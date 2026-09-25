@@ -224,7 +224,12 @@ namespace StutterFix
         public static void OnSongEnd(MethodBase __originalMethod)
         {
             endedByHook = true;
+            long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
+            InvisibleSkip.LastAllN = 0; InvisibleSkip.LastAllMs = 0;
             Hitch.Report();
+            double rms = Ms(t0);
+            if (rms >= 30) Main.Entry.Logger.Log(string.Format("[곡 끝] {0}: 곡 끝 요약 {1:F0}ms{2}", __originalMethod.Name, rms,
+                InvisibleSkip.LastAllN > 0 ? string.Format(" (투명 장식 위치 반영 {0}개 {1:F0}ms)", InvisibleSkip.LastAllN, InvisibleSkip.LastAllMs) : ""));
             // 편집 화면으로 돌아가거나 메뉴로 나갈 때는 타일/장식을 다시 만드느라 멈춘다 (완주 연출은 끊김으로 본다)
             string n = __originalMethod.Name;
             if (n == "SwitchToEditMode" || n.Contains("Quit"))
