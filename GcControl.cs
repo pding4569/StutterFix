@@ -164,6 +164,7 @@ namespace StutterFix
         {
             endedByHook = true;
             Hitch.Report();
+            EffectBudget.Reset();   // 이전 씬의 밀린 효과는 버린다
             PerfOverlay.MarkLoading(SettingsWindow.T("화면 전환", "Scene change"));
             Resume("씬 바뀜");
             LeakGuard.ScheduleCensus("장면 " + to.name, 2f);
@@ -219,7 +220,7 @@ namespace StutterFix
             return __exception;
         }
 
-        public static void AfterLoad() { endedByHook = false; LeakGuard.ScheduleCensus("맵 불러온 뒤", 2f); PerfOverlay.MarkLoading(SettingsWindow.T("맵 불러오기", "Level load")); PerfOverlay.LevelActivity(); Resume("맵 로딩"); }
+        public static void AfterLoad() { endedByHook = false; EffectBudget.Reset(); LeakGuard.ScheduleCensus("맵 불러온 뒤", 2f); PerfOverlay.MarkLoading(SettingsWindow.T("맵 불러오기", "Level load")); PerfOverlay.LevelActivity(); Resume("맵 로딩"); }
 
         public static void OnSongEnd(MethodBase __originalMethod)
         {
