@@ -240,10 +240,12 @@ namespace StutterFix
         // 재시작 시간: 재시작 함수가 불린 순간부터 곡이 다시 도는 첫 프레임까지 (Hitch.SongStarted 가 기록)
         internal static long RestartAt;
         internal static string RestartWhy = "";
+        internal static int RestartFrame; internal static float RestartMaxMs; internal static long RestartGcMs;   // 그 사이 프레임 수, 가장 긴 프레임(PerfOverlay), 메모리 정리 시간
 
         public static void OnSongRestart(MethodBase __originalMethod)
         {
             RestartAt = System.Diagnostics.Stopwatch.GetTimestamp(); RestartWhy = __originalMethod.Name;
+            RestartFrame = UnityEngine.Time.frameCount; RestartMaxMs = 0; RestartGcMs = 0;
             Hitch.Report();
             PerfOverlay.MarkLoading(SettingsWindow.T("곡 준비", "Level start"));
             PerfOverlay.BeginStartPhase();
@@ -342,6 +344,7 @@ namespace StutterFix
                 lastCleanMB = GC.GetTotalMemory(false) / 1048576;
                 ModCost.Add(SettingsWindow.T("메모리 정리 (모드)", "Memory cleanup (mod)"), sw.Elapsed.TotalMilliseconds);
                 ForcedCollects++;
+                if (RestartAt != 0) RestartGcMs += sw.ElapsedMilliseconds;
                 Main.Entry.Logger.Log(string.Format("GC 재개 및 정리 ({0}) {1}MB -> {2}MB, {3}ms",
                     reason, before, GC.GetTotalMemory(false) / 1048576, sw.ElapsedMilliseconds));
             }

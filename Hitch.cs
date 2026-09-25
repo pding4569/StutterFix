@@ -180,7 +180,8 @@ namespace StutterFix
             {
                 double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - GcControl.RestartAt) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
                 GcControl.RestartAt = 0;
-                if (ms < 30000) Main.Entry.Logger.Log(string.Format("[재시작 시간] {0} → 곡 시작까지 {1:F0}ms{2}", GcControl.RestartWhy, ms, LoadFix.Summary()));
+                if (ms < 30000) Main.Entry.Logger.Log(string.Format("[재시작 시간] {0} → 곡 시작까지 {1:F0}ms (프레임 {3}개, 가장 긴 프레임 {4:F0}ms, 메모리 정리 {5}ms){2}",
+                    GcControl.RestartWhy, ms, LoadFix.Summary(), UnityEngine.Time.frameCount - GcControl.RestartFrame, GcControl.RestartMaxMs, GcControl.RestartGcMs));
                 LoadFix.ResetStats();
             }
             RestartAdvisor.SongStarted();

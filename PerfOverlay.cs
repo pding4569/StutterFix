@@ -309,6 +309,7 @@ namespace StutterFix
             wasPlaying = playing;
             if (!playing) SongBucket = -1;
             PresentWatch.Frame(playing, ms, lastWait);
+            if (GcControl.RestartAt != 0 && ms > GcControl.RestartMaxMs) GcControl.RestartMaxMs = ms;
             if (playing && ms < 1500f)
             {
                 int b = (int)(songMs / (BucketSec * 1000.0));

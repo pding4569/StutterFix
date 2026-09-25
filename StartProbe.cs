@@ -49,6 +49,11 @@ namespace StutterFix
             new[] { "ffxSetDefaultText", "UpdateHudTexts" }, new[] { "AudioManager", "StopAllSounds" },
             new[] { "scrMistakesManager", "RevertToLastCheckpoint" },
             new[] { "DG.Tweening.DOTween", "KillAll" },
+            // 재시작(scrController.ResetCustomLevel 코루틴 -> scnGame.ResetScene -> scnGame.Play). Arche 한 판 뒤 재시작 9초(2026-09-26)
+            new[] { "scnGame", "ResetScene" }, new[] { "scnGame", "DisableFilters" }, new[] { "scnGame", "SetStartingBG" }, new[] { "scnGame", "ResetPlanetsPosition" },
+            new[] { "scrController", "TogglePauseGame" }, new[] { "scrController", "EnableHallOfMirrors" }, new[] { "scrCamera", "SetCustomFrameRate" },
+            new[] { "scrLivesCounter", "Reset" }, new[] { "scrUIController", "WipeToBlack" }, new[] { "scrCountdown", "CancelGo" },
+            new[] { "scrPlayerManager", "SetAllPlayerResponsive" }, new[] { "scrController", "WaitForStartCo" }, new[] { "scnGame", "UpdateVideo" },
         };
 
         // 장식 수만큼(23만 번) 불리는 함수들. 한 번씩 기록하면 목록이 터지므로 이름별 합계만 센다.
@@ -59,7 +64,7 @@ namespace StutterFix
             new[] { "scrDecoration", "Setup" }, new[] { "scrDecoration", "UpdateHitbox" },
             new[] { "scrDecorationManager", "TryAddDecorationToDictionary" }, new[] { "scnGame", "ApplyEvent" },
             new[] { "scrFloor", "SetTrackStyle" }, new[] { "scrFloor", "UpdateAngle" },
-            new[] { "UnityEngine.Texture2D", "Apply" },
+            new[] { "UnityEngine.Texture2D", "Apply" }, new[] { "DG.Tweening.TweenExtensions", "Kill" },
         };
 
         private class Hot { public int Count; public double Ms; }
@@ -104,6 +109,16 @@ namespace StutterFix
                     catch { }
                 }
             }
+            // 재시작 코루틴 본체 (이름 끝 번호는 게임 빌드마다 다를 수 있어 이름으로 찾는다)
+            var ctl = AccessTools.TypeByName("scrController");
+            if (ctl != null)
+                foreach (var nt in ctl.GetNestedTypes(AccessTools.all))
+                {
+                    if (!nt.Name.StartsWith("<ResetCustomLevel>", StringComparison.Ordinal)) continue;
+                    var mn = AccessTools.Method(nt, "MoveNext");
+                    if (mn == null) continue;
+                    try { harmony.Patch(mn, prefix: pre, finalizer: post); names[mn] = "scrController.ResetCustomLevel(코루틴)"; n++; } catch { }
+                }
             var hpre = new HarmonyMethod(typeof(StartProbe), nameof(HotPre));
             var hpost = new HarmonyMethod(typeof(StartProbe), nameof(HotPost));
             int h = 0;
