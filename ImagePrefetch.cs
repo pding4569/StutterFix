@@ -419,9 +419,11 @@ namespace StutterFix
 
                 Compat.Refresh();   // PACL2 손실 압축이 켜져 있는지 (작업 스레드가 미리 압축할지 정한다)
                 Resilience.Phase("맵 이미지 불러오는 중");
-                // 코어 수만큼 (최대 8). 예전에는 코어 - 1 이었는데, 메인 스레드는 불러오는 동안 대부분 풀린 이미지를 기다린다
-                // (Hello (BPM) 2026: 전체 11초 중 기다림 5초). 작업 스레드는 낮은 우선순위라 메인 스레드가 필요할 때는 양보한다.
-                int n = Math.Max(1, Math.Min(8, Environment.ProcessorCount));
+                // 코어 - 1 (최대 8). 메인 스레드가 대부분 기다리는 맵(Hello (BPM) 2026: 전체 11초 중 기다림 5초)은 작업 스레드가 많을수록
+                // 좋지만, 장식이 많거나 미리 압축하는 맵은 메인 스레드도 바쁘다(Arche: 기다림 0.3~0.4초). 6코어 6스레드(i5-9400F)에서
+                // 코어 수(6개)로 늘리자 메인 스레드의 넣기가 1.9초 -> 3.6~3.9초, 전체 17.5 -> 18.7~19.6초로 느려졌다(낮은 우선순위여도
+                // 유니티의 렌더·잡 스레드와 코어를 나눠 쓴다). 그래서 코어 하나는 비워 두고, 스레드가 많은 CPU 는 최대 8개까지 쓴다.
+                int n = Math.Max(1, Math.Min(8, Environment.ProcessorCount - 1));
                 PngDecoder.ResetStats();
                 workers = new Thread[n];
                 for (int i = 0; i < n; i++)
