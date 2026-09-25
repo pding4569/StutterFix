@@ -117,6 +117,7 @@ namespace StutterFix
                 LeakGuard.Install(harmony);
                 LoadFix.Install(harmony);
                 LoadFix.InstallDoubleReset(harmony);
+                LoadFix.InstallRetryColliders(harmony);
                 TexCompress.Install(harmony);
                 HalfRender.Install(harmony);
                 RenderVerify.Install(harmony);
@@ -477,7 +478,7 @@ namespace StutterFix
             LowEnd.Apply();
             MoveApply.Enabled = E("MoveFinish", Config.MoveFinish);
             ParticleFix.SkipIdle = E("SkipIdleParticles", Config.SkipIdleParticles); ParticleFix.PauseOffscreen = E("LowPauseParticles", Config.LowPauseParticles); LeakGuard.Enabled = E("LeakFix", Config.LeakFix);
-            bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc;
+            bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc;
             TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages);
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);

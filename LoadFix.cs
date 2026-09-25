@@ -328,13 +328,82 @@ namespace StutterFix
             return n;
         }
 
-        internal static void ResetStats() { TimeHits = TimeMisses = 0; ResetsSkipped = ResetsKept = 0; ColCalls = ColActiveTicks = ColEnableTicks = ColActiveChanged = ColEnableChanged = 0; ToggleTicks = 0; }
+        // ── 4) 에디터에서 죽고 다시 할 때 클릭용 충돌 상자 ──
+        // scrDecoration.Setup 은 끝에서 "에디터면 SetCollider(true)" 를 한다(IL). 재생 시작(scnEditor.Play)은 장식을 다시 설정한 뒤 마지막에
+        // ToggleClickableBoxColliderForLevelEditor(false) 로 모두 끄지만, 죽고 다시 할 때(scrController.ResetCustomLevel 코루틴 -> scnGame.ResetScene
+        // -> scnGame.Play)는 다시 설정만 두 번 하고 끄지 않는다(원래 게임도 같음). 그래서 다시 한 판 동안 클릭용 충돌 상자 2만 8천 개(Arche)가
+        // 켜진 채로 장식이 움직일 때마다 물리 엔진이 겹침을 다시 찾았다(겹쳐 놓인 장식이 많다): 재시작 프레임의 "그 밖" 5~6초,
+        // 곡 중 Physics2DFixedUpdate 가장 무거운 구간 17.6ms (FPS 250 -> 57), 가벼운 구간은 0.1ms (2026-09-26).
+        // 다시 할 때는 다시 설정 안의 켜기(SetCollider(true))를 건너뛰고(재생 중에는 꺼져 있었으므로 그대로 꺼진 채),
+        // 끝나면 하나라도 켜져 있는지 보고 켜져 있으면 재생 시작과 같은 끄기를 부른다. 편집으로 돌아가면(SwitchToEditMode) 게임이 원래대로 모두 켠다.
+        internal static bool RetryColliders = true;
+        private static bool retrying;
+        internal static long RetrySkips, RetryFixes;
+        private static System.Reflection.MethodInfo toggleMethod;
+
+        internal static void InstallRetryColliders(Harmony h)
+        {
+            try
+            {
+                toggleMethod = AccessTools.Method(typeof(scrDecorationManager), "ToggleClickableBoxColliderForLevelEditor");
+                var ctl = AccessTools.TypeByName("scrController");
+                System.Reflection.MethodInfo move = null;
+                if (ctl != null)
+                    foreach (var nt in ctl.GetNestedTypes(AccessTools.all))
+                        if (nt.Name.StartsWith("<ResetCustomLevel>", StringComparison.Ordinal)) move = AccessTools.Method(nt, "MoveNext");
+                var baseSet = AccessTools.Method(typeof(scrDecoration), "SetCollider", new[] { typeof(bool) });
+                var objSet = AccessTools.DeclaredMethod(typeof(scrObjectDecoration), "SetCollider", new[] { typeof(bool) });
+                if (move == null || baseSet == null || toggleMethod == null || colField == null) { Main.Entry.Logger.Log("[로딩] 다시 할 때 충돌 상자: 게임 코드 모양이 달라 끔"); return; }
+                h.Patch(move, prefix: new HarmonyMethod(typeof(LoadFix), nameof(RetryPrefix)), finalizer: new HarmonyMethod(typeof(LoadFix), nameof(RetryFinalizer)));
+                h.Patch(baseSet, prefix: new HarmonyMethod(typeof(LoadFix), nameof(ColliderPrefix)));
+                if (objSet != null) h.Patch(objSet, prefix: new HarmonyMethod(typeof(LoadFix), nameof(ColliderPrefix)));
+                Main.Entry.Logger.Log("[로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치");
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 다시 할 때 충돌 상자 설치 실패: " + ex.Message); }
+        }
+
+        public static void RetryPrefix() { if (RetryColliders && ADOBase.isLevelEditor) retrying = true; }
+        public static Exception RetryFinalizer(Exception __exception)
+        {
+            if (retrying) { retrying = false; EnsureCollidersOff(); }
+            return __exception;
+        }
+        public static bool ColliderPrefix(bool __0)
+        {
+            if (retrying && __0) { RetrySkips++; return false; }
+            return true;
+        }
+        private static void EnsureCollidersOff()
+        {
+            try
+            {
+                var mgr = scrDecorationManager.instance;
+                var all = mgr == null ? null : allRef(mgr);
+                if (all == null) return;
+                int on = 0;
+                for (int i = 0; i < all.Count; i++)
+                {
+                    var d = all[i];
+                    if ((object)d == null) continue;
+                    var c = colField.GetValue(d) as Behaviour;
+                    if ((object)c != null && c != null && (c.enabled || c.gameObject.activeSelf)) on++;
+                }
+                if (on == 0) return;
+                RetryFixes++;
+                toggleMethod.Invoke(mgr, new object[] { false });
+                Main.Entry.Logger.Log("[로딩] 다시 할 때 켜져 있던 클릭용 충돌 상자 " + on + "개를 끔 (재생 시작과 같게)");
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 충돌 상자 확인 실패: " + ex.Message); }
+        }
+
+        internal static void ResetStats() { TimeHits = TimeMisses = 0; ResetsSkipped = ResetsKept = 0; ColCalls = ColActiveTicks = ColEnableTicks = ColActiveChanged = ColEnableChanged = 0; ToggleTicks = 0; RetrySkips = 0; }
 
         internal static string Summary()
         {
             string s = "";
             if (TimeHits + TimeMisses > 0) s += string.Format(" | 이미지 파일 시각: {0}번 중 디스크 {1}번", TimeHits + TimeMisses, TimeMisses);
             if (ResetsSkipped + ResetsKept > 0) s += string.Format(" | 재생 준비 장식 다시 설정: 건너뜀 {0}번, 함 {1}번", ResetsSkipped, ResetsKept);
+            if (RetrySkips > 0) s += string.Format(" | 클릭용 충돌 상자 켜기 건너뜀 {0}번", RetrySkips);
             if (ColCalls > 0)
             {
                 double f = 1000.0 / System.Diagnostics.Stopwatch.Frequency;
