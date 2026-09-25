@@ -316,9 +316,11 @@ namespace StutterFix
         // 곡이 끝날 때는 아직 "재생 중" 으로 보여서, 반영하려고 부른 SetPosition 이 도로 미뤄졌다. 반영하는 동안은 막는다.
         private static bool applyingAll;
 
+        internal static int RestartLazyN, LastAllN; internal static double RestartLazyMs, LastAllMs;   // 재시작 시간 나누기용 (GcControl.RestartParts), 곡 끝 기록용
         internal static void ApplyAllLazy()
         {
             if (lazy.Count == 0) return;
+            long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             var list = new List<scrDecoration>(lazy);
             lazy.Clear();
             applyingAll = true;
@@ -327,7 +329,12 @@ namespace StutterFix
                 foreach (var d in list)
                     if (d != null) { LazyApplied++; setPosition(d, pivotPosRef(d), pivotOffRef(d)); }
             }
-            finally { applyingAll = false; }
+            finally
+            {
+                applyingAll = false;
+                LastAllN = list.Count; LastAllMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+                if (GcControl.RestartAt != 0) { RestartLazyN += LastAllN; RestartLazyMs += LastAllMs; }
+            }
         }
 
         // ── 개발자용: 미뤘다 반영한 위치가 원래 방식과 같은지 자동 확인 ──

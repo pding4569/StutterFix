@@ -138,6 +138,15 @@ namespace StutterFix
                     }
                 }
 
+                // 재시작 시간 나누기: 장면 초기화(ResetScene)와 재생 준비(Play)
+                if (scnGame != null)
+                    foreach (var name in new[] { "ResetScene", "Play" })
+                    {
+                        var m = AccessTools.Method(scnGame, name);
+                        if (m == null) continue;
+                        try { harmony.Patch(m, prefix: new HarmonyMethod(typeof(GcControl), nameof(PartPre)), finalizer: new HarmonyMethod(typeof(GcControl), name == "Play" ? nameof(PlayPost) : nameof(ScenePost))); } catch { }
+                    }
+
                 // 나가는 길은 종류가 많아 다 잡기 어렵다. 씬이 바뀌는 것은 무조건 끝난 것이므로
                 // 마지막 그물로 걸어 둔다.
                 UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneChanged;
@@ -241,12 +250,27 @@ namespace StutterFix
         internal static long RestartAt;
         internal static string RestartWhy = "";
         internal static int RestartFrame; internal static float RestartMaxMs; internal static long RestartGcMs;   // 그 사이 프레임 수, 가장 긴 프레임(PerfOverlay), 메모리 정리 시간
+        // 재시작 시간 나누기 (Arche 한 판 뒤 재시작 8.8초 중 장면 초기화+재생 준비는 3.4초뿐이라 나머지를 찾으려고, 2026-09-26)
+        internal static double RestartReportMs, RestartSceneMs, RestartPlayMs;
+        private static double Ms(long from) { return (System.Diagnostics.Stopwatch.GetTimestamp() - from) * 1000.0 / System.Diagnostics.Stopwatch.Frequency; }
+        public static void PartPre(out long __state) { __state = System.Diagnostics.Stopwatch.GetTimestamp(); }
+        public static Exception ScenePost(long __state, Exception __exception) { if (RestartAt != 0) RestartSceneMs += Ms(__state); return __exception; }
+        public static Exception PlayPost(long __state, Exception __exception) { if (RestartAt != 0) RestartPlayMs += Ms(__state); return __exception; }
+        internal static string RestartParts(double total)
+        {
+            double other = total - RestartReportMs - RestartGcMs - RestartSceneMs - RestartPlayMs;
+            return string.Format(" | 나눔: 곡 끝 요약 {0:F0}ms{1}, 메모리 정리 {2}ms, 장면 초기화 {3:F0}ms, 재생 준비 {4:F0}ms, 그 밖 {5:F0}ms",
+                RestartReportMs, InvisibleSkip.RestartLazyN > 0 ? string.Format(" (투명 장식 위치 반영 {0}개 {1:F0}ms)", InvisibleSkip.RestartLazyN, InvisibleSkip.RestartLazyMs) : "",
+                RestartGcMs, RestartSceneMs, RestartPlayMs, other);
+        }
 
         public static void OnSongRestart(MethodBase __originalMethod)
         {
             RestartAt = System.Diagnostics.Stopwatch.GetTimestamp(); RestartWhy = __originalMethod.Name;
             RestartFrame = UnityEngine.Time.frameCount; RestartMaxMs = 0; RestartGcMs = 0;
+            RestartReportMs = RestartSceneMs = RestartPlayMs = 0; InvisibleSkip.RestartLazyN = 0; InvisibleSkip.RestartLazyMs = 0;
             Hitch.Report();
+            RestartReportMs = Ms(RestartAt);
             PerfOverlay.MarkLoading(SettingsWindow.T("곡 준비", "Level start"));
             PerfOverlay.BeginStartPhase();
             // 재시작은 어차피 화면이 바뀌는 순간이라 바로 치운다.
