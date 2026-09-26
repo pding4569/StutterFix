@@ -67,6 +67,7 @@ namespace StutterFix
             if (has("no-present-keepalive")) { WindowGhost.KeepPresent = false; WindowGhost.PresentStatus = "no-present-keepalive 파일"; Entry.Logger.Log("[첫 판 FPS] no-present-keepalive 파일이 있어 멈춘 동안 화면 다시 내보내기 끔"); }
             if (has("present-flip")) { WindowGhost.PresentMode = 0; Entry.Logger.Log("[첫 판 FPS] present-flip 파일이 있어 보통 Present(0,0) 로 내보냄"); }
             if (has("present-screen-check")) { WindowGhost.ScreenCheck = true; Entry.Logger.Log("[첫 판 FPS] present-screen-check 파일이 있어 멈춘 동안 화면을 비교함"); }
+            if (has("freeze-test")) { PresentWatch.FreezeTest = true; Entry.Logger.Log("[첫 판 FPS 시험] freeze-test 파일이 있어 곡 중 6초 멈춤 시험을 함"); }
         }
 
         // UMM에서 모드를 끄고 켤 때 불린다.

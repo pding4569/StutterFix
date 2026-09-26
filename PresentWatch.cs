@@ -45,6 +45,7 @@ namespace StutterFix
             bool h = avgWait >= HighMs && avgWait >= avgMs * 0.15f;
             songSec++; if (h) { songHighSec++; songHighWait += avgWait; }
             if (Edition.Dev && (songSec == 3 || songSec == 8)) Main.Entry.Logger.Log(GfxProbe.Snapshot() + string.Format(" (곡 {0}초, 화면 대기 {1:F2}ms)", songSec, avgWait));
+            if (Edition.Dev && FreezeTest) FreezeStep(h, avgWait);
             if (Edition.Dev) SampleGpu(h);
             if (h == high) { streak = 0; return; }
             if (++streak < 2) return;
@@ -67,6 +68,83 @@ namespace StutterFix
                 lock (pending) pending.Add(line);
                 busy = false;
             });
+        }
+
+        // ── (개발자용 시험, 모드 폴더에 freeze-test 파일) 곡 중 일부러 6초 멈춰 느린 상태를 만드는 것이 무엇인지 가린다 ──
+        // 느린 상태는 곡 전 5초 넘는 멈춤 뒤에만 생기고, 1초 이상 멈추면 풀린다(2026-09-27). 멈춘 동안 무엇을 하느냐에 따라 느려지는지 본다:
+        //   A 아무것도 안 함 (멈춘 창 판정 + 화면 안 넘어감)
+        //   B 0.5초마다 입력 큐 확인만 (멈춘 창 판정 없음, 화면 안 넘어감)
+        //   C 입력 큐 확인 + 화면 다시 내보내기 (둘 다 없음)
+        //   D 화면 다시 내보내기만 (멈춘 창 판정 있음, 화면은 넘어감)
+        // 멈춘 뒤 1초를 건너뛰고 다음 1초의 화면 대기로 느림/빠름을 적는다. 느려졌으면 1초 멈춤(아무것도 안 함)으로 되돌린 뒤 다음 것.
+        internal static bool FreezeTest;
+        private struct FreezeKind { public string Name; public int Ms; public bool Peek, Present; }
+        private static readonly FreezeKind[] ftKinds =
+        {
+            new FreezeKind { Name = "A 아무것도 안 함", Ms = 6000 },
+            new FreezeKind { Name = "B 입력 큐 확인만", Ms = 6000, Peek = true },
+            new FreezeKind { Name = "C 입력 큐 확인 + 화면 다시 내보내기", Ms = 6000, Peek = true, Present = true },
+            new FreezeKind { Name = "D 화면 다시 내보내기만", Ms = 6000, Present = true },
+        };
+        private static readonly FreezeKind ftReset = new FreezeKind { Name = "되돌리기", Ms = 1000 };
+        private static int ftState, ftIdx, ftAfter, ftResets, ftHung;
+        private static bool ftResetting;
+        private static readonly List<string> ftResults = new List<string>();
+
+        private static void FreezeStep(bool slowNow, float wait)
+        {
+            if (songSec == 1) { ftState = 0; ftIdx = 0; ftResets = 0; ftResetting = false; ftResults.Clear(); }
+            if (ftState == 0)
+            {
+                if (songSec < 3) return;
+                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 시작: {0} (대기 {1:F2}ms)", Slow(wait) ? "느림" : "빠름", wait));
+                if (Slow(wait)) RunFreeze(ftReset, true); else RunFreeze(ftKinds[0], false);
+                return;
+            }
+            if (ftState != 2) return;
+            if (++ftAfter < 2) return;   // 멈춘 프레임이 낀 1초는 건너뛴다
+            bool slow = Slow(wait);
+            int hung = WindowGhost.HungStarts - ftHung;
+            if (ftResetting)
+            {
+                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 되돌리기 1초 멈춤 뒤: 대기 {0:F2}ms ({1})", wait, slow ? "그대로 느림" : "풀림"));
+                if (slow) { if (++ftResets >= 3) { Done("되돌리기가 안 됨"); return; } RunFreeze(ftReset, true); return; }
+                if (ftIdx >= ftKinds.Length) { Done(null); return; }
+                RunFreeze(ftKinds[ftIdx], false);
+                return;
+            }
+            string r = string.Format("{0}: {1} (대기 {2:F2}ms, 멈춘 창 판정 {3}번)", ftKinds[ftIdx].Name, slow ? "느려짐" : "빠름", wait, hung);
+            ftResults.Add(r);
+            Main.Entry.Logger.Log("[첫 판 FPS 시험] 6초 멈춘 뒤 " + r);
+            ftIdx++;
+            if (slow) { RunFreeze(ftReset, true); return; }
+            if (ftIdx >= ftKinds.Length) { Done(null); return; }
+            RunFreeze(ftKinds[ftIdx], false);
+        }
+
+        private static bool Slow(float wait) { return wait >= 0.3f; }
+
+        private static void Done(string why)
+        {
+            ftState = 3;
+            Main.Entry.Logger.Log("[첫 판 FPS 시험] 끝" + (why != null ? " (" + why + ")" : "") + ": " + string.Join(" | ", ftResults));
+        }
+
+        private static void RunFreeze(FreezeKind k, bool reset)
+        {
+            ftResetting = reset; ftHung = WindowGhost.HungStarts; ftState = 2; ftAfter = 0;
+            if (!reset) Main.Entry.Logger.Log("[첫 판 FPS 시험] " + k.Name + " - " + k.Ms + "ms 멈춤");
+            long f = System.Diagnostics.Stopwatch.Frequency, t0 = System.Diagnostics.Stopwatch.GetTimestamp(), lastPeek = t0, lastPresent = t0;
+            int presents = 0;
+            while (true)
+            {
+                Thread.Sleep(5);
+                long now = System.Diagnostics.Stopwatch.GetTimestamp();
+                if ((now - t0) * 1000 >= (long)k.Ms * f) break;
+                if (k.Peek && now - lastPeek >= f / 2) { WindowGhost.PeekInput(); lastPeek = now; }
+                if (k.Present && now - lastPresent >= f / 2) { if (WindowGhost.PresentOnce(0x21)) presents++; lastPresent = now; }
+            }
+            if (k.Present) Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험]   화면 다시 내보내기 {0}번{1}", presents, WindowGhost.PresentStatus.Length > 0 ? " (" + WindowGhost.PresentStatus + ")" : ""));
         }
 
         // ── (개발자용) 곡 중 GPU 클럭 (NVIDIA, GpuClock.cs) ──

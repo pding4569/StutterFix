@@ -78,23 +78,38 @@ namespace StutterFix
             {
                 string note; while (notes.TryDequeue(out note)) Main.Entry.Logger.Log(note);
                 if (peeksThisFrame > 0) LogFrame();
-                frame = f; frameStart = now; lastPeek = now; peeksThisFrame = 0; presentsThisFrame = 0; maxGap = 0;
-                return;
+                // 프레임이 실제로 시작한 시각(유니티가 메시지를 처리하고 화면을 넘긴 직후): 이 프레임 첫 Tick 이 늦게 불려도 빈틈을 바로 잰다
+                long startTicks = now;
+                try { startTicks = now - (long)((UnityEngine.Time.realtimeSinceStartupAsDouble - UnityEngine.Time.unscaledTimeAsDouble) * System.Diagnostics.Stopwatch.Frequency); } catch { }
+                frame = f; frameStart = startTicks; lastPeek = startTicks; peeksThisFrame = 0; presentsThisFrame = 0; maxGap = 0;
+                if (Edition.Dev) { tickTimes.Length = 0; hungBase = HungStarts; }
             }
             if (now - lastPeek < System.Diagnostics.Stopwatch.Frequency / 2) return;   // 프레임 0.5초 뒤부터 0.5초마다
             if (now - lastPeek > maxGap) maxGap = now - lastPeek;
             lastPeek = now;
-            try { MSG m; PeekMessageW(out m, IntPtr.Zero, 0, 0, PM_NOREMOVE | PM_NOYIELD | PM_QS_INPUT); peeksThisFrame++; Peeks++; }
-            catch { KeepResponsive = false; }
+            if (!PeekInput()) return;
+            peeksThisFrame++;
+            if (Edition.Dev && tickTimes.Length < 400) tickTimes.Append(tickTimes.Length > 0 ? " " : "").Append(((now - frameStart) / (double)System.Diagnostics.Stopwatch.Frequency).ToString("F1"));
             if (peeksThisFrame == 1) { presentBase = SfNative.PresentCount; failBase = SfNative.PresentFails; rebindBase = SfNative.PresentRebinds; }
             if (ScreenCheck) CheckScreen(peeksThisFrame == 1);
-            KeepPresenting();
+            if (KeepPresent && PresentOnce(PresentMode)) presentsThisFrame++;
         }
+
+        // 입력 큐 확인만 (꺼내지 않음). 멈춘 창 판정 타이머가 다시 시작된다.
+        internal static bool PeekInput()
+        {
+            try { MSG m; PeekMessageW(out m, IntPtr.Zero, 0, 0, PM_NOREMOVE | PM_NOYIELD | PM_QS_INPUT); Peeks++; return true; }
+            catch { KeepResponsive = false; return false; }
+        }
+
+        private static readonly System.Text.StringBuilder tickTimes = new System.Text.StringBuilder();
+        private static int hungBase;
 
         private static void LogFrame()
         {
             double sec = (lastPeek - frameStart) / (double)System.Diagnostics.Stopwatch.Frequency;
             string line = string.Format("[첫 판 FPS] {0:F1}초 멈춘 프레임 동안 윈도우 메시지 확인 {1}번 (멈춘 창 판정 막기)", sec, peeksThisFrame);
+            if (Edition.Dev) line += " [확인 시각(프레임 시작부터 초): " + tickTimes + "]" + (HungStarts != hungBase ? string.Format(" [이 프레임에서 멈춘 창 판정 {0}번]", HungStarts - hungBase) : "");
             if (presentsThisFrame > 0)
             {
                 int done = SfNative.PresentCount - presentBase, failed = SfNative.PresentFails - failBase;
@@ -124,21 +139,22 @@ namespace StutterFix
         internal static long Presents;
         private static int presentsThisFrame, presentBase, failBase, rebindBase;
         private static long maxGap;
-        private static void KeepPresenting()
+        // 그래픽 스레드에 Present 한 번 부탁 (메인 스레드). 안 되면 false, 다시 안 되게 KeepPresent 를 끈다.
+        internal static bool PresentOnce(int mode)
         {
-            if (!KeepPresent) return;
             try
             {
-                if (!SfNative.Ready || !SfNative.PresentReady) { PresentStatus = SfNative.Ready ? "sfnative 가 예전 것 (게임을 다시 켜면 됨)" : "sfnative 없음: " + SfNative.Status; KeepPresent = false; return; }
+                if (!SfNative.Ready || !SfNative.PresentReady) { PresentStatus = SfNative.Ready ? "sfnative 가 예전 것 (게임을 다시 켜면 됨)" : "sfnative 없음: " + SfNative.Status; KeepPresent = false; return false; }
                 IntPtr sc = GfxProbe.MainSwapChain();
-                if (sc == IntPtr.Zero) { PresentStatus = "스왑체인 확인 실패" + (GfxProbe.Status.Length > 0 ? " (" + GfxProbe.Status + ")" : ""); KeepPresent = false; return; }
+                if (sc == IntPtr.Zero) { PresentStatus = "스왑체인 확인 실패" + (GfxProbe.Status.Length > 0 ? " (" + GfxProbe.Status + ")" : ""); KeepPresent = false; return false; }
                 IntPtr fn = SfNative.PresentEvent(sc);
-                if (fn == IntPtr.Zero) { PresentStatus = "sfnative 함수 없음"; KeepPresent = false; return; }
-                UnityEngine.GL.IssuePluginEvent(fn, PresentMode);
+                if (fn == IntPtr.Zero) { PresentStatus = "sfnative 함수 없음"; KeepPresent = false; return false; }
+                UnityEngine.GL.IssuePluginEvent(fn, mode);
                 UnityEngine.GL.Flush();
-                presentsThisFrame++; Presents++;
+                Presents++;
+                return true;
             }
-            catch (Exception ex) { PresentStatus = "실패: " + ex.Message; KeepPresent = false; }
+            catch (Exception ex) { PresentStatus = "실패: " + ex.Message; KeepPresent = false; return false; }
         }
 
         // ── (개발자용 시험, 모드 폴더에 present-screen-check 파일) 멈춘 동안 화면이 정말 그대로인지 ──
@@ -213,6 +229,7 @@ namespace StutterFix
         private static System.Threading.Thread watch;
         private static readonly System.Collections.Concurrent.ConcurrentQueue<string> notes = new System.Collections.Concurrent.ConcurrentQueue<string>();
         private static volatile bool watching;
+        internal static int HungStarts;   // 멈춘 창 판정이 시작된 횟수 (개발자용 감시 스레드)
         internal static void StartWatch()
         {
             if (watch != null) return;
@@ -227,7 +244,7 @@ namespace StutterFix
                         if (hwnd == IntPtr.Zero) hwnd = PresentWatch.FindGameWindow();
                         bool h = hwnd != IntPtr.Zero && IsHungAppWindow(hwnd);
                         long now = System.Diagnostics.Stopwatch.GetTimestamp();
-                        if (h && !hung) since = now;
+                        if (h && !hung) { since = now; System.Threading.Interlocked.Increment(ref HungStarts); }
                         if (!h && hung) notes.Enqueue(string.Format("[첫 판 FPS] 윈도우가 게임 창을 멈춘 창으로 판정했음 ({0:F1}초 동안)", (now - since) / (double)System.Diagnostics.Stopwatch.Frequency));
                         hung = h;
                     }
