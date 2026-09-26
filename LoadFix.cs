@@ -404,13 +404,15 @@ namespace StutterFix
         // 목록 개수와 집합 개수가 다르면(다른 모드가 목록을 직접 바꾼 경우) 집합을 목록에서 다시 만든다. 장식이 이미 파괴됐으면 원래 코드로.
         internal static bool FastTextureDict = true;
         internal static long DictAdds;
-        private static readonly AccessTools.FieldRef<scrDecorationManager, Dictionary<string, List<scrDecoration>>> sameTexRef = AccessTools.FieldRefAccess<scrDecorationManager, Dictionary<string, List<scrDecoration>>>("decorationsWithSameTexture");
-        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<List<scrDecoration>, HashSet<scrDecoration>> sameTexSets = new System.Runtime.CompilerServices.ConditionalWeakTable<List<scrDecoration>, HashSet<scrDecoration>>();
-        private sealed class RefEq : IEqualityComparer<scrDecoration>
+        // 필드 형식: Dictionary<string, List<scrVisualDecoration>>, 함수 인자: scrVisualDecoration (리플렉션으로 확인).
+        // 형식이 다르면 정적 초기화에서 예외가 나 모드 전체가 안 켜진다(2026-09-26 실제로 그랬다). 그래서 설치할 때 try 안에서 만든다.
+        private static AccessTools.FieldRef<scrDecorationManager, Dictionary<string, List<scrVisualDecoration>>> sameTexRef;
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<List<scrVisualDecoration>, HashSet<scrVisualDecoration>> sameTexSets = new System.Runtime.CompilerServices.ConditionalWeakTable<List<scrVisualDecoration>, HashSet<scrVisualDecoration>>();
+        private sealed class RefEq : IEqualityComparer<scrVisualDecoration>
         {
             internal static readonly RefEq Instance = new RefEq();
-            public bool Equals(scrDecoration a, scrDecoration b) { return ReferenceEquals(a, b); }
-            public int GetHashCode(scrDecoration d) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(d); }
+            public bool Equals(scrVisualDecoration a, scrVisualDecoration b) { return ReferenceEquals(a, b); }
+            public int GetHashCode(scrVisualDecoration d) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(d); }
         }
 
         internal static void InstallTextureDict(Harmony h)
@@ -418,16 +420,20 @@ namespace StutterFix
             try
             {
                 var m = AccessTools.Method(typeof(scrDecorationManager), "TryAddDecorationToDictionary");
-                if (m == null || m.GetParameters().Length != 1) { Main.Entry.Logger.Log("[로딩] 같은 이미지 목록: 게임 코드 모양이 달라 끔"); return; }
+                var f = AccessTools.Field(typeof(scrDecorationManager), "decorationsWithSameTexture");
+                if (m == null || m.GetParameters().Length != 1 || m.GetParameters()[0].ParameterType != typeof(scrVisualDecoration)
+                    || f == null || f.FieldType != typeof(Dictionary<string, List<scrVisualDecoration>>))
+                { Main.Entry.Logger.Log("[로딩] 같은 이미지 목록: 게임 코드 모양이 달라 끔"); return; }
+                sameTexRef = AccessTools.FieldRefAccess<scrDecorationManager, Dictionary<string, List<scrVisualDecoration>>>(f);
                 h.Patch(m, prefix: new HarmonyMethod(typeof(LoadFix), nameof(TexDictPrefix)));
                 Main.Entry.Logger.Log("[로딩] 같은 이미지 장식 목록 넣기 빠르게 설치");
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 같은 이미지 목록 설치 실패: " + ex.Message); }
+            catch (Exception ex) { sameTexRef = null; Main.Entry.Logger.Log("[로딩] 같은 이미지 목록 설치 실패: " + ex.Message); }
         }
 
-        public static bool TexDictPrefix(scrDecorationManager __instance, scrDecoration __0)
+        public static bool TexDictPrefix(scrDecorationManager __instance, scrVisualDecoration __0)
         {
-            if (!FastTextureDict) return true;
+            if (!FastTextureDict || sameTexRef == null) return true;
             try
             {
                 var d = __0;
@@ -438,10 +444,10 @@ namespace StutterFix
                 if (string.IsNullOrEmpty(img)) return false;       // 원래도 여기서 끝
                 var dict = sameTexRef(__instance);
                 if (dict == null) return false;                     // 원래도 여기서 끝
-                List<scrDecoration> list;
-                if (!dict.TryGetValue(img, out list)) { list = new List<scrDecoration>(); dict[img] = list; }
-                HashSet<scrDecoration> set;
-                if (!sameTexSets.TryGetValue(list, out set)) { set = new HashSet<scrDecoration>(RefEq.Instance); sameTexSets.Add(list, set); }
+                List<scrVisualDecoration> list;
+                if (!dict.TryGetValue(img, out list)) { list = new List<scrVisualDecoration>(); dict[img] = list; }
+                HashSet<scrVisualDecoration> set;
+                if (!sameTexSets.TryGetValue(list, out set)) { set = new HashSet<scrVisualDecoration>(RefEq.Instance); sameTexSets.Add(list, set); }
                 if (set.Count != list.Count) { set.Clear(); foreach (var x in list) set.Add(x); }
                 if (set.Add(d)) { list.Add(d); DictAdds++; }
                 return false;

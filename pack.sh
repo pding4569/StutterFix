@@ -10,6 +10,11 @@ ver=$(grep -oE '"Version": *"[^"]+"' Info.json | grep -oE '[0-9][0-9.]*')
 dotnet build -v q --nologo -c Debug
 dotnet build -v q --nologo -c Debug -p:Edition=Player
 
+# 불러오기 미리 확인: 게임 필드를 잘못 적은 FieldRefAccess 가 있으면 모드 전체가 안 켜지므로 여기서 멈춘다
+dotnet build tools/LoadCheck -v q --nologo -c Release -o tools/LoadCheck/bin
+tools/LoadCheck/bin/LoadCheck.exe bin/Debug/StutterFix.dll
+tools/LoadCheck/bin/LoadCheck.exe bin/Player/StutterFix.dll
+
 rm -rf dist && mkdir -p dist/player/StutterFix dist/developer/StutterFix
 cp bin/Player/StutterFix.dll Info.json dist/player/StutterFix/
 cp bin/Debug/StutterFix.dll dist/developer/StutterFix/
