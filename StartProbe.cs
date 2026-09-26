@@ -34,7 +34,7 @@ namespace StutterFix
             new[] { "scnGame", "ReloadCustomSounds" }, new[] { "scnGame", "Play" }, new[] { "scnGame", "FinishCustomLevelLoading" },
             new[] { "scnGame", "PrepVfx" }, new[] { "scnGame", "LoadLevel" },
             new[] { "ADOBase", "FlushUnusedMemory" },
-            new[] { "LevelData", "LoadLevel" }, new[] { "LevelData", "Decode" }, new[] { "GDMiniJSON.Json", "Deserialize" }, new[] { "RDFile", "ReadAllText" },
+            new[] { "LevelData", "LoadLevel" }, new[] { "LevelData", "Decode" }, new[] { "RDFile", "ReadAllText" },
             new[] { "scrUIController", "LevelFinishedLoading" },
             new[] { "TextureManager", "Unload" }, new[] { "TextureManager", "MarkAllUnused" },
             new[] { "scrDecorationManager", "ResetDecorations" }, new[] { "scrDecorationManager", "ResetDecorationHitboxEvents" },
@@ -65,6 +65,9 @@ namespace StutterFix
             new[] { "scrDecorationManager", "TryAddDecorationToDictionary" }, new[] { "scnGame", "ApplyEvent" },
             new[] { "scrFloor", "SetTrackStyle" }, new[] { "scrFloor", "UpdateAngle" },
             new[] { "UnityEngine.Texture2D", "Apply" }, new[] { "DG.Tweening.TweenExtensions", "Kill" },
+            // 맵 파일 읽기 안쪽 (LevelData.Decode 3.9초의 나눔)
+            new[] { "LevelEvent", "Decode" }, new[] { "LevelEvent", "FixDefaultValues" }, new[] { "System.Enum", "Parse" }, new[] { "System.Enum", "ToObject" },
+            new[] { "RDEditorUtils", "DecodeModsArray" }, new[] { "RDEditorUtils", "DecodeFloatArray" }, new[] { "GDMiniJSON.Json", "Deserialize" },
         };
 
         private class Hot { public int Count; public double Ms; }
