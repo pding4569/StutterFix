@@ -326,6 +326,11 @@ namespace StutterFix
         // 필터를 되돌리며 결과 메모리에 바로 쓴다. s = 원본 줄(필터 적용된 값), d = 결과 줄, p = 결과의 윗줄.
         private static bool UnfilterTo(byte* d, byte* s, byte* p, int n, int bpp, int filter)
         {
+            if (SfNative.Available) return SfNative.UnfilterTo(d, s, p, n, bpp, filter);
+            return ManagedUnfilterTo(d, s, p, n, bpp, filter);
+        }
+        private static bool ManagedUnfilterTo(byte* d, byte* s, byte* p, int n, int bpp, int filter)
+        {
             switch (filter)
             {
                 case 0: Buffer.MemoryCopy(s, d, n, n); return true;
@@ -434,6 +439,11 @@ namespace StutterFix
 
         // 필터 되돌리기 (PNG 명세 그대로). c = 이번 줄(제자리에서 바뀜), p = 윗줄(이미 되돌린 값).
         private static bool UnfilterPtr(byte* c, byte* p, int n, int bpp, int filter)
+        {
+            if (SfNative.Available) return SfNative.UnfilterInPlace(c, p, n, bpp, filter);
+            return ManagedUnfilter(c, p, n, bpp, filter);
+        }
+        internal static bool ManagedUnfilter(byte* c, byte* p, int n, int bpp, int filter)
         {
             switch (filter)
             {

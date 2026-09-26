@@ -70,23 +70,33 @@ namespace StutterFix
         // 내용이 같으면 쓰지 않는다. 어떤 이유로든 못 불러오면 원래 zlib(DeflateStream) 길로 푼다.
         private static void LoadNative()
         {
+            string p = Extract("libdeflate.dll");
+            if (p == null) NativeInflate.Status = "모드 안에 DLL 없음"; else NativeInflate.Init(p);
+            Main.Entry.Logger.Log("[이미지] 빠른 압축 풀기(libdeflate): " + NativeInflate.Status);
+            p = Extract("sfnative.dll");
+            if (p == null) SfNative.Status = "모드 안에 DLL 없음"; else SfNative.Init(p);
+            Main.Entry.Logger.Log("[이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): " + SfNative.Status);
+        }
+
+        // 모드 DLL 안에 넣어 둔 네이티브 DLL 을 모드 폴더에 꺼내 두고 그 경로를 돌려준다(없으면 null). 이미 같은 파일이면 쓰지 않는다.
+        private static string Extract(string name)
+        {
             try
             {
-                string path = Path.Combine(Main.Entry.Path, "libdeflate.dll");
+                string path = Path.Combine(Main.Entry.Path, name);
                 byte[] want;
-                using (var s = typeof(ImagePrefetch).Assembly.GetManifestResourceStream("StutterFix.libdeflate.dll"))
+                using (var s = typeof(ImagePrefetch).Assembly.GetManifestResourceStream("StutterFix." + name))
                 {
-                    if (s == null) { NativeInflate.Status = "모드 안에 DLL 없음"; return; }
+                    if (s == null) return null;
                     want = new byte[s.Length];
                     int got = 0; while (got < want.Length) { int n = s.Read(want, got, want.Length - got); if (n <= 0) break; got += n; }
                 }
                 bool same = false;
                 try { if (File.Exists(path)) { var have = File.ReadAllBytes(path); same = have.Length == want.Length && System.Linq.Enumerable.SequenceEqual(have, want); } } catch { }
-                if (!same) { try { File.WriteAllBytes(path, want); } catch (Exception ex) { Main.Entry.Logger.Log("[이미지] libdeflate.dll 쓰기 실패 (" + ex.Message + ")"); } }
-                NativeInflate.Init(path);
+                if (!same) { try { File.WriteAllBytes(path, want); } catch (Exception ex) { Main.Entry.Logger.Log("[이미지] " + name + " 쓰기 실패 (" + ex.Message + ")"); } }
+                return path;
             }
-            catch (Exception ex) { NativeInflate.Status = "실패: " + ex.Message; }
-            Main.Entry.Logger.Log("[이미지] 빠른 압축 풀기(libdeflate): " + NativeInflate.Status);
+            catch (Exception ex) { Main.Entry.Logger.Log("[이미지] " + name + " 꺼내기 실패: " + ex.Message); return null; }
         }
 
         internal static void Install(Harmony harmony)
@@ -424,7 +434,7 @@ namespace StutterFix
                 // 코어 수(6개)로 늘리자 메인 스레드의 넣기가 1.9초 -> 3.6~3.9초, 전체 17.5 -> 18.7~19.6초로 느려졌다(낮은 우선순위여도
                 // 유니티의 렌더·잡 스레드와 코어를 나눠 쓴다). 그래서 코어 하나는 비워 두고, 스레드가 많은 CPU 는 최대 8개까지 쓴다.
                 int n = Math.Max(1, Math.Min(8, Environment.ProcessorCount - 1));
-                PngDecoder.ResetStats();
+                PngDecoder.ResetStats(); SfNative.ResetStats();
                 workers = new Thread[n];
                 for (int i = 0; i < n; i++)
                 {
@@ -502,7 +512,7 @@ namespace StutterFix
                 if (job != null)
                 {
                     long t0 = Stopwatch.GetTimestamp();
-                    try { unsafe { DxtEncoder.EncodeRows((byte*)jpx, job.Width, job.Height, job.Layout, job.Dxt5, (byte*)jbl, r0, r1); } }
+                    try { unsafe { SfNative.EncodeRows((byte*)jpx, job.Width, job.Height, job.Layout, job.Dxt5, (byte*)jbl, r0, r1); } }
                     catch { lock (gate) job.Abandoned = true; }
                     Interlocked.Add(ref TexCompress.EncodeTicks, Stopwatch.GetTimestamp() - t0);
                     lock (gate)
@@ -765,7 +775,7 @@ namespace StutterFix
                 Main.Entry.Logger.Log("[이미지] " + Last);
                 double tk = Stopwatch.Frequency / 1000.0;
                 Main.Entry.Logger.Log(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
-                    workers.Length, PngDecoder.InflateTicks / tk, PngDecoder.FilterTicks / tk, PngDecoder.NewKinds, PngDecoder.NativeImages, PngDecoder.NativeFallbacks, NativeInflate.Status));
+                    workers.Length, PngDecoder.InflateTicks / tk, PngDecoder.FilterTicks / tk, PngDecoder.NewKinds, PngDecoder.NativeImages, PngDecoder.NativeFallbacks, NativeInflate.Status) + SfNative.Summary());
                 Resilience.Phase("메뉴·편집");
             }
             Stop();

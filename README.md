@@ -241,6 +241,8 @@ cl /O2 /GL /MT /LD /Brepro /DLIBDEFLATE_DLL /I. lib\deflate_decompress.c lib\zli
 
 검증: 맵 폴더의 PNG 29,524장(압축 9.8GB, 풀린 양 약 248GB)을 .NET 의 zlib 과 이 DLL 로 각각 풀어 바이트 단위로 비교, 다름 0.
 
+`native/sfnative.dll`은 이 모드가 직접 쓴 C 코드(`native/sfnative/sfnative.c`)로, 이미지 불러오기의 PNG 필터 되돌리기(SSE2)와 DXT 압축을 네이티브로 합니다. 같은 도구로 `native/build-sfnative.bat` 로 빌드합니다(`/Brepro`). 검증: 필터 되돌리기는 맵 폴더 PNG 전부의 모든 줄을 C# 코드와 바이트 비교, DXT 는 Arche 이미지 251장의 블록 6,280만 개가 C# 과 모두 같음. DLL 을 못 불러오면 C# 으로 동작합니다.
+
 ## 환경
 
 - ADOFAI r148 / Unity 6000.3.10f1 (Mono)

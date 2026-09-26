@@ -28,6 +28,7 @@
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="PerfOverlay.cs" />
     <Compile Include="PresentWatch.cs" />
+    <Compile Include="SfNative.cs" />
     <Compile Include="SystemMonitor.cs" />
     <Compile Include="UiInputBlock.cs" />
     <Compile Include="ModCost.cs" />
@@ -94,6 +95,8 @@
     <Compile Include="SceneReset.cs" />
     <!-- libdeflate 1.24 (MIT, native/libdeflate-LICENSE.txt): 압축 풀기만 넣어 MSVC x64 로 빌드한 것. 이미지 불러오기에서 zlib 대신 쓴다 -->
     <EmbeddedResource Include="native/libdeflate.dll" LogicalName="StutterFix.libdeflate.dll" />
+    <!-- 이 모드의 C 코드(native/sfnative/sfnative.c): PNG 필터 되돌리기, DXT 압축. native/build-sfnative.bat 로 빌드 -->
+    <EmbeddedResource Include="native/sfnative.dll" LogicalName="StutterFix.sfnative.dll" />
   </ItemGroup>
 
   <PropertyGroup>
