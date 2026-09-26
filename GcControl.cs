@@ -392,6 +392,14 @@ namespace StutterFix
 
             if (!Enabled)
             {
+                // 곡 중에 꺼지면(설정 창, 자동 보호) 한꺼번에 치우지 않고 GC 만 원래대로 켠다. 치우기는 게임의 GC 에 맡긴다(원래 게임과 같음).
+                if (Paused && IsPlaying())
+                {
+                    try { GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; } catch { }
+                    Paused = false; resumeCountdown = -1f; holdAfterFail = false;
+                    Main.Entry.Logger.Log("[GC] 곡 중에 꺼짐: 한꺼번에 치우지 않고 GC 만 원래대로 켬");
+                    return;
+                }
                 Resume("기능 꺼짐");
                 return;
             }
