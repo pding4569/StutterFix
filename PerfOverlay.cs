@@ -316,7 +316,7 @@ namespace StutterFix
             {
                 int b = (int)(songMs / (BucketSec * 1000.0));
                 SongBucket = b < MaxBuckets ? b : -1;
-                if (b < MaxBuckets) { bucketMs[b] += ms; bucketFrames[b]++; bucketCpu[b] += lastCpu; bucketRender[b] += lastRender; bucketWait[b] += lastWait; bucketGpu[b] += lastGpu; bucketAwake[b] += Dormancy.LastAwake; bucketAnim[b] += DecoAnim.LastFrameMs; bucketOff[b] += Dormancy.LastOffscreen; }
+                if (b < MaxBuckets) { bucketMs[b] += ms; bucketFrames[b]++; bucketCpu[b] += lastCpu; bucketRender[b] += lastRender; bucketWait[b] += lastWait; bucketGpu[b] += lastGpu < 1000f ? lastGpu : 0f; bucketAwake[b] += Dormancy.LastAwake; bucketAnim[b] += DecoAnim.LastFrameMs; bucketOff[b] += Dormancy.LastOffscreen; }
                 songMs += ms; songFrames++; if (ms > songWorst) songWorst = ms;
                 // 효과가 가장 무거운 프레임 (GPU 가 튄 프레임 같은 것에 가려지지 않게 따로 남긴다)
                 if (!InStartWindow)
@@ -335,7 +335,8 @@ namespace StutterFix
                     wpMove = (float)(last ? EffectScan.LastFrameMoveMs : EffectScan.FrameMoveMs);
                     wpN = last ? EffectScan.LastFrameN : EffectScan.FrameN;
                 }
-                if (lastGpu > 0f || lastCpu > 0f) { songGpu += lastGpu; songCpu += lastCpu; songTiming++; }
+                // 가끔 창구가 말도 안 되는 값을 준다(플레이어용 2.3.0 곡 요약 "GPU 평균 40256469.5ms"). 한 프레임 1초 넘는 값은 뺀다
+                if ((lastGpu > 0f || lastCpu > 0f) && lastGpu < 1000f && lastCpu < 1000f) { songGpu += lastGpu; songCpu += lastCpu; songTiming++; }
                 songMod += ModCost.LastFrameMs;   // 모드가 그 프레임에 쓴 시간(모니터 그리기 포함)
             }
 
