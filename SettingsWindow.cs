@@ -554,6 +554,15 @@ namespace StutterFix
                 GUILayout.Space(14);
             }
 
+            // 화면 합성 대기 (게임 위에 겹친 창·화면 캡처 프로그램 때문에 FPS 가 떨어진 판이 있었음)
+            var pn = PresentWatch.Notice;
+            if (pn != null && !PresentWatch.NoticeDismissed)
+            {
+                InfoCard(new[] { T("FPS 가 떨어진 원인 (게임 밖)", "FPS drop caused outside the game"), pn });
+                if (GUILayout.Button(T("닫기", "Dismiss"), sPrimary, GUILayout.Width(120), GUILayout.Height(34))) PresentWatch.NoticeDismissed = true;
+                GUILayout.Space(14);
+            }
+
             // 지금 재시작하면 좋은 때 (메모리가 쌓임, 멀티스레드 그리기 변경, 모드 업데이트 등)
             var why = RestartAdvisor.Reasons();
             if (why.Count > 0)

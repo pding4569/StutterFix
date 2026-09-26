@@ -48,14 +48,43 @@ namespace StutterFix
                             : string.Format("[화면 대기] 다시 줄어듦: 평균 {0:F1}ms (약 {1:F0} FPS)", avgWait, 1000 / avgMs);
             if (snaps >= 6 || busy) { Main.Entry.Logger.Log(head); return; }
             snaps++; busy = true;
+            float fpsNow = 1000 / avgMs, fpsWithout = 1000 / Math.Max(0.5f, avgMs - avgWait);
             ThreadPool.QueueUserWorkItem(_ =>
             {
                 string line;
-                try { line = head + " | " + Snapshot(); }
+                try
+                {
+                    overNames.Clear(); encNames.Clear();
+                    line = head + " | " + Snapshot();
+                    if (h) MakeNotice(avgWait, fpsNow, fpsWithout);
+                }
                 catch (Exception ex) { line = head + " | 조사 실패: " + ex.Message; }
                 lock (pending) pending.Add(line);
                 busy = false;
             });
+        }
+
+        // ── 설정 창 홈에 보일 안내 (사용자가 원인 프로그램을 알 수 있게) ──
+        internal static volatile string Notice;
+        internal static bool NoticeDismissed;
+        private static readonly List<string> overNames = new List<string>(), encNames = new List<string>();
+        private static void MakeNotice(float wait, float fps, float fpsWithout)
+        {
+            string head = SettingsWindow.T(
+                string.Format("곡 중에 윈도우가 게임 화면을 한 번 더 합성하느라 프레임마다 {0:F1}ms 를 기다렸습니다 (이때 약 {1:F0} FPS, 기다림이 없으면 약 {2:F0} FPS). 게임과 모드가 하는 일은 그대로입니다.", wait, fps, fpsWithout),
+                string.Format("During play, Windows composited the game screen an extra time and the game waited {0:F1} ms per frame (about {1:F0} FPS; about {2:F0} FPS without the wait). The game and mod workload is unchanged.", wait, fps, fpsWithout));
+            string cause;
+            if (overNames.Count > 0)
+                cause = SettingsWindow.T("게임 화면 위에 겹친 창: " + string.Join(", ", overNames.ToArray()) + ". 이 프로그램(데스크톱 캐릭터, 오버레이 등)을 끄면 FPS 가 오릅니다.",
+                    "Windows on top of the game: " + string.Join(", ", overNames.ToArray()) + ". Closing these programs (desktop pets, overlays, etc.) should raise FPS.");
+            else if (encNames.Count > 0)
+                cause = SettingsWindow.T("화면을 캡처하는 프로그램: " + string.Join(", ", encNames.ToArray()) + " (원격 데스크톱·녹화·방송). 게임할 때 끄면 FPS 가 오릅니다.",
+                    "Programs capturing the screen: " + string.Join(", ", encNames.ToArray()) + " (remote desktop, recording, streaming). Closing them while playing should raise FPS.");
+            else
+                cause = SettingsWindow.T("원인 프로그램을 찾지 못했습니다. 원격 데스크톱·녹화·오버레이·데스크톱 캐릭터 프로그램이 켜져 있는지 확인해 보세요.",
+                    "Couldn't find the program responsible. Check for remote desktop, recording, overlay or desktop pet programs.");
+            Notice = head + "\n" + cause;
+            NoticeDismissed = false;
         }
 
         // ── 조사 (작업 스레드) ─────────────────────────────────────────
@@ -79,6 +108,7 @@ namespace StutterFix
                     RECT r; if (!GetWindowRect(w, out r)) continue;
                     int ix = Math.Min(r.Right, gr.Right) - Math.Max(r.Left, gr.Left), iy = Math.Min(r.Bottom, gr.Bottom) - Math.Max(r.Top, gr.Top);
                     if (ix <= 0 || iy <= 0) continue;
+                    { uint op; GetWindowThreadProcessId(w, out op); string pn = ProcName(op); if (!overNames.Contains(pn)) overNames.Add(pn); }
                     if (above.Count < 8) above.Add(Describe(w) + " " + ix + "x" + iy + Flags(w));
                     else { above.Add("…"); break; }
                 }
@@ -117,10 +147,29 @@ namespace StutterFix
         {
             string n;
             lock (names) if (names.TryGetValue(pid, out n)) return n;
-            try { n = System.Diagnostics.Process.GetProcessById((int)pid).ProcessName; } catch { n = "pid " + pid; }
+            try { n = System.Diagnostics.Process.GetProcessById((int)pid).ProcessName; } catch { n = ImageName(pid) ?? "pid " + pid; }
             lock (names) names[pid] = n;
             return n;
         }
+
+        // 권한이 모자라 Process 로 이름을 못 읽는 프로세스(dwm 등)는 제한된 조회로 실행 파일 이름만 읽는다
+        private static string ImageName(uint pid)
+        {
+            IntPtr hp = IntPtr.Zero;
+            try
+            {
+                hp = OpenProcess(0x1000, false, pid);   // PROCESS_QUERY_LIMITED_INFORMATION
+                if (hp == IntPtr.Zero) return null;
+                var sb = new StringBuilder(512); int len = sb.Capacity;
+                if (!QueryFullProcessImageName(hp, 0, sb, ref len)) return null;
+                return System.IO.Path.GetFileNameWithoutExtension(sb.ToString());
+            }
+            catch { return null; }
+            finally { if (hp != IntPtr.Zero) CloseHandle(hp); }
+        }
+        [DllImport("kernel32.dll")] private static extern IntPtr OpenProcess(uint access, bool inherit, uint pid);
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] private static extern bool QueryFullProcessImageName(IntPtr hp, int flags, StringBuilder name, ref int size);
+        [DllImport("kernel32.dll")] private static extern bool CloseHandle(IntPtr h);
 
         private static string Flags(IntPtr w)
         {
@@ -177,7 +226,7 @@ namespace StutterFix
                     if (kv.Value < 1 || shown >= 4) break;
                     double a, e, c; d3.TryGetValue(kv.Key, out a); enc.TryGetValue(kv.Key, out e); copy.TryGetValue(kv.Key, out c);
                     sb.Append(shown == 0 ? ", 다른 프로그램: " : ", ").Append(ProcName(kv.Key)).AppendFormat(" 3D {0:F0}%", a);
-                    if (e >= 1) sb.AppendFormat(" 영상 인코딩 {0:F0}%", e);
+                    if (e >= 1) { sb.AppendFormat(" 영상 인코딩 {0:F0}%", e); string en = ProcName(kv.Key); if (!encNames.Contains(en)) encNames.Add(en); }
                     if (c >= 1) sb.AppendFormat(" 복사 {0:F0}%", c);
                     shown++;
                 }

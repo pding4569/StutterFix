@@ -34,7 +34,7 @@ namespace StutterFix
             new[] { "scnGame", "ReloadCustomSounds" }, new[] { "scnGame", "Play" }, new[] { "scnGame", "FinishCustomLevelLoading" },
             new[] { "scnGame", "PrepVfx" }, new[] { "scnGame", "LoadLevel" },
             new[] { "ADOBase", "FlushUnusedMemory" },
-            new[] { "LevelData", "LoadLevel" },
+            new[] { "LevelData", "LoadLevel" }, new[] { "LevelData", "Decode" }, new[] { "GDMiniJSON.Json", "Deserialize" }, new[] { "RDFile", "ReadAllText" },
             new[] { "scrUIController", "LevelFinishedLoading" },
             new[] { "TextureManager", "Unload" }, new[] { "TextureManager", "MarkAllUnused" },
             new[] { "scrDecorationManager", "ResetDecorations" }, new[] { "scrDecorationManager", "ResetDecorationHitboxEvents" },

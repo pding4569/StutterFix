@@ -58,7 +58,7 @@ namespace StutterFix
             __result = Parse(__0);   // 예외도 원래처럼 부른 쪽으로 간다
             LastMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             Parses++;
-            if (Edition.Dev && !devChecked && origParse != null) { devChecked = true; DevCompare(__0, __result); }
+            if (Edition.Dev && !devChecked && origParse != null && __0.Length >= 1000000) { devChecked = true; DevCompare(__0, __result); }   // 맵 파일(1MB 넘는 것)로
             return false;
         }
 
