@@ -13,6 +13,10 @@
 #include <stdint.h>
 #include <string.h>
 #include <emmintrin.h>
+#define COBJMACROS
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <d3d11.h>
 
 #define SF_API __declspec(dllexport)
 
@@ -353,3 +357,52 @@ SF_API void sf_dxt_encode_rows_ref(const uint8_t* src, int w, int h, int layout,
             encode_color(blk, dst); dst += 8;
         }
 }
+
+/* ---------------------------------------------------------------- keep presenting during long freezes ----------------------------------------------------------------
+ * When the game's main thread is stuck in one frame for several seconds (editor Play on a big level, level load), nothing is presented.
+ * After a present gap of more than about 5 seconds the game stayed for the whole run in a state where every frame waited ~1.7 ms for the
+ * swap chain's frame latency object (Arche about 200 instead of 320 FPS); a later gap of 1 second (but not 0.5 s) cleared it again.
+ * The mod asks Unity's render thread (idle during the freeze) to present every 0.5 s with GL.IssuePluginEvent, so the gap never grows.
+ * eventId = sync interval | (DXGI_PRESENT flags << 4). The mod uses sync 1 + DXGI_PRESENT_DO_NOT_SEQUENCE (0x2): "present a frame from the
+ * current buffer" - the frame already on screen is shown again, no buffer is flipped, so nothing visible changes.
+ * sf_present_event runs on Unity's render thread (UnityRenderingEvent signature). IDXGISwapChain::Present is vtable slot 8. */
+static void* volatile g_swapchain;
+static volatile long g_presents, g_presentFails, g_lastHr, g_rebinds;
+SF_API void sf_set_swapchain(void* sc) { g_swapchain = sc; }
+
+/* Flip-model Present unbinds the swap chain's back buffer from the immediate context. Unity does not know about this extra present,
+ * so the render target bindings are read before and put back after if Present changed them (Unity's state cache stays true). */
+static void __stdcall present_event(int eventId)
+{
+    static const GUID iidDevice = { 0xdb6f6ddb, 0xac77, 0x4e88, { 0x82, 0x53, 0x81, 0x9d, 0xf9, 0xbb, 0xf1, 0x40 } };   /* IID_ID3D11Device */
+    IDXGISwapChain* sc = (IDXGISwapChain*)g_swapchain;
+    ID3D11Device* dev = NULL;
+    ID3D11DeviceContext* ctx = NULL;
+    ID3D11RenderTargetView *before[8] = { 0 }, *after[8] = { 0 };
+    ID3D11DepthStencilView *dsvBefore = NULL, *dsvAfter = NULL;
+    HRESULT hr;
+    int i, n = 0, changed = 0;
+    if (!sc) return;
+    if (SUCCEEDED(IDXGISwapChain_GetDevice(sc, &iidDevice, (void**)&dev)) && dev) ID3D11Device_GetImmediateContext(dev, &ctx);
+    if (ctx) ID3D11DeviceContext_OMGetRenderTargets(ctx, 8, before, &dsvBefore);
+    hr = IDXGISwapChain_Present(sc, (UINT)eventId & 0xF, (UINT)eventId >> 4);
+    g_lastHr = hr;
+    if (FAILED(hr)) g_presentFails++; else g_presents++;
+    if (ctx)
+    {
+        ID3D11DeviceContext_OMGetRenderTargets(ctx, 8, after, &dsvAfter);
+        for (i = 0; i < 8; i++) { if (before[i]) n = i + 1; if (before[i] != after[i]) changed = 1; }
+        if (dsvBefore != dsvAfter) changed = 1;
+        if (changed) { ID3D11DeviceContext_OMSetRenderTargets(ctx, (UINT)n, before, dsvBefore); g_rebinds++; }
+        for (i = 0; i < 8; i++) { if (before[i]) ID3D11RenderTargetView_Release(before[i]); if (after[i]) ID3D11RenderTargetView_Release(after[i]); }
+        if (dsvBefore) ID3D11DepthStencilView_Release(dsvBefore);
+        if (dsvAfter) ID3D11DepthStencilView_Release(dsvAfter);
+        ID3D11DeviceContext_Release(ctx);
+    }
+    if (dev) ID3D11Device_Release(dev);
+}
+SF_API void* sf_present_event_ptr(void) { return (void*)present_event; }
+SF_API long sf_present_count(void) { return g_presents; }
+SF_API long sf_present_fail_count(void) { return g_presentFails; }
+SF_API long sf_present_last_hr(void) { return g_lastHr; }
+SF_API long sf_present_rebind_count(void) { return g_rebinds; }

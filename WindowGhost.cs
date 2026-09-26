@@ -57,6 +57,7 @@ namespace StutterFix
         // Play 0.3~0.5초 판정이 남았음 - 맵 파일 해석·이벤트 읽기, Play 앞쪽의 타일 다시 만들기 구간).
         internal static void Install(HarmonyLib.Harmony h)
         {
+            ImagePrefetch.LoadSfNativeOnly();   // 멈춘 동안 화면 다시 내보내기
             FastJsonParser.Progress = TickEvery;
             DecodeFix.Progress = TickEvery;
             var reset = HarmonyLib.AccessTools.Method(typeof(scrLevelMaker), "ResetFloor");
@@ -76,49 +77,132 @@ namespace StutterFix
             if (f != frame)
             {
                 string note; while (notes.TryDequeue(out note)) Main.Entry.Logger.Log(note);
-                if (peeksThisFrame > 0)
-                    Main.Entry.Logger.Log(string.Format("[첫 판 FPS] {0:F1}초 멈춘 프레임 동안 윈도우 메시지 확인 {1}번 (멈춘 창 판정 막기), GPU 깨우기 {2}번",
-                        (lastPeek - frameStart) / (double)System.Diagnostics.Stopwatch.Frequency, peeksThisFrame, kicksThisFrame));
-                frame = f; frameStart = now; lastPeek = now; peeksThisFrame = 0; kicksThisFrame = 0;
+                if (peeksThisFrame > 0) LogFrame();
+                frame = f; frameStart = now; lastPeek = now; peeksThisFrame = 0; presentsThisFrame = 0; maxGap = 0;
                 return;
             }
             if (now - lastPeek < System.Diagnostics.Stopwatch.Frequency / 2) return;   // 프레임 0.5초 뒤부터 0.5초마다
+            if (now - lastPeek > maxGap) maxGap = now - lastPeek;
             lastPeek = now;
             try { MSG m; PeekMessageW(out m, IntPtr.Zero, 0, 0, PM_NOREMOVE | PM_NOYIELD | PM_QS_INPUT); peeksThisFrame++; Peeks++; }
             catch { KeepResponsive = false; }
-            KickGpu();
+            if (peeksThisFrame == 1) { presentBase = SfNative.PresentCount; failBase = SfNative.PresentFails; rebindBase = SfNative.PresentRebinds; }
+            if (ScreenCheck) CheckScreen(peeksThisFrame == 1);
+            KeepPresenting();
         }
 
-        // ── 멈춘 동안 그래픽 드라이버 깨워 두기 (시험) ──
-        // 멈춤이 5초를 넘으면 그 판 내내 느린 상태가 되는데(5초 미만은 늘 정상), 느린 판은 늘 NVIDIA 드라이버가 "쉬는 중이라 클럭 내림"
-        // 상태였고, 시스템이 바쁠 때(디코 화면 공유, ETW 기록, GPU 를 많이 쓰는 맵)는 생기지 않았다. 멈춘 동안 게임이 GPU 에 아무 일도
-        // 안 시켜 드라이버가 앱을 쉬는 중으로 보고 동작을 바꾸는 것으로 보고, 0.5초마다 화면 밖 4x4 버퍼를 지우는 명령을 보내 깨워 둔다.
-        // 그림에는 아무 영향이 없다(아무도 읽지 않는 버퍼, 지금 그리는 대상은 되돌림).
-        internal static bool KeepGpuAwake = true;
-        private static UnityEngine.RenderTexture tiny;
-        private static UnityEngine.Rendering.CommandBuffer kick;
-        internal static long GpuKicks;
-        private static int kicksThisFrame;
-        private static void KickGpu()
+        private static void LogFrame()
         {
-            if (!KeepGpuAwake) return;
+            double sec = (lastPeek - frameStart) / (double)System.Diagnostics.Stopwatch.Frequency;
+            string line = string.Format("[첫 판 FPS] {0:F1}초 멈춘 프레임 동안 윈도우 메시지 확인 {1}번 (멈춘 창 판정 막기)", sec, peeksThisFrame);
+            if (presentsThisFrame > 0)
+            {
+                int done = SfNative.PresentCount - presentBase, failed = SfNative.PresentFails - failBase;
+                line += string.Format(", 화면 다시 내보내기 {0}번 요청 / {1}번 됨", presentsThisFrame, done);
+                if (failed > 0) line += string.Format(" / 실패 {0}번(0x{1:X8})", failed, SfNative.PresentLastHr);
+                if (Edition.Dev) line += string.Format(" (그리기 대상 되돌림 {0}번)", SfNative.PresentRebinds - rebindBase);
+            }
+            else if (!KeepPresent && PresentStatus.Length > 0) line += ", 화면 다시 내보내기 안 함: " + PresentStatus;
+            line += string.Format(", 가장 긴 빈틈 {0:F1}초", maxGap / (double)System.Diagnostics.Stopwatch.Frequency);
+            if (ScreenCheck) line += " | " + ScreenSummary();
+            Main.Entry.Logger.Log(line);
+        }
+
+        // ── 멈춘 동안 화면 다시 내보내기 ──
+        // 2026-09-27 확인: 첫 판 느린 상태(프레임마다 화면 대기 1.7ms, Arche 약 200 FPS)는 곡 시작 전 한 프레임이 5초를 넘게 멈춘 판에서만 생겼고,
+        // 느린 판 도중 메인 스레드를 일부러 멈춰 보니 0.1 / 0.25 / 0.5초는 그대로, 1초 이상은 곧바로 풀렸다(대기 0.00ms, 318 FPS).
+        // 화면이 몇 초 동안 한 번도 안 넘어가는 것이 원인으로 보고, 긴 프레임 동안 0.5초마다 유니티 그래픽 스레드(멈춘 동안 쉬고 있음)에
+        // GL.IssuePluginEvent 로 sfnative 의 Present 를 부탁한다. 빈틈이 0.5초를 넘지 않는다.
+        // Present 는 DXGI_PRESENT_DO_NOT_SEQUENCE(동기 1): 버퍼를 넘기지 않고 지금 화면에 나와 있는 그림을 한 번 더 내보낸다 - 보이는 것은 그대로.
+        // Flip 방식 Present 는 백 버퍼를 그리기 대상에서 떼어 내므로, sfnative 가 Present 앞뒤로 그리기 대상을 읽어 달라졌으면 되돌린다
+        // (유니티가 아는 상태 그대로).
+        // 게임 밖 시험(C:\SFBundle\PresentTest, 유니티와 같은 Flip + 대기 객체 스왑체인, 백 버퍼를 묶어 둔 채로): 4번 모두 성공, 화면 그대로(GDI 로 읽음),
+        // 그리기 대상 4번 되돌림, 그 뒤 앱이 다시 묶지 않고 그린 프레임도 정상. 비교: 보통 Present(0,0) 은 예전 버퍼(이전 그림)가 나왔다.
+        internal static bool KeepPresent = true;
+        internal static int PresentMode = 0x21;   // 동기 1 | DXGI_PRESENT_DO_NOT_SEQUENCE << 4 (개발자용 present-flip 파일: 0 = 보통 Present)
+        internal static string PresentStatus = "";
+        internal static long Presents;
+        private static int presentsThisFrame, presentBase, failBase, rebindBase;
+        private static long maxGap;
+        private static void KeepPresenting()
+        {
+            if (!KeepPresent) return;
             try
             {
-                if (tiny == null)
-                {
-                    tiny = new UnityEngine.RenderTexture(4, 4, 0) { name = "StutterFix.KeepAwake" };
-                    tiny.Create();
-                    kick = new UnityEngine.Rendering.CommandBuffer { name = "StutterFix.KeepAwake" };
-                    kick.SetRenderTarget(tiny);
-                    kick.ClearRenderTarget(false, true, UnityEngine.Color.clear);
-                }
-                var prev = UnityEngine.RenderTexture.active;
-                UnityEngine.Graphics.ExecuteCommandBuffer(kick);
+                if (!SfNative.Ready || !SfNative.PresentReady) { PresentStatus = SfNative.Ready ? "sfnative 가 예전 것 (게임을 다시 켜면 됨)" : "sfnative 없음: " + SfNative.Status; KeepPresent = false; return; }
+                IntPtr sc = GfxProbe.MainSwapChain();
+                if (sc == IntPtr.Zero) { PresentStatus = "스왑체인 확인 실패" + (GfxProbe.Status.Length > 0 ? " (" + GfxProbe.Status + ")" : ""); KeepPresent = false; return; }
+                IntPtr fn = SfNative.PresentEvent(sc);
+                if (fn == IntPtr.Zero) { PresentStatus = "sfnative 함수 없음"; KeepPresent = false; return; }
+                UnityEngine.GL.IssuePluginEvent(fn, PresentMode);
                 UnityEngine.GL.Flush();
-                UnityEngine.RenderTexture.active = prev;
-                kicksThisFrame++; GpuKicks++;
+                presentsThisFrame++; Presents++;
             }
-            catch { KeepGpuAwake = false; }
+            catch (Exception ex) { PresentStatus = "실패: " + ex.Message; KeepPresent = false; }
+        }
+
+        // ── (개발자용 시험, 모드 폴더에 present-screen-check 파일) 멈춘 동안 화면이 정말 그대로인지 ──
+        // 0.5초마다 게임 창 영역을 데스크톱에서 GDI 로 읽어, 이번 긴 프레임 첫 확인(내보내기 전) 그림과 픽셀 단위로 비교한다.
+        internal static bool ScreenCheck;
+        [StructLayout(LayoutKind.Sequential)] private struct RECT { public int l, t, r, b; }
+        [StructLayout(LayoutKind.Sequential)] private struct POINT { public int x, y; }
+        [StructLayout(LayoutKind.Sequential)] private struct BITMAPINFOHEADER { public int size, width, height; public short planes, bits; public int compression, imageSize, xppm, yppm, used, important; }
+        [DllImport("user32.dll")] private static extern bool GetClientRect(IntPtr h, out RECT r);
+        [DllImport("user32.dll")] private static extern bool ClientToScreen(IntPtr h, ref POINT p);
+        [DllImport("user32.dll")] private static extern IntPtr GetDC(IntPtr h);
+        [DllImport("user32.dll")] private static extern int ReleaseDC(IntPtr h, IntPtr dc);
+        [DllImport("gdi32.dll")] private static extern IntPtr CreateCompatibleDC(IntPtr dc);
+        [DllImport("gdi32.dll")] private static extern IntPtr CreateDIBSection(IntPtr dc, ref BITMAPINFOHEADER bmi, uint usage, out IntPtr bits, IntPtr section, uint offset);
+        [DllImport("gdi32.dll")] private static extern IntPtr SelectObject(IntPtr dc, IntPtr o);
+        [DllImport("gdi32.dll")] private static extern bool BitBlt(IntPtr dst, int x, int y, int w, int h, IntPtr src, int sx, int sy, uint rop);
+        [DllImport("gdi32.dll")] private static extern bool DeleteObject(IntPtr o);
+        [DllImport("gdi32.dll")] private static extern bool DeleteDC(IntPtr dc);
+        private static int[] shotBase, shotNow;
+        private static int shots, shotsChanged, maxChanged, shotW, shotH;
+        private static string shotError = "";
+        private static void CheckScreen(bool first)
+        {
+            try
+            {
+                if (first) { shots = shotsChanged = maxChanged = 0; shotError = ""; }
+                IntPtr hwnd = PresentWatch.FindGameWindow();
+                RECT rc; POINT p = new POINT();
+                if (hwnd == IntPtr.Zero || !GetClientRect(hwnd, out rc) || !ClientToScreen(hwnd, ref p)) { shotError = "창 못 찾음"; return; }
+                int w = rc.r - rc.l, h = rc.b - rc.t;
+                if (w <= 0 || h <= 0) { shotError = "창 크기 0"; return; }
+                if (first || shotBase == null || shotW != w || shotH != h) { shotW = w; shotH = h; shotBase = Grab(p.x, p.y, w, h, shotBase); shots = 1; return; }
+                shotNow = Grab(p.x, p.y, w, h, shotNow);
+                if (shotNow == null || shotBase == null) { shotError = "캡처 실패"; return; }
+                int diff = 0;
+                for (int i = 0; i < w * h; i++) if (shotNow[i] != shotBase[i]) diff++;
+                shots++;
+                if (diff > 0) { shotsChanged++; if (diff > maxChanged) maxChanged = diff; }
+            }
+            catch (Exception ex) { shotError = ex.Message; }
+        }
+        private static int[] Grab(int x, int y, int w, int h, int[] into)
+        {
+            var bi = new BITMAPINFOHEADER { size = 40, width = w, height = -h, planes = 1, bits = 32 };
+            IntPtr screen = GetDC(IntPtr.Zero), mem = CreateCompatibleDC(screen), bits;
+            IntPtr bmp = CreateDIBSection(screen, ref bi, 0, out bits, IntPtr.Zero, 0);
+            try
+            {
+                if (bmp == IntPtr.Zero) return null;
+                IntPtr old = SelectObject(mem, bmp);
+                bool ok = BitBlt(mem, 0, 0, w, h, screen, x, y, 0x00CC0020);   // SRCCOPY
+                SelectObject(mem, old);
+                if (!ok) return null;
+                if (into == null || into.Length != w * h) into = new int[w * h];
+                Marshal.Copy(bits, into, 0, w * h);
+                return into;
+            }
+            finally { if (bmp != IntPtr.Zero) DeleteObject(bmp); DeleteDC(mem); ReleaseDC(IntPtr.Zero, screen); }
+        }
+        private static string ScreenSummary()
+        {
+            if (shotError.Length > 0) return "화면 확인 실패: " + shotError;
+            return shotsChanged == 0 ? string.Format("화면 확인 {0}번: 전부 처음과 같음", shots)
+                                     : string.Format("화면 확인 {0}번 중 {1}번 달라짐 (최대 {2}픽셀)", shots, shotsChanged, maxChanged);
         }
 
         [DllImport("user32.dll")] private static extern void DisableProcessWindowsGhosting();

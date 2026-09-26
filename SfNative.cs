@@ -24,11 +24,26 @@ namespace StutterFix
         internal static string FirstMismatch = "";
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)] private static extern IntPtr LoadLibraryW(string path);
+        [DllImport("kernel32", CharSet = CharSet.Ansi)] private static extern IntPtr GetProcAddress(IntPtr mod, string name);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_version();
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern void sf_dxt_init();
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_unfilter_to(byte* d, byte* s, byte* p, int n, int bpp, int filter);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_unfilter_inplace(byte* c, byte* p, int n, int bpp, int filter);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern void sf_dxt_encode_rows(byte* src, int w, int h, int layout, int dxt5, byte* dst, int by0, int by1);
+        [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern void sf_set_swapchain(IntPtr sc);
+        [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern IntPtr sf_present_event_ptr();
+        [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_present_count();
+        [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_present_fail_count();
+        [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_present_last_hr();
+        [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_present_rebind_count();
+
+        // 긴 멈춤 동안 화면 다시 내보내기(WindowGhost.KeepPresenting): 그래픽 스레드에서 부를 함수 주소와 스왑체인, 결과 개수
+        internal static bool PresentReady;
+        internal static IntPtr PresentEvent(IntPtr swapChain) { if (!Ready || !PresentReady) return IntPtr.Zero; sf_set_swapchain(swapChain); return sf_present_event_ptr(); }
+        internal static int PresentCount { get { return Ready && PresentReady ? sf_present_count() : 0; } }
+        internal static int PresentFails { get { return Ready && PresentReady ? sf_present_fail_count() : 0; } }
+        internal static int PresentLastHr { get { return Ready && PresentReady ? sf_present_last_hr() : 0; } }
+        internal static int PresentRebinds { get { return Ready && PresentReady ? sf_present_rebind_count() : 0; } }
 
         // 전체 경로로 먼저 올려 두면 DllImport("sfnative") 가 이미 올라온 것을 쓴다(libdeflate 와 같은 방식).
         internal static void Init(string path)
@@ -37,7 +52,10 @@ namespace StutterFix
             try
             {
                 if (!File.Exists(path)) { Status = "DLL 없음"; return; }
-                if (LoadLibraryW(path) == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + Marshal.GetLastWin32Error() + ")"; return; }
+                IntPtr mod = LoadLibraryW(path);
+                if (mod == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + Marshal.GetLastWin32Error() + ")"; return; }
+                // 화면 다시 내보내기 함수는 2.3.2 에 들어왔다. 게임이 예전 DLL 을 이미 올려 둔 채 모드만 다시 불러오면 없다.
+                PresentReady = GetProcAddress(mod, "sf_present_rebind_count") != IntPtr.Zero;
                 int v = sf_version();
                 if (v != 1) { Status = "버전이 다름 (" + v + ")"; return; }
                 sf_dxt_init();

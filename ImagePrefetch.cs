@@ -83,6 +83,14 @@ namespace StutterFix
             Main.Entry.Logger.Log("[이미지] JPG 풀기(libjpeg-turbo): " + TurboJpeg.Status);
         }
 
+        // 이미지 미리 풀기를 꺼도 첫 판 FPS 떨어짐 막기(WindowGhost)가 sfnative 를 쓴다
+        internal static void LoadSfNativeOnly()
+        {
+            if (SfNative.Ready) return;
+            string p = Extract("sfnative.dll");
+            if (p == null) SfNative.Status = "모드 안에 DLL 없음"; else SfNative.Init(p);
+        }
+
         // 모드 DLL 안에 넣어 둔 네이티브 DLL 을 모드 폴더에 꺼내 두고 그 경로를 돌려준다(없으면 null). 이미 같은 파일이면 쓰지 않는다.
         private static string Extract(string name)
         {
