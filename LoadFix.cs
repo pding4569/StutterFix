@@ -396,6 +396,59 @@ namespace StutterFix
             catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 충돌 상자 확인 실패: " + ex.Message); }
         }
 
+        // ── 5) 같은 이미지를 쓰는 장식 목록에 넣기 ──
+        // scrDecorationManager.TryAddDecorationToDictionary (장식을 만들 때마다, IL): 이미지 이름별 List 에서 Contains 로 찾고 없으면 Add.
+        // 목록을 처음부터 훑으므로 한 이미지를 쓰는 장식이 많으면 제곱으로 늘어난다(Arche 2만 8천 개: 맵 열 때 1.8초, 한 번에 62us).
+        // 이 목록은 게임 전체에서 여기서만 늘고(Add), ClearDecorations 에서 사전째 비우고, 그 밖에는 읽기만 한다(IL 전체 검색).
+        // 그래서 목록마다 "들어 있는 장식" 집합을 옆에 두고 Contains 대신 쓴다. 넣는 순서와 결과(목록 내용)는 원래와 같다.
+        // 목록 개수와 집합 개수가 다르면(다른 모드가 목록을 직접 바꾼 경우) 집합을 목록에서 다시 만든다. 장식이 이미 파괴됐으면 원래 코드로.
+        internal static bool FastTextureDict = true;
+        internal static long DictAdds;
+        private static readonly AccessTools.FieldRef<scrDecorationManager, Dictionary<string, List<scrDecoration>>> sameTexRef = AccessTools.FieldRefAccess<scrDecorationManager, Dictionary<string, List<scrDecoration>>>("decorationsWithSameTexture");
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<List<scrDecoration>, HashSet<scrDecoration>> sameTexSets = new System.Runtime.CompilerServices.ConditionalWeakTable<List<scrDecoration>, HashSet<scrDecoration>>();
+        private sealed class RefEq : IEqualityComparer<scrDecoration>
+        {
+            internal static readonly RefEq Instance = new RefEq();
+            public bool Equals(scrDecoration a, scrDecoration b) { return ReferenceEquals(a, b); }
+            public int GetHashCode(scrDecoration d) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(d); }
+        }
+
+        internal static void InstallTextureDict(Harmony h)
+        {
+            try
+            {
+                var m = AccessTools.Method(typeof(scrDecorationManager), "TryAddDecorationToDictionary");
+                if (m == null || m.GetParameters().Length != 1) { Main.Entry.Logger.Log("[로딩] 같은 이미지 목록: 게임 코드 모양이 달라 끔"); return; }
+                h.Patch(m, prefix: new HarmonyMethod(typeof(LoadFix), nameof(TexDictPrefix)));
+                Main.Entry.Logger.Log("[로딩] 같은 이미지 장식 목록 넣기 빠르게 설치");
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 같은 이미지 목록 설치 실패: " + ex.Message); }
+        }
+
+        public static bool TexDictPrefix(scrDecorationManager __instance, scrDecoration __0)
+        {
+            if (!FastTextureDict) return true;
+            try
+            {
+                var d = __0;
+                if ((object)d == null || d == null) return true;   // 파괴된 장식은 원래 코드(유니티 null 비교 규칙)로
+                var ev = d.sourceLevelEvent;
+                if (ev == null) return true;
+                string img = ev["decorationImage"] as string;
+                if (string.IsNullOrEmpty(img)) return false;       // 원래도 여기서 끝
+                var dict = sameTexRef(__instance);
+                if (dict == null) return false;                     // 원래도 여기서 끝
+                List<scrDecoration> list;
+                if (!dict.TryGetValue(img, out list)) { list = new List<scrDecoration>(); dict[img] = list; }
+                HashSet<scrDecoration> set;
+                if (!sameTexSets.TryGetValue(list, out set)) { set = new HashSet<scrDecoration>(RefEq.Instance); sameTexSets.Add(list, set); }
+                if (set.Count != list.Count) { set.Clear(); foreach (var x in list) set.Add(x); }
+                if (set.Add(d)) { list.Add(d); DictAdds++; }
+                return false;
+            }
+            catch { return true; }
+        }
+
         internal static void ResetStats() { TimeHits = TimeMisses = 0; ResetsSkipped = ResetsKept = 0; ColCalls = ColActiveTicks = ColEnableTicks = ColActiveChanged = ColEnableChanged = 0; ToggleTicks = 0; RetrySkips = 0; }
 
         internal static string Summary()

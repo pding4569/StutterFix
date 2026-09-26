@@ -29,6 +29,8 @@
     <Compile Include="PerfOverlay.cs" />
     <Compile Include="PresentWatch.cs" />
     <Compile Include="SfNative.cs" />
+    <Compile Include="FastJson.cs" />
+    <Compile Include="FastJsonParser.cs" />
     <Compile Include="SystemMonitor.cs" />
     <Compile Include="UiInputBlock.cs" />
     <Compile Include="ModCost.cs" />
