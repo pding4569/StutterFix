@@ -18,6 +18,8 @@ made by **naro** & **Claude**
 | Arche | 효과가 몰리는 프레임 | 91 → 67ms |
 | 블렌드 장식 1,500개 (3440×1440) | 화면 복사 없이 그리기 | 약 11 FPS 로 떨어지던 구간이 끊김 없이 |
 | Arche | 에디터 재생 시작 | 8.6초 → 4.3초 (2.2.0) |
+| Arche | 에디터 Play 직후 첫 판 FPS | 약 200 → **약 300 FPS** (2.3.0) |
+| Arche | 에디터에서 죽고 다시 하기 | 9.1초 → **3.2초** (2.3.0) |
 | Hello (BPM) 2026 | 맵 불러오기 | 12.2초 → **8.1초** |
 | Hello (BPM) 2026 | 첫 판 곡 중 끊김 | 10번(최악 133ms) → **2번(최악 35ms)** |
 
@@ -25,7 +27,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.2.1 이후 바뀐 것](#221-이후-바뀐-것)
+- [2.3.0 에서 바뀐 것](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -45,21 +47,40 @@ made by **naro** & **Claude**
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 재시작하지 않음). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
 
-## 2.2.1 이후 바뀐 것
+## 2.3.0 에서 바뀐 것
 
-전부 기본으로 켜져 있고, 화면·판정·소리는 원래 게임과 같습니다.
+[MAIJEUN](https://github.com/MAIJEUN) 님의 기여([PR #1](https://github.com/pding4569/StutterFix/pull/1): 장면 정리·소리 보호·필터 셰이더 준비 고침, libdeflate, 첫 판 VRAM 예측, 장식 애니메이션 확장)와 그 뒤의 작업을 합친 버전입니다. 감사합니다!
+"최신 화면 출력 방식(실험)"만 빼고 전부 기본으로 켜져 있고, 화면·판정·소리는 원래 게임과 같습니다.
+
+### 첫 판 FPS 떨어짐 고침
+
+큰 맵을 에디터에서 Play 하면 곡이 시작되기까지 게임이 한 프레임에 5초 넘게 멈춥니다(Arche 5.2~5.8초). 이때 윈도우가 게임 창을 **"응답 없음" 창으로 바꿔치기**했고, 그 뒤로는 그 판 내내 프레임마다 1.7ms 를 더 기다려 FPS 가 크게 떨어졌습니다(Arche 약 320 → 200 FPS, 화면에 나오기까지도 약 5ms 늦음). 죽고 다시 하면(3초대 멈춤) 정상이라 "첫 판만 느리다"로 보였습니다. 원래 게임에서도 생기는 현상입니다.
+
+이제 이 게임에서만 "응답 없음" 창을 끕니다(설정 → 그래픽 → **첫 판 FPS 떨어짐 막기**). 게임이 정말 멈췄을 때 "응답 없음" 표시가 안 뜨는 것 말고는 달라지는 것이 없습니다.
+
+측정: 맵을 연 뒤 첫 에디터 Play 13번 중 10번이 약 200 FPS → 끈 뒤 새로 켠 게임에서 첫 Play 모두 약 300 FPS(화면 대기 0).
+원인이 아니었던 것: 화면 출력 방식, 멀티스레드 그리기, 프레임 시간 통계, NVIDIA 저지연 모드, 게임 위에 겹친 창, 디스코드. 곡 중에는 무엇을 해도(수직동기·프레임 제한·대기 단계 건너뛰기 등 10가지) 상태가 바뀌지 않았고, 판이 시작되기 전의 5초 넘는 멈춤만 공통이었습니다.
+
+### 에디터에서 죽고 다시 하기 9초 → 3초
+
+원래 게임은 에디터에서 **죽고 다시 할 때** 장식마다 에디터 클릭용 충돌 상자를 다시 켜 두었습니다(Play 로 시작할 때는 끔). Arche 는 2만 8천 개가 켜진 채로 남아 재시작 한 프레임이 5~6초, 곡 중 물리 계산이 한 프레임 최대 17.6ms 였습니다. 다시 하기 동안에는 켜지 않게 해서 **9.1초 → 3.2초**, 다시 한 판도 처음처럼 약 300 FPS 입니다.
 
 ### 맵 불러오기가 빨라짐
 
 | 바꾼 것 | 내용 |
 |---|---|
-| **libdeflate 로 압축 풀기** | PNG 압축 풀기를 게임의 zlib 대신 [libdeflate](https://github.com/ebiggers/libdeflate)(MIT)로 합니다. 압축 풀기만 넣어 빌드한 DLL(118KB)이 모드 DLL 안에 들어 있어 따로 챙길 파일이 없습니다. DLL 을 못 불러오거나 결과 크기가 맞지 않으면 원래 방식으로 다시 풉니다. |
+| **libdeflate 로 압축 풀기** | PNG 압축 풀기를 게임의 zlib 대신 [libdeflate](https://github.com/ebiggers/libdeflate)(MIT)로 합니다. 압축 풀기만 넣어 공식 소스에서 직접 빌드한 DLL 이 모드 DLL 안에 들어 있어 따로 챙길 파일이 없습니다. DLL 을 못 불러오거나 결과 크기가 맞지 않으면 원래 방식으로 다시 풉니다. |
+| **JPG 도 여러 코어에서** | JPG 장식도 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) 3.2.0 으로 작업 스레드에서 풉니다(예전에는 게임이 메인 스레드에서 한 장씩). 맵 폴더의 JPG 2,068장 전부 유니티가 푼 결과와 **바이트까지 같음**을 확인했고, 오류·CMYK·너무 큰 이미지는 원래 방식으로 풉니다. |
+| **PNG 필터 되돌리기를 네이티브로** | 이 모드의 C 코드(SSE2)로 합니다. 맵 폴더 PNG 29,524장의 모든 줄(3,337만 줄)이 이전 C# 코드와 같음. |
+| **DXT 미리 압축 3.4배** | PACL2 손실 압축을 대신하는 미리 압축을 [ISPC](https://github.com/ispc/ispc) 로 블록 여러 개씩 동시에 합니다(CPU 에 따라 AVX2 / SSE4.1 / SSE2). 결과는 이전 압축과 **바이트까지 같음**(맵 폴더 PNG 23,447장, 블록 33억 개 다름 0). MEGAMIX: 압축이 제때 안 끝나 게임이 메인 스레드에서 압축한 이미지 181 → 66장. |
+| 맵 파일 읽기 | 게임의 JSON 해석기를 결과가 같은 빠른 해석기로 바꾸고(맵 파일 425개·망가뜨린 입력 2,584개·모든 글자 경우에서 결과와 예외 전부 같음), 이벤트를 읽을 때의 Enum 변환을 캐시합니다. Arche 6.4 → 5.2초. |
+| 같은 이미지 장식 목록 | 게임이 장식마다 목록 전체를 훑던 것(제곱 시간)을 옆에 둔 집합으로. Arche 1.8초 → 0.02초. |
 | 해독 중 복사 없애기 | 압축을 결과 메모리에 바로 풀고 그 자리에서 PNG 필터를 되돌립니다(2026 기준 약 10GB 의 복사가 사라짐). |
-| 인터레이스 PNG 도 여러 코어에서 | 인터레이스(Adam7) PNG 도 작업 스레드에서 풉니다(예전에는 메인 스레드에서 한 장씩). JPG 는 손실 압축이라 해독기마다 픽셀이 달라질 수 있어 게임 해독기에 둡니다. |
-| 해독 스레드 | 코어 수 - 1 → 코어 수(최대 8). 메인 스레드는 불러오는 동안 대부분 해독을 기다립니다. |
+| 인터레이스 PNG 도 여러 코어에서 | 인터레이스(Adam7) PNG 도 작업 스레드에서 풉니다(예전에는 메인 스레드에서 한 장씩). |
+| 해독 스레드 | 코어 수 - 1 (최대 8). 6코어 CPU 에서 코어 수만큼 쓰면 메인 스레드가 오히려 느려졌습니다. |
 
 측정 (Hello (BPM) 2026, 긴 변 1536 같은 조건): 압축 풀기(작업 스레드 합계) 45.7초 → 5.2초, **전체 12.2초 → 8.1초**.
-검증: 2025·2026 의 PNG 1,047장을 PIL 과 픽셀 단위로 비교, 원래 zlib 길과 libdeflate 길 모두 **다름 0**.
+검증: 2025·2026 의 PNG 1,047장을 PIL 과 픽셀 단위로 비교, 원래 zlib 길과 libdeflate 길 모두 **다름 0**. 개발자용은 불러올 때마다 네이티브 결과 일부를 C# 과, JPG 일부를 유니티와 계속 대조합니다.
 
 ### 첫 판부터 VRAM 부족 막기
 
@@ -83,6 +104,14 @@ made by **naro** & **Claude**
 
 "효과 몰림 나누기"가 어떤 효과든 다음 프레임으로 미룰 수 있었습니다. 소리 재생(`PlaySound`)은 오디오 시계로 예약되는데 늦게 불리면 그 시각이 지나 **소리가 늦게 납니다**. 이제는 게임 코드로 확인한 **화면 전용 효과 20종만** 미루고, 소리·판정·진행 효과(플레이어 죽이기, 체크포인트, 오프셋, 속도, 입력, 프레임 제한 등)는 원래 프레임에 그대로 실행합니다. 히트박스 장식이 있는 맵에서는 장식 이동도 미루지 않습니다.
 
+### 최신 화면 출력 방식 (실험, 기본 끔)
+
+게임은 D3D11 에서 윈도우가 게임 화면을 통째로 복사해 합성하는 옛 방식(BitBlt)으로 화면을 내보냅니다(게임의 `boot.config` 에 `force-d3d11-bitblt-model=` 줄이 들어 있음). 설정 → 그래픽 → **최신 화면 출력 방식**을 켜면 이 줄을 빼서 최신 방식(Flip)으로 바꿉니다. 측정: 같은 구간 300 → 318 FPS, 화면에 나오기까지 약 6.2 → 4.4ms. 수직동기를 끈 채 게임 위에 다른 창이 없으면 화면이 가로로 찢어져 보일 수 있어 기본은 끔입니다. 끄거나 모드를 끄면 원래 줄을 되살립니다(다음 실행부터).
+
+### 게임 밖 원인 알려 주기
+
+곡 중에 윈도우가 화면을 넘겨받느라 기다리는 시간이 늘면(오버레이·항상 위 창, 원격 데스크톱·녹화 프로그램 등), 설정 창 홈에 **원인 프로그램 이름과 그것이 없을 때의 FPS** 를 보여 줍니다(닫기 가능).
+
 ### 장식 애니메이션 넓히기
 
 - "장식 애니메이션 직접 처리"가 **피벗·시차 오프셋·시차 배율**도 맡습니다(예전에는 이것이 섞인 효과는 통째로 DOTween). 개발자용 대조: 진짜 DOTween 과 나란히 41,586프레임, **다름 0**.
@@ -99,6 +128,14 @@ made by **naro** & **Claude**
 | 효과 하나가 예외를 던지면 효과 나누기가 다음 재시작까지 꺼짐 | 효과 감싸기 뒷정리를 예외에도 반드시 도는 방식(finalizer)으로 |
 | 에디터로 돌아가면 선택 테두리가 곡 중 위치에 남음 / 글꼴을 바꿔도 글자 테두리 크기가 안 바뀜 | 되돌리는 순간과 편집 중에는 원래 동작 |
 | 개발자용이 오히려 끊기고 연출이 튐 | 20초마다 픽셀 비교(230ms 멈춤, 시간으로 움직이는 필터가 한 번 더 진행)와 느린 함수 찾기(5초마다 장면 전체 훑기)를 기본으로 끔 |
+| 곡 중 실시간 모니터 위에서 마우스로 치면 그 입력이 무시될 수 있음 | 게임은 마우스를 누른 순간 포인터가 화면의 UI 위면 그 프레임 입력을 버림. 곡 중에는 모니터가 마우스를 받지 않음(곡 중 보기 바꾸기는 Shift+Insert) |
+| 곡이 없는 맵·음악이 먼저 끝나는 맵에서 곡 중에 메모리 정리가 돌 수 있음 | "10초간 조용함" 을 음악뿐 아니라 타일 진행으로도 판단 |
+| `boot.config` 의 줄 끝이 바뀜(LF → CRLF) | 원래 줄 끝 그대로 씀 |
+
+### 그 밖
+
+- **디스코드 서버**: [discord.gg/csys9ZAeD6](https://discord.gg/csys9ZAeD6) — 버그 제보, 기능 아이디어, 질문. 설정 창 정보 페이지의 "디스코드 서버 열기" 버튼, UMM 모드 목록의 홈페이지 링크로도 갑니다.
+- 문제 보고용 로그 zip 은 디스코드 서버에 올리거나 narooh 에게 DM 으로 보내 주세요.
 
 ## 기능
 
@@ -141,9 +178,9 @@ made by **naro** & **Claude**
 
 | 기능 | 하는 일 | 측정 |
 |---|---|---|
-| 이미지 빠르게 불러오기 | 장식 이미지(PNG)를 여러 코어에서 동시에 풉니다. 압축 풀기는 libdeflate. 흑백+알파·16비트 PNG 도 유니티와 바이트까지 같게 미리 풀고(2.2.0), PACL2 의 이미지 손실 압축이 켜져 있으면 그 압축(메인 스레드에서 한 장씩)을 여러 코어에서 미리 해 둔 것으로 대신합니다(압축 오차는 시험한 모든 이미지에서 유니티 압축 이하, 2.2.0). | 700장 맵 67 → 38초, 2026 12.2 → 8.1초, PACL2 와 함께 Arche 장식 준비 25.3 → 18.5초 |
+| 이미지 빠르게 불러오기 | 장식 이미지(PNG, 2.3.0 부터 JPG 도)를 여러 코어에서 동시에 풉니다. 압축 풀기는 libdeflate, JPG 는 libjpeg-turbo, 필터 되돌리기와 DXT 압축은 네이티브 코드(2.3.0). 흑백+알파·16비트 PNG 도 유니티와 바이트까지 같게 미리 풀고(2.2.0), PACL2 의 이미지 손실 압축이 켜져 있으면 그 압축(메인 스레드에서 한 장씩)을 여러 코어에서 미리 해 둔 것으로 대신합니다(압축 오차는 시험한 모든 이미지에서 유니티 압축 이하, 2.2.0). | 700장 맵 67 → 38초, 2026 12.2 → 8.1초, PACL2 와 함께 Arche 장식 준비 25.3 → 18.5초 |
 | 불필요한 정리 건너뛰기 | 편집으로 돌아올 때 게임이 부르는 에셋 정리(한 번에 120~200ms)를 건너뜁니다. 맵을 새로 열 때의 정리는 이전 맵 메모리를 풀기 위해 그대로 둡니다(2.2.0). | |
-| 에디터 재생 시작 빠르게 | 이미지 파일 수정 시각을 파일마다 한 번만 읽고, 장식이 하나도 안 바뀌었으면 장식 전체 다시 설정을 두 번 대신 한 번만 하고, 에디터 클릭용 충돌 상자를 넣은 반대 순서로 끕니다(2.2.0). 개발자용 검증: 건너뛴 다시 설정의 차이 0. | Arche 8.6 → 4.3초 |
+| 에디터 재생 시작 빠르게 | 이미지 파일 수정 시각을 파일마다 한 번만 읽고, 장식이 하나도 안 바뀌었으면 장식 전체 다시 설정을 두 번 대신 한 번만 하고, 에디터 클릭용 충돌 상자를 넣은 반대 순서로 끕니다(2.2.0). 죽고 다시 할 때는 충돌 상자를 아예 켜지 않고, 맵 파일 읽기와 같은 이미지 장식 목록도 빠르게 합니다(2.3.0). 개발자용 검증: 건너뛴 다시 설정의 차이 0. | Arche 8.6 → 4.3초, 죽고 다시 하기 9.1 → 3.2초 |
 | 게임 메모리 누수 막기 | 게임의 사용자 지정 FPS 효과가 켤 때마다 새로 만들고 풀지 않던 화면 크기 버퍼(4K 에서 약 40MB)를 풀고, 재시작마다 게임 화면 버퍼를 괜히 다시 만드는 것을 막습니다(2.2.0). | |
 | 큰 이미지 줄이기 (기본 자동) | 필요한 VRAM 이 크게 넘칠 맵은 첫 판부터 긴 변 3072, 그래도 VRAM 이 가득 차 끊기면 기억해 두었다가 한 단계씩(2048 → 1536 → 1024) 줄입니다. 화면에 보이는 크기는 그대로이고 선명도만 조금 낮아집니다. 설정 창에서 기억한 맵을 지울 수 있습니다. | 이미지 2,000장 맵(VRAM 8GB) 150~200ms 멈춤이 3072 에서 사라짐 |
 | 필터 셰이더 미리 준비 | 맵에서 쓰는 필터(일반·고급)의 셰이더를 불러오기 끝에 미리 만들어 둡니다. | 2026 필터 109개 약 200ms |
@@ -154,6 +191,8 @@ made by **naro** & **Claude**
 |---|---|---|
 | 멀티스레드 그리기 | 게임 폴더의 `boot.config`에 `force-gfx-jobs=legacy` 한 줄을 넣어 그리기 준비를 여러 코어에 나눕니다. 원래 파일은 백업해 두고, 모드를 끄면 되돌립니다. | D3D11 140 → 160 FPS |
 | 블렌드 장식 빠르게 그리기 | 더하기(Linear Dodge) 블렌드 장식을 화면 복사 없이 그래픽카드 기본 섞기로 그립니다. 원래는 장식 하나마다 화면 전체를 복사했습니다. | 1,500개 장면 약 11 FPS → 끊김 없음, 픽셀 차이 0 |
+| 첫 판 FPS 떨어짐 막기 | 이 게임에서만 윈도우의 "응답 없음" 창을 끕니다. 큰 맵에서 5초 넘게 멈춘 뒤 그 판 내내 FPS 가 떨어지던 것을 막습니다(2.3.0). 끄면 다음 실행부터. | Arche 첫 판 약 200 → 300 FPS |
+| (실험, 기본 끔) 최신 화면 출력 방식 | `boot.config` 의 `force-d3d11-bitblt-model=` 줄을 빼 D3D11 화면 출력을 Flip 방식으로 바꿉니다. 수직동기를 끄면 찢어짐이 보일 수 있습니다(2.3.0). | 300 → 318 FPS, 화면까지 6.2 → 4.4ms |
 
 ### 저사양
 
@@ -199,13 +238,13 @@ made by **naro** & **Claude**
 
 ## 모드를 끄면
 
-UMM 에서 끄면 모든 변경을 즉시 되돌립니다(패치, GC 상태, 작업 스레드, 설정 창). 곡 중에 끄면 밀린 효과와 장식 애니메이션을 마무리한 뒤 내립니다. 멀티스레드 그리기는 다음 실행부터 원래대로 돌아갑니다.
+UMM 에서 끄면 모든 변경을 즉시 되돌립니다(패치, GC 상태, 작업 스레드, 설정 창). 곡 중에 끄면 밀린 효과와 장식 애니메이션을 마무리한 뒤 내립니다. 멀티스레드 그리기와 최신 화면 출력 방식은 다음 실행부터 원래대로 돌아가고, "응답 없음" 창 끄기(첫 판 FPS 떨어짐 막기)는 윈도우에 되돌리는 기능이 없어 게임을 다시 켤 때까지 그대로입니다.
 
 ## 그래도 끊긴다면
 
 - 전체 화면 필터가 아주 많이 겹치는 구간은 그래픽카드 성능 한계입니다.
 - 백그라운드 프로그램이 순간적으로 CPU 를 가져가 끊길 수 있습니다(저사양 페이지의 "게임 우선순위 높이기").
-- 원격 데스크톱(StarDesk 등)·화면 녹화 프로그램이 켜져 있으면 화면을 캡처하는 동안 게임이 매 프레임 화면을 넘기며 기다려 FPS 가 크게 떨어질 수 있습니다(측정: 같은 구간 250 → 186 FPS, 끄자 6판 모두 280~293 FPS). 게임할 때는 끄세요. 2.2.1 부터 곡 중에 이런 대기가 생기면 그때 게임 창 위에 겹친 창과 GPU 를 쓰는 다른 프로그램을 로그에 남깁니다.
+- 원격 데스크톱(StarDesk 등)·화면 녹화 프로그램이 켜져 있으면 화면을 캡처하는 동안 게임이 매 프레임 화면을 넘기며 기다려 FPS 가 크게 떨어질 수 있습니다(측정: 같은 구간 250 → 186 FPS, 끄자 6판 모두 280~293 FPS). 게임할 때는 끄세요. 2.2.1 부터 곡 중에 이런 대기가 생기면 그때 게임 창 위에 겹친 창과 GPU 를 쓰는 다른 프로그램을 로그에 남기고, 2.3.0 부터는 설정 창 홈에 그 프로그램 이름을 보여 줍니다.
 - Steam 실행 옵션에 `-force-d3d12 -force-gfx-jobs native`가 있으면 곡 중 60~80ms 씩 멈출 수 있습니다. 빼는 것을 권합니다.
 - 맵에 **SetFrameRate** 이벤트가 있으면 그 구간의 낮은 FPS 는 맵이 의도한 연출입니다.
 
@@ -260,6 +299,7 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 - [libdeflate](https://github.com/ebiggers/libdeflate) 1.24 — MIT, `native/libdeflate-LICENSE.txt`
 - [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) 3.2.0 — IJG License + Modified (3-clause) BSD License + zlib License, `native/libjpeg-turbo-LICENSE.md`, `native/libjpeg-turbo-README.ijg`. This software is based in part on the work of the Independent JPEG Group.
 - AMD FidelityFX Super Resolution 1 — MIT, `fsr/license.txt`
+- 빌드 도구로만 쓴 것: [ISPC](https://github.com/ispc/ispc) 1.31.0 (BSD-3-Clause, DXT 압축 코드 컴파일), CMake, NASM
 
 ---
 
@@ -269,8 +309,17 @@ Stutter Fix reduces mid-play hitches and level loading times on heavy custom lev
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
 
-**Since 2.2.1:**
-- **Faster level loading:** PNG inflate with libdeflate (MIT, embedded), decoding straight into the output buffer, interlaced PNGs decoded on worker threads, one worker per core. Hello (BPM) 2026: 12.2 s → 8.1 s. 1,047 PNGs verified pixel-identical against PIL.
+**2.3.0** (includes [PR #1](https://github.com/pding4569/StutterFix/pull/1) by [MAIJEUN](https://github.com/MAIJEUN) — thank you!):
+- **First-run FPS drop fixed:** when a big level froze the game for more than 5 s after pressing Play in the editor, Windows swapped the window for a "Not responding" ghost window, and every frame of that run then waited an extra 1.7 ms (Arche about 320 → 200 FPS, about 5 ms more latency). Window ghosting is now disabled for this game only (Graphics → *Prevent first-run FPS drop*). First editor Play was slow 10 times out of 13 before, fast every time after.
+- **Editor retry 9.1 s → 3.2 s:** the game re-enabled 28,835 editor click colliders on every retry (up to 17.6 ms of 2D physics per frame); they now stay off, and runs after a retry stay at full FPS.
+- **Faster level loading:** JPG decoding on worker threads with libjpeg-turbo 3.2.0 (all 2,068 test JPGs byte-identical to Unity), native PNG unfiltering (SSE2) and DXT pre-compression with ISPC (3.4× faster, byte-identical output on 3.3 billion blocks from 23,447 PNGs), a faster drop-in JSON parser for level files (identical results and exceptions), and an O(n²) decoration list check replaced by a side set (Arche 1.8 s → 0.02 s).
+- **Modern presentation (experimental, off by default):** switches D3D11 from BitBlt to flip model (300 → 318 FPS, frame-to-screen 6.2 → 4.4 ms; tearing possible with vsync off).
+- **Outside causes shown:** when Windows composition waits grow during play, the settings home card names the overlay or capture program responsible.
+- **Gameplay-safety fixes:** the live monitor never takes mouse input during play (the game drops a frame's input when the mouse is pressed over UI); GC "quiet" detection also looks at tile progress; `boot.config` keeps its original line endings.
+- **Discord server** link in the settings window, UMM mod list and README.
+
+**Since 2.2.1 (from PR #1):**
+- **Faster level loading:** PNG inflate with libdeflate (MIT, embedded), decoding straight into the output buffer, interlaced PNGs decoded on worker threads. Hello (BPM) 2026: 12.2 s → 8.1 s. 1,047 PNGs verified pixel-identical against PIL.
 - **VRAM overflow prevented on the first play:** image sizes are read from file headers before loading; if the originals would exceed 1.25× the free VRAM, the largest images are capped at 3072 px from the first play (only this first step). Hello (BPM) 2026: no VRAM hitches on the first play (was several 130 ms hitches).
 - **Filter shader warm-up fixed:** shader names are read from each filter's IL (`Shader.Find`), legacy filters are included, and warm-up happens at level load (109 filters in about 200 ms).
 - **Audio and judgement are never delayed:** effect burst splitting now only defers 20 visual-only effect types.
