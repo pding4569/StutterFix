@@ -47,6 +47,8 @@ namespace StutterFix
 
         private static float pausedFor;
         private static float quietTimer;
+        private static int quietSeq = -2;
+        private static bool limitSlicing;   // 곡 중 힙 한계: 한꺼번에 대신 조금씩 치우는 중
         private static long quietHeapMark;
         private static int frameCounter;
         private static int slowFrame, ramMB;
@@ -448,7 +450,12 @@ namespace StutterFix
                 Main.Entry.Logger.Log("[GC] 실패 뒤 곡이 다시 도는 것을 감지: 정리 없이 GC 를 켬 (힙 " + heapNow + "MB)");
                 return;
             }
-            if (songRunning) { quietTimer = 0f; quietHeapMark = heapNow; }
+            // 곡 소리만 보면 곡 없는 맵이나 음악이 채보보다 먼저 끝나는 맵에서, 타일을 치는 중인데도 "조용함" 으로 보고
+            // 곡 도중에 정리(0.8초 멈춤)할 수 있었다. 타일이 넘어가고 있으면(현재 타일 번호가 바뀜) 곡이 도는 것으로 본다.
+            int seq = -1;
+            try { var c = scrController.instance; var f = c != null ? c.currFloor : null; if (f != null) seq = f.seqID; } catch { }
+            bool advancing = seq != quietSeq; quietSeq = seq;
+            if (songRunning || (playing && advancing)) { quietTimer = 0f; quietHeapMark = heapNow; }
             else quietTimer += dt;
             if (quietTimer >= 10f)
             {
@@ -465,15 +472,28 @@ namespace StutterFix
             int limit = HardLimitMB;
             if (ramMB == 0) { try { ramMB = SystemInfo.systemMemorySize; } catch { ramMB = -1; } }   // 바뀌지 않으므로 한 번만
             if (ramMB > 0) limit = Mathf.Min(limit, Mathf.Max(1500, ramMB * 2 / 5));
+            if (!playing) limitSlicing = false;
             if (heapNow > limit)
             {
-                // 안전장치. 여기까지 오면 어쩔 수 없이 한 번 멈춘다.
-                Resume("힙 한계 " + heapNow + "MB");
-                Pause();
-                return;
+                // 곡 중에 한꺼번에 치우면 0.8초 넘게 멈춰 그 자리에서 죽을 수 있다(RAM 8GB 면 한계 3.2GB, Arche 는 불러온 직후 2.4GB).
+                // 곡 중이고 유니티의 점진적 GC 를 쓸 수 있으면 멈추지 않고 조금씩 치운다(아래 조각 치우기, 한 번 2ms).
+                // 조금씩으로 못 따라가 한계의 1.5배를 넘으면 그때는 메모리가 우선이라 한 번 멈춘다.
+                bool canSlice = false;
+                try { canSlice = GarbageCollector.isIncremental; } catch { }
+                if (playing && canSlice && heapNow < limit * 3L / 2)
+                {
+                    if (!limitSlicing) { limitSlicing = true; Main.Entry.Logger.Log("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 조금씩 치움"); }
+                }
+                else
+                {
+                    // 안전장치. 여기까지 오면 어쩔 수 없이 한 번 멈춘다.
+                    Resume("힙 한계 " + heapNow + "MB");
+                    Pause();
+                    return;
+                }
             }
 
-            if (NoCollectDuringSong) return;
+            if (NoCollectDuringSong && !limitSlicing) return;
 
             // 유니티의 점진적 정리는 GC가 켜져 있을 때만 동작한다.
             // 꺼둔 채로 부르면 아무 일도 일어나지 않아 힙이 무한정 늘어난다(실제로 21GB까지 갔다).

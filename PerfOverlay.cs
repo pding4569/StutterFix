@@ -1009,7 +1009,9 @@ namespace StutterFix
             Vector2 m = ev.mousePosition;
             // 곡 중에는 게임이 커서를 숨긴다. 마우스 클릭을 박자 입력으로 쓰는 사람도 있어서, 그때 아이콘이
             // 클릭을 가로채면 안 된다. 커서가 보일 때(편집 화면, 메뉴, 설정 창)만 누르고 끌 수 있다.
-            if (!Cursor.visible && !dragging) { UiInputBlock.Clear(this); return; }
+            // 게임은 "마우스를 누른 프레임에 포인터가 UI 위면 그 프레임 입력 전체를 무시" 한다(scrPlayer.ValidInputWasTriggered IL).
+            // 커서가 보이는 채로 플레이하는 경우(에디터 등)에도 가리지 않게, 곡 중에는 무조건 판을 치운다.
+            if ((!Cursor.visible || Hitch.Playing) && !dragging) { UiInputBlock.Clear(this); return; }
 
             Rect grab = mode == 3 ? new Rect(widget.x, widget.y, widget.width, 60) : widget;   // 상세는 머리만 잡힌다
             Rect hover = widget;
