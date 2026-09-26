@@ -26,15 +26,20 @@ namespace StutterFix
     // 고스트 창만 꺼서는 모자랐다(2026-09-27): 고스트 창을 끈 채로도 Play 멈춤이 5.45초였던 판은 느렸다(197 FPS, 대기 1.7ms).
     // 같은 날 플레이어용 2.3.0 은 Play 멈춤이 4.7초라 빨랐다. 윈도우는 고스트 창과 별개로 "5초 넘게 메시지를 확인하지 않은 창" 을
     // 멈춘 창으로 판정하고(IsHungAppWindow), 느린 상태는 이 판정 자체에서 생기는 것으로 본다. 그래서 긴 프레임 동안 모드가 이미 걸어 둔
-    // 자리(장식 이미지 파일 시각, 충돌 상자 켜고 끄기, 이미지 넣기, 장면 되돌리기·재생 준비 앞뒤)에서, 프레임이 1초를 넘으면 1초마다
-    // 메시지 큐를 확인만 한다(PeekMessage, PM_NOREMOVE). 꺼내지 않으므로 입력·창 메시지는 게임이 원래처럼 다음 프레임에 처리하고,
-    // 보낸 메시지(SendMessage)도 처리하지 않게 게시된 메시지 큐만 본다(PM_QS_POSTMESSAGE) - 긴 프레임 한가운데서 게임의 창 처리가
-    // 끼어들지 않는다. 메인 스레드에서만 부른다.
+    // 자리(장식 이미지 파일 시각, 충돌 상자 켜고 끄기, 이미지 넣기, 장면 되돌리기·재생 준비 앞뒤)에서, 프레임이 0.5초를 넘으면 0.5초마다
+    // 입력 큐를 확인만 한다(PeekMessage, PM_NOREMOVE | PM_QS_INPUT). 꺼내지 않으므로 입력은 게임이 원래처럼 다음 프레임에 처리한다.
+    // 시험(C:SFBundleHungTest, UI 스레드를 8초 멈추고 1초마다 호출, IsHungAppWindow 를 0.05초마다 확인):
+    //   아무것도 안 함 / 게시된 메시지만 확인(PM_QS_POSTMESSAGE) / 보낸 것만 / GetInputState / GetQueueStatus -> 판정됨
+    //   MsgWaitForMultipleObjectsEx 0ms -> 입력이 쌓여 있으면 판정됨
+    //   PeekMessage 입력만(PM_QS_INPUT) 또는 전부 -> 입력이 쌓여 있어도 판정 안 됨
+    //   그중 입력만 확인하는 쪽은 다른 스레드가 SendMessage 로 보낸 메시지를 그 자리에서 처리하지 않음(0번, 전부 확인은 1번 처리)
+    //   -> 긴 프레임 한가운데서 게임의 창 처리가 끼어들지 않는다. 메인 스레드에서만 부른다.
+    // (2026-09-27 첫 시도는 PM_QS_POSTMESSAGE 로 해서 효과가 없었다: 맵 불러오기 17.5초 프레임에서 15번 확인하고도 23.4초 판정)
     internal static class WindowGhost
     {
         [StructLayout(LayoutKind.Sequential)] private struct MSG { public IntPtr hwnd; public uint message; public IntPtr wParam, lParam; public uint time; public int x, y; }
         [DllImport("user32.dll")] private static extern bool PeekMessageW(out MSG msg, IntPtr hWnd, uint min, uint max, uint flags);
-        private const uint PM_NOREMOVE = 0x0, PM_NOYIELD = 0x2, PM_QS_POSTMESSAGE = (0x0008u | 0x0080u | 0x0100u) << 16;   // QS_POSTMESSAGE | QS_HOTKEY | QS_TIMER
+        private const uint PM_NOREMOVE = 0x0, PM_NOYIELD = 0x2, PM_QS_INPUT = 0x0407u << 16;   // QS_MOUSE | QS_KEY | QS_RAWINPUT
 
         internal static bool KeepResponsive = true;
         private static int frame = -1;
@@ -58,9 +63,9 @@ namespace StutterFix
                 frame = f; frameStart = now; lastPeek = now; peeksThisFrame = 0;
                 return;
             }
-            if (now - lastPeek < System.Diagnostics.Stopwatch.Frequency) return;   // 프레임 1초 뒤부터 1초마다
+            if (now - lastPeek < System.Diagnostics.Stopwatch.Frequency / 2) return;   // 프레임 0.5초 뒤부터 0.5초마다
             lastPeek = now;
-            try { MSG m; PeekMessageW(out m, IntPtr.Zero, 0, 0, PM_NOREMOVE | PM_NOYIELD | PM_QS_POSTMESSAGE); peeksThisFrame++; Peeks++; }
+            try { MSG m; PeekMessageW(out m, IntPtr.Zero, 0, 0, PM_NOREMOVE | PM_NOYIELD | PM_QS_INPUT); peeksThisFrame++; Peeks++; }
             catch { KeepResponsive = false; }
         }
 
