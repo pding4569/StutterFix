@@ -149,7 +149,6 @@ namespace StutterFix
                 if (Edition.Dev)
                 {
                     StartProbe.Install(harmony);
-                    Try(() => PresentProbe.Install(harmony));
                     Try(() => FilterTrace.Install(harmony));
                     Try(() => MergeProbe.Install(harmony));
 
