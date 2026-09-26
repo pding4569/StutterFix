@@ -28,7 +28,6 @@ namespace StutterFix
         internal static void Frame(bool playing, float ms, float wait)
         {
             if (pending.Count > 0) lock (pending) { foreach (var p in pending) Main.Entry.Logger.Log(p); pending.Clear(); }
-            PresentProbe.Frame(playing, ms, wait);
             if (playing != wasPlaying)
             {
                 if (!playing && songHighSec > 0)

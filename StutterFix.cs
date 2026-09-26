@@ -47,6 +47,7 @@ namespace StutterFix
             if (Config.FlipModel < 0) { Config.FlipModel = BootConfig.FlipNow() ? 1 : 0; try { Config.Save(modEntry); } catch { } }   // 처음: 지금 boot.config 상태를 따른다
             BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1);
             modEntry.Logger.Log(BootConfig.Describe());
+            if (Edition.Dev) PresentProbe.NoGhosting();   // (개발자용 시험) 5초 넘는 멈춤 뒤 화면 대기 상태 가설
             PerfOverlay.FrameStatsOff = !Config.FrameStats;
             // (개발자용 시험) 모드 폴더에 frame-stats-off 파일이 있으면 설정과 상관없이 끈다 - 설정을 건드리지 않고 켜고 끄며 비교하려고
             if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "frame-stats-off"))) { PerfOverlay.FrameStatsOff = true; modEntry.Logger.Log("[프레임 통계] frame-stats-off 파일이 있어 이번 실행은 끔"); }

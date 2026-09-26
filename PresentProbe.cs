@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.LowLevel;
+using System.Runtime.InteropServices;
 
 namespace StutterFix
 {
@@ -14,108 +12,25 @@ namespace StutterFix
     //   - 느린 판/빠른 판 장면 비교: 카메라 5개(이름·그리는 곳·순서 같음), 캔버스 31개 같음, 프레임당 Blit 수 같음,
     //     ReadPixels·GetNativeTexturePtr·Camera.Render·Texture2D.Apply·WaitAllRequests·GL.Flush 호출은 어느 판에도 없음
     //   - 화면 넘기기 직전 그래픽 스레드에 일 얹기(작은 복사 40·300번 x10프레임), GPU 바쁘게(화면 크기 복사 x30프레임): 모두 그대로
-    //   - WPR(CPU+GPU) 기록 중에는 에디터 Play 판도 빨랐다(기록 부하가 있으면 안 생김 - 디코 화면 공유, 무거운 맵과 같은 쪽)
-    // 파이프라인을 비워도(수직동기, 프레임 제한) 그대로이니 타이밍이 아니라 "몇 번째 프레임을 기다릴지" 세는 값이 한 칸 밀려 굳은 것으로
-    // 본다: 느린 판은 방금 넘긴 프레임(GPU 1.3ms + 깨어나는 시간)을, 빠른 판은 그 앞 프레임(이미 끝남)을 기다린다.
-    // 그렇다면 대기 단계(TimeUpdate.WaitForLastPresentationAndUpdateTime)를 한 프레임만 건너뛰거나 두 번 돌리면 다시 맞춰질 수 있다.
-    //
-    // 시험: 느린 상태가 2초 이어지면 (1) 대기 단계를 한 프레임 건너뛰기, (2) 한 프레임 두 번 돌리기를 차례로 하고 1초 뒤를 재어 적는다.
-    // 건너뛴 프레임은 시간 갱신도 한 번 빠진다(다음 프레임이 두 프레임 몫). 개발자용 시험에서만.
+    //   - 유니티 대기 단계(TimeUpdate.WaitForLastPresentationAndUpdateTime)를 한 프레임 건너뛰기 / 두 번 돌리기: 그대로
+    //   - 곡 중에 Alt+Tab 으로 나갔다 오기: 그대로
+    //   - WPR 기록을 켜 두고(부하) Play 하거나, PowerShell 에서 Alt+Tab 으로 돌아온 직후 Play 하면 빨랐다(2번 중 2번)
+    // 곡 중에는 무엇을 해도 안 바뀌니 상태는 판이 시작되기 전에 정해진다. 느린 판이 나온 Arche 에디터 Play 는 한 프레임이 5.2~5.8초,
+    // 늘 빠른 다시 하기는 3.2~3.9초, 빠른 MEGAMIX Play 는 2.7~3.1초였다. 윈도우는 창이 5초 넘게 메시지를 처리하지 않으면(그 사이 입력이
+    // 있으면) "응답 없음" 고스트 창으로 바꿔 둔다. 입력 여부에 따라 걸리거나 안 걸리므로 운처럼 보이고, 5초를 넘는 Play 에서만 나온다.
+    // 고스트 창을 거친 뒤 윈도우가 게임 창의 화면을 다르게 다룬다는 가설을 시험하려고 DisableProcessWindowsGhosting 으로 고스트 창을 끈다.
+    // (고스트 창을 끄면 게임이 정말 멈췄을 때 "응답 없음" 표시와 그 상태의 창 옮기기·최소화가 안 된다. 많은 게임이 끈다.)
     internal static class PresentProbe
     {
-        private static bool wasPlaying;
-        private static int state;           // 0 지켜봄, 1 바꾼 뒤 되돌리기 기다림, 2 되돌린 뒤 재는 중, 3 끝
-        private static int kick, measureSec, highStreak, restoreIn;
-        private static float before;
-        private static double secMs, secWait; private static int secN;
-        private static string results = "";
-        private static readonly string[] kickNames = { "대기 단계 한 프레임 건너뛰기", "대기 단계 한 프레임 두 번" };
-        private static PlayerLoopSystem saved;
-        private static bool changed;
+        [DllImport("user32.dll")] private static extern void DisableProcessWindowsGhosting();
 
-        internal static void Frame(bool playing, float ms, float wait)
+        internal static string GhostNote = "";
+
+        internal static void NoGhosting()
         {
-            if (!Edition.Dev) return;
-            if (playing != wasPlaying)
-            {
-                if (!playing) End();
-                wasPlaying = playing;
-                if (playing) { state = 0; highStreak = 0; results = ""; secMs = secWait = 0; secN = 0; }
-            }
-            if (!playing) return;
-            if (state == 1)
-            {
-                // 바꾼 루프로 한 프레임이 돌았다: 되돌린다
-                if (--restoreIn <= 0) { Restore(); state = 2; measureSec = 0; secMs = secWait = 0; secN = 0; }
-                return;
-            }
-            if (ms > 500f) return;
-            secMs += ms; secWait += wait; secN++;
-            if (secMs < 1000) return;
-            float avg = (float)(secWait / secN);
-            secMs = secWait = 0; secN = 0;
-
-            if (state == 0)
-            {
-                highStreak = avg >= 1.0f ? highStreak + 1 : 0;
-                if (highStreak >= 2) { before = avg; kick = 0; Apply(); }
-            }
-            else if (state == 2)
-            {
-                if (++measureSec < 2) return;   // 되돌린 뒤 첫 1초는 넘어가는 중
-                results += string.Format(" | {0}: {1:F2} -> {2:F2}ms", kickNames[kick], before, avg);
-                if (avg < 0.3f) { results += " (풀림)"; state = 3; return; }
-                before = avg;
-                if (++kick < kickNames.Length) Apply(); else { results += " | 모두 안 풀림"; state = 3; }
-            }
-        }
-
-        // 지금 루프에서 대기 단계만 빼거나(0) 두 번 넣은(1) 루프로 바꾼다. 이 호출 다음 프레임에 적용되고, 그다음 Frame 에서 되돌린다.
-        private static void Apply()
-        {
-            try
-            {
-                saved = PlayerLoop.GetCurrentPlayerLoop();
-                var root = PlayerLoop.GetCurrentPlayerLoop();
-                var tops = root.subSystemList;
-                bool found = false;
-                for (int i = 0; i < tops.Length && !found; i++)
-                {
-                    var top = tops[i];
-                    if (top.subSystemList == null) continue;
-                    var list = new List<PlayerLoopSystem>();
-                    foreach (var c in top.subSystemList)
-                    {
-                        if (c.type != null && c.type.Name == "WaitForLastPresentationAndUpdateTime")
-                        {
-                            found = true;
-                            if (kick == 1) { list.Add(c); list.Add(c); }
-                            continue;
-                        }
-                        list.Add(c);
-                    }
-                    if (found) { top.subSystemList = list.ToArray(); tops[i] = top; }
-                }
-                if (!found) { results += " | 대기 단계를 못 찾음"; state = 3; return; }
-                root.subSystemList = tops;
-                PlayerLoop.SetPlayerLoop(root);
-                changed = true; restoreIn = 1; state = 1;
-            }
-            catch (Exception ex) { results += " | 시험 실패: " + ex.Message; state = 3; Restore(); }
-        }
-
-        private static void Restore()
-        {
-            if (!changed) return;
-            try { PlayerLoop.SetPlayerLoop(saved); } catch { }
-            changed = false;
-        }
-
-        private static void End()
-        {
-            Restore();
-            if (results.Length > 0) Main.Entry.Logger.Log("[화면 대기 풀기 시험]" + results);
-            state = 0;
+            try { DisableProcessWindowsGhosting(); GhostNote = "고스트 창 끔"; }
+            catch (Exception ex) { GhostNote = "고스트 창 끄기 실패: " + ex.Message; }
+            Main.Entry.Logger.Log("[화면 대기] " + GhostNote);
         }
     }
 }
