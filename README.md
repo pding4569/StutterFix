@@ -245,6 +245,8 @@ cl /O2 /GL /MT /LD /Brepro /DLIBDEFLATE_DLL /I. lib\deflate_decompress.c lib\zli
 
 `native/sfnative.dll`은 이 모드가 직접 쓴 C 코드(`native/sfnative/sfnative.c`)로, 이미지 불러오기의 PNG 필터 되돌리기(SSE2)와 DXT 압축을 네이티브로 합니다. 같은 도구로 `native/build-sfnative.bat` 로 빌드합니다(`/Brepro`). 검증: 필터 되돌리기는 맵 폴더 PNG 전부의 모든 줄을 C# 코드와 바이트 비교, DXT 는 Arche 이미지 251장의 블록 6,280만 개가 C# 과 모두 같음. DLL 을 못 불러오면 C# 으로 동작합니다.
 
+DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.31.0, BSD-3-Clause)로 같은 계산을 블록 여러 개씩 동시에 합니다(`native/sfnative/sfdxt.ispc`). SSE2 / SSE4.1 / AVX2 코드가 한 DLL 에 들어 있고 CPU 에 맞는 것을 실행 중에 고릅니다. 실수 계산 순서를 C 코드와 같게 두려고 `--opt=disable-fma` 로 빌드합니다. 검증: 세 경로 모두 Arche 블록 6,280만 개가 이전 C 코드·C# 과 바이트까지 같음. 속도(10억 픽셀): 이전 11.9초 → AVX2 3.5초, SSE4.1 5.9초, SSE2 8.4초. 빌드에는 `ispc.exe` 경로가 더 필요합니다(`build-sfnative.bat` 의 4번째 인자).
+
 `native/turbojpeg.dll`은 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) 3.2.0(태그 `3.2.0`, 커밋 `c85e6b9`)을 SIMD(NASM 3.02) 포함, 정적 CRT 로 빌드한 것이고 JPG 장식 이미지를 작업 스레드에서 풉니다. 빌드는 `native/build-turbojpeg.bat`(CMake 4.4.3 + NMake, `/Brepro`). 지금 들어 있는 DLL: 1,165,312 바이트, SHA-256 `6AB563B85C6A032620E285D23B25B8D9B48D90FC86DD998BF3BE7F2D7AE3C61F`. 검증: 맵 폴더의 JPG 2,068장을 유니티 6000.3.10f1 LoadImage 결과와 바이트 단위로 비교, 기본 설정(정확한 DCT, 부드러운 업샘플)에서 다름 0. 오류·경고가 나는 파일, CMYK, 최대 텍스처 크기를 넘는 이미지는 원래 방식(유니티)으로 풉니다.
 
 ## 환경
