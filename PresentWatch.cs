@@ -34,6 +34,7 @@ namespace StutterFix
                     Main.Entry.Logger.Log(string.Format("[화면 대기] 이번 판 {0}초 중 {1}초 동안 늘어나 있었음 (그때 평균 {2:F1}ms)", songSec, songHighSec, songHighWait / songHighSec));
                 string gpu = GpuSummary();
                 if (!playing && gpu != null) Main.Entry.Logger.Log(gpu);
+                ExpEnd(playing);
                 wasPlaying = playing; secMs = secWait = 0; secN = 0; high = false; streak = 0; songSec = songHighSec = snaps = 0; songHighWait = 0;
             }
             if (!playing || ms > 500f) return;
@@ -43,7 +44,7 @@ namespace StutterFix
             secMs = secWait = 0; secN = 0;
             bool h = avgWait >= HighMs && avgWait >= avgMs * 0.15f;
             songSec++; if (h) { songHighSec++; songHighWait += avgWait; }
-            if (Edition.Dev) SampleGpu(h);
+            if (Edition.Dev) { SampleGpu(h); ExpStep(avgWait); }
             if (h == high) { streak = 0; return; }
             if (++streak < 2) return;
             high = h; streak = 0;
@@ -65,6 +66,56 @@ namespace StutterFix
                 lock (pending) pending.Add(line);
                 busy = false;
             });
+        }
+
+        // ── (개발자용) 첫 판 화면 대기 실험 ──
+        // 첫 판(Arche)은 모든 프레임이 두 번째 판보다 약 1.65ms 씩 길었다(PresentMon: 분포 모양은 같고 통째로 밀림). 렌더 스레드 0.7ms,
+        // GPU 1.2ms 로 둘 다 한가한데 메인 스레드가 "직전에 넘긴 프레임을 GPU 가 끝낼 때까지"(화면 넘긴 뒤 GPU 끝까지 1.3ms + 깨어나는 시간)
+        // 기다리는 모양이다. 두 번째 판은 한 프레임 더 앞서 준비해 기다리지 않는다. 대기가 3초 이어지면 곡 중에 한 번,
+        // "앞서 준비하는 프레임 수"(QualitySettings.maxQueuedFrames)를 4초 바꿨다가 되돌리고 전·중·후 대기를 적는다.
+        // 되돌린 뒤에도 대기가 사라져 있으면 "한 번 어긋난 상태가 굳은 것" 이고, 바꾼 동안만 사라지면 그 설정 쪽 문제다.
+        // 그림은 그대로이고 화면에 나오는 시점만 달라진다. 개발자용만.
+        private static int expPhase, expOrig, expTry, expSec, expN1, expN2;
+        private static float expBefore; private static double expW1, expW2;
+
+        private static void ExpStep(float avgWait)
+        {
+            try
+            {
+                if (expPhase == 0)
+                {
+                    if (songHighSec < 3 || avgWait < HighMs) return;
+                    expBefore = avgWait; expOrig = UnityEngine.QualitySettings.maxQueuedFrames;
+                    expTry = expOrig >= 3 ? 1 : Math.Max(2, expOrig + 1);
+                    UnityEngine.QualitySettings.maxQueuedFrames = expTry;
+                    expPhase = 1; expSec = 0; expW1 = expW2 = 0; expN1 = expN2 = 0;
+                    return;
+                }
+                if (expPhase == 1)
+                {
+                    if (++expSec > 1) { expW1 += avgWait; expN1++; }   // 바꾼 뒤 첫 1초는 넘어가는 중이라 뺀다
+                    if (expSec < 5) return;
+                    UnityEngine.QualitySettings.maxQueuedFrames = expOrig;
+                    expPhase = 2; expSec = 0;
+                    return;
+                }
+                if (expPhase == 2)
+                {
+                    if (++expSec > 1) { expW2 += avgWait; expN2++; }
+                    if (expSec < 5) return;
+                    expPhase = 3;
+                    Main.Entry.Logger.Log(string.Format("[화면 대기 실험] 앞서 준비하는 프레임 {0} -> {1} (4초) -> {0}: 대기 {2:F2}ms -> 바꾼 동안 {3:F2}ms -> 되돌린 뒤 {4:F2}ms",
+                        expOrig, expTry, expBefore, expN1 > 0 ? expW1 / expN1 : -1, expN2 > 0 ? expW2 / expN2 : -1));
+                }
+            }
+            catch (Exception ex) { expPhase = 3; Main.Entry.Logger.Log("[화면 대기 실험] 실패: " + ex.Message); }
+        }
+
+        // 판이 바뀔 때: 바꾼 채로 끝났으면 되돌리고, 다음 판을 위해 비운다
+        private static void ExpEnd(bool playing)
+        {
+            if (expPhase == 1) { try { UnityEngine.QualitySettings.maxQueuedFrames = expOrig; } catch { } Main.Entry.Logger.Log("[화면 대기 실험] 판이 끝나 되돌림 (" + expOrig + ")"); }
+            expPhase = 0;
         }
 
         // ── (개발자용) 곡 중 GPU 클럭 (NVIDIA, GpuClock.cs) ──

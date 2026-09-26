@@ -526,8 +526,8 @@ namespace StutterFix
             try
             {
                 var r = Screen.currentResolution;
-                return string.Format("화면: 수직동기 {0}, 목표 FPS {1}, {2}, {3}x{4} {5:F0}Hz, 창 {6}x{7}", QualitySettings.vSyncCount, Application.targetFrameRate,
-                    Screen.fullScreenMode, r.width, r.height, r.refreshRateRatio.value, Screen.width, Screen.height);
+                return string.Format("화면: 수직동기 {0}, 목표 FPS {1}, {2}, {3}x{4} {5:F0}Hz, 창 {6}x{7}, 앞서 준비하는 프레임 {8}", QualitySettings.vSyncCount, Application.targetFrameRate,
+                    Screen.fullScreenMode, r.width, r.height, r.refreshRateRatio.value, Screen.width, Screen.height, QualitySettings.maxQueuedFrames);
             }
             catch (System.Exception ex) { return "화면: 읽기 실패 " + ex.Message; }
         }
