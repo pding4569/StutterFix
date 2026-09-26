@@ -79,26 +79,26 @@ namespace StutterFix
             if (gbState == 0)
             {
                 gbStreak = high ? gbStreak + 1 : 0;
-                if (gbStreak < 2) return;
-                // 느린 판 2초: DXGI 최대 대기 프레임을 읽고 3 으로 올려 본다
+                if (gbStreak < 5) return;
+                // 느린 판 5초(체감되게): DXGI 최대 대기 프레임을 읽고 3 으로 올려 본다
                 gbBefore = wait; gbPrev = GfxProbe.DxgiMaxLatency();
                 int hr = GfxProbe.SetDxgiMaxLatency(3);
                 gbState = 1; gbAfter = 0;
                 Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 느린 판: DXGI 최대 대기 프레임 {0} -> 3 으로 (결과 0x{1:X}, 지금 {2}), 대기 {3:F2}ms", gbPrev, hr, GfxProbe.DxgiMaxLatency(), wait));
                 return;
             }
-            if (gbState == 1 && ++gbAfter >= 2)
+            if (gbState == 1 && ++gbAfter >= 5)
             {
-                // 2초 뒤: 원래 값(유니티가 둔 2)으로 되돌리고 또 2초 본다
+                // 5초 뒤: 원래 값(유니티가 둔 2)으로 되돌리고 또 2초 본다
                 int hr = GfxProbe.SetDxgiMaxLatency(gbPrev > 0 ? (uint)gbPrev : 2u);
-                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 3 으로 올린 뒤 2초: 대기 {0:F2}ms -> {1:F2}ms ({2}) | 되돌림 {3} (결과 0x{4:X})", gbBefore, wait, wait < 0.3f ? "풀림" : "그대로", GfxProbe.DxgiMaxLatency(), hr));
+                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 3 으로 올린 뒤 5초: 대기 {0:F2}ms -> {1:F2}ms ({2}) | 되돌림 {3} (결과 0x{4:X})", gbBefore, wait, wait < 0.3f ? "풀림" : "그대로", GfxProbe.DxgiMaxLatency(), hr));
                 gbState = 2; gbAfter = 0;
                 return;
             }
-            if (gbState == 2 && ++gbAfter >= 2)
+            if (gbState == 2 && ++gbAfter >= 5)
             {
                 gbState = 3;
-                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 되돌린 뒤 2초: 대기 {0:F2}ms ({1}) | DXGI 최대 대기 프레임 {2}", wait, wait < 0.3f ? "풀린 채" : "느림", GfxProbe.DxgiMaxLatency()));
+                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 되돌린 뒤 5초: 대기 {0:F2}ms ({1}) | DXGI 최대 대기 프레임 {2}", wait, wait < 0.3f ? "풀린 채" : "느림", GfxProbe.DxgiMaxLatency()));
             }
         }
 
