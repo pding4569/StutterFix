@@ -19,7 +19,7 @@ made by **naro** & **Claude**
 | 블렌드 장식 1,500개 (3440×1440) | 화면 복사 없이 그리기 | 약 11 FPS 로 떨어지던 구간이 끊김 없이 |
 | Arche | 에디터 재생 시작 | 8.6초 → 4.3초 (2.2.0) |
 | Arche | 에디터 Play 직후 첫 판 FPS | 약 200 → **약 300 FPS** (2.3.0) |
-| Arche | 에디터에서 죽고 다시 하기 | 9.1초 → **3.2초** (2.3.0) |
+| Arche | 에디터에서 죽고 다시 하기 | 9.1초 → 3.2초 (2.3.0) → **2.1초** (2.3.1) |
 | Hello (BPM) 2026 | 맵 불러오기 | 12.2초 → **8.1초** |
 | Hello (BPM) 2026 | 첫 판 곡 중 끊김 | 10번(최악 133ms) → **2번(최악 35ms)** |
 
@@ -27,7 +27,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.3.0 에서 바뀐 것](#230-에서-바뀐-것)
+- [2.3.1 에서 바뀐 것](#231-에서-바뀐-것) · [2.3.0 에서 바뀐 것](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -47,6 +47,31 @@ made by **naro** & **Claude**
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 재시작하지 않음). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
 
+## 2.3.1 에서 바뀐 것
+
+### 에디터 전환이 빨라짐 (MAIJEUN 님 PR #1 추가분)
+
+| 바꾼 것 | 내용 |
+|---|---|
+| 장식 이미지 버리지 않기 | 편집으로 나가거나 에디터에서 죽고 다시 할 때, 게임은 "안 쓰는 이미지 치우기"에서 장식 이미지를 전부 내렸다가 곧바로 디스크에서 다시 읽고 풉니다. 이 두 경우에만 치우기를 건너뛰고 쓰던 이미지를 그대로 씁니다(파일이 바뀌었으면 게임이 원래대로 다시 읽음). 큰 이미지 줄이기로 줄인 이미지가 편집으로 나가면 원본으로 돌아가던 것도 사라집니다. |
+| 다시 하기 장식 설정 한 번 줄이기 | 에디터에서 죽고 다시 할 때 장식 전체 다시 설정을 연달아 두 번 합니다. 그 사이 코드는 장식을 읽지 않으므로 첫 번째를 건너뜁니다. 두 번째가 안 불리면 끝에서 대신 부릅니다(그때도 에디터 클릭용 충돌 상자는 꺼 둠). |
+| 전환 시간 기록 | 편집으로 나가기, 에디터 재생 시작, 다시 하기에 걸린 시간을 로그에 `[전환]` 으로 남깁니다. |
+
+설정의 "에디터 재생 시작·전환 빠르게" 에 묶여 있습니다.
+측정: **Arche 에디터에서 죽고 다시 하기 3.3초 → 2.1초**, Hello (BPM) 2026 0.77~0.81초 → 0.38~0.55초. 편집으로 나갈 때 이미지 304장(Arche)을 다시 읽지 않음.
+검증 (개발자용 자동 비교): 건너뜀 대 안 건너뜀의 다시 하기 뒤 장식 상태 차이가 안 건너뜀끼리의 차이(안 보이는 장식의 실제 위치 흔들림, Arche 73개)와 같음.
+
+### 첫 판 FPS 떨어짐 막기 보강
+
+2.3.0 이후 더 시험해 보니 "응답 없음" 창을 끄는 것만으로는 모자랐습니다. 윈도우는 창이 입력을 확인하지 않고 오래 멈춰 있으면 "응답 없음" 창과 별개로 멈춘 창으로 판정하는데, 이제 긴 멈춤(맵 불러오기, 에디터 Play) 동안에도 0.5초마다 **입력 큐를 확인만** 해서 이 판정을 막습니다. 입력을 꺼내지 않고, 다른 프로그램이 보낸 창 메시지도 그 자리에서 처리하지 않아 게임 동작에 끼어들지 않습니다(따로 만든 시험 프로그램으로 확인). 맵 불러오기 중 게임 창이 "응답 없음"이 되던 것도 사라집니다.
+
+솔직한 현황: 곡이 시작되기까지 **5초 미만으로 멈춘 판은 한 번도 느려지지 않았지만**(약 15번, 플레이어용 Arche Play 4.7초 포함), 5초를 넘게 멈춘 판(개발자용 Arche 5.2~5.8초)은 위 대책을 모두 켜도 가끔 느려졌습니다(최근 7판 중 3판). 정확한 원인은 계속 찾고 있고, 느려져도 죽고 다시 하면 풀립니다. 다음 작업은 Play 시작 자체를 더 빠르게 해서 5초 아래로 내리는 것입니다.
+
+### 고친 것
+
+- 곡 요약의 GPU·CPU 평균에 엉뚱한 값(예: "GPU 평균 40256469.5ms")이 섞이던 것
+- (개발자용) 필터 추적 설치 오류
+
 ## 2.3.0 에서 바뀐 것
 
 [MAIJEUN](https://github.com/MAIJEUN) 님의 기여([PR #1](https://github.com/pding4569/StutterFix/pull/1): 장면 정리·소리 보호·필터 셰이더 준비 고침, libdeflate, 첫 판 VRAM 예측, 장식 애니메이션 확장)와 그 뒤의 작업을 합친 버전입니다. 감사합니다!
@@ -58,7 +83,7 @@ made by **naro** & **Claude**
 
 이제 이 게임에서만 "응답 없음" 창을 끕니다(설정 → 그래픽 → **첫 판 FPS 떨어짐 막기**). 게임이 정말 멈췄을 때 "응답 없음" 표시가 안 뜨는 것 말고는 달라지는 것이 없습니다.
 
-측정: 맵을 연 뒤 첫 에디터 Play 13번 중 10번이 약 200 FPS → 끈 뒤 새로 켠 게임에서 첫 Play 모두 약 300 FPS(화면 대기 0).
+측정: 맵을 연 뒤 첫 에디터 Play 13번 중 10번이 약 200 FPS → 끈 뒤 새로 켠 게임에서 첫 Play 두 번 모두 약 300 FPS(화면 대기 0). 2.3.1 에서 보강했지만 완전히 없어지지는 않았습니다(위의 "첫 판 FPS 떨어짐 막기 보강" 참고).
 원인이 아니었던 것: 화면 출력 방식, 멀티스레드 그리기, 프레임 시간 통계, NVIDIA 저지연 모드, 게임 위에 겹친 창, 디스코드. 곡 중에는 무엇을 해도(수직동기·프레임 제한·대기 단계 건너뛰기 등 10가지) 상태가 바뀌지 않았고, 판이 시작되기 전의 5초 넘는 멈춤만 공통이었습니다.
 
 ### 에디터에서 죽고 다시 하기 9초 → 3초
@@ -81,18 +106,6 @@ made by **naro** & **Claude**
 
 측정 (Hello (BPM) 2026, 긴 변 1536 같은 조건): 압축 풀기(작업 스레드 합계) 45.7초 → 5.2초, **전체 12.2초 → 8.1초**.
 검증: 2025·2026 의 PNG 1,047장을 PIL 과 픽셀 단위로 비교, 원래 zlib 길과 libdeflate 길 모두 **다름 0**. 개발자용은 불러올 때마다 네이티브 결과 일부를 C# 과, JPG 일부를 유니티와 계속 대조합니다.
-
-### 에디터 전환이 빨라짐
-
-| 바꾼 것 | 내용 |
-|---|---|
-| 장식 이미지 버리지 않기 | 편집으로 나가거나 에디터에서 죽고 다시 할 때, 게임은 "안 쓰는 이미지 치우기"에서 장식 이미지를 전부 내렸다가 곧바로 디스크에서 다시 읽고 풉니다. 이 두 경우에만 치우기를 건너뛰고 쓰던 이미지를 그대로 씁니다(파일이 바뀌었으면 게임이 원래대로 다시 읽음). 큰 이미지 줄이기로 줄인 이미지가 편집으로 나가면 원본으로 돌아가던 것도 사라집니다. |
-| 다시 하기 장식 설정 한 번 줄이기 | 에디터에서 죽고 다시 할 때 장식 전체 다시 설정을 연달아 두 번 합니다. 그 사이 코드는 장식을 읽지 않으므로 첫 번째를 건너뜁니다. 두 번째가 안 불리면 끝에서 대신 부릅니다. |
-| 전환 시간 기록 | 편집으로 나가기, 에디터 재생 시작, 다시 하기에 걸린 시간을 로그에 `[전환]` 으로 남깁니다. |
-
-설정의 "에디터 재생 시작·전환 빠르게" 에 묶여 있습니다.
-측정 (Hello (BPM) 2026, 장식 2,531개): **에디터에서 죽고 다시 하기 0.77~0.81초 → 0.38~0.55초**, 곡 시작까지 1.44~1.56초 → 0.93~1.18초.
-검증 (개발자용 자동 비교): 건너뜀 대 안 건너뜀의 다시 하기 뒤 장식 상태 차이가 안 건너뜀끼리의 차이(안 보이는 장식의 실제 위치 흔들림)와 같음.
 
 ### 첫 판부터 VRAM 부족 막기
 
@@ -320,6 +333,11 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.3.1:**
+- **Faster editor transitions** (more from [PR #1](https://github.com/pding4569/StutterFix/pull/1) by MAIJEUN): decoration images are kept instead of unloaded and re-read from disk when returning to the editor or retrying in the editor, and the retry resets decorations once instead of twice. Arche editor retry 3.3 s → 2.1 s.
+- **First-run FPS drop, more mitigation:** during long freezes (level load, editor Play) the input queue is checked every 0.5 s without removing anything, so Windows no longer marks the game window as hung (verified with a standalone test; sent messages are not processed mid-frame). Honest status: runs whose Play freeze stayed under 5 s were never slow (about 15 runs), but runs with a freeze over 5 s can still occasionally start slow (3 of the last 7 in the dev build); a retry clears it. Next: make Play start faster so it stays under 5 s.
+- Fixed bogus values in the song summary's GPU/CPU averages.
 
 **2.3.0** (includes [PR #1](https://github.com/pding4569/StutterFix/pull/1) by [MAIJEUN](https://github.com/MAIJEUN) — thank you!):
 - **First-run FPS drop fixed:** when a big level froze the game for more than 5 s after pressing Play in the editor, Windows swapped the window for a "Not responding" ghost window, and every frame of that run then waited an extra 1.7 ms (Arche about 320 → 200 FPS, about 5 ms more latency). Window ghosting is now disabled for this game only (Graphics → *Prevent first-run FPS drop*). First editor Play was slow 10 times out of 13 before, fast every time after.

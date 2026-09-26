@@ -22,12 +22,16 @@ namespace StutterFix
             if (adv != null)
             {
                 advName = AccessTools.Field(adv, "filterName"); advOn = AccessTools.Field(adv, "enableFilter");
-                h.Patch(AccessTools.Method(adv, "StartEffect"), prefix: new HarmonyMethod(typeof(FilterTrace), nameof(Adv)));
+                var m = AccessTools.DeclaredMethod(adv, "StartEffect");   // 직접 선언하지 않은 판(부모 ffxPlusBase 것)은 못 걸고, 걸면 모든 효과에 걸린다
+                if (m != null) h.Patch(m, prefix: new HarmonyMethod(typeof(FilterTrace), nameof(Adv)));
+                else Main.Entry.Logger.Log("[필터 추적] ffxSetFilterAdvancedPlus.StartEffect 가 없어 고급 필터는 추적 안 함");
             }
             if (plus != null)
             {
                 plusFilter = AccessTools.Field(plus, "filter"); plusOn = AccessTools.Field(plus, "enableFilter");
-                h.Patch(AccessTools.Method(plus, "StartEffect"), prefix: new HarmonyMethod(typeof(FilterTrace), nameof(Plus)));
+                var m = AccessTools.DeclaredMethod(plus, "StartEffect");
+                if (m != null) h.Patch(m, prefix: new HarmonyMethod(typeof(FilterTrace), nameof(Plus)));
+                else Main.Entry.Logger.Log("[필터 추적] ffxSetFilterPlus.StartEffect 가 없어 일반 필터는 추적 안 함");
             }
         }
 
