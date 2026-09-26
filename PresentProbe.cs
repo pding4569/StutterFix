@@ -1,6 +1,11 @@
 using System;
-using Unity.Profiling;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Text;
+using HarmonyLib;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace StutterFix
 {
@@ -8,29 +13,89 @@ namespace StutterFix
     //
     // 2026-09-27 까지 확인: 에디터에서 Play 로 시작한 판은 대개 곡 내내 프레임마다 1.7ms 를 기다리고(약 200 FPS), 죽고 다시 하기로
     // 시작한 판은 기다리지 않는다(약 320 FPS). 한 판 안에서는 끝까지 같은 상태다. 화면 출력 방식, 멀티스레드 그리기, 프레임 시간 통계,
-    // NVIDIA 저지연 모드, 게임의 maxQueuedFrames(2 -> 3) 모두 상관없었다. 메인 스레드가 "방금 넘긴 프레임을 GPU 가 끝낼 때까지"
-    // 기다리는 모양이다.
+    // NVIDIA 저지연 모드, 게임의 maxQueuedFrames 모두 상관없었다.
+    // 곡 중에 상태를 흔들어 보는 시험(앞서 준비 프레임 1 로 30프레임, 수직동기 5프레임, 목표 FPS 120 으로 3프레임)도 모두 1.70 -> 1.70ms
+    // 그대로였다. 파이프라인이 한 번 비어도 그대로라서 "타이밍이 어긋난 상태" 가 아니라 장면에 무언가가 더 있는 쪽으로 본다:
+    // 느린 판은 GPU 시간도 프레임당 1.2~1.4ms 로 빠른 판(0.9~1.0ms)보다 길다. 유니티 안쪽 구간 기록기(Gfx.WaitForPresentOnGfxThread 등)는
+    // 플레이어 빌드에서 값이 안 나와 뺐다.
     //
-    // 여기서는 (1) 유니티 안쪽 구간(메인 스레드가 그래픽 스레드의 화면 넘기기를 기다린 시간 등)을 판마다 적고,
-    // (2) 느린 상태가 2초 이어지면 곡 중에 풀 수 있는 방법을 하나씩 짧게 시험해 어느 것이 상태를 바꾸는지 적는다.
-    // 시험은 그림을 바꾸지 않는다: 몇 프레임 동안 프레임 속도·수직동기·미리 준비하는 프레임 수만 바꿨다가 되돌린다.
+    // 그래서 판마다 (1) 곡 시작 3초 뒤의 카메라 목록(이름, 그리는 곳, 순서)과 캔버스 수, (2) 곡 중 CPU 가 GPU 를 기다리게 만들 수 있는
+    // 유니티 호출(ReadPixels, GetNativeTexturePtr, Camera.Render, Texture2D.Apply, Graphics.Blit, AsyncGPUReadback.WaitAllRequests,
+    // GL.Flush)의 횟수와 처음 부른 곳을 적어 느린 판과 빠른 판을 비교한다.
     internal static class PresentProbe
     {
-        // ── (1) 유니티 안쪽 구간 ──
-        private static readonly string[] markerNames = { "Gfx.WaitForPresentOnGfxThread", "Gfx.PresentFrame", "Gfx.WaitForGfxCommandsFromMainThread", "Gfx.WaitForRenderThread" };
-        private static ProfilerRecorder[] recs;
-        private static readonly double[] sums = new double[4];
-        private static int recFrames;
-
-        // ── (2) 시험 ──
-        private static int state;          // 0 지켜봄, 1 바꾸는 중, 2 되돌린 뒤 재는 중, 3 끝
-        private static int remedy, holdLeft, measureSec, highStreak;
-        private static float before;
-        private static int origQueued, origVsync, origFps;
-        private static double secMs, secWait; private static int secN;
         private static bool wasPlaying;
-        private static readonly string[] remedyNames = { "앞서 준비하는 프레임 1 (30프레임)", "수직동기 켬 (5프레임)", "목표 FPS 120 (3프레임)" };
-        private static string results = "";
+        private static float songStart;
+        private static bool censusDone;
+        private static double secMs, secWait; private static int secN, secCount, highSec;
+
+        // 부른 횟수 (곡 중에만 센다)
+        private class Count { public string Name; public long N; public List<string> Callers = new List<string>(); }
+        private static readonly Dictionary<MethodBase, Count> counts = new Dictionary<MethodBase, Count>();
+        private static bool counting;
+        private static string installNote = "";
+
+        internal static void Install(Harmony harmony)
+        {
+            var prefix = new HarmonyMethod(typeof(PresentProbe), nameof(Hit));
+            var targets = new List<MethodBase>();
+            Action<Type, string> all = (t, name) =>
+            {
+                if (t == null) return;
+                foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                    if (m.Name == name && !m.IsGenericMethodDefinition) targets.Add(m);
+            };
+            all(typeof(Texture2D), "ReadPixels");
+            all(typeof(Texture), "GetNativeTexturePtr");
+            all(typeof(Camera), "Render");
+            all(typeof(Texture2D), "Apply");
+            all(typeof(Graphics), "Blit");
+            all(typeof(AsyncGPUReadback), "WaitAllRequests");
+            all(typeof(GL), "Flush");
+            int ok = 0, fail = 0;
+            foreach (var m in targets)
+            {
+                try { harmony.Patch(m, prefix: prefix); ok++; }
+                catch { fail++; }   // 몸체 없는 extern 은 못 건다
+            }
+            installNote = "걸린 함수 " + ok + "개, 못 건 것 " + fail + "개";
+        }
+
+        public static void Hit(MethodBase __originalMethod)
+        {
+            if (!counting) return;
+            try
+            {
+                Count c;
+                if (!counts.TryGetValue(__originalMethod, out c))
+                {
+                    c = new Count { Name = __originalMethod.DeclaringType.Name + "." + __originalMethod.Name };
+                    counts[__originalMethod] = c;
+                }
+                c.N++;
+                if (c.Callers.Count < 3)
+                {
+                    string who = Caller();
+                    if (!c.Callers.Contains(who)) c.Callers.Add(who);
+                }
+            }
+            catch { }
+        }
+
+        // 유니티·Harmony·이 클래스가 아닌 첫 호출자
+        private static string Caller()
+        {
+            var st = new StackTrace(2, false);
+            for (int i = 0; i < st.FrameCount && i < 12; i++)
+            {
+                var m = st.GetFrame(i).GetMethod();
+                if (m == null || m.DeclaringType == null) continue;
+                string asm = m.DeclaringType.Assembly.GetName().Name;
+                if (asm.StartsWith("UnityEngine") || asm.StartsWith("0Harmony") || m.DeclaringType == typeof(PresentProbe)) continue;
+                return m.DeclaringType.FullName + "." + m.Name;
+            }
+            return "?";
+        }
 
         internal static void Frame(bool playing, float ms, float wait)
         {
@@ -39,91 +104,51 @@ namespace StutterFix
             {
                 if (!playing) End();
                 wasPlaying = playing;
-                if (playing) Begin();
+                if (playing) { counts.Clear(); counting = true; songStart = Time.realtimeSinceStartup; censusDone = false; secMs = secWait = 0; secN = secCount = highSec = 0; }
             }
             if (!playing) return;
-
-            if (recs != null)
-            {
-                for (int i = 0; i < recs.Length; i++) if (recs[i].Valid) sums[i] += recs[i].LastValue / 1e6;
-                recFrames++;
-            }
-
-            // 바꾸는 중: 정해진 프레임 수가 지나면 되돌린다
-            if (state == 1 && --holdLeft <= 0) { Restore(); state = 2; measureSec = 0; secMs = secWait = 0; secN = 0; return; }
-
+            if (!censusDone && Time.realtimeSinceStartup - songStart > 3f) { censusDone = true; Census(); }
             if (ms > 500f) return;
             secMs += ms; secWait += wait; secN++;
             if (secMs < 1000) return;
-            float avg = (float)(secWait / secN);
+            if (secWait / secN >= 1.0) highSec++;
+            secCount++;
             secMs = secWait = 0; secN = 0;
-
-            if (state == 0)
-            {
-                highStreak = avg >= 1.0f ? highStreak + 1 : 0;
-                if (highStreak >= 2) { before = avg; remedy = 0; Apply(); }
-            }
-            else if (state == 2)
-            {
-                if (++measureSec < 2) return;   // 되돌린 뒤 첫 1초는 넘어가는 중
-                results += string.Format(" | {0}: {1:F2} -> {2:F2}ms", remedyNames[remedy], before, avg);
-                if (avg < 0.3f) { results += " (풀림)"; state = 3; return; }
-                before = avg;
-                if (++remedy < remedyNames.Length) Apply(); else { results += " | 모두 안 풀림"; state = 3; }
-            }
         }
 
-        private static void Apply()
+        private static string census = "";
+        private static void Census()
         {
             try
             {
-                origQueued = QualitySettings.maxQueuedFrames; origVsync = QualitySettings.vSyncCount; origFps = Application.targetFrameRate;
-                if (remedy == 0) { QualitySettings.maxQueuedFrames = 1; holdLeft = 30; }
-                else if (remedy == 1) { QualitySettings.vSyncCount = 1; holdLeft = 5; }
-                else { Application.targetFrameRate = 120; holdLeft = 3; }
-                state = 1;
-            }
-            catch (Exception ex) { results += " | 시험 실패: " + ex.Message; state = 3; }
-        }
-
-        private static void Restore()
-        {
-            try
-            {
-                if (QualitySettings.maxQueuedFrames != origQueued) QualitySettings.maxQueuedFrames = origQueued;
-                if (QualitySettings.vSyncCount != origVsync) QualitySettings.vSyncCount = origVsync;
-                if (Application.targetFrameRate != origFps) Application.targetFrameRate = origFps;
-            }
-            catch { }
-        }
-
-        private static void Begin()
-        {
-            state = 0; highStreak = 0; results = ""; secMs = secWait = 0; secN = 0;
-            Array.Clear(sums, 0, sums.Length); recFrames = 0;
-            if (recs == null)
-            {
-                recs = new ProfilerRecorder[markerNames.Length];
-                for (int i = 0; i < markerNames.Length; i++)
+                var sb = new StringBuilder();
+                var cams = Camera.allCameras;
+                sb.Append("카메라 ").Append(cams.Length).Append("개:");
+                foreach (var c in cams)
                 {
-                    try { recs[i] = ProfilerRecorder.StartNew(ProfilerCategory.Render, markerNames[i]); } catch { }
+                    if (c == null) continue;
+                    var rt = c.targetTexture;
+                    sb.AppendFormat(" [{0} 순서 {1}, {2}, 지우기 {3}, 레이어 0x{4:X}]", c.name, c.depth, rt != null ? "RT " + rt.width + "x" + rt.height : "화면", c.clearFlags, c.cullingMask);
                 }
+                int canv = 0, canvOverlay = 0;
+                foreach (var cv in UnityEngine.Object.FindObjectsOfType<Canvas>()) { if (!cv.isActiveAndEnabled) continue; canv++; if (cv.renderMode == RenderMode.ScreenSpaceOverlay) canvOverlay++; }
+                sb.AppendFormat(" | 켜진 캔버스 {0}개(화면 위 {1}개)", canv, canvOverlay);
+                census = sb.ToString();
             }
+            catch (Exception ex) { census = "조사 실패: " + ex.Message; }
         }
 
         private static void End()
         {
-            if (state == 1) { Restore(); results += " | 판이 끝나 되돌림"; }
-            if (recFrames > 0)
-            {
-                var sb = new System.Text.StringBuilder("[화면 대기 안쪽] 프레임당:");
-                for (int i = 0; i < markerNames.Length; i++)
-                    sb.AppendFormat(" {0} {1}", markerNames[i], recs != null && recs[i].Valid ? (sums[i] / recFrames).ToString("F2") + "ms" : "못 잼");
-                sb.Append(" (" + recFrames + "프레임)");
-                Main.Entry.Logger.Log(sb.ToString());
-            }
-            if (results.Length > 0) Main.Entry.Logger.Log("[화면 대기 풀기 시험]" + results);
-            state = 0;
+            counting = false;
+            if (secCount == 0) return;
+            var sb = new StringBuilder();
+            sb.AppendFormat("[화면 대기 장면] 이번 판 {0}초 중 대기 1ms 넘은 초 {1} ({2}) | {3} | 곡 중 호출:", secCount, highSec, highSec * 2 > secCount ? "느린 판" : "빠른 판", census);
+            if (counts.Count == 0) sb.Append(" 없음");
+            foreach (var c in counts.Values)
+                sb.AppendFormat(" {0} {1}번(초당 {2:F1}, 부른 곳: {3})", c.Name, c.N, c.N / (double)secCount, string.Join(", ", c.Callers.ToArray()));
+            sb.Append(" | ").Append(installNote);
+            Main.Entry.Logger.Log(sb.ToString());
         }
     }
 }
