@@ -54,7 +54,28 @@ namespace StutterFix
             return true;
         }
 
-        internal static void Apply(bool enable)
+        // ── 화면 출력 방식 (실험) ──
+        // 게임의 boot.config 에는 "force-d3d11-bitblt-model=" 줄이 들어 있어서, D3D11 에서 화면을 옛 방식(BitBlt: 윈도우가 게임 화면을
+        // 통째로 복사해 합성)으로 내보낸다(PresentMon: "Composed: Copy with GPU GDI"). 이 줄을 빼면 최신 방식(Flip)이 된다.
+        // 측정(2026-09-26, Arche, 같은 PC): 두 번째 판 300 -> 318 FPS, 화면에 나오기까지 약 6.2 -> 4.4ms. 게임 위에 다른 창이 없으면
+        // 윈도우가 합성 없이 바로 내보낼 수 있어(Independent Flip) 더 줄 수 있고, 그때는 수직동기가 꺼져 있으면 화면이 찢어져 보일 수 있다.
+        // 개발사가 일부러 옛 방식을 골랐을 수 있어 기본은 끔. 끄거나 모드를 끄면 원래 줄을 되살린다.
+        private const string BitbltKey = "force-d3d11-bitblt-model";
+
+        // 지금 boot.config 에 옛 방식 줄이 없고 원래(백업)에는 있었으면 최신 방식으로 바꿔 둔 상태다 (설정 처음 읽을 때 지금 상태를 따른다)
+        internal static bool FlipNow()
+        {
+            try
+            {
+                if (!File.Exists(ConfigPath)) return false;
+                bool now = Find(new List<string>(File.ReadAllLines(ConfigPath)), BitbltKey) >= 0;
+                bool orig = File.Exists(BackupPath) ? Find(new List<string>(File.ReadAllLines(BackupPath)), BitbltKey) >= 0 : now;
+                return orig && !now;
+            }
+            catch { return false; }
+        }
+
+        internal static void Apply(bool enable, bool flip)
         {
             try
             {
@@ -62,20 +83,25 @@ namespace StutterFix
                 if (!File.Exists(path)) { Status = "boot.config 없음"; return; }
 
                 var lines = new List<string>(File.ReadAllLines(path));
-                if (enable && !File.Exists(BackupPath)) File.Copy(path, BackupPath);
+                if ((enable || flip) && !File.Exists(BackupPath)) File.Copy(path, BackupPath);
 
                 // 원래 값은 백업에서 가져온다. 백업이 없으면 바꾼 적이 없다는 뜻이다.
-                string originalMode = null;
+                string originalMode = null, originalBitblt = null;
                 if (File.Exists(BackupPath))
-                    originalMode = Value(new List<string>(File.ReadAllLines(BackupPath)), ModeKey);
+                {
+                    var orig = new List<string>(File.ReadAllLines(BackupPath));
+                    originalMode = Value(orig, ModeKey);
+                    originalBitblt = Value(orig, BitbltKey);
+                }
 
                 bool changed = false;
                 changed |= Set(lines, JobsKey, enable ? JobsValue : null);
                 if (originalMode != null) changed |= Set(lines, ModeKey, originalMode);   // 예전 버전이 3으로 바꿔 둔 것을 되돌린다
+                if (flip) changed |= Set(lines, BitbltKey, null);                         // 최신 방식: 옛 방식 줄을 뺀다
+                else if (File.Exists(BackupPath)) changed |= Set(lines, BitbltKey, originalBitblt);   // 원래대로 (원래 없었으면 없음)
 
-                // 줄 끝은 원래 파일 그대로(게임의 boot.config 는 LF). 예전에는 File.WriteAllLines 가 CRLF 로 바꿔 썼는데,
-                // 그러면 "force-d3d11-bitblt-model=" 처럼 값이 빈 줄이 "\r" 값이 되어, 게임이 예전 방식(BitBlt) 스왑체인으로
-                // 화면을 내보냈다(PresentMon: 9/20 원본 "Composed: Flip" -> 지금 "Composed: Copy with GPU GDI"). 이미 CRLF 로 바뀐 파일도 고친다.
+                // 줄 끝은 원래 파일 그대로(게임의 boot.config 는 LF). 예전에는 File.WriteAllLines 가 CRLF 로 바꿔 썼다.
+                // (옛 방식 화면 출력의 원인인지 확인했지만 아니었다: LF 로 되돌려도 같은 방식. 원래 모양을 지키려고 둔다.)
                 string nl = "\n";
                 try { string src = File.ReadAllText(File.Exists(BackupPath) ? BackupPath : path); if (src.Contains("\r\n")) nl = "\r\n"; } catch { }   // 원본(백업)의 줄 끝
                 bool repair = false;
@@ -85,7 +111,7 @@ namespace StutterFix
                 {
                     File.WriteAllText(path, string.Join(nl, lines.ToArray()) + nl);
                     if (repair && !changed) Main.Entry.Logger.Log("boot.config 줄 끝을 원래대로(LF) 고침 (다음 실행부터 적용)");
-                    Main.Entry.Logger.Log("boot.config 수정: " + (enable ? JobsKey + "=" + JobsValue + " 추가" : JobsKey + " 제거") + " (다음 실행부터 적용)");
+                    Main.Entry.Logger.Log("boot.config 수정: " + (enable ? JobsKey + "=" + JobsValue + " 추가" : JobsKey + " 제거") + ", 화면 출력 " + (flip ? "최신(Flip)" : "원래대로") + " (다음 실행부터 적용)");
                     Status = Describe() + " | 다음 실행부터 적용됩니다";
                 }
                 else Status = Describe();

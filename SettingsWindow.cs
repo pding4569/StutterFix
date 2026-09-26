@@ -851,7 +851,17 @@ namespace StutterFix
                 T("권장", "Recommended")))
             {
                 c.LegacyGfxJobs = v;
-                BootConfig.Apply(v);
+                BootConfig.Apply(v, c.FlipModel == 1);
+                Save();
+            }
+            bool flip = c.FlipModel == 1;
+            if (Option("flip", ref flip, T("최신 화면 출력 방식 (실험)", "Modern presentation (experimental)"),
+                T("게임은 D3D11 에서 윈도우가 게임 화면을 통째로 복사해 합성하는 옛 방식으로 화면을 내보냅니다. 이것을 최신 방식(Flip)으로 바꿉니다. 측정: 같은 구간 300 -> 318 FPS, 화면에 나오기까지 약 6.2 -> 4.4ms. 게임 위에 다른 창이 없으면 더 빨라질 수 있고, 그때 수직동기가 꺼져 있으면 화면이 가로로 찢어져 보일 수 있습니다. boot.config 의 한 줄을 빼고, 끄거나 모드를 끄면 되돌립니다.",
+                  "The game presents through the legacy D3D11 path where Windows copies and composites the whole frame. This switches to the modern flip model. Measured: 300 -> 318 FPS on the same section, frame-to-screen about 6.2 -> 4.4 ms. With no other windows on top it can get faster still, and with vsync off you may see tearing. Removes one line from boot.config; turning it off or disabling the mod restores it."),
+                T("실험", "Experimental")))
+            {
+                c.FlipModel = flip ? 1 : 0;
+                BootConfig.Apply(c.LegacyGfxJobs, flip);
                 Save();
             }
             var rows = new List<string> { T("지금 상태", "Current"), BootConfig.Describe().Replace("지금 ", "") };
@@ -1392,7 +1402,7 @@ namespace StutterFix
         {
             var c = Main.Config;
             c.GcPause = c.EffectSplit = c.RecolorSplit = c.TweenGuard = c.SkipSameText = c.ShaderWarm = c.FastBlend = c.SkipInvisible = c.LazyHidden = c.ZeroTween = c.InstantDirect = c.SkipSame = c.FastLoop = c.Precheck = c.DecoAnim = c.MoveFinish = c.DormantSkip = c.ImagePrefetch = c.SkipAssetUnload = c.SkipIdleParticles = c.LeakFix = c.LoadCache = true;
-            if (!c.LegacyGfxJobs) { c.LegacyGfxJobs = true; BootConfig.Apply(true); }
+            if (!c.LegacyGfxJobs) { c.LegacyGfxJobs = true; BootConfig.Apply(true, c.FlipModel == 1); }
             Save();
         }
 
