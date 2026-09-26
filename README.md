@@ -231,11 +231,15 @@ dotnet build -p:Edition=Player   # 플레이어용 -> bin/Player/StutterFix.dll
 dotnet build                     # 개발자용 -> bin/Debug/StutterFix.dll
 ```
 
-`native/libdeflate.dll`은 [libdeflate](https://github.com/ebiggers/libdeflate) 1.24 의 압축 풀기 부분만 MSVC x64 로 빌드한 것이고, 모드 DLL 안에 넣어 배포됩니다. 다시 빌드하려면(Visual Studio 개발자 명령 프롬프트, libdeflate 소스 폴더에서):
+`native/libdeflate.dll`은 [libdeflate](https://github.com/ebiggers/libdeflate) 1.24(태그 `v1.24`, 커밋 `96836d7`)의 압축 풀기 부분만 MSVC 14.44 x64 로 빌드한 것이고, 모드 DLL 안에 넣어 배포됩니다. 빌드 방법은 `native/build-libdeflate.bat` 에 있습니다(Visual Studio 의 MSVC 와 Windows SDK 가 필요, SDK 는 NuGet 의 `Microsoft.Windows.SDK.CPP` 패키지를 풀어 써도 됨). 핵심 명령:
 
 ```bat
-cl /O2 /GL /MT /LD /DLIBDEFLATE_DLL /I. lib\deflate_decompress.c lib\zlib_decompress.c lib\adler32.c lib\utils.c lib\x86\cpu_features.c /Fe:libdeflate.dll /link /LTCG
+cl /O2 /GL /MT /LD /Brepro /DLIBDEFLATE_DLL /I. lib\deflate_decompress.c lib\zlib_decompress.c lib\adler32.c lib\utils.c lib\x86\cpu_features.c /Fe:libdeflate.dll /link /LTCG /Brepro
 ```
+
+`/Brepro` 로 빌드 시각이 빠져 같은 도구면 매번 똑같은 파일이 나옵니다. 지금 들어 있는 DLL: 120,320 바이트, SHA-256 `212D8BA3B6B0826A41AB002B7C1727FCF92682CC11703060F44293A9AF2A78C2` (MSVC 14.44.35207, Windows SDK 10.0.26100.4188).
+
+검증: 맵 폴더의 PNG 29,524장(압축 9.8GB, 풀린 양 약 248GB)을 .NET 의 zlib 과 이 DLL 로 각각 풀어 바이트 단위로 비교, 다름 0.
 
 ## 환경
 
