@@ -139,6 +139,7 @@ namespace StutterFix
                 InvisibleSkip.Install(harmony);
                 TweenFix.Install(harmony);
                 SceneReset.Install(harmony);
+                TransitionFix.Install(harmony);
                 GcControl.Install();
                 SettingsWindow.Create();
                 RestartAdvisor.Init();
@@ -487,7 +488,7 @@ namespace StutterFix
             LowEnd.Apply();
             MoveApply.Enabled = E("MoveFinish", Config.MoveFinish);
             ParticleFix.SkipIdle = E("SkipIdleParticles", Config.SkipIdleParticles); ParticleFix.PauseOffscreen = E("LowPauseParticles", Config.LowPauseParticles); LeakGuard.Enabled = E("LeakFix", Config.LeakFix);
-            bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc;
+            bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc;
             TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages);
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);
