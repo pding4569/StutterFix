@@ -62,6 +62,43 @@ namespace StutterFix
             return st == 0 ? info[0] + "/" + info[1] : "조회 실패 0x" + st.ToString("X");
         }
 
+        // ── 스왑체인 대기 객체(DXGI frame latency waitable) 여유분 ──
+        // 2026-09-27: 느린 판과 빠른 판 모두 "스왑체인 대기 객체" 방식, 최대 대기 프레임 2 로 유니티 쪽 값은 같았다. 대기 객체는 세마포어이고
+        // (NtQuerySemaphore 가 형식 오류가 아니라 권한 오류), 유니티가 받은 핸들에는 조회 권한이 없다. 조회·올리기 권한으로 복제해 둔다.
+        [DllImport("kernel32.dll", SetLastError = true)] private static extern bool DuplicateHandle(IntPtr srcProc, IntPtr src, IntPtr dstProc, out IntPtr dst, uint access, bool inherit, uint options);
+        [DllImport("kernel32.dll", SetLastError = true)] private static extern bool ReleaseSemaphore(IntPtr h, int count, out int previous);
+        [DllImport("kernel32.dll")] private static extern bool CloseHandle(IntPtr h);
+        private const uint SEMAPHORE_QUERY_STATE = 0x0001, SEMAPHORE_MODIFY_STATE = 0x0002, SYNCHRONIZE = 0x00100000;
+        private static IntPtr latencyDup; private static long latencyOrig;
+
+        private static IntPtr LatencyHandle()
+        {
+            if (!Resolve()) return IntPtr.Zero;
+            long h = Ptr(settings + 0x350);
+            if (h == 0) return IntPtr.Zero;
+            if (h == latencyOrig && latencyDup != IntPtr.Zero) return latencyDup;
+            if (latencyDup != IntPtr.Zero) { CloseHandle(latencyDup); latencyDup = IntPtr.Zero; }   // 스왑체인이 새로 만들어졌다
+            IntPtr d;
+            if (!DuplicateHandle(GetCurrentProcess(), (IntPtr)h, GetCurrentProcess(), out d, SEMAPHORE_QUERY_STATE | SEMAPHORE_MODIFY_STATE | SYNCHRONIZE, false, 0))
+            { LastError = "복제 실패 " + Marshal.GetLastWin32Error(); return IntPtr.Zero; }
+            latencyDup = d; latencyOrig = h;
+            return d;
+        }
+        internal static string LastError = "";
+
+        internal static string LatencyCount() { var h = LatencyHandle(); return h == IntPtr.Zero ? "못 봄(" + LastError + ")" : Sem((long)h); }
+
+        // 여유분 하나 돌려주기. 돌려주기 전 값을 준다(-1 이면 실패)
+        internal static int GiveBack()
+        {
+            var h = LatencyHandle();
+            if (h == IntPtr.Zero) return -1;
+            int prev;
+            if (!ReleaseSemaphore(h, 1, out prev)) { LastError = "올리기 실패 " + Marshal.GetLastWin32Error(); return -1; }
+            return prev;
+        }
+        internal static void Close() { if (latencyDup != IntPtr.Zero) { CloseHandle(latencyDup); latencyDup = IntPtr.Zero; } }
+
         internal static string Snapshot()
         {
             try
@@ -70,7 +107,7 @@ namespace StutterFix
                 byte waitable = U8(settings + 0x360);
                 return string.Format("[프레임 대기 상태] 방식 {0} | 최대 대기 프레임 {1} | 쿼리 목록 {2}개 | 빚 {3} | 세마포어 {4} | 스왑체인 대기 객체 {5} | 프레임 기다림 {6}/{7}",
                     waitable == 1 ? "스왑체인 대기 객체" : waitable == 0 ? "세마포어" : "?(" + waitable + ")",
-                    I32(device + 0x1EAC), Ptr(device + 0x6748), I32(device + 0x6758), Sem(Ptr(device + 0x6750)), Sem(Ptr(settings + 0x350)),
+                    I32(device + 0x1EAC), Ptr(device + 0x6748), I32(device + 0x6758), Sem(Ptr(device + 0x6750)), LatencyCount(),
                     Ptr(device + 0x5E68), Ptr(device + 0x5E70));
             }
             catch (Exception ex) { return "[프레임 대기 상태] 실패: " + ex.Message; }

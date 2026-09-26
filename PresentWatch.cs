@@ -45,6 +45,7 @@ namespace StutterFix
             bool h = avgWait >= HighMs && avgWait >= avgMs * 0.15f;
             songSec++; if (h) { songHighSec++; songHighWait += avgWait; }
             if (Edition.Dev && (songSec == 3 || songSec == 8)) Main.Entry.Logger.Log(GfxProbe.Snapshot() + string.Format(" (곡 {0}초, 화면 대기 {1:F2}ms)", songSec, avgWait));
+            if (Edition.Dev) GiveBackStep(h, avgWait);
             if (Edition.Dev) SampleGpu(h);
             if (h == high) { streak = 0; return; }
             if (++streak < 2) return;
@@ -67,6 +68,27 @@ namespace StutterFix
                 lock (pending) pending.Add(line);
                 busy = false;
             });
+        }
+
+        // ── (개발자용 시험) 스왑체인 대기 객체 여유분 돌려주기 ──
+        // 느린 판(화면 대기 1.7ms)이 2초 이어지면 곡마다 한 번 대기 객체 세마포어를 하나 올리고, 그 뒤 2초의 대기를 적는다.
+        private static int gbState, gbStreak, gbAfter; private static float gbBefore; private static int gbPrev;
+        private static void GiveBackStep(bool high, float wait)
+        {
+            if (songSec == 1) { gbState = 0; gbStreak = 0; }
+            if (gbState == 0)
+            {
+                gbStreak = high ? gbStreak + 1 : 0;
+                if (gbStreak < 2) return;
+                gbBefore = wait; gbPrev = GfxProbe.GiveBack(); gbState = 1; gbAfter = 0;
+                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 스왑체인 대기 객체 여유분 하나 돌려줌 (그 전 값 {0}{1}), 대기 {2:F2}ms", gbPrev, gbPrev < 0 ? " " + GfxProbe.LastError : "", wait));
+                return;
+            }
+            if (gbState == 1 && ++gbAfter >= 2)
+            {
+                gbState = 2;
+                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 돌려준 뒤 2초: 대기 {0:F2}ms -> {1:F2}ms ({2}) | 지금 값 {3}", gbBefore, wait, wait < 0.3f ? "풀림" : "그대로", GfxProbe.LatencyCount()));
+            }
         }
 
         // ── (개발자용) 곡 중 GPU 클럭 (NVIDIA, GpuClock.cs) ──
