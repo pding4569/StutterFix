@@ -47,7 +47,7 @@ namespace StutterFix
             if (Config.FlipModel < 0) { Config.FlipModel = BootConfig.FlipNow() ? 1 : 0; try { Config.Save(modEntry); } catch { } }   // 처음: 지금 boot.config 상태를 따른다
             BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1);
             modEntry.Logger.Log(BootConfig.Describe());
-            if (Edition.Dev) PresentProbe.NoGhosting();   // (개발자용 시험) 5초 넘는 멈춤 뒤 화면 대기 상태 가설
+            if (Config.NoGhosting) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
             PerfOverlay.FrameStatsOff = !Config.FrameStats;
             // (개발자용 시험) 모드 폴더에 frame-stats-off 파일이 있으면 설정과 상관없이 끈다 - 설정을 건드리지 않고 켜고 끄며 비교하려고
             if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "frame-stats-off"))) { PerfOverlay.FrameStatsOff = true; modEntry.Logger.Log("[프레임 통계] frame-stats-off 파일이 있어 이번 실행은 끔"); }
@@ -673,6 +673,7 @@ namespace StutterFix
         public bool LeakFix = true;            // 게임 메모리 누수 막기 (사용자 지정 FPS 화면 버퍼)
         public bool LoadCache = true;          // 맵 열기·재생 시작 때 이미지 파일 수정 시각을 한 프레임에 한 번만 읽기
         public bool LegacyGfxJobs = true;   // boot.config 로 그래픽 작업 분산(legacy)을 켠다
+        public bool NoGhosting = true;      // 이 게임에서만 "응답 없음" 고스트 창을 끈다 (첫 판 FPS 떨어짐 막기, WindowGhost.cs). 끄면 다음 실행부터
         public bool FrameStats = true;      // 프레임 시간 통계(FrameTimingManager, GPU 시간) 켜기. 원래 게임은 꺼져 있다. 시작할 때만 읽는다
         public int FlipModel = -1;         // 화면 출력 최신 방식(Flip, 실험): 1 켬, 0 끔, -1 아직 안 정함(처음에 지금 boot.config 상태를 따름)
 

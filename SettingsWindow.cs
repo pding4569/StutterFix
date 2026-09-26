@@ -527,12 +527,12 @@ namespace StutterFix
 
             var c = Main.Config;
             int on = (c.GcPause ? 1 : 0) + (c.EffectSplit ? 1 : 0) + (c.RecolorSplit ? 1 : 0) + (c.TweenGuard ? 1 : 0) + (c.SkipSameText ? 1 : 0)
-                   + (c.ShaderWarm ? 1 : 0) + (c.FastBlend ? 1 : 0) + (c.SkipInvisible ? 1 : 0) + (c.LazyHidden ? 1 : 0) + (c.ZeroTween ? 1 : 0) + (c.InstantDirect ? 1 : 0) + (c.SkipSame ? 1 : 0) + (c.FastLoop ? 1 : 0) + (c.Precheck ? 1 : 0) + (c.DecoAnim ? 1 : 0) + (c.MoveFinish ? 1 : 0) + (c.DormantSkip ? 1 : 0) + (c.ImagePrefetch ? 1 : 0) + (c.SkipAssetUnload ? 1 : 0) + (c.LegacyGfxJobs ? 1 : 0) + (c.SkipIdleParticles ? 1 : 0) + (c.LeakFix ? 1 : 0) + (c.LoadCache ? 1 : 0);
+                   + (c.ShaderWarm ? 1 : 0) + (c.FastBlend ? 1 : 0) + (c.SkipInvisible ? 1 : 0) + (c.LazyHidden ? 1 : 0) + (c.ZeroTween ? 1 : 0) + (c.InstantDirect ? 1 : 0) + (c.SkipSame ? 1 : 0) + (c.FastLoop ? 1 : 0) + (c.Precheck ? 1 : 0) + (c.DecoAnim ? 1 : 0) + (c.MoveFinish ? 1 : 0) + (c.DormantSkip ? 1 : 0) + (c.ImagePrefetch ? 1 : 0) + (c.SkipAssetUnload ? 1 : 0) + (c.LegacyGfxJobs ? 1 : 0) + (c.NoGhosting ? 1 : 0) + (c.SkipIdleParticles ? 1 : 0) + (c.LeakFix ? 1 : 0) + (c.LoadCache ? 1 : 0);
             string d = BootConfig.Describe();
             bool jobs = d.Contains("Jobified") || d.Contains("Split");
 
             GUILayout.BeginHorizontal();
-            Stat(on + " / 23", T("켜진 기능", "Features on"), true);
+            Stat(on + " / 24", T("켜진 기능", "Features on"), true);
             GUILayout.Space(14);
             Stat(GcControl.Paused ? T("미루는 중", "Deferred") : T("대기", "Idle"), T("메모리 정리", "Memory cleanup"), false);
             GUILayout.Space(14);
@@ -855,6 +855,16 @@ namespace StutterFix
             {
                 c.LegacyGfxJobs = v;
                 BootConfig.Apply(v, c.FlipModel == 1);
+                Save();
+            }
+            bool ghost = c.NoGhosting;
+            if (Option("ghost", ref ghost, T("첫 판 FPS 떨어짐 막기", "Prevent first-run FPS drop"),
+                T("큰 맵에서 Play 를 누르고 곡이 시작되기까지 게임이 5초 넘게 멈추면, 윈도우가 게임 창을 '응답 없음' 창으로 바꿔치기합니다. 그 뒤로는 그 판 내내 프레임마다 1.7ms 를 더 기다려 FPS 가 크게 떨어졌습니다(Arche 약 320 -> 200 FPS, 죽고 다시 하면 정상). 이 게임에서만 '응답 없음' 창을 끕니다. 게임이 정말 멈췄을 때 '응답 없음' 표시가 안 뜨는 것 말고는 달라지는 것이 없습니다. 끄면 다음 실행부터 적용됩니다.",
+                  "When a big level freezes the game for more than 5 seconds after pressing Play, Windows swaps the game window for a 'Not responding' ghost window. After that, every frame of that run waited an extra 1.7 ms and FPS dropped a lot (Arche about 320 -> 200 FPS; fine again after a retry). This turns off the 'Not responding' window for this game only. The only other change is that a real hang won't show 'Not responding'. Turning it off applies after a restart."),
+                T("권장", "Recommended")))
+            {
+                c.NoGhosting = ghost;
+                if (ghost) WindowGhost.Disable();
                 Save();
             }
             bool flip = c.FlipModel == 1;

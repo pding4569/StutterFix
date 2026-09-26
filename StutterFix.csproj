@@ -31,7 +31,7 @@
     <Compile Include="SfNative.cs" />
     <Compile Include="TurboJpeg.cs" />
     <Compile Include="GpuClock.cs" />
-    <Compile Include="PresentProbe.cs" />
+    <Compile Include="WindowGhost.cs" />
     <Compile Include="FastJson.cs" />
     <Compile Include="FastJsonParser.cs" />
     <Compile Include="DecodeFix.cs" />
