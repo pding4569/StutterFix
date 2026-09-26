@@ -77,15 +77,48 @@ namespace StutterFix
             {
                 string note; while (notes.TryDequeue(out note)) Main.Entry.Logger.Log(note);
                 if (peeksThisFrame > 0)
-                    Main.Entry.Logger.Log(string.Format("[첫 판 FPS] {0:F1}초 멈춘 프레임 동안 윈도우 메시지 확인 {1}번 (멈춘 창 판정 막기)",
-                        (lastPeek - frameStart) / (double)System.Diagnostics.Stopwatch.Frequency, peeksThisFrame));
-                frame = f; frameStart = now; lastPeek = now; peeksThisFrame = 0;
+                    Main.Entry.Logger.Log(string.Format("[첫 판 FPS] {0:F1}초 멈춘 프레임 동안 윈도우 메시지 확인 {1}번 (멈춘 창 판정 막기), GPU 깨우기 {2}번",
+                        (lastPeek - frameStart) / (double)System.Diagnostics.Stopwatch.Frequency, peeksThisFrame, kicksThisFrame));
+                frame = f; frameStart = now; lastPeek = now; peeksThisFrame = 0; kicksThisFrame = 0;
                 return;
             }
             if (now - lastPeek < System.Diagnostics.Stopwatch.Frequency / 2) return;   // 프레임 0.5초 뒤부터 0.5초마다
             lastPeek = now;
             try { MSG m; PeekMessageW(out m, IntPtr.Zero, 0, 0, PM_NOREMOVE | PM_NOYIELD | PM_QS_INPUT); peeksThisFrame++; Peeks++; }
             catch { KeepResponsive = false; }
+            KickGpu();
+        }
+
+        // ── 멈춘 동안 그래픽 드라이버 깨워 두기 (시험) ──
+        // 멈춤이 5초를 넘으면 그 판 내내 느린 상태가 되는데(5초 미만은 늘 정상), 느린 판은 늘 NVIDIA 드라이버가 "쉬는 중이라 클럭 내림"
+        // 상태였고, 시스템이 바쁠 때(디코 화면 공유, ETW 기록, GPU 를 많이 쓰는 맵)는 생기지 않았다. 멈춘 동안 게임이 GPU 에 아무 일도
+        // 안 시켜 드라이버가 앱을 쉬는 중으로 보고 동작을 바꾸는 것으로 보고, 0.5초마다 화면 밖 4x4 버퍼를 지우는 명령을 보내 깨워 둔다.
+        // 그림에는 아무 영향이 없다(아무도 읽지 않는 버퍼, 지금 그리는 대상은 되돌림).
+        internal static bool KeepGpuAwake = true;
+        private static UnityEngine.RenderTexture tiny;
+        private static UnityEngine.Rendering.CommandBuffer kick;
+        internal static long GpuKicks;
+        private static int kicksThisFrame;
+        private static void KickGpu()
+        {
+            if (!KeepGpuAwake) return;
+            try
+            {
+                if (tiny == null)
+                {
+                    tiny = new UnityEngine.RenderTexture(4, 4, 0) { name = "StutterFix.KeepAwake" };
+                    tiny.Create();
+                    kick = new UnityEngine.Rendering.CommandBuffer { name = "StutterFix.KeepAwake" };
+                    kick.SetRenderTarget(tiny);
+                    kick.ClearRenderTarget(false, true, UnityEngine.Color.clear);
+                }
+                var prev = UnityEngine.RenderTexture.active;
+                UnityEngine.Graphics.ExecuteCommandBuffer(kick);
+                UnityEngine.GL.Flush();
+                UnityEngine.RenderTexture.active = prev;
+                kicksThisFrame++; GpuKicks++;
+            }
+            catch { KeepGpuAwake = false; }
         }
 
         [DllImport("user32.dll")] private static extern void DisableProcessWindowsGhosting();
