@@ -226,8 +226,10 @@ namespace StutterFix
             try { if (recGpu.Valid) recGpu.Dispose(); if (recCpu.Valid) recCpu.Dispose(); if (recRender.Valid) recRender.Dispose(); if (recWait.Valid) recWait.Dispose(); } catch { }
         }
 
+        internal static bool FrameStatsOff;   // (설정) 프레임 시간 통계를 켜지 않는다: 기록기도 안 만들고 창구도 안 읽는다
         private void CaptureTiming()
         {
+            if (FrameStatsOff) return;
             try
             {
                 if (!recGpu.Valid)

@@ -147,7 +147,7 @@ namespace StutterFix
         internal static int EffectivePct { get { return AutoRes ? Math.Min(AutoPct, RenderScalePct) : RenderScalePct; } }
         internal static void AutoTick()
         {
-            if (!AutoRes || !Hitch.Playing || !RenderScaleReady) { AutoPct = RenderScalePct; gpuEma = 0f; return; }
+            if (!AutoRes || !Hitch.Playing || !RenderScaleReady || PerfOverlay.FrameStatsOff) { AutoPct = RenderScalePct; gpuEma = 0f; return; }
             try
             {
                 if (!gpuRec.Valid) gpuRec = Unity.Profiling.ProfilerRecorder.StartNew(Unity.Profiling.ProfilerCategory.Internal, "GPU Frame Time");

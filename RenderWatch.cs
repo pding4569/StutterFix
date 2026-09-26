@@ -175,6 +175,7 @@ namespace StutterFix
 
         internal static string GpuInfo()
         {
+            if (PerfOverlay.FrameStatsOff) return "GPU 시간 안 읽음(프레임 통계 끔)";
             try
             {
                 UnityEngine.FrameTimingManager.CaptureFrameTimings();
