@@ -863,7 +863,7 @@ namespace StutterFix
                   "When a big level freezes the game for more than 5 seconds after pressing Play, Windows swaps the game window for a 'Not responding' ghost window. After that, every frame of that run waited an extra 1.7 ms and FPS dropped a lot (Arche about 320 -> 200 FPS; fine again after a retry). This turns off the 'Not responding' window for this game only. The only other change is that a real hang won't show 'Not responding'. Turning it off applies after a restart."),
                 T("권장", "Recommended")))
             {
-                c.NoGhosting = ghost;
+                c.NoGhosting = ghost; WindowGhost.KeepResponsive = ghost;
                 if (ghost) WindowGhost.Disable();
                 Save();
             }

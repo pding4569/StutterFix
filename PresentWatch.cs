@@ -28,6 +28,7 @@ namespace StutterFix
         internal static void Frame(bool playing, float ms, float wait)
         {
             if (pending.Count > 0) lock (pending) { foreach (var p in pending) Main.Entry.Logger.Log(p); pending.Clear(); }
+            if (Edition.Dev) WindowGhost.Flush();
             if (playing != wasPlaying)
             {
                 if (!playing && songHighSec > 0)
@@ -191,7 +192,7 @@ namespace StutterFix
             return sb.ToString();
         }
 
-        private static IntPtr FindGameWindow()
+        internal static IntPtr FindGameWindow()
         {
             uint self = (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
             IntPtr found = IntPtr.Zero;

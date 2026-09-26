@@ -73,6 +73,7 @@ namespace StutterFix
 
         public static DateTime WriteTime(string path)
         {
+            WindowGhost.Tick();
             if (!CacheFileTimes || path == null) return new FileInfo(path).LastWriteTimeUtc;
             int f = Time.frameCount;
             if (f != timesFrame) { times.Clear(); timesFrame = f; }
@@ -102,7 +103,7 @@ namespace StutterFix
             var all = mgr == null ? null : allRef(mgr);
             if (all == null) return true;
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
-            for (int i = all.Count - 1; i >= 0; i--) setCollider(all[i], false);   // 원래는 foreach (null 이면 원래도 예외)
+            for (int i = all.Count - 1; i >= 0; i--) { setCollider(all[i], false); if ((i & 255) == 0) WindowGhost.Tick(); }   // 원래는 foreach (null 이면 원래도 예외)
             ToggleTicks += System.Diagnostics.Stopwatch.GetTimestamp() - t0; ColCalls += all.Count;
             return false;
         }
@@ -388,6 +389,7 @@ namespace StutterFix
         }
         public static bool ColliderPrefix(bool __0)
         {
+            WindowGhost.Tick();
             if (retrying && __0) { RetrySkips++; return false; }
             return true;
         }

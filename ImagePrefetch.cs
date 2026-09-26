@@ -620,6 +620,7 @@ namespace StutterFix
         // 원래 RDFile.ReadAllBytes(path, out 상태)와 같은 모양이어야 한다. 성공이면 상태 0(게임이 캐시에 넣는 조건).
         public static byte[] ReadAllBytes(string path, out ADOFAI.LoadResult loadResult)
         {
+            WindowGhost.Tick();
             Item it = null;
             string why = null;
             if (running)
@@ -694,6 +695,7 @@ namespace StutterFix
 
         public static bool LoadImage(Texture2D tex, byte[] data)
         {
+            WindowGhost.Tick();
             Item it;
             long t0 = Stopwatch.GetTimestamp();
             if (data == null || markers == null || !markers.TryGetValue(data, out it))

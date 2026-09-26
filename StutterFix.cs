@@ -47,7 +47,9 @@ namespace StutterFix
             if (Config.FlipModel < 0) { Config.FlipModel = BootConfig.FlipNow() ? 1 : 0; try { Config.Save(modEntry); } catch { } }   // 처음: 지금 boot.config 상태를 따른다
             BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1);
             modEntry.Logger.Log(BootConfig.Describe());
+            WindowGhost.KeepResponsive = Config.NoGhosting;
             if (Config.NoGhosting) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
+            if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
             PerfOverlay.FrameStatsOff = !Config.FrameStats;
             // (개발자용 시험) 모드 폴더에 frame-stats-off 파일이 있으면 설정과 상관없이 끈다 - 설정을 건드리지 않고 켜고 끄며 비교하려고
             if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "frame-stats-off"))) { PerfOverlay.FrameStatsOff = true; modEntry.Logger.Log("[프레임 통계] frame-stats-off 파일이 있어 이번 실행은 끔"); }
@@ -337,6 +339,7 @@ namespace StutterFix
             Try(ParticleTextWatch.Shutdown);
             Try(RenderCallbackScan.Shutdown);
             Try(SlowScan.Shutdown);
+            Try(WindowGhost.StopWatch);
 
             foreach (var id in HarmonyIds)
                 Try(() => new Harmony(id).UnpatchAll(id));

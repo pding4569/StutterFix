@@ -261,9 +261,9 @@ namespace StutterFix
         // 재시작 시간 나누기 (Arche 한 판 뒤 재시작 8.8초 중 장면 초기화+재생 준비는 3.4초뿐이라 나머지를 찾으려고, 2026-09-26)
         internal static double RestartReportMs, RestartSceneMs, RestartPlayMs;
         private static double Ms(long from) { return (System.Diagnostics.Stopwatch.GetTimestamp() - from) * 1000.0 / System.Diagnostics.Stopwatch.Frequency; }
-        public static void PartPre(out long __state) { __state = System.Diagnostics.Stopwatch.GetTimestamp(); }
-        public static Exception ScenePost(long __state, Exception __exception) { if (RestartAt != 0) RestartSceneMs += Ms(__state); return __exception; }
-        public static Exception PlayPost(long __state, Exception __exception) { if (RestartAt != 0) RestartPlayMs += Ms(__state); return __exception; }
+        public static void PartPre(out long __state) { WindowGhost.Tick(); __state = System.Diagnostics.Stopwatch.GetTimestamp(); }
+        public static Exception ScenePost(long __state, Exception __exception) { WindowGhost.Tick(); if (RestartAt != 0) RestartSceneMs += Ms(__state); return __exception; }
+        public static Exception PlayPost(long __state, Exception __exception) { WindowGhost.Tick(); if (RestartAt != 0) RestartPlayMs += Ms(__state); return __exception; }
         internal static string RestartParts(double total)
         {
             double other = total - RestartReportMs - RestartGcMs - RestartSceneMs - RestartPlayMs;
