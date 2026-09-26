@@ -25,7 +25,8 @@ namespace StutterFix
     //        RDFile.ReadAllBytes(path)    -> 미리 풀어 둔 것이 있으면 그 표식을, 없으면 원래대로 읽기
     //        ImageConversion.LoadImage()  -> 표식이면 풀어 둔 픽셀을 그대로 넣기, 아니면 원래대로
     //      상태값, 이름, Apply, wrapMode 같은 나머지는 게임 코드 그대로 돈다.
-    // 미리 못 푼 것(16비트/흑백 PNG, JPG, 순서가 어긋난 것, 오류)은 전부 원래 방식으로 처리된다.
+    // JPG 는 libjpeg-turbo 로 푼다(TurboJpeg.cs, 유니티 결과와 바이트까지 같음을 확인).
+    // 미리 못 푼 것(순서가 어긋난 것, 지원하지 않는 형식, 오류)은 전부 원래 방식으로 처리된다.
     public static class ImagePrefetch
     {
         internal static bool Enabled = true;
@@ -42,6 +43,7 @@ namespace StutterFix
             public long Size;
             public float Factor = 1f;   // 큰 이미지 줄이기로 줄인 비율 (1 이면 그대로)
             public bool Extra;          // 추가 형식(흑백, 16비트)으로 푼 것: 개발자용에서 유니티 결과와 비교
+            public bool Jpg;            // libjpeg-turbo 로 푼 JPG
             public IntPtr Blocks; public long BlockSize; public bool Dxt5;   // 미리 압축한 DXT (없으면 Zero)
             // 줄 묶음 압축: 전체 블록 줄, 다음에 나눠 줄 줄, 끝난 줄, 지금 압축 중인 묶음 수, 압축 그만둠(게임이 먼저 가져감), 다 됨
             public int Rows, NextRow, DoneRows, InFlight, Layout; public bool Abandoned, BlocksReady, Urgent;   // Urgent: 게임이 기다리는 중
@@ -76,6 +78,9 @@ namespace StutterFix
             p = Extract("sfnative.dll");
             if (p == null) SfNative.Status = "모드 안에 DLL 없음"; else SfNative.Init(p);
             Main.Entry.Logger.Log("[이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): " + SfNative.Status);
+            p = Extract("turbojpeg.dll");
+            if (p == null) TurboJpeg.Status = "모드 안에 DLL 없음"; else TurboJpeg.Init(p);
+            Main.Entry.Logger.Log("[이미지] JPG 풀기(libjpeg-turbo): " + TurboJpeg.Status);
         }
 
         // 모드 DLL 안에 넣어 둔 네이티브 DLL 을 모드 폴더에 꺼내 두고 그 경로를 돌려준다(없으면 null). 이미 같은 파일이면 쓰지 않는다.
@@ -398,7 +403,9 @@ namespace StutterFix
                     }
                     string path = Path.Combine(dir, img);
                     if (seen.ContainsKey(path)) return;
-                    if (!path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)) return;   // JPG 등은 원래 방식
+                    // PNG 와 JPG 만 (어느 쪽으로 풀지는 파일 머리로 정한다. 이름만 .jpg 인 PNG 도 있다)
+                    bool jpgName = path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase);
+                    if (!path.EndsWith(".png", StringComparison.OrdinalIgnoreCase) && !(jpgName && TurboJpeg.Available)) return;
                     var it = new Item { Path = path, Index = list.Count };
                     seen[path] = it;
                     list.Add(it);
@@ -434,7 +441,8 @@ namespace StutterFix
                 // 코어 수(6개)로 늘리자 메인 스레드의 넣기가 1.9초 -> 3.6~3.9초, 전체 17.5 -> 18.7~19.6초로 느려졌다(낮은 우선순위여도
                 // 유니티의 렌더·잡 스레드와 코어를 나눠 쓴다). 그래서 코어 하나는 비워 두고, 스레드가 많은 CPU 는 최대 8개까지 쓴다.
                 int n = Math.Max(1, Math.Min(8, Environment.ProcessorCount - 1));
-                PngDecoder.ResetStats(); SfNative.ResetStats();
+                PngDecoder.ResetStats(); SfNative.ResetStats(); TurboJpeg.ResetStats(); jpgSeen = 0;
+                maxTexture = SystemInfo.maxTextureSize;   // 유니티는 이보다 큰 이미지를 못 올린다(JPG 는 원래 방식으로 넘겨 같은 오류가 나게 한다)
                 workers = new Thread[n];
                 for (int i = 0; i < n; i++)
                 {
@@ -469,7 +477,7 @@ namespace StutterFix
         private static void Work()
         {
             try { WorkLoop(); }
-            finally { NativeInflate.FreeThread(); }   // 스레드마다 둔 libdeflate 해독기와 풀 자리
+            finally { NativeInflate.FreeThread(); TurboJpeg.FreeThread(); }   // 스레드마다 둔 libdeflate·libjpeg-turbo 해독기와 풀 자리
         }
 
         private static void WorkLoop()
@@ -526,11 +534,16 @@ namespace StutterFix
                     continue;
                 }
 
-                int w = 0, h = 0, f = 0; IntPtr px = IntPtr.Zero; long size = 0; bool ok = false, extra = false; float factor = 1f;
+                int w = 0, h = 0, f = 0; IntPtr px = IntPtr.Zero; long size = 0; bool ok = false, extra = false, jpg = false; float factor = 1f;
                 try
                 {
                     int len = ReadInto(it.Path, ref fileBuf);
-                    ok = len > 0 && PngDecoder.TryDecode(fileBuf, len, ExtraFormats, out w, out h, out f, out px, out size, out extra);
+                    if (TurboJpeg.IsJpg(fileBuf, len))
+                    {
+                        jpg = true; f = PngDecoder.FormatRGB24;   // 유니티도 JPG 는 RGB24 로 만든다
+                        ok = TurboJpeg.TryDecode(fileBuf, len, maxTexture, out w, out h, out px, out size);
+                    }
+                    else ok = len > 0 && PngDecoder.TryDecode(fileBuf, len, ExtraFormats, out w, out h, out f, out px, out size, out extra);
                     long before = (long)w * h * 4;   // GPU 에는 한 픽셀 4바이트로 올라간다
                     if (ok && sideNow > 0 && PngDecoder.Downscale(ref px, ref w, ref h, f, ref size, sideNow, out factor))
                     {
@@ -556,7 +569,7 @@ namespace StutterFix
                     }
                     else if (ok)
                     {
-                        it.Width = w; it.Height = h; it.Format = f; it.Pixels = px; it.Size = size; it.Factor = factor; it.Extra = extra;
+                        it.Width = w; it.Height = h; it.Format = f; it.Pixels = px; it.Size = size; it.Factor = factor; it.Extra = extra; it.Jpg = jpg;
                         if (blocks != IntPtr.Zero)
                         {
                             it.Blocks = blocks; it.BlockSize = bsize; it.Dxt5 = d5; it.Layout = f == PngDecoder.FormatARGB32 ? 1 : f == PngDecoder.FormatRGB24 ? 2 : 0;
@@ -634,7 +647,7 @@ namespace StutterFix
                                 if (!it.BlocksReady) { it.Abandoned = true; lateCompress++; }
                             }
                             if (it.State == 2) { it.State = 4; pendingBytes -= it.Size + it.BlockSize; DropSkipped(it.Index); Monitor.PulseAll(gate); }
-                            else { it = null; why = "해독 못 함(지원하지 않는 PNG 형식이거나 오류)"; }
+                            else { it = null; why = "해독 못 함(지원하지 않는 형식이거나 오류)"; }
                         }
                     }
                     else why = "미리 풀기 목록에 없음";
@@ -698,6 +711,11 @@ namespace StutterFix
                     fallback++;
                     return ImageConversion.LoadImage(tex, File.ReadAllBytes(it.Path));
                 }
+                if (it.Jpg && Edition.Dev && it.Factor >= 1f && (jpgSeen++ < 16 || jpgSeen % 32 == 0) && !JpgMatches(it))
+                {
+                    fallback++;
+                    return ImageConversion.LoadImage(tex, File.ReadAllBytes(it.Path));
+                }
                 tex.Reinitialize(it.Width, it.Height, (TextureFormat)it.Format, false);
                 tex.LoadRawTextureData(it.Pixels, (int)it.Size);
                 if (it.Factor < 1f) shrunk[tex] = it.Factor;   // 스프라이트를 만들 때 크기 기준을 맞춘다
@@ -735,13 +753,41 @@ namespace StutterFix
         // 2026-09-26 확인: 16비트 RGBA(2692x2833), 흑백+알파(2000x2000) 모두 유니티 결과와 형식·바이트 전부 같음 -> 모두에게 켠다(개발자용은 계속 비교)
         internal static bool ExtraFormats = true;
         internal static int ExtraSame, ExtraDiff;
-        private static unsafe bool ExtraMatches(Item it)
+        private static bool ExtraMatches(Item it)
+        {
+            string desc;
+            string why = DiffFromUnity(it, out desc);
+            if (why == null) ExtraSame++; else ExtraDiff++;
+            Main.Entry.Logger.Log("[이미지] 추가 형식 확인 " + Path.GetFileName(it.Path) + " (" + desc + "): " + (why == null ? "유니티와 같음" : "다름 - " + why));
+            return why == null;
+        }
+
+        // (개발자용) libjpeg-turbo 로 푼 JPG 를 유니티로도 풀어 비교. 맵마다 앞 16장과 그 뒤 32장마다 한 장. 다를 때만 로그.
+        private static int jpgSeen;
+        private static int maxTexture = 16384;
+        private static bool JpgMatches(Item it)
+        {
+            string desc;
+            string why = DiffFromUnity(it, out desc);
+            Interlocked.Increment(ref TurboJpeg.DevChecks);
+            if (why != null)
+            {
+                Interlocked.Increment(ref TurboJpeg.DevMismatch);
+                Main.Entry.Logger.Log("[이미지] JPG 유니티와 다름 " + Path.GetFileName(it.Path) + " (" + desc + "): " + why + " -> 원래 방식으로");
+            }
+            return why == null;
+        }
+
+        // 같은 파일을 유니티 LoadImage 로 풀어 형식·크기·바이트 전체를 비교한다. 같으면 null, 다르면 까닭.
+        private static unsafe string DiffFromUnity(Item it, out string desc)
         {
             Texture2D u = null;
+            desc = "";
             try
             {
                 u = new Texture2D(2, 2, TextureFormat.RGBA32, false);
                 ImageConversion.LoadImage(u, File.ReadAllBytes(it.Path));
+                desc = u.format + " " + u.width + "x" + u.height;
                 string why = null;
                 if (u.format != (TextureFormat)it.Format) why = "형식 " + u.format + " / 우리 " + (TextureFormat)it.Format;
                 else if (u.width != it.Width || u.height != it.Height) why = "크기 " + u.width + "x" + u.height + " / 우리 " + it.Width + "x" + it.Height;
@@ -755,11 +801,9 @@ namespace StutterFix
                         for (int i = 0; i < raw.Length; i++) if (raw[i] != p[i]) { why = "바이트 " + i + " 번째부터 다름 (유니티 " + raw[i] + ", 우리 " + p[i] + ")"; break; }
                     }
                 }
-                if (why == null) ExtraSame++; else ExtraDiff++;
-                Main.Entry.Logger.Log("[이미지] 추가 형식 확인 " + Path.GetFileName(it.Path) + " (" + u.format + " " + u.width + "x" + u.height + "): " + (why == null ? "유니티와 같음" : "다름 - " + why));
-                return why == null;
+                return why;
             }
-            catch (Exception ex) { Main.Entry.Logger.Log("[이미지] 추가 형식 확인 실패: " + ex.Message); return false; }
+            catch (Exception ex) { return "확인 실패: " + ex.Message; }
             finally { if (u != null) UnityEngine.Object.Destroy(u); }
         }
 
@@ -775,7 +819,7 @@ namespace StutterFix
                 Main.Entry.Logger.Log("[이미지] " + Last);
                 double tk = Stopwatch.Frequency / 1000.0;
                 Main.Entry.Logger.Log(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
-                    workers.Length, PngDecoder.InflateTicks / tk, PngDecoder.FilterTicks / tk, PngDecoder.NewKinds, PngDecoder.NativeImages, PngDecoder.NativeFallbacks, NativeInflate.Status) + SfNative.Summary());
+                    workers.Length, PngDecoder.InflateTicks / tk, PngDecoder.FilterTicks / tk, PngDecoder.NewKinds, PngDecoder.NativeImages, PngDecoder.NativeFallbacks, NativeInflate.Status) + SfNative.Summary() + TurboJpeg.Summary());
                 Resilience.Phase("메뉴·편집");
             }
             Stop();

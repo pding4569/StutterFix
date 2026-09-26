@@ -32,6 +32,8 @@ namespace StutterFix
             {
                 if (!playing && songHighSec > 0)
                     Main.Entry.Logger.Log(string.Format("[화면 대기] 이번 판 {0}초 중 {1}초 동안 늘어나 있었음 (그때 평균 {2:F1}ms)", songSec, songHighSec, songHighWait / songHighSec));
+                string gpu = GpuSummary();
+                if (!playing && gpu != null) Main.Entry.Logger.Log(gpu);
                 wasPlaying = playing; secMs = secWait = 0; secN = 0; high = false; streak = 0; songSec = songHighSec = snaps = 0; songHighWait = 0;
             }
             if (!playing || ms > 500f) return;
@@ -41,6 +43,7 @@ namespace StutterFix
             secMs = secWait = 0; secN = 0;
             bool h = avgWait >= HighMs && avgWait >= avgMs * 0.15f;
             songSec++; if (h) { songHighSec++; songHighWait += avgWait; }
+            if (Edition.Dev) SampleGpu(h);
             if (h == high) { streak = 0; return; }
             if (++streak < 2) return;
             high = h; streak = 0;
@@ -62,6 +65,70 @@ namespace StutterFix
                 lock (pending) pending.Add(line);
                 busy = false;
             });
+        }
+
+        // ── (개발자용) 곡 중 GPU 클럭 (NVIDIA, GpuClock.cs) ──
+        // 1초마다 작업 스레드에서 한 번 읽어 판마다 모은다. 화면 대기가 늘었던 초와 아닌 초를 나눠 비교한다.
+        private static readonly object gpuLock = new object();
+        private static int gpuGen, gpuN, gpuIdle;
+        private static long gpuGr, gpuMem, gpuUtil;
+        private static uint gpuMin = uint.MaxValue, gpuMax;
+        private static readonly int[] gpuWaitN = new int[2];
+        private static readonly long[] gpuWaitGr = new long[2], gpuWaitMem = new long[2];
+        private static readonly SortedDictionary<int, int> gpuP = new SortedDictionary<int, int>();
+        private static volatile bool gpuBusy;
+
+        private static void SampleGpu(bool waitHigh)
+        {
+            if (gpuBusy) return;
+            gpuBusy = true;
+            int gen = gpuGen;
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                try
+                {
+                    var s = GpuClock.Read();
+                    if (!s.Ok) return;
+                    lock (gpuLock)
+                    {
+                        if (gen != gpuGen) return;   // 그 사이 판이 바뀌었다
+                        gpuN++; gpuGr += s.Gr; gpuMem += s.Mem; gpuUtil += s.Util;
+                        if (s.Gr < gpuMin) gpuMin = s.Gr;
+                        if (s.Gr > gpuMax) gpuMax = s.Gr;
+                        if ((s.Reasons & GpuClock.ReasonIdle) != 0) gpuIdle++;
+                        int k = waitHigh ? 1 : 0;
+                        gpuWaitN[k]++; gpuWaitGr[k] += s.Gr; gpuWaitMem[k] += s.Mem;
+                        int c; gpuP.TryGetValue(s.PState, out c); gpuP[s.PState] = c + 1;
+                    }
+                }
+                catch { }
+                finally { gpuBusy = false; }
+            });
+        }
+
+        // 판이 바뀔 때(메인 스레드): 모은 것을 한 줄로 만들고 비운다. 모은 게 없으면 null.
+        private static string GpuSummary()
+        {
+            lock (gpuLock)
+            {
+                gpuGen++;
+                string line = null;
+                if (gpuN > 0)
+                {
+                    var ps = new List<string>();
+                    foreach (var kv in gpuP) ps.Add((kv.Key >= 0 ? "P" + kv.Key : "?") + " " + kv.Value + "초");
+                    line = string.Format("[GPU 클럭] 이번 판 {0}초: 그래픽 평균 {1} MHz (최저 {2}, 최고 {3}), 메모리 평균 {4} MHz, 사용률 평균 {5}%, 성능 상태 {6}, 쉬는 중으로 클럭 내림 {7}초",
+                        gpuN, gpuGr / gpuN, gpuMin, gpuMax, gpuMem / gpuN, gpuUtil / gpuN, string.Join(", ", ps.ToArray()), gpuIdle);
+                    if (gpuWaitN[1] > 0)
+                        line += string.Format(" | 화면 대기 늘었을 때 {0}초: 그래픽 {1} / 메모리 {2} MHz", gpuWaitN[1], gpuWaitGr[1] / gpuWaitN[1], gpuWaitMem[1] / gpuWaitN[1]);
+                    if (gpuWaitN[0] > 0)
+                        line += string.Format(" | 대기 없을 때 {0}초: 그래픽 {1} / 메모리 {2} MHz", gpuWaitN[0], gpuWaitGr[0] / gpuWaitN[0], gpuWaitMem[0] / gpuWaitN[0]);
+                }
+                else if (Edition.Dev && GpuClock.Status != "사용 중" && GpuClock.Status != "안 불러옴") line = "[GPU 클럭] 못 읽음: " + GpuClock.Status;
+                gpuN = gpuIdle = 0; gpuGr = gpuMem = gpuUtil = 0; gpuMin = uint.MaxValue; gpuMax = 0;
+                gpuWaitN[0] = gpuWaitN[1] = 0; gpuWaitGr[0] = gpuWaitGr[1] = gpuWaitMem[0] = gpuWaitMem[1] = 0; gpuP.Clear();
+                return line;
+            }
         }
 
         // ── 설정 창 홈에 보일 안내 (사용자가 원인 프로그램을 알 수 있게) ──

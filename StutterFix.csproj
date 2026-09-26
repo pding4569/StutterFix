@@ -29,6 +29,8 @@
     <Compile Include="PerfOverlay.cs" />
     <Compile Include="PresentWatch.cs" />
     <Compile Include="SfNative.cs" />
+    <Compile Include="TurboJpeg.cs" />
+    <Compile Include="GpuClock.cs" />
     <Compile Include="FastJson.cs" />
     <Compile Include="FastJsonParser.cs" />
     <Compile Include="DecodeFix.cs" />
@@ -100,6 +102,8 @@
     <EmbeddedResource Include="native/libdeflate.dll" LogicalName="StutterFix.libdeflate.dll" />
     <!-- 이 모드의 C 코드(native/sfnative/sfnative.c): PNG 필터 되돌리기, DXT 압축. native/build-sfnative.bat 로 빌드 -->
     <EmbeddedResource Include="native/sfnative.dll" LogicalName="StutterFix.sfnative.dll" />
+    <!-- libjpeg-turbo 3.2.0 (BSD 계열, native/libjpeg-turbo-LICENSE.md): JPG 장식 이미지 풀기. native/build-turbojpeg.bat 로 빌드 -->
+    <EmbeddedResource Include="native/turbojpeg.dll" LogicalName="StutterFix.turbojpeg.dll" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -34,7 +34,7 @@ namespace StutterFix
             { "TweenFix", new[] { "TweenGuard" } }, { "ZeroTween", new[] { "ZeroTween" } }, { "InstantMove", new[] { "InstantDirect" } },
             { "FastMove", new[] { "FastLoop" } }, { "Precheck", new[] { "Precheck" } }, { "DecoAnim", new[] { "DecoAnim" } },
             { "MoveApply", new[] { "MoveFinish" } }, { "Dormancy", new[] { "DormantSkip" } }, { "TextFix", new[] { "SkipSameText" } },
-            { "ImagePrefetch", new[] { "ImagePrefetch" } }, { "PngDecoder", new[] { "ImagePrefetch" } }, { "TexCompress", new[] { "ImagePrefetch" } }, { "DxtEncoder", new[] { "ImagePrefetch" } }, { "SfNative", new[] { "ImagePrefetch" } },
+            { "ImagePrefetch", new[] { "ImagePrefetch" } }, { "PngDecoder", new[] { "ImagePrefetch" } }, { "TexCompress", new[] { "ImagePrefetch" } }, { "DxtEncoder", new[] { "ImagePrefetch" } }, { "SfNative", new[] { "ImagePrefetch" } }, { "TurboJpeg", new[] { "ImagePrefetch" } },
             { "ShaderWarm", new[] { "ShaderWarm" } }, { "FastBlend", new[] { "FastBlend" } }, { "InvisibleSkip", new[] { "SkipInvisible" } },
             { "ParticleFix", new[] { "SkipIdleParticles", "LowPauseParticles" } }, { "LeakGuard", new[] { "LeakFix" } }, { "LoadFix", new[] { "LoadCache" } },
             { "Fsr", new[] { "LowFsr" } }, { "HalfRender", new[] { "LowHalfRender" } }, { "LowEnd", new[] { "LowEnd" } },
