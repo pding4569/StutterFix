@@ -11,6 +11,8 @@ namespace StutterFix
     // 같은 계산을 C 로 옮겼다. 결과 검증(2026-09-26):
     //   필터 되돌리기: 맵 폴더 PNG 전부의 모든 줄에서 C# 결과와 바이트 비교
     //   DXT: Arche 이미지 251장, 블록 6,280만 개 전부 C# 과 같음, 원본 대비 오차 같음
+    // DXT 압축은 ISPC(인텔 SPMD 컴파일러)로 같은 계산을 블록 여러 개씩 동시에 한다(native/sfnative/sfdxt.ispc, CPU 에 따라 SSE2/SSE4.1/AVX2).
+    //   2026-09-27: Arche 이미지 251장 블록 6,280만 개가 세 경로 모두 C# 과 전부 같음. 10억 픽셀 11.9초 -> AVX2 3.5초(SSE4.1 5.9, SSE2 8.4).
     // 개발자용은 곡 불러오기 중 일부 호출을 C# 으로도 해서 계속 비교한다(다르면 로그).
     // DLL 을 못 불러오면 Ready 가 false 로 남고 C# 길을 쓴다.
     internal static unsafe class SfNative

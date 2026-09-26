@@ -5,7 +5,9 @@
  *   sf_dxt_encode_rows                    : DXT1/DXT5 block compression (same algorithm as DxtEncoder.EncodeRows)
  *
  * Integer code gives bit-identical results to the C# versions. The principal-axis search in the DXT colour encoder uses
- * float like the C# code; rounding may differ in rare blocks, so the DXT output is checked for quality, not bit equality.
+ * float like the C# code; in the checks so far every block was identical, and quality is checked as well.
+ * sf_dxt_encode_rows runs the ISPC version (sfdxt.ispc, one block per SIMD lane, SSE2/SSE4.1/AVX2 picked at run time);
+ * sf_dxt_encode_rows_ref is the scalar version it was checked against block by block.
  * Written for StutterFix (MIT). Build: native/build-sfnative.bat
  */
 #include <stdint.h>
@@ -318,8 +320,18 @@ static void encode_alpha(const uint8_t* p, uint8_t* dst)
     for (k = 0; k < 6; k++) dst[2 + k] = (uint8_t)(bits >> (8 * k));
 }
 
+/* The same encoder in ISPC (sfdxt.ispc): one block per SIMD lane, SSE2 / SSE4 / AVX2 picked at run time. */
+extern void sf_dxt_rows_ispc(const uint8_t* src, int w, int h, int layout, int dxt5, uint8_t* dst, int by0, int by1,
+                             const uint8_t* o5a, const uint8_t* o5b, const uint8_t* o6a, const uint8_t* o6b);
+
 /* layout: 0 = RGBA32, 1 = ARGB32, 2 = RGB24. Compresses block rows by0..by1-1; dst is the start of the whole output. */
 SF_API void sf_dxt_encode_rows(const uint8_t* src, int w, int h, int layout, int dxt5, uint8_t* dst, int by0, int by1)
+{
+    sf_dxt_rows_ispc(src, w, h, layout, dxt5, dst, by0, by1, O5a, O5b, O6a, O6b);
+}
+
+/* Scalar reference (the encoder before ISPC). Kept for the block-by-block comparison in the test harness. */
+SF_API void sf_dxt_encode_rows_ref(const uint8_t* src, int w, int h, int layout, int dxt5, uint8_t* dst, int by0, int by1)
 {
     int bpp = layout == 2 ? 3 : 4;
     int ro = layout == 1 ? 1 : 0, go = ro + 1, bo = ro + 2, ao = layout == 1 ? 0 : 3;
