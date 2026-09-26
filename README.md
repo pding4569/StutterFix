@@ -8,6 +8,8 @@
 
 made by **naro** & **Claude**
 
+**디스코드 서버: [discord.gg/csys9ZAeD6](https://discord.gg/csys9ZAeD6)** — 버그 제보, 기능 아이디어, 질문 모두 여기로 받습니다.
+
 ## 한눈에 보기
 
 | 맵 | 바뀐 것 | 측정 |
@@ -191,7 +193,7 @@ made by **naro** & **Claude**
 
 ## 문제 보고
 
-끊기거나 오류가 났다면 설정 창 **정보 → 로그 파일 만들기**(또는 UMM 모드 설정의 **문제 보고용 로그 만들기**)를 누르세요. 바탕화면에 `StutterFix-log-날짜.zip`이 생깁니다. 이 파일을 디스코드 **narooh** 에게 DM 으로 보내 주세요.
+끊기거나 오류가 났다면 설정 창 **정보 → 로그 파일 만들기**(또는 UMM 모드 설정의 **문제 보고용 로그 만들기**)를 누르세요. 바탕화면에 `StutterFix-log-날짜.zip`이 생깁니다. 이 파일을 [모드 디스코드 서버](https://discord.gg/csys9ZAeD6)에 올리거나 디스코드 **narooh** 에게 DM 으로 보내 주세요. 기능 아이디어나 질문도 디스코드 서버로 받습니다.
 
 들어가는 것: 컴퓨터 사양, 이 모드 설정, 설치된 모드 목록, 게임 로그(이번 실행과 직전 실행), 실시간 모니터의 끊김 기록. 로그 안의 윈도우 사용자 이름은 가려지고, 자동으로 어디에 올리지는 않습니다.
 
@@ -279,6 +281,8 @@ Stutter Fix reduces mid-play hitches and level loading times on heavy custom lev
 
 **Live monitor:** FPS, CPU/GPU/VRAM/RAM and hitch alerts with an estimated cause.
 
-**Bug reports:** Settings window → About → *Create log file* makes `StutterFix-log-<date>.zip` on your desktop (your Windows user name is hidden). Send that file to **narooh** on Discord (DM).
+**Bug reports:** Settings window → About → *Create log file* makes `StutterFix-log-<date>.zip` on your desktop (your Windows user name is hidden). Post that file on the [mod's Discord server](https://discord.gg/csys9ZAeD6) or send it to **narooh** on Discord (DM).
+
+**Discord server:** [discord.gg/csys9ZAeD6](https://discord.gg/csys9ZAeD6) — bug reports, feature ideas and questions are all welcome.
 
 **Third-party code:** libdeflate 1.24 (MIT), libjpeg-turbo 3.2.0 (IJG / BSD-3-Clause / zlib; this software is based in part on the work of the Independent JPEG Group), AMD FidelityFX Super Resolution 1 (MIT).

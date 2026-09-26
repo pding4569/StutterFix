@@ -48,6 +48,9 @@ namespace StutterFix
 
         internal static string T(string ko, string en) { return English ? en : ko; }
 
+        // 모드 디스코드 서버: 버그 제보, 기능 아이디어 (Info.json 의 HomePage, README 와 같은 주소)
+        internal const string DiscordUrl = "https://discord.gg/csys9ZAeD6";
+
         // ── 색 ─────────────────────────────────────────────────────────
         private static Color Hex(int rgb, float a = 1f) { return new Color(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f, a); }
         private static readonly Color Page = Hex(0xF4F4F6), CardC = Hex(0xFFFFFF), Edge = Hex(0xE9E9EE), EdgeHover = Hex(0xD6D6DD),
@@ -1111,14 +1114,16 @@ namespace StutterFix
             GUILayout.BeginVertical(sCard);
             GUILayout.Label(T("문제 보고용 로그 만들기", "Create a log for bug reports"), sBody);
             GUILayout.Space(4);
-            GUILayout.Label(T("게임이 끊기거나 오류가 났다면, 그 판을 끝낸 뒤(게임이 튕겼다면 다시 켠 뒤) 눌러 주세요. 바탕화면에 zip 파일이 생기고, 그 파일을 디스코드 <b>narooh</b> 에게 DM 으로 보내 주세요. 사양, 설정, 모드 목록, 게임 로그, 끊김 기록이 들어가며 윈도우 사용자 이름은 가려집니다.",
-                "If you hit a stutter or an error, press this after that run (or after restarting if the game crashed). A zip file appears on your desktop; send it to <b>narooh</b> on Discord (DM). It contains specs, settings, the mod list, game logs and the hitch record, with your Windows user name hidden."), sLead);
+            GUILayout.Label(T("게임이 끊기거나 오류가 났다면, 그 판을 끝낸 뒤(게임이 튕겼다면 다시 켠 뒤) 눌러 주세요. 바탕화면에 zip 파일이 생기고, 그 파일을 <b>모드 디스코드 서버</b>에 올리거나 디스코드 <b>narooh</b> 에게 DM 으로 보내 주세요. 사양, 설정, 모드 목록, 게임 로그, 끊김 기록이 들어가며 윈도우 사용자 이름은 가려집니다.",
+                "If you hit a stutter or an error, press this after that run (or after restarting if the game crashed). A zip file appears on your desktop; post it on the <b>mod's Discord server</b> or send it to <b>narooh</b> on Discord (DM). It contains specs, settings, the mod list, game logs and the hitch record, with your Windows user name hidden."), sLead);
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(T("로그 파일 만들기", "Create log file"), sPrimary, GUILayout.Width(170), GUILayout.Height(38)))
             {
                 if (LogExport.Export() != null) LogExport.Reveal();
             }
+            GUILayout.Space(10);
+            if (GUILayout.Button(T("디스코드 서버 열기", "Open Discord server"), sChip, GUILayout.Height(38), GUILayout.ExpandWidth(false))) Application.OpenURL(DiscordUrl);
             GUILayout.Space(10);
             if (LogExport.LastPath.Length > 0 && GUILayout.Button(T("폴더 열기", "Show file"), sChip, GUILayout.Height(38), GUILayout.ExpandWidth(false))) LogExport.Reveal();
             GUILayout.FlexibleSpace();
@@ -1144,6 +1149,7 @@ namespace StutterFix
                     "Turning the mod off in UMM reverts everything immediately. Multithreaded rendering reverts on the next launch."),
                 T("그래도 끊긴다면", "Still stuttering?"), T("필터가 아주 많이 겹치는 구간은 그래픽카드 한계이고, 백그라운드 프로그램이 순간 끊김을 만들 수도 있습니다. 원격 데스크톱(StarDesk 등)·화면 녹화 프로그램이 켜져 있으면 판마다 FPS 가 크게 떨어질 수 있으니 게임할 때는 끄세요.",
                     "Scenes stacking many full-screen filters are limited by the GPU, and background apps can cause occasional hitches. Remote desktop (StarDesk etc.) or screen recording apps can drop FPS a lot in some runs; close them while playing."),
+                T("디스코드 서버", "Discord server"), T("discord.gg/csys9ZAeD6 — 버그 제보, 기능 아이디어, 질문", "discord.gg/csys9ZAeD6 — bug reports, feature ideas, questions"),
                 T("소스", "Source"), "github.com/pding4569/StutterFix",
             });
             GUILayout.Space(4);

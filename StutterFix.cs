@@ -526,8 +526,12 @@ namespace StutterFix
             }
             string lr = LogExport.LastError.Length > 0 ? SettingsWindow.T("   만들지 못했습니다: ", "   Failed: ") + LogExport.LastError
                 : LogExport.LastPath.Length > 0 ? SettingsWindow.T("   바탕화면에 만들었습니다: ", "   Saved to desktop: ") + System.IO.Path.GetFileName(LogExport.LastPath)
-                : SettingsWindow.T("   끊김이나 오류가 있었다면 눌러서 생긴 zip 파일을 디스코드 <b>narooh</b> 에게 DM 으로 보내 주세요.", "   After a stutter or error, press it and send the zip file to <b>narooh</b> on Discord (DM).");
+                : SettingsWindow.T("   끊김이나 오류가 있었다면 눌러서 생긴 zip 파일을 모드 디스코드 서버에 올리거나 <b>narooh</b> 에게 DM 으로 보내 주세요.", "   After a stutter or error, press it and post the zip file on the mod's Discord server or send it to <b>narooh</b> (DM).");
             GUILayout.Label(lr, GUILayout.Height(30));
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(SettingsWindow.T("디스코드 서버 열기", "Open Discord server"), GUILayout.Width(160), GUILayout.Height(30))) Application.OpenURL(SettingsWindow.DiscordUrl);
+            GUILayout.Label(SettingsWindow.T("   버그 제보, 기능 아이디어, 질문: ", "   Bug reports, feature ideas, questions: ") + "discord.gg/csys9ZAeD6", GUILayout.Height(30));
             GUILayout.EndHorizontal();
         }
 
