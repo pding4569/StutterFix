@@ -99,13 +99,44 @@ namespace StutterFix
         }
         internal static void Close() { if (latencyDup != IntPtr.Zero) { CloseHandle(latencyDup); latencyDup = IntPtr.Zero; } }
 
+        // ── DXGI 스왑체인의 최대 대기 프레임 수 (IDXGISwapChain2, 전역 설정 S+0x328) ──
+        // 유니티 SetMaximumFrameLatencyForWaitableObject 가 이 포인터의 가상 함수 0x100(GetMaximumFrameLatency), 0xF8(SetMaximumFrameLatency),
+        // 0x108(GetFrameLatencyWaitableObject) 을 부른다(IDXGISwapChain2 의 32, 31, 33번째 함수와 같음).
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)] private delegate int GetLatencyFn(IntPtr self, out uint v);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)] private delegate int SetLatencyFn(IntPtr self, uint v);
+        private static long SwapChain() { return Resolve() ? Ptr(settings + 0x328) : 0; }
+        private static long VtblFn(long obj, int offset) { long vt = Ptr(obj); return vt == 0 ? 0 : Ptr(vt + offset); }
+
+        internal static int DxgiMaxLatency()
+        {
+            try
+            {
+                long sc = SwapChain(); long fn = VtblFn(sc, 0x100);
+                if (sc == 0 || fn == 0) return -1;
+                uint v; int hr = Marshal.GetDelegateForFunctionPointer<GetLatencyFn>((IntPtr)fn)((IntPtr)sc, out v);
+                return hr >= 0 ? (int)v : -2;
+            }
+            catch { return -3; }
+        }
+
+        internal static int SetDxgiMaxLatency(uint v)
+        {
+            try
+            {
+                long sc = SwapChain(); long fn = VtblFn(sc, 0xF8);
+                if (sc == 0 || fn == 0) return -1;
+                return Marshal.GetDelegateForFunctionPointer<SetLatencyFn>((IntPtr)fn)((IntPtr)sc, v);
+            }
+            catch { return -3; }
+        }
+
         internal static string Snapshot()
         {
             try
             {
                 if (!Resolve()) return "[프레임 대기 상태] 못 읽음: " + status;
                 byte waitable = U8(settings + 0x360);
-                return string.Format("[프레임 대기 상태] 방식 {0} | 최대 대기 프레임 {1} | 쿼리 목록 {2}개 | 빚 {3} | 세마포어 {4} | 스왑체인 대기 객체 {5} | 프레임 기다림 {6}/{7}",
+                return string.Format("[프레임 대기 상태] 방식 {0} | 최대 대기 프레임 {1} (DXGI " + DxgiMaxLatency() + ") | 쿼리 목록 {2}개 | 빚 {3} | 세마포어 {4} | 스왑체인 대기 객체 {5} | 프레임 기다림 {6}/{7}",
                     waitable == 1 ? "스왑체인 대기 객체" : waitable == 0 ? "세마포어" : "?(" + waitable + ")",
                     I32(device + 0x1EAC), Ptr(device + 0x6748), I32(device + 0x6758), Sem(Ptr(device + 0x6750)), LatencyCount(),
                     Ptr(device + 0x5E68), Ptr(device + 0x5E70));
