@@ -31,6 +31,7 @@
     <Compile Include="SfNative.cs" />
     <Compile Include="FastJson.cs" />
     <Compile Include="FastJsonParser.cs" />
+    <Compile Include="DecodeFix.cs" />
     <Compile Include="SystemMonitor.cs" />
     <Compile Include="UiInputBlock.cs" />
     <Compile Include="ModCost.cs" />

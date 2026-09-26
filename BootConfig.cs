@@ -73,9 +73,18 @@ namespace StutterFix
                 changed |= Set(lines, JobsKey, enable ? JobsValue : null);
                 if (originalMode != null) changed |= Set(lines, ModeKey, originalMode);   // 예전 버전이 3으로 바꿔 둔 것을 되돌린다
 
-                if (changed)
+                // 줄 끝은 원래 파일 그대로(게임의 boot.config 는 LF). 예전에는 File.WriteAllLines 가 CRLF 로 바꿔 썼는데,
+                // 그러면 "force-d3d11-bitblt-model=" 처럼 값이 빈 줄이 "\r" 값이 되어, 게임이 예전 방식(BitBlt) 스왑체인으로
+                // 화면을 내보냈다(PresentMon: 9/20 원본 "Composed: Flip" -> 지금 "Composed: Copy with GPU GDI"). 이미 CRLF 로 바뀐 파일도 고친다.
+                string nl = "\n";
+                try { string src = File.ReadAllText(File.Exists(BackupPath) ? BackupPath : path); if (src.Contains("\r\n")) nl = "\r\n"; } catch { }   // 원본(백업)의 줄 끝
+                bool repair = false;
+                try { repair = nl == "\n" && File.ReadAllText(path).IndexOf('\r') >= 0; } catch { }
+
+                if (changed || repair)
                 {
-                    File.WriteAllLines(path, lines.ToArray());
+                    File.WriteAllText(path, string.Join(nl, lines.ToArray()) + nl);
+                    if (repair && !changed) Main.Entry.Logger.Log("boot.config 줄 끝을 원래대로(LF) 고침 (다음 실행부터 적용)");
                     Main.Entry.Logger.Log("boot.config 수정: " + (enable ? JobsKey + "=" + JobsValue + " 추가" : JobsKey + " 제거") + " (다음 실행부터 적용)");
                     Status = Describe() + " | 다음 실행부터 적용됩니다";
                 }
