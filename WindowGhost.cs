@@ -28,7 +28,7 @@ namespace StutterFix
     // 멈춘 창으로 판정하고(IsHungAppWindow), 느린 상태는 이 판정 자체에서 생기는 것으로 본다. 그래서 긴 프레임 동안 모드가 이미 걸어 둔
     // 자리(장식 이미지 파일 시각, 충돌 상자 켜고 끄기, 이미지 넣기, 장면 되돌리기·재생 준비 앞뒤)에서, 프레임이 0.5초를 넘으면 0.5초마다
     // 입력 큐를 확인만 한다(PeekMessage, PM_NOREMOVE | PM_QS_INPUT). 꺼내지 않으므로 입력은 게임이 원래처럼 다음 프레임에 처리한다.
-    // 시험(C:SFBundleHungTest, UI 스레드를 8초 멈추고 1초마다 호출, IsHungAppWindow 를 0.05초마다 확인):
+    // 시험(C:\SFBundle\HungTest, UI 스레드를 8초 멈추고 1초마다 호출, IsHungAppWindow 를 0.05초마다 확인):
     //   아무것도 안 함 / 게시된 메시지만 확인(PM_QS_POSTMESSAGE) / 보낸 것만 / GetInputState / GetQueueStatus -> 판정됨
     //   MsgWaitForMultipleObjectsEx 0ms -> 입력이 쌓여 있으면 판정됨
     //   PeekMessage 입력만(PM_QS_INPUT) 또는 전부 -> 입력이 쌓여 있어도 판정 안 됨
