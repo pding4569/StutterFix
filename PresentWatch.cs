@@ -34,7 +34,6 @@ namespace StutterFix
                     Main.Entry.Logger.Log(string.Format("[화면 대기] 이번 판 {0}초 중 {1}초 동안 늘어나 있었음 (그때 평균 {2:F1}ms)", songSec, songHighSec, songHighWait / songHighSec));
                 string gpu = GpuSummary();
                 if (!playing && gpu != null) Main.Entry.Logger.Log(gpu);
-
                 wasPlaying = playing; secMs = secWait = 0; secN = 0; high = false; streak = 0; songSec = songHighSec = snaps = 0; songHighWait = 0;
             }
             if (!playing || ms > 500f) return;
@@ -70,6 +69,11 @@ namespace StutterFix
 
         // ── (개발자용) 곡 중 GPU 클럭 (NVIDIA, GpuClock.cs) ──
         // 1초마다 작업 스레드에서 한 번 읽어 판마다 모은다. 화면 대기가 늘었던 초와 아닌 초를 나눠 비교한다.
+        // 2026-09-26 Arche 첫 판/두 번째 판: 대기 1.7ms / 0, 클럭 2566 / 2706 MHz, 사용률 33 / 46%, "쉬어서 클럭 내림" 30초 중 30 / 72초 중 5.
+        //   PresentMon: 첫 판은 모든 프레임이 약 1.65ms 씩 통째로 길다(분포 모양 같음). 메인 스레드가 방금 넘긴 프레임을 GPU 가 끝낼 때까지
+        //   (화면 넘긴 뒤 1.3ms + 깨어나는 시간) 기다리는 모양 = 한 프레임도 앞서 준비하지 않음. 두 번째 판은 한 프레임 앞서 준비한다.
+        //   곡 중 QualitySettings.maxQueuedFrames 2 -> 3 -> 2 로 바꿔 봐도 1.70 / 1.71 / 1.71ms 그대로(게임 쪽 설정이 아님).
+        //   이 PC 는 NVIDIA 저지연 모드 "켜기"(드라이버가 미리 준비하는 프레임을 1개로 제한). 클럭이 낮은 것은 대기 탓에 GPU 가 더 쉬어서 생긴 결과로 본다.
         private static readonly object gpuLock = new object();
         private static int gpuGen, gpuN, gpuIdle;
         private static long gpuGr, gpuMem, gpuUtil;
