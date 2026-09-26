@@ -73,24 +73,33 @@ namespace StutterFix
         // ── (개발자용 시험) 스왑체인 대기 객체 여유분 돌려주기 ──
         // 느린 판(화면 대기 1.7ms)이 2초 이어지면 곡마다 한 번 대기 객체 세마포어를 하나 올리고, 그 뒤 2초의 대기를 적는다.
         private static int gbState, gbStreak, gbAfter; private static float gbBefore; private static int gbPrev;
+        // 2026-09-27 확인: 느린 판 5초 뒤 메인 스레드를 3초 멈추자 대기 1.70ms -> 0.00ms, 그 뒤 319 FPS (풀림).
+        // 풀리는 최소 멈춤을 찾는다: 느린 판 2초면 0.1 -> 0.25 -> 0.5 -> 1 -> 2 -> 3초 순서로 멈추고, 멈출 때마다 2초를 재어 풀렸으면 멈춘다.
+        private static readonly int[] gbSleeps = { 100, 250, 500, 1000, 2000, 3000 };
+        private static int gbStep;
         private static void GiveBackStep(bool high, float wait)
         {
-            if (songSec == 1) { gbState = 0; gbStreak = 0; }
+            if (songSec == 1) { gbState = 0; gbStreak = 0; gbStep = 0; }
             if (gbState == 0)
             {
                 gbStreak = high ? gbStreak + 1 : 0;
-                if (gbStreak < 5) return;
-                // 느린 판 5초: 메인 스레드를 3초 멈춰 본다("다시 하기" 의 3초 멈춤만으로 풀리는지)
-                // (DXGI 최대 대기 프레임 3 으로 올리기는 효과 없었음: 2 -> 3 -> 2 에서 1.70 / 1.71 / 1.70ms)
-                gbBefore = wait; gbState = 1; gbAfter = 0;
-                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 느린 판 5초: 3초 멈춤 시작, 대기 {0:F2}ms", wait));
-                System.Threading.Thread.Sleep(3000);
+                if (gbStreak < 2) return;
+                gbBefore = wait; gbState = 1;
+            }
+            if (gbState == 1)
+            {
+                int ms = gbSleeps[gbStep];
+                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 느린 판: {0}ms 멈춤, 대기 {1:F2}ms", ms, wait));
+                System.Threading.Thread.Sleep(ms);
+                gbState = 2; gbAfter = 0;
                 return;
             }
-            if (gbState == 1 && ++gbAfter >= 3)   // 멈춘 프레임이 낀 첫 1초는 넘기고
+            if (gbState == 2 && ++gbAfter >= 2)   // 멈춘 프레임이 낀 1초는 넘기고 다음 1초
             {
-                gbState = 2;
-                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] 3초 멈춘 뒤: 대기 {0:F2}ms -> {1:F2}ms ({2})", gbBefore, wait, wait < 0.3f ? "풀림" : "그대로"));
+                bool freed = wait < 0.3f;
+                Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험] {0}ms 멈춘 뒤: 대기 {1:F2}ms ({2})", gbSleeps[gbStep], wait, freed ? "풀림" : "그대로"));
+                if (freed || ++gbStep >= gbSleeps.Length) { gbState = 3; return; }
+                gbState = 1;
             }
         }
 
