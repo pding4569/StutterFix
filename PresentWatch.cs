@@ -44,6 +44,7 @@ namespace StutterFix
             secMs = secWait = 0; secN = 0;
             bool h = avgWait >= HighMs && avgWait >= avgMs * 0.15f;
             songSec++; if (h) { songHighSec++; songHighWait += avgWait; }
+            if (Edition.Dev && (songSec == 3 || songSec == 8)) Main.Entry.Logger.Log(GfxProbe.Snapshot() + string.Format(" (곡 {0}초, 화면 대기 {1:F2}ms)", songSec, avgWait));
             if (Edition.Dev) SampleGpu(h);
             if (h == high) { streak = 0; return; }
             if (++streak < 2) return;
