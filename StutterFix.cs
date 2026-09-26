@@ -47,6 +47,7 @@ namespace StutterFix
             if (Config.FlipModel < 0) { Config.FlipModel = BootConfig.FlipNow() ? 1 : 0; try { Config.Save(modEntry); } catch { } }   // 처음: 지금 boot.config 상태를 따른다
             BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1);
             modEntry.Logger.Log(BootConfig.Describe());
+            WindowGhost.MainThread = Environment.CurrentManagedThreadId;
             WindowGhost.KeepResponsive = Config.NoGhosting;
             if (Config.NoGhosting) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
             if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
@@ -148,6 +149,7 @@ namespace StutterFix
                 RestartAdvisor.StartReopen();
                 PerfOverlay.Create();
                 Try(() => PerfOverlay.Install(harmony));
+                Try(() => WindowGhost.Install(harmony));   // 긴 전환 중 윈도우 멈춘 창 판정 막기 자리 더하기
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)

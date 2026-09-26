@@ -634,7 +634,7 @@ namespace StutterFix
                         if (it.State == 0) { it.State = 3; notReady++; it = null; why = "순서 어긋남"; }
                         else
                         {
-                            while (it.State == 1 && running) Monitor.Wait(gate, 100);
+                            while (it.State == 1 && running) { Monitor.Wait(gate, 100); WindowGhost.Tick(); }
                             // 압축이 절반 넘게 됐으면 모든 작업 스레드가 이것부터 마저 하도록 하고 기다린다. 절반도 안 됐으면 그만두고 원래대로(유니티 압축).
                             if (it.State == 2 && it.Blocks != IntPtr.Zero && !it.BlocksReady && !it.Abandoned)
                             {
@@ -642,7 +642,7 @@ namespace StutterFix
                                 {
                                     long w0 = Stopwatch.GetTimestamp();
                                     it.Urgent = true; Monitor.PulseAll(gate);
-                                    while (running && !it.BlocksReady && !it.Abandoned) Monitor.Wait(gate, 20);
+                                    while (running && !it.BlocksReady && !it.Abandoned) { Monitor.Wait(gate, 20); WindowGhost.Tick(); }
                                     compressWaitMs += (Stopwatch.GetTimestamp() - w0) * 1000.0 / Stopwatch.Frequency;
                                 }
                                 if (!it.BlocksReady) { it.Abandoned = true; lateCompress++; }

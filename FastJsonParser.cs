@@ -7,6 +7,7 @@ namespace StutterFix
     // 게임의 JSON 해석기(Json.Deserialize)와 같은 결과를 내는 빠른 해석기. 설명과 규칙은 FastJson.cs. 유니티·Harmony 를 쓰지 않는다(검증 도구가 같은 파일을 쓴다).
     internal static class FastJsonParser
     {
+        internal static Action Progress;   // 긴 해석 중 가끔 부른다(모드: 윈도우 멈춘 창 판정 막기, WindowGhost). 검증 도구에서는 null
         // 원래 해석기는 배열 값 자리에 ':' 가 오면 그 글자를 읽지 않고 null 을 계속 넣어 끝나지 않는다(원래 게임도 같음, 여기도 같게 둠).
         // 검증 도구는 한도를 두어 그런 입력을 알아본다. 게임에서는 int.MaxValue(원래와 같이 메모리가 찰 때까지).
         internal static int ArrayLimit = int.MaxValue;
@@ -89,6 +90,7 @@ namespace StutterFix
                     if (t == 0) return null;
                     if (t == 2) return table;
                     if (t == 6) continue;
+                    var pg = Progress; if (pg != null) pg();
                     string name = ParseString();
                     if (NextToken() != 5) return null;
                     Read();   // ':'
@@ -106,6 +108,7 @@ namespace StutterFix
                     if (t == 0) return null;
                     if (t == 4) return array;
                     if (t == 6) continue;
+                    var pg = Progress; if (pg != null) pg();
                     array.Add(ParseByToken(t));
                     if (array.Count > ArrayLimit) throw new InvalidOperationException(HangMessage);   // 검증 도구용 (기본은 한도 없음)
                 }

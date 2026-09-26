@@ -15,6 +15,7 @@ namespace StutterFix
     internal static class DecodeFix
     {
         internal static bool Enabled = true;
+        internal static Action Progress;   // 이벤트를 읽는 동안 가끔 부른다(윈도우 멈춘 창 판정 막기, WindowGhost)
         internal static long Hits, Misses;
         private static readonly object sync = new object();
         private static readonly Dictionary<Type, Dictionary<int, object>> byInt = new Dictionary<Type, Dictionary<int, object>>();
@@ -53,6 +54,7 @@ namespace StutterFix
 
         public static object ToObject(Type enumType, int value)
         {
+            var pg = Progress; if (pg != null) pg();
             if (!Enabled || enumType == null) return Enum.ToObject(enumType, value);
             object o;
             lock (sync)
@@ -72,6 +74,7 @@ namespace StutterFix
 
         public static object Parse(Type enumType, string value)
         {
+            var pg = Progress; if (pg != null) pg();
             if (!Enabled || enumType == null || value == null) return Enum.Parse(enumType, value);
             object o;
             lock (sync)
