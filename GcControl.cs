@@ -481,6 +481,15 @@ namespace StutterFix
             if (ramMB == 0) { try { ramMB = SystemInfo.systemMemorySize; } catch { ramMB = -1; } }   // 바뀌지 않으므로 한 번만
             if (ramMB > 0) limit = Mathf.Min(limit, Mathf.Max(1500, ramMB * 2 / 5));
             if (!playing) limitSlicing = false;
+            // 조금씩 치워서 한계의 절반 아래로 내려오면 다시 곡 중 정리를 멈춘다.
+            // 2026-09-27 저사양 사용자 로그(Ryzen 7 5825U, RAM 16GB, 25분 넘는 곡): 곡 1457초에 힙 6GB 한계 -> 조금씩 치우기로 바뀐 뒤
+            // 곡이 끝날 때까지 계속 치워서, 치우기 한 바퀴가 끝날 때마다(약 8초) 80ms 씩 멈췄다("중반부터 계속 멈춤"). 곡 끝 힙은 1.2GB 였다.
+            // 멈추면 힙이 다시 한계까지 차는 데 한참 걸리므로(그 곡은 초당 약 3MB) 긴 곡에서도 가끔 한 번씩만 치운다.
+            if (limitSlicing && playing && heapNow < limit / 2)
+            {
+                limitSlicing = false;
+                Main.Entry.Logger.Log("[GC] 곡 중 조금씩 치우기로 힙 " + heapNow + "MB (한계 " + limit + "MB 의 절반 아래): 다시 곡 중 정리 멈춤");
+            }
             if (heapNow > limit)
             {
                 // 곡 중에 한꺼번에 치우면 0.8초 넘게 멈춰 그 자리에서 죽을 수 있다(RAM 8GB 면 한계 3.2GB, Arche 는 불러온 직후 2.4GB).

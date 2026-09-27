@@ -54,6 +54,7 @@ namespace StutterFix
             if (steps == null) return;
             float now = Time.realtimeSinceStartup;
             if (!started) { started = true; stepStart = now; }
+            if (!ummClosed || (idx < steps.Count && steps[idx].StartsWith("play", StringComparison.OrdinalIgnoreCase))) CloseUmm();
             if (idx >= steps.Count) { Finish("끝"); return; }
             if (now - stepStart > 180f) { Finish("시간 초과 (" + steps[idx] + ")"); return; }
             string line = steps[idx];
@@ -65,6 +66,20 @@ namespace StutterFix
                 if (Step(cmd, arg, now)) { idx++; stepStart = now; waitSec = 0f; }
             }
             catch (Exception ex) { Log("단계 실패 '" + line + "': " + (ex.InnerException ?? ex).Message); Finish("오류로 그만둠"); }
+        }
+
+        // UMM 창이 열려 있으면 그리는 비용 때문에 FPS 가 조금 낮게 나온다(사용자 관찰, 2026-09-27). 시작할 때와 재생마다 닫는다.
+        private static bool ummClosed;
+        private static void CloseUmm()
+        {
+            try
+            {
+                var ui = UnityModManagerNet.UnityModManager.UI.Instance;
+                if (ui == null) return;
+                if (ui.Opened) { ui.ToggleWindow(false); Log("UMM 창 닫음"); }
+                ummClosed = true;
+            }
+            catch { ummClosed = true; }
         }
 
         private static int openPhase;
