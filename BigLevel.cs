@@ -21,6 +21,9 @@ namespace StutterFix
     {
         internal static bool Enabled = true;
         internal static int MinFloors = 30000;
+        internal static int NoNumMin = 200000;   // 이만큼 넘는 맵은 타일마다 붙은 에디터 번호 표시(Canvas+UI 글자)를 만들자마자 없앤다 (메모리)
+        internal static long Stripped;
+        private static bool strip;
         internal static long Skips, Maps;
         private static bool active;
         private static readonly AccessTools.FieldRef<scrLevelMaker, float[]> anglesRef = AccessTools.FieldRefAccess<scrLevelMaker, float[]>("floorAngles");
@@ -35,6 +38,12 @@ namespace StutterFix
                 h.Patch(inst, prefix: new HarmonyMethod(typeof(BigLevel), nameof(InstPrefix)), transpiler: new HarmonyMethod(typeof(BigLevel), nameof(InstTranspiler)),
                         finalizer: new HarmonyMethod(typeof(BigLevel), nameof(InstFinalizer)));
                 if (Edition.Dev) h.Patch(make, finalizer: new HarmonyMethod(typeof(BigLevel), nameof(MakeFinalizer)));
+                foreach (var name in new[] { "DrawFloorNums", "Play" })
+                {
+                    var m = AccessTools.Method(typeof(scnEditor), name, Type.EmptyTypes);
+                    if (m != null) h.Patch(m, transpiler: new HarmonyMethod(typeof(BigLevel), nameof(NumTranspiler)));
+                    else Main.Entry.Logger.Log("[큰 맵] scnEditor." + name + " 없음");
+                }
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[큰 맵] 설치 실패: " + ex.Message); }
         }
@@ -48,9 +57,50 @@ namespace StutterFix
         {
             int n = Enabled ? FloorCount(__instance) : 0;
             active = n >= MinFloors;
+            strip = active && n >= NoNumMin;
+            if (strip) Main.Entry.Logger.Log("[큰 맵] 타일 " + n + "개: 타일마다 붙은 에디터 번호 표시를 없애 메모리를 줄임 (이 맵에서는 타일 번호 보기가 안 나옴)");
             if (active) { Maps++; Main.Entry.Logger.Log("[큰 맵] 타일 " + n + "개: 새 타일을 Floors 밑으로 옮기지 않고 각자 둠 (열기가 타일 수의 제곱으로 느려지는 것 막기)"); }
         }
-        public static Exception InstFinalizer(Exception __exception) { active = false; return __exception; }
+        public static Exception InstFinalizer(Exception __exception) { active = false; strip = false; return __exception; }
+
+        // 타일 만들기(Instantiate) 대신. 아주 큰 맵이면 새 타일의 에디터 번호 표시(꺼져 있는 Canvas + UI 글자 + 그림자 + 외곽선, 컴포넌트 11개)를 바로 없앤다.
+        // 타일 하나의 컴포넌트 절반이 이것이다. 이 필드를 확인 없이 쓰는 곳(scnEditor.DrawFloorNums, scnEditor.Play)은 NumObj 로 바꾼다.
+        public static GameObject InstMaybe(GameObject original, Vector3 position, Quaternion rotation)
+        {
+            var go = UnityEngine.Object.Instantiate(original, position, rotation);
+            if (strip)
+            {
+                try
+                {
+                    var f = go.GetComponent<scrFloor>();
+                    if (f != null && f.editorNumText != null) { UnityEngine.Object.DestroyImmediate(f.editorNumText.gameObject); f.editorNumText = null; Stripped++; }
+                }
+                catch { }
+            }
+            return go;
+        }
+
+        // floor.editorNumText.gameObject 대신: 번호 표시를 없앤 타일이면 아무도 안 쓰는 빈 오브젝트를 준다(SetActive 해도 아무 일 없음)
+        private static GameObject dummy;
+        public static GameObject NumObj(scrLetterPress t)
+        {
+            if (t != null) return t.gameObject;
+            if (dummy == null) { dummy = new GameObject("StutterFix.NoFloorNum"); dummy.hideFlags = HideFlags.HideAndDontSave; dummy.SetActive(false); }
+            return dummy;
+        }
+        public static System.Collections.Generic.IEnumerable<CodeInstruction> NumTranspiler(System.Collections.Generic.IEnumerable<CodeInstruction> code)
+        {
+            var field = AccessTools.Field(typeof(scrFloor), "editorNumText");
+            var getGo = AccessTools.PropertyGetter(typeof(Component), "gameObject");
+            var mine = AccessTools.Method(typeof(BigLevel), nameof(NumObj));
+            bool afterField = false;
+            foreach (var ci in code)
+            {
+                if (afterField && ci.opcode == System.Reflection.Emit.OpCodes.Callvirt && ci.operand is System.Reflection.MethodInfo m && m == getGo) { ci.opcode = System.Reflection.Emit.OpCodes.Call; ci.operand = mine; }
+                afterField = ci.opcode == System.Reflection.Emit.OpCodes.Ldfld && ci.operand is System.Reflection.FieldInfo fi && fi == field;
+                yield return ci;
+            }
+        }
 
         // transform.parent = Floors 대신. 큰 맵이면 옮기지 않는다.
         public static void SetParentMaybe(Transform child, Transform parent)
@@ -63,14 +113,20 @@ namespace StutterFix
         {
             var setParent = AccessTools.PropertySetter(typeof(Transform), "parent");
             var maybe = AccessTools.Method(typeof(BigLevel), nameof(SetParentMaybe));
-            int p = 0;
+            System.Reflection.MethodInfo inst = null;
+            foreach (var m in typeof(UnityEngine.Object).GetMethods())
+                if (m.Name == "Instantiate" && m.IsGenericMethodDefinition && m.GetParameters().Length == 3 && m.GetParameters()[1].ParameterType == typeof(Vector3)) { inst = m.MakeGenericMethod(typeof(GameObject)); break; }
+            var instMaybe = AccessTools.Method(typeof(BigLevel), nameof(InstMaybe));
+            int p = 0, n = 0;
             foreach (var ci in code)
             {
                 if (setParent != null && ci.opcode == System.Reflection.Emit.OpCodes.Callvirt && ci.operand is System.Reflection.MethodInfo sp && sp == setParent)
                 { ci.opcode = System.Reflection.Emit.OpCodes.Call; ci.operand = maybe; p++; }
+                else if (inst != null && ci.opcode == System.Reflection.Emit.OpCodes.Call && ci.operand is System.Reflection.MethodInfo im && im == inst)
+                { ci.operand = instMaybe; n++; }
                 yield return ci;
             }
-            if (p != 2) Main.Entry.Logger.Log("[큰 맵] 부모 지정 바꿔치기 " + p + "곳 (예상 2곳)");
+            if (p != 2 || n != 2) Main.Entry.Logger.Log("[큰 맵] 바꿔치기: 부모 지정 " + p + "곳, 타일 만들기 " + n + "곳 (예상 2곳씩)");
         }
 
         // (개발자용) 큰 맵: 타일 하나의 구성(오브젝트, 컴포넌트)과 부모를 한 번 적는다. 메모리 줄이기 조사용
