@@ -51,7 +51,7 @@ namespace StutterFix
             WindowGhost.KeepResponsive = Config.NoGhosting;
             if (Config.NoGhosting) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
             if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
-            // (개발자용 시험) 모드 폴더의 파일로 멈춘 동안 화면 다시 내보내기를 바꾼다: no-present-keepalive 끔(효과 비교), present-flip 보통 Present, present-screen-check 화면 비교
+            // (개발자용 시험) 모드 폴더의 파일로 멈춘 동안 화면 다시 내보내기를 바꾼다: present-keepalive 켬(효과 없어 기본은 끔), present-flip 보통 Present, present-screen-check 화면 비교
             if (Edition.Dev) DevPresentFlags(modEntry.Path);
             PerfOverlay.FrameStatsOff = !Config.FrameStats;
             // (개발자용 시험) 모드 폴더에 frame-stats-off 파일이 있으면 설정과 상관없이 끈다 - 설정을 건드리지 않고 켜고 끄며 비교하려고
@@ -64,7 +64,7 @@ namespace StutterFix
         private static void DevPresentFlags(string dir)
         {
             Func<string, bool> has = n => System.IO.File.Exists(System.IO.Path.Combine(dir, n));
-            if (has("no-present-keepalive")) { WindowGhost.KeepPresent = false; WindowGhost.PresentStatus = "no-present-keepalive 파일"; Entry.Logger.Log("[첫 판 FPS] no-present-keepalive 파일이 있어 멈춘 동안 화면 다시 내보내기 끔"); }
+            if (has("present-keepalive")) { WindowGhost.KeepPresent = true; Entry.Logger.Log("[첫 판 FPS] present-keepalive 파일이 있어 멈춘 동안 화면 다시 내보내기 켬"); }
             if (has("present-flip")) { WindowGhost.PresentMode = 0; Entry.Logger.Log("[첫 판 FPS] present-flip 파일이 있어 보통 Present(0,0) 로 내보냄"); }
             if (has("present-screen-check")) { WindowGhost.ScreenCheck = true; Entry.Logger.Log("[첫 판 FPS] present-screen-check 파일이 있어 멈춘 동안 화면을 비교함"); }
             if (has("freeze-test")) { PresentWatch.FreezeTest = true; Entry.Logger.Log("[첫 판 FPS 시험] freeze-test 파일이 있어 곡 중 6초 멈춤 시험을 함"); }

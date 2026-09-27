@@ -133,7 +133,9 @@ namespace StutterFix
         // (유니티가 아는 상태 그대로).
         // 게임 밖 시험(C:\SFBundle\PresentTest, 유니티와 같은 Flip + 대기 객체 스왑체인, 백 버퍼를 묶어 둔 채로): 4번 모두 성공, 화면 그대로(GDI 로 읽음),
         // 그리기 대상 4번 되돌림, 그 뒤 앱이 다시 묶지 않고 그린 프레임도 정상. 비교: 보통 Present(0,0) 은 예전 버퍼(이전 그림)가 나왔다.
-        internal static bool KeepPresent = true;
+        // 결과(2026-09-27): 효과 없음. 멈춤 중 0.5초마다 내보냈고(PresentMon 에도 동기 1, 플래그 2 Present 로 잡힘) 가장 긴 빈틈 2.1초였는데도
+        // 첫 Play 가 느렸다(201 FPS). 그래서 기본은 끔. 개발자용 present-keepalive 파일로만 켠다.
+        internal static bool KeepPresent = false;
         internal static int PresentMode = 0x21;   // 동기 1 | DXGI_PRESENT_DO_NOT_SEQUENCE << 4 (개발자용 present-flip 파일: 0 = 보통 Present)
         internal static string PresentStatus = "";
         internal static long Presents;
