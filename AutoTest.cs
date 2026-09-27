@@ -24,7 +24,7 @@ namespace StutterFix
         private static List<string> steps;
         private static int idx;
         private static float stepStart, waitSec;
-        private static bool started, prevAuto, autoChanged;
+        private static bool started, prevAuto, autoChanged, desiredAuto;
         private static readonly System.Reflection.FieldInfo loadingField = AccessTools.Field(typeof(scnEditor), "isLoading");
 
         internal static bool Active { get { return steps != null; } }
@@ -84,7 +84,7 @@ namespace StutterFix
                     {
                         bool on = arg.Equals("on", StringComparison.OrdinalIgnoreCase);
                         if (!autoChanged) { prevAuto = RDC.auto; autoChanged = true; }
-                        RDC.auto = on; Log("자동 플레이 " + (on ? "켬" : "끔"));
+                        desiredAuto = on; RDC.auto = on; Log("자동 플레이 " + (on ? "켬" : "끔") + " (재생 때마다 다시 맞춤)");
                         return true;
                     }
                 case "open":
@@ -108,6 +108,7 @@ namespace StutterFix
                 case "play":
                     if (ed == null) throw new Exception("에디터가 아님");
                     if (ed.playMode) { Log("이미 재생 중"); return true; }
+                    if (autoChanged) RDC.auto = desiredAuto;   // 메뉴에서 켠 값이 에디터에 들어가며 풀렸다(2026-09-27)
                     Log("재생 (자동 플레이 " + (RDC.auto ? "켬" : "끔") + ")");
                     ed.Play();
                     return true;
