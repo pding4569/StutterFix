@@ -633,7 +633,8 @@ namespace StutterFix
                 playMode = playModeGet(editor);
                 if (pausedInPlayGet != null && pausedInPlayGet(editor)) paused = true;
             }
-            bool stateOk = st != (int)States.Fail && st != (int)States.Fail2 && st != (int)States.Won;
+            TrackStart(gameworld && !paused && playMode && !endedByHook, st);
+            bool stateOk = !IsStopState(st) || (wasCandidate && st == stateAtStart);
             bool playing = gameworld && !paused && playMode && stateOk && !endedByHook;
 
             // 상태 이름 문자열은 값이 바뀔 때만 만든다 (예전과 같은 모양)
@@ -654,6 +655,18 @@ namespace StutterFix
                 }
             }
             return playing;
+        }
+
+        // 게임은 에디터에서 다시 Play 할 때 currentState 를 되돌리지 않는다. 한 번 죽으면 Fail 이 그대로 남아, 그 뒤 Play 가 모두
+        // "끝난 곡" 으로 보여 곡 중 GC 미루기가 꺼져 있었다(2026-09-27, 모니터에 메모리 정리 "대기" 가 계속 뜨고 곡 중 GC 50~67ms).
+        // 그래서 재생이 시작될 때(일시정지 풀림 포함) 이미 들어 있던 끝 상태는 무시하고, 재생 중에 그 값으로 바뀔 때만 끝으로 본다.
+        // 죽음·클리어는 원래도 종료 함수를 직접 가로채서(endedByHook) 잡는다.
+        private static bool wasCandidate; private static int stateAtStart = int.MinValue;
+        private static bool IsStopState(int st) { return st == (int)States.Fail || st == (int)States.Fail2 || st == (int)States.Won; }
+        private static void TrackStart(bool candidate, int st)
+        {
+            if (candidate && !wasCandidate) stateAtStart = st;   // 재생이 막 시작됨: 지금 상태를 기준으로
+            wasCandidate = candidate;
         }
 
         private static bool IsPlaying()
@@ -693,7 +706,9 @@ namespace StutterFix
                     }
                 }
 
-                bool stateOk = Array.IndexOf(StopStates, stateName) < 0;
+                int stNum = -1; try { if (ctrl != null && stateField != null) stNum = Convert.ToInt32(stateField.GetValue(ctrl)); } catch { }
+                TrackStart(gameworld && !paused && playMode && !endedByHook, stNum);
+                bool stateOk = Array.IndexOf(StopStates, stateName) < 0 || (wasCandidate && stNum == stateAtStart);
                 bool playing = gameworld && !paused && playMode && stateOk && !endedByHook;
 
                 LastScene = stateName
