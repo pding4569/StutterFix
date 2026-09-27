@@ -31,6 +31,7 @@ namespace StutterFix
             if (Edition.Dev) WindowGhost.Flush();
             if (playing != wasPlaying)
             {
+                if (playing && Edition.Dev) SystemMonitor.Start();   // 곡 3초·8초 VRAM 기록용 (맵 열 때 이미 켜져 있던 것과 같은 것)
                 if (!playing && songHighSec > 0)
                     Main.Entry.Logger.Log(string.Format("[화면 대기] 이번 판 {0}초 중 {1}초 동안 늘어나 있었음 (그때 평균 {2:F1}ms)", songSec, songHighSec, songHighWait / songHighSec));
                 string gpu = GpuSummary();
@@ -44,7 +45,7 @@ namespace StutterFix
             secMs = secWait = 0; secN = 0;
             bool h = avgWait >= HighMs && avgWait >= avgMs * 0.15f;
             songSec++; if (h) { songHighSec++; songHighWait += avgWait; }
-            if (Edition.Dev && (songSec == 3 || songSec == 8)) Main.Entry.Logger.Log(GfxProbe.Snapshot() + string.Format(" (곡 {0}초, 화면 대기 {1:F2}ms)", songSec, avgWait));
+            if (Edition.Dev && (songSec == 3 || songSec == 8)) Main.Entry.Logger.Log(GfxProbe.Snapshot() + string.Format(" (곡 {0}초, 화면 대기 {1:F2}ms) | VRAM 전체 {2:F0}MB, 게임 전용 {3:F0}MB, 게임 공유(시스템 RAM) {4:F0}MB, 힙 {5}MB", songSec, avgWait, SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB, SystemMonitor.SharedGameMB, GC.GetTotalMemory(false) >> 20));
             if (Edition.Dev && FreezeTest) FreezeStep(h, avgWait);
             if (Edition.Dev) SampleGpu(h);
             if (h == high) { streak = 0; return; }

@@ -152,7 +152,7 @@ namespace StutterFix
         internal static long ResetsSkipped, ResetsKept;
         private static bool inEditorPlay, inReload, skipping, haveFp, lastPlaySkipped;
         private static long lastFp;
-        private static int devPlays;
+        private static long devVerifiedFp = long.MinValue;
         private static readonly AccessTools.FieldRef<scrDecorationManager, List<scrDecoration>> allRef = AccessTools.FieldRefAccess<scrDecorationManager, List<scrDecoration>>("allDecorations");
         private static readonly System.Reflection.FieldInfo dataField = AccessTools.Field(AccessTools.TypeByName("ADOFAI.LevelEvent") ?? AccessTools.TypeByName("LevelEvent"), "data");
 
@@ -189,7 +189,10 @@ namespace StutterFix
             {
                 bool same = Fingerprint() == lastFp;
                 // 맵 연 뒤(장식을 새로 만든 뒤) 첫 재생은 개발자용도 늘 건너뛴다 - 맵 열 때 따로 검증했다(CreatedPostfix)
-                skipping = same && (fpFromOpen || !Edition.Dev || (devPlays++ / 2) % 2 == 1);   // 개발자용은 안 건너뜀 두 번, 건너뜀 두 번 차례로 (계속 비교)
+                // 개발자용은 같은 장식 데이터마다 한 번만 안 건너뛰고 비교한다(VerifyAfterPlay). 2026-09-27 자동 시험: 안 건너뛴 Play 는 약 6초 멈춰
+                // 첫 판 FPS 느린 상태가 27번 중 5번 생겼고, 건너뛴 Play(4.6~5.4초)는 한 번도 새로 생기지 않았다 - 번갈아 하던 비교가 개발자용을 더 느리게 했다.
+                skipping = same && (fpFromOpen || !Edition.Dev || devVerifiedFp == lastFp);
+                if (Edition.Dev && same && !skipping) devVerifiedFp = lastFp;
                 if (skipping && fpFromOpen) { OpenSkips++; Main.Entry.Logger.Log("[로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀"); }
                 if (!same) Main.Entry.Logger.Log("[로딩] 장식이 바뀌어 장식 다시 설정을 원래대로 두 번 함");
             }
