@@ -33,6 +33,7 @@
     <Compile Include="ExitFix.cs" />
     <Compile Include="StateDump.cs" />
     <Compile Include="AllocProbe.cs" />
+    <Compile Include="AllocFix.cs" />
     <Compile Include="Edition.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="PerfOverlay.cs" />
@@ -153,6 +154,10 @@
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
       <HintPath>$(GameManaged)\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SkyHook.Unity">
+      <HintPath>$(GameManaged)/SkyHook.Unity.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.SpriteMaskModule">

@@ -16,6 +16,12 @@ namespace StutterFix
             new[] { "scrCamera", "Update" }, new[] { "scrCamera", "LateUpdate" }, new[] { "scnGame", "Update" }, new[] { "scnEditor", "Update" },
             new[] { "DG.Tweening.Core.DOTweenComponent", "Update" }, new[] { "scrController", "Hit" }, new[] { "scrController", "Simulated_PlayerControl_Update" },
             new[] { "scrConductor", "OnBeat" }, new[] { "scrMisc", "GetHitMargin" }, new[] { "StutterFix.Main", "OnUpdate" },
+            new[] { "scrController", "UpdateInput" }, new[] { "scrPlayer", "Simulated_PlayerControl_Update" }, new[] { "AsyncInputUtils", "UpdateOffsetTime" },
+            new[] { "PlatformHelper", "Update" }, new[] { "AudioManager", "Play" }, new[] { "scrConductor", "PropagateOnBeat" }, new[] { "scrPlanet", "MoveToNextFloor" },
+            new[] { "scrController", "Hit" }, new[] { "scrPlanet", "Update_RefreshAngles" }, new[] { "scrController", "ValidInputWasTriggered" },
+            new[] { "scrPlayer", "ValidInputWasReleased" }, new[] { "scrPlayer", "ValidInputWasTriggered" }, new[] { "scrPlayer", "CountValidKeysPressed" }, new[] { "scrPlayer", "UpdateHoldBehavior" },
+            new[] { "scrPlayer", "UpdateHoldKeys" }, new[] { "scrPlayer", "CheckPreHoldFail" }, new[] { "scrPlayer", "HitHoldFloorsIfStartedAtHold" }, new[] { "scrPlayer", "CheckPostHoldFail" },
+            new[] { "scrPlayer", "OttoHoldHit" }, new[] { "scrPlayer", "HitAutoFloors" }, new[] { "RDInput", "GetMain" }, new[] { "scrPlanet", "AsyncRefreshAngles" }, new[] { "scrPlanet", "AutoShouldHitNow" },
         };
         private static readonly Dictionary<MethodBase, int> index = new Dictionary<MethodBase, int>();
         private static readonly List<string> names = new List<string>();
@@ -25,6 +31,7 @@ namespace StutterFix
 
         internal static void Install(Harmony h)
         {
+            harmonyRef = h;
             var pre = new HarmonyMethod(typeof(AllocProbe), nameof(Pre));
             var post = new HarmonyMethod(typeof(AllocProbe), nameof(Post));
             foreach (var t in Targets)
@@ -33,6 +40,30 @@ namespace StutterFix
                 if (type == null) continue;
                 foreach (var m in type.GetMethods(AccessTools.all))
                     if (m.Name == t[1] && m.DeclaringType == type && !m.IsAbstract && !m.ContainsGenericParameters) Add(h, m, t[0].Substring(t[0].LastIndexOf('.') + 1) + "." + t[1], pre, post);
+            }
+            // 화면 그리기 마무리 단계 후보: 모든 어셈블리의 MonoBehaviour OnGUI / OnRenderImage / OnPostRender / OnPreRender / OnWillRenderObject
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type[] types;
+                try { types = asm.GetTypes(); } catch { continue; }
+                foreach (var type in types)
+                {
+                    if (type == null || !typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type) || type.ContainsGenericParameters) continue;
+                    foreach (var n in new[] { "OnGUI", "OnRenderImage", "OnPostRender", "OnPreRender", "OnWillRenderObject" })
+                    {
+                        MethodInfo m = null;
+                        try { m = type.GetMethod(n, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly); } catch { }
+                        if (m != null && !m.IsAbstract) Add(h, m, type.Name + "." + n, pre, post);
+                    }
+                }
+            }
+            // 스크립트 업데이트 남은 후보: 입력 종류별 Main
+            foreach (var tn in new[] { "RDInputType_Keyboard", "RDInputType_Mouse", "RDInputType_AsyncKeyboard", "RDInputType_Controller" })
+            {
+                var type = AccessTools.TypeByName(tn);
+                if (type == null) continue;
+                foreach (var m in type.GetMethods(AccessTools.all))
+                    if (m.Name == "Main" && m.DeclaringType == type && !m.IsAbstract) Add(h, m, tn + ".Main", pre, post);
             }
             // 효과 시작: 효과 종류마다 따로
             var ffx = AccessTools.TypeByName("ffxPlusBase");
@@ -70,7 +101,30 @@ namespace StutterFix
             calls[i]++;
         }
 
-        internal static void ResetSong() { Array.Clear(bytes, 0, bytes.Length); Array.Clear(calls, 0, calls.Length); since = UnityEngine.Time.realtimeSinceStartup; }
+        // 곡 시작 때 한 번: 카메라 그리기 콜백(Camera.onPreCull/onPreRender/onPostRender, Canvas.willRenderCanvases)에 등록된 함수들도 감싼다
+        private static bool camDone;
+        private static Harmony harmonyRef;
+        private static void WrapCameraCallbacks()
+        {
+            if (camDone || harmonyRef == null) return;
+            camDone = true;
+            var pre = new HarmonyMethod(typeof(AllocProbe), nameof(Pre));
+            var post = new HarmonyMethod(typeof(AllocProbe), nameof(Post));
+            int before = names.Count;
+            foreach (var d in new Delegate[] { UnityEngine.Camera.onPreCull, UnityEngine.Camera.onPreRender, UnityEngine.Camera.onPostRender })
+            {
+                if (d == null) continue;
+                foreach (var x in d.GetInvocationList())
+                    if (x.Method != null && !index.ContainsKey(x.Method)) Add(harmonyRef, x.Method, "카메라콜백 " + x.Method.DeclaringType.Name + "." + x.Method.Name, pre, post);
+            }
+            if (names.Count > before)
+            {
+                var nb = new long[names.Count]; Array.Copy(bytes, nb, bytes.Length); bytes = nb;
+                var nc = new long[names.Count]; Array.Copy(calls, nc, calls.Length); calls = nc;
+            }
+            Main.Entry.Logger.Log("[할당 후보] 카메라 콜백 " + (names.Count - before) + "개 더 감쌈");
+        }
+        internal static void ResetSong() { WrapCameraCallbacks(); Array.Clear(bytes, 0, bytes.Length); Array.Clear(calls, 0, calls.Length); since = UnityEngine.Time.realtimeSinceStartup; }
 
         internal static void Report()
         {

@@ -28,7 +28,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.4.2 에서 바뀐 것](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
+- [2.4.3 에서 바뀐 것](#243-에서-바뀐-것) · [2.4.2](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -47,6 +47,21 @@ made by **naro** & **Claude**
 - **Shift+Insert**: 실시간 모니터 (아이콘 → 미니 → 상세 → 끔)
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
+
+## 2.4.3 에서 바뀐 것
+
+### 곡 중 쓰레기 줄이기 (1시간 맵 초당 2.21MB → 1.45MB, -34%)
+
+곡 중에는 메모리 정리를 미루므로 쓰레기가 적을수록 긴 곡에서 한계에 늦게 닿습니다(한계 근처에서는 2.4.2 부터 입력이 없는 틈에만 치움). 곡 중 프레임 단계별·함수별로 힙이 느는 양을 재서(개발자용) 게임 코드의 큰 곳 셋을 고쳤습니다. 모두 결과가 원래와 같게 임시 객체만 없앴습니다.
+
+| 곳 | 원래 | 고친 것 |
+|---|---|---|
+| 타일 업데이트(scrFloor.Update) | 볼륨 색 모드에서만 쓰는 람다용 객체를 모든 타일이 매 프레임 만듦(초당 0.38MB) | 볼륨 모드(또는 Start 전) 타일만 새로 만들고 나머지는 하나를 돌려씀 |
+| 비동기 키 입력 | 부를 때마다 HashSet·LINQ·람다·특수 키 목록(초당 0.45MB) | 같은 순서로 다시 쓰는 목록에 모으고, 특수 키 목록은 누른 키가 있을 때만 원래 함수로. 결과 목록은 원래처럼 새로 |
+| 마우스 입력 | 프레임마다 LINQ·람다로 목록(초당 0.14MB) | 같은 순서의 반복문으로 |
+
+검증(개발자용, 곡 중 실제 키를 보내며 부를 때마다 원래 코드와 비교): 비동기 키 입력 69,190번(키가 있던 것 6,157번), 마우스 입력 69,190번, 다른 결과 0번. Arche 재생 정상(319 FPS).
+남은 것: 화면 그리기 마무리 단계 0.47MB/s(모드·게임의 그리기 콜백에서는 안 잡힘, 유니티 내부로 보임), 입력 처리 안의 람다 등 약 0.5MB/s.
 
 ## 2.4.2 에서 바뀐 것
 
@@ -452,6 +467,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.4.3:** less garbage during play (1-hour level 2.21 → 1.45 MB/s): the tile update no longer allocates a closure object for the volume color mode on every tile every frame, and async keyboard / mouse input no longer build HashSets, LINQ iterators and lambdas on every call. Results are identical; dev builds compared every call against the original code while real keys were sent (69,190 calls each, 0 differences).
 
 **2.4.2:** in-song GC now happens only in input-free gaps. From 80% of the heap limit the mod waits for a gap where the next tile is at least "predicted pause + 0.15 s" away (or the game is paused) and cleans up in one step right there (6 GB heap: 195–206 ms, finished inside the gap), so the pause never overlaps a tile input. Only if no such gap appears before the limit does it fall back to 2.4.1's single incremental start. Dev test (1-hour level, 40 MB/s synthetic garbage): all three cleanups landed in gaps (0.51 / 1.79 / 2.79 s), none at the limit.
 

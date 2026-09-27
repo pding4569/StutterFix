@@ -241,6 +241,7 @@ namespace StutterFix
             SlowScan.ReportSong();
             PhaseWatch.ReportSong();
             if (AllocProbeOn) AllocProbe.Report();
+            if (AllocFix.VerifyInput) Main.Entry.Logger.Log(AllocFix.VerifySummary());
             UiProf.ReportSong();
             ModWatch.Report();
             Main.Entry.Logger.Log("[끊김] 같은 글자 건너뛰기 누적 " + TextFix.SkippedSameText + "회, 같은 그림자 색 건너뛰기 " + TextFix.SkippedSameShadow + "회");
