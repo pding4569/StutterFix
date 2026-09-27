@@ -171,7 +171,9 @@ namespace StutterFix
                 h.Patch(reset, prefix: new HarmonyMethod(typeof(LoadFix), nameof(ResetPrefix)) { priority = Priority.First }, postfix: new HarmonyMethod(typeof(LoadFix), nameof(ResetPostfix)));
                 h.Patch(mark, prefix: new HarmonyMethod(typeof(LoadFix), nameof(SkipIfSkipping)));
                 h.Patch(unload, prefix: new HarmonyMethod(typeof(LoadFix), nameof(SkipIfSkipping)));
-                Main.Entry.Logger.Log("[로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치");
+                var create = AccessTools.Method(typeof(scnGame), "UpdateDecorationObjects", new[] { typeof(bool) });
+                if (create != null) h.Patch(create, postfix: new HarmonyMethod(typeof(LoadFix), nameof(CreatedPostfix)));
+                Main.Entry.Logger.Log("[로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치" + (create != null ? " (맵 연 뒤 첫 재생 포함)" : ""));
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[로딩] 장식 다시 설정 줄이기 설치 실패: " + ex.Message); }
         }
@@ -186,7 +188,9 @@ namespace StutterFix
             try
             {
                 bool same = Fingerprint() == lastFp;
-                skipping = same && (!Edition.Dev || (devPlays++ / 2) % 2 == 1);   // 개발자용은 안 건너뜀 두 번, 건너뜀 두 번 차례로 (계속 비교)
+                // 맵 연 뒤(장식을 새로 만든 뒤) 첫 재생은 개발자용도 늘 건너뛴다 - 맵 열 때 따로 검증했다(CreatedPostfix)
+                skipping = same && (fpFromOpen || !Edition.Dev || (devPlays++ / 2) % 2 == 1);   // 개발자용은 안 건너뜀 두 번, 건너뜀 두 번 차례로 (계속 비교)
+                if (skipping && fpFromOpen) { OpenSkips++; Main.Entry.Logger.Log("[로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀"); }
                 if (!same) Main.Entry.Logger.Log("[로딩] 장식이 바뀌어 장식 다시 설정을 원래대로 두 번 함");
             }
             catch (Exception ex) { skipping = false; Main.Entry.Logger.Log("[로딩] 장식 지문 실패, 원래대로: " + ex.Message); }
@@ -203,8 +207,124 @@ namespace StutterFix
         public static void ResetPostfix()
         {
             // 에디터에서만 지문을 남긴다 (재생 준비 끝의 다시 설정이 마지막)
-            try { if (SkipDoubleReset && ADOBase.isLevelEditor) { lastFp = Fingerprint(); haveFp = true; } }
+            try { if (SkipDoubleReset && ADOBase.isLevelEditor) { lastFp = Fingerprint(); haveFp = true; fpFromOpen = false; } }
             catch { haveFp = false; }
+        }
+
+        // ── 3-2) 맵 연 뒤 첫 재생 ──
+        // 위 건너뛰기는 "지난 다시 설정 뒤로 장식 데이터가 그대로" 일 때만 했다. 맵을 막 열었을 때는 다시 설정이 한 번도 없어서 첫 재생은
+        // 늘 두 번 했다(Arche 에디터 Play 5.5초 중 1.35초). 그런데 맵 열기(scnGame.UpdateDecorationObjects)는 장식을 전부 지우고 새로 만들며
+        // 장식마다 같은 Setup 을 부른다 - 다시 설정(ResetDecorations = 태그 목록 비우고 모든 장식 Setup)을 막 한 것과 같은 상태다.
+        // 두 다시 설정 사이(효과 붙이기, ApplyEventsToFloors)가 장식에서 읽는 것은 태그 목록(taggedDecorations)과 히트박스 이벤트 태그 목록
+        // (hitboxEventTagDecorations)뿐이고(효과 Decode 는 태그 이름만 적어 두고, 장식 찾기는 재생 중에 한다 - 디컴파일로 확인), 장식마다의
+        // 상태는 두 번째 다시 설정이 어차피 처음부터 다시 정한다. 그래서 장식을 새로 만든 직후에도 지문을 남겨, 데이터가 그대로면 첫 재생의
+        // 첫 번째 다시 설정을 건너뛴다.
+        // 개발자용 검증(맵마다 한 번, 맵 열 때): 새로 만든 직후 상태를 찍고, 다시 설정을 한 번 해 다시 찍어 비교한다. 태그·히트박스 목록
+        // (장식 순서까지)이 다르면 이번 실행 동안 이 건너뛰기를 끈다.
+        private static bool fpFromOpen, openSkipOff;
+        internal static long OpenSkips;
+        private static readonly HashSet<string> verifiedOpen = new HashSet<string>();
+        public static void CreatedPostfix(bool reloadDecorations)
+        {
+            if (!SkipDoubleReset || !reloadDecorations || inEditorPlay || openSkipOff) return;
+            try
+            {
+                if (!ADOBase.isLevelEditor) return;
+                var mgr = scrDecorationManager.instance;
+                var all = mgr == null ? null : allRef(mgr);
+                if (all == null) return;
+                if (Edition.Dev && all.Count > 0 && verifiedOpen.Add(ADOBase.levelPath ?? "")) VerifyOpen(mgr, all);
+                if (openSkipOff) return;
+                lastFp = Fingerprint(); haveFp = true; fpFromOpen = true;
+            }
+            catch (Exception ex) { fpFromOpen = false; Main.Entry.Logger.Log("[로딩] 맵 연 뒤 장식 지문 실패: " + ex.Message); }
+        }
+
+        private static void VerifyOpen(scrDecorationManager mgr, List<scrDecoration> all)
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var s0 = OpenSnapshot(all); long t0 = TagDetail(mgr), h0 = HitboxTagDetail(mgr);
+            mgr.ResetDecorations();
+            var s1 = OpenSnapshot(all); long t1 = TagDetail(mgr), h1 = HitboxTagDetail(mgr);
+            string detail;
+            int diff = CompareOpen(all, s0, s1, out detail);
+            if (t0 != t1 || h0 != h1) openSkipOff = true;
+            Main.Entry.Logger.Log(string.Format("[로딩 검증] 맵 연 직후 장식 상태 대 한 번 다시 설정한 뒤: 장식 {0}개 중 다른 것 {1}개{2} | 태그 목록 {3}, 히트박스 태그 목록 {4}{5} ({6}ms)",
+                all.Count, diff, detail, t0 == t1 ? "같음" : "다름", h0 == h1 ? "같음" : "다름", openSkipOff ? " -> 맵 연 뒤 첫 재생 건너뛰기 끔" : "", sw.ElapsedMilliseconds));
+        }
+
+        // Snapshot 7부분 + 8번째(기타): 켜짐, hitOnce, 태그 집합, 히트박스 이벤트 태그, 렌더러마다 켜짐·정렬·재질
+        private const int OpenParts = Parts + 1;
+        private static long[] OpenSnapshot(List<scrDecoration> all)
+        {
+            var basic = Snapshot(all);
+            var snap = new long[all.Count * OpenParts];
+            for (int i = 0; i < all.Count; i++)
+            {
+                Array.Copy(basic, i * Parts, snap, i * OpenParts, Parts);
+                var d = all[i];
+                if ((object)d == null) continue;
+                unchecked
+                {
+                    long e = d.gameObject.activeSelf ? 1 : 2;
+                    e = e * 31 + (d.hitOnce ? 1 : 0);
+                    if (d.tags != null) { long th = 0; foreach (var t in d.tags) th += t == null ? 0 : t.GetHashCode(); e = e * 31 + th; }
+                    if (d.hitboxEventTags != null) foreach (var t in d.hitboxEventTags) e = e * 31 + (t == null ? 0 : t.GetHashCode());
+                    foreach (var r in d.GetComponentsInChildren<Renderer>(true))
+                    {
+                        e = e * 31 + (r.enabled ? 1 : 0);
+                        e = e * 31 + r.sortingOrder; e = e * 31 + r.sortingLayerID;
+                        var m = r.sharedMaterial; e = e * 31 + (m == null ? 0 : m.GetInstanceID());
+                    }
+                    snap[i * OpenParts + Parts] = e;
+                }
+            }
+            return snap;
+        }
+        private static int CompareOpen(List<scrDecoration> all, long[] a, long[] b, out string detail)
+        {
+            int diff = 0; var byPart = new int[OpenParts]; var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < all.Count; i++)
+            {
+                bool any = false;
+                for (int p = 0; p < OpenParts; p++) if (a[i * OpenParts + p] != b[i * OpenParts + p]) { byPart[p]++; any = true; }
+                if (!any) continue;
+                diff++;
+                if (diff <= 6)
+                {
+                    var d = all[i]; string tag = "";
+                    try { var ev = d.sourceLevelEvent; if (ev != null) tag = Convert.ToString(ev["tag"]); } catch { }
+                    sb.AppendFormat(" [#{0} {1} 태그 '{2}':", i, d.GetType().Name, tag);
+                    for (int p = 0; p < OpenParts; p++) if (a[i * OpenParts + p] != b[i * OpenParts + p]) sb.Append(" " + (p < Parts ? PartName[p] : "기타"));
+                    sb.Append("]");
+                }
+            }
+            var parts = new List<string>(); for (int p = 0; p < OpenParts; p++) if (byPart[p] > 0) parts.Add((p < Parts ? PartName[p] : "기타") + " " + byPart[p]);
+            detail = (parts.Count > 0 ? " (" + string.Join(", ", parts.ToArray()) + ")" : "") + sb.ToString();
+            return diff;
+        }
+        // 태그 -> 장식 목록: 키 순서와 상관없이, 목록 안은 순서대로 (장식 객체 자체로)
+        private static long TagDetail(scrDecorationManager mgr) { return ListDictHash(mgr.taggedDecorations); }
+        private static long HitboxTagDetail(scrDecorationManager mgr)
+        {
+            long h = ListDictHash(mgr.hitboxEventTagDecorations);
+            unchecked { if (mgr.hitboxEventTags != null) foreach (var t in mgr.hitboxEventTags) h += (t == null ? 0 : t.GetHashCode()) * 1000003L; }
+            return h;
+        }
+        private static long ListDictHash(Dictionary<string, List<scrDecoration>> d)
+        {
+            if (d == null) return -1;
+            long h = d.Count;
+            unchecked
+            {
+                foreach (var kv in d)
+                {
+                    long e = kv.Key == null ? 0 : kv.Key.GetHashCode();
+                    if (kv.Value != null) foreach (var x in kv.Value) e = e * 1099511628211L + System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(x);
+                    h += e * 31 + (kv.Value == null ? -1 : kv.Value.Count);
+                }
+            }
+            return h;
         }
 
         // 장식 목록(순서, 객체), 각 장식의 이벤트 객체와 그 모든 값
