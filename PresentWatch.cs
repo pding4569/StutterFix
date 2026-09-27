@@ -46,6 +46,7 @@ namespace StutterFix
             secMs = secWait = 0; secN = 0;
             bool h = avgWait >= HighMs && avgWait >= avgMs * 0.15f;
             songSec++; if (h) { songHighSec++; songHighWait += avgWait; }
+            if (Edition.Dev && songSec == 3) FloorCensus();
             if (Edition.Dev && (songSec == 3 || songSec == 8)) Main.Entry.Logger.Log(GfxProbe.Snapshot() + string.Format(" (곡 {0}초, 화면 대기 {1:F2}ms) | VRAM 전체 {2:F0}MB, 게임 전용 {3:F0}MB, 게임 공유(시스템 RAM) {4:F0}MB, 힙 {5}MB", songSec, avgWait, SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB, SystemMonitor.SharedGameMB, GC.GetTotalMemory(false) >> 20));
             if (Edition.Dev && FreezeTest) FreezeStep(h, avgWait);
             if (Edition.Dev) SampleGpu(h);
@@ -147,6 +148,19 @@ namespace StutterFix
                 if (k.Present && now - lastPresent >= f / 2) { if (WindowGhost.PresentOnce(0x21)) presents++; lastPresent = now; }
             }
             if (k.Present) Main.Entry.Logger.Log(string.Format("[첫 판 FPS 시험]   화면 다시 내보내기 {0}번{1}", presents, WindowGhost.PresentStatus.Length > 0 ? " (" + WindowGhost.PresentStatus + ")" : ""));
+        }
+
+        // (개발자용) 곡 중 켜진 타일 스크립트 수 (Update/LateUpdate 가 도는 것), 보이는 타일 렌더러 수
+        private static void FloorCensus()
+        {
+            try
+            {
+                var lm = ADOBase.lm; if (lm == null || lm.listFloors == null) return;
+                int n = lm.listFloors.Count, en = 0, vis = 0, startNot = 0;
+                foreach (var f in lm.listFloors) { if (f == null) continue; if (f.enabled) en++; var r = f.GetComponent<UnityEngine.Renderer>(); if (r != null && r.isVisible) vis++; }
+                Main.Entry.Logger.Log(string.Format("[타일] 곡 3초: 타일 {0}개 중 스크립트 켜짐 {1}개, 렌더러 보임 {2}개", n, en, vis));
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[타일] 세기 실패: " + ex.Message); }
         }
 
         // ── (개발자용) 곡 중 GPU 클럭 (NVIDIA, GpuClock.cs) ──
