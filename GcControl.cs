@@ -49,6 +49,7 @@ namespace StutterFix
         private static float quietTimer;
         private static int quietSeq = -2;
         private static bool limitSlicing;   // 곡 중 힙 한계: 한꺼번에 대신 조금씩 치우는 중
+        private static bool lastSliceMore;   // 마지막 조각 치우기 뒤 남은 일이 있었는지
         private static long quietHeapMark;
         private static int frameCounter;
         private static int slowFrame, ramMB;
@@ -295,12 +296,49 @@ namespace StutterFix
         // 완주해도 에디터는 playMode를 켜 둔 채라서, 이것이 없으면 다음 프레임에 도로 멈춘다.
         private static bool endedByHook;
 
-        private static void Pause()
+        // ── 곡 중 GC 멈추기: Disabled 가 아니라 Manual ──
+        // 2026-09-27 자동 시험(작은 맵 HELLO_BPM_2021, 에디터 다시 하기 26번씩, 판마다 곡 2초 뒤부터 잼)으로 "첫 판 FPS 떨어짐"의 원인을 찾았다.
+        //   GCMode.Disabled 로 멈춤(예전): 26판 중 9판이 판 내내 프레임마다 화면 대기 1.70ms (447 -> 245 FPS). 느린 판은 늘 GC 주기의 같은 자리(3판마다)
+        //   곡 중 GC 미루기 끔: 26판 모두 빠름
+        //   남은 점진적 GC 일을 모드가 끝낸 뒤 Disabled: 26판 모두 느림
+        //   GCMode.Manual 로 멈춤: 26판 모두 빠름(447 FPS, 대기 0), 곡 중 GC 끊김 0, 쓰레기는 판마다 쌓이고 판 사이 전환 때만 정리됨
+        // Disabled 는 GC 를 완전히 막고, Manual 은 자동 GC 만 막는다(GC.Collect / CollectIncremental 은 된다). Disabled 상태에서 유니티가
+        // 프레임마다 화면 대기 자리에서 GC 일을 하려다 막히는 것으로 보인다. 큰 맵은 불러온 뒤 쓰레기가 많아 첫 판에 잘 걸렸다.
+        // 그래서 곡 중에는 Manual 로 멈춘다. (시험용: 개발자용 gc-mode.txt 에 disabled / help 를 쓰면 예전 방식 / 끝내고 Disabled)
+        private static bool pausePending; private static float pendingSince;
+        internal static string PauseMode = "manual";
+        internal static GarbageCollector.Mode PausedMode { get { return PauseMode == "manual" ? GarbageCollector.Mode.Manual : GarbageCollector.Mode.Disabled; } }
+        internal static long PendingPauses, PendingFrames;
+        private static bool IncrementalWorkLeft(bool help)
         {
-            if (Paused) return;
+            try
+            {
+                if (GarbageCollector.GCMode != GarbageCollector.Mode.Enabled || !GarbageCollector.isIncremental) return false;
+                return GarbageCollector.CollectIncremental(help ? 1000000UL : 0UL);
+            }
+            catch { return false; }
+        }
+
+        // 끈 채로 곡을 시작했으면 true
+        private static bool Pause()
+        {
+            if (Paused) return true;
             if (lastCleanMB < 0) { try { lastCleanMB = GC.GetTotalMemory(false) / 1048576; } catch { } }   // 아직 치운 적이 없으면 곡 시작 때 힙이 기준
-            try { GarbageCollector.GCMode = GarbageCollector.Mode.Disabled; Paused = true; }
+            if (PauseMode == "help" && IncrementalWorkLeft(pausePending))
+            {
+                if (!pausePending) { pausePending = true; pendingSince = Time.realtimeSinceStartup; PendingPauses++; }
+                PendingFrames++;
+                if (Time.realtimeSinceStartup - pendingSince < 5f) return false;
+                Main.Entry.Logger.Log("[GC] 곡 시작 때 돌던 GC 가 5초 안에 안 끝나 그냥 멈춤");
+            }
+            if (pausePending)
+            {
+                if (Edition.Dev) Main.Entry.Logger.Log(string.Format("[GC] 곡 시작 때 돌던 점진적 GC 를 끝낸 뒤 멈춤 ({0:F2}초)", Time.realtimeSinceStartup - pendingSince));
+                pausePending = false;
+            }
+            try { GarbageCollector.GCMode = PausedMode; Paused = true; }
             catch (Exception ex) { Main.Entry.Logger.Error("GC 멈춤 실패: " + ex.Message); }
+            return Paused;
         }
 
         // ── 재시작 때 정리 줄이기 ──
@@ -409,7 +447,8 @@ namespace StutterFix
             Hitch.Tick(dt, playing);
             Main.TickCost[16] += System.Diagnostics.Stopwatch.GetTimestamp() - hq;
 
-            if (playing && !Paused) { Pause(); pausedFor = 0f; PeakHeapMB = 0; quietTimer = 0f; quietHeapMark = GC.GetTotalMemory(false) / 1048576; }
+            if (playing && !Paused) { if (Pause()) { pausedFor = 0f; PeakHeapMB = 0; quietTimer = 0f; quietHeapMark = GC.GetTotalMemory(false) / 1048576; } }
+            if (!playing) pausePending = false;
             else if (!playing && Paused) { Hitch.Report(); if (!holdAfterFail) ScheduleResume("곡 종료 [" + LastScene + "]"); }
 
             // 곡이 끝났으면 연출이 끝나기를 기다렸다 치운다.
@@ -485,7 +524,8 @@ namespace StutterFix
             // 2026-09-27 저사양 사용자 로그(Ryzen 7 5825U, RAM 16GB, 25분 넘는 곡): 곡 1457초에 힙 6GB 한계 -> 조금씩 치우기로 바뀐 뒤
             // 곡이 끝날 때까지 계속 치워서, 치우기 한 바퀴가 끝날 때마다(약 8초) 80ms 씩 멈췄다("중반부터 계속 멈춤"). 곡 끝 힙은 1.2GB 였다.
             // 멈추면 힙이 다시 한계까지 차는 데 한참 걸리므로(그 곡은 초당 약 3MB) 긴 곡에서도 가끔 한 번씩만 치운다.
-            if (limitSlicing && playing && heapNow < limit / 2)
+            // 점진적 GC 가 한 바퀴 다 돈 뒤에만 멈춘다(도는 도중에 끄면 그 판 내내 프레임마다 화면 대기가 붙는다 - Pause 참고).
+            if (limitSlicing && playing && heapNow < limit / 2 && !lastSliceMore)
             {
                 limitSlicing = false;
                 Main.Entry.Logger.Log("[GC] 곡 중 조금씩 치우기로 힙 " + heapNow + "MB (한계 " + limit + "MB 의 절반 아래): 다시 곡 중 정리 멈춤");
@@ -521,8 +561,8 @@ namespace StutterFix
                 try
                 {
                     GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
-                    GarbageCollector.CollectIncremental((ulong)(SliceMs * 1000000f));
-                    GarbageCollector.GCMode = GarbageCollector.Mode.Disabled;
+                    lastSliceMore = GarbageCollector.CollectIncremental((ulong)(SliceMs * 1000000f));
+                    GarbageCollector.GCMode = PausedMode;
                     IncrementalSlices++;
                 }
                 catch { }

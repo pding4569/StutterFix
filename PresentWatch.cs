@@ -29,6 +29,7 @@ namespace StutterFix
         {
             if (pending.Count > 0) lock (pending) { foreach (var p in pending) Main.Entry.Logger.Log(p); pending.Clear(); }
             if (Edition.Dev) WindowGhost.Flush();
+            if (Edition.Dev && AutoTest.Active) AutoTest.Sample(playing, ms, wait);
             if (playing != wasPlaying)
             {
                 if (playing && Edition.Dev) SystemMonitor.Start();   // 곡 3초·8초 VRAM 기록용 (맵 열 때 이미 켜져 있던 것과 같은 것)

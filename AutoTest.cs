@@ -82,6 +82,22 @@ namespace StutterFix
             catch { ummClosed = true; }
         }
 
+        // 판마다 재기: play/retry 뒤 2초부터 다음 명령 전까지 프레임 시간과 화면 대기(PresentWatch.Frame 에서 받음)
+        private static float runStart = -1f; private static string runKind = ""; private static int runNo;
+        private static double accMs, accWait; private static int accN;
+        internal static void Sample(bool playing, float ms, float wait)
+        {
+            if (runStart < 0f || ms > 500f || Time.realtimeSinceStartup - runStart < 2f) return;
+            accMs += ms; accWait += wait; accN++;
+        }
+        private static void EndRun()
+        {
+            if (runStart >= 0f && accN > 30)
+                Log(string.Format("판 #{0} ({1}): 평균 {2:F0} FPS, 화면 대기 {3:F2}ms, 프레임 {4}개 -> {5}", runNo, runKind, 1000.0 / (accMs / accN), accWait / accN, accN, accWait / accN >= 0.5 ? "느림" : "빠름"));
+            runStart = -1f; accMs = accWait = 0; accN = 0;
+        }
+        private static void BeginRun(string kind) { EndRun(); runNo++; runKind = kind; runStart = Time.realtimeSinceStartup; }
+
         private static int openPhase;
 
         // 끝났으면 true
@@ -111,6 +127,37 @@ namespace StutterFix
                             AltTab(); Main.Entry.Logger.Log("[자동 시험] Alt+Tab 돌아옴 (옆 스레드)");
                         }) { IsBackground = true, Name = "StutterFix.AutoTestAltTab" }.Start();
                         Log(string.Format("Alt+Tab 예약: {0}초 뒤 나갔다가 {1}초 뒤 돌아옴", delay, hold));
+                        return true;
+                    }
+                case "retry":
+                    {
+                        // 에디터에서 죽은 뒤 키를 눌렀을 때와 같은 다시 하기 (scrController.ResetCustomLevel 코루틴)
+                        var ctrl = ADOBase.controller;
+                        if (ctrl == null) throw new Exception("scrController 없음");
+                        if (ed != null && !ed.playMode) throw new Exception("재생 중이 아님");
+                        if (autoChanged) RDC.auto = desiredAuto;
+                        ctrl.StartCoroutine(ctrl.ResetCustomLevel());
+                        Log("다시 하기");
+                        BeginRun("다시 하기");
+                        return true;
+                    }
+                case "mark":
+                    {
+                        // 같은 판 안에서 재기 구간을 끊는다 (킥 전/뒤 비교). 새 구간은 0.5초 뒤부터
+                        EndRun(); runNo++; runKind = arg; runStart = now - 1.5f;
+                        return true;
+                    }
+                case "kick":
+                    {
+                        // 느린 판(화면 대기 1.7ms)을 빠른 판으로 바꿀 수 있는지 시험하는 한 번짜리 동작
+                        var parts = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        string kind = parts.Length > 0 ? parts[0] : "";
+                        int n = parts.Length > 1 ? int.Parse(parts[1]) : 1;
+                        if (kind == "present") { for (int i = 0; i < n; i++) WindowGhost.PresentOnce(0); }          // 보통 Present(0,0) n번 (그래픽 스레드)
+                        else if (kind == "presentdns") { for (int i = 0; i < n; i++) WindowGhost.PresentOnce(0x21); }
+                        else if (kind == "freeze") System.Threading.Thread.Sleep(n);                                      // 메인 스레드 n ms 멈춤
+                        else throw new Exception("모르는 킥: " + kind);
+                        Log("킥: " + arg);
                         return true;
                     }
                 case "setstate":
@@ -171,9 +218,11 @@ namespace StutterFix
                     if (autoChanged) RDC.auto = desiredAuto;   // 메뉴에서 켠 값이 에디터에 들어가며 풀렸다(2026-09-27)
                     Log("재생 (자동 플레이 " + (RDC.auto ? "켬" : "끔") + ")");
                     ed.Play();
+                    BeginRun("Play");
                     return true;
                 case "stop":
                     if (ed == null) throw new Exception("에디터가 아님");
+                    EndRun();
                     if (ed.playMode) ed.SwitchToEditMode();
                     Log("편집으로 돌아감");
                     return true;
@@ -209,6 +258,7 @@ namespace StutterFix
         {
             if (finished) return;
             finished = true;
+            EndRun();
             Log(why + " - 게임을 끕니다");
             steps = null;
             try { if (autoChanged) RDC.auto = prevAuto; } catch { }
