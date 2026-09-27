@@ -28,7 +28,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.4.0 에서 바뀐 것](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
+- [2.4.1 에서 바뀐 것](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -47,6 +47,18 @@ made by **naro** & **Claude**
 - **Shift+Insert**: 실시간 모니터 (아이콘 → 미니 → 상세 → 끔)
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
+
+## 2.4.1 에서 바뀐 것
+
+### 아주 긴 곡에서 메모리 정리가 끝없이 되풀이되던 것 고침
+
+곡 중에는 메모리 정리(GC)를 미루다가 힙이 한계(RAM 의 40%, 최대 6GB)에 닿으면 멈추지 않게 점진적 GC 로 치웁니다. 1시간짜리 맵에서 곡 31분에 한계에 닿은 뒤 **0.3초마다 74ms 씩 멈추기가 나갈 때까지 계속**됐습니다(제보, 47초 동안 116번).
+
+원인: 유니티의 점진적 GC 는 한 번 시작시키면 그 바퀴를 알아서 끝까지 돌리고, 모드에게는 늘 "남은 일 있음" 만 돌려줍니다. 모드는 그걸 모르고 몇 프레임마다 새 바퀴를 또 시작시켰고, 바퀴마다 끝에서 게임을 한 번 세웠습니다. 실제로는 첫 바퀴 뒤 1초 안에 힙이 이미 줄어 있었습니다(6GB → 0.6GB).
+
+이제 한계에 닿으면 **한 번만 시작시키고 힙이 줄었는지만 봅니다**. 줄면 끝, 30초 동안 다시 시작하지 않습니다. 치운 뒤에도 한계 가까이면(살아 있는 메모리가 많은 맵) 그 곡 동안 한계를 올려 되풀이하지 않습니다. 원래 한계의 1.5배를 넘으면 메모리가 우선이라 한 번 멈춰 치우는 안전장치는 그대로입니다.
+
+재현·확인(개발자용 자동 시험, 같은 1시간 맵, 곡 중 쓰레기를 초당 40MB 로 만들어 6GB 한계에 세 번 닿게 함): 예전 방식은 한계 뒤 곡 끝까지 **59번** 끊김, 새 방식은 한계에 닿을 때마다 **1번(91~95ms)**, 6GB → 0.64GB 가 0.6~0.7초 만에 끝남. 실제 이 맵(초당 약 2.5MB)이면 곡 31분쯤 한 번입니다.
 
 ## 2.4.0 에서 바뀐 것
 
@@ -425,6 +437,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.4.1:** fixed endless GC hitches in very long songs. When the heap hit the in-song limit (40% of RAM, max 6 GB), the mod kept starting new incremental GC cycles every few frames because Unity finishes a started cycle on its own and always reports "more work left"; each cycle stopped the game once at the end (1-hour level: 74 ms every 0.3 s until leaving). Now one cycle is started and the mod only watches the heap drop (6 GB → 0.6 GB in 0.7 s); 1 hitch per limit hit instead of 59 in the dev reproduction.
 
 **2.4.0:**
 - **Faster return to the editor** (reported hitch when leaving play mode): the game re-runs Setup on every decoration when you stop playing (Arche: 28,835 decorations, 1.5 s). Values are now recorded at play start; decorations that did not change during the run (all fields the effects change are equal, and no setter that leaves no field behind — depth, mask depth, hitbox — was called) get a light reset that skips the settings that would come out the same and redoes, through the game's own functions, only what can differ (placement, position/parallax/rotation/scale, color, visibility, tag lists, mask/tiling notifications, filter list, editor click collider). Changed decorations, text/object/particle/blend/mask/hitbox decorations and changed level data use the original Setup. GC work postponed during play is now done in 3 ms slices in the editor instead of one 0.7–1 s freeze, and the decoration data fingerprint is computed once per frame instead of three times on editor Play. Player build, Arche (automated, same PC): leaving after a long run 3.18 s → 1.60 s, other exits 2.28–2.57 s → 1.42–1.73 s, editor Play 3.50–4.05 s → 3.32–3.65 s. Dev builds compare the light result with the original Setup in the same frame (all script fields, all transforms, renderer/material properties, colliders, manager lists): identical on 8 levels, including after retries.

@@ -113,6 +113,11 @@ namespace StutterFix
                     return now - stepStart >= waitSec;
                 case "log":
                     Log(arg); return true;
+                case "allocscan":
+                    // 곡 중 누가 메모리를 잡는지 15초 동안 모은다 (F9 와 같음, 개발자용)
+                    if (!Edition.Dev) { Log("할당 추적은 개발자용만"); return true; }
+                    AllocScan.Toggle(); Log("할당 추적 시작");
+                    return true;
                 case "timeout":
                     float.TryParse(arg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out stepTimeout);
                     if (stepTimeout < 10f) stepTimeout = 180f;

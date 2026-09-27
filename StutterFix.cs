@@ -71,6 +71,10 @@ namespace StutterFix
             if (has("present-screen-check")) { WindowGhost.ScreenCheck = true; Entry.Logger.Log("[첫 판 FPS] present-screen-check 파일이 있어 멈춘 동안 화면을 비교함"); }
             if (has("freeze-test")) { PresentWatch.FreezeTest = true; Entry.Logger.Log("[첫 판 FPS 시험] freeze-test 파일이 있어 곡 중 6초 멈춤 시험을 함"); }
             try { var gm = System.IO.Path.Combine(dir, "gc-mode.txt"); if (System.IO.File.Exists(gm)) { GcControl.PauseMode = System.IO.File.ReadAllText(gm).Trim().ToLowerInvariant(); Entry.Logger.Log("[GC] (시험) 곡 중 멈추는 방식: " + GcControl.PauseMode); } } catch { }
+            // (시험) 곡 중 힙 한계를 낮춰 긴 곡의 "한계 뒤 조금씩 치우기" 를 빨리 재현 / 조각 치우기 방식
+            try { var gl = System.IO.Path.Combine(dir, "gc-limit.txt"); if (System.IO.File.Exists(gl)) { GcControl.HardLimitMB = int.Parse(System.IO.File.ReadAllText(gl).Trim()); Entry.Logger.Log("[GC] (시험) 곡 중 힙 한계 " + GcControl.HardLimitMB + "MB"); } } catch { }
+            try { var gg = System.IO.Path.Combine(dir, "gc-garbage.txt"); if (System.IO.File.Exists(gg)) { GcControl.GarbageMBps = float.Parse(System.IO.File.ReadAllText(gg).Trim(), System.Globalization.CultureInfo.InvariantCulture); Entry.Logger.Log("[GC] (시험) 곡 중 쓰레기 초당 " + GcControl.GarbageMBps + "MB 만듦"); } } catch { }
+            try { var gs = System.IO.Path.Combine(dir, "gc-slice.txt"); if (System.IO.File.Exists(gs)) { GcControl.SliceStyle = System.IO.File.ReadAllText(gs).Trim().ToLowerInvariant(); Entry.Logger.Log("[GC] (시험) 조각 치우기 방식: " + GcControl.SliceStyle); } } catch { }
         }
 
         // UMM에서 모드를 끄고 켤 때 불린다.

@@ -38,6 +38,29 @@ namespace StutterFix
         internal static int IncrementalStartMB = 800;     // 조금씩 치우기 모드에서만 쓴다
         internal static float SliceMs = 2f;
         internal static int SliceEveryFrames = 4;
+        // (시험) gc-garbage.txt: 곡 중 초당 이만큼(MB) 쓰레기를 만든다 - 긴 곡의 "힙 6GB 한계" 를 몇 분 만에 재현 (살아 있는 메모리는 그대로)
+        internal static float GarbageMBps;
+        private static float garbageDebt;
+        internal static object GarbageSink;
+        private static void MakeGarbage(float dt)
+        {
+            garbageDebt += GarbageMBps * Time.unscaledDeltaTime;
+            // 실제 곡 쓰레기처럼 작은 객체로 (큰 배열 하나는 GC 가 다루는 방식이 달라 재현이 안 된다): 0.1MB 마다 작은 배열 약 1600개
+            while (garbageDebt >= 0.1f) { object last = null; for (int i = 0; i < 1600; i++) { var a = new object[6]; a[0] = last; last = (i & 63) == 0 ? null : a; } GarbageSink = last; garbageDebt -= 0.1f; }
+        }
+        internal static string SliceStyle = "toggle";   // (시험) gc-slice.txt: toggle(켜고 치우고 끔) | enabled(치우는 동안 켜 둠) | manual(끈 채로 치움)
+
+        // (개발자용) 조각 치우기 5초마다 요약: 몇 번, 시간 합·최대, 바퀴가 끝난 횟수, GC 횟수 증가, 힙
+        private static int sN, sDone, sGc; private static double sMs, sMax; private static long sHeapStart = -1; private static float sT0;
+        private static void SliceStat(double ms, bool done, int gcDelta, long heap)
+        {
+            if (sHeapStart < 0) { sHeapStart = heap; sT0 = Time.realtimeSinceStartup; }
+            sN++; sMs += ms; if (ms > sMax) sMax = ms; if (done) sDone++; sGc += gcDelta;
+            if (Time.realtimeSinceStartup - sT0 < 5f) return;
+            Main.Entry.Logger.Log(string.Format("[GC] (개발자용) 조각 치우기 {0:F1}초: {1}번, 합계 {2:F0}ms, 최대 {3:F1}ms, 바퀴 끝 {4}번, GC 횟수 +{5}, 힙 {6} -> {7}MB ({8})",
+                Time.realtimeSinceStartup - sT0, sN, sMs, sMax, sDone, sGc, sHeapStart, heap, SliceStyle));
+            sN = sDone = sGc = 0; sMs = sMax = 0; sHeapStart = -1;
+        }
 
         internal static string LastScene = "?";
         internal static int PeakHeapMB;
@@ -50,6 +73,10 @@ namespace StutterFix
         private static int quietSeq = -2;
         private static bool limitSlicing;   // 곡 중 힙 한계: 한꺼번에 대신 조금씩 치우는 중
         private static bool lastSliceMore;   // 마지막 조각 치우기 뒤 남은 일이 있었는지
+        internal static float LimitRestSeconds = 30f;   // 한계 치우기 한 바퀴 뒤 쉬는 시간
+        private static float restUntil = -1f;
+        private static bool restCheck;       // 쉬는 시간이 끝나면 힙이 줄었는지 한 번 본다
+        private static int raisedLimit;      // 이 곡 동안 올린 한계 (0 = 안 올림)
         private static long quietHeapMark;
         private static int frameCounter;
         private static int slowFrame, ramMB;
@@ -493,6 +520,7 @@ namespace StutterFix
             }
 
             bool playing = IsPlaying();
+            if (Edition.Dev && GarbageMBps > 0 && playing) MakeGarbage(dt);
             long hq = System.Diagnostics.Stopwatch.GetTimestamp();
             Hitch.Tick(dt, playing);
             Main.TickCost[16] += System.Diagnostics.Stopwatch.GetTimestamp() - hq;
@@ -570,51 +598,119 @@ namespace StutterFix
             int limit = HardLimitMB;
             if (ramMB == 0) { try { ramMB = SystemInfo.systemMemorySize; } catch { ramMB = -1; } }   // 바뀌지 않으므로 한 번만
             if (ramMB > 0) limit = Mathf.Min(limit, Mathf.Max(1500, ramMB * 2 / 5));
-            if (!playing) limitSlicing = false;
-            // 조금씩 치워서 한계의 절반 아래로 내려오면 다시 곡 중 정리를 멈춘다.
+            if (!playing) { limitSlicing = false; limitPhase = false; restUntil = -1f; restCheck = false; raisedLimit = 0; }
+            // ── 곡 중 힙 한계 ──
             // 2026-09-27 저사양 사용자 로그(Ryzen 7 5825U, RAM 16GB, 25분 넘는 곡): 곡 1457초에 힙 6GB 한계 -> 조금씩 치우기로 바뀐 뒤
-            // 곡이 끝날 때까지 계속 치워서, 치우기 한 바퀴가 끝날 때마다(약 8초) 80ms 씩 멈췄다("중반부터 계속 멈춤"). 곡 끝 힙은 1.2GB 였다.
-            // 멈추면 힙이 다시 한계까지 차는 데 한참 걸리므로(그 곡은 초당 약 3MB) 긴 곡에서도 가끔 한 번씩만 치운다.
-            // 점진적 GC 가 한 바퀴 다 돈 뒤에만 멈춘다(도는 도중에 끄면 그 판 내내 프레임마다 화면 대기가 붙는다 - Pause 참고).
-            if (limitSlicing && playing && heapNow < limit / 2 && !lastSliceMore)
+            // 곡이 끝날 때까지 계속 치워서 약 8초마다 80ms 씩 멈췄다. 2.3.2 에서 "힙이 한계의 절반 아래이고 한 바퀴가 끝났으면 멈춤" 으로 했지만
+            // 2026-09-27 1시간 맵(230BPM 100ksub, 곡 31분에 힙 6GB)에서도 멈추지 않았다: 0.3초마다 74ms 씩 멈추기를 나갈 때까지 47초(116번).
+            // 개발자용 재현(곡 중 쓰레기 초당 40MB, gc-garbage.txt)으로 찾은 까닭: 유니티의 점진적 GC 는 한 번 시작시키면 그 바퀴를 알아서
+            // 끝까지 돌린다(곡 중 Manual 로 돌려놓아도). 그래서 CollectIncremental 은 늘 "남은 일 있음" 을 돌려주고, 첫 시작 뒤 7초 안에 힙이
+            // 6006 -> 807MB 로 줄었는데도 모드는 몇 프레임마다 새 바퀴를 또 시작시켰다. 바퀴마다 끝에서 게임을 한 번 세운다(힙이 클수록 길다).
+            // 이제: 한계에 닿으면 한 번만 시작시키고 힙이 줄었는지만 본다. 줄면 끝, LimitRestSeconds 동안 다시 시작하지 않는다.
+            // 안 줄면 KickWaitSeconds 마다 다시 시작(최대 3번). 줄고도 한계 가까이면(살아 있는 메모리가 한계에 가까움) 이 곡 동안 한계를 올린다
+            // (최대 1.4배). 원래 한계의 1.5배를 넘으면 메모리가 우선이라 한 번 멈춰 치운다(안전장치).
+            if (SliceStyle == "old") { OldLimitSlicing(heapNow, limit, playing); return; }
+            float nowT = Time.realtimeSinceStartup;
+            if (limitPhase)
             {
-                limitSlicing = false;
-                Main.Entry.Logger.Log("[GC] 곡 중 조금씩 치우기로 힙 " + heapNow + "MB (한계 " + limit + "MB 의 절반 아래): 다시 곡 중 정리 멈춤");
+                if (heapNow <= kickHeap * 6 / 10)
+                {
+                    limitPhase = false;
+                    restUntil = nowT + LimitRestSeconds; restCheck = true;
+                    LimitCleans++;
+                    Main.Entry.Logger.Log(string.Format("[GC] 곡 중 힙 한계 치우기 끝: {0} -> {1}MB ({2:F1}초, 시작 {3}번). {4:F0}초 동안 다시 시작 안 함",
+                        kickHeap, heapNow, nowT - kickStart, kicks, LimitRestSeconds));
+                }
+                else if (nowT - kickAt >= KickWaitSeconds)
+                {
+                    if (kicks < 3) Kick(heapNow);
+                    else
+                    {
+                        limitPhase = false;
+                        restUntil = nowT + LimitRestSeconds; restCheck = true;
+                        Main.Entry.Logger.Log(string.Format("[GC] 곡 중 힙 한계 치우기: {0}번 시작했는데 힙이 {1} -> {2}MB 로 덜 줄어 그만둠", kicks, kickHeap, heapNow));
+                    }
+                }
             }
-            if (heapNow > limit)
+            if (restCheck && nowT >= restUntil)
             {
-                // 곡 중에 한꺼번에 치우면 0.8초 넘게 멈춰 그 자리에서 죽을 수 있다(RAM 8GB 면 한계 3.2GB, Arche 는 불러온 직후 2.4GB).
-                // 곡 중이고 유니티의 점진적 GC 를 쓸 수 있으면 멈추지 않고 조금씩 치운다(아래 조각 치우기, 한 번 2ms).
-                // 조금씩으로 못 따라가 한계의 1.5배를 넘으면 그때는 메모리가 우선이라 한 번 멈춘다.
+                restCheck = false;
+                int cur = Math.Max(limit, raisedLimit);
+                if (heapNow > cur * 9L / 10)
+                {
+                    raisedLimit = (int)Math.Min(limit * 14L / 10, Math.Max(cur, heapNow * 5L / 4));
+                    Main.Entry.Logger.Log("[GC] 치운 뒤에도 힙 " + heapNow + "MB (한계 " + cur + "MB 가까이): 이 곡 동안 한계를 " + raisedLimit + "MB 로 올림");
+                }
+            }
+            int baseLimit = limit;
+            if (raisedLimit > limit) limit = raisedLimit;
+            bool over = heapNow >= baseLimit * 3L / 2;
+            if (!limitPhase && heapNow > limit && (nowT >= restUntil || over))
+            {
                 bool canSlice = false;
                 try { canSlice = GarbageCollector.isIncremental; } catch { }
-                if (playing && canSlice && heapNow < limit * 3L / 2)
+                if (playing && canSlice && !over)
                 {
-                    if (!limitSlicing) { limitSlicing = true; Main.Entry.Logger.Log("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 조금씩 치움"); }
-                }
-                else
-                {
-                    // 안전장치. 여기까지 오면 어쩔 수 없이 한 번 멈춘다.
-                    Resume("힙 한계 " + heapNow + "MB");
-                    Pause();
+                    // 곡 중에 한꺼번에 치우면 0.8초 넘게 멈춰 그 자리에서 죽을 수 있다: 점진적 GC 를 한 번 시작시킨다
+                    limitPhase = true; kicks = 0; kickHeap = heapNow; kickStart = nowT;
+                    Main.Entry.Logger.Log("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 점진적 GC 를 한 번 시작시킴");
+                    Kick(heapNow);
                     return;
                 }
             }
+            if (over && (limitPhase || heapNow > limit))
+            {
+                // 안전장치. 여기까지 오면 어쩔 수 없이 한 번 멈춘다.
+                limitPhase = false;
+                Resume("힙 한계 " + heapNow + "MB");
+                Pause();
+                return;
+            }
+        }
 
-            if (NoCollectDuringSong && !limitSlicing) return;
+        internal static float KickWaitSeconds = 15f;   // 시작시킨 뒤 힙이 줄기를 기다리는 시간
+        internal static long LimitCleans;
+        private static bool limitPhase;
+        private static int kicks;
+        private static long kickHeap;
+        private static float kickAt, kickStart;
+        private static void Kick(long heapNow)
+        {
+            try
+            {
+                long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
+                GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
+                bool more = GarbageCollector.CollectIncremental((ulong)(SliceMs * 1000000f));
+                GarbageCollector.GCMode = PausedMode;
+                kicks++; kickAt = Time.realtimeSinceStartup; IncrementalSlices++;
+                if (Edition.Dev) Main.Entry.Logger.Log(string.Format("[GC] (개발자용) 점진적 GC 시작 {0}번째: {1:F1}ms, 남은 일 {2}, 힙 {3}MB", kicks, Ms(t0), more, heapNow));
+            }
+            catch { }
+        }
 
-            // 유니티의 점진적 정리는 GC가 켜져 있을 때만 동작한다.
-            // 꺼둔 채로 부르면 아무 일도 일어나지 않아 힙이 무한정 늘어난다(실제로 21GB까지 갔다).
-            // 그래서 몇 프레임마다 잠깐 켜서 짧게 치우고 다시 끈다.
+        // (시험, gc-slice.txt = old) 예전 방식: 몇 프레임마다 조각 치우기, "한계의 절반 아래이고 바퀴 끝" 이면 멈춤 - 무한 반복 재현용
+        private static void OldLimitSlicing(long heapNow, int limit, bool playing)
+        {
+            if (limitSlicing && playing && heapNow < limit / 2 && !lastSliceMore) { limitSlicing = false; Main.Entry.Logger.Log("[GC] (시험, 예전 방식) 힙 " + heapNow + "MB: 다시 곡 중 정리 멈춤"); }
+            if (heapNow > limit && !limitSlicing)
+            {
+                bool canSlice = false;
+                try { canSlice = GarbageCollector.isIncremental; } catch { }
+                if (playing && canSlice && heapNow < limit * 3L / 2) { limitSlicing = true; Main.Entry.Logger.Log("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 조금씩 치움"); }
+                else { Resume("힙 한계 " + heapNow + "MB"); Pause(); return; }
+            }
+            if (!limitSlicing) return;
             if (heapNow > IncrementalStartMB && ++frameCounter >= SliceEveryFrames)
             {
                 frameCounter = 0;
                 try
                 {
+                    long st0 = System.Diagnostics.Stopwatch.GetTimestamp(); int gc0 = GC.CollectionCount(0);
                     GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
                     lastSliceMore = GarbageCollector.CollectIncremental((ulong)(SliceMs * 1000000f));
                     GarbageCollector.GCMode = PausedMode;
                     IncrementalSlices++;
+                    if (Edition.Dev) SliceStat(Ms(st0), !lastSliceMore, GC.CollectionCount(0) - gc0, heapNow);
                 }
                 catch { }
             }
