@@ -96,9 +96,13 @@ namespace StutterFix
         }
 
         // 입력 큐 확인만 (꺼내지 않음). 멈춘 창 판정 타이머가 다시 시작된다.
+        private static long lastPeekTs;
+        internal static uint MainNativeThread;
+        [DllImport("kernel32.dll")] internal static extern uint GetCurrentThreadId();
+        [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint pid);
         internal static bool PeekInput()
         {
-            try { MSG m; PeekMessageW(out m, IntPtr.Zero, 0, 0, PM_NOREMOVE | PM_NOYIELD | PM_QS_INPUT); Peeks++; return true; }
+            try { MSG m; PeekMessageW(out m, IntPtr.Zero, 0, 0, PM_NOREMOVE | PM_NOYIELD | PM_QS_INPUT); Peeks++; System.Threading.Interlocked.Exchange(ref lastPeekTs, System.Diagnostics.Stopwatch.GetTimestamp()); return true; }
             catch { KeepResponsive = false; return false; }
         }
 
@@ -238,16 +242,16 @@ namespace StutterFix
             watching = true;
             watch = new System.Threading.Thread(() =>
             {
-                IntPtr hwnd = IntPtr.Zero; bool hung = false; long since = 0;
+                IntPtr hwnd = IntPtr.Zero; bool hung = false; long since = 0; double peekAgo = 0;
                 while (watching)
                 {
                     try
                     {
-                        if (hwnd == IntPtr.Zero) hwnd = PresentWatch.FindGameWindow();
+                        if (hwnd == IntPtr.Zero) { hwnd = PresentWatch.FindGameWindow(); if (hwnd != IntPtr.Zero) { uint pid; uint wt = GetWindowThreadProcessId(hwnd, out pid); notes.Enqueue(string.Format("[첫 판 FPS] 게임 창 스레드 {0}, 모드가 입력을 확인하는 메인 스레드 {1} ({2})", wt, MainNativeThread, wt == MainNativeThread ? "같음" : "다름 - 메인 스레드의 확인은 이 창의 판정에 안 들어감")); } }
                         bool h = hwnd != IntPtr.Zero && IsHungAppWindow(hwnd);
                         long now = System.Diagnostics.Stopwatch.GetTimestamp();
-                        if (h && !hung) { since = now; System.Threading.Interlocked.Increment(ref HungStarts); }
-                        if (!h && hung) notes.Enqueue(string.Format("[첫 판 FPS] 윈도우가 게임 창을 멈춘 창으로 판정했음 ({0:F1}초 동안)", (now - since) / (double)System.Diagnostics.Stopwatch.Frequency));
+                        if (h && !hung) { since = now; peekAgo = (now - System.Threading.Interlocked.Read(ref lastPeekTs)) / (double)System.Diagnostics.Stopwatch.Frequency; System.Threading.Interlocked.Increment(ref HungStarts); }
+                        if (!h && hung) notes.Enqueue(string.Format("[첫 판 FPS] 윈도우가 게임 창을 멈춘 창으로 판정했음 ({0:F1}초 동안, 판정 시작 때 모드의 마지막 입력 확인 {1:F1}초 전)", (now - since) / (double)System.Diagnostics.Stopwatch.Frequency, peekAgo));
                         hung = h;
                     }
                     catch { }

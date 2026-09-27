@@ -48,6 +48,7 @@ namespace StutterFix
             BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1);
             modEntry.Logger.Log(BootConfig.Describe());
             WindowGhost.MainThread = Environment.CurrentManagedThreadId;
+            WindowGhost.MainNativeThread = WindowGhost.GetCurrentThreadId();
             WindowGhost.KeepResponsive = Config.NoGhosting;
             if (Config.NoGhosting) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
             if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록

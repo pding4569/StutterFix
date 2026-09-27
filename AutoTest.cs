@@ -80,6 +80,41 @@ namespace StutterFix
                     return now - stepStart >= waitSec;
                 case "log":
                     Log(arg); return true;
+                case "alttab":
+                    {
+                        // 옆 스레드가 <지연>초 뒤 Alt+Tab 으로 다른 창으로 갔다가 <머묾>초 뒤 Alt+Tab 으로 돌아온다(사람이 창을 오가는 것 흉내).
+                        // 바로 다음 play 의 멈춤 동안 하려고. 글자 입력은 없다.
+                        var parts = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        float delay = 1f, hold = 2f;
+                        if (parts.Length > 0) float.TryParse(parts[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out delay);
+                        if (parts.Length > 1) float.TryParse(parts[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out hold);
+                        new System.Threading.Thread(() =>
+                        {
+                            System.Threading.Thread.Sleep((int)(delay * 1000));
+                            AltTab(); Main.Entry.Logger.Log("[자동 시험] Alt+Tab 나감 (옆 스레드)");
+                            System.Threading.Thread.Sleep((int)(hold * 1000));
+                            AltTab(); Main.Entry.Logger.Log("[자동 시험] Alt+Tab 돌아옴 (옆 스레드)");
+                        }) { IsBackground = true, Name = "StutterFix.AutoTestAltTab" }.Start();
+                        Log(string.Format("Alt+Tab 예약: {0}초 뒤 나갔다가 {1}초 뒤 돌아옴", delay, hold));
+                        return true;
+                    }
+                case "jiggle":
+                    {
+                        // 옆 스레드가 N초 동안 50ms 마다 마우스 커서를 몇 픽셀씩 움직인다(클릭 없음). 바로 다음 play 의 멈춤 동안
+                        // 사람이 마우스를 건드린 것처럼 입력이 쌓이게 하려고. 끝나면 커서를 제자리로.
+                        float sec; float.TryParse(arg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out sec);
+                        if (sec <= 0f) sec = 5f;
+                        int ms = (int)(sec * 1000);
+                        new System.Threading.Thread(() =>
+                        {
+                            POINT p0; GetCursorPos(out p0);
+                            var sw = System.Diagnostics.Stopwatch.StartNew(); int n = 0;
+                            while (sw.ElapsedMilliseconds < ms) { n++; SetCursorPos(p0.x + (n % 2 == 0 ? 6 : -6), p0.y + (n % 4 < 2 ? 4 : -4)); System.Threading.Thread.Sleep(50); }
+                            SetCursorPos(p0.x, p0.y);
+                        }) { IsBackground = true, Name = "StutterFix.AutoTestJiggle" }.Start();
+                        Log("마우스 움직이기 " + sec + "초 (클릭 없음)");
+                        return true;
+                    }
                 case "auto":
                     {
                         bool on = arg.Equals("on", StringComparison.OrdinalIgnoreCase);
@@ -123,6 +158,19 @@ namespace StutterFix
                 default:
                     throw new Exception("모르는 명령: " + cmd);
             }
+        }
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)] private struct POINT { public int x, y; }
+        [System.Runtime.InteropServices.DllImport("user32.dll")] private static extern bool GetCursorPos(out POINT p);
+        [System.Runtime.InteropServices.DllImport("user32.dll")] private static extern bool SetCursorPos(int x, int y);
+        [System.Runtime.InteropServices.DllImport("user32.dll")] private static extern void keybd_event(byte vk, byte scan, uint flags, UIntPtr extra);
+        private static void AltTab()
+        {
+            const byte VK_MENU = 0x12, VK_TAB = 0x09; const uint KEYUP = 2;
+            keybd_event(VK_MENU, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(30);
+            keybd_event(VK_TAB, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(30);
+            keybd_event(VK_TAB, 0, KEYUP, UIntPtr.Zero); System.Threading.Thread.Sleep(30);
+            keybd_event(VK_MENU, 0, KEYUP, UIntPtr.Zero);
         }
 
         private static bool SamePath(string a, string b)
