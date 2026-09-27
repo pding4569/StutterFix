@@ -113,6 +113,16 @@ namespace StutterFix
                         Log(string.Format("Alt+Tab 예약: {0}초 뒤 나갔다가 {1}초 뒤 돌아옴", delay, hold));
                         return true;
                     }
+                case "setstate":
+                    {
+                        // scrController.currentState 를 직접 바꾼다. 에디터 밖에서 죽은 뒤 에디터로 오면 Fail 이 남아 있는 상황을 흉내 내려고.
+                        var ctrl = ADOBase.controller;
+                        if (ctrl == null) throw new Exception("scrController 없음");
+                        var st = (States)Enum.Parse(typeof(States), arg, true);
+                        AccessTools.FieldRefAccess<scrController, States>("currentState")(ctrl) = st;
+                        Log("게임 상태를 " + st + " 로 바꿈");
+                        return true;
+                    }
                 case "jiggle":
                     {
                         // 옆 스레드가 N초 동안 50ms 마다 마우스 커서를 몇 픽셀씩 움직인다(클릭 없음). 바로 다음 play 의 멈춤 동안
