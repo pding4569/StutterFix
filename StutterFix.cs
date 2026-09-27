@@ -53,6 +53,7 @@ namespace StutterFix
             if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
             // (개발자용 시험) 모드 폴더의 파일로 멈춘 동안 화면 다시 내보내기를 바꾼다: present-keepalive 켬(효과 없어 기본은 끔), present-flip 보통 Present, present-screen-check 화면 비교
             if (Edition.Dev) DevPresentFlags(modEntry.Path);
+            if (Edition.Dev) AutoTest.Init(modEntry.Path);   // 모드 폴더에 autotest.txt 가 있으면 자동 시험 (AutoTest.cs)
             PerfOverlay.FrameStatsOff = !Config.FrameStats;
             // (개발자용 시험) 모드 폴더에 frame-stats-off 파일이 있으면 설정과 상관없이 끈다 - 설정을 건드리지 않고 켜고 끄며 비교하려고
             if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "frame-stats-off"))) { PerfOverlay.FrameStatsOff = true; modEntry.Logger.Log("[프레임 통계] frame-stats-off 파일이 있어 이번 실행은 끔"); }
@@ -413,7 +414,7 @@ namespace StutterFix
 
             long q = System.Diagnostics.Stopwatch.GetTimestamp();
             GcControl.Tick(dt); Tk(0, ref q);
-            RestartAdvisor.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+            RestartAdvisor.Tick(); if (Edition.Dev) AutoTest.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);

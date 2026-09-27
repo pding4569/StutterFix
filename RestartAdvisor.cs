@@ -131,6 +131,14 @@ namespace StutterFix
         internal static bool WillReopen() { return ReopenTarget().Length > 0; }
         internal static string RecentBlock() { return Time.realtimeSinceStartup - LastBlockAt < 6f ? LastBlock : null; }
 
+        // (개발자용 자동 시험) 지금 실행에서 에디터로 가서 맵 열기 - 재시작 뒤 다시 열기와 같은 순서
+        internal static void BeginOpen(string p)
+        {
+            reopenPath = p; lastEditorLevel = p; reopenStep = 1; reopenStart = Time.realtimeSinceStartup; reopenWait = 0f;
+        }
+        internal static bool Opening { get { return reopenStep != 0; } }
+        internal static void ForceQuitNext() { try { var e = Editor(); if (e != null && forceQuitField != null) forceQuitField.SetValue(e, true); } catch { } }
+
         internal static void StartReopen()
         {
             string p = Main.Config.ReopenLevel;
