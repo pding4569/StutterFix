@@ -316,13 +316,13 @@ namespace StutterFix
                 var blk = RestartAdvisor.RecentBlock();
                 const float bw = 200f, bh = 34f;
                 int n = (canReopen ? 2 : 1) + 1;   // 마지막 칸은 게임 종료
-                float ph = n * (bh + 6f) + 10f + (blk != null ? 26f : 0f);
+                float ph = n * (bh + 6f) + 10f + (blk != null ? 42f : 0f);
                 var pr = new Rect(d.x - 10 - bw - 16, rr.center.y - ph / 2f, bw + 16, ph);
                 restartMenuRect = pr;
                 if (pr.Contains(m)) restartArmedUntil = Time.realtimeSinceStartup + 4f;   // 고르는 동안은 닫히지 않게
                 Fill(pr, new Color(0.06f, 0.065f, 0.08f, 0.92f), 9);
                 float by = pr.y + 8;
-                if (blk != null) { GUI.Label(new Rect(pr.x + 8, by, bw, 22), blk, sTipLeft); by += 26; }
+                if (blk != null) { var ws = new GUIStyle(sTipLeft) { wordWrap = true }; GUI.Label(new Rect(pr.x + 8, by, bw, 38), blk, ws); by += 42; }
                 for (int i = 0; i < n; i++)
                 {
                     var b = new Rect(pr.x + 8, by + i * (bh + 6f), bw, bh);
@@ -577,7 +577,9 @@ namespace StutterFix
                 for (int i = 0; i < (RestartAdvisor.WillReopen() ? 2 : 1); i++)
                 {
                     bool reopen = i == 1, me = homeArmed && homeArmChoice == i;
-                    string label = me ? T("한 번 더 누르면 재시작", "Click again to restart")
+                    bool warned = RestartAdvisor.RecentBlock() != null && homeArmChoice == i;   // 저장 안 된 편집 알림이 떠 있으면 한 번 더 = 저장 안 하고 재시작
+                    if (warned) me = true;
+                    string label = warned ? T("저장 안 하고 재시작", "Restart without saving") : me ? T("한 번 더 누르면 재시작", "Click again to restart")
                                       : reopen ? ReopenLabel() : T("게임 재시작", "Restart game");
                     if (GUILayout.Button(label, sPrimary, GUILayout.Width(190), GUILayout.Height(38)))
                     {

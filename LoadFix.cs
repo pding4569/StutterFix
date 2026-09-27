@@ -240,17 +240,27 @@ namespace StutterFix
             catch (Exception ex) { fpFromOpen = false; Main.Entry.Logger.Log("[로딩] 맵 연 뒤 장식 지문 실패: " + ex.Message); }
         }
 
+        // 판정: (1) 두 다시 설정 사이에 쓰이는 태그·히트박스 목록이 새로 만든 직후와 다시 설정한 뒤 같은가,
+        // (2) 다시 설정의 결과가 그 앞 상태(새로 만든 직후 / 다시 설정한 뒤)와 상관없이 같은가 = 다시 설정 1번 뒤 대 2번 뒤.
+        // 건너뛰면 재생 준비 끝의 다시 설정은 "새로 만든 직후" 위에서, 안 건너뛰면 "다시 설정한 뒤" 위에서 돈다. (2)가 같으면 결과가 같다.
+        // 참고로 새로 만든 직후 대 다시 설정 1번 뒤도 적는다(이 모드의 "안 보이는 장식 위치 반영 미루기" 때문에 안 보이는 장식의 실제 위치는
+        // 다를 수 있다 - 보이게 될 때 반영).
         private static void VerifyOpen(scrDecorationManager mgr, List<scrDecoration> all)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             var s0 = OpenSnapshot(all); long t0 = TagDetail(mgr), h0 = HitboxTagDetail(mgr);
             mgr.ResetDecorations();
             var s1 = OpenSnapshot(all); long t1 = TagDetail(mgr), h1 = HitboxTagDetail(mgr);
-            string detail;
-            int diff = CompareOpen(all, s0, s1, out detail);
-            if (t0 != t1 || h0 != h1) openSkipOff = true;
-            Main.Entry.Logger.Log(string.Format("[로딩 검증] 맵 연 직후 장식 상태 대 한 번 다시 설정한 뒤: 장식 {0}개 중 다른 것 {1}개{2} | 태그 목록 {3}, 히트박스 태그 목록 {4}{5} ({6}ms)",
-                all.Count, diff, detail, t0 == t1 ? "같음" : "다름", h0 == h1 ? "같음" : "다름", openSkipOff ? " -> 맵 연 뒤 첫 재생 건너뛰기 끔" : "", sw.ElapsedMilliseconds));
+            mgr.ResetDecorations();
+            var s2 = OpenSnapshot(all); long t2 = TagDetail(mgr), h2 = HitboxTagDetail(mgr);
+            string d01, d12;
+            int diff01 = CompareOpen(all, s0, s1, out d01);
+            int diff12 = CompareOpen(all, s1, s2, out d12);
+            bool ok = t0 == t1 && h0 == h1 && t1 == t2 && h1 == h2 && diff12 == 0;
+            if (!ok) openSkipOff = true;
+            Main.Entry.Logger.Log(string.Format("[로딩 검증] 맵 연 뒤 첫 재생 건너뛰기: 다시 설정 1번 뒤 대 2번 뒤 장식 {0}개 중 다른 것 {1}개{2} | 태그 목록 {3}, 히트박스 태그 목록 {4} -> {5} ({6}ms)",
+                all.Count, diff12, d12, t0 == t1 && t1 == t2 ? "같음" : "다름", h0 == h1 && h1 == h2 ? "같음" : "다름", ok ? "통과" : "실패, 이번 실행 동안 끔", sw.ElapsedMilliseconds));
+            Main.Entry.Logger.Log(string.Format("[로딩 검증]   (참고) 새로 만든 직후 대 다시 설정 1번 뒤: 다른 것 {0}개{1}", diff01, d01));
         }
 
         // Snapshot 7부분 + 8번째(기타): 켜짐, hitOnce, 태그 집합, 히트박스 이벤트 태그, 렌더러마다 켜짐·정렬·재질
@@ -283,13 +293,14 @@ namespace StutterFix
         }
         private static int CompareOpen(List<scrDecoration> all, long[] a, long[] b, out string detail)
         {
-            int diff = 0; var byPart = new int[OpenParts]; var sb = new System.Text.StringBuilder();
+            int diff = 0, hidden = 0; var byPart = new int[OpenParts]; var sb = new System.Text.StringBuilder();
             for (int i = 0; i < all.Count; i++)
             {
                 bool any = false;
                 for (int p = 0; p < OpenParts; p++) if (a[i * OpenParts + p] != b[i * OpenParts + p]) { byPart[p]++; any = true; }
                 if (!any) continue;
                 diff++;
+                try { if ((object)all[i] != null && !all[i].GetVisible()) hidden++; } catch { }
                 if (diff <= 6)
                 {
                     var d = all[i]; string tag = "";
@@ -300,7 +311,7 @@ namespace StutterFix
                 }
             }
             var parts = new List<string>(); for (int p = 0; p < OpenParts; p++) if (byPart[p] > 0) parts.Add((p < Parts ? PartName[p] : "기타") + " " + byPart[p]);
-            detail = (parts.Count > 0 ? " (" + string.Join(", ", parts.ToArray()) + ")" : "") + sb.ToString();
+            detail = (parts.Count > 0 ? " (" + string.Join(", ", parts.ToArray()) + ", 그중 안 보이는 장식 " + hidden + ")" : "") + sb.ToString();
             return diff;
         }
         // 태그 -> 장식 목록: 키 순서와 상관없이, 목록 안은 순서대로 (장식 객체 자체로)

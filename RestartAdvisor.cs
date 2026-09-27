@@ -66,8 +66,8 @@ namespace StutterFix
 
         // ── 재시작 뒤 하던 맵 다시 열기 (에디터) ──
         // 에디터에서 맵을 열어 둔 채 재시작하면, 다시 켠 뒤 에디터로 가서 같은 파일을 연다(게임의 scnEditor.OpenLevel(경로) 그대로).
-        // 저장 안 된 편집이 있으면 재시작하지 않는다: 게임을 끄면 그 편집이 사라지고, 게임이 끄기를 막으면
-        // 기다리던 재시작 프로세스가 나중에 형이 게임을 끌 때 멋대로 다시 켜 버린다.
+        // 저장 안 된 편집이 있으면 첫 번째 누름은 막는다(Proceed): 게임을 끄면 그 편집이 사라지고, 게임이 끄기를 막으면
+        // 기다리던 재시작 프로세스가 나중에 사용자가 게임을 끌 때 멋대로 다시 켜 버린다. 한 번 더 누르면 forceQuit 를 켜고 진행한다.
         internal static string LastBlock = "";
         internal static float LastBlockAt = -100f;
         private static int reopenStep;        // 0 없음, 1 첫 화면 기다림, 2 에디터 기다림
@@ -77,11 +77,33 @@ namespace StutterFix
         private static scnEditor Editor() { try { return ADOBase.isLevelEditor ? scnEditor.instance : null; } catch { return null; } }
 
         private static readonly System.Reflection.MethodInfo unsavedGetter = AccessTools.PropertyGetter(typeof(scnEditor), "unsavedChanges");
-        internal static string Blocked()
+        private static readonly System.Reflection.FieldInfo forceQuitField = AccessTools.Field(typeof(scnEditor), "forceQuit");
+        private static bool Unsaved()
         {
-            try { var e = Editor(); if (e != null && unsavedGetter != null && (bool)unsavedGetter.Invoke(e, null)) return SettingsWindow.T("에디터에 저장 안 된 변경이 있습니다. 저장한 뒤 재시작하세요", "The editor has unsaved changes. Save first, then restart"); }
-            catch { }
-            return null;
+            try { var e = Editor(); return e != null && unsavedGetter != null && (bool)unsavedGetter.Invoke(e, null); }
+            catch { return false; }
+        }
+
+        // 저장 안 된 편집이 있으면 첫 번째는 막고 알린다. 알림이 떠 있는 동안(6초) 같은 것을 한 번 더 누르면 저장하지 않고 진행한다:
+        // 게임의 "저장하지 않고 끄기"와 같게 scnEditor.forceQuit 를 켜서, 게임의 끄기 확인(TryApplicationQuit)이 끄기를 막지 않게 한다.
+        private static string lastBlockKind = "";
+        private static bool Proceed(bool quit)
+        {
+            if (!Unsaved()) return true;
+            string kind = quit ? "종료" : "재시작";
+            if (RecentBlock() != null && lastBlockKind == kind)
+            {
+                bool set = false;
+                try { var e = Editor(); if (e != null && forceQuitField != null) { forceQuitField.SetValue(e, true); set = true; } } catch { }
+                LastBlockAt = -100f;
+                Main.Entry.Logger.Log("[" + kind + "] 한 번 더 눌러 저장 안 된 편집을 버리고 진행" + (set ? "" : " (forceQuit 를 못 켜서 게임이 끄기를 막을 수 있음)"));
+                return true;
+            }
+            LastBlock = quit ? SettingsWindow.T("저장 안 된 편집이 있습니다. 한 번 더 누르면 저장하지 않고 종료합니다", "Unsaved changes. Click again to quit without saving")
+                             : SettingsWindow.T("저장 안 된 편집이 있습니다. 한 번 더 누르면 저장하지 않고 재시작합니다", "Unsaved changes. Click again to restart without saving");
+            LastBlockAt = Time.realtimeSinceStartup; lastBlockKind = kind;
+            Main.Entry.Logger.Log("[" + kind + "] 저장 안 된 편집이 있어 한 번 막음 (한 번 더 누르면 진행)");
+            return false;
         }
 
         // 에디터에서 마지막으로 연 맵. 에디터를 나가 메인 메뉴에 있어도 그 맵으로 재시작할 수 있게 기억한다 (1초마다 확인)
@@ -155,11 +177,10 @@ namespace StutterFix
             catch (Exception ex) { reopenStep = 0; Main.Entry.Logger.Log("[재시작] 맵 다시 열기 실패: " + (ex.InnerException ?? ex).Message); }
         }
 
-        // 게임 종료 (저장 안 된 편집이 있으면 하지 않는다)
+        // 게임 종료 (저장 안 된 편집이 있으면 한 번 막고, 한 번 더 누르면 저장하지 않고 끈다)
         internal static void Quit()
         {
-            var block = Blocked();
-            if (block != null) { LastBlock = block.Replace("재시작하세요", "종료하세요").Replace("then restart", "then quit"); LastBlockAt = Time.realtimeSinceStartup; Main.Entry.Logger.Log("[종료] 하지 않음: " + block); return; }
+            if (!Proceed(true)) return;
             Main.Entry.Logger.Log("[종료] 게임을 끕니다");
             try { Main.Config.ReopenLevel = ""; Main.Config.Save(Main.Entry); } catch { }
             Application.Quit();
@@ -168,8 +189,7 @@ namespace StutterFix
         // 게임을 끄고 다시 켠다
         internal static void Restart(bool reopen)
         {
-            var block = Blocked();
-            if (block != null) { LastBlock = block; LastBlockAt = Time.realtimeSinceStartup; Main.Entry.Logger.Log("[재시작] 하지 않음: " + block); return; }
+            if (!Proceed(false)) return;
             try { Main.Config.ReopenLevel = reopen ? ReopenTarget() : ""; } catch { }
             try
             {
