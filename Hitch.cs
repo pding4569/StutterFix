@@ -19,6 +19,7 @@ namespace StutterFix
     // 1초를 멈춰도 333ms로 보인다. 실제로 첫 기록에 333ms가 세 번 찍혔는데 전부 잘린 값이었다.
     public static class Hitch
     {
+        internal static bool AllocProbeOn;   // (개발자용) AllocProbe 곡 시작/끝
         internal static bool Enabled = true;
         // 164Hz 화면에서는 한 프레임이 6ms다. 20ms만 돼도 눈에 띄므로 기준을 낮게 잡는다.
         // 30ms로 두었을 때 사용자가 느낀 28~30초 구간이 기록에 아예 안 남았다.
@@ -169,6 +170,7 @@ namespace StutterFix
             SlowScan.InstallOnce();
             SlowScan.ResetSong();
             PhaseWatch.ResetSong();
+            if (AllocProbeOn) AllocProbe.ResetSong();
             UiProf.ResetSong();
             Main.Entry.Logger.Log("[끊김] 기록 시작");
         }
@@ -238,6 +240,7 @@ namespace StutterFix
             SongEnded();
             SlowScan.ReportSong();
             PhaseWatch.ReportSong();
+            if (AllocProbeOn) AllocProbe.Report();
             UiProf.ReportSong();
             ModWatch.Report();
             Main.Entry.Logger.Log("[끊김] 같은 글자 건너뛰기 누적 " + TextFix.SkippedSameText + "회, 같은 그림자 색 건너뛰기 " + TextFix.SkippedSameShadow + "회");

@@ -28,7 +28,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.4.1 에서 바뀐 것](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
+- [2.4.2 에서 바뀐 것](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -47,6 +47,21 @@ made by **naro** & **Claude**
 - **Shift+Insert**: 실시간 모니터 (아이콘 → 미니 → 상세 → 끔)
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
+
+## 2.4.2 에서 바뀐 것
+
+### 곡 중 메모리 정리를 입력이 없는 틈에만
+
+아주 긴 곡에서 힙이 한계(RAM 의 40%, 최대 6GB)에 닿아 곡 중에 치워야 할 때, 이제 **판정에 영향이 없는 순간**에 치웁니다.
+
+- 한계의 80% 부터 "다음 타일까지 예상 멈춤 + 0.15초 이상 비는 틈" 이나 일시정지를 기다렸다가, 그 순간 한 번에 치웁니다. 멈춤이 틈 안에서 끝나므로 다음 타일 입력과 겹치지 않습니다.
+- 예상 멈춤은 GB 당 50ms(6GB 면 0.3초)와 지난번 실측의 1.2배 중 큰 값입니다. 틈이 한계까지 끝내 없을 때만 2.4.1 방식(점진적 GC 를 한 번 시작시킴)으로 치웁니다.
+- RAM 상한은 그대로입니다. 저사양 PC 는 RAM 이 작아 상한을 올려도 한계에 닿기 때문에, 한계에 닿아도 판정과 겹치지 않게 하는 쪽을 택했습니다.
+
+측정(개발자용 자동 시험, 1시간 맵에서 곡 중 쓰레기를 초당 40MB 로 만들어 6GB 한계 근처를 세 번 지나게 함): 세 번 모두 틈에서 치움(다음 타일까지 0.51 / 1.79 / 2.79초, 필요 0.41~0.43초), 멈춤 195~206ms 가 그 틈 안에서 끝남, 6GB → 0.65GB. 한계까지 간 적 0번.
+참고: 같은 조건에서 방식별 멈춤 — 한 번에 크게 조각 치우기 180~206ms(부른 그 순간 끝남), GC.Collect 265ms, 작게 시작만 시키기 95ms(대신 0.7초 안 어느 순간에 옴).
+
+곡 중 쓰레기가 어디서 생기는지도 쟀습니다(개발자용): 이 1시간 맵은 초당 2.2MB, 그중 76% 가 스크립트 업데이트 단계(게임 입력 처리 쪽 0.79MB/s, 타일 색 애니메이션 0.37MB/s 등), 21% 가 화면 그리기 마무리 단계입니다. 게임 코드 여러 곳에 흩어져 있어 이번에는 고치지 않았습니다.
 
 ## 2.4.1 에서 바뀐 것
 
@@ -437,6 +452,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.4.2:** in-song GC now happens only in input-free gaps. From 80% of the heap limit the mod waits for a gap where the next tile is at least "predicted pause + 0.15 s" away (or the game is paused) and cleans up in one step right there (6 GB heap: 195–206 ms, finished inside the gap), so the pause never overlaps a tile input. Only if no such gap appears before the limit does it fall back to 2.4.1's single incremental start. Dev test (1-hour level, 40 MB/s synthetic garbage): all three cleanups landed in gaps (0.51 / 1.79 / 2.79 s), none at the limit.
 
 **2.4.1:** fixed endless GC hitches in very long songs. When the heap hit the in-song limit (40% of RAM, max 6 GB), the mod kept starting new incremental GC cycles every few frames because Unity finishes a started cycle on its own and always reports "more work left"; each cycle stopped the game once at the end (1-hour level: 74 ms every 0.3 s until leaving). Now one cycle is started and the mod only watches the heap drop (6 GB → 0.6 GB in 0.7 s); 1 hitch per limit hit instead of 59 in the dev reproduction.
 

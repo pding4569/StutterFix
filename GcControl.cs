@@ -48,7 +48,7 @@ namespace StutterFix
             // 실제 곡 쓰레기처럼 작은 객체로 (큰 배열 하나는 GC 가 다루는 방식이 달라 재현이 안 된다): 0.1MB 마다 작은 배열 약 1600개
             while (garbageDebt >= 0.1f) { object last = null; for (int i = 0; i < 1600; i++) { var a = new object[6]; a[0] = last; last = (i & 63) == 0 ? null : a; } GarbageSink = last; garbageDebt -= 0.1f; }
         }
-        internal static string SliceStyle = "toggle";   // (시험) gc-slice.txt: toggle(켜고 치우고 끔) | enabled(치우는 동안 켜 둠) | manual(끈 채로 치움)
+        internal static string SliceStyle = "";   // (시험) gc-slice.txt: old = 2.4.0 까지의 한계 치우기(무한 반복 재현용)
 
         // (개발자용) 조각 치우기 5초마다 요약: 몇 번, 시간 합·최대, 바퀴가 끝난 횟수, GC 횟수 증가, 힙
         private static int sN, sDone, sGc; private static double sMs, sMax; private static long sHeapStart = -1; private static float sT0;
@@ -526,6 +526,7 @@ namespace StutterFix
             Main.TickCost[16] += System.Diagnostics.Stopwatch.GetTimestamp() - hq;
 
             if (bgActive) BgStep(playing);   // 편집으로 나간 뒤 조금씩 치우기 (재생이 시작되면 거기서 멈춘다)
+            if (wantGap && playing && Paused && !limitPhase) GapCheck();   // 한계 가까이: 입력이 없는 틈을 매 프레임 본다
             if (playing && !Paused) { if (Pause()) { pausedFor = 0f; PeakHeapMB = 0; quietTimer = 0f; quietHeapMark = GC.GetTotalMemory(false) / 1048576; } }
             if (!playing) pausePending = false;
             else if (!playing && Paused) { Hitch.Report(); if (!holdAfterFail) ScheduleResume("곡 종료 [" + LastScene + "]"); }
@@ -598,7 +599,7 @@ namespace StutterFix
             int limit = HardLimitMB;
             if (ramMB == 0) { try { ramMB = SystemInfo.systemMemorySize; } catch { ramMB = -1; } }   // 바뀌지 않으므로 한 번만
             if (ramMB > 0) limit = Mathf.Min(limit, Mathf.Max(1500, ramMB * 2 / 5));
-            if (!playing) { limitSlicing = false; limitPhase = false; restUntil = -1f; restCheck = false; raisedLimit = 0; }
+            if (!playing) { limitSlicing = false; limitPhase = false; wantGap = false; restUntil = -1f; restCheck = false; raisedLimit = 0; }
             // ── 곡 중 힙 한계 ──
             // 2026-09-27 저사양 사용자 로그(Ryzen 7 5825U, RAM 16GB, 25분 넘는 곡): 곡 1457초에 힙 6GB 한계 -> 조금씩 치우기로 바뀐 뒤
             // 곡이 끝날 때까지 계속 치워서 약 8초마다 80ms 씩 멈췄다. 2.3.2 에서 "힙이 한계의 절반 아래이고 한 바퀴가 끝났으면 멈춤" 으로 했지만
@@ -645,6 +646,9 @@ namespace StutterFix
             int baseLimit = limit;
             if (raisedLimit > limit) limit = raisedLimit;
             bool over = heapNow >= baseLimit * 3L / 2;
+            // 한계의 GapZone(80%) 부터는 입력이 없는 틈(다음 타일까지 "예상 멈춤 + GapMargin" 이상, 또는 일시정지)을 기다렸다가 그 순간 한 번에 치운다(GapCheck).
+            // 2026-09-28 측정(6GB 힙): 한 번에 크게 조각 치우기 180~200ms 가 그 호출 안에서 끝남(GC.Collect 265ms). 작게 시작만 시키면 95ms 지만 0.7초 안 어느 순간에 온다. 틈이 끝까지 없으면 한계에서 작게 시작만 시킨다.
+            wantGap = !limitPhase && nowT >= restUntil && heapNow >= (long)(limit * GapZone) && heapNow <= limit;
             if (!limitPhase && heapNow > limit && (nowT >= restUntil || over))
             {
                 bool canSlice = false;
@@ -653,7 +657,7 @@ namespace StutterFix
                 {
                     // 곡 중에 한꺼번에 치우면 0.8초 넘게 멈춰 그 자리에서 죽을 수 있다: 점진적 GC 를 한 번 시작시킨다
                     limitPhase = true; kicks = 0; kickHeap = heapNow; kickStart = nowT;
-                    Main.Entry.Logger.Log("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 점진적 GC 를 한 번 시작시킴");
+                    Main.Entry.Logger.Log("[GC] 곡 중 힙 한계 " + heapNow + "MB (한계 " + limit + "MB): 한꺼번에 치우지 않고 점진적 GC 를 한 번 시작시킴 (기다리는 동안 가장 긴 틈 " + maxGapSeen.ToString("F2") + "초)"); maxGapSeen = 0;
                     Kick(heapNow);
                     return;
                 }
@@ -668,22 +672,65 @@ namespace StutterFix
             }
         }
 
+        internal static float GapZone = 0.8f;          // 한계의 이만큼부터 틈을 기다린다
+        internal static double GapMargin = 0.15;       // 멈춤이 끝난 뒤 다음 타일까지 남길 여유 (일찍 누르는 판정 범위 포함)
+        internal static ulong BigBudgetNs = 400000000UL;   // 틈에서 한 번에 치울 때 최대 400ms (6GB 힙에서 실제 180~200ms 에 끝남)
+        private static double lastBigMs;
+        internal static long BigUnfinished;
+        // 예상 멈춤: GB 당 50ms(6GB 에서 300ms, 실측 180~265ms), 지난번 실측의 1.2배 중 큰 것
+        private static double PredictMs(long heapMB) { return Math.Max(heapMB * 50.0 / 1024.0, lastBigMs * 1.2); }
+        internal static long GapKicks, PauseKicks;
+        private static bool wantGap;
+        private static double maxGapSeen;   // 틈을 기다리는 동안 본 가장 긴 틈 (기록용)
+        private static void GapCheck()
+        {
+            try
+            {
+                var ctl = scrController.instance;
+                var cd = scrConductor.instance;
+                if (ctl == null || cd == null) return;
+                string why = null;
+                if (ctl.paused) why = "일시정지";
+                else
+                {
+                    var f = ctl.currFloor;
+                    var next = f != null ? f.nextfloor : null;
+                    if (next == null || f.holdLength > 0) return;   // 누르고 있는 타일 중이면 기다린다
+                    float pitch = cd.song != null ? Math.Max(0.01f, cd.song.pitch) : 1f;
+                    double gap = (next.entryTime - cd.songposition_minusi) / Math.Max(1f, pitch);
+                    if (gap > maxGapSeen) maxGapSeen = gap;
+                    double need = PredictMs(GC.GetTotalMemory(false) / 1048576) / 1000.0 + GapMargin;
+                    if (gap >= need) why = string.Format("다음 타일까지 {0:F2}초, 필요 {1:F2}초", gap, need);
+                }
+                if (why == null) return;
+                long heap = GC.GetTotalMemory(false) / 1048576;
+                wantGap = false;
+                limitPhase = true; kicks = 0; kickHeap = heap; kickStart = Time.realtimeSinceStartup;
+                if (ctl.paused) PauseKicks++; else GapKicks++;
+                Main.Entry.Logger.Log("[GC] 곡 중 힙 " + heap + "MB (한계 가까이): 입력이 없는 틈(" + why + ")에 점진적 GC 를 한 번 시작시킴");
+                Kick(heap, true);
+            }
+            catch { wantGap = false; }
+        }
+
         internal static float KickWaitSeconds = 15f;   // 시작시킨 뒤 힙이 줄기를 기다리는 시간
         internal static long LimitCleans;
         private static bool limitPhase;
         private static int kicks;
         private static long kickHeap;
         private static float kickAt, kickStart;
-        private static void Kick(long heapNow)
+        private static void Kick(long heapNow, bool big = false)
         {
             try
             {
                 long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
                 GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
-                bool more = GarbageCollector.CollectIncremental((ulong)(SliceMs * 1000000f));
+                bool more = GarbageCollector.CollectIncremental(big ? BigBudgetNs : (ulong)(SliceMs * 1000000f));
+                double ms = Ms(t0);
+                if (big) { lastBigMs = ms; if (more) BigUnfinished++; }
                 GarbageCollector.GCMode = PausedMode;
                 kicks++; kickAt = Time.realtimeSinceStartup; IncrementalSlices++;
-                if (Edition.Dev) Main.Entry.Logger.Log(string.Format("[GC] (개발자용) 점진적 GC 시작 {0}번째: {1:F1}ms, 남은 일 {2}, 힙 {3}MB", kicks, Ms(t0), more, heapNow));
+                if (Edition.Dev || big) Main.Entry.Logger.Log(string.Format("[GC] 점진적 GC 시작 {0}번째{4}: {1:F1}ms, 남은 일 {2}, 힙 {3}MB", kicks, ms, more, heapNow, big ? " (틈에서 한 번에)" : ""));
             }
             catch { }
         }

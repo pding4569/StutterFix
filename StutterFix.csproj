@@ -32,6 +32,7 @@
     <Compile Include="StutterFix.cs" />
     <Compile Include="ExitFix.cs" />
     <Compile Include="StateDump.cs" />
+    <Compile Include="AllocProbe.cs" />
     <Compile Include="Edition.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="PerfOverlay.cs" />

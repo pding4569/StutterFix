@@ -75,6 +75,7 @@ namespace StutterFix
                 ticks = new long[names.Length];
                 lastFrame = new long[names.Length];
                 songTicks = new long[names.Length];
+                songAlloc = new long[names.Length];
                 bucketTicks = new long[PerfOverlay.MaxBuckets, names.Length];
                 lastStamp = Stopwatch.GetTimestamp();
                 lastIndex = -1;
@@ -103,9 +104,21 @@ namespace StutterFix
             };
         }
 
+        // (개발자용, alloc-phase 파일) 단계마다 힙이 는 양. 곡 중에는 GC 가 멈춰 있어 힙이 늘기만 하므로 늘어난 양 = 그 단계가 새로 잡은 메모리
+        internal static bool AllocPhases;
+        private static long[] songAlloc;
+        private static long lastHeap;
+        private static float allocSince;
+
         private static void Record(int index)
         {
             long now = Stopwatch.GetTimestamp();
+            if (AllocPhases && songAlloc != null)
+            {
+                long h = GC.GetTotalMemory(false);
+                if (lastIndex >= 0 && h > lastHeap && PerfOverlay.SongBucket >= 0) songAlloc[lastIndex] += h - lastHeap;
+                lastHeap = h;
+            }
 
             // 첫 표시가 다시 돌아왔으면 한 프레임이 끝난 것이다. 직전 프레임 기록으로 옮겨 둔다.
             if (index == 0)
@@ -130,6 +143,8 @@ namespace StutterFix
         internal static void ResetSong()
         {
             Array.Clear(songTicks, 0, songTicks.Length);
+            if (songAlloc != null) Array.Clear(songAlloc, 0, songAlloc.Length);
+            allocSince = Time.realtimeSinceStartup;
             Array.Clear(bucketTicks, 0, bucketTicks.Length);
         }
 
@@ -139,6 +154,22 @@ namespace StutterFix
             int frames = PerfOverlay.SongFrameCount;
             if (frames < 30) return;
             Main.Entry.Logger.Log("[엔진 단계] 곡 평균, 프레임당: " + Rank(i => songTicks[i], frames));
+            if (AllocPhases && songAlloc != null)
+            {
+                float secs = Math.Max(1f, Time.realtimeSinceStartup - allocSince);
+                var ix = new List<int>(); long tot = 0;
+                for (int i = 0; i < names.Length; i++) { ix.Add(i); tot += songAlloc[i]; }
+                ix.Sort((a, b) => songAlloc[b].CompareTo(songAlloc[a]));
+                var sb = new System.Text.StringBuilder();
+                sb.Append("합계 ").Append((tot / 1048576.0 / secs).ToString("F2")).Append("MB/s | ");
+                for (int n = 0; n < ix.Count && n < 12; n++)
+                {
+                    if (songAlloc[ix[n]] <= 0) break;
+                    if (n > 0) sb.Append(", ");
+                    sb.Append(names[ix[n]]).Append(' ').Append((songAlloc[ix[n]] / 1048576.0 / secs).ToString("F3")).Append("MB/s");
+                }
+                Main.Entry.Logger.Log("[할당 단계] 곡 중 단계별 힙 증가: " + sb);
+            }
             int best, bestFrames;
             if (PerfOverlay.BestBucket(out best, out bestFrames))
                 Main.Entry.Logger.Log("[엔진 단계] 가장 가벼운 구간 " + best * 10 + "초, 프레임당: " + Rank(i => bucketTicks[best, i], bestFrames));
