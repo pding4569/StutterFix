@@ -34,6 +34,7 @@
     <Compile Include="WindowGhost.cs" />
     <Compile Include="AutoTest.cs" />
     <Compile Include="BigLevel.cs" />
+    <Compile Include="PcTune.cs" />
     <Compile Include="GfxProbe.cs" />
     <Compile Include="FastJson.cs" />
     <Compile Include="FastJsonParser.cs" />

@@ -417,7 +417,7 @@ namespace StutterFix
 
             long q = System.Diagnostics.Stopwatch.GetTimestamp();
             GcControl.Tick(dt); Tk(0, ref q);
-            RestartAdvisor.Tick(); if (Edition.Dev) AutoTest.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+            RestartAdvisor.Tick(); if (Edition.Dev) AutoTest.Tick(); PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
@@ -737,6 +737,10 @@ namespace StutterFix
         public int LowSplit = 0;            // 효과 몰림 나누기 세기: 0 기본(10ms, 400칸), 1 잘게(5ms, 200칸), 2 아주 잘게(3ms, 120칸)
         public string ReopenLevel = "";     // 재시작 버튼으로 껐을 때 다시 켠 뒤 에디터로 열 맵 (한 번 쓰고 비움)
         public string LastEditorLevel = ""; // 에디터에서 마지막으로 연 맵 (메인 메뉴에서도 "마지막 맵으로 재시작" 하려고)
+        public int TuneVer = 0;              // PC 맞춤 자동 설정을 한 버전 (PcTune.Version 보다 작으면 메뉴에서 한 번 재고 적용)
+        public string TuneBackup = "";       // PC 맞춤으로 바꾸기 전 값 ("키=값;..."), 되돌리기용
+        public string TuneNotice = "";       // 처음 자동으로 바꾼 것 이름들 (홈 화면 알림, 닫으면 비움)
+        public string TuneLast = "";         // 마지막 PC 맞춤 측정 요약 (설정 창 표시용)
         public bool MoveFinish = true;     // 장식 위치 계산 줄이기 (마무리 묶기, 같은 값 건너뛰기, 편집기 작업 건너뛰기, LateUpdate 에 맡기기)
         public bool DormantSkip = true;    // 매 프레임 장식 순회에서 바뀔 일 없는 장식과 히트박스 없는 장식 빼기
         public int ImageMaxSide = -1;       // 큰 이미지 줄이기: 0 끔, -1 자동(VRAM 이 모자랄 때만), 4096, 2048 (긴 변 기준)

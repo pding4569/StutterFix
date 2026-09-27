@@ -167,6 +167,24 @@ namespace StutterFix
                         Log("킥: " + arg);
                         return true;
                     }
+                case "tune":
+                    PcTune.Measure();
+                    Log("PC 맞춤 추천: " + string.Join(", ", PcTune.RecommendLabels().ToArray()));
+                    return true;
+                case "tunesim":
+                    {
+                        // 약한 PC(내장 그래픽 + 느린 CPU)인 척 적용했다가 되돌려, 설정이 전과 같은지 본다 (저장 파일도)
+                        Func<string> snap = () => { var sb = new System.Text.StringBuilder(); foreach (var f in typeof(Settings).GetFields()) sb.Append(f.Name).Append("=").Append(Convert.ToString(f.GetValue(Main.Config), System.Globalization.CultureInfo.InvariantCulture)).Append(";"); return sb.ToString(); };
+                        string before = snap();
+                        PcTune.Measure(); PcTune.Integrated = PcTune.GpuWeak = PcTune.CpuWeak = true;
+                        var done = PcTune.Apply();
+                        string mid = snap();
+                        PcTune.Undo();
+                        string after = snap();
+                        Log("PC 맞춤 시험 적용: " + string.Join(", ", done.ToArray()) + " | 바뀐 값 " + (before == mid ? "없음(이상)" : "있음") + " | 되돌린 뒤 " + (before == after ? "전과 같음" : "다름: " + Diff(before, after)));
+                        PcTune.HasResult = false;
+                        return true;
+                    }
                 case "setstate":
                     {
                         // scrController.currentState 를 직접 바꾼다. 에디터 밖에서 죽은 뒤 에디터로 오면 Fail 이 남아 있는 상황을 흉내 내려고.
@@ -252,6 +270,13 @@ namespace StutterFix
             keybd_event(VK_TAB, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(30);
             keybd_event(VK_TAB, 0, KEYUP, UIntPtr.Zero); System.Threading.Thread.Sleep(30);
             keybd_event(VK_MENU, 0, KEYUP, UIntPtr.Zero);
+        }
+
+        private static string Diff(string a, string b)
+        {
+            var x = a.Split(';'); var y = b.Split(';'); var d = new List<string>();
+            for (int i = 0; i < Math.Min(x.Length, y.Length); i++) if (x[i] != y[i]) d.Add(x[i] + " -> " + y[i]);
+            return string.Join(", ", d.ToArray());
         }
 
         private static bool SamePath(string a, string b)

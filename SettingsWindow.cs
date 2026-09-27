@@ -542,6 +542,17 @@ namespace StutterFix
 
             // 새 버전 (GitHub 최신 릴리스)
             if (Updater.Available || Updater.Installed) UpdateCard();
+            // PC 맞춤 자동 설정 알림 (처음 한 번 자동으로 바꾼 것)
+            if (!string.IsNullOrEmpty(c.TuneNotice))
+            {
+                InfoCard(new[] { T("PC 맞춤 자동 설정", "Auto setup for this PC"), c.TuneLast + "\n" + T("켠 기능: ", "Turned on: ") + c.TuneNotice + "\n" + T("저사양 페이지에서 하나씩 바꾸거나 한 번에 되돌릴 수 있습니다.", "Change them on the Low-end page or undo all at once.") });
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button(T("확인", "OK"), sPrimary, GUILayout.Width(120), GUILayout.Height(34))) { c.TuneNotice = ""; Save(); }
+                GUILayout.Space(8);
+                if (PcTune.CanUndo && GUILayout.Button(T("되돌리기", "Undo"), sPrimary, GUILayout.Width(120), GUILayout.Height(34))) PcTune.Undo();
+                GUILayout.EndHorizontal();
+                GUILayout.Space(14);
+            }
             // 다른 모드(Quartz)와 겹치는 기능 안내
             var overlaps = Compat.Notes();
             if (overlaps.Count > 0) InfoCard(new[] { T("다른 모드와 겹치는 기능", "Overlaps with other mods"), string.Join("\n\n", overlaps.ToArray()) });
@@ -886,12 +897,33 @@ namespace StutterFix
         }
 
         // 저사양: 화면·동작이 아주 조금 달라지는 것을 감수하고 약한 컴퓨터에서 프레임을 짜내는 기능들 (전부 기본 꺼짐)
+        // 저사양 페이지 맨 위: PC 맞춤 (재고 추천 적용, 되돌리기)
+        private void TuneCard()
+        {
+            var c = Main.Config;
+            var rows = new List<string> { T("PC 맞춤", "PC fit"), string.IsNullOrEmpty(c.TuneLast) ? T("아직 안 잼", "Not measured yet") : c.TuneLast };
+            if (PcTune.HasResult)
+            {
+                var rec = PcTune.RecommendLabels();
+                rows.Add(T("추천", "Suggested")); rows.Add(rec.Count > 0 ? string.Join(", ", rec.ToArray()) : T("지금 설정으로 충분합니다", "Current settings are fine"));
+                if (PcTune.Integrated && c.FlipModel != 1) { rows.Add(T("내장 그래픽", "Integrated GPU")); rows.Add(T("그래픽 페이지의 \"최신 화면 출력 방식\"(실험)도 권합니다. 윈도우가 화면을 한 번 더 복사하는 것을 줄여 메모리 대역을 아낍니다. 게임을 다시 켜야 적용됩니다.", "The Modern presentation option (experimental, Graphics page) is also suggested: it saves one full-screen copy per frame. Needs a restart.")); }
+            }
+            InfoCard(rows.ToArray());
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(T("재고 추천 적용", "Measure and apply"), sPrimary, GUILayout.Width(170), GUILayout.Height(36))) { PcTune.Measure(); c.TuneLast = PcTune.Describe(); var done = PcTune.Apply(); c.TuneNotice = done.Count > 0 ? string.Join(", ", done.ToArray()) : ""; Save(); }
+            GUILayout.Space(8);
+            if (PcTune.CanUndo && GUILayout.Button(T("되돌리기", "Undo"), sPrimary, GUILayout.Width(120), GUILayout.Height(36))) PcTune.Undo();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(14);
+        }
+
         private void PageLowEnd()
         {
             var c = Main.Config;
             Heading(T("저사양", "Low-end PC"), T("약한 컴퓨터를 위한 기능입니다. 다른 기능과 달리 게임 밖 설정을 바꾸거나 아주 작은 차이를 감수하므로 기본으로 꺼져 있습니다. 필요한 것만 켜세요.",
                 "For weak PCs. Unlike the other features, these change settings outside the game or accept tiny differences, so they are off by default."));
             bool ch = false;
+            TuneCard();
             Section(T("컴퓨터 쪽", "System"));
             ch |= Option("lowprio", ref c.LowPriority, T("게임 우선순위 높이기", "Higher game priority"),
                 T("브라우저, 방송 프로그램, 업데이트 같은 다른 프로그램이 CPU 를 쓸 때 게임이 먼저 돌게 합니다. 백그라운드 때문에 끊기는 컴퓨터에 효과가 있습니다. 게임을 끄거나 이 기능을 끄면 원래대로 돌아갑니다.",
