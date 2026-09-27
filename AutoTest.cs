@@ -56,7 +56,7 @@ namespace StutterFix
             if (!started) { started = true; stepStart = now; }
             if (!ummClosed || (idx < steps.Count && steps[idx].StartsWith("play", StringComparison.OrdinalIgnoreCase))) CloseUmm();
             if (idx >= steps.Count) { Finish("끝"); return; }
-            if (now - stepStart > 180f) { Finish("시간 초과 (" + steps[idx] + ")"); return; }
+            if (now - stepStart > stepTimeout) { Finish("시간 초과 (" + steps[idx] + ")"); return; }
             string line = steps[idx];
             int sp = line.IndexOf(' ');
             string cmd = (sp < 0 ? line : line.Substring(0, sp)).ToLowerInvariant();
@@ -98,6 +98,8 @@ namespace StutterFix
         }
         private static void BeginRun(string kind) { EndRun(); runNo++; runKind = kind; runStart = Time.realtimeSinceStartup; }
 
+        private static float stepTimeout = 180f;   // 단계마다 최대 (timeout 명령으로 바꿈, 큰 맵 열기용)
+        private static float openStartedAt;
         private static int openPhase;
 
         // 끝났으면 true
@@ -111,6 +113,11 @@ namespace StutterFix
                     return now - stepStart >= waitSec;
                 case "log":
                     Log(arg); return true;
+                case "timeout":
+                    float.TryParse(arg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out stepTimeout);
+                    if (stepTimeout < 10f) stepTimeout = 180f;
+                    Log("단계 최대 시간 " + stepTimeout + "초");
+                    return true;
                 case "alttab":
                     {
                         // 옆 스레드가 <지연>초 뒤 Alt+Tab 으로 다른 창으로 갔다가 <머묾>초 뒤 Alt+Tab 으로 돌아온다(사람이 창을 오가는 것 흉내).
@@ -198,7 +205,7 @@ namespace StutterFix
                     if (openPhase == 0)
                     {
                         if (!File.Exists(arg)) throw new Exception("맵 파일 없음: " + arg);
-                        RestartAdvisor.BeginOpen(arg); openPhase = 1; Log("맵 열기: " + arg);
+                        RestartAdvisor.BeginOpen(arg); openPhase = 1; openStartedAt = now; Log("맵 열기: " + arg);
                         return false;
                     }
                     if (openPhase == 1)
@@ -210,7 +217,7 @@ namespace StutterFix
                         return false;
                     }
                     if (now - waitSec < 2f) return false;   // 열린 뒤 2초 (이미지 결과 창 등 정리)
-                    openPhase = 0; Log("맵 열림");
+                    openPhase = 0; Log(string.Format("맵 열림 ({0:F1}초, 열기 요청부터 2초 기다림 포함)", now - openStartedAt));
                     return true;
                 case "play":
                     if (ed == null) throw new Exception("에디터가 아님");

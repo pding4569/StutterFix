@@ -164,6 +164,7 @@ namespace StutterFix
                 PerfOverlay.Create();
                 Try(() => PerfOverlay.Install(harmony));
                 Try(() => WindowGhost.Install(harmony));   // 긴 전환 중 윈도우 멈춘 창 판정 막기 자리 더하기
+                Try(() => BigLevel.Install(harmony));   // 타일이 아주 많은 맵 불러오기 (BigLevel.cs)
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)
@@ -507,7 +508,7 @@ namespace StutterFix
             LowEnd.Apply();
             MoveApply.Enabled = E("MoveFinish", Config.MoveFinish);
             ParticleFix.SkipIdle = E("SkipIdleParticles", Config.SkipIdleParticles); ParticleFix.PauseOffscreen = E("LowPauseParticles", Config.LowPauseParticles); LeakGuard.Enabled = E("LeakFix", Config.LeakFix);
-            bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc;
+            bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc; BigLevel.Enabled = lc;
             TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages);
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);
