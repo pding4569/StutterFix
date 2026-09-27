@@ -351,6 +351,44 @@ namespace StutterFix
         private static long lastCleanMB = -1;
         internal static void NoteClean() { try { lastCleanMB = GC.GetTotalMemory(false) / 1048576; } catch { } }   // 다른 곳에서 한 정리 뒤 기준
         internal static long SkippedCollects;
+
+        // ── 편집으로 나간 뒤 조금씩 치우기 ──
+        // 에디터에서 한동안 플레이하고 편집으로 나가면 곡 중에 미뤄 둔 쓰레기를 여기서 한꺼번에 치웠다: 자동 시험 기록 684 / 748 / 1024 / 750ms
+        // (Arche, 힙 1~2.5GB). 편집 화면은 곧바로 곡이 도는 곳이 아니라서, 유니티의 점진적 GC 로 프레임마다 조금씩(ExitSliceMs) 치운다.
+        // 한 바퀴가 끝나고도 50MB 넘게 줄었으면 한 바퀴 더(최대 3바퀴, 한꺼번에 치우기의 "안 줄 때까지" 와 같은 뜻).
+        // 끝나기 전에 다시 재생하면 거기서 멈춘다(곡 중에는 Manual 로 멈춤 - 도는 중에 멈춰도 느린 판이 생기지 않음을 2.3.4 에서 확인).
+        internal static bool ExitSlices = true;
+        internal static float ExitSliceMs = 3f;
+        private static bool bgActive;
+        private static int bgFrames, bgCycles;
+        private static long bgBefore, bgCycleStart;
+        private static double bgMs, bgMaxMs;
+        private static float bgSince;
+        internal static long BgRuns, BgFrames;
+        private static void BgStep(bool playing)
+        {
+            long now = GC.GetTotalMemory(false) / 1048576;
+            if (playing || Paused || !Enabled)
+            {
+                bgActive = false;
+                Main.Entry.Logger.Log(string.Format("[GC] 편집 화면에서 조금씩 치우다 재생 시작으로 멈춤: {0}MB -> {1}MB, {2}프레임 {3:F0}ms", bgBefore, now, bgFrames, bgMs));
+                return;
+            }
+            long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
+            bool more = true;
+            try { GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; more = GarbageCollector.CollectIncremental((ulong)(ExitSliceMs * 1000000f)); }
+            catch { more = false; }
+            double ms = Ms(t0);
+            bgMs += ms; if (ms > bgMaxMs) bgMaxMs = ms; bgFrames++; BgFrames++;
+            if (more && Time.realtimeSinceStartup - bgSince < 60f) return;
+            bgCycles++;
+            if (!more && bgCycles < 3 && now < bgCycleStart - 50) { bgCycleStart = now; return; }
+            bgActive = false; BgRuns++;
+            lastCleanMB = now;
+            ModCost.Add(SettingsWindow.T("메모리 정리 (모드, 조금씩)", "Memory cleanup (mod, sliced)"), bgMs);
+            Main.Entry.Logger.Log(string.Format("[GC] 편집 화면에서 조금씩 치움 끝: {0}MB -> {1}MB, {2}바퀴, {3}프레임, 합계 {4:F0}ms, 한 프레임 최대 {5:F1}ms, {6:F1}초 걸림",
+                bgBefore, now, bgCycles, bgFrames, bgMs, bgMaxMs, Time.realtimeSinceStartup - bgSince));
+        }
         private static bool QuickTransition(string reason)
         {
             switch (reason)
@@ -381,6 +419,18 @@ namespace StutterFix
                         resumeCountdown = -1f;
                         SkippedCollects++;
                         Main.Entry.Logger.Log(string.Format("GC 재개 ({0}) 정리 생략: 지난 정리 뒤 쌓인 것 {1}MB < {2}MB (힙 {3}MB)", reason, debt, need, heap));
+                        return;
+                    }
+                    // 편집으로 나가기: 한꺼번에 치우지 않고 편집 화면에서 프레임마다 조금씩 (아래 BgStep)
+                    bool inc = false;
+                    try { inc = GarbageCollector.isIncremental; } catch { }
+                    if (reason == "SwitchToEditMode" && ExitSlices && inc)
+                    {
+                        GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
+                        Paused = false;
+                        resumeCountdown = -1f;
+                        bgActive = true; bgFrames = 0; bgCycles = 0; bgBefore = bgCycleStart = heap; bgMs = 0; bgMaxMs = 0; bgSince = Time.realtimeSinceStartup;
+                        Main.Entry.Logger.Log(string.Format("GC 재개 ({0}): 지난 정리 뒤 쌓인 것 {1}MB (힙 {2}MB) - 멈추지 않고 편집 화면에서 프레임마다 {3}ms 씩 치움", reason, debt, heap, ExitSliceMs));
                         return;
                     }
                 }
@@ -447,6 +497,7 @@ namespace StutterFix
             Hitch.Tick(dt, playing);
             Main.TickCost[16] += System.Diagnostics.Stopwatch.GetTimestamp() - hq;
 
+            if (bgActive) BgStep(playing);   // 편집으로 나간 뒤 조금씩 치우기 (재생이 시작되면 거기서 멈춘다)
             if (playing && !Paused) { if (Pause()) { pausedFor = 0f; PeakHeapMB = 0; quietTimer = 0f; quietHeapMark = GC.GetTotalMemory(false) / 1048576; } }
             if (!playing) pausePending = false;
             else if (!playing && Paused) { Hitch.Report(); if (!holdAfterFail) ScheduleResume("곡 종료 [" + LastScene + "]"); }

@@ -21,9 +21,17 @@
     <OutputPath>bin/Player/</OutputPath>
     <IntermediateOutputPath>obj/Player/</IntermediateOutputPath>
   </PropertyGroup>
+  <!-- (측정용, 배포 안 함) 플레이어용에 자동 시험만 더한다: dotnet build -p:Edition=Player -p:AutoTestBuild=1 -->
+  <PropertyGroup Condition="'$(AutoTestBuild)' == '1'">
+    <DefineConstants>$(DefineConstants);AUTOTEST</DefineConstants>
+    <OutputPath>bin/PlayerAuto/</OutputPath>
+    <IntermediateOutputPath>obj/PlayerAuto/</IntermediateOutputPath>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="StutterFix.cs" />
+    <Compile Include="ExitFix.cs" />
+    <Compile Include="StateDump.cs" />
     <Compile Include="Edition.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="PerfOverlay.cs" />
@@ -144,6 +152,10 @@
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
       <HintPath>$(GameManaged)\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteMaskModule">
+      <HintPath>$(GameManaged)/UnityEngine.SpriteMaskModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UIModule">

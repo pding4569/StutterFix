@@ -31,7 +31,7 @@ namespace StutterFix
 
         internal static void Init(string modPath)
         {
-            if (!Edition.Dev) return;
+            if (!Edition.AutoTest) return;
             try
             {
                 string f = Path.Combine(modPath, "autotest.txt");

@@ -187,7 +187,7 @@ namespace StutterFix
             if (!inEditorPlay || !SkipDoubleReset || !haveFp) return;
             try
             {
-                bool same = Fingerprint() == lastFp;
+                bool same = FingerprintMemo() == lastFp;
                 // 맵 연 뒤(장식을 새로 만든 뒤) 첫 재생은 개발자용도 늘 건너뛴다 - 맵 열 때 따로 검증했다(CreatedPostfix)
                 // 개발자용은 같은 장식 데이터마다 한 번만 안 건너뛰고 비교한다(VerifyAfterPlay). 2026-09-27 자동 시험: 안 건너뛴 Play 는 약 6초 멈춰
                 // 첫 판 FPS 느린 상태가 27번 중 5번 생겼고, 건너뛴 Play(4.6~5.4초)는 한 번도 새로 생기지 않았다 - 번갈아 하던 비교가 개발자용을 더 느리게 했다.
@@ -210,9 +210,37 @@ namespace StutterFix
         public static void ResetPostfix()
         {
             // 에디터에서만 지문을 남긴다 (재생 준비 끝의 다시 설정이 마지막)
-            try { if (SkipDoubleReset && ADOBase.isLevelEditor) { lastFp = Fingerprint(); haveFp = true; fpFromOpen = false; } }
+            // 같은 프레임에 이미 잰 지문(재생 시작의 ReloadAssets 앞, 편집으로 나가기의 ExitFix)이 있으면 그것을 쓴다. 다시 설정은 장식 데이터를 바꾸지 않는다.
+            // Arche 에디터 Play 는 한 프레임에 지문을 세 번 쟀다(ReloadAssets 앞, 건너뛴 다시 설정 뒤, 재생 준비 끝 다시 설정 뒤, 한 번 약 0.1초).
+            try { if (SkipDoubleReset && ADOBase.isLevelEditor) { lastFp = ReuseFingerprint(); haveFp = true; fpFromOpen = false; } }
             catch { haveFp = false; }
         }
+
+        // (ExitFix) 장식 데이터(목록, 순서, 이벤트 값 전부)가 마지막 장식 다시 설정 때와 같은가. 잰 지문은 이 다시 설정 끝(ResetPostfix)에서 다시 쓴다.
+        internal static bool SameDecorationData()
+        {
+            if (!haveFp || !SkipDoubleReset) return false;
+            return FingerprintMemo() == lastFp;
+        }
+
+        // 이번 프레임에 잰 지문 기억: 같은 장식 목록 객체, 같은 개수, 처음·끝 장식이 같은 객체일 때만 다시 쓴다(장식을 새로 만들면 객체가 바뀐다)
+        private static long memoFp; private static int memoFrame = -1, memoCount; private static List<scrDecoration> memoList; private static scrDecoration memoFirst, memoLast;
+        private static long FingerprintMemo()
+        {
+            long fp = Fingerprint();
+            var all = AllDecorations();
+            memoFp = fp; memoFrame = Time.frameCount; memoList = all; memoCount = all == null ? -1 : all.Count;
+            memoFirst = all != null && all.Count > 0 ? all[0] : null; memoLast = all != null && all.Count > 0 ? all[all.Count - 1] : null;
+            return fp;
+        }
+        private static long ReuseFingerprint()
+        {
+            var all = AllDecorations();
+            if (memoFrame == Time.frameCount && all != null && ReferenceEquals(all, memoList) && all.Count == memoCount
+                && (all.Count == 0 || (ReferenceEquals(all[0], memoFirst) && ReferenceEquals(all[all.Count - 1], memoLast)))) { FpReused++; return memoFp; }
+            return FingerprintMemo();
+        }
+        internal static long FpReused;
 
         // ── 3-2) 맵 연 뒤 첫 재생 ──
         // 위 건너뛰기는 "지난 다시 설정 뒤로 장식 데이터가 그대로" 일 때만 했다. 맵을 막 열었을 때는 다시 설정이 한 번도 없어서 첫 재생은

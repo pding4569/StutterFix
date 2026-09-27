@@ -77,6 +77,7 @@ namespace StutterFix
 
         public static void WakePost(scrVisualDecoration __instance) { Wake(__instance); }
         public static void WakeBase(scrDecoration __instance) { hbDirty = true; Wake(__instance); }
+        internal static void MarkHitboxDirty() { hbDirty = true; }   // ExitFix: Setup 을 건너뛴 장식이 있을 때 (Setup 뒤에 하던 것과 같게)
 
         private static void Wake(scrDecoration d)
         {

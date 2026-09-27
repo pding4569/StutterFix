@@ -13,5 +13,11 @@ namespace StutterFix
         internal const bool Dev = false;
         internal const string Name = "플레이어용";
 #endif
+        // (측정용, 배포 안 함) 플레이어용에서도 자동 시험(AutoTest)을 켠 빌드: -p:AutoTestBuild=1
+#if DEV || AUTOTEST
+        internal const bool AutoTest = true;
+#else
+        internal const bool AutoTest = false;
+#endif
     }
 }
