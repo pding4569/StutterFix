@@ -20,6 +20,7 @@ made by **naro** & **Claude**
 | Arche | 에디터 재생 시작 | 8.6초 → 4.3초 (2.2.0) |
 | Arche | 에디터 Play 직후 첫 판 FPS | 약 200 → **약 300 FPS** (2.3.0) |
 | Arche | 에디터에서 죽고 다시 하기 | 9.1초 → 3.2초 (2.3.0) → **2.1초** (2.3.1) |
+| Arche | 편집으로 나가기 | 2.3~3.2초 → **1.4~1.7초** (2.4.0) |
 | Hello (BPM) 2026 | 맵 불러오기 | 12.2초 → **8.1초** |
 | Hello (BPM) 2026 | 첫 판 곡 중 끊김 | 10번(최악 133ms) → **2번(최악 35ms)** |
 
@@ -27,7 +28,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.3.1 에서 바뀐 것](#231-에서-바뀐-것) · [2.3.0 에서 바뀐 것](#230-에서-바뀐-것)
+- [2.4.0 에서 바뀐 것](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -47,13 +48,34 @@ made by **naro** & **Claude**
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
 
-## 2.3.5 에서 바뀐 것
+## 2.4.0 에서 바뀐 것
+
+### 편집으로 나가기가 빨라짐
+
+플레이하다 에디터로 나갈 때 잠깐 멈추던 것(제보)을 줄였습니다. Arche 에서 나가기 멈춤을 나눠 보면 장식 28,835개 다시 설정 1.5초, 타일에 붙은 효과 컴포넌트 11만 개 지우기 0.76초, 그리고 한동안 플레이했으면 곡 중에 미뤄 둔 메모리 정리 0.7~1초였습니다.
+
+- **판 중에 안 바뀐 장식은 가볍게 다시 설정**: 게임은 나갈 때 모든 장식을 이벤트 값으로 처음부터 다시 설정(Setup)합니다. 이제 재생 시작 때 장식마다 값(효과가 바꾸는 필드 전부)을 찍어 두고, 나갈 때 그대로이고 필드에 흔적이 안 남는 설정(깊이, 마스크 깊이, 히트박스)도 불린 적 없는 장식은, 결과가 지금과 같은 설정은 건너뛰고 달라질 수 있는 것(놓는 위치, 위치·시차·회전·크기, 색, 보임, 태그 목록, 마스크·타일링 갱신 알림, 필터 목록, 에디터 클릭 상자)만 게임 함수로 다시 합니다. 바뀐 장식과 글자·오브젝트·파티클·블렌드·마스크·히트박스 장식, 장식 데이터가 바뀐 경우는 원래대로 합니다. 장식 순서대로 섞어 부르므로 태그 목록 순서도 원래와 같습니다.
+- **미뤄 둔 메모리 정리를 나눠서**: 곡 중에 미뤄 둔 쓰레기가 많이 쌓였으면 나갈 때 한꺼번에 치웠습니다(자동 시험 기록 0.68~1.0초). 이제 편집 화면에서 프레임마다 3ms 씩 조금씩 치웁니다. 끝나기 전에 다시 재생하면 거기서 멈춥니다.
+- **장식 데이터 지문을 한 프레임에 한 번만**: 에디터 재생 시작이 한 프레임에 세 번 재던 장식 데이터 지문(Arche 한 번 약 0.1초)을 한 번만 잽니다.
+- 타일 효과 컴포넌트 지우기(0.76초)는 뒤에서부터 지우기, 그동안 타일 충돌체 끄기 모두 시간이 같아(유니티의 컴포넌트 지우기 값 자체) 그대로 둡니다.
+
+측정(플레이어용, 사람 없이 자동으로 Arche 재생 → 나가기, 이전 코드와 같은 PC·같은 시나리오):
+
+| | 이전 | 2.4.0 |
+|---|---|---|
+| 한동안 플레이한 뒤 나가기 (메모리 정리가 걸림) | 3.18초 (정리 0.72초 포함) | **1.60~1.63초** (정리는 뒤이어 2.1~2.2초 동안 한 프레임 최대 약 39ms, 합계 0.13~0.15초) |
+| 그 밖의 나가기 | 2.28~2.57초 | **1.42~1.73초** |
+| 에디터 재생 시작 | 3.50~4.05초 | 3.32~3.65초 |
+
+50~110초 판 뒤에도 판 중에 바뀐 장식은 28,835개 중 41~74개였습니다. 나눠 치우기 뒤 다음 판 FPS 도 그대로(340~364 FPS, 곡 중 가장 긴 프레임 46ms 이하).
+
+검증(개발자용 자동 비교): 나가기마다 가볍게 한 결과를 넓게 찍고(장식 스크립트의 모든 필드, 자식까지 모든 트랜스폼, 모든 렌더러의 켜짐·정렬·스프라이트·색·마스크·재질(셰이더 속성 값 전부), 충돌체, 다른 스크립트의 필드, 매니저의 태그·알림 목록), 같은 프레임에 원래 방식으로 다시 설정해 이름별로 비교합니다. Arche, Windflower, DDONGSSADA3302, Hello (BPM) 2026, QuomodocunquizE, Battle Against A True Hero, 7777, Plum - Timeline 에서 재생 → 나가기, 재생 → 다시 하기 → 나가기: 가볍게 한 장식(맵마다 134~28,812개) 전부 원래 방식과 같음, 매니저 목록도 같음. 검증이 잡아 고친 것: 게임의 Setup 은 태그 없는 장식을 "NO TAG" 목록에 넣었다가 곧바로 다시 빼는데, 처음 만든 가벼운 처리는 이것을 따라 하지 않았습니다(Plum - Timeline). 검증기 자체 시험: 500개마다 하나씩 정렬·위치·색·태그 목록을 일부러 틀리게 하면 네 종류 모두 잡아냄.
 
 ### 타일이 아주 많은 맵(헤르츠 맵) 열기가 빨라짐
 
 게임은 타일을 만들 때마다 "Floors" 라는 정리용 오브젝트 밑으로 옮기는데, 옮길 때마다 이미 있는 타일 전부가 든 계층에 합치느라 **타일 수의 제곱으로** 느려졌습니다. 타일이 3만 개 이상이면 새 타일을 옮기지 않고 각자 둡니다(정리용 오브젝트는 원점에 있는 빈 오브젝트라 위치·모습은 같고, 게임 코드 전체에서 이 오브젝트를 쓰는 곳은 타일 만들기뿐).
 
-| 타일 수 (시험 맵) | 원래 열기 | 2.3.5 열기 |
+| 타일 수 (시험 맵) | 원래 열기 | 2.4.0 열기 |
 |---|---|---|
 | 9만 | 18.4초 | 12.1초 |
 | 36만 | 294초 | 60초 |
@@ -403,6 +425,12 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.4.0:**
+- **Faster return to the editor** (reported hitch when leaving play mode): the game re-runs Setup on every decoration when you stop playing (Arche: 28,835 decorations, 1.5 s). Values are now recorded at play start; decorations that did not change during the run (all fields the effects change are equal, and no setter that leaves no field behind — depth, mask depth, hitbox — was called) get a light reset that skips the settings that would come out the same and redoes, through the game's own functions, only what can differ (placement, position/parallax/rotation/scale, color, visibility, tag lists, mask/tiling notifications, filter list, editor click collider). Changed decorations, text/object/particle/blend/mask/hitbox decorations and changed level data use the original Setup. GC work postponed during play is now done in 3 ms slices in the editor instead of one 0.7–1 s freeze, and the decoration data fingerprint is computed once per frame instead of three times on editor Play. Player build, Arche (automated, same PC): leaving after a long run 3.18 s → 1.60 s, other exits 2.28–2.57 s → 1.42–1.73 s, editor Play 3.50–4.05 s → 3.32–3.65 s. Dev builds compare the light result with the original Setup in the same frame (all script fields, all transforms, renderer/material properties, colliders, manager lists): identical on 8 levels, including after retries.
+- **Huge levels (hundreds of thousands of tiles) open much faster:** tile creation was O(n²) because every new tile was re-parented under one "Floors" object; levels with 30,000+ tiles keep tiles at the root (360k tiles: 294 s → 60 s). Levels with 200,000+ tiles drop the hidden per-tile editor number canvas (360k tiles: 9.6 GB → 7.1 GB).
+- **Automatic PC tuning:** a 0.2 s benchmark on first launch (CPU, GPU bandwidth, integrated GPU, RAM, refresh rate) turns on only the low-end features that match the weak side; nothing changes on strong PCs. Undo from the home card or the low-end page.
+- **2.3.2–2.3.4:** the first-run FPS drop's real cause fixed (GC is now paused with Manual instead of Disabled mode), deferred GC no longer stops working after dying outside the editor, long-song GC slicing stops once the heap is back under half the limit, restart/quit buttons warn once about unsaved edits.
 
 **2.3.1:**
 - **Faster editor transitions** (more from [PR #1](https://github.com/pding4569/StutterFix/pull/1) by MAIJEUN): decoration images are kept instead of unloaded and re-read from disk when returning to the editor or retrying in the editor, and the retry resets decorations once instead of twice. Arche editor retry 3.3 s → 2.1 s.
