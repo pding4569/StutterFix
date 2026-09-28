@@ -85,6 +85,7 @@ namespace StutterFix
             Census(censusWhy);
         }
 
+        internal static void CensusNow(string why) { Census(why); }
         private static void Census(string why)
         {
             try

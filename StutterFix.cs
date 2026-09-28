@@ -182,6 +182,7 @@ namespace StutterFix
                 Try(() => ThumbCam.Install(harmony));   // 아무도 안 보는 썸네일 카메라 끄기 (ThumbCam.cs)
                 Try(() => TileCull.Install(harmony, Entry.Path));   // 화면 밖 타일 끄기 (TileCull.cs)
                 Try(() => BeatFix.Install(harmony));   // 박자 알림에서 아무것도 안 하는 타일 건너뛰기 (BeatFix.cs)
+                Try(() => MatReuse.Install(harmony));   // 타일 머티리얼 누수 막기 (MatReuse.cs)
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)
@@ -524,7 +525,7 @@ namespace StutterFix
             Fsr.Apply();
             LowEnd.Apply();
             MoveApply.Enabled = E("MoveFinish", Config.MoveFinish);
-            ParticleFix.SkipIdle = E("SkipIdleParticles", Config.SkipIdleParticles); ParticleFix.PauseOffscreen = E("LowPauseParticles", Config.LowPauseParticles); LeakGuard.Enabled = E("LeakFix", Config.LeakFix);
+            ParticleFix.SkipIdle = E("SkipIdleParticles", Config.SkipIdleParticles); ParticleFix.PauseOffscreen = E("LowPauseParticles", Config.LowPauseParticles); LeakGuard.Enabled = E("LeakFix", Config.LeakFix); MatReuse.Enabled = LeakGuard.Enabled;
             bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc; BigLevel.Enabled = lc; ExitFix.Enabled = lc; FfxReuse.Enabled = lc; AllocFix.Enabled = E("GcPause", Config.GcPause);
             TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages);
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);

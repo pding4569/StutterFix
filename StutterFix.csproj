@@ -40,6 +40,8 @@
     <Compile Include="TileCull.cs" />
     <Compile Include="TimeProbe.cs" />
     <Compile Include="BeatFix.cs" />
+    <Compile Include="MatReuse.cs" />
+    <Compile Include="HeapPath.cs" />
     <Compile Include="Edition.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="PerfOverlay.cs" />

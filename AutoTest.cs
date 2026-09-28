@@ -226,6 +226,134 @@ namespace StutterFix
                         Log("렌더러 enabled 호출 함수 " + hits + "개 / 훑은 함수 " + methods + "개, " + sw.ElapsedMilliseconds + "ms: " + string.Join(", ", who.ToArray()));
                         return true;
                     }
+                case "matrefs":
+                    {
+                        // 지금 타일들이 가리키는 머티리얼: 스크립트 필드(FloorRenderer.material) / 렌더러가 쓰는 것(sharedMaterials)
+                        var byField = new HashSet<Material>(); var byRend = new HashSet<Material>(); int same = 0, n = 0, slots = 0;
+                        foreach (var f in ADOBase.lm.listFloors)
+                        {
+                            if (f == null || f.floorRenderer == null) continue; n++;
+                            var m = f.floorRenderer.material; if (m != null) byField.Add(m);
+                            var sm = f.floorRenderer.renderer.sharedMaterials; slots += sm.Length; foreach (var x in sm) if (x != null) byRend.Add(x);
+                            if (sm.Length > 0 && ReferenceEquals(sm[0], m)) same++;
+                        }
+                        var both = new HashSet<Material>(byField); both.UnionWith(byRend);
+                        Log("타일 " + n + "개: 스크립트 필드 머티리얼 " + byField.Count + "개, 렌더러 머티리얼 " + byRend.Count + "개(슬롯 " + slots + "), 합 " + both.Count + "개, 둘이 같은 타일 " + same + "개, 첫 타일 id " + ADOBase.lm.listFloors[0].GetInstanceID());
+                        return true;
+                    }
+                case "whoholds":
+                    { var hsw = System.Diagnostics.Stopwatch.StartNew(); Log("지워진 타일을 붙잡는 곳: " + HeapPath.Find(typeof(scrFloor), 6000000, 12) + " (" + hsw.ElapsedMilliseconds + "ms)"); return true; }
+                case "whoholdsmat":
+                    {
+                        var cur = new HashSet<Material>();
+                        foreach (var f in ADOBase.lm.listFloors) if (f != null && f.floorRenderer != null) { if (f.floorRenderer.material != null) cur.Add(f.floorRenderer.material); foreach (var x in f.floorRenderer.renderer.sharedMaterials) if (x != null) cur.Add(x); }
+                        var orphan = new HashSet<object>(); int total = 0;
+                        foreach (var m in Resources.FindObjectsOfTypeAll<Material>()) if (m.name == "FloorMeshDefault (Instance)" && !cur.Contains(m)) { total++; if (orphan.Count < 2000) orphan.Add(m); }
+                        var hsw = System.Diagnostics.Stopwatch.StartNew();
+                        Log("버려진 타일 머티리얼 " + total + "개 중 " + orphan.Count + "개를 찾음: " + HeapPath.Find(o => orphan.Contains(o), "버려진 머티리얼", 20000000, 12) + " (" + hsw.ElapsedMilliseconds + "ms)");
+                        return true;
+                    }
+                case "dotclear":
+                    DG.Tweening.DOTween.ClearCachedTweens(); Log("DOTween 재활용 풀 비움"); return true;
+                case "killorphans":
+                    {
+                        var cur = new HashSet<Material>();
+                        foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>()) foreach (var x in r.sharedMaterials) if (x != null) cur.Add(x);
+                        foreach (var f in ADOBase.lm.listFloors) if (f != null && f.floorRenderer != null && f.floorRenderer.material != null) cur.Add(f.floorRenderer.material);
+                        int k = 0;
+                        foreach (var m in Resources.FindObjectsOfTypeAll<Material>()) if (m.name == "FloorMeshDefault (Instance)" && !cur.Contains(m)) { UnityEngine.Object.Destroy(m); k++; }
+                        Log("버려진 타일 머티리얼 " + k + "개 지움 (시험)");
+                        return true;
+                    }
+                case "orphanrend":
+                    {
+                        // 버려진 타일 머티리얼을 아직 쓰는 렌더러가 있는지 (지금 맵 목록 밖의 렌더러)
+                        var cur = new HashSet<Material>();
+                        foreach (var f in ADOBase.lm.listFloors) if (f != null && f.floorRenderer != null) foreach (var x in f.floorRenderer.renderer.sharedMaterials) if (x != null) cur.Add(x);
+                        var desc = new Dictionary<string, int>(); int n = 0;
+                        foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+                        {
+                            foreach (var m in r.sharedMaterials)
+                            {
+                                if (m == null || cur.Contains(m) || !m.name.EndsWith("(Instance)")) continue;
+                                if (!m.name.StartsWith("FloorMeshDefault")) continue;
+                                n++;
+                                var t = r.transform; string path = t.name; for (var p = t.parent; p != null; p = p.parent) path = p.name + "/" + path;
+                                var comps = new System.Text.StringBuilder(); foreach (var c in r.GetComponents<Component>()) comps.Append(c == null ? "null" : c.GetType().Name).Append(',');
+                                string k = path.Length > 80 ? path.Substring(0, 80) : path; k = System.Text.RegularExpressions.Regex.Replace(k, @"\d+", "#") + " [" + comps + "] 켜짐=" + r.gameObject.activeInHierarchy + " 장면=" + r.gameObject.scene.name;
+                                int c0; desc.TryGetValue(k, out c0); desc[k] = c0 + 1;
+                                break;
+                            }
+                        }
+                        var sbr = new System.Text.StringBuilder("버려진 타일 머티리얼을 쓰는 렌더러 " + n + "개:");
+                        int shown = 0; foreach (var kv in desc) { if (shown++ >= 8) break; sbr.Append("\n  ").Append(kv.Value).Append("개: ").Append(kv.Key); }
+                        Log(sbr.ToString());
+                        return true;
+                    }
+                case "newmats":
+                    {
+                        // 참조 없는 머티리얼을 만들어 둔다 (에셋 정리가 이런 것을 치우는지 시험)
+                        var sh = Shader.Find("Sprites/Default");
+                        for (int i = 0; i < 1000; i++) { var m = new Material(sh); m.name = "SFTestMat"; }
+                        var src = ADOBase.lm.listFloors[0].floorRenderer.renderer;
+                        var go = new GameObject("SFTestRend"); var mr = go.AddComponent<MeshRenderer>(); mr.sharedMaterial = src.sharedMaterial;
+                        for (int i = 0; i < 1000; i++) { var inst = mr.material; mr.sharedMaterial = src.sharedMaterial; }   // renderer.material 로 복제된 것 1000개
+                        UnityEngine.Object.Destroy(go);
+                        Log("시험 머티리얼 만듦");
+                        return true;
+                    }
+                case "countmats":
+                    {
+                        int a = 0, b = 0;
+                        foreach (var m in Resources.FindObjectsOfTypeAll<Material>()) { if (m.name == "SFTestMat") a++; else if (m.name.EndsWith("(Instance)") && m.name.StartsWith(ADOBase.lm.listFloors[0].floorRenderer.renderer.sharedMaterial.name.Replace(" (Instance)", ""))) b++; }
+                        Log("시험 머티리얼 남음: new Material " + a + "개, 타일 머티리얼 이름의 (Instance) " + b + "개");
+                        return true;
+                    }
+                case "whoholds2":
+                    {
+                        // 버려진 타일 머티리얼이나 지워진 타일/타일 렌더러에 닿는 경로를 출발점 묶음별로 (mods / game / scene)
+                        var cur = new HashSet<Material>();
+                        foreach (var f in ADOBase.lm.listFloors) if (f != null && f.floorRenderer != null) { if (f.floorRenderer.material != null) cur.Add(f.floorRenderer.material); foreach (var x in f.floorRenderer.renderer.sharedMaterials) if (x != null) cur.Add(x); }
+                        var orphan = new HashSet<object>();
+                        foreach (var m in Resources.FindObjectsOfTypeAll<Material>()) if (m.name == "FloorMeshDefault (Instance)" && !cur.Contains(m)) orphan.Add(m);
+                        Func<object, bool> isT = o => orphan.Contains(o) || ((o is scrFloor || o is FloorRenderer) && (UnityEngine.Object)o == null);
+                        HeapPath.SkipInto = o => (o is scrFloor || o is ffxPlusBase || o is FloorRenderer) && (UnityEngine.Object)o != null;
+                        string gameAsm = typeof(scrFloor).Assembly.GetName().Name, self = typeof(AutoTest).Assembly.GetName().Name;
+                        List<KeyValuePair<object, string>> roots = null;
+                        Func<System.Reflection.Assembly, bool> af = null;
+                        if (arg == "mods") af = a => { var n = a.GetName().Name; return n != gameAsm && n != self && !n.StartsWith("Unity") && !n.StartsWith("System") && n != "mscorlib" && !n.StartsWith("Mono.") && !n.Contains("Harmony") && !n.StartsWith("DOTween") && n != "netstandard"; };
+                        else if (arg == "floors") { HeapPath.SkipInto = null; roots = new List<KeyValuePair<object, string>>(); foreach (var f in ADOBase.lm.listFloors) if (f != null) roots.Add(new KeyValuePair<object, string>(f, "새 타일")); }
+                        else if (arg == "self") af = a => a.GetName().Name == self;
+                        else if (arg == "game") af = a => a.GetName().Name == gameAsm || a.GetName().Name.StartsWith("DOTween") || a.GetName().Name.StartsWith("Assembly-CSharp");
+                        else
+                        {
+                            roots = new List<KeyValuePair<object, string>>();
+                            foreach (var mb in UnityEngine.Object.FindObjectsOfType<MonoBehaviour>()) if (!(mb is scrFloor) && !(mb is ffxPlusBase) && !(mb is FloorRenderer)) roots.Add(new KeyValuePair<object, string>(mb, "장면:" + mb.GetType().Name));
+                        }
+                        var hsw = System.Diagnostics.Stopwatch.StartNew();
+                        Log("[" + arg + "] 버려진 머티리얼 " + orphan.Count + "개: " + HeapPath.Find(isT, "버려진 것", (arg == "game" || arg == "scene") ? 9000000 : 3000000, 16, roots, af) + " (" + hsw.ElapsedMilliseconds + "ms)");
+                        HeapPath.SkipInto = null;
+                        return true;
+                    }
+                case "unpatch":
+                    new Harmony(Main.Entry.Info.Id).UnpatchAll(Main.Entry.Info.Id); Log("이 모드의 게임 패치를 모두 뗌 (비교용)"); return true;
+                case "orphaninfo":
+                    {
+                        var cur = new HashSet<Material>();
+                        foreach (var f in ADOBase.lm.listFloors) if (f != null && f.floorRenderer != null) { if (f.floorRenderer.material != null) cur.Add(f.floorRenderer.material); foreach (var x in f.floorRenderer.renderer.sharedMaterials) if (x != null) cur.Add(x); }
+                        var flags = new Dictionary<string, int>(); int total = 0;
+                        foreach (var m in Resources.FindObjectsOfTypeAll<Material>()) if (m.name == "FloorMeshDefault (Instance)" && !cur.Contains(m)) { total++; string k = m.hideFlags.ToString(); int c; flags.TryGetValue(k, out c); flags[k] = c + 1; }
+                        var sbf = new System.Text.StringBuilder(); foreach (var kv in flags) sbf.Append(' ').Append(kv.Key).Append('=').Append(kv.Value);
+                        int curFlags = 0; foreach (var m in cur) if (m.hideFlags != HideFlags.None) curFlags++;
+                        Log("버려진 타일 머티리얼 " + total + "개, hideFlags:" + sbf + " / 지금 타일 것 중 hideFlags 있는 것 " + curFlags + "/" + cur.Count);
+                        return true;
+                    }
+                case "unload":
+                    { var usw = System.Diagnostics.Stopwatch.StartNew(); var op = Resources.UnloadUnusedAssets(); Log("에셋 정리 요청 (" + usw.ElapsedMilliseconds + "ms)"); return true; }
+                case "census":
+                    LeakGuard.CensusNow(arg.Length > 0 ? arg : "자동 시험");
+                    { var all = Resources.FindObjectsOfTypeAll<scrFloor>(); int act = 0; foreach (var f in all) if (f.gameObject.activeInHierarchy) act++; Log("타일 오브젝트 전체 " + all.Length + "개(켜진 것 " + act + "), 지금 맵 목록 " + (ADOBase.lm != null ? ADOBase.lm.listFloors.Count : -1) + "개, 박자 알림 목록 " + (scrConductor.instance != null ? scrConductor.instance.onBeats.Count : -1) + "개"); }
+                    return true;
                 case "beatfix":
                     BeatFix.Enabled = arg != "off"; Log("박자 알림 건너뛰기 " + (BeatFix.Enabled ? "켬" : "끔")); return true;
                 case "tilecull":
