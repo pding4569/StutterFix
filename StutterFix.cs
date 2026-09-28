@@ -70,6 +70,8 @@ namespace StutterFix
             if (has("present-flip")) { WindowGhost.PresentMode = 0; Entry.Logger.Log("[첫 판 FPS] present-flip 파일이 있어 보통 Present(0,0) 로 내보냄"); }
             if (has("present-screen-check")) { WindowGhost.ScreenCheck = true; Entry.Logger.Log("[첫 판 FPS] present-screen-check 파일이 있어 멈춘 동안 화면을 비교함"); }
             if (has("alloc-probe")) { Hitch.AllocProbeOn = true; AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe")); }
+            if (has("tilecull-verify.txt")) { TileCull.Verify = true; TileCull.VerifyInstall(); Entry.Logger.Log("[화면 밖 타일 검증] tilecull-verify.txt 파일이 있어 그리기마다 검사함"); }
+            if (has("tilecull-min.txt")) { try { TileCull.MinFloors = int.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "tilecull-min.txt")).Trim()); Entry.Logger.Log("[화면 밖 타일] 최소 타일 수 " + TileCull.MinFloors); } catch { } }
             if (has("ffx-verify.txt")) { FfxReuse.Verify = true; Entry.Logger.Log("[효과 재사용 검증] ffx-verify.txt 파일이 있어 효과 붙이기마다 원래 방식과 비교함"); }
             if (has("alloc-phase")) { PhaseWatch.AllocPhases = true; Entry.Logger.Log("[할당 단계] alloc-phase 파일이 있어 곡 중 단계별 힙 증가를 잼"); }
             if (has("freeze-test")) { PresentWatch.FreezeTest = true; Entry.Logger.Log("[첫 판 FPS 시험] freeze-test 파일이 있어 곡 중 6초 멈춤 시험을 함"); }
@@ -176,6 +178,7 @@ namespace StutterFix
                 Try(() => BigLevel.Install(harmony));   // 타일이 아주 많은 맵 불러오기 (BigLevel.cs)
                 Try(() => AllocFix.Install(harmony));   // 곡 중 쓰레기 줄이기 (AllocFix.cs)
                 Try(() => ThumbCam.Install(harmony));   // 아무도 안 보는 썸네일 카메라 끄기 (ThumbCam.cs)
+                Try(() => TileCull.Install(harmony, Entry.Path));   // 화면 밖 타일 끄기 (TileCull.cs)
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)
@@ -428,7 +431,7 @@ namespace StutterFix
 
             long q = System.Diagnostics.Stopwatch.GetTimestamp();
             GcControl.Tick(dt); Tk(0, ref q);
-            RestartAdvisor.Tick(); if (Edition.AutoTest) AutoTest.Tick(); PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+            RestartAdvisor.Tick(); if (Edition.AutoTest) AutoTest.Tick(); PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
@@ -528,6 +531,7 @@ namespace StutterFix
             FastBlend.Enabled = E("FastBlend", Config.FastBlend);
             InvisibleSkip.Enabled = E("SkipInvisible", Config.SkipInvisible);
             ThumbCam.Enabled = InvisibleSkip.Enabled; ThumbCam.Apply();
+            TileCull.Enabled = InvisibleSkip.Enabled;
             InvisibleSkip.LazyMove = E("SkipInvisible", Config.LazyHidden);
             if (!InvisibleSkip.Enabled) InvisibleSkip.RestoreAll();
             else if (!InvisibleSkip.LazyMove) InvisibleSkip.ApplyAllLazy();

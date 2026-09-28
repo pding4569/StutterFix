@@ -160,6 +160,68 @@ namespace StutterFix
                     }
                 case "ffxreuse":
                     FfxReuse.ForceOff = arg == "off"; Log("효과 재사용 " + (FfxReuse.ForceOff ? "끔" : "켬")); return true;
+                case "floordump":
+                    {
+                        // (개발자용 조사) 타일 구조, 렌더러 종류, 카메라 마스크, 렌더러 켜기/끄기 호출 훑기 시간
+                        var fl = ADOBase.lm.listFloors;
+                        var f0 = fl[Math.Min(100, fl.Count - 1)];
+                        var sb = new System.Text.StringBuilder("타일 " + fl.Count + "개, 예시 #" + f0.seqID + ":");
+                        foreach (var t in f0.GetComponentsInChildren<Transform>(true))
+                        {
+                            sb.Append("\n  ").Append(t == f0.transform ? "(루트)" : t.name).Append(" 층 ").Append(t.gameObject.layer).Append(t.gameObject.activeSelf ? "" : " 꺼짐").Append(":");
+                            foreach (var c in t.GetComponents<Component>())
+                            {
+                                if (c == null) continue;
+                                sb.Append(' ').Append(c.GetType().Name);
+                                if (c is Renderer rr) sb.Append(rr.enabled ? "(켬)" : "(끔)");
+                                else if (c is Behaviour bb) sb.Append(bb.enabled ? "(켬)" : "(끔)");
+                            }
+                        }
+                        var tally = new Dictionary<string, int>();
+                        foreach (var f in fl) foreach (var r in f.GetComponentsInChildren<Renderer>(false)) if (r.enabled) { string k = r.GetType().Name + "@층" + r.gameObject.layer + (r.transform == f.transform ? "(루트)" : "(" + r.name + ")"); int n; tally.TryGetValue(k, out n); tally[k] = n + 1; }
+                        sb.Append("\n켜진 렌더러:");
+                        foreach (var kv in tally) sb.Append(' ').Append(kv.Key).Append('=').Append(kv.Value);
+                        sb.Append("\n카메라:");
+                        foreach (var cam in Camera.allCameras) sb.Append(' ').Append(cam.name).Append("=0x").Append(cam.cullingMask.ToString("X"));
+                        Log(sb.ToString());
+                        var sw = System.Diagnostics.Stopwatch.StartNew();
+                        var setE = typeof(Renderer).GetProperty("enabled").GetSetMethod(); var getE = typeof(Renderer).GetProperty("enabled").GetGetMethod();
+                        int methods = 0, hits = 0; var who = new List<string>();
+                        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                        {
+                            var an = asm.GetName().Name;
+                            if (an.StartsWith("Unity") || an.StartsWith("System") || an == "mscorlib" || an == "netstandard" || an.StartsWith("Mono.") || an.StartsWith("0Harmony") || an.StartsWith("Harmony") || asm.IsDynamic) continue;
+                            Type[] types; try { types = asm.GetTypes(); } catch (System.Reflection.ReflectionTypeLoadException ex) { types = ex.Types; }
+                            var mod = asm.ManifestModule;
+                            var cache = new Dictionary<int, bool>();
+                            foreach (var t in types)
+                            {
+                                if (t == null) continue;
+                                foreach (var m in t.GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly))
+                                {
+                                    System.Reflection.MethodBody body; try { body = m.GetMethodBody(); } catch { continue; }
+                                    if (body == null) continue;
+                                    methods++;
+                                    var il = body.GetILAsByteArray();
+                                    for (int i = 0; i + 4 < il.Length; i++)
+                                    {
+                                        if (il[i] != 0x28 && il[i] != 0x6F) continue;
+                                        int tok = BitConverter.ToInt32(il, i + 1);
+                                        if ((tok >> 24) != 0x0A && (tok >> 24) != 0x06) continue;
+                                        bool hit;
+                                        if (!cache.TryGetValue(tok, out hit)) { try { var mb = mod.ResolveMethod(tok); hit = mb == setE || mb == getE; } catch { hit = false; } cache[tok] = hit; }
+                                        if (hit) { hits++; if (who.Count < 400) who.Add(an + ":" + t.Name + "." + m.Name); break; }
+                                    }
+                                }
+                            }
+                        }
+                        Log("렌더러 enabled 호출 함수 " + hits + "개 / 훑은 함수 " + methods + "개, " + sw.ElapsedMilliseconds + "ms: " + string.Join(", ", who.ToArray()));
+                        return true;
+                    }
+                case "tilecull":
+                    TileCull.ForceOff = arg == "off"; Log("화면 밖 타일 " + (TileCull.ForceOff ? "끔" : "켬")); return true;
+                case "culltest":
+                    Log("화면 밖 타일 비교: " + TileCull.RenderCompare()); return true;
                 case "framescan":
                     return FrameScan.Step(arg, now);
                 case "slowscan":

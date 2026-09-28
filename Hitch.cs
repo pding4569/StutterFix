@@ -172,6 +172,7 @@ namespace StutterFix
             PhaseWatch.ResetSong();
             if (AllocProbeOn) AllocProbe.ResetSong();
             UiProf.ResetSong();
+            TileCull.SongBegin();
             Main.Entry.Logger.Log("[끊김] 기록 시작");
         }
 

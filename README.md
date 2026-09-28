@@ -70,6 +70,14 @@ made by **naro** & **Claude**
 에디터에 있는 동안(곡 중 포함) 게임이 워크숍 썸네일용 512x512 이미지를 매 프레임 다시 그리고 있었습니다. 이 이미지는 썸네일을 저장할 때만 직접 한 번 그려서 쓰므로 카메라만 꺼 둡니다(프레임당 메인 스레드 0.07~0.09ms, 그래픽카드도 한 장 덜 그림). "투명한 장식 그리지 않기"에 포함됩니다.
 검증: 같은 프레임에 카메라를 켠 채/끈 채 만든 썸네일이 3개 맵 모두 바이트까지 같음.
 
+### 화면 밖 타일 끄기 (타일이 많은 맵의 평균 FPS)
+타일이 많은 맵은 평균 FPS 자체가 낮았습니다(같은 PC에서 5천 타일 402 FPS, 9만 타일 295 FPS). 늘어난 시간은 거의 다 유니티가 카메라 4개마다 화면 밖 타일까지 모두 "보이나?" 검사하는 값이었습니다. 타일이 3천 개 넘는 맵에서는 곡 중에 화면에서 먼 타일의 렌더러를 꺼서 그 검사에서 빼고, 카메라가 다가가면 그리기 직전에 다시 켭니다.
+- 게임과 다른 모드가 렌더러를 켜고 끄는 곳(게임 시작 뒤 첫 맵 로딩 때 찾아 바꿔 끼움, 약 190곳)에는 꺼 둔 타일도 원래 값으로 보이고, 그 사이 바꾼 값은 다시 켤 때 반영합니다.
+- 움직이거나 모양이 바뀌는 타일(트랙 이동·등장·사라짐, 회전, 메시 다시 만들기)은 바로 켜고 빼지 않습니다. 1초 넘게 안 움직이면 새 크기로 다시 넣습니다.
+- 측정(플레이어용, 9만 타일 시험 맵, 번갈아 2번씩): **295·297 → 418·425 FPS** (CPU 3.4 → 2.4ms/프레임).
+- 검증(개발자용, Windflower·scam·Arche·9만 타일 맵, 다시 하기 포함): 꺼 둔 타일 중 실제 화면과 겹친 것 0번, 꺼진 채 움직인 것 0번, 곡 중에 "지금 상태"와 "전부 켠 상태"로 타일을 그려 비교한 픽셀 차이 0개.
+- "투명한 장식 그리지 않기"에 포함됩니다.
+
 ## 2.4.3 에서 바뀐 것
 
 ### 곡 중 쓰레기 줄이기 (1시간 맵 초당 2.21MB → 1.45MB, -34%)
@@ -490,7 +498,7 @@ Stutter Fix reduces mid-play hitches and level loading times on heavy custom lev
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
 
-**2.4.4:** faster editor Play (the light decoration reset from 2.4.0 now also runs at play start for decorations untouched in the editor; Arche 3.3–3.9 s → 2.8–3.0 s from the second Play, verified identical on 4 levels), and less garbage during play (legacy keyboard check without lambdas/temp lists; no per-frame GUILayout setup for the mod's own overlay and closed settings window): 1-hour level 1.45 → 1.19 MB/s. Also: **floor effect components are reused** instead of destroyed and re-added on every editor exit / play start (reset to a freshly-constructed state; lookups hide kept components and return the original order): Arche play start 3.1 → 2.5 s, exit 1.5 → 1.1 s, verified field-by-field identical on 4 levels; **automatic updates** (checks at launch and every 3 hours, downloads and installs a new version by itself outside of levels, applied on the next launch; install work runs off the main thread), and the editor's unused workshop thumbnail camera no longer redraws a 512x512 image every frame (0.07–0.09 ms main thread per frame; saved thumbnails byte-identical).
+**2.4.4:** faster editor Play (the light decoration reset from 2.4.0 now also runs at play start for decorations untouched in the editor; Arche 3.3–3.9 s → 2.8–3.0 s from the second Play, verified identical on 4 levels), and less garbage during play (legacy keyboard check without lambdas/temp lists; no per-frame GUILayout setup for the mod's own overlay and closed settings window): 1-hour level 1.45 → 1.19 MB/s. Also: **floor effect components are reused** instead of destroyed and re-added on every editor exit / play start (reset to a freshly-constructed state; lookups hide kept components and return the original order): Arche play start 3.1 → 2.5 s, exit 1.5 → 1.1 s, verified field-by-field identical on 4 levels; **far off-screen tiles are left out of rendering** on levels with over 3,000 tiles (Unity was testing every tile for every camera each frame): 90k-tile level 295 → 420 FPS, verified with 0 on-screen culled tiles and 0-pixel render differences; **automatic updates** (checks at launch and every 3 hours, downloads and installs a new version by itself outside of levels, applied on the next launch; install work runs off the main thread), and the editor's unused workshop thumbnail camera no longer redraws a 512x512 image every frame (0.07–0.09 ms main thread per frame; saved thumbnails byte-identical).
 
 
 **2.4.3:** less garbage during play (1-hour level 2.21 → 1.45 MB/s): the tile update no longer allocates a closure object for the volume color mode on every tile every frame, and async keyboard / mouse input no longer build HashSets, LINQ iterators and lambdas on every call. Results are identical; dev builds compared every call against the original code while real keys were sent (69,190 calls each, 0 differences).

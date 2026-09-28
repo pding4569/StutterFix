@@ -581,7 +581,7 @@ namespace StutterFix
         }
         private static string loadDetail;
 
-        private static bool InLoading { get { return Time.frameCount - loadFrame <= 30 || Time.realtimeSinceStartup - loadTime < 2f; } }
+        internal static bool InLoading { get { return Time.frameCount - loadFrame <= 30 || Time.realtimeSinceStartup - loadTime < 2f; } }
         internal static bool IsLoadingNow { get { return InLoading; } }
 
         // 곡 시작 연출: 곡이 시작되고 첫 타일을 치기 전(최대 5초). 맵의 첫 효과 수천 개가 한 프레임에 시작되며 60~160ms 멈추는데,
