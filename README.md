@@ -28,7 +28,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.4.3 에서 바뀐 것](#243-에서-바뀐-것) · [2.4.2](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
+- [2.4.4 에서 바뀐 것](#244-에서-바뀐-것) · [2.4.3](#243-에서-바뀐-것) · [2.4.2](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -47,6 +47,16 @@ made by **naro** & **Claude**
 - **Shift+Insert**: 실시간 모니터 (아이콘 → 미니 → 상세 → 끔)
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
+
+## 2.4.4 에서 바뀐 것
+
+### 에디터 재생 시작이 빨라짐
+편집으로 나가기(2.4.0)에 쓰던 "안 바뀐 장식은 가볍게 다시 설정"을 에디터 재생 시작에도 씁니다. 편집 화면에서 손대지 않은 장식은 지난 다시 설정(나가기) 뒤 그대로이므로, 재생 준비 끝의 장식 전체 다시 설정에서 결과가 같은 설정을 건너뜁니다. 편집으로 바뀐 장식(설정 함수가 불렸거나 값·이벤트 데이터가 바뀜)은 원래대로 합니다.
+측정(플레이어용, Arche): 두 번째 재생부터 **3.3~3.9초 → 2.8~3.0초**. 검증(개발자용, 4개 맵에서 재생 시작 16번·나가기 16번을 원래 방식과 같은 프레임에 비교): 모두 같음.
+
+### 곡 중 쓰레기 더 줄임 (1시간 맵 1.45 → 1.19MB/s, 2.4.2 대비 -46%)
+- 비동기 입력을 써도 게임이 매 프레임 부르는 레거시 키보드 입력 확인에서 람다·임시 목록을 없앰(개발자용 매 호출 비교 18,943번, 다름 0).
+- 이 모드의 모니터·설정 창이 쓰지 않는 GUILayout 준비를 유니티가 프레임마다 하던 것을 끔(모니터는 늘, 설정 창은 닫혀 있고 곡 중일 때). 곡 중 설정 창을 열고 닫아도 정상으로 그려짐을 확인.
 
 ## 2.4.3 에서 바뀐 것
 
@@ -467,6 +477,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.4.4:** faster editor Play (the light decoration reset from 2.4.0 now also runs at play start for decorations untouched in the editor; Arche 3.3–3.9 s → 2.8–3.0 s from the second Play, verified identical on 4 levels), and less garbage during play (legacy keyboard check without lambdas/temp lists; no per-frame GUILayout setup for the mod's own overlay and closed settings window): 1-hour level 1.45 → 1.19 MB/s.
 
 **2.4.3:** less garbage during play (1-hour level 2.21 → 1.45 MB/s): the tile update no longer allocates a closure object for the volume color mode on every tile every frame, and async keyboard / mouse input no longer build HashSets, LINQ iterators and lambdas on every call. Results are identical; dev builds compared every call against the original code while real keys were sent (69,190 calls each, 0 differences).
 
