@@ -32,6 +32,7 @@ namespace StutterFix
             var go = new GameObject("StutterFix.PerfOverlay");
             DontDestroyOnLoad(go);
             Instance = go.AddComponent<PerfOverlay>();
+            Instance.useGUILayout = false;   // OnGUI 는 마우스 입력만 받고 GUILayout 을 안 쓴다: 유니티가 프레임마다 GUILayout 준비를 하지 않게 (곡 중 쓰레기)
         }
 
         // UMM 창(Ctrl+F10)을 열고 닫을 때: 열 때는 UMM 과 각 모드가 설정 화면을 처음 만들고, 닫을 때는 모드들이

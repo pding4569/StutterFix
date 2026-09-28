@@ -95,6 +95,7 @@ namespace StutterFix
             h.Patch(main, prefix: new HarmonyMethod(typeof(AllocFix), nameof(AsyncMainPrefix)), postfix: VerifyInput ? new HarmonyMethod(typeof(AllocFix), nameof(AsyncMainVerify)) : null);
             Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 임시 객체 없이" + (VerifyInput ? " (개발자용: 원래 코드와 매번 비교)" : ""));
             InstallMouse(h);
+            InstallKeyboard(h);
         }
 
         // 원래 결과를 목록에 채우고 개수를 돌려준다.
@@ -222,9 +223,69 @@ namespace StutterFix
             if (MouseDiffs <= 5) Main.Entry.Logger.Log(string.Format("[쓰레기 줄이기 검증] 마우스 입력 {0}: 원래 {1}개, 우리 {2}개", state, __result, expect));
         }
 
+        // 4) 레거시 키보드 입력(RDInputType_Keyboard.MainIgnoreActive): 비동기 입력을 써도 scrController.UpdateInput 이 매 프레임 부른다.
+        //    부를 때마다 람다(state, keys 를 붙잡음) + 임시 List + (눌림이면) 특수 키 List·람다들을 만든다. 같은 순서로 다시 쓰는 목록에 모으고,
+        //    특수 키 목록(CountSpecialInput, 입력 상태만 읽음)은 고른 키가 있을 때만 원래 함수로 만든다(없으면 빼기가 아무 일도 안 함).
+        //    결과 목록은 원래처럼 새로. 개발자용(input-verify): 원래 코드 결과와 비교.
+        private static AccessTools.FieldRef<RDInputType_Keyboard, KeyCode[]> kbMainKeys;
+        private static Func<RDInputType_Keyboard, List<KeyCode>> kbSpecial;
+        private static readonly List<KeyCode> ktmp = new List<KeyCode>();
+        internal static long KbFast, KbVerify, KbDiffs;
+
+        private static void InstallKeyboard(Harmony h)
+        {
+            var m = AccessTools.Method(typeof(RDInputType_Keyboard), "MainIgnoreActive", new[] { typeof(ButtonState) });
+            var sp = AccessTools.Method(typeof(RDInputType_Keyboard), "CountSpecialInput");
+            if (m == null || sp == null || getStateCount == null || checkKey == null) { Main.Entry.Logger.Log("[쓰레기 줄이기] 레거시 키보드 입력: 게임 코드 모양이 달라 끔"); return; }
+            kbMainKeys = AccessTools.FieldRefAccess<RDInputType_Keyboard, KeyCode[]>("mainKeys");
+            kbSpecial = AccessTools.MethodDelegate<Func<RDInputType_Keyboard, List<KeyCode>>>(sp);
+            h.Patch(m, prefix: new HarmonyMethod(typeof(AllocFix), nameof(KbPrefix)), postfix: VerifyInput ? new HarmonyMethod(typeof(AllocFix), nameof(KbVerifyPost)) : null);
+            Main.Entry.Logger.Log("[쓰레기 줄이기] 레거시 키보드 입력: 임시 객체 없이");
+        }
+
+        private static void KbCompute(RDInputType_Keyboard kb, ButtonState state, List<AnyKeyCode> outKeys)
+        {
+            var mk = kbMainKeys(kb);
+            ktmp.Clear();
+            for (int i = 0; i < mk.Length; i++) if (checkKey(mk[i], state)) ktmp.Add(mk[i]);
+            if (state == ButtonState.WentDown && ktmp.Count > 0)
+                foreach (var item in kbSpecial(kb)) ktmp.Remove(item);
+            var cache = Persistence.keyLimiterKeys.unityKeysCache;
+            for (int i = 0; i < ktmp.Count; i++)
+                if (!RDInput.useKeyLimiter || cache.Count <= 0 || cache.Contains(ktmp[i])) outKeys.Add(new AnyKeyCode(ktmp[i]));
+        }
+
+        public static bool KbPrefix(RDInputType_Keyboard __instance, ButtonState state, ref int __result, out List<AnyKeyCode> __state)
+        {
+            __state = null;
+            if (!Enabled) return true;
+            if (VerifyInput) { __state = new List<AnyKeyCode>(); KbCompute(__instance, state, __state); return true; }
+            var sc = getStateCount(__instance, state);
+            int frame = UnityEngine.Time.frameCount;
+            if (sc.lastFrameUpdated == frame) { __result = sc.keys.Count; return false; }
+            sc.lastFrameUpdated = frame;
+            sc.keys = new List<AnyKeyCode>();
+            KbCompute(__instance, state, sc.keys);
+            __result = sc.keys.Count;
+            KbFast++;
+            return false;
+        }
+
+        public static void KbVerifyPost(RDInputType_Keyboard __instance, ButtonState state, int __result, List<AnyKeyCode> __state)
+        {
+            if (__state == null) return;
+            KbVerify++;
+            var keys = getStateCount(__instance, state).keys;
+            bool same = keys != null && __result == keys.Count && keys.Count == __state.Count;
+            for (int i = 0; same && i < __state.Count; i++) same = (KeyCode)keys[i].value == (KeyCode)__state[i].value;
+            if (same) return;
+            KbDiffs++;
+            if (KbDiffs <= 5) Main.Entry.Logger.Log(string.Format("[쓰레기 줄이기 검증] 레거시 키보드 {0}: 원래 {1}개, 우리 {2}개", state, __result, __state.Count));
+        }
+
         internal static string VerifySummary()
         {
-            return VerifyInput ? string.Format("[쓰레기 줄이기 검증] 비동기 키 입력 비교 {0}번(키가 있던 것 {2}번) 중 다름 {1}번, 마우스 입력 비교 {3}번 중 다름 {4}번", VerifyCalls, VerifyDiffs, VerifyWithKeys, MouseVerify, MouseDiffs) : "";
+            return VerifyInput ? string.Format("[쓰레기 줄이기 검증] 비동기 키 입력 비교 {0}번(키가 있던 것 {2}번) 중 다름 {1}번, 마우스 입력 비교 {3}번 중 다름 {4}번, 레거시 키보드 비교 {5}번 중 다름 {6}번", VerifyCalls, VerifyDiffs, VerifyWithKeys, MouseVerify, MouseDiffs, KbVerify, KbDiffs) : "";
         }
     }
 }

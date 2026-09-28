@@ -122,6 +122,9 @@ namespace StutterFix
         private void Update()
         {
             if (Main.Config == null) return;
+            // 닫혀 있고 곡이 도는 동안에는 OnGUI 가 아무것도 그리지 않는다(PreWarm·업데이트 알림 모두 곡 중엔 건너뜀). 유니티가 프레임마다
+            // GUILayout 준비를 하지 않게 끈다. 여는 키는 이 Update 에서 받으므로 열리면 같은 프레임의 OnGUI 전에 다시 켜진다.
+            useGUILayout = Open || closing || !Hitch.Playing;
             if (Hotkey.Down(Main.Config.WindowKey, Main.Config.WindowMods)) SetOpen(!Open || closing);
             if (!Open) return;
             // Esc: 패널이 펼쳐져 있으면 패널만 접고, 한 번 더 누르면 아이콘 줄까지 닫는다
