@@ -36,6 +36,7 @@
     <Compile Include="AllocFix.cs" />
     <Compile Include="FrameScan.cs" />
     <Compile Include="ThumbCam.cs" />
+    <Compile Include="FfxReuse.cs" />
     <Compile Include="Edition.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="PerfOverlay.cs" />

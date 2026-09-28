@@ -101,6 +101,7 @@ namespace StutterFix
         private static float stepTimeout = 180f;   // 단계마다 최대 (timeout 명령으로 바꿈, 큰 맵 열기용)
         private static float openStartedAt;
         private static int thumbPhase; private static float thumbAt; private static byte[] thumbA; private static bool thumbSame;
+        private static int cullPhase, cullFrames; private static float cullAt; private static readonly List<Renderer> cullList = new List<Renderer>();
         private static bool Same(byte[] a, byte[] b) { if (a.Length != b.Length) return false; for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false; return true; }
         private static int openPhase;
 
@@ -134,6 +135,31 @@ namespace StutterFix
                         Log("썸네일 시험: 같은 프레임 켬/끔 " + (thumbSame ? "같음" : "다름") + " (" + thumbA.Length + "바이트) | 0.5초 뒤(대조군) " + (Same(thumbA, later) ? "같음" : "다름") + " | 지금 카메라 켜짐 " + tcam.enabled);
                         thumbPhase = 0; return true;
                     }
+                case "cullexp":
+                    {
+                        // (실험) 타일 렌더러를 끄는 방식별 FPS: none / force(forceRenderingOff) / enabled(enabled=false). 카메라 근처 반경 안 타일은 그대로 둔다.
+                        var parts = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        string mode = parts[0]; float secs = parts.Length > 1 ? float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture) : 4f;
+                        if (cullPhase == 0)
+                        {
+                            cullList.Clear();
+                            var cpos = (Vector2)Camera.main.transform.position;
+                            foreach (var fl in ADOBase.lm.listFloors)
+                            {
+                                if (fl == null || ((Vector2)fl.transform.position - cpos).sqrMagnitude < 60f * 60f) continue;
+                                foreach (var r in fl.GetComponentsInChildren<Renderer>(false)) if (r.enabled && !r.forceRenderingOff) cullList.Add(r);
+                            }
+                            foreach (var r in cullList) { if (mode == "force") r.forceRenderingOff = true; else if (mode == "enabled") r.enabled = false; }
+                            cullPhase = 1; cullAt = now; cullFrames = Time.frameCount; return false;
+                        }
+                        if (now - cullAt < secs) return false;
+                        float fps = (Time.frameCount - cullFrames) / (now - cullAt);
+                        foreach (var r in cullList) { if (r == null) continue; if (mode == "force") r.forceRenderingOff = false; else if (mode == "enabled") r.enabled = true; }
+                        Log("컬링 실험 " + mode + ": 렌더러 " + cullList.Count + "개 뺌, " + fps.ToString("F0") + " FPS");
+                        cullPhase = 0; return true;
+                    }
+                case "ffxreuse":
+                    FfxReuse.ForceOff = arg == "off"; Log("효과 재사용 " + (FfxReuse.ForceOff ? "끔" : "켬")); return true;
                 case "framescan":
                     return FrameScan.Step(arg, now);
                 case "slowscan":
@@ -280,8 +306,9 @@ namespace StutterFix
                 case "stop":
                     if (ed == null) throw new Exception("에디터가 아님");
                     EndRun();
+                    var stopSw = System.Diagnostics.Stopwatch.StartNew();
                     if (ed.playMode) ed.SwitchToEditMode();
-                    Log("편집으로 돌아감");
+                    Log("편집으로 돌아감 (" + stopSw.ElapsedMilliseconds + "ms)");
                     return true;
                 case "quit":
                     Finish("끝");

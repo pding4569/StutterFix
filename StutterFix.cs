@@ -70,6 +70,7 @@ namespace StutterFix
             if (has("present-flip")) { WindowGhost.PresentMode = 0; Entry.Logger.Log("[첫 판 FPS] present-flip 파일이 있어 보통 Present(0,0) 로 내보냄"); }
             if (has("present-screen-check")) { WindowGhost.ScreenCheck = true; Entry.Logger.Log("[첫 판 FPS] present-screen-check 파일이 있어 멈춘 동안 화면을 비교함"); }
             if (has("alloc-probe")) { Hitch.AllocProbeOn = true; AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe")); }
+            if (has("ffx-verify.txt")) { FfxReuse.Verify = true; Entry.Logger.Log("[효과 재사용 검증] ffx-verify.txt 파일이 있어 효과 붙이기마다 원래 방식과 비교함"); }
             if (has("alloc-phase")) { PhaseWatch.AllocPhases = true; Entry.Logger.Log("[할당 단계] alloc-phase 파일이 있어 곡 중 단계별 힙 증가를 잼"); }
             if (has("freeze-test")) { PresentWatch.FreezeTest = true; Entry.Logger.Log("[첫 판 FPS 시험] freeze-test 파일이 있어 곡 중 6초 멈춤 시험을 함"); }
             try { var gm = System.IO.Path.Combine(dir, "gc-mode.txt"); if (System.IO.File.Exists(gm)) { GcControl.PauseMode = System.IO.File.ReadAllText(gm).Trim().ToLowerInvariant(); Entry.Logger.Log("[GC] (시험) 곡 중 멈추는 방식: " + GcControl.PauseMode); } } catch { }
@@ -164,6 +165,7 @@ namespace StutterFix
                 SceneReset.Install(harmony);
                 TransitionFix.Install(harmony);
                 Try(() => ExitFix.Install(harmony));   // 편집으로 나가기 멈춤 (ExitFix.cs)
+                Try(() => { FfxReuse.Install(harmony); FfxReuse.InstallMakeLevel(harmony); });   // 효과 컴포넌트 다시 쓰기 (FfxReuse.cs)
                 GcControl.Install();
                 SettingsWindow.Create();
                 RestartAdvisor.Init();
@@ -517,7 +519,7 @@ namespace StutterFix
             LowEnd.Apply();
             MoveApply.Enabled = E("MoveFinish", Config.MoveFinish);
             ParticleFix.SkipIdle = E("SkipIdleParticles", Config.SkipIdleParticles); ParticleFix.PauseOffscreen = E("LowPauseParticles", Config.LowPauseParticles); LeakGuard.Enabled = E("LeakFix", Config.LeakFix);
-            bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc; BigLevel.Enabled = lc; ExitFix.Enabled = lc; AllocFix.Enabled = E("GcPause", Config.GcPause);
+            bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc; BigLevel.Enabled = lc; ExitFix.Enabled = lc; FfxReuse.Enabled = lc; AllocFix.Enabled = E("GcPause", Config.GcPause);
             TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages);
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);
