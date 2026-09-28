@@ -183,6 +183,7 @@ namespace StutterFix
                 Try(() => TileCull.Install(harmony, Entry.Path));   // 화면 밖 타일 끄기 (TileCull.cs)
                 Try(() => BeatFix.Install(harmony));   // 박자 알림에서 아무것도 안 하는 타일 건너뛰기 (BeatFix.cs)
                 Try(() => MatReuse.Install(harmony));   // 타일 머티리얼 누수 막기 (MatReuse.cs)
+                Try(() => EditorPick.Install(harmony));   // 큰 맵 편집 화면 클릭 끊김 (EditorPick.cs)
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)
@@ -529,7 +530,7 @@ namespace StutterFix
             bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc; BigLevel.Enabled = lc; ExitFix.Enabled = lc; FfxReuse.Enabled = lc; AllocFix.Enabled = E("GcPause", Config.GcPause);
             TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages);
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
-            BeatFix.Enabled = Dormancy.Enabled;
+            BeatFix.Enabled = Dormancy.Enabled; EditorPick.Enabled = Dormancy.Enabled;
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);
             ImagePrefetch.Enabled = E("ImagePrefetch", Config.ImagePrefetch);
             ShaderWarm.Enabled = E("ShaderWarm", Config.ShaderWarm);

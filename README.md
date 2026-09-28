@@ -28,7 +28,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.4.5 에서 바뀐 것](#245-에서-바뀐-것) · [2.4.4](#244-에서-바뀐-것) · [2.4.3](#243-에서-바뀐-것) · [2.4.2](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
+- [2.4.6 에서 바뀐 것](#246-에서-바뀐-것) · [2.4.5](#245-에서-바뀐-것) · [2.4.4](#244-에서-바뀐-것) · [2.4.3](#243-에서-바뀐-것) · [2.4.2](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -47,6 +47,15 @@ made by **naro** & **Claude**
 - **Shift+Insert**: 실시간 모니터 (아이콘 → 미니 → 상세 → 끔)
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
+
+## 2.4.6 에서 바뀐 것
+
+### 큰 맵 편집 화면에서 누를 때마다 끊기던 것
+편집 화면에서 마우스를 누를 때마다(화면 끌기 시작, 타일 고르기) 게임은 마우스 아래 물체를 찾으려고 맵의 모든 타일 위치를 하나씩 읽어 마우스와의 거리를 잽니다. 9만 타일 맵에서는 한 번에 56~61ms 라서, 화면을 조금씩 끌 때마다 "게임 처리"로 끊겼습니다.
+이제 타일 위치를 유니티 잡으로 한꺼번에(여러 스레드) 읽어 마우스 근처(반경보다 조금 넓게) 타일만 그 반복에 넘깁니다. 거리 판정과 그 뒤 처리는 게임 코드 그대로라 결과가 같습니다. 준비(9만 타일 약 0.1초)는 맵을 열거나 타일을 다시 만드는 순간에 미리 합니다.
+- 측정(9만 타일 맵): 누를 때 **56ms → 13~15ms**.
+- 검증(개발자용): 누를 때마다 원래 방식으로 가까운 타일을 구해 비교, 96번 중 빠뜨린 것 0.
+- 타일 2천 개 이상인 맵에서만, "장식 순회 줄이기"에 포함됩니다.
 
 ## 2.4.5 에서 바뀐 것
 
@@ -523,6 +532,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.4.6:** clicking in the editor on huge levels no longer stalls: the game measured the mouse distance to every tile on each mouse press (90k tiles: 56–61 ms); tile positions are now read in bulk by a Unity job and only tiles near the mouse are handed to the game loop, which still does the exact distance check (56 → 13–15 ms, verified identical).
 
 **2.4.5:** fixes for 2.4.4. No more hitch right when a level ends (off-screen tile culling no longer re-enables tens of thousands of renderers in one frame at the end, and the deferred memory cleanup after a clear now runs at the next transition instead of 3 s after the portal); no automatic GC right after the song starts (blocked from pressing Play until the song runs); no GC hitches in the editor after leaving play mode (cleanup runs once at the end of the exit freeze instead of in 40–46 ms slices or a Unity GC a few frames later); hitsounds no longer keep an old SetHitsound after the event is moved or removed (kept effect components are unlinked from the tile like a destroyed one); the beat listener index is rebuilt in one pass and only new entries are indexed when objects are added (90k tiles 68 → 16 ms, verified 0 mismatches).
 

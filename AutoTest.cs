@@ -112,6 +112,7 @@ namespace StutterFix
         private static int cullPhase, cullFrames; private static float cullAt; private static readonly List<Renderer> cullList = new List<Renderer>();
         private static bool Same(byte[] a, byte[] b) { if (a.Length != b.Length) return false; for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false; return true; }
         private static int openPhase;
+        private static System.Reflection.MethodInfo pickMethod; private static int pickDone, pickHits; private static readonly List<float> pickMs = new List<float>();
 
         // 끝났으면 true
         private static bool Step(string cmd, string arg, float now)
@@ -119,6 +120,32 @@ namespace StutterFix
             var ed = ADOBase.isLevelEditor ? scnEditor.instance : null;
             switch (cmd)
             {
+                case "pick":
+                    {
+                        // (개발자용) 편집 화면 클릭 판정(scnEditor.ObjectsAtMouse)을 프레임마다 한 번씩 N번: 카메라를 타일 길을 따라 옮기고
+                        // 마우스를 화면 가운데에 두어 마우스 아래에 타일이 있게 한다. 한 번에 걸린 시간 평균·최대, EditorPick 검증 결과.
+                        if (ed == null) { Log("pick: 에디터 아님"); return true; }
+                        var ps = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); int total = 30; if (ps.Length > 0) int.TryParse(ps[0], out total);
+                        if (pickDone == 0) EditorPick.Enabled = !(ps.Length > 1 && ps[1] == "off");
+                        var lfp = ADOBase.lm != null ? ADOBase.lm.listFloors : null;
+                        if (pickMethod == null) pickMethod = HarmonyLib.AccessTools.Method(typeof(scnEditor), "ObjectsAtMouse");
+                        var camF = HarmonyLib.AccessTools.Field(typeof(scnEditor), "camera");
+                        var cam = camF != null ? camF.GetValue(ed) as Camera : null;
+                        if (lfp == null || lfp.Count == 0 || cam == null || pickMethod == null) { Log("pick: 준비 안 됨"); return true; }
+                        if (pickDone == 0) { pickMs.Clear(); pickHits = 0; }
+                        var fp = lfp[(int)((long)pickDone * 7919 % lfp.Count)];
+                        var q = fp.transform.position; cam.transform.position = new Vector3(q.x, q.y, -10f);
+                        SetCursorPos(Screen.width / 2, Screen.height / 2);
+                        long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
+                        var r = pickMethod.Invoke(ed, null) as GameObject[];
+                        pickMs.Add((float)((System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency));
+                        if (r != null && r.Length > 0) pickHits++;
+                        if (++pickDone < total) return false;
+                        pickMs.Sort(); float s = 0; foreach (var v in pickMs) s += v;
+                        Log(string.Format("클릭 판정 {0}번: 평균 {1:F2}ms, 최대 {2:F2}ms, 물체 찾음 {3}번 | EditorPick 부름 {4}, 빠른 길 {5}, 검증 {6}번 중 빠뜨림 {7}", pickDone, s / pickMs.Count, pickMs[pickMs.Count - 1], pickHits, EditorPick.Calls, EditorPick.Fast, EditorPick.Checks, EditorPick.Missed));
+                        pickDone = 0; EditorPick.Enabled = true;
+                        return true;
+                    }
                 case "wait":
                     if (waitSec == 0f) { float.TryParse(arg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out waitSec); if (waitSec <= 0f) waitSec = 0.01f; }
                     return now - stepStart >= waitSec;
