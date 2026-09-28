@@ -7,11 +7,12 @@ using UnityEngine.Networking;
 
 namespace StutterFix
 {
-    // 새 버전 알림과 업데이트 받기.
-    // 게임을 켜고 조금 뒤 GitHub 의 최신 릴리스(api.github.com/repos/pding4569/StutterFix/releases/latest)를 한 번 확인한다.
-    // 더 새 버전이 있으면 설정 창 홈 / 정보 페이지와 첫 화면 안내에 띄우고, 버튼을 누르면 그 릴리스의 zip(플레이어용 또는 개발자용)을 받아
-    // 모드 폴더의 StutterFix.dll 과 Info.json 을 바꾼다. 게임이 쓰는 DLL 은 UMM 이 복사본을 올려 두므로 바로 덮어쓸 수 있고,
-    // 새 버전은 게임을 다시 켜면 올라온다(재시작 안내가 자동으로 뜬다). 원래 DLL 은 StutterFix.dll.bak 으로 남긴다.
+    // 자동 업데이트.
+    // 게임을 켜고 조금 뒤(그 뒤로는 3시간마다) GitHub 의 최신 릴리스(api.github.com/repos/pding4569/StutterFix/releases/latest)를 확인한다.
+    // 더 새 버전이 있으면 그 릴리스의 zip(플레이어용 또는 개발자용)을 알아서 받아 모드 폴더의 StutterFix.dll 과 Info.json 을 바꾼다.
+    // 게임이 쓰는 DLL 은 UMM 이 복사본을 올려 두므로 바로 덮어쓸 수 있고, 새 버전은 게임을 다시 켜면 올라온다. 원래 DLL 은 StutterFix.dll.bak 으로 남긴다.
+    // 곡에 영향이 없게: 확인·받기 시작과 결과 처리는 곡(에디터 재생 포함) 밖에서만 하고, 곡 중에 받기가 끝나면 곡이 끝날 때까지 미룬다.
+    // 받는 것은 UnityWebRequest 가 자기 스레드에서, 압축 풀기와 파일 쓰기는 작업 스레드에서 한다(메인 스레드는 결과만 본다).
     // UMM 도 Info.json 의 Repository(repository.json)로 모드 목록에 새 버전을 표시한다. 릴리스할 때 repository.json 버전을 같이 올린다.
     internal static class Updater
     {
@@ -26,25 +27,33 @@ namespace StutterFix
         internal static bool Busy;
         private static string zipUrl = "";
         private static UnityWebRequest req;
-        private static bool downloading, checkedOnce;
-        private static float startAt = -1f;
+        private static bool downloading;
+        private static float startAt = -1f, nextCheck = -1f;
+        private const float RecheckSeconds = 3 * 3600f;
+        // 작업 스레드의 설치 결과 (메인 스레드가 Tick 에서 읽어 화면·로그에 반영)
+        private static volatile int installState;   // 0 없음, 1 설치 중, 2 끝, 3 실패
+        private static string installError = "";
 
         private static string Current { get { try { return Main.Entry.Info.Version; } catch { return "0"; } } }
 
         // OnUpdate 에서 부른다
         internal static void Tick()
         {
+            if (installState >= 2) InstallDone();
+            if (Main.Config == null || Hitch.Playing) return;   // 곡 중에는 결과 처리도 새 요청도 하지 않는다
             if (req != null) { if (req.isDone) Finish(); return; }
-            if (checkedOnce || Main.Config == null || !Main.Config.CheckUpdates) return;
-            if (startAt < 0f) startAt = Time.realtimeSinceStartup;
-            if (Hitch.Playing || Time.realtimeSinceStartup - startAt < 15f) return;   // 켜진 직후와 플레이 중에는 하지 않는다
+            if (Busy || Installed || !Main.Config.CheckUpdates) return;
+            float now = Time.realtimeSinceStartup;
+            if (startAt < 0f) { startAt = now; nextCheck = now + 15f; }   // 켜진 직후에는 하지 않는다
+            if (Available && zipUrl.Length > 0) { Download(); return; }   // 확인만 됐던 새 버전(자동 업데이트를 나중에 켠 경우)
+            if (now < nextCheck) return;
+            nextCheck = now + RecheckSeconds;
             Check();
         }
 
         internal static void Check()
         {
-            if (req != null) return;
-            checkedOnce = true;
+            if (req != null || Busy) return;
             try
             {
                 req = UnityWebRequest.Get(Api);
@@ -60,7 +69,7 @@ namespace StutterFix
 
         internal static void Download()
         {
-            if (req != null || !Available || zipUrl.Length == 0) return;
+            if (req != null || Busy || !Available || zipUrl.Length == 0) return;
             try
             {
                 req = UnityWebRequest.Get(zipUrl);
@@ -82,13 +91,47 @@ namespace StutterFix
                 {
                     Status = (downloading ? SettingsWindow.T("받기 실패: ", "Download failed: ") : SettingsWindow.T("확인 실패: ", "Check failed: ")) + r.error;
                     Main.Entry.Logger.Log("[업데이트] " + Status);
+                    if (downloading) zipUrl = "";   // 같은 파일을 곧바로 다시 받지 않는다(다음 확인 때 다시)
                     return;
                 }
-                if (downloading) Install(r.downloadHandler.data);
-                else Parse(r.downloadHandler.text);
+                if (downloading)
+                {
+                    byte[] zip = r.downloadHandler.data;
+                    string latest = Latest, dir = Main.Entry.Path;
+                    Busy = true; installState = 1;
+                    Status = SettingsWindow.T("설치하는 중…", "Installing…");
+                    System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+                    {
+                        try { Install(zip, latest, dir); installState = 2; }
+                        catch (Exception ex) { installError = ex.Message; installState = 3; }
+                    });
+                }
+                else
+                {
+                    Parse(r.downloadHandler.text);
+                    if (Available && zipUrl.Length > 0 && Main.Config.CheckUpdates) Download();   // 새 버전이면 바로 받는다
+                }
             }
             catch (Exception ex) { Status = SettingsWindow.T("실패: ", "Failed: ") + ex.Message; Main.Entry.Logger.Log("[업데이트] 실패: " + ex); }
             finally { r.Dispose(); }
+        }
+
+        // 작업 스레드의 설치가 끝났을 때 (메인 스레드)
+        private static void InstallDone()
+        {
+            int s = installState; installState = 0; Busy = false;
+            if (s == 2)
+            {
+                Installed = true; Available = false; noticeUntil = -1f;
+                Status = string.Format(SettingsWindow.T("v{0} 로 자동 업데이트했습니다. 게임을 다시 켜면 적용됩니다", "Updated to v{0}. Restart the game to apply"), Latest);
+                Main.Entry.Logger.Log("[업데이트] v" + Latest + " 설치 (다시 켜면 적용)");
+            }
+            else
+            {
+                zipUrl = "";
+                Status = SettingsWindow.T("설치 실패: ", "Install failed: ") + installError;
+                Main.Entry.Logger.Log("[업데이트] 설치 실패: " + installError);
+            }
         }
 
         private static void Parse(string json)
@@ -169,7 +212,8 @@ namespace StutterFix
         }
         private static string Pad(string v) { var p = v.Split('.'); return p.Length >= 2 ? v : v + ".0"; }
 
-        private static void Install(byte[] zip)
+        // 작업 스레드에서 돈다: 유니티 API·화면 상태를 건드리지 않는다
+        private static void Install(byte[] zip, string latest, string dir)
         {
             byte[] dll = null; string info = null;
             using (var ms = new MemoryStream(zip))
@@ -184,18 +228,14 @@ namespace StutterFix
             }
             // 받은 것이 맞는지: DLL 모양(MZ), Info.json 의 Id 와 버전
             if (dll == null || dll.Length < 1024 || dll[0] != (byte)'M' || dll[1] != (byte)'Z') throw new Exception("zip 안에 올바른 StutterFix.dll 이 없음");
-            if (info == null || !Regex.IsMatch(info, "\"Id\"\\s*:\\s*\"StutterFix\"") || !Regex.IsMatch(info, "\"Version\"\\s*:\\s*\"" + Regex.Escape(Latest) + "\""))
+            if (info == null || !Regex.IsMatch(info, "\"Id\"\\s*:\\s*\"StutterFix\"") || !Regex.IsMatch(info, "\"Version\"\\s*:\\s*\"" + Regex.Escape(latest) + "\""))
                 throw new Exception("zip 안의 Info.json 이 맞지 않음");
-            string dir = Main.Entry.Path;
             string dllPath = Path.Combine(dir, "StutterFix.dll"), infoPath = Path.Combine(dir, "Info.json");
             try { if (File.Exists(dllPath)) File.Copy(dllPath, dllPath + ".bak", true); } catch { }
             File.WriteAllBytes(dllPath + ".new", dll);
             File.Copy(dllPath + ".new", dllPath, true);
             File.Delete(dllPath + ".new");
             File.WriteAllText(infoPath, info);
-            Installed = true; Available = false;
-            Status = string.Format(SettingsWindow.T("v{0} 을 받았습니다. 게임을 다시 켜면 적용됩니다", "Downloaded v{0}. Restart the game to apply"), Latest);
-            Main.Entry.Logger.Log("[업데이트] v" + Latest + " 설치 (다시 켜면 적용)");
         }
 
         private static byte[] ReadAll(ZipArchiveEntry e)
@@ -208,12 +248,14 @@ namespace StutterFix
             }
         }
 
-        // 첫 화면 안내: 새 버전이 있으면 곡 밖에서 20초 동안 오른쪽 위에 작게 (설정 창이 닫혀 있을 때)
+        // 안내: 자동 업데이트를 마쳤거나(다시 켜면 적용), 자동 업데이트를 끈 채 새 버전이 있으면
+        // 곡 밖에서 20초 동안 오른쪽 위에 작게 (설정 창이 닫혀 있을 때)
         private static float noticeUntil = -1f;
         private static GUIStyle noticeStyle;
         internal static void DrawNotice(bool windowOpen)
         {
-            if (!Available || windowOpen || Hitch.Playing || Event.current.type != EventType.Repaint) return;
+            bool manual = Available && !Main.Config.CheckUpdates;
+            if (!(Installed || manual) || windowOpen || Hitch.Playing || Event.current.type != EventType.Repaint) return;
             if (noticeUntil < 0f) noticeUntil = Time.realtimeSinceStartup + 20f;
             if (Time.realtimeSinceStartup > noticeUntil) return;
             if (noticeStyle == null)
@@ -222,7 +264,9 @@ namespace StutterFix
                 noticeStyle.normal.textColor = Color.white;
             }
             string key = Hotkey.Name(Main.Config.WindowKey, Main.Config.WindowMods);
-            var text = new GUIContent(string.Format(SettingsWindow.T("Stutter Fix 새 버전 v{0} · {1} 키 → 홈에서 업데이트", "Stutter Fix v{0} available · press {1} → Home to update"), Latest, key));
+            var text = new GUIContent(Installed
+                ? string.Format(SettingsWindow.T("Stutter Fix v{0} 로 자동 업데이트함 · 게임을 다시 켜면 적용", "Stutter Fix updated to v{0} · restart the game to apply"), Latest)
+                : string.Format(SettingsWindow.T("Stutter Fix 새 버전 v{0} · {1} 키 → 홈에서 업데이트", "Stutter Fix v{0} available · press {1} → Home to update"), Latest, key));
             var size = noticeStyle.CalcSize(text);
             var r = new Rect(Screen.width - size.x - 44, 20, size.x + 28, 40);
             var old = GUI.color;

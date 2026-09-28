@@ -1251,9 +1251,9 @@ namespace StutterFix
             GUI.enabled = true;
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
-            if (Option("autoupdate", ref c.CheckUpdates, T("켤 때 새 버전 확인", "Check for updates on launch"),
-                T("게임을 켜면 GitHub 에서 새 버전이 있는지 한 번 확인하고, 있으면 첫 화면과 이 창에 알려 줍니다. 받는 것은 버튼을 눌렀을 때만 합니다.",
-                  "On launch, checks GitHub once for a newer version and shows a notice. Nothing is downloaded until you press the button."), null)) Save();
+            if (Option("autoupdate", ref c.CheckUpdates, T("자동 업데이트", "Automatic updates"),
+                T("게임을 켜면(그 뒤로 3시간마다) GitHub 에서 새 버전을 확인하고, 있으면 알아서 받아 설치합니다. 게임을 다시 켜면 새 버전이 적용됩니다. 곡(에디터 재생 포함) 중에는 확인도 설치도 하지 않고 곡이 끝난 뒤에 합니다. 끄면 새 버전이 있다는 알림만 보고 버튼으로 받습니다.",
+                  "On launch (and every 3 hours) checks GitHub for a newer version and installs it automatically; it applies on the next launch. Nothing runs while a level (or editor playtest) is playing. Turn off to only get a notice and update with the button."), null)) Save();
         }
 
         private static string LoadSummary()
