@@ -28,7 +28,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.4.6 에서 바뀐 것](#246-에서-바뀐-것) · [2.4.5](#245-에서-바뀐-것) · [2.4.4](#244-에서-바뀐-것) · [2.4.3](#243-에서-바뀐-것) · [2.4.2](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
+- [2.4.7 에서 바뀐 것](#247-에서-바뀐-것) · [2.4.6](#246-에서-바뀐-것) · [2.4.5](#245-에서-바뀐-것) · [2.4.4](#244-에서-바뀐-것) · [2.4.3](#243-에서-바뀐-것) · [2.4.2](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -47,6 +47,10 @@ made by **naro** & **Claude**
 - **Shift+Insert**: 실시간 모니터 (아이콘 → 미니 → 상세 → 끔)
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
+
+## 2.4.7 에서 바뀐 것
+
+- **효과 몰림 비용이 늘었던 것 (2.4.4 부터)**: 화면 밖 타일 끄기가 타일 등장·사라짐 효과가 시작될 때마다 리플렉션으로 필드를 찾고 있었습니다(사라짐 효과는 그 필드가 없어 매번 끝까지 찾음). 필드를 직접 읽게 고쳤습니다. 동작은 같습니다.
 
 ## 2.4.6 에서 바뀐 것
 
@@ -535,6 +539,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.4.7:** effect bursts are cheaper again: off-screen tile culling looked up a field by reflection on every tile appear/disappear effect start (since 2.4.4); now a direct field read.
 
 **2.4.6:** clicking in the editor on huge levels no longer stalls: the game measured the mouse distance to every tile on each mouse press (90k tiles: 56–61 ms); tile positions are now read in bulk by a Unity job and only tiles near the mouse are handed to the game loop, which still does the exact distance check (56 → 13–15 ms, verified identical). Also: effect reuse no longer piles up the tile appear/disappear effects that the game adds outside the effect pass (up to ~80k kept components on some levels).
 

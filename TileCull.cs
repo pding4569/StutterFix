@@ -439,8 +439,9 @@ namespace StutterFix
         {
             if (!active) return;
             if (__instance.floor != null) { PinGo(__instance.floor.gameObject); if (__instance.floor.prevfloor != null) PinGo(__instance.floor.prevfloor.gameObject); }
-            var pf = AccessTools.Field(__instance.GetType(), "prevFloor");
-            if (pf != null && pf.GetValue(__instance) is scrFloor p && p != null) PinGo(p.gameObject);
+            // 등장 효과의 prevFloor 는 직접 읽는다 (2.4.4 는 부를 때마다 리플렉션으로 필드를 찾아 효과 몰림 비용이 늘었다; 사라짐 효과에는 이 필드가 없다)
+            var ap = __instance as ffxFloorAppearPlus;
+            if (!ReferenceEquals(ap, null) && ap.prevFloor != null) PinGo(ap.prevFloor.gameObject);
         }
 
         // 관리 밖 타일: 30프레임마다 봐서 두 번(약 1초 이상) 연속 안 움직였으면 새 크기로 다시 관리
