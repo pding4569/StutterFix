@@ -718,8 +718,8 @@ namespace StutterFix
 
             Section(T("투명한 장식", "Hidden decorations"));
             ch |= Option("invis", ref c.SkipInvisible, T("투명한 장식 그리지 않기", "Skip invisible decorations"),
-                T("투명도가 0 이라 보이지 않는 이미지 장식을 그리기에서 뺍니다. 다시 보이게 되면 바로 그립니다. 화면은 같고, 나중에 나타날 이미지를 깔아 둔 맵에서 프레임이 오릅니다.",
-                  "Leaves fully transparent image decorations out of rendering and draws them again as soon as they become visible. Looks identical; raises FPS on maps that pre-place hidden images."), null);
+                T("투명도가 0 이라 보이지 않는 이미지 장식을 그리기에서 뺍니다. 다시 보이게 되면 바로 그립니다. 화면은 같고, 나중에 나타날 이미지를 깔아 둔 맵에서 프레임이 오릅니다. 에디터가 아무도 안 보는 썸네일 이미지를 매 프레임 그리던 것도 멈춥니다(썸네일 저장은 그대로).",
+                  "Leaves fully transparent image decorations out of rendering and draws them again as soon as they become visible. Looks identical; raises FPS on maps that pre-place hidden images. Also stops the editor from redrawing an unused thumbnail image every frame (saving thumbnails still works)."), null);
             ch |= Option("lazy", ref c.LazyHidden, T("투명한 장식 위치 미루기", "Defer hidden decoration moves"),
                 T("투명해서 안 보이는 장식은 옮겨도 값만 저장했다가, 보이게 되는 순간 한 번 반영합니다. 히트박스·마스크 장식은 제외합니다.",
                   "Hidden decorations only store their new position until they become visible, then apply it once. Hitbox and mask decorations are excluded."),

@@ -173,6 +173,7 @@ namespace StutterFix
                 Try(() => WindowGhost.Install(harmony));   // 긴 전환 중 윈도우 멈춘 창 판정 막기 자리 더하기
                 Try(() => BigLevel.Install(harmony));   // 타일이 아주 많은 맵 불러오기 (BigLevel.cs)
                 Try(() => AllocFix.Install(harmony));   // 곡 중 쓰레기 줄이기 (AllocFix.cs)
+                Try(() => ThumbCam.Install(harmony));   // 아무도 안 보는 썸네일 카메라 끄기 (ThumbCam.cs)
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)
@@ -524,6 +525,7 @@ namespace StutterFix
             ShaderWarm.Enabled = E("ShaderWarm", Config.ShaderWarm);
             FastBlend.Enabled = E("FastBlend", Config.FastBlend);
             InvisibleSkip.Enabled = E("SkipInvisible", Config.SkipInvisible);
+            ThumbCam.Enabled = InvisibleSkip.Enabled; ThumbCam.Apply();
             InvisibleSkip.LazyMove = E("SkipInvisible", Config.LazyHidden);
             if (!InvisibleSkip.Enabled) InvisibleSkip.RestoreAll();
             else if (!InvisibleSkip.LazyMove) InvisibleSkip.ApplyAllLazy();

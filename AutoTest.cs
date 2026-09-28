@@ -100,6 +100,8 @@ namespace StutterFix
 
         private static float stepTimeout = 180f;   // 단계마다 최대 (timeout 명령으로 바꿈, 큰 맵 열기용)
         private static float openStartedAt;
+        private static int thumbPhase; private static float thumbAt; private static byte[] thumbA; private static bool thumbSame;
+        private static bool Same(byte[] a, byte[] b) { if (a.Length != b.Length) return false; for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false; return true; }
         private static int openPhase;
 
         // 끝났으면 true
@@ -111,6 +113,31 @@ namespace StutterFix
                 case "wait":
                     if (waitSec == 0f) { float.TryParse(arg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out waitSec); if (waitSec <= 0f) waitSec = 0.01f; }
                     return now - stepStart >= waitSec;
+                case "thumbtest":
+                    {
+                        // 썸네일 카메라를 켠 채(원래 게임) 만든 썸네일과 끈 채(ThumbCam) 만든 썸네일이 바이트까지 같은지.
+                        // 포털 그림이 시간에 따라 움직일 수 있어 같은 프레임 안에서 켬/끔을 비교하고, 0.5초 뒤 한 번 더(시간 차이 대조군) 만든다.
+                        if (ed == null || ed.thumbnailMaker == null) { Log("썸네일 시험: 에디터 아님"); return true; }
+                        var tcam = ed.thumbnailMaker.GetComponent<Camera>();
+                        if (thumbPhase == 0)
+                        {
+                            tcam.enabled = true;
+                            thumbA = File.ReadAllBytes(ed.MakeThumbnail(new DLCManager[0]));
+                            tcam.enabled = false;
+                            var b = File.ReadAllBytes(ed.MakeThumbnail(new DLCManager[0]));
+                            thumbSame = Same(thumbA, b);
+                            thumbPhase = 1; thumbAt = now; return false;
+                        }
+                        if (now - thumbAt < 0.5f) return false;
+                        var later = File.ReadAllBytes(ed.MakeThumbnail(new DLCManager[0]));
+                        ThumbCam.Apply();
+                        Log("썸네일 시험: 같은 프레임 켬/끔 " + (thumbSame ? "같음" : "다름") + " (" + thumbA.Length + "바이트) | 0.5초 뒤(대조군) " + (Same(thumbA, later) ? "같음" : "다름") + " | 지금 카메라 켜짐 " + tcam.enabled);
+                        thumbPhase = 0; return true;
+                    }
+                case "framescan":
+                    return FrameScan.Step(arg, now);
+                case "slowscan":
+                    SlowScan.Enabled = arg != "off"; return true;
                 case "log":
                     Log(arg); return true;
                 case "allocscan":
