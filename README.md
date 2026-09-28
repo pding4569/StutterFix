@@ -58,6 +58,14 @@ made by **naro** & **Claude**
 - 비동기 입력을 써도 게임이 매 프레임 부르는 레거시 키보드 입력 확인에서 람다·임시 목록을 없앰(개발자용 매 호출 비교 18,943번, 다름 0).
 - 이 모드의 모니터·설정 창이 쓰지 않는 GUILayout 준비를 유니티가 프레임마다 하던 것을 끔(모니터는 늘, 설정 창은 닫혀 있고 곡 중일 때). 곡 중 설정 창을 열고 닫아도 정상으로 그려짐을 확인.
 
+### 자동 업데이트
+"켤 때 새 버전 확인"이 **자동 업데이트**가 됐습니다. 게임을 켜면(그 뒤로 3시간마다) 새 버전을 확인하고, 있으면 알아서 받아 설치합니다. 게임을 다시 켜면 새 버전이 적용됩니다.
+곡(에디터 재생 포함) 중에는 확인도 설치도 하지 않고 곡이 끝난 뒤에 합니다. 받기는 네트워크 스레드에서, 압축 풀기·파일 쓰기는 작업 스레드에서 해서 메인 스레드가 멈추지 않습니다. 끄면 예전처럼 알림만 보고 버튼으로 받습니다.
+
+### 에디터의 쓰지 않는 썸네일 카메라 끄기
+에디터에 있는 동안(곡 중 포함) 게임이 워크숍 썸네일용 512x512 이미지를 매 프레임 다시 그리고 있었습니다. 이 이미지는 썸네일을 저장할 때만 직접 한 번 그려서 쓰므로 카메라만 꺼 둡니다(프레임당 메인 스레드 0.07~0.09ms, 그래픽카드도 한 장 덜 그림). "투명한 장식 그리지 않기"에 포함됩니다.
+검증: 같은 프레임에 카메라를 켠 채/끈 채 만든 썸네일이 3개 맵 모두 바이트까지 같음.
+
 ## 2.4.3 에서 바뀐 것
 
 ### 곡 중 쓰레기 줄이기 (1시간 맵 초당 2.21MB → 1.45MB, -34%)
@@ -386,7 +394,7 @@ Play·편집 복귀 시간은 원래와 같습니다. 원인 찾기에서 효과
 ### 편의
 
 - **재시작 메뉴**: 게임 재시작 / 이 맵으로 재시작(메인 메뉴에서는 에디터에서 마지막으로 연 맵) / **게임 종료**. 저장 안 된 편집이 있으면 하지 않습니다.
-- **새 버전 알림**: 게임을 켜고 15초 뒤 GitHub 최신 릴리스를 한 번 확인해, 새 버전이 있으면 알리고 **패치노트**를 보여 줍니다. 받는 것은 버튼을 눌렀을 때만이고, 게임을 다시 켜면 적용됩니다. 정보 페이지에서 끌 수 있습니다.
+- **자동 업데이트**: 게임을 켜고 15초 뒤(그 뒤로 3시간마다) GitHub 최신 릴리스를 확인해, 새 버전이 있으면 곡 밖에서 알아서 받아 설치하고 **패치노트**를 보여 줍니다. 게임을 다시 켜면 적용됩니다. 곡 중에는 아무것도 하지 않습니다. 정보 페이지에서 끄면 알림만 보고 버튼으로 받습니다.
 
 ### 다른 모드와 함께
 
@@ -478,7 +486,8 @@ Stutter Fix reduces mid-play hitches and level loading times on heavy custom lev
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
 
-**2.4.4:** faster editor Play (the light decoration reset from 2.4.0 now also runs at play start for decorations untouched in the editor; Arche 3.3–3.9 s → 2.8–3.0 s from the second Play, verified identical on 4 levels), and less garbage during play (legacy keyboard check without lambdas/temp lists; no per-frame GUILayout setup for the mod's own overlay and closed settings window): 1-hour level 1.45 → 1.19 MB/s.
+**2.4.4:** faster editor Play (the light decoration reset from 2.4.0 now also runs at play start for decorations untouched in the editor; Arche 3.3–3.9 s → 2.8–3.0 s from the second Play, verified identical on 4 levels), and less garbage during play (legacy keyboard check without lambdas/temp lists; no per-frame GUILayout setup for the mod's own overlay and closed settings window): 1-hour level 1.45 → 1.19 MB/s. Also: **automatic updates** (checks at launch and every 3 hours, downloads and installs a new version by itself outside of levels, applied on the next launch; install work runs off the main thread), and the editor's unused workshop thumbnail camera no longer redraws a 512x512 image every frame (0.07–0.09 ms main thread per frame; saved thumbnails byte-identical).
+
 
 **2.4.3:** less garbage during play (1-hour level 2.21 → 1.45 MB/s): the tile update no longer allocates a closure object for the volume color mode on every tile every frame, and async keyboard / mouse input no longer build HashSets, LINQ iterators and lambdas on every call. Results are identical; dev builds compared every call against the original code while real keys were sent (69,190 calls each, 0 differences).
 
