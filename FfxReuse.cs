@@ -40,6 +40,9 @@ namespace StutterFix
 
         // 원래라면 지워졌을 효과 (게임의 효과 찾기에서 뺀다)
         private static readonly HashSet<Component> pending = new HashSet<Component>(RefEq<Component>.I);
+        // 이 모드의 붙이기(Add, 효과 붙이기 안)로 붙은 효과. 이것만 남겨 둔다. 게임이 붙이기 밖에서 직접 붙인 것(ffxChangeTrack.PrepFloor 의
+        // 등장·사라짐 효과)은 다음에 같은 자리로 다시 요청되지 않아, 남겨 두면 판마다 쌓였다(2026 맵 판당 약 1만 9천 개). 그런 것은 원래대로 지운다.
+        private static readonly HashSet<Component> ours = new HashSet<Component>(RefEq<Component>.I);
         private sealed class Slot
         {
             public readonly Dictionary<Type, List<ffxPlusBase>> byType = new Dictionary<Type, List<ffxPlusBase>>();   // 남겨 둔 것, 종류별 (원래 순서)
@@ -245,9 +248,9 @@ namespace StutterFix
         {
             var f = o as ffxPlusBase;
             if (verifying && !ReferenceEquals(f, null) && pending.Contains(f)) return;   // (검증) 원래라면 이미 없는 것
-            if (!Enabled || ForceOff || verifying || ReferenceEquals(f, null) || !GetInfo(f.GetType()).ok || checkpointHeld.Contains(f))
+            if (!Enabled || ForceOff || verifying || ReferenceEquals(f, null) || !GetInfo(f.GetType()).ok || checkpointHeld.Contains(f) || !ours.Contains(f))
             {
-                if (!ReferenceEquals(f, null)) { pending.Remove(f); age.Remove(f); }
+                if (!ReferenceEquals(f, null)) { pending.Remove(f); age.Remove(f); ours.Remove(f); }
                 UnityEngine.Object.DestroyImmediate(o);
                 return;
             }
@@ -308,6 +311,7 @@ namespace StutterFix
                 r = (T)(Component)c;
             }
             else { r = go.AddComponent<T>(); Fresh++; }
+            ours.Add(r);
             logicalIndex[r] = s.logical.Count;
             s.logical.Add(r);
             return r;
@@ -390,6 +394,7 @@ namespace StutterFix
             if (!inPass) return;
             // 지워진 물체(타일째 없어진 것)는 목록에서 뺀다
             if (pending.Count > 0) pending.RemoveWhere(c => c == null);
+            if (ours.Count > 0) ours.RemoveWhere(c => c == null);
             // 이번 붙이기가 다시 만들 타일의 순서 기록은 붙이면서 새로 쓴다 (나머지 타일 기록은 그대로)
             if (floors != null) foreach (var fl in floors) if (fl != null) order.Remove(fl.gameObject);
             CleanLogical();
@@ -430,7 +435,7 @@ namespace StutterFix
                         if (!pending.Contains(c)) continue;
                         int a;
                         age.TryGetValue(c, out a);
-                        if (++a >= MaxAge || c == null) { pending.Remove(c); age.Remove(c); if (c != null) { UnityEngine.Object.DestroyImmediate(c); Dropped++; } }
+                        if (++a >= MaxAge || c == null) { pending.Remove(c); age.Remove(c); ours.Remove(c); if (c != null) { UnityEngine.Object.DestroyImmediate(c); Dropped++; } }
                         else age[c] = a;
                     }
                 }
@@ -438,6 +443,16 @@ namespace StutterFix
             passSw.Stop();
             if (was && (Reused + Fresh > 1000 || Edition.Dev))
                 Main.Entry.Logger.Log("[효과 재사용] 다시 씀 " + Reused + "개, 새로 붙임 " + Fresh + "개, 지움 " + Dropped + "개, 남겨 둔 것 " + pending.Count + "개 | " + passSw.ElapsedMilliseconds + "ms");
+            if (was && Edition.Dev && pending.Count > 0)
+            {
+                // (개발자용) 남겨 둔 것이 무엇인지: 종류별 수, 꺼진 게임오브젝트에 붙은 수
+                var byT = new Dictionary<string, int>(); int inactive = 0;
+                foreach (var c in pending) { if (c == null) continue; var k = c.GetType().Name; int v; byT.TryGetValue(k, out v); byT[k] = v + 1; if (!c.gameObject.activeInHierarchy) inactive++; }
+                var l = new List<KeyValuePair<string, int>>(byT); l.Sort((a, b) => b.Value.CompareTo(a.Value));
+                var sb = new System.Text.StringBuilder("[효과 재사용] 남겨 둔 것: 꺼진 물체에 " + inactive + "개 |");
+                for (int i = 0; i < l.Count && i < 8; i++) sb.Append(' ').Append(l[i].Key).Append('=').Append(l[i].Value);
+                Main.Entry.Logger.Log(sb.ToString());
+            }
             if (was && Verify && __exception == null) VerifyPass(__args);
             return __exception;
         }

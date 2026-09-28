@@ -57,6 +57,9 @@ made by **naro** & **Claude**
 - 검증(개발자용): 누를 때마다 원래 방식으로 가까운 타일을 구해 비교, 96번 중 빠뜨린 것 0.
 - 타일 2천 개 이상인 맵에서만, "장식 순회 줄이기"에 포함됩니다.
 
+### 효과 재사용이 판마다 쌓이던 것
+게임의 트랙 변경 효과가 타일 등장·사라짐 효과를 효과 붙이기 밖에서 직접 새로 붙여서, 옛 것이 다시 쓰이지 않고 판마다 남았습니다(2026 맵 판당 약 1만 9천 개, 최대 약 8만 개까지). 이제 이 모드가 붙인 효과만 남겨 두고 나머지는 원래처럼 바로 지웁니다. 남겨 둔 수가 판마다 같게 유지됨을 확인(나간 뒤 14,853개, 재생 뒤 0개), 재생 시작·나가기 시간은 그대로.
+
 ## 2.4.5 에서 바뀐 것
 
 2.4.4 에서 생긴 문제를 고쳤습니다.
@@ -533,7 +536,7 @@ Stutter Fix reduces mid-play hitches and level loading times on heavy custom lev
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
 
-**2.4.6:** clicking in the editor on huge levels no longer stalls: the game measured the mouse distance to every tile on each mouse press (90k tiles: 56–61 ms); tile positions are now read in bulk by a Unity job and only tiles near the mouse are handed to the game loop, which still does the exact distance check (56 → 13–15 ms, verified identical).
+**2.4.6:** clicking in the editor on huge levels no longer stalls: the game measured the mouse distance to every tile on each mouse press (90k tiles: 56–61 ms); tile positions are now read in bulk by a Unity job and only tiles near the mouse are handed to the game loop, which still does the exact distance check (56 → 13–15 ms, verified identical). Also: effect reuse no longer piles up the tile appear/disappear effects that the game adds outside the effect pass (up to ~80k kept components on some levels).
 
 **2.4.5:** fixes for 2.4.4. No more hitch right when a level ends (off-screen tile culling no longer re-enables tens of thousands of renderers in one frame at the end, and the deferred memory cleanup after a clear now runs at the next transition instead of 3 s after the portal); no automatic GC right after the song starts (blocked from pressing Play until the song runs); no GC hitches in the editor after leaving play mode (cleanup runs once at the end of the exit freeze instead of in 40–46 ms slices or a Unity GC a few frames later); hitsounds no longer keep an old SetHitsound after the event is moved or removed (kept effect components are unlinked from the tile like a destroyed one); the beat listener index is rebuilt in one pass and only new entries are indexed when objects are added (90k tiles 68 → 16 ms, verified 0 mismatches).
 
