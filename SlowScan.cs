@@ -27,6 +27,7 @@ namespace StutterFix
             // 곡 전체와 10초 구간별 누적. 끊긴 프레임이 아니라 평소 프레임에 매번 드는 비용을 보려고 둔다.
             public long SongTicks;
             public long SongCalls;
+            public long PanTicks, PanCalls;   // (개발자용 자동 시험 campan) 곡 밖 측정
             public long[] Bucket;
         }
 
@@ -222,6 +223,7 @@ namespace StutterFix
             s.Calls++;
             int b = PerfOverlay.SongBucket;
             if (b >= 0) { s.SongTicks += d; s.SongCalls++; s.Bucket[b] += d; }
+            if (Accum) { s.PanTicks += d; s.PanCalls++; }
         }
 
         // 지난 프레임(정확히는 지난 측정 이후) 가장 오래 걸린 함수들.
@@ -249,6 +251,11 @@ namespace StutterFix
             }
             return sb.Length > 0 ? sb.ToString() : "게임 함수들은 다 짧음";
         }
+
+        // (개발자용 자동 시험 campan) 곡 밖에서도 함수별 시간 모으기
+        internal static bool Accum;
+        internal static void StartPan() { Enabled = true; InstallOnce(); for (int i = 0; i < all.Count; i++) { all[i].PanTicks = 0; all[i].PanCalls = 0; } Accum = true; }
+        internal static string EndPan(int frames) { Accum = false; return Installed ? Rank(s => s.PanTicks, frames, s => s.PanCalls, 15) : "설치 안 됨"; }
 
         internal static void Reset()
         {

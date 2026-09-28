@@ -20,6 +20,7 @@ namespace StutterFix
     public static class Hitch
     {
         internal static bool AllocProbeOn;   // (개발자용) AllocProbe 곡 시작/끝
+        internal static bool TimeProbeOn;    // (개발자용) TimeProbe 곡 시작/끝
         internal static bool Enabled = true;
         // 164Hz 화면에서는 한 프레임이 6ms다. 20ms만 돼도 눈에 띄므로 기준을 낮게 잡는다.
         // 30ms로 두었을 때 사용자가 느낀 28~30초 구간이 기록에 아예 안 남았다.
@@ -171,6 +172,7 @@ namespace StutterFix
             SlowScan.ResetSong();
             PhaseWatch.ResetSong();
             if (AllocProbeOn) AllocProbe.ResetSong();
+            if (TimeProbeOn) TimeProbe.ResetSong();
             UiProf.ResetSong();
             TileCull.SongBegin();
             Main.Entry.Logger.Log("[끊김] 기록 시작");
@@ -242,6 +244,8 @@ namespace StutterFix
             SlowScan.ReportSong();
             PhaseWatch.ReportSong();
             if (AllocProbeOn) AllocProbe.Report();
+            if (TimeProbeOn) TimeProbe.Report();
+            if (BeatFix.Skipped + BeatFix.Called > 0) Main.Entry.Logger.Log("[박자 알림] 타일 OnBeat 건너뜀 " + BeatFix.Skipped + "번, 부름 " + BeatFix.Called + "번 (빠른 길 " + BeatFix.Fast + "번, 원래 반복 " + BeatFix.Slow + "번)" + (BeatFix.Verify ? " | 검증 " + BeatFix.Checks / 64 + "번, 목록 틀림 " + BeatFix.Mismatch : ""));
             if (AllocFix.VerifyInput) Main.Entry.Logger.Log(AllocFix.VerifySummary());
             UiProf.ReportSong();
             ModWatch.Report();

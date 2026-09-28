@@ -38,6 +38,8 @@
     <Compile Include="ThumbCam.cs" />
     <Compile Include="FfxReuse.cs" />
     <Compile Include="TileCull.cs" />
+    <Compile Include="TimeProbe.cs" />
+    <Compile Include="BeatFix.cs" />
     <Compile Include="Edition.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="PerfOverlay.cs" />

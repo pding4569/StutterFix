@@ -101,6 +101,14 @@ namespace StutterFix
         private static float stepTimeout = 180f;   // 단계마다 최대 (timeout 명령으로 바꿈, 큰 맵 열기용)
         private static float openStartedAt;
         private static int thumbPhase; private static float thumbAt; private static byte[] thumbA; private static bool thumbSame;
+        private static int panPhase, panVis, panInvis, panVisFrame, panInvisFrame; private static float panAt, panLast; private static Harmony panHarmony;
+        private static readonly List<float> panMs = new List<float>(); private static readonly List<KeyValuePair<float, string>> panWorst = new List<KeyValuePair<float, string>>();
+        private static readonly long[] panTick0 = new long[17]; private static long panUpd0;
+        private static readonly Dictionary<string, long> panTimes = new Dictionary<string, long>();
+        public static void PanPre(out long __state) { __state = System.Diagnostics.Stopwatch.GetTimestamp(); }
+        public static void PanPost(System.Reflection.MethodBase __originalMethod, long __state) { if (panPhase == 0) return; string k = __originalMethod.DeclaringType.Name + "." + __originalMethod.Name; long v; panTimes.TryGetValue(k, out v); panTimes[k] = v + System.Diagnostics.Stopwatch.GetTimestamp() - __state; }
+        public static void PanVis() { panVis++; panVisFrame++; }
+        public static void PanInvis() { panInvis++; panInvisFrame++; }
         private static int cullPhase, cullFrames; private static float cullAt; private static readonly List<Renderer> cullList = new List<Renderer>();
         private static bool Same(byte[] a, byte[] b) { if (a.Length != b.Length) return false; for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false; return true; }
         private static int openPhase;
@@ -218,8 +226,79 @@ namespace StutterFix
                         Log("렌더러 enabled 호출 함수 " + hits + "개 / 훑은 함수 " + methods + "개, " + sw.ElapsedMilliseconds + "ms: " + string.Join(", ", who.ToArray()));
                         return true;
                     }
+                case "beatfix":
+                    BeatFix.Enabled = arg != "off"; Log("박자 알림 건너뛰기 " + (BeatFix.Enabled ? "켬" : "끔")); return true;
                 case "tilecull":
                     TileCull.ForceOff = arg == "off"; Log("화면 밖 타일 " + (TileCull.ForceOff ? "끔" : "켬")); return true;
+                case "gcfull":
+                    { var gsw = System.Diagnostics.Stopwatch.StartNew(); int c0 = GC.CollectionCount(0); GC.Collect(); Log("GC 한 번에 끝냄 " + gsw.ElapsedMilliseconds + "ms (그 전 수집 횟수 " + c0 + ", 힙 " + (GC.GetTotalMemory(false) >> 20) + "MB, 모드 " + UnityEngine.Scripting.GarbageCollector.GCMode + ", 점진 " + UnityEngine.Scripting.GarbageCollector.isIncremental + ")"); return true; }
+                case "campan":
+                    {
+                        // (개발자용 조사) 편집 화면에서 카메라를 매 프레임 옮기며(끌기와 같은 방식) 프레임 시간·엔진 단계·타일 보임 이벤트를 잰다
+                        if (ed == null) { Log("campan: 에디터 아님"); return true; }
+                        var parts = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        float secs = parts.Length > 0 ? float.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture) : 5f;
+                        float speed = parts.Length > 1 ? float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture) : 20f;
+                        var camF = HarmonyLib.AccessTools.Field(typeof(scnEditor), "camera");
+                        var cam = camF != null ? camF.GetValue(ed) as Camera : null;
+                        if (cam == null) { Log("campan: 카메라 없음"); return true; }
+                        if (panPhase == 0)
+                        {
+                            if (panHarmony == null)
+                            {
+                                panHarmony = new Harmony("StutterFix.campan");
+                                panHarmony.Patch(HarmonyLib.AccessTools.Method(typeof(scrFloor), "OnBecameVisible"), prefix: new HarmonyMethod(typeof(AutoTest), nameof(PanVis)));
+                                panHarmony.Patch(HarmonyLib.AccessTools.Method(typeof(scrFloor), "OnBecameInvisible"), prefix: new HarmonyMethod(typeof(AutoTest), nameof(PanInvis)));
+                                foreach (var pm in new[] { HarmonyLib.AccessTools.Method(HarmonyLib.AccessTools.TypeByName("DG.Tweening.Core.DOTweenComponent"), "Update"), HarmonyLib.AccessTools.Method(HarmonyLib.AccessTools.TypeByName("UnityModManagerNet.UnityModManager+UI"), "Update"), HarmonyLib.AccessTools.Method(typeof(scnEditor), "Update"), HarmonyLib.AccessTools.Method(typeof(scnEditor), "LateUpdate"), HarmonyLib.AccessTools.Method(typeof(scrController), "UpdateInput"), HarmonyLib.AccessTools.Method(HarmonyLib.AccessTools.TypeByName("PlatformHelper"), "Update"), HarmonyLib.AccessTools.Method(HarmonyLib.AccessTools.TypeByName("AsyncInputUtils"), "UpdateOffsetTime"), HarmonyLib.AccessTools.Method(typeof(scrPlayer), "Simulated_PlayerControl_Update"), HarmonyLib.AccessTools.Method(typeof(scrConductor), "Update"), HarmonyLib.AccessTools.Method(typeof(scrConductor), "PropagateOnBeat"), HarmonyLib.AccessTools.Method(typeof(scrController), "CheckForAudioOutputChange"), HarmonyLib.AccessTools.Method(typeof(AudioManager), "Play", new[] { typeof(string), typeof(double), typeof(UnityEngine.Audio.AudioMixerGroup), typeof(float), typeof(int) }), HarmonyLib.AccessTools.Method(HarmonyLib.AccessTools.TypeByName("FloorMesh"), "UpdateAllRequired") })
+                                    if (pm != null) panHarmony.Patch(pm, prefix: new HarmonyMethod(typeof(AutoTest), nameof(PanPre)), postfix: new HarmonyMethod(typeof(AutoTest), nameof(PanPost)));
+                            }
+                            {
+                                // 켜진 스크립트 중 Update/LateUpdate 가 있는 것, 종류별 수
+                                var cnt = new Dictionary<Type, int>();
+                                foreach (var mb in UnityEngine.Object.FindObjectsOfType<MonoBehaviour>())
+                                {
+                                    if (mb == null || !mb.isActiveAndEnabled) continue;
+                                    var tt = mb.GetType(); int c0; cnt.TryGetValue(tt, out c0); cnt[tt] = c0 + 1;
+                                }
+                                var tl = new List<KeyValuePair<Type, int>>();
+                                foreach (var kv in cnt) { var um = kv.Key.GetMethod("Update", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic) ?? kv.Key.GetMethod("LateUpdate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic); if (um != null) tl.Add(kv); }
+                                tl.Sort((x, y) => y.Value.CompareTo(x.Value));
+                                var sbc = new System.Text.StringBuilder("켜진 Update 스크립트:");
+                                sbc.Append(" | 도는 트윈 ").Append(DG.Tweening.DOTween.TotalPlayingTweens()).Append("개, 전체 ").Append(DG.Tweening.DOTween.TotalActiveTweens()).Append("개 |");
+                                for (int k = 0; k < tl.Count && k < 12; k++) sbc.Append(' ').Append(tl[k].Key.Name).Append('=').Append(tl[k].Value);
+                                Log(sbc.ToString());
+                            }
+                            SlowScan.StartPan();
+                            if (Hitch.TimeProbeOn) { TimeProbe.ResetSong(); TimeProbe.Force = true; }
+                            Array.Copy(Main.TickCost, panTick0, panTick0.Length); panUpd0 = Main.UpdateTicks; panTimes.Clear();
+                            panPhase = 1; panAt = now; panVis = panInvis = 0; panMs.Clear(); panWorst.Clear(); panLast = now;
+                            return false;
+                        }
+                        float dtMs = (now - panLast) * 1000f; panLast = now;
+                        if (panMs.Count > 0 || dtMs > 0) { panMs.Add(dtMs); panWorst.Add(new KeyValuePair<float, string>(dtMs, PhaseWatch.TopOfLastFrame(3) + " | 보임 " + panVisFrame + " 안보임 " + panInvisFrame)); }
+                        panVisFrame = panInvisFrame = 0;
+                        var p = cam.transform.position;
+                        cam.transform.position = new Vector3(p.x + speed * Time.unscaledDeltaTime, p.y, -10f);
+                        if (now - panAt < secs) return false;
+                        panMs.Sort();
+                        panWorst.Sort((a, b) => b.Key.CompareTo(a.Key));
+                        float sum = 0; foreach (var v in panMs) sum += v;
+                        var sb = new System.Text.StringBuilder();
+                        sb.Append("카메라 옮기기 ").Append(secs).Append("초, 초당 ").Append(speed).Append(" 칸: 프레임 ").Append(panMs.Count).Append("개, 평균 ").Append((sum / Math.Max(1, panMs.Count)).ToString("F1"))
+                          .Append("ms, 95% ").Append(panMs.Count > 0 ? panMs[(int)(panMs.Count * 0.95f)].ToString("F1") : "-").Append("ms, 최대 ").Append(panMs.Count > 0 ? panMs[panMs.Count - 1].ToString("F1") : "-")
+                          .Append("ms | 타일 보임 ").Append(panVis).Append("번, 안보임 ").Append(panInvis).Append("번");
+                        double tms = 1000.0 / System.Diagnostics.Stopwatch.Frequency; int pf = Math.Max(1, panMs.Count);
+                        if (Hitch.TimeProbeOn) { TimeProbe.Force = false; TimeProbe.Report(); }
+                        sb.Append("\n  함수별: ").Append(SlowScan.EndPan(pf));
+                        sb.Append("\n  박자 알림: 건너뜀 ").Append(BeatFix.Skipped).Append(", 부름 ").Append(BeatFix.Called).Append(", 빠른 길 ").Append(BeatFix.Fast).Append(", 원래 반복 ").Append(BeatFix.Slow).Append(", 목록 틀림 ").Append(BeatFix.Mismatch);
+                        sb.Append("\n  이 모드 OnUpdate 프레임당 ").Append(((Main.UpdateTicks - panUpd0) * tms / pf).ToString("F2")).Append("ms:");
+                        for (int k = 0; k < panTick0.Length; k++) { double v = (Main.TickCost[k] - panTick0[k]) * tms / pf; if (v >= 0.05) sb.Append(' ').Append(Main.TickName[k]).Append(' ').Append(v.ToString("F2")); }
+                        foreach (var kv in panTimes) sb.Append(" | ").Append(kv.Key).Append(' ').Append((kv.Value * tms / pf).ToString("F2")).Append("ms/프레임");
+                        for (int i = 0; i < panWorst.Count && i < 5; i++) sb.Append("\n  ").Append(panWorst[i].Key.ToString("F1")).Append("ms: ").Append(panWorst[i].Value);
+                        Log(sb.ToString());
+                        panPhase = 0;
+                        return true;
+                    }
                 case "culltest":
                     Log("화면 밖 타일 비교: " + TileCull.RenderCompare()); return true;
                 case "framescan":

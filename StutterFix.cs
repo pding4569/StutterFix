@@ -69,6 +69,8 @@ namespace StutterFix
             if (has("present-keepalive")) { WindowGhost.KeepPresent = true; Entry.Logger.Log("[첫 판 FPS] present-keepalive 파일이 있어 멈춘 동안 화면 다시 내보내기 켬"); }
             if (has("present-flip")) { WindowGhost.PresentMode = 0; Entry.Logger.Log("[첫 판 FPS] present-flip 파일이 있어 보통 Present(0,0) 로 내보냄"); }
             if (has("present-screen-check")) { WindowGhost.ScreenCheck = true; Entry.Logger.Log("[첫 판 FPS] present-screen-check 파일이 있어 멈춘 동안 화면을 비교함"); }
+            if (has("beat-verify")) { BeatFix.Verify = true; Entry.Logger.Log("[박자 알림 검증] beat-verify 파일이 있어 건너뛴 타일을 가끔 원래대로 불러 봄"); }
+            if (has("time-probe")) { Hitch.TimeProbeOn = true; TimeProbe.Install(new HarmonyLib.Harmony("StutterFix.timeprobe")); }
             if (has("alloc-probe")) { Hitch.AllocProbeOn = true; AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe")); }
             if (has("tilecull-verify.txt")) { TileCull.Verify = true; TileCull.VerifyInstall(); Entry.Logger.Log("[화면 밖 타일 검증] tilecull-verify.txt 파일이 있어 그리기마다 검사함"); }
             if (has("tilecull-min.txt")) { try { TileCull.MinFloors = int.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "tilecull-min.txt")).Trim()); Entry.Logger.Log("[화면 밖 타일] 최소 타일 수 " + TileCull.MinFloors); } catch { } }
@@ -179,6 +181,7 @@ namespace StutterFix
                 Try(() => AllocFix.Install(harmony));   // 곡 중 쓰레기 줄이기 (AllocFix.cs)
                 Try(() => ThumbCam.Install(harmony));   // 아무도 안 보는 썸네일 카메라 끄기 (ThumbCam.cs)
                 Try(() => TileCull.Install(harmony, Entry.Path));   // 화면 밖 타일 끄기 (TileCull.cs)
+                Try(() => BeatFix.Install(harmony));   // 박자 알림에서 아무것도 안 하는 타일 건너뛰기 (BeatFix.cs)
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)
@@ -525,6 +528,7 @@ namespace StutterFix
             bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc; BigLevel.Enabled = lc; ExitFix.Enabled = lc; FfxReuse.Enabled = lc; AllocFix.Enabled = E("GcPause", Config.GcPause);
             TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages);
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
+            BeatFix.Enabled = Dormancy.Enabled;
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);
             ImagePrefetch.Enabled = E("ImagePrefetch", Config.ImagePrefetch);
             ShaderWarm.Enabled = E("ShaderWarm", Config.ShaderWarm);
