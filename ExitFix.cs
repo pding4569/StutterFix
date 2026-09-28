@@ -60,6 +60,8 @@ namespace StutterFix
                 if (sw == null || rd == null || setup == null || ac == null) { Main.Entry.Logger.Log("[나가기] 게임 코드 모양이 달라 끔"); return; }
                 applyColor = AccessTools.MethodDelegate<Action<scrDecoration>>(ac);   // 가상 호출 (scrVisualDecoration.ApplyColor, 여기 붙은 패치 포함)
                 h.Patch(sw, prefix: new HarmonyMethod(typeof(ExitFix), nameof(SwitchPrefix)), finalizer: new HarmonyMethod(typeof(ExitFix), nameof(SwitchFinalizer)));
+                var play = AccessTools.Method(typeof(scnEditor), "Play", Type.EmptyTypes);
+                if (play != null) h.Patch(play, prefix: new HarmonyMethod(typeof(ExitFix), nameof(PlayPrefix)), finalizer: new HarmonyMethod(typeof(ExitFix), nameof(PlayFinalizer)));
                 // 다른 앞 패치(LoadFix·TransitionFix 의 건너뛰기)가 정한 뒤에 본다
                 h.Patch(rd, prefix: new HarmonyMethod(typeof(ExitFix), nameof(ResetPrefix)) { priority = Priority.Last }, postfix: new HarmonyMethod(typeof(ExitFix), nameof(ResetPostfix)));
                 // 필드에 흔적이 안 남는 설정: 불리면 그 장식은 "바뀜"
@@ -79,9 +81,14 @@ namespace StutterFix
             catch (Exception ex) { Main.Entry.Logger.Log("[나가기] 설치 실패: " + ex.Message); }
         }
 
-        internal static bool Exiting;
+        internal static bool Exiting, PlayStarting;
         public static void SwitchPrefix() { Exiting = true; }
         public static Exception SwitchFinalizer(Exception __exception) { Exiting = false; return __exception; }
+        // 에디터 재생 시작(scnEditor.Play): 재생 준비 끝의 다시 설정(FinishCustomLevelLoading)도 같은 방식. 편집 화면에서 손대지 않은 장식은
+        // 지난 다시 설정(나가기) 뒤 그대로다. 편집으로 바뀐 장식은 Setup 을 거치거나(표시) 이벤트 값이 바뀌어(지문) 원래대로 한다.
+        public static void PlayPrefix() { PlayStarting = true; }
+        public static Exception PlayFinalizer(Exception __exception) { PlayStarting = false; return __exception; }
+        private static string Label { get { return Exiting ? "[나가기]" : "[재생 시작]"; } }
 
         // ── 재생 시작 때 찍어 두는 값 ──
         private struct Base
@@ -120,7 +127,7 @@ namespace StutterFix
         {
             lightRan = false;
             if (!__runOriginal) return false;
-            if (Exiting && Enabled && haveBase && ADOBase.isLevelEditor)
+            if ((Exiting || PlayStarting) && Enabled && haveBase && ADOBase.isLevelEditor)
             {
                 try { if (Light(__instance)) { lightRan = true; haveBase = false; return false; } }
                 catch (Exception ex) { Fallbacks++; Main.Entry.Logger.Log("[나가기] 가볍게 다시 설정 실패, 원래대로: " + ex.Message); }
@@ -131,8 +138,9 @@ namespace StutterFix
 
         public static void ResetPostfix(scrDecorationManager __instance, bool __runOriginal)
         {
-            if (!__runOriginal || lightRan) { lightRan = false; return; }
-            if (!Enabled || !ADOBase.isLevelEditor || Exiting) return;
+            if (!__runOriginal && !lightRan) return;   // 원래가 돌았거나 우리가 가볍게 했을 때만 (가볍게 하면 원래를 건너뛰어 __runOriginal 이 false)
+            lightRan = false;   // 가볍게 한 뒤에도 찍는다(결과가 원래 방식과 같음 - 검증)
+            if (!Enabled || !ADOBase.isLevelEditor) return;
             try { Capture(__instance); } catch (Exception ex) { haveBase = false; Main.Entry.Logger.Log("[나가기] 값 찍기 실패: " + ex.Message); }
         }
 
@@ -269,7 +277,7 @@ namespace StutterFix
             else if (!ReferenceEquals(all, baseList) || all.Count != baseCount) why = "장식 목록이 바뀜";
             else if (Foreign()) why = "다른 모드";
             else if (!LoadFix.SameDecorationData()) why = "장식 데이터가 바뀜";
-            if (why != null) { Main.Entry.Logger.Log("[나가기] 장식 다시 설정 원래대로 (" + why + ")"); return false; }
+            if (why != null) { Main.Entry.Logger.Log(Label + " 장식 다시 설정 원래대로 (" + why + ")"); return false; }
 
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             Exits++;
@@ -300,7 +308,7 @@ namespace StutterFix
             double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             LightTotal += light; FullTotal += full;
             LastLine = string.Format("장식 {0}개 중 판 중에 안 바뀐 {1}개는 가볍게, {2}개는 원래대로 다시 설정 {3:F0}ms", all.Count, light, full, ms);
-            Main.Entry.Logger.Log("[나가기] " + LastLine);
+            Main.Entry.Logger.Log(Label + " " + LastLine);
             if (Verify) RunVerify(mgr, all, lightIdx, alphaBefore, tileBefore, refreshBefore);
             return true;
         }
@@ -405,7 +413,7 @@ namespace StutterFix
                 int gd = StateDump.Compare(ga, StateDump.Manager(mgr), gKeys, null);
                 VerifyRuns++; VerifyDiffDecos += diffDecos; VerifyDiffGlobal += gd;
                 double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
-                Main.Entry.Logger.Log(string.Format("[나가기 검증] 가볍게 한 장식 {0}개 중 원래 방식과 다른 것 {1}개{2}{3} | 매니저 {4} | 검증 {5:F0}ms",
+                Main.Entry.Logger.Log(string.Format((Exiting ? "[나가기 검증]" : "[재생 시작 검증]") + " 가볍게 한 장식 {0}개 중 원래 방식과 다른 것 {1}개{2}{3} | 매니저 {4} | 검증 {5:F0}ms",
                     lightIdx.Count, diffDecos, diffDecos > 0 ? " (" + StateDump.Top(byKey, 8) + ")" : "", ex,
                     gd == 0 ? "같음" : "다름 (" + StateDump.Top(gKeys, 6) + ")", ms));
             }

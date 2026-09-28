@@ -220,7 +220,7 @@ namespace StutterFix
         internal static bool SameDecorationData()
         {
             if (!haveFp || !SkipDoubleReset) return false;
-            return FingerprintMemo() == lastFp;
+            return ReuseFingerprint() == lastFp;   // 재생 시작은 같은 프레임 ReloadAssets 앞에서 이미 쟀다
         }
 
         // 이번 프레임에 잰 지문 기억: 같은 장식 목록 객체, 같은 개수, 처음·끝 장식이 같은 객체일 때만 다시 쓴다(장식을 새로 만들면 객체가 바뀐다)
