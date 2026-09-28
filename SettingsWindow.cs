@@ -759,8 +759,8 @@ namespace StutterFix
                 T("장식을 옮길 때 위치 마무리 계산을 한 번으로 묶고, 값이 그대로인 쓰기와 플레이 중 필요 없는 편집기 작업을 건너뜁니다. 보이는 장식의 위치 재계산은 어차피 같은 프레임에 게임이 다시 하므로 그때 한 번만 합니다.",
                   "Batches position finishing per decoration, skips unchanged writes and editor-only work while playing, and leaves visible decorations' position recompute to the game's own once-per-frame pass."), null);
             ch |= Option("dormant", ref c.DormantSkip, T("장식 순회 줄이기", "Skip idle decorations"),
-                T("게임은 매 프레임 장식 전부를 훑습니다. 안 보이고 바뀔 일이 없는 장식과, 히트박스가 없는 장식은 그 순회에서 빼 둡니다. 장식이 수만 개인 맵에서 평소 프레임이 크게 오릅니다(Arche 107 → 170 fps).",
-                  "The game walks every decoration every frame. Idle invisible decorations and decorations without hitboxes are left out of those walks. Big everyday FPS gain on maps with tens of thousands of decorations (Arche 107 → 170 fps)."),
+                T("게임은 매 프레임 장식 전부를 훑습니다. 안 보이고 바뀔 일이 없는 장식과, 히트박스가 없는 장식은 그 순회에서 빼 둡니다. 장식이 수만 개인 맵에서 평소 프레임이 크게 오릅니다(Arche 107 → 170 fps). 박자마다 모든 타일에 보내는 박자 알림도, 아무것도 하지 않는 타일(아직 안 지나간 타일)은 건너뜁니다(9만 타일 BPM 32000: 166 → 287 fps, 큰 맵을 연 직후 편집 화면 끊김 해결).",
+                  "The game walks every decoration every frame. Idle invisible decorations and decorations without hitboxes are left out of those walks. Big everyday FPS gain on maps with tens of thousands of decorations (Arche 107 → 170 fps). The per-beat notification to every tile also skips tiles where it does nothing (tiles not reached yet): 90k tiles at BPM 32000 166 → 287 fps, and no more editor stutter right after opening a big level."),
                 T("장식 많은 맵", "Decoration-heavy maps"));
             ch |= Option("particleidle", ref c.SkipIdleParticles, T("변화 없는 파티클 갱신 건너뛰기", "Skip idle particle updates"),
                 T("파티클 장식은 값이 그대로여도 매 프레임 모양 크기와 속도를 게임 엔진에 다시 넣습니다. 넣을 값이 지난번과 같으면 건너뜁니다. 화면은 같습니다." + (Compat.QSkipIdleParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
