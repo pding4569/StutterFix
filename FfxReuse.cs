@@ -252,6 +252,7 @@ namespace StutterFix
                 return;
             }
             pending.Add(f);
+            Unlink(f);
             if (inPass)
             {
                 var s = SlotOf(f.gameObject);
@@ -260,6 +261,20 @@ namespace StutterFix
                 if (!s.byType.TryGetValue(t, out q)) { q = new List<ffxPlusBase>(); s.byType[t] = q; }
                 q.Add(f);
             }
+        }
+
+        // 원래라면 지워진 효과를 게임이 필드로 들고 있으면 "== null" 이 참이 된다. 남겨 둔 것은 살아 있어서 그 필드가 옛 효과를 계속 가리킨다.
+        // scrFloor.setHitsound / setGameSound (ffxSetHitsound.Decode 가 넣고 scrConductor.PlayHitTimes 가 "!= null" 로 읽는다):
+        // 히트사운드 이벤트를 옮기거나 지운 타일이 옛 히트사운드를 계속 써서 소리가 바뀌었다. 원래처럼 비운다.
+        // (타일의 다른 효과 목록은 ApplyEventsToFloors·scrFloor.Reset 이 비운다)
+        private static void Unlink(ffxPlusBase f)
+        {
+            var sh = f as ffxSetHitsound;
+            if (ReferenceEquals(sh, null)) return;
+            var fl = sh.GetComponent<scrFloor>();
+            if (ReferenceEquals(fl, null)) return;
+            if (ReferenceEquals(fl.setHitsound, sh)) fl.setHitsound = null;
+            if (ReferenceEquals(fl.setGameSound, sh)) fl.setGameSound = null;
         }
 
         private static Slot SlotOf(GameObject go)

@@ -34,7 +34,7 @@ namespace StutterFix
         // 사용자 로그(2.0.0, 에디터에서 죽고 다시 하기 반복): 죽고 3초 뒤 실패 화면에서 160~340ms 정리가 끊김 알림으로 떠서
         // "메모리 정리 때문에 끊긴다" 로 보였다. 재시작 순간은 어차피 곡 준비로 400~700ms 멈추므로 그때 같이 치운다.
         // 아무것도 안 하고 10초 있으면(10초간 조용함) 그때 치운다.
-        private static bool holdAfterFail;
+        private static bool holdAfterFail, holdAfterWin;
         internal static int IncrementalStartMB = 800;     // 조금씩 치우기 모드에서만 쓴다
         internal static float SliceMs = 2f;
         internal static int SliceEveryFrames = 4;
@@ -139,7 +139,9 @@ namespace StutterFix
                         foreach (var m in type.GetMethods(AccessTools.all))
                         {
                             if (m.Name != e[1] || m.IsAbstract || m.ContainsGenericParameters) continue;
-                            harmony.Patch(m, prefix: new HarmonyMethod(typeof(GcControl), nameof(OnSongEnd)));
+                            bool exit = e[1] == "SwitchToEditMode";
+                            harmony.Patch(m, prefix: new HarmonyMethod(typeof(GcControl), nameof(OnSongEnd)), finalizer: exit ? new HarmonyMethod(typeof(GcControl), nameof(ExitFinalizer)) : null);
+                            if (exit) exitFinalizer = true;
                             Main.Entry.Logger.Log("end hook: " + e[0] + "." + e[1]);
                         }
                     }
@@ -263,6 +265,14 @@ namespace StutterFix
                 InvisibleSkip.LastAllN > 0 ? string.Format(" (투명 장식 위치 반영 {0}개 {1:F0}ms)", InvisibleSkip.LastAllN, InvisibleSkip.LastAllMs) : ""));
             // 편집 화면으로 돌아가거나 메뉴로 나갈 때는 타일/장식을 다시 만드느라 멈춘다 (완주 연출은 끊김으로 본다)
             string n = __originalMethod.Name;
+            if (n == "SwitchToEditMode" && exitFinalizer)
+            {
+                // 편집으로 나가기: 나가기 작업(타일·효과·장식 다시 만들기)이 만드는 쓰레기까지 한 번에 치우도록 끝(ExitFinalizer)에서 치운다.
+                // 앞에서 치우면 그 뒤 쓰레기로 편집 화면에서 유니티 자동 GC 가 곧 돌았다(9만 타일 맵 72ms). 나가는 동안은 멈춘 채로 둔다.
+                PerfOverlay.MarkLoading(SettingsWindow.T("편집 화면으로", "Back to editor"));
+                exitPending = true;
+                return;
+            }
             if (n == "SwitchToEditMode" || n.Contains("Quit"))
             {
                 // 화면이 바뀌며 어차피 멈추는 순간이라 바로 치운다
@@ -271,7 +281,17 @@ namespace StutterFix
                 return;
             }
             if (n == "FailAction" || n == "Fail2Action") { if (Paused) holdAfterFail = true; return; }
+            // 완주: 3초 뒤 치우면 큰 맵에서 0.36~0.47초 멈춰 "곡 끝나자마자 끊김" 으로 보였다(2.4.4 사용자 기록, 힙 1.1GB -> 0.5GB).
+            // 다음 전환(편집으로 나가기·다시 하기·메뉴)까지 미룬다. 그 순간은 어차피 멈춘다. 에디터 밖에서는 곡이 끝나고 10초간 조용하면 치운다.
+            if (n == "OnLandOnPortal") { if (Paused) holdAfterWin = true; return; }
             ScheduleResume(__originalMethod.Name);
+        }
+
+        private static bool exitFinalizer, exitPending;
+        public static Exception ExitFinalizer(Exception __exception)
+        {
+            if (exitPending) { exitPending = false; Resume("SwitchToEditMode"); }
+            return __exception;
         }
 
         internal static void ScheduleResume(string reason)
@@ -313,6 +333,8 @@ namespace StutterFix
             // (재생 누르는 순간부터 GC 를 꺼 두는 것도 해 봤는데, 곡 시작 시간은 그대로였고 시작 직후
             //  "곡 아님" 으로 보이는 순간에 3초 뒤 정리가 예약되어 곡 초반에 끊겼다. 되돌렸다.)
             Resume(__originalMethod.Name);
+            // 대신 자동 GC 만 막는다(Paused 로 두지 않으므로 위의 3초 뒤 정리 예약은 생기지 않는다). 아래 StartHold 설명.
+            StartHold();
             EffectBudget.Reset();
             EffectBudget.Suspend(3f);
             endedByHook = false;
@@ -384,7 +406,10 @@ namespace StutterFix
         // (Arche, 힙 1~2.5GB). 편집 화면은 곧바로 곡이 도는 곳이 아니라서, 유니티의 점진적 GC 로 프레임마다 조금씩(ExitSliceMs) 치운다.
         // 한 바퀴가 끝나고도 50MB 넘게 줄었으면 한 바퀴 더(최대 3바퀴, 한꺼번에 치우기의 "안 줄 때까지" 와 같은 뜻).
         // 끝나기 전에 다시 재생하면 거기서 멈춘다(곡 중에는 Manual 로 멈춤 - 도는 중에 멈춰도 느린 판이 생기지 않음을 2.3.4 에서 확인).
-        internal static bool ExitSlices = true;
+        // 2.4.5: 기본으로 끔. 큰 힙(타일 수만 개 맵, 1GB 안팎)에서는 한 조각이 3ms 가 아니라 40~46ms 씩 걸려(유니티 점진적 GC 의 나눌 수 없는 단계),
+        // 나간 직후 편집 화면에서 움직일 때마다 끊겼다(사용자 기록 2026-09-28: 33프레임 최대 42.9ms, 99프레임 최대 45.6ms). 나가기는 이미 1~2초
+        // 멈추는 순간이라 그 안에서 한 번에 치우는 편이 낫다(이 맵들에서 약 0.3초).
+        internal static bool ExitSlices = false;
         internal static float ExitSliceMs = 3f;
         private static bool bgActive;
         private static int bgFrames, bgCycles;
@@ -425,12 +450,40 @@ namespace StutterFix
             return reason.StartsWith("곡 종료", StringComparison.Ordinal) || reason.StartsWith("Fail", StringComparison.Ordinal);
         }
 
+        // ── 재생 시작 준비 중 자동 GC 막기 ──
+        // 재생 준비(타일·효과 다시 만들기)가 쓰레기를 수백 MB 만들어, 편집으로 나갈 때 정리를 건너뛴 경우 유니티 자동 GC 가 곡 시작 직후
+        // (곡 1초 무렵) 돌아 0.2초 멈췄다(2.4.4 사용자 기록, 93858타일 맵 "메모리 정리 203ms"). 재생·다시 하기를 누른 순간부터 곡이 돌기 시작할
+        // 때까지 자동 GC 만 막는다(Manual: GC.Collect 는 된다). 곡이 시작되면 곡 중 멈춤(Pause)이 이어받고, 쌓인 것은 다음 전환에서 치운다.
+        // 30초 안에 곡이 안 돌면(불러오기 실패 등) 원래대로 켠다.
+        private static bool startHold;
+        private static float startHoldAt;
+        private static void StartHold()
+        {
+            if (!Enabled || Paused) return;
+            try
+            {
+                if (GarbageCollector.GCMode != GarbageCollector.Mode.Enabled) return;
+                GarbageCollector.GCMode = GarbageCollector.Mode.Manual;
+                startHold = true; startHoldAt = Time.realtimeSinceStartup;
+            }
+            catch { }
+        }
+        private static void EndStartHold(string why)
+        {
+            if (!startHold) return;
+            startHold = false;
+            if (Paused) return;   // 곡 중 멈춤이 이어받음
+            try { GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; } catch { }
+            if (why != null) Main.Entry.Logger.Log("[GC] 재생 준비 중 자동 GC 막기 끝: " + why);
+        }
+
         internal static void Resume(string reason)
         {
+            EndStartHold(null);
             if (!Paused) return;
             try
             {
-                holdAfterFail = false;
+                holdAfterFail = false; holdAfterWin = false;
                 if (QuickTransition(reason))
                 {
                     long heap = GC.GetTotalMemory(false) / 1048576;
@@ -439,6 +492,9 @@ namespace StutterFix
                     if (lastCleanMB < 0 || heap < lastCleanMB) lastCleanMB = heap;
                     long debt = heap - lastCleanMB;
                     long need = Math.Max(DebtMinMB, lastCleanMB * 35 / 100);
+                    // 편집으로 나가기는 건너뛰어도 소용이 없다: 곧 곡이 다시 멈춰 주는 재시작과 달리 편집 화면에서는 GC 가 켜진 채라, 곡 중
+                    // 쌓인 것 때문에 몇 프레임 뒤 유니티 자동 GC 가 바로 돈다(9만 타일 맵 69~79ms, "편집 화면에서 끊김"). 나가기 멈춤 안에서 치운다.
+                    if (reason == "SwitchToEditMode") need = 32;
                     if (debt < need)
                     {
                         GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
@@ -511,7 +567,7 @@ namespace StutterFix
                 if (Paused && IsPlaying())
                 {
                     try { GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; } catch { }
-                    Paused = false; resumeCountdown = -1f; holdAfterFail = false;
+                    Paused = false; resumeCountdown = -1f; holdAfterFail = false; holdAfterWin = false;
                     Main.Entry.Logger.Log("[GC] 곡 중에 꺼짐: 한꺼번에 치우지 않고 GC 만 원래대로 켬");
                     return;
                 }
@@ -529,7 +585,8 @@ namespace StutterFix
             if (wantGap && playing && Paused && !limitPhase) GapCheck();   // 한계 가까이: 입력이 없는 틈을 매 프레임 본다
             if (playing && !Paused) { if (Pause()) { pausedFor = 0f; PeakHeapMB = 0; quietTimer = 0f; quietHeapMark = GC.GetTotalMemory(false) / 1048576; } }
             if (!playing) pausePending = false;
-            else if (!playing && Paused) { Hitch.Report(); if (!holdAfterFail) ScheduleResume("곡 종료 [" + LastScene + "]"); }
+            else if (!playing && Paused) { Hitch.Report(); if (!holdAfterFail && !holdAfterWin) ScheduleResume("곡 종료 [" + LastScene + "]"); }
+            if (startHold && (playing || Paused || Time.realtimeSinceStartup - startHoldAt > 30f)) EndStartHold(playing ? null : "30초 안에 곡이 시작되지 않음");
 
             // 곡이 끝났으면 연출이 끝나기를 기다렸다 치운다.
             if (resumeCountdown > 0f)
@@ -582,7 +639,10 @@ namespace StutterFix
             int seq = -1;
             try { var c = scrController.instance; var f = c != null ? c.currFloor : null; if (f != null) seq = f.seqID; } catch { }
             bool advancing = seq != quietSeq; quietSeq = seq;
-            if (songRunning || (playing && advancing)) { quietTimer = 0f; quietHeapMark = heapNow; }
+            // 에디터에서 완주한 뒤에는 편집으로 나가는 순간(어차피 멈춤)까지 기다린다 (그 사이 힙은 아래 한계가 지킨다)
+            bool edWin = false;
+            if (holdAfterWin) { try { edWin = ADOBase.isLevelEditor; } catch { } }
+            if (songRunning || (playing && advancing) || edWin) { quietTimer = 0f; quietHeapMark = heapNow; }
             else quietTimer += dt;
             if (quietTimer >= 10f)
             {

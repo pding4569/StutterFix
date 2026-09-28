@@ -28,7 +28,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.4.4 에서 바뀐 것](#244-에서-바뀐-것) · [2.4.3](#243-에서-바뀐-것) · [2.4.2](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
+- [2.4.5 에서 바뀐 것](#245-에서-바뀐-것) · [2.4.4](#244-에서-바뀐-것) · [2.4.3](#243-에서-바뀐-것) · [2.4.2](#242-에서-바뀐-것) · [2.4.1](#241-에서-바뀐-것) · [2.4.0](#240-에서-바뀐-것) · [2.3.4](#234-에서-바뀐-것) · [2.3.3](#233-에서-바뀐-것) · [2.3.2](#232-에서-바뀐-것) · [2.3.1](#231-에서-바뀐-것) · [2.3.0](#230-에서-바뀐-것)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -47,6 +47,18 @@ made by **naro** & **Claude**
 - **Shift+Insert**: 실시간 모니터 (아이콘 → 미니 → 상세 → 끔)
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 주황색 표시로 알려 줍니다.
+
+## 2.4.5 에서 바뀐 것
+
+2.4.4 에서 생긴 문제를 고쳤습니다.
+
+- **곡이 끝나자마자 끊기던 것**: 두 가지였습니다. (1) 화면 밖 타일 끄기가 곡이 끝나는 순간 꺼 둔 타일 수만 개를 한 프레임에 다시 켰습니다. 이제 곡이 끝나도 카메라를 따라 계속 돌리다가, 어차피 멈추는 순간(편집으로 나가기·다시 하기·장면 전환)에 켭니다. (2) 완주 3초 뒤 미뤄 둔 메모리 정리를 해서 큰 맵에서 0.36~0.47초 멈췄습니다. 이제 다음 전환(편집으로 나가기·다시 하기·메뉴) 때 같이 합니다.
+- **곡 시작 직후 메모리 정리**: 편집으로 나갈 때 정리를 건너뛴 뒤 재생 준비가 쓰레기를 많이 만들면, 유니티 자동 GC 가 곡 1초 무렵 돌아 0.2초 멈췄습니다. 재생·다시 하기를 누른 순간부터 곡이 돌기 시작할 때까지 자동 GC 를 막습니다(쌓인 것은 다음 전환 때 치움).
+- **편집으로 나간 뒤 편집 화면이 끊기던 것**: 나간 뒤 메모리를 프레임마다 조금씩 치우던 것이 큰 맵(힙 1GB 안팎)에서는 한 조각에 40~46ms 씩 걸렸고, 쌓인 양이 적다고 정리를 건너뛰면 몇 프레임 뒤 유니티 자동 GC 가 돌았습니다(9만 타일 맵 69~79ms). 이제 나가기 작업이 끝나는 순간(아직 멈춘 동안) 한 번에 치웁니다. 9만 타일 맵에서 나가기가 약 0.6초 길어지는 대신 편집 화면에서는 끊기지 않습니다.
+- **히트사운드가 바뀌던 것**: 효과 컴포넌트 다시 쓰기(2.4.4)가 남겨 둔 히트사운드 효과를 타일이 계속 가리켜서, 히트사운드 이벤트를 옮기거나 지운 타일이 옛 소리를 썼습니다. 원래처럼 비웁니다.
+- **박자 알림 목록 다시 만들기**: 9만 타일 맵에서 한 번에 68ms 걸리던 것을 한 번 훑기로 16ms 로 줄였고, 알림을 받는 물체가 새로 생기면 새 것에만 번호를 매깁니다(목록이 다르게 바뀌면 원래대로 다시 만듦).
+
+검증(개발자용 자동 시험, 5천·9만 타일 맵): 박자 알림 목록을 원래 방식과 대조 75번 틀림 0, 화면 밖 타일 끄기 "화면과 겹친 꺼진 타일" 0번·"꺼진 채 움직인 타일" 0번(곡이 끝난 뒤 포함), 완주 뒤·곡 시작 뒤·편집 화면에서 메모리 정리 끊김 0번, 편집 화면에서 타일 위로 카메라를 옮길 때 프레임 평균 3.6~4.3ms.
 
 ## 2.4.4 에서 바뀐 것
 
@@ -511,6 +523,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.4.5:** fixes for 2.4.4. No more hitch right when a level ends (off-screen tile culling no longer re-enables tens of thousands of renderers in one frame at the end, and the deferred memory cleanup after a clear now runs at the next transition instead of 3 s after the portal); no automatic GC right after the song starts (blocked from pressing Play until the song runs); no GC hitches in the editor after leaving play mode (cleanup runs once at the end of the exit freeze instead of in 40–46 ms slices or a Unity GC a few frames later); hitsounds no longer keep an old SetHitsound after the event is moved or removed (kept effect components are unlinked from the tile like a destroyed one); the beat listener index is rebuilt in one pass and only new entries are indexed when objects are added (90k tiles 68 → 16 ms, verified 0 mismatches).
 
 **2.4.4:** faster editor Play (the light decoration reset from 2.4.0 now also runs at play start for decorations untouched in the editor; Arche 3.3–3.9 s → 2.8–3.0 s from the second Play, verified identical on 4 levels), and less garbage during play (legacy keyboard check without lambdas/temp lists; no per-frame GUILayout setup for the mod's own overlay and closed settings window): 1-hour level 1.45 → 1.19 MB/s. Also: **floor effect components are reused** instead of destroyed and re-added on every editor exit / play start (reset to a freshly-constructed state; lookups hide kept components and return the original order): Arche play start 3.1 → 2.5 s, exit 1.5 → 1.1 s, verified field-by-field identical on 4 levels; **far off-screen tiles are left out of rendering** on levels with over 3,000 tiles (Unity was testing every tile for every camera each frame): 90k-tile level 295 → 420 FPS, verified with 0 on-screen culled tiles and 0-pixel render differences; the per-beat OnBeat broadcast now only calls tiles where it does something (floors re-register themselves on every reset, so the list held each tile several times): 90k tiles BPM 32000 166 → 287 FPS, BPM 100000 112 → 159 FPS, and no more editor stutter right after opening a big level; the old tiles' materials that piled up on every level open in the editor (~128 MB per open for 90k tiles, even without mods) are now freed; **automatic updates** (checks at launch and every 3 hours, downloads and installs a new version by itself outside of levels, applied on the next launch; install work runs off the main thread), and the editor's unused workshop thumbnail camera no longer redraws a 512x512 image every frame (0.07–0.09 ms main thread per frame; saved thumbnails byte-identical).
 

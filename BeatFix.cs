@@ -42,6 +42,7 @@ namespace StutterFix
             var make = AccessTools.Method(typeof(scrLevelMaker), "MakeLevel");
             if (onBeat == null || prop == null || light == null || reset == null || make == null) { Main.Entry.Logger.Log("[박자 알림] 게임 코드 모양이 달라 쓰지 않음"); return; }
             h.Patch(prop, prefix: new HarmonyMethod(typeof(BeatFix), nameof(PropPrefix)));
+            if (Edition.Dev) Main.Entry.Logger.Log("[박자 알림] 목록 바뀜 횟수 읽기: " + (verRef != null ? "됨" : "안 됨 (개수만 봄)"));
             h.Patch(light, postfix: new HarmonyMethod(typeof(BeatFix), nameof(LitChanged)));
             h.Patch(reset, postfix: new HarmonyMethod(typeof(BeatFix), nameof(LitChanged)));
             var mark = new HarmonyMethod(typeof(BeatFix), nameof(MarkDirty));
@@ -49,7 +50,8 @@ namespace StutterFix
             foreach (var n in new[] { "InstantiateStringFloors", "InstantiateFloatFloors" }) { var m = AccessTools.Method(typeof(scrLevelMaker), n); if (m != null) h.Patch(m, postfix: mark); }
         }
 
-        public static void MarkDirty() { dirty = true; lDirty = true; }
+        public static void MarkDirty() { dirty = true; lDirty = true; dirtyGen++; }
+        private static int dirtyGen, litGen;
 
         // 다른 모드가 고쳐 쓰는지: scrFloor.OnBeat 에 패치가 있거나, PropagateOnBeat 에 transpiler 나 이 모드 밖의 prefix 가 있으면
         private static bool Foreign()
@@ -75,9 +77,17 @@ namespace StutterFix
         private static int lCount = -1;
         private static bool lDirty = true, lOverride;
         private static readonly List<int> lActive = new List<int>();
-        private static readonly Dictionary<scrFloor, List<int>> lByFloor = new Dictionary<scrFloor, List<int>>();
+        private sealed class RefEq : IEqualityComparer<scrFloor>
+        {
+            internal static readonly RefEq I = new RefEq();
+            public bool Equals(scrFloor a, scrFloor b) { return ReferenceEquals(a, b); }
+            public int GetHashCode(scrFloor o) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o); }
+        }
+        private static readonly Dictionary<scrFloor, int> lHead = new Dictionary<scrFloor, int>(RefEq.I);
+        private static int[] lNext = new int[0];
         private static int[] lBuf = new int[64];
         private static long lChecks;
+        private static readonly System.Diagnostics.Stopwatch rebuildSw = new System.Diagnostics.Stopwatch();
 
         // 이 타일의 OnBeat 가 아무것도 안 하는가 (타일 종류가 scrFloor 그 자체이고 vfx 가 있을 때만 판단)
         private static bool NoOp(scrFloor f, out bool plain)
@@ -92,8 +102,18 @@ namespace StutterFix
 
         private static void Listeners(List<ADOBase> list)
         {
-            bool ov = !ReferenceEquals(vfx0, null) && vfx0.overrideTileSprites;
-            if (!lDirty && ReferenceEquals(list, lRef) && list.Count == lCount && ov == lOverride)
+            // 타일들의 vfx 는 scrVfx.instance (scrFloor.Awake). vfx0 은 게임 화면에서만 채워지므로 편집 화면에서도 바뀜을 보려면 instance 를 본다
+            var vi = scrVfx.instance;
+            bool ov = !ReferenceEquals(vi, null) && vi.overrideTileSprites;
+            // 목록의 바뀜 횟수(List._version)로 지난 번호 매기기 뒤 무엇이 있었는지 본다. 늘어난 개수만큼만 바뀌었으면 끝에 더하기(Add)뿐이다
+            // (Clear·RemoveAt·Insert·덮어쓰기는 개수와 바뀜 횟수가 어긋난다). 그때는 새 항목에만 번호를 매긴다. 편집 화면에서 알림을 받는
+            // 물체가 새로 생길 때마다 9만 항목을 다시 훑지 않게. 바뀜 횟수를 못 읽으면 예전처럼 개수만 본다.
+            if (!lDirty && ReferenceEquals(list, lRef) && ov == lOverride && verRef != null)
+            {
+                int dc = list.Count - lCount;
+                if (dc > 0 && verRef(list) - lVersion == dc) Append(list);
+            }
+            if (!lDirty && ReferenceEquals(list, lRef) && list.Count == lCount && ov == lOverride && (verRef == null || verRef(list) == lVersion))
             {
                 if (Verify && (++lChecks & 63) == 0)
                 {
@@ -119,45 +139,89 @@ namespace StutterFix
                     return;
                 }
             }
-            // 원래 반복 그대로 (아무것도 안 하는 타일만 안 부름)
+            // 원래 반복 그대로 (아무것도 안 하는 타일만 안 부름). 번호도 같은 반복에서 만든다(9만 항목을 두 번 훑으면 68ms 였다).
+            // 항목은 끝에만 더해지므로(Awake 의 Add) 반복 중 OnBeat 가 새 항목을 넣어도 앞 번호는 그대로이고, 뒤에 붙은 것만 따로 번호를 매긴다.
+            rebuildSw.Restart();
+            lDirty = true;   // 반복 중 OnBeat 안에서 빛남이 바뀌어도(LitChanged) 만드는 중인 번호를 건드리지 않게, 끝난 뒤에 푼다
+            lActive.Clear(); lHead.Clear();
+            int g0 = litGen, d0 = dirtyGen;
             int num = list.Count;
+            if (lNext.Length < num) lNext = new int[Math.Max(num, lNext.Length * 2)];
             int i = 0;
             while (i < num)
             {
                 var e = list[i];
                 if (e == null) { list.RemoveAt(i); num--; continue; }
                 bool plain;
-                if (NoOp(e as scrFloor, out plain)) Skipped++;
-                else { e.OnBeat(); Called++; }
+                bool noop = NoOp(e as scrFloor, out plain);
+                if (plain) Link((scrFloor)e, i);
+                if (noop) Skipped++;
+                else { lActive.Add(i); e.OnBeat(); Called++; }
                 i++;
             }
-            // 번호 다시 만들기
-            lRef = list; lCount = list.Count; lDirty = false; lOverride = ov;
-            lActive.Clear(); lByFloor.Clear();
-            for (int k = 0; k < list.Count; k++)
+            if (lNext.Length < list.Count) Array.Resize(ref lNext, list.Count);
+            int from = num;
+            // 반복 중 누군가의 OnBeat 가 타일 빛남을 바꿨으면 앞에서 매긴 번호가 낡았을 수 있다: 처음부터 다시 매긴다
+            if (litGen != g0) { lActive.Clear(); lHead.Clear(); from = 0; }
+            for (int k = from; k < list.Count; k++)
             {
-                var e = list[k];
-                var f = e as scrFloor;
+                var f = list[k] as scrFloor;
                 bool plain;
                 bool noop = NoOp(f, out plain);
-                if (plain)
-                {
-                    List<int> l;
-                    if (!lByFloor.TryGetValue(f, out l)) { l = new List<int>(2); lByFloor[f] = l; }
-                    l.Add(k);
-                }
+                if (plain) Link(f, k);
                 if (!noop) lActive.Add(k);
             }
+            lRef = list; lCount = list.Count; lOverride = ov; lVersion = verRef != null ? verRef(list) : 0;
+            lDirty = dirtyGen != d0;   // 반복 중 타일 목록을 다시 만들었으면 다음 박자에 또 만든다
+            RebuildMs += rebuildSw.Elapsed.TotalMilliseconds; Rebuilds++;
+            if (Edition.Dev && rebuildSw.ElapsedMilliseconds >= 3) Main.Entry.Logger.Log("[박자 알림] 첫 반복 다시 만들기 " + rebuildSw.ElapsedMilliseconds + "ms (항목 " + list.Count + "개)");
+        }
+        internal static double RebuildMs; internal static long Rebuilds, Appends;
+
+        private static int lVersion;
+        private static readonly AccessTools.FieldRef<List<ADOBase>, int> verRef = VersionRef();
+        private static AccessTools.FieldRef<List<ADOBase>, int> VersionRef()
+        {
+            try
+            {
+                var f = AccessTools.Field(typeof(List<ADOBase>), "_version");
+                return f != null && f.FieldType == typeof(int) ? AccessTools.FieldRefAccess<List<ADOBase>, int>(f) : null;
+            }
+            catch { return null; }
+        }
+
+        // 끝에 더해진 항목에만 번호 매기기 (앞 번호는 그대로)
+        private static void Append(List<ADOBase> list)
+        {
+            int n = list.Count;
+            if (lNext.Length < n) Array.Resize(ref lNext, Math.Max(n, lNext.Length * 2));
+            for (int k = lCount; k < n; k++)
+            {
+                var f = list[k] as scrFloor;
+                bool plain;
+                bool noop = NoOp(f, out plain);
+                if (plain) Link(f, k);
+                if (!noop) lActive.Add(k);
+            }
+            lCount = n; lVersion = verRef(list); Appends++;
+        }
+
+        // 타일별 번호 사슬: lHead[타일] = 마지막 번호, lNext[번호] = 같은 타일의 앞 번호 (-1 끝). 타일마다 목록을 만들지 않는다.
+        private static void Link(scrFloor f, int k)
+        {
+            int h;
+            lNext[k] = lHead.TryGetValue(f, out h) ? h : -1;
+            lHead[f] = k;
         }
 
         // 타일의 hasLit 가 바뀌었을 때 첫 반복의 번호도 고친다
         private static void ListenersLitChanged(scrFloor f)
         {
-            List<int> l;
-            if (lDirty || !lByFloor.TryGetValue(f, out l)) return;
+            int head;
+            if (lDirty || !lHead.TryGetValue(f, out head)) return;
             bool plain;
             bool noop = NoOp(f, out plain);
-            foreach (var k in l)
+            for (int k = head; k >= 0; k = lNext[k])
             {
                 int at = lActive.BinarySearch(k);
                 if (!noop) { if (at < 0) lActive.Insert(~at, k); }
@@ -224,6 +288,7 @@ namespace StutterFix
         // LightUp / Reset 뒤: 그 타일의 hasLit 에 맞춰 목록을 고친다 (번호순 유지)
         public static void LitChanged(scrFloor __instance)
         {
+            litGen++;
             ListenersLitChanged(__instance);
             int i;
             if (dirty || !idx.TryGetValue(__instance, out i)) return;

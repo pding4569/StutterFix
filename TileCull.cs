@@ -276,8 +276,11 @@ namespace StutterFix
             try
             {
                 if (!Hitch.Playing) blocked = false;
-                bool want = !blocked && pauseDepth == 0 && Enabled && !ForceOff && Ready && !loopLost && Hitch.Playing && ADOBase.customLevel != null && ADOBase.lm != null && ADOBase.lm.listFloors != null
-                    && ADOBase.lm.listFloors.Count >= MinFloors && ADOBase.controller != null && ADOBase.controller.camy != null;
+                // 곡이 끝나도(완주·실패) 바로 전부 켜지 않는다: 큰 맵에서 수만 개 렌더러를 한 프레임에 켜면 곡 끝 순간 끊겼다(2.4.4).
+                // 이미 돌던 것은 카메라를 따라 계속 돌리고, 다시 켜기는 멈추는 순간(타일 다시 만들기·장면 초기화·편집으로 나가기·장면 바뀜)에 한다.
+                bool want = !blocked && pauseDepth == 0 && Enabled && !ForceOff && Ready && !loopLost && (Hitch.Playing || active) && ADOBase.customLevel != null && ADOBase.lm != null && ADOBase.lm.listFloors != null
+                    && ADOBase.lm.listFloors.Count >= MinFloors && ADOBase.controller != null && ADOBase.controller.camy != null
+                    && (!active || Hitch.Playing || (ReferenceEquals(ADOBase.lm.listFloors, builtList) && builtList.Count == fl.Length));   // 곡 뒤에 계속 돌 때: 같은 타일 목록일 때만 (장면이 바뀌면 멈춤)
                 if (!want) { if (active) StopAll(); return; }
                 if (!active) Build();
                 var cam = ADOBase.controller.camy.camobj;
@@ -297,11 +300,13 @@ namespace StutterFix
 
         private static long Key(int x, int y) { return ((long)x << 32) ^ (uint)y; }
 
+        private static List<scrFloor> builtList;
         private static void Build()
         {
             var sw = Stopwatch.StartNew();
             var list = ADOBase.lm.listFloors;
             int n = list.Count;
+            builtList = list;
             fl = list.ToArray(); rend = new Renderer[n]; bnd = new Bounds[n]; st = new byte[n]; want = new bool[n]; cover = new int[n]; quiet = new int[n];
             cells.Clear(); culled.Clear(); byGo.Clear(); haveRect = false;
             for (int i = 0; i < n; i++)
@@ -467,7 +472,7 @@ namespace StutterFix
             active = false;
             foreach (var kv in culled) { var r = kv.Key; if (r != null && want[kv.Value]) r.enabled = true; }
             culled.Clear(); cells.Clear(); byGo.Clear(); haveRect = false;
-            fl = new scrFloor[0]; rend = new Renderer[0];
+            fl = new scrFloor[0]; rend = new Renderer[0]; builtList = null;
             if (Verify || Edition.Dev) Main.Entry.Logger.Log("[화면 밖 타일] 멈춤: 끔 " + Culls + "번, 켬 " + Unculls + "번, 움직여 뺌 " + Pins + "번, 게임의 enabled 읽기/쓰기 대신 " + ReadHits + "번"
                 + (Verify ? " | 검증: 화면과 겹친 꺼진 타일 " + Violations + "번, 꺼진 채 움직인 타일 " + Moved + "번" : ""));
             Culls = Unculls = Pins = ReadHits = Violations = Moved = 0;

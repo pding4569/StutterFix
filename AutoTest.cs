@@ -101,7 +101,7 @@ namespace StutterFix
         private static float stepTimeout = 180f;   // 단계마다 최대 (timeout 명령으로 바꿈, 큰 맵 열기용)
         private static float openStartedAt;
         private static int thumbPhase; private static float thumbAt; private static byte[] thumbA; private static bool thumbSame;
-        private static int panPhase, panVis, panInvis, panVisFrame, panInvisFrame; private static float panAt, panLast; private static Harmony panHarmony;
+        private static int panPhase, panVis, panInvis, panVisFrame, panInvisFrame; private static float panAt, panLast, panK; private static Harmony panHarmony;
         private static readonly List<float> panMs = new List<float>(); private static readonly List<KeyValuePair<float, string>> panWorst = new List<KeyValuePair<float, string>>();
         private static readonly long[] panTick0 = new long[17]; private static long panUpd0;
         private static readonly Dictionary<string, long> panTimes = new Dictionary<string, long>();
@@ -399,14 +399,22 @@ namespace StutterFix
                             SlowScan.StartPan();
                             if (Hitch.TimeProbeOn) { TimeProbe.ResetSong(); TimeProbe.Force = true; }
                             Array.Copy(Main.TickCost, panTick0, panTick0.Length); panUpd0 = Main.UpdateTicks; panTimes.Clear();
-                            panPhase = 1; panAt = now; panVis = panInvis = 0; panMs.Clear(); panWorst.Clear(); panLast = now;
+                            panPhase = 1; panAt = now; panK = 0; panVis = panInvis = 0; panMs.Clear(); panWorst.Clear(); panLast = now;
                             return false;
                         }
                         float dtMs = (now - panLast) * 1000f; panLast = now;
                         if (panMs.Count > 0 || dtMs > 0) { panMs.Add(dtMs); panWorst.Add(new KeyValuePair<float, string>(dtMs, PhaseWatch.TopOfLastFrame(3) + " | 보임 " + panVisFrame + " 안보임 " + panInvisFrame)); }
                         panVisFrame = panInvisFrame = 0;
                         var p = cam.transform.position;
-                        cam.transform.position = new Vector3(p.x + speed * Time.unscaledDeltaTime, p.y, -10f);
+                        var lfp = ADOBase.lm != null ? ADOBase.lm.listFloors : null;
+                        if (parts.Length > 2 && parts[2] == "tiles" && lfp != null && lfp.Count > 0)
+                        {
+                            // 타일 길을 따라 (초당 speed 타일) - 타일이 없는 빈 곳으로 가지 않게
+                            panK += speed * Time.unscaledDeltaTime;
+                            var fp = lfp[Mathf.Clamp((int)panK, 0, lfp.Count - 1)];
+                            if (fp != null) { var q = fp.transform.position; cam.transform.position = new Vector3(q.x, q.y, -10f); }
+                        }
+                        else cam.transform.position = new Vector3(p.x + speed * Time.unscaledDeltaTime, p.y, -10f);
                         if (now - panAt < secs) return false;
                         panMs.Sort();
                         panWorst.Sort((a, b) => b.Key.CompareTo(a.Key));
@@ -418,7 +426,7 @@ namespace StutterFix
                         double tms = 1000.0 / System.Diagnostics.Stopwatch.Frequency; int pf = Math.Max(1, panMs.Count);
                         if (Hitch.TimeProbeOn) { TimeProbe.Force = false; TimeProbe.Report(); }
                         sb.Append("\n  함수별: ").Append(SlowScan.EndPan(pf));
-                        sb.Append("\n  박자 알림: 건너뜀 ").Append(BeatFix.Skipped).Append(", 부름 ").Append(BeatFix.Called).Append(", 빠른 길 ").Append(BeatFix.Fast).Append(", 원래 반복 ").Append(BeatFix.Slow).Append(", 목록 틀림 ").Append(BeatFix.Mismatch);
+                        sb.Append("\n  박자 알림: 건너뜀 ").Append(BeatFix.Skipped).Append(", 부름 ").Append(BeatFix.Called).Append(", 빠른 길 ").Append(BeatFix.Fast).Append(", 원래 반복 ").Append(BeatFix.Slow).Append(", 목록 틀림 ").Append(BeatFix.Mismatch).Append(", 다시 만들기 ").Append(BeatFix.Rebuilds).Append("번 ").Append(BeatFix.RebuildMs.ToString("F0")).Append("ms, 끝에 더하기 ").Append(BeatFix.Appends).Append("번");
                         sb.Append("\n  이 모드 OnUpdate 프레임당 ").Append(((Main.UpdateTicks - panUpd0) * tms / pf).ToString("F2")).Append("ms:");
                         for (int k = 0; k < panTick0.Length; k++) { double v = (Main.TickCost[k] - panTick0[k]) * tms / pf; if (v >= 0.05) sb.Append(' ').Append(Main.TickName[k]).Append(' ').Append(v.ToString("F2")); }
                         foreach (var kv in panTimes) sb.Append(" | ").Append(kv.Key).Append(' ').Append((kv.Value * tms / pf).ToString("F2")).Append("ms/프레임");

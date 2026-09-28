@@ -693,8 +693,8 @@ namespace StutterFix
 
             Section(T("기본", "General"));
             ch |= Option("gc", ref c.GcPause, T("메모리 정리 미루기", "Defer memory cleanup"),
-                T("플레이 중 게임이 메모리를 정리하느라 잠깐 멈추는 것을 막습니다. 곡이 끝나고 몇 초 뒤 한 번에 정리합니다.",
-                  "Stops the game from pausing to clean up memory mid-song. Cleanup runs once, a few seconds after the level ends."),
+                T("플레이 중 게임이 메모리를 정리하느라 잠깐 멈추는 것을 막습니다. 쌓인 것은 어차피 멈추는 순간(편집으로 나가기, 다시 하기, 화면 전환)에 한 번에 정리합니다.",
+                  "Stops the game from pausing to clean up memory mid-song. What piles up is cleaned at once during a transition that pauses anyway (back to editor, retry, scene change)."),
                 T("효과 가장 큼", "Biggest impact"));
             ch |= Option("fx", ref c.EffectSplit, T("효과 몰림 나누기", "Spread effect bursts"),
                 T("한 순간에 효과 수십 개가 동시에 시작될 때, 몇 프레임에 나눠 시작해 화면이 멈추지 않게 합니다.",
