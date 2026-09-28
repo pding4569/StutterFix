@@ -564,6 +564,8 @@ namespace StutterFix
                     if (now - waitSec < 2f) return false;   // 열린 뒤 2초 (이미지 결과 창 등 정리)
                     openPhase = 0; Log(string.Format("맵 열림 ({0:F1}초, 열기 요청부터 2초 기다림 포함)", now - openStartedAt));
                     return true;
+                case "select":
+                    { if (ed == null) throw new Exception("에디터가 아님"); int si = int.Parse(arg); ed.SelectFloor(ADOBase.lm.listFloors[Math.Min(si, ADOBase.lm.listFloors.Count - 1)], true); Log("타일 " + si + " 선택"); return true; }
                 case "play":
                     if (ed == null) throw new Exception("에디터가 아님");
                     if (ed.playMode) { Log("이미 재생 중"); return true; }
