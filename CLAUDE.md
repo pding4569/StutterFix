@@ -64,6 +64,7 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 - 장식 "가볍게 다시 설정"(`ExitFix`)은 **ResetScene 시점에서만** 맞다. ResetScene 쪽을 건너뛰고 재생 준비 끝(`FinishCustomLevelLoading`)에서 재생 시작 때 찍은 값으로 가볍게 하면 그 사이 바뀐 장식 변환을 놓친다(검증: Windflower 10개, HELLO 2026 180~190개 회전·위치·크기 다름).
 - 자동 시험 `game <맵>` / `press` / `retry`: 커스텀 맵 목록에서 연 것처럼 게임 화면(scnGame)에서 시험한다. 게임 화면은 곡 시작과 다시 하기 뒤에 키 누름(`press`)이 필요하다.
 - 모드 폴더에 `startprobe-cold.txt`를 두면 dev [시작시간]이 자주 불리는 함수를 감싸지 않아 단계 나눔이 정확해진다.
+- HELLO 2026에서 곡이 갈수록 FPS가 떨어지는 것(245→140)은 **맵 내용 탓**이다. 타일 2500에서 시작해도 첫 10초가 172 FPS, 5000에서 시작하면 145→191. 쌓이는 문제 아님. "곡이 갈수록 느려짐"은 중간 타일에서 시작(`select <타일>` + `play`)해서 가린다.
 - dev 빌드 [시작시간]은 `Enum.ToObject` 같은 많이 불리는 함수까지 감싸 부풀려진다. 맵 열기·재생 시작 시간은 플레이어용+자동 시험 빌드(`-p:Edition=Player -p:AutoTestBuild=1` → `bin/PlayerAuto`)로 잰다.
 
 ## 사용자 PC
