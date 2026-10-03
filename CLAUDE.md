@@ -60,7 +60,7 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 - 필터는 박자마다 토글되므로 "끊긴 순간 필터가 바뀜"은 **상관이지 인과가 아니다**. 필터를 다 꺼도 끊김은 그대로였다.
 - `scrController.currentState`는 이 버전에서 재생 중에도 `None`이다. 종료 감지는 실제 종료 함수(`OnLandOnPortal`, `FailAction`, `QuitToMainMenu` 등)를 가로챈다.
 - 이 릴리스 빌드는 유니티 내부 계측점(Recorder)이 거의 막혀 있다(44개 중 쓸 만한 것 없음). GPU 시간은 PresentMon으로 잰다 (`MsGPUBusy`).
-- 고급 필터(`ffxSetFilterAdvancedPlus`)가 길이 있는 효과에서 정수 필드를 0부터 트윈해서, `CameraFilterPack_Blur_Movie.OnRenderImage`가 그동안 매 프레임 0으로 나누기 예외를 던진다(원래 게임 버그, Windflower 60초에 약 420번). 예외만 삼키는 수정으로 A/B 4판: FPS 278/277 같음, 곡 중 최악 29~30ms 같음. **성능 영향 없음, 넣지 않았다.**
+- 고급 필터(`ffxSetFilterAdvancedPlus`)가 길이 있는 효과에서 정수 필드를 0부터 트윈해서, `CameraFilterPack_Blur_Movie.OnRenderImage`가 그동안 매 프레임 0으로 나누기 예외를 던진다(원래 게임 버그, Windflower 60초에 약 420번). 예외만 삼키는 수정으로 A/B 4판: FPS 278/277 같음, 곡 중 최악 29~30ms 같음. **성능 영향 없음, 넣지 않았다.** 던지기 전에 막는 수정(원래 코드의 예외 직전까지만 따라 함)도 해 봤다: 예외 0번이 됐지만 Windflower 17.2초 31ms 프레임은 그대로였다. 그 프레임은 예외도 셰이더(미리 데움 93개)도 아니고 엔진 단계 바깥이다(드라이버/그래픽 메모리 쪽, PerfView 로 볼 것).
 - 장식 "가볍게 다시 설정"(`ExitFix`)은 **ResetScene 시점에서만** 맞다. ResetScene 쪽을 건너뛰고 재생 준비 끝(`FinishCustomLevelLoading`)에서 재생 시작 때 찍은 값으로 가볍게 하면 그 사이 바뀐 장식 변환을 놓친다(검증: Windflower 10개, HELLO 2026 180~190개 회전·위치·크기 다름).
 - 자동 시험 `game <맵>` / `press` / `retry`: 커스텀 맵 목록에서 연 것처럼 게임 화면(scnGame)에서 시험한다. 게임 화면은 곡 시작과 다시 하기 뒤에 키 누름(`press`)이 필요하다.
 - 모드 폴더에 `startprobe-cold.txt`를 두면 dev [시작시간]이 자주 불리는 함수를 감싸지 않아 단계 나눔이 정확해진다.
