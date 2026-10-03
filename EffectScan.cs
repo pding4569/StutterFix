@@ -116,14 +116,31 @@ namespace StutterFix
             if (LogFloorAppear && __instance != null && GcControl.Paused && EffectBudget.OuterCall
                 && __instance.GetType().Name == "ffxFloorAppearPlus") DescribeFloorAppear(__instance);
             if (!EffectBudget.ShouldRun(__instance, __originalMethod, __args)) return false;
+            if (Edition.Dev && EffectBudget.OuterCall && __instance is ffxMoveFloorPlus) mfTweens0 = DG.Tweening.DOTween.TotalActiveTweens();
             EffectBudget.Enter();
             return true;
+        }
+        // (개발자용) 무거운 타일 이동 효과: 타일 범위와 살아 있는 트윈 수 변화 (2026-10-04, Lost Requiem 효과 하나 45ms)
+        private static int mfTweens0, mfLogged;
+        private static readonly AccessTools.FieldRef<ffxMoveFloorPlus, int> mfStart = AccessTools.FieldRefAccess<ffxMoveFloorPlus, int>("start");
+        private static readonly AccessTools.FieldRef<ffxMoveFloorPlus, int> mfEnd = AccessTools.FieldRefAccess<ffxMoveFloorPlus, int>("end");
+        private static readonly AccessTools.FieldRef<ffxMoveFloorPlus, int> mfGap = AccessTools.FieldRefAccess<ffxMoveFloorPlus, int>("gapLength");
+        private static readonly AccessTools.FieldRef<ffxPlusBase, float> mfDur = AccessTools.FieldRefAccess<ffxPlusBase, float>("duration");
+        private static void LogMoveFloor(ffxMoveFloorPlus m, double ms)
+        {
+            if (mfLogged >= 40) return;
+            mfLogged++;
+            int tiles = (Math.Abs(mfEnd(m) - mfStart(m)) / (1 + Math.Max(0, mfGap(m)))) + 1;
+            int after = DG.Tweening.DOTween.TotalActiveTweens();
+            Main.Entry.Logger.Log(string.Format("[타일 이동] {0:F1}ms | 타일 {1}~{2} 간격 {3} (약 {4}개, 타일당 {5:F2}us) | 길이 {6} | 살아 있는 트윈 {7} -> {8}",
+                ms, mfStart(m), mfEnd(m), mfGap(m), tiles, ms * 1000.0 / Math.Max(1, tiles), mfDur(m), mfTweens0, after));
         }
 
         public static void Post(object __instance, long __state)
         {
             double ms = (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency;
             EffectBudget.Exit(ms);
+            if (Edition.Dev && EffectBudget.OuterCall && ms > 5.0) { var mf = __instance as ffxMoveFloorPlus; if ((object)mf != null) LogMoveFloor(mf, ms); }   // 바깥 호출이 끝난 뒤
             // 실시간 모니터가 "왜 끊겼는지"를 가리려면 플레이어용에서도 프레임마다 효과 시작 시간 합계가 필요하다.
             // 이미 잰 값을 더하기만 하므로 비용은 없다.
             if (EffectBudget.OuterCall) { FrameEffectMs += ms; FrameN++; var mv = __instance as ffxMoveDecorationsPlus; if ((object)mv != null) { FrameMoveMs += ms; if (durRef(mv) > 0f) FrameAnimMs += ms; } }
