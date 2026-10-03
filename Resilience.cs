@@ -33,7 +33,7 @@ namespace StutterFix
             { "GcControl", new[] { "GcPause" } }, { "EffectBudget", new[] { "EffectSplit" } }, { "RecolorSplit", new[] { "RecolorSplit" } },
             { "TweenFix", new[] { "TweenGuard" } }, { "ZeroTween", new[] { "ZeroTween" } }, { "InstantMove", new[] { "InstantDirect" } },
             { "FastMove", new[] { "FastLoop" } }, { "Precheck", new[] { "Precheck" } }, { "DecoAnim", new[] { "DecoAnim" } },
-            { "MoveApply", new[] { "MoveFinish" } }, { "Dormancy", new[] { "DormantSkip" } }, { "TextFix", new[] { "SkipSameText" } }, { "TypeCache", new[] { "FilterTypeCache" } },
+            { "MoveApply", new[] { "MoveFinish" } }, { "Dormancy", new[] { "DormantSkip" } }, { "TextFix", new[] { "SkipSameText" } }, { "TypeCache", new[] { "FilterTypeCache" } }, { "MeshWarm", new[] { "MeshWarm" } },
             { "ImagePrefetch", new[] { "ImagePrefetch" } }, { "PngDecoder", new[] { "ImagePrefetch" } }, { "TexCompress", new[] { "ImagePrefetch" } }, { "DxtEncoder", new[] { "ImagePrefetch" } }, { "SfNative", new[] { "ImagePrefetch" } }, { "TurboJpeg", new[] { "ImagePrefetch" } },
             { "ShaderWarm", new[] { "ShaderWarm" } }, { "FastBlend", new[] { "FastBlend" } }, { "InvisibleSkip", new[] { "SkipInvisible" } },
             { "ParticleFix", new[] { "SkipIdleParticles", "LowPauseParticles" } }, { "LeakGuard", new[] { "LeakFix" } }, { "LoadFix", new[] { "LoadCache" } }, { "TransitionFix", new[] { "LoadCache" } },
