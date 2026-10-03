@@ -22,6 +22,7 @@ Unity 6000.3.10f1, Mono, UMM 0.32.5, HarmonyLib, DOTween. 모드 대상은 netst
    새로 게임에 무언가를 걸면(Harmony ID, 정적 이벤트, PlayerLoop, 다른 모드 감싸기) `Main.Unload`에 되돌리는 코드도 반드시 넣는다.
 2. 사용자가 게임을 켜고 맵을 돌린 뒤 "됐어"라고 한다.
 3. `/log` 스킬로 최근 판만 요약해 본다.
+   측정 MCP `sfmeasure`(`tools/sfmeasure`)가 붙어 있으면 2~3을 직접 한다: `sf_run`/`sf_ab` 로 게임을 켜서 돌리고 요약을 받는다. A/B 는 판마다 게임을 새로 켜는 `sf_ab` 로.
 4. `/ship` 은 사용자가 부를 때만: 빌드, 설치, 한국어 커밋(측정 근거 포함), 푸시.
 
 ## IL 스캐너 (디컴파일러 대신)

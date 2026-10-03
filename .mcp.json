@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sfmeasure": {
+      "command": "python",
+      "args": ["tools/sfmeasure/server.py"]
+    }
+  }
+}
