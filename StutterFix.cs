@@ -186,6 +186,7 @@ namespace StutterFix
                 Try(() => EditorPick.Install(harmony));   // 큰 맵 편집 화면 클릭 끊김 (EditorPick.cs)
                 Try(() => TypeCache.Install(harmony));   // 고급 필터 형식 찾기 기억 (TypeCache.cs)
                 Try(() => MeshWarm.Install(harmony));   // 색 바꾸기가 곡 중에 만들 타일 메시 미리 만들기 (MeshWarm.cs)
+                if (Edition.Dev || MeasureBuild) Try(() => ScriptProbe.Install(harmony));   // (진단) scriptprobe.txt 가 있으면 스크립트별 시간
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)

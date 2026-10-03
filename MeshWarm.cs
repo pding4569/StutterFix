@@ -36,6 +36,7 @@ namespace StutterFix
         private delegate void GetPos(FloorMesh m, float a0, float a1, float w, float l, int cp);
         private static GetPos getPositions;
         private static bool fin;   // 이 맵 타일들의 인셋 값 (모두 같을 때만 미리 만든다)
+        private static readonly HashSet<long> seen = new HashSet<long>();
         private static List<scrFloor> lastFloors; private static long lastFp; private static int lastCache;
 
         internal static void Install(Harmony h)
@@ -88,6 +89,7 @@ namespace StutterFix
             long t0 = Stopwatch.GetTimestamp();
             Vector2 dim = ctrl.baseFloorDimensions;
             int effects = 0, tiles = 0, made = 0;
+            seen.Clear();
             for (int fi = 0; fi < floors.Count; fi++)
             {
                 var fl = floors[fi];
@@ -103,6 +105,8 @@ namespace StutterFix
                     if (s < 0) s = 0;
                     for (int i = s; i <= e && i < floors.Count; i += 1 + Math.Max(0, rc.gapLength))
                     {
+                        // 같은 타일·같은 스타일은 키가 같다(키 문자열 만들기가 비싸서 한 번만). PLUM MEGAMIX: 효과 663개가 8만 8천 칸
+                        if (!seen.Add(((long)i << 8) | (uint)(int)rc.style)) continue;
                         tiles++;
                         if (Warm(floors[i], rc.style, dim)) made++;
                     }
@@ -111,7 +115,7 @@ namespace StutterFix
             Made += made;
             lastFloors = floors; lastFp = fp; lastCache = FloorMesh.cache.Count;
             if (made > 0 || Edition.Dev)
-                Main.Entry.Logger.Log(string.Format("[타일 메시] 색 바꾸기 효과 {0}개, 타일 {1}칸 -> 새로 미리 만든 메시 {2}개 {3:F0}ms (캐시 {4}개)",
+                Main.Entry.Logger.Log(string.Format("[타일 메시] 색 바꾸기 효과 {0}개, 타일·스타일 {1}가지 -> 새로 미리 만든 메시 {2}개 {3:F0}ms (캐시 {4}개)",
                     effects, tiles, made, (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency, FloorMesh.cache.Count));
         }
 
