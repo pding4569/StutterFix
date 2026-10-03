@@ -112,6 +112,7 @@ namespace StutterFix
         private static int cullPhase, cullFrames; private static float cullAt; private static readonly List<Renderer> cullList = new List<Renderer>();
         private static bool Same(byte[] a, byte[] b) { if (a.Length != b.Length) return false; for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false; return true; }
         private static int openPhase, gamePhase; private static scnGame gameOld;
+        private static bool endSeen; private static float endAt;
         private static Harmony pressHarmony; private static bool pressPending;
         public static bool PressPrefix(ref bool __result) { if (!pressPending) return true; pressPending = false; __result = true; return false; }
         private static System.Reflection.MethodInfo pickMethod; private static int pickDone, pickHits; private static readonly List<float> pickMs = new List<float>();
@@ -147,6 +148,16 @@ namespace StutterFix
                         Log(string.Format("클릭 판정 {0}번: 평균 {1:F2}ms, 최대 {2:F2}ms, 물체 찾음 {3}번 | EditorPick 부름 {4}, 빠른 길 {5}, 검증 {6}번 중 빠뜨림 {7}", pickDone, s / pickMs.Count, pickMs[pickMs.Count - 1], pickHits, EditorPick.Calls, EditorPick.Fast, EditorPick.Checks, EditorPick.Missed));
                         pickDone = 0; EditorPick.Enabled = true;
                         return true;
+                    }
+                case "waitend":
+                    {
+                        // 곡이 끝날 때까지 (Hitch.Playing 이 켜졌다가 꺼지면), 최대 arg 초. 곡 끝 요약([곡])이 남은 뒤 2초 더
+                        if (waitSec == 0f) { float.TryParse(arg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out waitSec); if (waitSec <= 0f) waitSec = 600f; endSeen = false; endAt = 0f; stepTimeout = Math.Max(stepTimeout, waitSec + 30f); }
+                        if (Hitch.Playing) endSeen = true;
+                        else if (endSeen && endAt == 0f) { endAt = now; Log(string.Format("곡 끝남 ({0:F0}초)", now - stepStart)); }
+                        if (endAt > 0f && now - endAt >= 2f) return true;
+                        if (now - stepStart >= waitSec) { Log("곡이 끝나지 않음 (" + waitSec + "초)"); return true; }
+                        return false;
                     }
                 case "wait":
                     if (waitSec == 0f) { float.TryParse(arg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out waitSec); if (waitSec <= 0f) waitSec = 0.01f; }
