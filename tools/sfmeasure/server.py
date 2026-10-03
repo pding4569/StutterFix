@@ -70,6 +70,7 @@ def read_text(path):
 
 
 RE_RUN = re.compile(r"판 #(\d+) \(([^)]*)\): 평균 ([\d.]+) FPS, 화면 대기 ([\d.]+)ms")
+RE_SONG = re.compile(r"\[곡\] 평균 ([\d.]+) FPS.*?곡 시작 연출 뒤 가장 긴 프레임 (\d+)ms, 끊김 (\d+)번")   # 플레이어용에도 있음
 RE_HITCH = re.compile(r"\[끊김\] ([\d.]+)초 중 (\d+)회 끊김, 합계 ([\d.]+)ms, 최악 ([\d.]+)ms")
 RE_FRAME = re.compile(r"프레임 ([\d.]+)")
 RE_ERR = re.compile(r"\[StutterFix\].*(Error|\[Error\]|설치 실패|patch failed|Exception)|단계 실패|시간 초과")
@@ -114,7 +115,8 @@ def metrics(text):
     """판 하나의 숫자: 판별 FPS/화면 대기, 끊김 횟수·최악."""
     runs = [{"no": int(m.group(1)), "kind": m.group(2), "fps": float(m.group(3)), "wait": float(m.group(4))} for m in RE_RUN.finditer(text)]
     hitches = [{"sec": float(m.group(1)), "count": int(m.group(2)), "total": float(m.group(3)), "worst": float(m.group(4))} for m in RE_HITCH.finditer(text)]
-    return {"runs": runs, "hitches": hitches, "errors": len([l for l in text.splitlines() if RE_ERR.search(l)])}
+    songs = [{"fps": float(m.group(1)), "worst": float(m.group(2)), "count": int(m.group(3))} for m in RE_SONG.finditer(text)]
+    return {"runs": runs, "hitches": hitches, "songs": songs, "errors": len([l for l in text.splitlines() if RE_ERR.search(l)])}
 
 
 # ── 설정 덮어쓰기 (UMM 의 Settings.xml, 필드 이름 = 요소 이름) ──
@@ -132,8 +134,13 @@ def apply_settings(overrides):
         v = str(v).lower() if isinstance(v, bool) else str(v)
         pat = re.compile(r"<%s>[^<]*</%s>" % (re.escape(k), re.escape(k)))
         if not pat.search(xml):
-            restore_settings(backup)
-            raise RuntimeError("설정 이름 없음: %s (StutterFix.cs 의 Settings 필드 이름을 쓴다)" % k)
+            # 새로 넣은 설정은 게임이 아직 저장하지 않아 없다: 끝에 넣는다 (XmlSerializer 는 순서를 보지 않는다)
+            if "</Settings>" not in xml:
+                restore_settings(backup)
+                raise RuntimeError("설정 이름 없음: %s (StutterFix.cs 의 Settings 필드 이름을 쓴다)" % k)
+            xml = xml.replace("</Settings>", "  <%s>%s</%s>\n</Settings>" % (k, v, k), 1)
+            changed.append("%s=%s(새로 넣음)" % (k, v))
+            continue
         xml = pat.sub("<%s>%s</%s>" % (k, v, k), xml, count=1)
         changed.append("%s=%s" % (k, v))
     with open(path, "wb") as f:
@@ -287,22 +294,26 @@ def sf_ab(steps, setting, a, b, repeats=2, timeout_min=15, presentmon=None):
             lines.append("%2d. %s=%s: 실패, 여기서 멈춤 - %s" % (i + 1, setting, v, e))
             break
         res[str(v)].append(m)
-        fps = [r["fps"] for r in m["runs"]]
+        fps = [r["fps"] for r in m["runs"]] or [x["fps"] for x in m["songs"]]   # 판별 FPS 는 개발자용에만 있다
         h = m["hitches"]
-        lines.append("%2d. %s=%s: FPS %s | 끊김 %s | 최악 %s ms | 오류 %d" % (
+        sg = m["songs"]
+        lines.append("%2d. %s=%s: FPS %s | 끊김 %s | 최악 %s ms | 곡 중(연출 뒤) 최악 %s ms, 끊김 %s | 오류 %d" % (
             i + 1, setting, v, ", ".join("%.0f" % x for x in fps) or "-",
-            ", ".join(str(x["count"]) for x in h) or "-", ", ".join("%.0f" % x["worst"] for x in h) or "-", m["errors"]))
+            ", ".join(str(x["count"]) for x in h) or "-", ", ".join("%.0f" % x["worst"] for x in h) or "-",
+            ", ".join("%.0f" % x["worst"] for x in sg) or "-", ", ".join(str(x["count"]) for x in sg) or "-", m["errors"]))
     lines.append("")
     for v, ms in res.items():
-        fps = [r["fps"] for m in ms for r in m["runs"]]
+        fps = [r["fps"] for m in ms for r in m["runs"]] or [x["fps"] for m in ms for x in m["songs"]]
+        sworst = [x["worst"] for m in ms for x in m["songs"]]
         cnt = [x["count"] for m in ms for x in m["hitches"]]
         worst = [x["worst"] for m in ms for x in m["hitches"]]
         if not ms:
             continue
-        lines.append("%s=%s (%d번): 평균 FPS %s, 끊김 평균 %s, 최악 최댓값 %s" % (
+        lines.append("%s=%s (%d번): 평균 FPS %s, 끊김 평균 %s, 최악 최댓값 %s, 곡 중(연출 뒤) 최악 최댓값 %s" % (
             setting, v, len(ms),
             "%.1f (편차 %.1f)" % (statistics.mean(fps), statistics.pstdev(fps)) if fps else "-",
-            "%.1f" % statistics.mean(cnt) if cnt else "-", "%.0fms" % max(worst) if worst else "-"))
+            "%.1f" % statistics.mean(cnt) if cnt else "-", "%.0fms" % max(worst) if worst else "-",
+            "%.0fms" % max(sworst) if sworst else "-"))
     return "\n".join(lines)
 
 

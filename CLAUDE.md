@@ -58,6 +58,8 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 - 필터는 박자마다 토글되므로 "끊긴 순간 필터가 바뀜"은 **상관이지 인과가 아니다**. 필터를 다 꺼도 끊김은 그대로였다.
 - `scrController.currentState`는 이 버전에서 재생 중에도 `None`이다. 종료 감지는 실제 종료 함수(`OnLandOnPortal`, `FailAction`, `QuitToMainMenu` 등)를 가로챈다.
 - 이 릴리스 빌드는 유니티 내부 계측점(Recorder)이 거의 막혀 있다(44개 중 쓸 만한 것 없음). GPU 시간은 PresentMon으로 잰다 (`MsGPUBusy`).
+- 고급 필터(`ffxSetFilterAdvancedPlus`)가 길이 있는 효과에서 정수 필드를 0부터 트윈해서, `CameraFilterPack_Blur_Movie.OnRenderImage`가 그동안 매 프레임 0으로 나누기 예외를 던진다(원래 게임 버그, Windflower 60초에 약 420번). 예외만 삼키는 수정으로 A/B 4판: FPS 278/277 같음, 곡 중 최악 29~30ms 같음. **성능 영향 없음, 넣지 않았다.**
+- dev 빌드 [시작시간]은 `Enum.ToObject` 같은 많이 불리는 함수까지 감싸 부풀려진다. 맵 열기·재생 시작 시간은 플레이어용+자동 시험 빌드(`-p:Edition=Player -p:AutoTestBuild=1` → `bin/PlayerAuto`)로 잰다.
 
 ## 사용자 PC
 

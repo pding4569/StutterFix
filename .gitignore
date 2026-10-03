@@ -4,3 +4,4 @@ obj/
 *.cache
 dist/
 dev-backup/
+__pycache__/
