@@ -38,7 +38,9 @@
     <Compile Include="ThumbCam.cs" />
     <Compile Include="FfxReuse.cs" />
     <Compile Include="MeshWarm.cs" />
+    <Compile Include="SoundWarm.cs" />
     <Compile Include="ScriptProbe.cs" />
+    <Compile Include="FloorProf.cs" />
     <Compile Include="TypeCache.cs" />
     <Compile Include="TileCull.cs" />
     <Compile Include="EditorPick.cs" />

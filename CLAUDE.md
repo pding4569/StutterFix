@@ -46,6 +46,7 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 | 편집 복귀 시 `UnloadUnusedAssets` | 매번 120ms | 건너뛰기 |
 | 에디터에서 죽고 다시 하기의 장식 전체 다시 설정(`ResetDecorations`, 장식마다 `Setup` 약 45µs) | Arche 1.3~1.45초씩 | 나가기의 "안 바뀐 장식은 가볍게"(`ExitFix`)를 다시 하기의 ResetScene 시점에도. 에디터 1.36→0.87초, 게임 화면(목록에서 연 맵) 두 번째부터 1.15→0.47초 |
 | 타일 색 바꾸기가 스타일을 바꾸면 `FloorMesh.UpdateAllRequired`(scrController.LateUpdate)가 처음 보는 메시를 곡 중에 만듦(하나 약 45µs) | Windflower 99.0초 1,102개 중 604개 새로 만들어 32ms (엔진 단계 LateUpdate 33ms) | 재생 준비 때 같은 키·같은 필드로 미리 만들기 (`MeshWarm`) → 곡 중 새 메시 0개, A/B 4판: 41~44ms 끊김 → 없음, 준비 +0.27초 |
+| 게임이 효과음을 처음 쓸 때 `AudioManager.FindOrLoadAudioClip` 이 메인 스레드에서 `Resources.Load` + Vorbis 압축 풀기 | Windflower 곡 22.7초: sndHeldbeatStartFuse 7ms + sndHeldbeatLoopFuse 24ms 한 프레임 (PerfView: 38ms 내내 FMOD 압축 풀기) | 재생 준비 때 맵이 쓸 수 있는 소리(맵·타일·자유 이동·행성 수·ffxPlaySound·누르는 박자 소리) 미리 불러오기 (`SoundWarm`) → 곡 중 새로 불러온 소리 0개, A/B 4판: 끔 29~30ms(두 판 모두 22.7초) → 켬 없음, 준비 +56ms |
 | 고급 필터 `ResetFilters`("다른 필터 끄기")가 쓴 필터마다 `Type.GetType("이름, Assembly-CSharp-firstpass")` | 한 번 0.7ms, 효과 하나 2~18ms. HELLO 2026 35초 한 프레임 22ms | 결과 기억 (`TypeCache`) → A/B 4판: 곡 중 최악 48~55→24ms, 재생 시작 3.3~3.6→1.9초 |
 | 한 프레임에 효과 수십 개 몰림 | | 프레임당 예산으로 분산 (`EffectBudget`) |
 | 박자마다 60~80ms (28~40초 구간) | PerfView: 끊긴 60ms 동안 게임 전체 CPU 16ms, 메인 스레드는 `RenderOffscreenCameras` → `CullScene` → `ujob_wait_for`에서 잠듦. GPU도 대기. VRAM 7.0/8GB, 게임 공유메모리 599MB로 넘침 | **Steam 실행 옵션 `-force-d3d12 -force-gfx-jobs native` 제거** (D3D11). 그 구간 끊김 사라짐. 모드는 옵션이 있으면 경고만 띄운다 |

@@ -186,7 +186,9 @@ namespace StutterFix
                 Try(() => EditorPick.Install(harmony));   // 큰 맵 편집 화면 클릭 끊김 (EditorPick.cs)
                 Try(() => TypeCache.Install(harmony));   // 고급 필터 형식 찾기 기억 (TypeCache.cs)
                 Try(() => MeshWarm.Install(harmony));   // 색 바꾸기가 곡 중에 만들 타일 메시 미리 만들기 (MeshWarm.cs)
+                Try(() => SoundWarm.Install(harmony));   // 곡 중에 처음 쓰는 효과음 미리 불러오기 (SoundWarm.cs)
                 if (Edition.Dev || MeasureBuild) Try(() => ScriptProbe.Install(harmony));   // (진단) scriptprobe.txt 가 있으면 스크립트별 시간
+                if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(Entry.Path, "floorprof.txt"))) Try(() => FloorProf.Install(harmony));   // (측정) floorprof.txt 가 있으면 타일 이동 안 DOTween 몫
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)
@@ -538,6 +540,7 @@ namespace StutterFix
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);
             TypeCache.Enabled = E("FilterTypeCache", Config.FilterTypeCache);
             global::StutterFix.MeshWarm.Enabled = E("MeshWarm", Config.MeshWarm);
+            global::StutterFix.SoundWarm.Enabled = E("SoundWarm", Config.SoundWarm);
             ImagePrefetch.Enabled = E("ImagePrefetch", Config.ImagePrefetch);
             ShaderWarm.Enabled = E("ShaderWarm", Config.ShaderWarm);
             FastBlend.Enabled = E("FastBlend", Config.FastBlend);
@@ -746,6 +749,7 @@ namespace StutterFix
         public bool DecoAnim = true;       // 길이 있는 장식 이동의 애니메이션을 DOTween 대신 모드가 돌림
         public bool FilterTypeCache = true; // 고급 필터의 형식 찾기(Type.GetType, 한 번 약 0.7ms) 결과를 기억
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기
+        public bool SoundWarm = true;       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음
         public bool LowNoThrottle = false;  // 윈도우 절전 제한 끄기 + 타이머 1ms
