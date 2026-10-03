@@ -251,7 +251,7 @@ UMM 에서 끄면 모든 변경을 즉시 되돌립니다(패치, GC 상태, 작
 ./pack.sh
 ```
 
-두 버전을 빌드해 `dist/`에 UMM 설치용 zip 을 만듭니다. 하나만 빌드하려면:
+두 버전을 빌드해 `dist/`에 UMM 설치용 zip 을 만듭니다. 정식 릴리스 전에 테스터에게 줄 zip 은 `./pack.sh test 1`(번호는 테스트 회차)로 만듭니다. 플레이어용과 같은 DLL 이고, UMM 목록에 "테스터 2.4.7.1" 처럼 보이며, 다음 정식 릴리스가 나오면 자동 업데이트로 넘어갑니다. 하나만 빌드하려면:
 
 ```bash
 dotnet build -p:Edition=Player   # 플레이어용 -> bin/Player/StutterFix.dll
