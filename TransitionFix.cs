@@ -29,6 +29,7 @@ namespace StutterFix
         internal static bool SkipRestartReset = true;
         internal static long ImagesKept, ResetsSkipped, Fallbacks;
         private static bool keeping, inRestart, pending, skipThis;
+        internal static bool InRestart { get { return inRestart; } }   // 에디터에서 죽고 다시 하기 중 (ExitFix 가 장식 다시 설정을 가볍게)
         private static int devRestarts;
         private static FieldInfo spritesField;
 
@@ -84,13 +85,14 @@ namespace StutterFix
             __state = Stopwatch.GetTimestamp();
             inRestart = ADOBase.isLevelEditor; pending = false;
             skipThis = SkipRestartReset && inRestart && (!Edition.Dev || (devRestarts++ / 2) % 2 == 1);
-            resetsAtStart = SceneReset.Count;
+            resetsAtStart = SceneReset.Count; skippedAtStart = ResetsSkipped;
         }
+        private static long skippedAtStart;
         private static long resetsAtStart;
         public static bool ResetPrefix()
         {
             // ResetScene 안에서 부른 첫 번째만 (Play 쪽 두 번째는 원래대로 돌면서 미뤄 둔 것을 대신한다)
-            if (inRestart && skipThis && SceneReset.Resetting && !pending) { pending = true; ResetsSkipped++; return false; }
+            if (inRestart && skipThis && SceneReset.Resetting && !pending && !ExitFix.LightReady) { pending = true; ResetsSkipped++; return false; }   // 가볍게 할 수 있으면 건너뛰지 않고 두 번 다 가볍게 (ExitFix)
             pending = false;
             return true;
         }
@@ -106,7 +108,7 @@ namespace StutterFix
             }
             if (SceneReset.Count != resetsAtStart)   // 이번 MoveNext 에서 실제로 되돌렸다 (게임 화면은 닦기 전환 뒤)
             {
-                Log(was ? "에디터에서 다시 하기" : "다시 하기", __state, was && skipThis ? " (장식 다시 설정 1번 건너뜀)" : "");
+                Log(was ? "에디터에서 다시 하기" : "다시 하기", __state, ResetsSkipped != skippedAtStart ? " (장식 다시 설정 1번 건너뜀)" : "");
                 if (Edition.Dev && was) Verify(skipThis);
             }
             return __exception;

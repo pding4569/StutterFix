@@ -88,7 +88,14 @@ namespace StutterFix
         // 지난 다시 설정(나가기) 뒤 그대로다. 편집으로 바뀐 장식은 Setup 을 거치거나(표시) 이벤트 값이 바뀌어(지문) 원래대로 한다.
         public static void PlayPrefix() { PlayStarting = true; }
         public static Exception PlayFinalizer(Exception __exception) { PlayStarting = false; return __exception; }
-        private static string Label { get { return Exiting ? "[나가기]" : "[재생 시작]"; } }
+        // 에디터에서 죽고 다시 하기(TransitionFix.InRestart): 판이 끝난 뒤 장식을 처음 상태로 되돌리는 것은 나가기와 같다.
+        // Arche 다시 하기 3.0초 중 장식 다시 설정이 1.3~1.45초씩 두 번(ResetScene 끝, 재생 준비 끝 FinishCustomLevelLoading).
+        // 가볍게 하는 것은 ResetScene 안의 다시 설정(나가기와 같은 자리)과, 같은 다시 하기에서 그 뒤에 찍은 값이 있을 때의 재생 준비 끝뿐이다.
+        // ResetScene 쪽을 건너뛰고(TransitionFix) 재생 준비 끝에서 재생 시작 때 찍은 값으로 가볍게 하면, 그 사이에 바뀐 장식 변환(회전·위치·크기)을
+        // 놓쳤다(2026-10-04 검증: Windflower 10개, HELLO 2026 180~190개). 그래서 가볍게 할 수 있으면 TransitionFix 는 건너뛰지 않는다(LightReady).
+        private static bool baseAtSceneReset;   // 지금 값이 이번 다시 하기의 ResetScene 안에서 찍은 것인가
+        internal static bool LightReady { get { return Enabled && haveBase && ADOBase.isLevelEditor; } }
+        private static string Label { get { return Exiting ? "[나가기]" : TransitionFix.InRestart ? "[다시 하기]" : "[재생 시작]"; } }
 
         // ── 재생 시작 때 찍어 두는 값 ──
         private struct Base
@@ -127,7 +134,8 @@ namespace StutterFix
         {
             lightRan = false;
             if (!__runOriginal) return false;
-            if ((Exiting || PlayStarting) && Enabled && haveBase && ADOBase.isLevelEditor)
+            bool restartOk = TransitionFix.InRestart && (SceneReset.Resetting || baseAtSceneReset);
+            if ((Exiting || PlayStarting || restartOk) && Enabled && haveBase && ADOBase.isLevelEditor)
             {
                 try { if (Light(__instance)) { lightRan = true; haveBase = false; return false; } }
                 catch (Exception ex) { Fallbacks++; Main.Entry.Logger.Log("[나가기] 가볍게 다시 설정 실패, 원래대로: " + ex.Message); }
@@ -141,6 +149,7 @@ namespace StutterFix
             if (!__runOriginal && !lightRan) return;   // 원래가 돌았거나 우리가 가볍게 했을 때만 (가볍게 하면 원래를 건너뛰어 __runOriginal 이 false)
             lightRan = false;   // 가볍게 한 뒤에도 찍는다(결과가 원래 방식과 같음 - 검증)
             if (!Enabled || !ADOBase.isLevelEditor) return;
+            baseAtSceneReset = TransitionFix.InRestart && SceneReset.Resetting;
             try { Capture(__instance); } catch (Exception ex) { haveBase = false; Main.Entry.Logger.Log("[나가기] 값 찍기 실패: " + ex.Message); }
         }
 

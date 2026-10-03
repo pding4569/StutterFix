@@ -132,6 +132,13 @@ namespace StutterFix
                     if (mn == null) continue;
                     try { harmony.Patch(mn, prefix: pre, finalizer: post); names[mn] = "scrController.ResetCustomLevel(코루틴)"; n++; } catch { }
                 }
+            // 모드 폴더에 startprobe-cold.txt 가 있으면 자주 불리는 함수(수만~수십만 번)는 감싸지 않는다.
+            // 감싸는 비용(호출마다 1~3us)이 굵직한 단계 시간을 부풀려서, 단계 나눔만 볼 때는 이쪽이 정확하다(2026-10-03).
+            if (System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "startprobe-cold.txt")))
+            {
+                Main.Entry.Logger.Log("[시작시간] 함수 " + n + "개 감쌈 (자주 불리는 함수는 뺌: startprobe-cold.txt)");
+                return;
+            }
             var hpre = new HarmonyMethod(typeof(StartProbe), nameof(HotPre));
             var hpost = new HarmonyMethod(typeof(StartProbe), nameof(HotPost));
             int h = 0;
