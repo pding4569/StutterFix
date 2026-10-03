@@ -7,7 +7,7 @@ main 에 올리기·태그·릴리스는 사용자가 "올려"라고 할 때만.
 
 ```bash
 git fetch origin main-gpsl7k && git checkout main-gpsl7k
-winget install Python.Python.3.12                     # sfmeasure 용. 새 터미널에서 python --version 확인
+# 파이썬은 설치돼 있음 (python --version 만 확인)
 winget install astral-sh.uv                           # uvx (Serena, Windows-MCP 용)
 
 # 꼭: 게임 DLL 디컴파일 (필요한 것은 mcilspy 안내를 따른다)
@@ -54,17 +54,27 @@ claude mcp add windows-mcp -s user -- uvx windows-mcp serve
 
 - `./pack.sh test 1` → `dist/StutterFix-2.4.7.1-tester.zip`. UMM 목록에 "테스터 2.4.7.1" 로 보이는지 확인.
 
-## 7. 측정·구현 (`docs/next-design.md`, sfmeasure 로)
+## 7. 디컴파일로 최적화 후보 찾기 (Claude, ilspy)
+
+측정으로 무거운 곳을 먼저 짚고 → 그 게임 함수를 C# 으로 읽어 원인을 찾고 → 고치고 → 원래와 같은지 대조한다.
+코드만 보고 고치지 않는다(호출 횟수·실제 비용은 sf_ab 로 확인). 디컴파일한 코드는 저장소에 넣지 않는다.
+
+- 측정으로 이미 짚인 곳부터: `scrVfxPlus.Update`/`StartEffect`(효과별 시작 비용), `scnGame.UpdateDecorationObjects`,
+  `LevelData.LoadLevel`(맵 파일 읽기 6.4초, 멈춘 네이티브 JSON 작업의 다른 길), `ShowHitText`, `scrFloor.Update`, 박자 알림(`scrConductor`).
+- 매 프레임 도는 게임 함수를 훑어 흔한 낭비 찾기: Update 안 `GetComponent`·`FindObjectsOfType`·`Camera.main`, 문자열 합치기, LINQ·람다 할당,
+  리스트 전체 훑기(O(n²)), 같은 값 다시 넣기. 찾은 것은 목록으로 남기고 할당량·A/B 로 실제로 큰 것만 고친다.
+
+## 8. 측정·구현 (`docs/next-design.md`, sfmeasure 로)
 
 1. 효과 재사용 조회 줄이기 (`FfxReuse.Arrange`): 대조 + 곡 중 할당량.
 2. 판정 글자 `DOTween.Kill` 비용: ILSpy 로 `ShowHitText` 확인 → `sf_ab`.
 3. 편집 화면 카메라 끌기 튐 (`campan`), 곡 중 쓰레기 0.47MB/s.
 
-## 8. 화면 출력 실험 (`sf_presentmon`, `sf_ab`)
+## 9. 화면 출력 실험 (`sf_presentmon`, `sf_ab`)
 
 - 지금 출력 방식(Flip/합성)과 찢어짐 허용 확인 → GPU 우선순위, 대기 프레임 수 1. 효과가 있을 때만 넣는다.
 
 ## 보류
 
 - **TUFReplay 충돌**: 그 모드 제작자가 분석할 때까지 기다린다. 제보자에게 Player.log 를 요청해 둠. 그동안은 4번의 "메모리 정리만 쓰기"가 임시 해결책.
-- 맵 확인 도구(보기만), AutoTest 명령 정리: 7번 뒤에.
+- 맵 확인 도구(보기만), AutoTest 명령 정리: 8번 뒤에.
