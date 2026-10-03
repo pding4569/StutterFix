@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +37,7 @@ namespace StutterFix
                 {
                     var t = AccessTools.TypeByName(tn);
                     var m = t == null ? null : AccessTools.DeclaredMethod(t, "Rebuild", new[] { typeof(CanvasUpdate) });
-                    if (m != null) { harmony.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(TmpPre))); tmp++; }
+                    if (m != null) { harmony.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(TmpPre)), postfix: new HarmonyMethod(typeof(UiProf), nameof(GraphicPost))); tmp++; }
                 }
                 InstallMore(harmony);
                 installed = true;
@@ -65,6 +66,16 @@ namespace StutterFix
             var inp = AccessTools.TypeByName("TMPro.TMP_InputField");
             var ir = inp == null ? null : AccessTools.DeclaredMethod(inp, "Rebuild", new[] { typeof(CanvasUpdate) });
             if (ir != null) harmony.Patch(ir, prefix: new HarmonyMethod(typeof(UiProf), nameof(TmpInputRebuildPre)));
+            // TMP 글꼴에 처음 보는 글자를 넣는 함수 (동적 글꼴: 글자 그림 그리기 + 텍스처 올리기)
+            int fa = 0;
+            var fat = AccessTools.TypeByName("TMPro.TMP_FontAsset");
+            if (fat != null)
+                foreach (var m in fat.GetMethods(AccessTools.all))
+                {
+                    if (m.DeclaringType != fat || m.IsAbstract || !(m.Name.StartsWith("TryAddCharacter") || m.Name.StartsWith("TryAddGlyph"))) continue;
+                    try { harmony.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(FontPre)), postfix: new HarmonyMethod(typeof(UiProf), nameof(FontPost))); fa++; } catch { }
+                }
+            Main.Entry.Logger.Log("[UI 측정] TMP 글자 넣기 함수 " + fa + "개 감쌈");
             Main.Entry.Logger.Log("[UI 측정] 보강 설치 (자르기 " + (cr != null) + ", Cull " + (mc != null) + "/" + (cc != null) + ", 입력칸 " + (ir != null) + ")");
         }
         private static string CanvasList()
@@ -83,12 +94,46 @@ namespace StutterFix
             catch (Exception ex) { sb.Append(" 실패 " + ex.Message); }
             return sb.ToString();
         }
-        public static void PerfPre() { t0 = Stopwatch.GetTimestamp(); }
+        public static void PerfPre() { t0 = Stopwatch.GetTimestamp(); callRebuilds = 0; slow1 = slow2 = 0; slowName1 = slowName2 = null; callFontMs = 0; }
+        // 한 번의 PerformUpdate 가 오래 걸린 경우: 그 안에서 가장 오래 걸린 다시 만들기 둘과 TMP 글자 넣기
+        private static int callRebuilds, heavyLogged, fontLogged;
+        private static double slow1, slow2, callFontMs;
+        private static string slowName1, slowName2;
+        private static int fontDepth; private static long fontT0;
+        public static void FontPre() { if (fontDepth++ == 0) fontT0 = Stopwatch.GetTimestamp(); }
+        public static void FontPost(UnityEngine.Object __instance, MethodBase __originalMethod)
+        {
+            if (--fontDepth != 0) return;
+            double ms = (Stopwatch.GetTimestamp() - fontT0) * 1000.0 / Stopwatch.Frequency;
+            callFontMs += ms;
+            if (ms > 1 && fontLogged < 40) { fontLogged++; Main.Entry.Logger.Log(string.Format("[UI 측정] TMP 글자 넣기 {0} '{1}' {2:F1}ms, 곡 중 {3}, 실시간 {4:F1}초", __originalMethod.Name, __instance != null ? __instance.name : "?", ms, Hitch.Playing, Time.realtimeSinceStartup)); }
+        }
         private static string snap; // 곡 도중(시작 1000프레임 뒤) 한 번 찍은 캔버스 목록 (곡 끝에 찍으면 에디터가 다시 나온 뒤라)
-        public static void PerfPost() { performTicks += Stopwatch.GetTimestamp() - t0; performCalls++; if (snap == null && startFrame >= 0 && Hitch.Playing && Time.frameCount - startFrame > 1000) snap = CanvasList(); }
-        public static void GraphicPre(Graphic __instance, CanvasUpdate __0) { if (__0 == CanvasUpdate.PreRender) { graphicCalls++; if (vertsDirtyRef(__instance) || matDirtyRef(__instance)) { realRebuilds++; Count(__instance); } } rebuildT0 = Stopwatch.GetTimestamp(); }
-        public static void GraphicPost() { rebuildTicks += Stopwatch.GetTimestamp() - rebuildT0; }
-        public static void TmpPre(Component __instance, CanvasUpdate __0) { if (__0 == CanvasUpdate.PreRender) { tmpCalls++; Count(__instance); } }
+        public static void PerfPost()
+        {
+            double callMs = (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
+            if (callMs > 5 && heavyLogged < 40 && Hitch.Playing)
+            {
+                heavyLogged++;
+                Main.Entry.Logger.Log(string.Format("[UI 측정] 무거운 UI 갱신 {0:F1}ms (다시 만들기 {1}번, TMP 글자 넣기 {2:F1}ms) 가장 오래: {3} {4:F1}ms, {5} {6:F1}ms | 실시간 {7:F1}초",
+                    callMs, callRebuilds, callFontMs, slowName1 ?? "-", slow1, slowName2 ?? "-", slow2, Time.realtimeSinceStartup));
+            }
+            performTicks += Stopwatch.GetTimestamp() - t0; performCalls++; if (snap == null && startFrame >= 0 && Hitch.Playing && Time.frameCount - startFrame > 1000) snap = CanvasList(); }
+        public static void GraphicPre(Component __instance, CanvasUpdate __0) { lastRebuilt = __instance; var g = __instance as Graphic; if (g == null) { rebuildT0 = Stopwatch.GetTimestamp(); return; } if (__0 == CanvasUpdate.PreRender) { graphicCalls++; if (vertsDirtyRef(g) || matDirtyRef(g)) { realRebuilds++; Count(g); } } rebuildT0 = Stopwatch.GetTimestamp(); }
+        private static Component lastRebuilt;
+        public static void GraphicPost()
+        {
+            long d = Stopwatch.GetTimestamp() - rebuildT0;
+            rebuildTicks += d; callRebuilds++;
+            double ms = d * 1000.0 / Stopwatch.Frequency;
+            if (ms > slow2 && (object)lastRebuilt != null)
+            {
+                string n = lastRebuilt.name + " (" + lastRebuilt.GetType().Name + ")";
+                var p = lastRebuilt.transform.parent; if (p != null) n = p.name + "/" + n;
+                if (ms > slow1) { slow2 = slow1; slowName2 = slowName1; slow1 = ms; slowName1 = n; } else { slow2 = ms; slowName2 = n; }
+            }
+        }
+        public static void TmpPre(Component __instance, CanvasUpdate __0) { if (__0 == CanvasUpdate.PreRender) { tmpCalls++; Count(__instance); } lastRebuilt = __instance; rebuildT0 = Stopwatch.GetTimestamp(); }
         public static void LayoutPre(CanvasUpdate __0) { if (__0 == CanvasUpdate.Layout) layoutCalls++; }
 
         private static void Count(Component c)

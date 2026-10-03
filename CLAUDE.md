@@ -72,6 +72,9 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 - HELLO 2026에서 곡이 갈수록 FPS가 떨어지는 것(245→140)은 **맵 내용 탓**이다. 타일 2500에서 시작해도 첫 10초가 172 FPS, 5000에서 시작하면 145→191. 쌓이는 문제 아님. "곡이 갈수록 느려짐"은 중간 타일에서 시작(`select <타일>` + `play`)해서 가린다.
 - dev 빌드 [시작시간]은 `Enum.ToObject` 같은 많이 불리는 함수까지 감싸 부풀려진다. 맵 열기·재생 시작 시간은 플레이어용+자동 시험 빌드(`-p:Edition=Player -p:AutoTestBuild=1` → `bin/PlayerAuto`)로 잰다.
 
+- **가끔 나오는 UI 캔버스 23~25ms** (HELLO 2026 다섯 판 중 세 판, 곡 35.0초/124.9초/125.6초로 자리가 바뀜, Windflower 다시 하기 중에도 한 번): 엔진 단계 `PlayerUpdateCanvases`. 개발자용 `UiProf` 로 보니 `CanvasUpdateRegistry.PerformUpdate`(관리 코드 다시 만들기)는 5ms 미만, TMP 글자 넣기 0ms, 옛 글꼴 텍스처 재생성 0회 → 유니티 네이티브 캔버스 묶기 쪽. PerfView 를 건 판에서는 안 나와서 아직 원인 모름.
+- 효과 시간에 **빈 함수(`ffxSetHitsound.StartEffect`)가 7ms** 로 찍힌 적이 있다(HELLO 165.4초, 99번째 사용). 효과 자체 비용이 아니라 그 순간 다른 것(힙 늘리기 등)이 겹친 것. 효과 이름별 시간 하나만 보고 범인을 짚지 않는다.
+
 ## 사용자 PC
 
 i5-9400F / RTX 4060 Ti / DDR4-2666 24GB / 3440x1440 164Hz / Windows 10 Atlas OS. 다른 모드 9개 동시 사용(Quartz, AdofaiTweaks, XPerfect 등).
