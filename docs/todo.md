@@ -32,7 +32,7 @@ claude mcp add windows-mcp -s user -- uvx windows-mcp serve
 
 ## 2. 빌드·설치 (Claude)
 
-- `dotnet build` (개발자용, 자동 시험 포함) → 훅이 Mods 에 설치. 클라우드에서 쓴 코드의 첫 컴파일이다: `StutterFix.cs`, `SettingsWindow.cs` 의 메모리 정리만 쓰기(GcOnly).
+- 됨 (2026-10-03). `dotnet build` (개발자용, 자동 시험 포함) → 훅이 Mods 에 설치.
 - `tools/LoadCheck` 로 불러오기 확인.
 
 ## 3. sfmeasure 첫 시험 (Claude, 사용자는 맵 경로만 알려 줌)
@@ -40,15 +40,16 @@ claude mcp add windows-mcp -s user -- uvx windows-mcp serve
 - `sf_status`: DLL 자동 시험 "있음", boot.config 상태.
 - 짧은 `sf_run`: `["open <맵>", "auto on", "play", "wait 30", "stop"]`. 게임이 저절로 켜지고 꺼지는지, 요약이 나오는지.
 - 안 되면 `tools/sfmeasure/server.py` 를 고친다(경로, 프로세스 이름, 로그 형식).
+- 됨 (2026-10-03): `D:/얼불춤 맵 파일/2022/level.adofai` 로 켜고 끄기·요약 정상 (곡 평균 415 FPS, 연출 뒤 최대 8ms).
 
-## 4. 메모리 정리만 쓰기(GcOnly) 시험 (Claude)
+## 4. (지움) 메모리 정리만 쓰기(GcOnly)
 
-- `sf_run` 에 `settings: {"GcOnly": true}`: 로그에 "켜짐: 메모리 정리만", 그 밖의 패치·boot.config 수정 없음, 곡 중 GC 멈춤은 동작(`GC 재개` 줄).
-- 끄고(`false`) 다시 돌려 원래 기능이 전부 돌아오는지. 설정 창 플레이 페이지에 항목이 보이는지(사용자 눈으로).
+- 넣지 않기로 함 (2026-10-03): TUFReplay 충돌의 정확한 원인이 나오지 않았는데 다른 기능을 다 끄는 설정을 둘 이유가 없다. 커밋 ab35428·0b48ce6 되돌림.
 
 ## 5. sfnative.dll 확인 (Claude)
 
 - Arche 열기 시간과 C# 대조 결과. 괜찮으면 다음 버전 후보 (MAIJEUN 님 크레딧).
+- 됨 (2026-10-03): Arche 열기 43.0초(이미지 301장 21.0초), 네이티브 C# 대조 1996번 중 다름 0, 곡 평균 338 FPS·연출 뒤 최대 13ms.
 
 ## 6. 테스터 zip (Claude → 사용자가 디스코드로 전달)
 
@@ -76,5 +77,5 @@ claude mcp add windows-mcp -s user -- uvx windows-mcp serve
 
 ## 보류
 
-- **TUFReplay 충돌**: 그 모드 제작자가 분석할 때까지 기다린다. 제보자에게 Player.log 를 요청해 둠. 그동안은 4번의 "메모리 정리만 쓰기"가 임시 해결책.
+- **TUFReplay 충돌**: 그 모드 제작자가 분석할 때까지 기다린다. 제보자에게 Player.log 를 요청해 둠.
 - 맵 확인 도구(보기만), AutoTest 명령 정리: 8번 뒤에.
