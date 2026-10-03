@@ -23,8 +23,12 @@ namespace StutterFix
             {
                 advName = AccessTools.Field(adv, "filterName"); advOn = AccessTools.Field(adv, "enableFilter");
                 var m = AccessTools.DeclaredMethod(adv, "StartEffect");   // 직접 선언하지 않은 판(부모 ffxPlusBase 것)은 못 걸고, 걸면 모든 효과에 걸린다
-                if (m != null) h.Patch(m, prefix: new HarmonyMethod(typeof(FilterTrace), nameof(Adv)));
+                if (m != null) h.Patch(m, prefix: new HarmonyMethod(typeof(FilterTrace), nameof(Adv)), postfix: new HarmonyMethod(typeof(FilterTrace), nameof(AdvPost)));
                 else Main.Entry.Logger.Log("[필터 추적] ffxSetFilterAdvancedPlus.StartEffect 가 없어 고급 필터는 추적 안 함");
+                // 고급 필터 하나가 3ms 씩 걸린다(2026 맵 35초, 7개 22ms). 어디서 쓰는지 나누어 잰다 (곡 하나에 수백 번뿐이라 Stopwatch 로 잰다)
+                var rf = AccessTools.Method(adv, "ResetFilters");
+                if (rf != null) h.Patch(rf, prefix: new HarmonyMethod(typeof(FilterTrace), nameof(RfPre)), postfix: new HarmonyMethod(typeof(FilterTrace), nameof(RfPost)));
+                advOthers = AccessTools.Field(adv, "disableOthers"); advDur = AccessTools.Field(adv, "duration"); advUsed = AccessTools.Field(adv, "usedFilters");
             }
             if (plus != null)
             {
@@ -35,8 +39,30 @@ namespace StutterFix
             }
         }
 
+        private static FieldInfo advOthers, advDur, advUsed;
+        private static long advStart, rfTicks; private static int rfCalls, slowLogged;
+        private static void RfPre(out long __state) { __state = System.Diagnostics.Stopwatch.GetTimestamp(); }
+        private static void RfPost(long __state) { rfTicks += System.Diagnostics.Stopwatch.GetTimestamp() - __state; rfCalls++; }
+        private static void AdvPost(object __instance)
+        {
+            double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - advStart) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            if (ms < 1.0 || slowLogged >= 80) return;
+            slowLogged++;
+            try
+            {
+                int used = 0;
+                var d = advUsed.GetValue(null) as System.Collections.IDictionary;
+                if (d != null) foreach (System.Collections.DictionaryEntry kv in d) { var hs = kv.Value as System.Collections.ICollection; if (hs != null) used = System.Math.Max(used, hs.Count); }
+                Main.Entry.Logger.Log(string.Format("[필터 비용] {0} {1} 다른것끄기 {2} 길이 {3} : {4:F2}ms (그중 ResetFilters {5}번 {6:F2}ms, 쓴 필터 {7}개) 곡 {8:F1}초",
+                    advName.GetValue(__instance), true.Equals(advOn.GetValue(__instance)) ? "켬" : "끔", advOthers.GetValue(__instance), advDur.GetValue(__instance), ms,
+                    rfCalls, rfTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency, used, Time.timeSinceLevelLoad));
+            }
+            catch { }
+        }
+
         private static void Adv(object __instance)
         {
+            advStart = System.Diagnostics.Stopwatch.GetTimestamp(); rfTicks = 0; rfCalls = 0;
             try { Add(advName.GetValue(__instance) + (true.Equals(advOn.GetValue(__instance)) ? " 켬" : " 끔") + "(고급)"); } catch { }
         }
 

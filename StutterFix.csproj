@@ -37,6 +37,7 @@
     <Compile Include="FrameScan.cs" />
     <Compile Include="ThumbCam.cs" />
     <Compile Include="FfxReuse.cs" />
+    <Compile Include="TypeCache.cs" />
     <Compile Include="TileCull.cs" />
     <Compile Include="EditorPick.cs" />
     <Compile Include="TimeProbe.cs" />

@@ -184,6 +184,7 @@ namespace StutterFix
                 Try(() => BeatFix.Install(harmony));   // 박자 알림에서 아무것도 안 하는 타일 건너뛰기 (BeatFix.cs)
                 Try(() => MatReuse.Install(harmony));   // 타일 머티리얼 누수 막기 (MatReuse.cs)
                 Try(() => EditorPick.Install(harmony));   // 큰 맵 편집 화면 클릭 끊김 (EditorPick.cs)
+                Try(() => TypeCache.Install(harmony));   // 고급 필터 형식 찾기 기억 (TypeCache.cs)
 
                 // 측정 (개발자용만)
                 if (Edition.Dev)
@@ -532,6 +533,7 @@ namespace StutterFix
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
             BeatFix.Enabled = Dormancy.Enabled; EditorPick.Enabled = Dormancy.Enabled;
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);
+            TypeCache.Enabled = E("FilterTypeCache", Config.FilterTypeCache);
             ImagePrefetch.Enabled = E("ImagePrefetch", Config.ImagePrefetch);
             ShaderWarm.Enabled = E("ShaderWarm", Config.ShaderWarm);
             FastBlend.Enabled = E("FastBlend", Config.FastBlend);
@@ -738,6 +740,7 @@ namespace StutterFix
         public bool FastLoop = true;       // 길이 0 장식 이동 효과를 게임 코드 대신 모드 루프로
         public bool Precheck = true;       // 곧 발동할 무거운 장식 이동이 아무것도 안 바꾸는지 미리 확인해 두고 건너뛰기
         public bool DecoAnim = true;       // 길이 있는 장식 이동의 애니메이션을 DOTween 대신 모드가 돌림
+        public bool FilterTypeCache = true; // 고급 필터의 형식 찾기(Type.GetType, 한 번 약 0.7ms) 결과를 기억
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음
         public bool LowNoThrottle = false;  // 윈도우 절전 제한 끄기 + 타이머 1ms
