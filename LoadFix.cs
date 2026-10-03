@@ -212,7 +212,7 @@ namespace StutterFix
             // 에디터에서만 지문을 남긴다 (재생 준비 끝의 다시 설정이 마지막)
             // 같은 프레임에 이미 잰 지문(재생 시작의 ReloadAssets 앞, 편집으로 나가기의 ExitFix)이 있으면 그것을 쓴다. 다시 설정은 장식 데이터를 바꾸지 않는다.
             // Arche 에디터 Play 는 한 프레임에 지문을 세 번 쟀다(ReloadAssets 앞, 건너뛴 다시 설정 뒤, 재생 준비 끝 다시 설정 뒤, 한 번 약 0.1초).
-            try { if (SkipDoubleReset && ADOBase.isLevelEditor) { lastFp = ReuseFingerprint(); haveFp = true; fpFromOpen = false; } }
+            try { if (SkipDoubleReset && (ADOBase.isLevelEditor || ExitFix.GameRestartReset)) { lastFp = ReuseFingerprint(); haveFp = true; fpFromOpen = false; } }
             catch { haveFp = false; }
         }
 

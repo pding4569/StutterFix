@@ -95,7 +95,10 @@ namespace StutterFix
         // 놓쳤다(2026-10-04 검증: Windflower 10개, HELLO 2026 180~190개). 그래서 가볍게 할 수 있으면 TransitionFix 는 건너뛰지 않는다(LightReady).
         private static bool baseAtSceneReset;   // 지금 값이 이번 다시 하기의 ResetScene 안에서 찍은 것인가
         internal static bool LightReady { get { return Enabled && haveBase && ADOBase.isLevelEditor; } }
-        private static string Label { get { return Exiting ? "[나가기]" : TransitionFix.InRestart ? "[다시 하기]" : "[재생 시작]"; } }
+        // 게임 화면에서 죽고 다시 하기: 장식 다시 설정은 ResetScene 안의 한 번뿐이다(Arche 1.2초). 첫 다시 하기는 원래대로 하고 끝에서 값을 찍어,
+        // 두 번째부터 가볍게 한다(나가기와 같은 자리, 같은 판단). 재생 시작에는 다시 설정이 없어서 맵을 연 직후 값은 쓰지 않는다.
+        internal static bool GameRestartReset { get { return TransitionFix.InRestartGame && SceneReset.Resetting && !ADOBase.isLevelEditor; } }
+        private static string Label { get { return Exiting ? "[나가기]" : TransitionFix.InRestart || TransitionFix.InRestartGame ? "[다시 하기]" : "[재생 시작]"; } }
 
         // ── 재생 시작 때 찍어 두는 값 ──
         private struct Base
@@ -135,7 +138,7 @@ namespace StutterFix
             lightRan = false;
             if (!__runOriginal) return false;
             bool restartOk = TransitionFix.InRestart && (SceneReset.Resetting || baseAtSceneReset);
-            if ((Exiting || PlayStarting || restartOk) && Enabled && haveBase && ADOBase.isLevelEditor)
+            if (((Exiting || PlayStarting || restartOk) && ADOBase.isLevelEditor || GameRestartReset) && Enabled && haveBase)
             {
                 try { if (Light(__instance)) { lightRan = true; haveBase = false; return false; } }
                 catch (Exception ex) { Fallbacks++; Main.Entry.Logger.Log("[나가기] 가볍게 다시 설정 실패, 원래대로: " + ex.Message); }
@@ -148,7 +151,7 @@ namespace StutterFix
         {
             if (!__runOriginal && !lightRan) return;   // 원래가 돌았거나 우리가 가볍게 했을 때만 (가볍게 하면 원래를 건너뛰어 __runOriginal 이 false)
             lightRan = false;   // 가볍게 한 뒤에도 찍는다(결과가 원래 방식과 같음 - 검증)
-            if (!Enabled || !ADOBase.isLevelEditor) return;
+            if (!Enabled || !(ADOBase.isLevelEditor || GameRestartReset)) return;
             baseAtSceneReset = TransitionFix.InRestart && SceneReset.Resetting;
             try { Capture(__instance); } catch (Exception ex) { haveBase = false; Main.Entry.Logger.Log("[나가기] 값 찍기 실패: " + ex.Message); }
         }

@@ -44,7 +44,7 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 | DOTween `ReorganizeActiveTweens` O(n²) | 한 프레임 382ms (4981회) | 효과 도는 동안 `isUpdateLoop=true` (`TweenFix`) |
 | PACL2가 매 프레임 글자 장식 34개를 같은 내용으로 다시 넣음 (`VariableStateManager.UpdateTexts`) | 호출 경로로 확인, 모드 끄면 0회 | 같은 글자면 `SetText` 건너뛰기 (`TextFix`) |
 | 편집 복귀 시 `UnloadUnusedAssets` | 매번 120ms | 건너뛰기 |
-| 에디터에서 죽고 다시 하기의 장식 전체 다시 설정(`ResetDecorations`, 장식마다 `Setup` 약 45µs) | Arche 1.3~1.45초씩 | 나가기의 "안 바뀐 장식은 가볍게"(`ExitFix`)를 다시 하기의 ResetScene 시점에도. 전환 1.36→0.87초 |
+| 에디터에서 죽고 다시 하기의 장식 전체 다시 설정(`ResetDecorations`, 장식마다 `Setup` 약 45µs) | Arche 1.3~1.45초씩 | 나가기의 "안 바뀐 장식은 가볍게"(`ExitFix`)를 다시 하기의 ResetScene 시점에도. 에디터 1.36→0.87초, 게임 화면(목록에서 연 맵) 두 번째부터 1.15→0.47초 |
 | 고급 필터 `ResetFilters`("다른 필터 끄기")가 쓴 필터마다 `Type.GetType("이름, Assembly-CSharp-firstpass")` | 한 번 0.7ms, 효과 하나 2~18ms. HELLO 2026 35초 한 프레임 22ms | 결과 기억 (`TypeCache`) → A/B 4판: 곡 중 최악 48~55→24ms, 재생 시작 3.3~3.6→1.9초 |
 | 한 프레임에 효과 수십 개 몰림 | | 프레임당 예산으로 분산 (`EffectBudget`) |
 | 박자마다 60~80ms (28~40초 구간) | PerfView: 끊긴 60ms 동안 게임 전체 CPU 16ms, 메인 스레드는 `RenderOffscreenCameras` → `CullScene` → `ujob_wait_for`에서 잠듦. GPU도 대기. VRAM 7.0/8GB, 게임 공유메모리 599MB로 넘침 | **Steam 실행 옵션 `-force-d3d12 -force-gfx-jobs native` 제거** (D3D11). 그 구간 끊김 사라짐. 모드는 옵션이 있으면 경고만 띄운다 |
@@ -62,6 +62,7 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 - 이 릴리스 빌드는 유니티 내부 계측점(Recorder)이 거의 막혀 있다(44개 중 쓸 만한 것 없음). GPU 시간은 PresentMon으로 잰다 (`MsGPUBusy`).
 - 고급 필터(`ffxSetFilterAdvancedPlus`)가 길이 있는 효과에서 정수 필드를 0부터 트윈해서, `CameraFilterPack_Blur_Movie.OnRenderImage`가 그동안 매 프레임 0으로 나누기 예외를 던진다(원래 게임 버그, Windflower 60초에 약 420번). 예외만 삼키는 수정으로 A/B 4판: FPS 278/277 같음, 곡 중 최악 29~30ms 같음. **성능 영향 없음, 넣지 않았다.**
 - 장식 "가볍게 다시 설정"(`ExitFix`)은 **ResetScene 시점에서만** 맞다. ResetScene 쪽을 건너뛰고 재생 준비 끝(`FinishCustomLevelLoading`)에서 재생 시작 때 찍은 값으로 가볍게 하면 그 사이 바뀐 장식 변환을 놓친다(검증: Windflower 10개, HELLO 2026 180~190개 회전·위치·크기 다름).
+- 자동 시험 `game <맵>` / `press` / `retry`: 커스텀 맵 목록에서 연 것처럼 게임 화면(scnGame)에서 시험한다. 게임 화면은 곡 시작과 다시 하기 뒤에 키 누름(`press`)이 필요하다.
 - 모드 폴더에 `startprobe-cold.txt`를 두면 dev [시작시간]이 자주 불리는 함수를 감싸지 않아 단계 나눔이 정확해진다.
 - dev 빌드 [시작시간]은 `Enum.ToObject` 같은 많이 불리는 함수까지 감싸 부풀려진다. 맵 열기·재생 시작 시간은 플레이어용+자동 시험 빌드(`-p:Edition=Player -p:AutoTestBuild=1` → `bin/PlayerAuto`)로 잰다.
 

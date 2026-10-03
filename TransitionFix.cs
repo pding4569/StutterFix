@@ -29,7 +29,10 @@ namespace StutterFix
         internal static bool SkipRestartReset = true;
         internal static long ImagesKept, ResetsSkipped, Fallbacks;
         private static bool keeping, inRestart, pending, skipThis;
-        internal static bool InRestart { get { return inRestart; } }   // 에디터에서 죽고 다시 하기 중 (ExitFix 가 장식 다시 설정을 가볍게)
+        internal static bool InRestart { get { return inRestart; } }
+        // 게임 화면(커스텀 맵 목록에서 연 맵)에서 죽고 다시 하기 중. 여기서는 장식 다시 설정이 ResetScene 안에서 한 번뿐이다 (ExitFix)
+        private static bool inRestartGame;
+        internal static bool InRestartGame { get { return inRestartGame; } }   // 에디터에서 죽고 다시 하기 중 (ExitFix 가 장식 다시 설정을 가볍게)
         private static int devRestarts;
         private static FieldInfo spritesField;
 
@@ -83,7 +86,7 @@ namespace StutterFix
         public static void RestartPrefix(out long __state)
         {
             __state = Stopwatch.GetTimestamp();
-            inRestart = ADOBase.isLevelEditor; pending = false;
+            inRestart = ADOBase.isLevelEditor; inRestartGame = !inRestart; pending = false;
             skipThis = SkipRestartReset && inRestart && (!Edition.Dev || (devRestarts++ / 2) % 2 == 1);
             resetsAtStart = SceneReset.Count; skippedAtStart = ResetsSkipped;
         }
@@ -99,7 +102,7 @@ namespace StutterFix
         public static Exception RestartFinalizer(Exception __exception, long __state)
         {
             bool was = inRestart;
-            inRestart = false;
+            inRestart = false; inRestartGame = false;
             if (pending)
             {
                 pending = false; Fallbacks++;

@@ -111,7 +111,9 @@ namespace StutterFix
         public static void PanInvis() { panInvis++; panInvisFrame++; }
         private static int cullPhase, cullFrames; private static float cullAt; private static readonly List<Renderer> cullList = new List<Renderer>();
         private static bool Same(byte[] a, byte[] b) { if (a.Length != b.Length) return false; for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false; return true; }
-        private static int openPhase;
+        private static int openPhase, gamePhase; private static scnGame gameOld;
+        private static Harmony pressHarmony; private static bool pressPending;
+        public static bool PressPrefix(ref bool __result) { if (!pressPending) return true; pressPending = false; __result = true; return false; }
         private static System.Reflection.MethodInfo pickMethod; private static int pickDone, pickHits; private static readonly List<float> pickMs = new List<float>();
 
         // 끝났으면 true
@@ -496,6 +498,44 @@ namespace StutterFix
                             AltTab(); Main.Entry.Logger.Log("[자동 시험] Alt+Tab 돌아옴 (옆 스레드)");
                         }) { IsBackground = true, Name = "StutterFix.AutoTestAltTab" }.Start();
                         Log(string.Format("Alt+Tab 예약: {0}초 뒤 나갔다가 {1}초 뒤 돌아옴", delay, hold));
+                        return true;
+                    }
+                case "game":
+                    {
+                        // 커스텀 맵 목록에서 고른 것처럼 게임 화면(scnGame)으로 연다 (scrController.LoadCustomLevel). 에디터를 거치지 않는다.
+                        // 열린 뒤 곡은 "아무 키나 누르기"를 기다린다 -> press
+                        if (gamePhase == 0)
+                        {
+                            if (!File.Exists(arg)) throw new Exception("맵 파일 없음: " + arg);
+                            var ctrl = ADOBase.controller;
+                            string sc = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+                            if (ctrl == null || sc == "" || sc == "scnSplash" || sc == "scnLoading" || sc == "scnIntro" || now - stepStart < 3f) return false;   // 첫 메뉴가 뜨고 조금 뒤 (RestartAdvisor 와 같은 조건)
+                            gameOld = ADOBase.customLevel;   // 이미 게임 화면이면 새 장면이 뜰 때까지 기다린다
+                            ctrl.LoadCustomLevel(arg);
+                            gamePhase = 1; openStartedAt = now; Log("게임 화면으로 맵 열기: " + arg);
+                            return false;
+                        }
+                        if (gamePhase == 1)
+                        {
+                            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "scnGame" || ADOBase.customLevel == null || ReferenceEquals(ADOBase.customLevel, gameOld) || ADOBase.customLevel.isLoading) return false;
+                            gamePhase = 2; waitSec = now;
+                            return false;
+                        }
+                        if (now - waitSec < 2f) return false;
+                        gamePhase = 0; Log(string.Format("게임 화면 맵 열림 ({0:F1}초, 2초 기다림 포함)", now - openStartedAt));
+                        return true;
+                    }
+                case "press":
+                    {
+                        // 키를 한 번 누른 것처럼: 다음 입력 확인(scrPlayerManager.AnyValidInputWasTriggered) 한 번만 참
+                        if (pressHarmony == null)
+                        {
+                            pressHarmony = new Harmony(Main.Entry.Info.Id);   // 모드를 내릴 때 같이 풀린다
+                            pressHarmony.Patch(AccessTools.Method(typeof(scrPlayerManager), "AnyValidInputWasTriggered"), prefix: new HarmonyMethod(typeof(AutoTest), nameof(PressPrefix)));
+                        }
+                        if (autoChanged) RDC.auto = desiredAuto;
+                        pressPending = true; Log("키 누름");
+                        BeginRun("게임 화면");
                         return true;
                     }
                 case "retry":
