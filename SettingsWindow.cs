@@ -692,6 +692,10 @@ namespace StutterFix
             bool ch = false;
 
             Section(T("기본", "General"));
+            ch |= Option("gconly", ref c.GcOnly, T("메모리 정리만 쓰기 (다음 실행부터)", "Memory cleanup only (next launch)"),
+                T("아래 '메모리 정리 미루기' 하나만 켜고 이 모드의 다른 기능은 전부 걸지 않습니다. 리플레이 같은 다른 모드와 충돌할 때 씁니다. 게임을 다시 켜야 적용됩니다.",
+                  "Keeps only 'Defer memory cleanup' below and installs none of the mod's other features. Use it when another mod (e.g. a replay mod) conflicts. Takes effect after restarting the game."),
+                null);
             ch |= Option("gc", ref c.GcPause, T("메모리 정리 미루기", "Defer memory cleanup"),
                 T("플레이 중 게임이 메모리를 정리하느라 잠깐 멈추는 것을 막습니다. 쌓인 것은 어차피 멈추는 순간(편집으로 나가기, 다시 하기, 화면 전환)에 한 번에 정리합니다.",
                   "Stops the game from pausing to clean up memory mid-song. What piles up is cleaned at once during a transition that pauses anyway (back to editor, retry, scene change)."),

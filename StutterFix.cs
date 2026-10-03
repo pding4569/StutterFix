@@ -45,12 +45,12 @@ namespace StutterFix
             if (Edition.Dev) LogLoadedCopies();
             InstallAll();
             if (Config.FlipModel < 0) { Config.FlipModel = BootConfig.FlipNow() ? 1 : 0; try { Config.Save(modEntry); } catch { } }   // 처음: 지금 boot.config 상태를 따른다
-            BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1);
+            BootConfig.Apply(!Config.GcOnly && Config.LegacyGfxJobs, !Config.GcOnly && Config.FlipModel == 1);   // 메모리 정리만 쓰면 boot.config 도 원래대로
             modEntry.Logger.Log(BootConfig.Describe());
             WindowGhost.MainThread = Environment.CurrentManagedThreadId;
             WindowGhost.MainNativeThread = WindowGhost.GetCurrentThreadId();
             WindowGhost.KeepResponsive = Config.NoGhosting;
-            if (Config.NoGhosting) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
+            if (Config.NoGhosting && !Config.GcOnly) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
             if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
             // (개발자용 시험) 모드 폴더의 파일로 멈춘 동안 화면 다시 내보내기를 바꾼다: present-keepalive 켬(효과 없어 기본은 끔), present-flip 보통 Present, present-screen-check 화면 비교
             if (Edition.Dev) DevPresentFlags(modEntry.Path);
@@ -93,7 +93,7 @@ namespace StutterFix
             // 모드를 끄면 게임 파일도 원래대로 돌려놓는다(다음 실행부터 원래 방식).
             // 다시 불러오기도 내부에서 끄기 -> 켜기를 거치므로 그때는 건드리지 않는다
             // (중간에 실패하면 legacy 줄이 빠진 채로 남았다).
-            if (!reloading) BootConfig.Apply(value && Config.LegacyGfxJobs, value && Config.FlipModel == 1);
+            if (!reloading) BootConfig.Apply(value && !Config.GcOnly && Config.LegacyGfxJobs, value && !Config.GcOnly && Config.FlipModel == 1);
             return true;
         }
 
@@ -134,6 +134,16 @@ namespace StutterFix
             elapsed = 0f;
             try
             {
+                // 메모리 정리만: 곡 중 GC 멈춤(자기 Harmony ID 로 곡 시작·끝 함수에만 건다)과 설정 창만 둔다.
+                // 다른 모드(리플레이 등)와 같은 게임 함수를 고쳐 부딪힐 때 원인을 GC 쪽만 남기고 가리려고, 또 그 조합으로 쓰려고.
+                if (Config.GcOnly)
+                {
+                    GcControl.Install();
+                    SettingsWindow.Create();
+                    PerfOverlay.Create();
+                    Entry.Logger.Log("켜짐: 메모리 정리만 (그 밖의 패치는 걸지 않음, " + Edition.Name + ")");
+                    return;
+                }
                 var harmony = new Harmony(Entry.Info.Id);
                 // 실제 수정 (두 버전 공통)
                 PatchUnloadCallers(harmony);
@@ -433,6 +443,7 @@ namespace StutterFix
             }
 
             if (!installed) return;   // 꺼져 있으면 아무 일도 하지 않는다
+            if (Config.GcOnly) { GcControl.Tick(dt); return; }   // 메모리 정리만 (InstallAll)
 
             long q = System.Diagnostics.Stopwatch.GetTimestamp();
             GcControl.Tick(dt); Tk(0, ref q);
@@ -723,6 +734,7 @@ namespace StutterFix
         // 기능별 켜기/끄기 (플레이어용 설정 화면에서 바꾸고 저장된다)
         public bool CheckUpdates = true;    // 게임을 켜면 GitHub 에서 새 버전이 있는지 한 번 확인
         public bool GcPause = true;
+        public bool GcOnly = false;         // 메모리 정리 미루기만 쓰기: 다른 모드(리플레이 등)와 겹칠 때 그 밖의 패치·게임 파일 수정을 전혀 하지 않는다. 다음 실행부터
         public bool EffectSplit = true;
         public bool RecolorSplit = true;
         public bool TweenGuard = true;
