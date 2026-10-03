@@ -8,11 +8,26 @@ main 에 올리기·태그·릴리스는 사용자가 "올려"라고 할 때만.
 ```bash
 git fetch origin main-gpsl7k && git checkout main-gpsl7k
 winget install Python.Python.3.12                     # sfmeasure 용. 새 터미널에서 python --version 확인
-pip install mcilspy                                   # 게임 DLL 디컴파일 MCP (필요한 것은 mcilspy 안내를 따른다)
+winget install astral-sh.uv                           # uvx (Serena, Windows-MCP 용)
+
+# 꼭: 게임 DLL 디컴파일 (필요한 것은 mcilspy 안내를 따른다)
+pip install mcilspy
 claude mcp add ilspy -s user -- python -m mcilspy.server
+
+# 권장: 필요한 함수 본문·부르는 곳만 찾아 읽기 (C#). 저장소 루트에서
+claude mcp add serena -s local -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project .
+
+# 권장: 세션이 넘어가도 측정값·해 본 것 기억 (플러그인. 설치 방법은 claude-mem README 를 따른다)
+#   CLAUDE.md 가 기준이고, 기억이 CLAUDE.md 와 어긋나면 CLAUDE.md 를 따른다
+
+# 선택: 화면 조작 (UMM 창, 설정 창 눈으로 확인). 게임 켜고 끄기·측정은 sfmeasure 가 하므로 없어도 된다
+claude mcp add windows-mcp -s user -- uvx windows-mcp serve
 ```
+- `sfmeasure` 는 저장소 `.mcp.json` 에 이미 등록돼 있어 따로 설치하지 않는다(파이썬만 있으면 됨).
+- 나중에: Discord MCP(제보 읽기, 아직 안 넣음), graphify·task observer(효과 작음).
+- 명령은 각 도구의 안내(README)로 한 번 확인한다. 클라우드에서는 직접 설치해 보지 못했다.
 - PresentMon 을 쓰려면 환경 변수 `SF_PRESENTMON` 에 PresentMon.exe 경로 (관리자 권한 필요).
-- **Claude Code 를 저장소에서 다시 켠다** (MCP 는 세션 시작 때 붙는다) → `/mcp` 에서 `sfmeasure`, `ilspy` 승인.
+- **Claude Code 를 저장소에서 다시 켠다** (MCP 는 세션 시작 때 붙는다) → `/mcp` 에서 `sfmeasure`, `ilspy`, `serena`(와 깐 것) 승인.
 - 디컴파일한 게임 코드는 보기만 하고 저장소·커밋·주석에 넣지 않는다.
 
 ## 2. 빌드·설치 (Claude)
