@@ -142,8 +142,11 @@ namespace StutterFix
             depth--;
             if (depth > 0) return;
             depth = 0;
+            // (개발자용) 무거운 효과 하나가 시작될 때의 예산 상태: 몰린 무거운 효과가 왜 한 프레임에 같이 도는지 보려고 (2026-10-04, Lost Requiem 타일 이동 3개 46ms)
+            if (Edition.Dev && ms > 8.0 && heavyLogged < 60) { heavyLogged++; Main.Entry.Logger.Log(string.Format("[효과나누기] 무거운 효과 {0:F1}ms | 그 전 쓴 시간 {1:F1}ms, 대기 {2}개, 밀린 것 처리 중 {3}, 유예 {4}, 켜짐 {5}, 프레임 {6}", ms, usedMs, queue.Count, replaying, InGrace, Enabled, Time.frameCount)); }
             if (!replaying) usedMs += ms;   // 밀린 것을 처리할 때는 Drain 쪽에서 따로 센다
         }
+        private static int heavyLogged;
 
         // 밀린 것을 먼저 처리한다. 새 효과보다 앞서 실행해야 순서가 뒤집히지 않는다.
         private static void Drain()
