@@ -821,6 +821,14 @@ namespace StutterFix
                     Log("화면 캡처: " + f);
                     return true;
                 }
+                case "glassdump":
+                    // glassdump: 유리 배경 복사본(창 자리)을 shots/glass-panel.png 로 (위아래 방향 확인용)
+                    Log("유리 배경 저장: " + SettingsWindow.DumpGlass(Path.Combine(modDir, "shots")));
+                    return true;
+                case "glassflip":
+                    SettingsWindow.GlassFlip = arg == "1";
+                    Log("유리 뒤집기: " + SettingsWindow.GlassFlip);
+                    return true;
                 case "keep":
                     keep = true;
                     Log("묶음이 끝나도 게임을 끄지 않음");
