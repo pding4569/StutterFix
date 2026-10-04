@@ -51,7 +51,7 @@ namespace StutterFix
         private static int everyCount;
 
         // 아주 자주 불리는 곳(맵 파일 해석, 이벤트 읽기, 타일 만들기)용: 1024번에 한 번만 Tick
-        internal static void TickEvery() { if ((++everyCount & 1023) == 0) Tick(); }
+        internal static void TickEvery() { if (ParallelDecode.OnWorker) return; if ((++everyCount & 1023) == 0) Tick(); }   // 작업 스레드(여러 코어로 이벤트 만들기)에서는 건너뜀
 
         // 메인 스레드가 5초 넘게 확인하지 않던 단계에도 확인 자리를 더 둔다(2026-09-27 로그: 입력 큐 확인으로 바꾼 뒤에도 맵 불러오기 5.8초,
         // Play 0.3~0.5초 판정이 남았음 - 맵 파일 해석·이벤트 읽기, Play 앞쪽의 타일 다시 만들기 구간).

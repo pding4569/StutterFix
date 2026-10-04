@@ -32,10 +32,25 @@ namespace StutterFix
                 foreach (var m in ev.GetMethods(AccessTools.all))
                     if (m.Name == "Decode" && m.DeclaringType == ev && !m.IsAbstract)
                         h.Patch(m, transpiler: new HarmonyMethod(typeof(DecodeFix), nameof(Transpiler)));
+                // 이벤트로 바꾸기 시간 (맵 파일 읽기 로그에 함께 적는다)
+                var ld = AccessTools.TypeByName("ADOFAI.LevelData");
+                if (ld != null)
+                    foreach (var m in ld.GetMethods(AccessTools.all))
+                        if (m.Name == "Decode" && m.GetParameters().Length == 2 && m.GetParameters()[0].ParameterType == typeof(Dictionary<string, object>))
+                            h.Patch(m, prefix: new HarmonyMethod(typeof(DecodeFix), nameof(TimePrefix)), finalizer: new HarmonyMethod(typeof(DecodeFix), nameof(TimeFinalizer)));
                 if (replaced == 0) { Main.Entry.Logger.Log("[맵 파일 읽기] 이벤트 바꾸기: 바꿀 호출이 없어 효과 없음"); return; }
                 Main.Entry.Logger.Log("[맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 " + replaced + ")");
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[맵 파일 읽기] 이벤트 바꾸기 설치 실패: " + ex.Message); }
+        }
+
+        internal static double LastDecodeMs;
+        private static long decodeT0;
+        public static void TimePrefix() { decodeT0 = System.Diagnostics.Stopwatch.GetTimestamp(); }
+        public static Exception TimeFinalizer(Exception __exception)
+        {
+            LastDecodeMs = (System.Diagnostics.Stopwatch.GetTimestamp() - decodeT0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            return __exception;
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> ins)
@@ -52,11 +67,25 @@ namespace StutterFix
             }
         }
 
+        // 작업 스레드(ParallelDecode)는 스레드마다 따로 둔 캐시를 먼저 본다(잠금 하나를 여러 스레드가 다투지 않게)
+        [ThreadStatic] private static Dictionary<Type, Dictionary<int, object>> tInt;
+        [ThreadStatic] private static Dictionary<Type, Dictionary<string, object>> tName;
+
         public static object ToObject(Type enumType, int value)
         {
             var pg = Progress; if (pg != null) pg();
             if (!Enabled || enumType == null) return Enum.ToObject(enumType, value);
             object o;
+            if (ParallelDecode.OnWorker)
+            {
+                if (tInt == null) tInt = new Dictionary<Type, Dictionary<int, object>>();
+                Dictionary<int, object> lm;
+                if (!tInt.TryGetValue(enumType, out lm)) { lm = new Dictionary<int, object>(); tInt[enumType] = lm; }
+                if (lm.TryGetValue(value, out o)) return o;
+                o = Enum.ToObject(enumType, value);   // 예외는 그대로
+                lm[value] = o;
+                return o;
+            }
             lock (sync)
             {
                 Dictionary<int, object> m;
@@ -77,6 +106,16 @@ namespace StutterFix
             var pg = Progress; if (pg != null) pg();
             if (!Enabled || enumType == null || value == null) return Enum.Parse(enumType, value);
             object o;
+            if (ParallelDecode.OnWorker)
+            {
+                if (tName == null) tName = new Dictionary<Type, Dictionary<string, object>>();
+                Dictionary<string, object> lm;
+                if (!tName.TryGetValue(enumType, out lm)) { lm = new Dictionary<string, object>(); tName[enumType] = lm; }
+                if (lm.TryGetValue(value, out o)) return o;
+                o = Enum.Parse(enumType, value);   // 없는 이름 등의 예외는 그대로(담지 않음)
+                lm[value] = o;
+                return o;
+            }
             lock (sync)
             {
                 Dictionary<string, object> m;

@@ -87,7 +87,7 @@ namespace StutterFix
 
         public static void HotPost(MethodBase __originalMethod, long __state)
         {
-            if (depth == 0) return;   // 재생/로딩 밖에서 불린 것은 세지 않는다
+            if (depth == 0 || ParallelDecode.OnWorker) return;   // 재생/로딩 밖에서 불린 것은 세지 않는다 (작업 스레드에서 부른 것도: 여러 코어로 이벤트 만들기)
             string name;
             if (!names.TryGetValue(__originalMethod, out name)) return;
             Hot h;

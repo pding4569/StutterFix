@@ -246,7 +246,7 @@ namespace StutterFix
             {
                 GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
                 double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - parseT0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
-                Main.Entry.Logger.Log(string.Format("[맵 파일 읽기] GC 멈춤 {0:F0}ms, 힙 {1}MB -> {2}MB (그 사이 GC {3}번)", ms, parseHeap0 / 1048576, GC.GetTotalMemory(false) / 1048576, GC.CollectionCount(0) - parseGc0));
+                Main.Entry.Logger.Log(string.Format("[맵 파일 읽기] GC 멈춤 {0:F0}ms(그중 이벤트로 바꾸기 {4:F0}ms{5}), 힙 {1}MB -> {2}MB (그 사이 GC {3}번)", ms, parseHeap0 / 1048576, GC.GetTotalMemory(false) / 1048576, GC.CollectionCount(0) - parseGc0, DecodeFix.LastDecodeMs, ParallelDecode.Last.Length > 0 ? ": " + ParallelDecode.Last : ""));
             }
             catch { }
             return __exception;

@@ -157,6 +157,7 @@ namespace StutterFix
                 LoadFix.InstallTextureDict(harmony);
                 FastJson.Install(harmony);
                 DecodeFix.Install(harmony);
+                ParallelDecode.Install(harmony);
                 TexCompress.Install(harmony);
                 HalfRender.Install(harmony);
                 RenderVerify.Install(harmony);
