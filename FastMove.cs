@@ -499,7 +499,7 @@ namespace StutterFix
         // 곡 시작 직후(되감기 구간)가 아님
         private static bool CanAnim(ffxMoveDecorationsPlus fx)
         {
-            if (!DecoAnim.Active || EffectBudget.InGrace) return false;
+            if (!DecoAnim.Active || EffectBudget.InCatchUp) return false;
             if (DecoAnim.CanPivotParallax) return true;   // 피벗·시차 오프셋·시차 배율도 모드 애니메이터가 맡는다 (시차 부품 확인은 대상 목록을 만든 뒤 ParallaxOk)
             if (parUsed(fx)) return false;
             if (!fdt(fx))

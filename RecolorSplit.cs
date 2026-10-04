@@ -127,7 +127,7 @@ namespace StutterFix
                 int end = endRef(self);   // 맞바꾸기가 끝난 뒤라 start <= end
                 int step = 1 + Math.Max(0, gapRef(self));
                 long tiles = (end - (long)start) / step + 1;
-                bool split = Enabled && tiles > ChunkTiles && !EffectBudget.InGrace;
+                bool split = Enabled && tiles > ChunkTiles && !EffectBudget.InCatchUp;
                 long span = (long)ChunkTiles * step;
                 int nowEnd = split ? (int)Math.Min(end, start + span - step) : end;
 

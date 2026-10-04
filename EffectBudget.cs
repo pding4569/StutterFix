@@ -54,6 +54,10 @@ namespace StutterFix
         private static int graceFrame = -1;
         internal static void Suspend(float seconds) { graceUntil = Time.realtimeSinceStartup + seconds; graceFrame = Time.frameCount + 60; }
         internal static bool InGrace { get { return Time.realtimeSinceStartup < graceUntil || Time.frameCount <= graceFrame || PerfOverlay.InStartWindow; } }
+        // 곡 시작·다시 하기 직후 게임이 시작 지점까지의 효과를 몰아서 적용하는 구간만 (첫 타일까지의 연출 구간은 뺀다).
+        // 타일·장식 애니메이션 직접 처리와 색 바꾸기 나누기는 순서를 바꾸지 않으므로 이 구간만 피하면 된다.
+        // 2026-10-04 ALPHA Finale Destination: 곡 2.0초(첫 타일 전 연출 구간) ffxRecolorFloor 13ms + ffxMoveFloor 6ms 가 유예라 원래대로 돌아 34ms.
+        internal static bool InCatchUp { get { return Time.frameCount <= graceFrame; } }   // 시작 뒤 60프레임 (실시간 3초는 첫 타일 전 효과까지 덮어 뺐다)
 
         internal static bool ShouldRun(object instance, MethodBase method, object[] args)
         {

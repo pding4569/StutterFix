@@ -127,7 +127,7 @@ namespace StutterFix
         {
             if (!__runOriginal) return false;
             if (!Active || !Hitch.Playing) return true;
-            if (EffectBudget.InGrace) { whyNot[0]++; Fallbacks++; return true; }
+            if (EffectBudget.InCatchUp) { whyNot[0]++; Fallbacks++; return true; }
             // 길이는 AdjustDurationForHardbake 가 음악 속도로 나누기만 하므로(공식 맵만) 부호는 그대로다.
             // 0 이면 즉시 이동(Done 이 그 자리에서 끝냄)을 같은 계산으로 바로 쓴다. 음수는 원래 코드.
             float d0 = durRef(__instance);
