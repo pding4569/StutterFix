@@ -67,6 +67,7 @@ static sf_stream_func pick_stream(void)
 typedef struct SfFused SfFused;
 SfFused* sf_fused_begin(int width, int height, int bpp, uint8_t* d0, int nw, int nh);
 int sf_fused_row(SfFused* f, const uint8_t* src);   /* src = filter byte + row */
+void sf_fused_detach(SfFused* f);                   /* before the bytes given to sf_fused_row change */
 int sf_fused_end(SfFused* f, int ok);                 /* writes the rest when ok, frees; returns ok */
 
 typedef struct
@@ -94,6 +95,7 @@ static int row_sink(void* ctx, const u8* p, size_t n)
         if (!sf_fused_row(s->f, p)) return 0;
         p += s->row; n -= s->row;
     }
+    sf_fused_detach(s->f);   /* the window moves after this call, and 'part' is about to be overwritten */
     if (n) { memcpy(s->part, p, n); s->have = n; }
     return 1;
 }
@@ -119,5 +121,18 @@ SF_API int sf_png_shrink(const uint8_t* zlib, int zlen, int width, int height, i
         ok = sf_fused_end(f, ok);
     }
     free(part); free(win); libdeflate_free_decompressor(d);
+    return ok;
+}
+
+/* measuring only (not used by the mod): the streaming inflate with a sink that does nothing */
+static int null_sink(void* ctx, const u8* p, size_t n) { (void)ctx; (void)p; (void)n; return 1; }
+SF_API int sf_png_inflate_only(const uint8_t* zlib, int zlen, size_t total)
+{
+    static sf_stream_func impl;
+    if (!impl) impl = pick_stream();
+    struct libdeflate_decompressor* d = libdeflate_alloc_decompressor();
+    u8* win = (u8*)malloc(SF_WINDOW);
+    int ok = d && win && impl(d, zlib + 2, (size_t)zlen - 2, win, SF_WINDOW, total, null_sink, NULL) == LIBDEFLATE_SUCCESS;
+    free(win); libdeflate_free_decompressor(d);
     return ok;
 }

@@ -40,9 +40,13 @@ typedef struct
     int* xs;            /* x0, x1 per output column */
     __m128i* acc4;      /* sse: (r*a, g*a, b*a, a) and (r, g, b, a) as 32-bit lanes per column */
     uint64_t* acc;      /* otherwise 7 sums per column */
+    /* sse: only columns with a non-zero pixel are summed and written ("dirty"); the rest of the output row is 0.
+     * colOf[px] = the first column whose box ends after pixel px (nw past the last box). */
+    int* colOf;
+    int* dlist; uint8_t* dmark; int dn;
 } Shrink;
 
-static void shrink_free(Shrink* k) { free(k->xs); if (k->acc4) _mm_free(k->acc4); free(k->acc); }
+static void shrink_free(Shrink* k) { free(k->xs); if (k->acc4) _mm_free(k->acc4); free(k->acc); free(k->colOf); free(k->dlist); free(k->dmark); }
 
 static int shrink_init(Shrink* k, int width, int height, int bpp, int nw, int nh)
 {
@@ -55,13 +59,28 @@ static int shrink_init(Shrink* k, int width, int height, int bpp, int nw, int nh
     k->xs = (int*)malloc(sizeof(int) * 2 * (size_t)nw);
     if (k->sse) k->acc4 = (__m128i*)_mm_malloc(sizeof(__m128i) * 2 * (size_t)nw, 16);
     else k->acc = (uint64_t*)malloc(sizeof(uint64_t) * 7 * (size_t)nw);
-    if (!k->xs || (k->sse ? !k->acc4 : !k->acc)) { shrink_free(k); return 0; }
+    if (k->sse)
+    {
+        k->colOf = (int*)malloc(sizeof(int) * (size_t)width);
+        k->dlist = (int*)malloc(sizeof(int) * (size_t)nw);
+        k->dmark = (uint8_t*)calloc((size_t)nw, 1);
+    }
+    if (!k->xs || (k->sse ? !k->acc4 || !k->colOf || !k->dlist || !k->dmark : !k->acc)) { shrink_free(k); return 0; }
     for (int x = 0; x < nw; x++)
     {
         int x0 = (int)(x * k->sx), x1 = (int)((x + 1) * k->sx);
         if (x1 > width) x1 = width;
         if (x1 < x0 + 1) x1 = x0 + 1;
         k->xs[2 * x] = x0; k->xs[2 * x + 1] = x1;
+    }
+    if (k->sse)
+    {
+        memset(k->acc4, 0, sizeof(__m128i) * 2 * (size_t)nw);
+        for (int px = 0, c = 0; px < width; px++)
+        {
+            while (c < nw && k->xs[2 * c + 1] <= px) c++;
+            k->colOf[px] = c;
+        }
     }
     return 1;
 }
@@ -76,7 +95,16 @@ static void shrink_rows(const Shrink* k, int y, int* y0, int* y1)
 
 static void shrink_clear(Shrink* k)
 {
-    if (k->sse) memset(k->acc4, 0, sizeof(__m128i) * 2 * (size_t)k->nw);
+    if (k->sse)
+    {
+        for (int i = 0; i < k->dn; i++)
+        {
+            int c = k->dlist[i];
+            k->acc4[2 * c] = k->acc4[2 * c + 1] = _mm_setzero_si128();
+            k->dmark[c] = 0;
+        }
+        k->dn = 0;
+    }
     else memset(k->acc, 0, sizeof(uint64_t) * 7 * (size_t)k->nw);
 }
 
@@ -89,29 +117,45 @@ static void shrink_add(Shrink* k, const uint8_t* row)
         const __m128i zero = _mm_setzero_si128();
         const __m128i keep = _mm_set_epi16(0, -1, -1, -1, 0, -1, -1, -1);   /* a a a _ | a a a _ */
         const __m128i ones = _mm_set_epi16(1, 0, 0, 0, 1, 0, 0, 0);         /* lane 3 of each pixel: a * 1 */
-        __m128i* A = k->acc4;
-        for (int x = 0; x < nw; x++, A += 2)
+        int width = k->width, next = 0;   /* next: first column not summed yet for this row */
+        for (int b = 0; b < width; b += 16)
         {
-            const uint8_t* p = row + (size_t)xs[2 * x] * 4;
-            const uint8_t* e = row + (size_t)xs[2 * x + 1] * 4;
-            __m128i sw = zero, su = zero;
-            for (; p + 8 <= e; p += 8)
+            /* a block of 16 pixels (64 bytes) with only zero bytes adds nothing (mostly-empty images) */
+            int be = b + 16 < width ? b + 16 : width;
+            const uint8_t* q = row + (size_t)b * 4; const uint8_t* qe = row + (size_t)be * 4;
+            __m128i o = zero;
+            for (; q + 16 <= qe; q += 16) o = _mm_or_si128(o, _mm_loadu_si128((const __m128i*)q));
+            for (; q < qe; q += 4) o = _mm_or_si128(o, _mm_cvtsi32_si128(*(const int*)q));
+            if (_mm_movemask_epi8(_mm_cmpeq_epi8(o, zero)) == 0xFFFF) continue;
+            int x = k->colOf[b];
+            if (x < next) x = next;
+            for (; x < nw && xs[2 * x] < be; x++)
             {
-                __m128i v = _mm_unpacklo_epi8(_mm_loadl_epi64((const __m128i*)p), zero);            /* r0 g0 b0 a0 r1 g1 b1 a1 */
-                __m128i al = _mm_shufflehi_epi16(_mm_shufflelo_epi16(v, 0xFF), 0xFF);                /* a0 x4, a1 x4 */
-                __m128i w = _mm_mullo_epi16(v, _mm_or_si128(_mm_and_si128(al, keep), ones));
-                sw = _mm_add_epi32(sw, _mm_add_epi32(_mm_unpacklo_epi16(w, zero), _mm_unpackhi_epi16(w, zero)));
-                su = _mm_add_epi32(su, _mm_add_epi32(_mm_unpacklo_epi16(v, zero), _mm_unpackhi_epi16(v, zero)));
+                const uint8_t* p = row + (size_t)xs[2 * x] * 4;
+                const uint8_t* e = row + (size_t)xs[2 * x + 1] * 4;
+                __m128i sw = zero, su = zero;
+                for (; p + 8 <= e; p += 8)
+                {
+                    __m128i v = _mm_unpacklo_epi8(_mm_loadl_epi64((const __m128i*)p), zero);            /* r0 g0 b0 a0 r1 g1 b1 a1 */
+                    __m128i al = _mm_shufflehi_epi16(_mm_shufflelo_epi16(v, 0xFF), 0xFF);                /* a0 x4, a1 x4 */
+                    __m128i w = _mm_mullo_epi16(v, _mm_or_si128(_mm_and_si128(al, keep), ones));
+                    sw = _mm_add_epi32(sw, _mm_add_epi32(_mm_unpacklo_epi16(w, zero), _mm_unpackhi_epi16(w, zero)));
+                    su = _mm_add_epi32(su, _mm_add_epi32(_mm_unpacklo_epi16(v, zero), _mm_unpackhi_epi16(v, zero)));
+                }
+                if (p < e)
+                {
+                    __m128i v = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(const int*)p), zero);
+                    __m128i al = _mm_shufflelo_epi16(v, 0xFF);
+                    __m128i w = _mm_mullo_epi16(v, _mm_or_si128(_mm_and_si128(al, keep), ones));
+                    sw = _mm_add_epi32(sw, _mm_unpacklo_epi16(w, zero));
+                    su = _mm_add_epi32(su, _mm_unpacklo_epi16(v, zero));
+                }
+                if (_mm_movemask_epi8(_mm_cmpeq_epi8(su, zero)) == 0xFFFF) continue;   /* every pixel 0 (alpha too): nothing to add */
+                __m128i* A = k->acc4 + 2 * (size_t)x;
+                A[0] = _mm_add_epi32(A[0], sw); A[1] = _mm_add_epi32(A[1], su);
+                if (!k->dmark[x]) { k->dmark[x] = 1; k->dlist[k->dn++] = x; }
             }
-            if (p < e)
-            {
-                __m128i v = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(const int*)p), zero);
-                __m128i al = _mm_shufflelo_epi16(v, 0xFF);
-                __m128i w = _mm_mullo_epi16(v, _mm_or_si128(_mm_and_si128(al, keep), ones));
-                sw = _mm_add_epi32(sw, _mm_unpacklo_epi16(w, zero));
-                su = _mm_add_epi32(su, _mm_unpacklo_epi16(v, zero));
-            }
-            A[0] = _mm_add_epi32(A[0], sw); A[1] = _mm_add_epi32(A[1], su);
+            next = x;
         }
         return;
     }
@@ -146,10 +190,23 @@ static void shrink_add(Shrink* k, const uint8_t* row)
 }
 
 /* write one output row from the sums (rows = y1 - y0). Same divisions and rounding as the C# code. */
+static void shrink_pixel(const Shrink* k, int x, int rows, uint8_t* q);
 static void shrink_out(const Shrink* k, int rows, uint8_t* q)
 {
+    if (k->sse)
+    {
+        /* columns without a non-zero pixel have all sums 0, and the divisions give 0, 0, 0, 0 for them */
+        memset(q, 0, (size_t)k->nw * 4);
+        for (int i = 0; i < k->dn; i++) shrink_pixel(k, k->dlist[i], rows, q + (size_t)k->dlist[i] * 4);
+        return;
+    }
+    for (int x = 0; x < k->nw; x++) shrink_pixel(k, x, rows, q + (size_t)x * k->bpp);
+}
+
+/* one output pixel from its column's sums. Same divisions and rounding as the C# code. */
+static void shrink_pixel(const Shrink* k, int x, int rows, uint8_t* q)
+{
     const int* xs = k->xs; int bpp = k->bpp;
-    for (int x = 0; x < k->nw; x++, q += bpp)
     {
         double n = (double)((int64_t)(xs[2 * x + 1] - xs[2 * x]) * rows);
         uint64_t s[7];
@@ -211,15 +268,17 @@ static int all_zero(const uint8_t* p, size_t n)
 typedef struct SfFused
 {
     Shrink k;
-    uint8_t *rows, *zero, *cur, *prev, *d0;
-    int n, bpp, height, nw, iy, cy, y0, y1, started;
+    uint8_t *rows, *zero, *cur, *d0;
+    const uint8_t* prev;   /* the row above, unfiltered: zero, one of the two own rows, or (filter None) the caller's bytes */
+    int n, bpp, height, nw, iy, cy, y0, y1, added, prevOutside;   /* added: a non-blank row went into the current output row */
 } SfFused;
 
 static void fused_out_row(SfFused* f)
 {
-    if (!f->started) shrink_clear(&f->k);
-    shrink_out(&f->k, f->y1 - f->y0, f->d0 + (size_t)f->cy * f->nw * f->bpp);
-    f->started = 0;
+    uint8_t* q = f->d0 + (size_t)f->cy * f->nw * f->bpp;
+    if (!f->added) memset(q, 0, (size_t)f->nw * f->bpp);   /* only blank rows: every sum is 0, so every pixel is 0 */
+    else shrink_out(&f->k, f->y1 - f->y0, q);
+    f->added = 0;
     if (--f->cy >= 0) shrink_rows(&f->k, f->cy, &f->y0, &f->y1);
 }
 
@@ -238,27 +297,46 @@ SfFused* sf_fused_begin(int width, int height, int bpp, uint8_t* d0, int nw, int
     return f;
 }
 
-/* one PNG row: src = filter byte + width*bpp bytes, rows in image order (top first) */
+/* one PNG row: src = filter byte + width*bpp bytes, rows in image order (top first).
+ * Filter None rows are read where they are (no copy). On the ALPHA Arche map half of the 44 million rows are blank and almost
+ * all of the rest (22 million rows, 389 GB) are filter None. */
 int sf_fused_row(SfFused* f, const uint8_t* src)
 {
-    int n = f->n, blank;
-    if (f->iy >= f->height || src[0] > 4) return 0;
-    if (f->prev == f->zero && all_zero(src + 1, (size_t)n)) blank = 1;
+    int n = f->n, filter = src[0], blank;
+    const uint8_t* row;
+    if (f->iy >= f->height || filter > 4) return 0;
+    if (filter == 0) { row = src + 1; blank = all_zero(row, (size_t)n); }
+    else if (f->prev == f->zero && all_zero(src + 1, (size_t)n)) { row = f->zero; blank = 1; }
     else
     {
-        if (!unfilter(f->cur, src + 1, f->prev, n, f->bpp, src[0])) return 0;
-        blank = all_zero(f->cur, (size_t)n);
+        uint8_t* d = f->cur;   /* never the row above (cur and prev are kept apart) */
+        if (!unfilter(d, src + 1, f->prev, n, f->bpp, filter)) return 0;
+        row = d; blank = all_zero(d, (size_t)n);
+        f->cur = d == f->rows ? f->rows + n : f->rows;
     }
     int m = f->height - 1 - f->iy++;          /* memory row (Unity order): visited from the top of memory down */
     while (f->cy >= 0 && m < f->y0) fused_out_row(f);   /* below the current output row's range: that row is complete */
     if (f->cy >= 0 && m < f->y1)
     {
-        if (!f->started) { shrink_clear(&f->k); f->started = 1; }
-        if (!blank) shrink_add(&f->k, f->cur);
+        if (!blank)
+        {
+            if (!f->added) { shrink_clear(&f->k); f->added = 1; }
+            shrink_add(&f->k, row);
+        }
     }
-    if (blank) f->prev = f->zero;
-    else { f->prev = f->cur; f->cur = f->cur == f->rows ? f->rows + n : f->rows; }
+    f->prev = blank ? f->zero : row;
+    f->prevOutside = !blank && filter == 0;
     return 1;
+}
+
+/* the caller's bytes are about to change: keep a copy of the row above if it is still read in place */
+void sf_fused_detach(SfFused* f)
+{
+    if (!f->prevOutside) return;
+    memcpy(f->cur, f->prev, (size_t)f->n);
+    f->prev = f->cur;
+    f->cur = f->cur == f->rows ? f->rows + f->n : f->rows;
+    f->prevOutside = 0;
 }
 
 int sf_fused_end(SfFused* f, int ok)
