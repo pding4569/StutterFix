@@ -529,13 +529,13 @@ namespace StutterFix
                 "Reduces hitches during play and loading times on heavy custom levels. Visuals and judgement are unchanged."));
 
             var c = Main.Config;
-            int on = (c.GcPause ? 1 : 0) + (c.EffectSplit ? 1 : 0) + (c.RecolorSplit ? 1 : 0) + (c.TweenGuard ? 1 : 0) + (c.SkipSameText ? 1 : 0) + (c.FilterTypeCache ? 1 : 0) + (c.MeshWarm ? 1 : 0) + (c.SoundWarm ? 1 : 0)
+            int on = (c.GcPause ? 1 : 0) + (c.EffectSplit ? 1 : 0) + (c.RecolorSplit ? 1 : 0) + (c.TweenGuard ? 1 : 0) + (c.SkipSameText ? 1 : 0) + (c.FilterTypeCache ? 1 : 0) + (c.MeshWarm ? 1 : 0) + (c.SoundWarm ? 1 : 0) + (c.JitWarm ? 1 : 0)
                    + (c.ShaderWarm ? 1 : 0) + (c.FastBlend ? 1 : 0) + (c.SkipInvisible ? 1 : 0) + (c.LazyHidden ? 1 : 0) + (c.ZeroTween ? 1 : 0) + (c.InstantDirect ? 1 : 0) + (c.SkipSame ? 1 : 0) + (c.FastLoop ? 1 : 0) + (c.Precheck ? 1 : 0) + (c.DecoAnim ? 1 : 0) + (c.FloorAnim ? 1 : 0) + (c.MoveFinish ? 1 : 0) + (c.DormantSkip ? 1 : 0) + (c.ImagePrefetch ? 1 : 0) + (c.SkipAssetUnload ? 1 : 0) + (c.LegacyGfxJobs ? 1 : 0) + (c.NoGhosting ? 1 : 0) + (c.SkipIdleParticles ? 1 : 0) + (c.LeakFix ? 1 : 0) + (c.LoadCache ? 1 : 0);
             string d = BootConfig.Describe();
             bool jobs = d.Contains("Jobified") || d.Contains("Split");
 
             GUILayout.BeginHorizontal();
-            Stat(on + " / 28", T("켜진 기능", "Features on"), true);
+            Stat(on + " / 29", T("켜진 기능", "Features on"), true);
             GUILayout.Space(14);
             Stat(GcControl.Paused ? T("미루는 중", "Deferred") : T("대기", "Idle"), T("메모리 정리", "Memory cleanup"), false);
             GUILayout.Space(14);
@@ -711,6 +711,9 @@ namespace StutterFix
             ch |= Option("meshwarm", ref c.MeshWarm, T("타일 모양 미리 만들기", "Pre-build tile shapes"),
                 T("타일 색 바꾸기가 스타일을 바꿀 때 곡 중에 새로 만들던 타일 모양을 재생 준비 때 미리 만들어 둡니다. 모양은 같고, 그 순간의 끊김이 없어집니다.",
                   "Tile shapes that a recolor with a style change would build mid-song are built while the level prepares. Same shapes, no hitch at that moment."), null);
+            ch |= Option("jitwarm", ref c.JitWarm, T("함수 미리 컴파일", "Precompile functions"),
+                T("게임을 켤 때 모드와 게임의 효과·장식·타일 함수를 미리 컴파일해, 곡 초반에 효과가 처음 나올 때의 끊김을 없앱니다. 게임을 켤 때 0.5초쯤 더 걸리고, 다음 실행부터 적용됩니다.",
+                  "Compiles the mod's and the game's effect/decoration/tile functions when the game starts, removing the hitch the first time an effect appears early in a song. Adds about 0.5 s to startup; applies from the next launch."), null);
             ch |= Option("soundwarm", ref c.SoundWarm, T("효과음 미리 불러오기", "Preload hit sounds"),
                 T("곡 중에 처음 쓰는 박자 소리·누르는 박자 소리를 재생 준비 때 미리 불러 둡니다. 처음 쓸 때 소리 파일을 푸느라 생기던 끊김이 없어집니다. 소리는 같습니다.",
                   "Hit sounds and hold sounds first used mid-song are loaded while the level prepares, removing the hitch of decoding them on first use. Sounds are identical."), null);
@@ -1480,7 +1483,7 @@ namespace StutterFix
         private void ResetDefaults()
         {
             var c = Main.Config;
-            c.GcPause = c.EffectSplit = c.RecolorSplit = c.TweenGuard = c.SkipSameText = c.FilterTypeCache = c.MeshWarm = c.SoundWarm = c.ShaderWarm = c.FastBlend = c.SkipInvisible = c.LazyHidden = c.ZeroTween = c.InstantDirect = c.SkipSame = c.FastLoop = c.Precheck = c.DecoAnim = c.FloorAnim = c.MoveFinish = c.DormantSkip = c.ImagePrefetch = c.SkipAssetUnload = c.SkipIdleParticles = c.LeakFix = c.LoadCache = true;
+            c.GcPause = c.EffectSplit = c.RecolorSplit = c.TweenGuard = c.SkipSameText = c.FilterTypeCache = c.MeshWarm = c.SoundWarm = c.JitWarm = c.ShaderWarm = c.FastBlend = c.SkipInvisible = c.LazyHidden = c.ZeroTween = c.InstantDirect = c.SkipSame = c.FastLoop = c.Precheck = c.DecoAnim = c.FloorAnim = c.MoveFinish = c.DormantSkip = c.ImagePrefetch = c.SkipAssetUnload = c.SkipIdleParticles = c.LeakFix = c.LoadCache = true;
             if (!c.LegacyGfxJobs) { c.LegacyGfxJobs = true; BootConfig.Apply(true, c.FlipModel == 1); }
             Save();
         }

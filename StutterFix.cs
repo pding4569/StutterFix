@@ -204,6 +204,7 @@ namespace StutterFix
                     FrameRateScreenWatch.Install(harmony);
                     ParticleTextWatch.Install(harmony);
                 }
+                if (Config.JitWarm && !Resilience.Off("JitWarm")) Try(JitWarm.Run);   // 모드 함수 미리 컴파일 (곡 초반 처음 쓰는 효과의 JIT, JitWarm.cs)
                 Entry.Logger.Log("켜짐: 패치 설치 완료 (" + Edition.Name + ")");
             }
             catch (Exception ex)
@@ -810,7 +811,8 @@ namespace StutterFix
         public bool DecoAnim = true;       // 길이 있는 장식 이동의 애니메이션을 DOTween 대신 모드가 돌림
         public bool FilterTypeCache = true; // 고급 필터의 형식 찾기(Type.GetType, 한 번 약 0.7ms) 결과를 기억
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기
-        public bool SoundWarm = true;       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
+        public bool SoundWarm = true;
+        public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음
         public bool LowNoThrottle = false;  // 윈도우 절전 제한 끄기 + 타이머 1ms

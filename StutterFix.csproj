@@ -40,6 +40,7 @@
     <Compile Include="MeshWarm.cs" />
     <Compile Include="SoundWarm.cs" />
     <Compile Include="FloorAnim.cs" />
+    <Compile Include="JitWarm.cs" />
     <Compile Include="ScriptProbe.cs" />
     <Compile Include="FloorProf.cs" />
     <Compile Include="TypeCache.cs" />

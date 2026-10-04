@@ -105,10 +105,13 @@ namespace StutterFix
                     if (Edition.Dev && (Precheck.Used & 1) == 1) VerifyNoop(__instance);
                     return false;
                 }
-                if (!Take(__instance)) return Orig(__instance);   // 원래 코드가 돈다 (아직 아무것도 안 바꿨다)
+                long hv0 = Edition.Dev ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+                if (!Take(__instance)) { if (Edition.Dev) Heavy(__instance, hv0, "원래 코드로", false); return Orig(__instance); }   // 원래 코드가 돈다 (아직 아무것도 안 바꿨다)
+                long hv1 = Edition.Dev ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
                 bool sample = Edition.Dev && durRef(__instance) <= 0f && ((Effects + 1) % 16) == 1;   // 길이 있는 효과는 원래 코드로 다시 돌리면 애니메이션을 끊어 버려 검증하지 않는다
                 if (sample) { hidBefore.Clear(); foreach (var dec in src) hidBefore.Add(InvisibleSkip.IsHidden(dec)); }
                 Run(__instance);
+                if (Edition.Dev) Heavy(__instance, hv0, "대상 찾기 " + ((hv1 - hv0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + "ms", sample);
                 if (sample) Verify(__instance, __args);
                 return false;
             }
@@ -119,6 +122,18 @@ namespace StutterFix
                 return false;
             }
             finally { running = false; }
+        }
+
+        // (개발자용) 무거운 장식 이동 효과 하나: 장식 수, 길이, 쓰는 속성
+        private static int heavyLogged;
+        private static void Heavy(ffxMoveDecorationsPlus fx, long t0, string how, bool sample)
+        {
+            double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            if (ms < 5 || heavyLogged >= 40 || !Hitch.Playing) return;
+            heavyLogged++;
+            string props = "";
+            try { props = (posUsed(fx) ? "위치 " : "") + (rotUsed(fx) ? "회전 " : "") + (scaleUsed(fx) ? "크기 " : "") + (colUsed(fx) ? "색 " : "") + (opaUsed(fx) ? "불투명도 " : "") + (visUsed(fx) ? "보임 " : "") + (depthUsed(fx) ? "깊이 " : "") + (AnyImg(fx) ? "이미지 " : "") + (parUsed(fx) ? "시차 " : ""); } catch { }
+            Main.Entry.Logger.Log(string.Format("[장식 이동 루프] (개발자용) 무거운 효과 {0:F1}ms: 장식 {1}개, 길이 {2}, 속성 {3}| {4}{5}", ms, src != null ? src.Count : -1, durRef(fx), props, how, sample ? ", 검증 표본(원래 코드로 한 번 더)" : ""));
         }
 
         // 원래 코드로 돈다. 원래 코드는 대상 장식의 애니메이션 사전을 바꿀 수 있으므로, 미리 확인 중인 계획이 그 장식을 보고 있으면 취소한다.

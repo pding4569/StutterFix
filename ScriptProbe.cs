@@ -48,7 +48,42 @@ namespace StutterFix
                 }
             }
             acc = new double[names.Count]; cnt = new int[names.Count];
+            // 지휘자 안쪽: 소리 예약(AudioManager.Play*)·박자 알림(PropagateOnBeat) 을 프레임마다 합쳐 잰다
+            int cp = 0;
+            foreach (var m in typeof(AudioManager).GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                if (m.Name.StartsWith("Play") && !m.ContainsGenericParameters && !m.IsAbstract) { try { h.Patch(m, prefix: new HarmonyMethod(typeof(ScriptProbe), nameof(CPre)), postfix: new HarmonyMethod(typeof(ScriptProbe), nameof(CPostPlay))); cp++; } catch { } }
+            foreach (var n in new[] { "PropagateOnBeat", "PlayWithEndTime" })
+                foreach (var m in typeof(scrConductor).GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                    if (m.Name == n) { try { h.Patch(m, prefix: new HarmonyMethod(typeof(ScriptProbe), nameof(CPre)), postfix: new HarmonyMethod(typeof(ScriptProbe), n == "PropagateOnBeat" ? nameof(CPostBeat) : nameof(CPostPlay))); cp++; } catch { } }
+            // 입력·판정 쪽: 이름별로 프레임마다 합친다
+            foreach (var pr in new[] { "scrController.UpdateInput", "scrController.Hit", "scrPlanet.MoveToNextFloor", "scrHitTextManager.ShowHitText", "scrHitTextMesh.Show", "scrPlanet.SwitchChosen", "scrController.OnLandOnPortal", "scrFloor.LightUp", "scrMistakesManager.AddHit", "UnityEngine.Physics2D.OverlapPointAll", "UnityEngine.Physics2D.OverlapCircleAll", "UnityEngine.Physics2D.SyncTransforms", "scrFailBar.DidFail", "scrFlash.Flash", "scrMarginTracker.AddHit", "scrPlayer.OnDamage" })
+            {
+                int dot = pr.LastIndexOf('.');
+                var parts = new[] { pr.Substring(0, dot), pr.Substring(dot + 1) };
+                var t = AccessTools.TypeByName(parts[0]);
+                if (t == null) continue;
+                foreach (var m in t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                    if (m.Name == parts[1] && !m.IsAbstract && !m.ContainsGenericParameters)
+                    { try { h.Patch(m, prefix: new HarmonyMethod(typeof(ScriptProbe), nameof(NPre)), postfix: new HarmonyMethod(typeof(ScriptProbe), nameof(NPost))); cp++; } catch { } }
+            }
+            Main.Entry.Logger.Log("[스크립트 측정] 지휘자 안쪽 " + cp + "개 감쌈");
             Main.Entry.Logger.Log(string.Format("[스크립트 측정] Update/LateUpdate {0}개 감쌈 {1}ms, 기준 {2}ms", names.Count, sw.ElapsedMilliseconds, threshold));
+        }
+
+        private static double playMs, beatMs; private static int playN, beatN, cdepth;
+        public static void CPre(out long __state) { __state = Stopwatch.GetTimestamp(); cdepth++; }
+        public static void CPostPlay(long __state) { cdepth--; if (cdepth == 0) { playMs += (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency; playN++; } }
+        public static void CPostBeat(long __state) { cdepth--; beatMs += (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency; beatN++; }
+
+        private static readonly Dictionary<string, double> named = new Dictionary<string, double>();
+        private static readonly Dictionary<string, int> namedN = new Dictionary<string, int>();
+        public static void NPre(out long __state) { __state = Stopwatch.GetTimestamp(); }
+        public static void NPost(MethodBase __originalMethod, long __state)
+        {
+            double ms = (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency;
+            string k = __originalMethod.DeclaringType.Name + "." + __originalMethod.Name;
+            double v; named.TryGetValue(k, out v); named[k] = v + ms;
+            int c; namedN.TryGetValue(k, out c); namedN[k] = c + 1;
         }
 
         public static void Pre(out long __state) { __state = Stopwatch.GetTimestamp(); }
@@ -73,8 +108,11 @@ namespace StutterFix
                 order.Sort((a, b) => acc[b].CompareTo(acc[a]));
                 var sb = new System.Text.StringBuilder();
                 for (int k = 0; k < order.Count && k < 6; k++) sb.Append(" [").Append(names[order[k]]).Append(' ').Append(acc[order[k]].ToString("F1")).Append("ms x").Append(cnt[order[k]]).Append(']');
+                foreach (var kv in named) if (kv.Value > 0.5) sb.AppendFormat(" | {0} {1}번 {2:F1}ms", kv.Key, namedN[kv.Key], kv.Value);
+                if (playN > 0 || beatN > 0) sb.AppendFormat(" | 소리 예약 {0}번 {1:F1}ms, 박자 알림 {2}번 {3:F1}ms", playN, playMs, beatN, beatMs);
                 Main.Entry.Logger.Log(string.Format("[스크립트 측정] 프레임 {0} 합계 {1:F1}ms 실시간 {2:F1}초:{3}", frame, total, Time.realtimeSinceStartup, sb));
             }
+            playMs = beatMs = 0; playN = beatN = 0; named.Clear(); namedN.Clear();
             Array.Clear(acc, 0, acc.Length);
             Array.Clear(cnt, 0, cnt.Length);
         }
