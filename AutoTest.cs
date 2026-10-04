@@ -807,7 +807,8 @@ namespace StutterFix
                     return true;
                 case "ui":
                     // ui <페이지 0~6 | dock | close>: 설정 창 열기 (모양 확인용)
-                    SettingsWindow.ShowForTest(arg == "close" ? -2 : arg == "dock" ? -1 : int.Parse(arg, System.Globalization.CultureInfo.InvariantCulture));
+                    // ui 1.2 = 플레이 페이지의 셋째 갈래
+                    { var pp = arg.Split('.'); SettingsWindow.ShowForTest(arg == "close" ? -2 : arg == "dock" ? -1 : int.Parse(pp[0]), pp.Length > 1 ? int.Parse(pp[1]) : 0); }
                     Log("설정 창: " + arg);
                     return true;
                 case "shot":

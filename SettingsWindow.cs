@@ -35,8 +35,9 @@ namespace StutterFix
         internal static void Toggle() { if (Instance != null) Instance.SetOpen(!Open || Instance.closing); }
 
         // (자동 시험) 창을 열고 그 기능 패널을 펼친다. -1 이면 아이콘 줄만, -2 면 닫는다. 화면 캡처로 모양을 확인하는 데 쓴다.
-        internal static void ShowForTest(int p)
+        internal static void ShowForTest(int p, int sub = 0)
         {
+            if (Instance != null && p >= 0 && p < 7) Instance.subSel[p] = sub;
             if (Instance == null) return;
             if (p == -2) { Instance.SetOpen(false); return; }
             Instance.SetOpen(true);
@@ -92,13 +93,13 @@ namespace StutterFix
         private static float Approach(float cur, float target, float speed) { return cur + (target - cur) * (1f - Mathf.Exp(-speed * Time.unscaledDeltaTime)); }
 
         private Font font;
-        private GUIStyle sBodyText, sSecondary, sDimMid;
+        private GUIStyle sBodyText, sSecondary, sDimMid, sGroup, sRow, sRail, sRailOn, sH2;
         private GUIStyle sWindow, sShadow, sTitle, sSub, sH1, sLead, sBody, sDim, sSmall, sTag, sCard, sCardDark, sNav, sNavOn, sNavText,
             sPrimary, sClose, sTab, sTabOn, sStat, sStatDark, sStatLabel, sStatLabelDark, sScroll, sThumb,
             sSegKnob, sSegText, sSegOnText, sSliderValue, sChip, sChipOn;
         private Texture2D tWhite, tMark;
 
-        private const float W = 900f, H = 590f, SideW = 196f, HeaderH = 66f;
+        private const float W = 900f, H = 640f, SideW = 196f, HeaderH = 66f;
 
         // 여는 것은 바로, 닫는 것은 사라지는 애니메이션이 끝난 뒤에 한다.
         private void SetOpen(bool open)
@@ -173,7 +174,7 @@ namespace StutterFix
         // 예전에는 화면 가운데에 큰 창(900x590)이 떠서 게임 화면을 가렸다. 이제 처음에는 오른쪽 끝에 반투명(75%) 아이콘만
         // 나오고, 아이콘을 누르면 그 기능 패널이 아이콘 줄 왼쪽에 펼쳐진다. 같은 아이콘을 다시 누르면 접힌다.
         // 패널 안의 내용(스위치, 설명, 버튼)은 예전 페이지 코드를 그대로 쓴다.
-        private const float DockW = 60f, IconS = 44f, IconGap = 6f, PanelW = 720f;
+        private const float DockW = 60f, IconS = 44f, IconGap = 6f, PanelW = 860f, RailW = 176f;
         private bool panelOpen;
         private float panelT;       // 패널이 펼쳐진 정도(0~1)
         private Texture2D[] icons;
@@ -428,10 +429,18 @@ namespace StutterFix
             Fill(new Rect(tabX - 9, ko.yMax + 1, 18, 2), Ink, 1);
             if (GUI.Button(new Rect(pw - 56, 18, 34, 32), "×", sClose)) panelOpen = false;   // 패널만 접는다 (아이콘 줄은 남는다)
 
+            Fill(new Rect(0, HeaderH, pw, 1), Rule, 0);   // 제목줄과 본문 사이 가는 선
+
+            // ── 페이지 안 갈래: 왼쪽 세로 메뉴 (긴 페이지만). 고른 갈래만 오른쪽에 보인다.
+            int[] subIcon;
+            string[] subs = SubDefs(page, out subIcon);
+            float left = 6f;
+            if (subs != null) { DrawRail(new Rect(14, HeaderH + 14, RailW, ph - HeaderH - 28), subs, subIcon); left = RailW + 18f; }
+
             // ── 본문 (페이지를 바꾸면 옆에서 살짝 밀려 들어온다)
             const float Gutter = 12f;
             float pe = EaseOut(pageT);
-            var body = new Rect(6 + (1 - pe) * 16f, HeaderH + 4, pw - 12, ph - HeaderH - 16);
+            var body = new Rect(left + (1 - pe) * 16f, HeaderH + 4, pw - left - 6, ph - HeaderH - 16);
             var oldC = GUI.color;
             GUI.color = new Color(oldC.r, oldC.g, oldC.b, oldC.a * pe);
             GUILayout.BeginArea(body);
@@ -699,101 +708,233 @@ namespace StutterFix
         private void PagePlay()
         {
             var c = Main.Config;
-            Heading(T("플레이", "Gameplay"), T("곡을 플레이하는 동안의 끊김을 줄입니다. 모두 켜 두는 것을 권장합니다. 들여 쓴 기능은 위 기능이 켜져 있을 때만 동작합니다.",
-                "Reduces hitches while a level is playing. Keeping everything on is recommended. Indented features only work while the feature above them is on."));
             bool ch = false;
-
-            Section(T("기본", "General"));
-            ch |= Option("gc", ref c.GcPause, T("메모리 정리 미루기", "Defer memory cleanup"),
-                T("플레이 중 게임이 메모리를 정리하느라 잠깐 멈추는 것을 막습니다. 쌓인 것은 어차피 멈추는 순간(편집으로 나가기, 다시 하기, 화면 전환)에 한 번에 정리합니다.",
-                  "Stops the game from pausing to clean up memory mid-song. What piles up is cleaned at once during a transition that pauses anyway (back to editor, retry, scene change)."),
-                T("효과 가장 큼", "Biggest impact"));
-            ch |= Option("fx", ref c.EffectSplit, T("효과 몰림 나누기", "Spread effect bursts"),
-                T("한 순간에 효과 수십 개가 동시에 시작될 때, 몇 프레임에 나눠 시작해 화면이 멈추지 않게 합니다.",
-                  "When dozens of effects start on the same beat, starts them over a few frames instead of freezing one frame."), null);
-            ch |= Option("recolor", ref c.RecolorSplit, T("타일 색 바꾸기 나누기", "Spread tile recolors"),
-                T("타일 수천 개의 색을 한 번에 바꾸는 이벤트를 조금씩 나눠 칠합니다. 먼 타일이 아주 잠깐 늦게 바뀔 뿐 결과는 같습니다.",
-                  "Recolors thousands of tiles in small batches. Far-away tiles update a few frames later; the result is identical."), null);
-            ch |= Option("tween", ref c.TweenGuard, T("애니메이션 처리 최적화", "Animation list guard"),
-                T("효과가 많을 때 게임이 애니메이션 목록을 반복해서 다시 정리하느라 느려지는 문제를 막습니다.",
-                  "Prevents the game from repeatedly re-sorting its animation list when many effects are running."), null);
-            ch |= Option("text", ref c.SkipSameText, T("글자 장식 최적화", "Text decoration skip"),
-                T("같은 글자를 매 프레임 다시 쓰는 글자 장식은 건너뜁니다. PACL2 같은 모드를 함께 쓸 때 효과가 큽니다.",
-                  "Skips text decorations that are re-set to the same text every frame. Helps a lot with mods like PACL2."), null);
-            ch |= Option("meshwarm", ref c.MeshWarm, T("타일 모양 미리 만들기", "Pre-build tile shapes"),
-                T("타일 색 바꾸기가 스타일을 바꿀 때 곡 중에 새로 만들던 타일 모양을 재생 준비 때 미리 만들어 둡니다. 모양은 같고, 그 순간의 끊김이 없어집니다.",
-                  "Tile shapes that a recolor with a style change would build mid-song are built while the level prepares. Same shapes, no hitch at that moment."), null);
-            ch |= Option("jitwarm", ref c.JitWarm, T("함수 미리 컴파일", "Precompile functions"),
-                T("게임을 켤 때 모드와 게임의 효과·장식·타일 함수를 미리 컴파일해, 곡 초반에 효과가 처음 나올 때의 끊김을 없앱니다. 게임을 켤 때 0.5초쯤 더 걸리고, 다음 실행부터 적용됩니다.",
-                  "Compiles the mod's and the game's effect/decoration/tile functions when the game starts, removing the hitch the first time an effect appears early in a song. Adds about 0.5 s to startup; applies from the next launch."), null);
-            ch |= Option("soundwarm", ref c.SoundWarm, T("효과음 미리 불러오기", "Preload hit sounds"),
-                T("곡 중에 처음 쓰는 박자 소리·누르는 박자 소리를 재생 준비 때 미리 불러 둡니다. 처음 쓸 때 소리 파일을 푸느라 생기던 끊김이 없어집니다. 소리는 같습니다.",
-                  "Hit sounds and hold sounds first used mid-song are loaded while the level prepares, removing the hitch of decoding them on first use. Sounds are identical."), null);
-            ch |= Option("filtertype", ref c.FilterTypeCache, T("고급 필터 빠르게 끄기", "Faster advanced filter reset"),
-                T("고급 필터의 \"다른 필터 끄기\"가 쓴 필터마다 형식을 새로 찾느라(한 번 약 0.7ms) 한 프레임에 수십 ms 멈추던 것을 없앱니다. 결과는 같습니다.",
-                  "The advanced filter's \"disable others\" looked up each used filter's type from scratch (about 0.7 ms each), stalling a frame for tens of ms. Results are identical."), null);
-            ch |= Option("shader", ref c.ShaderWarm, T("그래픽 미리 준비", "Shader warm-up"),
-                T("곡이 시작될 때 그래픽 준비를 미리 해 두어, 효과가 처음 나올 때의 끊김을 줄입니다.",
-                  "Prepares shaders when a level starts, reducing the hitch the first time an effect appears."), null);
-            ch |= Option("blend", ref c.FastBlend, T("블렌드 장식 빠르게 그리기", "Faster blend decorations"),
-                T("더하기(Linear Dodge) 블렌드 장식을 화면 복사 없이 그립니다. 모양은 같고, 블렌드 장식이 많은 맵에서 프레임이 크게 오릅니다.",
-                  "Draws additive (Linear Dodge) blend decorations without copying the screen. Looks identical; big FPS gain on maps with many blend decorations."),
-                T("무거운 맵", "Heavy maps"));
-
-            Section(T("투명한 장식", "Hidden decorations"));
-            ch |= Option("invis", ref c.SkipInvisible, T("투명한 장식 그리지 않기", "Skip invisible decorations"),
-                T("투명도가 0 이라 보이지 않는 이미지 장식을 그리기에서 뺍니다. 다시 보이게 되면 바로 그립니다. 화면은 같고, 나중에 나타날 이미지를 깔아 둔 맵에서 프레임이 오릅니다. 에디터가 아무도 안 보는 썸네일 이미지를 매 프레임 그리던 것도 멈춥니다(썸네일 저장은 그대로). 타일이 3천 개 넘는 맵에서는 화면에서 먼 타일도 그리기에서 빼서, 유니티가 카메라마다 모든 타일을 검사하던 비용을 없앱니다(9만 타일 맵 295→420 FPS). 화면에 가까워지면 그리기 전에 다시 넣고, 움직이는 타일은 빼지 않습니다.",
-                  "Leaves fully transparent image decorations out of rendering and draws them again as soon as they become visible. Looks identical; raises FPS on maps that pre-place hidden images. Also stops the editor from redrawing an unused thumbnail image every frame (saving thumbnails still works). On levels with over 3,000 tiles, far off-screen tiles are also left out of rendering so Unity stops testing every tile for every camera (90k-tile level 295 → 420 FPS); they come back before they can appear, and moving tiles are never left out."), null);
-            ch |= Option("lazy", ref c.LazyHidden, T("투명한 장식 위치 미루기", "Defer hidden decoration moves"),
-                T("투명해서 안 보이는 장식은 옮겨도 값만 저장했다가, 보이게 되는 순간 한 번 반영합니다. 히트박스·마스크 장식은 제외합니다.",
-                  "Hidden decorations only store their new position until they become visible, then apply it once. Hitbox and mask decorations are excluded."),
-                null, 1, Need(c.SkipInvisible, T("투명한 장식 그리지 않기", "Skip invisible decorations")));
-
-            Section(T("장식 이동", "Decoration moves"));
-            ch |= Option("zerotween", ref c.ZeroTween, T("즉시 이동 최적화", "Instant decoration moves"),
-                T("장식을 즉시(길이 0) 옮기는 이벤트를 애니메이션 없이 바로 처리하고, 곧바로 덮어써질 중간 호출은 건너뜁니다. 결과는 게임과 똑같습니다(26만 개를 비트 단위로 비교해 확인).",
-                  "Applies instant (zero-length) decoration moves without creating animations and skips intermediate calls that are overwritten right away. Identical results (verified bit-for-bit over 260,000 cases)."),
-                T("장식 많은 맵", "Decoration-heavy maps"));
-            string zt = Need(c.ZeroTween, T("즉시 이동 최적화", "Instant decoration moves"));
-            ch |= Option("instant", ref c.InstantDirect, T("즉시 이동 직접 처리", "Direct instant moves"),
-                T("즉시 이동이 한꺼번에 몰리는 순간(효과 몰림) 게임 코드가 속성마다 애니메이션 객체를 만드는 과정 자체를 건너뛰고 최종 값만 넣습니다. Arche 효과 몰림 68 → 36ms.",
-                  "When many instant moves land at once, skips the game's per-property animation setup entirely and applies only the final values. Arche effect burst 68 → 36 ms."),
-                T("효과 몰림", "Effect bursts"), 1, zt);
-            string id = zt ?? Need(c.InstantDirect, T("즉시 이동 직접 처리", "Direct instant moves"));
-            ch |= Option("fastloop", ref c.FastLoop, T("장식 이동 루프", "Decoration move loop"),
-                T("장식 이동 효과를 게임 코드 대신 모드의 루프로 돕니다. 게임 코드는 장식마다 객체를 여러 개 만들고 대상 목록을 여러 겹으로 훑는데, 같은 순서로 같은 일만 합니다. 이미지·마스크를 바꾸는 효과는 원래대로 둡니다.",
-                  "Runs decoration move effects in the mod's own loop instead of the game code, which allocates several objects per decoration and walks the target list through layered queries. Same work in the same order. Effects that change images or masks are left alone."),
-                T("효과 몰림", "Effect bursts"), 2, id);
-            string fl = id ?? Need(c.FastLoop, T("장식 이동 루프", "Decoration move loop"));
-            ch |= Option("decoanim", ref c.DecoAnim, T("장식 애니메이션 직접 처리", "Decoration animations"),
-                T("길이가 있는 장식 이동(위치·회전·크기·색·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 시간 누적, 이징, 콜백 순서, 끊기까지 DOTween 과 똑같이 하고(33만 개를 DOTween 과 나란히 돌려 비트 단위로 확인), 애니메이션 관리 비용만 줄입니다. 피벗·시차가 섞인 효과는 원래대로 둡니다.",
-                  "Runs decoration move animations (position, rotation, scale, color, opacity) in the mod instead of DOTween, with the same timing, easing, callback order and kill behavior (verified bit-for-bit against DOTween over 330,000 animations), cutting only the tween bookkeeping. Effects that also animate pivot or parallax stay on DOTween."),
-                T("무거운 구간", "Heavy sections"), 3, fl);
-            ch |= Option("flooranim", ref c.FloorAnim, T("타일 애니메이션 직접 처리", "Tile move animations"),
-                T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
-                  "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);
-            string ss = id ?? Need(c.SkipInvisible, T("투명한 장식 그리지 않기", "Skip invisible decorations"));
-            ch |= Option("samevalue", ref c.SkipSame, T("투명 장식 빠른 처리", "Fast path for hidden decorations"),
-                T("즉시 이동이 투명한 장식을 옮기면 게임 함수를 거치지 않고 위치를 바로 \"보일 때 반영\" 목록에 넣고, 이미 가진 것과 같은 색은 다시 넣지 않으며, 바뀌어도 투명한 채라면 값만 저장합니다. 게임 상태는 원래와 똑같습니다.",
-                  "When an instant move touches a transparent decoration, its position goes straight into the apply-when-visible list, re-writing an unchanged color is skipped, and color changes that stay transparent only store values. Game state stays identical."),
-                T("효과 몰림", "Effect bursts"), 2, ss);
-            string pc = fl ?? ss ?? Need(c.SkipSame, T("투명 장식 빠른 처리", "Fast path for hidden decorations")) ?? Need(c.LazyHidden, T("투명한 장식 위치 미루기", "Defer hidden decoration moves"));
-            ch |= Option("precheck", ref c.Precheck, T("미리 확인", "Look-ahead check"),
-                T("곧 발동할 무거운 장식 이동 효과(대상 200개 이상)가 이미 투명하고 값도 그대로인 장식에만 닿는지 몇 초 앞서 여유 있는 프레임에 나눠 확인해 두고, 발동할 때까지 대상이 하나도 안 바뀌었으면 효과를 통째로 건너뜁니다. 대상이 바뀌는 모든 길을 지켜보다가 바뀐 장식만 원래대로 처리합니다.",
-                  "Checks upcoming heavy decoration moves (200+ targets) a few seconds ahead, spread over idle frames, and skips the whole effect when every target is already hidden with the same values. Every write path to a watched decoration is tracked; decorations touched in between are processed normally."),
-                T("효과 몰림", "Effect bursts"), 3, pc);
-            ch |= Option("movefinish", ref c.MoveFinish, T("장식 위치 계산 줄이기", "Fewer position updates"),
-                T("장식을 옮길 때 위치 마무리 계산을 한 번으로 묶고, 값이 그대로인 쓰기와 플레이 중 필요 없는 편집기 작업을 건너뜁니다. 보이는 장식의 위치 재계산은 어차피 같은 프레임에 게임이 다시 하므로 그때 한 번만 합니다.",
-                  "Batches position finishing per decoration, skips unchanged writes and editor-only work while playing, and leaves visible decorations' position recompute to the game's own once-per-frame pass."), null);
-            ch |= Option("dormant", ref c.DormantSkip, T("장식 순회 줄이기", "Skip idle decorations"),
-                T("게임은 매 프레임 장식 전부를 훑습니다. 안 보이고 바뀔 일이 없는 장식과, 히트박스가 없는 장식은 그 순회에서 빼 둡니다. 장식이 수만 개인 맵에서 평소 프레임이 크게 오릅니다(Arche 107 → 170 fps). 박자마다 모든 타일에 보내는 박자 알림도, 아무것도 하지 않는 타일(아직 안 지나간 타일)은 건너뜁니다(9만 타일 BPM 32000: 166 → 287 fps, 큰 맵을 연 직후 편집 화면 끊김 해결).",
-                  "The game walks every decoration every frame. Idle invisible decorations and decorations without hitboxes are left out of those walks. Big everyday FPS gain on maps with tens of thousands of decorations (Arche 107 → 170 fps). The per-beat notification to every tile also skips tiles where it does nothing (tiles not reached yet): 90k tiles at BPM 32000 166 → 287 fps, and no more editor stutter right after opening a big level."),
-                T("장식 많은 맵", "Decoration-heavy maps"));
-            ch |= Option("particleidle", ref c.SkipIdleParticles, T("변화 없는 파티클 갱신 건너뛰기", "Skip idle particle updates"),
-                T("파티클 장식은 값이 그대로여도 매 프레임 모양 크기와 속도를 게임 엔진에 다시 넣습니다. 넣을 값이 지난번과 같으면 건너뜁니다. 화면은 같습니다." + (Compat.QSkipIdleParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
-                  "Particle decorations re-send their shape scale and speed to the engine every frame even when unchanged. Skips the write when the value is the same. Looks identical." + (Compat.QSkipIdleParticles ? " (Idle now: Quartz is doing the same)" : "")),
-                T("파티클 많은 맵", "Particle-heavy maps"));
+            int sub = Sub();
+            if (sub == 0)
+            {
+                SubHeading(T("기본", "Essentials"), T("끊김이 가장 큰 곳(메모리 정리, 효과 몰림, 타일 수천 개 바꾸기)입니다. 모두 켜 두는 것을 권장합니다.",
+                    "The biggest hitch sources: memory cleanup, effect bursts and changes to thousands of tiles. Keep these on."));
+                BeginGroup();
+                ch |= Option("gc", ref c.GcPause, T("메모리 정리 미루기", "Defer memory cleanup"),
+                    T("플레이 중 게임이 메모리를 정리하느라 잠깐 멈추는 것을 막습니다. 쌓인 것은 어차피 멈추는 순간(편집으로 나가기, 다시 하기, 화면 전환)에 한 번에 정리합니다.",
+                      "Stops the game from pausing to clean up memory mid-song. What piles up is cleaned at once during a transition that pauses anyway (back to editor, retry, scene change)."),
+                    T("효과 가장 큼", "Biggest impact"));
+                ch |= Option("fx", ref c.EffectSplit, T("효과 몰림 나누기", "Spread effect bursts"),
+                    T("한 순간에 효과 수십 개가 동시에 시작될 때, 몇 프레임에 나눠 시작해 화면이 멈추지 않게 합니다.",
+                      "When dozens of effects start on the same beat, starts them over a few frames instead of freezing one frame."), null);
+                ch |= Option("recolor", ref c.RecolorSplit, T("타일 색 바꾸기 나누기", "Spread tile recolors"),
+                    T("타일 수천 개의 색을 한 번에 바꾸는 이벤트를 조금씩 나눠 칠합니다. 먼 타일이 아주 잠깐 늦게 바뀔 뿐 결과는 같습니다.",
+                      "Recolors thousands of tiles in small batches. Far-away tiles update a few frames later; the result is identical."), null);
+                ch |= Option("tween", ref c.TweenGuard, T("애니메이션 처리 최적화", "Animation list guard"),
+                    T("효과가 많을 때 게임이 애니메이션 목록을 반복해서 다시 정리하느라 느려지는 문제를 막습니다.",
+                      "Prevents the game from repeatedly re-sorting its animation list when many effects are running."), null);
+                ch |= Option("flooranim", ref c.FloorAnim, T("타일 애니메이션 직접 처리", "Tile move animations"),
+                    T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
+                      "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);
+                EndGroup();
+            }
+            else if (sub == 1)
+            {
+                SubHeading(T("미리 준비", "Warm-up"), T("곡 중에 처음 쓰는 것(타일 모양, 함수, 소리, 그래픽)을 재생 준비 때 미리 해 둡니다. 화면과 소리는 같습니다.",
+                    "Prepares what a song uses for the first time (tile shapes, code, sounds, shaders) before it starts. Looks and sounds the same."));
+                BeginGroup();
+                ch |= Option("meshwarm", ref c.MeshWarm, T("타일 모양 미리 만들기", "Pre-build tile shapes"),
+                    T("타일 색 바꾸기가 스타일을 바꿀 때 곡 중에 새로 만들던 타일 모양을 재생 준비 때 미리 만들어 둡니다. 모양은 같고, 그 순간의 끊김이 없어집니다.",
+                      "Tile shapes that a recolor with a style change would build mid-song are built while the level prepares. Same shapes, no hitch at that moment."), null);
+                ch |= Option("jitwarm", ref c.JitWarm, T("함수 미리 컴파일", "Precompile functions"),
+                    T("게임을 켤 때 모드와 게임의 효과·장식·타일 함수를 미리 컴파일해, 곡 초반에 효과가 처음 나올 때의 끊김을 없앱니다. 게임을 켤 때 0.5초쯤 더 걸리고, 다음 실행부터 적용됩니다.",
+                      "Compiles the mod's and the game's effect/decoration/tile functions when the game starts, removing the hitch the first time an effect appears early in a song. Adds about 0.5 s to startup; applies from the next launch."), null);
+                ch |= Option("soundwarm", ref c.SoundWarm, T("효과음 미리 불러오기", "Preload hit sounds"),
+                    T("곡 중에 처음 쓰는 박자 소리·누르는 박자 소리를 재생 준비 때 미리 불러 둡니다. 처음 쓸 때 소리 파일을 푸느라 생기던 끊김이 없어집니다. 소리는 같습니다.",
+                      "Hit sounds and hold sounds first used mid-song are loaded while the level prepares, removing the hitch of decoding them on first use. Sounds are identical."), null);
+                ch |= Option("shader", ref c.ShaderWarm, T("그래픽 미리 준비", "Shader warm-up"),
+                    T("곡이 시작될 때 그래픽 준비를 미리 해 두어, 효과가 처음 나올 때의 끊김을 줄입니다.",
+                      "Prepares shaders when a level starts, reducing the hitch the first time an effect appears."), null);
+                ch |= Option("filtertype", ref c.FilterTypeCache, T("고급 필터 빠르게 끄기", "Faster advanced filter reset"),
+                    T("고급 필터의 \"다른 필터 끄기\"가 쓴 필터마다 형식을 새로 찾느라(한 번 약 0.7ms) 한 프레임에 수십 ms 멈추던 것을 없앱니다. 결과는 같습니다.",
+                      "The advanced filter's \"disable others\" looked up each used filter's type from scratch (about 0.7 ms each), stalling a frame for tens of ms. Results are identical."), null);
+                EndGroup();
+            }
+            else if (sub == 2)
+            {
+                SubHeading(T("그리기", "Rendering"), T("보이지 않거나 바뀌지 않는 장식·글자를 그리기와 갱신에서 뺍니다. 화면은 같습니다.",
+                    "Leaves hidden or unchanged decorations and text out of drawing and updates. Looks identical."));
+                BeginGroup();
+                ch |= Option("invis", ref c.SkipInvisible, T("투명한 장식 그리지 않기", "Skip invisible decorations"),
+                    T("투명도가 0 이라 보이지 않는 이미지 장식을 그리기에서 뺍니다. 다시 보이게 되면 바로 그립니다. 화면은 같고, 나중에 나타날 이미지를 깔아 둔 맵에서 프레임이 오릅니다. 에디터가 아무도 안 보는 썸네일 이미지를 매 프레임 그리던 것도 멈춥니다(썸네일 저장은 그대로). 타일이 3천 개 넘는 맵에서는 화면에서 먼 타일도 그리기에서 빼서, 유니티가 카메라마다 모든 타일을 검사하던 비용을 없앱니다(9만 타일 맵 295→420 FPS). 화면에 가까워지면 그리기 전에 다시 넣고, 움직이는 타일은 빼지 않습니다.",
+                      "Leaves fully transparent image decorations out of rendering and draws them again as soon as they become visible. Looks identical; raises FPS on maps that pre-place hidden images. Also stops the editor from redrawing an unused thumbnail image every frame (saving thumbnails still works). On levels with over 3,000 tiles, far off-screen tiles are also left out of rendering so Unity stops testing every tile for every camera (90k-tile level 295 → 420 FPS); they come back before they can appear, and moving tiles are never left out."), null);
+                ch |= Option("lazy", ref c.LazyHidden, T("투명한 장식 위치 미루기", "Defer hidden decoration moves"),
+                    T("투명해서 안 보이는 장식은 옮겨도 값만 저장했다가, 보이게 되는 순간 한 번 반영합니다. 히트박스·마스크 장식은 제외합니다.",
+                      "Hidden decorations only store their new position until they become visible, then apply it once. Hitbox and mask decorations are excluded."),
+                    null, 1, Need(c.SkipInvisible, T("투명한 장식 그리지 않기", "Skip invisible decorations")));
+                ch |= Option("dormant", ref c.DormantSkip, T("장식 순회 줄이기", "Skip idle decorations"),
+                    T("게임은 매 프레임 장식 전부를 훑습니다. 안 보이고 바뀔 일이 없는 장식과, 히트박스가 없는 장식은 그 순회에서 빼 둡니다. 장식이 수만 개인 맵에서 평소 프레임이 크게 오릅니다(Arche 107 → 170 fps). 박자마다 모든 타일에 보내는 박자 알림도, 아무것도 하지 않는 타일(아직 안 지나간 타일)은 건너뜁니다(9만 타일 BPM 32000: 166 → 287 fps, 큰 맵을 연 직후 편집 화면 끊김 해결).",
+                      "The game walks every decoration every frame. Idle invisible decorations and decorations without hitboxes are left out of those walks. Big everyday FPS gain on maps with tens of thousands of decorations (Arche 107 → 170 fps). The per-beat notification to every tile also skips tiles where it does nothing (tiles not reached yet): 90k tiles at BPM 32000 166 → 287 fps, and no more editor stutter right after opening a big level."),
+                    T("장식 많은 맵", "Decoration-heavy maps"));
+                ch |= Option("particleidle", ref c.SkipIdleParticles, T("변화 없는 파티클 갱신 건너뛰기", "Skip idle particle updates"),
+                    T("파티클 장식은 값이 그대로여도 매 프레임 모양 크기와 속도를 게임 엔진에 다시 넣습니다. 넣을 값이 지난번과 같으면 건너뜁니다. 화면은 같습니다." + (Compat.QSkipIdleParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
+                      "Particle decorations re-send their shape scale and speed to the engine every frame even when unchanged. Skips the write when the value is the same. Looks identical." + (Compat.QSkipIdleParticles ? " (Idle now: Quartz is doing the same)" : "")),
+                    T("파티클 많은 맵", "Particle-heavy maps"));
+                ch |= Option("text", ref c.SkipSameText, T("글자 장식 최적화", "Text decoration skip"),
+                    T("같은 글자를 매 프레임 다시 쓰는 글자 장식은 건너뜁니다. PACL2 같은 모드를 함께 쓸 때 효과가 큽니다.",
+                      "Skips text decorations that are re-set to the same text every frame. Helps a lot with mods like PACL2."), null);
+                ch |= Option("blend", ref c.FastBlend, T("블렌드 장식 빠르게 그리기", "Faster blend decorations"),
+                    T("더하기(Linear Dodge) 블렌드 장식을 화면 복사 없이 그립니다. 모양은 같고, 블렌드 장식이 많은 맵에서 프레임이 크게 오릅니다.",
+                      "Draws additive (Linear Dodge) blend decorations without copying the screen. Looks identical; big FPS gain on maps with many blend decorations."),
+                    T("무거운 맵", "Heavy maps"));
+                EndGroup();
+            }
+            else
+            {
+                SubHeading(T("장식 이동", "Decoration moves"), T("장식을 옮기는 효과를 가볍게 처리합니다. 들여 쓴 기능은 위 기능이 켜져 있을 때만 동작합니다.",
+                    "Lighter decoration move effects. Indented features only work while the feature above them is on."));
+                BeginGroup();
+                ch |= Option("zerotween", ref c.ZeroTween, T("즉시 이동 최적화", "Instant decoration moves"),
+                    T("장식을 즉시(길이 0) 옮기는 이벤트를 애니메이션 없이 바로 처리하고, 곧바로 덮어써질 중간 호출은 건너뜁니다. 결과는 게임과 똑같습니다(26만 개를 비트 단위로 비교해 확인).",
+                      "Applies instant (zero-length) decoration moves without creating animations and skips intermediate calls that are overwritten right away. Identical results (verified bit-for-bit over 260,000 cases)."),
+                    T("장식 많은 맵", "Decoration-heavy maps"));
+                string zt = Need(c.ZeroTween, T("즉시 이동 최적화", "Instant decoration moves"));
+                ch |= Option("instant", ref c.InstantDirect, T("즉시 이동 직접 처리", "Direct instant moves"),
+                    T("즉시 이동이 한꺼번에 몰리는 순간(효과 몰림) 게임 코드가 속성마다 애니메이션 객체를 만드는 과정 자체를 건너뛰고 최종 값만 넣습니다. Arche 효과 몰림 68 → 36ms.",
+                      "When many instant moves land at once, skips the game's per-property animation setup entirely and applies only the final values. Arche effect burst 68 → 36 ms."),
+                    T("효과 몰림", "Effect bursts"), 1, zt);
+                string id = zt ?? Need(c.InstantDirect, T("즉시 이동 직접 처리", "Direct instant moves"));
+                ch |= Option("fastloop", ref c.FastLoop, T("장식 이동 루프", "Decoration move loop"),
+                    T("장식 이동 효과를 게임 코드 대신 모드의 루프로 돕니다. 게임 코드는 장식마다 객체를 여러 개 만들고 대상 목록을 여러 겹으로 훑는데, 같은 순서로 같은 일만 합니다. 이미지·마스크를 바꾸는 효과는 원래대로 둡니다.",
+                      "Runs decoration move effects in the mod's own loop instead of the game code, which allocates several objects per decoration and walks the target list through layered queries. Same work in the same order. Effects that change images or masks are left alone."),
+                    T("효과 몰림", "Effect bursts"), 2, id);
+                string fl = id ?? Need(c.FastLoop, T("장식 이동 루프", "Decoration move loop"));
+                ch |= Option("decoanim", ref c.DecoAnim, T("장식 애니메이션 직접 처리", "Decoration animations"),
+                    T("길이가 있는 장식 이동(위치·회전·크기·색·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 시간 누적, 이징, 콜백 순서, 끊기까지 DOTween 과 똑같이 하고(33만 개를 DOTween 과 나란히 돌려 비트 단위로 확인), 애니메이션 관리 비용만 줄입니다. 피벗·시차가 섞인 효과는 원래대로 둡니다.",
+                      "Runs decoration move animations (position, rotation, scale, color, opacity) in the mod instead of DOTween, with the same timing, easing, callback order and kill behavior (verified bit-for-bit against DOTween over 330,000 animations), cutting only the tween bookkeeping. Effects that also animate pivot or parallax stay on DOTween."),
+                    T("무거운 구간", "Heavy sections"), 3, fl);
+                string ss = id ?? Need(c.SkipInvisible, T("투명한 장식 그리지 않기", "Skip invisible decorations"));
+                ch |= Option("samevalue", ref c.SkipSame, T("투명 장식 빠른 처리", "Fast path for hidden decorations"),
+                    T("즉시 이동이 투명한 장식을 옮기면 게임 함수를 거치지 않고 위치를 바로 \"보일 때 반영\" 목록에 넣고, 이미 가진 것과 같은 색은 다시 넣지 않으며, 바뀌어도 투명한 채라면 값만 저장합니다. 게임 상태는 원래와 똑같습니다.",
+                      "When an instant move touches a transparent decoration, its position goes straight into the apply-when-visible list, re-writing an unchanged color is skipped, and color changes that stay transparent only store values. Game state stays identical."),
+                    T("효과 몰림", "Effect bursts"), 2, ss);
+                string pc = fl ?? ss ?? Need(c.SkipSame, T("투명 장식 빠른 처리", "Fast path for hidden decorations")) ?? Need(c.LazyHidden, T("투명한 장식 위치 미루기", "Defer hidden decoration moves"));
+                ch |= Option("precheck", ref c.Precheck, T("미리 확인", "Look-ahead check"),
+                    T("곧 발동할 무거운 장식 이동 효과(대상 200개 이상)가 이미 투명하고 값도 그대로인 장식에만 닿는지 몇 초 앞서 여유 있는 프레임에 나눠 확인해 두고, 발동할 때까지 대상이 하나도 안 바뀌었으면 효과를 통째로 건너뜁니다. 대상이 바뀌는 모든 길을 지켜보다가 바뀐 장식만 원래대로 처리합니다.",
+                      "Checks upcoming heavy decoration moves (200+ targets) a few seconds ahead, spread over idle frames, and skips the whole effect when every target is already hidden with the same values. Every write path to a watched decoration is tracked; decorations touched in between are processed normally."),
+                    T("효과 몰림", "Effect bursts"), 3, pc);
+                ch |= Option("movefinish", ref c.MoveFinish, T("장식 위치 계산 줄이기", "Fewer position updates"),
+                    T("장식을 옮길 때 위치 마무리 계산을 한 번으로 묶고, 값이 그대로인 쓰기와 플레이 중 필요 없는 편집기 작업을 건너뜁니다. 보이는 장식의 위치 재계산은 어차피 같은 프레임에 게임이 다시 하므로 그때 한 번만 합니다.",
+                      "Batches position finishing per decoration, skips unchanged writes and editor-only work while playing, and leaves visible decorations' position recompute to the game's own once-per-frame pass."), null);
+                EndGroup();
+            }
             if (ch) Save();
+        }
+
+        // ── 페이지 안 갈래 (왼쪽 세로 메뉴) ──────────────────────────────
+        // 플레이(23개)·저사양처럼 긴 페이지는 스위치가 한 줄로 길게 이어져 찾기 어려웠다. 갈래를 왼쪽에 아이콘과 함께 두고 고른 것만 보인다.
+        private readonly int[] subSel = new int[7];
+        private float railY = -1f;
+        private int railPage = -1;
+        private Texture2D[] subIcons;
+        private const int IcBolt = 0, IcClock = 1, IcEye = 2, IcMove = 3, IcTune = 4, IcChip = 5, IcTiles = 6, IcCard = 7, IcFlask = 8;
+
+        private string[] SubDefs(int p, out int[] icons)
+        {
+            icons = null;
+            if (p == 1) { icons = new[] { IcBolt, IcClock, IcEye, IcMove }; return new[] { T("기본", "Essentials"), T("미리 준비", "Warm-up"), T("그리기", "Rendering"), T("장식 이동", "Decoration moves") }; }
+            if (p == 5) { icons = new[] { IcTune, IcChip, IcTiles, IcCard, IcFlask }; return new[] { T("PC 맞춤", "PC fit"), T("컴퓨터", "System"), T("게임", "Game"), T("그래픽카드", "Graphics card"), T("실험", "Experimental") }; }
+            return null;
+        }
+        private int Sub() { return subSel[Mathf.Clamp(page, 0, 6)]; }
+
+        private void DrawRail(Rect area, string[] names, int[] icons)
+        {
+            if (subIcons == null) subIcons = MakeSubIcons();
+            int sel = Mathf.Clamp(subSel[page], 0, names.Length - 1);
+            const float ItemH = 40f, Gap = 4f;
+            var ev = Event.current;
+            float target = area.y + sel * (ItemH + Gap);
+            if (railY < 0 || railPage != page) { railY = target; railPage = page; }
+            if (ev.type == EventType.Repaint) railY = Approach(railY, target, 18f);
+            // 고른 칸: 흰 바탕 + 가는 테두리가 미끄러져 간다
+            var selR = new Rect(area.x, railY, area.width, ItemH);
+            if (ev.type == EventType.Repaint) sGroup.Draw(selR, false, false, false, false);
+            for (int i = 0; i < names.Length; i++)
+            {
+                var r = new Rect(area.x, area.y + i * (ItemH + Gap), area.width, ItemH);
+                bool on = i == sel, hov = !on && r.Contains(ev.mousePosition);
+                if (hov) Fill(r, Hex(0xE9E9EE), 10);
+                var oc = GUI.color;
+                Color ink = on ? Ink : hov ? Ink : Text2;
+                GUI.color = new Color(ink.r, ink.g, ink.b, oc.a * (on ? 1f : 0.9f));
+                if (ev.type == EventType.Repaint) GUI.DrawTexture(new Rect(r.x + 14, r.y + 11, 18, 18), subIcons[icons[i]]);
+                GUI.color = oc;
+                GUI.Label(new Rect(r.x + 42, r.y, r.width - 48, ItemH), names[i], on ? sRailOn : sRail);
+                if (ev.type == EventType.MouseDown && ev.button == 0 && r.Contains(ev.mousePosition))
+                {
+                    ev.Use();
+                    if (i != sel) { subSel[page] = i; scroll = Vector2.zero; pageT = 0f; }
+                }
+            }
+        }
+
+        // 갈래 제목 (본문 맨 위)
+        private void SubHeading(string title, string lead)
+        {
+            GUILayout.Label(title, sH2);
+            if (!string.IsNullOrEmpty(lead)) { GUILayout.Space(4); P(lead, sLead); }
+            GUILayout.Space(16);
+        }
+
+        // ── 묶음 상자: 스위치마다 따로 떠 있던 카드를 한 상자 안의 줄로 (줄 사이 가는 선) ──
+        private bool groupOpen;
+        private int groupRow;
+        private readonly Dictionary<string, Rect> rowRects = new Dictionary<string, Rect>();
+        private void BeginGroup() { GUILayout.BeginVertical(sGroup); groupOpen = true; groupRow = 0; }
+        private void EndGroup() { if (!groupOpen) return; groupOpen = false; GUILayout.EndVertical(); GUILayout.Space(14); }
+        private void RowSeparator()
+        {
+            if (groupRow++ == 0) return;
+            Rect l = GUILayoutUtility.GetRect(1, 1, GUILayout.ExpandWidth(true), GUILayout.Height(1));
+            Fill(new Rect(l.x + 20, l.y, l.width - 40, 1), Rule, 0);
+        }
+        // 스위치가 아닌 줄(고르기, 슬라이더 등)
+        private void BeginRow() { if (groupOpen) { RowSeparator(); GUILayout.BeginVertical(sRow); } }
+        private void EndRow() { if (groupOpen) GUILayout.EndVertical(); }
+
+        private static Texture2D[] MakeSubIcons()
+        {
+            Func<float, float, float, float, float, float, bool> ring = (x, y, cx, cy, r0, r1) => { float d = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)); return d >= r0 && d <= r1; };
+            return new[]
+            {
+                // 기본: 번개
+                MakeIcon((x, y) => InTri(x, y, 0.62f, 0.04f, 0.18f, 0.58f, 0.54f, 0.58f) || InTri(x, y, 0.40f, 0.96f, 0.84f, 0.42f, 0.46f, 0.42f)),
+                // 미리 준비: 시계
+                MakeIcon((x, y) => ring(x, y, 0.5f, 0.5f, 0.34f, 0.45f) || InBox(x, y, 0.455f, 0.24f, 0.545f, 0.54f) || InBox(x, y, 0.455f, 0.455f, 0.72f, 0.545f)),
+                // 그리기: 눈
+                MakeIcon((x, y) =>
+                {
+                    float ex = (x - 0.5f) / 0.46f, ey = (y - 0.5f) / 0.27f; float e = ex * ex + ey * ey;
+                    float ix = (x - 0.5f) / 0.34f, iy = (y - 0.5f) / 0.15f;
+                    return (e <= 1f && ix * ix + iy * iy >= 1f && !(Mathf.Abs(x - 0.5f) < 0.30f && Mathf.Abs(y - 0.5f) < 0.12f)) || InCircle(x, y, 0.5f, 0.5f, 0.12f);
+                }),
+                // 장식 이동: 네 방향 화살표
+                MakeIcon((x, y) => InBox(x, y, 0.455f, 0.18f, 0.545f, 0.82f) || InBox(x, y, 0.18f, 0.455f, 0.82f, 0.545f)
+                                || InTri(x, y, 0.5f, 0.02f, 0.34f, 0.22f, 0.66f, 0.22f) || InTri(x, y, 0.5f, 0.98f, 0.34f, 0.78f, 0.66f, 0.78f)
+                                || InTri(x, y, 0.02f, 0.5f, 0.22f, 0.34f, 0.22f, 0.66f) || InTri(x, y, 0.98f, 0.5f, 0.78f, 0.34f, 0.78f, 0.66f)),
+                // PC 맞춤: 조절 막대 셋
+                MakeIcon((x, y) => InBox(x, y, 0.08f, 0.20f, 0.92f, 0.27f) || InBox(x, y, 0.08f, 0.47f, 0.92f, 0.54f) || InBox(x, y, 0.08f, 0.74f, 0.92f, 0.81f)
+                                || InCircle(x, y, 0.32f, 0.235f, 0.11f) || InCircle(x, y, 0.68f, 0.505f, 0.11f) || InCircle(x, y, 0.42f, 0.775f, 0.11f)),
+                // 컴퓨터: 칩 (테두리 + 가운데 + 다리)
+                MakeIcon((x, y) => (InBox(x, y, 0.20f, 0.20f, 0.80f, 0.80f) && !InBox(x, y, 0.29f, 0.29f, 0.71f, 0.71f)) || InBox(x, y, 0.38f, 0.38f, 0.62f, 0.62f)
+                                || ((InBox(x, y, 0.04f, 0.0f, 0.20f, 1f) || InBox(x, y, 0.80f, 0.0f, 0.96f, 1f)) && (InBox(x, y, 0, 0.30f, 1, 0.37f) || InBox(x, y, 0, 0.63f, 1, 0.70f)))
+                                || ((InBox(x, y, 0.0f, 0.04f, 1f, 0.20f) || InBox(x, y, 0.0f, 0.80f, 1f, 0.96f)) && (InBox(x, y, 0.30f, 0, 0.37f, 1) || InBox(x, y, 0.63f, 0, 0.70f, 1)))),
+                // 게임: 타일 넷
+                MakeIcon((x, y) => InBox(x, y, 0.10f, 0.10f, 0.45f, 0.45f) || InBox(x, y, 0.55f, 0.10f, 0.90f, 0.45f) || InBox(x, y, 0.10f, 0.55f, 0.45f, 0.90f)
+                                || (InBox(x, y, 0.55f, 0.55f, 0.90f, 0.90f) && !InBox(x, y, 0.63f, 0.63f, 0.82f, 0.82f))),
+                // 그래픽카드: 판 + 팬 둘
+                MakeIcon((x, y) => (InBox(x, y, 0.04f, 0.24f, 0.96f, 0.76f) && !InBox(x, y, 0.12f, 0.32f, 0.88f, 0.68f)) || ring(x, y, 0.33f, 0.5f, 0.06f, 0.13f) || ring(x, y, 0.67f, 0.5f, 0.06f, 0.13f)
+                                || InBox(x, y, 0.16f, 0.76f, 0.30f, 0.88f)),
+                // 실험: 플라스크
+                MakeIcon((x, y) => (InBox(x, y, 0.38f, 0.06f, 0.62f, 0.40f) && !InBox(x, y, 0.46f, 0.06f, 0.54f, 0.40f)) || InBox(x, y, 0.32f, 0.04f, 0.68f, 0.11f)
+                                || (InTri(x, y, 0.38f, 0.36f, 0.08f, 0.94f, 0.92f, 0.94f) && InTri(x, y, 0.62f, 0.36f, 0.92f, 0.94f, 0.08f, 0.94f) && !(InTri(x, y, 0.46f, 0.46f, 0.21f, 0.86f, 0.79f, 0.86f) && y < 0.62f))),
+            };
         }
 
         // 묶음 제목
@@ -824,8 +965,8 @@ namespace StutterFix
             {
                 var r = GUILayoutUtility.GetLastRect();
                 float lx = r.x + depth * 26 - 14;
-                Fill(new Rect(lx, r.y - 12, 2, 35), Rule, 1);   // 위 기능에서 내려오는 선
-                Fill(new Rect(lx, r.y + 21, 11, 2), Rule, 1);
+                if (groupOpen) { Fill(new Rect(lx, r.y, 2, 26), Rule, 1); Fill(new Rect(lx, r.y + 25, 10, 2), Rule, 1); }
+                else { Fill(new Rect(lx, r.y - 12, 2, 35), Rule, 1); Fill(new Rect(lx, r.y + 21, 11, 2), Rule, 1); }   // 위 기능에서 내려오는 선
             }
             return changed;
         }
@@ -836,6 +977,7 @@ namespace StutterFix
             Heading(T("맵 불러오기", "Level loading"), T("맵을 열거나 편집 화면으로 돌아올 때 기다리는 시간을 줄입니다.",
                 "Shortens waits when opening a level or returning to the editor."));
             bool ch = false;
+            BeginGroup();
             ch |= Option("img", ref c.ImagePrefetch, T("이미지 빠르게 불러오기", "Parallel image loading"),
                 T("장식 이미지가 많은 맵을 열 때 CPU 여러 코어로 이미지를 동시에 불러옵니다.",
                   "Decodes decoration images on several CPU cores at once when a level opens."),
@@ -850,6 +992,7 @@ namespace StutterFix
             ch |= Option("leakfix", ref c.LeakFix, T("게임 메모리 누수 막기", "Fix game memory leaks"),
                 T("게임의 사용자 지정 FPS 효과는 켤 때마다 화면 크기 버퍼(4K 급이면 약 40MB)를 새로 만들고 이전 것을 풀지 않으며, 재시작마다 게임 화면 버퍼를 괜히 다시 만듭니다. 이전 버퍼를 풀고 불필요한 재생성을 막습니다. 에디터에서 다른 맵을 열 때마다 옛 타일의 머티리얼(9만 타일이면 약 128MB)이 풀리지 않고 쌓이던 것도 풉니다. 화면은 같습니다." + (Compat.QLeakGuard ? " (지금은 Quartz 의 누수 수정이 켜져 있어 쉬는 중)" : ""),
                   "The game's custom frame-rate effect creates a new screen-sized buffer each time it turns on without freeing the old one (~40 MB at 4K), and needlessly recreates the game view buffer on every restart. Frees the old buffer and avoids the recreate. Also frees the old tiles' materials that piled up every time a level was opened in the editor (~128 MB for 90k tiles). Looks identical." + (Compat.QLeakGuard ? " (Idle now: Quartz leak fix is on)" : "")), null);
+            EndGroup();
 
             // 큰 이미지 줄이기 (화질을 조금 내주고 VRAM 을 아낀다)
             GUILayout.BeginVertical(sCard);
@@ -860,7 +1003,7 @@ namespace StutterFix
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(4);
-            GUILayout.Label(T("장식 이미지가 수천 장인 맵은 그래픽 메모리(VRAM)가 넘쳐 GPU 가 크게 느려집니다. 긴 변이 기준보다 큰 이미지를 줄여 불러옵니다. 장식의 화면 크기는 그대로이고 선명도만 낮아집니다. <b>자동</b>은 처음에는 원본 그대로 불러오고, 플레이 중 그래픽 메모리가 가득 차서 끊긴 맵만 기억해 두었다가 다음에 불러올 때 큰 이미지부터 한 단계씩(3072 → 2048 → 1536 → 1024) 줄입니다. 끊기지 않는 맵은 화질을 건드리지 않습니다. 다음에 여는 맵부터 적용됩니다.",
+            P(T("장식 이미지가 수천 장인 맵은 그래픽 메모리(VRAM)가 넘쳐 GPU 가 크게 느려집니다. 긴 변이 기준보다 큰 이미지를 줄여 불러옵니다. 장식의 화면 크기는 그대로이고 선명도만 낮아집니다. <b>자동</b>은 처음에는 원본 그대로 불러오고, 플레이 중 그래픽 메모리가 가득 차서 끊긴 맵만 기억해 두었다가 다음에 불러올 때 큰 이미지부터 한 단계씩(3072 → 2048 → 1536 → 1024) 줄입니다. 끊기지 않는 맵은 화질을 건드리지 않습니다. 다음에 여는 맵부터 적용됩니다.",
                 "Levels with thousands of decoration images can overflow video memory (VRAM) and slow the GPU badly. Images larger than the limit are loaded smaller. Decorations keep their on-screen size; only sharpness drops. <b>Auto</b> loads images at full size first. If a level stutters because VRAM is full, it remembers that level and caps large images one step lower (3072 → 2048 → 1536 → 1024) the next time it loads. Levels that run fine keep full quality. Applies to the next level you open."), sDim);
             GUILayout.Space(10);
             int cap = c.ImageMaxSide == ImagePrefetch.Auto ? 1 : c.ImageMaxSide >= 4096 ? 2 : c.ImageMaxSide > 0 ? 3 : 0;
@@ -891,6 +1034,7 @@ namespace StutterFix
             var c = Main.Config;
             Heading(T("그래픽", "Graphics"), T("바꾸면 게임을 다시 켜야 적용됩니다.", "Changes apply after restarting the game."));
             bool v = c.LegacyGfxJobs;
+            BeginGroup();
             if (Option("jobs", ref v, T("멀티스레드 그리기", "Multithreaded rendering"),
                 T("화면을 그리는 준비 작업을 여러 CPU 코어에 나눠 프레임을 높이고 끊김을 줄입니다. 게임 폴더의 boot.config 에 한 줄을 넣고, 모드를 끄면 원래대로 돌려놓습니다.",
                   "Splits render preparation across CPU cores for higher, steadier FPS. Adds one line to the game's boot.config and restores it when the mod is turned off."),
@@ -930,6 +1074,7 @@ namespace StutterFix
                 Main.ApplyFullscreen();
                 Save();
             }
+            EndGroup();
             var rows = new List<string> { T("지금 상태", "Current"), BootConfig.Describe().Replace("지금 ", "") };
             if (BootConfig.Status.Contains("다음 실행")) { rows.Add(T("적용", "Pending")); rows.Add(T("게임을 다시 켜면 적용됩니다", "Applies after restart")); }
             if (Main.LaunchWarning.Length > 0) { rows.Add(T("주의", "Warning")); rows.Add(Main.LaunchWarning.Trim()); }
@@ -960,11 +1105,15 @@ namespace StutterFix
         private void PageLowEnd()
         {
             var c = Main.Config;
-            Heading(T("저사양", "Low-end PC"), T("약한 컴퓨터를 위한 기능입니다. 다른 기능과 달리 게임 밖 설정을 바꾸거나 아주 작은 차이를 감수하므로 기본으로 꺼져 있습니다. 필요한 것만 켜세요.",
+            int sub = Sub();
+            if (sub == 0) SubHeading(T("PC 맞춤", "PC fit"), T("약한 컴퓨터를 위한 기능입니다. 다른 기능과 달리 게임 밖 설정을 바꾸거나 아주 작은 차이를 감수하므로 기본으로 꺼져 있습니다. 필요한 것만 켜세요.",
                 "For weak PCs. Unlike the other features, these change settings outside the game or accept tiny differences, so they are off by default."));
             bool ch = false;
-            TuneCard();
-            Section(T("컴퓨터 쪽", "System"));
+            if (sub == 0) TuneCard();
+            if (sub == 1)
+            {
+            SubHeading(T("컴퓨터", "System"), T("다른 프로그램보다 게임이 먼저 돌게 하고, 플레이 밖에서는 쉬게 합니다.", "Lets the game run ahead of other programs and rest outside of play."));
+            BeginGroup();
             ch |= Option("lowprio", ref c.LowPriority, T("게임 우선순위 높이기", "Higher game priority"),
                 T("브라우저, 방송 프로그램, 업데이트 같은 다른 프로그램이 CPU 를 쓸 때 게임이 먼저 돌게 합니다. 백그라운드 때문에 끊기는 컴퓨터에 효과가 있습니다. 게임을 끄거나 이 기능을 끄면 원래대로 돌아갑니다.",
                   "Lets the game run ahead of browsers, streaming and updates when they compete for the CPU. Reverts when the game or this option is turned off."),
@@ -973,34 +1122,47 @@ namespace StutterFix
                 T("윈도우 11 이 게임을 '효율 모드'로 느린 코어에 몰아넣지 않게 하고, 타이머 정밀도를 1ms 로 올려 프레임 간격이 덜 흔들리게 합니다. 노트북에 효과가 큽니다. 전기를 조금 더 씁니다.",
                   "Keeps Windows 11 from putting the game in efficiency mode and raises the timer resolution to 1 ms for steadier frame pacing. Helps laptops most; uses slightly more power."),
                 null);
+            BeginRow();
             GUILayout.Label(T("메뉴·에디터 FPS 제한", "Menu / editor FPS limit"), sBody);
-            GUILayout.Label(T("플레이 중이 아닐 때(메뉴, 에디터 편집, 맵 고르기) FPS 를 묶어 그래픽카드와 CPU 를 쉬게 합니다. 노트북은 발열이 줄어 플레이할 때 열 때문에 느려지는 일이 덜합니다. 곡을 시작하면 바로 원래 FPS 로 돌아가고, 맵을 불러오는 동안에는 묶지 않습니다. 수직동기가 켜져 있으면 적용되지 않습니다.",
+            P(T("플레이 중이 아닐 때(메뉴, 에디터 편집, 맵 고르기) FPS 를 묶어 그래픽카드와 CPU 를 쉬게 합니다. 노트북은 발열이 줄어 플레이할 때 열 때문에 느려지는 일이 덜합니다. 곡을 시작하면 바로 원래 FPS 로 돌아가고, 맵을 불러오는 동안에는 묶지 않습니다. 수직동기가 켜져 있으면 적용되지 않습니다.",
                 "Caps FPS outside of play (menus, editing, level select) so the GPU and CPU can rest; laptops run cooler and throttle less during play. Returns to your FPS as soon as a song starts, and never caps while a level loads. Has no effect with VSync on."), sDim);
             GUILayout.Space(6);
             int mf = c.LowMenuFps >= 60 ? 2 : c.LowMenuFps > 0 ? 1 : 0;
             if (Segment("lowmenufps", ref mf, new[] { T("끔", "Off"), "30", "60" })) { c.LowMenuFps = mf == 2 ? 60 : mf == 1 ? 30 : 0; ch = true; }
-            GUILayout.Space(12);
-            Section(T("게임 쪽", "Game"));
+            EndRow();
+            EndGroup();
+            }
+            if (sub == 2)
+            {
+            SubHeading(T("게임", "Game"), T("게임 안의 계산을 줄입니다. 아주 작은 차이(몇 프레임 늦게 시작 등)를 감수합니다.", "Cuts in-game work, accepting tiny differences (a few frames of delay)."));
+            BeginGroup();
             ch |= Option("lowfloorsplit", ref c.LowFloorSplit, T("타일 이동 나눠 처리", "Split large tile moves"),
                 T("타일 1000개 넘게 옮기는 효과를 지금 타일에서 가까운 것부터 몇 프레임에 나눠 처리합니다. 먼 타일이 처음 1~몇 프레임 늦게 움직이고, 끝나는 순간은 같습니다. \"효과 나누기 세기\" 가 프레임당 예산을 정합니다. \"타일 애니메이션 직접 처리\" 가 켜져 있어야 합니다.",
                   "Effects that move more than 1000 tiles are processed over a few frames, nearest tiles first. Far tiles start moving a frame or a few later but finish at the same moment. The effect split strength sets the per-frame budget. Needs tile move animations on."),
-                T("게임", "Game"));
+                null);
             ch |= Option("lowparticle", ref c.LowPauseParticles, T("화면 밖 파티클 멈추기", "Pause off-screen particles"),
                 T("파티클 장식이 화면 밖에 있는 동안 시뮬레이션을 멈춰 CPU 를 아낍니다. 파티클이 많은 맵에서 효과가 있습니다. 다시 화면에 들어오면 멈춘 곳부터 이어가서 원래와 모양·시점이 조금 달라질 수 있습니다." + (Compat.QPauseOffscreenParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
                   "Stops simulating particle decorations while they are off-screen to save CPU on particle-heavy levels. When they come back on screen they resume where they stopped, so they may look slightly different from the original." + (Compat.QPauseOffscreenParticles ? " (Idle now: Quartz is doing the same)" : "")),
-                T("게임", "Game"));
+                null);
             ch |= Option("lowfft", ref c.LowNoFft, T("음악 반응 계산 끄기", "Skip music spectrum analysis"),
                 T("게임은 매 프레임 음악 주파수를 분석하는데, 이 값을 쓰는 곳은 타일 색 방식 'Volume' 뿐입니다. 그 방식을 쓰는 타일이 없으면 분석을 건너뜁니다. 곡 도중 타일이 Volume 으로 바뀌면 바로 다시 켜며, 그 첫 한 프레임만 색이 한 프레임 늦을 수 있습니다.",
                   "The game analyses the music spectrum every frame, but only 'Volume' track colours use it. Skips it when no tile uses that mode; turns back on immediately if a tile switches to Volume (that first frame may lag by one frame)."),
-                T("게임", "Game"));
-            GUILayout.Space(10);
+                null);
+            BeginRow();
             GUILayout.Label(T("효과 몰림 더 잘게 나누기", "Split effect bursts finer"), sBody);
-            GUILayout.Label(T("한 박자에 효과가 몰릴 때 한 프레임에 쓰는 시간을 더 짧게 끊어 여러 프레임에 나눕니다(타일 색 바꾸기도 더 작은 조각으로). CPU 가 약하면 멈칫이 줄어드는 대신, 몰린 효과 중 뒤쪽 것이 몇 프레임(수십 ms) 늦게 시작할 수 있습니다. 판정에는 영향이 없습니다.",
+            P(T("한 박자에 효과가 몰릴 때 한 프레임에 쓰는 시간을 더 짧게 끊어 여러 프레임에 나눕니다(타일 색 바꾸기도 더 작은 조각으로). CPU 가 약하면 멈칫이 줄어드는 대신, 몰린 효과 중 뒤쪽 것이 몇 프레임(수십 ms) 늦게 시작할 수 있습니다. 판정에는 영향이 없습니다.",
                 "When many effects fire on one beat, spreads them over more frames with a shorter per-frame time (and smaller tile-recolour chunks). Fewer hitches on weak CPUs; later effects in a burst may start a few frames (tens of ms) late. Judgement is unaffected."), sDim);
             GUILayout.Space(6);
             int sp = Mathf.Clamp(c.LowSplit, 0, 2);
             if (Segment("lowsplit", ref sp, new[] { T("기본 (10ms)", "Default (10 ms)"), T("잘게 (5ms)", "Fine (5 ms)"), T("아주 잘게 (3ms)", "Finest (3 ms)") })) { c.LowSplit = sp; ch = true; }
-            Section(T("그래픽카드 쪽", "Graphics card"));
+            EndRow();
+            EndGroup();
+            }
+            if (sub == 3)
+            {
+            SubHeading(T("그래픽카드", "Graphics card"), T("그래픽카드가 약할 때 그리는 양과 그래픽 메모리를 줄입니다. 화면이 조금 흐려질 수 있습니다.", "Draws less and uses less video memory on weak graphics cards. The view may get slightly softer."));
+            BeginGroup();
+            BeginRow();
             GUILayout.Label(T("게임 화면 해상도", "Game view resolution"), sBody);
             P(T("플레이 중 게임 화면(타일, 장식, 배경, 필터)을 이 배율로 작게 그린 뒤 늘려서 보여 줍니다. 그래픽카드가 약할수록 효과가 가장 큽니다(50% 면 그릴 픽셀이 4분의 1). 게임 화면이 흐려지고, 픽셀 크기를 쓰는 일부 필터는 모양이 조금 달라질 수 있습니다. HUD·설정 창 글자는 선명하게 남습니다. 바로 적용됩니다.",
                 "Draws the game view (tiles, decorations, background, filters) at this scale during play and stretches it to the screen. Biggest win on weak graphics cards (50% = a quarter of the pixels). The game view gets softer and some pixel-based filters may look slightly different. HUD and this window stay sharp. Applies immediately."), sDim);
@@ -1011,11 +1173,13 @@ namespace StutterFix
                 int v = Mathf.Clamp(Mathf.RoundToInt(fs / 5f) * 5, 10, 100);   // 5% 단위
                 if (v != c.LowRenderScale) { c.LowRenderScale = v; ch = true; }
             }
-            GUILayout.Space(8);
+            EndRow();
             ch |= Option("lowauto", ref c.LowAutoRes, T("자동 해상도 (목표 FPS 유지)", "Auto resolution (keep target FPS)"),
                 T("그래픽카드가 바빠서 목표 FPS 를 못 맞출 때만 게임 화면 해상도를 10%씩 낮추고, 여유가 생기면 다시 올립니다. 가벼운 구간은 선명하게, 무거운 구간만 잠깐 흐려집니다. 위 슬라이더가 최대 배율입니다. CPU 가 한계라 느린 것은 해상도로 풀리지 않아 건드리지 않습니다. 해상도가 바뀌는 순간 아주 짧게 멈칫할 수 있어 바꾸는 간격을 두었습니다.",
                   "Lowers the game-view resolution in 10% steps only when the GPU can't keep the target FPS, and raises it back when there is headroom. Light parts stay sharp; only heavy parts get softer. The slider above is the maximum. CPU-bound slowdowns are left alone. A resolution change can cause a tiny hitch, so changes are spaced out."),
-                T("그래픽카드", "GPU"));
+                null);
+            bool extra = c.LowAutoRes || !LowEnd.RenderScaleReady || c.LowRenderScale < 100;
+            if (extra) BeginRow();
             if (c.LowAutoRes)
             {
                 int fi = c.LowAutoFps >= 240 ? 3 : c.LowAutoFps >= 144 ? 2 : c.LowAutoFps >= 120 ? 1 : 0;
@@ -1037,45 +1201,53 @@ namespace StutterFix
                 if (Segment("lowsharp", ref up, new[] { T("부드럽게", "Smooth"), "FSR 1", T("도트처럼", "Pixelated") })) { c.LowSharpUpscale = up == 2; c.LowFsr = up == 1; ch = true; }
                 if (c.LowFsr)
                 {
-                    GUILayout.Label(T("AMD FSR 1 로 가장자리를 살려 늘리고 선명도를 보정합니다. 보통 늘리기보다 원본에 가깝고 덜 흐립니다. 화면 해상도로 두 번 더 그리므로 그래픽카드 일이 조금 늘어납니다.",
+                    P(T("AMD FSR 1 로 가장자리를 살려 늘리고 선명도를 보정합니다. 보통 늘리기보다 원본에 가깝고 덜 흐립니다. 화면 해상도로 두 번 더 그리므로 그래픽카드 일이 조금 늘어납니다.",
                         "Upscales with AMD FSR 1 (edge-aware upscale + sharpening). Closer to native and less blurry than plain upscaling; costs two extra screen-resolution passes."), sDim);   // 긴 설명은 줄바꿈되는 sDim (sSub 는 한 줄이라 패널이 옆으로 늘어나 페이지가 망가졌다)
                     if (Fsr.Failed) GUILayout.Label(T("이 컴퓨터에서는 쓸 수 없어 부드럽게 늘립니다", "Unavailable on this PC; using smooth upscale"), sSub);
                 }
             }
-            GUILayout.Space(12);
+            if (extra) EndRow();
+            BeginRow();
             GUILayout.Label(T("장식 이미지 최대 크기", "Max decoration image size"), sBody);
-            GUILayout.Label(T("장식 이미지를 불러올 때 긴 변을 이 크기로 줄입니다. 그래픽 메모리가 적은 컴퓨터(내장 그래픽, 2~4GB 그래픽카드)에서 이미지가 많은 맵의 끊김과 로딩 시간이 줄어듭니다. 장식의 화면 크기는 그대로이고 선명도만 낮아집니다. '맵 불러오기' 페이지 설정보다 작은 쪽을 쓰며, 다음에 여는 맵부터 적용됩니다.",
+            P(T("장식 이미지를 불러올 때 긴 변을 이 크기로 줄입니다. 그래픽 메모리가 적은 컴퓨터(내장 그래픽, 2~4GB 그래픽카드)에서 이미지가 많은 맵의 끊김과 로딩 시간이 줄어듭니다. 장식의 화면 크기는 그대로이고 선명도만 낮아집니다. '맵 불러오기' 페이지 설정보다 작은 쪽을 쓰며, 다음에 여는 맵부터 적용됩니다.",
                 "Shrinks decoration images so their longer side is at most this size when loading. Helps PCs with little video memory on image-heavy levels (less stutter and faster loading). On-screen size stays the same; only sharpness drops. Uses the smaller of this and the Level loading setting; applies to the next level you open."), sDim);
             GUILayout.Space(6);
             int ic = c.LowImageCap >= 1024 ? 1 : c.LowImageCap > 0 ? 2 : 0;
             if (Segment("lowimg", ref ic, new[] { T("그대로", "Unchanged"), "1024", "512" })) { c.LowImageCap = ic == 1 ? 1024 : ic == 2 ? 512 : 0; ch = true; }
-            GUILayout.Space(12);
+            EndRow();
             ch |= Option("lowcompress", ref c.LowCompressImages, T("이미지 압축해서 불러오기", "Compress images on load"),
                 T("장식 이미지를 DXT 로 압축해서 그래픽카드에 올립니다. 그래픽 메모리가 4분의 1(투명 없는 이미지는 8분의 1)로 줄고 올리는 시간도 줄어듭니다. 압축은 이미지를 불러올 때 여러 CPU 코어에서 미리 합니다('맵 불러오기' 페이지의 '이미지 빠르게 불러오기' 가 켜져 있어야 함). 손실 압축이라 가까이서 보면 이미지가 조금 뭉개질 수 있습니다. 다음에 여는 맵부터 적용됩니다." +
                   (Compat.Pacl2Lossy ? " (지금 PACL2 의 이미지 손실 압축이 켜져 있어서, 이 옵션과 상관없이 PACL2 대신 여러 코어로 미리 압축하고 있습니다)" : ""),
                   "Uploads decoration images DXT-compressed: 1/4 of the video memory (1/8 for opaque images) and faster uploads. Compression is done ahead on several CPU cores while loading (needs 'Parallel image loading' on the Level loading page). Lossy, so images can look slightly blocky up close. Applies to the next level you open." +
                   (Compat.Pacl2Lossy ? " (PACL2 lossy image compression is on, so images are already pre-compressed on several cores in its place, regardless of this option)" : "")),
-                T("그래픽카드", "GPU"));
-            Section(T("실험적 기능", "Experimental"));
-            P(T("아직 다듬는 중인 기능입니다. 화면이 마음에 들지 않으면 끄세요.", "Still being tuned. Turn off if you don't like how it looks."), sDim);
-            GUILayout.Space(4);
+                null);
+            EndGroup();
+            }
+            if (sub == 4)
+            {
+            SubHeading(T("실험", "Experimental"), T("아직 다듬는 중인 기능입니다. 화면이 마음에 들지 않으면 끄세요.", "Still being tuned. Turn off if you don't like how it looks."));
+            BeginGroup();
             ch |= Option("lowsharpen", ref c.LowSharpen, T("늘린 화면 선명도 보정", "Sharpen the upscaled view"),
                 T("게임 화면 해상도를 낮췄을 때 늘린 화면이 흐려 보이는 것을 선명도 보정으로 덜어 줍니다(FSR 1 의 선명도 단계를 흉내). 게임에 들어 있는 Sharpen 필터 셰이더를 빌려 화면 해상도에서 한 번 겁니다. UI 는 그대로입니다. 해상도가 100% 면 동작하지 않습니다.",
                   "Reduces the blur of a lowered game-view resolution with a sharpening pass (like FSR 1's sharpening step), using the game's built-in Sharpen filter shader at screen resolution. UI is unaffected. Does nothing at 100%."),
-                T("실험", "Experimental"));
+                null);
             if (c.LowSharpen)
             {
+                BeginRow();
                 float sv = c.LowSharpenValue;
                 if (Slider("lowsharpv", ref sv, 0.25f, 4f, T("세기", "Strength"), sv.ToString("F2"))) { c.LowSharpenValue = Mathf.Round(sv * 20f) / 20f; ch = true; }
                 if (!LowEnd.SharpenReady) GUILayout.Label(T("셰이더를 찾지 못해 쓸 수 없습니다", "Shader not found; unavailable"), sSub);
+                EndRow();
             }
-            GUILayout.Space(8);
             ch |= Option("lowhalf", ref c.LowHalfRender, T("반만 그리기 + 카메라 보정", "Half-rate render + camera reprojection"),
                 T("게임 화면을 두 프레임에 한 번만 그리고, 사이 프레임에는 지난 그림을 카메라가 움직인 만큼 밀고·돌리고·키워 보여 줍니다(VR 의 재투영과 같은 방식). 그래픽카드 일이 절반이 되고, 프레임 생성과 달리 지연이 늘지 않습니다. 대신 행성·장식·필터는 절반 속도로 움직이고, 배경 그림은 사이 프레임에 조금 밀릴 수 있으며, 빠르게 움직일 때 화면 가장자리가 잠깐 빌 수 있습니다. 그래픽카드가 한계인 컴퓨터에서만 효과가 있습니다.",
                   "Draws the game view every other frame; in between, the last image is shifted, rotated and scaled by the camera's movement (like VR reprojection). Halves GPU work without adding latency, unlike frame generation. Planets, decorations and filters update at half rate, background art may shift slightly on in-between frames, and edges may briefly show gaps during fast movement. Only helps when the graphics card is the bottleneck."),
-                T("실험", "Experimental"));
+                null);
+            EndGroup();
+            }
             if (ch) Save();
-            GUILayout.Space(10);
+            if (sub != 0) return;
+            GUILayout.Space(4);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(T("모두 켜기", "Turn all on"), sPrimary, GUILayout.Width(150), GUILayout.Height(38)))
             { c.LowPriority = c.LowNoThrottle = c.LowNoFft = true; c.LowRenderScale = 75; c.LowImageCap = 1024; c.LowSplit = 1; c.LowMenuFps = 60; Save(); }
@@ -1202,7 +1374,7 @@ namespace StutterFix
             GUILayout.BeginVertical(sCard);
             GUILayout.Label(T("문제 보고용 로그 만들기", "Create a log for bug reports"), sBody);
             GUILayout.Space(4);
-            GUILayout.Label(T("게임이 끊기거나 오류가 났다면, 그 판을 끝낸 뒤(게임이 튕겼다면 다시 켠 뒤) 눌러 주세요. 바탕화면에 zip 파일이 생기고, 그 파일을 <b>모드 디스코드 서버</b>에 올리거나 디스코드 <b>narooh</b> 에게 DM 으로 보내 주세요. 사양, 설정, 모드 목록, 게임 로그, 끊김 기록이 들어가며 윈도우 사용자 이름은 가려집니다.",
+            P(T("게임이 끊기거나 오류가 났다면, 그 판을 끝낸 뒤(게임이 튕겼다면 다시 켠 뒤) 눌러 주세요. 바탕화면에 zip 파일이 생기고, 그 파일을 <b>모드 디스코드 서버</b>에 올리거나 디스코드 <b>narooh</b> 에게 DM 으로 보내 주세요. 사양, 설정, 모드 목록, 게임 로그, 끊김 기록이 들어가며 윈도우 사용자 이름은 가려집니다.",
                 "If you hit a stutter or an error, press this after that run (or after restarting if the game crashed). A zip file appears on your desktop; post it on the <b>mod's Discord server</b> or send it to <b>narooh</b> on Discord (DM). It contains specs, settings, the mod list, game logs and the hitch record, with your Windows user name hidden."), sLead);
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
@@ -1314,7 +1486,14 @@ namespace StutterFix
 
         private bool Option(string key, ref bool value, string title, string desc, string tag, bool clickable = true)
         {
-            GUILayout.BeginHorizontal(sCard);
+            if (groupOpen)
+            {
+                RowSeparator();
+                Rect last;
+                if (Event.current.type == EventType.Repaint && clickable && rowRects.TryGetValue(key, out last) && last.Contains(Event.current.mousePosition))
+                    Fill(last, Hex(0xF7F7F9), 0);   // 줄 위에 마우스: 아주 옅게
+            }
+            GUILayout.BeginHorizontal(groupOpen ? sRow : sCard);
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
             GUILayout.Label(title, sBody, GUILayout.ExpandWidth(false));
@@ -1325,14 +1504,13 @@ namespace StutterFix
             P(desc, sDim);
             GUILayout.EndVertical();
             GUILayout.Space(24);
-            GUILayout.BeginVertical(GUILayout.Width(44));
-            GUILayout.FlexibleSpace();
             Rect r = GUILayoutUtility.GetRect(44, 24, GUILayout.Width(44), GUILayout.Height(24));
-            GUILayout.FlexibleSpace();
-            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             Rect card = GUILayoutUtility.GetLastRect();
-            GUILayout.Space(12);
+            // 스위치는 줄 높이 가운데에 직접 둔다 (세로 FlexibleSpace 로 가운데 맞추면 줄이 늘어났다)
+            r.y = card.center.y - 12f;
+            if (groupOpen) { if (Event.current.type == EventType.Repaint) rowRects[key] = card; }
+            else GUILayout.Space(12);
 
             DrawSwitch(key, r, value);
 
@@ -1482,7 +1660,7 @@ namespace StutterFix
         // ── 띄어쓰기 자리에서만 줄 바꾸기 ──
         // 유니티 IMGUI 는 한글을 글자마다 끊을 수 있는 자리로 봐서, 단어 중간에서 줄이 바뀌었다("않습니/다", "떨/어졌습니다").
         // 그려질 폭을 알면(Repaint 의 Rect) 띄어쓰기 자리에서 미리 줄을 바꾼 글을 만들어 그린다. 레이아웃 높이는 지난번 폭으로 만든 글로 잰다.
-        private sealed class Para { public float Width = -1f; public string Shown; public readonly GUIContent Content = new GUIContent(); }
+        private sealed class Para { public float Width = -1f, Height = -1f; public string Shown; public readonly GUIContent Content = new GUIContent(); }
         private readonly Dictionary<KeyValuePair<string, GUIStyle>, Para> paras = new Dictionary<KeyValuePair<string, GUIStyle>, Para>();
         private readonly Dictionary<GUIStyle, GUIStyle> noWrap = new Dictionary<GUIStyle, GUIStyle>();
 
@@ -1497,10 +1675,11 @@ namespace StutterFix
                 if (paras.Count > 300) paras.Clear();
                 e = new Para { Shown = text }; e.Content.text = text; paras[key] = e;
             }
-            Rect r = GUILayoutUtility.GetRect(e.Content, s, opts);
+            // 높이는 그릴 폭에서 잰 값을 쓴다. 유니티 레이아웃이 더 좁은 폭으로 다시 줄을 나눠 재면 아래에 빈 줄만큼 자리가 남았다.
+            Rect r = opts.Length == 0 && e.Height > 0f ? GUILayoutUtility.GetRect(e.Content, s, GUILayout.Height(e.Height)) : GUILayoutUtility.GetRect(e.Content, s, opts);
             if (Event.current.type != EventType.Repaint || r.width < 20f) return;
             float inner = r.width - s.padding.horizontal;
-            if (Mathf.Abs(e.Width - inner) > 0.5f) { e.Width = inner; e.Shown = Wrapped(text, s, inner); e.Content.text = e.Shown; }
+            if (Mathf.Abs(e.Width - inner) > 0.5f) { e.Width = inner; e.Shown = Wrapped(text, s, inner); e.Content.text = e.Shown; e.Height = s.CalcHeight(e.Content, r.width); }
             GUI.Label(r, e.Content, s);
         }
 
@@ -1508,7 +1687,7 @@ namespace StutterFix
         {
             GUIStyle m;
             if (!noWrap.TryGetValue(s, out m)) { m = new GUIStyle(s) { wordWrap = false }; m.padding = new RectOffset(); noWrap[s] = m; }
-            float max = width - 2f;   // 잰 폭과 그릴 때 폭이 조금 달라도 유니티가 한 번 더 끊지 않게
+            float max = width * 0.96f - 4f;   // 잰 폭과 그릴 때 폭이 조금 달라도(배율 적용 글꼴) 유니티가 한 번 더 끊지 않게
             var sb = new System.Text.StringBuilder(text.Length + 8);
             var tmp = new GUIContent();
             var lines = new List<string>();
@@ -1657,7 +1836,9 @@ namespace StutterFix
 
             // 흰 카드 + 옅은 테두리 + 아래로 살짝 떨어지는 그림자 (그림자는 overflow 로 바깥에)
             const int pad = 8;
-            sCard = Styled(Card(CardC, Edge, 14, 1, pad, 0.06f), 14 + pad);
+            sCard = Styled(Card(CardC, Edge, 14, 1, pad, 0f), 14 + pad);   // 그림자 없이 가는 테두리만 (떠 있는 카드 무더기가 'AI 티' 였다)
+            sGroup = Styled(Card(CardC, Edge, 14, 1, 0, 0f), 14); sGroup.padding = new RectOffset(0, 0, 4, 4);
+            sRow = new GUIStyle { padding = new RectOffset(20, 20, 15, 15), margin = new RectOffset(0, 0, 0, 0) };
             sCard.overflow = new RectOffset(pad, pad, pad, pad);
             sCard.padding = new RectOffset(20, 20, 16, 17);
             sCard.hover.background = Card(CardC, EdgeHover, 14, 1, pad, 0.09f);
@@ -1670,6 +1851,9 @@ namespace StutterFix
             sTipLeft = Label(12, Hex(0xFFFFFF, 0.85f), FontStyle.Normal); sTipLeft.alignment = TextAnchor.MiddleLeft;
             sSub = Label(12, Text3, FontStyle.Normal);
             sH1 = Label(25, Ink, FontStyle.Bold);
+            sH2 = Label(20, Ink, FontStyle.Bold);
+            sRail = Label(14, Text2, FontStyle.Normal); sRail.alignment = TextAnchor.MiddleLeft;
+            sRailOn = Label(14, Ink, FontStyle.Bold); sRailOn.alignment = TextAnchor.MiddleLeft;
             sLead = Label(13, Text2, FontStyle.Normal); sLead.wordWrap = true;
             sBody = Label(15, Ink, FontStyle.Bold); sBody.wordWrap = true;
             sBodyText = Label(14, Ink, FontStyle.Normal); sBodyText.wordWrap = true;
