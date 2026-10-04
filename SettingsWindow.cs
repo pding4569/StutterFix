@@ -65,9 +65,12 @@ namespace StutterFix
 
         // ── 색 ─────────────────────────────────────────────────────────
         private static Color Hex(int rgb, float a = 1f) { return new Color(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f, a); }
-        private static readonly Color Page = Hex(0xF4F4F6), CardC = Hex(0xFFFFFF), Edge = Hex(0xE9E9EE), EdgeHover = Hex(0xD6D6DD),
-            Ink = Hex(0x15161A), Text2 = Hex(0x6E6F78), Text3 = Hex(0xA3A4AD), Rule = Hex(0xE6E6EB),
-            TrackOff = Hex(0xDCDCE2), Soft = Hex(0xECECF0);
+        // 2026-10-04 전면 개편: 어두운 게임 화면 위에 흰 패널이 따로 놀아 보였다. 같은 어두운 바탕에 층(바탕 < 상자 < 고른 칸)만 밝기로 나누고,
+        // 강조색은 얼불춤의 불 행성 쪽 주황 하나만 쓴다(켜짐 스위치, 주된 버튼, 고른 메뉴 표시, 끊긴 프레임).
+        private static readonly Color Page = Hex(0x121316), CardC = Hex(0x18191D), Edge = Hex(0x26272D), EdgeHover = Hex(0x34353C),
+            Ink = Hex(0xECECEF), Text2 = Hex(0xA0A1A9), Text3 = Hex(0x6E6F77), Rule = Hex(0x222328),
+            TrackOff = Hex(0x2F3036), Soft = Hex(0x1F2025), Surface2 = Hex(0x24252B), RowHover = Hex(0x1C1D21),
+            Accent = Hex(0xF0804D), AccentHover = Hex(0xF59466), OnAccent = Hex(0x1A120D), BarC = Hex(0x3A3B43);
 
         private static string HexStr(Color c) { return ColorUtility.ToHtmlStringRGB(c); }
 
@@ -93,7 +96,7 @@ namespace StutterFix
         private static float Approach(float cur, float target, float speed) { return cur + (target - cur) * (1f - Mathf.Exp(-speed * Time.unscaledDeltaTime)); }
 
         private Font font;
-        private GUIStyle sBodyText, sSecondary, sDimMid, sGroup, sRow, sRail, sRailOn, sH2;
+        private GUIStyle sBodyText, sSecondary, sDimMid, sGroup, sRow, sRail, sRailOn, sH2, sHero, sTileValue, sMono, sMonoAccent, sRight, sTile;
         private GUIStyle sWindow, sShadow, sTitle, sSub, sH1, sLead, sBody, sDim, sSmall, sTag, sCard, sCardDark, sNav, sNavOn, sNavText,
             sPrimary, sClose, sTab, sTabOn, sStat, sStatDark, sStatLabel, sStatLabelDark, sScroll, sThumb,
             sSegKnob, sSegText, sSegOnText, sSliderValue, sChip, sChipOn;
@@ -140,6 +143,7 @@ namespace StutterFix
             useGUILayout = Open || closing || !Hitch.Playing;
             if (Hotkey.Down(Main.Config.WindowKey, Main.Config.WindowMods)) SetOpen(!Open || closing);
             if (!Open) return;
+            SampleFrame();
             // Esc: 패널이 펼쳐져 있으면 패널만 접고, 한 번 더 누르면 아이콘 줄까지 닫는다
             if (!closing && !Hotkey.Capturing && Input.GetKeyDown(KeyCode.Escape)) { if (panelOpen) panelOpen = false; else SetOpen(false); }
             Cursor.visible = true;   // 곡 중에는 게임이 커서를 숨긴다
@@ -299,7 +303,7 @@ namespace StutterFix
                     GUI.color = new Color(1, 1, 1, c.a * (on || hov ? 1f : 0.72f));
                     GUI.DrawTexture(new Rect(r.x + 10, r.y + 10, IconS - 20, IconS - 20), icons[i]);
                     GUI.color = c;
-                    if (i == 0 && Updater.Available) Fill(new Rect(r.xMax - 13, r.y + 5, 8, 8), new Color(0.3f, 0.75f, 1f, c.a), 4);   // 새 버전 있음
+                    if (i == 0 && Updater.Available) Fill(new Rect(r.xMax - 13, r.y + 5, 8, 8), new Color(Accent.r, Accent.g, Accent.b, c.a), 4);   // 새 버전 있음
                 }
                 if (GUI.Button(r, GUIContent.none, GUIStyle.none)) TogglePanel(i);
                 y += IconS + IconGap;
@@ -320,7 +324,7 @@ namespace StutterFix
                 GUI.color = new Color(1, 1, 1, c.a * (armed || rhov ? 1f : 0.72f));
                 GUI.DrawTexture(new Rect(rr.x + 10, rr.y + 10, IconS - 20, IconS - 20), icons[7]);
                 GUI.color = c;
-                if (why.Count > 0) Fill(new Rect(rr.xMax - 13, rr.y + 5, 8, 8), new Color(1f, 0.62f, 0.2f, c.a), 4);
+                if (why.Count > 0) Fill(new Rect(rr.xMax - 13, rr.y + 5, 8, 8), new Color(Accent.r, Accent.g, Accent.b, c.a), 4);
             }
             // 누르면 왼쪽에 고르기 상자: "게임 재시작"(처음 화면으로) / "이 맵으로 재시작"(에디터에서 연 맵이 있을 때). 고르는 것이 곧 확인이다.
             if (GUI.Button(rr, GUIContent.none, GUIStyle.none))
@@ -426,7 +430,7 @@ namespace StutterFix
             float tabTarget = (English ? en : ko).center.x;
             if (tabX < 0) tabX = tabTarget;
             if (Event.current.type == EventType.Repaint) tabX = Approach(tabX, tabTarget, 16f);
-            Fill(new Rect(tabX - 9, ko.yMax + 1, 18, 2), Ink, 1);
+            Fill(new Rect(tabX - 9, ko.yMax + 1, 18, 2), Accent, 1);
             if (GUI.Button(new Rect(pw - 56, 18, 34, 32), "×", sClose)) panelOpen = false;   // 패널만 접는다 (아이콘 줄은 남는다)
 
             Fill(new Rect(0, HeaderH, pw, 1), Rule, 0);   // 제목줄과 본문 사이 가는 선
@@ -543,6 +547,95 @@ namespace StutterFix
             };
         }
 
+        // ── 홈의 실시간 프레임 그래프: 창이 열려 있는 동안만 프레임 시간을 모은다 ──
+        private const int FtN = 240;
+        private readonly float[] ft = new float[FtN];
+        private int ftIdx, ftCount;
+        private float fpsShown, fpsAcc, fpsAt; private int fpsN;
+        private readonly float[] ftSort = new float[FtN];
+        private void SampleFrame()
+        {
+            float dt = Time.unscaledDeltaTime;
+            ft[ftIdx] = dt * 1000f; ftIdx = (ftIdx + 1) % FtN; if (ftCount < FtN) ftCount++;
+            fpsAcc += dt; fpsN++;
+            if (Time.unscaledTime - fpsAt >= 0.5f && fpsAcc > 0f) { fpsShown = fpsN / fpsAcc; fpsAcc = 0f; fpsN = 0; fpsAt = Time.unscaledTime; }
+        }
+
+        private readonly GUIContent tmpC = new GUIContent();
+        private void DrawLive(Rect r)
+        {
+            if (Event.current.type != EventType.Repaint) return;
+            sTile.Draw(r, false, false, false, false);
+            float x = r.x + 22, y = r.y + 16;
+            sSmall.Draw(new Rect(x, y, 200, 16), T("지금", "Now"), false, false, false, false);
+            tmpC.text = fpsShown > 0f ? fpsShown.ToString("F0") : "-";
+            Vector2 big = sHero.CalcSize(tmpC);
+            sHero.Draw(new Rect(x - 1, y + 14, big.x + 4, big.y), tmpC, false, false, false, false);
+            sDim.Draw(new Rect(x + big.x + 6, y + 14 + big.y - 24, 60, 20), "FPS", false, false, false, false);
+            // 최근 프레임 중 가장 긴 것과 가운데 값
+            int n = ftCount; float worst = 0f;
+            for (int i = 0; i < n; i++) { ftSort[i] = ft[i]; if (ft[i] > worst) worst = ft[i]; }
+            System.Array.Sort(ftSort, 0, n);
+            float med = n > 0 ? ftSort[n / 2] : 0f;
+            string right = n > 0 ? string.Format(T("가장 긴 프레임 {0:F1}ms", "Longest frame {0:F1} ms"), worst) : "";
+            sRight.Draw(new Rect(r.xMax - 262, y, 240, 16), right, false, false, false, false);
+            // 막대: 높이는 33ms(60 FPS 두 프레임)를 꽉 찬 것으로, 넘으면 위에서 잘린다. 가운데 값보다 크게 튄 프레임만 주황.
+            var g = new Rect(x, r.y + 96, r.width - 44, r.height - 96 - 30);
+            Fill(new Rect(g.x, g.yMax, g.width, 1), Rule, 0);
+            float scaleMs = Mathf.Max(med * 3f, 12f);
+            float bw = g.width / FtN;
+            float spike = Mathf.Max(med * 2f, med + 6f);
+            for (int i = 0; i < n; i++)
+            {
+                int idx = (ftIdx - n + i + FtN) % FtN;
+                float ms = ft[idx];
+                float h = Mathf.Clamp(ms / scaleMs, 0.02f, 1f) * g.height;
+                Fill(new Rect(g.x + (FtN - n + i) * bw, g.yMax - h, Mathf.Max(1f, bw - 1f), h), ms > spike ? Accent : BarC, 0);
+            }
+            sSmall.Draw(new Rect(x, g.yMax + 8, 300, 16), string.Format(T("최근 {0:F0}초의 프레임 시간", "Frame times, last {0:F0} s"), Mathf.Max(1f, med * n / 1000f)), false, false, false, false);
+        }
+
+        // 작은 칸: 큰 값 + 설명
+        private void Tile(string value, string label, float h)
+        {
+            GUILayout.BeginVertical(sTile, GUILayout.Height(h));
+            GUILayout.Label(value, sTileValue);
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(label, sStatLabel);
+            GUILayout.EndVertical();
+        }
+
+        // 최근 끊김 (실시간 모니터가 모은 것)
+        private readonly List<string[]> hitchRows = new List<string[]>();
+        private float hitchAt;
+        private void RecentHitches()
+        {
+            GUILayout.Label(T("최근 끊김", "Recent hitches"), sBody);
+            GUILayout.Space(8);
+            if (Event.current.type == EventType.Layout && Time.unscaledTime >= hitchAt) { PerfOverlay.CopyRecent(hitchRows, 4); hitchAt = Time.unscaledTime + 0.5f; }
+            BeginGroup();
+            if (hitchRows.Count == 0)
+            {
+                BeginRow();
+                GUILayout.Label(T("아직 없습니다", "None yet"), sBody);
+                GUILayout.Space(2);
+                P(T("곡 중에 프레임이 끊기면 몇 ms 였는지와 원인이 여기에 나옵니다.", "When a frame spikes during a song, its length and cause show up here."), sDim);
+                EndRow();
+            }
+            for (int i = 0; i < hitchRows.Count; i++)
+            {
+                var h = hitchRows[i];
+                BeginRow();
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(h[0], h[3] == "1" ? sMonoAccent : sMono, GUILayout.Width(70));
+                GUILayout.Label(h[1], sDimMid, GUILayout.ExpandWidth(true));
+                GUILayout.Label(h[2], sRight, GUILayout.Width(80));
+                GUILayout.EndHorizontal();
+                EndRow();
+            }
+            EndGroup();
+        }
+
         // ── 페이지 ─────────────────────────────────────────────────────
         private void PageHome()
         {
@@ -555,14 +648,19 @@ namespace StutterFix
             string d = BootConfig.Describe();
             bool jobs = d.Contains("Jobified") || d.Contains("Split");
 
+            // 왼쪽 큰 칸: 실시간 프레임 그래프 / 오른쪽: 켜진 기능, 메모리 정리 (같은 칸 셋을 나란히 두던 것을 바꿈)
             GUILayout.BeginHorizontal();
-            Stat(on + " / 29", T("켜진 기능", "Features on"), true);
+            Rect live = GUILayoutUtility.GetRect(10, 188, GUILayout.ExpandWidth(true), GUILayout.Height(188));
             GUILayout.Space(14);
-            Stat(GcControl.Paused ? T("미루는 중", "Deferred") : T("대기", "Idle"), T("메모리 정리", "Memory cleanup"), false);
+            GUILayout.BeginVertical(GUILayout.Width(210));
+            Tile(on + " / 29", T("켜진 기능", "Features on"), 87);
             GUILayout.Space(14);
-            Stat(jobs ? T("켜짐", "On") : T("꺼짐", "Off"), T("멀티스레드 그리기", "Multithreaded rendering"), false);
+            Tile(GcControl.Paused ? T("미루는 중", "Deferred") : T("대기", "Idle"), T("메모리 정리", "Memory cleanup") + (jobs ? "" : T(" (멀티스레드 그리기 꺼짐)", " (multithreaded rendering off)")), 87);
+            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
-            GUILayout.Space(14);
+            DrawLive(live);
+            GUILayout.Space(22);
+            RecentHitches();
 
             // 새 버전 (GitHub 최신 릴리스)
             if (Updater.Available || Updater.Installed) UpdateCard();
@@ -636,7 +734,7 @@ namespace StutterFix
             });
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(T("모두 권장값으로", "Reset to recommended"), sPrimary, GUILayout.Width(170), GUILayout.Height(38))) ResetDefaults();
+            if (GUILayout.Button(T("모두 권장값으로", "Reset to recommended"), sSecondary, GUILayout.Width(170), GUILayout.Height(38))) ResetDefaults();
             GUILayout.EndHorizontal();
             GUILayout.Space(14);
             KeysCard();
@@ -854,14 +952,15 @@ namespace StutterFix
             if (ev.type == EventType.Repaint) railY = Approach(railY, target, 18f);
             // 고른 칸: 흰 바탕 + 가는 테두리가 미끄러져 간다
             var selR = new Rect(area.x, railY, area.width, ItemH);
-            if (ev.type == EventType.Repaint) sGroup.Draw(selR, false, false, false, false);
+            Fill(selR, Surface2, 10);
+            Fill(new Rect(selR.x + 6, selR.y + 11, 3, ItemH - 22), Accent, 1.5f);   // 고른 칸 왼쪽의 짧은 주황 선
             for (int i = 0; i < names.Length; i++)
             {
                 var r = new Rect(area.x, area.y + i * (ItemH + Gap), area.width, ItemH);
                 bool on = i == sel, hov = !on && r.Contains(ev.mousePosition);
-                if (hov) Fill(r, Hex(0xE9E9EE), 10);
+                if (hov) Fill(r, Soft, 10);
                 var oc = GUI.color;
-                Color ink = on ? Ink : hov ? Ink : Text2;
+                Color ink = on ? Accent : hov ? Ink : Text2;
                 GUI.color = new Color(ink.r, ink.g, ink.b, oc.a * (on ? 1f : 0.9f));
                 if (ev.type == EventType.Repaint) GUI.DrawTexture(new Rect(r.x + 14, r.y + 11, 18, 18), subIcons[icons[i]]);
                 GUI.color = oc;
@@ -1249,10 +1348,10 @@ namespace StutterFix
             if (sub != 0) return;
             GUILayout.Space(4);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(T("모두 켜기", "Turn all on"), sPrimary, GUILayout.Width(150), GUILayout.Height(38)))
+            if (GUILayout.Button(T("모두 켜기", "Turn all on"), sSecondary, GUILayout.Width(150), GUILayout.Height(38)))
             { c.LowPriority = c.LowNoThrottle = c.LowNoFft = true; c.LowRenderScale = 75; c.LowImageCap = 1024; c.LowSplit = 1; c.LowMenuFps = 60; Save(); }
             GUILayout.Space(8);
-            if (GUILayout.Button(T("모두 끄기", "Turn all off"), sPrimary, GUILayout.Width(150), GUILayout.Height(38)))
+            if (GUILayout.Button(T("모두 끄기", "Turn all off"), sSecondary, GUILayout.Width(150), GUILayout.Height(38)))
             { c.LowPriority = c.LowNoThrottle = c.LowNoFft = c.LowSharpUpscale = c.LowFsr = c.LowSharpen = c.LowHalfRender = c.LowAutoRes = c.LowPauseParticles = c.LowCompressImages = c.LowFloorSplit = false; c.LowRenderScale = 100; c.LowImageCap = 0; c.LowSplit = 0; c.LowMenuFps = 0; Save(); }
             GUILayout.EndHorizontal();
             GUILayout.Space(14);
@@ -1409,7 +1508,7 @@ namespace StutterFix
                     "Turning the mod off in UMM reverts everything immediately. Multithreaded rendering reverts on the next launch."),
                 T("그래도 끊긴다면", "Still stuttering?"), T("필터가 아주 많이 겹치는 구간은 그래픽카드 한계이고, 백그라운드 프로그램이 순간 끊김을 만들 수도 있습니다. 원격 데스크톱(StarDesk 등)·화면 녹화 프로그램이 켜져 있으면 판마다 FPS 가 크게 떨어질 수 있으니 게임할 때는 끄세요.",
                     "Scenes stacking many full-screen filters are limited by the GPU, and background apps can cause occasional hitches. Remote desktop (StarDesk etc.) or screen recording apps can drop FPS a lot in some runs; close them while playing."),
-                T("디스코드 서버", "Discord server"), T("discord.gg/csys9ZAeD6 — 버그 제보, 기능 아이디어, 질문", "discord.gg/csys9ZAeD6 — bug reports, feature ideas, questions"),
+                T("디스코드 서버", "Discord server"), T("discord.gg/csys9ZAeD6 (버그 제보, 기능 아이디어, 질문)", "discord.gg/csys9ZAeD6 (bug reports, feature ideas, questions)"),
                 T("소스", "Source"), "github.com/pding4569/StutterFix",
             });
             GUILayout.Space(4);
@@ -1491,7 +1590,7 @@ namespace StutterFix
                 RowSeparator();
                 Rect last;
                 if (Event.current.type == EventType.Repaint && clickable && rowRects.TryGetValue(key, out last) && last.Contains(Event.current.mousePosition))
-                    Fill(last, Hex(0xF7F7F9), 0);   // 줄 위에 마우스: 아주 옅게
+                    Fill(last, RowHover, 0);   // 줄 위에 마우스: 아주 옅게
             }
             GUILayout.BeginHorizontal(groupOpen ? sRow : sCard);
             GUILayout.BeginVertical();
@@ -1581,12 +1680,12 @@ namespace StutterFix
                 case EventType.Repaint:
                     float k = Mathf.InverseLerp(min, max, value);
                     Fill(track, TrackOff, 2);
-                    Fill(new Rect(track.x, track.y, track.width * k, track.height), Ink, 2);
+                    Fill(new Rect(track.x, track.y, track.width * k, track.height), Accent, 2);
                     float kx = track.x + track.width * k;
                     bool active = GUIUtility.hotControl == id;
                     float kr = active ? 9f : 8f;
-                    Fill(new Rect(kx - kr, track.center.y - kr, kr * 2, kr * 2), Ink, kr);
-                    Fill(new Rect(kx - kr + 3, track.center.y - kr + 3, kr * 2 - 6, kr * 2 - 6), Color.white, kr - 3);
+                    Fill(new Rect(kx - kr, track.center.y - kr, kr * 2, kr * 2), Accent, kr);
+                    Fill(new Rect(kx - kr + 3, track.center.y - kr + 3, kr * 2 - 6, kr * 2 - 6), CardC, kr - 3);
                     break;
             }
             return !Mathf.Approximately(old, value);
@@ -1620,9 +1719,9 @@ namespace StutterFix
             float k = Mathf.SmoothStep(0, 1, t);
 
             var track = new Rect(r.x, r.y + 1, 44, 24);
-            GUI.DrawTexture(track, tWhite, ScaleMode.StretchToFill, true, 0, Faded(Color.Lerp(TrackOff, Ink, k)), 0, 12);
+            GUI.DrawTexture(track, tWhite, ScaleMode.StretchToFill, true, 0, Faded(Color.Lerp(TrackOff, Accent, k)), 0, 12);
             float kx = Mathf.Lerp(track.x + 3, track.xMax - 21, k);
-            GUI.DrawTexture(new Rect(kx, track.y + 3, 18, 18), tWhite, ScaleMode.StretchToFill, true, 0, Faded(Color.white), 0, 9);
+            GUI.DrawTexture(new Rect(kx, track.y + 3, 18, 18), tWhite, ScaleMode.StretchToFill, true, 0, Faded(Color.Lerp(Text2, Hex(0xFFF7F2), k)), 0, 9);
         }
 
         private void Stat(string value, string label, bool dark)
@@ -1650,7 +1749,7 @@ namespace StutterFix
                 GUILayout.Label(kv[i], sSmall);
                 GUILayout.Space(3);
                 string v = kv[i + 1];
-                if (v.Length > 60 || v.IndexOf('\n') >= 0) P(v, sBodyText);   // 긴 글은 굵게 하지 않는다 (문단이 무거워 보였다)
+                if (v.Length > 40 || v.EndsWith(".") || v.IndexOf('\n') >= 0) P(v, sBodyText);   // 긴 글은 굵게 하지 않는다 (문단이 무거워 보였다)
                 else GUILayout.Label(v, sBody);
             }
             GUILayout.EndVertical();
@@ -1830,7 +1929,7 @@ namespace StutterFix
             tMark = Mark(48);
             icons = MakeIcons();
 
-            sWindow = Styled(Card(Page, Hex(0xFFFFFF, 0.6f), 20, 1, 0, 0f), 22);
+            sWindow = Styled(Card(Page, Hex(0xFFFFFF, 0.08f), 20, 1, 0, 0f), 22);
             sWindow.padding = new RectOffset(0, 0, 0, 0);
             sShadow = Styled(Shadow(48, 34), 48);
 
@@ -1841,8 +1940,8 @@ namespace StutterFix
             sRow = new GUIStyle { padding = new RectOffset(20, 20, 15, 15), margin = new RectOffset(0, 0, 0, 0) };
             sCard.overflow = new RectOffset(pad, pad, pad, pad);
             sCard.padding = new RectOffset(20, 20, 16, 17);
-            sCard.hover.background = Card(CardC, EdgeHover, 14, 1, pad, 0.09f);
-            sCardDark = Styled(Card(Ink, Ink, 14, 0, pad, 0.18f), 14 + pad);
+            sCard.hover.background = Card(CardC, EdgeHover, 14, 1, pad, 0f);
+            sCardDark = Styled(Card(Surface2, EdgeHover, 14, 1, pad, 0f), 14 + pad);
             sCardDark.overflow = new RectOffset(pad, pad, pad, pad);
             sCardDark.padding = new RectOffset(20, 20, 16, 17);
 
@@ -1863,8 +1962,14 @@ namespace StutterFix
             sTag = Label(12, Text3, FontStyle.Normal); sTag.padding = new RectOffset(0, 0, 3, 0);
             sStat = Label(24, Ink, FontStyle.Bold);
             sStatLabel = Label(12, Text2, FontStyle.Normal);
-            sStatDark = Label(24, Color.white, FontStyle.Bold); sStatDark.wordWrap = true;
-            sStatLabelDark = Label(12, Hex(0xFFFFFF, 0.62f), FontStyle.Normal); sStatLabelDark.wordWrap = true;
+            sStatDark = Label(24, Ink, FontStyle.Bold); sStatDark.wordWrap = true;
+            sStatLabelDark = Label(12, Text2, FontStyle.Normal); sStatLabelDark.wordWrap = true;
+            sHero = Label(40, Ink, FontStyle.Bold);
+            sTileValue = Label(22, Ink, FontStyle.Bold);
+            sMono = Label(13, Ink, FontStyle.Bold);
+            sMonoAccent = Label(13, Accent, FontStyle.Bold);
+            sRight = Label(12, Text3, FontStyle.Normal); sRight.alignment = TextAnchor.UpperRight;
+            sTile = Styled(Card(CardC, Edge, 14, 1, 0, 0f), 14); sTile.padding = new RectOffset(20, 20, 16, 16);
 
             // 메뉴: 선택된 것만 흰 카드로 떠 있다
             sNav = Styled(null, 10);
@@ -1878,14 +1983,14 @@ namespace StutterFix
             sNavText = new GUIStyle(sNav) { fontStyle = FontStyle.Bold };   // 선택 카드 위의 글자 (배경은 따로 미끄러지며 그린다)
             sNavText.normal.textColor = Ink; sNavText.hover.textColor = Ink;
 
-            sPrimary = Styled(Card(Ink, Ink, 10, 0, 0, 0f), 12);
-            sPrimary.normal.textColor = Color.white; sPrimary.alignment = TextAnchor.MiddleCenter; sPrimary.fontSize = 14; sPrimary.fontStyle = FontStyle.Bold;
-            sPrimary.hover.background = Card(Hex(0x2C2D33), Hex(0x2C2D33), 10, 0, 0, 0f); sPrimary.hover.textColor = Color.white;
+            sPrimary = Styled(Card(Accent, Accent, 10, 0, 0, 0f), 12);
+            sPrimary.normal.textColor = OnAccent; sPrimary.alignment = TextAnchor.MiddleCenter; sPrimary.fontSize = 14; sPrimary.fontStyle = FontStyle.Bold;
+            sPrimary.hover.background = Card(AccentHover, AccentHover, 10, 0, 0, 0f); sPrimary.hover.textColor = OnAccent;
 
             // 두 번째 동작(되돌리기 등): 옅은 회색 바탕. 검정 버튼이 둘 나란히 있으면 어느 쪽이 주된 동작인지 안 보였다.
-            sSecondary = Styled(Card(Soft, Soft, 10, 0, 0, 0f), 12);
+            sSecondary = Styled(Card(Surface2, EdgeHover, 10, 1, 0, 0f), 12);
             sSecondary.normal.textColor = Ink; sSecondary.alignment = TextAnchor.MiddleCenter; sSecondary.fontSize = 14; sSecondary.fontStyle = FontStyle.Bold;
-            sSecondary.hover.background = Card(TrackOff, TrackOff, 10, 0, 0, 0f); sSecondary.hover.textColor = Ink;
+            sSecondary.hover.background = Card(TrackOff, EdgeHover, 10, 1, 0, 0f); sSecondary.hover.textColor = Ink;
 
             sTab = Styled(null, 4);
             sTab.normal.textColor = Text3; sTab.hover.textColor = Ink; sTab.alignment = TextAnchor.MiddleCenter; sTab.fontSize = 13;
@@ -1898,7 +2003,7 @@ namespace StutterFix
 
 
             // 모니터 페이지의 조절 도구
-            sSegKnob = Styled(Card(CardC, Edge, 8, 1, 4, 0.08f), 12);
+            sSegKnob = Styled(Card(TrackOff, EdgeHover, 8, 1, 4, 0f), 12);
             sSegKnob.overflow = new RectOffset(4, 4, 4, 4);
             sSegText = Label(13, Text2, FontStyle.Normal); sSegText.alignment = TextAnchor.MiddleCenter;
             sSegOnText = Label(13, Ink, FontStyle.Bold); sSegOnText.alignment = TextAnchor.MiddleCenter;
@@ -1907,14 +2012,15 @@ namespace StutterFix
             sChip.normal.textColor = Text2; sChip.fontSize = 13; sChip.alignment = TextAnchor.MiddleCenter;
             sChip.padding = new RectOffset(14, 14, 0, 0);
             sChip.hover.background = Card(Soft, EdgeHover, 15, 1, 0, 0f); sChip.hover.textColor = Ink;
-            sChipOn = Styled(Card(Ink, Ink, 15, 0, 0, 0f), 16);
-            sChipOn.normal.textColor = Color.white; sChipOn.fontSize = 13; sChipOn.fontStyle = FontStyle.Bold; sChipOn.alignment = TextAnchor.MiddleCenter;
+            // 고른 항목 칩: 주황으로 채우면 한 줄에 여러 개가 너무 시끄러워, 한 단계 밝은 회색 + 어두운 주황 테두리
+            sChipOn = Styled(Card(Surface2, Hex(0x8A4C30), 15, 1, 0, 0f), 16);
+            sChipOn.normal.textColor = Ink; sChipOn.fontSize = 13; sChipOn.fontStyle = FontStyle.Bold; sChipOn.alignment = TextAnchor.MiddleCenter;
             sChipOn.padding = new RectOffset(14, 14, 0, 0);
-            sChipOn.hover.background = Card(Hex(0x2C2D33), Hex(0x2C2D33), 15, 0, 0, 0f); sChipOn.hover.textColor = Color.white;
+            sChipOn.hover.background = Card(TrackOff, Accent, 15, 1, 0, 0f); sChipOn.hover.textColor = Ink;
 
             sScroll = new GUIStyle { fixedWidth = 4, margin = new RectOffset(14, 0, 0, 0), border = new RectOffset(2, 2, 2, 2) };
             sThumb = new GUIStyle { fixedWidth = 4, border = new RectOffset(2, 2, 2, 2) };
-            sThumb.normal.background = Card(Hex(0xC9C9D0), Hex(0xC9C9D0), 2, 0, 0, 0f);
+            sThumb.normal.background = Card(Hex(0x3A3B42), Hex(0x3A3B42), 2, 0, 0, 0f);
         }
 
         private GUIStyle Label(int size, Color color, FontStyle style)
@@ -2000,7 +2106,7 @@ namespace StutterFix
                     float u = (x + 0.5f) / s, v = (y + 0.5f) / s;
                     float bar = Mathf.Max(Bar(u, v, 0.27f, 0.37f, 0.25f, 0.52f, s),
                                 Mathf.Max(Bar(u, v, 0.45f, 0.55f, 0.25f, 0.75f, s), Bar(u, v, 0.63f, 0.73f, 0.25f, 0.63f, s)));
-                    Color c = Color.Lerp(Ink, Color.white, bar);
+                    Color c = Color.Lerp(Accent, OnAccent, bar);   // 주황 바탕 + 어두운 막대
                     c.a = cover;
                     t.SetPixel(x, y, c);
                 }

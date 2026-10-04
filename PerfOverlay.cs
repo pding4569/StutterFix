@@ -769,6 +769,17 @@ namespace StutterFix
             sFooter = T("전체 끊김 ", "Hitches ") + hitchCount;
         }
 
+        // 설정 창 홈의 '최근 끊김': [ms, 원인, 몇 초 전, 30ms 넘음이면 "1"]
+        internal static void CopyRecent(List<string[]> dst, int max)
+        {
+            dst.Clear();
+            var o = Instance; if (o == null) return;
+            for (int i = 0; i < o.history.Count && i < max; i++)
+            {
+                var hr = o.history[i];
+                dst.Add(new[] { hr.Ms >= 1000 ? (hr.Ms / 1000f).ToString("F1") + T("초", "s") : hr.Ms.ToString("F0") + "ms", hr.Cause + (hr.Count > 1 ? "  ×" + hr.Count : ""), Ago(Time.unscaledTime - hr.Time), hr.Ms >= 30f ? "1" : "0" });
+            }
+        }
         private static string Ago(float s) { return s < 60 ? s.ToString("F0") + T("초 전", "s ago") : (s / 60f).ToString("F0") + T("분 전", "m ago"); }
         private static string Val(float v, string unit) { return v < 0 ? "-" : v.ToString("F0") + unit; }
 
