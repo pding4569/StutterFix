@@ -54,6 +54,7 @@ claude mcp add windows-mcp -s user -- uvx windows-mcp serve
 ## 6. 테스터 zip (Claude → 사용자가 디스코드로 전달)
 
 - `./pack.sh test 1` → `dist/StutterFix-2.4.7.1-tester.zip`. UMM 목록에 "테스터 2.4.7.1" 로 보이는지 확인.
+- 됨 (2026-10-04): 2.4.7.1 테스터 zip (TypeCache, 다시 하기 가볍게, MeshWarm, SoundWarm, FloorAnim, 타일 이동 나눠 처리). 불러오기 확인 FieldRefAccess 200곳 틀림 0.
 
 ## 7. 디컴파일로 최적화 후보 찾기 (Claude, ilspy)
 
@@ -74,6 +75,13 @@ claude mcp add windows-mcp -s user -- uvx windows-mcp serve
 ## 9. 화면 출력 실험 (`sf_presentmon`, `sf_ab`)
 
 - 지금 출력 방식(Flip/합성)과 찢어짐 허용 확인 → GPU 우선순위, 대기 프레임 수 1. 효과가 있을 때만 넣는다.
+
+## 10. 오늘(2026-10-04) 나온 것
+
+- HELLO 2026 곡 시작 5.1초 장식 이동 33개 몰림 (플레이어용 25ms, 개발자용 47ms).
+- UI 캔버스 23~28ms (`PlayerUpdateCanvases`, 네이티브): Lost Requiem 532.0초에 FloorAnim 끄면 재현. PerfView 로 볼 것.
+- PLUM MEGAMIX 567초 36ms: 소리 불러오기인지 개발자용 로그로 확인.
+- 남은 타일 이동 비용(타일당 약 2.5us, transform 엔진 호출): 저사양 나눠 처리로만 덮는다.
 
 ## 보류
 
