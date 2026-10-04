@@ -396,7 +396,7 @@ namespace StutterFix
                 y += IconS + IconGap;
             }
 
-            // 맨 아래: 게임 재시작 (실수로 눌리지 않게 3초 안에 한 번 더 눌러야 한다). 재시작하면 좋은 때면 주황 점.
+            // 맨 아래: 게임 재시작 (실수로 눌리지 않게 3초 안에 한 번 더 눌러야 한다). 재시작하면 좋은 때면 흰 점.
             Fill(new Rect(d.x + 14, y + 3, d.width - 28, 1), new Color(1, 1, 1, 0.14f), 0);
             y += 10;
             var rr = new Rect(d.x + (d.width - IconS) / 2f, y, IconS, IconS);
@@ -765,14 +765,22 @@ namespace StutterFix
         private void DrawBar(Rect b, bool spike)
         {
             Color face = spike ? Alert : BarC;
-            if (spike && tGlow != null)   // 튄 프레임: 흰 막대 뒤로 은은하게 번지는 빛
-            {
-                var oc = GUI.color; GUI.color = new Color(1f, 1f, 1f, 0.28f * oc.a);
-                GUI.DrawTexture(new Rect(b.center.x - 16f, b.y - 14f, 32f, b.height + 26f), tGlow);
-                GUI.color = oc;
-            }
+            if (spike) Bloom(new Rect(b.center.x - 6f, b.y, 12f, b.height), 0.75f);   // 튄 프레임: 흰 막대 둘레로 번지는 빛
             Fill(b, face, 0);
 
+        }
+
+        // 빛 번짐: 넓고 옅은 빛 + 좁고 진한 빛 두 겹 (Repaint 때만)
+        private void Bloom(Rect r, float strength)
+        {
+            if (tGlow == null || Event.current.type != EventType.Repaint) return;
+            var oc = GUI.color;
+            float wx = Mathf.Max(48f, r.width * 1.6f), wy = Mathf.Max(40f, r.height * 1.5f);
+            GUI.color = new Color(1f, 1f, 1f, 0.32f * strength * oc.a);
+            GUI.DrawTexture(new Rect(r.center.x - wx, r.center.y - wy, wx * 2f, wy * 2f), tGlow);
+            GUI.color = new Color(1f, 1f, 1f, 0.55f * strength * oc.a);
+            GUI.DrawTexture(new Rect(r.x - 14f, r.y - 12f, r.width + 28f, r.height + 24f), tGlow);
+            GUI.color = oc;
         }
 
         // 상태 목록: 이름 / 값
@@ -820,12 +828,9 @@ namespace StutterFix
                 var h = hitchRows[i];
                 BeginRow();
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(h[0], h[3] == "1" ? sMonoAccent : sMono, GUILayout.Width(80));
-                if (h[3] == "1" && Event.current.type == EventType.Repaint && tGlow != null)
-                {
-                    var lr = GUILayoutUtility.GetLastRect(); var oc = GUI.color; GUI.color = new Color(1f, 1f, 1f, 0.10f * oc.a);
-                    GUI.DrawTexture(new Rect(lr.x - 12f, lr.y - 8f, 76f, lr.height + 16f), tGlow); GUI.color = oc;
-                }
+                Rect mr = GUILayoutUtility.GetRect(new GUIContent(h[0]), sMono, GUILayout.Width(80));
+                if (h[3] == "1") Bloom(new Rect(mr.x, mr.y + 2f, sMonoAccent.CalcSize(new GUIContent(h[0])).x, mr.height - 4f), 0.42f);   // 30ms 넘은 끊김: 숫자 뒤로 빛
+                GUI.Label(mr, h[0], h[3] == "1" ? sMonoAccent : sMono);
                 GUILayout.Label(h[1], sDimMid, GUILayout.ExpandWidth(true));
                 GUILayout.Label(h[2], sRight, GUILayout.Width(80));
                 GUILayout.EndHorizontal();
@@ -846,7 +851,10 @@ namespace StutterFix
             // 첫 화면: 지금 상태를 한 문장으로
             GUILayout.Space(10);
             GUILayout.BeginVertical();
-            GUILayout.Label(string.Format(T("기능 {0}개가 켜져 있습니다", "{0} features are on"), on), sH1);
+            var h1 = new GUIContent(string.Format(T("기능 {0}개가 켜져 있습니다", "{0} features are on"), on));
+            Rect h1r = GUILayoutUtility.GetRect(h1, sH1);
+            Bloom(new Rect(h1r.x, h1r.y + 4f, sH1.CalcSize(h1).x, h1r.height - 8f), 0.16f);   // 제목 뒤로 아주 옅은 빛
+            GUI.Label(h1r, h1, sH1);
             GUILayout.Space(6);
             P(T("곡 중에는 메모리 정리를 미루고, ", "During a song, memory cleanup is deferred and ") + (jobs ? T("그리기는 여러 코어로 나눕니다. ", "rendering is spread over several cores. ") : T("그리기는 한 코어에서 합니다. ", "rendering runs on one core. "))
               + T("연출과 판정은 바꾸지 않습니다.", "Visuals and judgement stay the same."), sLead);
@@ -2384,7 +2392,7 @@ namespace StutterFix
                 {
                     float dx = (x + 0.5f) / n * 2f - 1f, dy = (y + 0.5f) / n * 2f - 1f;
                     float d = Mathf.Clamp01(1f - Mathf.Sqrt(dx * dx + dy * dy));
-                    px[y * n + x] = new Color(1f, 1f, 1f, d * d * d);
+                    px[y * n + x] = new Color(1f, 1f, 1f, d * d * (3f - 2f * d) * d);   // 가운데는 진하고 끝은 부드럽게 사라짐
                 }
             t.SetPixels(px); t.Apply(false, false);
             return t;
@@ -2460,7 +2468,7 @@ namespace StutterFix
                     float u = (x + 0.5f) / s, v = (y + 0.5f) / s;
                     float bar = Mathf.Max(Bar(u, v, 0.27f, 0.37f, 0.25f, 0.52f, s),
                                 Mathf.Max(Bar(u, v, 0.45f, 0.55f, 0.25f, 0.75f, s), Bar(u, v, 0.63f, 0.73f, 0.25f, 0.63f, s)));
-                    Color c = Color.Lerp(Accent, OnAccent, bar);   // 주황 바탕 + 어두운 막대
+                    Color c = Color.Lerp(Accent, OnAccent, bar);   // 밝은 바탕 + 어두운 막대
                     c.a = cover;
                     t.SetPixel(x, y, c);
                 }
