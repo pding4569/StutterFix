@@ -3,6 +3,8 @@
  *
  *   sf_unfilter_to / sf_unfilter_inplace : PNG row unfiltering (same rules and results as PngDecoder.UnfilterTo / UnfilterPtr)
  *   sf_dxt_encode_rows                    : DXT1/DXT5 block compression (same algorithm as DxtEncoder.EncodeRows)
+ *   sf_downscale                          : box downscale for "shrink big images" (same boxes and rounding as PngDecoder.Downscale)
+ *   sf_unfilter_downscale                 : PNG unfilter + downscale row by row (the full-size image is never written)
  *
  * Integer code gives bit-identical results to the C# versions. The principal-axis search in the DXT colour encoder uses
  * float like the C# code; in the checks so far every block was identical, and quality is checked as well.
@@ -12,6 +14,7 @@
  */
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 #include <emmintrin.h>
 #define COBJMACROS
 #define WIN32_LEAN_AND_MEAN
@@ -21,6 +24,214 @@
 #define SF_API __declspec(dllexport)
 
 SF_API int sf_version(void) { return 1; }
+
+/* ---------------------------------------------------------------- downscale ---------------------------------------------------------------- */
+/* PngDecoder.Downscale in C. The C# code sums in double, but every term is an integer below 2^53, so the sums are exact;
+ * here they are summed as integers and only the final divisions are done in double, exactly like the C# code.
+ * Box edges use the same double expressions ((int)(x * sx) etc.), so the output is byte-identical.
+ * Rows are tightly packed (width * bpp). bpp 4 = RGBA (alpha-weighted colour), bpp 3 = RGB.
+ * Output row y covers memory rows [y0, y1); memory row 0 is the bottom image row (Unity order), like the C# code. */
+
+typedef struct
+{
+    int width, height, bpp, nw, nh, sse;
+    double sx, sy;
+    int* xs;            /* x0, x1 per output column */
+    __m128i* acc4;      /* sse: (r*a, g*a, b*a, a) and (r, g, b, a) as 32-bit lanes per column */
+    uint64_t* acc;      /* otherwise 7 sums per column */
+} Shrink;
+
+static void shrink_free(Shrink* k) { free(k->xs); if (k->acc4) _mm_free(k->acc4); free(k->acc); }
+
+static int shrink_init(Shrink* k, int width, int height, int bpp, int nw, int nh)
+{
+    memset(k, 0, sizeof(*k));
+    if (width <= 0 || height <= 0 || nw <= 0 || nh <= 0 || (bpp != 3 && bpp != 4)) return 0;
+    k->width = width; k->height = height; k->bpp = bpp; k->nw = nw; k->nh = nh;
+    k->sx = (double)width / nw; k->sy = (double)height / nh;
+    /* (int) edges can make a box one pixel wider than ceil(sx); 32-bit sums are safe while box area * 255 * 255 < 2^32 */
+    k->sse = bpp == 4 && (k->sx + 2.0) * (k->sy + 2.0) * 65025.0 < 4294967295.0;
+    k->xs = (int*)malloc(sizeof(int) * 2 * (size_t)nw);
+    if (k->sse) k->acc4 = (__m128i*)_mm_malloc(sizeof(__m128i) * 2 * (size_t)nw, 16);
+    else k->acc = (uint64_t*)malloc(sizeof(uint64_t) * 7 * (size_t)nw);
+    if (!k->xs || (k->sse ? !k->acc4 : !k->acc)) { shrink_free(k); return 0; }
+    for (int x = 0; x < nw; x++)
+    {
+        int x0 = (int)(x * k->sx), x1 = (int)((x + 1) * k->sx);
+        if (x1 > width) x1 = width;
+        if (x1 < x0 + 1) x1 = x0 + 1;
+        k->xs[2 * x] = x0; k->xs[2 * x + 1] = x1;
+    }
+    return 1;
+}
+
+static void shrink_rows(const Shrink* k, int y, int* y0, int* y1)
+{
+    int a = (int)(y * k->sy), b = (int)((y + 1) * k->sy);
+    if (b > k->height) b = k->height;
+    if (b < a + 1) b = a + 1;
+    *y0 = a; *y1 = b;
+}
+
+static void shrink_clear(Shrink* k)
+{
+    if (k->sse) memset(k->acc4, 0, sizeof(__m128i) * 2 * (size_t)k->nw);
+    else memset(k->acc, 0, sizeof(uint64_t) * 7 * (size_t)k->nw);
+}
+
+/* add one input row to the column sums. SSE2: two pixels per step as 16-bit lanes; every product fits in 16 bits (255*255). */
+static void shrink_add(Shrink* k, const uint8_t* row)
+{
+    const int* xs = k->xs; int nw = k->nw;
+    if (k->sse)
+    {
+        const __m128i zero = _mm_setzero_si128();
+        const __m128i keep = _mm_set_epi16(0, -1, -1, -1, 0, -1, -1, -1);   /* a a a _ | a a a _ */
+        const __m128i ones = _mm_set_epi16(1, 0, 0, 0, 1, 0, 0, 0);         /* lane 3 of each pixel: a * 1 */
+        __m128i* A = k->acc4;
+        for (int x = 0; x < nw; x++, A += 2)
+        {
+            const uint8_t* p = row + (size_t)xs[2 * x] * 4;
+            const uint8_t* e = row + (size_t)xs[2 * x + 1] * 4;
+            __m128i sw = zero, su = zero;
+            for (; p + 8 <= e; p += 8)
+            {
+                __m128i v = _mm_unpacklo_epi8(_mm_loadl_epi64((const __m128i*)p), zero);            /* r0 g0 b0 a0 r1 g1 b1 a1 */
+                __m128i al = _mm_shufflehi_epi16(_mm_shufflelo_epi16(v, 0xFF), 0xFF);                /* a0 x4, a1 x4 */
+                __m128i w = _mm_mullo_epi16(v, _mm_or_si128(_mm_and_si128(al, keep), ones));
+                sw = _mm_add_epi32(sw, _mm_add_epi32(_mm_unpacklo_epi16(w, zero), _mm_unpackhi_epi16(w, zero)));
+                su = _mm_add_epi32(su, _mm_add_epi32(_mm_unpacklo_epi16(v, zero), _mm_unpackhi_epi16(v, zero)));
+            }
+            if (p < e)
+            {
+                __m128i v = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(const int*)p), zero);
+                __m128i al = _mm_shufflelo_epi16(v, 0xFF);
+                __m128i w = _mm_mullo_epi16(v, _mm_or_si128(_mm_and_si128(al, keep), ones));
+                sw = _mm_add_epi32(sw, _mm_unpacklo_epi16(w, zero));
+                su = _mm_add_epi32(su, _mm_unpacklo_epi16(v, zero));
+            }
+            A[0] = _mm_add_epi32(A[0], sw); A[1] = _mm_add_epi32(A[1], su);
+        }
+        return;
+    }
+    uint64_t* A = k->acc;
+    if (k->bpp == 4)
+    {
+        for (int x = 0; x < nw; x++, A += 7)
+        {
+            const uint8_t* p = row + (size_t)xs[2 * x] * 4;
+            const uint8_t* e = row + (size_t)xs[2 * x + 1] * 4;
+            uint64_t r = 0, g = 0, b = 0, a = 0, ur = 0, ug = 0, ub = 0;
+            for (; p < e; p += 4)
+            {
+                uint32_t al = p[3];
+                r += p[0] * al; g += p[1] * al; b += p[2] * al; a += al;
+                ur += p[0]; ug += p[1]; ub += p[2];
+            }
+            A[0] += r; A[1] += g; A[2] += b; A[3] += a; A[4] += ur; A[5] += ug; A[6] += ub;
+        }
+    }
+    else
+    {
+        for (int x = 0; x < nw; x++, A += 7)
+        {
+            const uint8_t* p = row + (size_t)xs[2 * x] * 3;
+            const uint8_t* e = row + (size_t)xs[2 * x + 1] * 3;
+            uint64_t r = 0, g = 0, b = 0;
+            for (; p < e; p += 3) { r += p[0]; g += p[1]; b += p[2]; }
+            A[0] += r; A[1] += g; A[2] += b;
+        }
+    }
+}
+
+/* write one output row from the sums (rows = y1 - y0). Same divisions and rounding as the C# code. */
+static void shrink_out(const Shrink* k, int rows, uint8_t* q)
+{
+    const int* xs = k->xs; int bpp = k->bpp;
+    for (int x = 0; x < k->nw; x++, q += bpp)
+    {
+        double n = (double)((int64_t)(xs[2 * x + 1] - xs[2 * x]) * rows);
+        uint64_t s[7];
+        if (k->sse)
+        {
+            uint32_t w4[4], u4[4];
+            _mm_storeu_si128((__m128i*)w4, k->acc4[2 * x]); _mm_storeu_si128((__m128i*)u4, k->acc4[2 * x + 1]);
+            s[0] = w4[0]; s[1] = w4[1]; s[2] = w4[2]; s[3] = w4[3]; s[4] = u4[0]; s[5] = u4[1]; s[6] = u4[2];
+        }
+        else memcpy(s, k->acc + 7 * (size_t)x, sizeof(s));
+        if (bpp == 4)
+        {
+            double a = (double)s[3];
+            if (a > 0) { q[0] = (uint8_t)(int)((double)s[0] / a + 0.5); q[1] = (uint8_t)(int)((double)s[1] / a + 0.5); q[2] = (uint8_t)(int)((double)s[2] / a + 0.5); }
+            else { q[0] = (uint8_t)(int)((double)s[4] / n + 0.5); q[1] = (uint8_t)(int)((double)s[5] / n + 0.5); q[2] = (uint8_t)(int)((double)s[6] / n + 0.5); }
+            q[3] = (uint8_t)(int)(a / n + 0.5);
+        }
+        else { q[0] = (uint8_t)(int)((double)s[0] / n + 0.5); q[1] = (uint8_t)(int)((double)s[1] / n + 0.5); q[2] = (uint8_t)(int)((double)s[2] / n + 0.5); }
+    }
+}
+
+SF_API int sf_downscale(const uint8_t* s0, int width, int height, int bpp, uint8_t* d0, int nw, int nh)
+{
+    Shrink k;
+    if (!s0 || !d0 || !shrink_init(&k, width, height, bpp, nw, nh)) return 0;
+    size_t srow = (size_t)width * bpp;
+    for (int y = 0; y < nh; y++)
+    {
+        int y0, y1; shrink_rows(&k, y, &y0, &y1);
+        shrink_clear(&k);
+        for (int yy = y0; yy < y1; yy++) shrink_add(&k, s0 + (size_t)yy * srow);
+        shrink_out(&k, y1 - y0, d0 + (size_t)y * nw * bpp);
+    }
+    shrink_free(&k);
+    return 1;
+}
+
+static int unfilter(uint8_t* d, const uint8_t* s, const uint8_t* p, int n, int bpp, int filter);
+
+/* PNG raw rows (filter byte + width*bpp, top row first, as libdeflate gives them) -> unfilter -> downscale, one row at a time.
+ * Same result as unfiltering the whole image into Unity order (bottom row first) and then sf_downscale, but the full-size
+ * image is never written: only two rows and the column sums stay in cache. Returns 0 on a bad filter byte or bad input. */
+SF_API int sf_unfilter_downscale(const uint8_t* raw, int width, int height, int bpp, uint8_t* d0, int nw, int nh)
+{
+    Shrink k;
+    if (!raw || !d0 || !shrink_init(&k, width, height, bpp, nw, nh)) return 0;
+    int n = width * bpp, ok = 1;
+    uint8_t* rows = (uint8_t*)malloc((size_t)n * 3);
+    if (!rows) { shrink_free(&k); return 0; }
+    uint8_t* zero = rows + 2 * (size_t)n; memset(zero, 0, (size_t)n);
+    uint8_t* cur = rows; uint8_t* prev = zero;
+    int cy = nh - 1, y0, y1, started = 0;
+    shrink_rows(&k, cy, &y0, &y1);
+    for (int iy = 0; iy < height; iy++)
+    {
+        const uint8_t* src = raw + (size_t)iy * (1 + (size_t)n);
+        if (!unfilter(cur, src + 1, prev, n, bpp, src[0])) { ok = 0; break; }
+        int m = height - 1 - iy;   /* memory row (Unity order): visited from the top of memory down */
+        while (cy >= 0 && m < y0)  /* below the current output row's range: that row is complete */
+        {
+            if (!started) shrink_clear(&k);
+            shrink_out(&k, y1 - y0, d0 + (size_t)cy * nw * bpp);
+            started = 0;
+            if (--cy >= 0) shrink_rows(&k, cy, &y0, &y1);
+        }
+        if (cy >= 0 && m < y1)
+        {
+            if (!started) { shrink_clear(&k); started = 1; }
+            shrink_add(&k, cur);
+        }
+        prev = cur; cur = cur == rows ? rows + n : rows;
+    }
+    if (ok)
+        while (cy >= 0)
+        {
+            if (!started) shrink_clear(&k);
+            shrink_out(&k, y1 - y0, d0 + (size_t)cy * nw * bpp);
+            started = 0;
+            if (--cy >= 0) shrink_rows(&k, cy, &y0, &y1);
+        }
+    free(rows); shrink_free(&k);
+    return ok;
+}
 
 /* ---------------------------------------------------------------- PNG unfilter ---------------------------------------------------------------- */
 

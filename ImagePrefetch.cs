@@ -530,6 +530,7 @@ namespace StutterFix
                 // 유니티의 렌더·잡 스레드와 코어를 나눠 쓴다). 그래서 코어 하나는 비워 두고, 스레드가 많은 CPU 는 최대 8개까지 쓴다.
                 int n = Math.Max(1, Math.Min(8, Environment.ProcessorCount - 1));
                 PngDecoder.ResetStats(); SfNative.ResetStats(); TurboJpeg.ResetStats(); jpgSeen = 0;
+                PngDecoder.DownscaleVerifyAll = Edition.Dev && File.Exists(Path.Combine(Main.Entry.Path, "downscale-verify.txt"));   // 개발자용: 줄인 이미지 전부를 C# 과 비교
                 maxTexture = SystemInfo.maxTextureSize;   // 유니티는 이보다 큰 이미지를 못 올린다(JPG 는 원래 방식으로 넘겨 같은 오류가 나게 한다)
                 workers = new Thread[n];
                 for (int i = 0; i < n; i++)
@@ -622,7 +623,7 @@ namespace StutterFix
                     continue;
                 }
 
-                int w = 0, h = 0, f = 0; IntPtr px = IntPtr.Zero; long size = 0; bool ok = false, extra = false, jpg = false; float factor = 1f;
+                int w = 0, h = 0, f = 0, ow = 0, oh = 0; IntPtr px = IntPtr.Zero; long size = 0; bool ok = false, extra = false, jpg = false; float factor = 1f;
                 try
                 {
                     int len = ReadInto(it.Path, ref fileBuf);
@@ -631,9 +632,14 @@ namespace StutterFix
                         jpg = true; f = PngDecoder.FormatRGB24;   // 유니티도 JPG 는 RGB24 로 만든다
                         ok = TurboJpeg.TryDecode(fileBuf, len, maxTexture, out w, out h, out px, out size);
                     }
-                    else ok = len > 0 && PngDecoder.TryDecode(fileBuf, len, ExtraFormats, out w, out h, out f, out px, out size, out extra);
-                    long before = (long)w * h * 4;   // GPU 에는 한 픽셀 4바이트로 올라간다
-                    if (ok && sideNow > 0 && PngDecoder.Downscale(ref px, ref w, ref h, f, ref size, sideNow, out factor))
+                    else ok = len > 0 && PngDecoder.TryDecode(fileBuf, len, ExtraFormats, sideNow, out w, out h, out f, out px, out size, out extra, out factor, out ow, out oh);
+                    long before = (jpg ? (long)w * h : (long)ow * oh) * 4;   // GPU 에는 한 픽셀 4바이트로 올라간다 (PNG 는 해독하며 줄였을 수 있어 원래 크기로)
+                    if (ok && factor < 1f)   // 해독하며 줄임
+                    {
+                        Interlocked.Increment(ref shrunkCount);
+                        Interlocked.Add(ref savedBytes, before - (long)w * h * 4);
+                    }
+                    else if (ok && sideNow > 0 && PngDecoder.Downscale(ref px, ref w, ref h, f, ref size, sideNow, out factor))
                     {
                         Interlocked.Increment(ref shrunkCount);
                         Interlocked.Add(ref savedBytes, before - (long)w * h * 4);
@@ -909,8 +915,8 @@ namespace StutterFix
                     used, fallback, notReady, waitMs, total / 1000.0, putMs, fallbackMs, GC.CollectionCount(0) - gcAtStart) + TexCompress.EndLoad() + (lateCompress > 0 ? ", 압축이 늦어 원래대로 " + lateCompress + "장" : "") + (compressWaitMs > 0 ? string.Format(", 압축 마저 기다림 {0:F0}ms", compressWaitMs) : "");
                 Main.Entry.Logger.Log("[이미지] " + Last);
                 double tk = Stopwatch.Frequency / 1000.0;
-                Main.Entry.Logger.Log(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
-                    workers.Length, PngDecoder.InflateTicks / tk, PngDecoder.FilterTicks / tk, PngDecoder.NewKinds, PngDecoder.NativeImages, PngDecoder.NativeFallbacks, NativeInflate.Status) + SfNative.Summary() + TurboJpeg.Summary());
+                Main.Entry.Logger.Log(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms, 줄이기 {7:F0}ms({8:F0}M 픽셀), 필터·줄이기 한 번에 {9}장 {10:F0}ms({11:F0}M 픽셀) | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
+                    workers.Length, PngDecoder.InflateTicks / tk, PngDecoder.FilterTicks / tk, PngDecoder.NewKinds, PngDecoder.NativeImages, PngDecoder.NativeFallbacks, NativeInflate.Status, PngDecoder.DownscaleTicks / tk, PngDecoder.DownscalePixels / 1e6, PngDecoder.FusedImages, PngDecoder.FusedTicks / tk, PngDecoder.FusedPixels / 1e6) + SfNative.Summary() + TurboJpeg.Summary());
                 Resilience.Phase("메뉴·편집");
             }
             Stop();

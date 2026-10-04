@@ -99,7 +99,17 @@ namespace StutterFix
         // extra: 추가 형식(흑백+알파, 16비트 RGBA, 확인된 뒤 흑백)을 유니티와 같은 모양(ARGB32)으로 푼다. usedExtra: 이번 이미지가 추가 형식이었나
         internal static bool TryDecode(byte[] d, int dLen, bool extra, out int width, out int height, out int format, out IntPtr pixels, out long size, out bool usedExtra)
         {
-            width = height = format = 0; pixels = IntPtr.Zero; size = 0; usedExtra = false;
+            float f; int ow, oh;
+            return TryDecode(d, dLen, extra, 0, out width, out height, out format, out pixels, out size, out usedExtra, out f, out ow, out oh);
+        }
+
+        // shrinkTo > 0 이면 긴 변이 그보다 큰 이미지는 줄인 결과를 돌려준다(factor < 1, width/height 는 줄인 크기, origW/H 는 원래 크기).
+        // 인터레이스 아닌 8비트 RGBA·RGB 는 필터 되돌리기와 줄이기를 한 줄씩 함께 해서(sfnative) 원본 크기 그림을 만들지 않는다.
+        // 결과는 원본 크기로 풀고 Downscale 한 것과 바이트까지 같다(개발자용은 비교). 나머지 형식은 호출한 쪽이 Downscale 한다(factor 1).
+        internal static bool TryDecode(byte[] d, int dLen, bool extra, int shrinkTo, out int width, out int height, out int format, out IntPtr pixels, out long size, out bool usedExtra,
+                                       out float factor, out int origW, out int origH)
+        {
+            width = height = format = 0; pixels = IntPtr.Zero; size = 0; usedExtra = false; factor = 1f; origW = origH = 0;
             if (d == null || dLen < 45 || dLen > d.Length) return false;
             if (d[0] != 0x89 || d[1] != 0x50 || d[2] != 0x4E || d[3] != 0x47 || d[4] != 0x0D || d[5] != 0x0A || d[6] != 0x1A || d[7] != 0x0A) return false;
 
@@ -127,6 +137,7 @@ namespace StutterFix
                 pos = data + len + 4;
             }
             if (!sawEnd || width <= 0 || height <= 0 || (interlace != 0 && interlace != 1) || idatLen < 3) return false;
+            origW = width; origH = height;
 
             int channels;
             if (colorType == 6 && bitDepth == 8) channels = 4;
@@ -168,6 +179,39 @@ namespace StutterFix
             int bpp = Math.Max(1, channels * bitDepth / 8);   // 필터가 쓰는 "왼쪽 픽셀" 거리
             var cur = Grow(ref curBuf, rowBytes);
             var prev = Grow(ref prevBuf, rowBytes);
+
+            // 줄일 이미지: 압축만 풀고 필터 되돌리기 + 줄이기를 한 줄씩 (원본 크기 그림을 쓰고 다시 읽지 않는다).
+            // WYSI ALPHA: 원본 크기 그림이 장당 평균 70MB, 합계 106GB 라 작업 스레드가 메모리 쓰기·읽기와 새 메모리 할당에 묶였다.
+            int big = Math.Max(width, height);
+            if (shrinkTo > 0 && big > shrinkTo && interlace == 0 && bitDepth == 8 && (colorType == 6 || (colorType == 2 && !rgbKey)) && rowBytes == outRow
+                && NativeInflate.Ready && SfNative.CanFuse)
+            {
+                float fct = (float)shrinkTo / big;
+                int nw = Math.Max(1, (int)Math.Round(width * (double)fct)), nh = Math.Max(1, (int)Math.Round(height * (double)fct));
+                long nsize = (long)nw * nh * outBpp;
+                long n0 = System.Diagnostics.Stopwatch.GetTimestamp();
+                byte* raw = NativeInflate.Inflate(idat, (int)idatLen, (long)height * (1 + rowBytes));
+                long n1 = System.Diagnostics.Stopwatch.GetTimestamp();
+                if (raw != null)
+                {
+                    IntPtr small = Marshal.AllocHGlobal((IntPtr)nsize);
+                    if (SfNative.UnfilterDownscale(raw, width, height, outBpp, (byte*)small, nw, nh))
+                    {
+                        long n2 = System.Diagnostics.Stopwatch.GetTimestamp();
+                        System.Threading.Interlocked.Add(ref InflateTicks, n1 - n0);
+                        System.Threading.Interlocked.Add(ref FusedTicks, n2 - n1);
+                        System.Threading.Interlocked.Add(ref FusedPixels, (long)width * height);
+                        System.Threading.Interlocked.Increment(ref FusedImages);
+                        System.Threading.Interlocked.Increment(ref NativeImages);
+                        if (Edition.Dev && (DownscaleVerifyAll || System.Threading.Interlocked.Increment(ref fusedChecked) <= 40))
+                            DevCheckFused(raw, width, height, channels, bpp, colorType, rgbKey, outBpp, outRow, cv, prev, cur, (byte*)small, nw, nh, nsize);
+                        pixels = small; width = nw; height = nh; size = nsize; factor = fct;
+                        return true;
+                    }
+                    Marshal.FreeHGlobal(small);
+                }
+                System.Threading.Interlocked.Increment(ref NativeFallbacks);   // 아래 원래 길로 (같은 결과)
+            }
 
             pixels = Marshal.AllocHGlobal((IntPtr)size);
             bool ok = false;
@@ -276,8 +320,26 @@ namespace StutterFix
         }
 
         // 해독 시간 나눠 보기 (모든 작업 스레드 합계): 압축 풀기 / 필터 되돌리기+픽셀 옮기기. 맵 불러오기 끝에 로그로 남긴다.
-        internal static long InflateTicks, FilterTicks, NewKinds, NativeImages, NativeFallbacks;
-        internal static void ResetStats() { InflateTicks = FilterTicks = NewKinds = NativeImages = NativeFallbacks = 0; }
+        internal static long InflateTicks, FilterTicks, NewKinds, NativeImages, NativeFallbacks, DownscaleTicks, DownscalePixels, FusedTicks, FusedPixels, FusedImages;
+        internal static void ResetStats() { InflateTicks = FilterTicks = NewKinds = NativeImages = NativeFallbacks = DownscaleTicks = DownscalePixels = FusedTicks = FusedPixels = FusedImages = 0; }
+        private static int fusedChecked;
+
+        // 개발자용: 같은 원본 줄을 원래 길(원본 크기로 필터 되돌리기 -> C# 줄이기)로도 만들어 한 줄씩 한 결과와 비교
+        private static void DevCheckFused(byte* raw, int width, int height, int channels, int bpp, int colorType, bool rgbKey, int outBpp, long outRow, Conv cv,
+                                          byte[] zeroBuf, byte[] rowBuf, byte* got, int nw, int nh, long nsize)
+        {
+            IntPtr full = IntPtr.Zero, want = IntPtr.Zero;
+            try
+            {
+                full = Marshal.AllocHGlobal((IntPtr)(outRow * height));
+                want = Marshal.AllocHGlobal((IntPtr)nsize);
+                if (!FromRaw(raw, width, height, channels, 8, bpp, 0, colorType, rgbKey, outBpp, outRow, cv, (byte*)full, zeroBuf, rowBuf)) return;
+                ManagedDownscale((byte*)full, width, height, outBpp, (byte*)want, nw, nh);
+                SfNative.DevCompare(got, (byte*)want, nsize, "필터·줄이기 한 번에 " + width + "x" + height + " -> " + nw + "x" + nh);
+            }
+            catch { }
+            finally { if (full != IntPtr.Zero) Marshal.FreeHGlobal(full); if (want != IntPtr.Zero) Marshal.FreeHGlobal(want); }
+        }
 
         // libdeflate 로 한 번에 푼 "원본 줄" 묶음(줄마다 필터 바이트 1 + 데이터)에서 결과를 만든다. 원래 길과 같은 규칙.
         private static bool FromRaw(byte* raw, int width, int height, int channels, int bitDepth, int bpp, int interlace, int colorType, bool rgbKey,
@@ -560,9 +622,33 @@ namespace StutterFix
             int bpp = format == FormatRGB24 ? 3 : 4;
             long nsize = (long)nw * nh * bpp;
             IntPtr dst = Marshal.AllocHGlobal((IntPtr)nsize);
+            long dt0 = System.Diagnostics.Stopwatch.GetTimestamp();
             try
             {
-                byte* s0 = (byte*)pixels, d0 = (byte*)dst;
+                // 네이티브(sfnative)가 있으면 C 로 (같은 상자, 정수 합계 + 같은 나눗셈이라 바이트까지 같다). WYSI ALPHA 맵 열기에서 작업 스레드 시간의
+                // 78%(C# 291초 / 풀기·필터 82초)가 이 줄이기였다. 개발자용은 앞의 몇 장(downscale-verify.txt 가 있으면 전부)을 C# 으로도 줄여 비교한다.
+                bool native = SfNative.CanDownscale && SfNative.Downscale((byte*)pixels, width, height, bpp, (byte*)dst, nw, nh);
+                if (!native) ManagedDownscale((byte*)pixels, width, height, bpp, (byte*)dst, nw, nh);
+                else if (Edition.Dev && (DownscaleVerifyAll || System.Threading.Interlocked.Increment(ref downscaleChecked) <= 40))
+                {
+                    IntPtr t = Marshal.AllocHGlobal((IntPtr)nsize);
+                    try { ManagedDownscale((byte*)pixels, width, height, bpp, (byte*)t, nw, nh); SfNative.DevCompare((byte*)dst, (byte*)t, nsize, "줄이기 " + width + "x" + height + " -> " + nw + "x" + nh); }
+                    finally { Marshal.FreeHGlobal(t); }
+                }
+            }
+            catch { Marshal.FreeHGlobal(dst); factor = 1f; return false; }
+            System.Threading.Interlocked.Add(ref DownscaleTicks, System.Diagnostics.Stopwatch.GetTimestamp() - dt0);
+            System.Threading.Interlocked.Add(ref DownscalePixels, (long)width * height);
+            Marshal.FreeHGlobal(pixels);
+            pixels = dst; width = nw; height = nh; size = nsize;
+            return true;
+        }
+        internal static bool DownscaleVerifyAll;
+        private static int downscaleChecked;
+
+        private static void ManagedDownscale(byte* s0, int width, int height, int bpp, byte* d0, int nw, int nh)
+        {
+            {
                 double sx = (double)width / nw, sy = (double)height / nh;
                 for (int y = 0; y < nh; y++)
                 {
@@ -592,10 +678,6 @@ namespace StutterFix
                     }
                 }
             }
-            catch { Marshal.FreeHGlobal(dst); factor = 1f; return false; }
-            Marshal.FreeHGlobal(pixels);
-            pixels = dst; width = nw; height = nh; size = nsize;
-            return true;
         }
     }
 }

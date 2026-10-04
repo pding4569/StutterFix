@@ -30,6 +30,8 @@ namespace StutterFix
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_unfilter_to(byte* d, byte* s, byte* p, int n, int bpp, int filter);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_unfilter_inplace(byte* c, byte* p, int n, int bpp, int filter);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern void sf_dxt_encode_rows(byte* src, int w, int h, int layout, int dxt5, byte* dst, int by0, int by1);
+        [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_downscale(byte* s, int w, int h, int bpp, byte* d, int nw, int nh);
+        [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_unfilter_downscale(byte* raw, int w, int h, int bpp, byte* d, int nw, int nh);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern void sf_set_swapchain(IntPtr sc);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern IntPtr sf_present_event_ptr();
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_present_count();
@@ -56,6 +58,8 @@ namespace StutterFix
                 if (mod == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + Marshal.GetLastWin32Error() + ")"; return; }
                 // 화면 다시 내보내기 함수는 2.3.2 에 들어왔다. 게임이 예전 DLL 을 이미 올려 둔 채 모드만 다시 불러오면 없다.
                 PresentReady = GetProcAddress(mod, "sf_present_rebind_count") != IntPtr.Zero;
+                DownscaleReady = GetProcAddress(mod, "sf_downscale") != IntPtr.Zero;   // 2.5.1 (예전 DLL 이 올라와 있으면 C# 으로)
+                FuseReady = GetProcAddress(mod, "sf_unfilter_downscale") != IntPtr.Zero;
                 int v = sf_version();
                 if (v != 1) { Status = "버전이 다름 (" + v + ")"; return; }
                 sf_dxt_init();
@@ -111,6 +115,16 @@ namespace StutterFix
         }
 
         internal static bool Available { get { return Use; } }
+
+        // 큰 이미지 줄이기 (PngDecoder.Downscale 와 같은 상자·반올림). 개발자용은 C# 결과와 비교한다(PngDecoder 쪽).
+        internal static bool DownscaleReady;
+        internal static bool CanDownscale { get { return Use && DownscaleReady; } }
+        internal static bool FuseReady;
+        internal static bool CanFuse { get { return Use && FuseReady; } }
+        internal static bool Downscale(byte* s, int w, int h, int bpp, byte* d, int nw, int nh) { return sf_downscale(s, w, h, bpp, d, nw, nh) != 0; }
+        // PNG 원본 줄(필터 바이트 + 줄, 위 줄부터) -> 필터 되돌리기 -> 줄이기를 한 줄씩. 원본 크기 그림을 만들지 않는다.
+        internal static bool UnfilterDownscale(byte* raw, int w, int h, int bpp, byte* d, int nw, int nh) { return sf_unfilter_downscale(raw, w, h, bpp, d, nw, nh) != 0; }
+        internal static void DevCompare(byte* a, byte* b, long n, string what) { Check(a, b, n, what); }
 
         // 개발자용: 원본 줄 s 를 C# 규칙으로 되돌려 네이티브 결과 d 와 비교
         private static void DevRow(byte* d, byte* s, byte* p, int n, int bpp, int filter)
