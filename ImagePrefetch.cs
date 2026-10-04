@@ -242,11 +242,12 @@ namespace StutterFix
         // 2026-10-04 ALPHA WYSI EX: nevCTF/nes_leeeeeeeeeeeetterbox_2-3-5.428571pp.png (4164x4164, 마지막 IDAT 체크섬 틀림·IEND 없음, 유니티 LoadImage 도 실패)
         // -> 장식 이동 45867번에서 멈춰 맵이 안 열림. 상태를 "오류" 로 바꾸면 게임이 없는 파일처럼 건너뛰고 오류 목록에 적는다.
         internal static int BrokenImages;
+        private static readonly HashSet<string> brokenSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         public static void BrokenImagePostfix(Texture2D __result, ref ADOFAI.LoadResult status, string filePath)
         {
             if ((object)__result != null || status != ADOFAI.LoadResult.Successful) return;
             status = ADOFAI.LoadResult.Error;
-            if (BrokenImages++ < 20) Main.Entry.Logger.Log("[이미지] 풀 수 없는 이미지(파일이 깨짐), 게임이 건너뛰게 함: " + filePath);
+            if (filePath != null && brokenSeen.Add(filePath) && BrokenImages++ < 20) Main.Entry.Logger.Log("[이미지] 풀 수 없는 이미지(파일이 깨짐), 게임이 건너뛰게 함: " + filePath);
         }
 
         public static bool SkipDuplicateError(scnEditor __instance, string name)
@@ -291,6 +292,12 @@ namespace StutterFix
         // 크기는 파일 머리(PNG IHDR, JPG SOF)만 읽는다.
         internal const int PredictSide = 3072;
         internal static float PredictRatio = 1.25f;
+        // 3072 로 줄여도 이미지 전체가 비어 있는 VRAM 의 몇 배를 넘으면 한 단계 더 (2048, 1536, 1024 까지).
+        // 2026-10-04 ALPHA WYSI EX(이미지 1520장, 원본 약 100GB): 3072 에서 전체가 비어 있는 VRAM 의 7.7배 -> 190~193초에 그리기·GPU 대기로
+        // 31~42ms 프레임이 이어졌고, 2048(3.6배)에서는 같은 구간이 17ms 로 끊김 0 (sf_ab 2쌍: FPS 214 -> 281, 곡 중 최악 42 -> 17ms).
+        // 원본으로 잘 돌던 CICADA3302 는 2.2배였다. 그래서 5배를 넘을 때만 더 내린다.
+        internal static float PredictDeepRatio = 5f;
+        private static readonly int[] DeepSides = { 2048, 1536, 1024 };
         private static int Predict(scnGame g, string dir, out string why)
         {
             why = "";
@@ -303,6 +310,7 @@ namespace StutterFix
                 double freeMB = totalMB * 0.9 - used;
                 var seenPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 long bytes = 0; int big = 0, count = 0;
+                var dims = new List<long>();   // 이미지마다 (가로 << 32 | 세로)
                 Action<ADOFAI.LevelEvent> look = ev =>
                 {
                     if (ev == null || !ev.ContainsKey("decorationImage")) return;
@@ -312,18 +320,42 @@ namespace StutterFix
                     if (!seenPaths.Add(p)) return;
                     int w, h;
                     if (!ReadDims(p, out w, out h)) return;
-                    bytes += (long)w * h * 4; count++;
+                    bytes += (long)w * h * 4; count++; dims.Add(((long)w << 32) | (uint)h);
                     if (Math.Max(w, h) > PredictSide) big++;
                 };
                 foreach (var ev in g.decorations) look(ev);
                 foreach (var ev in g.events) if ((int)ev.eventType == 29) look(ev);
                 double needMB = bytes / 1048576.0;
                 string info = string.Format("이미지 {0}장 원본 약 {1:F0}MB, 비어 있는 VRAM 약 {2:F0}MB, 3072 보다 큰 이미지 {3}장", count, needMB, freeMB, big);
-                if (needMB > Math.Max(0, freeMB) * PredictRatio && big > 0) { why = info; return PredictSide; }
+                if (needMB > Math.Max(0, freeMB) * PredictRatio && big > 0)
+                {
+                    int side = PredictSide;
+                    double atMB = SizeAt(dims, side);
+                    foreach (int next in DeepSides)
+                    {
+                        if (atMB <= Math.Max(0, freeMB) * PredictDeepRatio) break;
+                        side = next; atMB = SizeAt(dims, side);
+                    }
+                    if (side != PredictSide) info += string.Format(", 3072 로도 약 {0:F0}MB 라 더 줄임 -> 긴 변 {1} 에서 약 {2:F0}MB", SizeAt(dims, PredictSide), side, atMB);
+                    why = info; return side;
+                }
                 why = info;
                 return 0;
             }
             catch (Exception ex) { why = "어림 실패: " + ex.Message; return 0; }
+        }
+
+        // 긴 변을 side 로 줄였을 때 이미지 전체 크기(RGBA, MB)
+        private static double SizeAt(List<long> dims, int side)
+        {
+            double b = 0;
+            foreach (long d in dims)
+            {
+                int w = (int)(d >> 32), h = (int)(d & 0xffffffff);
+                double f = Math.Max(w, h) > side ? (double)side / Math.Max(w, h) : 1.0;
+                b += Math.Max(1, (int)(w * f)) * (double)Math.Max(1, (int)(h * f)) * 4;
+            }
+            return b / 1048576.0;
         }
 
         // 이미지 가로·세로를 파일 머리에서 읽는다 (PNG: IHDR, JPG: SOFn 표시). 못 읽으면 false.
