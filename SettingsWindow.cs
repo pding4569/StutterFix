@@ -29,6 +29,7 @@ namespace StutterFix
             if (Instance == null) return;
             if (Open) Instance.FinishClose();   // 모드를 끌 때는 애니메이션 없이 바로
             UnityEngine.Object.Destroy(Instance.gameObject);
+            UiOrbit.Destroy();
             Instance = null;
         }
 
@@ -590,7 +591,7 @@ namespace StutterFix
                 bool sp = ms > spike;
                 float h = Mathf.Clamp(ms / scaleMs, 0.04f, 1f) * (r.height - 2f);
                 if (!sp) h = Mathf.Min(h, r.height * 0.35f);   // 보통 프레임은 낮고 옅게, 튄 프레임만 솟는다
-                Color c = sp ? Alert : new Color(BarC.r, BarC.g, BarC.b, 0.8f);
+                Color c = sp ? new Color(Alert.r, Alert.g, Alert.b, 0.85f) : new Color(BarC.r, BarC.g, BarC.b, 0.45f);
                 Fill(new Rect(r.x + (FtN - n + i) * bw, r.yMax - h, Mathf.Max(1f, bw - 0.6f), h), c, 0);
             }
         }
@@ -653,7 +654,7 @@ namespace StutterFix
         {
             Color face = spike ? Alert : BarC;
             Fill(b, face, 0);
-            if (b.height > 3f) Fill(new Rect(b.x, b.y, b.width, 1.5f), spike ? Hex(0xFFB3A6) : Hex(0x6A6A6F), 0);
+
         }
 
         // 상태 목록: 이름 / 값
@@ -712,24 +713,31 @@ namespace StutterFix
         // ── 페이지 ─────────────────────────────────────────────────────
         private void PageHome()
         {
-            Heading(T("홈", "Home"), T("고사양 커스텀 맵에서 플레이 중 순간적으로 멈추는 현상과 맵 로딩 시간을 줄입니다. 연출과 판정은 바꾸지 않습니다.",
-                "Reduces hitches during play and loading times on heavy custom levels. Visuals and judgement are unchanged."));
-
             var c = Main.Config;
             int on = (c.GcPause ? 1 : 0) + (c.EffectSplit ? 1 : 0) + (c.RecolorSplit ? 1 : 0) + (c.TweenGuard ? 1 : 0) + (c.SkipSameText ? 1 : 0) + (c.FilterTypeCache ? 1 : 0) + (c.MeshWarm ? 1 : 0) + (c.SoundWarm ? 1 : 0) + (c.JitWarm ? 1 : 0)
                    + (c.ShaderWarm ? 1 : 0) + (c.FastBlend ? 1 : 0) + (c.SkipInvisible ? 1 : 0) + (c.LazyHidden ? 1 : 0) + (c.ZeroTween ? 1 : 0) + (c.InstantDirect ? 1 : 0) + (c.SkipSame ? 1 : 0) + (c.FastLoop ? 1 : 0) + (c.Precheck ? 1 : 0) + (c.DecoAnim ? 1 : 0) + (c.FloorAnim ? 1 : 0) + (c.MoveFinish ? 1 : 0) + (c.DormantSkip ? 1 : 0) + (c.ImagePrefetch ? 1 : 0) + (c.SkipAssetUnload ? 1 : 0) + (c.LegacyGfxJobs ? 1 : 0) + (c.NoGhosting ? 1 : 0) + (c.SkipIdleParticles ? 1 : 0) + (c.LeakFix ? 1 : 0) + (c.LoadCache ? 1 : 0);
             string d = BootConfig.Describe();
             bool jobs = d.Contains("Jobified") || d.Contains("Split");
 
-            // 프레임 시간 그래프 (큰 숫자 하나를 내세우던 칸 대신, 그래프와 그 숫자를 글로)
-            Rect live = GUILayoutUtility.GetRect(10, 210, GUILayout.ExpandWidth(true), GUILayout.Height(210));
+            // 첫 화면: 왼쪽에 서로 도는 두 행성(3D), 오른쪽에 지금 상태를 한 문장으로
+            GUILayout.BeginHorizontal();
+            Rect art = GUILayoutUtility.GetRect(300, 168, GUILayout.Width(300), GUILayout.Height(168));
+            GUILayout.Space(18);
+            GUILayout.BeginVertical(GUILayout.Height(168));
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(string.Format(T("기능 {0}개가 켜져 있습니다", "{0} features are on"), on), sH1);
+            GUILayout.Space(6);
+            P(T("곡 중에는 메모리 정리를 미루고, ", "During a song, memory cleanup is deferred and ") + (jobs ? T("그리기는 여러 코어로 나눕니다. ", "rendering is spread over several cores. ") : T("그리기는 한 코어에서 합니다. ", "rendering runs on one core. "))
+              + T("연출과 판정은 바꾸지 않습니다.", "Visuals and judgement stay the same."), sLead);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+            UiOrbit.Draw(art, 70f, 1f);
+            GUILayout.Space(18);
+
+            // 프레임 시간 그래프
+            Rect live = GUILayoutUtility.GetRect(10, 200, GUILayout.ExpandWidth(true), GUILayout.Height(200));
             DrawLive(live);
-            GUILayout.Space(14);
-            BeginGroup();
-            StateRow(T("켜진 기능", "Features on"), on + " / 29");
-            StateRow(T("메모리 정리", "Memory cleanup"), GcControl.Paused ? T("곡 중이라 미루는 중", "Deferred during the song") : T("대기", "Idle"));
-            StateRow(T("그리기", "Rendering"), jobs ? T("멀티스레드", "Multithreaded") : T("한 스레드", "Single-threaded"));
-            EndGroup();
             GUILayout.Space(22);
             RecentHitches();
 
@@ -2013,6 +2021,7 @@ namespace StutterFix
             tWhite = Texture2D.whiteTexture;
             tMark = Mark(48);
             icons = MakeIcons();
+            UiOrbit.Prepare();   // 홈의 두 행성 (다른 스레드에서 미리 그림)
 
             sWindow = Styled(Panel3D(Page, Hex(0xFFFFFF, 0.10f), Hex(0xFFFFFF, 0.04f), Hex(0xFFFFFF, 0.07f), 20, 0, 0f, 0), 22);
             sWindow.padding = new RectOffset(0, 0, 0, 0);
@@ -2061,11 +2070,11 @@ namespace StutterFix
             sWell = Styled(Well3D(Hex(0x080809), 10), 12);
             sWellThin = Styled(Well3D(Hex(0x080809), 4), 5);
             sPillWell = Styled(Well3D(Hex(0x070708), 12), 13);
-            sPillOn = Styled(Panel3D(Hex(0xE9E9EC), Hex(0xFFFFFF), Hex(0xBDBDC2), Hex(0xFFFFFF, 0.9f), 12, 0, 0f, 0), 13);
+            sPillOn = Styled(Panel3D(Hex(0xD9D9DC), Hex(0xE4E4E7), Hex(0xCACACE), Hex(0xFFFFFF, 0.3f), 12, 0, 0f, 0), 13);
             sDock = Styled(Panel3D(Hex(0x0E0E0F, 0.92f), Hex(0xFFFFFF, 0.12f), Hex(0xFFFFFF, 0.03f), Hex(0xFFFFFF, 0.06f), 16, 0, 0f, 0), 17);
             tKnobLight = Knob(Hex(0xFFFFFF), Hex(0xD6D6DA), 0.55f);
             tKnobGray = Knob(Hex(0x9A9AA0), Hex(0x6A6A70), 0.6f);
-            tKnobDark = Knob(Hex(0x3A3A3E), Hex(0x111113), 0.35f);
+            tKnobDark = Knob(Hex(0x1C1C1E), Hex(0x141416), 0.35f);
             sRightMid = Label(12, Text2, FontStyle.Normal); sRightMid.alignment = TextAnchor.MiddleRight;
             sSmallRight = Label(11, Text3, FontStyle.Normal); sSmallRight.alignment = TextAnchor.UpperRight;
             sValueRight = Label(13, Ink, FontStyle.Bold); sValueRight.alignment = TextAnchor.MiddleRight;
@@ -2083,7 +2092,7 @@ namespace StutterFix
             sNavText.normal.textColor = Ink; sNavText.hover.textColor = Ink;
 
             // 주된 버튼: 빛을 받은 흰 면(위가 더 밝다) + 아래 그림자. 누르면 그림자가 없어지고 조금 어두워진다(가라앉음).
-            sPrimary = Styled(Panel3D(Hex(0xF2F2F4), Hex(0xFFFFFF), Hex(0xB9B9BE), Hex(0xFFFFFF, 0.9f), 10, 6, 0.6f, 2), 16);
+            sPrimary = Styled(Panel3D(Hex(0xE6E6E9), Hex(0xEFEFF2), Hex(0xD0D0D4), Hex(0xFFFFFF, 0.6f), 10, 6, 0.6f, 2), 16);
             sPrimary.overflow = new RectOffset(6, 6, 6, 6);
             sPrimary.normal.textColor = OnAccent; sPrimary.alignment = TextAnchor.MiddleCenter; sPrimary.fontSize = 14; sPrimary.fontStyle = FontStyle.Bold;
             sPrimary.hover.background = Panel3D(Hex(0xFFFFFF), Hex(0xFFFFFF), Hex(0xC8C8CD), Hex(0xFFFFFF, 1f), 10, 6, 0.7f, 3); sPrimary.hover.textColor = OnAccent;
@@ -2117,7 +2126,7 @@ namespace StutterFix
             sChip.padding = new RectOffset(14, 14, 0, 0);
             sChip.hover.background = Well3D(Hex(0x131315), 15); sChip.hover.textColor = Ink;
             // 고른 항목 칩: 주황으로 채우면 한 줄에 여러 개가 너무 시끄러워, 한 단계 밝은 회색 + 어두운 주황 테두리
-            sChipOn = Styled(Panel3D(Hex(0xEDEDF0), Hex(0xFFFFFF), Hex(0xB9B9BE), Hex(0xFFFFFF, 0.9f), 15, 0, 0f, 0), 16);   // 고른 칩: 흰 면
+            sChipOn = Styled(Panel3D(Hex(0xE2E2E5), Hex(0xEBEBEE), Hex(0xD0D0D4), Hex(0xFFFFFF, 0.5f), 15, 0, 0f, 0), 16);   // 고른 칩: 흰 면
             sChipOn.normal.textColor = OnAccent; sChipOn.fontSize = 13; sChipOn.fontStyle = FontStyle.Bold; sChipOn.alignment = TextAnchor.MiddleCenter;
             sChipOn.padding = new RectOffset(14, 14, 0, 0);
             sChipOn.hover.background = Panel3D(Hex(0xFFFFFF), Hex(0xFFFFFF), Hex(0xC8C8CD), Hex(0xFFFFFF, 1f), 15, 0, 0f, 0); sChipOn.hover.textColor = OnAccent;
@@ -2203,7 +2212,8 @@ namespace StutterFix
         {
             // 어두운 면은 위쪽 띠가 아주 옅게 밝다(빛이 위에서 든다). 9칸 늘리기에서 위 띠는 늘어나지 않고 위 가장자리에만 남는다.
             float luma = fill.r * 0.3f + fill.g * 0.59f + fill.b * 0.11f;
-            float sheen = luma < 0.5f ? 0.045f : 0f;
+            float sheen = 0f;                                   // (평평하게) 위 띠 밝음은 쓰지 않는다
+            highlight.a *= 0.35f; shadowA *= 0.45f;            // 윗변 빛과 그림자도 아주 옅게
             int inner = r * 2 + 8, size = inner + pad * 2;
             var t = NewTex(size, size);
             var px = new Color[size * size];
@@ -2250,10 +2260,10 @@ namespace StutterFix
                     float cover = Mathf.Clamp01(0.5f - d);
                     float fromTop = inner - fy, fromBottom = fy;
                     Color c = fill;
-                    float shade = Mathf.Clamp01(1f - fromTop / 5f) * 0.55f;            // 위쪽 안에 드리운 그늘
+                    float shade = Mathf.Clamp01(1f - fromTop / 4f) * 0.18f;            // 위쪽 안에 드리운 옅은 그늘
                     c = Color.Lerp(c, Color.black, shade);
-                    if (d > -1.2f) c = Color.Lerp(c, Hex(0x000000), 0.5f);              // 가장자리 어두운 선
-                    if (fromBottom < 1.6f && d < -0.2f) c = Color.Lerp(c, Color.white, 0.07f);   // 아랫입술 빛
+                    if (d > -1.2f) c = Color.Lerp(c, Hex(0x2A2A2D), 0.6f);              // 가장자리 가는 선
+                    if (fromBottom < 1.6f && d < -0.2f) c = Color.Lerp(c, Color.white, 0.02f);   // 아랫입술 빛
                     px[y * size + x] = new Color(c.r, c.g, c.b, fill.a * cover);
                 }
             t.SetPixels(px);
@@ -2276,14 +2286,14 @@ namespace StutterFix
                     // 그림자: 아래로 3px, 퍼짐 R*0.9
                     float ds = Mathf.Sqrt(dx * dx + (dy + 3f) * (dy + 3f)) - R;
                     float sh = Mathf.Clamp01(1f - Mathf.Max(0f, ds) / (R * 0.9f));
-                    var bg = new Color(0, 0, 0, sh * sh * sh * shadowA);
+                    var bg = new Color(0, 0, 0, sh * sh * sh * shadowA * 0.5f);
                     float cover = Mathf.Clamp01(R + 0.5f - dist);
                     float v = Mathf.Clamp01((dy / R + 1f) / 2f);                // 0 아래 -> 1 위
                     Color c = Color.Lerp(bottom, top, Mathf.SmoothStep(0f, 1f, v));
                     float hx = dx + R * 0.35f, hy = dy - R * 0.4f;                  // 왼쪽 위 반짝임
                     float spec = Mathf.Clamp01(1f - Mathf.Sqrt(hx * hx + hy * hy) / (R * 0.6f));
-                    c = Color.Lerp(c, Color.white, spec * spec * 0.45f);
-                    if (dist > R - 1.2f) c = Color.Lerp(c, Color.black, 0.25f);    // 테두리
+                    c = Color.Lerp(bottom, top, 0.7f);                              // (평평하게) 한 색
+                    if (dist > R - 1.2f) c = Color.Lerp(c, Color.black, 0.15f);    // 테두리
                     float a = cover;
                     float outA = a + bg.a * (1 - a);
                     Color rgb = outA > 0 ? (c * a + bg * bg.a * (1 - a)) / outA : Color.clear;
