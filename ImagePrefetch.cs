@@ -243,11 +243,18 @@ namespace StutterFix
         // 2026-10-04 ALPHA WYSI EX: nevCTF/nes_leeeeeeeeeeeetterbox_2-3-5.428571pp.png (4164x4164, 마지막 IDAT 체크섬 틀림·IEND 없음, 유니티 LoadImage 도 실패)
         // -> 장식 이동 45867번에서 멈춰 맵이 안 열림. 상태를 "오류" 로 바꾸면 게임이 없는 파일처럼 건너뛰고 오류 목록에 적는다.
         internal static int BrokenImages;
+        // 게임은 실패한 이미지를 기억하지 않아, 그 이미지를 쓰는 장식마다 파일을 다시 읽고 유니티로 다시 풀다 실패한다
+        // (ALPHA Arche: 깨진 3장을 70번, 메인 스레드 7.2초). 이번 불러오기에서 깨졌다고 확인된 파일은 다시 읽지 않고 바로 실패시킨다.
+        // 게임이 보는 결과(null 텍스처 -> 위에서 "오류" -> 없는 파일처럼 건너뜀)는 같다.
+        private static readonly HashSet<string> brokenThisLoad = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static readonly byte[] BrokenMarker = new byte[1];
+        private static int brokenSkipped;
         private static readonly HashSet<string> brokenSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         public static void BrokenImagePostfix(Texture2D __result, ref ADOFAI.LoadResult status, string filePath)
         {
             if ((object)__result != null || status != ADOFAI.LoadResult.Successful) return;
             status = ADOFAI.LoadResult.Error;
+            if (running && filePath != null) brokenThisLoad.Add(filePath);
             if (filePath != null && brokenSeen.Add(filePath) && BrokenImages++ < 20) Main.Entry.Logger.Log("[이미지] 풀 수 없는 이미지(파일이 깨짐), 게임이 건너뛰게 함: " + filePath);
         }
 
@@ -512,6 +519,7 @@ namespace StutterFix
                 {
                     items = list; byPath = seen; next = 0; pendingBytes = 0; running = true; consumed = -1;
                     used = fallback = notReady = 0; waitMs = 0; shrunkCount = 0; savedBytes = 0;
+                    brokenThisLoad.Clear(); brokenSkipped = 0;
                 }
                 startTicks = Stopwatch.GetTimestamp();
                 putMs = fallbackMs = 0; fallbackNotes = 0; lateCompress = 0; compressWaitMs = 0;
@@ -716,6 +724,7 @@ namespace StutterFix
         public static byte[] ReadAllBytes(string path, out ADOFAI.LoadResult loadResult)
         {
             WindowGhost.Tick();
+            if (running && path != null && brokenThisLoad.Contains(path)) { brokenSkipped++; loadResult = (ADOFAI.LoadResult)0; return BrokenMarker; }
             Item it = null;
             string why = null;
             if (running)
@@ -797,6 +806,7 @@ namespace StutterFix
             WindowGhost.Tick();
             Item it;
             long t0 = Stopwatch.GetTimestamp();
+            if ((object)data == BrokenMarker) return false;   // 이번 불러오기에서 이미 깨졌다고 확인된 파일
             if (data == null || markers == null || !markers.TryGetValue(data, out it))
             {
                 bool r = ImageConversion.LoadImage(tex, data);
@@ -927,7 +937,7 @@ namespace StutterFix
                 double total = (Stopwatch.GetTimestamp() - startTicks) * 1000.0 / Stopwatch.Frequency;
                 LastSide = sideNow; LastShrunk = shrunkCount; LastSavedMB = Interlocked.Read(ref savedBytes) / 1048576f; AnyLoad = true;
                 Last = string.Format("미리 푼 것 {0}장(넣기 {5:F0}ms), 원래 방식 {1}장({6:F0}ms, 순서 어긋남 {2}), 기다림 {3:F0}ms, GC {7}번, 전체 {4:F1}초" + (shrunkCount > 0 ? ", 줄인 이미지 " + shrunkCount + "장 (긴 변 " + sideNow + ", VRAM 약 " + LastSavedMB.ToString("F0") + "MB 아낌)" : ""),
-                    used, fallback, notReady, waitMs, total / 1000.0, putMs, fallbackMs, GC.CollectionCount(0) - gcAtStart) + TexCompress.EndLoad() + (lateCompress > 0 ? ", 압축이 늦어 원래대로 " + lateCompress + "장" : "") + (compressWaitMs > 0 ? string.Format(", 압축 마저 기다림 {0:F0}ms", compressWaitMs) : "");
+                    used, fallback, notReady, waitMs, total / 1000.0, putMs, fallbackMs, GC.CollectionCount(0) - gcAtStart) + TexCompress.EndLoad() + (lateCompress > 0 ? ", 압축이 늦어 원래대로 " + lateCompress + "장" : "") + (brokenSkipped > 0 ? ", 깨진 이미지 다시 읽지 않음 " + brokenSkipped + "번" : "") + (compressWaitMs > 0 ? string.Format(", 압축 마저 기다림 {0:F0}ms", compressWaitMs) : "");
                 Main.Entry.Logger.Log("[이미지] " + Last);
                 double tk = Stopwatch.Frequency / 1000.0;
                 Main.Entry.Logger.Log(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms, 줄이기 {7:F0}ms({8:F0}M 픽셀), 필터·줄이기 한 번에 {9}장 {10:F0}ms({11:F0}M 픽셀), 흘려 풀기·줄이기 {12}장 {13:F0}ms({14:F0}M 픽셀, 못 한 것 {15}) | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
