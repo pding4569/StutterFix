@@ -28,12 +28,14 @@ made by **naro** & **Claude**
 | Lost Requiem (타일 1.5만 개) | 타일 이동 효과 한 프레임 | 56ms → **26ms** (2.5.0) |
 | Windflower | 곡 중 끊김 (타일 모양·효과음 처음 만들기) | 41~44ms·29~30ms → **없음** (2.5.0) |
 | 이미지 원본 약 100GB 맵 | 깨진 이미지로 안 열리던 맵 / 곡 중 최악 프레임 | 열림, 66ms → **26ms**, 끊김 3 → 0 (2.5.0) |
+| 이미지 1만 장 맵 (PNG 2.75GB, 풀면 737GB) | 맵 열기 | 490.7초 → **64.1초** (2.5.1) |
+| Arche / HELLO 2026 / Windflower | 맵 열기 | 25.1 / 19.4 / 16.1초 → **21.5 / 15.4 / 14.3초** (2.5.1) |
 
 ## 목차
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.5.0 에서 바뀐 것](#250-에서-바뀐-것) · [2.4.7](#247-에서-바뀐-것) · [2.4.6](#246-에서-바뀐-것) · [2.4.5](#245-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
+- [2.5.1 에서 바뀐 것](#251-에서-바뀐-것) · [2.5.0](#250-에서-바뀐-것) · [2.4.7](#247-에서-바뀐-것) · [2.4.6](#246-에서-바뀐-것) · [2.4.5](#245-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -52,6 +54,29 @@ made by **naro** & **Claude**
 - **Shift+Insert**: 실시간 모니터 (아이콘 → 미니 → 상세 → 끔)
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 아이콘 옆 점으로 알려 줍니다.
+
+## 2.5.1 에서 바뀐 것
+
+### 맵 열기
+
+맵 열기를 단계마다 재서 오래 걸리는 곳을 차례로 줄였습니다. 연출·판정·이미지 결과는 같습니다(아래 검증).
+
+| 맵 | 2.5.0 | 2.5.1 |
+|---|---|---|
+| 이미지 1만 장, 원본이 크고 대부분 빈 맵 (PNG 2.75GB → 풀면 737GB) | 490.7초 | **64.1초** |
+| 이미지 1,520장 (원본 약 100GB) | 87.8초 | **20.6초** |
+| 이미지 1,288장 | 79.0초 | **17.5초** |
+| HELLO (BPM) 2026 | 19.4초 | **15.4초** |
+| Arche (장식 2만 8,835개) | 25.1초 | **21.5초** |
+| Windflower | 16.1초 | **14.3초** |
+
+(플레이어용, 판마다 게임을 새로 켜서 2.5.0 과 번갈아 측정. 메뉴에서 편집기로 들어가 맵을 열어 편집 화면이 뜰 때까지)
+
+- **큰 이미지 줄이기를 네이티브로, 한 줄씩**: 큰 이미지를 줄일 때 PNG 압축 풀기 → 필터 되돌리기 → 줄이기를 한 줄씩 이어서 해, 원본 크기 그림과 풀린 데이터를 메모리에 쓰지 않습니다(압축 풀기는 libdeflate 1.24 를 흘려 쓰도록 고친 것). 빈 줄·빈 칸은 건너뜁니다. 결과는 원본 크기로 풀어 줄인 것과 바이트까지 같습니다(실제 PNG 14,710장 대조).
+- **PACL2 손실 압축과 함께**: 원본을 텍스처에 넣었다가 압축본으로 바꾸던 것을 압축본을 바로 넣게 했습니다(텍스처 결과는 같음). 이미지 1,520장 맵에서 메인 스레드 11.5 → 3.0초.
+- **깨진 이미지**: 게임은 실패한 이미지를 기억하지 않아 그 이미지를 쓰는 장식마다 다시 읽고 다시 풀다 실패했습니다(70번, 7.2초). 한 번 깨졌다고 확인된 파일은 다시 읽지 않습니다. 맵을 연 뒤 이미지 오류 안내창에 "알 수 없는 오류" 대신 **"깨진 파일"** 로 나옵니다.
+- **이벤트 해석을 여러 코어로**: 맵 파일의 이벤트를 게임 객체로 바꾸는 일을 작업 스레드에서 미리 하고, 게임의 원래 반복문이 같은 순서로 받습니다. Arche 3.85 → 2.5초. 차례로 만든 것과 대조 다름 0.
+- **장식 복제를 한 번에**: 연달아 나오는 이미지 장식을 한 번에 복제합니다(장식 순서는 원래대로). Arche 장식 만들기 9.1 → 7.9초.
 
 ## 2.5.0 에서 바뀐 것
 
@@ -278,7 +303,7 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 
 ## 라이선스와 사용한 외부 코드
 
-- [libdeflate](https://github.com/ebiggers/libdeflate) 1.24 — MIT, `native/libdeflate-LICENSE.txt`
+- [libdeflate](https://github.com/ebiggers/libdeflate) 1.24 — MIT, `native/libdeflate-LICENSE.txt` (압축 풀기 부분 소스는 `native/sfnative/libdeflate/` 에도 들어 있고, 큰 이미지를 흘려 풀기 위해 `native/sfnative/stream_template.h` 로 고친 복사본을 sfnative.dll 에 함께 빌드합니다. `native/sfnative/libdeflate/COPYING`)
 - [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) 3.2.0 — IJG License + Modified (3-clause) BSD License + zlib License, `native/libjpeg-turbo-LICENSE.md`, `native/libjpeg-turbo-README.ijg`. This software is based in part on the work of the Independent JPEG Group.
 - AMD FidelityFX Super Resolution 1 — MIT, `fsr/license.txt`
 - 빌드 도구로만 쓴 것: [ISPC](https://github.com/ispc/ispc) 1.31.0 (BSD-3-Clause, DXT 압축 코드 컴파일), CMake, NASM
@@ -290,6 +315,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.5.1:** much faster level loading. Big images that get shrunk are decoded row by row in native code (streaming inflate from a modified libdeflate 1.24 → unfilter → downscale), so the full-size image and the inflated data are never written to memory; empty rows and blocks are skipped. Output is byte-identical to decoding at full size and shrinking (checked on 14,710 real PNGs). With PACL2 lossy compression the precompressed DXT is put directly instead of putting the raw image and replacing it. Corrupt images are not re-read for every decoration that uses them, and the editor's image error list now says "Corrupted file" instead of "unknown error". Level events are decoded on worker threads and handed to the game's own loop in order, and runs of image decorations are instantiated in one batch (sibling order kept). Level open (player build, alternating with 2.5.0): 10k-image level 490.7 → 64.1 s, 1,520-image level 87.8 → 20.6 s, HELLO 2026 19.4 → 15.4 s, Arche 25.1 → 21.5 s, Windflower 16.1 → 14.3 s.
 
 **2.5.0:** fewer mid-song hitches: tile move effects (MoveTrack) are animated by the mod instead of creating DOTween tweens per tile (Lost Requiem 56 → 26 ms, HELLO 2026 41 → 25 ms; run side by side with real DOTween on 4 levels, 470k frames identical); mod and game effect functions are JIT-compiled at launch instead of on first use (HELLO 2026 42–43 ms → none, ~0.5 s at launch); hitsounds the level can use are loaded during play setup (Windflower 29–30 ms → none); tile meshes that recolor events would build mid-song are built during setup (Windflower 41–44 ms → none); the advanced filter "disable other filters" caches type lookups (HELLO 2026 worst 48–55 → 24 ms, play start 3.3–3.6 → 1.9 s). Levels with a truncated PNG now open (the game returned an empty texture marked "successful" and decoration loading stopped); the automatic image cap now goes down to 2048/1536/1024 when 3072 still needs over 5× the free VRAM (1,520-image level: worst frame 66 → 26 ms, hitches 3 → 0). Faster retries (editor 1.36 → 0.87 s, levels opened from the custom level list 1.15 → 0.47 s from the second retry), and opening a new level in the editor now frees the previous one (game bug: the old editor stayed referenced by a quit callback). New settings window: dark translucent glass, list rows without boxes, one-line descriptions that expand on click. Off by default: split large tile moves over frames (low-end page), exclusive fullscreen for lower display latency (experimental).
 
