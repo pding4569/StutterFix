@@ -184,6 +184,33 @@ namespace StutterFix
             // WYSI ALPHA: 원본 크기 그림이 장당 평균 70MB, 합계 106GB 라 작업 스레드가 메모리 쓰기·읽기와 새 메모리 할당에 묶였다.
             int big = Math.Max(width, height);
             if (shrinkTo > 0 && big > shrinkTo && interlace == 0 && bitDepth == 8 && (colorType == 6 || (colorType == 2 && !rgbKey)) && rowBytes == outRow
+                && SfNative.CanStream)
+            {
+                // 압축 풀기까지 한 줄씩: 풀린 원본 줄(Arche ALPHA 737GB)도 메모리에 쓰지 않는다. 실패하면(깨진 데이터 등) 아래 길로.
+                float fct = (float)shrinkTo / big;
+                int nw = Math.Max(1, (int)Math.Round(width * (double)fct)), nh = Math.Max(1, (int)Math.Round(height * (double)fct));
+                long nsize = (long)nw * nh * outBpp;
+                long n0 = System.Diagnostics.Stopwatch.GetTimestamp();
+                IntPtr small = Marshal.AllocHGlobal((IntPtr)nsize);
+                bool sok;
+                fixed (byte* z = idat) sok = SfNative.PngShrink(z, (int)idatLen, width, height, outBpp, (byte*)small, nw, nh);
+                if (sok)
+                {
+                    System.Threading.Interlocked.Add(ref StreamTicks, System.Diagnostics.Stopwatch.GetTimestamp() - n0);
+                    System.Threading.Interlocked.Add(ref StreamPixels, (long)width * height);
+                    System.Threading.Interlocked.Increment(ref StreamImages);
+                    if (Edition.Dev && NativeInflate.Ready && (DownscaleVerifyAll || System.Threading.Interlocked.Increment(ref streamChecked) <= 40))
+                    {
+                        byte* raw = NativeInflate.Inflate(idat, (int)idatLen, (long)height * (1 + rowBytes));
+                        if (raw != null) DevCheckFused(raw, width, height, channels, bpp, colorType, rgbKey, outBpp, outRow, cv, prev, cur, (byte*)small, nw, nh, nsize, "흘려 풀기·줄이기 ");
+                    }
+                    pixels = small; width = nw; height = nh; size = nsize; factor = fct;
+                    return true;
+                }
+                Marshal.FreeHGlobal(small);
+                System.Threading.Interlocked.Increment(ref StreamFallbacks);
+            }
+            if (shrinkTo > 0 && big > shrinkTo && interlace == 0 && bitDepth == 8 && (colorType == 6 || (colorType == 2 && !rgbKey)) && rowBytes == outRow
                 && NativeInflate.Ready && SfNative.CanFuse)
             {
                 float fct = (float)shrinkTo / big;
@@ -204,7 +231,7 @@ namespace StutterFix
                         System.Threading.Interlocked.Increment(ref FusedImages);
                         System.Threading.Interlocked.Increment(ref NativeImages);
                         if (Edition.Dev && (DownscaleVerifyAll || System.Threading.Interlocked.Increment(ref fusedChecked) <= 40))
-                            DevCheckFused(raw, width, height, channels, bpp, colorType, rgbKey, outBpp, outRow, cv, prev, cur, (byte*)small, nw, nh, nsize);
+                            DevCheckFused(raw, width, height, channels, bpp, colorType, rgbKey, outBpp, outRow, cv, prev, cur, (byte*)small, nw, nh, nsize, "필터·줄이기 한 번에 ");
                         pixels = small; width = nw; height = nh; size = nsize; factor = fct;
                         return true;
                     }
@@ -321,12 +348,17 @@ namespace StutterFix
 
         // 해독 시간 나눠 보기 (모든 작업 스레드 합계): 압축 풀기 / 필터 되돌리기+픽셀 옮기기. 맵 불러오기 끝에 로그로 남긴다.
         internal static long InflateTicks, FilterTicks, NewKinds, NativeImages, NativeFallbacks, DownscaleTicks, DownscalePixels, FusedTicks, FusedPixels, FusedImages;
-        internal static void ResetStats() { InflateTicks = FilterTicks = NewKinds = NativeImages = NativeFallbacks = DownscaleTicks = DownscalePixels = FusedTicks = FusedPixels = FusedImages = 0; }
-        private static int fusedChecked;
+        internal static long StreamTicks, StreamPixels, StreamImages, StreamFallbacks;
+        internal static void ResetStats()
+        {
+            InflateTicks = FilterTicks = NewKinds = NativeImages = NativeFallbacks = DownscaleTicks = DownscalePixels = FusedTicks = FusedPixels = FusedImages = 0;
+            StreamTicks = StreamPixels = StreamImages = StreamFallbacks = 0;
+        }
+        private static int fusedChecked, streamChecked;
 
         // 개발자용: 같은 원본 줄을 원래 길(원본 크기로 필터 되돌리기 -> C# 줄이기)로도 만들어 한 줄씩 한 결과와 비교
         private static void DevCheckFused(byte* raw, int width, int height, int channels, int bpp, int colorType, bool rgbKey, int outBpp, long outRow, Conv cv,
-                                          byte[] zeroBuf, byte[] rowBuf, byte* got, int nw, int nh, long nsize)
+                                          byte[] zeroBuf, byte[] rowBuf, byte* got, int nw, int nh, long nsize, string what)
         {
             IntPtr full = IntPtr.Zero, want = IntPtr.Zero;
             try
@@ -335,7 +367,7 @@ namespace StutterFix
                 want = Marshal.AllocHGlobal((IntPtr)nsize);
                 if (!FromRaw(raw, width, height, channels, 8, bpp, 0, colorType, rgbKey, outBpp, outRow, cv, (byte*)full, zeroBuf, rowBuf)) return;
                 ManagedDownscale((byte*)full, width, height, outBpp, (byte*)want, nw, nh);
-                SfNative.DevCompare(got, (byte*)want, nsize, "필터·줄이기 한 번에 " + width + "x" + height + " -> " + nw + "x" + nh);
+                SfNative.DevCompare(got, (byte*)want, nsize, what + width + "x" + height + " -> " + nw + "x" + nh);
             }
             catch { }
             finally { if (full != IntPtr.Zero) Marshal.FreeHGlobal(full); if (want != IntPtr.Zero) Marshal.FreeHGlobal(want); }

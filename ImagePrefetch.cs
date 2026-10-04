@@ -915,8 +915,8 @@ namespace StutterFix
                     used, fallback, notReady, waitMs, total / 1000.0, putMs, fallbackMs, GC.CollectionCount(0) - gcAtStart) + TexCompress.EndLoad() + (lateCompress > 0 ? ", 압축이 늦어 원래대로 " + lateCompress + "장" : "") + (compressWaitMs > 0 ? string.Format(", 압축 마저 기다림 {0:F0}ms", compressWaitMs) : "");
                 Main.Entry.Logger.Log("[이미지] " + Last);
                 double tk = Stopwatch.Frequency / 1000.0;
-                Main.Entry.Logger.Log(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms, 줄이기 {7:F0}ms({8:F0}M 픽셀), 필터·줄이기 한 번에 {9}장 {10:F0}ms({11:F0}M 픽셀) | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
-                    workers.Length, PngDecoder.InflateTicks / tk, PngDecoder.FilterTicks / tk, PngDecoder.NewKinds, PngDecoder.NativeImages, PngDecoder.NativeFallbacks, NativeInflate.Status, PngDecoder.DownscaleTicks / tk, PngDecoder.DownscalePixels / 1e6, PngDecoder.FusedImages, PngDecoder.FusedTicks / tk, PngDecoder.FusedPixels / 1e6) + SfNative.Summary() + TurboJpeg.Summary());
+                Main.Entry.Logger.Log(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms, 줄이기 {7:F0}ms({8:F0}M 픽셀), 필터·줄이기 한 번에 {9}장 {10:F0}ms({11:F0}M 픽셀), 흘려 풀기·줄이기 {12}장 {13:F0}ms({14:F0}M 픽셀, 못 한 것 {15}) | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
+                    workers.Length, PngDecoder.InflateTicks / tk, PngDecoder.FilterTicks / tk, PngDecoder.NewKinds, PngDecoder.NativeImages, PngDecoder.NativeFallbacks, NativeInflate.Status, PngDecoder.DownscaleTicks / tk, PngDecoder.DownscalePixels / 1e6, PngDecoder.FusedImages, PngDecoder.FusedTicks / tk, PngDecoder.FusedPixels / 1e6, PngDecoder.StreamImages, PngDecoder.StreamTicks / tk, PngDecoder.StreamPixels / 1e6, PngDecoder.StreamFallbacks) + SfNative.Summary() + TurboJpeg.Summary());
                 Resilience.Phase("메뉴·편집");
             }
             Stop();

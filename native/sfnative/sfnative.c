@@ -5,6 +5,7 @@
  *   sf_dxt_encode_rows                    : DXT1/DXT5 block compression (same algorithm as DxtEncoder.EncodeRows)
  *   sf_downscale                          : box downscale for "shrink big images" (same boxes and rounding as PngDecoder.Downscale)
  *   sf_unfilter_downscale                 : PNG unfilter + downscale row by row (the full-size image is never written)
+ *   sf_png_shrink (sfinflate.c)           : the same, fed straight from a streaming inflate (the raw rows are never written either)
  *
  * Integer code gives bit-identical results to the C# versions. The principal-axis search in the DXT colour encoder uses
  * float like the C# code; in the checks so far every block was identical, and quality is checked as well.
@@ -188,49 +189,96 @@ SF_API int sf_downscale(const uint8_t* s0, int width, int height, int bpp, uint8
 
 static int unfilter(uint8_t* d, const uint8_t* s, const uint8_t* p, int n, int bpp, int filter);
 
+static int all_zero(const uint8_t* p, size_t n)
+{
+    size_t i = 0;
+    for (; i + 64 <= n; i += 64)
+    {
+        __m128i v = _mm_or_si128(_mm_or_si128(_mm_loadu_si128((const __m128i*)(p + i)), _mm_loadu_si128((const __m128i*)(p + i + 16))),
+                                 _mm_or_si128(_mm_loadu_si128((const __m128i*)(p + i + 32)), _mm_loadu_si128((const __m128i*)(p + i + 48))));
+        if (_mm_movemask_epi8(_mm_cmpeq_epi8(v, _mm_setzero_si128())) != 0xFFFF) return 0;
+    }
+    for (; i < n; i++) if (p[i]) return 0;
+    return 1;
+}
+
 /* PNG raw rows (filter byte + width*bpp, top row first, as libdeflate gives them) -> unfilter -> downscale, one row at a time.
  * Same result as unfiltering the whole image into Unity order (bottom row first) and then sf_downscale, but the full-size
- * image is never written: only two rows and the column sums stay in cache. Returns 0 on a bad filter byte or bad input. */
-SF_API int sf_unfilter_downscale(const uint8_t* raw, int width, int height, int bpp, uint8_t* d0, int nw, int nh)
+ * image is never written: only two rows and the column sums stay in cache. Returns 0 on a bad filter byte or bad input.
+ * Blank rows (all bytes 0) add nothing to the sums and are skipped. When the row above is blank and this row's filtered bytes are
+ * all 0, every filter type (None/Sub/Up/Average/Paeth of zeros) gives a blank row, so it is not even unfiltered.
+ * (Images on very large maps are often mostly transparent: ALPHA maps unpack to 268x their file size.) */
+typedef struct SfFused
 {
     Shrink k;
-    if (!raw || !d0 || !shrink_init(&k, width, height, bpp, nw, nh)) return 0;
-    int n = width * bpp, ok = 1;
-    uint8_t* rows = (uint8_t*)malloc((size_t)n * 3);
-    if (!rows) { shrink_free(&k); return 0; }
-    uint8_t* zero = rows + 2 * (size_t)n; memset(zero, 0, (size_t)n);
-    uint8_t* cur = rows; uint8_t* prev = zero;
-    int cy = nh - 1, y0, y1, started = 0;
-    shrink_rows(&k, cy, &y0, &y1);
-    for (int iy = 0; iy < height; iy++)
+    uint8_t *rows, *zero, *cur, *prev, *d0;
+    int n, bpp, height, nw, iy, cy, y0, y1, started;
+} SfFused;
+
+static void fused_out_row(SfFused* f)
+{
+    if (!f->started) shrink_clear(&f->k);
+    shrink_out(&f->k, f->y1 - f->y0, f->d0 + (size_t)f->cy * f->nw * f->bpp);
+    f->started = 0;
+    if (--f->cy >= 0) shrink_rows(&f->k, f->cy, &f->y0, &f->y1);
+}
+
+SfFused* sf_fused_begin(int width, int height, int bpp, uint8_t* d0, int nw, int nh)
+{
+    SfFused* f = (SfFused*)calloc(1, sizeof(SfFused));
+    if (!f || !d0) { free(f); return NULL; }
+    if (!shrink_init(&f->k, width, height, bpp, nw, nh)) { free(f); return NULL; }
+    f->n = width * bpp; f->bpp = bpp; f->height = height; f->nw = nw; f->d0 = d0;
+    f->rows = (uint8_t*)malloc((size_t)f->n * 3);
+    if (!f->rows) { shrink_free(&f->k); free(f); return NULL; }
+    f->zero = f->rows + 2 * (size_t)f->n; memset(f->zero, 0, (size_t)f->n);
+    f->cur = f->rows; f->prev = f->zero;
+    f->cy = nh - 1;
+    shrink_rows(&f->k, f->cy, &f->y0, &f->y1);
+    return f;
+}
+
+/* one PNG row: src = filter byte + width*bpp bytes, rows in image order (top first) */
+int sf_fused_row(SfFused* f, const uint8_t* src)
+{
+    int n = f->n, blank;
+    if (f->iy >= f->height || src[0] > 4) return 0;
+    if (f->prev == f->zero && all_zero(src + 1, (size_t)n)) blank = 1;
+    else
     {
-        const uint8_t* src = raw + (size_t)iy * (1 + (size_t)n);
-        if (!unfilter(cur, src + 1, prev, n, bpp, src[0])) { ok = 0; break; }
-        int m = height - 1 - iy;   /* memory row (Unity order): visited from the top of memory down */
-        while (cy >= 0 && m < y0)  /* below the current output row's range: that row is complete */
-        {
-            if (!started) shrink_clear(&k);
-            shrink_out(&k, y1 - y0, d0 + (size_t)cy * nw * bpp);
-            started = 0;
-            if (--cy >= 0) shrink_rows(&k, cy, &y0, &y1);
-        }
-        if (cy >= 0 && m < y1)
-        {
-            if (!started) { shrink_clear(&k); started = 1; }
-            shrink_add(&k, cur);
-        }
-        prev = cur; cur = cur == rows ? rows + n : rows;
+        if (!unfilter(f->cur, src + 1, f->prev, n, f->bpp, src[0])) return 0;
+        blank = all_zero(f->cur, (size_t)n);
     }
-    if (ok)
-        while (cy >= 0)
-        {
-            if (!started) shrink_clear(&k);
-            shrink_out(&k, y1 - y0, d0 + (size_t)cy * nw * bpp);
-            started = 0;
-            if (--cy >= 0) shrink_rows(&k, cy, &y0, &y1);
-        }
-    free(rows); shrink_free(&k);
+    int m = f->height - 1 - f->iy++;          /* memory row (Unity order): visited from the top of memory down */
+    while (f->cy >= 0 && m < f->y0) fused_out_row(f);   /* below the current output row's range: that row is complete */
+    if (f->cy >= 0 && m < f->y1)
+    {
+        if (!f->started) { shrink_clear(&f->k); f->started = 1; }
+        if (!blank) shrink_add(&f->k, f->cur);
+    }
+    if (blank) f->prev = f->zero;
+    else { f->prev = f->cur; f->cur = f->cur == f->rows ? f->rows + n : f->rows; }
+    return 1;
+}
+
+int sf_fused_end(SfFused* f, int ok)
+{
+    if (!f) return 0;
+    if (ok && f->iy == f->height) while (f->cy >= 0) fused_out_row(f);
+    else ok = 0;
+    free(f->rows); shrink_free(&f->k); free(f);
     return ok;
+}
+
+SF_API int sf_unfilter_downscale(const uint8_t* raw, int width, int height, int bpp, uint8_t* d0, int nw, int nh)
+{
+    if (!raw) return 0;
+    SfFused* f = sf_fused_begin(width, height, bpp, d0, nw, nh);
+    if (!f) return 0;
+    size_t row = 1 + (size_t)width * bpp;
+    int ok = 1;
+    for (int iy = 0; iy < height && ok; iy++) ok = sf_fused_row(f, raw + (size_t)iy * row);
+    return sf_fused_end(f, ok);
 }
 
 /* ---------------------------------------------------------------- PNG unfilter ---------------------------------------------------------------- */

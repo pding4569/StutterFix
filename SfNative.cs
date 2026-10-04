@@ -32,6 +32,7 @@ namespace StutterFix
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern void sf_dxt_encode_rows(byte* src, int w, int h, int layout, int dxt5, byte* dst, int by0, int by1);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_downscale(byte* s, int w, int h, int bpp, byte* d, int nw, int nh);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_unfilter_downscale(byte* raw, int w, int h, int bpp, byte* d, int nw, int nh);
+        [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_png_shrink(byte* zlib, int zlen, int w, int h, int bpp, byte* d, int nw, int nh);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern void sf_set_swapchain(IntPtr sc);
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern IntPtr sf_present_event_ptr();
         [DllImport("sfnative", CallingConvention = CallingConvention.Cdecl)] private static extern int sf_present_count();
@@ -60,6 +61,7 @@ namespace StutterFix
                 PresentReady = GetProcAddress(mod, "sf_present_rebind_count") != IntPtr.Zero;
                 DownscaleReady = GetProcAddress(mod, "sf_downscale") != IntPtr.Zero;   // 2.5.1 (예전 DLL 이 올라와 있으면 C# 으로)
                 FuseReady = GetProcAddress(mod, "sf_unfilter_downscale") != IntPtr.Zero;
+                StreamReady = GetProcAddress(mod, "sf_png_shrink") != IntPtr.Zero;
                 int v = sf_version();
                 if (v != 1) { Status = "버전이 다름 (" + v + ")"; return; }
                 sf_dxt_init();
@@ -121,6 +123,10 @@ namespace StutterFix
         internal static bool CanDownscale { get { return Use && DownscaleReady; } }
         internal static bool FuseReady;
         internal static bool CanFuse { get { return Use && FuseReady; } }
+        // PNG 압축 데이터(IDAT) -> 압축 풀기(libdeflate 를 고쳐 흘려 쓰는 것) -> 필터 되돌리기 -> 줄이기. 풀린 원본 줄도 메모리에 쓰지 않는다.
+        internal static bool StreamReady;
+        internal static bool CanStream { get { return Use && StreamReady; } }
+        internal static bool PngShrink(byte* zlib, int zlen, int w, int h, int bpp, byte* d, int nw, int nh) { return sf_png_shrink(zlib, zlen, w, h, bpp, d, nw, nh) != 0; }
         internal static bool Downscale(byte* s, int w, int h, int bpp, byte* d, int nw, int nh) { return sf_downscale(s, w, h, bpp, d, nw, nh) != 0; }
         // PNG 원본 줄(필터 바이트 + 줄, 위 줄부터) -> 필터 되돌리기 -> 줄이기를 한 줄씩. 원본 크기 그림을 만들지 않는다.
         internal static bool UnfilterDownscale(byte* raw, int w, int h, int bpp, byte* d, int nw, int nh) { return sf_unfilter_downscale(raw, w, h, bpp, d, nw, nh) != 0; }

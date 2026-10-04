@@ -1,5 +1,7 @@
 @echo off
 rem Builds native\sfnative.dll from native\sfnative\sfnative.c + sfdxt.ispc (StutterFix's own code: PNG unfilter + DXT encoder, x64, static CRT).
+rem sfinflate.c adds a streaming copy of libdeflate 1.24's decompressor (native\sfnative\libdeflate, MIT; stream_template.h is
+rem generated from its decompress_template.h) that decodes big PNGs straight into the downscaler.
 rem Same toolchain as build-libdeflate.bat, plus the Intel ISPC compiler for the DXT encoder:
 rem   ISPC https://github.com/ispc/ispc v1.31.0 (ispc-v1.31.0-windows.zip, BSD-3-Clause)
 rem   Targets SSE2 / SSE4.1 / AVX2 in one DLL; the ISPC dispatcher picks the best one for the CPU at run time.
@@ -21,7 +23,7 @@ mkdir "%OUT%"
 cd /d "%OUT%"
 ispc "%~dp0sfnative\sfdxt.ispc" -O2 --arch=x86-64 --target-os=windows --target=sse2-i32x4,sse4.1-i32x4,avx2-i32x8 --opt=disable-fma -o sfdxt.obj
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /GL /MT /LD /Brepro /W3 "%~dp0sfnative\sfnative.c" sfdxt.obj sfdxt_sse2.obj sfdxt_sse4.obj sfdxt_avx2.obj /Fe:sfnative.dll /link /LTCG /Brepro
+cl /nologo /O2 /GL /MT /LD /Brepro /W3 "%~dp0sfnative\sfnative.c" "%~dp0sfnative\sfinflate.c" "%~dp0sfnative\libdeflate\lib\x86\cpu_features.c" "%~dp0sfnative\libdeflate\lib\utils.c" sfdxt.obj sfdxt_sse2.obj sfdxt_sse4.obj sfdxt_avx2.obj /Fe:sfnative.dll /link /LTCG /Brepro
 if errorlevel 1 exit /b 1
 copy /y sfnative.dll "%~dp0sfnative.dll" >nul
 echo OK %~dp0sfnative.dll
