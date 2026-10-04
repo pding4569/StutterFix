@@ -25,6 +25,10 @@ namespace StutterFix
         }
         private static readonly Dictionary<Texture2D, Pre> pending = new Dictionary<Texture2D, Pre>(new RefEq());
         private static readonly HashSet<Texture2D> ours = new HashSet<Texture2D>(new RefEq());
+        // 처음부터 압축 결과로 넣은 것(ImagePrefetch.LoadImage). 곧 이어 압축이 불리는지(PACL2 Compress / 저사양 옵션의 Apply) 센다.
+        private static readonly HashSet<Texture2D> direct = new HashSet<Texture2D>(new RefEq());
+        internal static long Direct, DirectConfirmed;
+        private static int registeredThisLoad;
         private static bool verifying;
         private static int verifiedThisLoad;
 
@@ -48,6 +52,7 @@ namespace StutterFix
         // 메인 스레드: 미리 푼 이미지를 텍스처에 넣은 직후 (압축 결과의 주인이 여기로 넘어온다)
         internal static void Register(Texture2D tex, IntPtr blocks, long size, bool dxt5, int w, int h, TextureFormat src)
         {
+            registeredThisLoad++;
             Pre old;
             if (pending.TryGetValue(tex, out old)) Marshal.FreeHGlobal(old.Blocks);
             pending[tex] = new Pre { Blocks = blocks, Size = size, Dxt5 = dxt5, W = w, H = h, Src = src };
@@ -56,14 +61,16 @@ namespace StutterFix
         public static bool CompressPrefix(Texture2D __instance, bool __0)
         {
             if (verifying || (object)__instance == null) return true;
-            if (ours.Contains(__instance)) { SkippedAgain++; return false; }   // 이미 미리 압축한 것을 넣었다
+            if (ours.Contains(__instance)) { SkippedAgain++; if (direct.Remove(__instance)) DirectConfirmed++; return false; }   // 이미 미리 압축한 것을 넣었다
             if (__0) return true;   // 고품질은 유니티에
             return !Substitute(__instance);
         }
 
         public static void ApplyPrefix(Texture2D __instance)
         {
-            if (!OwnOption || verifying || (object)__instance == null || pending.Count == 0) return;
+            if (!OwnOption || verifying || (object)__instance == null) return;
+            if (direct.Count > 0 && direct.Remove(__instance)) { DirectConfirmed++; return; }   // 저사양 옵션: 이 Apply 에서 압축했을 것
+            if (pending.Count == 0) return;
             if (pending.ContainsKey(__instance)) Substitute(__instance);
         }
 
@@ -113,16 +120,29 @@ namespace StutterFix
             finally { verifying = false; if (copy != null) UnityEngine.Object.Destroy(copy); }
         }
 
+        // 미리 압축한 결과를 처음부터 넣어도 되는가: 이번 불러오기에서 원래 길(원본을 넣고 압축 순간에 바꿔 넣기)로 넣은 처음 16장이
+        // 모두 압축됐으면(PACL2 가 이 맵의 이미지를 압축한다는 뜻) 나머지는 원본을 넣지 않고 압축 결과를 바로 넣는다.
+        // 게임 LoadTexture 는 LoadImage 바로 뒤에 Apply(PACL2 는 그 앞에서 Compress)를 부르므로 결과 텍스처는 같다(DXT, 읽기 불가).
+        // 원본(2048x2048 이면 16MB)을 넣고 버리는 일이 없어진다.
+        internal static bool DirectAllowed
+        {
+            get { return Planned && registeredThisLoad >= 16 && Substituted == registeredThisLoad && Mismatch == 0 && pending.Count == 0; }
+        }
+
+        internal static void MarkDirect(Texture2D tex) { ours.Add(tex); direct.Add(tex); Direct++; }
+
         // 불러오기가 끝나면: 쓰이지 않은 압축 결과를 버리고 요약
         internal static string EndLoad()
         {
             int unused = pending.Count;
             foreach (var kv in pending) Marshal.FreeHGlobal(kv.Value.Blocks);
             pending.Clear(); ours.Clear(); verifiedThisLoad = 0;
-            if (Substituted + unused + Mismatch == 0) return "";
+            long notConfirmed = direct.Count; direct.Clear(); registeredThisLoad = 0;
+            if (Substituted + unused + Mismatch + Direct == 0) return "";
             string s = string.Format(", 미리 압축 넣음 {0}장 (쓰지 않음 {1}, 크기·형식 달라 원래대로 {2}, 압축 {3:F0}ms/작업 스레드 합)",
-                Substituted, unused, Mismatch, EncodeTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency);
-            Substituted = Mismatch = SkippedAgain = 0; EncodeTicks = 0;
+                Substituted, unused, Mismatch, EncodeTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency)
+                + (Direct > 0 ? string.Format(", 처음부터 압축으로 넣음 {0}장 (뒤이어 압축 불림 {1}, 안 불림 {2})", Direct, DirectConfirmed, notConfirmed) : "");
+            Substituted = Mismatch = SkippedAgain = 0; EncodeTicks = 0; Direct = DirectConfirmed = 0;
             return s;
         }
     }

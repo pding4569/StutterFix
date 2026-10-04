@@ -122,7 +122,8 @@ namespace StutterFix
                 harmony.Patch(update,
                     prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(Begin)),
                     finalizer: new HarmonyMethod(typeof(ImagePrefetch), nameof(End)));
-                harmony.Patch(load, transpiler: new HarmonyMethod(typeof(ImagePrefetch), nameof(Transpiler)), postfix: new HarmonyMethod(typeof(ImagePrefetch), nameof(BrokenImagePostfix)));
+                harmony.Patch(load, prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(LoadTexturePrefix)),
+                    transpiler: new HarmonyMethod(typeof(ImagePrefetch), nameof(Transpiler)), postfix: new HarmonyMethod(typeof(ImagePrefetch), nameof(BrokenImagePostfix)));
                 LoadNative();
 
                 // 게임 버그: 없는 이미지를 장식 여러 개가 쓰면, 두 번째 실패에서 오류 목록 Dictionary.Add 가
@@ -787,6 +788,10 @@ namespace StutterFix
             if (k > consumed) consumed = k;
         }
 
+        // 이번 LoadTexture 의 maxSideSize (-1 이 아니면 게임이 LoadImage 뒤에 ShrinkImage 로 픽셀을 다시 읽으므로 압축 결과를 바로 넣지 않는다)
+        private static int loadMaxSide = -1;
+        public static void LoadTexturePrefix(int maxSideSize) { loadMaxSide = maxSideSize; }
+
         public static bool LoadImage(Texture2D tex, byte[] data)
         {
             WindowGhost.Tick();
@@ -812,11 +817,21 @@ namespace StutterFix
                     fallback++;
                     return ImageConversion.LoadImage(tex, File.ReadAllBytes(it.Path));
                 }
-                tex.Reinitialize(it.Width, it.Height, (TextureFormat)it.Format, false);
-                tex.LoadRawTextureData(it.Pixels, (int)it.Size);
+                if (it.Blocks != IntPtr.Zero && it.BlocksReady && loadMaxSide == -1 && TexCompress.DirectAllowed)
+                {
+                    // 곧 압축될 것이 확인된 맵: 원본을 넣지 않고 압축 결과를 바로 (TexCompress.DirectAllowed)
+                    tex.Reinitialize(it.Width, it.Height, it.Dxt5 ? TextureFormat.DXT5 : TextureFormat.DXT1, false);
+                    tex.LoadRawTextureData(it.Blocks, (int)it.BlockSize);
+                    TexCompress.MarkDirect(tex);
+                }
+                else
+                {
+                    tex.Reinitialize(it.Width, it.Height, (TextureFormat)it.Format, false);
+                    tex.LoadRawTextureData(it.Pixels, (int)it.Size);
+                    // 미리 압축한 것은 압축 순간(PACL2 의 Compress, 또는 저사양 옵션의 Apply)에 넣도록 맡긴다
+                    if (it.Blocks != IntPtr.Zero && it.BlocksReady) { TexCompress.Register(tex, it.Blocks, it.BlockSize, it.Dxt5, it.Width, it.Height, (TextureFormat)it.Format); it.Blocks = IntPtr.Zero; }
+                }
                 if (it.Factor < 1f) shrunk[tex] = it.Factor;   // 스프라이트를 만들 때 크기 기준을 맞춘다
-                // 미리 압축한 것은 압축 순간(PACL2 의 Compress, 또는 저사양 옵션의 Apply)에 넣도록 맡긴다
-                if (it.Blocks != IntPtr.Zero && it.BlocksReady) { TexCompress.Register(tex, it.Blocks, it.BlockSize, it.Dxt5, it.Width, it.Height, (TextureFormat)it.Format); it.Blocks = IntPtr.Zero; }
                 used++;
                 putMs += (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
                 return true;
