@@ -87,7 +87,17 @@ namespace StutterFix
                     if (m.Name == "KillAll" && m.GetParameters().Length >= 1 && m.GetParameters()[0].ParameterType == typeof(bool))
                         h.Patch(m, prefix: new HarmonyMethod(typeof(FloorAnim), nameof(KillAllPrefix)) { priority = Priority.First });
                 var playing = AccessTools.Method(typeof(DOTween), "PlayingTweens");
-                if (playing != null) h.Patch(playing, postfix: new HarmonyMethod(typeof(FloorAnim), nameof(PlayingPostfix)));
+                if (playing != null) h.Patch(playing, prefix: new HarmonyMethod(typeof(FloorAnim), nameof(PlayingPrefix)), postfix: new HarmonyMethod(typeof(FloorAnim), nameof(PlayingPostfix)));
+                // (저사양 나누기) 타일을 건드리는 다른 효과·게임의 효과 끊기/되감기 전에 남은 것을 끝까지
+                foreach (var t in new[] { typeof(ffxFloorAppearPlus), typeof(ffxFloorDisappearPlus) })
+                    foreach (var m in t.GetMethods(AccessTools.all))
+                        if (m.Name == "StartEffect" && m.DeclaringType == t && !m.IsAbstract)
+                            h.Patch(m, prefix: new HarmonyMethod(typeof(FloorAnim), nameof(FlushPrefix)) { priority = Priority.First });
+                foreach (var n in new[] { "Kill", "ScrubToTime" })
+                {
+                    var m = AccessTools.DeclaredMethod(typeof(ffxPlusBase), n);
+                    if (m != null) h.Patch(m, prefix: new HarmonyMethod(typeof(FloorAnim), nameof(FlushPrefix)) { priority = Priority.First });
+                }
                 foreach (var m in typeof(TweenExtensions).GetMethods(AccessTools.all))
                     if (m.Name == "Complete" && m.GetParameters().Length >= 1 && m.GetParameters()[0].ParameterType == typeof(Tween))
                         h.Patch(m, prefix: new HarmonyMethod(typeof(FloorAnim), nameof(CompletePrefix)) { priority = Priority.First });
@@ -156,13 +166,16 @@ namespace StutterFix
             Effects++;
             var floors = lmRef(fx).listFloors;
             int end = endRef(fx), step = 1 + gapRef(fx);
+            if (Split && (end - startRef(fx)) / step + 1 > SplitMin) { RunSplit(floors, startRef(fx), end, step, c); return; }
+            bool pend = jobs.Count > 0;
             for (int i = startRef(fx); i <= end; i += step)
             {
                 scrFloor f = floors[i];
+                if (pend) BeforeAll(f);
                 TweenFloor(f, ref c);
                 if (f.freeroamArea == null) continue;
                 foreach (scrFloor lf in f.freeroamArea.listFloors)
-                    if (lf.isLandable) TweenFloor(lf, ref c);
+                    if (lf.isLandable) { if (pend) BeforeAll(lf); TweenFloor(lf, ref c); }
             }
         }
 
@@ -173,6 +186,7 @@ namespace StutterFix
             public float Opacity, Dur, Over, Period;
             public Ease Ease;
             public bool Zero; public float K;   // 길이 0: 이징 끝점
+            public float Start;                 // (저사양 나누기) 늦게 만든 애니메이션이 이미 지났어야 할 시간
         }
 
         // (개발자용) 효과 하나 안의 시간 나눔: 타일 앞부분(transform·벡터) / 위치 / 회전 / 크기 / 불투명도 / 짝
@@ -284,6 +298,120 @@ namespace StutterFix
             }
             MaybeShadow();
         }
+
+        // ── (저사양) 타일 이동 나눠 처리 ──
+        // 타일이 많은 효과(1000개 넘게)는 지금 타일에서 가까운 것부터 프레임당 예산만큼 처리하고 나머지는 다음 프레임들로 미룬다.
+        // 늦게 만든 애니메이션은 그동안 지난 시간만큼 앞으로 당겨 두어(Pos) 끝나는 순간은 원래와 같다. 먼 타일이 처음 1~몇 프레임 늦게 움직이는 것만 다르다.
+        // 다른 타일 이동이 남은 타일을 건드리면 그 타일만 먼저(원래 순서대로) 만들고, 타일 나타나기·사라지기가 시작되거나
+        // 게임이 애니메이션을 모아 끊거나 완료할 때는 남은 것을 그 자리에서 끝까지 만든다.
+        internal static bool Split;
+        internal static float SplitBudgetMs = 4f;
+        internal const int SplitMin = 1000;
+        internal static long SplitEffects, SplitDeferred, SplitFlushes;
+        private sealed class Job
+        {
+            public Ctx C; public List<scrFloor> Left = new List<scrFloor>(); public int Next; public float Elapsed;
+            public Dictionary<scrFloor, int> Pending = new Dictionary<scrFloor, int>(RefEq.I);   // 아직 안 만든 타일 (같은 타일이 두 번 들어갈 수 있다)
+        }
+        private sealed class RefEq : IEqualityComparer<scrFloor>
+        {
+            internal static readonly RefEq I = new RefEq();
+            public bool Equals(scrFloor a, scrFloor b) { return ReferenceEquals(a, b); }
+            public int GetHashCode(scrFloor o) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o); }
+        }
+        private static readonly List<Job> jobs = new List<Job>();
+        private static readonly List<scrFloor> orderBuf = new List<scrFloor>();
+
+        private static void RunSplit(List<scrFloor> floors, int start, int end, int step, Ctx c)
+        {
+            SplitEffects++;
+            int cur = -1;
+            try { var ctl = ADOBase.controller; if (ctl != null && ctl.currFloor != null) cur = ctl.currFloor.seqID; } catch { }
+            // 원래 순서대로 대상 목록 (자유 이동 구역의 착지 가능한 타일 포함). 인덱스는 원래처럼 읽는다(같은 자리에서 예외).
+            orderBuf.Clear();
+            for (int i = start; i <= end; i += step)
+            {
+                scrFloor f = floors[i];
+                orderBuf.Add(f);
+                if (f.freeroamArea == null) continue;
+                foreach (scrFloor lf in f.freeroamArea.listFloors)
+                    if (lf.isLandable) orderBuf.Add(lf);
+            }
+            var job = new Job { C = c };
+            // 지금 타일에서 가까운 것부터: 목록은 타일 번호 순이므로 지금 타일 자리에서 양쪽으로 펼친다 (정렬 없이 O(n))
+            int n = orderBuf.Count, p = 0;
+            if (cur >= 0) { while (p < n && orderBuf[p].seqID < cur) p++; }
+            int lo = p - 1, hi = p;
+            while (lo >= 0 || hi < n)
+            {
+                if (hi >= n || (lo >= 0 && cur - orderBuf[lo].seqID < orderBuf[hi].seqID - cur)) job.Left.Add(orderBuf[lo--]);
+                else job.Left.Add(orderBuf[hi++]);
+            }
+            orderBuf.Clear();
+            for (int i = 0; i < job.Left.Count; i++) { int k; job.Pending.TryGetValue(job.Left[i], out k); job.Pending[job.Left[i]] = k + 1; }
+            jobs.Add(job);
+            long deadline = TS() + (long)(SplitBudgetMs * System.Diagnostics.Stopwatch.Frequency / 1000.0);
+            Work(job, deadline);
+            if (job.Next >= job.Left.Count) jobs.Remove(job);
+            else SplitDeferred += job.Pending.Count;
+        }
+        private static void Work(Job job, long deadline)
+        {
+            int done = 0;
+            while (job.Next < job.Left.Count)
+            {
+                var f = job.Left[job.Next++];
+                if (TakeOne(job, f)) { Before(job, f); var c = job.C; c.Start = job.Elapsed; TweenFloor(f, ref c); }
+                if ((++done & 31) == 0 && deadline != long.MaxValue && TS() > deadline) break;
+            }
+        }
+        private static bool TakeOne(Job job, scrFloor f)
+        {
+            int k;
+            if (!job.Pending.TryGetValue(f, out k) || k <= 0) return false;
+            if (k == 1) job.Pending.Remove(f); else job.Pending[f] = k - 1;
+            return true;
+        }
+        // 타일 하나를 만들기 전에, 그보다 먼저 시작된 효과가 그 타일에 남겨 둔 것을 원래 순서대로 먼저 만든다
+        private static void Before(Job self, scrFloor f)
+        {
+            for (int i = 0; i < jobs.Count; i++)
+            {
+                var j = jobs[i];
+                if (j == self) return;   // 자기보다 앞선 것만
+                int k;
+                while (j.Pending.TryGetValue(f, out k) && k > 0)
+                {
+                    TakeOne(j, f);
+                    var c = j.C; c.Start = j.Elapsed; TweenFloor(f, ref c);
+                    SplitPulled++;
+                }
+            }
+        }
+        // 나누지 않는 효과가 타일을 건드리기 전에 (jobs 에 없는 효과)
+        private static void BeforeAll(scrFloor f) { if (jobs.Count > 0) Before(null, f); }
+        internal static long SplitPulled;
+        // 남은 것을 모두 지금 만든다 (먼저 시작된 효과부터)
+        internal static void Flush()
+        {
+            if (jobs.Count == 0) return;
+            SplitFlushes++;
+            var copy = jobs.ToArray();
+            foreach (var j in copy) Work(j, long.MaxValue);
+            jobs.Clear();
+        }
+        // DOTween 갱신 앞: 예산만큼 이어서 만든다 (먼저 시작된 효과부터. 만든 것은 같은 갱신에서 바로 진행된다)
+        private static void SplitTick()
+        {
+            long deadline = TS() + (long)(SplitBudgetMs * System.Diagnostics.Stopwatch.Frequency / 1000.0);
+            for (int i = 0; i < jobs.Count; i++)
+            {
+                Work(jobs[i], deadline);
+                if (TS() > deadline) break;
+            }
+            for (int i = jobs.Count - 1; i >= 0; i--) if (jobs[i].Pending.Count == 0) jobs.RemoveAt(i);
+        }
+        public static void FlushPrefix() { if (jobs.Count > 0) Flush(); }
 
         // ── 길이 0 (즉시 이동) ──
         // 원래: DOTween.To(...).SetEase(ease).Done() -> Done 이 길이 0 이면 그 자리에서 Complete:
@@ -400,6 +528,7 @@ namespace StutterFix
                 r.Shadow = null; r.SDone = false; r.SStepped = false;
             }
             else r = new Rec { F = f, T = tt, Key = key };
+            r.Pos = c.Start;
             r.Dur = c.Dur; r.E = c.Ease; r.Over = c.Over; r.Period = c.Period;
             if (reuseProxy) r.Proxy = old;
             else
@@ -432,7 +561,7 @@ namespace StutterFix
         private static void MaybeShadow()
         {
             var r = lastNew; lastNew = null;
-            if (r == null || !Edition.Dev || (++sampleCounter & 63) != 0) return;
+            if (r == null || !Edition.Dev || r.Pos != 0f || (++sampleCounter & 63) != 0) return;
             switch (r.Key)
             {
                 case PX: r.Shadow = DOTween.To(() => r.Started ? r.FStart : r.T.position.x, v => { r.SF = v; r.SStepped = true; }, r.FEnd, r.Dur).SetEase(r.E).OnComplete(() => r.SDone = true); break;
@@ -514,6 +643,7 @@ namespace StutterFix
             if (r.Running) { Killed++; Complete(r); }
             return false;
         }
+        public static void PlayingPrefix() { if (jobs.Count > 0) Flush(); }
         public static void PlayingPostfix(List<Tween> __0, ref List<Tween> __result)
         {
             int n = 0;
@@ -531,6 +661,7 @@ namespace StutterFix
         }
         public static void KillAllPrefix(bool complete)
         {
+            if (jobs.Count > 0) Flush();
             if (recs.Count == 0) return;
             var copy = recs.ToArray();
             foreach (var r in copy)
@@ -541,16 +672,18 @@ namespace StutterFix
             }
             recs.Clear();
         }
-        internal static void DropAll() { KillAllPrefix(false); }
+        internal static void DropAll() { jobs.Clear(); KillAllPrefix(false); }
         internal static void FinishAll() { KillAllPrefix(true); }
 
         public static void UpdatePrefix()
         {
-            if (recs.Count == 0) { LastFrameMs = 0; return; }
+            if (jobs.Count > 0) SplitTick();
+            if (recs.Count == 0) { LastFrameMs = 0; AddElapsed(); return; }
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
             float td = dt * 1f;
             Frames++;
+            AddElapsed();
             if (!(td < 1E-06f && td > -1E-06f))
             {
                 for (int i = 0; i < recs.Count; i++)
@@ -565,6 +698,15 @@ namespace StutterFix
             if (!Edition.Dev) Compact();
             LastFrameMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             UpdateMs += LastFrameMs;
+        }
+
+        // 남은 타일의 애니메이션이 이번 갱신까지 지났어야 할 시간 (DOTween 과 같은 dt, 너무 작으면 진행 안 함)
+        private static void AddElapsed()
+        {
+            if (jobs.Count == 0) return;
+            float td = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
+            if (td < 1E-06f && td > -1E-06f) return;
+            for (int i = 0; i < jobs.Count; i++) jobs[i].Elapsed += td;
         }
 
         public static void UpdatePostfix()
@@ -616,10 +758,11 @@ namespace StutterFix
             string s = string.Format(" | 타일 이동 애니메이션 직접 처리: 효과 {0}개(타일 {1}개, 시작에 쓴 시간 {2:F0}ms), 원래 코드로 {3}개 [곡 시작 직후 {4}, 길이 음수 {5}, 기타 {6}], 만든 것 {7}개(동시 최대 {8}, 다시 씀 {9}, 겹쳐서 진짜 DOTween {10}), 끝까지 감 {11}, 끊겨서 완료 {12}, 버림 {13}, 갱신 {14:F0}ms ({15}프레임), 게임이 멈출 때 넘겨준 것 {16}{17}",
                 Effects, Tiles, StartMs, Fallbacks, whyNot[0], whyNot[1], whyNot[2], Created, Peak, Reused, Real, Completed, Killed, Dropped, UpdateMs, Frames, Listed, Errors > 0 ? ", 예외 " + Errors : "");
             if (ZeroEffects > 0) s += string.Format(", 길이 0 효과 {0}개(바로 쓴 값 {1}개)", ZeroEffects, ZeroWrites);
+            if (SplitEffects > 0) s += string.Format(", (저사양) 나눠 처리한 효과 {0}개(미룬 타일 {1}개, 다른 효과가 건드려 먼저 만든 것 {3}개, 남은 것을 한꺼번에 끝냄 {2}번)", SplitEffects, SplitDeferred, SplitFlushes, SplitPulled);
             if (Edition.Dev) s += " (검증: 진짜 DOTween 과 나란히 " + VerifyN + "개, 프레임 " + VerifySteps + "번 중 다름 " + VerifyMismatch + ", 길이 0 은 원래 코드 결과와 " + ZeroChecked + "번 비교 중 다름 " + ZeroMismatch + First + ")";
             else if (First.Length > 0) s += First;
             return s;
         }
-        internal static void ResetStats() { Effects = Fallbacks = Tiles = Created = Completed = Killed = Dropped = Frames = Steps = Reused = Real = VerifyN = VerifySteps = VerifyMismatch = Errors = Listed = 0; ZeroEffects = ZeroWrites = ZeroChecked = ZeroMismatch = 0; Peak = 0; UpdateMs = StartMs = 0; First = ""; Array.Clear(whyNot, 0, whyNot.Length); }
+        internal static void ResetStats() { Effects = Fallbacks = Tiles = Created = Completed = Killed = Dropped = Frames = Steps = Reused = Real = VerifyN = VerifySteps = VerifyMismatch = Errors = Listed = 0; ZeroEffects = ZeroWrites = ZeroChecked = ZeroMismatch = 0; SplitEffects = SplitDeferred = SplitFlushes = SplitPulled = 0; Peak = 0; UpdateMs = StartMs = 0; First = ""; Array.Clear(whyNot, 0, whyNot.Length); }
     }
 }

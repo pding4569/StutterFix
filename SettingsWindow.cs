@@ -956,6 +956,10 @@ namespace StutterFix
             if (Segment("lowmenufps", ref mf, new[] { T("끔", "Off"), "30", "60" })) { c.LowMenuFps = mf == 2 ? 60 : mf == 1 ? 30 : 0; ch = true; }
             GUILayout.Space(12);
             Section(T("게임 쪽", "Game"));
+            ch |= Option("lowfloorsplit", ref c.LowFloorSplit, T("타일 이동 나눠 처리", "Split large tile moves"),
+                T("타일 1000개 넘게 옮기는 효과를 지금 타일에서 가까운 것부터 몇 프레임에 나눠 처리합니다. 먼 타일이 처음 1~몇 프레임 늦게 움직이고, 끝나는 순간은 같습니다. \"효과 나누기 세기\" 가 프레임당 예산을 정합니다. \"타일 애니메이션 직접 처리\" 가 켜져 있어야 합니다.",
+                  "Effects that move more than 1000 tiles are processed over a few frames, nearest tiles first. Far tiles start moving a frame or a few later but finish at the same moment. The effect split strength sets the per-frame budget. Needs tile move animations on."),
+                T("게임", "Game"));
             ch |= Option("lowparticle", ref c.LowPauseParticles, T("화면 밖 파티클 멈추기", "Pause off-screen particles"),
                 T("파티클 장식이 화면 밖에 있는 동안 시뮬레이션을 멈춰 CPU 를 아낍니다. 파티클이 많은 맵에서 효과가 있습니다. 다시 화면에 들어오면 멈춘 곳부터 이어가서 원래와 모양·시점이 조금 달라질 수 있습니다." + (Compat.QPauseOffscreenParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
                   "Stops simulating particle decorations while they are off-screen to save CPU on particle-heavy levels. When they come back on screen they resume where they stopped, so they may look slightly different from the original." + (Compat.QPauseOffscreenParticles ? " (Idle now: Quartz is doing the same)" : "")),
@@ -1052,7 +1056,7 @@ namespace StutterFix
             { c.LowPriority = c.LowNoThrottle = c.LowNoFft = true; c.LowRenderScale = 75; c.LowImageCap = 1024; c.LowSplit = 1; c.LowMenuFps = 60; Save(); }
             GUILayout.Space(8);
             if (GUILayout.Button(T("모두 끄기", "Turn all off"), sPrimary, GUILayout.Width(150), GUILayout.Height(38)))
-            { c.LowPriority = c.LowNoThrottle = c.LowNoFft = c.LowSharpUpscale = c.LowFsr = c.LowSharpen = c.LowHalfRender = c.LowAutoRes = c.LowPauseParticles = c.LowCompressImages = false; c.LowRenderScale = 100; c.LowImageCap = 0; c.LowSplit = 0; c.LowMenuFps = 0; Save(); }
+            { c.LowPriority = c.LowNoThrottle = c.LowNoFft = c.LowSharpUpscale = c.LowFsr = c.LowSharpen = c.LowHalfRender = c.LowAutoRes = c.LowPauseParticles = c.LowCompressImages = c.LowFloorSplit = false; c.LowRenderScale = 100; c.LowImageCap = 0; c.LowSplit = 0; c.LowMenuFps = 0; Save(); }
             GUILayout.EndHorizontal();
             GUILayout.Space(14);
             InfoCard(new[]
