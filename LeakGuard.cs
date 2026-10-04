@@ -14,6 +14,12 @@ namespace StutterFix
     //    게임 화면 버퍼(camRT) 자체를 Release 해서 다음 프레임에 다시 만들게 한다. scnGame.ResetScene 이 재시작마다 끄기를 부른다.
     //    -> 켤 때 이전 버퍼를 풀고 없앤다. 끌 때 끼워진 것이 camRT 면 Release 없이 원래대로 두고, 따로 만든 버퍼면 풀고 없앤다.
     //    화면 결과는 같다(끼워지는 텍스처, 필드 값 모두 원래와 같음).
+    // 3) 편집기 종료 확인 콜백 (scnEditor.Start 가 Application.wantsToQuit += TryApplicationQuit, 빼는 곳은 QuitToMenu 뿐. IL 확인)
+    //    편집기에서 맵을 새로 열면 장면을 다시 불러 새 scnEditor 가 또 더한다. 지워진 옛 편집기가 정적 이벤트에 남아
+    //    옛 scnGame -> 옛 LevelData(이벤트·장식 전부)를 붙잡았다: Arche(이벤트 10만 8천, 장식 2만 8천) 뒤 다른 맵에서 힙 약 1.1GB 가 안 풀렸다.
+    //    -> 새 편집기가 시작될 때 대상이 지워진 편집기인 콜백만 뺀다 (지금 편집기 것은 그대로, 게임을 끌 때 확인 창은 원래대로).
+    //    다른 모드(PACL2 VariableStateManager._textDecorationsOnPlay)도 옛 글자 장식을 들고 있어 옛 타일 -> 옛 scnGame -> 옛 LevelData,
+    //    옛 장식 관리자 -> 옛 장식 전부로 이어졌다. 다른 모드는 건드리지 않고, 이미 지워진 옛 scnGame 의 levelData 와 옛 장식 관리자의 목록만 비워 사슬을 끊는다.
     // 2) (개발자용) 누수 확인: 맵을 열 때와 장면이 바뀐 뒤 2초에, 남아 있는 텍스처·화면 버퍼·머티리얼·메시·오디오를 종류별·이름별로 세어
     //    지난번보다 늘어난 것을 로그에 남긴다. 맵을 여러 번 열고 닫았을 때 계속 늘어나는 것이 누수다.
     internal static class LeakGuard
@@ -33,9 +39,50 @@ namespace StutterFix
                 frameRateField = AccessTools.Field(typeof(scrCamera), "frameRate");
                 if (m == null || frameRateField == null || m.GetParameters().Length != 2) { Main.Entry.Logger.Log("[누수] SetCustomFrameRate 모양이 달라 끔"); return; }
                 h.Patch(m, prefix: new HarmonyMethod(typeof(LeakGuard), nameof(CfrPrefix)) { priority = Priority.First });
-                Main.Entry.Logger.Log("[누수] 설치 (사용자 지정 FPS 화면 버퍼)");
+                var st = AccessTools.Method(typeof(scnEditor), "Start");
+                if (st != null) h.Patch(st, prefix: new HarmonyMethod(typeof(LeakGuard), nameof(EditorStartPrefix)), postfix: new HarmonyMethod(typeof(LeakGuard), nameof(EditorStartPostfix)));
+                Main.Entry.Logger.Log("[누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)");
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[누수] 설치 실패: " + ex.Message); }
+        }
+
+        internal static int StaleQuitRemoved;
+        private static scrDecorationManager prevMgr;
+        public static void EditorStartPostfix() { if (Enabled) prevMgr = scrDecorationManager.instance; }
+        public static void EditorStartPrefix()
+        {
+            if (!Enabled) return;
+            try
+            {
+                var f = typeof(Application).GetField("wantsToQuit", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+                var d = f != null ? f.GetValue(null) as Func<bool> : null;
+                if (d == null) return;
+                int n = 0;
+                foreach (var x in d.GetInvocationList())
+                {
+                    var ed = x.Target as scnEditor;
+                    if ((object)ed != null && ed == null)   // 지워진 편집기 것만
+                    {
+                        Application.wantsToQuit -= (Func<bool>)x; n++;
+                        try { var g = Traverse.Create(ed).Field("customLevel").GetValue() as scnGame; if ((object)g != null && g == null) g.levelData = null; } catch { }
+                    }
+                }
+                // 지워진 옛 장식 관리자의 목록·사전 필드를 모두 비운다 (allDecorations, taggedDecorations 등)
+                if ((object)prevMgr != null && prevMgr == null)
+                    foreach (var fi in typeof(scrDecorationManager).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                    {
+                        try
+                        {
+                            var v = fi.GetValue(prevMgr);
+                            if (v is System.Collections.IList l && !l.IsFixedSize && !l.IsReadOnly) l.Clear();
+                            else if (v is System.Collections.IDictionary dd && !dd.IsReadOnly) dd.Clear();
+                        }
+                        catch { }
+                    }
+                prevMgr = null;
+                if (n > 0) { StaleQuitRemoved += n; Main.Entry.Logger.Log("[누수] 지워진 편집기의 종료 확인 콜백 " + n + "개 뺌 (지난 맵 데이터를 놓아 줌)"); }
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[누수] 종료 콜백 정리 실패: " + ex.Message); }
         }
 
         public static bool CfrPrefix(scrCamera __instance, object[] __args)

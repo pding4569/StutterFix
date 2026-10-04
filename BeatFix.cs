@@ -51,6 +51,8 @@ namespace StutterFix
         }
 
         public static void MarkDirty() { dirty = true; lDirty = true; dirtyGen++; }
+        // 새 맵 파일을 열 때: 지난 맵 타일 번호표를 놓는다 (다음 박자에 다시 만든다)
+        internal static void ForgetLevel() { MarkDirty(); arr = new scrFloor[0]; idx.Clear(); lit.Clear(); lActive.Clear(); lHead.Clear(); }
         private static int dirtyGen, litGen;
 
         // 다른 모드가 고쳐 쓰는지: scrFloor.OnBeat 에 패치가 있거나, PropagateOnBeat 에 transpiler 나 이 모드 밖의 prefix 가 있으면

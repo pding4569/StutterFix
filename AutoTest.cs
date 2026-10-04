@@ -281,8 +281,59 @@ namespace StutterFix
                         Log("타일 " + n + "개: 스크립트 필드 머티리얼 " + byField.Count + "개, 렌더러 머티리얼 " + byRend.Count + "개(슬롯 " + slots + "), 합 " + both.Count + "개, 둘이 같은 타일 " + same + "개, 첫 타일 id " + ADOBase.lm.listFloors[0].GetInstanceID());
                         return true;
                     }
+                case "listtail":
+                    {
+                        // 지금 맵 이벤트 목록의 내부 배열에서 Count 뒤에 남은 것 (지난 맵 이벤트가 남아 있는지)
+                        var ld2 = ADOBase.customLevel != null ? ADOBase.customLevel.levelData : null;
+                        if (ld2 == null) { Log("listtail: 맵 없음"); return true; }
+                        foreach (var g in Resources.FindObjectsOfTypeAll<scnGame>())
+                        {
+                            var gl = g.levelData;
+                            Log("listtail scnGame#" + g.GetInstanceID() + " 장면 " + g.gameObject.scene.IsValid() + ", ADOBase.customLevel 와 같음 " + ReferenceEquals(g, ADOBase.customLevel) + ", levelData 이벤트 " + (gl != null ? gl.levelEvents.Count : -1) + ", 지금 levelData 와 같음 " + ReferenceEquals(gl, ld2));
+                        }
+                        var edc = ed != null ? HarmonyLib.Traverse.Create(ed).Field("customLevel").GetValue() as scnGame : null;
+                        Log("listtail scnEditor.customLevel = ADOBase.customLevel ? " + ReferenceEquals(edc, ADOBase.customLevel) + (edc != null && edc.levelData != null ? ", 그 levelData 이벤트 " + edc.levelData.levelEvents.Count : ""));
+                        var itemsF = typeof(List<ADOFAI.LevelEvent>).GetField("_items", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                        foreach (var pr in new[] { new KeyValuePair<string, List<ADOFAI.LevelEvent>>("levelEvents", ld2.levelEvents), new KeyValuePair<string, List<ADOFAI.LevelEvent>>("decorations", ld2.decorations) })
+                        {
+                            var arr = itemsF.GetValue(pr.Value) as ADOFAI.LevelEvent[];
+                            int beyond = 0; if (arr != null) for (int i = pr.Value.Count; i < arr.Length; i++) if (arr[i] != null) beyond++;
+                            Log("listtail " + pr.Key + ": Count " + pr.Value.Count + ", 배열 길이 " + (arr == null ? -1 : arr.Length) + ", Count 뒤에 남은 것 " + beyond);
+                        }
+                        return true;
+                    }
+                case "whoholdsev":
+                    {
+                        // 지금 맵에 없는 레벨 이벤트(지난 맵 것)를 붙잡는 곳: 정적 필드 + 살아 있는 모든 MonoBehaviour 에서 출발
+                        var cur = new HashSet<object>();
+                        var ld = ADOBase.customLevel != null ? ADOBase.customLevel.levelData : null;
+                        if (ld != null)
+                        {
+                            foreach (var e in ld.levelEvents) cur.Add(e); foreach (var e in ld.decorations) cur.Add(e);
+                            foreach (var fn in new[] { "levelSettings", "trackSettings", "backgroundSettings", "cameraSettings", "miscSettings", "eventSettings", "decorationSettings" })
+                            { var v = HarmonyLib.Traverse.Create(ld).Field(fn).GetValue(); if (v != null) cur.Add(v); }
+                        }
+                        var roots = new List<KeyValuePair<object, string>>();
+                        var byType = new Dictionary<string, int>(); int inScene = 0, noScene = 0, destroyedGo = 0;
+                        foreach (var mb in Resources.FindObjectsOfTypeAll<MonoBehaviour>())
+                        {
+                            if (mb == null) continue;
+                            roots.Add(new KeyValuePair<object, string>(mb, "장면:" + mb.GetType().Name));
+                            string k = mb.GetType().Name; int c; byType.TryGetValue(k, out c); byType[k] = c + 1;
+                            if (mb.gameObject.scene.IsValid()) inScene++; else noScene++;
+                        }
+                        var top = new List<KeyValuePair<string, int>>(byType); top.Sort((x, y) => y.Value.CompareTo(x.Value));
+                        var tsb = new System.Text.StringBuilder();
+                        for (int i = 0; i < top.Count && i < 15; i++) tsb.Append(' ').Append(top[i].Key).Append('=').Append(top[i].Value);
+                        int floorsAlive = 0; foreach (var f in Resources.FindObjectsOfTypeAll<scrFloor>()) if (f != null && f.gameObject.scene.IsValid()) floorsAlive++;
+                        Log("살아 있는 MonoBehaviour " + roots.Count + "개 (장면 안 " + inScene + ", 장면 밖(에셋·프리팹) " + noScene + "), 장면 안 타일 " + floorsAlive + "개, 지금 맵 타일 " + (ADOBase.lm != null && ADOBase.lm.listFloors != null ? ADOBase.lm.listFloors.Count : -1) + "개 | 종류별:" + tsb);
+                        GC.Collect();
+                        var hsw = System.Diagnostics.Stopwatch.StartNew();
+                        Log("지금 맵(이벤트 " + cur.Count + "개)에 없는 LevelEvent 를 붙잡는 곳 (출발 " + roots.Count + "개 + 정적): " + HeapPath.Find(o => o is ADOFAI.LevelEvent && !cur.Contains(o), "옛 LevelEvent", 20000000, 40, roots, null, true) + " (" + hsw.ElapsedMilliseconds + "ms)");
+                        return true;
+                    }
                 case "whoholds":
-                    { var hsw = System.Diagnostics.Stopwatch.StartNew(); Log("지워진 타일을 붙잡는 곳: " + HeapPath.Find(typeof(scrFloor), 6000000, 12) + " (" + hsw.ElapsedMilliseconds + "ms)"); return true; }
+                    { var wt = string.IsNullOrEmpty(arg) ? typeof(scrFloor) : HarmonyLib.AccessTools.TypeByName(arg.Trim()); if (wt == null) { Log("whoholds: 형식 없음 " + arg); return true; } GC.Collect(); var hsw = System.Diagnostics.Stopwatch.StartNew(); Log("지워진 " + wt.Name + " 을 붙잡는 곳: " + HeapPath.Find(wt, 6000000, 12) + " (" + hsw.ElapsedMilliseconds + "ms)"); return true; }
                 case "whoholdsmat":
                     {
                         var cur = new HashSet<Material>();

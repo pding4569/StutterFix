@@ -103,6 +103,8 @@ namespace StutterFix
             return true;
         }
         private static List<scrDecoration> hbList; private static int hbCount = -1; private static bool hbAny; private static int hbFrame = -1000;
+        // 새 맵 파일을 열 때: 지난 맵 장식 목록을 놓는다 (안 놓아서 Arche 뒤 다른 맵에서 장식 2만 8천 개를 붙잡았다)
+        internal static void ForgetDecos() { hbList = null; hbCount = -1; hbAny = false; }
         private static readonly AccessTools.FieldRef<scrDecorationManager, List<scrDecoration>> allDecoRef = AccessTools.FieldRefAccess<scrDecorationManager, List<scrDecoration>>("allDecorations");
         private static bool MapHasHitbox()
         {

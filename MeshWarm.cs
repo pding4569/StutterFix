@@ -38,6 +38,7 @@ namespace StutterFix
         private static bool fin;   // 이 맵 타일들의 인셋 값 (모두 같을 때만 미리 만든다)
         private static readonly HashSet<long> seen = new HashSet<long>();
         private static List<scrFloor> lastFloors; private static long lastFp; private static int lastCache;
+        internal static void ForgetLevel() { lastFloors = null; lastFp = 0; }
 
         internal static void Install(Harmony h)
         {

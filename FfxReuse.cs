@@ -409,8 +409,7 @@ namespace StutterFix
             passSw.Restart();
             if (!inPass) return;
             // 지워진 물체(타일째 없어진 것)는 목록에서 뺀다
-            if (pending.Count > 0) pending.RemoveWhere(c => c == null);
-            if (ours.Count > 0) ours.RemoveWhere(c => c == null);
+            Prune();
             // 이번 붙이기가 다시 만들 타일의 순서 기록은 붙이면서 새로 쓴다 (나머지 타일 기록은 그대로)
             if (floors != null) foreach (var fl in floors) if (fl != null) order.Remove(fl.gameObject);
             // 표시는 남겨 둔 것이 붙은 오브젝트와 순서 기록이 남은 오브젝트 중 되돌려 쓴 적이 있는 것만 남긴다 (지워진 것은 뺀다)
@@ -419,6 +418,20 @@ namespace StutterFix
             checkpointHeld.Clear();
             var all = ADOBase.lm != null ? ADOBase.lm.listFloors : floors;
             if (all != null) foreach (var f in all) if (f != null && f.onCheckpointEffects.Count > 0) foreach (var e in f.onCheckpointEffects) if (!ReferenceEquals(e, null)) checkpointHeld.Add(e);
+        }
+
+        // 지워진 것(맵을 바꾸면 타일째 없어짐)을 모든 기록에서 뺀다. age 에서 안 빼서 맵을 바꿔도 지난 맵 효과 10만 개(와 그 타일)를 붙잡고 있었다.
+        internal static void Prune()
+        {
+            if (pending.Count > 0) pending.RemoveWhere(c => c == null);
+            if (ours.Count > 0) ours.RemoveWhere(c => c == null);
+            if (touched.Count > 0) touched.RemoveWhere(g => g == null);
+            if (age.Count > 0)
+            {
+                var dead = new List<Component>();
+                foreach (var k in age.Keys) if (k == null) dead.Add(k);
+                foreach (var k in dead) age.Remove(k);
+            }
         }
 
         // 순서 기록에서 지워진 것·기록이 없어진 타일의 것을 뺀다

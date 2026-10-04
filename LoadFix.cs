@@ -497,6 +497,7 @@ namespace StutterFix
             detail = (parts.Count > 0 ? " (" + string.Join(", ", parts.ToArray()) + ")" : "") + sb.ToString();
             return diff;
         }
+        internal static void ForgetLevel() { memoList = null; memoFirst = null; memoLast = null; memoFrame = -1; memoCount = -1; }
         internal static List<scrDecoration> AllDecorations() { var mgr = scrDecorationManager.instance; return mgr == null ? null : allRef(mgr); }
         internal static long TagHash() { var mgr = scrDecorationManager.instance; return mgr == null ? 0 : TagCount(mgr); }
         private static readonly System.Reflection.FieldInfo tagField = AccessTools.Field(typeof(scrDecorationManager), "taggedDecorations");

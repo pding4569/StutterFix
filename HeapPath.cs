@@ -45,12 +45,12 @@ namespace StutterFix
         internal static string Find(Type target, int maxObjects, int maxHits) { return Find(o => target.IsInstanceOfType(o) && o is UnityEngine.Object uo && uo == null, target.Name, maxObjects, maxHits); }
         internal static string Find(Func<object, bool> isTarget, string what, int maxObjects, int maxHits) { return Find(isTarget, what, maxObjects, maxHits, null, null); }
         // roots 가 있으면 그것에서만 출발, asmFilter 가 있으면 그 어셈블리의 정적 필드에서만 출발
-        internal static string Find(Func<object, bool> isTarget, string what, int maxObjects, int maxHits, List<KeyValuePair<object, string>> roots, Func<Assembly, bool> asmFilter)
+        internal static string Find(Func<object, bool> isTarget, string what, int maxObjects, int maxHits, List<KeyValuePair<object, string>> roots, Func<Assembly, bool> asmFilter, bool alsoStatics = false)
         {
             parent = new Dictionary<object, KeyValuePair<object, string>>(RefEq.I);
             queue = new Queue<object>();
             if (roots != null) foreach (var r in roots) Push(r.Key, null, r.Value);
-            if (roots == null) foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            if (roots == null || alsoStatics) foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
                 if (asm.IsDynamic) continue;
                 if (asmFilter != null && !asmFilter(asm)) continue;

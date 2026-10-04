@@ -128,7 +128,7 @@ namespace StutterFix
                     if (cam == null) cam = Camera.main;
                     if (cam == null) return;
                     var found = cam.GetComponents<Behaviour>();
-                    if (found.Length != camFx.Length)
+                    if (found.Length != camFx.Length || (camFx.Length > 0 && camFx[0] == null))   // 카메라가 바뀌면(장면을 다시 불러옴) 옛 것을 놓는다
                     {
                         camFx = found;
                         wasOn = new bool[found.Length];

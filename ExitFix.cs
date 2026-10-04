@@ -76,6 +76,8 @@ namespace StutterFix
                     Sabotage = Verify && System.IO.File.ReadAllText(System.IO.Path.Combine(Main.Entry.Path, "exit-verify.txt")).Contains("sabotage");
                     if (Verify) Main.Entry.Logger.Log("[나가기] (개발자용) 나가기마다 원래 방식과 비교함");
                 }
+                foreach (var m in typeof(scnGame).GetMethods(AccessTools.all))
+                    if (m.Name == "LoadLevel" && m.DeclaringType == typeof(scnGame) && !m.IsAbstract) h.Patch(m, prefix: new HarmonyMethod(typeof(ExitFix), nameof(LoadLevelPrefix)));
                 Main.Entry.Logger.Log("[나가기] 설치");
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[나가기] 설치 실패: " + ex.Message); }
@@ -120,6 +122,15 @@ namespace StutterFix
         }
         private static Base[] bases = new Base[0];
         private static List<scrDecoration> baseList;
+        private static int filled;
+        // 새 맵 파일을 열 때: 지난 맵의 값 기록을 버린다 (다음 다시 설정까지는 원래 방식으로 돈다)
+        internal static void Forget()
+        {
+            if (filled > 0) Array.Clear(bases, 0, filled);
+            filled = 0; baseList = null; baseCount = 0; haveBase = false;
+            touched.Clear();
+        }
+        public static void LoadLevelPrefix() { try { Forget(); } catch { } try { FfxReuse.Prune(); } catch { } try { EffectBudget.ForgetDecos(); } catch { } try { Dormancy.ForgetLevel(); } catch { } try { LoadFix.ForgetLevel(); } catch { } try { BeatFix.ForgetLevel(); } catch { } try { MeshWarm.ForgetLevel(); } catch { } try { FastMove.ForgetLevel(); } catch { } }
         private static int baseCount;
         private static bool haveBase;
         private sealed class RefEq : IEqualityComparer<scrDecoration>
@@ -161,6 +172,9 @@ namespace StutterFix
             var all = allRef(mgr);
             if (all == null || !ADOBase.customLevel) { haveBase = false; return; }
             if (bases.Length < all.Count) bases = new Base[all.Count + 256];
+            // 지난번이 더 많았으면 그 뒤 칸을 비운다 (지난 맵의 지워진 장식을 계속 붙잡았다: Arche 뒤 다른 맵에서 장식 2만 8천 개)
+            if (filled > all.Count) Array.Clear(bases, all.Count, filled - all.Count);
+            filled = all.Count;
             for (int i = 0; i < all.Count; i++)
             {
                 bases[i] = default(Base);

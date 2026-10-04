@@ -69,6 +69,7 @@ namespace StutterFix
             public int GetHashCode(scrDecoration o) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o); }
         }
         private static readonly List<scrDecoration> list = new List<scrDecoration>();
+        internal static void ForgetLevel() { list.Clear(); src = null; if (shape.Targets != null) shape.Targets = null; shape.Sources.Clear(); stamp.Clear(); }
         private static bool running, bypass;
 
         internal static void Install(Harmony h)

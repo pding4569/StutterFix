@@ -219,6 +219,13 @@ namespace StutterFix
                 && !meshOnRef((scrVisualDecoration)d) && !d.GetVisible();
         }
 
+        // 새 맵 파일을 열 때: 지난 맵 장식 목록·히트박스 목록을 놓는다 (지난 맵 장식 2만 8천 개를 붙잡았다)
+        internal static void ForgetLevel()
+        {
+            ResetState();
+            hbSource = null; hbCount = -1; hbVersion = -1; hbDirty = true; hitboxList.Clear();
+        }
+
         private static void ResetState()
         {
             if (source == null && dormant.Count == 0) return;
