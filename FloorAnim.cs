@@ -499,7 +499,7 @@ namespace StutterFix
         private static Rec lastNew;
         // 꺼진 DOTween 객체(모드 표). AccessTools.CreateInstance 는 부를 때마다 생성자를 리플렉션으로 찾아 하나 약 2us 였다 (효과 하나에 7천 개).
         private static Func<Tween> factory;
-        private static Tween NewProxy()
+        internal static Tween NewProxy()
         {
             if (factory == null)
             {

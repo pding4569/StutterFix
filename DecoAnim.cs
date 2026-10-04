@@ -57,7 +57,7 @@ namespace StutterFix
             public Tween Shadow; public float SF; public Color SC; public Vector2 SV; public bool SDone, SStepped;
             public bool InList;   // recs 목록에 들어 있음 (다시 쓰면 두 번 진행되므로 목록에서 빠진 것만 다시 쓴다)
         }
-        internal static long Reused;
+        internal static long Reused, NewProxies;
 
         private static readonly List<Rec> recs = new List<Rec>();
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> pivotPosRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("pivotPosVec");
@@ -151,7 +151,8 @@ namespace StutterFix
             }
             else r = new Rec { D = dec, Key = key, Dur = dur, E = ease };
             ZeroTween.EaseParams(ease, out r.Over, out r.Period);
-            r.Proxy = reuseProxy ? old : AccessTools.CreateInstance<TweenerCore<float, float, FloatOptions>>();
+            if (!reuseProxy) NewProxies++;
+            r.Proxy = reuseProxy ? old : FloorAnim.NewProxy();   // 리플렉션 생성(하나 약 2us) 대신 생성자 호출기
             r.Proxy.id = r;
             d[(global::TweenType)key] = r.Proxy;
             recs.Add(r); r.InList = true; Created++;
@@ -452,8 +453,8 @@ namespace StutterFix
         internal static string Summary()
         {
             if (Created == 0) return "";
-            string s = string.Format(" | 장식 애니메이션 직접 처리: 만든 것 {0}개(동시 최대 {1}개), 끝까지 감 {2}, 끊겨서 완료 {3}, 버림 {4}, 기록 다시 씀 {8}, 갱신에 쓴 시간 {5:F0}ms ({6}프레임), 게임이 멈출 때 넘겨준 것 {9}{7}",
-                Created, Peak, Completed, Killed, Dropped, UpdateMs, Frames, Errors > 0 ? ", 예외 " + Errors : "", Reused, Listed);
+            string s = string.Format(" | 장식 애니메이션 직접 처리: 만든 것 {0}개(동시 최대 {1}개), 끝까지 감 {2}, 끊겨서 완료 {3}, 버림 {4}, 기록 다시 씀 {8}, 새 표 객체 {10}, 갱신에 쓴 시간 {5:F0}ms ({6}프레임), 게임이 멈출 때 넘겨준 것 {9}{7}",
+                Created, Peak, Completed, Killed, Dropped, UpdateMs, Frames, Errors > 0 ? ", 예외 " + Errors : "", Reused, Listed, NewProxies);
             if (Edition.Dev) s += " (검증: 진짜 DOTween 과 나란히 " + VerifyN + "개, 프레임 " + VerifySteps + "번 중 다름 " + VerifyMismatch + " [위치X " + MismatchByKey[1] + ", 위치Y " + MismatchByKey[2] + ", 회전 " + MismatchByKey[5] + ", 크기X " + MismatchByKey[7] + ", 크기Y " + MismatchByKey[8] + ", 색 " + MismatchByKey[9] + ", 불투명도 " + MismatchByKey[10] + ", 피벗 " + (MismatchByKey[3] + MismatchByKey[4]) + ", 시차배율 " + MismatchByKey[11] + ", 시차 " + (MismatchByKey[12] + MismatchByKey[13]) + "]" + First + ")";
             else if (First.Length > 0) s += First;
             if (Prof && Steps > 0)
@@ -465,6 +466,6 @@ namespace StutterFix
             }
             return s;
         }
-        internal static void ResetStats() { Array.Clear(MismatchByKey, 0, 16); Created = Completed = Killed = Dropped = Frames = VerifyN = VerifySteps = VerifyMismatch = Errors = 0; Peak = 0; UpdateMs = 0; First = ""; Reused = 0; Steps = 0; Array.Clear(ProfN, 0, 16); Array.Clear(ProfApply, 0, 16); Array.Clear(ProfSet, 0, 16); }
+        internal static void ResetStats() { Array.Clear(MismatchByKey, 0, 16); Created = Completed = Killed = Dropped = Frames = VerifyN = VerifySteps = VerifyMismatch = Errors = 0; Peak = 0; UpdateMs = 0; First = ""; Reused = 0; NewProxies = 0; Steps = 0; Array.Clear(ProfN, 0, 16); Array.Clear(ProfApply, 0, 16); Array.Clear(ProfSet, 0, 16); }
     }
 }
