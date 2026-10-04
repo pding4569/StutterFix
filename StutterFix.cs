@@ -146,6 +146,7 @@ namespace StutterFix
                 FastMove.Install(harmony);
                 Precheck.Install(harmony);
                 DecoAnim.Install(harmony);
+                FloorAnim.Install(harmony);   // 길이 있는 타일 이동 애니메이션을 모드가 직접 (FloorAnim.cs)
                 LowEnd.Install(harmony);
                 ParticleFix.Install(harmony);
                 LeakGuard.Install(harmony);
@@ -370,6 +371,7 @@ namespace StutterFix
             // 곡 중에 내리면 원래 게임이 이미 끝냈을 일을 마저 한다: 밀린 효과·타일 색 조각 실행, 모드 애니메이션은 끝값으로(Kill(true) 와 같음)
             if (Hitch.Playing) Try(EffectBudget.FlushAll);
             Try(global::StutterFix.DecoAnim.FinishAll);
+            Try(global::StutterFix.FloorAnim.FinishAll);
             Try(EffectBudget.Reset);       // 색 나누기 대기열도 같이 비운다
             Try(ImagePrefetch.Stop);       // 이미지 작업 스레드와 풀어 둔 메모리
             Try(() => SystemMonitor.Keep = false);
@@ -526,6 +528,9 @@ namespace StutterFix
             bool deco = E("DecoAnim", Config.DecoAnim);
             if (!deco && global::StutterFix.DecoAnim.Enabled) global::StutterFix.DecoAnim.FinishAll();   // 끄면 진행 중인 것은 끝값으로 (Kill(true) 와 같음)
             global::StutterFix.DecoAnim.Enabled = deco;
+            bool floorAnim = E("FloorAnim", Config.FloorAnim);
+            if (!floorAnim && global::StutterFix.FloorAnim.Enabled) global::StutterFix.FloorAnim.FinishAll();
+            global::StutterFix.FloorAnim.Enabled = floorAnim;
             LowEnd.Priority = Config.LowPriority; LowEnd.NoThrottle = Config.LowNoThrottle; LowEnd.NoFft = Config.LowNoFft; LowEnd.RenderScalePct = low ? Mathf.Clamp(Config.LowRenderScale, 10, 100) : 100; LowEnd.SharpUpscale = Config.LowSharpUpscale; LowEnd.ImageCap = Config.LowImageCap; LowEnd.Sharpen = low && Config.LowSharpen; LowEnd.SharpenValue = Mathf.Clamp(Config.LowSharpenValue, 0.25f, 4f); HalfRender.Enabled = low && E("LowHalfRender", Config.LowHalfRender); LowEnd.AutoRes = low && Config.LowAutoRes; LowEnd.AutoTargetFps = Config.LowAutoFps; LowEnd.AutoMinPct = Mathf.Clamp(Config.LowAutoMin, 10, 100); LowEnd.MenuFps = Config.LowMenuFps; Fsr.Enabled = low && E("LowFsr", Config.LowFsr) && !Config.LowSharpUpscale;
             EffectBudget.BudgetMs = Config.LowSplit >= 2 ? 3f : Config.LowSplit == 1 ? 5f : 10f;
             RecolorSplit.ChunkTiles = Config.LowSplit >= 2 ? 120 : Config.LowSplit == 1 ? 200 : 400;
@@ -746,6 +751,7 @@ namespace StutterFix
         public bool SkipSame = true;       // 즉시 이동 값이 이미 그대로면(투명 장식) 설정 함수를 부르지 않음
         public bool FastLoop = true;       // 길이 0 장식 이동 효과를 게임 코드 대신 모드 루프로
         public bool Precheck = true;       // 곧 발동할 무거운 장식 이동이 아무것도 안 바꾸는지 미리 확인해 두고 건너뛰기
+        public bool FloorAnim = true;      // 길이 있는 타일 이동(MoveTrack)의 애니메이션을 DOTween 대신 모드가 돌림
         public bool DecoAnim = true;       // 길이 있는 장식 이동의 애니메이션을 DOTween 대신 모드가 돌림
         public bool FilterTypeCache = true; // 고급 필터의 형식 찾기(Type.GetType, 한 번 약 0.7ms) 결과를 기억
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기

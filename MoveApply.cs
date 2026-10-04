@@ -394,18 +394,18 @@ namespace StutterFix
 
         internal static string Summary()
         {
-            if (Calls == 0) return "미룬 것 없음";
+            if (Calls == 0) return "미룬 것 없음" + FloorAnim.Summary();
             return string.Format("위치 마무리 {0}번을 {1}번으로 줄임 ({2:F0}% 절약, 마무리에 쓴 시간 {7:F0}ms) | 편집기 피벗 갱신 {4}번을 {5}번으로 | 위치 쓰기 {8}번 중 같은 값이라 건너뜀 {9}번{6}",
                 Calls, Flushed, 100.0 * (Calls - Flushed) / Calls, FrameUnique, PivotCalls, PivotDone, Patched ? "" : " (적용 안 됨)", FlushMs, PosWrites + PosSkips, PosSkips)
                 + " | 재생 중 편집기 검사 건너뜀 " + EditorSkips + "번" + ProfSummary()
                 + (LogicCalls > 0 ? string.Format(" | 매 프레임 장식 순회 {0}번 중 바뀌는 게 없어 뺀 것 {1}번", LogicCalls, LogicSkips) : "")
                 + Dormancy.Summary()
-                + InstantMove.Summary() + FastMove.Summary()
+                + InstantMove.Summary() + FastMove.Summary() + FloorAnim.Summary()
                 + (LateSkips > 0 ? string.Format(" | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 {0}번 (안 보이게 돼서 대신 갱신 {1}번){2}", LateSkips, LateFixups, Edition.Dev ? string.Format(", 검사 {0}개 중 다름 {1}, 게임 목록에 없음 {2}", LateChecked / 32, LateMismatch, LateNotInList) : "") : "")
                 + (MovesIn + MovesOut > 0 ? string.Format(" | 옮긴 장식 중 투명: 효과 시작 안 {0}/{1}, 애니메이션 진행 중 {2}/{3} (그중 히트박스 {4})", HiddenIn, MovesIn, HiddenOut, MovesOut, HiddenHitbox) : "");
         }
 
-        internal static void ResetMoves() { MovesIn = MovesOut = HiddenIn = HiddenOut = HiddenHitbox = 0; LateSkips = LateFixups = LateNotInList = LateChecked = LateMismatch = 0; devAll = null; LogicSkips = LogicCalls = 0; Dormancy.ResetStats(); InstantMove.Reset(); FastMove.Reset(); }
+        internal static void ResetMoves() { MovesIn = MovesOut = HiddenIn = HiddenOut = HiddenHitbox = 0; LateSkips = LateFixups = LateNotInList = LateChecked = LateMismatch = 0; devAll = null; LogicSkips = LogicCalls = 0; Dormancy.ResetStats(); InstantMove.Reset(); FastMove.Reset(); FloorAnim.ResetStats(); }
         internal static void Reset() { Calls = Flushed = PivotCalls = PivotDone = FrameUnique = 0; FlushMs = 0; PosWrites = PosSkips = 0; ProfN = 0; ProfScale = ProfWrite = ProfEditor = ProfRest = 0; EditorSkips = 0; frameSet.Clear(); ResetMoves(); }
     }
 }

@@ -530,12 +530,12 @@ namespace StutterFix
 
             var c = Main.Config;
             int on = (c.GcPause ? 1 : 0) + (c.EffectSplit ? 1 : 0) + (c.RecolorSplit ? 1 : 0) + (c.TweenGuard ? 1 : 0) + (c.SkipSameText ? 1 : 0) + (c.FilterTypeCache ? 1 : 0) + (c.MeshWarm ? 1 : 0) + (c.SoundWarm ? 1 : 0)
-                   + (c.ShaderWarm ? 1 : 0) + (c.FastBlend ? 1 : 0) + (c.SkipInvisible ? 1 : 0) + (c.LazyHidden ? 1 : 0) + (c.ZeroTween ? 1 : 0) + (c.InstantDirect ? 1 : 0) + (c.SkipSame ? 1 : 0) + (c.FastLoop ? 1 : 0) + (c.Precheck ? 1 : 0) + (c.DecoAnim ? 1 : 0) + (c.MoveFinish ? 1 : 0) + (c.DormantSkip ? 1 : 0) + (c.ImagePrefetch ? 1 : 0) + (c.SkipAssetUnload ? 1 : 0) + (c.LegacyGfxJobs ? 1 : 0) + (c.NoGhosting ? 1 : 0) + (c.SkipIdleParticles ? 1 : 0) + (c.LeakFix ? 1 : 0) + (c.LoadCache ? 1 : 0);
+                   + (c.ShaderWarm ? 1 : 0) + (c.FastBlend ? 1 : 0) + (c.SkipInvisible ? 1 : 0) + (c.LazyHidden ? 1 : 0) + (c.ZeroTween ? 1 : 0) + (c.InstantDirect ? 1 : 0) + (c.SkipSame ? 1 : 0) + (c.FastLoop ? 1 : 0) + (c.Precheck ? 1 : 0) + (c.DecoAnim ? 1 : 0) + (c.FloorAnim ? 1 : 0) + (c.MoveFinish ? 1 : 0) + (c.DormantSkip ? 1 : 0) + (c.ImagePrefetch ? 1 : 0) + (c.SkipAssetUnload ? 1 : 0) + (c.LegacyGfxJobs ? 1 : 0) + (c.NoGhosting ? 1 : 0) + (c.SkipIdleParticles ? 1 : 0) + (c.LeakFix ? 1 : 0) + (c.LoadCache ? 1 : 0);
             string d = BootConfig.Describe();
             bool jobs = d.Contains("Jobified") || d.Contains("Split");
 
             GUILayout.BeginHorizontal();
-            Stat(on + " / 27", T("켜진 기능", "Features on"), true);
+            Stat(on + " / 28", T("켜진 기능", "Features on"), true);
             GUILayout.Space(14);
             Stat(GcControl.Paused ? T("미루는 중", "Deferred") : T("대기", "Idle"), T("메모리 정리", "Memory cleanup"), false);
             GUILayout.Space(14);
@@ -754,6 +754,9 @@ namespace StutterFix
                 T("길이가 있는 장식 이동(위치·회전·크기·색·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 시간 누적, 이징, 콜백 순서, 끊기까지 DOTween 과 똑같이 하고(33만 개를 DOTween 과 나란히 돌려 비트 단위로 확인), 애니메이션 관리 비용만 줄입니다. 피벗·시차가 섞인 효과는 원래대로 둡니다.",
                   "Runs decoration move animations (position, rotation, scale, color, opacity) in the mod instead of DOTween, with the same timing, easing, callback order and kill behavior (verified bit-for-bit against DOTween over 330,000 animations), cutting only the tween bookkeeping. Effects that also animate pivot or parallax stay on DOTween."),
                 T("무거운 구간", "Heavy sections"), 3, fl);
+            ch |= Option("flooranim", ref c.FloorAnim, T("타일 애니메이션 직접 처리", "Tile move animations"),
+                T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
+                  "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);
             string ss = id ?? Need(c.SkipInvisible, T("투명한 장식 그리지 않기", "Skip invisible decorations"));
             ch |= Option("samevalue", ref c.SkipSame, T("투명 장식 빠른 처리", "Fast path for hidden decorations"),
                 T("즉시 이동이 투명한 장식을 옮기면 게임 함수를 거치지 않고 위치를 바로 \"보일 때 반영\" 목록에 넣고, 이미 가진 것과 같은 색은 다시 넣지 않으며, 바뀌어도 투명한 채라면 값만 저장합니다. 게임 상태는 원래와 똑같습니다.",
@@ -1463,7 +1466,7 @@ namespace StutterFix
         private void ResetDefaults()
         {
             var c = Main.Config;
-            c.GcPause = c.EffectSplit = c.RecolorSplit = c.TweenGuard = c.SkipSameText = c.FilterTypeCache = c.MeshWarm = c.SoundWarm = c.ShaderWarm = c.FastBlend = c.SkipInvisible = c.LazyHidden = c.ZeroTween = c.InstantDirect = c.SkipSame = c.FastLoop = c.Precheck = c.DecoAnim = c.MoveFinish = c.DormantSkip = c.ImagePrefetch = c.SkipAssetUnload = c.SkipIdleParticles = c.LeakFix = c.LoadCache = true;
+            c.GcPause = c.EffectSplit = c.RecolorSplit = c.TweenGuard = c.SkipSameText = c.FilterTypeCache = c.MeshWarm = c.SoundWarm = c.ShaderWarm = c.FastBlend = c.SkipInvisible = c.LazyHidden = c.ZeroTween = c.InstantDirect = c.SkipSame = c.FastLoop = c.Precheck = c.DecoAnim = c.FloorAnim = c.MoveFinish = c.DormantSkip = c.ImagePrefetch = c.SkipAssetUnload = c.SkipIdleParticles = c.LeakFix = c.LoadCache = true;
             if (!c.LegacyGfxJobs) { c.LegacyGfxJobs = true; BootConfig.Apply(true, c.FlipModel == 1); }
             Save();
         }

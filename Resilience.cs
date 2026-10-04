@@ -32,7 +32,7 @@ namespace StutterFix
         {
             { "GcControl", new[] { "GcPause" } }, { "EffectBudget", new[] { "EffectSplit" } }, { "RecolorSplit", new[] { "RecolorSplit" } },
             { "TweenFix", new[] { "TweenGuard" } }, { "ZeroTween", new[] { "ZeroTween" } }, { "InstantMove", new[] { "InstantDirect" } },
-            { "FastMove", new[] { "FastLoop" } }, { "Precheck", new[] { "Precheck" } }, { "DecoAnim", new[] { "DecoAnim" } },
+            { "FastMove", new[] { "FastLoop" } }, { "Precheck", new[] { "Precheck" } }, { "DecoAnim", new[] { "DecoAnim" } }, { "FloorAnim", new[] { "FloorAnim" } },
             { "MoveApply", new[] { "MoveFinish" } }, { "Dormancy", new[] { "DormantSkip" } }, { "TextFix", new[] { "SkipSameText" } }, { "TypeCache", new[] { "FilterTypeCache" } }, { "MeshWarm", new[] { "MeshWarm" } }, { "SoundWarm", new[] { "SoundWarm" } },
             { "ImagePrefetch", new[] { "ImagePrefetch" } }, { "PngDecoder", new[] { "ImagePrefetch" } }, { "TexCompress", new[] { "ImagePrefetch" } }, { "DxtEncoder", new[] { "ImagePrefetch" } }, { "SfNative", new[] { "ImagePrefetch" } }, { "TurboJpeg", new[] { "ImagePrefetch" } },
             { "ShaderWarm", new[] { "ShaderWarm" } }, { "FastBlend", new[] { "FastBlend" } }, { "InvisibleSkip", new[] { "SkipInvisible" } },
@@ -40,7 +40,7 @@ namespace StutterFix
             { "Fsr", new[] { "LowFsr" } }, { "HalfRender", new[] { "LowHalfRender" } }, { "LowEnd", new[] { "LowEnd" } },
         };
         // 안전 모드에서 끄는 것: 게임 동작에 깊이 끼어드는 기능 (메모리 정리 미루기·같은 글자 건너뛰기처럼 단순한 것은 둔다)
-        private static readonly string[] safeOff = { "ImagePrefetch", "LoadCache", "DecoAnim", "FastLoop", "InstantDirect", "ZeroTween", "Precheck", "DormantSkip",
+        private static readonly string[] safeOff = { "ImagePrefetch", "LoadCache", "DecoAnim", "FloorAnim", "FastLoop", "InstantDirect", "ZeroTween", "Precheck", "DormantSkip",
             "SkipInvisible", "MoveFinish", "FastBlend", "SkipIdleParticles", "LowPauseParticles", "LeakFix", "LowFsr", "LowHalfRender", "LowEnd" };
 
         internal static bool Off(string key) { lock (sync) return off.Contains(key); }
