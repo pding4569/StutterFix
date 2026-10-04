@@ -905,6 +905,16 @@ namespace StutterFix
                 BootConfig.Apply(c.LegacyGfxJobs, flip);
                 Save();
             }
+            bool exfs = c.ExpFullscreen == 1;
+            if (Option("exfs", ref exfs, T("화면 지연 줄이기 (독점 전체 화면)", "Lower display latency (exclusive fullscreen)"),
+                T("전체 화면일 때 게임을 독점 전체 화면으로 바꿔, 윈도우가 화면을 한 번 더 합성하는 단계를 건너뜁니다. 측정(HELLO 2026, 165Hz): 프레임이 화면에 나오기까지 15.8 -> 7.9ms 로 절반, 평균 FPS 는 209 -> 187 로 조금 낮아집니다. 수직동기가 꺼져 있으면 화면이 가로로 찢어져 보일 수 있고, Alt+Tab 하면 게임이 최소화되며 켜고 끌 때 화면이 한 번 깜빡입니다. 창 모드에서는 아무것도 하지 않습니다.",
+                  "In fullscreen, switches the game to exclusive fullscreen so Windows skips one composition step. Measured (HELLO 2026, 165 Hz): frame-to-screen 15.8 -> 7.9 ms, average FPS 209 -> 187. With vsync off you may see tearing; Alt+Tab minimizes the game and the screen blinks once when switching. Does nothing in windowed mode."),
+                T("실험", "Experimental")))
+            {
+                c.ExpFullscreen = exfs ? 1 : 0;
+                Main.ApplyFullscreen();
+                Save();
+            }
             var rows = new List<string> { T("지금 상태", "Current"), BootConfig.Describe().Replace("지금 ", "") };
             if (BootConfig.Status.Contains("다음 실행")) { rows.Add(T("적용", "Pending")); rows.Add(T("게임을 다시 켜면 적용됩니다", "Applies after restart")); }
             if (Main.LaunchWarning.Length > 0) { rows.Add(T("주의", "Warning")); rows.Add(Main.LaunchWarning.Trim()); }

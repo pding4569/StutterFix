@@ -174,6 +174,7 @@ namespace StutterFix
             if (AllocProbeOn) AllocProbe.ResetSong();
             if (TimeProbeOn) TimeProbe.ResetSong();
             UiProf.ResetSong();
+            if (Main.Config != null && Main.Config.ExpFullscreen == 1) Main.ApplyFullscreen();   // 게임 설정에서 화면을 바꿨으면 다시 독점 전체 화면으로
             TileCull.SongBegin();
             Main.Entry.Logger.Log("[끊김] 기록 시작");
         }

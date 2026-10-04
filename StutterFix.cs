@@ -94,6 +94,7 @@ namespace StutterFix
             // 다시 불러오기도 내부에서 끄기 -> 켜기를 거치므로 그때는 건드리지 않는다
             // (중간에 실패하면 legacy 줄이 빠진 채로 남았다).
             if (!reloading) BootConfig.Apply(value && Config.LegacyGfxJobs, value && Config.FlipModel == 1);
+            if (!reloading && !value) { try { RestoreFullscreen(); } catch { } }   // 모드를 끄면 독점 전체 화면도 원래대로
             return true;
         }
 
@@ -527,30 +528,35 @@ namespace StutterFix
             }
             catch (Exception ex) { Entry.Logger.Log("[화면 출력 실험] 실패: " + ex.Message); }
         }
-        private static void RestoreQueued() { if (origQueued >= 0) { QualitySettings.maxQueuedFrames = origQueued; origQueued = -1; } RestoreFullscreen(); }
-        // (실험, 설정 창에 없음) 전체 화면 방식: 1 = 독점 전체 화면(ExclusiveFullScreen). 창 모드면 건드리지 않는다.
-        private static int origFsMode = -1;
-        private static void ApplyFullscreen()
+        private static void RestoreQueued() { if (origQueued >= 0) { QualitySettings.maxQueuedFrames = origQueued; origQueued = -1; } }
+        // (실험 옵션, 설정 창 그래픽) 전체 화면일 때 독점 전체 화면(ExclusiveFullScreen). 창 모드면 건드리지 않는다.
+        // 유니티는 끌 때 전체 화면 방식을 기억하므로, 모드가 바꿨다는 표시(ExpFsChanged)를 저장해 두고 옵션을 끄면 다음 실행에서도 전체 화면 창으로 되돌린다.
+        internal static void ApplyFullscreen()
         {
             try
             {
-                if (Config.ExpFullscreen == 1 && Screen.fullScreen && Screen.fullScreenMode != FullScreenMode.ExclusiveFullScreen)
+                bool want = Config.ExpFullscreen == 1;
+                if (want && Screen.fullScreen && Screen.fullScreenMode != FullScreenMode.ExclusiveFullScreen)
                 {
-                    origFsMode = (int)Screen.fullScreenMode;
                     var r = Screen.currentResolution;
+                    Entry.Logger.Log("[화면 출력] 전체 화면 " + Screen.fullScreenMode + " -> ExclusiveFullScreen " + r.width + "x" + r.height);
                     Screen.SetResolution(r.width, r.height, FullScreenMode.ExclusiveFullScreen, r.refreshRateRatio);
-                    Entry.Logger.Log("[화면 출력 실험] 전체 화면 " + (FullScreenMode)origFsMode + " -> ExclusiveFullScreen " + r.width + "x" + r.height);
+                    if (!Config.ExpFsChanged) { Config.ExpFsChanged = true; try { Config.Save(Entry); } catch { } }
                 }
-                else if (Config.ExpFullscreen != 1) RestoreFullscreen();
+                else if (!want) RestoreFullscreen();
+                else if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen && !Config.ExpFsChanged) { Config.ExpFsChanged = true; try { Config.Save(Entry); } catch { } }   // 지난번에 모드가 바꿔 둔 것이 유니티에 남아 있다
             }
-            catch (Exception ex) { Entry.Logger.Log("[화면 출력 실험] 전체 화면 실패: " + ex.Message); }
+            catch (Exception ex) { Entry.Logger.Log("[화면 출력] 전체 화면 실패: " + ex.Message); }
         }
         private static void RestoreFullscreen()
         {
-            if (origFsMode < 0) return;
+            if (!Config.ExpFsChanged) return;
+            Config.ExpFsChanged = false;
+            try { Config.Save(Entry); } catch { }
+            if (Screen.fullScreenMode != FullScreenMode.ExclusiveFullScreen) return;
             var r = Screen.currentResolution;
-            Screen.SetResolution(r.width, r.height, (FullScreenMode)origFsMode, r.refreshRateRatio);
-            origFsMode = -1;
+            Screen.SetResolution(r.width, r.height, FullScreenMode.FullScreenWindow, r.refreshRateRatio);
+            Entry.Logger.Log("[화면 출력] 독점 전체 화면 -> 전체 화면 창 (되돌림)");
         }
 
         private static void ApplyToggles()
@@ -824,7 +830,8 @@ namespace StutterFix
         public bool LowAutoRes = false;     // 자동 해상도: 목표 FPS 를 못 맞출 만큼 GPU 가 바쁠 때만 게임 화면 해상도를 낮춤
         public int LowAutoFps = 60;         // 자동 해상도 목표 FPS
         public int LowAutoMin = 50;         // 자동 해상도 최소 배율 %
-        public int ExpFullscreen = 0;       // (실험) 1 = 독점 전체 화면
+        public bool ExpFsChanged = false;   // 모드가 독점 전체 화면으로 바꿔 둠 (옵션을 끄면 되돌린다)
+        public int ExpFullscreen = 0;       // (실험, 설정 창 그래픽) 1 = 전체 화면일 때 독점 전체 화면 (화면 지연 절반, FPS 약 -10%, 찢어짐)
         public int MaxQueuedFrames = 0;     // (실험) 앞서 준비하는 프레임 수, 0 = 게임 값 그대로
         public int LowSplit = 0;            // 효과 몰림 나누기 세기: 0 기본(10ms, 400칸), 1 잘게(5ms, 200칸), 2 아주 잘게(3ms, 120칸)
         public string ReopenLevel = "";     // 재시작 버튼으로 껐을 때 다시 켠 뒤 에디터로 열 맵 (한 번 쓰고 비움)
