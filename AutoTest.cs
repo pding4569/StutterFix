@@ -703,6 +703,24 @@ namespace StutterFix
                     return true;
                 case "select":
                     { if (ed == null) throw new Exception("에디터가 아님"); int si = int.Parse(arg); ed.SelectFloor(ADOBase.lm.listFloors[Math.Min(si, ADOBase.lm.listFloors.Count - 1)], true); Log("타일 " + si + " 선택"); return true; }
+                case "seek":
+                    {
+                        // seek <곡 초> [앞 여유 초=8]: 그 시점 조금 앞 타일을 골라 재생한다 (곡 전체를 돌리지 않고 볼 구간만)
+                        if (ed == null) throw new Exception("에디터가 아님");
+                        var sp = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        double at = double.Parse(sp[0], System.Globalization.CultureInfo.InvariantCulture);
+                        double lead = sp.Length > 1 ? double.Parse(sp[1], System.Globalization.CultureInfo.InvariantCulture) : 8;
+                        var fl = ADOBase.lm.listFloors; int pick = 0;
+                        for (int i = 0; i < fl.Count; i++) { if (fl[i] != null && fl[i].entryTime >= at - lead) { pick = i; break; } pick = i; }
+                        ed.SelectFloor(fl[pick], true);
+                        Log(string.Format("{0:F1}초 {1:F0}초 앞: 타일 {2} (그 타일 {3:F1}초) 선택", at, lead, pick, fl[pick].entryTime));
+                        if (ed.playMode) { Log("이미 재생 중"); return true; }
+                        if (autoChanged) RDC.auto = desiredAuto;
+                        Log("재생 (자동 플레이 " + (RDC.auto ? "켬" : "끔") + ")");
+                        ed.Play();
+                        BeginRun("Play");
+                        return true;
+                    }
                 case "play":
                     if (ed == null) throw new Exception("에디터가 아님");
                     if (ed.playMode) { Log("이미 재생 중"); return true; }
