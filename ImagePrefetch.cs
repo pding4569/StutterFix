@@ -122,6 +122,8 @@ namespace StutterFix
                 harmony.Patch(update,
                     prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(Begin)),
                     finalizer: new HarmonyMethod(typeof(ImagePrefetch), nameof(End)));
+                var create = AccessTools.Method(typeof(scrDecorationManager), "CreateDecoration");
+                if (create != null) harmony.Patch(create, prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(CreatePrefix)), finalizer: new HarmonyMethod(typeof(ImagePrefetch), nameof(CreateFinalizer)));
                 harmony.Patch(load, prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(LoadTexturePrefix)),
                     transpiler: new HarmonyMethod(typeof(ImagePrefetch), nameof(Transpiler)), postfix: new HarmonyMethod(typeof(ImagePrefetch), nameof(BrokenImagePostfix)));
                 LoadNative();
@@ -252,6 +254,7 @@ namespace StutterFix
         private static readonly HashSet<string> brokenSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         public static void BrokenImagePostfix(Texture2D __result, ref ADOFAI.LoadResult status, string filePath)
         {
+            if (running && loadT0 != 0) { loadTicks += Stopwatch.GetTimestamp() - loadT0; loadT0 = 0; }
             if ((object)__result != null || status != ADOFAI.LoadResult.Successful) return;
             status = ADOFAI.LoadResult.Error;
             if (running && filePath != null) brokenThisLoad.Add(filePath);
@@ -520,6 +523,7 @@ namespace StutterFix
                     items = list; byPath = seen; next = 0; pendingBytes = 0; running = true; consumed = -1;
                     used = fallback = notReady = 0; waitMs = 0; shrunkCount = 0; savedBytes = 0;
                     brokenThisLoad.Clear(); brokenSkipped = 0;
+                    loadT0 = loadTicks = createTicks = 0; createDepth = createCount = 0;
                 }
                 startTicks = Stopwatch.GetTimestamp();
                 putMs = fallbackMs = 0; fallbackNotes = 0; lateCompress = 0; compressWaitMs = 0;
@@ -799,7 +803,20 @@ namespace StutterFix
 
         // 이번 LoadTexture 의 maxSideSize (-1 이 아니면 게임이 LoadImage 뒤에 ShrinkImage 로 픽셀을 다시 읽으므로 압축 결과를 바로 넣지 않는다)
         private static int loadMaxSide = -1;
-        public static void LoadTexturePrefix(int maxSideSize) { loadMaxSide = maxSideSize; }
+        public static void LoadTexturePrefix(int maxSideSize) { loadMaxSide = maxSideSize; if (running) loadT0 = Stopwatch.GetTimestamp(); }
+
+        // 맵 열기 나눠 보기: 장식 만들기(CreateDecoration) 전체와 그 안의 텍스처 불러오기(LoadTexture) 시간 (불러오기 중에만, 장식마다 두 번 시각 읽기)
+        private static long loadT0, loadTicks, createT0, createTicks; private static int createDepth, createCount;
+        public static void CreatePrefix() { if (running && createDepth++ == 0) createT0 = Stopwatch.GetTimestamp(); }
+        public static Exception CreateFinalizer(Exception __exception)
+        {
+            if (running && createDepth > 0 && --createDepth == 0)
+            {
+                createTicks += Stopwatch.GetTimestamp() - createT0;
+                createCount++;
+            }
+            return __exception;
+        }
 
         public static bool LoadImage(Texture2D tex, byte[] data)
         {
@@ -937,7 +954,8 @@ namespace StutterFix
                 double total = (Stopwatch.GetTimestamp() - startTicks) * 1000.0 / Stopwatch.Frequency;
                 LastSide = sideNow; LastShrunk = shrunkCount; LastSavedMB = Interlocked.Read(ref savedBytes) / 1048576f; AnyLoad = true;
                 Last = string.Format("미리 푼 것 {0}장(넣기 {5:F0}ms), 원래 방식 {1}장({6:F0}ms, 순서 어긋남 {2}), 기다림 {3:F0}ms, GC {7}번, 전체 {4:F1}초" + (shrunkCount > 0 ? ", 줄인 이미지 " + shrunkCount + "장 (긴 변 " + sideNow + ", VRAM 약 " + LastSavedMB.ToString("F0") + "MB 아낌)" : ""),
-                    used, fallback, notReady, waitMs, total / 1000.0, putMs, fallbackMs, GC.CollectionCount(0) - gcAtStart) + TexCompress.EndLoad() + (lateCompress > 0 ? ", 압축이 늦어 원래대로 " + lateCompress + "장" : "") + (brokenSkipped > 0 ? ", 깨진 이미지 다시 읽지 않음 " + brokenSkipped + "번" : "") + (compressWaitMs > 0 ? string.Format(", 압축 마저 기다림 {0:F0}ms", compressWaitMs) : "");
+                    used, fallback, notReady, waitMs, total / 1000.0, putMs, fallbackMs, GC.CollectionCount(0) - gcAtStart) + TexCompress.EndLoad() + (lateCompress > 0 ? ", 압축이 늦어 원래대로 " + lateCompress + "장" : "") + (brokenSkipped > 0 ? ", 깨진 이미지 다시 읽지 않음 " + brokenSkipped + "번" : "")
+                    + string.Format(" | 장식 만들기 {0}개 {1:F0}ms, 그중 텍스처 불러오기 {2:F0}ms", createCount, createTicks * 1000.0 / Stopwatch.Frequency, loadTicks * 1000.0 / Stopwatch.Frequency) + (compressWaitMs > 0 ? string.Format(", 압축 마저 기다림 {0:F0}ms", compressWaitMs) : "");
                 Main.Entry.Logger.Log("[이미지] " + Last);
                 double tk = Stopwatch.Frequency / 1000.0;
                 Main.Entry.Logger.Log(string.Format("[이미지] 해독 시간(작업 스레드 {0}개 합계): 압축 풀기 {1:F0}ms, 필터 되돌리기 {2:F0}ms, 줄이기 {7:F0}ms({8:F0}M 픽셀), 필터·줄이기 한 번에 {9}장 {10:F0}ms({11:F0}M 픽셀), 흘려 풀기·줄이기 {12}장 {13:F0}ms({14:F0}M 픽셀, 못 한 것 {15}) | 새로 맡은 형식(흑백·인터레이스) {3}장 | libdeflate {4}장, 원래 zlib 로 다시 푼 것 {5}장 ({6})",
