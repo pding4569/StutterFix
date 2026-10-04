@@ -34,6 +34,17 @@ namespace StutterFix
 
         internal static void Toggle() { if (Instance != null) Instance.SetOpen(!Open || Instance.closing); }
 
+        // (자동 시험) 창을 열고 그 기능 패널을 펼친다. -1 이면 아이콘 줄만, -2 면 닫는다. 화면 캡처로 모양을 확인하는 데 쓴다.
+        internal static void ShowForTest(int p)
+        {
+            if (Instance == null) return;
+            if (p == -2) { Instance.SetOpen(false); return; }
+            Instance.SetOpen(true);
+            if (p < 0) { Instance.panelOpen = false; return; }
+            Instance.GoTo(p);
+            Instance.panelOpen = true;
+        }
+
         // ── 언어 ───────────────────────────────────────────────────────
         internal static bool English
         {
@@ -81,6 +92,7 @@ namespace StutterFix
         private static float Approach(float cur, float target, float speed) { return cur + (target - cur) * (1f - Mathf.Exp(-speed * Time.unscaledDeltaTime)); }
 
         private Font font;
+        private GUIStyle sBodyText, sSecondary, sDimMid;
         private GUIStyle sWindow, sShadow, sTitle, sSub, sH1, sLead, sBody, sDim, sSmall, sTag, sCard, sCardDark, sNav, sNavOn, sNavText,
             sPrimary, sClose, sTab, sTabOn, sStat, sStatDark, sStatLabel, sStatLabelDark, sScroll, sThumb,
             sSegKnob, sSegText, sSegOnText, sSliderValue, sChip, sChipOn;
@@ -552,7 +564,7 @@ namespace StutterFix
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button(T("확인", "OK"), sPrimary, GUILayout.Width(120), GUILayout.Height(34))) { c.TuneNotice = ""; Save(); }
                 GUILayout.Space(8);
-                if (PcTune.CanUndo && GUILayout.Button(T("되돌리기", "Undo"), sPrimary, GUILayout.Width(120), GUILayout.Height(34))) PcTune.Undo();
+                if (PcTune.CanUndo && GUILayout.Button(T("되돌리기", "Undo"), sSecondary, GUILayout.Width(120), GUILayout.Height(34))) PcTune.Undo();
                 GUILayout.EndHorizontal();
                 GUILayout.Space(14);
             }
@@ -642,7 +654,7 @@ namespace StutterFix
         private void KeyRow(int id, string label, KeyCode key, int mods)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label(label, sDim, GUILayout.Height(34));
+            P(label, sDim, GUILayout.Height(34));
             GUILayout.FlexibleSpace();
             bool on = capturing == id;
             string text = on ? T("키를 누르세요… (Esc 취소)", "Press a key… (Esc to cancel)") : Hotkey.Name(key, mods);
@@ -832,8 +844,8 @@ namespace StutterFix
                 T("편집으로 돌아올 때 게임이 하는 짧은 정리 작업을 건너뛰어 멈춤을 줄입니다. 맵을 새로 열 때의 정리는 이전 맵 메모리를 풀기 위해 그대로 둡니다.",
                   "Skips a short cleanup the game runs when returning to the editor. The cleanup when opening a new level is kept so the previous level's memory is freed."), null);
             ch |= Option("loadcache", ref c.LoadCache, T("에디터 재생 시작·전환 빠르게", "Faster editor play start & transitions"),
-                T("에디터에서 재생을 누를 때 게임이 하는 헛일을 줄입니다. ① 장식 이미지 파일의 수정 시각을 한 번의 불러오기 안에서는 파일마다 한 번만 읽습니다(원래는 장식마다 디스크에서 다시 읽음). ② 지난번 뒤로 장식이 하나도 안 바뀌었으면 장식 전체 다시 설정을 한 번만 합니다(원래는 두 번). ③ 에디터 클릭용 충돌 상자를 끌 때 넣은 반대 순서로 꺼서 물리 엔진이 목록을 매번 끝까지 뒤지지 않게 합니다. ④ 편집으로 나가거나 에디터에서 죽고 다시 할 때 장식 이미지를 버렸다가 디스크에서 다시 읽지 않고 그대로 씁니다. ⑤ 에디터에서 죽고 다시 할 때 장식 전체 다시 설정을 한 번만 합니다(원래는 두 번). ⑥ 편집으로 나갈 때 판 중에 안 바뀐 장식은 다시 설정을 가볍게 합니다(결과가 같은 설정은 건너뜀). ⑦ 타일의 효과 컴포넌트를 지웠다 새로 붙이지 않고, 새로 만든 것과 같은 상태로 되돌려 다시 씁니다(Arche 재생 시작 3.1초→2.5초, 나가기 1.5초→1.1초). 화면과 동작은 같습니다(자동 비교로 확인).",
-                  "Cuts wasted work when pressing Play in the editor: (1) reads each decoration image file's modified time once per load instead of once per decoration, (2) resets all decorations once instead of twice when nothing changed since the last play, (3) disables the editor click colliders in reverse order so the physics engine doesn't scan its whole list each time, (4) keeps decoration images when returning to the editor or retrying after a death in the editor instead of throwing them away and reading them from disk again, (5) resets all decorations once instead of twice when retrying in the editor, (6) when returning to the editor, decorations that did not change during the run get a light reset that skips settings that would come out the same. (7) floor effect components are reset and reused instead of destroyed and re-added (Arche play start 3.1 s â 2.5 s, exit 1.5 s â 1.1 s). Looks and plays the same (checked automatically)."),
+                T("에디터에서 재생을 누를 때 게임이 하는 헛일을 줄입니다.\n① 장식 이미지 파일의 수정 시각을 한 번의 불러오기 안에서는 파일마다 한 번만 읽습니다(원래는 장식마다 디스크에서 다시 읽음).\n② 지난번 뒤로 장식이 하나도 안 바뀌었으면 장식 전체 다시 설정을 한 번만 합니다(원래는 두 번).\n③ 에디터 클릭용 충돌 상자를 끌 때 넣은 반대 순서로 꺼서 물리 엔진이 목록을 매번 끝까지 뒤지지 않게 합니다.\n④ 편집으로 나가거나 에디터에서 죽고 다시 할 때 장식 이미지를 버렸다가 디스크에서 다시 읽지 않고 그대로 씁니다.\n⑤ 에디터에서 죽고 다시 할 때 장식 전체 다시 설정을 한 번만 합니다(원래는 두 번).\n⑥ 편집으로 나갈 때 판 중에 안 바뀐 장식은 다시 설정을 가볍게 합니다(결과가 같은 설정은 건너뜀).\n⑦ 타일의 효과 컴포넌트를 지웠다 새로 붙이지 않고, 새로 만든 것과 같은 상태로 되돌려 다시 씁니다(Arche 재생 시작 3.1초→2.5초, 나가기 1.5초→1.1초). 화면과 동작은 같습니다(자동 비교로 확인).",
+                  "Cuts wasted work when pressing Play in the editor:\n(1) reads each decoration image file's modified time once per load instead of once per decoration,\n(2) resets all decorations once instead of twice when nothing changed since the last play,\n(3) disables the editor click colliders in reverse order so the physics engine doesn't scan its whole list each time,\n(4) keeps decoration images when returning to the editor or retrying after a death in the editor instead of throwing them away and reading them from disk again,\n(5) resets all decorations once instead of twice when retrying in the editor,\n(6) when returning to the editor, decorations that did not change during the run get a light reset that skips settings that would come out the same.\n(7) floor effect components are reset and reused instead of destroyed and re-added (Arche play start 3.1 s â 2.5 s, exit 1.5 s â 1.1 s). Looks and plays the same (checked automatically)."),
                 T("예: Arche 재생 시작 8.6초 → 4.3초", "e.g. Arche play start 8.6s → 4.3s"));
             ch |= Option("leakfix", ref c.LeakFix, T("게임 메모리 누수 막기", "Fix game memory leaks"),
                 T("게임의 사용자 지정 FPS 효과는 켤 때마다 화면 크기 버퍼(4K 급이면 약 40MB)를 새로 만들고 이전 것을 풀지 않으며, 재시작마다 게임 화면 버퍼를 괜히 다시 만듭니다. 이전 버퍼를 풀고 불필요한 재생성을 막습니다. 에디터에서 다른 맵을 열 때마다 옛 타일의 머티리얼(9만 타일이면 약 128MB)이 풀리지 않고 쌓이던 것도 풉니다. 화면은 같습니다." + (Compat.QLeakGuard ? " (지금은 Quartz 의 누수 수정이 켜져 있어 쉬는 중)" : ""),
@@ -862,7 +874,7 @@ namespace StutterFix
             {
                 GUILayout.Space(10);
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(T("자동이 줄이기로 기억한 맵 ", "Levels remembered by Auto: ") + remembered + T("개", ""), sDim, GUILayout.Height(34));
+                P(T("자동이 줄이기로 기억한 맵 ", "Levels remembered by Auto: ") + remembered + T("개", ""), sDim, GUILayout.Height(34));
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(T("기억 지우기", "Forget"), sChip, GUILayout.Height(34), GUILayout.ExpandWidth(false))) VramGuard.Forget();
                 GUILayout.EndHorizontal();
@@ -899,7 +911,7 @@ namespace StutterFix
                 Save();
             }
             bool flip = c.FlipModel == 1;
-            if (Option("flip", ref flip, T("최신 화면 출력 방식 (실험)", "Modern presentation (experimental)"),
+            if (Option("flip", ref flip, T("최신 화면 출력 방식", "Modern presentation"),
                 T("게임은 D3D11 에서 윈도우가 게임 화면을 통째로 복사해 합성하는 옛 방식으로 화면을 내보냅니다. 이것을 최신 방식(Flip)으로 바꿉니다. 측정: 같은 구간 300 -> 318 FPS, 화면에 나오기까지 약 6.2 -> 4.4ms. 게임 위에 다른 창이 없으면 더 빨라질 수 있고, 그때 수직동기가 꺼져 있으면 화면이 가로로 찢어져 보일 수 있습니다. boot.config 의 한 줄을 빼고, 끄거나 모드를 끄면 되돌립니다.",
                   "The game presents through the legacy D3D11 path where Windows copies and composites the whole frame. This switches to the modern flip model. Measured: 300 -> 318 FPS on the same section, frame-to-screen about 6.2 -> 4.4 ms. With no other windows on top it can get faster still, and with vsync off you may see tearing. Removes one line from boot.config; turning it off or disabling the mod restores it."),
                 T("실험", "Experimental")))
@@ -925,7 +937,7 @@ namespace StutterFix
         }
 
         // 저사양: 화면·동작이 아주 조금 달라지는 것을 감수하고 약한 컴퓨터에서 프레임을 짜내는 기능들 (전부 기본 꺼짐)
-        // 저사양 페이지 맨 위: PC 맞춤 (재고 추천 적용, 되돌리기)
+        // 저사양 페이지 맨 위: PC 맞춤 (측정해서 추천 적용, 되돌리기)
         private void TuneCard()
         {
             var c = Main.Config;
@@ -938,9 +950,9 @@ namespace StutterFix
             }
             InfoCard(rows.ToArray());
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(T("재고 추천 적용", "Measure and apply"), sPrimary, GUILayout.Width(170), GUILayout.Height(36))) { PcTune.Measure(); c.TuneLast = PcTune.Describe(); var done = PcTune.Apply(); c.TuneNotice = done.Count > 0 ? string.Join(", ", done.ToArray()) : ""; Save(); }
+            if (GUILayout.Button(T("측정해서 추천 적용", "Measure and apply"), sPrimary, GUILayout.Width(170), GUILayout.Height(36))) { PcTune.Measure(); c.TuneLast = PcTune.Describe(); var done = PcTune.Apply(); c.TuneNotice = done.Count > 0 ? string.Join(", ", done.ToArray()) : ""; Save(); }
             GUILayout.Space(8);
-            if (PcTune.CanUndo && GUILayout.Button(T("되돌리기", "Undo"), sPrimary, GUILayout.Width(120), GUILayout.Height(36))) PcTune.Undo();
+            if (PcTune.CanUndo && GUILayout.Button(T("되돌리기", "Undo"), sSecondary, GUILayout.Width(120), GUILayout.Height(36))) PcTune.Undo();
             GUILayout.EndHorizontal();
             GUILayout.Space(14);
         }
@@ -956,11 +968,11 @@ namespace StutterFix
             ch |= Option("lowprio", ref c.LowPriority, T("게임 우선순위 높이기", "Higher game priority"),
                 T("브라우저, 방송 프로그램, 업데이트 같은 다른 프로그램이 CPU 를 쓸 때 게임이 먼저 돌게 합니다. 백그라운드 때문에 끊기는 컴퓨터에 효과가 있습니다. 게임을 끄거나 이 기능을 끄면 원래대로 돌아갑니다.",
                   "Lets the game run ahead of browsers, streaming and updates when they compete for the CPU. Reverts when the game or this option is turned off."),
-                T("컴퓨터", "System"));
+                null);
             ch |= Option("lowthrottle", ref c.LowNoThrottle, T("윈도우 절전 제한 끄기", "No Windows power throttling"),
                 T("윈도우 11 이 게임을 '효율 모드'로 느린 코어에 몰아넣지 않게 하고, 타이머 정밀도를 1ms 로 올려 프레임 간격이 덜 흔들리게 합니다. 노트북에 효과가 큽니다. 전기를 조금 더 씁니다.",
                   "Keeps Windows 11 from putting the game in efficiency mode and raises the timer resolution to 1 ms for steadier frame pacing. Helps laptops most; uses slightly more power."),
-                T("컴퓨터", "System"));
+                null);
             GUILayout.Label(T("메뉴·에디터 FPS 제한", "Menu / editor FPS limit"), sBody);
             GUILayout.Label(T("플레이 중이 아닐 때(메뉴, 에디터 편집, 맵 고르기) FPS 를 묶어 그래픽카드와 CPU 를 쉬게 합니다. 노트북은 발열이 줄어 플레이할 때 열 때문에 느려지는 일이 덜합니다. 곡을 시작하면 바로 원래 FPS 로 돌아가고, 맵을 불러오는 동안에는 묶지 않습니다. 수직동기가 켜져 있으면 적용되지 않습니다.",
                 "Caps FPS outside of play (menus, editing, level select) so the GPU and CPU can rest; laptops run cooler and throttle less during play. Returns to your FPS as soon as a song starts, and never caps while a level loads. Has no effect with VSync on."), sDim);
@@ -990,7 +1002,7 @@ namespace StutterFix
             if (Segment("lowsplit", ref sp, new[] { T("기본 (10ms)", "Default (10 ms)"), T("잘게 (5ms)", "Fine (5 ms)"), T("아주 잘게 (3ms)", "Finest (3 ms)") })) { c.LowSplit = sp; ch = true; }
             Section(T("그래픽카드 쪽", "Graphics card"));
             GUILayout.Label(T("게임 화면 해상도", "Game view resolution"), sBody);
-            GUILayout.Label(T("플레이 중 게임 화면(타일, 장식, 배경, 필터)을 이 배율로 작게 그린 뒤 늘려서 보여 줍니다. 그래픽카드가 약할수록 효과가 가장 큽니다(50% 면 그릴 픽셀이 4분의 1). 게임 화면이 흐려지고, 픽셀 크기를 쓰는 일부 필터는 모양이 조금 달라질 수 있습니다. HUD·설정 창 글자는 선명하게 남습니다. 바로 적용됩니다.",
+            P(T("플레이 중 게임 화면(타일, 장식, 배경, 필터)을 이 배율로 작게 그린 뒤 늘려서 보여 줍니다. 그래픽카드가 약할수록 효과가 가장 큽니다(50% 면 그릴 픽셀이 4분의 1). 게임 화면이 흐려지고, 픽셀 크기를 쓰는 일부 필터는 모양이 조금 달라질 수 있습니다. HUD·설정 창 글자는 선명하게 남습니다. 바로 적용됩니다.",
                 "Draws the game view (tiles, decorations, background, filters) at this scale during play and stretches it to the screen. Biggest win on weak graphics cards (50% = a quarter of the pixels). The game view gets softer and some pixel-based filters may look slightly different. HUD and this window stay sharp. Applies immediately."), sDim);
             GUILayout.Space(6);
             float fs = Mathf.Clamp(c.LowRenderScale, 10, 100);
@@ -1045,7 +1057,7 @@ namespace StutterFix
                   (Compat.Pacl2Lossy ? " (PACL2 lossy image compression is on, so images are already pre-compressed on several cores in its place, regardless of this option)" : "")),
                 T("그래픽카드", "GPU"));
             Section(T("실험적 기능", "Experimental"));
-            GUILayout.Label(T("아직 다듬는 중인 기능입니다. 화면이 마음에 들지 않으면 끄세요.", "Still being tuned. Turn off if you don't like how it looks."), sDim);
+            P(T("아직 다듬는 중인 기능입니다. 화면이 마음에 들지 않으면 끄세요.", "Still being tuned. Turn off if you don't like how it looks."), sDim);
             GUILayout.Space(4);
             ch |= Option("lowsharpen", ref c.LowSharpen, T("늘린 화면 선명도 보정", "Sharpen the upscaled view"),
                 T("게임 화면 해상도를 낮췄을 때 늘린 화면이 흐려 보이는 것을 선명도 보정으로 덜어 줍니다(FSR 1 의 선명도 단계를 흉내). 게임에 들어 있는 Sharpen 필터 셰이더를 빌려 화면 해상도에서 한 번 겁니다. UI 는 그대로입니다. 해상도가 100% 면 동작하지 않습니다.",
@@ -1091,7 +1103,7 @@ namespace StutterFix
             GUILayout.BeginVertical(sCard);
             GUILayout.Label(T("표시 방식", "Style"), sBody);
             GUILayout.Space(3);
-            GUILayout.Label(T("게임 중 " + Hotkey.Name(c.OverlayKey, c.OverlayMods) + " 로 차례로 바꿀 수 있습니다 (홈에서 키 변경). 아이콘은 누르면 상세 정보가 펼쳐집니다.",
+            P(T("게임 중 " + Hotkey.Name(c.OverlayKey, c.OverlayMods) + " 로 차례로 바꿀 수 있습니다 (홈에서 키 변경). 아이콘은 누르면 상세 정보가 펼쳐집니다.",
                 "Cycle with " + Hotkey.Name(c.OverlayKey, c.OverlayMods) + " in game (change it on Home). Click the icon to expand it."), sDim);
             GUILayout.Space(10);
             ch |= Segment("ovmode", ref c.OverlayMode, new[] { T("끔", "Off"), T("아이콘", "Icon"), T("미니", "Mini"), T("상세", "Detail") });
@@ -1115,7 +1127,7 @@ namespace StutterFix
             GUILayout.BeginVertical(sCard);
             GUILayout.Label(T("아이콘·미니에 보여 줄 항목", "Items in icon and mini"), sBody);
             GUILayout.Space(3);
-            GUILayout.Label(T("FPS 는 항상 보입니다. 사용률이 75%를 넘으면 주황, 90%를 넘으면 빨강으로 바뀝니다.",
+            P(T("FPS 는 항상 보입니다. 사용률이 75%를 넘으면 주황, 90%를 넘으면 빨강으로 바뀝니다.",
                 "FPS is always shown. Usage turns orange above 75% and red above 90%."), sDim);
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
@@ -1160,7 +1172,7 @@ namespace StutterFix
             GUILayout.BeginVertical(sCard);
             GUILayout.Label(T("끊김 알림", "Hitch alerts"), sBody);
             GUILayout.Space(3);
-            GUILayout.Label(T("프레임이 튀면 원인을 띄웁니다: 모드 작업(보라), 메모리 정리, 효과 몰림, GPU 과부하, 게임 처리, 게임 바깥(윈도우나 다른 프로그램). 같은 원인이 연달아 나면 ×2, ×3 으로 묶습니다.",
+            P(T("프레임이 튀면 원인을 띄웁니다: 모드 작업(보라), 메모리 정리, 효과 몰림, GPU 과부하, 게임 처리, 게임 바깥(윈도우나 다른 프로그램). 같은 원인이 연달아 나면 ×2, ×3 으로 묶습니다.",
                 "Shows the likely cause when a frame spikes: mod work (purple), memory cleanup, effect burst, GPU overload, game logic, or something outside the game. Repeats are grouped (×2, ×3)."), sDim);
             GUILayout.Space(10);
             int style = !c.HitchAlerts ? 0 : c.AlertDetailed ? 2 : 1;
@@ -1172,7 +1184,7 @@ namespace StutterFix
             ch |= Segment("alertpos", ref c.AlertPos, new[] { T("모니터 옆", "Beside monitor"), T("화면 위", "Top center"), T("화면 아래", "Bottom center") });
             GUILayout.Space(12);
             ch |= Slider("alertms", ref c.AlertMs, 20f, 100f, T("알림 기준", "Alert above"), c.AlertMs.ToString("F0") + "ms");
-            GUILayout.Label(T("이보다 긴 프레임만 알립니다. 33ms 는 60fps 기준 두 프레임이 밀린 것입니다.",
+            P(T("이보다 긴 프레임만 알립니다. 33ms 는 60fps 기준 두 프레임이 밀린 것입니다.",
                 "Only frames longer than this are reported. 33ms is two frames at 60 fps."), sDim);
             GUILayout.EndVertical();
             GUILayout.Space(12);
@@ -1204,7 +1216,7 @@ namespace StutterFix
             if (LogExport.LastPath.Length > 0 && GUILayout.Button(T("폴더 열기", "Show file"), sChip, GUILayout.Height(38), GUILayout.ExpandWidth(false))) LogExport.Reveal();
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-            if (LogExport.LastError.Length > 0) { GUILayout.Space(6); GUILayout.Label(T("만들지 못했습니다: ", "Failed: ") + LogExport.LastError, sDim); }
+            if (LogExport.LastError.Length > 0) { GUILayout.Space(6); P(T("만들지 못했습니다: ", "Failed: ") + LogExport.LastError, sDim); }
             else if (LogExport.LastPath.Length > 0) { GUILayout.Space(6); GUILayout.Label(T("만든 파일: ", "Created: ") + System.IO.Path.GetFileName(LogExport.LastPath) + T("  (바탕화면)", "  (desktop)"), sSub); }
             GUILayout.EndVertical();
         }
@@ -1296,7 +1308,7 @@ namespace StutterFix
         {
             GUILayout.Label(title, sH1);
             GUILayout.Space(4);
-            GUILayout.Label(lead, sLead);
+            P(lead, sLead);
             GUILayout.Space(18);
         }
 
@@ -1310,7 +1322,7 @@ namespace StutterFix
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(4);
-            GUILayout.Label(desc, sDim);
+            P(desc, sDim);
             GUILayout.EndVertical();
             GUILayout.Space(24);
             GUILayout.BeginVertical(GUILayout.Width(44));
@@ -1367,7 +1379,7 @@ namespace StutterFix
         private bool Slider(string key, ref float value, float min, float max, string label, string shown)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label(label, sDim, GUILayout.Width(110), GUILayout.Height(28));
+            GUILayout.Label(label, sDimMid, GUILayout.Width(110), GUILayout.Height(28));   // 막대와 같은 높이 가운데 (위에 붙어 막대보다 떠 보였다)
             Rect r = GUILayoutUtility.GetRect(10, 28, GUILayout.ExpandWidth(true), GUILayout.Height(28));
             GUILayout.Label(shown, sSliderValue, GUILayout.Width(64), GUILayout.Height(28));
             GUILayout.EndHorizontal();
@@ -1459,10 +1471,93 @@ namespace StutterFix
                 }
                 GUILayout.Label(kv[i], sSmall);
                 GUILayout.Space(3);
-                GUILayout.Label(kv[i + 1], sBody);
+                string v = kv[i + 1];
+                if (v.Length > 60 || v.IndexOf('\n') >= 0) P(v, sBodyText);   // 긴 글은 굵게 하지 않는다 (문단이 무거워 보였다)
+                else GUILayout.Label(v, sBody);
             }
             GUILayout.EndVertical();
             GUILayout.Space(14);
+        }
+
+        // ── 띄어쓰기 자리에서만 줄 바꾸기 ──
+        // 유니티 IMGUI 는 한글을 글자마다 끊을 수 있는 자리로 봐서, 단어 중간에서 줄이 바뀌었다("않습니/다", "떨/어졌습니다").
+        // 그려질 폭을 알면(Repaint 의 Rect) 띄어쓰기 자리에서 미리 줄을 바꾼 글을 만들어 그린다. 레이아웃 높이는 지난번 폭으로 만든 글로 잰다.
+        private sealed class Para { public float Width = -1f; public string Shown; public readonly GUIContent Content = new GUIContent(); }
+        private readonly Dictionary<KeyValuePair<string, GUIStyle>, Para> paras = new Dictionary<KeyValuePair<string, GUIStyle>, Para>();
+        private readonly Dictionary<GUIStyle, GUIStyle> noWrap = new Dictionary<GUIStyle, GUIStyle>();
+
+        // 창이 열려 있으면 프레임마다 불리므로 같은 글에는 새로 할당하지 않는다 (곡 중에 열어 둘 수도 있다)
+        private void P(string text, GUIStyle s, params GUILayoutOption[] opts)
+        {
+            if (string.IsNullOrEmpty(text)) { GUILayout.Label(text, s, opts); return; }
+            var key = new KeyValuePair<string, GUIStyle>(text, s);
+            Para e;
+            if (!paras.TryGetValue(key, out e))
+            {
+                if (paras.Count > 300) paras.Clear();
+                e = new Para { Shown = text }; e.Content.text = text; paras[key] = e;
+            }
+            Rect r = GUILayoutUtility.GetRect(e.Content, s, opts);
+            if (Event.current.type != EventType.Repaint || r.width < 20f) return;
+            float inner = r.width - s.padding.horizontal;
+            if (Mathf.Abs(e.Width - inner) > 0.5f) { e.Width = inner; e.Shown = Wrapped(text, s, inner); e.Content.text = e.Shown; }
+            GUI.Label(r, e.Content, s);
+        }
+
+        private string Wrapped(string text, GUIStyle s, float width)
+        {
+            GUIStyle m;
+            if (!noWrap.TryGetValue(s, out m)) { m = new GUIStyle(s) { wordWrap = false }; m.padding = new RectOffset(); noWrap[s] = m; }
+            float max = width - 2f;   // 잰 폭과 그릴 때 폭이 조금 달라도 유니티가 한 번 더 끊지 않게
+            var sb = new System.Text.StringBuilder(text.Length + 8);
+            var tmp = new GUIContent();
+            var lines = new List<string>();
+            string[] parts = text.Split('\n');
+            for (int pi = 0; pi < parts.Length; pi++)
+            {
+                if (pi > 0) sb.Append('\n');
+                string[] words = parts[pi].Split(' ');
+                // 번호 항목(①, (1))은 둘째 줄부터 번호 뒤 글자 자리에서 시작한다
+                string indent = "";
+                if (words.Length > 1 && IsMarker(words[0]))
+                {
+                    tmp.text = words[0] + " "; float mw = m.CalcSize(tmp).x;
+                    tmp.text = "          "; float sw = m.CalcSize(tmp).x / 10f;
+                    if (sw > 0f) indent = new string(' ', Mathf.Clamp(Mathf.RoundToInt(mw / sw), 0, 8));
+                }
+                lines.Clear();
+                string line = "";
+                foreach (string word in words)
+                {
+                    string cand = line.Length == 0 ? (lines.Count > 0 ? indent + word : word) : line + " " + word;
+                    tmp.text = cand;
+                    if (line.Length == 0 || m.CalcSize(tmp).x <= max) { line = cand; continue; }
+                    lines.Add(line);
+                    line = indent + word;
+                }
+                lines.Add(line);
+                // 마지막 줄에 짧은 조각만 남으면("번).") 앞줄 끝 단어를 같이 내린다
+                int n = lines.Count;
+                if (n >= 2)
+                {
+                    tmp.text = lines[n - 1]; float lastW = m.CalcSize(tmp).x;
+                    string prev = lines[n - 2]; int sp = prev.LastIndexOf(' ');
+                    if (lastW < max * 0.18f && sp > indent.Length)
+                    {
+                        string moved = prev.Substring(sp + 1) + " " + lines[n - 1].TrimStart(' ');
+                        tmp.text = indent + moved;
+                        if (m.CalcSize(tmp).x <= max) { lines[n - 2] = prev.Substring(0, sp); lines[n - 1] = indent + moved; }
+                    }
+                }
+                for (int li = 0; li < lines.Count; li++) { if (li > 0) sb.Append('\n'); sb.Append(lines[li]); }
+            }
+            return sb.ToString();
+        }
+
+        private static bool IsMarker(string w)
+        {
+            if (w.Length == 1 && w[0] >= '\u2460' && w[0] <= '\u2473') return true;   // ① ~ ⑳
+            return w.Length >= 3 && w[0] == '(' && w[w.Length - 1] == ')' && char.IsDigit(w[1]);
         }
 
         private void Fill(Rect r, Color c, float radius)
@@ -1577,7 +1672,9 @@ namespace StutterFix
             sH1 = Label(25, Ink, FontStyle.Bold);
             sLead = Label(13, Text2, FontStyle.Normal); sLead.wordWrap = true;
             sBody = Label(15, Ink, FontStyle.Bold); sBody.wordWrap = true;
+            sBodyText = Label(14, Ink, FontStyle.Normal); sBodyText.wordWrap = true;
             sDim = Label(13, Text2, FontStyle.Normal); sDim.wordWrap = true;
+            sDimMid = Label(13, Text2, FontStyle.Normal); sDimMid.alignment = TextAnchor.MiddleLeft;
             sSmall = Label(11, Text3, FontStyle.Normal);
             sTag = Label(12, Text3, FontStyle.Normal); sTag.padding = new RectOffset(0, 0, 3, 0);
             sStat = Label(24, Ink, FontStyle.Bold);
@@ -1600,6 +1697,11 @@ namespace StutterFix
             sPrimary = Styled(Card(Ink, Ink, 10, 0, 0, 0f), 12);
             sPrimary.normal.textColor = Color.white; sPrimary.alignment = TextAnchor.MiddleCenter; sPrimary.fontSize = 14; sPrimary.fontStyle = FontStyle.Bold;
             sPrimary.hover.background = Card(Hex(0x2C2D33), Hex(0x2C2D33), 10, 0, 0, 0f); sPrimary.hover.textColor = Color.white;
+
+            // 두 번째 동작(되돌리기 등): 옅은 회색 바탕. 검정 버튼이 둘 나란히 있으면 어느 쪽이 주된 동작인지 안 보였다.
+            sSecondary = Styled(Card(Soft, Soft, 10, 0, 0, 0f), 12);
+            sSecondary.normal.textColor = Ink; sSecondary.alignment = TextAnchor.MiddleCenter; sSecondary.fontSize = 14; sSecondary.fontStyle = FontStyle.Bold;
+            sSecondary.hover.background = Card(TrackOff, TrackOff, 10, 0, 0, 0f); sSecondary.hover.textColor = Ink;
 
             sTab = Styled(null, 4);
             sTab.normal.textColor = Text3; sTab.hover.textColor = Ink; sTab.alignment = TextAnchor.MiddleCenter; sTab.fontSize = 13;

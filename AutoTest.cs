@@ -805,6 +805,21 @@ namespace StutterFix
                     keep = false;
                     Finish("끝");
                     return true;
+                case "ui":
+                    // ui <페이지 0~6 | dock | close>: 설정 창 열기 (모양 확인용)
+                    SettingsWindow.ShowForTest(arg == "close" ? -2 : arg == "dock" ? -1 : int.Parse(arg, System.Globalization.CultureInfo.InvariantCulture));
+                    Log("설정 창: " + arg);
+                    return true;
+                case "shot":
+                {
+                    // shot <이름>: 화면 캡처를 모드 폴더 shots/<이름>.png 로 (그 프레임 끝에 저장된다)
+                    string dir = Path.Combine(modDir, "shots");
+                    Directory.CreateDirectory(dir);
+                    string f = Path.Combine(dir, (arg.Length > 0 ? arg : "shot") + ".png");
+                    ScreenCapture.CaptureScreenshot(f);
+                    Log("화면 캡처: " + f);
+                    return true;
+                }
                 case "keep":
                     keep = true;
                     Log("묶음이 끝나도 게임을 끄지 않음");
