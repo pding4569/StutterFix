@@ -54,6 +54,9 @@ namespace StutterFix
         // 붙인 순서 기록: 다시 쓴 효과는 게임오브젝트 안에서 원래 자리에 있으므로, 게임의 효과 찾기가 이 순서로 돌려준다
         private static readonly Dictionary<GameObject, List<Component>> order = new Dictionary<GameObject, List<Component>>(RefEq<GameObject>.I);
         private static readonly Dictionary<Component, int> logicalIndex = new Dictionary<Component, int>(RefEq<Component>.I);
+        // 남겨 둔 것이 붙어 있거나 효과를 되돌려 쓴 게임오브젝트. 여기에 없으면 컴포넌트 순서가 원래 방식과 같아서 게임 호출을 그대로 쓴다.
+        // (순서 기록은 처음 연 맵에서도 모든 타일에 생겨, 곡 중 타일마다 GetComponents 배열을 만들고 해시를 찾았다)
+        private static readonly HashSet<GameObject> touched = new HashSet<GameObject>(RefEq<GameObject>.I);
         private static readonly Dictionary<GameObject, Slot> slots = new Dictionary<GameObject, Slot>(RefEq<GameObject>.I);
         private static readonly HashSet<ffxPlusBase> checkpointHeld = new HashSet<ffxPlusBase>(RefEq<ffxPlusBase>.I);
         internal static int Reused, Fresh, Dropped;
@@ -255,6 +258,7 @@ namespace StutterFix
                 return;
             }
             pending.Add(f);
+            touched.Add(f.gameObject);
             Unlink(f);
             if (inPass)
             {
@@ -308,6 +312,7 @@ namespace StutterFix
                 if (!c.enabled) c.enabled = true;
                 c.Awake();
                 Reused++;
+                touched.Add(go);
                 r = (T)(Component)c;
             }
             else { r = go.AddComponent<T>(); Fresh++; }
@@ -324,14 +329,25 @@ namespace StutterFix
         public static T GoGet<T>(GameObject go) where T : Component
         {
             if (Plain) return go.GetComponent<T>();
+            if (!touched.Contains(go)) { var q = go.GetComponent<T>(); if (Edition.Dev) CheckQuick(q, go); return q; }
             var a = GoGets<T>(go);
             return a.Length > 0 ? a[0] : null;
         }
         public static T CGet<T>(Component x) where T : Component
         {
             if (Plain) return x.GetComponent<T>();
+            if (!touched.Contains(x.gameObject)) { var q = x.GetComponent<T>(); if (Edition.Dev) CheckQuick(q, x.gameObject); return q; }
             var a = GoGets<T>(x.gameObject);
             return a.Length > 0 ? a[0] : null;
+        }
+        // (개발자용) 빠른 길이 예전 길(배열 + 붙인 순서)과 같은 것을 돌려주는지
+        internal static long QuickN, QuickDiff;
+        private static void CheckQuick<T>(T q, GameObject go) where T : Component
+        {
+            QuickN++;
+            var a = GoGets<T>(go);
+            var old = a.Length > 0 ? a[0] : null;
+            if (!ReferenceEquals(old, q)) { QuickDiff++; if (QuickDiff <= 5) Main.Entry.Logger.Log("[효과 재사용] (개발자용) 빠른 길이 다름: " + go.name + " " + typeof(T).Name + " " + (q == null ? "null" : q.GetType().Name) + " / " + (old == null ? "null" : old.GetType().Name)); }
         }
         public static T[] GoGets<T>(GameObject go) where T : Component { return Arrange(go.GetComponents<T>()); }
         public static T[] CGets<T>(Component x) where T : Component { return Arrange(x.GetComponents<T>()); }
@@ -397,6 +413,8 @@ namespace StutterFix
             if (ours.Count > 0) ours.RemoveWhere(c => c == null);
             // 이번 붙이기가 다시 만들 타일의 순서 기록은 붙이면서 새로 쓴다 (나머지 타일 기록은 그대로)
             if (floors != null) foreach (var fl in floors) if (fl != null) order.Remove(fl.gameObject);
+            // 표시는 남겨 둔 것이 붙은 오브젝트와 순서 기록이 남은 오브젝트 중 되돌려 쓴 적이 있는 것만 남긴다 (지워진 것은 뺀다)
+            if (touched.Count > 0) touched.RemoveWhere(g => g == null);
             CleanLogical();
             checkpointHeld.Clear();
             var all = ADOBase.lm != null ? ADOBase.lm.listFloors : floors;
@@ -442,7 +460,7 @@ namespace StutterFix
             slots.Clear();
             passSw.Stop();
             if (was && (Reused + Fresh > 1000 || Edition.Dev))
-                Main.Entry.Logger.Log("[효과 재사용] 다시 씀 " + Reused + "개, 새로 붙임 " + Fresh + "개, 지움 " + Dropped + "개, 남겨 둔 것 " + pending.Count + "개 | " + passSw.ElapsedMilliseconds + "ms");
+                Main.Entry.Logger.Log("[효과 재사용] 다시 씀 " + Reused + "개, 새로 붙임 " + Fresh + "개, 지움 " + Dropped + "개, 남겨 둔 것 " + pending.Count + "개, 순서가 다를 수 있는 오브젝트 " + touched.Count + "개 | " + passSw.ElapsedMilliseconds + "ms" + (Edition.Dev ? " | (개발자용) 빠른 찾기 " + QuickN + "번 중 다름 " + QuickDiff : ""));
             if (was && Edition.Dev && pending.Count > 0)
             {
                 // (개발자용) 남겨 둔 것이 무엇인지: 종류별 수, 꺼진 게임오브젝트에 붙은 수

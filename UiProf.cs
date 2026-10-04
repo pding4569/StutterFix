@@ -40,6 +40,7 @@ namespace StutterFix
                     if (m != null) { harmony.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(TmpPre)), postfix: new HarmonyMethod(typeof(UiProf), nameof(GraphicPost))); tmp++; }
                 }
                 InstallMore(harmony);
+                SetHarmony(harmony);
                 installed = true;
                 Main.Entry.Logger.Log("[UI 측정] 설치 (PerformUpdate " + (pu != null) + ", Graphic.Rebuild " + (gr != null) + ", 레이아웃 " + (lr != null) + ", TMP " + tmp + "개)");
             }
@@ -150,9 +151,125 @@ namespace StutterFix
             }
         }
 
+        // Canvas.willRenderCanvases 에 걸린 함수마다 시간 (PerfView: 캔버스 24ms 는 이 안의 C# 코드, 절반 가까이 Mono 런타임 안)
+        // 곡이 시작될 때 목록을 보고 아직 안 감싼 것을 감싼다. 5ms 넘는 호출은 이름·처음 불린 것인지와 함께 남긴다.
+        private static Harmony wrH;
+        private static readonly HashSet<MethodBase> wrapped = new HashSet<MethodBase>();
+        private static readonly Dictionary<MethodBase, int> wrCalls = new Dictionary<MethodBase, int>();
+        private static int wrLogged;
+        internal static void SetHarmony(Harmony h) { wrH = h; }
+        private static void WrapCanvasSubscribers()
+        {
+            if (wrH == null) return;
+            try
+            {
+                var f = AccessTools.Field(typeof(Canvas), "willRenderCanvases");
+                var d = f == null ? null : f.GetValue(null) as Delegate;
+                var pre = AccessTools.Field(typeof(Canvas), "preWillRenderCanvases");
+                var d2 = pre == null ? null : pre.GetValue(null) as Delegate;
+                var list = new List<Delegate>();
+                if (d != null) list.AddRange(d.GetInvocationList());
+                if (d2 != null) list.AddRange(d2.GetInvocationList());
+                var sb = new System.Text.StringBuilder();
+                foreach (var x in list)
+                {
+                    var m = x.Method;
+                    sb.Append(" [").Append(m.DeclaringType != null ? m.DeclaringType.FullName : "?").Append('.').Append(m.Name).Append(']');
+                    if (m == null || wrapped.Contains(m)) continue;
+                    try { wrH.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(WrPre)), postfix: new HarmonyMethod(typeof(UiProf), nameof(WrPost))); wrapped.Add(m); }
+                    catch (Exception ex) { sb.Append("(감싸기 실패 ").Append(ex.Message).Append(')'); }
+                }
+                Main.Entry.Logger.Log("[UI 측정] 캔버스 그리기 전 콜백 " + list.Count + "개:" + sb);
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[UI 측정] 캔버스 콜백 목록 실패: " + ex.Message); }
+        }
+        // TMP_UpdateManager.DoRebuilds 안: 글자 오브젝트마다 InternalUpdate / Rebuild / UpdateCulling 시간 (2ms 넘는 것만 이름과 함께)
+        private static bool tmpInner;
+        private static void WrapTmpInner()
+        {
+            if (tmpInner || wrH == null) return;
+            tmpInner = true;
+            int n = 0;
+            foreach (var tn in new[] { "TMPro.TextMeshPro", "TMPro.TextMeshProUGUI", "TMPro.TMP_Text" })
+            {
+                var t = AccessTools.TypeByName(tn);
+                if (t == null) continue;
+                foreach (var m in t.GetMethods(AccessTools.all))
+                {
+                    if (m.DeclaringType != t || m.IsAbstract || m.ContainsGenericParameters) continue;
+                    if (m.Name != "InternalUpdate" && m.Name != "Rebuild" && m.Name != "UpdateCulling") continue;
+                    try { wrH.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(TiPre)), postfix: new HarmonyMethod(typeof(UiProf), nameof(TiPost))); n++; } catch { }
+                }
+            }
+            // 한 번 더 안쪽: 글자 메시 만들기·글꼴 아틀라스 반영·재질·여백
+            var inner = new[] { new[] { "TMPro.TextMeshPro", "GenerateTextMesh" }, new[] { "TMPro.TextMeshPro", "UpdateMeshPadding" }, new[] { "TMPro.TextMeshPro", "UpdateMaterial" },
+                new[] { "TMPro.TextMeshPro", "SetArraySizes" }, new[] { "TMPro.TMP_Text", "ParseInputText" }, new[] { "TMPro.TMP_FontAsset", "UpdateFontAssetsInUpdateQueue" },
+                new[] { "TMPro.TMP_FontAsset", "ReadFontAssetDefinition" }, new[] { "TMPro.TextMeshPro", "SetActiveSubTextObjectRenderers" }, new[] { "TMPro.TextMeshPro", "OnEnable" } };
+            foreach (var pr in inner)
+            {
+                var t = AccessTools.TypeByName(pr[0]);
+                if (t == null) continue;
+                foreach (var m in t.GetMethods(AccessTools.all))
+                {
+                    if (m.Name != pr[1] || m.DeclaringType != t || m.IsAbstract) continue;
+                    try { wrH.Patch(m, prefix: new HarmonyMethod(typeof(UiProf), nameof(TiPre)), postfix: new HarmonyMethod(typeof(UiProf), nameof(InPost))); n++; } catch { }
+                }
+            }
+            Main.Entry.Logger.Log("[UI 측정] TMP 안쪽 함수 " + n + "개 감쌈");
+        }
+        private static int tiLogged, inLogged;
+        private static readonly Dictionary<int, int> rebuildN = new Dictionary<int, int>();
+        public static void InPost(object __instance, MethodBase __originalMethod, long __state)
+        {
+            double ms = (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency;
+            if (ms < 1 || inLogged >= 80 || !Hitch.Playing) return;
+            inLogged++;
+            var c = __instance as Component;
+            int auto = -1;
+            try { if (c != null) auto = Traverse.Create(c).Field("m_AutoSizeIterationCount").GetValue<int>(); } catch { }
+            Main.Entry.Logger.Log(string.Format("[UI 측정]   TMP 안쪽 {0}.{1} {2:F1}ms {3}{4}", __originalMethod.DeclaringType.Name, __originalMethod.Name, ms, c != null ? c.name : (__instance == null ? "(정적)" : __instance.ToString()), auto >= 0 ? " 자동 크기 반복 " + auto : ""));
+        }
+        public static void TiPre(out long __state) { __state = Stopwatch.GetTimestamp(); }
+        public static void TiPost(Component __instance, MethodBase __originalMethod, long __state)
+        {
+            double ms = (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency;
+            if (__originalMethod.Name == "Rebuild") { int id = __instance.GetInstanceID(), k; rebuildN.TryGetValue(id, out k); rebuildN[id] = k + 1; }
+            if (ms < 2 || tiLogged >= 60) return;
+            tiLogged++;
+            string path = "?", txt = "";
+            try
+            {
+                path = __instance.name; var p = __instance.transform.parent;
+                for (int i = 0; i < 3 && p != null; i++, p = p.parent) path = p.name + "/" + path;
+                var tr = Traverse.Create(__instance);
+                var str = tr.Property("text").GetValue() as string;
+                var font = tr.Property("font").GetValue() as UnityEngine.Object;
+                txt = " 글자 '" + str + "' " + (str == null ? 0 : str.Length) + "자, 글꼴 " + (font != null ? font.name : "?") + ", 켜짐 " + ((Behaviour)__instance).isActiveAndEnabled;
+                int rk; rebuildN.TryGetValue(__instance.GetInstanceID(), out rk); txt += ", 이 오브젝트 Rebuild " + rk + "번째";
+                var hm = __instance.GetComponent("scrHitTextMesh"); if (hm != null) txt += ", 판정 " + Traverse.Create(hm).Field("hitMargin").GetValue();
+            }
+            catch { }
+            Main.Entry.Logger.Log(string.Format("[UI 측정] TMP {0}.{1} {2:F1}ms: {3}{4} (곡 중 {5}, 실시간 {6:F1}초)", __instance.GetType().Name, __originalMethod.Name, ms, path, txt, Hitch.Playing, Time.realtimeSinceStartup));
+        }
+
+        public static void WrPre(out long __state) { __state = Stopwatch.GetTimestamp(); }
+        public static void WrPost(MethodBase __originalMethod, long __state)
+        {
+            double ms = (Stopwatch.GetTimestamp() - __state) * 1000.0 / Stopwatch.Frequency;
+            int n; wrCalls.TryGetValue(__originalMethod, out n); wrCalls[__originalMethod] = n + 1;
+            if (ms > 5 && wrLogged < 60)
+            {
+                wrLogged++;
+                Main.Entry.Logger.Log(string.Format("[UI 측정] 캔버스 콜백 {0}.{1} {2:F1}ms ({3}번째 호출, 곡 중 {4}, 실시간 {5:F1}초)",
+                    __originalMethod.DeclaringType != null ? __originalMethod.DeclaringType.FullName : "?", __originalMethod.Name, ms, n + 1, Hitch.Playing, Time.realtimeSinceStartup));
+            }
+        }
+
         internal static void ResetSong()
         {
             if (!installed) return;
+            // 캔버스 콜백·TMP 안쪽 측정은 무거워서(TMP 글자마다 매 프레임) 모드 폴더에 uiprobe.txt 가 있을 때만
+            if (System.IO.File.Exists(System.IO.Path.Combine(Main.Entry.Path, "uiprobe.txt"))) { WrapCanvasSubscribers(); WrapTmpInner(); }
             performTicks = performCalls = graphicCalls = tmpCalls = layoutCalls = cullTicks = rebuildTicks = realRebuilds = maskCulls = tmpInputRebuilds = 0;
             counts.Clear(); names.Clear();
             startFrame = Time.frameCount;
