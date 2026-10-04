@@ -38,6 +38,7 @@
     <Compile Include="ThumbCam.cs" />
     <Compile Include="FfxReuse.cs" />
     <Compile Include="MeshWarm.cs" />
+    <Compile Include="DecoDiag.cs" />
     <Compile Include="SoundWarm.cs" />
     <Compile Include="FloorAnim.cs" />
     <Compile Include="JitWarm.cs" />

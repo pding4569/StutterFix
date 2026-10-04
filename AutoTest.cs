@@ -34,6 +34,35 @@ namespace StutterFix
         internal static bool Active { get { return steps != null; } }
 
         internal static bool ReloadNow;
+
+        // 맵을 여는 동안 3초마다 힙·프로세스 메모리를 적는다 (긴 한 프레임 안에서도 다른 스레드라 적힌다). 메모리가 터지는 단계 찾기용.
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct PMC { public uint cb, PageFaultCount; public UIntPtr PeakWorkingSetSize, WorkingSetSize, QuotaPeakPagedPoolUsage, QuotaPagedPoolUsage, QuotaPeakNonPagedPoolUsage, QuotaNonPagedPoolUsage, PagefileUsage, PeakPagefileUsage, PrivateUsage; }
+        [System.Runtime.InteropServices.DllImport("psapi.dll")] private static extern bool GetProcessMemoryInfo(IntPtr h, out PMC c, uint cb);
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")] private static extern IntPtr GetCurrentProcess();
+        private static volatile int memWatchGen;
+        internal static volatile int MainFrame;
+        internal static volatile string Phase = "";
+        private static void StartMemWatch()
+        {
+            int gen = ++memWatchGen;
+            var t = new System.Threading.Thread(() =>
+            {
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                while (gen == memWatchGen && sw.Elapsed.TotalSeconds < 600)
+                {
+                    System.Threading.Thread.Sleep(3000);
+                    try
+                    {
+                        PMC c; GetProcessMemoryInfo(GetCurrentProcess(), out c, (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(PMC)));
+                        Main.Entry.Logger.Log(string.Format("[자동 시험] 메모리 {0:F0}초: 힙 {1}MB, 프로세스 {2}MB(실제 램 {3}MB), 프레임 {4} {5}",
+                            sw.Elapsed.TotalSeconds, GC.GetTotalMemory(false) >> 20, (long)c.PrivateUsage.ToUInt64() >> 20, (long)c.WorkingSetSize.ToUInt64() >> 20, MainFrame, Phase));
+                    }
+                    catch { }
+                }
+            }) { IsBackground = true, Name = "SF memwatch" };
+            t.Start();
+        }
         private static string loadedHash;   // 불러온 DLL 내용. 같은 DLL 을 다시 불러오면 Mono 가 같은 어셈블리로 여겨 패치가 깨진다
         private static string DllHash()
         {
@@ -87,6 +116,7 @@ namespace StutterFix
                 if (steps == null) return;
             }
             float now = Time.realtimeSinceStartup;
+            MainFrame = Time.frameCount;
             if (!started) { started = true; stepStart = now; }
             if (!ummClosed || (idx < steps.Count && steps[idx].StartsWith("play", StringComparison.OrdinalIgnoreCase))) CloseUmm();
             if (idx >= steps.Count) { Finish("끝"); return; }
@@ -722,6 +752,7 @@ namespace StutterFix
                     {
                         if (!File.Exists(arg)) throw new Exception("맵 파일 없음: " + arg);
                         RestartAdvisor.BeginOpen(arg); openPhase = 1; openStartedAt = now; Log("맵 열기: " + arg);
+                        StartMemWatch();
                         return false;
                     }
                     if (openPhase == 1)
@@ -733,7 +764,7 @@ namespace StutterFix
                         return false;
                     }
                     if (now - waitSec < 2f) return false;   // 열린 뒤 2초 (이미지 결과 창 등 정리)
-                    openPhase = 0; Log(string.Format("맵 열림 ({0:F1}초, 열기 요청부터 2초 기다림 포함)", now - openStartedAt));
+                    openPhase = 0; memWatchGen++; Log(string.Format("맵 열림 ({0:F1}초, 열기 요청부터 2초 기다림 포함)", now - openStartedAt));
                     return true;
                 case "select":
                     { if (ed == null) throw new Exception("에디터가 아님"); int si = int.Parse(arg); ed.SelectFloor(ADOBase.lm.listFloors[Math.Min(si, ADOBase.lm.listFloors.Count - 1)], true); Log("타일 " + si + " 선택"); return true; }

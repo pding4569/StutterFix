@@ -164,7 +164,7 @@ namespace StutterFix
                 UiProf.Install(harmony);
                 MoveApply.Install(harmony);
                 Dormancy.Install(harmony);
-                ImagePrefetch.Install(harmony);
+                ImagePrefetch.Install(harmony); DecoDiag.Install(harmony);
                 FastBlend.Install(harmony);
                 InvisibleSkip.Install(harmony);
                 TweenFix.Install(harmony);

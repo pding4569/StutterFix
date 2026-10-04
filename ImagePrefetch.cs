@@ -122,7 +122,7 @@ namespace StutterFix
                 harmony.Patch(update,
                     prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(Begin)),
                     finalizer: new HarmonyMethod(typeof(ImagePrefetch), nameof(End)));
-                harmony.Patch(load, transpiler: new HarmonyMethod(typeof(ImagePrefetch), nameof(Transpiler)));
+                harmony.Patch(load, transpiler: new HarmonyMethod(typeof(ImagePrefetch), nameof(Transpiler)), postfix: new HarmonyMethod(typeof(ImagePrefetch), nameof(BrokenImagePostfix)));
                 LoadNative();
 
                 // 게임 버그: 없는 이미지를 장식 여러 개가 쓰면, 두 번째 실패에서 오류 목록 Dictionary.Add 가
@@ -236,6 +236,18 @@ namespace StutterFix
         }
 
         private static FieldInfo errorsField;
+
+        // 게임 버그: 파일은 있는데 이미지를 풀지 못하면(깨진 PNG) LoadTexture 가 null 을 돌려주면서 상태는 "성공" 으로 둔다.
+        // 그러면 GetOrAddSprite 가 null 텍스처로 스프라이트를 만들다 null 예외를 내고, 맵 열기(장식 불러오기)가 그 자리에서 멈춘다.
+        // 2026-10-04 ALPHA WYSI EX: nevCTF/nes_leeeeeeeeeeeetterbox_2-3-5.428571pp.png (4164x4164, 마지막 IDAT 체크섬 틀림·IEND 없음, 유니티 LoadImage 도 실패)
+        // -> 장식 이동 45867번에서 멈춰 맵이 안 열림. 상태를 "오류" 로 바꾸면 게임이 없는 파일처럼 건너뛰고 오류 목록에 적는다.
+        internal static int BrokenImages;
+        public static void BrokenImagePostfix(Texture2D __result, ref ADOFAI.LoadResult status, string filePath)
+        {
+            if ((object)__result != null || status != ADOFAI.LoadResult.Successful) return;
+            status = ADOFAI.LoadResult.Error;
+            if (BrokenImages++ < 20) Main.Entry.Logger.Log("[이미지] 풀 수 없는 이미지(파일이 깨짐), 게임이 건너뛰게 함: " + filePath);
+        }
 
         public static bool SkipDuplicateError(scnEditor __instance, string name)
         {
@@ -362,6 +374,42 @@ namespace StutterFix
         }
 
         // ── 1) 불러올 순서 뽑기 ─────────────────────────────────────────
+        // 게임의 장식 불러오기(UpdateDecorationObjects) 안에서 null 예외가 나면 맵 열기가 그 자리에서 멈춘다. 무엇이 비었는지 적는다.
+        private static void WhyNull(scnGame g)
+        {
+            var sb = new System.Text.StringBuilder("[장식 불러오기] null 예외: ");
+            sb.Append("controller ").Append(ADOBase.controller == null ? "없음" : "있음");
+            sb.Append(", decManager ").Append(g.decManager == null ? "없음" : "있음");
+            sb.Append(", imgHolder ").Append(g.imgHolder == null ? "없음" : "있음");
+            sb.Append(", levelData ").Append(g.levelData == null ? "없음" : "있음");
+            sb.Append(", levelPath ").Append(g.levelPath == null ? "없음" : "있음");
+            if (g.levelData != null)
+            {
+                var d = g.levelData.decorations; var e = g.levelData.levelEvents;
+                int dn = 0, en = 0, img = 0; string firstBad = null;
+                if (d != null) for (int i = 0; i < d.Count; i++)
+                    {
+                        if (d[i] == null) { dn++; if (firstBad == null) firstBad = "장식 " + i; continue; }
+                        try { bool a = d[i].active; string o; d[i].TryGet<string>("decorationImage", out o); }
+                        catch (Exception ex) { dn++; if (firstBad == null) firstBad = "장식 " + i + ": " + ex.GetType().Name; }
+                    }
+                if (e != null) for (int i = 0; i < e.Count; i++)
+                    {
+                        if (e[i] == null) { en++; if (firstBad == null) firstBad = "이벤트 " + i; continue; }
+                        if (e[i].eventType == ADOFAI.LevelEventType.MoveDecorations)
+                        {
+                            try { string o = null; if (e[i].TryGetAndSet("decorationImage", ref o, true) && !string.IsNullOrEmpty(o)) Path.Combine(Path.GetDirectoryName(g.levelPath), o); }
+                            catch (Exception ex) { img++; if (firstBad == null) firstBad = "장식 이동 " + i + " (타일 " + e[i].floor + "): " + ex.GetType().Name; }
+                        }
+                    }
+                sb.Append(", 장식 ").Append(d == null ? "목록 없음" : d.Count + "개 중 null " + dn);
+                sb.Append(", 이벤트 ").Append(e == null ? "목록 없음" : e.Count + "개 중 null " + en);
+                sb.Append(", 읽다 예외 난 장식 이동 ").Append(img);
+                if (firstBad != null) sb.Append(", 처음: ").Append(firstBad);
+            }
+            Main.Entry.Logger.Log(sb.ToString());
+        }
+
         public static void Begin(scnGame __instance)
         {
             if (!Enabled || swapped != 2) return;
@@ -818,8 +866,9 @@ namespace StutterFix
         }
 
         // ── 끝 ─────────────────────────────────────────────────────────
-        public static Exception End(Exception __exception)
+        public static Exception End(scnGame __instance, Exception __exception)
         {
+            if (__exception is NullReferenceException) { try { WhyNull(__instance); } catch (Exception ex) { Main.Entry.Logger.Log("[장식 불러오기] 원인 찾기 실패: " + ex.Message); } }
             if (running)
             {
                 double total = (Stopwatch.GetTimestamp() - startTicks) * 1000.0 / Stopwatch.Frequency;

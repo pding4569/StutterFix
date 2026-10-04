@@ -99,6 +99,7 @@ namespace StutterFix
         private class Entry { public string Name; public int Depth; public double Ms; }
         private static readonly List<Entry> entries = new List<Entry>();
         private static int depth;
+        private static readonly List<string> phase = new List<string>();   // 자동 시험 메모리 기록에 붙이는 지금 단계
         private static readonly Dictionary<MethodBase, string> names = new Dictionary<MethodBase, string>();
 
         internal static void Install(Harmony harmony)
@@ -180,6 +181,7 @@ namespace StutterFix
             var e = new Entry { Name = name ?? __originalMethod.Name, Depth = depth };
             entries.Add(e);
             depth++;
+            if (Edition.AutoTest) { phase.Add(e.Name); AutoTest.Phase = string.Join(" > ", phase.ToArray()); }
             // 시작 시각과 그 순간까지의 GC 횟수를 같이 들고 간다
             __state = new long[] { Stopwatch.GetTimestamp(), GC.CollectionCount(0), entries.Count - 1 };
         }
@@ -190,6 +192,7 @@ namespace StutterFix
             {
                 var s = (long[])__state;
                 depth = Math.Max(0, depth - 1);
+                if (Edition.AutoTest && phase.Count > 0) { phase.RemoveAt(phase.Count - 1); AutoTest.Phase = string.Join(" > ", phase.ToArray()); }
                 var e = entries[(int)s[2]];
                 e.Ms = (Stopwatch.GetTimestamp() - s[0]) * 1000.0 / Stopwatch.Frequency;
                 long gcNow = GC.CollectionCount(0);
