@@ -134,7 +134,20 @@ namespace StutterFix
                 var result = AccessTools.Method(typeof(scnEditor), "UpdateImageLoadResult");
                 errorsField = AccessTools.Field(typeof(scnEditor), "errorImageResult");
                 if (result != null && errorsField != null)
-                    harmony.Patch(result, prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(SkipDuplicateError)));
+                    harmony.Patch(result, prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(SkipDuplicateError)), postfix: new HarmonyMethod(typeof(ImagePrefetch), nameof(MarkBrokenResult)));
+
+                // 맵 불러온 뒤 이미지 오류 안내창: 게임은 깨진 파일도 "알 수 없는 오류"(editor.dialog.imageError)로 적는다.
+                // 이 모드가 깨졌다고 확인한 파일은 결과를 SFBroken 으로 적어 두고, 안내창을 만드는 동안에만 그 문구를 "깨진 파일"로 바꾼다.
+                var show = AccessTools.Method(typeof(scnEditor), "ShowImageLoadResult", Type.EmptyTypes);
+                if (show != null && errorsField != null)
+                {
+                    harmony.Patch(show, prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(ShowPrefix)), finalizer: new HarmonyMethod(typeof(ImagePrefetch), nameof(ShowFinalizer)));
+                    var rds = AccessTools.TypeByName("RDString");
+                    if (rds != null)
+                        foreach (var m in rds.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                            if (m.Name == "Get" && m.ReturnType == typeof(string) && m.GetParameters().Length > 0 && m.GetParameters()[0].ParameterType == typeof(string))
+                                harmony.Patch(m, prefix: new HarmonyMethod(typeof(ImagePrefetch), nameof(RdStringPrefix)));
+                }
 
                 // 줄인 이미지의 스프라이트 크기 기준을 맞춘다 (texture, fileLastModified, isInternal, isFromBundle, pixelsPerUnit, spriteType)
                 var spriteType = AccessTools.TypeByName("CustomSprite") ?? AccessTools.TypeByName("ADOFAI.CustomSprite");
@@ -258,7 +271,39 @@ namespace StutterFix
             if ((object)__result != null || status != ADOFAI.LoadResult.Successful) return;
             status = ADOFAI.LoadResult.Error;
             if (running && filePath != null) brokenThisLoad.Add(filePath);
+            if (filePath != null) brokenFiles.Add(FullPath(filePath));
             if (filePath != null && brokenSeen.Add(filePath) && BrokenImages++ < 20) Main.Entry.Logger.Log("[이미지] 풀 수 없는 이미지(파일이 깨짐), 게임이 건너뛰게 함: " + filePath);
+        }
+
+        // 깨졌다고 확인한 파일 (전체 경로, 이번 실행 동안)
+        private static readonly HashSet<string> brokenFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private const string BrokenKey = "SFBroken";
+        private static bool showingImageResult;
+
+        private static string FullPath(string p) { try { return Path.GetFullPath(p); } catch { return p; } }
+
+        public static void MarkBrokenResult(scnEditor __instance, string name, ADOFAI.LoadResult loadResult)
+        {
+            if (loadResult != ADOFAI.LoadResult.Error || name == null || brokenFiles.Count == 0) return;
+            try
+            {
+                string dir = Path.GetDirectoryName(ADOBase.levelPath ?? "");
+                if (!brokenFiles.Contains(FullPath(Path.Combine(dir ?? "", name)))) return;
+                var errors = errorsField.GetValue(__instance) as Dictionary<string, string>;
+                string v;
+                if (errors != null && errors.TryGetValue(name, out v) && v == "Error") errors[name] = BrokenKey;
+            }
+            catch { }
+        }
+
+        public static void ShowPrefix() { showingImageResult = true; }
+        public static Exception ShowFinalizer(Exception __exception) { showingImageResult = false; return __exception; }
+
+        public static bool RdStringPrefix(string __0, ref string __result)
+        {
+            if (!showingImageResult || __0 == null || !__0.EndsWith(BrokenKey, StringComparison.Ordinal)) return true;
+            __result = SettingsWindow.T("깨진 파일", "Corrupted file");
+            return false;
         }
 
         public static bool SkipDuplicateError(scnEditor __instance, string name)
