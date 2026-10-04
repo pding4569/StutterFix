@@ -92,6 +92,15 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 
 - **화면 출력 실험 (2026-10-04, PresentMon, HELLO 2026 곡 전체, 3440x1440 165Hz, 수직동기 끔)**: 지금(전체 화면 창 + Flip) 출력은 `Composed: Flip`(윈도우가 한 번 더 합성), 프레임 시작→화면 15.8ms, present→화면 10.8ms, 209 FPS. 앞서 준비하는 프레임 2→1(`MaxQueuedFrames`)은 FPS 209→128, 시작→화면 15.8→19.1ms 로 **둘 다 나빠져** 버림. 독점 전체 화면(`ExpFullscreen=1`)은 `Hardware: Independent Flip` 이 되어 시작→화면 15.8→7.9ms, present→화면 10.8→2.7ms 로 절반이지만 FPS 209→187, 찢어짐 허용(AllowsTearing 1). 둘 다 설정 창에 없는 실험 설정이다. 관리자 PresentMon 은 `C:\Users\Public\StutterFixTrace\agent.ps1` 의 `pm <이름> <초>` 명령(분석 `pmstat.py`).
 
+## 설정 창 디자인 (2026-10-04 전면 개편, `SettingsWindow.cs`)
+
+- 색: 얼음 쪽으로 살짝 푸른 어두운 바탕에 밝기 층만(바탕 `0F1217` < 상자 `151920` < 고른 칸 `1C222B`, 테두리 1px). 얼불춤 두 행성: 얼음 파랑은 데이터(프레임 시간), 불 주황 `F2804B` 은 행동·상태(켜짐, 주된 버튼 하나, 고른 메뉴 아이콘, 끊긴 프레임). 그림자 없음.
+- 이 모드만의 표시: 제목줄 아래 가장자리를 흐르는 실시간 프레임 시간 줄(창이 열려 있을 때만 모음, 튄 프레임만 주황). 홈은 큰 숫자 칸 대신 프레임 시간 그래프 + 상태 목록 + 최근 끊김.
+- 긴 페이지(플레이·모니터·저사양)는 패널 안 왼쪽 갈래 메뉴, 기능은 한 상자 안의 줄. 고른 메뉴에 색 막대 쓰지 않음(impeccable 금지), 칩에 ✓ 글자 쓰지 않음.
+- 글꼴은 윈도우 Segoe UI + 맑은 고딕(IMGUI 는 실행 중 TTF 를 못 불러온다). 크기 단계 11/12/13/14/16/18/22.
+- 움직임: 창 0.16초, 페이지 0.18초, 버튼은 누르는 동안 0.97 배(Emil Kowalski). 한글은 `P()` 가 띄어쓰기 자리에서만 줄을 바꾼다.
+- 확인: 자동 시험 `ui <페이지>.<갈래>` + `shot <이름>` 으로 캡처해 본다. 사용자 범위 스킬: taste-skill, redesign-skill, impeccable(바이너리 실행기는 설치 안 함), emil-design-eng, apple-design, frontend-design.
+
 ## 사용자 PC
 
 i5-9400F / RTX 4060 Ti / DDR4-2666 24GB / 3440x1440 164Hz / Windows 10 Atlas OS. 다른 모드 9개 동시 사용(Quartz, AdofaiTweaks, XPerfect 등).
