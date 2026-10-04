@@ -68,19 +68,20 @@ claude mcp add windows-mcp -s user -- uvx windows-mcp serve
 
 ## 8. 측정·구현 (`docs/next-design.md`, sfmeasure 로)
 
-1. 효과 재사용 조회 줄이기 (`FfxReuse.Arrange`): 대조 + 곡 중 할당량.
-2. 판정 글자 `DOTween.Kill` 비용: ILSpy 로 `ShowHitText` 확인 → `sf_ab`.
-3. 편집 화면 카메라 끌기 튐 (`campan`), 곡 중 쓰레기 0.47MB/s.
+1. 효과 재사용 조회 줄이기 (`FfxReuse.Arrange`): 대조 + 곡 중 할당량. → 됨 (2026-10-04): 되돌려 쓴 적 없는 오브젝트는 GetComponent 그대로, 대조 3,520번 다름 0.
+2. 판정 글자 `DOTween.Kill` 비용: ILSpy 로 `ShowHitText` 확인 → `sf_ab`. → 저절로 해결: `DOKill` 3번이 살아 있는 트윈을 다 훑는데, FloorAnim·DecoAnim 뒤로 살아 있는 진짜 트윈이 120~300개뿐.
+3. 편집 화면 카메라 끌기 튐 (`campan`), 곡 중 쓰레기 0.47MB/s. → 확인 (HELLO 2026): 95% 8.2ms, 최대 13ms (측정 명령 자체의 설치 5초 프레임 빼고). 할 것 없음.
 
 ## 9. 화면 출력 실험 (`sf_presentmon`, `sf_ab`)
 
 - 지금 출력 방식(Flip/합성)과 찢어짐 허용 확인 → GPU 우선순위, 대기 프레임 수 1. 효과가 있을 때만 넣는다.
+- 됨 (2026-10-04): 지금은 Composed: Flip(합성). 대기 프레임 1 은 FPS 209→128·지연 늘어 버림. 독점 전체 화면은 Independent Flip, 지연 15.8→7.9ms → 실험 옵션(기본 끔). GPU 우선순위는 다른 프로그램이 GPU 를 같이 쓸 때만 의미가 있어 미룸.
 
 ## 10. 오늘(2026-10-04) 나온 것
 
-- HELLO 2026 곡 시작 5.1초 장식 이동 33개 몰림 (플레이어용 25ms, 개발자용 47ms).
-- UI 캔버스 23~28ms (`PlayerUpdateCanvases`, 네이티브): Lost Requiem 532.0초에 FloorAnim 끄면 재현. PerfView 로 볼 것.
-- PLUM MEGAMIX 567초 36ms: 소리 불러오기인지 개발자용 로그로 확인.
+- HELLO 2026 곡 시작 5.1초: 됨 — 처음 쓰는 효과의 JIT 였다(`JitWarm`), 42~43ms → 끊김 없음.
+- UI 캔버스 23~28ms: 판정 글자 TMP Rebuild 22.7ms 까지 좁힘(CLAUDE.md). 재현이 들쭉날쭉해 원인 함수는 아직.
+- PLUM MEGAMIX 520~570초: 소리 불러오기 아님. 대부분 GPU 과부하(519.9초 GPU 20ms, 528.5초 27ms, 맵 그리기 자체). 567초는 메인 스레드가 다른 스레드를 17ms 기다림(PerfView 샘플 유실로 더 못 봄).
 - 남은 타일 이동 비용(타일당 약 2.5us, transform 엔진 호출): 저사양 나눠 처리로만 덮는다.
 
 ## 보류
