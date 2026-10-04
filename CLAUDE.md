@@ -76,6 +76,8 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 - **가끔 나오는 UI 캔버스 23~25ms** (HELLO 2026 다섯 판 중 세 판, 곡 35.0초/124.9초/125.6초로 자리가 바뀜, Windflower 다시 하기 중에도 한 번): 엔진 단계 `PlayerUpdateCanvases`. 개발자용 `UiProf` 로 보니 `CanvasUpdateRegistry.PerformUpdate`(관리 코드 다시 만들기)는 5ms 미만, TMP 글자 넣기 0ms, 옛 글꼴 텍스처 재생성 0회 → 유니티 네이티브 캔버스 묶기 쪽. PerfView 를 건 판에서는 안 나와서 아직 원인 모름.
 - 효과 시간에 **빈 함수(`ffxSetHitsound.StartEffect`)가 7ms** 로 찍힌 적이 있다(HELLO 165.4초, 99번째 사용). 효과 자체 비용이 아니라 그 순간 다른 것(힙 늘리기 등)이 겹친 것. 효과 이름별 시간 하나만 보고 범인을 짚지 않는다.
 
+- **화면 출력 실험 (2026-10-04, PresentMon, HELLO 2026 곡 전체, 3440x1440 165Hz, 수직동기 끔)**: 지금(전체 화면 창 + Flip) 출력은 `Composed: Flip`(윈도우가 한 번 더 합성), 프레임 시작→화면 15.8ms, present→화면 10.8ms, 209 FPS. 앞서 준비하는 프레임 2→1(`MaxQueuedFrames`)은 FPS 209→128, 시작→화면 15.8→19.1ms 로 **둘 다 나빠져** 버림. 독점 전체 화면(`ExpFullscreen=1`)은 `Hardware: Independent Flip` 이 되어 시작→화면 15.8→7.9ms, present→화면 10.8→2.7ms 로 절반이지만 FPS 209→187, 찢어짐 허용(AllowsTearing 1). 둘 다 설정 창에 없는 실험 설정이다. 관리자 PresentMon 은 `C:\Users\Public\StutterFixTrace\agent.ps1` 의 `pm <이름> <초>` 명령(분석 `pmstat.py`).
+
 ## 사용자 PC
 
 i5-9400F / RTX 4060 Ti / DDR4-2666 24GB / 3440x1440 164Hz / Windows 10 Atlas OS. 다른 모드 9개 동시 사용(Quartz, AdofaiTweaks, XPerfect 등).
