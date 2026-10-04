@@ -442,6 +442,7 @@ namespace StutterFix
                 RequestReload();
                 return;
             }
+            if (Edition.AutoTest && AutoTest.ReloadNow) { AutoTest.ReloadNow = false; RequestReload(); return; }
 
             if (!installed) return;   // 꺼져 있으면 아무 일도 하지 않는다
 

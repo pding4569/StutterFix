@@ -18,7 +18,11 @@ namespace StutterFix
     //   wait <초>            기다리기
     //   log <글>             로그에 표시 남기기
     //   quit                 저장하지 않고 게임 끄기
+    //   keep                 (켜 둔 게임 다시 쓰기) 이 묶음이 끝나도, 오류·시간 초과여도 게임을 끄지 않는다. 끝나면 autotest.end 에 이유를 쓴다
+    //   set <설정> <값>       Settings 필드를 바꾸고 바로 반영(ApplyConfig). 묶음이 끝나면 원래 값으로 되돌린다 (재시작이 필요한 설정은 안 됨)
+    //   reload               묶음을 끝내고 UMM 다시 불러오기(Ctrl+F5 와 같음: 새 DLL 적용). 마지막 단계로 쓴다
     // 파일은 켤 때 읽고 autotest.done 으로 이름을 바꾼다(다음 실행에서 되풀이하지 않게). 어디서든 3분 넘게 멈추면 그만두고 끈다.
+    // 묶음을 하고 있지 않을 때는 1초마다 autotest.txt 를 다시 찾는다(켜 둔 게임에 새 묶음 넣기, sfmeasure sf_live).
     internal static class AutoTest
     {
         private static List<string> steps;
@@ -29,16 +33,38 @@ namespace StutterFix
 
         internal static bool Active { get { return steps != null; } }
 
+        internal static bool ReloadNow;
+        private static string loadedHash;   // 불러온 DLL 내용. 같은 DLL 을 다시 불러오면 Mono 가 같은 어셈블리로 여겨 패치가 깨진다
+        private static string DllHash()
+        {
+            try { using (var md5 = System.Security.Cryptography.MD5.Create()) return BitConverter.ToString(md5.ComputeHash(File.ReadAllBytes(Path.Combine(modDir, "StutterFix.dll")))); }
+            catch { return null; }
+        }
+        private static string modDir;
+        private static float pollAt;
+        private static bool keep, reloadPending;
+        private static readonly Dictionary<System.Reflection.FieldInfo, object> setOrig = new Dictionary<System.Reflection.FieldInfo, object>();
+
         internal static void Init(string modPath)
         {
             if (!Edition.AutoTest) return;
+            modDir = modPath;
+            loadedHash = DllHash();
+            ReadFile();
+        }
+
+        private static void ReadFile()
+        {
             try
             {
-                string f = Path.Combine(modPath, "autotest.txt");
+                string f = Path.Combine(modDir, "autotest.txt");
                 if (!File.Exists(f)) return;
+                idx = 0; started = false; finished = false; keep = false; reloadPending = false; stepTimeout = 180f; waitSec = 0f; ummClosed = false;
+                string endf = Path.Combine(modDir, "autotest.end");
+                if (File.Exists(endf)) File.Delete(endf);
                 steps = new List<string>();
                 foreach (var raw in File.ReadAllLines(f)) { var l = raw.Trim(); if (l.Length > 0 && !l.StartsWith("#")) steps.Add(l); }
-                string done = Path.Combine(modPath, "autotest.done");
+                string done = Path.Combine(modDir, "autotest.done");
                 if (File.Exists(done)) File.Delete(done);
                 File.Move(f, done);
                 Main.Entry.Logger.Log("[자동 시험] 시작: " + steps.Count + "단계 - " + string.Join(" / ", steps.ToArray()));
@@ -51,7 +77,15 @@ namespace StutterFix
         // 매 프레임 (OnUpdate)
         internal static void Tick()
         {
-            if (steps == null) return;
+            if (steps == null)
+            {
+                if (modDir == null) return;
+                float t = Time.realtimeSinceStartup;
+                if (t < pollAt) return;
+                pollAt = t + 1f;
+                ReadFile();
+                if (steps == null) return;
+            }
             float now = Time.realtimeSinceStartup;
             if (!started) { started = true; stepStart = now; }
             if (!ummClosed || (idx < steps.Count && steps[idx].StartsWith("play", StringComparison.OrdinalIgnoreCase))) CloseUmm();
@@ -737,8 +771,31 @@ namespace StutterFix
                     Log("편집으로 돌아감 (" + stopSw.ElapsedMilliseconds + "ms)");
                     return true;
                 case "quit":
+                    keep = false;
                     Finish("끝");
                     return true;
+                case "keep":
+                    keep = true;
+                    Log("묶음이 끝나도 게임을 끄지 않음");
+                    return true;
+                case "set":
+                {
+                    var sp = arg.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    if (sp.Length < 2) throw new Exception("set <설정> <값>");
+                    var fi = typeof(Settings).GetField(sp[0], System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                    if (fi == null) throw new Exception("설정 이름 없음: " + sp[0]);
+                    object v = ParseValue(fi.FieldType, sp[1].Trim());
+                    if (!setOrig.ContainsKey(fi)) setOrig[fi] = fi.GetValue(Main.Config);
+                    fi.SetValue(Main.Config, v);
+                    Main.ApplyConfig();
+                    Log("설정 " + fi.Name + " = " + v + " (묶음 끝에 " + setOrig[fi] + " 로 되돌림)");
+                    return true;
+                }
+                case "reload":
+                    if (DllHash() == loadedHash) { Log("DLL 이 그대로라 다시 불러오지 않음"); return true; }
+                    reloadPending = true;
+                    EndBatch("다시 불러오기");
+                    return false;   // 묶음이 이미 끝났다 (idx 를 건드리지 않음)
                 default:
                     throw new Exception("모르는 명령: " + cmd);
             }
@@ -771,10 +828,50 @@ namespace StutterFix
         }
 
         private static bool finished;
-        private static void Finish(string why)
+        private static object ParseValue(Type t, string v)
+        {
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            if (t == typeof(bool)) { string l = v.ToLowerInvariant(); return l == "true" || l == "1" || l == "on"; }
+            if (t.IsEnum) return Enum.Parse(t, v, true);
+            if (t == typeof(string)) return v;
+            return Convert.ChangeType(v, t, inv);
+        }
+
+        private static void RestoreSets()
+        {
+            if (setOrig.Count == 0) return;
+            foreach (var kv in setOrig) kv.Key.SetValue(Main.Config, kv.Value);
+            setOrig.Clear();
+            try { Main.ApplyConfig(); } catch (Exception ex) { Log("설정 되돌린 뒤 반영 실패: " + ex.Message); }
+            Log("바꾼 설정 되돌림");
+        }
+
+        // keep 묶음의 끝: 게임은 켜 둔 채 결과 표시만 남기고 다음 autotest.txt 를 기다린다
+        private static void EndBatch(string why)
         {
             if (finished) return;
             finished = true;
+            EndRun();
+            try { if (autoChanged) RDC.auto = prevAuto; } catch { }
+            autoChanged = false;
+            try { RestoreSets(); } catch (Exception ex) { Log("설정 되돌리기 실패: " + ex.Message); }
+            Log("묶음 끝: " + why);
+            steps = null;
+            pollAt = Time.realtimeSinceStartup + 1f;
+            try { File.WriteAllText(Path.Combine(modDir, "autotest.end"), why); } catch { }
+            if (reloadPending)
+            {
+                reloadPending = false;
+                ReloadNow = true;   // 다음 OnUpdate 맨 앞에서 Ctrl+F5 와 같이 (새 DLL 의 Init 이 다음 묶음을 받는다)
+            }
+        }
+
+        private static void Finish(string why)
+        {
+            if (keep) { EndBatch(why); return; }
+            if (finished) return;
+            finished = true;
+            try { RestoreSets(); } catch { }
             EndRun();
             Log(why + " - 게임을 끕니다");
             steps = null;

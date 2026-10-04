@@ -8,6 +8,9 @@ Claude 가 게임을 직접 켜서 같은 구간을 여러 번 돌리고(AutoTes
   sf_status     게임이 켜져 있는지, 설치된 DLL 이 자동 시험 빌드인지, boot.config 상태
   sf_run        autotest.txt 를 써 두고 게임을 켜서 끝날 때까지 기다린 뒤 결과 요약 (설정 덮어쓰기는 끝나면 되돌림)
   sf_ab         설정 하나를 A/B 로 바꿔 가며 sf_run 을 ABBA 순서로 되풀이하고 비교표
+  sf_live       켜 둔 게임에 명령 묶음을 넣고(없으면 켬) 끝날 때까지 기다린 뒤 그 묶음의 로그만 요약 (게임은 계속 켜 둠)
+  sf_ab_live    같은 게임 안에서 A/B: 첫 판 버림, ABBA, 실패하면 게임을 새로 켜서 그 판만 다시
+  sf_quit       켜 둔 게임 끄기
   sf_log        Player.log(또는 저장한 판 로그)의 최근 판 요약 (.claude/skills/log 와 같은 내용)
   sf_presentmon 켜져 있는 게임을 PresentMon 으로 N초 재서 요약 (관리자 또는 Performance Log Users 필요)
 
@@ -317,6 +320,187 @@ def sf_ab(steps, setting, a, b, repeats=2, timeout_min=15, presentmon=None):
     return "\n".join(lines)
 
 
+# ── 켜 둔 게임 다시 쓰기 (AutoTest 의 keep 묶음: 1초마다 autotest.txt 를 찾고, 끝나면 autotest.end 를 쓴다) ──
+END_FILE = os.path.join(MOD_DIR, "autotest.end")
+TXT_FILE = os.path.join(MOD_DIR, "autotest.txt")
+
+
+def log_size():
+    try:
+        return os.path.getsize(PLAYER_LOG)
+    except OSError:
+        return 0
+
+
+def read_from(off):
+    with open(PLAYER_LOG, "rb") as f:
+        size = os.fstat(f.fileno()).st_size
+        f.seek(off if off <= size else 0)   # 게임을 새로 켜면 로그가 처음부터 다시 쓰인다
+        return f.read().decode("utf-8", errors="replace")
+
+
+def _batch(lines, timeout_min, launch_ok=True):
+    """묶음 하나를 넣고 autotest.end 를 기다린다. (끝 이유, 그 묶음 로그, 걸린 초)"""
+    if os.path.exists(END_FILE):
+        os.remove(END_FILE)
+    running = game_running()
+    off = log_size() if running else 0
+    with open(TXT_FILE, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(["keep"] + lines) + "\n")
+    t0 = time.time()
+    if not running:
+        if not launch_ok:
+            raise RuntimeError("게임이 꺼져 있다")
+        launch_game()
+        while not game_running():
+            if time.time() - t0 > 90:
+                raise RuntimeError("90초 안에 게임이 켜지지 않음 (Steam 확인)")
+            time.sleep(1)
+    try:
+        while not os.path.exists(END_FILE):
+            if not game_running():
+                raise RuntimeError("묶음 도중 게임이 꺼짐")
+            if time.time() - t0 > timeout_min * 60:
+                raise RuntimeError("%.0f분 안에 묶음이 끝나지 않음" % timeout_min)
+            if time.time() - t0 > (15 if running else 150) and os.path.exists(TXT_FILE):
+                raise RuntimeError("게임이 autotest.txt 를 읽지 않음 (자동 시험 빌드가 아니거나 이전 버전 DLL)")
+            time.sleep(0.5)
+    finally:
+        if os.path.exists(TXT_FILE):
+            os.remove(TXT_FILE)
+    time.sleep(0.5)   # 로그가 마저 쓰이기를 잠깐
+    why = read_text(END_FILE).strip() if os.path.exists(END_FILE) else "?"
+    return why, read_from(off), time.time() - t0
+
+
+def live_run(steps, settings=None, timeout_min=15, tag="", reload=False, fresh=False):
+    if not IS_WIN:
+        raise RuntimeError("PC(윈도우)에서만 돈다")
+    dll = os.path.join(MOD_DIR, "StutterFix.dll")
+    if not dll_has_autotest(dll):
+        raise RuntimeError("설치된 DLL 에 자동 시험이 없다 (개발자용 빌드나 -p:AutoTestBuild=1 로 빌드해 설치)")
+    if fresh and game_running():
+        kill_game()
+        time.sleep(3)
+    head = []
+    if reload and game_running():
+        why, _, _ = _batch(["reload"], 2)
+        time.sleep(3)   # 새 DLL 이 올라오기를
+        head.append("다시 불러옴 (새 DLL)" if why == "다시 불러오기" else "DLL 이 그대로라 다시 불러오지 않음")
+    lines = [s.strip() for s in steps if s.strip() and s.strip().lower() not in ("quit", "keep")]
+    sets = ["set %s %s" % (k, str(v).lower() if isinstance(v, bool) else v) for k, v in (settings or {}).items()]
+    why, text, sec = _batch(sets + lines, timeout_min)
+    os.makedirs(RUNS_DIR, exist_ok=True)
+    stamp = time.strftime("%Y%m%d-%H%M%S") + ("-" + re.sub(r"[^\w.-]", "_", tag) if tag else "")
+    saved = os.path.join(RUNS_DIR, stamp + ".log")
+    with open(saved, "w", encoding="utf-8") as f:
+        f.write(text)
+    head.append("걸린 시간 %.0f초, 묶음 끝: %s, 로그 %s" % (sec, why, saved))
+    if sets:
+        head.append("설정(묶음 끝에 게임이 되돌림): " + ", ".join(s[4:] for s in sets))
+    m = metrics(text)
+    if why != "끝":
+        m["errors"] += 1
+    return "\n".join(head) + "\n\n" + summarize(text), m, why
+
+
+def sf_live(steps, settings=None, timeout_min=15, tag="", reload=False, fresh=False):
+    if not RUN_LOCK.acquire(blocking=False):
+        raise RuntimeError("다른 측정이 돌고 있다")
+    try:
+        text, _, _ = live_run(steps, settings, timeout_min, tag, reload, fresh)
+        return text
+    finally:
+        RUN_LOCK.release()
+
+
+def ab_line(i, setting, v, m):
+    fps = [r["fps"] for r in m["runs"]] or [x["fps"] for x in m["songs"]]
+    h, sg = m["hitches"], m["songs"]
+    return "%2d. %s=%s: FPS %s | 끊김 %s | 최악 %s ms | 곡 중(연출 뒤) 최악 %s ms, 끊김 %s | 오류 %d" % (
+        i, setting, v, ", ".join("%.0f" % x for x in fps) or "-",
+        ", ".join(str(x["count"]) for x in h) or "-", ", ".join("%.0f" % x["worst"] for x in h) or "-",
+        ", ".join("%.0f" % x["worst"] for x in sg) or "-", ", ".join(str(x["count"]) for x in sg) or "-", m["errors"])
+
+
+def ab_table(setting, res):
+    lines = []
+    for v, ms in res.items():
+        if not ms:
+            continue
+        fps = [r["fps"] for m in ms for r in m["runs"]] or [x["fps"] for m in ms for x in m["songs"]]
+        sworst = [x["worst"] for m in ms for x in m["songs"]]
+        cnt = [x["count"] for m in ms for x in m["hitches"]]
+        worst = [x["worst"] for m in ms for x in m["hitches"]]
+        lines.append("%s=%s (%d번): 평균 FPS %s, 끊김 평균 %s, 최악 최댓값 %s, 곡 중(연출 뒤) 최악 최댓값 %s" % (
+            setting, v, len(ms),
+            "%.1f (편차 %.1f)" % (statistics.mean(fps), statistics.pstdev(fps)) if fps else "-",
+            "%.1f" % statistics.mean(cnt) if cnt else "-", "%.0fms" % max(worst) if worst else "-",
+            "%.0fms" % max(sworst) if sworst else "-"))
+    return lines
+
+
+def sf_ab_live(steps, setting, a, b, repeats=2, timeout_min=15, warmup=True, reload=False):
+    if not RUN_LOCK.acquire(blocking=False):
+        raise RuntimeError("다른 측정이 돌고 있다")
+    try:
+        n = 2 * max(1, int(repeats))
+        order = ([a, b, b, a] * n)[:n]
+        res = {str(a): [], str(b): []}
+        lines = []
+        if warmup:
+            try:
+                _, m, why = live_run(list(steps), {setting: a}, timeout_min, "ab-warm", reload)
+                lines.append(" 0. (버림, 첫 판) " + ab_line(0, setting, a, m)[4:] + ("" if why == "끝" else " [" + why + "]"))
+            except Exception as e:
+                lines.append(" 0. 첫 판 실패: %s" % e)
+            reload = False
+        for i, v in enumerate(order):
+            m = None
+            for attempt in range(2):
+                try:
+                    _, m, why = live_run(list(steps), {setting: v}, timeout_min, "ab-%s-%s" % (setting, v), reload and i == 0, fresh=attempt > 0)
+                    if why != "끝":
+                        raise RuntimeError("묶음 끝: " + why)
+                    break
+                except Exception as e:
+                    lines.append("%2d. %s=%s: %s번째 실패 - %s%s" % (i + 1, setting, v, attempt + 1, e, ", 게임을 새로 켜서 다시" if attempt == 0 else ""))
+                    m = None
+                    if attempt == 0:
+                        kill_game()
+                        time.sleep(3)
+                        try:   # 새로 켠 게임의 첫 판은 버린다
+                            live_run(list(steps), {setting: v}, timeout_min, "ab-rewarm")
+                        except Exception:
+                            pass
+            if m is None:
+                lines.append("여기서 멈춤")
+                break
+            res[str(v)].append(m)
+            lines.append(ab_line(i + 1, setting, v, m))
+        lines.append("")
+        lines += ab_table(setting, res)
+        return "\n".join(lines)
+    finally:
+        RUN_LOCK.release()
+
+
+def sf_quit():
+    if not game_running():
+        return "이미 꺼져 있다"
+    try:
+        _batch(["quit"], 1, launch_ok=False)
+    except Exception:
+        pass
+    t0 = time.time()
+    while game_running() and time.time() - t0 < 20:
+        time.sleep(1)
+    if game_running():
+        kill_game()
+        return "안 꺼져서 강제로 끔"
+    return "껐다"
+
+
 def sf_status():
     dll = os.path.join(MOD_DIR, "StutterFix.dll")
     out = ["게임 켜짐: %s" % ("예" if game_running() else "아니오")]
@@ -352,6 +536,16 @@ TOOLS = [
          "steps": {"type": "array", "items": {"type": "string"}, "description": STEPS_DESC},
          "setting": {"type": "string"}, "a": {}, "b": {}, "repeats": {"type": "integer", "description": "A/B 쌍 수 (기본 2 -> 4판)"},
          "timeout_min": {"type": "number"}, "presentmon": PM_SCHEMA}}},
+    {"name": "sf_live", "description": "켜 둔 게임에 명령 묶음을 넣고(게임이 꺼져 있으면 켬) 끝나면 그 묶음 로그만 요약한다. 게임은 계속 켜 둔다. settings 는 게임 안에서 set 으로 바꾸고 묶음 끝에 되돌린다(재시작이 필요한 설정은 sf_run/sf_ab). reload 는 먼저 Ctrl+F5(새 DLL), fresh 는 게임을 새로 켬.",
+     "inputSchema": {"type": "object", "required": ["steps"], "properties": {
+         "steps": {"type": "array", "items": {"type": "string"}, "description": "자동 시험 명령 줄들 (quit 없이)"},
+         "settings": {"type": "object"}, "timeout_min": {"type": "number"}, "tag": {"type": "string"},
+         "reload": {"type": "boolean"}, "fresh": {"type": "boolean"}}}},
+    {"name": "sf_ab_live", "description": "같은 게임 안에서 설정 하나를 a/b 로 바꿔 ABBA 로 되풀이 (첫 판 버림, 실패한 판은 게임을 새로 켜서 다시). 재시작이 필요한 설정과 최종 확인은 sf_ab.",
+     "inputSchema": {"type": "object", "required": ["steps", "setting", "a", "b"], "properties": {
+         "steps": {"type": "array", "items": {"type": "string"}}, "setting": {"type": "string"}, "a": {}, "b": {},
+         "repeats": {"type": "integer"}, "timeout_min": {"type": "number"}, "warmup": {"type": "boolean"}, "reload": {"type": "boolean"}}}},
+    {"name": "sf_quit", "description": "켜 둔 게임을 끈다 (자동 시험 quit, 안 되면 강제)", "inputSchema": {"type": "object", "properties": {}}},
     {"name": "sf_log", "description": "Player.log(또는 file 로 준 저장 로그)의 최근 판 요약: 설치 오류, 자동 시험 결과, 끊김 요약, 30ms 넘은 프레임과 원인",
      "inputSchema": {"type": "object", "properties": {"runs": {"type": "integer"}, "file": {"type": "string"}, "max_frames": {"type": "integer"}}}},
     {"name": "sf_presentmon", "description": "지금 켜져 있는 게임을 PresentMon 으로 N초 재서 FPS, 1% 최저, GPU 바쁨, 화면 지연, 출력 방식(Flip/합성), 찢어짐 허용을 요약",
@@ -367,6 +561,13 @@ def call(name, a):
         return text
     if name == "sf_ab":
         return sf_ab(a["steps"], a["setting"], a["a"], a["b"], int(a.get("repeats", 2)), float(a.get("timeout_min", 15)), a.get("presentmon"))
+    if name == "sf_live":
+        return sf_live(a["steps"], a.get("settings"), float(a.get("timeout_min", 15)), a.get("tag", ""), bool(a.get("reload")), bool(a.get("fresh")))
+    if name == "sf_ab_live":
+        return sf_ab_live(a["steps"], a["setting"], a["a"], a["b"], int(a.get("repeats", 2)), float(a.get("timeout_min", 15)),
+                          a.get("warmup", True) is not False, bool(a.get("reload")))
+    if name == "sf_quit":
+        return sf_quit()
     if name == "sf_log":
         return summarize(read_text(a.get("file") or PLAYER_LOG), int(a.get("runs", 1)), int(a.get("max_frames", 15)))
     if name == "sf_presentmon":
