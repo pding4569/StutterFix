@@ -372,6 +372,7 @@ namespace StutterFix
             if (Hitch.Playing) Try(EffectBudget.FlushAll);
             Try(global::StutterFix.DecoAnim.FinishAll);
             Try(global::StutterFix.FloorAnim.FinishAll);
+            Try(RestoreQueued);
             Try(EffectBudget.Reset);       // 색 나누기 대기열도 같이 비운다
             Try(ImagePrefetch.Stop);       // 이미지 작업 스레드와 풀어 둔 메모리
             Try(() => SystemMonitor.Keep = false);
@@ -510,8 +511,52 @@ namespace StutterFix
             ApplyToggles();
         }
 
+        // (실험, 설정 창에 없음) 앞서 준비하는 프레임 수. 0 이면 게임 값 그대로. 바꿨으면 모드를 내릴 때 되돌린다.
+        private static int origQueued = -1;
+        private static void ApplyQueued()
+        {
+            try
+            {
+                int want = Config.MaxQueuedFrames;
+                if (want > 0)
+                {
+                    if (origQueued < 0) origQueued = QualitySettings.maxQueuedFrames;
+                    if (QualitySettings.maxQueuedFrames != want) { QualitySettings.maxQueuedFrames = want; Entry.Logger.Log("[화면 출력 실험] 앞서 준비하는 프레임 " + origQueued + " -> " + want); }
+                }
+                else if (origQueued >= 0) { QualitySettings.maxQueuedFrames = origQueued; origQueued = -1; }
+            }
+            catch (Exception ex) { Entry.Logger.Log("[화면 출력 실험] 실패: " + ex.Message); }
+        }
+        private static void RestoreQueued() { if (origQueued >= 0) { QualitySettings.maxQueuedFrames = origQueued; origQueued = -1; } RestoreFullscreen(); }
+        // (실험, 설정 창에 없음) 전체 화면 방식: 1 = 독점 전체 화면(ExclusiveFullScreen). 창 모드면 건드리지 않는다.
+        private static int origFsMode = -1;
+        private static void ApplyFullscreen()
+        {
+            try
+            {
+                if (Config.ExpFullscreen == 1 && Screen.fullScreen && Screen.fullScreenMode != FullScreenMode.ExclusiveFullScreen)
+                {
+                    origFsMode = (int)Screen.fullScreenMode;
+                    var r = Screen.currentResolution;
+                    Screen.SetResolution(r.width, r.height, FullScreenMode.ExclusiveFullScreen, r.refreshRateRatio);
+                    Entry.Logger.Log("[화면 출력 실험] 전체 화면 " + (FullScreenMode)origFsMode + " -> ExclusiveFullScreen " + r.width + "x" + r.height);
+                }
+                else if (Config.ExpFullscreen != 1) RestoreFullscreen();
+            }
+            catch (Exception ex) { Entry.Logger.Log("[화면 출력 실험] 전체 화면 실패: " + ex.Message); }
+        }
+        private static void RestoreFullscreen()
+        {
+            if (origFsMode < 0) return;
+            var r = Screen.currentResolution;
+            Screen.SetResolution(r.width, r.height, (FullScreenMode)origFsMode, r.refreshRateRatio);
+            origFsMode = -1;
+        }
+
         private static void ApplyToggles()
         {
+            ApplyQueued();
+            ApplyFullscreen();
             // 설정 값에 "이번 실행 동안 끔"(오류 자동 차단, 안전 모드)을 겹친다 (Resilience)
             Func<string, bool, bool> E = Resilience.Eff;
             bool low = !Resilience.Off("LowEnd");   // 저사양 그래픽 기능 묶음
@@ -779,6 +824,8 @@ namespace StutterFix
         public bool LowAutoRes = false;     // 자동 해상도: 목표 FPS 를 못 맞출 만큼 GPU 가 바쁠 때만 게임 화면 해상도를 낮춤
         public int LowAutoFps = 60;         // 자동 해상도 목표 FPS
         public int LowAutoMin = 50;         // 자동 해상도 최소 배율 %
+        public int ExpFullscreen = 0;       // (실험) 1 = 독점 전체 화면
+        public int MaxQueuedFrames = 0;     // (실험) 앞서 준비하는 프레임 수, 0 = 게임 값 그대로
         public int LowSplit = 0;            // 효과 몰림 나누기 세기: 0 기본(10ms, 400칸), 1 잘게(5ms, 200칸), 2 아주 잘게(3ms, 120칸)
         public string ReopenLevel = "";     // 재시작 버튼으로 껐을 때 다시 켠 뒤 에디터로 열 맵 (한 번 쓰고 비움)
         public string LastEditorLevel = ""; // 에디터에서 마지막으로 연 맵 (메인 메뉴에서도 "마지막 맵으로 재시작" 하려고)
