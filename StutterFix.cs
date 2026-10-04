@@ -158,6 +158,7 @@ namespace StutterFix
                 FastJson.Install(harmony);
                 DecodeFix.Install(harmony);
                 ParallelDecode.Install(harmony);
+                DecoBatch.Install(harmony);
                 TexCompress.Install(harmony);
                 HalfRender.Install(harmony);
                 RenderVerify.Install(harmony);
@@ -193,6 +194,10 @@ namespace StutterFix
                 if (Edition.Dev || MeasureBuild) Try(() => ScriptProbe.Install(harmony));   // (진단) scriptprobe.txt 가 있으면 스크립트별 시간
                 if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(Entry.Path, "floorprof.txt"))) Try(() => FloorProf.Install(harmony));   // (측정) floorprof.txt 가 있으면 타일 이동 안 DOTween 몫
 
+#if AUTOTEST
+                // 측정용 플레이어 빌드: startprobe-cold.txt 가 있으면 맵 열기·재생 시작 단계 시간 (자주 불리는 함수는 감싸지 않음)
+                if (!Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(Entry.Path, "startprobe-cold.txt"))) Try(() => StartProbe.Install(harmony));
+#endif
                 // 측정 (개발자용만)
                 if (Edition.Dev)
                 {
