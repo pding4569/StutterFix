@@ -30,6 +30,8 @@ made by **naro** & **Claude**
 | 이미지 원본 약 100GB 맵 | 깨진 이미지로 안 열리던 맵 / 곡 중 최악 프레임 | 열림, 66ms → **26ms**, 끊김 3 → 0 (2.5.0) |
 | 이미지 1만 장 맵 (PNG 2.75GB, 풀면 737GB) | 맵 열기 | 490.7초 → **64.1초** (2.5.1) |
 | Arche / HELLO 2026 / Windflower | 맵 열기 | 25.1 / 19.4 / 16.1초 → **21.5 / 15.4 / 14.3초** (2.5.1) |
+| HELLO 2026 | 판정 오차 막대 가볍게 | 232·234 → **254·255 FPS** (2.5.2) |
+| PLUM MEGAMIX (VRAM 89%) | 566초 끊김 | 36·33ms → **20·23ms** (2.5.2) |
 
 ## 목차
 
@@ -54,6 +56,25 @@ made by **naro** & **Claude**
 - **Shift+Insert**: 실시간 모니터 (아이콘 → 미니 → 상세 → 끔)
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 아이콘 옆 점으로 알려 줍니다.
+
+## 2.5.2 에서 바뀐 것
+
+### 곡 중 끊김·프레임
+- **판정 오차 막대 가볍게** (기본 켬): 막대 눈금이 사라질 때 눈금 그림을 매 프레임 다시 만들지 않고 투명도만 바꿉니다(화면 투명도는 같음). HELLO 2026 자동 플레이 A/B 4판: **232·234 → 254·255 FPS (+9%)**.
+- **판정 글자 가볍게 사라지기** (기본 켬): 판정 글자가 투명해질 때 글자를 다시 만들지 않고 색만 바꿉니다. 판정 글자가 많은 구간(초당 20개) 프레임 수 +4.7%.
+- **VRAM 이 거의 찬 맵**: 맵을 연 뒤 그래픽 메모리가 88% 넘게 찼으면(대부분 게임 몫) 다음에 열 때부터 큰 이미지를 한 단계 줄입니다(2048 까지). PLUM MEGAMIX 566초의 36ms 끊김(숨어 있던 장식이 처음 보일 때 윈도우가 밀려나 있던 그림을 그래픽카드로 다시 올리느라 멈춤, PerfView 로 확인): **36·33ms → 20·23ms**.
+- 안전 모드에서도 큰 이미지 줄이기는 그대로 씁니다(안전 모드에서 이미지가 큰 맵이 메모리 부족으로 다시 꺼지던 것).
+
+### 연출 끄기 (새 페이지, 전부 기본 꺼짐)
+설정 창 눈 모양 아이콘. 켜면 맵이 원래와 다르게 보이므로 전부 기본으로 꺼져 있습니다. 판정·타이밍은 그대로입니다.
+- **맵 효과 종류별 끄기**: 카메라 이동, 타일 색 바꾸기(맵의 타일 색·모양 포함), 타일 나타나기·사라지기, 타일 이동, 배경, 행성 크기, 장식, 필터, 고급 필터, 블룸, 플래시, 거울의 방, 화면 흔들기, 화면 타일·스크롤, 프레임레이트 연출. 이 맵에 몇 개 있는지 함께 보입니다.
+- **노이펙 모드**: 위 효과를 한 번에 모두 끕니다. 장식은 숨기고(히트박스 장식은 플레이에 필요해 남김), 타일은 기본 모양, 배경은 검정입니다. 앞 타일은 밟기 1.5초 전부터 나타나고(0.3~5초 조절) 지나간 타일은 바로 사라집니다. 게임 화면으로 열면 장식을 아예 만들지 않아 맵이 빨리 열립니다(Windflower 장식 6,290개, 열기 8.7 → 5.1초).
+- **필터 하나씩 끄기**: 이 맵이 쓰는 필터를 일반/고급, 종류별로 나눠 보여 주고 하나씩 또는 종류째 끕니다.
+- **판정 글자 숨기기**(전부 / 완벽만), **플레이 중 마우스 휠 확대 막기**(에디터).
+
+### 에디터
+- **게임 화면으로 플레이 단추**: 재생 단추 오른쪽 위. 커스텀 맵 목록에서 연 것과 같은 화면으로 엽니다(저장 안 한 변경은 먼저 묻습니다). 돌아올 때는 일시정지 메뉴의 에디터 단추.
+- 장면이 바뀐 직후 다른 모드(PACL2)가 지난 장면의 글자 장식에 글자를 넣다 나던 오류를 막았습니다.
 
 ## 2.5.1 에서 바뀐 것
 
@@ -315,6 +336,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.5.2:** lighter hit error meter (ticks fade by renderer alpha instead of rebuilding each tick every frame; HELLO 2026 232–234 → 254–255 FPS, +9%) and lighter judgment text fade (+4.7% frames with 20 judgments/s). Levels whose VRAM is over 88% full right after loading now get large images capped one step lower on the next load (down to 2048): PLUM MEGAMIX 566 s hitch (Windows paging an evicted texture back into VRAM when a hidden decoration first appeared, confirmed with PerfView) 36/33 → 20/23 ms. Safe mode keeps image downscaling. New **Effects off** page (all off by default): turn off level effects by kind (camera, tile colors and styles, tile appear/disappear, tile moves, background, planet scale, decorations, filters, bloom, flash, hall of mirrors, shake, screen tile/scroll, frame rate), filters one by one grouped by kind, judgment text, mouse-wheel zoom while playing; and a **no-effects mode** (decorations hidden except hitbox ones, plain tiles, black background, tiles fade in 1.5 s ahead and fade out once passed; in the game screen decorations are not created at all, so levels open faster). Editor: a **play in game screen** button next to the play button.
 
 **2.5.1:** much faster level loading. Big images that get shrunk are decoded row by row in native code (streaming inflate from a modified libdeflate 1.24 → unfilter → downscale), so the full-size image and the inflated data are never written to memory; empty rows and blocks are skipped. Output is byte-identical to decoding at full size and shrinking (checked on 14,710 real PNGs). With PACL2 lossy compression the precompressed DXT is put directly instead of putting the raw image and replacing it. Corrupt images are not re-read for every decoration that uses them, and the editor's image error list now says "Corrupted file" instead of "unknown error". Level events are decoded on worker threads and handed to the game's own loop in order, and runs of image decorations are instantiated in one batch (sibling order kept). Level open (player build, alternating with 2.5.0): 10k-image level 490.7 → 64.1 s, 1,520-image level 87.8 → 20.6 s, HELLO 2026 19.4 → 15.4 s, Arche 25.1 → 21.5 s, Windflower 16.1 → 14.3 s.
 
