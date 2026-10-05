@@ -281,6 +281,7 @@ namespace StutterFix
         private static bool showingImageResult;
 
         private static string FullPath(string p) { try { return Path.GetFullPath(p); } catch { return p; } }
+        internal static bool IsBroken(string path) { return brokenFiles.Contains(FullPath(path)); }
 
         public static void MarkBrokenResult(scnEditor __instance, string name, ADOFAI.LoadResult loadResult)
         {

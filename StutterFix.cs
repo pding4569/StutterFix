@@ -164,6 +164,8 @@ namespace StutterFix
                 DecodeFix.Install(harmony);
                 ParallelDecode.Install(harmony);
                 DecoBatch.Install(harmony);
+                HitTextFade.Install(harmony);
+                PlayTweaks.Install(harmony);
                 TexCompress.Install(harmony);
                 HalfRender.Install(harmony);
                 RenderVerify.Install(harmony);
@@ -583,6 +585,12 @@ namespace StutterFix
             EffectBudget.Enabled = E("EffectSplit", Config.EffectSplit);
             RecolorSplit.Enabled = E("RecolorSplit", Config.RecolorSplit);
             TweenFix.Enabled = E("TweenGuard", Config.TweenGuard);
+            HitTextFade.Enabled = E("HitTextFade", Config.HitTextFade);
+            {
+                var off = new HashSet<string>((Config.EffectsOff ?? "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                foreach (var k in PlayTweaks.Kinds) k.Off = off.Contains(k.Event);
+                PlayTweaks.HideJudgeAll = Config.HideJudgeAll; PlayTweaks.HideJudgePerfect = Config.HideJudgePerfect; PlayTweaks.NoPlayZoom = Config.NoPlayZoom;
+            }
             ZeroTween.Enabled = E("ZeroTween", Config.ZeroTween);
             ZeroTween.SkipUpdate = ZeroTween.Enabled;
             InstantMove.Enabled = E("InstantDirect", Config.InstantDirect);
@@ -820,6 +828,12 @@ namespace StutterFix
         public bool FastLoop = true;       // 길이 0 장식 이동 효과를 게임 코드 대신 모드 루프로
         public bool Precheck = true;       // 곧 발동할 무거운 장식 이동이 아무것도 안 바꾸는지 미리 확인해 두고 건너뛰기
         public bool FloorAnim = true;      // 길이 있는 타일 이동(MoveTrack)의 애니메이션을 DOTween 대신 모드가 돌림
+        public bool HitTextFade = true;    // 판정 글자가 투명해질 때 메시 전체 대신 정점 색만 바꾸기
+        // 연출 끄기 (기본 꺼짐: 켜면 화면이 달라진다)
+        public string EffectsOff = "";     // 끌 효과 이벤트 이름들 (쉼표로)
+        public bool HideJudgeAll = false;
+        public bool HideJudgePerfect = false;
+        public bool NoPlayZoom = false;    // 에디터 재생 중 마우스 휠로 화면 크기 바꾸기 막기
         public bool DecoAnim = true;       // 길이 있는 장식 이동의 애니메이션을 DOTween 대신 모드가 돌림
         public bool FilterTypeCache = true; // 고급 필터의 형식 찾기(Type.GetType, 한 번 약 0.7ms) 결과를 기억
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기

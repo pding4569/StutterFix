@@ -68,6 +68,8 @@
     <Compile Include="DecodeFix.cs" />
     <Compile Include="ParallelDecode.cs" />
     <Compile Include="DecoBatch.cs" />
+    <Compile Include="HitTextFade.cs" />
+    <Compile Include="PlayTweaks.cs" />
     <Compile Include="SystemMonitor.cs" />
     <Compile Include="UiInputBlock.cs" />
     <Compile Include="ModCost.cs" />
@@ -189,6 +191,14 @@
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(GameManaged)/UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(GameManaged)/Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreFontEngineModule">
+      <HintPath>$(GameManaged)/UnityEngine.TextCoreFontEngineModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">

@@ -103,6 +103,7 @@ namespace StutterFix
 
         private static void Log(string s) { Main.Entry.Logger.Log("[자동 시험] " + s); }
 
+        private static float watchStart = -1, watchNext; private static int watchBad, watchChecks; private static readonly HashSet<int> watchSeen = new HashSet<int>();
         private static object spamMgr; private static scrPlanet spamPlanet; private static System.Reflection.MethodInfo spamShow;
         private static float spamStart, spamLast, spamMax; private static int spamOver, spamFrames, spamShown, spamSlowCalls;
         private static double spamCallMs, spamCallMax; private static string spamCallMaxWhat = "";
@@ -839,6 +840,60 @@ namespace StutterFix
                     string f = Path.Combine(dir, (arg.Length > 0 ? arg : "shot") + ".png");
                     ScreenCapture.CaptureScreenshot(f);
                     Log("화면 캡처: " + f);
+                    return true;
+                }
+                case "decowatch":
+                {
+                    // decowatch <초>: 곡 중 0.5초마다, 그리기가 꺼져 있는데(forceRenderingOff) 실제 색은 보이는(알파 > 0) 이미지 장식을 찾는다
+                    float dur = arg.Length > 0 ? float.Parse(arg, System.Globalization.CultureInfo.InvariantCulture) : 60f;
+                    if (watchStart < 0) { watchStart = now; watchNext = now; watchBad = 0; watchChecks = 0; watchSeen.Clear(); }
+                    if (now >= watchNext)
+                    {
+                        watchNext = now + 0.5f; watchChecks++;
+                        var mgr = scrDecorationManager.instance;
+                        if (mgr != null)
+                            foreach (var d in mgr.allDecorations)
+                            {
+                                var v = d as scrVisualDecoration;
+                                if (v == null || v.spriteRenderer == null) continue;
+                                var r = v.spriteRenderer;
+                                if (!r.forceRenderingOff || r.color.a <= 0f || !r.enabled || !v.gameObject.activeInHierarchy) continue;
+                                watchBad++;
+                                int id = v.GetInstanceID();
+                                if (watchSeen.Add(id) && watchSeen.Count <= 15)
+                                    Log(string.Format("decowatch: 곡 {0:F1}초 그리기 꺼짐인데 보여야 함: '{1}' 알파 {2:F3} (태그 {3})", (scrConductor.instance != null ? scrConductor.instance.songposition_minusi : -1), v.sourceLevelEvent != null ? v.sourceLevelEvent["decorationImage"] : "?", r.color.a, v.sourceLevelEvent != null ? v.sourceLevelEvent["tag"] : ""));
+                            }
+                    }
+                    if (now - watchStart < dur && Hitch.Playing) return false;
+                    Log(string.Format("decowatch 끝: 검사 {0}번, 보여야 하는데 꺼진 경우 {1}번 (장식 {2}개)", watchChecks, watchBad, watchSeen.Count));
+                    watchStart = -1;
+                    return true;
+                }
+                case "decoaudit":
+                {
+                    // decoaudit: 이미지가 지정된 장식 중 그림(스프라이트)이 비어 있는 것을 센다 (파일 없음 / 깨진 파일 / 파일은 정상인데 빠짐)
+                    var mgr = scrDecorationManager.instance;
+                    if (mgr == null) { Log("decoaudit: 장식 관리자 없음"); return true; }
+                    string dir = System.IO.Path.GetDirectoryName(ADOBase.levelPath ?? "") ?? "";
+                    int total = 0, ok = 0, noFile = 0, broken = 0, suspect = 0, noTex = 0;
+                    var names = new List<string>();
+                    foreach (var d in mgr.allDecorations)
+                    {
+                        var v = d as scrVisualDecoration;
+                        if (v == null || v.sourceLevelEvent == null) continue;
+                        string img = v.sourceLevelEvent["decorationImage"] as string;
+                        if (string.IsNullOrEmpty(img) || img.StartsWith("prefab:", StringComparison.OrdinalIgnoreCase)) continue;
+                        total++;
+                        var sp = v.spriteRenderer != null ? v.spriteRenderer.sprite : null;
+                        if (sp != null && sp.texture != null) { ok++; continue; }
+                        if (sp != null) { noTex++; if (names.Count < 12) names.Add("텍스처 없음:" + img); continue; }
+                        string full = System.IO.Path.Combine(dir, img);
+                        if (!System.IO.File.Exists(full)) { noFile++; continue; }
+                        if (ImagePrefetch.IsBroken(full)) { broken++; continue; }
+                        suspect++; if (names.Count < 12) names.Add(img);
+                    }
+                    Log(string.Format("decoaudit: 이미지 장식 {0}개 - 그림 있음 {1}, 파일 없음 {2}, 깨진 파일 {3}, 스프라이트는 있는데 텍스처 없음 {4}, 파일은 정상인데 빠짐 {5}{6}",
+                        total, ok, noFile, broken, noTex, suspect, names.Count > 0 ? " | " + string.Join(", ", names.ToArray()) : ""));
                     return true;
                 }
                 case "hitspam":

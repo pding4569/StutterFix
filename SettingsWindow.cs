@@ -193,12 +193,12 @@ namespace StutterFix
 
         private string[] PageNames()
         {
-            return new[] { T("홈", "Home"), T("플레이", "Gameplay"), T("맵 불러오기", "Level loading"), T("그래픽", "Graphics"), T("모니터", "Monitor"), T("저사양", "Low-end PC"), T("정보", "About") };
+            return new[] { T("홈", "Home"), T("플레이", "Gameplay"), T("맵 불러오기", "Level loading"), T("그래픽", "Graphics"), T("모니터", "Monitor"), T("저사양", "Low-end PC"), T("연출 끄기", "Effects off"), T("정보", "About") };
         }
 
         private Rect DockRect(float sw, float sh, float e)
         {
-            float h = 8 * IconS + 7 * IconGap + 20 + 10;   // 기능 7개 + 구분선 + 재시작
+            float h = 9 * IconS + 8 * IconGap + 20 + 10;   // 기능 8개 + 구분선 + 재시작
             return new Rect(sw - DockW - 12 + (1 - e) * (DockW + 24), (sh - h) / 2f, DockW, h);   // 오른쪽 밖에서 미끄러져 들어온다
         }
 
@@ -405,11 +405,11 @@ namespace StutterFix
             var why = RestartAdvisor.Reasons();
             if (armed) Fill(rr, new Color(0.92f, 0.32f, 0.30f, 0.55f), 12);
             else if (rhov) Fill(rr, new Color(1, 1, 1, 0.09f), 12);
-            if (Event.current.type == EventType.Repaint && icons != null && icons.Length > 7)
+            if (Event.current.type == EventType.Repaint && icons != null && icons.Length > 8)
             {
                 var c = GUI.color;
                 GUI.color = new Color(1, 1, 1, c.a * (armed || rhov ? 1f : 0.72f));
-                GUI.DrawTexture(new Rect(rr.x + 10, rr.y + 10, IconS - 20, IconS - 20), icons[7]);
+                GUI.DrawTexture(new Rect(rr.x + 10, rr.y + 10, IconS - 20, IconS - 20), icons[8]);
                 GUI.color = c;
                 if (why.Count > 0) Fill(new Rect(rr.xMax - 13, rr.y + 5, 8, 8), new Color(Alert.r, Alert.g, Alert.b, c.a), 4);
             }
@@ -512,7 +512,7 @@ namespace StutterFix
             float bw = sCrumb.CalcSize(brand).x;
             GUI.Label(new Rect(52, 19, bw + 4, 24), brand, sCrumb);
             GUI.Label(new Rect(52 + bw + 8, 19, 14, 24), "/", sCrumb);
-            GUI.Label(new Rect(52 + bw + 24, 18, 320, 26), PageNames()[Mathf.Clamp(page, 0, 6)], sPageTitle);
+            GUI.Label(new Rect(52 + bw + 24, 18, 320, 26), PageNames()[Mathf.Clamp(page, 0, 7)], sPageTitle);
 
             // 언어 + 닫기 (작게)
             var ko = new Rect(pw - 176, 18, 58, 26);
@@ -577,6 +577,7 @@ namespace StutterFix
                 case 3: PageGraphics(); break;
                 case 4: PageMonitor(); break;
                 case 5: PageLowEnd(); break;
+                case 6: PageEffects(); break;
                 default: PageAbout(); break;
             }
             GUILayout.Space(Gutter);
@@ -645,6 +646,17 @@ namespace StutterFix
                     float px = 0.5f + 0.55f * 0.38f * t, py = 0.62f - 0.83f * 0.38f * t;
                     bool needle = (x - px) * (x - px) + (y - py) * (y - py) <= 0.055f * 0.055f;
                     return arc || needle || InCircle(x, y, 0.5f, 0.62f, 0.09f);
+                }),
+                // 연출 끄기: 눈 + 사선
+                MakeIcon((x, y) =>
+                {
+                    float dx = (x - 0.5f) / 0.44f, dy = (y - 0.5f) / 0.26f;
+                    float e = dx * dx + dy * dy;
+                    bool eye = e <= 1f && e >= 0.62f;
+                    bool pupil = InCircle(x, y, 0.5f, 0.5f, 0.11f);
+                    float l = Mathf.Abs((x - 0.14f) - (y - 0.14f) * 1.0f) / 1.414f;
+                    bool slash = l <= 0.045f && x > 0.12f && x < 0.88f;
+                    return (eye || pupil || slash);
                 }),
                 // 정보: 동그라미 안에 i
                 MakeIcon((x, y) =>
@@ -1031,6 +1043,9 @@ namespace StutterFix
                 ch |= Option("tween", ref c.TweenGuard, T("애니메이션 처리 최적화", "Animation list guard"),
                     T("효과가 많을 때 게임이 애니메이션 목록을 반복해서 다시 정리하느라 느려지는 문제를 막습니다.",
                       "Prevents the game from repeatedly re-sorting its animation list when many effects are running."), null);
+                ch |= Option("hittextfade", ref c.HitTextFade, T("판정 글자 가볍게 사라지기", "Lighter judgment fade"),
+                    T("판정 글자가 투명해지며 사라질 때 글자를 매번 새로 만들지 않고 색만 바꿉니다. 직접 플레이할 때 판정 글자가 많이 떠 있는 빠른 구간에서 프레임이 가벼워집니다. 보이는 모습은 같습니다.",
+                      "When judgment text fades out, only its color is updated instead of rebuilding the text every frame. Lighter frames in dense sections when you play by hand. Looks the same."), null);
                 ch |= Option("flooranim", ref c.FloorAnim, T("타일 애니메이션 직접 처리", "Tile move animations"),
                     T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
                       "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);
@@ -1131,7 +1146,7 @@ namespace StutterFix
 
         // ── 페이지 안 갈래 (왼쪽 세로 메뉴) ──────────────────────────────
         // 플레이(23개)·저사양처럼 긴 페이지는 스위치가 한 줄로 길게 이어져 찾기 어려웠다. 갈래를 왼쪽에 아이콘과 함께 두고 고른 것만 보인다.
-        private readonly int[] subSel = new int[7];
+        private readonly int[] subSel = new int[8];
         private float railY = -1f, tabW = -1f;
         // 아래 줄 키 안내: [키] 설명 을 오른쪽부터 왼쪽으로 놓는다. 다음 자리(x) 를 돌려준다.
         private float KeyHint(float right, float y, float h, string key, string label)
@@ -1155,9 +1170,10 @@ namespace StutterFix
             if (p == 1) { icons = new[] { IcBolt, IcClock, IcEye, IcMove }; return new[] { T("기본", "Essentials"), T("미리 준비", "Warm-up"), T("그리기", "Rendering"), T("장식 이동", "Decoration moves") }; }
             if (p == 4) { icons = new[] { IcEye, IcTiles, IcBolt }; return new[] { T("표시", "Display"), T("항목", "Items"), T("끊김 알림", "Hitch alerts") }; }
             if (p == 5) { icons = new[] { IcTune, IcChip, IcTiles, IcCard, IcFlask }; return new[] { T("PC 맞춤", "PC fit"), T("컴퓨터", "System"), T("게임", "Game"), T("그래픽카드", "Graphics card"), T("실험", "Experimental") }; }
+            if (p == 6) { icons = new[] { IcEye, IcMove }; return new[] { T("맵 효과", "Level effects"), T("판정·조작", "Judgment & input") }; }
             return null;
         }
-        private int Sub() { return subSel[Mathf.Clamp(page, 0, 6)]; }
+        private int Sub() { return subSel[Mathf.Clamp(page, 0, 7)]; }
 
         private void DrawRail(Rect area, string[] names, int[] icons)
         {
@@ -1708,6 +1724,51 @@ namespace StutterFix
             if (LogExport.LastError.Length > 0) { GUILayout.Space(6); P(T("만들지 못했습니다: ", "Failed: ") + LogExport.LastError, sDim); }
             else if (LogExport.LastPath.Length > 0) { GUILayout.Space(6); GUILayout.Label(T("만든 파일: ", "Created: ") + System.IO.Path.GetFileName(LogExport.LastPath) + T("  (바탕화면)", "  (desktop)"), sSub); }
             GUILayout.EndVertical();
+        }
+
+        private void PageEffects()
+        {
+            var c = Main.Config;
+            int sub = Sub();
+            bool ch = false;
+            if (sub == 0)
+            {
+                SubHeading(T("맵 효과", "Level effects"),
+                    T("고른 효과를 시작하지 않습니다. 켜면 맵이 원래와 다르게 보이므로 전부 기본으로 꺼져 있습니다. 이미 켜져 있는 효과는 다음 다시 하기부터 사라집니다.",
+                      "Skips the chosen effects. Levels then look different from the original, so everything is off by default. Effects already on disappear from the next retry."));
+                BeginGroup();
+                bool have = PlayTweaks.HaveLevel;
+                foreach (var k in PlayTweaks.Kinds)
+                {
+                    bool v = k.Off;
+                    int n = PlayTweaks.CountIn(k.Event);
+                    string tag = !have ? null : n > 0 ? string.Format(T("이 맵 {0}개", "{0} in this level"), n) : T("이 맵에 없음", "none here");
+                    if (Option("fxoff_" + k.Event, ref v, T(k.Ko + " 끄기", "Turn off " + k.En.ToLowerInvariant()), T("이 효과를 시작하지 않습니다.", "This effect is not started."), tag))
+                    {
+                        k.Off = v; ch = true;
+                        var list = new List<string>();
+                        foreach (var q in PlayTweaks.Kinds) if (q.Off) list.Add(q.Event);
+                        c.EffectsOff = string.Join(",", list.ToArray());
+                    }
+                }
+                EndGroup();
+                if (!have) P(T("맵을 열면 효과마다 이 맵에 몇 개 있는지 나옵니다.", "Open a level to see how many of each effect it has."), sDim);
+            }
+            else
+            {
+                SubHeading(T("판정 글자", "Judgment text"), T("플레이 중 타일 위에 뜨는 판정 글자(완벽, 빠름, 느림…)를 숨깁니다. 판정 자체와 정확도 기록은 그대로입니다.",
+                    "Hides the judgment text over the tiles (Perfect, Early, Late...). Judgment and accuracy are unchanged."));
+                BeginGroup();
+                ch |= Option("hidejudgeall", ref c.HideJudgeAll, T("판정 글자 전부 숨기기", "Hide all judgment text"), T("모든 판정 글자를 띄우지 않습니다.", "Shows no judgment text."), null);
+                ch |= Option("hidejudgeperfect", ref c.HideJudgePerfect, T("완벽 판정만 숨기기", "Hide Perfect only"), T("완벽 판정 글자만 띄우지 않고, 나머지(빠름, 느림, 놓침…)는 그대로 띄웁니다.", "Hides only Perfect; Early, Late, Miss and the rest still show."), null);
+                EndGroup();
+                SubHeading(T("조작", "Input"), T("플레이 중 실수로 화면이 바뀌지 않게 합니다.", "Keeps the view from changing by accident during play."));
+                BeginGroup();
+                ch |= Option("noplayzoom", ref c.NoPlayZoom, T("플레이 중 마우스 휠 확대 막기", "No mouse-wheel zoom while playing"),
+                    T("에디터에서 재생하는 동안 마우스 휠을 굴려도 화면 크기가 바뀌지 않습니다. 편집할 때는 그대로 확대·축소됩니다.", "While playing from the editor, the mouse wheel no longer zooms. Zooming while editing still works."), null);
+                EndGroup();
+            }
+            if (ch) Save();
         }
 
         private void PageAbout()
