@@ -666,10 +666,10 @@ namespace StutterFix
             TitleOf(h);   // 알림 제목은 한 번만 만든다
             // 원인 분류가 무엇을 보고 정했는지 남긴다. 플레이어용도 40ms 넘는 것만 한 번 실행에 300줄까지 남긴다
             // (문제 보고용 로그 파일로 원인을 볼 수 있게).
-            bool logIt = Edition.Dev || (ms >= 40f && ++playerLogLines <= 300);
+            bool logIt = Edition.Dev || (ms >= (Main.AutoTestBuild ? 20f : 40f) && ++playerLogLines <= 300);   // 측정용 빌드는 20ms 부터
             if (logIt)
-                Main.Entry.Logger.Log(string.Format("[모니터] {0:F0}ms -> {1} / gpu {2:F1} cpu {3:F1} (수집 {4}번) 효과 {5:F1} 모드 {6:F1}({7}) gc {8}" + (p.SongT >= 0 ? " | 곡 {9:F1}초, 다시 보이게 된 장식 {10}개" : ""),
-                    ms, h.Cause, gpu, cpuMain, timingSamples, fx, mod, modWhat, gcDelta, p.SongT, p.Shown));
+                Main.Entry.Logger.Log(string.Format("[모니터] {0:F0}ms -> {1} / gpu {2:F1} cpu {3:F1} (수집 {4}번) 효과 {5:F1} 모드 {6:F1}({7}) gc {8}" + (p.SongT >= 0 ? " | 곡 {9:F1}초, 다시 보이게 된 장식 {10}개" : "") + " | 시각 {11}",
+                    ms, h.Cause, gpu, cpuMain, timingSamples, fx, mod, modWhat, gcDelta, p.SongT, p.Shown, DateTime.Now.ToString("HH:mm:ss.fff")));
             if (logIt && gpu > ms * 0.7f)
                 Main.Entry.Logger.Log("[모니터]   직전 필터 변화 (6프레임): " + FilterTrace.Recent(p.Frame, 6)
                     + string.Format(" | VRAM 전체 {0:F0}/{1}MB, 게임 전용 {2:F0}MB, 게임 공유(시스템 RAM) {3:F0}MB",

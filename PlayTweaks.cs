@@ -34,6 +34,9 @@ namespace StutterFix
         };
 
         internal static bool HideJudgeAll, HideJudgePerfect, NoPlayZoom;
+        // 필터 하나씩 끄기: "SetFilter:<Filter 이름>" / "SetFilterAdvanced:<필터 클래스 이름>"
+        internal static readonly HashSet<string> FiltersOff = new HashSet<string>();
+        internal static long FilterOffs;
         internal static long Skipped, HiddenJudge, BlockedZoom;
         private static readonly Dictionary<MethodBase, Kind> byMethod = new Dictionary<MethodBase, Kind>();
 
@@ -49,6 +52,9 @@ namespace StutterFix
                     if (m == null) { Main.Entry.Logger.Log("[연출 끄기] " + k.Ko + ": 효과 함수 없음"); continue; }
                     h.Patch(m, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(EffectPrefix)) { priority = Priority.First });
                     byMethod[m] = k; n++;
+                    // 필터는 효과를 통째로 건너뛰지 않고(다른 필터 끄기 등은 그대로), 돈 직후에 꺼 둔 필터만 끈다
+                    if (k.Event == "SetFilter") h.Patch(m, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(FilterPostfix)) { priority = Priority.Last });
+                    if (k.Event == "SetFilterAdvanced") h.Patch(m, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(AdvFilterPostfix)) { priority = Priority.Last });
                 }
                 catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] " + k.Ko + " 설치 실패: " + ex.Message); }
             }
@@ -68,6 +74,74 @@ namespace StutterFix
             Kind k;
             if (byMethod.TryGetValue(__originalMethod, out k) && k.Off) { Skipped++; return false; }
             return true;
+        }
+
+        // 일반 필터: 그 필터의 애니메이션(매 프레임 필터를 다시 켠다)을 멈추고 컴포넌트를 끈다
+        private static System.Reflection.PropertyInfo compsProp, tweensProp;
+        public static void FilterPostfix(ffxSetFilterPlus __instance)
+        {
+            if (FiltersOff.Count == 0 || __instance == null || !FiltersOff.Contains("SetFilter:" + __instance.filter)) return;
+            try
+            {
+                if (compsProp == null) { compsProp = AccessTools.Property(typeof(ffxSetFilterPlus), "filterToComp"); tweensProp = AccessTools.Property(typeof(ffxSetFilterPlus), "filterTween"); }
+                var tweens = tweensProp.GetValue(__instance, null) as Dictionary<Filter, DG.Tweening.Tween>;
+                DG.Tweening.Tween tw;
+                if (tweens != null && tweens.TryGetValue(__instance.filter, out tw)) { DG.Tweening.TweenExtensions.Kill(tw, false); tweens.Remove(__instance.filter); }
+                var comps = compsProp.GetValue(__instance, null) as Dictionary<Filter, MonoBehaviour>;
+                MonoBehaviour c;
+                if (comps != null && comps.TryGetValue(__instance.filter, out c) && c != null) c.enabled = false;
+                FilterOffs++;
+            }
+            catch { }
+        }
+
+        // 고급 필터: 효과 끝에서 켠 그 필터 컴포넌트를 끈다 (뒤따르는 애니메이션은 필드 값만 바꾼다)
+        private static readonly AccessTools.FieldRef<ffxSetFilterAdvancedPlus, Dictionary<GameObject, MonoBehaviour>> advComps =
+            AccessTools.FieldRefAccess<ffxSetFilterAdvancedPlus, Dictionary<GameObject, MonoBehaviour>>("filterMonoBehaviours");
+        public static void AdvFilterPostfix(ffxSetFilterAdvancedPlus __instance)
+        {
+            if (FiltersOff.Count == 0 || __instance == null || __instance.filterName == null || !FiltersOff.Contains("SetFilterAdvanced:" + __instance.filterName)) return;
+            try
+            {
+                var comps = advComps(__instance);
+                if (comps != null) foreach (var c in comps.Values) if (c != null) c.enabled = false;
+                FilterOffs++;
+            }
+            catch { }
+        }
+
+        // 지금 맵의 필터 종류별 개수 (키, 보여 줄 이름, 개수)
+        private static object filtersFor;
+        private static readonly List<KeyValuePair<string, int>> filterList = new List<KeyValuePair<string, int>>();
+        internal static List<KeyValuePair<string, int>> FiltersInLevel()
+        {
+            var ld = scnGame.instance != null ? scnGame.instance.levelData : null;
+            if (!ReferenceEquals(ld, filtersFor))
+            {
+                filtersFor = ld; filterList.Clear();
+                var d = new Dictionary<string, int>();
+                if (ld != null && ld.levelEvents != null)
+                    foreach (var ev in ld.levelEvents)
+                    {
+                        if (ev == null) continue;
+                        string t = ev.eventType.ToString();
+                        if (t != "SetFilter" && t != "SetFilterAdvanced") continue;
+                        object f = null; try { f = ev["filter"]; } catch { }
+                        if (f == null) continue;
+                        string key = t + ":" + f;
+                        int c; d.TryGetValue(key, out c); d[key] = c + 1;
+                    }
+                filterList.AddRange(d);
+                filterList.Sort((a, b) => b.Value.CompareTo(a.Value));
+            }
+            return filterList;
+        }
+        internal static string FilterLabel(string key)
+        {
+            int i = key.IndexOf(':');
+            string name = i >= 0 ? key.Substring(i + 1) : key;
+            if (name.StartsWith("CameraFilterPack_")) name = name.Substring(17);
+            return (key.StartsWith("SetFilterAdvanced:") ? "[고급] " : "") + name.Replace('_', ' ');
         }
 
         public static bool HitTextPrefix(HitMargin hitMargin)

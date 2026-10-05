@@ -1170,7 +1170,7 @@ namespace StutterFix
             if (p == 1) { icons = new[] { IcBolt, IcClock, IcEye, IcMove }; return new[] { T("기본", "Essentials"), T("미리 준비", "Warm-up"), T("그리기", "Rendering"), T("장식 이동", "Decoration moves") }; }
             if (p == 4) { icons = new[] { IcEye, IcTiles, IcBolt }; return new[] { T("표시", "Display"), T("항목", "Items"), T("끊김 알림", "Hitch alerts") }; }
             if (p == 5) { icons = new[] { IcTune, IcChip, IcTiles, IcCard, IcFlask }; return new[] { T("PC 맞춤", "PC fit"), T("컴퓨터", "System"), T("게임", "Game"), T("그래픽카드", "Graphics card"), T("실험", "Experimental") }; }
-            if (p == 6) { icons = new[] { IcEye, IcMove }; return new[] { T("맵 효과", "Level effects"), T("판정·조작", "Judgment & input") }; }
+            if (p == 6) { icons = new[] { IcEye, IcTiles, IcMove }; return new[] { T("맵 효과", "Level effects"), T("필터", "Filters"), T("판정·조작", "Judgment & input") }; }
             return null;
         }
         private int Sub() { return subSel[Mathf.Clamp(page, 0, 7)]; }
@@ -1753,6 +1753,35 @@ namespace StutterFix
                 }
                 EndGroup();
                 if (!have) P(T("맵을 열면 효과마다 이 맵에 몇 개 있는지 나옵니다.", "Open a level to see how many of each effect it has."), sDim);
+
+            }
+            else if (sub == 1)
+            {
+                bool have = PlayTweaks.HaveLevel;
+                var fl = have ? PlayTweaks.FiltersInLevel() : null;
+                if (fl == null || fl.Count == 0)
+                {
+                    SubHeading(T("필터 하나씩", "Filters one by one"), have ? T("이 맵은 필터를 쓰지 않습니다.", "This level uses no filters.") : T("맵을 열면 이 맵이 쓰는 필터가 많이 쓰는 순서로 나옵니다.", "Open a level to list the filters it uses, most used first."));
+                }
+                if (fl != null && fl.Count > 0)
+                {
+                    SubHeading(T("필터 하나씩", "Filters one by one"),
+                        T("이 맵이 쓰는 필터를 하나씩 끌 수 있습니다. 그 필터만 켜지지 않고, 같은 효과의 다른 동작(다른 필터 끄기 등)은 그대로 합니다. 위에서 필터 전체를 끄면 이것과 상관없이 전부 꺼집니다.",
+                          "Turn off the filters this level uses one at a time. Only that filter stays off; the rest of the event (such as turning other filters off) still happens. Turning all filters off above overrides this."));
+                    BeginGroup();
+                    foreach (var kv in fl)
+                    {
+                        bool v = PlayTweaks.FiltersOff.Contains(kv.Key);
+                        if (Option("filteroff_" + kv.Key, ref v, PlayTweaks.FilterLabel(kv.Key), T("이 필터를 켜지 않습니다.", "This filter is never turned on."), string.Format(T("{0}번", "{0}x"), kv.Value)))
+                        {
+                            if (v) PlayTweaks.FiltersOff.Add(kv.Key); else PlayTweaks.FiltersOff.Remove(kv.Key);
+                            var arr = new List<string>(PlayTweaks.FiltersOff);
+                            c.FiltersOff = string.Join("|", arr.ToArray());
+                            ch = true;
+                        }
+                    }
+                    EndGroup();
+                }
             }
             else
             {
