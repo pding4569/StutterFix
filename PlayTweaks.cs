@@ -41,8 +41,8 @@ namespace StutterFix
                 NoteKo = "타일 색 바꾸기 효과를 하지 않고, 맵이 정한 타일 색·모양(무지개, 줄무늬, 네온 등)도 무시하고 기본 타일로 보여 줍니다. 다음 재생부터 적용됩니다.",
                 NoteEn = "Skips tile recolor effects and also ignores the level's tile colors and styles (rainbow, stripes, neon...), showing plain default tiles. Applies from the next play." },
             new Kind { Ko = "타일 나타나기·사라지기", En = "Tile appear/disappear", Event = "AnimateTrack", Class = "", Tiles = TileLook.Anim,
-                NoteKo = "타일이 앞에서 하나씩 나타나거나 지나간 뒤 사라지는 애니메이션을 하지 않고, 처음부터 타일을 다 보여 줍니다. 맵이 투명하게 숨겨 둔 타일도 보이게 합니다. 다음 재생부터 적용됩니다.",
-                NoteEn = "Skips tiles appearing ahead or vanishing behind, so all tiles are shown from the start. Tiles the level hides with zero opacity are shown too. Applies from the next play." },
+                NoteKo = "맵의 타일 나타나기·사라지기 연출 대신, 앞의 타일은 처음부터 다 보여 주고 밟고 지나간 타일은 바로 흐려져 사라지게 합니다(지나간 타일이 겹쳐 보이지 않게). 맵이 투명하게 숨겨 둔 타일도 보이게 합니다. 다음 재생부터 적용됩니다.",
+                NoteEn = "Replaces the level's tile appear/disappear effects: tiles ahead are all shown from the start and tiles you have passed fade out right away (so old tiles don't overlap). Tiles the level hides with zero opacity are shown too. Applies from the next play." },
             new Kind { Ko = "타일 이동", En = "Tile moves", Event = "MoveTrack", Class = "ffxMoveFloorPlus",
                 NoteKo = "타일이 움직이거나 나타나고 사라지는 효과를 하지 않습니다. 타일을 처음에 숨겨 두었다가 이 효과로 보여 주는 맵은 타일이 안 보일 수 있습니다.", NoteEn = "Skips tile moves, fades and appearances. Levels that hide tiles at first and reveal them with this effect may show no tiles." },
             new Kind { Ko = "배경", En = "Background", Event = "CustomBackground", Class = "ffxCustomBackgroundPlus", Tiles = TileLook.Background,
@@ -153,7 +153,8 @@ namespace StutterFix
             if (LookOff(TileLook.Anim))
             {
                 __instance.animationType = TrackAnimationType.None;
-                __instance.animationType2 = TrackAnimationType2.None;
+                __instance.animationType2 = TrackAnimationType2.Fade;   // 지나간 타일은 바로 흐려져 사라진다 (겹쳐 보이지 않게)
+                __instance.tilesBehind = 0f;
                 if (f.opacityVal != 1f) { f.opacityVal = 1f; f.SetOpacity(1f); }
             }
         }
