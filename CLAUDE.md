@@ -10,7 +10,7 @@
 | 게임 DLL (참조) | `D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed` |
 | 설치 위치 | `D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\` |
 | 로그 | `%USERPROFILE%\AppData\LocalLow\7th Beat Games\A Dance of Fire and Ice\Player.log` (`[StutterFix]` 접두어) |
-| IL 스캐너 | `%TEMP%\ilscan` (.NET 8, System.Reflection.Metadata) |
+| IL 스캐너 | `tools/ilscan` (.NET 8, System.Reflection.Metadata). 예전 `%TEMP%\ilscan` 은 윈도우 임시 파일 정리에 지워졌다(2026-10-01 무렵) |
 | 원격 | GitHub `pding4569/StutterFix` |
 
 Unity 6000.3.10f1, Mono, UMM 0.32.5, HarmonyLib, DOTween. 모드 대상은 netstandard2.1.
@@ -28,12 +28,12 @@ Unity 6000.3.10f1, Mono, UMM 0.32.5, HarmonyLib, DOTween. 모드 대상은 netst
 ## IL 스캐너 (디컴파일러 대신)
 
 ```bash
-cd %TEMP%/ilscan
-bin/Debug/net8.0/ILScan.exe <dll> <호출이름>          # 그 이름을 부르는 곳 전부
-TYPES=scrController bin/Debug/net8.0/ILScan.exe <dll> ZZZ   # 타입의 필드/메서드 목록
-METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드별 호출/정적필드 목록
+cd tools/ilscan && dotnet build -c Release            # 처음 한 번
+bin/Release/net8.0/ILScan.exe <dll> <호출이름>          # 그 이름을 부르는 곳 전부
+TYPES=scrController bin/Release/net8.0/ILScan.exe <dll> ZZZ   # 타입의 필드/메서드(서명) 목록
+METHOD=scrCamera bin/Release/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드별 호출/정적필드 목록
 ```
-인스턴스 필드(ldfld)는 안 나온다. 제네릭 호출은 `제네릭 X::Y` 로 풀린다.
+인스턴스 필드(ldfld)는 `FIELDS=1` 일 때만 나온다. 디컴파일 결과(스크래치패드)도 %TEMP% 아래라 지워질 수 있다. 제네릭 호출은 `제네릭 X::Y` 로 풀린다.
 
 ## 확정된 원인과 해결 (측정값)
 
