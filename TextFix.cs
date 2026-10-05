@@ -52,7 +52,11 @@ namespace StutterFix
         // 글꼴을 바꾼 뒤 Setup 이 같은 글자로 SetText 를 불러 테두리 크기를 새 글꼴로 다시 잰다. 그걸 막으면 테두리가 옛 크기로 남는다.
         public static bool SetTextPrefix(scrTextDecoration __instance, string __0)
         {
-            if (!SkipSameText || !Hitch.Playing) return true;
+            // 지워진 글자 장식: 장면이 바뀐 직후 PACL2 가 지난 장면의 글자 장식 목록으로 몇 프레임 더 부른다.
+            // 원래 코드는 StartCoroutine 에서 ArgumentNullException 을 던질 뿐이라 건너뛰어도 결과는 같다.
+            if (!SkipSameText) return true;
+            if (__instance == null) return false;
+            if (!Hitch.Playing) return true;
             try
             {
                 var t = textRef(__instance);
