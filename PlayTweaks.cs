@@ -19,6 +19,7 @@ namespace StutterFix
             public string Ko, En, Event, Class;   // Class: 효과 클래스 (여럿이면 쉼표로)
             public string NoteKo, NoteEn;          // 설명 (없으면 "이 효과를 시작하지 않습니다")
             public bool Deco;                      // 장식을 움직이는 효과: 히트박스 장식을 건드리면 그대로 둔다
+            public TileLook Tiles;                 // 효과 말고도 맵의 바탕 설정까지 바꾸는 것
             public bool Off;
             public bool OffNow { get { return Off || NoFx; } }
         }
@@ -29,14 +30,24 @@ namespace StutterFix
         internal static bool DecoOff { get { return DecoKind != null && DecoKind.OffNow; } }
         internal static long DecoNotMade, DecoHidden;
 
+        internal enum TileLook { None, Color, Anim, Background }
+        private static bool LookOff(TileLook t) { foreach (var k in Kinds) if (k.Tiles == t) return k.OffNow; return false; }
+
         internal static readonly Kind[] Kinds =
         {
             new Kind { Ko = "카메라 이동", En = "Camera moves", Event = "MoveCamera", Class = "ffxCameraPlus",
                 NoteKo = "맵 시작 때의 카메라 설정은 그대로 두고, 그 뒤 카메라 움직임(이동·회전·확대)만 하지 않습니다.", NoteEn = "Keeps the level's starting camera and skips later camera moves (position, rotation, zoom)." },
-            new Kind { Ko = "타일 색 바꾸기", En = "Tile recolor", Event = "RecolorTrack", Class = "ffxRecolorFloorPlus" },
+            new Kind { Ko = "타일 색 바꾸기", En = "Tile colors", Event = "RecolorTrack", Class = "ffxRecolorFloorPlus", Tiles = TileLook.Color,
+                NoteKo = "타일 색 바꾸기 효과를 하지 않고, 맵이 정한 타일 색·모양(무지개, 줄무늬, 네온 등)도 무시하고 기본 타일로 보여 줍니다. 다음 재생부터 적용됩니다.",
+                NoteEn = "Skips tile recolor effects and also ignores the level's tile colors and styles (rainbow, stripes, neon...), showing plain default tiles. Applies from the next play." },
+            new Kind { Ko = "타일 나타나기·사라지기", En = "Tile appear/disappear", Event = "AnimateTrack", Class = "", Tiles = TileLook.Anim,
+                NoteKo = "타일이 앞에서 하나씩 나타나거나 지나간 뒤 사라지는 애니메이션을 하지 않고, 처음부터 타일을 다 보여 줍니다. 맵이 투명하게 숨겨 둔 타일도 보이게 합니다. 다음 재생부터 적용됩니다.",
+                NoteEn = "Skips tiles appearing ahead or vanishing behind, so all tiles are shown from the start. Tiles the level hides with zero opacity are shown too. Applies from the next play." },
             new Kind { Ko = "타일 이동", En = "Tile moves", Event = "MoveTrack", Class = "ffxMoveFloorPlus",
                 NoteKo = "타일이 움직이거나 나타나고 사라지는 효과를 하지 않습니다. 타일을 처음에 숨겨 두었다가 이 효과로 보여 주는 맵은 타일이 안 보일 수 있습니다.", NoteEn = "Skips tile moves, fades and appearances. Levels that hide tiles at first and reveal them with this effect may show no tiles." },
-            new Kind { Ko = "배경 바꾸기", En = "Background changes", Event = "CustomBackground", Class = "ffxCustomBackgroundPlus" },
+            new Kind { Ko = "배경", En = "Background", Event = "CustomBackground", Class = "ffxCustomBackgroundPlus", Tiles = TileLook.Background,
+                NoteKo = "배경 바꾸기 효과를 하지 않고 배경을 검정으로 둡니다(맵의 배경 이미지·영상·기본 배경 무늬 숨김). 영상은 다음 맵 열기부터, 나머지는 다음 재생부터 적용됩니다.",
+                NoteEn = "Skips background changes and keeps the background black (hides the level's background image, video and default pattern). Video applies from the next open, the rest from the next play." },
             new Kind { Ko = "행성 크기", En = "Planet scale", Event = "ScalePlanets", Class = "ffxScalePlanetsPlus" },
             new Kind { Ko = "장식", En = "Decorations", Event = "Decorations", Class = "ffxMoveDecorationsPlus,ffxSetTextPlus,ffxSetObjectPlus,ffxEmitParticlePlus,ffxSetParticlePlus", Deco = true,
                 NoteKo = "장식(이미지·글자·파티클·오브젝트)을 숨기고 장식 이동·글자 바꾸기·파티클 효과를 하지 않습니다. 히트박스 장식(닿으면 죽거나 이벤트가 일어나는 것)은 플레이에 필요해서 그대로 둡니다. 게임 화면으로 열면 장식을 아예 만들지 않아 맵이 빨리 열리고, 에디터에서는 재생하는 동안만 숨깁니다. 다음에 맵을 열거나 재생할 때부터 적용됩니다.",
@@ -65,7 +76,7 @@ namespace StutterFix
             foreach (var k in Kinds)
             {
                 if (k.Deco) DecoKind = k;
-                foreach (var cls in k.Class.Split(','))
+                foreach (var cls in k.Class.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     try
                     {
@@ -99,6 +110,21 @@ namespace StutterFix
             catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 장식 설치 실패: " + ex.Message); }
             try
             {
+                // 타일 기본 모양·나타나기 없애기: 게임이 재생 준비 때 타일마다 부르는 ffxChangeTrack.PrepFloor 직전에 값을 바꾼다
+                var prep = AccessTools.Method(typeof(ffxChangeTrack), "PrepFloor");
+                if (prep != null) h.Patch(prep, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(PrepFloorPrefix)));
+                // 배경 검정
+                foreach (var name in new[] { "SetBackground", "SetStartingBG" })
+                {
+                    var m = AccessTools.Method(typeof(scnGame), name);
+                    if (m != null) h.Patch(m, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(BackgroundPostfix)));
+                }
+                var vid = AccessTools.Method(typeof(scnGame), "UpdateVideo");
+                if (vid != null) h.Patch(vid, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(VideoPostfix)));
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 타일·배경 설치 실패: " + ex.Message); }
+            try
+            {
                 var show = AccessTools.Method(AccessTools.TypeByName("scrHitTextManager"), "ShowHitText");
                 if (show != null) h.Patch(show, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(HitTextPrefix)) { priority = Priority.First });
                 var zoom = AccessTools.Method(typeof(scnEditor), "ZoomCamera");
@@ -109,6 +135,49 @@ namespace StutterFix
         }
 
         private static readonly Dictionary<MethodBase, FieldInfo> tagField = new Dictionary<MethodBase, FieldInfo>();
+
+        private static readonly Color PlainTile = new Color32(0xDE, 0xBB, 0x7B, 0xFF);   // 게임 기본 타일 색
+        public static void PrepFloorPrefix(ffxChangeTrack __instance)
+        {
+            var f = __instance != null ? __instance.floor : null;
+            if (f == null) return;
+            if (LookOff(TileLook.Color))
+            {
+                __instance.color1 = __instance.color2 = PlainTile;
+                __instance.colorType = TrackColorType.Single;
+                __instance.pulseType = TrackColorPulse.None;
+                __instance.texture = null;
+                f.styleNum = 0;
+                f.SetTrackStyle(TrackStyle.Standard, true);
+            }
+            if (LookOff(TileLook.Anim))
+            {
+                __instance.animationType = TrackAnimationType.None;
+                __instance.animationType2 = TrackAnimationType2.None;
+                if (f.opacityVal != 1f) { f.opacityVal = 1f; f.SetOpacity(1f); }
+            }
+        }
+
+        public static void BackgroundPostfix(scnGame __instance)
+        {
+            if (!LookOff(TileLook.Background) || __instance == null) return;
+            try
+            {
+                var cam = scrCamera.instance;
+                if (cam != null && cam.Bgcamstatic != null) cam.Bgcamstatic.backgroundColor = Color.black;
+                if (__instance.custBG != null) __instance.custBG.SetCustomBG(null, Color.white);   // 원래 그림(baseSprite)은 두어 끄면 다음 재생에 돌아온다
+                __instance.ShowTutorialBackground(false);
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 배경 끄기 실패: " + ex.Message); }
+        }
+        private static FieldInfo videoField;
+        public static void VideoPostfix(scnGame __instance)
+        {
+            if (!LookOff(TileLook.Background) || __instance == null) return;
+            if (videoField == null) videoField = AccessTools.Field(typeof(scnGame), "videoBG");   // VideoModule 참조 없이
+            var vb = videoField != null ? videoField.GetValue(__instance) as Component : null;
+            if (vb != null) vb.gameObject.SetActive(false);   // 게임은 videoBG 가 꺼져 있으면 재생하지 않는다 (scrVfxPlus)
+        }
 
         // 맵 이벤트로 만든 효과만 건너뛴다 (맵 시작 카메라처럼 게임이 이벤트 없이 만든 것은 그대로)
         public static bool EffectPrefix(ffxPlusBase __instance, MethodBase __originalMethod)
@@ -265,14 +334,16 @@ namespace StutterFix
         }
 
         // 지금 맵의 필터 종류별 개수 (키, 보여 줄 이름, 개수)
-        private static object filtersFor;
+        private static object filtersFor, filtersEvs; private static int filtersN = -2;
         private static readonly List<KeyValuePair<string, int>> filterList = new List<KeyValuePair<string, int>>();
         internal static List<KeyValuePair<string, int>> FiltersInLevel()
         {
             var ld = scnGame.instance != null ? scnGame.instance.levelData : null;
-            if (!ReferenceEquals(ld, filtersFor))
+            var evs = ld != null ? ld.levelEvents : null;   // 맵을 불러오는 중에 세면 같은 levelData 로 빈 목록이 남았다: 목록과 개수도 본다
+            int evn = evs != null ? evs.Count : -1;
+            if (!ReferenceEquals(ld, filtersFor) || !ReferenceEquals(evs, filtersEvs) || evn != filtersN)
             {
-                filtersFor = ld; filterList.Clear();
+                filtersFor = ld; filtersEvs = evs; filtersN = evn; filterList.Clear();
                 var d = new Dictionary<string, int>();
                 if (ld != null && ld.levelEvents != null)
                     foreach (var ev in ld.levelEvents)
@@ -354,14 +425,16 @@ namespace StutterFix
         }
 
         // 지금 맵에 효과가 종류별로 몇 개 있는지 (설정 창이 맵이 바뀔 때만 다시 센다)
-        private static object countedFor;
+        private static object countedFor, countedEvs; private static int countedN = -2;
         private static readonly Dictionary<string, int> counts = new Dictionary<string, int>();
         internal static int CountIn(string eventName)
         {
             var ld = scnGame.instance != null ? scnGame.instance.levelData : null;
-            if (!ReferenceEquals(ld, countedFor))
+            var cevs = ld != null ? ld.levelEvents : null;
+            int cn = cevs != null ? cevs.Count : -1;
+            if (!ReferenceEquals(ld, countedFor) || !ReferenceEquals(cevs, countedEvs) || cn != countedN)
             {
-                countedFor = ld; counts.Clear();
+                countedFor = ld; countedEvs = cevs; countedN = cn; counts.Clear();
                 if (ld != null && ld.levelEvents != null)
                     foreach (var ev in ld.levelEvents)
                     {

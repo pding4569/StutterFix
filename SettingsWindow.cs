@@ -1726,6 +1726,8 @@ namespace StutterFix
             GUILayout.EndVertical();
         }
 
+        private int filterKindSel;        // 필터 탭: 0 일반 / 1 고급
+        private string filterGroupSel;    // 필터 탭: 고른 종류
         private void PageEffects()
         {
             var c = Main.Config;
@@ -1790,13 +1792,42 @@ namespace StutterFix
                     }
                     groups.Sort((a, b) => gtotal[b.Key].CompareTo(gtotal[a.Key]));
                     bool changed = false;
-                    foreach (var g in groups)
+                    // 일반 / 고급 나누고, 왼쪽에 종류 목록 · 오른쪽에 고른 종류의 필터
+                    var normal = groups.FindAll(x => x.Key.StartsWith("N:"));
+                    var adv = groups.FindAll(x => x.Key.StartsWith("A:"));
+                    int nN = 0, nA = 0; foreach (var g in normal) nN += g.Value.Count; foreach (var g in adv) nA += g.Value.Count;
+                    if (normal.Count == 0) filterKindSel = 1; else if (adv.Count == 0) filterKindSel = 0;
+                    if (normal.Count > 0 && adv.Count > 0)
                     {
-                        GUILayout.Space(10);
-                        bool allOff = g.Value.TrueForAll(x => PlayTweaks.FiltersOff.Contains(x.Key));
-                        bool gv = allOff;
+                        if (Segment("filterkind", ref filterKindSel, new[] { string.Format(T("일반 필터 {0}종", "Filters ({0})"), nN), string.Format(T("고급 필터 {0}종", "Advanced ({0})"), nA) })) { filterGroupSel = null; scroll = Vector2.zero; }
+                        GUILayout.Space(14);
+                    }
+                    var list = filterKindSel == 0 ? normal : adv;
+                    if (filterGroupSel == null || !list.Exists(x => x.Key == filterGroupSel)) filterGroupSel = list.Count > 0 ? list[0].Key : null;
+                    GUILayout.BeginHorizontal();
+                    GUILayout.BeginVertical(GUILayout.Width(176));
+                    var ev = Event.current;
+                    foreach (var g in list)
+                    {
+                        var r = GUILayoutUtility.GetRect(176, 36, GUILayout.Width(176), GUILayout.Height(36));
+                        GUILayout.Space(2);
+                        bool on = g.Key == filterGroupSel, hov = !on && r.Contains(ev.mousePosition);
+                        if (on) Fill(r, Surface2, 8); else if (hov) Fill(r, Soft, 8);
+                        int off = g.Value.FindAll(x => PlayTweaks.FiltersOff.Contains(x.Key)).Count;
+                        string right = off == 0 ? string.Format(T("{0}종", "{0}"), g.Value.Count) : off == g.Value.Count ? T("다 끔", "all off") : string.Format(T("{0}/{1} 끔", "{0}/{1} off"), off, g.Value.Count);
+                        GUI.Label(new Rect(r.x + 12, r.y, r.width - 70, r.height), gname[g.Key].Replace(T("고급 · ", "Advanced · "), ""), on ? sRailOn : sRail);
+                        GUI.Label(new Rect(r.xMax - 80, r.y + (r.height - 18f) * 0.5f, 70, 18), right, sSmallRight);
+                        if (ev.type == EventType.MouseDown && ev.button == 0 && r.Contains(ev.mousePosition)) { ev.Use(); filterGroupSel = g.Key; }
+                    }
+                    GUILayout.EndVertical();
+                    GUILayout.Space(18);
+                    GUILayout.BeginVertical();
+                    foreach (var g in list)
+                    {
+                        if (g.Key != filterGroupSel) continue;
+                        bool gv = g.Value.TrueForAll(x => PlayTweaks.FiltersOff.Contains(x.Key));
                         BeginGroup();
-                        if (Option("filtergroup_" + g.Key, ref gv, gname[g.Key], string.Format(T("이 묶음 {0}종을 한 번에 끕니다.", "Turns off all {0} filters in this group."), g.Value.Count), string.Format(T("{0}번", "{0}x"), gtotal[g.Key])))
+                        if (Option("filtergroup_" + g.Key, ref gv, string.Format(T("{0} 전부 끄기", "Turn off all {0}"), gname[g.Key]), string.Format(T("이 종류 {0}종을 한 번에 끕니다.", "Turns off all {0} filters of this kind."), g.Value.Count), string.Format(T("{0}번", "{0}x"), gtotal[g.Key])))
                         {
                             foreach (var x in g.Value) { if (gv) PlayTweaks.FiltersOff.Add(x.Key); else PlayTweaks.FiltersOff.Remove(x.Key); }
                             changed = true;
@@ -1812,6 +1843,8 @@ namespace StutterFix
                         }
                         EndGroup();
                     }
+                    GUILayout.EndVertical();
+                    GUILayout.EndHorizontal();
                     if (changed)
                     {
                         var arr = new List<string>(PlayTweaks.FiltersOff);
