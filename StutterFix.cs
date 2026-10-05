@@ -591,6 +591,7 @@ namespace StutterFix
                 foreach (var k in PlayTweaks.Kinds) k.Off = off.Contains(k.Event);
                 PlayTweaks.FiltersOff.Clear();
                 foreach (var f in (Config.FiltersOff ?? "").Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)) PlayTweaks.FiltersOff.Add(f);
+                PlayTweaks.NoFx = Config.NoFx;
                 PlayTweaks.HideJudgeAll = Config.HideJudgeAll; PlayTweaks.HideJudgePerfect = Config.HideJudgePerfect; PlayTweaks.NoPlayZoom = Config.NoPlayZoom;
             }
             ZeroTween.Enabled = E("ZeroTween", Config.ZeroTween);
@@ -833,6 +834,7 @@ namespace StutterFix
         public bool HitTextFade = true;    // 판정 글자가 투명해질 때 메시 전체 대신 정점 색만 바꾸기
         // 연출 끄기 (기본 꺼짐: 켜면 화면이 달라진다)
         public string EffectsOff = "";     // 끌 효과 이벤트 이름들 (쉼표로)
+        public bool NoFx = false;          // 노이펙 모드: 맵 효과 전부 + 장식 끄기 (히트박스 장식은 그대로)
         public string FiltersOff = "";     // 하나씩 끈 필터 ("SetFilter:이름" / "SetFilterAdvanced:클래스", | 로)
         public bool HideJudgeAll = false;
         public bool HideJudgePerfect = false;

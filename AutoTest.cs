@@ -869,6 +869,25 @@ namespace StutterFix
                     watchStart = -1;
                     return true;
                 }
+                case "decostate":
+                {
+                    // decostate: 장식 보이기 상태 세기 (꺼진 오브젝트 / 꺼진 렌더러 / 그리기 꺼짐 / 투명)
+                    var mgr = scrDecorationManager.instance;
+                    if (mgr == null) { Log("decostate: 장식 관리자 없음"); return true; }
+                    int total = 0, inactive = 0, rOff = 0, force = 0, clear = 0, vis = 0;
+                    foreach (var d in mgr.allDecorations)
+                    {
+                        if (d == null) continue;
+                        total++;
+                        if (!d.gameObject.activeInHierarchy) { inactive++; continue; }
+                        var v = d as scrVisualDecoration;
+                        if (v == null || v.spriteRenderer == null) continue;
+                        var r = v.spriteRenderer;
+                        if (!r.enabled) rOff++; else if (r.forceRenderingOff) force++; else if (r.color.a <= 0f) clear++; else vis++;
+                    }
+                    Log(string.Format("decostate: 장식 {0}개, 꺼진 오브젝트 {1}, 꺼진 렌더러 {2}, 그리기 꺼짐 {3}, 투명 {4}, 보임 {5}", total, inactive, rOff, force, clear, vis));
+                    return true;
+                }
                 case "decoaudit":
                 {
                     // decoaudit: 이미지가 지정된 장식 중 그림(스프라이트)이 비어 있는 것을 센다 (파일 없음 / 깨진 파일 / 파일은 정상인데 빠짐)

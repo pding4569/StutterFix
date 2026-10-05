@@ -1733,6 +1733,12 @@ namespace StutterFix
             bool ch = false;
             if (sub == 0)
             {
+                BeginGroup();
+                if (Option("nofx", ref c.NoFx, T("노이펙 모드", "No-effects mode"),
+                    T("아래 맵 효과를 전부 끄고 장식도 숨깁니다. 타일과 행성, 판정은 그대로라 맵의 박자만 보며 칠 수 있습니다. 히트박스 장식(닿으면 죽거나 이벤트가 일어나는 것)은 플레이에 필요해서 남깁니다. 게임 화면으로 열면 장식을 아예 만들지 않아 맵이 빨리 열립니다. 이미 켜진 효과는 다음 다시 하기부터, 장식은 다음 재생(게임 화면은 다음 맵 열기)부터 적용됩니다.",
+                      "Turns off every level effect below and hides decorations. Tiles, planets and judgment stay, so you play to the rhythm alone. Hitbox decorations (that kill or trigger events) stay, since play needs them. Opened in the game screen, decorations are not created at all so the level opens faster. Effects already on stop from the next retry; decorations from the next play (or next open in the game screen)."), null))
+                    ch = true;
+                EndGroup();
                 SubHeading(T("맵 효과", "Level effects"),
                     T("고른 효과를 시작하지 않습니다. 켜면 맵이 원래와 다르게 보이므로 전부 기본으로 꺼져 있습니다. 이미 켜져 있는 효과는 다음 다시 하기부터 사라집니다.",
                       "Skips the chosen effects. Levels then look different from the original, so everything is off by default. Effects already on disappear from the next retry."));
@@ -1740,10 +1746,14 @@ namespace StutterFix
                 bool have = PlayTweaks.HaveLevel;
                 foreach (var k in PlayTweaks.Kinds)
                 {
-                    bool v = k.Off;
+                    bool v = k.OffNow;
                     int n = PlayTweaks.CountIn(k.Event);
-                    string tag = !have ? null : n > 0 ? string.Format(T("이 맵 {0}개", "{0} in this level"), n) : T("이 맵에 없음", "none here");
-                    if (Option("fxoff_" + k.Event, ref v, T(k.Ko + " 끄기", "Turn off " + k.En.ToLowerInvariant()), T("이 효과를 시작하지 않습니다.", "This effect is not started."), tag))
+                    string tag = c.NoFx ? T("노이펙 모드", "No-effects mode") : !have ? null : n > 0 ? string.Format(T("이 맵 {0}개", "{0} in this level"), n) : T("이 맵에 없음", "none here");
+                    var oldC = GUI.color;
+                    if (c.NoFx) GUI.color = new Color(oldC.r, oldC.g, oldC.b, oldC.a * 0.45f);
+                    bool hit = Option("fxoff_" + k.Event, ref v, T(k.Ko + " 끄기", "Turn off " + k.En.ToLowerInvariant()), k.NoteKo != null ? T(k.NoteKo, k.NoteEn) : T("이 효과를 시작하지 않습니다.", "This effect is not started."), tag, !c.NoFx);
+                    GUI.color = oldC;
+                    if (hit && !c.NoFx)
                     {
                         k.Off = v; ch = true;
                         var list = new List<string>();

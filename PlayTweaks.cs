@@ -16,12 +16,31 @@ namespace StutterFix
     {
         internal sealed class Kind
         {
-            public string Ko, En, Event, Class;
+            public string Ko, En, Event, Class;   // Class: 효과 클래스 (여럿이면 쉼표로)
+            public string NoteKo, NoteEn;          // 설명 (없으면 "이 효과를 시작하지 않습니다")
+            public bool Deco;                      // 장식을 움직이는 효과: 히트박스 장식을 건드리면 그대로 둔다
             public bool Off;
+            public bool OffNow { get { return Off || NoFx; } }
         }
+
+        // 노이펙 모드: 아래 효과를 전부 끄고 장식도 숨긴다(게임 화면은 아예 만들지 않음). 히트박스 장식은 플레이에 필요해 그대로.
+        internal static bool NoFx;
+        internal static Kind DecoKind;
+        internal static bool DecoOff { get { return DecoKind != null && DecoKind.OffNow; } }
+        internal static long DecoNotMade, DecoHidden;
 
         internal static readonly Kind[] Kinds =
         {
+            new Kind { Ko = "카메라 이동", En = "Camera moves", Event = "MoveCamera", Class = "ffxCameraPlus",
+                NoteKo = "맵 시작 때의 카메라 설정은 그대로 두고, 그 뒤 카메라 움직임(이동·회전·확대)만 하지 않습니다.", NoteEn = "Keeps the level's starting camera and skips later camera moves (position, rotation, zoom)." },
+            new Kind { Ko = "타일 색 바꾸기", En = "Tile recolor", Event = "RecolorTrack", Class = "ffxRecolorFloorPlus" },
+            new Kind { Ko = "타일 이동", En = "Tile moves", Event = "MoveTrack", Class = "ffxMoveFloorPlus",
+                NoteKo = "타일이 움직이거나 나타나고 사라지는 효과를 하지 않습니다. 타일을 처음에 숨겨 두었다가 이 효과로 보여 주는 맵은 타일이 안 보일 수 있습니다.", NoteEn = "Skips tile moves, fades and appearances. Levels that hide tiles at first and reveal them with this effect may show no tiles." },
+            new Kind { Ko = "배경 바꾸기", En = "Background changes", Event = "CustomBackground", Class = "ffxCustomBackgroundPlus" },
+            new Kind { Ko = "행성 크기", En = "Planet scale", Event = "ScalePlanets", Class = "ffxScalePlanetsPlus" },
+            new Kind { Ko = "장식", En = "Decorations", Event = "Decorations", Class = "ffxMoveDecorationsPlus,ffxSetTextPlus,ffxSetObjectPlus,ffxEmitParticlePlus,ffxSetParticlePlus", Deco = true,
+                NoteKo = "장식(이미지·글자·파티클·오브젝트)을 숨기고 장식 이동·글자 바꾸기·파티클 효과를 하지 않습니다. 히트박스 장식(닿으면 죽거나 이벤트가 일어나는 것)은 플레이에 필요해서 그대로 둡니다. 게임 화면으로 열면 장식을 아예 만들지 않아 맵이 빨리 열리고, 에디터에서는 재생하는 동안만 숨깁니다. 다음에 맵을 열거나 재생할 때부터 적용됩니다.",
+                NoteEn = "Hides decorations (images, text, particles, objects) and skips decoration moves, text changes and particle effects. Hitbox decorations (that kill or trigger events) stay, since play needs them. Opened in the game screen, decorations are not created at all so the level opens faster; in the editor they are hidden only while playing. Applies from the next open or play." },
             new Kind { Ko = "필터", En = "Filters", Event = "SetFilter", Class = "ffxSetFilterPlus" },
             new Kind { Ko = "고급 필터", En = "Advanced filters", Event = "SetFilterAdvanced", Class = "ffxSetFilterAdvancedPlus" },
             new Kind { Ko = "블룸", En = "Bloom", Event = "Bloom", Class = "ffxBloomPlus" },
@@ -45,19 +64,39 @@ namespace StutterFix
             int n = 0;
             foreach (var k in Kinds)
             {
-                try
+                if (k.Deco) DecoKind = k;
+                foreach (var cls in k.Class.Split(','))
                 {
-                    var t = AccessTools.TypeByName(k.Class);
-                    var m = t == null ? null : t.GetMethod("StartEffect", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, new[] { typeof(scrPlanet) }, null);   // StartEffect(scrPlanet) (부모의 StartEffect() 도 이걸 부른다)
-                    if (m == null) { Main.Entry.Logger.Log("[연출 끄기] " + k.Ko + ": 효과 함수 없음"); continue; }
-                    h.Patch(m, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(EffectPrefix)) { priority = Priority.First });
-                    byMethod[m] = k; n++;
-                    // 필터는 효과를 통째로 건너뛰지 않고(다른 필터 끄기 등은 그대로), 돈 직후에 꺼 둔 필터만 끈다
-                    if (k.Event == "SetFilter") h.Patch(m, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(FilterPostfix)) { priority = Priority.Last });
-                    if (k.Event == "SetFilterAdvanced") h.Patch(m, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(AdvFilterPostfix)) { priority = Priority.Last });
+                    try
+                    {
+                        var t = AccessTools.TypeByName(cls);
+                        var m = t == null ? null : t.GetMethod("StartEffect", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, new[] { typeof(scrPlanet) }, null);   // StartEffect(scrPlanet) (부모의 StartEffect() 도 이걸 부른다)
+                        if (m == null) { Main.Entry.Logger.Log("[연출 끄기] " + k.Ko + ": 효과 함수 없음 (" + cls + ")"); continue; }
+                        h.Patch(m, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(EffectPrefix)) { priority = Priority.First });
+                        byMethod[m] = k; n++;
+                        if (k.Deco) { var f = AccessTools.Field(t, "targetTags"); if (f != null) tagField[m] = f; }
+                        // 필터는 효과를 통째로 건너뛰지 않고(다른 필터 끄기 등은 그대로), 돈 직후에 꺼 둔 필터만 끈다
+                        if (k.Event == "SetFilter") h.Patch(m, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(FilterPostfix)) { priority = Priority.Last });
+                        if (k.Event == "SetFilterAdvanced") h.Patch(m, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(AdvFilterPostfix)) { priority = Priority.Last });
+                    }
+                    catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] " + k.Ko + " 설치 실패: " + ex.Message); }
                 }
-                catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] " + k.Ko + " 설치 실패: " + ex.Message); }
             }
+            try
+            {
+                // 장식: 게임 화면은 만들지 않고, 에디터는 재생 동안만 숨긴다 (에디터는 장식 목록 번호로 장식을 찾아서 빼면 안 된다)
+                var create = AccessTools.Method(typeof(scrDecorationManager), "CreateDecoration");
+                if (create != null) h.Patch(create, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(CreatePrefix)) { priority = Priority.First }, finalizer: new HarmonyMethod(typeof(PlayTweaks), nameof(CreateFinalizer)));
+                var sprite = AccessTools.Method(typeof(TextureManager), "GetOrAddSprite");
+                if (sprite != null) h.Patch(sprite, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(SpritePrefix)) { priority = Priority.First });
+                var play = AccessTools.Method(typeof(scnEditor), "Play", Type.EmptyTypes);
+                if (play != null) h.Patch(play, postfix: new HarmonyMethod(typeof(PlayTweaks), nameof(PlayPostfix)));
+                var upd = AccessTools.Method(typeof(scnGame), "UpdateDecorationObjects");
+                if (upd != null) h.Patch(upd, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(ResetDecoCount)), finalizer: new HarmonyMethod(typeof(PlayTweaks), nameof(DecoLoadDone)));
+                var sw = AccessTools.Method(typeof(scnEditor), "SwitchToEditMode");
+                if (sw != null) h.Patch(sw, prefix: new HarmonyMethod(typeof(PlayTweaks), nameof(UnhideDecorations)) { priority = Priority.First });
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 장식 설치 실패: " + ex.Message); }
             try
             {
                 var show = AccessTools.Method(AccessTools.TypeByName("scrHitTextManager"), "ShowHitText");
@@ -69,11 +108,116 @@ namespace StutterFix
             Main.Entry.Logger.Log("[연출 끄기] 설치 (효과 " + n + "종)");
         }
 
-        public static bool EffectPrefix(MethodBase __originalMethod)
+        private static readonly Dictionary<MethodBase, FieldInfo> tagField = new Dictionary<MethodBase, FieldInfo>();
+
+        // 맵 이벤트로 만든 효과만 건너뛴다 (맵 시작 카메라처럼 게임이 이벤트 없이 만든 것은 그대로)
+        public static bool EffectPrefix(ffxPlusBase __instance, MethodBase __originalMethod)
         {
             Kind k;
-            if (byMethod.TryGetValue(__originalMethod, out k) && k.Off) { Skipped++; return false; }
-            return true;
+            if (!byMethod.TryGetValue(__originalMethod, out k) || !k.OffNow) return true;
+            if (__instance == null || __instance.sourceLevelEvent == null) return true;
+            if (k.Deco && TouchesHitbox(__instance, __originalMethod)) return true;
+            Skipped++;
+            return false;
+        }
+
+        // 이 장식 효과가 히트박스 장식을 건드리는지 (그러면 플레이가 달라지므로 그대로 돌린다)
+        private static bool TouchesHitbox(ffxPlusBase fx, MethodBase m)
+        {
+            try
+            {
+                FieldInfo f;
+                if (!tagField.TryGetValue(m, out f)) return false;
+                var tags = f.GetValue(fx) as List<string>;
+                var mgr = scrDecorationManager.instance;
+                if (tags == null || mgr == null) return false;
+                foreach (var d in mgr.GetTaggedDecorations(tags)) if (d != null && d.useHitbox) return true;
+            }
+            catch { return true; }
+            return false;
+        }
+
+        private static bool HasHitbox(LevelEvent ev)
+        {
+            try { HitboxType hb; return ev != null && ev.TryGet<HitboxType>("hitbox", out hb) && hb != HitboxType.None; }
+            catch { return true; }
+        }
+
+        // 맵을 열 때 이 장식을 만들지 않을지 (게임 화면에서만. 이미지 미리 풀기도 이걸 보고 건너뛴다)
+        internal static bool SkipDecoAtLoad(LevelEvent ev)
+        {
+            return DecoOff && !ADOBase.isLevelEditor && !HasHitbox(ev);
+        }
+
+        // 게임 화면에서 장식을 안 만들 때는 장식 이동 효과가 바꿔 넣을 이미지도 미리 불러오지 않는다
+        // (UpdateDecorationObjects 끝의 MoveDecorations 이미지 불러오기. 장식 만들기 안에서 부른 것은 그대로)
+        internal static bool SkipMoveImagesAtLoad { get { return DecoOff && !ADOBase.isLevelEditor; } }
+        private static bool decoLoad;
+        private static int createDepth;
+        internal static long ImagesNotLoaded;
+        public static void ResetDecoCount(bool reloadDecorations)
+        {
+            if (reloadDecorations) { DecoNotMade = 0; ImagesNotLoaded = 0; }
+            decoLoad = reloadDecorations && SkipMoveImagesAtLoad; createDepth = 0;
+        }
+        public static Exception DecoLoadDone(Exception __exception, bool reloadDecorations)
+        {
+            decoLoad = false;
+            if (reloadDecorations && DecoOff)
+                Main.Entry.Logger.Log("[연출 끄기] " + (NoFx ? "노이펙: " : "") + (ADOBase.isLevelEditor ? "에디터라 장식은 재생 때 숨김"
+                    : "장식 " + DecoNotMade + "개 안 만듦 (히트박스 장식만 남김), 장식 이동용 이미지 " + ImagesNotLoaded + "개 안 불러옴"));
+            return __exception;
+        }
+        public static bool SpritePrefix(ref TextureManager.CustomSprite __result, ref LoadResult status)
+        {
+            if (!decoLoad || createDepth > 0) return true;
+            __result = null; status = LoadResult.Successful;
+            ImagesNotLoaded++;
+            return false;
+        }
+        public static Exception CreateFinalizer(Exception __exception, bool __runOriginal)
+        {
+            if (__runOriginal && createDepth > 0) createDepth--;
+            return __exception;
+        }
+
+        public static bool CreatePrefix(LevelEvent levelEvent, ref bool spritesLoaded)
+        {
+            if (!SkipDecoAtLoad(levelEvent)) { if (decoLoad) createDepth++; return true; }
+            spritesLoaded = false;
+            DecoNotMade++;
+            return false;
+        }
+
+        // 에디터: 재생을 시작하면 히트박스 없는 장식을 끄고, 편집으로 돌아갈 때 다시 켠다
+        private static readonly List<GameObject> hidden = new List<GameObject>();
+        private static readonly AccessTools.FieldRef<scrDecorationManager, List<scrDecoration>> allDecos =
+            AccessTools.FieldRefAccess<scrDecorationManager, List<scrDecoration>>("allDecorations");
+        public static void PlayPostfix()
+        {
+            if (!DecoOff) return;
+            try
+            {
+                var mgr = scrDecorationManager.instance;
+                var all = mgr != null ? allDecos(mgr) : null;
+                if (all == null) return;
+                foreach (var d in all)
+                {
+                    if (d == null || d.useHitbox) continue;
+                    var go = d.gameObject;
+                    if (!go.activeSelf) continue;
+                    go.SetActive(false);
+                    hidden.Add(go);
+                }
+                DecoHidden = hidden.Count;
+            }
+            catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 장식 숨기기 실패: " + ex.Message); }
+        }
+        public static void UnhideDecorations()
+        {
+            if (hidden.Count == 0) return;
+            foreach (var go in hidden) if (go != null) go.SetActive(true);
+            hidden.Clear();
         }
 
         // 일반 필터: 그 필터의 애니메이션(매 프레임 필터를 다시 켠다)을 멈추고 컴포넌트를 끈다
@@ -216,6 +360,7 @@ namespace StutterFix
                         int c; counts.TryGetValue(name, out c); counts[name] = c + 1;
                     }
             }
+            if (ld != null && eventName == "Decorations") return ld.decorations != null ? ld.decorations.Count : 0;
             int r; return ld == null ? -1 : counts.TryGetValue(eventName, out r) ? r : 0;
         }
         internal static bool HaveLevel { get { return scnGame.instance != null && scnGame.instance.levelData != null; } }
