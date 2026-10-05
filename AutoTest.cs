@@ -103,6 +103,26 @@ namespace StutterFix
 
         private static void Log(string s) { Main.Entry.Logger.Log("[자동 시험] " + s); }
 
+        private static object spamMgr; private static scrPlanet spamPlanet; private static System.Reflection.MethodInfo spamShow;
+        private static float spamStart, spamLast, spamMax; private static int spamOver, spamFrames, spamShown, spamSlowCalls;
+        private static double spamCallMs, spamCallMax; private static string spamCallMaxWhat = "";
+        private static readonly System.Random spamRng = new System.Random(7);
+        // scrHitTextManager 는 MonoBehaviour 가 아니라 컨트롤러·플레이어 관리자 필드에 들어 있다
+        private static object FindHitTextManager()
+        {
+            var t = AccessTools.TypeByName("scrHitTextManager");
+            if (t == null) return null;
+            foreach (var owner in new object[] { scrController.instance, UnityEngine.Object.FindObjectOfType<scrPlayerManager>() })
+            {
+                if (owner == null) continue;
+                foreach (var f in owner.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static))
+                    if (t.IsAssignableFrom(f.FieldType)) { var v = f.GetValue(f.IsStatic ? null : owner); if (v != null) return v; }
+                foreach (var pr in owner.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static))
+                    if (t.IsAssignableFrom(pr.PropertyType) && pr.GetIndexParameters().Length == 0) { try { var v = pr.GetValue(owner, null); if (v != null) return v; } catch { } }
+            }
+            return null;
+        }
+
         // 매 프레임 (OnUpdate)
         internal static void Tick()
         {
@@ -819,6 +839,39 @@ namespace StutterFix
                     string f = Path.Combine(dir, (arg.Length > 0 ? arg : "shot") + ".png");
                     ScreenCapture.CaptureScreenshot(f);
                     Log("화면 캡처: " + f);
+                    return true;
+                }
+                case "hitspam":
+                {
+                    // hitspam <초> <프레임당 개수>: 곡 중 판정 글자를 여러 종류로 띄운다(자동 플레이는 완벽만 나와 직접 플레이와 다르다). 끝나면 최악 프레임을 적는다
+                    var ps = arg.Split(' ');
+                    float dur = ps.Length > 0 && ps[0].Length > 0 ? float.Parse(ps[0], System.Globalization.CultureInfo.InvariantCulture) : 20f;
+                    int per = ps.Length > 1 ? int.Parse(ps[1]) : 3;
+                    if (spamMgr == null)
+                    {
+                        spamMgr = FindHitTextManager();
+                        spamPlanet = UnityEngine.Object.FindObjectOfType<scrPlanet>();
+                        spamStart = now; spamMax = 0; spamOver = 0; spamFrames = 0; spamLast = now; spamShown = 0;
+                        if (spamMgr == null || spamPlanet == null) { Log("hitspam: 판정 글자 관리자/행성 없음"); spamMgr = null; return true; }
+                        spamShow = AccessTools.Method(spamMgr.GetType(), "ShowHitText");
+                    }
+                    float dt = (now - spamLast) * 1000f; spamLast = now;
+                    if (spamFrames > 0) { if (dt > spamMax) spamMax = dt; if (dt > 15f) spamOver++; }
+                    spamFrames++;
+                    var margins = new[] { HitMargin.TooEarly, HitMargin.VeryEarly, HitMargin.EarlyPerfect, HitMargin.Perfect, HitMargin.LatePerfect, HitMargin.VeryLate, HitMargin.TooLate, HitMargin.Multipress, HitMargin.FailMiss, HitMargin.FailOverload, HitMargin.OverPress };
+                    for (int k = 0; k < per; k++)
+                    {
+                        var hm = margins[spamRng.Next(margins.Length)];
+                        long c0 = System.Diagnostics.Stopwatch.GetTimestamp();
+                        spamShow.Invoke(spamMgr, new object[] { hm, spamPlanet, (float)(spamRng.NextDouble() * 2 - 1) }); spamShown++;
+                        double cms = (System.Diagnostics.Stopwatch.GetTimestamp() - c0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+                        spamCallMs += cms; if (cms > spamCallMax) { spamCallMax = cms; spamCallMaxWhat = hm + " #" + spamShown; }
+                        if (cms > 5) spamSlowCalls++;
+                    }
+                    if (now - spamStart < dur) return false;
+                    Log(string.Format("hitspam {0:F0}초: 판정 글자 {1}개, 프레임 {2}개, 최악 {3:F1}ms, 15ms 넘은 프레임 {4}개 | 띄우기 호출 합계 {5:F0}ms, 가장 오래 {6:F1}ms ({7}), 5ms 넘은 호출 {8}번", dur, spamShown, spamFrames, spamMax, spamOver, spamCallMs, spamCallMax, spamCallMaxWhat, spamSlowCalls));
+                    spamCallMs = 0; spamCallMax = 0; spamSlowCalls = 0;
+                    spamMgr = null;
                     return true;
                 }
                 case "glassdump":

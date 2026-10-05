@@ -47,7 +47,7 @@ namespace StutterFix
                     }
                 }
             }
-            acc = new double[names.Count]; cnt = new int[names.Count];
+            acc = new double[names.Count]; cnt = new int[names.Count]; tot = new double[names.Count]; totN = new long[names.Count];
             // 지휘자 안쪽: 소리 예약(AudioManager.Play*)·박자 알림(PropagateOnBeat) 을 프레임마다 합쳐 잰다
             int cp = 0;
             foreach (var m in typeof(AudioManager).GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
@@ -96,10 +96,31 @@ namespace StutterFix
             if (idx.TryGetValue(__originalMethod, out i)) { acc[i] += ms; cnt[i]++; }
         }
 
+        // 곡 전체: 스크립트별 프레임당 평균 (곡이 끝나면 위에서 20개)
+        private static double[] tot = new double[0]; private static long[] totN = new long[0];
+        private static long totFrames; private static bool wasPlaying;
+        private static void SongTotals()
+        {
+            if (totFrames < 600) { Array.Clear(tot, 0, tot.Length); Array.Clear(totN, 0, totN.Length); totFrames = 0; return; }
+            var order = new List<int>();
+            double all = 0;
+            for (int i = 0; i < tot.Length; i++) { all += tot[i]; if (tot[i] > 0) order.Add(i); }
+            order.Sort((a, b) => tot[b].CompareTo(tot[a]));
+            var sb = new System.Text.StringBuilder();
+            for (int k = 0; k < order.Count && k < 20; k++)
+                sb.AppendFormat(" [{0} {1:F3}ms {2:F0}번]", names[order[k]], tot[order[k]] / totFrames, (double)totN[order[k]] / totFrames);
+            Main.Entry.Logger.Log(string.Format("[스크립트 측정] 곡 전체 프레임 {0}개, 감싼 스크립트 합계 프레임당 {1:F2}ms (계측 비용 포함):{2}", totFrames, all / totFrames, sb));
+            Array.Clear(tot, 0, tot.Length); Array.Clear(totN, 0, totN.Length); totFrames = 0;
+        }
+
         private static void Flush()
         {
             double total = 0;
             for (int i = 0; i < acc.Length; i++) total += acc[i];
+            bool playing = Hitch.Playing;
+            if (playing && frame >= 0) { for (int i = 0; i < acc.Length; i++) { tot[i] += acc[i]; totN[i] += cnt[i]; } totFrames++; }
+            if (wasPlaying && !playing) SongTotals();
+            wasPlaying = playing;
             if (total > threshold && logged < 100 && frame >= 0 && Hitch.Playing)
             {
                 logged++;

@@ -22,6 +22,11 @@ namespace StutterFix
     {
         // 측정용 플레이어 빌드 표시: 켜면 플레이어용에서도 엔진 단계별 시간을 잰다(곡 요약의 무거운 프레임 5개에 붙음). 배포 전에 false.
         internal const bool MeasureBuild = false;
+#if AUTOTEST
+        internal const bool AutoTestBuild = true;    // 측정용 플레이어 빌드(-p:AutoTestBuild=1): 진단 도구를 파일로 켤 수 있다
+#else
+        internal const bool AutoTestBuild = false;
+#endif
         internal static UnityModManager.ModEntry Entry;
         internal static Settings Config;
 
@@ -191,7 +196,7 @@ namespace StutterFix
                 Try(() => TypeCache.Install(harmony));   // 고급 필터 형식 찾기 기억 (TypeCache.cs)
                 Try(() => MeshWarm.Install(harmony));   // 색 바꾸기가 곡 중에 만들 타일 메시 미리 만들기 (MeshWarm.cs)
                 Try(() => SoundWarm.Install(harmony));   // 곡 중에 처음 쓰는 효과음 미리 불러오기 (SoundWarm.cs)
-                if (Edition.Dev || MeasureBuild) Try(() => ScriptProbe.Install(harmony));   // (진단) scriptprobe.txt 가 있으면 스크립트별 시간
+                if (Edition.Dev || MeasureBuild || AutoTestBuild) Try(() => ScriptProbe.Install(harmony));   // (진단) scriptprobe.txt 가 있으면 스크립트별 시간
                 if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(Entry.Path, "floorprof.txt"))) Try(() => FloorProf.Install(harmony));   // (측정) floorprof.txt 가 있으면 타일 이동 안 DOTween 몫
 
 #if AUTOTEST
