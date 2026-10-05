@@ -26,6 +26,7 @@ namespace StutterFix
 
         // 노이펙 모드: 아래 효과를 전부 끄고 장식도 숨긴다(게임 화면은 아예 만들지 않음). 히트박스 장식은 플레이에 필요해 그대로.
         internal static bool NoFx;
+        internal static float AheadSec = 1.5f;   // 노이펙: 앞 타일이 보이기 시작하는 시간(초)
         internal static Kind DecoKind;
         internal static bool DecoOff { get { return DecoKind != null && DecoKind.OffNow; } }
         internal static long DecoNotMade, DecoHidden;
@@ -41,8 +42,8 @@ namespace StutterFix
                 NoteKo = "타일 색 바꾸기 효과를 하지 않고, 맵이 정한 타일 색·모양(무지개, 줄무늬, 네온 등)도 무시하고 기본 타일로 보여 줍니다. 다음 재생부터 적용됩니다.",
                 NoteEn = "Skips tile recolor effects and also ignores the level's tile colors and styles (rainbow, stripes, neon...), showing plain default tiles. Applies from the next play." },
             new Kind { Ko = "타일 나타나기·사라지기", En = "Tile appear/disappear", Event = "AnimateTrack", Class = "", Tiles = TileLook.Anim,
-                NoteKo = "맵의 타일 나타나기·사라지기 연출 대신, 앞의 타일은 처음부터 다 보여 주고 밟고 지나간 타일은 바로 흐려져 사라지게 합니다(지나간 타일이 겹쳐 보이지 않게). 맵이 투명하게 숨겨 둔 타일도 보이게 합니다. 다음 재생부터 적용됩니다.",
-                NoteEn = "Replaces the level's tile appear/disappear effects: tiles ahead are all shown from the start and tiles you have passed fade out right away (so old tiles don't overlap). Tiles the level hides with zero opacity are shown too. Applies from the next play." },
+                NoteKo = "맵의 타일 나타나기·사라지기 연출 대신, 앞의 타일은 밟기 조금 전(아래에서 정한 초, 최소 4박자)부터 흐릿하게 나타나고 밟고 지나간 타일은 바로 흐려져 사라지게 합니다(지나간 타일이 겹쳐 보이지 않게). 맵이 투명하게 숨겨 둔 타일도 보이게 합니다. 다음 재생부터 적용됩니다.",
+                NoteEn = "Replaces the level's tile appear/disappear effects: tiles ahead fade in shortly before you reach them (the seconds set below, at least 4 beats) and tiles you have passed fade out right away (so old tiles don't overlap). Tiles the level hides with zero opacity are shown too. Applies from the next play." },
             new Kind { Ko = "타일 이동", En = "Tile moves", Event = "MoveTrack", Class = "ffxMoveFloorPlus",
                 NoteKo = "타일이 움직이거나 나타나고 사라지는 효과를 하지 않습니다. 타일을 처음에 숨겨 두었다가 이 효과로 보여 주는 맵은 타일이 안 보일 수 있습니다.", NoteEn = "Skips tile moves, fades and appearances. Levels that hide tiles at first and reveal them with this effect may show no tiles." },
             new Kind { Ko = "배경", En = "Background", Event = "CustomBackground", Class = "ffxCustomBackgroundPlus", Tiles = TileLook.Background,
@@ -152,7 +153,13 @@ namespace StutterFix
             }
             if (LookOff(TileLook.Anim))
             {
-                __instance.animationType = TrackAnimationType.None;
+                // 앞 타일은 밟기 AheadSec 초 전(최소 4박자)부터 흐릿하게 나타난다. 박자 수로만 정하면 빠른 곡과 느린 곡에서 보이는 거리가 너무 달라서 시간으로.
+                // 게임의 나타나기 효과는 "밟기 tilesAhead 박자 전" 에 시작한다(박자 = 60 / (bpm x 타일 속도)).
+                __instance.animationType = TrackAnimationType.Fade;
+                var cond = scrConductor.instance;
+                float bpm = cond != null && cond.bpm > 0 ? (float)cond.bpm : 100f;
+                float beat = 60f / Mathf.Max(1f, bpm * Mathf.Max(0.0001f, f.speed));
+                __instance.tilesAhead = Mathf.Max(4f, AheadSec / beat);
                 __instance.animationType2 = TrackAnimationType2.Fade;   // 지나간 타일은 바로 흐려져 사라진다 (겹쳐 보이지 않게)
                 __instance.tilesBehind = 0f;
                 if (f.opacityVal != 1f) { f.opacityVal = 1f; f.SetOpacity(1f); }

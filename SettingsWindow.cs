@@ -1765,6 +1765,15 @@ namespace StutterFix
                         foreach (var q in PlayTweaks.Kinds) if (q.Off) list.Add(q.Event);
                         c.EffectsOff = string.Join(",", list.ToArray());
                     }
+                    if (k.Tiles == PlayTweaks.TileLook.Anim && k.OffNow)
+                    {
+                        // 앞 타일이 몇 초 앞부터 보일지 (최소 4박자)
+                        BeginRow();
+                        float sec = Mathf.Clamp(c.NoFxAheadSec, 0.3f, 5f);
+                        if (Slider("nofxahead", ref sec, 0.3f, 5f, T("미리 보기", "Look-ahead"), sec.ToString("F1") + T("초", " s")))
+                        { c.NoFxAheadSec = Mathf.Round(sec * 10f) / 10f; ch = true; }
+                        EndRow();
+                    }
                 }
                 EndGroup();
                 if (!have) P(T("맵을 열면 효과마다 이 맵에 몇 개 있는지 나옵니다.", "Open a level to see how many of each effect it has."), sDim);
