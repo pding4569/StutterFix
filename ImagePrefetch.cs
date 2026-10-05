@@ -523,6 +523,7 @@ namespace StutterFix
                     }
                     Main.Entry.Logger.Log("[이미지] " + AutoNote);
                 }
+                if (Resilience.SafeMode && sideNow <= 0) { Main.Entry.Logger.Log("[이미지] 안전 모드: 줄일 필요가 없는 맵이라 원래 방식으로 불러옴"); return; }
                 var list = new List<Item>();
                 var seen = new Dictionary<string, Item>(StringComparer.OrdinalIgnoreCase);
                 var cached = spritesField != null ? spritesField.GetValue(__instance.imgHolder) as System.Collections.IDictionary : null;

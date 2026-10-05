@@ -617,7 +617,7 @@ namespace StutterFix
             MoveApply.Enabled = E("MoveFinish", Config.MoveFinish);
             ParticleFix.SkipIdle = E("SkipIdleParticles", Config.SkipIdleParticles); ParticleFix.PauseOffscreen = E("LowPauseParticles", Config.LowPauseParticles); LeakGuard.Enabled = E("LeakFix", Config.LeakFix); MatReuse.Enabled = LeakGuard.Enabled;
             bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc; BigLevel.Enabled = lc; ExitFix.Enabled = lc; FfxReuse.Enabled = lc; AllocFix.Enabled = E("GcPause", Config.GcPause);
-            TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages);
+            TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages) && !Resilience.SafeMode;   // 안전 모드: 미리 풀기는 줄이기에만 쓰고 저사양 압축은 끈다
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
             BeatFix.Enabled = Dormancy.Enabled; EditorPick.Enabled = Dormancy.Enabled;
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);

@@ -40,7 +40,9 @@ namespace StutterFix
             { "Fsr", new[] { "LowFsr" } }, { "HalfRender", new[] { "LowHalfRender" } }, { "LowEnd", new[] { "LowEnd" } },
         };
         // 안전 모드에서 끄는 것: 게임 동작에 깊이 끼어드는 기능 (메모리 정리 미루기·같은 글자 건너뛰기처럼 단순한 것은 둔다)
-        private static readonly string[] safeOff = { "ImagePrefetch", "LoadCache", "DecoAnim", "FloorAnim", "FastLoop", "InstantDirect", "ZeroTween", "Precheck", "DormantSkip",
+        // (이미지 미리 풀기는 끄지 않는다: 큰 이미지 줄이기가 이 길에만 있어, 끄면 이미지 원본이 아주 큰 맵이 메모리 부족으로 다시 꺼지는
+        //  악순환이 된다(2026-10-04 ALPHA). 대신 안전 모드에서는 줄일 필요가 있는 맵에서만 쓴다 - ImagePrefetch.Begin)
+        private static readonly string[] safeOff = { "LoadCache", "DecoAnim", "FloorAnim", "FastLoop", "InstantDirect", "ZeroTween", "Precheck", "DormantSkip",
             "SkipInvisible", "MoveFinish", "FastBlend", "SkipIdleParticles", "LowPauseParticles", "LeakFix", "LowFsr", "LowHalfRender", "LowEnd" };
 
         internal static bool Off(string key) { lock (sync) return off.Contains(key); }
