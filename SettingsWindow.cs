@@ -1828,8 +1828,11 @@ namespace StutterFix
                 ch |= Option("hidejudgeall", ref c.HideJudgeAll, T("판정 글자 전부 숨기기", "Hide all judgment text"), T("모든 판정 글자를 띄우지 않습니다.", "Shows no judgment text."), null);
                 ch |= Option("hidejudgeperfect", ref c.HideJudgePerfect, T("완벽 판정만 숨기기", "Hide Perfect only"), T("완벽 판정 글자만 띄우지 않고, 나머지(빠름, 느림, 놓침…)는 그대로 띄웁니다.", "Hides only Perfect; Early, Late, Miss and the rest still show."), null);
                 EndGroup();
-                SubHeading(T("조작", "Input"), T("플레이 중 실수로 화면이 바뀌지 않게 합니다.", "Keeps the view from changing by accident during play."));
+                SubHeading(T("에디터", "Editor"), T("에디터에서 플레이할 때 쓰는 단추와 조작입니다.", "Buttons and input for playing from the editor."));
                 BeginGroup();
+                ch |= Option("gamescreenbtn", ref c.GameScreenButton, T("에디터에 게임 화면 단추", "Game screen button in the editor"),
+                    T("에디터 재생 단추 오른쪽 위에 맵을 게임 화면(커스텀 맵 목록에서 연 것과 같은 화면)으로 여는 단추를 둡니다. 에디터 재생보다 조금 가볍고, 노이펙 모드면 장식을 만들지 않아 더 빨리 열립니다. 에디터로 돌아올 때는 일시정지 메뉴의 에디터 단추를 누릅니다. 저장하지 않은 변경이 있으면 먼저 저장할지 묻습니다.",
+                      "Adds a button above-right of the editor's play button that opens the level in the game screen (as from the custom level list). It is a bit lighter than editor play, and in no-effects mode decorations are not created so it opens faster. Use the editor button in the pause menu to come back. Asks to save unsaved changes first."), null);
                 ch |= Option("noplayzoom", ref c.NoPlayZoom, T("플레이 중 마우스 휠 확대 막기", "No mouse-wheel zoom while playing"),
                     T("에디터에서 재생하는 동안 마우스 휠을 굴려도 화면 크기가 바뀌지 않습니다. 편집할 때는 그대로 확대·축소됩니다.", "While playing from the editor, the mouse wheel no longer zooms. Zooming while editing still works."), null);
                 EndGroup();

@@ -869,6 +869,68 @@ namespace StutterFix
                     watchStart = -1;
                     return true;
                 }
+                case "gamebtn":
+                {
+                    // gamebtn: 에디터의 "게임 화면으로" 단추와 같은 동작 (저장 확인 없이). 열린 뒤는 game 과 같이 기다린다
+                    if (gamePhase == 0)
+                    {
+                        if (scnEditor.instance == null) throw new Exception("에디터가 아님");
+                        gameOld = ADOBase.customLevel;
+                        GameScreenButton.Go();
+                        gamePhase = 1; openStartedAt = now; Log("에디터에서 게임 화면으로 열기");
+                        return false;
+                    }
+                    if (gamePhase == 1)
+                    {
+                        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "scnGame" || scnEditor.instance != null || ADOBase.customLevel == null || ReferenceEquals(ADOBase.customLevel, gameOld) || ADOBase.customLevel.isLoading) return false;
+                        gamePhase = 2; waitSec = now;
+                        return false;
+                    }
+                    if (now - waitSec < 2f) return false;
+                    gamePhase = 0; Log(string.Format("게임 화면 맵 열림 ({0:F1}초, 2초 기다림 포함)", now - openStartedAt));
+                    return true;
+                }
+                case "toeditor":
+                {
+                    // toeditor: 게임 화면 일시정지 메뉴의 "에디터에서 열기" 와 같게 (같은 scnGame 위에 에디터를 더한다)
+                    if (gamePhase == 0)
+                    {
+                        if (scnEditor.instance != null) throw new Exception("이미 에디터");
+                        UnityEngine.SceneManagement.SceneManager.LoadScene("scnEditor", UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                        gamePhase = 1; openStartedAt = now; Log("게임 화면에서 에디터 열기");
+                        return false;
+                    }
+                    if (gamePhase == 1)
+                    {
+                        if (scnEditor.instance == null || scnEditor.instance.playMode || now - openStartedAt < 2f) return false;
+                        gamePhase = 2; waitSec = now;
+                        return false;
+                    }
+                    if (now - waitSec < 2f) return false;
+                    gamePhase = 0; Log(string.Format("에디터 열림 ({0:F1}초)", now - openStartedAt));
+                    return true;
+                }
+                case "uidump":
+                {
+                    // uidump: 에디터 재생 단추와 그 부모의 구조 (자리·크기·컴포넌트)
+                    var ued = scnEditor.instance;
+                    if (ued == null || ued.playPause == null) { Log("uidump: 에디터 재생 단추 없음"); return true; }
+                    Action<Transform, int> udump = null;
+                    udump = (t, depth) =>
+                    {
+                        var rt = t as RectTransform;
+                        var comps = new List<string>();
+                        foreach (var c in t.GetComponents<Component>()) if (c != null && !(c is Transform)) comps.Add(c.GetType().Name);
+                        Log(string.Format("uidump: {0}{1} [{2}] 활성 {3} {4}", new string(' ', depth * 2), t.name, string.Join(",", comps.ToArray()), t.gameObject.activeSelf,
+                            (rt != null ? string.Format("anchor {0}-{1} pivot {2} pos {3} size {4}", rt.anchorMin, rt.anchorMax, rt.pivot, rt.anchoredPosition, rt.sizeDelta) : "")
+                            + (t.GetComponent<UnityEngine.UI.Image>() is UnityEngine.UI.Image im ? string.Format(" 그림 {0} 색 {1} 재질 {2}", im.sprite != null ? im.sprite.name + "/" + im.sprite.texture.width : "-", im.color, im.material != null ? im.material.name : "-") : "")));
+                        if (depth < 3) foreach (Transform ch in t) udump(ch, depth + 1);
+                    };
+                    var p = ued.playPause.transform.parent;
+                    Log("uidump: 부모 " + (p != null ? p.name : "-") + ", 형제 " + (p != null ? p.childCount : 0) + "개");
+                    if (p != null) foreach (Transform ch in p) udump(ch, 0);
+                    return true;
+                }
                 case "decostate":
                 {
                     // decostate: 장식 보이기 상태 세기 (꺼진 오브젝트 / 꺼진 렌더러 / 그리기 꺼짐 / 투명)

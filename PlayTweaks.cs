@@ -160,9 +160,10 @@ namespace StutterFix
             if (reloadDecorations) { DecoNotMade = 0; ImagesNotLoaded = 0; }
             decoLoad = reloadDecorations && SkipMoveImagesAtLoad; createDepth = 0;
         }
-        public static Exception DecoLoadDone(Exception __exception, bool reloadDecorations)
+        public static Exception DecoLoadDone(scnGame __instance, Exception __exception, bool reloadDecorations)
         {
             decoLoad = false;
+            if (reloadDecorations) notMadeIn = DecoNotMade > 0 && !ADOBase.isLevelEditor ? __instance : null;
             if (reloadDecorations && DecoOff)
                 Main.Entry.Logger.Log("[연출 끄기] " + (NoFx ? "노이펙: " : "") + (ADOBase.isLevelEditor ? "에디터라 장식은 재생 때 숨김"
                     : "장식 " + DecoNotMade + "개 안 만듦 (히트박스 장식만 남김), 장식 이동용 이미지 " + ImagesNotLoaded + "개 안 불러옴"));
@@ -213,8 +214,17 @@ namespace StutterFix
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 장식 숨기기 실패: " + ex.Message); }
         }
-        public static void UnhideDecorations()
+        // 게임 화면에서 장식을 안 만든 채 일시정지 메뉴로 에디터를 열면(같은 scnGame 을 쓴다) 장식을 다시 만든다.
+        // 에디터는 장식 목록 번호로 장식을 찾으므로 빠진 채 두면 안 된다. 이때는 에디터가 있어 전부 만든다.
+        private static UnityEngine.Object notMadeIn;
+        public static void UnhideDecorations(bool clsToEditor)
         {
+            if (clsToEditor && notMadeIn != null && ReferenceEquals(notMadeIn, scnGame.instance))
+            {
+                notMadeIn = null;
+                try { scnGame.instance.UpdateDecorationObjects(true); Main.Entry.Logger.Log("[연출 끄기] 게임 화면에서 에디터로: 안 만든 장식을 다시 만듦"); }
+                catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 장식 다시 만들기 실패: " + ex.Message); }
+            }
             if (hidden.Count == 0) return;
             foreach (var go in hidden) if (go != null) go.SetActive(true);
             hidden.Clear();

@@ -371,6 +371,7 @@ namespace StutterFix
             if (!installed) return;
             installed = false;
             Try(GcControl.Shutdown);
+            Try(GameScreenButton.Remove);
             Try(LowEnd.Shutdown);
             Try(HalfRender.Shutdown);
             Try(ParticleFix.Shutdown);
@@ -467,7 +468,7 @@ namespace StutterFix
             FastBlend.Tick(); Tk(4, ref q);
             MoveApply.Tick(); Tk(5, ref q);
             VramGuard.Tick(); Tk(6, ref q);
-            ImagePrefetch.LogAfterLoad(); Tk(7, ref q);
+            ImagePrefetch.LogAfterLoad(); GameScreenButton.Tick(); Tk(7, ref q);
 
             if (Edition.Dev)
             {
@@ -592,6 +593,7 @@ namespace StutterFix
                 PlayTweaks.FiltersOff.Clear();
                 foreach (var f in (Config.FiltersOff ?? "").Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)) PlayTweaks.FiltersOff.Add(f);
                 PlayTweaks.NoFx = Config.NoFx;
+                GameScreenButton.Enabled = Config.GameScreenButton;
                 PlayTweaks.HideJudgeAll = Config.HideJudgeAll; PlayTweaks.HideJudgePerfect = Config.HideJudgePerfect; PlayTweaks.NoPlayZoom = Config.NoPlayZoom;
             }
             ZeroTween.Enabled = E("ZeroTween", Config.ZeroTween);
@@ -834,6 +836,7 @@ namespace StutterFix
         public bool HitTextFade = true;    // 판정 글자가 투명해질 때 메시 전체 대신 정점 색만 바꾸기
         // 연출 끄기 (기본 꺼짐: 켜면 화면이 달라진다)
         public string EffectsOff = "";     // 끌 효과 이벤트 이름들 (쉼표로)
+        public bool GameScreenButton = true;   // 에디터 재생 단추 옆 "게임 화면으로 플레이" 단추
         public bool NoFx = false;          // 노이펙 모드: 맵 효과 전부 + 장식 끄기 (히트박스 장식은 그대로)
         public string FiltersOff = "";     // 하나씩 끈 필터 ("SetFilter:이름" / "SetFilterAdvanced:클래스", | 로)
         public bool HideJudgeAll = false;
