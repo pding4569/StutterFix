@@ -1768,19 +1768,46 @@ namespace StutterFix
                     SubHeading(T("필터 하나씩", "Filters one by one"),
                         T("이 맵이 쓰는 필터를 하나씩 끌 수 있습니다. 그 필터만 켜지지 않고, 같은 효과의 다른 동작(다른 필터 끄기 등)은 그대로 합니다. 위에서 필터 전체를 끄면 이것과 상관없이 전부 꺼집니다.",
                           "Turn off the filters this level uses one at a time. Only that filter stays off; the rest of the event (such as turning other filters off) still happens. Turning all filters off above overrides this."));
-                    BeginGroup();
+                    // 묶음별로 (묶음 안에서 많이 쓰는 순, 묶음은 합계가 많은 순)
+                    var groups = new List<KeyValuePair<string, List<KeyValuePair<string, int>>>>();
+                    var gname = new Dictionary<string, string>(); var gtotal = new Dictionary<string, int>();
                     foreach (var kv in fl)
                     {
-                        bool v = PlayTweaks.FiltersOff.Contains(kv.Key);
-                        if (Option("filteroff_" + kv.Key, ref v, PlayTweaks.FilterLabel(kv.Key), T("이 필터를 켜지 않습니다.", "This filter is never turned on."), string.Format(T("{0}번", "{0}x"), kv.Value)))
-                        {
-                            if (v) PlayTweaks.FiltersOff.Add(kv.Key); else PlayTweaks.FiltersOff.Remove(kv.Key);
-                            var arr = new List<string>(PlayTweaks.FiltersOff);
-                            c.FiltersOff = string.Join("|", arr.ToArray());
-                            ch = true;
-                        }
+                        var g = PlayTweaks.FilterGroup(kv.Key);
+                        int gi = groups.FindIndex(x => x.Key == g.Key);
+                        if (gi < 0) { groups.Add(new KeyValuePair<string, List<KeyValuePair<string, int>>>(g.Key, new List<KeyValuePair<string, int>>())); gi = groups.Count - 1; gname[g.Key] = g.Value; gtotal[g.Key] = 0; }
+                        groups[gi].Value.Add(kv); gtotal[g.Key] += kv.Value;
                     }
-                    EndGroup();
+                    groups.Sort((a, b) => gtotal[b.Key].CompareTo(gtotal[a.Key]));
+                    bool changed = false;
+                    foreach (var g in groups)
+                    {
+                        GUILayout.Space(10);
+                        bool allOff = g.Value.TrueForAll(x => PlayTweaks.FiltersOff.Contains(x.Key));
+                        bool gv = allOff;
+                        BeginGroup();
+                        if (Option("filtergroup_" + g.Key, ref gv, gname[g.Key], string.Format(T("이 묶음 {0}종을 한 번에 끕니다.", "Turns off all {0} filters in this group."), g.Value.Count), string.Format(T("{0}번", "{0}x"), gtotal[g.Key])))
+                        {
+                            foreach (var x in g.Value) { if (gv) PlayTweaks.FiltersOff.Add(x.Key); else PlayTweaks.FiltersOff.Remove(x.Key); }
+                            changed = true;
+                        }
+                        foreach (var kv in g.Value)
+                        {
+                            bool v = PlayTweaks.FiltersOff.Contains(kv.Key);
+                            if (Option("filteroff_" + kv.Key, ref v, PlayTweaks.FilterLabel(kv.Key), T("이 필터를 켜지 않습니다.", "This filter is never turned on."), string.Format(T("{0}번", "{0}x"), kv.Value), 1, null))
+                            {
+                                if (v) PlayTweaks.FiltersOff.Add(kv.Key); else PlayTweaks.FiltersOff.Remove(kv.Key);
+                                changed = true;
+                            }
+                        }
+                        EndGroup();
+                    }
+                    if (changed)
+                    {
+                        var arr = new List<string>(PlayTweaks.FiltersOff);
+                        c.FiltersOff = string.Join("|", arr.ToArray());
+                        ch = true;
+                    }
                 }
             }
             else

@@ -136,12 +136,52 @@ namespace StutterFix
             }
             return filterList;
         }
+        // 필터 묶음 (보기 편하게): 일반 필터는 종류별로, 고급 필터는 이름의 분류 부분(CameraFilterPack_<분류>_...)으로
+        private static readonly Dictionary<string, string[]> normalGroup = new Dictionary<string, string[]>();
+        private static void G(string ko, string en, params string[] names) { foreach (var n in names) normalGroup[n] = new[] { ko, en }; }
+        static PlayTweaks()
+        {
+            G("색·톤", "Color & tone", "Grayscale", "Sepia", "Invert", "Posterize", "Contrast", "Neon", "Funk", "Sharpen");
+            G("흐림", "Blur", "Blur", "BlurFocus", "GaussianBlur", "MotionBlur");
+            G("왜곡", "Distortion", "Fisheye", "Waves", "Aberration", "Tunnel", "Weird3D", "Pixelate", "WaterDrop", "LightWater");
+            G("TV·노이즈", "TV & noise", "VHS", "EightiesTV", "FiftiesTV", "Arcade", "LED", "Glitch", "Static", "Grain", "Compression", "Handheld", "NightVision");
+            G("그림", "Drawing", "Drawing", "OilPaint", "SuperDot", "HexagonBlack", "EdgeBlackLine");
+            G("날씨·입자", "Weather & particles", "Rain", "Blizzard", "PixelSnow", "Petals", "PetalsInstant");
+        }
+        private static readonly Dictionary<string, string> advKo = new Dictionary<string, string>
+        {
+            { "FX", "특수" }, { "TV", "TV" }, { "Blur", "흐림" }, { "Color", "색" }, { "Colors", "색" }, { "Distortion", "왜곡" }, { "Glow", "빛" },
+            { "Light", "빛" }, { "Drawing", "그림" }, { "Pixel", "픽셀" }, { "Pixelisation", "픽셀" }, { "Vision", "시야" }, { "Atmosphere", "날씨" },
+            { "Gradients", "그라디언트" }, { "Film", "필름" }, { "Edge", "외곽선" }, { "Noise", "노이즈" }, { "Real", "실사" }, { "Retro", "레트로" },
+            { "Sharpen", "선명" }, { "Special", "특수" }, { "Alien", "외계" }, { "Classic", "고전" }, { "Lut", "LUT" }, { "Blend2Camera", "합성" },
+            { "Broken", "깨짐" }, { "Gradient", "그라디언트" }, { "AAA", "고급 효과" }, { "Glitch", "글리치" }, { "NewGlitch", "글리치" }, { "Oculus", "VR" },
+            { "3D", "3D" }, { "Cartoon", "만화" }, { "Mask", "마스크" }, { "Night", "밤" }, { "Weather", "날씨" },
+        };
+        // (묶음 키, 보여 줄 이름)
+        internal static KeyValuePair<string, string> FilterGroup(string key)
+        {
+            int i = key.IndexOf(':');
+            string name = i >= 0 ? key.Substring(i + 1) : key;
+            if (key.StartsWith("SetFilterAdvanced:"))
+            {
+                string rest = name.StartsWith("CameraFilterPack_") ? name.Substring(17) : name;
+                int u = rest.IndexOf('_');
+                string cat = u > 0 ? rest.Substring(0, u) : rest;
+                string ko; if (!advKo.TryGetValue(cat, out ko)) ko = cat;
+                return new KeyValuePair<string, string>("A:" + cat, SettingsWindow.T("고급 · " + ko, "Advanced · " + cat));
+            }
+            string[] g;
+            if (normalGroup.TryGetValue(name, out g)) return new KeyValuePair<string, string>("N:" + g[1], SettingsWindow.T(g[0], g[1]));
+            return new KeyValuePair<string, string>("N:other", SettingsWindow.T("기타", "Other"));
+        }
+
         internal static string FilterLabel(string key)
         {
             int i = key.IndexOf(':');
             string name = i >= 0 ? key.Substring(i + 1) : key;
             if (name.StartsWith("CameraFilterPack_")) name = name.Substring(17);
-            return (key.StartsWith("SetFilterAdvanced:") ? "[고급] " : "") + name.Replace('_', ' ');
+            if (key.StartsWith("SetFilterAdvanced:")) { int u = name.IndexOf('_'); if (u > 0) name = name.Substring(u + 1); }   // 묶음 이름(분류)은 빼고
+            return name.Replace('_', ' ');
         }
 
         public static bool HitTextPrefix(HitMargin hitMargin)
