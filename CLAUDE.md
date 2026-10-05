@@ -58,6 +58,7 @@ METHOD=scrCamera bin/Debug/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서드
 | 이벤트로 바꾸기(new LevelEvent 13만 7천 개)를 한 스레드에서 | Arche 3.85초 | 작업 스레드가 미리 만들고 원래 반복문은 순서대로 받음(`ParallelDecode`, 메인 스레드 전용일 수 있는 두 값은 미리 구함). 2.5~2.9초(GC 할당 잠금으로 1.4배). 대조 6,634개 다름 0 |
 | 이미지 장식 프리팹 복제가 하나 약 100us | Arche 2만 8,835개 약 4.2초 | 연달아 나오는 이미지 장식 구간을 `InstantiateAsync(프리팹, 개수, 부모)` 로(`DecoBatch`, 형제 순서 유지). 장식 단계 9.1→7.85초 |
 | 고급 필터 `ResetFilters`("다른 필터 끄기")가 쓴 필터마다 `Type.GetType("이름, Assembly-CSharp-firstpass")` | 한 번 0.7ms, 효과 하나 2~18ms. HELLO 2026 35초 한 프레임 22ms | 결과 기억 (`TypeCache`) → A/B 4판: 곡 중 최악 48~55→24ms, 재생 시작 3.3~3.6→1.9초 |
+| 판정 오차 막대 눈금이 사라질 때 `Image.DOColor` 로 매 프레임 눈금 그림을 다시 만듦(최대 60개) | HELLO 2026 자동 플레이 | 정점 색은 그대로 두고 CanvasRenderer 투명도만(`HitMeterFade`, 화면 투명도 같음). A/B 4판: 232·234 → 254·255 FPS (+9%) |
 | 한 프레임에 효과 수십 개 몰림 | | 프레임당 예산으로 분산 (`EffectBudget`) |
 | 박자마다 60~80ms (28~40초 구간) | PerfView: 끊긴 60ms 동안 게임 전체 CPU 16ms, 메인 스레드는 `RenderOffscreenCameras` → `CullScene` → `ujob_wait_for`에서 잠듦. GPU도 대기. VRAM 7.0/8GB, 게임 공유메모리 599MB로 넘침 | **Steam 실행 옵션 `-force-d3d12 -force-gfx-jobs native` 제거** (D3D11). 그 구간 끊김 사라짐. 모드는 옵션이 있으면 경고만 띄운다 |
 
