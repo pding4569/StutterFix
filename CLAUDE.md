@@ -59,6 +59,7 @@ METHOD=scrCamera bin/Release/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서�
 | 이미지 장식 프리팹 복제가 하나 약 100us | Arche 2만 8,835개 약 4.2초 | 연달아 나오는 이미지 장식 구간을 `InstantiateAsync(프리팹, 개수, 부모)` 로(`DecoBatch`, 형제 순서 유지). 장식 단계 9.1→7.85초 |
 | 고급 필터 `ResetFilters`("다른 필터 끄기")가 쓴 필터마다 `Type.GetType("이름, Assembly-CSharp-firstpass")` | 한 번 0.7ms, 효과 하나 2~18ms. HELLO 2026 35초 한 프레임 22ms | 결과 기억 (`TypeCache`) → A/B 4판: 곡 중 최악 48~55→24ms, 재생 시작 3.3~3.6→1.9초 |
 | 판정 오차 막대 눈금이 사라질 때 `Image.DOColor` 로 매 프레임 눈금 그림을 다시 만듦(최대 60개) | HELLO 2026 자동 플레이 | 정점 색은 그대로 두고 CanvasRenderer 투명도만(`HitMeterFade`, 화면 투명도 같음). A/B 4판: 232·234 → 254·255 FPS (+9%) |
+| "드라이버 쪽" 끊김 PLUM MEGAMIX 566초 36ms (첫 판만): 맵 연 뒤 VRAM 89%(게임 6GB). 숨어 있던 장식이 처음 보일 때 VidMm 이 밀려나 있던 그림을 다시 올리고(PageInOneAllocation) 다른 것을 내보내느라(Evict) GPU 가 멈춤 → 출력 대기열이 차서 메인 스레드가 28ms 대기(dxgkrnl SignalPresentLimitSemaphore 가 깨움). GPU 19ms 라 "게임 처리"로 잘못 분류돼 VRAM 학습이 안 걸렸다 | PerfView ThreadTime + `tools/etwstall` | 맵 연 뒤 VRAM 88%↑(절반 넘게 게임 몫)이면 다음 열기부터 한 단계 줄임, 이 이유로는 2048 까지만(`VramGuard.AfterOpen`). 3072: 36·33ms → 2048: 20·23ms |
 | 한 프레임에 효과 수십 개 몰림 | | 프레임당 예산으로 분산 (`EffectBudget`) |
 | 박자마다 60~80ms (28~40초 구간) | PerfView: 끊긴 60ms 동안 게임 전체 CPU 16ms, 메인 스레드는 `RenderOffscreenCameras` → `CullScene` → `ujob_wait_for`에서 잠듦. GPU도 대기. VRAM 7.0/8GB, 게임 공유메모리 599MB로 넘침 | **Steam 실행 옵션 `-force-d3d12 -force-gfx-jobs native` 제거** (D3D11). 그 구간 끊김 사라짐. 모드는 옵션이 있으면 경고만 띄운다 |
 
@@ -119,6 +120,11 @@ PACL2가 매 프레임 글자 34개를 다시 넣는 것은 양쪽 모두에서 
 모드 탓을 가리려면 다른 모드를 전부 끄고(게임 재시작) 같은 구간을 돌려 비교한다.
 
 ## 엔진 안쪽 보기 (PerfView)
+
+**끊긴 프레임 하나 보기 (2026-10-05)**: 자동 시험 `trace <이름> <초>` 가 관리자 에이전트에 ThreadTime 기록을 시작시키고(에이전트가 받을 때까지 기다림), 측정용 빌드의 끊김 줄에 "시각" 이 찍힌다.
+PerfView 가 만든 etlx(%TEMP%\PerfView\<이름>_*.etlx)를 `tools/etwstall` 로 본다: `EtwStall <etlx> <PID> <HH:mm:ss.fff> [앞ms] [뒤ms]` → 스레드별 잠든 구간·이유·깨운 스레드와 그 스택, CPU 샘플 스택. PID 4(System)로 돌리면 VidMm 같은 커널 작업이 보인다.
+PerfView `SaveCPUStacks` 는 프로세스 이름을 못 찾거나(게임이 기록 끝 전에 꺼지면) 모든 프로세스 심볼을 서버에서 찾느라 40분 넘게 걸렸다. etwstall 은 로컬 심볼만 써서 5초. 게임 PID 는 기록 안의 것(etwstall ETW_PROCS=1)으로. Git Bash 에서 PerfView 를 부르면 `/AcceptEULA` 가 경로로 바뀐다(PowerShell 로).
+
 
 C# 측정으로 안 보이는 끊김(엔진 네이티브, 드라이버, OS)은 PerfView로 본다. 도구와 결과는 `C:\Users\Public\StutterFixTrace`(한글 경로에선 PerfView 기록이 실패했다).
 

@@ -890,6 +890,33 @@ namespace StutterFix
                     gamePhase = 0; Log(string.Format("게임 화면 맵 열림 ({0:F1}초, 2초 기다림 포함)", now - openStartedAt));
                     return true;
                 }
+                case "trace":
+                {
+                    // trace <이름> <초>: 관리자 에이전트(C:\Users\Public\StutterFixTrace\agent.ps1)에 PerfView ThreadTime 기록 시작을 알린다.
+                    // 에이전트가 받았다고 적을 때까지(최대 15초) 기다린다. 끊김 줄의 "시각" 으로 기록 안의 위치를 맞춘다.
+                    const string dir = @"C:\Users\Public\StutterFixTrace";
+                    string st = Path.Combine(dir, "agent-status.txt");
+                    var pa = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (pa.Length < 2) throw new Exception("trace <이름> <초>");
+                    if (gamePhase == 0)
+                    {
+                        if (!Directory.Exists(dir)) throw new Exception("에이전트 폴더 없음");
+                        File.WriteAllText(Path.Combine(dir, "cmd.txt"), "start " + pa[0] + " " + pa[1]);
+                        gamePhase = 1; openStartedAt = now;
+                        Log("기록 시작 요청: " + pa[0] + " " + pa[1] + "초, 시각 " + DateTime.Now.ToString("HH:mm:ss.fff"));
+                        return false;
+                    }
+                    string s = "";
+                    try { s = File.ReadAllText(st); } catch { }
+                    if (s.Contains("started " + pa[0] + " "))
+                    {
+                        if (now - openStartedAt < 4f) return false;   // PerfView 가 커널 세션을 여는 시간
+                        gamePhase = 0; Log("기록 시작됨 (" + s.Trim() + "), 시각 " + DateTime.Now.ToString("HH:mm:ss.fff"));
+                        return true;
+                    }
+                    if (now - openStartedAt > 15f) { gamePhase = 0; throw new Exception("에이전트 응답 없음 (관리자 agent.ps1 이 꺼져 있음?)"); }
+                    return false;
+                }
                 case "toeditor":
                 {
                     // toeditor: 게임 화면 일시정지 메뉴의 "에디터에서 열기" 와 같게 (같은 scnGame 위에 에디터를 더한다)

@@ -186,6 +186,7 @@ namespace StutterFix
                 var holder = scnGame.instance != null ? scnGame.instance.imgHolder : null;
                 var c2 = holder != null && spritesField != null ? spritesField.GetValue(holder) as System.Collections.IDictionary : null;
                 Main.Entry.Logger.Log(string.Format("[이미지] 맵 연 뒤: 올라와 있는 이미지 {0}장, VRAM 전체 {1:F0}MB / 게임 {2:F0}MB", c2 != null ? c2.Count : -1, SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB));
+                VramGuard.AfterOpen(SystemMonitor.VramUsedMB, SystemMonitor.VramGameMB);
             }
             catch { }
         }

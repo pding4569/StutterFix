@@ -81,6 +81,32 @@ namespace StutterFix
             if (want) SystemMonitor.Start();
         }
 
+        // 맵을 연 뒤 VRAM 이 이미 거의 찼으면(88% 이상, 그 절반 넘게가 게임 몫) 다음에 열 때 한 단계 줄인다.
+        // PLUM MEGAMIX (2026-10-05, PerfView): 맵 연 뒤 VRAM 7,325/8,188MB(게임 6,029MB). 곡 566초에 숨어 있던 장식이 처음 보일 때
+        // 윈도우 그래픽 메모리 관리자가 시스템 메모리로 밀려나 있던 그림을 다시 올리고(PageInOneAllocation) 다른 것을 내보내느라(Evict)
+        // GPU 가 멈췄고, 게임은 화면 출력 대기열이 꽉 차 28ms 를 기다렸다(dxgkrnl SignalPresentLimitSemaphore 가 깨움). 36ms, 첫 판만.
+        // 이 끊김은 GPU 시간(19ms)이 프레임의 70% 가 안 되고 출력 대기도 CPU 시간에 섞여 "게임 처리" 로 분류돼, 아래 GpuHitch 로는 못 잡았다.
+        internal static void AfterOpen(float used, float game)
+        {
+            if (ImagePrefetch.MaxSide != ImagePrefetch.Auto || Level.Length == 0 || noted) return;
+            long total = SystemInfo.graphicsMemorySize;
+            if (total <= 0 || used < total * 0.88f || game < total * 0.5f) return;
+            // 이 이유로는 2048 까지만. 대부분의 그림은 이미 압축(DXT)돼 있어 더 줄여도 VRAM 은 거의 안 빠지고 화질만 떨어진다
+            // (PLUM: 3072 -> 2048 로 줄인 그림 259장, VRAM 7,468 -> 7,319MB). 더 깊이는 실제 GPU 끊김(GpuHitch)이 날 때만.
+            if (CurrentCap > 0 && CurrentCap <= 2048) return;
+            int next = Next(CurrentCap);
+            if (next == CurrentCap) return;
+            noted = true;
+            var d = Load();
+            d[Level] = next;
+            Save(d);
+            string what = SettingsWindow.T("맵을 연 뒤 그래픽 메모리가 거의 찼습니다(", "VRAM is nearly full after loading (") + used.ToString("F0") + "/" + total + "MB"
+                + SettingsWindow.T("). 장식이 처음 보일 때 끊길 수 있어, 다음에 이 맵을 불러올 때 큰 이미지를 긴 변 ", "). Decorations may hitch when first shown, so next time this level loads, large images will be capped at ")
+                + next + SettingsWindow.T(" 으로 줄입니다", " px");
+            Main.Entry.Logger.Log(string.Format("[이미지] 자동: 맵 연 뒤 VRAM {0:F0}/{1}MB (게임 {2:F0}MB) -> 이 맵은 다음부터 긴 변 {3} ({4})", used, total, game, next, Level));
+            PerfOverlay.Notice(SettingsWindow.T("VRAM 거의 참", "VRAM nearly full"), what);
+        }
+
         // 실시간 모니터가 "GPU 과부하" 로 가린 끊김마다 불린다 (그 프레임의 GPU 시간이 70% 넘게 차지).
         // 예전에는 "VRAM 90% + 45ms 넘는 프레임" 만 봐서, VRAM 이 높은 맵의 게임 처리(CPU) 끊김이나 효과 몰림까지
         // VRAM 부족으로 잘못 기억했다(Arche: 효과 몰림 147ms, 게임 처리 100~120ms 인데 3072 로 기억).
