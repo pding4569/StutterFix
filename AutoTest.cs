@@ -106,7 +106,7 @@ namespace StutterFix
         private static float watchStart = -1, watchNext; private static int watchBad, watchChecks; private static readonly HashSet<int> watchSeen = new HashSet<int>();
         private static object spamMgr; private static scrPlanet spamPlanet; private static System.Reflection.MethodInfo spamShow;
         private static float spamStart, spamLast, spamMax; private static int spamOver, spamFrames, spamShown, spamSlowCalls;
-        private static double spamCallMs, spamCallMax; private static string spamCallMaxWhat = "";
+        private static double spamCallMs, spamCallMax; private static string spamCallMaxWhat = ""; private static float spamLastShow, spamAcc;
         private static readonly System.Random spamRng = new System.Random(7);
         // scrHitTextManager 는 MonoBehaviour 가 아니라 컨트롤러·플레이어 관리자 필드에 들어 있다
         private static object FindHitTextManager()
@@ -898,15 +898,17 @@ namespace StutterFix
                 }
                 case "hitspam":
                 {
-                    // hitspam <초> <프레임당 개수>: 곡 중 판정 글자를 여러 종류로 띄운다(자동 플레이는 완벽만 나와 직접 플레이와 다르다). 끝나면 최악 프레임을 적는다
+                    // hitspam <초> <개수>: 곡 중 판정 글자를 여러 종류로 띄운다(자동 플레이는 판정 글자를 띄우지 않는다). 개수가 정수면 프레임당, "20/s" 면 초당. 끝나면 최악 프레임을 적는다
                     var ps = arg.Split(' ');
                     float dur = ps.Length > 0 && ps[0].Length > 0 ? float.Parse(ps[0], System.Globalization.CultureInfo.InvariantCulture) : 20f;
-                    int per = ps.Length > 1 ? int.Parse(ps[1]) : 3;
+                    string perS = ps.Length > 1 ? ps[1] : "3";
+                    bool perSec = perS.EndsWith("/s");
+                    float rate = float.Parse(perSec ? perS.Substring(0, perS.Length - 2) : perS, System.Globalization.CultureInfo.InvariantCulture);
                     if (spamMgr == null)
                     {
                         spamMgr = FindHitTextManager();
                         spamPlanet = UnityEngine.Object.FindObjectOfType<scrPlanet>();
-                        spamStart = now; spamMax = 0; spamOver = 0; spamFrames = 0; spamLast = now; spamShown = 0;
+                        spamStart = now; spamMax = 0; spamOver = 0; spamFrames = 0; spamLast = now; spamShown = 0; spamLastShow = now; spamAcc = 0;
                         if (spamMgr == null || spamPlanet == null) { Log("hitspam: 판정 글자 관리자/행성 없음"); spamMgr = null; return true; }
                         spamShow = AccessTools.Method(spamMgr.GetType(), "ShowHitText");
                     }
@@ -914,6 +916,9 @@ namespace StutterFix
                     if (spamFrames > 0) { if (dt > spamMax) spamMax = dt; if (dt > 15f) spamOver++; }
                     spamFrames++;
                     var margins = new[] { HitMargin.TooEarly, HitMargin.VeryEarly, HitMargin.EarlyPerfect, HitMargin.Perfect, HitMargin.LatePerfect, HitMargin.VeryLate, HitMargin.TooLate, HitMargin.Multipress, HitMargin.FailMiss, HitMargin.FailOverload, HitMargin.OverPress };
+                    int per;
+                    if (perSec) { spamAcc += rate * (now - spamLastShow); per = (int)spamAcc; spamAcc -= per; } else per = (int)rate;
+                    spamLastShow = now;
                     for (int k = 0; k < per; k++)
                     {
                         var hm = margins[spamRng.Next(margins.Length)];
