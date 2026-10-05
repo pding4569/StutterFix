@@ -1046,6 +1046,9 @@ namespace StutterFix
                 ch |= Option("hittextfade", ref c.HitTextFade, T("판정 글자 가볍게 사라지기", "Lighter judgment fade"),
                     T("판정 글자가 투명해지며 사라질 때 글자를 매번 새로 만들지 않고 색만 바꿉니다. 직접 플레이할 때 판정 글자가 많이 떠 있는 빠른 구간에서 프레임이 가벼워집니다. 보이는 모습은 같습니다.",
                       "When judgment text fades out, only its color is updated instead of rebuilding the text every frame. Lighter frames in dense sections when you play by hand. Looks the same."), null);
+                ch |= Option("hitmeterfade", ref c.HitMeterFade, T("판정 오차 막대 가볍게", "Lighter hit error meter"),
+                    T("판정 오차 막대의 눈금이 사라질 때 눈금 그림을 매 프레임 다시 만들지 않고 투명도만 바꿉니다. 박자가 빠른 구간에서 프레임이 가벼워집니다. 보이는 모습은 같습니다.",
+                      "When hit error meter ticks fade out, only their opacity is updated instead of rebuilding each tick every frame. Lighter frames in fast sections. Looks the same."), null);
                 ch |= Option("flooranim", ref c.FloorAnim, T("타일 애니메이션 직접 처리", "Tile move animations"),
                     T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
                       "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);

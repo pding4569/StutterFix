@@ -69,6 +69,7 @@
     <Compile Include="ParallelDecode.cs" />
     <Compile Include="DecoBatch.cs" />
     <Compile Include="HitTextFade.cs" />
+    <Compile Include="HitMeterFade.cs" />
     <Compile Include="PlayTweaks.cs" />
     <Compile Include="GameScreenButton.cs" />
     <Compile Include="SystemMonitor.cs" />

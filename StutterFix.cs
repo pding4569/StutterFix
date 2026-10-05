@@ -165,6 +165,7 @@ namespace StutterFix
                 ParallelDecode.Install(harmony);
                 DecoBatch.Install(harmony);
                 HitTextFade.Install(harmony);
+                HitMeterFade.Install(harmony);
                 PlayTweaks.Install(harmony);
                 TexCompress.Install(harmony);
                 HalfRender.Install(harmony);
@@ -587,6 +588,7 @@ namespace StutterFix
             RecolorSplit.Enabled = E("RecolorSplit", Config.RecolorSplit);
             TweenFix.Enabled = E("TweenGuard", Config.TweenGuard);
             HitTextFade.Enabled = E("HitTextFade", Config.HitTextFade);
+            HitMeterFade.Enabled = E("HitMeterFade", Config.HitMeterFade);
             {
                 var off = new HashSet<string>((Config.EffectsOff ?? "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
                 foreach (var k in PlayTweaks.Kinds) k.Off = off.Contains(k.Event);
@@ -834,6 +836,7 @@ namespace StutterFix
         public bool Precheck = true;       // 곧 발동할 무거운 장식 이동이 아무것도 안 바꾸는지 미리 확인해 두고 건너뛰기
         public bool FloorAnim = true;      // 길이 있는 타일 이동(MoveTrack)의 애니메이션을 DOTween 대신 모드가 돌림
         public bool HitTextFade = true;    // 판정 글자가 투명해질 때 메시 전체 대신 정점 색만 바꾸기
+        public bool HitMeterFade = true;   // 판정 오차 막대 눈금이 사라질 때 그림을 다시 만들지 않고 렌더러 투명도만 바꾸기
         // 연출 끄기 (기본 꺼짐: 켜면 화면이 달라진다)
         public string EffectsOff = "";     // 끌 효과 이벤트 이름들 (쉼표로)
         public bool GameScreenButton = true;   // 에디터 재생 단추 옆 "게임 화면으로 플레이" 단추

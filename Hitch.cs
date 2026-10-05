@@ -222,7 +222,7 @@ namespace StutterFix
                 {
                     endLogged = true;
                     string perf = PerfOverlay.SongSummary();
-                    if (perf != null) Main.Entry.Logger.Log("[곡] " + perf + " | 같은 그림자 색 건너뛰기 " + TextFix.SkippedSameShadow + "회" + ParticleFix.Summary() + LeakGuard.Summary() + TypeCache.Summary() + LowEnd.Summary() + (HitTextFade.Fast + HitTextFade.Slow > 0 ? " | " + HitTextFade.Summary() : "")
+                    if (perf != null) Main.Entry.Logger.Log("[곡] " + perf + " | 같은 그림자 색 건너뛰기 " + TextFix.SkippedSameShadow + "회" + ParticleFix.Summary() + LeakGuard.Summary() + TypeCache.Summary() + LowEnd.Summary() + (HitTextFade.Fast + HitTextFade.Slow > 0 ? " | " + HitTextFade.Summary() : "") + (HitMeterFade.Fast + HitMeterFade.Slow > 0 ? " | " + HitMeterFade.Summary() : "")
                         + (PlayTweaks.Skipped + PlayTweaks.HiddenJudge + PlayTweaks.BlockedZoom + PlayTweaks.FilterOffs + PlayTweaks.DecoNotMade + PlayTweaks.DecoHidden > 0 ? string.Format(" | 연출 끄기{6}: 효과 {0}개 건너뜀, 필터 {3}번 끔, 장식 안 만듦 {4}개·숨김 {5}개, 판정 글자 {1}개 숨김, 휠 확대 {2}번 막음", PlayTweaks.Skipped, PlayTweaks.HiddenJudge, PlayTweaks.BlockedZoom, PlayTweaks.FilterOffs, PlayTweaks.DecoNotMade, PlayTweaks.DecoHidden, PlayTweaks.NoFx ? "(노이펙)" : "") : ""));
                     PlayTweaks.Skipped = PlayTweaks.HiddenJudge = PlayTweaks.BlockedZoom = 0; PlayTweaks.FilterOffs = 0; PlayTweaks.DecoHidden = 0;
                     Main.Entry.Logger.Log("[장식 이동] " + ZeroTween.Summary() + " | " + MoveApply.Summary() + EffectBudget.Summary());
