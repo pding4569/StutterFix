@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using HarmonyLib;
 using UnityEngine;
 
@@ -937,6 +938,25 @@ namespace StutterFix
                     gamePhase = 0; Log(string.Format("에디터 열림 ({0:F1}초)", now - openStartedAt));
                     return true;
                 }
+                case "bigrend":
+                {
+                    // bigrend: 켜져 있는 렌더러 중 큰 것(경계 상자 긴 변 > 15) - 화면을 덮는 물체 찾기
+                    int n = 0;
+                    var cnt = new Dictionary<string, int>();
+                    foreach (var r in UnityEngine.Object.FindObjectsOfType<Renderer>())
+                    {
+                        if (!r.enabled || !r.gameObject.activeInHierarchy || r.forceRenderingOff) continue;
+                        var sz = r.bounds.size;
+                        if (Mathf.Max(sz.x, sz.y) < 15f) continue;
+                        var t = r.transform; string path = t.name; if (t.parent != null) path = t.parent.name + "/" + path; if (t.parent != null && t.parent.parent != null) path = t.parent.parent.name + "/" + path;
+                        string col = ""; var sr = r as SpriteRenderer; if (sr != null) col = " 색 " + sr.color;
+                        string key = r.GetType().Name + " " + path + " 크기 " + sz.x.ToString("F0") + "x" + sz.y.ToString("F0") + col + " 층 " + r.sortingLayerName + "/" + r.sortingOrder + " 재질 " + (r.sharedMaterial != null ? r.sharedMaterial.name : "-");
+                        cnt[key] = cnt.TryGetValue(key, out var c0) ? c0 + 1 : 1; n++;
+                    }
+                    Log("bigrend: 큰 렌더러 " + n + "개");
+                    foreach (var kv in cnt.OrderByDescending(x => x.Value).Take(15)) Log("bigrend:  " + kv.Value + "개 " + kv.Key);
+                    return true;
+                }
                 case "uidump":
                 {
                     // uidump: 에디터 재생 단추와 그 부모의 구조 (자리·크기·컴포넌트)
@@ -975,6 +995,20 @@ namespace StutterFix
                         if (!r.enabled) rOff++; else if (r.forceRenderingOff) force++; else if (r.color.a <= 0f) clear++; else vis++;
                     }
                     Log(string.Format("decostate: 장식 {0}개, 꺼진 오브젝트 {1}, 꺼진 렌더러 {2}, 그리기 꺼짐 {3}, 투명 {4}, 보임 {5}", total, inactive, rOff, force, clear, vis));
+                    // 켜져 있는 장식 중 히트박스 장식 (노이펙에서 남는 것)
+                    int hb = 0; var names = new List<string>();
+                    foreach (var d in mgr.allDecorations)
+                    {
+                        if (d == null || !d.gameObject.activeInHierarchy || !d.useHitbox) continue;
+                        hb++;
+                        if (names.Count < 12 && d.sourceLevelEvent != null)
+                        {
+                            object img = null; try { img = d.sourceLevelEvent["decorationImage"]; } catch { }
+                            object tag = null; try { tag = d.sourceLevelEvent["tag"]; } catch { }
+                            names.Add(string.Format("{0}({1}, {2}, 태그 {3})", img, d.hitbox, d.hitboxTriggerType, tag));
+                        }
+                    }
+                    Log("decostate: 켜진 히트박스 장식 " + hb + "개: " + string.Join(" | ", names.ToArray()));
                     return true;
                 }
                 case "decoaudit":

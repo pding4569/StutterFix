@@ -192,7 +192,10 @@ namespace StutterFix
         {
             Kind k;
             if (!byMethod.TryGetValue(__originalMethod, out k) || !k.OffNow) return true;
-            if (__instance == null || __instance.sourceLevelEvent == null) return true;
+            if (__instance == null) return true;
+            // 배경 그림 효과는 게임이 이벤트를 연결하지 않고 따로 만든다(scnGame 배경 반복 처리) -> 이벤트가 없어도 건너뛴다.
+            // 맵 시작 배경은 SetBackground 가 따로 하므로 이 효과는 전부 맵 중간의 배경 바꾸기다.
+            if (__instance.sourceLevelEvent == null && k.Tiles != TileLook.Background) return true;
             if (k.Deco && TouchesHitbox(__instance, __originalMethod)) return true;
             Skipped++;
             return false;
