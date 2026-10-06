@@ -138,7 +138,15 @@ namespace StutterFix
         private static readonly Dictionary<MethodBase, FieldInfo> tagField = new Dictionary<MethodBase, FieldInfo>();
 
         private static readonly Color PlainTile = new Color32(0xDE, 0xBB, 0x7B, 0xFF);   // 게임 기본 타일 색
+        private static bool prepBroken, unhideBroken;
         public static void PrepFloorPrefix(ffxChangeTrack __instance)
+        {
+            if (prepBroken) return;
+            try { PrepFloorImpl(__instance); }
+            catch (Exception ex) { prepBroken = true; Main.Entry.Logger.Log("[연출 끄기] 타일 모양 바꾸기 끔 (게임 코드가 달라짐): " + ex.Message); }
+        }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        private static void PrepFloorImpl(ffxChangeTrack __instance)
         {
             var f = __instance != null ? __instance.floor : null;
             if (f == null) return;
@@ -166,6 +174,31 @@ namespace StutterFix
             }
         }
 
+        // 이름으로 찾은 함수를 앞 인자만 채워 부른다. 나머지는 기본값(없으면 그 형식의 기본값). 게임 버전마다 인자가 늘어도 된다.
+        private static readonly Dictionary<string, MethodInfo> looseCache = new Dictionary<string, MethodInfo>();
+        internal static void CallLoose(object target, string name, params object[] first)
+        {
+            var t = target.GetType();
+            string key = t.FullName + "." + name;
+            MethodInfo m;
+            if (!looseCache.TryGetValue(key, out m))
+            {
+                foreach (var c in t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                    if (c.Name == name && c.GetParameters().Length >= first.Length && (m == null || c.GetParameters().Length < m.GetParameters().Length)) m = c;
+                looseCache[key] = m;
+            }
+            if (m == null) return;
+            var ps = m.GetParameters();
+            var args = new object[ps.Length];
+            for (int i = 0; i < ps.Length; i++)
+            {
+                if (i < first.Length) args[i] = first[i];
+                else if (ps[i].HasDefaultValue) args[i] = ps[i].DefaultValue;
+                else args[i] = ps[i].ParameterType.IsValueType ? Activator.CreateInstance(ps[i].ParameterType) : null;
+            }
+            m.Invoke(target, args);
+        }
+
         public static void BackgroundPostfix(scnGame __instance)
         {
             if (!LookOff(TileLook.Background) || __instance == null) return;
@@ -173,8 +206,10 @@ namespace StutterFix
             {
                 var cam = scrCamera.instance;
                 if (cam != null && cam.Bgcamstatic != null) cam.Bgcamstatic.backgroundColor = Color.black;
-                if (__instance.custBG != null) __instance.custBG.SetCustomBG(null, Color.white);   // 원래 그림(baseSprite)은 두어 끄면 다음 재생에 돌아온다
-                __instance.ShowTutorialBackground(false);
+                // 게임 함수는 리플렉션으로 부른다. 게임 3.4.0(알파)에서 SetCustomBG 인자가 늘어, 직접 부르면 이 함수가 컴파일되는 순간
+                // MissingMethodException 이 나서 노이펙을 안 켜도 재생 시작·나가기가 끊겼다.
+                if (__instance.custBG != null) CallLoose(__instance.custBG, "SetCustomBG", null, Color.white);   // 원래 그림(baseSprite)은 두어 끄면 다음 재생에 돌아온다
+                CallLoose(__instance, "ShowTutorialBackground", false);
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 배경 끄기 실패: " + ex.Message); }
         }
@@ -196,7 +231,12 @@ namespace StutterFix
             // 배경 그림 효과는 게임이 이벤트를 연결하지 않고 따로 만든다(scnGame 배경 반복 처리) -> 이벤트가 없어도 건너뛴다.
             // 맵 시작 배경은 SetBackground 가 따로 하므로 이 효과는 전부 맵 중간의 배경 바꾸기다.
             if (__instance.sourceLevelEvent == null && k.Tiles != TileLook.Background) return true;
-            if (k.Deco && TouchesHitbox(__instance, __originalMethod)) return true;
+            if (k.Deco)
+            {
+                bool hb;
+                try { hb = TouchesHitbox(__instance, __originalMethod); } catch { hb = true; }
+                if (hb) return true;
+            }
             Skipped++;
             return false;
         }
@@ -226,7 +266,7 @@ namespace StutterFix
         // 맵을 열 때 이 장식을 만들지 않을지 (게임 화면에서만. 이미지 미리 풀기도 이걸 보고 건너뛴다)
         internal static bool SkipDecoAtLoad(LevelEvent ev)
         {
-            return DecoOff && !ADOBase.isLevelEditor && !HasHitbox(ev);
+            try { return DecoOff && !ADOBase.isLevelEditor && !HasHitbox(ev); } catch { return false; }
         }
 
         // 게임 화면에서 장식을 안 만들 때는 장식 이동 효과가 바꿔 넣을 이미지도 미리 불러오지 않는다
@@ -302,7 +342,7 @@ namespace StutterFix
             if (clsToEditor && notMadeIn != null && ReferenceEquals(notMadeIn, scnGame.instance))
             {
                 notMadeIn = null;
-                try { scnGame.instance.UpdateDecorationObjects(true); Main.Entry.Logger.Log("[연출 끄기] 게임 화면에서 에디터로: 안 만든 장식을 다시 만듦"); }
+                try { CallLoose(scnGame.instance, "UpdateDecorationObjects", true); Main.Entry.Logger.Log("[연출 끄기] 게임 화면에서 에디터로: 안 만든 장식을 다시 만듦"); }
                 catch (Exception ex) { Main.Entry.Logger.Log("[연출 끄기] 장식 다시 만들기 실패: " + ex.Message); }
             }
             if (hidden.Count == 0) return;
@@ -420,9 +460,22 @@ namespace StutterFix
             return name.Replace('_', ' ');
         }
 
+        // 완벽 판정: 3.3 까지는 Perfect 하나, 3.4(알파)부터는 PerfectMinus / XPerfect / PerfectPlus. 이름으로 골라 두 버전 모두에서 돈다.
+        private static HashSet<int> perfectSet;
+        private static bool IsPerfect(HitMargin m)
+        {
+            if (perfectSet == null)
+            {
+                perfectSet = new HashSet<int>();
+                foreach (var n in new[] { "Perfect", "PerfectMinus", "XPerfect", "PerfectPlus" })
+                    try { if (Enum.IsDefined(typeof(HitMargin), n)) perfectSet.Add((int)Enum.Parse(typeof(HitMargin), n)); } catch { }
+            }
+            return perfectSet.Contains((int)m);
+        }
+
         public static bool HitTextPrefix(HitMargin hitMargin)
         {
-            if (HideJudgeAll || (HideJudgePerfect && hitMargin == HitMargin.Perfect)) { HiddenJudge++; return false; }
+            if (HideJudgeAll || (HideJudgePerfect && IsPerfect(hitMargin))) { HiddenJudge++; return false; }
             return true;
         }
 

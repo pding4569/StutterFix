@@ -1057,7 +1057,7 @@ namespace StutterFix
                     float dt = (now - spamLast) * 1000f; spamLast = now;
                     if (spamFrames > 0) { if (dt > spamMax) spamMax = dt; if (dt > 15f) spamOver++; }
                     spamFrames++;
-                    var margins = new[] { HitMargin.TooEarly, HitMargin.VeryEarly, HitMargin.EarlyPerfect, HitMargin.Perfect, HitMargin.LatePerfect, HitMargin.VeryLate, HitMargin.TooLate, HitMargin.Multipress, HitMargin.FailMiss, HitMargin.FailOverload, HitMargin.OverPress };
+                    var margins = new[] { HitMargin.TooEarly, HitMargin.VeryEarly, HitMargin.EarlyPerfect, (HitMargin)Enum.Parse(typeof(HitMargin), Enum.IsDefined(typeof(HitMargin), "Perfect") ? "Perfect" : "XPerfect"), HitMargin.LatePerfect, HitMargin.VeryLate, HitMargin.TooLate, HitMargin.Multipress, HitMargin.FailMiss, HitMargin.FailOverload, HitMargin.OverPress };
                     int per;
                     if (perSec) { spamAcc += rate * (now - spamLastShow); per = (int)spamAcc; spamAcc -= per; } else per = (int)rate;
                     spamLastShow = now;

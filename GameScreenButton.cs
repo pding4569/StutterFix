@@ -19,7 +19,15 @@ namespace StutterFix
         private static bool shown;
 
         // 모드 OnUpdate 에서 매 프레임 (에디터가 없으면 바로 돌아간다)
+        private static bool broken;
         internal static void Tick()
+        {
+            if (broken) return;
+            try { TickImpl(); }
+            catch (Exception ex) { broken = true; Remove(); Main.Entry.Logger.Log("[게임 화면] 단추 끔 (게임 코드가 달라짐): " + ex.Message); }
+        }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        private static void TickImpl()
         {
             var ed = scnEditor.instance;
             if (!Enabled || ed == null) { if (btn != null && !Enabled) Remove(); return; }
@@ -68,7 +76,8 @@ namespace StutterFix
         {
             var ed = scnEditor.instance;
             if (ed == null || ed.playMode) return;
-            ed.CheckUnsavedChanges(Go);   // 저장하지 않은 변경이 있으면 게임의 "저장할까요" 창을 먼저 띄운다
+            try { PlayTweaks.CallLoose(ed, "CheckUnsavedChanges", (Action)Go); }   // 저장하지 않은 변경이 있으면 게임의 "저장할까요" 창을 먼저 띄운다
+            catch (Exception ex) { Main.Entry.Logger.Log("[게임 화면] 저장 확인 실패: " + ex.Message); }
         }
 
         // 자동 시험(gamebtn)도 이것을 부른다
@@ -85,7 +94,8 @@ namespace StutterFix
             }
             catch { }
             Main.Entry.Logger.Log("[게임 화면] 에디터에서 게임 화면으로 열기: " + Path.GetFileName(path));
-            ADOBase.controller.LoadCustomLevel(path);
+            try { PlayTweaks.CallLoose(ADOBase.controller, "LoadCustomLevel", path); }
+            catch (Exception ex) { Main.Entry.Logger.Log("[게임 화면] 열기 실패: " + ex.Message); }
         }
 
         // 화면(모니터 테두리) 안에 재생 삼각형

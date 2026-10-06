@@ -57,6 +57,11 @@ made by **naro** & **Claude**
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 아이콘 옆 점으로 알려 줍니다.
 
+## 2.5.3 에서 바뀐 것
+
+- **게임 3.4.0(알파, Unity 6000.3.21)에서 모드가 동작하지 않던 것을 고쳤습니다.** 배경 설정 함수(SetCustomBG)의 인자가 늘어 2.5.x 의 "연출 끄기" 배경 코드가 그 함수를 찾지 못했고(MissingMethodException), 노이펙을 켜지 않아도·안전 모드에서도 에디터로 나가기가 중간에 끊겼습니다. 바뀔 수 있는 게임 함수는 이름으로 찾아 부르게 했고, 새로 넣은 연출 끄기·게임 화면 단추 코드는 게임 코드가 달라지면 그 기능만 꺼지게 했습니다. 알파판에서 재생·나가기·노이펙·게임 화면 단추를 확인했습니다. (분석: MAIJEUN)
+- 알파판의 새 판정(PerfectMinus / XPerfect / PerfectPlus)에서 "완벽 판정만 숨기기"가 셋 모두에 적용됩니다.
+
 ## 2.5.2 에서 바뀐 것
 
 ### 곡 중 끊김·프레임
@@ -336,6 +341,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. **Visuals, judgement and audio stay identical to the vanilla game**; features that may change how things look (the low-end page) are off by default. Every feature was built after measuring a real hitch, and dev builds cross-check the results against the original game code.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.5.3:** fixes the mod on game 3.4.0 (alpha, Unity 6000.3.21): SetCustomBG gained a parameter, so the 2.5.x effects-off background code threw MissingMethodException and broke exiting to the editor even with no-effects mode off and in safe mode (analysis: MAIJEUN). Game methods that may change are now called by name, and the new effects-off and game-screen-button code turns itself off instead of breaking the game flow. "Hide Perfect only" covers the alpha's PerfectMinus / XPerfect / PerfectPlus.
 
 **2.5.2:** lighter hit error meter (ticks fade by renderer alpha instead of rebuilding each tick every frame; HELLO 2026 232–234 → 254–255 FPS, +9%) and lighter judgment text fade (+4.7% frames with 20 judgments/s). Levels whose VRAM is over 88% full right after loading now get large images capped one step lower on the next load (down to 2048): PLUM MEGAMIX 566 s hitch (Windows paging an evicted texture back into VRAM when a hidden decoration first appeared, confirmed with PerfView) 36/33 → 20/23 ms. Safe mode keeps image downscaling. New **Effects off** page (all off by default): turn off level effects by kind (camera, tile colors and styles, tile appear/disappear, tile moves, background, planet scale, decorations, filters, bloom, flash, hall of mirrors, shake, screen tile/scroll, frame rate), filters one by one grouped by kind, judgment text, mouse-wheel zoom while playing; and a **no-effects mode** (decorations hidden except hitbox ones, plain tiles, black background, tiles fade in 1.5 s ahead and fade out once passed; in the game screen decorations are not created at all, so levels open faster). Editor: a **play in game screen** button next to the play button.
 
