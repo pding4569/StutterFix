@@ -1,4 +1,7 @@
 $ErrorActionPreference = 'Stop'
+# Section-12 experiments are not authorized for tester distribution.
+$binaryText = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes("$PSScriptRoot\out\FrameGenLab.exe"))
+if ($binaryText.Contains('--gpu-timing')) { throw 'Research binary: preserve the existing tester ZIP; section-12 experiments must not be packaged' }
 $repo = (Resolve-Path "$PSScriptRoot\..\..").Path
 $dist = Join-Path $repo 'dist'
 New-Item -ItemType Directory -Force $dist | Out-Null

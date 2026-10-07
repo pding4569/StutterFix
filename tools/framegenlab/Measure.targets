@@ -5,6 +5,6 @@
     <Compile Include="$(FrameGenProbeMain)" />
     <Compile Remove="AutoTest.cs" />
     <Compile Include="$(FrameGenProbeAutoTest)" />
-    <Compile Include="$(MSBuildThisFileDirectory)StageProbe.cs" />
+    <Compile Include="$(FrameGenProbeSource)" />
   </ItemGroup>
 </Project>

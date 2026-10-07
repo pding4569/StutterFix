@@ -1,7 +1,25 @@
 # FrameGenLab — 게임 밖 프레임 생성 시험
 
-이번 범위는 `docs/framegen-research.md` 9장 **1a와 0단계**다. 실제 게임의 프레임 생성 설정은 아직 추가하지 않았다.
+11장은 9장 **1a와 0단계**, 12장은 수직동기 0과 **1b 상태·UI 조사**다. 실제 게임의 프레임 생성 설정은 아직 추가하지 않았다.
 게임 그림·게임 DLL·다른 모드 코드는 포함하지 않는다. 타일 길·움직이는 장식·행성 둘을 직접 만든 장면이다.
+
+12장 추가 실험은 배포하지 않는다. 기존 테스터 ZIP을 보존하며, `pack.ps1`은 새 GPU 계측 바이너리를 거부한다.
+
+```powershell
+.\build.ps1
+py -3 .\run_unsynced.py
+# 게임을 정상 종료한 상태에서만; 설치 DLL·설정을 디스크에 백업하고 끝에 복원
+.\build_measure.ps1 -Probe Capture
+py -3 .\capture_game.py --map '<맵.adofai>' --seconds 15 --ui --out results\capture-new
+```
+
+독립 시험은 3440×1440, Present 동기 0, 원본 400/200/100 × 끔/2/3/4, 조건마다 15초다.
+출력 FPS는 성공한 Present/s이며 물리적 화면 표시 수는 확인 안 됨. GPU 값은 D3D11 timestamp/disjoint다.
+`--gpu-timing 0`으로 계측을 끈 대조를 할 수 있다. CSV·로그·게임 캡처는 `results/`에만 둔다.
+게임 캡처는 WaitForEndOfFrame 숫자 버퍼를 종료 때 CSV로 쓰고, 재생 진입 뒤 8초에 camRT/화면을 한 번 읽는다.
+`--ui`는 ScreenSpaceOverlay 루트만 임시 UI 카메라로 옮겨 투명 RT에 한 번 그린 뒤 상태를 복원한다.
+Canvas·layer 복원은 확인했지만 RectTransform의 미세한 반올림 차이가 남았다. 이 방법을 그대로 정식 기능에 쓰지 않는다.
+WorldSpace 표시 요소·원래 화면과의 정확한 합성·매 프레임 비용은 확인 안 됨. 캡처/PNG 저장 프레임은 성능 표본으로 쓰지 않는다.
 
 ## 테스터가 실행할 것
 

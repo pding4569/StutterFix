@@ -245,3 +245,138 @@ API 근거: [DXGI Flip model](https://learn.microsoft.com/en-us/windows/win32/di
 [프레임 대기 객체](https://learn.microsoft.com/en-us/windows/uwp/gaming/reduce-latency-with-dxgi-1-3-swap-chains),
 [PresentMon 지표](https://github.com/GameTechDev/PresentMon/blob/main/README-ConsoleApplication.md).
 
+## 12. 수직동기 0·실제 게임 상태 캡처 (2026-10-07, `codex/framegen`)
+
+이번 범위는 **독립 시험 프로그램의 비동기 출력 → 1b 실험**이다. 정식 기능·버전·게임 렌더링 경로는 바꾸지 않는다.
+측정 DLL은 `build_measure.ps1 -Probe Capture`로 만든 소스 사본에만 코드를 주입한다. 이번 실험을 정식 빌드나 테스터 ZIP에 넣지 않는다.
+기존 테스터 ZIP은 보존하며, `pack.ps1`은 이번 GPU 측정 옵션이 들어간 바이너리의 포장을 거부한다.
+
+### 12.1. 수직동기 끈 독립 출력
+
+3440×1440 전체 화면 창, RTX 4060 Ti, 현재 모니터 144Hz. `Present(0, DXGI_PRESENT_ALLOW_TEARING)`.
+ALLOW_TEARING 지원을 확인하고 스왑체인 생성 때 같은 플래그를 넣었다. FlipDiscard·버퍼 2장·대기 객체·최대 대기 1개는 유지했다.
+`--sync 0`에서는 목표 출력을 주사율에서 자르지 않는다. 원본은 400/200/100 FPS의 시간표로 갱신하고, 나머지는 **카메라 재투영 + 현재 행성 둘 그리기(hybrid)**다.
+각 조건 **15초 전체**를 사용하며 시작·끝을 제외하지 않았다. `run_unsynced.py`가 1초 단위 출력·원본 횟수도 남긴다.
+
+아래 출력 FPS는 **성공한 Present 횟수 / 15초**다. 흔히 표시 FPS라고 부르는 출력률이지만, 모니터에 완전한 프레임으로 실제 표시된 수는 **확인 안 됨**.
+수직동기 0에서 DXGI 표시 통계 표본은 12조건 모두 0개였다. 144Hz보다 많은 출력이 완전한 화면으로 모두 표시됐다고 해석하지 않는다.
+11장의 PresentMon 표시 추적 문제도 해결된 것으로 처리하지 않는다.
+
+GPU 시간은 CPU 제출 시간이 아니라 D3D11 timestamp 3개와 disjoint/frequency로 잰다.
+128개 질의 묶음을 먼저 만들고, 프레임 중에는 `GetData(DONOTFLUSH)`로 완료된 값만 읽는다. 미완료 질의는 기다리지 않는다.
+측정 뒤 한 번 Flush하고 남은 값만 회수한다. 12조건 모두 질의 빠짐·disjoint 오류 0, 유효 표본은 전체 출력 수와 같았다.
+생성 프레임의 전체 draw 구간을 재므로 재투영·행성·고정 UI 띠가 포함된다. Present/대기·CPU 비용은 포함되지 않는다.
+실제 게임 GPU 비용·입력 지연·전력은 **확인 안 됨**. 합성 장면에는 게임의 필터·많은 장식이 없다.
+
+원본 약 400 FPS:
+
+| 배수 | 출력 FPS(Present/s) | 원본 FPS | 끔 대비 원본 감소 | 생성 1장 GPU 평균 / 95% |
+|---|---:|---:|---:|---|
+| 끔 | 399.67 | 399.67 | 기준 | 해당 없음 |
+| 2 | 798.67 | 399.87 | -0.050% | 0.103 / 0.126ms |
+| 3 | 1197.20 | 399.73 | -0.017% | 0.101 / 0.118ms |
+| 4 | 1593.47 | 399.60 | 0.017% | 0.101 / 0.117ms |
+
+원본 200 FPS:
+
+| 배수 | 출력 FPS(Present/s) | 원본 FPS | 끔 대비 원본 감소 | 생성 1장 GPU 평균 / 95% |
+|---|---:|---:|---:|---|
+| 끔 | 200.00 | 200.00 | 기준 | 해당 없음 |
+| 2 | 399.87 | 200.00 | 0.000% | 0.104 / 0.128ms |
+| 3 | 599.47 | 200.00 | 0.000% | 0.104 / 0.126ms |
+| 4 | 798.40 | 200.00 | 0.000% | 0.103 / 0.120ms |
+
+원본 100 FPS:
+
+| 배수 | 출력 FPS(Present/s) | 원본 FPS | 끔 대비 원본 감소 | 생성 1장 GPU 평균 / 95% |
+|---|---:|---:|---:|---|
+| 끔 | 99.80 | 99.80 | 기준 | 해당 없음 |
+| 2 | 200.00 | 100.00 | -0.200% | 0.108 / 0.142ms |
+| 3 | 299.87 | 100.00 | -0.200% | 0.105 / 0.129ms |
+| 4 | 399.60 | 100.00 | -0.200% | 0.105 / 0.130ms |
+
+음수 감소율은 이번 판의 원본이 조금 더 많았다는 뜻이다. 각 조건 한 판이라 그 차이를 성능 향상으로 주장하지 않는다.
+400 FPS에서 GPU 계측을 끈 추가 15초 대조(끔/2/3/4)는 출력 399.67 / 799.00 / 1197.33 / 1593.33,
+원본 399.67 / 399.87 / 399.93 / 399.73 FPS였다. 계측 켬과 출력률 차이는 최대 0.33 FPS였다.
+이는 이 장면에서 큰 출력률 손실이 보이지 않았다는 증거이며, 질의 비용이 0이라는 증거는 아니다.
+모든 실행의 GPU UV 대조도 32카메라·512점, 허용 오차 1/255 안에서 불일치 0이었다.
+
+API 근거: [D3D11 timestamp/disjoint](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_query),
+[수직동기 0·tearing 조건](https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/variable-refresh-rate-displays).
+
+### 12.2. 1b: 실제 게임 프레임 끝의 상태
+
+`CaptureProbe.cs`는 PlayerAuto 소스 사본에서만 설치한다. Harmony 메서드 패치는 추가하지 않는다.
+`WaitForEndOfFrame`에서 본 카메라(`scrCamera.camobj`)의 위치·quaternion 회전·orthographicSize·FOV·projectionMatrix·worldToCameraMatrix,
+`scrController.planetRed/planetBlue.transform.position`, camRT 식별자와 Unity 프레임 번호를 매 프레임 숫자 배열에 저장한다.
+이 시점은 카메라와 GUI의 렌더 제출 뒤이며 **GPU 실행 완료를 기다린다는 뜻은 아니다**.
+`Camera.onPostRender`의 본 카메라 프레임 번호도 함께 기록해 같은 프레임인지 검사했다.
+매 프레임 문자열·로그·파일 쓰기는 하지 않는다. 65,536개 버퍼를 켤 때 만들고 종료할 때 `frames.csv`와 로그 표본 3개를 쓴다.
+포화 시 오래된 표본을 덮지 않고 overflow를 센다. 해제 시 자기 코루틴·GameObject·카메라 이벤트를 모두 제거하고 배열·참조를 놓는다.
+
+HELLO 2026, 3440×1440, 수직동기 0, 매 판 새 게임, `auto on / press / wait 15 / quit`.
+첫 판 **4,732**, UI 조사 마지막 판 **4,669프레임**: Unity 프레임 번호 빠짐 0, 본 카메라 렌더 프레임과 일치 **전체**, missing/overflow 0.
+이 표본에는 시작 대기·카운트다운과 명령 사이 기다림이 포함된다. 정확히 곡 0~15초만의 표본이나 성능 벤치마크로 해석하지 않는다.
+초기 1프레임은 camRT가 아직 null이었다. 상태 값과 camRT 유무를 구분했으며 없는 그림을 캡처 성공으로 세지 않는다.
+
+마지막 판의 로그/CSV 표본(좌표는 월드 단위, 회전 quaternion은 x=y=0):
+
+| Unity 프레임 | 첫 캡처 뒤 실시간 | 카메라 x,y,z | 회전 z,w | 직교 크기 | 빨강 x,y | 파랑 x,y |
+|---|---:|---|---|---:|---|---|
+| 7063 | 0.00s | 0, 0, -10 | 0, 1 | 5.000 | 0, 0 | 1, 0 |
+| 9397 | 6.24s | 38.684, 9.983, -10 | 0.056461, 0.998405 | 26.588 | 9.235, 1.431 | 8.788, 0 |
+| 11731 | 17.51s | 459.977, 52.948, -10 | -0.055633, 0.998451 | 12.817 | 459.756, 53.911 | 460.165, 55.254 |
+
+카메라 직교 크기는 5.000~27.750, 회전 z 성분은 -0.08138~0.13053으로 변했고 행성 둘의 위치도 매 프레임 얻었다.
+이는 실제 상태를 읽은 확인이다. **끼운 시각의 카메라·행성 예측, 행성 없는 원본 만들기, 카메라 재투영을 게임 그림에 적용하는 것은 확인 안 됨**.
+필터가 왜곡한 그림과 원래 projection의 대응, 다른 맵·다중 행성·재시작/모드 reload도 확인 안 됨.
+
+### 12.3. UI를 따로 얻기: 일부 성공, 통합 기준은 미완료
+
+재생 진입 뒤 8초에 camRT·전체 화면을 한 번씩 읽고 실제 그림을 비교했다. 초기 시험의 2초 캡처는 아직 시작 안내 구간이어서 UI/장면 검증 표본으로 쓰지 않았다.
+재생 중 camRT는 **3440×1440 ARGB32**이며 게임 장면·필터를 담고, 전체 화면에는 그 위로 진행률·콤보·키 표시·모니터 HUD가 더해졌다.
+관찰한 카메라 구성:
+
+| 카메라 | depth | cullingMask | 출력 |
+|---|---:|---:|---|
+| BGStaticCam | -1.63 | 2048 | camRT |
+| BGMovingCam | -1.11 | 1024 | camRT |
+| Camera(본 화면) | -1.00 | 652183 | camRT |
+| OverlayCam | -1.63 | 1048576 | 화면 |
+
+**이름·depth만으로 그리는 순서를 단정하지 않는다.** 마지막 판 첫 프레임만 Overlay→본 카메라였고 이후 4,668프레임은 본 카메라→Overlay였다.
+지금 조건에서 Overlay가 항상 지난 camRT를 낸다는 가정은 맞지 않았다. 다른 설정/게임 상태의 순서는 확인 안 됨.
+
+화면 위 UI의 루트 Canvas **14개**는 ScreenSpaceOverlay였고 layer **0과 5**를 함께 썼다(게임 UI와 다른 모드 UI 포함).
+WorldSpace Canvas도 있었다. 레이어 5만 따로 그려서는 모든 HUD를 얻지 못하며, WorldSpace Canvas를 모두 HUD로 분류하면 맵 글자 장식도 섞일 수 있다.
+ScreenSpaceOverlay는 카메라를 지정하지 않고 화면에 그리므로, 본 카메라의 `targetTexture`만 바꾸는 것으로 UI 텍스처가 생기지 않는다.
+
+실험으로 활성 Overlay 루트만 임시 ScreenSpaceCamera로 바꾸고 전용 카메라·layer 31·투명 ARGB32 RT에 한 번 그렸다.
+카메라·planeDistance·원래 레이어·RectTransform 값을 저장하고 finally에서 돌려놓았다. layer 31에 기존 scene Renderer가 있으면 실험을 중단한다.
+**별도 `overlay-ui.png`에 게임 장면 없이 진행률·콤보·키 표시·판정 막대 등이 담긴 것을 눈으로 확인했다.**
+이전 UI 조사 판의 RGBA 검증: 총 4,953,600픽셀 중 alpha 0 = 4,691,523, alpha 255 = 151,212, 중간 alpha = 110,865.
+검정 바탕으로 장면을 덮은 그림이 아니라 투명 UI 텍스처를 얻었다.
+
+복원 검증 마지막 판: 루트 Canvas 14개·레이어 858개·RectTransform 630개. Canvas 모드/카메라/planeDistance 차이 0, 레이어 차이 0.
+그러나 **RectTransform 값 76개는 성분을 정확히 비교하면 차이가 남았다**. 로그에서 예를 들면 anchored y 63.8→63.7999878, -62→-62.0000038.
+anchoredPosition을 다시 넣을 때의 반올림뿐 아니라 레이아웃 재계산도 끼어 있다. 원래 localPosition 직접 복원과 레이아웃 콜백 뒤 재복원으로도 완전한 비트 일치를 얻지 못했다.
+따라서 **이 임시 전환 방식을 정식 렌더 경로로 채택하지 않는다**. 전체 UI 원본과 정확히 합성되는지, 다음 프레임 레이아웃까지 완전히 같아지는지, WorldSpace UI 분리와 스텐실·마스크·다른 모드 호환은 **확인 안 됨**.
+캡처·PNG 저장·UI 시험 프레임에 약 1초의 진단 끊김이 생겼다. 이 시간을 생성 프레임 비용으로 읽지 않는다. 파일 쓰기/ReadPixels를 매 프레임 돌리는 방식은 쓰지 않는다.
+
+다음 방법 후보(아직 확인 안 됨):
+
+- 기존 Overlay Canvas를 그대로 화면에 그리게 두고, 생성한 게임 그림만 UI 아래에서 합성하기. UI 상태를 바꾸지 않는 장점이 있지만 추가 Present에도 UI를 유지하는 연결 지점이 필요하다.
+- GUI의 실제 그리기 명령을 별도 RT로 보내거나 CanvasRenderer의 메시·재질을 별도로 복사해서 그리기. Canvas 모드/Transform을 건드리지 않고 마스크·클리핑·그리기 순서까지 보존할 수 있는지 검증해야 한다.
+- 실험 진입 때 한 번만 전용 UI 카메라로 분리하고 종료 때 복원하기. 매 프레임 Canvas 전환은 피하지만 원래 HUD와 화면/레이아웃이 같다는 대조가 먼저다.
+
+결론은 **카메라·행성 상태 읽기 성공, Overlay UI 투명 그림 얻기 성공, 완전한 UI 분리·복원과 실시간 연결은 미완료**다.
+게임의 렌더링을 건너뛰거나 프레임을 끼우는 기능은 이번 실험에 없다. 원본 설치 DLL·설정은 매 실행 뒤 복구했다.
+공개 요약은 `tools/framegenlab/validation-12-2026-10-07.json`, 원본 로그·CSV·그림은 무시되는 `results/`에만 둔다.
+최종 빌드 검증: 독립 C++ `/W4 /WX` 오류 0, Capture/Stage/정식 Player 빌드 오류 0(기존 경고 25개).
+LoadCheck는 Capture 210곳·정식 Player 207곳 모두 필드 불일치 0. 정식 Player DLL에는 Stage/Capture 계측 형식이 없고 `MeasureBuild=false`다.
+설치 DLL·Settings.xml·기존 테스터 ZIP SHA256은 실험 전과 일치했다. 연구 바이너리 포장 거부도 확인했다.
+
+API 근거: [WaitForEndOfFrame 시점](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/WaitForEndOfFrame.html),
+[ScreenSpaceOverlay](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/RenderMode.ScreenSpaceOverlay.html),
+[Camera.Render](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/Camera.Render.html).
+

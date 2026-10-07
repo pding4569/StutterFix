@@ -4,7 +4,7 @@
 #define _UNICODE
 #include <windows.h>
 #include <d3d11.h>
-#include <dxgi1_3.h>
+#include <dxgi1_5.h>
 #include <d3dcompiler.h>
 #include <wrl/client.h>
 #include <algorithm>
@@ -15,6 +15,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <array>
+#include <limits>
 
 using Microsoft::WRL::ComPtr;
 static void check(HRESULT hr, const char* name) {
@@ -25,7 +27,9 @@ struct Handle {
     ~Handle() { if (h) CloseHandle(h); }
 };
 struct State { float source[4], current[4], clock[4], flags[4]; };
-struct Record { double time, interval, lateness, draw, present, sourceAge, qpcStart; int real, slot; UINT presentId; };
+struct Record { double time, interval, lateness, draw, present, sourceAge, qpcStart; int real, slot; UINT presentId;
+    double gpuOutput = std::numeric_limits<double>::quiet_NaN(), gpuCompose = std::numeric_limits<double>::quiet_NaN(); };
+struct GpuQueries { ComPtr<ID3D11Query> start, compose, end, disjoint; size_t row = SIZE_MAX; };
 struct DisplayRecord { UINT present, refresh, sync; LONGLONG qpc; double observed; };
 static double frequency;
 static double now() { LARGE_INTEGER t; QueryPerformanceCounter(&t); return static_cast<double>(t.QuadPart)/frequency; }
@@ -72,12 +76,12 @@ static void capture(ID3D11Device* dev, ID3D11DeviceContext* ctx, ID3D11Texture2D
 }
 int wmain(int argc, wchar_t** argv) {
     try {
-        double hz = 0, base = 60, seconds = 20; int multiple = 2, mode = 2, width = 1280, height = 720;
+        double hz = 0, base = 60, seconds = 20; int multiple = 2, mode = 2, width = 1280, height = 720, sync = 1, gpuTiming = 0;
         bool borderless = false; std::wstring csv = L"frames.csv", shot;
         for (int i=1;i<argc;++i) {
             std::wstring a = argv[i];
             if (a == L"--borderless") { borderless = true; continue; }
-            if (a == L"--help") { puts("FrameGenLab --multiplier 2|3|4 --base 60 (0 = hz / multiplier) --hz 0 --seconds 20 --mode none|reproj|hybrid --csv frames.csv --capture image.ppm --borderless --width 1280 --height 720"); return 0; }
+            if (a == L"--help") { puts("FrameGenLab --multiplier 2|3|4 --base 60 (0 = hz / multiplier) --hz 0 --seconds 20 --mode none|reproj|hybrid --csv frames.csv --capture image.ppm --borderless --width 1280 --height 720 --sync 0|1 --gpu-timing 0|1"); return 0; }
             if (++i >= argc) throw std::runtime_error("Missing option value");
             if (a == L"--multiplier") multiple = std::stoi(argv[i]);
             else if (a == L"--base") base = std::stod(argv[i]);
@@ -88,9 +92,11 @@ int wmain(int argc, wchar_t** argv) {
             else if (a == L"--capture") shot = argv[i];
             else if (a == L"--width") width = std::stoi(argv[i]);
             else if (a == L"--height") height = std::stoi(argv[i]);
+            else if (a == L"--sync") sync = std::stoi(argv[i]);
+            else if (a == L"--gpu-timing") gpuTiming = std::stoi(argv[i]);
             else throw std::runtime_error("Unknown option");
         }
-        if (multiple<2 || multiple>4 || !std::isfinite(base) || base<0 || !std::isfinite(hz) || hz<0 || !std::isfinite(seconds) || seconds<=0 || seconds>600 || width<64 || height<64 || width>8192 || height>8192)
+        if (multiple<2 || multiple>4 || sync<0 || sync>1 || gpuTiming<0 || gpuTiming>1 || !std::isfinite(base) || base<0 || !std::isfinite(hz) || hz<0 || !std::isfinite(seconds) || seconds<=0 || seconds>600 || width<64 || height<64 || width>8192 || height>8192)
             throw std::runtime_error("Invalid numeric options");
         SetProcessDPIAware();
         POINT pt{0,0}; HMONITOR monitor = MonitorFromPoint(pt,MONITOR_DEFAULTTOPRIMARY);
@@ -102,7 +108,8 @@ int wmain(int argc, wchar_t** argv) {
         hz = std::min(hz,monitorHz);
         if (base==0) base = hz/multiple;
         if (base<1 || base>1000) throw std::runtime_error("base must be 1..1000 FPS");
-        double target = std::min(mode==0 ? base : base*multiple,hz);
+        double target = mode==0 ? base : base*multiple;
+        if (sync) target = std::min(target,hz);
         if (borderless) { width = mi.rcMonitor.right-mi.rcMonitor.left; height = mi.rcMonitor.bottom-mi.rcMonitor.top; }
         LARGE_INTEGER f; QueryPerformanceFrequency(&f); frequency = static_cast<double>(f.QuadPart);
         WNDCLASSW wc{}; wc.lpfnWndProc = wndproc; wc.hInstance = GetModuleHandleW(nullptr); wc.lpszClassName = L"FrameGenLab"; wc.hCursor = LoadCursorW(nullptr,IDC_ARROW);
@@ -119,9 +126,12 @@ int wmain(int argc, wchar_t** argv) {
         DXGI_ADAPTER_DESC ad{}; check(adapter->GetDesc(&ad),"adapter description");
         printf("process_id=%lu adapter_vendor=0x%04X device=0x%04X dedicated_vram_mb=%zu\n",GetCurrentProcessId(),ad.VendorId,ad.DeviceId,ad.DedicatedVideoMemory/1048576);
         ComPtr<IDXGIFactory2> factory; check(adapter->GetParent(IID_PPV_ARGS(&factory)),"factory");
+        BOOL tearing = FALSE; ComPtr<IDXGIFactory5> factory5;
+        if (!sync && SUCCEEDED(factory.As(&factory5))) check(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING,&tearing,sizeof(tearing)),"tearing support");
         DXGI_SWAP_CHAIN_DESC1 sd{}; sd.Width = static_cast<UINT>(width); sd.Height = static_cast<UINT>(height); sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         sd.SampleDesc.Count = 1; sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; sd.BufferCount = 2;
         sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+        if (tearing) sd.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
         ComPtr<IDXGISwapChain1> sc; check(factory->CreateSwapChainForHwnd(dev.Get(),window.h,&sd,nullptr,nullptr,&sc),"swapchain");
         check(factory->MakeWindowAssociation(window.h,DXGI_MWA_NO_ALT_ENTER),"window association");
         ComPtr<IDXGISwapChain2> sc2; check(sc.As(&sc2),"swapchain2"); check(sc2->SetMaximumFrameLatency(1),"frame latency");
@@ -191,9 +201,27 @@ int wmain(int argc, wchar_t** argv) {
         printf("GPU affine verification: %d pixels (32 cameras), mismatch=0, tolerance=1/255\n",checkedPixels);
         ctx->PSSetShader(ps.Get(),nullptr,0);
         ShowWindow(window.h,SW_SHOW); SetForegroundWindow(window.h);
-        printf("monitor=%.3fHz target=%.3fHz base=%.3fFPS multiple=%d mode=%d size=%dx%d FlipDiscard waitable latency=1\n",monitorHz,target,base,multiple,mode,width,height); fflush(stdout);
+        printf("monitor=%.3fHz target=%.3fHz base=%.3fFPS multiple=%d mode=%d size=%dx%d FlipDiscard waitable latency=1 sync=%d tearing=%d gpu_timing=%d\n",monitorHz,target,base,multiple,mode,width,height,sync,tearing,gpuTiming); fflush(stdout);
         std::vector<Record> records; records.reserve(static_cast<size_t>(seconds*target+100));
         std::vector<DisplayRecord> displayRecords; displayRecords.reserve(static_cast<size_t>(seconds*target+100));
+        std::array<GpuQueries,128> gpuQueries; size_t gpuNext = 0, gpuSkipped = 0, gpuInvalid = 0;
+        if (gpuTiming) for (auto& q : gpuQueries) {
+            D3D11_QUERY_DESC desc{D3D11_QUERY_TIMESTAMP,0};
+            check(dev->CreateQuery(&desc,&q.start),"GPU start query"); check(dev->CreateQuery(&desc,&q.compose),"GPU compose query"); check(dev->CreateQuery(&desc,&q.end),"GPU end query");
+            desc.Query = D3D11_QUERY_TIMESTAMP_DISJOINT; check(dev->CreateQuery(&desc,&q.disjoint),"GPU disjoint query");
+        }
+        auto collectGpu = [&](GpuQueries& q) {
+            if (q.row==SIZE_MAX) return;
+            D3D11_QUERY_DATA_TIMESTAMP_DISJOINT d{}; UINT64 a=0,b=0,c=0;
+            HRESULT hr = ctx->GetData(q.disjoint.Get(),&d,sizeof(d),D3D11_ASYNC_GETDATA_DONOTFLUSH); check(hr,"GPU disjoint data"); if (hr!=S_OK) return;
+            for (auto pair : {std::make_pair(q.start.Get(),&a),std::make_pair(q.compose.Get(),&b),std::make_pair(q.end.Get(),&c)}) {
+                hr = ctx->GetData(pair.first,pair.second,sizeof(UINT64),D3D11_ASYNC_GETDATA_DONOTFLUSH); check(hr,"GPU timestamp data"); if (hr!=S_OK) return;
+            }
+            if (!d.Disjoint && d.Frequency && a<=b && b<=c) {
+                records[q.row].gpuOutput = (c-a)*1000.0/d.Frequency; records[q.row].gpuCompose = (c-b)*1000.0/d.Frequency;
+            } else ++gpuInvalid;
+            q.row = SIZE_MAX;
+        };
         UINT lastDisplay = 0; HRESULT statsResult = S_OK;
         double start = now(), previous = 0, sourceTime = 0; int oldReal = -1, missed = 0; bool occluded = false;
         Handle timer; timer.h = CreateWaitableTimerExW(nullptr,nullptr,0x2,TIMER_ALL_ACCESS); // CREATE_WAITABLE_TIMER_HIGH_RESOLUTION (Win10 1803+)
@@ -227,11 +255,19 @@ int wmain(int argc, wchar_t** argv) {
             if (real) { sourceTime = realIndex/base; oldReal = realIndex; }
             camera(sourceTime,s.source); camera(t-start,s.current); s.clock[0] = static_cast<float>(sourceTime); s.clock[1] = static_cast<float>(t-start);
             ID3D11ShaderResourceView* nullSrv = nullptr;
+            GpuQueries* q = nullptr;
+            if (gpuTiming) {
+                auto& candidate = gpuQueries[gpuNext++ % gpuQueries.size()]; collectGpu(candidate);
+                if (candidate.row==SIZE_MAX) { q=&candidate; q->row=records.size(); ctx->Begin(q->disjoint.Get()); ctx->End(q->start.Get()); }
+                else ++gpuSkipped; // Never wait on GPU or overwrite an unfinished query during timing.
+            }
             if (real) { ctx->PSSetShaderResources(0,1,&nullSrv); s.flags[1] = 1; draw(sourceView.Get(),td.Width,td.Height,s); }
+            if (q) ctx->End(q->compose.Get());
             s.flags[1] = 0;
             ID3D11ShaderResourceView* srv = sourceSrv.Get(); ctx->PSSetShaderResources(0,1,&srv); draw(backView.Get(),static_cast<UINT>(width),static_cast<UINT>(height),s);
-            double beforePresent = now(); HRESULT hr = sc->Present(1,0); double afterPresent = now();
-            check(hr,"Present"); if (hr == DXGI_STATUS_OCCLUDED) { puts("Occluded; measurement aborted"); occluded = true; break; }
+            if (q) { ctx->End(q->end.Get()); ctx->End(q->disjoint.Get()); }
+            double beforePresent = now(); HRESULT hr = sc->Present(static_cast<UINT>(sync),tearing ? DXGI_PRESENT_ALLOW_TEARING : 0); double afterPresent = now();
+            check(hr,"Present"); if (hr == DXGI_STATUS_OCCLUDED) { if (q) q->row=SIZE_MAX; puts("Occluded; measurement aborted"); occluded = true; break; }
             UINT presentId = 0; check(sc->GetLastPresentCount(&presentId),"last Present count");
             DXGI_FRAME_STATISTICS stats{}; statsResult = sc->GetFrameStatistics(&stats);
             if (SUCCEEDED(statsResult) && stats.PresentCount>lastDisplay && stats.SyncQPCTime.QuadPart>0) {
@@ -241,6 +277,11 @@ int wmain(int argc, wchar_t** argv) {
             records.push_back({t-start,previous ? (t-previous)*1000 : 0,(t-deadline)*1000,(beforePresent-t)*1000,(afterPresent-beforePresent)*1000,(t-start-sourceTime)*1000,t,real ? 1:0,slot,presentId});
             previous = t;
         }
+        if (gpuTiming) {
+            ctx->Flush(); // Once, after the measured interval; no readback stalls in the frame loop.
+            double until = now()+2;
+            while (now()<until) { bool pending=false; for (auto& q : gpuQueries) { collectGpu(q); pending |= q.row!=SIZE_MAX; } if (!pending) break; Sleep(1); }
+        }
         // Draw one last frame after the measured interval for an optional readback.
         if (!shot.empty() && !records.empty()) {
             const auto& last = records.back(); State s{}; camera(sourceTime,s.source); camera(last.time,s.current);
@@ -248,9 +289,9 @@ int wmain(int argc, wchar_t** argv) {
             draw(backView.Get(),static_cast<UINT>(width),static_cast<UINT>(height),s); capture(dev.Get(),ctx.Get(),back.Get(),shot);
         }
         FILE* file = nullptr; _wfopen_s(&file,csv.c_str(),L"wb"); if (!file) throw std::runtime_error("Cannot write CSV");
-        fprintf(file,"time_s,interval_ms,lateness_ms,cpu_submit_ms,present_call_ms,source_age_ms,qpc_start_s,real,slot,present_id\n");
+        fprintf(file,"time_s,interval_ms,lateness_ms,cpu_submit_ms,present_call_ms,source_age_ms,qpc_start_s,real,slot,present_id,gpu_output_ms,gpu_compose_ms\n");
         size_t realCount = 0;
-        for (auto& row : records) { realCount += row.real; fprintf(file,"%.9f,%.6f,%.6f,%.6f,%.6f,%.6f,%.9f,%d,%d,%u\n",row.time,row.interval,row.lateness,row.draw,row.present,row.sourceAge,row.qpcStart,row.real,row.slot,row.presentId); }
+        for (auto& row : records) { realCount += row.real; fprintf(file,"%.9f,%.6f,%.6f,%.6f,%.6f,%.6f,%.9f,%d,%d,%u,%.6f,%.6f\n",row.time,row.interval,row.lateness,row.draw,row.present,row.sourceAge,row.qpcStart,row.real,row.slot,row.presentId,row.gpuOutput,row.gpuCompose); }
         fclose(file);
         std::wstring displayPath = csv+L".display.csv";
         _wfopen_s(&file,displayPath.c_str(),L"wb"); if (!file) throw std::runtime_error("Cannot write DXGI statistics");
@@ -258,6 +299,7 @@ int wmain(int argc, wchar_t** argv) {
         for (auto& row : displayRecords) fprintf(file,"%u,%u,%u,%.9f,%.9f\n",row.present,row.refresh,row.sync,static_cast<double>(row.qpc)/frequency,row.observed);
         fclose(file);
         printf("DXGI displayed statistics samples=%zu last_hresult=0x%08lX\n",displayRecords.size(),static_cast<unsigned long>(statsResult));
+        printf("GPU timestamp queries skipped=%zu invalid=%zu (NaN = unmeasured)\n",gpuSkipped,gpuInvalid);
         printf("outputs=%zu real=%zu generated=%zu missed_slots=%d elapsed=%.3f csv written (CPU submit is NOT GPU time; output count is NOT displayed count)\n",records.size(),realCount,records.size()-realCount,missed,now()-start);
         return records.size()>10 && !occluded ? 0 : 2;
     } catch (const std::exception& e) { fprintf(stderr,"FrameGenLab: %s\n",e.what()); return 1; }

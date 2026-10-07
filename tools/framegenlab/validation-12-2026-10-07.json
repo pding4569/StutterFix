@@ -1,0 +1,2712 @@
+{
+  "date": "2026-10-07",
+  "branch": "codex/framegen",
+  "resolution": [
+    3440,
+    1440
+  ],
+  "monitor_hz": 144,
+  "sync": 0,
+  "tearing_supported": true,
+  "native": [
+    {
+      "base": 400,
+      "multiplier": 1,
+      "seconds": 15,
+      "output_fps": 399.6666666666667,
+      "real_fps": 399.6666666666667,
+      "generated_count": 0,
+      "generated_gpu": null,
+      "real_gpu": {
+        "count": 5995,
+        "mean_ms": 0.17459563502919098,
+        "median_ms": 0.172032,
+        "p95_ms": 0.173056
+      },
+      "gpu_valid_count": 5995,
+      "output_count": 5995,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 1,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 2,
+          "output": 399,
+          "real": 399
+        },
+        {
+          "second": 3,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 4,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 5,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 6,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 7,
+          "output": 399,
+          "real": 399
+        },
+        {
+          "second": 8,
+          "output": 399,
+          "real": 399
+        },
+        {
+          "second": 9,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 10,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 11,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 12,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 13,
+          "output": 398,
+          "real": 398
+        },
+        {
+          "second": 14,
+          "output": 400,
+          "real": 400
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": 0.0
+    },
+    {
+      "base": 400,
+      "multiplier": 2,
+      "seconds": 15,
+      "output_fps": 798.6666666666666,
+      "real_fps": 399.8666666666667,
+      "generated_count": 5982,
+      "generated_gpu": {
+        "count": 5982,
+        "mean_ms": 0.10338190036776998,
+        "median_ms": 0.098944,
+        "p95_ms": 0.12576
+      },
+      "real_gpu": {
+        "count": 5998,
+        "mean_ms": 0.16890742780926976,
+        "median_ms": 0.165888,
+        "p95_ms": 0.16752
+      },
+      "gpu_valid_count": 11980,
+      "output_count": 11980,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 1,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 2,
+          "output": 796,
+          "real": 399
+        },
+        {
+          "second": 3,
+          "output": 795,
+          "real": 399
+        },
+        {
+          "second": 4,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 5,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 6,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 7,
+          "output": 797,
+          "real": 400
+        },
+        {
+          "second": 8,
+          "output": 798,
+          "real": 400
+        },
+        {
+          "second": 9,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 10,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 11,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 12,
+          "output": 797,
+          "real": 400
+        },
+        {
+          "second": 13,
+          "output": 797,
+          "real": 400
+        },
+        {
+          "second": 14,
+          "output": 800,
+          "real": 400
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": -0.050041701417845356
+    },
+    {
+      "base": 400,
+      "multiplier": 3,
+      "seconds": 15,
+      "output_fps": 1197.2,
+      "real_fps": 399.73333333333335,
+      "generated_count": 11962,
+      "generated_gpu": {
+        "count": 11962,
+        "mean_ms": 0.10109731483029594,
+        "median_ms": 0.097952,
+        "p95_ms": 0.11776
+      },
+      "real_gpu": {
+        "count": 5996,
+        "mean_ms": 0.17018635356904604,
+        "median_ms": 0.166688,
+        "p95_ms": 0.177152
+      },
+      "gpu_valid_count": 17958,
+      "output_count": 17958,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 1198,
+          "real": 400
+        },
+        {
+          "second": 1,
+          "output": 1195,
+          "real": 400
+        },
+        {
+          "second": 2,
+          "output": 1192,
+          "real": 398
+        },
+        {
+          "second": 3,
+          "output": 1198,
+          "real": 400
+        },
+        {
+          "second": 4,
+          "output": 1200,
+          "real": 400
+        },
+        {
+          "second": 5,
+          "output": 1200,
+          "real": 400
+        },
+        {
+          "second": 6,
+          "output": 1194,
+          "real": 400
+        },
+        {
+          "second": 7,
+          "output": 1198,
+          "real": 400
+        },
+        {
+          "second": 8,
+          "output": 1197,
+          "real": 400
+        },
+        {
+          "second": 9,
+          "output": 1200,
+          "real": 400
+        },
+        {
+          "second": 10,
+          "output": 1200,
+          "real": 400
+        },
+        {
+          "second": 11,
+          "output": 1194,
+          "real": 399
+        },
+        {
+          "second": 12,
+          "output": 1196,
+          "real": 399
+        },
+        {
+          "second": 13,
+          "output": 1196,
+          "real": 400
+        },
+        {
+          "second": 14,
+          "output": 1200,
+          "real": 400
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": -0.016680567139281788
+    },
+    {
+      "base": 400,
+      "multiplier": 4,
+      "seconds": 15,
+      "output_fps": 1593.4666666666667,
+      "real_fps": 399.6,
+      "generated_count": 17908,
+      "generated_gpu": {
+        "count": 17908,
+        "mean_ms": 0.10066530265802993,
+        "median_ms": 0.09728,
+        "p95_ms": 0.11744
+      },
+      "real_gpu": {
+        "count": 5994,
+        "mean_ms": 0.172656982315649,
+        "median_ms": 0.166752,
+        "p95_ms": 0.178176
+      },
+      "gpu_valid_count": 23902,
+      "output_count": 23902,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 1597,
+          "real": 400
+        },
+        {
+          "second": 1,
+          "output": 1589,
+          "real": 400
+        },
+        {
+          "second": 2,
+          "output": 1579,
+          "real": 397
+        },
+        {
+          "second": 3,
+          "output": 1597,
+          "real": 400
+        },
+        {
+          "second": 4,
+          "output": 1600,
+          "real": 400
+        },
+        {
+          "second": 5,
+          "output": 1600,
+          "real": 400
+        },
+        {
+          "second": 6,
+          "output": 1588,
+          "real": 400
+        },
+        {
+          "second": 7,
+          "output": 1588,
+          "real": 400
+        },
+        {
+          "second": 8,
+          "output": 1599,
+          "real": 400
+        },
+        {
+          "second": 9,
+          "output": 1600,
+          "real": 400
+        },
+        {
+          "second": 10,
+          "output": 1600,
+          "real": 400
+        },
+        {
+          "second": 11,
+          "output": 1588,
+          "real": 399
+        },
+        {
+          "second": 12,
+          "output": 1583,
+          "real": 398
+        },
+        {
+          "second": 13,
+          "output": 1596,
+          "real": 400
+        },
+        {
+          "second": 14,
+          "output": 1598,
+          "real": 400
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": 0.016680567139281788
+    },
+    {
+      "base": 200,
+      "multiplier": 1,
+      "seconds": 15,
+      "output_fps": 200.0,
+      "real_fps": 200.0,
+      "generated_count": 0,
+      "generated_gpu": null,
+      "real_gpu": {
+        "count": 3000,
+        "mean_ms": 0.175358496,
+        "median_ms": 0.172032,
+        "p95_ms": 0.177152
+      },
+      "gpu_valid_count": 3000,
+      "output_count": 3000,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 1,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 2,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 3,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 4,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 5,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 6,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 7,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 8,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 9,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 10,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 11,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 12,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 13,
+          "output": 200,
+          "real": 200
+        },
+        {
+          "second": 14,
+          "output": 200,
+          "real": 200
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": 0.0
+    },
+    {
+      "base": 200,
+      "multiplier": 2,
+      "seconds": 15,
+      "output_fps": 399.8666666666667,
+      "real_fps": 200.0,
+      "generated_count": 2998,
+      "generated_gpu": {
+        "count": 2998,
+        "mean_ms": 0.10393638425617079,
+        "median_ms": 0.099264,
+        "p95_ms": 0.127776
+      },
+      "real_gpu": {
+        "count": 3000,
+        "mean_ms": 0.16904380800000002,
+        "median_ms": 0.166528,
+        "p95_ms": 0.16752
+      },
+      "gpu_valid_count": 5998,
+      "output_count": 5998,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 399,
+          "real": 200
+        },
+        {
+          "second": 1,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 2,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 3,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 4,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 5,
+          "output": 399,
+          "real": 200
+        },
+        {
+          "second": 6,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 7,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 8,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 9,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 10,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 11,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 12,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 13,
+          "output": 400,
+          "real": 200
+        },
+        {
+          "second": 14,
+          "output": 400,
+          "real": 200
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": 0.0
+    },
+    {
+      "base": 200,
+      "multiplier": 3,
+      "seconds": 15,
+      "output_fps": 599.4666666666667,
+      "real_fps": 200.0,
+      "generated_count": 5992,
+      "generated_gpu": {
+        "count": 5992,
+        "mean_ms": 0.10429452603471295,
+        "median_ms": 0.098304,
+        "p95_ms": 0.125952
+      },
+      "real_gpu": {
+        "count": 3000,
+        "mean_ms": 0.16882813866666668,
+        "median_ms": 0.166752,
+        "p95_ms": 0.171008
+      },
+      "gpu_valid_count": 8992,
+      "output_count": 8992,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 599,
+          "real": 200
+        },
+        {
+          "second": 1,
+          "output": 599,
+          "real": 200
+        },
+        {
+          "second": 2,
+          "output": 600,
+          "real": 200
+        },
+        {
+          "second": 3,
+          "output": 600,
+          "real": 200
+        },
+        {
+          "second": 4,
+          "output": 600,
+          "real": 200
+        },
+        {
+          "second": 5,
+          "output": 598,
+          "real": 200
+        },
+        {
+          "second": 6,
+          "output": 599,
+          "real": 200
+        },
+        {
+          "second": 7,
+          "output": 600,
+          "real": 200
+        },
+        {
+          "second": 8,
+          "output": 600,
+          "real": 200
+        },
+        {
+          "second": 9,
+          "output": 600,
+          "real": 200
+        },
+        {
+          "second": 10,
+          "output": 598,
+          "real": 200
+        },
+        {
+          "second": 11,
+          "output": 599,
+          "real": 200
+        },
+        {
+          "second": 12,
+          "output": 600,
+          "real": 200
+        },
+        {
+          "second": 13,
+          "output": 600,
+          "real": 200
+        },
+        {
+          "second": 14,
+          "output": 600,
+          "real": 200
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": 0.0
+    },
+    {
+      "base": 200,
+      "multiplier": 4,
+      "seconds": 15,
+      "output_fps": 798.4,
+      "real_fps": 200.0,
+      "generated_count": 8976,
+      "generated_gpu": {
+        "count": 8976,
+        "mean_ms": 0.1028120962566845,
+        "median_ms": 0.098272,
+        "p95_ms": 0.120384
+      },
+      "real_gpu": {
+        "count": 3000,
+        "mean_ms": 0.16955669333333334,
+        "median_ms": 0.166752,
+        "p95_ms": 0.16768
+      },
+      "gpu_valid_count": 11976,
+      "output_count": 11976,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 799,
+          "real": 200
+        },
+        {
+          "second": 1,
+          "output": 792,
+          "real": 200
+        },
+        {
+          "second": 2,
+          "output": 800,
+          "real": 200
+        },
+        {
+          "second": 3,
+          "output": 800,
+          "real": 200
+        },
+        {
+          "second": 4,
+          "output": 796,
+          "real": 200
+        },
+        {
+          "second": 5,
+          "output": 798,
+          "real": 200
+        },
+        {
+          "second": 6,
+          "output": 799,
+          "real": 200
+        },
+        {
+          "second": 7,
+          "output": 800,
+          "real": 200
+        },
+        {
+          "second": 8,
+          "output": 800,
+          "real": 200
+        },
+        {
+          "second": 9,
+          "output": 797,
+          "real": 200
+        },
+        {
+          "second": 10,
+          "output": 799,
+          "real": 200
+        },
+        {
+          "second": 11,
+          "output": 799,
+          "real": 200
+        },
+        {
+          "second": 12,
+          "output": 800,
+          "real": 200
+        },
+        {
+          "second": 13,
+          "output": 800,
+          "real": 200
+        },
+        {
+          "second": 14,
+          "output": 797,
+          "real": 200
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": 0.0
+    },
+    {
+      "base": 100,
+      "multiplier": 1,
+      "seconds": 15,
+      "output_fps": 99.8,
+      "real_fps": 99.8,
+      "generated_count": 0,
+      "generated_gpu": null,
+      "real_gpu": {
+        "count": 1497,
+        "mean_ms": 0.18548275217100868,
+        "median_ms": 0.172896,
+        "p95_ms": 0.20992
+      },
+      "gpu_valid_count": 1497,
+      "output_count": 1497,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 1,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 2,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 3,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 4,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 5,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 6,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 7,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 8,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 9,
+          "output": 98,
+          "real": 98
+        },
+        {
+          "second": 10,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 11,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 12,
+          "output": 99,
+          "real": 99
+        },
+        {
+          "second": 13,
+          "output": 100,
+          "real": 100
+        },
+        {
+          "second": 14,
+          "output": 100,
+          "real": 100
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": 0.0
+    },
+    {
+      "base": 100,
+      "multiplier": 2,
+      "seconds": 15,
+      "output_fps": 200.0,
+      "real_fps": 100.0,
+      "generated_count": 1500,
+      "generated_gpu": {
+        "count": 1500,
+        "mean_ms": 0.108364352,
+        "median_ms": 0.100352,
+        "p95_ms": 0.142336
+      },
+      "real_gpu": {
+        "count": 1500,
+        "mean_ms": 0.16911351466666666,
+        "median_ms": 0.16672,
+        "p95_ms": 0.171008
+      },
+      "gpu_valid_count": 3000,
+      "output_count": 3000,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 1,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 2,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 3,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 4,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 5,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 6,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 7,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 8,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 9,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 10,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 11,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 12,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 13,
+          "output": 200,
+          "real": 100
+        },
+        {
+          "second": 14,
+          "output": 200,
+          "real": 100
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": -0.20040080160320928
+    },
+    {
+      "base": 100,
+      "multiplier": 3,
+      "seconds": 15,
+      "output_fps": 299.8666666666667,
+      "real_fps": 100.0,
+      "generated_count": 2998,
+      "generated_gpu": {
+        "count": 2998,
+        "mean_ms": 0.10465903135423615,
+        "median_ms": 0.099072,
+        "p95_ms": 0.129024
+      },
+      "real_gpu": {
+        "count": 1500,
+        "mean_ms": 0.16580017066666666,
+        "median_ms": 0.16660799999999998,
+        "p95_ms": 0.16768
+      },
+      "gpu_valid_count": 4498,
+      "output_count": 4498,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 1,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 2,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 3,
+          "output": 299,
+          "real": 100
+        },
+        {
+          "second": 4,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 5,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 6,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 7,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 8,
+          "output": 299,
+          "real": 100
+        },
+        {
+          "second": 9,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 10,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 11,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 12,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 13,
+          "output": 300,
+          "real": 100
+        },
+        {
+          "second": 14,
+          "output": 300,
+          "real": 100
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": -0.20040080160320928
+    },
+    {
+      "base": 100,
+      "multiplier": 4,
+      "seconds": 15,
+      "output_fps": 399.6,
+      "real_fps": 100.0,
+      "generated_count": 4494,
+      "generated_gpu": {
+        "count": 4494,
+        "mean_ms": 0.1047352808188696,
+        "median_ms": 0.098304,
+        "p95_ms": 0.130048
+      },
+      "real_gpu": {
+        "count": 1500,
+        "mean_ms": 0.16812699733333333,
+        "median_ms": 0.166912,
+        "p95_ms": 0.167936
+      },
+      "gpu_valid_count": 5994,
+      "output_count": 5994,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 1,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 2,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 3,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 4,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 5,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 6,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 7,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 8,
+          "output": 399,
+          "real": 100
+        },
+        {
+          "second": 9,
+          "output": 396,
+          "real": 100
+        },
+        {
+          "second": 10,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 11,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 12,
+          "output": 400,
+          "real": 100
+        },
+        {
+          "second": 13,
+          "output": 399,
+          "real": 100
+        },
+        {
+          "second": 14,
+          "output": 400,
+          "real": 100
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": -0.20040080160320928
+    }
+  ],
+  "native_no_query_control": [
+    {
+      "base": 400,
+      "multiplier": 1,
+      "seconds": 15,
+      "output_fps": 399.73333333333335,
+      "real_fps": 399.73333333333335,
+      "generated_count": 0,
+      "generated_gpu": null,
+      "real_gpu": null,
+      "gpu_valid_count": 0,
+      "output_count": 5996,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 1,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 2,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 3,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 4,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 5,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 6,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 7,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 8,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 9,
+          "output": 397,
+          "real": 397
+        },
+        {
+          "second": 10,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 11,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 12,
+          "output": 400,
+          "real": 400
+        },
+        {
+          "second": 13,
+          "output": 399,
+          "real": 399
+        },
+        {
+          "second": 14,
+          "output": 400,
+          "real": 400
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": 0.0
+    },
+    {
+      "base": 400,
+      "multiplier": 2,
+      "seconds": 15,
+      "output_fps": 799.0,
+      "real_fps": 399.8666666666667,
+      "generated_count": 5987,
+      "generated_gpu": null,
+      "real_gpu": null,
+      "gpu_valid_count": 0,
+      "output_count": 11985,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 1,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 2,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 3,
+          "output": 797,
+          "real": 399
+        },
+        {
+          "second": 4,
+          "output": 797,
+          "real": 400
+        },
+        {
+          "second": 5,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 6,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 7,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 8,
+          "output": 797,
+          "real": 399
+        },
+        {
+          "second": 9,
+          "output": 799,
+          "real": 400
+        },
+        {
+          "second": 10,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 11,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 12,
+          "output": 800,
+          "real": 400
+        },
+        {
+          "second": 13,
+          "output": 797,
+          "real": 400
+        },
+        {
+          "second": 14,
+          "output": 798,
+          "real": 400
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": -0.0333555703802516
+    },
+    {
+      "base": 400,
+      "multiplier": 3,
+      "seconds": 15,
+      "output_fps": 1197.3333333333333,
+      "real_fps": 399.93333333333334,
+      "generated_count": 11961,
+      "generated_gpu": null,
+      "real_gpu": null,
+      "gpu_valid_count": 0,
+      "output_count": 17960,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 1199,
+          "real": 400
+        },
+        {
+          "second": 1,
+          "output": 1200,
+          "real": 400
+        },
+        {
+          "second": 2,
+          "output": 1194,
+          "real": 399
+        },
+        {
+          "second": 3,
+          "output": 1196,
+          "real": 400
+        },
+        {
+          "second": 4,
+          "output": 1198,
+          "real": 400
+        },
+        {
+          "second": 5,
+          "output": 1200,
+          "real": 400
+        },
+        {
+          "second": 6,
+          "output": 1200,
+          "real": 400
+        },
+        {
+          "second": 7,
+          "output": 1194,
+          "real": 400
+        },
+        {
+          "second": 8,
+          "output": 1198,
+          "real": 400
+        },
+        {
+          "second": 9,
+          "output": 1197,
+          "real": 400
+        },
+        {
+          "second": 10,
+          "output": 1200,
+          "real": 400
+        },
+        {
+          "second": 11,
+          "output": 1200,
+          "real": 400
+        },
+        {
+          "second": 12,
+          "output": 1194,
+          "real": 400
+        },
+        {
+          "second": 13,
+          "output": 1198,
+          "real": 400
+        },
+        {
+          "second": 14,
+          "output": 1192,
+          "real": 400
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": -0.05003335557037741
+    },
+    {
+      "base": 400,
+      "multiplier": 4,
+      "seconds": 15,
+      "output_fps": 1593.3333333333333,
+      "real_fps": 399.73333333333335,
+      "generated_count": 17904,
+      "generated_gpu": null,
+      "real_gpu": null,
+      "gpu_valid_count": 0,
+      "output_count": 23900,
+      "per_second": [
+        {
+          "second": 0,
+          "output": 1597,
+          "real": 400
+        },
+        {
+          "second": 1,
+          "output": 1600,
+          "real": 400
+        },
+        {
+          "second": 2,
+          "output": 1590,
+          "real": 399
+        },
+        {
+          "second": 3,
+          "output": 1583,
+          "real": 400
+        },
+        {
+          "second": 4,
+          "output": 1596,
+          "real": 400
+        },
+        {
+          "second": 5,
+          "output": 1600,
+          "real": 400
+        },
+        {
+          "second": 6,
+          "output": 1600,
+          "real": 400
+        },
+        {
+          "second": 7,
+          "output": 1590,
+          "real": 400
+        },
+        {
+          "second": 8,
+          "output": 1590,
+          "real": 400
+        },
+        {
+          "second": 9,
+          "output": 1599,
+          "real": 400
+        },
+        {
+          "second": 10,
+          "output": 1600,
+          "real": 400
+        },
+        {
+          "second": 11,
+          "output": 1600,
+          "real": 400
+        },
+        {
+          "second": 12,
+          "output": 1589,
+          "real": 400
+        },
+        {
+          "second": 13,
+          "output": 1586,
+          "real": 400
+        },
+        {
+          "second": 14,
+          "output": 1580,
+          "real": 397
+        }
+      ],
+      "physical_display_fps": null,
+      "fps_basis": "successful Present calls / requested wall-clock seconds; physical scanout unverified",
+      "real_loss_pct_vs_none": 0.0
+    }
+  ],
+  "game_runs": {
+    "capture-hello": {
+      "frames": 4732,
+      "frame_gaps": 0,
+      "rendered_frame_matches": 4732,
+      "overlay_before_main": 1,
+      "ranges": {
+        "camera_x": [
+          0.0,
+          463.4924
+        ],
+        "camera_y": [
+          0.0,
+          57.61631
+        ],
+        "q_z": [
+          -0.08138389,
+          0.1305262
+        ],
+        "ortho_size": [
+          5.0,
+          27.749979
+        ],
+        "red_x": [
+          0.0,
+          459.939972
+        ],
+        "red_y": [
+          -1.927917,
+          57.566864
+        ],
+        "blue_x": [
+          -1.499994,
+          460.558441
+        ],
+        "blue_y": [
+          -1.79771566,
+          58.33773
+        ]
+      },
+      "sample": [
+        {
+          "frame": "7889",
+          "realtime_s": "5.39999999915608E-06",
+          "main_render_frame": "7889",
+          "main_order": "4",
+          "overlay_order": "2",
+          "camRT_id": "0",
+          "camera_x": "0",
+          "camera_y": "0",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0",
+          "q_w": "1",
+          "ortho_size": "5",
+          "fov": "60",
+          "red_x": "0",
+          "red_y": "0",
+          "red_z": "0",
+          "blue_x": "1",
+          "blue_y": "0",
+          "blue_z": "0",
+          "projection_0": "0.08372093",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.2",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "1",
+          "view_1": "0",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0",
+          "view_5": "1",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "0",
+          "view_13": "0",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "10255",
+          "realtime_s": "6.8565182999999976",
+          "main_render_frame": "10255",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1189052",
+          "camera_x": "46.1509781",
+          "camera_y": "11.9099169",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0.0406825542",
+          "q_w": "0.999172151",
+          "ortho_size": "27.7385521",
+          "fov": "60",
+          "red_x": "10.451252",
+          "red_y": "0.3775545",
+          "red_z": "0",
+          "blue_x": "8.99957752",
+          "blue_y": "1.82519475E-08",
+          "blue_z": "0",
+          "projection_0": "0.0150910774",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.03605091",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.996689856",
+          "view_1": "-0.08129775",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0.08129775",
+          "view_5": "0.996689856",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-46.96646",
+          "view_13": "-8.118523",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "12620",
+          "realtime_s": "17.515696799999994",
+          "main_render_frame": "12620",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1189052",
+          "camera_x": "463.4076",
+          "camera_y": "54.17627",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "-0.0579679571",
+          "q_w": "0.9983185",
+          "ortho_size": "12.935133",
+          "fov": "60",
+          "red_x": "459.939972",
+          "red_y": "53.9528923",
+          "red_z": "0",
+          "blue_x": "460.051239",
+          "blue_y": "55.38719",
+          "blue_z": "0",
+          "projection_0": "0.0323618352",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.07730883",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.993279457",
+          "view_1": "0.11574097",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "-0.11574097",
+          "view_5": "0.993279457",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-454.022827",
+          "view_13": "-107.447418",
+          "view_14": "-10",
+          "view_15": "1"
+        }
+      ],
+      "null_camRT_frames": 1,
+      "nonfinite_values": 0,
+      "probe_log": [
+        "[StutterFix] [프레임생성 캡처] frames=4732 missing=0 overflow=0 frames.csv saved at quit"
+      ],
+      "label": "HELLO 2026"
+    },
+    "capture-hello-ui": {
+      "frames": 4622,
+      "frame_gaps": 0,
+      "rendered_frame_matches": 4622,
+      "overlay_before_main": 1,
+      "ranges": {
+        "camera_x": [
+          0.0,
+          462.296478
+        ],
+        "camera_y": [
+          0.0,
+          57.6385231
+        ],
+        "q_z": [
+          -0.0813849643,
+          0.1305262
+        ],
+        "ortho_size": [
+          5.0,
+          27.7499371
+        ],
+        "red_x": [
+          0.0,
+          459.893982
+        ],
+        "red_y": [
+          -1.79771566,
+          57.4450455
+        ],
+        "blue_x": [
+          -1.49997354,
+          460.928162
+        ],
+        "blue_y": [
+          -1.84185994,
+          57.3189049
+        ]
+      },
+      "sample": [
+        {
+          "frame": "7041",
+          "realtime_s": "4.5000000028494469E-06",
+          "main_render_frame": "7041",
+          "main_order": "4",
+          "overlay_order": "2",
+          "camRT_id": "0",
+          "camera_x": "0",
+          "camera_y": "0",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0",
+          "q_w": "1",
+          "ortho_size": "5",
+          "fov": "60",
+          "red_x": "0",
+          "red_y": "0",
+          "red_z": "0",
+          "blue_x": "1",
+          "blue_y": "0",
+          "blue_z": "0",
+          "projection_0": "0.08372093",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.2",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "1",
+          "view_1": "0",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0",
+          "view_5": "1",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "0",
+          "view_13": "0",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "9352",
+          "realtime_s": "6.2563109000000026",
+          "main_render_frame": "9352",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1188980",
+          "camera_x": "38.51563",
+          "camera_y": "9.9392",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0.0573110953",
+          "q_w": "0.9983564",
+          "ortho_size": "26.5504551",
+          "fov": "60",
+          "red_x": "9.209777",
+          "red_y": "1.43565726",
+          "red_z": "0",
+          "blue_x": "8.778808",
+          "blue_y": "1.82519475E-08",
+          "blue_z": "0",
+          "projection_0": "0.0157663841",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.0376641378",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.993430853",
+          "view_1": "-0.114433795",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0.114433795",
+          "view_5": "0.993430853",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-39.3999939",
+          "view_13": "-5.46641827",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "11662",
+          "realtime_s": "17.527467300000005",
+          "main_render_frame": "11662",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1188980",
+          "camera_x": "462.296478",
+          "camera_y": "51.0097847",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "-0.0574818738",
+          "q_w": "0.998346567",
+          "ortho_size": "12.9056225",
+          "fov": "60",
+          "red_x": "459.893982",
+          "red_y": "53.94356",
+          "red_z": "0",
+          "blue_x": "460.672119",
+          "blue_y": "55.0654755",
+          "blue_z": "0",
+          "projection_0": "0.0324358381",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.0774856061",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.9933917",
+          "view_1": "0.114773661",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "-0.114773661",
+          "view_5": "0.9933917",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-453.3869",
+          "view_13": "-103.732155",
+          "view_14": "-10",
+          "view_15": "1"
+        }
+      ],
+      "null_camRT_frames": 1,
+      "nonfinite_values": 0,
+      "probe_log": [
+        "[StutterFix] [프레임생성 캡처] UI experiment: overlay roots=14; world-space UI excluded; exact composition unverified",
+        "[StutterFix] [프레임생성 캡처] UI restore: roots=14 layers=858 rects=630 changed_rects=6",
+        "[StutterFix] [프레임생성 캡처] frames=4622 missing=0 overflow=0 frames.csv saved at quit"
+      ],
+      "label": "HELLO 2026"
+    },
+    "capture-hello-ui-restored": {
+      "frames": 4735,
+      "frame_gaps": 0,
+      "rendered_frame_matches": 4735,
+      "overlay_before_main": 1,
+      "ranges": {
+        "camera_x": [
+          0.0,
+          464.1683
+        ],
+        "camera_y": [
+          0.0,
+          57.6197281
+        ],
+        "q_z": [
+          -0.08138498,
+          0.1305262
+        ],
+        "ortho_size": [
+          5.0,
+          27.7499313
+        ],
+        "red_x": [
+          0.0,
+          460.390869
+        ],
+        "red_y": [
+          -2.24326873,
+          57.48145
+        ],
+        "blue_x": [
+          -1.49999917,
+          461.018127
+        ],
+        "blue_y": [
+          -1.91012454,
+          57.323616
+        ]
+      },
+      "sample": [
+        {
+          "frame": "7979",
+          "realtime_s": "3.7999999946691787E-06",
+          "main_render_frame": "7979",
+          "main_order": "4",
+          "overlay_order": "2",
+          "camRT_id": "0",
+          "camera_x": "0",
+          "camera_y": "0",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0",
+          "q_w": "1",
+          "ortho_size": "5",
+          "fov": "60",
+          "red_x": "0",
+          "red_y": "0",
+          "red_z": "0",
+          "blue_x": "1",
+          "blue_y": "0",
+          "blue_z": "0",
+          "projection_0": "0.08372093",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.2",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "1",
+          "view_1": "0",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0",
+          "view_5": "1",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "0",
+          "view_13": "0",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "10346",
+          "realtime_s": "6.0912354999999963",
+          "main_render_frame": "10346",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1189052",
+          "camera_x": "34.9314537",
+          "camera_y": "9.014072",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0.06960873",
+          "q_w": "0.9975744",
+          "ortho_size": "25.6467876",
+          "fov": "60",
+          "red_x": "8.569899",
+          "red_y": "1.49945211",
+          "red_z": "0",
+          "blue_x": "8.535637",
+          "blue_y": "1.82519475E-08",
+          "blue_z": "0",
+          "projection_0": "0.0163219143",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.03899124",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.990309238",
+          "view_1": "-0.138879776",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0.138879776",
+          "view_5": "0.990309238",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-35.8448143",
+          "view_13": "-4.075447",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "12713",
+          "realtime_s": "17.523013799999994",
+          "main_render_frame": "12713",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1189052",
+          "camera_x": "463.873718",
+          "camera_y": "52.0943146",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "-0.05784613",
+          "q_w": "0.9983255",
+          "ortho_size": "12.9104986",
+          "fov": "60",
+          "red_x": "459.927917",
+          "red_y": "53.9505119",
+          "red_z": "0",
+          "blue_x": "459.364441",
+          "blue_y": "52.44987",
+          "blue_z": "0",
+          "projection_0": "0.0324235857",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.07745634",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.99330765",
+          "view_1": "0.115498535",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "-0.115498535",
+          "view_5": "0.99330765",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-454.7525",
+          "view_13": "-105.322418",
+          "view_14": "-10",
+          "view_15": "1"
+        }
+      ],
+      "null_camRT_frames": 1,
+      "nonfinite_values": 0,
+      "probe_log": [
+        "[StutterFix] [프레임생성 캡처] UI experiment: overlay roots=14; world-space UI excluded; exact composition unverified",
+        "[StutterFix] [프레임생성 캡처] UI restore: roots=14 layers=865 rects=637 layout_rewrites=6 changed_rects=6",
+        "[StutterFix] [프레임생성 캡처] frames=4735 missing=0 overflow=0 frames.csv saved at quit"
+      ],
+      "label": "HELLO 2026"
+    },
+    "capture-hello-ui-final": {
+      "frames": 4713,
+      "frame_gaps": 0,
+      "rendered_frame_matches": 4713,
+      "overlay_before_main": 1,
+      "ranges": {
+        "camera_x": [
+          0.0,
+          462.344635
+        ],
+        "camera_y": [
+          0.0,
+          57.7223549
+        ],
+        "q_z": [
+          -0.08138494,
+          0.1305262
+        ],
+        "ortho_size": [
+          5.0,
+          27.7499657
+        ],
+        "red_x": [
+          0.0,
+          459.9468
+        ],
+        "red_y": [
+          -1.79771566,
+          58.1701851
+        ],
+        "blue_x": [
+          -1.49999261,
+          460.945374
+        ],
+        "blue_y": [
+          -2.13487244,
+          57.339798
+        ]
+      },
+      "sample": [
+        {
+          "frame": "7923",
+          "realtime_s": "4.699999998081239E-06",
+          "main_render_frame": "7923",
+          "main_order": "4",
+          "overlay_order": "2",
+          "camRT_id": "0",
+          "camera_x": "0",
+          "camera_y": "0",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0",
+          "q_w": "1",
+          "ortho_size": "5",
+          "fov": "60",
+          "red_x": "0",
+          "red_y": "0",
+          "red_z": "0",
+          "blue_x": "1",
+          "blue_y": "0",
+          "blue_z": "0",
+          "projection_0": "0.08372093",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.2",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "1",
+          "view_1": "0",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0",
+          "view_5": "1",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "0",
+          "view_13": "0",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "10279",
+          "realtime_s": "6.079573400000001",
+          "main_render_frame": "10279",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1189052",
+          "camera_x": "34.3300362",
+          "camera_y": "8.858885",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0.07020728",
+          "q_w": "0.9975324",
+          "ortho_size": "25.47096",
+          "fov": "60",
+          "red_x": "8.460559",
+          "red_y": "1.49987626",
+          "red_z": "0",
+          "blue_x": "8.4861145",
+          "blue_y": "1.82519475E-08",
+          "blue_z": "0",
+          "projection_0": "0.0164345838",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.0392603949",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.990141869",
+          "view_1": "-0.140068084",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0.140068084",
+          "view_5": "0.990141869",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-35.2324562",
+          "view_13": "-3.96301079",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "12635",
+          "realtime_s": "17.542002499999995",
+          "main_render_frame": "12635",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1189052",
+          "camera_x": "462.344635",
+          "camera_y": "51.6018829",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "-0.05803508",
+          "q_w": "0.998314559",
+          "ortho_size": "12.9350605",
+          "fov": "60",
+          "red_x": "459.9468",
+          "red_y": "53.9542122",
+          "red_z": "0",
+          "blue_x": "460.720825",
+          "blue_y": "55.0705872",
+          "blue_z": "0",
+          "projection_0": "0.0323620178",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.0773092657",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.993263841",
+          "view_1": "0.115874529",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "-0.115874529",
+          "view_5": "0.993263841",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-453.250854",
+          "view_13": "-104.828247",
+          "view_14": "-10",
+          "view_15": "1"
+        }
+      ],
+      "null_camRT_frames": 1,
+      "nonfinite_values": 0,
+      "probe_log": [
+        "[StutterFix] [프레임생성 캡처] UI experiment: overlay roots=14; world-space UI excluded; exact composition unverified",
+        "[StutterFix] [프레임생성 캡처] UI restore: roots=14 layers=865 rects=637 layout_rewrites=76 changed_rects=76 changed_canvases=0 changed_layers=0",
+        "[StutterFix] [프레임생성 캡처] frames=4713 missing=0 overflow=0 frames.csv saved at quit"
+      ],
+      "label": "HELLO 2026"
+    },
+    "capture-hello-ui-local": {
+      "frames": 4669,
+      "frame_gaps": 0,
+      "rendered_frame_matches": 4669,
+      "overlay_before_main": 1,
+      "ranges": {
+        "camera_x": [
+          0.0,
+          460.5426
+        ],
+        "camera_y": [
+          0.0,
+          57.8205833
+        ],
+        "q_z": [
+          -0.0813833252,
+          0.1305262
+        ],
+        "ortho_size": [
+          5.0,
+          27.7499542
+        ],
+        "red_x": [
+          0.0,
+          459.756317
+        ],
+        "red_y": [
+          -1.79771566,
+          57.693512
+        ],
+        "blue_x": [
+          -1.49999952,
+          460.701965
+        ],
+        "blue_y": [
+          -2.16053033,
+          57.65431
+        ]
+      },
+      "sample": [
+        {
+          "frame": "7063",
+          "realtime_s": "3.5999999994373866E-06",
+          "main_render_frame": "7063",
+          "main_order": "4",
+          "overlay_order": "2",
+          "camRT_id": "0",
+          "camera_x": "0",
+          "camera_y": "0",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0",
+          "q_w": "1",
+          "ortho_size": "5",
+          "fov": "60",
+          "red_x": "0",
+          "red_y": "0",
+          "red_z": "0",
+          "blue_x": "1",
+          "blue_y": "0",
+          "blue_z": "0",
+          "projection_0": "0.08372093",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.2",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "1",
+          "view_1": "0",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0",
+          "view_5": "1",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "0",
+          "view_13": "0",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "9397",
+          "realtime_s": "6.2432447999999994",
+          "main_render_frame": "9397",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1188980",
+          "camera_x": "38.6841354",
+          "camera_y": "9.98272",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "0.05646101",
+          "q_w": "0.9984048",
+          "ortho_size": "26.5878181",
+          "fov": "60",
+          "red_x": "9.235331",
+          "red_y": "1.43063271",
+          "red_z": "0",
+          "blue_x": "8.788052",
+          "blue_y": "1.82519475E-08",
+          "blue_z": "0",
+          "projection_0": "0.0157442279",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.03761121",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.9936243",
+          "view_1": "-0.112741888",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "0.112741888",
+          "view_5": "0.9936243",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-39.56297",
+          "view_13": "-5.55775166",
+          "view_14": "-10",
+          "view_15": "1"
+        },
+        {
+          "frame": "11731",
+          "realtime_s": "17.505958399999997",
+          "main_render_frame": "11731",
+          "main_order": "3",
+          "overlay_order": "4",
+          "camRT_id": "-1188980",
+          "camera_x": "459.977325",
+          "camera_y": "52.947876",
+          "camera_z": "-10",
+          "q_x": "0",
+          "q_y": "0",
+          "q_z": "-0.0556332022",
+          "q_w": "0.9984513",
+          "ortho_size": "12.8173962",
+          "fov": "60",
+          "red_x": "459.756317",
+          "red_y": "53.9108",
+          "red_z": "0",
+          "blue_x": "460.164856",
+          "blue_y": "55.2538872",
+          "blue_z": "0",
+          "projection_0": "0.0326591022",
+          "projection_1": "0",
+          "projection_2": "0",
+          "projection_3": "0",
+          "projection_4": "0",
+          "projection_5": "0.07801896",
+          "projection_6": "0",
+          "projection_7": "0",
+          "projection_8": "0",
+          "projection_9": "0",
+          "projection_10": "-0.0020006",
+          "projection_11": "0",
+          "projection_12": "0",
+          "projection_13": "0",
+          "projection_14": "-1.0006001",
+          "projection_15": "1",
+          "view_0": "0.9938099",
+          "view_1": "0.111094087",
+          "view_2": "0",
+          "view_3": "0",
+          "view_4": "-0.111094087",
+          "view_5": "0.9938099",
+          "view_6": "0",
+          "view_7": "0",
+          "view_8": "0",
+          "view_9": "0",
+          "view_10": "-1",
+          "view_11": "0",
+          "view_12": "-451.2478",
+          "view_13": "-103.720886",
+          "view_14": "-10",
+          "view_15": "1"
+        }
+      ],
+      "null_camRT_frames": 1,
+      "nonfinite_values": 0,
+      "probe_log": [
+        "[StutterFix] [프레임생성 캡처] UI experiment: overlay roots=14; world-space UI excluded; exact composition unverified",
+        "[StutterFix] [프레임생성 캡처] UI restore: roots=14 layers=858 rects=630 layout_rewrites=76 changed_rects=76 changed_canvases=0 changed_layers=0",
+        "[StutterFix] [프레임생성 캡처] frames=4669 missing=0 overflow=0 frames.csv saved at quit"
+      ],
+      "label": "HELLO 2026"
+    }
+  },
+  "ui_alpha_validation": {
+    "size": [
+      3440,
+      1440
+    ],
+    "zero": 4691523,
+    "opaque": 151212,
+    "partial": 110865,
+    "run": "capture-hello-ui"
+  },
+  "unverified": [
+    "physical display FPS",
+    "game GPU generation cost",
+    "input latency",
+    "WorldSpace UI separation",
+    "pixel-identical UI recomposition",
+    "bit-identical RectTransform restore",
+    "continuous real-time integration",
+    "other maps / multi planets / mod reload"
+  ],
+  "verification": {
+    "native_build": "MSVC /W4 /WX errors 0",
+    "capture_build": {
+      "errors": 0,
+      "existing_warnings": 25,
+      "loadcheck_fields": 210,
+      "loadcheck_mismatches": 0
+    },
+    "normal_player": {
+      "errors": 0,
+      "existing_warnings": 25,
+      "loadcheck_fields": 207,
+      "loadcheck_mismatches": 0,
+      "probe_types_absent": true,
+      "MeasureBuild": false
+    },
+    "stage_build_after_selector_change": {
+      "errors": 0,
+      "existing_warnings": 25
+    },
+    "installed_dll_sha256": "DD9CA8CADD52BB61AAD3E3AB41A54F07E693FB8367653C27513BDEF07FC193E1",
+    "settings_sha256": "FA6E781728A4C72C53AA1969A4D08707D837F15932BCF4E5C912BBBAF28D8CD5",
+    "preserved_tester_zip_sha256": "689DE906E1B0513C526C34C0AFF33DBFF6B1D12FE9544ADF78B8295A4932C134",
+    "pack_research_binary_rejected": true
+  }
+}
