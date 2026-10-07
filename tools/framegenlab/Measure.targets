@@ -7,4 +7,8 @@
     <Compile Include="$(FrameGenProbeAutoTest)" />
     <Compile Include="$(FrameGenProbeSource)" />
   </ItemGroup>
+  <ItemGroup Condition="'$(FrameGenProbeKind)' == 'InGame'">
+    <EmbeddedResource Remove="native/sfnative.dll" />
+    <EmbeddedResource Include="$(FrameGenNative)" LogicalName="StutterFix.sfnative.dll" />
+  </ItemGroup>
 </Project>

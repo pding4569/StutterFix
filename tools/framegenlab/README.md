@@ -103,3 +103,29 @@ py -3 .\measure_maps.py --map '<맵.adofai>' --label hello-reference --seconds 4
 API 근거: [DXGI Flip model](https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/for-best-performance--use-dxgi-flip-model),
 [프레임 대기 객체](https://learn.microsoft.com/en-us/windows/uwp/gaming/reduce-latency-with-dxgi-1-3-swap-chains),
 [PresentMon 지표 정의](https://github.com/GameTechDev/PresentMon/blob/main/README-ConsoleApplication.md).
+
+## 13장 게임 안 프레임 생성 (연구용, 배포 금지)
+
+```powershell
+.\build_ingame_native.ps1
+.\build_measure.ps1 -Probe InGame
+py -3 .\measure_ingame.py --map '<맵.adofai>' --label hello-2x --mode 2 --flip --out results/ingame-hello-2x
+```
+
+`--mode 0/2/4`, 기본 실험 설정 `FrameGenExperiment=0`. 연구 DLL의 UMM 설정창 단추나 F8로 끔/2배/4배를 바꾼다.
+`--flip`은 이 PC에서 확인한 D3D11 RT의 세로 방향을 맞춘다. 연구 DLL의 설정 기본값은 true다.
+입력·판정·카메라·행성 로직은 매 출력 프레임 실행한다. 무거운 장면 카메라는 2/4프레임마다 렌더링하며,
+그 사이 저장한 행성 없는 화면을 현재 카메라로 재투영하고 현재 행성 렌더링과 진짜 프레임 UI 픽셀을 합친다.
+따라서 2배/4배는 장면 렌더링 횟수에 대한 출력 비율이다. 끔 대비 전체 출력률이 2/4배 된다는 뜻은 아니다.
+메인 스레드가 멈추면 생성 출력도 멈춘다.
+
+네이티브 연구 코드는 별도 sfnative 사본에만 연결한다. 정식 프로젝트의 Compile 목록·원래 native DLL을 바꾸지 않는다.
+러너는 설치된 관리 DLL·sfnative.dll·Settings.xml의 원본을 디스크에 먼저 저장하고, 정상 종료 후 세 파일을 정확히 복원한다.
+게임이 켜져 있거나 이전 진단 폴더가 있으면 실행을 거부한다. 강제 중단 뒤에는 게임을 정상 종료하고 결과 폴더의 `.original` 세 파일로 복원한다.
+`build_measure.ps1 -Install -Probe InGame`은 이 복구 절차를 생략하므로 거부한다.
+
+표본은 마지막 음악 재생 구간의 곡 5~45초다. 메뉴/카운트다운의 이전 곡 시계를 버리고 연속 프레임 번호를 확인한다.
+출력은 성공한 Present(0) 호출 수이며 물리적 표시 FPS는 확인 안 됨.
+GPU 시간은 끼운 프레임의 행성 검정/흰 HDR 바탕 두 패스 + 네이티브 합성에 D3D11 timestamp/disjoint를 둬 잰다.
+곡 중 파일 쓰기·GPU 결과 대기·이미지 읽기는 하지 않는다. `--capture`는 시각 확인용이며 성능 표에서 제외한다.
+이 빌드와 코드를 정식 DLL·테스터 ZIP에 넣지 않는다.
