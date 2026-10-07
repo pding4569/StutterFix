@@ -8,9 +8,18 @@ static Texture texture(ID3D11Device* d,unsigned w,unsigned h,DXGI_FORMAT format)
 }
 int wmain(int argc,wchar_t** argv) {
     try {
+        { Packet a{},b{}; a.pose.camera[2]=b.pose.camera[2]=10;
+          a.pose.camera[0]=.5f; b.pose.camera[0]=-.5f; b.textures[1]=reinterpret_cast<void*>(1);
+          float base[4]={0,0,1,0}; memcpy(a.textures+3,base,16); memcpy(b.textures+3,base,16);
+          auto p=scenePrediction(a,b,.005,.0025);
+          if(fabs(p.camera[0]-b.pose.camera[0])>.00001) throw std::runtime_error("random camera shake was extrapolated");
+          b.pulse[0]=12; b.pulse[1]=10; b.pulse[2]=.095f; b.pulse[3]=.1f; b.pose.camera[2]=10.1f;
+          p=scenePrediction(a,b,.005,.01);
+          if(fabs(p.camera[2]-10)>.00001) throw std::runtime_error("pulse exceeded its endpoint"); }
         int mode=argc>1?_wtoi(argv[1]):4; double fps=argc>2?_wtof(argv[2]):200,seconds=argc>3?_wtof(argv[3]):15;
         if(mode!=1 && mode!=2 && mode!=4) return 2;
         std::wstring path=argc>4?argv[4]:L"."; SetProcessDPIAware();
+        bool narrow=argc>5 && _wtoi(argv[5])==1;
         HWND window=CreateWindowExW(0,L"STATIC",L"FrameGen shared-device producer",WS_POPUP|WS_VISIBLE,0,0,3440,1440,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr); if(!window) return 3;
         ComPtr<ID3D11Device> d; ComPtr<ID3D11DeviceContext> context; UINT flags=D3D11_CREATE_DEVICE_DEBUG;
         DXGI_SWAP_CHAIN_DESC sd{}; sd.BufferDesc.Width=3440; sd.BufferDesc.Height=1440; sd.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -34,7 +43,7 @@ int wmain(int argc,wchar_t** argv) {
             double t=now()-start; if(now()<deadline) { Sleep(0); continue; } deadline+=1/fps;
             if(!paused && t>seconds*.5) { beforePause=engine.outputs; Sleep(100); afterPause=engine.outputs; paused=true; }
             Packet p{}; p.frame=++frames; p.mode=mode; p.measure=1; p.song=now()-start;
-            engine.beginFrame();
+            if(!narrow) engine.beginFrame();
             p.pose.camera[0]=float(p.song)*2; p.pose.camera[1]=float(sin(p.song)*.3); p.pose.camera[2]=10+float(sin(p.song*2)); p.pose.camera[3]=float(sin(p.song)*.05);
             p.pose.planet[0][0]=p.pose.camera[0]+float(cos(p.song*4)); p.pose.planet[0][1]=float(sin(p.song*4)); p.pose.planet[0][2]=1;
             p.pose.planet[1][0]=p.pose.camera[0]-1; p.pose.planet[1][2]=1;
@@ -44,7 +53,11 @@ int wmain(int argc,wchar_t** argv) {
               for(int i=0;i<6;i++) { float color[4]={.05f+float(frames%32)/200,.08f,.12f,1}; if(i==2||i==4) color[0]=color[1]=color[2]=1; else if(i!=0 && i!=5) color[0]=color[1]=color[2]=0; context->ClearRenderTargetView(rtvs[i].Get(),color); }
               context->VSSetShader(producerVS.Get(),nullptr,0); context->PSSetShader(producerPS.Get(),nullptr,0); ID3D11Buffer* cb=producerCB.Get(); context->PSSetConstantBuffers(0,1,&cb); float color[4]={.05f+float(frames%32)/200,.08f,.12f,1}; context->UpdateSubresource(cb,0,nullptr,color,0,0); context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); context->Draw(3,0);
             }
-            for(int i=0;i<5;i++) p.textures[i]=images[i].texture.Get(); engine.publish(p,images[5].texture.Get());
+            if(narrow) engine.beginFrame();
+            for(int i=0;i<5;i++) p.textures[i]=images[i].texture.Get();
+            if(narrow) p.textures[1]=reinterpret_cast<void*>(1);
+            if(narrow) { float base[4]={p.pose.camera[0],p.pose.camera[1],p.pose.camera[2],p.pose.camera[3]}; memcpy(p.textures+3,base,16); }
+            engine.publish(p,images[5].texture.Get());
             engine.drawReal(); check(engine.present()); engine.recordOff(p,S_OK);
             { ContextLock lock(engine.protection.Get()); D3D11_VIEWPORT vp{}; UINT count=1; context->RSGetViewports(&count,&vp); ComPtr<ID3D11RenderTargetView> target; context->OMGetRenderTargets(1,&target,nullptr);
               ComPtr<ID3D11PixelShader> ps; context->PSGetShader(&ps,nullptr,nullptr); ComPtr<ID3D11Buffer> cb; context->PSGetConstantBuffers(0,1,&cb);
