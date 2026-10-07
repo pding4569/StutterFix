@@ -1,0 +1,37 @@
+{
+  "label": "ch16-visual-arche",
+  "conditions": {
+    "vsync": "0",
+    "target_fps": "10000",
+    "fullscreen_mode": "FullScreenWindow",
+    "width": "2560",
+    "height": "1440",
+    "refresh_hz": "120",
+    "window_width": "2560",
+    "window_height": "1440"
+  },
+  "samples": [
+    {
+      "mode": 0,
+      "sample_count": 167,
+      "sampled_generated": 0,
+      "first_song_s": 20.003742807,
+      "last_song_s": 22.987625711
+    },
+    {
+      "mode": 2,
+      "sample_count": 170,
+      "sampled_generated": 66,
+      "first_song_s": 20.002003305,
+      "last_song_s": 22.993332498
+    },
+    {
+      "mode": 4,
+      "sample_count": 176,
+      "sampled_generated": 131,
+      "first_song_s": 20.000433557,
+      "last_song_s": 22.98336438
+    }
+  ],
+  "scope": "Actual decimated GPU captures in separate fresh runs; nearest song-time alignment; compressed 30 FPS preview, not a performance or physical pacing measurement"
+}
