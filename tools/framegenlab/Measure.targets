@@ -1,0 +1,10 @@
+<Project>
+  <!-- Measurement-only: the normal Player/Debug build never imports this file. -->
+  <ItemGroup>
+    <Compile Remove="StutterFix.cs" />
+    <Compile Include="$(FrameGenProbeMain)" />
+    <Compile Remove="AutoTest.cs" />
+    <Compile Include="$(FrameGenProbeAutoTest)" />
+    <Compile Include="$(MSBuildThisFileDirectory)StageProbe.cs" />
+  </ItemGroup>
+</Project>
