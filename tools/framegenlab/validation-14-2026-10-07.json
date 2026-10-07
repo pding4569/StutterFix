@@ -1,0 +1,275 @@
+{
+  "chapter": 14,
+  "date": "2026-10-07",
+  "branch": "codex/framegen",
+  "method": "Whole filtered scene with planets reprojected; last real UI; original swapchain; ordinary Present(0)",
+  "research_only": true,
+  "default_mode": 0,
+  "draw_function_hooks": false,
+  "minhook_vendor_removed": true,
+  "conditions": {
+    "width": 3440,
+    "height": 1440,
+    "refresh_hz": 165,
+    "api": "D3D11",
+    "color_space": "Gamma",
+    "display": "FullScreenWindow",
+    "vsync": 0,
+    "present_sync": 0,
+    "target_fps": 10000,
+    "max_queued_frames": 2,
+    "performance_song_seconds": [
+      5,
+      45
+    ],
+    "capture_starts_song_seconds": 50,
+    "frame_stats": false,
+    "low_half_render": false,
+    "samples_per_condition": 1,
+    "order": [
+      "fresh process OFF",
+      "same process retry 2",
+      "same process retry 4"
+    ]
+  },
+  "metrics_definition": {
+    "output_fps": "Successful Present return rate, not physical display FPS",
+    "real_fps": "Unity EOF source record rate; exact scene rate unconfirmed where camera callbacks missing",
+    "scene_fps_bounds": "All whole-session missing callbacks conservatively assigned to each 40s window",
+    "gpu_ms": "Timestamp draw interval; excludes source snapshot copies, Present and screenshot readback"
+  },
+  "maps": [
+    {
+      "map": "HELLO 2026",
+      "performance": [
+        {
+          "mode": 0,
+          "seconds": 39.99353549996158,
+          "source_seconds": 39.99354160000803,
+          "source_frames": 7823,
+          "output_frames": 7823,
+          "real_output_frames": 7823,
+          "generated_frames": 0,
+          "real_fps": 195.58157860164175,
+          "output_fps": 195.5816084328807,
+          "generated_gpu_ms": null,
+          "gpu_coverage": 0,
+          "output_worst_ms": 16.932900005485862,
+          "output_over_33ms": 0,
+          "source_worst_ms": 16.967999981716275,
+          "source_over_33ms": 0,
+          "source_age_ms": null,
+          "scene_fps_lower_bound": 195.58157860164175,
+          "scene_fps_upper_bound": 195.58157860164175
+        },
+        {
+          "mode": 2,
+          "seconds": 39.99688359996071,
+          "source_seconds": 39.992989199992735,
+          "source_frames": 7369,
+          "output_frames": 8116,
+          "real_output_frames": 7369,
+          "generated_frames": 747,
+          "real_fps": 184.23229039357074,
+          "output_fps": 202.89080722299002,
+          "generated_gpu_ms": {
+            "mean": 0.12919269611780454,
+            "p95": 0.185344,
+            "maximum": 0.277504
+          },
+          "gpu_coverage": 747,
+          "output_worst_ms": 9.032399975694716,
+          "output_over_33ms": 0,
+          "source_worst_ms": 18.231699999887496,
+          "source_over_33ms": 0,
+          "source_age_ms": {
+            "mean": 3.377403078982597,
+            "p95": 4.9006,
+            "maximum": 13.5787
+          },
+          "scene_fps_lower_bound": 184.23229039357074,
+          "scene_fps_upper_bound": 184.23229039357074
+        },
+        {
+          "mode": 4,
+          "seconds": 39.991562200011685,
+          "source_seconds": 39.987792400002945,
+          "source_frames": 7429,
+          "output_frames": 15254,
+          "real_output_frames": 7429,
+          "generated_frames": 7825,
+          "real_fps": 185.7566910845384,
+          "output_fps": 381.40545557371456,
+          "generated_gpu_ms": {
+            "mean": 0.11941178479233226,
+            "p95": 0.175104,
+            "maximum": 0.293632
+          },
+          "gpu_coverage": 7825,
+          "output_worst_ms": 17.89620000636205,
+          "output_over_33ms": 0,
+          "source_worst_ms": 17.20010000281036,
+          "source_over_33ms": 0,
+          "source_age_ms": {
+            "mean": 1.6886452396166134,
+            "p95": 2.9547,
+            "maximum": 13.5152
+          },
+          "scene_fps_lower_bound": 185.7566910845384,
+          "scene_fps_upper_bound": 185.7566910845384
+        }
+      ],
+      "whole_songs_completed": 2,
+      "safety": {
+        "outputs": "116579",
+        "frame_begins": "79682",
+        "frame_ends": "79682",
+        "worker_error": "0"
+      },
+      "missing_camera_callbacks": 0,
+      "all_camera_renders_confirmed": true,
+      "missing_callback_location": "not recorded",
+      "generated_captures": [
+        "2x-capture-00-song50.2.ppm",
+        "2x-capture-01-song120.4.ppm",
+        "2x-capture-02-song175.1.ppm",
+        "4x-capture-00-song50.0.ppm",
+        "4x-capture-01-song120.0.ppm",
+        "4x-capture-02-song175.0.ppm"
+      ]
+    },
+    {
+      "map": "Arche",
+      "performance": [
+        {
+          "mode": 0,
+          "seconds": 39.99469419999514,
+          "source_seconds": 39.9946792999981,
+          "source_frames": 13759,
+          "output_frames": 13759,
+          "real_output_frames": 13759,
+          "generated_frames": 0,
+          "real_fps": 343.9957574556837,
+          "output_fps": 343.9956293002904,
+          "generated_gpu_ms": null,
+          "gpu_coverage": 0,
+          "output_worst_ms": 10.726300009991974,
+          "output_over_33ms": 0,
+          "source_worst_ms": 10.759900033008307,
+          "source_over_33ms": 0,
+          "source_age_ms": null,
+          "scene_fps_lower_bound": 342.4705545770097,
+          "scene_fps_upper_bound": 343.9957574556837
+        },
+        {
+          "mode": 2,
+          "seconds": 39.994733200001065,
+          "source_seconds": 39.99482409999473,
+          "source_frames": 13034,
+          "output_frames": 13564,
+          "real_output_frames": 13034,
+          "generated_frames": 530,
+          "real_fps": 325.86716639670675,
+          "output_fps": 339.1196518845546,
+          "generated_gpu_ms": {
+            "mean": 0.0934950641509434,
+            "p95": 0.120672,
+            "maximum": 0.14848
+          },
+          "gpu_coverage": 530,
+          "output_worst_ms": 6.79770001443103,
+          "output_over_33ms": 0,
+          "source_worst_ms": 12.90470000822097,
+          "source_over_33ms": 0,
+          "source_age_ms": {
+            "mean": 1.7019090566037736,
+            "p95": 2.8435,
+            "maximum": 7.5217
+          },
+          "scene_fps_lower_bound": 324.34196903998156,
+          "scene_fps_upper_bound": 325.86716639670675
+        },
+        {
+          "mode": 4,
+          "seconds": 39.99286659999052,
+          "source_seconds": 39.99287709995406,
+          "source_frames": 12755,
+          "output_frames": 25670,
+          "real_output_frames": 12755,
+          "generated_frames": 12915,
+          "real_fps": 318.9067885294667,
+          "output_fps": 641.8394624406865,
+          "generated_gpu_ms": {
+            "mean": 0.08991761889276036,
+            "p95": 0.118784,
+            "maximum": 0.216928
+          },
+          "gpu_coverage": 12915,
+          "output_worst_ms": 4.698899982031435,
+          "output_over_33ms": 0,
+          "source_worst_ms": 10.8291000360623,
+          "source_over_33ms": 0,
+          "source_age_ms": {
+            "mean": 0.9894135346496322,
+            "p95": 1.4158,
+            "maximum": 7.8961
+          },
+          "scene_fps_lower_bound": 317.3815169205364,
+          "scene_fps_upper_bound": 318.9067885294667
+        }
+      ],
+      "whole_songs_completed": 2,
+      "safety": {
+        "outputs": "291628",
+        "frame_begins": "198371",
+        "frame_ends": "198371",
+        "worker_error": "0"
+      },
+      "missing_camera_callbacks": 61,
+      "all_camera_renders_confirmed": false,
+      "missing_callback_location": "not recorded",
+      "generated_captures": [
+        "2x-capture-00-song50.0.ppm",
+        "2x-capture-01-song120.1.ppm",
+        "2x-capture-02-song175.1.ppm",
+        "2x-capture-03-song300.6.ppm",
+        "4x-capture-00-song50.0.ppm",
+        "4x-capture-01-song120.0.ppm",
+        "4x-capture-02-song175.0.ppm",
+        "4x-capture-03-song300.0.ppm"
+      ]
+    }
+  ],
+  "limits": [
+    "Arche 61 missing camera completion callbacks; timing and cause not recorded",
+    "No crash or progress abort observed in four full songs; does not prove every render access safe",
+    "14 generated screenshots visually inspected; full temporal visual correctness unconfirmed",
+    "Screenshot readback caused approx 73-94 ms stalls outside performance window",
+    "Arche 4x game log retained approx 66 ms effect burst at 220.7 seconds",
+    "Overlay disabled comparison still hung in older second-output-window test; Steam-only cause unconfirmed",
+    "No repeated ABBA or displayed-frame measurement"
+  ],
+  "verification": {
+    "native_build_errors": 0,
+    "native_warnings": 0,
+    "research_build_errors": 0,
+    "research_existing_warnings": 25,
+    "research_loadcheck_named": 210,
+    "research_loadcheck_wrong": 0,
+    "player_build_errors": 0,
+    "player_existing_warnings": 4,
+    "player_loadcheck_named": 207,
+    "player_loadcheck_wrong": 0,
+    "player_experiment_symbols_absent": true,
+    "installed_files_restored_sha256": {
+      "StutterFix.dll": "DD9CA8CADD52BB61AAD3E3AB41A54F07E693FB8367653C27513BDEF07FC193E1",
+      "sfnative.dll": "AD2DFDC5ED4D5CD416488BB8E1D96863601D9C3A57690CC25756C5F71EEC89D1",
+      "Settings.xml": "FA6E781728A4C72C53AA1969A4D08707D837F15932BCF4E5C912BBBAF28D8CD5"
+    },
+    "normal_native_unchanged_sha256": "AD2DFDC5ED4D5CD416488BB8E1D96863601D9C3A57690CC25756C5F71EEC89D1",
+    "existing_tester_zip_unchanged_sha256": "689DE906E1B0513C526C34C0AFF33DBFF6B1D12FE9544ADF78B8295A4932C134",
+    "main_merge": false,
+    "tag_created": false,
+    "release_published": false
+  }
+}
