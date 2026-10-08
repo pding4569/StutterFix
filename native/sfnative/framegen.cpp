@@ -49,7 +49,7 @@ static HRESULT __stdcall present(IDXGISwapChain* self,UINT sync,UINT flags) {
 
         }
         bool active=havePacket && packet.mode>=2 && packet.mode<=8;
-        if(active && cameraBlendEnabled(packet)) engine->drawReal(); // Research: real and generated output share the delayed timeline.
+        if(active && cameraBlendEnabled(packet)) engine->drawReal(); // Real and generated output share the delayed timeline.
         UINT outputSync=active?0:sync;
         if(sync) { ++syncRequested; if(active) ++syncForcedZero; else if(outputSync==sync) ++syncPreserved; }
         HRESULT hr=originalPresent(self,outputSync,flags);
@@ -114,5 +114,6 @@ API int sf_framegen_status() { return status; }
 API int sf_framegen_error() { return failure; }
 API int sf_framegen_stopped() { return stopped; }
 API int sf_framegen_installed() { return installed; }
+API int sf_framegen_block_version() { return 1; }
 API unsigned long long sf_framegen_sources() { return sourcePresents; }
 API unsigned long long sf_framegen_generated() { return generatedPresents; }

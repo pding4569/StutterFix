@@ -1,0 +1,31 @@
+{
+  "native_compile_errors": 0,
+  "managed_compile_errors": 0,
+  "managed_existing_warnings": 25,
+  "loadcheck": {
+    "Player": 217,
+    "PlayerAuto": 217,
+    "Developer": 217,
+    "mismatches": 0
+  },
+  "native_sha256": "60835c24568c7f12dfaae26bfba775029587a36c006f9bb18d3eb5b930952eab",
+  "player_sha256": "b86d073dfdae7543d9de4cff8c8a46980f4eab4a83c2d37d489543b8832f3138",
+  "player_auto_sha256": "d27198084933ef6995698f6aa1aa292e85a5cb3718164301bdb0e24a942dfdfb",
+  "developer_sha256": "61de1913d8e584c20a9b97fbaa90c57038ad7d1a79aa10b89b012a7fc5686142",
+  "fixtures": {
+    "normal": {
+      "cases": 60,
+      "pixel_errors": 0,
+      "ui_errors": 0,
+      "state_errors": 0,
+      "sha256": "1db96eb49d3372f87dd9af07337a61e4b526b7c03233bfdf5401e531d3a5408b"
+    },
+    "research": {
+      "cases": 60,
+      "pixel_errors": 0,
+      "ui_errors": 0,
+      "state_errors": 0,
+      "sha256": "1db96eb49d3372f87dd9af07337a61e4b526b7c03233bfdf5401e531d3a5408b"
+    }
+  }
+}

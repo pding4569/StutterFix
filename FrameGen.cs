@@ -63,7 +63,8 @@ namespace StutterFix
         internal static void InstallResearch() { research=true; failed=false; Tick(); }
         internal static void FinishResearch() { quitting=true; if(active) FrameGenRuntime.Finish(); }
     }
-    // Experimental frame increase. The entire filtered scene, including both planets, is reprojected.
+    // Experimental image interpolation between two completed filtered scenes.
+    // Planet envelopes and UI use the nearer true frame; uncertain blocks do too.
     // Unity's camera scheduling is untouched; no draw-function interception.
     internal static class FrameGenRuntime
     {
@@ -84,6 +85,7 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_status();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_error();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_stopped();
+        [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_block_version();
         private static readonly AccessTools.FieldRef<scrCamera,Camera> Cam=AccessTools.FieldRefAccess<scrCamera,Camera>("camobj");
         private static readonly AccessTools.FieldRef<scrCamera,Camera> Overlay=AccessTools.FieldRefAccess<scrCamera,Camera>("Overlaycam");
         private static readonly AccessTools.FieldRef<scrCamera,RenderTexture> RT=AccessTools.FieldRefAccess<scrCamera,RenderTexture>("camRT");
@@ -104,15 +106,16 @@ namespace StutterFix
         private static bool BlockFlow => Main.Config.FrameGenBlockFlow;
         private static int BlockVariant => Main.Config.FrameGenBlockVariant;
         private static bool CostSplit => Main.Config.FrameGenCostSplit;
-        private static Renderer[] redRenderers,blueRenderers;
         private static bool ScenePair => Main.Config.FrameGenScenePair;
         private static bool pairGeometrySaved;
         private static double lastPairSong;
         private static readonly AccessTools.FieldRef<scrCamera,MeshRenderer> QuadMesh=AccessTools.FieldRefAccess<scrCamera,MeshRenderer>("camQuadMesh");
 #else
         internal const bool Diagnostics=false;
-        private const bool Narrow=true,FlipY=true,Capture=false,Clip=false,CameraBlend=false,ScenePair=false;
+        private const bool Narrow=true,FlipY=true,Capture=false,Clip=false,CameraBlend=true,ScenePair=false,BlockFlow=true;
+        private const int BlockVariant=3;
 #endif
+        private static Renderer[] redRenderers,blueRenderers;
         internal static bool Failed => failed;
         private static Runner runner;
         private static CommandBuffer command;
@@ -154,6 +157,10 @@ namespace StutterFix
             if(runner!=null) return;
             if(SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Direct3D11) throw new InvalidOperationException("D3D11에서 사용할 수 있습니다.");
             if(Marshal.SizeOf<Packet>()!=136) throw new InvalidOperationException("Outside packet ABI");
+            if(BlockFlow) {
+                try { if(sf_framegen_block_version()!=1) throw new EntryPointNotFoundException(); }
+                catch(EntryPointNotFoundException) { throw new InvalidOperationException("블록 보간 DLL을 사용하려면 게임을 다시 켜 주세요."); }
+            }
             string directory=Diagnostics?Path.Combine(Main.Entry.Path,"framegen-outside"):string.Empty; if(Diagnostics) Directory.CreateDirectory(directory);
             if(sf_framegen_setup(directory,Diagnostics?1:0)==0) throw new InvalidOperationException("지난 해제가 끝나지 않았습니다. 게임을 다시 켜 주세요.");
             callback=sf_framegen_event_ptr(); command=new CommandBuffer {name="FrameGen included snapshot"};
@@ -200,12 +207,10 @@ namespace StutterFix
             // as UI. Capture the same pixel grid as the game's final output instead.
             world=new RenderTexture(width,height,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear) {hideFlags=HideFlags.HideAndDontSave}; world.Create(); texture=world.GetNativeTexturePtr();
             worldCamera=new GameObject("FrameGen.IncludedWorld") {hideFlags=HideFlags.HideAndDontSave}.AddComponent<Camera>(); worldCamera.enabled=false;
-#if FRAMEGEN_RESEARCH
             if(BlockFlow && scrController.instance!=null) {
                 redRenderers=scrController.instance.planetRed.GetComponentsInChildren<Renderer>(true);
                 blueRenderers=scrController.instance.planetBlue.GetComponentsInChildren<Renderer>(true);
             }
-#endif
             Log("scene="+rt.width+"x"+rt.height+" snapshot="+width+"x"+height+" planets, trails, glow and game filters retained in the scene");
         }
         private static IEnumerator Loop() {
@@ -225,9 +230,9 @@ namespace StutterFix
 #if FRAMEGEN_RESEARCH
                 if(Main.Config.FrameGenImageGate && CameraBlend) p.capture|=32;
                 if(CostSplit) p.capture|=1024; // Equal diagnostic work in OFF/copy-only/2x/4x cost comparison.
-                if(BlockFlow) p.capture|=64|4|((BlockVariant&7)<<7);
 #endif
-                if(CameraBlend) p.capture|=4; // Research only: known-camera interpolation, one-source visual delay.
+                if(BlockFlow) p.capture|=64|4|((BlockVariant&7)<<7);
+                if(CameraBlend) p.capture|=4; // Shared delayed timeline, one-source visual delay.
                 if(ScenePair) p.capture|=8; // Separate early visual test; never a performance sample.
                 p.unused2=renderedFrame==Time.frameCount?new IntPtr(1):IntPtr.Zero;
                 if(sc!=null && controller!=null && controller.planetRed!=null && controller.planetBlue!=null) {
@@ -236,11 +241,9 @@ namespace StutterFix
                         p.pose=new Pose {x=sceneCamera.x,y=sceneCamera.y,size=sceneCamera.z,angle=sceneCamera.w,rx=r.position.x,ry=r.position.y,rs=r.lossyScale.x,ra=r.eulerAngles.z*Mathf.Deg2Rad,bx=b.position.x,by=b.position.y,bs=b.lossyScale.x,ba=b.eulerAngles.z*Mathf.Deg2Rad};
                         p.baseCamera=sceneBase; p.pulse=scenePulse;
                         if(renderedFrame!=Time.frameCount) p.pulse.w=0; // The stored image belongs to the last camera that actually rendered.
-#if FRAMEGEN_RESEARCH
-                        // Research bit64 reuses base/pulse payload for two true-frame planet envelopes.
+                        // Bit64 reuses base/pulse payload for two true-frame planet envelopes.
                         // Actual camera/planet poses remain intact; counterfactual prediction is disabled.
                         if(BlockFlow) {p.baseCamera=PlanetEnvelope(camera,redRenderers);p.pulse=PlanetEnvelope(camera,blueRenderers);}
-#endif
                     }
                 }
                 if(p.mode!=0 && sceneCamera.z>.00001f && scene!=null && sc!=null && Overlay(sc)!=null) {
@@ -261,7 +264,6 @@ namespace StutterFix
                 Issue(1,Write(p));
         }
         private static unsafe IntPtr Write(Packet p) { var ptr=packets[packetIndex++%packets.Length]; *(Packet*)ptr=p; return ptr; }
-#if FRAMEGEN_RESEARCH
         private static Vector4 PlanetEnvelope(Camera camera,Renderer[] renderers) {
             if(renderers==null || renderers.Length==0) return new Vector4(0,0,1,1); // Unknown coverage: keep true image.
             var box=new Vector4(2,2,-1,-1);bool any=false;
@@ -278,6 +280,7 @@ namespace StutterFix
             float x=32f/Screen.width,y=32f/Screen.height;
             return new Vector4(Mathf.Clamp01(box.x-x),Mathf.Clamp01(box.y-y),Mathf.Clamp01(box.z+x),Mathf.Clamp01(box.w+y));
         }
+#if FRAMEGEN_RESEARCH
         // One explicit visual-only read, never used by ordinary measurements/builds.
         private static void SavePairGeometry(scrCamera sc,double song) {
             using(var f=new StreamWriter(Path.Combine(Main.Entry.Path,"framegen-outside","pair-geometry.txt"))) {
@@ -312,9 +315,7 @@ namespace StutterFix
         }
         private static void Issue(int id,IntPtr data) { command.Clear(); command.IssuePluginEventAndData(callback,id,data); Graphics.ExecuteCommandBuffer(command); }
         private static void FreeTextures() {
-#if FRAMEGEN_RESEARCH
             redRenderers=blueRenderers=null;
-#endif
             if(worldCamera!=null) UnityEngine.Object.Destroy(worldCamera.gameObject); worldCamera=null;
             if(world!=null) { world.Release(); UnityEngine.Object.Destroy(world); } world=null; scene=null; texture=IntPtr.Zero;
         }

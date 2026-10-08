@@ -1395,8 +1395,8 @@ namespace StutterFix
             }
             bool frameGen = c.FrameGenOutside >= 2 && c.FrameGenOutside <= 8;
             if (Option("framegen", ref frameGen, T("프레임 늘리기 (실험)", "Increase frames (experimental)"),
-                T("진짜 프레임 사이에 공을 포함한 지난 화면을 카메라 움직임에 맞춰 옮겨 출력합니다. 입력·판정과 공 자체의 움직임은 진짜 프레임 속도를 따릅니다. UI는 지난 진짜 프레임 것을 유지합니다. 배율이 높을수록 원본 FPS가 낮아질 수 있습니다. 화면이 흔들리거나 어색하면 끄세요. D3D11에서 사용할 수 있고 기본 꺼짐입니다. 바로 적용됩니다.",
-                  "Presents camera-reprojected frames between real frames, including the planets. Input, judgment and planet motion still follow real frames; UI retains the last real frame. Higher multipliers can reduce real FPS. Turn off if motion looks wrong. Requires D3D11. Off by default; applies immediately."), T("실험", "Experimental")))
+                T("완성된 진짜 화면 두 장의 그림 움직임을 찾아 중간 화면을 만듭니다. 움직임이 불확실한 부분과 공·UI는 가까운 진짜 프레임 것을 씁니다. 화면이 진짜 프레임 한 장만큼 늦어지며 입력·판정 속도는 그대로입니다. 배율이 높으면 진짜 FPS가 낮아질 수 있습니다. 화면이 흔들리거나 어색하면 끄세요. D3D11에서 사용할 수 있고 기본 꺼짐입니다. 바로 적용됩니다.",
+                  "Builds intermediate pictures from image motion between two completed real frames. Uncertain regions, planets and UI use the nearer real frame. Adds about one real frame of visual delay; input and judgment timing are unchanged. Higher multipliers can reduce real FPS. Turn off if motion looks wrong. Requires D3D11. Off by default; applies immediately."), T("실험", "Experimental")))
             {
                 c.FrameGenOutside = frameGen ? Mathf.Clamp(c.FrameGenMultiplier, 2, 8) : 0;
                 Save();
@@ -1651,8 +1651,8 @@ namespace StutterFix
             SubHeading(T("항목", "Items"), T("모니터에 띄울 값을 고릅니다. 고른 것은 흰색으로 바뀝니다.", "Choose what the monitor shows. Selected items turn white."));
             GUILayout.Label(T("FPS 표시", "FPS display"), sBody);
             int fpsSource = c.OverlayFpsSource + 1;
-            if (Segment("ovfpssource", ref fpsSource, new[] { T("자동", "Auto"), T("원본", "Real"), T("출력", "Output"), T("둘 다", "Both") })) { c.OverlayFpsSource = fpsSource - 1; ch = true; }
-            P(T("기본값인 자동은 프레임 늘리기를 켜면 출력 FPS, 끄면 원본 FPS를 보여 줍니다. 직접 고른 표시 방식은 유지합니다. 출력 FPS는 생성 프레임까지 합친 실제 출력 제출 수이며 모니터 주사율이나 물리적으로 표시된 수가 아닙니다. 프레임 시간·1% low·끊김·이번 곡 통계는 원본 기준입니다.",
+            if (Segment("ovfpssource", ref fpsSource, new[] { T("자동", "Auto"), T("진짜", "Real"), T("표시", "Output"), T("둘 다", "Both") })) { c.OverlayFpsSource = fpsSource - 1; ch = true; }
+            P(T("기본값인 자동은 프레임 늘리기를 켜면 표시 FPS, 끄면 진짜 FPS를 보여 줍니다. 직접 고른 표시 방식은 유지합니다. 표시 FPS는 생성 프레임까지 합친 성공 출력 제출 수이며 모니터 주사율이나 물리적으로 표시된 수가 아닙니다. 프레임 시간·1% low·끊김·이번 곡 통계는 진짜 프레임 기준입니다.",
                 "Auto, the default, shows output FPS when frame generation is active and real FPS otherwise. Manual selections are retained. Output FPS counts successful submissions including generated frames, not physical display refreshes. Frame time, 1% low, hitches and level statistics always use real frames."), sDim);
             GUILayout.Space(12);
             GUILayout.BeginVertical(sCard);

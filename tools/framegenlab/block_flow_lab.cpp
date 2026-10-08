@@ -1,5 +1,9 @@
 // Independent GPU fixture: exact known translation, stationary region, true UI/planet box.
+#ifdef FG_NORMAL_FIXTURE
+#include "../../native/sfnative/framegen.h"
+#else
 #include "native/outside.h"
+#endif
 using namespace outside;
 int wmain(int argc,wchar_t** argv) {
     try {
@@ -33,9 +37,11 @@ int wmain(int argc,wchar_t** argv) {
             c->Unmap(read.Get(),0);printf("movement=%d flip=%d flat=%d phase=%.2f checked=%u errors_above3=%u mean_error=%.6f ui_errors=%u state_errors=0\n",movement,flip?1:0,flat?1:0,phase,checked,errors,absolute/checked,uiErrors);
             if(errors || uiErrors)throw std::runtime_error("known translation, stationary, protected planet or true UI failed");
             }
+#ifdef SF_FRAMEGEN_RESEARCH
             std::wstring path=argc>1?argv[1]:L".";path+=L"/move"+std::to_wstring(movement)+L"-flip"+std::to_wstring(flip?1:0)+L"-flat"+std::to_wstring(flat?1:0);CreateDirectoryW(path.c_str(),nullptr);flow.save(c.Get(),path);
             FILE* f=nullptr;_wfopen_s(&f,(path+L"/block-flow.txt").c_str(),L"rb");if(!f)throw std::runtime_error("fixture counters missing");UINT generated=0,fresh=0;int fields=fscanf_s(f,"variant=%*u scale=%*u block_size=%*u skipped_pairs=%*u generated=%u new_picture=%u",&generated,&fresh);fclose(f);
             if(fields!=2 || generated!=3 || fresh!=UINT(!flat && movement?3:0))throw std::runtime_error("new-picture counter disagrees with known pixels");
+#endif
         }
         return 0;
     }catch(const std::exception& e){fprintf(stderr,"%s\n",e.what());return 1;}

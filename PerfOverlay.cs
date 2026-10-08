@@ -710,8 +710,8 @@ namespace StutterFix
             float avg = n > 0 ? sum / n : 0;
             sFps = avg > 0 ? (1000f / avg).ToString("F0") : "-";
             displayedRealFps = displayedFps = avg > 0 ? 1000.0/avg : 0;
-            sRealFpsShort = T("원본 ", "Real ") + sFps;
-            sFpsLabel = T("원본 FPS", "Real FPS");
+            sRealFpsShort = T("진짜 ", "Real ") + sFps;
+            sFpsLabel = T("진짜 FPS", "Real FPS");
             // Read counters on the existing 4 Hz text refresh; no per-frame native call or new hook.
             if (C.OverlayFpsSource != 0)
             {
@@ -720,7 +720,7 @@ namespace StutterFix
                 bool counting = FrameGen.TryOutputCount(out count);
                 if (counting)
                 {
-                    sFpsLabel = T("출력 FPS", "Output FPS");
+                    sFpsLabel = T("표시 FPS", "Output FPS");
                     bool comparable = outputSample && outputEpoch == FrameGen.CounterEpoch && stamp > outputStamp && count >= outputCount;
                     if (comparable)
                     {
@@ -728,12 +728,12 @@ namespace StutterFix
                         displayedFps = (count-outputCount)*hz;
                         displayedRealFps = (Time.frameCount-outputFrame)*hz;
                         sFps = displayedFps.ToString("F0");
-                        sRealFpsShort = T("원본 ", "Real ") + displayedRealFps.ToString("F0");
+                        sRealFpsShort = T("진짜 ", "Real ") + displayedRealFps.ToString("F0");
                     }
                     else { sFps = "-"; displayedFps = 0; }
                 }
                 // While generation is OFF, Unity FPS estimates output without connecting Present.
-                else if (C.OverlayFpsSource > 0) sFpsLabel = T("출력≈FPS", "Output≈FPS");
+                else if (C.OverlayFpsSource > 0) sFpsLabel = T("표시≈FPS", "Output≈FPS");
                 outputSample = counting; outputCount = count; outputStamp = stamp;
                 outputEpoch = FrameGen.CounterEpoch; outputFrame = Time.frameCount;
             }

@@ -32,9 +32,7 @@ struct Packet {
 };
 static_assert(sizeof(Packet)==136,"packet ABI");
 struct Record { double time,song,gpu; int real,frame; HRESULT hr; double age; float camera[4]{};
-#ifdef SF_FRAMEGEN_RESEARCH
     double targetTime=0;
-#endif
 };
 struct SourceRecord { double time,song; int frame; Pose pose; double cameraError,redError,blueError,horizon; int rendered; float base[4]{},pulse[4]{}; };
 struct ScheduleRecord { int frame,mode,made,lockMiss,earlyMiss,lateMiss; double song,waitMs,holdMs; unsigned long long continuousLock,continuousTimer; };
@@ -111,7 +109,7 @@ inline bool screenBorderEnabled(const Packet& p) {
     (void)p; return false;
 #endif
 }
-// Packet.capture bits0..1 select readback; bit2 selects the research-only delayed camera;
+// Packet.capture bits0..1 select research readback; bit2 selects the delayed timeline;
 // bit3 requests an early diagnostic pair; bit4 selects the research fixed screen mask.
 // With bit4, textures[2] packs the aligned mask pointer plus the scene-rendered low bit.
 // The ordinary packet remains 0/1 in textures[2]; its native build rejects bit4.
@@ -119,21 +117,21 @@ inline bool cameraBlendEnabled(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
     return (p.capture&4)!=0;
 #else
-    (void)p; return false; // The candidate is not enabled in the ordinary native build.
+    return (p.capture&(64|4))==(64|4) && ((p.capture>>7)&7)==3;
 #endif
 }
 inline bool blockFlowEnabled(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
     return (p.capture&64)!=0;
 #else
-    (void)p; return false;
+    return (p.capture&(64|4))==(64|4) && ((p.capture>>7)&7)==3;
 #endif
 }
 inline int blockFlowVariant(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
     return (p.capture>>7)&7;
 #else
-    (void)p; return 0;
+    (void)p; return 3;
 #endif
 }
 inline bool connectionOnly(const Packet& p) {
@@ -163,9 +161,7 @@ inline bool imageGateEnabled(const Packet& p) {
 #endif
 }
 struct Query { ComPtr<ID3D11Query> begin,end,disjoint; size_t row=SIZE_MAX; };
-#ifdef SF_FRAMEGEN_RESEARCH
 #include "framegen_block.h"
-#endif
 class Output {
 public:
     ComPtr<ID3D11Device> device;
@@ -223,6 +219,9 @@ public:
     void publish(const Packet& p,ID3D11Texture2D* screen) {
         if(error.load()) throw std::runtime_error("worker failed");
         if(p.mode!=0 && !connectionOnly(p) && (p.mode<2 || p.mode>8)) throw std::runtime_error("unsupported output multiplier");
+#ifndef SF_FRAMEGEN_RESEARCH
+        if(p.mode>=2 && !blockFlowEnabled(p)) throw std::runtime_error("block interpolation packet required; restart with matching DLLs");
+#endif
         double t=now();
 #ifdef SF_FRAMEGEN_RESEARCH
         if((p.capture&3)==2) { ContextLock context(protection.Get()); motionClip.initialize(device.Get(),width,height); }
@@ -278,7 +277,6 @@ public:
         s.packet=p; s.previousPacket=lastPacket; s.previous=lastPacket.pose; s.previousSong=lastPacket.song;
         s.frameDelta=havePrevious?t-lastQpc:.005;
         s.period=std::clamp(s.frameDelta,.001,.05); s.qpc=t; s.sequence=++published;
-        #ifdef SF_FRAMEGEN_RESEARCH
         if(blockFlowEnabled(p) && !connectionOnly(p)) {
             const auto& previous=slots[(s.sequence-1)%slots.size()];
             if(blockFlowVariant(p)>=3) {
@@ -287,6 +285,7 @@ public:
                 if(s.sequence>1 && previous.sequence==s.sequence-1) blockFlow.skipIfUnused(previous);
             } else blockFlow.prepare(device.Get(),immediate.Get(),s.sequence>1 && previous.sequence==s.sequence-1?previous:s,s,width,height);
         }
+#ifdef SF_FRAMEGEN_RESEARCH
         s.motionRow=SIZE_MAX;
         if(imageGateEnabled(p)) {
             // Prepare on activation, never defer shader compilation until a later eligible movement.
@@ -361,9 +360,9 @@ private:
     std::atomic<int> mode{0};
     bool initialized=false;
     std::array<Slot,3> slots;
+    BlockFlow blockFlow;
 #ifdef SF_FRAMEGEN_RESEARCH
     ImageMotionGate motionGate;
-    BlockFlow blockFlow;
     MotionClip motionClip;
     std::vector<MotionRecord> motions;
     std::array<MotionRecord,3> unloggedMotion; // Diagnostic capacity must not change the rendering decision.
@@ -573,7 +572,6 @@ inline void Output::render(const Slot& s,bool real,double tick) {
         const auto& previousImage=slots[(s.sequence-1)%slots.size()];
         if(previousImage.sequence==s.sequence-1 && previousImage.packet.pose.camera[2]>.00001f) image=&previousImage;
     }
-#ifdef SF_FRAMEGEN_RESEARCH
     if(blockFlowEnabled(s.packet)) {
         double phase=real?0:std::clamp(age/s.period,0.,1.);
         auto& q=queries[nextQuery++%queries.size()];bool timing=!real && s.packet.measure && q.row==SIZE_MAX && records.size()<1000000;
@@ -581,13 +579,17 @@ inline void Output::render(const Slot& s,bool real,double tick) {
             if(blockFlowVariant(s.packet)>=3 && !real && phase>0 && phase<1)
                 blockFlow.prepare(device.Get(),immediate.Get(),*image,s,width,height,blockFlowVariant(s.packet)!=4);
             blockFlow.draw(immediate.Get(),backTarget.Get(),*image,s,phase,timing?&q:nullptr,!real && s.packet.measure && song>=5 && song<45);}
+#ifdef SF_FRAMEGEN_RESEARCH
         if((s.packet.capture&3)==2) clip(backBuffer.Get(),song,s.packet.frame,s.packet.mode,real,image,&s,-2,phase);
+#endif
         pending={0,song,NAN,real?1:0,s.packet.measure?s.packet.frame:-1,S_OK,std::max(0.,tick-(image->qpc+phase*(s.qpc-image->qpc)))};
         pending.targetTime=image->qpc+phase*(s.qpc-image->qpc);
-        memcpy(pending.camera,image->packet.pose.camera,16);pendingQuery=timing?&q:nullptr;pendingMotion=SIZE_MAX;pendingWarp=false;
+        memcpy(pending.camera,image->packet.pose.camera,16);pendingQuery=timing?&q:nullptr;
+#ifdef SF_FRAMEGEN_RESEARCH
+        pendingMotion=SIZE_MAX;pendingWarp=false;
+#endif
         return;
     }
-#endif
     // FMOD's reported song time can move backwards between Unity frames. Camera velocity
     // uses monotonically increasing render-source time; pulse still uses the saved song state.
     double delta=s.packet.textures[1]==reinterpret_cast<void*>(1)?s.frameDelta:s.packet.song-s.previousSong;

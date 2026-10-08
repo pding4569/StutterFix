@@ -1,0 +1,23 @@
+{
+  "managed_sha256": "d27198084933ef6995698f6aa1aa292e85a5cb3718164301bdb0e24a942dfdfb",
+  "images": [
+    {
+      "sha256": "471c8242b2d78c2d495aeda022f2aa196466cbefb86201c34af5b799569e4a25",
+      "request_song_s": 25.445,
+      "request_unity_frame": 12514,
+      "file": "hello-normal4-monitor-song25.png"
+    },
+    {
+      "sha256": "5e19a8f4d439ce265e8a9c9897be09fc83f055b64ee6be427c806288f497abb2",
+      "request_song_s": 34.474,
+      "request_unity_frame": 13994,
+      "file": "hello-normal4-settings-song34.png"
+    }
+  ],
+  "native_sha256": "60835c24568c7f12dfaae26bfba775029587a36c006f9bb18d3eb5b930952eab",
+  "mode": 4,
+  "map": "HELLO 2026",
+  "actual_width": 2560,
+  "actual_height": 1440,
+  "scope": "New ordinary-build UI captures; separate visual run, not a motion-quality or performance proof"
+}

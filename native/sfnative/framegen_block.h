@@ -1,14 +1,18 @@
-// Research only. GPU block matching between TWO KNOWN images; no camera prediction.
+// Default-OFF experiment. GPU block matching between TWO KNOWN images; no camera prediction.
 // All GPU work is ordered through the existing protected D3D11 immediate context.
 class BlockFlow {
     struct Image { Texture texture; ComPtr<ID3D11UnorderedAccessView> target; };
     std::array<Image,2> gray,flow;
     ComPtr<ID3D11DeviceContext> commands;
-    ComPtr<ID3D11ComputeShader> reduce,match,metric;
+    ComPtr<ID3D11ComputeShader> reduce,match;
     ComPtr<ID3D11VertexShader> vertex;
     ComPtr<ID3D11PixelShader> pixel;
-    ComPtr<ID3D11Buffer> constants,counters,counterRead;
+    ComPtr<ID3D11Buffer> constants;
+#ifdef SF_FRAMEGEN_RESEARCH
+    ComPtr<ID3D11ComputeShader> metric;
+    ComPtr<ID3D11Buffer> counters,counterRead;
     ComPtr<ID3D11UnorderedAccessView> counterTarget;
+#endif
     ComPtr<ID3D11SamplerState> linear;
     unsigned width=0,height=0,smallW=0,smallH=0,blocksW=0,blocksH=0,scale=8,blockSize=8,variant=0;
     unsigned skippedPairs=0;
@@ -118,17 +122,22 @@ public:
     void initialize(ID3D11Device* device,unsigned w,unsigned h,unsigned selectedVariant) {
         if(vertex) return; width=w;height=h;variant=selectedVariant;scale=variant==1?16:8;blockSize=variant==2?16:8;smallW=(w+scale-1)/scale;smallH=(h+scale-1)/scale;blocksW=(smallW+blockSize-1)/blockSize;blocksH=(smallH+blockSize-1)/blockSize;
         auto compile=[&](const char* entry,const char* profile) {ComPtr<ID3DBlob> result,errors;HRESULT hr=D3DCompile(code(),strlen(code()),nullptr,nullptr,nullptr,entry,profile,D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&result,&errors);if(FAILED(hr)) throw std::runtime_error(errors?static_cast<const char*>(errors->GetBufferPointer()):"block shader compile failed");return result;};
-        auto vs=compile("VS","vs_5_0"),ps=compile("PS","ps_5_0"),cs=compile("Reduce","cs_5_0"),ms=compile("Match","cs_5_0"),qs=compile("Metric","cs_5_0");
+        auto vs=compile("VS","vs_5_0"),ps=compile("PS","ps_5_0"),cs=compile("Reduce","cs_5_0"),ms=compile("Match","cs_5_0");
         check(device->CreateVertexShader(vs->GetBufferPointer(),vs->GetBufferSize(),nullptr,&vertex));check(device->CreatePixelShader(ps->GetBufferPointer(),ps->GetBufferSize(),nullptr,&pixel));
-        check(device->CreateComputeShader(cs->GetBufferPointer(),cs->GetBufferSize(),nullptr,&reduce));check(device->CreateComputeShader(ms->GetBufferPointer(),ms->GetBufferSize(),nullptr,&match));check(device->CreateComputeShader(qs->GetBufferPointer(),qs->GetBufferSize(),nullptr,&metric));
+        check(device->CreateComputeShader(cs->GetBufferPointer(),cs->GetBufferSize(),nullptr,&reduce));check(device->CreateComputeShader(ms->GetBufferPointer(),ms->GetBufferSize(),nullptr,&match));
+#ifdef SF_FRAMEGEN_RESEARCH
+        auto qs=compile("Metric","cs_5_0");check(device->CreateComputeShader(qs->GetBufferPointer(),qs->GetBufferSize(),nullptr,&metric));
+#endif
         check(device->CreateDeferredContext(0,&commands));
         D3D11_BUFFER_DESC bd{};bd.ByteWidth=sizeof(Data);bd.Usage=D3D11_USAGE_DEFAULT;bd.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&bd,nullptr,&constants));
         D3D11_SAMPLER_DESC sd{};sd.Filter=D3D11_FILTER_MIN_MAG_MIP_LINEAR;sd.AddressU=sd.AddressV=sd.AddressW=D3D11_TEXTURE_ADDRESS_CLAMP;sd.MaxLOD=D3D11_FLOAT32_MAX;check(device->CreateSamplerState(&sd,&linear));
         auto image=[&](Image& out,unsigned iw,unsigned ih,DXGI_FORMAT format) {D3D11_TEXTURE2D_DESC td{};td.Width=iw;td.Height=ih;td.MipLevels=td.ArraySize=1;td.Format=format;td.SampleDesc.Count=1;td.BindFlags=D3D11_BIND_UNORDERED_ACCESS|D3D11_BIND_SHADER_RESOURCE;check(device->CreateTexture2D(&td,nullptr,&out.texture.texture));check(device->CreateShaderResourceView(out.texture.texture.Get(),nullptr,&out.texture.view));check(device->CreateUnorderedAccessView(out.texture.texture.Get(),nullptr,&out.target));};
         for(auto& g:gray) image(g,smallW,smallH,DXGI_FORMAT_R32_FLOAT);for(auto& f:flow) image(f,blocksW,blocksH,DXGI_FORMAT_R32G32B32A32_FLOAT);
+#ifdef SF_FRAMEGEN_RESEARCH
         bd.ByteWidth=16;bd.Usage=D3D11_USAGE_DEFAULT;bd.BindFlags=D3D11_BIND_UNORDERED_ACCESS;bd.MiscFlags=D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;bd.StructureByteStride=4;UINT zeros[4]{};D3D11_SUBRESOURCE_DATA initial{zeros,0,0};check(device->CreateBuffer(&bd,&initial,&counters));
         D3D11_UNORDERED_ACCESS_VIEW_DESC ud{};ud.ViewDimension=D3D11_UAV_DIMENSION_BUFFER;ud.Buffer.NumElements=4;check(device->CreateUnorderedAccessView(counters.Get(),&ud,&counterTarget));
         bd.Usage=D3D11_USAGE_STAGING;bd.CPUAccessFlags=D3D11_CPU_ACCESS_READ;bd.BindFlags=bd.MiscFlags=bd.StructureByteStride=0;check(device->CreateBuffer(&bd,nullptr,&counterRead));
+#endif
     }
     Data data(const Slot& a,const Slot& b,double phase) const {
         Data d{{float(width),float(height),float(std::clamp(phase,0.,1.)),float(b.packet.flip)},{float(smallW),float(smallH),float(blocksW),float(blocksH)},{}};
@@ -156,12 +165,18 @@ public:
         if(timing) {commands->Begin(timing->disjoint.Get());commands->End(timing->begin.Get());}
         D3D11_VIEWPORT vp{0,0,float(width),float(height),0,1};commands->RSSetViewports(1,&vp);commands->OMSetRenderTargets(1,&target,nullptr);commands->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);commands->VSSetShader(vertex.Get(),nullptr,0);commands->PSSetShader(pixel.Get(),nullptr,0);commands->Draw(3,0);commands->OMSetRenderTargets(0,nullptr,nullptr);
         if(timing) {commands->End(timing->end.Get());commands->End(timing->disjoint.Get());}
+#ifdef SF_FRAMEGEN_RESEARCH
         if(measure) {auto uav=counterTarget.Get();commands->CSSetUnorderedAccessViews(2,1,&uav,nullptr);commands->CSSetShader(metric.Get(),nullptr,0);commands->Dispatch(1,1,1);ID3D11UnorderedAccessView* empty=nullptr;commands->CSSetUnorderedAccessViews(2,1,&empty,nullptr);}
+#else
+        (void)measure;
+#endif
         execute(immediate);
     }
+#ifdef SF_FRAMEGEN_RESEARCH
     void save(ID3D11DeviceContext* immediate,const std::wstring& path) {
         if(!vertex) return; // CPU readback AFTER worker stop only, never in a performance interval.
         immediate->CopyResource(counterRead.Get(),counters.Get());D3D11_MAPPED_SUBRESOURCE mapped{};check(immediate->Map(counterRead.Get(),0,D3D11_MAP_READ,0,&mapped));UINT v[4];memcpy(v,mapped.pData,sizeof(v));immediate->Unmap(counterRead.Get(),0);
         FILE* f=nullptr;_wfopen_s(&f,(path+L"/block-flow.txt").c_str(),L"wb");if(f) {fprintf(f,"variant=%u scale=%u block_size=%u skipped_pairs=%u generated=%u new_picture=%u both_changed_samples=%u moving_samples=%u samples_per_frame=256 threshold=3/255 minimum_samples=4 window=5..45\n",variant,scale,blockSize,skippedPairs,v[0],v[1],v[2],v[3]);fclose(f);}
     }
+#endif
 };

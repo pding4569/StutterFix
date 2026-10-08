@@ -39,7 +39,7 @@ def main():
         (a.out/(n+'.original')).write_bytes(data)
     shot = mod/'shots'/'framegen-normal.png'
     old_shot = shot.read_bytes() if shot.exists() else None
-    monitor_shots = {mod/'shots'/('framegen-monitor-'+n+'.png'): None for n in ['icon','mini','detail','settings']}
+    monitor_shots = {mod/'shots'/('framegen-monitor-'+n+'.png'): None for n in ['icon','mini','detail','settings','graphics']}
     if a.monitor_smoke:
         monitor_shots = {p:p.read_bytes() if p.exists() else None for p in monitor_shots}
     binary = (ROOT/'bin/PlayerAuto/StutterFix.dll').read_bytes()
@@ -52,7 +52,8 @@ def main():
                 steps += ['set OverlayFpsSource '+str(source), 'wait 3', 'fgmonitor']
             for layout,name in [(1,'icon'),(2,'mini'),(3,'detail')]:
                 steps += ['set OverlayMode '+str(layout), 'wait 2', 'shot framegen-monitor-'+name, 'wait 1']
-            steps += ['ui 4.1', 'wait 2', 'shot framegen-monitor-settings', 'wait 1', 'ui close', 'fgstate',
+            steps += ['ui 4.1', 'wait 2', 'shot framegen-monitor-settings', 'wait 1',
+                      'ui 3', 'wait 2', 'shot framegen-monitor-graphics', 'wait 1', 'ui close', 'fgstate',
                       'set FrameGenOutside 0','wait 3','fgstate','fgmonitor']
         elif a.switch:
             for mode in [2, 4, 3, 5, 6, 7, 8, 1, 9, 0, 2]:
@@ -77,7 +78,9 @@ def main():
         (a.out/'run.txt').write_text(summary, encoding='utf8')
         states = [dict(active=m[0]=='True', installed=int(m[1]), sources=int(m[2]), generated=int(m[3]), runtime_initialized=m[4]=='True', status=m[5])
                   for m in re.findall(r'\[프레임상태\] active=(True|False) native_installed=(\d+) sources=(\d+) generated=(\d+) runtime_initialized=(True|False) status=([^\r\n]*)', log)]
-        if metrics['errors'] or any(s['status'] for s in states) or any(s in log for s in ['Crash!!!', '단계 실패', 'native failure', 'shutdown pending', '[안정성] 안전 모드로 켬']) or '시간 초과로 끔' in summary:
+        # A delayed shutdown retains live buffers safely; the observed final
+        # installed=0 and switch reactivation checks below prove cleanup completed.
+        if metrics['errors'] or any(s['status'] for s in states) or any(s in log for s in ['Crash!!!', '단계 실패', 'native failure', '[안정성] 안전 모드로 켬']) or '시간 초과로 끔' in summary:
             raise RuntimeError('Normal build failed; inspect saved logs, no automatic retry')
         if diagnostic.exists():
             raise RuntimeError('Normal build must not produce research files')

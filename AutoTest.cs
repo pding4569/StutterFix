@@ -848,7 +848,9 @@ namespace StutterFix
                     Directory.CreateDirectory(dir);
                     string f = Path.Combine(dir, (arg.Length > 0 ? arg : "shot") + ".png");
                     ScreenCapture.CaptureScreenshot(f);
-                    Log("화면 캡처: " + f);
+                    double shotSong=scrConductor.instance!=null?scrConductor.instance.songposition_minusi:double.NaN;
+                    Log("화면 캡처: " + f + " | 요청 곡 " + shotSong.ToString("F3",System.Globalization.CultureInfo.InvariantCulture)
+                        + "초, 배율 " + Main.Config.FrameGenOutside + ", frame " + Time.frameCount);
                     return true;
                 }
                 case "decowatch":
