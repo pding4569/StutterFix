@@ -27,5 +27,9 @@
       "state_errors": 0,
       "sha256": "1db96eb49d3372f87dd9af07337a61e4b526b7c03233bfdf5401e531d3a5408b"
     }
+  },
+  "version_exports": {
+    "old_has_block_export": false,
+    "new_block_version": 1
   }
 }
