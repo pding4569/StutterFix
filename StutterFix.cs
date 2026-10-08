@@ -898,7 +898,7 @@ namespace StutterFix
 
         // 실시간 모니터: 0 끔, 1 아이콘(화면 끝의 작은 탭), 2 미니(한 줄), 3 상세(패널). Shift+키로 차례로 바꾼다.
         public int OverlayMode = 1;
-        public int OverlayFpsSource = 0;    // 0 원본, 1 출력(생성 포함), 2 둘 다. 통계·끊김은 항상 원본.
+        public int OverlayFpsSource = -1;   // -1 자동(생성 켬: 출력, 끔: 원본), 0 원본, 1 출력, 2 둘 다. 통계·끊김은 항상 원본.
         public bool OverlayRight = false;   // 왼쪽 끝 / 오른쪽 끝
         public float OverlayY = 0.5f;       // 세로 위치 (0 위 ~ 1 아래)
         public float OverlayOpacity = 0.75f;

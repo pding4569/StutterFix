@@ -509,7 +509,9 @@
     },
     "remaining": [
       "Actual3440 game",
-      "Full song candidate safety",
+      "2x full song candidate safety",
+      "Remaining long source/output gaps in4x full songs require cause investigation",
+      "Uncovered borders with BORDER sampler: contribution to reported shake unconfirmed",
       "Subjective shake comparison; user could not judge preview"
     ],
     "hello_performance": {
@@ -917,6 +919,785 @@
           }
         }
       ]
+    },
+    "full_song_4x": {
+      "hello": {
+        "label": "HELLO 2026 delayed camera full4",
+        "mode": 4,
+        "camera_blend": true,
+        "scene_pair": false,
+        "expected_inactive": false,
+        "compatibility_settings": {},
+        "visual_smoke": false,
+        "native": {
+          "seconds": 39.99824450002052,
+          "source_seconds": 39.99155609996524,
+          "source_frames": 7002,
+          "output_frames": 28105,
+          "real_output_frames": 7002,
+          "generated_frames": 21103,
+          "real_fps": 175.06195514122757,
+          "output_fps": 702.6308367104857,
+          "generated_gpu_ms": {
+            "mean": 0.05893919764962328,
+            "p95": 0.111616,
+            "maximum": 0.82944
+          },
+          "gpu_coverage": 21103,
+          "output_worst_ms": 43.1514999945648,
+          "output_over_33ms": 2,
+          "source_worst_ms": 46.873000042978674,
+          "source_over_33ms": 2,
+          "prediction_camera_px": {
+            "mean": 29.914275160811197,
+            "p95": 45.020433,
+            "maximum": 76393.424318
+          },
+          "prediction_red_px": {
+            "mean": 44.00155666823765,
+            "p95": 120.144625,
+            "maximum": 20072.563055
+          },
+          "prediction_blue_px": {
+            "mean": 44.59311643487575,
+            "p95": 122.837146,
+            "maximum": 17179.150922
+          },
+          "prediction_horizon_ms": {
+            "mean": 5.712091888031991,
+            "p95": 7.4875,
+            "maximum": 46.873
+          },
+          "prediction_samples": 7002,
+          "source_age_ms": {
+            "mean": 8.168174278538597,
+            "p95": 11.5602,
+            "maximum": 53.3992
+          },
+          "missing_camera_callbacks": 0,
+          "scene_fps": 175.06195514122757,
+          "scheduler": {
+            "samples": 7002,
+            "expected_generated": 21006,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 5,
+            "continuous_miss_timer": 20,
+            "worker_wait_ms": {
+              "mean": 0.21079881462439304,
+              "p95": 0.8788,
+              "maximum": 41.3048
+            },
+            "source_hold_ms": {
+              "mean": 0.8051562125107112,
+              "p95": 1.4539,
+              "maximum": 41.4295
+            }
+          },
+          "prediction_metrics_scope": "Counterfactual extrapolation from source poses; not delayed display-camera error"
+        },
+        "safety": {
+          "outputs": "138222",
+          "frame_begins": "38354",
+          "frame_ends": "38354",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [
+            {
+              "fps": 174.0,
+              "worst": 46.0,
+              "count": 0
+            }
+          ],
+          "errors": 0
+        },
+        "whole_song_native": {
+          "seconds": 180.08986539999023,
+          "source_seconds": 180.04745279997587,
+          "source_frames": 30336,
+          "output_frames": 122198,
+          "real_output_frames": 30336,
+          "generated_frames": 91862,
+          "real_fps": 168.48336107093243,
+          "output_fps": 678.5334628830625,
+          "generated_gpu_ms": {
+            "mean": 0.06556299074699005,
+            "p95": 0.156672,
+            "maximum": 0.830464
+          },
+          "gpu_coverage": 91862,
+          "output_worst_ms": 43.1514999945648,
+          "output_over_33ms": 2,
+          "source_worst_ms": 46.873000042978674,
+          "source_over_33ms": 2,
+          "prediction_camera_px": {
+            "mean": 36.06371416821598,
+            "p95": 52.803582,
+            "maximum": 76393.424318
+          },
+          "prediction_red_px": {
+            "mean": 49.97586916261208,
+            "p95": 137.081583,
+            "maximum": 20072.563055
+          },
+          "prediction_blue_px": {
+            "mean": 49.484044440961235,
+            "p95": 137.086331,
+            "maximum": 17179.150922
+          },
+          "prediction_horizon_ms": {
+            "mean": 5.9352572554061185,
+            "p95": 8.6448,
+            "maximum": 46.873
+          },
+          "prediction_samples": 30336,
+          "source_age_ms": {
+            "mean": 8.594396101761337,
+            "p95": 13.0235,
+            "maximum": 58.4394
+          },
+          "missing_camera_callbacks": 0,
+          "scene_fps": 168.48336107093243,
+          "scheduler": {
+            "samples": 30336,
+            "expected_generated": 91008,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 16,
+            "continuous_miss_timer": 1818,
+            "worker_wait_ms": {
+              "mean": 0.14818461563818566,
+              "p95": 0.7189,
+              "maximum": 41.3048
+            },
+            "source_hold_ms": {
+              "mean": 0.6765113594409282,
+              "p95": 1.1562,
+              "maximum": 41.4295
+            }
+          },
+          "scope": "Whole measured song after5s, separate fresh4x run, no readbacks. No paired whole-song OFF control; not a source-loss comparison or visual proof.",
+          "source_gaps_over_33ms": [
+            {
+              "frame": 9450,
+              "song_s": 13.236895066,
+              "interval_ms": 44.73570000845939
+            },
+            {
+              "frame": 9826,
+              "song_s": 15.551857453,
+              "interval_ms": 46.873000042978674
+            }
+          ],
+          "output_gaps_over_33ms": [
+            {
+              "frame": 9450,
+              "song_s": 13.236895066,
+              "real": true,
+              "interval_ms": 40.175800037104636
+            },
+            {
+              "frame": 9826,
+              "song_s": 15.551857453,
+              "real": true,
+              "interval_ms": 43.1514999945648
+            }
+          ]
+        }
+      },
+      "arche": {
+        "label": "Arche delayed camera full4",
+        "mode": 4,
+        "camera_blend": true,
+        "scene_pair": false,
+        "expected_inactive": false,
+        "compatibility_settings": {},
+        "visual_smoke": false,
+        "native": {
+          "seconds": 40.00820570002543,
+          "source_seconds": 40.006075100041926,
+          "source_frames": 12558,
+          "output_frames": 50266,
+          "real_output_frames": 12558,
+          "generated_frames": 37708,
+          "real_fps": 313.8773290956213,
+          "output_fps": 1256.3672656774022,
+          "generated_gpu_ms": {
+            "mean": 0.03898322350694813,
+            "p95": 0.055296,
+            "maximum": 0.193536
+          },
+          "gpu_coverage": 37708,
+          "output_worst_ms": 4.040099971462041,
+          "output_over_33ms": 0,
+          "source_worst_ms": 11.707500030752271,
+          "source_over_33ms": 0,
+          "prediction_camera_px": {
+            "mean": 13.370177402611882,
+            "p95": 5.660352,
+            "maximum": 42957.949703
+          },
+          "prediction_red_px": {
+            "mean": 7.739755942506768,
+            "p95": 20.018128,
+            "maximum": 4204.229038
+          },
+          "prediction_blue_px": {
+            "mean": 7.212878644449753,
+            "p95": 17.93981,
+            "maximum": 1556.471216
+          },
+          "prediction_horizon_ms": {
+            "mean": 3.185944242713808,
+            "p95": 3.8763,
+            "maximum": 11.7075
+          },
+          "prediction_samples": 12558,
+          "source_age_ms": {
+            "mean": 4.599341460697995,
+            "p95": 6.2324,
+            "maximum": 19.5214
+          },
+          "missing_camera_callbacks": 12,
+          "scene_fps": 313.5773746519526,
+          "scheduler": {
+            "samples": 12558,
+            "expected_generated": 37674,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 0,
+            "continuous_miss_timer": 182,
+            "worker_wait_ms": {
+              "mean": 0.16245974677496416,
+              "p95": 0.6032,
+              "maximum": 1.0473
+            },
+            "source_hold_ms": {
+              "mean": 0.5619629240324893,
+              "p95": 0.7775,
+              "maximum": 1.2708
+            }
+          },
+          "prediction_metrics_scope": "Counterfactual extrapolation from source poses; not delayed display-camera error"
+        },
+        "safety": {
+          "outputs": "349953",
+          "frame_begins": "91542",
+          "frame_ends": "91542",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [
+            {
+              "fps": 275.0,
+              "worst": 64.0,
+              "count": 1
+            }
+          ],
+          "errors": 0
+        },
+        "whole_song_native": {
+          "seconds": 303.43907630001195,
+          "source_seconds": 303.4036518000066,
+          "source_frames": 82580,
+          "output_frames": 330725,
+          "real_output_frames": 82580,
+          "generated_frames": 248145,
+          "real_fps": 272.17536608436495,
+          "output_fps": 1089.918951878865,
+          "generated_gpu_ms": {
+            "mean": 0.03913504662193475,
+            "p95": 0.059136,
+            "maximum": 0.719744
+          },
+          "gpu_coverage": 248145,
+          "output_worst_ms": 16.83119998779148,
+          "output_over_33ms": 0,
+          "source_worst_ms": 63.00720002036542,
+          "source_over_33ms": 2,
+          "prediction_camera_px": {
+            "mean": 34.8541629811924,
+            "p95": 9.553671,
+            "maximum": 513573.578482
+          },
+          "prediction_red_px": {
+            "mean": 15.618246360444697,
+            "p95": 28.171851,
+            "maximum": 92392.316155
+          },
+          "prediction_blue_px": {
+            "mean": 19.026530029997698,
+            "p95": 30.229477,
+            "maximum": 92695.137207
+          },
+          "prediction_horizon_ms": {
+            "mean": 3.6741018177854747,
+            "p95": 6.2185,
+            "maximum": 63.0072
+          },
+          "prediction_samples": 82573,
+          "source_age_ms": {
+            "mean": 5.314890472103004,
+            "p95": 8.7421,
+            "maximum": 96.5572
+          },
+          "missing_camera_callbacks": 22,
+          "scene_fps": 272.10285542119567,
+          "scheduler": {
+            "samples": 82575,
+            "expected_generated": 247740,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 0,
+            "continuous_miss_timer": 1185,
+            "worker_wait_ms": {
+              "mean": 0.1675030965788677,
+              "p95": 0.6308,
+              "maximum": 2.8456
+            },
+            "source_hold_ms": {
+              "mean": 0.5765705709960642,
+              "p95": 0.807,
+              "maximum": 4.6507
+            }
+          },
+          "scope": "Whole measured song after5s, separate fresh4x run, no readbacks. No paired whole-song OFF control; not a source-loss comparison or visual proof.",
+          "source_gaps_over_33ms": [
+            {
+              "frame": 73759,
+              "song_s": 219.602602594,
+              "interval_ms": 63.00720002036542
+            },
+            {
+              "frame": 73760,
+              "song_s": 219.650820368,
+              "interval_ms": 44.34899997431785
+            }
+          ],
+          "output_gaps_over_33ms": []
+        }
+      }
+    },
+    "arche_performance": {
+      "label": "Arche delayed camera",
+      "conditions": {
+        "vsync": "0",
+        "target_fps": "10000",
+        "fullscreen_mode": "FullScreenWindow",
+        "width": "2560",
+        "height": "1440",
+        "refresh_hz": "144",
+        "window_width": "2560",
+        "window_height": "1440"
+      },
+      "order": [
+        0,
+        2,
+        4,
+        0
+      ],
+      "camera_blend": true,
+      "research_binary_sha256": "56089bd74813c1521fa9741ccb8057c87503f99fd21f04e687539163b4ce7255",
+      "pooled": [
+        {
+          "mode": 0,
+          "trials": 2,
+          "real_fps": 345.3476648845611,
+          "scene_fps_bounds": [
+            345.04762347284554,
+            345.3476648845611
+          ],
+          "output_fps": 345.34771324003185,
+          "output_over_source": 1.0000001400196836,
+          "missing_camera_callbacks": 24,
+          "generated_gpu_mean_ms": null,
+          "generated_gpu_samples": 0,
+          "worst_output_ms": 11.054799950215966,
+          "worst_source_ms": 11.060999997425824,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 0,
+          "source_fps_trials": [
+            346.6690963088446,
+            344.0262048602444
+          ],
+          "output_ratio_trials": [
+            1.0000000600080934,
+            1.000000220033018
+          ],
+          "output_over_off": 1.0,
+          "scene_fps_decrease_bounds_percent": [
+            -0.08695652173913437,
+            0.08688097306690512
+          ]
+        },
+        {
+          "mode": 2,
+          "trials": 1,
+          "real_fps": 316.8831127007624,
+          "scene_fps_bounds": [
+            316.6330865742824,
+            316.8831127007624
+          ],
+          "output_fps": 634.0208777512988,
+          "output_over_source": 2.0008036160324343,
+          "missing_camera_callbacks": 10,
+          "generated_gpu_mean_ms": 0.041789709420575485,
+          "generated_gpu_samples": 12685,
+          "worst_output_ms": 9.449500008486211,
+          "worst_source_ms": 11.709799990057945,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 0,
+          "source_fps_trials": [
+            316.8831127007624
+          ],
+          "output_ratio_trials": [
+            2.0008036160324343
+          ],
+          "output_over_off": 1.8358913449953163,
+          "scene_fps_decrease_bounds_percent": [
+            8.162499567048787,
+            8.314687264463494
+          ]
+        },
+        {
+          "mode": 4,
+          "trials": 1,
+          "real_fps": 312.04042483698703,
+          "scene_fps_bounds": [
+            311.71538272778184,
+            312.04042483698703
+          ],
+          "output_fps": 1249.6623071520119,
+          "output_over_source": 4.004809017308728,
+          "missing_camera_callbacks": 13,
+          "generated_gpu_mean_ms": 0.03946825150658632,
+          "generated_gpu_samples": 37502,
+          "worst_output_ms": 4.486699996050447,
+          "worst_source_ms": 12.293900013901293,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 171,
+          "source_fps_trials": [
+            312.04042483698703
+          ],
+          "output_ratio_trials": [
+            4.004809017308728
+          ],
+          "output_over_off": 3.618562565328011,
+          "scene_fps_decrease_bounds_percent": [
+            9.565983473135297,
+            9.738673683524535
+          ]
+        }
+      ],
+      "runs": [
+        {
+          "index": 0,
+          "mode": 0,
+          "native": {
+            "seconds": 39.994909600005485,
+            "source_seconds": 39.99491200002376,
+            "source_frames": 13866,
+            "output_frames": 13866,
+            "real_output_frames": 13866,
+            "generated_frames": 0,
+            "real_fps": 346.6690963088446,
+            "output_fps": 346.6691171117961,
+            "generated_gpu_ms": null,
+            "gpu_coverage": 0,
+            "output_worst_ms": 11.054799950215966,
+            "output_over_33ms": 0,
+            "source_worst_ms": 11.060999997425824,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 16.22178799134574,
+              "p95": 4.7224,
+              "maximum": 77402.65786
+            },
+            "prediction_red_px": {
+              "mean": 7.6164605972162125,
+              "p95": 18.479484,
+              "maximum": 4272.199786
+            },
+            "prediction_blue_px": {
+              "mean": 6.900061819053801,
+              "p95": 16.663136,
+              "maximum": 1984.864266
+            },
+            "prediction_horizon_ms": {
+              "mean": 2.8845729626424346,
+              "p95": 3.4733,
+              "maximum": 11.061
+            },
+            "prediction_samples": 13866,
+            "source_age_ms": null,
+            "missing_camera_callbacks": 12,
+            "scene_fps": 346.3690581439902,
+            "scheduler": {
+              "samples": 0,
+              "expected_generated": 0,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": null,
+              "source_hold_ms": null
+            },
+            "prediction_metrics_scope": "Counterfactual extrapolation from source poses; not delayed display-camera error"
+          },
+          "safety": {
+            "outputs": "23421",
+            "frame_begins": "23421",
+            "frame_ends": "23421",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        },
+        {
+          "index": 1,
+          "mode": 2,
+          "native": {
+            "seconds": 39.997105599963106,
+            "source_seconds": 39.99582020001253,
+            "source_frames": 12675,
+            "output_frames": 25360,
+            "real_output_frames": 12675,
+            "generated_frames": 12685,
+            "real_fps": 316.8831127007624,
+            "output_fps": 634.0208777512988,
+            "generated_gpu_ms": {
+              "mean": 0.041789709420575485,
+              "p95": 0.062464,
+              "maximum": 0.142336
+            },
+            "gpu_coverage": 12685,
+            "output_worst_ms": 9.449500008486211,
+            "output_over_33ms": 0,
+            "source_worst_ms": 11.709799990057945,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 26.375250909822483,
+              "p95": 5.316686,
+              "maximum": 206811.240865
+            },
+            "prediction_red_px": {
+              "mean": 11.31373931376726,
+              "p95": 20.112022,
+              "maximum": 24640.560595
+            },
+            "prediction_blue_px": {
+              "mean": 10.938460398027614,
+              "p95": 18.085467,
+              "maximum": 25088.245937
+            },
+            "prediction_horizon_ms": {
+              "mean": 3.1556965917159765,
+              "p95": 3.8305,
+              "maximum": 11.7098
+            },
+            "prediction_samples": 12675,
+            "source_age_ms": {
+              "mean": 4.7831088923925895,
+              "p95": 5.6778,
+              "maximum": 19.7906
+            },
+            "missing_camera_callbacks": 10,
+            "scene_fps": 316.6330865742824,
+            "scheduler": {
+              "samples": 12675,
+              "expected_generated": 12675,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": {
+                "mean": 0.012757317554240631,
+                "p95": 0.0089,
+                "maximum": 0.7791
+              },
+              "source_hold_ms": {
+                "mean": 0.6360889151873768,
+                "p95": 0.8368,
+                "maximum": 1.5267
+              }
+            },
+            "prediction_metrics_scope": "Counterfactual extrapolation from source poses; not delayed display-camera error"
+          },
+          "safety": {
+            "outputs": "43425",
+            "frame_begins": "24351",
+            "frame_ends": "24351",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        },
+        {
+          "index": 2,
+          "mode": 4,
+          "native": {
+            "seconds": 39.99640519998502,
+            "source_seconds": 39.99481800000649,
+            "source_frames": 12481,
+            "output_frames": 49983,
+            "real_output_frames": 12481,
+            "generated_frames": 37502,
+            "real_fps": 312.04042483698703,
+            "output_fps": 1249.6623071520119,
+            "generated_gpu_ms": {
+              "mean": 0.03946825150658632,
+              "p95": 0.057344,
+              "maximum": 0.19456
+            },
+            "gpu_coverage": 37502,
+            "output_worst_ms": 4.486699996050447,
+            "output_over_33ms": 0,
+            "source_worst_ms": 12.293900013901293,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 17.156359877573912,
+              "p95": 5.712384,
+              "maximum": 56948.046422
+            },
+            "prediction_red_px": {
+              "mean": 8.182125219613813,
+              "p95": 20.055067,
+              "maximum": 4298.555044
+            },
+            "prediction_blue_px": {
+              "mean": 7.46853146991427,
+              "p95": 18.048864,
+              "maximum": 1756.334275
+            },
+            "prediction_horizon_ms": {
+              "mean": 3.20468310231552,
+              "p95": 3.9085,
+              "maximum": 12.2939
+            },
+            "prediction_samples": 12481,
+            "source_age_ms": {
+              "mean": 4.622702551863901,
+              "p95": 6.289,
+              "maximum": 20.3391
+            },
+            "missing_camera_callbacks": 13,
+            "scene_fps": 311.7153827277818,
+            "scheduler": {
+              "samples": 12481,
+              "expected_generated": 37443,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 171,
+              "worker_wait_ms": {
+                "mean": 0.1721118019389472,
+                "p95": 0.6175,
+                "maximum": 1.0716
+              },
+              "source_hold_ms": {
+                "mean": 0.5653542584728788,
+                "p95": 0.782,
+                "maximum": 1.4842
+              }
+            },
+            "prediction_metrics_scope": "Counterfactual extrapolation from source poses; not delayed display-camera error"
+          },
+          "safety": {
+            "outputs": "79535",
+            "frame_begins": "24025",
+            "frame_ends": "24025",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        },
+        {
+          "index": 3,
+          "mode": 0,
+          "native": {
+            "seconds": 39.99403760000132,
+            "source_seconds": 39.99404640001012,
+            "source_frames": 13760,
+            "output_frames": 13760,
+            "real_output_frames": 13760,
+            "generated_frames": 0,
+            "real_fps": 344.0262048602444,
+            "output_fps": 344.0262805573685,
+            "generated_gpu_ms": null,
+            "gpu_coverage": 0,
+            "output_worst_ms": 11.016100004781038,
+            "output_over_33ms": 0,
+            "source_worst_ms": 11.026600026525557,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 12.847231147165697,
+              "p95": 4.739871,
+              "maximum": 53031.78803
+            },
+            "prediction_red_px": {
+              "mean": 8.316275424200581,
+              "p95": 18.842708,
+              "maximum": 7877.147989
+            },
+            "prediction_blue_px": {
+              "mean": 7.370955598255814,
+              "p95": 16.775912,
+              "maximum": 4624.456064
+            },
+            "prediction_horizon_ms": {
+              "mean": 2.9067503125,
+              "p95": 3.4993,
+              "maximum": 11.0266
+            },
+            "prediction_samples": 13760,
+            "source_age_ms": null,
+            "missing_camera_callbacks": 12,
+            "scene_fps": 343.72616020159745,
+            "scheduler": {
+              "samples": 0,
+              "expected_generated": 0,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": null,
+              "source_hold_ms": null
+            },
+            "prediction_metrics_scope": "Counterfactual extrapolation from source poses; not delayed display-camera error"
+          },
+          "safety": {
+            "outputs": "23798",
+            "frame_begins": "23798",
+            "frame_ends": "23798",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        }
+      ]
     }
   },
   "final_normal_default_off": {
@@ -1096,6 +1877,210 @@
     "observed_submission_ratios": [
       2.0
     ],
+    "game_metrics": {
+      "runs": [],
+      "hitches": [],
+      "songs": [],
+      "errors": 0
+    },
+    "no_research_directory": true
+  },
+  "auto_monitor4": {
+    "mode": 4,
+    "full_song": false,
+    "switch": false,
+    "compatibility_settings": {},
+    "monitor_smoke": true,
+    "monitor_samples": [
+      {
+        "mode": -1,
+        "shown": 824.572,
+        "real": 203.155,
+        "counting": true
+      },
+      {
+        "mode": 0,
+        "shown": 208.159,
+        "real": 208.159,
+        "counting": false
+      },
+      {
+        "mode": 1,
+        "shown": 837.93,
+        "real": 207.487,
+        "counting": true
+      },
+      {
+        "mode": 2,
+        "shown": 798.641,
+        "real": 199.66,
+        "counting": true
+      },
+      {
+        "mode": -1,
+        "shown": 815.157,
+        "real": 202.795,
+        "counting": true
+      },
+      {
+        "mode": -1,
+        "shown": 164.602,
+        "real": 164.602,
+        "counting": false
+      }
+    ],
+    "managed_sha256": "3fb56520227e20dfc8ce015fc2a6c8c005e72ecbc1396c6321f3f4acf9fb410d",
+    "native_sha256": "5f156440556ae9fbfcd967777103930197b24a4407775a74fb7be821d3493c9f",
+    "states": [
+      {
+        "active": true,
+        "installed": 1,
+        "sources": 909,
+        "generated": 0,
+        "runtime_initialized": true,
+        "status": ""
+      },
+      {
+        "active": true,
+        "installed": 1,
+        "sources": 8532,
+        "generated": 10308,
+        "runtime_initialized": true,
+        "status": ""
+      },
+      {
+        "active": true,
+        "installed": 1,
+        "sources": 13031,
+        "generated": 23876,
+        "runtime_initialized": true,
+        "status": ""
+      },
+      {
+        "active": false,
+        "installed": 0,
+        "sources": 13032,
+        "generated": 23880,
+        "runtime_initialized": true,
+        "status": ""
+      }
+    ],
+    "clocks": [
+      {
+        "frame": 910,
+        "ticks": 182625647,
+        "hz": 10000000
+      },
+      {
+        "frame": 8534,
+        "ticks": 479433899,
+        "hz": 10000000
+      },
+      {
+        "frame": 13032,
+        "ticks": 720676077,
+        "hz": 10000000
+      },
+      {
+        "frame": 13577,
+        "ticks": 750852106,
+        "hz": 10000000
+      }
+    ],
+    "sample": null,
+    "observed_submission_ratios": [
+      4.01578128472994
+    ],
+    "game_metrics": {
+      "runs": [],
+      "hitches": [],
+      "songs": [],
+      "errors": 0
+    },
+    "no_research_directory": true
+  },
+  "auto_off": {
+    "mode": 0,
+    "full_song": false,
+    "switch": false,
+    "compatibility_settings": {},
+    "monitor_smoke": false,
+    "monitor_samples": [
+      {
+        "mode": -1,
+        "shown": 218.863,
+        "real": 218.863,
+        "counting": false
+      }
+    ],
+    "managed_sha256": "3fb56520227e20dfc8ce015fc2a6c8c005e72ecbc1396c6321f3f4acf9fb410d",
+    "native_sha256": "5f156440556ae9fbfcd967777103930197b24a4407775a74fb7be821d3493c9f",
+    "states": [
+      {
+        "active": false,
+        "installed": 0,
+        "sources": 0,
+        "generated": 0,
+        "runtime_initialized": false,
+        "status": ""
+      },
+      {
+        "active": false,
+        "installed": 0,
+        "sources": 0,
+        "generated": 0,
+        "runtime_initialized": false,
+        "status": ""
+      },
+      {
+        "active": false,
+        "installed": 0,
+        "sources": 0,
+        "generated": 0,
+        "runtime_initialized": false,
+        "status": ""
+      },
+      {
+        "active": false,
+        "installed": 0,
+        "sources": 0,
+        "generated": 0,
+        "runtime_initialized": false,
+        "status": ""
+      }
+    ],
+    "clocks": [
+      {
+        "frame": 1246,
+        "ticks": 183834818,
+        "hz": 10000000
+      },
+      {
+        "frame": 10771,
+        "ticks": 480306727,
+        "hz": 10000000
+      },
+      {
+        "frame": 17832,
+        "ticks": 830430342,
+        "hz": 10000000
+      },
+      {
+        "frame": 18293,
+        "ticks": 860586790,
+        "hz": 10000000
+      }
+    ],
+    "sample": {
+      "seconds": 35.0123615,
+      "unity_frames": 7061,
+      "real_fps": 201.6716296043042,
+      "submitted": 7061,
+      "output_fps": 201.6716296043042,
+      "output_over_source": 1.0,
+      "off_output_inferred_from_unity": true
+    },
+    "observed_submission_ratios": [],
     "game_metrics": {
       "runs": [],
       "hitches": [],

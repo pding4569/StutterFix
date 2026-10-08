@@ -1650,9 +1650,10 @@ namespace StutterFix
             {
             SubHeading(T("항목", "Items"), T("모니터에 띄울 값을 고릅니다. 고른 것은 흰색으로 바뀝니다.", "Choose what the monitor shows. Selected items turn white."));
             GUILayout.Label(T("FPS 표시", "FPS display"), sBody);
-            ch |= Segment("ovfpssource", ref c.OverlayFpsSource, new[] { T("원본", "Real"), T("출력", "Output"), T("둘 다", "Both") });
-            P(T("출력 FPS는 프레임 늘리기로 생성한 프레임까지 합친 실제 출력 제출 수입니다. 모니터 주사율이나 물리적으로 표시된 수가 아닙니다. 프레임 시간·1% low·끊김·이번 곡 통계는 원본 기준입니다.",
-                "Output FPS counts successful submissions including generated frames, not physical display refreshes. Frame time, 1% low, hitches and level statistics always use real frames."), sDim);
+            int fpsSource = c.OverlayFpsSource + 1;
+            if (Segment("ovfpssource", ref fpsSource, new[] { T("자동", "Auto"), T("원본", "Real"), T("출력", "Output"), T("둘 다", "Both") })) { c.OverlayFpsSource = fpsSource - 1; ch = true; }
+            P(T("기본값인 자동은 프레임 늘리기를 켜면 출력 FPS, 끄면 원본 FPS를 보여 줍니다. 직접 고른 표시 방식은 유지합니다. 출력 FPS는 생성 프레임까지 합친 실제 출력 제출 수이며 모니터 주사율이나 물리적으로 표시된 수가 아닙니다. 프레임 시간·1% low·끊김·이번 곡 통계는 원본 기준입니다.",
+                "Auto, the default, shows output FPS when frame generation is active and real FPS otherwise. Manual selections are retained. Output FPS counts successful submissions including generated frames, not physical display refreshes. Frame time, 1% low, hitches and level statistics always use real frames."), sDim);
             GUILayout.Space(12);
             GUILayout.BeginVertical(sCard);
             GUILayout.Label(T("아이콘·미니에 보여 줄 항목", "Items in icon and mini"), sBody);

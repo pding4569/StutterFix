@@ -713,7 +713,7 @@ namespace StutterFix
             sRealFpsShort = T("원본 ", "Real ") + sFps;
             sFpsLabel = T("원본 FPS", "Real FPS");
             // Read counters on the existing 4 Hz text refresh; no per-frame native call or new hook.
-            if (C.OverlayFpsSource > 0)
+            if (C.OverlayFpsSource != 0)
             {
                 long stamp = Stopwatch.GetTimestamp();
                 ulong count;
@@ -733,7 +733,7 @@ namespace StutterFix
                     else { sFps = "-"; displayedFps = 0; }
                 }
                 // While generation is OFF, Unity FPS estimates output without connecting Present.
-                else sFpsLabel = T("출력≈FPS", "Output≈FPS");
+                else if (C.OverlayFpsSource > 0) sFpsLabel = T("출력≈FPS", "Output≈FPS");
                 outputSample = counting; outputCount = count; outputStamp = stamp;
                 outputEpoch = FrameGen.CounterEpoch; outputFrame = Time.frameCount;
             }

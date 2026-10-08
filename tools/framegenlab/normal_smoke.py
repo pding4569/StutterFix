@@ -47,7 +47,8 @@ def main():
         (mod/'StutterFix.dll').write_bytes(binary)
         steps = ['wait 3', 'fgstate', 'game '+str(a.map), 'auto on', 'press', 'wait 10', 'fgstate']
         if a.monitor_smoke:
-            for source in [0,1,2]:
+            steps += ['fgmonitor'] # Missing setting uses Auto by default; do not set it before this sample.
+            for source in [0,1,2,-1]:
                 steps += ['set OverlayFpsSource '+str(source), 'wait 3', 'fgmonitor']
             for layout,name in [(1,'icon'),(2,'mini'),(3,'detail')]:
                 steps += ['set OverlayMode '+str(layout), 'wait 2', 'shot framegen-monitor-'+name, 'wait 1']
@@ -66,6 +67,8 @@ def main():
             if a.full_song:
                 steps += ['waitend 600', 'wait 3', 'fgstate']
             steps += ['set FrameGenOutside 0', 'wait 3', 'fgstate']
+            if not a.mode:
+                steps += ['fgmonitor']
         steps += ['quit']
         summary, metrics = sf.sf_run(steps, settings={**extra, 'FrameGenOutside': a.mode, 'FrameStats': False, 'LowHalfRender': False},
                                     timeout_min=12 if a.full_song else 4, tag='framegen-normal')
@@ -108,9 +111,9 @@ def main():
         if a.full_song and ('곡 끝남' not in summary or '곡이 끝나지 않음' in summary):
             raise RuntimeError('Actual song completion not confirmed')
         monitor = [dict(mode=int(m[0]), shown=float(m[1]), real=float(m[2]), counting=m[3]=='True')
-                   for m in re.findall(r'\[출력 모니터\] mode=(\d+) shown=([\d.]+) real=([\d.]+) counting=(True|False)', log)]
+                   for m in re.findall(r'\[출력 모니터\] mode=(-?\d+) shown=([\d.]+) real=([\d.]+) counting=(True|False)', log)]
         if a.monitor_smoke:
-            if [r['mode'] for r in monitor] != [0,1,2,2] or [r['counting'] for r in monitor] != [False,True,True,False]:
+            if [r['mode'] for r in monitor] != [-1,0,1,2,-1,-1] or [r['counting'] for r in monitor] != [True,False,True,True,True,False]:
                 raise RuntimeError('Monitor source selection did not match: '+str(monitor))
             for row in monitor:
                 target = a.mode if row['counting'] else 1
@@ -118,6 +121,9 @@ def main():
                     raise RuntimeError('Monitor FPS did not match successful submission ratio: '+str(row))
             for p in monitor_shots:
                 (a.out/p.name).write_bytes(p.read_bytes())
+        elif not a.mode and not a.switch:
+            if not monitor or any(r['counting'] or abs(r['shown']-r['real'])>.001 for r in monitor):
+                raise RuntimeError('Default OFF monitor unexpectedly counted native output: '+str(monitor))
         if not a.no_shot and not a.switch and shot.exists():
             (a.out/'screen.png').write_bytes(shot.read_bytes())
         result = dict(mode=a.mode, full_song=a.full_song, switch=a.switch, compatibility_settings=extra,
