@@ -171,3 +171,9 @@ Present 누적 수, 꺼짐 출력은 Unity 수에서 추정한다. 꺼짐을 재
 shake·줌·회전·방향 전환 없는 이동의 되돌림만 센다. 화면 전체 품질을 증명하지 않는다.
 `preview_camera.py <비교 폴더> --prediction-run <성공한 예측 판 이름> --output <webp>`는
 off/지정한예측/blend4의 실제 GPU 표본으로 나란한 미리보기를 만든다. 실패 판은 보존하며 자동으로 다른 판을 고르지 않는다.
+
+`analyze_full.py <완주 폴더>`는 배율을 summary에서 읽어5초~곡 끝의 집계와 긴 간격 목록을 저장한다.
+`analyze_border.py <capture 폴더> --out <json>`과 `analyze_edge_runs.py <시각 비교 폴더> --out <json>`은
+NumPy·Pillow가 있는 Python으로 실행하는 오프라인 픽셀 분석이다. 지연 모드의 같은 그림 대조는
+실제 지난 슬롯을 저장한 `pair-pose.json`이 필요하다. 연구 `--scene-pair`는 기하 정보를 한 번 읽으며
+시작 전 곡 시간과 되감기를 구분한다. 전체 품질 승인·물리적 표시 FPS로 쓰지 않는다.

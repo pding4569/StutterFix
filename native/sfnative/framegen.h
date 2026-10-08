@@ -432,8 +432,16 @@ inline void Output::render(const Slot& s,bool real,double tick) {
 #ifdef SF_FRAMEGEN_RESEARCH
     if((s.packet.capture&8) && !real && captured==0 && song>=20) {
         // Explicit visual-only run, kept out of performance results.
-        picture(s.images[0].texture.Get(),L"snapshot-world.ppm");
-        picture(s.images[1].texture.Get(),L"snapshot-screen.ppm");
+        // Save the exact image slot used by this render, including delayed mode.
+        picture(image->images[0].texture.Get(),L"snapshot-world.ppm");
+        picture(image->images[1].texture.Get(),L"snapshot-screen.ppm");
+        FILE* pair=nullptr; _wfopen_s(&pair,(path+L"/pair-pose.json").c_str(),L"wb");
+        if(pair) {
+            const auto& old=image->packet.pose.camera; const auto& shown=predicted.camera;
+            fprintf(pair,"{\"source_frame\":%d,\"display_frame\":%d,\"song_s\":%.9f,\"flip_y\":%s,\"source_camera\":[%.9g,%.9g,%.9g,%.9g],\"display_camera\":[%.9g,%.9g,%.9g,%.9g]}\n",
+                image->packet.frame,s.packet.frame,song,s.packet.flip?"true":"false",old[0],old[1],old[2],old[3],shown[0],shown[1],shown[2],shown[3]);
+            fclose(pair);
+        }
         picture(backBuffer.Get(),L"early-generated.ppm"); ++captured;
     }
 #endif

@@ -102,6 +102,9 @@ namespace StutterFix
         private static bool Clip => Main.Config.FrameGenClip;
         private static bool CameraBlend => Main.Config.FrameGenCameraBlend;
         private static bool ScenePair => Main.Config.FrameGenScenePair;
+        private static bool pairGeometrySaved;
+        private static double lastPairSong;
+        private static readonly AccessTools.FieldRef<scrCamera,MeshRenderer> QuadMesh=AccessTools.FieldRefAccess<scrCamera,MeshRenderer>("camQuadMesh");
 #else
         internal const bool Diagnostics=false;
         private const bool Narrow=true,FlipY=true,Capture=false,Clip=false,CameraBlend=false,ScenePair=false;
@@ -152,6 +155,10 @@ namespace StutterFix
             callback=sf_framegen_event_ptr(); command=new CommandBuffer {name="FrameGen included snapshot"};
             packets=new IntPtr[512]; for(int i=0;i<packets.Length;i++) packets[i]=Marshal.AllocHGlobal(136);
             finished=failed=false; oldMode=-1; packetIndex=missingScenes=0; renderedFrame=-1; trackedCamera=null;
+#if FRAMEGEN_RESEARCH
+            pairGeometrySaved=false;
+            lastPairSong=double.NaN;
+#endif
             finalBeginFrame=-1;
             sceneCamera=sceneBase=scenePulse=Vector4.zero;
             Camera.onPostRender+=PostRender;
@@ -196,6 +203,9 @@ namespace StutterFix
         }
         private static void EndFrame() {
                 var sc=scrCamera.instance; var controller=scrController.instance; double song=scrConductor.instance!=null?scrConductor.instance.songposition_minusi:-1;
+#if FRAMEGEN_RESEARCH
+                if(ScenePair) { if(song<lastPairSong-1) pairGeometrySaved=false; lastPairSong=song; }
+#endif
                 if(Diagnostics && Hitch.Playing && song>=5 && trackedCamera!=null && renderedFrame!=Time.frameCount) missingScenes++;
                 Packet p=new Packet {unused1=Narrow?new IntPtr(1):IntPtr.Zero,frame=Time.frameCount,song=song,measure=Diagnostics && Hitch.Playing?1:0,mode=Hitch.Playing && !failed?Math.Max(0,oldMode):0,flip=FlipY?1:0,linear=QualitySettings.activeColorSpace==ColorSpace.Linear?1:0,capture=Capture?1:Clip?2:0};
                 if(CameraBlend) p.capture|=4; // Research only: known-camera interpolation, one-source visual delay.
@@ -212,11 +222,38 @@ namespace StutterFix
                 if(p.mode!=0 && sceneCamera.z>.00001f && scene!=null && sc!=null && Overlay(sc)!=null) {
                     var overlay=Overlay(sc); worldCamera.CopyFrom(overlay); worldCamera.enabled=false;
                     worldCamera.transform.SetPositionAndRotation(overlay.transform.position,overlay.transform.rotation); worldCamera.targetTexture=world; worldCamera.Render();
+#if FRAMEGEN_RESEARCH
+                    if(ScenePair && !pairGeometrySaved && song>=20 && song<23) { pairGeometrySaved=true; SavePairGeometry(sc,song); }
+#endif
                     p.world=texture;
                 } else p.mode=0;
                 Issue(1,Write(p));
         }
         private static unsafe IntPtr Write(Packet p) { var ptr=packets[packetIndex++%packets.Length]; *(Packet*)ptr=p; return ptr; }
+#if FRAMEGEN_RESEARCH
+        // One explicit visual-only read, never used by ordinary measurements/builds.
+        private static void SavePairGeometry(scrCamera sc,double song) {
+            using(var f=new StreamWriter(Path.Combine(Main.Entry.Path,"framegen-outside","pair-geometry.txt"))) {
+                f.WriteLine(FormattableString.Invariant($"frame={Time.frameCount} song={song:R} screen={Screen.width}x{Screen.height}"));
+                var cameras=new[]{Cam(sc),Overlay(sc),worldCamera}; var labels=new[]{"scene","overlay","snapshot"};
+                for(int i=0;i<cameras.Length;i++) {
+                    var c=cameras[i]; if(c==null) continue; var r=c.rect; var p=c.pixelRect;
+                    f.WriteLine(FormattableString.Invariant($"{labels[i]} rect={r.x:R},{r.y:R},{r.width:R},{r.height:R} pixelRect={p.x:R},{p.y:R},{p.width:R},{p.height:R} size={c.orthographicSize:R} aspect={c.aspect:R}"));
+                    foreach(var behaviour in c.GetComponents<MonoBehaviour>()) if(behaviour.enabled)
+                        f.WriteLine(labels[i]+" enabled_component="+behaviour.GetType().Name);
+                }
+                var quad=QuadMesh(sc); var mesh=quad!=null?quad.GetComponent<MeshFilter>():null;
+                if(mesh==null || mesh.sharedMesh==null) return;
+                var material=quad.sharedMaterial;
+                if(material!=null) { var scale=material.mainTextureScale; var offset=material.mainTextureOffset;
+                    f.WriteLine(FormattableString.Invariant($"quad_shader={material.shader.name} uv_scale={scale.x:R},{scale.y:R} uv_offset={offset.x:R},{offset.y:R}")); }
+                foreach(var vertex in mesh.sharedMesh.vertices) {
+                    var point=Overlay(sc).WorldToViewportPoint(quad.transform.TransformPoint(vertex));
+                    f.WriteLine(FormattableString.Invariant($"quad_viewport={point.x:R},{point.y:R},{point.z:R}"));
+                }
+            }
+        }
+#endif
         private static void PostRender(Camera c) {
             if(c!=trackedCamera) return;
             renderedFrame=Time.frameCount; var sc=scrCamera.instance; if(sc==null) return;

@@ -1,0 +1,66 @@
+{
+  "scope": "One existing HELLO prediction4x visual-only GPU sample;not a new game run, motion proof, exact GPU mask or delayed-candidate result",
+  "flip_y": true,
+  "frame": 11117,
+  "song_s": 20.001582169,
+  "source_camera": [
+    814.36145,
+    68.646507,
+    18.960785,
+    6.282369
+  ],
+  "display_camera": [
+    814.268738,
+    68.650459,
+    18.970194,
+    6.282328
+  ],
+  "size": [
+    2560,
+    1440
+  ],
+  "reconstruction": {
+    "mean_max_rgb_error": 0.2870808243751526,
+    "p99_max_rgb_error": 0.551483154296875,
+    "agreement_within3": {
+      "pixels": 3686400,
+      "percent": 100.0
+    }
+  },
+  "outside_uv": {
+    "pixels": 7135,
+    "percent": 0.1935492621527778
+  },
+  "outside_not_ui": {
+    "pixels": 6287,
+    "percent": 0.17054578993055555
+  },
+  "outside_not_ui_actual_dark": {
+    "pixels": 6287,
+    "percent": 0.17054578993055555
+  },
+  "border_black_with_bright_clamp_and_gpu_agreement": {
+    "pixels": 0,
+    "percent": 0.0
+  },
+  "edge_inside_uv_original_bright_to_actual_dark": {
+    "pixels": 4015,
+    "percent": 0.10891384548611112
+  },
+  "median_black_edge_run_px": {
+    "source": {
+      "left": 49.0,
+      "right": 49.0,
+      "top": 28.0,
+      "bottom": 28.0
+    },
+    "generated": {
+      "left": 53.0,
+      "right": 46.0,
+      "top": 28.0,
+      "bottom": 28.0
+    }
+  },
+  "maximum_outside_texels": 3.6859130859375,
+  "limits": "Quantized PPM/rounded poses;CLAMP is an offline counterfactual only, not a proposed fix or unseen-image reconstruction. Existing same-source early-pair must be prediction, not camera-blend."
+}
