@@ -1,8 +1,10 @@
 """Chapter26 cost split, selected variant3 whole-song trials and ordinary-build checks."""
 import hashlib
 import json
+import re
 from pathlib import Path
 from summarize_validation25 import full_song
+from measure_outside import read
 
 HERE=Path(__file__).resolve().parent
 
@@ -10,6 +12,15 @@ HERE=Path(__file__).resolve().parent
 def main():
     cost=json.loads((HERE/'results/ch26-cost/summary.json').read_text(encoding='utf-8'))
     full={name:full_song(name) for name in [f'ch26-{song}-{mode}-full' for song in ['hello','arche'] for mode in [2,4]]}
+    for name,row in full.items():
+        if not isinstance(row,dict): continue
+        root=HERE/'results'/name
+        log=(root/'game.log').read_text(encoding='utf-8')
+        conditions=re.findall(r'\[곡 시작\] 화면: 수직동기 (\d+), 목표 FPS (\d+), (\w+), (\d+)x(\d+) (\d+)Hz, 창 (\d+)x(\d+)',log)
+        if not conditions or list(conditions[-1])!=list(cost['conditions'].values()): raise RuntimeError('Full-song actual screen conditions changed: '+name)
+        if row['build']!=cost['build']: raise RuntimeError('Full-song build differs from selected candidate: '+name)
+        row['missing_camera_song_s']=[float(r['song_s']) for r in read(root/'capture/sources.csv') if float(r['song_s'])>=5 and r['scene_rendered']=='0']
+        row['true_camera_callback_rows']=row['source_rows']-row['missing_camera_callbacks']
     ordinary={}
     for name in ['off','switch','monitor','fsr']:
         p=HERE/f'results/ch26-normal-{name}/summary.json'

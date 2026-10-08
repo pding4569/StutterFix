@@ -341,10 +341,246 @@
     }
   },
   "whole_song_variant3": {
-    "ch26-hello-2-full": "확인 안 됨",
-    "ch26-hello-4-full": "확인 안 됨",
-    "ch26-arche-2-full": "확인 안 됨",
-    "ch26-arche-4-full": "확인 안 됨"
+    "ch26-hello-2-full": {
+      "completed": true,
+      "last_song_s": 185.031958085,
+      "source_rows": 31824,
+      "output_rows": 63699,
+      "source_frame_gaps": 0,
+      "missing_camera_callbacks": 0,
+      "failed_present": 0,
+      "source_intervals": {
+        "worst_ms": 31.123199965804815,
+        "worst_song_s": 122.413862687,
+        "over_33ms": 0
+      },
+      "output_intervals": {
+        "worst_ms": 29.954700032249093,
+        "worst_song_s": 122.407965165,
+        "over_33ms": 0
+      },
+      "safety": {
+        "outputs": "75323",
+        "frame_begins": "40821",
+        "frame_ends": "40821",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 181.0,
+            "worst": 32.0,
+            "count": 0
+          }
+        ],
+        "errors": 0
+      },
+      "build": {
+        "managed_sha256": "ee7016ecf43cbb74c882a71aa9495bf3a55ebad05675733ba1450f15293f62be",
+        "native_sha256": "c391946baebf128e3b7608d39ecb74cd66b88c4f155c999da302613be57dcfb4"
+      },
+      "physical_display_latency": "확인 안 됨",
+      "whole_song_pixel_quality": "확인 안 됨",
+      "missing_camera_song_s": [],
+      "true_camera_callback_rows": 31824
+    },
+    "ch26-hello-4-full": {
+      "completed": true,
+      "last_song_s": 185.026327592,
+      "source_rows": 31342,
+      "output_rows": 126261,
+      "source_frame_gaps": 0,
+      "missing_camera_callbacks": 0,
+      "failed_present": 0,
+      "source_intervals": {
+        "worst_ms": 39.03310000896454,
+        "worst_song_s": 161.111669999,
+        "over_33ms": 1
+      },
+      "output_intervals": {
+        "worst_ms": 23.75150000443682,
+        "worst_song_s": 53.672838911,
+        "over_33ms": 0
+      },
+      "safety": {
+        "outputs": "143277",
+        "frame_begins": "40389",
+        "frame_ends": "40389",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 178.0,
+            "worst": 41.0,
+            "count": 1
+          }
+        ],
+        "errors": 0
+      },
+      "build": {
+        "managed_sha256": "ee7016ecf43cbb74c882a71aa9495bf3a55ebad05675733ba1450f15293f62be",
+        "native_sha256": "c391946baebf128e3b7608d39ecb74cd66b88c4f155c999da302613be57dcfb4"
+      },
+      "physical_display_latency": "확인 안 됨",
+      "whole_song_pixel_quality": "확인 안 됨",
+      "missing_camera_song_s": [],
+      "true_camera_callback_rows": 31342
+    },
+    "ch26-arche-2-full": {
+      "completed": true,
+      "last_song_s": 308.402361505,
+      "source_rows": 83916,
+      "output_rows": 167929,
+      "source_frame_gaps": 0,
+      "missing_camera_callbacks": 24,
+      "failed_present": 0,
+      "source_intervals": {
+        "worst_ms": 62.84359999699518,
+        "worst_song_s": 219.605684869,
+        "over_33ms": 2
+      },
+      "output_intervals": {
+        "worst_ms": 41.42880003200844,
+        "worst_song_s": 219.659014337,
+        "over_33ms": 1
+      },
+      "safety": {
+        "outputs": "182072",
+        "frame_begins": "94279",
+        "frame_ends": "94279",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 279.0,
+            "worst": 63.0,
+            "count": 1
+          }
+        ],
+        "errors": 0
+      },
+      "build": {
+        "managed_sha256": "ee7016ecf43cbb74c882a71aa9495bf3a55ebad05675733ba1450f15293f62be",
+        "native_sha256": "c391946baebf128e3b7608d39ecb74cd66b88c4f155c999da302613be57dcfb4"
+      },
+      "physical_display_latency": "확인 안 됨",
+      "whole_song_pixel_quality": "확인 안 됨",
+      "missing_camera_song_s": [
+        7.505659692,
+        9.902046793,
+        17.704004877,
+        20.405684107,
+        28.805637949,
+        34.507017725,
+        34.805685632,
+        39.605684869,
+        42.005682581,
+        44.405684107,
+        46.805685632,
+        49.205683344,
+        54.005682581,
+        57.604826563,
+        59.406187647,
+        68.405680292,
+        77.099016779,
+        77.101709955,
+        82.805681818,
+        85.210177057,
+        87.590654962,
+        87.595018976,
+        87.598002069,
+        87.600626581
+      ],
+      "true_camera_callback_rows": 83892
+    },
+    "ch26-arche-4-full": {
+      "completed": true,
+      "last_song_s": 308.401812189,
+      "source_rows": 81823,
+      "output_rows": 327634,
+      "source_frame_gaps": 0,
+      "missing_camera_callbacks": 22,
+      "failed_present": 0,
+      "source_intervals": {
+        "worst_ms": 64.78870002320036,
+        "worst_song_s": 219.601153009,
+        "over_33ms": 3
+      },
+      "output_intervals": {
+        "worst_ms": 31.636299972888082,
+        "worst_song_s": 258.050746025,
+        "over_33ms": 0
+      },
+      "safety": {
+        "outputs": "347797",
+        "frame_begins": "91358",
+        "frame_ends": "91358",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 272.0,
+            "worst": 64.0,
+            "count": 2
+          }
+        ],
+        "errors": 0
+      },
+      "build": {
+        "managed_sha256": "ee7016ecf43cbb74c882a71aa9495bf3a55ebad05675733ba1450f15293f62be",
+        "native_sha256": "c391946baebf128e3b7608d39ecb74cd66b88c4f155c999da302613be57dcfb4"
+      },
+      "physical_display_latency": "확인 안 됨",
+      "whole_song_pixel_quality": "확인 안 됨",
+      "missing_camera_song_s": [
+        7.504517191,
+        17.704519861,
+        20.407133691,
+        28.80741369,
+        29.99999296,
+        30.003437631,
+        34.503550165,
+        34.807131403,
+        37.199926965,
+        37.202475183,
+        39.607134454,
+        42.007132166,
+        44.407133691,
+        46.807131403,
+        49.207132929,
+        54.007132166,
+        57.606363886,
+        59.408362024,
+        68.407129877,
+        77.100466364,
+        82.807131403,
+        85.204241388
+      ],
+      "true_camera_callback_rows": 81801
+    }
   },
   "ordinary": {
     "off": "확인 안 됨",
