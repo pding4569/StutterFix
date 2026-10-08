@@ -225,3 +225,7 @@ identity 대조와 출력 왕복을 비교하며, 정지 원본의 추가 이동
 `check_motion_lab.py <fixture 폴더>`는 CPU 기준으로 GPU 축소·이진 마스크·UI·상하 반전을 바이트 대조한다.
 연구 native를 다시 만들면 build_measure도 다시 실행한다. runner는 두 바이너리 SHA와 실제 설치된
 native 및 삼중 캡처 파일을 확인하며, 내장 native가 오래된 빌드는 설치 전에 거부한다.
+
+`summarize_repeat.py`의 손실 범위는 두 종류다. `scene_fps_decrease_bounds_percent`는 시간 가중 끔
+기준의 카메라 콜백 누락 범위이고, `scene_loss_across_off_controls_percent`는 독립한 양끝 끔 판의
+변동까지 포함한 범위다. 기준이10% 근처면 가중 값만 골라 통과시키지 않고 각 끔 값도 확인한다.

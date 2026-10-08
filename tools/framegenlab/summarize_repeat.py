@@ -38,13 +38,18 @@ def summarize(root):
                            source_fps_trials=[r['real_fps'] for r in rows],
                            output_ratio_trials=[r['output_fps']/r['real_fps'] for r in rows]))
     off = pooled[0]
+    controls = [[r['native']['scene_fps'],r['native']['real_fps']] for r in data['runs'] if r['mode']==0]
     for r in pooled:
         r['output_over_off'] = r['output_fps']/off['output_fps']
         r['scene_fps_decrease_bounds_percent'] = [100*(1-r['scene_fps_bounds'][1]/off['scene_fps_bounds'][0]),
                                                  100*(1-r['scene_fps_bounds'][0]/off['scene_fps_bounds'][1])]
+        # Callback bounds do not describe drift between the separate OFF runs.
+        # Preserve that wider comparison instead of treating a pooled control as certainty.
+        r['scene_loss_across_off_controls_percent'] = [100*(1-r['scene_fps_bounds'][1]/min(c[0] for c in controls)),
+                                                       100*(1-r['scene_fps_bounds'][0]/max(c[1] for c in controls))]
     return dict(label=data['label'], conditions=data['conditions'], order=data['modes'],
                 camera_blend=data.get('camera_blend',False),screen_border=data.get('screen_border',False),image_gate=data.get('image_gate',False),
-                research_binary_sha256=data['research_binary_sha256'], pooled=pooled, runs=data['runs'])
+                research_binary_sha256=data['research_binary_sha256'], off_control_scene_fps_bounds=controls, pooled=pooled, runs=data['runs'])
 
 
 if __name__ == '__main__':

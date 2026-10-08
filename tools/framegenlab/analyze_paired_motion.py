@@ -41,12 +41,17 @@ def analyze(folder,mode):
         if ar or br: reversal_rows.append(dict(index=b['index'],song_s=b['song_s'],actual=ar,reference=br))
     valid=[r for r in records if r['accepted']]
     generated=[r for r in valid if not r['real']]
+    valid_pairs=[r for r in pairs if r['accepted']]
+    def lengths(key):
+        values=[r[key]['length'] for r in valid_pairs]
+        return dict(median=float(np.median(values)),p95=float(np.percentile(values,95)),maximum=max(values)) if values else None
     metadata_complete=all(r['gate_reprojected'] is not None for r in records)
     static_bad=[r for r in generated if r['source']['length']<.1 and r['added']['length']>.25]
     backwards=[r for r in generated if r['source']['length']>.25 and r['added']['length']>.25 and
                r['source']['dx']*r['added']['dx']+r['source']['dy']*r['added']['dy']<0]
     overshoot=[r for r in generated if r['added']['length']>r['source']['length']+.25]
     summary=dict(frames=len(rows),accepted_triplets=len(valid),accepted_generated=len(generated),
+                 accepted_adjacent_pairs=len(valid_pairs),adjacent_actual_length=lengths('actual'),adjacent_reference_length=lengths('reference'),
                  actual_reversals=sum(r['actual'] for r in reversal_rows),reference_reversals=sum(r['reference'] for r in reversal_rows),
                  extra_reversals=sum(r['actual'] and not r['reference'] for r in reversal_rows),
                  static_source_added_motion=len(static_bad),generated_opposite_source_direction=len(backwards),
