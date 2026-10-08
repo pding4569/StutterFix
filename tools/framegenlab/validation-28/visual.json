@@ -1,0 +1,1736 @@
+{
+  "source": "clip-4x-086-generated.ppm",
+  "rows": [
+    {
+      "index": "0",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9418",
+      "present_sample_s": "462136.680314400",
+      "song_s": "20.000474843",
+      "gate_reprojected": "-2",
+      "block_phase": "0.503858661"
+    },
+    {
+      "index": "1",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9421",
+      "present_sample_s": "462136.698152400",
+      "song_s": "20.016208039",
+      "gate_reprojected": "-2",
+      "block_phase": "0.631046956"
+    },
+    {
+      "index": "2",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9425",
+      "present_sample_s": "462136.716568300",
+      "song_s": "20.039362412",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "3",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9428",
+      "present_sample_s": "462136.733697500",
+      "song_s": "20.055666428",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "4",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9431",
+      "present_sample_s": "462136.751263000",
+      "song_s": "20.079432523",
+      "gate_reprojected": "-2",
+      "block_phase": "0.587082451"
+    },
+    {
+      "index": "5",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9434",
+      "present_sample_s": "462136.769103000",
+      "song_s": "20.097173644",
+      "gate_reprojected": "-2",
+      "block_phase": "0.697295872"
+    },
+    {
+      "index": "6",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9437",
+      "present_sample_s": "462136.786412400",
+      "song_s": "20.111860411",
+      "gate_reprojected": "-2",
+      "block_phase": "0.494828069"
+    },
+    {
+      "index": "7",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9440",
+      "present_sample_s": "462136.803769900",
+      "song_s": "20.134746265",
+      "gate_reprojected": "-2",
+      "block_phase": "0.611629475"
+    },
+    {
+      "index": "8",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9443",
+      "present_sample_s": "462136.820666300",
+      "song_s": "20.137827426",
+      "gate_reprojected": "-2",
+      "block_phase": "0.409585538"
+    },
+    {
+      "index": "9",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9446",
+      "present_sample_s": "462136.837524400",
+      "song_s": "20.159441683",
+      "gate_reprojected": "-2",
+      "block_phase": "0.375228161"
+    },
+    {
+      "index": "10",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9449",
+      "present_sample_s": "462136.855415300",
+      "song_s": "20.176013194",
+      "gate_reprojected": "-2",
+      "block_phase": "0.575841574"
+    },
+    {
+      "index": "11",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9452",
+      "present_sample_s": "462136.873300400",
+      "song_s": "20.198889181",
+      "gate_reprojected": "-2",
+      "block_phase": "0.864170842"
+    },
+    {
+      "index": "12",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9455",
+      "present_sample_s": "462136.890700100",
+      "song_s": "20.216250567",
+      "gate_reprojected": "-2",
+      "block_phase": "0.896177240"
+    },
+    {
+      "index": "13",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9459",
+      "present_sample_s": "462136.908891600",
+      "song_s": "20.236999970",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "14",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9462",
+      "present_sample_s": "462136.926398700",
+      "song_s": "20.254794135",
+      "gate_reprojected": "-2",
+      "block_phase": "0.373980049"
+    },
+    {
+      "index": "15",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9465",
+      "present_sample_s": "462136.943656700",
+      "song_s": "20.270801758",
+      "gate_reprojected": "-2",
+      "block_phase": "0.339659621"
+    },
+    {
+      "index": "16",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9468",
+      "present_sample_s": "462136.961079400",
+      "song_s": "20.293388198",
+      "gate_reprojected": "-2",
+      "block_phase": "0.407698108"
+    },
+    {
+      "index": "17",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9471",
+      "present_sample_s": "462136.978406100",
+      "song_s": "20.297552088",
+      "gate_reprojected": "-2",
+      "block_phase": "0.228994729"
+    },
+    {
+      "index": "18",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9474",
+      "present_sample_s": "462136.995262700",
+      "song_s": "20.317607457",
+      "gate_reprojected": "-2",
+      "block_phase": "0.098562527"
+    },
+    {
+      "index": "19",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9477",
+      "present_sample_s": "462137.013106800",
+      "song_s": "20.335997742",
+      "gate_reprojected": "-2",
+      "block_phase": "0.615420945"
+    },
+    {
+      "index": "20",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9480",
+      "present_sample_s": "462137.030715000",
+      "song_s": "20.353117900",
+      "gate_reprojected": "-2",
+      "block_phase": "0.644565674"
+    },
+    {
+      "index": "21",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9483",
+      "present_sample_s": "462137.048425300",
+      "song_s": "20.375289202",
+      "gate_reprojected": "-2",
+      "block_phase": "0.727222966"
+    },
+    {
+      "index": "22",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9486",
+      "present_sample_s": "462137.065184900",
+      "song_s": "20.387404724",
+      "gate_reprojected": "-2",
+      "block_phase": "0.159785122"
+    },
+    {
+      "index": "23",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9489",
+      "present_sample_s": "462137.082249200",
+      "song_s": "20.407665711",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "24",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9492",
+      "present_sample_s": "462137.099906100",
+      "song_s": "20.430929806",
+      "gate_reprojected": "-2",
+      "block_phase": "0.342591447"
+    },
+    {
+      "index": "25",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9495",
+      "present_sample_s": "462137.117260500",
+      "song_s": "20.447551151",
+      "gate_reprojected": "-2",
+      "block_phase": "0.423107437"
+    },
+    {
+      "index": "26",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9498",
+      "present_sample_s": "462137.135739600",
+      "song_s": "20.454038200",
+      "gate_reprojected": "-2",
+      "block_phase": "0.630666054"
+    },
+    {
+      "index": "27",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9501",
+      "present_sample_s": "462137.153011300",
+      "song_s": "20.475011995",
+      "gate_reprojected": "-2",
+      "block_phase": "0.661185117"
+    },
+    {
+      "index": "28",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9504",
+      "present_sample_s": "462137.169853500",
+      "song_s": "20.496105189",
+      "gate_reprojected": "-2",
+      "block_phase": "0.601417972"
+    },
+    {
+      "index": "29",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9507",
+      "present_sample_s": "462137.187207000",
+      "song_s": "20.513215253",
+      "gate_reprojected": "-2",
+      "block_phase": "0.535408395"
+    },
+    {
+      "index": "30",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9510",
+      "present_sample_s": "462137.204063300",
+      "song_s": "20.527550377",
+      "gate_reprojected": "-2",
+      "block_phase": "0.407285557"
+    },
+    {
+      "index": "31",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9513",
+      "present_sample_s": "462137.220959600",
+      "song_s": "20.538696771",
+      "gate_reprojected": "-2",
+      "block_phase": "0.700714396"
+    },
+    {
+      "index": "32",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9516",
+      "present_sample_s": "462137.237786800",
+      "song_s": "20.553420517",
+      "gate_reprojected": "-2",
+      "block_phase": "0.204771556"
+    },
+    {
+      "index": "33",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9519",
+      "present_sample_s": "462137.256150300",
+      "song_s": "20.575513198",
+      "gate_reprojected": "-2",
+      "block_phase": "0.388676520"
+    },
+    {
+      "index": "34",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9522",
+      "present_sample_s": "462137.272857600",
+      "song_s": "20.595620892",
+      "gate_reprojected": "-2",
+      "block_phase": "0.051014423"
+    },
+    {
+      "index": "35",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9525",
+      "present_sample_s": "462137.290426900",
+      "song_s": "20.611484986",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "36",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9528",
+      "present_sample_s": "462137.307848200",
+      "song_s": "20.621000748",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "37",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9531",
+      "present_sample_s": "462137.324992200",
+      "song_s": "20.637066346",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "38",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9533",
+      "present_sample_s": "462137.341851900",
+      "song_s": "20.658371836",
+      "gate_reprojected": "-2",
+      "block_phase": "0.941806637"
+    },
+    {
+      "index": "39",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9536",
+      "present_sample_s": "462137.359324200",
+      "song_s": "20.674236477",
+      "gate_reprojected": "-2",
+      "block_phase": "0.821056496"
+    },
+    {
+      "index": "40",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9539",
+      "present_sample_s": "462137.377148400",
+      "song_s": "20.691360932",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "41",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9541",
+      "present_sample_s": "462137.394559000",
+      "song_s": "20.711023519",
+      "gate_reprojected": "-2",
+      "block_phase": "0.813117662"
+    },
+    {
+      "index": "42",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9544",
+      "present_sample_s": "462137.411446000",
+      "song_s": "20.730449113",
+      "gate_reprojected": "-2",
+      "block_phase": "0.445351647"
+    },
+    {
+      "index": "43",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9547",
+      "present_sample_s": "462137.430468000",
+      "song_s": "20.748999101",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "44",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9549",
+      "present_sample_s": "462137.448125400",
+      "song_s": "20.771387600",
+      "gate_reprojected": "-2",
+      "block_phase": "0.593770954"
+    },
+    {
+      "index": "45",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9552",
+      "present_sample_s": "462137.465978200",
+      "song_s": "20.780495429",
+      "gate_reprojected": "-2",
+      "block_phase": "0.743758101"
+    },
+    {
+      "index": "46",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9555",
+      "present_sample_s": "462137.484316400",
+      "song_s": "20.800612520",
+      "gate_reprojected": "-2",
+      "block_phase": "0.413460737"
+    },
+    {
+      "index": "47",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9558",
+      "present_sample_s": "462137.501172000",
+      "song_s": "20.815519984",
+      "gate_reprojected": "-2",
+      "block_phase": "0.505425729"
+    },
+    {
+      "index": "48",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9561",
+      "present_sample_s": "462137.519034100",
+      "song_s": "20.838321678",
+      "gate_reprojected": "-2",
+      "block_phase": "0.674218471"
+    },
+    {
+      "index": "49",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9564",
+      "present_sample_s": "462137.536894900",
+      "song_s": "20.854789536",
+      "gate_reprojected": "-2",
+      "block_phase": "0.556362501"
+    },
+    {
+      "index": "50",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9567",
+      "present_sample_s": "462137.554263100",
+      "song_s": "20.876318951",
+      "gate_reprojected": "-2",
+      "block_phase": "0.962770814"
+    },
+    {
+      "index": "51",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9571",
+      "present_sample_s": "462137.571117000",
+      "song_s": "20.893389204",
+      "gate_reprojected": "-2",
+      "block_phase": "0.174598147"
+    },
+    {
+      "index": "52",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9574",
+      "present_sample_s": "462137.588047000",
+      "song_s": "20.910612855",
+      "gate_reprojected": "-2",
+      "block_phase": "0.272435354"
+    },
+    {
+      "index": "53",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9577",
+      "present_sample_s": "462137.604818200",
+      "song_s": "20.927303523",
+      "gate_reprojected": "-2",
+      "block_phase": "0.534748395"
+    },
+    {
+      "index": "54",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9580",
+      "present_sample_s": "462137.621722300",
+      "song_s": "20.939352193",
+      "gate_reprojected": "-2",
+      "block_phase": "0.792610417"
+    },
+    {
+      "index": "55",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9584",
+      "present_sample_s": "462137.638771500",
+      "song_s": "20.957464677",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "56",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9587",
+      "present_sample_s": "462137.656433000",
+      "song_s": "20.974530131",
+      "gate_reprojected": "-2",
+      "block_phase": "0.278296140"
+    },
+    {
+      "index": "57",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9590",
+      "present_sample_s": "462137.674284500",
+      "song_s": "20.993051707",
+      "gate_reprojected": "-2",
+      "block_phase": "0.766913565"
+    },
+    {
+      "index": "58",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9593",
+      "present_sample_s": "462137.692143700",
+      "song_s": "21.016232046",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "59",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9597",
+      "present_sample_s": "462137.709993400",
+      "song_s": "21.033116294",
+      "gate_reprojected": "-2",
+      "block_phase": "0.383616124"
+    },
+    {
+      "index": "60",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9600",
+      "present_sample_s": "462137.728368700",
+      "song_s": "21.050989708",
+      "gate_reprojected": "-2",
+      "block_phase": "0.594602813"
+    },
+    {
+      "index": "61",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9603",
+      "present_sample_s": "462137.745744400",
+      "song_s": "21.072447303",
+      "gate_reprojected": "-2",
+      "block_phase": "0.641681573"
+    },
+    {
+      "index": "62",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9605",
+      "present_sample_s": "462137.762600100",
+      "song_s": "21.086762296",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "63",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9608",
+      "present_sample_s": "462137.779939700",
+      "song_s": "21.094489190",
+      "gate_reprojected": "-2",
+      "block_phase": "0.681660909"
+    },
+    {
+      "index": "64",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9612",
+      "present_sample_s": "462137.797597500",
+      "song_s": "21.116859895",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "65",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9615",
+      "present_sample_s": "462137.814798600",
+      "song_s": "21.132999879",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "66",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9618",
+      "present_sample_s": "462137.831468300",
+      "song_s": "21.154333573",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "67",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9621",
+      "present_sample_s": "462137.848368800",
+      "song_s": "21.172223482",
+      "gate_reprojected": "-2",
+      "block_phase": "0.445493493"
+    },
+    {
+      "index": "68",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9624",
+      "present_sample_s": "462137.865240900",
+      "song_s": "21.190806261",
+      "gate_reprojected": "-2",
+      "block_phase": "0.978753644"
+    },
+    {
+      "index": "69",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9628",
+      "present_sample_s": "462137.883074100",
+      "song_s": "21.207666856",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "70",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9631",
+      "present_sample_s": "462137.900338100",
+      "song_s": "21.229000550",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "71",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9634",
+      "present_sample_s": "462137.917183000",
+      "song_s": "21.245415192",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "72",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9637",
+      "present_sample_s": "462137.934648200",
+      "song_s": "21.250332337",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "73",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9640",
+      "present_sample_s": "462137.952050200",
+      "song_s": "21.272669032",
+      "gate_reprojected": "-2",
+      "block_phase": "0.183437582"
+    },
+    {
+      "index": "74",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9643",
+      "present_sample_s": "462137.970022500",
+      "song_s": "21.290527135",
+      "gate_reprojected": "-2",
+      "block_phase": "0.617684390"
+    },
+    {
+      "index": "75",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9646",
+      "present_sample_s": "462137.988248700",
+      "song_s": "21.312253712",
+      "gate_reprojected": "-2",
+      "block_phase": "0.522162408"
+    },
+    {
+      "index": "76",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9649",
+      "present_sample_s": "462138.006115600",
+      "song_s": "21.329300214",
+      "gate_reprojected": "-2",
+      "block_phase": "0.679082319"
+    },
+    {
+      "index": "77",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9653",
+      "present_sample_s": "462138.022985200",
+      "song_s": "21.347445509",
+      "gate_reprojected": "-2",
+      "block_phase": "0.240628980"
+    },
+    {
+      "index": "78",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9656",
+      "present_sample_s": "462138.040331700",
+      "song_s": "21.365551180",
+      "gate_reprojected": "-2",
+      "block_phase": "0.495207042"
+    },
+    {
+      "index": "79",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9660",
+      "present_sample_s": "462138.057687700",
+      "song_s": "21.388056260",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "80",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9663",
+      "present_sample_s": "462138.074544900",
+      "song_s": "21.406150892",
+      "gate_reprojected": "-2",
+      "block_phase": "0.267302631"
+    },
+    {
+      "index": "81",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9666",
+      "present_sample_s": "462138.091432100",
+      "song_s": "21.412532792",
+      "gate_reprojected": "-2",
+      "block_phase": "0.415225102"
+    },
+    {
+      "index": "82",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9670",
+      "present_sample_s": "462138.109181400",
+      "song_s": "21.431665879",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "83",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9673",
+      "present_sample_s": "462138.127162400",
+      "song_s": "21.451166276",
+      "gate_reprojected": "-2",
+      "block_phase": "0.759635951"
+    },
+    {
+      "index": "84",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9676",
+      "present_sample_s": "462138.143993700",
+      "song_s": "21.468025074",
+      "gate_reprojected": "-2",
+      "block_phase": "0.950902301"
+    },
+    {
+      "index": "85",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9680",
+      "present_sample_s": "462138.161849400",
+      "song_s": "21.486927662",
+      "gate_reprojected": "-2",
+      "block_phase": "0.391939668"
+    },
+    {
+      "index": "86",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9683",
+      "present_sample_s": "462138.178732500",
+      "song_s": "21.502574143",
+      "gate_reprojected": "-2",
+      "block_phase": "0.145953246"
+    },
+    {
+      "index": "87",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9686",
+      "present_sample_s": "462138.195870500",
+      "song_s": "21.522486192",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "88",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9689",
+      "present_sample_s": "462138.213167400",
+      "song_s": "21.538332444",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "89",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9692",
+      "present_sample_s": "462138.230838800",
+      "song_s": "21.562394438",
+      "gate_reprojected": "-2",
+      "block_phase": "0.568680175"
+    },
+    {
+      "index": "90",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9695",
+      "present_sample_s": "462138.248169800",
+      "song_s": "21.578823771",
+      "gate_reprojected": "-2",
+      "block_phase": "0.436263268"
+    },
+    {
+      "index": "91",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9698",
+      "present_sample_s": "462138.266128100",
+      "song_s": "21.585389033",
+      "gate_reprojected": "-2",
+      "block_phase": "0.802031944"
+    },
+    {
+      "index": "92",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9701",
+      "present_sample_s": "462138.282881600",
+      "song_s": "21.606189227",
+      "gate_reprojected": "-2",
+      "block_phase": "0.770277284"
+    },
+    {
+      "index": "93",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9705",
+      "present_sample_s": "462138.300050000",
+      "song_s": "21.623667222",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "94",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9708",
+      "present_sample_s": "462138.317572400",
+      "song_s": "21.641846985",
+      "gate_reprojected": "-2",
+      "block_phase": "0.480845326"
+    },
+    {
+      "index": "95",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9711",
+      "present_sample_s": "462138.334566800",
+      "song_s": "21.659634510",
+      "gate_reprojected": "-2",
+      "block_phase": "0.688311012"
+    },
+    {
+      "index": "96",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9715",
+      "present_sample_s": "462138.351803500",
+      "song_s": "21.683173801",
+      "gate_reprojected": "-2",
+      "block_phase": "0.258169060"
+    },
+    {
+      "index": "97",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9718",
+      "present_sample_s": "462138.369193700",
+      "song_s": "21.701186099",
+      "gate_reprojected": "-2",
+      "block_phase": "0.564185245"
+    },
+    {
+      "index": "98",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9721",
+      "present_sample_s": "462138.387569700",
+      "song_s": "21.719089939",
+      "gate_reprojected": "-2",
+      "block_phase": "0.859367523"
+    },
+    {
+      "index": "99",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9725",
+      "present_sample_s": "462138.404401900",
+      "song_s": "21.735704881",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "100",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9728",
+      "present_sample_s": "462138.421748000",
+      "song_s": "21.743314080",
+      "gate_reprojected": "-2",
+      "block_phase": "0.487067780"
+    },
+    {
+      "index": "101",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9731",
+      "present_sample_s": "462138.440256700",
+      "song_s": "21.766323775",
+      "gate_reprojected": "-2",
+      "block_phase": "0.708057560"
+    },
+    {
+      "index": "102",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9735",
+      "present_sample_s": "462138.457132100",
+      "song_s": "21.783293229",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "103",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9737",
+      "present_sample_s": "462138.473853600",
+      "song_s": "21.789801269",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "104",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9741",
+      "present_sample_s": "462138.491617400",
+      "song_s": "21.805000764",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "105",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9743",
+      "present_sample_s": "462138.509073200",
+      "song_s": "21.826720907",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "106",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9747",
+      "present_sample_s": "462138.527517200",
+      "song_s": "21.847666245",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "107",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9749",
+      "present_sample_s": "462138.544256000",
+      "song_s": "21.861878346",
+      "gate_reprojected": "-2",
+      "block_phase": "0.530155263"
+    },
+    {
+      "index": "108",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9752",
+      "present_sample_s": "462138.562129800",
+      "song_s": "21.884911233",
+      "gate_reprojected": "-2",
+      "block_phase": "0.879510386"
+    },
+    {
+      "index": "109",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9755",
+      "present_sample_s": "462138.580005000",
+      "song_s": "21.902379479",
+      "gate_reprojected": "-2",
+      "block_phase": "0.906574744"
+    },
+    {
+      "index": "110",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9758",
+      "present_sample_s": "462138.596819300",
+      "song_s": "21.909441481",
+      "gate_reprojected": "-2",
+      "block_phase": "0.267550759"
+    },
+    {
+      "index": "111",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9761",
+      "present_sample_s": "462138.614211500",
+      "song_s": "21.930563912",
+      "gate_reprojected": "-2",
+      "block_phase": "0.264169094"
+    },
+    {
+      "index": "112",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9764",
+      "present_sample_s": "462138.631599500",
+      "song_s": "21.946709017",
+      "gate_reprojected": "-2",
+      "block_phase": "0.633005953"
+    },
+    {
+      "index": "113",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9768",
+      "present_sample_s": "462138.650430600",
+      "song_s": "21.970566254",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "114",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9771",
+      "present_sample_s": "462138.667902800",
+      "song_s": "21.987207598",
+      "gate_reprojected": "-2",
+      "block_phase": "0.161622125"
+    },
+    {
+      "index": "115",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9774",
+      "present_sample_s": "462138.685036200",
+      "song_s": "22.002607804",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "116",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9777",
+      "present_sample_s": "462138.703495200",
+      "song_s": "22.026583057",
+      "gate_reprojected": "-2",
+      "block_phase": "0.418623981"
+    },
+    {
+      "index": "117",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9780",
+      "present_sample_s": "462138.720856100",
+      "song_s": "22.042795781",
+      "gate_reprojected": "-2",
+      "block_phase": "0.660595567"
+    },
+    {
+      "index": "118",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9783",
+      "present_sample_s": "462138.738730900",
+      "song_s": "22.054686182",
+      "gate_reprojected": "-2",
+      "block_phase": "0.783860676"
+    },
+    {
+      "index": "119",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9786",
+      "present_sample_s": "462138.756551800",
+      "song_s": "22.071513272",
+      "gate_reprojected": "-2",
+      "block_phase": "0.794688739"
+    },
+    {
+      "index": "120",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9789",
+      "present_sample_s": "462138.773447700",
+      "song_s": "22.090484140",
+      "gate_reprojected": "-2",
+      "block_phase": "0.355863753"
+    },
+    {
+      "index": "121",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9792",
+      "present_sample_s": "462138.790312200",
+      "song_s": "22.111283855",
+      "gate_reprojected": "-2",
+      "block_phase": "0.359924396"
+    },
+    {
+      "index": "122",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9795",
+      "present_sample_s": "462138.807668800",
+      "song_s": "22.125771859",
+      "gate_reprojected": "-2",
+      "block_phase": "0.152722233"
+    },
+    {
+      "index": "123",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9798",
+      "present_sample_s": "462138.824978200",
+      "song_s": "22.148946553",
+      "gate_reprojected": "-2",
+      "block_phase": "0.525633799"
+    },
+    {
+      "index": "124",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9801",
+      "present_sample_s": "462138.841881300",
+      "song_s": "22.165733830",
+      "gate_reprojected": "-2",
+      "block_phase": "0.592130571"
+    },
+    {
+      "index": "125",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9804",
+      "present_sample_s": "462138.859367300",
+      "song_s": "22.182559641",
+      "gate_reprojected": "-2",
+      "block_phase": "0.755758632"
+    },
+    {
+      "index": "126",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9808",
+      "present_sample_s": "462138.876902800",
+      "song_s": "22.199667435",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "127",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9811",
+      "present_sample_s": "462138.893643000",
+      "song_s": "22.210333329",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "128",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9814",
+      "present_sample_s": "462138.912379200",
+      "song_s": "22.228989241",
+      "gate_reprojected": "-2",
+      "block_phase": "0.495722616"
+    },
+    {
+      "index": "129",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9817",
+      "present_sample_s": "462138.929194300",
+      "song_s": "22.246848317",
+      "gate_reprojected": "-2",
+      "block_phase": "0.841279596"
+    },
+    {
+      "index": "130",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9821",
+      "present_sample_s": "462138.946196800",
+      "song_s": "22.263666612",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "131",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9823",
+      "present_sample_s": "462138.963398500",
+      "song_s": "22.279651105",
+      "gate_reprojected": "-2",
+      "block_phase": "0.815586102"
+    },
+    {
+      "index": "132",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9826",
+      "present_sample_s": "462138.980271700",
+      "song_s": "22.299633500",
+      "gate_reprojected": "-2",
+      "block_phase": "0.622575478"
+    },
+    {
+      "index": "133",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9829",
+      "present_sample_s": "462138.997625100",
+      "song_s": "22.321385994",
+      "gate_reprojected": "-2",
+      "block_phase": "0.818317502"
+    },
+    {
+      "index": "134",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9833",
+      "present_sample_s": "462139.014667500",
+      "song_s": "22.338333588",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "135",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9836",
+      "present_sample_s": "462139.031921600",
+      "song_s": "22.359667283",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "136",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9838",
+      "present_sample_s": "462139.049197100",
+      "song_s": "22.378074332",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "137",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9841",
+      "present_sample_s": "462139.066109100",
+      "song_s": "22.385420670",
+      "gate_reprojected": "-2",
+      "block_phase": "0.743751058"
+    },
+    {
+      "index": "138",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9844",
+      "present_sample_s": "462139.082973000",
+      "song_s": "22.402863139",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "139",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9848",
+      "present_sample_s": "462139.100579000",
+      "song_s": "22.423666459",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "140",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9851",
+      "present_sample_s": "462139.117813300",
+      "song_s": "22.439390641",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "141",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9854",
+      "present_sample_s": "462139.135006000",
+      "song_s": "22.457513447",
+      "gate_reprojected": "-2",
+      "block_phase": "0.588175377"
+    },
+    {
+      "index": "142",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9856",
+      "present_sample_s": "462139.152259800",
+      "song_s": "22.473262948",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "143",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9860",
+      "present_sample_s": "462139.169363800",
+      "song_s": "22.494207487",
+      "gate_reprojected": "-2",
+      "block_phase": "0.804521354"
+    },
+    {
+      "index": "144",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9862",
+      "present_sample_s": "462139.186599400",
+      "song_s": "22.509657830",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "145",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9865",
+      "present_sample_s": "462139.204702000",
+      "song_s": "22.526813966",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "146",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9868",
+      "present_sample_s": "462139.222100500",
+      "song_s": "22.541000825",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "147",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9870",
+      "present_sample_s": "462139.240227900",
+      "song_s": "22.555258018",
+      "gate_reprojected": "-2",
+      "block_phase": "0.493337543"
+    },
+    {
+      "index": "148",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9873",
+      "present_sample_s": "462139.257524700",
+      "song_s": "22.573000413",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "149",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9875",
+      "present_sample_s": "462139.275911000",
+      "song_s": "22.600685707",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "150",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9878",
+      "present_sample_s": "462139.293698000",
+      "song_s": "22.619657494",
+      "gate_reprojected": "-2",
+      "block_phase": "0.671116567"
+    },
+    {
+      "index": "151",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9881",
+      "present_sample_s": "462139.311403900",
+      "song_s": "22.636999589",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "152",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9883",
+      "present_sample_s": "462139.328951000",
+      "song_s": "22.653650990",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "153",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9886",
+      "present_sample_s": "462139.346304800",
+      "song_s": "22.672951077",
+      "gate_reprojected": "-2",
+      "block_phase": "0.734909060"
+    },
+    {
+      "index": "154",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9889",
+      "present_sample_s": "462139.365176400",
+      "song_s": "22.691015593",
+      "gate_reprojected": "-2",
+      "block_phase": "0.865071250"
+    },
+    {
+      "index": "155",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9892",
+      "present_sample_s": "462139.383502500",
+      "song_s": "22.701527573",
+      "gate_reprojected": "-2",
+      "block_phase": "0.799538641"
+    },
+    {
+      "index": "156",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9895",
+      "present_sample_s": "462139.401379800",
+      "song_s": "22.724971959",
+      "gate_reprojected": "-2",
+      "block_phase": "0.458469397"
+    },
+    {
+      "index": "157",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9898",
+      "present_sample_s": "462139.418780600",
+      "song_s": "22.743666154",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "158",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9901",
+      "present_sample_s": "462139.437455300",
+      "song_s": "22.760553819",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "159",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9903",
+      "present_sample_s": "462139.454981200",
+      "song_s": "22.780810342",
+      "gate_reprojected": "-2",
+      "block_phase": "0.907432889"
+    },
+    {
+      "index": "160",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9907",
+      "present_sample_s": "462139.473242000",
+      "song_s": "22.796999436",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "161",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9909",
+      "present_sample_s": "462139.490746100",
+      "song_s": "22.817614672",
+      "gate_reprojected": "-2",
+      "block_phase": "0.384922969"
+    },
+    {
+      "index": "162",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9912",
+      "present_sample_s": "462139.508014200",
+      "song_s": "22.837378017",
+      "gate_reprojected": "-2",
+      "block_phase": "0.288138637"
+    },
+    {
+      "index": "163",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9914",
+      "present_sample_s": "462139.524877500",
+      "song_s": "22.852064232",
+      "gate_reprojected": "-2",
+      "block_phase": "0.888401208"
+    },
+    {
+      "index": "164",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9917",
+      "present_sample_s": "462139.542698700",
+      "song_s": "22.863852720",
+      "gate_reprojected": "-2",
+      "block_phase": "0.391963391"
+    },
+    {
+      "index": "165",
+      "mode": "4",
+      "real": "1",
+      "unity_frame": "9920",
+      "present_sample_s": "462139.561116900",
+      "song_s": "22.882334214",
+      "gate_reprojected": "-2",
+      "block_phase": "0.000000000"
+    },
+    {
+      "index": "166",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9922",
+      "present_sample_s": "462139.577946600",
+      "song_s": "22.897840508",
+      "gate_reprojected": "-2",
+      "block_phase": "0.698581304"
+    },
+    {
+      "index": "167",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9925",
+      "present_sample_s": "462139.594867300",
+      "song_s": "22.919474002",
+      "gate_reprojected": "-2",
+      "block_phase": "1.000000000"
+    },
+    {
+      "index": "168",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9928",
+      "present_sample_s": "462139.612217300",
+      "song_s": "22.939997897",
+      "gate_reprojected": "-2",
+      "block_phase": "0.721468805"
+    },
+    {
+      "index": "169",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9931",
+      "present_sample_s": "462139.629151000",
+      "song_s": "22.956552495",
+      "gate_reprojected": "-2",
+      "block_phase": "0.838874853"
+    },
+    {
+      "index": "170",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9934",
+      "present_sample_s": "462139.646962900",
+      "song_s": "22.971975685",
+      "gate_reprojected": "-2",
+      "block_phase": "0.772704440"
+    },
+    {
+      "index": "171",
+      "mode": "4",
+      "real": "0",
+      "unity_frame": "9937",
+      "present_sample_s": "462139.664739800",
+      "song_s": "22.993055979",
+      "gate_reprojected": "-2",
+      "block_phase": "0.594473364"
+    }
+  ],
+  "scope": "New actual GPU capture, separate from performance. Reduced step6 picture; no whole-song or physical-display quality proof.",
+  "selected_sample": {
+    "index": "86",
+    "mode": "4",
+    "real": "0",
+    "unity_frame": "9683",
+    "present_sample_s": "462138.178732500",
+    "song_s": "21.502574143",
+    "gate_reprojected": "-2",
+    "block_phase": "0.145953246"
+  }
+}

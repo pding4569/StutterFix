@@ -17,7 +17,12 @@ int wmain(int argc,wchar_t** argv) {
           p=scenePrediction(a,b,.005,.01);
           if(fabs(p.camera[2]-10)>.00001) throw std::runtime_error("pulse exceeded its endpoint"); }
         int mode=argc>1?_wtoi(argv[1]):4; double fps=argc>2?_wtof(argv[2]):200,seconds=argc>3?_wtof(argv[3]):15;
-        if(mode<1 || mode>8 || !std::isfinite(fps) || fps<=0 || !std::isfinite(seconds) || seconds<=0) return 2;
+        if(mode<1 || mode>9 || !std::isfinite(fps) || fps<=0 || !std::isfinite(seconds) || seconds<=0) return 2;
+        refreshRate=165;
+        for(double source:{60.,100.,164.,165.,200.,400.}) {
+            double interval=refreshInterval(1/source,165);
+            if(source>=165?interval!=0:std::abs(1/interval+source-165)>1e-8) throw std::runtime_error("refresh shortage arithmetic");
+        }
         std::wstring path=argc>4?argv[4]:L"."; SetProcessDPIAware();
         bool narrow=argc>5 && _wtoi(argv[5])==1;
         bool blend=argc>6 && _wtoi(argv[6])==1;
@@ -72,6 +77,7 @@ int wmain(int argc,wchar_t** argv) {
             if(narrow) engine.beginFrame();
             for(int i=0;i<5;i++) p.textures[i]=images[i].texture.Get();
             if(narrow) p.textures[1]=reinterpret_cast<void*>(1);
+            if(mode==9) p.textures[1]=reinterpret_cast<void*>(-intptr_t(std::llround(1e9/fps)));
             if(narrow) { float base[4]={p.pose.camera[0],p.pose.camera[1],p.pose.camera[2],p.pose.camera[3]}; memcpy(p.textures+3,base,16); }
             if(costStage) {
                 unsigned long long beforeGap=engine.outputs;
@@ -110,6 +116,6 @@ int wmain(int argc,wchar_t** argv) {
         printf("swapchains=1 debug_layer=%d frames=%d outputs=%llu producer_state_errors=%d pixel_errors=%d debug_errors=%llu pause_outputs=%llu worker_error=%d device_removed=0x%08lX\n",debug?1:0,frames,engine.outputs.load(),stateErrors,pixelErrors,serious,afterPause-beforePause,engine.error.load(),static_cast<unsigned long>(d->GetDeviceRemovedReason()));
         printf("private_world_gap_outputs=%llu\n",gapOutputs);
         FILE* f=nullptr; _wfopen_s(&f,(path+L"/check.txt").c_str(),L"wb"); if(f) { fprintf(f,"swapchains=1 debug_layer=%d frames=%d outputs=%llu state_errors=%d pixel_errors=%d debug_errors=%llu pause_outputs=%llu worker_error=%d device_removed=%ld frame_begins=%llu frame_ends=%llu\n",debug?1:0,frames,engine.outputs.load(),stateErrors,pixelErrors,serious,afterPause-beforePause,engine.error.load(),long(d->GetDeviceRemovedReason()),engine.frameBegins.load(),engine.frameEnds.load()); fclose(f); }
-        engine.release(); DestroyWindow(window); return stateErrors||pixelErrors||serious||engine.error||(mode>=2 && afterPause<=beforePause)||(costStage>=3 && mode>=2 && !gapOutputs)?1:0;
+        engine.release(); DestroyWindow(window); return stateErrors||pixelErrors||serious||engine.error||(mode>=2 && mode!=9 && afterPause<=beforePause)||(mode==9 && fps>=165 && engine.outputs>unsigned(frames))||(costStage>=3 && mode>=2 && !gapOutputs)?1:0;
     } catch(const std::exception& e) { fprintf(stderr,"%s\n",e.what()); return 1; }
 }

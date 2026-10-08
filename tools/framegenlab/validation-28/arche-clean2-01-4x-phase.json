@@ -1,0 +1,22 @@
+{
+  "scope": "Native target phase, final song reset, generated outputs at song5..45. Not image motion, physical display phase, or fresh-picture proof.",
+  "generated": 32894,
+  "matched": 32894,
+  "ambiguous": 0,
+  "ambiguous_song_s": [],
+  "phase": {
+    "mean": 0.44308019172929236,
+    "p95": 0.9328101868690718,
+    "maximum": 1
+  },
+  "endpoint_zero": 0,
+  "endpoint_one": 885,
+  "interior": 32009,
+  "bins_0_25_50_75_100": [
+    11285,
+    8242,
+    7623,
+    4987
+  ],
+  "endpoint_scope": "1e-5 phase tolerance for timestamp serialization. Endpoint1 repeats the newer true picture; interior is only an eligibility bound, not a quality result."
+}

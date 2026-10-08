@@ -103,11 +103,12 @@ inline void retainTexture(ID3D11Device* device,ID3D11Texture2D* input,Texture& o
     check(device->CreateShaderResourceView(input,&sd,&out.view));
 }
 inline bool rotatingWorld(const Packet& p) {
-#ifdef SF_FRAMEGEN_RESEARCH
     return (p.capture&2048)!=0;
-#else
-    (void)p;return false;
-#endif
+}
+inline std::atomic<int> refreshRate{0};
+inline double refreshInterval(double period,int hz) {
+    double shortage=hz>0 && period>0?hz-1/period:0;
+    return shortage>0?1/shortage:0;
 }
 inline bool completionOnly(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
@@ -147,7 +148,7 @@ struct Slot {
     #ifdef SF_FRAMEGEN_RESEARCH
     size_t motionRow=SIZE_MAX;
 #endif
-    Packet packet{},previousPacket{}; Pose previous{}; double qpc=0,previousSong=0,period=.005,frameDelta=.005; unsigned long long sequence=0;
+    Packet packet{},previousPacket{}; Pose previous{}; double qpc=0,previousSong=0,period=.005,frameDelta=.005; unsigned long long sequence=0; bool pairValid=true;
 };
 inline bool screenBorderEnabled(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
@@ -295,7 +296,7 @@ public:
     // Producer/render thread only. Ordered GPU copies and publication are under the same gate as playback.
     void publish(const Packet& p,ID3D11Texture2D* screen) {
         if(error.load()) throw std::runtime_error("worker failed");
-        if(p.mode!=0 && !connectionOnly(p) && (p.mode<2 || p.mode>8)) throw std::runtime_error("unsupported output multiplier");
+        if(p.mode!=0 && !connectionOnly(p) && (p.mode<2 || p.mode>9)) throw std::runtime_error("unsupported output multiplier");
 #ifndef SF_FRAMEGEN_RESEARCH
         if(p.mode>=2 && !blockFlowEnabled(p)) throw std::runtime_error("block interpolation packet required; restart with matching DLLs");
 #endif
@@ -303,7 +304,12 @@ public:
 #ifdef SF_FRAMEGEN_RESEARCH
         if((p.capture&3)==2) { ContextLock context(protection.Get()); motionClip.initialize(device.Get(),width,height); }
 #endif
-        if(p.song<lastPacket.song-1) { captured=0; clipNext=0; }
+        if(p.song<lastPacket.song-1) {
+            captured=0; clipNext=0;
+#ifdef SF_FRAMEGEN_RESEARCH
+            ContextLock context(protection.Get());blockFlow.resetMetrics(immediate.Get());
+#endif
+        }
         if((p.capture&3)==2 && !cameraBlendEnabled(p)) clip(screen,p.song,p.frame,p.mode,true);
         SourceRecord row{t,p.song,p.frame,p.pose,0,0,0,0,(reinterpret_cast<uintptr_t>(p.textures[2])&1)?1:0};
         memcpy(row.base,p.textures+3,16); memcpy(row.pulse,p.pulse,16);
@@ -329,7 +335,7 @@ public:
         if(scheduleActive) {
             auto& old=slots[published%slots.size()];
             int lm=0,em=0,tm=0;
-            if(old.packet.textures[1]!=reinterpret_cast<void*>(1)) for(int i=made+1;i<old.packet.mode;i++) {
+            if(old.packet.mode!=9 && old.packet.textures[1]!=reinterpret_cast<void*>(1)) for(int i=made+1;i<old.packet.mode;i++) {
                 double due=old.qpc+old.period*i/old.packet.mode,waiting=workerWaitSince.load();
                 if(due>t) ++em;
                 else if(waiting>0 && due>=waiting) ++lm;
@@ -371,6 +377,7 @@ public:
         s.packet=p; s.previousPacket=lastPacket; s.previous=lastPacket.pose; s.previousSong=lastPacket.song;
         s.frameDelta=havePrevious?t-lastQpc:.005;
         s.period=std::clamp(s.frameDelta,.001,.05); s.qpc=t; s.sequence=++published;
+        s.pairValid=lastPacket.mode>=2;
         if(blockFlowEnabled(p) && !connectionOnly(p)) {
             const auto& previous=slots[(s.sequence-1)%slots.size()];
             if(blockFlowVariant(p)>=3) {
@@ -574,6 +581,14 @@ private:
                         double interval=s.period/currentMode;
                         bool continuous=s.packet.textures[1]==reinterpret_cast<void*>(1);
                         if(continuous) interval=s.period/(currentMode-1);
+                        if(currentMode==9) {
+                            // A source-end EMA is measured even while copying/generation
+                            // rests. Sampling only worker-visible frames aliases real FPS.
+                            double refreshPeriod=-double(reinterpret_cast<intptr_t>(s.packet.textures[1]))/1e9;
+                            interval=refreshInterval(refreshPeriod,refreshRate.load());
+                            if(interval<=0) { deadline=0;seen=s.sequence;mode=0;continue; }
+                            continuous=true;
+                        }
                         if(seen!=s.sequence) { seen=s.sequence; if(!continuous || deadline==0) deadline=s.qpc+interval; }
                         if(continuous) {
                             t=now();
@@ -671,7 +686,7 @@ inline void Output::initialize() {
 inline void Output::render(const Slot& s,bool real,double tick) {
     double age=std::max(0.,tick-s.qpc),song=s.packet.song+age;
     const Slot* image=&s;
-    if(cameraBlendEnabled(s.packet) && s.sequence>1) {
+    if(cameraBlendEnabled(s.packet) && s.pairValid && s.sequence>1) {
         const auto& previousImage=slots[(s.sequence-1)%slots.size()];
         if(previousImage.sequence==s.sequence-1 && previousImage.packet.pose.camera[2]>.00001f) image=&previousImage;
     }

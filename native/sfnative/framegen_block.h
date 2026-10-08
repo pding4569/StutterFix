@@ -116,6 +116,13 @@ groupshared uint counts[4];
     }
     void execute(ID3D11DeviceContext* immediate) { ComPtr<ID3D11CommandList> list;check(commands->FinishCommandList(FALSE,&list));immediate->ExecuteCommandList(list.Get(),TRUE); }
 public:
+    void resetMetrics(ID3D11DeviceContext* immediate) {
+#ifdef SF_FRAMEGEN_RESEARCH
+        if(counterTarget) {UINT zeros[4]{};immediate->ClearUnorderedAccessViewUint(counterTarget.Get(),zeros);}
+#else
+        (void)immediate;
+#endif
+    }
     void skipIfUnused(const Slot& source) {
         if(source.sequence && sequence!=source.sequence) ++skippedPairs;
     }

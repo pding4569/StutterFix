@@ -1,0 +1,115 @@
+{
+  "mode": 4,
+  "refresh": false,
+  "full_song": false,
+  "switch": false,
+  "compatibility_settings": {},
+  "monitor_smoke": true,
+  "monitor_samples": [
+    {
+      "mode": -1,
+      "shown": 747.428,
+      "real": 181.914,
+      "counting": true
+    },
+    {
+      "mode": 0,
+      "shown": 185.01,
+      "real": 185.01,
+      "counting": false
+    },
+    {
+      "mode": 1,
+      "shown": 764.123,
+      "real": 191.031,
+      "counting": true
+    },
+    {
+      "mode": 2,
+      "shown": 731.643,
+      "real": 182.911,
+      "counting": true
+    },
+    {
+      "mode": -1,
+      "shown": 718.634,
+      "real": 178.666,
+      "counting": true
+    },
+    {
+      "mode": -1,
+      "shown": 160.146,
+      "real": 160.146,
+      "counting": false
+    }
+  ],
+  "managed_sha256": "3ec7b955f16027158a8dff33397343d9cfcf0874aae7eed2f96b74e292e23605",
+  "native_sha256": "98c01c7e497a40575b8bb641b25d4a1eeb7c7800d43e4c7900bbb1fbba06f02e",
+  "states": [
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 664,
+      "generated": 0,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 7436,
+      "generated": 9054,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 11945,
+      "generated": 22689,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": false,
+      "installed": 0,
+      "sources": 11946,
+      "generated": 22693,
+      "runtime_initialized": true,
+      "status": ""
+    }
+  ],
+  "clocks": [
+    {
+      "frame": 665,
+      "ticks": 191524132,
+      "hz": 10000000
+    },
+    {
+      "frame": 7437,
+      "ticks": 501141470,
+      "hz": 10000000
+    },
+    {
+      "frame": 11946,
+      "ticks": 772829575,
+      "hz": 10000000
+    },
+    {
+      "frame": 12392,
+      "ticks": 803056089,
+      "hz": 10000000
+    }
+  ],
+  "sample": null,
+  "observed_submission_ratios": [
+    4.023952095808383
+  ],
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  },
+  "no_research_directory": true
+}

@@ -48,7 +48,7 @@ static HRESULT __stdcall present(IDXGISwapChain* self,UINT sync,UINT flags) {
             engine->publish(packet,back.Get());
 
         }
-        bool active=havePacket && packet.mode>=2 && packet.mode<=8;
+        bool active=havePacket && packet.mode>=2 && packet.mode<=9;
         if(active && cameraBlendEnabled(packet)) engine->drawReal(); // Real and generated output share the delayed timeline.
         UINT outputSync=active?0:sync;
         if(sync) { ++syncRequested; if(active) ++syncForcedZero; else if(outputSync==sync) ++syncPreserved; }
@@ -120,6 +120,7 @@ API int sf_framegen_status() { return status; }
 API int sf_framegen_error() { return failure; }
 API int sf_framegen_stopped() { return stopped; }
 API int sf_framegen_installed() { return installed; }
-API int sf_framegen_block_version() { return 1; }
+API int sf_framegen_block_version() { return 2; }
+API void sf_framegen_refresh_rate(int hz) { refreshRate=hz>0 && hz<=1000?hz:0; }
 API unsigned long long sf_framegen_sources() { return sourcePresents; }
 API unsigned long long sf_framegen_generated() { return generatedPresents; }

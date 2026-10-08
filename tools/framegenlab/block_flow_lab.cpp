@@ -7,7 +7,9 @@
 using namespace outside;
 int wmain(int argc,wchar_t** argv) {
     try {
-        constexpr unsigned w=640,h=384;
+        const unsigned w=argc>4?unsigned(_wtoi(argv[4])):640,h=argc>5?unsigned(_wtoi(argv[5])):384;
+        const bool resolutionProbe=argc>6;
+        if(w<128 || h<128 || w>8192 || h>8192) throw std::runtime_error("invalid fixture dimensions");
         const int variant=argc>2?_wtoi(argv[2]):0;
         const bool query=argc>3 && wcscmp(argv[3],L"query")==0;
         const bool borrow=query || (argc>3 && wcscmp(argv[3],L"rotate")==0);
@@ -15,7 +17,8 @@ int wmain(int argc,wchar_t** argv) {
         ComPtr<ID3D11Device> d;ComPtr<ID3D11DeviceContext> c;check(D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_HARDWARE,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&d,nullptr,&c));
         auto pattern=[](int x,int y) {UINT a=UINT(x/8)*1299827u+UINT(y/8)*738563u+19;a^=a>>13;a*=1274126177u;a^=a>>16;return 40+a%160;};
         auto texture=[&](int shift,bool screen,bool flat,bool flip) {Texture t;std::vector<UINT> p(w*h);for(unsigned y=0;y<h;y++)for(unsigned x=0;x<w;x++) {UINT a=flat?96:pattern(int(x)-(x<w/2?shift:0),int(y));UINT color=0xff000000u|(a<<16)|(a<<8)|a;if(screen && x>=32 && x<64 && y>=32 && y<64)color=0xffff0040u;p[(flip?h-1-y:y)*w+x]=color;}D3D11_TEXTURE2D_DESC td{};td.Width=w;td.Height=h;td.MipLevels=td.ArraySize=1;td.Format=DXGI_FORMAT_R8G8B8A8_UNORM;td.SampleDesc.Count=1;td.BindFlags=D3D11_BIND_SHADER_RESOURCE;D3D11_SUBRESOURCE_DATA data{p.data(),w*4,0};check(d->CreateTexture2D(&td,&data,&t.texture));check(d->CreateShaderResourceView(t.texture.Get(),nullptr,&t.view));return t;};
-        for(int movement:{-16,0,16}) for(bool flip:{false,true}) for(bool flat:{false,true}) {
+        std::vector<int> movements=resolutionProbe?std::vector<int>{_wtoi(argv[6])}:std::vector<int>{-16,0,16};
+        for(int movement:movements) for(bool flip:{false,true}) for(bool flat:{false,true}) {
             Slot a,b;a.sequence=1;b.sequence=2;b.packet.flip=flip?1:0;b.packet.capture=64|4|(variant<<7);
             a.images[0]=texture(0,false,flat,flip);b.images[0]=texture(movement,false,flat,flip);a.images[1]=texture(0,true,flat,false);b.images[1]=texture(movement,true,flat,false);
             // Same 60 pixel cases, now reading retained producer textures while a
@@ -52,12 +55,16 @@ int wmain(int argc,wchar_t** argv) {
             unsigned uiErrors=0;for(unsigned y=32;y<64;y++)for(unsigned x=32;x<64;x++) {auto p=static_cast<const BYTE*>(m.pData)+y*m.RowPitch+x*4;uiErrors+=p[0]!=64 || p[1]!=0 || p[2]!=255;}
             c->Unmap(read.Get(),0);printf("movement=%d flip=%d flat=%d phase=%.2f checked=%u errors_above3=%u mean_error=%.6f ui_errors=%u state_errors=0\n",movement,flip?1:0,flat?1:0,phase,checked,errors,absolute/checked,uiErrors);
             if(query && !completion.ready(c.Get())) throw std::runtime_error("completion query lost queue ordering");
-            if(errors || uiErrors)throw std::runtime_error("known translation, stationary, protected planet or true UI failed");
+            if((errors && !resolutionProbe) || uiErrors)throw std::runtime_error("known translation, stationary, protected planet or true UI failed");
             }
 #ifdef SF_FRAMEGEN_RESEARCH
+            const bool resetCase=!resolutionProbe && movement==16 && !flip && !flat;
+            if(resetCase) {flow.resetMetrics(c.Get());flow.draw(c.Get(),target.Get(),a,b,.5,nullptr,true);}
             std::wstring path=argc>1?argv[1]:L".";path+=L"/move"+std::to_wstring(movement)+L"-flip"+std::to_wstring(flip?1:0)+L"-flat"+std::to_wstring(flat?1:0);CreateDirectoryW(path.c_str(),nullptr);flow.save(c.Get(),path);
             FILE* f=nullptr;_wfopen_s(&f,(path+L"/block-flow.txt").c_str(),L"rb");if(!f)throw std::runtime_error("fixture counters missing");UINT generated=0,fresh=0;int fields=fscanf_s(f,"variant=%*u scale=%*u block_size=%*u skipped_pairs=%*u generated=%u new_picture=%u",&generated,&fresh);fclose(f);
-            if(fields!=2 || generated!=3 || fresh!=UINT(!flat && movement?3:0))throw std::runtime_error("new-picture counter disagrees with known pixels");
+            UINT expectedGenerated=resetCase?1u:3u;
+            if(fields!=2 || generated!=expectedGenerated || (!resolutionProbe && fresh!=UINT(!flat && movement?expectedGenerated:0)))throw std::runtime_error("new-picture counter disagrees with known pixels");
+            if(resetCase) printf("metric_reset_generated=%u new_picture=%u\n",generated,fresh);
 #endif
         }
         return 0;

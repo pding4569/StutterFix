@@ -1,0 +1,86 @@
+{
+  "mode": 4,
+  "refresh": true,
+  "full_song": false,
+  "switch": false,
+  "compatibility_settings": {},
+  "monitor_smoke": false,
+  "monitor_samples": [],
+  "managed_sha256": "3ec7b955f16027158a8dff33397343d9cfcf0874aae7eed2f96b74e292e23605",
+  "native_sha256": "98c01c7e497a40575b8bb641b25d4a1eeb7c7800d43e4c7900bbb1fbba06f02e",
+  "states": [
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 772,
+      "generated": 0,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 8790,
+      "generated": 28,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 19618,
+      "generated": 28,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": false,
+      "installed": 0,
+      "sources": 19619,
+      "generated": 28,
+      "runtime_initialized": true,
+      "status": ""
+    }
+  ],
+  "clocks": [
+    {
+      "frame": 773,
+      "ticks": 195156004,
+      "hz": 10000000
+    },
+    {
+      "frame": 8791,
+      "ticks": 557491993,
+      "hz": 10000000
+    },
+    {
+      "frame": 19619,
+      "ticks": 907530268,
+      "hz": 10000000
+    },
+    {
+      "frame": 20638,
+      "ticks": 937613800,
+      "hz": 10000000
+    }
+  ],
+  "sample": {
+    "seconds": 35.0038275,
+    "unity_frames": 10828,
+    "real_fps": 309.337600295282,
+    "submitted": 10828,
+    "output_fps": 309.337600295282,
+    "output_over_source": 1.0,
+    "off_output_inferred_from_unity": false
+  },
+  "observed_submission_ratios": [
+    1.0
+  ],
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  },
+  "no_research_directory": true
+}

@@ -871,6 +871,7 @@ namespace StutterFix
         public bool LowHalfRender = false;  // (실험) 두 프레임에 한 번만 그리고 사이 프레임은 카메라만 옮기기
         public int FrameGenOutside = 0;     // (실험) 0=끔, 2..8=출력 배율. 입력·판정은 원래 속도.
         public int FrameGenMultiplier = 2;  // 마지막으로 선택한 배율
+        public bool FrameGenRefresh = false; // 주사율 부족분만 생성. 기존 2..8배 저장 값 보존.
         public bool LowAutoRes = false;     // 자동 해상도: 목표 FPS 를 못 맞출 만큼 GPU 가 바쁠 때만 게임 화면 해상도를 낮춤
         public int LowAutoFps = 60;         // 자동 해상도 목표 FPS
         public int LowAutoMin = 50;         // 자동 해상도 최소 배율 %

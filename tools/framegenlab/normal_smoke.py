@@ -12,6 +12,7 @@ def main():
     p.add_argument('--map', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--mode', type=int, choices=[0, *range(2, 9)], default=0)
+    p.add_argument('--refresh', action='store_true', help='General match-refresh mode, including zero-generation above refresh')
     p.add_argument('--full-song', action='store_true')
     p.add_argument('--switch', action='store_true')
     p.add_argument('--monitor-smoke', action='store_true', help='Verify real/output/both counters and capture all three monitor layouts')
@@ -71,7 +72,7 @@ def main():
             if not a.mode:
                 steps += ['fgmonitor']
         steps += ['quit']
-        summary, metrics = sf.sf_run(steps, settings={**extra, 'FrameGenOutside': a.mode, 'FrameStats': False, 'LowHalfRender': False},
+        summary, metrics = sf.sf_run(steps, settings={**extra, 'FrameGenOutside': a.mode, 'FrameGenRefresh': a.refresh, 'FrameStats': False, 'LowHalfRender': False},
                                     timeout_min=12 if a.full_song else 4, tag='framegen-normal')
         log = sf.read_text(sf.PLAYER_LOG)
         (a.out/'game.log').write_text(log, encoding='utf8')
@@ -106,7 +107,7 @@ def main():
                 raise RuntimeError('Active normal build not observed')
             ds = states[2]['sources']-states[1]['sources']
             dg = states[2]['generated']-states[1]['generated']
-            if ds <= 0 or dg <= 0:
+            if ds <= 0 or dg < 0 or (dg==0 and not a.refresh):
                 raise RuntimeError('Missing normal build successful source/generated Presents')
             ratios.append((ds+dg)/ds)
         elif any(s['active'] or s['installed'] or s['generated'] or s['sources'] or s['runtime_initialized'] for s in states):
@@ -129,7 +130,7 @@ def main():
                 raise RuntimeError('Default OFF monitor unexpectedly counted native output: '+str(monitor))
         if not a.no_shot and not a.switch and shot.exists():
             (a.out/'screen.png').write_bytes(shot.read_bytes())
-        result = dict(mode=a.mode, full_song=a.full_song, switch=a.switch, compatibility_settings=extra,
+        result = dict(mode=a.mode, refresh=a.refresh, full_song=a.full_song, switch=a.switch, compatibility_settings=extra,
                       monitor_smoke=a.monitor_smoke, monitor_samples=monitor,
                       managed_sha256=hashlib.sha256(binary).hexdigest(),
                       native_sha256=hashlib.sha256((mod/'sfnative.dll').read_bytes()).hexdigest(),

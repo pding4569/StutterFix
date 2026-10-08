@@ -150,6 +150,8 @@ METHOD=scrCamera bin/Release/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서�
 
 - **화면 출력 실험 (2026-10-04, PresentMon, HELLO 2026 곡 전체, 3440x1440 165Hz, 수직동기 끔)**: 지금(전체 화면 창 + Flip) 출력은 `Composed: Flip`(윈도우가 한 번 더 합성), 프레임 시작→화면 15.8ms, present→화면 10.8ms, 209 FPS. 앞서 준비하는 프레임 2→1(`MaxQueuedFrames`)은 FPS 209→128, 시작→화면 15.8→19.1ms 로 **둘 다 나빠져** 버림. 독점 전체 화면(`ExpFullscreen=1`)은 `Hardware: Independent Flip` 이 되어 시작→화면 15.8→7.9ms, present→화면 10.8→2.7ms 로 절반이지만 FPS 209→187, 찢어짐 허용(AllowsTearing 1). 둘 다 설정 창에 없는 실험 설정이다. 관리자 PresentMon 은 `C:\Users\Public\StutterFixTrace\agent.ps1` 의 `pm <이름> <초>` 명령(분석 `pmstat.py`).
 
+- **프레임 늘리기28장**: 재생 전 conductor가 약35초인 상태의 GPU 새 그림 계수가 곡0초 재시작 뒤에도 남아1960회가 섞였다. 곡 역행 시 GPU 계수 초기화와 최종5~45초 생성 Present 수 일치를 검사한다. 3440x1440·165Hz에서4배 성공 제출666.68/1095.70회라도 표시164.95/165.00FPS다. 주사율 맞춤은 연결·기존 잠금을 유지하며 주사율 이상에서 저장/생성을 쉬므로 전체 실행 비용0과 구분한다. 2560의 짧은 시각 신뢰도 표본74%와3440의40초 GPU 표본 비율을 해상도만의 차이라고 해석하지 않는다.
+
 ## 설정 창 디자인 (2026-10-04, `SettingsWindow.cs`)
 
 - 사용자가 고른 방향: **Linear / Raycast** (3D·입체·행성은 해 보고 접음). 거슬렸던 것: 글자가 너무 많음, 상자·테두리가 많음, 배치·크기.

@@ -86,6 +86,7 @@ def main():
     p.add_argument("--map",type=Path,required=True)
     p.add_argument("--label",required=True)
     p.add_argument("--mode",type=int,choices=[0,1,*range(2,9)],required=True)
+    p.add_argument('--refresh',action='store_true',help='Use the general match-refresh setting; multiplier storage unchanged')
     p.add_argument("--seconds",type=int,default=55)
     p.add_argument("--out",type=Path,required=True)
     p.add_argument("--capture",action="store_true")
@@ -149,6 +150,7 @@ def main():
         if a.full_song: steps[-1]="waitend 600"
         settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair,"FrameGenScreenBorder":a.screen_border,"FrameGenLayerProbe":a.layer_probe,"FrameGenImageGate":a.image_gate,"FrameGenBlockFlow":a.block_flow,"FrameGenBlockVariant":a.block_variant,"FrameGenCostSplit":a.cost_split}
         settings['FrameGenFixedCostStage']=a.fixed_cost_stage
+        settings['FrameGenRefresh']=a.refresh
         summary,metrics=sf.sf_run(steps+["quit"],settings=settings,tag="framegen-outside-"+a.label,timeout_min=a.timeout_min)
         log=sf.read_text(sf.PLAYER_LOG); (a.out/"game.log").write_text(log,encoding="utf-8"); (a.out/"run.txt").write_text(summary,encoding="utf-8")
         if a.ui_smoke: shutil.copyfile(shot,a.out/'settings.png')
@@ -178,14 +180,18 @@ def main():
             raise RuntimeError("Native worker or frame start/end balance failed; stop the experiment")
         if a.sync_smoke and (int(safety.get('sync_preserved_off',0))==0 or int(safety.get('sync_forced_zero_active',0))==0):
             raise RuntimeError("OFF/active sync restoration was not observed")
-        native=analyze(a.out/"capture",0 if a.expect_inactive else a.mode,end=45 if a.seconds>=50 else a.seconds-5)
+        native=analyze(a.out/"capture",0 if a.expect_inactive or a.refresh else a.mode,end=45 if a.seconds>=50 else a.seconds-5)
         if a.camera_blend:
             native['prediction_metrics_scope']='Counterfactual extrapolation from source poses; not delayed display-camera error'
         if a.block_flow and a.mode>=2:
             native['prediction_metrics_scope']='Not applicable: actual image motion; base/pulse payload holds planet envelopes'
-            native['block_flow']=dict(part.split('=',1) for part in (a.out/'capture/block-flow.txt').read_text().split())
+            native['block_flow']=dict(part.split('=',1) for part in (a.out/'capture/block-flow.txt').read_text().split()) if (a.out/'capture/block-flow.txt').exists() else None
             native['block_variant']=a.block_variant
             present_rows=read(a.out/'capture/presents.csv')
+            metric_expected=sum(r['real']=='0' and 5<=float(r['song_s'])<45 for r in present_rows)
+            if native['block_flow'] and int(native['block_flow']['generated'])!=metric_expected:
+                raise RuntimeError('GPU new-picture window includes pre-play or missing outputs; preserve data')
+            native['new_picture_metric_expected_outputs']=metric_expected
             delayed=[float(r['source_age_ms']) for r in present_rows if 5<=float(r['song_s'])<45]
             native['interpolated_timeline_to_render_ms']=stats(delayed)
             native['interpolated_timeline_to_submit_ms']=stats([float(r['timeline_to_submit_ms']) for r in present_rows if 5<=float(r['song_s'])<45 and math.isfinite(float(r['timeline_to_submit_ms']))])
@@ -213,6 +219,8 @@ def main():
         if diagnostic.exists() and (a.out/"capture").is_dir():
             if diagnostic.resolve().parent!=mod.resolve() or diagnostic.name!="framegen-outside": raise RuntimeError("Unexpected cleanup path")
             shutil.rmtree(diagnostic)
+        elif diagnostic.exists() and not any(diagnostic.iterdir()):
+            diagnostic.rmdir() # A Steam launch failure created no diagnostic data.
         print("Installed managed/native DLL and exact settings restored",flush=True)
 
 

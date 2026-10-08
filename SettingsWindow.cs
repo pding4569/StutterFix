@@ -1403,11 +1403,18 @@ namespace StutterFix
             }
             if (frameGen)
             {
+                int frameMode=c.FrameGenRefresh?0:1;
+                if(Segment("framegenmode",ref frameMode,new[] {T("주사율 맞춤","Match refresh"),T("2~8배","2–8×")})) {
+                    c.FrameGenRefresh=frameMode==0;Save();
+                }
+                if(c.FrameGenRefresh) P(T("진짜 FPS가 모니터 주사율 이상이면 그림 저장·생성을 쉽니다. 부족한 만큼만 생성하며 표시 이벤트 수는 별도로 확인해야 합니다.","Snapshots and generation rest above monitor refresh; only the shortage is generated. Display events must be measured separately."),sDim);
+                else {
                 float multiplier = Mathf.Clamp(c.FrameGenOutside, 2, 8);
                 if (Slider("framegenmultiplier", ref multiplier, 2, 8, T("출력 배율", "Output multiplier"), Mathf.RoundToInt(multiplier) + T("배", "×")))
                 {
                     c.FrameGenMultiplier = c.FrameGenOutside = Mathf.RoundToInt(multiplier);
                     Save();
+                }
                 }
                 if (HalfRender.Enabled) P(T("'반만 그리기'가 켜져 있어 프레임 늘리기는 쉬고 있습니다. 두 방식 중 하나를 선택하세요.", "Frame increase is suspended while Half rendering is enabled. Choose one method."), sDim);
                 else if (FrameGen.Status.Length>0) P(FrameGen.Status, sDim);

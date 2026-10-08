@@ -1,0 +1,12 @@
+{
+  "excluded_new_picture_reason": "Pre-play conductor retained about35s; no GPU counter reset at song rewind. Performance and PM use last reset; new-picture ratio does not.",
+  "all_segments_generated_5_45": 22153,
+  "final_segment_generated_5_45": 20193,
+  "contaminating_outputs": 1960,
+  "gpu_generated": 22153,
+  "first_off_real_fps": 181.29398783825297,
+  "four_real_fps": 166.5457836647066,
+  "launch_failures_before_game": 1,
+  "empty_diagnostic_guard_stop": 1,
+  "intentional_batch_stop_before_refresh": 1
+}

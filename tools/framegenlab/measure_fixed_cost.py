@@ -146,6 +146,8 @@ def main():
         root=a.out/f'{index:02d}-{mode}x'
         name=f'{a.stage}-{index}-{mode}x'
         command=[sys.executable,str(HERE/'measure_outside.py'),'--map',str(a.map),'--out',str(root),'--label',name,'--mode',str(mode),'--seconds','55','--cost-split','--timeout-min','4']
+        if mode==9:
+            command[command.index('--mode')+1]='4';command+=['--refresh']
         if a.variant: command+=['--fixed-cost-stage',str(a.variant)]
         if mode: command+=['--block-flow','--block-variant','3']
         reused=a.resume and (root/'summary.json').is_file()
@@ -206,6 +208,15 @@ def main():
         result['runs'].append(row); result['conditions']=current; result['build']=build
         (a.out/'summary.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
         print(json.dumps(row,ensure_ascii=False),flush=True)
+
+    # Each active has immediately adjacent fresh OFF controls; retain both losses.
+    for i,row in enumerate(result['runs']):
+        if row['mode'] and i>0 and i+1<len(result['runs']) and result['runs'][i-1]['mode']==result['runs'][i+1]['mode']==0:
+            before,after=result['runs'][i-1]['real_fps'],result['runs'][i+1]['real_fps']
+            row['bracket_off_fps']=[before,after]
+            row['bracket_loss_percent']=[100*(1-row['real_fps']/before),100*(1-row['real_fps']/after)]
+    result['scope']='Fresh immediately adjacent OFF controls for each active when bracket_loss_percent is present'
+    (a.out/'summary.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
 
 if __name__=='__main__': main()
