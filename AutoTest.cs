@@ -824,8 +824,16 @@ namespace StutterFix
                     Log("편집으로 돌아감 (" + stopSw.ElapsedMilliseconds + "ms)");
                     return true;
                 case "quit":
+                    FrameGen.Quit();
                     keep = false;
                     Finish("끝");
+                    return true;
+                case "fgstate":
+                    Log("[프레임상태] " + FrameGen.Describe());
+                    Log("[프레임시각] frame=" + Time.frameCount + " ticks=" + System.Diagnostics.Stopwatch.GetTimestamp() + " hz=" + System.Diagnostics.Stopwatch.Frequency);
+                    return true;
+                case "fgmonitor":
+                    Log("[출력 모니터] " + PerfOverlay.DescribeFps());
                     return true;
                 case "ui":
                     // ui <페이지 0~6 | dock | close>: 설정 창 열기 (모양 확인용)

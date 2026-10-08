@@ -8,10 +8,11 @@ def summarize(root):
     data = json.loads((root/'repeat.json').read_text(encoding='utf8'))
     if data['visual_only'] or len(data['runs']) != len(data['modes']):
         raise RuntimeError('A complete performance batch is required')
-    if data['modes'] != [0, 2, 4, 4, 2, 0]:
-        raise RuntimeError('Expected OFF/2/4/4/2/OFF ordering')
+    modes = data['modes']
+    if len(modes) < 4 or modes[0] != 0 or modes[-1] != 0 or any(m != 0 and not 2 <= m <= 8 for m in modes):
+        raise RuntimeError('Complete bounded multipliers with OFF controls at both ends required')
     pooled = []
-    for mode in [0, 2, 4]:
+    for mode in sorted(set(modes)):
         runs = [r for r in data['runs'] if r['mode'] == mode]
         rows = [r['native'] for r in runs]
         for r in runs:

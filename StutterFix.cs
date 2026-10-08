@@ -371,6 +371,7 @@ namespace StutterFix
         {
             if (!installed) return;
             installed = false;
+            Try(FrameGen.Shutdown);
             Try(GcControl.Shutdown);
             Try(GameScreenButton.Remove);
             Try(LowEnd.Shutdown);
@@ -463,7 +464,7 @@ namespace StutterFix
 
             long q = System.Diagnostics.Stopwatch.GetTimestamp();
             GcControl.Tick(dt); Tk(0, ref q);
-            RestartAdvisor.Tick(); if (Edition.AutoTest) AutoTest.Tick(); PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+            RestartAdvisor.Tick(); if (Edition.AutoTest) AutoTest.Tick(); FrameGen.Tick(); PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
@@ -868,6 +869,8 @@ namespace StutterFix
         public bool LowSharpen = false;     // (실험) 늘린 게임 화면에 선명도 보정
         public float LowSharpenValue = 1f;  // (실험) 선명도 보정 세기 (셰이더 _Value)
         public bool LowHalfRender = false;  // (실험) 두 프레임에 한 번만 그리고 사이 프레임은 카메라만 옮기기
+        public int FrameGenOutside = 0;     // (실험) 0=끔, 2..8=출력 배율. 입력·판정은 원래 속도.
+        public int FrameGenMultiplier = 2;  // 마지막으로 선택한 배율
         public bool LowAutoRes = false;     // 자동 해상도: 목표 FPS 를 못 맞출 만큼 GPU 가 바쁠 때만 게임 화면 해상도를 낮춤
         public int LowAutoFps = 60;         // 자동 해상도 목표 FPS
         public int LowAutoMin = 50;         // 자동 해상도 최소 배율 %
@@ -895,6 +898,7 @@ namespace StutterFix
 
         // 실시간 모니터: 0 끔, 1 아이콘(화면 끝의 작은 탭), 2 미니(한 줄), 3 상세(패널). Shift+키로 차례로 바꾼다.
         public int OverlayMode = 1;
+        public int OverlayFpsSource = 0;    // 0 원본, 1 출력(생성 포함), 2 둘 다. 통계·끊김은 항상 원본.
         public bool OverlayRight = false;   // 왼쪽 끝 / 오른쪽 끝
         public float OverlayY = 0.5f;       // 세로 위치 (0 위 ~ 1 아래)
         public float OverlayOpacity = 0.75f;

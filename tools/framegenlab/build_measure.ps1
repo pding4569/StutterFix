@@ -20,7 +20,7 @@ if ($Probe -in @('InGame','Outside')) {
     $setting=if($Probe -eq 'Outside') {'FrameGenOutside'} else {'FrameGenExperiment'}
     $extra="        public bool FrameGenFlipY = true;`n        public bool FrameGenCapture = false;`n"
     if($Probe -eq 'Outside') { $extra+="        public bool FrameGenNarrow = true;`n        public bool FrameGenClip = false;`n" }
-    $main=$main.Replace($point,"        public int $setting = 0;`n$extra$point")
+    $main=$main.Replace($point,$(if($Probe -eq 'Outside'){"$extra$point"}else{"        public int $setting = 0;`n$extra$point"}))
     $gui='            if (Edition.Dev) DevGUI(); else PlayerGUI();'
     if (!$main.Contains($gui)) { throw 'GUI injection point changed' }
     $main=$main.Replace($gui,"            $probeType.DrawGUI();`n$gui")
@@ -31,6 +31,9 @@ $auto = Get-Content -LiteralPath "$repo\AutoTest.cs" -Raw
 $quitPoint = '                case "quit":'
 if ($auto.Split(@($quitPoint), [StringSplitOptions]::None).Count -ne 2) { throw 'AutoTest quit point changed' }
 $auto = $auto.Replace($quitPoint, "$quitPoint`n                    $probeType.Finish();")
+if ($Probe -eq 'Outside') {
+    $auto=$auto.Replace($quitPoint,"                case `"fgsync`":`n                    QualitySettings.vSyncCount = int.Parse(arg);`n                    Log(`"프레임 생성 시험 수직동기 = `" + QualitySettings.vSyncCount);`n                    return true;`n$quitPoint")
+}
 $autoPath = Join-Path $out 'MeasureAutoTest.cs'
 [IO.File]::WriteAllText($autoPath, $auto, [Text.UTF8Encoding]::new($false))
 & dotnet build "$repo\StutterFix.csproj" -v q --nologo -p:Edition=Player -p:AutoTestBuild=1 `

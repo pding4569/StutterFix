@@ -1,0 +1,109 @@
+{
+  "chapter": 18,
+  "date": "2026-10-08",
+  "monitor": {
+    "mode": 4,
+    "full_song": false,
+    "switch": false,
+    "compatibility_settings": {},
+    "monitor_smoke": true,
+    "monitor_samples": [
+      {
+        "mode": 0,
+        "shown": 210.677,
+        "real": 210.677,
+        "counting": false
+      },
+      {
+        "mode": 1,
+        "shown": 838.598,
+        "real": 207.653,
+        "counting": true
+      },
+      {
+        "mode": 2,
+        "shown": 808.976,
+        "real": 200.281,
+        "counting": true
+      },
+      {
+        "mode": 2,
+        "shown": 195.72,
+        "real": 195.72,
+        "counting": false
+      }
+    ],
+    "managed_sha256": "712fe40b2784838c8a97433241f7f8a686ee87ecbce46df65dd437b0a4d3a7f7",
+    "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+    "states": [
+      {
+        "active": true,
+        "installed": 1,
+        "sources": 987,
+        "generated": 0,
+        "runtime_initialized": true,
+        "status": ""
+      },
+      {
+        "active": true,
+        "installed": 1,
+        "sources": 9274,
+        "generated": 10948,
+        "runtime_initialized": true,
+        "status": ""
+      },
+      {
+        "active": true,
+        "installed": 1,
+        "sources": 13424,
+        "generated": 23442,
+        "runtime_initialized": true,
+        "status": ""
+      },
+      {
+        "active": false,
+        "installed": 0,
+        "sources": 13425,
+        "generated": 23447,
+        "runtime_initialized": true,
+        "status": ""
+      }
+    ],
+    "clocks": [
+      {
+        "frame": 988,
+        "ticks": 172499356,
+        "hz": 10000000
+      },
+      {
+        "frame": 9275,
+        "ticks": 467711830,
+        "hz": 10000000
+      },
+      {
+        "frame": 13425,
+        "ticks": 678840603,
+        "hz": 10000000
+      },
+      {
+        "frame": 14001,
+        "ticks": 709013454,
+        "hz": 10000000
+      }
+    ],
+    "sample": null,
+    "observed_submission_ratios": [
+      4.010602409638555
+    ],
+    "game_metrics": {
+      "runs": [],
+      "hitches": [],
+      "songs": [],
+      "errors": 0
+    },
+    "no_research_directory": true
+  },
+  "conditions": "2560x1440,144Hz;separateUItestnotperformance",
+  "motion_quality": "User still reports violent edge shaking in HELLO early rush;not resolved",
+  "camera_blend_trial": "Not yet implemented or validated"
+}

@@ -75,7 +75,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--map",type=Path,required=True)
     p.add_argument("--label",required=True)
-    p.add_argument("--mode",type=int,choices=[0,2,4],required=True)
+    p.add_argument("--mode",type=int,choices=[0,*range(2,9)],required=True)
     p.add_argument("--seconds",type=int,default=55)
     p.add_argument("--out",type=Path,required=True)
     p.add_argument("--capture",action="store_true")
@@ -84,44 +84,65 @@ def main():
     p.add_argument("--full-song",action="store_true",help="Run to the actual song end; captures start after the performance window")
     p.add_argument("--switch-smoke",action="store_true")
     p.add_argument("--freeze-smoke",action="store_true",help="Insert a 100ms main-thread stop; not a performance run")
+    p.add_argument("--sync-smoke",action="store_true",help="Verify OFF preserves Unity sync=1 while active uses sync=0; not a performance run")
+    p.add_argument("--ui-smoke",action="store_true",help="Capture the research Graphics setting in a separate visual run")
+    p.add_argument("--expect-inactive",action="store_true",help="Verify an incompatible setting suspends only frame generation")
     p.add_argument("--timeout-min",type=float,default=3)
+    p.add_argument("--settings",type=Path,help="Additional compatibility settings JSON; experimental controls stay fixed")
     a=p.parse_args()
     if (HERE/"out/stop-outside-batch").exists():
         raise RuntimeError("Measurement batch stopped for the requested visual comparison; no installation changed")
     if not a.map.is_file() or not 10<=a.seconds<=600 or sf.game_running():
         raise RuntimeError("Existing map, 10..600 seconds and closed game required")
     if a.switch_smoke and a.mode!=0: p.error("switch test starts OFF")
+    if a.sync_smoke and a.mode!=0: p.error("sync test starts OFF")
+    if sum([a.switch_smoke,a.freeze_smoke,a.sync_smoke,a.ui_smoke])>1: p.error("Choose one smoke test")
+    extra=json.loads(a.settings.read_text(encoding="utf-8")) if a.settings else {}
+    if not isinstance(extra,dict) or any(k.startswith('FrameGen') for k in extra):
+        p.error("Compatibility settings must be an object without FrameGen controls")
     mod=Path(sf.MOD_DIR); diagnostic=mod/"framegen-outside"
     if diagnostic.exists(): raise RuntimeError("Preserve prior framegen-outside output first")
     a.out.mkdir(parents=True,exist_ok=False)
     original={n:(mod/n).read_bytes() for n in ["StutterFix.dll","sfnative.dll","Settings.xml"]}
     for n,b in original.items(): (a.out/(n+".original")).write_bytes(b)
+    shot=mod/'shots'/f'framegen-research-setting-{a.mode}x.png'
+    old_shot=shot.read_bytes() if a.ui_smoke and shot.exists() else None
     try:
         diagnostic.mkdir()
         (mod/"StutterFix.dll").write_bytes((HERE/"out/outside/StutterFix.dll").read_bytes())
         steps=["game "+str(a.map),"auto on","press"]
-        steps+=(["wait 10","set FrameGenOutside 2","wait 5","set FrameGenOutside 4","wait 5","set FrameGenOutside 0","wait 5"] if a.switch_smoke else ["wait 10","kick freeze 100","wait 15"] if a.freeze_smoke else ["wait "+str(a.seconds)])
+        steps+=(["wait 10","set FrameGenOutside 2","wait 3","set FrameGenOutside 3","wait 3","set FrameGenOutside 4","wait 3","set FrameGenOutside 5","wait 3","set FrameGenOutside 8","wait 3","set FrameGenOutside 1","wait 3","set FrameGenOutside 9","wait 3","set FrameGenOutside 0","wait 3"] if a.switch_smoke else ["wait 10","kick freeze 100","wait 15"] if a.freeze_smoke else ["wait "+str(a.seconds)])
+        if a.sync_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","fgsync 1","wait 5","set FrameGenOutside 2","wait 5","set FrameGenOutside 0","wait 5","fgsync 0","wait 5"]
+        if a.ui_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","ui 3","wait 3",f"shot framegen-research-setting-{a.mode}x","wait 3","ui close","wait 10"]
         if a.full_song: steps[-1]="waitend 600"
-        summary,metrics=sf.sf_run(steps+["quit"],settings={"FrameStats":False,"LowHalfRender":False,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip},tag="framegen-outside-"+a.label,timeout_min=a.timeout_min)
+        settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip}
+        summary,metrics=sf.sf_run(steps+["quit"],settings=settings,tag="framegen-outside-"+a.label,timeout_min=a.timeout_min)
         log=sf.read_text(sf.PLAYER_LOG); (a.out/"game.log").write_text(log,encoding="utf-8"); (a.out/"run.txt").write_text(summary,encoding="utf-8")
+        if a.ui_smoke: shutil.copyfile(shot,a.out/'settings.png')
         if diagnostic.exists(): shutil.copytree(diagnostic,a.out/"capture")
         if any(v in log for v in ["Crash!!!","단계 실패","[안정성] 안전 모드로 켬","native failure","feature disabled"]) or "시간 초과로 끔" in summary:
             raise RuntimeError("Failed experiment; inspect evidence")
         safety=dict(part.split("=",1) for part in (a.out/"capture/safety.txt").read_text().split())
         if int(safety["worker_error"]) or safety["frame_begins"]!=safety["frame_ends"]:
             raise RuntimeError("Native worker or frame start/end balance failed; stop the experiment")
-        native=analyze(a.out/"capture",a.mode,end=45 if a.seconds>=50 else a.seconds-5)
+        if a.sync_smoke and (int(safety.get('sync_preserved_off',0))==0 or int(safety.get('sync_forced_zero_active',0))==0):
+            raise RuntimeError("OFF/active sync restoration was not observed")
+        native=analyze(a.out/"capture",0 if a.expect_inactive else a.mode,end=45 if a.seconds>=50 else a.seconds-5)
+        if a.expect_inactive and native['generated_frames']!=0: raise RuntimeError("Expected suspension did not occur")
         if a.full_song and ("곡 끝남" not in summary or "곡이 끝나지 않음" in summary):
             raise RuntimeError("Actual whole-song completion not confirmed")
         if a.seconds>=50 and native["seconds"]<39:
             raise RuntimeError("Incomplete 5..45 second performance window")
-        result=dict(label=a.label,mode=a.mode,visual_smoke=a.clip or a.switch_smoke or a.freeze_smoke,native=native,safety=safety,game_metrics=metrics)
+        result=dict(label=a.label,mode=a.mode,expected_inactive=a.expect_inactive,compatibility_settings=extra,visual_smoke=a.clip or a.switch_smoke or a.freeze_smoke or a.sync_smoke or a.ui_smoke or a.expect_inactive,native=native,safety=safety,game_metrics=metrics)
         (a.out/"summary.json").write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
         print(json.dumps(result,ensure_ascii=False),flush=True)
     finally:
         if sf.game_running(): sf.sf_quit()
         if sf.game_running(): raise RuntimeError("Close normally, then restore disk backups")
         for n,b in original.items(): (mod/n).write_bytes(b)
+        if a.ui_smoke:
+            if old_shot is not None: shot.write_bytes(old_shot)
+            else: shot.unlink(missing_ok=True)
         if diagnostic.exists() and (a.out/"capture").is_dir():
             if diagnostic.resolve().parent!=mod.resolve() or diagnostic.name!="framegen-outside": raise RuntimeError("Unexpected cleanup path")
             shutil.rmtree(diagnostic)

@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup Condition="'$(FrameGenProbeKind)' == 'Outside'">
+    <DefineConstants>$(DefineConstants);FRAMEGEN_RESEARCH</DefineConstants>
+  </PropertyGroup>
   <!-- Measurement-only: the normal Player/Debug build never imports this file. -->
   <ItemGroup>
     <Compile Remove="StutterFix.cs" />

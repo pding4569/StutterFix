@@ -78,6 +78,7 @@
     <Compile Include="UiProf.cs" />
     <Compile Include="LowEnd.cs" />
     <Compile Include="HalfRender.cs" />
+    <Compile Include="FrameGen.cs" />
     <Compile Include="Fsr.cs" />
     <Compile Include="Updater.cs" />
     <Compile Include="Compat.cs" />
@@ -244,7 +245,6 @@
   </ItemGroup>
 
 </Project>
-
 
 
 

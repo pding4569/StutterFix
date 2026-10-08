@@ -1,0 +1,3850 @@
+{
+  "chapter": 17,
+  "date": "2026-10-08",
+  "recorded_utc": "2026-10-08T00:09:48.171657+00:00",
+  "branch": "codex/framegen",
+  "default_off": true,
+  "normal_build_inclusion_authorized_by_user": true,
+  "released": false,
+  "snapshot_classifier_cpu_approximation": {
+    "before": {
+      "world_size": [
+        1280,
+        720
+      ],
+      "screen_size": [
+        2560,
+        1440
+      ],
+      "flip_y": true,
+      "cpu_classifier_approximation": true,
+      "threshold_rgb_8bit": 2.5,
+      "different_pixels": 597131,
+      "pixels": 3686400,
+      "different_percent": 16.19821506076389,
+      "center_different_percent": 6.818901909722222,
+      "mean_max_rgb_difference": 6.426175672743056
+    },
+    "after": {
+      "world_size": [
+        2560,
+        1440
+      ],
+      "screen_size": [
+        2560,
+        1440
+      ],
+      "flip_y": true,
+      "cpu_classifier_approximation": true,
+      "threshold_rgb_8bit": 2.5,
+      "different_pixels": 153788,
+      "pixels": 3686400,
+      "different_percent": 4.171766493055555,
+      "center_different_percent": 0.0,
+      "mean_max_rgb_difference": 5.229809027777778
+    }
+  },
+  "normal_fps_comparisons": [
+    {
+      "label": "HELLO 2026 current display",
+      "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+      "modes": [
+        0,
+        2,
+        4,
+        0
+      ],
+      "runs": [
+        {
+          "mode": 0,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 1291,
+              "ticks": 180692853,
+              "hz": 10000000
+            },
+            {
+              "frame": 10780,
+              "ticks": 476936760,
+              "hz": 10000000
+            },
+            {
+              "frame": 17865,
+              "ticks": 827061965,
+              "hz": 10000000
+            },
+            {
+              "frame": 18333,
+              "ticks": 857247241,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0125205,
+            "unity_frames": 7085,
+            "real_fps": 202.3561828403642,
+            "submitted": 7085,
+            "output_fps": 202.3561828403642,
+            "output_over_source": 1.0,
+            "off_output_inferred_from_unity": true
+          },
+          "observed_submission_ratios": [],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true,
+          "source_loss_percent": 0.8432454814582213
+        },
+        {
+          "mode": 2,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 976,
+              "generated": 0,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 8821,
+              "generated": 3458,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 15476,
+              "generated": 10117,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 15478,
+              "generated": 10119,
+              "runtime_initialized": true,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 977,
+              "ticks": 184696218,
+              "hz": 10000000
+            },
+            {
+              "frame": 8822,
+              "ticks": 478967217,
+              "hz": 10000000
+            },
+            {
+              "frame": 15478,
+              "ticks": 829118406,
+              "hz": 10000000
+            },
+            {
+              "frame": 15936,
+              "ticks": 859285841,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0151189,
+            "unity_frames": 6656,
+            "real_fps": 190.089315961169,
+            "submitted": 13314,
+            "output_fps": 380.23575010622056,
+            "output_over_source": 2.000300480769231,
+            "off_output_inferred_from_unity": false
+          },
+          "observed_submission_ratios": [
+            2.000601051840721
+          ],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true,
+          "source_loss_percent": 6.854145127709909
+        },
+        {
+          "mode": 4,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 955,
+              "generated": 0,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 8906,
+              "generated": 10559,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 15563,
+              "generated": 30652,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 15565,
+              "generated": 30656,
+              "runtime_initialized": true,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 956,
+              "ticks": 182601443,
+              "hz": 10000000
+            },
+            {
+              "frame": 8907,
+              "ticks": 479897920,
+              "hz": 10000000
+            },
+            {
+              "frame": 15565,
+              "ticks": 830015892,
+              "hz": 10000000
+            },
+            {
+              "frame": 16030,
+              "ticks": 860170459,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0117972,
+            "unity_frames": 6658,
+            "real_fps": 190.1644740476219,
+            "submitted": 26750,
+            "output_fps": 764.0281887614727,
+            "output_over_source": 4.017723039951938,
+            "off_output_inferred_from_unity": false
+          },
+          "observed_submission_ratios": [
+            4.0183265735316205
+          ],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true,
+          "source_loss_percent": 6.817316838977206
+        },
+        {
+          "mode": 0,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 1275,
+              "ticks": 183315089,
+              "hz": 10000000
+            },
+            {
+              "frame": 10719,
+              "ticks": 478857354,
+              "hz": 10000000
+            },
+            {
+              "frame": 17924,
+              "ticks": 828957861,
+              "hz": 10000000
+            },
+            {
+              "frame": 18398,
+              "ticks": 859088881,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0100507,
+            "unity_frames": 7205,
+            "real_fps": 205.79804530245937,
+            "submitted": 7205,
+            "output_fps": 205.79804530245937,
+            "output_over_source": 1.0,
+            "off_output_inferred_from_unity": true
+          },
+          "observed_submission_ratios": [],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true,
+          "source_loss_percent": -0.8433049685954375
+        }
+      ],
+      "conditions": {
+        "vsync": "0",
+        "target_fps": "10000",
+        "fullscreen_mode": "FullScreenWindow",
+        "width": "2560",
+        "height": "1440",
+        "refresh_hz": "144",
+        "window_width": "2560",
+        "window_height": "1440"
+      },
+      "pooled_off_unity_fps": 204.0770533716134
+    },
+    {
+      "label": "Arche current display",
+      "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+      "modes": [
+        0,
+        2,
+        4,
+        0
+      ],
+      "runs": [
+        {
+          "mode": 0,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 1295,
+              "ticks": 178693545,
+              "hz": 10000000
+            },
+            {
+              "frame": 12475,
+              "ticks": 532901162,
+              "hz": 10000000
+            },
+            {
+              "frame": 24538,
+              "ticks": 882946568,
+              "hz": 10000000
+            },
+            {
+              "frame": 25655,
+              "ticks": 913022781,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0045406,
+            "unity_frames": 12063,
+            "real_fps": 344.6124357935439,
+            "submitted": 12063,
+            "output_fps": 344.6124357935439,
+            "output_over_source": 1.0,
+            "off_output_inferred_from_unity": true
+          },
+          "observed_submission_ratios": [],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true,
+          "source_loss_percent": -0.8473312083280948
+        },
+        {
+          "mode": 2,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 955,
+              "generated": 0,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 10389,
+              "generated": 4972,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 21425,
+              "generated": 16011,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 21426,
+              "generated": 16012,
+              "runtime_initialized": true,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 956,
+              "ticks": 174412507,
+              "hz": 10000000
+            },
+            {
+              "frame": 10390,
+              "ticks": 533104933,
+              "hz": 10000000
+            },
+            {
+              "frame": 21426,
+              "ticks": 883140492,
+              "hz": 10000000
+            },
+            {
+              "frame": 22540,
+              "ticks": 913219399,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0035559,
+            "unity_frames": 11036,
+            "real_fps": 315.282253938092,
+            "submitted": 22075,
+            "output_fps": 630.6502134544564,
+            "output_over_source": 2.0002718376223267,
+            "off_output_inferred_from_unity": false
+          },
+          "observed_submission_ratios": [
+            2.0002718376223267
+          ],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true,
+          "source_loss_percent": 7.735848783903232
+        },
+        {
+          "mode": 4,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 968,
+              "generated": 0,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 10097,
+              "generated": 13600,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 20779,
+              "generated": 45775,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 20780,
+              "generated": 45779,
+              "runtime_initialized": true,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 969,
+              "ticks": 181270591,
+              "hz": 10000000
+            },
+            {
+              "frame": 10098,
+              "ticks": 535618150,
+              "hz": 10000000
+            },
+            {
+              "frame": 20780,
+              "ticks": 885672374,
+              "hz": 10000000
+            },
+            {
+              "frame": 21869,
+              "ticks": 915753740,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0054224,
+            "unity_frames": 10682,
+            "real_fps": 305.15272399626866,
+            "submitted": 42857,
+            "output_fps": 1224.2960393473213,
+            "output_over_source": 4.012076390189103,
+            "off_output_inferred_from_unity": false
+          },
+          "observed_submission_ratios": [
+            4.012076390189103
+          ],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true,
+          "source_loss_percent": 10.700152897524184
+        },
+        {
+          "mode": 0,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 1323,
+              "ticks": 183231660,
+              "hz": 10000000
+            },
+            {
+              "frame": 12527,
+              "ticks": 537196445,
+              "hz": 10000000
+            },
+            {
+              "frame": 24387,
+              "ticks": 887233350,
+              "hz": 10000000
+            },
+            {
+              "frame": 25508,
+              "ticks": 917288131,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0036905,
+            "unity_frames": 11860,
+            "real_fps": 338.82141655891974,
+            "submitted": 11860,
+            "output_fps": 338.82141655891974,
+            "output_over_source": 1.0,
+            "off_output_inferred_from_unity": true
+          },
+          "observed_submission_ratios": [],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true,
+          "source_loss_percent": 0.8473517866228408
+        }
+      ],
+      "conditions": {
+        "vsync": "0",
+        "target_fps": "10000",
+        "fullscreen_mode": "FullScreenWindow",
+        "width": "2560",
+        "height": "1440",
+        "refresh_hz": "144",
+        "window_width": "2560",
+        "window_height": "1440"
+      },
+      "pooled_off_unity_fps": 341.7169613359936
+    }
+  ],
+  "interrupted_normal_comparison": {
+    "reason": "Actual refresh changed120to144Hz on finalOFF; not pooled",
+    "first_three": {
+      "label": "hello",
+      "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+      "modes": [
+        0,
+        2,
+        4,
+        0
+      ],
+      "runs": [
+        {
+          "mode": 0,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 0,
+              "generated": 0,
+              "runtime_initialized": false,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 1310,
+              "ticks": 175080312,
+              "hz": 10000000
+            },
+            {
+              "frame": 11368,
+              "ticks": 468407097,
+              "hz": 10000000
+            },
+            {
+              "frame": 18707,
+              "ticks": 818516015,
+              "hz": 10000000
+            },
+            {
+              "frame": 19178,
+              "ticks": 848665734,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0108918,
+            "unity_frames": 7339,
+            "real_fps": 209.62048158967488,
+            "submitted": 7339,
+            "output_fps": 209.62048158967488,
+            "output_over_source": 1.0,
+            "off_output_inferred_from_unity": true
+          },
+          "observed_submission_ratios": [],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true
+        },
+        {
+          "mode": 2,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 971,
+              "generated": 0,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 9372,
+              "generated": 3673,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 16397,
+              "generated": 10704,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 16399,
+              "generated": 10706,
+              "runtime_initialized": true,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 972,
+              "ticks": 174296449,
+              "hz": 10000000
+            },
+            {
+              "frame": 9374,
+              "ticks": 467221230,
+              "hz": 10000000
+            },
+            {
+              "frame": 16399,
+              "ticks": 817307717,
+              "hz": 10000000
+            },
+            {
+              "frame": 16875,
+              "ticks": 847442511,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0086487,
+            "unity_frames": 7025,
+            "real_fps": 200.66470032018117,
+            "submitted": 14056,
+            "output_fps": 401.50078686127637,
+            "output_over_source": 2.00085409252669,
+            "off_output_inferred_from_unity": false
+          },
+          "observed_submission_ratios": [
+            2.00085409252669
+          ],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true
+        },
+        {
+          "mode": 4,
+          "full_song": false,
+          "switch": false,
+          "compatibility_settings": {},
+          "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+          "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+          "states": [
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 1022,
+              "generated": 0,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 9313,
+              "generated": 10886,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": true,
+              "installed": 1,
+              "sources": 16223,
+              "generated": 31712,
+              "runtime_initialized": true,
+              "status": ""
+            },
+            {
+              "active": false,
+              "installed": 0,
+              "sources": 16224,
+              "generated": 31716,
+              "runtime_initialized": true,
+              "status": ""
+            }
+          ],
+          "clocks": [
+            {
+              "frame": 1023,
+              "ticks": 175209305,
+              "hz": 10000000
+            },
+            {
+              "frame": 9315,
+              "ticks": 468098006,
+              "hz": 10000000
+            },
+            {
+              "frame": 16224,
+              "ticks": 818223824,
+              "hz": 10000000
+            },
+            {
+              "frame": 16696,
+              "ticks": 848358735,
+              "hz": 10000000
+            }
+          ],
+          "sample": {
+            "seconds": 35.0125818,
+            "unity_frames": 6909,
+            "real_fps": 197.32906414802008,
+            "submitted": 27736,
+            "output_fps": 792.172372732593,
+            "output_over_source": 4.014473874656246,
+            "off_output_inferred_from_unity": false
+          },
+          "observed_submission_ratios": [
+            4.013892908827786
+          ],
+          "game_metrics": {
+            "runs": [],
+            "hitches": [],
+            "songs": [],
+            "errors": 0
+          },
+          "no_research_directory": true
+        }
+      ],
+      "conditions": {
+        "vsync": "0",
+        "target_fps": "10000",
+        "fullscreen_mode": "FullScreenWindow",
+        "width": "2560",
+        "height": "1440",
+        "refresh_hz": "120",
+        "window_width": "2560",
+        "window_height": "1440"
+      }
+    },
+    "last_off": {
+      "mode": 0,
+      "full_song": false,
+      "switch": false,
+      "compatibility_settings": {},
+      "managed_sha256": "51625d16578b2a91a9b5752f4bae9beb12ee9d2474433c6e8619de173241cb74",
+      "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+      "states": [
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        }
+      ],
+      "clocks": [
+        {
+          "frame": 1191,
+          "ticks": 175743595,
+          "hz": 10000000
+        },
+        {
+          "frame": 10733,
+          "ticks": 475540049,
+          "hz": 10000000
+        },
+        {
+          "frame": 17758,
+          "ticks": 825701730,
+          "hz": 10000000
+        },
+        {
+          "frame": 18215,
+          "ticks": 855840063,
+          "hz": 10000000
+        }
+      ],
+      "sample": {
+        "seconds": 35.0161681,
+        "unity_frames": 7025,
+        "real_fps": 200.6216094216203,
+        "submitted": 7025,
+        "output_fps": 200.6216094216203,
+        "output_over_source": 1.0,
+        "off_output_inferred_from_unity": true
+      },
+      "observed_submission_ratios": [],
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [],
+        "errors": 0
+      },
+      "no_research_directory": true
+    }
+  },
+  "active_display_modes1440": [
+    "2560x1440@60",
+    "2560x1440@90",
+    "2560x1440@120",
+    "2560x1440@144"
+  ],
+  "png_regression": {
+    "same": 62,
+    "different": 0,
+    "reference_failed": 0,
+    "stream_failed": 0,
+    "skipped": 2,
+    "scope": "Up to32actualPNGs each fromHELLOandArche;not fullPNGorDXTregression"
+  },
+  "build_validation": {
+    "editions": [
+      "PlayerAuto",
+      "Player",
+      "Dev"
+    ],
+    "errors": 0,
+    "existing_warnings_each": 25,
+    "loadcheck_named_field_refs_each": 217,
+    "loadcheck_mismatches": 0,
+    "framegen_cpp_w4_wx_errors": 0,
+    "framegen_cpp_w4_wx_warnings": 0
+  },
+  "method": "Fresh process per mode; performance song5..45 without capture; normal lifecycle/UI/full-song runs kept separate",
+  "maps": [
+    {
+      "label": "ch17-hello",
+      "conditions": {
+        "vsync": "0",
+        "target_fps": "10000",
+        "fullscreen_mode": "FullScreenWindow",
+        "width": "2560",
+        "height": "1440",
+        "refresh_hz": "120",
+        "window_width": "2560",
+        "window_height": "1440"
+      },
+      "order": [
+        0,
+        2,
+        4,
+        3,
+        5,
+        8,
+        0
+      ],
+      "research_binary_sha256": "1d89ac1112119bf4ae561c98e2e0c57473c0620d3a883e56d590edb6964908c2",
+      "pooled": [
+        {
+          "mode": 0,
+          "trials": 2,
+          "real_fps": 207.74981224603795,
+          "scene_fps_bounds": [
+            207.74981224603795,
+            207.74981224603795
+          ],
+          "output_fps": 207.74974680503317,
+          "output_over_source": 0.9999996850008956,
+          "missing_camera_callbacks": 0,
+          "generated_gpu_mean_ms": null,
+          "generated_gpu_samples": 0,
+          "worst_output_ms": 19.202600000426173,
+          "worst_source_ms": 19.211100006941706,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 0,
+          "source_fps_trials": [
+            206.53635917706063,
+            208.96283595943456
+          ],
+          "output_ratio_trials": [
+            0.9999997924633829,
+            0.999999577576455
+          ],
+          "output_over_off": 1.0,
+          "scene_fps_decrease_bounds_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "mode": 2,
+          "trials": 1,
+          "real_fps": 196.76726386784188,
+          "scene_fps_bounds": [
+            196.76726386784188,
+            196.76726386784188
+          ],
+          "output_fps": 393.6464739112108,
+          "output_over_source": 2.000568926829222,
+          "missing_camera_callbacks": 0,
+          "generated_gpu_mean_ms": 0.0797654281361097,
+          "generated_gpu_samples": 7876,
+          "worst_output_ms": 16.921899979934096,
+          "worst_source_ms": 19.688299973495305,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 0,
+          "source_fps_trials": [
+            196.76726386784188
+          ],
+          "output_ratio_trials": [
+            2.000568926829222
+          ],
+          "output_over_off": 1.8948108479796901,
+          "scene_fps_decrease_bounds_percent": [
+            5.286429989736618,
+            5.286429989736618
+          ]
+        },
+        {
+          "mode": 3,
+          "trials": 1,
+          "real_fps": 196.7137042074715,
+          "scene_fps_bounds": [
+            196.7137042074715,
+            196.7137042074715
+          ],
+          "output_fps": 591.3439079257734,
+          "output_over_source": 3.0061144459060682,
+          "missing_camera_callbacks": 0,
+          "generated_gpu_mean_ms": 0.07978748473717542,
+          "generated_gpu_samples": 15790,
+          "worst_output_ms": 9.902300022076815,
+          "worst_source_ms": 21.020199987106025,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 0,
+          "source_fps_trials": [
+            196.7137042074715
+          ],
+          "output_ratio_trials": [
+            3.0061144459060682
+          ],
+          "output_over_off": 2.8464242051795696,
+          "scene_fps_decrease_bounds_percent": [
+            5.31221083631902,
+            5.31221083631902
+          ]
+        },
+        {
+          "mode": 4,
+          "trials": 1,
+          "real_fps": 196.63074653354568,
+          "scene_fps_bounds": [
+            196.63074653354568,
+            196.63074653354568
+          ],
+          "output_fps": 790.1329732120977,
+          "output_over_source": 4.0183592197128695,
+          "missing_camera_callbacks": 0,
+          "generated_gpu_mean_ms": 0.078958474393531,
+          "generated_gpu_samples": 23744,
+          "worst_output_ms": 6.93390000378713,
+          "worst_source_ms": 20.177400030661374,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 3,
+          "source_fps_trials": [
+            196.63074653354568
+          ],
+          "output_ratio_trials": [
+            4.0183592197128695
+          ],
+          "output_over_off": 3.803292111607787,
+          "scene_fps_decrease_bounds_percent": [
+            5.352142364068168,
+            5.352142364068168
+          ]
+        },
+        {
+          "mode": 5,
+          "trials": 1,
+          "real_fps": 194.35225932794367,
+          "scene_fps_bounds": [
+            194.35225932794367,
+            194.35225932794367
+          ],
+          "output_fps": 976.6302181109043,
+          "output_over_source": 5.025052044612305,
+          "missing_camera_callbacks": 0,
+          "generated_gpu_mean_ms": 0.07847893524168557,
+          "generated_gpu_samples": 31301,
+          "worst_output_ms": 4.5832000323571265,
+          "worst_source_ms": 16.04570000199601,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 13,
+          "source_fps_trials": [
+            194.35225932794367
+          ],
+          "output_ratio_trials": [
+            5.025052044612305
+          ],
+          "output_over_off": 4.700993542136261,
+          "scene_fps_decrease_bounds_percent": [
+            6.448888099223682,
+            6.448888099223682
+          ]
+        },
+        {
+          "mode": 8,
+          "trials": 1,
+          "real_fps": 183.6534090664408,
+          "scene_fps_bounds": [
+            183.6534090664408,
+            183.6534090664408
+          ],
+          "output_fps": 1455.7982924758169,
+          "output_over_source": 7.9268786780274185,
+          "missing_camera_callbacks": 0,
+          "generated_gpu_mean_ms": 0.07807754291103426,
+          "generated_gpu_samples": 50896,
+          "worst_output_ms": 13.063899998087436,
+          "worst_source_ms": 19.4611000479199,
+          "continuous_miss_lock": 35,
+          "continuous_miss_other": 1128,
+          "source_fps_trials": [
+            183.6534090664408
+          ],
+          "output_ratio_trials": [
+            7.9268786780274185
+          ],
+          "output_over_off": 7.007461211695432,
+          "scene_fps_decrease_bounds_percent": [
+            11.598760508654426,
+            11.598760508654426
+          ]
+        }
+      ],
+      "runs": [
+        {
+          "index": 0,
+          "mode": 0,
+          "native": {
+            "seconds": 39.99296659999527,
+            "source_seconds": 39.99295829999028,
+            "source_frames": 8261,
+            "output_frames": 8261,
+            "real_output_frames": 8261,
+            "generated_frames": 0,
+            "real_fps": 206.53635917706063,
+            "output_fps": 206.53631631320334,
+            "generated_gpu_ms": null,
+            "gpu_coverage": 0,
+            "output_worst_ms": 19.202600000426173,
+            "output_over_33ms": 0,
+            "source_worst_ms": 19.211100006941706,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 24.72969424210144,
+              "p95": 34.124015,
+              "maximum": 76551.559605
+            },
+            "prediction_red_px": {
+              "mean": 39.29548744740346,
+              "p95": 102.627067,
+              "maximum": 24028.108216
+            },
+            "prediction_blue_px": {
+              "mean": 39.12973632962111,
+              "p95": 108.307611,
+              "maximum": 17412.469136
+            },
+            "prediction_horizon_ms": {
+              "mean": 4.84159694952185,
+              "p95": 6.3368,
+              "maximum": 19.2111
+            },
+            "prediction_samples": 8261,
+            "source_age_ms": null,
+            "missing_camera_callbacks": 0,
+            "scene_fps": 206.53635917706063,
+            "scheduler": {
+              "samples": 0,
+              "expected_generated": 0,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": null,
+              "source_hold_ms": null
+            }
+          },
+          "safety": {
+            "outputs": "15885",
+            "frame_begins": "15885",
+            "frame_ends": "15885",
+            "worker_error": "0"
+          }
+        },
+        {
+          "index": 1,
+          "mode": 2,
+          "native": {
+            "seconds": 40.00035830005072,
+            "source_seconds": 39.99649049999425,
+            "source_frames": 7871,
+            "output_frames": 15747,
+            "real_output_frames": 7871,
+            "generated_frames": 7876,
+            "real_fps": 196.76726386784188,
+            "output_fps": 393.6464739112108,
+            "generated_gpu_ms": {
+              "mean": 0.0797654281361097,
+              "p95": 0.119584,
+              "maximum": 0.503808
+            },
+            "gpu_coverage": 7876,
+            "output_worst_ms": 16.921899979934096,
+            "output_over_33ms": 0,
+            "source_worst_ms": 19.688299973495305,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 16.91704157730911,
+              "p95": 37.141785,
+              "maximum": 9593.199618
+            },
+            "prediction_red_px": {
+              "mean": 35.21328266255876,
+              "p95": 107.836513,
+              "maximum": 2448.55843
+            },
+            "prediction_blue_px": {
+              "mean": 37.163977183839414,
+              "p95": 113.215429,
+              "maximum": 2244.383708
+            },
+            "prediction_horizon_ms": {
+              "mean": 5.081982289416847,
+              "p95": 6.6643,
+              "maximum": 19.6883
+            },
+            "prediction_samples": 7871,
+            "source_age_ms": {
+              "mean": 2.537268905535805,
+              "p95": 3.9049,
+              "maximum": 17.1658
+            },
+            "missing_camera_callbacks": 0,
+            "scene_fps": 196.76726386784188,
+            "scheduler": {
+              "samples": 7871,
+              "expected_generated": 7871,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": {
+                "mean": 0.014804802439334266,
+                "p95": 0.0105,
+                "maximum": 1.4415
+              },
+              "source_hold_ms": {
+                "mean": 0.6207798881971796,
+                "p95": 0.8121,
+                "maximum": 2.3536
+              }
+            }
+          },
+          "safety": {
+            "outputs": "27138",
+            "frame_begins": "15045",
+            "frame_ends": "15045",
+            "worker_error": "0"
+          }
+        },
+        {
+          "index": 2,
+          "mode": 4,
+          "native": {
+            "seconds": 40.004658800025936,
+            "source_seconds": 39.99883100000443,
+            "source_frames": 7866,
+            "output_frames": 31610,
+            "real_output_frames": 7866,
+            "generated_frames": 23744,
+            "real_fps": 196.63074653354568,
+            "output_fps": 790.1329732120977,
+            "generated_gpu_ms": {
+              "mean": 0.078958474393531,
+              "p95": 0.123904,
+              "maximum": 0.546816
+            },
+            "gpu_coverage": 23744,
+            "output_worst_ms": 6.93390000378713,
+            "output_over_33ms": 0,
+            "source_worst_ms": 20.177400030661374,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 17.960855503559625,
+              "p95": 38.284611,
+              "maximum": 13286.584989
+            },
+            "prediction_red_px": {
+              "mean": 35.80887318904144,
+              "p95": 108.448706,
+              "maximum": 3216.813296
+            },
+            "prediction_blue_px": {
+              "mean": 37.53633187083651,
+              "p95": 114.976418,
+              "maximum": 2500.882005
+            },
+            "prediction_horizon_ms": {
+              "mean": 5.085489270277142,
+              "p95": 6.6918,
+              "maximum": 20.1774
+            },
+            "prediction_samples": 7866,
+            "source_age_ms": {
+              "mean": 2.3692632875673856,
+              "p95": 4.7424,
+              "maximum": 16.4141
+            },
+            "missing_camera_callbacks": 0,
+            "scene_fps": 196.63074653354568,
+            "scheduler": {
+              "samples": 7866,
+              "expected_generated": 23598,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 3,
+              "worker_wait_ms": {
+                "mean": 0.10114246122552759,
+                "p95": 0.569,
+                "maximum": 5.1521
+              },
+              "source_hold_ms": {
+                "mean": 0.520997686244597,
+                "p95": 0.8083,
+                "maximum": 5.3397
+              }
+            }
+          },
+          "safety": {
+            "outputs": "51768",
+            "frame_begins": "15047",
+            "frame_ends": "15047",
+            "worker_error": "0"
+          }
+        },
+        {
+          "index": 3,
+          "mode": 3,
+          "native": {
+            "seconds": 40.00886739999987,
+            "source_seconds": 40.002296899969224,
+            "source_frames": 7870,
+            "output_frames": 23660,
+            "real_output_frames": 7870,
+            "generated_frames": 15790,
+            "real_fps": 196.7137042074715,
+            "output_fps": 591.3439079257734,
+            "generated_gpu_ms": {
+              "mean": 0.07978748473717542,
+              "p95": 0.121856,
+              "maximum": 0.535552
+            },
+            "gpu_coverage": 15790,
+            "output_worst_ms": 9.902300022076815,
+            "output_over_33ms": 0,
+            "source_worst_ms": 21.020199987106025,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 17.625082394663277,
+              "p95": 37.522304,
+              "maximum": 12197.50513
+            },
+            "prediction_red_px": {
+              "mean": 35.706324501524776,
+              "p95": 107.234105,
+              "maximum": 3351.802055
+            },
+            "prediction_blue_px": {
+              "mean": 37.53874091359594,
+              "p95": 116.344363,
+              "maximum": 2317.007566
+            },
+            "prediction_horizon_ms": {
+              "mean": 5.083359250317662,
+              "p95": 6.6565,
+              "maximum": 21.0202
+            },
+            "prediction_samples": 7870,
+            "source_age_ms": {
+              "mean": 2.395715383153895,
+              "p95": 4.5573,
+              "maximum": 15.3576
+            },
+            "missing_camera_callbacks": 0,
+            "scene_fps": 196.7137042074715,
+            "scheduler": {
+              "samples": 7870,
+              "expected_generated": 15740,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": {
+                "mean": 0.04890146124523507,
+                "p95": 0.4182,
+                "maximum": 1.477
+              },
+              "source_hold_ms": {
+                "mean": 0.5495403176620076,
+                "p95": 0.7991,
+                "maximum": 1.9973
+              }
+            }
+          },
+          "safety": {
+            "outputs": "39769",
+            "frame_begins": "15232",
+            "frame_ends": "15232",
+            "worker_error": "0"
+          }
+        },
+        {
+          "index": 4,
+          "mode": 5,
+          "native": {
+            "seconds": 40.01104949996807,
+            "source_seconds": 40.004680300015025,
+            "source_frames": 7776,
+            "output_frames": 39077,
+            "real_output_frames": 7776,
+            "generated_frames": 31301,
+            "real_fps": 194.35225932794367,
+            "output_fps": 976.6302181109043,
+            "generated_gpu_ms": {
+              "mean": 0.07847893524168557,
+              "p95": 0.124928,
+              "maximum": 0.514048
+            },
+            "gpu_coverage": 31301,
+            "output_worst_ms": 4.5832000323571265,
+            "output_over_33ms": 0,
+            "source_worst_ms": 16.04570000199601,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 17.42403568917181,
+              "p95": 37.898167,
+              "maximum": 10366.719863
+            },
+            "prediction_red_px": {
+              "mean": 35.65934390187757,
+              "p95": 108.767243,
+              "maximum": 2761.819774
+            },
+            "prediction_blue_px": {
+              "mean": 37.36757625913066,
+              "p95": 115.085344,
+              "maximum": 2083.556399
+            },
+            "prediction_horizon_ms": {
+              "mean": 5.145129153806584,
+              "p95": 6.6969,
+              "maximum": 16.0457
+            },
+            "prediction_samples": 7776,
+            "source_age_ms": {
+              "mean": 2.351818274176544,
+              "p95": 4.849,
+              "maximum": 12.8995
+            },
+            "missing_camera_callbacks": 0,
+            "scene_fps": 194.35225932794367,
+            "scheduler": {
+              "samples": 7776,
+              "expected_generated": 31104,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 13,
+              "worker_wait_ms": {
+                "mean": 0.11499934413580247,
+                "p95": 0.5661,
+                "maximum": 1.3062
+              },
+              "source_hold_ms": {
+                "mean": 0.47760493827160494,
+                "p95": 0.7643,
+                "maximum": 1.5939
+              }
+            }
+          },
+          "safety": {
+            "outputs": "62637",
+            "frame_begins": "14887",
+            "frame_ends": "14887",
+            "worker_error": "0"
+          }
+        },
+        {
+          "index": 5,
+          "mode": 8,
+          "native": {
+            "seconds": 40.0069159999839,
+            "source_seconds": 39.99925749999238,
+            "source_frames": 7347,
+            "output_frames": 58243,
+            "real_output_frames": 7347,
+            "generated_frames": 50896,
+            "real_fps": 183.6534090664408,
+            "output_fps": 1455.7982924758169,
+            "generated_gpu_ms": {
+              "mean": 0.07807754291103426,
+              "p95": 0.126976,
+              "maximum": 0.504832
+            },
+            "gpu_coverage": 50896,
+            "output_worst_ms": 13.063899998087436,
+            "output_over_33ms": 0,
+            "source_worst_ms": 19.4611000479199,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 20.923534874370493,
+              "p95": 43.679676,
+              "maximum": 15527.801862
+            },
+            "prediction_red_px": {
+              "mean": 38.692144966789165,
+              "p95": 117.594981,
+              "maximum": 4598.53194
+            },
+            "prediction_blue_px": {
+              "mean": 40.16743573975772,
+              "p95": 122.0765,
+              "maximum": 3375.334717
+            },
+            "prediction_horizon_ms": {
+              "mean": 5.444816482918198,
+              "p95": 7.3373,
+              "maximum": 19.4611
+            },
+            "prediction_samples": 7347,
+            "source_age_ms": {
+              "mean": 2.4930290533637223,
+              "p95": 5.2515,
+              "maximum": 18.9239
+            },
+            "missing_camera_callbacks": 0,
+            "scene_fps": 183.6534090664408,
+            "scheduler": {
+              "samples": 7347,
+              "expected_generated": 51429,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 35,
+              "continuous_miss_timer": 1128,
+              "worker_wait_ms": {
+                "mean": 0.226865958894787,
+                "p95": 0.6616,
+                "maximum": 9.2893
+              },
+              "source_hold_ms": {
+                "mean": 0.5114327072274397,
+                "p95": 0.8556,
+                "maximum": 9.4507
+              }
+            }
+          },
+          "safety": {
+            "outputs": "92191",
+            "frame_begins": "14305",
+            "frame_ends": "14305",
+            "worker_error": "0"
+          }
+        },
+        {
+          "index": 6,
+          "mode": 0,
+          "native": {
+            "seconds": 40.00713089999044,
+            "source_seconds": 40.00711400003638,
+            "source_frames": 8361,
+            "output_frames": 8361,
+            "real_output_frames": 8361,
+            "generated_frames": 0,
+            "real_fps": 208.96283595943456,
+            "output_fps": 208.9627476886126,
+            "generated_gpu_ms": null,
+            "gpu_coverage": 0,
+            "output_worst_ms": 17.89489999646321,
+            "output_over_33ms": 0,
+            "source_worst_ms": 17.898300022352487,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 27.020886439540725,
+              "p95": 32.589505,
+              "maximum": 101328.668656
+            },
+            "prediction_red_px": {
+              "mean": 36.243330974763786,
+              "p95": 102.622419,
+              "maximum": 11010.380034
+            },
+            "prediction_blue_px": {
+              "mean": 37.838348532831,
+              "p95": 108.678221,
+              "maximum": 10859.511424
+            },
+            "prediction_horizon_ms": {
+              "mean": 4.785425630905394,
+              "p95": 6.3076,
+              "maximum": 17.8983
+            },
+            "prediction_samples": 8361,
+            "source_age_ms": null,
+            "missing_camera_callbacks": 0,
+            "scene_fps": 208.96283595943456,
+            "scheduler": {
+              "samples": 0,
+              "expected_generated": 0,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": null,
+              "source_hold_ms": null
+            }
+          },
+          "safety": {
+            "outputs": "15983",
+            "frame_begins": "15983",
+            "frame_ends": "15983",
+            "worker_error": "0"
+          }
+        }
+      ]
+    },
+    {
+      "label": "ch17-arche",
+      "conditions": {
+        "vsync": "0",
+        "target_fps": "10000",
+        "fullscreen_mode": "FullScreenWindow",
+        "width": "2560",
+        "height": "1440",
+        "refresh_hz": "120",
+        "window_width": "2560",
+        "window_height": "1440"
+      },
+      "order": [
+        0,
+        2,
+        4,
+        3,
+        5,
+        8,
+        0
+      ],
+      "research_binary_sha256": "49ba0e38b7cbe77c1ecda647d670f51848edb87da9bd0b8210b7c628f80e5dd3",
+      "pooled": [
+        {
+          "mode": 0,
+          "trials": 2,
+          "real_fps": 356.019873937635,
+          "scene_fps_bounds": [
+            355.7323275984642,
+            356.019873937635
+          ],
+          "output_fps": 356.0199727493355,
+          "output_over_source": 1.0000002775454624,
+          "missing_camera_callbacks": 23,
+          "generated_gpu_mean_ms": null,
+          "generated_gpu_samples": 0,
+          "worst_output_ms": 11.29409996792674,
+          "worst_source_ms": 11.294500029180199,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 0,
+          "source_fps_trials": [
+            356.5206802245281,
+            355.5191048114218
+          ],
+          "output_ratio_trials": [
+            1.0000001975407053,
+            1.0000003575442957
+          ],
+          "output_over_off": 1.0,
+          "scene_fps_decrease_bounds_percent": [
+            -0.08083222042596372,
+            0.08076693471925633
+          ]
+        },
+        {
+          "mode": 2,
+          "trials": 1,
+          "real_fps": 327.0965417830032,
+          "scene_fps_bounds": [
+            326.7965678814827,
+            327.0965417830032
+          ],
+          "output_fps": 654.4461245163382,
+          "output_over_source": 2.0007735971433767,
+          "missing_camera_callbacks": 12,
+          "generated_gpu_mean_ms": 0.06387016493585827,
+          "generated_gpu_samples": 13096,
+          "worst_output_ms": 7.520500046666712,
+          "worst_source_ms": 10.979299957398325,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 0,
+          "source_fps_trials": [
+            327.0965417830032
+          ],
+          "output_ratio_trials": [
+            2.0007735971433767
+          ],
+          "output_over_off": 1.8382286798755438,
+          "scene_fps_decrease_bounds_percent": [
+            8.049812624222309,
+            8.20833560018378
+          ]
+        },
+        {
+          "mode": 3,
+          "trials": 1,
+          "real_fps": 324.58267539956256,
+          "scene_fps_bounds": [
+            324.2826914112081,
+            324.58267539956256
+          ],
+          "output_fps": 976.287595411641,
+          "output_over_source": 3.00782410586094,
+          "missing_camera_callbacks": 12,
+          "generated_gpu_mean_ms": 0.06049816823290246,
+          "generated_gpu_samples": 26071,
+          "worst_output_ms": 13.713299995288253,
+          "worst_source_ms": 14.863000018522143,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 8,
+          "source_fps_trials": [
+            324.58267539956256
+          ],
+          "output_ratio_trials": [
+            3.00782410586094
+          ],
+          "output_over_off": 2.742227038197713,
+          "scene_fps_decrease_bounds_percent": [
+            8.75648620669136,
+            8.914441257283967
+          ]
+        },
+        {
+          "mode": 4,
+          "trials": 1,
+          "real_fps": 323.57040987101465,
+          "scene_fps_bounds": [
+            323.2703677631055,
+            323.57040987101465
+          ],
+          "output_fps": 1296.8890127553611,
+          "output_over_source": 4.008058132609659,
+          "missing_camera_callbacks": 12,
+          "generated_gpu_mean_ms": 0.058761977292576414,
+          "generated_gpu_samples": 38930,
+          "worst_output_ms": 4.222199961077422,
+          "worst_source_ms": 11.81279995944351,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 106,
+          "source_fps_trials": [
+            323.57040987101465
+          ],
+          "output_ratio_trials": [
+            4.008058132609659
+          ],
+          "output_over_off": 3.6427422954398887,
+          "scene_fps_decrease_bounds_percent": [
+            9.0410444124023,
+            9.198785958860912
+          ]
+        },
+        {
+          "mode": 5,
+          "trials": 1,
+          "real_fps": 321.15897595558727,
+          "scene_fps_bounds": [
+            320.759027044061,
+            321.15897595558727
+          ],
+          "output_fps": 1590.3929557373178,
+          "output_over_source": 4.952042679190917,
+          "missing_camera_callbacks": 16,
+          "generated_gpu_mean_ms": 0.05873050323952816,
+          "generated_gpu_samples": 50779,
+          "worst_output_ms": 9.63200000114739,
+          "worst_source_ms": 11.775300023145974,
+          "continuous_miss_lock": 0,
+          "continuous_miss_other": 945,
+          "source_fps_trials": [
+            321.15897595558727
+          ],
+          "output_ratio_trials": [
+            4.952042679190917
+          ],
+          "output_over_off": 4.467145321807753,
+          "scene_fps_decrease_bounds_percent": [
+            9.718923179200601,
+            9.904179366051558
+          ]
+        },
+        {
+          "mode": 8,
+          "trials": 1,
+          "real_fps": 311.04235697037075,
+          "scene_fps_bounds": [
+            310.7923229213592,
+            311.04235697037075
+          ],
+          "output_fps": 2392.8932742371812,
+          "output_over_source": 7.693142816767954,
+          "missing_camera_callbacks": 10,
+          "generated_gpu_mean_ms": 0.05862026233051917,
+          "generated_gpu_samples": 83269,
+          "worst_output_ms": 2.1927999914623797,
+          "worst_source_ms": 10.6229999801144,
+          "continuous_miss_lock": 306,
+          "continuous_miss_other": 4654,
+          "source_fps_trials": [
+            311.04235697037075
+          ],
+          "output_ratio_trials": [
+            7.693142816767954
+          ],
+          "output_over_off": 6.721233238007002,
+          "scene_fps_decrease_bounds_percent": [
+            12.562808370494139,
+            12.703659072751217
+          ]
+        }
+      ],
+      "runs": [
+        {
+          "index": 0,
+          "mode": 0,
+          "native": {
+            "seconds": 39.992062099976465,
+            "source_seconds": 39.99207000003662,
+            "source_frames": 14259,
+            "output_frames": 14259,
+            "real_output_frames": 14259,
+            "generated_frames": 0,
+            "real_fps": 356.5206802245281,
+            "output_fps": 356.5207506518748,
+            "generated_gpu_ms": null,
+            "gpu_coverage": 0,
+            "output_worst_ms": 11.29409996792674,
+            "output_over_33ms": 0,
+            "source_worst_ms": 11.294500029180199,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 26.233116181078618,
+              "p95": 4.733127,
+              "maximum": 201001.429353
+            },
+            "prediction_red_px": {
+              "mean": 26.585191803001614,
+              "p95": 17.985388,
+              "maximum": 137886.221251
+            },
+            "prediction_blue_px": {
+              "mean": 18.0558856527807,
+              "p95": 16.153298,
+              "maximum": 79578.584224
+            },
+            "prediction_horizon_ms": {
+              "mean": 2.8048608457816115,
+              "p95": 3.4109,
+              "maximum": 11.2945
+            },
+            "prediction_samples": 14259,
+            "source_age_ms": null,
+            "missing_camera_callbacks": 11,
+            "scene_fps": 356.2456256949679,
+            "scheduler": {
+              "samples": 0,
+              "expected_generated": 0,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": null,
+              "source_hold_ms": null
+            }
+          },
+          "safety": {
+            "outputs": "24525",
+            "frame_begins": "24525",
+            "frame_ends": "24525",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        },
+        {
+          "index": 1,
+          "mode": 2,
+          "native": {
+            "seconds": 40.004820900037885,
+            "source_seconds": 40.00348010001471,
+            "source_frames": 13086,
+            "output_frames": 26182,
+            "real_output_frames": 13086,
+            "generated_frames": 13096,
+            "real_fps": 327.0965417830032,
+            "output_fps": 654.4461245163382,
+            "generated_gpu_ms": {
+              "mean": 0.06387016493585827,
+              "p95": 0.088064,
+              "maximum": 0.18832
+            },
+            "gpu_coverage": 13096,
+            "output_worst_ms": 7.520500046666712,
+            "output_over_33ms": 0,
+            "source_worst_ms": 10.979299957398325,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 14.798809372535533,
+              "p95": 4.957729,
+              "maximum": 55570.941018
+            },
+            "prediction_red_px": {
+              "mean": 7.657077452850374,
+              "p95": 19.565505,
+              "maximum": 4084.8396
+            },
+            "prediction_blue_px": {
+              "mean": 7.091302876127159,
+              "p95": 17.601508,
+              "maximum": 3290.064026
+            },
+            "prediction_horizon_ms": {
+              "mean": 3.0571639079932753,
+              "p95": 3.7051,
+              "maximum": 10.9793
+            },
+            "prediction_samples": 13086,
+            "source_age_ms": {
+              "mean": 1.6538697923029932,
+              "p95": 2.4864,
+              "maximum": 9.5011
+            },
+            "missing_camera_callbacks": 12,
+            "scene_fps": 326.7965678814827,
+            "scheduler": {
+              "samples": 13086,
+              "expected_generated": 13086,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": {
+                "mean": 0.010860255234601865,
+                "p95": 0.0088,
+                "maximum": 1.0067
+              },
+              "source_hold_ms": {
+                "mean": 0.5554749044780681,
+                "p95": 0.7448,
+                "maximum": 1.3825
+              }
+            }
+          },
+          "safety": {
+            "outputs": "42446",
+            "frame_begins": "22725",
+            "frame_ends": "22725",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        },
+        {
+          "index": 2,
+          "mode": 4,
+          "native": {
+            "seconds": 39.99648349999916,
+            "source_seconds": 39.99438640003791,
+            "source_frames": 12942,
+            "output_frames": 51872,
+            "real_output_frames": 12942,
+            "generated_frames": 38930,
+            "real_fps": 323.57040987101465,
+            "output_fps": 1296.8890127553611,
+            "generated_gpu_ms": {
+              "mean": 0.05876197729257642,
+              "p95": 0.084992,
+              "maximum": 0.201728
+            },
+            "gpu_coverage": 38930,
+            "output_worst_ms": 4.222199961077422,
+            "output_over_33ms": 0,
+            "source_worst_ms": 11.81279995944351,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 14.849568356127337,
+              "p95": 5.260408,
+              "maximum": 23951.070847
+            },
+            "prediction_red_px": {
+              "mean": 9.015466048833256,
+              "p95": 19.798294,
+              "maximum": 10290.530786
+            },
+            "prediction_blue_px": {
+              "mean": 8.25465145448926,
+              "p95": 17.542473,
+              "maximum": 6365.157797
+            },
+            "prediction_horizon_ms": {
+              "mean": 3.0905397156544585,
+              "p95": 3.7801,
+              "maximum": 11.8128
+            },
+            "prediction_samples": 12942,
+            "source_age_ms": {
+              "mean": 1.3900058181351143,
+              "p95": 2.7469,
+              "maximum": 9.4291
+            },
+            "missing_camera_callbacks": 12,
+            "scene_fps": 323.27036776310547,
+            "scheduler": {
+              "samples": 12942,
+              "expected_generated": 38826,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 106,
+              "worker_wait_ms": {
+                "mean": 0.1389314093648586,
+                "p95": 0.5332,
+                "maximum": 1.4195
+              },
+              "source_hold_ms": {
+                "mean": 0.5005239298408283,
+                "p95": 0.6938,
+                "maximum": 1.5398
+              }
+            }
+          },
+          "safety": {
+            "outputs": "80505",
+            "frame_begins": "22467",
+            "frame_ends": "22467",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        },
+        {
+          "index": 3,
+          "mode": 3,
+          "native": {
+            "seconds": 40.00358110002708,
+            "source_seconds": 40.002135000017006,
+            "source_frames": 12985,
+            "output_frames": 39056,
+            "real_output_frames": 12985,
+            "generated_frames": 26071,
+            "real_fps": 324.58267539956256,
+            "output_fps": 976.287595411641,
+            "generated_gpu_ms": {
+              "mean": 0.06049816823290246,
+              "p95": 0.08704,
+              "maximum": 0.197632
+            },
+            "gpu_coverage": 26071,
+            "output_worst_ms": 13.713299995288253,
+            "output_over_33ms": 0,
+            "source_worst_ms": 14.863000018522143,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 19.153274756334234,
+              "p95": 5.35119,
+              "maximum": 89928.182664
+            },
+            "prediction_red_px": {
+              "mean": 9.135573766653831,
+              "p95": 19.790087,
+              "maximum": 10719.832774
+            },
+            "prediction_blue_px": {
+              "mean": 8.838066389988448,
+              "p95": 18.003061,
+              "maximum": 10987.184135
+            },
+            "prediction_horizon_ms": {
+              "mean": 3.080906091644205,
+              "p95": 3.7452,
+              "maximum": 14.863
+            },
+            "prediction_samples": 12985,
+            "source_age_ms": {
+              "mean": 1.4309153273752446,
+              "p95": 2.647,
+              "maximum": 13.9917
+            },
+            "missing_camera_callbacks": 12,
+            "scene_fps": 324.2826914112081,
+            "scheduler": {
+              "samples": 12985,
+              "expected_generated": 25970,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 8,
+              "worker_wait_ms": {
+                "mean": 0.07242834809395457,
+                "p95": 0.4733,
+                "maximum": 1.2817
+              },
+              "source_hold_ms": {
+                "mean": 0.5140701501732768,
+                "p95": 0.717,
+                "maximum": 1.4566
+              }
+            }
+          },
+          "safety": {
+            "outputs": "62004",
+            "frame_begins": "22632",
+            "frame_ends": "22632",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        },
+        {
+          "index": 4,
+          "mode": 5,
+          "native": {
+            "seconds": 40.00709369999822,
+            "source_seconds": 40.00510949996533,
+            "source_frames": 12849,
+            "output_frames": 63628,
+            "real_output_frames": 12849,
+            "generated_frames": 50779,
+            "real_fps": 321.15897595558727,
+            "output_fps": 1590.3929557373178,
+            "generated_gpu_ms": {
+              "mean": 0.05873050323952815,
+              "p95": 0.083968,
+              "maximum": 0.192512
+            },
+            "gpu_coverage": 50779,
+            "output_worst_ms": 9.63200000114739,
+            "output_over_33ms": 0,
+            "source_worst_ms": 11.775300023145974,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 18.040476803720132,
+              "p95": 5.339802,
+              "maximum": 40950.059764
+            },
+            "prediction_red_px": {
+              "mean": 8.008323482449995,
+              "p95": 19.74568,
+              "maximum": 3499.597551
+            },
+            "prediction_blue_px": {
+              "mean": 7.525584005058759,
+              "p95": 18.087374,
+              "maximum": 3032.017419
+            },
+            "prediction_horizon_ms": {
+              "mean": 3.1137174799595297,
+              "p95": 3.8098,
+              "maximum": 11.7753
+            },
+            "prediction_samples": 12849,
+            "source_age_ms": {
+              "mean": 1.3988767758325291,
+              "p95": 2.8201,
+              "maximum": 9.6697
+            },
+            "missing_camera_callbacks": 16,
+            "scene_fps": 320.759027044061,
+            "scheduler": {
+              "samples": 12849,
+              "expected_generated": 51396,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 945,
+              "worker_wait_ms": {
+                "mean": 0.19342088100241264,
+                "p95": 0.5323,
+                "maximum": 7.2863
+              },
+              "source_hold_ms": {
+                "mean": 0.4897246711806366,
+                "p95": 0.6767,
+                "maximum": 7.7874
+              }
+            }
+          },
+          "safety": {
+            "outputs": "97906",
+            "frame_begins": "22349",
+            "frame_ends": "22349",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        },
+        {
+          "index": 5,
+          "mode": 8,
+          "native": {
+            "seconds": 39.99718710000161,
+            "source_seconds": 39.994552900025155,
+            "source_frames": 12441,
+            "output_frames": 95710,
+            "real_output_frames": 12441,
+            "generated_frames": 83269,
+            "real_fps": 311.04235697037075,
+            "output_fps": 2392.8932742371812,
+            "generated_gpu_ms": {
+              "mean": 0.05862026233051916,
+              "p95": 0.08192,
+              "maximum": 0.2048
+            },
+            "gpu_coverage": 83269,
+            "output_worst_ms": 2.1927999914623797,
+            "output_over_33ms": 0,
+            "source_worst_ms": 10.6229999801144,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 14.5753462242585,
+              "p95": 6.4558,
+              "maximum": 37210.110402
+            },
+            "prediction_red_px": {
+              "mean": 8.035693689574794,
+              "p95": 19.650249,
+              "maximum": 3936.946793
+            },
+            "prediction_blue_px": {
+              "mean": 7.677921710634194,
+              "p95": 18.787154,
+              "maximum": 2095.796458
+            },
+            "prediction_horizon_ms": {
+              "mean": 3.214922176673901,
+              "p95": 3.977,
+              "maximum": 10.623
+            },
+            "prediction_samples": 12441,
+            "source_age_ms": {
+              "mean": 1.4807057128102896,
+              "p95": 2.9654,
+              "maximum": 9.6843
+            },
+            "missing_camera_callbacks": 10,
+            "scene_fps": 310.7923229213592,
+            "scheduler": {
+              "samples": 12441,
+              "expected_generated": 87087,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 306,
+              "continuous_miss_timer": 4654,
+              "worker_wait_ms": {
+                "mean": 0.2538505345229483,
+                "p95": 0.5589,
+                "maximum": 1.197
+              },
+              "source_hold_ms": {
+                "mean": 0.4465040591592316,
+                "p95": 0.6421,
+                "maximum": 1.365
+              }
+            }
+          },
+          "safety": {
+            "outputs": "145163",
+            "frame_begins": "21719",
+            "frame_ends": "21719",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        },
+        {
+          "index": 6,
+          "mode": 0,
+          "native": {
+            "seconds": 39.9950233999989,
+            "source_seconds": 39.99503769999137,
+            "source_frames": 14220,
+            "output_frames": 14220,
+            "real_output_frames": 14220,
+            "generated_frames": 0,
+            "real_fps": 355.5191048114218,
+            "output_fps": 355.51923192524976,
+            "generated_gpu_ms": null,
+            "gpu_coverage": 0,
+            "output_worst_ms": 10.699500038754195,
+            "output_over_33ms": 0,
+            "source_worst_ms": 10.694800002966076,
+            "source_over_33ms": 0,
+            "prediction_camera_px": {
+              "mean": 16.435039192897328,
+              "p95": 4.649798,
+              "maximum": 62284.449917
+            },
+            "prediction_red_px": {
+              "mean": 7.964685431223629,
+              "p95": 18.463473,
+              "maximum": 5563.456137
+            },
+            "prediction_blue_px": {
+              "mean": 7.411311230379747,
+              "p95": 16.40773,
+              "maximum": 3265.507282
+            },
+            "prediction_horizon_ms": {
+              "mean": 2.8127571448663855,
+              "p95": 3.4701,
+              "maximum": 10.6948
+            },
+            "prediction_samples": 14220,
+            "source_age_ms": null,
+            "missing_camera_callbacks": 12,
+            "scene_fps": 355.21906758955413,
+            "scheduler": {
+              "samples": 0,
+              "expected_generated": 0,
+              "reset_miss_lock": 0,
+              "reset_miss_next_before_due": 0,
+              "reset_miss_worker_late": 0,
+              "continuous_miss_lock": 0,
+              "continuous_miss_timer": 0,
+              "worker_wait_ms": null,
+              "source_hold_ms": null
+            }
+          },
+          "safety": {
+            "outputs": "24619",
+            "frame_begins": "24619",
+            "frame_ends": "24619",
+            "worker_error": "0",
+            "sync_requested": "0",
+            "sync_preserved_off": "0",
+            "sync_forced_zero_active": "0"
+          }
+        }
+      ]
+    }
+  ],
+  "normal_build_tests": [
+    {
+      "label": "ch17-normal-lazy-off",
+      "mode": 0,
+      "full_song": false,
+      "switch": false,
+      "managed_sha256": "a0d120164dc0f09e3dd942b4ad220ecfab953bba4ca170959f414e8779d05ce3",
+      "native_sha256": "951339dfe11afc5c8aa0cccf94b36cccb5979d53451ebae6065cde8403d4b47f",
+      "states": [
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        }
+      ],
+      "observed_submission_ratios": [],
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [],
+        "errors": 0
+      },
+      "no_research_directory": true
+    },
+    {
+      "label": "ch17-normal-switch",
+      "mode": 0,
+      "full_song": false,
+      "switch": true,
+      "managed_sha256": "a0d120164dc0f09e3dd942b4ad220ecfab953bba4ca170959f414e8779d05ce3",
+      "native_sha256": "951339dfe11afc5c8aa0cccf94b36cccb5979d53451ebae6065cde8403d4b47f",
+      "states": [
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 636,
+          "generated": 631,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 1271,
+          "generated": 2540,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 1910,
+          "generated": 3823,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 2521,
+          "generated": 6270,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 3124,
+          "generated": 9303,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 3685,
+          "generated": 12680,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 4259,
+          "generated": 16668,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 4261,
+          "generated": 16677,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 4261,
+          "generated": 16677,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 4261,
+          "generated": 16677,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 586,
+          "generated": 584,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 588,
+          "generated": 586,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 519,
+          "generated": 517,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 521,
+          "generated": 518,
+          "runtime_initialized": true,
+          "status": ""
+        }
+      ],
+      "observed_submission_ratios": [],
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [],
+        "errors": 0
+      },
+      "no_research_directory": true
+    },
+    {
+      "label": "ch17-normal-hello4",
+      "mode": 4,
+      "full_song": true,
+      "switch": false,
+      "managed_sha256": "a0d120164dc0f09e3dd942b4ad220ecfab953bba4ca170959f414e8779d05ce3",
+      "native_sha256": "951339dfe11afc5c8aa0cccf94b36cccb5979d53451ebae6065cde8403d4b47f",
+      "states": [
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 1015,
+          "generated": 0,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 8943,
+          "generated": 10767,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 15788,
+          "generated": 31415,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 41105,
+          "generated": 106302,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 41107,
+          "generated": 106302,
+          "runtime_initialized": true,
+          "status": ""
+        }
+      ],
+      "observed_submission_ratios": [
+        4.016508400292184
+      ],
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 185.0,
+            "worst": 26.0,
+            "count": 0
+          }
+        ],
+        "errors": 0
+      },
+      "no_research_directory": true
+    },
+    {
+      "label": "ch17-normal-arche5",
+      "mode": 5,
+      "full_song": true,
+      "switch": false,
+      "managed_sha256": "a0d120164dc0f09e3dd942b4ad220ecfab953bba4ca170959f414e8779d05ce3",
+      "native_sha256": "951339dfe11afc5c8aa0cccf94b36cccb5979d53451ebae6065cde8403d4b47f",
+      "states": [
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 1031,
+          "generated": 0,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 10548,
+          "generated": 18697,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 21571,
+          "generated": 62315,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 94441,
+          "generated": 347222,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 94442,
+          "generated": 347222,
+          "runtime_initialized": true,
+          "status": ""
+        }
+      ],
+      "observed_submission_ratios": [
+        4.956999002086547
+      ],
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 280.0,
+            "worst": 64.0,
+            "count": 1
+          }
+        ],
+        "errors": 0
+      },
+      "no_research_directory": true
+    },
+    {
+      "label": "ch17-normal-fsr4",
+      "mode": 4,
+      "full_song": true,
+      "switch": false,
+      "compatibility_settings": {
+        "LowRenderScale": 50,
+        "LowFsr": true,
+        "LowSharpUpscale": false,
+        "LowAutoRes": false
+      },
+      "managed_sha256": "393a070ca9d2cc6244727613fed8b05548157a0e6ff4f43b1a14b5933f0ace27",
+      "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+      "states": [
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 1015,
+          "generated": 0,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 9226,
+          "generated": 10821,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 16027,
+          "generated": 31345,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 41267,
+          "generated": 105744,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 41269,
+          "generated": 105744,
+          "runtime_initialized": true,
+          "status": ""
+        }
+      ],
+      "clocks": [],
+      "sample": null,
+      "observed_submission_ratios": [
+        4.017791501249816
+      ],
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 185.0,
+            "worst": 24.0,
+            "count": 0
+          }
+        ],
+        "errors": 0
+      },
+      "no_research_directory": true
+    },
+    {
+      "label": "ch17-normal-switch-final",
+      "mode": 0,
+      "full_song": false,
+      "switch": true,
+      "compatibility_settings": {},
+      "monitor_smoke": false,
+      "monitor_samples": [],
+      "managed_sha256": "712fe40b2784838c8a97433241f7f8a686ee87ecbce46df65dd437b0a4d3a7f7",
+      "native_sha256": "4738952300fd539ad23711433161a2002480307468aa7b8e5a04e5e906387874",
+      "states": [
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 0,
+          "generated": 0,
+          "runtime_initialized": false,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 646,
+          "generated": 642,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 1284,
+          "generated": 2558,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 1923,
+          "generated": 3841,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 2538,
+          "generated": 6310,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 3147,
+          "generated": 9369,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 3732,
+          "generated": 12881,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 4313,
+          "generated": 16897,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 4314,
+          "generated": 16906,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 4314,
+          "generated": 16906,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 4314,
+          "generated": 16906,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 591,
+          "generated": 588,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 593,
+          "generated": 589,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": true,
+          "installed": 1,
+          "sources": 533,
+          "generated": 531,
+          "runtime_initialized": true,
+          "status": ""
+        },
+        {
+          "active": false,
+          "installed": 0,
+          "sources": 535,
+          "generated": 532,
+          "runtime_initialized": true,
+          "status": ""
+        }
+      ],
+      "clocks": [
+        {
+          "frame": 1371,
+          "ticks": 175262856,
+          "hz": 10000000
+        },
+        {
+          "frame": 10761,
+          "ticks": 468461652,
+          "hz": 10000000
+        },
+        {
+          "frame": 11408,
+          "ticks": 498565104,
+          "hz": 10000000
+        },
+        {
+          "frame": 12046,
+          "ticks": 528706076,
+          "hz": 10000000
+        },
+        {
+          "frame": 12685,
+          "ticks": 558831720,
+          "hz": 10000000
+        },
+        {
+          "frame": 13300,
+          "ticks": 588951788,
+          "hz": 10000000
+        },
+        {
+          "frame": 13909,
+          "ticks": 619085733,
+          "hz": 10000000
+        },
+        {
+          "frame": 14494,
+          "ticks": 649191035,
+          "hz": 10000000
+        },
+        {
+          "frame": 15075,
+          "ticks": 679343785,
+          "hz": 10000000
+        },
+        {
+          "frame": 15682,
+          "ticks": 709487433,
+          "hz": 10000000
+        },
+        {
+          "frame": 16330,
+          "ticks": 739647288,
+          "hz": 10000000
+        },
+        {
+          "frame": 16853,
+          "ticks": 769775691,
+          "hz": 10000000
+        },
+        {
+          "frame": 17446,
+          "ticks": 799899604,
+          "hz": 10000000
+        },
+        {
+          "frame": 18059,
+          "ticks": 830022963,
+          "hz": 10000000
+        },
+        {
+          "frame": 18594,
+          "ticks": 860188783,
+          "hz": 10000000
+        },
+        {
+          "frame": 19030,
+          "ticks": 890361960,
+          "hz": 10000000
+        }
+      ],
+      "sample": null,
+      "observed_submission_ratios": [],
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [],
+        "errors": 0
+      },
+      "no_research_directory": true
+    }
+  ],
+  "compatibility": {
+    "research_binary_sha256": "ee0ac24ef02b1604bb52f54fff79f4c10279fda913685a3f296921b26de32f51",
+    "cases": [
+      {
+        "label": "compat-fsr",
+        "mode": 4,
+        "expected_inactive": false,
+        "compatibility_settings": {
+          "LowRenderScale": 50,
+          "LowFsr": true,
+          "LowSharpUpscale": false,
+          "LowAutoRes": false
+        },
+        "visual_smoke": false,
+        "native": {
+          "seconds": 40.01073469995754,
+          "source_seconds": 40.004683499981184,
+          "source_frames": 7762,
+          "output_frames": 31195,
+          "real_output_frames": 7762,
+          "generated_frames": 23433,
+          "real_fps": 194.0022847575747,
+          "output_fps": 779.64076975655,
+          "generated_gpu_ms": {
+            "mean": 0.07562001075406478,
+            "p95": 0.110592,
+            "maximum": 0.484352
+          },
+          "gpu_coverage": 23433,
+          "output_worst_ms": 8.272800012491643,
+          "output_over_33ms": 0,
+          "source_worst_ms": 18.909099977463484,
+          "source_over_33ms": 0,
+          "prediction_camera_px": {
+            "mean": 17.903623741303786,
+            "p95": 38.717925,
+            "maximum": 10858.841842
+          },
+          "prediction_red_px": {
+            "mean": 36.00429125483123,
+            "p95": 108.524482,
+            "maximum": 3448.171806
+          },
+          "prediction_blue_px": {
+            "mean": 37.727953800695694,
+            "p95": 118.225704,
+            "maximum": 2120.766377
+          },
+          "prediction_horizon_ms": {
+            "mean": 5.154436923473332,
+            "p95": 6.7611,
+            "maximum": 18.9091
+          },
+          "prediction_samples": 7762,
+          "source_age_ms": {
+            "mean": 2.3869526394401057,
+            "p95": 4.8049,
+            "maximum": 17.2688
+          },
+          "missing_camera_callbacks": 0,
+          "scene_fps": 194.0022847575747,
+          "scheduler": {
+            "samples": 7762,
+            "expected_generated": 23286,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 0,
+            "continuous_miss_timer": 4,
+            "worker_wait_ms": {
+              "mean": 0.10490081164648286,
+              "p95": 0.5834,
+              "maximum": 1.6238
+            },
+            "source_hold_ms": {
+              "mean": 0.534817830456068,
+              "p95": 0.8185,
+              "maximum": 1.9479
+            }
+          }
+        },
+        "safety": {
+          "outputs": "53653",
+          "frame_begins": "17531",
+          "frame_ends": "17531",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [],
+          "errors": 0
+        }
+      },
+      {
+        "label": "compat-half-suspended",
+        "mode": 4,
+        "expected_inactive": true,
+        "compatibility_settings": {
+          "LowHalfRender": true
+        },
+        "visual_smoke": true,
+        "native": {
+          "seconds": 20.00594349997118,
+          "source_seconds": 20.005950699967798,
+          "source_frames": 4642,
+          "output_frames": 4642,
+          "real_output_frames": 4642,
+          "generated_frames": 0,
+          "real_fps": 231.9809775402211,
+          "output_fps": 231.98106102852313,
+          "generated_gpu_ms": null,
+          "gpu_coverage": 0,
+          "output_worst_ms": 17.59979996131733,
+          "output_over_33ms": 0,
+          "source_worst_ms": 17.59819994913414,
+          "source_over_33ms": 0,
+          "prediction_camera_px": {
+            "mean": 32.59172497371822,
+            "p95": 93.771578,
+            "maximum": 788.014982
+          },
+          "prediction_red_px": {
+            "mean": 33.27701038948729,
+            "p95": 97.724769,
+            "maximum": 715.284376
+          },
+          "prediction_blue_px": {
+            "mean": 34.386293814950456,
+            "p95": 101.676899,
+            "maximum": 641.778854
+          },
+          "prediction_horizon_ms": {
+            "mean": 4.310581818181818,
+            "p95": 5.6518,
+            "maximum": 17.5982
+          },
+          "prediction_samples": 4642,
+          "source_age_ms": null,
+          "missing_camera_callbacks": 2112,
+          "scene_fps": 126.41238789037257,
+          "scheduler": {
+            "samples": 0,
+            "expected_generated": 0,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 0,
+            "continuous_miss_timer": 0,
+            "worker_wait_ms": null,
+            "source_hold_ms": null
+          }
+        },
+        "safety": {
+          "outputs": "11578",
+          "frame_begins": "11578",
+          "frame_ends": "11578",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [],
+          "errors": 0
+        }
+      },
+      {
+        "label": "compat-switch",
+        "mode": 0,
+        "expected_inactive": false,
+        "compatibility_settings": {},
+        "visual_smoke": true,
+        "native": {
+          "seconds": 27.406252799963113,
+          "source_seconds": 27.406246799975634,
+          "source_frames": 5749,
+          "output_frames": 16105,
+          "real_output_frames": 5749,
+          "generated_frames": 10356,
+          "real_fps": 209.7332057888755,
+          "output_fps": 587.6031326698437,
+          "generated_gpu_ms": {
+            "mean": 0.07347448435689455,
+            "p95": 0.109312,
+            "maximum": 0.464864
+          },
+          "gpu_coverage": 10356,
+          "output_worst_ms": 25.4344999557361,
+          "output_over_33ms": 0,
+          "source_worst_ms": 21.522199967876077,
+          "source_over_33ms": 0,
+          "prediction_camera_px": {
+            "mean": 19.538084852322143,
+            "p95": 38.942061,
+            "maximum": 25956.196196
+          },
+          "prediction_red_px": {
+            "mean": 35.437914086101934,
+            "p95": 109.293155,
+            "maximum": 8311.484345
+          },
+          "prediction_blue_px": {
+            "mean": 37.90131981092364,
+            "p95": 120.964286,
+            "maximum": 6064.671876
+          },
+          "prediction_horizon_ms": {
+            "mean": 4.7677166289789525,
+            "p95": 5.69,
+            "maximum": 21.5222
+          },
+          "prediction_samples": 5749,
+          "source_age_ms": {
+            "mean": 2.2796053978370026,
+            "p95": 4.4368,
+            "maximum": 20.0889
+          },
+          "missing_camera_callbacks": 0,
+          "scene_fps": 209.7332057888755,
+          "scheduler": {
+            "samples": 3113,
+            "expected_generated": 0,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 1,
+            "continuous_miss_timer": 97,
+            "worker_wait_ms": {
+              "mean": 0.09046999678766464,
+              "p95": 0.5223,
+              "maximum": 1.2143
+            },
+            "source_hold_ms": {
+              "mean": 0.5275894314166399,
+              "p95": 0.7835,
+              "maximum": 20.3281
+            }
+          }
+        },
+        "safety": {
+          "outputs": "22256",
+          "frame_begins": "11900",
+          "frame_ends": "11900",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [],
+          "errors": 0
+        }
+      },
+      {
+        "label": "compat-ui-off",
+        "mode": 0,
+        "expected_inactive": false,
+        "compatibility_settings": {},
+        "visual_smoke": true,
+        "native": {
+          "seconds": 15.005095000029542,
+          "source_seconds": 15.005140400025994,
+          "source_frames": 3052,
+          "output_frames": 3052,
+          "real_output_frames": 3052,
+          "generated_frames": 0,
+          "real_fps": 203.33032005450045,
+          "output_fps": 203.33093525859005,
+          "generated_gpu_ms": null,
+          "gpu_coverage": 0,
+          "output_worst_ms": 158.3241000189446,
+          "output_over_33ms": 1,
+          "source_worst_ms": 157.62359998188913,
+          "source_over_33ms": 1,
+          "prediction_camera_px": {
+            "mean": 10.194931392529488,
+            "p95": 27.609973,
+            "maximum": 879.195675
+          },
+          "prediction_red_px": {
+            "mean": 31.01247152719528,
+            "p95": 129.122114,
+            "maximum": 467.794897
+          },
+          "prediction_blue_px": {
+            "mean": 33.20566186304063,
+            "p95": 130.519996,
+            "maximum": 570.953656
+          },
+          "prediction_horizon_ms": {
+            "mean": 4.917760190039319,
+            "p95": 6.1424,
+            "maximum": 157.6236
+          },
+          "prediction_samples": 3052,
+          "source_age_ms": null,
+          "missing_camera_callbacks": 0,
+          "scene_fps": 203.33032005450045,
+          "scheduler": {
+            "samples": 0,
+            "expected_generated": 0,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 0,
+            "continuous_miss_timer": 0,
+            "worker_wait_ms": null,
+            "source_hold_ms": null
+          }
+        },
+        "safety": {
+          "outputs": "10163",
+          "frame_begins": "10163",
+          "frame_ends": "10163",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [],
+          "errors": 0
+        }
+      },
+      {
+        "label": "compat-ui-on",
+        "mode": 5,
+        "expected_inactive": false,
+        "compatibility_settings": {},
+        "visual_smoke": true,
+        "native": {
+          "seconds": 14.989656399993692,
+          "source_seconds": 14.98573169996962,
+          "source_frames": 2866,
+          "output_frames": 14307,
+          "real_output_frames": 2866,
+          "generated_frames": 11441,
+          "real_fps": 191.18185600545672,
+          "output_fps": 954.3914562315131,
+          "generated_gpu_ms": {
+            "mean": 0.06658592780351368,
+            "p95": 0.106272,
+            "maximum": 0.447488
+          },
+          "gpu_coverage": 11441,
+          "output_worst_ms": 160.86919995723292,
+          "output_over_33ms": 1,
+          "source_worst_ms": 164.7526000160724,
+          "source_over_33ms": 1,
+          "prediction_camera_px": {
+            "mean": 11.166690407885556,
+            "p95": 27.492552,
+            "maximum": 1140.777742
+          },
+          "prediction_red_px": {
+            "mean": 32.539680005931615,
+            "p95": 124.313132,
+            "maximum": 891.667357
+          },
+          "prediction_blue_px": {
+            "mean": 34.53940952965806,
+            "p95": 128.572524,
+            "maximum": 874.183464
+          },
+          "prediction_horizon_ms": {
+            "mean": 5.230171667829728,
+            "p95": 6.5507,
+            "maximum": 164.7526
+          },
+          "prediction_samples": 2866,
+          "source_age_ms": {
+            "mean": 2.142283314395595,
+            "p95": 4.455,
+            "maximum": 18.9591
+          },
+          "missing_camera_callbacks": 0,
+          "scene_fps": 191.18185600545672,
+          "scheduler": {
+            "samples": 2866,
+            "expected_generated": 11464,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 3,
+            "continuous_miss_timer": 103,
+            "worker_wait_ms": {
+              "mean": 0.3613682484298674,
+              "p95": 1.1402,
+              "maximum": 159.0599
+            },
+            "source_hold_ms": {
+              "mean": 0.8155705163991626,
+              "p95": 1.4106,
+              "maximum": 160.7598
+            }
+          }
+        },
+        "safety": {
+          "outputs": "38351",
+          "frame_begins": "12114",
+          "frame_ends": "12114",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [],
+          "errors": 0
+        }
+      }
+    ]
+  },
+  "shared_device_3440_lab": {
+    "2": {
+      "swapchains": 1,
+      "debug_layer": 0,
+      "frames": 2000,
+      "outputs": 4001,
+      "state_errors": 0,
+      "pixel_errors": 0,
+      "debug_errors": 0,
+      "pause_outputs": 22,
+      "worker_error": 0,
+      "device_removed": 0,
+      "frame_begins": 2000,
+      "frame_ends": 2000
+    },
+    "3": {
+      "swapchains": 1,
+      "debug_layer": 0,
+      "frames": 2000,
+      "outputs": 5999,
+      "state_errors": 0,
+      "pixel_errors": 0,
+      "debug_errors": 0,
+      "pause_outputs": 42,
+      "worker_error": 0,
+      "device_removed": 0,
+      "frame_begins": 2000,
+      "frame_ends": 2000
+    },
+    "4": {
+      "swapchains": 1,
+      "debug_layer": 0,
+      "frames": 2000,
+      "outputs": 7960,
+      "state_errors": 0,
+      "pixel_errors": 0,
+      "debug_errors": 0,
+      "pause_outputs": 63,
+      "worker_error": 0,
+      "device_removed": 0,
+      "frame_begins": 2000,
+      "frame_ends": 2000
+    },
+    "5": {
+      "swapchains": 1,
+      "debug_layer": 0,
+      "frames": 2000,
+      "outputs": 9960,
+      "state_errors": 0,
+      "pixel_errors": 0,
+      "debug_errors": 0,
+      "pause_outputs": 82,
+      "worker_error": 0,
+      "device_removed": 0,
+      "frame_begins": 2000,
+      "frame_ends": 2000
+    },
+    "8": {
+      "swapchains": 1,
+      "debug_layer": 0,
+      "frames": 2000,
+      "outputs": 17351,
+      "state_errors": 0,
+      "pixel_errors": 0,
+      "debug_errors": 0,
+      "pause_outputs": 147,
+      "worker_error": 0,
+      "device_removed": 0,
+      "frame_begins": 2000,
+      "frame_ends": 2000
+    }
+  },
+  "sync_smoke": {
+    "label": "ch17-sync",
+    "mode": 0,
+    "expected_inactive": false,
+    "compatibility_settings": {},
+    "visual_smoke": true,
+    "native": {
+      "seconds": 19.99382340000011,
+      "source_seconds": 19.993856400018558,
+      "source_frames": 4401,
+      "output_frames": 5465,
+      "real_output_frames": 4401,
+      "generated_frames": 1064,
+      "real_fps": 220.067600365276,
+      "output_fps": 273.2843984207628,
+      "generated_gpu_ms": {
+        "mean": 0.06595524812030075,
+        "p95": 0.095232,
+        "maximum": 0.13824
+      },
+      "gpu_coverage": 1064,
+      "output_worst_ms": 25.92370001366362,
+      "output_over_33ms": 0,
+      "source_worst_ms": 22.444400005042553,
+      "source_over_33ms": 0,
+      "prediction_camera_px": {
+        "mean": 9.193816279481936,
+        "p95": 25.011625,
+        "maximum": 897.89986
+      },
+      "prediction_red_px": {
+        "mean": 29.4993951002045,
+        "p95": 103.833941,
+        "maximum": 904.220651
+      },
+      "prediction_blue_px": {
+        "mean": 30.37948632174506,
+        "p95": 104.784496,
+        "maximum": 655.553844
+      },
+      "prediction_horizon_ms": {
+        "mean": 4.543811520109066,
+        "p95": 5.4166,
+        "maximum": 22.4444
+      },
+      "prediction_samples": 4401,
+      "source_age_ms": {
+        "mean": 2.4564173872180453,
+        "p95": 3.6615,
+        "maximum": 20.683
+      },
+      "missing_camera_callbacks": 0,
+      "scene_fps": 220.067600365276,
+      "scheduler": {
+        "samples": 1066,
+        "expected_generated": 0,
+        "reset_miss_lock": 0,
+        "reset_miss_next_before_due": 0,
+        "reset_miss_worker_late": 0,
+        "continuous_miss_lock": 0,
+        "continuous_miss_timer": 0,
+        "worker_wait_ms": {
+          "mean": 0.011766510318949343,
+          "p95": 0.0077,
+          "maximum": 0.7924
+        },
+        "source_hold_ms": {
+          "mean": 0.594850469043152,
+          "p95": 0.8017,
+          "maximum": 20.8536
+        }
+      }
+    },
+    "safety": {
+      "outputs": "12236",
+      "frame_begins": "11172",
+      "frame_ends": "11172",
+      "worker_error": "0",
+      "sync_requested": "3267",
+      "sync_preserved_off": "2201",
+      "sync_forced_zero_active": "1066"
+    },
+    "game_metrics": {
+      "runs": [],
+      "hitches": [],
+      "songs": [],
+      "errors": 0
+    }
+  },
+  "default_off_failure_and_fix": {
+    "first_strict_test": "ch17-normal-final-off",
+    "native_installed": 0,
+    "generated": 0,
+    "runtime_initialized": true,
+    "cause": "Mono GetFunctionPointer initialized FrameGenRuntime during JitWarm",
+    "fix": "Exclude FrameGenRuntime and nested types from JitWarm",
+    "corrected_test": "ch17-normal-lazy-off"
+  },
+  "restored_sha256": {
+    "StutterFix.dll": "dd9ca8cadd52bb61aad3e3ab41a54f07e693fb8367653c27513bdef07fc193e1",
+    "sfnative.dll": "ad2dfdc5ed4d5cd416488bb8e1d96863601d9c3a57690cc25756c5f71eec89d1",
+    "Settings.xml": "fa6e781728a4c72c53aa1969a4d08707d837f15932bcf4e5c912bbbaf28d8cd5"
+  },
+  "tester_zip_sha256": "689de906e1b0513c526c34c0aff33dbff6b1d12fe9544adf78b8295a4932c134",
+  "limitations": [
+    "3440x1440 current game retest not confirmed; actual desktop and game2560x1440",
+    "Successful Present returns are submission counts, not physical displayed FPS",
+    "8x exceeds10percent source FPS loss;6x/7x only short switch tests",
+    "Whole-song subjective motion quality and all combinations of settings are not confirmed"
+  ],
+  "captures": [
+    {
+      "file": "validation-17/hello4-song48.png",
+      "song": "HELLO 2026",
+      "mode": 4,
+      "song_second_from_visible_HUD": 48,
+      "new": true
+    },
+    {
+      "file": "validation-17/hello4-fsr50-song48.png",
+      "song": "HELLO 2026",
+      "mode": 4,
+      "fsr_percent": 50,
+      "song_second_from_visible_HUD": 48,
+      "new": true
+    },
+    {
+      "file": "validation-17/arche5-song48.png",
+      "song": "Arche",
+      "mode": 5,
+      "song_second_from_visible_HUD": 48,
+      "new": true
+    }
+  ]
+}

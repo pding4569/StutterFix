@@ -42,6 +42,7 @@ namespace StutterFix
 
         // 긴 멈춤 동안 화면 다시 내보내기(WindowGhost.KeepPresenting): 그래픽 스레드에서 부를 함수 주소와 스왑체인, 결과 개수
         internal static bool PresentReady;
+        internal static bool FrameGenReady;
         internal static IntPtr PresentEvent(IntPtr swapChain) { if (!Ready || !PresentReady) return IntPtr.Zero; sf_set_swapchain(swapChain); return sf_present_event_ptr(); }
         internal static int PresentCount { get { return Ready && PresentReady ? sf_present_count() : 0; } }
         internal static int PresentFails { get { return Ready && PresentReady ? sf_present_fail_count() : 0; } }
@@ -59,6 +60,7 @@ namespace StutterFix
                 if (mod == IntPtr.Zero) { Status = "DLL 불러오기 실패 (" + Marshal.GetLastWin32Error() + ")"; return; }
                 // 화면 다시 내보내기 함수는 2.3.2 에 들어왔다. 게임이 예전 DLL 을 이미 올려 둔 채 모드만 다시 불러오면 없다.
                 PresentReady = GetProcAddress(mod, "sf_present_rebind_count") != IntPtr.Zero;
+                FrameGenReady = GetProcAddress(mod, "sf_framegen_setup") != IntPtr.Zero;
                 DownscaleReady = GetProcAddress(mod, "sf_downscale") != IntPtr.Zero;   // 2.5.1 (예전 DLL 이 올라와 있으면 C# 으로)
                 FuseReady = GetProcAddress(mod, "sf_unfilter_downscale") != IntPtr.Zero;
                 StreamReady = GetProcAddress(mod, "sf_png_shrink") != IntPtr.Zero;

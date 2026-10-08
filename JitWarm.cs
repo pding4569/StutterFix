@@ -23,6 +23,9 @@ namespace StutterFix
             foreach (var t in types)
             {
                 if (t == null || t.ContainsGenericParameters) continue;
+                // Mono GetFunctionPointer also initializes this experimental type.
+                // Keep its FieldRefs/buffers lazy while the feature is OFF.
+                if (t == typeof(FrameGenRuntime) || t.DeclaringType == typeof(FrameGenRuntime)) continue;
                 MethodInfo[] ms;
                 try { ms = t.GetMethods(All); } catch { continue; }
                 foreach (var m in ms)

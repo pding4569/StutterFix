@@ -17,7 +17,7 @@ int wmain(int argc,wchar_t** argv) {
           p=scenePrediction(a,b,.005,.01);
           if(fabs(p.camera[2]-10)>.00001) throw std::runtime_error("pulse exceeded its endpoint"); }
         int mode=argc>1?_wtoi(argv[1]):4; double fps=argc>2?_wtof(argv[2]):200,seconds=argc>3?_wtof(argv[3]):15;
-        if(mode!=1 && mode!=2 && mode!=4) return 2;
+        if(mode<1 || mode>8 || !std::isfinite(fps) || fps<=0 || !std::isfinite(seconds) || seconds<=0) return 2;
         std::wstring path=argc>4?argv[4]:L"."; SetProcessDPIAware();
         bool narrow=argc>5 && _wtoi(argv[5])==1;
         HWND window=CreateWindowExW(0,L"STATIC",L"FrameGen shared-device producer",WS_POPUP|WS_VISIBLE,0,0,3440,1440,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr); if(!window) return 3;
@@ -42,7 +42,7 @@ int wmain(int argc,wchar_t** argv) {
             MSG msg; while(PeekMessageW(&msg,nullptr,0,0,PM_REMOVE)) {TranslateMessage(&msg); DispatchMessageW(&msg);}
             double t=now()-start; if(now()<deadline) { Sleep(0); continue; } deadline+=1/fps;
             if(!paused && t>seconds*.5) { beforePause=engine.outputs; Sleep(100); afterPause=engine.outputs; paused=true; }
-            Packet p{}; p.frame=++frames; p.mode=mode; p.measure=1; p.song=now()-start;
+            Packet p{}; p.frame=++frames; p.mode=mode==1?0:mode; p.measure=1; p.song=now()-start;
             if(!narrow) engine.beginFrame();
             p.pose.camera[0]=float(p.song)*2; p.pose.camera[1]=float(sin(p.song)*.3); p.pose.camera[2]=10+float(sin(p.song*2)); p.pose.camera[3]=float(sin(p.song)*.05);
             p.pose.planet[0][0]=p.pose.camera[0]+float(cos(p.song*4)); p.pose.planet[0][1]=float(sin(p.song*4)); p.pose.planet[0][2]=1;
@@ -72,6 +72,6 @@ int wmain(int argc,wchar_t** argv) {
         if(SUCCEEDED(d.As(&info))) for(UINT64 i=0;i<info->GetNumStoredMessages();i++) { SIZE_T n=0; info->GetMessage(i,nullptr,&n); std::vector<char> bytes(n); auto m=reinterpret_cast<D3D11_MESSAGE*>(bytes.data()); info->GetMessage(i,m,&n); if(m->Severity==D3D11_MESSAGE_SEVERITY_ERROR || m->Severity==D3D11_MESSAGE_SEVERITY_CORRUPTION) ++serious; }
         printf("swapchains=1 debug_layer=%d frames=%d outputs=%llu producer_state_errors=%d pixel_errors=%d debug_errors=%llu pause_outputs=%llu worker_error=%d device_removed=0x%08lX\n",debug?1:0,frames,engine.outputs.load(),stateErrors,pixelErrors,serious,afterPause-beforePause,engine.error.load(),static_cast<unsigned long>(d->GetDeviceRemovedReason()));
         FILE* f=nullptr; _wfopen_s(&f,(path+L"/check.txt").c_str(),L"wb"); if(f) { fprintf(f,"swapchains=1 debug_layer=%d frames=%d outputs=%llu state_errors=%d pixel_errors=%d debug_errors=%llu pause_outputs=%llu worker_error=%d device_removed=%ld frame_begins=%llu frame_ends=%llu\n",debug?1:0,frames,engine.outputs.load(),stateErrors,pixelErrors,serious,afterPause-beforePause,engine.error.load(),long(d->GetDeviceRemovedReason()),engine.frameBegins.load(),engine.frameEnds.load()); fclose(f); }
-        engine.release(); DestroyWindow(window); return stateErrors||pixelErrors||serious||engine.error||afterPause<=beforePause?1:0;
+        engine.release(); DestroyWindow(window); return stateErrors||pixelErrors||serious||engine.error||(mode>=2 && afterPause<=beforePause)?1:0;
     } catch(const std::exception& e) { fprintf(stderr,"%s\n",e.what()); return 1; }
 }

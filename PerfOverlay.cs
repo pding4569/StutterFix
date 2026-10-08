@@ -171,6 +171,15 @@ namespace StutterFix
         private int lastMode = 1;
         private float cpuBar, gpuBar, vramBar, ramBar, flash;
         private float textTimer;
+        private ulong outputCount;
+        private long outputStamp;
+        private int outputEpoch, outputFrame;
+        private bool outputSample;
+        private double displayedRealFps, displayedFps;
+        private string sFpsLabel = "FPS", sRealFpsShort = "";
+        internal static string DescribeFps() => Instance == null ? "unavailable" :
+            "mode=" + C.OverlayFpsSource + " shown=" + Instance.displayedFps.ToString("F3", System.Globalization.CultureInfo.InvariantCulture) +
+            " real=" + Instance.displayedRealFps.ToString("F3", System.Globalization.CultureInfo.InvariantCulture) + " counting=" + Instance.outputSample;
         private string sFps = "-", sMs = "", sLow = "", sCpu = "", sCpuSub = "", sGpu = "", sGpuSub = "", sVram = "", sVramSub = "",
             sRam = "", sRamSub = "", sGc = "", sGcSub = "", sFooter = "", sSong = "", sSongSub = "";
         private string sMsShort = "", sLowShort = "", sCpuShort = "", sGpuShort = "", sVramShort = "", sRamShort = "";
@@ -700,6 +709,35 @@ namespace StutterFix
             for (int i = 1; i <= recentCount && sum < 500f; i++) { sum += recent[(recentHead - i + LowN) % LowN]; n++; }
             float avg = n > 0 ? sum / n : 0;
             sFps = avg > 0 ? (1000f / avg).ToString("F0") : "-";
+            displayedRealFps = displayedFps = avg > 0 ? 1000.0/avg : 0;
+            sRealFpsShort = T("원본 ", "Real ") + sFps;
+            sFpsLabel = T("원본 FPS", "Real FPS");
+            // Read counters on the existing 4 Hz text refresh; no per-frame native call or new hook.
+            if (C.OverlayFpsSource > 0)
+            {
+                long stamp = Stopwatch.GetTimestamp();
+                ulong count;
+                bool counting = FrameGen.TryOutputCount(out count);
+                if (counting)
+                {
+                    sFpsLabel = T("출력 FPS", "Output FPS");
+                    bool comparable = outputSample && outputEpoch == FrameGen.CounterEpoch && stamp > outputStamp && count >= outputCount;
+                    if (comparable)
+                    {
+                        double hz = (double)Stopwatch.Frequency/(stamp-outputStamp);
+                        displayedFps = (count-outputCount)*hz;
+                        displayedRealFps = (Time.frameCount-outputFrame)*hz;
+                        sFps = displayedFps.ToString("F0");
+                        sRealFpsShort = T("원본 ", "Real ") + displayedRealFps.ToString("F0");
+                    }
+                    else { sFps = "-"; displayedFps = 0; }
+                }
+                // While generation is OFF, Unity FPS estimates output without connecting Present.
+                else sFpsLabel = T("출력≈FPS", "Output≈FPS");
+                outputSample = counting; outputCount = count; outputStamp = stamp;
+                outputEpoch = FrameGen.CounterEpoch; outputFrame = Time.frameCount;
+            }
+            else outputSample = false;
             sMs = avg.ToString("F1") + " ms";
             sMsShort = avg.ToString("F1") + "ms";
             if (recentCount >= 30)
@@ -789,6 +827,7 @@ namespace StutterFix
         private void CollectCompact()
         {
             compact.Clear(); compactLoad.Clear();
+            if (C.OverlayFpsSource == 2) { compact.Add(sRealFpsShort); compactLoad.Add(-1); }
             if (C.CmMs) { compact.Add(sMsShort); compactLoad.Add(-1); }
             if (C.CmLow) { compact.Add(sLowShort); compactLoad.Add(-1); }
             if (C.CmCpu) { compact.Add(sCpuShort); compactLoad.Add(cpuBar); }
@@ -896,6 +935,7 @@ namespace StutterFix
         private float PanelHeight()
         {
             float h = 66;                          // FPS 머리
+            if (C.OverlayFpsSource == 2) h += 15;
             if (C.OvGraph) h += 54;
             if (C.OvSession) h += 52;
             int rows = (C.OvCpu ? 1 : 0) + (C.OvGpu ? 1 : 0) + (C.OvVram ? 1 : 0) + (C.OvRam ? 1 : 0);
@@ -1100,7 +1140,7 @@ namespace StutterFix
             float cx = right ? r.x : r.x + 16;          // 화면 안쪽으로 보이는 부분의 왼쪽 끝
             var inner = new Rect(cx, r.y, IconW, r.height);
             Label(new Rect(inner.x, inner.y + 9, inner.width, 22), sFps, sCenterBig);
-            Label(new Rect(inner.x, inner.y + 30, inner.width, 12), "FPS", sCenterSmall);
+            Label(new Rect(inner.x, inner.y + 30, inner.width, 12), sFpsLabel, sCenterSmall);
 
             float pulse;
             Color dot = StatusColor(out pulse);
@@ -1166,8 +1206,8 @@ namespace StutterFix
             float pulse;
             Color dot = StatusColor(out pulse);
             Fill(new Rect(r.x + 16, r.center.y - 3, 6, 6), new Color(dot.r, dot.g, dot.b, pulse), 3);
-            Label(new Rect(r.x + 30, r.y + 10, 60, 24), sFps, sMid);
-            Label(new Rect(r.x + 74, r.y + 17, 40, 14), "FPS", sSmall);
+            Label(new Rect(r.x + 30, r.y + 4, 78, 24), sFps, sMid);
+            Label(new Rect(r.x + 30, r.y + 28, 78, 12), sFpsLabel, sSmall);
 
             // 고른 항목을 칸으로 나눈다
             float x = r.x + 16 + 96;
@@ -1194,10 +1234,11 @@ namespace StutterFix
             // 머리: 큰 FPS + 상태 점 / 오른쪽에 프레임 시간과 1% low
             Label(new Rect(ix, cy - 2, 120, 34), sFps, sBig);
             Fill(new Rect(ix, cy + 38, 6, 6), new Color(dot.r, dot.g, dot.b, pulse), 3);
-            Label(new Rect(ix + 11, cy + 34, 60, 14), "FPS", sSmall);
+            Label(new Rect(ix + 11, cy + 34, 100, 14), sFpsLabel, sSmall);
             Label(new Rect(ix + iw - 120, cy + 6, 120, 16), sMs, sValue);
             Label(new Rect(ix + iw - 120, cy + 25, 120, 14), sLow, sSub);
             cy += 58;
+            if (C.OverlayFpsSource == 2) { Label(new Rect(ix, cy, iw, 13), sRealFpsShort + " FPS", sLabel); cy += 15; }
 
             if (C.OvGraph) { Graph(new Rect(ix, cy, iw, 42), GraphN, true); cy += 54; }
 

@@ -1393,6 +1393,25 @@ namespace StutterFix
                 BootConfig.Apply(c.LegacyGfxJobs, flip);
                 Save();
             }
+            bool frameGen = c.FrameGenOutside >= 2 && c.FrameGenOutside <= 8;
+            if (Option("framegen", ref frameGen, T("프레임 늘리기 (실험)", "Increase frames (experimental)"),
+                T("진짜 프레임 사이에 공을 포함한 지난 화면을 카메라 움직임에 맞춰 옮겨 출력합니다. 입력·판정과 공 자체의 움직임은 진짜 프레임 속도를 따릅니다. UI는 지난 진짜 프레임 것을 유지합니다. 배율이 높을수록 원본 FPS가 낮아질 수 있습니다. 화면이 흔들리거나 어색하면 끄세요. D3D11에서 사용할 수 있고 기본 꺼짐입니다. 바로 적용됩니다.",
+                  "Presents camera-reprojected frames between real frames, including the planets. Input, judgment and planet motion still follow real frames; UI retains the last real frame. Higher multipliers can reduce real FPS. Turn off if motion looks wrong. Requires D3D11. Off by default; applies immediately."), T("실험", "Experimental")))
+            {
+                c.FrameGenOutside = frameGen ? Mathf.Clamp(c.FrameGenMultiplier, 2, 8) : 0;
+                Save();
+            }
+            if (frameGen)
+            {
+                float multiplier = Mathf.Clamp(c.FrameGenOutside, 2, 8);
+                if (Slider("framegenmultiplier", ref multiplier, 2, 8, T("출력 배율", "Output multiplier"), Mathf.RoundToInt(multiplier) + T("배", "×")))
+                {
+                    c.FrameGenMultiplier = c.FrameGenOutside = Mathf.RoundToInt(multiplier);
+                    Save();
+                }
+                if (HalfRender.Enabled) P(T("'반만 그리기'가 켜져 있어 프레임 늘리기는 쉬고 있습니다. 두 방식 중 하나를 선택하세요.", "Frame increase is suspended while Half rendering is enabled. Choose one method."), sDim);
+                else if (FrameGen.Status.Length>0) P(FrameGen.Status, sDim);
+            }
             bool exfs = c.ExpFullscreen == 1;
             if (Option("exfs", ref exfs, T("화면 지연 줄이기 (독점 전체 화면)", "Lower display latency (exclusive fullscreen)"),
                 T("전체 화면일 때 게임을 독점 전체 화면으로 바꿔, 윈도우가 화면을 한 번 더 합성하는 단계를 건너뜁니다. 측정(HELLO 2026, 165Hz): 프레임이 화면에 나오기까지 15.8 -> 7.9ms 로 절반, 평균 FPS 는 209 -> 187 로 조금 낮아집니다. 수직동기가 꺼져 있으면 화면이 가로로 찢어져 보일 수 있고, Alt+Tab 하면 게임이 최소화되며 켜고 끌 때 화면이 한 번 깜빡입니다. 창 모드에서는 아무것도 하지 않습니다.",
@@ -1630,6 +1649,11 @@ namespace StutterFix
             if (sub == 1)
             {
             SubHeading(T("항목", "Items"), T("모니터에 띄울 값을 고릅니다. 고른 것은 흰색으로 바뀝니다.", "Choose what the monitor shows. Selected items turn white."));
+            GUILayout.Label(T("FPS 표시", "FPS display"), sBody);
+            ch |= Segment("ovfpssource", ref c.OverlayFpsSource, new[] { T("원본", "Real"), T("출력", "Output"), T("둘 다", "Both") });
+            P(T("출력 FPS는 프레임 늘리기로 생성한 프레임까지 합친 실제 출력 제출 수입니다. 모니터 주사율이나 물리적으로 표시된 수가 아닙니다. 프레임 시간·1% low·끊김·이번 곡 통계는 원본 기준입니다.",
+                "Output FPS counts successful submissions including generated frames, not physical display refreshes. Frame time, 1% low, hitches and level statistics always use real frames."), sDim);
+            GUILayout.Space(12);
             GUILayout.BeginVertical(sCard);
             GUILayout.Label(T("아이콘·미니에 보여 줄 항목", "Items in icon and mini"), sBody);
             GUILayout.Space(3);

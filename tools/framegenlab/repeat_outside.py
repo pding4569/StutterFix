@@ -18,10 +18,12 @@ def main():
     p.add_argument('--modes', default='0,2,4,4,2,0')
     p.add_argument('--seconds', type=int, default=55)
     p.add_argument('--clip', action='store_true')
+    p.add_argument('--width', type=int, help='Required actual game width; reject a different condition')
+    p.add_argument('--height', type=int, default=1440)
     a = p.parse_args()
     modes = [int(v) for v in a.modes.split(',')]
-    if not a.map.is_file() or not modes or any(v not in (0, 2, 4) for v in modes):
-        p.error('Existing map and modes 0,2,4 required')
+    if not a.map.is_file() or not modes or any(v != 0 and not 2 <= v <= 8 for v in modes):
+        p.error('Existing map and modes OFF or 2..8 required')
     if not 25 <= a.seconds <= 600:
         p.error('25..600 seconds required')
     a.out.mkdir(parents=True, exist_ok=False)
@@ -47,6 +49,8 @@ def main():
         if not found or found[-1][0] != '0':
             raise RuntimeError('Missing actual screen conditions; stop comparison')
         current = found[-1]
+        if a.width is not None and (int(current[6]), int(current[7])) != (a.width, a.height):
+            raise RuntimeError(f'Required game size {a.width}x{a.height}, observed {current[6]}x{current[7]}; stop comparison')
         if condition is not None and current != condition:
             raise RuntimeError(f'Screen conditions changed: {condition} -> {current}; stop comparison')
         condition = current
