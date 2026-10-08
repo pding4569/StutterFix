@@ -25,12 +25,16 @@ namespace StutterFix
         private struct Sample { internal long tick; internal double song; internal int frame; }
         private static Sample[] samples;
         private static int count,lastFrame=-1,overflow;
-        internal static void Install() { samples=new Sample[40000]; count=overflow=0; lastFrame=-1; Camera.onPostRender+=Post; }
+        private static long frequency;
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")] private static extern bool QueryPerformanceCounter(out long value);
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")] private static extern bool QueryPerformanceFrequency(out long value);
+        internal static void Install() { samples=new Sample[40000]; count=overflow=0; lastFrame=-1; if(!QueryPerformanceFrequency(out frequency))throw new InvalidOperationException("QPC unavailable"); Camera.onPostRender+=Post; }
         private static void Post(Camera c) {
             if(!Hitch.Playing || Time.frameCount==lastFrame || scrCamera.instance==null || c!=Cam(scrCamera.instance) || scrConductor.instance==null) return;
             lastFrame=Time.frameCount;
             if(count==samples.Length) { ++overflow; return; }
-            samples[count++]=new Sample {tick=System.Diagnostics.Stopwatch.GetTimestamp(),song=scrConductor.instance.songposition_minusi,frame=lastFrame};
+            QueryPerformanceCounter(out var tick);
+            samples[count++]=new Sample {tick=tick,song=scrConductor.instance.songposition_minusi,frame=lastFrame};
         }
         internal static void Detach() { Camera.onPostRender-=Post; }
         internal static void Finish() {
@@ -38,7 +42,7 @@ namespace StutterFix
             Detach(); string path=Path.Combine(Main.Entry.Path,"framegen-outside");
             using(var f=new StreamWriter(Path.Combine(path,"cost-sources.csv"))) {
                 f.WriteLine("source_s,song_s,unity_frame");
-                for(int i=0;i<count;i++) { var r=samples[i]; f.WriteLine(FormattableString.Invariant($"{(double)r.tick/System.Diagnostics.Stopwatch.Frequency:R},{r.song:R},{r.frame}")); }
+                for(int i=0;i<count;i++) { var r=samples[i]; f.WriteLine(FormattableString.Invariant($"{(double)r.tick/frequency:R},{r.song:R},{r.frame}")); }
             }
             File.WriteAllText(Path.Combine(path,"cost-state.txt"),FrameGen.Describe()+" overflow="+overflow);
             samples=null;

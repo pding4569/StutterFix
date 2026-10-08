@@ -95,7 +95,13 @@ static void discover() {
 static void __stdcall event(int id,void* data) {
     try {
         if(id==0) { discover(); return; }
-        if(id==5) { if(engine && status==1 && !engine->error) engine->beginFrame(); return; }
+        if(id==5) { if(engine && status==1 && !engine->error) engine->beginFrame(data==nullptr); return; }
+        if(id==6 && data && status==1) {
+            if(!engine || !game) throw std::runtime_error("split snapshot without original swapchain");
+            ComPtr<ID3D11Texture2D> back;
+            {ContextLock lock(engine->protection.Get());check(game->GetBuffer(0,IID_PPV_ARGS(&back)));}
+            engine->stageScreen(*static_cast<Packet*>(data),back.Get());engine->endFrame(false);return;
+        }
         if(id==1 && data && status==1) { packet=*static_cast<Packet*>(data); havePacket=true; return; }
         if(id==4) { finish(); status=-2; return; }
         if(id==3) {

@@ -1,0 +1,22 @@
+{
+  "arche2off\\00-0x\\presentmon.csv": {
+    "bytes": 6718792,
+    "sha256": "2e4887f2dbd3c41424ec044083278e50a7be48f4b88bdef771b9b92f68460e0f"
+  },
+  "arche2off\\00-0x\\game.log": {
+    "bytes": 232159,
+    "sha256": "53f5847f398f9cbdd73528095ba15c299d5ab4de9f8e8ad7947fbe9ba90f5678"
+  },
+  "arche2off\\00-0x\\run.txt": {
+    "bytes": 1232,
+    "sha256": "d51c71c38985d26fe36a50f9eb27662eb795ae1e0e6efd78a874e5d0f38145a0"
+  },
+  "arche2off\\00-0x\\capture\\cost-sources.csv": {
+    "bytes": 786487,
+    "sha256": "19970810c910d24ec6ddc303a265df8f23628040a9fea0eec9e12de56e585bca"
+  },
+  "arche2off\\00-0x\\capture\\cost-state.txt": {
+    "bytes": 98,
+    "sha256": "7a6387271f644a3667a52cd2ce1f7b2bc38dc6995a5b2a0e79decb19fa0ba019"
+  }
+}

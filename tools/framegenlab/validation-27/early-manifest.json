@@ -1,0 +1,58 @@
+{
+  "early\\00-0x\\presentmon.csv": {
+    "bytes": 7638494,
+    "sha256": "d010550cd3ef7f7ae8be642953dde4332209b94dd3588a0c811f839a618d2125"
+  },
+  "early\\00-0x\\game.log": {
+    "bytes": 232225,
+    "sha256": "6c3ae0857511e46f010817102ff8a5210ef540edbe8336cbddc6ad4fe6c94df5"
+  },
+  "early\\00-0x\\run.txt": {
+    "bytes": 1228,
+    "sha256": "6b7af1892fea7e65e4c15a8b6a53fafecae40fdc0f3afeff747d8318b5688774"
+  },
+  "early\\00-0x\\capture\\cost-sources.csv": {
+    "bytes": 847849,
+    "sha256": "f53651b1e1516852a61de4610688455205b6fc7022092d40303d0ca378b4c7b5"
+  },
+  "early\\00-0x\\capture\\cost-state.txt": {
+    "bytes": 98,
+    "sha256": "7a6387271f644a3667a52cd2ce1f7b2bc38dc6995a5b2a0e79decb19fa0ba019"
+  },
+  "early\\01-1x\\game.log": {
+    "bytes": 233385,
+    "sha256": "49e914c3ac2c85c3e2fe89e1d6d600b2172089c7e857690038dd5e763e37691e"
+  },
+  "early\\01-1x\\run.txt": {
+    "bytes": 1226,
+    "sha256": "295551bbe615cb12ba897e4770592589a142f1df656780cb4af16018da5fa18c"
+  },
+  "early\\01-1x\\capture\\cost-sources.csv": {
+    "bytes": 784048,
+    "sha256": "d2e6c5181388c31d936252fe696019a8870524719f30fbb512dac8d9434824d3"
+  },
+  "early\\01-1x\\capture\\cost-state.txt": {
+    "bytes": 160,
+    "sha256": "d925bc51ca4c8b6af598b1a78a161e92ef45d621450c25285f64059f45c94d33"
+  },
+  "early\\01-1x\\capture\\sources.csv": {
+    "bytes": 4037575,
+    "sha256": "654ca4dc9516b6e862db2cf9abfbf0df7a7e45f8cbf28bb6ede7b394d5a134a8"
+  },
+  "early\\01-1x\\capture\\presents.csv": {
+    "bytes": 1714818,
+    "sha256": "544c7dbcf9fe1a41f6c71f607a6a975be2be9fef320b70a736046576bb6eb401"
+  },
+  "early\\01-1x\\capture\\ownership.txt": {
+    "bytes": 117,
+    "sha256": "ebfd0f418cfabf289596de17b183d43360efb8dfa1fb56f6227677b8cc38c1ba"
+  },
+  "early\\01-1x\\capture\\safety.txt": {
+    "bytes": 129,
+    "sha256": "ae7db3cd96d8da28fecde49e91a61f0daceed5a9b4eebff22612572c4a6f907a"
+  },
+  "early\\01-1x\\capture\\native-init.txt": {
+    "bytes": 307,
+    "sha256": "8369f61818cdba428fd0083dbf71566667b9aa19a4bad9b2d6ed8b351653f035"
+  }
+}

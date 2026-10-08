@@ -1,0 +1,63 @@
+{
+  "scope": "Separate final-build28s visual run; GPU captures invalidate performance/pacing. Original runner39s cost-window check failed; saved short data postprocessed with corrected23s end. Not a whole-song motion validation.",
+  "selection_rule": "First generated sample with phase0.25..0.75 differing from both references in at least4/256 pixels at threshold3/255",
+  "sample": {
+    "index": "54",
+    "mode": "4",
+    "real": "0",
+    "unity_frame": "12169",
+    "present_sample_s": "458118.973760500",
+    "song_s": "20.925688975",
+    "gate_reprojected": "-2",
+    "block_phase": "0.515068325"
+  },
+  "size": [
+    573,
+    240
+  ],
+  "difference_fraction": [
+    0.08377690517742874,
+    0.032140779522978474
+  ],
+  "triplets": 176,
+  "camera_window": {
+    "seconds": 18.009430299978703,
+    "frames": 4953,
+    "real_fps": 274.96705434407085,
+    "state": "active=True native_installed=1 sources=13583 generated=27678 runtime_initialized=True status= overflow=0"
+  },
+  "build": {
+    "managed_sha256": "2942ea830a637aec6c728e239cde0d032e0d9def8b692e8e36354efbd8f645c0",
+    "native_sha256": "cb868b72ea61f7e5dcf5bb498d49d310e9a328a24de34f19d44366c676ca26be"
+  },
+  "files": {
+    "clip-4x-054-generated.ppm": {
+      "bytes": 412575,
+      "sha256": "24cd929d7520a4b5b915dcb5a4bde9c5c9cfd995f02bcdd33b50744368ccaeb8"
+    },
+    "reference-4x-054.ppm": {
+      "bytes": 412575,
+      "sha256": "d0dc1a78723851530404925036ce18745906f26a90db65f7be47c5a97463e63b"
+    },
+    "next-reference-4x-054.ppm": {
+      "bytes": 412575,
+      "sha256": "63ddf0159f3fe56f0f581c148098a2cded7d9e42aaf67ab56a7c8a6e09bd9503"
+    },
+    "clip.csv": {
+      "bytes": 10355,
+      "sha256": "5f667166de1d5716b6f7d380c1fc8c02efcb488e01cbda1d25e875a0907005fb"
+    },
+    "safety.txt": {
+      "bytes": 129,
+      "sha256": "7fa7daeecf6b1635787e103a212a21243463bb02325cc6051d2c057b0370d067"
+    },
+    "ownership.txt": {
+      "bytes": 113,
+      "sha256": "d64bd09b6dc7b6f5eb71c960f990aaac85e95110fc433ae8e4e17fc42cda5cf5"
+    },
+    "native-init.txt": {
+      "bytes": 243,
+      "sha256": "5763ffea2dbca662cd78af8efa0bf52e8710b62695ad2be156b14b6a0d4f6905"
+    }
+  }
+}

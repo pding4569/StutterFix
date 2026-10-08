@@ -1,0 +1,1 @@
+Player/StutterFix.dll: FieldRefAccess(이름) 217곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 4(실행 중 확인)

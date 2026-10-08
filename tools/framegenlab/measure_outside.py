@@ -22,10 +22,10 @@ def stats(values):
     return dict(mean=statistics.mean(values),p95=sorted(values)[int(.95*(len(values)-1))],maximum=max(values)) if values else None
 
 
-def cost_scenes(directory):
-    rows=[r for r in read(directory/'cost-sources.csv') if 5<=float(r['song_s'])<45]
+def cost_scenes(directory,end=45):
+    rows=[r for r in read(directory/'cost-sources.csv') if 5<=float(r['song_s'])<end]
     seconds=float(rows[-1]['source_s'])-float(rows[0]['source_s'])
-    if seconds<39 or len({r['unity_frame'] for r in rows})!=len(rows):
+    if seconds<end-6 or len({r['unity_frame'] for r in rows})!=len(rows):
         raise RuntimeError('Incomplete or duplicate cost-scene window')
     state=(directory/'cost-state.txt').read_text(encoding='utf-8-sig')
     if 'overflow=0' not in state: raise RuntimeError('Cost sampler overflow')
@@ -94,6 +94,7 @@ def main():
     p.add_argument("--block-flow",action="store_true",help="Research only: GPU bidirectional image block interpolation, one true-frame delay")
     p.add_argument("--block-variant",type=int,choices=[0,1,2,3,4],default=3,help="Research only: 0 baseline, 1 smaller search image, 2 larger blocks, 3 search used pairs (default), 4 also batch matching with first generated draw")
     p.add_argument("--cost-split",action="store_true",help="Research-only equal counterfactual diagnostics OFF; mode1 copies/locks without matching, drawing or extra Present")
+    p.add_argument("--fixed-cost-stage",type=int,choices=[0,1,2,3,4],default=0,help="Chapter27: 1 ring,2 query,3 rejected early screen copy,4 early private scene render; ordinary unchanged")
     p.add_argument("--camera-blend",action="store_true",help="Research only: interpolate known camera poses with one-source visual delay")
     p.add_argument("--scene-pair",action="store_true",help="Visual only: save same-source world/screen textures at song20s")
     p.add_argument("--filter-pair",action="store_true",help="Visual only: copy one WideScreenHV input/output at song20s;read after native finish")
@@ -147,6 +148,7 @@ def main():
         if a.ui_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","ui 3","wait 3",f"shot framegen-research-setting-{a.mode}x","wait 3","ui close","wait 10"]
         if a.full_song: steps[-1]="waitend 600"
         settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair,"FrameGenScreenBorder":a.screen_border,"FrameGenLayerProbe":a.layer_probe,"FrameGenImageGate":a.image_gate,"FrameGenBlockFlow":a.block_flow,"FrameGenBlockVariant":a.block_variant,"FrameGenCostSplit":a.cost_split}
+        settings['FrameGenFixedCostStage']=a.fixed_cost_stage
         summary,metrics=sf.sf_run(steps+["quit"],settings=settings,tag="framegen-outside-"+a.label,timeout_min=a.timeout_min)
         log=sf.read_text(sf.PLAYER_LOG); (a.out/"game.log").write_text(log,encoding="utf-8"); (a.out/"run.txt").write_text(summary,encoding="utf-8")
         if a.ui_smoke: shutil.copyfile(shot,a.out/'settings.png')
@@ -161,9 +163,9 @@ def main():
                 index=int(row['index'])
                 for name in [f'reference-{a.mode}x-{index:03d}.ppm',f'next-reference-{a.mode}x-{index:03d}.ppm']:
                     if not (a.out/'capture'/name).is_file(): raise RuntimeError('Incomplete async triplet capture: '+name)
-        if any(v in log for v in ["Crash!!!","단계 실패","[안정성] 안전 모드로 켬","native failure","feature disabled","[프레임생성 테두리] 중단:"]) or "시간 초과로 끔" in summary:
+        if any(v in log for v in ["Crash!!!","단계 실패","[안정성] 안전 모드로 켬","native failure","feature disabled","[프레임생성 바깥] 중단:","[프레임생성 테두리] 중단:"]) or "시간 초과로 끔" in summary:
             raise RuntimeError("Failed experiment; inspect evidence")
-        scenes=cost_scenes(a.out/'capture') if a.cost_split else None
+        scenes=cost_scenes(a.out/'capture',end=45 if a.seconds>=50 else a.seconds-5) if a.cost_split else None
         if a.cost_split and a.mode==0:
             if not all(v in scenes['state'] for v in ['active=False','native_installed=0','generated=0','runtime_initialized=False']):
                 raise RuntimeError('OFF cost trial connected or initialized FrameGen')

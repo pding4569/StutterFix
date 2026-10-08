@@ -1,0 +1,42 @@
+{
+  "arche2\\00-2x\\presentmon.csv": {
+    "bytes": 9741997,
+    "sha256": "049a6a8f3d15c046fca369a03fd22255902e2515163be4ff86f8d3c334b5e6cd"
+  },
+  "arche2\\00-2x\\game.log": {
+    "bytes": 232708,
+    "sha256": "548bf271d57440bcd553bc43361b05b8aa5aadf42c450c829180163cb9f941bd"
+  },
+  "arche2\\00-2x\\run.txt": {
+    "bytes": 1227,
+    "sha256": "0804610de46181e5873adc1ea143c59f2dde1b9961fbbe6a8b759039b8813263"
+  },
+  "arche2\\00-2x\\capture\\cost-sources.csv": {
+    "bytes": 646649,
+    "sha256": "2abdbb0763241b964e32bb639f6644222e38c033472275fb36f45d58ab737535"
+  },
+  "arche2\\00-2x\\capture\\cost-state.txt": {
+    "bytes": 104,
+    "sha256": "e17eab04cb456703ac7b59072b636ef5fe2eace1ba49118d81288b5f6427acf9"
+  },
+  "arche2\\00-2x\\capture\\sources.csv": {
+    "bytes": 3592607,
+    "sha256": "445d9753d4323a437761529438dc79807072055cc1ab03e92407180092f53008"
+  },
+  "arche2\\00-2x\\capture\\presents.csv": {
+    "bytes": 3291882,
+    "sha256": "c5831f6873b58c05b37f084c1ec0c534123b8e64940ad6c43d0fafea9be0fa68"
+  },
+  "arche2\\00-2x\\capture\\ownership.txt": {
+    "bytes": 117,
+    "sha256": "1a5b4aa5703ce498dab7f32a7693b4e8434f4561e2c5cabc143cc5fbd76f7eaa"
+  },
+  "arche2\\00-2x\\capture\\safety.txt": {
+    "bytes": 129,
+    "sha256": "12681fe3b1e09e099b0f3ac7ad55c4ea550bf7a722028def08dca2d0537156f2"
+  },
+  "arche2\\00-2x\\capture\\native-init.txt": {
+    "bytes": 243,
+    "sha256": "888e7f2eadd0e36fc8ecd775c0281f2ac6fc3667d092689a493bdb2e6dea480d"
+  }
+}

@@ -91,7 +91,54 @@ inline DXGI_FORMAT raw(DXGI_FORMAT f) {
 }
 struct ContextLock { ID3D11Multithread* m; explicit ContextLock(ID3D11Multithread* p):m(p){m->Enter();} ~ContextLock(){m->Leave();} };
 struct Texture { ComPtr<ID3D11Texture2D> texture; ComPtr<ID3D11ShaderResourceView> view; };
+// Retain the producer's immutable ring entry; no GPU copy. The producer may only
+// rewrite the third entry while the current/previous entries are still consumed.
+inline void retainTexture(ID3D11Device* device,ID3D11Texture2D* input,Texture& out) {
+    if(!input) throw std::runtime_error("missing ring texture");
+    if(out.texture.Get()==input) return;
+    D3D11_TEXTURE2D_DESC d{};input->GetDesc(&d);
+    if(!(d.BindFlags&D3D11_BIND_SHADER_RESOURCE)) throw std::runtime_error("ring texture is not readable");
+    out=Texture{};out.texture=input;
+    D3D11_SHADER_RESOURCE_VIEW_DESC sd{};sd.Format=raw(d.Format);sd.ViewDimension=D3D11_SRV_DIMENSION_TEXTURE2D;sd.Texture2D.MipLevels=1;
+    check(device->CreateShaderResourceView(input,&sd,&out.view));
+}
+inline bool rotatingWorld(const Packet& p) {
+#ifdef SF_FRAMEGEN_RESEARCH
+    return (p.capture&2048)!=0;
+#else
+    (void)p;return false;
+#endif
+}
+inline bool completionOnly(const Packet& p) {
+#ifdef SF_FRAMEGEN_RESEARCH
+    return (p.capture&4096)!=0;
+#else
+    (void)p;return false;
+#endif
+}
+inline bool splitSnapshotLock(const Packet& p) {
+#ifdef SF_FRAMEGEN_RESEARCH
+    return (p.capture&8192)!=0;
+#else
+    (void)p;return false;
+#endif
+}
+struct SceneCompletion {
+    ComPtr<ID3D11Query> event;
+    bool ready(ID3D11DeviceContext* context) const {
+        if(!event) return true;
+        HRESULT hr=context->GetData(event.Get(),nullptr,0,D3D11_ASYNC_GETDATA_DONOTFLUSH);
+        check(hr);return hr==S_OK;
+    }
+    void mark(ID3D11Device* device,ID3D11DeviceContext* context) {
+        if(!event) {D3D11_QUERY_DESC d{D3D11_QUERY_EVENT,0};check(device->CreateQuery(&d,&event));}
+        context->End(event.Get());
+    }
+};
 struct Slot {
+#ifdef SF_FRAMEGEN_RESEARCH
+    SceneCompletion completion;
+#endif
 #ifdef SF_FRAMEGEN_RESEARCH
     std::array<Texture,3> images;
 #else
@@ -178,7 +225,14 @@ public:
     std::vector<ScheduleRecord> schedules;
     std::atomic<double> workerWaitSince{0};
     double sourceBegin=0,sourceHeldMs=0,workerWaitMs=0;
+#ifdef SF_FRAMEGEN_RESEARCH
+    double sourceAccumulatedMs=0;
+    unsigned long long stagedSequence=0;
+    int stagedFrame=-1;
+#endif
     unsigned long long missedLock=0,missedTimer=0,replacedSnapshots=0;
+    unsigned long long worldCopies=0,worldRetains=0,screenCopies=0;
+    unsigned long long explicitFlushes=0,completionMarks=0,completionReady=0,completionPending=0;
     std::wstring path;
     unsigned width=0,height=0;
     bool oldProtection=false,diagnostics=false;
@@ -194,13 +248,25 @@ public:
         if(diagnostics) { records.reserve(1000000); sources.reserve(500000); // Bounded, allocated before playing; three whole runs fit without growth.
         schedules.reserve(500000); }
     }
-    void beginFrame() {
+    void beginFrame(bool first=true) {
         frameMutex.lock();
         if(frameHeld.exchange(true)) { error=4; frameMutex.unlock(); return; }
         ++frameBegins;
+#ifdef SF_FRAMEGEN_RESEARCH
+        if(first) sourceAccumulatedMs=0;
+#else
+        (void)first;
+#endif
         sourceBegin=now();
     }
-    void endFrame() { if(frameHeld.exchange(false)) { sourceHeldMs=(now()-sourceBegin)*1000; ++frameEnds; frameMutex.unlock(); } }
+    void endFrame(bool final=true) { if(frameHeld.exchange(false)) {
+#ifdef SF_FRAMEGEN_RESEARCH
+        sourceAccumulatedMs+=(now()-sourceBegin)*1000;
+        if(final) sourceHeldMs=sourceAccumulatedMs;
+#else
+        (void)final;sourceHeldMs=(now()-sourceBegin)*1000;
+#endif
+        ++frameEnds; frameMutex.unlock(); } }
     void stop() { stopRequested=true; endFrame(); if(worker.joinable()) worker.join(); }
     bool isWorker() const { return workerId.load()==GetCurrentThreadId(); }
     void drawReal() { std::lock_guard<std::mutex> gate(mutex); auto& s=slots[published%slots.size()]; if(s.sequence) render(s,true,s.qpc); }
@@ -215,6 +281,17 @@ public:
     }
     void release() { stop(); if(protection) protection->SetMultithreadProtected(oldProtection); for(auto& s:slots) s=Slot{}; backTarget.Reset(); backBuffer.Reset(); protection.Reset(); immediate.Reset(); device.Reset(); }
     ~Output(){release();}
+    void stageScreen(const Packet& p,ID3D11Texture2D* screen) {
+#ifdef SF_FRAMEGEN_RESEARCH
+        if(!splitSnapshotLock(p) || !frameHeld || p.mode==0) throw std::runtime_error("invalid split snapshot boundary");
+        std::lock_guard<std::mutex> gate(mutex);ContextLock context(protection.Get());
+        auto& s=slots[(published+1)%slots.size()];
+        copy(screen,s.images[1]);++screenCopies;
+        stagedSequence=published+1;stagedFrame=p.frame;
+#else
+        (void)p;(void)screen;throw std::runtime_error("split snapshot is research only");
+#endif
+    }
     // Producer/render thread only. Ordered GPU copies and publication are under the same gate as playback.
     void publish(const Packet& p,ID3D11Texture2D* screen) {
         if(error.load()) throw std::runtime_error("worker failed");
@@ -270,7 +347,24 @@ public:
         }
         ContextLock context(protection.Get());
         auto& s=slots[(published+1)%slots.size()];
-        for(int i=0;i<2;i++) copy(i==1?screen:static_cast<ID3D11Texture2D*>(p.textures[0]),s.images[i]);
+#ifdef SF_FRAMEGEN_RESEARCH
+        if(completionOnly(p) && s.completion.event) {
+            if(s.completion.ready(immediate.Get())) ++completionReady;else ++completionPending;
+        }
+#endif
+        auto* world=static_cast<ID3D11Texture2D*>(p.textures[0]);
+        if(rotatingWorld(p)) {
+            for(unsigned age=0;age<2 && published>age;age++)
+                if(slots[(published-age)%slots.size()].images[0].texture.Get()==world)
+                    throw std::runtime_error("producer overwrote a live interpolation ring entry");
+            retainTexture(device.Get(),world,s.images[0]);++worldRetains;
+        } else {copy(world,s.images[0]);++worldCopies;}
+        if(splitSnapshotLock(p)) {
+#ifdef SF_FRAMEGEN_RESEARCH
+            if(stagedSequence!=published+1 || stagedFrame!=p.frame) throw std::runtime_error("missing split screen snapshot");
+            stagedSequence=0;stagedFrame=-1;
+#endif
+        } else {copy(screen,s.images[1]);++screenCopies;} // Original swapchain/UI is mutable; retain is not a snapshot.
 #ifdef SF_FRAMEGEN_RESEARCH
         if(screenBorderEnabled(p)) copy(reinterpret_cast<ID3D11Texture2D*>(reinterpret_cast<uintptr_t>(p.textures[2])&~uintptr_t(1)),s.images[2]);
 #endif
@@ -312,11 +406,20 @@ public:
         }
 #endif
         scheduleActive=true;
-        immediate->Flush(); // Hand buffered Unity work to the driver before waking independent output.
+        if(completionOnly(p)) {
+#ifdef SF_FRAMEGEN_RESEARCH
+            // The original Present submits this immediate-context queue. All later
+            // GPU reads and ring rewrites stay ordered in the same queue. Query is
+            // observation only: never spin, CPU-wait or insert a readback here.
+            s.completion.mark(device.Get(),immediate.Get());++completionMarks;
+#endif
+        } else {immediate->Flush();++explicitFlushes;}
         previousPacket=lastPacket; lastPacket=p; previousQpc=lastQpc; lastQpc=t; havePrevious=true; mode=connectionOnly(p)?0:p.mode;
     }
     void save() {
         if(!diagnostics) return;
+        FILE* ownership=nullptr;_wfopen_s(&ownership,(path+L"/ownership.txt").c_str(),L"wb");
+        if(ownership) {fprintf(ownership,"world_copies=%llu world_retains=%llu screen_copies=%llu flushes=%llu query_marks=%llu query_ready=%llu query_pending=%llu\n",worldCopies,worldRetains,screenCopies,explicitFlushes,completionMarks,completionReady,completionPending);fclose(ownership);}
 #ifdef SF_FRAMEGEN_RESEARCH
         { ContextLock context(protection.Get()); motionClip.save(immediate.Get(),path); }
         { ContextLock context(protection.Get()); blockFlow.save(immediate.Get(),path); }
@@ -581,6 +684,13 @@ inline void Output::render(const Slot& s,bool real,double tick) {
             blockFlow.draw(immediate.Get(),backTarget.Get(),*image,s,phase,timing?&q:nullptr,!real && s.packet.measure && song>=5 && song<45);}
 #ifdef SF_FRAMEGEN_RESEARCH
         if((s.packet.capture&3)==2) clip(backBuffer.Get(),song,s.packet.frame,s.packet.mode,real,image,&s,-2,phase);
+        if((s.packet.capture&8) && !real && captured==0 && song>=20) {
+            ++captured; // Separate visual-only blocking read; never a performance trial.
+            picture(image->images[0].texture.Get(),L"snapshot-world.ppm");
+            picture(image->images[1].texture.Get(),L"snapshot-screen.ppm");
+            picture(s.images[0].texture.Get(),L"next-world.ppm");
+            picture(s.images[1].texture.Get(),L"next-screen.ppm");
+        }
 #endif
         pending={0,song,NAN,real?1:0,s.packet.measure?s.packet.frame:-1,S_OK,std::max(0.,tick-(image->qpc+phase*(s.qpc-image->qpc)))};
         pending.targetTime=image->qpc+phase*(s.qpc-image->qpc);

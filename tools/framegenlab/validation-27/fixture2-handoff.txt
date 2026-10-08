@@ -1,0 +1,1 @@
+swapchains=1 debug_layer=0 frames=600 outputs=1486 producer_state_errors=0 pixel_errors=0 debug_errors=0 pause_outputs=66 worker_error=0 device_removed=0x00000000

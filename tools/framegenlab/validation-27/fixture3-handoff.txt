@@ -1,0 +1,2 @@
+swapchains=1 debug_layer=0 frames=91 outputs=430 producer_state_errors=0 pixel_errors=0 debug_errors=0 pause_outputs=65 worker_error=0 device_removed=0x00000000
+private_world_gap_outputs=272

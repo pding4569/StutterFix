@@ -1,0 +1,38 @@
+{
+  "scope": "Separate fresh Arche4x runs, ~song20s;3440x1440 originals. Flip worldY, center60%, per-channel2.5/255. Diagnostic GPU readbacks invalidate performance and pacing; still images do not verify motion.",
+  "runs": {
+    "pair-query": {
+      "size": [
+        3440,
+        1440
+      ],
+      "world_flip_y": true,
+      "matching_percent": 96.48072109173127,
+      "center_matching_percent": 100.0,
+      "mae": 3.961222612510767,
+      "geometry": "frame=13379 song=20.000593774486333 screen=3440x1440\nscene rect=0,0,1,1 pixelRect=0,0,3440,1440 size=8.452002 aspect=2.38888884 clearFlags=Nothing background=RGBA(0.500, 0.500, 0.500, 1.000)\nscene enabled_component=scrCamera\nscene enabled_component=CameraFilterPackLegacy_Atmosphere_Rain\nscene enabled_component=VideoBloom\nscene enabled_component=CameraFilterPackLegacy_Color_Chromatic_Aberration\nscene enabled_component=CameraFilterPackLegacy_Color_Contrast\noverlay rect=0,0,1,1 pixelRect=0,0,3440,1440 size=5 aspect=2.38888884 clearFlags=SolidColor background=RGBA(0.000, 0.000, 0.000, 1.000)\nsnapshot rect=0,0,1,1 pixelRect=0,0,3440,1440 size=5 aspect=2.38888884 clearFlags=SolidColor background=RGBA(0.000, 0.000, 0.000, 1.000)\nquad_shader=Mobile/Unlit (Supports Lightmap) uv_scale=1,1 uv_offset=0,0\nquad_viewport=0,2.38418579E-07,50\nquad_viewport=0.9999995,2.38418579E-07,50\nquad_viewport=0,1.00000048,50\nquad_viewport=0.9999995,1.00000024,50\n"
+    },
+    "pair-split": {
+      "size": [
+        3440,
+        1440
+      ],
+      "world_flip_y": true,
+      "matching_percent": 43.53141149870801,
+      "center_matching_percent": 22.37732827304048,
+      "mae": 14.567202909668389,
+      "geometry": "frame=13302 song=20.001930825877935 screen=3440x1440\nscene rect=0,0,1,1 pixelRect=0,0,3440,1440 size=8.438644 aspect=2.38888884 clearFlags=Nothing background=RGBA(0.500, 0.500, 0.500, 1.000)\nscene enabled_component=scrCamera\nscene enabled_component=CameraFilterPackLegacy_Atmosphere_Rain\nscene enabled_component=VideoBloom\nscene enabled_component=CameraFilterPackLegacy_Color_Chromatic_Aberration\nscene enabled_component=CameraFilterPackLegacy_Color_Contrast\noverlay rect=0,0,1,1 pixelRect=0,0,3440,1440 size=5 aspect=2.38888884 clearFlags=SolidColor background=RGBA(0.000, 0.000, 0.000, 1.000)\nsnapshot rect=0,0,1,1 pixelRect=0,0,3440,1440 size=5 aspect=2.38888884 clearFlags=SolidColor background=RGBA(0.000, 0.000, 0.000, 1.000)\nquad_shader=Mobile/Unlit (Supports Lightmap) uv_scale=1,1 uv_offset=0,0\nquad_viewport=0,-2.38418579E-07,50\nquad_viewport=1,-1.1920929E-07,50\nquad_viewport=-2.38418579E-07,0.999999762,50\nquad_viewport=1,0.999999762,50\n"
+    },
+    "pair-early": {
+      "size": [
+        3440,
+        1440
+      ],
+      "world_flip_y": true,
+      "matching_percent": 96.47060723514211,
+      "center_matching_percent": 100.0,
+      "mae": 3.980986151485788,
+      "geometry": "frame=13292 song=20.000389688182622 screen=3440x1440\nscene rect=0,0,1,1 pixelRect=0,0,3440,1440 size=8.436589 aspect=2.38888884 clearFlags=Nothing background=RGBA(0.500, 0.500, 0.500, 1.000)\nscene enabled_component=scrCamera\nscene enabled_component=CameraFilterPackLegacy_Atmosphere_Rain\nscene enabled_component=VideoBloom\nscene enabled_component=CameraFilterPackLegacy_Color_Chromatic_Aberration\nscene enabled_component=CameraFilterPackLegacy_Color_Contrast\noverlay rect=0,0,1,1 pixelRect=0,0,3440,1440 size=5 aspect=2.38888884 clearFlags=SolidColor background=RGBA(0.000, 0.000, 0.000, 1.000)\nsnapshot rect=0,0,1,1 pixelRect=0,0,3440,1440 size=5 aspect=2.38888884 clearFlags=SolidColor background=RGBA(0.000, 0.000, 0.000, 1.000)\nquad_shader=Mobile/Unlit (Supports Lightmap) uv_scale=1,1 uv_offset=0,0\nquad_viewport=-2.38418579E-07,-1.1920929E-07,50\nquad_viewport=0.999999762,-2.38418579E-07,50\nquad_viewport=0,1,50\nquad_viewport=0.999999762,0.999999762,50\n"
+    }
+  }
+}

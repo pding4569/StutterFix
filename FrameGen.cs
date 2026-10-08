@@ -106,6 +106,23 @@ namespace StutterFix
         private static bool BlockFlow => Main.Config.FrameGenBlockFlow;
         private static int BlockVariant => Main.Config.FrameGenBlockVariant;
         private static bool CostSplit => Main.Config.FrameGenCostSplit;
+        private static int FixedCostStage => Main.Config.FrameGenFixedCostStage;
+        private static RenderTexture[] worldRing;
+        private static IntPtr[] worldPointers;
+        private static int worldIndex;
+        private static int earlyWorldFrame=-1,earlyFallbacks;
+        private static void EarlyWorld(Camera c) {
+            if(FixedCostStage!=4 || finished || failed || oldMode==0 || worldCamera==null || world==null ||
+               scrCamera.instance==null || c!=Overlay(scrCamera.instance) || earlyWorldFrame==Time.frameCount || finalBeginFrame==Time.frameCount) return;
+            // This camera has not begun drawing to the final screen. Only our
+            // third scene RT is touched; final UI capture stays in native Present.
+            try {
+            if(worldRing!=null) {int i=worldIndex%3;world=worldRing[i];texture=worldPointers[i];}
+            worldCamera.CopyFrom(c);worldCamera.enabled=false;
+            worldCamera.transform.SetPositionAndRotation(c.transform.position,c.transform.rotation);worldCamera.targetTexture=world;
+            worldCamera.Render();earlyWorldFrame=Time.frameCount;
+            } catch(Exception ex) {failed=true;Log("중단: early world: "+ex.Message);}
+        }
         private static bool ScenePair => Main.Config.FrameGenScenePair;
         private static bool pairGeometrySaved;
         private static double lastPairSong;
@@ -169,6 +186,7 @@ namespace StutterFix
 #if FRAMEGEN_RESEARCH
             pairGeometrySaved=false;
             lastPairSong=double.NaN;
+            earlyWorldFrame=-1;earlyFallbacks=0;Camera.onPreCull+=EarlyWorld;
 #endif
             finalBeginFrame=-1;
             sceneCamera=sceneBase=scenePulse=Vector4.zero;
@@ -206,6 +224,16 @@ namespace StutterFix
             // Downsampling it to camRT size changes pixels and mislabels scene edges
             // as UI. Capture the same pixel grid as the game's final output instead.
             world=new RenderTexture(width,height,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear) {hideFlags=HideFlags.HideAndDontSave}; world.Create(); texture=world.GetNativeTexturePtr();
+#if FRAMEGEN_RESEARCH
+            if(FixedCostStage>=1) {
+                worldRing=new RenderTexture[3]; worldPointers=new IntPtr[3]; worldIndex=0;
+                worldRing[0]=world; worldPointers[0]=texture;
+                for(int i=1;i<3;i++) {
+                    worldRing[i]=new RenderTexture(world.descriptor) {hideFlags=HideFlags.HideAndDontSave};
+                    worldRing[i].Create(); worldPointers[i]=worldRing[i].GetNativeTexturePtr();
+                }
+            }
+#endif
             worldCamera=new GameObject("FrameGen.IncludedWorld") {hideFlags=HideFlags.HideAndDontSave}.AddComponent<Camera>(); worldCamera.enabled=false;
             if(BlockFlow && scrController.instance!=null) {
                 redRenderers=scrController.instance.planetRed.GetComponentsInChildren<Renderer>(true);
@@ -230,6 +258,9 @@ namespace StutterFix
 #if FRAMEGEN_RESEARCH
                 if(Main.Config.FrameGenImageGate && CameraBlend) p.capture|=32;
                 if(CostSplit) p.capture|=1024; // Equal diagnostic work in OFF/copy-only/2x/4x cost comparison.
+                if(FixedCostStage>=1) p.capture|=2048; // Borrow one of three producer-owned scene textures.
+                if(FixedCostStage>=2) p.capture|=4096; // Completion query; original Present submits the queue.
+                if(FixedCostStage==3) p.capture|=8192; // Rejected early-backbuffer snapshot experiment; not stage4.
 #endif
                 if(BlockFlow) p.capture|=64|4|((BlockVariant&7)<<7);
                 if(CameraBlend) p.capture|=4; // Shared delayed timeline, one-source visual delay.
@@ -247,19 +278,40 @@ namespace StutterFix
                     }
                 }
                 if(p.mode!=0 && sceneCamera.z>.00001f && scene!=null && sc!=null && Overlay(sc)!=null) {
-                    var overlay=Overlay(sc); worldCamera.CopyFrom(overlay); worldCamera.enabled=false;
-                    worldCamera.transform.SetPositionAndRotation(overlay.transform.position,overlay.transform.rotation); worldCamera.targetTexture=world;
 #if FRAMEGEN_RESEARCH
                     if(Main.Config.FrameGenScreenBorder && FrameGenScreenBorder.TryGet(out var border)) {
                         if((border.ToInt64()&1)!=0) throw new InvalidOperationException("unaligned screen mask pointer");
                         p.unused2=new IntPtr(border.ToInt64()|p.unused2.ToInt64()); p.capture|=16;
                     }
 #endif
+#if FRAMEGEN_RESEARCH
+                    if(FixedCostStage!=4 || earlyWorldFrame!=Time.frameCount) {
+                    if(FixedCostStage==4) ++earlyFallbacks;
+                    if(worldRing!=null) {int i=worldIndex%3;world=worldRing[i];texture=worldPointers[i];}
+#endif
+                    var overlay=Overlay(sc); worldCamera.CopyFrom(overlay); worldCamera.enabled=false;
+                    worldCamera.transform.SetPositionAndRotation(overlay.transform.position,overlay.transform.rotation); worldCamera.targetTexture=world;
+                    p.world=texture;
+#if FRAMEGEN_RESEARCH
+                    bool split=FixedCostStage==3;
+                    if(split) Issue(6,Write(p));
+                    try {worldCamera.Render();}
+                    finally {if(split) Issue(5,new IntPtr(1));} // Resume the same source frame, including on managed failure.
+#else
                     worldCamera.Render();
+#endif
+#if FRAMEGEN_RESEARCH
+                    }
+#endif
 #if FRAMEGEN_RESEARCH
                     if(ScenePair && !pairGeometrySaved && song>=20 && song<23) { pairGeometrySaved=true; SavePairGeometry(sc,song); }
 #endif
                     p.world=texture;
+#if FRAMEGEN_RESEARCH
+                    // An early render can run while the scene camera is inactive.
+                    // Advance only for an admitted packet, never for that unused render.
+                    if(worldRing!=null) ++worldIndex;
+#endif
                 } else p.mode=0;
                 Issue(1,Write(p));
         }
@@ -288,7 +340,7 @@ namespace StutterFix
                 var cameras=new[]{Cam(sc),Overlay(sc),worldCamera}; var labels=new[]{"scene","overlay","snapshot"};
                 for(int i=0;i<cameras.Length;i++) {
                     var c=cameras[i]; if(c==null) continue; var r=c.rect; var p=c.pixelRect;
-                    f.WriteLine(FormattableString.Invariant($"{labels[i]} rect={r.x:R},{r.y:R},{r.width:R},{r.height:R} pixelRect={p.x:R},{p.y:R},{p.width:R},{p.height:R} size={c.orthographicSize:R} aspect={c.aspect:R}"));
+                    f.WriteLine(FormattableString.Invariant($"{labels[i]} rect={r.x:R},{r.y:R},{r.width:R},{r.height:R} pixelRect={p.x:R},{p.y:R},{p.width:R},{p.height:R} size={c.orthographicSize:R} aspect={c.aspect:R} clearFlags={c.clearFlags} background={c.backgroundColor}"));
                     foreach(var behaviour in c.GetComponents<MonoBehaviour>()) if(behaviour.enabled)
                         f.WriteLine(labels[i]+" enabled_component="+behaviour.GetType().Name);
                 }
@@ -317,11 +369,22 @@ namespace StutterFix
         private static void FreeTextures() {
             redRenderers=blueRenderers=null;
             if(worldCamera!=null) UnityEngine.Object.Destroy(worldCamera.gameObject); worldCamera=null;
+#if FRAMEGEN_RESEARCH
+            earlyWorldFrame=-1;
+            if(worldRing!=null) {
+                foreach(var rt in worldRing) {rt.Release();UnityEngine.Object.Destroy(rt);}
+                worldRing=null;worldPointers=null;world=null;worldIndex=0;
+            }
+#endif
             if(world!=null) { world.Release(); UnityEngine.Object.Destroy(world); } world=null; scene=null; texture=IntPtr.Zero;
         }
         internal static void Finish() {
             if(finished || callback==IntPtr.Zero) return; finished=true; Camera.onPostRender-=PostRender; Camera.onPreRender-=PreRender;
             if(Diagnostics) PlayerLoop.SetPlayerLoop(RemoveFrameStart(PlayerLoop.GetCurrentPlayerLoop()));
+#if FRAMEGEN_RESEARCH
+            Camera.onPreCull-=EarlyWorld;
+            if(FixedCostStage==4) Log("early world fallback="+earlyFallbacks);
+#endif
             Issue(4,IntPtr.Zero); GL.Flush(); if(Diagnostics) Log("finish; missing real scenes="+missingScenes+" native status="+sf_framegen_status());
         }
         internal static void Uninstall() {

@@ -1,0 +1,102 @@
+{
+  "rotate\\00-0x\\presentmon.csv": {
+    "bytes": 7579970,
+    "sha256": "5579bec26b2cbf7ac2e85e79c037c6b321cba02232981096418e35665e6f5e8d"
+  },
+  "rotate\\00-0x\\game.log": {
+    "bytes": 232263,
+    "sha256": "13a0541602581fad601331832625456d2fa61d9eabd5806b27384c7a885299c1"
+  },
+  "rotate\\00-0x\\run.txt": {
+    "bytes": 1229,
+    "sha256": "b287eff72fadc8db77e84522aaea82c08c3169386c7f36c1e7093f7b390a4297"
+  },
+  "rotate\\00-0x\\capture\\cost-sources.csv": {
+    "bytes": 836283,
+    "sha256": "39f119cde465511e0f47edace89a1f6f7f8fd31c718926b21e653f97d94ca32e"
+  },
+  "rotate\\00-0x\\capture\\cost-state.txt": {
+    "bytes": 98,
+    "sha256": "7a6387271f644a3667a52cd2ce1f7b2bc38dc6995a5b2a0e79decb19fa0ba019"
+  },
+  "rotate\\01-1x\\presentmon.csv": {
+    "bytes": 6790667,
+    "sha256": "9d503eee7613defd8e83b111549f42865c4495d07c3d920cdc9e6e4b857da20d"
+  },
+  "rotate\\01-1x\\game.log": {
+    "bytes": 232790,
+    "sha256": "a7879640a609465e1b30abcd93eb405c0726740a246cc691dca1d19a1a419d62"
+  },
+  "rotate\\01-1x\\run.txt": {
+    "bytes": 1227,
+    "sha256": "05efc9e2423d07c16f38e444c2aa5f30097fb20affde1c59ae4f30adb2d99745"
+  },
+  "rotate\\01-1x\\capture\\cost-sources.csv": {
+    "bytes": 783467,
+    "sha256": "1f01be0b98894367254904e7807d5ab82e453ed76a1635b13f6ca8c66fd992fb"
+  },
+  "rotate\\01-1x\\capture\\cost-state.txt": {
+    "bytes": 100,
+    "sha256": "cae799e7d0c17a53b066eb8bb8ee256cb83c597c283b9bfea18981fe42c05181"
+  },
+  "rotate\\01-1x\\capture\\sources.csv": {
+    "bytes": 4339121,
+    "sha256": "ade109f670e0ec46a3b7dc7e707e06d2e066801ec69d5396934aa98d4b27766f"
+  },
+  "rotate\\01-1x\\capture\\presents.csv": {
+    "bytes": 1842266,
+    "sha256": "d17ae3f8812113f9ebc9d33a7a5252cbaf1ce317914c3f6145d518e71e67f42c"
+  },
+  "rotate\\01-1x\\capture\\ownership.txt": {
+    "bytes": 55,
+    "sha256": "b6d6cabb406c802c6fe47e53156917bc13bff90ca3a4e8452d17f47569143281"
+  },
+  "rotate\\01-1x\\capture\\safety.txt": {
+    "bytes": 129,
+    "sha256": "34d791755d00ce6c0c79dc560eb2e3b513c3114ec45063c290f80c960e7a707c"
+  },
+  "rotate\\01-1x\\capture\\native-init.txt": {
+    "bytes": 243,
+    "sha256": "b11d20c6074f8838d1e284bab40445e0f4a217cb59fb0467e3c7529052ea811b"
+  },
+  "rotate\\02-4x\\presentmon.csv": {
+    "bytes": 20579180,
+    "sha256": "03f4e6c9f7ba9241f7685ba064fa0cc3e94894b3c9e4daf5b11e86dee680a28d"
+  },
+  "rotate\\02-4x\\game.log": {
+    "bytes": 232645,
+    "sha256": "93fc90a30530e060c3e714afa1f8d7ce9d6f6d9f2aee98503bcb171cd4f4e9f0"
+  },
+  "rotate\\02-4x\\run.txt": {
+    "bytes": 1227,
+    "sha256": "d97e86123f0caec50b2b6b66579db6b1cdc7fac5e173413ede56b90bf607b827"
+  },
+  "rotate\\02-4x\\capture\\cost-sources.csv": {
+    "bytes": 728380,
+    "sha256": "e2b36c3306efac37d15cffd89f91b6e09f267f0f3997559c02f39001d7c9ea23"
+  },
+  "rotate\\02-4x\\capture\\cost-state.txt": {
+    "bytes": 104,
+    "sha256": "3e5841579c756e3094bb30b2132a63c97741407d3bf8fdfa07d6371568bcf730"
+  },
+  "rotate\\02-4x\\capture\\sources.csv": {
+    "bytes": 4039543,
+    "sha256": "23165153efe28cdbcbbc14441d25646b94ae41664ae4e88c58306fd1143f4850"
+  },
+  "rotate\\02-4x\\capture\\presents.csv": {
+    "bytes": 7456725,
+    "sha256": "64be68fb6079e24f3ccf2355ca0ffdac6fb68329bd66d36f7489b79dfc7340a8"
+  },
+  "rotate\\02-4x\\capture\\ownership.txt": {
+    "bytes": 55,
+    "sha256": "42022c2034b2168b70c851b01027fda543315309bc6ec72d069939cf5db97f84"
+  },
+  "rotate\\02-4x\\capture\\safety.txt": {
+    "bytes": 129,
+    "sha256": "178f4c11dffd8320f5562d867407b5084b5221b32f7d9f034618d73c36b6c26e"
+  },
+  "rotate\\02-4x\\capture\\native-init.txt": {
+    "bytes": 243,
+    "sha256": "4e616d3a4b96560c734e317fee966ef0688c6410085e9269db6220531a879cbc"
+  }
+}
