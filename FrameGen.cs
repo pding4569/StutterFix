@@ -100,9 +100,11 @@ namespace StutterFix
         private static bool FlipY => Main.Config.FrameGenFlipY;
         private static bool Capture => Main.Config.FrameGenCapture;
         private static bool Clip => Main.Config.FrameGenClip;
+        private static bool CameraBlend => Main.Config.FrameGenCameraBlend;
+        private static bool ScenePair => Main.Config.FrameGenScenePair;
 #else
         internal const bool Diagnostics=false;
-        private const bool Narrow=true,FlipY=true,Capture=false,Clip=false;
+        private const bool Narrow=true,FlipY=true,Capture=false,Clip=false,CameraBlend=false,ScenePair=false;
 #endif
         internal static bool Failed => failed;
         private static Runner runner;
@@ -196,6 +198,8 @@ namespace StutterFix
                 var sc=scrCamera.instance; var controller=scrController.instance; double song=scrConductor.instance!=null?scrConductor.instance.songposition_minusi:-1;
                 if(Diagnostics && Hitch.Playing && song>=5 && trackedCamera!=null && renderedFrame!=Time.frameCount) missingScenes++;
                 Packet p=new Packet {unused1=Narrow?new IntPtr(1):IntPtr.Zero,frame=Time.frameCount,song=song,measure=Diagnostics && Hitch.Playing?1:0,mode=Hitch.Playing && !failed?Math.Max(0,oldMode):0,flip=FlipY?1:0,linear=QualitySettings.activeColorSpace==ColorSpace.Linear?1:0,capture=Capture?1:Clip?2:0};
+                if(CameraBlend) p.capture|=4; // Research only: known-camera interpolation, one-source visual delay.
+                if(ScenePair) p.capture|=8; // Separate early visual test; never a performance sample.
                 p.unused2=renderedFrame==Time.frameCount?new IntPtr(1):IntPtr.Zero;
                 if(sc!=null && controller!=null && controller.planetRed!=null && controller.planetBlue!=null) {
                     var camera=Cam(sc); if(camera!=null) {

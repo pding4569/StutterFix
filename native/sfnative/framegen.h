@@ -90,6 +90,22 @@ inline DXGI_FORMAT raw(DXGI_FORMAT f) {
 struct ContextLock { ID3D11Multithread* m; explicit ContextLock(ID3D11Multithread* p):m(p){m->Enter();} ~ContextLock(){m->Leave();} };
 struct Texture { ComPtr<ID3D11Texture2D> texture; ComPtr<ID3D11ShaderResourceView> view; };
 struct Slot { std::array<Texture,2> images; Packet packet{},previousPacket{}; Pose previous{}; double qpc=0,previousSong=0,period=.005,frameDelta=.005; unsigned long long sequence=0; };
+// Packet.capture bits0..1 select readback; bit2 selects the research-only delayed camera; bit3 requests an early diagnostic pair.
+inline bool cameraBlendEnabled(const Packet& p) {
+#ifdef SF_FRAMEGEN_RESEARCH
+    return (p.capture&4)!=0;
+#else
+    (void)p; return false; // The candidate is not enabled in the ordinary native build.
+#endif
+}
+inline Pose interpolateCamera(const Pose& previous,const Pose& current,double phase) {
+    Pose result=current;
+    if(previous.camera[2]<=.00001f || current.camera[2]<=.00001f) return result;
+    float u=float(std::clamp(phase,0.,1.));
+    for(int i=0;i<3;i++) result.camera[i]=previous.camera[i]+(current.camera[i]-previous.camera[i])*u;
+    result.camera[3]=previous.camera[3]+angleDifference(current.camera[3],previous.camera[3])*u;
+    return result;
+}
 struct Query { ComPtr<ID3D11Query> begin,end,disjoint; size_t row=SIZE_MAX; };
 class Output {
 public:
@@ -150,7 +166,7 @@ public:
         if(p.mode!=0 && (p.mode<2 || p.mode>8)) throw std::runtime_error("unsupported output multiplier");
         double t=now();
         if(p.song<lastPacket.song-1) { captured=0; clipNext=0; }
-        if(p.capture==2) clip(screen,p.song,p.frame,p.mode,true);
+        if((p.capture&3)==2 && !cameraBlendEnabled(p)) clip(screen,p.song,p.frame,p.mode,true);
         SourceRecord row{t,p.song,p.frame,p.pose,0,0,0,0,p.textures[2]==reinterpret_cast<void*>(1)?1:0};
         memcpy(row.base,p.textures+3,16); memcpy(row.pulse,p.pulse,16);
         bool realClock=lastPacket.textures[1]==reinterpret_cast<void*>(1);
@@ -214,7 +230,7 @@ public:
         _wfopen_s(&f,(path+L"/clip.csv").c_str(),L"wb");
         if(f) { fprintf(f,"index,mode,real,unity_frame,present_sample_s,song_s\n"); for(auto& r:clips) fprintf(f,"%d,%d,%d,%d,%.9f,%.9f\n",r.index,r.mode,r.real,r.frame,r.time,r.song); fclose(f); }
     }
-    void recordOff(const Packet& p,HRESULT hr) { ++outputs; std::lock_guard<std::mutex> gate(mutex); if(p.measure && records.size()<1000000) { Record r{now(),p.song,NAN,1,p.frame,hr,0}; memcpy(r.camera,p.pose.camera,16); records.push_back(r); } }
+    void recordOff(const Packet& p,HRESULT hr) { ++outputs; std::lock_guard<std::mutex> gate(mutex); if(p.measure && records.size()<1000000) { Record r{now(),p.song,NAN,1,p.frame,hr,0}; memcpy(r.camera,cameraBlendEnabled(p) && p.mode?pending.camera:p.pose.camera,16); records.push_back(r); } }
 private:
     std::thread worker;
     std::mutex mutex;
@@ -391,15 +407,21 @@ inline void Output::initialize() {
 }
 inline void Output::render(const Slot& s,bool real,double tick) {
     double age=std::max(0.,tick-s.qpc),song=s.packet.song+age;
+    const Slot* image=&s;
+    if(cameraBlendEnabled(s.packet) && s.sequence>1) {
+        const auto& previousImage=slots[(s.sequence-1)%slots.size()];
+        if(previousImage.sequence==s.sequence-1 && previousImage.packet.pose.camera[2]>.00001f) image=&previousImage;
+    }
     // FMOD's reported song time can move backwards between Unity frames. Camera velocity
     // uses monotonically increasing render-source time; pulse still uses the saved song state.
     double delta=s.packet.textures[1]==reinterpret_cast<void*>(1)?s.frameDelta:s.packet.song-s.previousSong;
     Pose predicted=real?s.packet.pose:scenePrediction(s.previousPacket,s.packet,delta,age);
+    if(cameraBlendEnabled(s.packet)) predicted=interpolateCamera(image->packet.pose,s.packet.pose,real?0:age/s.period);
     auto& q=queries[nextQuery++%queries.size()]; bool timing=!real && s.packet.measure && q.row==SIZE_MAX && records.size()<1000000;
     deferred->ClearState(); if(timing) { deferred->Begin(q.disjoint.Get()); deferred->End(q.begin.Get()); }
-    float data[12]; memcpy(data,s.packet.pose.camera,16); memcpy(data+4,predicted.camera,16); data[8]=float(width)/height; data[9]=float(s.packet.flip); data[10]=data[11]=0;
+    float data[12]; memcpy(data,image->packet.pose.camera,16); memcpy(data+4,predicted.camera,16); data[8]=float(width)/height; data[9]=float(s.packet.flip); data[10]=data[11]=0;
     deferred->UpdateSubresource(constants.Get(),0,nullptr,data,0,0); ID3D11Buffer* b=constants.Get(); deferred->PSSetConstantBuffers(0,1,&b);
-    ID3D11ShaderResourceView* views[2]={s.images[0].view.Get(),s.images[1].view.Get()}; deferred->PSSetShaderResources(0,2,views);
+    ID3D11ShaderResourceView* views[2]={image->images[0].view.Get(),image->images[1].view.Get()}; deferred->PSSetShaderResources(0,2,views);
     auto sm=sampler.Get(); deferred->PSSetSamplers(0,1,&sm); auto rt=backTarget.Get(); deferred->OMSetRenderTargets(1,&rt,nullptr);
     D3D11_VIEWPORT vp{0,0,float(width),float(height),0,1}; deferred->RSSetViewports(1,&vp); deferred->RSSetState(raster.Get()); deferred->OMSetDepthStencilState(depth.Get(),0);
     deferred->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); deferred->VSSetShader(vs.Get(),nullptr,0); deferred->PSSetShader(ps.Get(),nullptr,0); deferred->Draw(3,0);
@@ -407,7 +429,15 @@ inline void Output::render(const Slot& s,bool real,double tick) {
     deferred->OMSetRenderTargets(0,nullptr,nullptr); ComPtr<ID3D11CommandList> list; check(deferred->FinishCommandList(FALSE,&list));
     { ContextLock lock(protection.Get()); immediate->ExecuteCommandList(list.Get(),TRUE); }
     const double captureTimes[]={50,120,175,300}; // All readbacks occur AFTER the 5..45s performance window.
-    if(s.packet.capture==1 && !real && captured<4 && s.packet.song>=captureTimes[captured]) {
+#ifdef SF_FRAMEGEN_RESEARCH
+    if((s.packet.capture&8) && !real && captured==0 && song>=20) {
+        // Explicit visual-only run, kept out of performance results.
+        picture(s.images[0].texture.Get(),L"snapshot-world.ppm");
+        picture(s.images[1].texture.Get(),L"snapshot-screen.ppm");
+        picture(backBuffer.Get(),L"early-generated.ppm"); ++captured;
+    }
+#endif
+    if((s.packet.capture&3)==1 && !real && captured<4 && s.packet.song>=captureTimes[captured]) {
         wchar_t name[100]; swprintf_s(name,L"%dx-capture-%02d-song%.1f.ppm",s.packet.mode,captured,song); picture(backBuffer.Get(),name);
         if(diagnostics && captured==0) {
             picture(s.images[0].texture.Get(),L"snapshot-world.ppm");
@@ -415,8 +445,8 @@ inline void Output::render(const Slot& s,bool real,double tick) {
         }
         FILE* f=nullptr; _wfopen_s(&f,(path+L"/visual-pose.txt").c_str(),L"ab"); if(f) { fprintf(f,"frame=%d song=%.9f age=%.6f source=%.6f,%.6f,%.6f,%.6f predicted=%.6f,%.6f,%.6f,%.6f\n",s.packet.frame,song,age,s.packet.pose.camera[0],s.packet.pose.camera[1],s.packet.pose.camera[2],s.packet.pose.camera[3],predicted.camera[0],predicted.camera[1],predicted.camera[2],predicted.camera[3]); fclose(f); } ++captured;
     }
-    if(s.packet.capture==2 && !real) clip(backBuffer.Get(),song,s.packet.frame,s.packet.mode,false);
-    pending={0,song,NAN,real?1:0,s.packet.measure?s.packet.frame:-1,S_OK,age}; pendingQuery=timing?&q:nullptr;
+    if((s.packet.capture&3)==2 && (!real || cameraBlendEnabled(s.packet))) clip(backBuffer.Get(),song,s.packet.frame,s.packet.mode,real);
+    pending={0,song,NAN,real?1:0,s.packet.measure?s.packet.frame:-1,S_OK,std::max(0.,tick-image->qpc)}; pendingQuery=timing?&q:nullptr;
     memcpy(pending.camera,predicted.camera,16);
 }
 } // namespace outside

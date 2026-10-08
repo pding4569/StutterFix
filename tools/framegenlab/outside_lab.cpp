@@ -20,6 +20,9 @@ int wmain(int argc,wchar_t** argv) {
         if(mode<1 || mode>8 || !std::isfinite(fps) || fps<=0 || !std::isfinite(seconds) || seconds<=0) return 2;
         std::wstring path=argc>4?argv[4]:L"."; SetProcessDPIAware();
         bool narrow=argc>5 && _wtoi(argv[5])==1;
+        bool blend=argc>6 && _wtoi(argv[6])==1;
+        { Pose a{},b{}; a.camera[0]=-5; a.camera[2]=2; b.camera[0]=7; b.camera[2]=20;
+          for(int i=-10;i<=110;i++) { auto p=interpolateCamera(a,b,i*.01); if(p.camera[0]<-5 || p.camera[0]>7 || p.camera[2]<2 || p.camera[2]>20) throw std::runtime_error("camera blend exceeded known poses"); } }
         HWND window=CreateWindowExW(0,L"STATIC",L"FrameGen shared-device producer",WS_POPUP|WS_VISIBLE,0,0,3440,1440,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr); if(!window) return 3;
         ComPtr<ID3D11Device> d; ComPtr<ID3D11DeviceContext> context; UINT flags=D3D11_CREATE_DEVICE_DEBUG;
         DXGI_SWAP_CHAIN_DESC sd{}; sd.BufferDesc.Width=3440; sd.BufferDesc.Height=1440; sd.BufferDesc.Format=DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -43,6 +46,8 @@ int wmain(int argc,wchar_t** argv) {
             double t=now()-start; if(now()<deadline) { Sleep(0); continue; } deadline+=1/fps;
             if(!paused && t>seconds*.5) { beforePause=engine.outputs; Sleep(100); afterPause=engine.outputs; paused=true; }
             Packet p{}; p.frame=++frames; p.mode=mode==1?0:mode; p.measure=1; p.song=now()-start;
+            if(blend) p.capture=4;
+            if(blend && !cameraBlendEnabled(p)) throw std::runtime_error("camera blend research guard was not compiled");
             if(!narrow) engine.beginFrame();
             p.pose.camera[0]=float(p.song)*2; p.pose.camera[1]=float(sin(p.song)*.3); p.pose.camera[2]=10+float(sin(p.song*2)); p.pose.camera[3]=float(sin(p.song)*.05);
             p.pose.planet[0][0]=p.pose.camera[0]+float(cos(p.song*4)); p.pose.planet[0][1]=float(sin(p.song*4)); p.pose.planet[0][2]=1;

@@ -49,6 +49,7 @@ static HRESULT __stdcall present(IDXGISwapChain* self,UINT sync,UINT flags) {
 
         }
         bool active=havePacket && packet.mode>=2 && packet.mode<=8;
+        if(active && cameraBlendEnabled(packet)) engine->drawReal(); // Research: real and generated output share the delayed timeline.
         UINT outputSync=active?0:sync;
         if(sync) { ++syncRequested; if(active) ++syncForcedZero; else if(outputSync==sync) ++syncPreserved; }
         HRESULT hr=originalPresent(self,outputSync,flags);
@@ -74,7 +75,10 @@ static void finish() {
     }
 }
 static HRESULT __stdcall resize(IDXGISwapChain* self,UINT count,UINT w,UINT h,DXGI_FORMAT format,UINT flags) {
-    if(self==game.Get() && engine) { finish(); engine.reset(); status=-1; failure=2; }
+    if(self==game.Get() && engine) {
+        char detail[180]; sprintf_s(detail,"ResizeBuffers requested count=%u width=%u height=%u format=%u flags=%u qpc=%.9f",count,w,h,unsigned(format),flags,now()); engine->trace(detail);
+        finish(); engine.reset(); status=-1; failure=2;
+    }
     return originalResize(self,count,w,h,format,flags); // No resize/recovery workaround in this experiment.
 }
 static void discover() {

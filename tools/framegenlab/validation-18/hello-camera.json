@@ -1,0 +1,20 @@
+{
+  "samples": [
+    {
+      "label": "off",
+      "count": 163,
+      "generated": 0
+    },
+    {
+      "label": "predict4-stable",
+      "count": 172,
+      "generated": 149
+    },
+    {
+      "label": "blend4",
+      "count": 172,
+      "generated": 151
+    }
+  ],
+  "scope": "Separate fresh runs, approximate song-time alignment, decimated actual GPU samples;30FPS compressed preview;readbacks affect pacing;not physical display/motion proof"
+}
