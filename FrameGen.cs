@@ -101,6 +101,8 @@ namespace StutterFix
         private static bool Capture => Main.Config.FrameGenCapture;
         private static bool Clip => Main.Config.FrameGenClip;
         private static bool CameraBlend => Main.Config.FrameGenCameraBlend;
+        private static bool BlockFlow => Main.Config.FrameGenBlockFlow;
+        private static Renderer[] redRenderers,blueRenderers;
         private static bool ScenePair => Main.Config.FrameGenScenePair;
         private static bool pairGeometrySaved;
         private static double lastPairSong;
@@ -192,6 +194,12 @@ namespace StutterFix
             // as UI. Capture the same pixel grid as the game's final output instead.
             world=new RenderTexture(width,height,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear) {hideFlags=HideFlags.HideAndDontSave}; world.Create(); texture=world.GetNativeTexturePtr();
             worldCamera=new GameObject("FrameGen.IncludedWorld") {hideFlags=HideFlags.HideAndDontSave}.AddComponent<Camera>(); worldCamera.enabled=false;
+#if FRAMEGEN_RESEARCH
+            if(BlockFlow && scrController.instance!=null) {
+                redRenderers=scrController.instance.planetRed.GetComponentsInChildren<Renderer>(true);
+                blueRenderers=scrController.instance.planetBlue.GetComponentsInChildren<Renderer>(true);
+            }
+#endif
             Log("scene="+rt.width+"x"+rt.height+" snapshot="+width+"x"+height+" planets, trails, glow and game filters retained in the scene");
         }
         private static IEnumerator Loop() {
@@ -210,6 +218,7 @@ namespace StutterFix
                 Packet p=new Packet {unused1=Narrow?new IntPtr(1):IntPtr.Zero,frame=Time.frameCount,song=song,measure=Diagnostics && Hitch.Playing?1:0,mode=Hitch.Playing && !failed?Math.Max(0,oldMode):0,flip=FlipY?1:0,linear=QualitySettings.activeColorSpace==ColorSpace.Linear?1:0,capture=Capture?1:Clip?2:0};
 #if FRAMEGEN_RESEARCH
                 if(Main.Config.FrameGenImageGate && CameraBlend) p.capture|=32;
+                if(BlockFlow) p.capture|=64|4;
 #endif
                 if(CameraBlend) p.capture|=4; // Research only: known-camera interpolation, one-source visual delay.
                 if(ScenePair) p.capture|=8; // Separate early visual test; never a performance sample.
@@ -220,6 +229,11 @@ namespace StutterFix
                         p.pose=new Pose {x=sceneCamera.x,y=sceneCamera.y,size=sceneCamera.z,angle=sceneCamera.w,rx=r.position.x,ry=r.position.y,rs=r.lossyScale.x,ra=r.eulerAngles.z*Mathf.Deg2Rad,bx=b.position.x,by=b.position.y,bs=b.lossyScale.x,ba=b.eulerAngles.z*Mathf.Deg2Rad};
                         p.baseCamera=sceneBase; p.pulse=scenePulse;
                         if(renderedFrame!=Time.frameCount) p.pulse.w=0; // The stored image belongs to the last camera that actually rendered.
+#if FRAMEGEN_RESEARCH
+                        // Research bit64 reuses base/pulse payload for two true-frame planet envelopes.
+                        // Actual camera/planet poses remain intact; counterfactual prediction is disabled.
+                        if(BlockFlow) {p.baseCamera=PlanetEnvelope(camera,redRenderers);p.pulse=PlanetEnvelope(camera,blueRenderers);}
+#endif
                     }
                 }
                 if(p.mode!=0 && sceneCamera.z>.00001f && scene!=null && sc!=null && Overlay(sc)!=null) {
@@ -241,6 +255,22 @@ namespace StutterFix
         }
         private static unsafe IntPtr Write(Packet p) { var ptr=packets[packetIndex++%packets.Length]; *(Packet*)ptr=p; return ptr; }
 #if FRAMEGEN_RESEARCH
+        private static Vector4 PlanetEnvelope(Camera camera,Renderer[] renderers) {
+            if(renderers==null || renderers.Length==0) return new Vector4(0,0,1,1); // Unknown coverage: keep true image.
+            var box=new Vector4(2,2,-1,-1);bool any=false;
+            foreach(var renderer in renderers) {
+                if(renderer==null || !renderer.enabled || !renderer.gameObject.activeInHierarchy || renderer.forceRenderingOff) continue;
+                var b=renderer.bounds;
+                for(int corner=0;corner<8;corner++) {
+                    var point=camera.WorldToViewportPoint(b.center+Vector3.Scale(b.extents,new Vector3((corner&1)==0?-1:1,(corner&2)==0?-1:1,(corner&4)==0?-1:1)));
+                    if(point.z<0) continue;
+                    box.x=Mathf.Min(box.x,point.x);box.y=Mathf.Min(box.y,1-point.y);box.z=Mathf.Max(box.z,point.x);box.w=Mathf.Max(box.w,1-point.y);any=true;
+                }
+            }
+            if(!any) return Vector4.zero;
+            float x=32f/Screen.width,y=32f/Screen.height;
+            return new Vector4(Mathf.Clamp01(box.x-x),Mathf.Clamp01(box.y-y),Mathf.Clamp01(box.z+x),Mathf.Clamp01(box.w+y));
+        }
         // One explicit visual-only read, never used by ordinary measurements/builds.
         private static void SavePairGeometry(scrCamera sc,double song) {
             using(var f=new StreamWriter(Path.Combine(Main.Entry.Path,"framegen-outside","pair-geometry.txt"))) {
@@ -275,6 +305,9 @@ namespace StutterFix
         }
         private static void Issue(int id,IntPtr data) { command.Clear(); command.IssuePluginEventAndData(callback,id,data); Graphics.ExecuteCommandBuffer(command); }
         private static void FreeTextures() {
+#if FRAMEGEN_RESEARCH
+            redRenderers=blueRenderers=null;
+#endif
             if(worldCamera!=null) UnityEngine.Object.Destroy(worldCamera.gameObject); worldCamera=null;
             if(world!=null) { world.Release(); UnityEngine.Object.Destroy(world); } world=null; scene=null; texture=IntPtr.Zero;
         }

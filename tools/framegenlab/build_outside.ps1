@@ -24,6 +24,8 @@ try {
     if($LASTEXITCODE -ne 0) { throw 'Outside lab failed' }
     & cl.exe /nologo /std:c++17 /EHsc /O2 /MT /Brepro /W4 /WX "$PSScriptRoot\motion_gate_lab.cpp" /Fe:MotionGateLab.exe d3d11.lib dxgi.lib d3dcompiler.lib user32.lib
     if($LASTEXITCODE -ne 0) { throw 'Motion gate lab failed' }
+    & cl.exe /nologo /std:c++17 /EHsc /O2 /MT /Brepro /W4 /WX "$PSScriptRoot\block_flow_lab.cpp" /Fe:BlockFlowLab.exe d3d11.lib dxgi.lib d3dcompiler.lib user32.lib
+    if($LASTEXITCODE -ne 0) { throw 'Block flow lab failed' }
     if($Game) {
         & cl.exe /nologo /std:c++17 /EHsc /c /O2 /MT /Brepro /W4 /WX "$PSScriptRoot\native\outside_game.cpp"
         if($LASTEXITCODE -ne 0) { throw 'Outside game native failed' }

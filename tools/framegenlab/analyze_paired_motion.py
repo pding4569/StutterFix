@@ -19,10 +19,15 @@ def analyze(folder,mode):
     for r in rows:
         i=int(r['index']); actual,gray,roi=read(f"clip-{mode}x-{i:03d}-{'real' if r['real']=='1' else 'generated'}.ppm")
         original,reference,_=read(f'reference-{mode}x-{i:03d}.ppm')
-        _,next_reference,_=read(f'next-reference-{mode}x-{i:03d}.ppm')
+        next_original,next_reference,_=read(f'next-reference-{mode}x-{i:03d}.ppm')
         added=phase(reference,gray); source=phase(reference,next_reference)
         error=np.max(np.abs(actual-original),axis=2)
+        next_error=np.max(np.abs(actual-next_original),axis=2)
         records.append(dict(index=i,song_s=float(r['song_s']),real=r['real']=='1',gate_reprojected=int(r['gate_reprojected']) if 'gate_reprojected' in r else None,
+                            block_phase=float(r.get('block_phase',-1)),
+                            new_picture_fraction_threshold=4/256,
+                            new_picture=bool((error>3).mean()>=4/256 and (next_error>3).mean()>=4/256),
+                            next_fraction_rgb_error_above3=float((next_error>3).mean()),
                             added=added,source=source,accepted=accepted(added) and accepted(source),
                             maximum_rgb_error=float(error.max()),mean_rgb_error=float(error.mean()),full_fraction_rgb_error_above3=float((error>3).mean()),
                             roi_fraction_rgb_error_above3=float((error[roi]>3).mean())))
@@ -51,6 +56,8 @@ def analyze(folder,mode):
                r['source']['dx']*r['added']['dx']+r['source']['dy']*r['added']['dy']<0]
     overshoot=[r for r in generated if r['added']['length']>r['source']['length']+.25]
     summary=dict(frames=len(rows),accepted_triplets=len(valid),accepted_generated=len(generated),
+                 captured_generated=sum(not r['real'] for r in records),
+                 captured_new_picture_generated=sum(not r['real'] and r['new_picture'] for r in records),
                  accepted_adjacent_pairs=len(valid_pairs),adjacent_actual_length=lengths('actual'),adjacent_reference_length=lengths('reference'),
                  actual_reversals=sum(r['actual'] for r in reversal_rows),reference_reversals=sum(r['reference'] for r in reversal_rows),
                  extra_reversals=sum(r['actual'] and not r['reference'] for r in reversal_rows),

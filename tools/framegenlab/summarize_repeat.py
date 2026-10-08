@@ -48,7 +48,7 @@ def summarize(root):
         r['scene_loss_across_off_controls_percent'] = [100*(1-r['scene_fps_bounds'][1]/min(c[0] for c in controls)),
                                                        100*(1-r['scene_fps_bounds'][0]/max(c[1] for c in controls))]
     return dict(label=data['label'], conditions=data['conditions'], order=data['modes'],
-                camera_blend=data.get('camera_blend',False),screen_border=data.get('screen_border',False),image_gate=data.get('image_gate',False),
+                block_flow=data.get('block_flow',False),camera_blend=data.get('camera_blend',False),screen_border=data.get('screen_border',False),image_gate=data.get('image_gate',False),
                 research_binary_sha256=data['research_binary_sha256'], off_control_scene_fps_bounds=controls, pooled=pooled, runs=data['runs'])
 
 
