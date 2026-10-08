@@ -103,6 +103,7 @@ namespace StutterFix
         private static bool CameraBlend => Main.Config.FrameGenCameraBlend;
         private static bool BlockFlow => Main.Config.FrameGenBlockFlow;
         private static int BlockVariant => Main.Config.FrameGenBlockVariant;
+        private static bool CostSplit => Main.Config.FrameGenCostSplit;
         private static Renderer[] redRenderers,blueRenderers;
         private static bool ScenePair => Main.Config.FrameGenScenePair;
         private static bool pairGeometrySaved;
@@ -178,7 +179,11 @@ namespace StutterFix
             if(Hitch.Playing && scrCamera.instance!=null) trackedCamera=Cam(scrCamera.instance);
             if(sf_framegen_status()<0) { failed=true; Log("native failure="+sf_framegen_error()+"; experiment stopped"); return; }
             int mode=Hitch.Playing && sf_framegen_status()==1?Main.Config.FrameGenOutside:0;
+#if FRAMEGEN_RESEARCH
+            if(!(CostSplit && mode==1) && (mode<2 || mode>8)) mode=0;
+#else
             if(mode<2 || mode>8) mode=0;
+#endif
             // HalfRender already reprojects alternating scenes and retains an older
             // camera pose. Treating those Unity frames as new source scenes doubles
             // camera velocity at the next completed render. Suspend this experiment.
@@ -219,6 +224,7 @@ namespace StutterFix
                 Packet p=new Packet {unused1=Narrow?new IntPtr(1):IntPtr.Zero,frame=Time.frameCount,song=song,measure=Diagnostics && Hitch.Playing?1:0,mode=Hitch.Playing && !failed?Math.Max(0,oldMode):0,flip=FlipY?1:0,linear=QualitySettings.activeColorSpace==ColorSpace.Linear?1:0,capture=Capture?1:Clip?2:0};
 #if FRAMEGEN_RESEARCH
                 if(Main.Config.FrameGenImageGate && CameraBlend) p.capture|=32;
+                if(CostSplit) p.capture|=1024; // Equal diagnostic work in OFF/copy-only/2x/4x cost comparison.
                 if(BlockFlow) p.capture|=64|4|((BlockVariant&7)<<7);
 #endif
                 if(CameraBlend) p.capture|=4; // Research only: known-camera interpolation, one-source visual delay.

@@ -22,6 +22,16 @@ def stats(values):
     return dict(mean=statistics.mean(values),p95=sorted(values)[int(.95*(len(values)-1))],maximum=max(values)) if values else None
 
 
+def cost_scenes(directory):
+    rows=[r for r in read(directory/'cost-sources.csv') if 5<=float(r['song_s'])<45]
+    seconds=float(rows[-1]['source_s'])-float(rows[0]['source_s'])
+    if seconds<39 or len({r['unity_frame'] for r in rows})!=len(rows):
+        raise RuntimeError('Incomplete or duplicate cost-scene window')
+    state=(directory/'cost-state.txt').read_text(encoding='utf-8-sig')
+    if 'overflow=0' not in state: raise RuntimeError('Cost sampler overflow')
+    return dict(seconds=seconds,frames=len(rows),real_fps=(len(rows)-1)/seconds,state=state)
+
+
 def analyze(directory, mode, end=45):
     all_sources=read(directory/"sources.csv")
     first=next(i for i,r in enumerate(all_sources) if float(r['song_s'])>=5)
@@ -34,7 +44,7 @@ def analyze(directory, mode, end=45):
         raise RuntimeError("Missing actual source scenes")
     generated=[r for r in rows if r["real"]=="0"]
     gpu=[float(r["gpu_ms"]) for r in generated if math.isfinite(float(r["gpu_ms"]))]
-    if mode and (not generated or len(gpu)!=len(generated)):
+    if mode>=2 and (not generated or len(gpu)!=len(generated)):
         raise RuntimeError("Incomplete generated GPU coverage")
     interval=[(float(b["present_s"])-float(a["present_s"]))*1000 for a,b in zip(rows,rows[1:])]
     source_interval=[(float(b["source_s"])-float(a["source_s"]))*1000 for a,b in zip(sources,sources[1:])]
@@ -75,14 +85,15 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--map",type=Path,required=True)
     p.add_argument("--label",required=True)
-    p.add_argument("--mode",type=int,choices=[0,*range(2,9)],required=True)
+    p.add_argument("--mode",type=int,choices=[0,1,*range(2,9)],required=True)
     p.add_argument("--seconds",type=int,default=55)
     p.add_argument("--out",type=Path,required=True)
     p.add_argument("--capture",action="store_true")
     p.add_argument("--clip",action="store_true",help="Sample actual GPU outputs at song 20..23s; visual-only, excluded from performance comparison")
     p.add_argument("--image-gate",action="store_true",help="Research only: repeat on actual-image disagreement or camera jump; 16px whole-interval limit")
     p.add_argument("--block-flow",action="store_true",help="Research only: GPU bidirectional image block interpolation, one true-frame delay")
-    p.add_argument("--block-variant",type=int,choices=[0,1,2,3,4],default=0,help="Research only: 0 baseline, 1 smaller search image, 2 larger blocks, 3 search used pairs, 4 also batch matching with first generated draw")
+    p.add_argument("--block-variant",type=int,choices=[0,1,2,3,4],default=3,help="Research only: 0 baseline, 1 smaller search image, 2 larger blocks, 3 search used pairs (default), 4 also batch matching with first generated draw")
+    p.add_argument("--cost-split",action="store_true",help="Research-only equal counterfactual diagnostics OFF; mode1 copies/locks without matching, drawing or extra Present")
     p.add_argument("--camera-blend",action="store_true",help="Research only: interpolate known camera poses with one-source visual delay")
     p.add_argument("--scene-pair",action="store_true",help="Visual only: save same-source world/screen textures at song20s")
     p.add_argument("--filter-pair",action="store_true",help="Visual only: copy one WideScreenHV input/output at song20s;read after native finish")
@@ -98,6 +109,7 @@ def main():
     p.add_argument("--timeout-min",type=float,default=3)
     p.add_argument("--settings",type=Path,help="Additional compatibility settings JSON; experimental controls stay fixed")
     a=p.parse_args()
+    if a.mode==1 and (not a.cost_split or not a.block_flow): p.error('Mode1 requires --cost-split --block-flow')
     if a.block_flow:
         if a.image_gate or a.screen_border or a.filter_pair: p.error('Block flow uses original filtered pictures; do not combine camera gate/final mask')
         a.camera_blend=True
@@ -134,12 +146,12 @@ def main():
         if a.sync_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","fgsync 1","wait 5","set FrameGenOutside 2","wait 5","set FrameGenOutside 0","wait 5","fgsync 0","wait 5"]
         if a.ui_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","ui 3","wait 3",f"shot framegen-research-setting-{a.mode}x","wait 3","ui close","wait 10"]
         if a.full_song: steps[-1]="waitend 600"
-        settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair,"FrameGenScreenBorder":a.screen_border,"FrameGenLayerProbe":a.layer_probe,"FrameGenImageGate":a.image_gate,"FrameGenBlockFlow":a.block_flow,"FrameGenBlockVariant":a.block_variant}
+        settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair,"FrameGenScreenBorder":a.screen_border,"FrameGenLayerProbe":a.layer_probe,"FrameGenImageGate":a.image_gate,"FrameGenBlockFlow":a.block_flow,"FrameGenBlockVariant":a.block_variant,"FrameGenCostSplit":a.cost_split}
         summary,metrics=sf.sf_run(steps+["quit"],settings=settings,tag="framegen-outside-"+a.label,timeout_min=a.timeout_min)
         log=sf.read_text(sf.PLAYER_LOG); (a.out/"game.log").write_text(log,encoding="utf-8"); (a.out/"run.txt").write_text(summary,encoding="utf-8")
         if a.ui_smoke: shutil.copyfile(shot,a.out/'settings.png')
         if diagnostic.exists(): shutil.copytree(diagnostic,a.out/"capture")
-        if hashlib.sha256((mod/'sfnative.dll').read_bytes()).hexdigest()!=build_stamp['native_sha256']:
+        if not (a.cost_split and a.mode==0) and hashlib.sha256((mod/'sfnative.dll').read_bytes()).hexdigest()!=build_stamp['native_sha256']:
             raise RuntimeError('Installed research native does not match the measured build')
         if a.clip:
             import csv
@@ -151,6 +163,14 @@ def main():
                     if not (a.out/'capture'/name).is_file(): raise RuntimeError('Incomplete async triplet capture: '+name)
         if any(v in log for v in ["Crash!!!","단계 실패","[안정성] 안전 모드로 켬","native failure","feature disabled","[프레임생성 테두리] 중단:"]) or "시간 초과로 끔" in summary:
             raise RuntimeError("Failed experiment; inspect evidence")
+        scenes=cost_scenes(a.out/'capture') if a.cost_split else None
+        if a.cost_split and a.mode==0:
+            if not all(v in scenes['state'] for v in ['active=False','native_installed=0','generated=0','runtime_initialized=False']):
+                raise RuntimeError('OFF cost trial connected or initialized FrameGen')
+            result=dict(label=a.label,mode=0,cost_split=True,scene_metrics=scenes,native=None,safety=None,game_metrics=metrics,build=build_stamp)
+            (a.out/'summary.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+            print(json.dumps(result,ensure_ascii=False),flush=True)
+            return
         safety=dict(part.split("=",1) for part in (a.out/"capture/safety.txt").read_text().split())
         if int(safety["worker_error"]) or safety["frame_begins"]!=safety["frame_ends"]:
             raise RuntimeError("Native worker or frame start/end balance failed; stop the experiment")
@@ -159,7 +179,7 @@ def main():
         native=analyze(a.out/"capture",0 if a.expect_inactive else a.mode,end=45 if a.seconds>=50 else a.seconds-5)
         if a.camera_blend:
             native['prediction_metrics_scope']='Counterfactual extrapolation from source poses; not delayed display-camera error'
-        if a.block_flow:
+        if a.block_flow and a.mode>=2:
             native['prediction_metrics_scope']='Not applicable: actual image motion; base/pulse payload holds planet envelopes'
             native['block_flow']=dict(part.split('=',1) for part in (a.out/'capture/block-flow.txt').read_text().split())
             native['block_variant']=a.block_variant
@@ -168,14 +188,17 @@ def main():
             native['interpolated_timeline_to_render_ms']=stats(delayed)
             native['interpolated_timeline_to_submit_ms']=stats([float(r['timeline_to_submit_ms']) for r in present_rows if 5<=float(r['song_s'])<45 and math.isfinite(float(r['timeline_to_submit_ms']))])
         if a.expect_inactive and native['generated_frames']!=0: raise RuntimeError("Expected suspension did not occur")
+        if a.mode==1 and (any(r['real']=='0' for r in read(a.out/'capture/presents.csv')) or (a.out/'capture/block-flow.txt').exists()):
+            raise RuntimeError('Copy-only unexpectedly generated or initialized block search')
         if a.full_song and ("곡 끝남" not in summary or "곡이 끝나지 않음" in summary):
             raise RuntimeError("Actual whole-song completion not confirmed")
         if a.filter_pair and not all((a.out/'capture'/name).is_file() for name in ['filter-input.png','filter-output.png','filter-mask.png','filter-pair.txt']):
             raise RuntimeError('Exact filter input/output capture missing; inspect filter-pair.txt')
         if a.seconds>=50 and native["seconds"]<39:
             raise RuntimeError("Incomplete 5..45 second performance window")
-        result=dict(label=a.label,mode=a.mode,block_flow=a.block_flow,image_gate=a.image_gate,camera_blend=a.camera_blend,scene_pair=a.scene_pair,filter_pair=a.filter_pair,screen_border=a.screen_border,layer_probe=a.layer_probe,expected_inactive=a.expect_inactive,compatibility_settings=extra,visual_smoke=a.layer_probe or a.filter_pair or a.scene_pair or a.clip or a.switch_smoke or a.freeze_smoke or a.sync_smoke or a.ui_smoke or a.expect_inactive,native=native,safety=safety,game_metrics=metrics)
+        result=dict(label=a.label,mode=a.mode,block_flow=a.block_flow,cost_split=a.cost_split,image_gate=a.image_gate,camera_blend=a.camera_blend,scene_pair=a.scene_pair,filter_pair=a.filter_pair,screen_border=a.screen_border,layer_probe=a.layer_probe,expected_inactive=a.expect_inactive,compatibility_settings=extra,visual_smoke=a.layer_probe or a.filter_pair or a.scene_pair or a.clip or a.switch_smoke or a.freeze_smoke or a.sync_smoke or a.ui_smoke or a.expect_inactive,native=native,safety=safety,game_metrics=metrics)
         result['build']=build_stamp
+        if scenes is not None: result['scene_metrics']=scenes
         (a.out/"summary.json").write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
         print(json.dumps(result,ensure_ascii=False),flush=True)
     finally:

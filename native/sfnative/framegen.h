@@ -136,6 +136,13 @@ inline int blockFlowVariant(const Packet& p) {
     (void)p; return 0;
 #endif
 }
+inline bool connectionOnly(const Packet& p) {
+#ifdef SF_FRAMEGEN_RESEARCH
+    return p.mode==1 && (p.capture&1024)!=0;
+#else
+    (void)p; return false;
+#endif
+}
 inline Pose interpolateCamera(const Pose& previous,const Pose& current,double phase) {
     Pose result=current;
     if(previous.camera[2]<=.00001f || current.camera[2]<=.00001f) return result;
@@ -215,7 +222,7 @@ public:
     // Producer/render thread only. Ordered GPU copies and publication are under the same gate as playback.
     void publish(const Packet& p,ID3D11Texture2D* screen) {
         if(error.load()) throw std::runtime_error("worker failed");
-        if(p.mode!=0 && (p.mode<2 || p.mode>8)) throw std::runtime_error("unsupported output multiplier");
+        if(p.mode!=0 && !connectionOnly(p) && (p.mode<2 || p.mode>8)) throw std::runtime_error("unsupported output multiplier");
         double t=now();
 #ifdef SF_FRAMEGEN_RESEARCH
         if((p.capture&3)==2) { ContextLock context(protection.Get()); motionClip.initialize(device.Get(),width,height); }
@@ -225,7 +232,7 @@ public:
         SourceRecord row{t,p.song,p.frame,p.pose,0,0,0,0,(reinterpret_cast<uintptr_t>(p.textures[2])&1)?1:0};
         memcpy(row.base,p.textures+3,16); memcpy(row.pulse,p.pulse,16);
         bool realClock=lastPacket.textures[1]==reinterpret_cast<void*>(1);
-        if(!blockFlowEnabled(p) && p.measure && lastPacket.measure && previousPacket.measure && p.pose.camera[2]>.001f && lastPacket.pose.camera[2]>.001f && previousPacket.pose.camera[2]>.001f && havePrevious &&
+        if(!(p.capture&1024) && !blockFlowEnabled(p) && p.measure && lastPacket.measure && previousPacket.measure && p.pose.camera[2]>.001f && lastPacket.pose.camera[2]>.001f && previousPacket.pose.camera[2]>.001f && havePrevious &&
            (realClock?(t>lastQpc && lastQpc>previousQpc):(p.song>lastPacket.song && lastPacket.song>previousPacket.song))) {
             double horizon=realClock?t-lastQpc:p.song-lastPacket.song;
             double delta=realClock?lastQpc-previousQpc:lastPacket.song-previousPacket.song;
@@ -272,7 +279,7 @@ public:
         s.frameDelta=havePrevious?t-lastQpc:.005;
         s.period=std::clamp(s.frameDelta,.001,.05); s.qpc=t; s.sequence=++published;
         #ifdef SF_FRAMEGEN_RESEARCH
-        if(blockFlowEnabled(p)) {
+        if(blockFlowEnabled(p) && !connectionOnly(p)) {
             const auto& previous=slots[(s.sequence-1)%slots.size()];
             if(blockFlowVariant(p)>=3) {
                 // Compile/allocate on activation; search only a pair actually used by an intermediate output.
@@ -307,7 +314,7 @@ public:
 #endif
         scheduleActive=true;
         immediate->Flush(); // Hand buffered Unity work to the driver before waking independent output.
-        previousPacket=lastPacket; lastPacket=p; previousQpc=lastQpc; lastQpc=t; havePrevious=true; mode=p.mode;
+        previousPacket=lastPacket; lastPacket=p; previousQpc=lastQpc; lastQpc=t; havePrevious=true; mode=connectionOnly(p)?0:p.mode;
     }
     void save() {
         if(!diagnostics) return;
@@ -342,9 +349,9 @@ public:
         _wfopen_s(&f,(path+L"/clip.csv").c_str(),L"wb");
         if(f) { fprintf(f,"index,mode,real,unity_frame,present_sample_s,song_s,gate_reprojected,block_phase\n"); for(auto& r:clips) fprintf(f,"%d,%d,%d,%d,%.9f,%.9f,%d,%.9f\n",r.index,r.mode,r.real,r.frame,r.time,r.song,r.gateWarp,r.phase); fclose(f); }
     }
-    void recordOff(const Packet& p,HRESULT hr) { ++outputs; std::lock_guard<std::mutex> gate(mutex); if(p.measure && records.size()<1000000) { Record r{now(),p.song,NAN,1,p.frame,hr,0}; memcpy(r.camera,cameraBlendEnabled(p) && p.mode?pending.camera:p.pose.camera,16);
+    void recordOff(const Packet& p,HRESULT hr) { ++outputs; std::lock_guard<std::mutex> gate(mutex); if(p.measure && records.size()<1000000) { Record r{now(),p.song,NAN,1,p.frame,hr,0}; memcpy(r.camera,cameraBlendEnabled(p) && p.mode>=2?pending.camera:p.pose.camera,16);
 #ifdef SF_FRAMEGEN_RESEARCH
-        if(blockFlowEnabled(p) && p.mode) {r.targetTime=pending.targetTime;r.age=pending.age;}
+        if(blockFlowEnabled(p) && p.mode>=2) {r.targetTime=pending.targetTime;r.age=pending.age;}
 #endif
         records.push_back(r); } }
 private:

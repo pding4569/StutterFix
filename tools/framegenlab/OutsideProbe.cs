@@ -10,10 +10,39 @@ namespace StutterFix
     // The research harness uses the same runtime as the Player build.
     internal static class FrameGenOutsideProbe
     {
-        internal static void Install() { FrameGen.InstallResearch(); if(Main.Config.FrameGenFilterPair) FrameGenScreenFilterProbe.Install(); if(Main.Config.FrameGenScreenBorder) FrameGenScreenBorder.Install(); if(Main.Config.FrameGenLayerProbe) FrameGenLayerProbe.Install(); }
-        internal static void Finish() { FrameGen.FinishResearch(); FrameGenScreenBorder.Detach(); try { if(Main.Config.FrameGenLayerProbe) FrameGenLayerProbe.Finish(); FrameGenScreenFilterProbe.Finish(); } finally { FrameGenLayerProbe.Uninstall(); FrameGenScreenFilterProbe.Uninstall(); } }
-        internal static void Uninstall() { FrameGen.Shutdown(); FrameGenScreenBorder.Detach(); FrameGenLayerProbe.Uninstall(); FrameGenScreenFilterProbe.Uninstall(); }
+        private static bool installed;
+        internal static void Install() { if(Main.Config.FrameGenCostSplit) FrameGenCostProbe.Install(); if(Main.Config.FrameGenCostSplit && Main.Config.FrameGenOutside==0) return; FrameGen.InstallResearch(); installed=true; if(Main.Config.FrameGenFilterPair) FrameGenScreenFilterProbe.Install(); if(Main.Config.FrameGenScreenBorder) FrameGenScreenBorder.Install(); if(Main.Config.FrameGenLayerProbe) FrameGenLayerProbe.Install(); }
+        internal static void Finish() { FrameGenCostProbe.Finish(); if(installed) FrameGen.FinishResearch(); FrameGenScreenBorder.Detach(); try { if(Main.Config.FrameGenLayerProbe) FrameGenLayerProbe.Finish(); FrameGenScreenFilterProbe.Finish(); } finally { FrameGenLayerProbe.Uninstall(); FrameGenScreenFilterProbe.Uninstall(); } }
+        internal static void Uninstall() { FrameGenCostProbe.Detach(); if(installed) FrameGen.Shutdown(); installed=false; FrameGenScreenBorder.Detach(); FrameGenLayerProbe.Uninstall(); FrameGenScreenFilterProbe.Uninstall(); }
         internal static void DrawGUI() { UnityEngine.GUILayout.Label("프레임 늘리기 (실험): StutterFix 설정 → 그래픽"); }
+    }
+
+    // Identical scene-end sampler in all four cost trials, including genuinely unconnected OFF.
+    // Fixed storage, one QPC and one struct write per completed scene; no per-frame file IO/readback.
+    internal static class FrameGenCostProbe
+    {
+        private static readonly AccessTools.FieldRef<scrCamera,Camera> Cam=AccessTools.FieldRefAccess<scrCamera,Camera>("camobj");
+        private struct Sample { internal long tick; internal double song; internal int frame; }
+        private static Sample[] samples;
+        private static int count,lastFrame=-1,overflow;
+        internal static void Install() { samples=new Sample[40000]; count=overflow=0; lastFrame=-1; Camera.onPostRender+=Post; }
+        private static void Post(Camera c) {
+            if(!Hitch.Playing || Time.frameCount==lastFrame || scrCamera.instance==null || c!=Cam(scrCamera.instance) || scrConductor.instance==null) return;
+            lastFrame=Time.frameCount;
+            if(count==samples.Length) { ++overflow; return; }
+            samples[count++]=new Sample {tick=System.Diagnostics.Stopwatch.GetTimestamp(),song=scrConductor.instance.songposition_minusi,frame=lastFrame};
+        }
+        internal static void Detach() { Camera.onPostRender-=Post; }
+        internal static void Finish() {
+            if(samples==null) return;
+            Detach(); string path=Path.Combine(Main.Entry.Path,"framegen-outside");
+            using(var f=new StreamWriter(Path.Combine(path,"cost-sources.csv"))) {
+                f.WriteLine("source_s,song_s,unity_frame");
+                for(int i=0;i<count;i++) { var r=samples[i]; f.WriteLine(FormattableString.Invariant($"{(double)r.tick/System.Diagnostics.Stopwatch.Frequency:R},{r.song:R},{r.frame}")); }
+            }
+            File.WriteAllText(Path.Combine(path,"cost-state.txt"),FrameGen.Describe()+" overflow="+overflow);
+            samples=null;
+        }
     }
 
     // Research candidate: move only the confirmed binary border to final composition.

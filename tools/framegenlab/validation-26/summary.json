@@ -1,0 +1,367 @@
+{
+  "conditions": {
+    "vsync": "0",
+    "target_fps": "10000",
+    "fullscreen_mode": "FullScreenWindow",
+    "width": "2560",
+    "height": "1440",
+    "refresh_hz": "144",
+    "window_width": "2560",
+    "window_height": "1440"
+  },
+  "cost_split": {
+    "order": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "scope": "One ordered batch; no repeated or closing OFF control",
+    "runs": [
+      {
+        "mode": 0,
+        "real_scene_fps": 351.94906433918686,
+        "mean_scene_ms": 2.8413202401250355,
+        "loss_vs_off_percent": 0.0,
+        "increment_vs_previous_stage_ms": 0.0,
+        "output_submissions_per_second": null,
+        "native": null,
+        "safety": null,
+        "scene_metrics": {
+          "seconds": 39.9944237,
+          "frames": 14077,
+          "real_fps": 351.94906433918686,
+          "state": "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status= overflow=0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [],
+          "errors": 0
+        }
+      },
+      {
+        "mode": 1,
+        "real_scene_fps": 329.4384827956348,
+        "mean_scene_ms": 3.0354680834914602,
+        "loss_vs_off_percent": 6.395977095667959,
+        "increment_vs_previous_stage_ms": 0.19414784336642477,
+        "output_submissions_per_second": 329.7392686564485,
+        "native": {
+          "seconds": 39.99220370000694,
+          "source_seconds": 39.99225030001253,
+          "source_frames": 13188,
+          "output_frames": 13188,
+          "real_output_frames": 13188,
+          "generated_frames": 0,
+          "real_fps": 329.7388844357145,
+          "output_fps": 329.7392686564485,
+          "generated_gpu_ms": null,
+          "gpu_coverage": 0,
+          "output_worst_ms": 10.861899994779378,
+          "output_over_33ms": 0,
+          "source_worst_ms": 10.933400015346706,
+          "source_over_33ms": 0,
+          "prediction_camera_px": null,
+          "prediction_red_px": null,
+          "prediction_blue_px": null,
+          "prediction_horizon_ms": null,
+          "prediction_samples": 0,
+          "source_age_ms": null,
+          "missing_camera_callbacks": 12,
+          "scene_fps": 329.43882630170157,
+          "scheduler": {
+            "samples": 13188,
+            "expected_generated": 0,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 0,
+            "continuous_miss_timer": 0,
+            "worker_wait_ms": {
+              "mean": 0.0,
+              "p95": 0.0,
+              "maximum": 0.0
+            },
+            "source_hold_ms": {
+              "mean": 0.4672771231422505,
+              "p95": 0.6509,
+              "maximum": 1.2946
+            }
+          }
+        },
+        "safety": {
+          "outputs": "22832",
+          "frame_begins": "22832",
+          "frame_ends": "22832",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "scene_metrics": {
+          "seconds": 39.99229199999999,
+          "frames": 13176,
+          "real_fps": 329.4384827956348,
+          "state": "active=True native_installed=1 sources=22833 generated=0 runtime_initialized=True status= overflow=0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [],
+          "errors": 0
+        }
+      },
+      {
+        "mode": 2,
+        "real_scene_fps": 313.1734581121073,
+        "mean_scene_ms": 3.193118618762475,
+        "loss_vs_off_percent": 11.017391479611948,
+        "increment_vs_previous_stage_ms": 0.1576505352710149,
+        "output_submissions_per_second": 627.2446716071051,
+        "native": {
+          "seconds": 39.993962699954864,
+          "source_seconds": 39.99411069997586,
+          "source_frames": 12536,
+          "output_frames": 25087,
+          "real_output_frames": 12536,
+          "generated_frames": 12551,
+          "real_fps": 313.42114577903504,
+          "output_fps": 627.2446716071051,
+          "generated_gpu_ms": {
+            "mean": 0.07358773898494143,
+            "p95": 0.099328,
+            "maximum": 0.318432
+          },
+          "gpu_coverage": 12551,
+          "output_worst_ms": 7.807099958881736,
+          "output_over_33ms": 0,
+          "source_worst_ms": 12.045799987390637,
+          "source_over_33ms": 0,
+          "prediction_camera_px": null,
+          "prediction_red_px": null,
+          "prediction_blue_px": null,
+          "prediction_horizon_ms": null,
+          "prediction_samples": 0,
+          "source_age_ms": {
+            "mean": 3.191687897378695,
+            "p95": 3.9934,
+            "maximum": 12.0458
+          },
+          "missing_camera_callbacks": 10,
+          "scene_fps": 313.17110896548974,
+          "scheduler": {
+            "samples": 12536,
+            "expected_generated": 12536,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 0,
+            "continuous_miss_timer": 0,
+            "worker_wait_ms": {
+              "mean": 0.02097681876196554,
+              "p95": 0.0716,
+              "maximum": 1.4601
+            },
+            "source_hold_ms": {
+              "mean": 0.6288687380344608,
+              "p95": 0.8666,
+              "maximum": 4.8552
+            }
+          },
+          "prediction_metrics_scope": "Not applicable: actual image motion; base/pulse payload holds planet envelopes",
+          "block_flow": {
+            "variant": "3",
+            "scale": "8",
+            "block_size": "8",
+            "skipped_pairs": "363",
+            "generated": "13529",
+            "new_picture": "7604",
+            "both_changed_samples": "101135",
+            "moving_samples": "220236",
+            "samples_per_frame": "256",
+            "threshold": "3/255",
+            "minimum_samples": "4",
+            "window": "5..45"
+          },
+          "block_variant": 3,
+          "interpolated_timeline_to_render_ms": {
+            "mean": 3.1911827128507655,
+            "p95": 3.9891,
+            "maximum": 12.0458
+          },
+          "interpolated_timeline_to_submit_ms": {
+            "mean": 3.457005397002551,
+            "p95": 4.2924,
+            "maximum": 12.5797
+          }
+        },
+        "safety": {
+          "outputs": "42816",
+          "frame_begins": "24013",
+          "frame_ends": "24013",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "scene_metrics": {
+          "seconds": 39.993810700000004,
+          "frames": 12526,
+          "real_fps": 313.1734581121073,
+          "state": "active=True native_installed=1 sources=24014 generated=18802 runtime_initialized=True status= overflow=0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [],
+          "errors": 0
+        }
+      },
+      {
+        "mode": 4,
+        "real_scene_fps": 310.8694612054452,
+        "mean_scene_ms": 3.216784293067395,
+        "loss_vs_off_percent": 11.672030784020404,
+        "increment_vs_previous_stage_ms": 0.023665674304919726,
+        "output_submissions_per_second": 1246.4925413355695,
+        "native": {
+          "seconds": 40.00104159995681,
+          "source_seconds": 39.99736690003192,
+          "source_frames": 12446,
+          "output_frames": 49862,
+          "real_output_frames": 12446,
+          "generated_frames": 37416,
+          "real_fps": 311.14548192896336,
+          "output_fps": 1246.4925413355695,
+          "generated_gpu_ms": {
+            "mean": 0.07391148171905067,
+            "p95": 0.106496,
+            "maximum": 0.434176
+          },
+          "gpu_coverage": 37416,
+          "output_worst_ms": 6.245600001420826,
+          "output_over_33ms": 0,
+          "source_worst_ms": 11.672599997837096,
+          "source_over_33ms": 0,
+          "prediction_camera_px": null,
+          "prediction_red_px": null,
+          "prediction_blue_px": null,
+          "prediction_horizon_ms": null,
+          "prediction_samples": 0,
+          "source_age_ms": {
+            "mean": 3.202918631066923,
+            "p95": 3.9354,
+            "maximum": 11.6726
+          },
+          "missing_camera_callbacks": 11,
+          "scene_fps": 310.87046382520936,
+          "scheduler": {
+            "samples": 12446,
+            "expected_generated": 37338,
+            "reset_miss_lock": 0,
+            "reset_miss_next_before_due": 0,
+            "reset_miss_worker_late": 0,
+            "continuous_miss_lock": 0,
+            "continuous_miss_timer": 169,
+            "worker_wait_ms": {
+              "mean": 0.17466680057849912,
+              "p95": 0.6165,
+              "maximum": 2.0521
+            },
+            "source_hold_ms": {
+              "mean": 0.5582434517113932,
+              "p95": 0.7958,
+              "maximum": 2.6055
+            }
+          },
+          "prediction_metrics_scope": "Not applicable: actual image motion; base/pulse payload holds planet envelopes",
+          "block_flow": {
+            "variant": "3",
+            "scale": "8",
+            "block_size": "8",
+            "skipped_pairs": "11",
+            "generated": "40058",
+            "new_picture": "20589",
+            "both_changed_samples": "257659",
+            "moving_samples": "644460",
+            "samples_per_frame": "256",
+            "threshold": "3/255",
+            "minimum_samples": "4",
+            "window": "5..45"
+          },
+          "block_variant": 3,
+          "interpolated_timeline_to_render_ms": {
+            "mean": 3.2056620273983594,
+            "p95": 3.9406,
+            "maximum": 11.6726
+          },
+          "interpolated_timeline_to_submit_ms": {
+            "mean": 3.37279445815031,
+            "p95": 4.1392,
+            "maximum": 12.1248
+          }
+        },
+        "safety": {
+          "outputs": "80286",
+          "frame_begins": "24681",
+          "frame_ends": "24681",
+          "worker_error": "0",
+          "sync_requested": "0",
+          "sync_preserved_off": "0",
+          "sync_forced_zero_active": "0"
+        },
+        "scene_metrics": {
+          "seconds": 39.99749589999999,
+          "frames": 12435,
+          "real_fps": 310.8694612054452,
+          "state": "active=True native_installed=1 sources=24682 generated=55602 runtime_initialized=True status= overflow=0"
+        },
+        "game_metrics": {
+          "runs": [],
+          "hitches": [],
+          "songs": [],
+          "errors": 0
+        }
+      }
+    ],
+    "conditions": {
+      "vsync": "0",
+      "target_fps": "10000",
+      "fullscreen_mode": "FullScreenWindow",
+      "width": "2560",
+      "height": "1440",
+      "refresh_hz": "144",
+      "window_width": "2560",
+      "window_height": "1440"
+    },
+    "build": {
+      "managed_sha256": "ee7016ecf43cbb74c882a71aa9495bf3a55ebad05675733ba1450f15293f62be",
+      "native_sha256": "c391946baebf128e3b7608d39ecb74cd66b88c4f155c999da302613be57dcfb4"
+    }
+  },
+  "whole_song_variant3": {
+    "ch26-hello-2-full": "확인 안 됨",
+    "ch26-hello-4-full": "확인 안 됨",
+    "ch26-arche-2-full": "확인 안 됨",
+    "ch26-arche-4-full": "확인 안 됨"
+  },
+  "ordinary": {
+    "off": "확인 안 됨",
+    "switch": "확인 안 됨",
+    "monitor": "확인 안 됨",
+    "fsr": "확인 안 됨"
+  },
+  "restored_files": {
+    "StutterFix.dll": "dd9ca8cadd52bb61aad3e3ab41a54f07e693fb8367653c27513bdef07fc193e1",
+    "sfnative.dll": "ad2dfdc5ed4d5cd416488bb8e1d96863601d9c3a57690cc25756c5f71eec89d1",
+    "Settings.xml": "fa6e781728a4c72c53aa1969a4d08707d837f15932bcf4e5c912bbbaf28d8cd5"
+  },
+  "existing_test_zips": {
+    "FrameGenLab-2026-10-07-tester.zip": "689de906e1b0513c526c34c0aff33dbff6b1d12fe9544adf78b8295a4932c134"
+  },
+  "actual_3440": "확인 안 됨",
+  "physical_display_latency": "확인 안 됨",
+  "whole_song_pixel_quality": "확인 안 됨",
+  "whole_song_fps_loss_without_full_off": "확인 안 됨"
+}

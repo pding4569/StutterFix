@@ -22,7 +22,7 @@ def main():
     p.add_argument('--screen-border', action='store_true', help='Research-only fixed binary screen border')
     p.add_argument('--image-gate', action='store_true', help='Research-only actual-image agreement and jump limit')
     p.add_argument('--block-flow', action='store_true', help='Research-only GPU image block interpolation')
-    p.add_argument('--block-variant', type=int, choices=[0,1,2,3,4], default=0)
+    p.add_argument('--block-variant', type=int, choices=[0,1,2,3,4], default=3)
     p.add_argument('--width', type=int, help='Required actual game width; reject a different condition')
     p.add_argument('--height', type=int, default=1440)
     a = p.parse_args()
