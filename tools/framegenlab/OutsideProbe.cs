@@ -10,10 +10,69 @@ namespace StutterFix
     // The research harness uses the same runtime as the Player build.
     internal static class FrameGenOutsideProbe
     {
-        internal static void Install() { FrameGen.InstallResearch(); if(Main.Config.FrameGenFilterPair) FrameGenScreenFilterProbe.Install(); }
-        internal static void Finish() { FrameGen.FinishResearch(); try { FrameGenScreenFilterProbe.Finish(); } finally { FrameGenScreenFilterProbe.Uninstall(); } }
-        internal static void Uninstall() { FrameGen.Shutdown(); FrameGenScreenFilterProbe.Uninstall(); }
+        internal static void Install() { FrameGen.InstallResearch(); if(Main.Config.FrameGenFilterPair) FrameGenScreenFilterProbe.Install(); if(Main.Config.FrameGenScreenBorder) FrameGenScreenBorder.Install(); }
+        internal static void Finish() { FrameGen.FinishResearch(); FrameGenScreenBorder.Detach(); try { FrameGenScreenFilterProbe.Finish(); } finally { FrameGenScreenFilterProbe.Uninstall(); } }
+        internal static void Uninstall() { FrameGen.Shutdown(); FrameGenScreenBorder.Detach(); FrameGenScreenFilterProbe.Uninstall(); }
         internal static void DrawGUI() { UnityEngine.GUILayout.Label("프레임 늘리기 (실험): StutterFix 설정 → 그래픽"); }
+    }
+
+    // Research candidate: move only the confirmed binary border to final composition.
+    // Original effect runs first (fields/time unchanged); its destination is then
+    // replaced by its input. All subsequent game filters still run exactly once.
+    internal static class FrameGenScreenBorder
+    {
+        private static readonly AccessTools.FieldRef<CameraFilterPack_TV_WideScreenHV,Material> Mat=AccessTools.FieldRefAccess<CameraFilterPack_TV_WideScreenHV,Material>("SCMaterial");
+        private static readonly AccessTools.FieldRef<CameraFilterPack_TV_WideScreenHV,float> StretchX=AccessTools.FieldRefAccess<CameraFilterPack_TV_WideScreenHV,float>("StretchX");
+        private static readonly AccessTools.FieldRef<CameraFilterPack_TV_WideScreenHV,float> StretchY=AccessTools.FieldRefAccess<CameraFilterPack_TV_WideScreenHV,float>("StretchY");
+        private static Harmony harmony;
+        private static RenderTexture mask;
+        private static IntPtr maskPointer;
+        private static CameraFilterPack_TV_WideScreenHV owner;
+        private static int capturedFrame=-1;
+        private static float lastSize=float.NaN;
+        private static string failure;
+        internal static void Install() {
+            if(!Main.Config.FrameGenCameraBlend) throw new InvalidOperationException("screen-border candidate requires delayed real-frame composition");
+            capturedFrame=-1; lastSize=float.NaN; failure=null; owner=null;
+            harmony=new Harmony("StutterFix.FrameGen.ScreenBorder");
+            harmony.Patch(AccessTools.Method(typeof(CameraFilterPack_TV_WideScreenHV),"OnRenderImage"),
+                postfix:new HarmonyMethod(typeof(FrameGenScreenBorder),nameof(Postfix)));
+        }
+        private static void Postfix(CameraFilterPack_TV_WideScreenHV __instance,RenderTexture __0,RenderTexture __1) {
+            if(!Hitch.Playing || !FrameGen.Active || Main.Config.FrameGenOutside<2 || failure!=null) return;
+            try {
+                if(owner==null) owner=__instance;
+                if(owner!=__instance) throw new InvalidOperationException("multiple WideScreenHV cameras");
+                if(__instance.Smooth!=0 || StretchX(__instance)!=1 || StretchY(__instance)!=1) throw new InvalidOperationException("unverified WideScreenHV smooth/stretch");
+                if(__1==null || __0.width!=Screen.width || __0.height!=Screen.height) throw new InvalidOperationException("screen-border candidate requires full-size filter input/output");
+                if(mask==null) {
+                    mask=new RenderTexture(__0.width,__0.height,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear) {hideFlags=HideFlags.HideAndDontSave}; mask.Create(); maskPointer=mask.GetNativeTexturePtr();
+                    Main.Entry.Logger.Log("[프레임생성 테두리] retain all other filters; move binary WideScreenHV border to final composition");
+                }
+                if(mask.width!=__0.width || mask.height!=__0.height) throw new InvalidOperationException("screen-border source resized; stop");
+                if(lastSize!=__instance.Size) {
+                    var material=Mat(__instance); var original=material.mainTexture;
+                    try { Graphics.Blit(Texture2D.whiteTexture,mask,material); } finally { material.mainTexture=original; }
+                    lastSize=__instance.Size;
+                }
+                Graphics.Blit(__0,__1); // Keep the unmasked image for the remaining game filters.
+                capturedFrame=Time.frameCount;
+            } catch(Exception ex) { failure=ex.Message; Main.Entry.Logger.Log("[프레임생성 테두리] 중단: "+failure); }
+        }
+        internal static bool TryGet(out IntPtr border) {
+            border=IntPtr.Zero;
+            if(failure!=null) throw new InvalidOperationException(failure);
+            if(owner==null || !owner.isActiveAndEnabled) return false;
+            if(capturedFrame!=Time.frameCount) throw new InvalidOperationException("WideScreenHV source was not captured this frame");
+            border=maskPointer; return true;
+        }
+        internal static void Detach() { harmony?.UnpatchAll("StutterFix.FrameGen.ScreenBorder"); harmony=null; }
+        // Called by FrameGenRuntime only after the native engine confirms shutdown.
+        internal static void Release() {
+            Detach();
+            if(mask!=null) { mask.Release(); UnityEngine.Object.Destroy(mask); mask=null; }
+            maskPointer=IntPtr.Zero; owner=null;
+        }
     }
 
     // Explicit visual-only experiment: one managed effect, one input/output pair.

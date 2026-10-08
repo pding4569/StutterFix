@@ -14,4 +14,7 @@
     <EmbeddedResource Remove="native/sfnative.dll" />
     <EmbeddedResource Include="$(FrameGenNative)" LogicalName="StutterFix.sfnative.dll" />
   </ItemGroup>
+  <ItemGroup Condition="'$(FrameGenProbeKind)' == 'Outside'">
+    <Reference Include="Assembly-CSharp-firstpass"><HintPath>$(GameManaged)/Assembly-CSharp-firstpass.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
 </Project>

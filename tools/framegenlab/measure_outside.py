@@ -83,6 +83,7 @@ def main():
     p.add_argument("--camera-blend",action="store_true",help="Research only: interpolate known camera poses with one-source visual delay")
     p.add_argument("--scene-pair",action="store_true",help="Visual only: save same-source world/screen textures at song20s")
     p.add_argument("--filter-pair",action="store_true",help="Visual only: copy one WideScreenHV input/output at song20s;read after native finish")
+    p.add_argument("--screen-border",action="store_true",help="Research only: retain all other filters and move only the binary WideScreenHV border to final composition")
     p.add_argument("--legacy",action="store_true",help="Chapter 14 full-frame gate and resetting clock; instrumentation control")
     p.add_argument("--full-song",action="store_true",help="Run to the actual song end; captures start after the performance window")
     p.add_argument("--switch-smoke",action="store_true")
@@ -97,6 +98,8 @@ def main():
         raise RuntimeError("Measurement batch stopped for the requested visual comparison; no installation changed")
     if not a.map.is_file() or not 10<=a.seconds<=600 or sf.game_running():
         raise RuntimeError("Existing map, 10..600 seconds and closed game required")
+    if a.screen_border and not a.camera_blend: p.error("Screen-border candidate requires delayed real-frame composition")
+    if a.screen_border and a.filter_pair: p.error("Original filter-pair diagnostics must use an unmodified filter")
     if a.switch_smoke and a.mode!=0: p.error("switch test starts OFF")
     if a.sync_smoke and a.mode!=0: p.error("sync test starts OFF")
     if sum([a.switch_smoke,a.freeze_smoke,a.sync_smoke,a.ui_smoke])>1: p.error("Choose one smoke test")
@@ -118,12 +121,12 @@ def main():
         if a.sync_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","fgsync 1","wait 5","set FrameGenOutside 2","wait 5","set FrameGenOutside 0","wait 5","fgsync 0","wait 5"]
         if a.ui_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","ui 3","wait 3",f"shot framegen-research-setting-{a.mode}x","wait 3","ui close","wait 10"]
         if a.full_song: steps[-1]="waitend 600"
-        settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair}
+        settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair,"FrameGenScreenBorder":a.screen_border}
         summary,metrics=sf.sf_run(steps+["quit"],settings=settings,tag="framegen-outside-"+a.label,timeout_min=a.timeout_min)
         log=sf.read_text(sf.PLAYER_LOG); (a.out/"game.log").write_text(log,encoding="utf-8"); (a.out/"run.txt").write_text(summary,encoding="utf-8")
         if a.ui_smoke: shutil.copyfile(shot,a.out/'settings.png')
         if diagnostic.exists(): shutil.copytree(diagnostic,a.out/"capture")
-        if any(v in log for v in ["Crash!!!","단계 실패","[안정성] 안전 모드로 켬","native failure","feature disabled"]) or "시간 초과로 끔" in summary:
+        if any(v in log for v in ["Crash!!!","단계 실패","[안정성] 안전 모드로 켬","native failure","feature disabled","[프레임생성 테두리] 중단:"]) or "시간 초과로 끔" in summary:
             raise RuntimeError("Failed experiment; inspect evidence")
         safety=dict(part.split("=",1) for part in (a.out/"capture/safety.txt").read_text().split())
         if int(safety["worker_error"]) or safety["frame_begins"]!=safety["frame_ends"]:
@@ -140,7 +143,7 @@ def main():
             raise RuntimeError('Exact filter input/output capture missing; inspect filter-pair.txt')
         if a.seconds>=50 and native["seconds"]<39:
             raise RuntimeError("Incomplete 5..45 second performance window")
-        result=dict(label=a.label,mode=a.mode,camera_blend=a.camera_blend,scene_pair=a.scene_pair,filter_pair=a.filter_pair,expected_inactive=a.expect_inactive,compatibility_settings=extra,visual_smoke=a.filter_pair or a.scene_pair or a.clip or a.switch_smoke or a.freeze_smoke or a.sync_smoke or a.ui_smoke or a.expect_inactive,native=native,safety=safety,game_metrics=metrics)
+        result=dict(label=a.label,mode=a.mode,camera_blend=a.camera_blend,scene_pair=a.scene_pair,filter_pair=a.filter_pair,screen_border=a.screen_border,expected_inactive=a.expect_inactive,compatibility_settings=extra,visual_smoke=a.filter_pair or a.scene_pair or a.clip or a.switch_smoke or a.freeze_smoke or a.sync_smoke or a.ui_smoke or a.expect_inactive,native=native,safety=safety,game_metrics=metrics)
         (a.out/"summary.json").write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
         print(json.dumps(result,ensure_ascii=False),flush=True)
     finally:

@@ -221,7 +221,14 @@ namespace StutterFix
                 }
                 if(p.mode!=0 && sceneCamera.z>.00001f && scene!=null && sc!=null && Overlay(sc)!=null) {
                     var overlay=Overlay(sc); worldCamera.CopyFrom(overlay); worldCamera.enabled=false;
-                    worldCamera.transform.SetPositionAndRotation(overlay.transform.position,overlay.transform.rotation); worldCamera.targetTexture=world; worldCamera.Render();
+                    worldCamera.transform.SetPositionAndRotation(overlay.transform.position,overlay.transform.rotation); worldCamera.targetTexture=world;
+#if FRAMEGEN_RESEARCH
+                    if(Main.Config.FrameGenScreenBorder && FrameGenScreenBorder.TryGet(out var border)) {
+                        if((border.ToInt64()&1)!=0) throw new InvalidOperationException("unaligned screen mask pointer");
+                        p.unused2=new IntPtr(border.ToInt64()|p.unused2.ToInt64()); p.capture|=16;
+                    }
+#endif
+                    worldCamera.Render();
 #if FRAMEGEN_RESEARCH
                     if(ScenePair && !pairGeometrySaved && song>=20 && song<23) { pairGeometrySaved=true; SavePairGeometry(sc,song); }
 #endif
@@ -277,7 +284,11 @@ namespace StutterFix
             if(callback==IntPtr.Zero) return; Finish();
             if(runner!=null) { runner.StopAllCoroutines(); UnityEngine.Object.Destroy(runner.gameObject); runner=null; }
             Issue(3,IntPtr.Zero); GL.Flush(); var wait=System.Diagnostics.Stopwatch.StartNew(); while(sf_framegen_stopped()==0 && wait.ElapsedMilliseconds<300) System.Threading.Thread.Sleep(1);
-            if(sf_framegen_stopped()!=0) { foreach(var p in packets) Marshal.FreeHGlobal(p); FreeTextures(); }
+            if(sf_framegen_stopped()!=0) { foreach(var p in packets) Marshal.FreeHGlobal(p); FreeTextures();
+#if FRAMEGEN_RESEARCH
+                FrameGenScreenBorder.Release();
+#endif
+            }
             else Log("shutdown pending; retaining packets and RTs to avoid in-flight use-after-free");
             trackedCamera=null; renderedFrame=finalBeginFrame=-1;
             packets=null; callback=IntPtr.Zero; command.Release(); command=null;

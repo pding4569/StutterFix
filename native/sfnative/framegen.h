@@ -89,8 +89,25 @@ inline DXGI_FORMAT raw(DXGI_FORMAT f) {
 }
 struct ContextLock { ID3D11Multithread* m; explicit ContextLock(ID3D11Multithread* p):m(p){m->Enter();} ~ContextLock(){m->Leave();} };
 struct Texture { ComPtr<ID3D11Texture2D> texture; ComPtr<ID3D11ShaderResourceView> view; };
-struct Slot { std::array<Texture,2> images; Packet packet{},previousPacket{}; Pose previous{}; double qpc=0,previousSong=0,period=.005,frameDelta=.005; unsigned long long sequence=0; };
-// Packet.capture bits0..1 select readback; bit2 selects the research-only delayed camera; bit3 requests an early diagnostic pair.
+struct Slot {
+#ifdef SF_FRAMEGEN_RESEARCH
+    std::array<Texture,3> images;
+#else
+    std::array<Texture,2> images;
+#endif
+    Packet packet{},previousPacket{}; Pose previous{}; double qpc=0,previousSong=0,period=.005,frameDelta=.005; unsigned long long sequence=0;
+};
+inline bool screenBorderEnabled(const Packet& p) {
+#ifdef SF_FRAMEGEN_RESEARCH
+    return (p.capture&16)!=0;
+#else
+    (void)p; return false;
+#endif
+}
+// Packet.capture bits0..1 select readback; bit2 selects the research-only delayed camera;
+// bit3 requests an early diagnostic pair; bit4 selects the research fixed screen mask.
+// With bit4, textures[2] packs the aligned mask pointer plus the scene-rendered low bit.
+// The ordinary packet remains 0/1 in textures[2]; its native build rejects bit4.
 inline bool cameraBlendEnabled(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
     return (p.capture&4)!=0;
@@ -167,7 +184,7 @@ public:
         double t=now();
         if(p.song<lastPacket.song-1) { captured=0; clipNext=0; }
         if((p.capture&3)==2 && !cameraBlendEnabled(p)) clip(screen,p.song,p.frame,p.mode,true);
-        SourceRecord row{t,p.song,p.frame,p.pose,0,0,0,0,p.textures[2]==reinterpret_cast<void*>(1)?1:0};
+        SourceRecord row{t,p.song,p.frame,p.pose,0,0,0,0,(reinterpret_cast<uintptr_t>(p.textures[2])&1)?1:0};
         memcpy(row.base,p.textures+3,16); memcpy(row.pulse,p.pulse,16);
         bool realClock=lastPacket.textures[1]==reinterpret_cast<void*>(1);
         if(p.measure && lastPacket.measure && previousPacket.measure && p.pose.camera[2]>.001f && lastPacket.pose.camera[2]>.001f && previousPacket.pose.camera[2]>.001f && havePrevious &&
@@ -210,6 +227,9 @@ public:
         ContextLock context(protection.Get());
         auto& s=slots[(published+1)%slots.size()];
         for(int i=0;i<2;i++) copy(i==1?screen:static_cast<ID3D11Texture2D*>(p.textures[0]),s.images[i]);
+#ifdef SF_FRAMEGEN_RESEARCH
+        if(screenBorderEnabled(p)) copy(reinterpret_cast<ID3D11Texture2D*>(reinterpret_cast<uintptr_t>(p.textures[2])&~uintptr_t(1)),s.images[2]);
+#endif
         s.packet=p; s.previousPacket=lastPacket; s.previous=lastPacket.pose; s.previousSong=lastPacket.song;
         s.frameDelta=havePrevious?t-lastQpc:.005;
         s.period=std::clamp(s.frameDelta,.001,.05); s.qpc=t; s.sequence=++published;
@@ -370,6 +390,9 @@ private:
 inline const char* shader=R"(
 cbuffer Data:register(b0) { float4 oldCamera; float4 camera; float4 info; };
 Texture2D worldTex:register(t0); Texture2D screenTex:register(t1);
+#ifdef SF_FRAMEGEN_RESEARCH
+Texture2D maskTex:register(t2);
+#endif
 SamplerState linearSampler:register(s0);
 struct V { float4 pos:SV_POSITION; float2 uv:TEXCOORD0; };
 V VS(uint id:SV_VertexID) { V v; v.uv=float2((id<<1)&2,id&2); v.pos=float4(v.uv*float2(2,-2)+float2(-1,1),0,1); return v; }
@@ -379,6 +402,13 @@ float2 sourceUV(float2 p) { float2 q=rotate(p-oldCamera.xy,-oldCamera.w)/(2*oldC
 float4 PS(V v):SV_TARGET {
     float3 color=worldTex.SampleLevel(linearSampler,sourceUV(world(v.uv,camera)),0).rgb;
     float3 oldWorld=worldTex.SampleLevel(linearSampler,sourceUV(world(v.uv,oldCamera)),0).rgb;
+#ifdef SF_FRAMEGEN_RESEARCH
+    if(info.z>.5) {
+        float2 uv=v.uv; if(info.y>.5) uv.y=1-uv.y;
+        float3 mask=maskTex.SampleLevel(linearSampler,uv,0).rgb;
+        color*=mask; // UI is classified against the unmasked original screen.
+    }
+#endif
     float3 ui=screenTex.SampleLevel(linearSampler,v.uv,0).rgb;
     if(max(max(abs(ui.r-oldWorld.r),abs(ui.g-oldWorld.g)),abs(ui.b-oldWorld.b))>2.5/255) color=ui;
     return float4(color,1);
@@ -395,8 +425,12 @@ inline void Output::initialize() {
     if(diagnostics) for(auto& q:queries) { D3D11_QUERY_DESC desc{D3D11_QUERY_TIMESTAMP,0}; check(device->CreateQuery(&desc,&q.begin)); check(device->CreateQuery(&desc,&q.end)); desc.Query=D3D11_QUERY_TIMESTAMP_DISJOINT; check(device->CreateQuery(&desc,&q.disjoint)); }
     trace("queries created");
     ComPtr<ID3DBlob> v,p,errors;
-    check(D3DCompile(shader,strlen(shader),nullptr,nullptr,nullptr,"VS","vs_5_0",D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&v,&errors));
-    check(D3DCompile(shader,strlen(shader),nullptr,nullptr,nullptr,"PS","ps_5_0",D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&p,&errors));
+    const D3D_SHADER_MACRO* defines=nullptr;
+#ifdef SF_FRAMEGEN_RESEARCH
+    const D3D_SHADER_MACRO research[]={{"SF_FRAMEGEN_RESEARCH","1"},{nullptr,nullptr}}; defines=research;
+#endif
+    check(D3DCompile(shader,strlen(shader),nullptr,defines,nullptr,"VS","vs_5_0",D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&v,&errors));
+    check(D3DCompile(shader,strlen(shader),nullptr,defines,nullptr,"PS","ps_5_0",D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&p,&errors));
     trace("shaders compiled");
     check(device->CreateVertexShader(v->GetBufferPointer(),v->GetBufferSize(),nullptr,&vs)); check(device->CreatePixelShader(p->GetBufferPointer(),p->GetBufferSize(),nullptr,&ps));
     D3D11_BUFFER_DESC bd{}; bd.ByteWidth=48; bd.Usage=D3D11_USAGE_DEFAULT; bd.BindFlags=D3D11_BIND_CONSTANT_BUFFER; check(device->CreateBuffer(&bd,nullptr,&constants));
@@ -419,9 +453,13 @@ inline void Output::render(const Slot& s,bool real,double tick) {
     if(cameraBlendEnabled(s.packet)) predicted=interpolateCamera(image->packet.pose,s.packet.pose,real?0:age/s.period);
     auto& q=queries[nextQuery++%queries.size()]; bool timing=!real && s.packet.measure && q.row==SIZE_MAX && records.size()<1000000;
     deferred->ClearState(); if(timing) { deferred->Begin(q.disjoint.Get()); deferred->End(q.begin.Get()); }
-    float data[12]; memcpy(data,image->packet.pose.camera,16); memcpy(data+4,predicted.camera,16); data[8]=float(width)/height; data[9]=float(s.packet.flip); data[10]=data[11]=0;
+    float data[12]; memcpy(data,image->packet.pose.camera,16); memcpy(data+4,predicted.camera,16); data[8]=float(width)/height; data[9]=float(s.packet.flip); data[10]=screenBorderEnabled(image->packet)?1.f:0.f; data[11]=0;
     deferred->UpdateSubresource(constants.Get(),0,nullptr,data,0,0); ID3D11Buffer* b=constants.Get(); deferred->PSSetConstantBuffers(0,1,&b);
-    ID3D11ShaderResourceView* views[2]={image->images[0].view.Get(),image->images[1].view.Get()}; deferred->PSSetShaderResources(0,2,views);
+    ID3D11ShaderResourceView* views[]={image->images[0].view.Get(),image->images[1].view.Get()
+#ifdef SF_FRAMEGEN_RESEARCH
+        ,screenBorderEnabled(image->packet)?image->images[2].view.Get():nullptr
+#endif
+    }; deferred->PSSetShaderResources(0,UINT(std::size(views)),views);
     auto sm=sampler.Get(); deferred->PSSetSamplers(0,1,&sm); auto rt=backTarget.Get(); deferred->OMSetRenderTargets(1,&rt,nullptr);
     D3D11_VIEWPORT vp{0,0,float(width),float(height),0,1}; deferred->RSSetViewports(1,&vp); deferred->RSSetState(raster.Get()); deferred->OMSetDepthStencilState(depth.Get(),0);
     deferred->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); deferred->VSSetShader(vs.Get(),nullptr,0); deferred->PSSetShader(ps.Get(),nullptr,0); deferred->Draw(3,0);
@@ -435,11 +473,12 @@ inline void Output::render(const Slot& s,bool real,double tick) {
         // Save the exact image slot used by this render, including delayed mode.
         picture(image->images[0].texture.Get(),L"snapshot-world.ppm");
         picture(image->images[1].texture.Get(),L"snapshot-screen.ppm");
+        if(screenBorderEnabled(image->packet)) picture(image->images[2].texture.Get(),L"snapshot-mask.ppm");
         FILE* pair=nullptr; _wfopen_s(&pair,(path+L"/pair-pose.json").c_str(),L"wb");
         if(pair) {
             const auto& old=image->packet.pose.camera; const auto& shown=predicted.camera;
-            fprintf(pair,"{\"source_frame\":%d,\"display_frame\":%d,\"song_s\":%.9f,\"flip_y\":%s,\"source_camera\":[%.9g,%.9g,%.9g,%.9g],\"display_camera\":[%.9g,%.9g,%.9g,%.9g]}\n",
-                image->packet.frame,s.packet.frame,song,s.packet.flip?"true":"false",old[0],old[1],old[2],old[3],shown[0],shown[1],shown[2],shown[3]);
+            fprintf(pair,"{\"source_frame\":%d,\"display_frame\":%d,\"song_s\":%.9f,\"flip_y\":%s,\"screen_border\":%s,\"source_camera\":[%.9g,%.9g,%.9g,%.9g],\"display_camera\":[%.9g,%.9g,%.9g,%.9g]}\n",
+                image->packet.frame,s.packet.frame,song,s.packet.flip?"true":"false",screenBorderEnabled(image->packet)?"true":"false",old[0],old[1],old[2],old[3],shown[0],shown[1],shown[2],shown[3]);
             fclose(pair);
         }
         picture(backBuffer.Get(),L"early-generated.ppm"); ++captured;

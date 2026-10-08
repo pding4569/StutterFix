@@ -43,7 +43,7 @@ def summarize(root):
         r['scene_fps_decrease_bounds_percent'] = [100*(1-r['scene_fps_bounds'][1]/off['scene_fps_bounds'][0]),
                                                  100*(1-r['scene_fps_bounds'][0]/off['scene_fps_bounds'][1])]
     return dict(label=data['label'], conditions=data['conditions'], order=data['modes'],
-                camera_blend=data.get('camera_blend',False),
+                camera_blend=data.get('camera_blend',False),screen_border=data.get('screen_border',False),
                 research_binary_sha256=data['research_binary_sha256'], pooled=pooled, runs=data['runs'])
 
 

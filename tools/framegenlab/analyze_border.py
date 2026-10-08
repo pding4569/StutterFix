@@ -64,8 +64,11 @@ def analyze(folder):
     h, w = world.shape[:2]
     u, v = source_uv(w,h,old,camera)
     identity = world[::-1]  # Tested packet flip=1; do not optimize orientation to fit.
-    ui = np.max(np.abs(screen-identity),axis=2)>2.5
     border, clamp = sample(world,u,v), sample(world,u,v,clamp=True)
+    if pair.get('screen_border'):
+        mask=np.asarray(Image.open(folder/'snapshot-mask.ppm').convert('RGB')).astype(np.float32)[::-1]/255
+        border*=mask; clamp*=mask
+    ui = np.max(np.abs(screen-identity),axis=2)>2.5
     reconstructed = np.where(ui[...,None],screen,border)
     error = np.max(np.abs(reconstructed-actual),axis=2)
     outside = (u<0)|(u>1)|(v<0)|(v>1)
@@ -77,7 +80,8 @@ def analyze(folder):
     edge = np.zeros((h,w),bool)
     edge[:h//20]=True; edge[-h//20:]=True
     edge[:,:w//20]=True; edge[:,-w//20:]=True
-    moved_dark = edge & ~outside & ~ui & actual_dark & (np.max(identity,axis=2)>8) & (error<=3)
+    filtered_identity=identity*mask if pair.get("screen_border") else identity
+    moved_dark = edge & ~outside & ~ui & actual_dark & (np.max(filtered_identity,axis=2)>8) & (error<=3)
     def black_bands(image):
         dark=np.max(image,axis=2)<=3
         # Central half avoids corner HUDs. A run can still include map graphics:
@@ -90,7 +94,7 @@ def analyze(folder):
                 [('left',left),('right',right),('top',top),('bottom',bottom)]}
     def count(mask): return dict(pixels=int(mask.sum()),percent=float(mask.mean()*100))
     result = dict(scope='One same-source visual-only GPU sample;not motion proof or an exact GPU mask. See trial metadata for prediction/delayed mode and capture date.',
-                  flip_y=True, frame=pair['display_frame'],source_frame=pair['source_frame'],song_s=pair['song_s'],
+                  screen_border=pair.get('screen_border',False),flip_y=True, frame=pair['display_frame'],source_frame=pair['source_frame'],song_s=pair['song_s'],
                   source_camera=old,display_camera=camera,size=[w,h],
                   reconstruction=dict(mean_max_rgb_error=float(error.mean()),
                                       p99_max_rgb_error=float(np.percentile(error,99)),
@@ -99,7 +103,7 @@ def analyze(folder):
                   outside_not_ui_actual_dark=count(unmasked&actual_dark),
                   border_black_with_bright_clamp_and_gpu_agreement=count(attributable),
                   edge_inside_uv_original_bright_to_actual_dark=count(moved_dark),
-                  median_black_edge_run_px=dict(source=black_bands(identity),generated=black_bands(actual)),
+                  median_black_edge_run_px=dict(source=black_bands(filtered_identity),generated=black_bands(actual)),
                   maximum_outside_texels=float(np.maximum.reduce([-u*w,(u-1)*w,-v*h,(v-1)*h]).max()),
                   limits='Quantized PPM/rounded poses;CLAMP is an offline counterfactual only, not a proposed fix or unseen-image reconstruction. Older pairs without exact image-slot metadata must be prediction-only.')
     return result, attributable

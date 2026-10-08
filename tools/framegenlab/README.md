@@ -182,3 +182,13 @@ NumPy·Pillow가 있는 Python으로 실행하는 오프라인 픽셀 분석이�
 한 managed 효과에만 연구용 연결을 설치하고 native 종료 뒤 PNG를 읽는다. 원래 설정은 유지한다.
 `analyze_filter_pair.py <capture 폴더> --out <json> [--preview <png>]`는 NumPy·Pillow로
 테두리와 흰 그림 마스크×입력 모델을 비교한다. 성능 측정·필터 수정 시험과 구분한다.
+
+`--screen-border --camera-blend`는 연구 전용 화면 고정 테두리 후보다. 원래 WideScreenHV가
+한 번 실행된 뒤 그 입력을 출력에 다시 넣어, 뒤따르는 게임 필터도 빠짐없이 한 번씩 처리한다.
+생성기는 그 그림을 옮긴 후 원래 material로 얻은 검은 마스크를 화면 좌표에 적용하고 UI를 덮는다.
+**WideScreenHV와 뒤 필터의 적용 순서는 의도적으로 달라진다.** 전체 움직임·모든 필터 조합의
+원본 동일성 승인이 아니다. Smooth0·StretchX/Y1·화면 크기 입력만 허용하며 다른 조건이면 중단한다.
+마스크는 Size가 바뀔 때 다시 그리고 native는 이미지 슬롯마다 자기 복사본을 보관한다.
+셰이더·세 번째 슬롯·설정·managed 효과 연결은 연구에만 있고 기본false다. 일반 native는 선택을 막는다.
+원래 필터 입출력 증거인 `--filter-pair`와 함께 사용하지 않는다. `--scene-pair`의 별도 시각 판은
+정확한 마스크와 source/display 카메라도 저장하며 GPU 읽기로 생긴 간격은 성능에서 제외한다.
