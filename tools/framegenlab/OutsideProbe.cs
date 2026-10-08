@@ -10,9 +10,9 @@ namespace StutterFix
     // The research harness uses the same runtime as the Player build.
     internal static class FrameGenOutsideProbe
     {
-        internal static void Install() { FrameGen.InstallResearch(); if(Main.Config.FrameGenFilterPair) FrameGenScreenFilterProbe.Install(); if(Main.Config.FrameGenScreenBorder) FrameGenScreenBorder.Install(); }
-        internal static void Finish() { FrameGen.FinishResearch(); FrameGenScreenBorder.Detach(); try { FrameGenScreenFilterProbe.Finish(); } finally { FrameGenScreenFilterProbe.Uninstall(); } }
-        internal static void Uninstall() { FrameGen.Shutdown(); FrameGenScreenBorder.Detach(); FrameGenScreenFilterProbe.Uninstall(); }
+        internal static void Install() { FrameGen.InstallResearch(); if(Main.Config.FrameGenFilterPair) FrameGenScreenFilterProbe.Install(); if(Main.Config.FrameGenScreenBorder) FrameGenScreenBorder.Install(); if(Main.Config.FrameGenLayerProbe) FrameGenLayerProbe.Install(); }
+        internal static void Finish() { FrameGen.FinishResearch(); FrameGenScreenBorder.Detach(); try { if(Main.Config.FrameGenLayerProbe) FrameGenLayerProbe.Finish(); FrameGenScreenFilterProbe.Finish(); } finally { FrameGenLayerProbe.Uninstall(); FrameGenScreenFilterProbe.Uninstall(); } }
+        internal static void Uninstall() { FrameGen.Shutdown(); FrameGenScreenBorder.Detach(); FrameGenLayerProbe.Uninstall(); FrameGenScreenFilterProbe.Uninstall(); }
         internal static void DrawGUI() { UnityEngine.GUILayout.Label("프레임 늘리기 (실험): StutterFix 설정 → 그래픽"); }
     }
 

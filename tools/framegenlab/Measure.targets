@@ -15,6 +15,7 @@
     <EmbeddedResource Include="$(FrameGenNative)" LogicalName="StutterFix.sfnative.dll" />
   </ItemGroup>
   <ItemGroup Condition="'$(FrameGenProbeKind)' == 'Outside'">
+    <Compile Include="tools/framegenlab/LayerProbe.cs" />
     <Reference Include="Assembly-CSharp-firstpass"><HintPath>$(GameManaged)/Assembly-CSharp-firstpass.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
 </Project>

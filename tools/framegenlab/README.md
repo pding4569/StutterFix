@@ -192,3 +192,12 @@ NumPy·Pillow가 있는 Python으로 실행하는 오프라인 픽셀 분석이�
 셰이더·세 번째 슬롯·설정·managed 효과 연결은 연구에만 있고 기본false다. 일반 native는 선택을 막는다.
 원래 필터 입출력 증거인 `--filter-pair`와 함께 사용하지 않는다. `--scene-pair`의 별도 시각 판은
 정확한 마스크와 source/display 카메라도 저장하며 GPU 읽기로 생긴 간격은 성능에서 제외한다.
+
+
+`--layer-probe --clip`은 연구용 실제 장식 상태/원본 그림 진단이다. 다섯 시각에서 연속 원본
+두 프레임의 중앙 장식128개까지 현재 시차·placement·위치/bounds를 `deco-state.csv`에 기록한다.
+기본false·일반 미포함이며 GPU 읽기와 함께 성능 집계에서 제외한다.
+`analyze_image_motion.py <capture> --mode 0 --out <json>`은 비압축 GPU 그림의 중앙60% 위상 상관을
+재며 PSR/그림 변화량과 거절 표본도 보존한다. 원본 두 그림에는 카메라 중심 예상 이동과
+실제 그림 이동·반복/카메라 warp 회색 MAE도 따로 기록한다. 저장 step6 픽셀과 실제 픽셀을
+구분하고 압축 미리보기나 카메라 상수만으로 품질을 승인하지 않는다.
