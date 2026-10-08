@@ -1,0 +1,94 @@
+{
+  "scope": "HELLO2560x1440 144Hz;research-only one-effect diagnostics;no performance or full motion approval.",
+  "runs": {
+    "ch20-filter-pair4": {
+      "analysis": {
+        "scope": "Same source frame, one original WideScreenHV call;GPU copies before/after,readback after native finish. Not performance or motion proof.",
+        "size": [
+          2560,
+          1440
+        ],
+        "metadata": "frame=11786 song_s=20.000084381899796 captured=True\nSize=0.68 Smooth=0 StretchX=1 StretchY=1\nerror=\n",
+        "input_black_edge_runs_px": {
+          "left": 0.0,
+          "right": 0.0,
+          "top": 0.0,
+          "bottom": 0.0
+        },
+        "output_black_edge_runs_px": {
+          "left": 49.0,
+          "right": 49.0,
+          "top": 28.0,
+          "bottom": 28.0
+        },
+        "input_bright_to_output_black_pixels": 278992,
+        "input_bright_to_output_black_percent": 7.568142361111112,
+        "center_max_channel_error_mean": 0.0,
+        "center_max_channel_error_p99": 0.0
+      },
+      "safety": {
+        "outputs": "35609",
+        "frame_begins": "13357",
+        "frame_ends": "13357",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "stutterfix_parsed_errors": 0,
+      "raw_sha256": {
+        "filter-input.png": "48960e83636c64a2feed9fd50f45688a45ae41522975f304a57ff68e0bf61cfc",
+        "filter-output.png": "17f6b7d71446d443af28689b7bba5ff72ada4dfea5c2fa590f82bba66a55afaf"
+      }
+    },
+    "ch20-filter-mask4": {
+      "analysis": {
+        "scope": "Same source frame, one original WideScreenHV call;GPU copies before/after,readback after native finish. Not performance or motion proof.",
+        "size": [
+          2560,
+          1440
+        ],
+        "metadata": "frame=10928 song_s=20.000944596133195 captured=True\nSize=0.68 Smooth=0 StretchX=1 StretchY=1\nerror=\n",
+        "input_black_edge_runs_px": {
+          "left": 0.0,
+          "right": 0.0,
+          "top": 0.0,
+          "bottom": 0.0
+        },
+        "output_black_edge_runs_px": {
+          "left": 49.0,
+          "right": 49.0,
+          "top": 28.0,
+          "bottom": 28.0
+        },
+        "input_bright_to_output_black_pixels": 278992,
+        "input_bright_to_output_black_percent": 7.568142361111112,
+        "center_max_channel_error_mean": 0.0,
+        "center_max_channel_error_p99": 0.0,
+        "input_times_mask_model": {
+          "mean_max_channel_error": 0.0,
+          "p99_max_channel_error": 0.0,
+          "maximum": 0.0,
+          "agreement_within3_percent": 100.0
+        }
+      },
+      "safety": {
+        "outputs": "34410",
+        "frame_begins": "12483",
+        "frame_ends": "12483",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "stutterfix_parsed_errors": 0,
+      "raw_sha256": {
+        "filter-input.png": "6f1c4a4c0ab1f5413ba8899aa71cc17511015baf53d0c31927d29029f3eb8e1f",
+        "filter-output.png": "32927f69685392c5d69e8bf708b27368796756c0528e906488a0f35ec84f9ed0",
+        "filter-mask.png": "dfb5f8706ccd98d1f6ba9a96f865efc50b7cb1a401f426a384fb00b963fdf61a"
+      }
+    }
+  },
+  "latest_research_binary_sha256": "00c57f53ea6fb84d3e752a8dc6441d544a1f91832e4fb4c5c37b4bae0e43b6f3",
+  "limits": "Only Size0.68 Smooth0 StretchX1 StretchY1 at song20s. Reusing white-mask composition under other settings remains unverified. Existing DOTween safe-mode warnings exist in the process;StutterFix parser error0 does not mean every game/mod message is error-free."
+}

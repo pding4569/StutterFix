@@ -177,3 +177,8 @@ off/지정한예측/blend4의 실제 GPU 표본으로 나란한 미리보기를 
 NumPy·Pillow가 있는 Python으로 실행하는 오프라인 픽셀 분석이다. 지연 모드의 같은 그림 대조는
 실제 지난 슬롯을 저장한 `pair-pose.json`이 필요하다. 연구 `--scene-pair`는 기하 정보를 한 번 읽으며
 시작 전 곡 시간과 되감기를 구분한다. 전체 품질 승인·물리적 표시 FPS로 쓰지 않는다.
+
+`measure_outside.py --filter-pair`는 WideScreenHV의 실제 입력/출력을 곡20초 한 프레임에서 복사한다.
+한 managed 효과에만 연구용 연결을 설치하고 native 종료 뒤 PNG를 읽는다. 원래 설정은 유지한다.
+`analyze_filter_pair.py <capture 폴더> --out <json> [--preview <png>]`는 NumPy·Pillow로
+테두리와 흰 그림 마스크×입력 모델을 비교한다. 성능 측정·필터 수정 시험과 구분한다.
