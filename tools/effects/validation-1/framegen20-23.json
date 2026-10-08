@@ -1,0 +1,175 @@
+{
+  "scope": "20..23s step6 uncompressed triplets, same selected source/reference, not independent OFF or full-song quality. Effects states bracket19..24s. No performance inference.",
+  "trials": [
+    {
+      "trial": "hello-off",
+      "visual": {
+        "frames": 173,
+        "accepted_triplets": 168,
+        "accepted_generated": 117,
+        "captured_generated": 120,
+        "captured_new_picture_generated": 89,
+        "accepted_adjacent_pairs": 168,
+        "adjacent_actual_length": {
+          "median": 0.029442712326090234,
+          "p95": 7.701662784098345,
+          "maximum": 15.330256145894195
+        },
+        "adjacent_reference_length": {
+          "median": 0.019685308769103484,
+          "p95": 6.584538699266125,
+          "maximum": 23.4706559409054
+        },
+        "actual_reversals": 2,
+        "reference_reversals": 1,
+        "extra_reversals": 1,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 2,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.01676011555731358,
+        "added_length_max": 5.4853205220346,
+        "maximum_roi_fraction_rgb_error_above3": 0.9999596253229974,
+        "maximum_full_rgb_error": 255.0
+      },
+      "fx_states": [
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 coordinator=False size=0x0 status=",
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 coordinator=False size=0x0 status="
+      ],
+      "ambiguous_song_seconds": [
+        21.328251344,
+        21.346547541,
+        21.365075589,
+        22.300259329,
+        22.346455079
+      ]
+    },
+    {
+      "trial": "hello-glow",
+      "visual": {
+        "frames": 172,
+        "accepted_triplets": 167,
+        "accepted_generated": 127,
+        "captured_generated": 130,
+        "captured_new_picture_generated": 98,
+        "accepted_adjacent_pairs": 163,
+        "adjacent_actual_length": {
+          "median": 0.024924997202451733,
+          "p95": 7.506290271688209,
+          "maximum": 15.59793490161144
+        },
+        "adjacent_reference_length": {
+          "median": 0.017305872762504202,
+          "p95": 7.247570004899068,
+          "maximum": 85.75060276993177
+        },
+        "actual_reversals": 3,
+        "reference_reversals": 1,
+        "extra_reversals": 2,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 0,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.018133868412798394,
+        "added_length_max": 46.03664248403179,
+        "maximum_roi_fraction_rgb_error_above3": 1.0,
+        "maximum_full_rgb_error": 255.0
+      },
+      "fx_states": [
+        "enabled=True ready=True failed=False frames=4235 reused=0 glow_rest=2675 coordinator=True size=3440x1440 status=",
+        "enabled=True ready=True failed=False frames=5193 reused=0 glow_rest=3633 coordinator=True size=3440x1440 status="
+      ],
+      "ambiguous_song_seconds": [
+        21.315244728,
+        21.334091645,
+        21.352225451,
+        21.369677101,
+        22.431858521
+      ]
+    },
+    {
+      "trial": "arche-off",
+      "visual": {
+        "frames": 176,
+        "accepted_triplets": 175,
+        "accepted_generated": 123,
+        "captured_generated": 123,
+        "captured_new_picture_generated": 81,
+        "accepted_adjacent_pairs": 175,
+        "adjacent_actual_length": {
+          "median": 0.8777574832514718,
+          "p95": 3.8127946810761792,
+          "maximum": 27.35488733014381
+        },
+        "adjacent_reference_length": {
+          "median": 0.86521637652392,
+          "p95": 3.639933734894742,
+          "maximum": 27.35488733014381
+        },
+        "actual_reversals": 3,
+        "reference_reversals": 1,
+        "extra_reversals": 2,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 0,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.01648435789529562,
+        "added_length_max": 1.950427638178313,
+        "maximum_roi_fraction_rgb_error_above3": 0.3029513888888889,
+        "maximum_full_rgb_error": 255.0
+      },
+      "fx_states": [
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 coordinator=False size=0x0 status=",
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 coordinator=False size=0x0 status="
+      ],
+      "ambiguous_song_seconds": [
+        20.407261484
+      ]
+    },
+    {
+      "trial": "arche-glow",
+      "visual": {
+        "frames": 176,
+        "accepted_triplets": 176,
+        "accepted_generated": 123,
+        "captured_generated": 123,
+        "captured_new_picture_generated": 80,
+        "accepted_adjacent_pairs": 175,
+        "adjacent_actual_length": {
+          "median": 0.8614222649084522,
+          "p95": 4.489217540833836,
+          "maximum": 91.4715072696947
+        },
+        "adjacent_reference_length": {
+          "median": 0.9089732106506342,
+          "p95": 4.268413399074354,
+          "maximum": 91.4194653083598
+        },
+        "actual_reversals": 6,
+        "reference_reversals": 3,
+        "extra_reversals": 3,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 0,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.01373826627434024,
+        "added_length_max": 2.0315822611967724,
+        "maximum_roi_fraction_rgb_error_above3": 0.7430353682170543,
+        "maximum_full_rgb_error": 255.0
+      },
+      "fx_states": [
+        "enabled=True ready=True failed=False frames=7174 reused=2 glow_rest=4931 coordinator=True size=3440x1440 status=",
+        "enabled=True ready=True failed=False frames=8730 reused=4 glow_rest=6487 coordinator=True size=3440x1440 status="
+      ],
+      "ambiguous_song_seconds": []
+    }
+  ]
+}

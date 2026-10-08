@@ -832,6 +832,20 @@ namespace StutterFix
                     Log("[프레임상태] " + FrameGen.Describe());
                     Log("[프레임시각] frame=" + Time.frameCount + " ticks=" + System.Diagnostics.Stopwatch.GetTimestamp() + " hz=" + System.Diagnostics.Stopwatch.Frequency);
                     return true;
+                case "shaders":
+                    ScreenEffects.Inventory();return true;
+                case "fxstate":
+                    Log("[화면효과상태] "+ScreenEffects.Describe());return true;
+#if DEV || AUTOTEST
+                case "fxcapture":
+                    ScreenEffects.Capture();return true;
+                case "fxfixture":
+                    ScreenEffects.Fixture();return true;
+                case "fxbench":
+                    EffectsGpuProbe.Start(arg);return true;
+                case "fxbenchreport":
+                    EffectsGpuProbe.Report();return true;
+#endif
                 case "fgmonitor":
                     Log("[출력 모니터] " + PerfOverlay.DescribeFps());
                     return true;

@@ -372,6 +372,7 @@ namespace StutterFix
             if (!installed) return;
             installed = false;
             Try(FrameGen.Shutdown);
+            Try(ScreenEffects.Shutdown);
             Try(GcControl.Shutdown);
             Try(GameScreenButton.Remove);
             Try(LowEnd.Shutdown);
@@ -619,6 +620,8 @@ namespace StutterFix
             if (!fsplit && global::StutterFix.FloorAnim.Split) global::StutterFix.FloorAnim.Flush();
             global::StutterFix.FloorAnim.Split = fsplit;
             global::StutterFix.FloorAnim.SplitBudgetMs = Config.LowSplit >= 2 ? 1.5f : Config.LowSplit == 1 ? 2.5f : 4f;
+            ScreenEffects.Apply();
+            Fsr.Sharpness=Mathf.Clamp(Config.FxRcasSharpness,0,2);
             Fsr.Apply();
             LowEnd.Apply();
             MoveApply.Enabled = E("MoveFinish", Config.MoveFinish);
@@ -872,6 +875,13 @@ namespace StutterFix
         public int FrameGenOutside = 0;     // (실험) 0=끔, 2..8=출력 배율. 입력·판정은 원래 속도.
         public int FrameGenMultiplier = 2;  // 마지막으로 선택한 배율
         public bool FrameGenRefresh = false; // 주사율 부족분만 생성. 기존 2..8배 저장 값 보존.
+        public int FxPreset = 0;
+        public bool FxColor=false, FxSharp=false, FxAA=false, FxGlow=false, FxVignette=false, FxLut=false, FxLight=false;
+        public float FxVibrance=.2f, FxContrast=1.08f, FxBrightness=0, FxTemperature=0;
+        public float FxSharpAmount=.4f, FxGlowThreshold=.75f, FxGlowAmount=.25f, FxVignetteAmount=.15f, FxLightAmount=.2f;
+        public int FxLightQuality=3;
+        public string FxLutPath="";
+        public float FxRcasSharpness=.2f;
         public bool LowAutoRes = false;     // 자동 해상도: 목표 FPS 를 못 맞출 만큼 GPU 가 바쁠 때만 게임 화면 해상도를 낮춤
         public int LowAutoFps = 60;         // 자동 해상도 목표 FPS
         public int LowAutoMin = 50;         // 자동 해상도 최소 배율 %

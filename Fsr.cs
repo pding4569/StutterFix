@@ -21,6 +21,7 @@ namespace StutterFix
         private static RenderTexture mid, outRT;
         private static int content, done = -1;
         private static bool hooked;
+        internal static bool CoordinatorActive=>hooked;
         private static Material quadMat;
         private static RenderTexture lastCamRT;
         private static readonly AccessTools.FieldRef<scrCamera, Camera> camRef = AccessTools.FieldRefAccess<scrCamera, Camera>("camobj");
@@ -35,7 +36,7 @@ namespace StutterFix
         {
             if (Enabled && !Ready && !Failed) Load();
             // 자동 해상도로 배율이 오가도 되게 켜져 있으면 늘 걸어 두고, 100% 일 때는 PreCull 이 바로 돌아간다
-            if (Enabled && Ready) { if (!hooked) { Camera.onPreCull += PreCull; hooked = true; } }
+            if ((Enabled && Ready) || ScreenEffects.Enabled) { if (!hooked) { Camera.onPreCull += PreCull; hooked = true; } }
             else { RestoreQuad(); Unhook(); }
         }
 
@@ -81,18 +82,21 @@ namespace StutterFix
 
         private static void PreCull(Camera c)
         {
+            scrCamera effectsCamera=null;
             try
             {
                 var sc = scrCamera.instance;
                 if (sc == null) return;
                 if (c == camRef(sc)) { content++; return; }
                 if (c != ovRef(sc)) return;
+                ScreenEffects.RestoreQuad();
                 var camRT = rtRef(sc); var qm = quadMeshRef(sc);
                 if (camRT == null || qm == null) return;
                 if (quadMat == null || lastCamRT != camRT) { quadMat = qm.material; lastCamRT = camRT; }
                 var tex = quadMat.mainTexture;
                 bool ours = outRT != null && tex == outRT;
-                if (tex != camRT && !ours) return;   // 게임이 다른 텍스처를 쓰는 중(사용자 지정 FPS 등)이면 손대지 않음
+                if (tex != camRT && !ours) {if(ScreenEffects.Enabled)++ScreenEffects.CustomSourceSkipped;return;}   // 게임이 다른 텍스처를 쓰는 중(사용자 지정 FPS 등)이면 손대지 않음
+                effectsCamera=sc;
                 if (Suppress || !Active) { if (ours) quadMat.mainTexture = camRT; return; }
                 int W = Screen.width, H = Screen.height;
                 if (camRT.width >= W && camRT.height >= H) { if (ours) quadMat.mainTexture = camRT; return; }
@@ -120,6 +124,7 @@ namespace StutterFix
                 if (TestSharp < -1.5f) { done = content; Frames++; } else done = -1;   // 검증용으로 그린 것은 다음 프레임에 다시 그린다
             }
             catch (Exception ex) { Failed = true; Ready = false; Main.Entry.Logger.Log("[저사양] FSR 1 실패, 끔: " + ex.Message); RestoreQuad(); }
+            finally { if(effectsCamera!=null) ScreenEffects.Render(effectsCamera,content); }
         }
 
         private static void RestoreQuad()

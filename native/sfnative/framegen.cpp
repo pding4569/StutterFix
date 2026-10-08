@@ -3,6 +3,7 @@
 #include <memory>
 using namespace outside;
 #define API extern "C" __declspec(dllexport)
+#include "effects_gpu.h"
 using PresentFn=HRESULT(__stdcall*)(IDXGISwapChain*,UINT,UINT);
 using ResizeFn=HRESULT(__stdcall*)(IDXGISwapChain*,UINT,UINT,UINT,DXGI_FORMAT,UINT);
 static ComPtr<IDXGISwapChain> game;

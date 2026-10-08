@@ -125,6 +125,7 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--stage',required=True)
     parser.add_argument('--order',default='0,1,4')
+    parser.add_argument('--settings',type=Path,help='Explicit screen-effects/compatibility settings; same file throughout batch')
     parser.add_argument('--variant',type=int,default=0,choices=[0,1,2,3,4])
     parser.add_argument('--resume',action='store_true',help='Reuse completed game trial and saved PM capture; never retry failed game')
     parser.add_argument('--baseline-off',type=Path,help='Reuse the explicitly named earlier same-build OFF for a remaining2x trial')
@@ -150,6 +151,7 @@ def main():
             command[command.index('--mode')+1]='4';command+=['--refresh']
         if a.variant: command+=['--fixed-cost-stage',str(a.variant)]
         if mode: command+=['--block-flow','--block-variant','3']
+        if a.settings: command+=['--settings',str(a.settings.resolve())]
         reused=a.resume and (root/'summary.json').is_file()
         print('START '+name,flush=True)
         if not reused:

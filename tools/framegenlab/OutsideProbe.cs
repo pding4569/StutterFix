@@ -22,7 +22,7 @@ namespace StutterFix
     internal static class FrameGenCostProbe
     {
         private static readonly AccessTools.FieldRef<scrCamera,Camera> Cam=AccessTools.FieldRefAccess<scrCamera,Camera>("camobj");
-        private struct Sample { internal long tick; internal double song; internal int frame; }
+        private struct Sample { internal long tick; internal double song; internal int frame,fxFrame;internal bool glow; }
         private static Sample[] samples;
         private static int count,lastFrame=-1,overflow;
         private static long frequency;
@@ -34,15 +34,17 @@ namespace StutterFix
             lastFrame=Time.frameCount;
             if(count==samples.Length) { ++overflow; return; }
             QueryPerformanceCounter(out var tick);
-            samples[count++]=new Sample {tick=tick,song=scrConductor.instance.songposition_minusi,frame=lastFrame};
+            samples[count++]=new Sample {tick=tick,song=scrConductor.instance.songposition_minusi,frame=lastFrame,fxFrame=ScreenEffects.LastFrame,glow=ScreenEffects.LastGlow};
         }
         internal static void Detach() { Camera.onPostRender-=Post; }
         internal static void Finish() {
             if(samples==null) return;
             Detach(); string path=Path.Combine(Main.Entry.Path,"framegen-outside");
             using(var f=new StreamWriter(Path.Combine(path,"cost-sources.csv"))) {
-                f.WriteLine("source_s,song_s,unity_frame");
-                for(int i=0;i<count;i++) { var r=samples[i]; f.WriteLine(FormattableString.Invariant($"{(double)r.tick/frequency:R},{r.song:R},{r.frame}")); }
+                // Camera callback precedes this frame's overlay effect. fx_frame is
+                // the explicit previous completed effect frame, never assumed equal.
+                f.WriteLine("source_s,song_s,unity_frame,fx_frame,fx_glow");
+                for(int i=0;i<count;i++) { var r=samples[i]; f.WriteLine(FormattableString.Invariant($"{(double)r.tick/frequency:R},{r.song:R},{r.frame},{r.fxFrame},{(r.glow?1:0)}")); }
             }
             File.WriteAllText(Path.Combine(path,"cost-state.txt"),FrameGen.Describe()+" overflow="+overflow);
             samples=null;

@@ -1,0 +1,161 @@
+{
+  "scope": "0.1..0.9s, FX states0.05/1.2s. Step6 uncompressed triplets, same selected source/reference, not independent OFF or full-song quality. No performance inference.",
+  "trials": [
+    {
+      "trial": "hello-off",
+      "visual": {
+        "frames": 47,
+        "accepted_triplets": 47,
+        "accepted_generated": 35,
+        "captured_generated": 35,
+        "captured_new_picture_generated": 0,
+        "accepted_adjacent_pairs": 46,
+        "adjacent_actual_length": {
+          "median": 0.005922991542503916,
+          "p95": 0.036018847046798384,
+          "maximum": 0.07971792281001122
+        },
+        "adjacent_reference_length": {
+          "median": 0.005926239242593973,
+          "p95": 0.03153809714846376,
+          "maximum": 0.08460265861797003
+        },
+        "actual_reversals": 0,
+        "reference_reversals": 0,
+        "extra_reversals": 0,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 0,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.0020538584731669717,
+        "added_length_max": 0.029951517549277325,
+        "maximum_roi_fraction_rgb_error_above3": 0.0011910529715762274,
+        "maximum_full_rgb_error": 157.0
+      },
+      "fx_states": [
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status="
+      ],
+      "ambiguous_song_seconds": []
+    },
+    {
+      "trial": "hello-glow",
+      "visual": {
+        "frames": 47,
+        "accepted_triplets": 47,
+        "accepted_generated": 27,
+        "captured_generated": 27,
+        "captured_new_picture_generated": 0,
+        "accepted_adjacent_pairs": 46,
+        "adjacent_actual_length": {
+          "median": 0.006239107878055652,
+          "p95": 0.020679544094246306,
+          "maximum": 0.046550291470603536
+        },
+        "adjacent_reference_length": {
+          "median": 0.006747698444110422,
+          "p95": 0.021802536222109814,
+          "maximum": 0.046550291470603536
+        },
+        "actual_reversals": 0,
+        "reference_reversals": 0,
+        "extra_reversals": 0,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 0,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.0026865417408679093,
+        "added_length_max": 0.011301359473653735,
+        "maximum_roi_fraction_rgb_error_above3": 0.0010497416020671835,
+        "maximum_full_rgb_error": 155.0
+      },
+      "fx_states": [
+        "enabled=True ready=True failed=False frames=768 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+        "enabled=True ready=True failed=False frames=1139 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status="
+      ],
+      "ambiguous_song_seconds": []
+    },
+    {
+      "trial": "arche-off",
+      "visual": {
+        "frames": 47,
+        "accepted_triplets": 47,
+        "accepted_generated": 22,
+        "captured_generated": 22,
+        "captured_new_picture_generated": 0,
+        "accepted_adjacent_pairs": 46,
+        "adjacent_actual_length": {
+          "median": 0.006474785113682971,
+          "p95": 0.018026034714125404,
+          "maximum": 0.039557262409376584
+        },
+        "adjacent_reference_length": {
+          "median": 0.0063399769940681115,
+          "p95": 0.01815132071367377,
+          "maximum": 0.04802282956914615
+        },
+        "actual_reversals": 0,
+        "reference_reversals": 0,
+        "extra_reversals": 0,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 0,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.0007341270211913679,
+        "added_length_max": 0.013139495741401011,
+        "maximum_roi_fraction_rgb_error_above3": 0.002099483204134367,
+        "maximum_full_rgb_error": 144.0
+      },
+      "fx_states": [
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status="
+      ],
+      "ambiguous_song_seconds": []
+    },
+    {
+      "trial": "arche-glow",
+      "visual": {
+        "frames": 47,
+        "accepted_triplets": 47,
+        "accepted_generated": 30,
+        "captured_generated": 30,
+        "captured_new_picture_generated": 0,
+        "accepted_adjacent_pairs": 46,
+        "adjacent_actual_length": {
+          "median": 0.004489357294902934,
+          "p95": 0.01706846192199225,
+          "maximum": 0.024483277480751752
+        },
+        "adjacent_reference_length": {
+          "median": 0.004186446937903978,
+          "p95": 0.011631018653043649,
+          "maximum": 0.024483277480751752
+        },
+        "actual_reversals": 0,
+        "reference_reversals": 0,
+        "extra_reversals": 0,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 0,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.005130615744924685,
+        "added_length_max": 0.02113119011252145,
+        "maximum_roi_fraction_rgb_error_above3": 0.001937984496124031,
+        "maximum_full_rgb_error": 148.0
+      },
+      "fx_states": [
+        "enabled=True ready=True failed=False frames=920 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+        "enabled=True ready=True failed=False frames=1349 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status="
+      ],
+      "ambiguous_song_seconds": []
+    }
+  ]
+}

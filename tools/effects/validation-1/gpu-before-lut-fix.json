@@ -1,0 +1,177 @@
+{
+  "scope": "D3D11 disjoint/timestamp queries around private offscreen passes on one frozen true3440x1440 scene. Thirty warmup frames per profile; async8slot DONOTFLUSH, no GPU waits/CPU pixel reads. Not gameplay FPS, PresentMon, physical display or arbitrary-scene cost. Glow executes privately even if the live map has its own bloom; live effects unchanged.",
+  "profiles": {
+    "passthrough": {
+      "profile": "passthrough",
+      "samples": 739,
+      "mean_ms": 0.05914258186738836,
+      "maximum_ms": 0.07168,
+      "skipped": 0,
+      "errors": 0
+    },
+    "color": {
+      "profile": "color",
+      "samples": 692,
+      "mean_ms": 0.059334289017341044,
+      "maximum_ms": 0.070656,
+      "skipped": 0,
+      "errors": 0
+    },
+    "combined": {
+      "profile": "combined",
+      "samples": 664,
+      "mean_ms": 0.0854916626506024,
+      "maximum_ms": 0.125952,
+      "skipped": 0,
+      "errors": 0
+    },
+    "sharp": {
+      "profile": "sharp",
+      "samples": 698,
+      "mean_ms": 0.08947676790830945,
+      "maximum_ms": 0.103424,
+      "skipped": 0,
+      "errors": 0
+    },
+    "fxaa": {
+      "profile": "fxaa",
+      "samples": 552,
+      "mean_ms": 0.11471953623188406,
+      "maximum_ms": 0.156672,
+      "skipped": 0,
+      "errors": 0
+    },
+    "glow": {
+      "profile": "glow",
+      "samples": 685,
+      "mean_ms": 0.08628209051094891,
+      "maximum_ms": 0.123904,
+      "skipped": 0,
+      "errors": 0
+    },
+    "light": {
+      "profile": "light",
+      "samples": 506,
+      "mean_ms": 0.09202036363636364,
+      "maximum_ms": 0.126976,
+      "skipped": 0,
+      "errors": 0
+    }
+  },
+  "rows": [
+    {
+      "profile": "passthrough",
+      "samples": 738,
+      "mean_ms": 0.05914363143631436,
+      "maximum_ms": 0.07168,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "passthrough",
+      "samples": 739,
+      "mean_ms": 0.05914258186738836,
+      "maximum_ms": 0.07168,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "color",
+      "samples": 691,
+      "mean_ms": 0.05933272358900145,
+      "maximum_ms": 0.070656,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "color",
+      "samples": 692,
+      "mean_ms": 0.059334289017341044,
+      "maximum_ms": 0.070656,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "combined",
+      "samples": 663,
+      "mean_ms": 0.08548314932126698,
+      "maximum_ms": 0.125952,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "combined",
+      "samples": 664,
+      "mean_ms": 0.0854916626506024,
+      "maximum_ms": 0.125952,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "sharp",
+      "samples": 697,
+      "mean_ms": 0.08947585652797704,
+      "maximum_ms": 0.103424,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "sharp",
+      "samples": 698,
+      "mean_ms": 0.08947676790830945,
+      "maximum_ms": 0.103424,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "fxaa",
+      "samples": 551,
+      "mean_ms": 0.11471773502722322,
+      "maximum_ms": 0.156672,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "fxaa",
+      "samples": 552,
+      "mean_ms": 0.11471953623188406,
+      "maximum_ms": 0.156672,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "glow",
+      "samples": 684,
+      "mean_ms": 0.08628247953216374,
+      "maximum_ms": 0.123904,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "glow",
+      "samples": 685,
+      "mean_ms": 0.08628209051094891,
+      "maximum_ms": 0.123904,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "light",
+      "samples": 505,
+      "mean_ms": 0.09202008712871287,
+      "maximum_ms": 0.126976,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "light",
+      "samples": 506,
+      "mean_ms": 0.09202036363636364,
+      "maximum_ms": 0.126976,
+      "skipped": 0,
+      "errors": 0
+    }
+  ],
+  "managed_sha256": "c9ed8182435d1b07b0b49bf42a830e8710c8b87ce4f1d4c7c1074bae3860263e",
+  "native_sha256": "a793190f76ee0286e6529ceaf2041be0aa5a480c5543ebbe47729bd35299c9a6"
+}

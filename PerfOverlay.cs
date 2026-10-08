@@ -942,6 +942,7 @@ namespace StutterFix
             h += rows * RowH;
             if (C.OvVram && sImg.Length > 0) h += ImgLineH;
             if (C.OvGc) h += 26;
+            if (ScreenEffects.ReShadeFiles) h += 16;
             if (C.OvHitchList) h += 34 + Mathf.Max(1, sHist.Length) * 18;
             return h + 34;                         // 아래 줄
         }
@@ -1289,6 +1290,7 @@ namespace StutterFix
             }
 
             Fill(new Rect(ix, r.yMax - 30, iw, 1), new Color(1, 1, 1, 0.08f), 0);
+            if(ScreenEffects.ReShadeFiles)Label(new Rect(ix,r.yMax-38,iw,14),T("ReShade 파일 있음 · 연결 확인 안 됨","ReShade files found; active hook unconfirmed"),sSmall);
             Label(new Rect(ix, r.yMax - 22, iw / 2, 14), sFooter, sSmall);
             Label(new Rect(ix + iw / 2, r.yMax - 22, iw / 2, 14), T("끌어서 옮기기", "drag to move"), sSubFaint);
         }

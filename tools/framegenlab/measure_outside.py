@@ -91,6 +91,7 @@ def main():
     p.add_argument("--out",type=Path,required=True)
     p.add_argument("--capture",action="store_true")
     p.add_argument("--clip",action="store_true",help="Sample actual GPU outputs at song 20..23s; visual-only, excluded from performance comparison")
+    p.add_argument('--fx-state-window',type=float,nargs=2,default=[19,24],help='Visual-only effect state samples surrounding the compiled clip window')
     p.add_argument("--image-gate",action="store_true",help="Research only: repeat on actual-image disagreement or camera jump; 16px whole-interval limit")
     p.add_argument("--block-flow",action="store_true",help="Research only: GPU bidirectional image block interpolation, one true-frame delay")
     p.add_argument("--block-variant",type=int,choices=[0,1,2,3,4],default=3,help="Research only: 0 baseline, 1 smaller search image, 2 larger blocks, 3 search used pairs (default), 4 also batch matching with first generated draw")
@@ -148,6 +149,12 @@ def main():
         if a.sync_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","fgsync 1","wait 5","set FrameGenOutside 2","wait 5","set FrameGenOutside 0","wait 5","fgsync 0","wait 5"]
         if a.ui_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","ui 3","wait 3",f"shot framegen-research-setting-{a.mode}x","wait 3","ui close","wait 10"]
         if a.full_song: steps[-1]="waitend 600"
+        if any(k.startswith('Fx') for k in extra):
+            if a.clip:
+                start,end=a.fx_state_window
+                if not 0<=start<end<=a.seconds: raise RuntimeError('Effect state window must fit trial')
+                steps=["game "+str(a.map),"auto on","press","wait "+str(start),"fxstate","wait "+str(end-start),"fxstate","wait "+str(a.seconds-end)]
+            else: steps += ['fxstate']
         settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair,"FrameGenScreenBorder":a.screen_border,"FrameGenLayerProbe":a.layer_probe,"FrameGenImageGate":a.image_gate,"FrameGenBlockFlow":a.block_flow,"FrameGenBlockVariant":a.block_variant,"FrameGenCostSplit":a.cost_split}
         settings['FrameGenFixedCostStage']=a.fixed_cost_stage
         settings['FrameGenRefresh']=a.refresh

@@ -207,7 +207,7 @@ namespace StutterFix
         // 메서드 IL 에서 "ldstr 문자열" 바로 뒤가 Shader.Find / Resources.Load 호출인 것을 찾는다.
         // 바이트를 한 칸씩 훑으므로 피연산자 안의 0x72 를 잘못 볼 수 있지만, 토큰이 문자열 표(0x70)이고 바로 뒤 호출 대상이
         // 그 두 함수일 때만 쓰므로 잘못 잡을 일이 사실상 없고, 잘못 잡아도 없는 이름을 찾아보는 것뿐이다.
-        private static void ScanStrings(MethodInfo m, List<string> shaderNames, List<string> resNames)
+        internal static void ScanStrings(MethodInfo m, List<string> shaderNames, List<string> resNames)
         {
             byte[] il;
             try { var body = m.GetMethodBody(); il = body != null ? body.GetILAsByteArray() : null; } catch { return; }

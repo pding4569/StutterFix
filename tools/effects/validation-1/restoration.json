@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-09T07:06:26.9560918+09:00",
+  "game_running": false,
+  "old_tester_zip_sha256": "689de906e1b0513c526c34c0aff33dbff6b1d12fe9544adf78b8295a4932c134",
+  "old_tester_zip_matched": true,
+  "files": [
+    {
+      "actual_sha256": "dd9ca8cadd52bb61aad3e3ab41a54f07e693fb8367653c27513bdef07fc193e1",
+      "name": "StutterFix.dll",
+      "expected_sha256": "dd9ca8cadd52bb61aad3e3ab41a54f07e693fb8367653c27513bdef07fc193e1",
+      "matched": true
+    },
+    {
+      "actual_sha256": "fa6e781728a4c72c53aa1969a4d08707d837f15932bcf4e5c912bbbaf28d8cd5",
+      "name": "Settings.xml",
+      "expected_sha256": "fa6e781728a4c72c53aa1969a4d08707d837f15932bcf4e5c912bbbaf28d8cd5",
+      "matched": true
+    },
+    {
+      "actual_sha256": "ad2dfdc5ed4d5cd416488bb8e1d96863601d9c3a57690cc25756c5f71eec89d1",
+      "name": "sfnative.dll",
+      "expected_sha256": "ad2dfdc5ed4d5cd416488bb8e1d96863601d9c3a57690cc25756c5f71eec89d1",
+      "matched": true
+    }
+  ]
+}

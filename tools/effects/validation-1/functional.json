@@ -1,0 +1,29 @@
+{
+  "states": [
+    "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 coordinator=True size=0x0 status=",
+    "enabled=True ready=True failed=False frames=416 reused=0 glow_rest=0 coordinator=True size=3440x1440 status=",
+    "enabled=False ready=False failed=False frames=1072 reused=0 glow_rest=0 coordinator=True size=0x0 status=",
+    "enabled=True ready=True failed=False frames=1697 reused=0 glow_rest=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=2479 reused=0 glow_rest=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=3203 reused=0 glow_rest=555 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=4006 reused=0 glow_rest=756 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=4656 reused=0 glow_rest=756 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=5158 reused=315 glow_rest=756 coordinator=True size=3440x1440 status=",
+    "enabled=False ready=False failed=False frames=5244 reused=401 glow_rest=756 coordinator=False size=0x0 status="
+  ],
+  "fixture": [
+    "off_pixels=57600 mismatch=0",
+    "preset=1 changed=28130 total=57600 source_altered=0",
+    "preset=2 changed=57493 total=57600 source_altered=0",
+    "preset=3 changed=57570 total=57600 source_altered=0",
+    "light_pass=1",
+    "identity_lut_max_byte_error=0"
+  ],
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  },
+  "scope": "Visual/functional only; no performance inference"
+}

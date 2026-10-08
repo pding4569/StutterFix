@@ -505,7 +505,11 @@ private:
     std::vector<ClipRecord> clips;
     void clip(ID3D11Texture2D* texture,double song,int frame,int currentMode,bool real,const Slot* source=nullptr,const Slot* next=nullptr,int gateWarp=0,double phase=-1) {
         bool force=gateWarp==1 && lastWarpClipFrame!=frame;
-        double t=now(); if(song<20 || song>=23 || (t<clipNext && !force) || clips.size()>=256) return;
+#ifndef SF_FRAMEGEN_CLIP_BEGIN
+#define SF_FRAMEGEN_CLIP_BEGIN 20.0
+#define SF_FRAMEGEN_CLIP_END 23.0
+#endif
+        double t=now(); if(song<SF_FRAMEGEN_CLIP_BEGIN || song>=SF_FRAMEGEN_CLIP_END || (t<clipNext && !force) || clips.size()>=256) return;
         if(t>=clipNext) clipNext=t+1./60;
         int index=int(clips.size());
 #ifdef SF_FRAMEGEN_RESEARCH

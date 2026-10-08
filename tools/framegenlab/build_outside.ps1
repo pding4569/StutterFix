@@ -1,5 +1,7 @@
-param([switch]$Game)
+param([switch]$Game,[double]$ClipBegin=20,[double]$ClipEnd=23)
 $ErrorActionPreference='Stop'
+if([double]::IsNaN($ClipBegin) -or [double]::IsInfinity($ClipBegin) -or [double]::IsNaN($ClipEnd) -or [double]::IsInfinity($ClipEnd) -or $ClipBegin -lt 0 -or $ClipEnd -le $ClipBegin -or $ClipEnd-$ClipBegin -gt 4){throw 'Clip window must be finite, positive and at most4seconds'}
+$clipFlags=@(('/DSF_FRAMEGEN_CLIP_BEGIN='+$ClipBegin.ToString('R',[cultureinfo]::InvariantCulture)),('/DSF_FRAMEGEN_CLIP_END='+$ClipEnd.ToString('R',[cultureinfo]::InvariantCulture)))
 $repo=(Resolve-Path "$PSScriptRoot\..\..").Path
 if($Game) {
     $base=Join-Path $PSScriptRoot 'out\ingame-native'
@@ -29,7 +31,7 @@ try {
     & cl.exe /nologo /std:c++17 /EHsc /O2 /MT /Brepro /W4 /WX /DFG_NORMAL_FIXTURE "$PSScriptRoot\block_flow_lab.cpp" /Fe:BlockFlowNormalLab.exe d3d11.lib dxgi.lib d3dcompiler.lib user32.lib
     if($LASTEXITCODE -ne 0) { throw 'Ordinary block flow lab failed' }
     if($Game) {
-        & cl.exe /nologo /std:c++17 /EHsc /c /O2 /MT /Brepro /W4 /WX "$PSScriptRoot\native\outside_game.cpp"
+        & cl.exe /nologo /std:c++17 /EHsc /c /O2 /MT /Brepro /W4 /WX @clipFlags "$PSScriptRoot\native\outside_game.cpp"
         if($LASTEXITCODE -ne 0) { throw 'Outside game native failed' }
         $base=Join-Path $PSScriptRoot 'out\ingame-native'
         & link.exe /nologo /DLL /Brepro /OUT:sfnative.dll "$base\sfnative.obj" "$base\sfinflate.obj" "$base\cpu_features.obj" "$base\utils.obj" "$base\sfdxt.obj" "$base\sfdxt_sse2.obj" "$base\sfdxt_sse4.obj" "$base\sfdxt_avx2.obj" outside_game.obj d3d11.lib dxgi.lib d3dcompiler.lib user32.lib

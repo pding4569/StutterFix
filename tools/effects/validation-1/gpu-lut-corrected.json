@@ -1,0 +1,57 @@
+{
+  "scope": "D3D11 disjoint/timestamp queries around private offscreen passes on one frozen true3440x1440 scene. Thirty warmup frames per profile; async8slot DONOTFLUSH, no GPU waits/CPU pixel reads. Not gameplay FPS, PresentMon, physical display or arbitrary-scene cost. Glow executes privately even if the live map has its own bloom; live effects unchanged.",
+  "profiles": {
+    "color": {
+      "profile": "color",
+      "samples": 797,
+      "mean_ms": 0.06051364617314931,
+      "maximum_ms": 0.070656,
+      "skipped": 0,
+      "errors": 0
+    },
+    "combined": {
+      "profile": "combined",
+      "samples": 748,
+      "mean_ms": 0.07712171122994652,
+      "maximum_ms": 0.088064,
+      "skipped": 0,
+      "errors": 0
+    }
+  },
+  "rows": [
+    {
+      "profile": "color",
+      "samples": 796,
+      "mean_ms": 0.06051505527638191,
+      "maximum_ms": 0.070656,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "color",
+      "samples": 797,
+      "mean_ms": 0.06051364617314931,
+      "maximum_ms": 0.070656,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "combined",
+      "samples": 747,
+      "mean_ms": 0.0771221419009371,
+      "maximum_ms": 0.088064,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "combined",
+      "samples": 748,
+      "mean_ms": 0.07712171122994652,
+      "maximum_ms": 0.088064,
+      "skipped": 0,
+      "errors": 0
+    }
+  ],
+  "managed_sha256": "3473974f93ab44708f8253068997474eb1e250a9ce52483b0aca555ded1607e4",
+  "native_sha256": "a793190f76ee0286e6529ceaf2041be0aa5a480c5543ebbe47729bd35299c9a6"
+}

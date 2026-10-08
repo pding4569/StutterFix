@@ -96,7 +96,7 @@ namespace StutterFix
                 if (qm == null) return true;
                 var mat = qm.material;
                 var old = mat.mainTexture as RenderTexture;
-                bool ownBuffer = old != null && !ReferenceEquals(old, camRT) && !Fsr.IsOwn(old);   // FSR 출력 버퍼는 FSR 이 관리
+                bool ownBuffer = old != null && !ReferenceEquals(old, camRT) && !Fsr.IsOwn(old) && !ScreenEffects.IsOwn(old);   // 후처리 출력 버퍼는 소유자가 관리
                 if (enable)
                 {
                     // 이전에 만든 버퍼가 끼워져 있으면 풀고 없앤 뒤 원래 코드가 새로 만들게 둔다
