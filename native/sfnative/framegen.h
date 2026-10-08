@@ -129,6 +129,13 @@ inline bool blockFlowEnabled(const Packet& p) {
     (void)p; return false;
 #endif
 }
+inline int blockFlowVariant(const Packet& p) {
+#ifdef SF_FRAMEGEN_RESEARCH
+    return (p.capture>>7)&7;
+#else
+    (void)p; return 0;
+#endif
+}
 inline Pose interpolateCamera(const Pose& previous,const Pose& current,double phase) {
     Pose result=current;
     if(previous.camera[2]<=.00001f || current.camera[2]<=.00001f) return result;
@@ -267,7 +274,11 @@ public:
         #ifdef SF_FRAMEGEN_RESEARCH
         if(blockFlowEnabled(p)) {
             const auto& previous=slots[(s.sequence-1)%slots.size()];
-            blockFlow.prepare(device.Get(),immediate.Get(),s.sequence>1 && previous.sequence==s.sequence-1?previous:s,s,width,height);
+            if(blockFlowVariant(p)>=3) {
+                // Compile/allocate on activation; search only a pair actually used by an intermediate output.
+                blockFlow.initialize(device.Get(),width,height,blockFlowVariant(p));
+                if(s.sequence>1 && previous.sequence==s.sequence-1) blockFlow.skipIfUnused(previous);
+            } else blockFlow.prepare(device.Get(),immediate.Get(),s.sequence>1 && previous.sequence==s.sequence-1?previous:s,s,width,height);
         }
         s.motionRow=SIZE_MAX;
         if(imageGateEnabled(p)) {
@@ -559,7 +570,10 @@ inline void Output::render(const Slot& s,bool real,double tick) {
     if(blockFlowEnabled(s.packet)) {
         double phase=real?0:std::clamp(age/s.period,0.,1.);
         auto& q=queries[nextQuery++%queries.size()];bool timing=!real && s.packet.measure && q.row==SIZE_MAX && records.size()<1000000;
-        {ContextLock lock(protection.Get());blockFlow.draw(immediate.Get(),backTarget.Get(),*image,s,phase,timing?&q:nullptr,!real && s.packet.measure && song>=5 && song<45);}
+        {ContextLock lock(protection.Get());
+            if(blockFlowVariant(s.packet)>=3 && !real && phase>0 && phase<1)
+                blockFlow.prepare(device.Get(),immediate.Get(),*image,s,width,height,blockFlowVariant(s.packet)!=4);
+            blockFlow.draw(immediate.Get(),backTarget.Get(),*image,s,phase,timing?&q:nullptr,!real && s.packet.measure && song>=5 && song<45);}
         if((s.packet.capture&3)==2) clip(backBuffer.Get(),song,s.packet.frame,s.packet.mode,real,image,&s,-2,phase);
         pending={0,song,NAN,real?1:0,s.packet.measure?s.packet.frame:-1,S_OK,std::max(0.,tick-(image->qpc+phase*(s.qpc-image->qpc)))};
         pending.targetTime=image->qpc+phase*(s.qpc-image->qpc);

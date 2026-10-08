@@ -10,7 +10,8 @@ class BlockFlow {
     ComPtr<ID3D11Buffer> constants,counters,counterRead;
     ComPtr<ID3D11UnorderedAccessView> counterTarget;
     ComPtr<ID3D11SamplerState> linear;
-    unsigned width=0,height=0,smallW=0,smallH=0,blocksW=0,blocksH=0;
+    unsigned width=0,height=0,smallW=0,smallH=0,blocksW=0,blocksH=0,scale=8,blockSize=8,variant=0;
+    unsigned skippedPairs=0;
     unsigned long long sequence=0;
     struct Data { float info[4],grid[4],boxes[4][4]; };
     static const char* code() { return R"(
@@ -38,7 +39,7 @@ float errorAt(float values[16],int2 origin,int2 delta) {
 }
 [numthreads(8,8,1)] void Match(uint3 id:SV_DispatchThreadID) {
     if(any(id.xy>=uint2(grid.zw))) return;
-    int2 origin=int2(id.xy)*8; float values[16],mean=0,squares=0;
+    int blockSize=max(1,int(ceil(grid.x/grid.z))); int2 origin=int2(id.xy)*blockSize; float values[16],mean=0,squares=0;
     [unroll] for(int k=0;k<16;k++) { float a=grayA.Load(int3(min(origin+int2(k%4,k/4)*2,int2(grid.xy)-1),0)); values[k]=a; mean+=a; squares+=a*a; }
     float variance=squares/16-(mean/16)*(mean/16);
     if(variance<.0004) { vectors[id.xy]=0; return; }
@@ -64,7 +65,7 @@ float errorAt(float values[16],int2 origin,int2 delta) {
     vectors[id.xy]=float4(best+fractional,confidence,cost);
 }
 bool inside(float2 uv,float4 b) { return b.z>b.x && b.w>b.y && all(uv>=b.xy) && all(uv<=b.zw); }
-float4 flowAt(Texture2D<float4> f,float2 uv) { return f.Load(int3(clamp(int2(uv*grid.xy)/8,0,int2(grid.zw)-1),0)); }
+float4 flowAt(Texture2D<float4> f,float2 uv) { int blockSize=max(1,int(ceil(grid.x/grid.z))); return f.Load(int3(clamp(int2(uv*grid.xy)/blockSize,0,int2(grid.zw)-1),0)); }
 float3 closest(float2 uv) { return info.z<.5 ? oldScreen.SampleLevel(linearClamp,uv,0).rgb : newScreen.SampleLevel(linearClamp,uv,0).rgb; }
 float difference(float3 a,float3 b) { return max(max(abs(a.r-b.r),abs(a.g-b.g)),abs(a.b-b.b)); }
 float3 colorAt(float2 uv,out bool moving) {
@@ -111,8 +112,11 @@ groupshared uint counts[4];
     }
     void execute(ID3D11DeviceContext* immediate) { ComPtr<ID3D11CommandList> list;check(commands->FinishCommandList(FALSE,&list));immediate->ExecuteCommandList(list.Get(),TRUE); }
 public:
-    void initialize(ID3D11Device* device,unsigned w,unsigned h) {
-        if(vertex) return; width=w;height=h;smallW=(w+7)/8;smallH=(h+7)/8;blocksW=(smallW+7)/8;blocksH=(smallH+7)/8;
+    void skipIfUnused(const Slot& source) {
+        if(source.sequence && sequence!=source.sequence) ++skippedPairs;
+    }
+    void initialize(ID3D11Device* device,unsigned w,unsigned h,unsigned selectedVariant) {
+        if(vertex) return; width=w;height=h;variant=selectedVariant;scale=variant==1?16:8;blockSize=variant==2?16:8;smallW=(w+scale-1)/scale;smallH=(h+scale-1)/scale;blocksW=(smallW+blockSize-1)/blockSize;blocksH=(smallH+blockSize-1)/blockSize;
         auto compile=[&](const char* entry,const char* profile) {ComPtr<ID3DBlob> result,errors;HRESULT hr=D3DCompile(code(),strlen(code()),nullptr,nullptr,nullptr,entry,profile,D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&result,&errors);if(FAILED(hr)) throw std::runtime_error(errors?static_cast<const char*>(errors->GetBufferPointer()):"block shader compile failed");return result;};
         auto vs=compile("VS","vs_5_0"),ps=compile("PS","ps_5_0"),cs=compile("Reduce","cs_5_0"),ms=compile("Match","cs_5_0"),qs=compile("Metric","cs_5_0");
         check(device->CreateVertexShader(vs->GetBufferPointer(),vs->GetBufferSize(),nullptr,&vertex));check(device->CreatePixelShader(ps->GetBufferPointer(),ps->GetBufferSize(),nullptr,&pixel));
@@ -130,15 +134,21 @@ public:
         Data d{{float(width),float(height),float(std::clamp(phase,0.,1.)),float(b.packet.flip)},{float(smallW),float(smallH),float(blocksW),float(blocksH)},{}};
         memcpy(d.boxes[0],a.packet.textures+3,16);memcpy(d.boxes[1],a.packet.pulse,16);memcpy(d.boxes[2],b.packet.textures+3,16);memcpy(d.boxes[3],b.packet.pulse,16);return d;
     }
-    void prepare(ID3D11Device* device,ID3D11DeviceContext* immediate,const Slot& a,const Slot& b,unsigned w,unsigned h) {
-        initialize(device,w,h);auto d=data(a,b,0);bind(d,a,b);
+    void prepare(ID3D11Device* device,ID3D11DeviceContext* immediate,const Slot& a,const Slot& b,unsigned w,unsigned h,bool flush=true) {
+        initialize(device,w,h,blockFlowVariant(b.packet));
+        if(sequence==b.sequence) return;
+        auto d=data(a,b,0);bind(d,a,b);
         ID3D11ShaderResourceView* none[8]{};ID3D11UnorderedAccessView* noTarget=nullptr;
         commands->PSSetShaderResources(0,8,none);commands->CSSetShaderResources(4,2,none);
         commands->CSSetShader(reduce.Get(),nullptr,0);
         for(int i=0;i<2;i++) {auto view=(i?b:a).images[0].view.Get();commands->CSSetShaderResources(0,1,&view);auto target=gray[i].target.Get();commands->CSSetUnorderedAccessViews(0,1,&target,nullptr);commands->Dispatch((smallW+7)/8,(smallH+7)/8,1);commands->CSSetUnorderedAccessViews(0,1,&noTarget,nullptr);}
         commands->CSSetShader(match.Get(),nullptr,0);
         for(int i=0;i<2;i++) {ID3D11ShaderResourceView* views[]={gray[i].texture.view.Get(),gray[1-i].texture.view.Get()};commands->CSSetShaderResources(6,2,views);auto target=flow[i].target.Get();commands->CSSetUnorderedAccessViews(1,1,&target,nullptr);commands->Dispatch((blocksW+7)/8,(blocksH+7)/8,1);commands->CSSetUnorderedAccessViews(1,1,&noTarget,nullptr);}
-        commands->CSSetShaderResources(0,8,none);execute(immediate);sequence=b.sequence;
+        commands->CSSetShaderResources(0,8,none);
+        // Research variant4 records matching and the immediately following draw in one list.
+        // draw() is mandatory before this protected context scope is left when flush is false.
+        if(flush) execute(immediate);
+        sequence=b.sequence;
     }
     void draw(ID3D11DeviceContext* immediate,ID3D11RenderTargetView* target,const Slot& a,const Slot& b,double phase,Query* timing,bool measure) {
         if(sequence!=b.sequence) phase=phase<.5?0:1;
@@ -152,6 +162,6 @@ public:
     void save(ID3D11DeviceContext* immediate,const std::wstring& path) {
         if(!vertex) return; // CPU readback AFTER worker stop only, never in a performance interval.
         immediate->CopyResource(counterRead.Get(),counters.Get());D3D11_MAPPED_SUBRESOURCE mapped{};check(immediate->Map(counterRead.Get(),0,D3D11_MAP_READ,0,&mapped));UINT v[4];memcpy(v,mapped.pData,sizeof(v));immediate->Unmap(counterRead.Get(),0);
-        FILE* f=nullptr;_wfopen_s(&f,(path+L"/block-flow.txt").c_str(),L"wb");if(f) {fprintf(f,"generated=%u new_picture=%u both_changed_samples=%u moving_samples=%u samples_per_frame=256 threshold=3/255 minimum_samples=4 window=5..45\n",v[0],v[1],v[2],v[3]);fclose(f);}
+        FILE* f=nullptr;_wfopen_s(&f,(path+L"/block-flow.txt").c_str(),L"wb");if(f) {fprintf(f,"variant=%u scale=%u block_size=%u skipped_pairs=%u generated=%u new_picture=%u both_changed_samples=%u moving_samples=%u samples_per_frame=256 threshold=3/255 minimum_samples=4 window=5..45\n",variant,scale,blockSize,skippedPairs,v[0],v[1],v[2],v[3]);fclose(f);}
     }
 };

@@ -102,6 +102,7 @@ namespace StutterFix
         private static bool Clip => Main.Config.FrameGenClip;
         private static bool CameraBlend => Main.Config.FrameGenCameraBlend;
         private static bool BlockFlow => Main.Config.FrameGenBlockFlow;
+        private static int BlockVariant => Main.Config.FrameGenBlockVariant;
         private static Renderer[] redRenderers,blueRenderers;
         private static bool ScenePair => Main.Config.FrameGenScenePair;
         private static bool pairGeometrySaved;
@@ -218,7 +219,7 @@ namespace StutterFix
                 Packet p=new Packet {unused1=Narrow?new IntPtr(1):IntPtr.Zero,frame=Time.frameCount,song=song,measure=Diagnostics && Hitch.Playing?1:0,mode=Hitch.Playing && !failed?Math.Max(0,oldMode):0,flip=FlipY?1:0,linear=QualitySettings.activeColorSpace==ColorSpace.Linear?1:0,capture=Capture?1:Clip?2:0};
 #if FRAMEGEN_RESEARCH
                 if(Main.Config.FrameGenImageGate && CameraBlend) p.capture|=32;
-                if(BlockFlow) p.capture|=64|4;
+                if(BlockFlow) p.capture|=64|4|((BlockVariant&7)<<7);
 #endif
                 if(CameraBlend) p.capture|=4; // Research only: known-camera interpolation, one-source visual delay.
                 if(ScenePair) p.capture|=8; // Separate early visual test; never a performance sample.

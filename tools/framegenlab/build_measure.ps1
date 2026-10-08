@@ -19,7 +19,7 @@ if ($Probe -in @('InGame','Outside')) {
     if (!$main.Contains($point)) { throw 'Settings injection point changed' }
     $setting=if($Probe -eq 'Outside') {'FrameGenOutside'} else {'FrameGenExperiment'}
     $extra="        public bool FrameGenFlipY = true;`n        public bool FrameGenCapture = false;`n"
-    if($Probe -eq 'Outside') { $extra+="        public bool FrameGenNarrow = true;`n        public bool FrameGenClip = false;`n        public bool FrameGenCameraBlend = false;`n        public bool FrameGenScenePair = false;`n        public bool FrameGenFilterPair = false;`n        public bool FrameGenScreenBorder = false;`n        public bool FrameGenLayerProbe = false;`n        public bool FrameGenImageGate = false;`n        public bool FrameGenBlockFlow = false;`n" }
+    if($Probe -eq 'Outside') { $extra+="        public bool FrameGenNarrow = true;`n        public bool FrameGenClip = false;`n        public bool FrameGenCameraBlend = false;`n        public bool FrameGenScenePair = false;`n        public bool FrameGenFilterPair = false;`n        public bool FrameGenScreenBorder = false;`n        public bool FrameGenLayerProbe = false;`n        public bool FrameGenImageGate = false;`n        public bool FrameGenBlockFlow = false;`n        public int FrameGenBlockVariant = 0;`n" }
     $main=$main.Replace($point,$(if($Probe -eq 'Outside'){"$extra$point"}else{"        public int $setting = 0;`n$extra$point"}))
     $gui='            if (Edition.Dev) DevGUI(); else PlayerGUI();'
     if (!$main.Contains($gui)) { throw 'GUI injection point changed' }
