@@ -80,6 +80,7 @@ def main():
     p.add_argument("--out",type=Path,required=True)
     p.add_argument("--capture",action="store_true")
     p.add_argument("--clip",action="store_true",help="Sample actual GPU outputs at song 20..23s; visual-only, excluded from performance comparison")
+    p.add_argument("--image-gate",action="store_true",help="Research only: repeat on actual-image disagreement or camera jump; 16px whole-interval limit")
     p.add_argument("--camera-blend",action="store_true",help="Research only: interpolate known camera poses with one-source visual delay")
     p.add_argument("--scene-pair",action="store_true",help="Visual only: save same-source world/screen textures at song20s")
     p.add_argument("--filter-pair",action="store_true",help="Visual only: copy one WideScreenHV input/output at song20s;read after native finish")
@@ -97,8 +98,14 @@ def main():
     a=p.parse_args()
     if (HERE/"out/stop-outside-batch").exists():
         raise RuntimeError("Measurement batch stopped for the requested visual comparison; no installation changed")
+    import hashlib
+    build_stamp=json.loads((HERE/'out/outside/build-stamp.json').read_text(encoding='utf-8-sig'))
+    for key,file in [('managed_sha256',HERE/'out/outside/StutterFix.dll'),('native_sha256',HERE/'out/outside-native/sfnative.dll')]:
+        if hashlib.sha256(file.read_bytes()).hexdigest()!=build_stamp[key]:
+            raise RuntimeError('Research managed/native build mismatch; run build_measure.ps1 -Probe Outside before installing')
     if not a.map.is_file() or not 10<=a.seconds<=600 or sf.game_running():
         raise RuntimeError("Existing map, 10..600 seconds and closed game required")
+    if a.image_gate and not a.camera_blend: p.error("Image gate requires known-camera delayed composition")
     if a.screen_border and not a.camera_blend: p.error("Screen-border candidate requires delayed real-frame composition")
     if a.screen_border and a.filter_pair: p.error("Original filter-pair diagnostics must use an unmodified filter")
     if a.switch_smoke and a.mode!=0: p.error("switch test starts OFF")
@@ -122,11 +129,21 @@ def main():
         if a.sync_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","fgsync 1","wait 5","set FrameGenOutside 2","wait 5","set FrameGenOutside 0","wait 5","fgsync 0","wait 5"]
         if a.ui_smoke: steps=["game "+str(a.map),"auto on","press","wait 10","ui 3","wait 3",f"shot framegen-research-setting-{a.mode}x","wait 3","ui close","wait 10"]
         if a.full_song: steps[-1]="waitend 600"
-        settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair,"FrameGenScreenBorder":a.screen_border,"FrameGenLayerProbe":a.layer_probe}
+        settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair,"FrameGenScreenBorder":a.screen_border,"FrameGenLayerProbe":a.layer_probe,"FrameGenImageGate":a.image_gate}
         summary,metrics=sf.sf_run(steps+["quit"],settings=settings,tag="framegen-outside-"+a.label,timeout_min=a.timeout_min)
         log=sf.read_text(sf.PLAYER_LOG); (a.out/"game.log").write_text(log,encoding="utf-8"); (a.out/"run.txt").write_text(summary,encoding="utf-8")
         if a.ui_smoke: shutil.copyfile(shot,a.out/'settings.png')
         if diagnostic.exists(): shutil.copytree(diagnostic,a.out/"capture")
+        if hashlib.sha256((mod/'sfnative.dll').read_bytes()).hexdigest()!=build_stamp['native_sha256']:
+            raise RuntimeError('Installed research native does not match the measured build')
+        if a.clip:
+            import csv
+            clip_rows=list(csv.DictReader((a.out/'capture/clip.csv').open(newline='')))
+            if len(clip_rows)<2: raise RuntimeError('No usable async image triplets; do not call this visual validation')
+            for row in clip_rows:
+                index=int(row['index'])
+                for name in [f'reference-{a.mode}x-{index:03d}.ppm',f'next-reference-{a.mode}x-{index:03d}.ppm']:
+                    if not (a.out/'capture'/name).is_file(): raise RuntimeError('Incomplete async triplet capture: '+name)
         if any(v in log for v in ["Crash!!!","단계 실패","[안정성] 안전 모드로 켬","native failure","feature disabled","[프레임생성 테두리] 중단:"]) or "시간 초과로 끔" in summary:
             raise RuntimeError("Failed experiment; inspect evidence")
         safety=dict(part.split("=",1) for part in (a.out/"capture/safety.txt").read_text().split())
@@ -144,7 +161,8 @@ def main():
             raise RuntimeError('Exact filter input/output capture missing; inspect filter-pair.txt')
         if a.seconds>=50 and native["seconds"]<39:
             raise RuntimeError("Incomplete 5..45 second performance window")
-        result=dict(label=a.label,mode=a.mode,camera_blend=a.camera_blend,scene_pair=a.scene_pair,filter_pair=a.filter_pair,screen_border=a.screen_border,layer_probe=a.layer_probe,expected_inactive=a.expect_inactive,compatibility_settings=extra,visual_smoke=a.layer_probe or a.filter_pair or a.scene_pair or a.clip or a.switch_smoke or a.freeze_smoke or a.sync_smoke or a.ui_smoke or a.expect_inactive,native=native,safety=safety,game_metrics=metrics)
+        result=dict(label=a.label,mode=a.mode,image_gate=a.image_gate,camera_blend=a.camera_blend,scene_pair=a.scene_pair,filter_pair=a.filter_pair,screen_border=a.screen_border,layer_probe=a.layer_probe,expected_inactive=a.expect_inactive,compatibility_settings=extra,visual_smoke=a.layer_probe or a.filter_pair or a.scene_pair or a.clip or a.switch_smoke or a.freeze_smoke or a.sync_smoke or a.ui_smoke or a.expect_inactive,native=native,safety=safety,game_metrics=metrics)
+        result['build']=build_stamp
         (a.out/"summary.json").write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
         print(json.dumps(result,ensure_ascii=False),flush=True)
     finally:

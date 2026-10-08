@@ -34,7 +34,7 @@ static_assert(sizeof(Packet)==136,"packet ABI");
 struct Record { double time,song,gpu; int real,frame; HRESULT hr; double age; float camera[4]{}; };
 struct SourceRecord { double time,song; int frame; Pose pose; double cameraError,redError,blueError,horizon; int rendered; float base[4]{},pulse[4]{}; };
 struct ScheduleRecord { int frame,mode,made,lockMiss,earlyMiss,lateMiss; double song,waitMs,holdMs; unsigned long long continuousLock,continuousTimer; };
-struct ClipRecord { double time,song; int index,mode,frame,real; };
+struct ClipRecord { double time,song; int index,mode,frame,real,gateWarp; };
 inline float angleDifference(float a,float b) { return std::remainder(a-b,6.28318530718f); }
 inline Pose predict(const Pose& previous,const Pose& last,double dt,double ahead) {
     Pose result=last;
@@ -95,6 +95,9 @@ struct Slot {
 #else
     std::array<Texture,2> images;
 #endif
+    #ifdef SF_FRAMEGEN_RESEARCH
+    size_t motionRow=SIZE_MAX;
+#endif
     Packet packet{},previousPacket{}; Pose previous{}; double qpc=0,previousSong=0,period=.005,frameDelta=.005; unsigned long long sequence=0;
 };
 inline bool screenBorderEnabled(const Packet& p) {
@@ -122,6 +125,17 @@ inline Pose interpolateCamera(const Pose& previous,const Pose& current,double ph
     for(int i=0;i<3;i++) result.camera[i]=previous.camera[i]+(current.camera[i]-previous.camera[i])*u;
     result.camera[3]=previous.camera[3]+angleDifference(current.camera[3],previous.camera[3])*u;
     return result;
+}
+#ifdef SF_FRAMEGEN_RESEARCH
+#include "framegen_motion.h"
+#include "framegen_clip.h"
+#endif
+inline bool imageGateEnabled(const Packet& p) {
+#ifdef SF_FRAMEGEN_RESEARCH
+    return (p.capture&32)!=0 && cameraBlendEnabled(p);
+#else
+    (void)p; return false;
+#endif
 }
 struct Query { ComPtr<ID3D11Query> begin,end,disjoint; size_t row=SIZE_MAX; };
 class Output {
@@ -182,6 +196,9 @@ public:
         if(error.load()) throw std::runtime_error("worker failed");
         if(p.mode!=0 && (p.mode<2 || p.mode>8)) throw std::runtime_error("unsupported output multiplier");
         double t=now();
+#ifdef SF_FRAMEGEN_RESEARCH
+        if((p.capture&3)==2) { ContextLock context(protection.Get()); motionClip.initialize(device.Get(),width,height); }
+#endif
         if(p.song<lastPacket.song-1) { captured=0; clipNext=0; }
         if((p.capture&3)==2 && !cameraBlendEnabled(p)) clip(screen,p.song,p.frame,p.mode,true);
         SourceRecord row{t,p.song,p.frame,p.pose,0,0,0,0,(reinterpret_cast<uintptr_t>(p.textures[2])&1)?1:0};
@@ -233,12 +250,47 @@ public:
         s.packet=p; s.previousPacket=lastPacket; s.previous=lastPacket.pose; s.previousSong=lastPacket.song;
         s.frameDelta=havePrevious?t-lastQpc:.005;
         s.period=std::clamp(s.frameDelta,.001,.05); s.qpc=t; s.sequence=++published;
+        #ifdef SF_FRAMEGEN_RESEARCH
+        s.motionRow=SIZE_MAX;
+        if(imageGateEnabled(p)) {
+            // Prepare on activation, never defer shader compilation until a later eligible movement.
+            motionGate.initialize(device.Get());
+            if(motions.capacity()==0) motions.reserve(65536);
+            MotionRecord r{}; r.frame=p.frame; r.song=p.song; r.bound=std::numeric_limits<double>::infinity(); r.reason=4; // no history
+            if(s.sequence>1) {
+                const auto& before=slots[(s.sequence-1)%slots.size()];
+                if(before.sequence==s.sequence-1) {
+                    r.bound=motionBound(before.packet.pose,p.pose,width,height);
+                    r.reason=!std::isfinite(r.bound) || r.bound>16?5:0; // Whole-interval 16 physical pixel ceiling.
+                    // A sudden acceleration/cut is repeated even below that ceiling.
+                    if(r.reason==0 && s.sequence>2) {
+                        const auto& older=slots[(s.sequence-2)%slots.size()];
+                        double prior=motionBound(older.packet.pose,before.packet.pose,width,height);
+                        double velocityRatio=s.frameDelta/std::max(.00001,before.frameDelta);
+                        if(r.bound>4 && r.bound>4*prior*velocityRatio) r.reason=6;
+                    }
+                    if(r.reason==0 && !motionGate.submit(device.Get(),immediate.Get(),s.sequence,before,s,width,height)) r.reason=7; // busy; repeat
+                }
+            }
+            unloggedMotion[s.sequence%unloggedMotion.size()]=r;
+            if(motions.size()<65536) { s.motionRow=motions.size(); motions.push_back(r); }
+        }
+#endif
         scheduleActive=true;
         immediate->Flush(); // Hand buffered Unity work to the driver before waking independent output.
         previousPacket=lastPacket; lastPacket=p; previousQpc=lastQpc; lastQpc=t; havePrevious=true; mode=p.mode;
     }
     void save() {
         if(!diagnostics) return;
+#ifdef SF_FRAMEGEN_RESEARCH
+        { ContextLock context(protection.Get()); motionClip.save(immediate.Get(),path); }
+        if(!motions.empty()) {
+            FILE* mf=nullptr; _wfopen_s(&mf,(path+L"/motion-gate.csv").c_str(),L"wb");
+            if(mf) { fprintf(mf,"unity_frame,song_s,bound_px,reason,textured,agree,veto,same_correlation,warp_correlation,reprojected,repeated,pending_repeats\n");
+                for(auto& r:motions) fprintf(mf,"%d,%.9f,%.6f,%d,%d,%d,%d,%.6f,%.6f,%llu,%llu,%llu\n",r.frame,r.song,r.bound,r.reason,r.textured,r.agree,r.veto,r.same,r.warp,r.reprojected,r.repeated,r.pending);
+                fclose(mf); }
+        }
+#endif
         FILE* f=nullptr; _wfopen_s(&f,(path+L"/presents.csv").c_str(),L"wb");
         if(f) { fprintf(f,"present_s,real,unity_frame,gpu_ms,hr,song_s,source_age_ms,camera_x,camera_y,camera_size,camera_angle\n"); for(auto& r:records) fprintf(f,"%.9f,%d,%d,%.6f,%ld,%.9f,%.6f,%.6f,%.6f,%.6f,%.6f\n",r.time,r.real,r.frame,r.gpu,long(r.hr),r.song,r.age*1000,r.camera[0],r.camera[1],r.camera[2],r.camera[3]); fclose(f); }
         _wfopen_s(&f,(path+L"/sources.csv").c_str(),L"wb");
@@ -248,7 +300,7 @@ public:
         _wfopen_s(&f,(path+L"/scheduler-total.txt").c_str(),L"wb");
         if(f) { fprintf(f,"continuous_missed_lock=%llu continuous_missed_timer=%llu replaced_snapshots=%llu\n",missedLock,missedTimer,replacedSnapshots); fclose(f); }
         _wfopen_s(&f,(path+L"/clip.csv").c_str(),L"wb");
-        if(f) { fprintf(f,"index,mode,real,unity_frame,present_sample_s,song_s\n"); for(auto& r:clips) fprintf(f,"%d,%d,%d,%d,%.9f,%.9f\n",r.index,r.mode,r.real,r.frame,r.time,r.song); fclose(f); }
+        if(f) { fprintf(f,"index,mode,real,unity_frame,present_sample_s,song_s,gate_reprojected\n"); for(auto& r:clips) fprintf(f,"%d,%d,%d,%d,%.9f,%.9f,%d\n",r.index,r.mode,r.real,r.frame,r.time,r.song,r.gateWarp); fclose(f); }
     }
     void recordOff(const Packet& p,HRESULT hr) { ++outputs; std::lock_guard<std::mutex> gate(mutex); if(p.measure && records.size()<1000000) { Record r{now(),p.song,NAN,1,p.frame,hr,0}; memcpy(r.camera,cameraBlendEnabled(p) && p.mode?pending.camera:p.pose.camera,16); records.push_back(r); } }
 private:
@@ -258,6 +310,14 @@ private:
     std::atomic<int> mode{0};
     bool initialized=false;
     std::array<Slot,3> slots;
+#ifdef SF_FRAMEGEN_RESEARCH
+    ImageMotionGate motionGate;
+    MotionClip motionClip;
+    std::vector<MotionRecord> motions;
+    std::array<MotionRecord,3> unloggedMotion; // Diagnostic capacity must not change the rendering decision.
+    size_t pendingMotion=SIZE_MAX;
+    bool pendingWarp=false;
+#endif
     unsigned long long published=0;
     Packet previousPacket{},lastPacket{};
     double lastQpc=0,previousQpc=0;
@@ -280,12 +340,21 @@ private:
     int made=0;
     bool scheduleActive=false;
     double clipNext=0;
+    int lastWarpClipFrame=-1;
     std::vector<ClipRecord> clips;
-    void clip(ID3D11Texture2D* texture,double song,int frame,int currentMode,bool real) {
-        double t=now(); if(song<20 || song>=23 || t<clipNext || clips.size()>=256) return;
-        clipNext=t+1./60;
-        int index=int(clips.size()); wchar_t name[100]; swprintf_s(name,L"clip-%dx-%03d-%s.ppm",currentMode,index,real?L"real":L"generated");
-        picture(texture,name,6); clips.push_back({t,song,index,currentMode,frame,real?1:0});
+    void clip(ID3D11Texture2D* texture,double song,int frame,int currentMode,bool real,const Slot* source=nullptr,const Slot* next=nullptr,int gateWarp=0) {
+        bool force=gateWarp==1 && lastWarpClipFrame!=frame;
+        double t=now(); if(song<20 || song>=23 || (t<clipNext && !force) || clips.size()>=256) return;
+        if(t>=clipNext) clipNext=t+1./60;
+        int index=int(clips.size());
+#ifdef SF_FRAMEGEN_RESEARCH
+        ContextLock context(protection.Get());
+        if(!motionClip.submit(device.Get(),immediate.Get(),texture,source,next,index,currentMode,real,frame,song)) return;
+#else
+        (void)source; (void)next; wchar_t name[100]; swprintf_s(name,L"clip-%dx-%03d-%s.ppm",currentMode,index,real?L"real":L"generated"); picture(texture,name,6);
+#endif
+        clips.push_back({t,song,index,currentMode,frame,real?1:0,gateWarp});
+        if(gateWarp==1) lastWarpClipFrame=frame;
     }
     void picture(ID3D11Texture2D* texture,const wchar_t* name,UINT step=1) {
         ContextLock lock(protection.Get()); D3D11_TEXTURE2D_DESC d{}; texture->GetDesc(&d); DXGI_FORMAT format=raw(d.Format); bool half=format==DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -365,6 +434,9 @@ private:
                             HRESULT hr=present();
                             if(FAILED(hr)) { error=int(hr); throw std::runtime_error("Present failed"); }
                             ++outputs;
+#ifdef SF_FRAMEGEN_RESEARCH
+                            if(pendingMotion!=SIZE_MAX) { auto& r=motions[pendingMotion]; if(pendingWarp) ++r.reprojected; else { ++r.repeated; if(r.reason==0) ++r.pending; } }
+#endif
                             ++made;
                             if(pending.frame>=0 && records.size()<1000000) {
                                 pending.time=now(); pending.hr=hr; records.push_back(pending);
@@ -400,6 +472,9 @@ float2 rotate(float2 p,float a) { float s,c; sincos(a,s,c); return float2(c*p.x-
 float2 world(float2 uv,float4 c) { return rotate(float2((uv.x-.5)*info.x,.5-uv.y)*2*c.z,c.w)+c.xy; }
 float2 sourceUV(float2 p) { float2 q=rotate(p-oldCamera.xy,-oldCamera.w)/(2*oldCamera.z); float2 uv=float2(.5+q.x/info.x,.5-q.y); if(info.y>.5) uv.y=1-uv.y; return uv; }
 float4 PS(V v):SV_TARGET {
+#ifdef SF_FRAMEGEN_RESEARCH
+    if(info.w>.5 && info.z<.5) return float4(screenTex.SampleLevel(linearSampler,v.uv,0).rgb,1);
+#endif
     float3 color=worldTex.SampleLevel(linearSampler,sourceUV(world(v.uv,camera)),0).rgb;
     float3 oldWorld=worldTex.SampleLevel(linearSampler,sourceUV(world(v.uv,oldCamera)),0).rgb;
 #ifdef SF_FRAMEGEN_RESEARCH
@@ -451,9 +526,25 @@ inline void Output::render(const Slot& s,bool real,double tick) {
     double delta=s.packet.textures[1]==reinterpret_cast<void*>(1)?s.frameDelta:s.packet.song-s.previousSong;
     Pose predicted=real?s.packet.pose:scenePrediction(s.previousPacket,s.packet,delta,age);
     if(cameraBlendEnabled(s.packet)) predicted=interpolateCamera(image->packet.pose,s.packet.pose,real?0:age/s.period);
+    bool repeatImage=false;
+#ifdef SF_FRAMEGEN_RESEARCH
+    pendingMotion=SIZE_MAX; pendingWarp=false;
+    if(imageGateEnabled(s.packet)) {
+        repeatImage=true;
+        if(!real) {
+            auto& r=s.motionRow==SIZE_MAX?unloggedMotion[s.sequence%unloggedMotion.size()]:motions[s.motionRow];
+            if(r.reason==0) {
+                ContextLock lock(protection.Get()); auto d=motionGate.decision(immediate.Get(),s.sequence);
+                if(d.reason) { r.reason=d.reason; r.textured=d.textured; r.agree=d.agree; r.veto=d.veto; r.same=d.same; r.warp=d.warp; }
+            }
+            repeatImage=r.reason!=3; pendingMotion=s.motionRow; pendingWarp=!repeatImage;
+        }
+        if(repeatImage) predicted=image->packet.pose;
+    }
+#endif
     auto& q=queries[nextQuery++%queries.size()]; bool timing=!real && s.packet.measure && q.row==SIZE_MAX && records.size()<1000000;
     deferred->ClearState(); if(timing) { deferred->Begin(q.disjoint.Get()); deferred->End(q.begin.Get()); }
-    float data[12]; memcpy(data,image->packet.pose.camera,16); memcpy(data+4,predicted.camera,16); data[8]=float(width)/height; data[9]=float(s.packet.flip); data[10]=screenBorderEnabled(image->packet)?1.f:0.f; data[11]=0;
+    float data[12]; memcpy(data,image->packet.pose.camera,16); memcpy(data+4,predicted.camera,16); data[8]=float(width)/height; data[9]=float(s.packet.flip); data[10]=screenBorderEnabled(image->packet)?1.f:0.f; data[11]=repeatImage?1.f:0.f;
     deferred->UpdateSubresource(constants.Get(),0,nullptr,data,0,0); ID3D11Buffer* b=constants.Get(); deferred->PSSetConstantBuffers(0,1,&b);
     ID3D11ShaderResourceView* views[]={image->images[0].view.Get(),image->images[1].view.Get()
 #ifdef SF_FRAMEGEN_RESEARCH
@@ -492,7 +583,7 @@ inline void Output::render(const Slot& s,bool real,double tick) {
         }
         FILE* f=nullptr; _wfopen_s(&f,(path+L"/visual-pose.txt").c_str(),L"ab"); if(f) { fprintf(f,"frame=%d song=%.9f age=%.6f source=%.6f,%.6f,%.6f,%.6f predicted=%.6f,%.6f,%.6f,%.6f\n",s.packet.frame,song,age,s.packet.pose.camera[0],s.packet.pose.camera[1],s.packet.pose.camera[2],s.packet.pose.camera[3],predicted.camera[0],predicted.camera[1],predicted.camera[2],predicted.camera[3]); fclose(f); } ++captured;
     }
-    if((s.packet.capture&3)==2 && (!real || cameraBlendEnabled(s.packet))) clip(backBuffer.Get(),song,s.packet.frame,s.packet.mode,real);
+    if((s.packet.capture&3)==2 && (!real || cameraBlendEnabled(s.packet))) clip(backBuffer.Get(),song,s.packet.frame,s.packet.mode,real,image,&s,real?0:imageGateEnabled(s.packet)?(repeatImage?0:1):-1);
     pending={0,song,NAN,real?1:0,s.packet.measure?s.packet.frame:-1,S_OK,std::max(0.,tick-image->qpc)}; pendingQuery=timing?&q:nullptr;
     memcpy(pending.camera,predicted.camera,16);
 }

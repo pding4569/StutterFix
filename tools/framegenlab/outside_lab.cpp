@@ -21,6 +21,8 @@ int wmain(int argc,wchar_t** argv) {
         std::wstring path=argc>4?argv[4]:L"."; SetProcessDPIAware();
         bool narrow=argc>5 && _wtoi(argv[5])==1;
         bool blend=argc>6 && _wtoi(argv[6])==1;
+        bool imageGate=argc>7 && _wtoi(argv[7])==1;
+        if(imageGate && !blend) return 2;
         { Pose a{},b{}; a.camera[0]=-5; a.camera[2]=2; b.camera[0]=7; b.camera[2]=20;
           for(int i=-10;i<=110;i++) { auto p=interpolateCamera(a,b,i*.01); if(p.camera[0]<-5 || p.camera[0]>7 || p.camera[2]<2 || p.camera[2]>20) throw std::runtime_error("camera blend exceeded known poses"); } }
         HWND window=CreateWindowExW(0,L"STATIC",L"FrameGen shared-device producer",WS_POPUP|WS_VISIBLE,0,0,3440,1440,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr); if(!window) return 3;
@@ -47,6 +49,7 @@ int wmain(int argc,wchar_t** argv) {
             if(!paused && t>seconds*.5) { beforePause=engine.outputs; Sleep(100); afterPause=engine.outputs; paused=true; }
             Packet p{}; p.frame=++frames; p.mode=mode==1?0:mode; p.measure=1; p.song=now()-start;
             if(blend) p.capture=4;
+            if(imageGate) p.capture|=32;
             if(blend && !cameraBlendEnabled(p)) throw std::runtime_error("camera blend research guard was not compiled");
             if(!narrow) engine.beginFrame();
             p.pose.camera[0]=float(p.song)*2; p.pose.camera[1]=float(sin(p.song)*.3); p.pose.camera[2]=10+float(sin(p.song*2)); p.pose.camera[3]=float(sin(p.song)*.05);

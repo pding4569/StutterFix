@@ -20,6 +20,7 @@ def main():
     p.add_argument('--clip', action='store_true')
     p.add_argument('--camera-blend', action='store_true', help='Research-only delayed known-camera interpolation')
     p.add_argument('--screen-border', action='store_true', help='Research-only fixed binary screen border')
+    p.add_argument('--image-gate', action='store_true', help='Research-only actual-image agreement and jump limit')
     p.add_argument('--width', type=int, help='Required actual game width; reject a different condition')
     p.add_argument('--height', type=int, default=1440)
     a = p.parse_args()
@@ -30,7 +31,7 @@ def main():
         p.error('25..600 seconds required')
     a.out.mkdir(parents=True, exist_ok=False)
     binary = HERE/'out/outside/StutterFix.dll'
-    result = dict(label=a.label, visual_only=a.clip, camera_blend=a.camera_blend, screen_border=a.screen_border, modes=modes,
+    result = dict(label=a.label, visual_only=a.clip, camera_blend=a.camera_blend, screen_border=a.screen_border, image_gate=a.image_gate, modes=modes,
                   research_binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(), runs=[])
     condition = None
     for i, mode in enumerate(modes):
@@ -40,10 +41,12 @@ def main():
                    '--seconds', str(a.seconds), '--out', str(root), '--timeout-min', '4']
         if a.clip:
             command.append('--clip')
-        if a.camera_blend:
+        if a.camera_blend and mode:
             command.append('--camera-blend')
-        if a.screen_border:
+        if a.screen_border and mode:
             command.append('--screen-border')
+        if a.image_gate and mode:
+            command.append('--image-gate')
         print(f'START {a.label} {i+1}/{len(modes)} mode={mode}', flush=True)
         run = subprocess.run(command, capture_output=True, text=True, encoding='utf8', errors='replace')
         (a.out/f'{i:02d}-{mode}x.log').write_text(run.stdout+run.stderr, encoding='utf8')

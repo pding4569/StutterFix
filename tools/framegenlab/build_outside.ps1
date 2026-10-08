@@ -22,6 +22,8 @@ try {
     $env:PATH="$msvc\bin\Hostx64\x64;$oldPath"
     & cl.exe /nologo /std:c++17 /EHsc /O2 /MT /Brepro /W4 /WX "$PSScriptRoot\outside_lab.cpp" /Fe:OutsideLab.exe d3d11.lib dxgi.lib d3dcompiler.lib user32.lib
     if($LASTEXITCODE -ne 0) { throw 'Outside lab failed' }
+    & cl.exe /nologo /std:c++17 /EHsc /O2 /MT /Brepro /W4 /WX "$PSScriptRoot\motion_gate_lab.cpp" /Fe:MotionGateLab.exe d3d11.lib dxgi.lib d3dcompiler.lib user32.lib
+    if($LASTEXITCODE -ne 0) { throw 'Motion gate lab failed' }
     if($Game) {
         & cl.exe /nologo /std:c++17 /EHsc /c /O2 /MT /Brepro /W4 /WX "$PSScriptRoot\native\outside_game.cpp"
         if($LASTEXITCODE -ne 0) { throw 'Outside game native failed' }

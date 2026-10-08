@@ -1,0 +1,13 @@
+{
+  "trial": "ch23-paired-hello-4",
+  "clip_row": {
+    "index": "9",
+    "mode": "4",
+    "real": "0",
+    "unity_frame": "11823",
+    "present_sample_s": "414185.914642700",
+    "song_s": "20.161079114"
+  },
+  "source_reference_sha256": "32000cb1f204ff58493b55ca89da94d79cf6615e52dace4418a31567ea362a39",
+  "actual_sha256": "32000cb1f204ff58493b55ca89da94d79cf6615e52dace4418a31567ea362a39"
+}

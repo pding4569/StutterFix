@@ -19,7 +19,7 @@ if ($Probe -in @('InGame','Outside')) {
     if (!$main.Contains($point)) { throw 'Settings injection point changed' }
     $setting=if($Probe -eq 'Outside') {'FrameGenOutside'} else {'FrameGenExperiment'}
     $extra="        public bool FrameGenFlipY = true;`n        public bool FrameGenCapture = false;`n"
-    if($Probe -eq 'Outside') { $extra+="        public bool FrameGenNarrow = true;`n        public bool FrameGenClip = false;`n        public bool FrameGenCameraBlend = false;`n        public bool FrameGenScenePair = false;`n        public bool FrameGenFilterPair = false;`n        public bool FrameGenScreenBorder = false;`n        public bool FrameGenLayerProbe = false;`n" }
+    if($Probe -eq 'Outside') { $extra+="        public bool FrameGenNarrow = true;`n        public bool FrameGenClip = false;`n        public bool FrameGenCameraBlend = false;`n        public bool FrameGenScenePair = false;`n        public bool FrameGenFilterPair = false;`n        public bool FrameGenScreenBorder = false;`n        public bool FrameGenLayerProbe = false;`n        public bool FrameGenImageGate = false;`n" }
     $main=$main.Replace($point,$(if($Probe -eq 'Outside'){"$extra$point"}else{"        public int $setting = 0;`n$extra$point"}))
     $gui='            if (Edition.Dev) DevGUI(); else PlayerGUI();'
     if (!$main.Contains($gui)) { throw 'GUI injection point changed' }
@@ -44,6 +44,13 @@ $autoPath = Join-Path $out 'MeasureAutoTest.cs'
     "-p:OutputPath=$out\" "-p:IntermediateOutputPath=$repo\obj\FrameGen$($Probe)Measure\" *> "$out\build.log"
 if ($LASTEXITCODE -ne 0) { Get-Content "$out\build.log" -Tail 35; throw 'Measurement build failed' }
 Get-Content "$out\build.log" -Tail 4
+if($Probe -eq 'Outside') {
+    $stamp=@{
+        managed_sha256=(Get-FileHash -LiteralPath "$out\StutterFix.dll" -Algorithm SHA256).Hash.ToLowerInvariant()
+        native_sha256=(Get-FileHash -LiteralPath "$PSScriptRoot\out\outside-native\sfnative.dll" -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+    $stamp | ConvertTo-Json | Set-Content -LiteralPath "$out\build-stamp.json" -Encoding UTF8
+}
 if ($Install) {
     $mod = 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix'
     if (Get-Process -Name 'A Dance of Fire and Ice' -ErrorAction SilentlyContinue) { throw 'Close game normally before installing' }
