@@ -21,6 +21,7 @@ if [ "$1" = "test" ]; then
   tools/LoadCheck/bin/LoadCheck.exe bin/Player/StutterFix.dll
   rm -rf dist/tester && mkdir -p dist/tester/StutterFix
   cp bin/Player/StutterFix.dll dist/tester/StutterFix/
+  cp effects/license.txt dist/tester/StutterFix/effects-LICENSE.txt
   sed -e "s/\"Version\": *\"[^\"]*\"/\"Version\": \"$tver\"/" \
       -e "s/\"DisplayName\": *\"Stutter Fix\"/\"DisplayName\": \"Stutter Fix (테스터 $tver)\"/" Info.json > dist/tester/StutterFix/Info.json
   powershell.exe -NoProfile -ExecutionPolicy Bypass -File zip.ps1 -Version "$tver" -Editions tester
@@ -39,6 +40,8 @@ tools/LoadCheck/bin/LoadCheck.exe bin/Player/StutterFix.dll
 rm -rf dist && mkdir -p dist/player/StutterFix dist/developer/StutterFix
 cp bin/Player/StutterFix.dll Info.json dist/player/StutterFix/
 cp bin/Debug/StutterFix.dll dist/developer/StutterFix/
+cp effects/license.txt dist/player/StutterFix/effects-LICENSE.txt
+cp effects/license.txt dist/developer/StutterFix/effects-LICENSE.txt
 sed 's/"DisplayName": *"Stutter Fix"/"DisplayName": "Stutter Fix (개발자용)"/' Info.json > dist/developer/StutterFix/Info.json
 
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File zip.ps1 -Version "$ver"

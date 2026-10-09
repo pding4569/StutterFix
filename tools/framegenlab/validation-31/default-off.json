@@ -1,0 +1,7 @@
+{
+  "scope": "Fresh game menu, default OFF with refresh preference true; no map or screenshot.",
+  "framegen": "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=",
+  "effects": "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=0x0 status=",
+  "errors": 0,
+  "log_sha256": "dc76e6dddd728bcc3aa863a4e1ec23efed2116d2b938b1d18d613f7c6e38e8c2"
+}

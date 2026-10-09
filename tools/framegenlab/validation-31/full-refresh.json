@@ -1,0 +1,121 @@
+{
+  "scope": "Two fresh PlayerAuto Release full songs, FX OFF, Won and normal quit confirmed. Rounded original-FPS song summary; not whole-song physical-display or visual-quality proof. 35s sample is separate.",
+  "runs": [
+    {
+      "map": "hello",
+      "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+      "completed": true,
+      "unexpected_exit": 0,
+      "errors": 0,
+      "storage_states": [
+        "refresh=True deadline=False resting=False",
+        "refresh=True deadline=True resting=False",
+        "refresh=True deadline=True resting=False",
+        "refresh=True deadline=False resting=False",
+        "refresh=True deadline=False resting=False"
+      ],
+      "managed_sha256": "c7350fafadda596fcbe5d514326402d78488386af31c0bc09b0da75c7eff192c",
+      "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 178.0,
+            "worst": 27.0,
+            "count": 0
+          }
+        ],
+        "errors": 0
+      },
+      "sample35s": {
+        "seconds": 35.01603,
+        "unity_frames": 6682,
+        "real_fps": 190.8268870000397,
+        "submitted": 6893,
+        "output_fps": 196.8526986068952,
+        "output_over_source": 1.0315773720442982,
+        "off_output_inferred_from_unity": false
+      },
+      "framegen_failure_lines": [],
+      "warnings": {
+        "DOTWEEN": 776,
+        "MissingReferenceException": 0,
+        "NullReferenceException": 793,
+        "AccessViolation": 0,
+        "Crash!!!": 0,
+        "native failure": 0
+      },
+      "log_sha256": "81f87e72b5d7fd28e341589d3c92f5ce7a69a80c551e169b3fa34671ad66afea",
+      "won_confirmed": true,
+      "start_end_conditions_equal": true,
+      "dotween_captured_errors": 775,
+      "reported_hitches": [
+        {
+          "ms": 35,
+          "song_s": 190.1,
+          "cause_unconfirmed": true
+        }
+      ],
+      "final_connection": 0
+    },
+    {
+      "map": "arche",
+      "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+      "completed": true,
+      "unexpected_exit": 0,
+      "errors": 0,
+      "storage_states": [
+        "refresh=True deadline=False resting=False",
+        "refresh=True deadline=True resting=False",
+        "refresh=True deadline=True resting=True",
+        "refresh=True deadline=False resting=False",
+        "refresh=True deadline=False resting=False"
+      ],
+      "managed_sha256": "c7350fafadda596fcbe5d514326402d78488386af31c0bc09b0da75c7eff192c",
+      "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 306.0,
+            "worst": 67.0,
+            "count": 1
+          }
+        ],
+        "errors": 0
+      },
+      "sample35s": {
+        "seconds": 35.0030458,
+        "unity_frames": 12105,
+        "real_fps": 345.8270479993486,
+        "submitted": 12111,
+        "output_fps": 345.99846165387123,
+        "output_over_source": 1.0004956629491946,
+        "off_output_inferred_from_unity": false
+      },
+      "framegen_failure_lines": [],
+      "warnings": {
+        "DOTWEEN": 776,
+        "MissingReferenceException": 0,
+        "NullReferenceException": 793,
+        "AccessViolation": 0,
+        "Crash!!!": 0,
+        "native failure": 0
+      },
+      "log_sha256": "7f5be984fd8a7b33fff5a5bea671b01576d94492cdf778f790e35db6bb3be5b6",
+      "won_confirmed": true,
+      "start_end_conditions_equal": true,
+      "dotween_captured_errors": 775,
+      "reported_hitches": [
+        {
+          "ms": 67,
+          "song_s": 225.3,
+          "cause_unconfirmed": true
+        }
+      ],
+      "final_connection": 0
+    }
+  ]
+}

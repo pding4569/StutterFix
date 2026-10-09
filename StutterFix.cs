@@ -874,8 +874,8 @@ namespace StutterFix
         public bool LowHalfRender = false;  // (실험) 두 프레임에 한 번만 그리고 사이 프레임은 카메라만 옮기기
         public int FrameGenOutside = 0;     // (실험) 0=끔, 2..8=출력 배율. 입력·판정은 원래 속도.
         public int FrameGenMultiplier = 2;  // 마지막으로 선택한 배율
-        public bool FrameGenRefresh = false; // 주사율 부족분만 생성. 기존 2..8배 저장 값 보존.
-        public bool FrameGenRefreshRest = false; // 저장 휴식 검증 후보; 마감 모드에만 적용.
+        public bool FrameGenRefresh = true; // 새 설정의 첫 추천. 기능 전체는 FrameGenOutside=0으로 기본 꺼짐.
+        public bool FrameGenRefreshRest = true; // 옛 XML 호환용. 주사율 맞춤은 이 값과 무관하게 마감+저장 휴식 사용.
         public int FxPreset = 0;
         public bool FxColor=false, FxSharp=false, FxAA=false, FxGlow=false, FxVignette=false, FxLut=false, FxLight=false;
         public bool FxGlowStack=false, FxToneMap=false, FxRays=false, FxStreak=false, FxFlare=false;

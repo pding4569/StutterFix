@@ -1477,13 +1477,12 @@ namespace StutterFix
             if (frameGen)
             {
                 int frameMode=c.FrameGenRefresh?0:1;
-                if(Segment("framegenmode",ref frameMode,new[] {T("주사율 맞춤","Match refresh"),T("2~8배","2–8×")})) {
+                if(Segment("framegenmode",ref frameMode,new[] {T("주사율 맞춤 · 추천","Match refresh · Recommended"),T("2~8배","2–8×")})) {
                     c.FrameGenRefresh=frameMode==0;Save();
                 }
                 if(c.FrameGenRefresh) {
-                    P(T("마지막 진짜 프레임 뒤 1/주사율 동안 다음 진짜 프레임이 없을 때만 하나 생성합니다.","Generate only if no new real frame arrives within one refresh period after the last real frame."),sDim);
-                    if(Option("framegenrefreshrest",ref c.FrameGenRefreshRest,T("빠른 구간에서 그림 저장 쉬기","Rest snapshots in fast sections"),
-                        T("진짜 프레임 8장이 연속으로 주사율 간격의 80%보다 빠르면 그림 저장을 쉬고, 가까워지면 다시 저장합니다. CPU·GPU 비용을 줄이지만 쉬는 중 처음 생긴 끊김에는 중간 화면을 만들 수 없습니다. 저장 재개 때 화면 지연이 달라질 수 있어 기본 꺼짐인 실험 후보입니다.","Pause snapshots after eight consecutive real frames faster than 80% of a refresh interval, and resume near that interval. Saves CPU/GPU work, but cannot fill the first unexpected hitch while resting. Visual delay can change when resuming; this experimental candidate is off by default."),T("실험","Experimental"))) Save();
+                    P(T("마지막 진짜 프레임 뒤 1/주사율 동안 다음 진짜 프레임이 없을 때만 하나 생성합니다. 빠른 구간에서는 그림 저장도 쉽니다.","Generate only if no new real frame arrives within one refresh period after the last real frame. Snapshots also rest in fast sections."),sDim);
+                    P(T("진짜 프레임 8장이 연속으로 주사율 간격의 80%보다 빠르면 저장을 쉬고, 가까워지면 즉시 재개합니다. 쉬는 중 처음 생긴 끊김은 채울 수 없고, 재개 때 화면 지연이 달라질 수 있습니다.","Snapshots rest after eight consecutive real frames faster than 80% of a refresh interval and resume immediately near it. The first unexpected hitch while resting cannot be filled; visual delay can change when resuming."),sDim);
                 }
                 else {
                 float multiplier = Mathf.Clamp(c.FrameGenOutside, 2, 8);

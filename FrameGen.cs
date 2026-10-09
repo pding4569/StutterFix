@@ -22,6 +22,8 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_generated();
         internal static string Describe() => "active="+active+" native_installed="+(SfNative.FrameGenReady?sf_framegen_installed():0)+
             " sources="+(SfNative.FrameGenReady?sf_framegen_sources():0)+" generated="+(SfNative.FrameGenReady?sf_framegen_generated():0)+" runtime_initialized="+RuntimeInitialized+" status="+Status;
+        // Explicit state commands only; no extra per-frame instrumentation.
+        internal static string DescribeStorage() => "refresh="+Main.Config.FrameGenRefresh+" "+(RuntimeInitialized?FrameGenRuntime.DescribeStorage():"deadline=False resting=False");
         // Read existing atomic counters only when the monitor refreshes its text.
         // Never install an observation hook to count the default-OFF path.
         internal static bool TryOutputCount(out ulong count)
@@ -68,6 +70,7 @@ namespace StutterFix
     // Unity's camera scheduling is untouched; no draw-function interception.
     internal static class FrameGenRuntime
     {
+        internal static string DescribeStorage() => "deadline="+(oldMode==9)+" resting="+snapshotGate.Resting;
         // Prevent beforefieldinit. JitWarm also excludes this type because Mono's
         // GetFunctionPointer can still invoke its initializer without running Install.
         static FrameGenRuntime() { FrameGen.RuntimeInitialized=true; }
@@ -231,7 +234,7 @@ namespace StutterFix
                 mode=hz>0?9:0;
             }
             if(mode!=oldMode) { oldMode=mode; Log("mode="+mode); }
-            if(mode!=9 || !Main.Config.FrameGenRefreshRest) snapshotGate.Reset();
+            if(mode!=9) snapshotGate.Reset();
             if(mode==0) return;
             var sc=scrCamera.instance; if(sc==null) return;
             var rt=RT(sc); var overlay=Overlay(sc); if(rt==null || overlay==null) return;
@@ -272,7 +275,7 @@ namespace StutterFix
                 if(Diagnostics && Hitch.Playing && song>=5 && trackedCamera!=null && renderedFrame!=Time.frameCount) missingScenes++;
                 Packet p=new Packet {unused1=Narrow?new IntPtr(1):IntPtr.Zero,frame=Time.frameCount,song=song,measure=Diagnostics && Hitch.Playing?1:0,mode=Hitch.Playing && !failed?Math.Max(0,oldMode):0,flip=FlipY?1:0,linear=QualitySettings.activeColorSpace==ColorSpace.Linear?1:0,capture=Capture?1:Clip?2:0};
                 bool storageRest=false;
-                if(p.mode==9 && Main.Config.FrameGenRefreshRest) {
+                if(p.mode==9) {
                     bool before=snapshotGate.Resting;
                     if(renderedFrame!=Time.frameCount) snapshotGate.Reset();
                     else storageRest=snapshotGate.Observe(System.Diagnostics.Stopwatch.GetTimestamp(),System.Diagnostics.Stopwatch.Frequency,refreshHz);
@@ -413,7 +416,7 @@ namespace StutterFix
 #if FRAMEGEN_RESEARCH
             Camera.onPreCull-=EarlyWorld;
             if(FixedCostStage==4) Log("early world fallback="+earlyFallbacks);
-            if(Main.Config.FrameGenRefreshRest) Log("storage-rest window=5..45 saved="+savedSources+" rested="+restingSources+" transitions="+storageTransitions);
+            if(Main.Config.FrameGenRefresh) Log("storage-rest window=5..45 saved="+savedSources+" rested="+restingSources+" transitions="+storageTransitions);
 #endif
             Issue(4,IntPtr.Zero); GL.Flush(); if(Diagnostics) Log("finish; missing real scenes="+missingScenes+" native status="+sf_framegen_status());
         }
