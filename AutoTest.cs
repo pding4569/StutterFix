@@ -843,6 +843,15 @@ namespace StutterFix
 #endif
                     return true;
 #if DEV || AUTOTEST
+                case "fxinput":
+                    {var input=arg.Split(new[]{' '},2);if(input.Length!=2)throw new Exception("fxinput <slider key> <text>");SettingsWindow.InputFxForTest(input[0],input[1]);return true;}
+                case "fxpersist":
+                    {
+                        var stored=UnityModManagerNet.UnityModManager.ModSettings.Load<Settings>(Main.Entry);int fields=0,bad=0;
+                        foreach(var field in typeof(Settings).GetFields())if(field.Name.StartsWith("Fx") && field.FieldType==typeof(float)){fields++;if(!field.GetValue(stored).Equals(field.GetValue(Main.Config)))bad++;}
+                        Log("[화면효과저장] float_fields="+fields+" mismatches="+bad+" preset="+stored.FxPreset);
+                        if(bad!=0 || stored.FxPreset!=4)throw new Exception("Custom effect values not persisted");return true;
+                    }
                 case "fxpreset":
                     {
                         int preset=int.Parse(arg); if(preset<0 || preset>6 || preset==4) throw new Exception("미리 설정 0~3 또는 후보5·6 필요");

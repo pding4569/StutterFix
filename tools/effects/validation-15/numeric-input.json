@@ -1,0 +1,62 @@
+{
+  "scope": "Actual IMGUI numeric acceptance and Custom Save path, explicit AUTOTEST text injection; not physical keyboard/mouse automation. Screenshot/functional run, excluded from performance.",
+  "inputs": [
+    "0.75",
+    "9",
+    "-",
+    "NaN",
+    "-0.25"
+  ],
+  "values": [
+    0.75,
+    1.0,
+    1.0,
+    1.0,
+    -0.25
+  ],
+  "persistence": [
+    {
+      "float_fields": 23,
+      "mismatches": 0,
+      "preset": 4
+    },
+    {
+      "float_fields": 23,
+      "mismatches": 0,
+      "preset": 4
+    },
+    {
+      "float_fields": 23,
+      "mismatches": 0,
+      "preset": 4
+    },
+    {
+      "float_fields": 23,
+      "mismatches": 0,
+      "preset": 4
+    },
+    {
+      "float_fields": 23,
+      "mismatches": 0,
+      "preset": 4
+    }
+  ],
+  "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+  "errors": 0,
+  "fx_times": [
+    "song_s=11.460335236391984 unity_frame=9485 effect_frame=9484 glow=False",
+    "song_s=12.476910096011125 unity_frame=9625 effect_frame=9624 glow=False"
+  ],
+  "managed_sha256": "163ba94fc8e7ccc6f5a787da35734f3c3b628296fdf5aed4471b42b72568f1a1",
+  "fixture_log_sha256": "e79d3f62a75e2d3fd51f80600e0e8c3090151ce9c907c5e518ec2fb3e51bf00b",
+  "normal_player_loadcheck": {
+    "checked": 219,
+    "errors": 0
+  },
+  "playerauto_loadcheck": {
+    "checked": 220,
+    "errors": 0
+  },
+  "bundle_rebuilt": false,
+  "mouse_and_keyboard_actions": "not tested; explicit GUI text injection only"
+}

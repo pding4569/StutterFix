@@ -1373,6 +1373,7 @@ namespace StutterFix
         {
             var c=Main.Config; bool ch=false;
             SubHeading(T("화면 효과","Screen effects"),T("맵 연출 뒤, UI와 프레임 늘리기 앞에 적용합니다. 전부 기본 꺼짐.","After level effects; before UI and frame interpolation. All disabled by default."));
+            P(T("효과를 켠 뒤 막대를 끌거나 오른쪽 숫자를 입력하세요. 바꾼 값은 직접 조절로 저장됩니다.","Enable an effect, then drag its slider or type the value at the right. Edits are saved as Custom."),sDim);
             int preset=ScreenEffects.Enabled?Mathf.Clamp(c.FxPreset==5?2:c.FxPreset==6?3:c.FxPreset==0?4:c.FxPreset,1,4):0;bool presetChanged=false;
             if(Segment("fxpreset",ref preset,new[]{T("꺼짐","Off"),T("선명","Sharp"),T("또렷","Clear"),T("네온","Neon"),T("직접 조절","Custom")})){if(preset<4)ScreenEffects.Preset(preset);else c.FxPreset=4;ch=presetChanged=true;}
             int candidate=c.FxPreset==5?1:c.FxPreset==6?2:0;
@@ -1428,7 +1429,7 @@ namespace StutterFix
             EndGroup();
             if(ch){if(!presetChanged)c.FxPreset=4;Save();}
         }
-        private bool FxSlider(string key,ref float value,float min,float max,string title){return Slider(key,ref value,min,max,title,value.ToString("F2"));}
+        private bool FxSlider(string key,ref float value,float min,float max,string title){return Slider(key,ref value,min,max,title,value.ToString("F2"),true);}
 
         private void PageGraphics()
         {
@@ -2155,23 +2156,61 @@ namespace StutterFix
         }
 
         // 가로 막대를 끌어서 값 고르기
-        private bool Slider(string key, ref float value, float min, float max, string label, string shown)
+        private string sliderEditKey, sliderEditText;
+#if DEV || AUTOTEST
+        private string testFxKey,testFxText;
+        internal static void InputFxForTest(string key,string text)
         {
+            if(Instance==null || !Open)throw new InvalidOperationException("Open the screen effects page first");
+            Instance.testFxKey=key;Instance.testFxText=text;
+        }
+#endif
+        private bool Slider(string key, ref float value, float min, float max, string label, string shown, bool editValue=false)
+        {
+            float old = value;
             GUILayout.BeginHorizontal();
             GUILayout.Label(label, sDimMid, GUILayout.Width(110), GUILayout.Height(28));   // 막대와 같은 높이 가운데 (위에 붙어 막대보다 떠 보였다)
             Rect r = GUILayoutUtility.GetRect(10, 28, GUILayout.ExpandWidth(true), GUILayout.Height(28));
-            GUILayout.Label(shown, sSliderValue, GUILayout.Width(64), GUILayout.Height(28));
+            if(editValue)
+            {
+                string control="fxvalue-"+key;
+                bool focused=GUI.GetNameOfFocusedControl()==control;
+                bool commit=focused && Event.current.type==EventType.KeyDown &&
+                    (Event.current.keyCode==KeyCode.Return || Event.current.keyCode==KeyCode.KeypadEnter);
+                GUI.SetNextControlName(control);
+                string input=focused && sliderEditKey==key?sliderEditText:shown;
+                string text=GUILayout.TextField(input,
+                    sSliderValue,GUILayout.Width(64),GUILayout.Height(28));
+                bool edited=text!=input;
+                bool accept=GUI.GetNameOfFocusedControl()==control;
+#if DEV || AUTOTEST
+                bool injected=testFxKey==key;
+                if(injected){text=testFxText;testFxKey=null;accept=true;edited=true;}
+#endif
+                if(accept)
+                {
+                    sliderEditKey=key;sliderEditText=text;
+                    float parsed;
+                    if(edited && (float.TryParse(text,System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out parsed) ||
+                        float.TryParse(text,System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.CurrentCulture,out parsed)) &&
+                        !float.IsNaN(parsed) && !float.IsInfinity(parsed)) value=Mathf.Clamp(parsed,min,max);
+                }
+#if DEV || AUTOTEST
+                if(injected)Main.Entry.Logger.Log(FormattableString.Invariant($"[화면효과입력] key={key} text={text} value={value:R}"));
+#endif
+                if(commit){GUI.FocusControl(null);sliderEditKey=null;Event.current.Use();}
+            }
+            else GUILayout.Label(shown, sSliderValue, GUILayout.Width(64), GUILayout.Height(28));
             GUILayout.EndHorizontal();
             GUILayout.Space(4);
 
             int id = GUIUtility.GetControlID(key.GetHashCode(), FocusType.Passive, r);
             var e = Event.current;
-            float old = value;
             var track = new Rect(r.x + 9, r.center.y - 2, r.width - 18, 4);
             switch (e.type)
             {
                 case EventType.MouseDown:
-                    if (e.button == 0 && r.Contains(e.mousePosition)) { GUIUtility.hotControl = id; value = Pick(track, e.mousePosition.x, min, max); e.Use(); }
+                    if (e.button == 0 && r.Contains(e.mousePosition)) { if(editValue){GUI.FocusControl(null);sliderEditKey=null;} GUIUtility.hotControl = id; value = Pick(track, e.mousePosition.x, min, max); e.Use(); }
                     break;
                 case EventType.MouseDrag:
                     if (GUIUtility.hotControl == id) { value = Pick(track, e.mousePosition.x, min, max); e.Use(); }

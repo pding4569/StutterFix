@@ -1,0 +1,456 @@
+{
+  "scope": "Six fresh normal PlayerAuto games, fixed FrameGen4x, no capture/readback/ETW. FX OFF/strong-neon6/OFF per map. Unity frame / Stopwatch QPC35s after wait10, not exact native5..45s, scene callback coverage unmeasured. Incremental shader cost only, not total FrameGen loss.",
+  "maps": {
+    "HELLO 2026": {
+      "scope": "Incremental selected-effect cost at fixed4x, not total FrameGen loss. Separate fresh games, adjacent OFF controls, general Unity frame/QPC window. Exact native song window, physical display FPS and display latency unconfirmed.",
+      "preset": 6,
+      "rays": false,
+      "runs": [
+        {
+          "profile": "off-before",
+          "settings": {
+            "FxColor": false,
+            "FxSharp": false,
+            "FxAA": false,
+            "FxGlow": false,
+            "FxLight": false,
+            "FxVignette": false,
+            "FxLut": false,
+            "FxGlowStack": false,
+            "FxToneMap": false,
+            "FxRays": false,
+            "FxStreak": false,
+            "FxFlare": false,
+            "FxChromatic": false,
+            "FxGrain": false,
+            "FxCrt": false,
+            "FxPixel": false,
+            "FxPosterize": false,
+            "FxBlur": false,
+            "LowHalfRender": false,
+            "LowSharpen": false,
+            "LowFsr": false,
+            "LowRenderScale": 100,
+            "FxPreset": 0
+          },
+          "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+          "sample": {
+            "seconds": 35.0170195,
+            "unity_frames": 6484,
+            "real_fps": 185.16710138622733,
+            "submitted": 26190,
+            "output_fps": 747.9220211760169,
+            "output_over_source": 4.039173349784084,
+            "off_output_inferred_from_unity": false
+          },
+          "managed_sha256": "079e47cb926c7c9126db2e9aac05fef7b3452bcf4f879e6136b11c773d5f6e5f",
+          "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+          "errors": 0,
+          "effect_prepared": false,
+          "effect_states": [
+            "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+            "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status="
+          ],
+          "completed_effect_frames": 0,
+          "effect_execution_fraction": "not measured: endpoint counters only",
+          "reported_hitches": [],
+          "fx_clock_endpoints": [
+            "song_s=8.3514141853665933 unity_frame=9194 effect_frame=-1 glow=False",
+            "song_s=43.375986557803117 unity_frame=15678 effect_frame=-1 glow=False"
+          ],
+          "game_log_sha256": "8404d60340a3fad51fa23f4ce95ca3dabb86610bb9d68489c49823494c1172e6",
+          "existing_dotween_summary": [
+            [
+              "18",
+              "missing target or field errors"
+            ],
+            [
+              "757",
+              "startup errors"
+            ]
+          ]
+        },
+        {
+          "profile": "neon-strong",
+          "settings": {
+            "FxColor": true,
+            "FxSharp": true,
+            "FxAA": false,
+            "FxGlow": true,
+            "FxLight": false,
+            "FxVignette": true,
+            "FxLut": false,
+            "FxGlowStack": true,
+            "FxToneMap": true,
+            "FxRays": false,
+            "FxStreak": false,
+            "FxFlare": false,
+            "FxChromatic": false,
+            "FxGrain": false,
+            "FxCrt": false,
+            "FxPixel": false,
+            "FxPosterize": false,
+            "FxBlur": false,
+            "LowHalfRender": false,
+            "LowSharpen": false,
+            "LowFsr": false,
+            "LowRenderScale": 100,
+            "FxPreset": 6,
+            "FxVibrance": 0.55,
+            "FxContrast": 1.12,
+            "FxBrightness": -0.1,
+            "FxTemperature": 0,
+            "FxSharpAmount": 0.4,
+            "FxGlowAmount": 1.2,
+            "FxGlowThreshold": 0.28,
+            "FxVignetteAmount": 0.15,
+            "FxCeiling": 0.97,
+            "FxRaysAmount": 0.8,
+            "FxRaysX": 0.5,
+            "FxRaysY": 0.25,
+            "FxRaysLength": 0.8
+          },
+          "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+          "sample": {
+            "seconds": 35.0163325,
+            "unity_frames": 6444,
+            "real_fps": 184.028410171168,
+            "submitted": 26223,
+            "output_fps": 748.8791123399345,
+            "output_over_source": 4.0693668528864055,
+            "off_output_inferred_from_unity": false
+          },
+          "managed_sha256": "079e47cb926c7c9126db2e9aac05fef7b3452bcf4f879e6136b11c773d5f6e5f",
+          "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+          "errors": 0,
+          "effect_prepared": true,
+          "effect_states": [
+            "enabled=True ready=True failed=False frames=2538 reused=0 glow_rest=0 custom_source_skipped=724 coordinator=True size=3440x1440 status=",
+            "enabled=True ready=True failed=False frames=8944 reused=0 glow_rest=0 custom_source_skipped=762 coordinator=True size=3440x1440 status="
+          ],
+          "completed_effect_frames": 6406,
+          "effect_execution_fraction": "not measured: endpoint counters only",
+          "reported_hitches": [],
+          "fx_clock_endpoints": [
+            "song_s=8.3549694832181558 unity_frame=8438 effect_frame=8101 glow=True",
+            "song_s=43.364851456484757 unity_frame=14882 effect_frame=14881 glow=True"
+          ],
+          "game_log_sha256": "5e0da73eb4f00996be376fc447bd1dba6031fe597568de62198059a1d5b7874c",
+          "existing_dotween_summary": [
+            [
+              "18",
+              "missing target or field errors"
+            ],
+            [
+              "757",
+              "startup errors"
+            ]
+          ]
+        },
+        {
+          "profile": "off-after",
+          "settings": {
+            "FxColor": false,
+            "FxSharp": false,
+            "FxAA": false,
+            "FxGlow": false,
+            "FxLight": false,
+            "FxVignette": false,
+            "FxLut": false,
+            "FxGlowStack": false,
+            "FxToneMap": false,
+            "FxRays": false,
+            "FxStreak": false,
+            "FxFlare": false,
+            "FxChromatic": false,
+            "FxGrain": false,
+            "FxCrt": false,
+            "FxPixel": false,
+            "FxPosterize": false,
+            "FxBlur": false,
+            "LowHalfRender": false,
+            "LowSharpen": false,
+            "LowFsr": false,
+            "LowRenderScale": 100,
+            "FxPreset": 0
+          },
+          "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+          "sample": {
+            "seconds": 35.0187415,
+            "unity_frames": 6525,
+            "real_fps": 186.32879768109316,
+            "submitted": 26402,
+            "output_fps": 753.9391442722178,
+            "output_over_source": 4.046283524904214,
+            "off_output_inferred_from_unity": false
+          },
+          "managed_sha256": "079e47cb926c7c9126db2e9aac05fef7b3452bcf4f879e6136b11c773d5f6e5f",
+          "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+          "errors": 0,
+          "effect_prepared": false,
+          "effect_states": [
+            "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+            "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status="
+          ],
+          "completed_effect_frames": 0,
+          "effect_execution_fraction": "not measured: endpoint counters only",
+          "reported_hitches": [],
+          "fx_clock_endpoints": [
+            "song_s=8.3543333824491128 unity_frame=8935 effect_frame=-1 glow=False",
+            "song_s=43.381937485537492 unity_frame=15460 effect_frame=-1 glow=False"
+          ],
+          "game_log_sha256": "d6dba5f199e1f0c71a00a8cc70080dd81a737ab9205f0369f3e8e7f77b4e08ea",
+          "existing_dotween_summary": [
+            [
+              "18",
+              "missing target or field errors"
+            ],
+            [
+              "757",
+              "startup errors"
+            ]
+          ]
+        }
+      ],
+      "effect_real_fps_loss_percent_vs_controls": [
+        0.6149533078687819,
+        1.2345850660520852
+      ]
+    },
+    "Arche": {
+      "scope": "Incremental selected-effect cost at fixed4x, not total FrameGen loss. Separate fresh games, adjacent OFF controls, general Unity frame/QPC window. Exact native song window, physical display FPS and display latency unconfirmed.",
+      "preset": 6,
+      "rays": false,
+      "runs": [
+        {
+          "profile": "off-before",
+          "settings": {
+            "FxColor": false,
+            "FxSharp": false,
+            "FxAA": false,
+            "FxGlow": false,
+            "FxLight": false,
+            "FxVignette": false,
+            "FxLut": false,
+            "FxGlowStack": false,
+            "FxToneMap": false,
+            "FxRays": false,
+            "FxStreak": false,
+            "FxFlare": false,
+            "FxChromatic": false,
+            "FxGrain": false,
+            "FxCrt": false,
+            "FxPixel": false,
+            "FxPosterize": false,
+            "FxBlur": false,
+            "LowHalfRender": false,
+            "LowSharpen": false,
+            "LowFsr": false,
+            "LowRenderScale": 100,
+            "FxPreset": 0
+          },
+          "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+          "sample": {
+            "seconds": 35.0079339,
+            "unity_frames": 10681,
+            "real_fps": 305.10226711779757,
+            "submitted": 42812,
+            "output_fps": 1222.9227843691742,
+            "output_over_source": 4.008238928939238,
+            "off_output_inferred_from_unity": false
+          },
+          "managed_sha256": "079e47cb926c7c9126db2e9aac05fef7b3452bcf4f879e6136b11c773d5f6e5f",
+          "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+          "errors": 0,
+          "effect_prepared": false,
+          "effect_states": [
+            "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+            "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status="
+          ],
+          "completed_effect_frames": 0,
+          "effect_execution_fraction": "not measured: endpoint counters only",
+          "reported_hitches": [],
+          "fx_clock_endpoints": [
+            "song_s=7.886596315074712 unity_frame=10262 effect_frame=-1 glow=False",
+            "song_s=42.9045168091543 unity_frame=20943 effect_frame=-1 glow=False"
+          ],
+          "game_log_sha256": "691e640a555137e33da194aade11de65f13ca1d54e9fefa21d9da3909f9d4049",
+          "existing_dotween_summary": [
+            [
+              "18",
+              "missing target or field errors"
+            ],
+            [
+              "757",
+              "startup errors"
+            ]
+          ]
+        },
+        {
+          "profile": "neon-strong",
+          "settings": {
+            "FxColor": true,
+            "FxSharp": true,
+            "FxAA": false,
+            "FxGlow": true,
+            "FxLight": false,
+            "FxVignette": true,
+            "FxLut": false,
+            "FxGlowStack": true,
+            "FxToneMap": true,
+            "FxRays": false,
+            "FxStreak": false,
+            "FxFlare": false,
+            "FxChromatic": false,
+            "FxGrain": false,
+            "FxCrt": false,
+            "FxPixel": false,
+            "FxPosterize": false,
+            "FxBlur": false,
+            "LowHalfRender": false,
+            "LowSharpen": false,
+            "LowFsr": false,
+            "LowRenderScale": 100,
+            "FxPreset": 6,
+            "FxVibrance": 0.55,
+            "FxContrast": 1.12,
+            "FxBrightness": -0.1,
+            "FxTemperature": 0,
+            "FxSharpAmount": 0.4,
+            "FxGlowAmount": 1.2,
+            "FxGlowThreshold": 0.28,
+            "FxVignetteAmount": 0.15,
+            "FxCeiling": 0.97,
+            "FxRaysAmount": 0.8,
+            "FxRaysX": 0.5,
+            "FxRaysY": 0.25,
+            "FxRaysLength": 0.8
+          },
+          "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+          "sample": {
+            "seconds": 35.0067696,
+            "unity_frames": 10393,
+            "real_fps": 296.8854344103776,
+            "submitted": 41609,
+            "output_fps": 1188.5986760686426,
+            "output_over_source": 4.0035600885211196,
+            "off_output_inferred_from_unity": false
+          },
+          "managed_sha256": "079e47cb926c7c9126db2e9aac05fef7b3452bcf4f879e6136b11c773d5f6e5f",
+          "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+          "errors": 0,
+          "effect_prepared": true,
+          "effect_states": [
+            "enabled=True ready=True failed=False frames=4490 reused=1 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+            "enabled=True ready=True failed=False frames=14875 reused=9 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status="
+          ],
+          "completed_effect_frames": 10385,
+          "effect_execution_fraction": "not measured: endpoint counters only",
+          "reported_hitches": [],
+          "fx_clock_endpoints": [
+            "song_s=7.8850828339345753 unity_frame=9573 effect_frame=9572 glow=True",
+            "song_s=42.893084161449224 unity_frame=19966 effect_frame=19965 glow=True"
+          ],
+          "game_log_sha256": "1cc61024c6e15aa24c5de9068779bf8d62e7b7847c4934757cb9ab13931327fa",
+          "existing_dotween_summary": [
+            [
+              "18",
+              "missing target or field errors"
+            ],
+            [
+              "757",
+              "startup errors"
+            ]
+          ]
+        },
+        {
+          "profile": "off-after",
+          "settings": {
+            "FxColor": false,
+            "FxSharp": false,
+            "FxAA": false,
+            "FxGlow": false,
+            "FxLight": false,
+            "FxVignette": false,
+            "FxLut": false,
+            "FxGlowStack": false,
+            "FxToneMap": false,
+            "FxRays": false,
+            "FxStreak": false,
+            "FxFlare": false,
+            "FxChromatic": false,
+            "FxGrain": false,
+            "FxCrt": false,
+            "FxPixel": false,
+            "FxPosterize": false,
+            "FxBlur": false,
+            "LowHalfRender": false,
+            "LowSharpen": false,
+            "LowFsr": false,
+            "LowRenderScale": 100,
+            "FxPreset": 0
+          },
+          "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+          "sample": {
+            "seconds": 35.0084851,
+            "unity_frames": 10627,
+            "real_fps": 303.554980161081,
+            "submitted": 42587,
+            "output_fps": 1216.4765164317264,
+            "output_over_source": 4.007433894796273,
+            "off_output_inferred_from_unity": false
+          },
+          "managed_sha256": "079e47cb926c7c9126db2e9aac05fef7b3452bcf4f879e6136b11c773d5f6e5f",
+          "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+          "errors": 0,
+          "effect_prepared": false,
+          "effect_states": [
+            "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+            "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status="
+          ],
+          "completed_effect_frames": 0,
+          "effect_execution_fraction": "not measured: endpoint counters only",
+          "reported_hitches": [],
+          "fx_clock_endpoints": [
+            "song_s=7.8900009323842824 unity_frame=10112 effect_frame=-1 glow=False",
+            "song_s=42.897837274242193 unity_frame=20739 effect_frame=-1 glow=False"
+          ],
+          "game_log_sha256": "cf8ffbf05739790afbdb8658d5ac7fb71cea200d3d866dbb033f6812e382a9de",
+          "existing_dotween_summary": [
+            [
+              "18",
+              "missing target or field errors"
+            ],
+            [
+              "757",
+              "startup errors"
+            ]
+          ]
+        }
+      ],
+      "effect_real_fps_loss_percent_vs_controls": [
+        2.693140495166324,
+        2.1971458834785684
+      ]
+    }
+  },
+  "excluded": [
+    {
+      "folder": "ch15-hello-neon6",
+      "cause": "Steam ShowInterstitials user response pending; launch timeout90s; samples0"
+    },
+    {
+      "folder": "ch15-hello-neon6-cli",
+      "cause": "Prior delayed launch was already running; rejected before installing; samples0"
+    }
+  ],
+  "unmeasured": [
+    "Physical display FPS and intervals",
+    "Whole-frame GPU execution",
+    "Added display/input-to-photon latency",
+    "Effect execution fraction between endpoints",
+    "Whole-song motion quality",
+    "Comparison against FrameGen OFF",
+    "Physical keyboard/mouse entry"
+  ]
+}

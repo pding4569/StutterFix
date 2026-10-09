@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 from measure_maps import sf, ROOT
 
@@ -19,7 +20,12 @@ def main():
     p.add_argument('--monitor-smoke', action='store_true', help='Verify real/output/both counters and capture all three monitor layouts')
     p.add_argument('--settings', type=Path, help='Temporary compatibility settings JSON')
     p.add_argument('--no-shot', action='store_true', help='Submission/source sample without a later screenshot')
+    p.add_argument('--fx-state', action='store_true', help='Explicit endpoint-only FX readiness counters; no per-frame instrumentation')
+    p.add_argument('--steam-exe', type=Path, help='Use Steam -applaunch instead of the URL handler; keeps saved launch options')
     a = p.parse_args()
+    if a.steam_exe:
+        if not a.steam_exe.is_file() or a.steam_exe.name.lower()!='steam.exe':p.error('Existing Steam executable required')
+        sf.launch_game=lambda: subprocess.Popen([str(a.steam_exe),'-applaunch','977950'])
     if a.refresh_rest and not a.refresh:p.error('--refresh-rest requires --refresh')
     if (Path(__file__).resolve().parent/'out/stop-outside-batch').exists():
         raise RuntimeError('Batch deliberately stopped before installation; preserve current evidence')
@@ -49,6 +55,7 @@ def main():
     try:
         (mod/'StutterFix.dll').write_bytes(binary)
         steps = ['wait 3', 'fgstate', 'game '+str(a.map), 'auto on', 'press', 'wait 10', 'fgstate']
+        if a.fx_state:steps += ['fxstate']
         if a.monitor_smoke:
             steps += ['fgmonitor'] # Missing setting uses Auto by default; do not set it before this sample.
             for source in [0,1,2,-1]:
@@ -66,6 +73,7 @@ def main():
                       'set FrameGenOutside 0', 'wait 3', 'fgstate']
         else:
             steps += ['wait 35', 'fgstate']
+            if a.fx_state:steps += ['fxstate']
             if not a.no_shot:
                 steps += ['wait 5', 'shot framegen-normal', 'wait 3']
             if a.full_song:
