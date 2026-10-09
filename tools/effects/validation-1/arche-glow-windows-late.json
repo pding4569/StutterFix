@@ -1,0 +1,313 @@
+{
+  "scope": "Visual diagnostics only, 2s sampled real-level glow execution counters. FrameGen OFF. Windows identify candidates, not visible motion or interpolation quality. No screenshots/readbacks/ETW/elevation; no complete-song claim.",
+  "requested_wall_window": [
+    260,
+    318
+  ],
+  "conditions": "\uc218\uc9c1\ub3d9\uae30 0, \ubaa9\ud45c FPS 10000, FullScreenWindow, 3440x1440 165Hz, \ucc3d 3440x1440, \uc55e\uc11c \uc900\ube44\ud558\ub294 \ud504\ub808\uc784 2",
+  "seconds": 365.17166566848755,
+  "managed_sha256": "0b0fae410204ee747a259000f2f825c608eb7f262a4ff052515ff74bb02304e4",
+  "records": [
+    {
+      "song_s": 257.9038263489492,
+      "unity_frame": 87542,
+      "effect_frame": 87541,
+      "last_glow": false,
+      "frames": 81671,
+      "rest": 78975,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 259.9091669251211,
+      "unity_frame": 87699,
+      "effect_frame": 87698,
+      "last_glow": false,
+      "frames": 81828,
+      "rest": 79132,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 261.93583928840235,
+      "unity_frame": 87842,
+      "effect_frame": 87841,
+      "last_glow": false,
+      "frames": 81971,
+      "rest": 79275,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 263.9731622864492,
+      "unity_frame": 87984,
+      "effect_frame": 87983,
+      "last_glow": false,
+      "frames": 82113,
+      "rest": 79417,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 265.9891534973867,
+      "unity_frame": 88123,
+      "effect_frame": 88122,
+      "last_glow": false,
+      "frames": 82252,
+      "rest": 79556,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 267.9944940735586,
+      "unity_frame": 88265,
+      "effect_frame": 88264,
+      "last_glow": false,
+      "frames": 82394,
+      "rest": 79698,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 270.0318475891836,
+      "unity_frame": 88404,
+      "effect_frame": 88403,
+      "last_glow": false,
+      "frames": 82533,
+      "rest": 79837,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 272.0584894348867,
+      "unity_frame": 88529,
+      "effect_frame": 88528,
+      "last_glow": false,
+      "frames": 82658,
+      "rest": 79962,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 274.07451116340235,
+      "unity_frame": 88655,
+      "effect_frame": 88654,
+      "last_glow": false,
+      "frames": 82784,
+      "rest": 80088,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 276.09050237433985,
+      "unity_frame": 88980,
+      "effect_frame": 88979,
+      "last_glow": false,
+      "frames": 83109,
+      "rest": 80413,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 278.085161798168,
+      "unity_frame": 89553,
+      "effect_frame": 89552,
+      "last_glow": false,
+      "frames": 83682,
+      "rest": 80986,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 280.10429631965235,
+      "unity_frame": 90091,
+      "effect_frame": 90090,
+      "last_glow": false,
+      "frames": 84220,
+      "rest": 81524,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 282.098833673168,
+      "unity_frame": 90672,
+      "effect_frame": 90671,
+      "last_glow": false,
+      "frames": 84801,
+      "rest": 82105,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 284.10808049933985,
+      "unity_frame": 91318,
+      "effect_frame": 91317,
+      "last_glow": false,
+      "frames": 85447,
+      "rest": 82751,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 286.11516057746485,
+      "unity_frame": 91991,
+      "effect_frame": 91990,
+      "last_glow": false,
+      "frames": 86120,
+      "rest": 83424,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 288.122515313793,
+      "unity_frame": 92655,
+      "effect_frame": 92654,
+      "last_glow": false,
+      "frames": 86784,
+      "rest": 84088,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 290.1171747376211,
+      "unity_frame": 93283,
+      "effect_frame": 93282,
+      "last_glow": false,
+      "frames": 87412,
+      "rest": 84716,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 292.1361261536367,
+      "unity_frame": 93924,
+      "effect_frame": 93923,
+      "last_glow": false,
+      "frames": 88053,
+      "rest": 85357,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 294.1309686829336,
+      "unity_frame": 94563,
+      "effect_frame": 94562,
+      "last_glow": false,
+      "frames": 88692,
+      "rest": 85996,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 296.1363397766836,
+      "unity_frame": 95173,
+      "effect_frame": 95172,
+      "last_glow": false,
+      "frames": 89302,
+      "rest": 86606,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 298.1453729798086,
+      "unity_frame": 95760,
+      "effect_frame": 95759,
+      "last_glow": false,
+      "frames": 89889,
+      "rest": 87193,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 300.15300237433985,
+      "unity_frame": 96371,
+      "effect_frame": 96370,
+      "last_glow": false,
+      "frames": 90500,
+      "rest": 87804,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 302.1491571594961,
+      "unity_frame": 97093,
+      "effect_frame": 97092,
+      "last_glow": false,
+      "frames": 91222,
+      "rest": 88526,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 304.154497735668,
+      "unity_frame": 97868,
+      "effect_frame": 97867,
+      "last_glow": false,
+      "frames": 91997,
+      "rest": 89301,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 306.15983831183985,
+      "unity_frame": 98643,
+      "effect_frame": 98642,
+      "last_glow": false,
+      "frames": 92772,
+      "rest": 90076,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 308.1651788880117,
+      "unity_frame": 99425,
+      "effect_frame": 99424,
+      "last_glow": false,
+      "frames": 93554,
+      "rest": 90858,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 310.1704889466055,
+      "unity_frame": 99826,
+      "effect_frame": 99825,
+      "last_glow": false,
+      "frames": 93955,
+      "rest": 91259,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 312.17582952277735,
+      "unity_frame": 100199,
+      "effect_frame": 100198,
+      "last_glow": false,
+      "frames": 94328,
+      "rest": 91632,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 314.1968866516836,
+      "unity_frame": 100582,
+      "effect_frame": 100581,
+      "last_glow": false,
+      "frames": 94711,
+      "rest": 92015,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    },
+    {
+      "song_s": 316.1971613098867,
+      "unity_frame": 100966,
+      "effect_frame": 100965,
+      "last_glow": false,
+      "frames": 95095,
+      "rest": 92399,
+      "custom_skip": 0,
+      "size": "3440x1440"
+    }
+  ],
+  "active_windows": []
+}

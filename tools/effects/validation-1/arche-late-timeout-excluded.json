@@ -1,0 +1,14 @@
+{
+  "scope": "Excluded late-window scout. No late glow samples. Existing AutoTest command safety timeout, not a crash or rendering failure.",
+  "command": "wait 260",
+  "end_reason": [
+    "시간 초과 (wait 260)"
+  ],
+  "fx_state_samples": 0,
+  "actual_conditions": [
+    "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2"
+  ],
+  "normal_quit_and_exact_original_restoration": true,
+  "restoration_evidence": "Runner finally returned Installed originals restored exactly after normal quit; no force kill.",
+  "followup": "Split lead-in into waits <=60s; preserve original command timeout."
+}

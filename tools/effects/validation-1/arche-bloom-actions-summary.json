@@ -1,0 +1,35 @@
+{
+  "scope": "Static chart actions, not proof of runtime component enable state, timing or visible glow.",
+  "map_sha256": "b59b6d2d7cec19d7261bdacbda30a5bfaddf1660813869dec936585efe790e59",
+  "bloom_actions": 103,
+  "enabled": 102,
+  "disabled": 1,
+  "same_floor_events": [
+    {
+      "action_index": 107235,
+      "floor": 3703,
+      "eventType": "Bloom",
+      "enabled": false,
+      "threshold": 50,
+      "intensity": 100,
+      "color": "ffffff",
+      "duration": 0,
+      "ease": "Linear",
+      "angleOffset": 0,
+      "eventTag": ""
+    },
+    {
+      "action_index": 107243,
+      "floor": 3703,
+      "eventType": "Bloom",
+      "enabled": true,
+      "threshold": 22,
+      "intensity": -1000,
+      "color": "232323ff",
+      "duration": 0,
+      "ease": "Linear",
+      "angleOffset": 0,
+      "eventTag": ""
+    }
+  ]
+}

@@ -6,9 +6,9 @@ sys.path.insert(0,str(ROOT/'tools/framegenlab'))
 from measure_maps import sf
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--map',type=Path,required=True);p.add_argument('--dll',type=Path,required=True);p.add_argument('--seconds',type=int,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--map',type=Path,required=True);p.add_argument('--dll',type=Path,required=True);p.add_argument('--seconds',type=int,required=True);p.add_argument('--begin',type=int,default=0,help='Play normally from the beginning, but defer diagnostic samples until this wall time');p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     if sf.game_running():raise RuntimeError('Existing game must be closed normally')
-    if not 4<=a.seconds<=240:raise RuntimeError('Use a bounded pre-end level interval')
+    if not 0<=a.begin<a.seconds<=360 or a.seconds-a.begin<4:raise RuntimeError('Use a bounded pre-end level interval')
     a.out.mkdir(parents=True,exist_ok=False);mod=Path(sf.MOD_DIR)
     original={n:(mod/n).read_bytes() for n in ['StutterFix.dll','sfnative.dll','Settings.xml']}
     for n,b in original.items():(a.out/(n+'.original')).write_bytes(b)
@@ -17,12 +17,18 @@ def main():
         config={n:False for n in ['FxColor','FxSharp','FxAA','FxGlow','FxLight','FxVignette','FxLut','LowHalfRender','LowSharpen','LowFsr']}
         config.update(FxGlow=True,LowRenderScale=100,FrameGenOutside=0,FrameGenRefresh=False,FrameStats=False)
         sf.apply_settings(config)
-        steps=['game '+str(a.map),'auto on','press','fxstate']
-        for _ in range(a.seconds//2):steps+=['wait 2','fxstate']
+        steps=['game '+str(a.map),'auto on','press']
+        # AutoTest has a per-command timeout. Keep the existing safety timeout;
+        # divide a long lead-in rather than asking one command to wait >180s.
+        remaining=a.begin
+        while remaining:
+            chunk=min(60,remaining);steps+=['wait '+str(chunk)];remaining-=chunk
+        steps+=['fxstate']
+        for _ in range((a.seconds-a.begin)//2):steps+=['wait 2','fxstate']
         why,log,elapsed=sf._batch(steps,a.seconds/60+3)
         (a.out/'game.log').write_text(sf.read_text(sf.PLAYER_LOG),encoding='utf8')
         (a.out/'batch.log').write_text(log,encoding='utf8')
-        if why!='끝' or '[상태] PlayerControl' not in log or '[화면 효과] 실패:' in log:raise RuntimeError('Scout did not execute the real level correctly')
+        if why!='끝' or '[상태] PlayerControl' not in log or '[화면 효과] 실패:' in log:raise RuntimeError('Scout did not execute the real level correctly: batch='+why)
         conditions=re.findall(r'\[곡 시작\] 화면: ([^\r\n]+)',log)
         if len(conditions)!=1 or '3440x1440 165Hz' not in conditions[0]:raise RuntimeError('Actual screen conditions changed')
         states=re.findall(r'\[화면효과상태\] ([^\r\n]+)',log)
@@ -36,7 +42,7 @@ def main():
             frames=new['frames']-old['frames'];rest=new['rest']-old['rest'];active=frames-rest
             if active<0 or frames<0 or new['song_s']<old['song_s']:raise RuntimeError('Counter/time rewind; preserve without combining')
             if active:windows.append(dict(from_song_s=old['song_s'],to_song_s=new['song_s'],executed_glow_frames=active,processed_frames=frames,rest_frames=rest,custom_skip=new['custom_skip']-old['custom_skip']))
-        data=dict(scope='Visual diagnostics only, 2s sampled real-level glow execution counters. FrameGen OFF. Windows identify candidates, not visible motion or interpolation quality. No screenshots/readbacks/ETW/elevation; no complete-song claim.',conditions=conditions[0],seconds=elapsed,managed_sha256=hashlib.sha256(a.dll.read_bytes()).hexdigest(),records=records,active_windows=windows)
+        data=dict(scope='Visual diagnostics only, 2s sampled real-level glow execution counters. FrameGen OFF. Windows identify candidates, not visible motion or interpolation quality. No screenshots/readbacks/ETW/elevation; no complete-song claim.',requested_wall_window=[a.begin,a.seconds],conditions=conditions[0],seconds=elapsed,managed_sha256=hashlib.sha256(a.dll.read_bytes()).hexdigest(),records=records,active_windows=windows)
         (a.out/'summary.json').write_text(json.dumps(data,indent=2),encoding='utf8');print(json.dumps(dict(samples=len(records),active_windows=windows)),flush=True)
     finally:
         if sf.game_running():

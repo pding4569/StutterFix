@@ -1,0 +1,698 @@
+{
+  "scope": "86.0..89.0s, FX states[85.0, 90.0]. Step6 uncompressed triplets, same selected source/reference, not independent OFF or full-song quality. No performance inference. This is 4x with optional glow OFF/ON, not FrameGen OFF. Paired references are same-source counterfactuals, not independent OFF runs. Registration flags are retained; no quality pass or causal attribution to glow. Captures excluded from FPS/latency.",
+  "trials": [
+    {
+      "trial": "hello-off",
+      "visual": {
+        "frames": 172,
+        "accepted_triplets": 172,
+        "accepted_generated": 134,
+        "captured_generated": 134,
+        "captured_new_picture_generated": 99,
+        "accepted_adjacent_pairs": 169,
+        "adjacent_actual_length": {
+          "median": 2.7071489194122473,
+          "p95": 35.579435719232954,
+          "maximum": 107.49946827077439
+        },
+        "adjacent_reference_length": {
+          "median": 2.314514289735965,
+          "p95": 42.6920711879638,
+          "maximum": 107.49904010545889
+        },
+        "actual_reversals": 41,
+        "reference_reversals": 39,
+        "extra_reversals": 14,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 0,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.027688693200742326,
+        "added_length_max": 41.62043073534605,
+        "maximum_roi_fraction_rgb_error_above3": 0.9910973837209303,
+        "maximum_full_rgb_error": 255.0
+      },
+      "fx_states": [
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+        "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status="
+      ],
+      "glow_both_source_frames_confirmed": 0,
+      "effect_frame_identity_unknown": 172,
+      "ambiguous_song_seconds": [],
+      "new_picture_ratio_percent": 73.88059701492537,
+      "extra_reversal_rows": [
+        {
+          "index": 4,
+          "song_s": 86.078613171,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 11,
+          "song_s": 86.183444136,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 28,
+          "song_s": 86.483869814,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 29,
+          "song_s": 86.505307531,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 36,
+          "song_s": 86.623241889,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 37,
+          "song_s": 86.645826798,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 45,
+          "song_s": 86.786351746,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 51,
+          "song_s": 86.90122388,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 64,
+          "song_s": 87.125845414,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 96,
+          "song_s": 87.676707145,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 98,
+          "song_s": 87.714592895,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 99,
+          "song_s": 87.724896677,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 112,
+          "song_s": 87.957640153,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 142,
+          "song_s": 88.488462961,
+          "actual": true,
+          "reference": false
+        }
+      ],
+      "overshoot_rows": [],
+      "region_summary": {
+        "regions": 1206,
+        "accepted": 572,
+        "static_added": 0,
+        "opposite": 0,
+        "overshoot": 1
+      },
+      "region_flagged_rows": [
+        {
+          "index": 50,
+          "song_s": 86.879331193,
+          "region": [
+            1,
+            1
+          ],
+          "source": {
+            "dx": -3.9643229751978724,
+            "dy": -0.9788455260307594,
+            "length": 4.083380366254428,
+            "psr": 10.697757969481165,
+            "peak": 0.14097193105773786,
+            "texture_std": 33.68065643310547
+          },
+          "added": {
+            "dx": 2.9826665361872076,
+            "dy": -14.974510142203714,
+            "length": 15.26866902074483,
+            "psr": 10.214447010281367,
+            "peak": 0.1363029589419628,
+            "texture_std": 33.488731384277344
+          },
+          "accepted": true,
+          "static_added": false,
+          "opposite": false,
+          "overshoot": true
+        }
+      ],
+      "safety": {
+        "outputs": "76810",
+        "frame_begins": "23698",
+        "frame_ends": "23698",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "identity_scope": "Explicit completed FX frame keys, not nearest callback or current config. Both endpoints must have executed glow. Identity does not prove a visible pixel change.",
+      "build": {
+        "managed_sha256": "bf3235ac1baf2fca47e28052a5f915eb09a9a0c0151a3eab0a47a2221bba49f4",
+        "native_sha256": "fd8c18b84638c77c711b2cf0e81a97ca810124655afc6a4965ecda0ae0864ec8"
+      },
+      "source_camera_angle_range": [
+        -5.9e-05,
+        6.283029
+      ],
+      "source_camera_angle_unwrapped_range_rad": [
+        -0.10575130717958592,
+        0.12217300000000009
+      ],
+      "source_camera_angle_unwrapped_span_degrees": 13.059100849833607,
+      "source_camera_size_range": [
+        8.998593,
+        19.60677
+      ]
+    },
+    {
+      "trial": "hello-glow",
+      "visual": {
+        "frames": 172,
+        "accepted_triplets": 172,
+        "accepted_generated": 131,
+        "captured_generated": 131,
+        "captured_new_picture_generated": 95,
+        "accepted_adjacent_pairs": 169,
+        "adjacent_actual_length": {
+          "median": 2.874446356858182,
+          "p95": 35.50723631687563,
+          "maximum": 71.20558155817005
+        },
+        "adjacent_reference_length": {
+          "median": 2.9805635310720455,
+          "p95": 34.323016177159516,
+          "maximum": 90.93977776181256
+        },
+        "actual_reversals": 35,
+        "reference_reversals": 34,
+        "extra_reversals": 16,
+        "static_source_added_motion": 0,
+        "generated_opposite_source_direction": 0,
+        "generated_overshoot_quarter_pixel": 1,
+        "reprojection_metadata_complete": true,
+        "gate_reprojected_frames": 0,
+        "accepted_gate_reprojected": 0,
+        "added_length_median": 0.13684307600114762,
+        "added_length_max": 102.87298832237073,
+        "maximum_roi_fraction_rgb_error_above3": 0.9734940245478036,
+        "maximum_full_rgb_error": 255.0
+      },
+      "fx_states": [
+        "enabled=True ready=True failed=False frames=14914 reused=0 glow_rest=13212 custom_source_skipped=729 coordinator=True size=3440x1440 status=",
+        "enabled=True ready=True failed=False frames=15764 reused=0 glow_rest=13304 custom_source_skipped=729 coordinator=True size=3440x1440 status="
+      ],
+      "glow_both_source_frames_confirmed": 172,
+      "effect_frame_identity_unknown": 0,
+      "ambiguous_song_seconds": [],
+      "new_picture_ratio_percent": 72.51908396946565,
+      "extra_reversal_rows": [
+        {
+          "index": 11,
+          "song_s": 86.199064851,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 28,
+          "song_s": 86.496592285,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 29,
+          "song_s": 86.514648924,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 44,
+          "song_s": 86.772833005,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 46,
+          "song_s": 86.817677779,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 47,
+          "song_s": 86.830171173,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 49,
+          "song_s": 86.859843883,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 51,
+          "song_s": 86.898911432,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 52,
+          "song_s": 86.920245407,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 63,
+          "song_s": 87.104692494,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 64,
+          "song_s": 87.120642686,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 66,
+          "song_s": 87.15843783,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 114,
+          "song_s": 87.989615794,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 115,
+          "song_s": 88.01145441,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 116,
+          "song_s": 88.031996497,
+          "actual": true,
+          "reference": false
+        },
+        {
+          "index": 129,
+          "song_s": 88.263884049,
+          "actual": true,
+          "reference": false
+        }
+      ],
+      "overshoot_rows": [
+        {
+          "index": 51,
+          "song_s": 86.898911432,
+          "real": false,
+          "gate_reprojected": -2,
+          "block_phase": 0.632270003,
+          "new_picture_fraction_threshold": 0.015625,
+          "new_picture": true,
+          "next_fraction_rgb_error_above3": 0.0174956369982548,
+          "added": {
+            "dx": 2.1070985117413614,
+            "dy": -1.3501971590782142,
+            "length": 2.5025779721250525,
+            "psr": 18.07464939418899,
+            "peak": 0.07958714126058196,
+            "texture_std": 22.59419059753418
+          },
+          "source": {
+            "dx": 0.20165778848835392,
+            "dy": -2.021772947275119,
+            "length": 2.0318050383812754,
+            "psr": 18.34289336470189,
+            "peak": 0.08083197900641975,
+            "texture_std": 22.59419059753418
+          },
+          "accepted": true,
+          "maximum_rgb_error": 255.0,
+          "mean_rgb_error": 26.967538833618164,
+          "full_fraction_rgb_error_above3": 0.769022687609075,
+          "roi_fraction_rgb_error_above3": 0.762718023255814
+        }
+      ],
+      "region_summary": {
+        "regions": 1179,
+        "accepted": 639,
+        "static_added": 0,
+        "opposite": 1,
+        "overshoot": 8
+      },
+      "region_flagged_rows": [
+        {
+          "index": 16,
+          "song_s": 86.282722255,
+          "region": [
+            1,
+            2
+          ],
+          "source": {
+            "dx": -0.22023996818817482,
+            "dy": -0.014230221258119704,
+            "length": 0.22069921337554263,
+            "psr": 8.961020539601424,
+            "peak": 0.1172257673129479,
+            "texture_std": 69.42669677734375
+          },
+          "added": {
+            "dx": -12.08617322768247,
+            "dy": 0.17681111617070633,
+            "length": 12.08746646160187,
+            "psr": 8.618927964409675,
+            "peak": 0.11435423811357887,
+            "texture_std": 69.34494018554688
+          },
+          "accepted": true,
+          "static_added": false,
+          "opposite": false,
+          "overshoot": true
+        },
+        {
+          "index": 28,
+          "song_s": 86.496592285,
+          "region": [
+            2,
+            1
+          ],
+          "source": {
+            "dx": -7.016676131054446,
+            "dy": -0.9764900792219997,
+            "length": 7.084297904727622,
+            "psr": 14.403765357174038,
+            "peak": 0.18849624043346283,
+            "texture_std": 23.211383819580078
+          },
+          "added": {
+            "dx": -9.959777924312792,
+            "dy": 5.0416108780239695,
+            "length": 11.16310962711726,
+            "psr": 13.967586704395924,
+            "peak": 0.18178108533541354,
+            "texture_std": 22.789827346801758
+          },
+          "accepted": true,
+          "static_added": false,
+          "opposite": false,
+          "overshoot": true
+        },
+        {
+          "index": 49,
+          "song_s": 86.859843883,
+          "region": [
+            2,
+            0
+          ],
+          "source": {
+            "dx": 5.405933985815507,
+            "dy": 3.002317274131241,
+            "length": 6.183690748536991,
+            "psr": 11.11240278443595,
+            "peak": 0.1393362637367372,
+            "texture_std": 28.230548858642578
+          },
+          "added": {
+            "dx": 11.01523729578125,
+            "dy": -3.0369736642801555,
+            "length": 11.426226924050715,
+            "psr": 10.802919818592155,
+            "peak": 0.1391428803090084,
+            "texture_std": 28.230548858642578
+          },
+          "accepted": true,
+          "static_added": false,
+          "opposite": false,
+          "overshoot": true
+        },
+        {
+          "index": 51,
+          "song_s": 86.898911432,
+          "region": [
+            2,
+            0
+          ],
+          "source": {
+            "dx": 1.0322246245437108,
+            "dy": -1.0058544406605883,
+            "length": 1.4412601539316312,
+            "psr": 13.66467678736201,
+            "peak": 0.17575658812388575,
+            "texture_std": 23.932567596435547
+          },
+          "added": {
+            "dx": 4.909838255507368,
+            "dy": -0.7762290857895484,
+            "length": 4.970819176842919,
+            "psr": 12.026031432313939,
+            "peak": 0.15408724988441339,
+            "texture_std": 23.932567596435547
+          },
+          "accepted": true,
+          "static_added": false,
+          "opposite": false,
+          "overshoot": true
+        },
+        {
+          "index": 60,
+          "song_s": 87.045724785,
+          "region": [
+            2,
+            1
+          ],
+          "source": {
+            "dx": -2.9170898081738668,
+            "dy": 0.2729338089848533,
+            "length": 2.9298303386098703,
+            "psr": 9.370172975578779,
+            "peak": 0.11958074412441135,
+            "texture_std": 37.055381774902344
+          },
+          "added": {
+            "dx": -2.9530989768068934,
+            "dy": 2.210982487126067,
+            "length": 3.6890699539580556,
+            "psr": 9.715841919126861,
+            "peak": 0.12522631444426136,
+            "texture_std": 37.055381774902344
+          },
+          "accepted": true,
+          "static_added": false,
+          "opposite": false,
+          "overshoot": true
+        },
+        {
+          "index": 63,
+          "song_s": 87.104692494,
+          "region": [
+            1,
+            0
+          ],
+          "source": {
+            "dx": -7.89386973637073,
+            "dy": -0.3846041499840318,
+            "length": 7.9032335007245385,
+            "psr": 11.009879068442835,
+            "peak": 0.14157514857356485,
+            "texture_std": 29.842695236206055
+          },
+          "added": {
+            "dx": -4.979318052034408,
+            "dy": -8.786840376460658,
+            "length": 10.099612471016648,
+            "psr": 9.227609434410924,
+            "peak": 0.12132886180686622,
+            "texture_std": 29.5273380279541
+          },
+          "accepted": true,
+          "static_added": false,
+          "opposite": false,
+          "overshoot": true
+        },
+        {
+          "index": 65,
+          "song_s": 87.136668974,
+          "region": [
+            2,
+            1
+          ],
+          "source": {
+            "dx": -3.1159422592975674,
+            "dy": 0.9462268181201804,
+            "length": 3.256446123399905,
+            "psr": 10.68260949800762,
+            "peak": 0.1389772413263019,
+            "texture_std": 45.29452133178711
+          },
+          "added": {
+            "dx": -1.1120920885501553,
+            "dy": -12.898999842403374,
+            "length": 12.946850804258853,
+            "psr": 8.699502223048212,
+            "peak": 0.11455435989267451,
+            "texture_std": 45.18611526489258
+          },
+          "accepted": true,
+          "static_added": false,
+          "opposite": true,
+          "overshoot": true
+        },
+        {
+          "index": 77,
+          "song_s": 87.339818011,
+          "region": [
+            2,
+            1
+          ],
+          "source": {
+            "dx": -0.0814961865052262,
+            "dy": -0.1846606063357284,
+            "length": 0.20184441519936455,
+            "psr": 9.115762614535328,
+            "peak": 0.11969721982567645,
+            "texture_std": 34.818634033203125
+          },
+          "added": {
+            "dx": -0.04910715723080694,
+            "dy": -0.455428826750009,
+            "length": 0.4580686947676963,
+            "psr": 9.48971691316655,
+            "peak": 0.12444899805742221,
+            "texture_std": 34.6254997253418
+          },
+          "accepted": true,
+          "static_added": false,
+          "opposite": false,
+          "overshoot": true
+        }
+      ],
+      "safety": {
+        "outputs": "75550",
+        "frame_begins": "23052",
+        "frame_ends": "23052",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "identity_scope": "Explicit completed FX frame keys, not nearest callback or current config. Both endpoints must have executed glow. Identity does not prove a visible pixel change.",
+      "build": {
+        "managed_sha256": "bf3235ac1baf2fca47e28052a5f915eb09a9a0c0151a3eab0a47a2221bba49f4",
+        "native_sha256": "fd8c18b84638c77c711b2cf0e81a97ca810124655afc6a4965ecda0ae0864ec8"
+      },
+      "source_camera_angle_range": [
+        0.000233,
+        6.282945
+      ],
+      "source_camera_angle_unwrapped_range_rad": [
+        -0.10585030717958599,
+        0.12217300000000009
+      ],
+      "source_camera_angle_unwrapped_span_degrees": 13.064773132005406,
+      "source_camera_size_range": [
+        9.173438,
+        19.605272
+      ]
+    }
+  ],
+  "figure": {
+    "file": "hello-glow-motion86.png",
+    "selected_rows": [
+      {
+        "index": 9,
+        "song_s": 86.165947896,
+        "real": false,
+        "new_picture": true
+      },
+      {
+        "index": 10,
+        "song_s": 86.182589147,
+        "real": false,
+        "new_picture": true
+      },
+      {
+        "index": 11,
+        "song_s": 86.199064851,
+        "real": false,
+        "new_picture": true
+      }
+    ],
+    "flagged_reversal": {
+      "index": 11,
+      "song_s": 86.199064851,
+      "actual": true,
+      "reference": false
+    },
+    "source_file_sha256": [
+      {
+        "file": "reference-4x-009.ppm",
+        "sha256": "1a99a9232246ae0471ab6feeea4c952125b957845b45880cd93138a64717b61f"
+      },
+      {
+        "file": "clip-4x-009-generated.ppm",
+        "sha256": "0ba8dbe0bee4deb530b9f033ae0ee60252df1f0c36f100d3c57fe1e53db39ac2"
+      },
+      {
+        "file": "next-reference-4x-009.ppm",
+        "sha256": "494434bfe0ce085e87bfe28b1785b270972cb4c8975cbe9d12df6dfc5354b427"
+      },
+      {
+        "file": "reference-4x-010.ppm",
+        "sha256": "6683a58b2527dfde0b5b1d02c7364eca54464b0fcf6f31c28a815b3e92456735"
+      },
+      {
+        "file": "clip-4x-010-generated.ppm",
+        "sha256": "fa856fa2c8891b692b72d911ae0bbe09c3e52316dd46dce1430126ed164e4650"
+      },
+      {
+        "file": "next-reference-4x-010.ppm",
+        "sha256": "8a6218d8c8e4c7230c3eb8e6a4ac70538e85611c335869222c7e5f4c1ffb2755"
+      },
+      {
+        "file": "reference-4x-011.ppm",
+        "sha256": "db10f7c33bcb67d1ed80e1528735a3223a5be49a8c8a4e00ac97f52442a5c4f2"
+      },
+      {
+        "file": "clip-4x-011-generated.ppm",
+        "sha256": "07451d5e284272a2bf7fa8661038e5e57b5ac89e38ee413c997f2a3727f6cfd3"
+      },
+      {
+        "file": "next-reference-4x-011.ppm",
+        "sha256": "a247830df0f44d3ea361a49be0406e6b6df4d36a6fddf3b9fabccfb3da079da7"
+      }
+    ]
+  }
+}
