@@ -1,0 +1,408 @@
+{
+  "stage": "ch30-arche-baseline",
+  "variant": 1,
+  "order": [
+    0,
+    4,
+    0,
+    9,
+    0
+  ],
+  "runs": [
+    {
+      "mode": 0,
+      "real_fps": 345.0445849361106,
+      "mean_scene_ms": 2.898176188405225,
+      "loss_percent": 0.0,
+      "output_fps": null,
+      "new_picture_ratio": null,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": null,
+      "safety": null,
+      "presentmon": {
+        "scope": "Same 5..45s QPC window; ETW display events, not optical or input latency",
+        "rows": 13816,
+        "chains": {
+          "0x00000202C5BD0060": 13816
+        },
+        "selected_chain": "0x00000202C5BD0060",
+        "displayed_rows": 6594,
+        "display_changes": 6594,
+        "observed_display_fps": 164.8770731259153,
+        "display_interval_ms": {
+          "mean": 6.0651246473565665,
+          "p95": 6.083300046157092,
+          "maximum": 12.14190002065152
+        },
+        "present_to_display_ms": {
+          "mean": 8.338224840764331,
+          "p95": 9.7446,
+          "maximum": 13.0964
+        },
+        "present_call_ms": {
+          "mean": 0.0989298277359583,
+          "p95": 0.1498,
+          "maximum": 0.5615
+        },
+        "modes": {
+          "Composed: Flip": 13816
+        },
+        "sync_intervals": [
+          "0"
+        ],
+        "camera_ready_timeline_to_display_ms": {
+          "mean": 8.799710554736848,
+          "p95": 10.234199988190085,
+          "maximum": 17.818499996792525
+        },
+        "camera_ready_timeline_display_samples": 6594,
+        "camera_callback_frame_identity_confirmed": false,
+        "camera_latency_scope": "OFF/connection: nearest preceding CPU camera callback, frame identity UNCONFIRMED; Unity may enqueue ahead. Active: native frame IDs map the interpolated callback target. ETW display; not input latency or the age of every UI/fallback block. Do not subtract OFF from active as confirmed added latency."
+      },
+      "physical_display_measurement": "PresentMon"
+    },
+    {
+      "mode": 4,
+      "real_fps": 303.5050128521539,
+      "mean_scene_ms": 3.294838495755353,
+      "loss_percent": 12.038899869026565,
+      "output_fps": 1216.6297939637525,
+      "new_picture_ratio": 0.4985072173984497,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": {
+        "mean": 3.4735043217360926,
+        "p95": 4.3268,
+        "maximum": 12.0836
+      },
+      "safety": {
+        "outputs": "77739",
+        "frame_begins": "23560",
+        "frame_ends": "23560",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "presentmon": {
+        "scope": "Same 5..45s QPC window; ETW display events, not optical or input latency",
+        "rows": 48660,
+        "chains": {
+          "0x0000017E5738C010": 48660
+        },
+        "selected_chain": "0x0000017E5738C010",
+        "displayed_rows": 6599,
+        "display_changes": 6599,
+        "observed_display_fps": 165.00213572491077,
+        "display_interval_ms": {
+          "mean": 6.060527614425463,
+          "p95": 6.077199999708682,
+          "maximum": 6.2395999557338655
+        },
+        "present_to_display_ms": {
+          "mean": 7.151494347628429,
+          "p95": 7.9733,
+          "maximum": 10.3245
+        },
+        "present_call_ms": {
+          "mean": 0.0775211467324291,
+          "p95": 0.1551,
+          "maximum": 0.9437
+        },
+        "modes": {
+          "Composed: Flip": 48660
+        },
+        "sync_intervals": [
+          "0"
+        ],
+        "timeline_to_display_ms": {
+          "mean": 10.57485054537255,
+          "p95": 11.891600035596639,
+          "maximum": 22.245900006964803
+        },
+        "matched_native_presents": 48651,
+        "eligible_native_presents": 48659,
+        "displayed_timeline_samples": 6598,
+        "matching_error_ms": {
+          "mean": 0.001693687835385396,
+          "p95": 0.002900022082030773,
+          "maximum": 0.18939998699352145
+        },
+        "worst_timeline_display": {
+          "ms": 22.245900006964803,
+          "packet_song_s": 9.917386634,
+          "frame": 10586,
+          "real": 0
+        },
+        "camera_ready_timeline_to_display_ms": {
+          "mean": 11.26099037066076,
+          "p95": 12.666185561101884,
+          "maximum": 23.241154791321605
+        },
+        "camera_ready_timeline_display_samples": 6581,
+        "camera_callback_frame_identity_confirmed": true,
+        "camera_latency_scope": "OFF/connection: nearest preceding CPU camera callback, frame identity UNCONFIRMED; Unity may enqueue ahead. Active: native frame IDs map the interpolated callback target. ETW display; not input latency or the age of every UI/fallback block. Do not subtract OFF from active as confirmed added latency."
+      },
+      "physical_display_measurement": "PresentMon",
+      "generated_gpu_ms": {
+        "mean": 0.13850040052585452,
+        "p95": 0.202752,
+        "maximum": 0.784384
+      },
+      "missing_camera_callbacks": 12,
+      "output_worst_ms": 4.019999993033707,
+      "ownership": {
+        "world_copies": "0",
+        "world_retains": "18165",
+        "screen_copies": "18165",
+        "flushes": "18165",
+        "query_marks": "0",
+        "query_ready": "0",
+        "query_pending": "0"
+      },
+      "source_hold_ms": {
+        "mean": 0.6108500822909809,
+        "p95": 0.852,
+        "maximum": 2.8209
+      },
+      "bracket_off_fps": [
+        345.0445849361106,
+        348.01037719027545
+      ],
+      "bracket_loss_percent": [
+        12.038899869026565,
+        12.788516450987352
+      ]
+    },
+    {
+      "mode": 0,
+      "real_fps": 348.01037719027545,
+      "mean_scene_ms": 2.8734775326922155,
+      "loss_percent": -0.8595388490777234,
+      "output_fps": null,
+      "new_picture_ratio": null,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": null,
+      "safety": null,
+      "presentmon": {
+        "scope": "Same 5..45s QPC window; ETW display events, not optical or input latency",
+        "rows": 13935,
+        "chains": {
+          "0x0000021DCF89EBA0": 13935
+        },
+        "selected_chain": "0x0000021DCF89EBA0",
+        "displayed_rows": 6593,
+        "display_changes": 6593,
+        "observed_display_fps": 164.87711921190774,
+        "display_interval_ms": {
+          "mean": 6.065122952049845,
+          "p95": 6.083099986426532,
+          "maximum": 12.122799991630018
+        },
+        "present_to_display_ms": {
+          "mean": 8.322567617169726,
+          "p95": 9.7409,
+          "maximum": 12.4438
+        },
+        "present_call_ms": {
+          "mean": 0.09288089702188733,
+          "p95": 0.1178,
+          "maximum": 0.4443
+        },
+        "modes": {
+          "Composed: Flip": 13935
+        },
+        "sync_intervals": [
+          "0"
+        ],
+        "camera_ready_timeline_to_display_ms": {
+          "mean": 8.778814591049818,
+          "p95": 10.224200028460473,
+          "maximum": 23.46699999179691
+        },
+        "camera_ready_timeline_display_samples": 6593,
+        "camera_callback_frame_identity_confirmed": false,
+        "camera_latency_scope": "OFF/connection: nearest preceding CPU camera callback, frame identity UNCONFIRMED; Unity may enqueue ahead. Active: native frame IDs map the interpolated callback target. ETW display; not input latency or the age of every UI/fallback block. Do not subtract OFF from active as confirmed added latency."
+      },
+      "physical_display_measurement": "PresentMon"
+    },
+    {
+      "mode": 9,
+      "real_fps": 318.11523986873726,
+      "mean_scene_ms": 3.1435149111769256,
+      "loss_percent": 7.804598664360906,
+      "output_fps": 318.54119445308424,
+      "new_picture_ratio": 0.2857142857142857,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": {
+        "mean": 3.478490235478807,
+        "p95": 4.1304,
+        "maximum": 12.2123
+      },
+      "safety": {
+        "outputs": "24745",
+        "frame_begins": "24706",
+        "frame_ends": "24706",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "presentmon": {
+        "scope": "Same 5..45s QPC window; ETW display events, not optical or input latency",
+        "rows": 12739,
+        "chains": {
+          "0x000001D0466DB020": 12739
+        },
+        "selected_chain": "0x000001D0466DB020",
+        "displayed_rows": 6596,
+        "display_changes": 6596,
+        "observed_display_fps": 164.95210562462344,
+        "display_interval_ms": {
+          "mean": 6.062365777104234,
+          "p95": 6.079600076191127,
+          "maximum": 12.14909995906055
+        },
+        "present_to_display_ms": {
+          "mean": 8.353793526379624,
+          "p95": 9.908,
+          "maximum": 12.899
+        },
+        "present_call_ms": {
+          "mean": 0.07217210927074338,
+          "p95": 0.1037,
+          "maximum": 0.2919
+        },
+        "modes": {
+          "Composed: Flip": 12739
+        },
+        "sync_intervals": [
+          "0"
+        ],
+        "timeline_to_display_ms": {
+          "mean": 11.782329987842994,
+          "p95": 13.625999970827252,
+          "maximum": 23.227500030770898
+        },
+        "matched_native_presents": 12739,
+        "eligible_native_presents": 12739,
+        "displayed_timeline_samples": 6596,
+        "matching_error_ms": {
+          "mean": 0.0007256369061656346,
+          "p95": 0.00100000761449337,
+          "maximum": 0.09329995373263955
+        },
+        "worst_timeline_display": {
+          "ms": 23.227500030770898,
+          "packet_song_s": 10.807942026,
+          "frame": 11322,
+          "real": 1
+        },
+        "camera_ready_timeline_to_display_ms": {
+          "mean": 12.381065393937597,
+          "p95": 14.225499995518476,
+          "maximum": 23.85509997839108
+        },
+        "camera_ready_timeline_display_samples": 6584,
+        "camera_callback_frame_identity_confirmed": true,
+        "camera_latency_scope": "OFF/connection: nearest preceding CPU camera callback, frame identity UNCONFIRMED; Unity may enqueue ahead. Active: native frame IDs map the interpolated callback target. ETW display; not input latency or the age of every UI/fallback block. Do not subtract OFF from active as confirmed added latency."
+      },
+      "physical_display_measurement": "PresentMon",
+      "generated_gpu_ms": {
+        "mean": 0.1107382857142857,
+        "p95": 0.130048,
+        "maximum": 0.139264
+      },
+      "missing_camera_callbacks": 10,
+      "output_worst_ms": 6.675200012978166,
+      "ownership": {
+        "world_copies": "0",
+        "world_retains": "19111",
+        "screen_copies": "19111",
+        "flushes": "19111",
+        "query_marks": "0",
+        "query_ready": "0",
+        "query_pending": "0"
+      },
+      "source_hold_ms": {
+        "mean": 0.5822516688918558,
+        "p95": 0.769,
+        "maximum": 2.6459
+      },
+      "bracket_off_fps": [
+        348.01037719027545,
+        349.6294186935086
+      ],
+      "bracket_loss_percent": [
+        8.590300543018847,
+        9.01359472052815
+      ]
+    },
+    {
+      "mode": 0,
+      "real_fps": 349.6294186935086,
+      "mean_scene_ms": 2.860171217104067,
+      "loss_percent": -1.328765602348736,
+      "output_fps": null,
+      "new_picture_ratio": null,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": null,
+      "safety": null,
+      "presentmon": {
+        "scope": "Same 5..45s QPC window; ETW display events, not optical or input latency",
+        "rows": 13997,
+        "chains": {
+          "0x00000296DB5FA460": 13997
+        },
+        "selected_chain": "0x00000296DB5FA460",
+        "displayed_rows": 6595,
+        "display_changes": 6595,
+        "observed_display_fps": 164.90211813866085,
+        "display_interval_ms": {
+          "mean": 6.064203488029986,
+          "p95": 6.0804999666288495,
+          "maximum": 12.15660001616925
+        },
+        "present_to_display_ms": {
+          "mean": 8.322926050037907,
+          "p95": 9.7395,
+          "maximum": 12.2358
+        },
+        "present_call_ms": {
+          "mean": 0.09119819961420304,
+          "p95": 0.1163,
+          "maximum": 0.3433
+        },
+        "modes": {
+          "Composed: Flip": 13997
+        },
+        "sync_intervals": [
+          "0"
+        ],
+        "camera_ready_timeline_to_display_ms": {
+          "mean": 8.774151599521511,
+          "p95": 10.211599990725517,
+          "maximum": 20.498599973507226
+        },
+        "camera_ready_timeline_display_samples": 6595,
+        "camera_callback_frame_identity_confirmed": false,
+        "camera_latency_scope": "OFF/connection: nearest preceding CPU camera callback, frame identity UNCONFIRMED; Unity may enqueue ahead. Active: native frame IDs map the interpolated callback target. ETW display; not input latency or the age of every UI/fallback block. Do not subtract OFF from active as confirmed added latency."
+      },
+      "physical_display_measurement": "PresentMon"
+    }
+  ],
+  "scope": "Fresh immediately adjacent OFF controls for each active when bracket_loss_percent is present",
+  "conditions": [
+    "0",
+    "10000",
+    "FullScreenWindow",
+    "3440",
+    "1440",
+    "165",
+    "3440",
+    "1440"
+  ],
+  "build": {
+    "managed_sha256": "0965eb201865ec9132f03af9211d3f34bd75db0e1be25761fb627236ea888f94",
+    "native_sha256": "c2db7d568f8736e56014ca8c5c2708341d723dbb0bdea54579f18c9ca1cc8526"
+  }
+}

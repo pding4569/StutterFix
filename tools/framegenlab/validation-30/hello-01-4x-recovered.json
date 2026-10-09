@@ -1,0 +1,62 @@
+{
+  "agent_exit": "unconfirmed: expected stop warning aborted helper before status write",
+  "presentmon": {
+    "scope": "Same 5..45s QPC window; ETW display events, not optical or input latency",
+    "rows": 29717,
+    "chains": {
+      "0x000001A64B6D6B40": 29717
+    },
+    "selected_chain": "0x000001A64B6D6B40",
+    "displayed_rows": 6597,
+    "display_changes": 6597,
+    "observed_display_fps": 164.90229750123683,
+    "display_interval_ms": {
+      "mean": 6.064196892056641,
+      "p95": 6.078599952161312,
+      "maximum": 12.119799968786538
+    },
+    "present_to_display_ms": {
+      "mean": 8.303830316810672,
+      "p95": 10.4365,
+      "maximum": 16.3057
+    },
+    "present_call_ms": {
+      "mean": 0.09950158831645187,
+      "p95": 0.1843,
+      "maximum": 5.6131
+    },
+    "modes": {
+      "Composed: Flip": 29717
+    },
+    "sync_intervals": [
+      "0"
+    ],
+    "timeline_to_display_ms": {
+      "mean": 14.024608550649948,
+      "p95": 17.524799972306937,
+      "maximum": 27.85989997209981
+    },
+    "matched_native_presents": 29711,
+    "eligible_native_presents": 29717,
+    "displayed_timeline_samples": 6596,
+    "matching_error_ms": {
+      "mean": 0.00196492220813786,
+      "p95": 0.003200024366378784,
+      "maximum": 0.19720004638656974
+    },
+    "worst_timeline_display": {
+      "ms": 27.85989997209981,
+      "packet_song_s": 34.605934227,
+      "frame": 13784,
+      "real": 0
+    },
+    "camera_ready_timeline_to_display_ms": {
+      "mean": 15.274902807689505,
+      "p95": 19.10406834213063,
+      "maximum": 30.361699231434613
+    },
+    "camera_ready_timeline_display_samples": 6595,
+    "camera_callback_frame_identity_confirmed": true,
+    "camera_latency_scope": "OFF/connection: nearest preceding CPU camera callback, frame identity UNCONFIRMED; Unity may enqueue ahead. Active: native frame IDs map the interpolated callback target. ETW display; not input latency or the age of every UI/fallback block. Do not subtract OFF from active as confirmed added latency."
+  }
+}

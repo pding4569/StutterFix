@@ -1,0 +1,43 @@
+{
+  "agent_exit": "unconfirmed: agent ended before status write",
+  "presentmon": {
+    "scope": "Same 5..45s QPC window; ETW display events, not optical or input latency",
+    "rows": 7829,
+    "chains": {
+      "0x0000022CC53C2860": 7829
+    },
+    "selected_chain": "0x0000022CC53C2860",
+    "displayed_rows": 6437,
+    "display_changes": 6437,
+    "observed_display_fps": 160.9510846670935,
+    "display_interval_ms": {
+      "mean": 6.213067790554941,
+      "p95": 6.0866999556310475,
+      "maximum": 24.21830000821501
+    },
+    "present_to_display_ms": {
+      "mean": 10.880215830355755,
+      "p95": 13.6638,
+      "maximum": 15.9368
+    },
+    "present_call_ms": {
+      "mean": 0.10391313066802912,
+      "p95": 0.1364,
+      "maximum": 0.4995
+    },
+    "modes": {
+      "Composed: Flip": 7829
+    },
+    "sync_intervals": [
+      "0"
+    ],
+    "camera_ready_timeline_to_display_ms": {
+      "mean": 11.871798212749729,
+      "p95": 14.820099982898682,
+      "maximum": 17.500100017059594
+    },
+    "camera_ready_timeline_display_samples": 6437,
+    "camera_callback_frame_identity_confirmed": false,
+    "camera_latency_scope": "OFF/connection: nearest preceding CPU camera callback, frame identity UNCONFIRMED; Unity may enqueue ahead. Active: native frame IDs map the interpolated callback target. ETW display; not input latency or the age of every UI/fallback block. Do not subtract OFF from active as confirmed added latency."
+  }
+}
