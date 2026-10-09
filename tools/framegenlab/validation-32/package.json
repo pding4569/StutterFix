@@ -1,0 +1,30 @@
+{
+  "zip_sha256": "20a6a5c34078d6f0c3c096c59e7035881b2faae5ee070e4cdca5f3a056c2972f",
+  "managed_sha256": "c4b7de0d5efc21a42baa53b6cb27c0bbb146cc4ad3a9dc017acfdf3a2d076cbd",
+  "version": "2.5.3.2",
+  "entries": [
+    "StutterFix/Info.json",
+    "StutterFix/StutterFix.dll",
+    "StutterFix/effects-LICENSE.txt"
+  ],
+  "defaults": {
+    "framegen": false,
+    "refresh": true,
+    "rest": true,
+    "effects": false,
+    "fx_off_count": 18,
+    "monitor": -1
+  },
+  "saved_fixed_multiplier_preserved": true,
+  "missing_xml_defaults": true,
+  "measurement": false,
+  "autotest": false,
+  "resources": {
+    "StutterFix.sfnative.dll": "7a21489689fc979d54536ea79c0dc292e8eda5bb03ccd5c345a830a4dfa184c4",
+    "StutterFix.effects": "8ed7aeba7096a3523a491dcccfb804cb42205bdbcb6847615a941633dbea53a3",
+    "StutterFix.fsr": "8bbe41cf020b0ee0052833c8fda1b55764849bd8a72b86b8a5c95952deb760a0"
+  },
+  "stage": 1,
+  "variant": 3,
+  "errors": 0
+}

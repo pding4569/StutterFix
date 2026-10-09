@@ -371,6 +371,7 @@ namespace StutterFix
         {
             if (!installed) return;
             installed = false;
+            EndDisplayTransition();
             Try(FrameGen.Shutdown);
             Try(ScreenEffects.Shutdown);
             Try(GcControl.Shutdown);
@@ -550,34 +551,87 @@ namespace StutterFix
         private static void RestoreQueued() { if (origQueued >= 0) { QualitySettings.maxQueuedFrames = origQueued; origQueued = -1; } }
         // (실험 옵션, 설정 창 그래픽) 전체 화면일 때 독점 전체 화면(ExclusiveFullScreen). 창 모드면 건드리지 않는다.
         // 유니티는 끌 때 전체 화면 방식을 기억하므로, 모드가 바꿨다는 표시(ExpFsChanged)를 저장해 두고 옵션을 끄면 다음 실행에서도 전체 화면 창으로 되돌린다.
+        private static bool displayPending,displayApplied;
+        private static DisplayTransitionRunner displayRunner;
+        private static FullScreenMode displayTarget,displayIssuedTarget,displayObserved;
+        private static int displayFrame;
+        private static float displaySince,displayStableSince;
+        internal static string DescribeDisplay() => "mode="+Screen.fullScreenMode+" pending="+displayPending+" applied="+displayApplied+" window="+Screen.width+"x"+Screen.height;
         internal static void ApplyFullscreen()
         {
-            try
-            {
-                bool want = Config.ExpFullscreen == 1;
-                if (want && Screen.fullScreen && Screen.fullScreenMode != FullScreenMode.ExclusiveFullScreen)
-                {
-                    var r = Screen.currentResolution;
-                    Entry.Logger.Log("[화면 출력] 전체 화면 " + Screen.fullScreenMode + " -> ExclusiveFullScreen " + r.width + "x" + r.height);
-                    Screen.SetResolution(r.width, r.height, FullScreenMode.ExclusiveFullScreen, r.refreshRateRatio);
-                    if (!Config.ExpFsChanged) { Config.ExpFsChanged = true; try { Config.Save(Entry); } catch { } }
-                }
-                else if (!want) RestoreFullscreen();
-                else if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen && !Config.ExpFsChanged) { Config.ExpFsChanged = true; try { Config.Save(Entry); } catch { } }   // 지난번에 모드가 바꿔 둔 것이 유니티에 남아 있다
+            bool want=Config.ExpFullscreen==1;
+            if(want && Screen.fullScreen && (displayPending || Screen.fullScreenMode!=FullScreenMode.ExclusiveFullScreen))
+                RequestDisplay(FullScreenMode.ExclusiveFullScreen);
+            else if(!want) RestoreFullscreen();
+            else if(Screen.fullScreenMode==FullScreenMode.ExclusiveFullScreen && !Config.ExpFsChanged) {
+                Config.ExpFsChanged=true; try { Config.Save(Entry); } catch { }
             }
-            catch (Exception ex) { Entry.Logger.Log("[화면 출력] 전체 화면 실패: " + ex.Message); }
+        }
+        private static void RequestDisplay(FullScreenMode target)
+        {
+            if(displayPending) { displayTarget=target; return; }
+            // SetResolution is asynchronous. Quiesce the worker and release all
+            // backbuffer references BEFORE Unity starts its DXGI mode transition.
+            FrameGen.BeginDisplayChange();
+            displayPending=true;displayApplied=false;displayTarget=target;
+            displaySince=Time.realtimeSinceStartup;
+            var go=new GameObject("StutterFix.DisplayTransition") {hideFlags=HideFlags.HideAndDontSave};
+            UnityEngine.Object.DontDestroyOnLoad(go);displayRunner=go.AddComponent<DisplayTransitionRunner>();
+        }
+        private static void EndDisplayTransition()
+        {
+            displayPending=displayApplied=false;FrameGen.EndDisplayChange();
+            if(displayRunner!=null) {UnityEngine.Object.Destroy(displayRunner.gameObject);displayRunner=null;}
+        }
+        private sealed class DisplayTransitionRunner:MonoBehaviour
+        {
+            // A restore requested by OnToggle(false) must finish even when UMM
+            // stops calling this disabled mod's OnUpdate. Unload removes us.
+            private void Update() {TickFullscreen();}
+        }
+        private static void TickFullscreen()
+        {
+            if(!displayPending) return;
+            try {
+                float now=Time.realtimeSinceStartup;
+                if(!displayApplied) {
+                    if(!FrameGen.DisplayChangeReady) {
+                        if(now-displaySince>5) {
+                            Entry.Logger.Log("[화면 출력] 생성 출력 해제 확인 시간 초과; 화면 전환 취소");
+                            EndDisplayTransition();
+                        }
+                        return;
+                    }
+                    var r=Screen.currentResolution;
+                    Entry.Logger.Log("[화면 출력] 생성 출력 해제 확인; "+Screen.fullScreenMode+" -> "+displayTarget+" "+r.width+"x"+r.height);
+                    displayIssuedTarget=displayTarget;
+                    Screen.SetResolution(r.width,r.height,displayIssuedTarget,r.refreshRateRatio);
+                    Config.ExpFsChanged=displayTarget==FullScreenMode.ExclusiveFullScreen;
+                    try { Config.Save(Entry); } catch { }
+                    displayApplied=true;displayFrame=Time.frameCount;displaySince=now;
+                    displayObserved=Screen.fullScreenMode;displayStableSince=now;
+                    return;
+                }
+                if(displayObserved!=Screen.fullScreenMode) {displayObserved=Screen.fullScreenMode;displayStableSince=now;}
+                // Allow Unity's render thread/window mode hand-off to settle;
+                // do not install a new Present connection in that same frame.
+                if(Time.frameCount-displayFrame<8 || now-displayStableSince<.25f) return;
+                if(displayObserved!=displayIssuedTarget && now-displaySince<1f) return;
+                Entry.Logger.Log("[화면 출력] 전환 완료: 요청="+displayIssuedTarget+" 실제="+displayObserved);
+                if(displayTarget!=displayIssuedTarget) {displayApplied=false;displaySince=now;return;}
+                EndDisplayTransition();
+            } catch(Exception ex) {
+                EndDisplayTransition();
+                Entry.Logger.Log("[화면 출력] 전환 실패: "+ex.Message);
+            }
         }
         private static void RestoreFullscreen()
         {
-            if (!Config.ExpFsChanged) return;
-            Config.ExpFsChanged = false;
-            try { Config.Save(Entry); } catch { }
-            if (Screen.fullScreenMode != FullScreenMode.ExclusiveFullScreen) return;
-            var r = Screen.currentResolution;
-            Screen.SetResolution(r.width, r.height, FullScreenMode.FullScreenWindow, r.refreshRateRatio);
-            Entry.Logger.Log("[화면 출력] 독점 전체 화면 -> 전체 화면 창 (되돌림)");
+            if(!Config.ExpFsChanged && !displayPending) return;
+            if(Screen.fullScreenMode==FullScreenMode.ExclusiveFullScreen || displayPending)
+                RequestDisplay(FullScreenMode.FullScreenWindow);
+            else {Config.ExpFsChanged=false;try {Config.Save(Entry);}catch {}}
         }
-
         private static void ApplyToggles()
         {
             ApplyQueued();

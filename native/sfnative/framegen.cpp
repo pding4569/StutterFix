@@ -13,6 +13,12 @@ static ResizeFn originalResize=nullptr;
 static void** presentCell=nullptr;
 static void** resizeCell=nullptr;
 static HWND dummy=nullptr;
+// Discovery modifies the shared table for one capture only. Keeping it patched
+// lets an overlay re-hook our entry as its original and recurse on focus/mode changes.
+static PresentFn discoveryPresent=nullptr;
+static ResizeFn discoveryResize=nullptr;
+static void** gameTable=nullptr;
+static std::array<void*,41> privateTable{};
 static std::wstring directory;
 static Packet packet{};
 static bool havePacket=false;
@@ -24,17 +30,41 @@ static bool diagnostics=false;
 static unsigned long long syncRequested=0, syncPreserved=0, syncForcedZero=0;
 static void patch(void** cell,void* value) { DWORD old=0; if(!VirtualProtect(cell,sizeof(void*),PAGE_EXECUTE_READWRITE,&old)) throw std::runtime_error("vtable protect"); InterlockedExchangePointer(cell,value); DWORD unused; VirtualProtect(cell,sizeof(void*),old,&unused); }
 
+static HRESULT __stdcall present(IDXGISwapChain*,UINT,UINT);
+static HRESULT __stdcall resize(IDXGISwapChain*,UINT,UINT,UINT,DXGI_FORMAT,UINT);
+static void restoreDiscovery() {
+    if(presentCell && *presentCell==reinterpret_cast<void*>(present)) patch(presentCell,reinterpret_cast<void*>(discoveryPresent));
+    if(resizeCell && *resizeCell==reinterpret_cast<void*>(resize)) patch(resizeCell,reinterpret_cast<void*>(discoveryResize));
+}
+static void attachGameTable(IDXGISwapChain* self) {
+    restoreDiscovery();
+    gameTable=*reinterpret_cast<void***>(self);
+    unsigned size=18;
+    ComPtr<IDXGISwapChain1> one;ComPtr<IDXGISwapChain2> two;ComPtr<IDXGISwapChain3> three;ComPtr<IDXGISwapChain4> four;
+    if(SUCCEEDED(self->QueryInterface(IID_PPV_ARGS(&four))) && four.Get()==self) size=41;
+    else if(SUCCEEDED(self->QueryInterface(IID_PPV_ARGS(&three))) && three.Get()==self) size=40;
+    else if(SUCCEEDED(self->QueryInterface(IID_PPV_ARGS(&two))) && two.Get()==self) size=36;
+    else if(SUCCEEDED(self->QueryInterface(IID_PPV_ARGS(&one))) && one.Get()==self) size=29;
+    std::copy_n(gameTable,size,privateTable.begin());
+    originalPresent=reinterpret_cast<PresentFn>(gameTable[8]);originalResize=reinterpret_cast<ResizeFn>(gameTable[13]);
+    privateTable[8]=reinterpret_cast<void*>(present);privateTable[13]=reinterpret_cast<void*>(resize);
+    InterlockedExchangePointer(reinterpret_cast<void**>(self),privateTable.data());
+}
 static HRESULT __stdcall present(IDXGISwapChain* self,UINT sync,UINT flags) {
     if(!game && dummy) {
         DXGI_SWAP_CHAIN_DESC desc{}; DWORD pid=0;
         if(SUCCEEDED(self->GetDesc(&desc)) && desc.OutputWindow!=dummy && GetWindowThreadProcessId(desc.OutputWindow,&pid) && pid==GetCurrentProcessId() && IsWindowVisible(desc.OutputWindow)) {
             game=self;
-            try {
-                ComPtr<ID3D11Device> d; check(self->GetDevice(IID_PPV_ARGS(&d)));
-                engine=std::make_unique<Output>(); engine->start(d.Get(),self,directory,desc.BufferDesc.Width,desc.BufferDesc.Height,diagnostics);
-                status=1;
-            } catch(...) { failure=1; status=-1; }
+            try {attachGameTable(self);} catch(...) {failure=1;status=-1;}
         }
+    }
+    if(self==game.Get() && !engine && status==0) {
+        try {
+            DXGI_SWAP_CHAIN_DESC desc{};check(self->GetDesc(&desc));
+            ComPtr<ID3D11Device> d;check(self->GetDevice(IID_PPV_ARGS(&d)));
+            engine=std::make_unique<Output>();engine->start(d.Get(),self,directory,desc.BufferDesc.Width,desc.BufferDesc.Height,diagnostics);
+            status=1;
+        } catch(...) {failure=1;status=-1;}
     }
     // Calls the ordinary captured Present chain, including Steam. No byte/RVA checks or raw DXGI dispatch.
     if(self!=game.Get() || !engine) return originalPresent(self,sync,flags);
@@ -76,11 +106,19 @@ static void finish() {
     }
 }
 static HRESULT __stdcall resize(IDXGISwapChain* self,UINT count,UINT w,UINT h,DXGI_FORMAT format,UINT flags) {
-    if(self==game.Get() && engine) {
+    const bool ours=self==game.Get() && engine;
+    if(ours) {
         char detail[180]; sprintf_s(detail,"ResizeBuffers requested count=%u width=%u height=%u format=%u flags=%u qpc=%.9f",count,w,h,unsigned(format),flags,now()); engine->trace(detail);
-        finish(); engine.reset(); status=-1; failure=2;
+        // The real swapchain owns these buffers. Release every old view/history
+        // before forwarding Unity's resize; never publish a pair across it.
+        finish(); engine.reset(); status=0;
     }
-    return originalResize(self,count,w,h,format,flags); // No resize/recovery workaround in this experiment.
+    HRESULT hr=originalResize(self,count,w,h,format,flags);
+    if(ours) {
+        if(SUCCEEDED(hr)) {failure=0;} // Next real Present recreates output/history; keep this instance connection.
+        else {status=-1;failure=2;} // Failed resize is still a failure; no retry or alternate swapchain.
+    }
+    return hr;
 }
 static void discover() {
     WNDCLASSW wc{}; wc.lpfnWndProc=DefWindowProcW; wc.hInstance=GetModuleHandleW(nullptr); wc.lpszClassName=L"StutterFix.OutsideDiscovery";
@@ -90,7 +128,8 @@ static void discover() {
     ComPtr<IDXGISwapChain> temporary; ComPtr<ID3D11Device> d; ComPtr<ID3D11DeviceContext> c;
     check(D3D11CreateDeviceAndSwapChain(nullptr,D3D_DRIVER_TYPE_HARDWARE,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&desc,&temporary,&d,nullptr,&c));
     presentCell=*reinterpret_cast<void***>(temporary.Get())+8; resizeCell=*reinterpret_cast<void***>(temporary.Get())+13;
-    originalPresent=reinterpret_cast<PresentFn>(*presentCell); originalResize=reinterpret_cast<ResizeFn>(*resizeCell);
+    discoveryPresent=reinterpret_cast<PresentFn>(*presentCell); discoveryResize=reinterpret_cast<ResizeFn>(*resizeCell);
+    originalPresent=discoveryPresent;originalResize=discoveryResize;
     patch(resizeCell,reinterpret_cast<void*>(resize)); patch(presentCell,reinterpret_cast<void*>(present));
 }
 static void __stdcall event(int id,void* data) {
@@ -107,9 +146,10 @@ static void __stdcall event(int id,void* data) {
         if(id==4) { finish(); status=-2; return; }
         if(id==3) {
             finish();
-            if(presentCell && *presentCell==reinterpret_cast<void*>(present)) patch(presentCell,reinterpret_cast<void*>(originalPresent));
-            if(resizeCell && *resizeCell==reinterpret_cast<void*>(resize)) patch(resizeCell,reinterpret_cast<void*>(originalResize));
-            engine.reset(); game.Reset(); presentCell=resizeCell=nullptr;
+            restoreDiscovery();
+            if(game && gameTable && *reinterpret_cast<void***>(game.Get())==privateTable.data())
+                InterlockedExchangePointer(reinterpret_cast<void**>(game.Get()),gameTable);
+            engine.reset(); game.Reset(); gameTable=nullptr;presentCell=resizeCell=nullptr;
             if(dummy) { DestroyWindow(dummy); dummy=nullptr; } UnregisterClassW(L"StutterFix.OutsideDiscovery",GetModuleHandleW(nullptr));
             status=0; stopped=1; installed=0;
         }

@@ -12,7 +12,7 @@ namespace StutterFix
     // No runtime type initialization, camera hooks, native setup or buffers while OFF.
     internal static class FrameGen
     {
-        private static bool active,research,failed,quitting;
+        private static bool active,research,failed,quitting,displayChanging;
         internal static bool RuntimeInitialized;
         internal static int CounterEpoch;
         internal static bool Active => active;
@@ -35,7 +35,8 @@ namespace StutterFix
         }
         internal static void Tick()
         {
-            if(quitting) return;
+            if(RuntimeInitialized && !FrameGenRuntime.TryCompleteUninstall()) return;
+            if(quitting || displayChanging) return;
             bool requested=Main.Config.FrameGenOutside>=2 && Main.Config.FrameGenOutside<=8;
             if(!requested && !research) { if(active) Shutdown(); failed=false; Status=""; return; }
             if(!research && HalfRender.Enabled) { if(active) Shutdown(); return; }
@@ -61,6 +62,9 @@ namespace StutterFix
             active=false;
             FrameGenRuntime.Uninstall();
         }
+        internal static void BeginDisplayChange() { displayChanging=true; Shutdown(); }
+        internal static bool DisplayChangeReady => !RuntimeInitialized || FrameGenRuntime.TryCompleteUninstall();
+        internal static void EndDisplayChange() { displayChanging=false; }
         internal static void Quit() { quitting=true; Shutdown(); }
         internal static void InstallResearch() { research=true; failed=false; Tick(); }
         internal static void FinishResearch() { quitting=true; if(active) FrameGenRuntime.Finish(); }
@@ -149,7 +153,7 @@ namespace StutterFix
         private static IntPtr callback;
         private static IntPtr[] packets;
         private static int packetIndex,oldMode=-1;
-        private static bool finished,failed;
+        private static bool finished,failed,uninstallPending;
         private static Camera worldCamera,trackedCamera;
         private static RenderTexture scene,world;
         private static IntPtr texture;
@@ -421,17 +425,30 @@ namespace StutterFix
             Issue(4,IntPtr.Zero); GL.Flush(); if(Diagnostics) Log("finish; missing real scenes="+missingScenes+" native status="+sf_framegen_status());
         }
         internal static void Uninstall() {
-            if(callback==IntPtr.Zero) return; Finish();
-            if(runner!=null) { runner.StopAllCoroutines(); UnityEngine.Object.Destroy(runner.gameObject); runner=null; }
-            Issue(3,IntPtr.Zero); GL.Flush(); var wait=System.Diagnostics.Stopwatch.StartNew(); while(sf_framegen_stopped()==0 && wait.ElapsedMilliseconds<300) System.Threading.Thread.Sleep(1);
-            if(sf_framegen_stopped()!=0) { foreach(var p in packets) Marshal.FreeHGlobal(p); FreeTextures();
+            if(callback==IntPtr.Zero || uninstallPending) return; Finish();
+            if(runner!=null) runner.StopAllCoroutines();
+            // Never wait on the main/window thread: worker Present can need its
+            // message pump. Retain packets/RTs until the render-event ACK arrives.
+            uninstallPending=true;
+            Issue(3,IntPtr.Zero); GL.Flush();
+            if(!TryCompleteUninstall() && runner!=null) runner.StartCoroutine(Retire());
+        }
+        private static IEnumerator Retire() {
+            while(!TryCompleteUninstall()) yield return null;
+        }
+        internal static bool TryCompleteUninstall() {
+            if(!uninstallPending) return true;
+            if(sf_framegen_stopped()==0) return false;
+            foreach(var p in packets) Marshal.FreeHGlobal(p);
+            FreeTextures();
 #if FRAMEGEN_RESEARCH
-                FrameGenScreenBorder.Release();
+            FrameGenScreenBorder.Release();
 #endif
-            }
-            else Log("shutdown pending; retaining packets and RTs to avoid in-flight use-after-free");
             trackedCamera=null; renderedFrame=finalBeginFrame=-1;
             packets=null; callback=IntPtr.Zero; command.Release(); command=null;
+            uninstallPending=false;
+            if(runner!=null) { UnityEngine.Object.Destroy(runner.gameObject); runner=null; }
+            return true;
         }
         private static void Log(string message) { Main.Entry.Logger.Log("[프레임생성 바깥] "+message); }
         [DefaultExecutionOrder(32000)] private sealed class Runner:MonoBehaviour { private void LateUpdate(){try { Late(); } catch(Exception ex) { failed=true; Log("중단: "+ex.Message); }} private void OnApplicationQuit(){FrameGen.Quit();} }

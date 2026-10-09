@@ -1,0 +1,157 @@
+{
+  "before_second_chance_code": "0xc00000fd",
+  "before_module": "gameoverlayrenderer64.dll",
+  "before_stack_modules": [
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll",
+    "sfnative.dll",
+    "gameoverlayrenderer64.dll",
+    "gameoverlayrenderer64.dll"
+  ],
+  "after_minimize_restore": true,
+  "after_second_chance_exceptions": 0,
+  "after_full_song": [
+    {
+      "full_song": true,
+      "won": true,
+      "map": "hello",
+      "mode": "4x",
+      "startup_exclusive": true,
+      "screen_states": [
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ]
+      ],
+      "framegen_states": [
+        [
+          "True",
+          "1",
+          "1215",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "4356",
+          "551",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "26344",
+          "65786",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "26345",
+          "65786",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "517",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "338",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "340",
+          "0",
+          "True",
+          ""
+        ]
+      ],
+      "transitions": [
+        "생성 출력 해제 확인; ExclusiveFullScreen -> FullScreenWindow 3440x1440",
+        "전환 완료: 요청=FullScreenWindow 실제=FullScreenWindow",
+        "생성 출력 해제 확인; FullScreenWindow -> ExclusiveFullScreen 3440x1440",
+        "전환 완료: 요청=ExclusiveFullScreen 실제=ExclusiveFullScreen"
+      ],
+      "conditions": [
+        "수직동기 0, 목표 FPS 10000, ExclusiveFullScreen, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2"
+      ],
+      "normal_exit": true,
+      "fatal_lines": [],
+      "sf_errors": 0,
+      "managed_sha256": "84bc7f41d8825e12cc19995748aaf3ba009c3078ba1ee0550779e68b91097939",
+      "native_sha256": "88e2ba27555fa9b93ab141d1fb2114bf9e595913c66f3dc37569ae2f9eb161bc"
+    }
+  ],
+  "temporary_cold_native_trace": true,
+  "performance_sample": false
+}

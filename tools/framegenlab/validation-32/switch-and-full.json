@@ -1,0 +1,600 @@
+{
+  "quick": [
+    {
+      "full_song": false,
+      "won": false,
+      "map": "hello",
+      "mode": "4x",
+      "startup_exclusive": false,
+      "screen_states": [
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ]
+      ],
+      "framegen_states": [
+        [
+          "True",
+          "1",
+          "1004",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "6936",
+          "8176",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "7788",
+          "10756",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "503",
+          "1504",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "318",
+          "946",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "1039",
+          "3126",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "1040",
+          "3129",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "626",
+          "1886",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "234",
+          "694",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "236",
+          "698",
+          "True",
+          ""
+        ]
+      ],
+      "transitions": [
+        "생성 출력 해제 확인; ExclusiveFullScreen -> FullScreenWindow 3440x1440",
+        "전환 완료: 요청=FullScreenWindow 실제=FullScreenWindow",
+        "생성 출력 해제 확인; FullScreenWindow -> FullScreenWindow 3440x1440",
+        "전환 완료: 요청=FullScreenWindow 실제=FullScreenWindow",
+        "생성 출력 해제 확인; FullScreenWindow -> ExclusiveFullScreen 3440x1440",
+        "전환 완료: 요청=ExclusiveFullScreen 실제=ExclusiveFullScreen",
+        "생성 출력 해제 확인; ExclusiveFullScreen -> FullScreenWindow 3440x1440",
+        "전환 완료: 요청=FullScreenWindow 실제=FullScreenWindow"
+      ],
+      "conditions": [
+        "수직동기 0, 목표 FPS 10000, ExclusiveFullScreen, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2"
+      ],
+      "normal_exit": true,
+      "fatal_lines": [],
+      "sf_errors": 0,
+      "managed_sha256": "d804aa363759a0c96303ba2165984467b2baa4a0ab83cadf5a7ed5739c1c0faa",
+      "native_sha256": "7a21489689fc979d54536ea79c0dc292e8eda5bb03ccd5c345a830a4dfa184c4"
+    },
+    {
+      "full_song": false,
+      "won": false,
+      "map": "arche",
+      "mode": "refresh",
+      "startup_exclusive": true,
+      "screen_states": [
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ]
+      ],
+      "framegen_states": [
+        [
+          "True",
+          "1",
+          "1252",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "8787",
+          "32",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "773",
+          "7",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "2041",
+          "1",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "3677",
+          "1",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "3678",
+          "1",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "1115",
+          "2",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "494",
+          "1",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "495",
+          "1",
+          "True",
+          ""
+        ]
+      ],
+      "transitions": [
+        "생성 출력 해제 확인; FullScreenWindow -> ExclusiveFullScreen 3440x1440",
+        "전환 완료: 요청=ExclusiveFullScreen 실제=ExclusiveFullScreen",
+        "생성 출력 해제 확인; ExclusiveFullScreen -> FullScreenWindow 3440x1440",
+        "전환 완료: 요청=FullScreenWindow 실제=FullScreenWindow",
+        "생성 출력 해제 확인; FullScreenWindow -> ExclusiveFullScreen 3440x1440",
+        "전환 완료: 요청=ExclusiveFullScreen 실제=ExclusiveFullScreen",
+        "생성 출력 해제 확인; ExclusiveFullScreen -> FullScreenWindow 3440x1440",
+        "전환 완료: 요청=FullScreenWindow 실제=FullScreenWindow",
+        "생성 출력 해제 확인; FullScreenWindow -> ExclusiveFullScreen 3440x1440",
+        "전환 완료: 요청=ExclusiveFullScreen 실제=ExclusiveFullScreen"
+      ],
+      "conditions": [
+        "수직동기 0, 목표 FPS 10000, ExclusiveFullScreen, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2"
+      ],
+      "normal_exit": true,
+      "fatal_lines": [],
+      "sf_errors": 0,
+      "managed_sha256": "d804aa363759a0c96303ba2165984467b2baa4a0ab83cadf5a7ed5739c1c0faa",
+      "native_sha256": "7a21489689fc979d54536ea79c0dc292e8eda5bb03ccd5c345a830a4dfa184c4"
+    }
+  ],
+  "full": [
+    {
+      "full_song": true,
+      "won": true,
+      "map": "hello",
+      "mode": "4x",
+      "startup_exclusive": true,
+      "screen_states": [
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ]
+      ],
+      "framegen_states": [
+        [
+          "True",
+          "1",
+          "1431",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "7069",
+          "8089",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "33183",
+          "85486",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "33184",
+          "85486",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "530",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "347",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "349",
+          "0",
+          "True",
+          ""
+        ]
+      ],
+      "transitions": [
+        "생성 출력 해제 확인; ExclusiveFullScreen -> FullScreenWindow 3440x1440",
+        "전환 완료: 요청=FullScreenWindow 실제=FullScreenWindow",
+        "생성 출력 해제 확인; FullScreenWindow -> ExclusiveFullScreen 3440x1440",
+        "전환 완료: 요청=ExclusiveFullScreen 실제=ExclusiveFullScreen"
+      ],
+      "conditions": [
+        "수직동기 0, 목표 FPS 10000, ExclusiveFullScreen, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2"
+      ],
+      "normal_exit": true,
+      "fatal_lines": [],
+      "sf_errors": 0,
+      "managed_sha256": "d804aa363759a0c96303ba2165984467b2baa4a0ab83cadf5a7ed5739c1c0faa",
+      "native_sha256": "7a21489689fc979d54536ea79c0dc292e8eda5bb03ccd5c345a830a4dfa184c4"
+    },
+    {
+      "full_song": true,
+      "won": true,
+      "map": "arche",
+      "mode": "refresh",
+      "startup_exclusive": true,
+      "screen_states": [
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "ExclusiveFullScreen",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ],
+        [
+          "FullScreenWindow",
+          "False",
+          "False",
+          "3440x1440"
+        ]
+      ],
+      "framegen_states": [
+        [
+          "True",
+          "1",
+          "1333",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "9197",
+          "33",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "95165",
+          "5109",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "95166",
+          "5109",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "899",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "True",
+          "1",
+          "478",
+          "0",
+          "True",
+          ""
+        ],
+        [
+          "False",
+          "0",
+          "479",
+          "0",
+          "True",
+          ""
+        ]
+      ],
+      "transitions": [
+        "생성 출력 해제 확인; ExclusiveFullScreen -> FullScreenWindow 3440x1440",
+        "전환 완료: 요청=FullScreenWindow 실제=FullScreenWindow",
+        "생성 출력 해제 확인; FullScreenWindow -> ExclusiveFullScreen 3440x1440",
+        "전환 완료: 요청=ExclusiveFullScreen 실제=ExclusiveFullScreen"
+      ],
+      "conditions": [
+        "수직동기 0, 목표 FPS 10000, ExclusiveFullScreen, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2"
+      ],
+      "normal_exit": true,
+      "fatal_lines": [],
+      "sf_errors": 0,
+      "managed_sha256": "d804aa363759a0c96303ba2165984467b2baa4a0ab83cadf5a7ed5739c1c0faa",
+      "native_sha256": "7a21489689fc979d54536ea79c0dc292e8eda5bb03ccd5c345a830a4dfa184c4"
+    }
+  ],
+  "off": {
+    "startup_off_initialization": 0,
+    "off_hooks": 0,
+    "off_sources": 0,
+    "off_generated": 0,
+    "exclusive_on_off": true,
+    "normal_exit": true,
+    "sf_errors": 0
+  },
+  "installed": {
+    "version": "2.5.3.2",
+    "actual_zip_dll": true,
+    "managed_sha256": "c4b7de0d5efc21a42baa53b6cb27c0bbb146cc4ad3a9dc017acfdf3a2d076cbd",
+    "native_sha256": "7a21489689fc979d54536ea79c0dc292e8eda5bb03ccd5c345a830a4dfa184c4",
+    "settings_bytes_preserved": true,
+    "settings_sha256": "8d14c8a5d351b14c2c54c324e883d510a6ba586527f9ca10ac08411c492443d2",
+    "normal_startup": true,
+    "normal_actual_mode": "확인 안 됨",
+    "normal_window_close": true,
+    "autotest": false,
+    "sf_errors": 0
+  }
+}

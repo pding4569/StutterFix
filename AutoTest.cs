@@ -830,6 +830,7 @@ namespace StutterFix
                     return true;
                 case "fgstate":
                     Log("[프레임상태] " + FrameGen.Describe());
+                    Log("[화면상태] " + Main.DescribeDisplay());
                     Log("[프레임저장상태] " + FrameGen.DescribeStorage());
                     Log("[프레임시각] frame=" + Time.frameCount + " ticks=" + System.Diagnostics.Stopwatch.GetTimestamp() + " hz=" + System.Diagnostics.Stopwatch.Frequency);
                     return true;
