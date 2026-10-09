@@ -835,7 +835,13 @@ namespace StutterFix
                 case "shaders":
                     ScreenEffects.Inventory();return true;
                 case "fxstate":
-                    Log("[화면효과상태] "+ScreenEffects.Describe());return true;
+                    Log("[화면효과상태] "+ScreenEffects.Describe());
+#if DEV || AUTOTEST
+                    // Explicit diagnostic only; no new per-frame work. The effect
+                    // belongs to its recorded frame, not automatically to this one.
+                    Log(FormattableString.Invariant($"[화면효과시각] song_s={(scrConductor.instance!=null?scrConductor.instance.songposition_minusi:double.NaN):R} unity_frame={Time.frameCount} effect_frame={ScreenEffects.LastFrame} glow={ScreenEffects.LastGlow}"));
+#endif
+                    return true;
 #if DEV || AUTOTEST
                 case "fxcapture":
                     ScreenEffects.Capture();return true;

@@ -1,0 +1,72 @@
+{
+  "scope": "Incremental Neon cost at fixed4x, not total FrameGen loss. Separate fresh games, adjacent OFF controls, general Unity frame/QPC window. Exact native song window, physical display FPS and display latency unconfirmed.",
+  "runs": [
+    {
+      "profile": "off-before",
+      "conditions": "\uc218\uc9c1\ub3d9\uae30 0, \ubaa9\ud45c FPS 10000, FullScreenWindow, 3440x1440 165Hz, \ucc3d 3440x1440, \uc55e\uc11c \uc900\ube44\ud558\ub294 \ud504\ub808\uc784 2",
+      "sample": {
+        "seconds": 35.0148979,
+        "unity_frames": 6499,
+        "real_fps": 185.60670999414793,
+        "submitted": 26228,
+        "output_fps": 749.0525911257905,
+        "output_over_source": 4.035697799661486,
+        "off_output_inferred_from_unity": false
+      },
+      "managed_sha256": "edb1e6557a2c720764583e3213c6356e81855f68a4dfd9f4c4a388e2109863ec",
+      "native_sha256": "a793190f76ee0286e6529ceaf2041be0aa5a480c5543ebbe47729bd35299c9a6",
+      "errors": 0,
+      "effect_prepared": false,
+      "effect_execution_fraction": "not measured",
+      "reported_hitches": []
+    },
+    {
+      "profile": "neon",
+      "conditions": "\uc218\uc9c1\ub3d9\uae30 0, \ubaa9\ud45c FPS 10000, FullScreenWindow, 3440x1440 165Hz, \ucc3d 3440x1440, \uc55e\uc11c \uc900\ube44\ud558\ub294 \ud504\ub808\uc784 2",
+      "sample": {
+        "seconds": 35.0141515,
+        "unity_frames": 6051,
+        "real_fps": 172.81583990404567,
+        "submitted": 24659,
+        "output_fps": 704.2581054691559,
+        "output_over_source": 4.075194182779706,
+        "off_output_inferred_from_unity": false
+      },
+      "managed_sha256": "edb1e6557a2c720764583e3213c6356e81855f68a4dfd9f4c4a388e2109863ec",
+      "native_sha256": "a793190f76ee0286e6529ceaf2041be0aa5a480c5543ebbe47729bd35299c9a6",
+      "errors": 0,
+      "effect_prepared": true,
+      "effect_execution_fraction": "not measured",
+      "reported_hitches": [
+        {
+          "rounded_ms": 411,
+          "song_s": 47.1,
+          "cause": "unconfirmed"
+        }
+      ]
+    },
+    {
+      "profile": "off-after",
+      "conditions": "\uc218\uc9c1\ub3d9\uae30 0, \ubaa9\ud45c FPS 10000, FullScreenWindow, 3440x1440 165Hz, \ucc3d 3440x1440, \uc55e\uc11c \uc900\ube44\ud558\ub294 \ud504\ub808\uc784 2",
+      "sample": {
+        "seconds": 35.0131792,
+        "unity_frames": 6470,
+        "real_fps": 184.78756136489312,
+        "submitted": 26078,
+        "output_fps": 744.8052589294718,
+        "output_over_source": 4.030602782071098,
+        "off_output_inferred_from_unity": false
+      },
+      "managed_sha256": "edb1e6557a2c720764583e3213c6356e81855f68a4dfd9f4c4a388e2109863ec",
+      "native_sha256": "a793190f76ee0286e6529ceaf2041be0aa5a480c5543ebbe47729bd35299c9a6",
+      "errors": 0,
+      "effect_prepared": false,
+      "effect_execution_fraction": "not measured",
+      "reported_hitches": []
+    }
+  ],
+  "neon_real_fps_loss_percent_vs_controls": [
+    6.891383447562616,
+    6.478640322119588
+  ]
+}

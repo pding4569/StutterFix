@@ -29,6 +29,8 @@ def main():
             with (a.out/(name+'.log')).open('w',encoding='utf8') as f:subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT,check=True)
             data=json.loads((trial/'summary.json').read_text(encoding='utf8'))
             log=(trial/'game.log').read_text(encoding='utf8')
+            if '[상태] PlayerControl' not in log:
+                raise RuntimeError('Real level playback not observed; an active output counter is insufficient')
             if '[화면 효과] 실패:' in log or (neon and '[화면 효과] 번들 준비' not in log):
                 raise RuntimeError('Configured effect did not prepare successfully; preserve logs')
             conditions=re.findall(r'\[곡 시작\] 화면: ([^\r\n]+)',log)

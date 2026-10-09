@@ -1,0 +1,47 @@
+{
+  "scope": "Functional/visual only; reload, retry and screenshot excluded from performance.",
+  "identity": {
+    "before_mvid": "b0b6269e-a23a-4e91-bf8a-df6910e752ed",
+    "after_mvid": "5fc7d240-2ae8-40e3-b5d3-deb1f27f3da0",
+    "after_sha256": "0b0fae410204ee747a259000f2f825c608eb7f262a4ff052515ff74bb02304e4",
+    "before_sha256": "edb1e6557a2c720764583e3213c6356e81855f68a4dfd9f4c4a388e2109863ec"
+  },
+  "before_sha256": "edb1e6557a2c720764583e3213c6356e81855f68a4dfd9f4c4a388e2109863ec",
+  "after_sha256": "0b0fae410204ee747a259000f2f825c608eb7f262a4ff052515ff74bb02304e4",
+  "phases": [
+    {
+      "name": "before",
+      "why": "끝",
+      "seconds": 53.63670229911804
+    },
+    {
+      "name": "reload",
+      "why": "다시 불러오기",
+      "seconds": 1.1038377285003662
+    },
+    {
+      "name": "after",
+      "why": "끝",
+      "seconds": 24.797465801239014
+    }
+  ],
+  "fx_states": [
+    "enabled=True ready=True failed=False frames=2854 reused=0 glow_rest=1287 custom_source_skipped=729 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=95 reused=0 glow_rest=95 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=4235 reused=0 glow_rest=143 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=False ready=False failed=False frames=4987 reused=0 glow_rest=143 custom_source_skipped=0 coordinator=False size=0x0 status="
+  ],
+  "fg_states": [
+    "active=True native_installed=1 sources=8709 generated=10957 runtime_initialized=True status=",
+    "active=True native_installed=1 sources=94 generated=283 runtime_initialized=True status=",
+    "active=True native_installed=1 sources=4234 generated=12942 runtime_initialized=True status=",
+    "active=False native_installed=0 sources=4982 generated=15162 runtime_initialized=True status="
+  ],
+  "fresh_static_frames": [
+    2854,
+    95
+  ],
+  "capture_metadata": [
+    "요청 곡 73.169초, 배율 4, frame 13157"
+  ]
+}
