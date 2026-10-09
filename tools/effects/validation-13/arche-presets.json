@@ -1,0 +1,110 @@
+{
+  "scope": "Visual only; four presets in one process with full retry and identical song target. Original PNG bytes preserved. Contact sheet downsized4x; request timestamp is not GPU capture-completion time. No performance/latency or subjective quality conclusion.",
+  "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+  "capture_screen_samples": [
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ],
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ],
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ],
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ]
+  ],
+  "captures": [
+    {
+      "profile": "off",
+      "target_song_s": 20.0,
+      "request_song_s": 20.000906579662114,
+      "request_unity_frame": 17137,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "e6cbc03010aca1c296c42225514b6ec259ebf14f5650339b2bbb64edc6dad9fb"
+    },
+    {
+      "profile": "sharp",
+      "target_song_s": 20.0,
+      "request_song_s": 20.000250451732427,
+      "request_unity_frame": 26288,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "ad583a4322b8e26402edd5177d0fadacf9b36448fe302c9ec48e6a10505a6635"
+    },
+    {
+      "profile": "clear",
+      "target_song_s": 20.0,
+      "request_song_s": 20.00042974250391,
+      "request_unity_frame": 36082,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "194965544942d48540269eab43f421159ac9906fd202b5e871d3cd649ac279f7"
+    },
+    {
+      "profile": "neon",
+      "target_song_s": 20.0,
+      "request_song_s": 20.000881784129888,
+      "request_unity_frame": 45911,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "9c71b1045c59e3bec9e9ecba67db8c08e66d9684e5b25508eb541ae31b840151"
+    }
+  ],
+  "fx_states": [
+    "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+    "enabled=True ready=True failed=False frames=8698 reused=3 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=18490 reused=7 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=28313 reused=12 glow_rest=7542 custom_source_skipped=0 coordinator=True size=3440x1440 status="
+  ],
+  "framegen_states": [
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=",
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=",
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=",
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status="
+  ],
+  "managed_sha256": "abf7ffe7ed62b257afeddf3d73bd61b221fbeddf56df4b4f1ff294bd39444aaa",
+  "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [
+      {
+        "fps": 378.0,
+        "worst": 54.0,
+        "count": 3
+      }
+    ],
+    "errors": 0
+  }
+}

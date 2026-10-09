@@ -1,0 +1,11 @@
+{
+  "accepted_png": 0,
+  "requested_captures": 4,
+  "reason": "Preset fields changed without Main.ApplyConfig; three active materials remained ready=False. Excluded, logs preserved locally.",
+  "fx_states": [
+    "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+    "enabled=True ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+    "enabled=True ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=",
+    "enabled=True ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status="
+  ]
+}

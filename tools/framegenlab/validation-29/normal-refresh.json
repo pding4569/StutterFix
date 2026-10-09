@@ -1,0 +1,98 @@
+{
+  "mode": 4,
+  "refresh": true,
+  "full_song": false,
+  "switch": false,
+  "compatibility_settings": {
+    "FxColor": false,
+    "FxSharp": false,
+    "FxAA": false,
+    "FxGlow": false,
+    "FxLight": false,
+    "FxVignette": false,
+    "FxLut": false,
+    "LowHalfRender": false,
+    "LowSharpen": false,
+    "LowFsr": false,
+    "LowRenderScale": 100
+  },
+  "monitor_smoke": false,
+  "monitor_samples": [],
+  "managed_sha256": "ef59a7c6c28a3930dbdcba4de602af0b48503661c4cd560825a17790ab4b0307",
+  "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+  "states": [
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 1020,
+      "generated": 0,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 9070,
+      "generated": 32,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 15814,
+      "generated": 248,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": false,
+      "installed": 0,
+      "sources": 15815,
+      "generated": 249,
+      "runtime_initialized": true,
+      "status": ""
+    }
+  ],
+  "clocks": [
+    {
+      "frame": 1021,
+      "ticks": 177003833,
+      "hz": 10000000
+    },
+    {
+      "frame": 9071,
+      "ticks": 480533539,
+      "hz": 10000000
+    },
+    {
+      "frame": 15815,
+      "ticks": 830631854,
+      "hz": 10000000
+    },
+    {
+      "frame": 16272,
+      "ticks": 860801435,
+      "hz": 10000000
+    }
+  ],
+  "sample": {
+    "seconds": 35.0098315,
+    "unity_frames": 6744,
+    "real_fps": 192.63160406813157,
+    "submitted": 6960,
+    "output_fps": 198.8012995720931,
+    "output_over_source": 1.0320284697508897,
+    "off_output_inferred_from_unity": false
+  },
+  "observed_submission_ratios": [
+    1.0320284697508897
+  ],
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  },
+  "no_research_directory": true
+}

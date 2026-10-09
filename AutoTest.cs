@@ -843,6 +843,27 @@ namespace StutterFix
 #endif
                     return true;
 #if DEV || AUTOTEST
+                case "fxpreset":
+                    {
+                        int preset=int.Parse(arg); if(preset<0 || preset>3) throw new Exception("미리 설정 0~3 필요");
+                        foreach(var field in typeof(Settings).GetFields(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance))
+                            if(field.Name.StartsWith("Fx",StringComparison.Ordinal) && !setOrig.ContainsKey(field)) setOrig[field]=field.GetValue(Main.Config);
+                        ScreenEffects.Preset(preset); Main.ApplyConfig();
+                        Log("화면 효과 미리 설정: "+preset); return true;
+                    }
+                case "shotat":
+                    {
+                        // Explicit visual command only. Poll until the requested song
+                        // time; the ordinary shot path captures the end of that frame.
+                        var pair=arg.Split(new[]{' '},2,StringSplitOptions.RemoveEmptyEntries);
+                        if(pair.Length!=2) throw new Exception("shotat <곡 초> <이름>");
+                        double target=double.Parse(pair[0],System.Globalization.CultureInfo.InvariantCulture);
+                        if(double.IsNaN(target) || double.IsInfinity(target) || target<0) throw new Exception("유효한 곡 시간 필요");
+                        if(!Hitch.Playing || scrConductor.instance==null || scrConductor.instance.songposition_minusi<target) return false;
+                        Log(FormattableString.Invariant($"[예약 캡처] target_song_s={target:R} request_song_s={scrConductor.instance.songposition_minusi:R} unity_frame={Time.frameCount}"));
+                        Log(FormattableString.Invariant($"[예약 화면] window={Screen.width}x{Screen.height} display={Screen.currentResolution.width}x{Screen.currentResolution.height} hz={Screen.currentResolution.refreshRateRatio.value:R} sync={QualitySettings.vSyncCount}"));
+                        arg=pair[1]; goto case "shot";
+                    }
                 case "fxcapture":
                     ScreenEffects.Capture();return true;
                 case "fxfixture":

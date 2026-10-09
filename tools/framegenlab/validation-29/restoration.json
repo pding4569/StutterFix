@@ -1,0 +1,9 @@
+{
+  "installed_sha256": {
+    "StutterFix.dll": "dd9ca8cadd52bb61aad3e3ab41a54f07e693fb8367653c27513bdef07fc193e1",
+    "sfnative.dll": "ad2dfdc5ed4d5cd416488bb8e1d96863601d9c3a57690cc25756c5f71eec89d1",
+    "Settings.xml": "fa6e781728a4c72c53aa1969a4d08707d837f15932bcf4e5c912bbbaf28d8cd5"
+  },
+  "existing_tester_zip_sha256": "689de906e1b0513c526c34c0aff33dbff6b1d12fe9544adf78b8295a4932c134",
+  "new_zip": 0
+}

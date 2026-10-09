@@ -1,0 +1,411 @@
+{
+  "scope": "Four fresh whole-song games, no capture/PresentMon. GPU new-picture counters remain limited to5..45s; diagnostic motion capacity65536 does not cover all later frames.",
+  "runs": [
+    {
+      "map": "hello",
+      "mode": 9,
+      "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+      "build": {
+        "managed_sha256": "0965eb201865ec9132f03af9211d3f34bd75db0e1be25761fb627236ea888f94",
+        "native_sha256": "c2db7d568f8736e56014ca8c5c2708341d723dbb0bdea54579f18c9ca1cc8526"
+      },
+      "safety": {
+        "outputs": "44436",
+        "frame_begins": "39940",
+        "frame_ends": "39940",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 179.0,
+            "worst": 31.0,
+            "count": 0
+          }
+        ],
+        "errors": 0
+      },
+      "closing_conditions": {
+        "window_width": "3440",
+        "window_height": "1440",
+        "display_width": "3440",
+        "display_height": "1440",
+        "refresh_hz": "164.999",
+        "sync": "0"
+      },
+      "completion_confirmed": true,
+      "full_native": {
+        "seconds": 185.0933628999628,
+        "source_seconds": 185.04468759999145,
+        "source_frames": 32808,
+        "output_frames": 37280,
+        "real_output_frames": 32808,
+        "generated_frames": 4472,
+        "real_fps": 177.29230936323034,
+        "output_fps": 201.40646545034755,
+        "generated_gpu_ms": {
+          "mean": 0.17158938103756707,
+          "p95": 0.289792,
+          "maximum": 2.214912
+        },
+        "gpu_coverage": 4472,
+        "output_worst_ms": 9.472500008996576,
+        "output_over_33ms": 0,
+        "source_worst_ms": 24.67020001495257,
+        "source_over_33ms": 0,
+        "prediction_camera_px": null,
+        "prediction_red_px": null,
+        "prediction_blue_px": null,
+        "prediction_horizon_ms": null,
+        "prediction_samples": 0,
+        "source_age_ms": {
+          "mean": 8.324618917710197,
+          "p95": 11.3961,
+          "maximum": 48.8928
+        },
+        "missing_camera_callbacks": 0,
+        "scene_fps": 177.29230936323034,
+        "scheduler": {
+          "samples": 32808,
+          "expected_generated": null,
+          "reset_miss_lock": 0,
+          "reset_miss_next_before_due": 0,
+          "reset_miss_worker_late": 0,
+          "continuous_miss_lock": 0,
+          "continuous_miss_timer": 0,
+          "worker_wait_ms": {
+            "mean": 0.09447412216532552,
+            "p95": 0.5158,
+            "maximum": 4.3359
+          },
+          "source_hold_ms": {
+            "mean": 0.6534356406973909,
+            "p95": 0.8703,
+            "maximum": 7.5127
+          }
+        },
+        "mode": 9,
+        "camera_blend": true,
+        "scope": "Whole measured song from0s, fresh run, no readbacks. No paired whole-song OFF control;not a source-loss comparison or visual proof.",
+        "prediction_metrics_scope": "Counterfactual extrapolation;not delayed display-camera error",
+        "source_gaps_over_33ms": [],
+        "output_gaps_over_33ms": []
+      }
+    },
+    {
+      "map": "hello",
+      "mode": 4,
+      "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+      "build": {
+        "managed_sha256": "0965eb201865ec9132f03af9211d3f34bd75db0e1be25761fb627236ea888f94",
+        "native_sha256": "c2db7d568f8736e56014ca8c5c2708341d723dbb0bdea54579f18c9ca1cc8526"
+      },
+      "safety": {
+        "outputs": "138040",
+        "frame_begins": "38584",
+        "frame_ends": "38584",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 171.0,
+            "worst": 25.0,
+            "count": 0
+          }
+        ],
+        "errors": 0
+      },
+      "closing_conditions": {
+        "window_width": "3440",
+        "window_height": "1440",
+        "display_width": "3440",
+        "display_height": "1440",
+        "refresh_hz": "164.999",
+        "sync": "0"
+      },
+      "completion_confirmed": true,
+      "full_native": {
+        "seconds": 185.08427479997044,
+        "source_seconds": 185.0351484999992,
+        "source_frames": 31319,
+        "output_frames": 126726,
+        "real_output_frames": 31319,
+        "generated_frames": 95407,
+        "real_fps": 169.25432953620773,
+        "output_fps": 684.6880975542512,
+        "generated_gpu_ms": {
+          "mean": 0.18117089437881917,
+          "p95": 0.330752,
+          "maximum": 1.88416
+        },
+        "gpu_coverage": 95407,
+        "output_worst_ms": 23.994099989067763,
+        "output_over_33ms": 0,
+        "source_worst_ms": 24.589900043793023,
+        "source_over_33ms": 0,
+        "prediction_camera_px": null,
+        "prediction_red_px": null,
+        "prediction_blue_px": null,
+        "prediction_horizon_ms": null,
+        "prediction_samples": 0,
+        "source_age_ms": {
+          "mean": 5.911284107036171,
+          "p95": 9.3114,
+          "maximum": 49.3384
+        },
+        "missing_camera_callbacks": 0,
+        "scene_fps": 169.25432953620773,
+        "scheduler": {
+          "samples": 31319,
+          "expected_generated": 93957,
+          "reset_miss_lock": 0,
+          "reset_miss_next_before_due": 0,
+          "reset_miss_worker_late": 0,
+          "continuous_miss_lock": 18,
+          "continuous_miss_timer": 4538,
+          "worker_wait_ms": {
+            "mean": 0.14382689102461765,
+            "p95": 0.6751,
+            "maximum": 20.1405
+          },
+          "source_hold_ms": {
+            "mean": 0.6267845940164117,
+            "p95": 1.0006,
+            "maximum": 22.4903
+          }
+        },
+        "mode": 4,
+        "camera_blend": true,
+        "scope": "Whole measured song from0s, fresh run, no readbacks. No paired whole-song OFF control;not a source-loss comparison or visual proof.",
+        "prediction_metrics_scope": "Counterfactual extrapolation;not delayed display-camera error",
+        "source_gaps_over_33ms": [],
+        "output_gaps_over_33ms": []
+      }
+    },
+    {
+      "map": "arche",
+      "mode": 9,
+      "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+      "build": {
+        "managed_sha256": "0965eb201865ec9132f03af9211d3f34bd75db0e1be25761fb627236ea888f94",
+        "native_sha256": "c2db7d568f8736e56014ca8c5c2708341d723dbb0bdea54579f18c9ca1cc8526"
+      },
+      "safety": {
+        "outputs": "99741",
+        "frame_begins": "95930",
+        "frame_ends": "95930",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 286.0,
+            "worst": 63.0,
+            "count": 1
+          }
+        ],
+        "errors": 0
+      },
+      "closing_conditions": {
+        "window_width": "3440",
+        "window_height": "1440",
+        "display_width": "3440",
+        "display_height": "1440",
+        "refresh_hz": "164.999",
+        "sync": "0"
+      },
+      "completion_confirmed": true,
+      "full_native": {
+        "seconds": 308.4311037999578,
+        "source_seconds": 308.40052550000837,
+        "source_frames": 87937,
+        "output_frames": 91736,
+        "real_output_frames": 87937,
+        "generated_frames": 3799,
+        "real_fps": 285.13570091176,
+        "output_fps": 297.42460753730427,
+        "generated_gpu_ms": {
+          "mean": 0.1350164569623585,
+          "p95": 0.212992,
+          "maximum": 0.910112
+        },
+        "gpu_coverage": 3799,
+        "output_worst_ms": 7.407299999613315,
+        "output_over_33ms": 0,
+        "source_worst_ms": 62.38880002638325,
+        "source_over_33ms": 2,
+        "prediction_camera_px": null,
+        "prediction_red_px": null,
+        "prediction_blue_px": null,
+        "prediction_horizon_ms": null,
+        "prediction_samples": 0,
+        "source_age_ms": {
+          "mean": 11.784861266649118,
+          "p95": 18.1966,
+          "maximum": 60.923
+        },
+        "missing_camera_callbacks": 25,
+        "scene_fps": 285.0546374960623,
+        "scheduler": {
+          "samples": 87932,
+          "expected_generated": null,
+          "reset_miss_lock": 0,
+          "reset_miss_next_before_due": 0,
+          "reset_miss_worker_late": 0,
+          "continuous_miss_lock": 0,
+          "continuous_miss_timer": 0,
+          "worker_wait_ms": {
+            "mean": 0.05510248260019106,
+            "p95": 0.4122,
+            "maximum": 4.2043
+          },
+          "source_hold_ms": {
+            "mean": 0.5431175521994268,
+            "p95": 0.7181,
+            "maximum": 5.3281
+          }
+        },
+        "mode": 9,
+        "camera_blend": true,
+        "scope": "Whole measured song from0s, fresh run, no readbacks. No paired whole-song OFF control;not a source-loss comparison or visual proof.",
+        "prediction_metrics_scope": "Counterfactual extrapolation;not delayed display-camera error",
+        "source_gaps_over_33ms": [
+          {
+            "frame": 77355,
+            "song_s": 219.601336115,
+            "interval_ms": 62.38880002638325
+          },
+          {
+            "frame": 77356,
+            "song_s": 219.654665582,
+            "interval_ms": 44.61390001233667
+          }
+        ],
+        "output_gaps_over_33ms": []
+      }
+    },
+    {
+      "map": "arche",
+      "mode": 4,
+      "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+      "build": {
+        "managed_sha256": "0965eb201865ec9132f03af9211d3f34bd75db0e1be25761fb627236ea888f94",
+        "native_sha256": "c2db7d568f8736e56014ca8c5c2708341d723dbb0bdea54579f18c9ca1cc8526"
+      },
+      "safety": {
+        "outputs": "350860",
+        "frame_begins": "91962",
+        "frame_ends": "91962",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "game_metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 273.0,
+            "worst": 67.0,
+            "count": 1
+          }
+        ],
+        "errors": 0
+      },
+      "closing_conditions": {
+        "window_width": "3440",
+        "window_height": "1440",
+        "display_width": "3440",
+        "display_height": "1440",
+        "refresh_hz": "164.999",
+        "sync": "0"
+      },
+      "completion_confirmed": true,
+      "full_native": {
+        "seconds": 308.42993909999495,
+        "source_seconds": 308.39591760002077,
+        "source_frames": 84041,
+        "output_frames": 337805,
+        "real_output_frames": 84041,
+        "generated_frames": 253764,
+        "real_fps": 272.5068498117964,
+        "output_fps": 1095.2373851439947,
+        "generated_gpu_ms": {
+          "mean": 0.12712024614996612,
+          "p95": 0.185344,
+          "maximum": 1.932288
+        },
+        "gpu_coverage": 253764,
+        "output_worst_ms": 16.907299985177815,
+        "output_over_33ms": 0,
+        "source_worst_ms": 66.3592999917455,
+        "source_over_33ms": 2,
+        "prediction_camera_px": null,
+        "prediction_red_px": null,
+        "prediction_blue_px": null,
+        "prediction_horizon_ms": null,
+        "prediction_samples": 0,
+        "source_age_ms": {
+          "mean": 3.674723729875002,
+          "p95": 6.5524,
+          "maximum": 65.89162
+        },
+        "missing_camera_callbacks": 26,
+        "scene_fps": 272.42254259981274,
+        "scheduler": {
+          "samples": 84036,
+          "expected_generated": 252123,
+          "reset_miss_lock": 0,
+          "reset_miss_next_before_due": 0,
+          "reset_miss_worker_late": 0,
+          "continuous_miss_lock": 15,
+          "continuous_miss_timer": 5850,
+          "worker_wait_ms": {
+            "mean": 0.1751743764577086,
+            "p95": 0.6354,
+            "maximum": 2.5528
+          },
+          "source_hold_ms": {
+            "mean": 0.574201665952687,
+            "p95": 0.8109,
+            "maximum": 3.6849
+          }
+        },
+        "mode": 4,
+        "camera_blend": true,
+        "scope": "Whole measured song from0s, fresh run, no readbacks. No paired whole-song OFF control;not a source-loss comparison or visual proof.",
+        "prediction_metrics_scope": "Counterfactual extrapolation;not delayed display-camera error",
+        "source_gaps_over_33ms": [
+          {
+            "frame": 74171,
+            "song_s": 219.60202276,
+            "interval_ms": 66.3592999917455
+          },
+          {
+            "frame": 74172,
+            "song_s": 219.670519464,
+            "interval_ms": 47.18210001010448
+          }
+        ],
+        "output_gaps_over_33ms": []
+      }
+    }
+  ]
+}

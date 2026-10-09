@@ -6,7 +6,7 @@ from pathlib import Path
 from measure_outside import analyze, read
 
 
-def analyze_full(root):
+def analyze_full(root,begin=5):
     metadata=json.loads((root/'summary.json').read_text(encoding='utf8'))
     mode=9 if metadata.get('refresh',False) else metadata['mode']
     if metadata['visual_smoke'] or metadata['scene_pair'] or (root/'capture/visual-pose.txt').exists():
@@ -15,11 +15,11 @@ def analyze_full(root):
     if '곡 끝남' not in run or '곡이 끝나지 않음' in run:
         raise RuntimeError('Actual song completion not confirmed')
     folder=root/'capture'
-    result=analyze(folder,0 if mode==9 else mode,end=1e9)
+    result=analyze(folder,0 if mode==9 else mode,begin=begin,end=1e9)
     if mode==9: result['scheduler']['expected_generated']=None
     result['mode']=mode
     result['camera_blend']=metadata['camera_blend']
-    result['scope']='Whole measured song after5s, fresh run, no readbacks. No paired whole-song OFF control;not a source-loss comparison or visual proof.'
+    result['scope']=f'Whole measured song from{begin}s, fresh run, no readbacks. No paired whole-song OFF control;not a source-loss comparison or visual proof.'
     if metadata['camera_blend']:
         result['prediction_metrics_scope']='Counterfactual extrapolation;not delayed display-camera error'
     for name,file,time in [('source','sources.csv','source_s'),('output','presents.csv','present_s')]:
@@ -27,7 +27,7 @@ def analyze_full(root):
         result[name+'_gaps_over_33ms']=[dict(frame=int(b['unity_frame']),song_s=float(b['song_s']),
             interval_ms=(float(b[time])-float(a[time]))*1000,
             **({'real':b['real']=='1'} if name=='output' else {}))
-            for a,b in zip(rows,rows[1:]) if float(b['song_s'])>=5 and
+            for a,b in zip(rows,rows[1:]) if float(a['song_s'])>=begin and float(b['song_s'])>=begin and
             (float(b[time])-float(a[time]))*1000>1000/30]
     return result
 

@@ -13,7 +13,12 @@ def main():
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--settings',type=Path,required=True)
     p.add_argument('--resume',action='store_true')
+    p.add_argument('--analyze-only',action='store_true',help='Require all four saved trials; never launch a game')
     a=p.parse_args()
+    if a.analyze_only:
+        if not all((a.out/f'{name}-{mode}x'/'summary.json').is_file() for name in ['hello','arche'] for mode in [9,4]):
+            p.error('Analyze-only requires four completed saved trials')
+        a.resume=True
     a.out.mkdir(parents=True,exist_ok=a.resume)
     result=dict(scope='Four fresh whole-song games, no capture/PresentMon. GPU new-picture counters remain limited to5..45s; diagnostic motion capacity65536 does not cover all later frames.',runs=[])
     condition=build=None
@@ -40,7 +45,7 @@ def main():
             closing=dict(x.split('=',1) for x in (root/'capture/screen-end.txt').read_text().split())
             if any(int(closing[k])!=v for k,v in dict(window_width=3440,window_height=1440,display_width=3440,display_height=1440,sync=0).items()) or round(float(closing['refresh_hz']))!=165:
                 raise RuntimeError('End-of-trial display/window conditions changed; preserve data')
-            full=analyze_full(root)
+            full=analyze_full(root,begin=0)
             row=dict(map=name,mode=mode,conditions=condition,build=build,safety=data['safety'],game_metrics=data['game_metrics'],
                 closing_conditions=closing,completion_confirmed='곡 끝남' in (root/'run.txt').read_text(encoding='utf8'),full_native=full)
             result['runs'].append(row)

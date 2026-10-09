@@ -32,9 +32,9 @@ def cost_scenes(directory,end=45):
     return dict(seconds=seconds,frames=len(rows),real_fps=(len(rows)-1)/seconds,state=state)
 
 
-def analyze(directory, mode, end=45):
+def analyze(directory, mode, end=45, begin=5):
     all_sources=read(directory/"sources.csv")
-    first=next(i for i,r in enumerate(all_sources) if float(r['song_s'])>=5)
+    first=next(i for i,r in enumerate(all_sources) if float(r['song_s'])>=begin)
     last=next((i for i,r in enumerate(all_sources[first:],first) if float(r['song_s'])>=end),len(all_sources))
     sources=all_sources[first:last]
     rows=[r for r in read(directory/'presents.csv') if int(sources[0]['unity_frame'])<=int(r['unity_frame'])<=int(sources[-1]['unity_frame'])]
