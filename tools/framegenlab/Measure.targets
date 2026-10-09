@@ -18,4 +18,7 @@
     <Compile Include="tools/framegenlab/LayerProbe.cs" />
     <Reference Include="Assembly-CSharp-firstpass"><HintPath>$(GameManaged)/Assembly-CSharp-firstpass.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
+  <ItemGroup Condition="'$(FrameGenProbeKind)' == 'Raw'">
+    <Reference Include="Unity.Collections"><HintPath>$(GameManaged)/Unity.Collections.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
 </Project>

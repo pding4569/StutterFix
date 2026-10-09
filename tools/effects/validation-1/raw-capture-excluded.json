@@ -1,0 +1,25 @@
+{
+  "scope": "Preliminary raw capture harness failures, excluded from motion quality, FPS and latency evidence. No game interpolation algorithm change.",
+  "trials": [
+    {
+      "trial": "effects-raw-smoke1",
+      "window_song_seconds": [0.1, 0.9],
+      "frames": 0,
+      "reason": "rawstart injection occurred after build; command unknown. Moved injection before generated source write/build.",
+      "installation_originals_restored": true
+    },
+    {
+      "trial": "effects-raw-smoke2",
+      "window_song_seconds": [0.1, 0.9],
+      "frames": 45,
+      "readback_errors": 0,
+      "dropped": 0,
+      "native_connection": 0,
+      "runtime_initialized": false,
+      "reason": "Normal quit clears keep and emits no autotest.end; _batch interpreted normal process exit as failure after all raw data saved. Explicit rawsave now finishes the keep batch before normal quit.",
+      "quality_claim": "Excluded; functional capture smoke only, static/countdown scene.",
+      "crash_confirmed": false,
+      "installation_originals_restored": true
+    }
+  ]
+}

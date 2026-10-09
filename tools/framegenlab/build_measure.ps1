@@ -1,8 +1,8 @@
-param([switch]$Install, [ValidateSet('Stage','Capture','InGame','Outside')][string]$Probe = 'Stage')
+param([switch]$Install, [ValidateSet('Stage','Capture','InGame','Outside','Raw')][string]$Probe = 'Stage')
 $ErrorActionPreference = 'Stop'
-if ($Install -and $Probe -in @('InGame','Outside')) { throw 'Use the measurement runner: game experiments require native DLL and exact settings backups/restoration' }
+if ($Install -and $Probe -in @('InGame','Outside','Raw')) { throw 'Use the measurement runner: game experiments require native DLL and exact settings backups/restoration' }
 $repo = (Resolve-Path "$PSScriptRoot\..\..").Path
-$out = Join-Path $PSScriptRoot $(if ($Probe -eq 'Stage') {'out\measure'} elseif ($Probe -eq 'Capture') {'out\capture'} elseif ($Probe -eq 'Outside') {'out\outside'} else {'out\ingame'})
+$out = Join-Path $PSScriptRoot $(if ($Probe -eq 'Stage') {'out\measure'} elseif ($Probe -eq 'Capture') {'out\capture'} elseif ($Probe -eq 'Outside') {'out\outside'} elseif($Probe -eq 'Raw') {'out\raw'} else {'out\ingame'})
 $probeType = "FrameGen$($Probe)Probe"
 New-Item -ItemType Directory -Force $out | Out-Null
 $main = Get-Content -LiteralPath "$repo\StutterFix.cs" -Raw
@@ -31,6 +31,9 @@ $auto = Get-Content -LiteralPath "$repo\AutoTest.cs" -Raw
 $quitPoint = '                case "quit":'
 if ($auto.Split(@($quitPoint), [StringSplitOptions]::None).Count -ne 2) { throw 'AutoTest quit point changed' }
 $auto = $auto.Replace($quitPoint, "$quitPoint`n                    $probeType.Finish();")
+if ($Probe -eq 'Raw') {
+    $auto=$auto.Replace($quitPoint,"                case `"rawstart`":`n                    FrameGenRawProbe.Start(arg); return true;`n                case `"rawsave`":`n                    FrameGenRawProbe.Finish(); return true;`n$quitPoint")
+}
 if ($Probe -eq 'Outside') {
     $auto=$auto.Replace($quitPoint,"                case `"fgsync`":`n                    QualitySettings.vSyncCount = int.Parse(arg);`n                    Log(`"프레임 생성 시험 수직동기 = `" + QualitySettings.vSyncCount);`n                    return true;`n$quitPoint")
 }
