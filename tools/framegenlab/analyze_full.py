@@ -8,14 +8,15 @@ from measure_outside import analyze, read
 
 def analyze_full(root):
     metadata=json.loads((root/'summary.json').read_text(encoding='utf8'))
-    mode=metadata['mode']
+    mode=9 if metadata.get('refresh',False) else metadata['mode']
     if metadata['visual_smoke'] or metadata['scene_pair'] or (root/'capture/visual-pose.txt').exists():
         raise RuntimeError('Whole-song performance evidence must not contain readbacks/smoke tests')
     run=(root/'run.txt').read_text(encoding='utf8')
     if '곡 끝남' not in run or '곡이 끝나지 않음' in run:
         raise RuntimeError('Actual song completion not confirmed')
     folder=root/'capture'
-    result=analyze(folder,mode,end=1e9)
+    result=analyze(folder,0 if mode==9 else mode,end=1e9)
+    if mode==9: result['scheduler']['expected_generated']=None
     result['mode']=mode
     result['camera_blend']=metadata['camera_blend']
     result['scope']='Whole measured song after5s, fresh run, no readbacks. No paired whole-song OFF control;not a source-loss comparison or visual proof.'

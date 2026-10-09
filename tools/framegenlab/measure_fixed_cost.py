@@ -128,11 +128,13 @@ def main():
     parser.add_argument('--settings',type=Path,help='Explicit screen-effects/compatibility settings; same file throughout batch')
     parser.add_argument('--variant',type=int,default=0,choices=[0,1,2,3,4])
     parser.add_argument('--resume',action='store_true',help='Reuse completed game trial and saved PM capture; never retry failed game')
+    parser.add_argument('--without-presentmon',action='store_true',help='Measure only native/real-frame counters; physical display FPS and latency remain unmeasured. No elevation.')
     parser.add_argument('--baseline-off',type=Path,help='Reuse the explicitly named earlier same-build OFF for a remaining2x trial')
     a=parser.parse_args()
     if pid(): raise RuntimeError('Close game normally first')
-    status=json.loads((TRACE/'agent2-status.json').read_text(encoding='utf-8-sig'))
-    if status['status'] not in ['ready','finished']: raise RuntimeError('PresentMon agent not ready')
+    if not a.without_presentmon:
+        status=json.loads((TRACE/'agent2-status.json').read_text(encoding='utf-8-sig'))
+        if status['status'] not in ['ready','finished']: raise RuntimeError('PresentMon agent not ready')
     a.out.mkdir(parents=True,exist_ok=a.resume)
     result=dict(stage=a.stage,variant=a.variant,order=[int(n) for n in a.order.split(',')],runs=[],scope='One ordered batch; no closing OFF control')
     condition=build=None
@@ -161,25 +163,27 @@ def main():
             while process.poll() is None:
                 game=pid() if not started else None
                 if game:
-                    payload=json.dumps(dict(action='pm',name=name,pid=game))
-                    temporary=TRACE/'command.pending'
-                    temporary.write_text(payload,encoding='utf-8')
-                    temporary.replace(TRACE/'command2.json')
+                    if not a.without_presentmon:
+                        payload=json.dumps(dict(action='pm',name=name,pid=game))
+                        temporary=TRACE/'command.pending'
+                        temporary.write_text(payload,encoding='utf-8')
+                        temporary.replace(TRACE/'command2.json')
                     started=True
                 time.sleep(.5)
           if not started: raise RuntimeError('Game process missed')
-          (TRACE/('stop-'+name)).touch()
-          deadline=time.monotonic()+20
-          while time.monotonic()<deadline:
-            status=json.loads((TRACE/'agent2-status.json').read_text(encoding='utf-8-sig'))
-            if status.get('name')==name and status['status']=='finished': break
-            time.sleep(.5)
-          else: raise RuntimeError('PresentMon did not finish normally')
-          if status['exit']!=0: raise RuntimeError('PresentMon exit '+str(status['exit']))
+          if not a.without_presentmon:
+            (TRACE/('stop-'+name)).touch()
+            deadline=time.monotonic()+20
+            while time.monotonic()<deadline:
+                status=json.loads((TRACE/'agent2-status.json').read_text(encoding='utf-8-sig'))
+                if status.get('name')==name and status['status']=='finished': break
+                time.sleep(.5)
+            else: raise RuntimeError('PresentMon did not finish normally')
+            if status['exit']!=0: raise RuntimeError('PresentMon exit '+str(status['exit']))
           if process.returncode:
-            shutil.copyfile(TRACE/(name+'.csv'),root/'presentmon.csv')
+            if not a.without_presentmon: shutil.copyfile(TRACE/(name+'.csv'),root/'presentmon.csv')
             raise RuntimeError('Trial failed, preserve evidence: '+name)
-        shutil.copyfile(TRACE/(name+'.csv'),root/'presentmon.csv')
+        if not a.without_presentmon: shutil.copyfile(TRACE/(name+'.csv'),root/'presentmon.csv')
         data=json.loads((root/'summary.json').read_text(encoding='utf-8'))
         log=(root/'game.log').read_text(encoding='utf-8')
         found=re.findall(r'\[곡 시작\] 화면: 수직동기 (\d+), 목표 FPS (\d+), (\w+), (\d+)x(\d+) (\d+)Hz, 창 (\d+)x(\d+)',log)
@@ -198,7 +202,8 @@ def main():
                  new_picture_ratio=float(flow['new_picture'])/float(flow['generated']) if flow and int(flow['generated']) else None,
                  new_picture_scope='Research GPU metric, 5..45s,256 sampled pixels; not physical display count',
                  timeline_to_submit_ms=native.get('interpolated_timeline_to_submit_ms') if native else None,
-                 safety=data['safety'],presentmon=pm_summary(root))
+                 safety=data['safety'],presentmon=None if a.without_presentmon else pm_summary(root))
+        row['physical_display_measurement']='unmeasured: no PresentMon capture' if a.without_presentmon else 'PresentMon'
         if native:
             row['generated_gpu_ms']=native['generated_gpu_ms']
             row['missing_camera_callbacks']=native['missing_camera_callbacks']

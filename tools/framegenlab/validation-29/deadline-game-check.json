@@ -1,0 +1,18 @@
+{
+  "hello": {
+    "scope": "After the last song-clock reset;5..45s. Real record QPC vs generated successful Present; tolerance0.05ms.",
+    "generated": 442,
+    "minimum_after_real_ms": 6.20050000725314,
+    "before_deadline_by_0_05ms": 0,
+    "native_scene_fps": 189.48040402580352,
+    "missing_camera_callbacks": 0
+  },
+  "arche": {
+    "scope": "After the last song-clock reset;5..45s. Real record QPC vs generated successful Present; tolerance0.05ms.",
+    "generated": 6,
+    "minimum_after_real_ms": 6.343299988657236,
+    "before_deadline_by_0_05ms": 0,
+    "native_scene_fps": 325.197137324805,
+    "missing_camera_callbacks": 10
+  }
+}

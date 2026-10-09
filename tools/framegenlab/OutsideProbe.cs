@@ -12,7 +12,13 @@ namespace StutterFix
     {
         private static bool installed;
         internal static void Install() { if(Main.Config.FrameGenCostSplit) FrameGenCostProbe.Install(); if(Main.Config.FrameGenCostSplit && Main.Config.FrameGenOutside==0) return; FrameGen.InstallResearch(); installed=true; if(Main.Config.FrameGenFilterPair) FrameGenScreenFilterProbe.Install(); if(Main.Config.FrameGenScreenBorder) FrameGenScreenBorder.Install(); if(Main.Config.FrameGenLayerProbe) FrameGenLayerProbe.Install(); }
-        internal static void Finish() { FrameGenCostProbe.Finish(); if(installed) FrameGen.FinishResearch(); FrameGenScreenBorder.Detach(); try { if(Main.Config.FrameGenLayerProbe) FrameGenLayerProbe.Finish(); FrameGenScreenFilterProbe.Finish(); } finally { FrameGenLayerProbe.Uninstall(); FrameGenScreenFilterProbe.Uninstall(); } }
+        internal static void Finish() {
+            // Explicit end-of-trial check, never in the per-frame sampler.
+            var resolution=Screen.currentResolution;
+            var path=Path.Combine(Main.Entry.Path,"framegen-outside");Directory.CreateDirectory(path);
+            File.WriteAllText(Path.Combine(path,"screen-end.txt"),FormattableString.Invariant($"window_width={Screen.width} window_height={Screen.height} display_width={resolution.width} display_height={resolution.height} refresh_hz={resolution.refreshRateRatio.value:R} sync={QualitySettings.vSyncCount}"));
+            FrameGenCostProbe.Finish(); if(installed) FrameGen.FinishResearch(); FrameGenScreenBorder.Detach(); try { if(Main.Config.FrameGenLayerProbe) FrameGenLayerProbe.Finish(); FrameGenScreenFilterProbe.Finish(); } finally { FrameGenLayerProbe.Uninstall(); FrameGenScreenFilterProbe.Uninstall(); }
+        }
         internal static void Uninstall() { FrameGenCostProbe.Detach(); if(installed) FrameGen.Shutdown(); installed=false; FrameGenScreenBorder.Detach(); FrameGenLayerProbe.Uninstall(); FrameGenScreenFilterProbe.Uninstall(); }
         internal static void DrawGUI() { UnityEngine.GUILayout.Label("프레임 늘리기 (실험): StutterFix 설정 → 그래픽"); }
     }

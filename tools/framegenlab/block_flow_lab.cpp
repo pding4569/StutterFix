@@ -55,7 +55,7 @@ int wmain(int argc,wchar_t** argv) {
             unsigned uiErrors=0;for(unsigned y=32;y<64;y++)for(unsigned x=32;x<64;x++) {auto p=static_cast<const BYTE*>(m.pData)+y*m.RowPitch+x*4;uiErrors+=p[0]!=64 || p[1]!=0 || p[2]!=255;}
             c->Unmap(read.Get(),0);printf("movement=%d flip=%d flat=%d phase=%.2f checked=%u errors_above3=%u mean_error=%.6f ui_errors=%u state_errors=0\n",movement,flip?1:0,flat?1:0,phase,checked,errors,absolute/checked,uiErrors);
             if(query && !completion.ready(c.Get())) throw std::runtime_error("completion query lost queue ordering");
-            if((errors && !resolutionProbe) || uiErrors)throw std::runtime_error("known translation, stationary, protected planet or true UI failed");
+            if(errors || uiErrors)throw std::runtime_error("known translation, stationary, protected planet or true UI failed");
             }
 #ifdef SF_FRAMEGEN_RESEARCH
             const bool resetCase=!resolutionProbe && movement==16 && !flip && !flat;
@@ -63,7 +63,7 @@ int wmain(int argc,wchar_t** argv) {
             std::wstring path=argc>1?argv[1]:L".";path+=L"/move"+std::to_wstring(movement)+L"-flip"+std::to_wstring(flip?1:0)+L"-flat"+std::to_wstring(flat?1:0);CreateDirectoryW(path.c_str(),nullptr);flow.save(c.Get(),path);
             FILE* f=nullptr;_wfopen_s(&f,(path+L"/block-flow.txt").c_str(),L"rb");if(!f)throw std::runtime_error("fixture counters missing");UINT generated=0,fresh=0;int fields=fscanf_s(f,"variant=%*u scale=%*u block_size=%*u skipped_pairs=%*u generated=%u new_picture=%u",&generated,&fresh);fclose(f);
             UINT expectedGenerated=resetCase?1u:3u;
-            if(fields!=2 || generated!=expectedGenerated || (!resolutionProbe && fresh!=UINT(!flat && movement?expectedGenerated:0)))throw std::runtime_error("new-picture counter disagrees with known pixels");
+            if(fields!=2 || generated!=expectedGenerated || fresh!=UINT(!flat && movement?expectedGenerated:0))throw std::runtime_error("new-picture counter disagrees with known pixels");
             if(resetCase) printf("metric_reset_generated=%u new_picture=%u\n",generated,fresh);
 #endif
         }

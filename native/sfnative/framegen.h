@@ -106,9 +106,8 @@ inline bool rotatingWorld(const Packet& p) {
     return (p.capture&2048)!=0;
 }
 inline std::atomic<int> refreshRate{0};
-inline double refreshInterval(double period,int hz) {
-    double shortage=hz>0 && period>0?hz-1/period:0;
-    return shortage>0?1/shortage:0;
+inline double refreshDeadline(double lastReal,int hz) {
+    return hz>0?lastReal+1./hz:0;
 }
 inline bool completionOnly(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
@@ -458,7 +457,7 @@ public:
         _wfopen_s(&f,(path+L"/clip.csv").c_str(),L"wb");
         if(f) { fprintf(f,"index,mode,real,unity_frame,present_sample_s,song_s,gate_reprojected,block_phase\n"); for(auto& r:clips) fprintf(f,"%d,%d,%d,%d,%.9f,%.9f,%d,%.9f\n",r.index,r.mode,r.real,r.frame,r.time,r.song,r.gateWarp,r.phase); fclose(f); }
     }
-    void recordOff(const Packet& p,HRESULT hr) { ++outputs; std::lock_guard<std::mutex> gate(mutex); if(p.measure && records.size()<1000000) { Record r{now(),p.song,NAN,1,p.frame,hr,0}; memcpy(r.camera,cameraBlendEnabled(p) && p.mode>=2?pending.camera:p.pose.camera,16);
+    void recordOff(const Packet& p,HRESULT hr) { ++outputs; std::lock_guard<std::mutex> gate(mutex); if(SUCCEEDED(hr)) lastRealPresent=now(); if(p.measure && records.size()<1000000) { Record r{now(),p.song,NAN,1,p.frame,hr,0}; memcpy(r.camera,cameraBlendEnabled(p) && p.mode>=2?pending.camera:p.pose.camera,16);
 #ifdef SF_FRAMEGEN_RESEARCH
         if(blockFlowEnabled(p) && p.mode>=2) {r.targetTime=pending.targetTime;r.age=pending.age;}
 #endif
@@ -481,7 +480,7 @@ private:
 #endif
     unsigned long long published=0;
     Packet previousPacket{},lastPacket{};
-    double lastQpc=0,previousQpc=0;
+    double lastQpc=0,previousQpc=0,lastRealPresent=0;
     bool havePrevious=false;
     ComPtr<ID3D11DeviceContext> deferred;
     ComPtr<IDXGISwapChain1> swap;
@@ -586,11 +585,13 @@ private:
                         bool continuous=s.packet.textures[1]==reinterpret_cast<void*>(1);
                         if(continuous) interval=s.period/(currentMode-1);
                         if(currentMode==9) {
-                            // A source-end EMA is measured even while copying/generation
-                            // rests. Sampling only worker-visible frames aliases real FPS.
-                            double refreshPeriod=-double(reinterpret_cast<intptr_t>(s.packet.textures[1]))/1e9;
-                            interval=refreshInterval(refreshPeriod,refreshRate.load());
-                            if(interval<=0) { deadline=0;seen=s.sequence;mode=0;continue; }
+                            int hz=refreshRate.load();
+                            if(hz<=0) { deadline=0;seen=s.sequence;mode=0;continue; }
+                            interval=1./hz;
+                            // A new real Present cancels the preceding deadline. The
+                            // worker checks this while holding the original frame gate.
+                            // Do not estimate FPS or carry a shortage clock across sources.
+                            if(seen!=s.sequence) deadline=refreshDeadline(lastRealPresent,hz);
                             continuous=true;
                         }
                         if(seen!=s.sequence) { seen=s.sequence; if(!continuous || deadline==0) deadline=s.qpc+interval; }

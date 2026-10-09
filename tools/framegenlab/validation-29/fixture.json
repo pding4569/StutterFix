@@ -1,0 +1,179 @@
+{
+  "scope": "Actual GPU fixtures completed before game performance. Normal/research60 conditions0 errors. Resolution20 conditions repeated once after adding strict pixel/new-picture assertions; not additional independent performance samples. Pixel threshold3byte, not byte equality. Debug layer unavailable.",
+  "normal_conditions": 60,
+  "research_conditions": 60,
+  "normal_errors": 0,
+  "research_errors": 0,
+  "resolution": [
+    3440,
+    1440
+  ],
+  "move_px": 64,
+  "search_scale": [
+    1.34375,
+    1
+  ],
+  "coarse_candidates": 49,
+  "coarse_radius_reduced_px": [
+    8,
+    6
+  ],
+  "resolution_flows": {
+    "move64-flip0-flat0": {
+      "variant": "3",
+      "scale": "8",
+      "block_size": "8",
+      "skipped_pairs": "0",
+      "generated": "3",
+      "new_picture": "3",
+      "both_changed_samples": "337",
+      "moving_samples": "366",
+      "samples_per_frame": "256",
+      "threshold": "3/255",
+      "minimum_samples": "4",
+      "window": "5..45"
+    },
+    "move64-flip0-flat1": {
+      "variant": "3",
+      "scale": "8",
+      "block_size": "8",
+      "skipped_pairs": "0",
+      "generated": "3",
+      "new_picture": "0",
+      "both_changed_samples": "0",
+      "moving_samples": "0",
+      "samples_per_frame": "256",
+      "threshold": "3/255",
+      "minimum_samples": "4",
+      "window": "5..45"
+    },
+    "move64-flip1-flat0": {
+      "variant": "3",
+      "scale": "8",
+      "block_size": "8",
+      "skipped_pairs": "0",
+      "generated": "3",
+      "new_picture": "3",
+      "both_changed_samples": "337",
+      "moving_samples": "366",
+      "samples_per_frame": "256",
+      "threshold": "3/255",
+      "minimum_samples": "4",
+      "window": "5..45"
+    },
+    "move64-flip1-flat1": {
+      "variant": "3",
+      "scale": "8",
+      "block_size": "8",
+      "skipped_pairs": "0",
+      "generated": "3",
+      "new_picture": "0",
+      "both_changed_samples": "0",
+      "moving_samples": "0",
+      "samples_per_frame": "256",
+      "threshold": "3/255",
+      "minimum_samples": "4",
+      "window": "5..45"
+    }
+  },
+  "deadline": {
+    "deadline400": {
+      "parts": {
+        "swapchains": "1",
+        "debug_layer": "0",
+        "frames": "1200",
+        "outputs": "1217",
+        "state_errors": "0",
+        "pixel_errors": "0",
+        "debug_errors": "0",
+        "pause_outputs": "17",
+        "worker_error": "0",
+        "device_removed": "0",
+        "frame_begins": "1200",
+        "frame_ends": "1200"
+      },
+      "generated": 17,
+      "minimum_since_last_real_ms": 6.583000009413809,
+      "early_more_than_0_05ms": 0
+    },
+    "deadline100": {
+      "parts": {
+        "swapchains": "1",
+        "debug_layer": "0",
+        "frames": "299",
+        "outputs": "469",
+        "state_errors": "0",
+        "pixel_errors": "0",
+        "debug_errors": "0",
+        "pause_outputs": "19",
+        "worker_error": "0",
+        "device_removed": "0",
+        "frame_begins": "299",
+        "frame_ends": "299"
+      },
+      "generated": 170,
+      "minimum_since_last_real_ms": 6.183499994222075,
+      "early_more_than_0_05ms": 0
+    }
+  },
+  "strict_resolution_exit_code": 0,
+  "strict_resolution_conditions": 20,
+  "strict_resolution_flows": {
+    "move64-flip0-flat0": {
+      "variant": "3",
+      "scale": "8",
+      "block_size": "8",
+      "skipped_pairs": "0",
+      "generated": "3",
+      "new_picture": "3",
+      "both_changed_samples": "337",
+      "moving_samples": "366",
+      "samples_per_frame": "256",
+      "threshold": "3/255",
+      "minimum_samples": "4",
+      "window": "5..45"
+    },
+    "move64-flip0-flat1": {
+      "variant": "3",
+      "scale": "8",
+      "block_size": "8",
+      "skipped_pairs": "0",
+      "generated": "3",
+      "new_picture": "0",
+      "both_changed_samples": "0",
+      "moving_samples": "0",
+      "samples_per_frame": "256",
+      "threshold": "3/255",
+      "minimum_samples": "4",
+      "window": "5..45"
+    },
+    "move64-flip1-flat0": {
+      "variant": "3",
+      "scale": "8",
+      "block_size": "8",
+      "skipped_pairs": "0",
+      "generated": "3",
+      "new_picture": "3",
+      "both_changed_samples": "337",
+      "moving_samples": "366",
+      "samples_per_frame": "256",
+      "threshold": "3/255",
+      "minimum_samples": "4",
+      "window": "5..45"
+    },
+    "move64-flip1-flat1": {
+      "variant": "3",
+      "scale": "8",
+      "block_size": "8",
+      "skipped_pairs": "0",
+      "generated": "3",
+      "new_picture": "0",
+      "both_changed_samples": "0",
+      "moving_samples": "0",
+      "samples_per_frame": "256",
+      "threshold": "3/255",
+      "minimum_samples": "4",
+      "window": "5..45"
+    }
+  }
+}

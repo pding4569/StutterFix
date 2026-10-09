@@ -213,6 +213,7 @@ def main():
             raise RuntimeError("Incomplete 5..45 second performance window")
         result=dict(label=a.label,mode=a.mode,block_flow=a.block_flow,cost_split=a.cost_split,image_gate=a.image_gate,camera_blend=a.camera_blend,scene_pair=a.scene_pair,filter_pair=a.filter_pair,screen_border=a.screen_border,layer_probe=a.layer_probe,expected_inactive=a.expect_inactive,compatibility_settings=extra,visual_smoke=a.layer_probe or a.filter_pair or a.scene_pair or a.clip or a.switch_smoke or a.freeze_smoke or a.sync_smoke or a.ui_smoke or a.expect_inactive,native=native,safety=safety,game_metrics=metrics)
         result['build']=build_stamp
+        result['refresh']=a.refresh
         if scenes is not None: result['scene_metrics']=scenes
         (a.out/"summary.json").write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
         print(json.dumps(result,ensure_ascii=False),flush=True)

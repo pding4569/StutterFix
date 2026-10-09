@@ -1,0 +1,175 @@
+{
+  "stage": "ch29-hello-deadline",
+  "variant": 1,
+  "order": [
+    0,
+    4,
+    0,
+    9,
+    0
+  ],
+  "runs": [
+    {
+      "mode": 0,
+      "real_fps": 199.71262977296925,
+      "mean_scene_ms": 5.0071945932352255,
+      "loss_percent": 0.0,
+      "output_fps": null,
+      "new_picture_ratio": null,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": null,
+      "safety": null,
+      "presentmon": null,
+      "physical_display_measurement": "unmeasured: no PresentMon capture"
+    },
+    {
+      "mode": 4,
+      "real_fps": 185.0566701360203,
+      "mean_scene_ms": 5.403750101333717,
+      "loss_percent": 7.338524185280448,
+      "output_fps": 746.3494327744563,
+      "new_picture_ratio": 0.6595403527525387,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": {
+        "mean": 5.59369209486166,
+        "p95": 7.632,
+        "maximum": 18.8791
+      },
+      "safety": {
+        "outputs": "51421",
+        "frame_begins": "17009",
+        "frame_ends": "17009",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "presentmon": null,
+      "physical_display_measurement": "unmeasured: no PresentMon capture",
+      "generated_gpu_ms": {
+        "mean": 0.18506951944060926,
+        "p95": 0.272384,
+        "maximum": 1.890304
+      },
+      "missing_camera_callbacks": 0,
+      "output_worst_ms": 6.850700010545552,
+      "ownership": {
+        "world_copies": "0",
+        "world_retains": "11279",
+        "screen_copies": "11279",
+        "flushes": "11279",
+        "query_marks": "0",
+        "query_ready": "0",
+        "query_pending": "0"
+      },
+      "source_hold_ms": {
+        "mean": 0.6113289921642799,
+        "p95": 0.938,
+        "maximum": 2.9975
+      },
+      "bracket_off_fps": [
+        199.71262977296925,
+        199.15115950065282
+      ],
+      "bracket_loss_percent": [
+        7.338524185280448,
+        7.077282100678062
+      ]
+    },
+    {
+      "mode": 0,
+      "real_fps": 199.15115950065282,
+      "mean_scene_ms": 5.021311462646653,
+      "loss_percent": 0.2811390911805156,
+      "output_fps": null,
+      "new_picture_ratio": null,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": null,
+      "safety": null,
+      "presentmon": null,
+      "physical_display_measurement": "unmeasured: no PresentMon capture"
+    },
+    {
+      "mode": 9,
+      "real_fps": 189.48247113729113,
+      "mean_scene_ms": 5.277533029825443,
+      "loss_percent": 5.122439500850618,
+      "output_fps": 200.52559255326094,
+      "new_picture_ratio": 0.4411764705882353,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": {
+        "mean": 5.736566961725471,
+        "p95": 8.2437,
+        "maximum": 20.1398
+      },
+      "safety": {
+        "outputs": "18253",
+        "frame_begins": "17400",
+        "frame_ends": "17400",
+        "worker_error": "0",
+        "sync_requested": "0",
+        "sync_preserved_off": "0",
+        "sync_forced_zero_active": "0"
+      },
+      "presentmon": null,
+      "physical_display_measurement": "unmeasured: no PresentMon capture",
+      "generated_gpu_ms": {
+        "mean": 0.19415100677200903,
+        "p95": 0.27136,
+        "maximum": 0.698368
+      },
+      "missing_camera_callbacks": 0,
+      "output_worst_ms": 7.44499999564141,
+      "ownership": {
+        "world_copies": "0",
+        "world_retains": "11614",
+        "screen_copies": "11614",
+        "flushes": "11614",
+        "query_marks": "0",
+        "query_ready": "0",
+        "query_pending": "0"
+      },
+      "source_hold_ms": {
+        "mean": 0.5059290803536086,
+        "p95": 0.6559,
+        "maximum": 2.2294
+      },
+      "bracket_off_fps": [
+        199.15115950065282,
+        199.8075565363896
+      ],
+      "bracket_loss_percent": [
+        4.854949570770639,
+        5.167514971946529
+      ]
+    },
+    {
+      "mode": 0,
+      "real_fps": 199.8075565363896,
+      "mean_scene_ms": 5.004815720359789,
+      "loss_percent": -0.04753167765516597,
+      "output_fps": null,
+      "new_picture_ratio": null,
+      "new_picture_scope": "Research GPU metric, 5..45s,256 sampled pixels; not physical display count",
+      "timeline_to_submit_ms": null,
+      "safety": null,
+      "presentmon": null,
+      "physical_display_measurement": "unmeasured: no PresentMon capture"
+    }
+  ],
+  "scope": "Fresh immediately adjacent OFF controls for each active when bracket_loss_percent is present",
+  "conditions": [
+    "0",
+    "10000",
+    "FullScreenWindow",
+    "3440",
+    "1440",
+    "165",
+    "3440",
+    "1440"
+  ],
+  "build": {
+    "native_sha256": "c2db7d568f8736e56014ca8c5c2708341d723dbb0bdea54579f18c9ca1cc8526",
+    "managed_sha256": "f77b2d6782a273517073d57651be587ed0503b1199cae91f32f2d8c7bd6c85f3"
+  }
+}

@@ -1454,7 +1454,7 @@ namespace StutterFix
                 if(Segment("framegenmode",ref frameMode,new[] {T("주사율 맞춤","Match refresh"),T("2~8배","2–8×")})) {
                     c.FrameGenRefresh=frameMode==0;Save();
                 }
-                if(c.FrameGenRefresh) P(T("진짜 FPS가 모니터 주사율 이상이면 그림 저장·생성을 쉽니다. 부족한 만큼만 생성하며 표시 이벤트 수는 별도로 확인해야 합니다.","Snapshots and generation rest above monitor refresh; only the shortage is generated. Display events must be measured separately."),sDim);
+                if(c.FrameGenRefresh) P(T("마지막 진짜 프레임 뒤 1/주사율 동안 다음 진짜 프레임이 없을 때만 하나 생성합니다. 그림 저장은 계속하며 실제 표시 횟수는 별도로 확인해야 합니다.","Generate only if no new real frame arrives within one refresh period after the last real frame. Snapshots continue; display events must be measured separately."),sDim);
                 else {
                 float multiplier = Mathf.Clamp(c.FrameGenOutside, 2, 8);
                 if (Slider("framegenmultiplier", ref multiplier, 2, 8, T("출력 배율", "Output multiplier"), Mathf.RoundToInt(multiplier) + T("배", "×")))

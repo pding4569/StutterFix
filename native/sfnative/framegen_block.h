@@ -51,8 +51,11 @@ float errorAt(float values[16],int2 origin,int2 delta) {
     // Exhaust the coarse grid before refining: a local hill climb misses even
     // exact translations of detailed textures. Exact zero also stays EXACT zero.
     if(cost>1e-8) {
+        // Keep 49 coarse candidates. Scale their positions with the actual output
+        // grid, then refine in reduced-image pixels as before (3440/2560=1.34375).
+        float2 searchScale=max(float2(1,1),info.xy/float2(2560,1440));
         [loop] for(int y=-6;y<=6;y+=2) [loop] for(int x=-6;x<=6;x+=2) {
-            int2 d=int2(x,y); float c=errorAt(values,origin,d);
+            int2 d=int2(round(float2(x,y)*searchScale)); float c=errorAt(values,origin,d);
             if(c<cost-1e-7) { cost=c; best=d; }
         }
         int2 center=best;

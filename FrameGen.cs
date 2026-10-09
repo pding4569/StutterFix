@@ -134,7 +134,6 @@ namespace StutterFix
         private static RenderTexture[] worldRing;
         private static IntPtr[] worldPointers;
         private static int worldIndex;
-        private static double lastSceneTick,meanScenePeriod;
         private static int refreshHz;
         private static Renderer[] redRenderers,blueRenderers;
         internal static bool Failed => failed;
@@ -193,7 +192,7 @@ namespace StutterFix
             earlyWorldFrame=-1;earlyFallbacks=0;Camera.onPreCull+=EarlyWorld;
 #endif
             finalBeginFrame=-1;
-            lastSceneTick=meanScenePeriod=0;refreshHz=0;
+            refreshHz=0;
             sceneCamera=sceneBase=scenePulse=Vector4.zero;
             Camera.onPostRender+=PostRender;
             Camera.onPreRender+=PreRender;
@@ -221,7 +220,7 @@ namespace StutterFix
             if(Main.Config.FrameGenRefresh && mode>=2) {
                 int hz=(int)Math.Round(Screen.currentResolution.refreshRateRatio.value);
                 if(hz!=refreshHz) { refreshHz=hz; sf_framegen_refresh_rate(hz); }
-                mode=hz>0 && meanScenePeriod>1.0/hz?9:0;
+                mode=hz>0?9:0;
             }
             if(mode!=oldMode) { oldMode=mode; Log("mode="+mode); }
             if(mode==0) return;
@@ -263,9 +262,6 @@ namespace StutterFix
 #endif
                 if(Diagnostics && Hitch.Playing && song>=5 && trackedCamera!=null && renderedFrame!=Time.frameCount) missingScenes++;
                 Packet p=new Packet {unused1=Narrow?new IntPtr(1):IntPtr.Zero,frame=Time.frameCount,song=song,measure=Diagnostics && Hitch.Playing?1:0,mode=Hitch.Playing && !failed?Math.Max(0,oldMode):0,flip=FlipY?1:0,linear=QualitySettings.activeColorSpace==ColorSpace.Linear?1:0,capture=Capture?1:Clip?2:0};
-                // Mode9 carries the scene-end EMA period in negative nanoseconds.
-                // Other modes keep the existing clock flag; the pointer is never dereferenced.
-                if(p.mode==9) p.unused1=new IntPtr(-(long)Math.Round(meanScenePeriod*1e9));
 #if FRAMEGEN_RESEARCH
                 if(Main.Config.FrameGenImageGate && CameraBlend) p.capture|=32;
                 if(CostSplit) p.capture|=1024; // Equal diagnostic work in OFF/copy-only/2x/4x cost comparison.
@@ -370,14 +366,6 @@ namespace StutterFix
 #endif
         private static void PostRender(Camera c) {
             if(c!=trackedCamera) return;
-            if(Main.Config.FrameGenRefresh) {
-            double tick=(double)System.Diagnostics.Stopwatch.GetTimestamp()/System.Diagnostics.Stopwatch.Frequency;
-            if(lastSceneTick>0 && tick>lastSceneTick && tick-lastSceneTick<.1) {
-                double dt=tick-lastSceneTick;
-                meanScenePeriod=meanScenePeriod==0?dt:meanScenePeriod+(dt-meanScenePeriod)*Math.Min(1,dt/.25);
-            }
-            lastSceneTick=tick;
-            }
             renderedFrame=Time.frameCount; var sc=scrCamera.instance; if(sc==null) return;
             var position=c.transform.position; var shake=Shake(sc); var worldShake=new Vector3(shake.x,shake.y,0);
             if(sc.transform.parent!=null) worldShake=sc.transform.parent.TransformVector(worldShake);
