@@ -6,7 +6,9 @@ public static class BuildEffects {
    string output=Path.GetFullPath("EffectsOutput");Directory.CreateDirectory(output);
    PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64,false);
    PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64,new[]{UnityEngine.Rendering.GraphicsDeviceType.Direct3D11});
+   AssetDatabase.ImportAsset("Assets/Effects/ScreenEffects.shader",ImportAssetOptions.ForceSynchronousImport|ImportAssetOptions.ForceUpdate);
    var shader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/Effects/ScreenEffects.shader");
+   if(shader!=null)foreach(var message in ShaderUtil.GetShaderMessages(shader))Debug.LogError(message.message+" line="+message.line);
    if(shader==null || ShaderUtil.ShaderHasError(shader)) throw new System.Exception("ScreenEffects shader import failed");
    var b=new AssetBundleBuild {assetBundleName="stutterfix_effects",assetNames=new[]{"Assets/Effects/ScreenEffects.shader"}};
    if(BuildPipeline.BuildAssetBundles(output,new[]{b},BuildAssetBundleOptions.ChunkBasedCompression,BuildTarget.StandaloneWindows64)==null)

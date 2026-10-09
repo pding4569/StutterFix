@@ -1,6 +1,7 @@
+param([string]$Out='tools/framegenlab/out/effects-reload-build')
 $ErrorActionPreference='Stop'
 $fxRepo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
-$fxBuild=Join-Path $fxRepo 'tools/framegenlab/out/effects-reload-build'
+$fxBuild=Join-Path $fxRepo $Out
 if(Get-Process -Name 'A Dance of Fire and Ice' -ErrorAction SilentlyContinue){throw 'Close game normally before building the reload fixture'}
 if(Test-Path -LiteralPath $fxBuild){throw 'Preserve existing reload build; do not overwrite evidence'}
 New-Item -ItemType Directory -Path $fxBuild | Out-Null

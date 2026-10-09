@@ -878,6 +878,11 @@ namespace StutterFix
         public bool FrameGenRefreshRest = false; // 저장 휴식 검증 후보; 마감 모드에만 적용.
         public int FxPreset = 0;
         public bool FxColor=false, FxSharp=false, FxAA=false, FxGlow=false, FxVignette=false, FxLut=false, FxLight=false;
+        public bool FxGlowStack=false, FxToneMap=false, FxRays=false, FxStreak=false, FxFlare=false;
+        public bool FxChromatic=false, FxGrain=false, FxCrt=false, FxPixel=false, FxPosterize=false, FxBlur=false;
+        public float FxCeiling=.97f, FxRaysAmount=.8f, FxRaysX=.5f, FxRaysY=.25f, FxRaysLength=.8f;
+        public float FxStreakAmount=.5f, FxFlareAmount=.35f, FxChromaticAmount=2, FxGrainAmount=.045f;
+        public float FxCrtAmount=.5f, FxPixelSize=6, FxPosterizeLevels=8, FxBlurRadius=2;
         public float FxVibrance=.2f, FxContrast=1.08f, FxBrightness=0, FxTemperature=0;
         public float FxSharpAmount=.4f, FxGlowThreshold=.75f, FxGlowAmount=.25f, FxVignetteAmount=.15f, FxLightAmount=.2f;
         public int FxLightQuality=3;

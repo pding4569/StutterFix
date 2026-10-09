@@ -1373,8 +1373,10 @@ namespace StutterFix
         {
             var c=Main.Config; bool ch=false;
             SubHeading(T("화면 효과","Screen effects"),T("맵 연출 뒤, UI와 프레임 늘리기 앞에 적용합니다. 전부 기본 꺼짐.","After level effects; before UI and frame interpolation. All disabled by default."));
-            int preset=ScreenEffects.Enabled?Mathf.Clamp(c.FxPreset==0?4:c.FxPreset,1,4):0;bool presetChanged=false;
+            int preset=ScreenEffects.Enabled?Mathf.Clamp(c.FxPreset==5?2:c.FxPreset==6?3:c.FxPreset==0?4:c.FxPreset,1,4):0;bool presetChanged=false;
             if(Segment("fxpreset",ref preset,new[]{T("꺼짐","Off"),T("선명","Sharp"),T("또렷","Clear"),T("네온","Neon"),T("직접 조절","Custom")})){if(preset<4)ScreenEffects.Preset(preset);else c.FxPreset=4;ch=presetChanged=true;}
+            int candidate=c.FxPreset==5?1:c.FxPreset==6?2:0;
+            if(Segment("fxcandidate",ref candidate,new[]{T("기존 값","Original"),T("또렷 후보","Clear candidate"),T("네온 후보","Neon candidate")})) {ScreenEffects.Preset(candidate==1?5:candidate==2?6:c.FxPreset==6?3:2);ch=presetChanged=true;}
             BeginGroup();
             ch|=Option("fxcolor",ref c.FxColor,T("색감","Color"),T("생동감·대비·밝기·색온도를 한 패스로 조절합니다.","Vibrance, contrast, exposure and temperature in one pass."),null);
             if(c.FxColor){ch|=FxSlider("fxvib",ref c.FxVibrance,-1,1,T("생동감","Vibrance"));ch|=FxSlider("fxcon",ref c.FxContrast,.5f,1.5f,T("대비","Contrast"));ch|=FxSlider("fxbri",ref c.FxBrightness,-1,1,T("밝기","Exposure"));ch|=FxSlider("fxtemp",ref c.FxTemperature,-1,1,T("색온도","Temperature"));}
@@ -1382,17 +1384,40 @@ namespace StutterFix
             if(c.FxSharp)ch|=FxSlider("fxsharpv",ref c.FxSharpAmount,0,2,T("세기","Strength"));
             ch|=Option("fxaa",ref c.FxAA,T("가장자리 (FXAA)","Edges (FXAA)"),T("밝기 차이가 큰 가장자리를 한 패스로 다듬습니다.","One directional edge-smoothing pass."),null);
             ch|=Option("fxglow",ref c.FxGlow,T("글로우","Glow"),T("작은 그림에서 밝은 부분을 퍼뜨립니다. 맵 블룸이 켜진 동안은 쉽니다.","Spreads highlights at quarter size. Rests while level bloom is enabled."),null);
-            if(c.FxGlow){ch|=FxSlider("fxglowv",ref c.FxGlowAmount,0,1,T("세기","Strength"));ch|=FxSlider("fxthreshold",ref c.FxGlowThreshold,0,1,T("밝은 부분 기준","Highlight threshold"));}
+            if(c.FxGlow){ch|=FxSlider("fxglowv",ref c.FxGlowAmount,0,2,T("세기","Strength"));ch|=FxSlider("fxthreshold",ref c.FxGlowThreshold,0,1,T("밝은 부분 기준","Highlight threshold"));ch|=Option("fxstack",ref c.FxGlowStack,T("맵 블룸 위에 글로우","Glow over level bloom"),T("맵 블룸이 켜져 있어도 겹쳐 적용합니다. 네온 후보에서 사용합니다.","Apply glow even while level bloom is active; used by the neon candidate."),null);}
             ch|=Option("fxvignette",ref c.FxVignette,T("비네트","Vignette"),T("가장자리를 약하게 어둡게 합니다. 색감과 같은 패스입니다.","Darkens the border; shares the color pass."),null);
             if(c.FxVignette)ch|=FxSlider("fxvigv",ref c.FxVignetteAmount,0,.6f,T("세기","Strength"));
             ch|=Option("fxlut",ref c.FxLut,"LUT",T("luts 폴더의 N²×N PNG 색 보정 표를 사용합니다. 색감 패스에 합칩니다.","N²×N PNG color strip from the luts folder; shares the color pass."),null);
             if(c.FxLut){P(T("파일 이름 (예: warm.png)","File name (e.g. warm.png)"),sDim);if(fxLutSaved!=c.FxLutPath || fxLutEdit==null){fxLutSaved=c.FxLutPath;fxLutEdit=c.FxLutPath??"";}fxLutEdit=GUILayout.TextField(fxLutEdit,sBody);if(Btn(T("파일 적용","Apply file"),sBody)){c.FxLutPath=fxLutSaved=fxLutEdit.Trim();ch=true;}if(string.IsNullOrEmpty(c.FxLutPath))P(T("LUT 파일: 선택 안 됨","LUT file: not selected"),sDim);}
             ch|=Option("fxlight",ref c.FxLight,T("주변 비추기 (실험)","Surround lighting (experimental)"),T("밝은 부분의 색을 어두운 주변에 넓게 퍼뜨립니다. 깊이 정보는 쓰지 않습니다.","Spreads highlight color into dark surroundings; screen-space only, no depth."),null);
             if(c.FxLight){ch|=FxSlider("fxlightv",ref c.FxLightAmount,0,1,T("세기","Strength"));int quality=3-Mathf.Clamp(c.FxLightQuality,1,3);if(Segment("fxlightq",ref quality,new[]{"1/8","1/4","1/2"})){c.FxLightQuality=3-quality;ch=true;}}
+            ch|=Option("fxtone",ref c.FxToneMap,T("밝기 상한 · 톤 매핑","Brightness ceiling / tone mapping"),T("밝은 부분을 완만하게 눌러 흰색으로 날아가는 것을 줄입니다. 이미 지워진 밝은 세부는 복구하지 않습니다.","Softly compresses highlights; cannot recover already clipped detail."),null);
+            if(c.FxToneMap)ch|=FxSlider("fxcap",ref c.FxCeiling,.5f,1,T("밝기 상한","Ceiling"));
+            ch|=Option("fxrays",ref c.FxRays,T("빛줄기 (Godrays)","Light rays (Godrays)"),T("화면의 밝은 부분에서 지정한 중심으로 빛을 퍼뜨립니다. 2D 화면 효과입니다.","Radial highlight integration toward a chosen screen position; 2D screen effect."),null);
+            if(c.FxRays){ch|=FxSlider("fxraysv",ref c.FxRaysAmount,0,2,T("세기","Strength"));ch|=FxSlider("fxraysx",ref c.FxRaysX,0,1,T("중심 가로","Center X"));ch|=FxSlider("fxraysy",ref c.FxRaysY,0,1,T("중심 세로","Center Y"));ch|=FxSlider("fxrayslen",ref c.FxRaysLength,0,1,T("길이","Length"));}
+            ch|=Option("fxstreak",ref c.FxStreak,T("가로 빛 번짐","Light streak"),T("밝은 부분을 가로로 길게 퍼뜨립니다.","Spreads bright regions horizontally."),null);
+            if(c.FxStreak)ch|=FxSlider("fxstreakv",ref c.FxStreakAmount,0,2,T("세기","Strength"));
+            ch|=Option("fxflare",ref c.FxFlare,T("렌즈 플레어","Lens flare"),T("밝은 부분에 대응하는 반사 무늬를 만듭니다.","Adds mirrored highlight ghosts."),null);
+            if(c.FxFlare)ch|=FxSlider("fxflarev",ref c.FxFlareAmount,0,2,T("세기","Strength"));
+            if(!c.FxGlow && (c.FxRays||c.FxStreak||c.FxFlare))ch|=FxSlider("fxoptthreshold",ref c.FxGlowThreshold,0,1,T("빛 효과의 밝은 부분 기준","Light-effect highlight threshold"));
+            ch|=Option("fxca",ref c.FxChromatic,T("색수차","Chromatic aberration"),T("화면 가장자리의 빨강·파랑을 조금 벌립니다.","Separates red and blue toward the border."),null);
+            if(c.FxChromatic)ch|=FxSlider("fxcav",ref c.FxChromaticAmount,0,12,T("픽셀","Pixels"));
+            ch|=Option("fxgrain",ref c.FxGrain,T("필름 그레인","Film grain"),T("게임 그림에 작은 필름 입자를 더합니다. UI에는 적용하지 않습니다.","Adds grain to the scene, leaving UI intact."),null);
+            if(c.FxGrain)ch|=FxSlider("fxgrainv",ref c.FxGrainAmount,0,.2f,T("세기","Strength"));
+            ch|=Option("fxcrt",ref c.FxCrt,T("CRT","CRT"),T("주사선과 곡면 느낌을 게임 그림에 적용합니다.","Adds scanlines and screen curvature to the scene."),null);
+            if(c.FxCrt)ch|=FxSlider("fxcrtv",ref c.FxCrtAmount,0,1,T("세기","Strength"));
+            ch|=Option("fxpixel",ref c.FxPixel,T("픽셀화","Pixelate"),T("게임 그림을 큰 픽셀로 표시합니다.","Draws the scene with larger pixels."),null);
+            if(c.FxPixel)ch|=FxSlider("fxpixelv",ref c.FxPixelSize,2,32,T("픽셀 크기","Pixel size"));
+            ch|=Option("fxposter",ref c.FxPosterize,T("색 단계 줄이기","Posterize"),T("색을 몇 단계로 줄여 포스터 느낌을 만듭니다.","Quantizes colors for a poster-like appearance."),null);
+            if(c.FxPosterize)ch|=FxSlider("fxposterv",ref c.FxPosterizeLevels,2,32,T("색 단계","Color levels"));
+            ch|=Option("fxblur",ref c.FxBlur,T("화면 흐림","Scene blur"),T("작은 그림에서 게임 화면을 흐리게 합니다. UI는 선명하게 남습니다.","Blurs a reduced scene texture, keeping UI sharp."),null);
+            if(c.FxBlur)ch|=FxSlider("fxblurv",ref c.FxBlurRadius,1,8,T("반경","Radius"));
             EndGroup();
             P(T("3440×1440 · RTX 4060 Ti · 한 그림 GPU 표본", "3440×1440 · RTX 4060 Ti · one-scene GPU fixture"),sDim);
             P(T("색감 약 0.06ms · 색감+LUT+비네트 0.08ms · 선명 0.09ms · 가장자리 0.11ms · 글로우 0.09ms · 주변 비추기(1/8) 0.09ms", "Color ≈0.06ms · color+LUT+vignette 0.08ms · sharpen 0.09ms · edges 0.11ms · glow 0.09ms · lighting(1/8) 0.09ms"),sDim);
             P(T("효과를 합치면 패스 비용이 더해집니다. 장면·GPU에 따라 달라지며 전체 FPS 손실이 아닙니다.","Pass costs add when combined, vary by scene/GPU, and are not total FPS loss."),sDim);
+            P(T("또렷 후보 약 0.13ms · 네온 후보 0.28ms · 빛줄기 0.10ms · 가로 번짐 0.09ms · 플레어 0.08ms", "Clear candidate ≈0.13ms · neon candidate 0.28ms · rays 0.10ms · streak 0.09ms · flare 0.08ms"),sDim);
+            P(T("톤 상한·색수차·그레인·CRT·픽셀화·색 단계·흐림 각각 약 0.08~0.09ms", "Ceiling, chromatic, grain, CRT, pixelate, posterize and blur each ≈0.08–0.09ms"),sDim);
             P(T("맵이 별도 FPS 그림 버퍼를 쓰는 동안은 효과를 쉽니다.","Effects rest while a level uses a separate custom-FPS picture buffer."),sDim);
             if(ScreenEffects.Status.Length>0)P(ScreenEffects.Status,sDim);
             SubHeading(T("늘린 화면의 선명도","Upscale sharpness"),T("기존 설정 값은 유지합니다.","Existing saved values are preserved."));

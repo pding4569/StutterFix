@@ -1,0 +1,321 @@
+{
+  "scope": "D3D11 disjoint/timestamp queries around private offscreen passes on one frozen true3440x1440 scene. Thirty warmup frames per profile; async8slot DONOTFLUSH, no GPU waits/CPU pixel reads. Not gameplay FPS, PresentMon, physical display or arbitrary-scene cost. Glow executes privately even if the live map has its own bloom; live effects unchanged.",
+  "profiles": {
+    "passthrough": {
+      "profile": "passthrough",
+      "samples": 801,
+      "mean_ms": 0.05931913108614232,
+      "maximum_ms": 0.072704,
+      "skipped": 0,
+      "errors": 0
+    },
+    "clear-strong": {
+      "profile": "clear-strong",
+      "samples": 744,
+      "mean_ms": 0.1287872688172043,
+      "maximum_ms": 0.157696,
+      "skipped": 0,
+      "errors": 0
+    },
+    "neon-strong": {
+      "profile": "neon-strong",
+      "samples": 712,
+      "mean_ms": 0.27675038202247193,
+      "maximum_ms": 0.299008,
+      "skipped": 0,
+      "errors": 0
+    },
+    "rays": {
+      "profile": "rays",
+      "samples": 775,
+      "mean_ms": 0.09560988903225807,
+      "maximum_ms": 0.114688,
+      "skipped": 0,
+      "errors": 0
+    },
+    "streak": {
+      "profile": "streak",
+      "samples": 642,
+      "mean_ms": 0.08721864174454828,
+      "maximum_ms": 0.096256,
+      "skipped": 0,
+      "errors": 0
+    },
+    "flare": {
+      "profile": "flare",
+      "samples": 714,
+      "mean_ms": 0.07943744537815126,
+      "maximum_ms": 0.088064,
+      "skipped": 0,
+      "errors": 0
+    },
+    "tone": {
+      "profile": "tone",
+      "samples": 549,
+      "mean_ms": 0.0887056320582878,
+      "maximum_ms": 0.287744,
+      "skipped": 0,
+      "errors": 0
+    },
+    "chromatic": {
+      "profile": "chromatic",
+      "samples": 534,
+      "mean_ms": 0.08836698127340824,
+      "maximum_ms": 0.156672,
+      "skipped": 0,
+      "errors": 0
+    },
+    "grain": {
+      "profile": "grain",
+      "samples": 567,
+      "mean_ms": 0.08846673721340387,
+      "maximum_ms": 0.662528,
+      "skipped": 0,
+      "errors": 0
+    },
+    "crt": {
+      "profile": "crt",
+      "samples": 549,
+      "mean_ms": 0.08786442258652094,
+      "maximum_ms": 0.923648,
+      "skipped": 0,
+      "errors": 0
+    },
+    "pixel": {
+      "profile": "pixel",
+      "samples": 585,
+      "mean_ms": 0.0878854564102564,
+      "maximum_ms": 0.92672,
+      "skipped": 0,
+      "errors": 0
+    },
+    "posterize": {
+      "profile": "posterize",
+      "samples": 616,
+      "mean_ms": 0.0824718961038961,
+      "maximum_ms": 0.652288,
+      "skipped": 0,
+      "errors": 0
+    },
+    "blur": {
+      "profile": "blur",
+      "samples": 628,
+      "mean_ms": 0.08956901910828025,
+      "maximum_ms": 0.100352,
+      "skipped": 0,
+      "errors": 0
+    }
+  },
+  "rows": [
+    {
+      "profile": "passthrough",
+      "samples": 800,
+      "mean_ms": 0.05931136,
+      "maximum_ms": 0.072704,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "passthrough",
+      "samples": 801,
+      "mean_ms": 0.05931913108614232,
+      "maximum_ms": 0.072704,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "clear-strong",
+      "samples": 743,
+      "mean_ms": 0.1287841938088829,
+      "maximum_ms": 0.157696,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "clear-strong",
+      "samples": 744,
+      "mean_ms": 0.1287872688172043,
+      "maximum_ms": 0.157696,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "neon-strong",
+      "samples": 711,
+      "mean_ms": 0.2767464416315049,
+      "maximum_ms": 0.299008,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "neon-strong",
+      "samples": 712,
+      "mean_ms": 0.27675038202247193,
+      "maximum_ms": 0.299008,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "rays",
+      "samples": 774,
+      "mean_ms": 0.09561566925064599,
+      "maximum_ms": 0.114688,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "rays",
+      "samples": 775,
+      "mean_ms": 0.09560988903225807,
+      "maximum_ms": 0.114688,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "streak",
+      "samples": 641,
+      "mean_ms": 0.08721253042121685,
+      "maximum_ms": 0.096256,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "streak",
+      "samples": 642,
+      "mean_ms": 0.08721864174454828,
+      "maximum_ms": 0.096256,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "flare",
+      "samples": 713,
+      "mean_ms": 0.07943539971949509,
+      "maximum_ms": 0.088064,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "flare",
+      "samples": 714,
+      "mean_ms": 0.07943744537815126,
+      "maximum_ms": 0.088064,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "tone",
+      "samples": 548,
+      "mean_ms": 0.08872362043795622,
+      "maximum_ms": 0.287744,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "tone",
+      "samples": 549,
+      "mean_ms": 0.0887056320582878,
+      "maximum_ms": 0.287744,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "chromatic",
+      "samples": 533,
+      "mean_ms": 0.08834065290806754,
+      "maximum_ms": 0.156672,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "chromatic",
+      "samples": 534,
+      "mean_ms": 0.08836698127340824,
+      "maximum_ms": 0.156672,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "grain",
+      "samples": 566,
+      "mean_ms": 0.08847287632508834,
+      "maximum_ms": 0.662528,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "grain",
+      "samples": 567,
+      "mean_ms": 0.08846673721340387,
+      "maximum_ms": 0.662528,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "crt",
+      "samples": 548,
+      "mean_ms": 0.08786779562043796,
+      "maximum_ms": 0.923648,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "crt",
+      "samples": 549,
+      "mean_ms": 0.08786442258652094,
+      "maximum_ms": 0.923648,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "pixel",
+      "samples": 583,
+      "mean_ms": 0.08793578044596913,
+      "maximum_ms": 0.92672,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "pixel",
+      "samples": 585,
+      "mean_ms": 0.0878854564102564,
+      "maximum_ms": 0.92672,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "posterize",
+      "samples": 615,
+      "mean_ms": 0.08246946341463414,
+      "maximum_ms": 0.652288,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "posterize",
+      "samples": 616,
+      "mean_ms": 0.0824718961038961,
+      "maximum_ms": 0.652288,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "blur",
+      "samples": 627,
+      "mean_ms": 0.08957631897926635,
+      "maximum_ms": 0.100352,
+      "skipped": 0,
+      "errors": 0
+    },
+    {
+      "profile": "blur",
+      "samples": 628,
+      "mean_ms": 0.08956901910828025,
+      "maximum_ms": 0.100352,
+      "skipped": 0,
+      "errors": 0
+    }
+  ],
+  "managed_sha256": "2028905a0f0165c0147f8a96536e4a004a79fc9309b7c6066acf9373d5b5bfc3",
+  "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a"
+}

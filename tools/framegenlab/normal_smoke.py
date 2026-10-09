@@ -13,12 +13,14 @@ def main():
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--mode', type=int, choices=[0, *range(2, 9)], default=0)
     p.add_argument('--refresh', action='store_true', help='General match-refresh mode, including zero-generation above refresh')
+    p.add_argument('--refresh-rest', action='store_true', help='Explicit default-OFF snapshot-rest candidate, requires refresh')
     p.add_argument('--full-song', action='store_true')
     p.add_argument('--switch', action='store_true')
     p.add_argument('--monitor-smoke', action='store_true', help='Verify real/output/both counters and capture all three monitor layouts')
     p.add_argument('--settings', type=Path, help='Temporary compatibility settings JSON')
     p.add_argument('--no-shot', action='store_true', help='Submission/source sample without a later screenshot')
     a = p.parse_args()
+    if a.refresh_rest and not a.refresh:p.error('--refresh-rest requires --refresh')
     if (Path(__file__).resolve().parent/'out/stop-outside-batch').exists():
         raise RuntimeError('Batch deliberately stopped before installation; preserve current evidence')
     if not a.map.is_file() or sf.game_running():
@@ -72,7 +74,7 @@ def main():
             if not a.mode:
                 steps += ['fgmonitor']
         steps += ['quit']
-        summary, metrics = sf.sf_run(steps, settings={**extra, 'FrameGenOutside': a.mode, 'FrameGenRefresh': a.refresh, 'FrameStats': False, 'LowHalfRender': False},
+        summary, metrics = sf.sf_run(steps, settings={**extra, 'FrameGenOutside': a.mode, 'FrameGenRefresh': a.refresh, 'FrameGenRefreshRest':a.refresh_rest, 'FrameStats': False, 'LowHalfRender': False},
                                     timeout_min=12 if a.full_song else 4, tag='framegen-normal')
         log = sf.read_text(sf.PLAYER_LOG)
         (a.out/'game.log').write_text(log, encoding='utf8')
@@ -130,7 +132,7 @@ def main():
                 raise RuntimeError('Default OFF monitor unexpectedly counted native output: '+str(monitor))
         if not a.no_shot and not a.switch and shot.exists():
             (a.out/'screen.png').write_bytes(shot.read_bytes())
-        result = dict(mode=a.mode, refresh=a.refresh, full_song=a.full_song, switch=a.switch, compatibility_settings=extra,
+        result = dict(mode=a.mode, refresh=a.refresh, refresh_rest=a.refresh_rest, full_song=a.full_song, switch=a.switch, compatibility_settings=extra,
                       monitor_smoke=a.monitor_smoke, monitor_samples=monitor,
                       managed_sha256=hashlib.sha256(binary).hexdigest(),
                       native_sha256=hashlib.sha256((mod/'sfnative.dll').read_bytes()).hexdigest(),

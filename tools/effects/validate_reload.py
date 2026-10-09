@@ -6,7 +6,7 @@ sys.path.insert(0,str(ROOT/'tools/framegenlab'))
 from measure_maps import sf
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--next-dll',type=Path,required=True);p.add_argument('--identity',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--next-dll',type=Path,required=True);p.add_argument('--identity',type=Path,required=True);p.add_argument('--out',type=Path,required=True);p.add_argument('--strong-rays',action='store_true');a=p.parse_args()
     if sf.game_running():raise RuntimeError('Existing game must be closed normally')
     before=(ROOT/'bin/PlayerAuto/StutterFix.dll').read_bytes();after=a.next_dll.read_bytes()
     identity=json.loads(a.identity.read_text(encoding='utf-8-sig'))
@@ -27,6 +27,7 @@ def main():
         (mod/'StutterFix.dll').write_bytes(before);(mod/'sfnative.dll').write_bytes((ROOT/'native/sfnative.dll').read_bytes())
         config={n:False for n in ['FxColor','FxSharp','FxAA','FxGlow','FxLight','FxVignette','FxLut','LowHalfRender','LowSharpen','LowFsr']}
         config.update(FxColor=True,FxSharp=True,FxGlow=True,FxVignette=True,FxPreset=3,LowRenderScale=100,FrameGenOutside=4,FrameGenRefresh=False,FrameStats=False)
+        if a.strong_rays:config.update(FxPreset=6,FxVibrance=.55,FxContrast=1.12,FxBrightness=-.1,FxGlowAmount=1.2,FxGlowThreshold=.28,FxGlowStack=True,FxToneMap=True,FxCeiling=.97,FxRays=True)
         sf.apply_settings(config)
         first=batch('before',['wait 3','game D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai','auto on','press','wait 12','fxstate','fgstate'])
         (mod/'StutterFix.dll').write_bytes(after)
@@ -35,7 +36,7 @@ def main():
         # ResetCustomLevel is a coroutine. A same-frame press can be consumed
         # before the reset reaches its input-wait state, leaving a static menu.
         last=batch('after',['wait 2','fxstate','fgstate','retry','wait 3','auto on','press','wait 12','fxstate','fgstate','shot fx-reload','wait 2',
-            'set FrameGenOutside 0','set FxColor false','set FxSharp false','set FxGlow false','set FxVignette false','wait 2','fxstate','fgstate'])
+            'set FrameGenOutside 0','set FxColor false','set FxSharp false','set FxGlow false','set FxVignette false','set FxGlowStack false','set FxToneMap false','set FxRays false','wait 2','fxstate','fgstate'])
         whole=sf.read_text(sf.PLAYER_LOG);(a.out/'game.log').write_text(whole,encoding='utf8')
         if any(x in whole for x in ['다시 불러오기가 깨졌습니다','다시 불러오기 실패:','[화면 효과] 실패:','native failure','Crash!!!','단계 실패']):raise RuntimeError('Reload failed; preserve evidence')
         fx=re.findall(r'\[화면효과상태\] ([^\r\n]+)',first+last)
@@ -47,7 +48,7 @@ def main():
         old_frames=int(re.search(r'frames=(\d+)',fx[0])[1]);new_frames=int(re.search(r'frames=(\d+)',fx[1])[1])
         if new_frames>=old_frames:raise RuntimeError('Fresh effect static counters were not observed')
         shutil.copyfile(shot,a.out/'hello-neon-reloaded.png')
-        data=dict(scope='Functional/visual only; reload, retry and screenshot excluded from performance.',identity=identity,before_sha256=hashlib.sha256(before).hexdigest(),after_sha256=hashlib.sha256(after).hexdigest(),phases=phases,fx_states=fx,fg_states=fg,fresh_static_frames=[old_frames,new_frames],capture_metadata=re.findall(r'화면 캡처: [^\r\n]*?\| ([^\r\n]+)',whole))
+        data=dict(scope='Functional/visual only; reload, retry and screenshot excluded from performance.',strong_neon_and_rays=a.strong_rays,identity=identity,before_sha256=hashlib.sha256(before).hexdigest(),after_sha256=hashlib.sha256(after).hexdigest(),phases=phases,fx_states=fx,fg_states=fg,fresh_static_frames=[old_frames,new_frames],capture_metadata=re.findall(r'화면 캡처: [^\r\n]*?\| ([^\r\n]+)',whole))
         (a.out/'summary.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf8');print(json.dumps(data,ensure_ascii=False),flush=True)
     finally:
         if sf.game_running():

@@ -5,7 +5,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'framegenlab'))
 from measure_maps import sf,ROOT
 def main():
  p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True);p.add_argument('--profiles',default='passthrough,color,combined,sharp,fxaa,glow,light');a=p.parse_args();profiles=a.profiles.split(',')
- if not profiles or any(n not in ['passthrough','color','combined','sharp','fxaa','glow','light'] for n in profiles):p.error('Unknown GPU profile')
+ if not profiles or len(set(profiles))!=len(profiles) or any(n not in ['passthrough','color','combined','sharp','fxaa','glow','light','clear-strong','neon-strong','rays','streak','flare','tone','chromatic','grain','crt','pixel','posterize','blur'] for n in profiles):p.error('Unknown or duplicate GPU profile')
  if sf.game_running():raise RuntimeError('Closed game required')
  a.out.mkdir(parents=True,exist_ok=False);mod=Path(sf.MOD_DIR)
  original={n:(mod/n).read_bytes() for n in ['StutterFix.dll','sfnative.dll','Settings.xml']}
