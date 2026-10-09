@@ -87,6 +87,7 @@ def main():
     p.add_argument("--label",required=True)
     p.add_argument("--mode",type=int,choices=[0,1,*range(2,9)],required=True)
     p.add_argument('--refresh',action='store_true',help='Use the general match-refresh setting; multiplier storage unchanged')
+    p.add_argument('--refresh-rest',action='store_true',help='Candidate: stop snapshot work after eight fast intervals; refresh mode only')
     p.add_argument("--seconds",type=int,default=55)
     p.add_argument("--out",type=Path,required=True)
     p.add_argument("--capture",action="store_true")
@@ -158,6 +159,7 @@ def main():
         settings={"FrameStats":False,"LowHalfRender":False,**extra,"FrameGenOutside":a.mode,"FrameGenNarrow":not a.legacy,"FrameGenFlipY":True,"FrameGenCapture":a.capture,"FrameGenClip":a.clip,"FrameGenCameraBlend":a.camera_blend,"FrameGenScenePair":a.scene_pair,"FrameGenFilterPair":a.filter_pair,"FrameGenScreenBorder":a.screen_border,"FrameGenLayerProbe":a.layer_probe,"FrameGenImageGate":a.image_gate,"FrameGenBlockFlow":a.block_flow,"FrameGenBlockVariant":a.block_variant,"FrameGenCostSplit":a.cost_split}
         settings['FrameGenFixedCostStage']=a.fixed_cost_stage
         settings['FrameGenRefresh']=a.refresh
+        settings['FrameGenRefreshRest']=a.refresh_rest
         summary,metrics=sf.sf_run(steps+["quit"],settings=settings,tag="framegen-outside-"+a.label,timeout_min=a.timeout_min)
         log=sf.read_text(sf.PLAYER_LOG); (a.out/"game.log").write_text(log,encoding="utf-8"); (a.out/"run.txt").write_text(summary,encoding="utf-8")
         if a.ui_smoke: shutil.copyfile(shot,a.out/'settings.png')
@@ -214,6 +216,7 @@ def main():
         result=dict(label=a.label,mode=a.mode,block_flow=a.block_flow,cost_split=a.cost_split,image_gate=a.image_gate,camera_blend=a.camera_blend,scene_pair=a.scene_pair,filter_pair=a.filter_pair,screen_border=a.screen_border,layer_probe=a.layer_probe,expected_inactive=a.expect_inactive,compatibility_settings=extra,visual_smoke=a.layer_probe or a.filter_pair or a.scene_pair or a.clip or a.switch_smoke or a.freeze_smoke or a.sync_smoke or a.ui_smoke or a.expect_inactive,native=native,safety=safety,game_metrics=metrics)
         result['build']=build_stamp
         result['refresh']=a.refresh
+        result['refresh_rest']=a.refresh_rest
         if scenes is not None: result['scene_metrics']=scenes
         (a.out/"summary.json").write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
         print(json.dumps(result,ensure_ascii=False),flush=True)

@@ -135,6 +135,10 @@ namespace StutterFix
         private static IntPtr[] worldPointers;
         private static int worldIndex;
         private static int refreshHz;
+        private static DeadlineSnapshotGate snapshotGate;
+#if FRAMEGEN_RESEARCH
+        private static long restingSources,savedSources,storageTransitions;
+#endif
         private static Renderer[] redRenderers,blueRenderers;
         internal static bool Failed => failed;
         private static Runner runner;
@@ -193,6 +197,10 @@ namespace StutterFix
 #endif
             finalBeginFrame=-1;
             refreshHz=0;
+            snapshotGate.Reset();
+#if FRAMEGEN_RESEARCH
+            restingSources=savedSources=storageTransitions=0;
+#endif
             sceneCamera=sceneBase=scenePulse=Vector4.zero;
             Camera.onPostRender+=PostRender;
             Camera.onPreRender+=PreRender;
@@ -223,6 +231,7 @@ namespace StutterFix
                 mode=hz>0?9:0;
             }
             if(mode!=oldMode) { oldMode=mode; Log("mode="+mode); }
+            if(mode!=9 || !Main.Config.FrameGenRefreshRest) snapshotGate.Reset();
             if(mode==0) return;
             var sc=scrCamera.instance; if(sc==null) return;
             var rt=RT(sc); var overlay=Overlay(sc); if(rt==null || overlay==null) return;
@@ -262,6 +271,18 @@ namespace StutterFix
 #endif
                 if(Diagnostics && Hitch.Playing && song>=5 && trackedCamera!=null && renderedFrame!=Time.frameCount) missingScenes++;
                 Packet p=new Packet {unused1=Narrow?new IntPtr(1):IntPtr.Zero,frame=Time.frameCount,song=song,measure=Diagnostics && Hitch.Playing?1:0,mode=Hitch.Playing && !failed?Math.Max(0,oldMode):0,flip=FlipY?1:0,linear=QualitySettings.activeColorSpace==ColorSpace.Linear?1:0,capture=Capture?1:Clip?2:0};
+                bool storageRest=false;
+                if(p.mode==9 && Main.Config.FrameGenRefreshRest) {
+                    bool before=snapshotGate.Resting;
+                    if(renderedFrame!=Time.frameCount) snapshotGate.Reset();
+                    else storageRest=snapshotGate.Observe(System.Diagnostics.Stopwatch.GetTimestamp(),System.Diagnostics.Stopwatch.Frequency,refreshHz);
+#if FRAMEGEN_RESEARCH
+                    if(song>=5 && song<45) {if(storageRest)++restingSources;else ++savedSources;if(before!=storageRest)++storageTransitions;}
+#endif
+                    // Publish mode0 even when sleeping: native stops scheduling and
+                    // invalidates history via lastPacket.mode before the next pair.
+                    if(storageRest) p.mode=0;
+                }
 #if FRAMEGEN_RESEARCH
                 if(Main.Config.FrameGenImageGate && CameraBlend) p.capture|=32;
                 if(CostSplit) p.capture|=1024; // Equal diagnostic work in OFF/copy-only/2x/4x cost comparison.
@@ -273,7 +294,7 @@ namespace StutterFix
                 if(CameraBlend) p.capture|=4; // Shared delayed timeline, one-source visual delay.
                 if(ScenePair) p.capture|=8; // Separate early visual test; never a performance sample.
                 p.unused2=renderedFrame==Time.frameCount?new IntPtr(1):IntPtr.Zero;
-                if(sc!=null && controller!=null && controller.planetRed!=null && controller.planetBlue!=null) {
+                if(!storageRest && sc!=null && controller!=null && controller.planetRed!=null && controller.planetBlue!=null) {
                     var camera=Cam(sc); if(camera!=null) {
                         var r=controller.planetRed.transform; var b=controller.planetBlue.transform;
                         p.pose=new Pose {x=sceneCamera.x,y=sceneCamera.y,size=sceneCamera.z,angle=sceneCamera.w,rx=r.position.x,ry=r.position.y,rs=r.lossyScale.x,ra=r.eulerAngles.z*Mathf.Deg2Rad,bx=b.position.x,by=b.position.y,bs=b.lossyScale.x,ba=b.eulerAngles.z*Mathf.Deg2Rad};
@@ -392,6 +413,7 @@ namespace StutterFix
 #if FRAMEGEN_RESEARCH
             Camera.onPreCull-=EarlyWorld;
             if(FixedCostStage==4) Log("early world fallback="+earlyFallbacks);
+            if(Main.Config.FrameGenRefreshRest) Log("storage-rest window=5..45 saved="+savedSources+" rested="+restingSources+" transitions="+storageTransitions);
 #endif
             Issue(4,IntPtr.Zero); GL.Flush(); if(Diagnostics) Log("finish; missing real scenes="+missingScenes+" native status="+sf_framegen_status());
         }

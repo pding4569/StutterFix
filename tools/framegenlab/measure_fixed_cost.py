@@ -128,6 +128,7 @@ def main():
     parser.add_argument('--settings',type=Path,help='Explicit screen-effects/compatibility settings; same file throughout batch')
     parser.add_argument('--variant',type=int,default=0,choices=[0,1,2,3,4])
     parser.add_argument('--resume',action='store_true',help='Reuse completed game trial and saved PM capture; never retry failed game')
+    parser.add_argument('--refresh-rest',action='store_true',help='Refresh-deadline snapshot-rest candidate')
     parser.add_argument('--without-presentmon',action='store_true',help='Measure only native/real-frame counters; physical display FPS and latency remain unmeasured. No elevation.')
     parser.add_argument('--baseline-off',type=Path,help='Reuse the explicitly named earlier same-build OFF for a remaining2x trial')
     a=parser.parse_args()
@@ -151,6 +152,7 @@ def main():
         command=[sys.executable,str(HERE/'measure_outside.py'),'--map',str(a.map),'--out',str(root),'--label',name,'--mode',str(mode),'--seconds','55','--cost-split','--timeout-min','4']
         if mode==9:
             command[command.index('--mode')+1]='4';command+=['--refresh']
+            if a.refresh_rest:command+=['--refresh-rest']
         if a.variant: command+=['--fixed-cost-stage',str(a.variant)]
         if mode: command+=['--block-flow','--block-variant','3']
         if a.settings: command+=['--settings',str(a.settings.resolve())]
@@ -204,6 +206,20 @@ def main():
                  timeline_to_submit_ms=native.get('interpolated_timeline_to_submit_ms') if native else None,
                  safety=data['safety'],presentmon=None if a.without_presentmon else pm_summary(root))
         row['physical_display_measurement']='unmeasured: no PresentMon capture' if a.without_presentmon else 'PresentMon'
+        row['refresh_rest']=bool(a.refresh_rest and mode==9)
+        storage=re.search(r'storage-rest window=5\.\.45 saved=(\d+) rested=(\d+) transitions=(\d+)',log)
+        if storage:
+            row['snapshot_rest_untrimmed_counters']=dict(zip(['saved','rested','transitions'],map(int,storage.groups())))
+            row['snapshot_rest_untrimmed_scope']='Managed counters may include pre-play cached song time; not the final play window'
+            source_rows=read(root/'capture/sources.csv')
+            window=[r for r in source_rows if 5<=float(r['song_s'])<45]
+            # This candidate deliberately omits the pose only when resting.
+            # Cross-check positive poses against native active schedule frame IDs.
+            saved_ids={int(r['unity_frame']) for r in window if float(r['camera_size'])>0}
+            schedule_ids={int(r['unity_frame']) for r in read(root/'capture/schedule.csv') if 5<=float(r['song_s'])<45 and r['mode']=='9'}
+            if saved_ids!=schedule_ids or any(float(r['camera_size'])==0 and r['scene_rendered']!='1' for r in window):raise RuntimeError('Snapshot-rest marker/schedule mismatch')
+            row['snapshot_rest_window']=dict(saved=len(saved_ids),rested=len(window)-len(saved_ids),packets=len(window),
+                scope='Native packets5..45s after last song rewind; zero omitted pose cross-checked with active schedule IDs. Includes Unity packets without a new camera callback, not a true-scene FPS counter.')
         if native:
             row['generated_gpu_ms']=native['generated_gpu_ms']
             row['missing_camera_callbacks']=native['missing_camera_callbacks']

@@ -875,6 +875,7 @@ namespace StutterFix
         public int FrameGenOutside = 0;     // (실험) 0=끔, 2..8=출력 배율. 입력·판정은 원래 속도.
         public int FrameGenMultiplier = 2;  // 마지막으로 선택한 배율
         public bool FrameGenRefresh = false; // 주사율 부족분만 생성. 기존 2..8배 저장 값 보존.
+        public bool FrameGenRefreshRest = false; // 저장 휴식 검증 후보; 마감 모드에만 적용.
         public int FxPreset = 0;
         public bool FxColor=false, FxSharp=false, FxAA=false, FxGlow=false, FxVignette=false, FxLut=false, FxLight=false;
         public float FxVibrance=.2f, FxContrast=1.08f, FxBrightness=0, FxTemperature=0;

@@ -79,6 +79,7 @@
     <Compile Include="LowEnd.cs" />
     <Compile Include="HalfRender.cs" />
     <Compile Include="FrameGen.cs" />
+    <Compile Include="DeadlineSnapshotGate.cs" />
     <Compile Include="Fsr.cs" />
     <Compile Include="ScreenEffects.cs" />
     <Compile Include="EffectsGpuProbe.cs" />
@@ -248,4 +249,3 @@
   </ItemGroup>
 
 </Project>
-

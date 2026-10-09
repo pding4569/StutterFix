@@ -1454,7 +1454,11 @@ namespace StutterFix
                 if(Segment("framegenmode",ref frameMode,new[] {T("주사율 맞춤","Match refresh"),T("2~8배","2–8×")})) {
                     c.FrameGenRefresh=frameMode==0;Save();
                 }
-                if(c.FrameGenRefresh) P(T("마지막 진짜 프레임 뒤 1/주사율 동안 다음 진짜 프레임이 없을 때만 하나 생성합니다. 그림 저장은 계속하며 실제 표시 횟수는 별도로 확인해야 합니다.","Generate only if no new real frame arrives within one refresh period after the last real frame. Snapshots continue; display events must be measured separately."),sDim);
+                if(c.FrameGenRefresh) {
+                    P(T("마지막 진짜 프레임 뒤 1/주사율 동안 다음 진짜 프레임이 없을 때만 하나 생성합니다.","Generate only if no new real frame arrives within one refresh period after the last real frame."),sDim);
+                    if(Option("framegenrefreshrest",ref c.FrameGenRefreshRest,T("빠른 구간에서 그림 저장 쉬기","Rest snapshots in fast sections"),
+                        T("진짜 프레임 8장이 연속으로 주사율 간격의 80%보다 빠르면 그림 저장을 쉬고, 가까워지면 다시 저장합니다. CPU·GPU 비용을 줄이지만 쉬는 중 처음 생긴 끊김에는 중간 화면을 만들 수 없습니다. 저장 재개 때 화면 지연이 달라질 수 있어 기본 꺼짐인 실험 후보입니다.","Pause snapshots after eight consecutive real frames faster than 80% of a refresh interval, and resume near that interval. Saves CPU/GPU work, but cannot fill the first unexpected hitch while resting. Visual delay can change when resuming; this experimental candidate is off by default."),T("실험","Experimental"))) Save();
+                }
                 else {
                 float multiplier = Mathf.Clamp(c.FrameGenOutside, 2, 8);
                 if (Slider("framegenmultiplier", ref multiplier, 2, 8, T("출력 배율", "Output multiplier"), Mathf.RoundToInt(multiplier) + T("배", "×")))
