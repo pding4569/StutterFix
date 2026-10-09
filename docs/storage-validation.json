@@ -1,0 +1,44 @@
+{
+  "time": "2026-10-09T18:06:09.0802953+09:00",
+  "active_repository": "E:\\StutterFixWork\\StutterFix",
+  "verified_files": 34336.0,
+  "journal_sha256": "f212560a8f4256f58efbbaff4bfb806001bba4b31405ff9965c7a7894b1f0a55",
+  "copies": [
+    {
+      "source": "C:\\Users\\나로컴\\Documents\\StutterFix",
+      "target": "E:\\StutterFixWork\\StutterFix",
+      "files": 32151
+    },
+    {
+      "source": "C:\\Users\\Public\\StutterFixTrace",
+      "target": "E:\\StutterFixWork\\StutterFixTrace",
+      "files": 2183
+    },
+    {
+      "source": "C:\\Users\\나로컴\\AppData\\Local\\Temp\\PerfView",
+      "target": "E:\\StutterFixWork\\PerfViewCache",
+      "files": 2
+    }
+  ],
+  "completed_aliases": [
+    {
+      "path": "C:\\Users\\Public\\StutterFixTrace",
+      "type": "Junction",
+      "target": "E:\\StutterFixWork\\StutterFixTrace",
+      "backup_exists": false
+    },
+    {
+      "path": "C:\\Users\\나로컴\\AppData\\Local\\Temp\\PerfView",
+      "type": "Junction",
+      "target": "E:\\StutterFixWork\\PerfViewCache",
+      "backup_exists": false
+    }
+  ],
+  "project_root_removed": false,
+  "project_root_holder_query": "ChatGPT/Codex with Python/Node/uv connectors; Claude close did not release all holders",
+  "c_free_bytes": 35473825792,
+  "git_connectivity_exit": 0,
+  "playerauto_build_errors": 0,
+  "loadcheck_checked": 220,
+  "loadcheck_errors": 0
+}
