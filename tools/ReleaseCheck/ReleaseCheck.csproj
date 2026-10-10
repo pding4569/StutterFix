@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <GameManaged>D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed</GameManaged>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(GameManaged)/UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="Assembly-CSharp" HintPath="$(GameManaged)/Assembly-CSharp.dll" Private="false" />
+    <Reference Include="Assembly-CSharp-firstpass" HintPath="$(GameManaged)/Assembly-CSharp-firstpass.dll" Private="false" />
+    <Reference Include="RDTools" HintPath="$(GameManaged)/RDTools.dll" Private="false" />
+    <Reference Include="UnityModManager" HintPath="$(GameManaged)/UnityModManager/UnityModManager.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(GameManaged)/UnityModManager/0Harmony.dll" Private="false" />
+  </ItemGroup>
+</Project>

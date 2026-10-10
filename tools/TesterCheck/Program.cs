@@ -6,7 +6,9 @@ using System.Text.Json;
 using System.Xml.Serialization;
 
 // Read the actual tester artifact, without starting Unity or installing anything.
-if(args.Length!=3) throw new ArgumentException("TesterCheck <zip> <repo> <game Managed>");
+if(args.Length!=3&&args.Length!=4) throw new ArgumentException("TesterCheck <zip> <repo> <game Managed> [release]");
+bool release=args.Length==4&&args[3]=="release";
+if(args.Length==4&&!release)throw new ArgumentException("Unknown package kind");
 string zipPath=Path.GetFullPath(args[0]),repo=Path.GetFullPath(args[1]),managed=Path.GetFullPath(args[2]);
 AppDomain.CurrentDomain.AssemblyResolve+=(s,e)=>{
     string name=new AssemblyName(e.Name).Name+".dll";
@@ -25,7 +27,11 @@ Check(Read(zip.GetEntry("StutterFix/effects-LICENSE.txt")).SequenceEqual(File.Re
 byte[] dll=Read(zip.GetEntry("StutterFix/StutterFix.dll"));
 Check(dll.SequenceEqual(File.ReadAllBytes(Path.Combine(repo,"bin/Player/StutterFix.dll"))),"ZIP DLL differs from Player build");
 using var info=JsonDocument.Parse(Read(zip.GetEntry("StutterFix/Info.json")));
-Check(info.RootElement.GetProperty("DisplayName").GetString().Contains("테스터"),"Missing tester label");
+if(release){
+    using var original=JsonDocument.Parse(File.ReadAllText(Path.Combine(repo,"Info.json")));
+    Check(info.RootElement.GetProperty("Version").GetString()==original.RootElement.GetProperty("Version").GetString(),"Release version differs");
+    Check(info.RootElement.GetProperty("DisplayName").GetString()=="Stutter Fix","Unexpected release label");
+}else Check(info.RootElement.GetProperty("DisplayName").GetString().Contains("테스터"),"Missing tester label");
 // Edition.cs intentionally compiles diagnostic types into both editions.
 // Presence of old command strings does not prove that AutoTest is enabled.
 var asm=Assembly.Load(dll);

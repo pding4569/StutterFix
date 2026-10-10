@@ -1,0 +1,19 @@
+{
+  "settings_bytes_restored": true,
+  "settings_sha256": "2ad8482cd0e6967f2d742c8e0d2e91aeae7ed099d77836475121c8dbd03f6391",
+  "helper_folder_removed": true,
+  "won_state": true,
+  "native_failures": 0,
+  "existing_dotween_errors": [
+    "775"
+  ],
+  "normal_player_dll_matches_tester3": true,
+  "old_zips_preserved": {
+    "FrameGenLab-2026-10-07-tester.zip": "689de906e1b0513c526c34c0aff33dbff6b1d12fe9544adf78b8295a4932c134",
+    "StutterFix-2.5.3-developer.zip": "5ef70b31345aeff53e638fcfbde625a6d71589eb6fe051d1b904ae8d7e1878ae",
+    "StutterFix-2.5.3-player.zip": "d5492f077a49a76c87eeb4ffd45ebf0bdefae7b10f34c642957b4ea14b46b6e4",
+    "StutterFix-2.5.3.1-tester.zip": "3e4c9426265a819da423a4dfedca9ce70dbafb4b7bccc7add2c0f5581aa033a5",
+    "StutterFix-2.5.3.2-tester.zip": "20a6a5c34078d6f0c3c096c59e7035881b2faae5ee070e4cdca5f3a056c2972f",
+    "StutterFix-2.5.3.3-tester.zip": "df5af3c08fa4628d0d78cb56203b1b8d872fc48c40e6b8aa73792bc3c8586ac6"
+  }
+}
