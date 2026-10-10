@@ -38,7 +38,7 @@ namespace StutterFix {
                 case "clear-strong":ScreenEffects.ConfigurePreset(c,5);break;case "neon-strong":ScreenEffects.ConfigurePreset(c,6);break;
                 case "rays":c.FxRays=true;break;case "streak":c.FxStreak=true;break;case "flare":c.FxFlare=true;break;
                 case "tone":c.FxToneMap=true;break;case "chromatic":c.FxChromatic=true;break;case "grain":c.FxGrain=true;break;
-                case "crt":c.FxCrt=true;break;case "pixel":c.FxPixel=true;break;case "posterize":c.FxPosterize=true;break;case "blur":c.FxBlur=true;break;
+                case "crt":c.FxCrt=true;break;case "pixel":c.FxPixel=true;break;case "posterize":c.FxPosterize=true;break;case "blur":c.FxBlur=true;break;case "hdr":c.FxHdr=true;break;case "filmic":c.FxFilmic=true;break;case "hdr-filmic":c.FxHdr=c.FxFilmic=true;break;
                 default:throw new Exception("알 수 없는 GPU fixture: "+name);
             }return c;
         }

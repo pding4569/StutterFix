@@ -33,7 +33,7 @@ namespace StutterFix {
         private static bool injectionChecked;
         internal static bool ReShadeFiles;
         internal static bool Enabled {
-            get {var c=Main.Config;return c!=null && (c.FxColor||c.FxSharp||c.FxAA||c.FxGlow||c.FxVignette||c.FxLut||c.FxLight||c.FxToneMap||c.FxRays||c.FxStreak||c.FxFlare||c.FxChromatic||c.FxGrain||c.FxCrt||c.FxPixel||c.FxPosterize||c.FxBlur);}
+            get {var c=Main.Config;return c!=null && (c.FxColor||c.FxSharp||c.FxAA||c.FxGlow||c.FxVignette||c.FxLut||c.FxLight||c.FxToneMap||c.FxHdr||c.FxFilmic||c.FxRays||c.FxStreak||c.FxFlare||c.FxChromatic||c.FxGrain||c.FxCrt||c.FxPixel||c.FxPosterize||c.FxBlur);}
         }
         internal static bool IsOwn(Texture t)=>result!=null && t==result;
         internal static void Apply() {
@@ -98,7 +98,7 @@ namespace StutterFix {
                 material.SetVector("_StyleA",new Vector4(c.FxChromatic?Mathf.Clamp(c.FxChromaticAmount,0,12):0,c.FxGrain?Mathf.Clamp(c.FxGrainAmount,0,.2f):0,c.FxCrt?Mathf.Clamp01(c.FxCrtAmount):0,c.FxPixel?Mathf.Clamp(c.FxPixelSize,2,32):0));
                 material.SetVector("_StyleB",new Vector4(c.FxPosterize?Mathf.Clamp(Mathf.Round(c.FxPosterizeLevels),2,32):0,c.FxToneMap?1:0,Mathf.Clamp(c.FxCeiling,.5f,1),c.FxGrain?Time.unscaledTime:0));
             }
-            passesLeft=(color?1:0)+(c.FxSharp?1:0)+(c.FxAA?1:0)+(c.FxGlow&&!rest?1:0)+(c.FxLight?1:0)+(c.FxRays?1:0)+(c.FxStreak?1:0)+(c.FxFlare?1:0)+(c.FxBlur?1:0)+(style?1:0);finalTarget=dst;
+            passesLeft=(color?1:0)+(c.FxSharp?1:0)+(c.FxAA?1:0)+(c.FxGlow&&!rest?1:0)+(c.FxLight?1:0)+(c.FxRays?1:0)+(c.FxStreak?1:0)+(c.FxFlare?1:0)+(c.FxBlur?1:0)+(c.FxHdr||c.FxFilmic?1:0)+(style?1:0);finalTarget=dst;
             RenderTexture current=src;var saved=RenderTexture.active;
             try {
                 if(color)Pass(ref current,src,0);
@@ -111,6 +111,7 @@ namespace StutterFix {
                 if(c.FxStreak)Optical(ref current,src,8,c);
                 if(c.FxFlare)Optical(ref current,src,9,c);
                 if(c.FxBlur)Optical(ref current,src,11,c);
+                if(c.FxHdr||c.FxFilmic)Hdr(ref current,src,c);
                 if(style)Pass(ref current,src,10);
                 if(current!=dst)Graphics.Blit(current,dst);
 #if DEV || AUTOTEST
@@ -157,6 +158,21 @@ namespace StutterFix {
                 }
             }finally{RenderTexture.ReleaseTemporary(a);RenderTexture.ReleaseTemporary(b);}
         }
+        // HDR 느낌: 국소 대비(흐린 복사본과의 차이), 그림자 살리기(검정은 그대로), 밝은 곳 누르기(흰색은 그대로), 채도, 선택 필름 톤.
+        private static void Hdr(ref RenderTexture current,RenderTexture original,Settings c) {
+            float a=c.FxHdr?Mathf.Clamp(c.FxHdrAmount,0,1.5f):0;
+            material.SetVector("_Hdr",new Vector4(.7f*a,.8f*a,.9f*a,.18f*a));
+            material.SetVector("_HdrB",new Vector4(c.FxFilmic?1:0,Mathf.Clamp(c.FxFilmicExposure,.5f,2),0,0));
+            if(a<=0){material.SetTexture("_GlowTex",current);Pass(ref current,original,12);return;}
+            var s=RenderTexture.GetTemporary(Math.Max(1,original.width/4),Math.Max(1,original.height/4),0,original.format);
+            var t=RenderTexture.GetTemporary(s.width,s.height,0,s.format);s.filterMode=t.filterMode=FilterMode.Bilinear;
+            try {
+                Graphics.Blit(current,s);
+                material.SetVector("_Direction",new Vector4(6,0,0,0));Graphics.Blit(s,t,material,4);
+                material.SetVector("_Direction",new Vector4(0,6,0,0));Graphics.Blit(t,s,material,4);
+                material.SetTexture("_GlowTex",s);Pass(ref current,original,12);
+            }finally{RenderTexture.ReleaseTemporary(s);RenderTexture.ReleaseTemporary(t);}
+        }
         private static bool MapBloom() {
             var sc=scrCamera.instance;var cam=sc==null?null:CameraRef(sc);
             if(!Main.Config.FxGlow)return false;
@@ -171,7 +187,7 @@ namespace StutterFix {
         internal static void ConfigurePreset(Settings c,int p) {
             if(p<0 || p>6 || p==4)throw new ArgumentOutOfRangeException(nameof(p));
             c.FxPreset=p;c.FxColor=p>=2;c.FxSharp=p>=1;c.FxAA=p==1;c.FxGlow=p==3||p==6;c.FxVignette=p==3||p==6;c.FxLut=c.FxLight=false;
-            c.FxGlowStack=c.FxToneMap=p==6;c.FxRays=c.FxStreak=c.FxFlare=c.FxChromatic=c.FxGrain=c.FxCrt=c.FxPixel=c.FxPosterize=c.FxBlur=false;
+            c.FxGlowStack=c.FxToneMap=p==6;c.FxRays=c.FxStreak=c.FxFlare=c.FxChromatic=c.FxGrain=c.FxCrt=c.FxPixel=c.FxPosterize=c.FxBlur=false;c.FxHdr=c.FxFilmic=false;c.FxHdrAmount=.6f;c.FxFilmicExposure=1.2f;
             c.FxVibrance=.2f;c.FxContrast=1.08f;c.FxBrightness=0;c.FxTemperature=0;c.FxSharpAmount=.4f;c.FxGlowAmount=.25f;c.FxGlowThreshold=.75f;c.FxVignetteAmount=.15f;
             if(p==5){c.FxVibrance=.65f;c.FxContrast=1.22f;}
             if(p==6){c.FxVibrance=.55f;c.FxContrast=1.12f;c.FxBrightness=-.1f;c.FxGlowAmount=1.2f;c.FxGlowThreshold=.28f;c.FxCeiling=.97f;}
@@ -250,13 +266,28 @@ namespace StutterFix {
                     var retained=Read(src);int altered=0;for(int i=0;i<retained.Length;i++)if(!retained[i].Equals(baseline[i]))++altered;
                     Main.Entry.Logger.Log("[화면 효과 fixture] preset="+p+" changed="+changed+" total="+output.Length+" source_altered="+altered);if(changed==0||altered!=0)throw new Exception("출력 또는 원본 보존 검사 실패");}
                 config.FxLight=true;Process(src,dst);Main.Entry.Logger.Log("[화면 효과 fixture] light_pass=1");
-                foreach(string name in new[]{"clear-strong","neon-strong","rays","streak","flare","tone","chromatic","grain","crt","pixel","posterize","blur"}) {
+                foreach(string name in new[]{"clear-strong","neon-strong","rays","streak","flare","tone","chromatic","grain","crt","pixel","posterize","blur","hdr","filmic","hdr-filmic"}) {
                     var candidate=EffectsGpuProbe.Configuration(name);Process(src,dst,candidate);
                     var output=Read(dst);int changed=0,altered=0,bright=0;
                     for(int i=0;i<output.Length;i++){if(!output[i].Equals(baseline[i]))++changed;bright=Math.Max(bright,Math.Max(output[i].r,Math.Max(output[i].g,output[i].b)));}
                     var retained=Read(src);for(int i=0;i<retained.Length;i++)if(!retained[i].Equals(baseline[i]))++altered;
                     Main.Entry.Logger.Log("[화면 효과 fixture] profile="+name+" changed="+changed+" total="+output.Length+" source_altered="+altered+" max_channel="+bright);
                     if(changed==0 || altered!=0 || candidate.FxToneMap && bright>Math.Ceiling(candidate.FxCeiling*255)+1)throw new Exception("추가 효과 픽셀 검사 실패: "+name);
+                }
+                {
+                    // HDR 느낌·필름 톤은 검정은 검정, 흰색은 흰색으로 남고 밝기가 거꾸로 가지 않아야 한다 (회색 띠 입력)
+                    var ramp=new Color32[320*180];
+                    for(int y=0;y<180;y++)for(int x=0;x<320;x++){byte g=(byte)(x*255/319);ramp[y*320+x]=new Color32(g,g,g,255);}
+                    pattern.SetPixels32(ramp);pattern.Apply();Graphics.Blit(pattern,src);
+                    foreach(string name in new[]{"hdr","filmic","hdr-filmic"}) {
+                        Process(src,dst,EffectsGpuProbe.Configuration(name));var o=Read(dst);int row=90*320;
+                        int blackMax=Math.Max(o[row].r,Math.Max(o[row].g,o[row].b)),whiteMin=Math.Min(o[row+319].r,Math.Min(o[row+319].g,o[row+319].b)),drops=0;
+                        for(int x=8;x<312;x++){int a=o[row+x].r,b=o[row+x+1].r;if(b<a-2)++drops;}
+                        Main.Entry.Logger.Log("[화면 효과 fixture] ramp="+name+" black="+blackMax+" white_min="+whiteMin+" brightness_drops="+drops);
+                        if(blackMax>1 || whiteMin<253 || drops>0)throw new Exception("HDR 회색 띠 검사 실패: "+name);
+                    }
+                    for(int y=0;y<180;y++)for(int x=0;x<320;x++)pixels[y*320+x]=new Color32((byte)(x*7),(byte)(y*11),(byte)((x/8+y/8)%2*255),255);
+                    pattern.SetPixels32(pixels);pattern.Apply();Graphics.Blit(pattern,src);
                 }
                 string identity=Path.Combine(Main.Entry.Path,"shots","identity16.png");
                 if(File.Exists(identity)) {

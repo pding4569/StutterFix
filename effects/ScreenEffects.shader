@@ -13,6 +13,8 @@ Shader "StutterFix/ScreenEffects" {
  float4 _Rays; // centre XY, length, decay
  float4 _StyleA; // chromatic pixels, grain, CRT, pixel size
  float4 _StyleB; // posterize levels, tone map, brightness ceiling, noise clock
+ float4 _Hdr;  // local contrast (clarity), shadow lift, highlight roll-off, saturation
+ float4 _HdrB; // filmic (0/1), exposure, unused, unused
  float luma(float3 c) { return dot(c,float3(.2126,.7152,.0722)); }
  float4 colorPass(v2f_img i):SV_Target {
    float4 src=tex2D(_MainTex,i.uv); float3 c=src.rgb;
@@ -124,6 +126,21 @@ Shader "StutterFix/ScreenEffects" {
    }
    return float4(saturate(c),src.a);
  }
+ // ACES filmic curve (Narkowicz fit), normalized so white stays white.
+ float3 aces(float3 x) {return (x*(2.51*x+.03))/(x*(2.43*x+.59)+.14);}
+ // Pseudo-HDR look on an 8-bit picture: local contrast from a blurred copy, a shadow lift that keeps true black,
+ // a highlight roll-off that keeps white, and a little saturation. Optional filmic curve. No new highlight detail is created.
+ float4 hdrPass(v2f_img i):SV_Target {
+   float4 src=tex2D(_MainTex,i.uv);float3 c=src.rgb;
+   if(_Hdr.x>0) c+=(c-tex2D(_GlowTex,i.uv).rgb)*_Hdr.x;
+   c=saturate(c);
+   float L=luma(c);
+   c+=_Hdr.y*c*(1-c)*(1-L);
+   c=c*(1+_Hdr.z)/(1+_Hdr.z*c);
+   c=lerp(luma(c).xxx,c,1+_Hdr.w);
+   if(_HdrB.x>.5) {float e=max(.2,_HdrB.y);c=aces(c*e)/aces(float3(e,e,e));}
+   return float4(saturate(c),src.a);
+ }
  float4 sceneBlurPass(v2f_img i):SV_Target {
    float4 c=tex2D(_MainTex,i.uv);return float4(tex2D(_GlowTex,i.uv).rgb,c.a);
  }
@@ -179,6 +196,11 @@ Shader "StutterFix/ScreenEffects" {
  Pass { CGPROGRAM
  #pragma vertex vert_img
  #pragma fragment sceneBlurPass
+ #pragma target 3.0
+ ENDCG }
+ Pass { CGPROGRAM
+ #pragma vertex vert_img
+ #pragma fragment hdrPass
  #pragma target 3.0
  ENDCG }
  }

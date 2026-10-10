@@ -21,8 +21,11 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_status();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_sources();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_generated();
+        [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_stat(int which);
+        // 명시적 상태 명령에서만: 생성 기회를 원본 프레임이 잠가서 놓친 수 / 잠금 없이 놓친 수 / 출력 / 원본 시작 / 작업 스레드 대기(ms)
+        internal static string Scheduler() { try { if(!SfNative.FrameGenReady) return ""; return " missed_lock="+sf_framegen_stat(0)+" missed_timer="+sf_framegen_stat(1)+" outputs="+sf_framegen_stat(2)+" frame_begins="+sf_framegen_stat(3)+" worker_wait_ms="+sf_framegen_stat(4)/1000; } catch(EntryPointNotFoundException) { return " scheduler=n/a"; } }
         internal static string Describe() => "active="+active+" native_installed="+(SfNative.FrameGenReady?sf_framegen_installed():0)+
-            " sources="+(SfNative.FrameGenReady?sf_framegen_sources():0)+" generated="+(SfNative.FrameGenReady?sf_framegen_generated():0)+" runtime_initialized="+RuntimeInitialized+" status="+Status;
+            " sources="+(SfNative.FrameGenReady?sf_framegen_sources():0)+" generated="+(SfNative.FrameGenReady?sf_framegen_generated():0)+" runtime_initialized="+RuntimeInitialized+" status="+Status+Scheduler();
         internal static int NativeOutputStatus => SfNative.FrameGenReady?sf_framegen_status():0;
         // Explicit state commands only; no extra per-frame instrumentation.
         internal static string DescribeStorage() => "refresh="+Main.Config.FrameGenRefresh+" "+(RuntimeInitialized?FrameGenRuntime.DescribeStorage():"deadline=False resting=False");

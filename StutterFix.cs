@@ -935,6 +935,8 @@ namespace StutterFix
         public bool FxColor=false, FxSharp=false, FxAA=false, FxGlow=false, FxVignette=false, FxLut=false, FxLight=false;
         public bool FxGlowStack=false, FxToneMap=false, FxRays=false, FxStreak=false, FxFlare=false;
         public bool FxChromatic=false, FxGrain=false, FxCrt=false, FxPixel=false, FxPosterize=false, FxBlur=false;
+        public bool FxHdr=false, FxFilmic=false;   // HDR 느낌(국소 대비+그림자 살리기+밝은 곳 누르기), 필름 톤(ACES)
+        public float FxHdrAmount=.6f, FxFilmicExposure=1.2f;
         public float FxCeiling=.97f, FxRaysAmount=.8f, FxRaysX=.5f, FxRaysY=.25f, FxRaysLength=.8f;
         public float FxStreakAmount=.5f, FxFlareAmount=.35f, FxChromaticAmount=2, FxGrainAmount=.045f;
         public float FxCrtAmount=.5f, FxPixelSize=6, FxPosterizeLevels=8, FxBlurRadius=2;

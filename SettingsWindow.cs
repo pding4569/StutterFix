@@ -1368,7 +1368,7 @@ namespace StutterFix
             InfoCard(new[] { T("마지막 맵 불러오기", "Last level load"), LoadSummary() });
         }
 
-        private string fxLutEdit, fxLutSaved;
+        private string fxLutEdit, fxLutSaved, fxShareMsg;
         private void PageScreenEffects()
         {
             var c=Main.Config; bool ch=false;
@@ -1411,8 +1411,25 @@ namespace StutterFix
             if(c.FxPixel)ch|=FxSlider("fxpixelv",ref c.FxPixelSize,2,32,T("픽셀 크기","Pixel size"));
             ch|=Option("fxposter",ref c.FxPosterize,T("색 단계 줄이기","Posterize"),T("색을 몇 단계로 줄여 포스터 느낌을 만듭니다.","Quantizes colors for a poster-like appearance."),null);
             if(c.FxPosterize)ch|=FxSlider("fxposterv",ref c.FxPosterizeLevels,2,32,T("색 단계","Color levels"));
+            ch|=Option("fxhdr",ref c.FxHdr,T("HDR 느낌","HDR look"),T("흐린 복사본과의 차이로 질감을 또렷하게 하고, 어두운 곳은 살리되 검정은 그대로 두고, 밝은 곳은 눌러 흰색은 그대로 둡니다. 8비트 그림을 보기 좋게 다듬는 효과이며 진짜 HDR 출력이 아닙니다.","Sharpens local texture with a blurred copy, lifts shadows while keeping true black, and rolls off highlights while keeping white. A tone look on an 8-bit picture, not real HDR output."),null);
+            if(c.FxHdr)ch|=FxSlider("fxhdrv",ref c.FxHdrAmount,0,1.5f,T("세기","Strength"));
+            ch|=Option("fxfilmic",ref c.FxFilmic,T("필름 톤 (ACES)","Filmic tone (ACES)"),T("영화처럼 어두운 곳은 깊게, 밝은 곳은 부드럽게 말리는 곡선을 적용합니다. 흰색은 그대로입니다.","Applies a film-like curve: deeper shadows and softly rolled highlights; white stays white."),null);
+            if(c.FxFilmic)ch|=FxSlider("fxfilmicv",ref c.FxFilmicExposure,.5f,2,T("노출","Exposure"));
             ch|=Option("fxblur",ref c.FxBlur,T("화면 흐림","Scene blur"),T("작은 그림에서 게임 화면을 흐리게 합니다. UI는 선명하게 남습니다.","Blurs a reduced scene texture, keeping UI sharp."),null);
             if(c.FxBlur)ch|=FxSlider("fxblurv",ref c.FxBlurRadius,1,8,T("반경","Radius"));
+            EndGroup();
+            // 설정 공유: 지금 효과 값을 짧은 코드로 복사하고, 받은 코드를 붙여 넣어 적용한다 (LUT 파일 경로는 공유하지 않는다)
+            SubHeading(T("설정 공유","Share settings"),T("지금 화면 효과 값을 코드 한 줄로 복사해 친구에게 보내거나, 받은 코드를 붙여 넣어 적용합니다. LUT 파일은 공유되지 않습니다.","Copy the current effect values as one code line to send, or paste a code you received. LUT files are not shared."));
+            BeginGroup();
+            GUILayout.BeginHorizontal();
+            if(Btn(T("코드 복사","Copy code"),sBody)){GUIUtility.systemCopyBuffer=FxShare.Export(c);fxShareMsg=T("복사했습니다. 디스코드에 붙여 넣으세요.","Copied. Paste it into Discord.");}
+            if(Btn(T("붙여 넣어 적용","Paste and apply"),sBody)){
+                string message;
+                if(FxShare.Import(GUIUtility.systemCopyBuffer,c,out message)){ScreenEffects.Apply();ch=presetChanged=true;fxShareMsg=message;}
+                else fxShareMsg=message;
+            }
+            GUILayout.EndHorizontal();
+            if(!string.IsNullOrEmpty(fxShareMsg))P(fxShareMsg,sDim);
             EndGroup();
             P(T("3440×1440 · RTX 4060 Ti · 한 그림 GPU 표본", "3440×1440 · RTX 4060 Ti · one-scene GPU fixture"),sDim);
             P(T("색감 약 0.06ms · 색감+LUT+비네트 0.08ms · 선명 0.09ms · 가장자리 0.11ms · 글로우 0.09ms · 주변 비추기(1/8) 0.09ms", "Color ≈0.06ms · color+LUT+vignette 0.08ms · sharpen 0.09ms · edges 0.11ms · glow 0.09ms · lighting(1/8) 0.09ms"),sDim);

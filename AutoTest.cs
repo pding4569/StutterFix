@@ -854,6 +854,29 @@ namespace StutterFix
                         Log("[화면효과저장] float_fields="+fields+" mismatches="+bad+" preset="+stored.FxPreset);
                         if(bad!=0 || stored.FxPreset!=4)throw new Exception("Custom effect values not persisted");return true;
                     }
+                case "fxshare":
+                    {
+                        // 공유 코드 왕복: 내보내기 → 값 바꿈 → 가져오기로 원래 값 복구, 깨진 코드는 거부하고 아무것도 안 바꿈
+                        var c=Main.Config;var fields=new System.Collections.Generic.List<System.Reflection.FieldInfo>();
+                        foreach(var field in typeof(Settings).GetFields(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance))
+                            if(field.Name.StartsWith("Fx",StringComparison.Ordinal) && field.Name!="FxLutPath" && (field.FieldType==typeof(bool)||field.FieldType==typeof(int)||field.FieldType==typeof(float)))fields.Add(field);
+                        var before=new object[fields.Count];for(int i=0;i<fields.Count;i++)before[i]=fields[i].GetValue(c);
+                        string code=FxShare.Export(c);string lut=c.FxLutPath;
+                        bool hdr=c.FxHdr;float amount=c.FxHdrAmount;
+                        c.FxHdr=!hdr;c.FxHdrAmount=amount>.5f?.1f:1.2f;
+                        string message;bool ok=FxShare.Import("받은 코드: "+code+" 끝",c,out message);
+                        int mismatch=0;for(int i=0;i<fields.Count;i++)if(!before[i].Equals(fields[i].GetValue(c)))mismatch++;
+                        c.FxHdr=false;
+                        bool badA=FxShare.Import("SFX1:!!!!",c,out message),badB=FxShare.Import("nothing",c,out message),badC=FxShare.Import("SFX1:"+Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("HdrAmount=NaN;Hdr=1")),c,out message);
+                        bool unchanged=!c.FxHdr;
+                        bool unknown=FxShare.Import("SFX1:"+Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("FutureField=3;Hdr=1;LutPath=x")),c,out message);
+                        bool noPath=c.FxLutPath==lut && !System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(code.Substring(5))).Contains("LutPath");
+                        Log("[공유 시험] fields="+fields.Count+" roundtrip_ok="+ok+" mismatches="+mismatch+" bad_rejected="+(!badA&&!badB&&!badC)+" bad_unchanged="+unchanged+" unknown_field_ok="+unknown+" hdr_after_unknown="+c.FxHdr+" lut_path_kept="+noPath);
+                        bool pass=ok&&mismatch==0&&!badA&&!badB&&!badC&&unchanged&&unknown&&c.FxHdr&&noPath;
+                        for(int i=0;i<fields.Count;i++)fields[i].SetValue(c,before[i]);   // 원래 값으로
+                        if(!pass)throw new Exception("공유 코드 시험 실패");
+                        return true;
+                    }
                 case "fxpreset":
                     {
                         int preset=int.Parse(arg); if(preset<0 || preset>6 || preset==4) throw new Exception("미리 설정 0~3 또는 후보5·6 필요");

@@ -165,3 +165,8 @@ API int sf_framegen_block_version() { return 2; }
 API void sf_framegen_refresh_rate(int hz) { refreshRate=hz>0 && hz<=1000?hz:0; }
 API unsigned long long sf_framegen_sources() { return sourcePresents; }
 API unsigned long long sf_framegen_generated() { return generatedPresents; }
+// Read-only scheduler counters for an explicit state command (0 missed while the original frame held the gate, 1 missed with the gate free, 2 outputs, 3 frame begins, 4 worker wait in microseconds).
+API unsigned long long sf_framegen_stat(int which) {
+    auto* e=engine.get(); if(!e) return 0;
+    switch(which) { case 0: return e->missedLock; case 1: return e->missedTimer; case 2: return e->outputs.load(); case 3: return e->frameBegins.load(); case 4: return static_cast<unsigned long long>(e->workerWaitMs*1000); default: return 0; }
+}
