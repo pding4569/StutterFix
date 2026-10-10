@@ -1,0 +1,14 @@
+{
+  "tag": "v2.6.0",
+  "commit": "9399cd2d082a87d5fed7393adc3523b72f998b5d",
+  "url": "https://github.com/pding4569/StutterFix/releases/tag/v2.6.0",
+  "published_at": "2026-10-10T04:07:00Z",
+  "draft": false,
+  "prerelease": false,
+  "redownload_sha_match": 2,
+  "main_repository_version": "2.6.0",
+  "assets": {
+    "player": "aad39dc642e737a7883520281c8b6a274f43326eff7a2a786c593aeafe559805",
+    "developer": "33645d42dcdcc0d7b30a99532dfff980dc40db1dae0989611d55ea3b18588fa9"
+  }
+}
