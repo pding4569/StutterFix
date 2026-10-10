@@ -99,6 +99,8 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_stopped();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_block_version();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern void sf_framegen_refresh_rate(int hz);
+        [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern void sf_framegen_pace(int mille);
+        private static int paceSent=-1;
         private static readonly AccessTools.FieldRef<scrCamera,Camera> Cam=AccessTools.FieldRefAccess<scrCamera,Camera>("camobj");
         private static readonly AccessTools.FieldRef<scrCamera,Camera> Overlay=AccessTools.FieldRefAccess<scrCamera,Camera>("Overlaycam");
         private static readonly AccessTools.FieldRef<scrCamera,RenderTexture> RT=AccessTools.FieldRefAccess<scrCamera,RenderTexture>("camRT");
@@ -238,6 +240,8 @@ namespace StutterFix
             // camera velocity at the next completed render. Suspend this experiment.
             if(HalfRender.Enabled) mode=0;
             if(Main.Config.FrameGenRefresh && mode>=2) {
+                int pace=Math.Max(500,Math.Min(1000,Main.Config.FrameGenPace));
+                if(pace!=paceSent) { paceSent=pace; sf_framegen_pace(pace); }
                 int hz=(int)Math.Round(Screen.currentResolution.refreshRateRatio.value);
                 if(hz!=refreshHz) { refreshHz=hz; sf_framegen_refresh_rate(hz); }
                 mode=hz>0?9:0;

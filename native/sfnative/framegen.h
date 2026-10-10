@@ -106,8 +106,13 @@ inline bool rotatingWorld(const Packet& p) {
     return (p.capture&2048)!=0;
 }
 inline std::atomic<int> refreshRate{0};
+// Refresh deadline spacing, in permille of one refresh. The compositor latches one image per refresh. A generated
+// image placed exactly one refresh after the previous Present always leaves a gap of at least one refresh, so a
+// little lateness leaves a whole refresh without a new image (heavy sections, GPU frames longer than a refresh).
+// A shorter spacing keeps every refresh covered; Arche 240~300 s missed refreshes 172 -> 30 at 700 (docs 37).
+inline std::atomic<int> paceMille{700};
 inline double refreshDeadline(double lastReal,int hz) {
-    return hz>0?lastReal+1./hz:0;
+    return hz>0?lastReal+paceMille.load()/1000./hz:0;
 }
 inline bool completionOnly(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
@@ -587,7 +592,7 @@ private:
                         if(currentMode==9) {
                             int hz=refreshRate.load();
                             if(hz<=0) { deadline=0;seen=s.sequence;mode=0;continue; }
-                            interval=1./hz;
+                            interval=paceMille.load()/1000./hz;
                             // A new real Present cancels the preceding deadline. The
                             // worker checks this while holding the original frame gate.
                             // Do not estimate FPS or carry a shortage clock across sources.

@@ -930,6 +930,7 @@ namespace StutterFix
         public int FrameGenMultiplier = 2;  // 마지막으로 선택한 배율
         public bool FrameGenRefresh = true; // 새 설정의 첫 추천. 기능 전체는 FrameGenOutside=0으로 기본 꺼짐.
         public bool FrameGenRefreshRest = true; // 옛 XML 호환용. 주사율 맞춤은 이 값과 무관하게 마감+저장 휴식 사용.
+        public int FrameGenPace = 700;       // 마감 생성 간격: 한 칸의 천분율. 1000 이면 정확히 한 칸 뒤라 조금만 늦어도 칸이 비므로 700 (500~1000)
         public int FrameGenBlend = 1;        // 못 믿는 곳의 겹침: 0 끔(가까운 진짜 그림), 1 공 둘레만 섞기, 2 전체 섞기 (움직임이 고름)
         public int FxPreset = 0;
         public bool FxColor=false, FxSharp=false, FxAA=false, FxGlow=false, FxVignette=false, FxLut=false, FxLight=false;

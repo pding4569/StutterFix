@@ -163,6 +163,7 @@ API int sf_framegen_stopped() { return stopped; }
 API int sf_framegen_installed() { return installed; }
 API int sf_framegen_block_version() { return 2; }
 API void sf_framegen_refresh_rate(int hz) { refreshRate=hz>0 && hz<=1000?hz:0; }
+API void sf_framegen_pace(int mille) { paceMille=mille<500?500:mille>1000?1000:mille; }
 API unsigned long long sf_framegen_sources() { return sourcePresents; }
 API unsigned long long sf_framegen_generated() { return generatedPresents; }
 // Read-only scheduler counters for an explicit state command (0 missed while the original frame held the gate, 1 missed with the gate free, 2 outputs, 3 frame begins, 4 worker wait in microseconds).
