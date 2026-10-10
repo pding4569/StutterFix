@@ -35,6 +35,7 @@ namespace StutterFix
         internal static void Toggle() { if (Instance != null) Instance.SetOpen(!Open || Instance.closing); }
 
         // (자동 시험) 창을 열고 그 기능 패널을 펼친다. -1 이면 아이콘 줄만, -2 면 닫는다. 화면 캡처로 모양을 확인하는 데 쓴다.
+        internal static void ScrollForTest(float y) { if (Instance != null) Instance.scroll.y = y; }
         internal static void ShowForTest(int p, int sub = 0)
         {
             if (Instance != null && p >= 0 && p < 9) Instance.subSel[p] = sub;
@@ -1418,6 +1419,7 @@ namespace StutterFix
             ch|=Option("fxblur",ref c.FxBlur,T("화면 흐림","Scene blur"),T("작은 그림에서 게임 화면을 흐리게 합니다. UI는 선명하게 남습니다.","Blurs a reduced scene texture, keeping UI sharp."),null);
             if(c.FxBlur)ch|=FxSlider("fxblurv",ref c.FxBlurRadius,1,8,T("반경","Radius"));
             EndGroup();
+            DrawFxExtras(c,ref ch);
             // 설정 공유: 지금 효과 값을 짧은 코드로 복사하고, 받은 코드를 붙여 넣어 적용한다 (LUT 파일 경로는 공유하지 않는다)
             SubHeading(T("설정 공유","Share settings"),T("지금 화면 효과 값을 코드 한 줄로 복사해 친구에게 보내거나, 받은 코드를 붙여 넣어 적용합니다. LUT 파일은 공유되지 않습니다.","Copy the current effect values as one code line to send, or paste a code you received. LUT files are not shared."));
             BeginGroup();
@@ -1447,6 +1449,36 @@ namespace StutterFix
             if(ch){if(!presetChanged)c.FxPreset=4;Save();}
         }
         private bool FxSlider(string key,ref float value,float min,float max,string title){return Slider(key,ref value,min,max,title,value.ToString("F2"),true);}
+        // 더 많은 효과: FxExtras.All 표 그대로 (켬 스위치 + 값 막대). 값이 바뀌면 직접 조절로 저장된다.
+        private void DrawFxExtras(Settings c,ref bool ch)
+        {
+            string group=null;
+            foreach(var s in FxExtras.All)
+            {
+                if(s.Group!=group)
+                {
+                    if(group!=null)EndGroup();
+                    group=s.Group;
+                    if(group==FxExtras.Color)SubHeading(T("더 많은 효과: 색 조정","More effects: color"),T("모두 기본 꺼짐. 켜는 효과만 패스를 더합니다. 설정 공유 코드에도 들어갑니다.","All off by default; only enabled effects add passes. Included in share codes."));
+                    else if(group==FxExtras.Detail)SubHeading(T("더 많은 효과: 질감·디테일","More effects: texture & detail"),T("이웃 화소를 읽는 효과입니다.","Effects that read neighboring pixels."));
+                    else SubHeading(T("더 많은 효과: 렌즈·왜곡","More effects: lens & distortion"),T("화면 좌표를 바꿔 다시 읽는 효과입니다. 맵의 카메라 연출과 함께 움직입니다.","Effects that resample the picture with warped coordinates."));
+                    BeginGroup();
+                }
+                bool on=(bool)s.ToggleField.GetValue(c);
+                if(Option(s.Key,ref on,T(s.Ko,s.En),T(s.DescKo,s.DescEn),null)){s.ToggleField.SetValue(c,on);ch=true;}
+                if(on && s.ValueField!=null)
+                {
+                    float v=(float)s.ValueField.GetValue(c);
+                    if(FxSlider(s.Key+"v",ref v,s.Min,s.Max,T(s.ValueKo,s.ValueEn))){s.ValueField.SetValue(c,v);ch=true;}
+                }
+                if(on && s.Value2Field!=null)
+                {
+                    float v=(float)s.Value2Field.GetValue(c);
+                    if(FxSlider(s.Key+"w",ref v,s.Min2,s.Max2,T(s.Value2Ko,s.Value2En))){s.Value2Field.SetValue(c,v);ch=true;}
+                }
+            }
+            if(group!=null)EndGroup();
+        }
 
         private void PageGraphics()
         {

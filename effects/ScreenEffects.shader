@@ -15,6 +15,13 @@ Shader "StutterFix/ScreenEffects" {
  float4 _StyleB; // posterize levels, tone map, brightness ceiling, noise clock
  float4 _Hdr;  // local contrast (clarity), shadow lift, highlight roll-off, saturation
  float4 _HdrB; // filmic (0/1), exposure, unused, unused
+ float4 _GradeA; // sepia, duotone, teal-orange, invert
+ float4 _GradeB; // mono, night vision, thermal, hue shift (radians)
+ float4 _GradeC; // duotone hue (0..1), clock, unused, unused
+ float4 _DetailA; // outline, emboss, halftone cell (pixels, 0 off), tilt-shift
+ float4 _DetailB; // soft focus, halftone amount, unused, unused
+ float4 _LensA; // barrel (-1..1), ripple, glitch, zoom blur
+ float4 _LensB; // mirror (0/1), kaleidoscope segments (0 off), letterbox aspect (0 off), clock
  float luma(float3 c) { return dot(c,float3(.2126,.7152,.0722)); }
  float4 colorPass(v2f_img i):SV_Target {
    float4 src=tex2D(_MainTex,i.uv); float3 c=src.rgb;
@@ -141,6 +148,128 @@ Shader "StutterFix/ScreenEffects" {
    if(_HdrB.x>.5) {float e=max(.2,_HdrB.y);c=aces(c*e)/aces(float3(e,e,e));}
    return float4(saturate(c),src.a);
  }
+ // ---- extra looks (original code, no third-party shader source) ----
+ float3 hsv2rgb(float3 c) {
+   float3 p=abs(frac(c.xxx+float3(0,2./3,1./3))*6-3);
+   return c.z*lerp(float3(1,1,1),saturate(p-1),c.y);
+ }
+ // Hue rotation about the gray axis (the usual Rec.601-based color matrix).
+ float3 hueRotate(float3 c,float a) {
+   float s=sin(a),k=cos(a);
+   return float3(
+     dot(c,float3(.213+k*.787-s*.213,.715-k*.715-s*.715,.072-k*.072+s*.928)),
+     dot(c,float3(.213-k*.213+s*.143,.715+k*.285+s*.140,.072-k*.072-s*.283)),
+     dot(c,float3(.213-k*.213-s*.787,.715-k*.715+s*.715,.072+k*.928+s*.072)));
+ }
+ float3 thermalMap(float t) {
+   float3 c=0;
+   c=lerp(c,float3(0,0,.55),smoothstep(0,.2,t));
+   c=lerp(c,float3(.6,0,.65),smoothstep(.2,.4,t));
+   c=lerp(c,float3(1,.1,0),smoothstep(.4,.6,t));
+   c=lerp(c,float3(1,.7,0),smoothstep(.6,.8,t));
+   c=lerp(c,float3(1,1,.8),smoothstep(.8,1,t));
+   return c;
+ }
+ float4 gradePass(v2f_img i):SV_Target {
+   float4 src=tex2D(_MainTex,i.uv);float3 c=src.rgb;
+   if(_GradeB.w!=0) c=saturate(hueRotate(c,_GradeB.w));
+   if(_GradeA.x>0) {
+     float3 s=float3(dot(c,float3(.393,.769,.189)),dot(c,float3(.349,.686,.168)),dot(c,float3(.272,.534,.131)));
+     c=lerp(c,saturate(s),_GradeA.x);
+   }
+   if(_GradeB.x>0) c=lerp(c,luma(c).xxx,_GradeB.x);
+   if(_GradeA.y>0) {
+     float3 lo=hsv2rgb(float3(_GradeC.x,.85,.16)),hi=hsv2rgb(float3(frac(_GradeC.x+.08),.3,1));
+     c=lerp(c,lerp(lo,hi,saturate(luma(c)*1.1)),_GradeA.y);
+   }
+   if(_GradeA.z>0) {
+     float l=saturate(luma(c));
+     float3 tint=lerp(float3(-.09,.025,.1),float3(.11,.04,-.11),l);
+     c=saturate(c+tint*_GradeA.z+(c-.5)*.12*_GradeA.z);
+   }
+   if(_GradeB.z>0) c=lerp(c,thermalMap(saturate(luma(c)*1.05)),_GradeB.z);
+   if(_GradeB.y>0) {
+     float l=saturate(luma(c)*1.5+.03);
+     float n=noise(floor(i.uv/_MainTex_TexelSize.xy)+floor(_GradeC.y*30));
+     float3 g=float3(.08,1,.25)*pow(l,.8)*(.85+.3*n);
+     g*=.9+.1*cos(i.uv.y/_MainTex_TexelSize.y*3.14159265);
+     c=lerp(c,g,_GradeB.y);
+   }
+   if(_GradeA.w>0) c=lerp(c,1-c,_GradeA.w);
+   return float4(saturate(c),src.a);
+ }
+ float4 detailPass(v2f_img i):SV_Target {
+   float2 t=_MainTex_TexelSize.xy,uv=i.uv;
+   float4 src=tex2D(_MainTex,uv);float3 c=src.rgb;
+   if(_DetailA.z>1) {
+     float2 cell=t*_DetailA.z;float2 centre=(floor(uv/cell)+.5)*cell;
+     float3 s=tex2D(_MainTex,centre).rgb;float l=saturate(luma(s));
+     float r=length((uv-centre)/cell);float radius=pow(saturate(l),.45)*.75;
+     float m=smoothstep(radius,radius-.18,r);
+     float3 dotColor=saturate(s/max(l*1.2,.25));
+     c=lerp(c,dotColor*m+(1-m)*.015,_DetailB.y);
+   }
+   if(_DetailA.x>0) {
+     float a=luma(tex2D(_MainTex,uv+t*float2(-1,-1)).rgb),b=luma(tex2D(_MainTex,uv+t*float2(0,-1)).rgb),d=luma(tex2D(_MainTex,uv+t*float2(1,-1)).rgb);
+     float e=luma(tex2D(_MainTex,uv+t*float2(-1,0)).rgb),g=luma(tex2D(_MainTex,uv+t*float2(1,0)).rgb);
+     float h=luma(tex2D(_MainTex,uv+t*float2(-1,1)).rgb),k=luma(tex2D(_MainTex,uv+t*float2(0,1)).rgb),m=luma(tex2D(_MainTex,uv+t*float2(1,1)).rgb);
+     float gx=(d+2*g+m)-(a+2*e+h),gy=(h+2*k+m)-(a+2*b+d);
+     float edge=saturate(sqrt(gx*gx+gy*gy)*3.5);
+     float3 lineColor=luma(c)>.4?float3(0,0,0):float3(.92,.96,1);
+     c=lerp(c,lineColor,edge*_DetailA.x);
+   }
+   if(_DetailA.y>0) {
+     float d=luma(tex2D(_MainTex,uv+t).rgb)-luma(tex2D(_MainTex,uv-t).rgb);
+     c=lerp(c,saturate(c+d*3.0),_DetailA.y);
+   }
+   if(_DetailA.w>0) {
+     float w=smoothstep(.1,.42,abs(uv.y-.5))*_DetailA.w;
+     c=lerp(c,tex2D(_GlowTex,uv).rgb,w);
+   }
+   if(_DetailB.x>0) {
+     float3 b=tex2D(_GlowTex,uv).rgb;
+     c=1-(1-c)*(1-b*_DetailB.x*.8);
+   }
+   return float4(saturate(c),src.a);
+ }
+ float4 lensPass(v2f_img i):SV_Target {
+   float2 uv=i.uv;float aspect=_MainTex_TexelSize.z/_MainTex_TexelSize.w;
+   if(_LensB.x>.5 && uv.x>.5) uv.x=1-uv.x;
+   if(_LensB.y>=2) {
+     float2 q=(uv-.5)*float2(aspect,1);float r=length(q),a=atan2(q.y,q.x);
+     float seg=6.28318531/_LensB.y;a=abs(fmod(a+6.28318531,seg)-seg*.5);
+     q=float2(cos(a),sin(a))*r;uv=q/float2(aspect,1)+.5;
+   }
+   if(_LensA.x!=0) {
+     float2 q=uv*2-1;float r2=dot(q,q);
+     q=q*(1+_LensA.x*r2)/(1+max(_LensA.x,0)*.9);
+     uv=q*.5+.5;
+   }
+   if(_LensA.y>0) uv+=float2(sin(uv.y*38+_LensB.w*3.1),cos(uv.x*30+_LensB.w*2.3))*.0045*_LensA.y;
+   float2 split=0;
+   if(_LensA.z>0) {
+     float band=floor(uv.y*34),tk=floor(_LensB.w*11);
+     if(noise(float2(band,tk))>1-.2*_LensA.z) {
+       uv.x+=(noise(float2(band,tk+7))-.5)*.14*_LensA.z;
+       split=float2(.006*_LensA.z,0);
+     }
+   }
+   uv=saturate(uv);float3 c;
+   if(_LensA.w>0) {
+     float3 sum=0;
+     [unroll] for(int k=0;k<8;k++) {
+       float s=k/8.;float2 p=lerp(uv,float2(.5,.5),s*_LensA.w*.14);
+       sum+=tex2D(_MainTex,p).rgb;
+     }
+     c=sum/8;
+   } else c=tex2D(_MainTex,uv).rgb;
+   if(split.x>0) {c.r=tex2D(_MainTex,saturate(uv+split)).r;c.b=tex2D(_MainTex,saturate(uv-split)).b;}
+   if(_LensB.z>0) {
+     float h=aspect/_LensB.z;
+     if(h<1) {float m=(1-h)*.5;if(i.uv.y<m || i.uv.y>1-m) c=0;}
+   }
+   return float4(c,1);
+ }
  float4 sceneBlurPass(v2f_img i):SV_Target {
    float4 c=tex2D(_MainTex,i.uv);return float4(tex2D(_GlowTex,i.uv).rgb,c.a);
  }
@@ -201,6 +330,21 @@ Shader "StutterFix/ScreenEffects" {
  Pass { CGPROGRAM
  #pragma vertex vert_img
  #pragma fragment hdrPass
+ #pragma target 3.0
+ ENDCG }
+ Pass { CGPROGRAM
+ #pragma vertex vert_img
+ #pragma fragment gradePass
+ #pragma target 3.0
+ ENDCG }
+ Pass { CGPROGRAM
+ #pragma vertex vert_img
+ #pragma fragment detailPass
+ #pragma target 3.0
+ ENDCG }
+ Pass { CGPROGRAM
+ #pragma vertex vert_img
+ #pragma fragment lensPass
  #pragma target 3.0
  ENDCG }
  }

@@ -33,7 +33,7 @@ namespace StutterFix {
         private static bool injectionChecked;
         internal static bool ReShadeFiles;
         internal static bool Enabled {
-            get {var c=Main.Config;return c!=null && (c.FxColor||c.FxSharp||c.FxAA||c.FxGlow||c.FxVignette||c.FxLut||c.FxLight||c.FxToneMap||c.FxHdr||c.FxFilmic||c.FxRays||c.FxStreak||c.FxFlare||c.FxChromatic||c.FxGrain||c.FxCrt||c.FxPixel||c.FxPosterize||c.FxBlur);}
+            get {var c=Main.Config;return c!=null && (c.FxColor||c.FxSharp||c.FxAA||c.FxGlow||c.FxVignette||c.FxLut||c.FxLight||c.FxToneMap||c.FxHdr||c.FxFilmic||c.FxRays||c.FxStreak||c.FxFlare||c.FxChromatic||c.FxGrain||c.FxCrt||c.FxPixel||c.FxPosterize||c.FxBlur||FxExtras.Any(c));}
         }
         internal static bool IsOwn(Texture t)=>result!=null && t==result;
         internal static void Apply() {
@@ -94,11 +94,12 @@ namespace StutterFix {
             if(lut!=null)material.SetTexture("_Lut",lut);
             bool color=c.FxColor||c.FxVignette||(c.FxLut&&lut!=null),rest=fixture==null && !c.FxGlowStack && MapBloom();
             bool style=c.FxToneMap||c.FxChromatic||c.FxGrain||c.FxCrt||c.FxPixel||c.FxPosterize;
+            bool grade=FxExtras.AnyColor(c),detail=FxExtras.AnyDetail(c),lens=FxExtras.AnyLens(c);
             if(style) {
                 material.SetVector("_StyleA",new Vector4(c.FxChromatic?Mathf.Clamp(c.FxChromaticAmount,0,12):0,c.FxGrain?Mathf.Clamp(c.FxGrainAmount,0,.2f):0,c.FxCrt?Mathf.Clamp01(c.FxCrtAmount):0,c.FxPixel?Mathf.Clamp(c.FxPixelSize,2,32):0));
                 material.SetVector("_StyleB",new Vector4(c.FxPosterize?Mathf.Clamp(Mathf.Round(c.FxPosterizeLevels),2,32):0,c.FxToneMap?1:0,Mathf.Clamp(c.FxCeiling,.5f,1),c.FxGrain?Time.unscaledTime:0));
             }
-            passesLeft=(color?1:0)+(c.FxSharp?1:0)+(c.FxAA?1:0)+(c.FxGlow&&!rest?1:0)+(c.FxLight?1:0)+(c.FxRays?1:0)+(c.FxStreak?1:0)+(c.FxFlare?1:0)+(c.FxBlur?1:0)+(c.FxHdr||c.FxFilmic?1:0)+(style?1:0);finalTarget=dst;
+            passesLeft=(color?1:0)+(c.FxSharp?1:0)+(c.FxAA?1:0)+(c.FxGlow&&!rest?1:0)+(c.FxLight?1:0)+(c.FxRays?1:0)+(c.FxStreak?1:0)+(c.FxFlare?1:0)+(c.FxBlur?1:0)+(c.FxHdr||c.FxFilmic?1:0)+(grade?1:0)+(detail?1:0)+(lens?1:0)+(style?1:0);finalTarget=dst;
             RenderTexture current=src;var saved=RenderTexture.active;
             try {
                 if(color)Pass(ref current,src,0);
@@ -112,6 +113,9 @@ namespace StutterFix {
                 if(c.FxFlare)Optical(ref current,src,9,c);
                 if(c.FxBlur)Optical(ref current,src,11,c);
                 if(c.FxHdr||c.FxFilmic)Hdr(ref current,src,c);
+                if(grade)Grade(ref current,src,c);
+                if(detail)Detail(ref current,src,c);
+                if(lens)Lens(ref current,src,c);
                 if(style)Pass(ref current,src,10);
                 if(current!=dst)Graphics.Blit(current,dst);
 #if DEV || AUTOTEST
@@ -173,6 +177,37 @@ namespace StutterFix {
                 material.SetTexture("_GlowTex",s);Pass(ref current,original,12);
             }finally{RenderTexture.ReleaseTemporary(s);RenderTexture.ReleaseTemporary(t);}
         }
+        // 색 조정 (패스 13): 화소마다 계산, 이웃을 보지 않는다.
+        private static void Grade(ref RenderTexture current,RenderTexture original,Settings c) {
+            float clock=Time.unscaledTime%1000f;
+            material.SetVector("_GradeA",new Vector4(c.FxSepia?Mathf.Clamp01(c.FxSepiaAmount):0,c.FxDuotone?Mathf.Clamp01(c.FxDuotoneAmount):0,c.FxTealOrange?Mathf.Clamp(c.FxTealOrangeAmount,0,1.5f):0,c.FxInvert?Mathf.Clamp01(c.FxInvertAmount):0));
+            material.SetVector("_GradeB",new Vector4(c.FxMono?Mathf.Clamp01(c.FxMonoAmount):0,c.FxNight?Mathf.Clamp01(c.FxNightAmount):0,c.FxThermal?Mathf.Clamp01(c.FxThermalAmount):0,c.FxHue?Mathf.Clamp(c.FxHueShift,-180,180)*Mathf.Deg2Rad:0));
+            material.SetVector("_GradeC",new Vector4(Mathf.Repeat(c.FxDuotoneHue,1),clock,0,0));
+            Pass(ref current,original,13);
+        }
+        // 질감·디테일 (패스 14): 이웃 화소, 틸트 시프트·소프트 포커스는 1/4 크기 흐린 복사본을 쓴다.
+        private static void Detail(ref RenderTexture current,RenderTexture original,Settings c) {
+            float tilt=c.FxTiltShift?Mathf.Clamp01(c.FxTiltShiftAmount):0,soft=c.FxSoftFocus?Mathf.Clamp01(c.FxSoftFocusAmount):0;
+            material.SetVector("_DetailA",new Vector4(c.FxOutline?Mathf.Clamp01(c.FxOutlineAmount):0,c.FxEmboss?Mathf.Clamp01(c.FxEmbossAmount):0,c.FxHalftone?Mathf.Clamp(c.FxHalftoneSize,3,24):0,tilt));
+            material.SetVector("_DetailB",new Vector4(soft,c.FxHalftone?Mathf.Clamp01(c.FxHalftoneAmount):0,0,0));
+            if(tilt<=0 && soft<=0){Pass(ref current,original,14);return;}
+            var s=RenderTexture.GetTemporary(Math.Max(1,original.width/4),Math.Max(1,original.height/4),0,original.format);
+            var t=RenderTexture.GetTemporary(s.width,s.height,0,s.format);s.filterMode=t.filterMode=FilterMode.Bilinear;
+            try {
+                Graphics.Blit(current,s);
+                float r=tilt>0?4:3;
+                material.SetVector("_Direction",new Vector4(r,0,0,0));Graphics.Blit(s,t,material,4);
+                material.SetVector("_Direction",new Vector4(0,r,0,0));Graphics.Blit(t,s,material,4);
+                material.SetTexture("_GlowTex",s);Pass(ref current,original,14);
+            }finally{RenderTexture.ReleaseTemporary(s);RenderTexture.ReleaseTemporary(t);}
+        }
+        // 렌즈·왜곡 (패스 15): 좌표를 바꿔 다시 읽는다. 시네마 바는 마지막에 검은 띠.
+        private static void Lens(ref RenderTexture current,RenderTexture original,Settings c) {
+            float clock=Time.unscaledTime%1000f;
+            material.SetVector("_LensA",new Vector4(c.FxBarrel?Mathf.Clamp(c.FxBarrelAmount,-.6f,1):0,c.FxRipple?Mathf.Clamp(c.FxRippleAmount,0,2):0,c.FxGlitch?Mathf.Clamp01(c.FxGlitchAmount):0,c.FxZoomBlur?Mathf.Clamp01(c.FxZoomBlurAmount):0));
+            material.SetVector("_LensB",new Vector4(c.FxMirror?1:0,c.FxKaleido?Mathf.Clamp(Mathf.Round(c.FxKaleidoSegments),2,16):0,c.FxLetterbox?Mathf.Clamp(c.FxLetterboxAspect,1.5f,3):0,clock));
+            Pass(ref current,original,15);
+        }
         private static bool MapBloom() {
             var sc=scrCamera.instance;var cam=sc==null?null:CameraRef(sc);
             if(!Main.Config.FxGlow)return false;
@@ -187,7 +222,7 @@ namespace StutterFix {
         internal static void ConfigurePreset(Settings c,int p) {
             if(p<0 || p>6 || p==4)throw new ArgumentOutOfRangeException(nameof(p));
             c.FxPreset=p;c.FxColor=p>=2;c.FxSharp=p>=1;c.FxAA=p==1;c.FxGlow=p==3||p==6;c.FxVignette=p==3||p==6;c.FxLut=c.FxLight=false;
-            c.FxGlowStack=c.FxToneMap=p==6;c.FxRays=c.FxStreak=c.FxFlare=c.FxChromatic=c.FxGrain=c.FxCrt=c.FxPixel=c.FxPosterize=c.FxBlur=false;c.FxHdr=c.FxFilmic=false;c.FxHdrAmount=.6f;c.FxFilmicExposure=1.2f;
+            c.FxGlowStack=c.FxToneMap=p==6;c.FxRays=c.FxStreak=c.FxFlare=c.FxChromatic=c.FxGrain=c.FxCrt=c.FxPixel=c.FxPosterize=c.FxBlur=false;c.FxHdr=c.FxFilmic=false;c.FxHdrAmount=.6f;c.FxFilmicExposure=1.2f;FxExtras.Reset(c);
             c.FxVibrance=.2f;c.FxContrast=1.08f;c.FxBrightness=0;c.FxTemperature=0;c.FxSharpAmount=.4f;c.FxGlowAmount=.25f;c.FxGlowThreshold=.75f;c.FxVignetteAmount=.15f;
             if(p==5){c.FxVibrance=.65f;c.FxContrast=1.22f;}
             if(p==6){c.FxVibrance=.55f;c.FxContrast=1.12f;c.FxBrightness=-.1f;c.FxGlowAmount=1.2f;c.FxGlowThreshold=.28f;c.FxCeiling=.97f;}
@@ -240,6 +275,22 @@ namespace StutterFix {
         }
         internal static void PrepareBenchmark(Settings config){var old=Main.Config;bool color=config.FxColor;try{Main.Config=config;if(!Enabled)config.FxColor=true;Apply();if(material==null || (config.FxLut&&lut==null))throw new Exception("셰이더/LUT 준비 실패");}finally{config.FxColor=color;Main.Config=old;}}
         internal static void Benchmark(RenderTexture src,RenderTexture dst,Settings config){Process(src,dst,config);}
+        // (자동 시험) 지금 장면 한 장에 효과를 하나씩 적용해 shots/gal-<이름>.png 로 저장: 같은 입력으로 효과끼리 눈으로 비교한다.
+        internal static readonly string[] GalleryNames={"sepia","duotone","tealorange","mono","invert","night","thermal","hue","outline","emboss","halftone","tilt","soft","barrel","ripple","glitch","zoom","mirror","kaleido","letterbox","hdr","filmic","neon-strong","clear-strong"};
+        internal static void Gallery(string list){
+            var src=SceneTexture();if(src==null)throw new Exception("장면 그림 없음: 곡 재생 중에 부르세요.");
+            string dir=Path.Combine(Main.Entry.Path,"shots");Directory.CreateDirectory(dir);
+            var names=string.IsNullOrEmpty(list)||list=="all"?GalleryNames:list.Split(new[]{' ',','},StringSplitOptions.RemoveEmptyEntries);
+            var dst=new RenderTexture(src.width,src.height,0,src.format,RenderTextureReadWrite.Default);dst.Create();
+            try {
+                Save(src,Path.Combine(dir,"gal-base.png"));
+                foreach(var name in names) {
+                    var cfg=EffectsGpuProbe.Configuration(name);PrepareBenchmark(cfg);
+                    Process(src,dst,cfg);Save(dst,Path.Combine(dir,"gal-"+name+".png"));
+                }
+                Main.Entry.Logger.Log("[화면 효과] 갤러리 "+names.Length+"장 저장 "+src.width+"x"+src.height);
+            }finally{dst.Release();UnityEngine.Object.Destroy(dst);Apply();}
+        }
         internal static RenderTexture SceneTexture(){var sc=scrCamera.instance;return sc==null?null:AccessTools.FieldRefAccess<scrCamera,RenderTexture>("camRT")(sc);}
         private static Color32[] Read(RenderTexture rt){var saved=RenderTexture.active;Texture2D t=null;try{RenderTexture.active=rt;t=new Texture2D(rt.width,rt.height,TextureFormat.RGBA32,false,true);t.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0);t.Apply();return t.GetPixels32();}finally{RenderTexture.active=saved;if(t!=null)UnityEngine.Object.Destroy(t);}}
         private static void Save(RenderTexture rt,string path){var saved=RenderTexture.active;Texture2D t=null;try{RenderTexture.active=rt;t=new Texture2D(rt.width,rt.height,TextureFormat.RGBA32,false,true);t.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0);t.Apply();File.WriteAllBytes(path,t.EncodeToPNG());}finally{RenderTexture.active=saved;if(t!=null)UnityEngine.Object.Destroy(t);}}
@@ -266,7 +317,7 @@ namespace StutterFix {
                     var retained=Read(src);int altered=0;for(int i=0;i<retained.Length;i++)if(!retained[i].Equals(baseline[i]))++altered;
                     Main.Entry.Logger.Log("[화면 효과 fixture] preset="+p+" changed="+changed+" total="+output.Length+" source_altered="+altered);if(changed==0||altered!=0)throw new Exception("출력 또는 원본 보존 검사 실패");}
                 config.FxLight=true;Process(src,dst);Main.Entry.Logger.Log("[화면 효과 fixture] light_pass=1");
-                foreach(string name in new[]{"clear-strong","neon-strong","rays","streak","flare","tone","chromatic","grain","crt","pixel","posterize","blur","hdr","filmic","hdr-filmic"}) {
+                foreach(string name in new[]{"clear-strong","neon-strong","rays","streak","flare","tone","chromatic","grain","crt","pixel","posterize","blur","hdr","filmic","hdr-filmic","sepia","duotone","tealorange","invert","mono","night","thermal","hue","outline","emboss","halftone","tilt","soft","barrel","ripple","glitch","zoom","mirror","kaleido","letterbox","extras-all"}) {
                     var candidate=EffectsGpuProbe.Configuration(name);Process(src,dst,candidate);
                     var output=Read(dst);int changed=0,altered=0,bright=0;
                     for(int i=0;i<output.Length;i++){if(!output[i].Equals(baseline[i]))++changed;bright=Math.Max(bright,Math.Max(output[i].r,Math.Max(output[i].g,output[i].b)));}

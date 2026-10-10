@@ -39,6 +39,12 @@ namespace StutterFix {
                 case "rays":c.FxRays=true;break;case "streak":c.FxStreak=true;break;case "flare":c.FxFlare=true;break;
                 case "tone":c.FxToneMap=true;break;case "chromatic":c.FxChromatic=true;break;case "grain":c.FxGrain=true;break;
                 case "crt":c.FxCrt=true;break;case "pixel":c.FxPixel=true;break;case "posterize":c.FxPosterize=true;break;case "blur":c.FxBlur=true;break;case "hdr":c.FxHdr=true;break;case "filmic":c.FxFilmic=true;break;case "hdr-filmic":c.FxHdr=c.FxFilmic=true;break;
+                case "sepia":c.FxSepia=true;break;case "duotone":c.FxDuotone=true;break;case "tealorange":c.FxTealOrange=true;break;case "invert":c.FxInvert=true;break;
+                case "mono":c.FxMono=true;break;case "night":c.FxNight=true;break;case "thermal":c.FxThermal=true;break;case "hue":c.FxHue=true;break;
+                case "outline":c.FxOutline=true;break;case "emboss":c.FxEmboss=true;break;case "halftone":c.FxHalftone=true;break;case "tilt":c.FxTiltShift=true;break;case "soft":c.FxSoftFocus=true;break;
+                case "barrel":c.FxBarrel=true;break;case "ripple":c.FxRipple=true;break;case "glitch":c.FxGlitch=true;break;case "zoom":c.FxZoomBlur=true;break;
+                case "mirror":c.FxMirror=true;break;case "kaleido":c.FxKaleido=true;break;case "letterbox":c.FxLetterbox=true;break;
+                case "extras-all":foreach(var s in FxExtras.All)s.ToggleField.SetValue(c,true);c.FxMirror=false;c.FxInvert=false;break;
                 default:throw new Exception("알 수 없는 GPU fixture: "+name);
             }return c;
         }

@@ -904,6 +904,8 @@ namespace StutterFix
                     ScreenEffects.Capture();return true;
                 case "fxfixture":
                     ScreenEffects.Fixture();return true;
+                case "fxgallery":
+                    ScreenEffects.Gallery(arg);return true;
                 case "fxbench":
                     EffectsGpuProbe.Start(arg);return true;
                 case "fxbenchreport":
@@ -987,6 +989,9 @@ namespace StutterFix
                     // ui 1.2 = 플레이 페이지의 셋째 갈래
                     { var pp = arg.Split('.'); SettingsWindow.ShowForTest(arg == "close" ? -2 : arg == "dock" ? -1 : int.Parse(pp[0]), pp.Length > 1 ? int.Parse(pp[1]) : 0); }
                     Log("설정 창: " + arg);
+                    return true;
+                case "uiscroll":
+                    SettingsWindow.ScrollForTest(float.Parse(arg, System.Globalization.CultureInfo.InvariantCulture));
                     return true;
                 case "shot":
                 {

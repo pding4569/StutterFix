@@ -938,6 +938,13 @@ namespace StutterFix
         public bool FxChromatic=false, FxGrain=false, FxCrt=false, FxPixel=false, FxPosterize=false, FxBlur=false;
         public bool FxHdr=false, FxFilmic=false;   // HDR 느낌(국소 대비+그림자 살리기+밝은 곳 누르기), 필름 톤(ACES)
         public float FxHdrAmount=.6f, FxFilmicExposure=1.2f;
+        // 더 많은 효과 (FxExtras.cs 표). 색 조정 / 디테일 / 렌즈·왜곡. 전부 기본 꺼짐.
+        public bool FxSepia=false, FxDuotone=false, FxTealOrange=false, FxInvert=false, FxMono=false, FxNight=false, FxThermal=false, FxHue=false;
+        public float FxSepiaAmount=.8f, FxDuotoneAmount=.8f, FxDuotoneHue=.6f, FxTealOrangeAmount=.8f, FxInvertAmount=1f, FxMonoAmount=1f, FxNightAmount=.85f, FxThermalAmount=.9f, FxHueShift=30f;
+        public bool FxOutline=false, FxEmboss=false, FxHalftone=false, FxTiltShift=false, FxSoftFocus=false;
+        public float FxOutlineAmount=.8f, FxEmbossAmount=.7f, FxHalftoneSize=8f, FxHalftoneAmount=.9f, FxTiltShiftAmount=.8f, FxSoftFocusAmount=.5f;
+        public bool FxBarrel=false, FxRipple=false, FxGlitch=false, FxZoomBlur=false, FxMirror=false, FxKaleido=false, FxLetterbox=false;
+        public float FxBarrelAmount=.3f, FxRippleAmount=.6f, FxGlitchAmount=.5f, FxZoomBlurAmount=.5f, FxKaleidoSegments=6f, FxLetterboxAspect=2.39f;
         public float FxCeiling=.97f, FxRaysAmount=.8f, FxRaysX=.5f, FxRaysY=.25f, FxRaysLength=.8f;
         public float FxStreakAmount=.5f, FxFlareAmount=.35f, FxChromaticAmount=2, FxGrainAmount=.045f;
         public float FxCrtAmount=.5f, FxPixelSize=6, FxPosterizeLevels=8, FxBlurRadius=2;
