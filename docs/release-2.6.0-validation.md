@@ -32,3 +32,16 @@ shader-research14~16장에 있다. 전체화면500Hz 카운터 정지 원인은 
 공개 검사자료: tools/ReleaseCheck/validation-2.6.0. 개인 경로와 전체 Player.log는 out에만 둔다.
 릴리스 본문은 docs/patch-notes-2.6.0.md와 README의2.6.0 절이며,
 플레이어에게 보낼 짧은 공지는 docs/announcement-2.6.0.md다.
+
+## 공개·자동 업데이트 확인
+
+- main·v2.6.0: `9399cd2d082a87d5fed7393adc3523b72f998b5d`.
+- 정식 공개1·draft0·prerelease0·latest v2.6.0.
+- 공개 ZIP 재다운로드 SHA256 일치2/2·main 업데이트 메타데이터2.6.0 확인1.
+- 이전 테스터2.5.3.3 실제 게임 시작→2.6.0 자동 다운로드/설치1·정상 종료1·SF오류0.
+- 업데이트 설치DLL SHA 일치1·사용자 Settings 원본바이트 복원1. 다른PC 검증은 확인 안 됨.
+- 사용자 게임은2.6.0 일반판 유지, 임시플레이모드 폴더0. 공지 원본 HTTP200·개행 정규화 뒤 내용일치1.
+
+릴리스: https://github.com/pding4569/StutterFix/releases/tag/v2.6.0
+공개 후 검사자료는 publication.json·updater.json이다. 이 후속 기록은 코드·ZIP 변경0이다.
+공지의 최초 바이트 비교는 작업본 CRLF/원격 LF 차이로1회 실패했고 텍스트 개행 정규화 뒤 일치를 확인했다.

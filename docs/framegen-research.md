@@ -1,6 +1,6 @@
 # 프레임 보간·생성 가능성 조사 (2026-10-06~07)
 
-최신: 34장. 사용자 승인으로 2.6.0 정식 릴리스 준비. 일반 ZIP 자체 HELLO 완주1·SF오류0·설정 복원, 상세는 docs/release-2.6.0-validation.md. 33장500Hz 카운터 정지 원인은 확인 안 됨.
+최신: 34장. 2.6.0 정식 릴리스 공개·main/태그9399cd2. 일반 ZIP HELLO 완주1·SF오류0·이전버전 자동 업데이트1·공개ZIP SHA일치2. 상세는 docs/release-2.6.0-validation.md. 33장500Hz 카운터 정지 원인은 확인 안 됨.
 
 1~10장은 클라우드에서 코드·자료·시뮬레이션으로 조사한 내용이다. 11장은 개발 PC의 실제 출력·게임 측정이다.
 
@@ -1721,3 +1721,5 @@ managed `01f1da1fcc63cb738a2d7f6d8ba3a1b10f95da4119c8286fbfd4c398ab049f9c`다.
 초반1060ms와 기존DOTween775개가 남아 전체무끊김/전체게임오류0으로 쓰지 않는다.
 일반 DLL은 테스터3과 바이트가 같으며 별도임시도구는 종료뒤 제거했다.
 자료·측정범위는 `docs/release-2.6.0-validation.md`와 `tools/ReleaseCheck/validation-2.6.0`.
+
+34장 후속: 정식공개1·main/태그9399cd2·재다운로드SHA일치2/2·이전테스터자동설치1·설정복원1. 공개 후 코드/ZIP 변경0, 자료는 ReleaseCheck의publication.json·updater.json.
