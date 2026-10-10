@@ -52,6 +52,10 @@ namespace StutterFix
             imgUsed = B("imageFilenameUsed"), sizeUsed = B("originalSizeUsed"), smoothUsed = B("smoothingUsed"), maskTypeUsed = B("maskingTypeUsed"),
             maskTargetUsed = B("maskingTargetUsed"), maskDepthUsed = B("useMaskingDepthUsed"), maskFrontUsed = B("maskingFrontDepthUsed"), maskBackUsed = B("maskingBackDepthUsed");
         private static AccessTools.FieldRef<ffxMoveDecorationsPlus, bool> B(string f) { return AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, bool>(f); }
+        // 알파 3.4 에서 새로 생긴 "자른 이미지의 피벗 오프셋". 이 모드는 직접 처리하지 않으므로 쓰는 효과는 원래 코드로 돌린다.
+        // 옛 게임에는 필드가 없어 참조 접근자를 쓰지 않고, 있으면 읽는다.
+        private static readonly FieldInfo cropField = AccessTools.Field(typeof(ffxMoveDecorationsPlus), "cropPivotOffsetUsed");
+        private static bool CropUsed(ffxMoveDecorationsPlus fx) { return cropField != null && (bool)cropField.GetValue(fx); }
 
         private static readonly AccessTools.FieldRef<scrDecoration, Dictionary<global::TweenType, Tween>> tweensRef = AccessTools.FieldRefAccess<scrDecoration, Dictionary<global::TweenType, Tween>>("eventTweens");
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> startPosRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("startPos");
@@ -158,7 +162,7 @@ namespace StutterFix
         internal static ShapeInfo Shape(ffxMoveDecorationsPlus fx)
         {
             if (durRef(fx) > 0f) return Why("길이 있음");
-            if (imgUsed(fx) || sizeUsed(fx) || smoothUsed(fx) || maskTypeUsed(fx) || maskTargetUsed(fx) || maskDepthUsed(fx) || maskFrontUsed(fx) || maskBackUsed(fx)) return Why("이미지·마스크");
+            if (imgUsed(fx) || sizeUsed(fx) || smoothUsed(fx) || maskTypeUsed(fx) || maskTargetUsed(fx) || maskDepthUsed(fx) || maskFrontUsed(fx) || maskBackUsed(fx) || CropUsed(fx)) return Why("이미지·마스크");
             if (mtUsed(fx) && (int)mtRef(fx) != 7) return Why("배치 방식");
             if (parUsed(fx) || visUsed(fx) || depthUsed(fx)) return Why(parUsed(fx) ? "시차 배율" : visUsed(fx) ? "보이기" : "깊이");
             bool move = !fdt(fx);
@@ -286,6 +290,7 @@ namespace StutterFix
             }
             if (!ADOBase.customLevel) return No(1);                                        // 공식 맵: 길이 보정(AdjustDurationForHardbake)이 있다
             if ((int)ADOBase.controller.visualQuality == 10) return No(2);                 // 원래 코드의 그래픽 설정 검사는 원래대로
+            if (CropUsed(fx)) return No(3);                                               // 자른 이미지 피벗 오프셋(알파 3.4)은 원래대로
             if (AnyImg(fx) && !ImgSafe(fx)) return No(3);                                // 이미지·마스크: 준비 실패나 원래 코드가 예외를 낼 이름이면 원래대로
             var tags = tagsRef(fx); var mgr = mgrRef(fx);
             if (tags == null || (object)mgr == null) return No(4);

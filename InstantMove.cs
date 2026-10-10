@@ -59,19 +59,32 @@ namespace StutterFix
         private static Action<scrDecoration, float> setParX, setParY, setPivX, setPivY, setRot, setOpa;
         private static Action<scrDecoration, Color> setCol;
 
-        // 클로저 번호 -> (키, 도우미 이름). 번호와 키가 둘 다 맞아야 끼운다.
-        private static readonly Dictionary<string, KeyValuePair<int, string>> blocks = new Dictionary<string, KeyValuePair<int, string>>
+        // 클로저 안쪽 번호(<>c__DisplayClass<메서드 번호>_<안쪽 번호>) -> (키, 도우미 이름). 안쪽 번호와 키가 둘 다 맞아야 끼운다.
+        // 메서드 번호는 게임이 업데이트되어 같은 클래스에 람다나 메서드가 늘면 바뀐다(45 -> 47, 2026-10-06 알파 빌드에서 깨졌다).
+        // 그래서 번호는 코드에서 찾는다(장식 클로저 _0 의 번호). 안쪽 번호는 컴파일러가 코드 순서대로 붙이므로 키 순서가 같으면 그대로다.
+        private static readonly Dictionary<int, KeyValuePair<int, string>> blocks = new Dictionary<int, KeyValuePair<int, string>>
         {
-            { "<>c__DisplayClass45_2", new KeyValuePair<int, string>(1, nameof(PosX)) },
-            { "<>c__DisplayClass45_3", new KeyValuePair<int, string>(2, nameof(PosY)) },
-            { "<>c__DisplayClass45_4", new KeyValuePair<int, string>(12, nameof(ParX)) },
-            { "<>c__DisplayClass45_5", new KeyValuePair<int, string>(13, nameof(ParY)) },
-            { "<>c__DisplayClass45_6", new KeyValuePair<int, string>(3, nameof(PivX)) },
-            { "<>c__DisplayClass45_7", new KeyValuePair<int, string>(4, nameof(PivY)) },
-            { "<>c__DisplayClass45_8", new KeyValuePair<int, string>(5, nameof(Rot)) },
-            { "<>c__DisplayClass45_9", new KeyValuePair<int, string>(9, nameof(Col)) },
-            { "<>c__DisplayClass45_10", new KeyValuePair<int, string>(10, nameof(Opa)) },
+            { 2, new KeyValuePair<int, string>(1, nameof(PosX)) },
+            { 3, new KeyValuePair<int, string>(2, nameof(PosY)) },
+            { 4, new KeyValuePair<int, string>(12, nameof(ParX)) },
+            { 5, new KeyValuePair<int, string>(13, nameof(ParY)) },
+            { 6, new KeyValuePair<int, string>(3, nameof(PivX)) },
+            { 7, new KeyValuePair<int, string>(4, nameof(PivY)) },
+            { 8, new KeyValuePair<int, string>(5, nameof(Rot)) },
+            { 9, new KeyValuePair<int, string>(9, nameof(Col)) },
+            { 10, new KeyValuePair<int, string>(10, nameof(Opa)) },
         };
+        // "<>c__DisplayClass47_3" -> (47, 3). 이 모양이 아니면 (-1, -1)
+        private static void ClosureNo(string name, out int method, out int inner)
+        {
+            method = inner = -1;
+            const string p = "<>c__DisplayClass";
+            if (name == null || !name.StartsWith(p, StringComparison.Ordinal)) return;
+            int us = name.IndexOf('_', p.Length);
+            if (us < 0) return;
+            int a, b;
+            if (int.TryParse(name.Substring(p.Length, us - p.Length), out a) && int.TryParse(name.Substring(us + 1), out b)) { method = a; inner = b; }
+        }
 
         internal static void Install(Harmony h)
         {
@@ -110,16 +123,35 @@ namespace StutterFix
                 FieldInfo decField = null, startPosField = null;
                 object loc1 = null;
                 CodeInstruction ldDict = null, ldC1 = null;
+                int methodNo = -1;   // 이 메서드의 클로저 번호 (장식 클로저 _0 를 만드는 newobj 에서)
+                for (int i = 0; i < code.Count && methodNo < 0; i++)
+                {
+                    var ci0 = code[i].operand as ConstructorInfo;
+                    if (code[i].opcode == OpCodes.Newobj && ci0 != null)
+                    {
+                        int m0, n0; ClosureNo(ci0.DeclaringType.Name, out m0, out n0);
+                        if (n0 == 0) methodNo = m0;
+                    }
+                }
+                if (methodNo < 0)
+                {
+                    Main.Entry.Logger.Log("[즉시 이동 직접] 장식 클로저 번호를 못 찾아 적용 안 함");
+                    return code;
+                }
                 for (int i = 0; i < code.Count; i++)
                 {
                     var fi = code[i].operand as FieldInfo;
-                    if (fi != null && fi.Name == "dec" && fi.DeclaringType.Name == "<>c__DisplayClass45_0" && decField == null) decField = fi;
-                    if (fi != null && fi.Name == "startPos" && fi.DeclaringType.Name == "<>c__DisplayClass45_1") startPosField = fi;
+                    int fm = -1, fn = -1;
+                    if (fi != null) ClosureNo(fi.DeclaringType.Name, out fm, out fn);
+                    if (fi != null && fi.Name == "dec" && fm == methodNo && fn == 0 && decField == null) decField = fi;
+                    if (fi != null && fi.Name == "startPos" && fm == methodNo && fn == 1) startPosField = fi;
                     if (fi != null && fi.Name == "eventTweens" && code[i].opcode == OpCodes.Ldfld && ldDict == null && i + 1 < code.Count)
                         ldDict = Load(code[i + 1]);   // 바로 다음 stloc 이 사전 지역 변수
                     var ci = code[i].operand as ConstructorInfo;
-                    if (code[i].opcode == OpCodes.Newobj && ci != null && ci.DeclaringType.Name == "<>c__DisplayClass45_1" && i + 1 < code.Count) ldC1 = Load(code[i + 1]);
-                    if (code[i].opcode == OpCodes.Newobj && ci != null && ci.DeclaringType.Name == "<>c__DisplayClass45_0" && loc1 == null && i + 1 < code.Count) loc1 = code[i + 1];
+                    int cm = -1, cn = -1;
+                    if (ci != null) ClosureNo(ci.DeclaringType.Name, out cm, out cn);
+                    if (code[i].opcode == OpCodes.Newobj && ci != null && cm == methodNo && cn == 1 && i + 1 < code.Count) ldC1 = Load(code[i + 1]);
+                    if (code[i].opcode == OpCodes.Newobj && ci != null && cm == methodNo && cn == 0 && loc1 == null && i + 1 < code.Count) loc1 = code[i + 1];
                 }
                 var ldLoc1 = loc1 == null ? null : Load((CodeInstruction)loc1);
                 if (decField == null || startPosField == null || ldDict == null || ldC1 == null || ldLoc1 == null)
@@ -133,7 +165,8 @@ namespace StutterFix
                     var ci = code[i].operand as ConstructorInfo;
                     if (code[i].opcode != OpCodes.Newobj || ci == null) continue;
                     KeyValuePair<int, string> b;
-                    if (!blocks.TryGetValue(ci.DeclaringType.Name, out b)) continue;
+                    int bm, bn; ClosureNo(ci.DeclaringType.Name, out bm, out bn);
+                    if (bm != methodNo || !blocks.TryGetValue(bn, out b)) continue;
                     // 바로 앞이 블록을 건너뛰는 조건 분기여야 한다 (값 없음 -> 블록 끝)
                     var br = code[i - 1];
                     if (!(br.opcode == OpCodes.Brtrue || br.opcode == OpCodes.Brtrue_S || br.opcode == OpCodes.Brfalse || br.opcode == OpCodes.Brfalse_S)) continue;
