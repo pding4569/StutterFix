@@ -894,6 +894,71 @@ namespace StutterFix
                 case "fgmonitor":
                     Log("[출력 모니터] " + PerfOverlay.DescribeFps());
                     return true;
+#if DEV || AUTOTEST
+                case "fpscap":
+                {
+                    // fpscap <n | 0>: 진짜 FPS 를 n 으로 묶는다(수직동기 끔). 0 이면 풀기. 게임은 Application.targetFrameRate 만 쓴다.
+                    int n = int.Parse(arg);
+                    QualitySettings.vSyncCount = 0;
+                    Application.targetFrameRate = n > 0 ? n : 10000;
+                    Log("[FPS 제한] 목표 FPS " + Application.targetFrameRate + ", vSync " + QualitySettings.vSyncCount + " frame " + Time.frameCount);
+                    return true;
+                }
+                case "planetinfo":
+                {
+                    // planetinfo: 행성 위치·크기와 렌더러별 경계 (프레임 생성이 공을 따로 옮길 때 쓸 반지름 보정용)
+                    var ctl = scrController.instance;
+                    var cam = scrCamera.instance != null ? scrCamera.instance.GetComponent<Camera>() : Camera.main;
+                    if (ctl == null) { Log("[행성 정보] 컨트롤러 없음"); return true; }
+                    Log(FormattableString.Invariant($"[행성 정보] 카메라 size={(cam != null ? cam.orthographicSize : -1):R} aspect={(cam != null ? cam.aspect : -1):R} screen={Screen.width}x{Screen.height} pos={(cam != null ? cam.transform.position.x : 0):R},{(cam != null ? cam.transform.position.y : 0):R} rotz={(cam != null ? cam.transform.eulerAngles.z : 0):R}"));
+                    foreach (var p in new[] { ctl.planetRed, ctl.planetBlue })
+                    {
+                        if (p == null) continue;
+                        Log(FormattableString.Invariant($"[행성 정보] {p.name} pos={p.transform.position.x:R},{p.transform.position.y:R} lossy={p.transform.lossyScale.x:R} angle={p.angle:R}"));
+                        foreach (var r in p.GetComponentsInChildren<Renderer>(true))
+                        {
+                            var b = r.bounds;
+                            Log(FormattableString.Invariant($"[행성 정보]   {r.GetType().Name} '{r.name}' on={r.enabled && r.gameObject.activeInHierarchy} center={b.center.x:R},{b.center.y:R} extents={b.extents.x:R},{b.extents.y:R}"));
+                        }
+                    }
+                    return true;
+                }
+                case "hideplanets":
+                {
+                    // hideplanets: 두 행성(꼬리 포함)의 렌더러를 끈다 (움직임 진단용: 공 말고 무엇이 진짜 프레임에서만 움직이는지)
+                    var ctl = scrController.instance;
+                    int n = 0;
+                    if (ctl != null)
+                        foreach (var p in new[] { ctl.planetRed, ctl.planetBlue })
+                            if (p != null) foreach (var r in p.GetComponentsInChildren<Renderer>(true)) { r.enabled = false; n++; }
+                    Log("[행성 숨김] 렌더러 " + n + "개 끔");
+                    return true;
+                }
+                case "spawn":
+                {
+                    // spawn <exe> <인자...>: 바깥 도구를 기다리지 않고 켠다 (프레임 생성 연구의 화면 기록기용). 저장소 tools\framegenlab\out 안의 exe 만.
+                    int sp = arg.IndexOf(' ');
+                    string exe = sp > 0 ? arg.Substring(0, sp) : arg, rest = sp > 0 ? arg.Substring(sp + 1) : "";
+                    string full = Path.GetFullPath(exe);
+                    if (!full.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) || full.IndexOf(@"\tools\framegenlab\out\", StringComparison.OrdinalIgnoreCase) < 0 || !File.Exists(full))
+                        throw new Exception("spawn 은 tools\\framegenlab\\out 안의 exe 만: " + full);
+                    var psi = new System.Diagnostics.ProcessStartInfo(full, rest) { UseShellExecute = false, CreateNoWindow = true };
+                    System.Diagnostics.Process.Start(psi);
+                    Log("[spawn] " + Path.GetFileName(full) + " " + rest + " 곡 " + (scrConductor.instance != null ? scrConductor.instance.songposition_minusi.ToString("F2") : "-") + "초");
+                    return true;
+                }
+                case "pm":
+                {
+                    // pm <이름> <초>: 관리자 에이전트(StutterFixTrace\agent.ps1)에 PresentMon 기록을 시킨다. 바로 돌아온다(기록은 따로 돈다).
+                    var q = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (q.Length < 2) throw new Exception("pm <이름> <초>");
+                    string st = Path.Combine(@"C:\Users\Public\StutterFixTrace", "agent-status.txt");
+                    if (!File.Exists(st) || File.ReadAllText(st).Contains("ended") || File.ReadAllText(st).Contains("quit")) throw new Exception("관리자 에이전트가 꺼져 있음 (agent.ps1)");
+                    File.WriteAllText(Path.Combine(@"C:\Users\Public\StutterFixTrace", "cmd.txt"), "pm " + q[0] + " " + q[1]);
+                    Log("[PresentMon] 기록 요청 " + q[0] + " " + q[1] + "초, 곡 " + (scrConductor.instance != null ? scrConductor.instance.songposition_minusi.ToString("F2") : "-") + "초, 시각 " + DateTime.Now.ToString("HH:mm:ss.fff"));
+                    return true;
+                }
+#endif
                 case "ui":
                     // ui <페이지 0~6 | dock | close>: 설정 창 열기 (모양 확인용)
                     // ui 1.2 = 플레이 페이지의 셋째 갈래

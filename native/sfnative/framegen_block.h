@@ -27,7 +27,10 @@ Texture2D<float> grayA:register(t6),grayB:register(t7);
 SamplerState linearClamp:register(s0);
 RWTexture2D<float> reduced:register(u0); RWTexture2D<float4> vectors:register(u1);
 RWStructuredBuffer<uint> totals:register(u2);
-float2 worldUV(float2 uv) { if(info.w>.5) uv.y=1-uv.y; return uv; }
+// info.w = worldFlip + 2*blendMode. Mode 0: nearest true frame around planets and where flow is unreliable; 1: dissolve the two true pictures around planets; 2: also dissolve where flow is unreliable.
+bool flipped() { return fmod(info.w,2.)>.5; }
+int blendMode() { return int(floor(info.w*.5+.001)); }
+float2 worldUV(float2 uv) { if(flipped()) uv.y=1-uv.y; return uv; }
 float3 worldColor(Texture2D<float4> image,float2 uv) { return image.SampleLevel(linearClamp,worldUV(uv),0).rgb; }
 [numthreads(8,8,1)] void Reduce(uint3 id:SV_DispatchThreadID) {
     if(any(id.xy>=uint2(grid.xy))) return;
@@ -75,18 +78,35 @@ bool inside(float2 uv,float4 b) { return b.z>b.x && b.w>b.y && all(uv>=b.xy) && 
 float4 flowAt(Texture2D<float4> f,float2 uv) { int blockSize=max(1,int(ceil(grid.x/grid.z))); return f.Load(int3(clamp(int2(uv*grid.xy)/blockSize,0,int2(grid.zw)-1),0)); }
 float3 closest(float2 uv) { return info.z<.5 ? oldScreen.SampleLevel(linearClamp,uv,0).rgb : newScreen.SampleLevel(linearClamp,uv,0).rgb; }
 float difference(float3 a,float3 b) { return max(max(abs(a.r-b.r),abs(a.g-b.g)),abs(a.b-b.b)); }
+// Global change test: a flash, a scene cut or a teleport changes most of the picture. Dissolving those would
+// invent grey in-between pictures, so a whole-picture change keeps the nearest true frame.
+bool globalChange() {
+    float sum=0;
+    [unroll] for(int j=0;j<3;j++) [unroll] for(int i=0;i<3;i++) {
+        float2 p=float2(.2+.3*i,.2+.3*j);
+        sum+=difference(worldColor(oldWorld,p),worldColor(newWorld,p));
+    }
+    return sum/9>.18;
+}
 float3 colorAt(float2 uv,out bool moving) {
     moving=false; float3 fallback=closest(uv);
     if(info.z<=0 || info.z>=1) return fallback;
-    // Preserve both true-frame planet envelopes, including cached trail/glow bounds.
-    [unroll] for(int k=0;k<4;k++) if(inside(uv,boxes[k])) return fallback;
+    // Planet envelopes (ball, trail, glow of both true frames): no block flow is trusted there.
+    // Mode 0 snaps to the nearest true frame, so the ball (the thing players watch) only changes
+    // on real frames. Modes 1/2 dissolve between the two true pictures instead: every generated
+    // frame then carries its share of the motion (a short ghost rather than a hold).
+    int blend=blendMode();
+    bool envelope=false;
+    [unroll] for(int k=0;k<4;k++) if(inside(uv,boxes[k])) envelope=true;
+    if(envelope && blend<1) return fallback;
     float3 a=worldColor(oldWorld,uv),b=worldColor(newWorld,uv);
     float3 sa=oldScreen.SampleLevel(linearClamp,uv,0).rgb,sb=newScreen.SampleLevel(linearClamp,uv,0).rgb;
     if(difference(a,sa)>2.5/255. || difference(b,sb)>2.5/255.) return fallback; // True-frame UI.
     if(max(max(a.r,a.g),a.b)<1./255. && max(max(b.r,b.g),b.b)<1./255.) return fallback; // Fixed black border.
+    if(envelope) { if(globalChange()) return fallback; moving=true; return lerp(a,b,info.z); }
     float4 f=flowAt(forwardFlow,uv),r=flowAt(backwardFlow,uv);
     float4 checkR=flowAt(backwardFlow,uv+f.xy/grid.xy);
-    if(f.z<.5 || r.z<.5 || checkR.z<.5 || length(f.xy+checkR.xy)>1.25) return fallback;
+    if(f.z<.5 || r.z<.5 || checkR.z<.5 || length(f.xy+checkR.xy)>1.25) { if(blend<2 || globalChange()) return fallback; moving=true; return lerp(a,b,info.z); }
     float2 oldUV=uv-info.z*f.xy/grid.xy,newUV=uv-(1-info.z)*r.xy/grid.xy;
     if(any(oldUV<0) || any(oldUV>1) || any(newUV<0) || any(newUV>1)) return fallback;
     float3 ca=worldColor(oldWorld,oldUV),cb=worldColor(newWorld,newUV);
@@ -150,7 +170,7 @@ public:
 #endif
     }
     Data data(const Slot& a,const Slot& b,double phase) const {
-        Data d{{float(width),float(height),float(std::clamp(phase,0.,1.)),float(b.packet.flip)},{float(smallW),float(smallH),float(blocksW),float(blocksH)},{}};
+        Data d{{float(width),float(height),float(std::clamp(phase,0.,1.)),float((b.packet.flip?1:0)+2*((b.packet.capture>>14)&3))},{float(smallW),float(smallH),float(blocksW),float(blocksH)},{}};
         memcpy(d.boxes[0],a.packet.textures+3,16);memcpy(d.boxes[1],a.packet.pulse,16);memcpy(d.boxes[2],b.packet.textures+3,16);memcpy(d.boxes[3],b.packet.pulse,16);return d;
     }
     void prepare(ID3D11Device* device,ID3D11DeviceContext* immediate,const Slot& a,const Slot& b,unsigned w,unsigned h,bool flush=true) {

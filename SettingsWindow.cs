@@ -1492,6 +1492,14 @@ namespace StutterFix
                     Save();
                 }
                 }
+                // 못 믿는 곳(공 둘레 등)을 가까운 진짜 그림 하나로 두면 그 곳은 진짜 프레임 속도로만 움직인다. 두 진짜 그림을 섞으면 움직임이 고르다.
+                int blend = Mathf.Clamp(c.FrameGenBlend, 0, 2);
+                if (Segment("framegenblend", ref blend, new[] { T("끔", "Off"), T("공 주변", "Planets"), T("전체", "All") }))
+                {
+                    c.FrameGenBlend = blend; Save();
+                }
+                P(T("움직임 섞기: 공이나 움직임을 못 믿는 곳을 가까운 진짜 화면 하나로 두면 그 곳은 진짜 프레임 속도로만 움직입니다(진짜 80 FPS 면 공이 80번만 움직임). 두 진짜 화면을 섞으면 만든 화면마다 움직임이 나뉘어 고르지만, 빠르게 바뀌는 곳에서 잠깐 겹쳐 보일 수 있습니다. 번쩍임·장면 전환처럼 화면 전체가 바뀌면 섞지 않습니다.",
+                    "Motion blending: where motion is not trusted (planets etc.) the nearer real frame is shown, so those parts only move at the real frame rate (at 80 FPS the ball moves 80 times a second). Blending the two real frames spreads that motion across generated frames; fast-changing areas can briefly look doubled. Flashes and scene cuts are never blended."), sDim);
                 if (HalfRender.Enabled) P(T("'반만 그리기'가 켜져 있어 프레임 늘리기는 쉬고 있습니다. 두 방식 중 하나를 선택하세요.", "Frame increase is suspended while Half rendering is enabled. Choose one method."), sDim);
                 else if (FrameGen.Status.Length>0) P(FrameGen.Status, sDim);
             }
