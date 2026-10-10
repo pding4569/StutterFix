@@ -18,10 +18,12 @@ namespace StutterFix
         internal static bool Active => active;
         internal static string Status = "";
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_installed();
+        [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_status();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_sources();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_generated();
         internal static string Describe() => "active="+active+" native_installed="+(SfNative.FrameGenReady?sf_framegen_installed():0)+
             " sources="+(SfNative.FrameGenReady?sf_framegen_sources():0)+" generated="+(SfNative.FrameGenReady?sf_framegen_generated():0)+" runtime_initialized="+RuntimeInitialized+" status="+Status;
+        internal static int NativeOutputStatus => SfNative.FrameGenReady?sf_framegen_status():0;
         // Explicit state commands only; no extra per-frame instrumentation.
         internal static string DescribeStorage() => "refresh="+Main.Config.FrameGenRefresh+" "+(RuntimeInitialized?FrameGenRuntime.DescribeStorage():"deadline=False resting=False");
         // Read existing atomic counters only when the monitor refreshes its text.

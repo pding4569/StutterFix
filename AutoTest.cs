@@ -886,6 +886,11 @@ namespace StutterFix
                 case "fxbenchreport":
                     EffectsGpuProbe.Report();return true;
 #endif
+#if DEV || AUTOTEST
+                case "fgmonitorhold":
+                    PerfOverlay.TestFreezeOutputSample(arg=="on");
+                    Log("[출력 모니터 합성 시험] hold="+(arg=="on"));return true;
+#endif
                 case "fgmonitor":
                     Log("[출력 모니터] " + PerfOverlay.DescribeFps());
                     return true;
@@ -1213,6 +1218,9 @@ namespace StutterFix
 
         private static void RestoreSets()
         {
+#if DEV || AUTOTEST
+            PerfOverlay.TestFreezeOutputSample(false);
+#endif
             if (setOrig.Count == 0) return;
             foreach (var kv in setOrig) kv.Key.SetValue(Main.Config, kv.Value);
             setOrig.Clear();

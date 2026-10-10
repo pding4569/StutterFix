@@ -110,6 +110,7 @@ namespace StutterFix
             sb.AppendLine("화면: " + Screen.width + "x" + Screen.height + " " + Screen.fullScreenMode + ", 주사율 " + Screen.currentResolution.refreshRateRatio.value.ToString("F0") + "Hz");
             sb.AppendLine("수직동기: " + QualitySettings.vSyncCount + ", 목표 FPS: " + Application.targetFrameRate);
             try { sb.AppendLine(BootConfig.Describe()); } catch { }
+            try { sb.AppendLine("FPS 모니터: " + PerfOverlay.DescribeFps()); sb.AppendLine("프레임 생성: " + FrameGen.Describe() + " native_status=" + FrameGen.NativeOutputStatus); } catch { }
             sb.AppendLine();
 
             sb.AppendLine("── 이 모드 설정 ──");

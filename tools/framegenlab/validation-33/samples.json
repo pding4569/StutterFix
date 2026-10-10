@@ -1,0 +1,155 @@
+{
+  "samples": [
+    {
+      "mode": -1,
+      "shown": 1.331,
+      "real": 1.331,
+      "counting": false,
+      "measured": false,
+      "count": 0,
+      "label": "진짜 FPS"
+    },
+    {
+      "mode": -1,
+      "shown": 769.804,
+      "real": 190.467,
+      "counting": true,
+      "measured": true,
+      "count": 14857,
+      "label": "표시 FPS"
+    },
+    {
+      "mode": -1,
+      "shown": 224.144,
+      "real": 224.144,
+      "counting": true,
+      "measured": false,
+      "count": 14902,
+      "label": "진짜 FPS · 출력 대기"
+    },
+    {
+      "mode": 0,
+      "shown": 201.681,
+      "real": 201.681,
+      "counting": false,
+      "measured": false,
+      "count": 14902,
+      "label": "진짜 FPS"
+    },
+    {
+      "mode": 1,
+      "shown": 206.746,
+      "real": 206.746,
+      "counting": true,
+      "measured": false,
+      "count": 14902,
+      "label": "진짜 FPS · 출력 대기"
+    },
+    {
+      "mode": 2,
+      "shown": 206.433,
+      "real": 206.433,
+      "counting": true,
+      "measured": false,
+      "count": 14902,
+      "label": "진짜 FPS · 출력 대기"
+    },
+    {
+      "mode": -1,
+      "shown": 198.1,
+      "real": 198.1,
+      "counting": true,
+      "measured": false,
+      "count": 14902,
+      "label": "진짜 FPS · 출력 대기"
+    },
+    {
+      "mode": -1,
+      "shown": 814.776,
+      "real": 203.694,
+      "counting": true,
+      "measured": true,
+      "count": 21579,
+      "label": "표시 FPS"
+    },
+    {
+      "mode": 0,
+      "shown": 198.605,
+      "real": 198.605,
+      "counting": false,
+      "measured": false,
+      "count": 21579,
+      "label": "진짜 FPS"
+    },
+    {
+      "mode": 1,
+      "shown": 750.286,
+      "real": 186.579,
+      "counting": true,
+      "measured": true,
+      "count": 23205,
+      "label": "표시 FPS"
+    },
+    {
+      "mode": 2,
+      "shown": 849.068,
+      "real": 211.27,
+      "counting": true,
+      "measured": true,
+      "count": 24032,
+      "label": "표시 FPS"
+    },
+    {
+      "mode": -1,
+      "shown": 870.626,
+      "real": 215.66,
+      "counting": true,
+      "measured": true,
+      "count": 24856,
+      "label": "표시 FPS"
+    },
+    {
+      "mode": -1,
+      "shown": 215.468,
+      "real": 215.468,
+      "counting": false,
+      "measured": false,
+      "count": 0,
+      "label": "진짜 FPS"
+    },
+    {
+      "mode": -1,
+      "shown": 0.969,
+      "real": 0.969,
+      "counting": true,
+      "measured": false,
+      "count": 7,
+      "label": "진짜 FPS · 출력 대기"
+    },
+    {
+      "mode": -1,
+      "shown": 201.193,
+      "real": 201.193,
+      "counting": true,
+      "measured": true,
+      "count": 380,
+      "label": "표시 FPS"
+    }
+  ],
+  "synthetic_hold_pending_checks": 4,
+  "reinitialization_pending_checks": 1,
+  "valid_output_checks": 6,
+  "real_only_checks": 4,
+  "normal_quit": true,
+  "sf_errors": 0,
+  "native_changed": false,
+  "performance_run": false,
+  "conditions": "HELLO 2026, 3440x1440 165Hz D3D11 FullScreenWindow sync0",
+  "tool_assertion_correction": "Re-enabled generation starts a new baseline. Initial pending sample is expected; subsequent refresh mode sample recovered. No new game for reanalysis.",
+  "screenshot_public": "not retained; original shot removed during exact restoration",
+  "originals_restored": {
+    "StutterFix.dll": "c4b7de0d5efc21a42baa53b6cb27c0bbb146cc4ad3a9dc017acfdf3a2d076cbd",
+    "sfnative.dll": "7a21489689fc979d54536ea79c0dc292e8eda5bb03ccd5c345a830a4dfa184c4",
+    "Settings.xml": "6d8becdeb1db2d420826592b146d32676b8e2d557de8eed1d1e5c290cf650e7f"
+  }
+}

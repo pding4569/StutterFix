@@ -174,12 +174,23 @@ namespace StutterFix
         private ulong outputCount;
         private long outputStamp;
         private int outputEpoch, outputFrame;
-        private bool outputSample;
+        private bool outputSample, outputMeasured;
+#if DEV || AUTOTEST
+        private bool freezeOutputSample;
+        private ulong frozenOutputCount;
+        internal static void TestFreezeOutputSample(bool freeze)
+        {
+            if(Instance==null) return;
+            Instance.freezeOutputSample=freeze;
+            if(freeze) FrameGen.TryOutputCount(out Instance.frozenOutputCount);
+            Instance.outputSample=false; // Resume with a fresh baseline, not accumulated frozen counts.
+        }
+#endif
         private double displayedRealFps, displayedFps;
         private string sFpsLabel = "FPS", sRealFpsShort = "";
         internal static string DescribeFps() => Instance == null ? "unavailable" :
             "mode=" + C.OverlayFpsSource + " shown=" + Instance.displayedFps.ToString("F3", System.Globalization.CultureInfo.InvariantCulture) +
-            " real=" + Instance.displayedRealFps.ToString("F3", System.Globalization.CultureInfo.InvariantCulture) + " counting=" + Instance.outputSample;
+            " real=" + Instance.displayedRealFps.ToString("F3", System.Globalization.CultureInfo.InvariantCulture) + " counting=" + Instance.outputSample + " measured=" + Instance.outputMeasured + " count=" + Instance.outputCount + " label=" + Instance.sFpsLabel;
         private string sFps = "-", sMs = "", sLow = "", sCpu = "", sCpuSub = "", sGpu = "", sGpuSub = "", sVram = "", sVramSub = "",
             sRam = "", sRamSub = "", sGc = "", sGcSub = "", sFooter = "", sSong = "", sSongSub = "";
         private string sMsShort = "", sLowShort = "", sCpuShort = "", sGpuShort = "", sVramShort = "", sRamShort = "";
@@ -712,25 +723,30 @@ namespace StutterFix
             displayedRealFps = displayedFps = avg > 0 ? 1000.0/avg : 0;
             sRealFpsShort = T("진짜 ", "Real ") + sFps;
             sFpsLabel = T("진짜 FPS", "Real FPS");
+            outputMeasured = false;
             // Read counters on the existing 4 Hz text refresh; no per-frame native call or new hook.
             if (C.OverlayFpsSource != 0)
             {
                 long stamp = Stopwatch.GetTimestamp();
                 ulong count;
                 bool counting = FrameGen.TryOutputCount(out count);
+#if DEV || AUTOTEST
+                if(freezeOutputSample) count=frozenOutputCount;
+#endif
                 if (counting)
                 {
-                    sFpsLabel = T("표시 FPS", "Output FPS");
                     bool comparable = outputSample && outputEpoch == FrameGen.CounterEpoch && stamp > outputStamp && count >= outputCount;
-                    if (comparable)
+                    if (comparable && count > outputCount)
                     {
+                        outputMeasured = true;
+                        sFpsLabel = T("표시 FPS", "Output FPS");
                         double hz = (double)Stopwatch.Frequency/(stamp-outputStamp);
                         displayedFps = (count-outputCount)*hz;
                         displayedRealFps = (Time.frameCount-outputFrame)*hz;
                         sFps = displayedFps.ToString("F0");
                         sRealFpsShort = T("진짜 ", "Real ") + displayedRealFps.ToString("F0");
                     }
-                    else { sFps = "-"; displayedFps = 0; }
+                    else sFpsLabel = T("진짜 FPS · 출력 대기", "Real FPS · output pending"); // Keep the measured real FPS; unchanged counters are not a measured output rate.
                 }
                 // While generation is OFF, Unity FPS estimates output without connecting Present.
                 else if (C.OverlayFpsSource > 0) sFpsLabel = T("표시≈FPS", "Output≈FPS");

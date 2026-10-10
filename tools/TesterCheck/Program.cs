@@ -36,6 +36,7 @@ var edition=asm.GetType("StutterFix.Edition",true);
 Check(!(bool)edition.GetField("AutoTest",BindingFlags.Static|BindingFlags.NonPublic).GetRawConstantValue(),"AutoTest enabled");
 Check(!(bool)edition.GetField("Dev",BindingFlags.Static|BindingFlags.NonPublic).GetRawConstantValue(),"Developer edition");
 Check(asm.GetType("StutterFix.SettingsWindow",true).GetMethod("InputFxForTest",BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Instance)==null,"Test input hook included");
+Check(asm.GetType("StutterFix.PerfOverlay",true).GetMethod("TestFreezeOutputSample",BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Instance)==null,"Output counter test hook included");
 var type=asm.GetType("StutterFix.Settings",true);
 object settings=Activator.CreateInstance(type);
 object Value(object o,string field)=>type.GetField(field).GetValue(o);

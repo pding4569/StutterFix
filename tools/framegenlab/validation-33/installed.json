@@ -1,0 +1,13 @@
+{
+  "version": "2.5.3.3",
+  "actual_zip_dll": true,
+  "managed_sha256": "01f1da1fcc63cb738a2d7f6d8ba3a1b10f95da4119c8286fbfd4c398ab049f9c",
+  "native_sha256": "7a21489689fc979d54536ea79c0dc292e8eda5bb03ccd5c345a830a4dfa184c4",
+  "settings_bytes_preserved": true,
+  "settings_sha256": "6d8becdeb1db2d420826592b146d32676b8e2d557de8eed1d1e5c290cf650e7f",
+  "normal_startup": true,
+  "normal_actual_mode": "확인 안 됨",
+  "normal_window_close": true,
+  "autotest": false,
+  "sf_errors": 0
+}
