@@ -1670,6 +1670,15 @@ namespace StutterFix
                 {
                     c.FrameGenBlend = blend; Save();
                 }
+                // 움직임 흐림: 진짜 두 그림 사이 카메라 이동 경로를 따라 평균(셔터를 연 것처럼). 타일·배경만, UI·공은 선명.
+                P(T("움직임 흐림 (모션 블러)", "Motion blur"), sTag);
+                int blur = Mathf.Clamp(c.FrameGenBlur, 0, 3);
+                if (Segment("framegenblur", ref blur, new[] { T("끔", "Off"), T("약", "Low"), T("중", "Medium"), T("강", "High") }))
+                {
+                    c.FrameGenBlur = blur; Save();
+                }
+                P(T("움직이는 타일·장식을 움직이는 방향으로 흐리게 해 끊어지는 느낌을 줄입니다(카메라 셔터를 연 것처럼). 화면에 고정된 글자·UI와 공은 선명하게 둡니다. 셰이더 비용이 조금 늘어납니다.",
+                    "Blurs moving tiles and decorations along their motion, like an open camera shutter, so movement looks less stepped. Screen-fixed text, UI and the planets stay sharp. Costs a little GPU time."), sDim);
                 bool ballMove = c.FrameGenBallMove;
                 if (Option("framegenball", ref ballMove, T("공을 사이 위치로 옮겨 그리기", "Draw the ball between its true positions"),
                     T("켜면 공이 두 진짜 위치 사이를 피벗 둘레 호로 움직여 진짜 프레임 속도보다 부드럽게 보입니다. 끄면 공은 진짜 프레임 속도로만 움직입니다. 공이 이상하게 보이면 끄세요.",

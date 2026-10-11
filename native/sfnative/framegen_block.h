@@ -23,6 +23,7 @@ class BlockFlow {
     // interpolated output. World space keeps the planet move correct while the camera pans, zooms or rotates.
     // tnow = interpolated planet world positions (red x, y, blue x, y) at this output's phase; orbits are followed
     // as arcs about the pivot (a straight line between two true positions cuts inside the orbit).
+    // hintInfo.y = motion blur: shutter length as a fraction of one true-frame interval (0 = off).
     // hintInfo.x = hint count; hints = decoration motion hints of the newer picture (box min/max uv, 2x2, translation).
     struct Data { float info[4],grid[4],boxes[4][4],planets[2][4],disc[4],cams[3][4],tnow[4],hintInfo[4],hints[32][12]; };
     static const char* code() { return R"(
@@ -131,6 +132,20 @@ float alignedDifference(float2 uvOld,float2 uvNew) {
     }
     return d;
 }
+// Motion blur (FrameGenBlur): d = how far this content moves on screen over hintInfo.y of a true-frame interval (uv).
+// Averages one picture along that segment with taps about 2 px apart (no stepped copies of edges) and weights that fall
+// off toward the ends, like a shutter that opens and closes smoothly instead of a hard box.
+float2 blurSegment(float2 perInterval) {
+    float2 d=perInterval*hintInfo.y; float px=length(d*info.xy);
+    if(px>64) d*=64/px; // a jump nothing explained smoothly: no long smear
+    return d;
+}
+float3 smear(Texture2D<float4> image,float2 uv,float2 d) {
+    float px=length(d*info.xy); if(px<1) return worldColor(image,uv);
+    int n=clamp(int(px*.25+.5),1,12); float3 acc=0; float wsum=0;
+    [loop] for(int i=-n;i<=n;i++) { float o=i*.5/n,w=1-1.3*abs(o); acc+=worldColor(image,uv+d*o)*w; wsum+=w; }
+    return acc/wsum;
+}
 // Block-flow path (content that moves on its own: decorations, particles, anything the cameras do not explain).
 )" R"(float3 flowColor(float2 uv,float3 fallback,float3 a,float3 b,out bool moving) {
     moving=false;
@@ -142,7 +157,8 @@ float alignedDifference(float2 uvOld,float2 uvNew) {
         float2 oldUV=uv-info.z*f.xy/grid.xy,newUV=uv-(1-info.z)*r.xy/grid.xy;
         if(all(oldUV>=0) && all(oldUV<=1) && all(newUV>=0) && all(newUV<=1)) {
             bestErr=alignedDifference(oldUV,newUV);
-            best=lerp(worldColor(oldWorld,oldUV),worldColor(newWorld,newUV),info.z);
+            best=hintInfo.y>0?lerp(smear(oldWorld,oldUV,blurSegment(f.xy/grid.xy)),smear(newWorld,newUV,blurSegment(r.xy/grid.xy)),info.z)
+                            :lerp(worldColor(oldWorld,oldUV),worldColor(newWorld,newUV),info.z);
         }
     }
     // Decoration motion hints: the exact screen affine map of a decoration the mod animated (scale and rotation
@@ -170,7 +186,14 @@ float alignedDifference(float2 uvOld,float2 uvNew) {
     moving=true;
     return lerp(best,fallback,occlusion);
 }
-)" R"(float3 colorAt(float2 uv,out bool moving) {
+)" R"(// Motion blur (FrameGenBlur): content fixed in the world moved ub-ua on screen over one true-frame interval. Averaging
+// both pictures along that path over hintInfo.y of the interval is the blur a camera shutter that long would give, the
+// same in real and generated outputs. Screen-fixed content (UI, filters) and the planets stay sharp.
+void shutterSample(float2 ua,float2 ub,out float3 A,out float3 B) {
+    if(hintInfo.y<=0) { A=worldColor(oldWorld,ua); B=worldColor(newWorld,ub); return; }
+    float2 d=blurSegment(ub-ua); A=smear(oldWorld,ua,d); B=smear(newWorld,ub,d);
+}
+float3 colorAt(float2 uv,out bool moving) {
     moving=false; float3 fallback=closest(uv);
     if(info.z<=0 || info.z>=1) return fallback;
     int blend=blendMode();
@@ -190,7 +213,7 @@ float alignedDifference(float2 uvOld,float2 uvNew) {
     float4 camOld=cams[0],camNew=cams[1],camNow=cams[2];
     float2 w=toWorld(uv,camNow),ua=toUV(w,camOld),ub=toUV(w,camNew);
     if(!(all(ua>=0) && all(ua<=1) && all(ub>=0) && all(ub<=1))) return flowColor(uv,fallback,a,b,moving);
-    float3 A=worldColor(oldWorld,ua),B=worldColor(newWorld,ub);
+    float3 A,B; shutterSample(ua,ub,A,B);
     // Planets (ball, its glow): both true pictures carry a planet at its own position. Background = the picture that
     // has no planet at this world point; the planet itself is drawn at its interpolated position as "what it adds"
     // (picture minus the other picture at the same world point), so its glow fades out with no rim.
@@ -397,6 +420,7 @@ public:
     Data data(const Slot& a,const Slot& b,double phase) const {
         Data d{{float(width),float(height),float(std::clamp(phase,0.,1.)),float((b.packet.flip?1:0)+2*((b.packet.capture>>14)&3))},{float(smallW),float(smallH),float(blocksW),float(blocksH)},{}};
         if(denseOn) { d.grid[0]=d.grid[2]=float(dense.baseW()); d.grid[1]=d.grid[3]=float(dense.baseH()); }
+        { static const float shutter[4]={0.f,.3f,.6f,1.f}; d.hintInfo[1]=shutter[(b.packet.capture>>20)&3]; }
         if(b.hintCount>0 && a.sequence+1==b.sequence) { d.hintInfo[0]=float(b.hintCount); memcpy(d.hints,b.hints,sizeof(float)*12*b.hintCount); }
         memcpy(d.boxes[0],a.packet.textures+3,16);memcpy(d.boxes[1],a.packet.pulse,16);memcpy(d.boxes[2],b.packet.textures+3,16);memcpy(d.boxes[3],b.packet.pulse,16);
         // Planet world positions and radius (about the sprite plus a little glow, world units), and the three cameras.

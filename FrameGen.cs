@@ -328,6 +328,7 @@ namespace StutterFix
                 if(Main.Config.FrameGenDebugMarks) p.capture|=1<<17;
                 if(Main.Config.FrameGenDense) p.capture|=1<<18; // dense pyramid optical flow instead of 8x8 blocks
                 if(Main.Config.FrameGenQueue) p.capture|=1<<19; // present queue: sync 1, outputs queued up to two refreshes ahead
+                p.capture|=(Mathf.Clamp(Main.Config.FrameGenBlur,0,3)&3)<<20; // motion blur: shutter 0 / .3 / .6 / 1 of a true-frame interval
                 p.capture|=(Mathf.Clamp(Main.Config.FrameGenBlend,0,2)&3)<<14; // blend mode: 0 nearest true frame, 1 planets dissolve, 2 all unreliable dissolve
                 if(ScenePair) p.capture|=8; // Separate early visual test; never a performance sample.
                 p.unused2=renderedFrame==Time.frameCount?new IntPtr(1):IntPtr.Zero;

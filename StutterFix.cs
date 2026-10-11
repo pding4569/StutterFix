@@ -937,6 +937,7 @@ namespace StutterFix
         public bool FrameGenDecoHints = false;  // (연구) 모드가 돌리는 장식의 화면 변환을 움직임 후보로 넘김 (DLSS 의 게임 모션 벡터 역할)
         public bool FrameGenDebugMarks = false; // (진단) 공 위치 표시 고리를 그린다
         public bool FrameGenBallMove = true;   // 공을 두 진짜 프레임 사이 위치(피벗 둘레 호)로 옮겨 그린다. 끄면 공은 진짜 프레임 속도로만 움직인다
+        public int FrameGenBlur = 0;         // 움직임 흐림(모션 블러): 0 끔, 1 약(진짜 프레임 간격의 30%), 2 중(60%), 3 강(100%). 카메라·흐름으로 움직이는 내용만, 화면 고정 UI·공은 선명
         public int FrameGenBlend = 1;        // 못 믿는 곳의 겹침: 0 끔(가까운 진짜 그림), 1 공 둘레만 섞기, 2 전체 섞기 (움직임이 고름)
         public int FxPreset = 0;
         public bool FxColor=false, FxSharp=false, FxAA=false, FxGlow=false, FxVignette=false, FxLut=false, FxLight=false;
