@@ -68,7 +68,7 @@ static HRESULT __stdcall present(IDXGISwapChain* self,UINT sync,UINT flags) {
     }
     // Calls the ordinary captured Present chain, including Steam. No byte/RVA checks or raw DXGI dispatch.
     if(self!=game.Get() || !engine) return originalPresent(self,sync,flags);
-    if(engine->isWorker()) { HRESULT hr=originalPresent(self,0,flags); if(hr==S_OK) ++generatedPresents; return hr; }
+    if(engine->isWorker()) { HRESULT hr=originalPresent(self,sync,sync?(flags&~UINT(DXGI_PRESENT_ALLOW_TEARING)):flags); if(hr==S_OK) ++generatedPresents; return hr; } // the worker asks for 1 in queue mode
     if(status<0) { engine->endFrame(); havePacket=false; return originalPresent(self,sync,flags); }
     try {
         if(status<0 || engine->error) throw std::runtime_error("admission failed");
@@ -81,9 +81,12 @@ static HRESULT __stdcall present(IDXGISwapChain* self,UINT sync,UINT flags) {
         }
         bool active=havePacket && packet.mode>=2 && packet.mode<=9;
         if(active && cameraBlendEnabled(packet)) engine->drawReal(); // Real and generated output share the delayed timeline.
-        UINT outputSync=active?0:sync;
+        UINT outputSync=engine->queueMode.load()?1:(active?0:sync); // queue mode: real Presents join the refresh queue too
+        if(engine->queueMode.load() && !(active && cameraBlendEnabled(packet))) engine->claimRealSlot();
         if(sync) { ++syncRequested; if(active) ++syncForcedZero; else if(outputSync==sync) ++syncPreserved; }
-        HRESULT hr=originalPresent(self,outputSync,flags);
+        if(active) engine->noteRealSubmitted(); // before the Present: after it the event also waits for the flip
+        UINT outputFlags=outputSync?(flags&~UINT(DXGI_PRESENT_ALLOW_TEARING)):flags; // tearing is invalid with a sync interval
+        HRESULT hr=originalPresent(self,outputSync,outputFlags);
         if(hr==S_OK) { ++sourcePresents; engine->noteRealShown(); }
         if(havePacket) engine->recordOff(packet,hr);
         havePacket=false;
@@ -172,5 +175,5 @@ API unsigned long long sf_framegen_shown() { auto* e=engine.get(); return e?e->s
 // Read-only scheduler counters for an explicit state command (0 missed while the original frame held the gate, 1 missed with the gate free, 2 outputs, 3 frame begins, 4 worker wait in microseconds).
 API unsigned long long sf_framegen_stat(int which) {
     auto* e=engine.get(); if(!e) return 0;
-    switch(which) { case 0: return e->missedLock; case 1: return e->missedTimer; case 2: return e->outputs.load(); case 3: return e->frameBegins.load(); case 4: return static_cast<unsigned long long>(e->workerWaitMs*1000); case 5: return e->stalledOutputs; case 6: return e->earlyArrivals; case 7: return e->sourceCount; case 8: return e->intervalMicros; case 9: return e->shown; default: return 0; }
+    switch(which) { case 0: return e->missedLock; case 1: return e->missedTimer; case 2: return e->outputs.load(); case 3: return e->frameBegins.load(); case 4: return static_cast<unsigned long long>(e->workerWaitMs*1000); case 5: return e->stalledOutputs; case 6: return e->earlyArrivals; case 7: return e->sourceCount; case 8: return e->intervalMicros; case 9: return e->shown; case 10: return static_cast<unsigned long long>(e->realLatency*1e6); case 11: return e->realLatencySamples; default: return 0; }
 }

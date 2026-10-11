@@ -299,7 +299,34 @@ public:
         ++frameEnds; frameMutex.unlock(); } }
     void stop() { stopRequested=true; endFrame(); if(worker.joinable()) worker.join(); }
     bool isWorker() const { return workerId.load()==GetCurrentThreadId(); }
-    void drawReal() { std::lock_guard<std::mutex> gate(mutex); auto& s=slots[published%slots.size()]; if(s.sequence) { double tick=s.qpc; if(labelled()) { tick=clock.label(now(),lead()); labelSequence=s.sequence; labelTime=tick; realLabelled=true; labelledTick=true; realLabelKey=static_cast<long long>(tick*1e6); } render(s,true,tick); realLabelled=false; labelledTick=false; } }
+    // The real Present carries the game's whole frame of GPU work: in heavy scenes it completes 4-9 ms after the call
+    // (generated ones ~1.5 ms). The worker skipped the refresh the real Present was labelled for; the real image missed
+    // it and was then replaced by the next generated one, so a refresh went by with nothing new (HELLO 2026 ~134 s: 654
+    // of 1246 real Presents never shown, each followed by a 12 ms gap). Labelling it later does not help: anything
+    // presented after it queues behind its GPU work and replaces it. So when real frames finish late, the worker renders
+    // that refresh too and the real image is shown only if it happens to be in time.
+    void drawReal() { std::lock_guard<std::mutex> gate(mutex); auto& s=slots[published%slots.size()]; if(s.sequence) { double tick=s.qpc; if(labelled()) { double at=now(); tick=queueMode.load()?claimSlot(at):clock.label(at,lead()); realLabelSequence=s.sequence; realLabelTime=tick; realLabelAt=at; realLabelled=true; labelledTick=true; realLabelKey=static_cast<long long>(tick*1e6); } render(s,true,tick); realLabelled=false; labelledTick=false; } }
+    // GPU completion of real Presents: event queries the worker polls without waiting.
+    std::array<ComPtr<ID3D11Query>,8> realDone; std::array<double,8> realSubmit{}; std::array<bool,8> realPending{}; unsigned realQueries=0;
+    double realLatency=0; unsigned long long realLatencySamples=0;
+    bool realOutstanding() const { for(bool p:realPending) if(p) return true; return false; }
+    void noteRealSubmitted() {
+        ContextLock lock(protection.Get());
+        unsigned i=realQueries++%unsigned(realDone.size());
+        if(realPending[i]) return;
+        if(!realDone[i]) { D3D11_QUERY_DESC d{D3D11_QUERY_EVENT,0}; if(FAILED(device->CreateQuery(&d,&realDone[i]))) return; }
+        immediate->End(realDone[i].Get()); realSubmit[i]=now(); realPending[i]=true;
+    }
+    void pollReal() { // under ContextLock
+        for(size_t i=0;i<realDone.size();i++) {
+            if(!realPending[i]) continue;
+            BOOL done=FALSE;
+            if(immediate->GetData(realDone[i].Get(),&done,sizeof(done),D3D11_ASYNC_GETDATA_DONOTFLUSH)==S_OK && done) {
+                double lat=now()-realSubmit[i]; realPending[i]=false; ++realLatencySamples;
+                realLatency=realLatencySamples==1?lat:realLatency+(lat-realLatency)*.3; // follows the scene within a few frames
+            }
+        }
+    }
     bool labelled() { int hz=refreshRate.load(); if(mode.load()!=9 || hz<=0 || leadMicros.load()<=0) return false; clock.update(now()); return clock.valid; }
     double lead() const { return leadMicros.load()/1e6; }
     HRESULT present() {
@@ -307,7 +334,7 @@ public:
         ComPtr<ID3D11RenderTargetView> old[8]; ID3D11RenderTargetView* restore[8]{}; ComPtr<ID3D11DepthStencilView> z;
         for(int i=0;i<8;i++) restore[i]=nullptr;
         immediate->OMGetRenderTargets(8,restore,&z); for(int i=0;i<8;i++) old[i].Attach(restore[i]);
-        HRESULT hr=swap->Present(0,0);
+        HRESULT hr=swap->Present(queueMode.load()?1:0,0);
         immediate->OMSetRenderTargets(8,restore,z.Get()); // Flip Present can unbind Unity's cached backbuffer target.
         return hr;
     }
@@ -375,6 +402,11 @@ public:
             if(old.packet.measure && schedules.size()<500000) schedules.push_back({old.packet.frame,old.packet.mode,made,lm,em,tm,old.packet.song,workerWaitMs,sourceHeldMs,missedLock,missedTimer});
             ++replacedSnapshots; made=0; workerWaitMs=0; scheduleActive=false;
         }
+        // Present queue only while real frames finish their GPU work late (heavy scenes): there it keeps every refresh
+        // filled (HELLO 2026 ~132-138 s: 137 -> 160 shown/s), in light scenes its early images collide with the real
+        // ones (165 -> 130/s). Hysteresis: on above 4.5 ms, off below 3 ms (the polled latency reads ~0.5 ms high).
+        { bool allow=((p.capture>>19)&1)!=0 && refreshRate.load()>0; double lat=realLatency;
+          queueMode=allow && (queueMode.load()?lat>.003:lat>.0045); }
         if(p.mode==0) { mode=0; previousPacket=lastPacket; lastPacket=p; previousQpc=lastQpc; lastQpc=t; havePrevious=true; return; }
         if(!initialized) {
             initialize(); initialized=true;
@@ -419,6 +451,7 @@ public:
             if(blockFlowVariant(p)>=3) {
                 // Compile/allocate on activation; search only a pair actually used by an intermediate output.
                 blockFlow.initialize(device.Get(),width,height,blockFlowVariant(p));
+                if((p.capture>>18)&1) blockFlow.startDense(device.Get(),width,height); // compiles in the background
                 if(s.sequence>1 && previous.sequence==s.sequence-1) blockFlow.skipIfUnused(previous);
             } else blockFlow.prepare(device.Get(),immediate.Get(),s.sequence>1 && previous.sequence==s.sequence-1?previous:s,s,width,height);
         }
@@ -519,7 +552,14 @@ private:
     Packet previousPacket{},lastPacket{};
     double lastQpc=0,previousQpc=0,lastRealPresent=0;
 public:
-    DisplayClock clock; unsigned long long labelSequence=0; double labelTime=0; bool realLabelled=false;
+    // Present queue (FrameGenQueue): every output, real or generated, is presented with sync interval 1 and takes the
+    // next free refresh slot, so the compositor shows exactly one per refresh in order. Up to queueAhead slots are kept
+    // submitted ahead: a real frame whose GPU work runs 4-9 ms past its Present no longer leaves its refresh empty,
+    // because the images for the refreshes it blocks were already queued before it. Costs about one refresh of latency.
+    std::atomic<bool> queueMode{false}; double nextSlot=0; static constexpr int queueAhead=2;
+    void claimRealSlot() { std::lock_guard<std::mutex> gate(mutex); if(clock.valid) claimSlot(now()); } // a real Present we did not draw still takes a refresh
+    double claimSlot(double at) { double reach=clock.label(at,lead()); if(nextSlot<reach-1e-6) nextSlot=reach; double v=nextSlot; nextSlot+=clock.period; return v; }
+    DisplayClock clock; unsigned long long labelSequence=0,realLabelSequence=0; double labelTime=0,realLabelTime=0,realLabelAt=0; bool realLabelled=false;
     // Pictures that reach the screen: with the display clock one per refresh (a second image for the same refresh is
     // replaced before it is shown), otherwise every Present. This is what an "output FPS" should count.
     std::atomic<unsigned long long> shown{0}; std::atomic<long long> shownLabel{0}; long long realLabelKey=0;
@@ -532,7 +572,11 @@ public:
     // the true frames jitter (the old phase = age/last interval jumped and stalled with every late or early frame).
     double smoothInterval=0; bool labelledTick=false;
     static constexpr double renderAhead=.0028; // worker renders this long before the Present deadline
-    double timelineDelay() const { return (smoothInterval>0?smoothInterval:.0167)+lead()+renderAhead+.001; }
+    double timelineTarget() const { return (smoothInterval>0?smoothInterval:.0167)+lead()+(clock.valid&&queueMode.load()?queueAhead*clock.period:renderAhead)+.001; }
+    double delayNow=0;
+    // Moves at most 0.25 ms per output toward the target, so a mode switch changes the picture speed by ~4% for a
+    // fraction of a second instead of jumping 9 ms.
+    double timelineDelay() { double t=timelineTarget(); if(delayNow<=0) delayNow=t; else delayNow+=std::clamp(t-delayNow,-.00025,.00025); return delayNow; }
     void noteShown(bool labelled,double label) {
         if(!labelled) { ++shown; return; }
         long long key=static_cast<long long>(label*1e6); if(shownLabel.exchange(key)!=key) ++shown;
@@ -630,7 +674,14 @@ private:
                 double t=now();
                 {
                     double wait=now(); bool blocked=!frameMutex.try_lock();
-                    if(blocked) { workerWaitSince=wait; frameMutex.lock(); }
+                    if(blocked) {
+                        workerWaitSince=wait;
+                        // While the game holds the gate for its frame, keep watching the previous real frame's GPU completion.
+                        while(!frameMutex.try_lock()) {
+                            if(realOutstanding()) { ContextLock poll(protection.Get()); pollReal(); }
+                            LARGE_INTEGER due; due.QuadPart=-3000; SetWaitableTimer(timer,&due,0,nullptr,nullptr,FALSE); WaitForSingleObject(timer,2);
+                        }
+                    }
                     std::lock_guard<std::recursive_mutex> frame(frameMutex,std::adopt_lock);
                     double acquired=now(); workerWaitSince=0;
                     if(stopRequested || error) break;
@@ -653,11 +704,20 @@ private:
                             if(seen!=s.sequence) deadline=refreshDeadline(lastRealPresent,hz);
                             continuous=true;
                             if(leadMicros.load()>0) { clock.update(t); displayClock=clock.valid; }
+                            if(displayClock && queueMode.load()) {
+                                // Keep up to queueAhead refresh slots submitted ahead of what a Present now could reach.
+                                double L=lead(),reach=clock.label(t,L);
+                                if(nextSlot<reach-1e-6) { if(nextSlot>0) ++missedTimer; nextSlot=reach; }
+                                bool room=nextSlot<reach+(queueAhead-.5)*clock.period;
+                                renderTick=nextSlot; clockDue=room; seen=s.sequence;
+                                deadline=room?t:nextSlot-(queueAhead-.5)*clock.period-L+.0002;
+                            } else
                             if(displayClock) {
                                 // One image per refresh, picture time = the refresh it will be shown at. Render it once,
                                 // 1.5 ms before the Present must be in, so a late or locked worker still has retries.
                                 double L=lead(),V=clock.label(t,L);
                                 if(labelSequence==s.sequence && labelTime>=V-1e-6) V+=clock.period;
+                                if(realLabelSequence==s.sequence && fabs(realLabelTime-V)<1e-6) V+=clock.period; // the real Present owns this refresh
                                 double target=V-L-renderAhead; // late enough that the true frame the label needs has arrived, early enough to retry
                                 if(labelSequence && V-labelTime>clock.period*1.5 && t>=target) { if(blocked) ++missedLock; else ++missedTimer; }
                                 deadline=target; clockDue=t>=target; renderTick=V; seen=s.sequence;
@@ -677,6 +737,7 @@ private:
                             render(s,false,renderTick);
                             labelledTick=false;
                             if(displayClock) { labelSequence=s.sequence; labelTime=renderTick; }
+                            if(queueMode.load()) nextSlot=renderTick+clock.period;
                             HRESULT hr=present();
                             if(FAILED(hr)) { error=int(hr); throw std::runtime_error("Present failed"); }
                             noteShown(displayClock,renderTick);
@@ -690,12 +751,17 @@ private:
                                 if(pendingQuery) pendingQuery->row=records.size()-1;
                             }
                             if(!displayClock) { deadline+=interval; if(deadline<t-interval) deadline=t+interval; }
+                            else if(queueMode.load()) deadline=now();
                             else deadline=renderTick-lead()+clock.period-renderAhead-.0002; // next window's render time
                         }
                     }
                 }
                 collect();
+                // Poll the real frame's GPU completion with the context lock only: collect() waits for the frame gate, which
+                // the game holds for its whole next frame, and read 9 ms where PresentMon showed 1.7 ms.
+                if(realOutstanding()) { ContextLock poll(protection.Get()); pollReal(); }
                 double remaining=deadline-now();
+                if(realOutstanding()) remaining=std::min(remaining,.0005);
                 if(remaining>.00015) { LARGE_INTEGER due; due.QuadPart=-LONGLONG((remaining-.0001)*10000000); SetWaitableTimer(timer,&due,0,nullptr,nullptr,FALSE); WaitForSingleObject(timer,5); }
                 else SwitchToThread();
             }

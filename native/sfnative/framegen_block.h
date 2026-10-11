@@ -290,6 +290,7 @@ groupshared uint counts[4];
     }
     void execute(ID3D11DeviceContext* immediate) { ComPtr<ID3D11CommandList> list;check(commands->FinishCommandList(FALSE,&list));immediate->ExecuteCommandList(list.Get(),TRUE); }
 public:
+    void startDense(ID3D11Device* device,unsigned w,unsigned h) { dense.start(device,w,h); }
     void resetMetrics(ID3D11DeviceContext* immediate) {
 #ifdef SF_FRAMEGEN_RESEARCH
         if(counterTarget) {UINT zeros[4]{};immediate->ClearUnorderedAccessViewUint(counterTarget.Get(),zeros);}
@@ -411,7 +412,7 @@ public:
         initialize(device,w,h,blockFlowVariant(b.packet));
         if(sequence==b.sequence) return;
         denseOn=((b.packet.capture>>18)&1)!=0;
-        if(denseOn) dense.initialize(device,w,h);
+        if(denseOn) { dense.start(device,w,h); denseOn=dense.ready(); }
         auto d=data(a,b,0);bind(d,a,b);
         ID3D11ShaderResourceView* none[8]{};ID3D11UnorderedAccessView* noTarget=nullptr;
         commands->PSSetShaderResources(0,8,none);commands->CSSetShaderResources(4,2,none);

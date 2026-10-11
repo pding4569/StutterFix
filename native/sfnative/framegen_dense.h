@@ -115,6 +115,17 @@ float patchCostInt(int2 p,int2 v,float a[25],float ma) {
     float4 own=n[4]; outFlow[id.xy]=float4(n[pick].xy,own.z,own.w);
 }
 )"; }
+    // Compiling these shaders takes seconds (big unrolled patch loops). Doing it on the first pair froze the game picture
+    // at the start of a level while the song played on. It runs on its own thread; the block matcher is used until ready.
+    std::atomic<int> state{0}; // 0 not started, 1 compiling, 2 ready, -1 failed
+    std::thread compiler;
+    ~DenseFlow() { if(compiler.joinable()) compiler.join(); }
+    bool ready() const { return state.load()==2; }
+    void start(ID3D11Device* device,unsigned w,unsigned h) {
+        int expected=0; if(!state.compare_exchange_strong(expected,1)) return;
+        ComPtr<ID3D11Device> keep(device);
+        compiler=std::thread([this,keep,w,h]{ try { initialize(keep.Get(),w,h); state=2; } catch(...) { state=-1; } });
+    }
     void initialize(ID3D11Device* device,unsigned w,unsigned h) {
         if(lum0) return;
         width=w; height=h;
