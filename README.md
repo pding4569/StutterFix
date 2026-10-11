@@ -66,6 +66,7 @@ made by **naro** & **Claude**
 - **공과 타일**: 공을 두 진짜 위치 사이의 궤도(호)로 옮겨 그립니다. 타일처럼 월드에 붙은 내용은 카메라 이동으로 먼저 맞춰, 지나간 타일이 지글거리던 것을 줄였습니다. 움직임을 믿기 어려운 곳은 두 진짜 그림을 섞어(기본: 공 주변) 진짜 프레임 속도로만 움직이지 않게 했습니다.
 - **움직임 흐림(모션 블러)** 옵션 추가(끔/약/중/강, 기본 끔): 움직이는 타일·장식을 움직이는 방향으로 흐리게 해 끊어지는 느낌을 줄입니다. 글자·UI·공은 선명하게 둡니다.
 - 첫 곡 시작 때 약 4초 동안 **소리만 나오고 화면이 멈춰 있던 문제**를 고쳤습니다(셰이더를 곡 밖에서 미리 준비).
+- 주사율 맞춤에서 진짜 FPS가 주사율보다 조금 높을 때 **화면 저장을 쉬었다 깨기를 반복하며 끊기던 것**을 고쳤습니다(HELLO 2026 70초 동안 139번 → 11번).
 - FPS 모니터의 표시 FPS는 실제 화면에 올라간 장 수(갱신마다 최대 1장)로 셉니다. 주사율보다 높게 나오지 않습니다.
 - 여전히 구간에 따라 덜 부드럽게 느껴질 수 있습니다. 화면 전환·섬광이 많은 장면, GPU가 꽉 찬 장면은 진짜 프레임 위주로 나옵니다.
 
@@ -264,7 +265,7 @@ Stutter Fix reduces mid-play hitches and level loading times on heavy custom lev
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
 
-**2.7.0:** frame interpolation is smoother: outputs are timed to the display refresh, dense optical flow (no torn glyphs at block edges), planets moved along their orbit, tiles aligned by the camera first, optional motion blur, and the ~4 s frozen picture at the first song start is fixed. "Screen effects" are now **Shaders** (own page, an "On" tab, HDR/filmic tone, 20 more effects, share codes). The effects-off page lists the effects the open level uses first, with bulk off/restore. Restored two optimizations that the game 3.4 alpha had silently disabled (instant decoration moves: Arche 224.5 s 63–69 ms hitch gone; hit error meter fade).
+**2.7.0:** frame interpolation is smoother: outputs are timed to the display refresh, dense optical flow (no torn glyphs at block edges), planets moved along their orbit, tiles aligned by the camera first, optional motion blur, the ~4 s frozen picture at the first song start is fixed, and refresh-match mode no longer flips its storage rest on and off when the real rate hovers just above the refresh rate (HELLO 2026: 139 → 11 switches in 70 s). "Screen effects" are now **Shaders** (own page, an "On" tab, HDR/filmic tone, 20 more effects, share codes). The effects-off page lists the effects the open level uses first, with bulk off/restore. Restored two optimizations that the game 3.4 alpha had silently disabled (instant decoration moves: Arche 224.5 s 63–69 ms hitch gone; hit error meter fade).
 
 **2.6.0:** optional frame interpolation (recommended refresh-deadline mode with storage rest, or fixed 2–8×), screen effects with presets and numeric strength controls, light rays (Godrays), glow and other filters. Both features default to off. Interpolation adds visual latency and may show artifacts; output FPS counts successful submissions, not physical monitor refreshes. Exclusive fullscreen/minimize transitions and the stuck-zero FPS display were fixed. See the Korean release notes above for measurements and limits.
 
