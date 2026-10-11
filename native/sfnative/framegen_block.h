@@ -23,9 +23,10 @@ class BlockFlow {
     // interpolated output. World space keeps the planet move correct while the camera pans, zooms or rotates.
     // tnow = interpolated planet world positions (red x, y, blue x, y) at this output's phase; orbits are followed
     // as arcs about the pivot (a straight line between two true positions cuts inside the orbit).
-    struct Data { float info[4],grid[4],boxes[4][4],planets[2][4],disc[4],cams[3][4],tnow[4]; };
+    // hintInfo.x = hint count; hints = decoration motion hints of the newer picture (box min/max uv, 2x2, translation).
+    struct Data { float info[4],grid[4],boxes[4][4],planets[2][4],disc[4],cams[3][4],tnow[4],hintInfo[4],hints[32][12]; };
     static const char* code() { return R"(
-cbuffer Data:register(b0) { float4 info; float4 grid; float4 boxes[4]; float4 planets[2]; float4 disc; float4 cams[3]; float4 tnow; };
+cbuffer Data:register(b0) { float4 info; float4 grid; float4 boxes[4]; float4 planets[2]; float4 disc; float4 cams[3]; float4 tnow; float4 hintInfo; float4 hintData[96]; };
 // info: width,height,phase,worldFlip. grid: smallW,smallH,blocksW,blocksH.
 Texture2D<float4> oldWorld:register(t0),newWorld:register(t1),oldScreen:register(t2),newScreen:register(t3);
 Texture2D<float4> forwardFlow:register(t4),backwardFlow:register(t5);
@@ -131,22 +132,45 @@ float alignedDifference(float2 uvOld,float2 uvNew) {
     return d;
 }
 // Block-flow path (content that moves on its own: decorations, particles, anything the cameras do not explain).
-float3 flowColor(float2 uv,float3 fallback,float3 a,float3 b,out bool moving) {
+)" R"(float3 flowColor(float2 uv,float3 fallback,float3 a,float3 b,out bool moving) {
     moving=false;
     float4 f=flowAt(forwardFlow,uv),r=flowAt(backwardFlow,uv);
     float4 checkR=flowAt(backwardFlow,uv+f.xy/grid.xy);
-    if(f.z<.5 || r.z<.5 || checkR.z<.5 || length(f.xy+checkR.xy)>1.25) {
+    bool own=!(f.z<.5 || r.z<.5 || checkR.z<.5 || length(f.xy+checkR.xy)>1.25);
+    float bestErr=9; float3 best=fallback;
+    if(own) {
+        float2 oldUV=uv-info.z*f.xy/grid.xy,newUV=uv-(1-info.z)*r.xy/grid.xy;
+        if(all(oldUV>=0) && all(oldUV<=1) && all(newUV>=0) && all(newUV<=1)) {
+            bestErr=alignedDifference(oldUV,newUV);
+            best=lerp(worldColor(oldWorld,oldUV),worldColor(newWorld,newUV),info.z);
+        }
+    }
+    // Decoration motion hints: the exact screen affine map of a decoration the mod animated (scale and rotation
+    // included, which no translation vector can express). For this output point at phase z, find the old point pA
+    // with (1-z)*pA + z*T(pA) = uv, then pB = T(pA). Used only where it explains the two pictures better.
+    int hc=int(hintInfo.x+.5);
+    [loop] for(int h=0;h<hc;h++) {
+        float4 box=hintData[h*3];
+        if(any(uv<box.xy) || any(uv>box.zw)) continue;
+        float4 L=hintData[h*3+1]; float2 t=hintData[h*3+2].xy; float z=info.z;
+        float m00=1-z+z*L.x,m01=z*L.y,m10=z*L.z,m11=1-z+z*L.w,det=m00*m11-m01*m10;
+        if(abs(det)<1e-4) continue;
+        float2 rhs=uv-z*t;
+        float2 pA=float2(m11*rhs.x-m01*rhs.y,-m10*rhs.x+m00*rhs.y)/det;
+        float2 pB=float2(L.x*pA.x+L.y*pA.y,L.z*pA.x+L.w*pA.y)+t;
+        if(any(pA<0) || any(pA>1) || any(pB<0) || any(pB>1)) continue;
+        float e=alignedDifference(pA,pB);
+        if(e<bestErr-.01) { bestErr=e; best=lerp(worldColor(oldWorld,pA),worldColor(newWorld,pB),z); own=true; }
+    }
+    if(!own || bestErr>=9) {
         if(blendMode()<2 && disc.w<=.5) return fallback;
         moving=true; return disc.w>.5 ? fallback : lerp(a,b,info.z);
     }
-    float2 oldUV=uv-info.z*f.xy/grid.xy,newUV=uv-(1-info.z)*r.xy/grid.xy;
-    if(any(oldUV<0) || any(oldUV>1) || any(newUV<0) || any(newUV>1)) return fallback;
-    float3 ca=worldColor(oldWorld,oldUV),cb=worldColor(newWorld,newUV);
-    float occlusion=smoothstep(.25,.65,alignedDifference(oldUV,newUV)); // Occlusion/effects: no double image.
-    moving=length(f.xy)>.05 || length(r.xy)>.05;
-    return lerp(lerp(ca,cb,info.z),fallback,occlusion);
+    float occlusion=smoothstep(.25,.65,bestErr); // Occlusion/effects: no double image.
+    moving=true;
+    return lerp(best,fallback,occlusion);
 }
-float3 colorAt(float2 uv,out bool moving) {
+)" R"(float3 colorAt(float2 uv,out bool moving) {
     moving=false; float3 fallback=closest(uv);
     if(info.z<=0 || info.z>=1) return fallback;
     int blend=blendMode();
@@ -348,6 +372,7 @@ public:
     Data data(const Slot& a,const Slot& b,double phase) const {
         Data d{{float(width),float(height),float(std::clamp(phase,0.,1.)),float((b.packet.flip?1:0)+2*((b.packet.capture>>14)&3))},{float(smallW),float(smallH),float(blocksW),float(blocksH)},{}};
         if(denseOn) { d.grid[0]=d.grid[2]=float(dense.baseW()); d.grid[1]=d.grid[3]=float(dense.baseH()); }
+        if(b.hintCount>0 && a.sequence+1==b.sequence) { d.hintInfo[0]=float(b.hintCount); memcpy(d.hints,b.hints,sizeof(float)*12*b.hintCount); }
         memcpy(d.boxes[0],a.packet.textures+3,16);memcpy(d.boxes[1],a.packet.pulse,16);memcpy(d.boxes[2],b.packet.textures+3,16);memcpy(d.boxes[3],b.packet.pulse,16);
         // Planet world positions and radius (about the sprite plus a little glow, world units), and the three cameras.
         // A teleport (large planet or camera jump), a missing camera or a hidden planet disables the move.

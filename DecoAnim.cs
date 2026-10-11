@@ -127,6 +127,18 @@ namespace StutterFix
 
         internal static bool Active { get { return Enabled && Installed; } }
         internal static bool IsRunning(Tween t) { var r = t.id as Rec; return r != null && r.Running; }
+        // 프레임 늘리기 힌트: 지금 위치·회전·크기를 돌리고 있는 장식 (키 1,2 위치  5 회전  7,8 크기)
+        internal static void CollectMoving(List<scrDecoration> into, HashSet<scrDecoration> seen)
+        {
+            into.Clear(); seen.Clear();
+            for (int i = 0; i < recs.Count; i++)
+            {
+                var r = recs[i];
+                if (!r.Running || r.D == null) continue;
+                int k = r.Key;
+                if ((k == 1 || k == 2 || k == 5 || k == 7 || k == 8) && seen.Add(r.D)) into.Add(r.D);
+            }
+        }
 
         // ── 만들기 (FastMove 루프가 원래 블록 순서대로 부른다) ──
         // 원래 코드: 사전에 있으면 Kill(true) (null 이어도 부른다)

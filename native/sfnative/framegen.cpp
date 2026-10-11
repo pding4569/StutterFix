@@ -161,7 +161,7 @@ API int sf_framegen_status() { return status; }
 API int sf_framegen_error() { return failure; }
 API int sf_framegen_stopped() { return stopped; }
 API int sf_framegen_installed() { return installed; }
-API int sf_framegen_block_version() { return 3; }
+API int sf_framegen_block_version() { return 4; }
 API void sf_framegen_refresh_rate(int hz) { refreshRate=hz>0 && hz<=1000?hz:0; }
 API void sf_framegen_lead(int micros) { leadMicros=micros<=0?0:micros>12000?12000:micros; }
 API void sf_framegen_pace(int mille) { paceMille=mille<500?500:mille>1000?1000:mille; }

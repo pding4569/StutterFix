@@ -24,7 +24,7 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_shown();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_stat(int which);
         // 명시적 상태 명령에서만: 생성 기회를 원본 프레임이 잠가서 놓친 수 / 잠금 없이 놓친 수 / 출력 / 원본 시작 / 작업 스레드 대기(ms)
-        internal static string Scheduler() { try { if(!SfNative.FrameGenReady) return ""; return " missed_lock="+sf_framegen_stat(0)+" missed_timer="+sf_framegen_stat(1)+" outputs="+sf_framegen_stat(2)+" frame_begins="+sf_framegen_stat(3)+" worker_wait_ms="+sf_framegen_stat(4)/1000+" stalled="+sf_framegen_stat(5)+" early_sources="+sf_framegen_stat(6)+" sources_n="+sf_framegen_stat(7)+" interval_us_sum="+sf_framegen_stat(8)+" shown="+sf_framegen_stat(9); } catch(EntryPointNotFoundException) { return " scheduler=n/a"; } }
+        internal static string Scheduler() { try { if(!SfNative.FrameGenReady) return ""; return " missed_lock="+sf_framegen_stat(0)+" missed_timer="+sf_framegen_stat(1)+" outputs="+sf_framegen_stat(2)+" frame_begins="+sf_framegen_stat(3)+" worker_wait_ms="+sf_framegen_stat(4)/1000+" stalled="+sf_framegen_stat(5)+" early_sources="+sf_framegen_stat(6)+" sources_n="+sf_framegen_stat(7)+" interval_us_sum="+sf_framegen_stat(8)+" shown="+sf_framegen_stat(9)+(RuntimeInitialized?" hints="+FrameGenRuntime.HintsSent+"/"+FrameGenRuntime.HintFrames:""); } catch(EntryPointNotFoundException) { return " scheduler=n/a"; } }
         internal static string Describe() => "active="+active+" native_installed="+(SfNative.FrameGenReady?sf_framegen_installed():0)+
             " sources="+(SfNative.FrameGenReady?sf_framegen_sources():0)+" generated="+(SfNative.FrameGenReady?sf_framegen_generated():0)+" runtime_initialized="+RuntimeInitialized+" status="+Status+Scheduler();
         internal static int NativeOutputStatus => SfNative.FrameGenReady?sf_framegen_status():0;
@@ -94,6 +94,7 @@ namespace StutterFix
             public double song;
             public int frame,mode,measure,flip,linear,capture;
             public Vector4 pulse;
+            public int hintCount,hintFrom; public IntPtr hints; // decoration motion hints (old -> new picture), see BuildHints
         }
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl,CharSet=CharSet.Unicode)] private static extern int sf_framegen_setup(string directory,int diagnostics);
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern IntPtr sf_framegen_event_ptr();
@@ -198,15 +199,16 @@ namespace StutterFix
         internal static void Install() {
             if(runner!=null) return;
             if(SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Direct3D11) throw new InvalidOperationException("D3D11에서 사용할 수 있습니다.");
-            if(Marshal.SizeOf<Packet>()!=136) throw new InvalidOperationException("Outside packet ABI");
+            if(Marshal.SizeOf<Packet>()!=152) throw new InvalidOperationException("Outside packet ABI");
             if(BlockFlow) {
-                try { if(sf_framegen_block_version()!=3) throw new EntryPointNotFoundException(); }
+                try { if(sf_framegen_block_version()!=4) throw new EntryPointNotFoundException(); }
                 catch(EntryPointNotFoundException) { throw new InvalidOperationException("블록 보간 DLL을 사용하려면 게임을 다시 켜 주세요."); }
             }
             string directory=Diagnostics?Path.Combine(Main.Entry.Path,"framegen-outside"):string.Empty; if(Diagnostics) Directory.CreateDirectory(directory);
             if(sf_framegen_setup(directory,Diagnostics?1:0)==0) throw new InvalidOperationException("지난 해제가 끝나지 않았습니다. 게임을 다시 켜 주세요.");
             callback=sf_framegen_event_ptr(); command=new CommandBuffer {name="FrameGen included snapshot"};
-            packets=new IntPtr[512]; for(int i=0;i<packets.Length;i++) packets[i]=Marshal.AllocHGlobal(136);
+            packets=new IntPtr[512]; for(int i=0;i<packets.Length;i++) packets[i]=Marshal.AllocHGlobal(160);
+            hintBufs=new IntPtr[packets.Length]; for(int i=0;i<hintBufs.Length;i++) hintBufs[i]=Marshal.AllocHGlobal(HintMax*HintFloats*4);
             finished=failed=false; oldMode=-1; packetIndex=missingScenes=0; renderedFrame=-1; trackedCamera=null;
 #if FRAMEGEN_RESEARCH
             pairGeometrySaved=false;
@@ -316,7 +318,7 @@ namespace StutterFix
                 if(CameraBlend) p.capture|=4; // Shared delayed timeline, one-source visual delay.
                 if(Main.Config.FrameGenBallMove) p.capture|=1<<16;
                 if(Main.Config.FrameGenDebugMarks) p.capture|=1<<17;
-                if(Main.Config.FrameGenDense) p.capture|=1<<18; // dense pyramid optical flow instead of 8x8 blocks // planets are drawn between the true positions (experimental)
+                if(Main.Config.FrameGenDense) p.capture|=1<<18; // dense pyramid optical flow instead of 8x8 blocks
                 p.capture|=(Mathf.Clamp(Main.Config.FrameGenBlend,0,2)&3)<<14; // blend mode: 0 nearest true frame, 1 planets dissolve, 2 all unreliable dissolve
                 if(ScenePair) p.capture|=8; // Separate early visual test; never a performance sample.
                 p.unused2=renderedFrame==Time.frameCount?new IntPtr(1):IntPtr.Zero;
@@ -369,7 +371,65 @@ namespace StutterFix
                     // Advance only for an admitted packet, never for that unused render.
                     if(worldRing!=null) ++worldIndex;
                 } else p.mode=0;
+                if(hintBufs!=null) {
+                    var hb=hintBufs[packetIndex%hintBufs.Length];
+                    p.hints=hb; p.hintFrom=lastHintFrameSeen; // the frame the hint states were last taken at
+                    p.hintCount=Main.Config.FrameGenDecoHints && p.mode!=0 && sc!=null ? BuildHints(Cam(sc),hb) : 0;
+                }
                 Issue(1,Write(p));
+        }
+        // Decoration motion hints (what DLSS gets from game motion vectors): for decorations the mod is animating, the
+        // screen affine map from the previous true picture to this one, and the screen box they cover. The native output
+        // tries it as one more motion candidate and keeps it only where it matches the two pictures better than the flow.
+        internal const int HintMax=32,HintFloats=12;
+        private static IntPtr[] hintBufs; private static int lastHintFrameSeen=-1;
+        private sealed class HintState { public Vector2 p0,p1,p2; public Vector4 box; public int frame=-1; public Renderer r; }
+        private static readonly Dictionary<scrDecoration,HintState> hintStates=new Dictionary<scrDecoration,HintState>();
+        private static readonly List<scrDecoration> movingDecos=new List<scrDecoration>();
+        private static readonly HashSet<scrDecoration> movingSeen=new HashSet<scrDecoration>();
+        private static readonly List<KeyValuePair<float,float[]>> hintCandidates=new List<KeyValuePair<float,float[]>>();
+        private static readonly List<scrDecoration> hintStale=new List<scrDecoration>();
+        internal static long HintsSent,HintFrames;
+        private static Vector2 ToUV(Camera c,Vector3 w) { var v=c.WorldToViewportPoint(w); return new Vector2(v.x,1-v.y); }
+        private static unsafe int BuildHints(Camera camera,IntPtr buffer) {
+            if(camera==null || !DecoAnim.Enabled) return 0;
+            DecoAnim.CollectMoving(movingDecos,movingSeen);
+            int now=Time.frameCount; hintCandidates.Clear();
+            foreach(var d in movingDecos) {
+                if(d==null) continue;
+                HintState st;
+                if(!hintStates.TryGetValue(d,out st)) { st=new HintState(); hintStates[d]=st; }
+                if(st.r==null) st.r=d.GetComponentInChildren<Renderer>();
+                if(st.r==null || !st.r.enabled || !st.r.isVisible) { st.frame=-1; continue; }
+                var t=d.transform;
+                Vector2 q0=ToUV(camera,t.TransformPoint(Vector3.zero)),q1=ToUV(camera,t.TransformPoint(Vector3.right)),q2=ToUV(camera,t.TransformPoint(Vector3.up));
+                var b=st.r.bounds;
+                Vector2 c0=ToUV(camera,b.min),c1=ToUV(camera,b.max),c2=ToUV(camera,new Vector3(b.min.x,b.max.y,b.min.z)),c3=ToUV(camera,new Vector3(b.max.x,b.min.y,b.min.z));
+                var box=new Vector4(Mathf.Min(Mathf.Min(c0.x,c1.x),Mathf.Min(c2.x,c3.x)),Mathf.Min(Mathf.Min(c0.y,c1.y),Mathf.Min(c2.y,c3.y)),
+                                    Mathf.Max(Mathf.Max(c0.x,c1.x),Mathf.Max(c2.x,c3.x)),Mathf.Max(Mathf.Max(c0.y,c1.y),Mathf.Max(c2.y,c3.y)));
+                if(st.frame>=0 && st.frame==lastHintFrameSeen) {
+                    Vector2 dp1=st.p1-st.p0,dp2=st.p2-st.p0,dq1=q1-q0,dq2=q2-q0;
+                    float det=dp1.x*dp2.y-dp2.x*dp1.y;
+                    if(Mathf.Abs(det)>1e-9f) {
+                        float l00=(dq1.x*dp2.y-dq2.x*dp1.y)/det,l01=(-dq1.x*dp2.x+dq2.x*dp1.x)/det,l10=(dq1.y*dp2.y-dq2.y*dp1.y)/det,l11=(-dq1.y*dp2.x+dq2.y*dp1.x)/det;
+                        float tx=q0.x-(l00*st.p0.x+l01*st.p0.y),ty=q0.y-(l10*st.p0.x+l11*st.p0.y);
+                        float moved=Mathf.Abs(l00-1)+Mathf.Abs(l01)+Mathf.Abs(l10)+Mathf.Abs(l11-1)+Mathf.Abs(tx)+Mathf.Abs(ty);
+                        var u=new Vector4(Mathf.Min(box.x,st.box.x)-.005f,Mathf.Min(box.y,st.box.y)-.005f,Mathf.Max(box.z,st.box.z)+.005f,Mathf.Max(box.w,st.box.w)+.005f);
+                        float area=Mathf.Clamp01(u.z-u.x)*Mathf.Clamp01(u.w-u.y);
+                        if(moved>1e-5f && area>0 && area<.95f && !float.IsNaN(l00+l01+l10+l11+tx+ty))
+                            hintCandidates.Add(new KeyValuePair<float,float[]>(area,new[]{u.x,u.y,u.z,u.w,l00,l01,l10,l11,tx,ty,0f,0f}));
+                    }
+                }
+                st.p0=q0;st.p1=q1;st.p2=q2;st.box=box;st.frame=now;
+            }
+            lastHintFrameSeen=now;
+            if((now&63)==0) { hintStale.Clear(); foreach(var kv in hintStates) if(kv.Key==null || kv.Value.frame<now-2) hintStale.Add(kv.Key); foreach(var k in hintStale) hintStates.Remove(k); }
+            // Small objects first: a big background layer's box covers the screen, and the per-pixel check decides anyway.
+            hintCandidates.Sort((x,y)=>x.Key.CompareTo(y.Key));
+            int n=Math.Min(HintMax,hintCandidates.Count); float* f=(float*)buffer;
+            for(int i=0;i<n;i++) { var v=hintCandidates[i].Value; for(int k=0;k<HintFloats;k++) f[i*HintFloats+k]=v[k]; }
+            HintFrames++; HintsSent+=n;
+            return n;
         }
         private static unsafe IntPtr Write(Packet p) { var ptr=packets[packetIndex++%packets.Length]; *(Packet*)ptr=p; return ptr; }
         private static Vector4 PlanetEnvelope(Camera camera,Renderer[] renderers) {
@@ -460,6 +520,8 @@ namespace StutterFix
             if(!uninstallPending) return true;
             if(sf_framegen_stopped()==0) return false;
             foreach(var p in packets) Marshal.FreeHGlobal(p);
+            if(hintBufs!=null) { foreach(var h in hintBufs) Marshal.FreeHGlobal(h); hintBufs=null; }
+            hintStates.Clear(); lastHintFrameSeen=-1;
             FreeTextures();
 #if FRAMEGEN_RESEARCH
             FrameGenScreenBorder.Release();

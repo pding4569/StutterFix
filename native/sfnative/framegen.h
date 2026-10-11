@@ -30,8 +30,9 @@ struct Packet {
     double song;
     int frame,mode,measure,flip,linear,capture;
     float pulse[4]; // Linear pulse endpoints, elapsed and duration; random shake is held at last real state.
+    int hintCount,hintFrom; const float* hints; // decoration motion hints: 12 floats each (box, 2x2, translation), old -> this picture
 };
-static_assert(sizeof(Packet)==136,"packet ABI");
+static_assert(sizeof(Packet)==152,"packet ABI");
 struct Record { double time,song,gpu; int real,frame; HRESULT hr; double age; float camera[4]{};
     double targetTime=0;
 };
@@ -175,6 +176,7 @@ struct Slot {
     size_t motionRow=SIZE_MAX;
 #endif
     Packet packet{},previousPacket{}; Pose previous{}; double qpc=0,previousSong=0,period=.005,frameDelta=.005; unsigned long long sequence=0; bool pairValid=true;
+    float hints[32][12]{}; int hintCount=0; // copied at publish: the packet memory is reused by the producer
 };
 inline bool screenBorderEnabled(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
@@ -404,6 +406,9 @@ public:
         if(screenBorderEnabled(p)) copy(reinterpret_cast<ID3D11Texture2D*>(reinterpret_cast<uintptr_t>(p.textures[2])&~uintptr_t(1)),s.images[2]);
 #endif
         s.packet=p; s.previousPacket=lastPacket; s.previous=lastPacket.pose; s.previousSong=lastPacket.song;
+        s.hintCount=0;
+        if(p.hints && p.hintCount>0 && havePrevious && p.hintFrom==lastPacket.frame) { s.hintCount=std::min(p.hintCount,32); memcpy(s.hints,p.hints,sizeof(float)*12*s.hintCount); }
+        s.packet.hints=nullptr;
         s.frameDelta=havePrevious?t-lastQpc:.005;
         s.period=std::clamp(s.frameDelta,.001,.05); s.qpc=t; s.sequence=++published;
         if(havePrevious) smoothInterval=smoothInterval>0?smoothInterval+(s.period-smoothInterval)*.1:s.period;
