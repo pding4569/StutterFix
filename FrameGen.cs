@@ -308,6 +308,7 @@ namespace StutterFix
                 if(FixedCostStage>=1) p.capture|=2048; // Three producer-owned immutable scene textures; no scene copy.
                 if(BlockFlow) p.capture|=64|4|((BlockVariant&7)<<7);
                 if(CameraBlend) p.capture|=4; // Shared delayed timeline, one-source visual delay.
+                if(Main.Config.FrameGenBallMove) p.capture|=1<<16; // planets are drawn between the true positions (experimental)
                 p.capture|=(Mathf.Clamp(Main.Config.FrameGenBlend,0,2)&3)<<14; // blend mode: 0 nearest true frame, 1 planets dissolve, 2 all unreliable dissolve
                 if(ScenePair) p.capture|=8; // Separate early visual test; never a performance sample.
                 p.unused2=renderedFrame==Time.frameCount?new IntPtr(1):IntPtr.Zero;

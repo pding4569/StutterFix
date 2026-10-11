@@ -134,9 +134,11 @@ float3 colorAt(float2 uv,out bool moving) {
     if(envelope) {
         if(globalChange()) return fallback;
         if(disc.w>.5) {
-            // Only the pixels at a planet (sprite and glow, in world space) leave the ordinary path: both true
-            // pictures are sampled so the planet lands on its interpolated position. Where the planet was in one
-            // picture the other shows the background (it has left), so no copy stays behind. Feathered at the edge.
+            // Only the pixels at a planet (sprite and glow, in world space) leave the ordinary path. The planet sprite
+            // is taken from each true picture as "what differs from the other picture at the same world point" (the
+            // other picture shows the background there) and drawn at the interpolated position over a background
+            // with no copy of the planet. Moving the whole disc shifted the tiles around the ball and left a visible
+            // rim; the sprite alone keeps the background where it is.
             // The rest of the envelope box (trail, bloom, decorations passing through) takes the ordinary path
             // below: a blind dissolve there showed double images of moving decorations around the ball.
             float4 ca=cams[0],cb=cams[1],ct=cams[2];
@@ -146,14 +148,20 @@ float3 colorAt(float2 uv,out bool moving) {
                 if(radius>0) {
                     float2 wa=planets[k].xy,wb=planets[k].zw,wt=lerp(wa,wb,info.z);
                     float da=length(w-wa),db=length(w-wb),dt=length(w-wt);
-                    if(dt<radius || da<radius || db<radius) {
+                    if(dt<radius*1.3 || da<radius*1.3 || db<radius*1.3) {
                         float3 A=worldColor(oldWorld,toUV(w,ca)),B=worldColor(newWorld,toUV(w,cb));
                         float3 background=lerp(A,B,info.z);
-                        if(da<radius && db>=radius) background=B;
-                        else if(db<radius && da>=radius) background=A;
-                        float3 moved=lerp(worldColor(oldWorld,toUV(w+wa-wt,ca)),worldColor(newWorld,toUV(w+wb-wt,cb)),info.z);
+                        float sa=smoothstep(radius*1.15,radius*.75,da),sb=smoothstep(radius*1.15,radius*.75,db);
+                        background=lerp(background,B,sa*(1-sb));
+                        background=lerp(background,A,sb*(1-sa));
+                        float2 pa=w+wa-wt,pb=w+wb-wt;
+                        float3 cA=worldColor(oldWorld,toUV(pa,ca)),cB=worldColor(newWorld,toUV(pb,cb));
+                        float3 bA=worldColor(newWorld,toUV(pa,cb)),bB=worldColor(oldWorld,toUV(pb,ca));
+                        float edge=smoothstep(radius,radius*.6,dt);
+                        float mA=smoothstep(.04,.2,difference(cA,bA))*edge,mB=smoothstep(.04,.2,difference(cB,bB))*edge;
+                        float alpha=lerp(mA,mB,info.z);
                         moving=true;
-                        return lerp(background,moved,smoothstep(radius,radius*.65,dt));
+                        return background*(1-alpha)+lerp(cA*mA,cB*mB,info.z);
                     }
                 }
             }
@@ -171,8 +179,12 @@ float3 colorAt(float2 uv,out bool moving) {
             if(all(ua>=0) && all(ua<=1) && all(ub>=0) && all(ub<=1)) {
                 float3 A=worldColor(oldWorld,ua),B=worldColor(newWorld,ub);
                 float dc=alignedDifference(ua,ub),ds=alignedDifference(uv,uv);
-                if(ds<=dc && ds<=.22) { moving=true; return lerp(a,b,info.z); }
-                if(dc<=.22) { moving=true; return lerp(A,B,info.z); }
+                bool screenFixed=ds<=dc;
+                float3 blended=screenFixed?lerp(a,b,info.z):lerp(A,B,info.z);
+                // Soft hand-over to the nearest true picture as the two candidates disagree more and more: a hard
+                // switch flickered along edges, and hard nearest-picture copies are what made fast parts look steppy.
+                moving=true;
+                return lerp(blended,fallback,smoothstep(.25,.65,screenFixed?ds:dc));
             }
             return fallback;
         }
@@ -182,9 +194,9 @@ float3 colorAt(float2 uv,out bool moving) {
     float2 oldUV=uv-info.z*f.xy/grid.xy,newUV=uv-(1-info.z)*r.xy/grid.xy;
     if(any(oldUV<0) || any(oldUV>1) || any(newUV<0) || any(newUV>1)) return fallback;
     float3 ca=worldColor(oldWorld,oldUV),cb=worldColor(newWorld,newUV);
-    if(alignedDifference(oldUV,newUV)>.22) return fallback; // Occlusion/effects: no double image.
+    float occlusion=smoothstep(.25,.65,alignedDifference(oldUV,newUV)); // Occlusion/effects: no double image.
     moving=length(f.xy)>.05 || length(r.xy)>.05;
-    return lerp(ca,cb,info.z);
+    return lerp(lerp(ca,cb,info.z),fallback,occlusion);
 }
 struct V { float4 position:SV_POSITION; float2 uv:TEXCOORD0; };
 V VS(uint id:SV_VertexID) { V v;v.uv=float2((id<<1)&2,id&2);v.position=float4(v.uv*float2(2,-2)+float2(-1,1),0,1);return v; }
@@ -247,6 +259,7 @@ public:
         // Planet world positions and radius (about the sprite plus a little glow, world units), and the three cameras.
         // A teleport (large planet or camera jump), a missing camera or a hidden planet disables the move.
         d.disc[0]=d.disc[1]=0;d.disc[2]=height?float(width)/float(height):1.f;d.disc[3]=0;
+        const bool movePlanets=((b.packet.capture>>16)&1)!=0;   // experimental; off keeps the ball exactly as in the true frames
         const Pose& pa=a.packet.pose; const Pose& pb=b.packet.pose;
         if(width && height && pa.camera[2]>.0001f && pb.camera[2]>.0001f) {
             float t=float(std::clamp(phase,0.,1.));
@@ -261,7 +274,7 @@ public:
                     d.planets[k][0]=pa.planet[k][0];d.planets[k][1]=pa.planet[k][1];d.planets[k][2]=pb.planet[k][0];d.planets[k][3]=pb.planet[k][1];
                     float planetScale=.5f*(pa.planet[k][2]+pb.planet[k][2]);
                     float jump=hypotf(pb.planet[k][0]-pa.planet[k][0],pb.planet[k][1]-pa.planet[k][1]);
-                    if(planetScale>.05f && planetScale<20.f && jump<8.f*std::max(.2f,planetScale)) d.disc[k]=std::clamp(.55f*planetScale,.1f,3.f);
+                    if(movePlanets && planetScale>.05f && planetScale<20.f && jump<1.6f*std::max(.5f,planetScale)) d.disc[k]=std::clamp(.8f*planetScale,.15f,3.f);
                 }
             }
         }
