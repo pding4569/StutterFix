@@ -301,15 +301,39 @@ public:
     void skipIfUnused(const Slot& source) {
         if(source.sequence && sequence!=source.sequence) ++skippedPairs;
     }
+    static ComPtr<ID3DBlob> compileBlob(const char* entry,const char* profile) {ComPtr<ID3DBlob> result,errors;HRESULT hr=D3DCompile(code(),strlen(code()),nullptr,nullptr,nullptr,entry,profile,D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&result,&errors);if(FAILED(hr)) throw std::runtime_error(errors?static_cast<const char*>(errors->GetBufferPointer()):"block shader compile failed");return result;}
+    // Compiling these shaders takes about 4 s. Done on the first pair, it held the render thread at the start of a level:
+    // the song played on while the screen stayed on the editor picture (HELLO 2026, frames 386 -> 389 in 3.95 s).
+    // The managed side starts this while the setting is on and no level is playing; initialize() only waits if a level
+    // starts before it is done.
+    std::mutex preMutex; std::thread preThread; std::atomic<int> preState{0}; // 0 not started, 1 compiling, 2 ready, -1 failed
+    ComPtr<ID3DBlob> preBlobs[5];
+    ~BlockFlow() { std::lock_guard<std::mutex> g(preMutex); if(preThread.joinable()) preThread.join(); }
+    void precompile() {
+        std::lock_guard<std::mutex> g(preMutex);
+        int expected=0; if(!preState.compare_exchange_strong(expected,1)) return;
+        preThread=std::thread([this]{
+            try {
+                preBlobs[0]=compileBlob("VS","vs_5_0");preBlobs[1]=compileBlob("PS","ps_5_0");preBlobs[2]=compileBlob("Reduce","cs_5_0");preBlobs[3]=compileBlob("Match","cs_5_0");
+#ifdef SF_FRAMEGEN_RESEARCH
+                preBlobs[4]=compileBlob("Metric","cs_5_0");
+#endif
+                preState=2;
+            } catch(...) { preState=-1; }
+        });
+    }
+    int precompileState() const { return preState.load(); }
     void initialize(ID3D11Device* device,unsigned w,unsigned h,unsigned selectedVariant) {
         if(vertex) return; width=w;height=h;variant=selectedVariant;scale=variant==1?16:8;blockSize=variant==2?16:8;smallW=(w+scale-1)/scale;smallH=(h+scale-1)/scale;blocksW=(smallW+blockSize-1)/blockSize;blocksH=(smallH+blockSize-1)/blockSize;
-        auto compile=[&](const char* entry,const char* profile) {ComPtr<ID3DBlob> result,errors;HRESULT hr=D3DCompile(code(),strlen(code()),nullptr,nullptr,nullptr,entry,profile,D3DCOMPILE_OPTIMIZATION_LEVEL3,0,&result,&errors);if(FAILED(hr)) throw std::runtime_error(errors?static_cast<const char*>(errors->GetBufferPointer()):"block shader compile failed");return result;};
-        auto vs=compile("VS","vs_5_0"),ps=compile("PS","ps_5_0"),cs=compile("Reduce","cs_5_0"),ms=compile("Match","cs_5_0");
+        { std::lock_guard<std::mutex> g(preMutex); if(preThread.joinable()) preThread.join(); }
+        bool pre=preState.load()==2;
+        auto vs=pre?preBlobs[0]:compileBlob("VS","vs_5_0"),ps=pre?preBlobs[1]:compileBlob("PS","ps_5_0"),cs=pre?preBlobs[2]:compileBlob("Reduce","cs_5_0"),ms=pre?preBlobs[3]:compileBlob("Match","cs_5_0");
         check(device->CreateVertexShader(vs->GetBufferPointer(),vs->GetBufferSize(),nullptr,&vertex));check(device->CreatePixelShader(ps->GetBufferPointer(),ps->GetBufferSize(),nullptr,&pixel));
         check(device->CreateComputeShader(cs->GetBufferPointer(),cs->GetBufferSize(),nullptr,&reduce));check(device->CreateComputeShader(ms->GetBufferPointer(),ms->GetBufferSize(),nullptr,&match));
 #ifdef SF_FRAMEGEN_RESEARCH
-        auto qs=compile("Metric","cs_5_0");check(device->CreateComputeShader(qs->GetBufferPointer(),qs->GetBufferSize(),nullptr,&metric));
+        auto qs=pre?preBlobs[4]:compileBlob("Metric","cs_5_0");check(device->CreateComputeShader(qs->GetBufferPointer(),qs->GetBufferSize(),nullptr,&metric));
 #endif
+        for(auto& b:preBlobs) b.Reset();
         check(device->CreateDeferredContext(0,&commands));
         D3D11_BUFFER_DESC bd{};bd.ByteWidth=sizeof(Data);bd.Usage=D3D11_USAGE_DEFAULT;bd.BindFlags=D3D11_BIND_CONSTANT_BUFFER;check(device->CreateBuffer(&bd,nullptr,&constants));
         D3D11_SAMPLER_DESC sd{};sd.Filter=D3D11_FILTER_MIN_MAG_MIP_LINEAR;sd.AddressU=sd.AddressV=sd.AddressW=D3D11_TEXTURE_ADDRESS_CLAMP;sd.MaxLOD=D3D11_FLOAT32_MAX;check(device->CreateSamplerState(&sd,&linear));

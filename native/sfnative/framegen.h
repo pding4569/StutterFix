@@ -540,6 +540,10 @@ private:
     bool initialized=false;
     std::array<Slot,3> slots;
     BlockFlow blockFlow;
+    // Shader compiles ahead of the first level (see BlockFlow::precompile). Called from the managed thread.
+public:
+    int precompile(bool dense) { blockFlow.precompile(); if(dense) blockFlow.startDense(device.Get(),width,height); return blockFlow.precompileState(); }
+private:
 #ifdef SF_FRAMEGEN_RESEARCH
     ImageMotionGate motionGate;
     MotionClip motionClip;

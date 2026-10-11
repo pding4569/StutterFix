@@ -105,6 +105,7 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern void sf_framegen_refresh_rate(int hz);
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern void sf_framegen_pace(int mille);
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern void sf_framegen_lead(int micros);
+        [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_precompile(int dense);
         private static int paceSent=-1,leadSent=-1; private static bool poseLogged;
         private static readonly AccessTools.FieldRef<scrCamera,Camera> Cam=AccessTools.FieldRefAccess<scrCamera,Camera>("camobj");
         private static readonly AccessTools.FieldRef<scrCamera,Camera> Overlay=AccessTools.FieldRefAccess<scrCamera,Camera>("Overlaycam");
@@ -167,6 +168,7 @@ namespace StutterFix
         private static int packetIndex,oldMode=-1;
         private static bool finished,failed,uninstallPending;
         private static Camera worldCamera,trackedCamera;
+        private static bool precompileStarted; private static int precompileRetry;
         private static RenderTexture scene,world;
         private static IntPtr texture;
         private static int renderedFrame=-1,missingScenes;
@@ -201,7 +203,7 @@ namespace StutterFix
             if(SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Direct3D11) throw new InvalidOperationException("D3D11에서 사용할 수 있습니다.");
             if(Marshal.SizeOf<Packet>()!=152) throw new InvalidOperationException("Outside packet ABI");
             if(BlockFlow) {
-                try { if(sf_framegen_block_version()!=4) throw new EntryPointNotFoundException(); }
+                try { if(sf_framegen_block_version()!=5) throw new EntryPointNotFoundException(); }
                 catch(EntryPointNotFoundException) { throw new InvalidOperationException("블록 보간 DLL을 사용하려면 게임을 다시 켜 주세요."); }
             }
             string directory=Diagnostics?Path.Combine(Main.Entry.Path,"framegen-outside"):string.Empty; if(Diagnostics) Directory.CreateDirectory(directory);
@@ -209,7 +211,7 @@ namespace StutterFix
             callback=sf_framegen_event_ptr(); command=new CommandBuffer {name="FrameGen included snapshot"};
             packets=new IntPtr[512]; for(int i=0;i<packets.Length;i++) packets[i]=Marshal.AllocHGlobal(160);
             hintBufs=new IntPtr[packets.Length]; for(int i=0;i<hintBufs.Length;i++) hintBufs[i]=Marshal.AllocHGlobal(HintMax*HintFloats*4);
-            finished=failed=false; oldMode=-1; packetIndex=missingScenes=0; renderedFrame=-1; trackedCamera=null;
+            finished=failed=false; oldMode=-1; packetIndex=missingScenes=0; renderedFrame=-1; trackedCamera=null; precompileStarted=false; precompileRetry=0;
 #if FRAMEGEN_RESEARCH
             pairGeometrySaved=false;
             lastPairSong=double.NaN;
@@ -235,6 +237,12 @@ namespace StutterFix
             if(finished || failed) return;
             if(Hitch.Playing && scrCamera.instance!=null) trackedCamera=Cam(scrCamera.instance);
             if(sf_framegen_status()<0) { failed=true; Log("native failure="+sf_framegen_error()+"; experiment stopped"); return; }
+            // 설정이 켜져 있으면 곡 밖(메뉴·편집기)에서 셰이더를 미리 컴파일한다. 첫 곡 시작에서 하면 렌더 스레드가 약 4초 멈춰
+            // 소리만 나오고 화면은 편집기 그림에 머물렀다. 한 번 시작하면 다시 부르지 않는다(꺼짐 상태에서는 아무것도 하지 않음).
+            if(!precompileStarted && !Hitch.Playing && Main.Config.FrameGenOutside>=2 && sf_framegen_status()==1 && Time.frameCount>=precompileRetry) {
+                int r=sf_framegen_precompile(Main.Config.FrameGenDense?1:0);
+                if(r!=0) { precompileStarted=true; Log("셰이더 미리 컴파일 시작"); } else precompileRetry=Time.frameCount+60;
+            }
             int mode=Hitch.Playing && sf_framegen_status()==1?Main.Config.FrameGenOutside:0;
 #if FRAMEGEN_RESEARCH
             if(!(CostSplit && mode==1) && (mode<2 || mode>8)) mode=0;

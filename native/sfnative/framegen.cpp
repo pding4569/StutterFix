@@ -164,7 +164,13 @@ API int sf_framegen_status() { return status; }
 API int sf_framegen_error() { return failure; }
 API int sf_framegen_stopped() { return stopped; }
 API int sf_framegen_installed() { return installed; }
-API int sf_framegen_block_version() { return 4; }
+API int sf_framegen_block_version() { return 5; }
+// Starts the frame-generation shader compiles in the background (menu/editor, before a level plays). 1 once started, 0 if
+// the engine is not attached to the game swap chain yet (call again later), 2 when done, -1 failed.
+API int sf_framegen_precompile(int dense) {
+    auto* e=engine.get(); if(!e || status!=1) return 0;
+    int s=e->precompile(dense!=0); return s==2?2:s<0?-1:1;
+}
 API void sf_framegen_refresh_rate(int hz) { refreshRate=hz>0 && hz<=1000?hz:0; }
 API void sf_framegen_lead(int micros) { leadMicros=micros<=0?0:micros>12000?12000:micros; }
 API void sf_framegen_pace(int mille) { paceMille=mille<500?500:mille>1000?1000:mille; }
