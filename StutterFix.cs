@@ -933,7 +933,7 @@ namespace StutterFix
         public int FrameGenPace = 700;       // 마감 생성 간격: 한 칸의 천분율. 1000 이면 정확히 한 칸 뒤라 조금만 늦어도 칸이 비므로 700 (500~1000)
         public int FrameGenLead = 600;      // 화면 시각 맞추기: 출력이 모니터 갱신 시각에서 이만큼(마이크로초) 앞서 들어가야 그 칸에 뜬다고 보고 그림 시각을 그 칸에 맞춘다. 0 이면 끔(옛 방식)
         public bool FrameGenDense = true;       // 조밀한 다단계 광학 흐름(1/4 해상도, 4px마다 벡터 하나). 끄면 옛 8x8 블록 매칭
-        public bool FrameGenQueue = true;       // 진짜 프레임의 GPU 작업이 늦게 끝나는 무거운 구간에서만 출력을 수직동기 대기열로(빈칸 방지, 그 동안 약 1~2칸 지연)
+        public bool FrameGenQueue = false;      // (실험) 무거운 구간에서 출력을 수직동기 대기열로. 꺼 둠: 꽉 찬 대기열에서 진짜 Present 가 35~40ms 막혀 HELLO 2026 54~61초 "게임 바깥" 끊김 44번(끔 4번)
         public bool FrameGenDecoHints = false;  // (연구) 모드가 돌리는 장식의 화면 변환을 움직임 후보로 넘김 (DLSS 의 게임 모션 벡터 역할)
         public bool FrameGenDebugMarks = false; // (진단) 공 위치 표시 고리를 그린다
         public bool FrameGenBallMove = true;   // 공을 두 진짜 프레임 사이 위치(피벗 둘레 호)로 옮겨 그린다. 끄면 공은 진짜 프레임 속도로만 움직인다

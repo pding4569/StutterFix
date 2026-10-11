@@ -82,7 +82,7 @@ namespace StutterFix
     // Unity's camera scheduling is untouched; no draw-function interception.
     internal static class FrameGenRuntime
     {
-        internal static string DescribeStorage() => "deadline="+(oldMode==9)+" resting="+snapshotGate.Resting;
+        internal static string DescribeStorage() => "deadline="+(oldMode==9)+" resting="+snapshotGate.Resting+" rests="+snapshotGate.Rests;
         // Prevent beforefieldinit. JitWarm also excludes this type because Mono's
         // GetFunctionPointer can still invoke its initializer without running Install.
         static FrameGenRuntime() { FrameGen.RuntimeInitialized=true; }
