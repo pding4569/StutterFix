@@ -192,12 +192,12 @@ namespace StutterFix
         private float homeArmUntil; private int homeArmChoice;   // 홈 화면 재시작 버튼 확인
         private Rect restartMenuRect;   // 재시작 고르기 상자 (지난 프레임 자리, 바깥 클릭·입력 막기용)
 
-        // 아이콘 줄 순서(페이지 번호): 화면 효과(8)는 그래픽(3) 바로 아래
+        // 아이콘 줄 순서(페이지 번호): 쉐이더(8)는 그래픽(3) 바로 아래
         private static readonly int[] DockOrder = { 0, 1, 2, 3, 8, 4, 5, 6, 7 };
 
         private string[] PageNames()
         {
-            return new[] { T("홈", "Home"), T("플레이", "Gameplay"), T("맵 불러오기", "Level loading"), T("그래픽", "Graphics"), T("모니터", "Monitor"), T("저사양", "Low-end PC"), T("연출 끄기", "Effects off"), T("정보", "About"), T("화면 효과", "Screen effects") };
+            return new[] { T("홈", "Home"), T("플레이", "Gameplay"), T("맵 불러오기", "Level loading"), T("그래픽", "Graphics"), T("모니터", "Monitor"), T("저사양", "Low-end PC"), T("연출 끄기", "Effects off"), T("정보", "About"), T("쉐이더", "Shaders") };
         }
 
         private Rect DockRect(float sw, float sh, float e)
@@ -678,7 +678,7 @@ namespace StutterFix
                     bool ring = dd >= 0.25f && dd <= 0.37f && !(ang > 15f && ang < 82f);
                     return ring || InTri(x, y, 0.50f, 0.07f, 0.50f, 0.36f, 0.74f, 0.215f);
                 }),
-                // 화면 효과(9번): 네 갈래 반짝임 + 작은 반짝임
+                // 쉐이더(9번): 네 갈래 반짝임 + 작은 반짝임
                 MakeIcon((x, y) =>
                 {
                     float dx = Mathf.Abs(x - 0.42f), dy = Mathf.Abs(y - 0.55f);
@@ -696,6 +696,9 @@ namespace StutterFix
         {
             btnC.text = text;
             Rect r = GUILayoutUtility.GetRect(btnC, st, o);
+#if DEV || AUTOTEST
+            ClipCheck("단추", text, st, r.width);
+#endif
             int id = GUIUtility.GetControlID(FocusType.Passive, r);
             var e = Event.current;
             switch (e.GetTypeForControl(id))
@@ -1189,7 +1192,13 @@ namespace StutterFix
             if (p == 4) { icons = new[] { IcEye, IcTiles, IcBolt }; return new[] { T("표시", "Display"), T("항목", "Items"), T("끊김 알림", "Hitch alerts") }; }
             if (p == 5) { icons = new[] { IcTune, IcChip, IcTiles, IcCard, IcFlask }; return new[] { T("PC 맞춤", "PC fit"), T("컴퓨터", "System"), T("게임", "Game"), T("그래픽카드", "Graphics card"), T("실험", "Experimental") }; }
             if (p == 6) { icons = new[] { IcEye, IcTiles, IcMove }; return new[] { T("맵 효과", "Level effects"), T("필터", "Filters"), T("판정·조작", "Judgment & input") }; }
-            if (p == 8) { icons = new[] { IcTune, IcEye, IcBolt, IcTiles, IcMove, IcCard }; return new[] { T("기본", "Basics"), T("빛·톤", "Light"), T("색 조정", "Color"), T("질감", "Texture"), T("렌즈", "Lens"), T("공유", "Share") }; }
+            if (p == 8)
+            {
+                icons = new[] { IcBolt, IcTune, IcEye, IcFlask, IcTiles, IcMove, IcCard };
+                Func<string, int, string> withCount = (name, n) => n > 0 ? name + "  " + n : name;
+                return new[] { withCount(T("켜짐", "Active"), FxCount(0)), withCount(T("기본", "Basics"), FxCount(1)), withCount(T("빛·톤", "Light"), FxCount(2)),
+                               withCount(T("색 조정", "Color"), FxCount(3)), withCount(T("질감", "Texture"), FxCount(4)), withCount(T("렌즈", "Lens"), FxCount(5)), T("공유", "Share") };
+            }
             return null;
         }
         private int Sub() { return subSel[Mathf.Clamp(page, 0, 8)]; }
@@ -1216,6 +1225,9 @@ namespace StutterFix
                 GUI.color = new Color(ink.r, ink.g, ink.b, oc.a * (on ? 1f : 0.9f));
                 if (ev.type == EventType.Repaint) GUI.DrawTexture(new Rect(r.x + 14, r.y + 11, 18, 18), subIcons[icons[i]]);
                 GUI.color = oc;
+#if DEV || AUTOTEST
+                ClipCheck("갈래", names[i], on ? sRailOn : sRail, r.width - 48);
+#endif
                 GUI.Label(new Rect(r.x + 42, r.y, r.width - 48, ItemH), names[i], on ? sRailOn : sRail);
                 if (ev.type == EventType.MouseDown && ev.button == 0 && r.Contains(ev.mousePosition))
                 {
@@ -1228,6 +1240,7 @@ namespace StutterFix
         // 갈래 제목 (본문 맨 위)
         private void SubHeading(string title, string lead)
         {
+            if (fxOnlyOn) return;
             GUILayout.Space(4);
             if (!string.IsNullOrEmpty(lead)) P(lead, sLead);
             GUILayout.Space(12);
@@ -1237,8 +1250,8 @@ namespace StutterFix
         private bool groupOpen;
         private int groupRow;
         private readonly Dictionary<string, Rect> rowRects = new Dictionary<string, Rect>();
-        private void BeginGroup() { GUILayout.BeginVertical(); groupOpen = true; groupRow = 0; }
-        private void EndGroup() { if (!groupOpen) return; groupOpen = false; GUILayout.EndVertical(); GUILayout.Space(14); }
+        private void BeginGroup() { if (fxOnlyOn) { groupOpen = true; return; } GUILayout.BeginVertical(); groupOpen = true; groupRow = 0; }
+        private void EndGroup() { if (fxOnlyOn || !groupOpen) return; groupOpen = false; GUILayout.EndVertical(); GUILayout.Space(14); }
         private void RowSeparator() { groupRow++; }   // 줄 사이 선은 쓰지 않는다 (간격과 마우스 올림만으로 나눈다)
         // 스위치가 아닌 줄(고르기, 슬라이더 등)
         private void BeginRow() { if (groupOpen) { RowSeparator(); GUILayout.BeginVertical(sRow); } }
@@ -1284,6 +1297,17 @@ namespace StutterFix
         }
 
         // 묶음 제목
+#if DEV || AUTOTEST
+        private readonly HashSet<string> clipSeen = new HashSet<string>();
+        // 개발자·자동 시험 빌드: 고정 폭 칸보다 글자가 넓으면 로그에 적는다 ([UI 잘림])
+        private void ClipCheck(string kind, string text, GUIStyle st, float width)
+        {
+            if (Event.current.type != EventType.Repaint || string.IsNullOrEmpty(text)) return;
+            float need = st.CalcSize(new GUIContent(text)).x;
+            if (need > width + 0.5f && clipSeen.Add(kind + "|" + text))
+                Main.Entry.Logger.Log("[UI 잘림] " + kind + " '" + text + "' 필요 " + need.ToString("F0") + " > 칸 " + width.ToString("F0") + " (페이지 " + page + "." + subSel[Mathf.Clamp(page, 0, 8)] + ", " + (English ? "EN" : "KO") + ")");
+        }
+#endif
         private void Section(string title)
         {
             GUILayout.Space(6);
@@ -1375,20 +1399,32 @@ namespace StutterFix
         }
 
         private string fxLutEdit, fxLutSaved, fxShareMsg;
-        private void PageScreenEffects()
+        private bool fxOnlyOn;   // 켜짐 갈래: 켜진 효과의 줄만 그린다
+        private int FxExtraCount(Settings c, string group)
         {
-            var c=Main.Config; bool ch=false;
-            int tab=Mathf.Clamp(subSel[8],0,5); bool presetChanged=false;
-            if(tab==0)
+            int n = 0;
+            foreach (var x in FxExtras.All) if (x.Group == group && (bool)x.ToggleField.GetValue(c)) n++;
+            return n;
+        }
+        // 갈래별 켜진 효과 수 (0 은 전체)
+        private int FxCount(int tab)
+        {
+            var c = Main.Config; if (c == null) return 0;
+            Func<bool[], int> n = a => { int k = 0; foreach (var b in a) if (b) k++; return k; };
+            switch (tab)
             {
-            SubHeading(T("화면 효과","Screen effects"),T("맵 연출 뒤, UI와 프레임 늘리기 앞에 적용합니다. 전부 기본 꺼짐.","After level effects; before UI and frame interpolation. All disabled by default."));
-            P(T("효과를 켠 뒤 막대를 끌거나 오른쪽 숫자를 입력하세요. 바꾼 값은 직접 조절로 저장됩니다.","Enable an effect, then drag its slider or type the value at the right. Edits are saved as Custom."),sDim);
-            int preset=ScreenEffects.Enabled?Mathf.Clamp(c.FxPreset==5?2:c.FxPreset==6?3:c.FxPreset==0?4:c.FxPreset,1,4):0;
-            if(Segment("fxpreset",ref preset,new[]{T("꺼짐","Off"),T("선명","Sharp"),T("또렷","Clear"),T("네온","Neon"),T("직접 조절","Custom")})){if(preset<4)ScreenEffects.Preset(preset);else c.FxPreset=4;ch=presetChanged=true;}
-            int candidate=c.FxPreset==5?1:c.FxPreset==6?2:0;
-            if(Segment("fxcandidate",ref candidate,new[]{T("기존 값","Original"),T("또렷 후보","Clear candidate"),T("네온 후보","Neon candidate")})) {ScreenEffects.Preset(candidate==1?5:candidate==2?6:c.FxPreset==6?3:2);ch=presetChanged=true;}
-                GUILayout.Space(8);if(Btn(T("모든 화면 효과 끄기","Turn all screen effects off"),sSecondary,GUILayout.Width(210),GUILayout.Height(36))){foreach(var f in typeof(Settings).GetFields())if(f.Name.StartsWith("Fx") && f.FieldType==typeof(bool))f.SetValue(c,false);c.FxPreset=0;ch=presetChanged=true;}
-                BeginGroup();
+                case 1: return n(new[] { c.FxColor, c.FxSharp, c.FxAA, c.FxVignette, c.FxLut, c.FxToneMap });
+                case 2: return n(new[] { c.FxGlow, c.FxLight, c.FxRays, c.FxStreak, c.FxFlare, c.FxHdr, c.FxFilmic });
+                case 3: return FxExtraCount(c, FxExtras.Color);
+                case 4: return n(new[] { c.FxGrain, c.FxCrt, c.FxPixel, c.FxPosterize, c.FxBlur }) + FxExtraCount(c, FxExtras.Detail);
+                case 5: return n(new[] { c.FxChromatic }) + FxExtraCount(c, FxExtras.Lens);
+                case 0: return FxCount(1) + FxCount(2) + FxCount(3) + FxCount(4) + FxCount(5);
+            }
+            return 0;
+        }
+
+        private void FxBasic(Settings c, ref bool ch)
+        {
             ch|=Option("fxcolor",ref c.FxColor,T("색감","Color"),T("생동감·대비·밝기·색온도를 한 패스로 조절합니다.","Vibrance, contrast, exposure and temperature in one pass."),null);
             if(c.FxColor){ch|=FxSlider("fxvib",ref c.FxVibrance,-1,1,T("생동감","Vibrance"));ch|=FxSlider("fxcon",ref c.FxContrast,.5f,1.5f,T("대비","Contrast"));ch|=FxSlider("fxbri",ref c.FxBrightness,-1,1,T("밝기","Exposure"));ch|=FxSlider("fxtemp",ref c.FxTemperature,-1,1,T("색온도","Temperature"));}
             ch|=Option("fxsharp",ref c.FxSharp,T("선명하게","Sharpen"),T("타일과 장식의 경계를 선명하게 합니다. UI에는 적용하지 않습니다.","Sharpens scene edges without processing UI."),null);
@@ -1400,34 +1436,27 @@ namespace StutterFix
             if(c.FxLut){P(T("파일 이름 (예: warm.png)","File name (e.g. warm.png)"),sDim);if(fxLutSaved!=c.FxLutPath || fxLutEdit==null){fxLutSaved=c.FxLutPath;fxLutEdit=c.FxLutPath??"";}fxLutEdit=GUILayout.TextField(fxLutEdit,sBody);if(Btn(T("파일 적용","Apply file"),sBody)){c.FxLutPath=fxLutSaved=fxLutEdit.Trim();ch=true;}if(string.IsNullOrEmpty(c.FxLutPath))P(T("LUT 파일: 선택 안 됨","LUT file: not selected"),sDim);}
             ch|=Option("fxtone",ref c.FxToneMap,T("밝기 상한 · 톤 매핑","Brightness ceiling / tone mapping"),T("밝은 부분을 완만하게 눌러 흰색으로 날아가는 것을 줄입니다. 이미 지워진 밝은 세부는 복구하지 않습니다.","Softly compresses highlights; cannot recover already clipped detail."),null);
             if(c.FxToneMap)ch|=FxSlider("fxcap",ref c.FxCeiling,.5f,1,T("밝기 상한","Ceiling"));
-                EndGroup();
-            }
-            else if(tab==1)
-            {
-                SubHeading(T("빛과 톤","Light & tone"),T("밝은 부분을 퍼뜨리거나 톤을 다듬는 효과입니다.","Effects that spread highlights or shape tone."));
-                BeginGroup();
+        }
+        private void FxLight(Settings c, ref bool ch)
+        {
             ch|=Option("fxglow",ref c.FxGlow,T("글로우","Glow"),T("작은 그림에서 밝은 부분을 퍼뜨립니다. 맵 블룸이 켜진 동안은 쉽니다.","Spreads highlights at quarter size. Rests while level bloom is enabled."),null);
             if(c.FxGlow){ch|=FxSlider("fxglowv",ref c.FxGlowAmount,0,2,T("세기","Strength"));ch|=FxSlider("fxthreshold",ref c.FxGlowThreshold,0,1,T("밝은 부분 기준","Highlight threshold"));ch|=Option("fxstack",ref c.FxGlowStack,T("맵 블룸 위에 글로우","Glow over level bloom"),T("맵 블룸이 켜져 있어도 겹쳐 적용합니다. 네온 후보에서 사용합니다.","Apply glow even while level bloom is active; used by the neon candidate."),null);}
             ch|=Option("fxlight",ref c.FxLight,T("주변 비추기 (실험)","Surround lighting (experimental)"),T("밝은 부분의 색을 어두운 주변에 넓게 퍼뜨립니다. 깊이 정보는 쓰지 않습니다.","Spreads highlight color into dark surroundings; screen-space only, no depth."),null);
             if(c.FxLight){ch|=FxSlider("fxlightv",ref c.FxLightAmount,0,1,T("세기","Strength"));int quality=3-Mathf.Clamp(c.FxLightQuality,1,3);if(Segment("fxlightq",ref quality,new[]{"1/8","1/4","1/2"})){c.FxLightQuality=3-quality;ch=true;}}
-            ch|=Option("fxrays",ref c.FxRays,T("빛줄기 (Godrays)","Light rays (Godrays)"),T("화면의 밝은 부분에서 지정한 중심으로 빛을 퍼뜨립니다. 2D 화면 효과입니다.","Radial highlight integration toward a chosen screen position; 2D screen effect."),null);
+            ch|=Option("fxrays",ref c.FxRays,T("빛줄기 (Godrays)","Light rays (Godrays)"),T("화면의 밝은 부분에서 지정한 중심으로 빛을 퍼뜨립니다. 2D 쉐이더입니다.","Radial highlight integration toward a chosen screen position; 2D screen effect."),null);
             if(c.FxRays){ch|=FxSlider("fxraysv",ref c.FxRaysAmount,0,2,T("세기","Strength"));ch|=FxSlider("fxraysx",ref c.FxRaysX,0,1,T("중심 가로","Center X"));ch|=FxSlider("fxraysy",ref c.FxRaysY,0,1,T("중심 세로","Center Y"));ch|=FxSlider("fxrayslen",ref c.FxRaysLength,0,1,T("길이","Length"));}
             ch|=Option("fxstreak",ref c.FxStreak,T("가로 빛 번짐","Light streak"),T("밝은 부분을 가로로 길게 퍼뜨립니다.","Spreads bright regions horizontally."),null);
             if(c.FxStreak)ch|=FxSlider("fxstreakv",ref c.FxStreakAmount,0,2,T("세기","Strength"));
             ch|=Option("fxflare",ref c.FxFlare,T("렌즈 플레어","Lens flare"),T("밝은 부분에 대응하는 반사 무늬를 만듭니다.","Adds mirrored highlight ghosts."),null);
             if(c.FxFlare)ch|=FxSlider("fxflarev",ref c.FxFlareAmount,0,2,T("세기","Strength"));
-            if(!c.FxGlow && (c.FxRays||c.FxStreak||c.FxFlare))ch|=FxSlider("fxoptthreshold",ref c.FxGlowThreshold,0,1,T("빛 효과의 밝은 부분 기준","Light-effect highlight threshold"));
+            if(!c.FxGlow && (c.FxRays||c.FxStreak||c.FxFlare))ch|=FxSlider("fxoptthreshold",ref c.FxGlowThreshold,0,1,T("밝은 부분 기준","Highlight threshold"));
             ch|=Option("fxhdr",ref c.FxHdr,T("HDR 느낌","HDR look"),T("흐린 복사본과의 차이로 질감을 또렷하게 하고, 어두운 곳은 살리되 검정은 그대로 두고, 밝은 곳은 눌러 흰색은 그대로 둡니다. 8비트 그림을 보기 좋게 다듬는 효과이며 진짜 HDR 출력이 아닙니다.","Sharpens local texture with a blurred copy, lifts shadows while keeping true black, and rolls off highlights while keeping white. A tone look on an 8-bit picture, not real HDR output."),null);
             if(c.FxHdr)ch|=FxSlider("fxhdrv",ref c.FxHdrAmount,0,1.5f,T("세기","Strength"));
             ch|=Option("fxfilmic",ref c.FxFilmic,T("필름 톤 (ACES)","Filmic tone (ACES)"),T("영화처럼 어두운 곳은 깊게, 밝은 곳은 부드럽게 말리는 곡선을 적용합니다. 흰색은 그대로입니다.","Applies a film-like curve: deeper shadows and softly rolled highlights; white stays white."),null);
             if(c.FxFilmic)ch|=FxSlider("fxfilmicv",ref c.FxFilmicExposure,.5f,2,T("노출","Exposure"));
-                EndGroup();
-            }
-            else if(tab==2) DrawFxExtras(c,ref ch,FxExtras.Color);
-            else if(tab==3)
-            {
-                SubHeading(T("질감과 스타일","Texture & style"),T("게임 그림에 입자·주사선·큰 픽셀 같은 질감을 더합니다. UI에는 적용하지 않습니다.","Adds grain, scanlines or large pixels to the scene; UI is untouched."));
-                BeginGroup();
+        }
+        private void FxTexture(Settings c, ref bool ch)
+        {
             ch|=Option("fxgrain",ref c.FxGrain,T("필름 그레인","Film grain"),T("게임 그림에 작은 필름 입자를 더합니다. UI에는 적용하지 않습니다.","Adds grain to the scene, leaving UI intact."),null);
             if(c.FxGrain)ch|=FxSlider("fxgrainv",ref c.FxGrainAmount,0,.2f,T("세기","Strength"));
             ch|=Option("fxcrt",ref c.FxCrt,T("CRT","CRT"),T("주사선과 곡면 느낌을 게임 그림에 적용합니다.","Adds scanlines and screen curvature to the scene."),null);
@@ -1438,21 +1467,80 @@ namespace StutterFix
             if(c.FxPosterize)ch|=FxSlider("fxposterv",ref c.FxPosterizeLevels,2,32,T("색 단계","Color levels"));
             ch|=Option("fxblur",ref c.FxBlur,T("화면 흐림","Scene blur"),T("작은 그림에서 게임 화면을 흐리게 합니다. UI는 선명하게 남습니다.","Blurs a reduced scene texture, keeping UI sharp."),null);
             if(c.FxBlur)ch|=FxSlider("fxblurv",ref c.FxBlurRadius,1,8,T("반경","Radius"));
+        }
+        private void FxLens(Settings c, ref bool ch)
+        {
+            ch|=Option("fxca",ref c.FxChromatic,T("색수차","Chromatic aberration"),T("화면 가장자리의 빨강·파랑을 조금 벌립니다.","Separates red and blue toward the border."),null);
+            if(c.FxChromatic)ch|=FxSlider("fxcav",ref c.FxChromaticAmount,0,12,T("픽셀","Pixels"));
+        }
+
+        private void PageScreenEffects()
+        {
+            var c=Main.Config; bool ch=false; bool presetChanged=false;
+            int tab=Mathf.Clamp(subSel[8],0,6);
+            fxOnlyOn=false;
+            if(tab==0)
+            {
+                // 켜짐: 모양을 고르고, 켜 둔 쉐이더만 한곳에서 확인·조절·끈다
+                SubHeading(null,T("맵 연출 뒤, UI와 프레임 늘리기 앞에 적용합니다. 전부 기본 꺼짐입니다.","Applied after level effects and before UI and frame interpolation. Everything is off by default."));
+                int preset=ScreenEffects.Enabled?Mathf.Clamp(c.FxPreset==5?2:c.FxPreset==6?3:c.FxPreset==0?4:c.FxPreset,1,4):0;
+                if(Segment("fxpreset",ref preset,new[]{T("꺼짐","Off"),T("선명","Sharp"),T("또렷","Clear"),T("네온","Neon"),T("직접 조절","Custom")})){if(preset<4)ScreenEffects.Preset(preset);else c.FxPreset=4;ch=presetChanged=true;}
+                GUILayout.Space(10);
+                int on=FxCount(0);
+                GUILayout.BeginHorizontal();
+                P(on>0?T("켜진 쉐이더 "+on+"개","Active shaders: "+on):T("켜진 쉐이더가 없습니다.","No shader is active."),sTag,GUILayout.ExpandWidth(true));
+                if(on>0 && Btn(T("모두 끄기","Turn all off"),sSecondary,GUILayout.Width(120),GUILayout.Height(32))){foreach(var f in typeof(Settings).GetFields())if(f.Name.StartsWith("Fx") && f.FieldType==typeof(bool))f.SetValue(c,false);c.FxPreset=0;ch=presetChanged=true;}
+                GUILayout.EndHorizontal();
+                GUILayout.Space(8);
+                if(on==0) P(T("위에서 모양을 고르거나, 왼쪽의 기본·빛·색 조정·질감·렌즈 갈래에서 하나씩 켜 보세요. 켠 쉐이더는 여기에 모입니다.","Pick a look above, or turn effects on one by one in the tabs on the left. Active shaders gather here."),sDim);
+                else
+                {
+                    BeginGroup();
+                    fxOnlyOn=true;
+                    FxBasic(c,ref ch); FxLight(c,ref ch);
+                    DrawFxExtras(c,ref ch,FxExtras.Color);
+                    FxTexture(c,ref ch);
+                    DrawFxExtras(c,ref ch,FxExtras.Detail);
+                    DrawFxExtras(c,ref ch,FxExtras.Lens);
+                    FxLens(c,ref ch);
+                    fxOnlyOn=false;
+                    EndGroup();
+                }
+            }
+            else if(tab==1)
+            {
+                SubHeading(null,T("색과 윤곽을 다듬는 기본 쉐이더입니다. 켠 뒤 막대를 끌거나 오른쪽 숫자를 입력하세요.","Basic shaders for color and edges. Turn one on, then drag its slider or type the value on the right."));
+                BeginGroup();
+                FxBasic(c,ref ch);
+                EndGroup();
+            }
+            else if(tab==2)
+            {
+                SubHeading(null,T("밝은 부분을 퍼뜨리거나 톤을 다듬습니다.","Spread highlights or shape the tone."));
+                BeginGroup();
+                FxLight(c,ref ch);
+                EndGroup();
+            }
+            else if(tab==3) DrawFxExtras(c,ref ch,FxExtras.Color);
+            else if(tab==4)
+            {
+                SubHeading(null,T("입자·주사선·큰 픽셀 같은 질감을 더합니다. UI에는 적용하지 않습니다.","Add grain, scanlines or large pixels to the scene. UI is untouched."));
+                BeginGroup();
+                FxTexture(c,ref ch);
                 EndGroup();
                 DrawFxExtras(c,ref ch,FxExtras.Detail);
             }
-            else if(tab==4)
+            else if(tab==5)
             {
                 DrawFxExtras(c,ref ch,FxExtras.Lens);
-                SubHeading(T("색수차","Chromatic aberration"),T("화면 가장자리의 빨강·파랑을 조금 벌립니다.","Separates red and blue toward the border."));
+                SubHeading(null,T("화면 가장자리의 빨강·파랑을 조금 벌립니다.","Separates red and blue toward the border."));
                 BeginGroup();
-            ch|=Option("fxca",ref c.FxChromatic,T("색수차","Chromatic aberration"),T("화면 가장자리의 빨강·파랑을 조금 벌립니다.","Separates red and blue toward the border."),null);
-            if(c.FxChromatic)ch|=FxSlider("fxcav",ref c.FxChromaticAmount,0,12,T("픽셀","Pixels"));
+                FxLens(c,ref ch);
                 EndGroup();
             }
             else
             {
-            SubHeading(T("설정 공유","Share settings"),T("지금 화면 효과 값을 코드 한 줄로 복사해 친구에게 보내거나, 받은 코드를 붙여 넣어 적용합니다. LUT 파일은 공유되지 않습니다.","Copy the current effect values as one code line to send, or paste a code you received. LUT files are not shared."));
+            SubHeading(T("설정 공유","Share settings"),T("지금 쉐이더 값을 코드 한 줄로 복사해 친구에게 보내거나, 받은 코드를 붙여 넣어 적용합니다. LUT 파일은 공유되지 않습니다.","Copy the current effect values as one code line to send, or paste a code you received. LUT files are not shared."));
             BeginGroup();
             GUILayout.BeginHorizontal();
             if(Btn(T("코드 복사","Copy code"),sPrimary,GUILayout.Width(150),GUILayout.Height(36))){GUIUtility.systemCopyBuffer=FxShare.Export(c);fxShareMsg=T("복사했습니다. 디스코드에 붙여 넣으세요.","Copied. Paste it into Discord.");}
@@ -1463,15 +1551,9 @@ namespace StutterFix
             }
             GUILayout.EndHorizontal();
             if(!string.IsNullOrEmpty(fxShareMsg))P(fxShareMsg,sDim);
-            EndGroup();
-            P(T("3440×1440 · RTX 4060 Ti · 한 그림 GPU 표본", "3440×1440 · RTX 4060 Ti · one-scene GPU fixture"),sDim);
-            P(T("색감 약 0.06ms · 색감+LUT+비네트 0.08ms · 선명 0.09ms · 가장자리 0.11ms · 글로우 0.09ms · 주변 비추기(1/8) 0.09ms", "Color ≈0.06ms · color+LUT+vignette 0.08ms · sharpen 0.09ms · edges 0.11ms · glow 0.09ms · lighting(1/8) 0.09ms"),sDim);
-            P(T("효과를 합치면 패스 비용이 더해집니다. 장면·GPU에 따라 달라지며 전체 FPS 손실이 아닙니다.","Pass costs add when combined, vary by scene/GPU, and are not total FPS loss."),sDim);
-            P(T("또렷 후보 약 0.13ms · 네온 후보 0.28ms · 빛줄기 0.10ms · 가로 번짐 0.09ms · 플레어 0.08ms", "Clear candidate ≈0.13ms · neon candidate 0.28ms · rays 0.10ms · streak 0.09ms · flare 0.08ms"),sDim);
-            P(T("톤 상한·색수차·그레인·CRT·픽셀화·색 단계·흐림 각각 약 0.08~0.09ms", "Ceiling, chromatic, grain, CRT, pixelate, posterize and blur each ≈0.08–0.09ms"),sDim);
-            P(T("맵이 별도 FPS 그림 버퍼를 쓰는 동안은 효과를 쉽니다.","Effects rest while a level uses a separate custom-FPS picture buffer."),sDim);
+            P(T("쉐이더 하나의 비용은 보통 0.1ms 안팎입니다(3440×1440 한 장면에서 잰 값). 합치면 더해지고 장면과 그래픽카드에 따라 달라집니다.","One shader usually costs about 0.1 ms (measured on one 3440×1440 scene). Costs add up and vary with the scene and graphics card."),sDim);
+            P(T("맵이 별도 FPS 그림 버퍼를 쓰는 동안은 쉐이더를 쉽니다.","Shaders rest while a level uses a separate custom-FPS picture buffer."),sDim);
             if(ScreenEffects.Status.Length>0)P(ScreenEffects.Status,sDim);
-                if(ScreenEffects.Status.Length>0)P(ScreenEffects.Status,sDim);
             SubHeading(T("늘린 화면의 선명도","Upscale sharpness"),T("기존 설정 값은 유지합니다.","Existing saved values are preserved."));
             BeginGroup();
             ch|=Option("lowsharpen",ref c.LowSharpen,T("기존 Sharpen 보정","Legacy Sharpen"),T("해상도를 낮춘 화면에 기존 보정을 적용합니다. FSR RCAS와 중복 적용하지 않습니다.","Existing low-resolution sharpening; suspended when FSR RCAS is active."),null);
@@ -2187,6 +2269,7 @@ namespace StutterFix
 
         private bool Option(string key, ref bool value, string title, string desc, string tag, bool clickable = true)
         {
+            if (fxOnlyOn && !value) return false;
             var parts = SplitDesc(desc ?? "");
             bool hasMore = parts[1].Length > 0, open = hasMore && expanded.Contains(key);
             Rect last;
@@ -2207,6 +2290,9 @@ namespace StutterFix
             Rect r = GUILayoutUtility.GetRect(34, 20, GUILayout.Width(34), GUILayout.Height(20));
             GUILayout.EndHorizontal();
             Rect row = GUILayoutUtility.GetLastRect();
+#if DEV || AUTOTEST
+            ClipCheck("항목 제목", title, sRowTitle, row.width - sRow.padding.horizontal - 54 - (tag != null ? 70 : 0));
+#endif
             if (e0.type == EventType.Repaint) rowRects[key] = row;
             r.y = row.y + sRow.padding.top + 1f;   // 스위치는 제목 높이에
             DrawSwitch(key, r, value);
@@ -2245,7 +2331,12 @@ namespace StutterFix
                 var sel = new Rect(r.x + 3 + x * w, r.y + 3, w - 6, r.height - 6);
                 sSegKnob.Draw(sel, false, false, false, false);
                 for (int i = 0; i < labels.Length; i++)
+                {
+#if DEV || AUTOTEST
+                    ClipCheck("고르기", labels[i], i == value ? sSegOnText : sSegText, w - 6);
+#endif
                     (i == value ? sSegOnText : sSegText).Draw(new Rect(r.x + i * w, r.y, w, r.height), labels[i], false, false, false, false);
+                }
             }
             return changed;
         }
@@ -2264,7 +2355,10 @@ namespace StutterFix
         {
             float old = value;
             GUILayout.BeginHorizontal();
-            GUILayout.Label(label, sDimMid, GUILayout.Width(110), GUILayout.Height(28));   // 막대와 같은 높이 가운데 (위에 붙어 막대보다 떠 보였다)
+#if DEV || AUTOTEST
+            ClipCheck("막대 이름", label, sDimMid, 128);
+#endif
+            GUILayout.Label(label, sDimMid, GUILayout.Width(128), GUILayout.Height(28));   // 막대와 같은 높이 가운데 (위에 붙어 막대보다 떠 보였다)
             Rect r = GUILayoutUtility.GetRect(10, 28, GUILayout.ExpandWidth(true), GUILayout.Height(28));
             if(editValue)
             {
