@@ -17,9 +17,12 @@ class BlockFlow {
     unsigned width=0,height=0,smallW=0,smallH=0,blocksW=0,blocksH=0,scale=8,blockSize=8,variant=0;
     unsigned skippedPairs=0;
     unsigned long long sequence=0;
-    struct Data { float info[4],grid[4],boxes[4][4]; };
+    // planets[k] = (old world x, y, new world x, y) of planet k (0 red, 1 blue). disc = (red radius, blue radius, aspect,
+    // valid) with radii in world units. cams = camera (x, y, size, angle) of the old picture, the new picture and the
+    // interpolated output. World space keeps the planet move correct while the camera pans, zooms or rotates.
+    struct Data { float info[4],grid[4],boxes[4][4],planets[2][4],disc[4],cams[3][4]; };
     static const char* code() { return R"(
-cbuffer Data:register(b0) { float4 info; float4 grid; float4 boxes[4]; };
+cbuffer Data:register(b0) { float4 info; float4 grid; float4 boxes[4]; float4 planets[2]; float4 disc; float4 cams[3]; };
 // info: width,height,phase,worldFlip. grid: smallW,smallH,blocksW,blocksH.
 Texture2D<float4> oldWorld:register(t0),newWorld:register(t1),oldScreen:register(t2),newScreen:register(t3);
 Texture2D<float4> forwardFlow:register(t4),backwardFlow:register(t5);
@@ -88,6 +91,10 @@ bool globalChange() {
     }
     return sum/9>.18;
 }
+float2 rot(float2 p,float a) { float s,c; sincos(a,s,c); return float2(c*p.x-s*p.y,s*p.x+c*p.y); }
+// Screen UV (top origin) <-> world for camera c = (x, y, size, angle); matches the main output shader and screenPoint().
+float2 toWorld(float2 uv,float4 c) { return rot(float2((uv.x-.5)*disc.z,.5-uv.y)*2*c.z,c.w)+c.xy; }
+float2 toUV(float2 w,float4 c) { float2 q=rot(w-c.xy,-c.w)/(2*c.z); return float2(.5+q.x/disc.z,.5-q.y); }
 float3 colorAt(float2 uv,out bool moving) {
     moving=false; float3 fallback=closest(uv);
     if(info.z<=0 || info.z>=1) return fallback;
@@ -103,7 +110,35 @@ float3 colorAt(float2 uv,out bool moving) {
     float3 sa=oldScreen.SampleLevel(linearClamp,uv,0).rgb,sb=newScreen.SampleLevel(linearClamp,uv,0).rgb;
     if(difference(a,sa)>2.5/255. || difference(b,sb)>2.5/255.) return fallback; // True-frame UI.
     if(max(max(a.r,a.g),a.b)<1./255. && max(max(b.r,b.g),b.b)<1./255.) return fallback; // Fixed black border.
-    if(envelope) { if(globalChange()) return fallback; moving=true; return lerp(a,b,info.z); }
+    if(envelope) {
+        if(globalChange()) return fallback;
+        moving=true;
+        float3 dissolved=lerp(a,b,info.z);
+        if(disc.w>.5) {
+            // Camera-aligned dissolve, then planets moved in world space: both true pictures are sampled so the
+            // planet lands on its interpolated position. Where the planet was in one picture the other shows the
+            // background (the planet has left), so no copy stays behind. Feathered at the disc edge.
+            float4 ca=cams[0],cb=cams[1],ct=cams[2];
+            float2 w=toWorld(uv,ct);
+            float3 A=worldColor(oldWorld,toUV(w,ca)),B=worldColor(newWorld,toUV(w,cb));
+            dissolved=lerp(A,B,info.z);
+            [unroll] for(int k=0;k<2;k++) {
+                float radius=k==0?disc.x:disc.y;
+                if(radius>0) {
+                    float2 wa=planets[k].xy,wb=planets[k].zw,wt=lerp(wa,wb,info.z);
+                    float da=length(w-wa),db=length(w-wb),dt=length(w-wt);
+                    if(dt<radius || da<radius || db<radius) {
+                        float3 background=dissolved;
+                        if(da<radius && db>=radius) background=B;
+                        else if(db<radius && da>=radius) background=A;
+                        float3 moved=lerp(worldColor(oldWorld,toUV(w+wa-wt,ca)),worldColor(newWorld,toUV(w+wb-wt,cb)),info.z);
+                        return lerp(background,moved,smoothstep(radius,radius*.65,dt));
+                    }
+                }
+            }
+        }
+        return dissolved;
+    }
     float4 f=flowAt(forwardFlow,uv),r=flowAt(backwardFlow,uv);
     float4 checkR=flowAt(backwardFlow,uv+f.xy/grid.xy);
     if(f.z<.5 || r.z<.5 || checkR.z<.5 || length(f.xy+checkR.xy)>1.25) { if(blend<2 || globalChange()) return fallback; moving=true; return lerp(a,b,info.z); }
@@ -171,7 +206,29 @@ public:
     }
     Data data(const Slot& a,const Slot& b,double phase) const {
         Data d{{float(width),float(height),float(std::clamp(phase,0.,1.)),float((b.packet.flip?1:0)+2*((b.packet.capture>>14)&3))},{float(smallW),float(smallH),float(blocksW),float(blocksH)},{}};
-        memcpy(d.boxes[0],a.packet.textures+3,16);memcpy(d.boxes[1],a.packet.pulse,16);memcpy(d.boxes[2],b.packet.textures+3,16);memcpy(d.boxes[3],b.packet.pulse,16);return d;
+        memcpy(d.boxes[0],a.packet.textures+3,16);memcpy(d.boxes[1],a.packet.pulse,16);memcpy(d.boxes[2],b.packet.textures+3,16);memcpy(d.boxes[3],b.packet.pulse,16);
+        // Planet world positions and radius (about the sprite plus a little glow, world units), and the three cameras.
+        // A teleport (large planet or camera jump), a missing camera or a hidden planet disables the move.
+        d.disc[0]=d.disc[1]=0;d.disc[2]=height?float(width)/float(height):1.f;d.disc[3]=0;
+        const Pose& pa=a.packet.pose; const Pose& pb=b.packet.pose;
+        if(width && height && pa.camera[2]>.0001f && pb.camera[2]>.0001f) {
+            float t=float(std::clamp(phase,0.,1.));
+            double turn=angleDifference(pb.camera[3],pa.camera[3]);
+            bool cameraOk=hypot(double(pb.camera[0])-pa.camera[0],double(pb.camera[1])-pa.camera[1])<std::max(pa.camera[2],pb.camera[2])*2. && fabs(turn)<.2618 && fabs(pb.camera[2]/pa.camera[2]-1.f)<.35f;
+            if(cameraOk) {
+                for(int i=0;i<4;i++) {d.cams[0][i]=pa.camera[i];d.cams[1][i]=pb.camera[i];}
+                for(int i=0;i<3;i++) d.cams[2][i]=pa.camera[i]+(pb.camera[i]-pa.camera[i])*t;
+                d.cams[2][3]=pa.camera[3]+float(turn)*t;
+                d.disc[3]=1;
+                for(int k=0;k<2;k++) {
+                    d.planets[k][0]=pa.planet[k][0];d.planets[k][1]=pa.planet[k][1];d.planets[k][2]=pb.planet[k][0];d.planets[k][3]=pb.planet[k][1];
+                    float planetScale=.5f*(pa.planet[k][2]+pb.planet[k][2]);
+                    float jump=hypotf(pb.planet[k][0]-pa.planet[k][0],pb.planet[k][1]-pa.planet[k][1]);
+                    if(planetScale>.05f && planetScale<20.f && jump<8.f*std::max(.2f,planetScale)) d.disc[k]=std::clamp(.55f*planetScale,.1f,3.f);
+                }
+            }
+        }
+        return d;
     }
     void prepare(ID3D11Device* device,ID3D11DeviceContext* immediate,const Slot& a,const Slot& b,unsigned w,unsigned h,bool flush=true) {
         initialize(device,w,h,blockFlowVariant(b.packet));
