@@ -81,20 +81,27 @@ bool inside(float2 uv,float4 b) { return b.z>b.x && b.w>b.y && all(uv>=b.xy) && 
 float4 flowAt(Texture2D<float4> f,float2 uv) { int blockSize=max(1,int(ceil(grid.x/grid.z))); return f.Load(int3(clamp(int2(uv*grid.xy)/blockSize,0,int2(grid.zw)-1),0)); }
 float3 closest(float2 uv) { return info.z<.5 ? oldScreen.SampleLevel(linearClamp,uv,0).rgb : newScreen.SampleLevel(linearClamp,uv,0).rgb; }
 float difference(float3 a,float3 b) { return max(max(abs(a.r-b.r),abs(a.g-b.g)),abs(a.b-b.b)); }
+float2 rot(float2 p,float a) { float s,c; sincos(a,s,c); return float2(c*p.x-s*p.y,s*p.x+c*p.y); }
+// Screen UV (top origin) <-> world for camera c = (x, y, size, angle); matches the main output shader and screenPoint().
+float2 toWorld(float2 uv,float4 c) { return rot(float2((uv.x-.5)*disc.z,.5-uv.y)*2*c.z,c.w)+c.xy; }
+float2 toUV(float2 w,float4 c) { float2 q=rot(w-c.xy,-c.w)/(2*c.z); return float2(.5+q.x/disc.z,.5-q.y); }
 // Global change test: a flash, a scene cut or a teleport changes most of the picture. Dissolving those would
 // invent grey in-between pictures, so a whole-picture change keeps the nearest true frame.
 bool globalChange() {
     float sum=0;
     [unroll] for(int j=0;j<3;j++) [unroll] for(int i=0;i<3;i++) {
         float2 p=float2(.2+.3*i,.2+.3*j);
-        sum+=difference(worldColor(oldWorld,p),worldColor(newWorld,p));
+        float d=difference(worldColor(oldWorld,p),worldColor(newWorld,p));
+        // A fast camera pan moves the whole picture on screen without changing it: also compare the two pictures at
+        // the same world point (camera valid) and take the smaller difference.
+        if(disc.w>.5) {
+            float2 w=toWorld(p,cams[2]);
+            d=min(d,difference(worldColor(oldWorld,toUV(w,cams[0])),worldColor(newWorld,toUV(w,cams[1]))));
+        }
+        sum+=d;
     }
     return sum/9>.18;
 }
-float2 rot(float2 p,float a) { float s,c; sincos(a,s,c); return float2(c*p.x-s*p.y,s*p.x+c*p.y); }
-// Screen UV (top origin) <-> world for camera c = (x, y, size, angle); matches the main output shader and screenPoint().
-float2 toWorld(float2 uv,float4 c) { return rot(float2((uv.x-.5)*disc.z,.5-uv.y)*2*c.z,c.w)+c.xy; }
-float2 toUV(float2 w,float4 c) { float2 q=rot(w-c.xy,-c.w)/(2*c.z); return float2(.5+q.x/disc.z,.5-q.y); }
 float3 colorAt(float2 uv,out bool moving) {
     moving=false; float3 fallback=closest(uv);
     if(info.z<=0 || info.z>=1) return fallback;
@@ -141,7 +148,24 @@ float3 colorAt(float2 uv,out bool moving) {
     }
     float4 f=flowAt(forwardFlow,uv),r=flowAt(backwardFlow,uv);
     float4 checkR=flowAt(backwardFlow,uv+f.xy/grid.xy);
-    if(f.z<.5 || r.z<.5 || checkR.z<.5 || length(f.xy+checkR.xy)>1.25) { if(blend<2 || globalChange()) return fallback; moving=true; return lerp(a,b,info.z); }
+    if(f.z<.5 || r.z<.5 || checkR.z<.5 || length(f.xy+checkR.xy)>1.25) {
+        if(globalChange()) return fallback;
+        if(disc.w>.5) {
+            // Known cameras: the content here is normally fixed in the world, so align by camera. Screen-fixed content
+            // (HUD-like decorations) is detected by the pictures agreeing better on screen and is dissolved there.
+            float2 w=toWorld(uv,cams[2]);
+            float2 ua=toUV(w,cams[0]),ub=toUV(w,cams[1]);
+            if(all(ua>=0) && all(ua<=1) && all(ub>=0) && all(ub<=1)) {
+                float3 A=worldColor(oldWorld,ua),B=worldColor(newWorld,ub);
+                float dc=difference(A,B),ds=difference(a,b);
+                if(ds<=dc && ds<=.16) { moving=true; return lerp(a,b,info.z); }
+                if(dc<=.16) { moving=true; return lerp(A,B,info.z); }
+            }
+            return fallback;
+        }
+        if(blend<2) return fallback;
+        moving=true; return lerp(a,b,info.z);
+    }
     float2 oldUV=uv-info.z*f.xy/grid.xy,newUV=uv-(1-info.z)*r.xy/grid.xy;
     if(any(oldUV<0) || any(oldUV>1) || any(newUV<0) || any(newUV>1)) return fallback;
     float3 ca=worldColor(oldWorld,oldUV),cb=worldColor(newWorld,newUV);
