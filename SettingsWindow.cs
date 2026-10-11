@@ -1191,7 +1191,13 @@ namespace StutterFix
             if (p == 1) { icons = new[] { IcBolt, IcClock, IcEye, IcMove }; return new[] { T("기본", "Essentials"), T("미리 준비", "Warm-up"), T("그리기", "Rendering"), T("장식 이동", "Decoration moves") }; }
             if (p == 4) { icons = new[] { IcEye, IcTiles, IcBolt }; return new[] { T("표시", "Display"), T("항목", "Items"), T("끊김 알림", "Hitch alerts") }; }
             if (p == 5) { icons = new[] { IcTune, IcChip, IcTiles, IcCard, IcFlask }; return new[] { T("PC 맞춤", "PC fit"), T("컴퓨터", "System"), T("게임", "Game"), T("그래픽카드", "Graphics card"), T("실험", "Experimental") }; }
-            if (p == 6) { icons = new[] { IcEye, IcTiles, IcMove }; return new[] { T("맵 효과", "Level effects"), T("필터", "Filters"), T("판정·조작", "Judgment & input") }; }
+            if (p == 6)
+            {
+                icons = new[] { IcEye, IcTiles, IcMove };
+                int kindsOff = 0; foreach (var k in PlayTweaks.Kinds) if (k.Off) kindsOff++;
+                int filtersOff = PlayTweaks.FiltersOff != null ? PlayTweaks.FiltersOff.Count : 0;
+                return new[] { T("맵 효과", "Level effects") + (kindsOff > 0 ? "  " + kindsOff : ""), T("필터", "Filters") + (filtersOff > 0 ? "  " + filtersOff : ""), T("판정·조작", "Judgment & input") };
+            }
             if (p == 8)
             {
                 icons = new[] { IcBolt, IcTune, IcEye, IcFlask, IcTiles, IcMove, IcCard };
@@ -1551,6 +1557,7 @@ namespace StutterFix
             }
             GUILayout.EndHorizontal();
             if(!string.IsNullOrEmpty(fxShareMsg))P(fxShareMsg,sDim);
+            EndGroup();
             P(T("쉐이더 하나의 비용은 보통 0.1ms 안팎입니다(3440×1440 한 장면에서 잰 값). 합치면 더해지고 장면과 그래픽카드에 따라 달라집니다.","One shader usually costs about 0.1 ms (measured on one 3440×1440 scene). Costs add up and vary with the scene and graphics card."),sDim);
             P(T("맵이 별도 FPS 그림 버퍼를 쓰는 동안은 쉐이더를 쉽니다.","Shaders rest while a level uses a separate custom-FPS picture buffer."),sDim);
             if(ScreenEffects.Status.Length>0)P(ScreenEffects.Status,sDim);
@@ -2005,6 +2012,36 @@ namespace StutterFix
 
         private int filterKindSel;        // 필터 탭: 0 일반 / 1 고급
         private string filterGroupSel;    // 필터 탭: 고른 종류
+        private bool fxOffUnusedOpen;
+        // 맵 효과 한 줄: 스위치를 켜면 그 효과를 시작하지 않는다 (타일 나타나기는 아래에 미리 보기 막대가 붙는다)
+        private bool DrawEffectKind(PlayTweaks.Kind k, Settings c, bool have)
+        {
+            bool v = k.OffNow, changed = false;
+            int n = PlayTweaks.CountIn(k.Event);
+            string tag = c.NoFx ? T("노이펙 모드", "No-effects mode") : !have ? null : n > 0 ? string.Format(T("이 맵 {0}개", "{0} in this level"), n) : T("이 맵에 없음", "none here");
+            var oldC = GUI.color;
+            if (c.NoFx) GUI.color = new Color(oldC.r, oldC.g, oldC.b, oldC.a * 0.45f);
+            bool hit = Option("fxoff_" + k.Event, ref v, T(k.Ko + " 끄기", "Turn off " + k.En.ToLowerInvariant()), k.NoteKo != null ? T(k.NoteKo, k.NoteEn) : T("이 효과를 시작하지 않습니다.", "This effect is not started."), tag, !c.NoFx);
+            GUI.color = oldC;
+            if (hit && !c.NoFx)
+            {
+                k.Off = v; changed = true;
+                var list = new List<string>();
+                foreach (var q in PlayTweaks.Kinds) if (q.Off) list.Add(q.Event);
+                c.EffectsOff = string.Join(",", list.ToArray());
+            }
+            if (k.Tiles == PlayTweaks.TileLook.Anim && k.OffNow)
+            {
+                // 앞 타일이 몇 초 앞부터 보일지 (최소 4박자)
+                BeginRow();
+                float sec = Mathf.Clamp(c.NoFxAheadSec, 0.3f, 5f);
+                if (Slider("nofxahead", ref sec, 0.3f, 5f, T("미리 보기", "Look-ahead"), sec.ToString("F1") + T("초", " s")))
+                { c.NoFxAheadSec = Mathf.Round(sec * 10f) / 10f; changed = true; }
+                EndRow();
+            }
+            return changed;
+        }
+
         private void PageEffects()
         {
             var c = Main.Config;
@@ -2018,40 +2055,59 @@ namespace StutterFix
                       "Turns off every level effect below and hides decorations. Tiles, planets and judgment stay, so you play to the rhythm alone. Hitbox decorations (that kill or trigger events) stay, since play needs them. Opened in the game screen, decorations are not created at all so the level opens faster. Effects already on stop from the next retry; decorations from the next play (or next open in the game screen)."), null))
                     ch = true;
                 EndGroup();
-                SubHeading(T("맵 효과", "Level effects"),
-                    T("고른 효과를 시작하지 않습니다. 켜면 맵이 원래와 다르게 보이므로 전부 기본으로 꺼져 있습니다. 이미 켜져 있는 효과는 다음 다시 하기부터 사라집니다.",
-                      "Skips the chosen effects. Levels then look different from the original, so everything is off by default. Effects already on disappear from the next retry."));
-                BeginGroup();
                 bool have = PlayTweaks.HaveLevel;
+                var used = new List<PlayTweaks.Kind>(); var unused = new List<PlayTweaks.Kind>();
+                int offCount = 0, unusedOff = 0;
                 foreach (var k in PlayTweaks.Kinds)
                 {
-                    bool v = k.OffNow;
-                    int n = PlayTweaks.CountIn(k.Event);
-                    string tag = c.NoFx ? T("노이펙 모드", "No-effects mode") : !have ? null : n > 0 ? string.Format(T("이 맵 {0}개", "{0} in this level"), n) : T("이 맵에 없음", "none here");
-                    var oldC = GUI.color;
-                    if (c.NoFx) GUI.color = new Color(oldC.r, oldC.g, oldC.b, oldC.a * 0.45f);
-                    bool hit = Option("fxoff_" + k.Event, ref v, T(k.Ko + " 끄기", "Turn off " + k.En.ToLowerInvariant()), k.NoteKo != null ? T(k.NoteKo, k.NoteEn) : T("이 효과를 시작하지 않습니다.", "This effect is not started."), tag, !c.NoFx);
-                    GUI.color = oldC;
-                    if (hit && !c.NoFx)
+                    if (k.Off) offCount++;
+                    if (have && PlayTweaks.CountIn(k.Event) > 0) used.Add(k);
+                    else { unused.Add(k); if (k.Off) unusedOff++; }
+                }
+                used.Sort((a, b) => PlayTweaks.CountIn(b.Event).CompareTo(PlayTweaks.CountIn(a.Event)));
+                SubHeading(null, T("스위치를 켠 효과는 시작하지 않습니다. 켜면 맵이 원래와 다르게 보이므로 전부 기본으로 꺼져 있고, 이미 켜져 있는 효과는 다음 다시 하기부터 사라집니다.",
+                    "A switch that is on stops that effect from starting. Levels then look different from the original, so everything is off by default, and effects already running disappear from the next retry."));
+                // 한눈에: 꺼 둔 개수와 한 번에 끄기·되돌리기
+                GUILayout.BeginHorizontal();
+                P(offCount > 0 ? string.Format(T("꺼 둔 효과 {0}종", "{0} effect kinds turned off"), offCount) : T("꺼 둔 효과가 없습니다.", "No effect is turned off."), sTag, GUILayout.ExpandWidth(true));
+                bool bulk = false;
+                if (!c.NoFx && have && used.Count > 0 && Btn(T("이 맵의 효과 모두 끄기", "Turn off all in this level"), sSecondary, GUILayout.Width(190), GUILayout.Height(32)))
+                { foreach (var k in used) k.Off = true; bulk = true; }
+                if (!c.NoFx && offCount > 0) { GUILayout.Space(6); if (Btn(T("모두 되돌리기", "Restore all"), sSecondary, GUILayout.Width(130), GUILayout.Height(32))) { foreach (var k in PlayTweaks.Kinds) k.Off = false; bulk = true; } }
+                GUILayout.EndHorizontal();
+                GUILayout.Space(8);
+                if (bulk)
+                {
+                    var offList = new List<string>();
+                    foreach (var q in PlayTweaks.Kinds) if (q.Off) offList.Add(q.Event);
+                    c.EffectsOff = string.Join(",", offList.ToArray());
+                    ch = true;
+                }
+                if (used.Count > 0)
+                {
+                    Section(T("이 맵이 쓰는 효과", "Used by this level"));
+                    BeginGroup();
+                    foreach (var k in used) ch |= DrawEffectKind(k, c, have);
+                    EndGroup();
+                }
+                else if (!have) P(T("맵을 열면 이 맵이 쓰는 효과가 위로 모이고, 효과마다 몇 개 있는지 나옵니다.", "Open a level and the effects it uses gather at the top, with how many of each there are."), sDim);
+                if (unused.Count > 0)
+                {
+                    if (have)
                     {
-                        k.Off = v; ch = true;
-                        var list = new List<string>();
-                        foreach (var q in PlayTweaks.Kinds) if (q.Off) list.Add(q.Event);
-                        c.EffectsOff = string.Join(",", list.ToArray());
+                        string foldTitle = string.Format(fxOffUnusedOpen ? T("이 맵에 없는 효과 {0}종 접기", "Hide {0} effect kinds this level does not use") : T("이 맵에 없는 효과 {0}종 보기", "Show {0} effect kinds this level does not use"), unused.Count)
+                            + (unusedOff > 0 && !fxOffUnusedOpen ? string.Format(T(" (꺼 둔 {0})", " ({0} off)"), unusedOff) : "");
+                        if (Btn(foldTitle, sSecondary, GUILayout.Height(34))) fxOffUnusedOpen = !fxOffUnusedOpen;
+                        GUILayout.Space(8);
                     }
-                    if (k.Tiles == PlayTweaks.TileLook.Anim && k.OffNow)
+                    if (!have || fxOffUnusedOpen)
                     {
-                        // 앞 타일이 몇 초 앞부터 보일지 (최소 4박자)
-                        BeginRow();
-                        float sec = Mathf.Clamp(c.NoFxAheadSec, 0.3f, 5f);
-                        if (Slider("nofxahead", ref sec, 0.3f, 5f, T("미리 보기", "Look-ahead"), sec.ToString("F1") + T("초", " s")))
-                        { c.NoFxAheadSec = Mathf.Round(sec * 10f) / 10f; ch = true; }
-                        EndRow();
+                        if (have) Section(T("이 맵에 없는 효과", "Not in this level"));
+                        BeginGroup();
+                        foreach (var k in unused) ch |= DrawEffectKind(k, c, have);
+                        EndGroup();
                     }
                 }
-                EndGroup();
-                if (!have) P(T("맵을 열면 효과마다 이 맵에 몇 개 있는지 나옵니다.", "Open a level to see how many of each effect it has."), sDim);
-
             }
             else if (sub == 1)
             {
