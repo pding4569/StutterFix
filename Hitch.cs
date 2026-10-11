@@ -213,6 +213,7 @@ namespace StutterFix
             try
             {
                 Resilience.Phase("메뉴·편집");
+                PerfOverlay.AbortStartPhase();
                 InvisibleSkip.ApplyAllLazy();   // 곡이 끝나면 미뤄 둔 투명 장식 위치를 모두 반영한다 (편집기로 돌아갈 때 대비)
                 // 곡이 끝난 뒤(결과 화면 등) 재생 상태가 프레임마다 켜졌다 꺼졌다 해서 이 줄이 수백 번 찍혔다.
                 // 한 일이 없으면 남기지 않는다.

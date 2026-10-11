@@ -609,14 +609,40 @@ namespace StutterFix
         // 첫 타일 전이라 입력에는 영향이 없으므로 따로 적고 끊김으로 세지 않는다.
         private static bool startPhase;
         private static float startPhaseAt;
+        private static int startPhaseFrame;
+        // 첫 타일이 안 나온 판("노래만 나오고 시작 안 됨")의 원인을 다음에 바로 보려고 그 순간의 상태를 적는다.
+        private static string StartDiag()
+        {
+            try
+            {
+                var cn = scrConductor.instance; var c = scrController.instance;
+                return string.Format(" | 시작 뒤 {0:F1}초, 유니티 프레임 {1}개, 곡 위치 {2}초, 현재 타일 {3}, 상태 {4}, 일시정지 {5} | 프레임 늘리기: {6}",
+                    Time.realtimeSinceStartup - startPhaseAt, Time.frameCount - startPhaseFrame, cn != null ? cn.songposition_minusi.ToString("F2") : "-",
+                    c != null && c.currFloor != null ? c.currFloor.seqID.ToString() : "-", c != null ? c.state.ToString() : "-",
+                    c != null ? c.paused.ToString() : "-", FrameGen.Describe());
+            }
+            catch { return ""; }
+        }
+        // 첫 타일 전에 곡이 끝나거나 나가면(사용자가 안 시작된다고 보고 나간 판) 그 순간의 상태를 적는다.
+        internal static void AbortStartPhase()
+        {
+            if (!startPhase) return;
+            startPhase = false;
+            Main.Entry.Logger.Log("[모니터] 첫 타일 전에 나감" + StartDiag());
+        }
         // 첫 타일은 "지금 있는 타일 번호가 곡 시작 때와 달라졌는가" 로 본다. 처음에는 행성이 다음 타일로 옮겨 갈 때
         // (scrPlanet.MoveToNextFloor)로 봤는데, 곡 시작 준비 중에도 불려서 시작 연출 전에 구간이 끝나 버렸다.
         private static int startSeq = int.MinValue;
-        internal static void BeginStartPhase() { startPhase = true; startPhaseAt = Time.realtimeSinceStartup; startSeq = int.MinValue; levelActivity = true; }
+        internal static void BeginStartPhase() { startPhase = true; startPhaseAt = Time.realtimeSinceStartup; startPhaseFrame = Time.frameCount; startSeq = int.MinValue; levelActivity = true; }
         private static void UpdateStartPhase()
         {
             if (!startPhase) return;
-            if (Time.realtimeSinceStartup - startPhaseAt >= 5f) { startPhase = false; Main.Entry.Logger.Log("[모니터] 곡 시작 연출 구간 끝: 5초 지남"); return; }
+            if (Time.realtimeSinceStartup - startPhaseAt >= 5f)
+            {
+                startPhase = false;
+                Main.Entry.Logger.Log("[모니터] 곡 시작 연출 구간 끝: 5초 지남" + StartDiag());
+                return;
+            }
             int seq;
             try { var c = scrController.instance; var f = c != null ? c.currFloor : null; if (f == null) return; seq = f.seqID; }
             catch { return; }
