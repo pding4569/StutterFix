@@ -3,7 +3,7 @@
 얼불춤(A Dance of Fire and Ice) 고사양 커스텀 맵에서 **플레이 중 순간적으로 멈추는 현상**과 **맵 로딩 시간**을 줄이는 Unity Mod Manager 모드입니다.
 
 > **원칙: 연출·판정·소리는 원래 게임과 똑같이.**
-> 기본 기능은 게임의 처리 방법을 바꿉니다. 화면을 바꾸는 저사양·프레임 늘리기·화면 효과는 모두 기본으로 꺼져 있습니다.
+> 기본 기능은 게임의 처리 방법을 바꿉니다. 화면을 바꾸는 저사양·프레임 늘리기·쉐이더는 모두 기본으로 꺼져 있습니다.
 > 성능 수정은 실제 맵에서 원인을 측정하고 결과를 대조합니다. 실험 기능의 화면 품질과 지연은 맵·PC에 따라 달라집니다.
 
 made by **naro** & **Claude**
@@ -37,7 +37,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.6.0 에서 바뀐 것](#260-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
+- [2.7.0 에서 바뀐 것](#270-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -57,30 +57,33 @@ made by **naro** & **Claude**
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 아이콘 옆 점으로 알려 줍니다.
 
-## 2.6.0 에서 바뀐 것
+## 2.7.0 에서 바뀐 것
 
 ### 프레임 늘리기 (실험 · 기본 꺼짐)
 
-- 진짜 두 프레임의 그림에서 움직임을 찾아 사이 화면을 만드는 **프레임 보간**을 추가했습니다. 입력 판정과 곡 타이밍은 그대로입니다.
-- **주사율 맞춤 · 추천**: 다음 화면 갱신 때 새 진짜 프레임이 없으면 필요한 화면을 생성합니다. 진짜 프레임이 충분히 빠르면 화면 저장도 쉬어 부담을 줄입니다. 기존 **2~8배** 고정 배율도 선택할 수 있습니다.
-- HELLO 2026·Arche, 3440×1440·165Hz의 주사율 맞춤 시험에서 실제 표시 FPS는 각각 **163.78 / 165.00**, 가장 긴 표시 간격은 **12.16 / 6.15ms**였습니다. 같은 시험의 진짜 FPS 감소는 **3.59~3.78% / 1.27~2.38%**였습니다. PC·맵·설정에 따라 달라집니다.
-- 보간에는 화면 지연이 추가되며, 빠른 회전·확대·강한 필터에서는 그림이 어색할 수 있습니다. 배율만큼 모든 화면이 서로 다른 새 그림이 되거나 모니터 주사율이 올라가는 기능은 아닙니다. 어색하면 끄거나 배율을 낮춰 주세요.
+- **화면 갱신에 맞춘 출력**: 만든 화면을 모니터가 실제로 보여 줄 갱신 시각에 맞춰 그립니다. 진짜 60 FPS·165Hz에서 화면 사이 간격이 4.2/8.4ms로 번갈아 나오던 것이 고르게 바뀌었습니다(단순한 맵 기준 고름 0.67 → 0.89).
+- **움직임 찾기 개선**: 8×8 블록 대신 4px마다 움직임을 찾는 조밀한 광학 흐름을 씁니다. 빠르게 커지는 큰 글자의 획이 블록 경계에서 찢어지던 것이 사라졌습니다.
+- **공과 타일**: 공을 두 진짜 위치 사이의 궤도(호)로 옮겨 그립니다. 타일처럼 월드에 붙은 내용은 카메라 이동으로 먼저 맞춰, 지나간 타일이 지글거리던 것을 줄였습니다. 움직임을 믿기 어려운 곳은 두 진짜 그림을 섞어(기본: 공 주변) 진짜 프레임 속도로만 움직이지 않게 했습니다.
+- **GPU가 바쁜 구간의 빈칸 줄이기**: 진짜 프레임 그리기가 늦게 끝나는 무거운 구간에서는 출력을 대기열에 미리 넣어 화면이 비는 갱신을 줄입니다(HELLO 2026 무거운 30초 구간: 표시 4,588 → 4,858 / 4,950). 이 동안은 화면 지연이 1~2 갱신 늘어납니다.
+- **움직임 흐림(모션 블러)** 옵션 추가(끔/약/중/강, 기본 끔): 움직이는 타일·장식을 움직이는 방향으로 흐리게 해 끊어지는 느낌을 줄입니다. 글자·UI·공은 선명하게 둡니다.
+- 첫 곡 시작 때 약 4초 동안 **소리만 나오고 화면이 멈춰 있던 문제**를 고쳤습니다(셰이더를 곡 밖에서 미리 준비).
+- FPS 모니터의 표시 FPS는 실제 화면에 올라간 장 수(갱신마다 최대 1장)로 셉니다. 주사율보다 높게 나오지 않습니다.
+- 여전히 구간에 따라 덜 부드럽게 느껴질 수 있습니다. 화면 전환·섬광이 많은 장면, GPU가 꽉 찬 장면은 진짜 프레임 위주로 나옵니다.
 
-### 화면 효과 (기본 꺼짐)
+### 쉐이더 (기본 꺼짐)
 
-- 설정 창 오른쪽 아이콘 줄의 **위·아래 화살표 → 고사양 → 화면 효과**에서 설정합니다.
-- **선명 / 또렷 / 네온** 미리 설정과 더 강한 또렷·네온 후보, 직접 조절을 제공합니다.
-- 색감·대비·밝기·색온도·비네트·LUT, 선명하게, 가장자리 보정(FXAA), 글로우와 **빛줄기(Godrays)**를 추가했습니다.
-- 가로 빛 번짐·렌즈 플레어·색수차·그레인·CRT·픽셀화·포스터화·블러, 실험용 주변 비추기도 골라 쓸 수 있습니다.
-- 강도는 **슬라이더 또는 오른쪽 숫자를 직접 입력**해 조절하고 저장합니다. 효과는 게임 그림에 적용하며 UI는 따로 그립니다. 맵 연출 뒤에 효과를 적용하고, 그 결과로 프레임을 보간합니다.
-- 꺼짐에서는 효과를 적용하지 않습니다. 여러 효과를 켜면 진짜 FPS가 줄 수 있습니다.
+- "화면 효과"의 이름을 **쉐이더**로 바꾸고 설정 창 오른쪽 아이콘 줄의 한 페이지로 옮겼습니다. **켜짐** 탭에서 지금 켜 둔 쉐이더만 모아 보고 한 번에 끌 수 있습니다.
+- **HDR 느낌·필름 톤(ACES)**과 20종을 추가했습니다: 색 조정(세피아·듀오톤·틸&오렌지·흑백·반전·야간 투시·열화상·색조 회전), 질감(윤곽선·엠보스·하프톤·틸트 시프트·소프트 포커스), 렌즈(렌즈 왜곡·물결·글리치·줌 블러·거울·만화경·시네마 바).
+- **공유** 탭: 지금 쉐이더 설정을 코드 한 줄로 복사하거나, 받은 코드를 붙여 넣어 적용합니다(LUT 파일은 제외).
 
-### 모니터·안정성
+### 연출 끄기
 
-- FPS 모니터의 자동 모드는 프레임 늘리기가 켜지면 **표시 FPS**, 꺼지면 **진짜 FPS**를 보여 줍니다. 원본 / 표시 / 둘 다를 직접 선택할 수도 있습니다. 표시 FPS는 모드가 성공적으로 제출한 화면 수이며, 모니터의 물리적 표시 수와 다를 수 있습니다.
-- 출력 카운터가 준비되지 않거나 멈추면 0으로 고정되던 표시를 고쳤습니다. 이때는 **진짜 FPS · 출력 대기**로 표시하고, 유효한 출력 측정이 돌아오면 자동 복귀합니다. 보고된 카운터 정지 자체의 원인은 아직 확인되지 않았습니다.
-- 독점 전체 화면 전환·해제·최소화 때 프레임 생성의 화면 참조와 출력 연결을 정리해 충돌하던 문제를 수정했습니다.
-- 문제 보고 ZIP에 FPS 모니터와 프레임 생성 상태를 추가했습니다. 문제가 있으면 설정 창의 **로그 내보내기**로 보내 주세요.
+- **맵 효과** 탭이 지금 맵이 쓰는 효과를 개수 순으로 위에 보여 주고, 맵에 없는 효과는 접어 둡니다. **이 맵의 효과 모두 끄기 / 모두 되돌리기**로 한 번에 바꿀 수 있고, 탭 이름에 꺼 둔 개수가 나옵니다.
+
+### 게임 3.4 알파 대응
+
+- 게임 알파 빌드에서 내부 이름이 바뀌어 꺼져 있던 **장식 즉시 이동 직접 처리**를 복구했습니다. Arche 224.5초의 63~69ms 끊김이 없어졌습니다(곡 전체 끊김 0번, 곡 중 가장 긴 프레임 23ms).
+- 같은 이유로 꺼져 있던 **판정 오차 막대 눈금 가볍게 사라지기**를 복구했습니다.
 
 ## 기능
 
@@ -261,6 +264,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. Core optimizations preserve game visuals, judgement and audio. Optional low-end settings, frame interpolation and screen effects can change the picture and default to off. Performance fixes are measured and compared; experimental visual quality and latency depend on the level and PC.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.7.0:** frame interpolation is smoother: outputs are timed to the display refresh, dense optical flow (no torn glyphs at block edges), planets moved along their orbit, tiles aligned by the camera first, a present queue in GPU-heavy sections (HELLO 2026 heavy 30 s: 4,588 → 4,858 of 4,950 refreshes shown), optional motion blur, and the ~4 s frozen picture at the first song start is fixed. "Screen effects" are now **Shaders** (own page, an "On" tab, HDR/filmic tone, 20 more effects, share codes). The effects-off page lists the effects the open level uses first, with bulk off/restore. Restored two optimizations that the game 3.4 alpha had silently disabled (instant decoration moves: Arche 224.5 s 63–69 ms hitch gone; hit error meter fade).
 
 **2.6.0:** optional frame interpolation (recommended refresh-deadline mode with storage rest, or fixed 2–8×), screen effects with presets and numeric strength controls, light rays (Godrays), glow and other filters. Both features default to off. Interpolation adds visual latency and may show artifacts; output FPS counts successful submissions, not physical monitor refreshes. Exclusive fullscreen/minimize transitions and the stuck-zero FPS display were fixed. See the Korean release notes above for measurements and limits.
 
