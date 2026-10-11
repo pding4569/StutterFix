@@ -1582,9 +1582,9 @@ namespace StutterFix
                     c.FrameGenBlend = blend; Save();
                 }
                 bool ballMove = c.FrameGenBallMove;
-                if (Option("framegenball", ref ballMove, T("공을 사이 위치로 옮겨 그리기 (실험)", "Draw the ball between its true positions (experimental)"),
-                    T("끄면 공은 진짜 프레임 그대로 나옵니다(모양이 깨지지 않고 진짜 프레임 속도로 움직임). 켜면 공이 두 진짜 위치 사이로 움직이지만 공 둘레 배경이 어긋나거나 모양이 이상해 보일 수 있습니다.",
-                      "Off: the ball is shown exactly as in the real frames (shape intact, moves at the real frame rate). On: it is drawn between the two real positions, but the area around it may show seams or an odd shape."), null))
+                if (Option("framegenball", ref ballMove, T("공을 사이 위치로 옮겨 그리기", "Draw the ball between its true positions"),
+                    T("켜면 공이 두 진짜 위치 사이를 피벗 둘레 호로 움직여 진짜 프레임 속도보다 부드럽게 보입니다. 끄면 공은 진짜 프레임 속도로만 움직입니다. 공이 이상하게 보이면 끄세요.",
+                      "On: the ball follows its orbit between the two real positions, so it moves more smoothly than the real frame rate. Off: the ball only moves at the real frame rate. Turn it off if the ball looks wrong."), null))
                 { c.FrameGenBallMove = ballMove; Save(); }
                 P(T("움직임 섞기: 공이나 움직임을 못 믿는 곳을 가까운 진짜 화면 하나로 두면 그 곳은 진짜 프레임 속도로만 움직입니다(진짜 80 FPS 면 공이 80번만 움직임). 두 진짜 화면을 섞으면 만든 화면마다 움직임이 나뉘어 고르지만, 빠르게 바뀌는 곳에서 잠깐 겹쳐 보일 수 있습니다. 번쩍임·장면 전환처럼 화면 전체가 바뀌면 섞지 않습니다.",
                     "Motion blending: where motion is not trusted (planets etc.) the nearer real frame is shown, so those parts only move at the real frame rate (at 80 FPS the ball moves 80 times a second). Blending the two real frames spreads that motion across generated frames; fast-changing areas can briefly look doubled. Flashes and scene cuts are never blended."), sDim);

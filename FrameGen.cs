@@ -21,9 +21,10 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_status();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_sources();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_generated();
+        [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_shown();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern ulong sf_framegen_stat(int which);
         // 명시적 상태 명령에서만: 생성 기회를 원본 프레임이 잠가서 놓친 수 / 잠금 없이 놓친 수 / 출력 / 원본 시작 / 작업 스레드 대기(ms)
-        internal static string Scheduler() { try { if(!SfNative.FrameGenReady) return ""; return " missed_lock="+sf_framegen_stat(0)+" missed_timer="+sf_framegen_stat(1)+" outputs="+sf_framegen_stat(2)+" frame_begins="+sf_framegen_stat(3)+" worker_wait_ms="+sf_framegen_stat(4)/1000; } catch(EntryPointNotFoundException) { return " scheduler=n/a"; } }
+        internal static string Scheduler() { try { if(!SfNative.FrameGenReady) return ""; return " missed_lock="+sf_framegen_stat(0)+" missed_timer="+sf_framegen_stat(1)+" outputs="+sf_framegen_stat(2)+" frame_begins="+sf_framegen_stat(3)+" worker_wait_ms="+sf_framegen_stat(4)/1000+" stalled="+sf_framegen_stat(5)+" early_sources="+sf_framegen_stat(6)+" sources_n="+sf_framegen_stat(7)+" interval_us_sum="+sf_framegen_stat(8)+" shown="+sf_framegen_stat(9); } catch(EntryPointNotFoundException) { return " scheduler=n/a"; } }
         internal static string Describe() => "active="+active+" native_installed="+(SfNative.FrameGenReady?sf_framegen_installed():0)+
             " sources="+(SfNative.FrameGenReady?sf_framegen_sources():0)+" generated="+(SfNative.FrameGenReady?sf_framegen_generated():0)+" runtime_initialized="+RuntimeInitialized+" status="+Status+Scheduler();
         internal static int NativeOutputStatus => SfNative.FrameGenReady?sf_framegen_status():0;
@@ -35,7 +36,9 @@ namespace StutterFix
         {
             count=0;
             if(!active || !Hitch.Playing || !SfNative.FrameGenReady) return false;
-            count=sf_framegen_sources()+sf_framegen_generated();
+            // Pictures that reach the screen: one per refresh at most, not every Present (a second one for the same
+            // refresh is replaced before it is shown, so counting it showed 240 FPS on a 165 Hz screen).
+            count=sf_framegen_shown();
             return true;
         }
         internal static void Tick()
@@ -100,7 +103,8 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern int sf_framegen_block_version();
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern void sf_framegen_refresh_rate(int hz);
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern void sf_framegen_pace(int mille);
-        private static int paceSent=-1;
+        [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern void sf_framegen_lead(int micros);
+        private static int paceSent=-1,leadSent=-1; private static bool poseLogged;
         private static readonly AccessTools.FieldRef<scrCamera,Camera> Cam=AccessTools.FieldRefAccess<scrCamera,Camera>("camobj");
         private static readonly AccessTools.FieldRef<scrCamera,Camera> Overlay=AccessTools.FieldRefAccess<scrCamera,Camera>("Overlaycam");
         private static readonly AccessTools.FieldRef<scrCamera,RenderTexture> RT=AccessTools.FieldRefAccess<scrCamera,RenderTexture>("camRT");
@@ -196,7 +200,7 @@ namespace StutterFix
             if(SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Direct3D11) throw new InvalidOperationException("D3D11에서 사용할 수 있습니다.");
             if(Marshal.SizeOf<Packet>()!=136) throw new InvalidOperationException("Outside packet ABI");
             if(BlockFlow) {
-                try { if(sf_framegen_block_version()!=2) throw new EntryPointNotFoundException(); }
+                try { if(sf_framegen_block_version()!=3) throw new EntryPointNotFoundException(); }
                 catch(EntryPointNotFoundException) { throw new InvalidOperationException("블록 보간 DLL을 사용하려면 게임을 다시 켜 주세요."); }
             }
             string directory=Diagnostics?Path.Combine(Main.Entry.Path,"framegen-outside"):string.Empty; if(Diagnostics) Directory.CreateDirectory(directory);
@@ -242,6 +246,8 @@ namespace StutterFix
             if(Main.Config.FrameGenRefresh && mode>=2) {
                 int pace=Math.Max(500,Math.Min(1000,Main.Config.FrameGenPace));
                 if(pace!=paceSent) { paceSent=pace; sf_framegen_pace(pace); }
+                int lead=Math.Max(0,Math.Min(12000,Main.Config.FrameGenLead));
+                if(lead!=leadSent) { leadSent=lead; sf_framegen_lead(lead); }
                 int hz=(int)Math.Round(Screen.currentResolution.refreshRateRatio.value);
                 if(hz!=refreshHz) { refreshHz=hz; sf_framegen_refresh_rate(hz); }
                 mode=hz>0?9:0;
@@ -308,7 +314,8 @@ namespace StutterFix
                 if(FixedCostStage>=1) p.capture|=2048; // Three producer-owned immutable scene textures; no scene copy.
                 if(BlockFlow) p.capture|=64|4|((BlockVariant&7)<<7);
                 if(CameraBlend) p.capture|=4; // Shared delayed timeline, one-source visual delay.
-                if(Main.Config.FrameGenBallMove) p.capture|=1<<16; // planets are drawn between the true positions (experimental)
+                if(Main.Config.FrameGenBallMove) p.capture|=1<<16;
+                if(Main.Config.FrameGenDebugMarks) p.capture|=1<<17; // planets are drawn between the true positions (experimental)
                 p.capture|=(Mathf.Clamp(Main.Config.FrameGenBlend,0,2)&3)<<14; // blend mode: 0 nearest true frame, 1 planets dissolve, 2 all unreliable dissolve
                 if(ScenePair) p.capture|=8; // Separate early visual test; never a performance sample.
                 p.unused2=renderedFrame==Time.frameCount?new IntPtr(1):IntPtr.Zero;
@@ -316,6 +323,7 @@ namespace StutterFix
                     var camera=Cam(sc); if(camera!=null) {
                         var r=controller.planetRed.transform; var b=controller.planetBlue.transform;
                         p.pose=new Pose {x=sceneCamera.x,y=sceneCamera.y,size=sceneCamera.z,angle=sceneCamera.w,rx=r.position.x,ry=r.position.y,rs=r.lossyScale.x,ra=r.eulerAngles.z*Mathf.Deg2Rad,bx=b.position.x,by=b.position.y,bs=b.lossyScale.x,ba=b.eulerAngles.z*Mathf.Deg2Rad};
+                        if(!poseLogged && song>2) { poseLogged=true; Log("pose cam="+sceneCamera.x.ToString("F2")+","+sceneCamera.y.ToString("F2")+" size="+sceneCamera.z.ToString("F3")+" red="+r.position.x.ToString("F2")+","+r.position.y.ToString("F2")+" scale="+r.lossyScale.x.ToString("F3")+" blue="+b.position.x.ToString("F2")+","+b.position.y.ToString("F2")+" scale="+b.lossyScale.x.ToString("F3")); }
                         p.baseCamera=sceneBase; p.pulse=scenePulse;
                         if(renderedFrame!=Time.frameCount) p.pulse.w=0; // The stored image belongs to the last camera that actually rendered.
                         // Bit64 reuses base/pulse payload for two true-frame planet envelopes.

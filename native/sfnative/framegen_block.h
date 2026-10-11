@@ -20,9 +20,11 @@ class BlockFlow {
     // planets[k] = (old world x, y, new world x, y) of planet k (0 red, 1 blue). disc = (red radius, blue radius, aspect,
     // valid) with radii in world units. cams = camera (x, y, size, angle) of the old picture, the new picture and the
     // interpolated output. World space keeps the planet move correct while the camera pans, zooms or rotates.
-    struct Data { float info[4],grid[4],boxes[4][4],planets[2][4],disc[4],cams[3][4]; };
+    // tnow = interpolated planet world positions (red x, y, blue x, y) at this output's phase; orbits are followed
+    // as arcs about the pivot (a straight line between two true positions cuts inside the orbit).
+    struct Data { float info[4],grid[4],boxes[4][4],planets[2][4],disc[4],cams[3][4],tnow[4]; };
     static const char* code() { return R"(
-cbuffer Data:register(b0) { float4 info; float4 grid; float4 boxes[4]; float4 planets[2]; float4 disc; float4 cams[3]; };
+cbuffer Data:register(b0) { float4 info; float4 grid; float4 boxes[4]; float4 planets[2]; float4 disc; float4 cams[3]; float4 tnow; };
 // info: width,height,phase,worldFlip. grid: smallW,smallH,blocksW,blocksH.
 Texture2D<float4> oldWorld:register(t0),newWorld:register(t1),oldScreen:register(t2),newScreen:register(t3);
 Texture2D<float4> forwardFlow:register(t4),backwardFlow:register(t5);
@@ -116,80 +118,14 @@ float alignedDifference(float2 uvOld,float2 uvNew) {
     }
     return d;
 }
-float3 colorAt(float2 uv,out bool moving) {
-    moving=false; float3 fallback=closest(uv);
-    if(info.z<=0 || info.z>=1) return fallback;
-    // Planet envelopes (ball, trail, glow of both true frames): no block flow is trusted there.
-    // Mode 0 snaps to the nearest true frame, so the ball (the thing players watch) only changes
-    // on real frames. Modes 1/2 dissolve between the two true pictures instead: every generated
-    // frame then carries its share of the motion (a short ghost rather than a hold).
-    int blend=blendMode();
-    bool envelope=false;
-    [unroll] for(int k=0;k<4;k++) if(inside(uv,boxes[k])) envelope=true;
-    if(envelope && blend<1) return fallback;
-    float3 a=worldColor(oldWorld,uv),b=worldColor(newWorld,uv);
-    float3 sa=oldScreen.SampleLevel(linearClamp,uv,0).rgb,sb=newScreen.SampleLevel(linearClamp,uv,0).rgb;
-    if(difference(a,sa)>2.5/255. || difference(b,sb)>2.5/255.) return fallback; // True-frame UI.
-    if(max(max(a.r,a.g),a.b)<1./255. && max(max(b.r,b.g),b.b)<1./255.) return fallback; // Fixed black border.
-    if(envelope) {
-        if(globalChange()) return fallback;
-        if(disc.w>.5) {
-            // Only the pixels at a planet (sprite and glow, in world space) leave the ordinary path. The planet sprite
-            // is taken from each true picture as "what differs from the other picture at the same world point" (the
-            // other picture shows the background there) and drawn at the interpolated position over a background
-            // with no copy of the planet. Moving the whole disc shifted the tiles around the ball and left a visible
-            // rim; the sprite alone keeps the background where it is.
-            // The rest of the envelope box (trail, bloom, decorations passing through) takes the ordinary path
-            // below: a blind dissolve there showed double images of moving decorations around the ball.
-            float4 ca=cams[0],cb=cams[1],ct=cams[2];
-            float2 w=toWorld(uv,ct);
-            [unroll] for(int k=0;k<2;k++) {
-                float radius=k==0?disc.x:disc.y;
-                if(radius>0) {
-                    float2 wa=planets[k].xy,wb=planets[k].zw,wt=lerp(wa,wb,info.z);
-                    float da=length(w-wa),db=length(w-wb),dt=length(w-wt);
-                    if(dt<radius*1.3 || da<radius*1.3 || db<radius*1.3) {
-                        float3 A=worldColor(oldWorld,toUV(w,ca)),B=worldColor(newWorld,toUV(w,cb));
-                        float3 background=lerp(A,B,info.z);
-                        float sa=smoothstep(radius*1.15,radius*.75,da),sb=smoothstep(radius*1.15,radius*.75,db);
-                        background=lerp(background,B,sa*(1-sb));
-                        background=lerp(background,A,sb*(1-sa));
-                        float2 pa=w+wa-wt,pb=w+wb-wt;
-                        float3 cA=worldColor(oldWorld,toUV(pa,ca)),cB=worldColor(newWorld,toUV(pb,cb));
-                        float3 bA=worldColor(newWorld,toUV(pa,cb)),bB=worldColor(oldWorld,toUV(pb,ca));
-                        float edge=smoothstep(radius,radius*.6,dt);
-                        float mA=smoothstep(.04,.2,difference(cA,bA))*edge,mB=smoothstep(.04,.2,difference(cB,bB))*edge;
-                        float alpha=lerp(mA,mB,info.z);
-                        moving=true;
-                        return background*(1-alpha)+lerp(cA*mA,cB*mB,info.z);
-                    }
-                }
-            }
-        } else { moving=true; return lerp(a,b,info.z); }
-    }
+// Block-flow path (content that moves on its own: decorations, particles, anything the cameras do not explain).
+float3 flowColor(float2 uv,float3 fallback,float3 a,float3 b,out bool moving) {
+    moving=false;
     float4 f=flowAt(forwardFlow,uv),r=flowAt(backwardFlow,uv);
     float4 checkR=flowAt(backwardFlow,uv+f.xy/grid.xy);
     if(f.z<.5 || r.z<.5 || checkR.z<.5 || length(f.xy+checkR.xy)>1.25) {
-        if(globalChange()) return fallback;
-        if(disc.w>.5) {
-            // Known cameras: the content here is normally fixed in the world, so align by camera. Screen-fixed content
-            // (HUD-like decorations) is detected by the pictures agreeing better on screen and is dissolved there.
-            float2 w=toWorld(uv,cams[2]);
-            float2 ua=toUV(w,cams[0]),ub=toUV(w,cams[1]);
-            if(all(ua>=0) && all(ua<=1) && all(ub>=0) && all(ub<=1)) {
-                float3 A=worldColor(oldWorld,ua),B=worldColor(newWorld,ub);
-                float dc=alignedDifference(ua,ub),ds=alignedDifference(uv,uv);
-                bool screenFixed=ds<=dc;
-                float3 blended=screenFixed?lerp(a,b,info.z):lerp(A,B,info.z);
-                // Soft hand-over to the nearest true picture as the two candidates disagree more and more: a hard
-                // switch flickered along edges, and hard nearest-picture copies are what made fast parts look steppy.
-                moving=true;
-                return lerp(blended,fallback,smoothstep(.25,.65,screenFixed?ds:dc));
-            }
-            return fallback;
-        }
-        if(blend<2) return fallback;
-        moving=true; return lerp(a,b,info.z);
+        if(blendMode()<2 && disc.w<=.5) return fallback;
+        moving=true; return disc.w>.5 ? fallback : lerp(a,b,info.z);
     }
     float2 oldUV=uv-info.z*f.xy/grid.xy,newUV=uv-(1-info.z)*r.xy/grid.xy;
     if(any(oldUV<0) || any(oldUV>1) || any(newUV<0) || any(newUV>1)) return fallback;
@@ -197,6 +133,101 @@ float3 colorAt(float2 uv,out bool moving) {
     float occlusion=smoothstep(.25,.65,alignedDifference(oldUV,newUV)); // Occlusion/effects: no double image.
     moving=length(f.xy)>.05 || length(r.xy)>.05;
     return lerp(lerp(ca,cb,info.z),fallback,occlusion);
+}
+float3 colorAt(float2 uv,out bool moving) {
+    moving=false; float3 fallback=closest(uv);
+    if(info.z<=0 || info.z>=1) return fallback;
+    int blend=blendMode();
+    bool envelope=false;
+    [unroll] for(int k=0;k<4;k++) if(inside(uv,boxes[k])) envelope=true;
+    if(envelope && blend<1) return fallback; // Mode 0: planets only change on true frames.
+    float3 a=worldColor(oldWorld,uv),b=worldColor(newWorld,uv);
+    float3 sa=oldScreen.SampleLevel(linearClamp,uv,0).rgb,sb=newScreen.SampleLevel(linearClamp,uv,0).rgb;
+    if(difference(a,sa)>2.5/255. || difference(b,sb)>2.5/255.) return fallback; // True-frame UI.
+    if(max(max(a.r,a.g),a.b)<1./255. && max(max(b.r,b.g),b.b)<1./255.) return fallback; // Fixed black border.
+    if(disc.w<=.5) {
+        // No usable cameras: flow only, as before.
+        if(envelope) { if(globalChange()) return fallback; moving=true; return lerp(a,b,info.z); }
+        return flowColor(uv,fallback,a,b,moving);
+    }
+    if(globalChange()) return fallback;
+    float4 camOld=cams[0],camNew=cams[1],camNow=cams[2];
+    float2 w=toWorld(uv,camNow),ua=toUV(w,camOld),ub=toUV(w,camNew);
+    if(!(all(ua>=0) && all(ua<=1) && all(ub>=0) && all(ub<=1))) return flowColor(uv,fallback,a,b,moving);
+    float3 A=worldColor(oldWorld,ua),B=worldColor(newWorld,ub);
+    // Planets (ball, its glow): both true pictures carry a planet at its own position. Background = the picture that
+    // has no planet at this world point; the planet itself is drawn at its interpolated position as "what it adds"
+    // (picture minus the other picture at the same world point), so its glow fades out with no rim.
+    float freeA=1,freeB=1; bool zone=false;
+    [unroll] for(int k=0;k<2;k++) {
+        float radius=k==0?disc.x:disc.y;
+        if(radius>0) {
+            float reach=radius*2.6;
+            float2 wa=planets[k].xy,wb=planets[k].zw,wt=k==0?tnow.xy:tnow.zw;
+            freeA=min(freeA,smoothstep(reach*.8,reach*1.1,length(w-wa)));
+            freeB=min(freeB,smoothstep(reach*.8,reach*1.1,length(w-wb)));
+            if(length(w-wt)<reach*1.2) zone=true;
+        }
+    }
+    if(zone || freeA<1 || freeB<1) {
+        float wA=freeA*(1-info.z),wB=freeB*info.z;
+        float3 bg=(wA+wB>1e-3)?(A*wA+B*wB)/(wA+wB):lerp(A,B,info.z);
+        float3 delta=0,core=0; float coreMask=0;
+        [unroll] for(int k=0;k<2;k++) {
+            float radius=k==0?disc.x:disc.y;
+            if(radius>0) {
+                float reach=radius*2.6;
+                float2 wa=planets[k].xy,wb=planets[k].zw,wt=k==0?tnow.xy:tnow.zw;
+                float dist=length(w-wt);
+                if(dist<reach*1.15) {
+                    float2 sa2=w-wt+wa,sb2=w-wt+wb;
+                    float3 pA=worldColor(oldWorld,toUV(sa2,camOld)),pB=worldColor(newWorld,toUV(sb2,camNew));
+                    // Glow: additive, so "what it adds" = picture minus the other picture at the same world point.
+                    float sep=smoothstep(radius*1.8,radius*3.,length(wb-wa)); // sprites no longer overlap: the other picture shows no planet here
+                    float m=smoothstep(reach*1.15,reach*.7,dist)*sep;
+                    float3 dA=pA-worldColor(newWorld,toUV(sa2,camNew));
+                    float3 dB=pB-worldColor(oldWorld,toUV(sb2,camOld));
+                    float3 dd=lerp(dA,dB,info.z);
+                    delta+=m*sign(dd)*max(abs(dd)-.02,0.); // film grain/dither differs between pictures: not part of the planet
+                    // Sprite: opaque, so its core is pasted (no background shows through it, whatever is under it now).
+                    float mc=smoothstep(radius*.75,radius*.55,dist);
+                    // The pasted sprite carries the glow it had at its source. Where the background here is much
+                    // brighter or darker than at the source (a planet moving into or out of a bloom), pasting leaves a
+                    // visible grey disc on the glow; the additive layer alone looks right there.
+                    float lumHere=dot(bg,float3(.299,.587,.114));
+                    float lumSource=lerp(dot(pA-dA,float3(.299,.587,.114)),dot(pB-dB,float3(.299,.587,.114)),info.z);
+                    mc*=1-smoothstep(.08,.28,abs(lumHere-lumSource));
+                    if(mc>coreMask) { coreMask=mc; core=lerp(pA,pB,info.z); }
+                }
+            }
+        }
+        float3 shaded=saturate(bg+delta);
+        float3 result=lerp(shaded,core,coreMask);
+        if(disc.w>1.5) {
+            // Diagnostic markers: white = interpolated planet position, red = old picture's, blue = new picture's.
+            [unroll] for(int k=0;k<2;k++) {
+                float radius=k==0?disc.x:disc.y;
+                if(radius>0) {
+                    float2 wa=planets[k].xy,wb=planets[k].zw,wt=k==0?tnow.xy:tnow.zw;
+                    float thick=radius*.12;
+                    if(abs(length(w-wt)-radius*.9)<thick) result=float3(1,1,1);
+                    if(abs(length(w-wa)-radius*.6)<thick) result=float3(1,0,0);
+                    if(abs(length(w-wb)-radius*.6)<thick) result=float3(0,0,1);
+                }
+            }
+        }
+        moving=true; return result;
+    }
+    // Content fixed in the world (tiles, anything that follows the cameras): aligned by the known cameras, exactly;
+    // content fixed on the screen (filters, HUD-like decorations): aligned on screen. Only what neither explains
+    // (decorations with their own motion) goes to block matching.
+    float dc=alignedDifference(ua,ub),ds=alignedDifference(uv,uv);
+    float d=min(dc,ds);
+    float3 fixedColor=ds<=dc?lerp(a,b,info.z):lerp(A,B,info.z);
+    moving=true;
+    if(d<.12) return fixedColor;
+    bool flowMoving; float3 viaFlow=flowColor(uv,fallback,a,b,flowMoving);
+    return lerp(fixedColor,viaFlow,smoothstep(.12,.3,d));
 }
 struct V { float4 position:SV_POSITION; float2 uv:TEXCOORD0; };
 V VS(uint id:SV_VertexID) { V v;v.uv=float2((id<<1)&2,id&2);v.position=float4(v.uv*float2(2,-2)+float2(-1,1),0,1);return v; }
@@ -253,6 +284,55 @@ public:
         bd.Usage=D3D11_USAGE_STAGING;bd.CPUAccessFlags=D3D11_CPU_ACCESS_READ;bd.BindFlags=bd.MiscFlags=bd.StructureByteStride=0;check(device->CreateBuffer(&bd,nullptr,&counterRead));
 #endif
     }
+    static double wrapAngle(double x) { const double pi=3.14159265358979323846; while(x>pi) x-=2*pi; while(x<-pi) x+=2*pi; return x; }
+    static void rotateAbout(const double c[2],const double p[2],double angle,double out[2]) {
+        double dx=p[0]-c[0],dy=p[1]-c[1],s=sin(angle),k=cos(angle); out[0]=c[0]+k*dx-s*dy; out[1]=c[1]+s*dx+k*dy;
+    }
+    // Planet world positions at phase t between two true frames. One planet is the pivot; the other turns about it,
+    // and where the pivot changes inside the interval (a tile was reached) the first arc ends at the new pivot and
+    // the second starts there. Angular speed is constant, so the angles split the interval. Anything that does not
+    // fit (teleports, SetSpeed jumps, more than half a turn) falls back to a straight line.
+    static void orbit(const double a[2][2],const double b[2][2],double t,float out[4]) {
+        auto lineTo=[&]{ for(int k=0;k<2;k++) for(int c=0;c<2;c++) out[k*2+c]=float(a[k][c]+(b[k][c]-a[k][c])*t); };
+        double sepA=hypot(a[1][0]-a[0][0],a[1][1]-a[0][1]),sepB=hypot(b[1][0]-b[0][0],b[1][1]-b[0][1]);
+        double R=std::max(sepA,sepB); if(R<1e-4) { lineTo(); return; }
+        double m0=hypot(b[0][0]-a[0][0],b[0][1]-a[0][1]),m1=hypot(b[1][0]-a[1][0],b[1][1]-a[1][1]),e=.06*R;
+        double p[2][2];
+        auto arcAbout=[&](int pivot,int mover,double u) { // mover turns about pivot (pivot lerped), radius lerped
+            double c[2]={a[pivot][0]+(b[pivot][0]-a[pivot][0])*u,a[pivot][1]+(b[pivot][1]-a[pivot][1])*u};
+            double a0=atan2(a[mover][1]-a[pivot][1],a[mover][0]-a[pivot][0]),a1=atan2(b[mover][1]-b[pivot][1],b[mover][0]-b[pivot][0]);
+            double turn=wrapAngle(a1-a0),ra=hypot(a[mover][0]-a[pivot][0],a[mover][1]-a[pivot][1]),rb=hypot(b[mover][0]-b[pivot][0],b[mover][1]-b[pivot][1]);
+            double ang=a0+turn*u,r=ra+(rb-ra)*u;
+            p[mover][0]=c[0]+r*cos(ang);p[mover][1]=c[1]+r*sin(ang);p[pivot][0]=c[0];p[pivot][1]=c[1];
+        };
+        if(m0<e && m1<e) { lineTo(); return; }
+        if(m0<e) { arcAbout(0,1,t); }
+        else if(m1<e) { arcAbout(1,0,t); }
+        else {
+            // Pivot change inside the interval: the mover turns about the old pivot to its new tile, then the old pivot turns about it.
+            double bestErr=1e30; int pv=0;
+            for(int h=0;h<2;h++) {
+                int pivot=h,mover=1-h;
+                double err=fabs(hypot(b[mover][0]-a[pivot][0],b[mover][1]-a[pivot][1])-sepA)+fabs(hypot(b[pivot][0]-b[mover][0],b[pivot][1]-b[mover][1])-sepB);
+                if(err<bestErr) { bestErr=err; pv=h; }
+            }
+            if(bestErr>.35*R) { lineTo(); return; }
+            int mover=1-pv;
+            double a1=wrapAngle(atan2(b[mover][1]-a[pv][1],b[mover][0]-a[pv][0])-atan2(a[mover][1]-a[pv][1],a[mover][0]-a[pv][0]));
+            double a2=wrapAngle(atan2(b[pv][1]-b[mover][1],b[pv][0]-b[mover][0])-atan2(a[pv][1]-b[mover][1],a[pv][0]-b[mover][0]));
+            double f=fabs(a1)/std::max(1e-9,fabs(a1)+fabs(a2)); f=std::clamp(f,.05,.95);
+            if(t<f) {
+                double u=t/f,q0[2]={a[pv][0],a[pv][1]},q1[2]={a[mover][0],a[mover][1]},r1[2];
+                rotateAbout(q0,q1,a1*u,r1);
+                p[pv][0]=q0[0];p[pv][1]=q0[1];p[mover][0]=r1[0];p[mover][1]=r1[1];
+            } else {
+                double u=(t-f)/(1-f),c[2]={b[mover][0],b[mover][1]},q[2]={a[pv][0],a[pv][1]},r1[2];
+                rotateAbout(c,q,a2*u,r1);
+                p[mover][0]=c[0];p[mover][1]=c[1];p[pv][0]=r1[0];p[pv][1]=r1[1];
+            }
+        }
+        out[0]=float(p[0][0]);out[1]=float(p[0][1]);out[2]=float(p[1][0]);out[3]=float(p[1][1]);
+    }
     Data data(const Slot& a,const Slot& b,double phase) const {
         Data d{{float(width),float(height),float(std::clamp(phase,0.,1.)),float((b.packet.flip?1:0)+2*((b.packet.capture>>14)&3))},{float(smallW),float(smallH),float(blocksW),float(blocksH)},{}};
         memcpy(d.boxes[0],a.packet.textures+3,16);memcpy(d.boxes[1],a.packet.pulse,16);memcpy(d.boxes[2],b.packet.textures+3,16);memcpy(d.boxes[3],b.packet.pulse,16);
@@ -269,13 +349,22 @@ public:
                 for(int i=0;i<4;i++) {d.cams[0][i]=pa.camera[i];d.cams[1][i]=pb.camera[i];}
                 for(int i=0;i<3;i++) d.cams[2][i]=pa.camera[i]+(pb.camera[i]-pa.camera[i])*t;
                 d.cams[2][3]=pa.camera[3]+float(turn)*t;
-                d.disc[3]=1;
+                d.disc[3]=((b.packet.capture>>17)&1)?2.f:1.f; // 2 = draw the planet position markers (diagnostic)
+                double oldPos[2][2],newPos[2][2];
                 for(int k=0;k<2;k++) {
                     d.planets[k][0]=pa.planet[k][0];d.planets[k][1]=pa.planet[k][1];d.planets[k][2]=pb.planet[k][0];d.planets[k][3]=pb.planet[k][1];
+                    oldPos[k][0]=pa.planet[k][0];oldPos[k][1]=pa.planet[k][1];newPos[k][0]=pb.planet[k][0];newPos[k][1]=pb.planet[k][1];
                     float planetScale=.5f*(pa.planet[k][2]+pb.planet[k][2]);
                     float jump=hypotf(pb.planet[k][0]-pa.planet[k][0],pb.planet[k][1]-pa.planet[k][1]);
-                    if(movePlanets && planetScale>.05f && planetScale<20.f && jump<1.6f*std::max(.5f,planetScale)) d.disc[k]=std::clamp(.8f*planetScale,.15f,3.f);
+                    // Sprite radius ~0.22 tile; glow reaches about 2.6x that. A teleport disables the move.
+                    // A planet hidden in either picture (no renderer coverage) has no sprite to move.
+                    bool seenOld=d.boxes[k][2]>d.boxes[k][0] && d.boxes[k][3]>d.boxes[k][1],seenNew=d.boxes[2+k][2]>d.boxes[2+k][0] && d.boxes[2+k][3]>d.boxes[2+k][1];
+                    // Orbit radius ~ planet separation; a planet never moves further than the orbit's diameter between two pictures.
+                    double sepOld=hypot(double(pa.planet[1][0])-pa.planet[0][0],double(pa.planet[1][1])-pa.planet[0][1]),sepNew=hypot(double(pb.planet[1][0])-pb.planet[0][0],double(pb.planet[1][1])-pb.planet[0][1]);
+                    float reachLimit=float(2.2*std::max(std::max(sepOld,sepNew),.25));
+                    if(movePlanets && seenOld && seenNew && planetScale>.05f && planetScale<20.f && jump<reachLimit) d.disc[k]=std::clamp(.3f*planetScale,.08f,1.5f);
                 }
+                orbit(oldPos,newPos,t,d.tnow);
             }
         }
         return d;

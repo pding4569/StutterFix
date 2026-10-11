@@ -18,6 +18,7 @@
 #include <limits>
 #include <stdexcept>
 #include <algorithm>
+#include <dwmapi.h>
 namespace outside {
 using Microsoft::WRL::ComPtr;
 inline void check(HRESULT hr) { if(FAILED(hr)) throw std::runtime_error("outside D3D11 failure"); }
@@ -114,6 +115,27 @@ inline std::atomic<int> paceMille{700};
 inline double refreshDeadline(double lastReal,int hz) {
     return hz>0?lastReal+paceMille.load()/1000./hz:0;
 }
+// Display clock (DWM). One image per refresh reaches the screen: the newest Present before the compositor's compose
+// time. A generated image's picture time is therefore its DISPLAY time, not its Present time: labelled with the
+// compose time it will be shown at, successive refreshes advance by exactly one refresh whatever the Present jitter
+// (outputs 4.2 ms apart on a 6.06 ms refresh alternate 4.2/8.4 ms content steps otherwise).
+inline std::atomic<int> leadMicros{600}; // Present -> compose margin; 0 turns the display clock off
+struct DisplayClock {
+    double vblank=0,period=0,read=0; bool valid=false;
+    void update(double t) {
+        if(valid && t-read<.2) return;
+        read=t;
+        static auto fn=[]{ HMODULE m=LoadLibraryW(L"dwmapi.dll"); return m?reinterpret_cast<HRESULT(WINAPI*)(HWND,DWM_TIMING_INFO*)>(GetProcAddress(m,"DwmGetCompositionTimingInfo")):nullptr; }();
+        if(!fn) { valid=false; return; }
+        DWM_TIMING_INFO info{}; info.cbSize=sizeof(info);
+        if(FAILED(fn(nullptr,&info)) || !info.qpcRefreshPeriod || !info.qpcVBlank) { valid=false; return; }
+        LARGE_INTEGER f; QueryPerformanceFrequency(&f);
+        vblank=double(info.qpcVBlank)/double(f.QuadPart); period=double(info.qpcRefreshPeriod)/double(f.QuadPart);
+        valid=period>.0005 && period<.05;
+    }
+    // First compose time at least `lead` seconds after t.
+    double label(double t,double lead) const { return vblank+std::ceil((t+lead-vblank)/period)*period; }
+};
 inline bool completionOnly(const Packet& p) {
 #ifdef SF_FRAMEGEN_RESEARCH
     return (p.capture&4096)!=0;
@@ -274,7 +296,9 @@ public:
         ++frameEnds; frameMutex.unlock(); } }
     void stop() { stopRequested=true; endFrame(); if(worker.joinable()) worker.join(); }
     bool isWorker() const { return workerId.load()==GetCurrentThreadId(); }
-    void drawReal() { std::lock_guard<std::mutex> gate(mutex); auto& s=slots[published%slots.size()]; if(s.sequence) render(s,true,s.qpc); }
+    void drawReal() { std::lock_guard<std::mutex> gate(mutex); auto& s=slots[published%slots.size()]; if(s.sequence) { double tick=s.qpc; if(labelled()) { tick=clock.label(now(),lead()); labelSequence=s.sequence; labelTime=tick; realLabelled=true; labelledTick=true; realLabelKey=static_cast<long long>(tick*1e6); } render(s,true,tick); realLabelled=false; labelledTick=false; } }
+    bool labelled() { int hz=refreshRate.load(); if(mode.load()!=9 || hz<=0 || leadMicros.load()<=0) return false; clock.update(now()); return clock.valid; }
+    double lead() const { return leadMicros.load()/1e6; }
     HRESULT present() {
         ContextLock context(protection.Get());
         ComPtr<ID3D11RenderTargetView> old[8]; ID3D11RenderTargetView* restore[8]{}; ComPtr<ID3D11DepthStencilView> z;
@@ -381,6 +405,8 @@ public:
         s.packet=p; s.previousPacket=lastPacket; s.previous=lastPacket.pose; s.previousSong=lastPacket.song;
         s.frameDelta=havePrevious?t-lastQpc:.005;
         s.period=std::clamp(s.frameDelta,.001,.05); s.qpc=t; s.sequence=++published;
+        if(havePrevious) smoothInterval=smoothInterval>0?smoothInterval+(s.period-smoothInterval)*.1:s.period;
+        if(havePrevious) { ++sourceCount; intervalMicros+=static_cast<unsigned long long>(s.period*1e6); if(lastPhase>0 && lastPhase<.85) ++earlyArrivals; }
         s.pairValid=lastPacket.mode>=2;
         if(blockFlowEnabled(p) && !connectionOnly(p)) {
             const auto& previous=slots[(s.sequence-1)%slots.size()];
@@ -486,6 +512,27 @@ private:
     unsigned long long published=0;
     Packet previousPacket{},lastPacket{};
     double lastQpc=0,previousQpc=0,lastRealPresent=0;
+public:
+    DisplayClock clock; unsigned long long labelSequence=0; double labelTime=0; bool realLabelled=false;
+    // Pictures that reach the screen: with the display clock one per refresh (a second image for the same refresh is
+    // replaced before it is shown), otherwise every Present. This is what an "output FPS" should count.
+    std::atomic<unsigned long long> shown{0}; std::atomic<long long> shownLabel{0}; long long realLabelKey=0;
+    // Pacing statistics for the state command: outputs held at phase 1 (the next true frame was late), new true frames
+    // that arrived before the phase reached .85 (the picture timeline jumps forward), and mean true-frame interval.
+    std::atomic<unsigned long long> stalledOutputs{0},earlyArrivals{0},sourceCount{0},intervalMicros{0}; double lastPhase=0;
+    // Picture timeline with a constant delay: a labelled output (display time V) shows the picture time V-delay, found
+    // between the two true frames by their own timestamps. The delay is the smoothed true-frame interval plus the
+    // time between rendering and display, so the needed true frame has arrived and the speed stays steady however
+    // the true frames jitter (the old phase = age/last interval jumped and stalled with every late or early frame).
+    double smoothInterval=0; bool labelledTick=false;
+    static constexpr double renderAhead=.0028; // worker renders this long before the Present deadline
+    double timelineDelay() const { return (smoothInterval>0?smoothInterval:.0167)+lead()+renderAhead+.001; }
+    void noteShown(bool labelled,double label) {
+        if(!labelled) { ++shown; return; }
+        long long key=static_cast<long long>(label*1e6); if(shownLabel.exchange(key)!=key) ++shown;
+    }
+    void noteRealShown() { long long key=realLabelKey; realLabelKey=0; if(key) { if(shownLabel.exchange(key)!=key) ++shown; } else ++shown; }
+private:
     bool havePrevious=false;
     ComPtr<ID3D11DeviceContext> deferred;
     ComPtr<IDXGISwapChain1> swap;
@@ -586,6 +633,7 @@ private:
                     auto& s=slots[published%slots.size()];
                     int currentMode=mode.load();
                     if(s.sequence && currentMode) {
+                        double renderTick=t; bool displayClock=false,clockDue=false;
                         double interval=s.period/currentMode;
                         bool continuous=s.packet.textures[1]==reinterpret_cast<void*>(1);
                         if(continuous) interval=s.period/(currentMode-1);
@@ -598,9 +646,19 @@ private:
                             // Do not estimate FPS or carry a shortage clock across sources.
                             if(seen!=s.sequence) deadline=refreshDeadline(lastRealPresent,hz);
                             continuous=true;
+                            if(leadMicros.load()>0) { clock.update(t); displayClock=clock.valid; }
+                            if(displayClock) {
+                                // One image per refresh, picture time = the refresh it will be shown at. Render it once,
+                                // 1.5 ms before the Present must be in, so a late or locked worker still has retries.
+                                double L=lead(),V=clock.label(t,L);
+                                if(labelSequence==s.sequence && labelTime>=V-1e-6) V+=clock.period;
+                                double target=V-L-renderAhead; // late enough that the true frame the label needs has arrived, early enough to retry
+                                if(labelSequence && V-labelTime>clock.period*1.5 && t>=target) { if(blocked) ++missedLock; else ++missedTimer; }
+                                deadline=target; clockDue=t>=target; renderTick=V; seen=s.sequence;
+                            }
                         }
-                        if(seen!=s.sequence) { seen=s.sequence; if(!continuous || deadline==0) deadline=s.qpc+interval; }
-                        if(continuous) {
+                        if(!displayClock && seen!=s.sequence) { seen=s.sequence; if(!continuous || deadline==0) deadline=s.qpc+interval; }
+                        if(continuous && !displayClock) {
                             t=now();
                             if(t>deadline+interval) {
                                 auto n=static_cast<unsigned long long>((t-deadline)/interval);
@@ -608,10 +666,14 @@ private:
                                 deadline+=n*interval;
                             }
                         }
-                        if(t>=deadline) {
-                            render(s,false,t);
+                        if(displayClock?clockDue:t>=deadline) {
+                            labelledTick=displayClock;
+                            render(s,false,renderTick);
+                            labelledTick=false;
+                            if(displayClock) { labelSequence=s.sequence; labelTime=renderTick; }
                             HRESULT hr=present();
                             if(FAILED(hr)) { error=int(hr); throw std::runtime_error("Present failed"); }
+                            noteShown(displayClock,renderTick);
                             ++outputs;
 #ifdef SF_FRAMEGEN_RESEARCH
                             if(pendingMotion!=SIZE_MAX) { auto& r=motions[pendingMotion]; if(pendingWarp) ++r.reprojected; else { ++r.repeated; if(r.reason==0) ++r.pending; } }
@@ -621,8 +683,8 @@ private:
                                 pending.time=now(); pending.hr=hr; records.push_back(pending);
                                 if(pendingQuery) pendingQuery->row=records.size()-1;
                             }
-                            deadline+=interval;
-                            if(deadline<t-interval) deadline=t+interval;
+                            if(!displayClock) { deadline+=interval; if(deadline<t-interval) deadline=t+interval; }
+                            else deadline=renderTick-lead()+clock.period-renderAhead-.0002; // next window's render time
                         }
                     }
                 }
@@ -701,10 +763,14 @@ inline void Output::render(const Slot& s,bool real,double tick) {
         if(previousImage.sequence==s.sequence-1 && previousImage.packet.pose.camera[2]>.00001f) image=&previousImage;
     }
     if(blockFlowEnabled(s.packet)) {
-        double phase=real?0:std::clamp(age/s.period,0.,1.);
+        double phase=real&&!realLabelled?0:std::clamp(age/s.period,0.,1.);
+        if(labelledTick && image!=&s) {
+            double span=s.qpc-image->qpc;
+            if(span>1e-4) { double raw=(tick-timelineDelay()-image->qpc)/span; phase=std::clamp(raw,0.,1.); lastPhase=raw; if(raw>1.02) ++stalledOutputs; }
+        } else if(!real||realLabelled) { lastPhase=age/s.period; if(lastPhase>1.02) ++stalledOutputs; }
         auto& q=queries[nextQuery++%queries.size()];bool timing=!real && s.packet.measure && q.row==SIZE_MAX && records.size()<1000000;
         {ContextLock lock(protection.Get());
-            if(blockFlowVariant(s.packet)>=3 && !real && phase>0 && phase<1)
+            if(blockFlowVariant(s.packet)>=3 && (!real||realLabelled) && phase>0 && phase<1)
                 blockFlow.prepare(device.Get(),immediate.Get(),*image,s,width,height,blockFlowVariant(s.packet)!=4);
             blockFlow.draw(immediate.Get(),backTarget.Get(),*image,s,phase,timing?&q:nullptr,!real && s.packet.measure && song>=5 && song<45);}
 #ifdef SF_FRAMEGEN_RESEARCH

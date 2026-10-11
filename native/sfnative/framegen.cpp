@@ -84,7 +84,7 @@ static HRESULT __stdcall present(IDXGISwapChain* self,UINT sync,UINT flags) {
         UINT outputSync=active?0:sync;
         if(sync) { ++syncRequested; if(active) ++syncForcedZero; else if(outputSync==sync) ++syncPreserved; }
         HRESULT hr=originalPresent(self,outputSync,flags);
-        if(hr==S_OK) ++sourcePresents;
+        if(hr==S_OK) { ++sourcePresents; engine->noteRealShown(); }
         if(havePacket) engine->recordOff(packet,hr);
         havePacket=false;
         engine->endFrame(); // EOF snapshot does not unlock: Unity's real Present must finish first.
@@ -161,13 +161,16 @@ API int sf_framegen_status() { return status; }
 API int sf_framegen_error() { return failure; }
 API int sf_framegen_stopped() { return stopped; }
 API int sf_framegen_installed() { return installed; }
-API int sf_framegen_block_version() { return 2; }
+API int sf_framegen_block_version() { return 3; }
 API void sf_framegen_refresh_rate(int hz) { refreshRate=hz>0 && hz<=1000?hz:0; }
+API void sf_framegen_lead(int micros) { leadMicros=micros<=0?0:micros>12000?12000:micros; }
 API void sf_framegen_pace(int mille) { paceMille=mille<500?500:mille>1000?1000:mille; }
 API unsigned long long sf_framegen_sources() { return sourcePresents; }
 API unsigned long long sf_framegen_generated() { return generatedPresents; }
+// Pictures that reach the screen (see Output::noteShown): real + generated, one per refresh with the display clock.
+API unsigned long long sf_framegen_shown() { auto* e=engine.get(); return e?e->shown.load():0; }
 // Read-only scheduler counters for an explicit state command (0 missed while the original frame held the gate, 1 missed with the gate free, 2 outputs, 3 frame begins, 4 worker wait in microseconds).
 API unsigned long long sf_framegen_stat(int which) {
     auto* e=engine.get(); if(!e) return 0;
-    switch(which) { case 0: return e->missedLock; case 1: return e->missedTimer; case 2: return e->outputs.load(); case 3: return e->frameBegins.load(); case 4: return static_cast<unsigned long long>(e->workerWaitMs*1000); default: return 0; }
+    switch(which) { case 0: return e->missedLock; case 1: return e->missedTimer; case 2: return e->outputs.load(); case 3: return e->frameBegins.load(); case 4: return static_cast<unsigned long long>(e->workerWaitMs*1000); case 5: return e->stalledOutputs; case 6: return e->earlyArrivals; case 7: return e->sourceCount; case 8: return e->intervalMicros; case 9: return e->shown; default: return 0; }
 }
