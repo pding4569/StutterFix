@@ -932,6 +932,7 @@ namespace StutterFix
         public bool FrameGenRefreshRest = true; // 옛 XML 호환용. 주사율 맞춤은 이 값과 무관하게 마감+저장 휴식 사용.
         public int FrameGenPace = 700;       // 마감 생성 간격: 한 칸의 천분율. 1000 이면 정확히 한 칸 뒤라 조금만 늦어도 칸이 비므로 700 (500~1000)
         public int FrameGenLead = 600;      // 화면 시각 맞추기: 출력이 모니터 갱신 시각에서 이만큼(마이크로초) 앞서 들어가야 그 칸에 뜬다고 보고 그림 시각을 그 칸에 맞춘다. 0 이면 끔(옛 방식)
+        public bool FrameGenDense = true;       // 조밀한 다단계 광학 흐름(1/4 해상도, 4px마다 벡터 하나). 끄면 옛 8x8 블록 매칭
         public bool FrameGenDebugMarks = false; // (진단) 공 위치 표시 고리를 그린다
         public bool FrameGenBallMove = true;   // 공을 두 진짜 프레임 사이 위치(피벗 둘레 호)로 옮겨 그린다. 끄면 공은 진짜 프레임 속도로만 움직인다
         public int FrameGenBlend = 1;        // 못 믿는 곳의 겹침: 0 끔(가까운 진짜 그림), 1 공 둘레만 섞기, 2 전체 섞기 (움직임이 고름)

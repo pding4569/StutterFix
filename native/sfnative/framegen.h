@@ -235,6 +235,7 @@ inline bool imageGateEnabled(const Packet& p) {
 #endif
 }
 struct Query { ComPtr<ID3D11Query> begin,end,disjoint; size_t row=SIZE_MAX; };
+#include "framegen_dense.h"
 #include "framegen_block.h"
 class Output {
 public:

@@ -16,6 +16,7 @@ class BlockFlow {
     ComPtr<ID3D11SamplerState> linear;
     unsigned width=0,height=0,smallW=0,smallH=0,blocksW=0,blocksH=0,scale=8,blockSize=8,variant=0;
     unsigned skippedPairs=0;
+    DenseFlow dense; bool denseOn=false; // capture bit 18: dense pyramid flow instead of the 8x8 block matcher
     unsigned long long sequence=0;
     // planets[k] = (old world x, y, new world x, y) of planet k (0 red, 1 blue). disc = (red radius, blue radius, aspect,
     // valid) with radii in world units. cams = camera (x, y, size, angle) of the old picture, the new picture and the
@@ -88,7 +89,10 @@ float errorAt(float values[16],int2 origin,int2 delta) {
     vectors[id.xy]=float4(best+fractional,confidence,cost);
 }
 bool inside(float2 uv,float4 b) { return b.z>b.x && b.w>b.y && all(uv>=b.xy) && all(uv<=b.zw); }
-float4 flowAt(Texture2D<float4> f,float2 uv) { int blockSize=max(1,int(ceil(grid.x/grid.z))); return f.Load(int3(clamp(int2(uv*grid.xy)/blockSize,0,int2(grid.zw)-1),0)); }
+float4 flowAt(Texture2D<float4> f,float2 uv) {
+    if(grid.x==grid.z && grid.x>1) return f.SampleLevel(linearClamp,uv,0); // dense flow: one vector per 4 px, interpolated
+    int blockSize=max(1,int(ceil(grid.x/grid.z))); return f.Load(int3(clamp(int2(uv*grid.xy)/blockSize,0,int2(grid.zw)-1),0));
+}
 float3 closest(float2 uv) { return info.z<.5 ? oldScreen.SampleLevel(linearClamp,uv,0).rgb : newScreen.SampleLevel(linearClamp,uv,0).rgb; }
 float difference(float3 a,float3 b) { return max(max(abs(a.r-b.r),abs(a.g-b.g)),abs(a.b-b.b)); }
 float2 rot(float2 p,float a) { float s,c; sincos(a,s,c); return float2(c*p.x-s*p.y,s*p.x+c*p.y); }
@@ -257,7 +261,7 @@ groupshared uint counts[4];
         commands->ClearState(); commands->UpdateSubresource(constants.Get(),0,nullptr,&data,0,0);
         auto cb=constants.Get(); commands->CSSetConstantBuffers(0,1,&cb);commands->PSSetConstantBuffers(0,1,&cb);
         auto sampler=linear.Get();commands->CSSetSamplers(0,1,&sampler);commands->PSSetSamplers(0,1,&sampler);
-        ID3D11ShaderResourceView* views[]={a.images[0].view.Get(),b.images[0].view.Get(),a.images[1].view.Get(),b.images[1].view.Get(),flow[0].texture.view.Get(),flow[1].texture.view.Get()};
+        ID3D11ShaderResourceView* views[]={a.images[0].view.Get(),b.images[0].view.Get(),a.images[1].view.Get(),b.images[1].view.Get(),denseOn?dense.forward():flow[0].texture.view.Get(),denseOn?dense.backward():flow[1].texture.view.Get()};
         commands->PSSetShaderResources(0,6,views);commands->CSSetShaderResources(0,6,views);
     }
     void execute(ID3D11DeviceContext* immediate) { ComPtr<ID3D11CommandList> list;check(commands->FinishCommandList(FALSE,&list));immediate->ExecuteCommandList(list.Get(),TRUE); }
@@ -343,6 +347,7 @@ public:
     }
     Data data(const Slot& a,const Slot& b,double phase) const {
         Data d{{float(width),float(height),float(std::clamp(phase,0.,1.)),float((b.packet.flip?1:0)+2*((b.packet.capture>>14)&3))},{float(smallW),float(smallH),float(blocksW),float(blocksH)},{}};
+        if(denseOn) { d.grid[0]=d.grid[2]=float(dense.baseW()); d.grid[1]=d.grid[3]=float(dense.baseH()); }
         memcpy(d.boxes[0],a.packet.textures+3,16);memcpy(d.boxes[1],a.packet.pulse,16);memcpy(d.boxes[2],b.packet.textures+3,16);memcpy(d.boxes[3],b.packet.pulse,16);
         // Planet world positions and radius (about the sprite plus a little glow, world units), and the three cameras.
         // A teleport (large planet or camera jump), a missing camera or a hidden planet disables the move.
@@ -380,9 +385,18 @@ public:
     void prepare(ID3D11Device* device,ID3D11DeviceContext* immediate,const Slot& a,const Slot& b,unsigned w,unsigned h,bool flush=true) {
         initialize(device,w,h,blockFlowVariant(b.packet));
         if(sequence==b.sequence) return;
+        denseOn=((b.packet.capture>>18)&1)!=0;
+        if(denseOn) dense.initialize(device,w,h);
         auto d=data(a,b,0);bind(d,a,b);
         ID3D11ShaderResourceView* none[8]{};ID3D11UnorderedAccessView* noTarget=nullptr;
         commands->PSSetShaderResources(0,8,none);commands->CSSetShaderResources(4,2,none);
+        if(denseOn) {
+            dense.run(commands.Get(),a.images[0].view.Get(),b.images[0].view.Get(),b.packet.flip!=0,linear.Get());
+            commands->CSSetShaderResources(0,8,none);
+            if(flush) execute(immediate);
+            sequence=b.sequence;
+            return;
+        }
         commands->CSSetShader(reduce.Get(),nullptr,0);
         for(int i=0;i<2;i++) {auto view=(i?b:a).images[0].view.Get();commands->CSSetShaderResources(0,1,&view);auto target=gray[i].target.Get();commands->CSSetUnorderedAccessViews(0,1,&target,nullptr);commands->Dispatch((smallW+7)/8,(smallH+7)/8,1);commands->CSSetUnorderedAccessViews(0,1,&noTarget,nullptr);}
         commands->CSSetShader(match.Get(),nullptr,0);
