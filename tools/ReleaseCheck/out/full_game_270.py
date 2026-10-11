@@ -5,7 +5,7 @@ out=r/'tools/ReleaseCheck/out';mod=Path(sf.MOD_DIR);helper=mod.parent/'StutterFi
 assert not sf.game_running(),'Existing game; no changes'
 assert not helper.exists(),'Existing helper; do not overwrite'
 params=Path(sf.GAME_DIR)/'A Dance of Fire and Ice_Data/Managed/UnityModManager/Params.xml';parambytes=params.read_bytes()
-settings=(mod/'Settings.xml').read_bytes();backup=r/'install-backups/release-2.7.0/installed-original';backup.mkdir()
+settings=(mod/'Settings.xml').read_bytes();backup=r/'install-backups/release-2.7.0/installed-original';backup.mkdir(parents=True)
 for n in ['Settings.xml','Info.json','StutterFix.dll','sfnative.dll','effects-LICENSE.txt']:
  if (mod/n).exists():shutil.copy2(mod/n,backup/n)
 zp=r/'dist/StutterFix-2.7.0-player.zip';package=dict(zip_sha256=hashlib.sha256(zp.read_bytes()).hexdigest(),managed_sha256=hashlib.sha256(zipfile.ZipFile(zp).read('StutterFix/StutterFix.dll')).hexdigest())
