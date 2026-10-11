@@ -102,6 +102,20 @@ bool globalChange() {
     }
     return sum/9>.18;
 }
+// Difference of two candidate pictures judged over a small neighbourhood, so the pick between "blend" and "nearest
+// picture" is the same for a whole moving edge instead of flickering pixel by pixel (salt-and-pepper along fast letters).
+float alignedDifference(float2 uvOld,float2 uvNew) {
+    // Eight taps on a ring about 8 px out plus the centre: wide enough that the decision is shared by a moving
+    // edge and its neighbourhood (a 3 px ring still flickered at the letters of a fast-moving decoration).
+    float2 t=8./info.xy;
+    float d=difference(worldColor(oldWorld,uvOld),worldColor(newWorld,uvNew));
+    [unroll] for(int k=0;k<8;k++) {
+        float2 o=float2(k==0||k==4?1:k==1||k==5?.7:k==2||k==6?0:-.7, k==0||k==4?0:k==1||k==5?.7:k==2||k==6?1:.7);
+        if(k>=4) o=-o;
+        d=max(d,difference(worldColor(oldWorld,uvOld+o*t),worldColor(newWorld,uvNew+o*t)));
+    }
+    return d;
+}
 float3 colorAt(float2 uv,out bool moving) {
     moving=false; float3 fallback=closest(uv);
     if(info.z<=0 || info.z>=1) return fallback;
@@ -119,32 +133,31 @@ float3 colorAt(float2 uv,out bool moving) {
     if(max(max(a.r,a.g),a.b)<1./255. && max(max(b.r,b.g),b.b)<1./255.) return fallback; // Fixed black border.
     if(envelope) {
         if(globalChange()) return fallback;
-        moving=true;
-        float3 dissolved=lerp(a,b,info.z);
         if(disc.w>.5) {
-            // Camera-aligned dissolve, then planets moved in world space: both true pictures are sampled so the
-            // planet lands on its interpolated position. Where the planet was in one picture the other shows the
-            // background (the planet has left), so no copy stays behind. Feathered at the disc edge.
+            // Only the pixels at a planet (sprite and glow, in world space) leave the ordinary path: both true
+            // pictures are sampled so the planet lands on its interpolated position. Where the planet was in one
+            // picture the other shows the background (it has left), so no copy stays behind. Feathered at the edge.
+            // The rest of the envelope box (trail, bloom, decorations passing through) takes the ordinary path
+            // below: a blind dissolve there showed double images of moving decorations around the ball.
             float4 ca=cams[0],cb=cams[1],ct=cams[2];
             float2 w=toWorld(uv,ct);
-            float3 A=worldColor(oldWorld,toUV(w,ca)),B=worldColor(newWorld,toUV(w,cb));
-            dissolved=lerp(A,B,info.z);
             [unroll] for(int k=0;k<2;k++) {
                 float radius=k==0?disc.x:disc.y;
                 if(radius>0) {
                     float2 wa=planets[k].xy,wb=planets[k].zw,wt=lerp(wa,wb,info.z);
                     float da=length(w-wa),db=length(w-wb),dt=length(w-wt);
                     if(dt<radius || da<radius || db<radius) {
-                        float3 background=dissolved;
+                        float3 A=worldColor(oldWorld,toUV(w,ca)),B=worldColor(newWorld,toUV(w,cb));
+                        float3 background=lerp(A,B,info.z);
                         if(da<radius && db>=radius) background=B;
                         else if(db<radius && da>=radius) background=A;
                         float3 moved=lerp(worldColor(oldWorld,toUV(w+wa-wt,ca)),worldColor(newWorld,toUV(w+wb-wt,cb)),info.z);
+                        moving=true;
                         return lerp(background,moved,smoothstep(radius,radius*.65,dt));
                     }
                 }
             }
-        }
-        return dissolved;
+        } else { moving=true; return lerp(a,b,info.z); }
     }
     float4 f=flowAt(forwardFlow,uv),r=flowAt(backwardFlow,uv);
     float4 checkR=flowAt(backwardFlow,uv+f.xy/grid.xy);
@@ -157,9 +170,9 @@ float3 colorAt(float2 uv,out bool moving) {
             float2 ua=toUV(w,cams[0]),ub=toUV(w,cams[1]);
             if(all(ua>=0) && all(ua<=1) && all(ub>=0) && all(ub<=1)) {
                 float3 A=worldColor(oldWorld,ua),B=worldColor(newWorld,ub);
-                float dc=difference(A,B),ds=difference(a,b);
-                if(ds<=dc && ds<=.16) { moving=true; return lerp(a,b,info.z); }
-                if(dc<=.16) { moving=true; return lerp(A,B,info.z); }
+                float dc=alignedDifference(ua,ub),ds=alignedDifference(uv,uv);
+                if(ds<=dc && ds<=.22) { moving=true; return lerp(a,b,info.z); }
+                if(dc<=.22) { moving=true; return lerp(A,B,info.z); }
             }
             return fallback;
         }
@@ -169,7 +182,7 @@ float3 colorAt(float2 uv,out bool moving) {
     float2 oldUV=uv-info.z*f.xy/grid.xy,newUV=uv-(1-info.z)*r.xy/grid.xy;
     if(any(oldUV<0) || any(oldUV>1) || any(newUV<0) || any(newUV>1)) return fallback;
     float3 ca=worldColor(oldWorld,oldUV),cb=worldColor(newWorld,newUV);
-    if(difference(ca,cb)>.16) return fallback; // Occlusion/effects: no double image.
+    if(alignedDifference(oldUV,newUV)>.22) return fallback; // Occlusion/effects: no double image.
     moving=length(f.xy)>.05 || length(r.xy)>.05;
     return lerp(ca,cb,info.z);
 }
