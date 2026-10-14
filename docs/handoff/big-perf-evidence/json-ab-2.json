@@ -1,0 +1,20 @@
+[
+  "걸린 시간 85초, 로그 C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261014-234229-big-perf-json-ab-2-True.log\n설정 덮어씀(끝나고 되돌림): JsonCompactAllocations=true, ImageMaxSide=3072\n\n=== 설치 상태 ===\n오류 없음\n\n=== 자동 시험 ===\n시작: 11단계 - timeout 900 / game D:\\얼불춤 맵 파일\\Arche\\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / auto on / press / wait 10 / toeditor / auto on / play / wait 10 / stop / quit\nUMM 창 닫음\n단계 최대 시간 900초\n[임무단계] timeout 0.189ms\n게임 화면으로 맵 열기: D:\\얼불춤 맵 파일\\Arche\\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai\n게임 화면 맵 열림 (16.6초, 2초 기다림 포함)\n[임무단계] game 26732.789ms\n자동 플레이 켬 (재생 때마다 다시 맞춤)\n[임무단계] auto 2.005ms\n키 누름\n[임무단계] press 4.516ms\n[임무단계] wait 9999.947ms\n게임 화면에서 에디터 열기\n에디터 열림 (10.3초)\n[임무단계] toeditor 10309.222ms\n자동 플레이 켬 (재생 때마다 다시 맞춤)\n[임무단계] auto 5.396ms\n재생 (자동 플레이 켬)\n[임무단계] play 2322.181ms\n[임무단계] wait 7684.413ms\n편집으로 돌아감 (2374ms)\n[임무단계] stop 2377.727ms\n끝 - 게임을 끕니다\n[임무단계] quit 217.526ms\n\n플레이 기록 없음",
+  {
+    "runs": [],
+    "hitches": [],
+    "songs": [
+      {
+        "fps": 376.0,
+        "worst": 18.0,
+        "count": 0
+      },
+      {
+        "fps": 355.0,
+        "worst": 16.0,
+        "count": 0
+      }
+    ],
+    "errors": 0
+  }
+]

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,6 +30,9 @@ namespace StutterFix
         private static int idx;
         private static float stepStart, waitSec;
         private static bool started, prevAuto, autoChanged, desiredAuto;
+#if AUTOTEST
+        private static long missionStepTicks;
+#endif
         private static readonly System.Reflection.FieldInfo loadingField = AccessTools.Field(typeof(scnEditor), "isLoading");
 
         internal static bool Active { get { return steps != null; } }
@@ -81,7 +84,24 @@ namespace StutterFix
             modDir = modPath;
             loadedHash = DllHash();
             ReadFile();
+#if AUTOTEST
+            var endMethod = AccessTools.Method(typeof(scrController), "OnLandOnPortal");
+            if (endMethod != null)
+                new Harmony(Main.Entry.Info.Id).Patch(endMethod,
+                    prefix: new HarmonyMethod(typeof(AutoTest), nameof(MissionEndPrefix)) { priority = Priority.First },
+                    finalizer: new HarmonyMethod(typeof(AutoTest), nameof(MissionEndFinalizer)) { priority = Priority.Last });
+#endif
         }
+
+#if AUTOTEST
+        // 완주 전환 때 한 번만 측정. Main.Unload의 기존 Harmony ID 해제에 포함된다.
+        public static void MissionEndPrefix(out long __state) { __state = Active ? System.Diagnostics.Stopwatch.GetTimestamp() : 0; }
+        public static Exception MissionEndFinalizer(long __state, Exception __exception)
+        {
+            if (__state != 0) Log(string.Format("[임무완주] OnLandOnPortal {0:F3}ms", (System.Diagnostics.Stopwatch.GetTimestamp() - __state) * 1000.0 / System.Diagnostics.Stopwatch.Frequency));
+            return __exception;
+        }
+#endif
 
         private static void ReadFile()
         {
@@ -139,7 +159,11 @@ namespace StutterFix
             }
             float now = Time.realtimeSinceStartup;
             MainFrame = Time.frameCount;
-            if (!started) { started = true; stepStart = now; }
+            if (!started) { started = true; stepStart = now;
+#if AUTOTEST
+                missionStepTicks = System.Diagnostics.Stopwatch.GetTimestamp();
+#endif
+            }
             if (!ummClosed || (idx < steps.Count && steps[idx].StartsWith("play", StringComparison.OrdinalIgnoreCase))) CloseUmm();
             if (idx >= steps.Count) { Finish("끝"); return; }
             if (now - stepStart > stepTimeout) { Finish("시간 초과 (" + steps[idx] + ")"); return; }
@@ -149,7 +173,14 @@ namespace StutterFix
             string arg = sp < 0 ? "" : line.Substring(sp + 1).Trim();
             try
             {
-                if (Step(cmd, arg, now)) { idx++; stepStart = now; waitSec = 0f; }
+                if (Step(cmd, arg, now)) {
+#if AUTOTEST
+                    long ticks = System.Diagnostics.Stopwatch.GetTimestamp();
+                    Log(string.Format("[임무단계] {0} {1:F3}ms", cmd, (ticks - missionStepTicks) * 1000.0 / System.Diagnostics.Stopwatch.Frequency));
+                    missionStepTicks = ticks;
+#endif
+                    idx++; stepStart = now; waitSec = 0f;
+                }
             }
             catch (Exception ex) { Log("단계 실패 '" + line + "': " + (ex.InnerException ?? ex).Message); Finish("오류로 그만둠"); }
         }

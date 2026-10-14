@@ -1,0 +1,15 @@
+[StutterFix] [전환] 설치
+[StutterFix] [자동 시험] 시작: 6단계 - timeout 900 / jsonalloccheck D:\얼불춤 맵 파일\HELLO (BPM) 2026\level.adofai / jsonalloccheck D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / jsonalloccheck D:\얼불춤 맵 파일\Windflower\Windflower.adofai / jsonalloccheck D:\얼불춤 맵 파일\Plum - Timeline\Timeline.adofai / quit
+[StutterFix] [자동 시험] UMM 창 닫음
+[StutterFix] [자동 시험] 단계 최대 시간 900초
+[StutterFix] [자동 시험] [임무단계] timeout 0.234ms
+[StutterFix] [JSON 할당 대조] 형식·값·키 순서·실수 비트 전부 같음: D:\얼불춤 맵 파일\HELLO (BPM) 2026\level.adofai
+[StutterFix] [자동 시험] [임무단계] jsonalloccheck 2645.651ms
+[StutterFix] [JSON 할당 대조] 형식·값·키 순서·실수 비트 전부 같음: D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai
+[StutterFix] [자동 시험] [임무단계] jsonalloccheck 4960.144ms
+[StutterFix] [JSON 할당 대조] 형식·값·키 순서·실수 비트 전부 같음: D:\얼불춤 맵 파일\Windflower\Windflower.adofai
+[StutterFix] [자동 시험] [임무단계] jsonalloccheck 1377.899ms
+[StutterFix] [JSON 할당 대조] 형식·값·키 순서·실수 비트 전부 같음: D:\얼불춤 맵 파일\Plum - Timeline\Timeline.adofai
+[StutterFix] [자동 시험] [임무단계] jsonalloccheck 155.264ms
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다
+[StutterFix] [자동 시험] [임무단계] quit 12.377ms

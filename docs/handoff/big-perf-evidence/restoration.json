@@ -1,0 +1,12 @@
+{
+  "game_running": false,
+  "settings_restored_byte_for_byte": true,
+  "settings_sha256": "a73f5c606fb838641ba3b6268bd7c88a3dc1bd9e01b2a399559cc836f6ddce4a",
+  "player_dll_sha256": "cb634d735758ebe0e38a1e45320f0dd7d2919c7f7408e6ba0520814c3ad46858",
+  "installed_dll_sha256": "cb634d735758ebe0e38a1e45320f0dd7d2919c7f7408e6ba0520814c3ad46858",
+  "new_diagnostic_markers_in_player": false,
+  "rejected_candidate_sources_restored_byte_for_byte": true,
+  "autotest_pending": false,
+  "sfmeasure_backup_pending": false,
+  "normal_shutdown_runs": 13
+}

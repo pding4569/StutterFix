@@ -1,0 +1,30 @@
+{
+  "summary": "걸린 시간 272초, 로그 C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261014-234745-big-perf-final-hello.log\n설정 덮어씀(끝나고 되돌림): ImageMaxSide=3072\n\n=== 설치 상태 ===\n오류 없음\n\n=== 자동 시험 ===\n시작: 16단계 - timeout 900 / game D:\\얼불춤 맵 파일\\HELLO (BPM) 2026\\level.adofai / auto on / press / waitend 900 / wait 3 / retry / wait 5 / press / wait 10 / toeditor / auto on / play / wait 10 / stop / quit\nUMM 창 닫음\n단계 최대 시간 900초\n[임무단계] timeout 0.181ms\n게임 화면으로 맵 열기: D:\\얼불춤 맵 파일\\HELLO (BPM) 2026\\level.adofai\n게임 화면 맵 열림 (13.1초, 2초 기다림 포함)\n[임무단계] game 23228.388ms\n자동 플레이 켬 (재생 때마다 다시 맞춤)\n[임무단계] auto 2.415ms\n키 누름\n[임무단계] press 4.935ms\n[임무완주] OnLandOnPortal 24.521ms\n곡 끝남 (187초)\n[임무단계] waitend 188733.995ms\n[임무단계] wait 3004.492ms\n다시 하기\n[임무단계] retry 267.084ms\n[임무단계] wait 4741.192ms\n키 누름\n[임무단계] press 2.675ms\n[임무단계] wait 10003.847ms\n게임 화면에서 에디터 열기\n에디터 열림 (7.7초)\n[임무단계] toeditor 7734.361ms\n자동 플레이 켬 (재생 때마다 다시 맞춤)\n[임무단계] auto 4.412ms\n재생 (자동 플레이 켬)\n[임무단계] play 1419.988ms\n[임무단계] wait 8587.231ms\n편집으로 돌아감 (1392ms)\n[임무단계] stop 1397.186ms\n끝 - 게임을 끕니다\n[임무단계] quit 187.600ms\n\n플레이 기록 없음",
+  "metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [
+      {
+        "fps": 191.0,
+        "worst": 55.0,
+        "count": 1
+      },
+      {
+        "fps": 264.0,
+        "worst": 60.0,
+        "count": 2
+      },
+      {
+        "fps": 244.0,
+        "worst": 14.0,
+        "count": 0
+      }
+    ],
+    "errors": 0
+  },
+  "log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261014-234745-big-perf-final-hello.log",
+  "map": "D:\\얼불춤 맵 파일\\HELLO (BPM) 2026\\level.adofai",
+  "settings": {
+    "ImageMaxSide": 3072
+  }
+}

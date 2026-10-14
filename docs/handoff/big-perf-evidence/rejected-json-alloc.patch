@@ -1,0 +1,104 @@
+﻿diff --git a/FastJson.cs b/FastJson.cs
+index 0a563be..06f278a 100644
+--- a/FastJson.cs
++++ b/FastJson.cs
+@@ -107,6 +107,26 @@ namespace StutterFix
+             return a.Equals(b) ? null : path + " 값";
+         }
+ 
++#if DEV || AUTOTEST
++        // Mono에서도 원래 경로와 후보의 형식·키 순서·실수 비트가 같은지 검사한다. 게임 상태는 건드리지 않는다.
++        internal static void VerifyCompact(string path)
++        {
++            bool before = FastJsonParser.CompactAllocations;
++            try
++            {
++                string text = System.IO.File.ReadAllText(path);
++                FastJsonParser.CompactAllocations = false;
++                object original = Parse(text);
++                FastJsonParser.CompactAllocations = true;
++                object compact = Parse(text);
++                string diff = Diff(original, compact, "$");
++                if (diff != null) throw new InvalidOperationException("JSON 할당 대조 다름: " + diff);
++                Main.Entry.Logger.Log("[JSON 할당 대조] 형식·값·키 순서·실수 비트 전부 같음: " + path);
++            }
++            finally { FastJsonParser.CompactAllocations = before; }
++        }
++#endif
++
+         internal static object Parse(string json) { return FastJsonParser.Parse(json); }
+     }
+ }
+diff --git a/FastJsonParser.cs b/FastJsonParser.cs
+index 2630807..f49db2a 100644
+--- a/FastJsonParser.cs
++++ b/FastJsonParser.cs
+@@ -7,6 +7,7 @@ namespace StutterFix
+     // 게임의 JSON 해석기(Json.Deserialize)와 같은 결과를 내는 빠른 해석기. 설명과 규칙은 FastJson.cs. 유니티·Harmony 를 쓰지 않는다(검증 도구가 같은 파일을 쓴다).
+     internal static class FastJsonParser
+     {
++        internal static bool CompactAllocations; // 후보 A/B: Parse마다 설정을 고정하고 파싱 밖 상태는 보관하지 않는다
+         internal static Action Progress;   // 긴 해석 중 가끔 부른다(모드: 윈도우 멈춘 창 판정 막기, WindowGhost). 검증 도구에서는 null
+         // 원래 해석기는 배열 값 자리에 ':' 가 오면 그 글자를 읽지 않고 null 을 계속 넣어 끝나지 않는다(원래 게임도 같음, 여기도 같게 둠).
+         // 검증 도구는 한도를 두어 그런 입력을 알아본다. 게임에서는 int.MaxValue(원래와 같이 메모리가 찰 때까지).
+@@ -18,6 +19,7 @@ namespace StutterFix
+ 
+         private sealed class P
+         {
++            private readonly bool compact = CompactAllocations;
+             private readonly string s; private readonly int len; private int pos;
+             internal P(string json) { s = json; len = json.Length; if (len > 0 && s[0] == (char)0xFEFF) pos = 1; }
+ 
+@@ -82,7 +84,7 @@ namespace StutterFix
+ 
+             private Dictionary<string, object> ParseObject()
+             {
+-                var table = new Dictionary<string, object>();
++                var table = compact ? new Dictionary<string, object>(16) : new Dictionary<string, object>();
+                 Read();   // '{'
+                 while (true)
+                 {
+@@ -154,6 +156,17 @@ namespace StutterFix
+ 
+             private object ParseNumber()
+             {
++                if (compact)
++                {
++                    int start = pos;
++                    while (!IsBreak(PeekChar)) { pos++; if (AtEnd) break; }
++                    var numberSpan = s.AsSpan(start, pos - start);
++                    if (numberSpan.IndexOf('.') == -1)
++                    {
++                        int value; int.TryParse(numberSpan, out value); return value;
++                    }
++                    float real; float.TryParse(numberSpan, out real); return real;
++                }
+                 string number = NextWord();
+                 if (number.IndexOf('.') == -1)
+                 {
+diff --git a/StutterFix.cs b/StutterFix.cs
+index 6a11907..ce289ee 100644
+--- a/StutterFix.cs
++++ b/StutterFix.cs
+@@ -1,4 +1,4 @@
+-﻿using System;
++using System;
+ using System.Collections.Generic;
+ using System.Reflection;
+ using System.Reflection.Emit;
+@@ -686,6 +686,7 @@ namespace StutterFix
+             LowEnd.Apply();
+             MoveApply.Enabled = E("MoveFinish", Config.MoveFinish);
+             ParticleFix.SkipIdle = E("SkipIdleParticles", Config.SkipIdleParticles); ParticleFix.PauseOffscreen = E("LowPauseParticles", Config.LowPauseParticles); LeakGuard.Enabled = E("LeakFix", Config.LeakFix); MatReuse.Enabled = LeakGuard.Enabled;
++            FastJsonParser.CompactAllocations = Config.JsonCompactAllocations;
+             bool lc = E("LoadCache", Config.LoadCache); LoadFix.CacheFileTimes = lc; LoadFix.SkipDoubleReset = lc; LoadFix.ReverseToggle = lc; LoadFix.RetryColliders = lc; LoadFix.FastTextureDict = lc; FastJson.Enabled = lc; DecodeFix.Enabled = lc; TransitionFix.KeepImages = TransitionFix.SkipRestartReset = lc; BigLevel.Enabled = lc; ExitFix.Enabled = lc; FfxReuse.Enabled = lc; AllocFix.Enabled = E("GcPause", Config.GcPause);
+             TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages) && !Resilience.SafeMode;   // 안전 모드: 미리 풀기는 줄이기에만 쓰고 저사양 압축은 끈다
+             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
+@@ -877,6 +878,7 @@ namespace StutterFix
+         public bool SkipAssetUnload = true;
+         public bool SkipIdleParticles = true;  // 파티클 장식이 매 프레임 같은 크기·속도를 다시 넣는 것 건너뛰기
+         public bool LeakFix = true;            // 게임 메모리 누수 막기 (사용자 지정 FPS 화면 버퍼)
++        public bool JsonCompactAllocations = false; // 측정 중인 맵 JSON 할당 줄이기
+         public bool LoadCache = true;          // 맵 열기·재생 시작 때 이미지 파일 수정 시각을 한 프레임에 한 번만 읽기
+         public bool LegacyGfxJobs = true;   // boot.config 로 그래픽 작업 분산(legacy)을 켠다
+         public bool NoGhosting = true;      // 이 게임에서만 "응답 없음" 고스트 창을 끈다 (첫 판 FPS 떨어짐 막기, WindowGhost.cs). 끄면 다음 실행부터

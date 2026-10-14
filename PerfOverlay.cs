@@ -125,6 +125,13 @@ namespace StutterFix
         private double songGpu, songCpu, songMod;
         private float songWorstPlay, wpFx, wpMove, songStartT, fxWorst, fxWorstFx, fxWorstMove; private int wpN;
         private int songTiming;
+#if AUTOTEST
+        // 이미 잰 ms를 그대로 센다. 곡 중 로그/Stopwatch/할당 없이 고정 배열에만 보관한다.
+        private struct MissionFrame { internal float Ms, T, Cpu, Gpu, Fx; }
+        private readonly MissionFrame[] missionFrames = new MissionFrame[512];
+        private int missionOver30;
+#endif
+
         // 곡 평균만으로는 "가벼운 구간에서 몇 FPS 까지 나오나" 를 알 수 없다(같은 설정으로도 곡 평균이 121~149 로 흔들렸다).
         // 곡을 10초씩 잘라 구간마다 평균을 남긴다.
         internal const int BucketSec = 10, MaxBuckets = 180;
@@ -329,6 +336,16 @@ namespace StutterFix
             // 이번 곡 통계: 곡이 시작되면 새로 센다 (곡이 끝난 뒤에도 다음 곡까지 남겨 둔다)
             bool playing = Hitch.Playing;
             if (playing && !wasPlaying) { Main.Entry.Logger.Log("[곡 시작] " + ScreenState()); songStartT = Time.unscaledTime; songMs = 0; songFrames = 0; songHitches = 0; songWorst = 0; songGpu = 0; songCpu = 0; songTiming = 0; songMod = 0; songWorstPlay = 0; wpFx = wpMove = 0; wpN = 0; System.Array.Clear(top, 0, TopN); fxWorst = fxWorstFx = fxWorstMove = 0; System.Array.Clear(bucketMs, 0, MaxBuckets); System.Array.Clear(bucketCpu, 0, MaxBuckets); System.Array.Clear(bucketFrames, 0, MaxBuckets); System.Array.Clear(bucketRender, 0, MaxBuckets); System.Array.Clear(bucketWait, 0, MaxBuckets); System.Array.Clear(bucketGpu, 0, MaxBuckets); System.Array.Clear(bucketAwake, 0, MaxBuckets); System.Array.Clear(bucketAnim, 0, MaxBuckets); System.Array.Clear(bucketOff, 0, MaxBuckets); }
+
+#if AUTOTEST
+            if (playing && !wasPlaying) missionOver30 = 0;
+            if (playing && !InStartWindow && ms > 30f)
+            {
+                if (missionOver30 < missionFrames.Length)
+                    missionFrames[missionOver30] = new MissionFrame { Ms = ms, T = Time.unscaledTime - songStartT, Cpu = lastCpu, Gpu = lastGpu, Fx = (float)System.Math.Max(EffectScan.LastFrameEffectMs, EffectScan.FrameEffectMs) };
+                missionOver30++;
+            }
+#endif
             wasPlaying = playing;
             if (!playing) SongBucket = -1;
             PresentWatch.Frame(playing, ms, lastWait);
@@ -563,6 +580,15 @@ namespace StutterFix
             if (o == null || o.songFrames < 30) return null;
             string s = string.Format("평균 {0:F0} FPS ({1:F1}ms), 가장 긴 프레임 {2:F0}ms, 곡 시작 연출 뒤 가장 긴 프레임 {5:F0}ms, 끊김 {3}번, 프레임 {4}개",
                 1000.0 * o.songFrames / System.Math.Max(1.0, o.songMs), o.songMs / o.songFrames, o.songWorst, o.songHitches, o.songFrames, o.songWorstPlay);
+
+#if AUTOTEST
+            s += "\n[임무30] 시작 연출 뒤 30ms 초과 프레임 " + o.missionOver30 + "개 (위치 저장 " + System.Math.Min(o.missionOver30, o.missionFrames.Length) + "개)";
+            for (int i = 0; i < o.missionOver30 && i < o.missionFrames.Length; i++)
+            {
+                var f = o.missionFrames[i];
+                s += string.Format("\n[임무30] {0:F3}초 {1:F3}ms cpu {2:F3} gpu {3:F3} 효과 {4:F3}", f.T, f.Ms, f.Cpu, f.Gpu, f.Fx);
+            }
+#endif
             if (o.songTiming > 0)
                 s += string.Format(" | GPU 평균 {0:F1}ms, CPU 평균 {1:F1}ms ({2}개 잼)", o.songGpu / o.songTiming, o.songCpu / o.songTiming, o.songTiming);
             if (o.songWorstPlay > 0) s += string.Format(" | 그 프레임: 게임 효과 {0}개 {1:F1}ms (그중 장식 이동 {2:F1}ms), 나머지 {3:F1}ms", o.wpN, o.wpFx, o.wpMove, o.songWorstPlay - o.wpFx);

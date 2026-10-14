@@ -1,0 +1,135 @@
+{
+  "hello": {
+    "map": "D:\\얼불춤 맵 파일\\HELLO (BPM) 2026\\level.adofai",
+    "open_with_wait_s": 13.1,
+    "first_ready_s": 11.1,
+    "editor_prepare_ms": 1419.988,
+    "over_30": 2,
+    "frames": [
+      [
+        "106.770",
+        "55.167",
+        "10.308",
+        "7.427",
+        "0.013"
+      ],
+      [
+        "106.782",
+        "40.801",
+        "4.706",
+        "33.397",
+        "0.013"
+      ]
+    ],
+    "completion_ms": 24.521,
+    "restart_ms": 268,
+    "to_editor_with_wait_s": 7.7,
+    "editor_exit_ms": 1392,
+    "fps": 191.0,
+    "original_log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261014-234745-big-perf-final-hello.log",
+    "all_phase_over30": [
+      2,
+      2,
+      0
+    ],
+    "errors": 0
+  },
+  "arche": {
+    "map": "D:\\얼불춤 맵 파일\\Arche\\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai",
+    "open_with_wait_s": 16.9,
+    "first_ready_s": 14.899999999999999,
+    "editor_prepare_ms": 2284.161,
+    "over_30": 1,
+    "frames": [
+      [
+        "271.334",
+        "51.681",
+        "12.800",
+        "8.310",
+        "0.069"
+      ]
+    ],
+    "completion_ms": 20.925,
+    "restart_ms": 748,
+    "to_editor_with_wait_s": 10.2,
+    "editor_exit_ms": 2407,
+    "fps": 308.0,
+    "original_log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261014-235217-big-perf-final-arche.log",
+    "all_phase_over30": [
+      1,
+      0,
+      0
+    ],
+    "errors": 0
+  },
+  "windflower": {
+    "map": "D:\\얼불춤 맵 파일\\Windflower\\Windflower.adofai",
+    "open_with_wait_s": 11.2,
+    "first_ready_s": 9.2,
+    "editor_prepare_ms": 452.303,
+    "over_30": 3,
+    "frames": [
+      [
+        "263.426",
+        "33.633",
+        "5.152",
+        "11.564",
+        "0.045"
+      ],
+      [
+        "264.498",
+        "46.392",
+        "5.090",
+        "22.300",
+        "0.029"
+      ],
+      [
+        "264.553",
+        "45.539",
+        "4.808",
+        "18.626",
+        "3.214"
+      ]
+    ],
+    "completion_ms": 17.536,
+    "restart_ms": 195,
+    "to_editor_with_wait_s": 6.7,
+    "editor_exit_ms": 606,
+    "fps": 212.0,
+    "original_log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261014-235906-big-perf-final-windflower.log",
+    "all_phase_over30": [
+      3,
+      0,
+      0
+    ],
+    "errors": 0
+  },
+  "timeline": {
+    "map": "D:\\얼불춤 맵 파일\\Plum - Timeline\\Timeline.adofai",
+    "open_with_wait_s": 4.8,
+    "first_ready_s": 2.8,
+    "editor_prepare_ms": 115.104,
+    "over_30": 1,
+    "frames": [
+      [
+        "3.736",
+        "36.874",
+        "3.506",
+        "1.766",
+        "0.000"
+      ]
+    ],
+    "completion_ms": 14.93,
+    "restart_ms": 117,
+    "to_editor_with_wait_s": 5.3,
+    "editor_exit_ms": 116,
+    "fps": 325.0,
+    "original_log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261015-000631-big-perf-final-timeline.log",
+    "all_phase_over30": [
+      1,
+      0,
+      0
+    ],
+    "errors": 0
+  }
+}
