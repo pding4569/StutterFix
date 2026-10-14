@@ -164,7 +164,7 @@ API int sf_framegen_status() { return status; }
 API int sf_framegen_error() { return failure; }
 API int sf_framegen_stopped() { return stopped; }
 API int sf_framegen_installed() { return installed; }
-API int sf_framegen_block_version() { return 6; }
+API int sf_framegen_block_version() { return 7; }
 // Starts the frame-generation shader compiles in the background (menu/editor, before a level plays). 1 once started, 0 if
 // the engine is not attached to the game swap chain yet (call again later), 2 when done, -1 failed.
 API int sf_framegen_precompile(int dense) {

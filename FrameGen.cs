@@ -205,7 +205,7 @@ namespace StutterFix
             if(SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Direct3D11) throw new InvalidOperationException("D3D11에서 사용할 수 있습니다.");
             if(Marshal.SizeOf<Packet>()!=168) throw new InvalidOperationException("Outside packet ABI");
             if(BlockFlow) {
-                try { if(sf_framegen_block_version()!=6) throw new EntryPointNotFoundException(); }
+                try { if(sf_framegen_block_version()!=7) throw new EntryPointNotFoundException(); }
                 catch(EntryPointNotFoundException) { throw new InvalidOperationException("블록 보간 DLL을 사용하려면 게임을 다시 켜 주세요."); }
             }
             string directory=Diagnostics?Path.Combine(Main.Entry.Path,"framegen-outside"):string.Empty; if(Diagnostics) Directory.CreateDirectory(directory);
@@ -447,9 +447,8 @@ namespace StutterFix
         private static class BallLayer {
             internal static bool Enabled;
             private static long captures,filterSkips;
-            internal static string State => " ball_layer="+Enabled+" captures="+captures+" filter_skips="+filterSkips;
+            internal static string State => " ball_layer="+Enabled+" body_only=True captures="+captures+" filter_skips="+filterSkips;
             private static Camera camera;
-            private static RenderTexture background;
             private static readonly RenderTexture[] black=new RenderTexture[3],white=new RenderTexture[3];
             private static readonly IntPtr[] blackPtr=new IntPtr[3],whitePtr=new IntPtr[3];
             private static Renderer[] renderers;
@@ -462,6 +461,22 @@ namespace StutterFix
             private static readonly AccessTools.FieldRef<scrCamera,Camera> Bg=AccessTools.FieldRefAccess<scrCamera,Camera>("BGcam");
             private static readonly AccessTools.FieldRef<scrCamera,Camera> StaticBg=AccessTools.FieldRefAccess<scrCamera,Camera>("Bgcamstatic");
             private static readonly AccessTools.FieldRef<scrCamera,MeshRenderer> Quad=AccessTools.FieldRefAccess<scrCamera,MeshRenderer>("camQuadMesh");
+            // Explicit body fields: appearanceRenderers also contains glow/particles.
+            // Resolve only on owner changes; no reflection or hierarchy scan per frame.
+            private static void AddBodies(scrPlanet planet,List<Renderer> bodies) {
+                foreach(var appearance in planet.GetComponentsInChildren<PlanetRenderer>(true)) {
+                    var body=appearance.sprite!=null?appearance.sprite.meshRenderer:null;
+                    if(body!=null && !bodies.Contains(body)) bodies.Add(body);
+                    AddBody(appearance.samuraiSprite,bodies);
+                    AddBody(appearance.faceSprite,bodies);
+                    AddBody(appearance.faceDetails,bodies);
+                }
+            }
+            private static void AddBody(Component component,List<Renderer> bodies) {
+                if(component==null) return;
+                var renderer=component as Renderer ?? component.GetComponent<Renderer>();
+                if(renderer!=null && !bodies.Contains(renderer)) bodies.Add(renderer);
+            }
             internal static void LoadSetting() {
                 Enabled=false;captures=filterSkips=0;
                 var path=Path.Combine(Main.Entry.Path,"FrameGen-ball-layer.xml");
@@ -480,8 +495,7 @@ namespace StutterFix
                 if(owner!=scrController.instance || renderers==null) {
                     owner=scrController.instance;
                     var all=new List<Renderer>();
-                    owner.planetRed.GetComponentsInChildren<Renderer>(true,all);
-                    var blue=new List<Renderer>();owner.planetBlue.GetComponentsInChildren<Renderer>(true,blue);all.AddRange(blue);
+                    AddBodies(owner.planetRed,all);AddBodies(owner.planetBlue,all);
                     renderers=all.ToArray();states=new bool[renderers.Length];layers=new int[renderers.Length];
                     // A layer containing another scene renderer would contaminate both mattes.
                     uint used=0;foreach(var r in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include,FindObjectsSortMode.None)) used|=1u<<r.gameObject.layer;
@@ -490,12 +504,9 @@ namespace StutterFix
 
                 }
             }
-            private static void EnsureBuffers(scrCamera sc,RenderTexture output) {
-                var source=RT(sc);
-                if(background!=null && background.width==source.width && background.height==source.height && black[0].width==output.width && black[0].height==output.height) return;
+            private static void EnsureBuffers(RenderTexture output) {
+                if(black[0]!=null && black[0].width==output.width && black[0].height==output.height) return;
                 FreeBuffers();
-                background=new RenderTexture(source.descriptor) {hideFlags=HideFlags.HideAndDontSave};
-                if(!background.Create()) throw new InvalidOperationException("ball background RT creation failed");
                 for(int i=0;i<3;i++) {black[i]=Make(output.width,output.height,24);white[i]=Make(output.width,output.height,24);blackPtr[i]=black[i].GetNativeTexturePtr();whitePtr[i]=white[i].GetNativeTexturePtr();}
                 camera=new GameObject("FrameGen.BallMatte") {hideFlags=HideFlags.HideAndDontSave}.AddComponent<Camera>();camera.enabled=false;
             }
@@ -515,35 +526,28 @@ namespace StutterFix
                 }
                 return false;
             }
-            private static void RenderBackground(Camera c,RenderTexture rt) {
-                if(c==null) return;
-                var target=c.targetTexture;
-                try {c.targetTexture=rt;c.Render();} finally {c.targetTexture=target;}
-            }
             internal static bool Render(scrCamera sc,Camera snapshot,RenderTexture output,int index,ref Packet packet) {
                 if(!Enabled || !BlockFlow || sc==null || RT(sc)==null || scrController.instance==null || scrController.instance.planetRed==null || scrController.instance.planetBlue==null) return false;
                 Prepare(sc,output);
                 // Nonlinear postprocessing cannot be factored into a raw matte. Keep
                 // the original path instead of changing filter history or ball brightness.
                 if(HasImageEffects(Cam(sc)) || HasImageEffects(Bg(sc)) || HasImageEffects(StaticBg(sc)) || HasImageEffects(Overlay(sc))) {filterSkips++;return false;}
-                EnsureBuffers(sc,output);
+                EnsureBuffers(output);
                 var quad=Quad(sc);if(quad==null) return false;
                 var material=quad.sharedMaterial;if(material==null) return false;
                 var original=material.mainTexture;
                 if(original!=RT(sc)) {filterSkips++;return false;} // FSR/screen effects/custom-FPS output is already transformed.
+                // Keep the real scene (including glow/tails) for the existing additive
+                // reconstruction. Do not rerender the scene or subtract particle mattes.
                 var oldActive=RenderTexture.active;
                 int changed=0;
                 var savedCamera=sceneCamera;var savedBase=sceneBase;var savedPulse=scenePulse;int savedFrame=renderedFrame;
                 try {
+                    snapshot.Render();
                     for(int i=0;i<renderers.Length;i++) {
                         var r=renderers[i];if(r==null) {states[i]=false;layers[i]=-1;changed++;continue;}
                         states[i]=r.enabled;layers[i]=r.gameObject.layer;changed++;
-                        r.enabled=false;
                     }
-                    // Clear before the depth-only scene camera; never modify the real camRT.
-                    RenderTexture.active=background;GL.Clear(true,true,Cam(sc).backgroundColor);
-                    RenderBackground(StaticBg(sc),background);RenderBackground(Bg(sc),background);RenderBackground(Cam(sc),background);
-                    material.mainTexture=background;snapshot.Render();material.mainTexture=original;
                     for(int i=0;i<renderers.Length;i++) {var r=renderers[i];if(r!=null && layers[i]>=0) {r.enabled=states[i] && (Cam(sc).cullingMask&(1<<layers[i]))!=0;r.gameObject.layer=layer;}}
                     int slot=index%3;
                     camera.CopyFrom(Cam(sc));camera.enabled=false;camera.transform.SetPositionAndRotation(Cam(sc).transform.position,Cam(sc).transform.rotation);
@@ -560,7 +564,7 @@ namespace StutterFix
             }
             private static void Drop(ref RenderTexture rt) {if(rt!=null) {rt.Release();UnityEngine.Object.Destroy(rt);rt=null;}}
             private static void FreeBuffers() {
-                Drop(ref background);for(int i=0;i<3;i++) {Drop(ref black[i]);Drop(ref white[i]);blackPtr[i]=whitePtr[i]=IntPtr.Zero;}
+                for(int i=0;i<3;i++) {Drop(ref black[i]);Drop(ref white[i]);blackPtr[i]=whitePtr[i]=IntPtr.Zero;}
                 if(camera!=null) UnityEngine.Object.Destroy(camera.gameObject);camera=null;
             }
             internal static void Free() {FreeBuffers();renderers=null;states=null;layers=null;owner=null;components.Clear();effectTypes.Clear();layer=-1;}

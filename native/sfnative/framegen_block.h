@@ -194,30 +194,8 @@ void shutterSample(float2 ua,float2 ub,out float3 A,out float3 B) {
     if(hintInfo.y<=0) { A=worldColor(oldWorld,ua); B=worldColor(newWorld,ub); return; }
     float2 d=blurSegment(ub-ua); A=smear(oldWorld,ua,d); B=smear(newWorld,ub,d);
 }
-float3 colorAt(float2 uv,out bool moving) {
+float3 baseColorAt(float2 uv,out bool moving) {
     moving=false; float3 fallback=closest(uv);
-    if(hintInfo.z>0) {
-        if(info.z<=0 || info.z>=1 || disc.w<=.5) return fallback;
-        float2 w=toWorld(uv,cams[2]);
-        float2 ua=toUV(w,cams[0]),ub=toUV(w,cams[1]);
-        // The mattes contain both planets with their original overlap order. Choose
-        // the nearest planet displacement, rather than add two copies of that layer.
-        float2 center=distance(w,tnow.xy)<distance(w,tnow.zw)?tnow.xy:tnow.zw;
-        int k=distance(w,tnow.xy)<distance(w,tnow.zw)?0:1;
-        float2 ma=toUV(w-center+planets[k].xy,cams[0]);
-        float2 mb=toUV(w-center+planets[k].zw,cams[1]);
-        bool inA=all(ma>=0) && all(ma<=1),inB=all(mb>=0) && all(mb<=1);
-        float3 ba=inA?worldColor(oldBlack,ma):0,wa=inA?worldColor(oldWhite,ma):1;
-        float3 bb=inB?worldColor(newBlack,mb):0,wb=inB?worldColor(newWhite,mb):1;
-        float3 S=lerp(ba,bb,info.z), transmission=lerp(saturate(wa-ba),saturate(wb-bb),info.z);
-        float3 bg=lerp(worldColor(oldWorld,ua),worldColor(newWorld,ub),info.z);
-        bool backgroundMoving=false;bg=flowColor(uv,bg,worldColor(oldWorld,uv),worldColor(newWorld,uv),backgroundMoving);
-        // Compare screen to reconstructed TRUE pictures, not to ball-free background.
-        float3 ra=worldColor(oldWorld,uv)*saturate(worldColor(oldWhite,uv)-worldColor(oldBlack,uv))+worldColor(oldBlack,uv);
-        float3 rb=worldColor(newWorld,uv)*saturate(worldColor(newWhite,uv)-worldColor(newBlack,uv))+worldColor(newBlack,uv);
-        if(difference(ra,oldScreen.SampleLevel(linearClamp,uv,0).rgb)>2.5/255. || difference(rb,newScreen.SampleLevel(linearClamp,uv,0).rgb)>2.5/255.) return fallback;
-        moving=true;return bg*transmission+S;
-    }
     if(info.z<=0 || info.z>=1) return fallback;
     int blend=blendMode();
     bool envelope=false;
@@ -314,6 +292,35 @@ float3 colorAt(float2 uv,out bool moving) {
     if(d<.12) return fixedColor;
     bool flowMoving; float3 viaFlow=flowColor(uv,fallback,a,b,flowMoving);
     return lerp(fixedColor,viaFlow,smoothstep(.12,.3,d));
+}
+// Body-only matte correction. The base path retains the original scene and
+// handles glow/tails. Never reject individual body pixels against the true screen:
+// HDR clipping and stochastic effects made that old test punch holes/stipple.
+float3 colorAt(float2 uv,out bool moving) {
+    float3 base=baseColorAt(uv,moving);
+    if(hintInfo.z<=0 || info.z<=0 || info.z>=1 || disc.w<=.5) return base;
+    float2 w=toWorld(uv,cams[2]);
+    int k=distance(w,tnow.xy)<distance(w,tnow.zw)?0:1;
+    float2 center=k==0?tnow.xy:tnow.zw;
+    int other=1-k;
+    float otherRadius=other==0?disc.x:disc.y;
+    // A combined matte cannot identify which opaque body owns an overlap.
+    // Leave such pixels to the base path rather than move the other body too.
+    if(otherRadius>0 && (distance(w-center+planets[k].xy,planets[other].xy)<otherRadius*1.1 ||
+                         distance(w-center+planets[k].zw,planets[other].zw)<otherRadius*1.1)) return base;
+    float2 ma=toUV(w-center+planets[k].xy,cams[0]);
+    float2 mb=toUV(w-center+planets[k].zw,cams[1]);
+    // Never clamp an out-of-frame body sample to a texture edge.
+    if(any(ma<0) || any(ma>1) || any(mb<0) || any(mb>1)) return base;
+    float3 ba=worldColor(oldBlack,ma),wa=worldColor(oldWhite,ma);
+    float3 bb=worldColor(newBlack,mb),wb=worldColor(newWhite,mb);
+    float3 ta=saturate(wa-ba),tb=saturate(wb-bb);
+    // Require opaque support in BOTH endpoints and ALL channels. In particular,
+    // an overlap in just one endpoint must not fade into a hollow half-body.
+    float leakage=max(max(max(ta.r,ta.g),ta.b),max(max(tb.r,tb.g),tb.b));
+    float coverage=1-smoothstep(.002,.02,leakage);
+    moving=moving || coverage>0;
+    return lerp(base,lerp(ba,bb,info.z),coverage);
 }
 struct V { float4 position:SV_POSITION; float2 uv:TEXCOORD0; };
 V VS(uint id:SV_VertexID) { V v;v.uv=float2((id<<1)&2,id&2);v.position=float4(v.uv*float2(2,-2)+float2(-1,1),0,1);return v; }
