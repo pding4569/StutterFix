@@ -853,7 +853,12 @@ inline void Output::render(const Slot& newest,bool real,double tick) {
     // 10 ms). Use the pair that brackets it, one slot back, instead of holding the older frame of the newest pair.
     double delay=labelledTick?timelineDelay():0;
     const Slot* chosen=&newest;
-    if(labelledTick && newest.sequence>2) { // refresh-matched labels too: 60 FPS cap, 17% of outputs held without it
+    // Bracketing costs GPU time when the GPU is the limit: HELLO 2026, fixed 4x, uncapped: real FPS 210 -> 142 and the real
+    // frame's GPU completion 2.1 -> 6.7 ms (flow runs once per true frame either way, ring size and flow cache did not
+    // change it; cause not found). Where real frames are slow anyway (60 FPS cap: 17-36% of outputs held without it, GPU
+    // idle) the bracket is free, so it is used only from a true interval of about 10 ms (below ~100 FPS).
+    bool bracket=smoothInterval>=.0095;
+    if(bracket && labelledTick && newest.sequence>2) { // refresh-matched labels too: 60 FPS cap, 17% of outputs held without it
         const auto& back=slots[(newest.sequence-1)%slots.size()];
         const auto& back2=slots[(newest.sequence-2)%slots.size()];
         if(tick-delay<back.qpc) {
