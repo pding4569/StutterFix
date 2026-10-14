@@ -581,7 +581,12 @@ public:
     // the true frames jitter (the old phase = age/last interval jumped and stalled with every late or early frame).
     double smoothInterval=0; bool labelledTick=false;
     static constexpr double renderAhead=.0028; // worker renders this long before the Present deadline
-    double timelineTarget() const { return (smoothInterval>0?smoothInterval:.0167)+lead()+(clock.valid&&queueMode.load()?queueAhead*clock.period:renderAhead)+.001; }
+    unsigned long long heldOutputs=0; // picture time before the older true frame of the pair: shown as that frame, not moving
+    // Tearing output (fixed 2-8x) keeps the same delay; render() picks the true-frame pair that brackets the picture
+    // time (one slot back when it is before the newest pair). With the newest pair only, ~4 ms after every new true
+    // frame showed the older frame unchanged (60 FPS cap, 4x: 35.7% of outputs held -> 0% with the bracket; uncapped,
+    // where true Presents come in pairs: 14.6% held or past the newest). Shorter or peak-based delays were worse.
+    double timelineTarget() const { if(tearTimeline()) return (smoothInterval>0?smoothInterval:.0167)+lead()+renderAhead+.001; /* the longest recent gap: never ahead of the newest true frame */ return (smoothInterval>0?smoothInterval:.0167)+lead()+(clock.valid&&queueMode.load()?queueAhead*clock.period:renderAhead)+.001; }
     double delayNow=0;
     // Moves at most 0.25 ms per output toward the target, so a mode switch changes the picture speed by ~4% for a
     // fraction of a second instead of jumping 9 ms.
@@ -839,7 +844,17 @@ inline void Output::initialize() {
     D3D11_DEPTH_STENCIL_DESC dd{}; check(device->CreateDepthStencilState(&dd,&depth));
     trace("worker ready");
 }
-inline void Output::render(const Slot& s,bool real,double tick) {
+inline void Output::render(const Slot& newest,bool real,double tick) {
+    // Tearing timeline: the picture time can lie before the newest true frame (true Presents arrive in pairs, 2 ms then
+    // 10 ms). Use the pair that brackets it, one slot back, instead of holding the older frame of the newest pair.
+    double delay=labelledTick?timelineDelay():0;
+    const Slot* chosen=&newest;
+    if(labelledTick && tearTimeline() && newest.sequence>2) {
+        const auto& back=slots[(newest.sequence-1)%slots.size()];
+        const auto& back2=slots[(newest.sequence-2)%slots.size()];
+        if(tick-delay<back.qpc && back.sequence==newest.sequence-1 && back2.sequence==back.sequence-1 && back.pairValid && back2.packet.pose.camera[2]>.00001f) chosen=&back;
+    }
+    const Slot& s=*chosen;
     double age=std::max(0.,tick-s.qpc),song=s.packet.song+age;
     const Slot* image=&s;
     if(cameraBlendEnabled(s.packet) && s.pairValid && s.sequence>1) {
@@ -850,7 +865,7 @@ inline void Output::render(const Slot& s,bool real,double tick) {
         double phase=real&&!realLabelled?0:std::clamp(age/s.period,0.,1.);
         if(labelledTick && image!=&s) {
             double span=s.qpc-image->qpc;
-            if(span>1e-4) { double raw=(tick-timelineDelay()-image->qpc)/span; phase=std::clamp(raw,0.,1.); lastPhase=raw; if(raw>1.02) ++stalledOutputs; }
+            if(span>1e-4) { double raw=(tick-delay-image->qpc)/span; phase=std::clamp(raw,0.,1.); lastPhase=raw; if(raw>1.02) ++stalledOutputs; if(raw<-.02) ++heldOutputs; }
         } else if(!real||realLabelled) { lastPhase=age/s.period; if(lastPhase>1.02) ++stalledOutputs; }
         auto& q=queries[nextQuery++%queries.size()];bool timing=!real && s.packet.measure && q.row==SIZE_MAX && records.size()<1000000;
         {ContextLock lock(protection.Get());
