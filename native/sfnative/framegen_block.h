@@ -249,14 +249,19 @@ float3 colorAt(float2 uv,out bool moving) {
                     float2 sa2=w-wt+wa,sb2=w-wt+wb;
                     float3 cA=worldColor(oldWorld,toUV(sa2,camOld)),cB=worldColor(newWorld,toUV(sb2,camNew));
                     float3 bA=worldColor(newWorld,toUV(sa2,camNew)),bB=worldColor(oldWorld,toUV(sb2,camOld));
-                    float sep=smoothstep(radius*1.8,radius*3.,length(wb-wa));
                     float k0=smoothstep(radius*.9,radius*1.1,dist); // outline: inside opaque, outside see-through
+                    // Is the background sample clean? bA (B's picture at A's offset point) must lie outside B's own ball
+                    // and glow, bB likewise. The glow reaches ~2.85 radii, so a per-planet "sprites no longer overlap"
+                    // test let one picture's glow pass as background in the other and doubled the halo.
+                    float cleanA=smoothstep(reach*.85,reach*1.05,length(sa2-wb)),cleanB=smoothstep(reach*.85,reach*1.05,length(sb2-wa));
                     float3 dbg=bA-bB,dc=cA-cB; float d2=dot(dbg,dbg);
                     float kEst=saturate(dot(dc,dbg)/max(d2,1e-4));
-                    float kk=lerp(k0,kEst,saturate(d2/.02));
-                    float3 full=lerp(cA+kk*(result-bA),cB+kk*(result-bB),info.z);
-                    float3 overlap=lerp(lerp(cA,cB,info.z),result,k0);
-                    float3 layer=lerp(overlap,full,sep);
+                    float kk=lerp(k0,kEst,saturate(d2/.02)*cleanA*cleanB);
+                    // Unclean side: paste the sprite by its outline and keep today's background (which then carries the
+                    // blend of both pictures' glow there) instead of subtracting a background that holds glow.
+                    float3 rA=lerp(lerp(cA,result,k0),cA+kk*(result-bA),cleanA);
+                    float3 rB=lerp(lerp(cB,result,k0),cB+kk*(result-bB),cleanB);
+                    float3 layer=lerp(rA,rB,info.z);
                     result=lerp(result,saturate(layer),smoothstep(reach*1.15,reach*.7,dist));
                 }
             }
