@@ -37,7 +37,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.7.0 에서 바뀐 것](#270-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
+- [2.7.1 에서 바뀐 것](#271-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -57,33 +57,24 @@ made by **naro** & **Claude**
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 아이콘 옆 점으로 알려 줍니다.
 
-## 2.7.0 에서 바뀐 것
+## 2.7.1 에서 바뀐 것
 
 ### 프레임 늘리기 (실험 · 기본 꺼짐)
 
-- **화면 갱신에 맞춘 출력**: 만든 화면을 모니터가 실제로 보여 줄 갱신 시각에 맞춰 그립니다. 진짜 60 FPS·165Hz에서 화면 사이 간격이 4.2/8.4ms로 번갈아 나오던 것이 고르게 바뀌었습니다(단순한 맵 기준 고름 0.67 → 0.89).
-- **움직임 찾기 개선**: 8×8 블록 대신 4px마다 움직임을 찾는 조밀한 광학 흐름을 씁니다. 빠르게 커지는 큰 글자의 획이 블록 경계에서 찢어지던 것이 사라졌습니다.
-- **공과 타일**: 공을 두 진짜 위치 사이의 궤도(호)로 옮겨 그립니다. 타일처럼 월드에 붙은 내용은 카메라 이동으로 먼저 맞춰, 지나간 타일이 지글거리던 것을 줄였습니다. 움직임을 믿기 어려운 곳은 두 진짜 그림을 섞어(기본: 공 주변) 진짜 프레임 속도로만 움직이지 않게 했습니다.
-- **움직임 흐림(모션 블러)** 옵션 추가(끔/약/중/강, 기본 끔): 움직이는 타일·장식을 움직이는 방향으로 흐리게 해 끊어지는 느낌을 줄입니다. 글자·UI·공은 선명하게 둡니다.
-- 첫 곡 시작 때 약 4초 동안 **소리만 나오고 화면이 멈춰 있던 문제**를 고쳤습니다(셰이더를 곡 밖에서 미리 준비).
-- 주사율 맞춤에서 진짜 FPS가 주사율보다 조금 높을 때 **화면 저장을 쉬었다 깨기를 반복하며 끊기던 것**을 고쳤습니다(HELLO 2026 70초 동안 139번 → 11번).
-- FPS 모니터의 표시 FPS는 실제 화면에 올라간 장 수(갱신마다 최대 1장)로 셉니다. 주사율보다 높게 나오지 않습니다.
-- 여전히 구간에 따라 덜 부드럽게 느껴질 수 있습니다. 화면 전환·섬광이 많은 장면, GPU가 꽉 찬 장면은 진짜 프레임 위주로 나옵니다.
+- **고정 배율(2~8배)의 그림 시각을 바로잡았습니다.** 진짜 프레임이 2ms·10ms처럼 짝으로 몰려 올 때 사이 화면이 같은 그림을 반복하던 것을 진짜 프레임의 실제 시각에 맞췄습니다. 같은 조건(HELLO 2026, 일반 창, 4배)에서 같은 그림 반복이 **52% → 1.7%**, 진짜 FPS 174 → 209였습니다.
+- **그림 시각을 감싸는 진짜 프레임 쌍으로 보간합니다.** 새 진짜 프레임이 올 때마다 잠깐 이전 그림에 멈추던 것이 60 FPS 제한 4배에서 **35.7% → 0%**, 주사율 맞춤(60 FPS 제한)에서 **17% → 0%**가 됐습니다.
+- **공 크기 계산을 고쳤습니다.** 공을 옮겨 그릴 때 실제 공 크기보다 작게 잡아, 공 바깥쪽이 검은 테두리나 밝은 고리로 보이던 것을 줄였습니다. 공을 배경과 빛으로 나눠 지금 배경 위에 다시 얹어 반투명한 회색 공과 어두운 고리를 줄였습니다. 아주 빠른 장면이나 두 공이 겹치는 장면에서는 아직 어색할 수 있습니다.
+- **게임 창 위에 다른 창이 있으면 알려 줍니다.** 데스크톱 캐릭터·오버레이 같은 항상 위 창이 있으면 윈도우가 화면을 한 번 더 합성해 고정 배율의 출력이 갱신마다 한 장만 보이고 지연이 늘어납니다(출력→화면 3.2ms → 14ms). 고정 배율 설정에 설명과 함께 겹친 창 이름을 표시합니다.
+- 설정 창의 FPS 표시 설명을 고쳤습니다. 표시 FPS는 화면에 올라간 장 수라 주사율보다 높아지지 않습니다.
 
-### 쉐이더 (기본 꺼짐)
+### 저사양·성능
 
-- "화면 효과"의 이름을 **쉐이더**로 바꾸고 설정 창 오른쪽 아이콘 줄의 한 페이지로 옮겼습니다. **켜짐** 탭에서 지금 켜 둔 쉐이더만 모아 보고 한 번에 끌 수 있습니다.
-- **HDR 느낌·필름 톤(ACES)**과 20종을 추가했습니다: 색 조정(세피아·듀오톤·틸&오렌지·흑백·반전·야간 투시·열화상·색조 회전), 질감(윤곽선·엠보스·하프톤·틸트 시프트·소프트 포커스), 렌즈(렌즈 왜곡·물결·글리치·줌 블러·거울·만화경·시네마 바).
-- **공유** 탭: 지금 쉐이더 설정을 코드 한 줄로 복사하거나, 받은 코드를 붙여 넣어 적용합니다(LUT 파일은 제외).
+- **음악 반응 계산 끄기가 새 설치부터 기본으로 켜집니다.** 곡 전체에서 프레임당 0.07ms를 아낍니다(HELLO 2026, 11,322프레임 중 4번만 실행). 타일 색 방식 'Volume'을 쓰는 타일이 없을 때만 건너뛰고, 생기면 바로 다시 켭니다. 이미 설치해 쓰던 분은 저장된 값을 그대로 씁니다.
+- **내장 그래픽에서 큰 이미지 자동 한도를 시스템 RAM 기준으로 잡습니다.** 내장 그래픽은 그림을 시스템 RAM에 두는데 공유 한도를 전용 VRAM처럼 믿고 큰 이미지를 원본 그대로 올리던 것을 막습니다. 전용 그래픽카드 PC는 달라지지 않습니다.
 
-### 연출 끄기
+### 그 밖에
 
-- **맵 효과** 탭이 지금 맵이 쓰는 효과를 개수 순으로 위에 보여 주고, 맵에 없는 효과는 접어 둡니다. **이 맵의 효과 모두 끄기 / 모두 되돌리기**로 한 번에 바꿀 수 있고, 탭 이름에 꺼 둔 개수가 나옵니다.
-
-### 게임 3.4 알파 대응
-
-- 게임 알파 빌드에서 내부 이름이 바뀌어 꺼져 있던 **장식 즉시 이동 직접 처리**를 복구했습니다. Arche 224.5초의 63~69ms 끊김이 없어졌습니다(곡 전체 끊김 0번, 곡 중 가장 긴 프레임 23ms).
-- 같은 이유로 꺼져 있던 **판정 오차 막대 눈금 가볍게 사라지기**를 복구했습니다.
+- 개발용 측정 도구(낭비 후보 호출 수, 패치 호출 수, 필터 효과 없음 대조)를 추가했습니다. 일반 사용자 빌드에는 들어가지 않습니다.
 
 ## 기능
 
@@ -264,6 +255,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. Core optimizations preserve game visuals, judgement and audio. Optional low-end settings, frame interpolation and screen effects can change the picture and default to off. Performance fixes are measured and compared; experimental visual quality and latency depend on the level and PC.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.7.1:** frame interpolation, fixed 2-8x mode: picture times follow the true frames (repeated pictures 52% -> 1.7%, frozen pictures at a 60 FPS cap 35.7% -> 0%), ball size and halo fixes, a warning when a window (desktop pet, overlay) sits on top of the game and forces composition. Music-spectrum skipping is on by default for new installs (0.07 ms/frame), and the automatic image-size cap on integrated GPUs uses system RAM instead of the shared limit.
 
 **2.7.0:** frame interpolation is smoother: outputs are timed to the display refresh, dense optical flow (no torn glyphs at block edges), planets moved along their orbit, tiles aligned by the camera first, optional motion blur, the ~4 s frozen picture at the first song start is fixed, and refresh-match mode no longer flips its storage rest on and off when the real rate hovers just above the refresh rate (HELLO 2026: 139 → 11 switches in 70 s). "Screen effects" are now **Shaders** (own page, an "On" tab, HDR/filmic tone, 20 more effects, share codes). The effects-off page lists the effects the open level uses first, with bulk off/restore. Restored two optimizations that the game 3.4 alpha had silently disabled (instant decoration moves: Arche 224.5 s 63–69 ms hitch gone; hit error meter fade).
 
