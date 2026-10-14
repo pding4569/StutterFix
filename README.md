@@ -37,7 +37,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.7.1 에서 바뀐 것](#271-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
+- [2.7.2 에서 바뀐 것](#272-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -57,24 +57,13 @@ made by **naro** & **Claude**
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 아이콘 옆 점으로 알려 줍니다.
 
-## 2.7.1 에서 바뀐 것
+## 2.7.2 에서 바뀐 것
 
 ### 프레임 늘리기 (실험 · 기본 꺼짐)
 
-- **고정 배율(2~8배)의 그림 시각을 바로잡았습니다.** 진짜 프레임이 2ms·10ms처럼 짝으로 몰려 올 때 사이 화면이 같은 그림을 반복하던 것을 진짜 프레임의 실제 시각에 맞췄습니다. 같은 조건(HELLO 2026, 일반 창, 4배)에서 같은 그림 반복이 **52% → 1.7%**, 진짜 FPS 174 → 209였습니다.
-- **그림 시각을 감싸는 진짜 프레임 쌍으로 보간합니다.** 새 진짜 프레임이 올 때마다 잠깐 이전 그림에 멈추던 것이 60 FPS 제한 4배에서 **35.7% → 0%**, 주사율 맞춤(60 FPS 제한)에서 **17% → 0%**가 됐습니다.
-- **공 크기 계산을 고쳤습니다.** 공을 옮겨 그릴 때 실제 공 크기보다 작게 잡아, 공 바깥쪽이 검은 테두리나 밝은 고리로 보이던 것을 줄였습니다. 공을 배경과 빛으로 나눠 지금 배경 위에 다시 얹어 반투명한 회색 공과 어두운 고리를 줄였습니다. 아주 빠른 장면이나 두 공이 겹치는 장면에서는 아직 어색할 수 있습니다.
-- **게임 창 위에 다른 창이 있으면 알려 줍니다.** 데스크톱 캐릭터·오버레이 같은 항상 위 창이 있으면 윈도우가 화면을 한 번 더 합성해 고정 배율의 출력이 갱신마다 한 장만 보이고 지연이 늘어납니다(출력→화면 3.2ms → 14ms). 고정 배율 설정에 설명과 함께 겹친 창 이름을 표시합니다.
-- 설정 창의 FPS 표시 설명을 고쳤습니다. 표시 FPS는 화면에 올라간 장 수라 주사율보다 높아지지 않습니다.
-
-### 저사양·성능
-
-- **음악 반응 계산 끄기가 새 설치부터 기본으로 켜집니다.** 곡 전체에서 프레임당 0.07ms를 아낍니다(HELLO 2026, 11,322프레임 중 4번만 실행). 타일 색 방식 'Volume'을 쓰는 타일이 없을 때만 건너뛰고, 생기면 바로 다시 켭니다. 이미 설치해 쓰던 분은 저장된 값을 그대로 씁니다.
-- **내장 그래픽에서 큰 이미지 자동 한도를 시스템 RAM 기준으로 잡습니다.** 내장 그래픽은 그림을 시스템 RAM에 두는데 공유 한도를 전용 VRAM처럼 믿고 큰 이미지를 원본 그대로 올리던 것을 막습니다. 전용 그래픽카드 PC는 달라지지 않습니다.
-
-### 그 밖에
-
-- 개발용 측정 도구(낭비 후보 호출 수, 패치 호출 수, 필터 효과 없음 대조)를 추가했습니다. 일반 사용자 빌드에는 들어가지 않습니다.
+- **2.7.1 에서 FPS 제한을 풀고 고정 배율(2~8배)을 쓰면 진짜 FPS 가 떨어지던 문제를 고쳤습니다.** 같은 조건(HELLO 2026, 3440×1440, 4배, 제한 없음)에서 2.7.1 은 142 FPS, 고친 뒤 **209 FPS**입니다(진짜 프레임의 GPU 완료 6.7ms → 2.1ms).
+- 2.7.1 의 "그림 시각을 감싸는 진짜 프레임 쌍으로 보간"은 진짜 프레임 간격이 약 10ms 이상일 때(대략 100 FPS 미만, 예: 60 FPS 제한)만 씁니다. 그 구간에서는 GPU 에 여유가 있고 멈춘 그림이 0%가 됩니다. 진짜 FPS 가 높을 때는 쓰지 않습니다.
+- 알려진 것: 움직임 흐림(약/중/강)은 GPU 비용이 있습니다(약: 약 6%). 필요 없으면 끄세요.
 
 ## 기능
 
@@ -255,6 +244,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. Core optimizations preserve game visuals, judgement and audio. Optional low-end settings, frame interpolation and screen effects can change the picture and default to off. Performance fixes are measured and compared; experimental visual quality and latency depend on the level and PC.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.7.2:** fixes a real-FPS drop in 2.7.1 when the FPS limit is off and fixed 2-8x frame interpolation is used (142 -> 209 FPS in the same test): bracketing the picture time with the two true frames is now used only when true frames are slower than about 100 FPS.
 
 **2.7.1:** frame interpolation, fixed 2-8x mode: picture times follow the true frames (repeated pictures 52% -> 1.7%, frozen pictures at a 60 FPS cap 35.7% -> 0%), ball size and halo fixes, a warning when a window (desktop pet, overlay) sits on top of the game and forces composition. Music-spectrum skipping is on by default for new installs (0.07 ms/frame), and the automatic image-size cap on integrated GPUs uses system RAM instead of the shared limit.
 
