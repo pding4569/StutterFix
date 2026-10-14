@@ -1,0 +1,13 @@
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [자동 시험] 게임 화면 맵 열림 (4.8초, 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] game 14961.127ms
+[StutterFix] [자동 시험] [임무단계] auto 2.024ms
+[StutterFix] [자동 시험] 기록 시작 요청: mission-timeline-game 45초, 시각 01:02:26.032
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 176장, VRAM 전체 3609MB / 게임 1754MB
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 5초 지남 | 시작 뒤 5.0초, 유니티 프레임 1997개, 곡 위치 29.40초, 현재 타일 0, 상태 Start, 일시정지 False | 프레임 늘리기: active=True native_installed=1 sources=5857 generated=5249 runtime_initialized=True status= missed_lock=43 missed_timer=625 outputs=11105 frame_begins=5856 worker_wait_ms=0 stalled=43 early_sources=12 sources_n=1996 interval_us_sum=4892596 shown=11107 real_gpu_us=772/1996 held=7167/26/0 hints=0/0
+[StutterFix] [자동 시험] 기록 시작됨 (started mission-timeline-game 45 2026-10-15T01:02:28), 시각 01:02:30.032
+[StutterFix] [자동 시험] [임무단계] trace 4002.891ms
+[StutterFix] [자동 시험] [임무단계] press 4.641ms
+[StutterFix] [자동 시험] [임무단계] wait 34999.645ms
+[StutterFix] [자동 시험] [임무단계] wait 25000.067ms
+[StutterFix] [자동 시험] [임무단계] quit 3.901ms

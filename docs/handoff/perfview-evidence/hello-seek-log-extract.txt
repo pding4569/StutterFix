@@ -1,0 +1,16 @@
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [자동 시험] [임무단계] open 25247.248ms
+[StutterFix] [자동 시험] [임무단계] auto 4.037ms
+[StutterFix] [자동 시험] 기록 시작 요청: mission-hello-seek 65초, 시각 00:58:33.942
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 718장, VRAM 전체 6248MB / 게임 4496MB
+[StutterFix] [자동 시험] 기록 시작됨 (started mission-hello-seek 65 2026-10-15T00:58:34), 시각 00:58:37.942
+[StutterFix] [자동 시험] [임무단계] trace 4005.098ms
+[StutterFix] [자동 시험] 107.0초 25초 앞: 타일 6758 (그 타일 82.0초) 선택
+[StutterFix] [자동 시험] [임무단계] seek 1855.640ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 6758 (2.7초)
+[StutterFix] [모니터] 35ms -> GPU 과부하 / gpu 33.2 cpu 7.0 (수집 6145번) 효과 0.1 모드 0.0(모니터 그리기) gc 0 | 곡 7.0초, 다시 보이게 된 장식 0개 | 시각 00:58:47.078
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6659/7949MB, 게임 전용 4908MB, 게임 공유(시스템 RAM) 14MB
+[StutterFix] [자동 시험] [임무단계] wait 43152.008ms
+[StutterFix] [자동 시험] [임무단계] stop 1660.280ms
+[StutterFix] [자동 시험] [임무단계] wait 23353.085ms
+[StutterFix] [자동 시험] [임무단계] quit 5.584ms

@@ -1,0 +1,14 @@
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 304장, VRAM 전체 3402MB / 게임 1650MB
+[StutterFix] [자동 시험] 게임 화면 맵 열림 (17.7초, 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] game 27781.269ms
+[StutterFix] [자동 시험] [임무단계] auto 2.666ms
+[StutterFix] [자동 시험] [임무단계] press 5.723ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 5초 지남 | 시작 뒤 5.0초, 유니티 프레임 1696개, 곡 위치 -0.05초, 현재 타일 0, 상태 Countdown, 일시정지 False | 프레임 늘리기: active=True native_installed=1 sources=5510 generated=4279 runtime_initialized=True status= missed_lock=70 missed_timer=663 outputs=9788 frame_begins=5509 worker_wait_ms=0 stalled=40 early_sources=13 sources_n=1695 interval_us_sum=4200020 shown=9789 real_gpu_us=618/1694 held=5887/26/0 hints=0/0
+[StutterFix] [자동 시험] [임무단계] wait 119997.559ms
+[StutterFix] [자동 시험] [임무단계] wait 120002.573ms
+[StutterFix] [자동 시험] 기록 시작 요청: mission-arche-game 65초, 시각 00:52:45.781
+[StutterFix] [자동 시험] 기록 시작됨 (started mission-arche-game 65 2026-10-15T00:52:46), 시각 00:52:49.782
+[StutterFix] [자동 시험] [임무단계] trace 4005.725ms
+[StutterFix] [자동 시험] [임무단계] wait 65002.312ms
+[StutterFix] [자동 시험] [임무단계] quit 3.783ms

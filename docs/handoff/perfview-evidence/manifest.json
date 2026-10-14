@@ -1,0 +1,1690 @@
+{
+  "runs": [
+    {
+      "name": "wind-seek",
+      "log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261015-002231-mission-wind-seek.log",
+      "excluded": false,
+      "reason": null,
+      "metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 163.0,
+            "worst": 36.0,
+            "count": 1
+          }
+        ],
+        "errors": 0
+      },
+      "monitor_alerts": [
+        "[StutterFix] [모니터] 36ms -> 게임 바깥 / gpu 16.9 cpu 9.0 (수집 8604번) 효과 3.1 모드 0.0(모니터 그리기) gc 0 | 곡 22.9초, 다시 보이게 된 장식 126개 | 시각 00:23:40.837"
+      ],
+      "commands": "[StutterFix] [자동 시험] 시작: 8단계 - open D:/얼불춤 맵 파일/Windflower/Windflower.adofai / auto on / trace mission-wind-seek 65 / seek 264 25 / wait 45 / stop / wait 15 / quit"
+    },
+    {
+      "name": "wind-game",
+      "log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261015-002808-mission-wind-game.log",
+      "excluded": true,
+      "reason": "single wait exceeded 180-second step timeout",
+      "metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [],
+        "errors": 1
+      },
+      "monitor_alerts": [],
+      "commands": "[StutterFix] [자동 시험] 시작: 7단계 - game D:/얼불춤 맵 파일/Windflower/Windflower.adofai / auto on / press / wait 235 / trace mission-wind-game 65 / wait 65 / quit"
+    },
+    {
+      "name": "wind-game2",
+      "log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261015-003258-mission-wind-game2.log",
+      "excluded": false,
+      "reason": null,
+      "metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [],
+        "errors": 0
+      },
+      "monitor_alerts": [
+        "[StutterFix] [모니터] 36ms -> 게임 바깥 / gpu 19.6 cpu 7.0 (수집 63226번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 곡 264.4초, 다시 보이게 된 장식 0개 | 시각 00:37:59.422"
+      ],
+      "commands": "[StutterFix] [자동 시험] 시작: 8단계 - game D:/얼불춤 맵 파일/Windflower/Windflower.adofai / auto on / press / wait 120 / wait 115 / trace mission-wind-game2 65 / wait 65 / quit"
+    },
+    {
+      "name": "hello",
+      "log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261015-004109-mission-hello.log",
+      "excluded": false,
+      "reason": null,
+      "metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [],
+        "errors": 0
+      },
+      "monitor_alerts": [
+        "[StutterFix] [모니터] 36ms -> 게임 처리 / gpu 1.0 cpu 36.5 (수집 4575번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 시각 00:41:44.122"
+      ],
+      "commands": "[StutterFix] [자동 시험] 시작: 8단계 - wait 10 / trace mission-hello-open-game 180 / game D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai / auto on / press / wait 125 / wait 45 / quit"
+    },
+    {
+      "name": "arche",
+      "log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261015-004800-mission-arche.log",
+      "excluded": false,
+      "reason": null,
+      "metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [],
+        "errors": 0
+      },
+      "monitor_alerts": [],
+      "commands": "[StutterFix] [자동 시험] 시작: 8단계 - game D:\\얼불춤 맵 파일\\Arche\\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / auto on / press / wait 120 / wait 120 / trace mission-arche-game 65 / wait 65 / quit"
+    },
+    {
+      "name": "hello-seek",
+      "log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261015-005750-mission-hello-seek.log",
+      "excluded": false,
+      "reason": null,
+      "metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [
+          {
+            "fps": 186.0,
+            "worst": 122.0,
+            "count": 1
+          }
+        ],
+        "errors": 0
+      },
+      "monitor_alerts": [
+        "[StutterFix] [모니터] 35ms -> GPU 과부하 / gpu 33.2 cpu 7.0 (수집 6145번) 효과 0.1 모드 0.0(모니터 그리기) gc 0 | 곡 7.0초, 다시 보이게 된 장식 0개 | 시각 00:58:47.078"
+      ],
+      "commands": "[StutterFix] [자동 시험] 시작: 8단계 - open D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai / auto on / trace mission-hello-seek 65 / seek 107 25 / wait 45 / stop / wait 25 / quit"
+    },
+    {
+      "name": "timeline",
+      "log": "C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261015-010153-mission-timeline.log",
+      "excluded": false,
+      "reason": null,
+      "metrics": {
+        "runs": [],
+        "hitches": [],
+        "songs": [],
+        "errors": 0
+      },
+      "monitor_alerts": [],
+      "commands": "[StutterFix] [자동 시험] 시작: 7단계 - game D:/얼불춤 맵 파일/Plum - Timeline/Timeline.adofai / auto on / trace mission-timeline-game 45 / press / wait 35 / wait 25 / quit"
+    }
+  ],
+  "traces": [
+    {
+      "name": "mission-wind-seek",
+      "etl": "C:/Users/Public/StutterFixTrace/mission-wind-seek.etl",
+      "etlx": "C:/Users/Public/StutterFixTrace/mission-wind-seek.etlx",
+      "collect_log": "C:/Users/Public/StutterFixTrace/mission-wind-seek-collect.log"
+    },
+    {
+      "name": "mission-wind-game2",
+      "etl": "C:/Users/Public/StutterFixTrace/mission-wind-game2.etl",
+      "etlx": "C:/Users/Public/StutterFixTrace/mission-wind-game2.etlx",
+      "collect_log": "C:/Users/Public/StutterFixTrace/mission-wind-game2-collect.log"
+    },
+    {
+      "name": "mission-hello-open-game",
+      "etl": "C:/Users/Public/StutterFixTrace/mission-hello-open-game.etl",
+      "etlx": "C:/Users/Public/StutterFixTrace/mission-hello-open-game.etlx",
+      "collect_log": "C:/Users/Public/StutterFixTrace/mission-hello-open-game-collect.log"
+    },
+    {
+      "name": "mission-arche-game",
+      "etl": "C:/Users/Public/StutterFixTrace/mission-arche-game.etl",
+      "etlx": "C:/Users/Public/StutterFixTrace/mission-arche-game.etlx",
+      "collect_log": "C:/Users/Public/StutterFixTrace/mission-arche-game-collect.log"
+    },
+    {
+      "name": "mission-hello-seek",
+      "etl": "C:/Users/Public/StutterFixTrace/mission-hello-seek.etl",
+      "etlx": "C:/Users/Public/StutterFixTrace/mission-hello-seek.etlx",
+      "collect_log": "C:/Users/Public/StutterFixTrace/mission-hello-seek-collect.log"
+    },
+    {
+      "name": "mission-timeline-game",
+      "etl": "C:/Users/Public/StutterFixTrace/mission-timeline-game.etl",
+      "etlx": "C:/Users/Public/StutterFixTrace/mission-timeline-game.etlx",
+      "collect_log": "C:/Users/Public/StutterFixTrace/mission-timeline-game-collect.log"
+    }
+  ],
+  "final_analysis": [
+    {
+      "file": "wind-game2-corrected.txt",
+      "header": [
+        "기록 시작 00:37:34.256, 끊김 25165.4ms, 구간 25080.4 ~ 25185.4",
+        "Game CPU samples 165 / window 105.0ms"
+      ],
+      "sample_count": 165,
+      "native_inclusive_samples": 89,
+      "threads": [
+        {
+          "tid": 19524,
+          "samples": 55,
+          "native_inclusive": 44,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 21144,
+          "samples": 45,
+          "native_inclusive": 45,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24516,
+          "samples": 28,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 20
+        },
+        {
+          "tid": 18008,
+          "samples": 15,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 10280,
+          "samples": 5,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20108,
+          "samples": 4,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 4
+        },
+        {
+          "tid": 25484,
+          "samples": 4,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 18864,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20084,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 372,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 13648,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 21600,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24664,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        }
+      ]
+    },
+    {
+      "file": "wind-seek-corrected.txt",
+      "header": [
+        "기록 시작 00:23:14.527, 끊김 26309.3ms, 구간 26244.3 ~ 26329.3",
+        "Game CPU samples 181 / window 85.0ms"
+      ],
+      "sample_count": 181,
+      "native_inclusive_samples": 43,
+      "threads": [
+        {
+          "tid": 24580,
+          "samples": 52,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 34
+        },
+        {
+          "tid": 21616,
+          "samples": 37,
+          "native_inclusive": 37,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22044,
+          "samples": 25,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23528,
+          "samples": 25,
+          "native_inclusive": 6,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23916,
+          "samples": 9,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 12372,
+          "samples": 8,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 17628,
+          "samples": 7,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 16608,
+          "samples": 6,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24648,
+          "samples": 6,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 13692,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 18508,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 20840,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23940,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        }
+      ]
+    },
+    {
+      "file": "wind-main-wait-cpu.txt",
+      "header": [
+        "기록 시작 00:37:34.256, 끊김 25139.4ms, 구간 25115.0 ~ 25139.4",
+        "Game CPU samples 29 / window 24.4ms"
+      ],
+      "sample_count": 29,
+      "native_inclusive_samples": 22,
+      "threads": [
+        {
+          "tid": 19524,
+          "samples": 18,
+          "native_inclusive": 17,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 21144,
+          "samples": 5,
+          "native_inclusive": 5,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 18008,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 10280,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 18864,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20108,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        }
+      ]
+    },
+    {
+      "file": "wind-system-corrected.txt",
+      "header": [
+        "기록 시작 00:37:34.256, 끊김 25165.4ms, 구간 25080.4 ~ 25185.4",
+        "Game CPU samples 2 / window 105.0ms"
+      ],
+      "sample_count": 2,
+      "native_inclusive_samples": 0,
+      "threads": [
+        {
+          "tid": 20672,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        }
+      ]
+    },
+    {
+      "file": "wind-outside.txt",
+      "header": [
+        "기록 시작 00:37:34.256, 끊김 14743.4ms, 구간 13743.4 ~ 15743.4",
+        "Game CPU samples 5680 / window 2000.0ms"
+      ],
+      "sample_count": 5680,
+      "native_inclusive_samples": 911,
+      "threads": [
+        {
+          "tid": 24516,
+          "samples": 1560,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 926
+        },
+        {
+          "tid": 18008,
+          "samples": 1014,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 19524,
+          "samples": 981,
+          "native_inclusive": 307,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 21144,
+          "samples": 605,
+          "native_inclusive": 604,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 10280,
+          "samples": 389,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 25484,
+          "samples": 270,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 13648,
+          "samples": 266,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20084,
+          "samples": 245,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 21600,
+          "samples": 181,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20108,
+          "samples": 75,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 74
+        },
+        {
+          "tid": 18864,
+          "samples": 28,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 14412,
+          "samples": 27,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24664,
+          "samples": 9,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20204,
+          "samples": 8,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 372,
+          "samples": 5,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 21052,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 11768,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 20852,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 19648,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22612,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 23140,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 7400,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 24780,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 21396,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 1584,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 21720,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 1644,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        }
+      ]
+    },
+    {
+      "file": "hello-target-corrected.txt",
+      "header": [
+        "기록 시작 00:41:39.942, 끊김 126057.5ms, 구간 125057.5 ~ 127057.5",
+        "Game CPU samples 5790 / window 2000.0ms"
+      ],
+      "sample_count": 5790,
+      "native_inclusive_samples": 347,
+      "threads": [
+        {
+          "tid": 1084,
+          "samples": 1931,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1115
+        },
+        {
+          "tid": 24368,
+          "samples": 1010,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 13612,
+          "samples": 657,
+          "native_inclusive": 89,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24160,
+          "samples": 634,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 25208,
+          "samples": 370,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 17760,
+          "samples": 297,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 21940,
+          "samples": 259,
+          "native_inclusive": 258,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24596,
+          "samples": 255,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 1076,
+          "samples": 179,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 14628,
+          "samples": 85,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 85
+        },
+        {
+          "tid": 22312,
+          "samples": 41,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 13416,
+          "samples": 23,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23616,
+          "samples": 21,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 19628,
+          "samples": 7,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20580,
+          "samples": 4,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 4
+        },
+        {
+          "tid": 9208,
+          "samples": 4,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 4
+        },
+        {
+          "tid": 24780,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 7620,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 22080,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 23004,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22028,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 18992,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 21652,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 25224,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20632,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        }
+      ]
+    },
+    {
+      "file": "hello-open-corrected.txt",
+      "header": [
+        "기록 시작 00:41:39.942, 끊김 10057.5ms, 구간 5057.5 ~ 15057.5",
+        "Game CPU samples 37015 / window 10000.0ms"
+      ],
+      "sample_count": 37015,
+      "native_inclusive_samples": 17687,
+      "threads": [
+        {
+          "tid": 1084,
+          "samples": 7296,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 6909
+        },
+        {
+          "tid": 20140,
+          "samples": 4985,
+          "native_inclusive": 3372,
+          "unresolved_mono_candidates": 4857
+        },
+        {
+          "tid": 16656,
+          "samples": 4966,
+          "native_inclusive": 3788,
+          "unresolved_mono_candidates": 4914
+        },
+        {
+          "tid": 25528,
+          "samples": 4941,
+          "native_inclusive": 3785,
+          "unresolved_mono_candidates": 4897
+        },
+        {
+          "tid": 25516,
+          "samples": 4918,
+          "native_inclusive": 3279,
+          "unresolved_mono_candidates": 4662
+        },
+        {
+          "tid": 17904,
+          "samples": 4786,
+          "native_inclusive": 3436,
+          "unresolved_mono_candidates": 4624
+        },
+        {
+          "tid": 13612,
+          "samples": 1799,
+          "native_inclusive": 27,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24160,
+          "samples": 777,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 15
+        },
+        {
+          "tid": 17760,
+          "samples": 430,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 96
+        },
+        {
+          "tid": 25208,
+          "samples": 411,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 24596,
+          "samples": 254,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24368,
+          "samples": 194,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 1076,
+          "samples": 186,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 25388,
+          "samples": 120,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 119
+        },
+        {
+          "tid": 20332,
+          "samples": 116,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 116
+        },
+        {
+          "tid": 22844,
+          "samples": 113,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 113
+        },
+        {
+          "tid": 2992,
+          "samples": 113,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 113
+        },
+        {
+          "tid": 17544,
+          "samples": 109,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 109
+        },
+        {
+          "tid": 13416,
+          "samples": 56,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 19628,
+          "samples": 43,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 14628,
+          "samples": 37,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 37
+        },
+        {
+          "tid": 21652,
+          "samples": 26,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 16992,
+          "samples": 22,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 20
+        },
+        {
+          "tid": 11768,
+          "samples": 21,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 21
+        },
+        {
+          "tid": 10968,
+          "samples": 21,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 4304,
+          "samples": 21,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20624,
+          "samples": 20,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 7
+        },
+        {
+          "tid": 3908,
+          "samples": 20,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 16
+        },
+        {
+          "tid": 17892,
+          "samples": 20,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 15
+        },
+        {
+          "tid": 17308,
+          "samples": 19,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 16
+        },
+        {
+          "tid": 15928,
+          "samples": 18,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 13980,
+          "samples": 18,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24780,
+          "samples": 18,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 11504,
+          "samples": 18,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 25224,
+          "samples": 18,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20968,
+          "samples": 14,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 18192,
+          "samples": 13,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23616,
+          "samples": 12,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20580,
+          "samples": 11,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 11
+        },
+        {
+          "tid": 20632,
+          "samples": 10,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22028,
+          "samples": 5,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 17496,
+          "samples": 4,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 9872,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 6152,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 12384,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 19468,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 7620,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 15972,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 10340,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 18236,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22080,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 19408,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        }
+      ]
+    },
+    {
+      "file": "hello-seek-stall.txt",
+      "header": [
+        "기록 시작 00:58:34.669, 끊김 12408.8ms, 구간 12323.8 ~ 12428.8",
+        "Game CPU samples 184 / window 105.0ms"
+      ],
+      "sample_count": 184,
+      "native_inclusive_samples": 23,
+      "threads": [
+        {
+          "tid": 22860,
+          "samples": 63,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 35
+        },
+        {
+          "tid": 21712,
+          "samples": 30,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 13416,
+          "samples": 19,
+          "native_inclusive": 19,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 7788,
+          "samples": 19,
+          "native_inclusive": 4,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20296,
+          "samples": 17,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 17496,
+          "samples": 12,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 2688,
+          "samples": 8,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20008,
+          "samples": 7,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 3448,
+          "samples": 5,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 5
+        },
+        {
+          "tid": 22244,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 21692,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 19724,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        }
+      ]
+    },
+    {
+      "file": "arche-target-wide.txt",
+      "header": [
+        "기록 시작 00:52:46.554, 끊김 30445.7ms, 구간 27445.7 ~ 33445.7",
+        "Game CPU samples 16196 / window 6000.0ms"
+      ],
+      "sample_count": 16196,
+      "native_inclusive_samples": 432,
+      "threads": [
+        {
+          "tid": 17308,
+          "samples": 5836,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 4392
+        },
+        {
+          "tid": 2636,
+          "samples": 2721,
+          "native_inclusive": 116,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 7312,
+          "samples": 2255,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22384,
+          "samples": 1172,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20372,
+          "samples": 952,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22436,
+          "samples": 928,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 19112,
+          "samples": 820,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 3448,
+          "samples": 730,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 25064,
+          "samples": 316,
+          "native_inclusive": 316,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23988,
+          "samples": 175,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 175
+        },
+        {
+          "tid": 23104,
+          "samples": 81,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 7512,
+          "samples": 65,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24876,
+          "samples": 43,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 22572,
+          "samples": 29,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 17544,
+          "samples": 13,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 16004,
+          "samples": 8,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 18192,
+          "samples": 8,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 472,
+          "samples": 7,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 17300,
+          "samples": 6,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 6
+        },
+        {
+          "tid": 21976,
+          "samples": 5,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 5
+        },
+        {
+          "tid": 8460,
+          "samples": 4,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 4
+        },
+        {
+          "tid": 19644,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 18464,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 20968,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 9500,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 9512,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 20120,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 24092,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 12676,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 21592,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 13960,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 8208,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        }
+      ]
+    },
+    {
+      "file": "arche-target.txt",
+      "header": [
+        "기록 시작 00:52:46.554, 끊김 33445.7ms, 구간 32445.7 ~ 34445.7",
+        "Game CPU samples 5389 / window 2000.0ms"
+      ],
+      "sample_count": 5389,
+      "native_inclusive_samples": 126,
+      "threads": [
+        {
+          "tid": 17308,
+          "samples": 1953,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1481
+        },
+        {
+          "tid": 2636,
+          "samples": 934,
+          "native_inclusive": 34,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 7312,
+          "samples": 735,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22384,
+          "samples": 393,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22436,
+          "samples": 314,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 20372,
+          "samples": 308,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 19112,
+          "samples": 269,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 3448,
+          "samples": 249,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 25064,
+          "samples": 92,
+          "native_inclusive": 92,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23988,
+          "samples": 52,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 52
+        },
+        {
+          "tid": 23104,
+          "samples": 28,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 7512,
+          "samples": 23,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24876,
+          "samples": 9,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22572,
+          "samples": 9,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 472,
+          "samples": 5,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 17544,
+          "samples": 4,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 16004,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 17300,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 18192,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 8460,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 8208,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 9512,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 9500,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        }
+      ]
+    },
+    {
+      "file": "timeline-target.txt",
+      "header": [
+        "기록 시작 01:02:28.310, 끊김 5689.4ms, 구간 3689.4 ~ 7689.4",
+        "Game CPU samples 11231 / window 4000.0ms"
+      ],
+      "sample_count": 11231,
+      "native_inclusive_samples": 981,
+      "threads": [
+        {
+          "tid": 24512,
+          "samples": 3854,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2366
+        },
+        {
+          "tid": 25204,
+          "samples": 2392,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23388,
+          "samples": 1590,
+          "native_inclusive": 298,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 15560,
+          "samples": 1002,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23296,
+          "samples": 687,
+          "native_inclusive": 683,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24748,
+          "samples": 476,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22312,
+          "samples": 450,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 15456,
+          "samples": 279,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 19284,
+          "samples": 184,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 184
+        },
+        {
+          "tid": 16708,
+          "samples": 129,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24004,
+          "samples": 51,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 16404,
+          "samples": 47,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23832,
+          "samples": 25,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24528,
+          "samples": 11,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 11
+        },
+        {
+          "tid": 22168,
+          "samples": 9,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 23804,
+          "samples": 7,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 7
+        },
+        {
+          "tid": 15860,
+          "samples": 6,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 1960,
+          "samples": 4,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 22292,
+          "samples": 4,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 4
+        },
+        {
+          "tid": 19812,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 19192,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 17668,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 8332,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        },
+        {
+          "tid": 24032,
+          "samples": 3,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 3
+        },
+        {
+          "tid": 20140,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 13088,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 4120,
+          "samples": 2,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 2
+        },
+        {
+          "tid": 2752,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 20364,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 1
+        },
+        {
+          "tid": 22940,
+          "samples": 1,
+          "native_inclusive": 0,
+          "unresolved_mono_candidates": 0
+        }
+      ]
+    }
+  ],
+  "warning": "Pre-correction wind *-stall/*-symbols and hello-open/target without -corrected have incorrect blocking stack attribution; use final_analysis only.",
+  "performance_changes": 0,
+  "ab_runs": 0
+}

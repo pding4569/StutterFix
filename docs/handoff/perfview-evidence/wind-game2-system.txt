@@ -1,0 +1,138 @@
+기록 시작 00:37:34.256, 끊김 25165.4ms, 구간 25080.4 ~ 25185.4
+Game CPU samples 2 / window 105.0ms
+Top stack 1 samples storport.sys!0xfffff80085042c7e < storport.sys!0xfffff80085029d77 < storahci.sys!0xfffff80084fc5f88 < storahci.sys!0xfffff80084fc5bb3 < storahci.sys!0xfffff80084fc5480 < storport.sys!0xfffff8008500556f < storport.sys!0xfffff800850039c9 < ntoskrnl!0xfffff8007fb9efb9 < ntoskrnl!0xfffff8007fb9eee3 < ntoskrnl!0xfffff8007fc6e759 < storport.sys!0xfffff800850041c4 < storport.sys!0xfffff8008500a514 < storport.sys!0xfffff80085009ddc < storport.sys!0xfffff80085009b7a
+Top stack 1 samples ntfs.sys!0xfffff800851700ff < ntfs.sys!0xfffff8008516c693 < ntoskrnl!0xfffff8007fad21c5 < fltmgr.sys!0xfffff8007f18710f < fltmgr.sys!0xfffff8007f184a43 < ntoskrnl!0xfffff8007fad21c5 < ntoskrnl!0xfffff8007fe4c801 < ntoskrnl!0xfffff8007fdcedb5 < ntoskrnl!0xfffff8007fec92b0 < ntoskrnl!0xfffff8007fc11505 < ntoskrnl!0xfffff8007fc023b0 < ntoskrnl!0xfffff8007fe8e9f8 < ntoskrnl!0xfffff8007febd990 < ntoskrnl!0xfffff8007febcce5
+
+=== 스레드 20672: 샘플 2개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 25078.1 ~ 25083.8 (5.7ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25084.1 ~ 25099.7 (15.6ms) 이유 Executive/Wait | 깨운 것: steamwebhelper(8032) 스레드 8036
+     잠든 곳: ntoskrnl!0xfffff8007fc064a4 < ntoskrnl!0xfffff8007fc05bb6 < ntoskrnl!0xfffff8007fac7260 < ntoskrnl!0xfffff8007fac678f < ntoskrnl!0xfffff8007fac6033 < hdaudbus.sys!0xfffff800c3202d47 < hdaudbus.sys!0xfffff800c3202871 < rtkvhd64.sys!0xfffff800c3b06688 < rtkvhd64.sys!0xfffff800c3b06503 < rtkvhd64.sys!0xfffff800c3a13276 < rtkvhd64.sys!0xfffff800c3b1726f < rtkvhd64.sys!0xfffff800c3b11649 < rtkvhd64.sys!0xfffff800c3f90305 < rtkvhd64.sys!0xfffff800c3fd437a < ntoskrnl!0xfffff8007fb5d6e5 < ntoskrnl!0xfffff8007fc065c8
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fac3d1a < ntoskrnl!0xfffff8007fb2f021 < ntoskrnl!0xfffff8007fad1096 < ntoskrnl!0xfffff8007fad0979 < ntoskrnl!0xfffff8007fda72d8 < ntoskrnl!0xfffff8007fda6ff3 < ntoskrnl!0xfffff8007fa4a3f8 < ntoskrnl!0xfffff8007fa4a07b < ntoskrnl!0xfffff8007facd842 < win32kbase.sys!0xffff89138d837678 < win32kfull.sys!0xffff89138dc467b1 < win32kfull.sys!0xffff89138db32efe < win32k.sys!0xffff89138e146fd0 < ntoskrnl!0xfffff8007fc11505 < win32u!0x7fff08a9a124 < user32!0x7fff09a90cae < libcef!0x7ffeaf47daad < libcef!0x7ffeaf47d694 < libcef!0x7ffead35281e < libcef!0x7ffead88c0a6 < libcef!0x7ffead37d35f < libcef!0x7ffeac2b83e6 < steamwebhelper!0x7ff702b4bd4f < steamwebhelper!0x7ff702bd0042 < steamwebhelper!0x7ff702bd19e5 < steamwebhelper!0x7ff702d192aa < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+  잠듦 25100.0 ~ 25114.7 (14.7ms) 이유 Executive/Wait | 깨운 것: MuMuPlayerRemoteHealthd(3480) 스레드 3484
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fac3d1a < ntoskrnl!0xfffff8007fdaa6c5 < ntoskrnl!0xfffff8007fa46f2e < ntoskrnl!0xfffff8007fa46214 < ntoskrnl!0xfffff8007fc05e75 < ntoskrnl!0xfffff8007fc05c60 < ntoskrnl!0xfffff8007fc0505d < ntoskrnl!0xfffff8007fa4a0ca < ntoskrnl!0xfffff8007fac7587 < ntoskrnl!0xfffff8007fac678f < ntoskrnl!0xfffff8007fac6033 < ntoskrnl!0xfffff8007fa4b95b < ntoskrnl!0xfffff8007fdfd0b0 < win32kfull.sys!0xffff89138dc4681d < win32kfull.sys!0xffff89138db32efe < win32k.sys!0xffff89138e146fd0 < ntoskrnl!0xfffff8007fc11505 < win32u!0x7fff08a9a124 < user32!0x7fff09a90cae < mumuplayerremotehealthd!0x7ff7b0f04eeb < mumuplayerremotehealthd!0x7ff7b0f044bd < mumuplayerremotehealthd!0x7ff7b0f02c06 < mumuplayerremotehealthd!0x7ff7b0eff41e < mumuplayerremotehealthd!0x7ff7b0eec45a < mumuplayerremotehealthd!0x7ff7b0de2d11 < mumuplayerremotehealthd!0x7ff7b15b4006 < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+  잠듦 25115.0 ~ 25120.5 (5.5ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 19524
+  잠듦 25120.9 ~ 25129.4 (8.6ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fac3d1a < ntoskrnl!0xfffff8007fdaa6c5 < ntoskrnl!0xfffff8007fa46f2e < ntoskrnl!0xfffff8007fa46214 < ntoskrnl!0xfffff8007fc020be
+  잠듦 25129.8 ~ 25140.7 (10.9ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 24516
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fac3d1a < ntoskrnl!0xfffff8007fb2f021 < ntoskrnl!0xfffff8007fad1096 < ntoskrnl!0xfffff8007fad0979 < ntoskrnl!0xfffff8007fda72d8 < ntoskrnl!0xfffff8007fda6ff3 < ntoskrnl!0xfffff8007fa4a3f8 < ntoskrnl!0xfffff8007fc028bf < ntoskrnl!0xfffff8007fac41da < ntoskrnl!0xfffff8007fa5c3c6 < ntoskrnl!0xfffff8007fe260c5 < ntoskrnl!0xfffff8007fc11505 < ntdll!0x7fff0b3ee394 < ntdll!0x7fff0b3b4811 < unityplayer!0x7ffe8f22a796 < unityplayer!0x7ffe8f22b358 < unityplayer!0x7ffe8f22b76f < unityplayer!0x7ffe8f087303 < unityplayer!0x7ffe8f07f7f0 < unityplayer!0x7ffe8f073b9f < unityplayer!0x7ffe8effc8c0 < unityplayer!0x7ffe8f03b216 < unityplayer!0x7ffe8f28b214 < unityplayer!0x7ffe8f26de4d < unityplayer!0x7ffe8f26e014 < unityplayer!0x7ffe8f26e48e < unityplayer!0x7ffe8f4c4914 < unityplayer!0x7ffe8f4c6ded < unityplayer!0x7ffe8f4c9adc
+  잠듦 25141.0 ~ 25145.3 (4.3ms) 이유 Executive/Wait | 깨운 것: Discord(15040) 스레드 7456
+  잠듦 25145.7 ~ 25164.8 (19.2ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 24516
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fac3d1a < ntoskrnl!0xfffff8007fb2f021 < ntoskrnl!0xfffff8007fad1096 < ntoskrnl!0xfffff8007fad0979 < ntoskrnl!0xfffff8007fda72d8 < ntoskrnl!0xfffff8007fda6ff3 < ntoskrnl!0xfffff8007fa4a3f8 < ntoskrnl!0xfffff8007fc028bf < ntoskrnl!0xfffff8007fac41da < ntoskrnl!0xfffff8007fa5c3c6 < ntoskrnl!0xfffff8007fe260c5 < ntoskrnl!0xfffff8007fc11505 < ntdll!0x7fff0b3ee394 < ntdll!0x7fff0b3b4811 < unityplayer!0x7ffe8f22a796 < unityplayer!0x7ffe8f22b358 < unityplayer!0x7ffe8f22bbea < unityplayer!0x7ffe8f229ed0 < unityplayer!0x7ffe8f2268ed < unityplayer!0x7ffe8f22667d < unityplayer!0x7ffe8f6eaf26 < unityplayer!0x7ffe8f08438e < unityplayer!0x7ffe8f084c07 < unityplayer!0x7ffe8effacc9 < unityplayer!0x7ffe8effc11a < unityplayer!0x7ffe8effc83b < unityplayer!0x7ffe8f03b216 < unityplayer!0x7ffe8f28b214 < unityplayer!0x7ffe8f26de4d
+  25140.8~25164.9 (1개) storport.sys!0xfffff80085042c7e < storport.sys!0xfffff80085029d77 < storahci.sys!0xfffff80084fc5f88 < storahci.sys!0xfffff80084fc5bb3 < storahci.sys!0xfffff80084fc5480 < storport.sys!0xfffff8008500556f < storport.sys!0xfffff800850039c9 < ntoskrnl!0xfffff8007fb9efb9 < ntoskrnl!0xfffff8007fb9eee3 < ntoskrnl!0xfffff8007fc6e759 < storport.sys!0xfffff800850041c4 < storport.sys!0xfffff8008500a514 < storport.sys!0xfffff80085009ddc < storport.sys!0xfffff80085009b7a
+  25164.9~25164.9 (1개) ntfs.sys!0xfffff800851700ff < ntfs.sys!0xfffff8008516c693 < ntoskrnl!0xfffff8007fad21c5 < fltmgr.sys!0xfffff8007f18710f < fltmgr.sys!0xfffff8007f184a43 < ntoskrnl!0xfffff8007fad21c5 < ntoskrnl!0xfffff8007fe4c801 < ntoskrnl!0xfffff8007fdcedb5 < ntoskrnl!0xfffff8007fec92b0 < ntoskrnl!0xfffff8007fc11505 < ntoskrnl!0xfffff8007fc023b0 < ntoskrnl!0xfffff8007fe8e9f8 < ntoskrnl!0xfffff8007febd990 < ntoskrnl!0xfffff8007febcce5
+
+=== 스레드 36: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 24960.8 ~ 25083.8 (123.0ms) 이유 15/Wait | 깨운 것: Idle(0) 스레드 0
+     잠든 곳: ntoskrnl!0xfffff8007fc064a4 < ntoskrnl!0xfffff8007fc05df4 < ntoskrnl!0xfffff8007fc0505d < ntoskrnl!0xfffff8007fa4a0ca < ntoskrnl!0xfffff8007fac7587 < ntoskrnl!0xfffff8007fac678f < ntoskrnl!0xfffff8007fac6033 < ntoskrnl!0xfffff8007fe3e061 < ntoskrnl!0xfffff8007fe3dfba < ntoskrnl!0xfffff8007fc11505 < ntdll!0x7fff0b3ed624 < kernelbase!0x7fff08c6b6ae < nvwgf2umx!0x7ffef0c7ba4f < nvwgf2umx!0x7ffef116a2aa < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa4b476 < ntoskrnl!0xfffff8007fa482b5 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc020be
+
+=== 스레드 388: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+
+=== 스레드 648: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+
+=== 스레드 704: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 25104.8 ~ 25108.0 (3.3ms) 이유 Executive/Wait | 깨운 것: System(4) 스레드 708
+
+=== 스레드 708: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 25078.5 ~ 25080.5 (2.1ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25080.6 ~ 25082.1 (1.5ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25083.4 ~ 25088.1 (4.7ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25088.9 ~ 25090.4 (1.5ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25091.3 ~ 25092.9 (1.6ms) 이유 Executive/Wait | 깨운 것: Lilith(19032) 스레드 14636
+  잠듦 25092.9 ~ 25094.2 (1.3ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25094.2 ~ 25096.6 (2.5ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25098.3 ~ 25099.6 (1.3ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25099.7 ~ 25101.0 (1.4ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25101.0 ~ 25102.3 (1.3ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 19524
+  잠듦 25103.0 ~ 25104.3 (1.4ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 19524
+  잠듦 25106.2 ~ 25108.0 (1.8ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25108.7 ~ 25110.4 (1.7ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25110.9 ~ 25116.3 (5.4ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 21144
+  잠듦 25116.9 ~ 25119.0 (2.2ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 21144
+  잠듦 25119.0 ~ 25120.5 (1.5ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25121.1 ~ 25124.6 (3.5ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 19524
+  잠듦 25125.0 ~ 25129.2 (4.2ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 19524
+  잠듦 25129.3 ~ 25131.1 (1.9ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25131.1 ~ 25132.9 (1.8ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25133.2 ~ 25138.8 (5.6ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25138.8 ~ 25140.1 (1.3ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25141.3 ~ 25145.6 (4.4ms) 이유 Executive/Wait | 깨운 것: steam(8728) 스레드 9560
+  잠듦 25146.2 ~ 25148.9 (2.7ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 21144
+  잠듦 25149.6 ~ 25151.4 (1.8ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 21144
+  잠듦 25151.4 ~ 25152.8 (1.4ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25153.3 ~ 25157.5 (4.1ms) 이유 Executive/Wait | 깨운 것: Lilith(19032) 스레드 16736
+  잠듦 25157.9 ~ 25160.8 (2.8ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25160.8 ~ 25163.5 (2.8ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25166.3 ~ 25168.2 (1.9ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25169.0 ~ 25172.0 (3.0ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25172.0 ~ 25173.8 (1.7ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25174.6 ~ 25177.9 (3.3ms) 이유 Executive/Wait | 깨운 것: claude(16816) 스레드 11756
+  잠듦 25178.1 ~ 25182.9 (4.9ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+
+=== 스레드 716: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 24960.8 ~ 25104.6 (143.8ms) 이유 Executive/Wait | 깨운 것: System(4) 스레드 720
+     잠든 곳: ntoskrnl!0xfffff8007fc064a4 < ntoskrnl!0xfffff8007fc05bb6 < ntoskrnl!0xfffff8007fac7260 < ntoskrnl!0xfffff8007fac678f < ntoskrnl!0xfffff8007fac6033 < ntoskrnl!0xfffff8007fe3e061 < ntoskrnl!0xfffff8007fe3dfba < ntoskrnl!0xfffff8007fc11505 < ntdll!0x7fff0b3ed624 < mswsock!0x7fff07ff8c5c < mswsock!0x7fff0800003e < ws2_32!0x7fff0a5f16f7 < mumuplayerremotebackend!0x7ff74c8cf7bd < mumuplayerremotebackend!0x7ff74c8d81fa < mumuplayerremotebackend!0x7ff74c8b539f < ucrtbase!0x7fff08ae1bb2 < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fac3d1a < dxgmms2.sys!0xfffff8008bf67916 < dxgmms2.sys!0xfffff8008bfce549 < dxgmms2.sys!0xfffff8008bfce13a < dxgmms2.sys!0xfffff8008bfcdb66 < dxgmms2.sys!0xfffff8008bfed35e < dxgmms2.sys!0xfffff8008bff7509 < ntoskrnl!0xfffff8007fb5d6e5 < ntoskrnl!0xfffff8007fc065c8
+  잠듦 25104.7 ~ 25108.0 (3.3ms) 이유 Executive/Wait | 깨운 것: System(4) 스레드 720
+
+=== 스레드 720: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 25104.6 ~ 25107.9 (3.3ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 18008
+  잠듦 25108.0 ~ 25168.8 (60.9ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 18008
+     잠든 곳: ntoskrnl!0xfffff8007fc064a4 < ntoskrnl!0xfffff8007fc05bb6 < ntoskrnl!0xfffff8007fac7260 < ntoskrnl!0xfffff8007fac678f < ntoskrnl!0xfffff8007fa56c54 < ntoskrnl!0xfffff8007fe1a7d0 < ntoskrnl!0xfffff8007fc11505 < ntdll!0x7fff0b3f0fd4 < ntdll!0x7fff0b3b4d6d < ntdll!0x7fff0b3b4c22 < ntdll!0x7fff0b3b4933 < kernelbase!0x7fff08cbee2f < unityplayer!0x7ffe8f22b043 < unityplayer!0x7ffe8f22b159 < unityplayer!0x7ffe8ff7aae4 < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fac3d1a < dxgmms2.sys!0xfffff8008bfd3ae3 < dxgmms2.sys!0xfffff8008bfd398b < dxgmms2.sys!0xfffff8008bfd37ca < dxgmms2.sys!0xfffff8008bfd2f6a < dxgmms2.sys!0xfffff8008bfd2e18 < dxgmms2.sys!0xfffff8008bf61dbb < dxgkrnl.sys!0xfffff8009ff55e18 < dxgkrnl.sys!0xfffff8009ff55750 < ntoskrnl!0xfffff8007fc11505 < win32u!0x7fff08a95064 < d3d11!0x7fff065bdb32 < d3d11!0x7fff06590ff8 < nvwgf2umx!0x7ffef04a4b29 < nvwgf2umx!0x7ffef0443f90 < nvwgf2umx!0x7ffef042f008 < nvwgf2umx!0x7ffef05b0e19 < nvwgf2umx!0x7ffef08d75a9 < nvwgf2umx!0x7ffef08389dd < nvwgf2umx!0x7ffef08483ef < nvwgf2umx!0x7ffef0848350 < nvwgf2umx!0x7ffef083cb4d < nvwgf2umx!0x7ffef0d524da < nvwgf2umx!0x7ffef116a2aa < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+
+=== 스레드 2928: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 25078.8 ~ 25088.7 (9.9ms) 이유 Executive/Wait | 깨운 것: Lilith(19032) 스레드 4080
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc05e75 < ntoskrnl!0xfffff8007fc05c60 < ntoskrnl!0xfffff8007fc053a5 < ntoskrnl!0xfffff8007fbffea1 < ntdll!0x7fff0b3ed6e4 < kernelbase!0x7fff08cba10b < unityplayer!0x7ffe72a04fb0 < unityplayer!0x7ffe71e23d4a < unityplayer!0x7ffe71e242e1 < unityplayer!0x7ffe71e21c7f < unityplayer!0x7ffe71fd43ba < unityplayer!0x7ffe71fd4624 < unityplayer!0x7ffe71e59c6a < unityplayer!0x7ffe71e59d10 < unityplayer!0x7ffe71e5c9e8 < unityplayer!0x7ffe7205d475 < unityplayer!0x7ffe7205bdbb < unityplayer!0x7ffe72060f76 < unityplayer!0x7ffe720638db < lilith!0x7ff6d61011f2 < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+  잠듦 25088.8 ~ 25098.7 (9.9ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 18008
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc05e75 < ntoskrnl!0xfffff8007fc05c60 < ntoskrnl!0xfffff8007fc053a5 < ntoskrnl!0xfffff8007fbffea1 < ntdll!0x7fff0b3ed624 < kernelbase!0x7fff08c6b6ae < nvwgf2umx!0x7ffef084898e < nvwgf2umx!0x7ffef0848305 < nvwgf2umx!0x7ffef083cb4d < nvwgf2umx!0x7ffef0d524da < nvwgf2umx!0x7ffef116a2aa < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+  잠듦 25098.7 ~ 25108.6 (9.9ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 24516
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc05e75 < ntoskrnl!0xfffff8007fc05c60 < ntoskrnl!0xfffff8007fc053a5 < ntoskrnl!0xfffff8007fbffea1 < unityplayer!0x7ffe8f32e7b6 < unityplayer!0x7ffe8f330e90 < unityplayer!0x7ffe8ed8cdf7 < !0x2368f14ff3d < !0x2368f14feab < !0x2365f582a3b < !0x23658e8d3cb < !0x2365f5d5363 < !0x2365f58302a < !0x23658e9299b < !0x235c755c8b8 < mono-2.0-bdwgc!0x7ffe711e6c0e < mono-2.0-bdwgc!0x7ffe71128984 < mono-2.0-bdwgc!0x7ffe71128a70 < unityplayer!0x7ffe8f22e4cf < unityplayer!0x7ffe8f4335ca < unityplayer!0x7ffe8f43368b < unityplayer!0x7ffe8f0a1354 < unityplayer!0x7ffe8f26de4d < unityplayer!0x7ffe8f26e014 < unityplayer!0x7ffe8f26e48e < unityplayer!0x7ffe8f4c4914 < unityplayer!0x7ffe8f4c6ded
+  잠듦 25108.6 ~ 25118.5 (9.9ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc020be
+  잠듦 25118.5 ~ 25128.4 (9.9ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc020be
+  잠듦 25128.5 ~ 25138.4 (9.9ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc020be
+  잠듦 25138.4 ~ 25148.3 (9.9ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc020be
+  잠듦 25148.8 ~ 25158.7 (9.9ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc020be
+  잠듦 25158.7 ~ 25168.6 (9.9ms) 이유 Executive/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 21144
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc05e75 < ntoskrnl!0xfffff8007fc05c60 < ntoskrnl!0xfffff8007fc053a5 < ntoskrnl!0xfffff8007fbffea1 < ntdll!0x7fff0b3ee394 < ntdll!0x7fff0b3b4811 < ntdll!0x7fff0b37f2c7 < sfnative!0x7ffedbb711cc < sfnative!0x7ffedbb74efb < sfnative!0x7ffedbb68a21 < sfnative!0x7ffedbb8609b < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+  잠듦 25168.6 ~ 25178.5 (9.9ms) 이유 Executive/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc31d3d < ntoskrnl!0xfffff8007fa482e8 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc020be
+
+=== 스레드 8288: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+
+=== 스레드 18120: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 24991.5 ~ 25099.7 (108.1ms) 이유 15/Wait | 깨운 것: System(4) 스레드 22684
+     잠든 곳: ntoskrnl!0xfffff8007fc064a4 < ntoskrnl!0xfffff8007fc05bb6 < ntoskrnl!0xfffff8007fac7260 < ntoskrnl!0xfffff8007fac678f < ntoskrnl!0xfffff8007fa56e12 < ntoskrnl!0xfffff8007fe1a86f < ntoskrnl!0xfffff8007fc11505 < ntdll!0x7fff0b3edc24 < kernelbase!0x7fff08c962ce < msvcp140!0x7ffeecb82457 < mumuplayerremotebackend!0x7ff74c8bbed3 < mumuplayerremotebackend!0x7ff74c8bbe39 < mumuplayerremotebackend!0x7ff74ca83232 < mumuplayerremotebackend!0x7ff74ca8206f < ucrtbase!0x7fff08ae1bb2 < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fa40fe8 < ntoskrnl!0xfffff8007fa3e0fd < dxgkrnl.sys!0xfffff8009fe19587 < ntoskrnl!0xfffff8007fa46f2e < ntoskrnl!0xfffff8007fa46214 < ntoskrnl!0xfffff8007fc05e75 < ntoskrnl!0xfffff8007fc05c60 < ntoskrnl!0xfffff8007fc0505d < ntoskrnl!0xfffff8007fac41da < ntoskrnl!0xfffff8007fa5f72b < ntoskrnl!0xfffff8007fa5f5c4 < dxgkrnl.sys!0xfffff8009fe08364 < dxgkrnl.sys!0xfffff8009ff23335 < dxgkrnl.sys!0xfffff8009fe07ef9 < dxgmms2.sys!0xfffff8008bf6274a < dxgmms2.sys!0xfffff8008bfd9430 < dxgmms2.sys!0xfffff8008bf8aa26 < dxgmms2.sys!0xfffff8008bf794c1 < ntoskrnl!0xfffff8007fa418f5 < ntoskrnl!0xfffff8007fb5d6e5 < ntoskrnl!0xfffff8007fc065c8
+  잠듦 25099.7 ~ 25114.6 (14.9ms) 이유 15/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fa40fe8 < ntoskrnl!0xfffff8007fa3e0fd < ntoskrnl!0xfffff8007fbcd5e5 < ntoskrnl!0xfffff8007fa42fc4 < ntoskrnl!0xfffff8007fa42e17 < acpi.sys!0xfffff80084b7fee7 < ntoskrnl!0xfffff8007fb1418f < ntoskrnl!0xfffff8007fd6fa5d < ntoskrnl!0xfffff8007fa4b359 < ntoskrnl!0xfffff8007fa482b5 < ntoskrnl!0xfffff8007fa46894 < ntoskrnl!0xfffff8007fc020be
+
+=== 스레드 12492: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 25069.2 ~ 25088.8 (19.6ms) 이유 15/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 24664
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fa40fe8 < ntoskrnl!0xfffff8007fb0dba8 < ntoskrnl!0xfffff8007fb0db5b < nvlddmkm.sys!0xfffff800c4152784 < nvlddmkm.sys!0xfffff800c47cc977 < nvlddmkm.sys!0xfffff800c481439c < nvlddmkm.sys!0xfffff800c4c0c391 < nvlddmkm.sys!0xfffff800c4c0c6d8 < nvlddmkm.sys!0xfffff800c4762546 < nvlddmkm.sys!0xfffff800c4365933 < nvlddmkm.sys!0xfffff800c4c027fb < nvlddmkm.sys!0xfffff800c4c026ed < nvlddmkm.sys!0xfffff800c4199318 < nvlddmkm.sys!0xfffff800c419a87c < nvlddmkm.sys!0xfffff800c419b8cc < nvlddmkm.sys!0xfffff800c41593ba < ntoskrnl!0xfffff8007fa46f2e < ntoskrnl!0xfffff8007fa46214 < ntoskrnl!0xfffff8007fc05e75 < ntoskrnl!0xfffff8007fc05c60 < ntoskrnl!0xfffff8007fc053a5 < ntoskrnl!0xfffff8007fbff6c1 < ntdll!0x7fff0b3ed624 < kernelbase!0x7fff08c6b6ae < unityplayer!0x7ffe904671c4 < unityplayer!0x7ffe90467bb0 < unityplayer!0x7ffe908ddfce < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+  잠듦 25088.9 ~ 25092.9 (4.0ms) 이유 15/Wait | 깨운 것: Lilith(19032) 스레드 14636
+  잠듦 25092.9 ~ 25097.4 (4.5ms) 이유 15/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25097.5 ~ 25104.6 (7.1ms) 이유 15/Wait | 깨운 것: System(4) 스레드 720
+  잠듦 25105.6 ~ 25108.0 (2.4ms) 이유 15/Wait | 깨운 것: System(4) 스레드 720
+  잠듦 25108.7 ~ 25129.2 (20.5ms) 이유 15/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 19524
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fa40fe8 < ntoskrnl!0xfffff8007fb0dba8 < ntoskrnl!0xfffff8007fb0db5b < nvlddmkm.sys!0xfffff800c4152784 < nvlddmkm.sys!0xfffff800c47cc977 < nvlddmkm.sys!0xfffff800c481439c < nvlddmkm.sys!0xfffff800c4c0c391 < nvlddmkm.sys!0xfffff800c4c0c6d8 < nvlddmkm.sys!0xfffff800c4762546 < nvlddmkm.sys!0xfffff800c4365933 < nvlddmkm.sys!0xfffff800c4c027fb < nvlddmkm.sys!0xfffff800c4c026ed < nvlddmkm.sys!0xfffff800c4199318 < nvlddmkm.sys!0xfffff800c419a87c < nvlddmkm.sys!0xfffff800c419b8cc < nvlddmkm.sys!0xfffff800c41593ba < ntoskrnl!0xfffff8007fa46f2e < ntoskrnl!0xfffff8007fa46214 < ntoskrnl!0xfffff8007fc05e75 < ntoskrnl!0xfffff8007fc05c60 < ntoskrnl!0xfffff8007fc053a5 < ntoskrnl!0xfffff8007fbff6c1 < ntdll!0x7fff0b3edc24 < kernelbase!0x7fff08c962ce < nvwgf2umx!0x7ffef0429866 < nvwgf2umx!0x7ffef084d7ea < nvwgf2umx!0x7ffef084e1d6 < nvwgf2umx!0x7ffef05574a9 < d3d11!0x7fff06584ea1
+  잠듦 25129.3 ~ 25148.9 (19.6ms) 이유 15/Wait | 깨운 것: A Dance of Fire and Ice(17808) 스레드 21144
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fa40fe8 < ntoskrnl!0xfffff8007fb0dba8 < ntoskrnl!0xfffff8007fb0db5b < nvlddmkm.sys!0xfffff800c4152784 < nvlddmkm.sys!0xfffff800c47cc977 < nvlddmkm.sys!0xfffff800c481439c < nvlddmkm.sys!0xfffff800c4c0c391 < nvlddmkm.sys!0xfffff800c4c0c6d8 < nvlddmkm.sys!0xfffff800c4762546 < nvlddmkm.sys!0xfffff800c4365933 < nvlddmkm.sys!0xfffff800c4c027fb < nvlddmkm.sys!0xfffff800c4c026ed < nvlddmkm.sys!0xfffff800c4199318 < nvlddmkm.sys!0xfffff800c419a87c < nvlddmkm.sys!0xfffff800c419b8cc < nvlddmkm.sys!0xfffff800c41593ba < ntoskrnl!0xfffff8007fa46f2e < ntoskrnl!0xfffff8007fa46214 < ntoskrnl!0xfffff8007fc05e75 < ntoskrnl!0xfffff8007fc05c60 < ntoskrnl!0xfffff8007fc053a5 < ntoskrnl!0xfffff8007fbff6c1 < ntoskrnl!0xfffff8007fc11365 < ntdll!0x7fff0b3edc24 < kernelbase!0x7fff08c962ce < nvwgf2umx!0x7ffef0429866 < nvwgf2umx!0x7ffef084d7ea < nvwgf2umx!0x7ffef084e1d6 < nvwgf2umx!0x7ffef05574a9
+  잠듦 25148.9 ~ 25164.7 (15.8ms) 이유 15/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fa40fe8 < ntoskrnl!0xfffff8007fb0dba8 < ntoskrnl!0xfffff8007fb0db5b < nvlddmkm.sys!0xfffff800c415a890 < ntoskrnl!0xfffff8007fa46f2e < ntoskrnl!0xfffff8007fa46214 < ntoskrnl!0xfffff8007fc020be
+  잠듦 25164.8 ~ 25168.2 (3.4ms) 이유 15/Wait | 깨운 것: Idle(0) 스레드 0
+  잠듦 25168.2 ~ 25173.7 (5.5ms) 이유 15/Wait | 깨운 것: Idle(0) 스레드 0
+
+=== 스레드 22684: 샘플 0개 (1ms 간격이면 그만큼 돌았다)
+  잠듦 24991.5 ~ 25099.6 (108.1ms) 이유 15/Wait | 깨운 것: Idle(0) 스레드 0
+     잠든 곳: ntoskrnl!0xfffff8007fc064a4 < ntoskrnl!0xfffff8007fc05df4 < ntoskrnl!0xfffff8007fc0505d < unityplayer!0x7ffe8f5dae4c < unityplayer!0x7ffe900582c6 < unityplayer!0x7ffe9006331b < unityplayer!0x7ffe90056b0d < unityplayer!0x7ffe90056a5c < unityplayer!0x7ffe8ff7aae4 < kernel32!0x7fff0b197374 < ntdll!0x7fff0b39cc91
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fa40fe8 < ntoskrnl!0xfffff8007fa3e0fd < dxgmms2.sys!0xfffff8008bf8b0f6 < dxgmms2.sys!0xfffff8008bf7aedd < dxgmms2.sys!0xfffff8008bf66e64 < dxgkrnl.sys!0xfffff8009fe0e272 < nvlddmkm.sys!0xfffff800c4e41892 < nvlddmkm.sys!0xfffff800c4e41555 < nvlddmkm.sys!0xfffff800c4126f20 < ntoskrnl!0xfffff8007fa46f2e < ntoskrnl!0xfffff8007fa46214 < ntoskrnl!0xfffff8007fc020be
+  잠듦 25099.7 ~ 25114.8 (15.2ms) 이유 15/Wait | 깨운 것: System(4) 스레드 18120
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fa40fe8 < ntoskrnl!0xfffff8007fa3e0fd < ntoskrnl!0xfffff8007fbcd5e5 < ntoskrnl!0xfffff8007fa42fc4 < ntoskrnl!0xfffff8007fa42e17 < acpi.sys!0xfffff80084b330dc < acpi.sys!0xfffff80084b32bd9 < acpi.sys!0xfffff80084b32774 < acpi.sys!0xfffff80084b210d6 < ntoskrnl!0xfffff8007fad21c5 < ntoskrnl!0xfffff8007ffc0ae8 < ntoskrnl!0xfffff8007fa418f5 < ntoskrnl!0xfffff8007fb5d6e5 < ntoskrnl!0xfffff8007fc065c8
+  잠듦 25114.8 ~ 25129.9 (15.1ms) 이유 15/Wait | 깨운 것: Idle(0) 스레드 0
+     깨운 곳: ntoskrnl!0xfffff8007fc550f9 < ntoskrnl!0xfffff8007fa40fe8 < ntoskrnl!0xfffff8007fa3e0fd < dxgmms2.sys!0xfffff8008bf755ad < ntoskrnl!0xfffff8007fa47582 < ntoskrnl!0xfffff8007fa465fd < ntoskrnl!0xfffff8007fc020be

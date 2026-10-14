@@ -28,11 +28,17 @@ static class Program
         double t0 = hit - before, t1 = hit + after;
         Console.WriteLine($"기록 시작 {start:HH:mm:ss.fff}, 끊김 {hit:F1}ms, 구간 {t0:F1} ~ {t1:F1}");
 
+        if (Environment.GetEnvironmentVariable("ETW_PROCS") == "1")
+        {
+            foreach (var p in log.Processes) Console.WriteLine($"PID {p.ProcessID} {p.Name}");
+            return 0;
+        }
         var proc = log.Processes.FirstOrDefault(p => p.ProcessID == pid);
         if (proc == null) { Console.WriteLine("프로세스 없음"); return 1; }
 
         // 필요한 모듈 심볼만
         string symPath = @"C:\Users\Public\StutterFixTrace\symbols;SRV*C:\Users\Public\StutterFixTrace\symbols*https://msdl.microsoft.com/download/symbols";
+        if (Environment.GetEnvironmentVariable("ETW_LOCAL") == "1") symPath = @"SRV*C:\Users\Public\StutterFixTrace\symbols";
         using (var reader = new SymbolReader(TextWriter.Null, symPath))
         {
             reader.SecurityCheck = _ => true;
@@ -79,7 +85,7 @@ static class Program
             {
                 runningOnCpu[c.ProcessorNumber] = c.NewThreadID;
                 if (procThreads.Contains(c.NewThreadID) || procThreads.Contains(c.OldThreadID))
-                    cs.Add((t, c.NewThreadID, c.OldThreadID, c.ProcessorNumber, c.OldThreadWaitReason.ToString(), c.OldThreadState.ToString(), c.CallStack()));
+                    cs.Add((t, c.NewThreadID, c.OldThreadID, c.ProcessorNumber, c.OldThreadWaitReason.ToString(), c.OldThreadState.ToString(), log.CallStacks[c.BlockingStack()]));
             }
             else if (ev is DispatcherReadyThreadTraceData r)
             {
@@ -89,29 +95,41 @@ static class Program
         }
 
         foreach (var kv in kinds.OrderByDescending(x => x.Value).Take(40)) Console.WriteLine("  이벤트 " + kv.Value + " " + kv.Key);
-        string Who(int tid)
+        string Who(int tid, double time)
         {
-            var th = log.Threads.FirstOrDefault(x => x.ThreadID == tid && x.Process != null);
-            return th == null ? "스레드 " + tid : th.Process.Name + "(" + th.Process.ProcessID + ") 스레드 " + tid;
+            var th = log.Threads.GetThread(tid, time);
+            return th == null || th.Process == null ? "스레드 " + tid : th.Process.Name + "(" + th.Process.ProcessID + ") 스레드 " + tid;
         }
 
-        foreach (var kv in samplesByThread.OrderByDescending(k => k.Value.Count).Take(6))
+        Console.WriteLine($"Game CPU samples {samplesByThread.Sum(x => x.Value.Count)} / window {t1 - t0:F1}ms");
+        foreach (var group in samplesByThread.SelectMany(x => x.Value).GroupBy(x => Stack(x.st, 14)).OrderByDescending(x => x.Count()).Take(20))
+            Console.WriteLine($"Top stack {group.Count()} samples {group.Key}");
+        foreach (var kv in samplesByThread.OrderByDescending(x => x.Value.Count))
+        {
+            int native = kv.Value.Count(x => Stack(x.st, 60).Contains("sfnative!"));
+            int jit = kv.Value.Count(x => Stack(x.st, 60).Contains("!0x") && Stack(x.st, 60).Contains("mono-2.0-bdwgc!"));
+            Console.WriteLine($"Thread summary {kv.Key}: total={kv.Value.Count}, stacks including sfnative={native}, unresolved Mono/JIT candidates={jit}");
+        }
+        foreach (var tid in procThreads)
+            if (!samplesByThread.ContainsKey(tid) && cs.Any(x => (x.tidOut == tid || x.tidIn == tid) && x.t >= t0 && x.t <= t1))
+                samplesByThread[tid] = new List<(double, TraceCallStack)>();
+        foreach (var kv in samplesByThread.OrderByDescending(k => k.Value.Count).Take(Environment.GetEnvironmentVariable("ETW_ALL_THREADS") == "1" ? int.MaxValue : 6))
         {
             int tid = kv.Key;
             Console.WriteLine();
             Console.WriteLine($"=== 스레드 {tid}: 샘플 {kv.Value.Count}개 (1ms 간격이면 그만큼 돌았다)");
             // 잠든 구간 (나갔다가 들어온 사이)
             double outAt = -1; string why = ""; TraceCallStack outStack = null;
-            foreach (var c in cs.Where(x => x.t >= t0 && x.t <= t1))
+            foreach (var c in cs.Where(x => x.t <= t1))
             {
                 if (c.tidOut == tid) { outAt = c.t; why = c.why + "/" + c.state; outStack = c.st; }
                 if (c.tidIn == tid && outAt >= 0)
                 {
                     double gap = c.t - outAt;
-                    if (gap >= 1.0)
+                    if (gap >= 1.0 && c.t >= t0)
                     {
                         var rd = ready.LastOrDefault(r => r.tid == tid && r.t <= c.t && r.t >= outAt);
-                        Console.WriteLine($"  잠듦 {outAt:F1} ~ {c.t:F1} ({gap:F1}ms) 이유 {why} | 깨운 것: {(rd.by != 0 || rd.t > 0 ? Who(rd.by) : "?")}");
+                        Console.WriteLine($"  잠듦 {outAt:F1} ~ {c.t:F1} ({gap:F1}ms) 이유 {why} | 깨운 것: {(rd.by != 0 || rd.t > 0 ? Who(rd.by, rd.t) : "?")}");
                         if (gap >= 8 && outStack != null) Console.WriteLine("     잠든 곳: " + Stack(outStack, 40));
                         if (gap >= 8 && rd.st != null) Console.WriteLine("     깨운 곳: " + Stack(rd.st, 30));
                     }
@@ -127,7 +145,7 @@ static class Program
                 if (st != last) { Flush(s.t); last = st; from = s.t; n = 0; }
                 n++;
             }
-            Flush(kv.Value.Max(x => x.t));
+            if (kv.Value.Count > 0) Flush(kv.Value.Max(x => x.t));
         }
         return 0;
     }

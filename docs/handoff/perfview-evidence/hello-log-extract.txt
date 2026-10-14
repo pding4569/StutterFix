@@ -1,0 +1,15 @@
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [자동 시험] [임무단계] wait 10811.098ms
+[StutterFix] [자동 시험] 기록 시작 요청: mission-hello-open-game 180초, 시각 00:41:38.474
+[StutterFix] [자동 시험] 기록 시작됨 (started mission-hello-open-game 180 2026-10-15T00:41:39), 시각 00:41:42.476
+[StutterFix] [자동 시험] [임무단계] trace 4125.524ms
+[StutterFix] [모니터] 36ms -> 게임 처리 / gpu 1.0 cpu 36.5 (수집 4575번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 시각 00:41:44.122
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 718장, VRAM 전체 6516MB / 게임 4769MB
+[StutterFix] [자동 시험] 게임 화면 맵 열림 (13.8초, 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] game 16808.422ms
+[StutterFix] [자동 시험] [임무단계] auto 2.719ms
+[StutterFix] [자동 시험] [임무단계] press 5.249ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 5초 지남 | 시작 뒤 5.0초, 유니티 프레임 1226개, 곡 위치 0.50초, 현재 타일 0, 상태 Countdown, 일시정지 False | 프레임 늘리기: active=True native_installed=1 sources=6354 generated=3434 runtime_initialized=True status= missed_lock=7 missed_timer=181 outputs=9787 frame_begins=6353 worker_wait_ms=0 stalled=61 early_sources=42 sources_n=1225 interval_us_sum=4282356 shown=9788 real_gpu_us=742/1224 held=4489/43/0 hints=0/0
+[StutterFix] [자동 시험] [임무단계] wait 125002.423ms
+[StutterFix] [자동 시험] [임무단계] wait 45001.329ms
+[StutterFix] [자동 시험] [임무단계] quit 6.263ms

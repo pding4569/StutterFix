@@ -1,0 +1,9 @@
+[
+  "걸린 시간 348초, 로그 C:\\Users\\나로컴\\AppData\\Local\\StutterFix\\runs\\20261015-003258-mission-wind-game2.log\n설정 덮어씀(끝나고 되돌림): ImageMaxSide=3072\n\n=== 설치 상태 ===\n오류 없음\n\n=== 자동 시험 ===\n시작: 8단계 - game D:/얼불춤 맵 파일/Windflower/Windflower.adofai / auto on / press / wait 120 / wait 115 / trace mission-wind-game2 65 / wait 65 / quit\nUMM 창 닫음\n게임 화면으로 맵 열기: D:/얼불춤 맵 파일/Windflower/Windflower.adofai\n게임 화면 맵 열림 (11.4초, 2초 기다림 포함)\n[임무단계] game 21428.337ms\n자동 플레이 켬 (재생 때마다 다시 맞춤)\n[임무단계] auto 3.041ms\n키 누름\n[임무단계] press 5.666ms\n[임무단계] wait 119999.691ms\n[임무단계] wait 115000.929ms\n기록 시작 요청: mission-wind-game2 65초, 시각 00:37:32.201\n기록 시작됨 (started mission-wind-game2 65 2026-10-15T00:37:34), 시각 00:37:36.204\n[임무단계] trace 4006.238ms\n[임무단계] wait 65004.096ms\n끝 - 게임을 끕니다\n[임무단계] quit 4.242ms\n\n플레이 기록 없음",
+  {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  }
+]

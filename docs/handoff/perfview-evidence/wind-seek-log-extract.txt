@@ -1,0 +1,15 @@
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [자동 시험] [임무단계] open 23881.097ms
+[StutterFix] [자동 시험] [임무단계] auto 4.326ms
+[StutterFix] [자동 시험] 기록 시작 요청: mission-wind-seek 65초, 시각 00:23:12.860
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 1076장, VRAM 전체 6789MB / 게임 5135MB
+[StutterFix] [자동 시험] 기록 시작됨 (started mission-wind-seek 65 2026-10-15T00:23:14), 시각 00:23:16.863
+[StutterFix] [자동 시험] [임무단계] trace 4008.759ms
+[StutterFix] [자동 시험] 264.0초 25초 앞: 타일 824 (그 타일 239.1초) 선택
+[StutterFix] [자동 시험] [임무단계] seek 913.890ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 824 (0.4초)
+[StutterFix] [모니터] 36ms -> 게임 바깥 / gpu 16.9 cpu 9.0 (수집 8604번) 효과 3.1 모드 0.0(모니터 그리기) gc 0 | 곡 22.9초, 다시 보이게 된 장식 126개 | 시각 00:23:40.837
+[StutterFix] [자동 시험] [임무단계] wait 44094.162ms
+[StutterFix] [자동 시험] [임무단계] stop 1111.178ms
+[StutterFix] [자동 시험] [임무단계] wait 13895.745ms
+[StutterFix] [자동 시험] [임무단계] quit 5.881ms

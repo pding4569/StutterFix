@@ -1,0 +1,8 @@
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [자동 시험] 게임 화면 맵 열림 (11.4초, 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] game 21442.511ms
+[StutterFix] [자동 시험] [임무단계] auto 3.180ms
+[StutterFix] [자동 시험] [임무단계] press 5.362ms
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 1076장, VRAM 전체 7196MB / 게임 5562MB
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 5초 지남 | 시작 뒤 5.0초, 유니티 프레임 1227개, 곡 위치 1.85초, 현재 타일 0, 상태 Countdown, 일시정지 False | 프레임 늘리기: active=True native_installed=1 sources=5129 generated=3480 runtime_initialized=True status= missed_lock=7 missed_timer=119 outputs=8608 frame_begins=5128 worker_wait_ms=0 stalled=18 early_sources=122 sources_n=1226 interval_us_sum=4678578 shown=8609 real_gpu_us=1367/1225 held=4525/37/0 hints=0/0
+[StutterFix] [자동 시험] 시간 초과 (wait 235) - 게임을 끕니다
