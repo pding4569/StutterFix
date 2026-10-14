@@ -247,7 +247,10 @@ float3 colorAt(float2 uv,out bool moving) {
                     float3 dA=pA-worldColor(newWorld,toUV(sa2,camNew));
                     float3 dB=pB-worldColor(oldWorld,toUV(sb2,camOld));
                     float3 dd=lerp(dA,dB,info.z);
-                    delta+=m*sign(dd)*max(abs(dd)-.02,0.); // film grain/dither differs between pictures: not part of the planet
+                    // Only light is added: where the other picture is brighter at that world point (the planet's own glow or
+                    // trail there, a tile lit by the hit) the difference is negative and subtracting it drew a black rim
+                    // around the ball. The sprite's own dark parts come with the pasted core below.
+                    delta+=m*max(dd-.02,0.); // film grain/dither differs between pictures: not part of the planet
                     // Sprite: opaque, so its core is pasted (no background shows through it, whatever is under it now).
                     float mc=smoothstep(radius*.75,radius*.55,dist);
                     // The pasted sprite carries the glow it had at its source. Where the background here is much

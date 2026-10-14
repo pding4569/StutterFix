@@ -850,7 +850,7 @@ inline void Output::render(const Slot& newest,bool real,double tick) {
     // 10 ms). Use the pair that brackets it, one slot back, instead of holding the older frame of the newest pair.
     double delay=labelledTick?timelineDelay():0;
     const Slot* chosen=&newest;
-    if(labelledTick && tearTimeline() && newest.sequence>2) {
+    if(labelledTick && newest.sequence>2) { // refresh-matched labels too: 60 FPS cap, 17% of outputs held without it
         const auto& back=slots[(newest.sequence-1)%slots.size()];
         const auto& back2=slots[(newest.sequence-2)%slots.size()];
         if(tick-delay<back.qpc) {

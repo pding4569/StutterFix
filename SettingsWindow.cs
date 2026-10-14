@@ -1665,11 +1665,6 @@ namespace StutterFix
                 }
                 P(T("만든 화면을 기다리지 않고 바로 내보내 모니터에 찢어짐 조각으로 보입니다. 주사율보다 많은 장이 보여 부드럽고 지연이 적지만 화면에 찢어짐 선이 생깁니다.",
                     "Outputs are presented immediately and show up as tearing slices, so more pictures than the refresh rate reach the screen with little delay, at the cost of visible tear lines."), sDim);
-                bool steady = c.FrameGenSteady;
-                if (Option("framegensteady", ref steady, T("진짜 FPS 고르게", "Even out real FPS"),
-                    T("게임에 FPS 제한이 없으면 곡 중에만 이 PC가 지킬 수 있는 진짜 FPS 로 자동 제한합니다. 진짜 프레임이 고르게 와야 사이 화면이 멈추거나 튀지 않습니다. 게임에서 FPS 제한을 직접 걸었다면 그 값을 그대로 씁니다.",
-                      "Without a game FPS limit, real FPS is capped during play at a rate this PC can hold, so real frames arrive evenly and in-between pictures neither freeze nor jump. A limit you set in the game is kept."), null))
-                { c.FrameGenSteady = steady; Save(); }
                 string overlay = PresentWatch.OverlayNamesCached();
                 if (overlay != null)
                     P(T("게임 화면 위에 다른 창이 떠 있어 찢어짐 출력이 막힙니다: " + overlay + ". 이 프로그램(데스크톱 캐릭터·오버레이 등)을 끄면 만든 화면이 바로 보이고 지연도 줄어듭니다.",
