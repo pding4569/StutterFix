@@ -126,3 +126,7 @@ FilterIdentity.cs? DEV/AUTOTEST ?? FilterIdentityProbe.cs, AutoTest ?? filteride
    각 후보에 "지워도 되는 근거(코드 위치)"와 "위험"을 적는다.
 4. 빌드 확인: `dotnet build -p:Edition=Player -p:AutoTestBuild=1` 오류 0, `-p:Edition=Player` 오류 0. 정식 DLL 에 PatchHot 이 없음을 확인.
 5. 마지막 메시지에 요약과 Claude 가 돌릴 시험 순서(`sf_run` 단계)를 적는다.
+
+### 작업 6 결과 (2026-10-14)
+
+`docs/handoff/mod-audit.md`에 전체 설치 지점 216개(루프·오버로드 확장 전), 기능별 대상·빈도·설정·겹침, 삭제/분리 후보와 위험, 로컬 게임 DLL 이름·서명 및 정식 진단 형식 포함 여부를 기록했다. `PatchHot.cs`, AutoTest `patchhot on|state|off`, Hitch 곡 시계, Main.Unload 해제, csproj DEV/AUTOTEST 조건부 Compile을 추가했다. 호출 경로는 주 스레드 곡 중 long 배열 카운터와 시간 1/64 표본이며 설치 밖 반사·잠금·할당이 없다. 시간은 원래 함수·다른 패치까지 포함한다. PlayerAuto/Player 빌드는 오류 0, 정식 DLL의 PatchHot/WasteProbe는 ILScan 형식 0개. 게임과 무관한 로컬 Harmony 시험에서 128호출/2표본, 작업 스레드 제외, owner별 해제, off/on 초기화를 확인했다. 실게임 표본 0판, FPS·끊김·Unity Mono 동작은 Claude 시험이 남는다. 시험은 맵 열기→patchhot on→press→waitend→patchhot state→patchhot off→quit 순서이며 상세 sf_run은 감사 문서에 있다. 기존 기능 삭제·게임 실행·Mods 설치·커밋·푸시는 하지 않았고 현재 codex/shader 작업 트리를 보존했다.

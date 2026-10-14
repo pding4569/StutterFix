@@ -408,6 +408,7 @@ namespace StutterFix
             Try(SlowScan.Shutdown);
 #if DEV || AUTOTEST
             Try(WasteProbe.Off);
+            Try(PatchHot.Off);
 #endif
             Try(WindowGhost.StopWatch);
 

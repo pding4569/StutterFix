@@ -831,6 +831,15 @@ namespace StutterFix
 #if DEV || AUTOTEST
                 case "filteridentity":
                     FilterIdentityProbe.Command(arg); return true;
+                case "patchhot":
+                    switch (arg.Trim().ToLowerInvariant())
+                    {
+                        case "on": PatchHot.On(); break;
+                        case "off": PatchHot.Off(); break;
+                        case "state": PatchHot.State(); break;
+                        default: throw new Exception("patchhot on|state|off");
+                    }
+                    return true;
                 case "wasteprobe":
                     switch (arg.Trim().ToLowerInvariant())
                     {
