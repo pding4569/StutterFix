@@ -45,6 +45,8 @@
     <Compile Include="ScriptProbe.cs" />
     <Compile Include="FloorProf.cs" />
     <Compile Include="TypeCache.cs" />
+    <Compile Include="FilterIdentity.cs" />
+    <Compile Include="FilterIdentityProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileCull.cs" />
     <Compile Include="EditorPick.cs" />
     <Compile Include="TimeProbe.cs" />

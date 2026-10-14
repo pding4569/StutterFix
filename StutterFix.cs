@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -196,6 +196,7 @@ namespace StutterFix
                 Try(() => BeatFix.Install(harmony));   // 박자 알림에서 아무것도 안 하는 타일 건너뛰기 (BeatFix.cs)
                 Try(() => MatReuse.Install(harmony));   // 타일 머티리얼 누수 막기 (MatReuse.cs)
                 Try(() => EditorPick.Install(harmony));   // 큰 맵 편집 화면 클릭 끊김 (EditorPick.cs)
+                Try(() => FilterIdentity.Install(harmony));
                 Try(() => TypeCache.Install(harmony));   // 고급 필터 형식 찾기 기억 (TypeCache.cs)
                 Try(() => MeshWarm.Install(harmony));   // 색 바꾸기가 곡 중에 만들 타일 메시 미리 만들기 (MeshWarm.cs)
                 Try(() => SoundWarm.Install(harmony));   // 곡 중에 처음 쓰는 효과음 미리 불러오기 (SoundWarm.cs)
@@ -374,6 +375,7 @@ namespace StutterFix
             EndDisplayTransition();
             Try(FrameGen.Shutdown);
             Try(ScreenEffects.Shutdown);
+            Try(FilterIdentity.Shutdown);
             Try(GcControl.Shutdown);
             Try(GameScreenButton.Remove);
             Try(LowEnd.Shutdown);
@@ -689,6 +691,7 @@ namespace StutterFix
             BeatFix.Enabled = Dormancy.Enabled; EditorPick.Enabled = Dormancy.Enabled;
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);
             TypeCache.Enabled = E("FilterTypeCache", Config.FilterTypeCache);
+            FilterIdentity.Enabled = E("FilterIdentity", Config.FilterIdentity);
             global::StutterFix.MeshWarm.Enabled = E("MeshWarm", Config.MeshWarm);
             global::StutterFix.SoundWarm.Enabled = E("SoundWarm", Config.SoundWarm);
             ImagePrefetch.Enabled = E("ImagePrefetch", Config.ImagePrefetch);
@@ -909,6 +912,7 @@ namespace StutterFix
         public bool HideJudgePerfect = false;
         public bool NoPlayZoom = false;    // 에디터 재생 중 마우스 휠로 화면 크기 바꾸기 막기
         public bool DecoAnim = true;       // 길이 있는 장식 이동의 애니메이션을 DOTween 대신 모드가 돌림
+        public bool FilterIdentity = false; // (실험) 픽셀 대조를 통과한 효과 없는 필터만 건너뛰기. HELLO 2026 에서 이득이 프레임당 0.03ms 이하라 기본 끔
         public bool FilterTypeCache = true; // 고급 필터의 형식 찾기(Type.GetType, 한 번 약 0.7ms) 결과를 기억
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기
         public bool SoundWarm = true;

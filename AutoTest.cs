@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -829,6 +829,8 @@ namespace StutterFix
                     Finish("끝");
                     return true;
 #if DEV || AUTOTEST
+                case "filteridentity":
+                    FilterIdentityProbe.Command(arg); return true;
                 case "wasteprobe":
                     switch (arg.Trim().ToLowerInvariant())
                     {
