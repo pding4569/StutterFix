@@ -1,0 +1,52 @@
+# Codex 작업 목록 (Claude 와 나눠 하기)
+
+Claude 가 설계·검토·합치기를 맡고, 토큰이 많이 드는 반복 작업(픽셀 대조, 코드 훑기, 반복 측정)은 Codex 가 맡는다.
+규칙은 `AGENTS.md` 그대로(한국어, 측정 근거, 원래 게임과 같은 화면, Main.Unload 되돌리기).
+
+**공통 규칙**
+- 작업 브랜치: `codex/<작업 이름>` (예: `codex/filter-identity`). `codex/shader`·`main` 에 직접 커밋하지 않는다. Claude 가 검토 후 합친다.
+- 시작 전에 `git fetch` 후 `origin/codex/shader` 에서 브랜치를 딴다.
+- 끝나면 이 파일 맨 아래 **결과** 절에 한 단락: 무엇을 바꿨는지, 측정값(전/후, 표본 수), 확인 못 한 것. 그리고 푸시.
+- 게임 시험은 `sfmeasure`(`tools/sfmeasure`) 가 붙어 있으면 `sf_run` 으로. 자동 시험 빌드는
+  `dotnet build -p:Edition=Player -p:AutoTestBuild=1` → `bin/PlayerAuto/StutterFix.dll` 을 Mods 에 복사. 시험 뒤 정식 `bin/Player` DLL 로 되돌린다.
+- 시험 맵: HELLO 2026 `D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai` (게임 화면: `auto on`, `game <맵>`, `press`).
+- 프레임 늘리기 고정 2~8배에서 생성을 자동으로 쉬거나 FPS 를 자동 제한하는 것은 **넣지 않는다**(사용자 결정).
+
+---
+
+## 작업 1: 효과 없는 값으로 켜진 카메라 필터 건너뛰기 (`codex/filter-identity`)
+
+**배경**: HELLO 2026 에서 5초마다 켜진 카메라 필터(CameraFilterPack)를 찍었다(자동 시험 `filterstate`, 커밋 28fe938).
+동시에 0~11개가 켜지고, 화면을 바꾸지 않는 값으로 켜진 것이 구간마다 1~2개 있다:
+`Color_Chromatic_Aberration(Offset=0)`, `Colors_Brightness(_Brightness=1)`, `Distortion_Dream2(Distortion=0)`,
+`TV_Chromatical(Intensity=0)`, `Color_BrightContrastSaturation(1,1,1)`, `Color_Contrast(Contrast=1)` 등.
+필터 하나는 화면 전체를 한 번 다시 그린다(OnRenderImage 의 Graphics.Blit). 느린 GPU(내장 그래픽) 일수록 이득이 크다.
+
+**할 일**
+1. HELLO 2026 곡 전체에서 `filterstate` 를 2초마다 찍어, 필터 종류별로 "등장 수"와 "효과 없는 값일 때의 수"를 표로 만든다.
+2. 후보 필터마다 그 값에서 정말 화면이 같은지 **픽셀로** 확인한다:
+   같은 프레임에서 그 필터 컴포넌트를 켠 결과와 끈 결과를 RenderTexture 로 받아 바이트 비교(차이 0 또는 최대 1/255).
+   셰이더가 시간(_Time)·노이즈를 쓰면 같은 값이어도 다를 수 있다. 그런 필터는 후보에서 뺀다.
+   검증 도구는 AutoTest 명령으로 만든다(DEV/AUTOTEST 전용, 정식 빌드에 안 들어가게).
+3. 통과한 필터만 건너뛴다. 방법: 해당 필터 타입의 `OnRenderImage` 에 Harmony prefix,
+   효과 없는 값이면 `Graphics.Blit(src, dst)` 하고 원래 함수를 건너뛴다(또는 더 싸게 할 수 있으면 그 방법, 근거와 함께).
+   컴포넌트의 enabled 를 직접 바꾸지 않는다(게임이 그 값을 쓴다). 설정 항목은 기존 저사양/최적화 쪽에 기본 켬으로.
+4. 측정: 같은 구간 `sf_ab`(판마다 새로 켬) 4판 이상, 곡 평균 FPS·GPU 평균. 이 PC(RTX 4060 Ti, 3440x1440)에서는 이득이 작을 수 있다.
+   이득이 0.1ms 미만이면 그대로 결과에 적고 넣지 말지 Claude 에게 판단을 넘긴다.
+
+---
+
+## 작업 2: 게임 함수의 흔한 낭비 훑기 (`codex/game-waste-scan`) — 코드 변경 없음, 목록만
+
+`tools/ilscan` 으로 게임 DLL(Assembly-CSharp)에서 매 프레임 도는 함수(Update/LateUpdate/FixedUpdate/OnGUI,
+scrController·scrPlanet·scrFloor·scrConductor·scnGame·ffx* 의 Update 류)를 훑어 흔한 낭비 후보를 찾는다:
+`GetComponent`/`FindObjectsOfType`/`Camera.main` 반복 호출, 문자열 합치기·`ToString`, LINQ·람다 할당, 리스트 전체 훑기,
+같은 값 다시 넣기. 이미 모드가 고친 것(`AGENTS.md` "확정된 원인과 해결")은 뺀다.
+결과는 `docs/handoff/game-waste-candidates.md` 에: 함수, 낭비 종류, 호출 빈도 추정(매 프레임/타일마다/효과마다), 고치기 쉬움.
+디컴파일한 게임 코드를 저장소에 넣지 않는다(함수 이름과 설명만).
+
+---
+
+## 결과
+
+(Codex 가 작업마다 한 단락씩 적는다)
