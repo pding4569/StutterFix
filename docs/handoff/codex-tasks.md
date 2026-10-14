@@ -50,3 +50,19 @@ scrController·scrPlanet·scrFloor·scrConductor·scnGame·ffx* 의 Update 류)�
 ## 결과
 
 (Codex 가 작업마다 한 단락씩 적는다)
+
+---
+
+## 작업 3: 낭비 후보 10개의 실제 호출 수·시간 재기 (`codex/waste-measure`)
+
+`docs/handoff/game-waste-candidates.md` 의 상위 10개 함수가 곡 중 실제로 얼마나 불리고 얼마나 걸리는지 잰다. **게임은 Claude 가 돌린다.**
+Codex 는 측정 코드와 결과 정리만 한다(게임 실행·정식 DLL 교체 금지).
+
+1. 개발자 전용(`#if DEV || AUTOTEST`, 정식 빌드에 안 들어감) 측정기 `WasteProbe.cs` 를 만든다. 후보 10개 함수에 Harmony prefix/postfix 를 걸어:
+   - 곡 중(`Hitch.Playing`)에만 호출 수를 센다. 정적 `long` 배열, 잠금·할당 없음.
+   - 시간은 64번에 한 번만 `Stopwatch` 로 잰다(호출이 많은 곳을 항상 재면 측정이 비용을 덮는다. AGENTS.md "측정에서 배운 것").
+   - 후보 중 `UpdateHitboxSizes` 는 에디터 전용이라 곡 중 0 일 수 있다. 0 이면 0 으로 적는다.
+2. 자동 시험 명령 `wasteprobe on|off|state|reset` 을 `AutoTest.cs` 에 추가한다. `state` 는 함수별 `[낭비 측정] 이름 호출 N회 (초당 M), 잰 표본 K개 평균 X µs, 추정 합계 Y ms` 를 한 줄씩 로그에 낸다. `Main.Unload` 에서 패치를 되돌린다.
+3. 빌드 확인: `dotnet build -p:Edition=Player -p:AutoTestBuild=1` 오류 0. 정식 빌드(`-p:Edition=Player`)에 `WasteProbe` 가 안 들어가는지 확인한다.
+4. 끝나면 결과 절에 쓴 명령(`wasteprobe` 사용법)과, Claude 가 돌릴 시험 순서(`sf_run` 단계)를 적는다.
+5. 커밋·푸시는 하지 않는다.
