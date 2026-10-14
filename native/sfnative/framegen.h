@@ -305,7 +305,7 @@ public:
     // of 1246 real Presents never shown, each followed by a 12 ms gap). Labelling it later does not help: anything
     // presented after it queues behind its GPU work and replaces it. So when real frames finish late, the worker renders
     // that refresh too and the real image is shown only if it happens to be in time.
-    void drawReal() { std::lock_guard<std::mutex> gate(mutex); auto& s=slots[published%slots.size()]; if(s.sequence) { double tick=s.qpc; if(labelled()) { double at=now(); tick=queueMode.load()?claimSlot(at):clock.label(at,lead()); realLabelSequence=s.sequence; realLabelTime=tick; realLabelAt=at; realLabelled=true; labelledTick=true; realLabelKey=static_cast<long long>(tick*1e6); } render(s,true,tick); realLabelled=false; labelledTick=false; } }
+    void drawReal() { std::lock_guard<std::mutex> gate(mutex); auto& s=slots[published%slots.size()]; if(s.sequence) { double tick=s.qpc; if(labelled()) { double at=now(); tick=queueMode.load()?claimSlot(at):clock.label(at,lead()); realLabelSequence=s.sequence; realLabelTime=tick; realLabelAt=at; realLabelled=true; labelledTick=true; realLabelKey=static_cast<long long>(tick*1e6); } else if(tearTimeline()) { tick=now()+lead(); realLabelled=true; labelledTick=true; } render(s,true,tick); realLabelled=false; labelledTick=false; } }
     // GPU completion of real Presents: event queries the worker polls without waiting.
     std::array<ComPtr<ID3D11Query>,8> realDone; std::array<double,8> realSubmit{}; std::array<bool,8> realPending{}; unsigned realQueries=0;
     double realLatency=0; unsigned long long realLatencySamples=0;
@@ -329,6 +329,11 @@ public:
     }
     bool labelled() { int hz=refreshRate.load(); if(mode.load()!=9 || hz<=0 || leadMicros.load()<=0) return false; clock.update(now()); return clock.valid; }
     double lead() const { return leadMicros.load()/1e6; }
+    // Fixed 2-8x with tearing: every output is shown as soon as it is presented (a slice of the scan), so its picture
+    // time is simply "now minus a steady delay" on the true frames' own timeline, real Presents included. The old
+    // phase = age / last true interval broke where true Presents come in pairs (2 ms, 10 ms, 2 ms...): after a short
+    // one the phase hit 1 at once and 52% of outputs repeated the same picture (HELLO 2026, 4x, PresentMon 893/s).
+    bool tearTimeline() const { int m=mode.load(); return m>=2 && m<=8 && leadMicros.load()>0; }
     HRESULT present() {
         ContextLock context(protection.Get());
         ComPtr<ID3D11RenderTargetView> old[8]; ID3D11RenderTargetView* restore[8]{}; ComPtr<ID3D11DepthStencilView> z;
@@ -698,6 +703,8 @@ private:
                         double interval=s.period/currentMode;
                         bool continuous=s.packet.textures[1]==reinterpret_cast<void*>(1);
                         if(continuous) interval=s.period/(currentMode-1);
+                        bool tear=currentMode>=2 && currentMode<=8 && tearTimeline();
+                        if(tear && continuous) interval=std::clamp(smoothInterval>0?smoothInterval:s.period,.001,.05)/(currentMode-1); // steady spacing, not the last (paired) interval
                         if(currentMode==9) {
                             int hz=refreshRate.load();
                             if(hz<=0) { deadline=0;seen=s.sequence;mode=0;continue; }
@@ -737,7 +744,8 @@ private:
                             }
                         }
                         if(displayClock?clockDue:t>=deadline) {
-                            labelledTick=displayClock;
+                            labelledTick=displayClock||tear;
+                            if(tear) renderTick=now()+lead();
                             render(s,false,renderTick);
                             labelledTick=false;
                             if(displayClock) { labelSequence=s.sequence; labelTime=renderTick; }

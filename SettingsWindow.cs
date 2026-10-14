@@ -1663,6 +1663,12 @@ namespace StutterFix
                     c.FrameGenMultiplier = c.FrameGenOutside = Mathf.RoundToInt(multiplier);
                     Save();
                 }
+                P(T("만든 화면을 기다리지 않고 바로 내보내 모니터에 찢어짐 조각으로 보입니다. 주사율보다 많은 장이 보여 부드럽고 지연이 적지만 화면에 찢어짐 선이 생깁니다.",
+                    "Outputs are presented immediately and show up as tearing slices, so more pictures than the refresh rate reach the screen with little delay, at the cost of visible tear lines."), sDim);
+                string overlay = PresentWatch.OverlayNamesCached();
+                if (overlay != null)
+                    P(T("게임 화면 위에 다른 창이 떠 있어 찢어짐 출력이 막힙니다: " + overlay + ". 이 프로그램(데스크톱 캐릭터·오버레이 등)을 끄면 만든 화면이 바로 보이고 지연도 줄어듭니다.",
+                        "A window on top of the game blocks tearing output: " + overlay + ". Close it (desktop pets, overlays, etc.) so generated pictures show at once with less delay."), sTag);
                 }
                 // 못 믿는 곳(공 둘레 등)을 가까운 진짜 그림 하나로 두면 그 곳은 진짜 프레임 속도로만 움직인다. 두 진짜 그림을 섞으면 움직임이 고르다.
                 int blend = Mathf.Clamp(c.FrameGenBlend, 0, 2);

@@ -287,6 +287,36 @@ namespace StutterFix
             return sb.ToString();
         }
 
+        // 프레임 늘리기 고정 배율(찢어짐 출력)은 게임 창 위에 다른 창이 있으면 윈도우가 합성 경로로 바꿔 갱신마다 한 장만 보이고
+        // 지연이 늘어난다(HELLO 2026 4배: 데스크톱 캐릭터 창이 있을 때 출력->화면 14.0ms, 없을 때 2.6~3.2ms). 설정 창이 열려 있을 때만
+        // 3초에 한 번 확인한다.
+        private static float overlayCheckedAt = -10f; private static string overlayCached;
+        internal static string OverlayNamesCached()
+        {
+            float now = UnityEngine.Time.realtimeSinceStartup;
+            if (now - overlayCheckedAt < 3f) return overlayCached;
+            overlayCheckedAt = now; overlayCached = null;
+            try
+            {
+                IntPtr game = FindGameWindow(); RECT gr;
+                if (game == IntPtr.Zero || !GetWindowRect(game, out gr)) return null;
+                var list = new List<string>(); int guard = 0;
+                for (IntPtr w = GetWindow(game, GW_HWNDPREV); w != IntPtr.Zero && guard < 1000; w = GetWindow(w, GW_HWNDPREV), guard++)
+                {
+                    if (!IsWindowVisible(w) || Cloaked(w)) continue;
+                    RECT r; if (!GetWindowRect(w, out r)) continue;
+                    int ix = Math.Min(r.Right, gr.Right) - Math.Max(r.Left, gr.Left), iy = Math.Min(r.Bottom, gr.Bottom) - Math.Max(r.Top, gr.Top);
+                    if (ix <= 0 || iy <= 0) continue;
+                    uint op; GetWindowThreadProcessId(w, out op); string pn = ProcName(op);
+                    if (!list.Contains(pn)) list.Add(pn);
+                    if (list.Count >= 4) break;
+                }
+                if (list.Count > 0) overlayCached = string.Join(", ", list.ToArray());
+            }
+            catch { }
+            return overlayCached;
+        }
+
         internal static IntPtr FindGameWindow()
         {
             uint self = (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
