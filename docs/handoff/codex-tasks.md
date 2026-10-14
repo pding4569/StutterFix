@@ -104,3 +104,25 @@ FilterIdentity.cs? DEV/AUTOTEST ?? FilterIdentityProbe.cs, AutoTest ?? filteride
 ### 작업 5 결과 (2026-10-14)
 
 조사 기록과 상세 시험 순서는 `docs/handoff/ball-layer-findings.md`. FrameGen.cs에 두 매트 ARGBHalf 링/공 없는 배경 렌더/상태 복원, 네이티브에 공 층 복사·orbit 이동·premultiplied 합성을 구현했다. ABI 168바이트, block version 6. 보호된 작업 4 파일은 수정하지 않고 `FrameGen-ball-layer.xml`의 `FrameGenBallLayer`(기본 false)를 따로 읽는다. 후처리 활성/FSR 등 변환된 quad는 기존 경로로 복귀하므로 해당 장면 해결은 남아 있다. PlayerAuto 및 네이티브 빌드와 셰이더/매트 오프라인 검사를 통과했다. 게임 표본 0판, GPU 비용/정지 픽셀 일치/연속 영상 검증은 Claude 담당. 게임·설치·커밋·푸시는 수행하지 않았다.
+
+---
+
+## 작업 6: 모드 자체 감사 — 프레임을 먹는 것과 필요 없어진 기능 (`codex/mod-audit`)
+
+목표: 모드가 지금 매 프레임·매 타일·매 효과마다 쓰는 비용과, 더는 필요 없어진 기능·설정·패치를 목록으로 만든다. **코드는 지우지 않는다**(Claude 가 판단 후 지운다). 게임 실행·커밋·푸시 금지.
+
+1. **패치 목록**: `StutterFix.cs` 와 각 `Install`(Harmony 패치를 거는 곳)을 훑어, 모드가 거는 모든 게임 함수 패치를 `docs/handoff/mod-audit.md` 표로 만든다:
+   기능 이름, 파일, 패치 대상(게임 함수), 종류(prefix/postfix/transpiler), 그 함수의 호출 빈도 추정(프레임마다/타일마다/효과마다/가끔),
+   켜는 설정과 기본값, 같은 대상을 다른 기능도 걸었는지(겹침).
+2. **측정기** `PatchHot.cs`(DEV/AUTOTEST 전용, 정식 빌드에 안 들어감) 와 자동 시험 명령 `patchhot on|state|off`:
+   모드가 건 패치 대상마다 곡 중 호출 수를 센다(정적 long 배열, 잠금·할당 없음, 시간은 64번에 한 번만 Stopwatch).
+   `Harmony.GetAllPatchedMethods()` 와 `Harmony.GetPatchInfo()` 로 우리 Id(`StutterFix*`)가 건 것만 대상. 상태는 호출 수 내림차순으로 `[패치 호출] 대상 호출 N (초당 M) 표본 평균 X µs, 우리 패치 수 K` 로 로그.
+   `wasteprobe`(WasteProbe.cs)와 같은 방식을 참고. 측정 자체가 비용을 덮지 않게 주의(AGENTS.md "측정에서 배운 것").
+3. **필요 없어진 기능 후보**: 아래를 코드·문서(CLAUDE/AGENTS 의 확정된 원인 표, docs/*.md)에서 찾아 표로:
+   - 더 새 기능이 대체한 옛 기능(예: ZeroTween 이 FloorAnim/DecoAnim 에 흡수됐는지, FastMove 와 InstantMove 겹침 등)
+   - 기본 꺼짐이고 사용자 설정창에서도 못 켜는 실험 코드, 설정창에 없는데 코드만 있는 설정
+   - 개발용 진단이 정식 빌드(`-p:Edition=Player`)에 들어가 있는지(ILScan 으로 정식 DLL 확인)
+   - 게임 3.4 알파에서 대상 함수가 사라졌거나 바뀌어 **조용히 죽어 있는** 패치(이전에 InstantMove 클로저 번호 같은 사례). 정식 DLL 로 모드를 켜지 않고 게임 DLL 에서 대상 이름·시그니처 존재만 확인.
+   각 후보에 "지워도 되는 근거(코드 위치)"와 "위험"을 적는다.
+4. 빌드 확인: `dotnet build -p:Edition=Player -p:AutoTestBuild=1` 오류 0, `-p:Edition=Player` 오류 0. 정식 DLL 에 PatchHot 이 없음을 확인.
+5. 마지막 메시지에 요약과 Claude 가 돌릴 시험 순서(`sf_run` 단계)를 적는다.
