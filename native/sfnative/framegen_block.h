@@ -32,6 +32,7 @@ cbuffer Data:register(b0) { float4 info; float4 grid; float4 boxes[4]; float4 pl
 Texture2D<float4> oldWorld:register(t0),newWorld:register(t1),oldScreen:register(t2),newScreen:register(t3);
 Texture2D<float4> forwardFlow:register(t4),backwardFlow:register(t5);
 Texture2D<float> grayA:register(t6),grayB:register(t7);
+Texture2D<float4> oldBlack:register(t8),oldWhite:register(t9),newBlack:register(t10),newWhite:register(t11);
 SamplerState linearClamp:register(s0);
 RWTexture2D<float> reduced:register(u0); RWTexture2D<float4> vectors:register(u1);
 RWStructuredBuffer<uint> totals:register(u2);
@@ -195,6 +196,28 @@ void shutterSample(float2 ua,float2 ub,out float3 A,out float3 B) {
 }
 float3 colorAt(float2 uv,out bool moving) {
     moving=false; float3 fallback=closest(uv);
+    if(hintInfo.z>0) {
+        if(info.z<=0 || info.z>=1 || disc.w<=.5) return fallback;
+        float2 w=toWorld(uv,cams[2]);
+        float2 ua=toUV(w,cams[0]),ub=toUV(w,cams[1]);
+        // The mattes contain both planets with their original overlap order. Choose
+        // the nearest planet displacement, rather than add two copies of that layer.
+        float2 center=distance(w,tnow.xy)<distance(w,tnow.zw)?tnow.xy:tnow.zw;
+        int k=distance(w,tnow.xy)<distance(w,tnow.zw)?0:1;
+        float2 ma=toUV(w-center+planets[k].xy,cams[0]);
+        float2 mb=toUV(w-center+planets[k].zw,cams[1]);
+        bool inA=all(ma>=0) && all(ma<=1),inB=all(mb>=0) && all(mb<=1);
+        float3 ba=inA?worldColor(oldBlack,ma):0,wa=inA?worldColor(oldWhite,ma):1;
+        float3 bb=inB?worldColor(newBlack,mb):0,wb=inB?worldColor(newWhite,mb):1;
+        float3 S=lerp(ba,bb,info.z), transmission=lerp(saturate(wa-ba),saturate(wb-bb),info.z);
+        float3 bg=lerp(worldColor(oldWorld,ua),worldColor(newWorld,ub),info.z);
+        bool backgroundMoving=false;bg=flowColor(uv,bg,worldColor(oldWorld,uv),worldColor(newWorld,uv),backgroundMoving);
+        // Compare screen to reconstructed TRUE pictures, not to ball-free background.
+        float3 ra=worldColor(oldWorld,uv)*saturate(worldColor(oldWhite,uv)-worldColor(oldBlack,uv))+worldColor(oldBlack,uv);
+        float3 rb=worldColor(newWorld,uv)*saturate(worldColor(newWhite,uv)-worldColor(newBlack,uv))+worldColor(newBlack,uv);
+        if(difference(ra,oldScreen.SampleLevel(linearClamp,uv,0).rgb)>2.5/255. || difference(rb,newScreen.SampleLevel(linearClamp,uv,0).rgb)>2.5/255.) return fallback;
+        moving=true;return bg*transmission+S;
+    }
     if(info.z<=0 || info.z>=1) return fallback;
     int blend=blendMode();
     bool envelope=false;
@@ -314,6 +337,8 @@ groupshared uint counts[4];
         auto sampler=linear.Get();commands->CSSetSamplers(0,1,&sampler);commands->PSSetSamplers(0,1,&sampler);
         ID3D11ShaderResourceView* views[]={a.images[0].view.Get(),b.images[0].view.Get(),a.images[1].view.Get(),b.images[1].view.Get(),denseOn?dense.forward():flow[0].texture.view.Get(),denseOn?dense.backward():flow[1].texture.view.Get()};
         commands->PSSetShaderResources(0,6,views);commands->CSSetShaderResources(0,6,views);
+        ID3D11ShaderResourceView* balls[]={a.balls[0].view.Get(),a.balls[1].view.Get(),b.balls[0].view.Get(),b.balls[1].view.Get()};
+        commands->PSSetShaderResources(8,4,balls);commands->CSSetShaderResources(8,4,balls);
     }
     void execute(ID3D11DeviceContext* immediate) { ComPtr<ID3D11CommandList> list;check(commands->FinishCommandList(FALSE,&list));immediate->ExecuteCommandList(list.Get(),TRUE); }
 public:
@@ -430,6 +455,7 @@ public:
         // Planet world positions and radius (about the sprite plus a little glow, world units), and the three cameras.
         // A teleport (large planet or camera jump), a missing camera or a hidden planet disables the move.
         d.disc[0]=d.disc[1]=0;d.disc[2]=height?float(width)/float(height):1.f;d.disc[3]=0;
+        d.hintInfo[2]=(a.packet.ballBlack && a.packet.ballWhite && b.packet.ballBlack && b.packet.ballWhite)?1.f:0.f;
         const bool movePlanets=((b.packet.capture>>16)&1)!=0;   // experimental; off keeps the ball exactly as in the true frames
         const Pose& pa=a.packet.pose; const Pose& pb=b.packet.pose;
         if(width && height && pa.camera[2]>.0001f && pb.camera[2]>.0001f) {

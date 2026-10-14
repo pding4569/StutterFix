@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -82,7 +82,7 @@ namespace StutterFix
     // Unity's camera scheduling is untouched; no draw-function interception.
     internal static class FrameGenRuntime
     {
-        internal static string DescribeStorage() => "deadline="+(oldMode==9)+" resting="+snapshotGate.Resting+" rests="+snapshotGate.Rests;
+        internal static string DescribeStorage() => "deadline="+(oldMode==9)+" resting="+snapshotGate.Resting+" rests="+snapshotGate.Rests+BallLayer.State;
         // Prevent beforefieldinit. JitWarm also excludes this type because Mono's
         // GetFunctionPointer can still invoke its initializer without running Install.
         static FrameGenRuntime() { FrameGen.RuntimeInitialized=true; }
@@ -95,6 +95,7 @@ namespace StutterFix
             public int frame,mode,measure,flip,linear,capture;
             public Vector4 pulse;
             public int hintCount,hintFrom; public IntPtr hints; // decoration motion hints (old -> new picture), see BuildHints
+            public IntPtr ballBlack,ballWhite;
         }
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl,CharSet=CharSet.Unicode)] private static extern int sf_framegen_setup(string directory,int diagnostics);
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] private static extern IntPtr sf_framegen_event_ptr();
@@ -200,16 +201,17 @@ namespace StutterFix
         }
         internal static void Install() {
             if(runner!=null) return;
+            BallLayer.LoadSetting();
             if(SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Direct3D11) throw new InvalidOperationException("D3D11에서 사용할 수 있습니다.");
-            if(Marshal.SizeOf<Packet>()!=152) throw new InvalidOperationException("Outside packet ABI");
+            if(Marshal.SizeOf<Packet>()!=168) throw new InvalidOperationException("Outside packet ABI");
             if(BlockFlow) {
-                try { if(sf_framegen_block_version()!=5) throw new EntryPointNotFoundException(); }
+                try { if(sf_framegen_block_version()!=6) throw new EntryPointNotFoundException(); }
                 catch(EntryPointNotFoundException) { throw new InvalidOperationException("블록 보간 DLL을 사용하려면 게임을 다시 켜 주세요."); }
             }
             string directory=Diagnostics?Path.Combine(Main.Entry.Path,"framegen-outside"):string.Empty; if(Diagnostics) Directory.CreateDirectory(directory);
             if(sf_framegen_setup(directory,Diagnostics?1:0)==0) throw new InvalidOperationException("지난 해제가 끝나지 않았습니다. 게임을 다시 켜 주세요.");
             callback=sf_framegen_event_ptr(); command=new CommandBuffer {name="FrameGen included snapshot"};
-            packets=new IntPtr[512]; for(int i=0;i<packets.Length;i++) packets[i]=Marshal.AllocHGlobal(160);
+            packets=new IntPtr[512]; for(int i=0;i<packets.Length;i++) packets[i]=Marshal.AllocHGlobal(Marshal.SizeOf<Packet>());
             hintBufs=new IntPtr[packets.Length]; for(int i=0;i<hintBufs.Length;i++) hintBufs[i]=Marshal.AllocHGlobal(HintMax*HintFloats*4);
             finished=failed=false; oldMode=-1; packetIndex=missingScenes=0; renderedFrame=-1; trackedCamera=null; precompileStarted=false; precompileRetry=0;
 #if FRAMEGEN_RESEARCH
@@ -352,7 +354,7 @@ namespace StutterFix
                     }
 #endif
 #if FRAMEGEN_RESEARCH
-                    if(FixedCostStage!=4 || earlyWorldFrame!=Time.frameCount) {
+                    if(BallLayer.Enabled || FixedCostStage!=4 || earlyWorldFrame!=Time.frameCount) {
                     if(FixedCostStage==4) ++earlyFallbacks;
                     if(worldRing!=null) {int i=worldIndex%3;world=worldRing[i];texture=worldPointers[i];}
 #endif
@@ -365,10 +367,10 @@ namespace StutterFix
 #if FRAMEGEN_RESEARCH
                     bool split=FixedCostStage==3;
                     if(split) Issue(6,Write(p));
-                    try {worldCamera.Render();}
+                    try {if(!BallLayer.Render(sc,worldCamera,world,worldIndex,ref p)) worldCamera.Render();}
                     finally {if(split) Issue(5,new IntPtr(1));} // Resume the same source frame, including on managed failure.
 #else
-                    worldCamera.Render();
+                    if(!BallLayer.Render(sc,worldCamera,world,worldIndex,ref p)) worldCamera.Render();
 #endif
 #if FRAMEGEN_RESEARCH
                     }
@@ -441,6 +443,128 @@ namespace StutterFix
             HintFrames++; HintsSent+=n;
             return n;
         }
+        // Separate experimental setting while Settings.cs ownership belongs to task 4.
+        private static class BallLayer {
+            internal static bool Enabled;
+            private static long captures,filterSkips;
+            internal static string State => " ball_layer="+Enabled+" captures="+captures+" filter_skips="+filterSkips;
+            private static Camera camera;
+            private static RenderTexture background;
+            private static readonly RenderTexture[] black=new RenderTexture[3],white=new RenderTexture[3];
+            private static readonly IntPtr[] blackPtr=new IntPtr[3],whitePtr=new IntPtr[3];
+            private static Renderer[] renderers;
+            private static bool[] states;
+            private static int[] layers;
+            private static scrController owner;
+            private static readonly List<MonoBehaviour> components=new List<MonoBehaviour>();
+            private static readonly Dictionary<Type,bool> effectTypes=new Dictionary<Type,bool>();
+            private static int layer=-1;
+            private static readonly AccessTools.FieldRef<scrCamera,Camera> Bg=AccessTools.FieldRefAccess<scrCamera,Camera>("BGcam");
+            private static readonly AccessTools.FieldRef<scrCamera,Camera> StaticBg=AccessTools.FieldRefAccess<scrCamera,Camera>("Bgcamstatic");
+            private static readonly AccessTools.FieldRef<scrCamera,MeshRenderer> Quad=AccessTools.FieldRefAccess<scrCamera,MeshRenderer>("camQuadMesh");
+            internal static void LoadSetting() {
+                Enabled=false;captures=filterSkips=0;
+                var path=Path.Combine(Main.Entry.Path,"FrameGen-ball-layer.xml");
+                if(!File.Exists(path)) return;
+                try {
+                    var doc=new System.Xml.XmlDocument(); doc.Load(path);
+                    bool value; if(bool.TryParse(doc.SelectSingleNode("/Settings/FrameGenBallLayer")?.InnerText,out value)) Enabled=value;
+                } catch(Exception ex) {Log("ball layer settings: "+ex.Message);}
+            }
+            private static RenderTexture Make(int w,int h,int depth) {
+                var rt=new RenderTexture(w,h,depth,RenderTextureFormat.ARGBHalf,RenderTextureReadWrite.Linear) {hideFlags=HideFlags.HideAndDontSave};
+                if(!rt.Create()) {UnityEngine.Object.Destroy(rt);throw new InvalidOperationException("ball matte RT creation failed");}
+                return rt;
+            }
+            private static void Prepare(scrCamera sc,RenderTexture output) {
+                if(owner!=scrController.instance || renderers==null) {
+                    owner=scrController.instance;
+                    var all=new List<Renderer>();
+                    owner.planetRed.GetComponentsInChildren<Renderer>(true,all);
+                    var blue=new List<Renderer>();owner.planetBlue.GetComponentsInChildren<Renderer>(true,blue);all.AddRange(blue);
+                    renderers=all.ToArray();states=new bool[renderers.Length];layers=new int[renderers.Length];
+                    // A layer containing another scene renderer would contaminate both mattes.
+                    uint used=0;foreach(var r in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include,FindObjectsSortMode.None)) used|=1u<<r.gameObject.layer;
+                    layer=-1;for(int i=31;i>=8;i--) if((used&(1u<<i))==0) {layer=i;break;}
+                    if(layer<0) throw new InvalidOperationException("no unused renderer layer for ball matte");
+
+                }
+            }
+            private static void EnsureBuffers(scrCamera sc,RenderTexture output) {
+                var source=RT(sc);
+                if(background!=null && background.width==source.width && background.height==source.height && black[0].width==output.width && black[0].height==output.height) return;
+                FreeBuffers();
+                background=new RenderTexture(source.descriptor) {hideFlags=HideFlags.HideAndDontSave};
+                if(!background.Create()) throw new InvalidOperationException("ball background RT creation failed");
+                for(int i=0;i<3;i++) {black[i]=Make(output.width,output.height,24);white[i]=Make(output.width,output.height,24);blackPtr[i]=black[i].GetNativeTexturePtr();whitePtr[i]=white[i].GetNativeTexturePtr();}
+                camera=new GameObject("FrameGen.BallMatte") {hideFlags=HideFlags.HideAndDontSave}.AddComponent<Camera>();camera.enabled=false;
+            }
+            private static bool HasImageEffects(Camera c) {
+                if(c==null) return false;
+                components.Clear();c.GetComponents(components);
+                foreach(var component in components) {
+                    if(component==null || !component.isActiveAndEnabled) continue;
+                    var type=component.GetType();bool effect;
+                    if(!effectTypes.TryGetValue(type,out effect)) {
+                        effect=false;
+                        foreach(var method in type.GetMethods(System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic))
+                            if(method.Name=="OnRenderImage") {effect=true;break;}
+                        effectTypes.Add(type,effect);
+                    }
+                    if(effect) return true;
+                }
+                return false;
+            }
+            private static void RenderBackground(Camera c,RenderTexture rt) {
+                if(c==null) return;
+                var target=c.targetTexture;
+                try {c.targetTexture=rt;c.Render();} finally {c.targetTexture=target;}
+            }
+            internal static bool Render(scrCamera sc,Camera snapshot,RenderTexture output,int index,ref Packet packet) {
+                if(!Enabled || !BlockFlow || sc==null || RT(sc)==null || scrController.instance==null || scrController.instance.planetRed==null || scrController.instance.planetBlue==null) return false;
+                Prepare(sc,output);
+                // Nonlinear postprocessing cannot be factored into a raw matte. Keep
+                // the original path instead of changing filter history or ball brightness.
+                if(HasImageEffects(Cam(sc)) || HasImageEffects(Bg(sc)) || HasImageEffects(StaticBg(sc)) || HasImageEffects(Overlay(sc))) {filterSkips++;return false;}
+                EnsureBuffers(sc,output);
+                var quad=Quad(sc);if(quad==null) return false;
+                var material=quad.sharedMaterial;if(material==null) return false;
+                var original=material.mainTexture;
+                if(original!=RT(sc)) {filterSkips++;return false;} // FSR/screen effects/custom-FPS output is already transformed.
+                var oldActive=RenderTexture.active;
+                int changed=0;
+                var savedCamera=sceneCamera;var savedBase=sceneBase;var savedPulse=scenePulse;int savedFrame=renderedFrame;
+                try {
+                    for(int i=0;i<renderers.Length;i++) {
+                        var r=renderers[i];if(r==null) {states[i]=false;layers[i]=-1;changed++;continue;}
+                        states[i]=r.enabled;layers[i]=r.gameObject.layer;changed++;
+                        r.enabled=false;
+                    }
+                    // Clear before the depth-only scene camera; never modify the real camRT.
+                    RenderTexture.active=background;GL.Clear(true,true,Cam(sc).backgroundColor);
+                    RenderBackground(StaticBg(sc),background);RenderBackground(Bg(sc),background);RenderBackground(Cam(sc),background);
+                    material.mainTexture=background;snapshot.Render();material.mainTexture=original;
+                    for(int i=0;i<renderers.Length;i++) {var r=renderers[i];if(r!=null && layers[i]>=0) {r.enabled=states[i] && (Cam(sc).cullingMask&(1<<layers[i]))!=0;r.gameObject.layer=layer;}}
+                    int slot=index%3;
+                    camera.CopyFrom(Cam(sc));camera.enabled=false;camera.transform.SetPositionAndRotation(Cam(sc).transform.position,Cam(sc).transform.rotation);
+                    camera.cullingMask=1<<layer;camera.clearFlags=CameraClearFlags.SolidColor;camera.allowHDR=true;camera.allowMSAA=false;
+                    camera.targetTexture=black[slot];camera.backgroundColor=Color.black;camera.Render();
+                    camera.targetTexture=white[slot];camera.backgroundColor=Color.white;camera.Render();
+                    packet.ballBlack=blackPtr[slot];packet.ballWhite=whitePtr[slot];captures++;
+                    return true;
+                } finally {
+                    material.mainTexture=original;RenderTexture.active=oldActive;
+                    sceneCamera=savedCamera;sceneBase=savedBase;scenePulse=savedPulse;renderedFrame=savedFrame;
+                    for(int i=0;i<changed;i++) {var r=renderers[i];if(r!=null && layers[i]>=0) {r.gameObject.layer=layers[i];r.enabled=states[i];}}
+                }
+            }
+            private static void Drop(ref RenderTexture rt) {if(rt!=null) {rt.Release();UnityEngine.Object.Destroy(rt);rt=null;}}
+            private static void FreeBuffers() {
+                Drop(ref background);for(int i=0;i<3;i++) {Drop(ref black[i]);Drop(ref white[i]);blackPtr[i]=whitePtr[i]=IntPtr.Zero;}
+                if(camera!=null) UnityEngine.Object.Destroy(camera.gameObject);camera=null;
+            }
+            internal static void Free() {FreeBuffers();renderers=null;states=null;layers=null;owner=null;components.Clear();effectTypes.Clear();layer=-1;}
+        }
         private static unsafe IntPtr Write(Packet p) { var ptr=packets[packetIndex++%packets.Length]; *(Packet*)ptr=p; return ptr; }
         private static Vector4 PlanetEnvelope(Camera camera,Renderer[] renderers) {
             if(renderers==null || renderers.Length==0) return new Vector4(0,0,1,1); // Unknown coverage: keep true image.
@@ -493,6 +617,7 @@ namespace StutterFix
         }
         private static void Issue(int id,IntPtr data) { command.Clear(); command.IssuePluginEventAndData(callback,id,data); Graphics.ExecuteCommandBuffer(command); }
         private static void FreeTextures() {
+            BallLayer.Free();
             redRenderers=blueRenderers=null;
             if(worldCamera!=null) UnityEngine.Object.Destroy(worldCamera.gameObject); worldCamera=null;
 #if FRAMEGEN_RESEARCH

@@ -31,8 +31,9 @@ struct Packet {
     int frame,mode,measure,flip,linear,capture;
     float pulse[4]; // Linear pulse endpoints, elapsed and duration; random shake is held at last real state.
     int hintCount,hintFrom; const float* hints; // decoration motion hints: 12 floats each (box, 2x2, translation), old -> this picture
+    void* ballBlack; void* ballWhite;
 };
-static_assert(sizeof(Packet)==152,"packet ABI");
+static_assert(sizeof(Packet)==168,"packet ABI");
 struct Record { double time,song,gpu; int real,frame; HRESULT hr; double age; float camera[4]{};
     double targetTime=0;
 };
@@ -175,6 +176,7 @@ struct Slot {
     #ifdef SF_FRAMEGEN_RESEARCH
     size_t motionRow=SIZE_MAX;
 #endif
+    std::array<Texture,2> balls;
     Packet packet{},previousPacket{}; Pose previous{}; double qpc=0,previousSong=0,period=.005,frameDelta=.005; unsigned long long sequence=0; bool pairValid=true;
     float hints[32][12]{}; int hintCount=0; // copied at publish: the packet memory is reused by the producer
 };
@@ -442,6 +444,7 @@ public:
 #ifdef SF_FRAMEGEN_RESEARCH
         if(screenBorderEnabled(p)) copy(reinterpret_cast<ID3D11Texture2D*>(reinterpret_cast<uintptr_t>(p.textures[2])&~uintptr_t(1)),s.images[2]);
 #endif
+        if(p.ballBlack && p.ballWhite) {copy(static_cast<ID3D11Texture2D*>(p.ballBlack),s.balls[0]);copy(static_cast<ID3D11Texture2D*>(p.ballWhite),s.balls[1]);}
         s.packet=p; s.previousPacket=lastPacket; s.previous=lastPacket.pose; s.previousSong=lastPacket.song;
         s.hintCount=0;
         if(p.hints && p.hintCount>0 && havePrevious && p.hintFrom==lastPacket.frame) { s.hintCount=std::min(p.hintCount,32); memcpy(s.hints,p.hints,sizeof(float)*12*s.hintCount); }
@@ -450,7 +453,7 @@ public:
         s.period=std::clamp(s.frameDelta,.001,.05); s.qpc=t; s.sequence=++published;
         if(havePrevious) smoothInterval=smoothInterval>0?smoothInterval+(s.period-smoothInterval)*.1:s.period;
         if(havePrevious) { ++sourceCount; intervalMicros+=static_cast<unsigned long long>(s.period*1e6); if(lastPhase>0 && lastPhase<.85) ++earlyArrivals; }
-        s.pairValid=lastPacket.mode>=2;
+        s.pairValid=lastPacket.mode>=2 && bool(lastPacket.ballBlack)==bool(p.ballBlack);
         if(blockFlowEnabled(p) && !connectionOnly(p)) {
             const auto& previous=slots[(s.sequence-1)%slots.size()];
             if(blockFlowVariant(p)>=3) {
