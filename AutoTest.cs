@@ -828,6 +828,18 @@ namespace StutterFix
                     keep = false;
                     Finish("끝");
                     return true;
+#if DEV || AUTOTEST
+                case "wasteprobe":
+                    switch (arg.Trim().ToLowerInvariant())
+                    {
+                        case "on": WasteProbe.On(); break;
+                        case "off": WasteProbe.Off(); break;
+                        case "state": WasteProbe.State(); break;
+                        case "reset": WasteProbe.Reset(); break;
+                        default: throw new Exception("wasteprobe on|off|state|reset");
+                    }
+                    return true;
+#endif
                 case "filterstate":
                 {
                     // filterstate: 지금 켜진 카메라 필터(CameraFilterPack)와 공개 숫자·참거짓 값 (세기 0 인데 켜진 필터 찾기)

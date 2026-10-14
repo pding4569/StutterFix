@@ -103,6 +103,7 @@
     <Compile Include="LoopProfiler.cs" />
     <Compile Include="GcControl.cs" />
     <Compile Include="Hitch.cs" />
+    <Compile Include="WasteProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ModWatch.cs" />
     <Compile Include="AllocScan.cs" />
     <Compile Include="TextFix.cs" />

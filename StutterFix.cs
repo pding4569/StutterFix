@@ -404,6 +404,9 @@ namespace StutterFix
             Try(ParticleTextWatch.Shutdown);
             Try(RenderCallbackScan.Shutdown);
             Try(SlowScan.Shutdown);
+#if DEV || AUTOTEST
+            Try(WasteProbe.Off);
+#endif
             Try(WindowGhost.StopWatch);
 
             foreach (var id in HarmonyIds)

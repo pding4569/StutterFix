@@ -74,6 +74,9 @@ namespace StutterFix
 
         internal static void Tick(float dt, bool playing)
         {
+#if DEV || AUTOTEST
+            WasteProbe.Tick(playing);
+#endif
             // 곡 시작/끝에 해야 하는 실제 일(효과 나누기 초기화, 셰이더 준비)은 기록을 끄거나
             // 플레이어용이어도 해야 한다. 측정과 로그는 개발자용에서 기록이 켜져 있을 때만.
             if (!Edition.Dev || !Enabled)

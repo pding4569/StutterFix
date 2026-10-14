@@ -1,0 +1,6 @@
+[mcp_servers.sfmeasure]
+command = "py"
+args = [
+    "-3",
+    "tools/sfmeasure/server.py",
+]
