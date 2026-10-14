@@ -231,7 +231,14 @@ float3 colorAt(float2 uv,out bool moving) {
     if(zone || freeA<1 || freeB<1) {
         float wA=freeA*(1-info.z),wB=freeB*info.z;
         float3 bg=(wA+wB>1e-3)?(A*wA+B*wB)/(wA+wB):lerp(A,B,info.z);
-        float3 delta=0,core=0; float coreMask=0;
+        // Planet layer, per pixel. The same sprite pixel is seen over two different backgrounds: cA over bA (B's picture
+        // at that world point, the ball gone) and cB over bB. With c = a*s + k*b (k = 1-a for the opaque sprite, k = 1
+        // for additive glow) the two pictures give k = (cA-cB).(bA-bB)/|bA-bB|^2, and the pixel over today's
+        // background is c + k*(bgNow - b). An opaque core keeps its colour, glow adds to whatever is under it now and
+        // pure background stays background, so no pasted disc of the old background and no dark rim.
+        // Where both backgrounds are alike k cannot be read and hardly matters; the sprite outline decides.
+        // Where the two sprites overlap (slow move) the other picture has no clean background: plain cross-fade.
+        float3 result=bg;
         [unroll] for(int k=0;k<2;k++) {
             float radius=k==0?disc.x:disc.y;
             if(radius>0) {
@@ -240,31 +247,20 @@ float3 colorAt(float2 uv,out bool moving) {
                 float dist=length(w-wt);
                 if(dist<reach*1.15) {
                     float2 sa2=w-wt+wa,sb2=w-wt+wb;
-                    float3 pA=worldColor(oldWorld,toUV(sa2,camOld)),pB=worldColor(newWorld,toUV(sb2,camNew));
-                    // Glow: additive, so "what it adds" = picture minus the other picture at the same world point.
-                    float sep=smoothstep(radius*1.8,radius*3.,length(wb-wa)); // sprites no longer overlap: the other picture shows no planet here
-                    float m=smoothstep(reach*1.15,reach*.7,dist)*sep;
-                    float3 dA=pA-worldColor(newWorld,toUV(sa2,camNew));
-                    float3 dB=pB-worldColor(oldWorld,toUV(sb2,camOld));
-                    float3 dd=lerp(dA,dB,info.z);
-                    // Only light is added: where the other picture is brighter at that world point (the planet's own glow or
-                    // trail there, a tile lit by the hit) the difference is negative and subtracting it drew a black rim
-                    // around the ball. The sprite's own dark parts come with the pasted core below.
-                    delta+=m*max(dd-.02,0.); // film grain/dither differs between pictures: not part of the planet
-                    // Sprite: opaque, so its core is pasted (no background shows through it, whatever is under it now).
-                    float mc=smoothstep(radius*1.08,radius*.95,dist); // the whole opaque sprite: its edge drawn as a difference read as a dark or bright ring
-                    // The pasted sprite carries the glow it had at its source. Where the background here is much
-                    // brighter or darker than at the source (a planet moving into or out of a bloom), pasting leaves a
-                    // visible grey disc on the glow; the additive layer alone looks right there.
-                    float lumHere=dot(bg,float3(.299,.587,.114));
-                    float lumSource=lerp(dot(pA-dA,float3(.299,.587,.114)),dot(pB-dB,float3(.299,.587,.114)),info.z);
-                    mc*=1-smoothstep(.08,.28,abs(lumHere-lumSource));
-                    if(mc>coreMask) { coreMask=mc; core=lerp(pA,pB,info.z); }
+                    float3 cA=worldColor(oldWorld,toUV(sa2,camOld)),cB=worldColor(newWorld,toUV(sb2,camNew));
+                    float3 bA=worldColor(newWorld,toUV(sa2,camNew)),bB=worldColor(oldWorld,toUV(sb2,camOld));
+                    float sep=smoothstep(radius*1.8,radius*3.,length(wb-wa));
+                    float k0=smoothstep(radius*.9,radius*1.1,dist); // outline: inside opaque, outside see-through
+                    float3 dbg=bA-bB,dc=cA-cB; float d2=dot(dbg,dbg);
+                    float kEst=saturate(dot(dc,dbg)/max(d2,1e-4));
+                    float kk=lerp(k0,kEst,saturate(d2/.02));
+                    float3 full=lerp(cA+kk*(result-bA),cB+kk*(result-bB),info.z);
+                    float3 overlap=lerp(lerp(cA,cB,info.z),result,k0);
+                    float3 layer=lerp(overlap,full,sep);
+                    result=lerp(result,saturate(layer),smoothstep(reach*1.15,reach*.7,dist));
                 }
             }
         }
-        float3 shaded=saturate(bg+delta);
-        float3 result=lerp(shaded,core,coreMask);
         if(disc.w>1.5) {
             // Diagnostic markers: white = interpolated planet position, red = old picture's, blue = new picture's.
             [unroll] for(int k=0;k<2;k++) {
