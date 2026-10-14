@@ -581,6 +581,7 @@ public:
     // the true frames jitter (the old phase = age/last interval jumped and stalled with every late or early frame).
     double smoothInterval=0; bool labelledTick=false;
     static constexpr double renderAhead=.0028; // worker renders this long before the Present deadline
+    unsigned long long heldBeyond=0,heldNoPair=0; // diagnostics: picture before the stored frames / older pair unusable
     unsigned long long heldOutputs=0; // picture time before the older true frame of the pair: shown as that frame, not moving
     // Tearing output (fixed 2-8x) keeps the same delay; render() picks the true-frame pair that brackets the picture
     // time (one slot back when it is before the newest pair). With the newest pair only, ~4 ms after every new true
@@ -852,7 +853,10 @@ inline void Output::render(const Slot& newest,bool real,double tick) {
     if(labelledTick && tearTimeline() && newest.sequence>2) {
         const auto& back=slots[(newest.sequence-1)%slots.size()];
         const auto& back2=slots[(newest.sequence-2)%slots.size()];
-        if(tick-delay<back.qpc && back.sequence==newest.sequence-1 && back2.sequence==back.sequence-1 && back.pairValid && back2.packet.pose.camera[2]>.00001f) chosen=&back;
+        if(tick-delay<back.qpc) {
+            if(back.sequence==newest.sequence-1 && back2.sequence==back.sequence-1 && back.pairValid && back2.packet.pose.camera[2]>.00001f) { chosen=&back; if(tick-delay<back2.qpc) ++heldBeyond; }
+            else ++heldNoPair;
+        }
     }
     const Slot& s=*chosen;
     double age=std::max(0.,tick-s.qpc),song=s.packet.song+age;
