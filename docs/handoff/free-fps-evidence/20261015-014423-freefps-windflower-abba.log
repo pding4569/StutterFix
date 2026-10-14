@@ -1,0 +1,1238 @@
+[StutterFix] [자동 시험] 시작: 33단계 - keep / set FrameGenOutside 0 / fpscap 0 / auto on / open D:/얼불춤 맵 파일/Windflower/Windflower.adofai / freefps state / freefps restore / log FREEFPS WindflowerStatic A / play / wait 30 / stop / wait 1 / freefps restore / log FREEFPS WindflowerStatic B / play / freefps off BGStaticCam / wait 30 / stop / wait 1 / freefps restore / log FREEFPS WindflowerStatic B / play / freefps off BGStaticCam / wait 30 / stop / wait 1 / freefps restore / log FREEFPS WindflowerStatic A / play / wait 30 / stop / wait 1 / freefps restore
+[StutterFix] [자동 시험] 묶음이 끝나도 게임을 끄지 않음
+[StutterFix] [자동 시험] [임무단계] keep 0.011ms
+[StutterFix] [자동 시험] 설정 FrameGenOutside = 0 (묶음 끝에 4 로 되돌림)
+[StutterFix] [자동 시험] [임무단계] set 4.751ms
+[StutterFix] [자동 시험] [FPS 제한] 목표 FPS 10000, vSync 0 frame 85325
+[StutterFix] [자동 시험] [임무단계] fpscap 5.183ms
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[StutterFix] [자동 시험] [임무단계] auto 5140.555ms
+[StutterFix] [자동 시험] 맵 열기: D:/얼불춤 맵 파일/Windflower/Windflower.adofai
+[StutterFix] [모니터] 37ms -> 게임 처리 / gpu 0.4 cpu 36.6 (수집 85506번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 시각 01:42:04.521
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 456.052500 ms
+[StutterFix] [자동 시험] 메모리 3초: 힙 381MB, 프로세스 7114MB(실제 램 2453MB), 프레임 85717 
+Unloading 9508 unused Assets to reduce memory usage. Loaded Objects now: 41197.
+Total: 436.812000 ms (FindLiveObjects: 3.125500 ms CreateObjectMapping: 7.512600 ms MarkObjects: 378.087900 ms  DeleteObjects: 48.085600 ms)
+
+[StutterFix] [누수] 지워진 편집기의 종료 확인 콜백 1개 뺌 (지난 맵 데이터를 놓아 줌)
+[StutterFix] [첫 판 FPS] 1.0초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [타일 머티리얼] 버려진 타일 머티리얼 14721개 풀어 줌
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 0ms
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+[StutterFix] [첫 판 FPS] 2.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 2.5초
+[StutterFix] [맵 파일 읽기] GC 멈춤 312ms(그중 이벤트로 바꾸기 113ms: 이벤트 13166개 여러 코어(5개)로 107ms), 힙 448MB -> 594MB (그 사이 GC 0번)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 6가지 중 새로 불러온 것 6개 28ms
+[StutterFix] [이미지] 자동: 전에 VRAM 이 모자라 끊긴 맵이라 긴 변 2048 으로 줄임
+[StutterFix] [이미지] 맵 열기 전: 이미 올라와 있는 이미지 1장, VRAM 전체 6059MB / 게임 4478MB
+[StutterFix] [이미지] 1080장 미리 풀기 시작 (작업 스레드 5개, DXT 로 미리 압축: 저사양 옵션)
+[StutterFix] [자동 시험] 메모리 6초: 힙 648MB, 프로세스 3441MB(실제 램 2765MB), 프레임 85718 
+[StutterFix] [자동 시험] 메모리 9초: 힙 814MB, 프로세스 6072MB(실제 램 3926MB), 프레임 85718 
+[StutterFix] [장식 한 번에 복제] 54번에 5595개 (안 쓰고 지움 0개)
+[StutterFix] [이미지] 미리 푼 것 1075장(넣기 1748ms), 원래 방식 0장(0ms, 순서 어긋남 0), 기다림 1106ms, GC 0번, 전체 6.1초, 줄인 이미지 95장 (긴 변 2048, VRAM 약 1766MB 아낌), 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 6584ms/작업 스레드 합), 처음부터 압축으로 넣음 556장 (뒤이어 압축 불림 556, 안 불림 0), 압축이 늦어 원래대로 336장 | 장식 만들기 6290개 3504ms, 그중 텍스처 불러오기 3846ms, 압축 마저 기다림 64ms
+[StutterFix] [이미지] 해독 시간(작업 스레드 5개 합계): 압축 풀기 5509ms, 필터 되돌리기 9417ms, 줄이기 571ms(128M 픽셀), 필터·줄이기 한 번에 0장 0ms(0M 픽셀), 흘려 풀기·줄이기 83장 5039ms(599M 픽셀, 못 한 것 0) | 새로 맡은 형식(흑백·인터레이스) 33장 | libdeflate 957장, 원래 zlib 로 다시 푼 것 0장 (사용 중) | 네이티브(sfnative): 필터 되돌린 줄 1075819, DXT 압축 줄 묶음 183926 | JPG(libjpeg-turbo): 35장 649ms, 못 푼 것 0장
+[StutterFix] [이미지] 로딩 뒤 GC 한 번 171ms
+Shader warmup: 154 shaders 1424 combinations 0.005s
+[StutterFix] [셰이더] 맵 불러온 뒤: 셰이더 154개, 새 필터 20개(필터 텍스처 17개) 미리 준비 13ms
+[StutterFix] [재시작] 에디터에서 맵 열기: D:/얼불춤 맵 파일/Windflower/Windflower.adofai
+[StutterFix] [자동 시험] 메모리 12초: 힙 513MB, 프로세스 8397MB(실제 램 3074MB), 프레임 85719 
+Unloading 3047 unused Assets to reduce memory usage. Loaded Objects now: 602941.
+Total: 415.026800 ms (FindLiveObjects: 59.306100 ms CreateObjectMapping: 14.437300 ms MarkObjects: 322.746600 ms  DeleteObjects: 18.536300 ms)
+
+[StutterFix] [상태] None 편집중 일시정지  -> 정지
+[StutterFix] [자동 시험] 맵 열림 (13.9초, 열기 요청부터 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] open 13949.050ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 4.987ms
+[StutterFix] [자동 시험] [임무단계] freefps 4.519ms
+[StutterFix] [자동 시험] FREEFPS WindflowerStatic A
+[StutterFix] [자동 시험] [임무단계] log 4.529ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 6.8초 멈춘 프레임 동안 윈도우 메시지 확인 13번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.8초
+[StutterFix] [로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀
+[StutterFix] [타일 메시] 색 바꾸기 효과 212개, 타일·스타일 6513가지 -> 새로 미리 만든 메시 1798개 112ms (캐시 4860개)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 16가지 중 새로 불러온 것 9개 10ms
+[StutterFix] [효과 재사용] 다시 씀 0개, 새로 붙임 7573개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 0개 | 255ms
+[StutterFix] [전환] 에디터 재생 시작 729ms
+[StutterFix] [자동 시험] [임무단계] play 733.281ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 827ms (프레임 1개, 가장 긴 프레임 827ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 584ms, 그 밖 244ms | 이미지 파일 시각: 14623번 중 디스크 2079번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 60ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 1076장, VRAM 전체 6472MB / 게임 4891MB
+[StutterFix] [자동 시험] 메모리 15초: 힙 641MB, 프로세스 8458MB(실제 램 3036MB), 프레임 85926 
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 3 (0.6초)
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+[StutterFix] [자동 시험] [임무단계] wait 29272.144ms
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+[StutterFix] [곡] 평균 291 FPS (3.4ms), 가장 긴 프레임 57ms, 곡 시작 연출 뒤 가장 긴 프레임 11ms, 끊김 0번, 프레임 8499개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.7ms, CPU 평균 3.5ms (8499개 잼) | 그 프레임: 게임 효과 37개 1.2ms (그중 장식 이동 0.6ms), 나머지 10.3ms | 효과가 가장 무거운 프레임 11ms: 게임 효과 4.0ms (그중 장식 이동 0.4ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [11ms @28.5초: 효과 37개 1.2(장식 이동 0.6, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 9.7] [11ms @0.6초: 효과 40개 4.0(장식 이동 0.4, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 6.3] [7ms @16.2초: 효과 20개 1.9(장식 이동 0.1, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 4.2] [6ms @28.9초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 5.3] [6ms @2.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+2.0, 나머지 3.7] [5ms @2.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 3.5] [5ms @2.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 4.6] [5ms @2.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 3.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 284(3.8/0.7/0.0/1.7/0.0, 823/0개) 10s 299(3.3/0.7/0.0/1.6/0.0, 802/0개) 20s 290(3.4/0.8/0.0/1.7/0.0, 820/0개) | 가장 높은 구간 10s 299 FPS | 같은 그림자 색 건너뛰기 412168회 | 파티클 장식: 같은 값 넣기 10072420번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 29개 없앰, 게임 화면 버퍼 불필요한 해제 13번 막음 | 필터 형식 찾기 기억 562번 (새로 찾음 20번) | 오차 막대 눈금 가볍게 25208개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 11개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 112번을 43번으로 줄임 (62% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 2208482번 중 같은 값이라 건너뜀 717059번 | 재생 중 편집기 검사 건너뜀 90262번 | 매 프레임 장식 순회 6931335번 중 바뀌는 게 없어 뺀 것 29335번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 815개만 훑음 (잠재움 23858번, 깨움 18401번, 목록 새로 만듦 1번, 안전망 검사 30번에 놓친 깨움 0개) | 즉시 이동 직접 처리 406번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 646개(장식 1247개), 원래 코드로 넘긴 효과 1개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 418개(동시 최대 152개), 끝까지 감 331, 끊겨서 완료 99, 버림 0, 기록 다시 씀 20, 새 표 객체 397, 갱신에 쓴 시간 247ms (8124프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 84개(타일 117개, 시작에 쓴 시간 1ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 26개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 23, 끊겨서 완료 0, 버림 0, 갱신 12ms (4164프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 65개(바로 쓴 값 128개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 77146번 (안 보이게 돼서 대신 갱신 82번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4905개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 3360번, 보일 때 반영 34번 | 색 바뀜 24100번 확인, 그리기 켜고 끈 것 161번, 쓴 시간 약 13.7ms, 가장 많이 쓴 프레임 약 0.21ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4395개는 가볍게, 1895개는 원래대로 다시 설정 190ms
+[StutterFix] [전환] 편집으로 나가기 509ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 708MB -> 493MB, 330ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (839ms)
+[StutterFix] [자동 시험] [임무단계] stop 842.961ms
+[StutterFix] [자동 시험] [임무단계] wait 160.793ms
+[StutterFix] [자동 시험] [임무단계] freefps 4.933ms
+[StutterFix] [자동 시험] FREEFPS WindflowerStatic B
+[StutterFix] [자동 시험] [임무단계] log 4.998ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 119ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 197ms
+[StutterFix] [전환] 에디터 재생 시작 514ms
+[StutterFix] [자동 시험] [임무단계] play 519.497ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 610ms (프레임 1개, 가장 긴 프레임 610ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 348ms, 그 밖 262ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 75ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 102.847ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 3 (0.6초)
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+[StutterFix] [자동 시험] [임무단계] wait 30002.591ms
+[StutterFix] [곡] 평균 298 FPS (3.4ms), 가장 긴 프레임 23ms, 곡 시작 연출 뒤 가장 긴 프레임 8ms, 끊김 0번, 프레임 8944개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.7ms, CPU 평균 3.4ms (8944개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 7.8ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.7ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [8ms @25.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.8, 나머지 7.0] [7ms @1.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 6.8] [6ms @29.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.8, 나머지 5.1] [5ms @29.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.9, 나머지 4.3] [5ms @1.8초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+2.1, 나머지 3.1] [5ms @29.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.9, 나머지 4.3] [5ms @2.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 3.3] [5ms @29.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.7, 나머지 4.3] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 292(3.6/0.6/0.0/1.7/0.0, 823/0개) 10s 307(3.2/0.6/0.0/1.6/0.0, 802/0개) 20s 295(3.4/0.8/0.0/1.8/0.0, 821/0개) | 가장 높은 구간 10s 307 FPS | 같은 그림자 색 건너뛰기 456958회 | 파티클 장식: 같은 값 넣기 12132760번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 32개 없앰, 게임 화면 버퍼 불필요한 해제 14번 막음 | 필터 형식 찾기 기억 569번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 25230개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 11개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 112번을 43번으로 줄임 (62% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 2323359번 중 같은 값이라 건너뜀 750664번 | 재생 중 편집기 검사 건너뜀 91973번 | 매 프레임 장식 순회 7298246번 중 바뀌는 게 없어 뺀 것 29753번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 815개만 훑음 (잠재움 24276번, 깨움 18819번, 목록 새로 만듦 1번, 안전망 검사 30번에 놓친 깨움 0개) | 즉시 이동 직접 처리 406번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 646개(장식 1247개), 원래 코드로 넘긴 효과 1개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 418개(동시 최대 152개), 끝까지 감 345, 끊겨서 완료 418, 버림 0, 기록 다시 씀 260, 새 표 객체 157, 갱신에 쓴 시간 266ms (8542프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 84개(타일 117개, 시작에 쓴 시간 1ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 26개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 26, 끊겨서 완료 0, 버림 0, 갱신 12ms (4418프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 65개(바로 쓴 값 128개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 78659번 (안 보이게 돼서 대신 갱신 82번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4905개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 6308번, 보일 때 반영 34번 | 색 바뀜 26720번 확인, 그리기 켜고 끈 것 161번, 쓴 시간 약 11.9ms, 가장 많이 쓴 프레임 약 0.26ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4395개는 가볍게, 1895개는 원래대로 다시 설정 195ms
+[StutterFix] [전환] 편집으로 나가기 455ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 556MB -> 492MB, 324ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (779ms)
+[StutterFix] [자동 시험] [임무단계] stop 783.652ms
+[StutterFix] [자동 시험] [임무단계] wait 225.292ms
+[StutterFix] [자동 시험] [임무단계] freefps 5.148ms
+[StutterFix] [자동 시험] FREEFPS WindflowerStatic B
+[StutterFix] [자동 시험] [임무단계] log 5.191ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 120ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 204ms
+[StutterFix] [전환] 에디터 재생 시작 518ms
+[StutterFix] [자동 시험] [임무단계] play 523.344ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 609ms (프레임 1개, 가장 긴 프레임 609ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 356ms, 그 밖 253ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 75ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 93.531ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 3 (0.6초)
+[StutterFix] [모니터] 44ms -> 게임 처리 / gpu 2.1 cpu 44.3 (수집 109857번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 곡 22.3초, 다시 보이게 된 장식 0개 | 시각 01:43:43.009
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+[StutterFix] [자동 시험] [임무단계] wait 30002.745ms
+[StutterFix] [곡] 평균 291 FPS (3.4ms), 가장 긴 프레임 44ms, 곡 시작 연출 뒤 가장 긴 프레임 44ms, 끊김 1번, 프레임 8733개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 2개 (위치 저장 2개)
+[임무30] 22.204초 30.112ms cpu 3.407 gpu 1.997 효과 0.000
+[임무30] 22.274초 44.286ms cpu 3.519 gpu 1.208 효과 0.000 | GPU 평균 1.7ms, CPU 평균 3.5ms (8733개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 44.3ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.6ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [44ms @22.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.7, 나머지 43.6] [30ms @22.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.7, 나머지 29.4] [22ms @22.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 21.7] [21ms @22.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+9.7, 나머지 10.9] [14ms @22.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.7, 나머지 13.1] [13ms @22.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+9.7, 나머지 3.5] [11ms @22.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.8, 나머지 10.5] [11ms @22.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+6.2, 나머지 4.3] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 293(3.6/0.6/0.0/1.7/0.0, 823/0개) 10s 299(3.3/0.7/0.0/1.7/0.0, 802/0개) 20s 281(3.5/0.8/0.0/1.8/0.0, 821/0개) | 가장 높은 구간 10s 299 FPS | 같은 그림자 색 건너뛰기 500753회 | 파티클 장식: 같은 값 넣기 14147330번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 35개 없앰, 게임 화면 버퍼 불필요한 해제 15번 막음 | 필터 형식 찾기 기억 569번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 25252개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 11개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 112번을 43번으로 줄임 (62% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 2263713번 중 같은 값이라 건너뜀 731433번 | 재생 중 편집기 검사 건너뜀 87200번 | 매 프레임 장식 순회 7125404번 중 바뀌는 게 없어 뺀 것 29717번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 815개만 훑음 (잠재움 24240번, 깨움 18783번, 목록 새로 만듦 1번, 안전망 검사 30번에 놓친 깨움 0개) | 즉시 이동 직접 처리 406번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 646개(장식 1247개), 원래 코드로 넘긴 효과 1개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 418개(동시 최대 152개), 끝까지 감 345, 끊겨서 완료 418, 버림 0, 기록 다시 씀 260, 새 표 객체 157, 갱신에 쓴 시간 267ms (8315프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 84개(타일 117개, 시작에 쓴 시간 1ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 26개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 26, 끊겨서 완료 0, 버림 0, 갱신 12ms (4261프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 65개(바로 쓴 값 128개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 73883번 (안 보이게 돼서 대신 갱신 82번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4905개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 6286번, 보일 때 반영 34번 | 색 바뀜 26706번 확인, 그리기 켜고 끈 것 161번, 쓴 시간 약 12.6ms, 가장 많이 쓴 프레임 약 0.23ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4395개는 가볍게, 1895개는 원래대로 다시 설정 194ms
+[StutterFix] [전환] 편집으로 나가기 461ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 555MB -> 492MB, 393ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (857ms)
+[StutterFix] [자동 시험] [임무단계] stop 861.159ms
+[StutterFix] [자동 시험] [임무단계] wait 144.214ms
+[StutterFix] [자동 시험] [임무단계] freefps 4.800ms
+[StutterFix] [자동 시험] FREEFPS WindflowerStatic A
+[StutterFix] [자동 시험] [임무단계] log 4.894ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 120ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 202ms
+[StutterFix] [전환] 에디터 재생 시작 517ms
+[StutterFix] [자동 시험] [임무단계] play 521.483ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 608ms (프레임 1개, 가장 긴 프레임 608ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 354ms, 그 밖 254ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 75ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 3 (0.6초)
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+DivideByZeroException: Attempted to divide by zero.
+  at CameraFilterPack_Blur_Movie.OnRenderImage (UnityEngine.RenderTexture sourceTexture, UnityEngine.RenderTexture destTexture) [0x00097] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+
+[StutterFix] [자동 시험] [임무단계] wait 29486.202ms
+[StutterFix] [곡] 평균 295 FPS (3.4ms), 가장 긴 프레임 21ms, 곡 시작 연출 뒤 가장 긴 프레임 11ms, 끊김 0번, 프레임 8675개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.7ms, CPU 평균 3.4ms (8675개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 11.3ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.5ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [11ms @21.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.7, 나머지 10.6] [9ms @21.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.8, 나머지 8.3] [6ms @21.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+2.3, 나머지 3.4] [5ms @20.9초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.7, 나머지 4.7] [5ms @2.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+2.2, 나머지 3.1] [5ms @2.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 3.2] [5ms @0.8초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 3.2] [5ms @21.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+2.3, 나머지 2.8] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 289(3.7/0.6/0.0/1.7/0.0, 823/0개) 10s 304(3.3/0.7/0.0/1.7/0.0, 802/0개) 20s 292(3.4/0.8/0.0/1.7/0.0, 821/0개) | 가장 높은 구간 10s 304 FPS | 같은 그림자 색 건너뛰기 544183회 | 파티클 장식: 같은 값 넣기 16145110번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 38개 없앰, 게임 화면 버퍼 불필요한 해제 16번 막음 | 필터 형식 찾기 기억 569번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 25274개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 11개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 112번을 43번으로 줄임 (62% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 2252906번 중 같은 값이라 건너뜀 730417번 | 재생 중 편집기 검사 건너뜀 90884번 | 매 프레임 장식 순회 7075662번 중 바뀌는 게 없어 뺀 것 29469번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 815개만 훑음 (잠재움 23992번, 깨움 18535번, 목록 새로 만듦 1번, 안전망 검사 30번에 놓친 깨움 0개) | 즉시 이동 직접 처리 406번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 646개(장식 1247개), 원래 코드로 넘긴 효과 1개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 418개(동시 최대 152개), 끝까지 감 331, 끊겨서 완료 418, 버림 0, 기록 다시 씀 260, 새 표 객체 157, 갱신에 쓴 시간 254ms (8257프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 84개(타일 117개, 시작에 쓴 시간 1ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 26개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 23, 끊겨서 완료 0, 버림 0, 갱신 12ms (4280프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 65개(바로 쓴 값 128개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 77653번 (안 보이게 돼서 대신 갱신 82번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4905개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 4074번, 보일 때 반영 34번 | 색 바뀜 24938번 확인, 그리기 켜고 끈 것 161번, 쓴 시간 약 11.6ms, 가장 많이 쓴 프레임 약 0.24ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4395개는 가볍게, 1895개는 원래대로 다시 설정 193ms
+[StutterFix] [전환] 편집으로 나가기 457ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 555MB -> 492MB, 333ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (790ms)
+[StutterFix] [자동 시험] [임무단계] stop 794.416ms
+[StutterFix] [자동 시험] [임무단계] wait 212.513ms
+[StutterFix] [자동 시험] [임무단계] freefps 5.039ms
+[StutterFix] [자동 시험] 바꾼 설정 되돌림
+[StutterFix] [자동 시험] 묶음 끝: 끝
+[StutterFix] [프레임생성 바깥] 기본 꺼짐; 공 포함; 원래 스왑체인; 배율 2..8
+[StutterFix] [프레임생성 바깥] mode=0
+[StutterFix] [프레임생성 바깥] 셰이더 미리 컴파일 시작

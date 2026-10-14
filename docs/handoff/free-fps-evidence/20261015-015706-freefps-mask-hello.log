@@ -1,0 +1,1523 @@
+Mono path[0] = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed'
+Mono config path = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/MonoBleedingEdge/etc'
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.21f1 (c02631ffc030)
+[Subsystems] Discovering subsystems at path D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/UnitySubsystems
+GfxDevice: creating device client; kGfxThreadingModeClientWorkerJobs
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4060 Ti (ID=0x2803)
+    Vendor:   NVIDIA
+    VRAM:     7949 MB
+    Driver:   32.0.16.1088
+Begin MonoManager ReloadAssembly
+
+
+[Manager] Injection...
+[Manager] Initialize.
+[Manager] Version: 0.32.5.0.
+[Manager] OS: Microsoft Windows NT 10.0.19045.0 AMD64.
+[Manager] Net Framework: 4.0.30319.42000.
+[Manager] Unity Engine: 6000.3.211.
+[Manager] Game: A Dance of Fire and Ice.
+[Manager] IsSupportOnSessionStart: False.
+[Manager] IsSupportOnSessionStop: False.
+[Manager] Mods path: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods.
+[Manager] Injection successful.
+- Loaded All Assemblies, in  0.881 seconds
+- Finished resetting the current domain, in  0.002 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+<RI> Input initialized.
+UnloadTime: 0.551100 ms
+[Manager] Starting.
+[Manager] Parsing mods.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\AdofaiGenBridge\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\YouTubeStream\Info.json'.
+[Manager] Sorting mods.
+[Manager] Loading mods.
+[AdofaiGenBridge] Version '0.3.8'. Loading.
+[AdofaiGenBridge] Bridge 0.3.8 ready; bounded async heartbeat IO, timing, screenshots and hitch context.
+[AdofaiGenBridge] Active.
+[AdofaiGenBridge] Loading time 0.63 s.
+[JALib] Version '1.0.0.45 beta45'. Loading.
+[JALib] Active.
+[JALib] Loading time 0.00 s.
+[Quartz] Version '2.0.0-alpha-121'. Loading.
+[JALib] Version initialized to 1.0 beta45
+[JALib] Successfully loaded JAModInfo
+[JALib Bootstrap] Request completed: https://jalib.jongyeol.kr/autoInstaller/1.0.0.45 (411ms)
+[JALib INFO 01:45:46.264 #0] Starting JAPatcher Initialization...(0/4)
+  ⚡ Thread Pool Worker(7) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 01:45:46.267 #0] Starting JAPatcher Reverse Patches.(1/4)
+  ⚡ Thread Pool Worker(7) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 01:45:46.354 #0] Start Enter the Harmony Locker.(2/4)
+  ⚡ Thread Pool Worker(7) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 01:45:46.354 #0] Start JAPatcher Patches.(3/4)
+  ⚡ Thread Pool Worker(7) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 01:45:46.458 #0] Complete JAPatcher Initialization.(4/4)
+  ⚡ Thread Pool Worker(7) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 01:45:46.503 #0] JAMod JALib is Initialized
+  ⚡ Thread Pool Worker(7) | Unknown Task
+  📍 JALib.Core.JAMod.Setup(UnityModManager+ModEntry modEntry, JAModInfo modInfo, GetModInfo apiInfo, JAModSetting setting)
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[Quartz] Active.
+[Quartz] Loading time 0.80 s.
+[StutterFix] Version '2.7.2'. Loading.
+[StutterFix] [저사양] 선명도 보정 셰이더 찾음
+[StutterFix] patched scnGame.Awake
+[StutterFix] patched scnEditor.SwitchToEditMode
+[StutterFix] patched scrTextDecoration.SetText (같은 글자 건너뛰기)
+[StutterFix] patched Shadow.effectColor (같은 그림자 색 건너뛰기)
+[StutterFix] patched <SetCollider>d__23.MoveNext
+[StutterFix] [효과] StartEffect 87개, 걸러내기 0개 감쌈
+[StutterFix] RecolorSplit: StartEffect 인자 1개
+[StutterFix] patched ffxRecolorFloorPlus.StartEffect (구간 나누기)
+[StutterFix] [즉시 이동] OnUpdate 건너뛸 짝 9개, 타입으로 판별 가능 9개 (예상 9개)
+[StutterFix] [즉시 이동] 설치
+[StutterFix] [즉시 이동 직접] 설치: 속성 블록 9개 (예상 9개)
+[StutterFix] [장식 이동 루프] 설치
+[StutterFix] [미리 확인] 설치
+[StutterFix] [장식 애니메이션] 설치
+[StutterFix] [타일 애니메이션] 설치
+[StutterFix] [저사양] 설치 (게임 화면 해상도 사용 가능)
+[StutterFix] [파티클] 설치 (바꾼 호출 2곳)
+[StutterFix] [누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)
+[StutterFix] [로딩] 이미지 파일 시각 캐시 설치 (바꾼 곳 2)
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치
+[StutterFix] [로딩] 같은 이미지 장식 목록 넣기 빠르게 설치
+[StutterFix] [맵 파일 읽기] 빠른 JSON 해석기 설치 (GDMiniJSON.Json)
+[StutterFix] [맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 3)
+[StutterFix] [맵 파일 읽기] 여러 코어로 이벤트 만들기 설치
+[StutterFix] [장식 한 번에 복제] 설치
+[StutterFix] [판정 글자] 사라질 때 색만 바꾸기 설치
+[StutterFix] [오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 2개)
+[StutterFix] [연출 끄기] 설치 (효과 19종)
+[StutterFix] [이미지 압축] 설치
+[StutterFix] [장식 마무리] 설치
+[StutterFix] [잠든 장식] 설치
+[StutterFix] [이미지] 빠른 압축 풀기(libdeflate): 사용 중
+[StutterFix] [이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): 사용 중
+[StutterFix] [이미지] JPG 풀기(libjpeg-turbo): 사용 중
+[StutterFix] [이미지] 스프라이트 크기 보정 설치 (큰 이미지 줄이기용)
+[StutterFix] [이미지] 미리 풀기 설치
+[StutterFix] [투명 장식] 위치 늦게 반영 설치
+[StutterFix] [투명 장식] 설치
+[StutterFix] tween fix installed
+[StutterFix] [장면 정리] 설치
+[StutterFix] [전환] 설치
+[StutterFix] [나가기] 설치
+[StutterFix] end hook: scnEditor.SwitchToEditMode
+[StutterFix] end hook: scrController.FailAction
+[StutterFix] end hook: scrController.Fail2Action
+[StutterFix] end hook: scrController.OnLandOnPortal
+[StutterFix] end hook: scrController.QuitToMainMenu
+[StutterFix] end hook: scnEditor.QuitToMenu
+[StutterFix] end hook: scnEditor.TryQuitToMenu
+[StutterFix] end hook: scnEditor.SaveAndQuit
+[StutterFix] restart hook: scrController.Restart
+[StutterFix] restart hook: scnEditor.Play
+[StutterFix] restart hook: scrController.ResetCustomLevel
+[StutterFix] gc control installed
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [쓰레기 줄이기] 비동기 키 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 마우스 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 레거시 키보드 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [미리 컴파일] 모드 함수 2253개 482ms, 게임 함수(효과·장식·타일·행성·지휘자) 1111개 112ms
+[StutterFix] 켜짐: 패치 설치 완료 (플레이어용)
+[StutterFix] 지금 Direct3D11 / LegacyJobified
+[StutterFix] [첫 판 FPS] 응답 없음 창 끔
+[StutterFix] [자동 시험] 시작: 480단계 - keep / set FrameGenOutside 0 / fpscap 0 / auto on / open D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai / freefps batches / freefps verify / freefps restore / log FREEFPS MASK BGStaticCam A / play / freefps state / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK BGStaticCam B / play / freefps off BGStaticCam / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK BGStaticCam B / play / freefps off BGStaticCam / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK BGStaticCam A / play / freefps state / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK BGMovingCam A / play / freefps state / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK BGMovingCam B / play / freefps off BGMovingCam / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK BGMovingCam B / play / freefps off BGMovingCam / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK BGMovingCam A / play / freefps state / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK Camera A / play / freefps state / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK Camera B / play / freefps off Camera / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK Camera B / play / freefps off Camera / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / log FREEFPS MASK Camera A / play / freefps state / log equal-window / wait 20 / freefps state / stop / wait 1 / freefps restore / play / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / wait 2 / filterstate / stop / freefps verify / freefps batches
+[StutterFix] [프레임 통계] 게임 기본: 꺼짐, 이 모드: 켬(GPU 시간 측정)
+[StutterFix] Active.
+[StutterFix] Loading time 8.12 s.
+[YouTubeStream] Version '1.0.5'. Loading.
+Mod was added: YouTubeStream
+[YouTubeStream] Active.
+[YouTubeStream] Loading time 0.10 s.
+[Manager] FINISH. SUCCESSFUL LOADED 5/5 MODS.
+
+
+Startup: GetPlatform
+Startup: Setting platform to Windows.
+Startup: DetermineAppLocation
+Startup: isInSteamLibrary: True
+Startup: SetBuildDateAndCommit
+Startup: Version r150, (32e5b8a, 2026/09/28 11:18 PM)
+Startup: SetLocale
+Startup: LoadSaveData
+Startup: SetupSystems
+setting language to: English
+Startup: Initialize Steam SDK
+Has license for 1977570: True
+Has license for 2016430: False
+Has license for 0: False
+Startup: FixResolution
+Startup: SetupLevelEventsInfo
+Startup: SetSettings
+Startup: ForceResolutionOnLofi
+Startup: LoadCalibration
+Startup: SetupSfxHandler
+Startup: GetSteamBranch
+Startup: SetupDLCs
+Startup: DLCManagers count: 3
+Startup: DLC: CheckUpToDate
+Startup: Neo Cosmos: owns True, installed True
+Startup: CacheShaderPropertyIDs
+Startup: DeleteTempUnzippingFolder
+Startup: Setup Discord
+Initializing Discord: InternalError
+Discord was not initialized: Discord.ResultException: InternalError
+  at Discord.Discord..ctor (System.Int64 clientId, System.UInt64 flags) [0x00343] in <cfc5361fad264068a7cb1f7cdb300e40>:0 
+  at DiscordController.OnEnable () [0x0001f] in <d4aeee2e422b4bba92d1a78531be3227>:0 
+Startup: Give Steam Achievements
+Startup: Rewired Init
+Startup: RDInput Setup
+Mods detected! Disabling exception capturing
+Startup: Setup Loading Screen
+Startup: ADOStartup done!
+[Manager] Spawning.
+[JALib INFO 01:45:55.593 #1] Listening on port: 58076
+[Quartz] [Startup] paths + config took 18 ms
+[JALib INFO 01:45:55.626 #1] Unzip ModApplicator...
+[Quartz] [FontManager] CJK fallback: cjkFonts-regular-normalized SDF
+[Quartz] [Startup] FontManager took 34 ms
+[Quartz] [Localization] April Fools overlay ready for 3 language(s)
+[Quartz] [Translator] Starting to load translations from: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Lang
+[Quartz] [Translator] Found 3 translation files.
+[Quartz] [Startup] LocalizationService took 12 ms
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Overlay Core' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Discord' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Editor Tools' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Effect Remover' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Limiter' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Main Menu' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Hide Judgements' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Optimizer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'TUF' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Visual Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Planet Colors' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Auto Deafen' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'UI Hiding' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Calibration' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Viewer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Progress Bar' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Combo' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Judgement' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Song Title' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Panels' v2.0.0
+[Quartz] [Startup] ServiceAdapter took 245 ms
+[Quartz] [Startup] ServiceAdapter took 1 ms
+[Quartz] [Sprites] screen 2560x1440, 1.333 px/unit
+[Quartz] [Startup] UIService took 217 ms
+[Quartz] [Startup] TweenService took 0 ms
+[Quartz] [Startup] PlayCount took 8 ms
+[Quartz] [Startup] HarmonyService took 0 ms
+[Quartz] Mod Enabled
+[Quartz] [Startup] SetModEnabled took 1145 ms
+[Quartz] [Startup] total 2750 ms
+[Quartz] [Umm] active mods: [AdofaiGenBridge, JALib, Quartz, StutterFix, YouTubeStream]
+[Quartz] Hello
+[Quartz] [Compat] ADOFAI r150 — current game API
+[StutterFix] [상태] ? 종료됨 world:X  -> 정지
+[StutterFix] [자동 시험] UMM 창 닫음
+[StutterFix] [자동 시험] 묶음이 끝나도 게임을 끄지 않음
+[StutterFix] [자동 시험] [임무단계] keep 0.119ms
+[StutterFix] [프레임생성 바깥] 기본 꺼짐; 공 포함; 원래 스왑체인; 배율 2..8
+[StutterFix] [프레임생성 바깥] mode=0
+[Quartz] [Harmony] applied patches (deferred to first tick) in 186 ms
+[StutterFix] [자동 시험] 설정 FrameGenOutside = 0 (묶음 끝에 4 로 되돌림)
+[StutterFix] [자동 시험] [임무단계] set 2050.901ms
+[StutterFix] [자동 시험] [FPS 제한] 목표 FPS 10000, vSync 0 frame 3
+[StutterFix] [자동 시험] [임무단계] fpscap 31.634ms
+[Quartz] [Translator] Finished loading translations.
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[StutterFix] [자동 시험] [임무단계] auto 48.173ms
+[StutterFix] [자동 시험] 맵 열기: D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai
+[StutterFix] [화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 196개 바꿔 끼움 (지난 결과), 1프레임에 나눠 775ms, 한 프레임 최대 775ms
+[StutterFix] [자동 시험] 메모리 3초: 힙 80MB, 프로세스 1058MB(실제 램 827MB), 프레임 3746 
+[StutterFix] tween capacity set to 40000/25000
+Go to Menu
+Startup: Setup Audio Settings
+[StutterFix] [자동 시험] 메모리 6초: 힙 85MB, 프로세스 1057MB(실제 램 828MB), 프레임 8816 
+Startup: Setup Audio Settings End 
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.408600 ms
+Unloading 38 unused Assets to reduce memory usage. Loaded Objects now: 69782.
+Total: 44.196000 ms (FindLiveObjects: 4.467500 ms CreateObjectMapping: 1.402400 ms MarkObjects: 38.183800 ms  DeleteObjects: 0.141800 ms)
+
+Shader.WarmupAllShaders ();
+Shader warmup: 131 shaders 1383 combinations 0.086s
+[StutterFix] [상태] None 종료됨 world:X  -> 정지
+Skipping audio break checking. Detected delta time: 1.671211
+[StutterFix] [상태] Start 종료됨 world:X  -> 정지
+[StutterFix] [상태] PlayerControl 종료됨 world:X  -> 정지
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 39.393100 ms
+Unloading 263 unused Assets to reduce memory usage. Loaded Objects now: 18219.
+Total: 106.142900 ms (FindLiveObjects: 0.886300 ms CreateObjectMapping: 0.661300 ms MarkObjects: 103.038400 ms  DeleteObjects: 1.556800 ms)
+
+[StutterFix] [자동 시험] 메모리 9초: 힙 147MB, 프로세스 1609MB(실제 램 1198MB), 프레임 8915 
+[StutterFix] [첫 판 FPS] 9.9초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 9.9초
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 15ms
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+[StutterFix] [첫 판 FPS] 1.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.5초
+[StutterFix] [자동 시험] 메모리 12초: 힙 334MB, 프로세스 1851MB(실제 램 1446MB), 프레임 8916 
+[StutterFix] [맵 파일 읽기] GC 멈춤 337ms(그중 이벤트로 바꾸기 162ms: 이벤트 21349개 여러 코어(5개)로 153ms), 힙 213MB -> 355MB (그 사이 GC 0번)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 1ms
+[StutterFix] [이미지] 자동: 첫 판부터 긴 변 3072 으로 줄임 (이미지 713장 원본 약 11378MB, 비어 있는 VRAM 약 5379MB, 3072 보다 큰 이미지 101장)
+[StutterFix] [이미지] 맵 열기 전: 이미 올라와 있는 이미지 1장, VRAM 전체 1775MB / 게임 365MB
+[StutterFix] [다른 모드] Quartz 최적화: 켜진 것 없음
+[StutterFix] [이미지] 713장 미리 풀기 시작 (작업 스레드 5개, DXT 로 미리 압축: 저사양 옵션)
+[StutterFix] [자동 시험] 메모리 15초: 힙 487MB, 프로세스 3006MB(실제 램 2440MB), 프레임 8916 
+[StutterFix] [자동 시험] 메모리 18초: 힙 738MB, 프로세스 5386MB(실제 램 2936MB), 프레임 8916 
+[StutterFix] [장식 한 번에 복제] 36번에 2425개 (안 쓰고 지움 0개)
+[StutterFix] [이미지] 미리 푼 것 712장(넣기 1723ms), 원래 방식 5장(78ms, 순서 어긋남 0), 기다림 2104ms, GC 0번, 전체 5.8초, 줄인 이미지 98장 (긴 변 3072, VRAM 약 4202MB 아낌), 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 5406ms/작업 스레드 합), 처음부터 압축으로 넣음 409장 (뒤이어 압축 불림 409, 안 불림 0), 압축이 늦어 원래대로 116장 | 장식 만들기 2531개 4736ms, 그중 텍스처 불러오기 4880ms, 압축 마저 기다림 48ms
+[StutterFix] [이미지] 해독 시간(작업 스레드 5개 합계): 압축 풀기 4296ms, 필터 되돌리기 4960ms, 줄이기 1853ms(279M 픽셀), 필터·줄이기 한 번에 0장 0ms(0M 픽셀), 흘려 풀기·줄이기 82장 8862ms(1400M 픽셀, 못 한 것 0) | 새로 맡은 형식(흑백·인터레이스) 14장 | libdeflate 602장, 원래 zlib 로 다시 푼 것 0장 (사용 중) | 네이티브(sfnative): 필터 되돌린 줄 703607, DXT 압축 줄 묶음 151728 | JPG(libjpeg-turbo): 28장 1662ms, 못 푼 것 0장
+[StutterFix] [이미지] 로딩 뒤 GC 한 번 126ms
+Shader warmup: 203 shaders 1477 combinations 0.006s
+[StutterFix] [셰이더] 맵 불러온 뒤: 셰이더 203개, 새 필터 109개(필터 텍스처 14개) 미리 준비 31ms
+[StutterFix] [재시작] 에디터에서 맵 열기: D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai
+[StutterFix] [다른 모드] 같은 게임 함수를 고치는 곳 36개: scnEditor.SwitchToEditMode (quartz.module.planetcolors, quartz.module.uihider) | ffxCheckpoint.StartEffect (quartz.module.visualtweaks) | ffxMenuPlanetSpeedChange.StartEffect (quartz.module.mainmenu) | ffxBloomPlus.StartEffect (quartz.module.effectremover) | ffxFlashPlus.StartEffect (quartz.module.effectremover) | ffxHallOfMirrorsPlus.StartEffect (quartz.module.effectremover) | ffxMoveFloorPlus.StartEffect (quartz.module.effectremover) | ffxScreenScrollPlus.StartEffect (quartz.module.effectremover) | ffxScreenTilePlus.StartEffect (quartz.module.effectremover) | ffxSetFilterAdvancedPlus.StartEffect (quartz.module.effectremover) | ffxShakeScreenPlus.StartEffect (quartz.module.effectremover) | scrParticleDecoration.Update (quartz.module.optimizer) | scrParticleDecoration.ResetParticle (quartz.module.optimizer) | scrCamera.SetCustomFrameRate (quartz.module.optimizer) | scnEditor.Play (YouTubeStream, Quartz, quartz.module.planetcolors) | LevelData.Decode (quartz.module.effectremover) | TextureManager.LoadTexture (quartz.module.optimizer) | RDString.Get (YouTubeStream) | scnGame.ResetScene (quartz.module.planetcolors) | scnGame.LoadLevel (YouTubeStream) | scnGame.ApplyEventsToFloors (quartz.module.visualtweaks) | scnGame.ApplyEvent (quartz.module.keylimiter) | scrConductor.PlayHitTimes (quartz.module.optimizer) | scrPlanet.MoveToNextFloor (quartz.module.uihider, Quartz) | scrController.FailAction (quartz.module.optimizer) | scrController.OnLandOnPortal (quartz.module.uihider) | scrController.QuitToMainMenu (quartz.module.tuf) | scrController.Restart (quartz.module.optimizer, Quartz) | scnGame.Play (quartz.module.keylimiter, Quartz, quartz.module.autodeafen, quartz.module.combo, quartz.module.judgement) | scnEditor.OpenLevelCo (Quartz) | scrFloor.LightUp (quartz.module.visualtweaks) | PlanetRenderer.Revive (quartz.module.visualtweaks, quartz.module.planetcolors) | scnCalibration.Start (quartz.module.calibration) | scnCalibration.CleanSlate (quartz.module.calibration) | scnCalibration.Calibrated (quartz.module.calibration) | scnCalibration.Update (quartz.module.calibration)
+[StutterFix] [자동 시험] 메모리 21초: 힙 400MB, 프로세스 7072MB(실제 램 2648MB), 프레임 8917 
+Unloading 157 unused Assets to reduce memory usage. Loaded Objects now: 664535.
+Total: 293.845000 ms (FindLiveObjects: 69.247800 ms CreateObjectMapping: 15.973200 ms MarkObjects: 154.361900 ms  DeleteObjects: 54.261500 ms)
+
+[StutterFix] [상태] None 편집중 일시정지  -> 정지
+[StutterFix] [업데이트] 최신 v2.7.2, 지금 v2.7.2
+[StutterFix] [자동 시험] 맵 열림 (22.5초, 열기 요청부터 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] open 22495.710ms
+[StutterFix] [무료FPS 배치] activeRenderers=15540 sharedMaterialIds=15239 propertyBlocks=804
+[StutterFix] [무료FPS 배치] recorder=Draw Calls Count valid=True samples=0
+[StutterFix] [무료FPS 배치] recorder=SetPass Calls Count valid=True samples=0
+[StutterFix] [무료FPS 배치] recorder=Batches Count valid=True samples=0
+[StutterFix] [자동 시험] [임무단계] freefps 31.144ms
+[StutterFix] [무료FPS 대조] control depth24 repeat changedBytes=0
+[StutterFix] [무료FPS 대조] depth=0 changedBytes=1692230
+[StutterFix] [무료FPS 대조] depth=16 changedBytes=1692230
+[StutterFix] [무료FPS 대조] format=RGB565 changedBytes=337075
+'B4G4R4A4_UNormPack16' is not supported. RenderTexture::GetTemporary fallbacks to R8G8B8A8_UNorm format on this platform. Use 'SystemInfo.IsFormatSupported' C# API to check format support.
+[StutterFix] [무료FPS 대조] format=ARGB4444 changedBytes=0
+[StutterFix] [자동 시험] [임무단계] freefps 350.873ms
+[StutterFix] [자동 시험] [임무단계] freefps 10.423ms
+[StutterFix] [자동 시험] FREEFPS MASK BGStaticCam A
+[StutterFix] [자동 시험] [임무단계] log 5.384ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 미룬 것 없음
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 701개, 곡 중 최대 701개 | 색 바뀜 4852번 확인, 그리기 켜고 끈 것 701번, 쓴 시간 약 3.3ms, 가장 많이 쓴 프레임 약 3.32ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 8.3초 멈춘 프레임 동안 윈도우 메시지 확인 12번 (멈춘 창 판정 막기), 가장 긴 빈틈 2.7초
+[StutterFix] [로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀
+[StutterFix] [자동 시험] 메모리 24초: 힙 466MB, 프로세스 7389MB(실제 램 2712MB), 프레임 9039 
+[StutterFix] [타일 메시] 색 바꾸기 효과 3324개, 타일·스타일 38024가지 -> 새로 미리 만든 메시 1003개 179ms (캐시 2154개)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 4가지 중 새로 불러온 것 1개 1ms
+[StutterFix] [효과 재사용] 다시 씀 0개, 새로 붙임 30746개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 0개 | 880ms
+[StutterFix] [전환] 에디터 재생 시작 1726ms
+[StutterFix] [자동 시험] [임무단계] play 1729.886ms
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 718장, VRAM 전체 5736MB / 게임 4327MB
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1918ms (프레임 1개, 가장 긴 프레임 1917ms) | 나눔: 곡 끝 요약 1ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 1217ms, 그 밖 700ms | 이미지 파일 시각: 5132번 중 디스크 1268번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 3ms
+[StutterFix] [저사양] 그래픽 설정: 품질 단계 Default, 안티에일리어싱 0x, 수직동기 0, 그림자 Disable, 텍스처 0, 이방성 Disable, 파티클 레이캐스트 256, 소프트 파티클 False | 카메라 OverlayCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.63, 컬링 100000 | 카메라 BGStaticCam: MSAA False, HDR False, 경로 Forward, 대상 2560x1440, 깊이 -1.63, 컬링 800 | 카메라 BGMovingCam: MSAA False, HDR False, 경로 Forward, 대상 2560x1440, 깊이 -1.11, 컬링 400 | 카메라 Camera: MSAA False, HDR False, 경로 Forward, 대상 2560x1440, 깊이 -1, 컬링 9F397 | 화면 2560x1440 FullScreenWindow, 그래픽카드 NVIDIA GeForce RTX 4060 Ti
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 202.575ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 18ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 86.149ms
+[StutterFix] [모니터] 356ms -> 메모리 정리 / gpu 341.2 cpu 355.8 (수집 9037번) 효과 0.0 모드 0.1(모니터 그리기) gc 1 | 시각 01:46:25.445
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 5736/7949MB, 게임 전용 4327MB, 게임 공유(시스템 RAM) 37MB
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [자동 시험] [임무단계] wait 20003.614ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.333ms
+[StutterFix] [곡] 평균 268 FPS (3.7ms), 가장 긴 프레임 96ms, 곡 시작 연출 뒤 가장 긴 프레임 32ms, 끊김 0번, 프레임 5381개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 1개 (위치 저장 1개)
+[임무30] 3.085초 31.626ms cpu 5.147 gpu 1.779 효과 0.023 | GPU 평균 2.0ms, CPU 평균 3.7ms (5380개 잼) | 그 프레임: 게임 효과 1개 0.0ms (그중 장식 이동 0.0ms), 나머지 31.6ms | 효과가 가장 무거운 프레임 6ms: 게임 효과 11.6ms (그중 장식 이동 5.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [32ms @3.1초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 31.3] [30ms @3.2초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 29.3] [29ms @3.2초: 효과 3개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 29.0] [27ms @3.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.4, 나머지 26.8] [26ms @3.0초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 25.4] [16ms @3.2초: 효과 4개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 15.5] [16ms @3.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+11.8, 나머지 3.8] [14ms @16.2초: 효과 8개 4.2(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.5, 장식 갱신 0.0+0.3, 나머지 7.9] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 274(4.3/0.8/0.0/1.8/0.0, 159/0개) 10s 261(3.8/1.0/0.0/2.2/0.1, 188/0개) 20s 284(3.5/0.8/0.0/2.1/0.1, 172/0개) | 가장 높은 구간 20s 284 FPS | 같은 그림자 색 건너뛰기 28139회 | 파티클 장식: 같은 값 넣기 605330번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 2개 없앰, 게임 화면 버퍼 불필요한 해제 0번 막음 | 필터 형식 찾기 기억 1872번 (새로 찾음 70번) | 오차 막대 눈금 가볍게 2114개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 965804번 중 같은 값이라 건너뜀 217460번 | 재생 중 편집기 검사 건너뜀 212154번 | 매 프레임 장식 순회 933828번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 173개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 185개), 끝까지 감 119, 끊겨서 완료 354, 버림 0, 기록 다시 씀 0, 새 표 객체 496, 갱신에 쓴 시간 280ms (4887프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 6ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 166, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 978, 끊겨서 완료 64, 버림 0, 갱신 41ms (3164프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 212269번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 158349번, 보일 때 반영 299번 | 색 바뀜 31377번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 7.0ms, 가장 많이 쓴 프레임 약 0.13ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.4초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.9초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 78ms
+[StutterFix] [전환] 편집으로 나가기 1224ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 711MB -> 384MB, 263ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1487ms)
+[StutterFix] [자동 시험] [임무단계] stop 1490.983ms
+[StutterFix] [자동 시험] [임무단계] wait 175.071ms
+[StutterFix] [자동 시험] [임무단계] freefps 6.530ms
+[StutterFix] [자동 시험] FREEFPS MASK BGStaticCam B
+[StutterFix] [자동 시험] [임무단계] log 5.481ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 1.0초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 639ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 62ms
+[StutterFix] [전환] 에디터 재생 시작 1379ms
+[StutterFix] [자동 시험] [임무단계] play 1383.957ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1559ms (프레임 1개, 가장 긴 프레임 1559ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 903ms, 그 밖 656ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 188.479ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 88.519ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [자동 시험] [임무단계] wait 20003.305ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=0 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.890ms
+[StutterFix] [곡] 평균 277 FPS (3.6ms), 가장 긴 프레임 97ms, 곡 시작 연출 뒤 가장 긴 프레임 14ms, 끊김 0번, 프레임 5571개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.6ms (5570개 잼) | 그 프레임: 게임 효과 1개 0.0ms (그중 장식 이동 0.0ms), 나머지 13.9ms | 효과가 가장 무거운 프레임 13ms: 게임 효과 4.2ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [14ms @10.1초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.3, 나머지 12.6] [13ms @16.2초: 효과 8개 4.1(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.4, 장식 갱신 0.0+0.3, 나머지 7.6] [13ms @16.2초: 효과 8개 4.1(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.4, 장식 갱신 0.0+0.3, 나머지 7.5] [9ms @3.4초: 효과 15개 3.5(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.0] [8ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 7.7] [8ms @16.2초: 효과 33개 2.6(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 5.0] [8ms @7.2초: 효과 15개 2.9(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.6] [7ms @5.3초: 효과 22개 1.9(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.6] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 294(3.9/0.8/0.0/1.7/0.0, 158/0개) 10s 260(3.8/0.9/0.0/2.2/0.1, 188/0개) 20s 286(3.5/0.8/0.0/2.1/0.1, 174/0개) | 가장 높은 구간 0s 294 FPS | 같은 그림자 색 건너뛰기 56019회 | 파티클 장식: 같은 값 넣기 1218690번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 4개 없앰, 게임 화면 버퍼 불필요한 해제 1번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 4228개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 990766번 중 같은 값이라 건너뜀 221077번 | 재생 중 편집기 검사 건너뜀 215595번 | 매 프레임 장식 순회 961809번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 187개), 끝까지 감 120, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 286ms (5014프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 758개(타일 2183개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1092개(동시 최대 164, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 976, 끊겨서 완료 64, 버림 0, 갱신 43ms (3279프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 215710번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 157714번, 보일 때 반영 299번 | 색 바뀜 32692번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 5.8ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.1초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.1초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 78ms
+[StutterFix] [전환] 편집으로 나가기 999ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 517MB -> 385MB, 266ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1265ms)
+[StutterFix] [자동 시험] [임무단계] stop 1268.812ms
+[StutterFix] [자동 시험] [임무단계] wait 178.926ms
+[StutterFix] [자동 시험] [임무단계] freefps 5.952ms
+[StutterFix] [자동 시험] FREEFPS MASK BGStaticCam B
+[StutterFix] [자동 시험] [임무단계] log 4.738ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 642ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 62ms
+[StutterFix] [전환] 에디터 재생 시작 1384ms
+[StutterFix] [자동 시험] [임무단계] play 1388.553ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1572ms (프레임 1개, 가장 긴 프레임 1572ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 894ms, 그 밖 678ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 195.051ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 88.305ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.5초)
+[StutterFix] [자동 시험] [임무단계] wait 20000.638ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=0 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.452ms
+[StutterFix] [곡] 평균 276 FPS (3.6ms), 가장 긴 프레임 96ms, 곡 시작 연출 뒤 가장 긴 프레임 14ms, 끊김 0번, 프레임 5554개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.6ms (5553개 잼) | 그 프레임: 게임 효과 10개 4.6ms (그중 장식 이동 0.0ms), 나머지 9.7ms | 효과가 가장 무거운 프레임 13ms: 게임 효과 4.6ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [14ms @16.2초: 효과 10개 4.6(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.6, 장식 갱신 0.0+0.3, 나머지 7.8] [13ms @16.2초: 효과 10개 4.6(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.6, 장식 갱신 0.0+0.3, 나머지 7.0] [9ms @3.4초: 효과 15개 4.0(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.2] [8ms @16.1초: 효과 35개 2.7(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.7] [8ms @7.1초: 효과 15개 3.1(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.3] [7ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 7.1] [7ms @5.3초: 효과 22개 1.7(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.5] [6ms @4.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.5, 나머지 3.8] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 293(3.9/0.8/0.0/1.7/0.0, 158/0개) 10s 259(3.8/1.0/0.0/2.2/0.1, 188/0개) 20s 290(3.5/0.8/0.0/2.2/0.1, 175/0개) | 가장 높은 구간 0s 293 FPS | 같은 그림자 색 건너뛰기 83814회 | 파티클 장식: 같은 값 넣기 1830180번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 6개 없앰, 게임 화면 버퍼 불필요한 해제 2번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 6342개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 987450번 중 같은 값이라 건너뜀 220225번 | 재생 중 편집기 검사 건너뜀 214734번 | 매 프레임 장식 순회 958776번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 187개), 끝까지 감 118, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 284ms (4999프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 165, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 979, 끊겨서 완료 64, 버림 0, 갱신 41ms (3260프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 214849번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 157715번, 보일 때 반영 299번 | 색 바뀜 32545번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 6.5ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.1초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.1초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 77ms
+[JALib INFO 01:47:32.906 #25556] JALogger cache removed 3 entries, current cache size: 0
+[StutterFix] [전환] 편집으로 나가기 1005ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 518MB -> 386MB, 261ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1266ms)
+[StutterFix] [자동 시험] [임무단계] stop 1269.792ms
+[StutterFix] [자동 시험] [임무단계] wait 184.873ms
+[StutterFix] [자동 시험] [임무단계] freefps 6.175ms
+[StutterFix] [자동 시험] FREEFPS MASK BGStaticCam A
+[StutterFix] [자동 시험] [임무단계] log 4.574ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 643ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 62ms
+[StutterFix] [전환] 에디터 재생 시작 1387ms
+[StutterFix] [자동 시험] [임무단계] play 1391.445ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1572ms (프레임 1개, 가장 긴 프레임 1572ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 895ms, 그 밖 677ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 192.507ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 90.514ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [자동 시험] [임무단계] wait 20001.198ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.317ms
+[StutterFix] [곡] 평균 276 FPS (3.6ms), 가장 긴 프레임 98ms, 곡 시작 연출 뒤 가장 긴 프레임 15ms, 끊김 0번, 프레임 5557개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.6ms (5556개 잼) | 그 프레임: 게임 효과 16개 4.9ms (그중 장식 이동 0.0ms), 나머지 9.8ms | 효과가 가장 무거운 프레임 15ms: 게임 효과 4.9ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [15ms @16.2초: 효과 9개 4.6(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.6, 장식 갱신 0.0+0.3, 나머지 8.2] [14ms @16.2초: 효과 9개 4.6(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.6, 장식 갱신 0.0+0.3, 나머지 7.5] [9ms @3.4초: 효과 15개 3.6(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.1] [8ms @16.2초: 효과 33개 2.7(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 5.2] [8ms @7.2초: 효과 15개 3.2(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.2] [8ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.2, 나머지 7.3] [7ms @4.2초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+3.2, 나머지 3.9] [6ms @4.1초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.6, 나머지 3.7] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 294(3.9/0.8/0.0/1.7/0.0, 158/0개) 10s 258(3.9/1.0/0.0/2.2/0.1, 188/0개) 20s 288(3.5/0.8/0.0/2.2/0.1, 176/0개) | 가장 높은 구간 0s 294 FPS | 같은 그림자 색 건너뛰기 111624회 | 파티클 장식: 같은 값 넣기 2442000번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 8개 없앰, 게임 화면 버퍼 불필요한 해제 3번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 8456개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 986621번 중 같은 값이라 건너뜀 219748번 | 재생 중 편집기 검사 건너뜀 214226번 | 매 프레임 장식 순회 958557번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 187개), 끝까지 감 122, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 282ms (4994프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 165, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 977, 끊겨서 완료 65, 버림 0, 갱신 42ms (3264프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 214341번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 157286번, 보일 때 반영 299번 | 색 바뀜 32613번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 6.4ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.1초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.1초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 83ms
+[StutterFix] [전환] 편집으로 나가기 1015ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 518MB -> 386MB, 263ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1278ms)
+[StutterFix] [자동 시험] [임무단계] stop 1281.828ms
+[StutterFix] [자동 시험] [임무단계] wait 183.825ms
+[StutterFix] [자동 시험] [임무단계] freefps 7.584ms
+[StutterFix] [자동 시험] FREEFPS MASK BGMovingCam A
+[StutterFix] [자동 시험] [임무단계] log 5.288ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 647ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 64ms
+[StutterFix] [전환] 에디터 재생 시작 1400ms
+[StutterFix] [자동 시험] [임무단계] play 1404.984ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1587ms (프레임 1개, 가장 긴 프레임 1586ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 902ms, 그 밖 684ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 193.458ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 88.070ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.5초)
+[StutterFix] [모니터] 33ms -> 게임 처리 / gpu 2.4 cpu 33.0 (수집 33732번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 곡 9.4초, 다시 보이게 된 장식 0개 | 시각 01:48:07.709
+[StutterFix] [자동 시험] [임무단계] wait 20002.263ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.813ms
+[StutterFix] [곡] 평균 262 FPS (3.8ms), 가장 긴 프레임 96ms, 곡 시작 연출 뒤 가장 긴 프레임 33ms, 끊김 1번, 프레임 5276개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 2개 (위치 저장 2개)
+[임무30] 9.440초 33.238ms cpu 3.648 gpu 2.404 효과 0.000
+[임무30] 9.485초 31.414ms cpu 4.781 gpu 2.378 효과 0.024 | GPU 평균 2.0ms, CPU 평균 3.8ms (5275개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 33.2ms | 효과가 가장 무거운 프레임 15ms: 게임 효과 5.1ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.04ms/프레임 | 가장 무거운 프레임 8개: [33ms @9.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 32.8] [31ms @9.5초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 31.0] [30ms @9.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 29.3] [23ms @9.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 22.2] [22ms @9.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 21.2] [19ms @9.3초: 효과 3개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 18.8] [15ms @16.2초: 효과 9개 5.1(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.6, 장식 갱신 0.0+0.3, 나머지 8.0] [13ms @9.2초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 12.8] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 270(4.2/0.8/0.0/1.7/0.0, 156/0개) 10s 255(3.9/1.0/0.0/2.2/0.1, 188/0개) 20s 287(3.4/0.8/0.0/2.2/0.1, 175/0개) | 가장 높은 구간 20s 287 FPS | 같은 그림자 색 건너뛰기 138029회 | 파티클 장식: 같은 값 넣기 3022910번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 10개 없앰, 게임 화면 버퍼 불필요한 해제 4번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 10570개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 931968번 중 같은 값이라 건너뜀 205781번 | 재생 중 편집기 검사 건너뜀 200579번 | 매 프레임 장식 순회 907997번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 187개), 끝까지 감 121, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 273ms (4719프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 166, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 977, 끊겨서 완료 65, 버림 0, 갱신 41ms (3142프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 200694번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 151801번, 보일 때 반영 299번 | 색 바뀜 31001번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 12.6ms, 가장 많이 쓴 프레임 약 4.90ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.1초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.1초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 79ms
+[StutterFix] [전환] 편집으로 나가기 1026ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 518MB -> 387MB, 264ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1291ms)
+[StutterFix] [자동 시험] [임무단계] stop 1294.746ms
+[StutterFix] [자동 시험] [임무단계] wait 189.000ms
+[StutterFix] [자동 시험] [임무단계] freefps 6.161ms
+[StutterFix] [자동 시험] FREEFPS MASK BGMovingCam B
+[StutterFix] [자동 시험] [임무단계] log 4.726ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 1.0초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 656ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 65ms
+[StutterFix] [전환] 에디터 재생 시작 1415ms
+[StutterFix] [자동 시험] [임무단계] play 1419.695ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1602ms (프레임 1개, 가장 긴 프레임 1601ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 913ms, 그 밖 689ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 193.967ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 89.594ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [자동 시험] [임무단계] wait 20001.524ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=0 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.959ms
+[StutterFix] [곡] 평균 276 FPS (3.6ms), 가장 긴 프레임 97ms, 곡 시작 연출 뒤 가장 긴 프레임 15ms, 끊김 0번, 프레임 5556개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.6ms (5555개 잼) | 그 프레임: 게임 효과 8개 4.9ms (그중 장식 이동 0.0ms), 나머지 9.7ms | 효과가 가장 무거운 프레임 14ms: 게임 효과 5.3ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [15ms @16.2초: 효과 8개 4.9(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.6, 장식 갱신 0.0+0.3, 나머지 7.8] [14ms @16.2초: 효과 8개 4.9(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.6, 장식 갱신 0.0+0.3, 나머지 7.4] [14ms @16.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 13.6] [9ms @3.4초: 효과 15개 3.7(장식 이동 0.1, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.2] [9ms @8.9초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 8.4] [8ms @16.2초: 효과 33개 2.8(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.8] [8ms @7.1초: 효과 15개 3.0(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.2] [7ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.2, 나머지 6.9] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 294(3.9/0.8/0.0/1.7/0.0, 158/0개) 10s 258(3.9/1.0/0.0/2.2/0.1, 188/0개) 20s 285(3.5/0.8/0.0/2.1/0.1, 175/0개) | 가장 높은 구간 0s 294 FPS | 같은 그림자 색 건너뛰기 165834회 | 파티클 장식: 같은 값 넣기 3634620번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 12개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 12684개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 985658번 중 같은 값이라 건너뜀 219520번 | 재생 중 편집기 검사 건너뜀 213826번 | 매 프레임 장식 순회 957960번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 175개), 끝까지 감 122, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 284ms (4983프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 164, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 978, 끊겨서 완료 64, 버림 0, 갱신 43ms (3258프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 213941번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 156603번, 보일 때 반영 299번 | 색 바뀜 32515번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 6.9ms, 가장 많이 쓴 프레임 약 0.21ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.2초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.2초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 80ms
+[StutterFix] [전환] 편집으로 나가기 1065ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 519MB -> 387MB, 264ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1329ms)
+[StutterFix] [자동 시험] [임무단계] stop 1333.101ms
+[StutterFix] [자동 시험] [임무단계] wait 219.434ms
+[StutterFix] [자동 시험] [임무단계] freefps 6.471ms
+[StutterFix] [자동 시험] FREEFPS MASK BGMovingCam B
+[StutterFix] [자동 시험] [임무단계] log 5.337ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 1.1초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 651ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 64ms
+[StutterFix] [전환] 에디터 재생 시작 1410ms
+[StutterFix] [자동 시험] [임무단계] play 1415.660ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1597ms (프레임 1개, 가장 긴 프레임 1596ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 908ms, 그 밖 688ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 193.844ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 88.532ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.5초)
+[StutterFix] [자동 시험] [임무단계] wait 20002.946ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=0 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.654ms
+[StutterFix] [곡] 평균 277 FPS (3.6ms), 가장 긴 프레임 96ms, 곡 시작 연출 뒤 가장 긴 프레임 15ms, 끊김 0번, 프레임 5561개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.6ms (5560개 잼) | 그 프레임: 게임 효과 8개 4.8ms (그중 장식 이동 0.0ms), 나머지 10.1ms | 효과가 가장 무거운 프레임 15ms: 게임 효과 4.8ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [15ms @16.2초: 효과 8개 4.8(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 2.0, 장식 갱신 0.0+0.3, 나머지 7.8] [14ms @16.2초: 효과 8개 4.8(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 2.0, 장식 갱신 0.0+0.3, 나머지 6.9] [9ms @3.4초: 효과 15개 4.1(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.1] [8ms @16.1초: 효과 35개 2.9(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.6] [7ms @7.2초: 효과 15개 3.3(장식 이동 0.3, 그중 길이 있는 것 0.2), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 3.8] [7ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 7.0] [7ms @4.3초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.8, 나머지 4.0] [7ms @4.9초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.6, 나머지 4.0] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 295(3.9/0.8/0.0/1.7/0.0, 158/0개) 10s 258(3.9/1.0/0.0/2.2/0.1, 188/0개) 20s 281(3.6/0.8/0.0/2.1/0.1, 174/0개) | 가장 높은 구간 0s 295 FPS | 같은 그림자 색 건너뛰기 193664회 | 파티클 장식: 같은 값 넣기 4246880번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 14개 없앰, 게임 화면 버퍼 불필요한 해제 6번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 14798개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 986908번 중 같은 값이라 건너뜀 219768번 | 재생 중 편집기 검사 건너뜀 214241번 | 매 프레임 장식 순회 958965번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 187개), 끝까지 감 122, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 284ms (4997프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 165, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 978, 끊겨서 완료 64, 버림 0, 갱신 42ms (3267프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 214356번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 156894번, 보일 때 반영 299번 | 색 바뀜 32698번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 8.8ms, 가장 많이 쓴 프레임 약 0.29ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.2초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.2초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 80ms
+[StutterFix] [전환] 편집으로 나가기 1039ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 519MB -> 387MB, 262ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1302ms)
+[StutterFix] [자동 시험] [임무단계] stop 1305.629ms
+[StutterFix] [자동 시험] [임무단계] wait 187.213ms
+[StutterFix] [자동 시험] [임무단계] freefps 6.294ms
+[StutterFix] [자동 시험] FREEFPS MASK BGMovingCam A
+[StutterFix] [자동 시험] [임무단계] log 4.796ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 1.0초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 649ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 62ms
+[StutterFix] [전환] 에디터 재생 시작 1412ms
+[StutterFix] [자동 시험] [임무단계] play 1416.495ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1599ms (프레임 1개, 가장 긴 프레임 1599ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 907ms, 그 밖 692ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 195.160ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 88.091ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [자동 시험] [임무단계] wait 20002.684ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 4.031ms
+[StutterFix] [곡] 평균 277 FPS (3.6ms), 가장 긴 프레임 96ms, 곡 시작 연출 뒤 가장 긴 프레임 14ms, 끊김 0번, 프레임 5564개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.6ms (5563개 잼) | 그 프레임: 게임 효과 8개 4.9ms (그중 장식 이동 0.0ms), 나머지 9.6ms | 효과가 가장 무거운 프레임 14ms: 게임 효과 4.9ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [14ms @16.2초: 효과 8개 4.9(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.6, 장식 갱신 0.0+0.3, 나머지 7.7] [14ms @16.2초: 효과 8개 4.9(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.6, 장식 갱신 0.0+0.3, 나머지 6.9] [9ms @3.4초: 효과 15개 3.8(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.0] [8ms @16.1초: 효과 35개 3.0(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.4] [7ms @7.2초: 효과 15개 3.1(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 3.8] [7ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 6.9] [7ms @16.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 6.3] [6ms @4.1초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.4, 나머지 3.8] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 295(3.9/0.8/0.0/1.7/0.0, 158/0개) 10s 258(3.9/1.0/0.0/2.2/0.1, 188/0개) 20s 265(3.8/0.8/0.0/2.2/0.1, 175/0개) | 가장 높은 구간 0s 295 FPS | 같은 그림자 색 건너뛰기 221509회 | 파티클 장식: 같은 값 넣기 4859470번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 16개 없앰, 게임 화면 버퍼 불필요한 해제 7번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 16912개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 988821번 중 같은 값이라 건너뜀 220650번 | 재생 중 편집기 검사 건너뜀 215071번 | 매 프레임 장식 순회 960150번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 187개), 끝까지 감 121, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 282ms (5005프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 164, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 979, 끊겨서 완료 64, 버림 0, 갱신 42ms (3263프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 215186번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 156677번, 보일 때 반영 299번 | 색 바뀜 32763번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 6.2ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.2초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.2초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 77ms
+[StutterFix] [전환] 편집으로 나가기 1030ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 520MB -> 387MB, 269ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1299ms)
+[StutterFix] [자동 시험] [임무단계] stop 1302.306ms
+[StutterFix] [자동 시험] [임무단계] wait 183.398ms
+[StutterFix] [자동 시험] [임무단계] freefps 6.053ms
+[StutterFix] [자동 시험] FREEFPS MASK Camera A
+[StutterFix] [자동 시험] [임무단계] log 5.136ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 1.0초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 647ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 62ms
+[StutterFix] [전환] 에디터 재생 시작 1406ms
+[StutterFix] [자동 시험] [임무단계] play 1411.065ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1593ms (프레임 1개, 가장 긴 프레임 1593ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 902ms, 그 밖 692ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 194.074ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 88.682ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.5초)
+[StutterFix] [자동 시험] [임무단계] wait 20001.426ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.807ms
+[StutterFix] [곡] 평균 275 FPS (3.6ms), 가장 긴 프레임 96ms, 곡 시작 연출 뒤 가장 긴 프레임 15ms, 끊김 0번, 프레임 5526개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.6ms (5525개 잼) | 그 프레임: 게임 효과 10개 5.0ms (그중 장식 이동 0.0ms), 나머지 9.5ms | 효과가 가장 무거운 프레임 15ms: 게임 효과 5.0ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [15ms @16.2초: 효과 10개 5.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.7, 장식 갱신 0.0+0.3, 나머지 7.5] [14ms @16.2초: 효과 10개 5.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.7, 장식 갱신 0.0+0.3, 나머지 6.7] [10ms @3.3초: 효과 15개 4.2(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.4] [9ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.2, 나머지 8.9] [9ms @16.1초: 효과 33개 3.1(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 5.2] [8ms @7.1초: 효과 15개 3.4(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.4] [8ms @20.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.2, 장식 갱신 0.0+0.4, 나머지 7.1] [7ms @8.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.2, 나머지 4.2] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 293(3.9/0.8/0.0/1.7/0.0, 158/0개) 10s 257(3.9/1.0/0.0/2.2/0.1, 188/0개) 20s 231(4.3/0.9/0.0/2.3/0.1, 175/0개) | 가장 높은 구간 0s 293 FPS | 같은 그림자 색 건너뛰기 249164회 | 파티클 장식: 같은 값 넣기 5467880번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 18개 없앰, 게임 화면 버퍼 불필요한 해제 8번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 19026개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 981095번 중 같은 값이라 건너뜀 218615번 | 재생 중 편집기 검사 건너뜀 213089번 | 매 프레임 장식 순회 953114번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 187개), 끝까지 감 122, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 280ms (4969프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 167, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 978, 끊겨서 완료 65, 버림 0, 갱신 41ms (3236프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 213204번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 156292번, 보일 때 반영 299번 | 색 바뀜 32500번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 5.8ms, 가장 많이 쓴 프레임 약 0.11ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.1초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.1초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 78ms
+[StutterFix] [전환] 편집으로 나가기 1040ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 522MB -> 389MB, 271ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1311ms)
+[StutterFix] [자동 시험] [임무단계] stop 1315.708ms
+[StutterFix] [자동 시험] [임무단계] wait 183.141ms
+[StutterFix] [자동 시험] [임무단계] freefps 6.227ms
+[StutterFix] [자동 시험] FREEFPS MASK Camera B
+[StutterFix] [자동 시험] [임무단계] log 4.758ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 1.0초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 648ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 62ms
+[StutterFix] [전환] 에디터 재생 시작 1417ms
+[StutterFix] [자동 시험] [임무단계] play 1421.423ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1605ms (프레임 1개, 가장 긴 프레임 1605ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 903ms, 그 밖 703ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 195.577ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 88.877ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [자동 시험] [임무단계] wait 20002.419ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=0 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 2.824ms
+[StutterFix] [곡] 평균 354 FPS (2.8ms), 가장 긴 프레임 96ms, 곡 시작 연출 뒤 가장 긴 프레임 14ms, 끊김 0번, 프레임 7123개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 0.8ms, CPU 평균 2.8ms (7122개 잼) | 그 프레임: 게임 효과 7개 5.2ms (그중 장식 이동 0.0ms), 나머지 9.3ms | 효과가 가장 무거운 프레임 14ms: 게임 효과 5.2ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [14ms @16.2초: 효과 7개 5.2(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.8, 장식 갱신 0.0+0.3, 나머지 7.2] [13ms @16.2초: 효과 7개 5.2(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.8, 장식 갱신 0.0+0.3, 나머지 5.9] [9ms @3.4초: 효과 15개 4.1(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 4.2] [7ms @16.2초: 효과 35개 3.0(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 3.8] [7ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 6.7] [7ms @7.2초: 효과 15개 2.9(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 3.5] [6ms @5.3초: 효과 22개 1.8(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 3.7] [5ms @1.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.1] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 370(3.1/0.4/0.0/0.7/0.0, 158/0개) 10s 338(2.9/0.4/0.0/0.8/0.1, 188/0개) 20s 337(2.9/0.4/0.0/0.9/0.1, 172/0개) | 가장 높은 구간 0s 370 FPS | 같은 그림자 색 건너뛰기 284804회 | 파티클 장식: 같은 값 넣기 6251960번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 20개 없앰, 게임 화면 버퍼 불필요한 해제 9번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 21140개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 1268487번 중 같은 값이라 건너뜀 283006번 | 재생 중 편집기 검사 건너뜀 277558번 | 매 프레임 장식 순회 1230335번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 187개), 끝까지 감 122, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 342ms (6456프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 165, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 978, 끊겨서 완료 64, 버림 0, 갱신 55ms (4160프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 277673번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 205299번, 보일 때 반영 299번 | 색 바뀜 42053번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 7.2ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.2초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.7초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 77ms
+[StutterFix] [전환] 편집으로 나가기 1040ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 529MB -> 389MB, 267ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1308ms)
+[StutterFix] [자동 시험] [임무단계] stop 1310.741ms
+[StutterFix] [자동 시험] [임무단계] wait 184.107ms
+[StutterFix] [자동 시험] [임무단계] freefps 5.042ms
+[StutterFix] [자동 시험] FREEFPS MASK Camera B
+[StutterFix] [자동 시험] [임무단계] log 5.291ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 1.0초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 651ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 62ms
+[StutterFix] [전환] 에디터 재생 시작 1426ms
+[StutterFix] [자동 시험] [임무단계] play 1430.777ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1614ms (프레임 1개, 가장 긴 프레임 1614ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 909ms, 그 밖 705ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 195.487ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 87.839ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.5초)
+[StutterFix] [자동 시험] [임무단계] wait 20001.064ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=0 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.263ms
+[StutterFix] [곡] 평균 353 FPS (2.8ms), 가장 긴 프레임 95ms, 곡 시작 연출 뒤 가장 긴 프레임 15ms, 끊김 0번, 프레임 7105개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 0.7ms, CPU 평균 2.8ms (7104개 잼) | 그 프레임: 게임 효과 7개 5.1ms (그중 장식 이동 0.0ms), 나머지 9.5ms | 효과가 가장 무거운 프레임 15ms: 게임 효과 5.1ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [15ms @16.2초: 효과 7개 5.1(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.8, 장식 갱신 0.0+0.3, 나머지 7.3] [13ms @16.2초: 효과 7개 5.1(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 1.8, 장식 갱신 0.0+0.3, 나머지 6.0] [9ms @3.4초: 효과 15개 3.9(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 4.7] [8ms @13.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 7.5] [7ms @16.2초: 효과 35개 2.9(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 3.9] [7ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 6.4] [6ms @7.1초: 효과 15개 2.9(장식 이동 0.1, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 3.2] [6ms @1.5초: 효과 50개 2.8(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 3.0] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 370(3.1/0.4/0.0/0.7/0.0, 158/0개) 10s 337(3.0/0.4/0.0/0.8/0.1, 188/0개) 20s 349(2.9/0.4/0.0/0.9/0.1, 173/0개) | 가장 높은 구간 0s 370 FPS | 같은 그림자 색 건너뛰기 320354회 | 파티클 장식: 같은 값 넣기 7034060번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 22개 없앰, 게임 화면 버퍼 불필요한 해제 10번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 23254개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 1265825번 중 같은 값이라 건너뜀 282518번 | 재생 중 편집기 검사 건너뜀 277168번 | 매 프레임 장식 순회 1227451번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 172개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 175개), 끝까지 감 120, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 342ms (6464프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 166, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 977, 끊겨서 완료 65, 버림 0, 갱신 54ms (4189프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 277283번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 204563번, 보일 때 반영 299번 | 색 바뀜 42372번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 10.1ms, 가장 많이 쓴 프레임 약 0.29ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.2초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.7초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 81ms
+[StutterFix] [전환] 편집으로 나가기 1054ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 530MB -> 390MB, 265ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1319ms)
+[StutterFix] [자동 시험] [임무단계] stop 1322.614ms
+[StutterFix] [자동 시험] [임무단계] wait 185.893ms
+[StutterFix] [자동 시험] [임무단계] freefps 5.137ms
+[StutterFix] [자동 시험] FREEFPS MASK Camera A
+[StutterFix] [자동 시험] [임무단계] log 5.436ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 1.1초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 695ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 63ms
+[StutterFix] [전환] 에디터 재생 시작 1472ms
+[StutterFix] [자동 시험] [임무단계] play 1476.977ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1662ms (프레임 1개, 가장 긴 프레임 1662ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 950ms, 그 밖 713ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 197.593ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 15ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] equal-window
+[StutterFix] [자동 시험] [임무단계] log 89.796ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [자동 시험] [임무단계] wait 19999.995ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=OverlayCam enabled=True mask=1048576 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 3.771ms
+[StutterFix] [곡] 평균 275 FPS (3.6ms), 가장 긴 프레임 97ms, 곡 시작 연출 뒤 가장 긴 프레임 16ms, 끊김 0번, 프레임 5530개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.6ms (5529개 잼) | 그 프레임: 게임 효과 9개 5.6ms (그중 장식 이동 0.0ms), 나머지 10.6ms | 효과가 가장 무거운 프레임 16ms: 게임 효과 5.6ms (그중 장식 이동 0.0ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [16ms @16.2초: 효과 9개 5.6(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 2.0, 장식 갱신 0.0+0.3, 나머지 8.3] [15ms @16.2초: 효과 9개 5.6(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 2.0, 장식 갱신 0.0+0.3, 나머지 6.8] [9ms @16.2초: 효과 34개 3.1(장식 이동 0.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 5.9] [9ms @3.4초: 효과 15개 4.0(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.1] [7ms @7.2초: 효과 15개 3.1(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.0] [7ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 6.8] [7ms @5.3초: 효과 22개 1.8(장식 이동 0.2, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.3] [6ms @4.9초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.7, 나머지 3.7] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 290(3.9/0.8/0.1/1.8/0.0, 159/0개) 10s 260(3.8/1.0/0.0/2.2/0.1, 188/0개) 20s 275(3.6/0.8/0.0/2.1/0.1, 170/0개) | 가장 높은 구간 0s 290 FPS | 같은 그림자 색 건너뛰기 348029회 | 파티클 장식: 같은 값 넣기 7642910번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 24개 없앰, 게임 화면 버퍼 불필요한 해제 11번 막음 | 필터 형식 찾기 기억 1961번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 25368개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1057개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 234번을 216번으로 줄임 (8% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 987060번 중 같은 값이라 건너뜀 220898번 | 재생 중 편집기 검사 건너뜀 215691번 | 매 프레임 장식 순회 956613번 중 바뀌는 게 없어 뺀 것 5182번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 173개만 훑음 (잠재움 2777번, 깨움 428번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 1084번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 212번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 311개(장식 1463개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 131개 | 장식 애니메이션 직접 처리: 만든 것 561개(동시 최대 185개), 끝까지 감 121, 끊겨서 완료 561, 버림 0, 기록 다시 씀 202, 새 표 객체 294, 갱신에 쓴 시간 283ms (5021프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 759개(타일 2184개, 시작에 쓴 시간 5ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 1095개(동시 최대 165, 다시 씀 0, 겹쳐서 진짜 DOTween 111), 끝까지 감 977, 끊겨서 완료 65, 버림 0, 갱신 42ms (3268프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 215806번 (안 보이게 돼서 대신 갱신 298번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 650개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 157623번, 보일 때 반영 299번 | 색 바뀜 32883번 확인, 그리기 켜고 끈 것 805번, 쓴 시간 약 9.2ms, 가장 많이 쓴 프레임 약 0.35ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.2초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.7초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1718개는 가볍게, 813개는 원래대로 다시 설정 82ms
+[StutterFix] [전환] 편집으로 나가기 1037ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 523MB -> 390MB, 261ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1299ms)
+[StutterFix] [자동 시험] [임무단계] stop 1303.476ms
+[StutterFix] [자동 시험] [임무단계] wait 225.753ms
+[StutterFix] [자동 시험] [임무단계] freefps 6.793ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 1.0초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 14853개, 새로 붙임 15893개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 4447개 | 650ms
+[StutterFix] [재생 시작] 장식 2531개 중 판 중에 안 바뀐 1879개는 가볍게, 652개는 원래대로 다시 설정 63ms
+[StutterFix] [전환] 에디터 재생 시작 1409ms
+[StutterFix] [자동 시험] [임무단계] play 1413.809ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1596ms (프레임 1개, 가장 긴 프레임 1596ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 900ms, 그 밖 696ms | 이미지 파일 시각: 4930번 중 디스크 1096번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 6ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 14ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [자동 시험] [임무단계] wait 592.464ms
+[StutterFix] [자동 시험] [필터 상태] 곡 -0.2초, 켜진 필터 0개
+[StutterFix] [자동 시험] [임무단계] filterstate 2.557ms
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [자동 시험] [임무단계] wait 2002.620ms
+[StutterFix] [자동 시험] [필터 상태] 곡 1.8초, 켜진 필터 3개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:Glow_Glow(Amount=10.06 FastFilter=4 Threshold=0.5 Intensity=0.75 Precision=0.56 ) | Camera:TV_WideScreenHorizontal(Size=0.527 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 2.977ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.935ms
+[StutterFix] [자동 시험] [필터 상태] 곡 3.8초, 켜진 필터 5개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:Glow_Glow(Amount=10.06 FastFilter=4 Threshold=0.5 Intensity=0.75 Precision=0.56 ) | Camera:TV_WideScreenHorizontal(Size=0.63 Smooth=0 ) | Camera:Real_VHS(TRACKING=0.212 JITTER=1 GLITCH=1 NOISE=1 Brightness=0 Constrast=1 ) | Camera:Noise_TV_2(Fade=0.3 Fade_Additive=0 Fade_Distortion=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.375ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.409ms
+[StutterFix] [자동 시험] [필터 상태] 곡 5.8초, 켜진 필터 2개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.63 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.368ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.717ms
+[StutterFix] [자동 시험] [필터 상태] 곡 7.8초, 켜진 필터 3개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.63 Smooth=0 ) | Camera:FX_Glitch2(Glitch=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.772ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.080ms
+[StutterFix] [자동 시험] [필터 상태] 곡 9.8초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.63 Smooth=0 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.730ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.886ms
+[StutterFix] [자동 시험] [필터 상태] 곡 11.8초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.642 Smooth=0 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.131ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.128ms
+[StutterFix] [자동 시험] [필터 상태] 곡 13.8초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.649 Smooth=0 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.603ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.271ms
+[StutterFix] [자동 시험] [필터 상태] 곡 15.8초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:Distortion_Dream2(Distortion=0 Speed=1.64 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.923ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.438ms
+[StutterFix] [자동 시험] [필터 상태] 곡 17.8초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:Distortion_Dream2(Distortion=0 Speed=1.64 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.274ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.880ms
+[StutterFix] [자동 시험] [필터 상태] 곡 19.9초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 ) | Camera:TV_WideScreenHV(Size=0.68 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.400ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.230ms
+[StutterFix] [자동 시험] [필터 상태] 곡 21.9초, 켜진 필터 6개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:Glow_Glow(Amount=2.03 FastFilter=12 Threshold=0.91 Intensity=-9999.99 Precision=0.14 ) | Camera:TV_VHS(Cryptage=64 Parasite=32 Calibrage=0 WhiteParasite=1 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 ) | Camera:TV_WideScreenHV(Size=0.68 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.349ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.441ms
+[StutterFix] [자동 시험] [필터 상태] 곡 23.9초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 ) | Camera:TV_WideScreenHV(Size=0.68 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.552ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.172ms
+[StutterFix] [자동 시험] [필터 상태] 곡 25.9초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 ) | Camera:TV_WideScreenHV(Size=0.68 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.835ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.261ms
+[StutterFix] [자동 시험] [필터 상태] 곡 27.9초, 켜진 필터 10개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | BGMovingCam:Atmosphere_Rain_Pro(Fade=0.86 Intensity=0.5 DirectionX=0 Size=0.04 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | BGMovingCam:TV_Chromatical(Fade=0.24 Intensity=0 Speed=1 ) | Camera:Glow_Glow(Amount=2.09 FastFilter=12 Threshold=0.94 Intensity=9999.99 Precision=1 ) | Camera:TV_WideScreenHorizontal(Size=0.69 Smooth=0 ) | Camera:FX_Glitch2(Glitch=1 ) | Camera:Real_VHS(TRACKING=0.212 JITTER=1 GLITCH=1 NOISE=1 Brightness=0 Constrast=1 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 ) | Camera:TV_WideScreenVertical(Size=0.535 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.592ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.945ms
+[StutterFix] [자동 시험] [필터 상태] 곡 29.9초, 켜진 필터 7개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | BGMovingCam:Atmosphere_Rain_Pro(Fade=0.86 Intensity=0.5 DirectionX=0 Size=0.04 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | BGMovingCam:TV_Chromatical(Fade=0.24 Intensity=0 Speed=1 ) | Camera:TV_WideScreenHorizontal(Size=0.69 Smooth=0 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 ) | Camera:TV_WideScreenVertical(Size=0.466 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.196ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.345ms
+[StutterFix] [자동 시험] [필터 상태] 곡 31.9초, 켜진 필터 7개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | BGMovingCam:Atmosphere_Rain_Pro(Fade=0.86 Intensity=0.5 DirectionX=0 Size=0.04 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | BGMovingCam:TV_Chromatical(Fade=0.24 Intensity=0 Speed=1 ) | Camera:TV_WideScreenHorizontal(Size=0.689 Smooth=0 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 ) | Camera:TV_WideScreenVertical(Size=0.537 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.771ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.799ms
+[StutterFix] [자동 시험] [필터 상태] 곡 33.9초, 켜진 필터 5개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.57 Smooth=0 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 ) | Camera:TV_WideScreenVertical(Size=0.74 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.221ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.998ms
+[StutterFix] [자동 시험] [필터 상태] 곡 35.9초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1.2 Saturation=1.5 Contrast=1.2 ) | Camera:Film_Grain(Value=50 )
+[StutterFix] [자동 시험] [임무단계] filterstate 6.380ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.028ms
+[StutterFix] [자동 시험] [필터 상태] 곡 37.9초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1.2 Saturation=1.5 Contrast=1.2 ) | Camera:Film_Grain(Value=50 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.759ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.225ms
+[StutterFix] [자동 시험] [필터 상태] 곡 39.9초, 켜진 필터 5개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | BGMovingCam:Vision_Drost(Intensity=4 Speed=10 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1.2 Saturation=1.5 Contrast=1.2 ) | Camera:Film_Grain(Value=50 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.940ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.584ms
+[StutterFix] [자동 시험] [필터 상태] 곡 41.9초, 켜진 필터 5개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.8 Smooth=0 ) | Camera:Pixel_Pixelisation(_Pixelisation=0.6 _SizeX=1 _SizeY=1 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=0 Contrast=6.27 ) | Camera:Film_Grain(Value=50 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.204ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.863ms
+[StutterFix] [자동 시험] [필터 상태] 곡 43.9초, 켜진 필터 5개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | BGMovingCam:FX_Glitch2(Glitch=1 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1.2 Saturation=1.5 Contrast=1.2 ) | Camera:Film_Grain(Value=50 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.851ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.559ms
+[StutterFix] [자동 시험] [필터 상태] 곡 45.9초, 켜진 필터 5개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | BGMovingCam:FX_Glitch2(Glitch=1 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1.2 Saturation=1.5 Contrast=1.2 ) | Camera:Film_Grain(Value=50 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.005ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.292ms
+[StutterFix] [자동 시험] [필터 상태] 곡 48.0초, 켜진 필터 10개 | BGMovingCam:Blur_Radial(Intensity=-0.3 MovX=0.5 MovY=0.5 ) | BGMovingCam:FX_Glitch2(Glitch=1 ) | Camera:FX_Glitch1(Glitch=0 ) | Camera:Color_Noise(Noise=-0.1 ) | Camera:Colors_HUE_Rotate(Speed=3.608 ) | Camera:Color_BrightContrastSaturation(Brightness=1.2 Saturation=1.5 Contrast=1.2 ) | Camera:TV_Chromatical2(Aberration=0.308 Fade=1 ZoomFade=0 ZoomSpeed=0 ) | Camera:TV_LED(Fade=1 Size=94 ) | Camera:Drawing_Manga_Flash_Color(Size=1 Speed=30 PosX=0.5 PosY=0.5 Intensity=0.01 ) | Camera:Blur_Radial(Intensity=-0.13 MovX=0.5 MovY=0.5 )
+[StutterFix] [자동 시험] [임무단계] filterstate 9.010ms
+[StutterFix] [자동 시험] [임무단계] wait 2006.878ms
+[StutterFix] [자동 시험] [필터 상태] 곡 50.0초, 켜진 필터 7개 | BGMovingCam:Atmosphere_Rain_Pro(Fade=1 Intensity=-5 DirectionX=0 Size=0.01 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | BGMovingCam:Light_Water(Size=0.05 Alpha=0.07 Distance=10 Speed=0.4 ) | Camera:Colors_HUE_Rotate(Speed=5 ) | Camera:TV_WideScreenVertical(Size=0.643 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.7 Contrast=1.3 ) | Camera:TV_Chromatical2(Aberration=2 Fade=1 ZoomFade=0 ZoomSpeed=0 ) | Camera:Colors_Brightness(_Brightness=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.081ms
+[StutterFix] [자동 시험] [임무단계] wait 2006.127ms
+[StutterFix] [자동 시험] [필터 상태] 곡 52.0초, 켜진 필터 7개 | BGMovingCam:Atmosphere_Rain_Pro(Fade=1 Intensity=-5 DirectionX=0 Size=0.01 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | BGMovingCam:Light_Water(Size=0.05 Alpha=0.07 Distance=10 Speed=0.4 ) | Camera:Colors_HUE_Rotate(Speed=5 ) | Camera:TV_WideScreenVertical(Size=0.508 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.7 Contrast=1.3 ) | Camera:TV_Chromatical2(Aberration=2 Fade=1 ZoomFade=0 ZoomSpeed=0 ) | Camera:Colors_Brightness(_Brightness=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.122ms
+[StutterFix] [화면 대기] 늘어남: 평균 1.4ms (프레임 5.8ms 중, 약 173 FPS) | 게임 창이 앞에 있음 | 게임 창(2560x1440) 위에 겹친 창 1개: Lilith/UnityWndClass 2560x1440 항상위 반투명 클릭통과 | GPU 3D 전체 93%, 게임 90%, 다른 프로그램: pid 1900 3D 3%
+[StutterFix] [자동 시험] [임무단계] wait 2003.261ms
+[StutterFix] [자동 시험] [필터 상태] 곡 54.0초, 켜진 필터 8개 | BGMovingCam:Atmosphere_Rain_Pro(Fade=1 Intensity=-5 DirectionX=0 Size=0.01 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | BGMovingCam:Light_Water(Size=0.05 Alpha=0.07 Distance=10 Speed=0.4 ) | Camera:Colors_HUE_Rotate(Speed=5 ) | Camera:TV_WideScreenVertical(Size=0.585 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1.2 Saturation=1.7 Contrast=1.85 ) | Camera:TV_Chromatical2(Aberration=2 Fade=1 ZoomFade=0 ZoomSpeed=0 ) | Camera:Colors_Brightness(_Brightness=0.998 ) | Camera:Color_Chromatic_Aberration(Offset=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.268ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.742ms
+[StutterFix] [자동 시험] [필터 상태] 곡 56.0초, 켜진 필터 8개 | BGMovingCam:Atmosphere_Rain_Pro(Fade=1 Intensity=-5 DirectionX=0 Size=0.01 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | BGMovingCam:Light_Water(Size=0.05 Alpha=0.07 Distance=10 Speed=0.4 ) | Camera:Colors_HUE_Rotate(Speed=5 ) | Camera:TV_WideScreenVertical(Size=0.533 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1.2 Saturation=1.7 Contrast=1.85 ) | Camera:TV_Chromatical2(Aberration=2 Fade=1 ZoomFade=0 ZoomSpeed=0 ) | Camera:Colors_Brightness(_Brightness=1 ) | Camera:Color_Chromatic_Aberration(Offset=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 6.664ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.398ms
+[StutterFix] [자동 시험] [필터 상태] 곡 58.0초, 켜진 필터 9개 | BGMovingCam:Atmosphere_Rain_Pro(Fade=1 Intensity=-5 DirectionX=0 Size=0.01 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | Camera:TV_WideScreenHorizontal(Size=0.437 Smooth=0 ) | Camera:Color_Noise(Noise=-0.2 ) | Camera:TV_WideScreenVertical(Size=0.8 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.5 Contrast=1.5 ) | Camera:TV_Chromatical2(Aberration=2 Fade=1 ZoomFade=1 ZoomSpeed=1 ) | Camera:Colors_Brightness(_Brightness=1 ) | Camera:Color_Chromatic_Aberration(Offset=0 ) | Camera:TV_Distorted(Distortion=1 RGB=0.002 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.180ms
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.0ms (약 203 FPS) | 게임 창이 앞에 있음 | 게임 창(2560x1440) 위에 겹친 창 1개: Lilith/UnityWndClass 2560x1440 항상위 반투명 클릭통과 | GPU 3D 전체 71%, 게임 68%, 다른 프로그램: pid 1900 3D 3%
+[StutterFix] [자동 시험] [임무단계] wait 2004.333ms
+[StutterFix] [자동 시험] [필터 상태] 곡 60.0초, 켜진 필터 9개 | BGMovingCam:Atmosphere_Rain_Pro(Fade=1 Intensity=-5 DirectionX=0 Size=0.01 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | Camera:TV_WideScreenHorizontal(Size=0.496 Smooth=0 ) | Camera:Color_Noise(Noise=-0.2 ) | Camera:TV_WideScreenVertical(Size=0.8 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.5 Contrast=1.5 ) | Camera:TV_Chromatical2(Aberration=2 Fade=1 ZoomFade=1 ZoomSpeed=1 ) | Camera:Colors_Brightness(_Brightness=1 ) | Camera:Color_Chromatic_Aberration(Offset=0 ) | Camera:TV_Distorted(Distortion=1 RGB=0.002 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.535ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.944ms
+[StutterFix] [자동 시험] [필터 상태] 곡 62.0초, 켜진 필터 9개 | BGMovingCam:Atmosphere_Rain_Pro(Fade=1 Intensity=-5 DirectionX=0 Size=0.01 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | Camera:TV_WideScreenHorizontal(Size=0.58 Smooth=0 ) | Camera:Color_Noise(Noise=-0.2 ) | Camera:TV_WideScreenVertical(Size=0.8 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.5 Contrast=1.5 ) | Camera:TV_Chromatical2(Aberration=2 Fade=1 ZoomFade=1 ZoomSpeed=1 ) | Camera:Colors_Brightness(_Brightness=1 ) | Camera:Color_Chromatic_Aberration(Offset=0 ) | Camera:TV_Distorted(Distortion=1 RGB=0.002 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.882ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.879ms
+[StutterFix] [자동 시험] [필터 상태] 곡 64.0초, 켜진 필터 9개 | BGMovingCam:Atmosphere_Rain_Pro(Fade=1 Intensity=-5 DirectionX=0 Size=0.01 Speed=-0.3 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | Camera:TV_WideScreenHorizontal(Size=0.8 Smooth=0 ) | Camera:Color_Noise(Noise=-0.2 ) | Camera:TV_WideScreenVertical(Size=0.8 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.5 Contrast=1.5 ) | Camera:TV_Chromatical2(Aberration=2 Fade=1 ZoomFade=1 ZoomSpeed=1 ) | Camera:Colors_Brightness(_Brightness=1 ) | Camera:Color_Chromatic_Aberration(Offset=0 ) | Camera:TV_Distorted(Distortion=1 RGB=0.002 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.755ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.138ms
+[StutterFix] [자동 시험] [필터 상태] 곡 66.0초, 켜진 필터 3개 | Camera:TV_VHS_Rewind(Cryptage=1 Parasite=100 Parasite2=100 ) | Camera:Noise_TV_3(Fade=0.05 Fade_Additive=0 Fade_Distortion=0 ) | Camera:TV_Distorted(Distortion=1 RGB=0.002 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.738ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.388ms
+[StutterFix] [자동 시험] [필터 상태] 곡 68.0초, 켜진 필터 7개 | BGMovingCam:Noise_TV_3(Fade=0.5 Fade_Additive=0 Fade_Distortion=0 ) | Camera:TV_WideScreenHorizontal(Size=0.8 Smooth=0 ) | Camera:TV_VHS_Rewind(Cryptage=1 Parasite=100 Parasite2=100 ) | Camera:Noise_TV_3(Fade=0.05 Fade_Additive=0 Fade_Distortion=0 ) | Camera:VHS_Tracking(Tracking=2 ) | Camera:TV_WideScreenVertical(Size=0.8 Smooth=0 ) | Camera:TV_Distorted(Distortion=1 RGB=0.002 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.764ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.573ms
+[StutterFix] [자동 시험] [필터 상태] 곡 70.1초, 켜진 필터 5개 | BGMovingCam:Light_Rainbow(Value=1 ) | Camera:TV_WideScreenHorizontal(Size=0.561 Smooth=0 ) | Camera:TV_Artefact(Fade=1 Colorisation=1 Parasite=1 Noise=1 ) | Camera:TV_WideScreenVertical(Size=0.8 Smooth=0 ) | Camera:TV_Chromatical(Fade=0.25 Intensity=0 Speed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.287ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.418ms
+[StutterFix] [자동 시험] [필터 상태] 곡 72.1초, 켜진 필터 5개 | BGMovingCam:Light_Rainbow(Value=1 ) | Camera:TV_WideScreenHorizontal(Size=0.549 Smooth=0 ) | Camera:TV_Artefact(Fade=1 Colorisation=1 Parasite=1 Noise=1 ) | Camera:TV_WideScreenVertical(Size=0.8 Smooth=0 ) | Camera:TV_Chromatical(Fade=0.25 Intensity=0 Speed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.534ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.261ms
+[StutterFix] [자동 시험] [필터 상태] 곡 74.1초, 켜진 필터 0개
+[StutterFix] [자동 시험] [임무단계] filterstate 4.943ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.673ms
+[StutterFix] [자동 시험] [필터 상태] 곡 76.1초, 켜진 필터 0개
+[StutterFix] [자동 시험] [임무단계] filterstate 6.299ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.925ms
+[StutterFix] [자동 시험] [필터 상태] 곡 78.1초, 켜진 필터 4개 | BGMovingCam:Light_Rainbow(Value=1 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Artefact(Fade=1 Colorisation=1 Parasite=1 Noise=1 ) | Camera:TV_Chromatical(Fade=0.25 Intensity=0 Speed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.203ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.608ms
+[StutterFix] [자동 시험] [필터 상태] 곡 80.1초, 켜진 필터 0개
+[StutterFix] [자동 시험] [임무단계] filterstate 9.682ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.209ms
+[StutterFix] [자동 시험] [필터 상태] 곡 82.1초, 켜진 필터 0개
+[StutterFix] [자동 시험] [임무단계] filterstate 3.965ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.217ms
+[StutterFix] [자동 시험] [필터 상태] 곡 84.1초, 켜진 필터 6개 | BGMovingCam:Distortion_Flag(Distortion=15 ) | BGMovingCam:Distortion_Noise(Distortion=1.5 ) | Camera:FX_Glitch2(Glitch=0.02 ) | Camera:Color_Noise(Noise=-0.11 ) | Camera:VHS_Tracking(Tracking=0.15 ) | Camera:TV_Chromatical2(Aberration=0.4 Fade=1 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.774ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.715ms
+[StutterFix] [자동 시험] [필터 상태] 곡 86.1초, 켜진 필터 6개 | BGMovingCam:Distortion_Flag(Distortion=15 ) | BGMovingCam:Distortion_Noise(Distortion=1.5 ) | Camera:FX_Glitch2(Glitch=0.02 ) | Camera:Color_Noise(Noise=-0.11 ) | Camera:VHS_Tracking(Tracking=0.15 ) | Camera:TV_Chromatical2(Aberration=0.4 Fade=1 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.476ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.621ms
+[StutterFix] [자동 시험] [필터 상태] 곡 88.1초, 켜진 필터 6개 | BGMovingCam:Distortion_Flag(Distortion=15 ) | BGMovingCam:Distortion_Noise(Distortion=1.5 ) | Camera:FX_Glitch2(Glitch=0.02 ) | Camera:Color_Noise(Noise=-0.11 ) | Camera:VHS_Tracking(Tracking=0.15 ) | Camera:TV_Chromatical2(Aberration=0.4 Fade=1 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.183ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.422ms
+[StutterFix] [자동 시험] [필터 상태] 곡 90.1초, 켜진 필터 6개 | BGMovingCam:Distortion_Flag(Distortion=15 ) | BGMovingCam:Distortion_Noise(Distortion=1.5 ) | Camera:FX_Glitch2(Glitch=0.02 ) | Camera:Color_Noise(Noise=-0.11 ) | Camera:VHS_Tracking(Tracking=0.15 ) | Camera:TV_Chromatical2(Aberration=0.4 Fade=1 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.998ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.307ms
+[StutterFix] [자동 시험] [필터 상태] 곡 92.1초, 켜진 필터 6개 | BGMovingCam:Distortion_Flag(Distortion=15 ) | BGMovingCam:Distortion_Noise(Distortion=1.5 ) | Camera:FX_Glitch2(Glitch=0.02 ) | Camera:Color_Noise(Noise=-0.11 ) | Camera:VHS_Tracking(Tracking=0.15 ) | Camera:TV_Chromatical2(Aberration=0.4 Fade=1 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.838ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.999ms
+[StutterFix] [자동 시험] [필터 상태] 곡 94.1초, 켜진 필터 6개 | BGMovingCam:Distortion_Flag(Distortion=15 ) | BGMovingCam:Distortion_Noise(Distortion=1.5 ) | Camera:FX_Glitch2(Glitch=0.02 ) | Camera:Color_Noise(Noise=-0.11 ) | Camera:VHS_Tracking(Tracking=0.15 ) | Camera:TV_Chromatical2(Aberration=0.4 Fade=1 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.327ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.592ms
+[StutterFix] [자동 시험] [필터 상태] 곡 96.1초, 켜진 필터 3개 | Camera:TV_WideScreenHorizontal(Size=0.71 Smooth=0 ) | Camera:FX_Glitch1(Glitch=0.119 ) | Camera:TV_Old_Movie_2(FramePerSecond=4.757 Contrast=0.238 Burn=0 SceneCut=0.119 Fade=0.178 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.632ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.640ms
+[StutterFix] [자동 시험] [필터 상태] 곡 98.2초, 켜진 필터 4개 | Camera:TV_WideScreenHorizontal(Size=0.8 Smooth=0 ) | Camera:FX_Glitch1(Glitch=0.384 ) | Camera:TV_VHS_Rewind(Cryptage=1 Parasite=9 Parasite2=12 ) | Camera:TV_Old_Movie_2(FramePerSecond=15.364 Contrast=0.768 Burn=0 SceneCut=0.384 Fade=0.576 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.895ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.175ms
+[StutterFix] [자동 시험] [필터 상태] 곡 100.2초, 켜진 필터 4개 | Camera:TV_WideScreenHorizontal(Size=0.65 Smooth=0 ) | Camera:FX_Glitch1(Glitch=0.5 ) | Camera:TV_Old_Movie_2(FramePerSecond=20 Contrast=1 Burn=0 SceneCut=0.5 Fade=0.75 ) | Camera:Colors_BleachBypass(Value=-0.25 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.287ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.133ms
+[StutterFix] [자동 시험] [필터 상태] 곡 102.2초, 켜진 필터 4개 | Camera:TV_WideScreenHorizontal(Size=0.65 Smooth=0 ) | Camera:FX_Glitch1(Glitch=0.5 ) | Camera:TV_Old_Movie_2(FramePerSecond=20 Contrast=1 Burn=0 SceneCut=0.5 Fade=0.75 ) | Camera:Colors_BleachBypass(Value=-0.25 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.566ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.724ms
+[StutterFix] [자동 시험] [필터 상태] 곡 104.2초, 켜진 필터 4개 | Camera:TV_WideScreenHorizontal(Size=0.663 Smooth=0 ) | Camera:FX_Glitch1(Glitch=0.5 ) | Camera:TV_Old_Movie_2(FramePerSecond=20 Contrast=1 Burn=0 SceneCut=0.5 Fade=0.75 ) | Camera:Colors_BleachBypass(Value=-0.25 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.341ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.462ms
+[StutterFix] [자동 시험] [필터 상태] 곡 106.2초, 켜진 필터 2개 | Camera:TV_WideScreenHorizontal(Size=0.8 Smooth=0 ) | Camera:Colors_BleachBypass(Value=-0.25 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.613ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.460ms
+[StutterFix] [자동 시험] [필터 상태] 곡 108.2초, 켜진 필터 2개 | Camera:TV_WideScreenHorizontal(Size=0.8 Smooth=0 ) | Camera:Film_ColorPerfection(Gamma=0.4 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.341ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.176ms
+[StutterFix] [자동 시험] [필터 상태] 곡 110.2초, 켜진 필터 2개 | BGMovingCam:Vision_Aura(Twist=1 Speed=1 PosX=-1 PosY=-1 ) | Camera:Film_ColorPerfection(Gamma=0.4 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.846ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.285ms
+[StutterFix] [자동 시험] [필터 상태] 곡 112.2초, 켜진 필터 1개 | Camera:Film_ColorPerfection(Gamma=0.4 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.715ms
+[StutterFix] [자동 시험] [임무단계] wait 1999.950ms
+[StutterFix] [자동 시험] [필터 상태] 곡 114.2초, 켜진 필터 6개 | BGMovingCam:TV_Chromatical(Fade=0.5 Intensity=1 Speed=0 ) | Camera:Glow_Glow(Amount=0.25 FastFilter=4 Threshold=0.29 Intensity=0.5 Precision=0.56 ) | Camera:TV_WideScreenHorizontal(Size=0.59 Smooth=0 ) | Camera:TV_PlanetMars(Fade=0.15 Distortion=0.25 ) | Camera:Film_ColorPerfection(Gamma=0.55 ) | Camera:Blur_Movie(Radius=299.415 Factor=413.267 FastFilter=3 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.539ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.733ms
+[StutterFix] [자동 시험] [필터 상태] 곡 116.2초, 켜진 필터 3개 | Camera:TV_WideScreenHorizontal(Size=0.59 Smooth=0 ) | Camera:Film_ColorPerfection(Gamma=0.55 ) | Camera:Blur_Movie(Radius=0.01 Factor=0.01 FastFilter=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.132ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.251ms
+[StutterFix] [자동 시험] [필터 상태] 곡 118.2초, 켜진 필터 3개 | Camera:TV_WideScreenHorizontal(Size=0.59 Smooth=0 ) | Camera:Film_ColorPerfection(Gamma=0.55 ) | Camera:Blur_Movie(Radius=0.01 Factor=0.01 FastFilter=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.992ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.941ms
+[StutterFix] [자동 시험] [필터 상태] 곡 120.2초, 켜진 필터 3개 | Camera:TV_WideScreenHorizontal(Size=0.59 Smooth=0 ) | Camera:Film_ColorPerfection(Gamma=0.55 ) | Camera:Blur_Movie(Radius=0.01 Factor=0.01 FastFilter=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.864ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.264ms
+[StutterFix] [자동 시험] [필터 상태] 곡 122.2초, 켜진 필터 5개 | Camera:TV_VHS_Rewind(Cryptage=1 Parasite=20 Parasite2=12 ) | Camera:TV_PlanetMars(Fade=0.1 Distortion=1 ) | Camera:Film_ColorPerfection(Gamma=0.8 ) | Camera:Blur_Movie(Radius=160.763 Factor=160.763 FastFilter=1 ) | Camera:Blur_BlurHole(Size=10 _Radius=0.25 _SpotSize=0.75 _CenterX=0.5 _CenterY=0.5 _AlphaBlur=0.5 _AlphaBlurInside=0.25 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.252ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.047ms
+[StutterFix] [자동 시험] [필터 상태] 곡 124.2초, 켜진 필터 4개 | Camera:TV_PlanetMars(Fade=0.1 Distortion=1 ) | Camera:Film_ColorPerfection(Gamma=0.8 ) | Camera:Blur_Movie(Radius=857.01 Factor=857.01 FastFilter=2 ) | Camera:Blur_BlurHole(Size=10 _Radius=0.25 _SpotSize=0.75 _CenterX=0.5 _CenterY=0.5 _AlphaBlur=0.5 _AlphaBlurInside=0.25 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.318ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.835ms
+[StutterFix] [자동 시험] [필터 상태] 곡 126.2초, 켜진 필터 2개 | Camera:Glow_Glow(Amount=4 FastFilter=4 Threshold=0.5 Intensity=1 Precision=0 ) | Camera:Film_ColorPerfection(Gamma=0.5 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.082ms
+[StutterFix] [자동 시험] [임무단계] wait 1999.913ms
+[StutterFix] [자동 시험] [필터 상태] 곡 128.2초, 켜진 필터 2개 | Camera:TV_WideScreenHorizontal(Size=0.8 Smooth=0 ) | Camera:Glitch_Mozaic(Intensity=5.553 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.050ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.310ms
+[StutterFix] [자동 시험] [필터 상태] 곡 130.2초, 켜진 필터 1개 | Camera:TV_WideScreenHorizontal(Size=0.601 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.493ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.017ms
+[StutterFix] [자동 시험] [필터 상태] 곡 132.3초, 켜진 필터 1개 | Camera:Film_ColorPerfection(Gamma=0.4 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.334ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.753ms
+[StutterFix] [자동 시험] [필터 상태] 곡 134.3초, 켜진 필터 6개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Film_ColorPerfection(Gamma=0.35 ) | Camera:Blur_BlurHole(Size=10 _Radius=0.25 _SpotSize=1 _CenterX=0.5 _CenterY=0.5 _AlphaBlur=0.5 _AlphaBlurInside=0 ) | Camera:Atmosphere_Rain_Pro(Fade=1 Intensity=0.5 DirectionX=99.99 Size=0.003 Speed=-0.1 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | Camera:Blur_Noise(Level=2 ) | Camera:Glow_Glow_Color(Amount=4 FastFilter=4 Threshold=0.15 Intensity=0.25 Precision=0.56 )
+[StutterFix] [자동 시험] [임무단계] filterstate 6.105ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.190ms
+[StutterFix] [자동 시험] [필터 상태] 곡 136.3초, 켜진 필터 7개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Film_ColorPerfection(Gamma=0.35 ) | Camera:Blur_BlurHole(Size=10 _Radius=0.25 _SpotSize=1 _CenterX=0.5 _CenterY=0.5 _AlphaBlur=0.5 _AlphaBlurInside=0 ) | Camera:Atmosphere_Rain_Pro(Fade=1 Intensity=0.5 DirectionX=99.99 Size=0.003 Speed=-0.1 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | Camera:Blur_Noise(Level=2 ) | Camera:Glow_Glow_Color(Amount=4 FastFilter=4 Threshold=0.15 Intensity=0.25 Precision=0.56 ) | Camera:Color_GrayScale(_Fade=0.7 )
+[StutterFix] [자동 시험] [임무단계] filterstate 6.273ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.305ms
+[StutterFix] [자동 시험] [필터 상태] 곡 138.3초, 켜진 필터 6개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Film_ColorPerfection(Gamma=0.35 ) | Camera:Blur_BlurHole(Size=10 _Radius=0.25 _SpotSize=1 _CenterX=0.5 _CenterY=0.5 _AlphaBlur=0.5 _AlphaBlurInside=0 ) | Camera:Atmosphere_Rain_Pro(Fade=1 Intensity=0.5 DirectionX=99.99 Size=0.003 Speed=-0.1 Distortion=0 StormFlashOnOff=0 DropOnOff=0 ) | Camera:Blur_Noise(Level=2 ) | Camera:Glow_Glow_Color(Amount=4 FastFilter=4 Threshold=0.15 Intensity=0.25 Precision=0.56 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.966ms
+[StutterFix] [자동 시험] [임무단계] wait 2008.200ms
+[StutterFix] [자동 시험] [필터 상태] 곡 140.3초, 켜진 필터 2개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Glow_Glow_Color(Amount=20 FastFilter=16 Threshold=0 Intensity=0.26 Precision=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 17.267ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.704ms
+[StutterFix] [자동 시험] [필터 상태] 곡 142.3초, 켜진 필터 3개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Blur_Noise(Level=2 ) | Camera:Glow_Glow_Color(Amount=20 FastFilter=16 Threshold=0 Intensity=0.26 Precision=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.651ms
+[StutterFix] [자동 시험] [임무단계] wait 1999.856ms
+[StutterFix] [자동 시험] [필터 상태] 곡 144.3초, 켜진 필터 5개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Color_Noise(Noise=0.07 ) | Camera:Colors_HUE_Rotate(Speed=10 ) | Camera:Blur_Noise(Level=2 ) | Camera:Glow_Glow_Color(Amount=20 FastFilter=16 Threshold=0 Intensity=0.8 Precision=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.033ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.435ms
+[StutterFix] [자동 시험] [필터 상태] 곡 146.3초, 켜진 필터 5개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:Color_Noise(Noise=0.07 ) | Camera:Colors_HUE_Rotate(Speed=10 ) | Camera:Blur_Noise(Level=2 ) | Camera:Glow_Glow_Color(Amount=20 FastFilter=16 Threshold=0 Intensity=0.8 Precision=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.345ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.143ms
+[StutterFix] [자동 시험] [필터 상태] 곡 148.3초, 켜진 필터 2개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Chromatical2(Aberration=0.5 Fade=2 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 6.997ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.562ms
+[StutterFix] [자동 시험] [필터 상태] 곡 150.3초, 켜진 필터 4개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Chromatical2(Aberration=0.5 Fade=2 ZoomFade=0 ZoomSpeed=0 ) | Camera:Color_Chromatic_Aberration(Offset=0.003 ) | Camera:Color_GrayScale(_Fade=0.6 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.407ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.720ms
+[StutterFix] [자동 시험] [필터 상태] 곡 152.4초, 켜진 필터 2개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Chromatical2(Aberration=0.5 Fade=2 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 6.715ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.095ms
+[StutterFix] [자동 시험] [필터 상태] 곡 154.4초, 켜진 필터 3개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Chromatical2(Aberration=0.5 Fade=2 ZoomFade=0 ZoomSpeed=0 ) | Camera:Color_GrayScale(_Fade=0.7 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.294ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.472ms
+[StutterFix] [자동 시험] [필터 상태] 곡 156.4초, 켜진 필터 3개 | Camera:Vision_Tunnel(Value=0.7 Value2=0.4 Intensity=1 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Chromatical2(Aberration=0.5 Fade=2 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.179ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.662ms
+[StutterFix] [자동 시험] [필터 상태] 곡 158.4초, 켜진 필터 4개 | Camera:Vision_Tunnel(Value=0.7 Value2=0.4 Intensity=1 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Chromatical2(Aberration=0.5 Fade=2 ZoomFade=0 ZoomSpeed=0 ) | Camera:Color_GrayScale(_Fade=0.8 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.884ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.460ms
+[StutterFix] [자동 시험] [필터 상태] 곡 160.4초, 켜진 필터 3개 | Camera:Vision_Tunnel(Value=0.7 Value2=0.4 Intensity=1 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Chromatical2(Aberration=0.5 Fade=2 ZoomFade=0 ZoomSpeed=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.621ms
+[StutterFix] [자동 시험] [임무단계] wait 1999.988ms
+[StutterFix] [자동 시험] [필터 상태] 곡 162.4초, 켜진 필터 1개 | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.496ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.871ms
+[StutterFix] [자동 시험] [필터 상태] 곡 164.4초, 켜진 필터 2개 | BGMovingCam:Light_Water(Size=1 Alpha=0.148 Distance=1.375 Speed=2 ) | Camera:TV_WideScreenHorizontal(Size=0.5 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.306ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.256ms
+[StutterFix] [자동 시험] [필터 상태] 곡 166.4초, 켜진 필터 3개 | Camera:TV_WideScreenHorizontal(Size=0.5 Smooth=0 ) | Camera:TV_WideScreenVertical(Size=0.719 Smooth=0 ) | Camera:Color_Switching(Color=2 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.452ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.623ms
+[StutterFix] [자동 시험] [필터 상태] 곡 168.4초, 켜진 필터 4개 | Camera:Distortion_Dream2(Distortion=6 Speed=5 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Chromatical(Fade=1 Intensity=0.33 Speed=100 ) | Camera:Color_Switching(Color=2 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.340ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.971ms
+[StutterFix] [자동 시험] [필터 상태] 곡 170.4초, 켜진 필터 4개 | Camera:Distortion_Dream2(Distortion=6 Speed=5 ) | Camera:TV_WideScreenHorizontal(Size=0.55 Smooth=0 ) | Camera:TV_Chromatical(Fade=1 Intensity=0.33 Speed=100 ) | Camera:Color_Switching(Color=2 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.172ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.259ms
+[StutterFix] [자동 시험] [필터 상태] 곡 172.4초, 켜진 필터 4개 | BGMovingCam:AAA_SuperComputer(_AlphaHexa=1 ShapeFormula=10 Shape=1 _BorderSize=1 _SpotSize=2.5 Radius=0.77 ) | BGMovingCam:Light_Water(Size=1 Alpha=0.07 Distance=0.84 Speed=4 ) | BGMovingCam:FX_Glitch3(_Glitch=0.1 _Noise=2 ) | Camera:TV_WideScreenHV(Size=0.563 Smooth=0 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.022ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.600ms
+[StutterFix] [자동 시험] [필터 상태] 곡 174.4초, 켜진 필터 5개 | BGMovingCam:AAA_SuperComputer(_AlphaHexa=1 ShapeFormula=10 Shape=1 _BorderSize=1 _SpotSize=2.5 Radius=0.77 ) | BGMovingCam:Light_Water(Size=1 Alpha=0.07 Distance=0.84 Speed=4 ) | BGMovingCam:FX_Glitch3(_Glitch=0.1 _Noise=2 ) | Camera:TV_WideScreenHV(Size=0.6 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=2 Saturation=1.5 Contrast=1.5 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.354ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.803ms
+[StutterFix] [자동 시험] [필터 상태] 곡 176.4초, 켜진 필터 3개 | BGMovingCam:FX_DarkMatter(Speed=0.8 Intensity=1 PosX=0.5 PosY=0.5 Zoom=0.33 DarkIntensity=2 ) | Camera:TV_WideScreenVertical(Size=0.5 Smooth=0 ) | Camera:TV_Vintage(Distortion=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.682ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.957ms
+[StutterFix] [자동 시험] [필터 상태] 곡 178.4초, 켜진 필터 2개 | Camera:TV_WideScreenHorizontal(Size=0.561 Smooth=0 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.35 Contrast=1.3 )
+[StutterFix] [자동 시험] [임무단계] filterstate 4.869ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.225ms
+[StutterFix] [자동 시험] [필터 상태] 곡 180.5초, 켜진 필터 5개 | BGMovingCam:Blur_Radial(Intensity=-0.2 MovX=0 MovY=1 ) | BGMovingCam:Light_Water(Size=1 Alpha=0.07 Distance=2.12 Speed=4 ) | Camera:TV_WideScreenHV(Size=0.65 Smooth=0 ) | Camera:TV_Chromatical(Fade=0.29 Intensity=1 Speed=30 ) | Camera:Color_Switching(Color=2 )
+[StutterFix] [자동 시험] [임무단계] filterstate 5.221ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.219ms
+[StutterFix] [자동 시험] [필터 상태] 곡 182.5초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.2 MovX=0 MovY=1 ) | BGMovingCam:Light_Water(Size=1 Alpha=0.35 Distance=1.16 Speed=4 ) | Camera:TV_Chromatical(Fade=0.29 Intensity=1 Speed=30 ) | Camera:Drawing_Manga_FlashWhite(Size=0.55 Speed=55 PosX=0.5 PosY=0.5 Intensity=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.586ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.164ms
+[StutterFix] [자동 시험] [필터 상태] 곡 184.5초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.2 MovX=0 MovY=1 ) | BGMovingCam:Light_Water(Size=1 Alpha=0.35 Distance=1.16 Speed=4 ) | Camera:TV_Chromatical(Fade=0.29 Intensity=1 Speed=30 ) | Camera:Drawing_Manga_FlashWhite(Size=0.55 Speed=55 PosX=0.5 PosY=0.5 Intensity=1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.448ms
+[StutterFix] [곡] 평균 222 FPS (4.5ms), 가장 긴 프레임 96ms, 곡 시작 연출 뒤 가장 긴 프레임 25ms, 끊김 0번, 프레임 41122개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.4ms, CPU 평균 4.5ms (41121개 잼) | 그 프레임: 게임 효과 99개 21.5ms (그중 장식 이동 5.3ms), 나머지 3.7ms | 효과가 가장 무거운 프레임 25ms: 게임 효과 21.5ms (그중 장식 이동 5.3ms) | 모드가 쓴 시간 평균 0.04ms/프레임 | 가장 무거운 프레임 8개: [25ms @161.6초: 효과 99개 21.5(장식 이동 5.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 3.2] [22ms @140.8초: 효과 5개 4.8(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.4, 나머지 16.9] [21ms @161.7초: 효과 99개 21.5(장식 이동 5.3, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 -0.9] [21ms @133.2초: 효과 52개 8.2(장식 이동 0.3, 그중 길이 있는 것 0.2), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 12.1] [21ms @121.9초: 효과 58개 10.8(장식 이동 0.2, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 9.3] [18ms @133.2초: 효과 52개 8.2(장식 이동 0.3, 그중 길이 있는 것 0.2), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 9.6] [18ms @128.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 3.0, 장식 갱신 0.0+0.3, 나머지 14.5] [17ms @140.8초: 효과 5개 4.8(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.4, 나머지 11.7] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 295(3.9/0.8/0.0/1.7/0.0, 158/0개) 10s 259(3.8/1.0/0.0/2.2/0.1, 188/0개) 20s 243(4.1/1.1/0.0/2.6/0.1, 181/0개) 30s 221(4.5/1.1/0.0/2.6/0.1, 165/0개) 40s 197(5.1/1.2/0.0/2.2/0.1, 142/0개) 50s 187(4.6/1.2/0.8/4.0/0.2, 267/0개) 60s 204(4.8/1.5/0.1/3.1/0.2, 206/0개) 70s 215(4.7/1.5/0.0/2.0/0.2, 152/0개) 80s 238(4.2/1.1/0.0/1.6/0.1, 157/0개) 90s 257(3.9/1.0/0.0/1.5/0.1, 149/0개) 100s 280(3.6/0.8/0.0/1.8/0.1, 147/0개) 110s 246(4.1/1.0/0.0/2.8/0.1, 187/0개) 120s 196(5.1/1.4/0.0/2.7/0.1, 198/0개) 130s 199(5.0/1.3/0.0/3.1/0.1, 196/0개) 140s 187(5.3/1.6/0.0/2.9/0.1, 187/0개) 150s 162(6.2/2.2/0.0/3.7/0.2, 206/0개) 160s 219(4.6/1.2/0.0/2.4/0.2, 172/0개) 170s 223(4.5/1.0/0.0/2.1/0.1, 164/0개) 180s 150(6.6/2.5/0.0/3.2/0.2, 170/0개) | 가장 높은 구간 0s 295 FPS | 같은 그림자 색 건너뛰기 553664회 | 파티클 장식: 같은 값 넣기 12166880번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 29개 없앰, 게임 화면 버퍼 불필요한 해제 12번 막음 | 필터 형식 찾기 기억 2202번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 53298개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 13965개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 4240번을 1700번으로 줄임 (60% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 8228985번 중 같은 값이라 건너뜀 1347686번 | 재생 중 편집기 검사 건너뜀 1723307번 | 매 프레임 장식 순회 7262145번 중 바뀌는 게 없어 뺀 것 28859번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 177개만 훑음 (잠재움 26454번, 깨움 24091번, 목록 새로 만듦 1번, 안전망 검사 186번에 놓친 깨움 0개) | 즉시 이동 직접 처리 6538번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 579번, 투명한 채 색만 저장 28번 | 장식 이동 루프: 효과 5840개(장식 46544개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 208개 | 장식 애니메이션 직접 처리: 만든 것 41086개(동시 최대 455개), 끝까지 감 23611, 끊겨서 완료 37527, 버림 0, 기록 다시 씀 19124, 새 표 객체 6787, 갱신에 쓴 시간 4303ms (40557프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 13957개(타일 557334개, 시작에 쓴 시간 498ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 33784개(동시 최대 812, 다시 씀 767, 겹쳐서 진짜 DOTween 111), 끝까지 감 32602, 끊겨서 완료 1182, 버림 0, 갱신 769ms (25732프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1862개(바로 쓴 값 1434개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 1066146번 (안 보이게 돼서 대신 갱신 1540번) | 효과 나누기: 뒤로 미룬 효과 89개, 늦게 시작한 정도 평균 7.8ms 최대 13.9ms (1프레임)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 789개, 곡 중 최대 847개 | 투명한 장식 위치 반영 미룸 1764271번, 보일 때 반영 702번 | 색 바뀜 161618번 확인, 그리기 켜고 끈 것 2084번, 쓴 시간 약 32.4ms, 가장 많이 쓴 프레임 약 0.30ms (64번에 한 번 재서 추정)
+[StutterFix] [자동 시험] [임무완주] OnLandOnPortal 18.765ms
+[StutterFix] [상태] None 종료됨 에디터재생  -> 정지
+[StutterFix] [화면 대기] 이번 판 185초 중 6초 동안 늘어나 있었음 (그때 평균 1.2ms)
+[StutterFix] [자동 시험] [임무단계] wait 2002.155ms
+[StutterFix] [자동 시험] [필터 상태] 곡 186.5초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.860ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.115ms
+[StutterFix] [자동 시험] [필터 상태] 곡 188.5초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.490ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.495ms
+[StutterFix] [자동 시험] [필터 상태] 곡 190.5초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.000ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.576ms
+[StutterFix] [자동 시험] [필터 상태] 곡 192.5초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.728ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.798ms
+[StutterFix] [자동 시험] [필터 상태] 곡 194.5초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.151ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.621ms
+[StutterFix] [자동 시험] [필터 상태] 곡 196.5초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.831ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.575ms
+[StutterFix] [자동 시험] [필터 상태] 곡 198.5초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.774ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.985ms
+[StutterFix] [자동 시험] [필터 상태] 곡 200.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.827ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.449ms
+[StutterFix] [자동 시험] [필터 상태] 곡 202.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.425ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.580ms
+[StutterFix] [자동 시험] [필터 상태] 곡 204.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.018ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.751ms
+[StutterFix] [자동 시험] [필터 상태] 곡 206.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.955ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.351ms
+[StutterFix] [자동 시험] [필터 상태] 곡 208.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.655ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.930ms
+[StutterFix] [자동 시험] [필터 상태] 곡 210.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.301ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.374ms
+[StutterFix] [자동 시험] [필터 상태] 곡 212.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.100ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.950ms
+[StutterFix] [자동 시험] [필터 상태] 곡 214.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.208ms
+[StutterFix] [자동 시험] [임무단계] wait 2006.009ms
+[StutterFix] [자동 시험] [필터 상태] 곡 216.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.927ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.777ms
+[StutterFix] [자동 시험] [필터 상태] 곡 218.6초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.026ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.287ms
+[StutterFix] [자동 시험] [필터 상태] 곡 220.7초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.982ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.883ms
+[StutterFix] [자동 시험] [필터 상태] 곡 222.7초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.295ms
+[StutterFix] [자동 시험] [임무단계] wait 1999.867ms
+[StutterFix] [자동 시험] [필터 상태] 곡 224.7초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.882ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.167ms
+[StutterFix] [자동 시험] [필터 상태] 곡 226.7초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.496ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.118ms
+[StutterFix] [자동 시험] [필터 상태] 곡 228.7초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.652ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.726ms
+[StutterFix] [자동 시험] [필터 상태] 곡 230.7초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.138ms
+[StutterFix] [자동 시험] [임무단계] wait 2006.048ms
+[StutterFix] [자동 시험] [필터 상태] 곡 232.7초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.262ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.550ms
+[StutterFix] [자동 시험] [필터 상태] 곡 234.7초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.852ms
+[StutterFix] [자동 시험] [임무단계] wait 2006.016ms
+[StutterFix] [자동 시험] [필터 상태] 곡 236.7초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.847ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.190ms
+[StutterFix] [자동 시험] [필터 상태] 곡 238.8초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.810ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.168ms
+[StutterFix] [자동 시험] [필터 상태] 곡 240.8초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.361ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.623ms
+[StutterFix] [자동 시험] [필터 상태] 곡 242.8초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.625ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.403ms
+[StutterFix] [자동 시험] [필터 상태] 곡 244.8초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.613ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.329ms
+[StutterFix] [자동 시험] [필터 상태] 곡 246.8초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.347ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.568ms
+[StutterFix] [자동 시험] [필터 상태] 곡 248.8초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.000ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.359ms
+[StutterFix] [자동 시험] [필터 상태] 곡 250.8초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.181ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.839ms
+[StutterFix] [자동 시험] [필터 상태] 곡 252.8초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.303ms
+[StutterFix] [자동 시험] [임무단계] wait 2006.054ms
+[StutterFix] [자동 시험] [필터 상태] 곡 254.8초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.737ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.900ms
+[StutterFix] [자동 시험] [필터 상태] 곡 256.9초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.853ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.817ms
+[StutterFix] [자동 시험] [필터 상태] 곡 258.9초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.748ms
+[StutterFix] [자동 시험] [임무단계] wait 2006.080ms
+[StutterFix] [자동 시험] [필터 상태] 곡 260.9초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.611ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.562ms
+[StutterFix] [자동 시험] [필터 상태] 곡 262.9초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.412ms
+[StutterFix] [자동 시험] [임무단계] wait 1999.927ms
+[StutterFix] [자동 시험] [필터 상태] 곡 264.9초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.614ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.843ms
+[StutterFix] [자동 시험] [필터 상태] 곡 266.9초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.169ms
+[StutterFix] [자동 시험] [임무단계] wait 1999.972ms
+[StutterFix] [자동 시험] [필터 상태] 곡 268.9초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.233ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.757ms
+[StutterFix] [자동 시험] [필터 상태] 곡 270.9초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 6.920ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.547ms
+[StutterFix] [자동 시험] [필터 상태] 곡 273.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.204ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.741ms
+[StutterFix] [자동 시험] [필터 상태] 곡 275.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.986ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.070ms
+[StutterFix] [자동 시험] [필터 상태] 곡 277.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.877ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.051ms
+[StutterFix] [자동 시험] [필터 상태] 곡 279.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.690ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.029ms
+[StutterFix] [자동 시험] [필터 상태] 곡 281.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.638ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.655ms
+[StutterFix] [자동 시험] [필터 상태] 곡 283.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.204ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.062ms
+[StutterFix] [자동 시험] [필터 상태] 곡 285.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.886ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.040ms
+[StutterFix] [자동 시험] [필터 상태] 곡 287.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.406ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.337ms
+[StutterFix] [자동 시험] [필터 상태] 곡 289.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.084ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.085ms
+[StutterFix] [자동 시험] [필터 상태] 곡 291.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.490ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.175ms
+[StutterFix] [자동 시험] [필터 상태] 곡 293.0초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.553ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.165ms
+[StutterFix] [자동 시험] [필터 상태] 곡 295.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.771ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.826ms
+[StutterFix] [자동 시험] [필터 상태] 곡 297.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 6.959ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.765ms
+[StutterFix] [자동 시험] [필터 상태] 곡 299.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.596ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.254ms
+[StutterFix] [자동 시험] [필터 상태] 곡 301.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.483ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.510ms
+[StutterFix] [자동 시험] [필터 상태] 곡 303.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.712ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.688ms
+[StutterFix] [자동 시험] [필터 상태] 곡 305.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.892ms
+[StutterFix] [자동 시험] [임무단계] wait 2007.941ms
+[StutterFix] [자동 시험] [필터 상태] 곡 307.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.535ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.391ms
+[StutterFix] [자동 시험] [필터 상태] 곡 309.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.248ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.271ms
+[StutterFix] [자동 시험] [필터 상태] 곡 311.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.108ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.384ms
+[StutterFix] [자동 시험] [필터 상태] 곡 313.1초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.816ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.564ms
+[StutterFix] [자동 시험] [필터 상태] 곡 315.2초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.430ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.782ms
+[StutterFix] [자동 시험] [필터 상태] 곡 317.2초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.208ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.733ms
+[StutterFix] [자동 시험] [필터 상태] 곡 319.2초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.318ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.562ms
+[StutterFix] [자동 시험] [필터 상태] 곡 321.2초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.080ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.994ms
+[StutterFix] [자동 시험] [필터 상태] 곡 323.2초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.529ms
+[StutterFix] [자동 시험] [임무단계] wait 1999.908ms
+[StutterFix] [자동 시험] [필터 상태] 곡 325.2초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.350ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.637ms
+[StutterFix] [자동 시험] [필터 상태] 곡 327.2초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.300ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.737ms
+[StutterFix] [자동 시험] [필터 상태] 곡 329.2초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.027ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.621ms
+[StutterFix] [자동 시험] [필터 상태] 곡 331.2초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.532ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.436ms
+[StutterFix] [자동 시험] [필터 상태] 곡 333.3초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.251ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.927ms
+[StutterFix] [자동 시험] [필터 상태] 곡 335.3초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.923ms
+[StutterFix] [자동 시험] [임무단계] wait 2007.461ms
+[StutterFix] [자동 시험] [필터 상태] 곡 337.3초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.016ms
+[StutterFix] [자동 시험] [임무단계] wait 2005.253ms
+[StutterFix] [자동 시험] [필터 상태] 곡 339.3초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.093ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.235ms
+[StutterFix] [자동 시험] [필터 상태] 곡 341.3초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.439ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.027ms
+[StutterFix] [자동 시험] [필터 상태] 곡 343.3초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.258ms
+[StutterFix] [자동 시험] [임무단계] wait 2004.699ms
+[StutterFix] [자동 시험] [필터 상태] 곡 345.3초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.197ms
+[StutterFix] [자동 시험] [임무단계] wait 2003.953ms
+[StutterFix] [자동 시험] [필터 상태] 곡 347.3초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.670ms
+[StutterFix] [자동 시험] [임무단계] wait 2006.240ms
+[StutterFix] [자동 시험] [필터 상태] 곡 349.4초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.328ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.765ms
+[StutterFix] [자동 시험] [필터 상태] 곡 351.4초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.096ms
+[StutterFix] [자동 시험] [임무단계] wait 2002.744ms
+[StutterFix] [자동 시험] [필터 상태] 곡 353.4초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.084ms
+[StutterFix] [자동 시험] [임무단계] wait 2001.679ms
+[StutterFix] [자동 시험] [필터 상태] 곡 355.4초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 8.534ms
+[StutterFix] [자동 시험] [임무단계] wait 2000.836ms
+[StutterFix] [자동 시험] [필터 상태] 곡 357.4초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.471ms
+[StutterFix] [자동 시험] [임무단계] wait 2006.530ms
+[StutterFix] [자동 시험] [필터 상태] 곡 359.4초, 켜진 필터 2개 | Camera:Color_Noise(Noise=-0.05 ) | Camera:Color_BrightContrastSaturation(Brightness=1 Saturation=1.1 Contrast=1.1 )
+[StutterFix] [자동 시험] [임무단계] filterstate 7.783ms
+[StutterFix] [첫 판 FPS] 1.2초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.7초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 259개는 가볍게, 2272개는 원래대로 다시 설정 138ms
+[StutterFix] [전환] 편집으로 나가기 1142ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 1235MB -> 415MB, 282ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1424ms)
+[StutterFix] [자동 시험] [임무단계] stop 1431.398ms
+[StutterFix] [무료FPS 대조] control depth24 repeat changedBytes=0
+[StutterFix] [무료FPS 대조] depth=0 changedBytes=10923487
+[StutterFix] [무료FPS 대조] depth=16 changedBytes=10923487
+[StutterFix] [무료FPS 대조] format=RGB565 changedBytes=2672958
+'B4G4R4A4_UNormPack16' is not supported. RenderTexture::GetTemporary fallbacks to R8G8B8A8_UNorm format on this platform. Use 'SystemInfo.IsFormatSupported' C# API to check format support.
+[StutterFix] [무료FPS 대조] format=ARGB4444 changedBytes=0
+[StutterFix] [자동 시험] [임무단계] freefps 572.909ms
+[StutterFix] [무료FPS 배치] activeRenderers=15540 sharedMaterialIds=15239 propertyBlocks=812
+[StutterFix] [무료FPS 배치] recorder=Draw Calls Count valid=True samples=0
+[StutterFix] [무료FPS 배치] recorder=SetPass Calls Count valid=True samples=0
+[StutterFix] [무료FPS 배치] recorder=Batches Count valid=True samples=0
+[StutterFix] [자동 시험] [임무단계] freefps 55.651ms
+[StutterFix] [자동 시험] 바꾼 설정 되돌림
+[StutterFix] [자동 시험] 묶음 끝: 끝
+[StutterFix] [프레임생성 바깥] 기본 꺼짐; 공 포함; 원래 스왑체인; 배율 2..8
+[StutterFix] [프레임생성 바깥] mode=0
+[StutterFix] [프레임생성 바깥] pose cam=0.00,0.00 size=0.000 red=2668.20,637.51 scale=0.900 blue=2666.96,635.63 scale=0.900
+[StutterFix] [프레임생성 바깥] 셰이더 미리 컴파일 시작

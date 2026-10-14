@@ -1,0 +1,1054 @@
+{
+  "samples": 92,
+  "over3": 4,
+  "last_sample_s": 184.5,
+  "portal": true,
+  "rows": [
+    {
+      "song_s": 1.8,
+      "names": [
+        "Blur_Radial",
+        "Glow_Glow",
+        "TV_WideScreenHorizontal"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 3.8,
+      "names": [
+        "Blur_Radial",
+        "Glow_Glow",
+        "TV_WideScreenHorizontal",
+        "Real_VHS",
+        "Noise_TV_2"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 5.8,
+      "names": [
+        "Blur_Radial",
+        "TV_WideScreenHorizontal"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 7.8,
+      "names": [
+        "Blur_Radial",
+        "TV_WideScreenHorizontal",
+        "FX_Glitch2"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 9.8,
+      "names": [
+        "Blur_Radial",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "Color_Contrast"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 11.8,
+      "names": [
+        "Blur_Radial",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "Color_Contrast"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 13.8,
+      "names": [
+        "Blur_Radial",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "Color_Contrast"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 15.8,
+      "names": [
+        "Blur_Radial",
+        "Distortion_Dream2",
+        "Color_Noise",
+        "Color_Contrast"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 17.8,
+      "names": [
+        "Blur_Radial",
+        "Distortion_Dream2",
+        "Color_Noise",
+        "Color_Contrast"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 19.9,
+      "names": [
+        "Blur_Radial",
+        "Color_Noise",
+        "Color_Contrast",
+        "TV_WideScreenHV"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 21.9,
+      "names": [
+        "Blur_Radial",
+        "Glow_Glow",
+        "TV_VHS",
+        "Color_Noise",
+        "Color_Contrast",
+        "TV_WideScreenHV"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 23.9,
+      "names": [
+        "Blur_Radial",
+        "Color_Noise",
+        "Color_Contrast",
+        "TV_WideScreenHV"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 25.9,
+      "names": [
+        "Blur_Radial",
+        "Color_Noise",
+        "Color_Contrast",
+        "TV_WideScreenHV"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 27.9,
+      "names": [
+        "Blur_Radial",
+        "Atmosphere_Rain_Pro",
+        "TV_Chromatical",
+        "Glow_Glow",
+        "TV_WideScreenHorizontal",
+        "FX_Glitch2",
+        "Real_VHS",
+        "Color_Noise",
+        "Color_Contrast",
+        "TV_WideScreenVertical"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 29.9,
+      "names": [
+        "Blur_Radial",
+        "Atmosphere_Rain_Pro",
+        "TV_Chromatical",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "Color_Contrast",
+        "TV_WideScreenVertical"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 31.9,
+      "names": [
+        "Blur_Radial",
+        "Atmosphere_Rain_Pro",
+        "TV_Chromatical",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "Color_Contrast",
+        "TV_WideScreenVertical"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 33.9,
+      "names": [
+        "Blur_Radial",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "Color_Contrast",
+        "TV_WideScreenVertical"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_Contrast"
+      ]
+    },
+    {
+      "song_s": 35.9,
+      "names": [
+        "Blur_Radial",
+        "TV_WideScreenHorizontal",
+        "Color_BrightContrastSaturation",
+        "Film_Grain"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation"
+      ]
+    },
+    {
+      "song_s": 37.9,
+      "names": [
+        "Blur_Radial",
+        "TV_WideScreenHorizontal",
+        "Color_BrightContrastSaturation",
+        "Film_Grain"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation"
+      ]
+    },
+    {
+      "song_s": 39.9,
+      "names": [
+        "Blur_Radial",
+        "Vision_Drost",
+        "TV_WideScreenHorizontal",
+        "Color_BrightContrastSaturation",
+        "Film_Grain"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation"
+      ]
+    },
+    {
+      "song_s": 41.9,
+      "names": [
+        "Blur_Radial",
+        "TV_WideScreenHorizontal",
+        "Pixel_Pixelisation",
+        "Color_BrightContrastSaturation",
+        "Film_Grain"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation"
+      ]
+    },
+    {
+      "song_s": 43.9,
+      "names": [
+        "Blur_Radial",
+        "FX_Glitch2",
+        "TV_WideScreenHorizontal",
+        "Color_BrightContrastSaturation",
+        "Film_Grain"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation"
+      ]
+    },
+    {
+      "song_s": 45.9,
+      "names": [
+        "Blur_Radial",
+        "FX_Glitch2",
+        "TV_WideScreenHorizontal",
+        "Color_BrightContrastSaturation",
+        "Film_Grain"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation"
+      ]
+    },
+    {
+      "song_s": 48.0,
+      "names": [
+        "Blur_Radial",
+        "FX_Glitch2",
+        "FX_Glitch1",
+        "Color_Noise",
+        "Colors_HUE_Rotate",
+        "Color_BrightContrastSaturation",
+        "TV_Chromatical2",
+        "TV_LED",
+        "Drawing_Manga_Flash_Color",
+        "Blur_Radial"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_BrightContrastSaturation"
+      ]
+    },
+    {
+      "song_s": 50.0,
+      "names": [
+        "Atmosphere_Rain_Pro",
+        "Light_Water",
+        "Colors_HUE_Rotate",
+        "TV_WideScreenVertical",
+        "Color_BrightContrastSaturation",
+        "TV_Chromatical2",
+        "Colors_Brightness"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation",
+        "Colors_Brightness"
+      ]
+    },
+    {
+      "song_s": 52.0,
+      "names": [
+        "Atmosphere_Rain_Pro",
+        "Light_Water",
+        "Colors_HUE_Rotate",
+        "TV_WideScreenVertical",
+        "Color_BrightContrastSaturation",
+        "TV_Chromatical2",
+        "Colors_Brightness"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation",
+        "Colors_Brightness"
+      ]
+    },
+    {
+      "song_s": 54.0,
+      "names": [
+        "Atmosphere_Rain_Pro",
+        "Light_Water",
+        "Colors_HUE_Rotate",
+        "TV_WideScreenVertical",
+        "Color_BrightContrastSaturation",
+        "TV_Chromatical2",
+        "Colors_Brightness",
+        "Color_Chromatic_Aberration"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation",
+        "Colors_Brightness"
+      ]
+    },
+    {
+      "song_s": 56.0,
+      "names": [
+        "Atmosphere_Rain_Pro",
+        "Light_Water",
+        "Colors_HUE_Rotate",
+        "TV_WideScreenVertical",
+        "Color_BrightContrastSaturation",
+        "TV_Chromatical2",
+        "Colors_Brightness",
+        "Color_Chromatic_Aberration"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation",
+        "Colors_Brightness"
+      ]
+    },
+    {
+      "song_s": 58.0,
+      "names": [
+        "Atmosphere_Rain_Pro",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "TV_WideScreenVertical",
+        "Color_BrightContrastSaturation",
+        "TV_Chromatical2",
+        "Colors_Brightness",
+        "Color_Chromatic_Aberration",
+        "TV_Distorted"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_BrightContrastSaturation",
+        "Colors_Brightness"
+      ]
+    },
+    {
+      "song_s": 60.0,
+      "names": [
+        "Atmosphere_Rain_Pro",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "TV_WideScreenVertical",
+        "Color_BrightContrastSaturation",
+        "TV_Chromatical2",
+        "Colors_Brightness",
+        "Color_Chromatic_Aberration",
+        "TV_Distorted"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_BrightContrastSaturation",
+        "Colors_Brightness"
+      ]
+    },
+    {
+      "song_s": 62.0,
+      "names": [
+        "Atmosphere_Rain_Pro",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "TV_WideScreenVertical",
+        "Color_BrightContrastSaturation",
+        "TV_Chromatical2",
+        "Colors_Brightness",
+        "Color_Chromatic_Aberration",
+        "TV_Distorted"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_BrightContrastSaturation",
+        "Colors_Brightness"
+      ]
+    },
+    {
+      "song_s": 64.0,
+      "names": [
+        "Atmosphere_Rain_Pro",
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "TV_WideScreenVertical",
+        "Color_BrightContrastSaturation",
+        "TV_Chromatical2",
+        "Colors_Brightness",
+        "Color_Chromatic_Aberration",
+        "TV_Distorted"
+      ],
+      "simple": [
+        "Color_Noise",
+        "Color_BrightContrastSaturation",
+        "Colors_Brightness"
+      ]
+    },
+    {
+      "song_s": 66.0,
+      "names": [
+        "TV_VHS_Rewind",
+        "Noise_TV_3",
+        "TV_Distorted"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 68.0,
+      "names": [
+        "Noise_TV_3",
+        "TV_WideScreenHorizontal",
+        "TV_VHS_Rewind",
+        "Noise_TV_3",
+        "VHS_Tracking",
+        "TV_WideScreenVertical",
+        "TV_Distorted"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 70.1,
+      "names": [
+        "Light_Rainbow",
+        "TV_WideScreenHorizontal",
+        "TV_Artefact",
+        "TV_WideScreenVertical",
+        "TV_Chromatical"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 72.1,
+      "names": [
+        "Light_Rainbow",
+        "TV_WideScreenHorizontal",
+        "TV_Artefact",
+        "TV_WideScreenVertical",
+        "TV_Chromatical"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 74.1,
+      "names": [],
+      "simple": []
+    },
+    {
+      "song_s": 76.1,
+      "names": [],
+      "simple": []
+    },
+    {
+      "song_s": 78.1,
+      "names": [
+        "Light_Rainbow",
+        "TV_WideScreenHorizontal",
+        "TV_Artefact",
+        "TV_Chromatical"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 80.1,
+      "names": [],
+      "simple": []
+    },
+    {
+      "song_s": 82.1,
+      "names": [],
+      "simple": []
+    },
+    {
+      "song_s": 84.1,
+      "names": [
+        "Distortion_Flag",
+        "Distortion_Noise",
+        "FX_Glitch2",
+        "Color_Noise",
+        "VHS_Tracking",
+        "TV_Chromatical2"
+      ],
+      "simple": [
+        "Color_Noise"
+      ]
+    },
+    {
+      "song_s": 86.1,
+      "names": [
+        "Distortion_Flag",
+        "Distortion_Noise",
+        "FX_Glitch2",
+        "Color_Noise",
+        "VHS_Tracking",
+        "TV_Chromatical2"
+      ],
+      "simple": [
+        "Color_Noise"
+      ]
+    },
+    {
+      "song_s": 88.1,
+      "names": [
+        "Distortion_Flag",
+        "Distortion_Noise",
+        "FX_Glitch2",
+        "Color_Noise",
+        "VHS_Tracking",
+        "TV_Chromatical2"
+      ],
+      "simple": [
+        "Color_Noise"
+      ]
+    },
+    {
+      "song_s": 90.1,
+      "names": [
+        "Distortion_Flag",
+        "Distortion_Noise",
+        "FX_Glitch2",
+        "Color_Noise",
+        "VHS_Tracking",
+        "TV_Chromatical2"
+      ],
+      "simple": [
+        "Color_Noise"
+      ]
+    },
+    {
+      "song_s": 92.1,
+      "names": [
+        "Distortion_Flag",
+        "Distortion_Noise",
+        "FX_Glitch2",
+        "Color_Noise",
+        "VHS_Tracking",
+        "TV_Chromatical2"
+      ],
+      "simple": [
+        "Color_Noise"
+      ]
+    },
+    {
+      "song_s": 94.1,
+      "names": [
+        "Distortion_Flag",
+        "Distortion_Noise",
+        "FX_Glitch2",
+        "Color_Noise",
+        "VHS_Tracking",
+        "TV_Chromatical2"
+      ],
+      "simple": [
+        "Color_Noise"
+      ]
+    },
+    {
+      "song_s": 96.1,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "FX_Glitch1",
+        "TV_Old_Movie_2"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 98.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "FX_Glitch1",
+        "TV_VHS_Rewind",
+        "TV_Old_Movie_2"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 100.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "FX_Glitch1",
+        "TV_Old_Movie_2",
+        "Colors_BleachBypass"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 102.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "FX_Glitch1",
+        "TV_Old_Movie_2",
+        "Colors_BleachBypass"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 104.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "FX_Glitch1",
+        "TV_Old_Movie_2",
+        "Colors_BleachBypass"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 106.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Colors_BleachBypass"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 108.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Film_ColorPerfection"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 110.2,
+      "names": [
+        "Vision_Aura",
+        "Film_ColorPerfection"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 112.2,
+      "names": [
+        "Film_ColorPerfection"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 114.2,
+      "names": [
+        "TV_Chromatical",
+        "Glow_Glow",
+        "TV_WideScreenHorizontal",
+        "TV_PlanetMars",
+        "Film_ColorPerfection",
+        "Blur_Movie"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 116.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Film_ColorPerfection",
+        "Blur_Movie"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 118.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Film_ColorPerfection",
+        "Blur_Movie"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 120.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Film_ColorPerfection",
+        "Blur_Movie"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 122.2,
+      "names": [
+        "TV_VHS_Rewind",
+        "TV_PlanetMars",
+        "Film_ColorPerfection",
+        "Blur_Movie",
+        "Blur_BlurHole"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 124.2,
+      "names": [
+        "TV_PlanetMars",
+        "Film_ColorPerfection",
+        "Blur_Movie",
+        "Blur_BlurHole"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 126.2,
+      "names": [
+        "Glow_Glow",
+        "Film_ColorPerfection"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 128.2,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Glitch_Mozaic"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 130.2,
+      "names": [
+        "TV_WideScreenHorizontal"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 132.3,
+      "names": [
+        "Film_ColorPerfection"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 134.3,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Film_ColorPerfection",
+        "Blur_BlurHole",
+        "Atmosphere_Rain_Pro",
+        "Blur_Noise",
+        "Glow_Glow_Color"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 136.3,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Film_ColorPerfection",
+        "Blur_BlurHole",
+        "Atmosphere_Rain_Pro",
+        "Blur_Noise",
+        "Glow_Glow_Color",
+        "Color_GrayScale"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 138.3,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Film_ColorPerfection",
+        "Blur_BlurHole",
+        "Atmosphere_Rain_Pro",
+        "Blur_Noise",
+        "Glow_Glow_Color"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 140.3,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Glow_Glow_Color"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 142.3,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Blur_Noise",
+        "Glow_Glow_Color"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 144.3,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "Colors_HUE_Rotate",
+        "Blur_Noise",
+        "Glow_Glow_Color"
+      ],
+      "simple": [
+        "Color_Noise"
+      ]
+    },
+    {
+      "song_s": 146.3,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Color_Noise",
+        "Colors_HUE_Rotate",
+        "Blur_Noise",
+        "Glow_Glow_Color"
+      ],
+      "simple": [
+        "Color_Noise"
+      ]
+    },
+    {
+      "song_s": 148.3,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "TV_Chromatical2"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 150.3,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "TV_Chromatical2",
+        "Color_Chromatic_Aberration",
+        "Color_GrayScale"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 152.4,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "TV_Chromatical2"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 154.4,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "TV_Chromatical2",
+        "Color_GrayScale"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 156.4,
+      "names": [
+        "Vision_Tunnel",
+        "TV_WideScreenHorizontal",
+        "TV_Chromatical2"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 158.4,
+      "names": [
+        "Vision_Tunnel",
+        "TV_WideScreenHorizontal",
+        "TV_Chromatical2",
+        "Color_GrayScale"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 160.4,
+      "names": [
+        "Vision_Tunnel",
+        "TV_WideScreenHorizontal",
+        "TV_Chromatical2"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 162.4,
+      "names": [
+        "TV_WideScreenHorizontal"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 164.4,
+      "names": [
+        "Light_Water",
+        "TV_WideScreenHorizontal"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 166.4,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "TV_WideScreenVertical",
+        "Color_Switching"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 168.4,
+      "names": [
+        "Distortion_Dream2",
+        "TV_WideScreenHorizontal",
+        "TV_Chromatical",
+        "Color_Switching"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 170.4,
+      "names": [
+        "Distortion_Dream2",
+        "TV_WideScreenHorizontal",
+        "TV_Chromatical",
+        "Color_Switching"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 172.4,
+      "names": [
+        "AAA_SuperComputer",
+        "Light_Water",
+        "FX_Glitch3",
+        "TV_WideScreenHV"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 174.4,
+      "names": [
+        "AAA_SuperComputer",
+        "Light_Water",
+        "FX_Glitch3",
+        "TV_WideScreenHV",
+        "Color_BrightContrastSaturation"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation"
+      ]
+    },
+    {
+      "song_s": 176.4,
+      "names": [
+        "FX_DarkMatter",
+        "TV_WideScreenVertical",
+        "TV_Vintage"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 178.4,
+      "names": [
+        "TV_WideScreenHorizontal",
+        "Color_BrightContrastSaturation"
+      ],
+      "simple": [
+        "Color_BrightContrastSaturation"
+      ]
+    },
+    {
+      "song_s": 180.5,
+      "names": [
+        "Blur_Radial",
+        "Light_Water",
+        "TV_WideScreenHV",
+        "TV_Chromatical",
+        "Color_Switching"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 182.5,
+      "names": [
+        "Blur_Radial",
+        "Light_Water",
+        "TV_Chromatical",
+        "Drawing_Manga_FlashWhite"
+      ],
+      "simple": []
+    },
+    {
+      "song_s": 184.5,
+      "names": [
+        "Blur_Radial",
+        "Light_Water",
+        "TV_Chromatical",
+        "Drawing_Manga_FlashWhite"
+      ],
+      "simple": []
+    }
+  ]
+}

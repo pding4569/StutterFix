@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('docs/handoff/free-fps-findings.md');s=p.read_text(encoding='utf-8-sig');s=s.replace('未사용','사용하지 않는');s=s.replace('현재 실제 환경:', '공통 화면 환경:');s=s.replace('camRT 깊이만 바꾸는 것은 현재 직접 화면 경로에 영향을 주지 않는다.', '첫 세션에서 camRT 깊이만 바꾸는 것은 직접 화면 경로에 영향을 주지 않는다. 재시작 뒤 두 번째 세션에서는 세 카메라 targetTexture가 RT이고 OverlayCam이 활성화돼 있다. 최종 cullingMask ABBA는 이 두 번째 세션에서 진행하며 세션 간 수치는 섞지 않는다.');p.write_text(s,encoding='utf-8')

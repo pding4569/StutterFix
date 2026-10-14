@@ -1,0 +1,88 @@
+[StutterFix] [자동 시험] 시작: 10단계 - keep / set FrameGenOutside 0 / fpscap 0 / open D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai / auto on / freefps state / play / wait 15 / filterstate / stop
+[StutterFix] [자동 시험] 묶음이 끝나도 게임을 끄지 않음
+[StutterFix] [자동 시험] [임무단계] keep 0.012ms
+[StutterFix] [자동 시험] 설정 FrameGenOutside = 0 (묶음 끝에 4 로 되돌림)
+[StutterFix] [자동 시험] [임무단계] set 2.479ms
+[StutterFix] [자동 시험] [FPS 제한] 목표 FPS 10000, vSync 0 frame 11401
+[StutterFix] [자동 시험] [임무단계] fpscap 2.736ms
+[StutterFix] [자동 시험] 맵 열기: D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 61.093200 ms
+Unloading 263 unused Assets to reduce memory usage. Loaded Objects now: 18248.
+Total: 102.011200 ms (FindLiveObjects: 0.876600 ms CreateObjectMapping: 0.622900 ms MarkObjects: 98.901400 ms  DeleteObjects: 1.610000 ms)
+
+[StutterFix] [자동 시험] 메모리 3초: 힙 148MB, 프로세스 1508MB(실제 램 1104MB), 프레임 12282 
+[StutterFix] [첫 판 FPS] 9.8초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 9.8초
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 16ms
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+[StutterFix] [첫 판 FPS] 1.7초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.7초
+[StutterFix] [자동 시험] 메모리 6초: 힙 338MB, 프로세스 1844MB(실제 램 1445MB), 프레임 12283 
+[StutterFix] [맵 파일 읽기] GC 멈춤 342ms(그중 이벤트로 바꾸기 167ms: 이벤트 21349개 여러 코어(5개)로 159ms), 힙 213MB -> 355MB (그 사이 GC 0번)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 1ms
+[StutterFix] [이미지] 자동: 첫 판부터 긴 변 3072 으로 줄임 (이미지 713장 원본 약 11378MB, 비어 있는 VRAM 약 5341MB, 3072 보다 큰 이미지 101장)
+[StutterFix] [이미지] 맵 열기 전: 이미 올라와 있는 이미지 1장, VRAM 전체 1821MB / 게임 373MB
+[StutterFix] [다른 모드] Quartz 최적화: 켜진 것 없음
+[StutterFix] [이미지] 713장 미리 풀기 시작 (작업 스레드 5개, DXT 로 미리 압축: 저사양 옵션)
+[StutterFix] [자동 시험] 메모리 9초: 힙 483MB, 프로세스 3079MB(실제 램 2571MB), 프레임 12283 
+[StutterFix] [자동 시험] 메모리 12초: 힙 750MB, 프로세스 5225MB(실제 램 2906MB), 프레임 12283 
+[StutterFix] [장식 한 번에 복제] 36번에 2425개 (안 쓰고 지움 0개)
+[StutterFix] [이미지] 미리 푼 것 712장(넣기 1764ms), 원래 방식 5장(61ms, 순서 어긋남 0), 기다림 2385ms, GC 0번, 전체 6.1초, 줄인 이미지 98장 (긴 변 3072, VRAM 약 4202MB 아낌), 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 4944ms/작업 스레드 합), 처음부터 압축으로 넣음 386장 (뒤이어 압축 불림 386, 안 불림 0), 압축이 늦어 원래대로 139장 | 장식 만들기 2531개 4956ms, 그중 텍스처 불러오기 5195ms, 압축 마저 기다림 30ms
+[StutterFix] [이미지] 해독 시간(작업 스레드 5개 합계): 압축 풀기 4061ms, 필터 되돌리기 4654ms, 줄이기 1845ms(279M 픽셀), 필터·줄이기 한 번에 0장 0ms(0M 픽셀), 흘려 풀기·줄이기 82장 8718ms(1400M 픽셀, 못 한 것 0) | 새로 맡은 형식(흑백·인터레이스) 14장 | libdeflate 602장, 원래 zlib 로 다시 푼 것 0장 (사용 중) | 네이티브(sfnative): 필터 되돌린 줄 703607, DXT 압축 줄 묶음 144446 | JPG(libjpeg-turbo): 28장 1646ms, 못 푼 것 0장
+[StutterFix] [이미지] 로딩 뒤 GC 한 번 124ms
+Shader warmup: 203 shaders 1477 combinations 0.005s
+[StutterFix] [셰이더] 맵 불러온 뒤: 셰이더 203개, 새 필터 109개(필터 텍스처 14개) 미리 준비 32ms
+[StutterFix] [재시작] 에디터에서 맵 열기: D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai
+[StutterFix] [자동 시험] 메모리 15초: 힙 372MB, 프로세스 7289MB(실제 램 2713MB), 프레임 12284 
+Unloading 157 unused Assets to reduce memory usage. Loaded Objects now: 664564.
+Total: 283.266200 ms (FindLiveObjects: 63.483400 ms CreateObjectMapping: 13.750300 ms MarkObjects: 168.752600 ms  DeleteObjects: 37.279600 ms)
+
+[StutterFix] [상태] None 편집중 일시정지  -> 정지
+[StutterFix] [자동 시험] 맵 열림 (16.9초, 열기 요청부터 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] open 16877.207ms
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[StutterFix] [자동 시험] [임무단계] auto 4.010ms
+[StutterFix] [무료FPS] camera=Thumbnail Maker enabled=False mask=131072 depth=1 clear=SolidColor HDR=True MSAA=False dynamic=False occlusion=True forceRT=False RT=UnityEngine.RenderTextureDescriptor
+[StutterFix] [무료FPS] camera=BGMovingCam enabled=True mask=1024 depth=-1.11 clear=Depth HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] camera=Camera enabled=True mask=652183 depth=-1 clear=Nothing HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] camera=BGStaticCam enabled=True mask=2048 depth=-1.63 clear=SolidColor HDR=False MSAA=False dynamic=False occlusion=False forceRT=False RT=screen
+[StutterFix] [무료FPS] quality softParticles=False particleRaycast=256 anisotropic=Disable textureLimit=0 display=2560x1440@120 graphics=Direct3D11
+[StutterFix] [자동 시험] [임무단계] freefps 4.633ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 미룬 것 없음
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 701개, 곡 중 최대 701개 | 색 바뀜 4852번 확인, 그리기 켜고 끈 것 701번, 쓴 시간 약 3.8ms, 가장 많이 쓴 프레임 약 3.83ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 8.7초 멈춘 프레임 동안 윈도우 메시지 확인 13번 (멈춘 창 판정 막기), 가장 긴 빈틈 2.6초
+[StutterFix] [로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀
+[StutterFix] [자동 시험] 메모리 18초: 힙 426MB, 프로세스 7438MB(실제 램 2828MB), 프레임 12432 
+[StutterFix] [타일 메시] 색 바꾸기 효과 3324개, 타일·스타일 38024가지 -> 새로 미리 만든 메시 1003개 177ms (캐시 2154개)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 4가지 중 새로 불러온 것 1개 1ms
+[StutterFix] [효과 재사용] 다시 씀 0개, 새로 붙임 30746개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 0개 | 848ms
+[StutterFix] [전환] 에디터 재생 시작 1673ms
+[StutterFix] [자동 시험] [임무단계] play 1677.016ms
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 718장, VRAM 전체 5876MB / 게임 4429MB
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1856ms (프레임 1개, 가장 긴 프레임 1856ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 1176ms, 그 밖 680ms | 이미지 파일 시각: 5132번 중 디스크 1268번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 3ms
+[StutterFix] [저사양] 그래픽 설정: 품질 단계 Default, 안티에일리어싱 0x, 수직동기 0, 그림자 Disable, 텍스처 0, 이방성 Disable, 파티클 레이캐스트 256, 소프트 파티클 False | 카메라 OverlayCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.63, 컬링 100000 | 카메라 BGStaticCam: MSAA False, HDR False, 경로 Forward, 대상 2560x1440, 깊이 -1.63, 컬링 800 | 카메라 BGMovingCam: MSAA False, HDR False, 경로 Forward, 대상 2560x1440, 깊이 -1.11, 컬링 400 | 카메라 Camera: MSAA False, HDR False, 경로 Forward, 대상 2560x1440, 깊이 -1, 컬링 9F397 | 화면 2560x1440 FullScreenWindow, 그래픽카드 NVIDIA GeForce RTX 4060 Ti
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 17ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [자동 시험] [임무단계] wait 13329.072ms
+[StutterFix] [자동 시험] [필터 상태] 곡 12.5초, 켜진 필터 4개 | BGMovingCam:Blur_Radial(Intensity=-0.25 MovX=0.5 MovY=0.5 ) | Camera:TV_WideScreenHorizontal(Size=0.601 Smooth=0 ) | Camera:Color_Noise(Noise=-0.09 ) | Camera:Color_Contrast(Contrast=1.15 )
+[StutterFix] [자동 시험] [임무단계] filterstate 3.760ms
+[StutterFix] [곡] 평균 287 FPS (3.5ms), 가장 긴 프레임 87ms, 곡 시작 연출 뒤 가장 긴 프레임 11ms, 끊김 0번, 프레임 3769개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.5ms (3768개 잼) | 그 프레임: 게임 효과 15개 4.0ms (그중 장식 이동 0.2ms), 나머지 6.7ms | 효과가 가장 무거운 프레임 11ms: 게임 효과 4.0ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [11ms @3.4초: 효과 15개 4.0(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 6.4] [8ms @9.0초: 효과 39개 3.2(장식 이동 0.3, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 4.7] [7ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 7.1] [7ms @7.2초: 효과 15개 2.8(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.0] [7ms @5.3초: 효과 22개 2.3(장식 이동 1.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 4.2] [7ms @4.3초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+3.1, 나머지 3.6] [6ms @5.0초: 효과 2개 0.2(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.5, 나머지 3.5] [6ms @9.1초: 효과 39개 3.2(장식 이동 0.3, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 2.6] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 294(4.0/0.8/0.0/1.8/0.0, 158/0개) 10s 264(3.8/1.0/0.0/2.2/0.1, 188/0개) | 가장 높은 구간 0s 294 FPS | 같은 그림자 색 건너뛰기 20339회 | 파티클 장식: 같은 값 넣기 430870번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 2개 없앰, 게임 화면 버퍼 불필요한 해제 0번 막음 | 필터 형식 찾기 기억 1872번 (새로 찾음 70번) | 오차 막대 눈금 가볍게 1270개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 635개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 166번을 154번으로 줄임 (7% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 623862번 중 같은 값이라 건너뜀 138591번 | 재생 중 편집기 검사 건너뜀 125829번 | 매 프레임 장식 순회 623456번 중 바뀌는 게 없어 뺀 것 5021번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 165개만 훑음 (잠재움 2616번, 깨움 304번, 목록 새로 만듦 1번, 안전망 검사 14번에 놓친 깨움 0개) | 즉시 이동 직접 처리 711번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 147번, 투명한 채 색만 저장 0번 | 장식 이동 루프: 효과 241개(장식 1063개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 123개 | 장식 애니메이션 직접 처리: 만든 것 420개(동시 최대 187개), 끝까지 감 65, 끊겨서 완료 259, 버림 0, 기록 다시 씀 0, 새 표 객체 356, 갱신에 쓴 시간 157ms (3214프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 26개(타일 218개, 시작에 쓴 시간 1ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 218개(동시 최대 44, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 198, 끊겨서 완료 0, 버림 0, 갱신 7ms (1693프레임), 게임이 멈출 때 넘겨준 것 0 | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 125960번 (안 보이게 돼서 대신 갱신 162번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 609개, 곡 중 최대 701개 | 투명한 장식 위치 반영 미룸 71066번, 보일 때 반영 165번 | 색 바뀜 23806번 확인, 그리기 켜고 끈 것 516번, 쓴 시간 약 6.7ms, 가장 많이 쓴 프레임 약 0.22ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 1.3초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.3초
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 1773개는 가볍게, 758개는 원래대로 다시 설정 78ms
+[StutterFix] [전환] 편집으로 나가기 1233ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 660MB -> 384MB, 259ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1492ms)
+[StutterFix] [자동 시험] [임무단계] stop 1496.031ms
+[StutterFix] [자동 시험] 바꾼 설정 되돌림
+[StutterFix] [자동 시험] 묶음 끝: 끝
+[StutterFix] [프레임생성 바깥] 기본 꺼짐; 공 포함; 원래 스왑체인; 배율 2..8
+[StutterFix] [프레임생성 바깥] mode=0
+[StutterFix] [프레임생성 바깥] 셰이더 미리 컴파일 시작

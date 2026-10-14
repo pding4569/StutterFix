@@ -373,6 +373,9 @@ namespace StutterFix
             if (!installed) return;
             installed = false;
             EndDisplayTransition();
+#if DEV || AUTOTEST
+            Try(FreeFpsProbe.Restore);
+#endif
             Try(FrameGen.Shutdown);
             Try(ScreenEffects.Shutdown);
             Try(FilterIdentity.Shutdown);

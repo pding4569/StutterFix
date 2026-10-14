@@ -1,0 +1,3 @@
+from pathlib import Path
+p=Path('FreeFpsProbe.cs');s=p.read_text(encoding='utf-8-sig');s=s.replace('static readonly Dictionary<Camera,bool> enabled', 'static readonly Dictionary<Camera,int> masks = new Dictionary<Camera,int>();\n static readonly Dictionary<Camera,bool> enabled');s=s.replace('enabled.Clear(); }','enabled.Clear(); foreach(var x in masks)if(x.Key!=null)x.Key.cullingMask=x.Value;masks.Clear(); }');s=s.replace('if(!enabled.ContainsKey(c))enabled[c]=c.enabled;c.enabled=false;', 'if(!masks.ContainsKey(c))masks[c]=c.cullingMask;c.cullingMask=0;');p.write_text(s,encoding='utf-8')
+p=Path('AutoTest.cs');s=p.read_text(encoding='utf-8-sig').replace('                #if DEV || AUTOTEST',' #if DEV || AUTOTEST');p.write_text(s,encoding='utf-8')

@@ -1,0 +1,74 @@
+[
+  {
+    "label": "BGStaticCam A",
+    "fps": 268,
+    "gpu_ms": 2.0,
+    "over30": 1
+  },
+  {
+    "label": "BGStaticCam B",
+    "fps": 277,
+    "gpu_ms": 1.9,
+    "over30": 0
+  },
+  {
+    "label": "BGStaticCam B",
+    "fps": 276,
+    "gpu_ms": 2.0,
+    "over30": 0
+  },
+  {
+    "label": "BGStaticCam A",
+    "fps": 276,
+    "gpu_ms": 1.9,
+    "over30": 0
+  },
+  {
+    "label": "BGMovingCam A",
+    "fps": 262,
+    "gpu_ms": 2.0,
+    "over30": 2
+  },
+  {
+    "label": "BGMovingCam B",
+    "fps": 276,
+    "gpu_ms": 1.9,
+    "over30": 0
+  },
+  {
+    "label": "BGMovingCam B",
+    "fps": 277,
+    "gpu_ms": 1.9,
+    "over30": 0
+  },
+  {
+    "label": "BGMovingCam A",
+    "fps": 277,
+    "gpu_ms": 2.0,
+    "over30": 0
+  },
+  {
+    "label": "Camera A",
+    "fps": 275,
+    "gpu_ms": 2.0,
+    "over30": 0
+  },
+  {
+    "label": "Camera B",
+    "fps": 354,
+    "gpu_ms": 0.8,
+    "over30": 0
+  },
+  {
+    "label": "Camera B",
+    "fps": 353,
+    "gpu_ms": 0.7,
+    "over30": 0
+  },
+  {
+    "label": "Camera A",
+    "fps": 275,
+    "gpu_ms": 2.0,
+    "over30": 0
+  }
+]

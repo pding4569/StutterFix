@@ -1,0 +1,114 @@
+[
+  {
+    "label": "BGStaticCam A",
+    "fps": 268,
+    "gpu_ms": 2.0,
+    "over30": 1,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "BGStaticCam B",
+    "fps": 277,
+    "gpu_ms": 1.9,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "BGStaticCam B",
+    "fps": 276,
+    "gpu_ms": 2.0,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "BGStaticCam A",
+    "fps": 276,
+    "gpu_ms": 1.9,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "BGMovingCam A",
+    "fps": 262,
+    "gpu_ms": 2.0,
+    "over30": 2,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "BGMovingCam B",
+    "fps": 276,
+    "gpu_ms": 1.9,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "BGMovingCam B",
+    "fps": 277,
+    "gpu_ms": 1.9,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "BGMovingCam A",
+    "fps": 277,
+    "gpu_ms": 2.0,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "Camera A",
+    "fps": 275,
+    "gpu_ms": 2.0,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "Camera B",
+    "fps": 354,
+    "gpu_ms": 0.8,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "Camera B",
+    "fps": 353,
+    "gpu_ms": 0.7,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "Camera A",
+    "fps": 275,
+    "gpu_ms": 2.0,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "WindflowerStatic A",
+    "fps": 292,
+    "gpu_ms": 1.7,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "WindflowerStatic B",
+    "fps": 296,
+    "gpu_ms": 1.7,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "WindflowerStatic B",
+    "fps": 296,
+    "gpu_ms": 1.7,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  },
+  {
+    "label": "WindflowerStatic A",
+    "fps": 296,
+    "gpu_ms": 1.7,
+    "over30": 0,
+    "display": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  }
+]

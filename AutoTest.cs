@@ -882,6 +882,10 @@ namespace StutterFix
                     }
                     return true;
 #endif
+ #if DEV || AUTOTEST
+                case "freefps":
+                    FreeFpsProbe.Command(arg); return true;
+#endif
                 case "filterstate":
                 {
                     // filterstate: 지금 켜진 카메라 필터(CameraFilterPack)와 공개 숫자·참거짓 값 (세기 0 인데 켜진 필터 찾기)
