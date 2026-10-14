@@ -922,7 +922,7 @@ namespace StutterFix
         public bool LowNoThrottle = false;  // 윈도우 절전 제한 끄기 + 타이머 1ms
         public int LowMenuFps = 0;          // 플레이 중이 아닐 때(메뉴·에디터) FPS 제한 (0 끔, 30, 60)
         public int CrashStreak = 0;         // 연속 비정상 종료 횟수 (2 이상이면 안전 모드)
-        public bool LowNoFft = false;       // Volume 타일이 없으면 음악 주파수 분석 건너뛰기
+        public bool LowNoFft = true;        // Volume 타일이 없으면 음악 주파수 분석 건너뛰기 (프레임당 0.073ms, HELLO 2026 곡 11,322프레임 중 4번만 돎. 새 설치부터 기본 켬)
         public bool LowFloorSplit = false;    // (저사양) 타일이 많은 타일 이동 효과를 여러 프레임에 나눠 처리
         public bool LowPauseParticles = false; // (저사양) 화면 밖 파티클 장식 시뮬레이션 멈추기
         public bool LowCompressImages = false; // (저사양) 장식 이미지를 DXT 로 압축해서 올리기 (그래픽 메모리 1/4, 여러 코어로 미리 압축)
