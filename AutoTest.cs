@@ -828,6 +828,31 @@ namespace StutterFix
                     keep = false;
                     Finish("끝");
                     return true;
+                case "filterstate":
+                {
+                    // filterstate: 지금 켜진 카메라 필터(CameraFilterPack)와 공개 숫자·참거짓 값 (세기 0 인데 켜진 필터 찾기)
+                    var sbf = new System.Text.StringBuilder();
+                    int on = 0;
+                    foreach (var cam0 in Camera.allCameras)
+                        foreach (var mb in cam0.GetComponents<MonoBehaviour>())
+                        {
+                            if (mb == null || !mb.enabled) continue;
+                            var t = mb.GetType();
+                            if (!t.Name.StartsWith("CameraFilterPack_")) continue;
+                            on++;
+                            sbf.Append(" | ").Append(cam0.name).Append(':').Append(t.Name.Substring(17)).Append('(');
+                            foreach (var f in t.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+                            {
+                                object v = f.GetValue(mb);
+                                if (v is float fv) sbf.Append(f.Name).Append('=').Append(fv.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)).Append(' ');
+                                else if (v is int iv) sbf.Append(f.Name).Append('=').Append(iv).Append(' ');
+                                else if (v is bool bv) sbf.Append(f.Name).Append('=').Append(bv ? 1 : 0).Append(' ');
+                            }
+                            sbf.Append(')');
+                        }
+                    Log("[필터 상태] 곡 " + (scrConductor.instance != null ? scrConductor.instance.songposition_minusi.ToString("F1") : "-") + "초, 켜진 필터 " + on + "개" + sbf);
+                    return true;
+                }
                 case "fgstate":
                     Log("[프레임상태] " + FrameGen.Describe());
                     Log("[화면상태] " + Main.DescribeDisplay());
