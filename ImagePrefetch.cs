@@ -364,6 +364,15 @@ namespace StutterFix
                 long totalMB = SystemInfo.graphicsMemorySize;
                 if (totalMB <= 0) return 0;
                 float used = SystemMonitor.VramUsedMB;
+                // 내장 그래픽은 그림을 시스템 RAM 에 둔다. 보고되는 크기는 RAM 의 절반 넘게 잡힌 공유 한도(학교 PC: RAM 15.7GB 에 8,978MB)이고
+                // 전용 사용량은 0 으로 읽혀, 이미지 원본 4.9GB 맵을 "비어 있는 VRAM 6.6GB" 로 보고 원본 그대로 올렸다(게임 공유 3.7GB).
+                // 게임 힙·윈도우와 같은 RAM 을 나누므로 RAM 의 35% 를 그림 몫으로 보고, 사용량은 게임의 공유 메모리로 읽는다.
+                if (PcTune.Integrated)
+                {
+                    long ramShare = SystemInfo.systemMemorySize * 35L / 100;
+                    if (ramShare > 0 && ramShare < totalMB) totalMB = ramShare;
+                    used = SystemMonitor.SharedGameMB;
+                }
                 if (used <= 0) used = 1500f;   // 아직 못 읽었으면 게임 화면·메뉴 몫으로 어림
                 double freeMB = totalMB * 0.9 - used;
                 var seenPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -384,7 +393,7 @@ namespace StutterFix
                 foreach (var ev in g.decorations) if (!PlayTweaks.SkipDecoAtLoad(ev)) look(ev);   // 노이펙 모드로 안 만들 장식은 빼고
                 if (!PlayTweaks.SkipMoveImagesAtLoad) foreach (var ev in g.events) if ((int)ev.eventType == 29) look(ev);
                 double needMB = bytes / 1048576.0;
-                string info = string.Format("이미지 {0}장 원본 약 {1:F0}MB, 비어 있는 VRAM 약 {2:F0}MB, 3072 보다 큰 이미지 {3}장", count, needMB, freeMB, big);
+                string info = string.Format("이미지 {0}장 원본 약 {1:F0}MB, 비어 있는 VRAM 약 {2:F0}MB{4}, 3072 보다 큰 이미지 {3}장", count, needMB, freeMB, big, PcTune.Integrated ? " (내장 그래픽: RAM 의 35% 기준)" : "");
                 if (needMB > Math.Max(0, freeMB) * PredictRatio && big > 0)
                 {
                     int side = PredictSide;
