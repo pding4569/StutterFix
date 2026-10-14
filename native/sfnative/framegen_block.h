@@ -221,7 +221,7 @@ float3 colorAt(float2 uv,out bool moving) {
     [unroll] for(int k=0;k<2;k++) {
         float radius=k==0?disc.x:disc.y;
         if(radius>0) {
-            float reach=radius*2.6;
+            float reach=radius*2.85;
             float2 wa=planets[k].xy,wb=planets[k].zw,wt=k==0?tnow.xy:tnow.zw;
             freeA=min(freeA,smoothstep(reach*.8,reach*1.1,length(w-wa)));
             freeB=min(freeB,smoothstep(reach*.8,reach*1.1,length(w-wb)));
@@ -235,7 +235,7 @@ float3 colorAt(float2 uv,out bool moving) {
         [unroll] for(int k=0;k<2;k++) {
             float radius=k==0?disc.x:disc.y;
             if(radius>0) {
-                float reach=radius*2.6;
+                float reach=radius*2.85;
                 float2 wa=planets[k].xy,wb=planets[k].zw,wt=k==0?tnow.xy:tnow.zw;
                 float dist=length(w-wt);
                 if(dist<reach*1.15) {
@@ -252,7 +252,7 @@ float3 colorAt(float2 uv,out bool moving) {
                     // around the ball. The sprite's own dark parts come with the pasted core below.
                     delta+=m*max(dd-.02,0.); // film grain/dither differs between pictures: not part of the planet
                     // Sprite: opaque, so its core is pasted (no background shows through it, whatever is under it now).
-                    float mc=smoothstep(radius*.75,radius*.55,dist);
+                    float mc=smoothstep(radius*1.08,radius*.95,dist); // the whole opaque sprite: its edge drawn as a difference read as a dark or bright ring
                     // The pasted sprite carries the glow it had at its source. Where the background here is much
                     // brighter or darker than at the source (a planet moving into or out of a bloom), pasting leaves a
                     // visible grey disc on the glow; the additive layer alone looks right there.
@@ -446,13 +446,13 @@ public:
                     oldPos[k][0]=pa.planet[k][0];oldPos[k][1]=pa.planet[k][1];newPos[k][0]=pb.planet[k][0];newPos[k][1]=pb.planet[k][1];
                     float planetScale=.5f*(pa.planet[k][2]+pb.planet[k][2]);
                     float jump=hypotf(pb.planet[k][0]-pa.planet[k][0],pb.planet[k][1]-pa.planet[k][1]);
-                    // Sprite radius ~0.22 tile; glow reaches about 2.6x that. A teleport disables the move.
+                    // Sprite radius 0.387 x scale (planetinfo: 0.348 at 0.9), glow 2.85x that. A teleport disables the move.
                     // A planet hidden in either picture (no renderer coverage) has no sprite to move.
                     bool seenOld=d.boxes[k][2]>d.boxes[k][0] && d.boxes[k][3]>d.boxes[k][1],seenNew=d.boxes[2+k][2]>d.boxes[2+k][0] && d.boxes[2+k][3]>d.boxes[2+k][1];
                     // Orbit radius ~ planet separation; a planet never moves further than the orbit's diameter between two pictures.
                     double sepOld=hypot(double(pa.planet[1][0])-pa.planet[0][0],double(pa.planet[1][1])-pa.planet[0][1]),sepNew=hypot(double(pb.planet[1][0])-pb.planet[0][0],double(pb.planet[1][1])-pb.planet[0][1]);
                     float reachLimit=float(2.2*std::max(std::max(sepOld,sepNew),.25));
-                    if(movePlanets && seenOld && seenNew && planetScale>.05f && planetScale<20.f && jump<reachLimit) d.disc[k]=std::clamp(.3f*planetScale,.08f,1.5f);
+                    if(movePlanets && seenOld && seenNew && planetScale>.05f && planetScale<20.f && jump<reachLimit) d.disc[k]=std::clamp(.387f*planetScale,.08f,1.9f); // sprite radius 0.348 at scale 0.9 (glow 0.99 = 2.85x)
                 }
                 orbit(oldPos,newPos,t,d.tnow);
             }
