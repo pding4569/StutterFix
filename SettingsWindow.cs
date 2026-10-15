@@ -1089,7 +1089,7 @@ namespace StutterFix
                 ch |= Option("shader", ref c.ShaderWarm, T("그래픽 미리 준비", "Shader warm-up"),
                     T("곡이 시작될 때 그래픽 준비를 미리 해 두어, 효과가 처음 나올 때의 끊김을 줄입니다.",
                       "Prepares shaders when a level starts, reducing the hitch the first time an effect appears."), null);
-                ch |= Option("filteridentity", ref c.FilterIdentity, T("?? ?? ?? ????", "Skip identity filters"), T("?? ??? ??? ??? ?? ??? ?? ??? ?????.", "Bypass only pixel-verified filters at neutral values."), null);
+                ch |= Option("filteridentity", ref c.FilterIdentity, T("중립 필터 건너뛰기", "Skip identity filters"), T("픽셀 대조를 통과한 필터만 중립 값일 때 건너뜁니다.", "Bypass only pixel-verified filters at neutral values."), null);
                 ch |= Option("filtertype", ref c.FilterTypeCache, T("고급 필터 빠르게 끄기", "Faster advanced filter reset"),
                     T("고급 필터의 \"다른 필터 끄기\"가 쓴 필터마다 형식을 새로 찾느라(한 번 약 0.7ms) 한 프레임에 수십 ms 멈추던 것을 없앱니다. 결과는 같습니다.",
                       "The advanced filter's \"disable others\" looked up each used filter's type from scratch (about 0.7 ms each), stalling a frame for tens of ms. Results are identical."), null);

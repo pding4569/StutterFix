@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -860,6 +860,10 @@ namespace StutterFix
                     Finish("끝");
                     return true;
 #if DEV || AUTOTEST
+                case "filterhalfperf": FilterHalfPerf.Command(arg); return true;
+                case "filterhalf": FilterHalfProbe.Command(arg); return true;
+                case "waitsong": return now - stepStart > 5f && !Hitch.Playing;
+                case "filtergpu": FilterGpuProbe.Command(arg); return true;
                 case "filteridentity":
                     FilterIdentityProbe.Command(arg); return true;
                 case "patchhot":

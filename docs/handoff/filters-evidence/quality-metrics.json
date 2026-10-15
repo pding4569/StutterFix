@@ -1,0 +1,261 @@
+{
+  "quality": {
+    "CameraFilterPack_Blur_Movie": {
+      "samples": 8,
+      "max": 162,
+      "min_psnr": 32.98207120050815,
+      "control_max": 0,
+      "cumulative_psnr": 36.19928831804488
+    },
+    "CameraFilterPack_Blur_BlurHole": {
+      "samples": 8,
+      "max": 20,
+      "min_psnr": 49.69348809011357,
+      "control_max": 0,
+      "cumulative_psnr": 53.77628392034061
+    },
+    "CameraFilterPack_Blur_Radial": {
+      "samples": 8,
+      "max": 43,
+      "min_psnr": 49.06406764369146,
+      "control_max": 0,
+      "cumulative_psnr": 55.65653214505517
+    },
+    "CameraFilterPack_AAA_SuperComputer": {
+      "samples": 8,
+      "max": 9,
+      "min_psnr": 56.70683902481563,
+      "control_max": 0,
+      "cumulative_psnr": 57.163549815441506
+    },
+    "CameraFilterPack_TV_WideScreenHorizontal": {
+      "samples": 8,
+      "max": 198,
+      "min_psnr": 35.85750150676396,
+      "control_max": 0,
+      "cumulative_psnr": 39.902528125431786
+    }
+  },
+  "trials": [
+    {
+      "type": "Blur_Movie",
+      "mode": "A",
+      "proof": [],
+      "fps": 293,
+      "gpu": 2.2,
+      "over30": 0
+    },
+    {
+      "type": "Blur_Movie",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_Blur_Movie",
+          "2880",
+          "2879"
+        ]
+      ],
+      "fps": 293,
+      "gpu": 1.9,
+      "over30": 0
+    },
+    {
+      "type": "Blur_Movie",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_Blur_Movie",
+          "2860",
+          "2859"
+        ]
+      ],
+      "fps": 292,
+      "gpu": 1.9,
+      "over30": 0
+    },
+    {
+      "type": "Blur_Movie",
+      "mode": "A",
+      "proof": [],
+      "fps": 291,
+      "gpu": 2.2,
+      "over30": 0
+    },
+    {
+      "type": "Blur_BlurHole",
+      "mode": "A",
+      "proof": [],
+      "fps": 310,
+      "gpu": 2.0,
+      "over30": 0
+    },
+    {
+      "type": "Blur_BlurHole",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_Blur_BlurHole",
+          "6408",
+          "5869"
+        ]
+      ],
+      "fps": 311,
+      "gpu": 1.9,
+      "over30": 0
+    },
+    {
+      "type": "Blur_BlurHole",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_Blur_BlurHole",
+          "6475",
+          "5935"
+        ]
+      ],
+      "fps": 315,
+      "gpu": 1.8,
+      "over30": 0
+    },
+    {
+      "type": "Blur_BlurHole",
+      "mode": "A",
+      "proof": [],
+      "fps": 312,
+      "gpu": 2.0,
+      "over30": 0
+    },
+    {
+      "type": "Blur_Radial",
+      "mode": "A",
+      "proof": [],
+      "fps": 313,
+      "gpu": 2.0,
+      "over30": 0
+    },
+    {
+      "type": "Blur_Radial",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_Blur_Radial",
+          "4071",
+          "3726"
+        ]
+      ],
+      "fps": 315,
+      "gpu": 1.9,
+      "over30": 0
+    },
+    {
+      "type": "Blur_Radial",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_Blur_Radial",
+          "4087",
+          "3741"
+        ]
+      ],
+      "fps": 316,
+      "gpu": 1.9,
+      "over30": 0
+    },
+    {
+      "type": "Blur_Radial",
+      "mode": "A",
+      "proof": [],
+      "fps": 316,
+      "gpu": 2.0,
+      "over30": 0
+    },
+    {
+      "type": "AAA_SuperComputer",
+      "mode": "A",
+      "proof": [],
+      "fps": 212,
+      "gpu": 4.6,
+      "over30": 0
+    },
+    {
+      "type": "AAA_SuperComputer",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_AAA_SuperComputer",
+          "4630",
+          "4630"
+        ]
+      ],
+      "fps": 242,
+      "gpu": 3.9,
+      "over30": 0
+    },
+    {
+      "type": "AAA_SuperComputer",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_AAA_SuperComputer",
+          "4616",
+          "4616"
+        ]
+      ],
+      "fps": 241,
+      "gpu": 3.9,
+      "over30": 0
+    },
+    {
+      "type": "AAA_SuperComputer",
+      "mode": "A",
+      "proof": [],
+      "fps": 211,
+      "gpu": 4.6,
+      "over30": 0
+    },
+    {
+      "type": "TV_WideScreenHorizontal",
+      "mode": "A",
+      "proof": [],
+      "fps": 295,
+      "gpu": 2.1,
+      "over30": 0
+    },
+    {
+      "type": "TV_WideScreenHorizontal",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_TV_WideScreenHorizontal",
+          "5520",
+          "5443"
+        ]
+      ],
+      "fps": 292,
+      "gpu": 2.2,
+      "over30": 0
+    },
+    {
+      "type": "TV_WideScreenHorizontal",
+      "mode": "B",
+      "proof": [
+        [
+          "CameraFilterPack_TV_WideScreenHorizontal",
+          "5544",
+          "5466"
+        ]
+      ],
+      "fps": 293,
+      "gpu": 2.2,
+      "over30": 0
+    },
+    {
+      "type": "TV_WideScreenHorizontal",
+      "mode": "A",
+      "proof": [],
+      "fps": 293,
+      "gpu": 2.1,
+      "over30": 0
+    }
+  ]
+}

@@ -375,6 +375,9 @@ namespace StutterFix
             EndDisplayTransition();
 #if DEV || AUTOTEST
             Try(FreeFpsProbe.Restore);
+            Try(FilterGpuProbe.Stop);
+            Try(FilterHalfProbe.Stop);
+            Try(FilterHalfPerf.Stop);
 #endif
             Try(FrameGen.Shutdown);
             Try(ScreenEffects.Shutdown);

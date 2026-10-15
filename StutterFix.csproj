@@ -46,6 +46,9 @@
     <Compile Include="FloorProf.cs" />
     <Compile Include="TypeCache.cs" />
     <Compile Include="FilterIdentity.cs" />
+    <Compile Include="FilterGpuProbe.cs" />
+    <Compile Include="FilterHalfProbe.cs" />
+    <Compile Include="FilterHalfPerf.cs" />
     <Compile Include="FilterIdentityProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileCull.cs" />
     <Compile Include="EditorPick.cs" />
@@ -255,4 +258,7 @@
     </Reference>
   </ItemGroup>
 
+  <Target Name="CheckUiEncoding" AfterTargets="Build">
+    <Exec Command="py -3 &quot;$(MSBuildProjectDirectory)/tools/check-ui-encoding.py&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="true" />
+  </Target>
 </Project>

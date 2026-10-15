@@ -1,0 +1,1862 @@
+Mono path[0] = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed'
+Mono config path = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/MonoBleedingEdge/etc'
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.21f1 (c02631ffc030)
+[Subsystems] Discovering subsystems at path D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/UnitySubsystems
+GfxDevice: creating device client; kGfxThreadingModeClientWorkerJobs
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4060 Ti (ID=0x2803)
+    Vendor:   NVIDIA
+    VRAM:     7949 MB
+    Driver:   32.0.16.1088
+Begin MonoManager ReloadAssembly
+
+
+[Manager] Injection...
+[Manager] Initialize.
+[Manager] Version: 0.32.5.0.
+[Manager] OS: Microsoft Windows NT 10.0.19045.0 AMD64.
+[Manager] Net Framework: 4.0.30319.42000.
+[Manager] Unity Engine: 6000.3.211.
+[Manager] Game: A Dance of Fire and Ice.
+[Manager] IsSupportOnSessionStart: False.
+[Manager] IsSupportOnSessionStop: False.
+[Manager] Mods path: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods.
+[Manager] Injection successful.
+- Loaded All Assemblies, in  1.113 seconds
+- Finished resetting the current domain, in  0.003 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+<RI> Input initialized.
+UnloadTime: 0.764700 ms
+[Manager] Starting.
+[Manager] Parsing mods.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\AdofaiGenBridge\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\YouTubeStream\Info.json'.
+[Manager] Sorting mods.
+[Manager] Loading mods.
+[AdofaiGenBridge] Version '0.3.8'. Loading.
+[AdofaiGenBridge] Bridge 0.3.8 ready; bounded async heartbeat IO, timing, screenshots and hitch context.
+[AdofaiGenBridge] Active.
+[AdofaiGenBridge] Loading time 0.81 s.
+[JALib] Version '1.0.0.45 beta45'. Loading.
+[JALib] Active.
+[JALib] Loading time 0.00 s.
+[Quartz] Version '2.0.0-alpha-121'. Loading.
+[JALib] Version initialized to 1.0 beta45
+[JALib] Successfully loaded JAModInfo
+[JALib Bootstrap] Request completed: https://jalib.jongyeol.kr/autoInstaller/1.0.0.45 (325ms)
+[JALib INFO 18:15:51.371 #0] Starting JAPatcher Initialization...(0/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:15:51.373 #0] Starting JAPatcher Reverse Patches.(1/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:15:51.461 #0] Start Enter the Harmony Locker.(2/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:15:51.461 #0] Start JAPatcher Patches.(3/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:15:51.564 #0] Complete JAPatcher Initialization.(4/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:15:51.601 #0] JAMod JALib is Initialized
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.JAMod.Setup(UnityModManager+ModEntry modEntry, JAModInfo modInfo, GetModInfo apiInfo, JAModSetting setting)
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[Quartz] Active.
+[Quartz] Loading time 0.98 s.
+[StutterFix] Version '2.7.2'. Loading.
+[StutterFix] [화면 효과] 번들 준비 Direct3D11
+[StutterFix] [저사양] 선명도 보정 셰이더 찾음
+[StutterFix] patched scnGame.Awake
+[StutterFix] patched scnEditor.SwitchToEditMode
+[StutterFix] patched scrTextDecoration.SetText (같은 글자 건너뛰기)
+[StutterFix] patched Shadow.effectColor (같은 그림자 색 건너뛰기)
+[StutterFix] patched <SetCollider>d__23.MoveNext
+[StutterFix] [효과] StartEffect 87개, 걸러내기 0개 감쌈
+[StutterFix] RecolorSplit: StartEffect 인자 1개
+[StutterFix] patched ffxRecolorFloorPlus.StartEffect (구간 나누기)
+[StutterFix] [즉시 이동] OnUpdate 건너뛸 짝 9개, 타입으로 판별 가능 9개 (예상 9개)
+[StutterFix] [즉시 이동] 설치
+[StutterFix] [즉시 이동 직접] 설치: 속성 블록 9개 (예상 9개)
+[StutterFix] [장식 이동 루프] 설치
+[StutterFix] [미리 확인] 설치
+[StutterFix] [장식 애니메이션] 설치
+[StutterFix] [타일 애니메이션] 설치
+[StutterFix] [저사양] 설치 (게임 화면 해상도 사용 가능)
+[StutterFix] [파티클] 설치 (바꾼 호출 2곳)
+[StutterFix] [누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)
+[StutterFix] [로딩] 이미지 파일 시각 캐시 설치 (바꾼 곳 2)
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치
+[StutterFix] [로딩] 같은 이미지 장식 목록 넣기 빠르게 설치
+[StutterFix] [맵 파일 읽기] 빠른 JSON 해석기 설치 (GDMiniJSON.Json)
+[StutterFix] [맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 3)
+[StutterFix] [맵 파일 읽기] 여러 코어로 이벤트 만들기 설치
+[StutterFix] [장식 한 번에 복제] 설치
+[StutterFix] [판정 글자] 사라질 때 색만 바꾸기 설치
+[StutterFix] [오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 2개)
+[StutterFix] [연출 끄기] 설치 (효과 19종)
+[StutterFix] [이미지 압축] 설치
+[StutterFix] [장식 마무리] 설치
+[StutterFix] [잠든 장식] 설치
+[StutterFix] [이미지] 빠른 압축 풀기(libdeflate): 사용 중
+[StutterFix] [이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): 사용 중
+[StutterFix] [이미지] JPG 풀기(libjpeg-turbo): 사용 중
+[StutterFix] [이미지] 스프라이트 크기 보정 설치 (큰 이미지 줄이기용)
+[StutterFix] [이미지] 미리 풀기 설치
+[StutterFix] [투명 장식] 위치 늦게 반영 설치
+[StutterFix] [투명 장식] 설치
+[StutterFix] tween fix installed
+[StutterFix] [장면 정리] 설치
+[StutterFix] [전환] 설치
+[StutterFix] [나가기] 설치
+[StutterFix] end hook: scnEditor.SwitchToEditMode
+[StutterFix] end hook: scrController.FailAction
+[StutterFix] end hook: scrController.Fail2Action
+[StutterFix] end hook: scrController.OnLandOnPortal
+[StutterFix] end hook: scrController.QuitToMainMenu
+[StutterFix] end hook: scnEditor.QuitToMenu
+[StutterFix] end hook: scnEditor.TryQuitToMenu
+[StutterFix] end hook: scnEditor.SaveAndQuit
+[StutterFix] restart hook: scrController.Restart
+[StutterFix] restart hook: scnEditor.Play
+[StutterFix] restart hook: scrController.ResetCustomLevel
+[StutterFix] gc control installed
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [쓰레기 줄이기] 비동기 키 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 마우스 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 레거시 키보드 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [미리 컴파일] 모드 함수 2272개 486ms, 게임 함수(효과·장식·타일·행성·지휘자) 1111개 116ms
+[StutterFix] 켜짐: 패치 설치 완료 (플레이어용)
+[StutterFix] 지금 Direct3D11 / LegacyJobified
+[StutterFix] [첫 판 FPS] 응답 없음 창 끔
+[StutterFix] [자동 시험] 시작: 14단계 - timeout 900 / set FrameGenOutside 0 / fpscap 0 / auto on / open D:/얼불춤 맵 파일/Windflower/Windflower.adofai / filtergpu on / play / filtergpu reset / waitsong / wait 2 / filtergpu state / filtergpu off / stop / quit
+[StutterFix] [프레임 통계] 게임 기본: 꺼짐, 이 모드: 켬(GPU 시간 측정)
+[StutterFix] Active.
+[StutterFix] Loading time 8.11 s.
+[YouTubeStream] Version '1.0.5'. Loading.
+Mod was added: YouTubeStream
+[YouTubeStream] Active.
+[YouTubeStream] Loading time 0.09 s.
+[Manager] FINISH. SUCCESSFUL LOADED 5/5 MODS.
+
+
+Startup: GetPlatform
+Startup: Setting platform to Windows.
+Startup: DetermineAppLocation
+Startup: isInSteamLibrary: True
+Startup: SetBuildDateAndCommit
+Startup: Version r150, (32e5b8a, 2026/09/28 11:18 PM)
+Startup: SetLocale
+Startup: LoadSaveData
+Startup: SetupSystems
+setting language to: English
+Startup: Initialize Steam SDK
+Has license for 1977570: True
+Has license for 2016430: False
+Has license for 0: False
+Startup: FixResolution
+Startup: SetupLevelEventsInfo
+Startup: SetSettings
+Startup: ForceResolutionOnLofi
+Startup: LoadCalibration
+Startup: SetupSfxHandler
+Startup: GetSteamBranch
+Startup: SetupDLCs
+Startup: DLCManagers count: 3
+Startup: DLC: CheckUpToDate
+Startup: Neo Cosmos: owns True, installed True
+Startup: CacheShaderPropertyIDs
+Startup: DeleteTempUnzippingFolder
+Startup: Setup Discord
+Initializing Discord: Ok
+Startup: Give Steam Achievements
+Startup: Rewired Init
+Startup: RDInput Setup
+Mods detected! Disabling exception capturing
+Startup: Setup Loading Screen
+Startup: ADOStartup done!
+[Manager] Spawning.
+[JALib INFO 18:16:00.954 #1] Listening on port: 52958
+[JALib INFO 18:16:00.979 #1] Unzip ModApplicator...
+[Quartz] [Startup] paths + config took 19 ms
+[Quartz] [FontManager] CJK fallback: cjkFonts-regular-normalized SDF
+[Quartz] [Startup] FontManager took 36 ms
+[Quartz] [Localization] April Fools overlay ready for 3 language(s)
+[Quartz] [Translator] Starting to load translations from: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Lang
+[Quartz] [Translator] Found 3 translation files.
+[Quartz] [Startup] LocalizationService took 12 ms
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Overlay Core' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Discord' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Editor Tools' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Effect Remover' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Limiter' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Main Menu' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Hide Judgements' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Optimizer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'TUF' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Visual Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Planet Colors' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Auto Deafen' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'UI Hiding' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Calibration' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Viewer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Progress Bar' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Combo' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Judgement' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Song Title' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Panels' v2.0.0
+[Quartz] [Startup] ServiceAdapter took 246 ms
+[Quartz] [Startup] ServiceAdapter took 1 ms
+[Quartz] [Sprites] screen 3440x1440, 1.546 px/unit
+[Quartz] [Startup] UIService took 215 ms
+[Quartz] [Startup] TweenService took 0 ms
+[Quartz] [Startup] PlayCount took 3 ms
+[Quartz] [Startup] HarmonyService took 0 ms
+[Quartz] Mod Enabled
+[Quartz] [Startup] SetModEnabled took 1141 ms
+[Quartz] [Startup] total 2743 ms
+[Quartz] [Umm] active mods: [AdofaiGenBridge, JALib, Quartz, StutterFix, YouTubeStream]
+[Quartz] Hello
+[Quartz] [Compat] ADOFAI r150 — current game API
+[StutterFix] [상태] ? 종료됨 world:X  -> 정지
+[StutterFix] [자동 시험] UMM 창 닫음
+[StutterFix] [자동 시험] 단계 최대 시간 900초
+[StutterFix] [자동 시험] [임무단계] timeout 0.169ms
+[Quartz] [Harmony] applied patches (deferred to first tick) in 195 ms
+[StutterFix] [자동 시험] 설정 FrameGenOutside = 0 (묶음 끝에 0 로 되돌림)
+[StutterFix] [자동 시험] [임무단계] set 2041.800ms
+[StutterFix] [자동 시험] [FPS 제한] 목표 FPS 10000, vSync 0 frame 3
+[StutterFix] [자동 시험] [임무단계] fpscap 34.597ms
+[Quartz] [Translator] Finished loading translations.
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[StutterFix] [자동 시험] [임무단계] auto 38.428ms
+[StutterFix] [자동 시험] 맵 열기: D:/얼불춤 맵 파일/Windflower/Windflower.adofai
+[StutterFix] [화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 196개 바꿔 끼움 (지난 결과), 1프레임에 나눠 751ms, 한 프레임 최대 751ms
+[StutterFix] [자동 시험] 메모리 3초: 힙 78MB, 프로세스 1074MB(실제 램 827MB), 프레임 2915 
+[StutterFix] tween capacity set to 40000/25000
+Go to Menu
+Startup: Setup Audio Settings
+[StutterFix] [자동 시험] 메모리 6초: 힙 80MB, 프로세스 1072MB(실제 램 829MB), 프레임 6987 
+Startup: Setup Audio Settings End 
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.399700 ms
+Unloading 39 unused Assets to reduce memory usage. Loaded Objects now: 69783.
+Total: 36.163400 ms (FindLiveObjects: 4.563600 ms CreateObjectMapping: 1.401700 ms MarkObjects: 30.007200 ms  DeleteObjects: 0.190400 ms)
+
+Shader.WarmupAllShaders ();
+Shader warmup: 132 shaders 1399 combinations 0.083s
+[StutterFix] [상태] None 종료됨 world:X  -> 정지
+Skipping audio break checking. Detected delta time: 1.67197
+[StutterFix] [상태] Start 종료됨 world:X  -> 정지
+[StutterFix] [상태] PlayerControl 종료됨 world:X  -> 정지
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 38.948200 ms
+Unloading 263 unused Assets to reduce memory usage. Loaded Objects now: 18220.
+Total: 103.100700 ms (FindLiveObjects: 0.851600 ms CreateObjectMapping: 0.593000 ms MarkObjects: 100.056200 ms  DeleteObjects: 1.599500 ms)
+
+[StutterFix] [자동 시험] 메모리 9초: 힙 148MB, 프로세스 1697MB(실제 램 1278MB), 프레임 7077 
+[StutterFix] [첫 판 FPS] 10.2초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 10.2초
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 15ms
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+[StutterFix] [첫 판 FPS] 1.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.5초
+[StutterFix] [자동 시험] 메모리 12초: 힙 381MB, 프로세스 1998MB(실제 램 1577MB), 프레임 7078 
+[StutterFix] [맵 파일 읽기] GC 멈춤 365ms(그중 이벤트로 바꾸기 149ms: 이벤트 13166개 여러 코어(5개)로 140ms), 힙 212MB -> 395MB (그 사이 GC 0번)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 6가지 중 새로 불러온 것 6개 32ms
+[StutterFix] [이미지] 자동: 전에 VRAM 이 모자라 끊긴 맵이라 긴 변 2048 으로 줄임
+[StutterFix] [이미지] 맵 열기 전: 이미 올라와 있는 이미지 1장, VRAM 전체 1934MB / 게임 391MB
+[StutterFix] [다른 모드] Quartz 최적화: 켜진 것 없음
+[StutterFix] [이미지] 1080장 미리 풀기 시작 (작업 스레드 5개, DXT 로 미리 압축: 저사양 옵션)
+[StutterFix] [자동 시험] 메모리 15초: 힙 553MB, 프로세스 4243MB(실제 램 2553MB), 프레임 7078 
+[StutterFix] [자동 시험] 메모리 18초: 힙 653MB, 프로세스 7016MB(실제 램 2938MB), 프레임 7078 
+[StutterFix] [장식 한 번에 복제] 54번에 5595개 (안 쓰고 지움 0개)
+[StutterFix] [이미지] 미리 푼 것 1075장(넣기 1870ms), 원래 방식 0장(0ms, 순서 어긋남 0), 기다림 1112ms, GC 0번, 전체 6.5초, 줄인 이미지 95장 (긴 변 2048, VRAM 약 1766MB 아낌), 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 5830ms/작업 스레드 합), 처음부터 압축으로 넣음 496장 (뒤이어 압축 불림 496, 안 불림 0), 압축이 늦어 원래대로 396장 | 장식 만들기 6290개 3988ms, 그중 텍스처 불러오기 4025ms, 압축 마저 기다림 56ms
+[StutterFix] [이미지] 해독 시간(작업 스레드 5개 합계): 압축 풀기 5171ms, 필터 되돌리기 9683ms, 줄이기 549ms(128M 픽셀), 필터·줄이기 한 번에 0장 0ms(0M 픽셀), 흘려 풀기·줄이기 83장 5490ms(599M 픽셀, 못 한 것 0) | 새로 맡은 형식(흑백·인터레이스) 33장 | libdeflate 957장, 원래 zlib 로 다시 푼 것 0장 (사용 중) | 네이티브(sfnative): 필터 되돌린 줄 1075819, DXT 압축 줄 묶음 162068 | JPG(libjpeg-turbo): 35장 809ms, 못 푼 것 0장
+[StutterFix] [이미지] 로딩 뒤 GC 한 번 111ms
+Shader warmup: 190 shaders 1487 combinations 0.006s
+[StutterFix] [셰이더] 맵 불러온 뒤: 셰이더 190개, 새 필터 93개(필터 텍스처 12개) 미리 준비 36ms
+[StutterFix] [재시작] 에디터에서 맵 열기: D:/얼불춤 맵 파일/Windflower/Windflower.adofai
+[StutterFix] [다른 모드] 같은 게임 함수를 고치는 곳 36개: scnEditor.SwitchToEditMode (quartz.module.planetcolors, quartz.module.uihider) | ffxCheckpoint.StartEffect (quartz.module.visualtweaks) | ffxMenuPlanetSpeedChange.StartEffect (quartz.module.mainmenu) | ffxBloomPlus.StartEffect (quartz.module.effectremover) | ffxFlashPlus.StartEffect (quartz.module.effectremover) | ffxHallOfMirrorsPlus.StartEffect (quartz.module.effectremover) | ffxMoveFloorPlus.StartEffect (quartz.module.effectremover) | ffxScreenScrollPlus.StartEffect (quartz.module.effectremover) | ffxScreenTilePlus.StartEffect (quartz.module.effectremover) | ffxSetFilterAdvancedPlus.StartEffect (quartz.module.effectremover) | ffxShakeScreenPlus.StartEffect (quartz.module.effectremover) | scrParticleDecoration.Update (quartz.module.optimizer) | scrParticleDecoration.ResetParticle (quartz.module.optimizer) | scrCamera.SetCustomFrameRate (quartz.module.optimizer) | scnEditor.Play (YouTubeStream, Quartz, quartz.module.planetcolors) | LevelData.Decode (quartz.module.effectremover) | TextureManager.LoadTexture (quartz.module.optimizer) | RDString.Get (YouTubeStream) | scnGame.ResetScene (quartz.module.planetcolors) | scnGame.LoadLevel (YouTubeStream) | scnGame.ApplyEventsToFloors (quartz.module.visualtweaks) | scnGame.ApplyEvent (quartz.module.keylimiter) | scrConductor.PlayHitTimes (quartz.module.optimizer) | scrPlanet.MoveToNextFloor (quartz.module.uihider, Quartz) | scrController.FailAction (quartz.module.optimizer) | scrController.OnLandOnPortal (quartz.module.uihider) | scrController.QuitToMainMenu (quartz.module.tuf) | scrController.Restart (quartz.module.optimizer, Quartz) | scnGame.Play (quartz.module.keylimiter, Quartz, quartz.module.autodeafen, quartz.module.combo, quartz.module.judgement) | scnEditor.OpenLevelCo (Quartz) | scrFloor.LightUp (quartz.module.visualtweaks) | PlanetRenderer.Revive (quartz.module.visualtweaks, quartz.module.planetcolors) | scnCalibration.Start (quartz.module.calibration) | scnCalibration.CleanSlate (quartz.module.calibration) | scnCalibration.Calibrated (quartz.module.calibration) | scnCalibration.Update (quartz.module.calibration)
+Unloading 183 unused Assets to reduce memory usage. Loaded Objects now: 598377.
+Total: 249.034500 ms (FindLiveObjects: 62.283200 ms CreateObjectMapping: 13.611400 ms MarkObjects: 152.630900 ms  DeleteObjects: 20.508600 ms)
+
+[StutterFix] [상태] None 편집중 일시정지  -> 정지
+[StutterFix] [업데이트] 최신 v2.7.2, 지금 v2.7.2
+[StutterFix] [자동 시험] 메모리 21초: 힙 353MB, 프로세스 8309MB(실제 램 2794MB), 프레임 7147 
+[StutterFix] [자동 시험] 맵 열림 (21.3초, 열기 요청부터 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] open 21303.773ms
+[StutterFix] [filtergpu] on filters=300 size=3440x1440
+[StutterFix] [자동 시험] [임무단계] filtergpu 1066.665ms
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 1076장, VRAM 전체 6690MB / 게임 5148MB
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 미룬 것 없음
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4948개, 곡 중 최대 4948개 | 색 바뀜 11206번 확인, 그리기 켜고 끈 것 4948번, 쓴 시간 약 12.1ms, 가장 많이 쓴 프레임 약 12.11ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 7.4초 멈춘 프레임 동안 윈도우 메시지 확인 14번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.9초
+[StutterFix] [로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀
+[StutterFix] [타일 메시] 색 바꾸기 효과 212개, 타일·스타일 6513가지 -> 새로 미리 만든 메시 1933개 118ms (캐시 2941개)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 16가지 중 새로 불러온 것 9개 19ms
+[StutterFix] [효과 재사용] 다시 씀 0개, 새로 붙임 7573개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 0개 | 282ms
+[StutterFix] [전환] 에디터 재생 시작 758ms
+[StutterFix] [자동 시험] [임무단계] play 763.197ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 844ms (프레임 1개, 가장 긴 프레임 844ms) | 나눔: 곡 끝 요약 1ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 616ms, 그 밖 228ms | 이미지 파일 시각: 12158번 중 디스크 1531번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 61ms
+[StutterFix] [저사양] 그래픽 설정: 품질 단계 Default, 안티에일리어싱 0x, 수직동기 0, 그림자 Disable, 텍스처 0, 이방성 Disable, 파티클 레이캐스트 256, 소프트 파티클 False | 카메라 OverlayCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.63, 컬링 100000 | 카메라 BGStaticCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.63, 컬링 800 | 카메라 BGMovingCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.11, 컬링 400 | 카메라 Camera: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1, 컬링 9F397 | 화면 3440x1440 FullScreenWindow, 그래픽카드 NVIDIA GeForce RTX 4060 Ti
+[StutterFix] [자동 시험] [임무단계] filtergpu 90.764ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 1067ms -> 메모리 정리 / gpu 16.9 cpu 1066.9 (수집 7206번) 효과 0.0 모드 0.0(모니터 그리기) gc 2 | 시각 18:16:29.179
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 3 (0.7초)
+[StutterFix] [자동 시험] 메모리 24초: 힙 470MB, 프로세스 8446MB(실제 램 2702MB), 프레임 7354 
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+[StutterFix] [화면 대기] 늘어남: 평균 1.2ms (프레임 4.8ms 중, 약 206 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 60%, 게임 59%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.1ms (약 286 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 40%, 게임 39%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [화면 대기] 늘어남: 평균 1.3ms (프레임 5.8ms 중, 약 172 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 45%, 게임 44%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.5ms (약 209 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 45%, 게임 45%, 다른 프로그램 1% 넘는 것 없음
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Blur_Movie.OnRenderImage_Patch2(CameraFilterPack_Blur_Movie,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+[StutterFix] [화면 대기] 늘어남: 평균 2.0ms (프레임 8.4ms 중, 약 119 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 15%, 게임 14%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.0ms (약 231 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 14%, 게임 14%, 다른 프로그램 1% 넘는 것 없음
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Glow_Glow_Color.OnRenderImage_Patch2(CameraFilterPack_Glow_Glow_Color,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+DivideByZeroException: Attempted to divide by zero.
+  at (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition.CameraFilterPack_Glow_Glow_Color.OnRenderImage_Patch2(CameraFilterPack_Glow_Glow_Color,UnityEngine.RenderTexture,UnityEngine.RenderTexture)
+
+[StutterFix] [화면 대기] 늘어남: 평균 1.0ms (프레임 6.7ms 중, 약 150 FPS)
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.4ms (약 118 FPS)
+[StutterFix] [화면 대기] 늘어남: 평균 1.0ms (프레임 4.9ms 중, 약 206 FPS)
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.8ms (약 218 FPS)
+[StutterFix] [화면 대기] 늘어남: 평균 0.9ms (프레임 4.6ms 중, 약 217 FPS)
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.0ms (약 242 FPS)
+[StutterFix] [곡] 평균 231 FPS (4.3ms), 가장 긴 프레임 37ms, 곡 시작 연출 뒤 가장 긴 프레임 19ms, 끊김 0번, 프레임 83147개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.9ms, CPU 평균 4.1ms (83145개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 19.0ms | 효과가 가장 무거운 프레임 7ms: 게임 효과 13.5ms (그중 장식 이동 5.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [19ms @0.8초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 18.4] [19ms @35.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 18.4] [19ms @252.6초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.0, 나머지 17.7] [17ms @252.7초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.7, 나머지 16.2] [17ms @269.2초: 효과 56개 6.1(장식 이동 3.4, 그중 길이 있는 것 2.5), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.3, 나머지 9.5] [17ms @252.7초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.7, 나머지 16.2] [17ms @252.8초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.7, 나머지 16.0] [17ms @252.7초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.7, 나머지 16.0] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 252(4.6/0.8/0.1/2.4/0.0, 823/0개) 10s 273(3.7/0.8/0.0/2.3/0.0, 802/0개) 20s 256(3.9/0.9/0.0/2.2/0.0, 821/0개) 30s 244(3.7/0.8/0.4/3.6/0.0, 832/0개) 40s 270(3.4/0.7/0.3/2.9/0.0, 807/0개) 50s 291(3.4/0.7/0.0/2.1/0.0, 795/0개) 60s 287(3.5/0.7/0.0/1.8/0.0, 794/0개) 70s 279(3.6/0.8/0.0/1.8/0.0, 796/0개) 80s 274(3.6/0.8/0.0/1.8/0.0, 798/0개) 90s 231(4.3/1.1/0.0/2.1/0.0, 812/0개) 100s 274(3.6/0.8/0.0/2.3/0.0, 809/0개) 110s 265(3.7/0.8/0.1/2.4/0.0, 795/0개) 120s 239(3.9/0.9/0.2/2.8/0.0, 787/0개) 130s 253(3.9/1.0/0.0/3.0/0.0, 790/0개) 140s 259(3.9/0.9/0.0/1.8/0.0, 769/0개) 150s 253(3.9/1.0/0.0/1.8/0.0, 769/0개) 160s 221(4.5/1.3/0.0/2.3/0.0, 769/0개) 170s 124(8.0/3.0/0.0/4.9/0.0, 769/0개) 180s 118(8.4/3.2/0.0/5.2/0.0, 769/0개) 190s 150(6.7/1.8/0.0/3.0/0.0, 781/0개) 200s 170(5.9/1.2/0.0/2.4/0.0, 786/0개) 210s 170(5.9/1.5/0.0/2.6/0.0, 777/0개) 220s 232(4.2/1.1/0.1/3.4/0.1, 772/0개) 230s 242(4.1/1.0/0.0/2.3/0.1, 769/0개) 240s 186(5.4/1.6/0.0/3.3/0.2, 976/0개) 250s 135(7.1/1.7/0.3/4.4/0.5, 1157/0개) 260s 171(5.6/1.6/0.3/4.5/0.4, 1095/0개) 270s 270(3.5/0.9/0.2/2.7/0.2, 862/0개) 280s 293(3.1/0.7/0.3/2.5/0.1, 732/0개) 290s 213(3.7/0.9/1.0/4.6/0.0, 727/0개) 300s 217(3.9/1.0/0.8/4.5/0.1, 727/0개) 310s 209(3.8/1.0/1.0/4.7/0.0, 726/0개) 320s 213(3.7/1.0/1.0/4.6/0.0, 723/0개) 330s 241(3.7/1.0/0.4/3.2/0.1, 749/0개) 340s 271(3.5/0.9/0.2/3.3/0.1, 750/0개) 350s 286(3.0/0.6/0.5/3.4/0.1, 750/0개) | 가장 높은 구간 280s 293 FPS | 같은 그림자 색 건너뛰기 417024회 | 파티클 장식: 같은 값 넣기 19153250번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 22개 없앰, 게임 화면 버퍼 불필요한 해제 3번 막음 | 필터 형식 찾기 기억 729번 (새로 찾음 53번) | 오차 막대 눈금 가볍게 2604개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 1173개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 1693번을 402번으로 줄임 (76% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 22913460번 중 같은 값이라 건너뜀 7288350번 | 재생 중 편집기 검사 건너뜀 1879102번 | 매 프레임 장식 순회 66394682번 중 바뀌는 게 없어 뺀 것 56602번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 798개만 훑음 (잠재움 51125번, 깨움 45585번, 목록 새로 만듦 1번, 안전망 검사 359번에 놓친 깨움 0개) | 즉시 이동 직접 처리 15317번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 392번, 투명한 채 색만 저장 1175번 | 장식 이동 루프: 효과 3159개(장식 20065개), 원래 코드로 넘긴 효과 1개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 1352개 | 미리 확인: 계획 7개, 확인 끝남 0개, 건너뛴 효과 0개(장식 0개, 그중 목록 추가만 한 것 0개), 장식 확인 0번 | 못 쓴 것: 확인 뒤 건드려진 장식 0개(따로 처리 0개, 너무 많아 포기 0번), 원래 코드 효과가 대상을 건드림 0번, 목록 바뀜 0번, 발동 전에 못 끝냄·취소 2번, 그대로가 아님 7번 [불투명도가 다름, 색이 다름], 자리 없음 0번, 전체 취소 4번 | 대상 200개 이상인데 못 맡은 효과: 보이기 10개, 길이 있음 1개, 가장 큰 것 장식 1405개(보이기) | 장식 애니메이션 직접 처리: 만든 것 11578개(동시 최대 3280개), 끝까지 감 8817, 끊겨서 완료 3303, 버림 0, 기록 다시 씀 225, 새 표 객체 10738, 갱신에 쓴 시간 5146ms (82822프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 1789개(타일 11695개, 시작에 쓴 시간 27ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 5362개(동시 최대 869, 다시 씀 1013, 겹쳐서 진짜 DOTween 4), 끝까지 감 4613, 끊겨서 완료 749, 버림 0, 갱신 913ms (48568프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 197개(바로 쓴 값 3718개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 1497442번 (안 보이게 돼서 대신 갱신 956번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 2599개, 곡 중 최대 5038개 | 투명한 장식 위치 반영 미룸 1606178번, 보일 때 반영 449번 | 색 바뀜 223112번 확인, 그리기 켜고 끈 것 7625번, 쓴 시간 약 50.2ms, 가장 많이 쓴 프레임 약 0.63ms (64번에 한 번 재서 추정)
+[StutterFix] [자동 시험] [임무완주] OnLandOnPortal 14.035ms
+[StutterFix] [상태] None 종료됨 에디터재생  -> 정지
+[StutterFix] [자동 시험] [임무단계] waitsong 359365.625ms
+[StutterFix] [화면 대기] 이번 판 358초 중 49초 동안 늘어나 있었음 (그때 평균 1.1ms)
+[StutterFix] [자동 시험] [임무단계] wait 2002.540ms
+[StutterFix] [filtergpu] CameraFilterPack_AAA_SuperComputer samples=9301 mean_us=890.2041225674659 sum_ms=8279.788544 frames=9301 total_frames=83148 active_seconds=43.754483204334974 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Atmosphere_Rain samples=6553 mean_us=123.0155983518999 sum_ms=806.121216 frames=6508 total_frames=83148 active_seconds=27.372889013728127 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Atmosphere_Rain_Pro samples=3682 mean_us=170.29742965779468 sum_ms=627.035136 frames=3346 total_frames=83148 active_seconds=11.73464309447445 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_BlurHole samples=29581 mean_us=371.47854420066932 sum_ms=10988.706816 frames=28544 total_frames=83148 active_seconds=132.74214120651595 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Blurry samples=253 mean_us=129.0847114624506 sum_ms=32.658432 frames=253 total_frames=83148 active_seconds=0.98640880105085671 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_DitherOffset samples=342 mean_us=67.859461988304091 sum_ms=23.207936 frames=342 total_frames=83148 active_seconds=3.3191176955588162 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_GaussianBlur samples=2302 mean_us=353.24396872284967 sum_ms=813.167616 frames=2294 total_frames=83148 active_seconds=9.9378654090687633 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Movie samples=22592 mean_us=1255.7998866855523 sum_ms=28371.03104 frames=22531 total_frames=83148 active_seconds=108.5564768621698 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Radial samples=19873 mean_us=234.90378624264079 sum_ms=4668.242944 frames=18940 total_frames=83148 active_seconds=77.7380835916847 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Radial_Fast samples=6455 mean_us=112.18027079783114 sum_ms=724.123648 frames=6385 total_frames=83148 active_seconds=34.494610605062917 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Regular samples=334 mean_us=79.813748502994017 sum_ms=26.657792 frames=334 total_frames=83148 active_seconds=2.8874252000823617 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Tilt_Shift samples=2337 mean_us=70.156049636285843 sum_ms=163.954688 frames=2337 total_frames=83148 active_seconds=8.6369048000779 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Tilt_Shift_V samples=2346 mean_us=103.51129752770673 sum_ms=242.837504 frames=2346 total_frames=83148 active_seconds=9.29219059762545 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Color_BrightContrastSaturation samples=15268 mean_us=45.138091695048466 sum_ms=689.168384 frames=15180 total_frames=83148 active_seconds=82.044538837857544 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Color_Chromatic_Aberration samples=2588 mean_us=50.547140649149924 sum_ms=130.816 frames=2588 total_frames=83148 active_seconds=18.594412722159177 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Color_Contrast samples=813 mean_us=47.927734317343173 sum_ms=38.965248 frames=779 total_frames=83148 active_seconds=2.8121426024008542 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Color_GrayScale samples=5694 mean_us=48.251009483667019 sum_ms=274.741248 frames=5584 total_frames=83148 active_seconds=23.994397507514805 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Colors_Brightness samples=313 mean_us=43.704843450479231 sum_ms=13.679616 frames=313 total_frames=83148 active_seconds=1.1320421029813588 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Colors_DarkColor samples=281 mean_us=42.680028469750887 sum_ms=11.993088 frames=281 total_frames=83148 active_seconds=1.100096300477162 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Colors_HUE_Rotate samples=46 mean_us=45.033739130434782 sum_ms=2.071552 frames=46 total_frames=83148 active_seconds=0.21162769943475723 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Colors_RgbClamp samples=9301 mean_us=45.528971078378675 sum_ms=423.46496 frames=9301 total_frames=83148 active_seconds=43.754483204334974 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Aspiration samples=7 mean_us=47.835428571428572 sum_ms=0.334848 frames=7 total_frames=83148 active_seconds=0.040629500057548285 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_BlackHole samples=480 mean_us=88.885333333333335 sum_ms=42.66496 frames=480 total_frames=83148 active_seconds=3.3143271002918482 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Dissipation samples=1752 mean_us=894.32255707762556 sum_ms=1566.85312 frames=1752 total_frames=83148 active_seconds=7.4505177107639611 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Dream2 samples=31215 mean_us=45.35064911100433 sum_ms=1415.620512 frames=30708 total_frames=83148 active_seconds=148.5208894147072 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Water_Drop samples=2301 mean_us=45.623405475880055 sum_ms=104.979456 frames=2169 total_frames=83148 active_seconds=6.8117961019743234 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_EXTRA_Rotation samples=12783 mean_us=44.81207603848862 sum_ms=572.832768 frames=12746 total_frames=83148 active_seconds=58.239282011752948 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_DigitalMatrixDistortion samples=470 mean_us=148.50832340425532 sum_ms=69.798912 frames=470 total_frames=83148 active_seconds=2.0601507022511214 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_EarthQuake samples=1527 mean_us=48.001927963326786 sum_ms=73.298944 frames=1511 total_frames=83148 active_seconds=5.9415728040039539 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch1 samples=883 mean_us=70.225757644394108 sum_ms=62.009344 frames=825 total_frames=83148 active_seconds=3.8679539992008358 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch2 samples=106 mean_us=93.551094339622637 sum_ms=9.916416 frames=102 total_frames=83148 active_seconds=0.42790240817703307 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch3 samples=428 mean_us=84.712074766355144 sum_ms=36.256768 frames=428 total_frames=83148 active_seconds=3.0031007961370051 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Film_Grain samples=13007 mean_us=45.309736603367419 sum_ms=589.343744 frames=12928 total_frames=83148 active_seconds=63.978094845544547 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Glitch_Mozaic samples=408 mean_us=51.701960784313727 sum_ms=21.0944 frames=408 total_frames=83148 active_seconds=2.0872592029627413 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Glow_Glow samples=5869 mean_us=77.896930993354914 sum_ms=457.177088 frames=5869 total_frames=83148 active_seconds=23.060342598240823 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Glow_Glow_Color samples=7314 mean_us=67.635657642876666 sum_ms=494.6872 frames=7272 total_frames=83148 active_seconds=35.0129644239787 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Light_Water samples=9301 mean_us=48.253398989355986 sum_ms=448.804864 frames=9301 total_frames=83148 active_seconds=43.754483204334974 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Light_Water2 samples=1037 mean_us=138.73866923818707 sum_ms=143.872 frames=1037 total_frames=83148 active_seconds=4.1932113007642329 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_OldFilm_Cutting2 samples=369 mean_us=44.573138211382116 sum_ms=16.447488 frames=335 total_frames=83148 active_seconds=1.2326353057287633 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Pixel_Pixelisation samples=91 mean_us=46.687648351648349 sum_ms=4.248576 frames=91 total_frames=83148 active_seconds=0.41764239780604839 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Artefact samples=2357 mean_us=82.370090793381422 sum_ms=194.146304 frames=2225 total_frames=83148 active_seconds=7.2330434999894351 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_BrokenGlass samples=1588 mean_us=75.040241813602009 sum_ms=119.163904 frames=1588 total_frames=83148 active_seconds=9.6186997150070965 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_BrokenGlass2 samples=2320 mean_us=126.64761379310345 sum_ms=293.822464 frames=2204 total_frames=83148 active_seconds=6.6130462074652314 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Chromatical samples=3062 mean_us=47.199979098628347 sum_ms=144.526336 frames=2937 total_frames=83148 active_seconds=13.243121700594202 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Chromatical2 samples=11391 mean_us=46.29332209639189 sum_ms=527.327232 frames=11383 total_frames=83148 active_seconds=52.870609507896006 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Old_Movie samples=4019 mean_us=119.88367255536204 sum_ms=481.81248 frames=3982 total_frames=83148 active_seconds=16.486159811727703 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Old_Movie_2 samples=13908 mean_us=134.72863272936439 sum_ms=1873.805824 frames=13038 total_frames=83148 active_seconds=48.828133998205885 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_VHS samples=586 mean_us=67.18383617747439 sum_ms=39.369728 frames=570 total_frames=83148 active_seconds=2.4879095014184713 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenHorizontal samples=52574 mean_us=47.208398371818767 sum_ms=2481.934336 frames=50470 total_frames=83148 active_seconds=225.38005792745389 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenVertical samples=9003 mean_us=43.760161723869821 sum_ms=393.972736 frames=8547 total_frames=83148 active_seconds=29.049233792116866 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] concurrent=1 frames=7478
+[StutterFix] [filtergpu] concurrent=2 frames=11676
+[StutterFix] [filtergpu] concurrent=3 frames=9892
+[StutterFix] [filtergpu] concurrent=4 frames=20270
+[StutterFix] [filtergpu] concurrent=5 frames=5732
+[StutterFix] [filtergpu] concurrent=6 frames=3695
+[StutterFix] [filtergpu] concurrent=7 frames=4097
+[StutterFix] [filtergpu] concurrent=8 frames=11834
+[StutterFix] [filtergpu] concurrent=9 frames=927
+[StutterFix] [filtergpu] concurrent=10 frames=167
+[StutterFix] [filtergpu] concurrent=11 frames=180
+[StutterFix] [filtergpu] concurrent=12 frames=92
+[StutterFix] [filtergpu] concurrent=14 frames=29
+[StutterFix] [filtergpu] concurrent=15 frames=56
+[StutterFix] [filtergpu] concurrent=18 frames=12
+[StutterFix] [filtergpu] concurrent=22 frames=4
+[StutterFix] [filtergpu] skipped=0 invalid=0
+[StutterFix] [자동 시험] [임무단계] filtergpu 4.921ms
+[StutterFix] [filtergpu] CameraFilterPack_AAA_SuperComputer samples=9301 mean_us=890.2041225674659 sum_ms=8279.788544 frames=9301 total_frames=83148 active_seconds=43.754483204334974 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Atmosphere_Rain samples=6553 mean_us=123.0155983518999 sum_ms=806.121216 frames=6508 total_frames=83148 active_seconds=27.372889013728127 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Atmosphere_Rain_Pro samples=3682 mean_us=170.29742965779468 sum_ms=627.035136 frames=3346 total_frames=83148 active_seconds=11.73464309447445 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_BlurHole samples=29581 mean_us=371.47854420066932 sum_ms=10988.706816 frames=28544 total_frames=83148 active_seconds=132.74214120651595 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Blurry samples=253 mean_us=129.0847114624506 sum_ms=32.658432 frames=253 total_frames=83148 active_seconds=0.98640880105085671 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_DitherOffset samples=342 mean_us=67.859461988304091 sum_ms=23.207936 frames=342 total_frames=83148 active_seconds=3.3191176955588162 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_GaussianBlur samples=2302 mean_us=353.24396872284967 sum_ms=813.167616 frames=2294 total_frames=83148 active_seconds=9.9378654090687633 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Movie samples=22592 mean_us=1255.7998866855523 sum_ms=28371.03104 frames=22531 total_frames=83148 active_seconds=108.5564768621698 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Radial samples=19873 mean_us=234.90378624264079 sum_ms=4668.242944 frames=18940 total_frames=83148 active_seconds=77.7380835916847 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Radial_Fast samples=6455 mean_us=112.18027079783114 sum_ms=724.123648 frames=6385 total_frames=83148 active_seconds=34.494610605062917 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Regular samples=334 mean_us=79.813748502994017 sum_ms=26.657792 frames=334 total_frames=83148 active_seconds=2.8874252000823617 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Tilt_Shift samples=2337 mean_us=70.156049636285843 sum_ms=163.954688 frames=2337 total_frames=83148 active_seconds=8.6369048000779 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Tilt_Shift_V samples=2346 mean_us=103.51129752770673 sum_ms=242.837504 frames=2346 total_frames=83148 active_seconds=9.29219059762545 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Color_BrightContrastSaturation samples=15268 mean_us=45.138091695048466 sum_ms=689.168384 frames=15180 total_frames=83148 active_seconds=82.044538837857544 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Color_Chromatic_Aberration samples=2588 mean_us=50.547140649149924 sum_ms=130.816 frames=2588 total_frames=83148 active_seconds=18.594412722159177 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Color_Contrast samples=813 mean_us=47.927734317343173 sum_ms=38.965248 frames=779 total_frames=83148 active_seconds=2.8121426024008542 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Color_GrayScale samples=5694 mean_us=48.251009483667019 sum_ms=274.741248 frames=5584 total_frames=83148 active_seconds=23.994397507514805 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Colors_Brightness samples=313 mean_us=43.704843450479231 sum_ms=13.679616 frames=313 total_frames=83148 active_seconds=1.1320421029813588 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Colors_DarkColor samples=281 mean_us=42.680028469750887 sum_ms=11.993088 frames=281 total_frames=83148 active_seconds=1.100096300477162 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Colors_HUE_Rotate samples=46 mean_us=45.033739130434782 sum_ms=2.071552 frames=46 total_frames=83148 active_seconds=0.21162769943475723 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Colors_RgbClamp samples=9301 mean_us=45.528971078378675 sum_ms=423.46496 frames=9301 total_frames=83148 active_seconds=43.754483204334974 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Aspiration samples=7 mean_us=47.835428571428572 sum_ms=0.334848 frames=7 total_frames=83148 active_seconds=0.040629500057548285 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_BlackHole samples=480 mean_us=88.885333333333335 sum_ms=42.66496 frames=480 total_frames=83148 active_seconds=3.3143271002918482 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Dissipation samples=1752 mean_us=894.32255707762556 sum_ms=1566.85312 frames=1752 total_frames=83148 active_seconds=7.4505177107639611 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Dream2 samples=31215 mean_us=45.35064911100433 sum_ms=1415.620512 frames=30708 total_frames=83148 active_seconds=148.5208894147072 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Water_Drop samples=2301 mean_us=45.623405475880055 sum_ms=104.979456 frames=2169 total_frames=83148 active_seconds=6.8117961019743234 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_EXTRA_Rotation samples=12783 mean_us=44.81207603848862 sum_ms=572.832768 frames=12746 total_frames=83148 active_seconds=58.239282011752948 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_DigitalMatrixDistortion samples=470 mean_us=148.50832340425532 sum_ms=69.798912 frames=470 total_frames=83148 active_seconds=2.0601507022511214 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_EarthQuake samples=1527 mean_us=48.001927963326786 sum_ms=73.298944 frames=1511 total_frames=83148 active_seconds=5.9415728040039539 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch1 samples=883 mean_us=70.225757644394108 sum_ms=62.009344 frames=825 total_frames=83148 active_seconds=3.8679539992008358 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch2 samples=106 mean_us=93.551094339622637 sum_ms=9.916416 frames=102 total_frames=83148 active_seconds=0.42790240817703307 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch3 samples=428 mean_us=84.712074766355144 sum_ms=36.256768 frames=428 total_frames=83148 active_seconds=3.0031007961370051 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Film_Grain samples=13007 mean_us=45.309736603367419 sum_ms=589.343744 frames=12928 total_frames=83148 active_seconds=63.978094845544547 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Glitch_Mozaic samples=408 mean_us=51.701960784313727 sum_ms=21.0944 frames=408 total_frames=83148 active_seconds=2.0872592029627413 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Glow_Glow samples=5869 mean_us=77.896930993354914 sum_ms=457.177088 frames=5869 total_frames=83148 active_seconds=23.060342598240823 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Glow_Glow_Color samples=7314 mean_us=67.635657642876666 sum_ms=494.6872 frames=7272 total_frames=83148 active_seconds=35.0129644239787 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Light_Water samples=9301 mean_us=48.253398989355986 sum_ms=448.804864 frames=9301 total_frames=83148 active_seconds=43.754483204334974 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Light_Water2 samples=1037 mean_us=138.73866923818707 sum_ms=143.872 frames=1037 total_frames=83148 active_seconds=4.1932113007642329 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_OldFilm_Cutting2 samples=369 mean_us=44.573138211382116 sum_ms=16.447488 frames=335 total_frames=83148 active_seconds=1.2326353057287633 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_Pixel_Pixelisation samples=91 mean_us=46.687648351648349 sum_ms=4.248576 frames=91 total_frames=83148 active_seconds=0.41764239780604839 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Artefact samples=2357 mean_us=82.370090793381422 sum_ms=194.146304 frames=2225 total_frames=83148 active_seconds=7.2330434999894351 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_BrokenGlass samples=1588 mean_us=75.040241813602009 sum_ms=119.163904 frames=1588 total_frames=83148 active_seconds=9.6186997150070965 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_BrokenGlass2 samples=2320 mean_us=126.64761379310345 sum_ms=293.822464 frames=2204 total_frames=83148 active_seconds=6.6130462074652314 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Chromatical samples=3062 mean_us=47.199979098628347 sum_ms=144.526336 frames=2937 total_frames=83148 active_seconds=13.243121700594202 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Chromatical2 samples=11391 mean_us=46.29332209639189 sum_ms=527.327232 frames=11383 total_frames=83148 active_seconds=52.870609507896006 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Old_Movie samples=4019 mean_us=119.88367255536204 sum_ms=481.81248 frames=3982 total_frames=83148 active_seconds=16.486159811727703 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_Old_Movie_2 samples=13908 mean_us=134.72863272936439 sum_ms=1873.805824 frames=13038 total_frames=83148 active_seconds=48.828133998205885 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_VHS samples=586 mean_us=67.18383617747439 sum_ms=39.369728 frames=570 total_frames=83148 active_seconds=2.4879095014184713 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenHorizontal samples=52574 mean_us=47.208398371818767 sum_ms=2481.934336 frames=50470 total_frames=83148 active_seconds=225.38005792745389 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenVertical samples=9003 mean_us=43.760161723869821 sum_ms=393.972736 frames=8547 total_frames=83148 active_seconds=29.049233792116866 song_seconds=360.19803207810037
+[StutterFix] [filtergpu] concurrent=1 frames=7478
+[StutterFix] [filtergpu] concurrent=2 frames=11676
+[StutterFix] [filtergpu] concurrent=3 frames=9892
+[StutterFix] [filtergpu] concurrent=4 frames=20270
+[StutterFix] [filtergpu] concurrent=5 frames=5732
+[StutterFix] [filtergpu] concurrent=6 frames=3695
+[StutterFix] [filtergpu] concurrent=7 frames=4097
+[StutterFix] [filtergpu] concurrent=8 frames=11834
+[StutterFix] [filtergpu] concurrent=9 frames=927
+[StutterFix] [filtergpu] concurrent=10 frames=167
+[StutterFix] [filtergpu] concurrent=11 frames=180
+[StutterFix] [filtergpu] concurrent=12 frames=92
+[StutterFix] [filtergpu] concurrent=14 frames=29
+[StutterFix] [filtergpu] concurrent=15 frames=56
+[StutterFix] [filtergpu] concurrent=18 frames=12
+[StutterFix] [filtergpu] concurrent=22 frames=4
+[StutterFix] [filtergpu] skipped=0 invalid=0
+[StutterFix] [자동 시험] [임무단계] filtergpu 2267.904ms
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 68개는 가볍게, 6222개는 원래대로 다시 설정 323ms
+[JALib INFO 18:22:33.443 #90928] JALogger cache removed 3 entries, current cache size: 0
+[StutterFix] [전환] 편집으로 나가기 773ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 1386MB -> 382MB, 255ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1028ms)
+[StutterFix] [자동 시험] [임무단계] stop 1037.607ms
+[StutterFix] [자동 시험] 바꾼 설정 되돌림
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다
+[StutterFix] [자동 시험] [임무단계] quit 101.975ms
+[Manager] Destroying when exit.
+Thread ended
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.

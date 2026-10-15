@@ -1,0 +1,46 @@
+걸린 시간 236초, 로그 C:\Users\나로컴\AppData\Local\StutterFix\runs\20261015-180034-filters-windflower.log
+
+=== 설치 상태 ===
+오류 없음
+
+=== 자동 시험 ===
+시작: 18단계 - timeout 900 / set FrameGenOutside 0 / fpscap 0 / auto on / open D:\얼불춤 맵 파일\Windflower\Windflower.adofai / filtergpu on / play / filtergpu reset / wait 30 / wait 30 / wait 30 / wait 30 / wait 30 / wait 30 / filtergpu state / filtergpu off / stop / quit
+UMM 창 닫음
+단계 최대 시간 900초
+[임무단계] timeout 0.261ms
+설정 FrameGenOutside = 0 (묶음 끝에 0 로 되돌림)
+[임무단계] set 2060.764ms
+[FPS 제한] 목표 FPS 10000, vSync 0 frame 3
+[임무단계] fpscap 33.971ms
+자동 플레이 켬 (재생 때마다 다시 맞춤)
+[임무단계] auto 33.811ms
+맵 열기: D:\얼불춤 맵 파일\Windflower\Windflower.adofai
+메모리 3초: 힙 101MB, 프로세스 1146MB(실제 램 888MB), 프레임 3641 
+메모리 6초: 힙 102MB, 프로세스 1146MB(실제 램 890MB), 프레임 8066 
+메모리 9초: 힙 147MB, 프로세스 1761MB(실제 램 1337MB), 프레임 8069 
+메모리 12초: 힙 244MB, 프로세스 1945MB(실제 램 1523MB), 프레임 8069 
+메모리 15초: 힙 523MB, 프로세스 4581MB(실제 램 3738MB), 프레임 8070 
+메모리 18초: 힙 649MB, 프로세스 6431MB(실제 램 3858MB), 프레임 8070 
+메모리 21초: 힙 384MB, 프로세스 8602MB(실제 램 2837MB), 프레임 8071 
+맵 열림 (22.8초, 열기 요청부터 2초 기다림 포함)
+[임무단계] open 22857.809ms
+[임무단계] filtergpu 1096.156ms
+재생 (자동 플레이 켬)
+메모리 24초: 힙 369MB, 프로세스 8631MB(실제 램 2849MB), 프레임 8206 
+[임무단계] play 782.730ms
+[임무단계] filtergpu 93.414ms
+[임무단계] wait 30004.003ms
+[임무단계] wait 30001.882ms
+[임무단계] wait 30001.866ms
+[임무단계] wait 30001.036ms
+[임무단계] wait 30003.279ms
+[임무단계] wait 30007.079ms
+[임무단계] filtergpu 9.785ms
+[임무단계] filtergpu 2447.787ms
+편집으로 돌아감 (1038ms)
+[임무단계] stop 1047.859ms
+바꾼 설정 되돌림
+끝 - 게임을 끕니다
+[임무단계] quit 109.824ms
+
+플레이 기록 없음

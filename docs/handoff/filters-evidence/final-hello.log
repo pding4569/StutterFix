@@ -1,0 +1,587 @@
+Mono path[0] = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed'
+Mono config path = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/MonoBleedingEdge/etc'
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.21f1 (c02631ffc030)
+[Subsystems] Discovering subsystems at path D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/UnitySubsystems
+GfxDevice: creating device client; kGfxThreadingModeClientWorkerJobs
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4060 Ti (ID=0x2803)
+    Vendor:   NVIDIA
+    VRAM:     7949 MB
+    Driver:   32.0.16.1088
+Begin MonoManager ReloadAssembly
+
+
+[Manager] Injection...
+[Manager] Initialize.
+[Manager] Version: 0.32.5.0.
+[Manager] OS: Microsoft Windows NT 10.0.19045.0 AMD64.
+[Manager] Net Framework: 4.0.30319.42000.
+[Manager] Unity Engine: 6000.3.211.
+[Manager] Game: A Dance of Fire and Ice.
+[Manager] IsSupportOnSessionStart: False.
+[Manager] IsSupportOnSessionStop: False.
+[Manager] Mods path: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods.
+[Manager] Injection successful.
+- Loaded All Assemblies, in  1.158 seconds
+- Finished resetting the current domain, in  0.003 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+<RI> Input initialized.
+UnloadTime: 0.640200 ms
+[Manager] Starting.
+[Manager] Parsing mods.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\AdofaiGenBridge\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\YouTubeStream\Info.json'.
+[Manager] Sorting mods.
+[Manager] Loading mods.
+[AdofaiGenBridge] Version '0.3.8'. Loading.
+[AdofaiGenBridge] Bridge 0.3.8 ready; bounded async heartbeat IO, timing, screenshots and hitch context.
+[AdofaiGenBridge] Active.
+[AdofaiGenBridge] Loading time 1.13 s.
+[JALib] Version '1.0.0.45 beta45'. Loading.
+[JALib] Active.
+[JALib] Loading time 0.00 s.
+[Quartz] Version '2.0.0-alpha-121'. Loading.
+[JALib] Version initialized to 1.0 beta45
+[JALib] Successfully loaded JAModInfo
+[JALib Bootstrap] Request completed: https://jalib.jongyeol.kr/autoInstaller/1.0.0.45 (364ms)
+[JALib INFO 18:11:47.121 #0] Starting JAPatcher Initialization...(0/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:11:47.123 #0] Starting JAPatcher Reverse Patches.(1/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:11:47.213 #0] Start Enter the Harmony Locker.(2/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:11:47.213 #0] Start JAPatcher Patches.(3/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:11:47.315 #0] Complete JAPatcher Initialization.(4/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:11:47.356 #0] JAMod JALib is Initialized
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.JAMod.Setup(UnityModManager+ModEntry modEntry, JAModInfo modInfo, GetModInfo apiInfo, JAModSetting setting)
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[Quartz] Active.
+[Quartz] Loading time 1.03 s.
+[StutterFix] Version '2.7.2'. Loading.
+[StutterFix] [화면 효과] 번들 준비 Direct3D11
+[StutterFix] [저사양] 선명도 보정 셰이더 찾음
+[StutterFix] patched scnGame.Awake
+[StutterFix] patched scnEditor.SwitchToEditMode
+[StutterFix] patched scrTextDecoration.SetText (같은 글자 건너뛰기)
+[StutterFix] patched Shadow.effectColor (같은 그림자 색 건너뛰기)
+[StutterFix] patched <SetCollider>d__23.MoveNext
+[StutterFix] [효과] StartEffect 87개, 걸러내기 0개 감쌈
+[StutterFix] RecolorSplit: StartEffect 인자 1개
+[StutterFix] patched ffxRecolorFloorPlus.StartEffect (구간 나누기)
+[StutterFix] [즉시 이동] OnUpdate 건너뛸 짝 9개, 타입으로 판별 가능 9개 (예상 9개)
+[StutterFix] [즉시 이동] 설치
+[StutterFix] [즉시 이동 직접] 설치: 속성 블록 9개 (예상 9개)
+[StutterFix] [장식 이동 루프] 설치
+[StutterFix] [미리 확인] 설치
+[StutterFix] [장식 애니메이션] 설치
+[StutterFix] [타일 애니메이션] 설치
+[StutterFix] [저사양] 설치 (게임 화면 해상도 사용 가능)
+[StutterFix] [파티클] 설치 (바꾼 호출 2곳)
+[StutterFix] [누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)
+[StutterFix] [로딩] 이미지 파일 시각 캐시 설치 (바꾼 곳 2)
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치
+[StutterFix] [로딩] 같은 이미지 장식 목록 넣기 빠르게 설치
+[StutterFix] [맵 파일 읽기] 빠른 JSON 해석기 설치 (GDMiniJSON.Json)
+[StutterFix] [맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 3)
+[StutterFix] [맵 파일 읽기] 여러 코어로 이벤트 만들기 설치
+[StutterFix] [장식 한 번에 복제] 설치
+[StutterFix] [판정 글자] 사라질 때 색만 바꾸기 설치
+[StutterFix] [오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 2개)
+[StutterFix] [연출 끄기] 설치 (효과 19종)
+[StutterFix] [이미지 압축] 설치
+[StutterFix] [장식 마무리] 설치
+[StutterFix] [잠든 장식] 설치
+[StutterFix] [이미지] 빠른 압축 풀기(libdeflate): 사용 중
+[StutterFix] [이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): 사용 중
+[StutterFix] [이미지] JPG 풀기(libjpeg-turbo): 사용 중
+[StutterFix] [이미지] 스프라이트 크기 보정 설치 (큰 이미지 줄이기용)
+[StutterFix] [이미지] 미리 풀기 설치
+[StutterFix] [투명 장식] 위치 늦게 반영 설치
+[StutterFix] [투명 장식] 설치
+[StutterFix] tween fix installed
+[StutterFix] [장면 정리] 설치
+[StutterFix] [전환] 설치
+[StutterFix] [나가기] 설치
+[StutterFix] end hook: scnEditor.SwitchToEditMode
+[StutterFix] end hook: scrController.FailAction
+[StutterFix] end hook: scrController.Fail2Action
+[StutterFix] end hook: scrController.OnLandOnPortal
+[StutterFix] end hook: scrController.QuitToMainMenu
+[StutterFix] end hook: scnEditor.QuitToMenu
+[StutterFix] end hook: scnEditor.TryQuitToMenu
+[StutterFix] end hook: scnEditor.SaveAndQuit
+[StutterFix] restart hook: scrController.Restart
+[StutterFix] restart hook: scnEditor.Play
+[StutterFix] restart hook: scrController.ResetCustomLevel
+[StutterFix] gc control installed
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [쓰레기 줄이기] 비동기 키 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 마우스 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 레거시 키보드 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [미리 컴파일] 모드 함수 2272개 487ms, 게임 함수(효과·장식·타일·행성·지휘자) 1111개 115ms
+[StutterFix] 켜짐: 패치 설치 완료 (플레이어용)
+[StutterFix] 지금 Direct3D11 / LegacyJobified
+[StutterFix] [첫 판 FPS] 응답 없음 창 끔
+[StutterFix] [자동 시험] 시작: 14단계 - timeout 900 / set FrameGenOutside 0 / fpscap 0 / auto on / open D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai / filtergpu on / play / filtergpu reset / waitsong / wait 2 / filtergpu state / filtergpu off / stop / quit
+[StutterFix] [프레임 통계] 게임 기본: 꺼짐, 이 모드: 켬(GPU 시간 측정)
+[StutterFix] Active.
+[StutterFix] Loading time 8.16 s.
+[YouTubeStream] Version '1.0.5'. Loading.
+Mod was added: YouTubeStream
+[YouTubeStream] Active.
+[YouTubeStream] Loading time 0.10 s.
+[Manager] FINISH. SUCCESSFUL LOADED 5/5 MODS.
+
+
+Startup: GetPlatform
+Startup: Setting platform to Windows.
+Startup: DetermineAppLocation
+Startup: isInSteamLibrary: True
+Startup: SetBuildDateAndCommit
+Startup: Version r150, (32e5b8a, 2026/09/28 11:18 PM)
+Startup: SetLocale
+Startup: LoadSaveData
+Startup: SetupSystems
+setting language to: English
+Startup: Initialize Steam SDK
+Has license for 1977570: True
+Has license for 2016430: False
+Has license for 0: False
+Startup: FixResolution
+Startup: SetupLevelEventsInfo
+Startup: SetSettings
+Startup: ForceResolutionOnLofi
+Startup: LoadCalibration
+Startup: SetupSfxHandler
+Startup: GetSteamBranch
+Startup: SetupDLCs
+Startup: DLCManagers count: 3
+Startup: DLC: CheckUpToDate
+Startup: Neo Cosmos: owns True, installed True
+Startup: CacheShaderPropertyIDs
+Startup: DeleteTempUnzippingFolder
+Startup: Setup Discord
+Initializing Discord: Ok
+Startup: Give Steam Achievements
+Startup: Rewired Init
+Startup: RDInput Setup
+Mods detected! Disabling exception capturing
+Startup: Setup Loading Screen
+Startup: ADOStartup done!
+[Manager] Spawning.
+[JALib INFO 18:11:56.992 #1] Listening on port: 58724
+[JALib INFO 18:11:57.017 #1] Unzip ModApplicator...
+[Quartz] [Startup] paths + config took 23 ms
+[Quartz] [FontManager] CJK fallback: cjkFonts-regular-normalized SDF
+[Quartz] [Startup] FontManager took 44 ms
+[Quartz] [Localization] April Fools overlay ready for 3 language(s)
+[Quartz] [Translator] Starting to load translations from: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Lang
+[Quartz] [Translator] Found 3 translation files.
+[Quartz] [Startup] LocalizationService took 14 ms
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Overlay Core' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Discord' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Editor Tools' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Effect Remover' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Limiter' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Main Menu' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Hide Judgements' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Optimizer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'TUF' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Visual Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Planet Colors' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Auto Deafen' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'UI Hiding' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Calibration' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Viewer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Progress Bar' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Combo' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Judgement' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Song Title' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Panels' v2.0.0
+[Quartz] [Startup] ServiceAdapter took 271 ms
+[Quartz] [Startup] ServiceAdapter took 1 ms
+[Quartz] [Sprites] screen 3440x1440, 1.546 px/unit
+[Quartz] [Startup] UIService took 216 ms
+[Quartz] [Startup] TweenService took 0 ms
+[Quartz] [Startup] PlayCount took 7 ms
+[Quartz] [Startup] HarmonyService took 0 ms
+[Quartz] Mod Enabled
+[Quartz] [Startup] SetModEnabled took 1117 ms
+[Quartz] [Startup] total 2762 ms
+[Quartz] [Umm] active mods: [AdofaiGenBridge, JALib, Quartz, StutterFix, YouTubeStream]
+[Quartz] Hello
+[Quartz] [Compat] ADOFAI r150 — current game API
+[StutterFix] [상태] ? 종료됨 world:X  -> 정지
+[StutterFix] [자동 시험] UMM 창 닫음
+[StutterFix] [자동 시험] 단계 최대 시간 900초
+[StutterFix] [자동 시험] [임무단계] timeout 0.297ms
+[Quartz] [Harmony] applied patches (deferred to first tick) in 205 ms
+[StutterFix] [자동 시험] 설정 FrameGenOutside = 0 (묶음 끝에 0 로 되돌림)
+[StutterFix] [자동 시험] [임무단계] set 2074.542ms
+[StutterFix] [자동 시험] [FPS 제한] 목표 FPS 10000, vSync 0 frame 3
+[StutterFix] [자동 시험] [임무단계] fpscap 34.137ms
+[Quartz] [Translator] Finished loading translations.
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[StutterFix] [자동 시험] [임무단계] auto 34.599ms
+[StutterFix] [자동 시험] 맵 열기: D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai
+[StutterFix] [화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 196개 바꿔 끼움 (지난 결과), 1프레임에 나눠 734ms, 한 프레임 최대 734ms
+[StutterFix] [자동 시험] 메모리 3초: 힙 83MB, 프로세스 1074MB(실제 램 822MB), 프레임 2870 
+[StutterFix] tween capacity set to 40000/25000
+Go to Menu
+Startup: Setup Audio Settings
+[StutterFix] [자동 시험] 메모리 6초: 힙 88MB, 프로세스 1073MB(실제 램 826MB), 프레임 6969 
+Startup: Setup Audio Settings End 
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.603500 ms
+Unloading 39 unused Assets to reduce memory usage. Loaded Objects now: 69783.
+Total: 35.081700 ms (FindLiveObjects: 4.652600 ms CreateObjectMapping: 1.432200 ms MarkObjects: 28.814600 ms  DeleteObjects: 0.181800 ms)
+
+Shader.WarmupAllShaders ();
+Shader warmup: 132 shaders 1399 combinations 0.104s
+[StutterFix] [상태] None 종료됨 world:X  -> 정지
+Skipping audio break checking. Detected delta time: 1.931773
+[StutterFix] [상태] Start 종료됨 world:X  -> 정지
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 39.652200 ms
+Unloading 263 unused Assets to reduce memory usage. Loaded Objects now: 18220.
+Total: 103.775800 ms (FindLiveObjects: 1.050400 ms CreateObjectMapping: 0.782300 ms MarkObjects: 100.362700 ms  DeleteObjects: 1.579900 ms)
+
+[StutterFix] [자동 시험] 메모리 9초: 힙 136MB, 프로세스 1690MB(실제 램 1266MB), 프레임 6986 
+[StutterFix] [첫 판 FPS] 10.7초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 10.7초
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 16ms
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+[StutterFix] [첫 판 FPS] 1.7초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.7초
+[StutterFix] [자동 시험] 메모리 12초: 힙 280MB, 프로세스 1914MB(실제 램 1488MB), 프레임 6987 
+[StutterFix] [맵 파일 읽기] GC 멈춤 308ms(그중 이벤트로 바꾸기 140ms: 이벤트 21349개 여러 코어(5개)로 131ms), 힙 213MB -> 356MB (그 사이 GC 0번)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 1ms
+[StutterFix] [이미지] 자동: 첫 판부터 긴 변 3072 으로 줄임 (이미지 713장 원본 약 11378MB, 비어 있는 VRAM 약 5221MB, 3072 보다 큰 이미지 101장)
+[StutterFix] [이미지] 맵 열기 전: 이미 올라와 있는 이미지 1장, VRAM 전체 1933MB / 게임 392MB
+[StutterFix] [다른 모드] Quartz 최적화: 켜진 것 없음
+[StutterFix] [이미지] 713장 미리 풀기 시작 (작업 스레드 5개, DXT 로 미리 압축: 저사양 옵션)
+[StutterFix] [자동 시험] 메모리 15초: 힙 540MB, 프로세스 2876MB(실제 램 2382MB), 프레임 6987 
+[StutterFix] [자동 시험] 메모리 18초: 힙 787MB, 프로세스 5484MB(실제 램 3412MB), 프레임 6987 
+[StutterFix] [장식 한 번에 복제] 36번에 2425개 (안 쓰고 지움 0개)
+[StutterFix] [이미지] 미리 푼 것 712장(넣기 1721ms), 원래 방식 5장(59ms, 순서 어긋남 0), 기다림 2333ms, GC 0번, 전체 6.0초, 줄인 이미지 98장 (긴 변 3072, VRAM 약 4202MB 아낌), 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 4903ms/작업 스레드 합), 처음부터 압축으로 넣음 394장 (뒤이어 압축 불림 394, 안 불림 0), 압축이 늦어 원래대로 131장 | 장식 만들기 2531개 4869ms, 그중 텍스처 불러오기 5101ms, 압축 마저 기다림 61ms
+[StutterFix] [이미지] 해독 시간(작업 스레드 5개 합계): 압축 풀기 4074ms, 필터 되돌리기 4552ms, 줄이기 1836ms(279M 픽셀), 필터·줄이기 한 번에 0장 0ms(0M 픽셀), 흘려 풀기·줄이기 82장 8553ms(1400M 픽셀, 못 한 것 0) | 새로 맡은 형식(흑백·인터레이스) 14장 | libdeflate 602장, 원래 zlib 로 다시 푼 것 0장 (사용 중) | 네이티브(sfnative): 필터 되돌린 줄 703607, DXT 압축 줄 묶음 145600 | JPG(libjpeg-turbo): 28장 1627ms, 못 푼 것 0장
+[StutterFix] [자동 시험] 메모리 21초: 힙 401MB, 프로세스 7361MB(실제 램 2780MB), 프레임 6987 
+[StutterFix] [이미지] 로딩 뒤 GC 한 번 132ms
+Shader warmup: 204 shaders 1493 combinations 0.006s
+[StutterFix] [셰이더] 맵 불러온 뒤: 셰이더 204개, 새 필터 109개(필터 텍스처 14개) 미리 준비 35ms
+[StutterFix] [재시작] 에디터에서 맵 열기: D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai
+[StutterFix] [다른 모드] 같은 게임 함수를 고치는 곳 36개: scnEditor.SwitchToEditMode (quartz.module.planetcolors, quartz.module.uihider) | ffxCheckpoint.StartEffect (quartz.module.visualtweaks) | ffxMenuPlanetSpeedChange.StartEffect (quartz.module.mainmenu) | ffxBloomPlus.StartEffect (quartz.module.effectremover) | ffxFlashPlus.StartEffect (quartz.module.effectremover) | ffxHallOfMirrorsPlus.StartEffect (quartz.module.effectremover) | ffxMoveFloorPlus.StartEffect (quartz.module.effectremover) | ffxScreenScrollPlus.StartEffect (quartz.module.effectremover) | ffxScreenTilePlus.StartEffect (quartz.module.effectremover) | ffxSetFilterAdvancedPlus.StartEffect (quartz.module.effectremover) | ffxShakeScreenPlus.StartEffect (quartz.module.effectremover) | scrParticleDecoration.Update (quartz.module.optimizer) | scrParticleDecoration.ResetParticle (quartz.module.optimizer) | scrCamera.SetCustomFrameRate (quartz.module.optimizer) | scnEditor.Play (YouTubeStream, Quartz, quartz.module.planetcolors) | LevelData.Decode (quartz.module.effectremover) | TextureManager.LoadTexture (quartz.module.optimizer) | RDString.Get (YouTubeStream) | scnGame.ResetScene (quartz.module.planetcolors) | scnGame.LoadLevel (YouTubeStream) | scnGame.ApplyEventsToFloors (quartz.module.visualtweaks) | scnGame.ApplyEvent (quartz.module.keylimiter) | scrConductor.PlayHitTimes (quartz.module.optimizer) | scrPlanet.MoveToNextFloor (quartz.module.uihider, Quartz) | scrController.FailAction (quartz.module.optimizer) | scrController.OnLandOnPortal (quartz.module.uihider) | scrController.QuitToMainMenu (quartz.module.tuf) | scrController.Restart (quartz.module.optimizer, Quartz) | scnGame.Play (quartz.module.keylimiter, Quartz, quartz.module.autodeafen, quartz.module.combo, quartz.module.judgement) | scnEditor.OpenLevelCo (Quartz) | scrFloor.LightUp (quartz.module.visualtweaks) | PlanetRenderer.Revive (quartz.module.visualtweaks, quartz.module.planetcolors) | scnCalibration.Start (quartz.module.calibration) | scnCalibration.CleanSlate (quartz.module.calibration) | scnCalibration.Calibrated (quartz.module.calibration) | scnCalibration.Update (quartz.module.calibration)
+Unloading 157 unused Assets to reduce memory usage. Loaded Objects now: 664536.
+Total: 259.197400 ms (FindLiveObjects: 59.311400 ms CreateObjectMapping: 13.433700 ms MarkObjects: 148.987600 ms  DeleteObjects: 37.464400 ms)
+
+[StutterFix] [상태] None 편집중 일시정지  -> 정지
+[StutterFix] [업데이트] 최신 v2.7.2, 지금 v2.7.2
+[StutterFix] [자동 시험] 맵 열림 (23.1초, 열기 요청부터 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] open 23096.025ms
+[StutterFix] [자동 시험] 메모리 24초: 힙 450MB, 프로세스 7479MB(실제 램 2875MB), 프레임 7151 
+[StutterFix] [filtergpu] on filters=300 size=3440x1440
+[StutterFix] [자동 시험] [임무단계] filtergpu 1040.252ms
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 718장, VRAM 전체 5978MB / 게임 4437MB
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 미룬 것 없음
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 701개, 곡 중 최대 701개 | 색 바뀜 4852번 확인, 그리기 켜고 끈 것 701번, 쓴 시간 약 3.1ms, 가장 많이 쓴 프레임 약 3.06ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 8.9초 멈춘 프레임 동안 윈도우 메시지 확인 13번 (멈춘 창 판정 막기), 가장 긴 빈틈 2.7초
+[StutterFix] [로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀
+[StutterFix] [타일 메시] 색 바꾸기 효과 3324개, 타일·스타일 38024가지 -> 새로 미리 만든 메시 1003개 177ms (캐시 2154개)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 4가지 중 새로 불러온 것 1개 1ms
+[StutterFix] [효과 재사용] 다시 씀 0개, 새로 붙임 30746개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 0개 | 887ms
+[StutterFix] [전환] 에디터 재생 시작 1738ms
+[StutterFix] [자동 시험] [임무단계] play 1744.446ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 1915ms (프레임 1개, 가장 긴 프레임 1915ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 1219ms, 그 밖 696ms | 이미지 파일 시각: 5132번 중 디스크 1268번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 2531개 3ms
+[StutterFix] [저사양] 그래픽 설정: 품질 단계 Default, 안티에일리어싱 0x, 수직동기 0, 그림자 Disable, 텍스처 0, 이방성 Disable, 파티클 레이캐스트 256, 소프트 파티클 False | 카메라 OverlayCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.63, 컬링 100000 | 카메라 BGStaticCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.63, 컬링 800 | 카메라 BGMovingCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.11, 컬링 400 | 카메라 Camera: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1, 컬링 9F397 | 화면 3440x1440 FullScreenWindow, 그래픽카드 NVIDIA GeForce RTX 4060 Ti
+[StutterFix] [자동 시험] [임무단계] filtergpu 186.336ms
+[StutterFix] [화면 밖 타일] 곡 시작: 타일 14721개 등록 17ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 1043ms -> 메모리 정리 / gpu 10.3 cpu 1914.8 (수집 7152번) 효과 0.0 모드 0.0(모니터 그리기) gc 1 | 시각 18:12:28.152
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (1.6초)
+[StutterFix] [화면 대기] 늘어남: 평균 1.3ms (프레임 6.6ms 중, 약 152 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 54%, 게임 54%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.6ms (약 156 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 54%, 게임 54%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [곡] 평균 184 FPS (5.4ms), 가장 긴 프레임 94ms, 곡 시작 연출 뒤 가장 긴 프레임 28ms, 끊김 0번, 프레임 34234개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 3.0ms, CPU 평균 5.4ms (34232개 잼) | 그 프레임: 게임 효과 62개 13.4ms (그중 장식 이동 5.1ms), 나머지 15.0ms | 효과가 가장 무거운 프레임 28ms: 게임 효과 13.4ms (그중 장식 이동 5.1ms) | 모드가 쓴 시간 평균 0.04ms/프레임 | 가장 무거운 프레임 8개: [28ms @161.7초: 효과 62개 13.4(장식 이동 5.1, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 14.6] [24ms @121.9초: 효과 56개 10.3(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 13.8] [24ms @140.9초: 효과 3개 5.2(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.4, 장식 갱신 0.0+0.3, 나머지 18.4] [21ms @157.0초: 효과 19개 0.1(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 20.1] [20ms @65.1초: 효과 5개 5.9(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 2.0, 장식 갱신 0.0+0.2, 나머지 12.4] [20ms @137.1초: 효과 4개 5.2(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.5, 장식 갱신 0.0+0.4, 나머지 14.2] [20ms @125.7초: 효과 54개 2.8(장식 이동 0.4, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 16.4] [19ms @133.4초: 효과 7개 5.5(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.3, 장식 갱신 0.0+0.5, 나머지 12.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 241(5.3/1.0/0.1/2.2/0.0, 158/0개) 10s 217(4.6/1.2/0.0/2.8/0.1, 188/0개) 20s 198(5.0/1.3/0.0/3.2/0.1, 181/0개) 30s 184(5.4/1.3/0.0/3.1/0.1, 165/0개) 40s 162(6.1/1.4/0.0/2.5/0.1, 143/0개) 50s 156(5.7/1.5/0.7/5.1/0.1, 267/0개) 60s 158(6.3/1.8/0.1/3.9/0.1, 204/0개) 70s 178(5.6/1.7/0.0/2.5/0.1, 153/0개) 80s 204(4.9/1.3/0.0/2.2/0.1, 159/0개) 90s 215(4.6/1.2/0.0/2.2/0.1, 149/0개) 100s 247(4.0/1.0/0.0/2.3/0.1, 147/0개) 110s 211(4.7/1.2/0.0/3.3/0.1, 186/0개) 120s 157(6.4/1.6/0.0/3.3/0.1, 199/0개) 130s 166(6.0/1.6/0.0/3.5/0.1, 196/0개) 140s 153(6.5/1.8/0.0/3.4/0.1, 186/0개) 150s 128(7.8/2.4/0.0/4.2/0.1, 206/0개) 160s 185(5.4/1.4/0.0/3.0/0.2, 172/0개) 170s 189(5.3/1.3/0.0/2.8/0.1, 164/0개) 180s 130(7.7/2.3/0.0/3.4/0.1, 169/0개) | 가장 높은 구간 100s 247 FPS | 같은 그림자 색 건너뛰기 172829회 | 파티클 장식: 같은 값 넣기 3783890번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 5개 없앰, 게임 화면 버퍼 불필요한 해제 0번 막음 | 필터 형식 찾기 기억 2121번 (새로 찾음 70번) | 오차 막대 눈금 가볍게 27930개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 13965개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 3899번을 1681번으로 줄임 (57% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 2531번을 1번으로 | 위치 쓰기 6839176번 중 같은 값이라 건너뜀 1130498번 | 재생 중 편집기 검사 건너뜀 1426461번 | 매 프레임 장식 순회 6038486번 중 바뀌는 게 없어 뺀 것 25417번 | 히트박스 순회: 전체 2531개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 2531개 중 평균 176개만 훑음 (잠재움 23012번, 깨움 20737번, 목록 새로 만듦 1번, 안전망 검사 186번에 놓친 깨움 0개) | 즉시 이동 직접 처리 6585번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 579번, 투명한 채 색만 저장 28번 | 장식 이동 루프: 효과 5861개(장식 46729개), 원래 코드로 넘긴 효과 0개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 0, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 208개 | 장식 애니메이션 직접 처리: 만든 것 41161개(동시 최대 455개), 끝까지 감 23260, 끊겨서 완료 37354, 버림 0, 기록 다시 씀 18413, 새 표 객체 7064, 갱신에 쓴 시간 3229ms (33758프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 13961개(타일 558359개, 시작에 쓴 시간 443ms), 원래 코드로 0개 [곡 시작 직후 0, 길이 음수 0, 기타 0], 만든 것 33784개(동시 최대 812, 다시 씀 771, 겹쳐서 진짜 DOTween 111), 끝까지 감 32607, 끊겨서 완료 1177, 버림 0, 갱신 592ms (21169프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1865개(바로 쓴 값 1435개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 875300번 (안 보이게 돼서 대신 갱신 1348번) | 효과 나누기: 뒤로 미룬 효과 47개, 늦게 시작한 정도 평균 8.2ms 최대 14.8ms (1프레임)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 790개, 곡 중 최대 847개 | 투명한 장식 위치 반영 미룸 1467464번, 보일 때 반영 681번 | 색 바뀜 133859번 확인, 그리기 켜고 끈 것 2085번, 쓴 시간 약 25.4ms, 가장 많이 쓴 프레임 약 0.34ms (64번에 한 번 재서 추정)
+[StutterFix] [자동 시험] [임무완주] OnLandOnPortal 16.987ms
+[StutterFix] [상태] None 종료됨 에디터재생  -> 정지
+[StutterFix] [자동 시험] [임무단계] waitsong 185727.258ms
+[StutterFix] [화면 대기] 이번 판 185초 중 5초 동안 늘어나 있었음 (그때 평균 1.2ms)
+[StutterFix] [자동 시험] [임무단계] wait 2005.265ms
+[StutterFix] [filtergpu] CameraFilterPack_AAA_SuperComputer samples=838 mean_us=844.40775178997615 sum_ms=707.613696 frames=761 total_frames=34235 active_seconds=4.1423304004129022 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Atmosphere_Rain_Pro samples=4704 mean_us=176.16761904761904 sum_ms=828.69248 frames=4704 total_frames=34235 active_seconds=29.987706389045343 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Bloom samples=44 mean_us=156.09018181818183 sum_ms=6.867968 frames=44 total_frames=34235 active_seconds=0.48376279696822166 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_BlurHole samples=1817 mean_us=366.40207815079805 sum_ms=665.752576 frames=1817 total_frames=34235 active_seconds=11.857054012827575 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Movie samples=1936 mean_us=1198.9675371900828 sum_ms=2321.201152 frames=1936 total_frames=34235 active_seconds=11.007101895287633 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Noise samples=2077 mean_us=62.251508907077515 sum_ms=129.296384 frames=2077 total_frames=34235 active_seconds=13.737679897807539 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Radial samples=10545 mean_us=237.82475258416309 sum_ms=2507.862016 frames=10368 total_frames=34235 active_seconds=54.509422692935914 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_BrightContrastSaturation samples=5732 mean_us=45.774693649685972 sum_ms=262.380544 frames=5695 total_frames=34235 active_seconds=35.083143089897931 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_Chromatic_Aberration samples=2082 mean_us=45.5703669548511 sum_ms=94.877504 frames=2082 total_frames=34235 active_seconds=13.740106996847317 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_Contrast samples=5551 mean_us=45.073155827778777 sum_ms=250.201088 frames=5551 total_frames=34235 active_seconds=27.00276609021239 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_GrayScale samples=1175 mean_us=46.718801702127664 sum_ms=54.894592 frames=1175 total_frames=34235 active_seconds=8.12098278850317 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_Noise samples=9412 mean_us=48.382803229919247 sum_ms=455.378944 frames=9411 total_frames=34235 active_seconds=48.860976383090019 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_Switching samples=1609 mean_us=53.077439403356117 sum_ms=85.4016 frames=1609 total_frames=34235 active_seconds=8.5890949033200741 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Colors_Adjust_FullColors samples=144 mean_us=46.13688888888889 sum_ms=6.643712 frames=144 total_frames=34235 active_seconds=0.94580399570986629 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Colors_BleachBypass samples=1876 mean_us=44.839300639658845 sum_ms=84.118528 frames=1876 total_frames=34235 active_seconds=7.576030297903344 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Colors_Brightness samples=2576 mean_us=44.544260869565214 sum_ms=114.746016 frames=2576 total_frames=34235 active_seconds=16.602424180135131 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Colors_HUE_Rotate samples=2672 mean_us=49.575856287425154 sum_ms=132.466688 frames=2672 total_frames=34235 active_seconds=15.996761977439746 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_BlackHole samples=265 mean_us=48.004347169811318 sum_ms=12.721152 frames=265 total_frames=34235 active_seconds=1.4922496057115495 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Dream2 samples=1419 mean_us=57.09647921071177 sum_ms=81.019904 frames=1419 total_frames=34235 active_seconds=7.0851724857930094 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_FishEye samples=61 mean_us=45.005639344262292 sum_ms=2.745344 frames=61 total_frames=34235 active_seconds=0.22952760104089975 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Flag samples=2229 mean_us=43.153170031404215 sum_ms=96.188416 frames=2229 total_frames=34235 active_seconds=11.369621895486489 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Noise samples=2229 mean_us=96.810953790937631 sum_ms=215.791616 frames=2229 total_frames=34235 active_seconds=11.369621895486489 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Drawing_Manga_FlashWhite samples=398 mean_us=76.550432160804021 sum_ms=30.467072 frames=398 total_frames=34235 active_seconds=3.7301718001253903 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Drawing_Manga_Flash_Color samples=89 mean_us=44.1125393258427 sum_ms=3.926016 frames=89 total_frames=34235 active_seconds=0.95572599535807967 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Edge_Neon samples=32 mean_us=111.808 sum_ms=3.577856 frames=32 total_frames=34235 active_seconds=0.19884260976687074 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_DarkMatter samples=121 mean_us=227.74267768595041 sum_ms=27.556864 frames=101 total_frames=34235 active_seconds=0.48469199892133474 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch1 samples=2909 mean_us=70.039628738398079 sum_ms=203.74528 frames=2904 total_frames=34235 active_seconds=12.730198014061898 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch2 samples=3913 mean_us=99.498361359570652 sum_ms=389.337088 frames=3857 total_frames=34235 active_seconds=21.608150997431949 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch3 samples=791 mean_us=91.763863463969656 sum_ms=72.585216 frames=714 total_frames=34235 active_seconds=3.9040996984113008 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_Psycho samples=24 mean_us=43.392 sum_ms=1.041408 frames=24 total_frames=34235 active_seconds=0.12303399946540594 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Film_ColorPerfection samples=4875 mean_us=49.657383384615386 sum_ms=242.079744 frames=4875 total_frames=34235 active_seconds=27.481955795781687 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Film_Grain samples=1879 mean_us=46.532870675891431 sum_ms=87.435264 frames=1879 total_frames=34235 active_seconds=11.371855701785535 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Glitch_Mozaic samples=196 mean_us=44.596244897959188 sum_ms=8.740864 frames=196 total_frames=34235 active_seconds=0.93723549973219633 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Glow_Glow samples=1447 mean_us=71.891593642017966 sum_ms=104.027136 frames=1414 total_frames=34235 active_seconds=7.2285408892203122 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Glow_Glow_Color samples=2134 mean_us=92.353379568884719 sum_ms=197.082112 frames=2134 total_frames=34235 active_seconds=14.218578004743904 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Light_Rainbow samples=1476 mean_us=45.644314363143636 sum_ms=67.371008 frames=1476 total_frames=34235 active_seconds=8.5232727988623083 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Light_Water samples=2898 mean_us=48.241777777777784 sum_ms=139.804672 frames=2821 total_frames=34235 active_seconds=18.477932183770463 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_NightVision_4 samples=140 mean_us=43.717485714285715 sum_ms=6.120448 frames=124 total_frames=34235 active_seconds=0.61036439659073949 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Noise_TV samples=29 mean_us=54.201379310344826 sum_ms=1.57184 frames=26 total_frames=34235 active_seconds=0.13073560129851103 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Noise_TV_2 samples=81 mean_us=53.98123456790124 sum_ms=4.37248 frames=74 total_frames=34235 active_seconds=0.3977897958829999 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Noise_TV_3 samples=932 mean_us=53.1919313304721 sum_ms=49.57488 frames=645 total_frames=34235 active_seconds=3.9006262053735554 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Pixel_Pixelisation samples=201 mean_us=42.615721393034825 sum_ms=8.56576 frames=201 total_frames=34235 active_seconds=1.0081801121123135 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Real_VHS samples=278 mean_us=55.859568345323744 sum_ms=15.52896 frames=266 total_frames=34235 active_seconds=1.3962764975149184 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Artefact samples=1501 mean_us=83.020407728181212 sum_ms=124.613632 frames=1501 total_frames=34235 active_seconds=8.8194910038728267 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Chromatical samples=3809 mean_us=54.817739039117875 sum_ms=208.800768 frames=3809 total_frames=34235 active_seconds=22.950345693388954 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Chromatical2 samples=7036 mean_us=60.342649232518475 sum_ms=424.57088 frames=7036 total_frames=34235 active_seconds=44.820764379808679 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_CompressionFX samples=35 mean_us=49.912685714285715 sum_ms=1.746944 frames=35 total_frames=34235 active_seconds=0.22856379626318812 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Distorted samples=1761 mean_us=53.515484383872796 sum_ms=94.240768 frames=1761 total_frames=34235 active_seconds=11.368792801629752 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_LED samples=155 mean_us=46.813316129032259 sum_ms=7.256064 frames=155 total_frames=34235 active_seconds=1.43745859246701 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Noise samples=154 mean_us=45.800727272727272 sum_ms=7.053312 frames=154 total_frames=34235 active_seconds=0.8151078000664711 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Old_Movie_2 samples=2600 mean_us=129.91645538461538 sum_ms=337.782784 frames=2600 total_frames=34235 active_seconds=10.889651704346761 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_PlanetMars samples=790 mean_us=44.1486582278481 sum_ms=34.87744 frames=790 total_frames=34235 active_seconds=4.66599189909175 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_VHS samples=349 mean_us=67.56346131805158 sum_ms=23.579648 frames=333 total_frames=34235 active_seconds=1.699791481718421 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_VHS_Rewind samples=1167 mean_us=55.634728363324761 sum_ms=64.925728 frames=1167 total_frames=34235 active_seconds=6.8757155972998589 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Vcr samples=54 mean_us=80.440888888888892 sum_ms=4.343808 frames=54 total_frames=34235 active_seconds=0.26254310598596931 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Vintage samples=121 mean_us=45.21679338842975 sum_ms=5.471232 frames=101 total_frames=34235 active_seconds=0.48469199892133474 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenHV samples=2642 mean_us=47.450113550340646 sum_ms=125.3632 frames=2547 total_frames=34235 active_seconds=13.30713949049823 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenHorizontal samples=21327 mean_us=47.65942889295259 sum_ms=1016.43264 frames=21229 total_frames=34235 active_seconds=117.06760201067664 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenVertical samples=5263 mean_us=47.429508645259361 sum_ms=249.621504 frames=5223 total_frames=34235 active_seconds=30.786610490642488 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_VHS_Tracking samples=2455 mean_us=72.716096130346244 sum_ms=178.518016 frames=2455 total_frames=34235 active_seconds=12.7409449883271 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_Aura samples=467 mean_us=279.86117344753745 sum_ms=130.695168 frames=467 total_frames=34235 active_seconds=2.1266386094503105 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_AuraDistortion samples=199 mean_us=279.69608040201007 sum_ms=55.65952 frames=199 total_frames=34235 active_seconds=1.1812346060760319 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_Drost samples=560 mean_us=85.674057142857137 sum_ms=47.977472 frames=560 total_frames=34235 active_seconds=2.8297895940486342 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_Plasma samples=376 mean_us=56.772085106382974 sum_ms=21.346304 frames=376 total_frames=34235 active_seconds=1.8986117008607835 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_Tunnel samples=929 mean_us=51.440292787944024 sum_ms=47.788032 frames=929 total_frames=34235 active_seconds=6.876307207159698 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] concurrent=1 frames=1888
+[StutterFix] [filtergpu] concurrent=2 frames=3492
+[StutterFix] [filtergpu] concurrent=3 frames=4473
+[StutterFix] [filtergpu] concurrent=4 frames=8865
+[StutterFix] [filtergpu] concurrent=5 frames=4234
+[StutterFix] [filtergpu] concurrent=6 frames=4541
+[StutterFix] [filtergpu] concurrent=7 frames=1956
+[StutterFix] [filtergpu] concurrent=8 frames=668
+[StutterFix] [filtergpu] concurrent=9 frames=1273
+[StutterFix] [filtergpu] concurrent=10 frames=242
+[StutterFix] [filtergpu] concurrent=11 frames=22
+[StutterFix] [filtergpu] concurrent=12 frames=22
+[StutterFix] [filtergpu] skipped=0 invalid=0
+[StutterFix] [자동 시험] [임무단계] filtergpu 9.762ms
+[StutterFix] [filtergpu] CameraFilterPack_AAA_SuperComputer samples=838 mean_us=844.40775178997615 sum_ms=707.613696 frames=761 total_frames=34235 active_seconds=4.1423304004129022 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Atmosphere_Rain_Pro samples=4704 mean_us=176.16761904761904 sum_ms=828.69248 frames=4704 total_frames=34235 active_seconds=29.987706389045343 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Bloom samples=44 mean_us=156.09018181818183 sum_ms=6.867968 frames=44 total_frames=34235 active_seconds=0.48376279696822166 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_BlurHole samples=1817 mean_us=366.40207815079805 sum_ms=665.752576 frames=1817 total_frames=34235 active_seconds=11.857054012827575 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Movie samples=1936 mean_us=1198.9675371900828 sum_ms=2321.201152 frames=1936 total_frames=34235 active_seconds=11.007101895287633 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Noise samples=2077 mean_us=62.251508907077515 sum_ms=129.296384 frames=2077 total_frames=34235 active_seconds=13.737679897807539 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Blur_Radial samples=10545 mean_us=237.82475258416309 sum_ms=2507.862016 frames=10368 total_frames=34235 active_seconds=54.509422692935914 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_BrightContrastSaturation samples=5732 mean_us=45.774693649685972 sum_ms=262.380544 frames=5695 total_frames=34235 active_seconds=35.083143089897931 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_Chromatic_Aberration samples=2082 mean_us=45.5703669548511 sum_ms=94.877504 frames=2082 total_frames=34235 active_seconds=13.740106996847317 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_Contrast samples=5551 mean_us=45.073155827778777 sum_ms=250.201088 frames=5551 total_frames=34235 active_seconds=27.00276609021239 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_GrayScale samples=1175 mean_us=46.718801702127664 sum_ms=54.894592 frames=1175 total_frames=34235 active_seconds=8.12098278850317 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_Noise samples=9412 mean_us=48.382803229919247 sum_ms=455.378944 frames=9411 total_frames=34235 active_seconds=48.860976383090019 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Color_Switching samples=1609 mean_us=53.077439403356117 sum_ms=85.4016 frames=1609 total_frames=34235 active_seconds=8.5890949033200741 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Colors_Adjust_FullColors samples=144 mean_us=46.13688888888889 sum_ms=6.643712 frames=144 total_frames=34235 active_seconds=0.94580399570986629 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Colors_BleachBypass samples=1876 mean_us=44.839300639658845 sum_ms=84.118528 frames=1876 total_frames=34235 active_seconds=7.576030297903344 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Colors_Brightness samples=2576 mean_us=44.544260869565214 sum_ms=114.746016 frames=2576 total_frames=34235 active_seconds=16.602424180135131 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Colors_HUE_Rotate samples=2672 mean_us=49.575856287425154 sum_ms=132.466688 frames=2672 total_frames=34235 active_seconds=15.996761977439746 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_BlackHole samples=265 mean_us=48.004347169811318 sum_ms=12.721152 frames=265 total_frames=34235 active_seconds=1.4922496057115495 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Dream2 samples=1419 mean_us=57.09647921071177 sum_ms=81.019904 frames=1419 total_frames=34235 active_seconds=7.0851724857930094 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_FishEye samples=61 mean_us=45.005639344262292 sum_ms=2.745344 frames=61 total_frames=34235 active_seconds=0.22952760104089975 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Flag samples=2229 mean_us=43.153170031404215 sum_ms=96.188416 frames=2229 total_frames=34235 active_seconds=11.369621895486489 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Distortion_Noise samples=2229 mean_us=96.810953790937631 sum_ms=215.791616 frames=2229 total_frames=34235 active_seconds=11.369621895486489 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Drawing_Manga_FlashWhite samples=398 mean_us=76.550432160804021 sum_ms=30.467072 frames=398 total_frames=34235 active_seconds=3.7301718001253903 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Drawing_Manga_Flash_Color samples=89 mean_us=44.1125393258427 sum_ms=3.926016 frames=89 total_frames=34235 active_seconds=0.95572599535807967 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Edge_Neon samples=32 mean_us=111.808 sum_ms=3.577856 frames=32 total_frames=34235 active_seconds=0.19884260976687074 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_DarkMatter samples=121 mean_us=227.74267768595041 sum_ms=27.556864 frames=101 total_frames=34235 active_seconds=0.48469199892133474 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch1 samples=2909 mean_us=70.039628738398079 sum_ms=203.74528 frames=2904 total_frames=34235 active_seconds=12.730198014061898 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch2 samples=3913 mean_us=99.498361359570652 sum_ms=389.337088 frames=3857 total_frames=34235 active_seconds=21.608150997431949 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_Glitch3 samples=791 mean_us=91.763863463969656 sum_ms=72.585216 frames=714 total_frames=34235 active_seconds=3.9040996984113008 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_FX_Psycho samples=24 mean_us=43.392 sum_ms=1.041408 frames=24 total_frames=34235 active_seconds=0.12303399946540594 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Film_ColorPerfection samples=4875 mean_us=49.657383384615386 sum_ms=242.079744 frames=4875 total_frames=34235 active_seconds=27.481955795781687 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Film_Grain samples=1879 mean_us=46.532870675891431 sum_ms=87.435264 frames=1879 total_frames=34235 active_seconds=11.371855701785535 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Glitch_Mozaic samples=196 mean_us=44.596244897959188 sum_ms=8.740864 frames=196 total_frames=34235 active_seconds=0.93723549973219633 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Glow_Glow samples=1447 mean_us=71.891593642017966 sum_ms=104.027136 frames=1414 total_frames=34235 active_seconds=7.2285408892203122 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Glow_Glow_Color samples=2134 mean_us=92.353379568884719 sum_ms=197.082112 frames=2134 total_frames=34235 active_seconds=14.218578004743904 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Light_Rainbow samples=1476 mean_us=45.644314363143636 sum_ms=67.371008 frames=1476 total_frames=34235 active_seconds=8.5232727988623083 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Light_Water samples=2898 mean_us=48.241777777777784 sum_ms=139.804672 frames=2821 total_frames=34235 active_seconds=18.477932183770463 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_NightVision_4 samples=140 mean_us=43.717485714285715 sum_ms=6.120448 frames=124 total_frames=34235 active_seconds=0.61036439659073949 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Noise_TV samples=29 mean_us=54.201379310344826 sum_ms=1.57184 frames=26 total_frames=34235 active_seconds=0.13073560129851103 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Noise_TV_2 samples=81 mean_us=53.98123456790124 sum_ms=4.37248 frames=74 total_frames=34235 active_seconds=0.3977897958829999 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Noise_TV_3 samples=932 mean_us=53.1919313304721 sum_ms=49.57488 frames=645 total_frames=34235 active_seconds=3.9006262053735554 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Pixel_Pixelisation samples=201 mean_us=42.615721393034825 sum_ms=8.56576 frames=201 total_frames=34235 active_seconds=1.0081801121123135 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Real_VHS samples=278 mean_us=55.859568345323744 sum_ms=15.52896 frames=266 total_frames=34235 active_seconds=1.3962764975149184 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Artefact samples=1501 mean_us=83.020407728181212 sum_ms=124.613632 frames=1501 total_frames=34235 active_seconds=8.8194910038728267 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Chromatical samples=3809 mean_us=54.817739039117875 sum_ms=208.800768 frames=3809 total_frames=34235 active_seconds=22.950345693388954 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Chromatical2 samples=7036 mean_us=60.342649232518475 sum_ms=424.57088 frames=7036 total_frames=34235 active_seconds=44.820764379808679 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_CompressionFX samples=35 mean_us=49.912685714285715 sum_ms=1.746944 frames=35 total_frames=34235 active_seconds=0.22856379626318812 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Distorted samples=1761 mean_us=53.515484383872796 sum_ms=94.240768 frames=1761 total_frames=34235 active_seconds=11.368792801629752 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_LED samples=155 mean_us=46.813316129032259 sum_ms=7.256064 frames=155 total_frames=34235 active_seconds=1.43745859246701 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Noise samples=154 mean_us=45.800727272727272 sum_ms=7.053312 frames=154 total_frames=34235 active_seconds=0.8151078000664711 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Old_Movie_2 samples=2600 mean_us=129.91645538461538 sum_ms=337.782784 frames=2600 total_frames=34235 active_seconds=10.889651704346761 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_PlanetMars samples=790 mean_us=44.1486582278481 sum_ms=34.87744 frames=790 total_frames=34235 active_seconds=4.66599189909175 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_VHS samples=349 mean_us=67.56346131805158 sum_ms=23.579648 frames=333 total_frames=34235 active_seconds=1.699791481718421 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_VHS_Rewind samples=1167 mean_us=55.634728363324761 sum_ms=64.925728 frames=1167 total_frames=34235 active_seconds=6.8757155972998589 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Vcr samples=54 mean_us=80.440888888888892 sum_ms=4.343808 frames=54 total_frames=34235 active_seconds=0.26254310598596931 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_Vintage samples=121 mean_us=45.21679338842975 sum_ms=5.471232 frames=101 total_frames=34235 active_seconds=0.48469199892133474 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenHV samples=2642 mean_us=47.450113550340646 sum_ms=125.3632 frames=2547 total_frames=34235 active_seconds=13.30713949049823 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenHorizontal samples=21327 mean_us=47.65942889295259 sum_ms=1016.43264 frames=21229 total_frames=34235 active_seconds=117.06760201067664 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_TV_WideScreenVertical samples=5263 mean_us=47.429508645259361 sum_ms=249.621504 frames=5223 total_frames=34235 active_seconds=30.786610490642488 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_VHS_Tracking samples=2455 mean_us=72.716096130346244 sum_ms=178.518016 frames=2455 total_frames=34235 active_seconds=12.7409449883271 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_Aura samples=467 mean_us=279.86117344753745 sum_ms=130.695168 frames=467 total_frames=34235 active_seconds=2.1266386094503105 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_AuraDistortion samples=199 mean_us=279.69608040201007 sum_ms=55.65952 frames=199 total_frames=34235 active_seconds=1.1812346060760319 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_Drost samples=560 mean_us=85.674057142857137 sum_ms=47.977472 frames=560 total_frames=34235 active_seconds=2.8297895940486342 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_Plasma samples=376 mean_us=56.772085106382974 sum_ms=21.346304 frames=376 total_frames=34235 active_seconds=1.8986117008607835 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] CameraFilterPack_Vision_Tunnel samples=929 mean_us=51.440292787944024 sum_ms=47.788032 frames=929 total_frames=34235 active_seconds=6.876307207159698 song_seconds=187.62032584962435
+[StutterFix] [filtergpu] concurrent=1 frames=1888
+[StutterFix] [filtergpu] concurrent=2 frames=3492
+[StutterFix] [filtergpu] concurrent=3 frames=4473
+[StutterFix] [filtergpu] concurrent=4 frames=8865
+[StutterFix] [filtergpu] concurrent=5 frames=4234
+[StutterFix] [filtergpu] concurrent=6 frames=4541
+[StutterFix] [filtergpu] concurrent=7 frames=1956
+[StutterFix] [filtergpu] concurrent=8 frames=668
+[StutterFix] [filtergpu] concurrent=9 frames=1273
+[StutterFix] [filtergpu] concurrent=10 frames=242
+[StutterFix] [filtergpu] concurrent=11 frames=22
+[StutterFix] [filtergpu] concurrent=12 frames=22
+[StutterFix] [filtergpu] skipped=0 invalid=0
+[StutterFix] [자동 시험] [임무단계] filtergpu 2328.028ms
+[StutterFix] [첫 판 FPS] 1.4초 멈춘 프레임 동안 윈도우 메시지 확인 2번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.9초
+[JALib INFO 18:15:38.194 #41645] JALogger cache removed 3 entries, current cache size: 0
+[StutterFix] [나가기] 장식 2531개 중 판 중에 안 바뀐 261개는 가볍게, 2270개는 원래대로 다시 설정 122ms
+[StutterFix] [전환] 편집으로 나가기 1286ms (이미지 718장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 1486MB -> 453MB, 279ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1566ms)
+[StutterFix] [자동 시험] [임무단계] stop 1579.551ms
+[StutterFix] [자동 시험] 바꾼 설정 되돌림
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다
+[StutterFix] [자동 시험] [임무단계] quit 216.893ms
+Thread ended
+[Manager] Destroying when exit.
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.

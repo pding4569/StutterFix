@@ -1,0 +1,531 @@
+Mono path[0] = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed'
+Mono config path = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/MonoBleedingEdge/etc'
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.21f1 (c02631ffc030)
+[Subsystems] Discovering subsystems at path D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/UnitySubsystems
+GfxDevice: creating device client; kGfxThreadingModeClientWorkerJobs
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4060 Ti (ID=0x2803)
+    Vendor:   NVIDIA
+    VRAM:     7949 MB
+    Driver:   32.0.16.1088
+Begin MonoManager ReloadAssembly
+
+
+[Manager] Injection...
+[Manager] Initialize.
+[Manager] Version: 0.32.5.0.
+[Manager] OS: Microsoft Windows NT 10.0.19045.0 AMD64.
+[Manager] Net Framework: 4.0.30319.42000.
+[Manager] Unity Engine: 6000.3.211.
+[Manager] Game: A Dance of Fire and Ice.
+[Manager] IsSupportOnSessionStart: False.
+[Manager] IsSupportOnSessionStop: False.
+[Manager] Mods path: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods.
+[Manager] Injection successful.
+- Loaded All Assemblies, in  1.014 seconds
+- Finished resetting the current domain, in  0.002 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+<RI> Input initialized.
+UnloadTime: 0.585000 ms
+[Manager] Starting.
+[Manager] Parsing mods.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\AdofaiGenBridge\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\YouTubeStream\Info.json'.
+[Manager] Sorting mods.
+[Manager] Loading mods.
+[AdofaiGenBridge] Version '0.3.8'. Loading.
+[AdofaiGenBridge] Bridge 0.3.8 ready; bounded async heartbeat IO, timing, screenshots and hitch context.
+[AdofaiGenBridge] Active.
+[AdofaiGenBridge] Loading time 0.63 s.
+[JALib] Version '1.0.0.45 beta45'. Loading.
+[JALib] Active.
+[JALib] Loading time 0.00 s.
+[Quartz] Version '2.0.0-alpha-121'. Loading.
+[JALib] Version initialized to 1.0 beta45
+[JALib] Successfully loaded JAModInfo
+[JALib Bootstrap] Request completed: https://jalib.jongyeol.kr/autoInstaller/1.0.0.45 (355ms)
+[JALib INFO 18:26:27.792 #0] Starting JAPatcher Initialization...(0/4)
+  ⚡ Thread Pool Worker(11) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:26:27.794 #0] Starting JAPatcher Reverse Patches.(1/4)
+  ⚡ Thread Pool Worker(11) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:26:27.877 #0] Start Enter the Harmony Locker.(2/4)
+  ⚡ Thread Pool Worker(11) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:26:27.877 #0] Start JAPatcher Patches.(3/4)
+  ⚡ Thread Pool Worker(11) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:26:27.975 #0] Complete JAPatcher Initialization.(4/4)
+  ⚡ Thread Pool Worker(11) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:26:28.020 #0] JAMod JALib is Initialized
+  ⚡ Thread Pool Worker(11) | Unknown Task
+  📍 JALib.Core.JAMod.Setup(UnityModManager+ModEntry modEntry, JAModInfo modInfo, GetModInfo apiInfo, JAModSetting setting)
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[Quartz] Active.
+[Quartz] Loading time 0.75 s.
+[StutterFix] Version '2.7.2'. Loading.
+[StutterFix] [화면 효과] 번들 준비 Direct3D11
+[StutterFix] [저사양] 선명도 보정 셰이더 찾음
+[StutterFix] patched scnGame.Awake
+[StutterFix] patched scnEditor.SwitchToEditMode
+[StutterFix] patched scrTextDecoration.SetText (같은 글자 건너뛰기)
+[StutterFix] patched Shadow.effectColor (같은 그림자 색 건너뛰기)
+[StutterFix] patched <SetCollider>d__23.MoveNext
+[StutterFix] [효과] StartEffect 87개, 걸러내기 0개 감쌈
+[StutterFix] RecolorSplit: StartEffect 인자 1개
+[StutterFix] patched ffxRecolorFloorPlus.StartEffect (구간 나누기)
+[StutterFix] [즉시 이동] OnUpdate 건너뛸 짝 9개, 타입으로 판별 가능 9개 (예상 9개)
+[StutterFix] [즉시 이동] 설치
+[StutterFix] [즉시 이동 직접] 설치: 속성 블록 9개 (예상 9개)
+[StutterFix] [장식 이동 루프] 설치
+[StutterFix] [미리 확인] 설치
+[StutterFix] [장식 애니메이션] 설치
+[StutterFix] [타일 애니메이션] 설치
+[StutterFix] [저사양] 설치 (게임 화면 해상도 사용 가능)
+[StutterFix] [파티클] 설치 (바꾼 호출 2곳)
+[StutterFix] [누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)
+[StutterFix] [로딩] 이미지 파일 시각 캐시 설치 (바꾼 곳 2)
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치
+[StutterFix] [로딩] 같은 이미지 장식 목록 넣기 빠르게 설치
+[StutterFix] [맵 파일 읽기] 빠른 JSON 해석기 설치 (GDMiniJSON.Json)
+[StutterFix] [맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 3)
+[StutterFix] [맵 파일 읽기] 여러 코어로 이벤트 만들기 설치
+[StutterFix] [장식 한 번에 복제] 설치
+[StutterFix] [판정 글자] 사라질 때 색만 바꾸기 설치
+[StutterFix] [오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 2개)
+[StutterFix] [연출 끄기] 설치 (효과 19종)
+[StutterFix] [이미지 압축] 설치
+[StutterFix] [장식 마무리] 설치
+[StutterFix] [잠든 장식] 설치
+[StutterFix] [이미지] 빠른 압축 풀기(libdeflate): 사용 중
+[StutterFix] [이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): 사용 중
+[StutterFix] [이미지] JPG 풀기(libjpeg-turbo): 사용 중
+[StutterFix] [이미지] 스프라이트 크기 보정 설치 (큰 이미지 줄이기용)
+[StutterFix] [이미지] 미리 풀기 설치
+[StutterFix] [투명 장식] 위치 늦게 반영 설치
+[StutterFix] [투명 장식] 설치
+[StutterFix] tween fix installed
+[StutterFix] [장면 정리] 설치
+[StutterFix] [전환] 설치
+[StutterFix] [나가기] 설치
+[StutterFix] end hook: scnEditor.SwitchToEditMode
+[StutterFix] end hook: scrController.FailAction
+[StutterFix] end hook: scrController.Fail2Action
+[StutterFix] end hook: scrController.OnLandOnPortal
+[StutterFix] end hook: scrController.QuitToMainMenu
+[StutterFix] end hook: scnEditor.QuitToMenu
+[StutterFix] end hook: scnEditor.TryQuitToMenu
+[StutterFix] end hook: scnEditor.SaveAndQuit
+[StutterFix] restart hook: scrController.Restart
+[StutterFix] restart hook: scnEditor.Play
+[StutterFix] restart hook: scrController.ResetCustomLevel
+[StutterFix] gc control installed
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [쓰레기 줄이기] 비동기 키 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 마우스 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 레거시 키보드 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [미리 컴파일] 모드 함수 2272개 493ms, 게임 함수(효과·장식·타일·행성·지휘자) 1111개 113ms
+[StutterFix] 켜짐: 패치 설치 완료 (플레이어용)
+[StutterFix] 지금 Direct3D11 / LegacyJobified
+[StutterFix] [첫 판 FPS] 응답 없음 창 끔
+[StutterFix] [자동 시험] 시작: 20단계 - timeout 900 / set FrameGenOutside 0 / fpscap 0 / auto on / open D:/얼불춤 맵 파일/Windflower/Windflower.adofai / select 1154 / filterhalf CameraFilterPack_AAA_SuperComputer / play / wait 20 / filterhalf off / stop / wait 1 / select 1 / filterhalf CameraFilterPack_TV_WideScreenHorizontal / play / wait 20 / filterhalf off / stop / wait 1 / quit
+[StutterFix] [프레임 통계] 게임 기본: 꺼짐, 이 모드: 켬(GPU 시간 측정)
+[StutterFix] Active.
+[StutterFix] Loading time 8.15 s.
+[YouTubeStream] Version '1.0.5'. Loading.
+Mod was added: YouTubeStream
+[YouTubeStream] Active.
+[YouTubeStream] Loading time 0.10 s.
+[Manager] FINISH. SUCCESSFUL LOADED 5/5 MODS.
+
+
+Startup: GetPlatform
+Startup: Setting platform to Windows.
+Startup: DetermineAppLocation
+Startup: isInSteamLibrary: True
+Startup: SetBuildDateAndCommit
+Startup: Version r150, (32e5b8a, 2026/09/28 11:18 PM)
+Startup: SetLocale
+Startup: LoadSaveData
+Startup: SetupSystems
+setting language to: English
+Startup: Initialize Steam SDK
+Has license for 1977570: True
+Has license for 2016430: False
+Has license for 0: False
+Startup: FixResolution
+Startup: SetupLevelEventsInfo
+Startup: SetSettings
+Startup: ForceResolutionOnLofi
+Startup: LoadCalibration
+Startup: SetupSfxHandler
+Startup: GetSteamBranch
+Startup: SetupDLCs
+Startup: DLCManagers count: 3
+Startup: DLC: CheckUpToDate
+Startup: Neo Cosmos: owns True, installed True
+Startup: CacheShaderPropertyIDs
+Startup: DeleteTempUnzippingFolder
+Startup: Setup Discord
+Initializing Discord: Ok
+Startup: Give Steam Achievements
+Startup: Rewired Init
+Startup: RDInput Setup
+Mods detected! Disabling exception capturing
+Startup: Setup Loading Screen
+Startup: ADOStartup done!
+[Manager] Spawning.
+[JALib INFO 18:26:37.197 #1] Listening on port: 62006
+[JALib INFO 18:26:37.221 #1] Unzip ModApplicator...
+[Quartz] [Startup] paths + config took 21 ms
+[Quartz] [FontManager] CJK fallback: cjkFonts-regular-normalized SDF
+[Quartz] [Startup] FontManager took 37 ms
+[Quartz] [Localization] April Fools overlay ready for 3 language(s)
+[Quartz] [Translator] Starting to load translations from: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Lang
+[Quartz] [Translator] Found 3 translation files.
+[Quartz] [Startup] LocalizationService took 11 ms
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Overlay Core' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Discord' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Editor Tools' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Effect Remover' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Limiter' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Main Menu' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Hide Judgements' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Optimizer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'TUF' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Visual Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Planet Colors' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Auto Deafen' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'UI Hiding' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Calibration' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Viewer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Progress Bar' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Combo' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Judgement' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Song Title' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Panels' v2.0.0
+[Quartz] [Startup] ServiceAdapter took 254 ms
+[Quartz] [Startup] ServiceAdapter took 1 ms
+[Quartz] [Sprites] screen 3440x1440, 1.546 px/unit
+[Quartz] [Startup] UIService took 214 ms
+[Quartz] [Startup] TweenService took 0 ms
+[Quartz] [Startup] PlayCount took 4 ms
+[Quartz] [Startup] HarmonyService took 0 ms
+[Quartz] Mod Enabled
+[Quartz] [Startup] SetModEnabled took 1131 ms
+[Quartz] [Startup] total 2743 ms
+[Quartz] [Umm] active mods: [AdofaiGenBridge, JALib, Quartz, StutterFix, YouTubeStream]
+[Quartz] Hello
+[Quartz] [Compat] ADOFAI r150 — current game API
+[StutterFix] [상태] ? 종료됨 world:X  -> 정지
+[StutterFix] [자동 시험] UMM 창 닫음
+[StutterFix] [자동 시험] 단계 최대 시간 900초
+[StutterFix] [자동 시험] [임무단계] timeout 0.180ms
+[Quartz] [Harmony] applied patches (deferred to first tick) in 217 ms
+[StutterFix] [자동 시험] 설정 FrameGenOutside = 0 (묶음 끝에 0 로 되돌림)
+[StutterFix] [자동 시험] [임무단계] set 2089.975ms
+[StutterFix] [자동 시험] [FPS 제한] 목표 FPS 10000, vSync 0 frame 3
+[StutterFix] [자동 시험] [임무단계] fpscap 34.019ms
+[Quartz] [Translator] Finished loading translations.
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[StutterFix] [자동 시험] [임무단계] auto 35.033ms
+[StutterFix] [자동 시험] 맵 열기: D:/얼불춤 맵 파일/Windflower/Windflower.adofai
+[StutterFix] [화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 196개 바꿔 끼움 (지난 결과), 1프레임에 나눠 751ms, 한 프레임 최대 751ms
+[StutterFix] [자동 시험] 메모리 3초: 힙 83MB, 프로세스 1081MB(실제 램 824MB), 프레임 2805 
+[StutterFix] tween capacity set to 40000/25000
+Go to Menu
+Startup: Setup Audio Settings
+[StutterFix] [자동 시험] 메모리 6초: 힙 88MB, 프로세스 1080MB(실제 램 826MB), 프레임 6857 
+Startup: Setup Audio Settings End 
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.399700 ms
+Unloading 39 unused Assets to reduce memory usage. Loaded Objects now: 69783.
+Total: 35.555600 ms (FindLiveObjects: 5.333200 ms CreateObjectMapping: 1.429200 ms MarkObjects: 28.644800 ms  DeleteObjects: 0.147900 ms)
+
+Shader.WarmupAllShaders ();
+Shader warmup: 132 shaders 1399 combinations 0.094s
+[StutterFix] [상태] None 종료됨 world:X  -> 정지
+Skipping audio break checking. Detected delta time: 1.740566
+[StutterFix] [상태] Start 종료됨 world:X  -> 정지
+[StutterFix] [상태] PlayerControl 종료됨 world:X  -> 정지
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 85.263500 ms
+Unloading 263 unused Assets to reduce memory usage. Loaded Objects now: 18220.
+Total: 102.702300 ms (FindLiveObjects: 1.036500 ms CreateObjectMapping: 0.787300 ms MarkObjects: 99.255400 ms  DeleteObjects: 1.622800 ms)
+
+[StutterFix] [자동 시험] 메모리 9초: 힙 146MB, 프로세스 1722MB(실제 램 1288MB), 프레임 6917 
+[StutterFix] [첫 판 FPS] 9.8초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 9.8초
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 15ms
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+[StutterFix] [첫 판 FPS] 1.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.5초
+[StutterFix] [자동 시험] 메모리 12초: 힙 359MB, 프로세스 2022MB(실제 램 1580MB), 프레임 6918 
+[StutterFix] [맵 파일 읽기] GC 멈춤 379ms(그중 이벤트로 바꾸기 155ms: 이벤트 13166개 여러 코어(5개)로 148ms), 힙 214MB -> 397MB (그 사이 GC 0번)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 6가지 중 새로 불러온 것 6개 28ms
+[StutterFix] [이미지] 자동: 전에 VRAM 이 모자라 끊긴 맵이라 긴 변 2048 으로 줄임
+[StutterFix] [이미지] 맵 열기 전: 이미 올라와 있는 이미지 1장, VRAM 전체 1997MB / 게임 392MB
+[StutterFix] [다른 모드] Quartz 최적화: 켜진 것 없음
+[StutterFix] [이미지] 1080장 미리 풀기 시작 (작업 스레드 5개, DXT 로 미리 압축: 저사양 옵션)
+[StutterFix] [자동 시험] 메모리 15초: 힙 578MB, 프로세스 4727MB(실제 램 2995MB), 프레임 6918 
+[StutterFix] [자동 시험] 메모리 18초: 힙 677MB, 프로세스 7516MB(실제 램 2976MB), 프레임 6918 
+[StutterFix] [장식 한 번에 복제] 54번에 5595개 (안 쓰고 지움 0개)
+[StutterFix] [이미지] 미리 푼 것 1075장(넣기 1751ms), 원래 방식 0장(0ms, 순서 어긋남 0), 기다림 862ms, GC 0번, 전체 6.1초, 줄인 이미지 95장 (긴 변 2048, VRAM 약 1766MB 아낌), 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 6275ms/작업 스레드 합), 처음부터 압축으로 넣음 522장 (뒤이어 압축 불림 522, 안 불림 0), 압축이 늦어 원래대로 370장 | 장식 만들기 6290개 3626ms, 그중 텍스처 불러오기 3724ms, 압축 마저 기다림 59ms
+[StutterFix] [이미지] 해독 시간(작업 스레드 5개 합계): 압축 풀기 5694ms, 필터 되돌리기 9283ms, 줄이기 650ms(128M 픽셀), 필터·줄이기 한 번에 0장 0ms(0M 픽셀), 흘려 풀기·줄이기 83장 5161ms(599M 픽셀, 못 한 것 0) | 새로 맡은 형식(흑백·인터레이스) 33장 | libdeflate 957장, 원래 zlib 로 다시 푼 것 0장 (사용 중) | 네이티브(sfnative): 필터 되돌린 줄 1075819, DXT 압축 줄 묶음 174122 | JPG(libjpeg-turbo): 35장 749ms, 못 푼 것 0장
+[StutterFix] [이미지] 로딩 뒤 GC 한 번 113ms
+Shader warmup: 190 shaders 1487 combinations 0.006s
+[StutterFix] [셰이더] 맵 불러온 뒤: 셰이더 190개, 새 필터 93개(필터 텍스처 12개) 미리 준비 29ms
+[StutterFix] [재시작] 에디터에서 맵 열기: D:/얼불춤 맵 파일/Windflower/Windflower.adofai
+[StutterFix] [다른 모드] 같은 게임 함수를 고치는 곳 36개: scnEditor.SwitchToEditMode (quartz.module.planetcolors, quartz.module.uihider) | ffxCheckpoint.StartEffect (quartz.module.visualtweaks) | ffxMenuPlanetSpeedChange.StartEffect (quartz.module.mainmenu) | ffxBloomPlus.StartEffect (quartz.module.effectremover) | ffxFlashPlus.StartEffect (quartz.module.effectremover) | ffxHallOfMirrorsPlus.StartEffect (quartz.module.effectremover) | ffxMoveFloorPlus.StartEffect (quartz.module.effectremover) | ffxScreenScrollPlus.StartEffect (quartz.module.effectremover) | ffxScreenTilePlus.StartEffect (quartz.module.effectremover) | ffxSetFilterAdvancedPlus.StartEffect (quartz.module.effectremover) | ffxShakeScreenPlus.StartEffect (quartz.module.effectremover) | scrParticleDecoration.Update (quartz.module.optimizer) | scrParticleDecoration.ResetParticle (quartz.module.optimizer) | scrCamera.SetCustomFrameRate (quartz.module.optimizer) | scnEditor.Play (YouTubeStream, Quartz, quartz.module.planetcolors) | LevelData.Decode (quartz.module.effectremover) | TextureManager.LoadTexture (quartz.module.optimizer) | RDString.Get (YouTubeStream) | scnGame.ResetScene (quartz.module.planetcolors) | scnGame.LoadLevel (YouTubeStream) | scnGame.ApplyEventsToFloors (quartz.module.visualtweaks) | scnGame.ApplyEvent (quartz.module.keylimiter) | scrConductor.PlayHitTimes (quartz.module.optimizer) | scrPlanet.MoveToNextFloor (quartz.module.uihider, Quartz) | scrController.FailAction (quartz.module.optimizer) | scrController.OnLandOnPortal (quartz.module.uihider) | scrController.QuitToMainMenu (quartz.module.tuf) | scrController.Restart (quartz.module.optimizer, Quartz) | scnGame.Play (quartz.module.keylimiter, Quartz, quartz.module.autodeafen, quartz.module.combo, quartz.module.judgement) | scnEditor.OpenLevelCo (Quartz) | scrFloor.LightUp (quartz.module.visualtweaks) | PlanetRenderer.Revive (quartz.module.visualtweaks, quartz.module.planetcolors) | scnCalibration.Start (quartz.module.calibration) | scnCalibration.CleanSlate (quartz.module.calibration) | scnCalibration.Calibrated (quartz.module.calibration) | scnCalibration.Update (quartz.module.calibration)
+Unloading 183 unused Assets to reduce memory usage. Loaded Objects now: 598377.
+Total: 238.766800 ms (FindLiveObjects: 60.369000 ms CreateObjectMapping: 12.976500 ms MarkObjects: 144.443000 ms  DeleteObjects: 20.977900 ms)
+
+[StutterFix] [상태] None 편집중 일시정지  -> 정지
+[StutterFix] [업데이트] 최신 v2.7.2, 지금 v2.7.2
+[StutterFix] [자동 시험] 맵 열림 (20.8초, 열기 요청부터 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] open 20888.867ms
+[StutterFix] [자동 시험] 타일 1154 선택
+[StutterFix] [자동 시험] [임무단계] select 75.649ms
+[StutterFix] [자동 시험] 메모리 21초: 힙 381MB, 프로세스 8267MB(실제 램 2875MB), 프레임 7040 
+[StutterFix] [자동 시험] [임무단계] filterhalf 220.234ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 미룬 것 없음
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4948개, 곡 중 최대 4948개 | 색 바뀜 11206번 확인, 그리기 켜고 끈 것 4948번, 쓴 시간 약 9.8ms, 가장 많이 쓴 프레임 약 9.82ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 6.5초 멈춘 프레임 동안 윈도우 메시지 확인 12번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.9초
+[StutterFix] [로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀
+[StutterFix] [타일 메시] 색 바꾸기 효과 212개, 타일·스타일 6513가지 -> 새로 미리 만든 메시 1933개 116ms (캐시 2941개)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 16가지 중 새로 불러온 것 9개 9ms
+[StutterFix] [효과 재사용] 다시 씀 0개, 새로 붙임 7573개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 0개 | 272ms
+[StutterFix] [전환] 에디터 재생 시작 758ms
+[StutterFix] [자동 시험] [임무단계] play 779.604ms
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 1076장, VRAM 전체 6627MB / 게임 5022MB
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 849ms (프레임 1개, 가장 긴 프레임 848ms) | 나눔: 곡 끝 요약 1ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 615ms, 그 밖 233ms | 이미지 파일 시각: 12158번 중 디스크 1531번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 63ms
+[StutterFix] [저사양] 그래픽 설정: 품질 단계 Default, 안티에일리어싱 0x, 수직동기 0, 그림자 Disable, 텍스처 0, 이방성 Disable, 파티클 레이캐스트 256, 소프트 파티클 False | 카메라 OverlayCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.63, 컬링 100000 | 카메라 BGStaticCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.63, 컬링 800 | 카메라 BGMovingCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.11, 컬링 400 | 카메라 Camera: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1, 컬링 9F397 | 화면 3440x1440 FullScreenWindow, 그래픽카드 NVIDIA GeForce RTX 4060 Ti
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1154 (0.5초)
+[StutterFix] [모니터] 258ms -> 메모리 정리 / gpu 5.8 cpu 860.6 (수집 7041번) 효과 0.0 모드 0.0(모니터 그리기) gc 1 | 시각 18:27:04.768
+[StutterFix] [모니터] 54ms -> 게임 처리 / gpu 5.8 cpu 860.6 (수집 7042번) 효과 0.0 모드 0.6(모니터 그리기) gc 0 | 시각 18:27:04.776
+[StutterFix] [filterhalf] CameraFilterPack_AAA_SuperComputer sample=1 max=7 psnr=56.796504766169079 control_max=0 size=3440x1440 cumulative_max=7 cumulative_psnr=56.796504766169079
+[StutterFix] [filterhalf] CameraFilterPack_AAA_SuperComputer sample=2 max=6 psnr=56.805142554595975 control_max=0 size=3440x1440 cumulative_max=7 cumulative_psnr=56.80082151289448
+[StutterFix] [모니터] 275ms -> GPU 과부하 / gpu 246.4 cpu 271.2 (수집 7167번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 곡 1.7초, 다시 보이게 된 장식 0개 | 시각 18:27:05.961
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6706/7949MB, 게임 전용 5270MB, 게임 공유(시스템 RAM) 105MB
+[StutterFix] [filterhalf] CameraFilterPack_AAA_SuperComputer sample=3 max=9 psnr=56.727804598304061 control_max=0 size=3440x1440 cumulative_max=9 cumulative_psnr=56.776345885820909
+[StutterFix] [모니터] 277ms -> GPU 과부하 / gpu 252.1 cpu 272.7 (수집 7257번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 2.4초, 다시 보이게 된 장식 0개 | 시각 18:27:06.667
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6478/7949MB, 게임 전용 5041MB, 게임 공유(시스템 RAM) 11MB
+[StutterFix] [filterhalf] CameraFilterPack_AAA_SuperComputer sample=4 max=8 psnr=57.648838664782957 control_max=0 size=3440x1440 cumulative_max=9 cumulative_psnr=56.978592089475619
+[StutterFix] [모니터] 274ms -> 게임 처리 / gpu 5.1 cpu 270.2 (수집 7347번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 3.1초, 다시 보이게 된 장식 0개 | 시각 18:27:07.369
+[StutterFix] [filterhalf] CameraFilterPack_AAA_SuperComputer sample=5 max=7 psnr=57.147541185218238 control_max=0 size=3440x1440 cumulative_max=9 cumulative_psnr=57.011860200419562
+[StutterFix] [모니터] 266ms -> GPU 과부하 / gpu 243.7 cpu 261.9 (수집 7437번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 3.8초, 다시 보이게 된 장식 0개 | 시각 18:27:08.066
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6708/7949MB, 게임 전용 5271MB, 게임 공유(시스템 RAM) 62MB
+[StutterFix] [filterhalf] CameraFilterPack_AAA_SuperComputer sample=6 max=7 psnr=58.278838907895647 control_max=0 size=3440x1440 cumulative_max=9 cumulative_psnr=57.198984743270941
+[StutterFix] [모니터] 275ms -> 게임 처리 / gpu 4.7 cpu 271.4 (수집 7527번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 4.5초, 다시 보이게 된 장식 0개 | 시각 18:27:08.764
+[StutterFix] [filterhalf] CameraFilterPack_AAA_SuperComputer sample=7 max=8 psnr=57.442142215318526 control_max=0 size=3440x1440 cumulative_max=9 cumulative_psnr=57.232899057711286
+[StutterFix] [모니터] 269ms -> GPU 과부하 / gpu 249.4 cpu 265.2 (수집 7617번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 5.2초, 다시 보이게 된 장식 0개 | 시각 18:27:09.459
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6477/7949MB, 게임 전용 5040MB, 게임 공유(시스템 RAM) 11MB
+[StutterFix] [filterhalf] CameraFilterPack_AAA_SuperComputer sample=8 max=7 psnr=56.706839024815629 control_max=0 size=3440x1440 cumulative_max=9 cumulative_psnr=57.163549815441506
+[StutterFix] [모니터] 271ms -> GPU 과부하 / gpu 247.8 cpu 267.2 (수집 7707번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 5.9초, 다시 보이게 된 장식 0개 | 시각 18:27:10.157
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6728/7949MB, 게임 전용 5291MB, 게임 공유(시스템 RAM) 104MB
+[StutterFix] [화면 대기] 늘어남: 평균 1.3ms (프레임 4.6ms 중, 약 217 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 69%, 게임 69%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [자동 시험] [임무단계] wait 19244.522ms
+[StutterFix] [자동 시험] [임무단계] filterhalf 50.189ms
+[StutterFix] [곡] 평균 183 FPS (5.5ms), 가장 긴 프레임 515ms, 곡 시작 연출 뒤 가장 긴 프레임 314ms, 끊김 8번, 프레임 3515개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 9개 (위치 저장 9개)
+[임무30] 0.981초 313.898ms cpu 3.260 gpu 1.054 효과 2.235
+[임무30] 1.703초 274.803ms cpu 3.751 gpu 4.591 효과 0.000
+[임무30] 2.419초 276.611ms cpu 3.369 gpu 4.559 효과 0.000
+[임무30] 3.118초 274.302ms cpu 3.805 gpu 4.519 효과 0.000
+[임무30] 3.819초 265.577ms cpu 3.722 gpu 4.536 효과 0.017
+[임무30] 4.517초 275.160ms cpu 3.414 gpu 4.549 효과 0.000
+[임무30] 5.210초 268.939ms cpu 3.744 gpu 4.626 효과 0.000
+[임무30] 5.909초 270.885ms cpu 3.866 gpu 4.294 효과 0.038
+[임무30] 19.182초 49.948ms cpu 3.617 gpu 0.000 효과 0.000 | GPU 평균 4.9ms, CPU 평균 4.5ms (3515개 잼) | 그 프레임: 게임 효과 35개 2.2ms (그중 장식 이동 0.2ms), 나머지 311.7ms | 효과가 가장 무거운 프레임 314ms: 게임 효과 2.2ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.04ms/프레임 | 가장 무거운 프레임 8개: [314ms @1.0초: 효과 35개 2.2(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 311.2] [277ms @2.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.4, 나머지 276.2] [275ms @4.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 274.7] [275ms @1.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 274.4] [274ms @3.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.4, 나머지 273.9] [271ms @5.9초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 270.3] [269ms @5.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 268.5] [266ms @3.8초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.4, 나머지 265.1] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 154(6.0/0.7/1.2/5.3/0.0, 734/0개) 10s 215(3.3/0.7/1.4/4.6/0.0, 727/0개) | 가장 높은 구간 10s 215 FPS | 같은 그림자 색 건너뛰기 18819회 | 파티클 장식: 같은 값 넣기 836740번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 17개 없앰, 게임 화면 버퍼 불필요한 해제 3번 막음 | 필터 형식 찾기 기억 729번 (새로 찾음 53번) | 오차 막대 눈금 가볍게 234개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 117개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 1919번을 767번으로 줄임 (60% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 589762번 중 같은 값이라 건너뜀 286266번 | 재생 중 편집기 검사 건너뜀 24365번 | 매 프레임 장식 순회 2572103번 중 바뀌는 게 없어 뺀 것 15830번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 730개만 훑음 (잠재움 10646번, 깨움 5083번, 목록 새로 만듦 1번, 안전망 검사 19번에 놓친 깨움 0개) | 즉시 이동 직접 처리 15292번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 392번, 투명한 채 색만 저장 1181번 | 장식 이동 루프: 효과 2282개(장식 15333개), 원래 코드로 넘긴 효과 814개 [길이 있음 813, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 1311개 | 장식 애니메이션 직접 처리: 만든 것 144개(동시 최대 68개), 끝까지 감 32, 끊겨서 완료 108, 버림 0, 기록 다시 씀 32, 새 표 객체 36, 갱신에 쓴 시간 58ms (3390프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 332개(타일 332개, 시작에 쓴 시간 3ms), 원래 코드로 1071개 [곡 시작 직후 1071, 길이 음수 0, 기타 0], 만든 것 1099개(동시 최대 176, 다시 씀 331, 겹쳐서 진짜 DOTween 0), 끝까지 감 971, 끊겨서 완료 0, 버림 0, 갱신 117ms (3443프레임), 게임이 멈출 때 넘겨준 것 0 | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 24111번 (안 보이게 돼서 대신 갱신 952번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 2633개, 곡 중 최대 5038개 | 투명한 장식 위치 반영 미룸 2025번, 보일 때 반영 657번 | 색 바뀜 9057번 확인, 그리기 켜고 끈 것 7565번, 쓴 시간 약 3.4ms, 가장 많이 쓴 프레임 약 3.45ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 127개는 가볍게, 6163개는 원래대로 다시 설정 334ms
+[StutterFix] [전환] 편집으로 나가기 801ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 1108MB -> 358MB, 238ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (1039ms)
+[StutterFix] [자동 시험] [임무단계] stop 1044.150ms
+[StutterFix] [자동 시험] [임무단계] wait 105.888ms
+[StutterFix] [화면 대기] 이번 판 18초 중 14초 동안 늘어나 있었음 (그때 평균 1.3ms)
+[StutterFix] [자동 시험] 타일 1 선택
+[StutterFix] [자동 시험] [임무단계] select 68.920ms
+[StutterFix] [자동 시험] [임무단계] filterhalf 44.556ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 116ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 199ms
+[StutterFix] [전환] 에디터 재생 시작 500ms
+[StutterFix] [자동 시험] [임무단계] play 508.507ms
+[StutterFix] [모니터] 50ms -> 게임 처리 / gpu 4.9 cpu 1126.2 (수집 10558번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 곡 19.2초, 다시 보이게 된 장식 0개 | 시각 18:27:25.245
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 580ms (프레임 1개, 가장 긴 프레임 580ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 342ms, 그 밖 238ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 77ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (0.0초)
+[StutterFix] [filterhalf] CameraFilterPack_TV_WideScreenHorizontal sample=1 max=0 psnr=Infinity control_max=0 size=3440x1440 cumulative_max=0 cumulative_psnr=Infinity
+[StutterFix] [filterhalf] CameraFilterPack_TV_WideScreenHorizontal sample=2 max=145 psnr=47.411036887276452 control_max=0 size=3440x1440 cumulative_max=145 cumulative_psnr=50.421336843916265
+[StutterFix] [filterhalf] CameraFilterPack_TV_WideScreenHorizontal sample=3 max=179 psnr=39.291589084926251 control_max=0 size=3440x1440 cumulative_max=179 cumulative_psnr=43.440029880658031
+[StutterFix] [모니터] 263ms -> GPU 과부하 / gpu 257.8 cpu 259.3 (수집 10777번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 1.8초, 다시 보이게 된 장식 0개 | 시각 18:27:27.095
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6616/7949MB, 게임 전용 5183MB, 게임 공유(시스템 RAM) 83MB
+[StutterFix] [filterhalf] CameraFilterPack_TV_WideScreenHorizontal sample=4 max=116 psnr=35.85750150676396 control_max=0 size=3440x1440 cumulative_max=179 cumulative_psnr=40.049842687654554
+[StutterFix] [모니터] 278ms -> GPU 과부하 / gpu 270.7 cpu 272.2 (수집 10867번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 2.5초, 다시 보이게 된 장식 0개 | 시각 18:27:27.768
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6506/7949MB, 게임 전용 5073MB, 게임 공유(시스템 RAM) 13MB
+[StutterFix] [filterhalf] CameraFilterPack_TV_WideScreenHorizontal sample=5 max=198 psnr=39.546846584271023 control_max=0 size=3440x1440 cumulative_max=198 cumulative_psnr=39.944474845465379
+[StutterFix] [모니터] 261ms -> GPU 과부하 / gpu 256.3 cpu 257.5 (수집 10957번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 3.1초, 다시 보이게 된 장식 0개 | 시각 18:27:28.383
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6636/7949MB, 게임 전용 5202MB, 게임 공유(시스템 RAM) 102MB
+[StutterFix] [filterhalf] CameraFilterPack_TV_WideScreenHorizontal sample=6 max=195 psnr=39.446483014028829 control_max=0 size=3440x1440 cumulative_max=198 cumulative_psnr=39.857408984647066
+[StutterFix] [모니터] 255ms -> GPU 과부하 / gpu 247.5 cpu 251.9 (수집 11047번) 효과 0.0 모드 0.3(모니터 그리기) gc 0 | 곡 3.7초, 다시 보이게 된 장식 0개 | 시각 18:27:28.982
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6636/7949MB, 게임 전용 5202MB, 게임 공유(시스템 RAM) 102MB
+[StutterFix] [filterhalf] CameraFilterPack_TV_WideScreenHorizontal sample=7 max=195 psnr=39.447697964835257 control_max=0 size=3440x1440 cumulative_max=198 cumulative_psnr=39.796458786789387
+[StutterFix] [모니터] 270ms -> GPU 과부하 / gpu 265.5 cpu 266.8 (수집 11137번) 효과 0.0 모드 0.2(모니터 그리기) gc 0 | 곡 4.3초, 다시 보이게 된 장식 0개 | 시각 18:27:29.598
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6507/7949MB, 게임 전용 5073MB, 게임 공유(시스템 RAM) 14MB
+[StutterFix] [filterhalf] CameraFilterPack_TV_WideScreenHorizontal sample=8 max=84 psnr=40.72783239410434 control_max=0 size=3440x1440 cumulative_max=198 cumulative_psnr=39.902528125431786
+[StutterFix] [모니터] 266ms -> GPU 과부하 / gpu 262.5 cpu 262.4 (수집 11227번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 곡 4.9초, 다시 보이게 된 장식 0개 | 시각 18:27:30.207
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6507/7949MB, 게임 전용 5073MB, 게임 공유(시스템 RAM) 14MB
+[StutterFix] [자동 시험] [임무단계] wait 19501.205ms
+[StutterFix] [자동 시험] [임무단계] filterhalf 42.899ms
+[StutterFix] [곡] 평균 251 FPS (4.0ms), 가장 긴 프레임 297ms, 곡 시작 연출 뒤 가장 긴 프레임 297ms, 끊김 7번, 프레임 4890개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 9개 (위치 저장 9개)
+[임무30] 0.560초 296.800ms cpu 3.361 gpu 0.000 효과 1.855
+[임무30] 1.178초 260.593ms cpu 3.572 gpu 2.707 효과 0.000
+[임무30] 1.803초 262.772ms cpu 3.837 gpu 2.792 효과 0.000
+[임무30] 2.473초 278.366ms cpu 3.737 gpu 3.097 효과 0.001
+[임무30] 3.092초 260.816ms cpu 3.519 gpu 1.153 효과 0.000
+[임무30] 3.691초 255.405ms cpu 3.383 gpu 1.306 효과 0.000
+[임무30] 4.307초 270.326ms cpu 3.734 gpu 1.145 효과 0.000
+[임무30] 4.918초 265.988ms cpu 4.366 gpu 2.502 효과 0.000
+[임무30] 19.450초 42.543ms cpu 3.538 gpu 0.000 효과 0.000 | GPU 평균 2.7ms, CPU 평균 4.0ms (4890개 잼) | 그 프레임: 게임 효과 40개 1.9ms (그중 장식 이동 0.2ms), 나머지 294.9ms | 효과가 가장 무거운 프레임 297ms: 게임 효과 1.9ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.04ms/프레임 | 가장 무거운 프레임 8개: [297ms @0.6초: 효과 40개 1.9(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 294.4] [278ms @2.5초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.6, 나머지 277.7] [270ms @4.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 269.7] [266ms @4.9초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 265.4] [263ms @1.8초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.8, 나머지 260.9] [261ms @3.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 260.1] [261ms @1.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 260.0] [255ms @3.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 254.9] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 209(5.0/0.7/0.1/3.3/0.0, 824/0개) 10s 296(3.3/0.7/0.0/2.2/0.0, 802/0개) | 가장 높은 구간 10s 296 FPS | 같은 그림자 색 건너뛰기 43294회 | 파티클 장식: 같은 값 넣기 1962590번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 20개 없앰, 게임 화면 버퍼 불필요한 해제 4번 막음 | 필터 형식 찾기 기억 568번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 234개 (원래대로 0개)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 13번을 10번으로 줄임 (23% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1224677번 중 같은 값이라 건너뜀 396801번 | 재생 중 편집기 검사 건너뜀 26666번 | 매 프레임 장식 순회 3971965번 중 바뀌는 게 없어 뺀 것 23923번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 811개만 훑음 (잠재움 18739번, 깨움 13275번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 199번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 544개(장식 1258개), 원래 코드로 넘긴 효과 16개 [길이 있음 15, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 389개 | 장식 애니메이션 직접 처리: 만든 것 285개(동시 최대 148개), 끝까지 감 174, 끊겨서 완료 15, 버림 0, 기록 다시 씀 12, 새 표 객체 273, 갱신에 쓴 시간 81ms (4196프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 9개(타일 42개, 시작에 쓴 시간 0ms), 원래 코드로 2개 [곡 시작 직후 2, 길이 음수 0, 기타 0], 만든 것 11개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 10, 끊겨서 완료 0, 버림 0, 갱신 5ms (1397프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 5개(바로 쓴 값 8개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 13886번 (안 보이게 돼서 대신 갱신 14번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4874개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 14번, 보일 때 반영 6번 | 색 바뀜 16292번 확인, 그리기 켜고 끈 것 90번, 쓴 시간 약 6.8ms, 가장 많이 쓴 프레임 약 0.24ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4430개는 가볍게, 1860개는 원래대로 다시 설정 192ms
+[StutterFix] [전환] 편집으로 나가기 442ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 906MB -> 339MB, 233ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (675ms)
+[StutterFix] [자동 시험] [임무단계] stop 679.076ms
+[StutterFix] [모니터] 43ms -> 게임 처리 / gpu 3.9 cpu 759.5 (수집 15453번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 곡 19.5초, 다시 보이게 된 장식 0개 | 시각 18:27:45.517
+[StutterFix] [자동 시험] [임무단계] wait 326.447ms
+[StutterFix] [자동 시험] 바꾼 설정 되돌림
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다
+[StutterFix] [자동 시험] [임무단계] quit 5.328ms
+Thread ended
+[Manager] Destroying when exit.
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.

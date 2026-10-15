@@ -6,7 +6,7 @@ using HarmonyLib;
 
 namespace StutterFix
 {
-    // Unity ?? ??? ??? ????. No allocation/reflection/locks in the sampled path.
+    // Unity diagnostic sampling. No allocation/reflection/locks in the sampled path.
     internal static class WasteProbe
     {
         private const string Id = "StutterFix.WasteProbe";

@@ -1,0 +1,1270 @@
+Mono path[0] = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed'
+Mono config path = 'D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/MonoBleedingEdge/etc'
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.21f1 (c02631ffc030)
+[Subsystems] Discovering subsystems at path D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/UnitySubsystems
+GfxDevice: creating device client; kGfxThreadingModeClientWorkerJobs
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4060 Ti (ID=0x2803)
+    Vendor:   NVIDIA
+    VRAM:     7949 MB
+    Driver:   32.0.16.1088
+Begin MonoManager ReloadAssembly
+
+
+[Manager] Injection...
+[Manager] Initialize.
+[Manager] Version: 0.32.5.0.
+[Manager] OS: Microsoft Windows NT 10.0.19045.0 AMD64.
+[Manager] Net Framework: 4.0.30319.42000.
+[Manager] Unity Engine: 6000.3.211.
+[Manager] Game: A Dance of Fire and Ice.
+[Manager] IsSupportOnSessionStart: False.
+[Manager] IsSupportOnSessionStop: False.
+[Manager] Mods path: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods.
+[Manager] Injection successful.
+- Loaded All Assemblies, in  0.961 seconds
+- Finished resetting the current domain, in  0.002 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+<RI> Input initialized.
+UnloadTime: 0.552900 ms
+[Manager] Starting.
+[Manager] Parsing mods.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\AdofaiGenBridge\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\Info.json'.
+[Manager] Reading file 'D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\YouTubeStream\Info.json'.
+[Manager] Sorting mods.
+[Manager] Loading mods.
+[AdofaiGenBridge] Version '0.3.8'. Loading.
+[AdofaiGenBridge] Bridge 0.3.8 ready; bounded async heartbeat IO, timing, screenshots and hitch context.
+[AdofaiGenBridge] Active.
+[AdofaiGenBridge] Loading time 0.63 s.
+[JALib] Version '1.0.0.45 beta45'. Loading.
+[JALib] Active.
+[JALib] Loading time 0.00 s.
+[Quartz] Version '2.0.0-alpha-121'. Loading.
+[JALib] Version initialized to 1.0 beta45
+[JALib] Successfully loaded JAModInfo
+[JALib Bootstrap] Request completed: https://jalib.jongyeol.kr/autoInstaller/1.0.0.45 (345ms)
+[JALib INFO 18:29:35.322 #0] Starting JAPatcher Initialization...(0/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:29:35.324 #0] Starting JAPatcher Reverse Patches.(1/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:29:35.412 #0] Start Enter the Harmony Locker.(2/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:29:35.412 #0] Start JAPatcher Patches.(3/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:29:35.513 #0] Complete JAPatcher Initialization.(4/4)
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.Patch.JAPatcher..cctor()
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[JALib INFO 18:29:35.553 #0] JAMod JALib is Initialized
+  ⚡ Thread Pool Worker(6) | Unknown Task
+  📍 JALib.Core.JAMod.Setup(UnityModManager+ModEntry modEntry, JAModInfo modInfo, GetModInfo apiInfo, JAModSetting setting)
+  📁 <25014b5d858a4659afc6556e531fe63e>:0
+
+[Quartz] Active.
+[Quartz] Loading time 0.72 s.
+[StutterFix] Version '2.7.2'. Loading.
+[StutterFix] [화면 효과] 번들 준비 Direct3D11
+[StutterFix] [저사양] 선명도 보정 셰이더 찾음
+[StutterFix] patched scnGame.Awake
+[StutterFix] patched scnEditor.SwitchToEditMode
+[StutterFix] patched scrTextDecoration.SetText (같은 글자 건너뛰기)
+[StutterFix] patched Shadow.effectColor (같은 그림자 색 건너뛰기)
+[StutterFix] patched <SetCollider>d__23.MoveNext
+[StutterFix] [효과] StartEffect 87개, 걸러내기 0개 감쌈
+[StutterFix] RecolorSplit: StartEffect 인자 1개
+[StutterFix] patched ffxRecolorFloorPlus.StartEffect (구간 나누기)
+[StutterFix] [즉시 이동] OnUpdate 건너뛸 짝 9개, 타입으로 판별 가능 9개 (예상 9개)
+[StutterFix] [즉시 이동] 설치
+[StutterFix] [즉시 이동 직접] 설치: 속성 블록 9개 (예상 9개)
+[StutterFix] [장식 이동 루프] 설치
+[StutterFix] [미리 확인] 설치
+[StutterFix] [장식 애니메이션] 설치
+[StutterFix] [타일 애니메이션] 설치
+[StutterFix] [저사양] 설치 (게임 화면 해상도 사용 가능)
+[StutterFix] [파티클] 설치 (바꾼 호출 2곳)
+[StutterFix] [누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)
+[StutterFix] [로딩] 이미지 파일 시각 캐시 설치 (바꾼 곳 2)
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치
+[StutterFix] [로딩] 같은 이미지 장식 목록 넣기 빠르게 설치
+[StutterFix] [맵 파일 읽기] 빠른 JSON 해석기 설치 (GDMiniJSON.Json)
+[StutterFix] [맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 3)
+[StutterFix] [맵 파일 읽기] 여러 코어로 이벤트 만들기 설치
+[StutterFix] [장식 한 번에 복제] 설치
+[StutterFix] [판정 글자] 사라질 때 색만 바꾸기 설치
+[StutterFix] [오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 2개)
+[StutterFix] [연출 끄기] 설치 (효과 19종)
+[StutterFix] [이미지 압축] 설치
+[StutterFix] [장식 마무리] 설치
+[StutterFix] [잠든 장식] 설치
+[StutterFix] [이미지] 빠른 압축 풀기(libdeflate): 사용 중
+[StutterFix] [이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): 사용 중
+[StutterFix] [이미지] JPG 풀기(libjpeg-turbo): 사용 중
+[StutterFix] [이미지] 스프라이트 크기 보정 설치 (큰 이미지 줄이기용)
+[StutterFix] [이미지] 미리 풀기 설치
+[StutterFix] [투명 장식] 위치 늦게 반영 설치
+[StutterFix] [투명 장식] 설치
+[StutterFix] tween fix installed
+[StutterFix] [장면 정리] 설치
+[StutterFix] [전환] 설치
+[StutterFix] [나가기] 설치
+[StutterFix] end hook: scnEditor.SwitchToEditMode
+[StutterFix] end hook: scrController.FailAction
+[StutterFix] end hook: scrController.Fail2Action
+[StutterFix] end hook: scrController.OnLandOnPortal
+[StutterFix] end hook: scrController.QuitToMainMenu
+[StutterFix] end hook: scnEditor.QuitToMenu
+[StutterFix] end hook: scnEditor.TryQuitToMenu
+[StutterFix] end hook: scnEditor.SaveAndQuit
+[StutterFix] restart hook: scrController.Restart
+[StutterFix] restart hook: scnEditor.Play
+[StutterFix] restart hook: scrController.ResetCustomLevel
+[StutterFix] gc control installed
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [쓰레기 줄이기] 비동기 키 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 마우스 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 레거시 키보드 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [미리 컴파일] 모드 함수 2272개 492ms, 게임 함수(효과·장식·타일·행성·지휘자) 1111개 127ms
+[StutterFix] 켜짐: 패치 설치 완료 (플레이어용)
+[StutterFix] 지금 Direct3D11 / LegacyJobified
+[StutterFix] [첫 판 FPS] 응답 없음 창 끔
+[StutterFix] [자동 시험] 시작: 196단계 - timeout 900 / set FrameGenOutside 0 / fpscap 0 / auto on / open D:/얼불춤 맵 파일/Windflower/Windflower.adofai / filterhalfperf off / select 14 / play / wait 20 / stop / wait 1 / log HALF_ABBA Blur_Movie A / filterhalfperf off / select 14 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA Blur_Movie B / filterhalfperf CameraFilterPack_Blur_Movie / select 14 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA Blur_Movie B / filterhalfperf CameraFilterPack_Blur_Movie / select 14 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA Blur_Movie A / filterhalfperf off / select 14 / play / wait 20 / stop / filterhalfperf off / wait 1 / filterhalfperf off / select 71 / play / wait 20 / stop / wait 1 / log HALF_ABBA Blur_BlurHole A / filterhalfperf off / select 71 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA Blur_BlurHole B / filterhalfperf CameraFilterPack_Blur_BlurHole / select 71 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA Blur_BlurHole B / filterhalfperf CameraFilterPack_Blur_BlurHole / select 71 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA Blur_BlurHole A / filterhalfperf off / select 71 / play / wait 20 / stop / filterhalfperf off / wait 1 / filterhalfperf off / select 71 / play / wait 20 / stop / wait 1 / log HALF_ABBA Blur_Radial A / filterhalfperf off / select 71 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA Blur_Radial B / filterhalfperf CameraFilterPack_Blur_Radial / select 71 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA Blur_Radial B / filterhalfperf CameraFilterPack_Blur_Radial / select 71 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA Blur_Radial A / filterhalfperf off / select 71 / play / wait 20 / stop / filterhalfperf off / wait 1 / filterhalfperf off / select 1154 / play / wait 20 / stop / wait 1 / log HALF_ABBA AAA_SuperComputer A / filterhalfperf off / select 1154 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA AAA_SuperComputer B / filterhalfperf CameraFilterPack_AAA_SuperComputer / select 1154 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA AAA_SuperComputer B / filterhalfperf CameraFilterPack_AAA_SuperComputer / select 1154 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA AAA_SuperComputer A / filterhalfperf off / select 1154 / play / wait 20 / stop / filterhalfperf off / wait 1 / filterhalfperf off / select 1 / play / wait 20 / stop / wait 1 / log HALF_ABBA TV_WideScreenHorizontal A / filterhalfperf off / select 1 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA TV_WideScreenHorizontal B / filterhalfperf CameraFilterPack_TV_WideScreenHorizontal / select 1 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA TV_WideScreenHorizontal B / filterhalfperf CameraFilterPack_TV_WideScreenHorizontal / select 1 / play / wait 20 / stop / filterhalfperf off / wait 1 / log HALF_ABBA TV_WideScreenHorizontal A / filterhalfperf off / select 1 / play / wait 20 / stop / filterhalfperf off / wait 1 / quit
+[StutterFix] [프레임 통계] 게임 기본: 꺼짐, 이 모드: 켬(GPU 시간 측정)
+[StutterFix] Active.
+[StutterFix] Loading time 8.32 s.
+[YouTubeStream] Version '1.0.5'. Loading.
+Mod was added: YouTubeStream
+[YouTubeStream] Active.
+[YouTubeStream] Loading time 0.10 s.
+[Manager] FINISH. SUCCESSFUL LOADED 5/5 MODS.
+
+
+Startup: GetPlatform
+Startup: Setting platform to Windows.
+Startup: DetermineAppLocation
+Startup: isInSteamLibrary: True
+Startup: SetBuildDateAndCommit
+Startup: Version r150, (32e5b8a, 2026/09/28 11:18 PM)
+Startup: SetLocale
+Startup: LoadSaveData
+Startup: SetupSystems
+setting language to: English
+Startup: Initialize Steam SDK
+Has license for 1977570: True
+Has license for 2016430: False
+Has license for 0: False
+Startup: FixResolution
+Startup: SetupLevelEventsInfo
+Startup: SetSettings
+Startup: ForceResolutionOnLofi
+Startup: LoadCalibration
+Startup: SetupSfxHandler
+Startup: GetSteamBranch
+Startup: SetupDLCs
+Startup: DLCManagers count: 3
+Startup: DLC: CheckUpToDate
+Startup: Neo Cosmos: owns True, installed True
+Startup: CacheShaderPropertyIDs
+Startup: DeleteTempUnzippingFolder
+Startup: Setup Discord
+Initializing Discord: Ok
+Startup: Give Steam Achievements
+Startup: Rewired Init
+Startup: RDInput Setup
+Mods detected! Disabling exception capturing
+Startup: Setup Loading Screen
+Startup: ADOStartup done!
+[Manager] Spawning.
+[JALib INFO 18:29:44.859 #1] Listening on port: 51241
+[JALib INFO 18:29:44.886 #1] Unzip ModApplicator...
+[Quartz] [Startup] paths + config took 19 ms
+[Quartz] [FontManager] CJK fallback: cjkFonts-regular-normalized SDF
+[Quartz] [Startup] FontManager took 37 ms
+[Quartz] [Localization] April Fools overlay ready for 3 language(s)
+[Quartz] [Translator] Starting to load translations from: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Lang
+[Quartz] [Translator] Found 3 translation files.
+[Quartz] [Startup] LocalizationService took 12 ms
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module overlay Quartz.Features.Overlay.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Overlay Core' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module discord Quartz.Features.Discord.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Discord' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module editor Quartz.Features.Editor.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Editor Tools' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module effectremover Quartz.Features.EffectRemover.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Effect Remover' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keylimiter Quartz.Features.KeyLimiter.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Limiter' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tweaks Quartz.Features.Tweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module mainmenu Quartz.Features.MainMenu.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Main Menu' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module hidejudgements Quartz.Features.HideJudgements.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Hide Judgements' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module optimizer Quartz.Features.Optimizer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Optimizer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module tuf Quartz.Features.Tuf.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'TUF' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module visualtweaks Quartz.Features.VisualTweaks.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Visual Tweaks' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module planetcolors Quartz.Features.PlanetColors.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Planet Colors' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module autodeafen Quartz.Features.AutoDeafen.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Auto Deafen' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module uihider Quartz.Features.UiHider.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'UI Hiding' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module calibration Quartz.Features.Calibration.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Calibration' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module keyviewer Quartz.Features.KeyViewer.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Key Viewer' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module progressbar Quartz.Features.ProgressBar.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Progress Bar' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module combo Quartz.Features.Combo.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Combo' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module judgement Quartz.Features.Judgement.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Judgement' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module songtitle Quartz.Features.SongTitle.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Song Title' v2.0.0
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.en-US.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.ko-KR.json.
+[Quartz] [Translator] Merged 1 language block(s) from module panels Quartz.Features.Panels.Lang.zh-CN.json.
+[Quartz] [Modules] loaded 'Panels' v2.0.0
+[Quartz] [Startup] ServiceAdapter took 253 ms
+[Quartz] [Startup] ServiceAdapter took 1 ms
+[Quartz] [Sprites] screen 3440x1440, 1.546 px/unit
+[Quartz] [Startup] UIService took 217 ms
+[Quartz] [Startup] TweenService took 0 ms
+[Quartz] [Startup] PlayCount took 3 ms
+[Quartz] [Startup] HarmonyService took 0 ms
+[Quartz] Mod Enabled
+[Quartz] [Startup] SetModEnabled took 1125 ms
+[Quartz] [Startup] total 2746 ms
+[Quartz] [Umm] active mods: [AdofaiGenBridge, JALib, Quartz, StutterFix, YouTubeStream]
+[Quartz] Hello
+[Quartz] [Compat] ADOFAI r150 — current game API
+[StutterFix] [상태] ? 종료됨 world:X  -> 정지
+[StutterFix] [자동 시험] UMM 창 닫음
+[StutterFix] [자동 시험] 단계 최대 시간 900초
+[StutterFix] [자동 시험] [임무단계] timeout 0.207ms
+[Quartz] [Harmony] applied patches (deferred to first tick) in 199 ms
+[StutterFix] [자동 시험] 설정 FrameGenOutside = 0 (묶음 끝에 0 로 되돌림)
+[StutterFix] [자동 시험] [임무단계] set 2048.146ms
+[StutterFix] [자동 시험] [FPS 제한] 목표 FPS 10000, vSync 0 frame 3
+[StutterFix] [자동 시험] [임무단계] fpscap 31.857ms
+[Quartz] [Translator] Finished loading translations.
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[StutterFix] [자동 시험] [임무단계] auto 33.528ms
+[StutterFix] [자동 시험] 맵 열기: D:/얼불춤 맵 파일/Windflower/Windflower.adofai
+[StutterFix] [화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 196개 바꿔 끼움 (지난 결과), 1프레임에 나눠 743ms, 한 프레임 최대 743ms
+[StutterFix] [자동 시험] 메모리 3초: 힙 82MB, 프로세스 1086MB(실제 램 826MB), 프레임 2953 
+[StutterFix] tween capacity set to 40000/25000
+Go to Menu
+Startup: Setup Audio Settings
+[StutterFix] [자동 시험] 메모리 6초: 힙 87MB, 프로세스 1085MB(실제 램 827MB), 프레임 7071 
+Startup: Setup Audio Settings End 
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.459300 ms
+Unloading 39 unused Assets to reduce memory usage. Loaded Objects now: 69783.
+Total: 34.967200 ms (FindLiveObjects: 4.538500 ms CreateObjectMapping: 1.436600 ms MarkObjects: 28.807700 ms  DeleteObjects: 0.183900 ms)
+
+Shader.WarmupAllShaders ();
+Shader warmup: 132 shaders 1399 combinations 0.087s
+[StutterFix] [상태] None 종료됨 world:X  -> 정지
+Skipping audio break checking. Detected delta time: 1.726886
+[StutterFix] [상태] Start 종료됨 world:X  -> 정지
+[StutterFix] [상태] PlayerControl 종료됨 world:X  -> 정지
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 55.173200 ms
+Unloading 263 unused Assets to reduce memory usage. Loaded Objects now: 18220.
+Total: 102.861000 ms (FindLiveObjects: 0.883100 ms CreateObjectMapping: 0.600400 ms MarkObjects: 99.732000 ms  DeleteObjects: 1.645100 ms)
+
+[StutterFix] [자동 시험] 메모리 9초: 힙 147MB, 프로세스 1696MB(실제 램 1282MB), 프레임 7141 
+[StutterFix] [첫 판 FPS] 9.9초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 9.9초
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 3가지 중 새로 불러온 것 3개 15ms
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+[StutterFix] [첫 판 FPS] 1.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 1.5초
+[StutterFix] [자동 시험] 메모리 12초: 힙 359MB, 프로세스 1983MB(실제 램 1558MB), 프레임 7142 
+[StutterFix] [맵 파일 읽기] GC 멈춤 388ms(그중 이벤트로 바꾸기 173ms: 이벤트 13166개 여러 코어(5개)로 166ms), 힙 214MB -> 396MB (그 사이 GC 0번)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 6가지 중 새로 불러온 것 6개 28ms
+[StutterFix] [이미지] 자동: 전에 VRAM 이 모자라 끊긴 맵이라 긴 변 2048 으로 줄임
+[StutterFix] [이미지] 맵 열기 전: 이미 올라와 있는 이미지 1장, VRAM 전체 1848MB / 게임 391MB
+[StutterFix] [다른 모드] Quartz 최적화: 켜진 것 없음
+[StutterFix] [이미지] 1080장 미리 풀기 시작 (작업 스레드 5개, DXT 로 미리 압축: 저사양 옵션)
+[StutterFix] [자동 시험] 메모리 15초: 힙 603MB, 프로세스 4646MB(실제 램 2979MB), 프레임 7142 
+[StutterFix] [자동 시험] 메모리 18초: 힙 687MB, 프로세스 7357MB(실제 램 2976MB), 프레임 7142 
+[StutterFix] [장식 한 번에 복제] 54번에 5595개 (안 쓰고 지움 0개)
+[StutterFix] [이미지] 미리 푼 것 1075장(넣기 1724ms), 원래 방식 0장(0ms, 순서 어긋남 0), 기다림 925ms, GC 0번, 전체 6.2초, 줄인 이미지 95장 (긴 변 2048, VRAM 약 1766MB 아낌), 미리 압축 넣음 16장 (쓰지 않음 0, 크기·형식 달라 원래대로 0, 압축 6700ms/작업 스레드 합), 처음부터 압축으로 넣음 538장 (뒤이어 압축 불림 538, 안 불림 0), 압축이 늦어 원래대로 354장 | 장식 만들기 6290개 3648ms, 그중 텍스처 불러오기 3783ms, 압축 마저 기다림 71ms
+[StutterFix] [이미지] 해독 시간(작업 스레드 5개 합계): 압축 풀기 5395ms, 필터 되돌리기 9675ms, 줄이기 584ms(128M 픽셀), 필터·줄이기 한 번에 0장 0ms(0M 픽셀), 흘려 풀기·줄이기 83장 5049ms(599M 픽셀, 못 한 것 0) | 새로 맡은 형식(흑백·인터레이스) 33장 | libdeflate 957장, 원래 zlib 로 다시 푼 것 0장 (사용 중) | 네이티브(sfnative): 필터 되돌린 줄 1075819, DXT 압축 줄 묶음 180812 | JPG(libjpeg-turbo): 35장 618ms, 못 푼 것 0장
+[StutterFix] [이미지] 로딩 뒤 GC 한 번 113ms
+Shader warmup: 190 shaders 1487 combinations 0.007s
+[StutterFix] [셰이더] 맵 불러온 뒤: 셰이더 190개, 새 필터 93개(필터 텍스처 12개) 미리 준비 28ms
+[StutterFix] [재시작] 에디터에서 맵 열기: D:/얼불춤 맵 파일/Windflower/Windflower.adofai
+[StutterFix] [다른 모드] 같은 게임 함수를 고치는 곳 36개: scnEditor.SwitchToEditMode (quartz.module.planetcolors, quartz.module.uihider) | ffxCheckpoint.StartEffect (quartz.module.visualtweaks) | ffxMenuPlanetSpeedChange.StartEffect (quartz.module.mainmenu) | ffxBloomPlus.StartEffect (quartz.module.effectremover) | ffxFlashPlus.StartEffect (quartz.module.effectremover) | ffxHallOfMirrorsPlus.StartEffect (quartz.module.effectremover) | ffxMoveFloorPlus.StartEffect (quartz.module.effectremover) | ffxScreenScrollPlus.StartEffect (quartz.module.effectremover) | ffxScreenTilePlus.StartEffect (quartz.module.effectremover) | ffxSetFilterAdvancedPlus.StartEffect (quartz.module.effectremover) | ffxShakeScreenPlus.StartEffect (quartz.module.effectremover) | scrParticleDecoration.Update (quartz.module.optimizer) | scrParticleDecoration.ResetParticle (quartz.module.optimizer) | scrCamera.SetCustomFrameRate (quartz.module.optimizer) | scnEditor.Play (YouTubeStream, Quartz, quartz.module.planetcolors) | LevelData.Decode (quartz.module.effectremover) | TextureManager.LoadTexture (quartz.module.optimizer) | RDString.Get (YouTubeStream) | scnGame.ResetScene (quartz.module.planetcolors) | scnGame.LoadLevel (YouTubeStream) | scnGame.ApplyEventsToFloors (quartz.module.visualtweaks) | scnGame.ApplyEvent (quartz.module.keylimiter) | scrConductor.PlayHitTimes (quartz.module.optimizer) | scrPlanet.MoveToNextFloor (quartz.module.uihider, Quartz) | scrController.FailAction (quartz.module.optimizer) | scrController.OnLandOnPortal (quartz.module.uihider) | scrController.QuitToMainMenu (quartz.module.tuf) | scrController.Restart (quartz.module.optimizer, Quartz) | scnGame.Play (quartz.module.keylimiter, Quartz, quartz.module.autodeafen, quartz.module.combo, quartz.module.judgement) | scnEditor.OpenLevelCo (Quartz) | scrFloor.LightUp (quartz.module.visualtweaks) | PlanetRenderer.Revive (quartz.module.visualtweaks, quartz.module.planetcolors) | scnCalibration.Start (quartz.module.calibration) | scnCalibration.CleanSlate (quartz.module.calibration) | scnCalibration.Calibrated (quartz.module.calibration) | scnCalibration.Update (quartz.module.calibration)
+Unloading 183 unused Assets to reduce memory usage. Loaded Objects now: 598377.
+Total: 237.226000 ms (FindLiveObjects: 57.330700 ms CreateObjectMapping: 12.463600 ms MarkObjects: 146.303100 ms  DeleteObjects: 21.128200 ms)
+
+[StutterFix] [상태] None 편집중 일시정지  -> 정지
+[StutterFix] [업데이트] 최신 v2.7.2, 지금 v2.7.2
+[StutterFix] [자동 시험] 맵 열림 (20.9초, 열기 요청부터 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] open 20974.005ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.760ms
+[StutterFix] [자동 시험] 메모리 21초: 힙 372MB, 프로세스 8154MB(실제 램 2850MB), 프레임 7267 
+[StutterFix] [자동 시험] 타일 14 선택
+[StutterFix] [자동 시험] [임무단계] select 118.399ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 미룬 것 없음
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4948개, 곡 중 최대 4948개 | 색 바뀜 11206번 확인, 그리기 켜고 끈 것 4948번, 쓴 시간 약 9.4ms, 가장 많이 쓴 프레임 약 9.37ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 7.0초 멈춘 프레임 동안 윈도우 메시지 확인 13번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.9초
+[StutterFix] [로딩] 장식을 새로 만든 뒤 첫 재생: 장식 다시 설정 한 번 건너뜀
+[StutterFix] [타일 메시] 색 바꾸기 효과 212개, 타일·스타일 6513가지 -> 새로 미리 만든 메시 1933개 118ms (캐시 2941개)
+[StutterFix] [소리 미리 불러오기] 쓸 수 있는 소리 16가지 중 새로 불러온 것 9개 9ms
+[StutterFix] [효과 재사용] 다시 씀 0개, 새로 붙임 7573개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 0개 | 284ms
+[StutterFix] [전환] 에디터 재생 시작 761ms
+[StutterFix] [자동 시험] [임무단계] play 980.281ms
+[StutterFix] [이미지] 맵 연 뒤: 올라와 있는 이미지 1076장, VRAM 전체 6383MB / 게임 4926MB
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 846ms (프레임 1개, 가장 긴 프레임 847ms) | 나눔: 곡 끝 요약 1ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 620ms, 그 밖 225ms | 이미지 파일 시각: 12158번 중 디스크 1531번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 60ms
+[StutterFix] [저사양] 그래픽 설정: 품질 단계 Default, 안티에일리어싱 0x, 수직동기 0, 그림자 Disable, 텍스처 0, 이방성 Disable, 파티클 레이캐스트 256, 소프트 파티클 False | 카메라 OverlayCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.63, 컬링 100000 | 카메라 BGStaticCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.63, 컬링 800 | 카메라 BGMovingCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.11, 컬링 400 | 카메라 Camera: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1, 컬링 9F397 | 화면 3440x1440 FullScreenWindow, 그래픽카드 NVIDIA GeForce RTX 4060 Ti
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 14 (0.2초)
+[StutterFix] [모니터] 332ms -> 메모리 정리 / gpu 35.0 cpu 860.0 (수집 7268번) 효과 0.0 모드 0.0(모니터 그리기) gc 1 | 시각 18:30:12.222
+[StutterFix] [자동 시험] [임무단계] wait 19239.099ms
+[StutterFix] [곡] 평균 286 FPS (3.5ms), 가장 긴 프레임 166ms, 곡 시작 연출 뒤 가장 긴 프레임 26ms, 끊김 0번, 프레임 5477개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.2ms, CPU 평균 3.6ms (5477개 잼) | 그 프레임: 게임 효과 1개 0.0ms (그중 장식 이동 0.0ms), 나머지 26.0ms | 효과가 가장 무거운 프레임 8ms: 게임 효과 2.5ms (그중 장식 이동 0.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [26ms @0.4초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.7, 나머지 25.3] [23ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 22.2] [22ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 21.8] [22ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 21.0] [16ms @0.4초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.8, 나머지 15.2] [14ms @0.4초: 효과 16개 0.2(장식 이동 0.2, 그중 길이 있는 것 0.2), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 13.7] [14ms @0.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 13.4] [13ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 12.6] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 284(3.8/0.6/0.1/2.4/0.0, 806/0개) 10s 288(3.4/0.7/0.0/2.1/0.0, 817/0개) | 가장 높은 구간 10s 288 FPS | 같은 그림자 색 건너뛰기 28649회 | 파티클 장식: 같은 값 넣기 1288460번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 3개 없앰, 게임 화면 버퍼 불필요한 해제 0번 막음 | 필터 형식 찾기 기억 506번 (새로 찾음 53번) | 오차 막대 눈금 가볍게 20개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 10개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 112번을 43번으로 줄임 (62% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1451348번 중 같은 값이라 건너뜀 480703번 | 재생 중 편집기 검사 건너뜀 76778번 | 매 프레임 장식 순회 4451000번 중 바뀌는 게 없어 뺀 것 14757번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 9573번, 깨움 4097번, 목록 새로 만듦 1번, 안전망 검사 19번에 놓친 깨움 0개) | 즉시 이동 직접 처리 302번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 552개(장식 1266개), 원래 코드로 넘긴 효과 58개 [길이 있음 57, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 170개(동시 최대 113개), 끝까지 감 125, 끊겨서 완료 33, 버림 0, 기록 다시 씀 8, 새 표 객체 162, 갱신에 쓴 시간 96ms (3120프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 68개(타일 93개, 시작에 쓴 시간 1ms), 원래 코드로 3개 [곡 시작 직후 3, 길이 음수 0, 기타 0], 만든 것 14개(동시 최대 7, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 12, 끊겨서 완료 0, 버림 0, 갱신 7ms (2872프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 53개(바로 쓴 값 104개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 64622번 (안 보이게 돼서 대신 갱신 78번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4885개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 1048번, 보일 때 반영 28번 | 색 바뀜 5560번 확인, 그리기 켜고 끈 것 123번, 쓴 시간 약 1.3ms, 가장 많이 쓴 프레임 약 0.11ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4418개는 가볍게, 1872개는 원래대로 다시 설정 193ms
+[StutterFix] [전환] 편집으로 나가기 654ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 565MB -> 333MB, 226ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (881ms)
+[StutterFix] [자동 시험] [임무단계] stop 884.674ms
+[StutterFix] [화면 대기] 이번 판 19초 중 1초 동안 늘어나 있었음 (그때 평균 1.7ms)
+[StutterFix] [자동 시험] [임무단계] wait 119.617ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_Movie A
+[StutterFix] [자동 시험] [임무단계] log 5.072ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.396ms
+[StutterFix] [자동 시험] 타일 14 선택
+[StutterFix] [자동 시험] [임무단계] select 51.719ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 116ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 197ms
+[StutterFix] [전환] 에디터 재생 시작 496ms
+[StutterFix] [자동 시험] [임무단계] play 516.013ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 577ms (프레임 1개, 가장 긴 프레임 577ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 340ms, 그 밖 237ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 75ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 14 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19505.072ms
+[StutterFix] [곡] 평균 293 FPS (3.4ms), 가장 긴 프레임 40ms, 곡 시작 연출 뒤 가장 긴 프레임 11ms, 끊김 0번, 프레임 5683개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.2ms, CPU 평균 3.5ms (5683개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 10.5ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.4ms (그중 장식 이동 0.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [11ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 10.0] [9ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 8.1] [8ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.9] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.6, 나머지 7.7] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 7.6] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.6, 나머지 7.6] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.6] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 295(3.5/0.6/0.1/2.3/0.0, 807/0개) 10s 290(3.4/0.7/0.0/2.1/0.0, 817/0개) | 가장 높은 구간 0s 295 FPS | 같은 그림자 색 건너뛰기 57124회 | 파티클 장식: 같은 값 넣기 2598310번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 6개 없앰, 게임 화면 버퍼 불필요한 해제 1번 막음 | 필터 형식 찾기 기억 566번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 40개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 10개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 112번을 43번으로 줄임 (62% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1505225번 중 같은 값이라 건너뜀 499372번 | 재생 중 편집기 검사 건너뜀 78693번 | 매 프레임 장식 순회 4620725번 중 바뀌는 게 없어 뺀 것 15399번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 10215번, 깨움 4739번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 302번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 555개(장식 1268개), 원래 코드로 넘긴 효과 55개 [길이 있음 54, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 176개(동시 최대 113개), 끝까지 감 131, 끊겨서 완료 170, 버림 0, 기록 다시 씀 78, 새 표 객체 98, 갱신에 쓴 시간 102ms (3541프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 68개(타일 93개, 시작에 쓴 시간 0ms), 원래 코드로 3개 [곡 시작 직후 3, 길이 음수 0, 기타 0], 만든 것 14개(동시 최대 7, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 12, 끊겨서 완료 0, 버림 0, 갱신 8ms (2987프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 53개(바로 쓴 값 104개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 65940번 (안 보이게 돼서 대신 갱신 78번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4885개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 1136번, 보일 때 반영 28번 | 색 바뀜 6365번 확인, 그리기 켜고 끈 것 123번, 쓴 시간 약 1.8ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4418개는 가볍게, 1872개는 원래대로 다시 설정 194ms
+[StutterFix] [전환] 편집으로 나가기 446ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 425MB -> 332MB, 270ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (719ms)
+[StutterFix] [자동 시험] [임무단계] stop 723.016ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 111.695ms
+[StutterFix] [자동 시험] [임무단계] wait 976.885ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_Movie B
+[StutterFix] [자동 시험] [임무단계] log 4.853ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 34.873ms
+[StutterFix] [자동 시험] 타일 14 선택
+[StutterFix] [자동 시험] [임무단계] select 50.325ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 114ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 199ms
+[StutterFix] [전환] 에디터 재생 시작 496ms
+[StutterFix] [자동 시험] [임무단계] play 517.157ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 581ms (프레임 1개, 가장 긴 프레임 581ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 339ms, 그 밖 241ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 75ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 14 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19506.228ms
+[StutterFix] [곡] 평균 293 FPS (3.4ms), 가장 긴 프레임 40ms, 곡 시작 연출 뒤 가장 긴 프레임 9ms, 끊김 0번, 프레임 5697개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.5ms (5697개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 8.6ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.4ms (그중 장식 이동 0.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [9ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 8.0] [8ms @0.5초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 7.1] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.2] [7ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 6.5] [7ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 6.2] [6ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 5.8] [6ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 5.6] [6ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 5.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 295(3.6/0.6/0.0/1.7/0.0, 807/0개) 10s 292(3.4/0.7/0.0/2.1/0.0, 817/0개) | 가장 높은 구간 0s 295 FPS | 같은 그림자 색 건너뛰기 86659회 | 파티클 장식: 같은 값 넣기 3956920번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 9개 없앰, 게임 화면 버퍼 불필요한 해제 2번 막음 | 필터 형식 찾기 기억 566번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 60개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 10개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 112번을 43번으로 줄임 (62% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1511653번 중 같은 값이라 건너뜀 502055번 | 재생 중 편집기 검사 건너뜀 79869번 | 매 프레임 장식 순회 4633053번 중 바뀌는 게 없어 뺀 것 15466번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 10282번, 깨움 4806번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 302번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 556개(장식 1269개), 원래 코드로 넘긴 효과 54개 [길이 있음 53, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 179개(동시 최대 113개), 끝까지 감 134, 끊겨서 완료 176, 버림 0, 기록 다시 씀 84, 새 표 객체 95, 갱신에 쓴 시간 105ms (3584프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 68개(타일 93개, 시작에 쓴 시간 1ms), 원래 코드로 3개 [곡 시작 직후 3, 길이 음수 0, 기타 0], 만든 것 14개(동시 최대 7, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 12, 끊겨서 완료 0, 버림 0, 갱신 8ms (3003프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 53개(바로 쓴 값 104개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 67156번 (안 보이게 돼서 대신 갱신 78번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4885개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 1158번, 보일 때 반영 28번 | 색 바뀜 6466번 확인, 그리기 켜고 끈 것 123번, 쓴 시간 약 2.6ms, 가장 많이 쓴 프레임 약 0.15ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4418개는 가볍게, 1872개는 원래대로 다시 설정 193ms
+[StutterFix] [전환] 편집으로 나가기 441ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 431MB -> 333MB, 223ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (665ms)
+[StutterFix] [자동 시험] [임무단계] stop 668.462ms
+[StutterFix] [filterhalfperf] CameraFilterPack_Blur_Movie calls=2880 frames=2879
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 130.510ms
+[StutterFix] [자동 시험] [임무단계] wait 957.772ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_Movie B
+[StutterFix] [자동 시험] [임무단계] log 4.769ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 32.861ms
+[StutterFix] [자동 시험] 타일 14 선택
+[StutterFix] [자동 시험] [임무단계] select 50.671ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 116ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 202ms
+[StutterFix] [전환] 에디터 재생 시작 503ms
+[StutterFix] [자동 시험] [임무단계] play 523.408ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 584ms (프레임 1개, 가장 긴 프레임 584ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 345ms, 그 밖 239ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 75ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 14 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19498.155ms
+[StutterFix] [곡] 평균 292 FPS (3.4ms), 가장 긴 프레임 40ms, 곡 시작 연출 뒤 가장 긴 프레임 12ms, 끊김 0번, 프레임 5674개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.5ms (5674개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 11.5ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.4ms (그중 장식 이동 0.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [12ms @3.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 11.0] [11ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 10.2] [8ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.6] [8ms @0.5초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 7.3] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.3] [7ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 6.9] [7ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 6.7] [7ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 6.7] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 293(3.6/0.6/0.0/1.6/0.0, 807/0개) 10s 291(3.4/0.7/0.0/2.1/0.0, 817/0개) | 가장 높은 구간 0s 293 FPS | 같은 그림자 색 건너뛰기 116044회 | 파티클 장식: 같은 값 넣기 5308630번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 12개 없앰, 게임 화면 버퍼 불필요한 해제 3번 막음 | 필터 형식 찾기 기억 566번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 80개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 10개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 112번을 43번으로 줄임 (62% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1505935번 중 같은 값이라 건너뜀 500140번 | 재생 중 편집기 검사 건너뜀 79782번 | 매 프레임 장식 순회 4614490번 중 바뀌는 게 없어 뺀 것 15496번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 10312번, 깨움 4836번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 302번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 556개(장식 1269개), 원래 코드로 넘긴 효과 54개 [길이 있음 53, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 179개(동시 최대 113개), 끝까지 감 134, 끊겨서 완료 179, 버림 0, 기록 다시 씀 87, 새 표 객체 92, 갱신에 쓴 시간 106ms (3587프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 68개(타일 93개, 시작에 쓴 시간 0ms), 원래 코드로 3개 [곡 시작 직후 3, 길이 음수 0, 기타 0], 만든 것 14개(동시 최대 7, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 12, 끊겨서 완료 0, 버림 0, 갱신 8ms (2997프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 53개(바로 쓴 값 104개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 67165번 (안 보이게 돼서 대신 갱신 78번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4885개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 1070번, 보일 때 반영 28번 | 색 바뀜 6476번 확인, 그리기 켜고 끈 것 123번, 쓴 시간 약 1.9ms, 가장 많이 쓴 프레임 약 0.11ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4418개는 가볍게, 1872개는 원래대로 다시 설정 194ms
+[StutterFix] [전환] 편집으로 나가기 441ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 432MB -> 333MB, 224ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (665ms)
+[StutterFix] [자동 시험] [임무단계] stop 668.204ms
+[StutterFix] [filterhalfperf] CameraFilterPack_Blur_Movie calls=2860 frames=2859
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 125.625ms
+[StutterFix] [자동 시험] [임무단계] wait 963.782ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_Movie A
+[StutterFix] [자동 시험] [임무단계] log 4.970ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.837ms
+[StutterFix] [자동 시험] 타일 14 선택
+[StutterFix] [자동 시험] [임무단계] select 50.603ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 115ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 205ms
+[StutterFix] [전환] 에디터 재생 시작 507ms
+[StutterFix] [자동 시험] [임무단계] play 527.280ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 588ms (프레임 1개, 가장 긴 프레임 588ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 348ms, 그 밖 240ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 78ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 14 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19494.811ms
+[StutterFix] [곡] 평균 291 FPS (3.4ms), 가장 긴 프레임 39ms, 곡 시작 연출 뒤 가장 긴 프레임 14ms, 끊김 0번, 프레임 5655개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.2ms, CPU 평균 3.5ms (5655개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 13.8ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.2ms (그중 장식 이동 0.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 13.2] [13ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 12.7] [13ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 12.1] [12ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 11.2] [10ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 9.8] [10ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 9.5] [10ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 9.4] [10ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 9.1] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 293(3.6/0.6/0.1/2.3/0.0, 807/0개) 10s 289(3.4/0.8/0.0/2.1/0.0, 817/0개) | 가장 높은 구간 0s 293 FPS | 같은 그림자 색 건너뛰기 145344회 | 파티클 장식: 같은 값 넣기 6656430번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 15개 없앰, 게임 화면 버퍼 불필요한 해제 4번 막음 | 필터 형식 찾기 기억 566번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 100개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 10개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 112번을 43번으로 줄임 (62% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1498362번 중 같은 값이라 건너뜀 496894번 | 재생 중 편집기 검사 건너뜀 78735번 | 매 프레임 장식 순회 4597541번 중 바뀌는 게 없어 뺀 것 15260번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 10076번, 깨움 4600번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 302번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 555개(장식 1268개), 원래 코드로 넘긴 효과 55개 [길이 있음 54, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 176개(동시 최대 113개), 끝까지 감 131, 끊겨서 완료 179, 버림 0, 기록 다시 씀 84, 새 표 객체 92, 갱신에 쓴 시간 102ms (3529프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 68개(타일 93개, 시작에 쓴 시간 0ms), 원래 코드로 3개 [곡 시작 직후 3, 길이 음수 0, 기타 0], 만든 것 14개(동시 최대 7, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 12, 끊겨서 완료 0, 버림 0, 갱신 8ms (2981프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 53개(바로 쓴 값 104개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 66104번 (안 보이게 돼서 대신 갱신 78번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4885개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 1158번, 보일 때 반영 28번 | 색 바뀜 6208번 확인, 그리기 켜고 끈 것 123번, 쓴 시간 약 1.8ms, 가장 많이 쓴 프레임 약 0.11ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4418개는 가볍게, 1872개는 원래대로 다시 설정 192ms
+[StutterFix] [전환] 편집으로 나가기 442ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 431MB -> 333MB, 222ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (664ms)
+[StutterFix] [자동 시험] [임무단계] stop 668.694ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 111.250ms
+[StutterFix] [화면 대기] 이번 판 19초 중 1초 동안 늘어나 있었음 (그때 평균 0.9ms)
+[JALib INFO 18:31:59.423 #36244] JALogger cache removed 3 entries, current cache size: 0
+[StutterFix] [자동 시험] [임무단계] wait 976.073ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.515ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 58.187ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 114ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 201ms
+[StutterFix] [전환] 에디터 재생 시작 521ms
+[StutterFix] [자동 시험] [임무단계] play 545.973ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 601ms (프레임 1개, 가장 긴 프레임 601ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 342ms, 그 밖 259ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 76ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19480.820ms
+[StutterFix] [곡] 평균 310 FPS (3.2ms), 가장 긴 프레임 63ms, 곡 시작 연출 뒤 가장 긴 프레임 16ms, 끊김 0번, 프레임 6012개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.2ms (6012개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 16.0ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 0.9ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [16ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 14.1] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.6, 나머지 12.4] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 11.8] [13ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 11.5] [12ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 10.5] [10ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 8.5] [10ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 9.0] [10ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 7.6] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 303(3.3/0.5/0.2/2.2/0.0, 804/0개) 10s 318(3.1/0.6/0.0/1.7/0.0, 794/0개) | 가장 높은 구간 10s 318 FPS | 같은 그림자 색 건너뛰기 176424회 | 파티클 장식: 같은 값 넣기 8086110번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 18개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 584번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 110개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1431662번 중 같은 값이라 건너뜀 481995번 | 재생 중 편집기 검사 건너뜀 48391번 | 매 프레임 장식 순회 4808602번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 199, 버림 0, 기록 다시 씀 0, 새 표 객체 2, 갱신에 쓴 시간 15ms (2347프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (170프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 48392번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 200ms
+[StutterFix] [전환] 편집으로 나가기 449ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 434MB -> 333MB, 224ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (673ms)
+[StutterFix] [자동 시험] [임무단계] stop 676.666ms
+[StutterFix] [화면 대기] 이번 판 19초 중 1초 동안 늘어나 있었음 (그때 평균 0.8ms)
+[StutterFix] [자동 시험] [임무단계] wait 330.996ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_BlurHole A
+[StutterFix] [자동 시험] [임무단계] log 5.122ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.914ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 50.641ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 115ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 203ms
+[StutterFix] [전환] 에디터 재생 시작 506ms
+[StutterFix] [자동 시험] [임무단계] play 525.530ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 587ms (프레임 1개, 가장 긴 프레임 587ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 346ms, 그 밖 240ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 77ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19495.617ms
+[StutterFix] [곡] 평균 310 FPS (3.2ms), 가장 긴 프레임 56ms, 곡 시작 연출 뒤 가장 긴 프레임 16ms, 끊김 0번, 프레임 6028개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.2ms (6028개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 16.4ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 0.8ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [16ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 14.5] [15ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 12.9] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 12.7] [9ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 7.4] [9ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 8.3] [8ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 6.6] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 6.1] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 303(3.3/0.5/0.2/2.2/0.0, 804/0개) 10s 319(3.1/0.5/0.0/1.8/0.0, 794/0개) | 가장 높은 구간 10s 319 FPS | 같은 그림자 색 건너뛰기 206834회 | 파티클 장식: 같은 값 넣기 9484970번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 22개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 580번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 120개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1435379번 중 같은 값이라 건너뜀 483243번 | 재생 중 편집기 검사 건너뜀 48519번 | 매 프레임 장식 순회 4821327번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 2, 버림 0, 기록 다시 씀 2, 새 표 객체 0, 갱신에 쓴 시간 15ms (2360프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (182프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 48520번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.13ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 200ms
+[StutterFix] [전환] 편집으로 나가기 450ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 428MB -> 333MB, 224ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (674ms)
+[StutterFix] [자동 시험] [임무단계] stop 677.646ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 109.781ms
+[StutterFix] [자동 시험] [임무단계] wait 979.392ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_BlurHole B
+[StutterFix] [자동 시험] [임무단계] log 4.875ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 33.744ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 51.146ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 115ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 201ms
+[StutterFix] [전환] 에디터 재생 시작 504ms
+[StutterFix] [자동 시험] [임무단계] play 524.629ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 584ms (프레임 1개, 가장 긴 프레임 584ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 343ms, 그 밖 241ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 77ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19499.086ms
+[StutterFix] [곡] 평균 311 FPS (3.2ms), 가장 긴 프레임 56ms, 곡 시작 연출 뒤 가장 긴 프레임 17ms, 끊김 0번, 프레임 6049개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.2ms (6049개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 16.6ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 0.8ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [17ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 14.7] [15ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 13.4] [15ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 13.3] [13ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 11.3] [12ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 10.0] [11ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 8.8] [9ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 8.3] [8ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 306(3.3/0.5/0.2/2.1/0.0, 804/0개) 10s 318(3.1/0.6/0.0/1.6/0.0, 794/0개) | 가장 높은 구간 10s 318 FPS | 같은 그림자 색 건너뛰기 238114회 | 파티클 장식: 같은 값 넣기 10923850번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 26개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 580번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 130개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1440518번 중 같은 값이라 건너뜀 484881번 | 재생 중 편집기 검사 건너뜀 48687번 | 매 프레임 장식 순회 4838289번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 2, 버림 0, 기록 다시 씀 2, 새 표 객체 0, 갱신에 쓴 시간 16ms (2348프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (178프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 48688번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.13ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 192ms
+[StutterFix] [전환] 편집으로 나가기 441ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 435MB -> 334MB, 225ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (665ms)
+[StutterFix] [자동 시험] [임무단계] stop 669.001ms
+[StutterFix] [filterhalfperf] CameraFilterPack_Blur_BlurHole calls=6408 frames=5869
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 125.759ms
+[StutterFix] [자동 시험] [임무단계] wait 960.641ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_BlurHole B
+[StutterFix] [자동 시험] [임무단계] log 4.779ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 32.671ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 50.072ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 114ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 199ms
+[StutterFix] [전환] 에디터 재생 시작 502ms
+[StutterFix] [자동 시험] [임무단계] play 521.544ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 583ms (프레임 1개, 가장 긴 프레임 583ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 342ms, 그 밖 242ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 78ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19498.383ms
+[StutterFix] [곡] 평균 315 FPS (3.2ms), 가장 긴 프레임 57ms, 곡 시작 연출 뒤 가장 긴 프레임 15ms, 끊김 0번, 프레임 6112개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.8ms, CPU 평균 3.2ms (6112개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 15.0ms | 효과가 가장 무거운 프레임 4ms: 게임 효과 0.8ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [15ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 13.2] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 11.9] [13ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 11.5] [13ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 10.8] [9ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 8.5] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.9] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.9] [7ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 6.9] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 310(3.3/0.5/0.2/2.1/0.0, 804/0개) 10s 320(3.1/0.6/0.0/1.6/0.0, 794/0개) | 가장 높은 구간 10s 320 FPS | 같은 그림자 색 건너뛰기 269689회 | 파티클 장식: 같은 값 넣기 12376300번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 30개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 580번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 140개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1455401번 중 같은 값이라 건너뜀 489795번 | 재생 중 편집기 검사 건너뜀 49191번 | 매 프레임 장식 순회 4888641번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 2, 버림 0, 기록 다시 씀 2, 새 표 객체 0, 갱신에 쓴 시간 15ms (2363프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (175프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 49192번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.13ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 191ms
+[StutterFix] [전환] 편집으로 나가기 438ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 436MB -> 334MB, 223ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (661ms)
+[StutterFix] [자동 시험] [임무단계] stop 664.961ms
+[StutterFix] [filterhalfperf] CameraFilterPack_Blur_BlurHole calls=6475 frames=5935
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 124.335ms
+[StutterFix] [자동 시험] [임무단계] wait 962.160ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_BlurHole A
+[StutterFix] [자동 시험] [임무단계] log 5.250ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 30.551ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 51.286ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 112ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 198ms
+[StutterFix] [전환] 에디터 재생 시작 497ms
+[StutterFix] [자동 시험] [임무단계] play 515.953ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 578ms (프레임 1개, 가장 긴 프레임 578ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 338ms, 그 밖 240ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 77ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19504.655ms
+[StutterFix] [곡] 평균 312 FPS (3.2ms), 가장 긴 프레임 57ms, 곡 시작 연출 뒤 가장 긴 프레임 17ms, 끊김 0번, 프레임 6062개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.2ms (6062개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 17.1ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 0.9ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [17ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 15.4] [13ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 11.4] [12ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 10.4] [11ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 9.2] [10ms @0.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 7.7] [10ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 7.8] [9ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 8.8] [9ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 7.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 304(3.3/0.5/0.2/2.2/0.0, 804/0개) 10s 321(3.1/0.5/0.0/1.7/0.0, 794/0개) | 가장 높은 구간 10s 321 FPS | 같은 그림자 색 건너뛰기 301019회 | 파티클 장식: 같은 값 넣기 13817480번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 34개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 580번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 150개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1443253번 중 같은 값이라 건너뜀 485895번 | 재생 중 편집기 검사 건너뜀 48791번 | 매 프레임 장식 순회 4848343번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 2, 버림 0, 기록 다시 씀 2, 새 표 객체 0, 갱신에 쓴 시간 15ms (2384프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (186프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 48792번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 190ms
+[StutterFix] [전환] 편집으로 나가기 435ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 436MB -> 334MB, 223ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (658ms)
+[StutterFix] [자동 시험] [임무단계] stop 661.392ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 112.660ms
+[StutterFix] [화면 대기] 이번 판 19초 중 1초 동안 늘어나 있었음 (그때 평균 0.8ms)
+[StutterFix] [자동 시험] [임무단계] wait 976.721ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.508ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 51.322ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 119ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 199ms
+[StutterFix] [전환] 에디터 재생 시작 506ms
+[StutterFix] [자동 시험] [임무단계] play 526.160ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 589ms (프레임 1개, 가장 긴 프레임 588ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 346ms, 그 밖 243ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 77ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19495.004ms
+[StutterFix] [곡] 평균 310 FPS (3.2ms), 가장 긴 프레임 66ms, 곡 시작 연출 뒤 가장 긴 프레임 14ms, 끊김 0번, 프레임 6019개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.2ms (6019개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 14.2ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 0.8ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [14ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 12.4] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 12.2] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.6, 나머지 12.0] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 11.9] [12ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 10.3] [11ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 9.3] [11ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 10.6] [11ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 10.3] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 303(3.3/0.5/0.2/2.2/0.0, 804/0개) 10s 318(3.1/0.5/0.1/1.8/0.0, 794/0개) | 가장 높은 구간 10s 318 FPS | 같은 그림자 색 건너뛰기 332144회 | 파티클 장식: 같은 값 넣기 15249230번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 38개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 580번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 160개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1433270번 중 같은 값이라 건너뜀 482541번 | 재생 중 편집기 검사 건너뜀 48447번 | 매 프레임 장식 순회 4814151번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 2, 버림 0, 기록 다시 씀 2, 새 표 객체 0, 갱신에 쓴 시간 15ms (2354프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (174프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 48448번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.13ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 195ms
+[StutterFix] [전환] 편집으로 나가기 444ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 434MB -> 334MB, 225ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (669ms)
+[StutterFix] [자동 시험] [임무단계] stop 673.343ms
+[StutterFix] [화면 대기] 이번 판 19초 중 1초 동안 늘어나 있었음 (그때 평균 1.0ms)
+[StutterFix] [자동 시험] [임무단계] wait 334.381ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_Radial A
+[StutterFix] [자동 시험] [임무단계] log 4.868ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.332ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 50.380ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 116ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 200ms
+[StutterFix] [전환] 에디터 재생 시작 502ms
+[StutterFix] [자동 시험] [임무단계] play 521.995ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 588ms (프레임 1개, 가장 긴 프레임 588ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 343ms, 그 밖 245ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 77ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19499.145ms
+[StutterFix] [곡] 평균 313 FPS (3.2ms), 가장 긴 프레임 55ms, 곡 시작 연출 뒤 가장 긴 프레임 15ms, 끊김 0번, 프레임 6072개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.2ms (6072개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 14.8ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 0.8ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [15ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 13.0] [15ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 12.8] [10ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 8.1] [9ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 7.4] [9ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 6.9] [9ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.6, 나머지 6.9] [9ms @0.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.6, 나머지 6.9] [9ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 6.7] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 304(3.3/0.5/0.2/2.2/0.0, 804/0개) 10s 322(3.1/0.5/0.0/1.8/0.0, 794/0개) | 가장 높은 구간 10s 322 FPS | 같은 그림자 색 건너뛰기 362784회 | 파티클 장식: 같은 값 넣기 16658670번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 42개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 580번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 170개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1445642번 중 같은 값이라 건너뜀 486675번 | 재생 중 편집기 검사 건너뜀 48871번 | 매 프레임 장식 순회 4856362번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 2, 버림 0, 기록 다시 씀 2, 새 표 객체 0, 갱신에 쓴 시간 16ms (2383프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (182프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 48872번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.13ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 189ms
+[StutterFix] [전환] 편집으로 나가기 440ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 428MB -> 334MB, 227ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (667ms)
+[StutterFix] [자동 시험] [임무단계] stop 670.873ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 111.962ms
+[StutterFix] [화면 대기] 이번 판 19초 중 1초 동안 늘어나 있었음 (그때 평균 0.8ms)
+[StutterFix] [자동 시험] [임무단계] wait 979.362ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_Radial B
+[StutterFix] [자동 시험] [임무단계] log 4.932ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 33.179ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 50.090ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 113ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 196ms
+[StutterFix] [전환] 에디터 재생 시작 494ms
+[StutterFix] [자동 시험] [임무단계] play 514.037ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 575ms (프레임 1개, 가장 긴 프레임 575ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 336ms, 그 밖 239ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 76ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19507.864ms
+[StutterFix] [곡] 평균 315 FPS (3.2ms), 가장 긴 프레임 58ms, 곡 시작 연출 뒤 가장 긴 프레임 16ms, 끊김 0번, 프레임 6129개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.2ms (6128개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 15.7ms | 효과가 가장 무거운 프레임 4ms: 게임 효과 0.8ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [16ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 13.9] [14ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 12.4] [14ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 12.5] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 11.8] [13ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 10.9] [13ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 10.7] [9ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 8.4] [8ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 6.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 309(3.3/0.5/0.2/2.2/0.0, 804/0개) 10s 323(3.1/0.5/0.0/1.7/0.0, 794/0개) | 가장 높은 구간 10s 323 FPS | 같은 그림자 색 건너뛰기 394464회 | 파티클 장식: 같은 값 넣기 18115950번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 46개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 580번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 180개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1459076번 중 같은 값이라 건너뜀 491121번 | 재생 중 편집기 검사 건너뜀 49327번 | 매 프레임 장식 순회 4901887번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 2, 버림 0, 기록 다시 씀 2, 새 표 객체 0, 갱신에 쓴 시간 15ms (2401프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (185프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 49328번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 192ms
+[StutterFix] [전환] 편집으로 나가기 439ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 435MB -> 334MB, 221ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (660ms)
+[StutterFix] [자동 시험] [임무단계] stop 663.735ms
+[StutterFix] [filterhalfperf] CameraFilterPack_Blur_Radial calls=4071 frames=3726
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 123.558ms
+[StutterFix] [화면 대기] 이번 판 19초 중 1초 동안 늘어나 있었음 (그때 평균 0.8ms)
+[StutterFix] [자동 시험] [임무단계] wait 965.236ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_Radial B
+[StutterFix] [자동 시험] [임무단계] log 4.756ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 31.970ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 50.027ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 113ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 197ms
+[StutterFix] [전환] 에디터 재생 시작 499ms
+[StutterFix] [자동 시험] [임무단계] play 518.779ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 580ms (프레임 1개, 가장 긴 프레임 580ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 337ms, 그 밖 244ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 80ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19503.114ms
+[StutterFix] [곡] 평균 316 FPS (3.2ms), 가장 긴 프레임 55ms, 곡 시작 연출 뒤 가장 긴 프레임 17ms, 끊김 0번, 프레임 6145개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 1.9ms, CPU 평균 3.2ms (6145개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 16.8ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 0.9ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [17ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 15.0] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 12.2] [14ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 11.8] [13ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 11.2] [10ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 9.7] [9ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 6.9] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.7] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.6] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 310(3.3/0.5/0.2/2.1/0.0, 804/0개) 10s 323(3.0/0.5/0.0/1.7/0.0, 794/0개) | 가장 높은 구간 10s 323 FPS | 같은 그림자 색 건너뛰기 426219회 | 파티클 장식: 같은 값 넣기 19576680번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 50개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 580번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 190개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1462904번 중 같은 값이라 건너뜀 492369번 | 재생 중 편집기 검사 건너뜀 49455번 | 매 프레임 장식 순회 4914723번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 2, 버림 0, 기록 다시 씀 2, 새 표 객체 0, 갱신에 쓴 시간 15ms (2402프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (190프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 49456번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.10ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 189ms
+[StutterFix] [전환] 편집으로 나가기 434ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 437MB -> 335MB, 220ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (654ms)
+[StutterFix] [자동 시험] [임무단계] stop 657.926ms
+[StutterFix] [filterhalfperf] CameraFilterPack_Blur_Radial calls=4087 frames=3741
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 124.295ms
+[StutterFix] [자동 시험] [임무단계] wait 965.081ms
+[StutterFix] [자동 시험] HALF_ABBA Blur_Radial A
+[StutterFix] [자동 시험] [임무단계] log 4.950ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.459ms
+[StutterFix] [자동 시험] 타일 71 선택
+[StutterFix] [자동 시험] [임무단계] select 49.789ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 112ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 198ms
+[StutterFix] [전환] 에디터 재생 시작 497ms
+[StutterFix] [자동 시험] [임무단계] play 516.106ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 577ms (프레임 1개, 가장 긴 프레임 577ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 338ms, 그 밖 239ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 76ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 71 (0.1초)
+[StutterFix] [자동 시험] [임무단계] wait 19505.436ms
+[StutterFix] [곡] 평균 316 FPS (3.2ms), 가장 긴 프레임 59ms, 곡 시작 연출 뒤 가장 긴 프레임 15ms, 끊김 0번, 프레임 6148개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.0ms, CPU 평균 3.1ms (6148개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 14.7ms | 효과가 가장 무거운 프레임 4ms: 게임 효과 0.8ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [15ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 12.7] [13ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 11.7] [12ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 10.4] [11ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 10.8] [10ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 7.9] [9ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.8, 나머지 7.3] [9ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 7.2] [9ms @0.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.6, 나머지 7.2] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 309(3.2/0.5/0.2/2.2/0.0, 804/0개) 10s 324(3.0/0.5/0.0/1.7/0.0, 794/0개) | 가장 높은 구간 10s 324 FPS | 같은 그림자 색 건너뛰기 457999회 | 파티클 장식: 같은 값 넣기 21038560번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 54개 없앰, 게임 화면 버퍼 불필요한 해제 5번 막음 | 필터 형식 찾기 기억 580번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 200개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 5개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 61번을 36번으로 줄임 (41% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1463472번 중 같은 값이라 건너뜀 492603번 | 재생 중 편집기 검사 건너뜀 49479번 | 매 프레임 장식 순회 4916980번 중 바뀌는 게 없어 뺀 것 10883번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 799개만 훑음 (잠재움 5699번, 깨움 203번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 504번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 33번, 투명한 채 색만 저장 5번 | 장식 이동 루프: 효과 539개(장식 1373개), 원래 코드로 넘긴 효과 136개 [길이 있음 135, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 393개 | 장식 애니메이션 직접 처리: 만든 것 2개(동시 최대 2개), 끝까지 감 1, 끊겨서 완료 2, 버림 0, 기록 다시 씀 2, 새 표 객체 0, 갱신에 쓴 시간 15ms (2415프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 8개(타일 125개, 시작에 쓴 시간 0ms), 원래 코드로 121개 [곡 시작 직후 121, 길이 음수 0, 기타 0], 만든 것 21개(동시 최대 21, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 0, 끊겨서 완료 0, 버림 0, 갱신 1ms (188프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 2개(바로 쓴 값 220개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 49480번 (안 보이게 돼서 대신 갱신 73번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4943개, 곡 중 최대 4951개 | 투명한 장식 위치 반영 미룸 32번, 보일 때 반영 12번 | 색 바뀜 387번 확인, 그리기 켜고 끈 것 241번, 쓴 시간 약 0.2ms, 가장 많이 쓴 프레임 약 0.12ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4388개는 가볍게, 1902개는 원래대로 다시 설정 189ms
+[StutterFix] [전환] 편집으로 나가기 441ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 436MB -> 335MB, 220ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (661ms)
+[StutterFix] [자동 시험] [임무단계] stop 664.625ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 109.604ms
+[StutterFix] [자동 시험] [임무단계] wait 977.870ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.058ms
+[StutterFix] [자동 시험] 타일 1154 선택
+[StutterFix] [자동 시험] [임무단계] select 57.033ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 112ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 200ms
+[StutterFix] [전환] 에디터 재생 시작 504ms
+[StutterFix] [자동 시험] [임무단계] play 528.628ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 585ms (프레임 1개, 가장 긴 프레임 585ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 343ms, 그 밖 242ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 78ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1154 (0.4초)
+[StutterFix] [화면 대기] 늘어남: 평균 1.4ms (프레임 4.7ms 중, 약 214 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 66%, 게임 65%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [자동 시험] [임무단계] wait 19496.329ms
+[StutterFix] [곡] 평균 210 FPS (4.8ms), 가장 긴 프레임 391ms, 곡 시작 연출 뒤 가장 긴 프레임 17ms, 끊김 0번, 프레임 4088개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 4.7ms, CPU 평균 3.5ms (4088개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 16.9ms | 효과가 가장 무거운 프레임 4ms: 게임 효과 0.3ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [17ms @0.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 16.5] [16ms @0.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 15.1] [15ms @0.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 14.8] [15ms @0.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 14.6] [15ms @0.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 14.3] [15ms @0.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 14.1] [14ms @0.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 13.1] [14ms @0.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 13.1] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 204(3.7/0.7/1.5/4.8/0.0, 732/0개) 10s 218(3.2/0.7/1.4/4.5/0.0, 727/0개) | 가장 높은 구간 10s 218 FPS | 같은 그림자 색 건너뛰기 479479회 | 파티클 장식: 같은 값 넣기 22026640번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 72개 없앰, 게임 화면 버퍼 불필요한 해제 8번 막음 | 필터 형식 찾기 기억 785번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 438개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 119개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 1887번을 751번으로 줄임 (60% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 680047번 중 같은 값이라 건너뜀 327765번 | 재생 중 편집기 검사 건너뜀 25549번 | 매 프레임 장식 순회 2988960번 중 바뀌는 게 없어 뺀 것 15830번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 730개만 훑음 (잠재움 10646번, 깨움 5083번, 목록 새로 만듦 1번, 안전망 검사 19번에 놓친 깨움 0개) | 즉시 이동 직접 처리 15292번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 392번, 투명한 채 색만 저장 1181번 | 장식 이동 루프: 효과 2285개(장식 15338개), 원래 코드로 넘긴 효과 813개 [길이 있음 812, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 1312개 | 장식 애니메이션 직접 처리: 만든 것 148개(동시 최대 40개), 끝까지 감 66, 끊겨서 완료 117, 버림 0, 기록 다시 씀 66, 새 표 객체 36, 갱신에 쓴 시간 60ms (3907프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 340개(타일 340개, 시작에 쓴 시간 3ms), 원래 코드로 1067개 [곡 시작 직후 1067, 길이 음수 0, 기타 0], 만든 것 1123개(동시 최대 176, 다시 씀 339, 겹쳐서 진짜 DOTween 0), 끝까지 감 991, 끊겨서 완료 0, 버림 0, 갱신 131ms (4022프레임), 게임이 멈출 때 넘겨준 것 0 | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 25279번 (안 보이게 돼서 대신 갱신 952번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 2633개, 곡 중 최대 5038개 | 투명한 장식 위치 반영 미룸 2025번, 보일 때 반영 657번 | 색 바뀜 9057번 확인, 그리기 켜고 끈 것 7565번, 쓴 시간 약 3.4ms, 가장 많이 쓴 프레임 약 3.36ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 127개는 가볍게, 6163개는 원래대로 다시 설정 327ms
+[StutterFix] [전환] 편집으로 나가기 576ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 508MB -> 340MB, 225ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (801ms)
+[StutterFix] [자동 시험] [임무단계] stop 806.386ms
+[StutterFix] [화면 대기] 이번 판 19초 중 19초 동안 늘어나 있었음 (그때 평균 1.5ms)
+[StutterFix] [자동 시험] [임무단계] wait 199.417ms
+[StutterFix] [자동 시험] HALF_ABBA AAA_SuperComputer A
+[StutterFix] [자동 시험] [임무단계] log 4.759ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 28.933ms
+[StutterFix] [자동 시험] 타일 1154 선택
+[StutterFix] [자동 시험] [임무단계] select 49.820ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 115ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 194ms
+[StutterFix] [전환] 에디터 재생 시작 502ms
+[StutterFix] [자동 시험] [임무단계] play 511.648ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 583ms (프레임 1개, 가장 긴 프레임 583ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 339ms, 그 밖 244ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 78ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1154 (0.4초)
+[StutterFix] [화면 대기] 늘어남: 평균 1.6ms (프레임 4.8ms 중, 약 207 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 66%, 게임 66%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [자동 시험] [임무단계] wait 19499.380ms
+[StutterFix] [곡] 평균 212 FPS (4.7ms), 가장 긴 프레임 369ms, 곡 시작 연출 뒤 가장 긴 프레임 9ms, 끊김 0번, 프레임 4110개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 4.6ms, CPU 평균 3.4ms (4110개 잼) | 그 프레임: 게임 효과 35개 2.7ms (그중 장식 이동 0.1ms), 나머지 6.7ms | 효과가 가장 무거운 프레임 7ms: 게임 효과 2.7ms (그중 장식 이동 0.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [9ms @0.6초: 효과 35개 2.7(장식 이동 0.1, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 6.2] [9ms @0.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 8.4] [9ms @0.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.6, 장식 갱신 0.0+0.4, 나머지 7.8] [8ms @0.8초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 8.0] [8ms @0.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 8.0] [8ms @0.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 7.9] [8ms @0.8초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 7.9] [8ms @0.7초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 7.7] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 205(3.7/0.7/1.5/4.8/0.0, 732/0개) 10s 218(3.2/0.7/1.4/4.5/0.0, 727/0개) | 가장 높은 구간 10s 218 FPS | 같은 그림자 색 건너뛰기 500149회 | 파티클 장식: 같은 값 넣기 22977460번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 89개 없앰, 게임 화면 버퍼 불필요한 해제 12번 막음 | 필터 형식 찾기 기억 791번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 676개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 119개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 1887번을 751번으로 줄임 (60% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 682445번 중 같은 값이라 건너뜀 329476번 | 재생 중 편집기 검사 건너뜀 25677번 | 매 프레임 장식 순회 3003814번 중 바뀌는 게 없어 뺀 것 15830번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 729개만 훑음 (잠재움 10646번, 깨움 5083번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 15292번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 392번, 투명한 채 색만 저장 1181번 | 장식 이동 루프: 효과 2288개(장식 15343개), 원래 코드로 넘긴 효과 810개 [길이 있음 809, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 1313개 | 장식 애니메이션 직접 처리: 만든 것 152개(동시 최대 40개), 끝까지 감 74, 끊겨서 완료 152, 버림 0, 기록 다시 씀 106, 새 표 객체 4, 갱신에 쓴 시간 62ms (4037프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 350개(타일 410개, 시작에 쓴 시간 3ms), 원래 코드로 1057개 [곡 시작 직후 1057, 길이 음수 0, 기타 0], 만든 것 1151개(동시 최대 176, 다시 씀 355, 겹쳐서 진짜 DOTween 0), 끝까지 감 1019, 끊겨서 완료 0, 버림 0, 갱신 133ms (4035프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 25407번 (안 보이게 돼서 대신 갱신 952번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 2633개, 곡 중 최대 5038개 | 투명한 장식 위치 반영 미룸 2025번, 보일 때 반영 657번 | 색 바뀜 9057번 확인, 그리기 켜고 끈 것 7565번, 쓴 시간 약 3.3ms, 가장 많이 쓴 프레임 약 3.32ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 127개는 가볍게, 6163개는 원래대로 다시 설정 321ms
+[StutterFix] [전환] 편집으로 나가기 570ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 504MB -> 339MB, 230ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (800ms)
+[StutterFix] [자동 시험] [임무단계] stop 804.673ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 126.063ms
+[StutterFix] [화면 대기] 이번 판 19초 중 19초 동안 늘어나 있었음 (그때 평균 1.5ms)
+[StutterFix] [자동 시험] [임무단계] wait 976.456ms
+[StutterFix] [자동 시험] HALF_ABBA AAA_SuperComputer B
+[StutterFix] [자동 시험] [임무단계] log 4.525ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 33.145ms
+[StutterFix] [자동 시험] 타일 1154 선택
+[StutterFix] [자동 시험] [임무단계] select 50.327ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 113ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 203ms
+[StutterFix] [전환] 에디터 재생 시작 508ms
+[StutterFix] [자동 시험] [임무단계] play 517.579ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 589ms (프레임 1개, 가장 긴 프레임 589ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 346ms, 그 밖 243ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 78ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1154 (0.4초)
+[StutterFix] [화면 대기] 늘어남: 평균 0.9ms (프레임 4.2ms 중, 약 240 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 49%, 게임 48%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.8ms (약 251 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 51%, 게임 50%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [자동 시험] [임무단계] wait 19493.723ms
+[StutterFix] [곡] 평균 242 FPS (4.1ms), 가장 긴 프레임 376ms, 곡 시작 연출 뒤 가장 긴 프레임 8ms, 끊김 0번, 프레임 4702개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 3.9ms, CPU 평균 3.4ms (4702개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 7.7ms | 효과가 가장 무거운 프레임 6ms: 게임 효과 2.3ms (그중 장식 이동 0.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [8ms @16.8초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 7.3] [8ms @3.6초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 7.1] [7ms @0.6초: 효과 35개 2.3(장식 이동 0.1, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 4.3] [7ms @5.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 6.2] [7ms @4.0초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 6.0] [6ms @0.6초: 효과 35개 2.3(장식 이동 0.1, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 3.5] [6ms @8.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.8] [6ms @11.6초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 5.7] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 236(3.6/0.7/0.9/4.0/0.0, 731/0개) 10s 249(3.2/0.7/0.8/3.8/0.0, 727/0개) | 가장 높은 구간 10s 249 FPS | 같은 그림자 색 건너뛰기 524759회 | 파티클 장식: 같은 값 넣기 24109520번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 106개 없앰, 게임 화면 버퍼 불필요한 해제 16번 막음 | 필터 형식 찾기 기억 791번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 914개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 119개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 1887번을 751번으로 줄임 (60% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 777301번 중 같은 값이라 건너뜀 374644번 | 재생 중 편집기 검사 건너뜀 28813번 | 매 프레임 장식 순회 3434158번 중 바뀌는 게 없어 뺀 것 15830번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 729개만 훑음 (잠재움 10646번, 깨움 5083번, 목록 새로 만듦 1번, 안전망 검사 19번에 놓친 깨움 0개) | 즉시 이동 직접 처리 15292번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 392번, 투명한 채 색만 저장 1181번 | 장식 이동 루프: 효과 2288개(장식 15343개), 원래 코드로 넘긴 효과 810개 [길이 있음 809, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 1313개 | 장식 애니메이션 직접 처리: 만든 것 152개(동시 최대 40개), 끝까지 감 80, 끊겨서 완료 152, 버림 0, 기록 다시 씀 112, 새 표 객체 4, 갱신에 쓴 시간 71ms (4629프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 350개(타일 410개, 시작에 쓴 시간 3ms), 원래 코드로 1057개 [곡 시작 직후 1057, 길이 음수 0, 기타 0], 만든 것 1151개(동시 최대 176, 다시 씀 355, 겹쳐서 진짜 DOTween 0), 끝까지 감 1019, 끊겨서 완료 0, 버림 0, 갱신 153ms (4624프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 28543번 (안 보이게 돼서 대신 갱신 952번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 2633개, 곡 중 최대 5038개 | 투명한 장식 위치 반영 미룸 2025번, 보일 때 반영 657번 | 색 바뀜 9057번 확인, 그리기 켜고 끈 것 7565번, 쓴 시간 약 3.4ms, 가장 많이 쓴 프레임 약 3.36ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 127개는 가볍게, 6163개는 원래대로 다시 설정 324ms
+[StutterFix] [전환] 편집으로 나가기 571ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 514MB -> 340MB, 284ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (858ms)
+[StutterFix] [자동 시험] [임무단계] stop 861.979ms
+[StutterFix] [filterhalfperf] CameraFilterPack_AAA_SuperComputer calls=4630 frames=4630
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 142.883ms
+[StutterFix] [화면 대기] 이번 판 19초 중 12초 동안 늘어나 있었음 (그때 평균 0.9ms)
+[StutterFix] [자동 시험] [임무단계] wait 961.782ms
+[StutterFix] [자동 시험] HALF_ABBA AAA_SuperComputer B
+[StutterFix] [자동 시험] [임무단계] log 4.846ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 32.262ms
+[StutterFix] [자동 시험] 타일 1154 선택
+[StutterFix] [자동 시험] [임무단계] select 50.082ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 113ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 197ms
+[StutterFix] [전환] 에디터 재생 시작 501ms
+[StutterFix] [자동 시험] [임무단계] play 509.741ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 583ms (프레임 1개, 가장 긴 프레임 583ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 340ms, 그 밖 243ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 78ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1154 (0.4초)
+[StutterFix] [모니터] 54ms -> GPU 과부하 / gpu 348.8 cpu 586.7 (수집 112181번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 시각 18:36:43.039
+[StutterFix] [모니터]   직전 필터 변화 (6프레임): 없음 | VRAM 전체 6295/7949MB, 게임 전용 4913MB, 게임 공유(시스템 RAM) 13MB
+[StutterFix] [화면 대기] 늘어남: 평균 0.9ms (프레임 4.3ms 중, 약 234 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 50%, 게임 49%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [화면 대기] 다시 줄어듦: 평균 0.8ms (약 249 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 51%, 게임 51%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [자동 시험] [임무단계] wait 19502.716ms
+[StutterFix] [곡] 평균 241 FPS (4.1ms), 가장 긴 프레임 364ms, 곡 시작 연출 뒤 가장 긴 프레임 13ms, 끊김 0번, 프레임 4681개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 3.9ms, CPU 평균 3.4ms (4681개 잼) | 그 프레임: 게임 효과 35개 2.4ms (그중 장식 이동 0.1ms), 나머지 10.8ms | 효과가 가장 무거운 프레임 7ms: 게임 효과 2.4ms (그중 장식 이동 0.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [13ms @0.6초: 효과 35개 2.4(장식 이동 0.1, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.3, 나머지 10.4] [12ms @0.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 11.9] [11ms @0.6초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 10.2] [11ms @0.7초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 10.1] [10ms @0.7초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 10.0] [10ms @0.7초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 9.9] [9ms @0.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.6, 장식 갱신 0.0+0.3, 나머지 8.5] [9ms @0.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 8.7] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 234(3.6/0.7/0.9/4.1/0.0, 731/0개) 10s 249(3.2/0.7/0.8/3.8/0.0, 727/0개) | 가장 높은 구간 10s 249 FPS | 같은 그림자 색 건너뛰기 549234회 | 파티클 장식: 같은 값 넣기 25235370번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 123개 없앰, 게임 화면 버퍼 불필요한 해제 20번 막음 | 필터 형식 찾기 기억 791번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 1152개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 119개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 1919번을 767번으로 줄임 (60% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 774317번 중 같은 값이라 건너뜀 373297번 | 재생 중 편집기 검사 건너뜀 28957번 | 매 프레임 장식 순회 3419018번 중 바뀌는 게 없어 뺀 것 15830번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 729개만 훑음 (잠재움 10646번, 깨움 5083번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 15292번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 392번, 투명한 채 색만 저장 1181번 | 장식 이동 루프: 효과 2288개(장식 15343개), 원래 코드로 넘긴 효과 810개 [길이 있음 809, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 1313개 | 장식 애니메이션 직접 처리: 만든 것 152개(동시 최대 68개), 끝까지 감 52, 끊겨서 완료 152, 버림 0, 기록 다시 씀 84, 새 표 객체 4, 갱신에 쓴 시간 70ms (4613프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 350개(타일 410개, 시작에 쓴 시간 3ms), 원래 코드로 1057개 [곡 시작 직후 1057, 길이 음수 0, 기타 0], 만든 것 1151개(동시 최대 176, 다시 씀 355, 겹쳐서 진짜 DOTween 0), 끝까지 감 1025, 끊겨서 완료 0, 버림 0, 갱신 154ms (4613프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 28703번 (안 보이게 돼서 대신 갱신 952번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 2633개, 곡 중 최대 5038개 | 투명한 장식 위치 반영 미룸 2025번, 보일 때 반영 657번 | 색 바뀜 9057번 확인, 그리기 켜고 끈 것 7565번, 쓴 시간 약 3.2ms, 가장 많이 쓴 프레임 약 3.18ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 127개는 가볍게, 6163개는 원래대로 다시 설정 324ms
+[StutterFix] [전환] 편집으로 나가기 575ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 516MB -> 340MB, 226ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (801ms)
+[StutterFix] [자동 시험] [임무단계] stop 805.217ms
+[StutterFix] [filterhalfperf] CameraFilterPack_AAA_SuperComputer calls=4616 frames=4616
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 143.885ms
+[StutterFix] [화면 대기] 이번 판 19초 중 14초 동안 늘어나 있었음 (그때 평균 0.9ms)
+[StutterFix] [자동 시험] [임무단계] wait 963.537ms
+[StutterFix] [자동 시험] HALF_ABBA AAA_SuperComputer A
+[StutterFix] [자동 시험] [임무단계] log 4.549ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 28.814ms
+[StutterFix] [자동 시험] 타일 1154 선택
+[StutterFix] [자동 시험] [임무단계] select 49.924ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 113ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 201ms
+[StutterFix] [전환] 에디터 재생 시작 509ms
+[StutterFix] [자동 시험] [임무단계] play 518.567ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 590ms (프레임 1개, 가장 긴 프레임 590ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 346ms, 그 밖 244ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 80ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+Releasing render texture that is set to be RenderTexture.active!
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1154 (0.4초)
+[StutterFix] [화면 대기] 늘어남: 평균 1.7ms (프레임 4.9ms 중, 약 203 FPS) | 게임 창이 앞에 있음 | 게임 창(3440x1440) 위에 겹친 창 0개 | GPU 3D 전체 69%, 게임 68%, 다른 프로그램 1% 넘는 것 없음
+[StutterFix] [자동 시험] [임무단계] wait 19493.021ms
+[StutterFix] [곡] 평균 211 FPS (4.7ms), 가장 긴 프레임 375ms, 곡 시작 연출 뒤 가장 긴 프레임 18ms, 끊김 0번, 프레임 4102개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 4.6ms, CPU 평균 3.4ms (4102개 잼) | 그 프레임: 게임 효과 2개 0.0ms (그중 장식 이동 0.0ms), 나머지 17.5ms | 효과가 가장 무거운 프레임 6ms: 게임 효과 2.4ms (그중 장식 이동 0.1ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [18ms @0.7초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 17.1] [16ms @0.7초: 효과 35개 2.4(장식 이동 0.1, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 12.9] [12ms @0.7초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.6, 장식 갱신 0.0+0.4, 나머지 11.0] [7ms @2.6초: 효과 2개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.3, 나머지 6.9] [7ms @0.7초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 6.7] [7ms @2.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.4, 나머지 6.6] [7ms @18.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.4, 나머지 6.5] [7ms @8.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.4, 나머지 6.4] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 206(3.7/0.7/1.5/4.8/0.0, 732/0개) 10s 217(3.2/0.7/1.4/4.5/0.0, 727/0개) | 가장 높은 구간 10s 217 FPS | 같은 그림자 색 건너뛰기 570824회 | 파티클 장식: 같은 값 넣기 26228510번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 140개 없앰, 게임 화면 버퍼 불필요한 해제 24번 막음 | 필터 형식 찾기 기억 791번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 1390개 (원래대로 0개) | 연출 끄기: 효과 0개 건너뜀, 필터 0번 끔, 장식 안 만듦 0개·숨김 0개, 판정 글자 119개 숨김, 휠 확대 0번 막음
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 1919번을 767번으로 줄임 (60% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 681071번 중 같은 값이라 건너뜀 328796번 | 재생 중 편집기 검사 건너뜀 25565번 | 매 프레임 장식 순회 2997976번 중 바뀌는 게 없어 뺀 것 15830번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 729개만 훑음 (잠재움 10646번, 깨움 5083번, 목록 새로 만듦 1번, 안전망 검사 19번에 놓친 깨움 0개) | 즉시 이동 직접 처리 15292번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 392번, 투명한 채 색만 저장 1181번 | 장식 이동 루프: 효과 2288개(장식 15343개), 원래 코드로 넘긴 효과 810개 [길이 있음 809, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 1313개 | 장식 애니메이션 직접 처리: 만든 것 152개(동시 최대 68개), 끝까지 감 38, 끊겨서 완료 152, 버림 0, 기록 다시 씀 70, 새 표 객체 4, 갱신에 쓴 시간 62ms (4027프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 350개(타일 410개, 시작에 쓴 시간 3ms), 원래 코드로 1057개 [곡 시작 직후 1057, 길이 음수 0, 기타 0], 만든 것 1151개(동시 최대 176, 다시 씀 355, 겹쳐서 진짜 DOTween 0), 끝까지 감 1019, 끊겨서 완료 0, 버림 0, 갱신 133ms (4025프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 1개(바로 쓴 값 0개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 25311번 (안 보이게 돼서 대신 갱신 952번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 2633개, 곡 중 최대 5038개 | 투명한 장식 위치 반영 미룸 2025번, 보일 때 반영 657번 | 색 바뀜 9057번 확인, 그리기 켜고 끈 것 7565번, 쓴 시간 약 3.5ms, 가장 많이 쓴 프레임 약 3.55ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 127개는 가볍게, 6163개는 원래대로 다시 설정 322ms
+[StutterFix] [전환] 편집으로 나가기 572ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 513MB -> 340MB, 229ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (801ms)
+[StutterFix] [자동 시험] [임무단계] stop 805.910ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 127.607ms
+[StutterFix] [화면 대기] 이번 판 19초 중 19초 동안 늘어나 있었음 (그때 평균 1.5ms)
+[StutterFix] [자동 시험] [임무단계] wait 977.532ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 28.847ms
+[StutterFix] [자동 시험] 타일 1 선택
+[StutterFix] [자동 시험] [임무단계] select 57.347ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 114ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 197ms
+[StutterFix] [전환] 에디터 재생 시작 500ms
+[StutterFix] [자동 시험] [임무단계] play 513.397ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 583ms (프레임 1개, 가장 긴 프레임 583ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 338ms, 그 밖 245ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 78ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (0.0초)
+[StutterFix] [모니터] 66ms -> 게임 처리 / gpu 6.3 cpu 587.2 (수집 121399번) 효과 0.0 모드 0.0(모니터 그리기) gc 0 | 시각 18:37:26.684
+[StutterFix] [자동 시험] [임무단계] wait 19500.737ms
+[StutterFix] [곡] 평균 293 FPS (3.4ms), 가장 긴 프레임 19ms, 곡 시작 연출 뒤 가장 긴 프레임 19ms, 끊김 0번, 프레임 5691개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.2ms, CPU 평균 3.5ms (5691개 잼) | 그 프레임: 게임 효과 60개 0.8ms (그중 장식 이동 0.3ms), 나머지 18.1ms | 효과가 가장 무거운 프레임 6ms: 게임 효과 1.9ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [19ms @18.7초: 효과 60개 0.8(장식 이동 0.3, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 17.4] [13ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 12.1] [10ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 9.7] [8ms @1.9초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.7, 나머지 6.3] [8ms @0.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.3, 나머지 5.1] [8ms @0.3초: 효과 40개 1.9(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 5.1] [7ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 6.8] [7ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 6.8] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 281(3.7/0.7/0.1/2.1/0.0, 823/0개) 10s 306(3.2/0.7/0.0/2.2/0.0, 801/0개) | 가장 높은 구간 10s 306 FPS | 같은 그림자 색 건너뛰기 600374회 | 파티클 장식: 같은 값 넣기 27587810번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 143개 없앰, 게임 화면 버퍼 불필요한 해제 25번 막음 | 필터 형식 찾기 기억 568번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 1390개 (원래대로 0개)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 13번을 10번으로 줄임 (23% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1421519번 중 같은 값이라 건너뜀 458212번 | 재생 중 편집기 검사 건너뜀 29372번 | 매 프레임 장식 순회 4626797번 중 바뀌는 게 없어 뺀 것 28017번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 22833번, 깨움 17369번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 199번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 544개(장식 1258개), 원래 코드로 넘긴 효과 16개 [길이 있음 15, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 389개 | 장식 애니메이션 직접 처리: 만든 것 285개(동시 최대 148개), 끝까지 감 174, 끊겨서 완료 15, 버림 0, 기록 다시 씀 12, 새 표 객체 273, 갱신에 쓴 시간 82ms (4628프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 9개(타일 42개, 시작에 쓴 시간 0ms), 원래 코드로 2개 [곡 시작 직후 2, 길이 음수 0, 기타 0], 만든 것 11개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 10, 끊겨서 완료 0, 버림 0, 갱신 5ms (1439프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 5개(바로 쓴 값 8개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 16139번 (안 보이게 돼서 대신 갱신 9번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4874개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 14번, 보일 때 반영 6번 | 색 바뀜 20744번 확인, 그리기 켜고 끈 것 90번, 쓴 시간 약 9.4ms, 가장 많이 쓴 프레임 약 0.17ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4430개는 가볍게, 1860개는 원래대로 다시 설정 188ms
+[StutterFix] [전환] 편집으로 나가기 438ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 436MB -> 340MB, 226ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (664ms)
+[StutterFix] [자동 시험] [임무단계] stop 668.045ms
+[StutterFix] [자동 시험] [임무단계] wait 340.084ms
+[StutterFix] [자동 시험] HALF_ABBA TV_WideScreenHorizontal A
+[StutterFix] [자동 시험] [임무단계] log 4.845ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.597ms
+[StutterFix] [자동 시험] 타일 1 선택
+[StutterFix] [자동 시험] [임무단계] select 50.404ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 114ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 197ms
+[StutterFix] [전환] 에디터 재생 시작 499ms
+[StutterFix] [자동 시험] [임무단계] play 508.193ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 579ms (프레임 1개, 가장 긴 프레임 578ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 337ms, 그 밖 241ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 79ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (0.0초)
+[StutterFix] [자동 시험] [임무단계] wait 19501.309ms
+[StutterFix] [곡] 평균 295 FPS (3.4ms), 가장 긴 프레임 17ms, 곡 시작 연출 뒤 가장 긴 프레임 7ms, 끊김 0번, 프레임 5725개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.1ms, CPU 평균 3.5ms (5725개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 7.2ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.5ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [7ms @2.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 5.5] [7ms @1.9초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.6, 나머지 5.2] [6ms @2.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 4.3] [6ms @0.3초: 효과 40개 1.5(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 4.0] [6ms @2.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.9, 나머지 3.9] [6ms @2.4초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+2.1, 나머지 3.7] [6ms @2.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.6, 나머지 4.2] [6ms @1.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+1.7, 나머지 4.0] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 285(3.7/0.7/0.1/2.1/0.0, 823/0개) 10s 305(3.3/0.7/0.0/2.2/0.0, 802/0개) | 가장 높은 구간 10s 305 FPS | 같은 그림자 색 건너뛰기 629264회 | 파티클 장식: 같은 값 넣기 28916750번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 146개 없앰, 게임 화면 버퍼 불필요한 해제 26번 막음 | 필터 형식 찾기 기억 563번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 1390개 (원래대로 0개)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 13번을 10번으로 줄임 (23% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1430899번 중 같은 값이라 건너뜀 461349번 | 재생 중 편집기 검사 건너뜀 29854번 | 매 프레임 장식 순회 4654964번 중 바뀌는 게 없어 뺀 것 28082번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 22898번, 깨움 17434번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 199번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 559개(장식 1277개), 원래 코드로 넘긴 효과 1개 [길이 있음 0, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 389개 | 장식 애니메이션 직접 처리: 만든 것 321개(동시 최대 152개), 끝까지 감 209, 끊겨서 완료 286, 버림 0, 기록 다시 씀 201, 새 표 객체 119, 갱신에 쓴 시간 135ms (5416프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 9개(타일 42개, 시작에 쓴 시간 0ms), 원래 코드로 2개 [곡 시작 직후 2, 길이 음수 0, 기타 0], 만든 것 11개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 10, 끊겨서 완료 0, 버림 0, 갱신 5ms (1444프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 5개(바로 쓴 값 8개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 16655번 (안 보이게 돼서 대신 갱신 9번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4874개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 14번, 보일 때 반영 6번 | 색 바뀜 20843번 확인, 그리기 켜고 끈 것 90번, 쓴 시간 약 6.8ms, 가장 많이 쓴 프레임 약 0.14ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4430개는 가볍게, 1860개는 원래대로 다시 설정 189ms
+[StutterFix] [전환] 편집으로 나가기 442ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 430MB -> 340MB, 235ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (677ms)
+[StutterFix] [자동 시험] [임무단계] stop 681.831ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 123.974ms
+[StutterFix] [자동 시험] [임무단계] wait 980.293ms
+[StutterFix] [자동 시험] HALF_ABBA TV_WideScreenHorizontal B
+[StutterFix] [자동 시험] [임무단계] log 5.138ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 33.147ms
+[StutterFix] [자동 시험] 타일 1 선택
+[StutterFix] [자동 시험] [임무단계] select 50.771ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 114ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 202ms
+[StutterFix] [전환] 에디터 재생 시작 507ms
+[StutterFix] [자동 시험] [임무단계] play 516.844ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 597ms (프레임 1개, 가장 긴 프레임 597ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 343ms, 그 밖 254ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 81ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (0.0초)
+[StutterFix] [자동 시험] [임무단계] wait 19492.694ms
+[StutterFix] [곡] 평균 292 FPS (3.4ms), 가장 긴 프레임 14ms, 곡 시작 연출 뒤 가장 긴 프레임 14ms, 끊김 0번, 프레임 5664개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.2ms, CPU 평균 3.5ms (5664개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 14.0ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.5ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [14ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 13.5] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 7.7] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.2] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.2] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.1] [8ms @0.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 7.0] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.1] [8ms @0.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.6, 나머지 7.0] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 281(3.7/0.7/0.1/2.1/0.0, 823/0개) 10s 303(3.3/0.7/0.0/2.2/0.0, 802/0개) | 가장 높은 구간 10s 303 FPS | 같은 그림자 색 건너뛰기 658629회 | 파티클 장식: 같은 값 넣기 30267540번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 149개 없앰, 게임 화면 버퍼 불필요한 해제 27번 막음 | 필터 형식 찾기 기억 563번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 1390개 (원래대로 0개)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 13번을 10번으로 줄임 (23% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1415904번 중 같은 값이라 건너뜀 456652번 | 재생 중 편집기 검사 건너뜀 29594번 | 매 프레임 장식 순회 4605575번 중 바뀌는 게 없어 뺀 것 28052번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 22868번, 깨움 17404번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 199번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 544개(장식 1258개), 원래 코드로 넘긴 효과 16개 [길이 있음 15, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 389개 | 장식 애니메이션 직접 처리: 만든 것 285개(동시 최대 148개), 끝까지 감 172, 끊겨서 완료 320, 버림 0, 기록 다시 씀 201, 새 표 객체 84, 갱신에 쓴 시간 83ms (4607프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 9개(타일 42개, 시작에 쓴 시간 0ms), 원래 코드로 2개 [곡 시작 직후 2, 길이 음수 0, 기타 0], 만든 것 11개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 10, 끊겨서 완료 0, 버림 0, 갱신 5ms (1435프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 5개(바로 쓴 값 8개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 16418번 (안 보이게 돼서 대신 갱신 9번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4874개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 14번, 보일 때 반영 6번 | 색 바뀜 20840번 확인, 그리기 켜고 끈 것 90번, 쓴 시간 약 10.1ms, 가장 많이 쓴 프레임 약 0.36ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4430개는 가볍게, 1860개는 원래대로 다시 설정 190ms
+[StutterFix] [전환] 편집으로 나가기 438ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 436MB -> 340MB, 231ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (669ms)
+[StutterFix] [자동 시험] [임무단계] stop 673.497ms
+[StutterFix] [filterhalfperf] CameraFilterPack_TV_WideScreenHorizontal calls=5520 frames=5443
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 137.400ms
+[StutterFix] [자동 시험] [임무단계] wait 964.896ms
+[StutterFix] [자동 시험] HALF_ABBA TV_WideScreenHorizontal B
+[StutterFix] [자동 시험] [임무단계] log 4.841ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 31.832ms
+[StutterFix] [자동 시험] 타일 1 선택
+[StutterFix] [자동 시험] [임무단계] select 49.904ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 114ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 197ms
+[StutterFix] [전환] 에디터 재생 시작 499ms
+[StutterFix] [자동 시험] [임무단계] play 508.282ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 579ms (프레임 1개, 가장 긴 프레임 579ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 338ms, 그 밖 241ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 78ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (0.0초)
+[StutterFix] [자동 시험] [임무단계] wait 19503.149ms
+[StutterFix] [곡] 평균 293 FPS (3.4ms), 가장 긴 프레임 17ms, 곡 시작 연출 뒤 가장 긴 프레임 16ms, 끊김 0번, 프레임 5690개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.2ms, CPU 평균 3.5ms (5689개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 16.3ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.7ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [16ms @18.8초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.7, 나머지 15.6] [16ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 15.2] [11ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 10.2] [9ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 8.8] [8ms @0.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 7.3] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.3] [8ms @0.2초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.3] [8ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.3] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 281(3.7/0.7/0.1/2.1/0.0, 823/0개) 10s 305(3.2/0.7/0.0/2.2/0.0, 802/0개) | 가장 높은 구간 10s 305 FPS | 같은 그림자 색 건너뛰기 688119회 | 파티클 장식: 같은 값 넣기 31624080번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 152개 없앰, 게임 화면 버퍼 불필요한 해제 28번 막음 | 필터 형식 찾기 기억 563번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 1390개 (원래대로 0개)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 13번을 10번으로 줄임 (23% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1422043번 중 같은 값이라 건너뜀 458368번 | 재생 중 편집기 검사 건너뜀 29710번 | 매 프레임 장식 순회 4626262번 중 바뀌는 게 없어 뺀 것 27981번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 22797번, 깨움 17333번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 199번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 544개(장식 1258개), 원래 코드로 넘긴 효과 16개 [길이 있음 15, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 389개 | 장식 애니메이션 직접 처리: 만든 것 285개(동시 최대 148개), 끝까지 감 174, 끊겨서 완료 285, 버림 0, 기록 다시 씀 201, 새 표 객체 84, 갱신에 쓴 시간 82ms (4622프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 9개(타일 42개, 시작에 쓴 시간 0ms), 원래 코드로 2개 [곡 시작 직후 2, 길이 음수 0, 기타 0], 만든 것 11개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 10, 끊겨서 완료 0, 버림 0, 갱신 5ms (1443프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 5개(바로 쓴 값 8개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 16550번 (안 보이게 돼서 대신 갱신 9번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4874개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 14번, 보일 때 반영 6번 | 색 바뀜 20712번 확인, 그리기 켜고 끈 것 90번, 쓴 시간 약 8.8ms, 가장 많이 쓴 프레임 약 0.15ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4430개는 가볍게, 1860개는 원래대로 다시 설정 187ms
+[StutterFix] [전환] 편집으로 나가기 438ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 437MB -> 340MB, 227ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (665ms)
+[StutterFix] [자동 시험] [임무단계] stop 668.902ms
+[StutterFix] [filterhalfperf] CameraFilterPack_TV_WideScreenHorizontal calls=5544 frames=5466
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 136.287ms
+[StutterFix] [자동 시험] [임무단계] wait 963.448ms
+[StutterFix] [자동 시험] HALF_ABBA TV_WideScreenHorizontal A
+[StutterFix] [자동 시험] [임무단계] log 4.904ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 29.581ms
+[StutterFix] [자동 시험] 타일 1 선택
+[StutterFix] [자동 시험] [임무단계] select 49.729ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [효과 재사용] 다시 씀 5241개, 새로 붙임 2332개, 지움 0개, 남겨 둔 것 0개, 순서가 다를 수 있는 오브젝트 423개 | 114ms
+[StutterFix] [재생 시작] 장식 6290개 중 판 중에 안 바뀐 4533개는 가볍게, 1757개는 원래대로 다시 설정 200ms
+[StutterFix] [전환] 에디터 재생 시작 503ms
+[StutterFix] [자동 시험] [임무단계] play 512.023ms
+[StutterFix] [상태] None 에디터재생  -> 플레이
+[StutterFix] [재시작 시간] Play → 곡 시작까지 585ms (프레임 1개, 가장 긴 프레임 585ms) | 나눔: 곡 끝 요약 0ms, 메모리 정리 0ms, 장면 초기화 0ms, 재생 준비 340ms, 그 밖 245ms | 이미지 파일 시각: 11438번 중 디스크 900번 | 재생 준비 장식 다시 설정: 건너뜀 1번, 함 0번 | 충돌 상자 끄기(뒤에서부터) 6290개 80ms
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 0 -> 1 (0.0초)
+[StutterFix] [자동 시험] [임무단계] wait 19499.590ms
+[StutterFix] [곡] 평균 293 FPS (3.4ms), 가장 긴 프레임 17ms, 곡 시작 연출 뒤 가장 긴 프레임 13ms, 끊김 0번, 프레임 5688개
+[임무30] 시작 연출 뒤 30ms 초과 프레임 0개 (위치 저장 0개) | GPU 평균 2.1ms, CPU 평균 3.5ms (5688개 잼) | 그 프레임: 게임 효과 0개 0.0ms (그중 장식 이동 0.0ms), 나머지 13.2ms | 효과가 가장 무거운 프레임 5ms: 게임 효과 1.5ms (그중 장식 이동 0.2ms) | 모드가 쓴 시간 평균 0.03ms/프레임 | 가장 무거운 프레임 8개: [13ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 12.6] [12ms @0.3초: 효과 40개 1.5(장식 이동 0.2, 그중 길이 있는 것 0.1), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 9.6] [9ms @1.6초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.7, 나머지 7.4] [9ms @0.1초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 8.3] [8ms @0.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 7.4] [8ms @0.0초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+0.5, 나머지 7.5] [8ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 7.2] [7ms @0.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.5, 나머지 6.2] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 281(3.7/0.7/0.1/2.1/0.0, 823/0개) 10s 305(3.2/0.7/0.0/2.2/0.0, 802/0개) | 가장 높은 구간 10s 305 FPS | 같은 그림자 색 건너뛰기 717594회 | 파티클 장식: 같은 값 넣기 32979930번 중 0번 건너뜀 | 누수 막기: 사용자 지정 FPS 버퍼 155개 없앰, 게임 화면 버퍼 불필요한 해제 29번 막음 | 필터 형식 찾기 기억 563번 (새로 찾음 0번) | 오차 막대 눈금 가볍게 1390개 (원래대로 0개)
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 위치 마무리 13번을 10번으로 줄임 (23% 절약, 마무리에 쓴 시간 0ms) | 편집기 피벗 갱신 6290번을 1번으로 | 위치 쓰기 1421916번 중 같은 값이라 건너뜀 458585번 | 재생 중 편집기 검사 건너뜀 29817번 | 매 프레임 장식 순회 4624860번 중 바뀌는 게 없어 뺀 것 28037번 | 히트박스 순회: 전체 6290개 중 히트박스 있는 0개만 (목록 새로 만듦 1번) | 매 프레임 순회: 전체 6290개 중 평균 812개만 훑음 (잠재움 22853번, 깨움 17389번, 목록 새로 만듦 1번, 안전망 검사 20번에 놓친 깨움 0개) | 즉시 이동 직접 처리 199번 | 투명 장식 빠른 처리(위치 바로 미루기, 같은 색 건너뛰기) 19번, 투명한 채 색만 저장 4번 | 장식 이동 루프: 효과 544개(장식 1258개), 원래 코드로 넘긴 효과 16개 [길이 있음 15, 공식 맵 0, 그래픽 설정 0, 이미지 준비 안 됨·없는 이미지 1, 대상 없음 0, null 0], 이미지·마스크 바꾸는 효과 맡음 389개 | 장식 애니메이션 직접 처리: 만든 것 285개(동시 최대 148개), 끝까지 감 174, 끊겨서 완료 285, 버림 0, 기록 다시 씀 201, 새 표 객체 84, 갱신에 쓴 시간 83ms (4628프레임), 게임이 멈출 때 넘겨준 것 0 | 타일 이동 애니메이션 직접 처리: 효과 9개(타일 42개, 시작에 쓴 시간 0ms), 원래 코드로 2개 [곡 시작 직후 2, 길이 음수 0, 기타 0], 만든 것 11개(동시 최대 9, 다시 씀 0, 겹쳐서 진짜 DOTween 0), 끝까지 감 10, 끊겨서 완료 0, 버림 0, 갱신 5ms (1439프레임), 게임이 멈출 때 넘겨준 것 0, 길이 0 효과 5개(바로 쓴 값 8개) | 보이는 장식 위치 재계산을 LateUpdate 에 맡김 16604번 (안 보이게 돼서 대신 갱신 9번)
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 4874개, 곡 중 최대 4948개 | 투명한 장식 위치 반영 미룸 14번, 보일 때 반영 6번 | 색 바뀜 20814번 확인, 그리기 켜고 끈 것 90번, 쓴 시간 약 8.5ms, 가장 많이 쓴 프레임 약 0.15ms (64번에 한 번 재서 추정)
+[StutterFix] [첫 판 FPS] 0.5초 멈춘 프레임 동안 윈도우 메시지 확인 1번 (멈춘 창 판정 막기), 가장 긴 빈틈 0.5초
+[StutterFix] [나가기] 장식 6290개 중 판 중에 안 바뀐 4430개는 가볍게, 1860개는 원래대로 다시 설정 191ms
+[StutterFix] [전환] 편집으로 나가기 442ms (이미지 1076장 그대로 둠)
+[StutterFix] [상태] None 종료됨 편집중 일시정지  -> 정지
+[StutterFix] GC 재개 및 정리 (SwitchToEditMode) 437MB -> 341MB, 231ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (673ms)
+[StutterFix] [자동 시험] [임무단계] stop 677.194ms
+[StutterFix] [자동 시험] [임무단계] filterhalfperf 124.896ms
+[StutterFix] [자동 시험] [임무단계] wait 976.444ms
+[StutterFix] [자동 시험] 바꾼 설정 되돌림
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다
+[StutterFix] [자동 시험] [임무단계] quit 5.016ms
+Thread ended
+[Manager] Destroying when exit.
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.

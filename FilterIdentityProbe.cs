@@ -59,7 +59,7 @@ namespace StutterFix
             foreach (var c in FilterIdentity.Candidates.Values)
             {
                 sightings.TryGetValue(c.Type, out var n);
-                Main.Entry.Logger.Log("[?? ??] " + c.Type.Name + " ?? " + (n == null ? 0 : n[0]) + " ? ?? ?? ? " + (n == null ? 0 : n[1]));
+                Main.Entry.Logger.Log("[필터 관측] " + c.Type.Name + " 호출 " + (n == null ? 0 : n[0]) + " 중 중립 값 " + (n == null ? 0 : n[1]));
             }
             foreach (var kv in results) Main.Entry.Logger.Log("[필터 대조] " + kv.Key + " 표본 " + kv.Value.Samples + " 실패 " + kv.Value.Bad + " 최대 차이 " + kv.Value.Max + "/255");
         }
