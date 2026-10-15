@@ -37,7 +37,7 @@ made by **naro** & **Claude**
 
 - [설치](#설치)
 - [사용법](#사용법)
-- [2.7.2 에서 바뀐 것](#272-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
+- [2.7.3 에서 바뀐 것](#273-에서-바뀐-것) · [이전 버전](CHANGELOG.md)
 - [기능](#기능) — [플레이](#플레이) · [맵 불러오기](#맵-불러오기) · [그래픽](#그래픽) · [저사양](#저사양) · [편의](#편의) · [다른 모드와 함께](#다른-모드와-함께)
 - [실시간 모니터](#실시간-모니터)
 - [문제 보고](#문제-보고) · [그래도 끊긴다면](#그래도-끊긴다면)
@@ -57,13 +57,10 @@ made by **naro** & **Claude**
 - 두 단축키는 설정 창 홈에서 바꿀 수 있고, 한국어/English를 고를 수 있습니다.
 - 아이콘 줄 맨 아래 버튼으로 게임을 다시 켤 수 있습니다. 에디터에서 맵을 열어 둔 채라면 **이 맵으로 재시작**으로 다시 켠 뒤 그 맵을 바로 엽니다(저장 안 한 편집이 있으면 한 번 알리고, 한 번 더 누르면 저장하지 않고 재시작). 다시 켜면 좋은 때(설정 변경, 모드 업데이트, 메모리를 많이 씀, 오래 켜 둠)는 아이콘 옆 점으로 알려 줍니다.
 
-## 2.7.2 에서 바뀐 것
+## 2.7.3 에서 바뀐 것
 
-### 프레임 늘리기 (실험 · 기본 꺼짐)
-
-- **2.7.1 에서 FPS 제한을 풀고 고정 배율(2~8배)을 쓰면 진짜 FPS 가 떨어지던 문제를 고쳤습니다.** 같은 조건(HELLO 2026, 3440×1440, 4배, 제한 없음)에서 2.7.1 은 142 FPS, 고친 뒤 **209 FPS**입니다(진짜 프레임의 GPU 완료 6.7ms → 2.1ms).
-- 2.7.1 의 "그림 시각을 감싸는 진짜 프레임 쌍으로 보간"은 진짜 프레임 간격이 약 10ms 이상일 때(대략 100 FPS 미만, 예: 60 FPS 제한)만 씁니다. 그 구간에서는 GPU 에 여유가 있고 멈춘 그림이 0%가 됩니다. 진짜 FPS 가 높을 때는 쓰지 않습니다.
-- 알려진 것: 움직임 흐림(약/중/강)은 GPU 비용이 있습니다(약: 약 6%). 필요 없으면 끄세요.
+- 설정 창의 "중립 필터 건너뛰기" 항목이 제목과 설명 모두 `???`로만 보이던 글자 깨짐을 고쳤습니다(한국어 화면).
+- 개발용 필터 GPU 측정 도구와 글자 깨짐 검사를 추가했습니다(일반 사용자 빌드에는 들어가지 않습니다).
 
 ## 기능
 
@@ -244,6 +241,8 @@ DXT 압축은 [ISPC](https://github.com/ispc/ispc)(인텔 SPMD 컴파일러, v1.
 Stutter Fix reduces mid-play hitches and level loading times on heavy custom levels in A Dance of Fire and Ice. Core optimizations preserve game visuals, judgement and audio. Optional low-end settings, frame interpolation and screen effects can change the picture and default to off. Performance fixes are measured and compared; experimental visual quality and latency depend on the level and PC.
 
 **Install:** download `StutterFix-x.y.z-player.zip` from [Releases](https://github.com/pding4569/StutterFix/releases) and install it with Unity Mod Manager (Install Mod), or extract it to `A Dance of Fire and Ice/Mods/StutterFix/`. Restart the game once more to enable multithreaded rendering. Press **Insert** for the settings window (Korean/English) and **Shift+Insert** for the live monitor.
+
+**2.7.3:** fixes the Korean settings text of the "skip neutral filters" option that showed only question marks.
 
 **2.7.2:** fixes a real-FPS drop in 2.7.1 when the FPS limit is off and fixed 2-8x frame interpolation is used (142 -> 209 FPS in the same test): bracketing the picture time with the two true frames is now used only when true frames are slower than about 100 FPS.
 
