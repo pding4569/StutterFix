@@ -1036,6 +1036,8 @@ namespace StutterFix
                 }
                 case "threadstate":Log("[스레드 예약 상태] "+ThreadScheduling.Status);return true;
                 case "renderthreadstate":Log("[렌더 스레드 예약 상태] "+RenderThreadScheduling.FixtureState);return true;
+                case "renderthreadstopfixture":RenderThreadScheduling.Shutdown();Log("[렌더 스레드 내리기 시험] "+RenderThreadScheduling.FixtureState);return true;
+                case "moduleidentity":Log("[실행 모듈 식별] mvid="+typeof(Main).Module.ModuleVersionId);return true;
                 case "gccapability":
                 {
                     if(Hitch.Playing)throw new InvalidOperationException("GC capability check is menu-only");
@@ -1528,6 +1530,14 @@ namespace StutterFix
                     reloadPending = true;
                     EndBatch("다시 불러오기");
                     return false;   // 묶음이 이미 끝났다 (idx 를 건드리지 않음)
+                case "reloadactivefixture":
+                    if(setOrig.Count!=0||!Hitch.Playing||!RDC.auto||!RenderThreadScheduling.FixtureState.Contains("owned=True pending=0"))throw new InvalidOperationException("Active reload fixture requires an owned render lease, autoplay and no temporary settings");
+                    if(DllHash()==loadedHash)throw new InvalidOperationException("Active reload fixture requires a new DLL");
+                    Log("[활성 내리기 시험] "+RenderThreadScheduling.FixtureState);
+                    // This explicit research command keeps playback alive across
+                    // unload. Its run-owned process is normally quit afterwards.
+                    // Ordinary reload still restores temporary autoplay normally.
+                    autoChanged=false;reloadPending=true;EndBatch("활성 다시 불러오기");return false;
                 default:
                     throw new Exception("모르는 명령: " + cmd);
             }

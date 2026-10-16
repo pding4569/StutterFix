@@ -1,0 +1,48 @@
+{
+  "before_reload": {
+    "priority": 15,
+    "mask": 62,
+    "group": 0
+  },
+  "expected_original": {
+    "priority": 0,
+    "mask": 63,
+    "group": 0
+  },
+  "restored_exactly": true,
+  "batch": {
+    "first": "활성 다시 불러오기",
+    "second": "끝"
+  },
+  "mvid": [
+    "275683d7-0dec-4fac-bdef-797f95d6304d",
+    "26af98bc-d508-40ae-bc81-46a17c4eb564"
+  ],
+  "active_unload": [
+    "render=29128 priority=15 mask=3E  owned=True pending=0 requested=True before=[tid=29128 priority=0 mask=3F] current=[tid=29128 priority=15 mask=3E] restored=[]"
+  ],
+  "states": [
+    "render=29128 priority=15 mask=3E  owned=True pending=0 requested=True before=[tid=29128 priority=0 mask=3F] current=[tid=29128 priority=15 mask=3E] restored=[]",
+    "render=29128 priority=15 mask=3E  owned=True pending=0 requested=True before=[tid=29128 priority=0 mask=3F] current=[tid=29128 priority=15 mask=3E] restored=[]"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "actual_3440": false,
+  "managed_base_sha256": "6134e92be460b5af76e36d7a9a4f198bebfb4145e962e937854b6a918d11ba43",
+  "managed_new_sha256": "5f79e50303a4a1b9c70efb5529ff6ec278eb5f964ddad48ec28e823c29c78fd8",
+  "native_sha256": "0591ba9cfc167a1b3e192fe2c3293633ca051815e4e08f9d156b8524ab5b13a4",
+  "new_module_before_reapply": {
+    "priority": 0,
+    "mask": 63,
+    "group": 0
+  },
+  "external_observation_after_new_module_explicit_stop": {
+    "priority": 0,
+    "mask": 63,
+    "group": 0
+  },
+  "external_sample_immediately_between_unload_and_reapply": null,
+  "new_instance_reapplied_saved_render_setting": true
+}

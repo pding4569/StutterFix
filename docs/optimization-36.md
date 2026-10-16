@@ -595,9 +595,28 @@ SF집계오류0/0/0·정상 종료3/3·원본 복원5/5×3. 기존 DOTween NULL 
 매 프레임 Win32/토폴로지 조회0. 기본 꺼짐은 조건 검사 후 즉시 반환한다.
 전환 시에만 플러그인 이벤트를 내고 연결 대기 중 최대3초 동안50ms 간격으로 핸들 완료를 확인한다. GPU 완료 대기0/새 Harmony 패치0.
 실패하면 원래 예약을 유지/복구한다. 다른 값으로 바뀐 priority/affinity는 덮어쓰지 않는다.
-설정 끔/곡 밖/Main.Unload에 같은 복구 함수를 연결했다. 실제 새 DLL reload의 활성 소유 상태 복구는 다음 별도 확인 항목이다.
+설정 끔/곡 밖/Main.Unload에 같은 복구 함수를 연결했다. 실제 새 DLL reload 후속 확인은 아래와 같다.
 
 [Unity 플러그인 이벤트](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/GL.IssuePluginEvent.html)는 렌더 스레드에서 실행한다.
 [MMCSS 해제 규약](https://learn.microsoft.com/en-us/windows/win32/api/avrt/nf-avrt-avrevertmmthreadcharacteristics)은 등록한 스레드에서 직접 해제해야 한다.
 따라서 렌더 MMCSS는 넣지 않았으며 UI에 오디오 방식은 메인에만 적용한다고 명시한다. 일반 HANDLE 복구를 MMCSS 복구라고 부르지 않는다.
 자료: RenderThreadCheck,RenderSchedulingCheck,validation/20-render-game.json. 첫 게임 판의 no-eligible 상태 문자열은 값이 적용된 뒤에도 남는 표시 오류였고 최종 빌드에서 수정했다.
+
+### 활성 상태의 실제 새 DLL reload
+
+옛 자동 시험의 일반 reload는 묶음 끝에 자동 플레이를 되돌려 곡이 먼저 실패할 수 있다.
+따라서 명시적 연구 명령 reloadactivefixture는 임시 set이0개·자동 플레이·새 DLL을 요구하고, 실행 중 자동 플레이를 유지해 바로 실제 UMM Reload를 호출한다.
+일반 reload 동작은 변경0. 전체 시험은 소유한 새 게임에서 정상 quit로 끝내고 설치5파일 원본을 복원한다.
+
+|확인|값|
+|---|---:|
+|Unload 직전 활성 소유 /pending|True /0|
+|Unload 직전 실제 렌더 priority /mask|15 /62|
+|원래 값 /새 모듈이 재적용 전에 읽은 실제 값|0·63 /0·63|
+|옛·새 실행 MVID의 서로 다른 수|2|
+|SF집계오류 /정상 종료 /원본 복원|0 /1 /5/5|
+
+UMM은 옛 설정을 저장해 새 모듈도 같은 예약을 다시 켰다. 새 모듈의 before 값은 실제 새 lease의 적용 전 Win32 조회이며 원래0·63과 일치한다.
+외부 관측 핸들로 읽은 마지막0·63은 새 모듈의 명시적 Shutdown 뒤 값이다. 이를 Unload와 재적용 사이 외부 시점 측정으로 부르지 않는다.
+직접적인 그 사이 외부 표본·FPS/표시 지연 효과는 확인 안 됨.
+자료: validation/20-render-active-reload.json(두 managed SHA·MVID·활성 상태·각 관측 범위 보존). 두 Release/PlayerAuto 빌드 오류0.
