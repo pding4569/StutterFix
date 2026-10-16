@@ -18,17 +18,17 @@ namespace StutterFix
         [DllImport("avrt.dll",SetLastError=true)]private static extern bool AvRevertMmThreadCharacteristics(IntPtr handle);
         [StructLayout(LayoutKind.Sequential)]private struct GroupAffinity{public UIntPtr Mask;public ushort Group,R0,R1,R2;}
         private static int mode,lastKey=-1,oldPriority;
-        private static bool cores,priorityOwned;
+        private static bool cores,avoidZero,priorityOwned;
         private static uint owner;
         private static IntPtr mmcss;
         private static ulong oldMask,ownMask;
         private static float nextRestoreAttempt;
         internal static string Status="꺼짐";
-        internal static void Configure(int value,bool performanceCores)
-        {mode=value>=0&&value<=2?value:0;cores=performanceCores;}
+        internal static void Configure(int value,bool performanceCores,bool avoidLogicalZero=false)
+        {mode=value>=0&&value<=2?value:0;cores=performanceCores;avoidZero=avoidLogicalZero;}
         internal static void Tick()
         {
-            int key=Hitch.Playing?mode+(cores?4:0):0;
+            int key=Hitch.Playing?mode+(cores?4:0)+(avoidZero?8:0):0;
             if(key==lastKey)return;
             if(UnityEngine.Time.unscaledTime<nextRestoreAttempt)return;
             try
@@ -50,11 +50,13 @@ namespace StutterFix
                     if(mmcss==IntPtr.Zero)throw new InvalidOperationException("MMCSS Pro Audio unavailable");
                     Status+=" mmcss=True";
                 }
-                if(cores)ApplyCores(thread);
+                if(cores||avoidZero)ApplyCores(thread);
             }
             catch(Exception ex)
             {
-                Restore();lastKey=key;Status="기존 예약 유지: "+ex.Message;
+                bool restored=Restore();lastKey=restored?key:-1;
+                nextRestoreAttempt=restored?0:UnityEngine.Time.unscaledTime+1f;
+                Status="기존 예약 유지: "+ex.Message;
             }
         }
         private static void ApplyCores(IntPtr thread)
@@ -62,6 +64,12 @@ namespace StutterFix
             if(GetActiveProcessorGroupCount()!=1){Status+=" pcores=unsupported-groups";return;}
             GroupAffinity group;UIntPtr allowed,system;
             if(!GetThreadGroupAffinity(thread,out group)||group.Group!=0||!GetProcessAffinityMask(GetCurrentProcess(),out allowed,out system))throw new InvalidOperationException("Thread affinity unavailable");
+            ulong eligible=allowed.ToUInt64()&group.Mask.ToUInt64();
+            if(!cores)
+            {
+                bool ignored;SetOwnedMask(thread,CpuSetPolicy.SchedulingMask(null,eligible,false,avoidZero,out ignored));
+                return;
+            }
             uint required;GetSystemCpuSetInformation(IntPtr.Zero,0,out required,GetCurrentProcess(),0);
             if(required==0||required>1024*1024)throw new InvalidOperationException("CPU topology unavailable");
             var memory=Marshal.AllocHGlobal((int)required);
@@ -69,13 +77,18 @@ namespace StutterFix
             {
                 uint actual;if(!GetSystemCpuSetInformation(memory,required,out actual,GetCurrentProcess(),0)||actual>required)throw new InvalidOperationException("CPU topology changed");
                 var bytes=new byte[actual];Marshal.Copy(memory,bytes,0,bytes.Length);
-                bool hybrid;ulong mask=CpuSetPolicy.PerformanceMask(bytes,allowed.ToUInt64()&group.Mask.ToUInt64(),out hybrid);
+                bool hybrid;ulong mask=CpuSetPolicy.SchedulingMask(bytes,eligible,cores,avoidZero,out hybrid);
                 if(mask==0){Status+=hybrid?" pcores=no-eligible-core":" pcores=homogeneous-or-unknown";return;}
-                var prior=SetThreadAffinityMask(thread,new UIntPtr(mask));
-                if(prior==UIntPtr.Zero)throw new InvalidOperationException("CPU affinity rejected");
-                oldMask=prior.ToUInt64();ownMask=mask;Status+=" pcores-mask="+mask.ToString("X");
+                SetOwnedMask(thread,mask);
             }
             finally{Marshal.FreeHGlobal(memory);}
+        }
+        private static void SetOwnedMask(IntPtr thread,ulong mask)
+        {
+            if(mask==0){Status+=" affinity=no-eligible-core";return;}
+            var prior=SetThreadAffinityMask(thread,new UIntPtr(mask));
+            if(prior==UIntPtr.Zero)throw new InvalidOperationException("CPU affinity rejected");
+            oldMask=prior.ToUInt64();ownMask=mask;Status+=" affinity-mask="+mask.ToString("X");
         }
         private static bool Restore()
         {
@@ -101,7 +114,7 @@ namespace StutterFix
             }
             catch{Status="스레드 예약 복구 확인 안 됨";return false;}
         }
-        internal static void Shutdown(){mode=0;cores=false;if(Restore()){lastKey=-1;Status="꺼짐";}}
+        internal static void Shutdown(){mode=0;cores=avoidZero=false;if(Restore()){lastKey=-1;Status="꺼짐";}}
 #if DEV || AUTOTEST
         internal static string Fixture()
         {

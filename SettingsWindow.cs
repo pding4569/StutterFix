@@ -1117,6 +1117,7 @@ namespace StutterFix
                 ch |= Segment("threadmode",ref c.ThreadSchedulingMode,new[]{T("끔","Off"),T("우선순위","Priority"),T("오디오 방식","Audio task")});
                 P(T("메인 스레드에만 적용하며 곡 밖에서 복구합니다. 입력·오디오와 경쟁할 수 있어 기본 꺼짐입니다. 성능 개선은 확인 중입니다.","Main thread only; restored outside play. May compete with input/audio. Off by default; performance is under validation."),sDim);
                 ch |= Option("threadpcores",ref c.ThreadPerformanceCores,T("고성능 코어만 사용 (실험)","Performance cores only (experimental)"),T("윈도우가 서로 다른 코어 등급을 알려줄 때만 메인 스레드에 적용합니다. 구분할 수 없으면 기존 배치를 유지합니다.","Restricts the main thread only when Windows reports heterogeneous core classes. Otherwise keeps the original placement."),null);
+                ch |= Option("threadavoidzero",ref c.ThreadAvoidLogicalZero,T("0번 논리 코어 제외 (실험)","Avoid logical CPU 0 (experimental)"),T("곡 중 메인 스레드의 허용 코어에서 0번만 뺍니다. 남는 코어가 없으면 적용하지 않으며 곡 밖에서 복구합니다. 인터럽트 감소나 성능 개선은 확인 안 됨입니다.","Excludes logical CPU 0 from the main thread during play. Keeps placement if no eligible core remains and restores outside play. Interrupt or performance improvements are unverified."),null);
                 EndGroup();
                 BeginGroup();
                 ch |= Option("mapprofiles", ref c.MapProfilesEnabled, T("맵별 화면 설정 저장 (실험)", "Remember rendering settings per level (experimental)"),
@@ -2724,7 +2725,7 @@ namespace StutterFix
             c.ParticleCatchup = false;
             c.MapProfilesEnabled = false;
             c.HitchHeatmap = false;
-            c.ThreadSchedulingMode = 0;c.ThreadPerformanceCores = false;
+            c.ThreadSchedulingMode = 0;c.ThreadPerformanceCores = c.ThreadAvoidLogicalZero = false;
             c.AsyncUploadBudget = false;
             c.JsonStringPool = false;
             c.AssetDiskCache = false;

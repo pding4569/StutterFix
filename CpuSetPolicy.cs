@@ -3,6 +3,16 @@ namespace StutterFix
 {
     internal static class CpuSetPolicy
     {
+        internal static ulong SchedulingMask(byte[] data,ulong allowed,bool performanceCores,bool avoidLogicalZero,out bool hybrid)
+        {
+            hybrid=false;
+            if(!performanceCores&&!avoidLogicalZero)return 0;
+            ulong mask=performanceCores?PerformanceMask(data,allowed,out hybrid):allowed;
+            // This is an explicit scheduling experiment, not an assertion that
+            // Windows routes interrupts to CPU 0 on this machine.
+            if(avoidLogicalZero)mask&=~1UL;
+            return mask;
+        }
         // Win32 CPU_SET_INFORMATION has a size-prefixed, extensible record layout.
         internal static ulong PerformanceMask(byte[] data,ulong allowed,out bool hybrid)
         {

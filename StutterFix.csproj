@@ -143,6 +143,7 @@
     <Compile Include="EffectBudget.cs" />
     <Compile Include="RecolorSplit.cs" />
     <Compile Include="ShaderWarm.cs" />
+    <Compile Include="ShaderWarmPasses.cs" />
     <Compile Include="StartProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="PngDecoder.cs" />
     <Compile Include="ImagePrefetch.cs" />

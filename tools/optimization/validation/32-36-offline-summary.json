@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-17",
+  "branch": "codex/optimization-36",
+  "parent_commit": "30a5bc0f6e3e87670e8baabbbb77ee25e0b2f658",
+  "monitor_reported_off": true,
+  "new_game_runs": 0,
+  "actual_3440_test": false,
+  "all_36_tasks_complete": false,
+  "native_source_changed": false,
+  "numbered_developer_player_builds": {
+    "32": { "errors": 0 },
+    "33": { "errors": 0 },
+    "34": { "errors": 0 },
+    "35": { "errors": 0 },
+    "36": { "errors": 0 }
+  },
+  "player_diagnostic_types_excluded": 25,
+  "required_player_runtime_types_retained": 6,
+  "player_material_sharing": "blocking_stub_only",
+  "loadcheck_field_refs": 212,
+  "loadcheck_invalid": 0,
+  "loadcheck_dynamic_names": 5,
+  "installed_original_hashes_unchanged": true,
+  "task32": {
+    "status": "audited_not_implemented",
+    "motion_output_consumed_on_cpu": true,
+    "framegen_constant_buffers": "D3D11_USAGE_DEFAULT / UpdateSubresource",
+    "own_cpu_write_staging_map_paths": 0,
+    "new_non_temporal_stores": 0,
+    "new_prefetch": 0,
+    "performance_improvement": null
+  },
+  "task33": {
+    "status": "warmup_ownership_retry_fixed_partial_coverage",
+    "source_linked_fault_injection_conditions": 56,
+    "errors": 0,
+    "gpu_executed_by_fixture": false,
+    "all_gpu_shader_variants_verified": false,
+    "real_game_performance": null,
+    "new_per_frame_instrumentation": 0,
+    "new_harmony_patches": 0
+  },
+  "task34": {
+    "status": "default_off_candidate",
+    "setting": "ThreadAvoidLogicalZero",
+    "default": false,
+    "policy_conditions": 85,
+    "policy_errors": 0,
+    "windows_owned_worker_conditions": 6,
+    "windows_owned_worker_errors": 0,
+    "worker_affinity_before": 63,
+    "worker_affinity_applied": 62,
+    "worker_affinity_restored": 63,
+    "foreign_mask_preserved": 2,
+    "game_process_changed_by_fixture": false,
+    "render_thread_implemented": false,
+    "irq_distribution": null,
+    "performance_improvement": null,
+    "actual_game_gui": null
+  },
+  "task35": {
+    "status": "audited_not_implemented",
+    "new_dynamic_buffers": 0,
+    "new_no_overwrite_maps": 0,
+    "new_fences_flushes_waits": 0,
+    "driver_stall_improvement": null
+  },
+  "task36": {
+    "status": "audited_not_implemented",
+    "tag_rows": "List<scrDecoration>[]",
+    "tag_plans": "int[]",
+    "unmanaged_unrooted_unity_references_added": 0,
+    "gc_scan_reduction": null
+  },
+  "material_sharing_accepted": false,
+  "prior_sorting_mismatches": 30,
+  "prior_sorting_conditions": 36,
+  "main_changed": false,
+  "tags_created": false,
+  "release_created": false,
+  "new_zip_created": false
+}

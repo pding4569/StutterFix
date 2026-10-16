@@ -90,7 +90,11 @@
 |29|현재 엔진 비호환 확인·적용0|실제 bdwgc·NoGCRegion 미지원. SGen nursery128MB 런처를 작동하는 Unity 기능으로 만들지 않음|
 |30|NT 타이머 현재 범위 읽기·강제 요청 미구현|지원 실패는 확인 안 됨. 기존1ms 요청 유지·새 NtSet 요청0|
 |31|자기 소유1.25MiB만 선택적 페이지 고정|정책16조건·실제 Windows 고정/원복·Mono 계산1,048,576개 차이0. 관리 힙 전체 고정/페이지 폴트 감소는 확인 안 됨|
-|32~36|사전 감사 완료, 구현 미완료|번호별 구현·동일성·성능 검증을 계속 진행|
+|32|실제 쓰기/읽기 경로 감사·NT store 적용 보류|숫자 출력은 바로 CPU가 읽고 GPU 쪽은 DEFAULT 상수 버퍼 UpdateSubresource다. 자체 CPU-write staging 스트리밍 경로0. 성능 개선 확인 안 됨|
+|33|기존 예열의 실패 재시도·자원 복구 수정|독립 소유권/실패 주입56조건 오류0·두 Release 빌드 오류0. 전체 키워드/드라이버 변형·실제 GPU 성능은 확인 안 됨|
+|34|0번 논리 코어 제외 기본 꺼짐 후보|순수 정책85조건·자기 워커 Windows 적용/복구6조건 오류0. 게임 IRQ 분포/성능·렌더 스레드 적용 확인 안 됨|
+|35|기존 GPU 버퍼 경로 감사·NO_OVERWRITE 전환 보류|현재 DEFAULT 상수 버퍼와 GPU 그림 링은 별개. 기능 지원·GPU 사용 중 범위·지연 완료 소유권 미검증|
+|36|숫자/객체 참조 분리 감사·태그 객체 비관리 전환 보류|int 계획 배열은 객체 참조가 없고 행은 List<scrDecoration>다. 객체를 IntPtr로 감추는 변경0·GC 이득 확인 안 됨|
 
 05 실제 HELLO 두 새 실행: 첫 로드 DXT 저장 215·JSON 저장 1, 재방문 DXT 적중 84·JSON 적중 1.
 512MB LRU라 전체 이미지가 상주한다는 뜻은 아니다. 양 판 SF 오류 0·정상 종료, 설치 3파일 원본 복원.
@@ -352,3 +356,49 @@ Resources 등으로 공유 복제본을 찾아 직접 고치는 경우는 원본
 기존 위상/누적 회전 offset을 넣은 새42조건 차이0, 실제 입력 주입/판정 호출0. 이전21조건 절대 시각 대조와 구분한다.
 포커스 변경/설정 창/키 지정 중에는 대기를 지우며, 다른 모드가 각도 함수를 수정한 경우 새 후보 설치를 거부한다.
 실제 WM_INPUT→폴링 지연 분포와 물리 키 판정 개선은 여전히 확인 안 됨이다.
+
+## 32~36 후속: 모니터 꺼짐 중 독립 작업 (2026-10-17)
+
+사용자가 모니터를 껐다고 알렸다. 이번 묶음의 게임 실행0, 화면 조건 변경0, 3440 시험0이다.
+모니터 꺼짐은 모든 개발 중단 요청이 아니다. 이미 완료한 Arche 성능3판/정렬36조건은 다시 실행하지 않았다.
+36개 전체 완료가 아니며 위 진행 표의 미구현/보류/미확인은 그대로 남는다.
+
+|번호|새 변경 / 확인|숫자|남은 확인|
+|---|---|---:|---|
+|32|NativeMotion.Invoke→Output CPU 읽기, framegen DEFAULT 상수 버퍼 UpdateSubresource 경로 확인. NT store/prefetch 추가0|자체 CPU-write GPU staging Map 경로0|대상 버퍼의 CPU/GPU 소비 패턴·캐시 이득 확인 안 됨|
+|33|성공한 패스만 완료로 기록. 실패한 셰이더는 다음 준비 때 재시도. RT/Material/active RT를 finally에서 정리. 누락 자원 재시도·Unload 기록 해제|독립 실패 주입/소유권/캐시56조건 오류0|실제 GPU 키워드/블렌드 변형 전체·프레임 비용·완주 확인 안 됨|
+|34|ThreadAvoidLogicalZero=false. 곡 중 메인 스레드만 논리0 제외, 비어 있는 마스크/여러 그룹/P코어 미확인은 기존 배치. 곡 밖/끔/Unload 복원, 외부 변경 유지|정책85조건 오류0·Windows 자기 워커6조건 오류0|IRQ/DPC 분포·게임 비용·렌더 스레드·실제 GUI 확인 안 됨|
+|35|DEFAULT 상수 버퍼/그림 링/READ staging을 구분. NO_OVERWRITE 변경0|새 동적 버퍼0·새 fence/Flush/대기0|기능 지원·GPU 참조 범위·슬롯 반환 시점·성능 확인 안 됨|
+|36|CompiledTagTable.Rows의 List<scrDecoration> 참조와 Plan.Ids의 int를 구분. Unity 객체 주소를 IntPtr에 감추는 변경0|새 비관리 객체 색인0|실제 GC 스캔 이득·객체 수명 안전한 대체 색인 확인 안 됨|
+
+33 독립 시험은 실제 ShaderWarm.cs와 ShaderWarmPasses.cs를 연결하고 Unity/API 실패를 가짜 구현으로 주입했다.
+첫/둘째 RT 할당 실패, Material 생성 실패, 둘째 패스 실패, 패스0, Clear 실패, null RT, 미지원 셰이더,
+성공 뒤 반복 생략, 실패 뒤 재시도, 자원 중복 보관 방지, 누락 Shader/Resource의 나중 준비, 끔/플레이 중 AfterLoad 생략, Unload 뒤 재준비를 확인했다.
+셰이더를 성공 목록에 먼저 넣거나 Blit 예외에 Material/active RT를 남기는 기존 경로를 고쳤다.
+예열용 입력 RT를 명시적으로 비우며 마지막에는 호출자의 active RT를 복원한다.
+새 전역 이벤트/Harmony 패치/매 프레임 계측0. 기존 ShaderWarm 토글과 기본값은 유지한다.
+[Unity 예열 문서](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/Shader.WarmupAllShaders.html)는 메모리에 있는 셰이더 변형의 DX11/OpenGL 예열 지원과 DX12/Vulkan/Metal의 vertex layout/RT 차이 제한을 구분한다.
+이번 독립 가짜 API 시험은 실제 예열 범위를 측정하지 않았으므로 모든 키워드/드라이버 캐시가100% 준비됐다고 부르지 않는다.
+
+34 실제 Windows 시험은 게임이 아닌 자기 프로세스의 짧은 워커만 사용했다.
+허용 마스크63→62→63, 외부 대체 마스크2는 Unload에서도2 유지, 도구가 마지막에 원본63으로 복구했다.
+끔·끔으로 전환·곡 밖·Unload·외부 변경 보존6조건이다. 우선순위/MMCSS 기본값0, 새 제외 옵션false다.
+P코어 선택과 함께 켜면 확인된 P코어 집합의0번만 제외하며, 구분할 수 없으면 P코어라고 추정하지 않는다.
+기존 예약 Tick의 상태 키 계산에 bool 한 개만 더하며, 상태가 같으면 반환한다. 새 매 프레임 Win32 조회/할당0.
+복구 실패 뒤 동일 상태 키로 영구 건너뛰던 예외 경로도1초 후 재시도가 가능하게 했다.
+[Windows affinity 문서](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setthreadaffinitymask)의 프로세스 허용 마스크 제한을 유지한다.
+CPU0이 실제 인터럽트 집중 코어라는 측정도, 이 제외가 성능을 높였다는 측정도 없다.
+
+35 [D3D11_MAP 규약](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_map)에 따라
+NO_OVERWRITE는 GPU가 읽는 범위를 덮지 않겠다는 소유권 보장이 필요하다. D3D11.1 상수 버퍼 기능 지원 확인도 필요하다.
+원래 DEFAULT 상수 버퍼를 flag만 바꾸거나3프레임이 지났다는 이유로 슬롯을 덮는 구현을 넣지 않았다.
+이 보류는 GPU 링 자체가 불가능하다는 뜻이 아니며, 현재 안전성/비용 근거가 없는 상태다.
+
+36 숫자 배열을 비관리로 옮기는 것과 Unity 객체를 GC의 도달 가능 대상에서 빼는 것은 다르다.
+객체 주소만 숨기면 수명 안전성이 없어지고 GCHandle로 지키면 그 객체는 여전히 루트다.
+기존 게임 사전도 같은 장식들을 보관하므로 새 표만 옮겨 GC 스캔이 사라졌다고 할 수 없다.
+
+32/33/34/35/36 각 Developer·Player Release 빌드는 오류0. 네이티브 코드/내장 DLL 변경0.
+실제 GPU/화면/물리 입력 검증이 필요한 항목은 모니터 복귀 후 별도 조건에서 진행한다.
+재질 공유의 일반 채택0·정렬 실패30/36은 유지한다. 정렬 동률 제외 후보 추가 설계는 사용자 답변 대기다.
+main/태그/릴리스/새 ZIP0. 자료: tools/optimization/validation/32-36-offline-summary.json.

@@ -12,8 +12,8 @@ namespace StutterFix
     // 효과 나누기와 색 나누기 뒤에 남은 곡 중 끊김 두 곳은 필터가 바뀌는 순간이었다.
     //   137.1초: Glow_Color 가 켜진 그 프레임, 게임 코드 밖(FinishFrameRendering) 22ms, 다음 프레임 GPU 41ms
     //   165.6초: Chromatical2 가 꺼진 직후, 게임 루프 밖에서 45ms, 이어서 GPU 47ms
-    // 게임 코드는 짧고 그래픽 드라이버 쪽에서 멈췄다. 필터 셰이더를 처음 그릴 때 드라이버가
-    // 셰이더를 만드는 비용이다. 맵이 올라온 뒤 곡 시작 시점에 한꺼번에 미리 데운다.
+    // 필터 전환과 끊김이 겹친 기록이며 셰이더 컴파일이 원인이라는 증명은 아니다.
+    // 맵 준비 때 알려진 패스를 그리되 모든 키워드/드라이버 변형의 준비를 보장하지 않는다.
     //
     // 예전에는 Shader.WarmupAllShaders 만 불렀는데, 이것은 "이미 메모리에 올라온" 셰이더만 데운다.
     // 카메라 필터(CameraFilterPack)는 필터가 처음 켜질 때 Start 에서 Shader.Find 로 셰이더를 불러오므로
@@ -27,6 +27,7 @@ namespace StutterFix
         internal static string Last = "아직 안 함";
         private static int lastCount = -1;
         private static readonly HashSet<string> warmedFilters = new HashSet<string>();
+        private static readonly Dictionary<string, Shader> pendingFilters = new Dictionary<string, Shader>();
 
         // 맵을 새로 불러왔을 때만 한다. 같은 맵을 다시 플레이할 때도 매번 필터 이벤트와 셰이더 목록을 훑었는데
         // (객체 수천 개를 뒤져 40ms 안팎), 곡 시작 직후라 "게임 처리" 끊김으로 잡혔다. 새로 준비할 것이 없으니 건너뛴다.
@@ -102,7 +103,15 @@ namespace StutterFix
         // 필터 목록은 맵 데이터(레벨 이벤트)에서 읽는다. 효과 객체를 찾지 않아서 언제 불러도 같은 결과다.
         private static readonly HashSet<Type> seenTypes = new HashSet<Type>();
         private static readonly List<UnityEngine.Object> keepLoaded = new List<UnityEngine.Object>();   // 미리 불러온 필터 텍스처 (치워지지 않게)
+        private static readonly HashSet<string> loadedResources = new HashSet<string>();
         internal static int ResourcesLoaded;
+
+        internal static void Shutdown()
+        {
+            warmedFilters.Clear(); pendingFilters.Clear(); seenTypes.Clear();
+            keepLoaded.Clear(); loadedResources.Clear(); ResourcesLoaded = 0;
+            lastLevel = null; lastCount = -1; LevelChanged = true; Last = "아직 안 함";
+        }
 
         private static IEnumerable<Type> FilterTypes()
         {
@@ -137,48 +146,53 @@ namespace StutterFix
 
         private static int WarmFilters()
         {
-            var shaders = new Dictionary<string, Shader>();
+            var shaders = pendingFilters;
             foreach (var t in FilterTypes())
             {
-                if (t == null || !seenTypes.Add(t)) continue;
+                if (t == null || seenTypes.Contains(t)) continue;
                 var shaderNames = new List<string>(); var resNames = new List<string>();
-                foreach (var mn in new[] { "Start", "Awake", "OnEnable" })
+                bool resolved = true;
+                try
                 {
-                    var m = AccessTools.Method(t, mn, Type.EmptyTypes);
-                    if (m != null && m.DeclaringType == t) ScanStrings(m, shaderNames, resNames);
+                    foreach (var mn in new[] { "Start", "Awake", "OnEnable" })
+                    {
+                        var m = AccessTools.Method(t, mn, Type.EmptyTypes);
+                        if (m != null && m.DeclaringType == t) ScanStrings(m, shaderNames, resNames);
+                    }
+                    foreach (var sn in shaderNames)
+                    {
+                        if (shaders.ContainsKey(sn) || warmedFilters.Contains(sn)) continue;
+                        var s = Shader.Find(sn);
+                        if (s != null) shaders[sn] = s;
+                        else resolved = false;
+                    }
+                    foreach (var rn in resNames)
+                    {
+                        if (loadedResources.Contains(rn)) continue;
+                        try
+                        {
+                            var o = Resources.Load(rn);
+                            if (o != null) { keepLoaded.Add(o); loadedResources.Add(rn); ResourcesLoaded++; }
+                            else resolved = false;
+                        }
+                        catch { resolved = false; }
+                    }
+                    if (resolved) seenTypes.Add(t);
                 }
-                foreach (var sn in shaderNames)
-                {
-                    if (shaders.ContainsKey(sn) || warmedFilters.Contains(sn)) continue;
-                    var s = Shader.Find(sn);
-                    if (s != null) shaders[sn] = s;
-                }
-                foreach (var rn in resNames)
-                {
-                    try { var o = Resources.Load(rn); if (o != null) { keepLoaded.Add(o); ResourcesLoaded++; } } catch { }
-                }
+                catch { /* Retry unresolved filter metadata during the next preparation. */ }
             }
             InstanceShaders(shaders);
 
             int warmed = 0;
-            RenderTexture a = null, b = null;
-            try
+            var completed = new List<string>();
+            foreach (var kv in shaders)
             {
-                foreach (var kv in shaders)
-                {
-                    warmedFilters.Add(kv.Key);
-                    if (a == null) { a = RenderTexture.GetTemporary(16, 16, 0); b = RenderTexture.GetTemporary(16, 16, 0); }
-                    var m = new Material(kv.Value) { hideFlags = HideFlags.HideAndDontSave };
-                    for (int p = 0; p < m.passCount; p++) Graphics.Blit(a, b, m, p);
-                    UnityEngine.Object.Destroy(m);
-                    warmed++;
-                }
+                if (!ShaderWarmPasses.TryWarm(kv.Value)) continue;
+                warmedFilters.Add(kv.Key);
+                completed.Add(kv.Key);
+                warmed++;
             }
-            finally
-            {
-                if (a != null) RenderTexture.ReleaseTemporary(a);
-                if (b != null) RenderTexture.ReleaseTemporary(b);
-            }
+            foreach (var name in completed) shaders.Remove(name);
             if (warmed > 0 && Edition.Dev) Main.Entry.Logger.Log("[셰이더] 이 맵의 필터 셰이더 " + warmed + "개 새로 데움");
             return warmed;
         }
