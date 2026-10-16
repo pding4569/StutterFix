@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-17",
+  "branch": "codex/optimization-36",
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "all_36_tasks_complete": false,
+  "hierarchy": {"map": "Arche", "current_decorations": 28835, "max_parent_depth": 1, "floor_ancestors": 0, "decoration_ancestors": 0, "reparented": 0},
+  "empty_update_audit": {"active_types": 124, "exact_empty_update": 0, "components_disabled": 0},
+  "hit_text_sample": {"pooled": 1400, "active": 0, "fonts": 1, "materials": 1, "max_characters": 0, "ring_replaced": 0},
+  "alpha_bounds_and_pivot": {"conditions": 23080, "errors": 0, "pixels_checked": 1706991},
+  "alpha_crop_gpu": {"cases": 16, "mismatching_cases": 12, "summed_different_pixels": 171, "pixels_per_case": 16384, "lit_controls": 16, "scope": "owned offscreen Sprites/Default synthetic fixture", "accepted": false, "game_texture_mutations": 0},
+  "native_regression": {"image_cases": 600, "image_mismatch": 0, "motion_values": 4194304, "motion_mismatch": 0, "scope": "synthetic data / current CPU dispatcher", "invalid_initial_harness_mismatch": 101, "invalid_initial_harness_excluded": true},
+  "primitive_tags": {
+    "default": false,
+    "offline_conditions": 10028,
+    "offline_errors": 0,
+    "arche": {"effects": 97694, "native_plans": 97694, "ids": 98121, "capacity_ids": 98121, "payload_bytes": 392484, "mismatch": 0, "actual_hits": 27, "owned_released": true, "stale_slice_readable": false},
+    "hello": {"effects": 5869, "native_plans": 5869, "ids": 7676, "capacity_ids": 7676, "payload_bytes": 30704, "mismatch": 0, "actual_hits": 209, "owned_released": true, "stale_slice_readable": false},
+    "game_gc_reduction": null,
+    "game_fps_improvement": null,
+    "unity_object_references_unrooted": 0,
+    "full_song_verified": false
+  },
+  "developer_player_autotest_build_errors": 0,
+  "player_diagnostic_types_excluded": 29,
+  "player_required_runtime_types_retained": 6,
+  "loadcheck_refs": 212,
+  "loadcheck_invalid": 0,
+  "main_changed": false,
+  "release_created": false,
+  "new_zip_created": false
+}

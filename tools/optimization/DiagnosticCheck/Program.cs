@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 
-var excluded="AutoTest AllocProbe TimeProbe FrameScan HeapPath SceneScan FloorProf FilterGpuProbe FilterHalfProbe FilterHalfPerf FreeFpsProbe ScriptProbe FilterTrace MergeProbe RenderVerify UiProf RenderCallbackScan FrameRateScreenWatch ParticleTextWatch BlendProbe StartProbe UpdateFixture TimerResolutionInfo DecorationAudit MaterialPoolFixture".Split(' ');
+var excluded="AutoTest AllocProbe TimeProbe FrameScan HeapPath SceneScan FloorProf FilterGpuProbe FilterHalfProbe FilterHalfPerf FreeFpsProbe ScriptProbe FilterTrace MergeProbe RenderVerify UiProf RenderCallbackScan FrameRateScreenWatch ParticleTextWatch BlendProbe StartProbe UpdateFixture TimerResolutionInfo DecorationAudit MaterialPoolFixture AlphaCropPlan AlphaBoundsProbe AlphaCropFixture AnimationAudit".Split(' ');
 HashSet<string> Types(string path)
 {
     using var stream=File.OpenRead(path);using var pe=new PEReader(stream);var md=pe.GetMetadataReader();
@@ -25,7 +25,7 @@ using(var file=File.OpenRead(args[0]))using(var pe=new PEReader(file))
     foreach(var h in md.MethodDefinitions)
     {
         string name=md.GetString(md.GetMethodDefinition(h).Name);
-        if(name=="LifecycleFixture"||name=="TestInstall"||name=="CullSnapshot"||name=="AngleFixture"||name=="BindFixture"||name=="UnbindFixture"||name=="SuspendFixture"||name=="EscapeFixture")throw new Exception("Test hook in Player: "+name);
+        if(name=="LifecycleFixture"||name=="TestInstall"||name=="CullSnapshot"||name=="AngleFixture"||name=="BindFixture"||name=="UnbindFixture"||name=="SuspendFixture"||name=="EscapeFixture"||name=="VerifyPrimitivePlans"||name=="PrimitiveLifetimeFixture")throw new Exception("Test hook in Player: "+name);
     }
     var pool=md.TypeDefinitions.First(h=>md.GetString(md.GetTypeDefinition(h).Name)=="DecorationMaterialPool");
     var poolMethods=md.GetTypeDefinition(pool).GetMethods().Select(h=>md.GetString(md.GetMethodDefinition(h).Name)).ToHashSet();

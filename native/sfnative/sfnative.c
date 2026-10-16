@@ -27,6 +27,8 @@
 
 SF_API int sf_version(void) { return 1; }
 
+#include "alpha_bounds.h"
+
 /* Owned experimental SoA storage only. Never pass managed or driver-owned pointers to this free. */
 SF_API void *sf_alloc_aligned64_v1(size_t bytes)
 {

@@ -1011,6 +1011,11 @@ namespace StutterFix
                     Log("[맵 프로필 경로] load="+MapProfiles.LoadCalls+" loaded="+MapProfiles.LoadedCalls+" finish="+MapProfiles.FinishCalls+" miss="+MapProfiles.KeyMisses+" arg="+MapProfiles.LastArgument);
                     Log("[맵 프로필 시험] key="+MapProfiles.CurrentKey+" enabled="+MapProfiles.Enabled+" vibrance="+Main.Config.FxVibrance.ToString("R",System.Globalization.CultureInfo.InvariantCulture)+" status="+MapProfiles.Status);return true;
                 case "threadfixture":Log("[스레드 예약 시험] "+ThreadScheduling.Fixture());return true;
+                case "alphacropfixture":Log("[투명 여백 GPU 시험] "+AlphaCropFixture.Run());return true;
+                case "animationaudit":AnimationAudit.Run();return true;
+                case "tagprimitivestate":Log("[태그 번호 영역] enabled="+TagIndex.Enabled+" requested="+TagIndex.NativePlans+" used_ints="+TagIndex.PrimitiveUsed+" capacity_ints="+TagIndex.PrimitiveCapacity+" hits="+TagIndex.Hits+" compiled="+TagIndex.Compiled+" invalidations="+TagIndex.Invalidations);return true;
+                case "tagprimitiveverify":Log("[태그 번호 원본 대조] "+TagIndex.VerifyPrimitivePlans());return true;
+                case "tagprimitivelifetime":Log("[태그 번호 수명 대조] "+TagIndex.PrimitiveLifetimeFixture());return true;
                 case "threadstate":Log("[스레드 예약 상태] "+ThreadScheduling.Status);return true;
                 case "gccapability":
                 {

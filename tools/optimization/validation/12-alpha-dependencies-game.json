@@ -1,0 +1,17 @@
+{
+  "batch": "오류로 그만둠",
+  "alpha_fixture": [
+    "cases=16 affected=12 different_pixels=171 pixels_per_case=16384 lit_controls=16 native_cases=1 draws=48 game_texture_mutations=0 actual_loading_hook=0 details=Point/pivot=(0.50, 0.50)/angle=0/scale=0.7/different=0;Point/pivot=(0.50, 0.50)/angle=0/scale=1.13/different=0;Point/pivot=(0.50, 0.50)/angle=17/scale=0.7/different=1;Point/pivot=(0.50, 0.50)/angle=17/scale=1.13/different=3;Bilinear/pivot=(0.50, 0.50)/angle=0/scale=0.7/different=31;Bilinear/pivot=(0.50, 0.50)/angle=0/scale=1.13/different=17;Bilinear/pivot=(0.50, 0.50)/angle=17/scale=0.7/different=11;Bilinear/pivot=(0.50, 0.50)/angle=17/scale=1.13/different=22;Point/pivot=(0.30, 0.70)/angle=0/scale=0.7/different=0;Point/pivot=(0.30, 0.70)/angle=0/scale=1.13/different=0;Point/pivot=(0.30, 0.70)/angle=17/scale=0.7/different=1;Point/pivot=(0.30, 0.70)/angle=17/scale=1.13/different=2;Bilinear/pivot=(0.30, 0.70)/angle=0/scale=0.7/different=27;Bilinear/pivot=(0.30, 0.70)/angle=0/scale=1.13/different=18;Bilinear/pivot=(0.30, 0.70)/angle=17/scale=0.7/different=9;Bilinear/pivot=(0.30, 0.70)/angle=17/scale=1.13/different=29"
+  ],
+  "dependency_states": [],
+  "errors": [
+    "[StutterFix] [자동 시험] 단계 실패 'animationaudit': Pause/stop before the dependency audit; not a performance sample"
+  ],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "native_sha256": "cc45fc78a802c547780eceb63b53e9eadaa1045344f6313f374872dfa7147970",
+  "managed_sha256": "310a773a7a7be01b61c1f1df7818edd77f9867462cccf3bf1a1e280d3e2b6f02"
+}

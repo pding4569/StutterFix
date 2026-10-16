@@ -1,0 +1,17 @@
+{
+  "batch": "끝",
+  "alpha_fixture": [],
+  "dependency_states": [
+    "decorations=28835 current_manager=1 floor_ancestor=0 decoration_ancestor=0 max_depth=1 truncated=0 reparented=0 jobs_applied=0",
+    "active_types=124 exact_empty_update=0 empty_with_other_lifecycle=0 unknown_update_body=0 components_disabled=0",
+    "pooled=1400 active_sample=0 fonts=1 materials=1 unique_strings=1 max_characters=0 ring_replaced=0 canvas_reparented=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "native_sha256": "cc45fc78a802c547780eceb63b53e9eadaa1045344f6313f374872dfa7147970",
+  "managed_sha256": "d72de8fe8319e409855bed34196c0a86fce3b17581e4cfee7a5cfb6f413dddb5"
+}

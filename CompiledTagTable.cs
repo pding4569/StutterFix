@@ -22,5 +22,17 @@ namespace StutterFix
             }
             return plan;
         }
+        internal bool CompileNative(List<string> tags,PrimitiveIdStore store,out PrimitiveIdStore.Slice slice)
+        {
+            slice=default;if(tags==null||store==null)return false;
+            foreach(var tag in tags)if(tag==null)return false;
+            if(!store.TryAllocate(tags.Count,out slice))return false;
+            for(int i=0;i<tags.Count;i++)
+            {
+                int id;if(!ids.TryGetValue(tags[i],out id))id=-1;
+                if(!slice.TrySet(i,id))return false;
+            }
+            return true;
+        }
     }
 }

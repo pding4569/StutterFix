@@ -1,0 +1,21 @@
+{
+  "batch": "끝",
+  "states": [
+    "enabled=True requested=True used_ints=7676 capacity_ints=7676 hits=209 compiled=5869 invalidations=0",
+    "enabled=True requested=False used_ints=0 capacity_ints=0 hits=209 compiled=5869 invalidations=0"
+  ],
+  "checks": [
+    "available=1 effects=5869 native_plans=5869 values=7676 mismatch=0 skipped_not_current=0 primitive_ints=7676 objects_modified=0"
+  ],
+  "lifetime": [
+    "available=1 prior_slice_readable=True stale_slice_readable=False owned_released=True used_ints=0 game_objects_modified=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "native_sha256": "cc45fc78a802c547780eceb63b53e9eadaa1045344f6313f374872dfa7147970",
+  "managed_sha256": "db0176daff1decba9c2493bde15b2c0e4bd8c82582e0aaa6e97e4daf9836dd47"
+}

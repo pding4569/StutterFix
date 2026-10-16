@@ -1100,6 +1100,7 @@ namespace StutterFix
                 ch |= Option("tagindex", ref c.TagIndex, T("장식 태그 색인 (실험)", "Decoration tag index (experimental)"),
                     T("재생 준비 때 태그에 번호를 붙여 반복 조회를 줄입니다. 태그 표의 변경을 감지할 수 없거나 표가 바뀌면 기존 조회를 씁니다.",
                       "Indexes tags at playback preparation. Falls back when table changes cannot be tracked or the table changes."), null);
+                ch |= Option("tagprimitive",ref c.TagIndexNativePlans,T("태그 번호를 비관리 메모리에 (실험)","Unmanaged tag numbers (experimental)"),T("태그 색인의 정수 번호만 최대 8MiB 영역에 보관합니다. 게임 객체 참조는 유지하며, 영역이 부족하거나 실패하면 기존 배열을 씁니다. GC·성능 개선은 확인 중입니다.","Stores only integer tag IDs in up to 8 MiB of unmanaged storage. Keeps game object references; uses arrays on capacity or allocation failure. GC/performance effects are under validation."),null,1,c.TagIndex?null:T("장식 태그 색인","Decoration tag index"));
                 ch |= Option("inputframewait",ref c.FrameQueueDelay,T("입력 프레임 대기 보정 (실험)","Input frame wait correction (experimental)"),
                     T("키 메시지를 받은 뒤 게임이 확인할 때까지의 대기만 보정합니다. 게임의 비동기 입력을 쓰면 추가로 적용하지 않습니다. 지원되지 않는 입력은 그대로 처리하며 기본 꺼짐입니다.","Corrects only the wait between receiving a key message and the game checking it. Adds nothing when game async input is active. Keeps unsupported input unchanged; off by default."),null);
 #if DEV || AUTOTEST
@@ -2721,7 +2722,7 @@ namespace StutterFix
             c.NativeMotionPinArena = false;
             c.FrameQueueDelay = false;
             c.DecorationMaterialPool = false;
-            c.TagIndex = false;
+            c.TagIndex = c.TagIndexNativePlans = false;
             c.ParticleCatchup = false;
             c.MapProfilesEnabled = false;
             c.HitchHeatmap = false;

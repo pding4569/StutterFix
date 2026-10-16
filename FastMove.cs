@@ -308,7 +308,7 @@ namespace StutterFix
                 var tag = tags[0];
                 if (tag == null) return No(5);
                 List<scrDecoration> l;
-                if (!(indexed ? TagIndex.Get(tagPlan,0,out l) : dict.TryGetValue(tag, out l))) { list.Clear(); src = list; return true; }
+                if (!(indexed ? TagIndex.Get(tagPlan,0,dict,out l) : dict.TryGetValue(tag, out l))) { list.Clear(); src = list; return true; }
                 if (l == null) return No(5);
                 if (Clean(l)) { src = l; return ParallaxOk(fx) || No(0); }
             }
@@ -319,7 +319,7 @@ namespace StutterFix
                 var tag = tags[i];
                 if (tag == null) return No(5);
                 List<scrDecoration> l;
-                if (!(indexed ? TagIndex.Get(tagPlan,i,out l) : dict.TryGetValue(tag, out l))) continue;
+                if (!(indexed ? TagIndex.Get(tagPlan,i,dict,out l) : dict.TryGetValue(tag, out l))) continue;
                 if (l == null) return No(5);
                 for (int j = 0; j < l.Count; j++)
                 {

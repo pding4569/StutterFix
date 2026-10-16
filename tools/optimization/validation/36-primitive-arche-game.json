@@ -1,0 +1,18 @@
+{
+  "batch": "끝",
+  "states": [
+    "enabled=True requested=True used_ints=98121 hits=27 compiled=97694 invalidations=0",
+    "enabled=True requested=False used_ints=0 hits=27 compiled=97694 invalidations=0"
+  ],
+  "checks": [
+    "available=1 effects=97694 native_plans=97694 values=98121 mismatch=0 skipped_not_current=0 primitive_ints=98121 objects_modified=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "native_sha256": "cc45fc78a802c547780eceb63b53e9eadaa1045344f6313f374872dfa7147970",
+  "managed_sha256": "33666b39c685d2fd66bc640eb4b76f6cb81dbd4e17c0d2bcf83c5fd13f48c222"
+}
