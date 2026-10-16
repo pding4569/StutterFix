@@ -46,7 +46,7 @@
     <Compile Include="ThumbCam.cs" />
     <Compile Include="FfxReuse.cs" />
     <Compile Include="MeshWarm.cs" />
-    <Compile Include="DecoDiag.cs" />
+    <Compile Include="DecoDiag.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="SoundWarm.cs" />
     <Compile Include="FloorAnim.cs" />
     <Compile Include="JitWarm.cs" />
@@ -126,7 +126,7 @@
     <Compile Include="Profiler.cs" />
     <Compile Include="SceneScan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="AbTest.cs" />
-    <Compile Include="LoopProfiler.cs" />
+    <Compile Include="LoopProfiler.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GcControl.cs" />
     <Compile Include="MemoryBudgetPolicy.cs" />
     <Compile Include="MemoryBudget.cs" />
@@ -136,10 +136,10 @@
     <Compile Include="PatchHot.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="WasteProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ModWatch.cs" />
-    <Compile Include="AllocScan.cs" />
+    <Compile Include="AllocScan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TextFix.cs" />
-    <Compile Include="PhaseWatch.cs" />
-    <Compile Include="SlowScan.cs" />
+    <Compile Include="PhaseWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="SlowScan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="EffectScan.cs" />
     <Compile Include="EffectBudget.cs" />
     <Compile Include="RecolorSplit.cs" />
@@ -152,8 +152,8 @@
     <Compile Include="AlphaCropFixture.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ImagePrefetch.cs" />
     <Compile Include="TweenFix.cs" />
-    <Compile Include="RenderWatch.cs" />
-    <Compile Include="SamplerWatch.cs" />
+    <Compile Include="RenderWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="SamplerWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="RenderCallbackScan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FrameRateScreenWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ParticleTextWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

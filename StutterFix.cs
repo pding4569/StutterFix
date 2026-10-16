@@ -92,7 +92,9 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
             if (has("tilecull-verify.txt")) { TileCull.Verify = true; TileCull.VerifyInstall(); Entry.Logger.Log("[화면 밖 타일 검증] tilecull-verify.txt 파일이 있어 그리기마다 검사함"); }
             if (has("tilecull-min.txt")) { try { TileCull.MinFloors = int.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "tilecull-min.txt")).Trim()); Entry.Logger.Log("[화면 밖 타일] 최소 타일 수 " + TileCull.MinFloors); } catch { } }
             if (has("ffx-verify.txt")) { FfxReuse.Verify = true; Entry.Logger.Log("[효과 재사용 검증] ffx-verify.txt 파일이 있어 효과 붙이기마다 원래 방식과 비교함"); }
+#if DEV || AUTOTEST
             if (has("alloc-phase")) { PhaseWatch.AllocPhases = true; Entry.Logger.Log("[할당 단계] alloc-phase 파일이 있어 곡 중 단계별 힙 증가를 잼"); }
+#endif
             if (has("freeze-test")) { PresentWatch.FreezeTest = true; Entry.Logger.Log("[첫 판 FPS 시험] freeze-test 파일이 있어 곡 중 6초 멈춤 시험을 함"); }
             try { var gm = System.IO.Path.Combine(dir, "gc-mode.txt"); if (System.IO.File.Exists(gm)) { GcControl.PauseMode = System.IO.File.ReadAllText(gm).Trim().ToLowerInvariant(); Entry.Logger.Log("[GC] (시험) 곡 중 멈추는 방식: " + GcControl.PauseMode); } } catch { }
             // (시험) 곡 중 힙 한계를 낮춰 긴 곡의 "한계 뒤 조금씩 치우기" 를 빨리 재현 / 조각 치우기 방식
@@ -200,7 +202,10 @@ UiProf.Install(harmony);
 
                 MoveApply.Install(harmony);
                 Dormancy.Install(harmony);
-                ImagePrefetch.Install(harmony); DecoDiag.Install(harmony);
+                ImagePrefetch.Install(harmony);
+#if DEV || AUTOTEST
+                DecoDiag.Install(harmony);
+#endif
                 FastBlend.Install(harmony);
                 InvisibleSkip.Install(harmony);
                 TweenFix.Install(harmony);
@@ -260,7 +265,9 @@ Try(() => MergeProbe.Install(harmony));
 #endif
 
 
+#if DEV || AUTOTEST
                     RenderWatch.Install(harmony);
+#endif
 
 #if DEV || AUTOTEST
 RenderCallbackScan.Install(harmony);
@@ -456,13 +463,17 @@ ParticleTextWatch.Install(harmony);
             Try(ParticleFix.Shutdown);
             Try(Resilience.Shutdown);
             Try(Fsr.Shutdown);
+#if DEV || AUTOTEST
             Try(RenderWatch.Shutdown);
             Try(PhaseWatch.Uninstall);
             Try(LoopProfiler.Shutdown);
             Try(AllocScan.Shutdown);
+#endif
             Try(Profiler.Stop);
             Try(ModWatch.Shutdown);
+#if DEV || AUTOTEST
             Try(SamplerWatch.Shutdown);
+#endif
             // 곡 중에 내리면 원래 게임이 이미 끝냈을 일을 마저 한다: 밀린 효과·타일 색 조각 실행, 모드 애니메이션은 끝값으로(Kill(true) 와 같음)
             if (Hitch.Playing) Try(EffectBudget.FlushAll);
             Try(global::StutterFix.DecoAnim.FinishAll);
@@ -486,7 +497,9 @@ Try(ParticleTextWatch.Shutdown);
 Try(RenderCallbackScan.Shutdown);
 #endif
 
+#if DEV || AUTOTEST
             Try(SlowScan.Shutdown);
+#endif
 #if DEV || AUTOTEST
             Try(WasteProbe.Off);
             Try(PatchHot.Off);
@@ -571,6 +584,7 @@ AutoTest.Tick();
 
             if (Edition.Dev)
             {
+#if DEV || AUTOTEST
                 RenderWatch.Tick(dt); SlowScan.Tick(); Tk(8, ref q);
                 ModWatch.Tick(dt); Tk(9, ref q);
                 AllocScan.Tick(dt); Tk(10, ref q);
@@ -588,6 +602,7 @@ BlendProbe.Tick();
 #endif
  Tk(15, ref q);
                 InvisibleSkip.DevTick(); Tk(14, ref q);
+#endif
             }
 
             if (capacityApplied) return;
@@ -601,6 +616,7 @@ BlendProbe.Tick();
         internal static void ApplyCapacity()
         {
             capacityApplied = true;
+#if DEV || AUTOTEST
             if (Edition.Dev)
             {
                 ModWatch.Install();   // 다른 모드들이 다 올라온 뒤에 감싼다
@@ -611,6 +627,7 @@ BlendProbe.Tick();
             {
                 PhaseWatch.Install();  // 측정용 플레이어 빌드: 무거운 프레임의 엔진 단계를 곡 요약에 남긴다
             }
+#endif
             try
             {
                 DOTween.Init();
@@ -899,6 +916,7 @@ BlendProbe.Tick();
 
         private static void DevGUI()
         {
+#if DEV || AUTOTEST
             GUILayout.Label("고사양 맵의 프레임 문제를 줄입니다. 효과가 측정된 기능만 들어 있습니다. (" + Edition.Name + ")");
             if (LaunchWarning.Length > 0) GUILayout.Label(LaunchWarning);
             if (ReloadProblem.Length > 0) GUILayout.Label("  ⚠ " + ReloadProblem);
@@ -1004,6 +1022,7 @@ BlendProbe.Tick();
             GUILayout.Label("    F7: 엔진 단계 + 함수별 측정 20초,  F8: GC 기능 A-B 테스트");
             GUILayout.Label("    " + LoopProfiler.LastReport);
             GUILayout.Label("    A-B: " + AbTest.Summary);
+#endif
         }
 
         private static int IntField(int value, int min, int max)

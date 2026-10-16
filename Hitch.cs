@@ -137,8 +137,10 @@ namespace StutterFix
                         "[끊김] {9} 타일 #{0}, {1:F1}초 | 프레임 {2:F0}ms | 힙 {3:+#;-#;0}MB | 네이티브 {4:+#;-#;0}MB | 그래픽 {8:+#;-#;0}MB | 정리 {5}회 | 할당 {6:F0}MB/s | 모드 {7}",
                         r.Floor, songTime, r.Ms, r.HeapDelta, r.NativeDelta, r.Collects, AllocMBPerSec, ModWatch.Top, gfx - lastGfx,
                         DateTime.Now.ToString("HH:mm:ss.fff")));   // 바깥 측정(PerfView)과 맞춰 보려면 실제 시각이 필요하다
+#if DEV || AUTOTEST
                     Main.Entry.Logger.Log("[끊김]    직전 프레임 단계: " + PhaseWatch.TopOfLastFrame(3));
                     Main.Entry.Logger.Log("[끊김]    그리기: " + RenderWatch.Info());
+#endif
 
 #if DEV || AUTOTEST
 Main.Entry.Logger.Log("[끊김]    그리기 콜백: " + RenderCallbackScan.Top(5) + " | " + FrameRateScreenWatch.Info());
@@ -149,7 +151,9 @@ Main.Entry.Logger.Log("[끊김]    그리기 콜백: " + RenderCallbackScan.Top(
 Main.Entry.Logger.Log("[끊김]    파티클/글자: " + ParticleTextWatch.Info());
 #endif
 
+#if DEV || AUTOTEST
                     Main.Entry.Logger.Log("[끊김]    느린 함수: " + SlowScan.Top(5) + " | " + EffectScan.FrameSummary() + ZeroTween.FrameSummary() + InstantMove.FrameSummary() + " | 살아있는 애니메이션 " + ActiveTweens());
+#endif
                 }
             }
 
@@ -157,7 +161,9 @@ Main.Entry.Logger.Log("[끊김]    파티클/글자: " + ParticleTextWatch.Info(
             lastNative = native;
             lastGfx = gfx;
             lastCollects = collects;
+#if DEV || AUTOTEST
             RenderWatch.EndFrame();
+#endif
 
 #if DEV || AUTOTEST
 RenderCallbackScan.Reset();
@@ -173,7 +179,9 @@ FrameRateScreenWatch.Reset();
 ParticleTextWatch.Tick();
 #endif
 
+#if DEV || AUTOTEST
             SlowScan.Reset();   // 다음 프레임 몫만 모으도록 매번 비운다
+#endif
             ZeroTween.ResetFrame();
             MoveProf.EndFrame();
             InstantMove.ResetFrame();
@@ -196,9 +204,11 @@ ParticleTextWatch.Tick();
 ParticleTextWatch.Refresh();
 #endif
 
+#if DEV || AUTOTEST
             SlowScan.InstallOnce();
             SlowScan.ResetSong();
             PhaseWatch.ResetSong();
+#endif
             if (AllocProbeOn) {
 #if DEV || AUTOTEST
 AllocProbe.ResetSong();
@@ -289,8 +299,10 @@ BlendProbe.Report();
             reported = true;
 
             SongEnded();
+#if DEV || AUTOTEST
             SlowScan.ReportSong();
             PhaseWatch.ReportSong();
+#endif
             if (AllocProbeOn) {
 #if DEV || AUTOTEST
 AllocProbe.Report();

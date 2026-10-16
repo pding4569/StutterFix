@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 
-var excluded="AutoTest AllocProbe TimeProbe FrameScan HeapPath SceneScan FloorProf FilterGpuProbe FilterHalfProbe FilterHalfPerf FreeFpsProbe ScriptProbe FilterTrace MergeProbe RenderVerify UiProf RenderCallbackScan FrameRateScreenWatch ParticleTextWatch BlendProbe StartProbe UpdateFixture TimerResolutionInfo DecorationAudit MaterialPoolFixture AlphaCropPlan AlphaBoundsProbe AlphaCropFixture AnimationAudit".Split(' ');
+var excluded="AutoTest AllocProbe TimeProbe FrameScan HeapPath SceneScan FloorProf FilterGpuProbe FilterHalfProbe FilterHalfPerf FreeFpsProbe ScriptProbe FilterTrace MergeProbe RenderVerify UiProf RenderCallbackScan FrameRateScreenWatch ParticleTextWatch BlendProbe StartProbe UpdateFixture TimerResolutionInfo DecorationAudit MaterialPoolFixture AlphaCropPlan AlphaBoundsProbe AlphaCropFixture AnimationAudit AllocScan SlowScan PhaseWatch RenderWatch SamplerWatch LoopProfiler DecoDiag".Split(' ');
 HashSet<string> Types(string path)
 {
     using var stream=File.OpenRead(path);using var pe=new PEReader(stream);var md=pe.GetMetadataReader();

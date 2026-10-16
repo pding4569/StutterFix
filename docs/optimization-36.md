@@ -75,7 +75,7 @@
 |14|문자열 재질 호출45곳을 런타임 ID30개로 전환|두 Release 오류0. 정적 메시 병합·색 양자화 미구현|
 |15|기존 DRS GPU 예산80%·계측 실패 폴백·Recorder 수명 정리|정책12조건/두 Release 오류0. 실제 GPU응답·게임 필터 통합 미확인|
 |16|실제 풀 구조 추가 감사·구현 미완료|Arche준비 표본 판정 글자1,400개·활성0·문구 미준비. 7종/16슬롯 교체·Canvas 재부모화0|
-|17|순수 진단22타입 일반 Player 컴파일 제외|세 빌드 오류0·필수 런타임6타입 유지. 전체 핫패치 병합 미구현|
+|17|순수 진단36타입 일반 Player 컴파일 제외|세 빌드 오류0·필수 런타임6타입 유지·일반 DLL 시작/정상 종료 확인. 전체 핫패치 병합 미구현|
 |18|SHA-256·설치 트랜잭션·신규 모듈 수명 공통화|정책25조건·실제 엔진 파일4조건/수명3조건 오류0. 기존 전체 모듈 이관 미완료|
 |19|맵별 화면 프로필·상위5타일·Markdown 복사 후보|프로필13조건/타일 집계6조건·실제 맵 전환6상태 오류0. 실제 완주 히트맵·UI 클릭은 미확인|
 |20|메인 스레드 우선순위/MMCSS·P코어 후보|CPU 집합11조건·별도 워커 적용/복구·실제 MMCSS 적용/해제 오류0. 렌더 스레드 미구현·FPS 미측정|
@@ -476,3 +476,25 @@ Arche 앞선8MiB 고정 할당판도 기능 대조는 통과했지만 최종판�
 실제 GC 스캔 시간·원본 FPS·순간 끊김·전체 곡·다른 모드 전체 호환성은 확인 안 됨이다.
 일반 Player/Developer/PlayerAuto 빌드 오류0·LoadCheck212잘못된 참조0·일반 진단29타입 제외/필수6타입 유지.
 자료: validation/36-primitive-final-{arche,hello}-game.json,12-36-followup-summary.json.
+
+## 17 후속: 일반 빌드의 순수 진단 분리 (2026-10-17)
+
+AllocScan/SlowScan/PhaseWatch/RenderWatch/SamplerWatch/LoopProfiler/DecoDiag7타입을 추가로 일반 Player에서 컴파일 제외했다.
+해당 설치/해제/매 프레임 진단 호출/개발자 GUI 참조도 DEV||AUTOTEST 범위로 제한했다.
+플레이어 모니터의 빈 엔진 단계 설명은 빈 문자열 그대로다. 사용자 Insert 설정 창/효과 분산/프레임 구성 숫자/FPS·출력 대기 표시는 유지한다.
+EffectScan은 이름과 달리 EffectBudget.Enter/Exit와 실제 사용자 모니터의 효과 시간 집계에 필요해 제외하지 않았다.
+FrameParts/ModCost/PresentWatch/FrameGen/GC/화면 효과 등 런타임 기능을 진단이라는 이유로 지우지 않는다.
+
+|확인|값|
+|---|---:|
+|일반 Player 진단 타입 제외 /Developer 포함|36/36 ·36/36|
+|기존 필수 런타임 타입 유지|6/6|
+|일반 Player LoadCheck 참조 /잘못된 참조|212 /0|
+|Developer/Player/PlayerAuto 빌드 오류|0 /0 /0|
+|자동 시험 코드 없는 일반 Player 실제 시작 준비 /정상 창 닫기 /정상 종료|True /True /True|
+|일반 Player 시작 시험 SF집계오류 /게임 설치3+boot2원본 복원|0 /5/5|
+
+첫 Player빌드는 개발자 flags 함수의 PhaseWatch 참조1개가 남아 컴파일 실패했다. 보호 구간에 포함한 뒤 위 최종 빌드/시작을 확인했고 실패 로그는 보존했다.
+일반 시작 판은 곡 재생/성능/화면 품질 시험이 아니다. 실제 자동 시험 DLL을 일반 Player로 간주하지 않았다.
+한 게임 함수에 걸린 다른 모드와의 Prefix/Postfix 순서를 바꾸지 않았다. 전체 핫패치 병합은 아직 구현/검증하지 않았다.
+자료: validation/17-normal-player-smoke.json. 버전/릴리스/ZIP 변경0.

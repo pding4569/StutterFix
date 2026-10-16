@@ -546,7 +546,13 @@ namespace StutterFix
                 Fx = (float)(last ? EffectScan.LastFrameEffectMs : EffectScan.FrameEffectMs), Move = (float)(last ? EffectScan.LastFrameMoveMs : EffectScan.FrameMoveMs), Anim = (float)(last ? EffectScan.LastFrameAnimMs : EffectScan.FrameAnimMs),
                 N = last ? EffectScan.LastFrameN : EffectScan.FrameN,
                 Tw = (float)(last ? FrameParts.LastTween : FrameParts.Tween), Upd = (float)(last ? FrameParts.LastDecoUpdate : FrameParts.DecoUpdate),
-                Late = (float)(last ? FrameParts.LastDecoLate : FrameParts.DecoLate), TwSet = (float)(last ? FrameParts.LastTweenSet : FrameParts.TweenSet), TwN = last ? FrameParts.LastTweenSetN : FrameParts.TweenSetN, Ph = PhaseWatch.Installed ? PhaseWatch.TopOfLastFrame(4) : "", Nm = last ? EffectScan.LastNames : EffectScan.CurNames() };
+                Late = (float)(last ? FrameParts.LastDecoLate : FrameParts.DecoLate), TwSet = (float)(last ? FrameParts.LastTweenSet : FrameParts.TweenSet), TwN = last ? FrameParts.LastTweenSetN : FrameParts.TweenSetN,
+#if DEV || AUTOTEST
+                Ph = PhaseWatch.Installed ? PhaseWatch.TopOfLastFrame(4) : "",
+#else
+                Ph = "",
+#endif
+                Nm = last ? EffectScan.LastNames : EffectScan.CurNames() };
             int i = TopN - 1;
             while (i > 0 && top[i - 1].Ms < ms) { top[i] = top[i - 1]; i--; }
             top[i] = f;

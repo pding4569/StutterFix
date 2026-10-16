@@ -1,0 +1,13 @@
+{
+  "edition": "Player",
+  "autotest_compiled": false,
+  "window_close_requested": "True",
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "startup_capacity_ready": true,
+  "managed_sha256": "1259fc98090ab3dcbdefbf85b7dc929534c3376b85bb4a50fa184d550b92fd89"
+}
