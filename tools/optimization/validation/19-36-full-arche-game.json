@@ -1,0 +1,31 @@
+{
+  "batch": "끝",
+  "states": [
+    "enabled=True requested=True used_ints=98121 capacity_ints=98121 hits=27 compiled=97694 invalidations=0",
+    "enabled=True requested=True used_ints=98121 capacity_ints=98121 hits=261 compiled=97694 invalidations=0",
+    "enabled=True requested=True used_ints=98121 capacity_ints=98121 hits=515 compiled=97694 invalidations=0",
+    "enabled=True requested=True used_ints=98121 capacity_ints=98121 hits=624 compiled=97694 invalidations=0",
+    "enabled=True requested=True used_ints=98121 capacity_ints=98121 hits=30545 compiled=97694 invalidations=0",
+    "enabled=True requested=True used_ints=98121 capacity_ints=98121 hits=97692 compiled=97694 invalidations=0",
+    "enabled=True requested=True used_ints=98121 capacity_ints=98121 hits=97692 compiled=97694 invalidations=0",
+    "enabled=True requested=False used_ints=0 capacity_ints=0 hits=97692 compiled=97694 invalidations=0"
+  ],
+  "checks": [
+    "available=1 effects=97694 native_plans=97694 values=98121 mismatch=0 skipped_not_current=0 primitive_ints=98121 objects_modified=0",
+    "available=1 effects=97694 native_plans=97694 values=98121 mismatch=0 skipped_not_current=0 primitive_ints=98121 objects_modified=0"
+  ],
+  "heatmap": [
+    "포탈 도착 시점 | - 타일 79: 1회 / 최악 143.31ms / 합계 143.31ms | 타일 미확인 0 / 용량 초과 0",
+    "enabled=True portal_completed=True summary=포탈 도착 시점 | - 타일 79: 1회 / 최악 143.31ms / 합계 143.31ms | 타일 미확인 0 / 용량 초과 0"
+  ],
+  "song_end": [],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "includes_explicit_cpu_verifier": true,
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "native_sha256": "cc45fc78a802c547780eceb63b53e9eadaa1045344f6313f374872dfa7147970",
+  "managed_sha256": "ca40214ca16ffaf4660893f98ad29919e9a8a2d24829098d420164c4a03e02e2"
+}

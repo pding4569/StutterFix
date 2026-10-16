@@ -1,0 +1,35 @@
+{
+  "fps_off_on_off": [
+    390.4782117475669,
+    437.4348828700704,
+    435.686312560997
+  ],
+  "on_change_percent_vs_controls": [
+    12.025426697267205,
+    0.401336984583045
+  ],
+  "off_drift_percent_vs_first": 11.577624423934797,
+  "new_samples": 3,
+  "active_samples": 1,
+  "accept_performance_improvement": false,
+  "window": "existing monitor 10..50s; accumulated 40s; excludes >=1500ms; not exact native song window",
+  "sf_errors": [
+    0,
+    0,
+    0
+  ],
+  "normal_exit": [
+    true,
+    true,
+    true
+  ],
+  "restored_files": [
+    5,
+    5,
+    5
+  ],
+  "screen": [
+    "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  ],
+  "actual_3440": false
+}

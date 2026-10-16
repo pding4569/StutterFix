@@ -105,6 +105,7 @@
     <Compile Include="ModCost.cs" />
     <Compile Include="UiProf.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LowEnd.cs" />
+    <Compile Include="TimerPeriodLease.cs" />
     <Compile Include="HalfRender.cs" />
     <Compile Include="FrameGen.cs" />
     <Compile Include="DeadlineSnapshotGate.cs" />

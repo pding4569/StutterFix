@@ -9,6 +9,9 @@ namespace StutterFix
         internal static bool Enabled;
         private static readonly HitchHistogram current=new HitchHistogram();
         private static bool completed;
+#if DEV || AUTOTEST
+        internal static bool CompletedForFixture=>completed;
+#endif
         private static string previous="";
         internal static void Record(double ms)
         {
@@ -20,7 +23,11 @@ namespace StutterFix
         internal static string Describe()
         {
             var top=current.Top();
-            if(top.Length==0&&current.Missing==0&&current.Overflow==0)return previous.Length>0?previous:"기록 0 · 끊김 없음의 증명 아님";
+            if(top.Length==0&&current.Missing==0&&current.Overflow==0)
+            {
+                if(completed)return "포탈 도착 시점 · 기록 0 · 끊김 없음의 증명 아님";
+                return previous.Length>0?"이전 판 기록\n"+previous:"기록 0 · 끊김 없음의 증명 아님";
+            }
             var sb=new StringBuilder(completed?"포탈 도착 시점":"진행·중도 종료 기록");
             foreach(var x in top)sb.AppendFormat(System.Globalization.CultureInfo.InvariantCulture,"\n- 타일 {0}: {1}회 / 최악 {2:F2}ms / 합계 {3:F2}ms",x.Floor,x.Count,x.Worst,x.Total);
             sb.AppendFormat("\n타일 미확인 {0} / 용량 초과 {1}",current.Missing,current.Overflow);return sb.ToString();

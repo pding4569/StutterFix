@@ -36,11 +36,8 @@ namespace StutterFix
                 var method=AccessTools.Method(typeof(scnGame),"FinishCustomLevelLoading",new[]{typeof(int),typeof(bool)});
                 if(method==null)return false;
                 harmony.Patch(method,postfix:new HarmonyMethod(typeof(TagIndex),nameof(Begin)){priority=Priority.Last});
-                // Keep the new primitive store and existing object table scoped
-                // to this map even when another map is loaded before playback.
-                foreach(var candidate in typeof(scnGame).GetMethods(AccessTools.all))
-                    if(candidate.DeclaringType==typeof(scnGame)&&candidate.Name=="LoadLevel"&&!candidate.IsAbstract)
-                        harmony.Patch(candidate,prefix:new HarmonyMethod(typeof(TagIndex),nameof(Forget)));
+                // New map loading already calls Forget through FastMove.ForgetLevel.
+                // Do not duplicate that existing lifecycle patch.
                 var quit=AccessTools.Method(typeof(scrController),"QuitToMainMenu");
                 if(quit!=null)harmony.Patch(quit,prefix:new HarmonyMethod(typeof(TagIndex),nameof(Forget)));
                 return true;

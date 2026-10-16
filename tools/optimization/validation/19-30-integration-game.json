@@ -1,0 +1,21 @@
+{
+  "batch": "끝",
+  "timer_states": [
+    "requested=False owned=False",
+    "requested=True owned=True",
+    "requested=True owned=True",
+    "requested=False owned=False"
+  ],
+  "clipboard": [
+    "equal=True original_clipboard_restored=True report_characters=466 external_messages=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "physical_ui_clicked": false,
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "managed_sha256": "d750dccce49193409c409e4140cbd4febc8d10a9dfcf250469fb09bdf28094b2",
+  "nt_half_ms_request_added": false
+}

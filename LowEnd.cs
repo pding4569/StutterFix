@@ -11,7 +11,12 @@ namespace StutterFix
     internal static class LowEnd
     {
         internal static bool Priority, NoThrottle, NoFft;
-        private static bool priorityOn, throttleOn, timerOn, installed;
+        private static bool priorityOn, throttleOn, installed;
+        private static readonly TimerPeriodLease timer=new TimerPeriodLease(1,BeginTimerPeriod,EndTimerPeriod);
+        private static bool timerOn=>timer.Owned;
+#if DEV || AUTOTEST
+        internal static bool TimerOwnedForFixture=>timer.Owned;
+#endif
         private static ProcessPriorityClass priorityBefore = ProcessPriorityClass.Normal;
 
         // ── 1. 게임 우선순위 ──
@@ -42,21 +47,23 @@ namespace StutterFix
         [DllImport("kernel32.dll")] private static extern IntPtr GetCurrentProcess();
         [DllImport("winmm.dll")] private static extern uint timeBeginPeriod(uint ms);
         [DllImport("winmm.dll")] private static extern uint timeEndPeriod(uint ms);
+        private static uint BeginTimerPeriod(uint ms)=>timeBeginPeriod(ms);
+        private static uint EndTimerPeriod(uint ms)=>timeEndPeriod(ms);
         private const int ProcessPowerThrottlingClass = 4;   // PROCESS_INFORMATION_CLASS.ProcessPowerThrottling
         private const uint ExecutionSpeed = 1;               // PROCESS_POWER_THROTTLING_EXECUTION_SPEED
 
         private static void ApplyThrottle()
         {
-            if (NoThrottle == throttleOn) return;
+            if (NoThrottle == throttleOn && timerOn == NoThrottle) return;
+            // Timer release must still run if the independent power API fails.
+            bool timerOk=timer.Apply(NoThrottle);
             try
             {
                 // 켤 때: 제한을 끈다고 명시(ControlMask 에 넣고 StateMask 는 0). 끌 때: 윈도우가 알아서 하게(ControlMask 0).
                 var p = new PowerThrottling { Version = 1, ControlMask = NoThrottle ? ExecutionSpeed : 0u, StateMask = 0u };
                 bool ok = SetProcessInformation(GetCurrentProcess(), ProcessPowerThrottlingClass, ref p, Marshal.SizeOf(typeof(PowerThrottling)));
-                if (NoThrottle && !timerOn) { timeBeginPeriod(1); timerOn = true; }
-                else if (!NoThrottle && timerOn) { timeEndPeriod(1); timerOn = false; }
                 throttleOn = NoThrottle;
-                Main.Entry.Logger.Log("[저사양] 윈도우 절전 제한 " + (NoThrottle ? "끔" : "윈도우에 맡김") + (ok ? "" : " (절전 제한 설정 실패, 윈도우 10 이전일 수 있음)") + ", 타이머 1ms " + (timerOn ? "켬" : "끔"));
+                Main.Entry.Logger.Log("[저사양] 윈도우 절전 제한 " + (NoThrottle ? "끔" : "윈도우에 맡김") + (ok ? "" : " (절전 제한 설정 실패, 윈도우 10 이전일 수 있음)") + ", 타이머 1ms " + (timerOn ? "켬" : "끔")+(timerOk?"":" (요청 실패, 이전 소유 상태 유지)"));
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[저사양] 절전 제한 바꾸기 실패: " + ex.Message); }
         }

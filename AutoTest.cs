@@ -1016,6 +1016,24 @@ namespace StutterFix
                 case "tagprimitivestate":Log("[태그 번호 영역] enabled="+TagIndex.Enabled+" requested="+TagIndex.NativePlans+" used_ints="+TagIndex.PrimitiveUsed+" capacity_ints="+TagIndex.PrimitiveCapacity+" hits="+TagIndex.Hits+" compiled="+TagIndex.Compiled+" invalidations="+TagIndex.Invalidations);return true;
                 case "tagprimitiveverify":Log("[태그 번호 원본 대조] "+TagIndex.VerifyPrimitivePlans());return true;
                 case "tagprimitivelifetime":Log("[태그 번호 수명 대조] "+TagIndex.PrimitiveLifetimeFixture());return true;
+                case "heatmapstate":Log("[상위 타일 완주 상태] enabled="+HitchHeatmap.Enabled+" portal_completed="+HitchHeatmap.CompletedForFixture+" summary="+HitchHeatmap.Describe().Replace("\n"," | "));return true;
+                case "timerperiodstate":Log("[타이머 요청 소유] requested="+LowEnd.NoThrottle+" owned="+LowEnd.TimerOwnedForFixture);return true;
+                case "reportclipboardfixture":
+                {
+                    string previous=GUIUtility.systemCopyBuffer,error=LogExport.LastError;
+                    bool equal=false,restored=false;int length=0;
+                    try
+                    {
+                        string expected=LogExport.Markdown();length=expected.Length;LogExport.CopyMarkdown();
+                        equal=LogExport.LastError.Length==0&&GUIUtility.systemCopyBuffer==expected;
+                    }
+                    finally
+                    {
+                        GUIUtility.systemCopyBuffer=previous;restored=GUIUtility.systemCopyBuffer==previous;
+                        LogExport.LastError=error;
+                    }
+                    Log("[보고서 복사 API 시험] equal="+equal+" original_clipboard_restored="+restored+" report_characters="+length+" external_messages=0");return true;
+                }
                 case "threadstate":Log("[스레드 예약 상태] "+ThreadScheduling.Status);return true;
                 case "gccapability":
                 {
