@@ -1,0 +1,25 @@
+{
+  "batch": "끝",
+  "states": [
+    "꺼짐 owned=False pending=0 requested=False before=[] current=[closed] restored=[]",
+    "꺼짐 owned=False pending=0 requested=False before=[] current=[closed] restored=[]",
+    "render=86828 priority=unchanged mask=3E affinity=no-eligible-core owned=True pending=0 requested=True before=[tid=86828 priority=0 mask=3F] current=[tid=86828 priority=0 mask=3E] restored=[]",
+    "꺼짐 owned=False pending=0 requested=False before=[tid=86828 priority=0 mask=3F] current=[closed] restored=[tid=86828 priority=0 mask=3F]",
+    "render=86828 priority=15 mask=3E affinity=no-eligible-core owned=True pending=0 requested=True before=[tid=86828 priority=0 mask=3F] current=[tid=86828 priority=15 mask=3E] restored=[]",
+    "꺼짐 owned=False pending=0 requested=True before=[tid=86828 priority=0 mask=3F] current=[closed] restored=[tid=86828 priority=0 mask=3F]",
+    "꺼짐 owned=False pending=0 requested=False before=[tid=86828 priority=0 mask=3F] current=[closed] restored=[tid=86828 priority=0 mask=3F]"
+  ],
+  "screen": [
+    "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "full_song": false,
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "managed_sha256": "517ae2991dfbaab4377875d7801fb2bdc2781e5ec4f6b04b8d0d98aa493e8b58",
+  "native_sha256": "0591ba9cfc167a1b3e192fe2c3293633ca051815e4e08f9d156b8524ab5b13a4",
+  "render_mmcss_added": false
+}

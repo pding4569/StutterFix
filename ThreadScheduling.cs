@@ -61,14 +61,23 @@ namespace StutterFix
         }
         private static void ApplyCores(IntPtr thread)
         {
-            if(GetActiveProcessorGroupCount()!=1){Status+=" pcores=unsupported-groups";return;}
+            string detail;ulong mask=SelectMask(thread,cores,avoidZero,out detail);
+            if(mask==0){Status+=" "+detail;return;}
+            SetOwnedMask(thread,mask);
+        }
+        // Shared selection only. Applying/restoring remains owned by each lease.
+        internal static ulong SelectMask(IntPtr thread,bool performanceCores,bool excludeZero,out string detail)
+        {
+            detail="affinity=no-eligible-core";
+            if(GetActiveProcessorGroupCount()!=1){detail="pcores=unsupported-groups";return 0;}
             GroupAffinity group;UIntPtr allowed,system;
             if(!GetThreadGroupAffinity(thread,out group)||group.Group!=0||!GetProcessAffinityMask(GetCurrentProcess(),out allowed,out system))throw new InvalidOperationException("Thread affinity unavailable");
             ulong eligible=allowed.ToUInt64()&group.Mask.ToUInt64();
-            if(!cores)
+            if(!performanceCores)
             {
-                bool ignored;SetOwnedMask(thread,CpuSetPolicy.SchedulingMask(null,eligible,false,avoidZero,out ignored));
-                return;
+                bool ignored;ulong selected=CpuSetPolicy.SchedulingMask(null,eligible,false,excludeZero,out ignored);
+                if(selected!=0)detail="";
+                return selected;
             }
             uint required;GetSystemCpuSetInformation(IntPtr.Zero,0,out required,GetCurrentProcess(),0);
             if(required==0||required>1024*1024)throw new InvalidOperationException("CPU topology unavailable");
@@ -77,9 +86,10 @@ namespace StutterFix
             {
                 uint actual;if(!GetSystemCpuSetInformation(memory,required,out actual,GetCurrentProcess(),0)||actual>required)throw new InvalidOperationException("CPU topology changed");
                 var bytes=new byte[actual];Marshal.Copy(memory,bytes,0,bytes.Length);
-                bool hybrid;ulong mask=CpuSetPolicy.SchedulingMask(bytes,eligible,cores,avoidZero,out hybrid);
-                if(mask==0){Status+=hybrid?" pcores=no-eligible-core":" pcores=homogeneous-or-unknown";return;}
-                SetOwnedMask(thread,mask);
+                bool hybrid;ulong mask=CpuSetPolicy.SchedulingMask(bytes,eligible,performanceCores,excludeZero,out hybrid);
+                if(mask==0)detail=hybrid?"pcores=no-eligible-core":"pcores=homogeneous-or-unknown";
+                else detail="";
+                return mask;
             }
             finally{Marshal.FreeHGlobal(memory);}
         }

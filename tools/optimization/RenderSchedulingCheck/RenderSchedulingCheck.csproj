@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><DefineConstants>AUTOTEST</DefineConstants></PropertyGroup><ItemGroup><Compile Include="../../../RenderThreadLease.cs" Link="RenderThreadLease.cs" /><Compile Include="../../../RenderThreadScheduling.cs" Link="RenderThreadScheduling.cs" /></ItemGroup></Project>

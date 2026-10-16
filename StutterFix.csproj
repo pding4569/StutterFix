@@ -37,6 +37,8 @@
     <Compile Include="PageLockLease.cs" />
     <Compile Include="PinnedArenaOwner.cs" />
     <Compile Include="ThreadScheduling.cs" />
+    <Compile Include="RenderThreadLease.cs" />
+    <Compile Include="RenderThreadScheduling.cs" />
     <Compile Include="TimerResolutionInfo.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ExitFix.cs" />
     <Compile Include="StateDump.cs" />

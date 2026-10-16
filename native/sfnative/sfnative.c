@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <limits.h>
 #include <emmintrin.h>
 #define COBJMACROS
 #define WIN32_LEAN_AND_MEAN
@@ -28,6 +29,7 @@
 SF_API int sf_version(void) { return 1; }
 
 #include "alpha_bounds.h"
+#include "render_thread_capture.h"
 
 /* Owned experimental SoA storage only. Never pass managed or driver-owned pointers to this free. */
 SF_API void *sf_alloc_aligned64_v1(size_t bytes)

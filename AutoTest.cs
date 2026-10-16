@@ -1035,6 +1035,7 @@ namespace StutterFix
                     Log("[보고서 복사 API 시험] equal="+equal+" original_clipboard_restored="+restored+" report_characters="+length+" external_messages=0");return true;
                 }
                 case "threadstate":Log("[스레드 예약 상태] "+ThreadScheduling.Status);return true;
+                case "renderthreadstate":Log("[렌더 스레드 예약 상태] "+RenderThreadScheduling.FixtureState);return true;
                 case "gccapability":
                 {
                     if(Hitch.Playing)throw new InvalidOperationException("GC capability check is menu-only");

@@ -449,6 +449,7 @@ ParticleTextWatch.Install(harmony);
             Try(NativeMotion.Reset);
             Try(OptimizationModules.Shutdown);
             Try(ThreadScheduling.Shutdown);
+            Try(RenderThreadScheduling.Shutdown);
             Try(TagIndex.Shutdown);
             Try(UploadBudget.Restore);
             Try(Updater.Shutdown);
@@ -574,7 +575,7 @@ if (Edition.AutoTest && AutoTest.ReloadNow) { AutoTest.ReloadNow = false; Reques
 #if DEV || AUTOTEST
 AutoTest.Tick();
 #endif
-} FrameGen.Tick(); PcTune.Tick(); ThreadScheduling.Tick(); if(FrameQueueDelay.Enabled)FrameQueueDelay.Tick(); if(DecorationMaterialPool.Requested)DecorationMaterialPool.Deferred(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (!Hitch.Playing && Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+} FrameGen.Tick(); PcTune.Tick(); ThreadScheduling.Tick(); RenderThreadScheduling.Tick(); if(FrameQueueDelay.Enabled)FrameQueueDelay.Tick(); if(DecorationMaterialPool.Requested)DecorationMaterialPool.Deferred(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (!Hitch.Playing && Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
@@ -761,6 +762,7 @@ BlendProbe.Tick();
             TagIndex.Configure(effective("TagIndex",Config.TagIndex),Config.TagIndexNativePlans);
             MapProfiles.Configure(effective("MapProfiles",Config.MapProfilesEnabled));
             ThreadScheduling.Configure(Config.ThreadSchedulingMode,Config.ThreadPerformanceCores,Config.ThreadAvoidLogicalZero);
+            RenderThreadScheduling.Configure(Config.ThreadRenderScheduling,Config.ThreadSchedulingMode,Config.ThreadPerformanceCores,Config.ThreadAvoidLogicalZero);
             FrameQueueDelay.Enabled=effective("FrameQueueDelay",Config.FrameQueueDelay);
             DecorationMaterialPool.Configure(effective("DecorationMaterialPool",Config.DecorationMaterialPool));
             HitchHeatmap.Enabled=effective("HitchHeatmap",Config.HitchHeatmap);
@@ -1067,6 +1069,7 @@ BlendProbe.Tick();
         public bool MapProfilesEnabled = false;
         public bool HitchHeatmap = false;
         public int ThreadSchedulingMode = 0;
+        public bool ThreadRenderScheduling = false;
         public bool FrameQueueDelay = false;
         public bool DecorationMaterialPool = false;
         public bool ThreadPerformanceCores = false;
