@@ -1,0 +1,11 @@
+{
+  "batch": "끝",
+  "worker_fixture": [],
+  "states": [
+    "coarsest_100ns=156250 finest_100ns=5000 current_100ns=4959 requests_changed=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

@@ -1,0 +1,11 @@
+{
+  "batch": "끝",
+  "worker_fixture": [],
+  "states": [
+    "rigidbody2d=0 rigidbody3d=0 colliders2d=14769 fixed_update_behaviours=3 fixed_delta=0.0199999921 simulation2d=FixedUpdate simulation3d=Script sync2d=True values_changed=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

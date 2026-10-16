@@ -1023,11 +1023,35 @@ namespace StutterFix
                     Log("[GC 런타임 지원] "+result+" boehm_dll="+boehm);return true;
                 }
                 case "arenastate":Log("[계산 영역 시험] requested="+NativeMotion.ArenaRequested+" active="+NativeMotion.ArenaActive+" native_allocator="+NativeMotion.NativeArenaActive+" column_alignment_or="+NativeMotion.ArenaAlignment);return true;
+                case "pinarena":Log("[페이지 고정 시험] requested="+NativeMotion.PinRequested+" pinned="+NativeMotion.ArenaPinned+" working_set="+PinnedArenaOwner.WorkingSetSnapshot()+" original="+PinnedArenaOwner.OriginalSnapshot+" status="+PinnedArenaOwner.Status);return true;
+                case "timercapability":
+                    Log("[타이머 구성 감사] "+TimerResolutionInfo.Read());return true;
                 case "audiocapability":
                 {
                     int samples,buffers;AudioSettings.GetDSPBufferSize(out samples,out buffers);
                     var config=AudioSettings.GetConfiguration();
                     Log("[오디오 구성 감사] dsp_samples="+samples+" buffers="+buffers+" sample_rate="+config.sampleRate+" real_voices="+config.numRealVoices+" virtual_voices="+config.numVirtualVoices+" loaded_clips="+Resources.FindObjectsOfTypeAll<AudioClip>().Length+" audio_reset=0 phase_changed=0");return true;
+                }
+                case "physicsaudit":
+                {
+                    string Read(string name,string property)
+                    {try{var type=AccessTools.TypeByName(name);return Convert.ToString(type?.GetProperty(property,System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.Public)?.GetValue(null))??"unknown";}catch{return "unknown";}}
+                    int Count(string name)
+                    {
+                        var type=AccessTools.TypeByName(name);if(type==null)return -1;int n=0;
+                        foreach(var obj in Resources.FindObjectsOfTypeAll(type))if(obj is Component component&&component.gameObject.activeInHierarchy)n++;
+                        return n;
+                    }
+                    int callbacks=0;var types=new SortedDictionary<string,int>();
+                    foreach(var behaviour in Resources.FindObjectsOfTypeAll<MonoBehaviour>())
+                    {
+                        if(behaviour==null||!behaviour.isActiveAndEnabled)continue;
+                        var type=behaviour.GetType();
+                        var method=type.GetMethod("FixedUpdate",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic,null,Type.EmptyTypes,null);
+                        if(method==null)continue;callbacks++;int n;types.TryGetValue(type.FullName,out n);types[type.FullName]=n+1;
+                    }
+                    Log("[물리 사용 감사] rigidbody2d="+Count("UnityEngine.Rigidbody2D")+" rigidbody3d="+Count("UnityEngine.Rigidbody")+" colliders2d="+Count("UnityEngine.Collider2D")+" fixed_update_behaviours="+callbacks+" fixed_delta="+Time.fixedDeltaTime.ToString("R")+" simulation2d="+Read("UnityEngine.Physics2D","simulationMode")+" simulation3d="+Read("UnityEngine.Physics","simulationMode")+" sync2d="+Read("UnityEngine.Physics2D","autoSyncTransforms")+" values_changed=0");
+                    foreach(var row in types)Log("[FixedUpdate 사용] "+row.Key+"="+row.Value);return true;
                 }
                 case "indirectaudit":
                 {
@@ -1048,6 +1072,16 @@ namespace StutterFix
                     }
                     Log("[간접 그리기 감사] decorations="+decorations+" sprite_renderers="+renderers+" shared_materials="+materials.Count+" textures="+textures.Count+" sorting_keys="+orders.Count+" masked="+masked+" missing_material="+missing+" instancing="+SystemInfo.supportsInstancing+" compute="+SystemInfo.supportsComputeShaders+" renderer_changed=0");return true;
                 }
+                case "decostructure":DecorationAudit.Run();return true;
+                case "inputclockaudit":DecorationAudit.Input();return true;
+                case "framewindow":DecorationAudit.Window();return true;
+                case "rawclockstate":Log("[프레임 입력 대기] enabled="+FrameQueueDelay.Enabled+" status="+FrameQueueDelay.Status+" corrected="+FrameQueueDelay.Corrected+" skipped="+FrameQueueDelay.Skipped+" already_async="+FrameQueueDelay.AlreadyAsync+" last_delay_ms="+FrameQueueDelay.LastDelayMs);return true;
+                case "rawanglefixture":Log("[입력 각도 대조] "+FrameQueueDelay.AngleFixture());return true;
+                case "materialpoolstate":Log("[장식 재질 공유] "+DecorationMaterialPool.State);return true;
+                case "materialpoolfixture":Log("[장식 재질 픽셀 시험] "+MaterialPoolFixture.Run());return true;
+                case "materialpoolscene":Log("[장식 재질 장면 대조] "+MaterialPoolFixture.Scene());return true;
+                case "materialpoolescape":Log("[공유 재질 외부 수정 대조] "+DecorationMaterialPool.EscapeFixture());return true;
+                case "materialpoolsorting":Log("[공유 재질 동률 정렬 대조] "+MaterialPoolFixture.Sorting());return true;
                 case "profilesave":
                     Main.Config.Save(Main.Entry);return true;
                 case "optimizationstate":

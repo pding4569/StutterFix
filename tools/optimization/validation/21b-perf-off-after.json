@@ -1,0 +1,26 @@
+{
+  "batch": "끝",
+  "enabled": false,
+  "frame_window": [
+    "monitor_elapsed=10..50 seconds accumulated_ms=39999.422302246094 frames=17455 fps=436.38130241245625 pixels_capture=0 excludes_frames_ge_1500ms=1"
+  ],
+  "screen": [
+    "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  ],
+  "dotween_warnings": 757,
+  "external_abort_warnings": 0,
+  "worker_fixture": [],
+  "scene_pixels": [],
+  "fixtures": [],
+  "raw_states": [],
+  "roles": [],
+  "shader_states": [],
+  "input_states": [],
+  "states": [
+    "enabled=False status=off tracked=0 shared_renderers=0 canonical=0 detached=0 assignments=0 patches=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

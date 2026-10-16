@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
+  <ItemGroup><Compile Include="../../../FrameQueueDelayPolicy.cs" Link="FrameQueueDelayPolicy.cs" /><Compile Include="../../../RawKeyboardClock.cs" Link="RawKeyboardClock.cs" /><Compile Include="../../../KeyDeliveryBuffer.cs" Link="KeyDeliveryBuffer.cs" /></ItemGroup>
+</Project>

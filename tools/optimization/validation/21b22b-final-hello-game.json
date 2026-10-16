@@ -1,0 +1,29 @@
+{
+  "batch": "끝",
+  "worker_fixture": [],
+  "angle_fixture": [
+    "game_angle_conditions=21 mismatch=0 hit_calls=0 input_injected=0 scope=existing-game-angle-vs-same-DSP-tick; physical_keys_not_tested=1"
+  ],
+  "scene_pixels": [
+    "song_s=8.3543333824491128 size=2560x1440 pixels=3686400 different=0 nonblack=3686400 same_unity_frame=1 scope=world-camera-without-image-effects; enabled=True status=tracked 2426 proven 2358 tracked=2426 shared_renderers=2036 canonical=59 detached=2250 assignments=4286 patches=89"
+  ],
+  "fixtures": [
+    "conditions=14 errors=0 pixels=0 cached_write_isolation=1 renderer_sorting_unchanged=1"
+  ],
+  "raw_states": [
+    "enabled=True status=game-already-timestamped; correction=0 corrected=0 skipped=0 already_async=2374 last_delay_ms=0",
+    "enabled=False status=off corrected=0 skipped=0 already_async=4614 last_delay_ms=0"
+  ],
+  "roles": [],
+  "shader_states": [],
+  "input_states": [],
+  "states": [
+    "enabled=True status=tracked 2426 proven 2358 tracked=2426 shared_renderers=2036 canonical=57 detached=208 assignments=2244 patches=89",
+    "enabled=True status=tracked 2426 proven 2358 tracked=2426 shared_renderers=2036 canonical=59 detached=2534 assignments=4570 patches=89",
+    "enabled=False status=off tracked=0 shared_renderers=0 canonical=0 detached=2534 assignments=4570 patches=89"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

@@ -1,0 +1,26 @@
+{
+  "batch": "끝",
+  "worker_fixture": [],
+  "scene_pixels": [
+    "size=2560x1440 pixels=3686400 different=0 nonblack=74413 same_unity_frame=1 scope=world-camera-without-image-effects; enabled=True status=tracked 28828 proven 28828 tracked=28828 shared_renderers=28828 canonical=20 detached=28849 assignments=57677 patches=88"
+  ],
+  "fixtures": [
+    "conditions=14 errors=0 pixels=0 cached_write_isolation=1 renderer_sorting_unchanged=1"
+  ],
+  "raw_states": [
+    "enabled=True status=game-already-timestamped; correction=0 corrected=0 skipped=0 already_async=2905 last_delay_ms=0",
+    "enabled=False status=off corrected=0 skipped=0 already_async=5912 last_delay_ms=0"
+  ],
+  "roles": [],
+  "shader_states": [],
+  "input_states": [],
+  "states": [
+    "enabled=True status=tracked 28828 proven 28828 tracked=28828 shared_renderers=28828 canonical=18 detached=15 assignments=28843 patches=88",
+    "enabled=True status=tracked 28828 proven 28828 tracked=28828 shared_renderers=28828 canonical=20 detached=28939 assignments=57767 patches=88",
+    "enabled=False status=off tracked=0 shared_renderers=0 canonical=0 detached=28939 assignments=57767 patches=88"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

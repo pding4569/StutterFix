@@ -1,0 +1,2 @@
+﻿Owned message thread: receiving-software-QPC; real keyboard timing not tested
+Input delay conditions 26, errors 0; hardware time and judgment quality not measured

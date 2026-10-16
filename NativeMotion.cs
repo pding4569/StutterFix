@@ -11,8 +11,10 @@ namespace StutterFix
         private static AlignedArena arena;
         private static IntPtr startPtr,changePtr,positionPtr,durationPtr,outputPtr;
         internal static bool ArenaRequested;
+        internal static bool PinRequested;
         internal static bool ArenaActive=>arena!=null;
         internal static bool NativeArenaActive=>arena!=null&&arena.NativeAllocated;
+        internal static bool ArenaPinned=>arena!=null&&PinRequested&&PinnedArenaOwner.Owns(arena.Pointer);
         internal static int ArenaAlignment=>arena==null?-1:(int)((startPtr.ToInt64()|changePtr.ToInt64()|positionPtr.ToInt64()|durationPtr.ToInt64()|outputPtr.ToInt64())&63);
         internal static Span<float> Start=>arena!=null?new Span<float>((void*)startPtr,Capacity):start;
         internal static Span<float> Change=>arena!=null?new Span<float>((void*)changePtr,Capacity):change;
@@ -24,14 +26,16 @@ namespace StutterFix
         internal static int Rounding;
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)]
         private static extern int sf_motion_linear(float* start,float* change,float* position,float* duration,float* output,int count,int rounding);
-        internal static void Configure(bool enabled,bool useArena=false)
+        internal static void Configure(bool enabled,bool useArena=false,bool pinArena=false)
         {
-            if(enabled==Enabled&&(!enabled||ArenaRequested==useArena))return;
+            bool wantedPin=enabled&&useArena&&pinArena;
+            if(enabled==Enabled&&(!enabled||(ArenaRequested==useArena&&PinRequested==wantedPin)))return;
             Reset();
             if(!enabled)return;
             try
             {
                 ArenaRequested=useArena;
+                PinRequested=wantedPin;
                 if(useArena)
                 {
                     try{arena=CreateArena();ResetArena();}
@@ -51,6 +55,12 @@ namespace StutterFix
         {
             try
             {
+                if(PinRequested)
+                {
+                    var pointer=PinnedArenaOwner.Allocate(Capacity*5*sizeof(float));
+                    if(pointer!=IntPtr.Zero)
+                        return new AlignedArena(Capacity*5*sizeof(float),bytes=>pointer,PinnedArenaOwner.Release);
+                }
                 // ApplyConfig runs before image-module installation on a fresh start.
                 // The optional native arena depends on the DLL being initialized first.
                 if(!SfNative.Ready&&Main.Entry!=null)
@@ -118,8 +128,10 @@ namespace StutterFix
         }
         internal static void Reset()
         {
+            bool pinCleanup=PinRequested;
             Enabled=Failed=Compatible=ArenaRequested=false;Rounding=0;start=change=position=duration=output=null;
             if(arena!=null)arena.Dispose();arena=null;
+            if(pinCleanup)PinnedArenaOwner.RetryCleanup();PinRequested=false;
             startPtr=changePtr=positionPtr=durationPtr=outputPtr=IntPtr.Zero;
             Batches=Values=Checks=Mismatch=0;
         }

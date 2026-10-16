@@ -1,0 +1,29 @@
+{
+  "batch": "끝",
+  "worker_fixture": [],
+  "roles": [
+    "hitbox total/active/enabled/active_enabled/visible=28828/0/28828/0/0",
+    "main total/active/enabled/active_enabled/visible=28828/28828/28828/28828/15",
+    "selection total/active/enabled/active_enabled/visible=28828/0/28828/0/0"
+  ],
+  "shader_states": [
+    "Sprites/Tile queue=3000 passes=1 properties=_MainTex:Texture,_Color:Color,PixelSnap:Float,RepeatX:Float,RepeatY:Float"
+  ],
+  "input_states": [
+    "game_async_active=True qpc_frequency=10000000 changed=0",
+    "keyQueue type=System.Collections.Concurrent.ConcurrentQueue`1[SkyHook.SkyHookEvent] value=System.Collections.Concurrent.ConcurrentQueue`1[SkyHook.SkyHookEvent]",
+    "currFrameTick type=System.Int64 value=639278047612252538",
+    "targetSongTick type=System.Int64 value=545989790",
+    "prevFrameTick type=System.Int64 value=639278047608140702",
+    "offsetTick type=System.Int64 value=639278047066262748",
+    "offsetTickUpdated type=System.Boolean value=True",
+    "lastReportedTargetTick type=System.Int64 value=639278047612252538"
+  ],
+  "states": [
+    "decorations=28835 unique_renderers=86484 duplicate_visits=0 active_objects=28828 enabled_components=86484 is_visible=15 property_blocks=86484 materials=28829 crc_candidate_groups=19 changed=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

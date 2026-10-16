@@ -1,0 +1,20 @@
+{
+  "batch": "끝",
+  "gc_capability": [],
+  "arithmetic": [
+    "checks=1048576 mismatch=0 native_vs_r64=0 native_vs_forced_r32=250471"
+  ],
+  "pin_states": [
+    "requested=True pinned=True working_set=1581056/1646592/1 original=204800/1413120/0 status=locked bytes=1310720",
+    "requested=False pinned=False working_set=204800/1413120/0 original=204800/1413120/0 status=released"
+  ],
+  "states": [
+    "requested=True active=True native_allocator=True column_alignment_or=0",
+    "requested=False active=False native_allocator=False column_alignment_or=-1"
+  ],
+  "errors": [],
+  "expected_capability_exceptions": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

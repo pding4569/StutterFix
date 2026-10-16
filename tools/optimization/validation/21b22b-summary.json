@@ -1,0 +1,48 @@
+{
+  "performance_scope": "previous COW candidate; monitor accumulated 10..50 seconds, not physical display FPS",
+  "common_performance_dll_sha256": "C8CD58663F96851A90B4773A13C138A2A373CB57E4E291A6E6CF1776BAD54534",
+  "performance_trials": [
+    {
+      "mode": "off-before",
+      "ms": 40001.52009642124,
+      "frames": 17426,
+      "fps": 435.63344487898667,
+      "screen": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2",
+      "dotween_warnings": 757
+    },
+    {
+      "mode": "on",
+      "ms": 39999.37669622898,
+      "frames": 17314,
+      "fps": 432.85674503103724,
+      "screen": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2",
+      "dotween_warnings": 757
+    },
+    {
+      "mode": "off-after",
+      "ms": 39999.422302246094,
+      "frames": 17455,
+      "fps": 436.38130241245625,
+      "screen": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2",
+      "dotween_warnings": 757
+    }
+  ],
+  "fps_loss_pct_vs_controls": [
+    0.6373936346234288,
+    0.8076783679626387
+  ],
+  "control_variation_pct": 0.1716712851735469,
+  "material_pool_sorting_passed": 6,
+  "material_pool_sorting_failed": 30,
+  "sorting_cases": 36,
+  "normal_build_material_pool_implemented": false,
+  "additional_helper_renderers_disabled": 0,
+  "input_policy_checks": 26,
+  "game_relative_angle_checks": 42,
+  "game_relative_angle_mismatch": 0,
+  "physical_key_latency_ms": null,
+  "full_song_visual_equivalence": null,
+  "actual_3440_test": false,
+  "release_created": false,
+  "tester_zip_created": false
+}

@@ -1,0 +1,2 @@
+﻿Player diagnostic types absent 25/25, developer present 25/25; required runtime types 6/6 retained
+Player material sharing: blocking stub only; research core methods absent 5/5

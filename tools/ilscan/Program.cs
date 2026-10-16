@@ -211,7 +211,8 @@ static class Program
             foreach (var fh in t.GetFields())
             {
                 var f = md.GetFieldDefinition(fh);
-                Console.WriteLine("  필드 " + ((f.Attributes & System.Reflection.FieldAttributes.Static) != 0 ? "static " : "") + md.GetString(f.Name));
+                Console.WriteLine("  필드 " + ((f.Attributes & System.Reflection.FieldAttributes.Static) != 0 ? "static " : "") + md.GetString(f.Name) +
+                    (Environment.GetEnvironmentVariable("FIELDSIG")=="1"?" : "+f.DecodeSignature(new Names(),null):""));
             }
             foreach (var mh in t.GetMethods())
             {

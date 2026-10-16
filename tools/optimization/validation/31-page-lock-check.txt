@@ -1,0 +1,1 @@
+﻿Private page lock conditions 16, errors 0; Windows actual locking and game impact separately required

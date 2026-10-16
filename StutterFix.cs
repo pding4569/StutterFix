@@ -165,6 +165,8 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
                 if(TagIndex.Enabled)OptimizationModules.Install(TagIndexModule.Instance);
                 if(MapProfiles.Enabled)OptimizationModules.Install(MapProfilesModule.Instance);
                 if(HitchHeatmap.Enabled)OptimizationModules.Install(HitchHeatmapModule.Instance);
+                if(FrameQueueDelay.Enabled)OptimizationModules.Install(FrameQueueDelay.Instance);
+                if(DecorationMaterialPool.Enabled)OptimizationModules.Install(DecorationMaterialPool.Instance);
                 Try(MaterialPropertyIds.Warm);
                 Precheck.Install(harmony);
                 DecoAnim.Install(harmony);
@@ -558,7 +560,7 @@ if (Edition.AutoTest && AutoTest.ReloadNow) { AutoTest.ReloadNow = false; Reques
 #if DEV || AUTOTEST
 AutoTest.Tick();
 #endif
-} FrameGen.Tick(); PcTune.Tick(); ThreadScheduling.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (!Hitch.Playing && Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+} FrameGen.Tick(); PcTune.Tick(); ThreadScheduling.Tick(); if(FrameQueueDelay.Enabled)FrameQueueDelay.Tick(); if(DecorationMaterialPool.Requested)DecorationMaterialPool.Deferred(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (!Hitch.Playing && Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
@@ -737,10 +739,12 @@ BlendProbe.Tick();
             FastJsonParser.PoolStrings=Config.JsonStringPool;
             AssetDiskCache.Configure(Config.AssetDiskCache,Config.AssetDiskCacheMB,Config.AssetDiskCachePath);
             MoveApply.EpsilonSkip=effective("MoveEpsilon",Config.MoveEpsilon);
-            NativeMotion.Configure(effective("NativeMotion",Config.NativeMotion),Config.NativeMotionArena);
+            NativeMotion.Configure(effective("NativeMotion",Config.NativeMotion),Config.NativeMotionArena,Config.NativeMotionPinArena);
             TagIndex.Configure(effective("TagIndex",Config.TagIndex));
             MapProfiles.Configure(effective("MapProfiles",Config.MapProfilesEnabled));
             ThreadScheduling.Configure(Config.ThreadSchedulingMode,Config.ThreadPerformanceCores);
+            FrameQueueDelay.Enabled=effective("FrameQueueDelay",Config.FrameQueueDelay);
+            DecorationMaterialPool.Configure(effective("DecorationMaterialPool",Config.DecorationMaterialPool));
             HitchHeatmap.Enabled=effective("HitchHeatmap",Config.HitchHeatmap);
             ParticleFix.CatchupOffscreen=effective("ParticleCatchup",Config.ParticleCatchup);
             if(installed)
@@ -751,6 +755,10 @@ BlendProbe.Tick();
                 else OptimizationModules.Uninstall("profiles");
                 if(HitchHeatmap.Enabled)OptimizationModules.Install(HitchHeatmapModule.Instance);
                 else OptimizationModules.Uninstall("heatmap");
+                if(FrameQueueDelay.Enabled)OptimizationModules.Install(FrameQueueDelay.Instance);
+                else OptimizationModules.Uninstall("input-frame-delay");
+                if(DecorationMaterialPool.Requested){if(DecorationMaterialPool.Enabled)OptimizationModules.Install(DecorationMaterialPool.Instance);}
+                else OptimizationModules.Uninstall("deco-material-pool");
             }
         }
 #if DEV || AUTOTEST
@@ -1032,11 +1040,14 @@ BlendProbe.Tick();
         public bool MoveEpsilon = false;
         public bool NativeMotion = false;
         public bool NativeMotionArena = false;
+        public bool NativeMotionPinArena = false;
         public bool TagIndex = false;
         public bool ParticleCatchup = false;
         public bool MapProfilesEnabled = false;
         public bool HitchHeatmap = false;
         public int ThreadSchedulingMode = 0;
+        public bool FrameQueueDelay = false;
+        public bool DecorationMaterialPool = false;
         public bool ThreadPerformanceCores = false;
         public string MapProfilesPath = "";
         public bool AsyncUploadBudget = false;

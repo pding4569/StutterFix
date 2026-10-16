@@ -1095,9 +1095,18 @@ namespace StutterFix
                       "Uses native SIMD for at least 512 linear position, rotation or opacity values. Other easing and decoration updates keep their existing order."), null);
                 ch |= Option("motionarena",ref c.NativeMotionArena,T("계산 버퍼를 비관리 메모리에 (실험)","Unmanaged arithmetic buffers (experimental)"),
                     T("숫자 계산 묶기의 버퍼 1.25MiB를 64바이트 정렬 영역에서 재사용합니다. 다른 게임 객체와 맵 데이터는 그대로입니다.","Reuses 1.25 MiB of 64-byte aligned storage for batched arithmetic. Other game objects and level data remain unchanged."),null,1,c.NativeMotion?null:T("장식 숫자 계산 묶기","Batch decoration arithmetic"));
+                ch |= Option("motionpin",ref c.NativeMotionPinArena,T("계산 버퍼를 RAM에 고정 (실험)","Lock arithmetic buffers in RAM (experimental)"),
+                    T("자기 소유 계산 버퍼 1.25MiB만 별도 페이지에 고정합니다. RAM 여유가 적거나 윈도우가 거부하면 기존 할당을 씁니다. 끄면 페이지와 작업 집합 설정을 복구합니다.","Locks only the owned 1.25 MiB arithmetic buffer in private pages. Keeps the previous allocation if RAM is low or Windows rejects it; disabling releases pages and restores owned working-set changes."),null,2,c.NativeMotion&&c.NativeMotionArena?null:T("비관리 계산 버퍼","Unmanaged arithmetic buffers"));
                 ch |= Option("tagindex", ref c.TagIndex, T("장식 태그 색인 (실험)", "Decoration tag index (experimental)"),
                     T("재생 준비 때 태그에 번호를 붙여 반복 조회를 줄입니다. 태그 표의 변경을 감지할 수 없거나 표가 바뀌면 기존 조회를 씁니다.",
                       "Indexes tags at playback preparation. Falls back when table changes cannot be tracked or the table changes."), null);
+                ch |= Option("inputframewait",ref c.FrameQueueDelay,T("입력 프레임 대기 보정 (실험)","Input frame wait correction (experimental)"),
+                    T("키 메시지를 받은 뒤 게임이 확인할 때까지의 대기만 보정합니다. 게임의 비동기 입력을 쓰면 추가로 적용하지 않습니다. 지원되지 않는 입력은 그대로 처리하며 기본 꺼짐입니다.","Corrects only the wait between receiving a key message and the game checking it. Adds nothing when game async input is active. Keeps unsupported input unchanged; off by default."),null);
+#if DEV || AUTOTEST
+                ch |= Option("decomaterialpool",ref c.DecorationMaterialPool,T("장식 재질 공유 (연구 전용)","Share decoration materials (research only)"),
+                    T("재질 공유를 확인하는 연구 후보입니다. 겹친 장식의 순서가 바뀌는 반례가 있어 일반 빌드에는 포함하지 않습니다.","Research candidate for material sharing. Sorting counterexamples change overlapping sprites; excluded from normal builds."),null);
+                P(T("동률 정렬 검증36조건 중30조건이 달라 일반 빌드에서 사용을 차단했습니다.","Blocked in normal builds: 30 of 36 sorting tie fixtures changed pixels."),sDim);
+#endif
                 ch |= Option("particlecatchup", ref c.ParticleCatchup, T("입자 복귀 따라잡기 (실험)", "Catch up returning particles (experimental)"),
                     T("화면 밖 입자 멈추기와 함께 사용하면 다시 보일 때 지난 시간을 따라잡습니다. 돌아오는 순간의 추가 비용은 확인 중입니다.",
                       "With offscreen particle pause, catches up elapsed time when particles return. Return-time cost is under validation."), null);
@@ -2708,6 +2717,9 @@ namespace StutterFix
             c.MoveEpsilon = false;
             c.NativeMotion = false;
             c.NativeMotionArena = false;
+            c.NativeMotionPinArena = false;
+            c.FrameQueueDelay = false;
+            c.DecorationMaterialPool = false;
             c.TagIndex = false;
             c.ParticleCatchup = false;
             c.MapProfilesEnabled = false;
