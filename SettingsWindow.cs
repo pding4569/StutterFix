@@ -1102,6 +1102,12 @@ namespace StutterFix
                 EndGroup();
                 SubHeading(T("맵별 화면 설정", "Per-level rendering settings"), "");
                 BeginGroup();
+                P(T("게임 스레드 예약 (실험)","Game thread scheduling (experimental)"),sBody);
+                ch |= Segment("threadmode",ref c.ThreadSchedulingMode,new[]{T("끔","Off"),T("우선순위","Priority"),T("오디오 방식","Audio task")});
+                P(T("메인 스레드에만 적용하며 곡 밖에서 복구합니다. 입력·오디오와 경쟁할 수 있어 기본 꺼짐입니다. 성능 개선은 확인 중입니다.","Main thread only; restored outside play. May compete with input/audio. Off by default; performance is under validation."),sDim);
+                ch |= Option("threadpcores",ref c.ThreadPerformanceCores,T("고성능 코어만 사용 (실험)","Performance cores only (experimental)"),T("윈도우가 서로 다른 코어 등급을 알려줄 때만 메인 스레드에 적용합니다. 구분할 수 없으면 기존 배치를 유지합니다.","Restricts the main thread only when Windows reports heterogeneous core classes. Otherwise keeps the original placement."),null);
+                EndGroup();
+                BeginGroup();
                 ch |= Option("mapprofiles", ref c.MapProfilesEnabled, T("맵별 화면 설정 저장 (실험)", "Remember rendering settings per level (experimental)"),
                     T("다음 맵 열기부터 색감·선명도·해상도·프레임 늘리기 설정을 맵 내용 해시별로 저장하고 불러옵니다. 입력·전체 화면·시스템 설정은 전역으로 유지합니다.",
                       "From the next level load, remembers effects, scale and frame generation by level content hash. Input, fullscreen and system settings remain global."), null);
@@ -2703,6 +2709,7 @@ namespace StutterFix
             c.ParticleCatchup = false;
             c.MapProfilesEnabled = false;
             c.HitchHeatmap = false;
+            c.ThreadSchedulingMode = 0;c.ThreadPerformanceCores = false;
             c.AsyncUploadBudget = false;
             c.JsonStringPool = false;
             c.AssetDiskCache = false;

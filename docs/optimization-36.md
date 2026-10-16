@@ -78,7 +78,8 @@
 |17|순수 진단22타입 일반 Player 컴파일 제외|세 빌드 오류0·필수 런타임6타입 유지. 전체 핫패치 병합 미구현|
 |18|SHA-256·설치 트랜잭션·신규 모듈 수명 공통화|정책25조건·실제 엔진 파일4조건/수명3조건 오류0. 기존 전체 모듈 이관 미완료|
 |19|맵별 화면 프로필·상위5타일·Markdown 복사 후보|프로필13조건/타일 집계6조건·실제 맵 전환6상태 오류0. 실제 완주 히트맵·UI 클릭은 미확인|
-|20~36|사전 감사 완료, 구현 미완료|번호별 구현·동일성·성능 검증을 계속 진행|
+|20|메인 스레드 우선순위/MMCSS·P코어 후보|CPU 집합11조건·별도 워커 적용/복구·실제 MMCSS 적용/해제 오류0. 렌더 스레드 미구현·FPS 미측정|
+|21~36|사전 감사 완료, 구현 미완료|번호별 구현·동일성·성능 검증을 계속 진행|
 
 05 실제 HELLO 두 새 실행: 첫 로드 DXT 저장 215·JSON 저장 1, 재방문 DXT 적중 84·JSON 적중 1.
 512MB LRU라 전체 이미지가 상주한다는 뜻은 아니다. 양 판 SF 오류 0·정상 종료, 설치 3파일 원본 복원.
@@ -167,3 +168,13 @@ settings-experiments-3440.png는 새 설정 창/시작 화면 표본이며 곡 �
 완주 이벤트·실제 끊김 타일의 정확도·모니터끔 비용·설정 버튼 클릭은 확인 안 됨이다.
 기존 Harmony 공유 패치 확인은 곡 밖에서만1회 수행하도록 옮겼다. 같은 함수의 공유는 충돌 확정이 아니다.
 Discord 요약은 사용자 버튼으로 클립보드에만 복사하며 네트워크 전송0. 개인정보 마스킹은 기존 경로를 재사용한다.
+
+20: 메인 스레드 예약은0끔/1TIME_CRITICAL/2MMCSS Pro Audio 중 하나다. 기본0, P코어 제한도 기본false.
+곡 밖/끄기/Unload에 자기 스레드의 우선순위/코어마스크/MMCSS를 복구한다. 다른 코드가 바꾼 우선순위/마스크는 덮지 않는다.
+지원 API 실패는 기존 스케줄링으로 돌아가고, 복구 실패는1초 간격으로만 재시도한다. 레지스트리/권한/OS 설정 변경0.
+CPU_SET_INFORMATION의 레코드 Size·프로세스/기존 스레드 마스크·할당/주차 상태·단일 프로세서 그룹을 검사한다.
+EfficiencyClass 구분이 없으면 코어 제한0. CPU0 제외나 특정 CPU 모델의 P/E 번호 추정0.
+공식 규약: [MMCSS](https://learn.microsoft.com/en-us/windows/win32/api/avrt/nf-avrt-avsetmmthreadcharacteristicsw), [CPU 집합](https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-system_cpu_set_information).
+정책11조건 오류0. 별도 짧은 워커의TIME_CRITICAL 설정/복원True, MMCSS 설정/복원True.
+실제 HELLO12초 메인 MMCSS=True, P코어 homogeneous-or-unknown, 옵션 해제 뒤꺼짐·SF오류0·정상 종료1/1·설치5파일 복원.
+게임 메인의TIME_CRITICAL·실제 이종 CPU·렌더 스레드·입력/오디오 경쟁·FPS/최악 프레임 개선은 확인 안 됨이다.

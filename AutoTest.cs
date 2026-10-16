@@ -1010,6 +1010,8 @@ namespace StutterFix
                 case "profilestate":
                     Log("[맵 프로필 경로] load="+MapProfiles.LoadCalls+" loaded="+MapProfiles.LoadedCalls+" finish="+MapProfiles.FinishCalls+" miss="+MapProfiles.KeyMisses+" arg="+MapProfiles.LastArgument);
                     Log("[맵 프로필 시험] key="+MapProfiles.CurrentKey+" enabled="+MapProfiles.Enabled+" vibrance="+Main.Config.FxVibrance.ToString("R",System.Globalization.CultureInfo.InvariantCulture)+" status="+MapProfiles.Status);return true;
+                case "threadfixture":Log("[스레드 예약 시험] "+ThreadScheduling.Fixture());return true;
+                case "threadstate":Log("[스레드 예약 상태] "+ThreadScheduling.Status);return true;
                 case "profilesave":
                     Main.Config.Save(Main.Entry);return true;
                 case "optimizationstate":

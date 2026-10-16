@@ -1,0 +1,14 @@
+{
+  "batch": "끝",
+  "worker_fixture": [
+    "priority_apply_restore=True mmcss_apply_restore=True worker_only=True"
+  ],
+  "states": [
+    "main=98712 mmcss=True pcores=homogeneous-or-unknown",
+    "꺼짐"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

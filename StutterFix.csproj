@@ -32,6 +32,8 @@
     <Compile Include="StutterFix.cs" />
     <Compile Include="HitchHistogram.cs" />
     <Compile Include="HitchHeatmap.cs" />
+    <Compile Include="CpuSetPolicy.cs" />
+    <Compile Include="ThreadScheduling.cs" />
     <Compile Include="ExitFix.cs" />
     <Compile Include="StateDump.cs" />
     <Compile Include="AllocProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

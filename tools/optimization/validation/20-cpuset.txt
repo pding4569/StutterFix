@@ -1,0 +1,1 @@
+﻿CPU set conditions 11, errors 0; actual hybrid hardware and rendering thread unverified
