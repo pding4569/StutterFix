@@ -1,0 +1,19 @@
+{
+  "states": [
+    "memory_enabled=False memory_limit=6000 memory_active=False pool=False cache=False dxt_hits=0 dxt_writes=0 json_hits=0 json_writes=0 upload_time=2 upload_buffer=4",
+    "memory_enabled=False memory_limit=6000 memory_active=False pool=False cache=False dxt_hits=0 dxt_writes=0 json_hits=0 json_writes=0 upload_time=2 upload_buffer=4"
+  ],
+  "live_api_applied": {
+    "time": 16,
+    "buffer": 64
+  },
+  "restored": [
+    "2",
+    "4"
+  ],
+  "original_candidate_flags_off": true,
+  "normal_exit": true,
+  "sf_errors": 0,
+  "ui_clip_warnings": 0,
+  "performance_ab": false
+}

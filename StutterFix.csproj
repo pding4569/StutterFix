@@ -73,6 +73,10 @@
     <Compile Include="GfxProbe.cs" />
     <Compile Include="FastJson.cs" />
     <Compile Include="FastJsonParser.cs" />
+    <Compile Include="JsonStringPool.cs" />
+    <Compile Include="PersistentBlobCache.cs" />
+    <Compile Include="JsonSnapshot.cs" />
+    <Compile Include="AssetDiskCache.cs" />
     <Compile Include="DecodeFix.cs" />
     <Compile Include="ParallelDecode.cs" />
     <Compile Include="DecoBatch.cs" />
@@ -108,6 +112,10 @@
     <Compile Include="AbTest.cs" />
     <Compile Include="LoopProfiler.cs" />
     <Compile Include="GcControl.cs" />
+    <Compile Include="MemoryBudgetPolicy.cs" />
+    <Compile Include="MemoryBudget.cs" />
+    <Compile Include="UploadBudgetScope.cs" />
+    <Compile Include="UploadBudget.cs" />
     <Compile Include="Hitch.cs" />
     <Compile Include="PatchHot.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="WasteProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

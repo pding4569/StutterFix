@@ -1,0 +1,38 @@
+{
+  "results": [
+    {
+      "run": "cold",
+      "states": [
+        "memory_enabled=True memory_limit=11808 memory_active=True pool=True cache=True dxt_hits=0 dxt_writes=0 json_hits=0 json_writes=0 upload_time=2 upload_buffer=4",
+        "memory_enabled=True memory_limit=9879 memory_active=True pool=True cache=True dxt_hits=0 dxt_writes=215 json_hits=0 json_writes=1 upload_time=2 upload_buffer=4",
+        "memory_enabled=True memory_limit=10290 memory_active=True pool=True cache=True dxt_hits=0 dxt_writes=215 json_hits=0 json_writes=1 upload_time=2 upload_buffer=4"
+      ],
+      "counts": {
+        "dxt_hits": 0,
+        "dxt_writes": 215,
+        "json_hits": 0,
+        "json_writes": 1
+      },
+      "sf_errors": 0,
+      "normal_exit": true
+    },
+    {
+      "run": "warm",
+      "states": [
+        "memory_enabled=True memory_limit=11620 memory_active=True pool=True cache=True dxt_hits=0 dxt_writes=0 json_hits=0 json_writes=0 upload_time=2 upload_buffer=4",
+        "memory_enabled=True memory_limit=9661 memory_active=True pool=True cache=True dxt_hits=84 dxt_writes=182 json_hits=1 json_writes=0 upload_time=2 upload_buffer=4",
+        "memory_enabled=True memory_limit=10000 memory_active=True pool=True cache=True dxt_hits=84 dxt_writes=182 json_hits=1 json_writes=0 upload_time=2 upload_buffer=4"
+      ],
+      "counts": {
+        "dxt_hits": 84,
+        "dxt_writes": 182,
+        "json_hits": 1,
+        "json_writes": 0
+      },
+      "sf_errors": 0,
+      "normal_exit": true
+    }
+  ],
+  "performance_ab": false,
+  "settings_native_dll_restored": true
+}

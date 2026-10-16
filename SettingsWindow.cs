@@ -1071,6 +1071,20 @@ namespace StutterFix
                     T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
                       "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);
                 EndGroup();
+                SubHeading(T("로딩·메모리 실험", "Loading and memory experiments"), T("검증 중인 후보입니다. 기본으로 꺼져 있습니다.", "Candidates under validation; disabled by default."));
+                BeginGroup();
+                ch |= Option("gcbudget", ref c.GcDynamicBudget, T("메모리 한도 자동 조절 (실험)", "Adaptive memory budget (experimental)"),
+                    T("남은 RAM과 게임의 메모리 사용량에 맞춰 정리 한도를 조절합니다. 메모리 정리 미루기와 함께 사용합니다.",
+                      "Adjusts the cleanup budget to available RAM and game memory usage. Requires deferred memory cleanup."), null);
+                ch |= Option("jsonpool", ref c.JsonStringPool, T("맵 문자열 재사용 (실험)", "Reuse level strings (experimental)"),
+                    T("맵을 읽는 동안 반복되는 짧은 문자열과 검색 버퍼를 재사용합니다.", "Reuses repeated short strings and scratch lookup buffers while reading a level."), null);
+                ch |= Option("diskcache", ref c.AssetDiskCache, T("맵 파일 디스크 캐시 (실험)", "Level disk cache (experimental)"),
+                    T("다시 여는 맵의 이미지 압축 결과와 JSON 해석 결과를 저장합니다. 기본 최대 512MB이며 파일 변경 시 다시 만듭니다.",
+                      "Stores compressed images and parsed JSON for revisits. Default maximum 512MB; changed files are decoded again."), null);
+                ch |= Option("uploadbudget", ref c.AsyncUploadBudget, T("로딩 업로드 예산 (실험)", "Loading upload budget (experimental)"),
+                    T("이미지 미리 읽기 중 업로드 예산을 늘리고 끝나면 원래 설정으로 되돌립니다. 비동기 업로드가 가능한 에셋에 적용됩니다.",
+                      "Raises upload budgets during image prefetch, then restores original settings. Applies to assets eligible for asynchronous upload."), null);
+                EndGroup();
             }
             else if (sub == 1)
             {
@@ -2656,6 +2670,10 @@ namespace StutterFix
         private void ResetDefaults()
         {
             var c = Main.Config;
+            c.GcDynamicBudget = false;
+            c.AsyncUploadBudget = false;
+            c.JsonStringPool = false;
+            c.AssetDiskCache = false;
             c.GcPause = c.EffectSplit = c.RecolorSplit = c.TweenGuard = c.SkipSameText = c.FilterIdentity = c.FilterTypeCache = c.MeshWarm = c.SoundWarm = c.JitWarm = c.ShaderWarm = c.FastBlend = c.SkipInvisible = c.LazyHidden = c.ZeroTween = c.InstantDirect = c.SkipSame = c.FastLoop = c.Precheck = c.DecoAnim = c.FloorAnim = c.MoveFinish = c.DormantSkip = c.ImagePrefetch = c.SkipAssetUnload = c.SkipIdleParticles = c.LeakFix = c.LoadCache = true;
             if (!c.LegacyGfxJobs) { c.LegacyGfxJobs = true; BootConfig.Apply(true, c.FlipModel == 1); }
             Save();

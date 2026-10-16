@@ -43,6 +43,10 @@ namespace StutterFix
                 var parser = json.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic).FirstOrDefault(t => t.Name == "Parser");
                 origParse = parser == null ? null : parser.GetMethod("Parse", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static, null, new[] { typeof(string) }, null);
                 h.Patch(m, prefix: new HarmonyMethod(typeof(FastJson), nameof(Prefix)));
+                var ld=AccessTools.TypeByName("ADOFAI.LevelData")??AccessTools.TypeByName("LevelData");
+                if(ld!=null)foreach(var load in ld.GetMethods(AccessTools.all))
+                    if(load.DeclaringType==ld&&load.Name=="LoadLevel"&&!load.IsAbstract&&!load.ContainsGenericParameters)
+                        h.Patch(load,prefix:new HarmonyMethod(typeof(FastJson),nameof(SourcePrefix)),finalizer:new HarmonyMethod(typeof(FastJson),nameof(SourceFinalizer)));
                 Main.Entry.Logger.Log("[맵 파일 읽기] 빠른 JSON 해석기 설치 (" + json.FullName + ")");
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[맵 파일 읽기] 빠른 해석기 설치 실패: " + ex.Message); }
@@ -50,12 +54,41 @@ namespace StutterFix
 
         private static MethodInfo origParse;
         private static bool devChecked;
+        [ThreadStatic] private static string sourcePath;
+        public static void SourcePrefix(object[] __args,out string __state)
+        {
+            __state=sourcePath;sourcePath=null;
+            if(AssetDiskCache.Store==null)return;
+            try{foreach(var arg in __args)if(arg is string path&&path.Length<32768&&System.IO.File.Exists(path)){sourcePath=path;break;}}catch{}
+        }
+        public static Exception SourceFinalizer(string __state,Exception __exception){sourcePath=__state;return __exception;}
 
         public static bool Prefix(string __0, ref object __result)
         {
             if (!Enabled || __0 == null || __0.Length < MinLength) return true;
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
+            string key=null;var cache=AssetDiskCache.Store;
+            if(cache!=null&&sourcePath!=null)
+            {
+                try
+                {
+                    key=PersistentBlobCache.Key(sourcePath,"json-v1/"+JsonSnapshot.Fingerprint(__0));
+                    byte[] snapshot;
+                    if(cache.TryRead(key,out snapshot))
+                    {
+                        __result=JsonSnapshot.Decode(snapshot);
+                        System.Threading.Interlocked.Increment(ref AssetDiskCache.JsonHits);
+                        LastMs=(System.Diagnostics.Stopwatch.GetTimestamp()-t0)*1000.0/System.Diagnostics.Stopwatch.Frequency;
+                        Parses++;return false;
+                    }
+                }
+                catch{}
+            }
             __result = Parse(__0);   // 예외도 원래처럼 부른 쪽으로 간다
+            if(key!=null)try
+            {
+                if(key==PersistentBlobCache.Key(sourcePath,"json-v1/"+JsonSnapshot.Fingerprint(__0))&&cache.Write(key,JsonSnapshot.Encode(__result)))System.Threading.Interlocked.Increment(ref AssetDiskCache.JsonWrites);
+            }catch{}
             LastMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             Parses++;
             if (Edition.Dev && !devChecked && origParse != null && __0.Length >= 1000000) { devChecked = true; DevCompare(__0, __result); }   // 맵 파일(1MB 넘는 것)로

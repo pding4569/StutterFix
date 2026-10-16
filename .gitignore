@@ -6,3 +6,6 @@ dist/
 dev-backup/
 __pycache__/
 .serena/
+
+# Local optimization runs contain machine paths and game logs.
+tools/optimization/out/

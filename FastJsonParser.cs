@@ -12,14 +12,25 @@ namespace StutterFix
         // 검증 도구는 한도를 두어 그런 입력을 알아본다. 게임에서는 int.MaxValue(원래와 같이 메모리가 찰 때까지).
         internal static int ArrayLimit = int.MaxValue;
         internal const string HangMessage = "FastJsonParser: array limit";
+        internal static bool PoolStrings;
 
         // Json.Deserialize(json) 와 같다 (json 은 null 아님)
-        internal static object Parse(string json) { return new P(json).ParseValue(); }
+        internal static object Parse(string json)
+        {
+            var parser=new P(json);
+            try { return parser.ParseValue(); }
+            finally { parser.Pool?.Dispose(); }
+        }
 
         private sealed class P
         {
             private readonly string s; private readonly int len; private int pos;
-            internal P(string json) { s = json; len = json.Length; if (len > 0 && s[0] == (char)0xFEFF) pos = 1; }
+            internal readonly JsonStringPool Pool;
+            internal P(string json)
+            {
+                s=json;len=json.Length;if(len>0&&s[0]==(char)0xFEFF)pos=1;
+                if(PoolStrings) { try { Pool=new JsonStringPool(); }catch { Pool=null; } }
+            }
 
             // StringReader.Peek / Read 와 같은 값. 글자로 바꿀 때 끝(-1)이면 Convert.ToChar(-1) 과 같은 예외.
             private char PeekChar { get { if (pos >= len) return Convert.ToChar(-1); return s[pos]; } }
@@ -121,7 +132,7 @@ namespace StutterFix
                 int start = pos, i = pos;
                 while (i < len) { char c = s[i]; if (c == '"' || c == '\\') break; i++; }
                 if (i >= len) { pos = len; return s.Substring(start, len - start); }   // 닫는 따옴표 없이 끝: 끝까지
-                if (s[i] == '"') { pos = i + 1; return s.Substring(start, i - start); }
+                if (s[i] == '"') { pos = i + 1; return Pool!=null?Pool.Get(s,start,i-start):s.Substring(start,i-start); }
                 var sb = new StringBuilder(s, start, i - start, Math.Max(16, (i - start) * 2));
                 pos = i;
                 while (true)
@@ -149,7 +160,8 @@ namespace StutterFix
                             }
                     }
                 }
-                return sb.ToString();
+                string decoded=sb.ToString();
+                return Pool!=null?Pool.Get(decoded,0,decoded.Length):decoded;
             }
 
             private object ParseNumber()

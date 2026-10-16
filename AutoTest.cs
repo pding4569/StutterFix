@@ -1007,6 +1007,21 @@ namespace StutterFix
                     Log("[출력 모니터] " + PerfOverlay.DescribeFps());
                     return true;
 #if DEV || AUTOTEST
+                case "optimizationstate":
+                    Log("[최적화 후보] memory_enabled="+MemoryBudget.Enabled+" memory_limit="+
+                        MemoryBudget.Limit(GcControl.HardLimitMB,UnityEngine.SystemInfo.systemMemorySize,GC.GetTotalMemory(false)>>20)+
+                        " memory_active="+MemoryBudget.Active+" pool="+FastJsonParser.PoolStrings+
+                        " cache="+(AssetDiskCache.Store!=null)+" dxt_hits="+System.Threading.Interlocked.Read(ref AssetDiskCache.DxtHits)+
+                        " dxt_writes="+System.Threading.Interlocked.Read(ref AssetDiskCache.DxtWrites)+
+                        " json_hits="+System.Threading.Interlocked.Read(ref AssetDiskCache.JsonHits)+
+                        " json_writes="+System.Threading.Interlocked.Read(ref AssetDiskCache.JsonWrites)+
+                        " upload_time="+UnityEngine.QualitySettings.asyncUploadTimeSlice+
+                        " upload_buffer="+UnityEngine.QualitySettings.asyncUploadBufferSize);
+                    return true;
+                case "uploadbudgettest":
+                    UploadBudget.Begin();
+                    Log("[업로드 엔진 시험] time="+UnityEngine.QualitySettings.asyncUploadTimeSlice+" buffer="+UnityEngine.QualitySettings.asyncUploadBufferSize);
+                    UploadBudget.Restore();return true;
                 case "fpscap":
                 {
                     // fpscap <n | 0>: 진짜 FPS 를 n 으로 묶는다(수직동기 끔). 0 이면 풀기. 게임은 Application.targetFrameRate 만 쓴다.

@@ -380,6 +380,9 @@ namespace StutterFix
             Try(FilterHalfPerf.Stop);
 #endif
             Try(FrameGen.Shutdown);
+            Try(MemoryBudget.Reset);
+            Try(UploadBudget.Restore);
+            Try(() => AssetDiskCache.Store=null);
             Try(ScreenEffects.Shutdown);
             Try(FilterIdentity.Shutdown);
             Try(GcControl.Shutdown);
@@ -652,6 +655,10 @@ namespace StutterFix
             Func<string, bool, bool> E = Resilience.Eff;
             bool low = !Resilience.Off("LowEnd");   // 저사양 그래픽 기능 묶음
             GcControl.Enabled = E("GcPause", Config.GcPause);
+            MemoryBudget.Enabled = Config.GcDynamicBudget;
+            UploadBudget.Configure(Config.AsyncUploadBudget);
+            FastJsonParser.PoolStrings = Config.JsonStringPool;
+            AssetDiskCache.Configure(Config.AssetDiskCache,Config.AssetDiskCacheMB,Config.AssetDiskCachePath);
             EffectBudget.Enabled = E("EffectSplit", Config.EffectSplit);
             RecolorSplit.Enabled = E("RecolorSplit", Config.RecolorSplit);
             TweenFix.Enabled = E("TweenGuard", Config.TweenGuard);
@@ -892,6 +899,12 @@ namespace StutterFix
         // 기능별 켜기/끄기 (플레이어용 설정 화면에서 바꾸고 저장된다)
         public bool CheckUpdates = true;    // 게임을 켜면 GitHub 에서 새 버전이 있는지 한 번 확인
         public bool GcPause = true;
+        public bool GcDynamicBudget = false;
+        public bool AsyncUploadBudget = false;
+        public bool JsonStringPool = false;
+        public bool AssetDiskCache = false;
+        public int AssetDiskCacheMB = 512;
+        public string AssetDiskCachePath = "";
         public bool EffectSplit = true;
         public bool RecolorSplit = true;
         public bool TweenGuard = true;

@@ -41,6 +41,8 @@ namespace StutterFix
             public int Width, Height, Format;
             public IntPtr Pixels;
             public long Size;
+            public string DiskKey;
+            public bool CachedBlocks;
             public float Factor = 1f;   // 큰 이미지 줄이기로 줄인 비율 (1 이면 그대로)
             public bool Extra;          // 추가 형식(흑백, 16비트)으로 푼 것: 개발자용에서 유니티 결과와 비교
             public bool Jpg;            // libjpeg-turbo 로 푼 JPG
@@ -516,6 +518,7 @@ namespace StutterFix
             {
                 Stop();
                 string dir = Path.GetDirectoryName(__instance.levelPath);
+                UploadBudget.Begin();
                 sideNow = MaxSide > 0 ? MaxSide : MaxSide == Auto ? VramGuard.CapFor(__instance.levelPath) : 0;
                 if (MaxSide == Auto)
                 {
@@ -682,6 +685,18 @@ namespace StutterFix
                     try { unsafe { SfNative.EncodeRows((byte*)jpx, job.Width, job.Height, job.Layout, job.Dxt5, (byte*)jbl, r0, r1); } }
                     catch { lock (gate) job.Abandoned = true; }
                     Interlocked.Add(ref TexCompress.EncodeTicks, Stopwatch.GetTimestamp() - t0);
+                    byte[] cachedCopy=null;
+                    var cache=AssetDiskCache.Store;
+                    bool cacheComplete=false;
+                    if(cache!=null&&job.DiskKey!=null&&!job.Extra&&!job.Jpg)
+                    {
+                        lock(gate)cacheComplete=!job.Abandoned&&job.DoneRows+r1-r0>=job.Rows;
+                        if(cacheComplete)try
+                        {
+                            if(job.BlockSize<=64L*1024*1024)
+                            {cachedCopy=new byte[(int)job.BlockSize];Marshal.Copy(jbl,cachedCopy,0,cachedCopy.Length);}
+                        }catch{cachedCopy=null;}
+                    }
                     lock (gate)
                     {
                         job.InFlight--;
@@ -690,9 +705,42 @@ namespace StutterFix
                         ReleaseIfDone(job);
                         Monitor.PulseAll(gate);
                     }
+                    // No gate or native pointer is held during disk I/O.
+                    if(cachedCopy!=null)try
+                    {
+                        if(job.DiskKey==AssetDiskCache.ImageKey(job.Path,sideNow))
+                            if(cache.Write(job.DiskKey,AssetDiskCache.PackDxt(job.Width,job.Height,job.Format,job.Factor,job.Dxt5,cachedCopy)))Interlocked.Increment(ref AssetDiskCache.DxtWrites);
+                    }catch{}
                     continue;
                 }
 
+                var readCache=AssetDiskCache.Store;
+                if(readCache!=null&&TexCompress.Planned)
+                {
+                    try
+                    {
+                        it.DiskKey=AssetDiskCache.ImageKey(it.Path,sideNow);
+                        byte[] blob,cachedData;int cw,ch,cf;float factor0;bool dxt5;
+                        if(readCache.TryRead(it.DiskKey,out blob)&&AssetDiskCache.UnpackDxt(blob,out cw,out ch,out cf,out factor0,out dxt5,out cachedData)
+                            &&it.DiskKey==AssetDiskCache.ImageKey(it.Path,sideNow))
+                        {
+                            IntPtr pointer=Marshal.AllocHGlobal(cachedData.Length);
+                            try{Marshal.Copy(cachedData,0,pointer,cachedData.Length);}catch{Marshal.FreeHGlobal(pointer);throw;}
+                            lock(gate)
+                            {
+                                if(!running||it.State!=1||it.Index<consumed)Marshal.FreeHGlobal(pointer);
+                                else
+                                {
+                                    it.Width=cw;it.Height=ch;it.Format=cf;it.Factor=factor0;it.Dxt5=dxt5;
+                                    it.Blocks=pointer;it.BlockSize=cachedData.Length;it.BlocksReady=true;it.CachedBlocks=true;
+                                    it.State=2;pendingBytes+=cachedData.Length;Interlocked.Increment(ref AssetDiskCache.DxtHits);
+                                }
+                                Monitor.PulseAll(gate);
+                            }
+                            continue;
+                        }
+                    }catch{it.DiskKey=null;}
+                }
                 int w = 0, h = 0, f = 0, ow = 0, oh = 0; IntPtr px = IntPtr.Zero; long size = 0; bool ok = false, extra = false, jpg = false; float factor = 1f;
                 try
                 {
@@ -901,7 +949,11 @@ namespace StutterFix
                     fallback++;
                     return ImageConversion.LoadImage(tex, File.ReadAllBytes(it.Path));
                 }
-                if (it.Blocks != IntPtr.Zero && it.BlocksReady && loadMaxSide == -1 && TexCompress.DirectAllowed)
+                if(it.CachedBlocks&&(loadMaxSide!=-1||!TexCompress.Planned))
+                {
+                    fallback++;return ImageConversion.LoadImage(tex,File.ReadAllBytes(it.Path));
+                }
+                if (it.Blocks != IntPtr.Zero && it.BlocksReady && loadMaxSide == -1 && (it.CachedBlocks||TexCompress.DirectAllowed))
                 {
                     // 곧 압축될 것이 확인된 맵: 원본을 넣지 않고 압축 결과를 바로 (TexCompress.DirectAllowed)
                     tex.Reinitialize(it.Width, it.Height, it.Dxt5 ? TextureFormat.DXT5 : TextureFormat.DXT1, false);
@@ -1005,6 +1057,7 @@ namespace StutterFix
         // ── 끝 ─────────────────────────────────────────────────────────
         public static Exception End(scnGame __instance, Exception __exception)
         {
+            UploadBudget.Restore();
             if (__exception is NullReferenceException) { try { WhyNull(__instance); } catch (Exception ex) { Main.Entry.Logger.Log("[장식 불러오기] 원인 찾기 실패: " + ex.Message); } }
             if (running)
             {
@@ -1051,6 +1104,7 @@ namespace StutterFix
 
         internal static void Stop()
         {
+            UploadBudget.Restore();
             Thread[] ws;
             lock (gate)
             {

@@ -656,9 +656,8 @@ namespace StutterFix
             }
 
             // RAM 이 적은 컴퓨터에서는 한계를 낮춘다 (RAM 의 40%, 최소 1.5GB)
-            int limit = HardLimitMB;
             if (ramMB == 0) { try { ramMB = SystemInfo.systemMemorySize; } catch { ramMB = -1; } }   // 바뀌지 않으므로 한 번만
-            if (ramMB > 0) limit = Mathf.Min(limit, Mathf.Max(1500, ramMB * 2 / 5));
+            int limit = MemoryBudget.Limit(HardLimitMB,ramMB,heapNow);
             if (!playing) { limitSlicing = false; limitPhase = false; wantGap = false; restUntil = -1f; restCheck = false; raisedLimit = 0; }
             // ── 곡 중 힙 한계 ──
             // 2026-09-27 저사양 사용자 로그(Ryzen 7 5825U, RAM 16GB, 25분 넘는 곡): 곡 1457초에 힙 6GB 한계 -> 조금씩 치우기로 바뀐 뒤
@@ -697,15 +696,17 @@ namespace StutterFix
             {
                 restCheck = false;
                 int cur = Math.Max(limit, raisedLimit);
-                if (heapNow > cur * 9L / 10)
+                if (!MemoryBudget.Active && heapNow > cur * 9L / 10)
                 {
                     raisedLimit = (int)Math.Min(limit * 14L / 10, Math.Max(cur, heapNow * 5L / 4));
                     Main.Entry.Logger.Log("[GC] 치운 뒤에도 힙 " + heapNow + "MB (한계 " + cur + "MB 가까이): 이 곡 동안 한계를 " + raisedLimit + "MB 로 올림");
                 }
             }
             int baseLimit = limit;
-            if (raisedLimit > limit) limit = raisedLimit;
-            bool over = heapNow >= baseLimit * 3L / 2;
+            if (!MemoryBudget.Active && raisedLimit > limit) limit = raisedLimit;
+            // A shrinking physical budget must not bypass the existing GC rest
+            // period repeatedly when live objects cannot be reclaimed.
+            bool over = heapNow >= baseLimit * 3L / 2 && (!MemoryBudget.Active || nowT >= restUntil);
             // 한계의 GapZone(80%) 부터는 입력이 없는 틈(다음 타일까지 "예상 멈춤 + GapMargin" 이상, 또는 일시정지)을 기다렸다가 그 순간 한 번에 치운다(GapCheck).
             // 2026-09-28 측정(6GB 힙): 한 번에 크게 조각 치우기 180~200ms 가 그 호출 안에서 끝남(GC.Collect 265ms). 작게 시작만 시키면 95ms 지만 0.7초 안 어느 순간에 온다. 틈이 끝까지 없으면 한계에서 작게 시작만 시킨다.
             wantGap = !limitPhase && nowT >= restUntil && heapNow >= (long)(limit * GapZone) && heapNow <= limit;

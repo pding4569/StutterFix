@@ -67,6 +67,8 @@ METHOD=scrCamera bin/Release/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서�
 
 ## 측정에서 배운 것 (반복하지 말 것)
 
+- **36항목 감사 Phase 1 (2026-10-16)**: 현재 설치 엔진은 6000.3.21f1 알파이며 사용자가 이 설치판으로 계속하도록 확인했다. 동적 GC 예산·파서 풀·DXT/JSON DOM 디스크 캐시·로딩 업로드 예산은 기본 꺼짐 후보다. 문자열 풀 오프라인 20,017조건 오류0·반복 이벤트 할당 7,107,400→4,611,752바이트. 실제 HELLO 첫 로드 DXT저장215/JSON저장1, 재방문 DXT적중84/JSON적중1, SF오류0·정상종료2/2. 512MB LRU 전체 이미지 적중이나 LevelEvent.Decode 생략을 뜻하지 않는다. 업로드 실제16ms/64MB→원본2ms/4MB 복원. 성능 A/B·모든 픽셀·OOM 방지 효과는 확인 안 됨. 게임 최종 Texture2D.Apply는 이미(false,true)이며 게임 소유 메시 CPU 데이터는 임의 해제하지 않는다. 상세 docs/optimization-36.md.
+
 - **게임 업데이트 직후에는 시작 로그의 설치 줄부터 본다 (2026-10-11)**: 알파 3.4(게임 DLL 10-06)에서 `ffxMoveDecorationsPlus` 클로저 이름이 `<>c__DisplayClass45_N` → `47_N` 으로 바뀌어
   `[즉시 이동 직접] 설치: 속성 블록 0개 (예상 9개)` 가 되었고 FastMove 가 전부 원래 코드로 돌아 Arche 224.5초에서 63~69ms 가 다시 생겼다(며칠 눈치채지 못함).
   `[오차 막대] … (바꾼 곳 0개)` 도 같은 업데이트로 죽어 있었다(DOColor 호출이 `ADOFAI.ErrorMeterTick.Show` 로 이동). IL 모양에 의존하는 패치는 숫자·이름을 코드에서 찾고,
