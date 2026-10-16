@@ -21,6 +21,25 @@ namespace StutterFix
         internal static string LastPath = "";
         internal static string LastError = "";
 
+        internal static string Markdown()
+        {
+            var sb=new StringBuilder("### StutterFix 문제 보고\n");
+            try{sb.AppendLine("버전: "+Main.Entry.Info.Version+" / "+Edition.Name);}catch{}
+            sb.AppendLine("Unity: "+Application.unityVersion);
+            sb.AppendLine("화면: "+Screen.width+"×"+Screen.height+" / "+Screen.currentResolution.refreshRateRatio.value.ToString("F2")+"Hz");
+            sb.AppendLine("FPS: "+PerfOverlay.DescribeFps());
+            sb.AppendLine("같은 함수 패치: "+Compat.SharedSummary+" (충돌 확정 아님)");
+            sb.AppendLine("#### 끊김 상위 타일");
+            sb.AppendLine(Main.Config!=null&&Main.Config.HitchHeatmap?HitchHeatmap.Describe():"기록 꺼짐 · 확인 안 됨");
+            sb.AppendLine("#### 끊김 기록");sb.Append(PerfOverlay.ReportText());
+            return Mask(sb.ToString());
+        }
+        internal static void CopyMarkdown()
+        {
+            try{GUIUtility.systemCopyBuffer=Markdown();LastError="";}
+            catch(Exception ex){LastError=ex.Message;}
+        }
+
         internal static string Export()
         {
             LastError = "";
@@ -139,6 +158,8 @@ namespace StutterFix
 
             sb.AppendLine("── 이번 실행의 끊김 기록 (실시간 모니터) ──");
             try { sb.Append(PerfOverlay.ReportText()); } catch (Exception ex) { sb.AppendLine("기록을 읽지 못함: " + ex.Message); }
+            sb.AppendLine("── 끊김 상위 타일 ──");
+            sb.AppendLine(Main.Config!=null&&Main.Config.HitchHeatmap?HitchHeatmap.Describe():"기록 꺼짐 · 확인 안 됨");
             return sb.ToString();
         }
 

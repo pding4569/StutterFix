@@ -163,6 +163,8 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
                 MoveProf.Install(harmony);
                 FastMove.Install(harmony);
                 if(TagIndex.Enabled)OptimizationModules.Install(TagIndexModule.Instance);
+                if(MapProfiles.Enabled)OptimizationModules.Install(MapProfilesModule.Instance);
+                if(HitchHeatmap.Enabled)OptimizationModules.Install(HitchHeatmapModule.Instance);
                 Try(MaterialPropertyIds.Warm);
                 Precheck.Install(harmony);
                 DecoAnim.Install(harmony);
@@ -555,7 +557,7 @@ if (Edition.AutoTest && AutoTest.ReloadNow) { AutoTest.ReloadNow = false; Reques
 #if DEV || AUTOTEST
 AutoTest.Tick();
 #endif
-} FrameGen.Tick(); PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+} FrameGen.Tick(); PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (!Hitch.Playing && Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
@@ -736,11 +738,17 @@ BlendProbe.Tick();
             MoveApply.EpsilonSkip=effective("MoveEpsilon",Config.MoveEpsilon);
             NativeMotion.Configure(effective("NativeMotion",Config.NativeMotion));
             TagIndex.Configure(effective("TagIndex",Config.TagIndex));
+            MapProfiles.Configure(effective("MapProfiles",Config.MapProfilesEnabled));
+            HitchHeatmap.Enabled=effective("HitchHeatmap",Config.HitchHeatmap);
             ParticleFix.CatchupOffscreen=effective("ParticleCatchup",Config.ParticleCatchup);
             if(installed)
             {
                 if(TagIndex.Enabled)OptimizationModules.Install(TagIndexModule.Instance);
                 else OptimizationModules.Uninstall("tags");
+                if(MapProfiles.Enabled)OptimizationModules.Install(MapProfilesModule.Instance);
+                else OptimizationModules.Uninstall("profiles");
+                if(HitchHeatmap.Enabled)OptimizationModules.Install(HitchHeatmapModule.Instance);
+                else OptimizationModules.Uninstall("heatmap");
             }
         }
 #if DEV || AUTOTEST
@@ -750,14 +758,15 @@ BlendProbe.Tick();
             bool tagBefore=Config.TagIndex,nativeBefore=Config.NativeMotion;
             var method=AccessTools.Method(typeof(scnGame),"FinishCustomLevelLoading",new[]{typeof(int),typeof(bool)});
             int Owners(){int n=0;var info=Harmony.GetPatchInfo(method);if(info!=null)foreach(var owner in info.Owners)if(owner=="StutterFix.optimization.tags")n++;return n;}
+            int expected=OptimizationModules.Count+(Owners()==0?1:0);
             try
             {
                 Config.TagIndex=Config.NativeMotion=true;ApplyExperimentalOptions();
-                if(OptimizationModules.Count!=1||Owners()!=1)throw new Exception("Module install mismatch");
+                if(OptimizationModules.Count!=expected||Owners()!=1)throw new Exception("Module install mismatch");
                 OnToggle(Entry,false);
                 if(OptimizationModules.Count!=0||Owners()!=0||NativeMotion.Enabled)throw new Exception("Module uninstall mismatch");
                 OnToggle(Entry,true);
-                if(OptimizationModules.Count!=1||Owners()!=1||!NativeMotion.Enabled||!TagIndex.Enabled)throw new Exception("Module re-enable mismatch");
+                if(OptimizationModules.Count!=expected||Owners()!=1||!NativeMotion.Enabled||!TagIndex.Enabled)throw new Exception("Module re-enable mismatch");
                 return "checks=3 mismatch=0 owners=1/0/1 native_enabled=True/False/True";
             }
             finally
@@ -1022,6 +1031,9 @@ BlendProbe.Tick();
         public bool NativeMotion = false;
         public bool TagIndex = false;
         public bool ParticleCatchup = false;
+        public bool MapProfilesEnabled = false;
+        public bool HitchHeatmap = false;
+        public string MapProfilesPath = "";
         public bool AsyncUploadBudget = false;
         public bool JsonStringPool = false;
         public bool AssetDiskCache = false;
@@ -1150,6 +1162,6 @@ BlendProbe.Tick();
         public int AlertPos = 0;            // 알림 위치: 0 모니터 옆, 1 화면 위 가운데, 2 화면 아래 가운데
         public bool HitchAlerts = true;    // 끊기면 원인 알림   // 따로 뜨는 설정 창 (F10 은 윈도우 창 메뉴 키라 피한다)
 
-        public override void Save(UnityModManager.ModEntry modEntry) { Save(this, modEntry); }
+        public override void Save(UnityModManager.ModEntry modEntry) { MapProfiles.Save(this,()=>Save(this, modEntry)); }
     }
 }

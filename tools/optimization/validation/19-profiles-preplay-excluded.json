@@ -1,0 +1,17 @@
+{
+  "batch": "끝",
+  "states": [
+    "key= enabled=True vibrance=0.11 status=",
+    "key= enabled=True vibrance=0.75 status=",
+    "key= enabled=True vibrance=0.75 status=",
+    "key= enabled=True vibrance=0.25 status=",
+    "key= enabled=True vibrance=0.25 status=",
+    "key= enabled=False vibrance=0.25 status="
+  ],
+  "serialized_global_vibrance": 0.25,
+  "profile_count": 0,
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

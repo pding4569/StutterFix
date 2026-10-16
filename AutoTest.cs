@@ -1007,6 +1007,11 @@ namespace StutterFix
                     Log("[출력 모니터] " + PerfOverlay.DescribeFps());
                     return true;
 #if DEV || AUTOTEST
+                case "profilestate":
+                    Log("[맵 프로필 경로] load="+MapProfiles.LoadCalls+" loaded="+MapProfiles.LoadedCalls+" finish="+MapProfiles.FinishCalls+" miss="+MapProfiles.KeyMisses+" arg="+MapProfiles.LastArgument);
+                    Log("[맵 프로필 시험] key="+MapProfiles.CurrentKey+" enabled="+MapProfiles.Enabled+" vibrance="+Main.Config.FxVibrance.ToString("R",System.Globalization.CultureInfo.InvariantCulture)+" status="+MapProfiles.Status);return true;
+                case "profilesave":
+                    Main.Config.Save(Main.Entry);return true;
                 case "optimizationstate":
                     Log("[최적화 후보] memory_enabled="+MemoryBudget.Enabled+" memory_limit="+
                         MemoryBudget.Limit(GcControl.HardLimitMB,UnityEngine.SystemInfo.systemMemorySize,GC.GetTotalMemory(false)>>20)+

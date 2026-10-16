@@ -1100,6 +1100,15 @@ namespace StutterFix
                     T("화면 밖 입자 멈추기와 함께 사용하면 다시 보일 때 지난 시간을 따라잡습니다. 돌아오는 순간의 추가 비용은 확인 중입니다.",
                       "With offscreen particle pause, catches up elapsed time when particles return. Return-time cost is under validation."), null);
                 EndGroup();
+                SubHeading(T("맵별 화면 설정", "Per-level rendering settings"), "");
+                BeginGroup();
+                ch |= Option("mapprofiles", ref c.MapProfilesEnabled, T("맵별 화면 설정 저장 (실험)", "Remember rendering settings per level (experimental)"),
+                    T("다음 맵 열기부터 색감·선명도·해상도·프레임 늘리기 설정을 맵 내용 해시별로 저장하고 불러옵니다. 입력·전체 화면·시스템 설정은 전역으로 유지합니다.",
+                      "From the next level load, remembers effects, scale and frame generation by level content hash. Input, fullscreen and system settings remain global."), null);
+                if(c.MapProfilesEnabled&&MapProfiles.Status.Length>0)P(MapProfiles.Status,sDim);
+                ch |= Option("hitchheatmap", ref c.HitchHeatmap, T("끊긴 타일 상위 5개 기록 (실험)", "Record top 5 hitch tiles (experimental)"),
+                    T("기존 모니터가 잡은 끊김의 타일 번호와 시간을 기록합니다. 일시정지는 기록을 지우지 않으며, 완주는 포탈 도착으로 구분합니다.","Records the floor and duration of hitches detected by the existing monitor. Pause keeps records; portal arrival marks completion."),null);
+                EndGroup();
             }
             else if (sub == 1)
             {
@@ -2050,6 +2059,7 @@ namespace StutterFix
             if (LogExport.LastPath.Length > 0 && Btn(T("폴더 열기", "Show file"), sChip, GUILayout.Height(38), GUILayout.ExpandWidth(false))) LogExport.Reveal();
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            if (Btn(T("디스코드용 요약 복사", "Copy Discord summary"), sChip, GUILayout.Height(32), GUILayout.ExpandWidth(false))) LogExport.CopyMarkdown();
             if (LogExport.LastError.Length > 0) { GUILayout.Space(6); P(T("만들지 못했습니다: ", "Failed: ") + LogExport.LastError, sDim); }
             else if (LogExport.LastPath.Length > 0) { GUILayout.Space(6); GUILayout.Label(T("만든 파일: ", "Created: ") + System.IO.Path.GetFileName(LogExport.LastPath) + T("  (바탕화면)", "  (desktop)"), sSub); }
             GUILayout.EndVertical();
@@ -2684,12 +2694,15 @@ namespace StutterFix
 
         private void ResetDefaults()
         {
+            MapProfiles.DiscardLayer();
             var c = Main.Config;
             c.GcDynamicBudget = false;
             c.MoveEpsilon = false;
             c.NativeMotion = false;
             c.TagIndex = false;
             c.ParticleCatchup = false;
+            c.MapProfilesEnabled = false;
+            c.HitchHeatmap = false;
             c.AsyncUploadBudget = false;
             c.JsonStringPool = false;
             c.AssetDiskCache = false;

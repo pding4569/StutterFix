@@ -1,0 +1,1 @@
+Rendering profile checks 13, errors 0; game load/switch/save lifecycle separately required

@@ -1,0 +1,1 @@
+﻿Heatmap conditions 6, errors 0; game classification and completion require separate validation

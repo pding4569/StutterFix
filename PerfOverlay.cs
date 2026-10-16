@@ -391,7 +391,7 @@ namespace StutterFix
             avgMs = Mathf.Lerp(avgMs, Mathf.Min(ms, 1000f), sustained ? 0.25f : hitch ? 0.03f : 0.05f);
             CheckSlow();
             if (!hitch || sustained) return;
-            if (Mode == 0 && !VramGuard.Watching) { hitchCount++; return; }
+            if (Mode == 0 && !VramGuard.Watching && !HitchHeatmap.Enabled) { hitchCount++; return; }
             // 모드 창(UMM, 이 모드의 설정 창)이 열려 있는 동안은 창 안에서 누르는 것(다른 모드 화면 열기, 설정 저장)이 멈춤을 만든다
             if (UmmOpen()) MarkLoading(T("모드 창 (UMM)", "Mod window (UMM)"));
             else if (SettingsWindow.Open) MarkLoading(T("설정 창", "Settings window"));
@@ -399,6 +399,8 @@ namespace StutterFix
             // 불러오기 구간이면 바로 적는다
             var load = LoadingOrNull(ms);
             if (load != null) { Commit(load); return; }
+
+            if(playing&&HitchHeatmap.Enabled)HitchHeatmap.Record(ms);
 
             // 진짜 끊김: 상태 점과 횟수는 바로, 원인은 5프레임 뒤에 (GPU/CPU 시간이 늦게 오므로)
             hitchCount++;

@@ -1,0 +1,17 @@
+{
+  "batch": "끝",
+  "states": [
+    "key=11945eca2d39e1760a3d4b80325fd2497f6bc1c95666e4a8d2ec14d0e12b4bd8 enabled=True vibrance=0.11 status=이 맵: 전역 화면 설정",
+    "key=11945eca2d39e1760a3d4b80325fd2497f6bc1c95666e4a8d2ec14d0e12b4bd8 enabled=True vibrance=0.75 status=이 맵의 화면 설정 저장됨",
+    "key=026873b89f05ea94b86b83634a938ac053593ebea6cb832d8134e4a8084f8064 enabled=True vibrance=0.11 status=이 맵: 전역 화면 설정",
+    "key=026873b89f05ea94b86b83634a938ac053593ebea6cb832d8134e4a8084f8064 enabled=True vibrance=0.25 status=이 맵의 화면 설정 저장됨",
+    "key=11945eca2d39e1760a3d4b80325fd2497f6bc1c95666e4a8d2ec14d0e12b4bd8 enabled=True vibrance=0.75 status=이 맵: 저장한 화면 설정",
+    "key= enabled=False vibrance=0.11 status=이 맵: 저장한 화면 설정"
+  ],
+  "serialized_global_vibrance": 0.11,
+  "profile_count": 2,
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}
