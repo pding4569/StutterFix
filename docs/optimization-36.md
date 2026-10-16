@@ -79,7 +79,12 @@
 |18|SHA-256·설치 트랜잭션·신규 모듈 수명 공통화|정책25조건·실제 엔진 파일4조건/수명3조건 오류0. 기존 전체 모듈 이관 미완료|
 |19|맵별 화면 프로필·상위5타일·Markdown 복사 후보|프로필13조건/타일 집계6조건·실제 맵 전환6상태 오류0. 실제 완주 히트맵·UI 클릭은 미확인|
 |20|메인 스레드 우선순위/MMCSS·P코어 후보|CPU 집합11조건·별도 워커 적용/복구·실제 MMCSS 적용/해제 오류0. 렌더 스레드 미구현·FPS 미측정|
-|21~36|사전 감사 완료, 구현 미완료|번호별 구현·동일성·성능 검증을 계속 진행|
+|21|실제 렌더링 구성 감사, 구현 미완료|공유 재질/텍스처/정렬/마스크를 별도 감사. 단일 indirect 렌더러로 교체0|
+|22|RawInput 시간 규약 검토, 구현 미완료|WM_INPUT 수신 QPC는 키 접점의 하드웨어 시각이 아님. 게임 판정 변경0|
+|23|숫자 계산 비관리 영역 후보·NoGCRegion 지원 확인|영역13조건·실제 Mono1048576개 차이0/중간 재사용. NoGCRegion 미지원·전체 맵 버퍼 전환 미구현|
+|24|오디오 API·생명주기 검토, 구현 미완료|64/128 강제·위상 변경0. 오디오 리셋의 클립/재생 상태 복구 미검증|
+|25|숫자 버퍼64정렬·선택적AVX-512 타깃 후보|네이티브/두 Release 오류0. 오프라인4194304개/실제Mono1048576개 차이0. AVX-512 하드웨어·FP16 미검증|
+|26~36|사전 감사 완료, 구현 미완료|번호별 구현·동일성·성능 검증을 계속 진행|
 
 05 실제 HELLO 두 새 실행: 첫 로드 DXT 저장 215·JSON 저장 1, 재방문 DXT 적중 84·JSON 적중 1.
 512MB LRU라 전체 이미지가 상주한다는 뜻은 아니다. 양 판 SF 오류 0·정상 종료, 설치 3파일 원본 복원.
@@ -178,3 +183,42 @@ EfficiencyClass 구분이 없으면 코어 제한0. CPU0 제외나 특정 CPU �
 정책11조건 오류0. 별도 짧은 워커의TIME_CRITICAL 설정/복원True, MMCSS 설정/복원True.
 실제 HELLO12초 메인 MMCSS=True, P코어 homogeneous-or-unknown, 옵션 해제 뒤꺼짐·SF오류0·정상 종료1/1·설치5파일 복원.
 게임 메인의TIME_CRITICAL·실제 이종 CPU·렌더 스레드·입력/오디오 경쟁·FPS/최악 프레임 개선은 확인 안 됨이다.
+
+21: 현재 scrDecoration은 Transform·SpriteRenderer·Collider2D.Overlap을 함께 쓴다. GameObject를 없애면 그리기 외 게임 기능도 대체해야 한다.
+DrawMeshInstancedIndirect는 호출에 지정한 Mesh/Material을 공유하므로, 서로 다른 그림/블렌드/정렬/마스크를 현재 재질 그대로 한 번에 묶는 변경은 아니다.
+[Unity API](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/Graphics.DrawMeshInstancedIndirect.html).
+연구용 indirectaudit은 실제 맵의 공유 재질·그림·정렬 키를 한 번만 센다. 일반 Player에는 포함0, 렌더러 교체0.
+실제 Arche: 장식28,835·SpriteRenderer86,484·공유 재질28,829·텍스처218·정렬 키554·마스크0·누락 재질0.
+Instancing/Compute 지원True/True·SF오류0·정상 종료·설치5파일 복원. 서로 다른 재질을 동일한 것으로 가정하지 않는다.
+GPU 렌더러/ComputeShader/텍스처 atlas/동적 정렬/충돌체 대체·동일 픽셀·성능은 미구현/확인 안 됨이다.
+
+22: [RAWKEYBOARD](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-rawkeyboard)의 필드는 스캔 코드/상태/가상 키/메시지/추가 정보이며 표준 하드웨어 QPC 시각 필드는 없다.
+WM_INPUT을 받은 스레드의 QPC는 소프트웨어 수신 시각이다. 폴링1000Hz와 키가 눌린 시각의 정확도는 같지 않다.
+현재 판정·오디오 오프셋·다른 모드의 입력 제한에 연결한 역산 동일성 검증이 없어 실제 판정은 변경0.
+RawInput 수신/링버퍼·장치 시각 보정·새 판정 경로는 미구현이다. 서브밀리초 입력/입력→광자 개선은 확인 안 됨이다.
+
+23: 현재 Unity Mono는 mono-2.0-bdwgc.dll이며 실제 TryStartNoGCRegion(16MiB)은 NotImplementedException이다.
+지원 확인에서 잡은 예외1건을 일반 오류 정규식이 오인했다. 원시 로그를 보존하고 해당 정확한 지원 확인 줄만 별도 구분해 재집계했다. 재실행0.
+기존 GcControl의 Unity GCMode 제어를 유지하며 SGen/너서리 옵션을 작동하는 기능으로 표시하지 않는다.
+[Unity Mono GC](https://docs.unity.com/en-us/engine/6000.3/manual/scripting/compilation-and-code-reload/script-compilation/backends/mono).
+NativeMotion의5개 스칼라 버퍼만 64바이트 정렬 선형 영역1,310,720바이트로 선택 전환한다. 옵션은 기본false.
+할당 실패는 기존 관리 배열, 범위 초과는 거부, ResetScene에서 커서 재사용·Unload에서 정확히 해제한다. Unity 객체/LevelEvent를 주소만 저장하지 않는다.
+오프라인 정렬/경계/재사용/해제13조건 오류0. 실제5열 주소alignment OR0, Mono1048576계산 차이0,8번째 묶음 뒤 영역 재사용 포함.
+옵션 해제 뒤activeFalse, SF오류0(예상된 지원 예외 별도1)·정상 종료·설치5파일 복원. 전체 임시 버퍼 전환·GC/FPS 이득은 확인 안 됨.
+
+24: AudioSettings.Reset은 지원하는 가장 가까운 설정을 쓰며64/128을 보장하지 않는다. 전체 오디오 객체/재생 상태를 재구성하고 스크립트 생성 클립은 재생성해야 한다.
+로드 중 main thread stall 가능성이 명시되어 있다. [Reset](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/AudioSettings.Reset.html), [오디오 설정 수명](https://docs.unity3d.com/6000.3/Documentation/Manual/class-AudioSettings.html).
+SoundWarm의 사전 읽기와 판정 타이머를 보존하고, 복구하지 못할 클립/박자 상태를 try-catch만으로 안전하다고 하지 않는다.
+개발자 명령은 현재 DSP/버퍼 수/샘플레이트만 읽는다. 오디오 Reset/위상 보정0, 실제 오디오 지연·64/128 동작·위상 잠금은 확인 안 됨이다.
+실제 메뉴:48,000Hz·DSP1,024샘플·4버퍼·real255/virtual4095·로드 클립79. SF오류0/정상 종료/설치5파일 복원. 이것은 스피커까지의 지연 측정이 아니다.
+
+25: NativeMotion 기본 꺼짐 경로에만 SSE2/SSE4.1/AVX2/AVX512SKX 선택 빌드를 추가했다. 이미지 DXT의 타깃은 이전3개 그대로다.
+자기 소유5열 SoA만 _aligned_malloc(64)/_aligned_free로 할당한다. 없거나 실패하면 이전64정렬 관리 래퍼 할당으로 돌아간다.
+양쪽 새 export 존재를 확인한 뒤 사용하며, 기존 이미지/게임/드라이버 소유 메모리를 새 free에 넘기지 않는다.
+처음 실제 시작에서 ApplyConfig가 SfNative.Init보다 먼저여서 정렬 래퍼 폴백이었다. 폴백 실행도1048576개 차이0이지만 native_allocatorFalse였다.
+선택적 영역을 만들기 전에 기존 네이티브 초기화를 수행하도록 의존 순서를 고친 뒤, 실제 native_allocatorTrue·5열 정렬OR0·1048576개 차이0·해제activeFalse를 확인했다.
+사전 폴백 JSON은 별도 보존했다. 두 시험 SF오류0·정상 종료/원본5파일 복원. 아레나 helper16조건·실제 native할당10조건 오류0.
+변경 DLL의 오프라인 두 반올림 경로4,194,304개 차이0·기존 이미지600조건 차이0(현재 CPU 선택 경로).
+AVX-512 CPU 실제 실행·SSE2/SSE4.1 강제·전체 네이티브 버퍼 전환·FP16·게임 FPS 이득은 확인 안 됨/미구현이다.
+FP16은 원래 float 값과 같지 않고 AVX512SKX 지원이 AVX512-FP16 지원을 뜻하지 않으므로 정밀도 변경을 자동 적용하지 않는다.
+네이티브 빌드 성공은cmd 자체 종료0으로 확인했다. 첫 PowerShell stderr의 ISPC 경고 ErrorRecord와 잘못된 cmd 인용 실행은 원시 로그로 보존했다.

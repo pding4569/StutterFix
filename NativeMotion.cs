@@ -7,23 +7,63 @@ namespace StutterFix
     {
         internal const int Capacity=65536, Minimum=512;
         internal static bool Enabled, Failed;
-        internal static float[] Start,Change,Position,Duration,Output;
+        private static float[] start,change,position,duration,output;
+        private static AlignedArena arena;
+        private static IntPtr startPtr,changePtr,positionPtr,durationPtr,outputPtr;
+        internal static bool ArenaRequested;
+        internal static bool ArenaActive=>arena!=null;
+        internal static bool NativeArenaActive=>arena!=null&&arena.NativeAllocated;
+        internal static int ArenaAlignment=>arena==null?-1:(int)((startPtr.ToInt64()|changePtr.ToInt64()|positionPtr.ToInt64()|durationPtr.ToInt64()|outputPtr.ToInt64())&63);
+        internal static Span<float> Start=>arena!=null?new Span<float>((void*)startPtr,Capacity):start;
+        internal static Span<float> Change=>arena!=null?new Span<float>((void*)changePtr,Capacity):change;
+        internal static Span<float> Position=>arena!=null?new Span<float>((void*)positionPtr,Capacity):position;
+        internal static Span<float> Duration=>arena!=null?new Span<float>((void*)durationPtr,Capacity):duration;
+        internal static Span<float> Output=>arena!=null?new Span<float>((void*)outputPtr,Capacity):output;
         internal static long Batches,Values,Checks,Mismatch;
         internal static bool Compatible;
         internal static int Rounding;
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)]
         private static extern int sf_motion_linear(float* start,float* change,float* position,float* duration,float* output,int count,int rounding);
-        internal static void Configure(bool enabled)
+        internal static void Configure(bool enabled,bool useArena=false)
         {
-            if(enabled==Enabled)return;
+            if(enabled==Enabled&&(!enabled||ArenaRequested==useArena))return;
             Reset();
             if(!enabled)return;
             try
             {
-                Start=new float[Capacity];Change=new float[Capacity];Position=new float[Capacity];Duration=new float[Capacity];Output=new float[Capacity];
+                ArenaRequested=useArena;
+                if(useArena)
+                {
+                    try{arena=CreateArena();ResetArena();}
+                    catch{if(arena!=null)arena.Dispose();arena=null;}
+                }
+                if(arena==null)
+                {start=new float[Capacity];change=new float[Capacity];position=new float[Capacity];duration=new float[Capacity];output=new float[Capacity];}
                 Enabled=true;
             }
             catch{Reset();}
+        }
+        [DllImport("kernel32.dll",CharSet=CharSet.Unicode)]private static extern IntPtr GetModuleHandleW(string name);
+        [DllImport("kernel32.dll",CharSet=CharSet.Ansi,ExactSpelling=true)]private static extern IntPtr GetProcAddress(IntPtr module,string name);
+        [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)]private static extern IntPtr sf_alloc_aligned64_v1(UIntPtr bytes);
+        [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)]private static extern void sf_free_aligned64_v1(IntPtr pointer);
+        private static AlignedArena CreateArena()
+        {
+            try
+            {
+                // ApplyConfig runs before image-module installation on a fresh start.
+                // The optional native arena depends on the DLL being initialized first.
+                if(!SfNative.Ready&&Main.Entry!=null)
+                    SfNative.Init(System.IO.Path.Combine(Main.Entry.Path,"sfnative.dll"));
+                if(SfNative.Available)
+                {
+                    var module=GetModuleHandleW("sfnative.dll");
+                    if(module!=IntPtr.Zero&&GetProcAddress(module,"sf_alloc_aligned64_v1")!=IntPtr.Zero&&GetProcAddress(module,"sf_free_aligned64_v1")!=IntPtr.Zero)
+                        return new AlignedArena(Capacity*5*sizeof(float),bytes=>sf_alloc_aligned64_v1(new UIntPtr((uint)bytes)),sf_free_aligned64_v1);
+                }
+            }
+            catch{}
+            return new AlignedArena(Capacity*5*sizeof(float));
         }
         internal static bool Run(int count)
         {
@@ -78,8 +118,18 @@ namespace StutterFix
         }
         internal static void Reset()
         {
-            Enabled=Failed=Compatible=false;Rounding=0;Start=Change=Position=Duration=Output=null;
+            Enabled=Failed=Compatible=ArenaRequested=false;Rounding=0;start=change=position=duration=output=null;
+            if(arena!=null)arena.Dispose();arena=null;
+            startPtr=changePtr=positionPtr=durationPtr=outputPtr=IntPtr.Zero;
             Batches=Values=Checks=Mismatch=0;
+        }
+        internal static void ResetArena()
+        {
+            if(arena==null)return;
+            arena.Reset();int bytes=Capacity*sizeof(float);
+            startPtr=arena.Allocate(bytes);changePtr=arena.Allocate(bytes);positionPtr=arena.Allocate(bytes);
+            durationPtr=arena.Allocate(bytes);outputPtr=arena.Allocate(bytes);
+            if(outputPtr==IntPtr.Zero)throw new InvalidOperationException("Motion arena capacity mismatch");
         }
     }
 }

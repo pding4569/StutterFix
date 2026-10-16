@@ -1,0 +1,11 @@
+{
+  "batch": "끝",
+  "worker_fixture": [],
+  "states": [
+    "dsp_samples=1024 buffers=4 sample_rate=48000 real_voices=255 virtual_voices=4095 loaded_clips=79 audio_reset=0 phase_changed=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

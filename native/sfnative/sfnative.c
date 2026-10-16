@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <malloc.h>
 #include <emmintrin.h>
 #define COBJMACROS
 #define WIN32_LEAN_AND_MEAN
@@ -25,6 +26,14 @@
 #define SF_API __declspec(dllexport)
 
 SF_API int sf_version(void) { return 1; }
+
+/* Owned experimental SoA storage only. Never pass managed or driver-owned pointers to this free. */
+SF_API void *sf_alloc_aligned64_v1(size_t bytes)
+{
+    if (!bytes || bytes > 64u * 1024u * 1024u) return NULL;
+    return _aligned_malloc(bytes, 64);
+}
+SF_API void sf_free_aligned64_v1(void *pointer) { _aligned_free(pointer); }
 
 extern void sf_motion_linear_ispc(const float*, const float*, const float*, const float*, float*, int, int);
 SF_API int sf_motion_linear(const float *start, const float *change, const float *position,

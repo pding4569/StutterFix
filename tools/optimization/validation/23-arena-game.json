@@ -1,0 +1,20 @@
+{
+  "batch": "끝",
+  "gc_capability": [
+    "try_no_gc_region=unsupported exception=NotImplementedException boehm_dll=True"
+  ],
+  "arithmetic": [
+    "checks=1048576 mismatch=0 native_vs_r64=0 native_vs_forced_r32=250471"
+  ],
+  "states": [
+    "requested=True active=True column_alignment_or=0",
+    "requested=False active=False column_alignment_or=-1"
+  ],
+  "errors": [],
+  "expected_capability_exceptions": [
+    "[StutterFix] [자동 시험] [GC 런타임 지원] try_no_gc_region=unsupported exception=NotImplementedException boehm_dll=True"
+  ],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

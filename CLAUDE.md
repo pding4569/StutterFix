@@ -67,6 +67,8 @@ METHOD=scrCamera bin/Release/net8.0/ILScan.exe <dll> ZZZ     # 타입의 메서�
 
 ## 측정에서 배운 것 (반복하지 말 것)
 
+- 현재 설치 Unity Mono의 GC는 bdwgc이며 TryStartNoGCRegion은 실제 NotImplementedException이다. SGen nursery 환경변수를 Unity GC 최적화로 넣지 않는다. 36과제23의 비관리 숫자 버퍼1048576개(중간 영역 재사용 포함)는 엔진 값과 차이0이지만 전체 맵 메모리/GC 이득을 증명하지 않는다.
+
 - 36과제19 맵 프로필: 현재 설치판의 FinishCustomLevelLoading은 맵 열기 직후가 아니라 재생 시작 경로에서 불린다. LoadLevel 성공 뒤 맵 키를 연결해야 재생 전 저장도 맵별로 된다. HELLO→Arche→HELLO6상태에서 전역0.11/맵0.75·0.25/해제0.11 확인. 프로필13·상위타일 집계6조건 통과는 실제 완주 히트맵/FPS 검증의 대용이 아니다.
 
 - **36항목 17/18 검증 (2026-10-16)**: 일반 Player에서 순수 진단22타입과 테스트 메서드를 실제 메타데이터로 제외 확인, 모니터/프레임생성 등 필수6타입 유지. 새 태그 모듈은 독립 Harmony/실패 격리/해제 후 재설정으로 소유자1→0→1 확인. 모든 기존 모듈 이관을 뜻하지 않는다. 업데이트는 해당 GitHub 자산 digest와 ZIP SHA-256을 비교하고 무검증 파일은 자동 설치하지 않는다. 임시 파일 검증/원자 교체/이전 DLL·Info 복구 가짜 저장소25조건, 실제 Mono 격리 파일4조건 다름0. DLL/Info 교체 뒤 예외도 복구하며 복구 자체 실패 시 백업/복구 파일을 남긴다. 전원 손실·실제 인터넷 업데이트 시험은 미확인. 기본 꺼짐 후보·현재 엔진 검증 범위는 docs/optimization-36.md.

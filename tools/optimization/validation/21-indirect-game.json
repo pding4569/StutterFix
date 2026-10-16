@@ -1,0 +1,11 @@
+{
+  "batch": "끝",
+  "worker_fixture": [],
+  "states": [
+    "decorations=28835 sprite_renderers=86484 shared_materials=28829 textures=218 sorting_keys=554 masked=0 missing_material=0 instancing=True compute=True renderer_changed=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

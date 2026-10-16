@@ -1093,6 +1093,8 @@ namespace StutterFix
                 ch |= Option("nativemotion", ref c.NativeMotion, T("장식 숫자 계산 묶기 (실험)", "Batch decoration arithmetic (experimental)"),
                     T("직선 이징의 위치·회전·불투명도 계산이 512개 이상이면 네이티브 SIMD로 계산합니다. 나머지 이징과 실제 장식 갱신 순서는 기존 경로를 씁니다.",
                       "Uses native SIMD for at least 512 linear position, rotation or opacity values. Other easing and decoration updates keep their existing order."), null);
+                ch |= Option("motionarena",ref c.NativeMotionArena,T("계산 버퍼를 비관리 메모리에 (실험)","Unmanaged arithmetic buffers (experimental)"),
+                    T("숫자 계산 묶기의 버퍼 1.25MiB를 64바이트 정렬 영역에서 재사용합니다. 다른 게임 객체와 맵 데이터는 그대로입니다.","Reuses 1.25 MiB of 64-byte aligned storage for batched arithmetic. Other game objects and level data remain unchanged."),null,1,c.NativeMotion?null:T("장식 숫자 계산 묶기","Batch decoration arithmetic"));
                 ch |= Option("tagindex", ref c.TagIndex, T("장식 태그 색인 (실험)", "Decoration tag index (experimental)"),
                     T("재생 준비 때 태그에 번호를 붙여 반복 조회를 줄입니다. 태그 표의 변경을 감지할 수 없거나 표가 바뀌면 기존 조회를 씁니다.",
                       "Indexes tags at playback preparation. Falls back when table changes cannot be tracked or the table changes."), null);
@@ -2705,6 +2707,7 @@ namespace StutterFix
             c.GcDynamicBudget = false;
             c.MoveEpsilon = false;
             c.NativeMotion = false;
+            c.NativeMotionArena = false;
             c.TagIndex = false;
             c.ParticleCatchup = false;
             c.MapProfilesEnabled = false;

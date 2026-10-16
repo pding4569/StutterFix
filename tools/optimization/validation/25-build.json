@@ -1,0 +1,9 @@
+﻿{
+    "native_build_exit":  0,
+    "csharp_developer_errors":  0,
+    "csharp_player_errors":  0,
+    "dll_sha256":  "A3757F47D5B3CA6C44B45C69CA58B95455C04B13978A98E2F132585FF0C852EB",
+    "aligned_arena_bytes":  1310720,
+    "avx512_actual_hardware_verified":  false,
+    "fp16_implemented":  false
+}

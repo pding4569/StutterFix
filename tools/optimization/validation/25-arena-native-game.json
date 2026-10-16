@@ -1,0 +1,16 @@
+{
+  "batch": "끝",
+  "gc_capability": [],
+  "arithmetic": [
+    "checks=1048576 mismatch=0 native_vs_r64=0 native_vs_forced_r32=250471"
+  ],
+  "states": [
+    "requested=True active=True native_allocator=True column_alignment_or=0",
+    "requested=False active=False native_allocator=False column_alignment_or=-1"
+  ],
+  "errors": [],
+  "expected_capability_exceptions": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

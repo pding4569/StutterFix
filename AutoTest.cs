@@ -1012,6 +1012,42 @@ namespace StutterFix
                     Log("[맵 프로필 시험] key="+MapProfiles.CurrentKey+" enabled="+MapProfiles.Enabled+" vibrance="+Main.Config.FxVibrance.ToString("R",System.Globalization.CultureInfo.InvariantCulture)+" status="+MapProfiles.Status);return true;
                 case "threadfixture":Log("[스레드 예약 시험] "+ThreadScheduling.Fixture());return true;
                 case "threadstate":Log("[스레드 예약 상태] "+ThreadScheduling.Status);return true;
+                case "gccapability":
+                {
+                    if(Hitch.Playing)throw new InvalidOperationException("GC capability check is menu-only");
+                    bool started=false;string result="";
+                    try{started=GC.TryStartNoGCRegion(16L<<20);result="try_no_gc_region="+started;}
+                    catch(Exception ex){result="try_no_gc_region=unsupported exception="+ex.GetType().Name;}
+                    finally{if(started)GC.EndNoGCRegion();}
+                    bool boehm=System.IO.File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Application.dataPath),"MonoBleedingEdge/EmbedRuntime/mono-2.0-bdwgc.dll"));
+                    Log("[GC 런타임 지원] "+result+" boehm_dll="+boehm);return true;
+                }
+                case "arenastate":Log("[계산 영역 시험] requested="+NativeMotion.ArenaRequested+" active="+NativeMotion.ArenaActive+" native_allocator="+NativeMotion.NativeArenaActive+" column_alignment_or="+NativeMotion.ArenaAlignment);return true;
+                case "audiocapability":
+                {
+                    int samples,buffers;AudioSettings.GetDSPBufferSize(out samples,out buffers);
+                    var config=AudioSettings.GetConfiguration();
+                    Log("[오디오 구성 감사] dsp_samples="+samples+" buffers="+buffers+" sample_rate="+config.sampleRate+" real_voices="+config.numRealVoices+" virtual_voices="+config.numVirtualVoices+" loaded_clips="+Resources.FindObjectsOfTypeAll<AudioClip>().Length+" audio_reset=0 phase_changed=0");return true;
+                }
+                case "indirectaudit":
+                {
+                    int decorations=0,renderers=0,masked=0,missing=0;
+                    var materials=new HashSet<int>();var textures=new HashSet<int>();var orders=new HashSet<string>();
+                    var scene=UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                    foreach(var deco in Resources.FindObjectsOfTypeAll<scrDecoration>())
+                    {
+                        if(deco==null||deco.gameObject.scene!=scene)continue;decorations++;
+                        foreach(var renderer in deco.GetComponentsInChildren<SpriteRenderer>(true))
+                        {
+                            renderers++;var material=renderer.sharedMaterial;
+                            if(material==null){missing++;continue;}materials.Add(material.GetInstanceID());
+                            var texture=renderer.sprite!=null?renderer.sprite.texture:null;if(texture!=null)textures.Add(texture.GetInstanceID());
+                            orders.Add(renderer.sortingLayerID+"/"+renderer.sortingOrder);
+                            if(renderer.maskInteraction!=SpriteMaskInteraction.None)masked++;
+                        }
+                    }
+                    Log("[간접 그리기 감사] decorations="+decorations+" sprite_renderers="+renderers+" shared_materials="+materials.Count+" textures="+textures.Count+" sorting_keys="+orders.Count+" masked="+masked+" missing_material="+missing+" instancing="+SystemInfo.supportsInstancing+" compute="+SystemInfo.supportsComputeShaders+" renderer_changed=0");return true;
+                }
                 case "profilesave":
                     Main.Config.Save(Main.Entry);return true;
                 case "optimizationstate":
@@ -1059,6 +1095,7 @@ namespace StutterFix
                     var scratch=new float[2];
                     for(int pass=0;pass<16;pass++)
                     {
+                        if(pass==8&&NativeMotion.ArenaActive)NativeMotion.ResetArena();
                         for(int i=0;i<NativeMotion.Capacity;i++)
                         {
                             NativeMotion.Start[i]=(i%997-500)*.37f;NativeMotion.Change[i]=(i%499-250)*1.11f;

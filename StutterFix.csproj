@@ -33,6 +33,7 @@
     <Compile Include="HitchHistogram.cs" />
     <Compile Include="HitchHeatmap.cs" />
     <Compile Include="CpuSetPolicy.cs" />
+    <Compile Include="AlignedArena.cs" />
     <Compile Include="ThreadScheduling.cs" />
     <Compile Include="ExitFix.cs" />
     <Compile Include="StateDump.cs" />

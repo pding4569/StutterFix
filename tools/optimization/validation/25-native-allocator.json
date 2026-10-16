@@ -1,0 +1,7 @@
+{
+  "conditions": 10,
+  "mismatch": 0,
+  "alignment_bytes": 64,
+  "invalid_sizes_rejected": 3,
+  "cpu_path": "current machine"
+}
