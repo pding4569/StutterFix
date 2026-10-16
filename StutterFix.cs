@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -59,7 +59,11 @@ namespace StutterFix
             if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
             // (개발자용 시험) 모드 폴더의 파일로 멈춘 동안 화면 다시 내보내기를 바꾼다: present-keepalive 켬(효과 없어 기본은 끔), present-flip 보통 Present, present-screen-check 화면 비교
             if (Edition.Dev) DevPresentFlags(modEntry.Path);
-            if (Edition.AutoTest) AutoTest.Init(modEntry.Path);   // 모드 폴더에 autotest.txt 가 있으면 자동 시험 (AutoTest.cs)
+            if (Edition.AutoTest) {
+#if DEV || AUTOTEST
+AutoTest.Init(modEntry.Path);
+#endif
+}   // 모드 폴더에 autotest.txt 가 있으면 자동 시험 (AutoTest.cs)
             PerfOverlay.FrameStatsOff = !Config.FrameStats;
             // (개발자용 시험) 모드 폴더에 frame-stats-off 파일이 있으면 설정과 상관없이 끈다 - 설정을 건드리지 않고 켜고 끄며 비교하려고
             if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "frame-stats-off"))) { PerfOverlay.FrameStatsOff = true; modEntry.Logger.Log("[프레임 통계] frame-stats-off 파일이 있어 이번 실행은 끔"); }
@@ -75,8 +79,16 @@ namespace StutterFix
             if (has("present-flip")) { WindowGhost.PresentMode = 0; Entry.Logger.Log("[첫 판 FPS] present-flip 파일이 있어 보통 Present(0,0) 로 내보냄"); }
             if (has("present-screen-check")) { WindowGhost.ScreenCheck = true; Entry.Logger.Log("[첫 판 FPS] present-screen-check 파일이 있어 멈춘 동안 화면을 비교함"); }
             if (has("beat-verify")) { BeatFix.Verify = true; Entry.Logger.Log("[박자 알림 검증] beat-verify 파일이 있어 건너뛴 타일을 가끔 원래대로 불러 봄"); }
-            if (has("time-probe")) { Hitch.TimeProbeOn = true; TimeProbe.Install(new HarmonyLib.Harmony("StutterFix.timeprobe")); }
-            if (has("alloc-probe")) { Hitch.AllocProbeOn = true; AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe")); }
+            if (has("time-probe")) { Hitch.TimeProbeOn = true;
+#if DEV || AUTOTEST
+TimeProbe.Install(new HarmonyLib.Harmony("StutterFix.timeprobe"));
+#endif
+ }
+            if (has("alloc-probe")) { Hitch.AllocProbeOn = true;
+#if DEV || AUTOTEST
+AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
+#endif
+ }
             if (has("tilecull-verify.txt")) { TileCull.Verify = true; TileCull.VerifyInstall(); Entry.Logger.Log("[화면 밖 타일 검증] tilecull-verify.txt 파일이 있어 그리기마다 검사함"); }
             if (has("tilecull-min.txt")) { try { TileCull.MinFloors = int.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "tilecull-min.txt")).Trim()); Entry.Logger.Log("[화면 밖 타일] 최소 타일 수 " + TileCull.MinFloors); } catch { } }
             if (has("ffx-verify.txt")) { FfxReuse.Verify = true; Entry.Logger.Log("[효과 재사용 검증] ffx-verify.txt 파일이 있어 효과 붙이기마다 원래 방식과 비교함"); }
@@ -94,7 +106,7 @@ namespace StutterFix
         // 이제 끄면 다시 불러오기 때와 똑같이 전부 풀고, 켜면 다시 건다.
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
         {
-            if (value) { Resilience.Init(); InstallAll(); } else UninstallAll();
+            if (value) { Resilience.Init(); ApplyExperimentalOptions(); InstallAll(); } else UninstallAll();
             // 모드를 끄면 게임 파일도 원래대로 돌려놓는다(다음 실행부터 원래 방식).
             // 다시 불러오기도 내부에서 끄기 -> 켜기를 거치므로 그때는 건드리지 않는다
             // (중간에 실패하면 legacy 줄이 빠진 채로 남았다).
@@ -150,6 +162,8 @@ namespace StutterFix
                 InstantMove.Install(harmony);
                 MoveProf.Install(harmony);
                 FastMove.Install(harmony);
+                if(TagIndex.Enabled)OptimizationModules.Install(TagIndexModule.Instance);
+                Try(MaterialPropertyIds.Warm);
                 Precheck.Install(harmony);
                 DecoAnim.Install(harmony);
                 FloorAnim.Install(harmony);   // 길이 있는 타일 이동 애니메이션을 모드가 직접 (FloorAnim.cs)
@@ -169,9 +183,17 @@ namespace StutterFix
                 PlayTweaks.Install(harmony);
                 TexCompress.Install(harmony);
                 HalfRender.Install(harmony);
-                RenderVerify.Install(harmony);
+
+#if DEV || AUTOTEST
+RenderVerify.Install(harmony);
+#endif
+
                 FrameParts.Install(harmony);
-                UiProf.Install(harmony);
+
+#if DEV || AUTOTEST
+UiProf.Install(harmony);
+#endif
+
                 MoveApply.Install(harmony);
                 Dormancy.Install(harmony);
                 ImagePrefetch.Install(harmony); DecoDiag.Install(harmony);
@@ -200,8 +222,16 @@ namespace StutterFix
                 Try(() => TypeCache.Install(harmony));   // 고급 필터 형식 찾기 기억 (TypeCache.cs)
                 Try(() => MeshWarm.Install(harmony));   // 색 바꾸기가 곡 중에 만들 타일 메시 미리 만들기 (MeshWarm.cs)
                 Try(() => SoundWarm.Install(harmony));   // 곡 중에 처음 쓰는 효과음 미리 불러오기 (SoundWarm.cs)
-                if (Edition.Dev || MeasureBuild || AutoTestBuild) Try(() => ScriptProbe.Install(harmony));   // (진단) scriptprobe.txt 가 있으면 스크립트별 시간
-                if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(Entry.Path, "floorprof.txt"))) Try(() => FloorProf.Install(harmony));   // (측정) floorprof.txt 가 있으면 타일 이동 안 DOTween 몫
+                if (Edition.Dev || MeasureBuild || AutoTestBuild) {
+#if DEV || AUTOTEST
+Try(() => ScriptProbe.Install(harmony));
+#endif
+}   // (진단) scriptprobe.txt 가 있으면 스크립트별 시간
+                if (Edition.Dev && System.IO.File.Exists(System.IO.Path.Combine(Entry.Path, "floorprof.txt"))) {
+#if DEV || AUTOTEST
+Try(() => FloorProf.Install(harmony));
+#endif
+}   // (측정) floorprof.txt 가 있으면 타일 이동 안 DOTween 몫
 
 #if AUTOTEST
                 // 측정용 플레이어 빌드: startprobe-cold.txt 가 있으면 맵 열기·재생 시작 단계 시간 (자주 불리는 함수는 감싸지 않음)
@@ -210,14 +240,38 @@ namespace StutterFix
                 // 측정 (개발자용만)
                 if (Edition.Dev)
                 {
-                    StartProbe.Install(harmony);
-                    Try(() => FilterTrace.Install(harmony));
-                    Try(() => MergeProbe.Install(harmony));
+
+#if DEV || AUTOTEST
+StartProbe.Install(harmony);
+#endif
+
+
+#if DEV || AUTOTEST
+Try(() => FilterTrace.Install(harmony));
+#endif
+
+
+#if DEV || AUTOTEST
+Try(() => MergeProbe.Install(harmony));
+#endif
+
 
                     RenderWatch.Install(harmony);
-                    RenderCallbackScan.Install(harmony);
-                    FrameRateScreenWatch.Install(harmony);
-                    ParticleTextWatch.Install(harmony);
+
+#if DEV || AUTOTEST
+RenderCallbackScan.Install(harmony);
+#endif
+
+
+#if DEV || AUTOTEST
+FrameRateScreenWatch.Install(harmony);
+#endif
+
+
+#if DEV || AUTOTEST
+ParticleTextWatch.Install(harmony);
+#endif
+
                 }
                 if (Config.JitWarm && !Resilience.Off("JitWarm")) Try(JitWarm.Run);   // 모드 함수 미리 컴파일 (곡 초반 처음 쓰는 효과의 JIT, JitWarm.cs)
                 Entry.Logger.Log("켜짐: 패치 설치 완료 (" + Edition.Name + ")");
@@ -381,7 +435,11 @@ namespace StutterFix
 #endif
             Try(FrameGen.Shutdown);
             Try(MemoryBudget.Reset);
+            Try(NativeMotion.Reset);
+            Try(OptimizationModules.Shutdown);
+            Try(TagIndex.Shutdown);
             Try(UploadBudget.Restore);
+            Try(Updater.Shutdown);
             Try(() => AssetDiskCache.Store=null);
             Try(ScreenEffects.Shutdown);
             Try(FilterIdentity.Shutdown);
@@ -412,8 +470,16 @@ namespace StutterFix
             Try(SettingsWindow.Destroy);
             Try(global::StutterFix.MeshWarm.Release);   // 미리 만들기용 숨긴 물체
             Try(PerfOverlay.Destroy);
-            Try(ParticleTextWatch.Shutdown);
-            Try(RenderCallbackScan.Shutdown);
+
+#if DEV || AUTOTEST
+Try(ParticleTextWatch.Shutdown);
+#endif
+
+
+#if DEV || AUTOTEST
+Try(RenderCallbackScan.Shutdown);
+#endif
+
             Try(SlowScan.Shutdown);
 #if DEV || AUTOTEST
             Try(WasteProbe.Off);
@@ -475,13 +541,21 @@ namespace StutterFix
                 RequestReload();
                 return;
             }
-            if (Edition.AutoTest && AutoTest.ReloadNow) { AutoTest.ReloadNow = false; RequestReload(); return; }
+
+#if DEV || AUTOTEST
+if (Edition.AutoTest && AutoTest.ReloadNow) { AutoTest.ReloadNow = false; RequestReload(); return; }
+#endif
+
 
             if (!installed) return;   // 꺼져 있으면 아무 일도 하지 않는다
 
             long q = System.Diagnostics.Stopwatch.GetTimestamp();
             GcControl.Tick(dt); Tk(0, ref q);
-            RestartAdvisor.Tick(); if (Edition.AutoTest) AutoTest.Tick(); FrameGen.Tick(); PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+            RestartAdvisor.Tick(); if (Edition.AutoTest) {
+#if DEV || AUTOTEST
+AutoTest.Tick();
+#endif
+} FrameGen.Tick(); PcTune.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
@@ -502,7 +576,11 @@ namespace StutterFix
                 if (Input.GetKeyDown(KeyCode.F8)) AbTest.Toggle();
                 if (Input.GetKeyDown(KeyCode.F9)) AllocScan.Toggle();
                 if (Input.GetKeyDown(KeyCode.F6)) TextureCensus.Run();
-                BlendProbe.Tick(); Tk(15, ref q);
+
+#if DEV || AUTOTEST
+BlendProbe.Tick();
+#endif
+ Tk(15, ref q);
                 InvisibleSkip.DevTick(); Tk(14, ref q);
             }
 
@@ -647,6 +725,49 @@ namespace StutterFix
                 RequestDisplay(FullScreenMode.FullScreenWindow);
             else {Config.ExpFsChanged=false;try {Config.Save(Entry);}catch {}}
         }
+        private static void ApplyExperimentalOptions()
+        {
+            if(Config==null)return;
+            Func<string,bool,bool> effective=Resilience.Eff;
+            MemoryBudget.Enabled=Config.GcDynamicBudget;
+            UploadBudget.Configure(Config.AsyncUploadBudget);
+            FastJsonParser.PoolStrings=Config.JsonStringPool;
+            AssetDiskCache.Configure(Config.AssetDiskCache,Config.AssetDiskCacheMB,Config.AssetDiskCachePath);
+            MoveApply.EpsilonSkip=effective("MoveEpsilon",Config.MoveEpsilon);
+            NativeMotion.Configure(effective("NativeMotion",Config.NativeMotion));
+            TagIndex.Configure(effective("TagIndex",Config.TagIndex));
+            ParticleFix.CatchupOffscreen=effective("ParticleCatchup",Config.ParticleCatchup);
+            if(installed)
+            {
+                if(TagIndex.Enabled)OptimizationModules.Install(TagIndexModule.Instance);
+                else OptimizationModules.Uninstall("tags");
+            }
+        }
+#if DEV || AUTOTEST
+        internal static string LifecycleFixture()
+        {
+            if(Hitch.Playing)throw new InvalidOperationException("Lifecycle fixture is menu-only");
+            bool tagBefore=Config.TagIndex,nativeBefore=Config.NativeMotion;
+            var method=AccessTools.Method(typeof(scnGame),"FinishCustomLevelLoading",new[]{typeof(int),typeof(bool)});
+            int Owners(){int n=0;var info=Harmony.GetPatchInfo(method);if(info!=null)foreach(var owner in info.Owners)if(owner=="StutterFix.optimization.tags")n++;return n;}
+            try
+            {
+                Config.TagIndex=Config.NativeMotion=true;ApplyExperimentalOptions();
+                if(OptimizationModules.Count!=1||Owners()!=1)throw new Exception("Module install mismatch");
+                OnToggle(Entry,false);
+                if(OptimizationModules.Count!=0||Owners()!=0||NativeMotion.Enabled)throw new Exception("Module uninstall mismatch");
+                OnToggle(Entry,true);
+                if(OptimizationModules.Count!=1||Owners()!=1||!NativeMotion.Enabled||!TagIndex.Enabled)throw new Exception("Module re-enable mismatch");
+                return "checks=3 mismatch=0 owners=1/0/1 native_enabled=True/False/True";
+            }
+            finally
+            {
+                Config.TagIndex=tagBefore;Config.NativeMotion=nativeBefore;
+                if(!installed)OnToggle(Entry,true);
+                ApplyConfig();
+            }
+        }
+#endif
         private static void ApplyToggles()
         {
             ApplyQueued();
@@ -655,10 +776,7 @@ namespace StutterFix
             Func<string, bool, bool> E = Resilience.Eff;
             bool low = !Resilience.Off("LowEnd");   // 저사양 그래픽 기능 묶음
             GcControl.Enabled = E("GcPause", Config.GcPause);
-            MemoryBudget.Enabled = Config.GcDynamicBudget;
-            UploadBudget.Configure(Config.AsyncUploadBudget);
-            FastJsonParser.PoolStrings = Config.JsonStringPool;
-            AssetDiskCache.Configure(Config.AssetDiskCache,Config.AssetDiskCacheMB,Config.AssetDiskCachePath);
+            ApplyExperimentalOptions();
             EffectBudget.Enabled = E("EffectSplit", Config.EffectSplit);
             RecolorSplit.Enabled = E("RecolorSplit", Config.RecolorSplit);
             TweenFix.Enabled = E("TweenGuard", Config.TweenGuard);
@@ -900,6 +1018,10 @@ namespace StutterFix
         public bool CheckUpdates = true;    // 게임을 켜면 GitHub 에서 새 버전이 있는지 한 번 확인
         public bool GcPause = true;
         public bool GcDynamicBudget = false;
+        public bool MoveEpsilon = false;
+        public bool NativeMotion = false;
+        public bool TagIndex = false;
+        public bool ParticleCatchup = false;
         public bool AsyncUploadBudget = false;
         public bool JsonStringPool = false;
         public bool AssetDiskCache = false;

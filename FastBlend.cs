@@ -73,7 +73,7 @@ namespace StutterFix
             var s = Shader.Find(shader);
             if (s == null) return null;
             var m = new Material(s) { hideFlags = HideFlags.HideAndDontSave, name = "StutterFix." + shader };
-            if (m.HasProperty("_TintColor")) m.SetColor("_TintColor", new Color(0.5f, 0.5f, 0.5f, 0.5f));   // 셰이더가 2배를 곱하므로 0.5 = 원래 색
+            if (m.HasProperty(MaterialPropertyIds.P_TintColor)) m.SetColor(MaterialPropertyIds.P_TintColor, new Color(0.5f, 0.5f, 0.5f, 0.5f));   // 셰이더가 2배를 곱하므로 0.5 = 원래 색
             return m;
         }
 

@@ -1,0 +1,12 @@
+{
+  "batch": "끝",
+  "update_fixture": [
+    "checks=4 mismatch=0 target=isolated-filesystem memory_zip_only=True"
+  ],
+  "module_fixture": [],
+  "resolution_states": [],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

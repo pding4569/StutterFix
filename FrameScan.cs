@@ -118,7 +118,7 @@ namespace StutterFix
                 int raw = 0, rend = 0;
                 foreach (var ri in Resources.FindObjectsOfTypeAll<RawImage>()) if (ri.texture == rt) raw++;
                 foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
-                    foreach (var m in r.sharedMaterials) if (m != null && m.HasProperty("_MainTex") && m.mainTexture == rt) { rend++; break; }
+                    foreach (var m in r.sharedMaterials) if (m != null && m.HasProperty(MaterialPropertyIds.P_MainTex) && m.mainTexture == rt) { rend++; break; }
                 sb.Append("\n  ").Append(cam.name).Append(" -> RawImage ").Append(raw).Append("개, 렌더러 ").Append(rend).Append("개");
             }
             Log("카메라 텍스처를 쓰는 곳:" + sb);

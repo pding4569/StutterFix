@@ -139,8 +139,16 @@ namespace StutterFix
                         DateTime.Now.ToString("HH:mm:ss.fff")));   // 바깥 측정(PerfView)과 맞춰 보려면 실제 시각이 필요하다
                     Main.Entry.Logger.Log("[끊김]    직전 프레임 단계: " + PhaseWatch.TopOfLastFrame(3));
                     Main.Entry.Logger.Log("[끊김]    그리기: " + RenderWatch.Info());
-                    Main.Entry.Logger.Log("[끊김]    그리기 콜백: " + RenderCallbackScan.Top(5) + " | " + FrameRateScreenWatch.Info());
-                    Main.Entry.Logger.Log("[끊김]    파티클/글자: " + ParticleTextWatch.Info());
+
+#if DEV || AUTOTEST
+Main.Entry.Logger.Log("[끊김]    그리기 콜백: " + RenderCallbackScan.Top(5) + " | " + FrameRateScreenWatch.Info());
+#endif
+
+
+#if DEV || AUTOTEST
+Main.Entry.Logger.Log("[끊김]    파티클/글자: " + ParticleTextWatch.Info());
+#endif
+
                     Main.Entry.Logger.Log("[끊김]    느린 함수: " + SlowScan.Top(5) + " | " + EffectScan.FrameSummary() + ZeroTween.FrameSummary() + InstantMove.FrameSummary() + " | 살아있는 애니메이션 " + ActiveTweens());
                 }
             }
@@ -150,9 +158,21 @@ namespace StutterFix
             lastGfx = gfx;
             lastCollects = collects;
             RenderWatch.EndFrame();
-            RenderCallbackScan.Reset();
-            FrameRateScreenWatch.Reset();
-            ParticleTextWatch.Tick();
+
+#if DEV || AUTOTEST
+RenderCallbackScan.Reset();
+#endif
+
+
+#if DEV || AUTOTEST
+FrameRateScreenWatch.Reset();
+#endif
+
+
+#if DEV || AUTOTEST
+ParticleTextWatch.Tick();
+#endif
+
             SlowScan.Reset();   // 다음 프레임 몫만 모으도록 매번 비운다
             ZeroTween.ResetFrame();
             MoveProf.EndFrame();
@@ -171,13 +191,29 @@ namespace StutterFix
             rateTimer = 0f;
             reported = false;
             SongStarted();
-            ParticleTextWatch.Refresh();
+
+#if DEV || AUTOTEST
+ParticleTextWatch.Refresh();
+#endif
+
             SlowScan.InstallOnce();
             SlowScan.ResetSong();
             PhaseWatch.ResetSong();
-            if (AllocProbeOn) AllocProbe.ResetSong();
-            if (TimeProbeOn) TimeProbe.ResetSong();
-            UiProf.ResetSong();
+            if (AllocProbeOn) {
+#if DEV || AUTOTEST
+AllocProbe.ResetSong();
+#endif
+}
+            if (TimeProbeOn) {
+#if DEV || AUTOTEST
+TimeProbe.ResetSong();
+#endif
+}
+
+#if DEV || AUTOTEST
+UiProf.ResetSong();
+#endif
+
             if (Main.Config != null && Main.Config.ExpFullscreen == 1) Main.ApplyFullscreen();   // 게임 설정에서 화면을 바꿨으면 다시 독점 전체 화면으로
             TileCull.SongBegin();
             Main.Entry.Logger.Log("[끊김] 기록 시작");
@@ -202,7 +238,11 @@ namespace StutterFix
             // 비우는 것은 진짜 새로 시작하는 곳(재시작·재생 훅, 장면 정리, 씬 전환, 맵 불러오기)에서 한다.
             EffectBudget.Suspend(3f);
             ShaderWarm.MaybeRun();
-            if (Edition.Dev) BlendProbe.Report();
+            if (Edition.Dev) {
+#if DEV || AUTOTEST
+BlendProbe.Report();
+#endif
+}
             LowEnd.SongStarted(); LowEnd.LogRenderOnce(); Compat.Refresh(); Resilience.Phase("플레이 중");
         }
 
@@ -251,15 +291,35 @@ namespace StutterFix
             SongEnded();
             SlowScan.ReportSong();
             PhaseWatch.ReportSong();
-            if (AllocProbeOn) AllocProbe.Report();
-            if (TimeProbeOn) TimeProbe.Report();
+            if (AllocProbeOn) {
+#if DEV || AUTOTEST
+AllocProbe.Report();
+#endif
+}
+            if (TimeProbeOn) {
+#if DEV || AUTOTEST
+TimeProbe.Report();
+#endif
+}
             if (BeatFix.Skipped + BeatFix.Called > 0) Main.Entry.Logger.Log("[박자 알림] 타일 OnBeat 건너뜀 " + BeatFix.Skipped + "번, 부름 " + BeatFix.Called + "번 (빠른 길 " + BeatFix.Fast + "번, 원래 반복 " + BeatFix.Slow + "번)" + (BeatFix.Verify ? " | 검증 " + BeatFix.Checks / 64 + "번, 목록 틀림 " + BeatFix.Mismatch : ""));
             if (AllocFix.VerifyInput) Main.Entry.Logger.Log(AllocFix.VerifySummary());
-            UiProf.ReportSong();
+
+#if DEV || AUTOTEST
+UiProf.ReportSong();
+#endif
+
             ModWatch.Report();
             Main.Entry.Logger.Log("[끊김] 같은 글자 건너뛰기 누적 " + TextFix.SkippedSameText + "회, 같은 그림자 색 건너뛰기 " + TextFix.SkippedSameShadow + "회");
             Main.Entry.Logger.Log("[끊김] 색 바꾸기 나눔 " + RecolorSplit.SplitEffects + "번, 미룬 타일 " + RecolorSplit.DeferredTiles + "칸, 순서 맞추려 먼저 칠함 " + RecolorSplit.FlushedForOrder + "번" + (RecolorSplit.Patched ? "" : " (적용 안 됨)"));
-            if (Edition.Dev) { Main.Entry.Logger.Log("[끊김] 덮어쓰기 측정: " + MergeProbe.Summary()); MergeProbe.Reset(); }
+            if (Edition.Dev) {
+#if DEV || AUTOTEST
+Main.Entry.Logger.Log("[끊김] 덮어쓰기 측정: " + MergeProbe.Summary());
+#endif
+
+#if DEV || AUTOTEST
+MergeProbe.Reset();
+#endif
+ }
 
             if (recs.Count == 0)
             {

@@ -743,9 +743,15 @@ namespace StutterFix
                 Main.Entry.Logger.Log(string.Format("[모니터] {0:F0}ms -> {1} / gpu {2:F1} cpu {3:F1} (수집 {4}번) 효과 {5:F1} 모드 {6:F1}({7}) gc {8}" + (p.SongT >= 0 ? " | 곡 {9:F1}초, 다시 보이게 된 장식 {10}개" : "") + " | 시각 {11}",
                     ms, h.Cause, gpu, cpuMain, timingSamples, fx, mod, modWhat, gcDelta, p.SongT, p.Shown, DateTime.Now.ToString("HH:mm:ss.fff")));
             if (logIt && gpu > ms * 0.7f)
-                Main.Entry.Logger.Log("[모니터]   직전 필터 변화 (6프레임): " + FilterTrace.Recent(p.Frame, 6)
+            {
+            string recentFilters="확인 안 됨";
+#if DEV || AUTOTEST
+            recentFilters=FilterTrace.Recent(p.Frame,6);
+#endif
+                Main.Entry.Logger.Log("[모니터]   직전 필터 변화 (6프레임): " + recentFilters
                     + string.Format(" | VRAM 전체 {0:F0}/{1}MB, 게임 전용 {2:F0}MB, 게임 공유(시스템 RAM) {3:F0}MB",
                         SystemMonitor.VramUsedMB, SystemInfo.graphicsMemorySize, SystemMonitor.VramGameMB, SystemMonitor.SharedGameMB));
+            }
             return h;
         }
 

@@ -1016,12 +1016,68 @@ namespace StutterFix
                         " json_hits="+System.Threading.Interlocked.Read(ref AssetDiskCache.JsonHits)+
                         " json_writes="+System.Threading.Interlocked.Read(ref AssetDiskCache.JsonWrites)+
                         " upload_time="+UnityEngine.QualitySettings.asyncUploadTimeSlice+
-                        " upload_buffer="+UnityEngine.QualitySettings.asyncUploadBufferSize);
+                        " upload_buffer="+UnityEngine.QualitySettings.asyncUploadBufferSize+
+                        " epsilon_skips="+MoveApply.EpsilonSkips+" native_batches="+NativeMotion.Batches+
+                        " native_values="+NativeMotion.Values+" native_checks="+NativeMotion.Checks+
+                        " native_mismatch="+NativeMotion.Mismatch+" native_failed="+NativeMotion.Failed+" native_rounding="+NativeMotion.Rounding+
+                        " tag_hits="+TagIndex.Hits+" tag_compiled="+TagIndex.Compiled+" tag_invalidations="+TagIndex.Invalidations);
                     return true;
                 case "uploadbudgettest":
                     UploadBudget.Begin();
                     Log("[업로드 엔진 시험] time="+UnityEngine.QualitySettings.asyncUploadTimeSlice+" buffer="+UnityEngine.QualitySettings.asyncUploadBufferSize);
                     UploadBudget.Restore();return true;
+                case "particlesnapshot":
+                    Log("[입자 컬링 상태] "+ParticleFix.CullSnapshot());return true;
+                case "autoresstate":
+                    Log("[자동 해상도 상태] "+LowEnd.AutoGpuState);return true;
+                case "updatefixture":
+                    Log("[업데이트 복구 시험] "+UpdateFixture.Run(arg));return true;
+                case "modulefixture":
+                    Log("[모듈 수명 시험] "+Main.LifecycleFixture());return true;
+                case "propertyidfixture":
+                {
+                    int checkedIds=0,badIds=0;
+                    foreach(var f in typeof(MaterialPropertyIds).GetFields(System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic))
+                    {
+                        if(f.FieldType!=typeof(int)||!f.Name.StartsWith("P_",StringComparison.Ordinal))continue;
+                        checkedIds++;if((int)f.GetValue(null)!=UnityEngine.Shader.PropertyToID(f.Name.Substring(1)))badIds++;
+                    }
+                    Log("[재질 ID 시험] checks="+checkedIds+" mismatch="+badIds);return true;
+                }
+                case "motionfixture":
+                {
+                    if(!NativeMotion.Enabled)throw new InvalidOperationException("Native motion candidate must be enabled");
+                    if(!NativeMotion.EnsureCompatible())throw new InvalidOperationException("Runtime rounding mismatch; original calculation retained");
+                    int checkedValues=0,badValues=0,doubleBad=0,strictBad=0,printed=0;
+                    var scratch=new float[2];
+                    for(int pass=0;pass<16;pass++)
+                    {
+                        for(int i=0;i<NativeMotion.Capacity;i++)
+                        {
+                            NativeMotion.Start[i]=(i%997-500)*.37f;NativeMotion.Change[i]=(i%499-250)*1.11f;
+                            NativeMotion.Duration[i]=(i%199+1)*.019f;NativeMotion.Position[i]=NativeMotion.Duration[i]*((i+pass)%101)/100f;
+                        }
+                        if(!NativeMotion.Run(NativeMotion.Capacity))throw new InvalidOperationException("Native batch unavailable; managed fallback retained");
+                        for(int i=0;i<NativeMotion.Capacity;i++)
+                        {
+                            float e=ZeroTween.Eval(DG.Tweening.Ease.Linear,NativeMotion.Position[i],NativeMotion.Duration[i],0,0);
+                            float value=NativeMotion.Start[i]+NativeMotion.Change[i]*e;
+                            float dv=(float)((double)NativeMotion.Start[i]+(double)NativeMotion.Change[i]*(double)e);
+                            scratch[0]=e;scratch[1]=NativeMotion.Change[i]*scratch[0];scratch[0]=NativeMotion.Start[i]+scratch[1];
+                            int actual=InstantMove.Bits(NativeMotion.Output[i]);
+                            checkedValues++;if(InstantMove.Bits(value)!=actual)
+                            {
+                                badValues++;
+                                if(printed++<3)Log("[계산 반올림 표본] s="+NativeMotion.Start[i].ToString("R")+" c="+NativeMotion.Change[i].ToString("R")+" e="+e.ToString("R")+" mono="+value.ToString("R")+" r64="+dv.ToString("R")+" r32="+scratch[0].ToString("R")+" native="+NativeMotion.Output[i].ToString("R"));
+                            }
+                            if(InstantMove.Bits(dv)!=actual)doubleBad++;
+                            if(InstantMove.Bits(scratch[0])!=actual)strictBad++;
+                        }
+                    }
+                    if(badValues>0)NativeMotion.Failed=true;
+                    Log("[네이티브 계산 시험] checks="+checkedValues+" mismatch="+badValues+" native_vs_r64="+doubleBad+" native_vs_forced_r32="+strictBad);
+                    return true;
+                }
                 case "fpscap":
                 {
                     // fpscap <n | 0>: 진짜 FPS 를 n 으로 묶는다(수직동기 끔). 0 이면 풀기. 게임은 Application.targetFrameRate 만 쓴다.

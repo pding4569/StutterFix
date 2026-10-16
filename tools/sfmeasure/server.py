@@ -76,7 +76,7 @@ RE_RUN = re.compile(r"판 #(\d+) \(([^)]*)\): 평균 ([\d.]+) FPS, 화면 대기
 RE_SONG = re.compile(r"\[곡\] 평균 ([\d.]+) FPS.*?곡 시작 연출 뒤 가장 긴 프레임 (\d+)ms, 끊김 (\d+)번")   # 플레이어용에도 있음
 RE_HITCH = re.compile(r"\[끊김\] ([\d.]+)초 중 (\d+)회 끊김, 합계 ([\d.]+)ms, 최악 ([\d.]+)ms")
 RE_FRAME = re.compile(r"프레임 ([\d.]+)")
-RE_ERR = re.compile(r"\[StutterFix\].*(Error|\[Error\]|설치 실패|patch failed|Exception)|단계 실패|시간 초과")
+RE_ERR = re.compile(r"\[StutterFix\].*(\[(?:Error|ERROR)\]|설치 실패|patch failed|\b[A-Za-z0-9_.]*Exception\b)|\[StutterFix\]\s*(?:Error|ERROR)\b|단계 실패|시간 초과")
 
 
 def summarize(text, runs=1, max_frames=15):

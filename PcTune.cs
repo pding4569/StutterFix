@@ -202,7 +202,11 @@ namespace StutterFix
         {
             var c = Main.Config;
             if (c == null || c.TuneVer >= Version) return;
-            if (Edition.Dev && AutoTest.Active) return;
+
+#if DEV || AUTOTEST
+if (Edition.Dev && AutoTest.Active) return;
+#endif
+
             string scene;
             try { scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name; } catch { return; }
             bool menu = !(scene == "" || scene == "scnSplash" || scene == "scnLoading" || scene == "scnIntro" || scene == "scnEditor" || scene == "scnGame");

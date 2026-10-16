@@ -36,6 +36,8 @@ namespace StutterFix
         private static readonly AccessTools.FieldRef<ffxPlusBase, Ease> easeRef = AccessTools.FieldRefAccess<ffxPlusBase, Ease>("ease");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, List<string>> tagsRef = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, List<string>>("targetTags");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, scrDecorationManager> mgrRef = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, scrDecorationManager>("decManager");
+        internal static List<string> TagsForIndex(ffxMoveDecorationsPlus fx){return tagsRef(fx);}
+        internal static scrDecorationManager ManagerForIndex(ffxMoveDecorationsPlus fx){return mgrRef(fx);}
         private static readonly AccessTools.FieldRef<scrDecorationManager, Dictionary<string, List<scrDecoration>>> taggedRef = AccessTools.FieldRefAccess<scrDecorationManager, Dictionary<string, List<scrDecoration>>>("taggedDecorations");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, float> tScale = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, float>("targetScale");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, Vector2> tScaleV2 = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, Vector2>("targetScaleV2");
@@ -73,7 +75,7 @@ namespace StutterFix
             public int GetHashCode(scrDecoration o) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o); }
         }
         private static readonly List<scrDecoration> list = new List<scrDecoration>();
-        internal static void ForgetLevel() { list.Clear(); src = null; if (shape.Targets != null) shape.Targets = null; shape.Sources.Clear(); stamp.Clear(); }
+        internal static void ForgetLevel() { list.Clear(); src = null; if (shape.Targets != null) shape.Targets = null; shape.Sources.Clear(); stamp.Clear(); TagIndex.Forget(); }
         private static bool running, bypass;
 
         internal static void Install(Harmony h)
@@ -295,6 +297,7 @@ namespace StutterFix
             var tags = tagsRef(fx); var mgr = mgrRef(fx);
             if (tags == null || (object)mgr == null) return No(4);
             var dict = taggedRef(mgr);
+            TagIndex.Plan tagPlan;bool indexed=TagIndex.TryPlan(fx,dict,tags,out tagPlan);
             if (dict == null) return No(4);
             // 대상 목록. 태그가 하나이고 그 목록에 중복·null 이 없으면(목록이 바뀔 때만 다시 확인) 게임 목록을 그대로 쓴다.
             // 예전에는 효과마다 중복 거르기 집합을 비웠는데, 1만 4천 개 효과 한 번에 집합이 커진 뒤로는 비울 때마다
@@ -305,7 +308,7 @@ namespace StutterFix
                 var tag = tags[0];
                 if (tag == null) return No(5);
                 List<scrDecoration> l;
-                if (!dict.TryGetValue(tag, out l)) { list.Clear(); src = list; return true; }
+                if (!(indexed ? TagIndex.Get(tagPlan,0,out l) : dict.TryGetValue(tag, out l))) { list.Clear(); src = list; return true; }
                 if (l == null) return No(5);
                 if (Clean(l)) { src = l; return ParallaxOk(fx) || No(0); }
             }
@@ -316,7 +319,7 @@ namespace StutterFix
                 var tag = tags[i];
                 if (tag == null) return No(5);
                 List<scrDecoration> l;
-                if (!dict.TryGetValue(tag, out l)) continue;
+                if (!(indexed ? TagIndex.Get(tagPlan,i,out l) : dict.TryGetValue(tag, out l))) continue;
                 if (l == null) return No(5);
                 for (int j = 0; j < l.Count; j++)
                 {

@@ -1085,6 +1085,21 @@ namespace StutterFix
                     T("이미지 미리 읽기 중 업로드 예산을 늘리고 끝나면 원래 설정으로 되돌립니다. 비동기 업로드가 가능한 에셋에 적용됩니다.",
                       "Raises upload budgets during image prefetch, then restores original settings. Applies to assets eligible for asynchronous upload."), null);
                 EndGroup();
+                SubHeading(T("장식 이동 실험", "Decoration movement experiments"), "");
+                BeginGroup();
+                ch |= Option("moveepsilon", ref c.MoveEpsilon, T("미세 위치 쓰기 생략 (실험)", "Skip tiny position writes (experimental)"),
+                    T("곡 중 실제 위치와의 차이가 각 축 0.000001 미만이면 위치 쓰기를 생략합니다. 위치·시차·회전 처리 순서는 유지합니다.",
+                      "Skips position writes during play when each axis changes by less than 0.000001. Preserves position, parallax and rotation order."), null);
+                ch |= Option("nativemotion", ref c.NativeMotion, T("장식 숫자 계산 묶기 (실험)", "Batch decoration arithmetic (experimental)"),
+                    T("직선 이징의 위치·회전·불투명도 계산이 512개 이상이면 네이티브 SIMD로 계산합니다. 나머지 이징과 실제 장식 갱신 순서는 기존 경로를 씁니다.",
+                      "Uses native SIMD for at least 512 linear position, rotation or opacity values. Other easing and decoration updates keep their existing order."), null);
+                ch |= Option("tagindex", ref c.TagIndex, T("장식 태그 색인 (실험)", "Decoration tag index (experimental)"),
+                    T("재생 준비 때 태그에 번호를 붙여 반복 조회를 줄입니다. 태그 표의 변경을 감지할 수 없거나 표가 바뀌면 기존 조회를 씁니다.",
+                      "Indexes tags at playback preparation. Falls back when table changes cannot be tracked or the table changes."), null);
+                ch |= Option("particlecatchup", ref c.ParticleCatchup, T("입자 복귀 따라잡기 (실험)", "Catch up returning particles (experimental)"),
+                    T("화면 밖 입자 멈추기와 함께 사용하면 다시 보일 때 지난 시간을 따라잡습니다. 돌아오는 순간의 추가 비용은 확인 중입니다.",
+                      "With offscreen particle pause, catches up elapsed time when particles return. Return-time cost is under validation."), null);
+                EndGroup();
             }
             else if (sub == 1)
             {
@@ -2671,6 +2686,10 @@ namespace StutterFix
         {
             var c = Main.Config;
             c.GcDynamicBudget = false;
+            c.MoveEpsilon = false;
+            c.NativeMotion = false;
+            c.TagIndex = false;
+            c.ParticleCatchup = false;
             c.AsyncUploadBudget = false;
             c.JsonStringPool = false;
             c.AssetDiskCache = false;

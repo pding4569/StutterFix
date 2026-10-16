@@ -146,7 +146,11 @@ namespace StutterFix
                 if (sinceScan >= 5f)
                 {
                     sinceScan = 0f;
-                    SceneScan.Run();
+
+#if DEV || AUTOTEST
+SceneScan.Run();
+#endif
+
                 }
             }
 

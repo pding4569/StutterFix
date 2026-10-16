@@ -22,6 +22,8 @@ namespace StutterFix
     internal static class MoveApply
     {
         internal static bool Enabled = true;
+        internal static bool EpsilonSkip;
+        internal static long EpsilonSkips;
         internal static bool Patched;
         internal static int PatchedCount;
         internal static long Calls, Flushed;   // 미룬 횟수 / 실제로 한 횟수 (차이가 아낀 양)
@@ -209,6 +211,7 @@ namespace StutterFix
             if (t == null) return;
             var cur = t.localPosition;
             if (cur.x == v.x && cur.y == v.y && cur.z == v.z) { PosSkips++; return; }
+            if (EpsilonSkip && Hitch.Playing && MoveDeltaPolicy.Within(cur.x,cur.y,cur.z,v.x,v.y,v.z)) { EpsilonSkips++; return; }
             PosWrites++;
             t.localPosition = v;
         }

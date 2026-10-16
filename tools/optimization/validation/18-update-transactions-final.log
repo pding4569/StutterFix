@@ -1,0 +1,3 @@
+E:\StutterFixWork\StutterFix\FastJsonParser.cs(10,32): warning CS0649: 'FastJsonParser.Progress' 필드에는 할당되지 않으므로 항상 null 기본값을 사용합니다. [E:\StutterFixWork\StutterFix\tools\optimization\UpdateCheck\UpdateCheck.csproj]
+E:\StutterFixWork\StutterFix\FastJsonParser.cs(15,30): warning CS0649: 'FastJsonParser.PoolStrings' 필드에는 할당되지 않으므로 항상 false 기본값을 사용합니다. [E:\StutterFixWork\StutterFix\tools\optimization\UpdateCheck\UpdateCheck.csproj]
+Update transaction/digest checks 25, errors 0; fake storage faults, physical filesystem checked separately

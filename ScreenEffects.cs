@@ -88,16 +88,16 @@ namespace StutterFix {
         }
         private static void Process(RenderTexture src,RenderTexture dst,Settings fixture=null) {
             var c=fixture??Main.Config;
-            material.SetVector("_Color",new Vector4(c.FxColor?c.FxVibrance:0,c.FxColor?c.FxContrast:1,c.FxColor?c.FxBrightness:0,c.FxColor?c.FxTemperature:0));
-            material.SetVector("_Controls",new Vector4(c.FxVignette?c.FxVignetteAmount:0,c.FxSharp?Mathf.Clamp(c.FxSharpAmount,0,2):0,0,0));
-            material.SetVector("_LutInfo",new Vector4(lut!=null?lut.height:2,c.FxLut && lut!=null?1:0,0,0));
-            if(lut!=null)material.SetTexture("_Lut",lut);
+            material.SetVector(MaterialPropertyIds.P_Color,new Vector4(c.FxColor?c.FxVibrance:0,c.FxColor?c.FxContrast:1,c.FxColor?c.FxBrightness:0,c.FxColor?c.FxTemperature:0));
+            material.SetVector(MaterialPropertyIds.P_Controls,new Vector4(c.FxVignette?c.FxVignetteAmount:0,c.FxSharp?Mathf.Clamp(c.FxSharpAmount,0,2):0,0,0));
+            material.SetVector(MaterialPropertyIds.P_LutInfo,new Vector4(lut!=null?lut.height:2,c.FxLut && lut!=null?1:0,0,0));
+            if(lut!=null)material.SetTexture(MaterialPropertyIds.P_Lut,lut);
             bool color=c.FxColor||c.FxVignette||(c.FxLut&&lut!=null),rest=fixture==null && !c.FxGlowStack && MapBloom();
             bool style=c.FxToneMap||c.FxChromatic||c.FxGrain||c.FxCrt||c.FxPixel||c.FxPosterize;
             bool grade=FxExtras.AnyColor(c),detail=FxExtras.AnyDetail(c),lens=FxExtras.AnyLens(c);
             if(style) {
-                material.SetVector("_StyleA",new Vector4(c.FxChromatic?Mathf.Clamp(c.FxChromaticAmount,0,12):0,c.FxGrain?Mathf.Clamp(c.FxGrainAmount,0,.2f):0,c.FxCrt?Mathf.Clamp01(c.FxCrtAmount):0,c.FxPixel?Mathf.Clamp(c.FxPixelSize,2,32):0));
-                material.SetVector("_StyleB",new Vector4(c.FxPosterize?Mathf.Clamp(Mathf.Round(c.FxPosterizeLevels),2,32):0,c.FxToneMap?1:0,Mathf.Clamp(c.FxCeiling,.5f,1),c.FxGrain?Time.unscaledTime:0));
+                material.SetVector(MaterialPropertyIds.P_StyleA,new Vector4(c.FxChromatic?Mathf.Clamp(c.FxChromaticAmount,0,12):0,c.FxGrain?Mathf.Clamp(c.FxGrainAmount,0,.2f):0,c.FxCrt?Mathf.Clamp01(c.FxCrtAmount):0,c.FxPixel?Mathf.Clamp(c.FxPixelSize,2,32):0));
+                material.SetVector(MaterialPropertyIds.P_StyleB,new Vector4(c.FxPosterize?Mathf.Clamp(Mathf.Round(c.FxPosterizeLevels),2,32):0,c.FxToneMap?1:0,Mathf.Clamp(c.FxCeiling,.5f,1),c.FxGrain?Time.unscaledTime:0));
             }
             passesLeft=(color?1:0)+(c.FxSharp?1:0)+(c.FxAA?1:0)+(c.FxGlow&&!rest?1:0)+(c.FxLight?1:0)+(c.FxRays?1:0)+(c.FxStreak?1:0)+(c.FxFlare?1:0)+(c.FxBlur?1:0)+(c.FxHdr||c.FxFilmic?1:0)+(grade?1:0)+(detail?1:0)+(lens?1:0)+(style?1:0);finalTarget=dst;
             RenderTexture current=src;var saved=RenderTexture.active;
@@ -133,14 +133,14 @@ namespace StutterFix {
             var a=RenderTexture.GetTemporary(Math.Max(1,original.width/divisor),Math.Max(1,original.height/divisor),0,original.format);
             var b=RenderTexture.GetTemporary(a.width,a.height,0,a.format);a.filterMode=b.filterMode=FilterMode.Bilinear;
             try {
-                material.SetVector("_Glow",new Vector4(c.FxGlowThreshold,light?c.FxLightAmount:c.FxGlowAmount,c.FxToneMap?1:0,0));
+                material.SetVector(MaterialPropertyIds.P_Glow,new Vector4(c.FxGlowThreshold,light?c.FxLightAmount:c.FxGlowAmount,c.FxToneMap?1:0,0));
                 Graphics.Blit(current,a,material,3);
                 int loops=light?3:1;
                 for(int k=0;k<loops;k++) {
-                    material.SetVector("_Direction",new Vector4(light?4<<k:c.FxGlowStack?4:1,0,0,0));Graphics.Blit(a,b,material,4);
-                    material.SetVector("_Direction",new Vector4(0,light?4<<k:c.FxGlowStack?4:1,0,0));Graphics.Blit(b,a,material,4);
+                    material.SetVector(MaterialPropertyIds.P_Direction,new Vector4(light?4<<k:c.FxGlowStack?4:1,0,0,0));Graphics.Blit(a,b,material,4);
+                    material.SetVector(MaterialPropertyIds.P_Direction,new Vector4(0,light?4<<k:c.FxGlowStack?4:1,0,0));Graphics.Blit(b,a,material,4);
                 }
-                material.SetTexture("_GlowTex",a);Pass(ref current,original,light?6:5);
+                material.SetTexture(MaterialPropertyIds.P_GlowTex,a);Pass(ref current,original,light?6:5);
             }finally{RenderTexture.ReleaseTemporary(a);RenderTexture.ReleaseTemporary(b);}
         }
         private static void Optical(ref RenderTexture current,RenderTexture original,int kind,Settings c) {
@@ -148,64 +148,64 @@ namespace StutterFix {
             var b=RenderTexture.GetTemporary(a.width,a.height,0,a.format);a.filterMode=b.filterMode=FilterMode.Bilinear;
             try {
                 float amount=kind==7?c.FxRaysAmount:kind==8?c.FxStreakAmount:kind==9?c.FxFlareAmount:1;
-                material.SetVector("_Glow",new Vector4(Mathf.Clamp01(c.FxGlowThreshold),Mathf.Clamp(amount,0,2),1,0));
+                material.SetVector(MaterialPropertyIds.P_Glow,new Vector4(Mathf.Clamp01(c.FxGlowThreshold),Mathf.Clamp(amount,0,2),1,0));
                 if(kind==11) {
                     Graphics.Blit(current,a);
-                    material.SetVector("_Direction",new Vector4(Mathf.Clamp(c.FxBlurRadius,1,8),0,0,0));Graphics.Blit(a,b,material,4);
-                    material.SetVector("_Direction",new Vector4(0,Mathf.Clamp(c.FxBlurRadius,1,8),0,0));Graphics.Blit(b,a,material,4);
-                    material.SetTexture("_GlowTex",a);Pass(ref current,original,11);
+                    material.SetVector(MaterialPropertyIds.P_Direction,new Vector4(Mathf.Clamp(c.FxBlurRadius,1,8),0,0,0));Graphics.Blit(a,b,material,4);
+                    material.SetVector(MaterialPropertyIds.P_Direction,new Vector4(0,Mathf.Clamp(c.FxBlurRadius,1,8),0,0));Graphics.Blit(b,a,material,4);
+                    material.SetTexture(MaterialPropertyIds.P_GlowTex,a);Pass(ref current,original,11);
                 } else {
                     Graphics.Blit(current,a,material,3);
-                    material.SetVector("_Rays",new Vector4(Mathf.Clamp01(c.FxRaysX),Mathf.Clamp01(c.FxRaysY),Mathf.Clamp01(c.FxRaysLength),.97f));
-                    material.SetVector("_Direction",new Vector4(.012f,0,0,0));Graphics.Blit(a,b,material,kind);
-                    material.SetTexture("_GlowTex",b);Pass(ref current,original,5);
+                    material.SetVector(MaterialPropertyIds.P_Rays,new Vector4(Mathf.Clamp01(c.FxRaysX),Mathf.Clamp01(c.FxRaysY),Mathf.Clamp01(c.FxRaysLength),.97f));
+                    material.SetVector(MaterialPropertyIds.P_Direction,new Vector4(.012f,0,0,0));Graphics.Blit(a,b,material,kind);
+                    material.SetTexture(MaterialPropertyIds.P_GlowTex,b);Pass(ref current,original,5);
                 }
             }finally{RenderTexture.ReleaseTemporary(a);RenderTexture.ReleaseTemporary(b);}
         }
         // HDR 느낌: 국소 대비(흐린 복사본과의 차이), 그림자 살리기(검정은 그대로), 밝은 곳 누르기(흰색은 그대로), 채도, 선택 필름 톤.
         private static void Hdr(ref RenderTexture current,RenderTexture original,Settings c) {
             float a=c.FxHdr?Mathf.Clamp(c.FxHdrAmount,0,1.5f):0;
-            material.SetVector("_Hdr",new Vector4(.7f*a,.8f*a,.9f*a,.18f*a));
-            material.SetVector("_HdrB",new Vector4(c.FxFilmic?1:0,Mathf.Clamp(c.FxFilmicExposure,.5f,2),0,0));
-            if(a<=0){material.SetTexture("_GlowTex",current);Pass(ref current,original,12);return;}
+            material.SetVector(MaterialPropertyIds.P_Hdr,new Vector4(.7f*a,.8f*a,.9f*a,.18f*a));
+            material.SetVector(MaterialPropertyIds.P_HdrB,new Vector4(c.FxFilmic?1:0,Mathf.Clamp(c.FxFilmicExposure,.5f,2),0,0));
+            if(a<=0){material.SetTexture(MaterialPropertyIds.P_GlowTex,current);Pass(ref current,original,12);return;}
             var s=RenderTexture.GetTemporary(Math.Max(1,original.width/4),Math.Max(1,original.height/4),0,original.format);
             var t=RenderTexture.GetTemporary(s.width,s.height,0,s.format);s.filterMode=t.filterMode=FilterMode.Bilinear;
             try {
                 Graphics.Blit(current,s);
-                material.SetVector("_Direction",new Vector4(6,0,0,0));Graphics.Blit(s,t,material,4);
-                material.SetVector("_Direction",new Vector4(0,6,0,0));Graphics.Blit(t,s,material,4);
-                material.SetTexture("_GlowTex",s);Pass(ref current,original,12);
+                material.SetVector(MaterialPropertyIds.P_Direction,new Vector4(6,0,0,0));Graphics.Blit(s,t,material,4);
+                material.SetVector(MaterialPropertyIds.P_Direction,new Vector4(0,6,0,0));Graphics.Blit(t,s,material,4);
+                material.SetTexture(MaterialPropertyIds.P_GlowTex,s);Pass(ref current,original,12);
             }finally{RenderTexture.ReleaseTemporary(s);RenderTexture.ReleaseTemporary(t);}
         }
         // 색 조정 (패스 13): 화소마다 계산, 이웃을 보지 않는다.
         private static void Grade(ref RenderTexture current,RenderTexture original,Settings c) {
             float clock=Time.unscaledTime%1000f;
-            material.SetVector("_GradeA",new Vector4(c.FxSepia?Mathf.Clamp01(c.FxSepiaAmount):0,c.FxDuotone?Mathf.Clamp01(c.FxDuotoneAmount):0,c.FxTealOrange?Mathf.Clamp(c.FxTealOrangeAmount,0,1.5f):0,c.FxInvert?Mathf.Clamp01(c.FxInvertAmount):0));
-            material.SetVector("_GradeB",new Vector4(c.FxMono?Mathf.Clamp01(c.FxMonoAmount):0,c.FxNight?Mathf.Clamp01(c.FxNightAmount):0,c.FxThermal?Mathf.Clamp01(c.FxThermalAmount):0,c.FxHue?Mathf.Clamp(c.FxHueShift,-180,180)*Mathf.Deg2Rad:0));
-            material.SetVector("_GradeC",new Vector4(Mathf.Repeat(c.FxDuotoneHue,1),clock,0,0));
+            material.SetVector(MaterialPropertyIds.P_GradeA,new Vector4(c.FxSepia?Mathf.Clamp01(c.FxSepiaAmount):0,c.FxDuotone?Mathf.Clamp01(c.FxDuotoneAmount):0,c.FxTealOrange?Mathf.Clamp(c.FxTealOrangeAmount,0,1.5f):0,c.FxInvert?Mathf.Clamp01(c.FxInvertAmount):0));
+            material.SetVector(MaterialPropertyIds.P_GradeB,new Vector4(c.FxMono?Mathf.Clamp01(c.FxMonoAmount):0,c.FxNight?Mathf.Clamp01(c.FxNightAmount):0,c.FxThermal?Mathf.Clamp01(c.FxThermalAmount):0,c.FxHue?Mathf.Clamp(c.FxHueShift,-180,180)*Mathf.Deg2Rad:0));
+            material.SetVector(MaterialPropertyIds.P_GradeC,new Vector4(Mathf.Repeat(c.FxDuotoneHue,1),clock,0,0));
             Pass(ref current,original,13);
         }
         // 질감·디테일 (패스 14): 이웃 화소, 틸트 시프트·소프트 포커스는 1/4 크기 흐린 복사본을 쓴다.
         private static void Detail(ref RenderTexture current,RenderTexture original,Settings c) {
             float tilt=c.FxTiltShift?Mathf.Clamp01(c.FxTiltShiftAmount):0,soft=c.FxSoftFocus?Mathf.Clamp01(c.FxSoftFocusAmount):0;
-            material.SetVector("_DetailA",new Vector4(c.FxOutline?Mathf.Clamp01(c.FxOutlineAmount):0,c.FxEmboss?Mathf.Clamp01(c.FxEmbossAmount):0,c.FxHalftone?Mathf.Clamp(c.FxHalftoneSize,3,24):0,tilt));
-            material.SetVector("_DetailB",new Vector4(soft,c.FxHalftone?Mathf.Clamp01(c.FxHalftoneAmount):0,0,0));
+            material.SetVector(MaterialPropertyIds.P_DetailA,new Vector4(c.FxOutline?Mathf.Clamp01(c.FxOutlineAmount):0,c.FxEmboss?Mathf.Clamp01(c.FxEmbossAmount):0,c.FxHalftone?Mathf.Clamp(c.FxHalftoneSize,3,24):0,tilt));
+            material.SetVector(MaterialPropertyIds.P_DetailB,new Vector4(soft,c.FxHalftone?Mathf.Clamp01(c.FxHalftoneAmount):0,0,0));
             if(tilt<=0 && soft<=0){Pass(ref current,original,14);return;}
             var s=RenderTexture.GetTemporary(Math.Max(1,original.width/4),Math.Max(1,original.height/4),0,original.format);
             var t=RenderTexture.GetTemporary(s.width,s.height,0,s.format);s.filterMode=t.filterMode=FilterMode.Bilinear;
             try {
                 Graphics.Blit(current,s);
                 float r=tilt>0?4:3;
-                material.SetVector("_Direction",new Vector4(r,0,0,0));Graphics.Blit(s,t,material,4);
-                material.SetVector("_Direction",new Vector4(0,r,0,0));Graphics.Blit(t,s,material,4);
-                material.SetTexture("_GlowTex",s);Pass(ref current,original,14);
+                material.SetVector(MaterialPropertyIds.P_Direction,new Vector4(r,0,0,0));Graphics.Blit(s,t,material,4);
+                material.SetVector(MaterialPropertyIds.P_Direction,new Vector4(0,r,0,0));Graphics.Blit(t,s,material,4);
+                material.SetTexture(MaterialPropertyIds.P_GlowTex,s);Pass(ref current,original,14);
             }finally{RenderTexture.ReleaseTemporary(s);RenderTexture.ReleaseTemporary(t);}
         }
         // 렌즈·왜곡 (패스 15): 좌표를 바꿔 다시 읽는다. 시네마 바는 마지막에 검은 띠.
         private static void Lens(ref RenderTexture current,RenderTexture original,Settings c) {
             float clock=Time.unscaledTime%1000f;
-            material.SetVector("_LensA",new Vector4(c.FxBarrel?Mathf.Clamp(c.FxBarrelAmount,-.6f,1):0,c.FxRipple?Mathf.Clamp(c.FxRippleAmount,0,2):0,c.FxGlitch?Mathf.Clamp01(c.FxGlitchAmount):0,c.FxZoomBlur?Mathf.Clamp01(c.FxZoomBlurAmount):0));
-            material.SetVector("_LensB",new Vector4(c.FxMirror?1:0,c.FxKaleido?Mathf.Clamp(Mathf.Round(c.FxKaleidoSegments),2,16):0,c.FxLetterbox?Mathf.Clamp(c.FxLetterboxAspect,1.5f,3):0,clock));
+            material.SetVector(MaterialPropertyIds.P_LensA,new Vector4(c.FxBarrel?Mathf.Clamp(c.FxBarrelAmount,-.6f,1):0,c.FxRipple?Mathf.Clamp(c.FxRippleAmount,0,2):0,c.FxGlitch?Mathf.Clamp01(c.FxGlitchAmount):0,c.FxZoomBlur?Mathf.Clamp01(c.FxZoomBlurAmount):0));
+            material.SetVector(MaterialPropertyIds.P_LensB,new Vector4(c.FxMirror?1:0,c.FxKaleido?Mathf.Clamp(Mathf.Round(c.FxKaleidoSegments),2,16):0,c.FxLetterbox?Mathf.Clamp(c.FxLetterboxAspect,1.5f,3):0,clock));
             Pass(ref current,original,15);
         }
         private static bool MapBloom() {

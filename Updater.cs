@@ -26,6 +26,8 @@ namespace StutterFix
         internal static bool Installed;             // 받아서 바꿔 둠 (다시 켜면 적용)
         internal static bool Busy;
         private static string zipUrl = "";
+        private static string zipSha256 = "";
+        private static volatile int generation;
         private static UnityWebRequest req;
         private static bool downloading;
         private static float startAt = -1f, nextCheck = -1f;
@@ -97,13 +99,14 @@ namespace StutterFix
                 if (downloading)
                 {
                     byte[] zip = r.downloadHandler.data;
-                    string latest = Latest, dir = Main.Entry.Path;
+                    string latest = Latest, dir = Main.Entry.Path, expectedSha = zipSha256;
+                    int requestGeneration=generation;
                     Busy = true; installState = 1;
                     Status = SettingsWindow.T("설치하는 중…", "Installing…");
                     System.Threading.ThreadPool.QueueUserWorkItem(_ =>
                     {
-                        try { Install(zip, latest, dir); installState = 2; }
-                        catch (Exception ex) { installError = ex.Message; installState = 3; }
+                        try { Install(zip, latest, dir,expectedSha,()=>generation!=requestGeneration); if(generation==requestGeneration)installState = 2; }
+                        catch (Exception ex) { if(generation==requestGeneration){installError = ex.Message; installState = 3;} }
                     });
                 }
                 else
@@ -143,17 +146,14 @@ namespace StutterFix
             NotesUrl = page.Success ? page.Groups[1].Value : "https://github.com/pding4569/StutterFix/releases";
             string want = "StutterFix-" + Latest + "-" + (Edition.Dev ? "developer" : "player") + ".zip";
             zipUrl = "";
-            foreach (Match m in Regex.Matches(json, "\"browser_download_url\"\\s*:\\s*\"([^\"]+)\""))
-            {
-                string u = m.Groups[1].Value;
-                if (u.StartsWith(DownloadPrefix, StringComparison.Ordinal) && u.EndsWith("/" + want, StringComparison.Ordinal)) { zipUrl = u; break; }
-            }
+            zipSha256="";
+            if(ReleaseAssetDigest.TryFind(json,want,DownloadPrefix,out var assetUrl,out var assetSha)){zipUrl=assetUrl;zipSha256=assetSha;}
             Notes = CleanNotes(JsonString(json, "body"));
             Available = Newer(Latest, Current);
             Status = Available
                 ? string.Format(SettingsWindow.T("새 버전 v{0} 이 있습니다 (지금 v{1})", "New version v{0} available (you have v{1})"), Latest, Current)
                 : string.Format(SettingsWindow.T("최신 버전입니다 (v{0})", "Up to date (v{0})"), Current);
-            if (Available && zipUrl.Length == 0) Status += SettingsWindow.T(" - 받을 파일이 없어 릴리스 페이지에서 직접 받아야 합니다", " - no download file; get it from the release page");
+            if (Available && zipUrl.Length == 0) Status += SettingsWindow.T(" - 검증 가능한 파일이 없어 릴리스 페이지에서 직접 받아야 합니다", " - no verifiable download file; get it from the release page");
             Main.Entry.Logger.Log("[업데이트] 최신 v" + Latest + ", 지금 v" + Current + (Available ? " -> 새 버전 있음" : ""));
         }
 
@@ -213,8 +213,10 @@ namespace StutterFix
         private static string Pad(string v) { var p = v.Split('.'); return p.Length >= 2 ? v : v + ".0"; }
 
         // 작업 스레드에서 돈다: 유니티 API·화면 상태를 건드리지 않는다
-        private static void Install(byte[] zip, string latest, string dir)
+        private static void Install(byte[] zip, string latest, string dir,string expectedSha,Func<bool> cancelled)
         {
+            if(cancelled())throw new OperationCanceledException();
+            UpdateTransaction.VerifyPackage(zip,expectedSha);
             byte[] dll = null; string info = null;
             using (var ms = new MemoryStream(zip))
             using (var za = new ZipArchive(ms, ZipArchiveMode.Read))
@@ -222,21 +224,37 @@ namespace StutterFix
                 foreach (var e in za.Entries)
                 {
                     string n = e.FullName.Replace('\\', '/');
-                    if (n == "StutterFix/StutterFix.dll") dll = ReadAll(e);
-                    else if (n == "StutterFix/Info.json") info = System.Text.Encoding.UTF8.GetString(ReadAll(e));
+                    if (n == "StutterFix/StutterFix.dll")
+                    {
+                        if(dll!=null||e.Length>32*1024*1024)throw new InvalidDataException("Duplicate/oversized DLL");
+                        dll = ReadAll(e);
+                    }
+                    else if (n == "StutterFix/Info.json")
+                    {
+                        if(info!=null||e.Length>65536)throw new InvalidDataException("Duplicate/oversized Info.json");
+                        info = System.Text.Encoding.UTF8.GetString(ReadAll(e));
+                    }
                 }
             }
             // 받은 것이 맞는지: DLL 모양(MZ), Info.json 의 Id 와 버전
             if (dll == null || dll.Length < 1024 || dll[0] != (byte)'M' || dll[1] != (byte)'Z') throw new Exception("zip 안에 올바른 StutterFix.dll 이 없음");
             if (info == null || !Regex.IsMatch(info, "\"Id\"\\s*:\\s*\"StutterFix\"") || !Regex.IsMatch(info, "\"Version\"\\s*:\\s*\"" + Regex.Escape(latest) + "\""))
                 throw new Exception("zip 안의 Info.json 이 맞지 않음");
-            string dllPath = Path.Combine(dir, "StutterFix.dll"), infoPath = Path.Combine(dir, "Info.json");
-            try { if (File.Exists(dllPath)) File.Copy(dllPath, dllPath + ".bak", true); } catch { }
-            File.WriteAllBytes(dllPath + ".new", dll);
-            File.Copy(dllPath + ".new", dllPath, true);
-            File.Delete(dllPath + ".new");
-            File.WriteAllText(infoPath, info);
+            UpdateTransaction.Apply(dir,dll,new System.Text.UTF8Encoding(false,true).GetBytes(info),validateAssembly:path=>
+            {
+                if(System.Reflection.AssemblyName.GetAssemblyName(path).Name!="StutterFix")throw new BadImageFormatException("Unexpected assembly name");
+            },cancelled:cancelled);
         }
+
+        internal static void Shutdown()
+        {
+            generation++;
+            try{if(req!=null){req.Abort();req.Dispose();}}catch{}
+            req=null;Busy=false;installState=0;startAt=nextCheck=-1f;
+        }
+#if DEV || AUTOTEST
+        internal static void TestInstall(byte[] bytes,string directory,string digest){Install(bytes,"9.9.9",directory,digest,()=>false);}
+#endif
 
         private static byte[] ReadAll(ZipArchiveEntry e)
         {

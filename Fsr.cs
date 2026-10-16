@@ -111,11 +111,11 @@ namespace StutterFix
                 if (done == content && ours && TestSharp < -1.5f) { Reused++; return; }
                 float sharp = TestSharp > -1.5f ? TestSharp : Sharpness;   // 검증기: -1 = EASU 만, 0 이상 = 그 세기로 RCAS
                 float iw = camRT.width, ih = camRT.height;
-                easu.SetVector("_Con0", new Vector4(iw / W, ih / H, 0.5f * iw / W - 0.5f, 0.5f * ih / H - 0.5f));
-                easu.SetVector("_Con1", new Vector4(1f / iw, 1f / ih, 1f / iw, -1f / ih));
-                easu.SetVector("_Con2", new Vector4(-1f / iw, 2f / ih, 1f / iw, 2f / ih));
-                easu.SetVector("_Con3", new Vector4(0f, 4f / ih, 0f, 0f));
-                rcas.SetVector("_RcasCon", new Vector4(Mathf.Pow(2f, -Mathf.Max(0f, sharp)), 0f, 0f, 0f));
+                easu.SetVector(MaterialPropertyIds.P_Con0, new Vector4(iw / W, ih / H, 0.5f * iw / W - 0.5f, 0.5f * ih / H - 0.5f));
+                easu.SetVector(MaterialPropertyIds.P_Con1, new Vector4(1f / iw, 1f / ih, 1f / iw, -1f / ih));
+                easu.SetVector(MaterialPropertyIds.P_Con2, new Vector4(-1f / iw, 2f / ih, 1f / iw, 2f / ih));
+                easu.SetVector(MaterialPropertyIds.P_Con3, new Vector4(0f, 4f / ih, 0f, 0f));
+                rcas.SetVector(MaterialPropertyIds.P_RcasCon, new Vector4(Mathf.Pow(2f, -Mathf.Max(0f, sharp)), 0f, 0f, 0f));
                 var prev = RenderTexture.active;
                 if (sharp < -0.5f) Graphics.Blit(camRT, outRT, easu);
                 else { Graphics.Blit(camRT, mid, easu); Graphics.Blit(mid, outRT, rcas); }

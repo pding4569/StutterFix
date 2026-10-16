@@ -1,0 +1,16 @@
+{
+  "run": "Arche functional 35s",
+  "prepared_tags": 32035,
+  "prepared_effects": 97694,
+  "states": [
+    "memory_enabled=False memory_limit=6000 memory_active=False pool=False cache=False dxt_hits=0 dxt_writes=0 json_hits=0 json_writes=0 upload_time=2 upload_buffer=4 epsilon_skips=0 native_batches=0 native_values=0 native_checks=0 native_mismatch=0 native_failed=False native_rounding=0 tag_hits=0 tag_compiled=0 tag_invalidations=0",
+    "memory_enabled=False memory_limit=6000 memory_active=False pool=False cache=False dxt_hits=0 dxt_writes=0 json_hits=0 json_writes=0 upload_time=2 upload_buffer=4 epsilon_skips=0 native_batches=0 native_values=0 native_checks=0 native_mismatch=0 native_failed=False native_rounding=0 tag_hits=229 tag_compiled=97694 tag_invalidations=0"
+  ],
+  "particle_snapshots": [
+    "owned=0 pause=0 catchup=0 foreign=0",
+    "owned=0 pause=0 catchup=0 foreign=0",
+    "owned=0 pause=0 catchup=0 foreign=0"
+  ],
+  "normal_exit": true,
+  "performance_ab": false
+}

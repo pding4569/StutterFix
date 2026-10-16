@@ -26,6 +26,15 @@
 
 SF_API int sf_version(void) { return 1; }
 
+extern void sf_motion_linear_ispc(const float*, const float*, const float*, const float*, float*, int, int);
+SF_API int sf_motion_linear(const float *start, const float *change, const float *position,
+                            const float *duration, float *output, int count, int rounding)
+{
+    if (!start || !change || !position || !duration || !output || count < 0 || count > 65536 || rounding < 0 || rounding > 1) return 0;
+    sf_motion_linear_ispc(start, change, position, duration, output, count, rounding);
+    return 1;
+}
+
 /* ---------------------------------------------------------------- downscale ---------------------------------------------------------------- */
 /* PngDecoder.Downscale in C. The C# code sums in double, but every term is an integer below 2^53, so the sums are exact;
  * here they are summed as integers and only the final divisions are done in double, exactly like the C# code.

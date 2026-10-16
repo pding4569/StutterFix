@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -32,9 +32,9 @@
     <Compile Include="StutterFix.cs" />
     <Compile Include="ExitFix.cs" />
     <Compile Include="StateDump.cs" />
-    <Compile Include="AllocProbe.cs" />
+    <Compile Include="AllocProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="AllocFix.cs" />
-    <Compile Include="FrameScan.cs" />
+    <Compile Include="FrameScan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ThumbCam.cs" />
     <Compile Include="FfxReuse.cs" />
     <Compile Include="MeshWarm.cs" />
@@ -42,20 +42,20 @@
     <Compile Include="SoundWarm.cs" />
     <Compile Include="FloorAnim.cs" />
     <Compile Include="JitWarm.cs" />
-    <Compile Include="ScriptProbe.cs" />
-    <Compile Include="FloorProf.cs" />
+    <Compile Include="ScriptProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="FloorProf.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TypeCache.cs" />
     <Compile Include="FilterIdentity.cs" />
-    <Compile Include="FilterGpuProbe.cs" />
-    <Compile Include="FilterHalfProbe.cs" />
-    <Compile Include="FilterHalfPerf.cs" />
+    <Compile Include="FilterGpuProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="FilterHalfProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="FilterHalfPerf.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FilterIdentityProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileCull.cs" />
     <Compile Include="EditorPick.cs" />
-    <Compile Include="TimeProbe.cs" />
+    <Compile Include="TimeProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="BeatFix.cs" />
     <Compile Include="MatReuse.cs" />
-    <Compile Include="HeapPath.cs" />
+    <Compile Include="HeapPath.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="Edition.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="FxShare.cs" />
@@ -66,8 +66,8 @@
     <Compile Include="TurboJpeg.cs" />
     <Compile Include="GpuClock.cs" />
     <Compile Include="WindowGhost.cs" />
-    <Compile Include="AutoTest.cs" />
-    <Compile Include="FreeFpsProbe.cs" />
+    <Compile Include="AutoTest.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="FreeFpsProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="BigLevel.cs" />
     <Compile Include="PcTune.cs" />
     <Compile Include="GfxProbe.cs" />
@@ -87,7 +87,7 @@
     <Compile Include="SystemMonitor.cs" />
     <Compile Include="UiInputBlock.cs" />
     <Compile Include="ModCost.cs" />
-    <Compile Include="UiProf.cs" />
+    <Compile Include="UiProf.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LowEnd.cs" />
     <Compile Include="HalfRender.cs" />
     <Compile Include="FrameGen.cs" />
@@ -105,10 +105,10 @@
     <Compile Include="TexCompress.cs" />
     <Compile Include="Resilience.cs" />
     <EmbeddedResource Include="fsr/stutterfix_fsr" LogicalName="StutterFix.fsr" />
-    <Compile Include="RenderVerify.cs" />
+    <Compile Include="RenderVerify.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="WarmChars.cs" />
     <Compile Include="Profiler.cs" />
-    <Compile Include="SceneScan.cs" />
+    <Compile Include="SceneScan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="AbTest.cs" />
     <Compile Include="LoopProfiler.cs" />
     <Compile Include="GcControl.cs" />
@@ -128,17 +128,17 @@
     <Compile Include="EffectBudget.cs" />
     <Compile Include="RecolorSplit.cs" />
     <Compile Include="ShaderWarm.cs" />
-    <Compile Include="StartProbe.cs" />
+    <Compile Include="StartProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="PngDecoder.cs" />
     <Compile Include="ImagePrefetch.cs" />
     <Compile Include="TweenFix.cs" />
     <Compile Include="RenderWatch.cs" />
     <Compile Include="SamplerWatch.cs" />
-    <Compile Include="RenderCallbackScan.cs" />
-    <Compile Include="FrameRateScreenWatch.cs" />
-    <Compile Include="ParticleTextWatch.cs" />
+    <Compile Include="RenderCallbackScan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="FrameRateScreenWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="ParticleTextWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TextureCensus.cs" />
-    <Compile Include="BlendProbe.cs" />
+    <Compile Include="BlendProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FastBlend.cs" />
     <Compile Include="InvisibleSkip.cs" />
     <Compile Include="Dormancy.cs" />
@@ -152,11 +152,21 @@
     <Compile Include="UiDraw.cs" />
     <Compile Include="LogExport.cs" />
     <Compile Include="Hotkey.cs" />
-    <Compile Include="FilterTrace.cs" />
+    <Compile Include="FilterTrace.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="VramGuard.cs" />
-    <Compile Include="MergeProbe.cs" />
+    <Compile Include="MergeProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ZeroTween.cs" />
     <Compile Include="MoveApply.cs" />
+    <Compile Include="MoveDeltaPolicy.cs" />
+    <Compile Include="NativeMotion.cs" />
+    <Compile Include="CompiledTagTable.cs" />
+    <Compile Include="TagIndex.cs" />
+    <Compile Include="MaterialPropertyIds.cs" />
+    <Compile Include="ResolutionBudgetPolicy.cs" />
+    <Compile Include="OptimizationModules.cs" />
+    <Compile Include="ReleaseAssetDigest.cs" />
+    <Compile Include="UpdateTransaction.cs" />
+    <Compile Include="UpdateFixture.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="BootConfig.cs" />
     <Compile Include="SceneReset.cs" />
     <Compile Include="TransitionFix.cs" />

@@ -1,0 +1,13 @@
+{
+  "mono_checks": 1048576,
+  "mono_mismatch": 0,
+  "native_vs_r64": 0,
+  "native_vs_forced_r32": 250471,
+  "mode": 1,
+  "normal_exit": true,
+  "game_simd_batches_in_hello_arche_50sec": [
+    0,
+    0
+  ],
+  "fps_ab": "not measured"
+}

@@ -1,0 +1,6 @@
+Linear native bit checks 2097152, mismatch 0; dispatched CPU path only
+.NET 8 offline arithmetic microbenchmark; excludes Unity setters and Mono, not game FPS.
+n=512 scalar_us=1.819 native_us=0.145 sink=39410.332; gather cost excluded
+n=2048 scalar_us=6.899 native_us=0.631 sink=-73328.35; gather cost excluded
+n=8192 scalar_us=29.472 native_us=2.568 sink=66265.266; gather cost excluded
+n=32768 scalar_us=115.518 native_us=13.020 sink=-30549.695; gather cost excluded

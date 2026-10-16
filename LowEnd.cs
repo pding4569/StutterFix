@@ -142,15 +142,23 @@ namespace StutterFix
         internal static int AutoTargetFps = 60, AutoMinPct = 50, AutoPct = 100;
         internal static long AutoDown, AutoUp;
         private static Unity.Profiling.ProfilerRecorder gpuRec;
+        private static bool autoGpuAttempted,autoGpuFailed;
+        internal static string AutoGpuState {get{return "enabled="+AutoRes+" attempted="+autoGpuAttempted+" failed="+autoGpuFailed+" valid="+gpuRec.Valid+" ema="+gpuEma;}}
         private static float gpuEma, nextChange;
         internal static float GpuEma { get { return gpuEma; } }
         internal static int EffectivePct { get { return AutoRes ? Math.Min(AutoPct, RenderScalePct) : RenderScalePct; } }
         internal static void AutoTick()
         {
-            if (!AutoRes || !Hitch.Playing || !RenderScaleReady || PerfOverlay.FrameStatsOff) { AutoPct = RenderScalePct; gpuEma = 0f; return; }
+            if (!AutoRes || !Hitch.Playing || !RenderScaleReady || PerfOverlay.FrameStatsOff) { if(autoGpuAttempted)StopAutoGpu();AutoPct = RenderScalePct; gpuEma = 0f; return; }
+            if(autoGpuFailed)return;
             try
             {
-                if (!gpuRec.Valid) gpuRec = Unity.Profiling.ProfilerRecorder.StartNew(Unity.Profiling.ProfilerCategory.Internal, "GPU Frame Time");
+                if (!autoGpuAttempted)
+                {
+                    autoGpuAttempted=true;
+                    gpuRec = Unity.Profiling.ProfilerRecorder.StartNew(Unity.Profiling.ProfilerCategory.Internal, "GPU Frame Time");
+                }
+                if(!gpuRec.Valid){autoGpuFailed=true;return;}
                 float g = gpuRec.LastValue / 1e6f;
                 if (g <= 0f || g > 500f) return;   // 값이 없거나 멈춘 프레임
                 gpuEma = gpuEma <= 0f ? g : gpuEma * 0.92f + g * 0.08f;
@@ -158,10 +166,16 @@ namespace StutterFix
                 if (now < nextChange) return;
                 float budget = 1000f / Mathf.Max(30, AutoTargetFps);
                 int max = RenderScalePct, min = Mathf.Min(AutoMinPct, max);
-                if (gpuEma > budget * 0.85f && AutoPct > min) { AutoPct = Math.Max(min, AutoPct - 10); nextChange = now + 1.5f; AutoDown++; EnsureSharpen(); }
-                else if (gpuEma < budget * 0.55f && AutoPct < max) { AutoPct = Math.Min(max, AutoPct + 10); nextChange = now + 3f; AutoUp++; EnsureSharpen(); }
+                int direction=ResolutionBudgetPolicy.Direction(gpuEma,budget);
+                if (direction<0 && AutoPct > min) { AutoPct = Math.Max(min, AutoPct - 10); nextChange = now + 1.5f; AutoDown++; EnsureSharpen(); }
+                else if (direction>0 && AutoPct < max) { AutoPct = Math.Min(max, AutoPct + 10); nextChange = now + 3f; AutoUp++; EnsureSharpen(); }
             }
-            catch { }
+            catch {autoGpuFailed=true;AutoPct=RenderScalePct;try{gpuRec.Dispose();}catch{}gpuRec=default;}
+        }
+        private static void StopAutoGpu()
+        {
+            try{gpuRec.Dispose();}catch{}
+            gpuRec=default;autoGpuAttempted=autoGpuFailed=false;gpuEma=nextChange=0;
         }
 
 
@@ -288,6 +302,7 @@ namespace StutterFix
         // 모드를 끄거나 다시 불러올 때 원래대로
         internal static void Shutdown()
         {
+            StopAutoGpu();
             if (fpsCapped) { fpsCapped = false; try { Application.targetFrameRate = savedFps; } catch { } }
             bool p = Priority, t = NoThrottle, s = Sharpen;
             Sharpen = false; EnsureSharpen(); Sharpen = s;
@@ -321,8 +336,12 @@ namespace StutterFix
         {
             if (!NoFft && !Priority && !NoThrottle && RenderScalePct >= 100 && !HalfRender.Enabled && !AutoRes) return "";
             string rt = ""; try { var cam = scrCamera.instance; var t = cam == null ? null : camRTRef(cam); if (t != null) rt = ", 게임 화면 " + t.width + "x" + t.height; } catch { }
+            string renderVerification="";
+#if DEV || AUTOTEST
+            renderVerification=RenderVerify.Summary();
+#endif
             return string.Format(" | 저사양: 우선순위 {0}, 절전 제한 끔 {1}, 음악 반응 계산 건너뜀 {2}번 (돈 것 {3}번), 해상도 배율 {4}%{5}, 선명도 보정 {6}프레임",
-                priorityOn ? "높음" : "보통", throttleOn, FftSkipped, FftRun, RenderScalePct, rt, SharpenFrames) + (AutoRes ? string.Format(", 자동 해상도: 목표 {0} FPS, 내림 {1}번, 올림 {2}번, 끝났을 때 {3}%", AutoTargetFps, AutoDown, AutoUp, AutoPct) : "") + Fsr.Summary() + HalfRender.Summary() + RenderVerify.Summary();
+                priorityOn ? "높음" : "보통", throttleOn, FftSkipped, FftRun, RenderScalePct, rt, SharpenFrames) + (AutoRes ? string.Format(", 자동 해상도: 목표 {0} FPS, 내림 {1}번, 올림 {2}번, 끝났을 때 {3}%", AutoTargetFps, AutoDown, AutoUp, AutoPct) : "") + Fsr.Summary() + HalfRender.Summary() + renderVerification;
         }
     }
 }
@@ -336,10 +355,10 @@ namespace StutterFix
         {
             var m = LowEnd.SharpenMat;
             if (m == null) { Graphics.Blit(src, dst); return; }
-            m.SetFloat("_TimeX", 1f);
-            m.SetVector("_ScreenResolution", new Vector4(src.width, src.height, 0f, 0f));
-            m.SetFloat("_Value", LowEnd.SharpenValue);
-            m.SetFloat("_Value2", 1f);
+            m.SetFloat(MaterialPropertyIds.P_TimeX, 1f);
+            m.SetVector(MaterialPropertyIds.P_ScreenResolution, new Vector4(src.width, src.height, 0f, 0f));
+            m.SetFloat(MaterialPropertyIds.P_Value, LowEnd.SharpenValue);
+            m.SetFloat(MaterialPropertyIds.P_Value2, 1f);
             Graphics.Blit(src, dst, m);
             LowEnd.SharpenFrames++;
         }

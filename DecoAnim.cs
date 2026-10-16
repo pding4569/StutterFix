@@ -51,6 +51,7 @@ namespace StutterFix
             public float Dur, Pos; public bool Started, Running = true, Stepped;
             public Ease E; public float Over, Period;
             public float FStart, FEnd, FChange, FLast;          // 1,2 위치  5 회전  10 불투명도
+            public long NativeEpoch; public int NativeIndex;
             public Color CStart, CEnd, CChange, CLast;          // 9 색
             public Vector2 VStart, VEnd, VChange, VLast;        // 7 크기X  8 크기Y
             // 개발자용 짝 (진짜 DOTween)
@@ -60,6 +61,7 @@ namespace StutterFix
         internal static long Reused, NewProxies;
 
         private static readonly List<Rec> recs = new List<Rec>();
+        private static long nativeEpoch, activeNativeEpoch;
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> pivotPosRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("pivotPosVec");
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> pivotOffRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("pivotOffsetVec");
         private static readonly AccessTools.FieldRef<scrDecoration, float> rotRef = AccessTools.FieldRefAccess<scrDecoration, float>("rotAngle");
@@ -162,6 +164,7 @@ namespace StutterFix
                 r.Dur = dur; r.E = ease;
             }
             else r = new Rec { D = dec, Key = key, Dur = dur, E = ease };
+            r.NativeEpoch = 0;
             ZeroTween.EaseParams(ease, out r.Over, out r.Period);
             if (!reuseProxy) NewProxies++;
             r.Proxy = reuseProxy ? old : FloorAnim.NewProxy();   // 리플렉션 생성(하나 약 2us) 대신 생성자 호출기
@@ -263,8 +266,26 @@ namespace StutterFix
             }
         }
         // setter (값 계산 + 넣기)
-        private static void Apply(Rec r, float pos)
+        private static void Apply(Rec r, float pos, bool nativeStep = false)
         {
+            if (nativeStep && NativeMotion.Enabled && activeNativeEpoch != 0 && r.NativeEpoch == activeNativeEpoch && !NativeMotion.Failed)
+            {
+                int i=r.NativeIndex;
+                // A prior setter can cancel/reuse an animation. Do not consume
+                // prepared values after its source state has changed.
+                if(r.Running && r.E==Ease.Linear && pos==NativeMotion.Position[i] && r.Dur==NativeMotion.Duration[i]
+                    && r.FStart==NativeMotion.Start[i] && r.FChange==NativeMotion.Change[i])
+                {
+                    float value=NativeMotion.Output[i];
+                    if(Edition.Dev)
+                    {
+                        float expected=r.FStart+r.FChange*ZeroTween.Eval(r.E,pos,r.Dur,r.Over,r.Period);
+                        NativeMotion.Checks++;
+                        if(B(value)!=B(expected)){NativeMotion.Mismatch++;NativeMotion.Failed=true;value=expected;}
+                    }
+                    r.FLast=value;return;
+                }
+            }
             float e = ZeroTween.Eval(r.E, pos, r.Dur, r.Over, r.Period);
             switch (r.Key)
             {
@@ -316,8 +337,8 @@ namespace StutterFix
             if (to >= r.Dur) { to = r.Dur; done = true; }
             r.Pos = to;
             r.Stepped = true;
-            if (Prof && (++profN & 15) == 0) { long a0 = System.Diagnostics.Stopwatch.GetTimestamp(); Apply(r, to); long a1 = System.Diagnostics.Stopwatch.GetTimestamp(); OnUpdate(r); long a2 = System.Diagnostics.Stopwatch.GetTimestamp(); int k = r.Key & 15; ProfN[k]++; ProfApply[k] += a1 - a0; ProfSet[k] += a2 - a1; }
-            else { Apply(r, to);
+            if (Prof && (++profN & 15) == 0) { long a0 = System.Diagnostics.Stopwatch.GetTimestamp(); Apply(r, to, true); long a1 = System.Diagnostics.Stopwatch.GetTimestamp(); OnUpdate(r); long a2 = System.Diagnostics.Stopwatch.GetTimestamp(); int k = r.Key & 15; ProfN[k]++; ProfApply[k] += a1 - a0; ProfSet[k] += a2 - a1; }
+            else { Apply(r, to, true);
             OnUpdate(r); }
             if (done) { r.Running = false; Completed++; OnComplete(r); }
         }
@@ -389,6 +410,26 @@ namespace StutterFix
         internal static void DropAll() { KillAllPrefix(false); }
 
         // DOTweenComponent.Update 앞:DOTween 과 같은 dt 로, 만든 순서대로 진행
+        private static bool Finite(float value){return !float.IsNaN(value)&&!float.IsInfinity(value);}
+        private static void PrepareNative(float td)
+        {
+            activeNativeEpoch=0;
+            if(!NativeMotion.Enabled||NativeMotion.Failed||recs.Count<NativeMotion.Minimum||!Finite(td))return;
+            if(!NativeMotion.EnsureCompatible())return;
+            long token=++nativeEpoch;
+            int n=0;
+            for(int i=0;i<recs.Count && n<NativeMotion.Capacity;i++)
+            {
+                var r=recs[i];
+                if(!r.Running||!r.Started||r.E!=Ease.Linear||r.Key==7||r.Key==8||r.Key==9||r.Key==11)continue;
+                float pos=r.Pos+td;if(pos>=r.Dur)pos=r.Dur;
+                if(!(r.Dur>0)||!Finite(pos)||!Finite(r.Dur)||!Finite(r.FStart)||!Finite(r.FChange))continue;
+                NativeMotion.Start[n]=r.FStart;NativeMotion.Change[n]=r.FChange;
+                NativeMotion.Position[n]=pos;NativeMotion.Duration[n]=r.Dur;
+                r.NativeEpoch=token;r.NativeIndex=n++;
+            }
+            if(NativeMotion.Run(n))activeNativeEpoch=token;
+        }
         public static void UpdatePrefix()
         {
             if (recs.Count == 0) { LastFrameMs = 0; return; }
@@ -398,6 +439,7 @@ namespace StutterFix
             Frames++;
             if (!(td < 1E-06f && td > -1E-06f))
             {
+                PrepareNative(td);
                 for (int i = 0; i < recs.Count; i++)
                 {
                     var r = recs[i];

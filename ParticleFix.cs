@@ -20,6 +20,7 @@ namespace StutterFix
     {
         internal static bool SkipIdle = true;
         internal static bool PauseOffscreen;
+        internal static bool CatchupOffscreen;
         internal static long Skipped, Written, Paused;
 
         private sealed class State
@@ -27,7 +28,7 @@ namespace StutterFix
             public ParticleSystem Ps;
             public bool HasScale, HasSpeed, CullSet;
             public Vector3 Scale; public float Speed;
-            public ParticleSystemCullingMode CullBefore;
+            public ParticleSystemCullingMode CullBefore, CullApplied;
         }
         private static readonly ConditionalWeakTable<scrParticleDecoration, State> states = new ConditionalWeakTable<scrParticleDecoration, State>();
         private static readonly AccessTools.FieldRef<scrParticleDecoration, ParticleSystem> psRef = AccessTools.FieldRefAccess<scrParticleDecoration, ParticleSystem>("particleSystem");
@@ -80,11 +81,17 @@ namespace StutterFix
                 cur = s;
                 // 저사양: 화면 밖이면 멈춤
                 bool wantPause = PauseOffscreen && !Compat.QPauseOffscreenParticles && Hitch.Playing;
-                if (wantPause != s.CullSet)
+                var wantedMode=CatchupOffscreen?ParticleSystemCullingMode.PauseAndCatchup:ParticleSystemCullingMode.Pause;
+                if (wantPause != s.CullSet || (wantPause && wantedMode != s.CullApplied))
                 {
                     var main = ps.main;
-                    if (wantPause) { s.CullBefore = main.cullingMode; main.cullingMode = ParticleSystemCullingMode.Pause; Paused++; lock (culled) culled.Add(new WeakReference(__instance)); }
-                    else main.cullingMode = s.CullBefore;
+                    if (wantPause)
+                    {
+                        if(s.CullSet && main.cullingMode!=s.CullApplied)return;
+                        if(!s.CullSet){s.CullBefore=main.cullingMode;lock(culled)culled.Add(new WeakReference(__instance));}
+                        main.cullingMode=wantedMode;s.CullApplied=wantedMode;Paused++;
+                    }
+                    else if(main.cullingMode==s.CullApplied)main.cullingMode = s.CullBefore;
                     s.CullSet = wantPause;
                 }
             }
@@ -122,11 +129,28 @@ namespace StutterFix
                 {
                     var d = w.Target as scrParticleDecoration; State s;
                     if (d == null || !states.TryGetValue(d, out s) || !s.CullSet || s.Ps == null) continue;
-                    try { var main = s.Ps.main; main.cullingMode = s.CullBefore; s.CullSet = false; } catch { }
+                    try { var main = s.Ps.main; if(main.cullingMode==s.CullApplied)main.cullingMode = s.CullBefore; s.CullSet = false; } catch { }
                 }
                 culled.Clear();
             }
         }
+
+#if DEV || AUTOTEST
+        internal static string CullSnapshot()
+        {
+            int owned=0,pause=0,catchup=0,foreign=0;
+            lock(culled)foreach(var weak in culled)
+            {
+                var dec=weak.Target as scrParticleDecoration;State s;
+                if(dec==null||!states.TryGetValue(dec,out s)||!s.CullSet||s.Ps==null)continue;
+                owned++;var mode=s.Ps.main.cullingMode;
+                if(mode!=s.CullApplied)foreign++;
+                if(mode==ParticleSystemCullingMode.Pause)pause++;
+                if(mode==ParticleSystemCullingMode.PauseAndCatchup)catchup++;
+            }
+            return "owned="+owned+" pause="+pause+" catchup="+catchup+" foreign="+foreign;
+        }
+#endif
 
         internal static string Summary()
         {

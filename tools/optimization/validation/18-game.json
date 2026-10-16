@@ -1,0 +1,17 @@
+{
+  "batch": "끝",
+  "update_fixture": [
+    "checks=4 mismatch=0 target=isolated-filesystem memory_zip_only=True"
+  ],
+  "module_fixture": [
+    "checks=3 mismatch=0 owners=1/0/1 native_enabled=True/False/True"
+  ],
+  "resolution_states": [
+    "enabled=True attempted=True failed=False valid=True ema=2.917483",
+    "enabled=False attempted=False failed=False valid=False ema=0"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false
+}

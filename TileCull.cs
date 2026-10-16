@@ -291,7 +291,8 @@ namespace StutterFix
                 r = r * 1.25f + 3f;   // 여유: 흔들림·그리기 직전 작은 움직임
                 int x0 = Mathf.FloorToInt((c.x - r) / Cell), x1 = Mathf.FloorToInt((c.x + r) / Cell);
                 int y0 = Mathf.FloorToInt((c.y - r) / Cell), y1 = Mathf.FloorToInt((c.y + r) / Cell);
-                if ((long)(x1 - x0 + 1) * (y1 - y0 + 1) > 200000) { StopAll(); return; }   // 너무 멀리 줌아웃: 하지 않음
+                long cellWidth=(long)x1-x0+1,cellHeight=(long)y1-y0+1;
+                if (cellWidth<=0 || cellHeight<=0 || cellWidth>200000 || cellHeight>200000 || cellWidth*cellHeight>200000) { StopAll(); return; }   // 너무 멀리 줌아웃: 하지 않음
                 Move(x0, y0, x1, y1);
                 if (++frames % 30 == 0) Requalify();
             }
