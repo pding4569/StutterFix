@@ -1815,6 +1815,10 @@ namespace StutterFix
                 T("윈도우 11 이 게임을 '효율 모드'로 느린 코어에 몰아넣지 않게 하고, 타이머 정밀도를 1ms 로 올려 프레임 간격이 덜 흔들리게 합니다. 노트북에 효과가 큽니다. 전기를 조금 더 씁니다.",
                   "Keeps Windows 11 from putting the game in efficiency mode and raises the timer resolution to 1 ms for steadier frame pacing. Helps laptops most; uses slightly more power."),
                 null);
+            ch |= Option("timerhalf", ref c.TimerHalfMs, T("타이머 0.5ms 요청 (실험)", "0.5 ms timer request (experimental)"),
+                T("윈도우 타이머 정밀도를 0.5ms 까지 요청해 프레임 대기가 덜 튀게 합니다. 이미 다른 프로그램이 올려 둔 컴퓨터에서는 차이가 없습니다. 끄거나 게임을 끝내면 우리가 올린 요청만 내립니다.",
+                  "Requests 0.5 ms Windows timer resolution for steadier frame waits. No difference if another program already raised it. Turning it off releases only our own request."),
+                null);
             BeginRow();
             GUILayout.Label(T("메뉴·에디터 FPS 제한", "Menu / editor FPS limit"), sBody);
             P(T("플레이 중이 아닐 때(메뉴, 에디터 편집, 맵 고르기) FPS 를 묶어 그래픽카드와 CPU 를 쉬게 합니다. 노트북은 발열이 줄어 플레이할 때 열 때문에 느려지는 일이 덜합니다. 곡을 시작하면 바로 원래 FPS 로 돌아가고, 맵을 불러오는 동안에는 묶지 않습니다. 수직동기가 켜져 있으면 적용되지 않습니다.",

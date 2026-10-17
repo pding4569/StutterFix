@@ -10,10 +10,25 @@ namespace StutterFix
     // 게임 밖 설정(우선순위, 절전)이나 거의 안 보이는 차이를 감수하는 기능을 모아 둔다. 전부 기본 꺼짐.
     internal static class LowEnd
     {
-        internal static bool Priority, NoThrottle, NoFft;
+        internal static bool Priority, NoThrottle, NoFft, HalfMsTimer;
         private static bool priorityOn, throttleOn, installed;
         private static readonly TimerPeriodLease timer=new TimerPeriodLease(1,BeginTimerPeriod,EndTimerPeriod);
         private static bool timerOn=>timer.Owned;
+        // NtSetTimerResolution 0.5ms: 우리가 올린 요청만 소유하고 같은 값으로 내린다. 다른 프로세스가 올린 전역 해상도는 건드리지 않는다.
+        [DllImport("ntdll.dll",ExactSpelling=true)]private static extern int NtSetTimerResolution(uint desired,bool set,out uint current);
+        private static bool ntOwned;
+        internal static bool NtTimerOwned=>ntOwned;
+        private static void ApplyNtTimer()
+        {
+            if(HalfMsTimer==ntOwned)return;
+            try
+            {
+                uint cur;int st=NtSetTimerResolution(5000,HalfMsTimer,out cur);
+                if(st>=0){ntOwned=HalfMsTimer;Main.Entry.Logger.Log("[저사양] 타이머 0.5ms 요청 "+(ntOwned?"켬":"해제")+" (현재 "+cur+"x100ns)");}
+                else Main.Entry.Logger.Log("[저사양] 타이머 0.5ms 요청 실패 status="+st+" (소유 상태 유지, 다시 시도)");
+            }
+            catch(Exception ex){Main.Entry.Logger.Log("[저사양] 타이머 0.5ms 요청 오류: "+ex.Message);}
+        }
 #if DEV || AUTOTEST
         internal static bool TimerOwnedForFixture=>timer.Owned;
 #endif
@@ -54,6 +69,7 @@ namespace StutterFix
 
         private static void ApplyThrottle()
         {
+            ApplyNtTimer();
             if (NoThrottle == throttleOn && timerOn == NoThrottle) return;
             // Timer release must still run if the independent power API fails.
             bool timerOk=timer.Apply(NoThrottle);
@@ -311,11 +327,11 @@ namespace StutterFix
         {
             StopAutoGpu();
             if (fpsCapped) { fpsCapped = false; try { Application.targetFrameRate = savedFps; } catch { } }
-            bool p = Priority, t = NoThrottle, s = Sharpen;
+            bool p = Priority, t = NoThrottle, s = Sharpen, h = HalfMsTimer;
             Sharpen = false; EnsureSharpen(); Sharpen = s;
-            Priority = false; NoThrottle = false;
+            Priority = false; NoThrottle = false; HalfMsTimer = false;
             ApplyPriority(); ApplyThrottle();
-            Priority = p; NoThrottle = t;
+            Priority = p; NoThrottle = t; HalfMsTimer = h;
         }
 
         // ── 그래픽 설정 기록 (다음 저사양 옵션을 고르는 근거) ──

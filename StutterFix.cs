@@ -843,7 +843,7 @@ BlendProbe.Tick();
             bool floorAnim = E("FloorAnim", Config.FloorAnim);
             if (!floorAnim && global::StutterFix.FloorAnim.Enabled) global::StutterFix.FloorAnim.FinishAll();
             global::StutterFix.FloorAnim.Enabled = floorAnim;
-            LowEnd.Priority = Config.LowPriority; LowEnd.NoThrottle = Config.LowNoThrottle; LowEnd.NoFft = Config.LowNoFft; LowEnd.RenderScalePct = low ? Mathf.Clamp(Config.LowRenderScale, 10, 100) : 100; LowEnd.SharpUpscale = Config.LowSharpUpscale; LowEnd.ImageCap = Config.LowImageCap; LowEnd.Sharpen = low && Config.LowSharpen; LowEnd.SharpenValue = Mathf.Clamp(Config.LowSharpenValue, 0.25f, 4f); HalfRender.Enabled = low && E("LowHalfRender", Config.LowHalfRender); LowEnd.AutoRes = low && Config.LowAutoRes; LowEnd.AutoTargetFps = Config.LowAutoFps; LowEnd.AutoMinPct = Mathf.Clamp(Config.LowAutoMin, 10, 100); LowEnd.MenuFps = Config.LowMenuFps; Fsr.Enabled = low && E("LowFsr", Config.LowFsr) && !Config.LowSharpUpscale;
+            LowEnd.Priority = Config.LowPriority; LowEnd.NoThrottle = Config.LowNoThrottle; LowEnd.HalfMsTimer = Config.TimerHalfMs; LowEnd.NoFft = Config.LowNoFft; LowEnd.RenderScalePct = low ? Mathf.Clamp(Config.LowRenderScale, 10, 100) : 100; LowEnd.SharpUpscale = Config.LowSharpUpscale; LowEnd.ImageCap = Config.LowImageCap; LowEnd.Sharpen = low && Config.LowSharpen; LowEnd.SharpenValue = Mathf.Clamp(Config.LowSharpenValue, 0.25f, 4f); HalfRender.Enabled = low && E("LowHalfRender", Config.LowHalfRender); LowEnd.AutoRes = low && Config.LowAutoRes; LowEnd.AutoTargetFps = Config.LowAutoFps; LowEnd.AutoMinPct = Mathf.Clamp(Config.LowAutoMin, 10, 100); LowEnd.MenuFps = Config.LowMenuFps; Fsr.Enabled = low && E("LowFsr", Config.LowFsr) && !Config.LowSharpUpscale;
             EffectBudget.BudgetMs = Config.LowSplit >= 2 ? 3f : Config.LowSplit == 1 ? 5f : 10f;
             RecolorSplit.ChunkTiles = Config.LowSplit >= 2 ? 120 : Config.LowSplit == 1 ? 200 : 400;
             bool fsplit = low && E("LowFloorSplit", Config.LowFloorSplit);
@@ -1114,6 +1114,7 @@ BlendProbe.Tick();
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음
+        public bool TimerHalfMs = false;    // 타이머 0.5ms 요청(NtSetTimerResolution), 기본 끔
         public bool LowNoThrottle = false;  // 윈도우 절전 제한 끄기 + 타이머 1ms
         public int LowMenuFps = 0;          // 플레이 중이 아닐 때(메뉴·에디터) FPS 제한 (0 끔, 30, 60)
         public int CrashStreak = 0;         // 연속 비정상 종료 횟수 (2 이상이면 안전 모드)
