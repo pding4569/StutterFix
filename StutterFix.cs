@@ -1074,8 +1074,8 @@ BlendProbe.Tick();
         public string MapProfilesPath = "";
         public bool AsyncUploadBudget = true;
         public bool JsonStringPool = true;
-        public bool AssetDiskCache = false; // 기본 끔: 캐시가 채워진 뒤에도 USB SSD(D:)에서 HELLO 맵 열기 11.9 -> 16.4초(이미지 4.8 -> 8.0초). 빠른 내장 NVMe 에서만 이득일 수 있다
-        public int AssetDiskCacheMB = 512;
+        public bool AssetDiskCache = true;  // 기본 켬(내장 드라이브 C: 의 LocalAppData). 두 번째 열기부터 Windflower 11.8 -> 9.7초, HELLO 12.9 -> 11.6초. 첫 열기는 +0.1~1.2초(쓰기). 빈 공간이 모자라면 저절로 꺼진다
+        public int AssetDiskCacheMB = 3072;   // 무거운 맵 하나(Windflower)가 1.6GB. 512MB 는 계속 밀어내서 적중 40%였다
         public string AssetDiskCachePath = "";
         public bool EffectSplit = true;
         public bool RecolorSplit = true;

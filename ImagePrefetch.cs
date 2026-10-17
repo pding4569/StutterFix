@@ -720,20 +720,20 @@ namespace StutterFix
                     try
                     {
                         it.DiskKey=AssetDiskCache.ImageKey(it.Path,sideNow);
-                        byte[] blob,cachedData;int cw,ch,cf;float factor0;bool dxt5;
-                        if(readCache.TryRead(it.DiskKey,out blob)&&AssetDiskCache.UnpackDxt(blob,out cw,out ch,out cf,out factor0,out dxt5,out cachedData)
+                        byte[] blob,cachedData;int cw,ch,cf,cachedOffset;float factor0;bool dxt5;
+                        if(readCache.TryRead(it.DiskKey,out blob)&&AssetDiskCache.UnpackDxt(blob,out cw,out ch,out cf,out factor0,out dxt5,out cachedData,out cachedOffset)
                             &&it.DiskKey==AssetDiskCache.ImageKey(it.Path,sideNow))
                         {
-                            IntPtr pointer=Marshal.AllocHGlobal(cachedData.Length);
-                            try{Marshal.Copy(cachedData,0,pointer,cachedData.Length);}catch{Marshal.FreeHGlobal(pointer);throw;}
+                            int cachedLength=cachedData.Length-cachedOffset;IntPtr pointer=Marshal.AllocHGlobal(cachedLength);
+                            try{Marshal.Copy(cachedData,cachedOffset,pointer,cachedLength);}catch{Marshal.FreeHGlobal(pointer);throw;}
                             lock(gate)
                             {
                                 if(!running||it.State!=1||it.Index<consumed)Marshal.FreeHGlobal(pointer);
                                 else
                                 {
                                     it.Width=cw;it.Height=ch;it.Format=cf;it.Factor=factor0;it.Dxt5=dxt5;
-                                    it.Blocks=pointer;it.BlockSize=cachedData.Length;it.BlocksReady=true;it.CachedBlocks=true;
-                                    it.State=2;pendingBytes+=cachedData.Length;Interlocked.Increment(ref AssetDiskCache.DxtHits);
+                                    it.Blocks=pointer;it.BlockSize=cachedLength;it.BlocksReady=true;it.CachedBlocks=true;
+                                    it.State=2;pendingBytes+=cachedLength;Interlocked.Increment(ref AssetDiskCache.DxtHits);
                                 }
                                 Monitor.PulseAll(gate);
                             }

@@ -1079,8 +1079,8 @@ namespace StutterFix
                 ch |= Option("jsonpool", ref c.JsonStringPool, T("맵 문자열 재사용 (실험)", "Reuse level strings (experimental)"),
                     T("맵을 읽는 동안 반복되는 짧은 문자열과 검색 버퍼를 재사용합니다.", "Reuses repeated short strings and scratch lookup buffers while reading a level."), null);
                 ch |= Option("diskcache", ref c.AssetDiskCache, T("맵 파일 디스크 캐시 (실험)", "Level disk cache (experimental)"),
-                    T("다시 여는 맵의 이미지 압축 결과와 JSON 해석 결과를 저장합니다. 기본 최대 512MB이며 파일 변경 시 다시 만듭니다.",
-                      "Stores compressed images and parsed JSON for revisits. Default maximum 512MB; changed files are decoded again."), null);
+                    T("다시 여는 맵의 이미지 압축 결과와 JSON 해석 결과를 내장 드라이브(C:)에 저장합니다. 두 번째 열기부터 약 1~2초 빨라지고 맵마다 1~2GB를 씁니다. 기본 최대 3GB이며 남은 공간이 모자라면 저절로 꺼지고 파일이 바뀌면 다시 만듭니다.",
+                      "Stores compressed images and parsed JSON on the internal drive (C:) for revisits. Opens ~1-2 s faster from the second time and uses 1-2 GB per heavy level. Default maximum 3 GB; turns itself off when free space is low and rebuilds changed files."), null);
                 ch |= Option("uploadbudget", ref c.AsyncUploadBudget, T("로딩 업로드 예산 (실험)", "Loading upload budget (experimental)"),
                     T("이미지 미리 읽기 중 업로드 예산을 늘리고 끝나면 원래 설정으로 되돌립니다. 비동기 업로드가 가능한 에셋에 적용됩니다.",
                       "Raises upload budgets during image prefetch, then restores original settings. Applies to assets eligible for asynchronous upload."), null);

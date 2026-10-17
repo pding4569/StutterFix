@@ -335,7 +335,11 @@ namespace StutterFix
 
             // 이번 곡 통계: 곡이 시작되면 새로 센다 (곡이 끝난 뒤에도 다음 곡까지 남겨 둔다)
             bool playing = Hitch.Playing;
-            if (playing && !wasPlaying) { Main.Entry.Logger.Log("[곡 시작] " + ScreenState()); songStartT = Time.unscaledTime; songMs = 0; songFrames = 0; songHitches = 0; songWorst = 0; songGpu = 0; songCpu = 0; songTiming = 0; songMod = 0; songWorstPlay = 0; wpFx = wpMove = 0; wpN = 0; System.Array.Clear(top, 0, TopN); fxWorst = fxWorstFx = fxWorstMove = 0; System.Array.Clear(bucketMs, 0, MaxBuckets); System.Array.Clear(bucketCpu, 0, MaxBuckets); System.Array.Clear(bucketFrames, 0, MaxBuckets); System.Array.Clear(bucketRender, 0, MaxBuckets); System.Array.Clear(bucketWait, 0, MaxBuckets); System.Array.Clear(bucketGpu, 0, MaxBuckets); System.Array.Clear(bucketAwake, 0, MaxBuckets); System.Array.Clear(bucketAnim, 0, MaxBuckets); System.Array.Clear(bucketOff, 0, MaxBuckets); }
+            if (playing && !wasPlaying) { Main.Entry.Logger.Log("[곡 시작] " + ScreenState()); songStartT = Time.unscaledTime;
+#if AUTOTEST
+                System.Array.Clear(songHist, 0, songHist.Length);
+#endif
+                songMs = 0; songFrames = 0; songHitches = 0; songWorst = 0; songGpu = 0; songCpu = 0; songTiming = 0; songMod = 0; songWorstPlay = 0; wpFx = wpMove = 0; wpN = 0; System.Array.Clear(top, 0, TopN); fxWorst = fxWorstFx = fxWorstMove = 0; System.Array.Clear(bucketMs, 0, MaxBuckets); System.Array.Clear(bucketCpu, 0, MaxBuckets); System.Array.Clear(bucketFrames, 0, MaxBuckets); System.Array.Clear(bucketRender, 0, MaxBuckets); System.Array.Clear(bucketWait, 0, MaxBuckets); System.Array.Clear(bucketGpu, 0, MaxBuckets); System.Array.Clear(bucketAwake, 0, MaxBuckets); System.Array.Clear(bucketAnim, 0, MaxBuckets); System.Array.Clear(bucketOff, 0, MaxBuckets); }
 
 #if AUTOTEST
             if (playing && !wasPlaying) missionOver30 = 0;
@@ -356,6 +360,9 @@ namespace StutterFix
                 SongBucket = b < MaxBuckets ? b : -1;
                 if (b < MaxBuckets) { bucketMs[b] += ms; bucketFrames[b]++; bucketCpu[b] += lastCpu; bucketRender[b] += lastRender; bucketWait[b] += lastWait; bucketGpu[b] += lastGpu < 1000f ? lastGpu : 0f; bucketAwake[b] += Dormancy.LastAwake; bucketAnim[b] += DecoAnim.LastFrameMs; bucketOff[b] += Dormancy.LastOffscreen; }
                 songMs += ms; songFrames++; if (ms > songWorst) songWorst = ms;
+#if AUTOTEST
+                { int hb = (int)(ms * 10f); if (hb < 0) hb = 0; else if (hb > 1999) hb = 1999; songHist[hb]++; }
+#endif
                 // 효과가 가장 무거운 프레임 (GPU 가 튄 프레임 같은 것에 가려지지 않게 따로 남긴다)
                 if (!InStartWindow)
                 {
@@ -582,6 +589,21 @@ namespace StutterFix
         }
 
         internal static int SongFrames { get { var o = Instance; return o == null ? 0 : o.songFrames; } }
+#if AUTOTEST
+        private static readonly int[] songHist = new int[2000];   // 0.1ms 단위 프레임 시간 분포(곡 전체), 1% low 계산용
+        private static string LowText()
+        {
+            long n = 0; for (int i = 0; i < songHist.Length; i++) n += songHist[i];
+            if (n == 0) return "";
+            double Low(double fraction)
+            {
+                long skip = (long)(n * fraction), acc = 0;
+                for (int i = songHist.Length - 1; i >= 0; i--) { acc += songHist[i]; if (acc > skip) return 1000.0 / ((i + 0.5) / 10.0); }
+                return 0;
+            }
+            return string.Format(" | 1% low {0:F0} FPS, 0.1% low {1:F0} FPS", Low(0.01), Low(0.001));
+        }
+#endif
         internal static string SongSummary()
         {
             var o = Instance;
@@ -602,6 +624,9 @@ namespace StutterFix
             if (o.songWorstPlay > 0) s += string.Format(" | 그 프레임: 게임 효과 {0}개 {1:F1}ms (그중 장식 이동 {2:F1}ms), 나머지 {3:F1}ms", o.wpN, o.wpFx, o.wpMove, o.songWorstPlay - o.wpFx);
             if (o.fxWorstFx > 0) s += string.Format(" | 효과가 가장 무거운 프레임 {0:F0}ms: 게임 효과 {1:F1}ms (그중 장식 이동 {2:F1}ms)", o.fxWorst, o.fxWorstFx, o.fxWorstMove);
             s += string.Format(" | 모드가 쓴 시간 평균 {0:F2}ms/프레임", o.songMod / o.songFrames);
+#if AUTOTEST
+            s += LowText();
+#endif
             s += " | 가장 무거운 프레임 8개:" + o.TopText();
             s += " | " + ScreenState();
             if (Edition.Dev && IconN > 0)
