@@ -28,7 +28,6 @@
 
 SF_API int sf_version(void) { return 1; }
 
-#include "alpha_bounds.h"
 #include "render_thread_capture.h"
 
 /* Owned experimental SoA storage only. Never pass managed or driver-owned pointers to this free. */

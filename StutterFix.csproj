@@ -65,14 +65,12 @@
     <Compile Include="TimeProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="BeatFix.cs" />
     <Compile Include="MatReuse.cs" />
-    <Compile Include="DecorationMaterialPool.cs" />
     <Compile Include="FrameQueueDelayPolicy.cs" />
     <Compile Include="RawKeyboardClock.cs" />
     <Compile Include="KeyDeliveryBuffer.cs" />
     <Compile Include="FrameQueueDelay.cs" />
     <Compile Include="DecorationAudit.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="AnimationAudit.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="MaterialPoolFixture.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="HeapPath.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="Edition.cs" />
     <Compile Include="SettingsWindow.cs" />
@@ -151,9 +149,6 @@
     <Compile Include="ShaderWarmPasses.cs" />
     <Compile Include="StartProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="PngDecoder.cs" />
-    <Compile Include="AlphaCropPlan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="AlphaBoundsProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="AlphaCropFixture.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ImagePrefetch.cs" />
     <Compile Include="TweenFix.cs" />
     <Compile Include="RenderWatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

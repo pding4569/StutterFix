@@ -1011,7 +1011,6 @@ namespace StutterFix
                     Log("[맵 프로필 경로] load="+MapProfiles.LoadCalls+" loaded="+MapProfiles.LoadedCalls+" finish="+MapProfiles.FinishCalls+" miss="+MapProfiles.KeyMisses+" arg="+MapProfiles.LastArgument);
                     Log("[맵 프로필 시험] key="+MapProfiles.CurrentKey+" enabled="+MapProfiles.Enabled+" vibrance="+Main.Config.FxVibrance.ToString("R",System.Globalization.CultureInfo.InvariantCulture)+" status="+MapProfiles.Status);return true;
                 case "threadfixture":Log("[스레드 예약 시험] "+ThreadScheduling.Fixture());return true;
-                case "alphacropfixture":Log("[투명 여백 GPU 시험] "+AlphaCropFixture.Run());return true;
                 case "animationaudit":AnimationAudit.Run();return true;
                 case "tagprimitivestate":Log("[태그 번호 영역] enabled="+TagIndex.Enabled+" requested="+TagIndex.NativePlans+" used_ints="+TagIndex.PrimitiveUsed+" capacity_ints="+TagIndex.PrimitiveCapacity+" hits="+TagIndex.Hits+" compiled="+TagIndex.Compiled+" invalidations="+TagIndex.Invalidations);return true;
                 case "tagprimitiveverify":Log("[태그 번호 원본 대조] "+TagIndex.VerifyPrimitivePlans());return true;
@@ -1039,16 +1038,6 @@ namespace StutterFix
                 case "renderthreadstopfixture":RenderThreadScheduling.Shutdown();Log("[렌더 스레드 내리기 시험] "+RenderThreadScheduling.FixtureState);return true;
                 case "constantringstate":Log("[보간 상수 버퍼 링] "+FrameGen.DescribeConstantRing());return true;
                 case "moduleidentity":Log("[실행 모듈 식별] mvid="+typeof(Main).Module.ModuleVersionId);return true;
-                case "gccapability":
-                {
-                    if(Hitch.Playing)throw new InvalidOperationException("GC capability check is menu-only");
-                    bool started=false;string result="";
-                    try{started=GC.TryStartNoGCRegion(16L<<20);result="try_no_gc_region="+started;}
-                    catch(Exception ex){result="try_no_gc_region=unsupported exception="+ex.GetType().Name;}
-                    finally{if(started)GC.EndNoGCRegion();}
-                    bool boehm=System.IO.File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Application.dataPath),"MonoBleedingEdge/EmbedRuntime/mono-2.0-bdwgc.dll"));
-                    Log("[GC 런타임 지원] "+result+" boehm_dll="+boehm);return true;
-                }
                 case "arenastate":Log("[계산 영역 시험] requested="+NativeMotion.ArenaRequested+" active="+NativeMotion.ArenaActive+" native_allocator="+NativeMotion.NativeArenaActive+" column_alignment_or="+NativeMotion.ArenaAlignment);return true;
                 case "pinarena":Log("[페이지 고정 시험] requested="+NativeMotion.PinRequested+" pinned="+NativeMotion.ArenaPinned+" working_set="+PinnedArenaOwner.WorkingSetSnapshot()+" original="+PinnedArenaOwner.OriginalSnapshot+" status="+PinnedArenaOwner.Status);return true;
                 case "timercapability":
@@ -1104,11 +1093,6 @@ namespace StutterFix
                 case "framewindow":DecorationAudit.Window();return true;
                 case "rawclockstate":Log("[프레임 입력 대기] enabled="+FrameQueueDelay.Enabled+" status="+FrameQueueDelay.Status+" corrected="+FrameQueueDelay.Corrected+" skipped="+FrameQueueDelay.Skipped+" already_async="+FrameQueueDelay.AlreadyAsync+" last_delay_ms="+FrameQueueDelay.LastDelayMs);return true;
                 case "rawanglefixture":Log("[입력 각도 대조] "+FrameQueueDelay.AngleFixture());return true;
-                case "materialpoolstate":Log("[장식 재질 공유] "+DecorationMaterialPool.State);return true;
-                case "materialpoolfixture":Log("[장식 재질 픽셀 시험] "+MaterialPoolFixture.Run());return true;
-                case "materialpoolscene":Log("[장식 재질 장면 대조] "+MaterialPoolFixture.Scene());return true;
-                case "materialpoolescape":Log("[공유 재질 외부 수정 대조] "+DecorationMaterialPool.EscapeFixture());return true;
-                case "materialpoolsorting":Log("[공유 재질 동률 정렬 대조] "+MaterialPoolFixture.Sorting());return true;
                 case "profilesave":
                     Main.Config.Save(Main.Entry);return true;
                 case "optimizationstate":

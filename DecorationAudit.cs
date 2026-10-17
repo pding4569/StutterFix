@@ -30,7 +30,7 @@ namespace StutterFix
                     row[0]++;if(a){row[1]++;active++;}if(e){row[2]++;enabled++;}
                     if(a&&e)row[3]++;if(r.isVisible){row[4]++;visible++;}
                     if(r.HasPropertyBlock())propertyBlocks++;
-                    var m=DecorationMaterialPool.Enabled?DecorationMaterialPool.Peek(r):r.sharedMaterial;if(m==null)continue;mats.Add(m.GetInstanceID());
+                    var m=r.sharedMaterial;if(m==null)continue;mats.Add(m.GetInstanceID());
                     string shader=m.shader!=null?m.shader.name:"null";shaders[shader]=m;
                     // CRC is a candidate bucket, never proof of material equality.
                     crc.Add(shader+"/"+m.ComputeCRC());

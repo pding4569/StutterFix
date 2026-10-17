@@ -1103,11 +1103,6 @@ namespace StutterFix
                 ch |= Option("tagprimitive",ref c.TagIndexNativePlans,T("태그 번호를 비관리 메모리에 (실험)","Unmanaged tag numbers (experimental)"),T("태그 색인의 정수 번호만 최대 8MiB 영역에 보관합니다. 게임 객체 참조는 유지하며, 영역이 부족하거나 실패하면 기존 배열을 씁니다. GC·성능 개선은 확인 중입니다.","Stores only integer tag IDs in up to 8 MiB of unmanaged storage. Keeps game object references; uses arrays on capacity or allocation failure. GC/performance effects are under validation."),null,1,c.TagIndex?null:T("장식 태그 색인","Decoration tag index"));
                 ch |= Option("inputframewait",ref c.FrameQueueDelay,T("입력 프레임 대기 보정 (실험)","Input frame wait correction (experimental)"),
                     T("키 메시지를 받은 뒤 게임이 확인할 때까지의 대기만 보정합니다. 게임의 비동기 입력을 쓰면 추가로 적용하지 않습니다. 지원되지 않는 입력은 그대로 처리하며 기본 꺼짐입니다.","Corrects only the wait between receiving a key message and the game checking it. Adds nothing when game async input is active. Keeps unsupported input unchanged; off by default."),null);
-#if DEV || AUTOTEST
-                ch |= Option("decomaterialpool",ref c.DecorationMaterialPool,T("장식 재질 공유 (연구 전용)","Share decoration materials (research only)"),
-                    T("재질 공유를 확인하는 연구 후보입니다. 겹친 장식의 순서가 바뀌는 반례가 있어 일반 빌드에는 포함하지 않습니다.","Research candidate for material sharing. Sorting counterexamples change overlapping sprites; excluded from normal builds."),null);
-                P(T("동률 정렬 검증36조건 중30조건이 달라 일반 빌드에서 사용을 차단했습니다.","Blocked in normal builds: 30 of 36 sorting tie fixtures changed pixels."),sDim);
-#endif
                 ch |= Option("particlecatchup", ref c.ParticleCatchup, T("입자 복귀 따라잡기 (실험)", "Catch up returning particles (experimental)"),
                     T("화면 밖 입자 멈추기와 함께 사용하면 다시 보일 때 지난 시간을 따라잡습니다. 돌아오는 순간의 추가 비용은 확인 중입니다.",
                       "With offscreen particle pause, catches up elapsed time when particles return. Return-time cost is under validation."), null);
@@ -2733,7 +2728,6 @@ namespace StutterFix
             c.NativeMotionArena = false;
             c.NativeMotionPinArena = false;
             c.FrameQueueDelay = false;
-            c.DecorationMaterialPool = false;
             c.TagIndex = c.TagIndexNativePlans = false;
             c.ParticleCatchup = false;
             c.MapProfilesEnabled = false;
