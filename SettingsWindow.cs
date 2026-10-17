@@ -1109,11 +1109,11 @@ namespace StutterFix
                 EndGroup();
                 SubHeading(T("맵별 화면 설정", "Per-level rendering settings"), "");
                 BeginGroup();
-                P(T("게임 스레드 예약 (실험)","Game thread scheduling (experimental)"),sBody);
+                P(T("게임 스레드 예약","Game thread scheduling"),sBody);
                 ch |= Segment("threadmode",ref c.ThreadSchedulingMode,new[]{T("끔","Off"),T("우선순위","Priority"),T("오디오 방식","Audio task")});
-                P(T("메인 스레드에만 적용하며 곡 밖에서 복구합니다. 입력·오디오와 경쟁할 수 있어 기본 꺼짐입니다. 성능 개선은 확인 중입니다.","Main thread only; restored outside play. May compete with input/audio. Off by default; performance is under validation."),sDim);
-                ch |= Option("threadrender",ref c.ThreadRenderScheduling,T("렌더 스레드도 적용 (실험)","Also apply to render thread (experimental)"),
-                    T("위 우선순위·코어 선택을 렌더 스레드에도 적용하고 곡 밖·모드 내리기에서 복구합니다. 오디오 방식 예약은 메인 스레드에만 적용합니다. 기본 꺼짐입니다.","Applies the priority/core choices to the render thread; restores outside play and on unload. Audio-task registration applies to the main thread only. Off by default."),null);
+                P(T("곡 중에만 게임 스레드를 높은 우선순위로 돌리고 곡 밖에서 원래대로 돌립니다. 아래 '렌더 스레드도 적용'과 함께 켤 때 곡 중 30ms 넘는 끊김이 크게 줄었습니다(HELLO 12~20개 → 0~1개, Arche 11 → 3개). 방송·녹화 프로그램이 CPU를 덜 받을 수 있습니다.","Raises the game thread priority only during a song and restores it afterwards. Together with 'Also apply to render thread' below it cut 30 ms+ hitches a lot (HELLO 12-20 -> 0-1, Arche 11 -> 3). Streaming/recording apps may get less CPU."),sDim);
+                ch |= Option("threadrender",ref c.ThreadRenderScheduling,T("렌더 스레드도 적용","Also apply to render thread"),
+                    T("위 우선순위·코어 선택을 렌더 스레드에도 적용하고 곡 밖·모드 내리기에서 복구합니다. 오디오 방식 예약은 메인 스레드에만 적용합니다. 우선순위와 함께 기본 켬입니다.","Applies the priority/core choices to the render thread; restores outside play and on unload. Audio-task registration applies to the main thread only. On by default together with priority."),null);
                 ch |= Option("threadpcores",ref c.ThreadPerformanceCores,T("고성능 코어만 사용 (실험)","Performance cores only (experimental)"),T("윈도우가 서로 다른 코어 등급을 알려줄 때만 메인 스레드에 적용합니다. 구분할 수 없으면 기존 배치를 유지합니다.","Restricts the main thread only when Windows reports heterogeneous core classes. Otherwise keeps the original placement."),null);
                 ch |= Option("threadavoidzero",ref c.ThreadAvoidLogicalZero,T("0번 논리 코어 제외 (실험)","Avoid logical CPU 0 (experimental)"),T("곡 중 메인 스레드의 허용 코어에서 0번만 뺍니다. 남는 코어가 없으면 적용하지 않으며 곡 밖에서 복구합니다. 인터럽트 감소나 성능 개선은 확인 안 됨입니다.","Excludes logical CPU 0 from the main thread during play. Keeps placement if no eligible core remains and restores outside play. Interrupt or performance improvements are unverified."),null);
                 ch |= Option("physicspause",ref c.PhysicsPause,T("곡 중 물리 시뮬레이션 중지 (실험)","Pause physics simulation during play (experimental)"),

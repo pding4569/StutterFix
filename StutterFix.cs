@@ -1066,8 +1066,8 @@ BlendProbe.Tick();
         public bool ParticleCatchup = false;
         public bool MapProfilesEnabled = false;
         public bool HitchHeatmap = false;
-        public int ThreadSchedulingMode = 0;
-        public bool ThreadRenderScheduling = false;
+        public int ThreadSchedulingMode = 1;   // 기본 켬(우선순위): HELLO 전곡 30ms 초과 프레임 12·20개 -> 렌더 스레드와 함께 0·1개, Arche 11 -> 3개
+        public bool ThreadRenderScheduling = true;
         public bool FrameQueueDelay = false;
         public bool ThreadPerformanceCores = false;
         public bool ThreadAvoidLogicalZero = false;
