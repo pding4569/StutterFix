@@ -8,6 +8,8 @@ class BlockFlow {
     ComPtr<ID3D11VertexShader> vertex;
     ComPtr<ID3D11PixelShader> pixel;
     ComPtr<ID3D11Buffer> constants;
+    sf_buffers::ConstantRing constantRing;
+    bool constantRingAttempted=false;
 #ifdef SF_FRAMEGEN_RESEARCH
     ComPtr<ID3D11ComputeShader> metric;
     ComPtr<ID3D11Buffer> counters,counterRead;
@@ -338,17 +340,26 @@ groupshared uint counts[4];
         InterlockedAdd(totals[2],counts[2]); InterlockedAdd(totals[3],counts[3]); }
 }
 )"; }
-    void bind(const Data& data,const Slot& a,const Slot& b) {
-        commands->ClearState(); commands->UpdateSubresource(constants.Get(),0,nullptr,&data,0,0);
-        auto cb=constants.Get(); commands->CSSetConstantBuffers(0,1,&cb);commands->PSSetConstantBuffers(0,1,&cb);
+    void bind(ID3D11DeviceContext* immediate,const Data& data,const Slot& a,const Slot& b) {
+        commands->ClearState();
+        ID3D11Buffer* cb=nullptr;
+        if((b.packet.capture&(1<<28))!=0) {
+            if(!constantRingAttempted) {ComPtr<ID3D11Device> device;immediate->GetDevice(&device);constantRing.reportTo(&sf_buffers::gameCounters);constantRing.initialize(device.Get(),sizeof(Data));constantRingAttempted=true;}
+            cb=constantRing.write(immediate,&data,sizeof(Data));
+        } else if(constantRingAttempted) {constantRing.reset();constantRingAttempted=false;}
+        if(!cb) {commands->UpdateSubresource(constants.Get(),0,nullptr,&data,0,0);cb=constants.Get();}
+        commands->CSSetConstantBuffers(0,1,&cb);commands->PSSetConstantBuffers(0,1,&cb);
         auto sampler=linear.Get();commands->CSSetSamplers(0,1,&sampler);commands->PSSetSamplers(0,1,&sampler);
         ID3D11ShaderResourceView* views[]={a.images[0].view.Get(),b.images[0].view.Get(),a.images[1].view.Get(),b.images[1].view.Get(),denseOn?dense.forward():flow[0].texture.view.Get(),denseOn?dense.backward():flow[1].texture.view.Get()};
         commands->PSSetShaderResources(0,6,views);commands->CSSetShaderResources(0,6,views);
         ID3D11ShaderResourceView* balls[]={a.balls[0].view.Get(),a.balls[1].view.Get(),b.balls[0].view.Get(),b.balls[1].view.Get()};
         commands->PSSetShaderResources(8,4,balls);commands->CSSetShaderResources(8,4,balls);
     }
-    void execute(ID3D11DeviceContext* immediate) { ComPtr<ID3D11CommandList> list;check(commands->FinishCommandList(FALSE,&list));immediate->ExecuteCommandList(list.Get(),TRUE); }
+    void execute(ID3D11DeviceContext* immediate) { ComPtr<ID3D11CommandList> list;check(commands->FinishCommandList(FALSE,&list));immediate->ExecuteCommandList(list.Get(),TRUE);if(constantRingAttempted)constantRing.submitted(immediate); }
 public:
+    unsigned ringWrites() const {return constantRing.writes.load();}
+    unsigned ringFallbacks() const {return constantRing.fallbacks.load();}
+    bool ringSupported() const {return constantRing.supported();}
     void startDense(ID3D11Device* device,unsigned w,unsigned h) { dense.start(device,w,h); }
     void resetMetrics(ID3D11DeviceContext* immediate) {
 #ifdef SF_FRAMEGEN_RESEARCH
@@ -498,7 +509,7 @@ public:
         if(sequence==b.sequence) return;
         denseOn=((b.packet.capture>>18)&1)!=0;
         if(denseOn) { dense.start(device,w,h); denseOn=dense.ready(); }
-        auto d=data(a,b,0);bind(d,a,b);
+        auto d=data(a,b,0);bind(immediate,d,a,b);
         ID3D11ShaderResourceView* none[8]{};ID3D11UnorderedAccessView* noTarget=nullptr;
         commands->PSSetShaderResources(0,8,none);commands->CSSetShaderResources(4,2,none);
         if(denseOn) {
@@ -520,7 +531,7 @@ public:
     }
     void draw(ID3D11DeviceContext* immediate,ID3D11RenderTargetView* target,const Slot& a,const Slot& b,double phase,Query* timing,bool measure) {
         if(sequence!=b.sequence) phase=phase<.5?0:1;
-        auto d=data(a,b,phase);bind(d,a,b);
+        auto d=data(a,b,phase);bind(immediate,d,a,b);
         if(timing) {commands->Begin(timing->disjoint.Get());commands->End(timing->begin.Get());}
         D3D11_VIEWPORT vp{0,0,float(width),float(height),0,1};commands->RSSetViewports(1,&vp);commands->OMSetRenderTargets(1,&target,nullptr);commands->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);commands->VSSetShader(vertex.Get(),nullptr,0);commands->PSSetShader(pixel.Get(),nullptr,0);commands->Draw(3,0);commands->OMSetRenderTargets(0,nullptr,nullptr);
         if(timing) {commands->End(timing->end.Get());commands->End(timing->disjoint.Get());}

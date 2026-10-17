@@ -1708,6 +1708,8 @@ namespace StutterFix
             }
             if (frameGen)
             {
+                if(Option("framegenconstantring",ref c.FrameGenConstantRing,T("보간 업로드 버퍼 재사용 (실험)","Reuse interpolation upload buffers (experimental)"),
+                    T("우리 보간 상수 버퍼 3개만 GPU 완료 확인 뒤 번갈아 씁니다. 미지원·혼잡 시 기존 방식으로 돌아가며 GPU를 기다리지 않습니다. 성능 개선은 확인 중이고 기본 꺼짐입니다.","Rotates three owned interpolation constant buffers only after GPU completion. Falls back without a GPU wait if unsupported or busy. Performance is under validation; off by default."),null))Save();
                 int frameMode=c.FrameGenRefresh?0:1;
                 if(Segment("framegenmode",ref frameMode,new[] {T("주사율 맞춤 · 추천","Match refresh · Recommended"),T("2~8배","2–8×")})) {
                     c.FrameGenRefresh=frameMode==0;Save();
@@ -2729,6 +2731,7 @@ namespace StutterFix
             c.MapProfilesEnabled = false;
             c.HitchHeatmap = false;
             c.ThreadSchedulingMode = 0;c.ThreadPerformanceCores = c.ThreadAvoidLogicalZero = c.ThreadRenderScheduling = false;
+            c.FrameGenConstantRing = false;
             c.AsyncUploadBudget = false;
             c.JsonStringPool = false;
             c.AssetDiskCache = false;

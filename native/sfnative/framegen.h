@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <dwmapi.h>
+#include "constant_ring.h"
 namespace outside {
 using Microsoft::WRL::ComPtr;
 inline void check(HRESULT hr) { if(FAILED(hr)) throw std::runtime_error("outside D3D11 failure"); }

@@ -1,0 +1,24 @@
+{
+  "batch": "끝",
+  "enabled": false,
+  "frame_window": [
+    "monitor_elapsed=10..50 seconds accumulated_ms=40001.739698886871 frames=9504 fps=237.58966663803545 pixels_capture=0 excludes_frames_ge_1500ms=1"
+  ],
+  "ring": [
+    "requested=False supported=0 writes=0 fallbacks=0"
+  ],
+  "framegen": [
+    "active=True native_installed=1 sources=18162 generated=40442 runtime_initialized=True status= missed_lock=150 missed_timer=941 outputs=58603 frame_begins=18161 worker_wait_ms=0 stalled=234 early_sources=2622 sources_n=13834 interval_us_sum=57144312 shown=58604 real_gpu_us=1310/13833 held=50056/49/0 hints=0/0"
+  ],
+  "screen": [
+    "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "captures_or_verifiers": 0,
+  "actual_3440_test": false,
+  "managed_sha256": "0ddef79a54d58bef2e5f3673e07a382e5f0b6b71c36466a235b14350defcc61b",
+  "native_sha256": "489f022171ed961fc42bc3c3a55b164a650244c022ccce08d8dc8bb97c304824"
+}

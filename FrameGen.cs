@@ -30,6 +30,9 @@ namespace StutterFix
         internal static int NativeOutputStatus => SfNative.FrameGenReady?sf_framegen_status():0;
         // Explicit state commands only; no extra per-frame instrumentation.
         internal static string DescribeStorage() => "refresh="+Main.Config.FrameGenRefresh+" "+(RuntimeInitialized?FrameGenRuntime.DescribeStorage():"deadline=False resting=False");
+#if DEV || AUTOTEST
+        internal static string DescribeConstantRing() => "requested="+Main.Config.FrameGenConstantRing+" supported="+(SfNative.FrameGenReady?sf_framegen_stat(17):0)+" writes="+(SfNative.FrameGenReady?sf_framegen_stat(15):0)+" fallbacks="+(SfNative.FrameGenReady?sf_framegen_stat(16):0);
+#endif
         // Read existing atomic counters only when the monitor refreshes its text.
         // Never install an observation hook to count the default-OFF path.
         internal static bool TryOutputCount(out ulong count)
@@ -329,6 +332,7 @@ namespace StutterFix
                 if(Main.Config.FrameGenBallMove) p.capture|=1<<16;
                 if(Main.Config.FrameGenDebugMarks) p.capture|=1<<17;
                 if(Main.Config.FrameGenDense) p.capture|=1<<18; // dense pyramid optical flow instead of 8x8 blocks
+                if(Main.Config.FrameGenConstantRing) p.capture|=1<<28; // owned retired constant buffers; default OFF
                 if(Main.Config.FrameGenQueue) p.capture|=1<<19; // present queue: sync 1, outputs queued up to two refreshes ahead
                 p.capture|=(Mathf.Clamp(Main.Config.FrameGenBlur,0,3)&3)<<20; // motion blur: shutter 0 / .3 / .6 / 1 of a true-frame interval
                 p.capture|=(Mathf.Clamp(Main.Config.FrameGenBlend,0,2)&3)<<14; // blend mode: 0 nearest true frame, 1 planets dissolve, 2 all unreliable dissolve

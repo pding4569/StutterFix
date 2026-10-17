@@ -1132,6 +1132,7 @@ BlendProbe.Tick();
         public int FrameGenMultiplier = 2;  // 마지막으로 선택한 배율
         public bool FrameGenRefresh = true; // 새 설정의 첫 추천. 기능 전체는 FrameGenOutside=0으로 기본 꺼짐.
         public bool FrameGenRefreshRest = true; // 옛 XML 호환용. 주사율 맞춤은 이 값과 무관하게 마감+저장 휴식 사용.
+        public bool FrameGenConstantRing = false;
         public int FrameGenPace = 700;       // 마감 생성 간격: 한 칸의 천분율. 1000 이면 정확히 한 칸 뒤라 조금만 늦어도 칸이 비므로 700 (500~1000)
         public int FrameGenLead = 600;      // 화면 시각 맞추기: 출력이 모니터 갱신 시각에서 이만큼(마이크로초) 앞서 들어가야 그 칸에 뜬다고 보고 그림 시각을 그 칸에 맞춘다. 0 이면 끔(옛 방식)
         public bool FrameGenDense = true;       // 조밀한 다단계 광학 흐름(1/4 해상도, 4px마다 벡터 하나). 끄면 옛 8x8 블록 매칭

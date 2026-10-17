@@ -12,6 +12,8 @@ int wmain(int argc,wchar_t** argv) {
         if(w<128 || h<128 || w>8192 || h>8192) throw std::runtime_error("invalid fixture dimensions");
         const int variant=argc>2?_wtoi(argv[2]):0;
         const bool query=argc>3 && wcscmp(argv[3],L"query")==0;
+        const bool constantRing=argc>3 && wcscmp(argv[3],L"constant-ring")==0;
+        unsigned ringCases=0,ringPixels=0,ringDifferences=0,ringAnalyticFailures=0;
         const bool borrow=query || (argc>3 && wcscmp(argv[3],L"rotate")==0);
         if(variant<0 || variant>4) throw std::runtime_error("unsupported fixture variant");
         ComPtr<ID3D11Device> d;ComPtr<ID3D11DeviceContext> c;check(D3D11CreateDevice(nullptr,D3D_DRIVER_TYPE_HARDWARE,nullptr,0,nullptr,0,D3D11_SDK_VERSION,&d,nullptr,&c));
@@ -20,6 +22,7 @@ int wmain(int argc,wchar_t** argv) {
         std::vector<int> movements=resolutionProbe?std::vector<int>{_wtoi(argv[6])}:std::vector<int>{-16,0,16};
         for(int movement:movements) for(bool flip:{false,true}) for(bool flat:{false,true}) {
             Slot a,b;a.sequence=1;b.sequence=2;b.packet.flip=flip?1:0;b.packet.capture=64|4|(variant<<7);
+            if(constantRing)b.packet.capture|=1<<28;
             a.images[0]=texture(0,false,flat,flip);b.images[0]=texture(movement,false,flat,flip);a.images[1]=texture(0,true,flat,false);b.images[1]=texture(movement,true,flat,false);
             // Same 60 pixel cases, now reading retained producer textures while a
             // third producer entry is overwritten. Current/previous must survive.
@@ -53,9 +56,19 @@ int wmain(int argc,wchar_t** argv) {
                 int shift=held?(phase<.5?0:movement):int(movement*phase);UINT expected=flat?96:pattern(int(x)-(x<w/2?shift:0),int(y));auto pixel=static_cast<const BYTE*>(m.pData)+y*m.RowPitch+x*4;int error=abs(int(pixel[0])-int(expected));absolute+=error;errors+=error>3;++checked;
             }
             unsigned uiErrors=0;for(unsigned y=32;y<64;y++)for(unsigned x=32;x<64;x++) {auto p=static_cast<const BYTE*>(m.pData)+y*m.RowPitch+x*4;uiErrors+=p[0]!=64 || p[1]!=0 || p[2]!=255;}
+            std::vector<BYTE> ringImage;
+            if(constantRing) {ringImage.resize(size_t(w)*h*4);for(unsigned y=0;y<h;y++)memcpy(ringImage.data()+size_t(y)*w*4,static_cast<const BYTE*>(m.pData)+size_t(y)*m.RowPitch,w*4);}
             c->Unmap(read.Get(),0);printf("movement=%d flip=%d flat=%d phase=%.2f checked=%u errors_above3=%u mean_error=%.6f ui_errors=%u state_errors=0\n",movement,flip?1:0,flat?1:0,phase,checked,errors,absolute/checked,uiErrors);
+            if(constantRing) {
+                if(!flow.ringSupported())throw std::runtime_error("requested ring not supported on fixture device");
+                b.packet.capture&=~(1<<28);flow.draw(c.Get(),target.Get(),a,b,phase,nullptr,false);
+                c->CopyResource(read.Get(),output.Get());check(c->Map(read.Get(),0,D3D11_MAP_READ,0,&m));
+                for(unsigned y=0;y<h;y++)for(unsigned x=0;x<w;x++) {auto p=static_cast<const BYTE*>(m.pData)+size_t(y)*m.RowPitch+x*4;ringDifferences+=memcmp(p,ringImage.data()+(size_t(y)*w+x)*4,4)!=0;}
+                c->Unmap(read.Get(),0);b.packet.capture|=1<<28;++ringCases;ringPixels+=w*h;
+            }
             if(query && !completion.ready(c.Get())) throw std::runtime_error("completion query lost queue ordering");
-            if(errors || uiErrors)throw std::runtime_error("known translation, stationary, protected planet or true UI failed");
+            if(uiErrors || (errors && !constantRing))throw std::runtime_error("known translation, stationary, protected planet or true UI failed");
+            if(constantRing && errors)++ringAnalyticFailures;
             }
 #ifdef SF_FRAMEGEN_RESEARCH
             const bool resetCase=!resolutionProbe && movement==16 && !flip && !flat;
@@ -67,6 +80,7 @@ int wmain(int argc,wchar_t** argv) {
             if(resetCase) printf("metric_reset_generated=%u new_picture=%u\n",generated,fresh);
 #endif
         }
+        if(constantRing) {printf("constant_ring_framegen_cases=%u pixels=%u mismatched_pixels=%u writes=%llu fallbacks=%llu legacy_known_motion_failed_cases=%u\n",ringCases,ringPixels,ringDifferences,sf_buffers::gameCounters.writes.load(),sf_buffers::gameCounters.fallbacks.load(),ringAnalyticFailures);if(ringDifferences)throw std::runtime_error("ring/default output byte mismatch");}
         return 0;
     }catch(const std::exception& e){fprintf(stderr,"%s\n",e.what());return 1;}
 }

@@ -93,7 +93,7 @@
 |32|실제 쓰기/읽기 경로 감사·NT store 적용 보류|숫자 출력은 바로 CPU가 읽고 GPU 쪽은 DEFAULT 상수 버퍼 UpdateSubresource다. 자체 CPU-write staging 스트리밍 경로0. 성능 개선 확인 안 됨|
 |33|기존 예열의 실패 재시도·자원 복구 수정|독립 소유권/실패 주입56조건 오류0·두 Release 빌드 오류0. 전체 키워드/드라이버 변형·실제 GPU 성능은 확인 안 됨|
 |34|0번 논리 코어 제외 기본 꺼짐 후보|순수 정책85조건·자기 워커 Windows 적용/복구6조건 오류0. 게임 IRQ 분포/성능·렌더 스레드 적용 확인 안 됨|
-|35|기존 GPU 버퍼 경로 감사·NO_OVERWRITE 전환 보류|현재 DEFAULT 상수 버퍼와 GPU 그림 링은 별개. 기능 지원·GPU 사용 중 범위·지연 완료 소유권 미검증|
+|35|보간 소유 상수 버퍼3칸 후보 구현·기능 검증|완료 event 후 NO_OVERWRITE·기존 경로 폴백.60조건14,745,600픽셀 추가 차이0. FPS차이−0.8214~+3.6431%·대조변동4.5015%라 성능 채택0|
 |36|정수 태그 계획만 비관리 영역 후보 구현|독립10,028조건 오류0. 실제 두 맵105,797번호 대조 불일치0·해제/오래된 계획 차단2/2. Unity 객체 참조 유지·GC/FPS 이득 확인 안 됨|
 
 05 실제 HELLO 두 새 실행: 첫 로드 DXT 저장 215·JSON 저장 1, 재방문 DXT 적중 84·JSON 적중 1.
@@ -620,3 +620,61 @@ UMM은 옛 설정을 저장해 새 모듈도 같은 예약을 다시 켰다. 새
 외부 관측 핸들로 읽은 마지막0·63은 새 모듈의 명시적 Shutdown 뒤 값이다. 이를 Unload와 재적용 사이 외부 시점 측정으로 부르지 않는다.
 직접적인 그 사이 외부 표본·FPS/표시 지연 효과는 확인 안 됨.
 자료: validation/20-render-active-reload.json(두 managed SHA·MVID·활성 상태·각 관측 범위 보존). 두 Release/PlayerAuto 빌드 오류0.
+
+## 35 후속: GPU 완료를 확인하는 소유 상수 버퍼 링 (2026-10-17)
+
+FrameGenConstantRing 기본false. 보간의 BlockFlow가 소유한 상수 버퍼3개만 DYNAMIC으로 만들고,
+D3D11.1 MapNoOverwriteOnDynamicConstantBuffer 지원을 확인한 뒤 immediate context에서 NO_OVERWRITE로 쓴다.
+게임/Unity 소유 vertex/index 버퍼 변경0, 렌더 상태/픽셀 계산/보간 방식/스왑체인 변경0.
+상수 Data의 페이로드는1,760바이트×3=5,280바이트이며 드라이버 실제 할당/VRAM 사용량을 뜻하지 않는다.
+다른 보간 계산(DenseFlow)의 자체 버퍼와 모든 게임 업로드를 전환한 것은 아니다.
+
+각 command list 실행 뒤 소유 event query를 End한다. 다음 사용은 GetData(DONOTFLUSH)가S_OK·True일 때만 허용한다.
+미지원/미완료/이미 같은 미실행 목록에서 예약한 칸/Map 실패는 기존 DEFAULT UpdateSubresource로 돌아간다.
+GPU 완료 대기 루프·Flush·3프레임만 지난 뒤 무조건 덮어쓰기0. Map과 드라이버 자체의 블로킹 시간은 아직 측정하지 않았다.
+공유 immediate context의 기존 보호 범위를 그대로 사용하며 소스 그림 완료 query나 잠금 정책을 바꾸지 않는다.
+기본 꺼짐은 새 버퍼/쿼리 생성0·기존 업로드 경로다. 네이티브 사용 횟수는 수명과 별개인 정적 atomic으로 읽어 engine 해제 뒤 객체를 역참조하지 않는다.
+
+|확인|값|
+|---|---:|
+|독립 상수 업로드 색/알파 양성대조 조건 /픽셀 /차이|60 /61,440 /0|
+|미실행3칸 예약 뒤4번째 쓰기 /deferred context Map 허용|거절 /거절|
+|독립 실제 feature 지원 /D3D debug layer|1 /확인 안 됨|
+|실제 보간 상수 업로드의 기존 경로와 바이트 대조 조건 /픽셀 /추가 차이|60 /14,745,600 /0|
+|같은 보간 fixture의 기존 움직임 판정 실패 조건|12/60|
+|실제 HELLO 링 쓰기 /기존 경로 폴백(켬 표본)|11,513 /396|
+|링 끈 뒤 지원 상태 /FG 끈 뒤 원래Present 연결|0 /0|
+|실제 SF집계오류 /정상 종료 /설치5원본 복원|0 /1 /5/5|
+|네이티브/Developer/Player/PlayerAuto 빌드 오류|0 /0 /0 /0|
+|이미지/DXT 회귀 /비트 계산 /렌더 핸들 수명 회귀 오류|600조건0 /4,194,304개0 /539조건0|
+|성능·전체 곡·실제3440|확인 안 됨|
+
+독립 색 fixture 사전판은 SDK winrt include 누락으로 빌드 실패했고, 첫 draw는 기본 컬링 때문에 양성대조 alpha에 실패해 제외했다.
+현재 도구는 CullNone을 명시하고 모든 원본 픽셀의 색/alpha도 검증한다. 게임 raster 상태 변경0.
+D3D 디버그 레이어가 없어 debug_errors=-1로 적으며0오류 통과라고 부르지 않는다.
+보간 기존 움직임 판정은 새 링 끔/켬 모두 첫 비정지 조건에서16,648픽셀 실패였다.
+새 링 대조 모드는 전체60조건에서 기존 움직임 실패12개를 별도로 보존하고, 업로드 경로 사이 전체RGBA 바이트 동일성만 검증한다.
+기존 비링 움직임 fixture의 실패 조건/반환은 그대로다. 보간 움직임 품질 통과나12개 실패 해결이 아니다.
+실제 게임 기능 판은2560×1440 120Hz·4배의 짧은 전환 시험이며 캡처/성능 대조가 아니다.
+
+자료: ConstantRingLab,BlockFlowLab constant-ring 모드,validation/35-constant-ring-game.json.
+규약: [D3D11_MAP](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_map),
+[Map](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-map),
+[GetData](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-getdata).
+
+### 35 캡처·검사 없는 HELLO 원본 FPS
+
+같은 managed/native SHA·실제2560×1440 120Hz·FG고정4배, 새 실행 끔→켬→끔3판.
+기존 모니터 경과10~50초 누적40초 창이며1500ms 이상 제외 규칙을 유지한다. 정확한 native 곡5~45초 창과 같다고 가정하지 않는다.
+시험 중 빌드/벤치/GPU캡처/전체 대조0. 출력 카운터는 곡 창으로 자르지 않았으므로 이 표의 원본 FPS와 배율을 계산하지 않는다.
+
+|판|원본 프레임 수|누적ms|원본 FPS|
+|---|---:|---:|---:|
+|링 끔 앞|9,094|39,999.076|227.3552|
+|링 켬|9,426|40,002.022|235.6381|
+|링 끔 뒤|9,504|40,001.740|237.5897|
+
+켬의 대조 대비 차이−0.8214~+3.6431%, 끔 앞→뒤 차이+4.5015%. 활성1표본·개선 채택0·기본false 유지.
+켬 누적 링 쓰기54,242·전체 폴백2,627(곡 창 미분리, 원인별 분리 확인 안 됨).
+SF집계오류0/0/0·정상 종료3/3·원본 복원5/5×3. Arche 성능·전체 곡·실제3440·물리 표시 지연은 확인 안 됨.
+자료: validation/35-ring-perf-{off-before,on,off-after}.json,35-ring-summary.json.

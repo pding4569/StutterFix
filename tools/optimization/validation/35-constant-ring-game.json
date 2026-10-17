@@ -1,0 +1,26 @@
+{
+  "batch": "끝",
+  "states": [
+    "requested=False supported=0 writes=0 fallbacks=0",
+    "requested=True supported=1 writes=11513 fallbacks=396",
+    "requested=False supported=0 writes=11526 fallbacks=397",
+    "requested=False supported=0 writes=11526 fallbacks=397"
+  ],
+  "framegen": [
+    "active=True native_installed=1 sources=8140 generated=8877 runtime_initialized=True status= missed_lock=15 missed_timer=443 outputs=17016 frame_begins=8140 worker_wait_ms=0 stalled=114 early_sources=145 sources_n=3122 interval_us_sum=10144337 shown=17017 real_gpu_us=1500/3121 held=11623/30/0 hints=0/0",
+    "active=True native_installed=1 sources=10987 generated=17331 runtime_initialized=True status= missed_lock=17 missed_timer=541 outputs=28317 frame_begins=10986 worker_wait_ms=0 stalled=120 early_sources=766 sources_n=5968 interval_us_sum=22157677 shown=28318 real_gpu_us=2364/5967 held=22108/30/0 hints=0/0",
+    "active=False native_installed=0 sources=11737 generated=19557 runtime_initialized=True status= missed_lock=0 missed_timer=0 outputs=0 frame_begins=0 worker_wait_ms=0 stalled=0 early_sources=0 sources_n=0 interval_us_sum=0 shown=0 real_gpu_us=0/0 held=0/0/0 hints=0/0"
+  ],
+  "screen": [
+    "수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2"
+  ],
+  "errors": [],
+  "normal_exit": true,
+  "restored_files": 5,
+  "performance_ab": false,
+  "full_song": false,
+  "monitor_reported_off": true,
+  "actual_3440_test": false,
+  "managed_sha256": "0ddef79a54d58bef2e5f3673e07a382e5f0b6b71c36466a235b14350defcc61b",
+  "native_sha256": "489f022171ed961fc42bc3c3a55b164a650244c022ccce08d8dc8bb97c304824"
+}

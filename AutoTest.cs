@@ -1037,6 +1037,7 @@ namespace StutterFix
                 case "threadstate":Log("[스레드 예약 상태] "+ThreadScheduling.Status);return true;
                 case "renderthreadstate":Log("[렌더 스레드 예약 상태] "+RenderThreadScheduling.FixtureState);return true;
                 case "renderthreadstopfixture":RenderThreadScheduling.Shutdown();Log("[렌더 스레드 내리기 시험] "+RenderThreadScheduling.FixtureState);return true;
+                case "constantringstate":Log("[보간 상수 버퍼 링] "+FrameGen.DescribeConstantRing());return true;
                 case "moduleidentity":Log("[실행 모듈 식별] mvid="+typeof(Main).Module.ModuleVersionId);return true;
                 case "gccapability":
                 {

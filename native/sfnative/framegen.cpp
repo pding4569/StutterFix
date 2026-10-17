@@ -158,7 +158,7 @@ static void __stdcall event(int id,void* data) {
         }
     } catch(const std::exception& ex) { failure=1; status=-1; if(engine) { engine->trace(ex.what()); engine->endFrame(); } }
 }
-API int sf_framegen_setup(const wchar_t* path,int collect) { if(installed.exchange(1)) return 0; directory=path; diagnostics=collect!=0; sourcePresents=generatedPresents=0; syncRequested=syncPreserved=syncForcedZero=0; failure=stopped=status=0; return 1; }
+API int sf_framegen_setup(const wchar_t* path,int collect) { if(installed.exchange(1)) return 0; sf_buffers::gameCounters.reset();directory=path; diagnostics=collect!=0; sourcePresents=generatedPresents=0; syncRequested=syncPreserved=syncForcedZero=0; failure=stopped=status=0; return 1; }
 API void* sf_framegen_event_ptr() { return reinterpret_cast<void*>(event); }
 API int sf_framegen_status() { return status; }
 API int sf_framegen_error() { return failure; }
@@ -180,6 +180,9 @@ API unsigned long long sf_framegen_generated() { return generatedPresents; }
 API unsigned long long sf_framegen_shown() { auto* e=engine.get(); return e?e->shown.load():0; }
 // Read-only scheduler counters for an explicit state command (0 missed while the original frame held the gate, 1 missed with the gate free, 2 outputs, 3 frame begins, 4 worker wait in microseconds).
 API unsigned long long sf_framegen_stat(int which) {
+    if(which==15)return sf_buffers::gameCounters.writes.load(std::memory_order_relaxed);
+    if(which==16)return sf_buffers::gameCounters.fallbacks.load(std::memory_order_relaxed);
+    if(which==17)return sf_buffers::gameCounters.supported.load(std::memory_order_relaxed);
     auto* e=engine.get(); if(!e) return 0;
     switch(which) { case 0: return e->missedLock; case 1: return e->missedTimer; case 2: return e->outputs.load(); case 3: return e->frameBegins.load(); case 4: return static_cast<unsigned long long>(e->workerWaitMs*1000); case 5: return e->stalledOutputs; case 6: return e->earlyArrivals; case 7: return e->sourceCount; case 8: return e->intervalMicros; case 9: return e->shown; case 10: return static_cast<unsigned long long>(e->realLatency*1e6); case 11: return e->realLatencySamples; case 12: return e->heldOutputs; case 13: return e->heldBeyond; case 14: return e->heldNoPair; default: return 0; }
 }

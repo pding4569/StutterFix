@@ -1,0 +1,46 @@
+{
+  "fps_off_on_off": [
+    227.35524908905282,
+    235.6380897258836,
+    237.58966663803545
+  ],
+  "on_change_percent_vs_controls": [
+    3.6431270753667366,
+    -0.8214064777173458
+  ],
+  "off_drift_percent_vs_first": 4.501509241589541,
+  "active_samples": 1,
+  "accept_performance_improvement": false,
+  "window": "existing monitor 10..50s; 40 accumulated seconds; excludes >=1500ms; no pixel captures/full verifiers",
+  "sf_errors": [
+    0,
+    0,
+    0
+  ],
+  "restored_files": [
+    5,
+    5,
+    5
+  ],
+  "actual_3440": false,
+  "gpu_color_fixture": {
+    "conditions": 60,
+    "pixels": 61440,
+    "mismatch": 0,
+    "debug_layer": false
+  },
+  "block_constant_equivalence": {
+    "conditions": 60,
+    "pixels": 14745600,
+    "mismatch": 0,
+    "legacy_known_motion_failed_conditions": 12
+  },
+  "native_regression": {
+    "image_cases": 600,
+    "image_mismatch": 0,
+    "arithmetic_bits": 4194304,
+    "arithmetic_mismatch": 0,
+    "render_lease_conditions": 539,
+    "render_lease_errors": 0
+  }
+}
