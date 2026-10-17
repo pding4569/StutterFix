@@ -460,6 +460,7 @@ ParticleTextWatch.Install(harmony);
             Try(GcControl.Shutdown);
             Try(GameScreenButton.Remove);
             Try(LowEnd.Shutdown);
+            Try(PhysicsPause.Shutdown);
             Try(HalfRender.Shutdown);
             Try(ParticleFix.Shutdown);
             Try(Resilience.Shutdown);
@@ -766,6 +767,7 @@ BlendProbe.Tick();
             FrameQueueDelay.Enabled=effective("FrameQueueDelay",Config.FrameQueueDelay);
             DecorationMaterialPool.Configure(effective("DecorationMaterialPool",Config.DecorationMaterialPool));
             HitchHeatmap.Enabled=effective("HitchHeatmap",Config.HitchHeatmap);
+            PhysicsPause.Enabled=Config.PhysicsPause;if(!PhysicsPause.Enabled)PhysicsPause.SongEnded();
             ParticleFix.CatchupOffscreen=effective("ParticleCatchup",Config.ParticleCatchup);
             if(installed)
             {
@@ -1114,6 +1116,7 @@ BlendProbe.Tick();
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음
+        public bool PhysicsPause = false;   // 곡 중 물리 시뮬레이션 중지(Script 모드), 기본 끔
         public bool TimerHalfMs = false;    // 타이머 0.5ms 요청(NtSetTimerResolution), 기본 끔
         public bool LowNoThrottle = false;  // 윈도우 절전 제한 끄기 + 타이머 1ms
         public int LowMenuFps = 0;          // 플레이 중이 아닐 때(메뉴·에디터) FPS 제한 (0 끔, 30, 60)

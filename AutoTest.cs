@@ -1017,7 +1017,7 @@ namespace StutterFix
                 case "tagprimitiveverify":Log("[태그 번호 원본 대조] "+TagIndex.VerifyPrimitivePlans());return true;
                 case "tagprimitivelifetime":Log("[태그 번호 수명 대조] "+TagIndex.PrimitiveLifetimeFixture());return true;
                 case "heatmapstate":Log("[상위 타일 완주 상태] enabled="+HitchHeatmap.Enabled+" portal_completed="+HitchHeatmap.CompletedForFixture+" summary="+HitchHeatmap.Describe().Replace("\n"," | "));return true;
-                case "timerperiodstate":Log("[타이머 요청 소유] requested="+LowEnd.NoThrottle+" owned="+LowEnd.TimerOwnedForFixture+" nt_requested="+LowEnd.HalfMsTimer+" nt_owned="+LowEnd.NtTimerOwned+" "+TimerResolutionInfo.Read());return true;
+                case "timerperiodstate":Log("[물리 상태] "+PhysicsPause.State);Log("[타이머 요청 소유] requested="+LowEnd.NoThrottle+" owned="+LowEnd.TimerOwnedForFixture+" nt_requested="+LowEnd.HalfMsTimer+" nt_owned="+LowEnd.NtTimerOwned+" "+TimerResolutionInfo.Read());return true;
                 case "reportclipboardfixture":
                 {
                     string previous=GUIUtility.systemCopyBuffer,error=LogExport.LastError;

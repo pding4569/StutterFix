@@ -1121,6 +1121,10 @@ namespace StutterFix
                     T("위 우선순위·코어 선택을 렌더 스레드에도 적용하고 곡 밖·모드 내리기에서 복구합니다. 오디오 방식 예약은 메인 스레드에만 적용합니다. 기본 꺼짐입니다.","Applies the priority/core choices to the render thread; restores outside play and on unload. Audio-task registration applies to the main thread only. Off by default."),null);
                 ch |= Option("threadpcores",ref c.ThreadPerformanceCores,T("고성능 코어만 사용 (실험)","Performance cores only (experimental)"),T("윈도우가 서로 다른 코어 등급을 알려줄 때만 메인 스레드에 적용합니다. 구분할 수 없으면 기존 배치를 유지합니다.","Restricts the main thread only when Windows reports heterogeneous core classes. Otherwise keeps the original placement."),null);
                 ch |= Option("threadavoidzero",ref c.ThreadAvoidLogicalZero,T("0번 논리 코어 제외 (실험)","Avoid logical CPU 0 (experimental)"),T("곡 중 메인 스레드의 허용 코어에서 0번만 뺍니다. 남는 코어가 없으면 적용하지 않으며 곡 밖에서 복구합니다. 인터럽트 감소나 성능 개선은 확인 안 됨입니다.","Excludes logical CPU 0 from the main thread during play. Keeps placement if no eligible core remains and restores outside play. Interrupt or performance improvements are unverified."),null);
+                ch |= Option("physicspause",ref c.PhysicsPause,T("곡 중 물리 시뮬레이션 중지 (실험)","Pause physics simulation during play (experimental)"),
+                    T("게임은 물리 엔진의 움직임 계산을 쓰지 않고 판정 영역 질의만 씁니다. 곡 중에는 시뮬레이션 단계를 멈춰 CPU를 아낍니다. 충돌 콜백에 기대는 다른 모드는 멈출 수 있어 기본 꺼짐이며, 곡이 끝나면 원래 값으로 되돌립니다.",
+                      "The game only uses physics queries, not simulation. Stops the simulation step during a song to save CPU. Mods relying on collision callbacks may stop working, so it is off by default; restored when the song ends."),
+                    null);
                 EndGroup();
                 BeginGroup();
                 ch |= Option("mapprofiles", ref c.MapProfilesEnabled, T("맵별 화면 설정 저장 (실험)", "Remember rendering settings per level (experimental)"),
