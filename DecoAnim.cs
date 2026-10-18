@@ -70,6 +70,9 @@ namespace StutterFix
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> scaleRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("scaleVec");
         private delegate void SetXY(scrDecoration d, float v, Vector2 off);
         private static SetXY setPosX, setPosY;
+        private static Action<scrDecoration, Vector2, Vector2> setPos;
+        internal static bool PairXY = true;
+        internal static long PairSteps;
         private static Action<scrDecoration, float> setRot, setOpa;
         private static Action<scrDecoration, Color> setCol;
         private static Action<scrDecoration, Vector2> setScale;
@@ -87,6 +90,7 @@ namespace StutterFix
                 var d = typeof(scrDecoration);
                 setPosX = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionX", new[] { typeof(float), typeof(Vector2) }));
                 setPosY = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionY", new[] { typeof(float), typeof(Vector2) }));
+                setPos = AccessTools.MethodDelegate<Action<scrDecoration, Vector2, Vector2>>(AccessTools.Method(d, "SetPosition", new[] { typeof(Vector2), typeof(Vector2) }));
                 setRot = AccessTools.MethodDelegate<Action<scrDecoration, float>>(AccessTools.Method(d, "SetRotation", new[] { typeof(float) }));
                 setOpa = AccessTools.MethodDelegate<Action<scrDecoration, float>>(AccessTools.Method(d, "SetOpacity", new[] { typeof(float) }));
                 setCol = AccessTools.MethodDelegate<Action<scrDecoration, Color>>(AccessTools.Method(d, "SetColor", new[] { typeof(Color) }));
@@ -342,6 +346,24 @@ namespace StutterFix
             OnUpdate(r); }
             if (done) { r.Running = false; Completed++; OnComplete(r); }
         }
+        // 위치 X(r)·Y(n) 짝: 원래는 X 진행 -> SetPositionX(값) [-> 끝나면 SetPositionX(끝값)] -> Y 진행 -> SetPositionY(값) [-> SetPositionY(끝값)].
+        // SetPositionX/Y 는 SetPosition(pivotPosVec.WithX/Y(v), 오프셋) 이고 SetPosition 의 결과(pivotPosVec, 자식 위치, 화면 고정 값, UpdatePosition)는
+        // 마지막 호출의 인자로만 정해진다(오프셋은 그 사이 안 바뀜). 그래서 최종 (X, Y) 로 한 번만 부른다.
+        private static void StepPair(Rec r, Rec n, float td)
+        {
+            if (!r.Started) Startup(r);
+            if (!n.Started) Startup(n);
+            float tr = r.Pos + td; bool dr = false; if (tr >= r.Dur) { tr = r.Dur; dr = true; }
+            float tn = n.Pos + td; bool dn = false; if (tn >= n.Dur) { tn = n.Dur; dn = true; }
+            r.Pos = tr; r.Stepped = true; n.Pos = tn; n.Stepped = true;
+            Apply(r, tr, true);
+            Apply(n, tn, true);
+            float x = dr ? r.FEnd : r.FLast, y = dn ? n.FEnd : n.FLast;
+            setPos(r.D, new Vector2(x, y), pivotOffRef(r.D));
+            if (dr) { r.Running = false; Completed++; }
+            if (dn) { n.Running = false; Completed++; }
+        }
+
         // Kill(true) / KillAll(true): 끝 위치로 한 번 (시작 전이면 시작 처리부터)
         private static void Complete(Rec r)
         {
@@ -444,6 +466,19 @@ namespace StutterFix
                 {
                     var r = recs[i];
                     if (!r.Running) continue;
+                    // 같은 장식의 위치 X·Y 가 나란히 있으면(한 효과가 만든 짝) 한 번의 SetPosition 으로 합친다
+                    if (r.Key == 1 && PairXY && !Prof && i + 1 < recs.Count && (object)setPos != null)
+                    {
+                        var n = recs[i + 1];
+                        if (n.Key == 2 && n.Running && ReferenceEquals(n.D, r.D))
+                        {
+                            Steps += 2; PairSteps++;
+                            try { StepPair(r, n, td); }
+                            catch (Exception ex) { r.Running = false; n.Running = false; Error(ex); }
+                            i++;
+                            continue;
+                        }
+                    }
                     Steps++;
                     try { Step(r, td); }
                     catch (Exception ex) { r.Running = false; Error(ex); }   // DOTween 안전 모드: 예외가 나면 그 애니메이션을 끝냄

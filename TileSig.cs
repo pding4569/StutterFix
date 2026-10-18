@@ -14,6 +14,13 @@ namespace StutterFix
     {
         private static readonly AccessTools.FieldRef<scrVisualDecoration, TextureManager.CustomSprite> spriteField = AccessTools.FieldRefAccess<scrVisualDecoration, TextureManager.CustomSprite>("_sprite");
         private static readonly System.Reflection.FieldInfo colField = AccessTools.Field(typeof(scrDecoration), "editorCollider") ?? AccessTools.Field(typeof(scrVisualDecoration), "editorCollider");
+        private static readonly AccessTools.FieldRef<scrDecoration, Vector2> ppRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("pivotPosVec");
+        private static readonly AccessTools.FieldRef<scrDecoration, Vector2> poRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("pivotOffsetVec");
+        private static readonly AccessTools.FieldRef<scrDecoration, float> rotRef = AccessTools.FieldRefAccess<scrDecoration, float>("rotAngle");
+        private static readonly AccessTools.FieldRef<scrDecoration, Vector2> scRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("scaleVec");
+        private static readonly AccessTools.FieldRef<scrDecoration, Transform> pivField = AccessTools.FieldRefAccess<scrDecoration, Transform>("pivotTrans");
+        private static readonly AccessTools.FieldRef<scrDecoration, Transform> childField = AccessTools.FieldRefAccess<scrDecoration, Transform>("childTransform");
+        private static string V2(Vector2 v) { return F(v.x) + "," + F(v.y); }
         private static string F(float v) { return v.ToString("R", CultureInfo.InvariantCulture); }
         internal static string Run(string dir, string name)
         {
@@ -40,6 +47,10 @@ namespace StutterFix
                     if (col != null) { var sz = (Vector2)col.GetType().GetProperty("size").GetValue(col, null); sb.Append("|col=").Append(F(sz.x)).Append(',').Append(F(sz.y)); }
                     if (sr != null && sr.sharedMaterial != null) sb.Append("|kw=").Append(string.Join(",", sr.sharedMaterial.shaderKeywords));
                     if (sp != null && sp.texture != null) sb.Append("|wrap=").Append((int)sp.texture.wrapModeU).Append(',').Append((int)sp.texture.wrapModeV);
+                    var pt = pivField(v); var ct = childField(v);
+                    sb.Append("|pp=").Append(V2(ppRef(v))).Append("|po=").Append(V2(poRef(v))).Append("|rot=").Append(F(rotRef(v))).Append("|sc=").Append(V2(scRef(v)));
+                    if (ct != null) sb.Append("|cl=").Append(F(ct.localPosition.x)).Append(',').Append(F(ct.localPosition.y));
+                    if (pt != null) sb.Append("|pw=").Append(F(pt.position.x)).Append(',').Append(F(pt.position.y)).Append("|pr=").Append(F(pt.eulerAngles.z)).Append("|ps=").Append(F(pt.localScale.x)).Append(',').Append(F(pt.localScale.y));
                     w.Write(i); w.Write('|'); w.WriteLine(sb.ToString());
                     n++;
                 }

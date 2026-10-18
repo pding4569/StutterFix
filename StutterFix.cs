@@ -93,6 +93,7 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
             if (has("matprobe")) { MatProbe.Install(new HarmonyLib.Harmony("StutterFix.matprobe")); Entry.Logger.Log("[재질 만들기] matprobe 파일이 있어 곡 중 재질 만들기를 잼"); }
 #endif
             if (has("late-verify")) { MoveApply.VerifyLate = true; Entry.Logger.Log("[장식 이동] late-verify 파일이 있어 LateUpdate 에 맡긴 장식을 32개 중 1개 대조"); }
+            if (has("pairxy-off")) { DecoAnim.PairXY = false; Entry.Logger.Log("[장식 애니메이션] pairxy-off 파일이 있어 위치 X·Y 합치기 끔"); }
             if (has("rotscale-off")) { MoveApply.DeferRotScale = false; Entry.Logger.Log("[장식 이동] rotscale-off 파일이 있어 회전·크기 맡기기 끔"); }
             if (has("lazysprite-off")) { LazySprite.Enabled = false; Entry.Logger.Log("[투명 장식] lazysprite-off 파일이 있어 이미지 미루기 끔"); }
             if (has("floorlate-off")) { FloorLateFix.Enabled = false; Entry.Logger.Log("[타일 LateUpdate] floorlate-off 파일이 있어 위치·크기 읽기를 원래대로 함"); }
