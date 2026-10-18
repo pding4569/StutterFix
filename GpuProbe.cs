@@ -45,6 +45,7 @@ namespace StutterFix
         }
         static void StartProbe()
         {
+            if (GpuHide.Busy) throw new InvalidOperationException("gpuhide active; cancel it before restarting probe");
             Stop();
             if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Direct3D11) throw new InvalidOperationException("gpuprobe requires D3D11");
             // Resolve the optional DLL before creating any Unity objects or hooks.
@@ -124,6 +125,26 @@ namespace StutterFix
             var eof = new WaitForEndOfFrame();
             while (instance == this) { yield return eof; if (instance == this) { Issue(2); sampled = false; } }
         }
+        internal static bool Active => instance != null;
+        internal sealed class Window
+        {
+            internal ulong Completed;
+            internal readonly Dictionary<string, double> Means = new Dictionary<string, double>();
+            internal double Frame;
+        }
+        internal static Window Snapshot()
+        {
+            var p = instance;
+            if (p == null) throw new InvalidOperationException("gpuprobe off");
+            var data = new ulong[ScopeCount * 4];
+            if (gp_snapshot(data, data.Length) == 0) return null;
+            var result = new Window { Completed = data[0] };
+            if (result.Completed == 0) return result;
+            for (int i = 0; i < ScopeCount; i++)
+                if (p.names[i] != null) result.Means[p.names[i]] = data[i*4+1] / 1e6 / result.Completed;
+            result.Frame = data[1] / 1e6 / result.Completed;
+            return result;
+        }
         internal static void Report()
         {
             var p = instance;
@@ -141,6 +162,7 @@ namespace StutterFix
         }
         internal static void Stop()
         {
+            GpuHide.Stop();
             var p = instance; if (p == null) return;
             instance = null;
             Camera.onPreCull -= PreCull; Camera.onPreRender -= PreRender;
