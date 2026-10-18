@@ -45,6 +45,11 @@ namespace StutterFix
         private static Bounds[] bnd = new Bounds[0];
         private static byte[] st = new byte[0];      // 0 관리(켜짐), 1 꺼 둠, 2 관리 밖(움직임·모양 바뀜·너무 큼), 3 대상 아님
         private static bool[] want = new bool[0];    // 꺼 둔 동안 게임이 원하는 enabled
+        // 타일 발광(topGlow, 자식 SpriteRenderer)도 같이 끈다. 평소 알파 0 이어도 켜져 있으면 카메라마다 컬링 목록에 들어간다
+        // (HELLO 130초: 타일 14,721개 중 발광 활성 9,712개, 그중 보이는 것 64개). culled 사전에는 -(i+1) 로 넣는다.
+        internal static bool CullGlow = true;
+        private static Renderer[] glowR = new Renderer[0];
+        private static bool[] wantGlow = new bool[0];
         private static int[] cover = new int[0];     // 이 타일을 덮는 켜진 칸 수
         private static int[] quiet = new int[0];     // 관리 밖 타일: 안 움직인 검사 횟수
         private static readonly Dictionary<long, List<int>> cells = new Dictionary<long, List<int>>();
@@ -71,13 +76,13 @@ namespace StutterFix
         public static void SetEnabled(Renderer r, bool v)
         {
             int i;
-            if (culled.Count > 0 && culled.TryGetValue(r, out i)) { want[i] = v; ReadHits++; return; }
+            if (culled.Count > 0 && culled.TryGetValue(r, out i)) { if (i >= 0) want[i] = v; else wantGlow[-i - 1] = v; ReadHits++; return; }
             r.enabled = v;
         }
         public static bool GetEnabled(Renderer r)
         {
             int i;
-            if (culled.Count > 0 && culled.TryGetValue(r, out i)) { ReadHits++; return want[i]; }
+            if (culled.Count > 0 && culled.TryGetValue(r, out i)) { ReadHits++; return i >= 0 ? want[i] : wantGlow[-i - 1]; }
             return r.enabled;
         }
 
@@ -321,7 +326,7 @@ namespace StutterFix
             var list = ADOBase.lm.listFloors;
             int n = list.Count;
             builtList = list;
-            fl = list.ToArray(); rend = new Renderer[n]; bnd = new Bounds[n]; st = new byte[n]; want = new bool[n]; cover = new int[n]; quiet = new int[n];
+            fl = list.ToArray(); rend = new Renderer[n]; glowR = new Renderer[n]; wantGlow = new bool[n]; bnd = new Bounds[n]; st = new byte[n]; want = new bool[n]; cover = new int[n]; quiet = new int[n];
             cells.Clear(); culled.Clear(); byGo.Clear(); floorIndex.Clear(); haveRect = false;
             for (int i = 0; i < n; i++)
             {
@@ -334,6 +339,7 @@ namespace StutterFix
                 var r = fr != null ? fr.renderer : null;
                 if (r == null || !(r is MeshRenderer) || r.gameObject != f.gameObject) continue;
                 rend[i] = r;
+                if (CullGlow && f.topGlow != null && !f.isFake && f.topGlow.transform.parent == f.transform) glowR[i] = f.topGlow;
                 Register(i);
             }
             active = true;
@@ -384,6 +390,8 @@ namespace StutterFix
             want[i] = true;
             culled[r] = i;
             r.enabled = false;
+            var g = glowR[i];
+            if (!ReferenceEquals(g, null) && g != null && g.enabled) { wantGlow[i] = true; culled[g] = -(i + 1); g.enabled = false; }
             st[i] = 1;
             if (Verify) fl[i].transform.hasChanged = false;
             Culls++;
@@ -396,6 +404,8 @@ namespace StutterFix
             culled.Remove(r);
             st[i] = 0;
             if (r != null && want[i]) r.enabled = true;
+            var g = glowR[i];
+            if (!ReferenceEquals(g, null) && culled.Remove(g) && g != null && wantGlow[i]) g.enabled = true;
             Unculls++;
         }
 
@@ -507,7 +517,7 @@ namespace StutterFix
             if (!active) return;
             RecolorDefer.FlushAll();
             active = false;
-            foreach (var kv in culled) { var r = kv.Key; if (r != null && want[kv.Value]) r.enabled = true; }
+            foreach (var kv in culled) { var r = kv.Key; int v = kv.Value; if (r != null && (v >= 0 ? want[v] : wantGlow[-v - 1])) r.enabled = true; }
             culled.Clear(); cells.Clear(); byGo.Clear(); floorIndex.Clear(); haveRect = false;
             fl = new scrFloor[0]; rend = new Renderer[0]; builtList = null;
             if (Verify || Edition.Dev) Main.Entry.Logger.Log("[화면 밖 타일] 멈춤: 끔 " + Culls + "번, 켬 " + Unculls + "번, 움직여 뺌 " + Pins + "번, 게임의 enabled 읽기/쓰기 대신 " + ReadHits + "번"
@@ -528,6 +538,7 @@ namespace StutterFix
             foreach (var kv in culled)
             {
                 int i = kv.Value;
+                if (i < 0) continue;
                 var b = bnd[i];
                 if (b.max.x >= c.x - ex && b.min.x <= c.x + ex && b.max.y >= c.y - ey && b.min.y <= c.y + ey) Violations++;
                 if (fl[i] != null && fl[i].transform.hasChanged) { Moved++; fl[i].transform.hasChanged = false; }
@@ -554,7 +565,7 @@ namespace StutterFix
             // 대조군: 같은 상태로 두 번 그린 것도 비교한다(0 이어야 이 비교를 믿을 수 있다).
             int oldMask = int.MinValue;
             int fl0Layer = 9;
-            foreach (var kv in culled) { fl0Layer = kv.Key.gameObject.layer; break; }
+            foreach (var kv in culled) { if (kv.Value < 0) continue; fl0Layer = kv.Key.gameObject.layer; break; }
             var fx = new List<Behaviour>();
             foreach (var bh in cam.GetComponents<Behaviour>()) if (!(bh is Camera) && bh.enabled) { bh.enabled = false; fx.Add(bh); }
             try
@@ -566,7 +577,7 @@ namespace StutterFix
                 cam.Render(); tex.ReadPixels(new Rect(0, 0, W, H), 0, 0); a = tex.GetPixels32();
                 cam.Render(); tex.ReadPixels(new Rect(0, 0, W, H), 0, 0); a2 = tex.GetPixels32();
                 var saved = new List<Renderer>();
-                foreach (var kv in culled) if (want[kv.Value]) { kv.Key.enabled = true; saved.Add(kv.Key); }
+                foreach (var kv in culled) if (kv.Value >= 0 ? want[kv.Value] : wantGlow[-kv.Value - 1]) { kv.Key.enabled = true; saved.Add(kv.Key); }
                 cam.Render(); tex.ReadPixels(new Rect(0, 0, W, H), 0, 0); b = tex.GetPixels32();
                 foreach (var r in saved) r.enabled = false;
                 return "꺼 둔 타일 " + culled.Count + "개, " + W + "x" + H + " 픽셀 중 다른 것 " + Diff(a2, b) + "개 (대조군: 같은 상태 첫 번째와 두 번째 " + Diff(a, a2) + "개, 끈 필터 " + fx.Count + "개)";

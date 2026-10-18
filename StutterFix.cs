@@ -89,6 +89,7 @@ TimeProbe.Install(new HarmonyLib.Harmony("StutterFix.timeprobe"));
 AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
 #endif
  }
+            if (has("tc-no-glow")) { TileCull.CullGlow = false; Entry.Logger.Log("[화면 밖 타일] tc-no-glow 파일이 있어 타일 발광은 끄지 않음"); }
             if (has("tc-old-pin")) { TileCull.PinOnScript = true; Entry.Logger.Log("[화면 밖 타일] tc-old-pin 파일이 있어 타일 스크립트가 돌면 예전처럼 관리에서 뺌"); }
             if (has("fastopa-off")) { global::StutterFix.FloorAnim.FastOpa = false; Entry.Logger.Log("[타일 이동] fastopa-off 파일이 있어 불투명도 전용 빠른 경로를 끔"); }
             if (has("tilecull-verify.txt")) { TileCull.Verify = true; TileCull.VerifyInstall(); Entry.Logger.Log("[화면 밖 타일 검증] tilecull-verify.txt 파일이 있어 그리기마다 검사함"); }
