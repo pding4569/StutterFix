@@ -89,6 +89,7 @@ TimeProbe.Install(new HarmonyLib.Harmony("StutterFix.timeprobe"));
 AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
 #endif
  }
+            if (has("floorlate-off")) { FloorLateFix.Enabled = false; Entry.Logger.Log("[타일 LateUpdate] floorlate-off 파일이 있어 위치·크기 읽기를 원래대로 함"); }
             if (has("tc-no-glow")) { TileCull.CullGlow = false; Entry.Logger.Log("[화면 밖 타일] tc-no-glow 파일이 있어 타일 발광은 끄지 않음"); }
             if (has("tc-old-pin")) { TileCull.PinOnScript = true; Entry.Logger.Log("[화면 밖 타일] tc-old-pin 파일이 있어 타일 스크립트가 돌면 예전처럼 관리에서 뺌"); }
             if (has("fastopa-off")) { global::StutterFix.FloorAnim.FastOpa = false; Entry.Logger.Log("[타일 이동] fastopa-off 파일이 있어 불투명도 전용 빠른 경로를 끔"); }
@@ -226,7 +227,8 @@ UiProf.Install(harmony);
                 Try(() => BigLevel.Install(harmony));   // 타일이 아주 많은 맵 불러오기 (BigLevel.cs)
                 Try(() => AllocFix.Install(harmony));   // 곡 중 쓰레기 줄이기 (AllocFix.cs)
                 Try(() => ThumbCam.Install(harmony));   // 아무도 안 보는 썸네일 카메라 끄기 (ThumbCam.cs)
-                Try(() => TileCull.Install(harmony, Entry.Path));   // 화면 밖 타일 끄기 (TileCull.cs)
+                Try(() => TileCull.Install(harmony, Entry.Path));
+                Try(() => FloorLateFix.Install(harmony));   // 화면 밖 타일 끄기 (TileCull.cs)
                 Try(() => BeatFix.Install(harmony));   // 박자 알림에서 아무것도 안 하는 타일 건너뛰기 (BeatFix.cs)
                 Try(() => MatReuse.Install(harmony));   // 타일 머티리얼 누수 막기 (MatReuse.cs)
                 Try(() => EditorPick.Install(harmony));   // 큰 맵 편집 화면 클릭 끊김 (EditorPick.cs)
