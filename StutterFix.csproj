@@ -116,6 +116,7 @@
     <Compile Include="ParticleDump.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileSig.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FuseProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DecoBatchShadow.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DecoJobShadow.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="OffscreenProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="CpuBreak.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

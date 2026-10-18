@@ -63,6 +63,7 @@ namespace StutterFix
             else
             {
                 var v = scaleRef(r.D);
+                BatchShadowScale(r, v);
                 if (r.Key == 7) v.x = r.VStart.x + r.VChange.x * e;
                 else v.y = r.VStart.y + r.VChange.y * e;
                 r.VLast = v; scaleRef(r.D) = v;

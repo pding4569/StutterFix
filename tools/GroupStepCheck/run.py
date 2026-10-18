@@ -18,6 +18,7 @@ def block(marker):
     return source[start:end]
 
 parts = [block('internal sealed class Rec')]
+parts += [line.strip() for line in source.splitlines() if line.strip().startswith('static partial void BatchShadow')]
 parts += [block('private static void ' + name + '(') for name in
           ('Startup', 'ApplyE', 'OnUpdate', 'OnComplete', 'Step', 'StepPair', 'Compact', 'CompactRecords', 'Complete')]
 parts += [block('public static void UpdatePrefix(')]

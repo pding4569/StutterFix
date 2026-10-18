@@ -47,6 +47,9 @@ namespace StutterFix
 
         internal sealed class Rec
         {
+#if DEV || AUTOTEST
+            internal int BatchShadowSlot = -1;
+#endif
             public scrDecoration D; public int Key; public Tween Proxy;
             internal int PosSlot = -1, PosGeneration;
             public float Dur, Pos; public bool Started, Running = true, Stepped;
@@ -304,7 +307,14 @@ namespace StutterFix
                 case 11: r.VChange = r.VEnd - r.VStart; break;   // 시작값은 만들 때 담았다
                 default: r.FChange = r.FEnd - r.FStart; break;
             }
+            BatchShadowStart(r);
         }
+        // Calls and declarations disappear from a normal Player build.
+        static partial void BatchShadowStart(Rec r);
+        static partial void BatchShadowCancel(Rec r);
+        static partial void BatchShadowBegin(float td);
+        static partial void BatchShadowEnd();
+        static partial void BatchShadowScale(Rec r, Vector2 v);
         // setter (값 계산 + 넣기)
         private static void Apply(Rec r, float pos, bool nativeStep = false)
         {
@@ -337,8 +347,8 @@ namespace StutterFix
             {
                 // DOTween ColorPlugin 과 같은 모양: 성분마다 "시작 += 변화 x 이징" (색 연산자로 하면 곱을 한 번 더 반올림해 끝자리가 달랐다)
                 case 9: { var c = r.CStart; c.r += r.CChange.r * e; c.g += r.CChange.g * e; c.b += r.CChange.b * e; c.a += r.CChange.a * e; r.CLast = c; break; }
-                case 7: { var v = scaleRef(r.D); v.x = r.VStart.x + r.VChange.x * e; r.VLast = v; if (MoveApply.DeferTransform(r.D)) scaleRef(r.D) = v; else setScale(r.D, v); break; }
-                case 8: { var v = scaleRef(r.D); v.y = r.VStart.y + r.VChange.y * e; r.VLast = v; if (MoveApply.DeferTransform(r.D)) scaleRef(r.D) = v; else setScale(r.D, v); break; }
+                case 7: { var v = scaleRef(r.D); BatchShadowScale(r, v); v.x = r.VStart.x + r.VChange.x * e; r.VLast = v; if (MoveApply.DeferTransform(r.D)) scaleRef(r.D) = v; else setScale(r.D, v); break; }
+                case 8: { var v = scaleRef(r.D); BatchShadowScale(r, v); v.y = r.VStart.y + r.VChange.y * e; r.VLast = v; if (MoveApply.DeferTransform(r.D)) scaleRef(r.D) = v; else setScale(r.D, v); break; }
                 // DOTween Vector2Plugin (축 제한 없음) 과 같은 모양: 성분마다 "시작 += 변화 x 이징" 후 setter
                 case 11: { var v = r.VStart; v.x += r.VChange.x * e; v.y += r.VChange.y * e; r.VLast = v; parallaxRef(r.D).multiplier = v; break; }
                 default: r.FLast = r.FStart + r.FChange * e; break;
@@ -431,6 +441,7 @@ namespace StutterFix
         // Kill(true) / KillAll(true): 끝 위치로 한 번 (시작 전이면 시작 처리부터)
         private static void Complete(Rec r)
         {
+            BatchShadowCancel(r);
             fastDirty = true;
             if (!r.Running) return;
             if (!r.Started) Startup(r);
@@ -439,6 +450,7 @@ namespace StutterFix
             r.Stepped = true;
             try { Apply(r, r.Dur); OnUpdate(r); OnComplete(r); }
             catch (Exception ex) { Error(ex); }
+            BatchShadowCancel(r); // Startup can have enrolled an unstarted completion.
             if (Edition.Dev && r.Shadow != null && r.Shadow.active) { try { r.Shadow.Complete(true); } catch { } }
         }
 
@@ -447,6 +459,7 @@ namespace StutterFix
             if ((object)t == null) return true;
             var r = t.id as Rec;
             if (r == null) return true;
+            BatchShadowCancel(r);
             if (complete) { Killed++; Complete(r); }
             else if (r.Running) { r.Running = false; fastDirty = true; Dropped++; if (r.Shadow != null) r.Shadow.Kill(false); }
             return false;   // 표 자체는 꺼진 객체라 DOTween 에 넘길 것이 없다
@@ -486,6 +499,7 @@ namespace StutterFix
             var copy = recs.ToArray();
             foreach (var r in copy)
             {
+                BatchShadowCancel(r);
                 if (complete) Complete(r);
                 else if (r.Running) { r.Running = false; Dropped++; }
                 r.InList = false;
@@ -557,6 +571,7 @@ namespace StutterFix
 #endif
             if (!(td < 1E-06f && td > -1E-06f))
             {
+                BatchShadowBegin(td);
                 PrepareNative(td);
                 for (int i = 0; i < recs.Count; i++)
                 {
@@ -610,6 +625,7 @@ namespace StutterFix
 #if AUTOTEST
             long sampCompact0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
 #endif
+            BatchShadowEnd();
             if (!Edition.Dev)
             {
                 if (!FastMaySkipCompact()) Compact();
@@ -667,7 +683,7 @@ namespace StutterFix
             {
                 var r = records[i];
                 if (r.Running || (Edition.Dev && r.Shadow != null)) records[w++] = r;
-                else r.InList = false;
+                else { BatchShadowCancel(r); r.InList = false; }
             }
             if (w < records.Count) records.RemoveRange(w, records.Count - w);
         }

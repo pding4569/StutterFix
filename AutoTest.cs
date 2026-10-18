@@ -1066,6 +1066,7 @@ namespace StutterFix
                 }
                 case "decosig": Log("[장식 상태 기록] "+DecoSig.Run(modDir,arg)+" | "+LazySprite.State); return true;
                 case "fuse": Log("[합치기 연구] " + (arg == "begin" ? FuseProbe.Begin() : FuseProbe.End())); return true;
+                case "decobatch": Log("[장식 일괄 그림자] " + DecoBatchShadow.Command(arg)); return true;
                 case "phasereport": PhaseWatch.ReportSong(); return true;
 #if AUTOTEST
                 case "decosamp": if (arg == "begin") { DecoAnim.SampReset(); DecoAnim.SampOn = true; Log("[decosamp] 시작"); } else { DecoAnim.SampOn = false; Log("[decosamp] " + DecoAnim.SampReport()); } return true;
