@@ -233,6 +233,12 @@ namespace StutterFix
             awake.Clear(); dormant.Clear(); woken.Clear(); inAwake.Clear();
         }
 
+        internal static string Stat()
+        {
+            int hid = 0, vis = 0;
+            foreach (var d in awake) { if (d == null) continue; if (InvisibleSkip.IsHidden(d)) hid++; else vis++; }
+            return "깨어 있는 장식 " + awake.Count + "(투명 " + hid + ", 보임·기타 " + vis + "), 이번 프레임 훑음 " + LastAwake;
+        }
         internal static string Summary()
         {
             if (AwakeFrames == 0 && HitboxFrames == 0) return "";

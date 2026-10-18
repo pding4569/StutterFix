@@ -237,6 +237,20 @@ namespace StutterFix
             public int GetHashCode(scrDecoration o) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o); }
         }
 
+        // 회전·크기 애니메이션도 같다: UpdatePosition 끝에서 SetRotation(rotAngle)·SetScale(scaleVec) 을 다시 부른다(IL).
+        // Arche 260~280초(90 FPS 구간)는 보이는 장식 약 2,000~2,500개에 회전·크기 애니메이션이 프레임마다 돌아,
+        // Update 에서 엔진에 넣은 값을 같은 프레임 LateUpdate 가 다시 계산해 덮어썼다. 보이는 이미지 장식(SetScale 을 덮어쓰지 않는 형식)은 값만 저장한다.
+        internal static bool DeferRotScale = true;
+        internal static long RotScaleDeferred;
+        internal static bool DeferTransform(scrDecoration d)
+        {
+            if (!DeferRotScale || (object)d == null || d.GetType() != typeof(scrVisualDecoration)) return false;
+            if (!SkipForLate(d)) return false;
+            RotScaleDeferred++;
+            return true;
+        }
+        internal static bool VerifyLate;   // (자동 시험 late-verify 파일) 개발자용 LateUpdate 결과 대조를 자동 시험 빌드에서도
+
         private static bool SkipForLate(scrDecoration d)
         {
             if (!LateSkip || !Enabled || (object)d == null || !Hitch.Playing || SceneReset.Resetting) return false;
@@ -256,7 +270,7 @@ namespace StutterFix
         public static void ManagerLatePostfix(scrDecorationManager __instance)
         {
             if (lateSkipped.Count == 0) return;
-            if (Edition.Dev && devAll == null) { try { devAll = new HashSet<scrDecoration>(allRef(__instance), RefEqDeco.Instance); } catch { devAll = new HashSet<scrDecoration>(RefEqDeco.Instance); } }
+            if ((Edition.Dev || VerifyLate) && devAll == null) { try { devAll = new HashSet<scrDecoration>(allRef(__instance), RefEqDeco.Instance); } catch { devAll = new HashSet<scrDecoration>(RefEqDeco.Instance); } }
             for (int i = 0; i < lateSkipped.Count; i++)
             {
                 var d = lateSkipped[i];
@@ -264,7 +278,7 @@ namespace StutterFix
                 try
                 {
                     if (!d.GetVisible()) { update(d); LateFixups++; continue; }   // 게임이 이번엔 안 해 줬다
-                    if (!Edition.Dev) continue;
+                    if (!Edition.Dev && !VerifyLate) continue;
                     // 개발자용: 게임 목록에 없는 장식이면 LogicUpdate 가 안 돌아서 위치가 안 바뀐다 -> 세고 원래대로 갱신
                     if (!devAll.Contains(d)) { LateNotInList++; update(d); continue; }
                     // 개발자용: 32개 중 1개는 게임이 LateUpdate 에서 만든 값이 "지금 값으로 한 번 더 계산" 과 같은지 본다
@@ -390,8 +404,11 @@ namespace StutterFix
                 try { clamp(d); if (!SkipForLate(d)) update(d); Flushed++; } catch { }
             }
             if (Edition.Dev) FlushMs += (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            // HashSet.Clear 는 담긴 수가 아니라 한 번 커진 버킷 배열 전체를 지운다. 장식 1만 개짜리 효과 뒤에는 장식 1개짜리 효과마다
+            // 큰 배열을 지웠다(Arche 타일 3400~3699: 효과 1만 7천 개). 적게 담겼으면 담은 것만 뺀다(결과는 같다: 빈 집합).
+            if (dirty.Count <= 256) { for (int i = 0; i < dirty.Count; i++) inList.Remove(dirty[i]); if (inList.Count != 0) inList.Clear(); }
+            else inList.Clear();
             dirty.Clear();
-            inList.Clear();
 
         }
 

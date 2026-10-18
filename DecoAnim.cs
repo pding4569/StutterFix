@@ -291,8 +291,8 @@ namespace StutterFix
             {
                 // DOTween ColorPlugin 과 같은 모양: 성분마다 "시작 += 변화 x 이징" (색 연산자로 하면 곱을 한 번 더 반올림해 끝자리가 달랐다)
                 case 9: { var c = r.CStart; c.r += r.CChange.r * e; c.g += r.CChange.g * e; c.b += r.CChange.b * e; c.a += r.CChange.a * e; r.CLast = c; break; }
-                case 7: { var v = scaleRef(r.D); v.x = r.VStart.x + r.VChange.x * e; r.VLast = v; setScale(r.D, v); break; }
-                case 8: { var v = scaleRef(r.D); v.y = r.VStart.y + r.VChange.y * e; r.VLast = v; setScale(r.D, v); break; }
+                case 7: { var v = scaleRef(r.D); v.x = r.VStart.x + r.VChange.x * e; r.VLast = v; if (MoveApply.DeferTransform(r.D)) scaleRef(r.D) = v; else setScale(r.D, v); break; }
+                case 8: { var v = scaleRef(r.D); v.y = r.VStart.y + r.VChange.y * e; r.VLast = v; if (MoveApply.DeferTransform(r.D)) scaleRef(r.D) = v; else setScale(r.D, v); break; }
                 // DOTween Vector2Plugin (축 제한 없음) 과 같은 모양: 성분마다 "시작 += 변화 x 이징" 후 setter
                 case 11: { var v = r.VStart; v.x += r.VChange.x * e; v.y += r.VChange.y * e; r.VLast = v; parallaxRef(r.D).multiplier = v; break; }
                 default: r.FLast = r.FStart + r.FChange * e; break;
@@ -306,7 +306,7 @@ namespace StutterFix
                 case 2: setPosY(r.D, r.FLast, pivotOffRef(r.D)); break;
                 case 3: setPivX(r.D, r.FLast); break;
                 case 4: setPivY(r.D, r.FLast); break;
-                case 5: setRot(r.D, r.FLast); break;
+                case 5: if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FLast; else setRot(r.D, r.FLast); break;
                 case 12: setParOffX(r.D, r.FLast); break;
                 case 13: setParOffY(r.D, r.FLast); break;
                 case 9: setCol(r.D, r.CLast); break;
@@ -322,7 +322,7 @@ namespace StutterFix
                 case 2: setPosY(r.D, r.FEnd, pivotOffRef(r.D)); break;
                 case 3: setPivX(r.D, r.FEnd); break;
                 case 4: setPivY(r.D, r.FEnd); break;
-                case 5: setRot(r.D, r.FEnd); break;
+                case 5: if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FEnd; else setRot(r.D, r.FEnd); break;
                 case 12: setParOffX(r.D, r.FEnd); break;
                 case 13: setParOffY(r.D, r.FEnd); break;
                 case 9: setCol(r.D, r.CEnd); break;
@@ -504,6 +504,24 @@ namespace StutterFix
         // 설정을 끄면 진행 중인 것을 DOTween 처럼 끝까지 가게 할 수는 없으니 완료시킨다 (Kill(true) 와 같음)
         internal static void FinishAll() { KillAllPrefix(true); }
 
+        // (자동 시험 animstat) 지금 도는 애니메이션: 종류별 수와 그중 안 그리는(투명) 장식 대상 수
+        internal static string Stat()
+        {
+            var n = new int[16]; var h = new int[16]; int run = 0;
+            var decs = new System.Collections.Generic.HashSet<scrDecoration>(); var hidDecs = new System.Collections.Generic.HashSet<scrDecoration>();
+            foreach (var r in recs)
+            {
+                if (r == null || !r.Running || r.Key < 0 || r.Key >= 16) continue;
+                run++; n[r.Key]++; decs.Add(r.D);
+                if (InvisibleSkip.IsHidden(r.D)) { h[r.Key]++; hidDecs.Add(r.D); }
+            }
+            var sb = new System.Text.StringBuilder();
+            sb.Append("도는 애니메이션 ").Append(run).Append("개(장식 ").Append(decs.Count).Append(", 그중 투명 ").Append(hidDecs.Count).Append(") 종류별[투명]:");
+            string[] nm = { "?", "위치X", "위치Y", "피벗X", "피벗Y", "회전", "?", "크기X", "크기Y", "색", "투명도", "시차", "시차오프X", "시차오프Y", "?", "?" };
+            for (int k = 0; k < 16; k++) if (n[k] > 0) sb.Append(' ').Append(nm[k]).Append(' ').Append(n[k]).Append('[').Append(h[k]).Append(']');
+            sb.Append(" | 이번 프레임 갱신 ").Append(LastFrameMs.ToString("F2")).Append("ms");
+            return sb.ToString();
+        }
         internal static string Summary()
         {
             if (Created == 0) return "";

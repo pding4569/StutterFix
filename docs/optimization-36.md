@@ -747,3 +747,15 @@ HELLO PlayerAuto ABBA: 끔 12ms 초과 102·102 / 16ms 초과 40·34 / 1% low 11
 | 4 SetTrans·SetRotation·SetScale 같은 값 쓰기 생략 | 깨어 있는 장식이 프레임당 약 93개라 엔진 호출 약 280번(0.03~0.06ms 추정, 0.1ms 미만) — 하지 않음 |
 | 5 FloorAnim position·localScale 중복 읽기 | 위치·크기를 쓰는 큰 타일 이동 효과 시작 몇 번의 타일당 1~2번 — 효과 시작 시간 기록에서 3ms 넘는 타일 이동이 없어 하지 않음 |
 남은 Arche 효과 프레임: 곡 274.8초 장식 5,091개 색 바꾸기 7ms(색 4ms, 앞부분 2ms), 279.6초 효과 85개 14ms. 나머지 20~30ms 프레임은 효과가 0개인 엔진·OS 쪽이다.
+
+## 2026-10-18 Arche 90 FPS 구간(곡 260~280초)
+
+측정(PlayerAuto, 10초 구간): 270초 87 FPS = 메인 11.4ms, 렌더 스레드 4.5ms, GPU 6.7ms, 모드 장식 애니메이션 4.3ms, 깨어 있는 장식 약 2,130개. `animstat`: 도는 애니메이션 1만~1만 3천 개(장식 약 2,000~2,500개, **투명한 것은 0~7%**) — 위치X·Y·회전·크기X·Y·색이 장식마다 하나씩. 그래서 투명 장식 미루기(Gemini 2·3)는 이 구간에 해당이 거의 없다.
+개발자용 엔진 단계(270초 구간, 프레임당 13.2ms): Update 스크립트 6.4ms, LateUpdate 스크립트 3.5ms(scrDecorationManager → 장식마다 UpdatePosition), FinishFrameRendering 1.8ms, UpdateAllRenderers 0.5ms. 애니메이션 진행 한 번 평균 0.36us, 종류별 설정 비용: 위치X 0.74us, 위치Y 0.26us, 회전 0.18us, 색 0.31us, 투명도 1.01us.
+
+| 변경 | 결과 |
+|---|---|
+| 보이는 이미지 장식의 회전·크기 애니메이션은 값만 저장(같은 프레임 LateUpdate 의 UpdatePosition 이 SetRotation(rotAngle)·SetScale(scaleVec) 을 다시 한다. 위치에 쓰던 MoveApply.SkipForLate 와 같은 조건 + 형식이 정확히 scrVisualDecoration) | 대조(LateUpdate 뒤 다시 계산, 32개 중 1개) 약 597만 번 다름 0. 애니메이션 갱신 4.3 → 3.7ms |
+| MoveApply 의 HashSet.Clear 가 한 번 커진 버킷 배열을 효과마다 통째로 지우던 것: 적게 담겼으면 담은 것만 뺌 | 결과 같음(빈 집합) |
+| 합계(끔 2판 / 켬 3판) | 270초 87~88 → 87~93, 260초 124 → 124~129, 230초 186~190 → 192~195, 1% low 92~94 → 95~99 |
+남은 것: 위치X·Y 설정(SetPosition 사슬) 프레임당 약 2.3ms, LateUpdate UpdatePosition 약 2,100번, GPU 6.7ms(CPU 를 다 줄여도 이 구간은 약 140 FPS 가 상한).
