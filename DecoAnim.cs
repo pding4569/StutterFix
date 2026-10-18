@@ -516,6 +516,24 @@ namespace StutterFix
             if(NativeMotion.Run(n))activeNativeEpoch=token;
         }
 #if AUTOTEST
+        internal static bool SampOn;
+        internal static readonly long[] sampTicks = new long[16], sampCalls = new long[16];
+        internal static long sampCompactTicks, sampLoopTicks, sampFrames, sampRecs;
+        internal static string SampReport()
+        {
+            double tk = System.Diagnostics.Stopwatch.Frequency / 1e6; long f = Math.Max(1, sampFrames);
+            string[] nm = { "?", "위치X(단독)", "위치Y(단독)", "피벗X", "피벗Y", "회전", "?", "크기X", "크기Y", "색", "투명도", "시차배율", "시차X", "시차Y", "위치쌍(X+Y)", "그 밖" };
+            var sb = new System.Text.StringBuilder();
+            sb.Append("표본 프레임 ").Append(sampFrames).Append(" 루프 전체 프레임당 ").Append((sampLoopTicks / tk / 1000.0 / f).ToString("F3")).Append("ms (기록 ").Append((sampRecs / (double)f).ToString("F0")).Append("개) 정리(Compact) ").Append((sampCompactTicks / tk / 1000.0 / f).ToString("F3")).Append("ms | 호출별(Stopwatch 쌍 약 0.05us 포함): ");
+            double sum = 0;
+            for (int k = 0; k < 16; k++) if (sampCalls[k] > 0)
+            { double ms = sampTicks[k] / tk / 1000.0 / f; sum += ms; sb.Append(nm[k]).Append(" 프레임당 ").Append((sampCalls[k] / (double)f).ToString("F0")).Append("번 ").Append((sampTicks[k] / tk / sampCalls[k]).ToString("F2")).Append("us = ").Append(ms.ToString("F3")).Append("ms, "); }
+            sb.Append("호출 합 ").Append(sum.ToString("F3")).Append("ms");
+            return sb.ToString();
+        }
+        internal static void SampReset() { Array.Clear(sampTicks, 0, 16); Array.Clear(sampCalls, 0, 16); sampCompactTicks = sampLoopTicks = sampFrames = sampRecs = 0; }
+#endif
+#if AUTOTEST
         internal static int AblateMask;   // 자동 시험 decoablate: 키 비트마스크. 화면이 달라지는 측정 전용 설정
 #endif
         public static void UpdatePrefix()
@@ -530,6 +548,10 @@ namespace StutterFix
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
             float td = dt * 1f;   // 애니메이션마다의 timeScale 은 1
             Frames++;
+#if AUTOTEST
+            bool sampFrame = SampOn && (Frames & 15) == 0;
+            long sampFrameStart = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+#endif
             if (!(td < 1E-06f && td > -1E-06f))
             {
                 PrepareNative(td);
@@ -558,18 +580,36 @@ namespace StutterFix
                         if (n.Key == 2 && n.Running && ReferenceEquals(n.D, r.D))
                         {
                             Steps += 2; PairSteps++;
+#if AUTOTEST
+                            long sp0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+#endif
                             try { StepPair(r, n, td); }
                             catch (Exception ex) { r.Running = false; n.Running = false; Error(ex); }
+#if AUTOTEST
+                            if (sampFrame) { sampTicks[14] += System.Diagnostics.Stopwatch.GetTimestamp() - sp0; sampCalls[14]++; }
+#endif
                             i++;
                             continue;
                         }
                     }
                     Steps++;
+#if AUTOTEST
+                    long ss0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+#endif
                     try { Step(r, td); }
                     catch (Exception ex) { r.Running = false; Error(ex); }   // DOTween 안전 모드: 예외가 나면 그 애니메이션을 끝냄
+#if AUTOTEST
+                    if (sampFrame) { int sk = r.Key >= 0 && r.Key < 14 ? r.Key : 15; sampTicks[sk] += System.Diagnostics.Stopwatch.GetTimestamp() - ss0; sampCalls[sk]++; }
+#endif
                 }
             }
+#if AUTOTEST
+            long sampCompact0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+#endif
             if (!Edition.Dev) Compact();
+#if AUTOTEST
+            if (sampFrame) { long now = System.Diagnostics.Stopwatch.GetTimestamp(); sampCompactTicks += now - sampCompact0; sampLoopTicks += now - sampFrameStart; sampFrames++; sampRecs += recs.Count; }
+#endif
             long elapsedTicks = System.Diagnostics.Stopwatch.GetTimestamp() - t0;
             LastFrameMs = elapsedTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             UpdateMs += LastFrameMs;
