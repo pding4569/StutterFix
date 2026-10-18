@@ -183,6 +183,8 @@ namespace StutterFix
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> pivotOffRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("pivotOffsetVec");
         private static readonly AccessTools.FieldRef<scrDecoration, scrParallax> parallaxRef = AccessTools.FieldRefAccess<scrDecoration, scrParallax>("parallax");
         private static Func<scrVisualDecoration, bool> isMask;
+        // 마스크이거나 알 수 없으면 true (다른 장식의 UpdateShader 가 이 장식의 위치·회전·크기·이미지를 읽는다)
+        internal static bool MaskOrUnknown(scrVisualDecoration v) { if (isMask == null) return true; try { return isMask(v); } catch { return true; } }
         private static Action<scrDecoration, Vector2, Vector2> setPosition;
 
         private static void InstallLazy(Harmony h)

@@ -759,3 +759,30 @@ HELLO PlayerAuto ABBA: 끔 12ms 초과 102·102 / 16ms 초과 40·34 / 1% low 11
 | MoveApply 의 HashSet.Clear 가 한 번 커진 버킷 배열을 효과마다 통째로 지우던 것: 적게 담겼으면 담은 것만 뺌 | 결과 같음(빈 집합) |
 | 합계(끔 2판 / 켬 3판) | 270초 87~88 → 87~93, 260초 124 → 124~129, 230초 186~190 → 192~195, 1% low 92~94 → 95~99 |
 남은 것: 위치X·Y 설정(SetPosition 사슬) 프레임당 약 2.3ms, LateUpdate UpdatePosition 약 2,100번, GPU 6.7ms(CPU 를 다 줄여도 이 구간은 약 140 FPS 가 상한).
+
+## 2026-10-18 위치 X·Y 짝 합치기(StepPair)
+
+같은 장식의 위치X·위치Y 애니메이션이 표에 나란히 있으면(Arche 는 거의 모두) `SetPositionX` + `SetPositionY` 두 번 대신 두 축을 각각 계산해 `SetPosition` 한 번. 두 축 계산은 서로의 중간값·Transform 을 읽지 않고, 끝난 축은 FEnd(원래 OnComplete 가 넣는 값)를 쓴다.
+검증: Arche 곡 끝 장식 2만 8,828개 pp/po/sc/cl 같음(회전 17개는 계속 도는 장식, pw 는 카메라 시점 차). 측정(Arche, 판마다 새로 켬): 270초 94 → 96 FPS, 장식 애니메이션 3.6 → 3.2ms, 240초 214 → 218.
+다른 모드가 SetPositionX/Y/SetPosition 을 감쌌으면 쓰지 않는다(호출 횟수·한 축 예외의 처리가 원래와 달라짐. 처음 쓸 때 Harmony 패치 주인을 본다).
+
+## 2026-10-18 Codex 정적 검토(`docs/handoff/codex-review-20261018-result.md`) 반영
+
+Codex 가 오늘 변경을 게임 IL·다른 모드 19개 IL 전수로 읽고 원래와 달라질 수 있는 경로 F1~F8 을 냈다. 고친 것:
+
+| 항목 | 내용 | 수정 |
+|---|---|---|
+| F1 | 화면 밖 타일에 길이 있는 단색 색이 밀린 채 무지개로 바꾸는 효과가 오면, 원래는 효과의 타일별 Kill(true) 가 앞 색 애니메이션을 끝내는데 밀린 색을 ColorFloor 에서야 적용해 그 취소를 지나쳐 살아 남음 | 효과 입구에서 칠할 색(usedColorType 이면 colorType)이 미룰 수 없으면 그 효과의 UpdateAngle/SetTrackStyle 을 미루지 않고 밀린 것을 먼저 적용, 타일별 Kill 람다(`<StartEffect>b__0`) 앞에서도 적용 |
+| F2 | 처음 크기(spriteUnscaledSize)가 0 인 투명 장식에 A→B 이미지를 미루면 A 가 정할 처음 크기를 B 가 정함 | 처음 크기가 0 이면 미루지 않음 (Arche 곡 전체 해당 0번) |
+| F3 | `SetToRandomColor`(MoveToNextFloor·LightUp·OnBeat)·`TweenColor` 가 밀린 타일의 옛 색 알파로 발광 투명도를 정할 수 있음 | 두 함수 앞에서 그 타일의 밀린 것 적용 |
+| F4 | FlushAll 뒤에도 순서 목록이 지난 맵 타일을 붙잡음 | FlushAll·Shutdown 에서 비움 |
+| F5 | (예전부터) TileCull 이 모드 끄기·다시 불러오기에서 PlayerLoop 단계·꺼 둔 렌더러·검증 이벤트를 안 되돌림 | `TileCull.Shutdown`(전부 켜기, PlayerLoop 단계 빼기, 검증 이벤트 떼기, 설치 세대로 옛 훑기 결과 버리기)을 Harmony 풀기 전에. 다시 설치하면 바꿔 끼우기를 처음부터 |
+| F6 | (V15 켠 경우만) 마스크 장식의 회전·크기를 미루면 대상 장식의 UpdateShader 가 옛 Transform 을 읽음. 이미지 미룬 장식이 마스크로 바뀔 때도 | 마스크는 회전·크기 미루기 제외, `SetMaskingType/SetMaskingTarget` 앞에서 미룬 이미지 적용 |
+| F8 | 개발자용 matprobe Harmony ID 가 해제 목록에 없음 | 목록에 추가 |
+| StepPair 예외 | 한 축 예외 때 두 축이 같이 끝남 | 위(다른 모드가 감싸면 끔) |
+
+F7(컬링 경계가 바뀐 메시·발광 경계를 포함하는 보장)은 이론상으로 남김(기존 culltest 0픽셀).
+재검증: HELLO 곡 끝 타일 1만 4,721개 미루기 켬/끔 비색 필드 차이 0, 단색 색 차이 0(애니메이션 색 종류만 시점 차). Arche 곡 끝 장식 대조 이미지·크기·충돌 상자·키워드 같음. 곡 중 모드 다시 불러오기 → 설치 정상(세대 1).
+FPS: HELLO 244/244(켬/끔), Arche 377.
+
+**따로 남긴 것**: 모드 다시 불러오기(Ctrl+F5) 뒤 맵을 열면 게임이 로그 없이 꺼진다(맵 파일 읽은 직후). 오늘 아침 커밋(83facdf)에서도 같아 오늘 변경 탓은 아니다. 디스크 캐시·이미지 미리 풀기를 꺼도 같다.

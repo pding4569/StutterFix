@@ -69,13 +69,53 @@ namespace StutterFix
                 h.Patch(ua, prefix: new HarmonyMethod(typeof(RecolorDefer), nameof(UpdateAnglePrefix)));
                 h.Patch(st, prefix: new HarmonyMethod(typeof(RecolorDefer), nameof(SetTrackStylePrefix)));
                 h.Patch(cf, prefix: new HarmonyMethod(typeof(RecolorDefer), nameof(ColorFloorPrefix)));
+                // 미룰 수 없는 색(무지개)으로 바꾸는 효과: 원래는 타일마다 ColorFloor 앞에서 지난 움직임을 Kill(true) 한다(StartEffect 안 람다).
+                // 밀린 색을 ColorFloor 에서야 적용하면 그 취소를 지나쳐 지난 색 애니메이션이 살아 남으므로, 그 취소 바로 앞에서 적용한다.
+                foreach (var nt in typeof(ffxRecolorFloorPlus).GetNestedTypes(AccessTools.all))
+                {
+                    var tf = AccessTools.Field(nt, "target");
+                    var b0 = AccessTools.Method(nt, "<StartEffect>b__0");
+                    if (tf == null || b0 == null || tf.FieldType != typeof(scrFloor)) continue;
+                    killTarget = tf;
+                    h.Patch(b0, prefix: new HarmonyMethod(typeof(RecolorDefer), nameof(KillPrefix)));
+                }
+                // 타일 색을 읽어 다른 값(발광 투명도 등)에 남기는 함수: 밀린 것을 먼저 (scrPlanet.MoveToNextFloor·LightUp·OnBeat 가 부름)
+                var consumer = new HarmonyMethod(typeof(RecolorDefer), nameof(ConsumerPrefix));
+                foreach (var m in typeof(scrFloor).GetMethods(AccessTools.all))
+                    if ((m.Name == "SetToRandomColor" || m.Name == "TweenColor") && m.DeclaringType == typeof(scrFloor) && !m.IsAbstract) h.Patch(m, prefix: consumer);
                 Installed = true;
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[색 바꾸기 미루기] 설치 실패: " + ex.Message); }
         }
 
-        public static void EnterPrefix() { depth++; }
-        public static void ExitFinalizer() { if (depth > 0) depth--; }
+        private static readonly AccessTools.FieldRef<ffxRecolorFloorPlus, bool> usedTypeRef = AccessTools.FieldRefAccess<ffxRecolorFloorPlus, bool>("usedColorType");
+        private static readonly AccessTools.FieldRef<ffxRecolorFloorPlus, TrackColorType> typeRef = AccessTools.FieldRefAccess<ffxRecolorFloorPlus, TrackColorType>("colorType");
+        private static System.Reflection.FieldInfo killTarget;
+        private static readonly bool[] unsStack = new bool[16];
+        private static bool unsupportedNow;   // 지금 효과가 미룰 수 없는 색을 칠함
+        private static bool Supported(TrackColorType t)
+        {
+            return t == TrackColorType.Single || t == TrackColorType.Stripes || t == TrackColorType.Glow
+                || t == TrackColorType.Blink || t == TrackColorType.Switch || t == TrackColorType.Volume;
+        }
+        public static void EnterPrefix(ffxRecolorFloorPlus __instance)
+        {
+            if (depth < unsStack.Length) unsStack[depth] = unsupportedNow;
+            depth++;
+            unsupportedNow = __instance != null && usedTypeRef(__instance) && !Supported(typeRef(__instance));
+        }
+        public static void ExitFinalizer()
+        {
+            if (depth > 0) depth--;
+            unsupportedNow = depth > 0 && depth < unsStack.Length && unsStack[depth];   // 들어오기 전 값 (맨 바깥이면 false)
+        }
+        // 효과 안 타일별 Kill(true) 람다 앞
+        public static void KillPrefix(object __instance)
+        {
+            if (!unsupportedNow || pending.Count == 0 || bypass) return;
+            FlushIf(killTarget.GetValue(__instance) as scrFloor);
+        }
+        public static void ConsumerPrefix(scrFloor __instance) { if (!bypass && pending.Count > 0) FlushIf(__instance); }
 
         private static bool CanDefer(scrFloor f)
         {
@@ -97,7 +137,7 @@ namespace StutterFix
         public static bool UpdateAnglePrefix(scrFloor __instance, bool rotate)
         {
             if (bypass) return true;
-            if (rotate || !CanDefer(__instance)) { FlushIf(__instance); return true; }
+            if (rotate || unsupportedNow || !CanDefer(__instance)) { FlushIf(__instance); return true; }
             Get(__instance).Angle = true;
             Skipped++;
             return false;
@@ -106,7 +146,7 @@ namespace StutterFix
         public static bool SetTrackStylePrefix(scrFloor __instance, TrackStyle style, bool initial, Color? customShadowColor)
         {
             if (bypass) return true;
-            if (initial || !CanDefer(__instance)) { FlushIf(__instance); return true; }
+            if (initial || unsupportedNow || !CanDefer(__instance)) { FlushIf(__instance); return true; }
             var p = Get(__instance);
             p.Style = true; p.StyleVal = style; p.Initial = initial; p.Shadow = customShadowColor;
             Skipped++;
@@ -116,8 +156,7 @@ namespace StutterFix
         public static bool ColorFloorPrefix(scrFloor __instance, TrackColorType colorType, Color color1, Color color2, float animDuration, TrackColorPulse pulseType, float pulseLength, int startOfColorChange, float duration, Ease ease)
         {
             if (bypass) return true;
-            bool supported = colorType == TrackColorType.Single || colorType == TrackColorType.Stripes || colorType == TrackColorType.Glow
-                || colorType == TrackColorType.Blink || colorType == TrackColorType.Switch || colorType == TrackColorType.Volume;
+            bool supported = Supported(colorType);
             if (!supported || !CanDefer(__instance)) { FlushIf(__instance); if (depth > 0 && Enabled) Fallbacks++; return true; }
             var f = __instance;
             // 원래 ColorFloor 의 관리 값 쓰기 (엔진 호출 앞부분)
@@ -168,6 +207,7 @@ namespace StutterFix
             if (pending.Count == 0) return;
             var list = new List<KeyValuePair<scrFloor, Pending>>(pending);
             foreach (var kv in list) Apply(kv.Key, kv.Value);
+            if (pending.Count == 0) { order.Clear(); drainAt = 0; }
         }
 
         // PlayerLoop 의 TileCull 단계가 끝난 뒤: 방금 적용한 타일 메시를 그리기 전에 만든다
@@ -254,7 +294,7 @@ namespace StutterFix
             else if (elapsed > 0f) t.Goto(elapsed, true);
         }
 
-        internal static void Shutdown() { Enabled = false; FlushAll(); }
+        internal static void Shutdown() { Enabled = false; FlushAll(); order.Clear(); drainAt = 0; depth = 0; unsupportedNow = false; }
         internal static string State
         {
             get

@@ -22,7 +22,7 @@ namespace StutterFix
     {
         internal static bool Enabled = true;
         internal static long Deferred, Flushed;
-        internal static readonly long[] No = new long[8];   // 못 미룬 이유: 1 재생 아님 2 보임 3 이미지 아님 4 히트박스 5 안 그리는 목록에 없음 6 마스크
+        internal static readonly long[] No = new long[9];   // 못 미룬 이유: 1 재생 아님 2 보임 3 이미지 아님 4 히트박스 5 안 그리는 목록에 없음 6 마스크 8 처음 크기 아직 없음
         private sealed class RefEq : IEqualityComparer<scrVisualDecoration>
         {
             public bool Equals(scrVisualDecoration a, scrVisualDecoration b) { return ReferenceEquals(a, b); }
@@ -40,7 +40,7 @@ namespace StutterFix
                 var all = new HarmonyMethod(typeof(LazySprite), nameof(AllPrefix)) { priority = Priority.First };
                 int n = 0;
                 // 이 장식의 스프라이트·스프라이트 크기를 읽거나 바꾸는 함수 (IL: SpriteRenderer.get_sprite / _sprite / spriteUnscaledSize)
-                foreach (var name in new[] { "SetSprite", "GetDecorationPixelsSizeInUnits", "GetDecorationWorldSize", "SetTextureScaleMultiplier", "SetTile", "UpdateHitbox", "UpdateShader", "ResizeCollider", "get_spriteUnscaledSize" })
+                foreach (var name in new[] { "SetSprite", "GetDecorationPixelsSizeInUnits", "GetDecorationWorldSize", "SetTextureScaleMultiplier", "SetTile", "UpdateHitbox", "UpdateShader", "ResizeCollider", "get_spriteUnscaledSize", "SetMaskingType", "SetMaskingTarget" })
                     foreach (var m in typeof(scrVisualDecoration).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
                         if (m.Name == name && !m.IsAbstract) { h.Patch(m, prefix: one); n++; }
                 // 여러 장식을 훑으며 스프라이트를 읽는 관리자 함수: 미룬 것을 모두 먼저
@@ -76,6 +76,8 @@ namespace StutterFix
             if (!Enabled || !installed || flushing || (object)ADOBase.controller == null) { No[7]++; return false; }
             int why = InvisibleSkip.SpriteLazyWhy(v);
             if (why != 0) { No[why]++; return false; }
+            // 처음 유효한 이미지가 원래 크기(spriteUnscaledSize)를 정한다(ResizeCollider). 그 첫 번째는 미루지 않는다(미루면 뒤 이미지 크기가 남음).
+            if (!pending.ContainsKey(v) && v.spriteUnscaledSize == Vector2.zero) { No[8]++; return false; }
             return true;
         }
 
@@ -125,6 +127,6 @@ namespace StutterFix
             finally { flushing = false; }
         }
 
-        internal static string State { get { return "이미지 미룸 " + Deferred + "번, 적용 " + Flushed + "번, 남음 " + pending.Count + " (못 미룬 이유 재생아님 " + No[1] + " 보임 " + No[2] + " 이미지아님 " + No[3] + " 히트박스 " + No[4] + " 목록에없음 " + No[5] + " 마스크 " + No[6] + " 다른 이미지 설정 " + No[0] + " V15꺼짐·설치 " + No[7] + ")"; } }
+        internal static string State { get { return "이미지 미룸 " + Deferred + "번, 적용 " + Flushed + "번, 남음 " + pending.Count + " (못 미룬 이유 재생아님 " + No[1] + " 보임 " + No[2] + " 이미지아님 " + No[3] + " 히트박스 " + No[4] + " 목록에없음 " + No[5] + " 마스크 " + No[6] + " 다른 이미지 설정 " + No[0] + " V15꺼짐·설치 " + No[7] + " 처음크기 " + No[8] + ")"; } }
     }
 }

@@ -245,6 +245,7 @@ namespace StutterFix
         internal static bool DeferTransform(scrDecoration d)
         {
             if (!DeferRotScale || (object)d == null || d.GetType() != typeof(scrVisualDecoration)) return false;
+            if (InvisibleSkip.MaskOrUnknown((scrVisualDecoration)d)) return false;   // 마스크: 대상 장식의 UpdateShader 가 이 Transform 을 읽는다
             if (!SkipForLate(d)) return false;
             RotScaleDeferred++;
             return true;

@@ -72,6 +72,25 @@ namespace StutterFix
         private static SetXY setPosX, setPosY;
         private static Action<scrDecoration, Vector2, Vector2> setPos;
         internal static bool PairXY = true;
+        // 다른 모드가 SetPositionX/Y/SetPosition 을 감쌌으면 짝 합치기를 하지 않는다(호출 횟수·예외 처리가 원래와 달라짐). 처음 쓸 때 한 번 본다.
+        private static int pairOk;   // 0 모름 1 됨 2 안 됨
+        private static bool PairAllowed()
+        {
+            if (pairOk != 0) return pairOk == 1;
+            pairOk = 1;
+            try
+            {
+                foreach (var m in typeof(scrDecoration).GetMethods(AccessTools.all))
+                {
+                    if (m.Name != "SetPositionX" && m.Name != "SetPositionY" && m.Name != "SetPosition") continue;
+                    var info = Harmony.GetPatchInfo(m);
+                    if (info == null) continue;
+                    foreach (var o in info.Owners) if (!o.StartsWith("StutterFix")) { pairOk = 2; Main.Entry.Logger.Log("[장식 애니메이션] " + o + " 가 " + m.Name + " 을 감싸 위치 X·Y 합치기를 쓰지 않음"); return false; }
+                }
+            }
+            catch { pairOk = 2; }
+            return pairOk == 1;
+        }
         internal static long PairSteps;
         private static Action<scrDecoration, float> setRot, setOpa;
         private static Action<scrDecoration, Color> setCol;
@@ -467,7 +486,7 @@ namespace StutterFix
                     var r = recs[i];
                     if (!r.Running) continue;
                     // 같은 장식의 위치 X·Y 가 나란히 있으면(한 효과가 만든 짝) 한 번의 SetPosition 으로 합친다
-                    if (r.Key == 1 && PairXY && !Prof && i + 1 < recs.Count && (object)setPos != null)
+                    if (r.Key == 1 && PairXY && !Prof && i + 1 < recs.Count && (object)setPos != null && PairAllowed())
                     {
                         var n = recs[i + 1];
                         if (n.Key == 2 && n.Running && ReferenceEquals(n.D, r.D))

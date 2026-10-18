@@ -110,6 +110,7 @@ namespace StutterFix
         internal static void Install(Harmony h, string modDir)
         {
             harmony = h;
+            gen++; shut = false; Ready = false; found = null; patchAt = 0; patchFail = 0; loopLost = false; blocked = false; pauseDepth = 0;
             cachePath = Path.Combine(modDir, "tilecull-scan.txt");
             var patchMover = new HarmonyMethod(typeof(TileCull), nameof(PinSelf));
             // 타일을 움직이거나 모양을 바꾸는 곳
@@ -154,8 +155,10 @@ namespace StutterFix
                 || an == "UnityModManager" || an == "StutterFix" || an.StartsWith("Microsoft.") || an.StartsWith("DOTween") || an.StartsWith("Newtonsoft");
         }
 
+        private static int gen;   // 설치 세대: 해제 뒤 끝난 옛 훑기 결과를 쓰지 않게
         private static void Scan()
         {
+            int g = gen;
             try
             {
                 System.Threading.Thread.Sleep(8000);   // 모드들이 다 올라온 뒤
@@ -184,7 +187,7 @@ namespace StutterFix
                                 Assembly a;
                                 if (p.Length == 2 && byName.TryGetValue(p[0], out a)) list.Add(a.ManifestModule.ResolveMethod(int.Parse(p[1])));
                             }
-                            found = list;
+                            if (g == gen) found = list;
                             return;
                         }
                     }
@@ -231,7 +234,7 @@ namespace StutterFix
                 }
                 try { File.WriteAllText(cachePath, sb.ToString()); } catch { }
                 scanMs = sw.ElapsedMilliseconds;
-                found = list;
+                if (g == gen) found = list;
             }
             catch (Exception ex) { scanError = ex.Message; found = new List<MethodBase>(); patchFail = 1; }
         }
@@ -241,6 +244,7 @@ namespace StutterFix
         // OnUpdate 에서: 찾은 함수를 곡 밖에서 조금씩 바꿔 끼운다 (한 프레임 8개), 그리고 안전장치
         internal static void Tick()
         {
+            if (shut) return;
             if (active && lastStep < Time.frameCount - 1) { StopAll(); Main.Entry.Logger.Log("[화면 밖 타일] 단계가 한 프레임 안 돌아 전부 켜고 멈춤"); loopLost = true; }
             if (Ready || found == null || Hitch.Playing) return;
             var list = found;
@@ -259,7 +263,7 @@ namespace StutterFix
             {
                 Ready = patchFail == 0;
                 InstallLoop();
-                Main.Entry.Logger.Log("[화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 " + list.Count + "개 바꿔 끼움" + (scanMs >= 0 ? " (훑기 " + scanMs + "ms)" : " (지난 결과)")
+                Main.Entry.Logger.Log("[화면 밖 타일] 렌더러 켜기/끄기 부르는 함수 " + list.Count + "개 바꿔 끼움, 세대 " + gen + (scanMs >= 0 ? " (훑기 " + scanMs + "ms)" : " (지난 결과)")
                     + ", " + patchFrames + "프레임에 나눠 " + patchMs + "ms, 한 프레임 최대 " + patchWorst + "ms"
                     + (patchFail > 0 ? " - 실패 " + patchFail + "개라 쓰지 않음 " + scanError : ""));
                 found = null;
@@ -295,7 +299,7 @@ namespace StutterFix
                 if (!Hitch.Playing) blocked = false;
                 // 곡이 끝나도(완주·실패) 바로 전부 켜지 않는다: 큰 맵에서 수만 개 렌더러를 한 프레임에 켜면 곡 끝 순간 끊겼다(2.4.4).
                 // 이미 돌던 것은 카메라를 따라 계속 돌리고, 다시 켜기는 멈추는 순간(타일 다시 만들기·장면 초기화·편집으로 나가기·장면 바뀜)에 한다.
-                bool want = !blocked && pauseDepth == 0 && Enabled && !ForceOff && Ready && !loopLost && (Hitch.Playing || active) && ADOBase.customLevel != null && ADOBase.lm != null && ADOBase.lm.listFloors != null
+                bool want = !shut && !blocked && pauseDepth == 0 && Enabled && !ForceOff && Ready && !loopLost && (Hitch.Playing || active) && ADOBase.customLevel != null && ADOBase.lm != null && ADOBase.lm.listFloors != null
                     && ADOBase.lm.listFloors.Count >= MinFloors && ADOBase.controller != null && ADOBase.controller.camy != null
                     && (!active || Hitch.Playing || (ReferenceEquals(ADOBase.lm.listFloors, builtList) && builtList.Count == fl.Length));   // 곡 뒤에 계속 돌 때: 같은 타일 목록일 때만 (장면이 바뀌면 멈춤)
                 if (!want) { if (active) StopAll(); return; }
@@ -523,6 +527,28 @@ namespace StutterFix
             if (Verify || Edition.Dev) Main.Entry.Logger.Log("[화면 밖 타일] 멈춤: 끔 " + Culls + "번, 켬 " + Unculls + "번, 움직여 뺌 " + Pins + "번, 게임의 enabled 읽기/쓰기 대신 " + ReadHits + "번"
                 + (Verify ? " | 검증: 화면과 겹친 꺼진 타일 " + Violations + "번, 꺼진 채 움직인 타일 " + Moved + "번" : ""));
             Culls = Unculls = Pins = ReadHits = Violations = Moved = 0;
+        }
+
+        // 모드 끄기·다시 불러오기 (Harmony 를 풀기 전에): 전부 켜고, PlayerLoop 단계·검증 이벤트를 떼고, 끝나지 않은 훑기 결과는 버린다
+        private static bool shut;
+        internal static void Shutdown()
+        {
+            shut = true; gen++;
+            StopAll();
+            found = null; Ready = false;
+            if (Verify) { Camera.onPreCull -= VerifyPreCull; }
+            var root = PlayerLoop.GetCurrentPlayerLoop();
+            var subs = root.subSystemList;
+            if (subs == null) return;
+            for (int i = 0; i < subs.Length; i++)
+            {
+                var l = subs[i].subSystemList;
+                if (l == null || !Array.Exists(l, x => x.type == typeof(TileCullStep))) continue;
+                subs[i].subSystemList = Array.FindAll(l, x => x.type != typeof(TileCullStep));
+                root.subSystemList = subs;
+                PlayerLoop.SetPlayerLoop(root);
+                return;
+            }
         }
 
         // ── (개발자용) 검증: 메인 카메라 그리기 직전 ──

@@ -437,6 +437,7 @@ ParticleTextWatch.Install(harmony);
         private static readonly string[] HarmonyIds =
         {
             "StutterFix", "StutterFix.GcControl", "StutterFix.AllocScan", "StutterFix.SlowScan", "StutterFix.Profiler",
+            "StutterFix.matprobe",
         };
 
         private static bool Unload(UnityModManager.ModEntry modEntry)
@@ -474,6 +475,7 @@ ParticleTextWatch.Install(harmony);
             Try(GameScreenButton.Remove);
             Try(LowEnd.Shutdown);
             Try(PhysicsPause.Shutdown);
+            Try(TileCull.Shutdown);
             Try(RecolorDefer.Shutdown);
             Try(HalfRender.Shutdown);
             Try(ParticleFix.Shutdown);
