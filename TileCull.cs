@@ -58,6 +58,7 @@ namespace StutterFix
         private static bool haveRect;
         private static int lastStep = -10, frames;
         internal static long Culls, Unculls, Pins, Violations, Moved, ReadHits;
+        internal static string Counters { get { return "끔 " + Culls + " 켬 " + Unculls + " 관리에서 뺌 " + Pins + " 미룬 메시 갱신에 그대로 둠 " + DeferMeshKept; } }
 
         private sealed class RefEq<T> : IEqualityComparer<T> where T : class
         {
@@ -107,10 +108,18 @@ namespace StutterFix
             cachePath = Path.Combine(modDir, "tilecull-scan.txt");
             var patchMover = new HarmonyMethod(typeof(TileCull), nameof(PinSelf));
             // 타일을 움직이거나 모양을 바꾸는 곳
-            foreach (var n in new[] { "TweenRotation", "SetRotation", "ResetToLevelStart", "LateUpdate", "Update" })
+            foreach (var n in new[] { "TweenRotation", "SetRotation", "ResetToLevelStart" })
             {
                 var m = AccessTools.Method(typeof(scrFloor), n);
                 if (m != null) h.Patch(m, prefix: patchMover);
+            }
+            // 타일 스크립트(Update/LateUpdate)는 위치·회전·크기·메시를 바꾸지 않는다(IL 확인: 색·투명도·아이콘·발광만).
+            // 예전에는 스크립트가 돌면 관리에서 뺐는데(켜진 타일마다 매 프레임 2번 gameObject 읽기), 지금은 미뤄 둔 색 바꾸기만 먼저 적용한다.
+            var script = new HarmonyMethod(typeof(TileCull), nameof(ScriptPrefix));
+            foreach (var n in new[] { "LateUpdate", "Update" })
+            {
+                var m = AccessTools.Method(typeof(scrFloor), n);
+                if (m != null) h.Patch(m, prefix: script);
             }
             var fm = AccessTools.TypeByName("FloorMesh");
             if (fm != null) foreach (var n in new[] { "GenerateMesh", "UpdateMesh" }) { var m = AccessTools.Method(fm, n); if (m != null) h.Patch(m, prefix: new HarmonyMethod(typeof(TileCull), nameof(PinComp))); }
@@ -440,7 +449,26 @@ namespace StutterFix
             if (active && !ReferenceEquals(go, null) && byGo.TryGetValue(go, out i)) Pin(i);
         }
         public static void PinSelf(scrFloor __instance) { if (active) PinGo(__instance.gameObject); }
-        public static void PinComp(Component __instance) { if (active) PinGo(__instance.gameObject); }
+        internal static bool PinOnScript;   // (개발자용 비교) 예전처럼 스크립트가 돌면 관리에서 뺀다
+        internal static long DeferMeshKept;
+        public static void ScriptPrefix(scrFloor __instance)
+        {
+            if (!active) return;
+            if (PinOnScript) { PinGo(__instance.gameObject); return; }
+            if (RecolorDefer.Count > 0) RecolorDefer.FlushFloor(__instance);   // 스크립트가 색을 읽거나 덮기 전에 미룬 것을 먼저
+        }
+        public static void PinComp(Component __instance)
+        {
+            if (!active) return;
+            // 미뤄 둔 색 바꾸기를 화면 밖 타일에 미리 적용하며 생긴 메시 갱신은 그 타일을 켜지 않는다(화면 밖 그대로).
+            // 스타일 메시 모양(길이·폭)만 조금 바뀌고, 켜는 칸 범위는 화면보다 25%+3 넓어 바뀐 크기를 덮는다.
+            if (RecolorDefer.InMeshUpdate && !PinOnScript && !ReferenceEquals(__instance, null))
+            {
+                int i;
+                if (byGo.TryGetValue(__instance.gameObject, out i) && st[i] == 1) { DeferMeshKept++; return; }
+            }
+            PinGo(__instance.gameObject);
+        }
         public static void PinArg(scrFloor target) { if (active && target != null) PinGo(target.gameObject); }
         public static void PinFx(ffxPlusBase __instance)
         {

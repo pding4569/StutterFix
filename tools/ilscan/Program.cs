@@ -195,7 +195,7 @@ static class Program
         foreach (var th in md.TypeDefinitions)
         {
             string n = TypeName(th);
-            if (n == part || n.EndsWith("." + part) || n.EndsWith("+" + part)) yield return th;
+            if (part == "*" || n == part || n.EndsWith("." + part) || n.EndsWith("+" + part)) yield return th;
         }
     }
 

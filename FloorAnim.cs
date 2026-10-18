@@ -168,9 +168,9 @@ namespace StutterFix
             // 위치·크기를 "쓴다"고 표시돼도 값이 둘 다 비어 있으면(NaN) 원래 TweenFloor 도 아무것도 안 한다(HELLO 8,933칸 효과가 그렇다).
             bool posNone = !c.PosUsed || (float.IsNaN(c.Pos.x) && float.IsNaN(c.Pos.y));
             bool scaleNone = !c.ScaleUsed || (float.IsNaN(c.Scale.x) && float.IsNaN(c.Scale.y));
-            c.OpaOnlyZero = FastOpa && c.Zero && c.OpaUsed && posNone && !c.RotUsed && scaleNone;
+            c.OpaOnly = FastOpa && c.OpaUsed && posNone && !c.RotUsed && scaleNone;
 #if DEV || AUTOTEST
-            opaOnlyLast = c.OpaOnlyZero;
+            opaOnlyLast = c.OpaOnly;
 #endif
             if (c.Zero) { c.K = ZeroTween.EaseEnd(c.Ease); ZeroEffects++; }
             Effects++;
@@ -196,7 +196,7 @@ namespace StutterFix
             public float Opacity, Dur, Over, Period;
             public Ease Ease;
             public bool Zero; public float K;   // 길이 0: 이징 끝점
-            public bool OpaOnlyZero;            // 길이 0 이고 불투명도만 바꾸는 효과 (위치·회전·크기 안 씀)
+            public bool OpaOnly;                // 불투명도만 바꾸는 효과 (위치·회전·크기 안 씀, 길이 0 이든 아니든)
             public float Start;                 // (저사양 나누기) 늦게 만든 애니메이션이 이미 지났어야 할 시간
         }
 
@@ -227,17 +227,19 @@ namespace StutterFix
             return null;
         }
 
-        // 불투명도만 바꾸는 길이 0 효과(HELLO 8,933칸·2,357칸·1,799칸 등)의 타일 하나. 원래 TweenFloor 에서 이 갈래가 안 쓰는
-        // transform 읽기, startPos·startRot 계산을 뺀다. 나머지(material 읽기, 이전 불투명도 애니메이션 정리, 값 비교·쓰기)는 순서까지 같다.
-        private static void OpaZero(scrFloor target, ref Ctx c)
+        // 불투명도만 바꾸는 효과(HELLO 8,933칸·2,357칸·1,799칸, Arche 3,043개 등)의 타일 하나. 원래 TweenFloor 에서 이 갈래가 안 쓰는
+        // transform 읽기, startPos·startRot 계산을 뺀다. 불투명도 애니메이션 기록(OPA)은 Transform 을 쓰지 않는다(시작·적용·검증 모두 r.F 만).
+        // 나머지(material 읽기, 이전 불투명도 애니메이션 정리, 값 비교·쓰기·애니메이션 등록)는 순서까지 같다.
+        private static void OpaOnly(scrFloor target, ref Ctx c)
         {
             Tiles++;
             _ = target.floorRenderer.material;   // 원래도 읽는다 (재질 복사본을 만들고, floorRenderer 가 없으면 같은 자리에서 예외)
             var mt = target.moveTweens;
-            if (mt.Count != 0) Prev(mt, global::TweenType.Opacity, false);
+            Tween old = mt.Count != 0 ? Prev(mt, global::TweenType.Opacity, false) : null;
             if (!Mathf.Approximately(target.opacity, c.Opacity))
             {
-                target.opacity = c.Opacity;
+                if (c.Zero) target.opacity = c.Opacity;
+                else New(target, null, mt, OPA, global::TweenType.Opacity, old, ref c).FEnd = c.Opacity;
                 target.dontChangeMySprite = true;
             }
             MaybeShadow();
@@ -245,7 +247,7 @@ namespace StutterFix
 
         private static void TweenFloor(scrFloor target, ref Ctx c)
         {
-            if (c.OpaOnlyZero) { OpaZero(target, ref c); return; }
+            if (c.OpaOnly) { OpaOnly(target, ref c); return; }
             long a = Prof ? TS() : 0, b;
             Tiles++;
             Transform tt = target.transform;

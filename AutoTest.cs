@@ -1039,7 +1039,28 @@ namespace StutterFix
                 case "constantringstate":Log("[보간 상수 버퍼 링] "+FrameGen.DescribeConstantRing());return true;
                 case "tilesig": Log("[타일 상태 기록] "+TileSig.Run(modDir,arg)); Log("[색 바꾸기 미루기] "+RecolorDefer.State); return true;
                 case "psdump": Log("[파티클 목록] "+ParticleDump.Run(arg.Length>0?int.Parse(arg):8)); return true;
-                case "deferstate": Log("[색 바꾸기 미루기] "+RecolorDefer.State); return true;
+                case "floordiag":
+                {
+                    var fls = ADOBase.lm == null ? null : ADOBase.lm.listFloors;
+                    if (fls == null) { Log("[타일 진단] 목록 없음"); return true; }
+                    int n = 0, scriptOn = 0, rootOn = 0, glowNull = 0, glowOn = 0, glowActive = 0, glowAlpha0 = 0, glowVisible = 0;
+                    foreach (var f in fls)
+                    {
+                        if (f == null) continue; n++;
+                        if (f.enabled) scriptOn++;
+                        var rr = f.floorRenderer != null ? f.floorRenderer.renderer : null;
+                        if (rr != null && rr.enabled) rootOn++;
+                        var g = f.topGlow;
+                        if (g == null) { glowNull++; continue; }
+                        if (g.enabled) glowOn++;
+                        if (g.gameObject.activeInHierarchy) glowActive++;
+                        if (g.enabled && g.gameObject.activeInHierarchy && g.color.a <= 0f) glowAlpha0++;
+                        if (g.isVisible) glowVisible++;
+                    }
+                    Log("[타일 진단] 타일 " + n + " 스크립트 켜짐 " + scriptOn + " 본체 렌더러 켜짐 " + rootOn + " | 발광(topGlow) 없음 " + glowNull + " 켜짐 " + glowOn + " 활성 " + glowActive + " 켜짐인데 알파0 " + glowAlpha0 + " 보임 " + glowVisible);
+                    return true;
+                }
+                case "deferstate": Log("[색 바꾸기 미루기] "+RecolorDefer.State+" | 화면 밖 타일: "+TileCull.Counters+" | 타일 이동 효과 시작 합계 "+global::StutterFix.FloorAnim.StartMs.ToString("F1")+"ms"); return true;
                 case "moduleidentity":Log("[실행 모듈 식별] mvid="+typeof(Main).Module.ModuleVersionId);return true;
                 case "arenastate":Log("[계산 영역 시험] requested="+NativeMotion.ArenaRequested+" active="+NativeMotion.ArenaActive+" native_allocator="+NativeMotion.NativeArenaActive+" column_alignment_or="+NativeMotion.ArenaAlignment);return true;
                 case "pinarena":Log("[페이지 고정 시험] requested="+NativeMotion.PinRequested+" pinned="+NativeMotion.ArenaPinned+" working_set="+PinnedArenaOwner.WorkingSetSnapshot()+" original="+PinnedArenaOwner.OriginalSnapshot+" status="+PinnedArenaOwner.Status);return true;

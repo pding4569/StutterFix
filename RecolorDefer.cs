@@ -25,6 +25,7 @@ namespace StutterFix
     {
         internal static bool Enabled;
         internal static bool Installed;
+        internal static bool InMeshUpdate;   // AfterStep 의 메시 갱신 중 (TileCull 이 화면 밖 타일을 켜지 않게)
         internal static long Deferred, FlushedFloors, Fallbacks, Skipped, Drained;
         internal static double FlushMs, FlushWorstMs;
         internal static int Count { get { return pending.Count; } }
@@ -176,7 +177,9 @@ namespace StutterFix
             if (pending.Count == 0 && order.Count > 0) { order.Clear(); drainAt = 0; }
             if (!flushedThisStep) return;
             flushedThisStep = false;
+            InMeshUpdate = true;
             try { FloorMesh.UpdateAllRequired(); } catch (Exception ex) { Main.Entry.Logger.Log("[색 바꾸기 미루기] 메시 갱신 실패: " + ex.Message); }
+            finally { InMeshUpdate = false; }
         }
 
         private static void Drain()
