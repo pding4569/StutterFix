@@ -437,7 +437,7 @@ ParticleTextWatch.Install(harmony);
         private static readonly string[] HarmonyIds =
         {
             "StutterFix", "StutterFix.GcControl", "StutterFix.AllocScan", "StutterFix.SlowScan", "StutterFix.Profiler",
-            "StutterFix.matprobe", "StutterFix.fuseprobe",
+            "StutterFix.matprobe", "StutterFix.fuseprobe", "StutterFix.cpubreak",
         };
 
         private static bool Unload(UnityModManager.ModEntry modEntry)
@@ -644,7 +644,7 @@ BlendProbe.Tick();
                 SamplerWatch.Install();
                 PhaseWatch.Install();  // 끊긴 프레임의 범인을 단계 단위로 지목하려면 항상 켜져 있어야 한다
             }
-            else if (MeasureBuild)
+            else if (MeasureBuild || System.IO.File.Exists(System.IO.Path.Combine(Entry.Path, "phasewatch")))
             {
                 PhaseWatch.Install();  // 측정용 플레이어 빌드: 무거운 프레임의 엔진 단계를 곡 요약에 남긴다
             }
