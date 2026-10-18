@@ -187,6 +187,9 @@ namespace StutterFix
                 r.Dur = dur; r.E = ease;
             }
             else r = new Rec { D = dec, Key = key, Dur = dur, E = ease };
+#if DEV || AUTOTEST
+            if (FuseProbe.On) FuseProbe.NewRec(dec, key, dur, (object)old != null, oldR != null && oldR.Running);
+#endif
             r.NativeEpoch = 0;
             ZeroTween.EaseParams(ease, out r.Over, out r.Period);
             if (!reuseProxy) NewProxies++;
@@ -559,6 +562,26 @@ namespace StutterFix
         internal static void FinishAll() { KillAllPrefix(true); }
 
         // (자동 시험 animstat) 지금 도는 애니메이션: 종류별 수와 그중 안 그리는(투명) 장식 대상 수
+#if DEV || AUTOTEST
+        internal static HashSet<scrDecoration> RunningDecorations()
+        {
+            var set = new HashSet<scrDecoration>();
+            foreach (var r in recs) if (r != null && r.Running) set.Add(r.D);
+            return set;
+        }
+        // 장식마다 도는 속성 조합 (위치X=1 위치Y=2 회전=5 크기X=7 크기Y=8 색=9 투명도=10) -> 가장 흔한 것들
+        internal static string KeyCombos()
+        {
+            var per = new Dictionary<scrDecoration, int>();
+            foreach (var r in recs) if (r != null && r.Running && r.Key >= 0 && r.Key < 31) { int m; per.TryGetValue(r.D, out m); per[r.D] = m | (1 << r.Key); }
+            var cnt = new Dictionary<int, int>();
+            foreach (var kv in per) { int c; cnt.TryGetValue(kv.Value, out c); cnt[kv.Value] = c + 1; }
+            var l = new List<KeyValuePair<int, int>>(cnt); l.Sort((a, b) => b.Value.CompareTo(a.Value));
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < l.Count && i < 6; i++) { sb.Append(i > 0 ? ", " : "").Append('{'); bool f = true; for (int k = 0; k < 31; k++) if ((l[i].Key & (1 << k)) != 0) { sb.Append(f ? "" : "+").Append(k); f = false; } sb.Append("} ").Append(l[i].Value); }
+            return sb.ToString();
+        }
+#endif
         internal static string Stat()
         {
             var n = new int[16]; var h = new int[16]; int run = 0;

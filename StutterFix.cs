@@ -437,7 +437,7 @@ ParticleTextWatch.Install(harmony);
         private static readonly string[] HarmonyIds =
         {
             "StutterFix", "StutterFix.GcControl", "StutterFix.AllocScan", "StutterFix.SlowScan", "StutterFix.Profiler",
-            "StutterFix.matprobe",
+            "StutterFix.matprobe", "StutterFix.fuseprobe",
         };
 
         private static bool Unload(UnityModManager.ModEntry modEntry)
