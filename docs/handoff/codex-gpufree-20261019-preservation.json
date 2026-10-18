@@ -1,0 +1,20 @@
+﻿[
+    {
+        "Path":  "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\StutterFix\\StutterFix.dll",
+        "Before":  "B0533BBD4835C370BDBB329AB055D63F026B52D734F806C650EE160F5C09B080",
+        "After":  "B0533BBD4835C370BDBB329AB055D63F026B52D734F806C650EE160F5C09B080",
+        "Same":  true
+    },
+    {
+        "Path":  "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\StutterFix\\Settings.xml",
+        "Before":  "DC299403875AD73158C796CFD9365FA2190DD08D0B663186A78EB3D49EDC080D",
+        "After":  "DC299403875AD73158C796CFD9365FA2190DD08D0B663186A78EB3D49EDC080D",
+        "Same":  true
+    },
+    {
+        "Path":  "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\boot.config",
+        "Before":  "4B3756F0E4D8EA99D35CFA1CF8ACE028B9B6AF78EF6F83CC682FC11028BFCEC2",
+        "After":  "4B3756F0E4D8EA99D35CFA1CF8ACE028B9B6AF78EF6F83CC682FC11028BFCEC2",
+        "Same":  true
+    }
+]

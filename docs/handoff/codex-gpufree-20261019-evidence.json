@@ -1,0 +1,2775 @@
+{
+  "png": [
+    {
+      "path": "D:\\\uc5bc\ubd88\ucda4 \ub9f5 \ud30c\uc77c\\Arche\\fog.png",
+      "size": [
+        682,
+        682
+      ],
+      "sha256": "47d3ac5f245880235f701c17c950faf24a7a626acb79e1fd7f97047e232b997e",
+      "extrema": [
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          112
+        ]
+      ],
+      "unique_rgb": 33,
+      "unique_rgb_nonzero_alpha": 33,
+      "constant_rgb": null,
+      "zero_alpha_pixels": 95248,
+      "rgba_bytes": 1860496
+    },
+    {
+      "path": "D:\\\uc5bc\ubd88\ucda4 \ub9f5 \ud30c\uc77c\\Arche\\nes_large_fog.png",
+      "size": [
+        1489,
+        1489
+      ],
+      "sha256": "aa8d7078db6b4ca827470939b9376863762d79ef82f22060f75efa012393a5ee",
+      "extrema": [
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          112
+        ]
+      ],
+      "unique_rgb": 35,
+      "unique_rgb_nonzero_alpha": 35,
+      "constant_rgb": null,
+      "zero_alpha_pixels": 1093615,
+      "rgba_bytes": 8868484
+    },
+    {
+      "path": "D:\\\uc5bc\ubd88\ucda4 \ub9f5 \ud30c\uc77c\\Arche\\nev_fog.png",
+      "size": [
+        100,
+        100
+      ],
+      "sha256": "bca75a16e9b3a9b6de8bf78a4b09e58d709f94cd1fcbf8a8f80d1c9d7e528355",
+      "extrema": [
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ],
+        [
+          0,
+          255
+        ]
+      ],
+      "unique_rgb": 2,
+      "unique_rgb_nonzero_alpha": 1,
+      "constant_rgb": null,
+      "zero_alpha_pixels": 6707,
+      "rgba_bytes": 40000
+    },
+    {
+      "path": "D:\\\uc5bc\ubd88\ucda4 \ub9f5 \ud30c\uc77c\\Arche\\nes_black_fog.png",
+      "size": [
+        682,
+        682
+      ],
+      "sha256": "a46b71ffa56e3317e8a87b2d175cdfe940366c9c41528f09a071fb23e90a10ce",
+      "extrema": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          112
+        ]
+      ],
+      "unique_rgb": 2,
+      "unique_rgb_nonzero_alpha": 2,
+      "constant_rgb": null,
+      "zero_alpha_pixels": 95248,
+      "rgba_bytes": 1860496
+    }
+  ],
+  "census": [
+    {
+      "path": "C:\\Users\\\ub098\ub85c\ucef4\\AppData\\Local\\StutterFix\\gpu-census-20261018-213606-940.tsv",
+      "sha256": "5676dba567dc557a6c48ea3ab2e3d7e73d39f5378983d230730e07824fadda0a",
+      "records": [
+        "# camera=BGStaticCam#94430 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=2048 RT=#-2763810:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=OverlayCam#94432 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=1048576 RT=backbuffer:3440x1440:format=unknown:MSAA_quality=0 viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=BGMovingCam#94426 enabled=True (disabled=manual-render-candidates-only) depth=-1.11 mask=1024 RT=#-2763810:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=Camera#94428 enabled=True (disabled=manual-render-candidates-only) depth=-1 mask=652183 RT=#-2763810:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# OnRenderImage CameraFilterPackLegacy_Distortion_FishEye#96534 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_TV_80#97066 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Drawing_Paper#97442 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_GrayScale#97058 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Atmosphere_Rain#96898 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Film_Grain#97042 active=True",
+        "# OnRenderImage VideoBloom#97098 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Chromatic_Aberration#97292 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Blur_Focus#96558 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Sharpen_Sharpen#96858 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Contrast#97408 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Light_Water2#96490 active=True"
+      ]
+    },
+    {
+      "path": "C:\\Users\\\ub098\ub85c\ucef4\\AppData\\Local\\StutterFix\\gpu-census-20261018-220315-835.tsv",
+      "sha256": "ffb9075f845440729081d65a17abdc438e54302105a53edaf69de1003a9a52b1",
+      "records": [
+        "# camera=BGStaticCam#94430 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=2048 RT=#-2763810:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=OverlayCam#94432 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=1048576 RT=backbuffer:3440x1440:format=unknown:MSAA_quality=0 viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=BGMovingCam#94426 enabled=True (disabled=manual-render-candidates-only) depth=-1.11 mask=1024 RT=#-2763810:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=Camera#94428 enabled=True (disabled=manual-render-candidates-only) depth=-1 mask=652183 RT=#-2763810:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# OnRenderImage CameraFilterPackLegacy_Distortion_FishEye#96534 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_GrayScale#97058 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Atmosphere_Rain#96898 active=True",
+        "# OnRenderImage VideoBloom#97098 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Chromatic_Aberration#97292 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Blur_Focus#96558 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Sharpen_Sharpen#96858 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Contrast#97408 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Light_Water2#96490 active=True"
+      ]
+    },
+    {
+      "path": "C:\\Users\\\ub098\ub85c\ucef4\\AppData\\Local\\StutterFix\\gpu-census-20261018-221600-504.tsv",
+      "sha256": "a50c760960346e69e7f5dd4c2ddce1437732c2024de527efb8cb38a7f398425d",
+      "records": [
+        "# camera=BGStaticCam#94430 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=2048 RT=#-2763642:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=OverlayCam#94432 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=1048576 RT=backbuffer:3440x1440:format=unknown:MSAA_quality=0 viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=BGMovingCam#94426 enabled=True (disabled=manual-render-candidates-only) depth=-1.11 mask=1024 RT=#-2763642:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=Camera#94428 enabled=True (disabled=manual-render-candidates-only) depth=-1 mask=652183 RT=#-2763642:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# OnRenderImage CameraFilterPackLegacy_Distortion_FishEye#96534 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_GrayScale#97058 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Atmosphere_Rain#96898 active=True",
+        "# OnRenderImage VideoBloom#97098 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Chromatic_Aberration#97292 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_FX_Hexagon_Black#96800 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Sharpen_Sharpen#96858 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Contrast#97408 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Light_Water2#96490 active=True"
+      ]
+    },
+    {
+      "path": "C:\\Users\\\ub098\ub85c\ucef4\\AppData\\Local\\StutterFix\\gpu-census-20261018-222125-274.tsv",
+      "sha256": "23ea7507812810bcc96057de55d79860aa212f6a278f2e786e523d681b40e39a",
+      "records": [
+        "# camera=BGStaticCam#94430 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=2048 RT=#-2763642:unity=1720x720:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=1720x720:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:1720.00, height:720.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=OverlayCam#94432 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=1048576 RT=backbuffer:3440x1440:format=unknown:MSAA_quality=0 viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=BGMovingCam#94426 enabled=True (disabled=manual-render-candidates-only) depth=-1.11 mask=1024 RT=#-2763642:unity=1720x720:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=1720x720:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:1720.00, height:720.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=Camera#94428 enabled=True (disabled=manual-render-candidates-only) depth=-1 mask=652183 RT=#-2763642:unity=1720x720:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=1720x720:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:1720.00, height:720.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# OnRenderImage CameraFilterPackLegacy_Distortion_FishEye#96534 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_GrayScale#97058 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Atmosphere_Rain#96898 active=True",
+        "# OnRenderImage VideoBloom#97098 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Chromatic_Aberration#97292 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_FX_Hexagon_Black#96800 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Sharpen_Sharpen#96858 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Contrast#97408 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Light_Water2#96490 active=True"
+      ]
+    },
+    {
+      "path": "C:\\Users\\\ub098\ub85c\ucef4\\AppData\\Local\\StutterFix\\gpu-census-20261018-222654-408.tsv",
+      "sha256": "088b57afd06f5d89fdd373dd3c4e3fb5322e8e1c027da848e258e85c230b8f66",
+      "records": [
+        "# camera=BGStaticCam#94430 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=2048 RT=#-2763642:unity=1720x720:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=1720x720:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:1720.00, height:720.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=OverlayCam#94432 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=1048576 RT=backbuffer:3440x1440:format=unknown:MSAA_quality=0 viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=BGMovingCam#94426 enabled=True (disabled=manual-render-candidates-only) depth=-1.11 mask=1024 RT=#-2763642:unity=1720x720:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=1720x720:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:1720.00, height:720.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=Camera#94428 enabled=True (disabled=manual-render-candidates-only) depth=-1 mask=652183 RT=#-2763642:unity=1720x720:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=1720x720:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:1720.00, height:720.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# OnRenderImage CameraFilterPackLegacy_Distortion_FishEye#96534 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_GrayScale#97058 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Atmosphere_Rain#96898 active=True",
+        "# OnRenderImage VideoBloom#97098 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Chromatic_Aberration#97292 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_FX_Hexagon_Black#96800 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Sharpen_Sharpen#96858 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Contrast#97408 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Light_Water2#96490 active=True"
+      ]
+    },
+    {
+      "path": "C:\\Users\\\ub098\ub85c\ucef4\\AppData\\Local\\StutterFix\\gpu-census-20261018-223220-954.tsv",
+      "sha256": "6b246634292c3dd69a05f1278da1bfd011d2172d53f560ab4fffb1793c50d355",
+      "records": [
+        "# camera=BGStaticCam#94430 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=2048 RT=#-2763642:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=OverlayCam#94432 enabled=True (disabled=manual-render-candidates-only) depth=-1.63 mask=1048576 RT=backbuffer:3440x1440:format=unknown:MSAA_quality=0 viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=BGMovingCam#94426 enabled=True (disabled=manual-render-candidates-only) depth=-1.11 mask=1024 RT=#-2763642:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# camera=Camera#94428 enabled=True (disabled=manual-render-candidates-only) depth=-1 mask=652183 RT=#-2763642:unity=3440x1440:R8G8B8A8_UNorm/ARGB32/MSAA=1:mips=1:filter=Bilinear:wrap=Clamp:aniso=1:GPU=3440x1440:DXGI=27:GPUmips=1:array=1:GPUsamples=1:depth=32:sRGB=False viewport=(x:0.00, y:0.00, width:3440.00, height:1440.00) HDR=False allowMSAA=False path=Forward occlusion=False sort=Default axis=(0.00, 0.00, 1.00)",
+        "# OnRenderImage CameraFilterPackLegacy_Distortion_FishEye#96534 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_GrayScale#97058 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Atmosphere_Rain#96898 active=True",
+        "# OnRenderImage VideoBloom#97098 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Chromatic_Aberration#97292 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_FX_Hexagon_Black#96800 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Sharpen_Sharpen#96858 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Color_Contrast#97408 active=True",
+        "# OnRenderImage CameraFilterPackLegacy_Light_Water2#96490 active=True"
+      ]
+    }
+  ],
+  "errors": [],
+  "shader_objects": 428,
+  "camera_objects": 731,
+  "cameras": [
+    {
+      "file": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\resources.assets",
+      "path_id": 9069,
+      "type": "Camera",
+      "name": "BGStaticCam",
+      "settings": {
+        "m_ClearFlags": 2,
+        "m_BackGroundColor": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        },
+        "m_Depth": -1.6299999952316284,
+        "m_CullingMask": {
+          "m_Bits": 2048
+        },
+        "m_TargetTexture": {
+          "m_FileID": 0,
+          "m_PathID": 0
+        },
+        "m_TargetDisplay": 0,
+        "m_TargetEye": 3,
+        "m_HDR": false,
+        "m_AllowMSAA": false,
+        "m_OcclusionCulling": false
+      }
+    },
+    {
+      "file": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\resources.assets",
+      "path_id": 9070,
+      "type": "Camera",
+      "name": "BGMovingCam",
+      "settings": {
+        "m_ClearFlags": 3,
+        "m_BackGroundColor": {
+          "r": 0.5,
+          "g": 0.5,
+          "b": 0.5,
+          "a": 1.0
+        },
+        "m_Depth": -1.1100000143051147,
+        "m_CullingMask": {
+          "m_Bits": 1024
+        },
+        "m_TargetTexture": {
+          "m_FileID": 0,
+          "m_PathID": 0
+        },
+        "m_TargetDisplay": 0,
+        "m_TargetEye": 3,
+        "m_HDR": false,
+        "m_AllowMSAA": false,
+        "m_OcclusionCulling": false
+      }
+    },
+    {
+      "file": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\resources.assets",
+      "path_id": 9071,
+      "type": "Camera",
+      "name": "Camera",
+      "settings": {
+        "m_ClearFlags": 4,
+        "m_BackGroundColor": {
+          "r": 0.5,
+          "g": 0.5,
+          "b": 0.5,
+          "a": 1.0
+        },
+        "m_Depth": -1.0,
+        "m_CullingMask": {
+          "m_Bits": 3142551
+        },
+        "m_TargetTexture": {
+          "m_FileID": 0,
+          "m_PathID": 0
+        },
+        "m_TargetDisplay": 0,
+        "m_TargetEye": 3,
+        "m_HDR": false,
+        "m_AllowMSAA": false,
+        "m_OcclusionCulling": false
+      }
+    },
+    {
+      "file": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\resources.assets",
+      "path_id": 9073,
+      "type": "Camera",
+      "name": "OverlayCam",
+      "settings": {
+        "m_ClearFlags": 2,
+        "m_BackGroundColor": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        },
+        "m_Depth": -1.6299999952316284,
+        "m_CullingMask": {
+          "m_Bits": 1048576
+        },
+        "m_TargetTexture": {
+          "m_FileID": 0,
+          "m_PathID": 0
+        },
+        "m_TargetDisplay": 0,
+        "m_TargetEye": 3,
+        "m_HDR": false,
+        "m_AllowMSAA": false,
+        "m_OcclusionCulling": false
+      }
+    },
+    {
+      "file": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\level1",
+      "path_id": 8198,
+      "type": "Camera",
+      "name": "BGMovingCam",
+      "settings": {
+        "m_ClearFlags": 3,
+        "m_BackGroundColor": {
+          "r": 0.5,
+          "g": 0.5,
+          "b": 0.5,
+          "a": 1.0
+        },
+        "m_Depth": -1.1100000143051147,
+        "m_CullingMask": {
+          "m_Bits": 1024
+        },
+        "m_TargetTexture": {
+          "m_FileID": 0,
+          "m_PathID": 0
+        },
+        "m_TargetDisplay": 0,
+        "m_TargetEye": 3,
+        "m_HDR": false,
+        "m_AllowMSAA": false,
+        "m_OcclusionCulling": false
+      }
+    },
+    {
+      "file": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\level1",
+      "path_id": 8199,
+      "type": "Camera",
+      "name": "Camera",
+      "settings": {
+        "m_ClearFlags": 4,
+        "m_BackGroundColor": {
+          "r": 0.5,
+          "g": 0.5,
+          "b": 0.5,
+          "a": 1.0
+        },
+        "m_Depth": -1.0,
+        "m_CullingMask": {
+          "m_Bits": 3142551
+        },
+        "m_TargetTexture": {
+          "m_FileID": 0,
+          "m_PathID": 0
+        },
+        "m_TargetDisplay": 0,
+        "m_TargetEye": 3,
+        "m_HDR": false,
+        "m_AllowMSAA": false,
+        "m_OcclusionCulling": false
+      }
+    },
+    {
+      "file": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\level1",
+      "path_id": 8200,
+      "type": "Camera",
+      "name": "BGStaticCam",
+      "settings": {
+        "m_ClearFlags": 2,
+        "m_BackGroundColor": {
+          "r": 0.007843137718737125,
+          "g": 0.007843137718737125,
+          "b": 0.0117647061124444,
+          "a": 1.0
+        },
+        "m_Depth": -1.6299999952316284,
+        "m_CullingMask": {
+          "m_Bits": 2048
+        },
+        "m_TargetTexture": {
+          "m_FileID": 0,
+          "m_PathID": 0
+        },
+        "m_TargetDisplay": 0,
+        "m_TargetEye": 3,
+        "m_HDR": false,
+        "m_AllowMSAA": false,
+        "m_OcclusionCulling": false
+      }
+    },
+    {
+      "file": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\level1",
+      "path_id": 8201,
+      "type": "Camera",
+      "name": "OverlayCam",
+      "settings": {
+        "m_ClearFlags": 2,
+        "m_BackGroundColor": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        },
+        "m_Depth": -1.6299999952316284,
+        "m_CullingMask": {
+          "m_Bits": 1048576
+        },
+        "m_TargetTexture": {
+          "m_FileID": 0,
+          "m_PathID": 0
+        },
+        "m_TargetDisplay": 0,
+        "m_TargetEye": 3,
+        "m_HDR": false,
+        "m_AllowMSAA": false,
+        "m_OcclusionCulling": false
+      }
+    }
+  ],
+  "shaders": [
+    {
+      "name": "Sprites/Tile",
+      "states": [
+        {
+          "zWrite": {
+            "val": 0.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 4.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "Sprites_Tile-0.asm",
+          "sha256": "581667c2c2badb1f572cd208a16faf25c68baaaef70d8b1f69d347431f387bd0",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "Sprites_Tile-1.asm",
+          "sha256": "581667c2c2badb1f572cd208a16faf25c68baaaef70d8b1f69d347431f387bd0",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "Sprites_Tile-2.asm",
+          "sha256": "054a66f17a377d23e09544405c97c19c8a717a628c6a420fe12c2dc77155ddee",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "Sprites_Tile-3.asm",
+          "sha256": "054a66f17a377d23e09544405c97c19c8a717a628c6a420fe12c2dc77155ddee",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "Sprites_Tile-4.asm",
+          "sha256": "78954e5a3f95cc759c4b00c67859a90f7f781c7fcc9890922717861f00ccf227",
+          "stage": "pixel",
+          "sample_instructions": 1
+        },
+        {
+          "file": "Sprites_Tile-5.asm",
+          "sha256": "ad68017d625648c3457c073833042e569b37a28775908129adf72452b0446dcc",
+          "stage": "pixel",
+          "sample_instructions": 1
+        },
+        {
+          "file": "Sprites_Tile-6.asm",
+          "sha256": "78954e5a3f95cc759c4b00c67859a90f7f781c7fcc9890922717861f00ccf227",
+          "stage": "pixel",
+          "sample_instructions": 1
+        },
+        {
+          "file": "Sprites_Tile-7.asm",
+          "sha256": "ad68017d625648c3457c073833042e569b37a28775908129adf72452b0446dcc",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/TV_CompressionFX",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_TV_CompressionFX-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_TV_CompressionFX-1.asm",
+          "sha256": "84ee072d1392e59f572b129ec060ff6bedcd006e0c2ec0fc8fe07cddccd29959",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/TV_50",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_TV_50-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_TV_50-1.asm",
+          "sha256": "140a0b1411e2ba0c98dc7d72a54e2f0ec8a0d1237b3a78bcf68762630edb5faf",
+          "stage": "pixel",
+          "sample_instructions": 2
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/TV_Posterize",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_TV_Posterize-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_TV_Posterize-1.asm",
+          "sha256": "f8705b9c3f94d9caaf3b52ce65c5ff2d3d97b429b2521bab26ac3cab99a2aad0",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "ADOFAI/zWriteUI",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 2.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "_StencilOp"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 0.0,
+              "name": "_StencilComp"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "_Stencil"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "ADOFAI_zWriteUI-0.asm",
+          "sha256": "cb21619042be3ba363406044c5acb94920a149d4a06e0f31f303ffbe2997fc0f",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "ADOFAI_zWriteUI-1.asm",
+          "sha256": "36c60b9076b1062795b72c926882822ee7c7c295f556747e72b0e82caa7ebff7",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Edge_Neon",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Edge_Neon-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Edge_Neon-1.asm",
+          "sha256": "3bf70fe998bdfe5881f7a9ba3dec707c7c4000e2d607c39d61759784140fab15",
+          "stage": "pixel",
+          "sample_instructions": 8
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Color_Sepia",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Color_Sepia-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Color_Sepia-1.asm",
+          "sha256": "c92f4341a3bc4fa0b0fc8f4e89eaab60179cb6a1c8328dbd39ec7d78b6c96864",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/TV_Video3D",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_TV_Video3D-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_TV_Video3D-1.asm",
+          "sha256": "5d6300595c2a8c6f85c647c0f2ce309046cf8a0755228945f633fd1838e4d01c",
+          "stage": "pixel",
+          "sample_instructions": 5
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/FX_Glitch1",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_FX_Glitch1-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_FX_Glitch1-1.asm",
+          "sha256": "fc5538b27498d803274f612962bbc89313ab920efc8346679f09d5f927e93322",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/TV_80",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_TV_80-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_TV_80-1.asm",
+          "sha256": "d373c0c044d7ad5eb5d74fc46e0a0146a1e93d4e58bbc2a2838d3d5f1571cc23",
+          "stage": "pixel",
+          "sample_instructions": 2
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/FX_Hexagon_Black",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_FX_Hexagon_Black-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_FX_Hexagon_Black-1.asm",
+          "sha256": "1453e67cefeb056af1a02ef510a389fdd0c820b11c5139281b4c0af2d6630049",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "Hidden/VideoBloom",
+      "states": [
+        {
+          "zWrite": {
+            "val": 0.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        },
+        {
+          "zWrite": {
+            "val": 0.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        },
+        {
+          "zWrite": {
+            "val": 0.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        },
+        {
+          "zWrite": {
+            "val": 0.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        },
+        {
+          "zWrite": {
+            "val": 0.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "Hidden_VideoBloom-0.asm",
+          "sha256": "8485f1f6235196d8579b119dfcefba248e949f16fc22d2685afeb52736819508",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "Hidden_VideoBloom-1.asm",
+          "sha256": "a3f94be82730568d4d12d91357dc262979ccdd8817ea65617d3c53d2b7b20693",
+          "stage": "pixel",
+          "sample_instructions": 5
+        },
+        {
+          "file": "Hidden_VideoBloom-2.asm",
+          "sha256": "d546f921b3e47a7cbb370c14c9a8c4f1f850b63a19f3b16a0f01a6b60ada83c7",
+          "stage": "pixel",
+          "sample_instructions": 5
+        },
+        {
+          "file": "Hidden_VideoBloom-3.asm",
+          "sha256": "e2c8c9e88321a1d0244d9b886591b57a7b6d22c548c91c650d1592912a2f8370",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "Hidden_VideoBloom-4.asm",
+          "sha256": "9f85278ffbd6850c81db542eb332c2a967692555268e34ecdb2940c9a36b64c2",
+          "stage": "pixel",
+          "sample_instructions": 1
+        },
+        {
+          "file": "Hidden_VideoBloom-5.asm",
+          "sha256": "c3b444961a51b11eb704daefc305b44a7649d607f7b37604cbb6acccb882f069",
+          "stage": "pixel",
+          "sample_instructions": 3
+        },
+        {
+          "file": "Hidden_VideoBloom-6.asm",
+          "sha256": "41c917e63aa5fdbe5508a322cd357c17059f5f94d20e6e6ffdbeb8ee43f2fd30",
+          "stage": "pixel",
+          "sample_instructions": 3
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Color_GrayScale",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Color_GrayScale-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Color_GrayScale-1.asm",
+          "sha256": "891426798795cea60754cdb718dad5fb179a2289706c82012f03b84aa4375eb9",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/TV_LED",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_TV_LED-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_TV_LED-1.asm",
+          "sha256": "29a7d45dbf088239aaf74f4fd3c7343d6d1cece4c341236e59ef23e269cf620b",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Oculus_NightVision1",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Oculus_NightVision1-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Oculus_NightVision1-1.asm",
+          "sha256": "f58fef34bea9e0cd5908bcf58a87bcd4d522eae02488fe69067f01dd627804f9",
+          "stage": "pixel",
+          "sample_instructions": 2
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Atmosphere_Snow_8bits",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Atmosphere_Snow_8bits-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Atmosphere_Snow_8bits-1.asm",
+          "sha256": "99c9a190973aa62406913f05b76a7ecbd634f645cf180cf8d412feedf02febd8",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Pixel_Pixelisation",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Pixel_Pixelisation-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Pixel_Pixelisation-1.asm",
+          "sha256": "5d49acd35411c1064f21f4b4c82e0a0ea32937e28bd10e0588d36caa15bac650",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Real_VHS",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Real_VHS-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Real_VHS-1.asm",
+          "sha256": "ecd8f183b9a33f40d1cddc36fe0edb82ad23ad900a028e6bf4df2ee0889d3115",
+          "stage": "pixel",
+          "sample_instructions": 4
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Sharpen_Sharpen",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Sharpen_Sharpen-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Sharpen_Sharpen-1.asm",
+          "sha256": "d043aac4ffef33a4020cd90a72d24742ec67c9c5c8b57923603c57967a516607",
+          "stage": "pixel",
+          "sample_instructions": 5
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/AAA_WaterDrop",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_AAA_WaterDrop-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_AAA_WaterDrop-1.asm",
+          "sha256": "df77f6cc7fa3f84340b63b4f5d4391851eb64cad2438685abf3b3ad5efd70372",
+          "stage": "pixel",
+          "sample_instructions": 4
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Blizzard",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Blizzard-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Blizzard-1.asm",
+          "sha256": "dc1e66e0e6f640fc1bf960ab626d7712cf749c11e059cd946d145a0aa9ef26cb",
+          "stage": "pixel",
+          "sample_instructions": 5
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Pixelisation_OilPaint",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Pixelisation_OilPaint-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Pixelisation_OilPaint-1.asm",
+          "sha256": "c73b6c9c42178948a3284777fd099acc046b5c5467a22efd75e8832372d1cfc5",
+          "stage": "pixel",
+          "sample_instructions": 16
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/FX_superDot",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_FX_superDot-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_FX_superDot-1.asm",
+          "sha256": "c09afc2946ea6c0c9a84216ecfdfd89f5f82738d23903ac8b417a46d70406f57",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/FX_Funk",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_FX_Funk-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_FX_Funk-1.asm",
+          "sha256": "5d74851ac14eecc07d6b5b08c2859b3591b9ae24b8b7d141cd2e6b77cc1d1ffd",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Edge_BlackLine",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Edge_BlackLine-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Edge_BlackLine-1.asm",
+          "sha256": "a95400457054b789079e717f2197f123536958d04a207aeedb8d74fea057b60b",
+          "stage": "pixel",
+          "sample_instructions": 0
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Noise_TV",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Noise_TV-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Noise_TV-1.asm",
+          "sha256": "b544ed40ecf9a23a8952d73061f8f72630d7dd35d4a2ea2327e9434a5cf43741",
+          "stage": "pixel",
+          "sample_instructions": 2
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Color_Chromatic_Aberration",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Color_Chromatic_Aberration-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Color_Chromatic_Aberration-1.asm",
+          "sha256": "aa78293c8712fc1b18acde51eb8e82cba4a876b636bfdc0d042acd726c64f94d",
+          "stage": "pixel",
+          "sample_instructions": 3
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Light_Water2",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Light_Water2-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Light_Water2-1.asm",
+          "sha256": "21778613c0849211cf26d31ba07b27cfcd59cffd5c2872082a3a2744a0d2eab8",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Color_Invert",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Color_Invert-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Color_Invert-1.asm",
+          "sha256": "1db92719ae43d46217b20ced6f25bd9d68da68a3fd571e19a740ad4aca616a51",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Distortion_FishEye",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Distortion_FishEye-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Distortion_FishEye-1.asm",
+          "sha256": "5903d152e38f7da89b158ed46a5a71cb8fee6ae8ef98af55d11add32b4868361",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Color_Contrast",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Color_Contrast-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Color_Contrast-1.asm",
+          "sha256": "53dc6e888a136138f7b844cc4a1258998864d5d76f0e1d1369a0db52b0a27577",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/FX_8bits_gb",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_FX_8bits_gb-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_FX_8bits_gb-1.asm",
+          "sha256": "a176a4afece495f72983bb9b2910c36fb9ae915a35889700e1949becf598c633",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Atmosphere_Rain",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Atmosphere_Rain-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Atmosphere_Rain-1.asm",
+          "sha256": "e7fa08889f4d963e65a5d3b2ff57a77c352469f994ded79cb62d4a1de99f2b6a",
+          "stage": "pixel",
+          "sample_instructions": 8
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Film_Grain",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Film_Grain-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Film_Grain-1.asm",
+          "sha256": "c860acaf37cb14ea3b262a8fbc970a08853a943552ff42e208ad286016990f14",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Drawing_Paper",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Drawing_Paper-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Drawing_Paper-1.asm",
+          "sha256": "e2cb5bc37f6d515fbc1e77662c1278a57e39a95a099c6c156fc848fb648fd110",
+          "stage": "pixel",
+          "sample_instructions": 7
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/TV_ARCADE",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_TV_ARCADE-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_TV_ARCADE-1.asm",
+          "sha256": "99351cecdf8bd48f3ecf39585b93ae9ed4c9ff9dd79a668f0560d7add1a0a89b",
+          "stage": "pixel",
+          "sample_instructions": 2
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Blur_GaussianBlur",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Blur_GaussianBlur-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Blur_GaussianBlur-1.asm",
+          "sha256": "d6a349d2226a6ac572bb48882d8cf42de25774ea5473dbc91440ca8c3e3641bc",
+          "stage": "pixel",
+          "sample_instructions": 0
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Blur_Blurry",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Blur_Blurry-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Blur_Blurry-1.asm",
+          "sha256": "ff9d97ab551b0fd4cbc5e3b89b797e92d90506518252ef24e59bcd52e6c689ad",
+          "stage": "pixel",
+          "sample_instructions": 0
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Distortion_Wave_Horizontal",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Distortion_Wave_Horizontal-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Distortion_Wave_Horizontal-1.asm",
+          "sha256": "7ea77e8341bbeaca6903d54ed01cfe41444a344218b0abdbfd278407786041bb",
+          "stage": "pixel",
+          "sample_instructions": 1
+        }
+      ]
+    },
+    {
+      "name": "ADOFAI/FloorMesh",
+      "states": [
+        {
+          "zWrite": {
+            "val": 0.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 4.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "ADOFAI_FloorMesh-0.asm",
+          "sha256": "fa2fe1c5f9710bf60e7a6b23f8dfb4fd24954e96c8ccb555565f20cd597dd4f6",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "ADOFAI_FloorMesh-1.asm",
+          "sha256": "a6a34d4ad28ac3f26f1d772ae7ca0ebdd4d258e659a30c50e64578e5f823bdc6",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "ADOFAI_FloorMesh-2.asm",
+          "sha256": "570d4429d1071979d94629e1a9680ebdd8a4c28d0fd47e329ad8d3074c5391ec",
+          "stage": "pixel",
+          "sample_instructions": 4
+        },
+        {
+          "file": "ADOFAI_FloorMesh-3.asm",
+          "sha256": "570d4429d1071979d94629e1a9680ebdd8a4c28d0fd47e329ad8d3074c5391ec",
+          "stage": "pixel",
+          "sample_instructions": 4
+        }
+      ]
+    },
+    {
+      "name": "CameraFilterPackLegacy/Blur_Focus",
+      "states": [
+        {
+          "zWrite": {
+            "val": 1.0,
+            "name": "<noninit>"
+          },
+          "zTest": {
+            "val": 8.0,
+            "name": "<noninit>"
+          },
+          "stencilOp": {
+            "pass": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "fail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "zFail": {
+              "val": 0.0,
+              "name": "<noninit>"
+            },
+            "comp": {
+              "val": 8.0,
+              "name": "<noninit>"
+            }
+          },
+          "stencilRef": {
+            "val": 0.0,
+            "name": "<noninit>"
+          }
+        }
+      ],
+      "programs": [
+        {
+          "file": "CameraFilterPackLegacy_Blur_Focus-0.asm",
+          "sha256": "6ab23633f150f3d93793662973036d359690d35260776079818a210894cf3aa2",
+          "stage": "vertex",
+          "sample_instructions": 0
+        },
+        {
+          "file": "CameraFilterPackLegacy_Blur_Focus-1.asm",
+          "sha256": "994c5ffad4d7b713434c077a5b88b2f4953831adc2aa024cfcc82950899c6477",
+          "stage": "pixel",
+          "sample_instructions": 0
+        }
+      ]
+    }
+  ]
+}

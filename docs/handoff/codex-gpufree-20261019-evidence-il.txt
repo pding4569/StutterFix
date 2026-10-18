@@ -1,0 +1,1487 @@
+== CameraFilterPackLegacy_Atmosphere_Rain
+OnRenderImage
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld CameraFilterPackLegacy_Atmosphere_Rain::SCShader
+    IL_0006 Ldnull 
+    IL_0007 Call UnityEngine.Object::op_Inequality
+    IL_000C Brfalse 299
+    IL_0011 Ldarg_0 
+    IL_0012 Ldarg_0 
+    IL_0013 Ldfld CameraFilterPackLegacy_Atmosphere_Rain::TimeX
+    IL_0018 Call UnityEngine.Time::get_deltaTime
+    IL_001D Add 
+    IL_001E Stfld CameraFilterPackLegacy_Atmosphere_Rain::TimeX
+    IL_0023 Ldarg_0 
+    IL_0024 Ldfld CameraFilterPackLegacy_Atmosphere_Rain::TimeX
+    IL_0029 Ldc_r4 100
+    IL_002E Ble_un_s 11
+    IL_0030 Ldarg_0 
+    IL_0031 Ldc_r4 0
+    IL_0036 Stfld CameraFilterPackLegacy_Atmosphere_Rain::TimeX
+    IL_003B Ldarg_0 
+    IL_003C Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_0041 Ldstr _TimeX
+    IL_0046 Ldarg_0 
+    IL_0047 Ldfld CameraFilterPackLegacy_Atmosphere_Rain::TimeX
+    IL_004C Callvirt UnityEngine.Material::SetFloat
+    IL_0051 Ldarg_0 
+    IL_0052 Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_0057 Ldstr _Value
+    IL_005C Ldarg_0 
+    IL_005D Ldfld CameraFilterPackLegacy_Atmosphere_Rain::Fade
+    IL_0062 Callvirt UnityEngine.Material::SetFloat
+    IL_0067 Ldarg_0 
+    IL_0068 Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_006D Ldstr _Value2
+    IL_0072 Ldarg_0 
+    IL_0073 Ldfld CameraFilterPackLegacy_Atmosphere_Rain::Intensity
+    IL_0078 Callvirt UnityEngine.Material::SetFloat
+    IL_007D Ldarg_0 
+    IL_007E Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_0083 Ldstr _Value3
+    IL_0088 Ldarg_0 
+    IL_0089 Ldfld CameraFilterPackLegacy_Atmosphere_Rain::DirectionX
+    IL_008E Callvirt UnityEngine.Material::SetFloat
+    IL_0093 Ldarg_0 
+    IL_0094 Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_0099 Ldstr _Value4
+    IL_009E Ldarg_0 
+    IL_009F Ldfld CameraFilterPackLegacy_Atmosphere_Rain::Speed
+    IL_00A4 Callvirt UnityEngine.Material::SetFloat
+    IL_00A9 Ldarg_0 
+    IL_00AA Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_00AF Ldstr _Value5
+    IL_00B4 Ldarg_0 
+    IL_00B5 Ldfld CameraFilterPackLegacy_Atmosphere_Rain::Size
+    IL_00BA Callvirt UnityEngine.Material::SetFloat
+    IL_00BF Ldarg_0 
+    IL_00C0 Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_00C5 Ldstr _Value6
+    IL_00CA Ldarg_0 
+    IL_00CB Ldfld CameraFilterPackLegacy_Atmosphere_Rain::Distortion
+    IL_00D0 Callvirt UnityEngine.Material::SetFloat
+    IL_00D5 Ldarg_0 
+    IL_00D6 Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_00DB Ldstr _Value7
+    IL_00E0 Ldarg_0 
+    IL_00E1 Ldfld CameraFilterPackLegacy_Atmosphere_Rain::StormFlashOnOff
+    IL_00E6 Callvirt UnityEngine.Material::SetFloat
+    IL_00EB Ldarg_0 
+    IL_00EC Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_00F1 Ldstr _ScreenResolution
+    IL_00F6 Ldarg_1 
+    IL_00F7 Callvirt UnityEngine.Texture::get_width
+    IL_00FC Conv_r4 
+    IL_00FD Ldarg_1 
+    IL_00FE Callvirt UnityEngine.Texture::get_height
+    IL_0103 Conv_r4 
+    IL_0104 Ldc_r4 0
+    IL_0109 Ldc_r4 0
+    IL_010E Newobj UnityEngine.Vector4::.ctor
+    IL_0113 Callvirt UnityEngine.Material::SetVector
+    IL_0118 Ldarg_0 
+    IL_0119 Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_011E Ldstr Texture2
+    IL_0123 Ldarg_0 
+    IL_0124 Ldfld CameraFilterPackLegacy_Atmosphere_Rain::Texture2
+    IL_0129 Callvirt UnityEngine.Material::SetTexture
+    IL_012E Ldarg_1 
+    IL_012F Ldarg_2 
+    IL_0130 Ldarg_0 
+    IL_0131 Call CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    IL_0136 Call UnityEngine.Graphics::Blit
+    IL_013B Ret 
+    IL_013C Ldarg_1 
+    IL_013D Ldarg_2 
+    IL_013E Call UnityEngine.Graphics::Blit
+    IL_0143 Ret 
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::SCShader
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::TimeX
+    호출 UnityEngine.Time::get_deltaTime
+    필드 쓰기 CameraFilterPackLegacy_Atmosphere_Rain::TimeX
+    호출 CameraFilterPackLegacy_Atmosphere_Rain::get_material
+    호출 UnityEngine.Material::SetFloat
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::Fade
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::Intensity
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::DirectionX
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::Speed
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::Size
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::Distortion
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::StormFlashOnOff
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Material::SetVector
+    필드 읽기 CameraFilterPackLegacy_Atmosphere_Rain::Texture2
+    호출 UnityEngine.Material::SetTexture
+    호출 UnityEngine.Graphics::Blit
+
+== CameraFilterPackLegacy_Color_Chromatic_Aberration
+OnRenderImage
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld CameraFilterPackLegacy_Color_Chromatic_Aberration::SCShader
+    IL_0006 Ldnull 
+    IL_0007 Call UnityEngine.Object::op_Inequality
+    IL_000C Brfalse 145
+    IL_0011 Ldarg_0 
+    IL_0012 Ldarg_0 
+    IL_0013 Ldfld CameraFilterPackLegacy_Color_Chromatic_Aberration::TimeX
+    IL_0018 Call UnityEngine.Time::get_deltaTime
+    IL_001D Add 
+    IL_001E Stfld CameraFilterPackLegacy_Color_Chromatic_Aberration::TimeX
+    IL_0023 Ldarg_0 
+    IL_0024 Ldfld CameraFilterPackLegacy_Color_Chromatic_Aberration::TimeX
+    IL_0029 Ldc_r4 100
+    IL_002E Ble_un_s 11
+    IL_0030 Ldarg_0 
+    IL_0031 Ldc_r4 0
+    IL_0036 Stfld CameraFilterPackLegacy_Color_Chromatic_Aberration::TimeX
+    IL_003B Ldarg_0 
+    IL_003C Call CameraFilterPackLegacy_Color_Chromatic_Aberration::get_material
+    IL_0041 Ldstr _TimeX
+    IL_0046 Ldarg_0 
+    IL_0047 Ldfld CameraFilterPackLegacy_Color_Chromatic_Aberration::TimeX
+    IL_004C Callvirt UnityEngine.Material::SetFloat
+    IL_0051 Ldarg_0 
+    IL_0052 Call CameraFilterPackLegacy_Color_Chromatic_Aberration::get_material
+    IL_0057 Ldstr _Distortion
+    IL_005C Ldarg_0 
+    IL_005D Ldfld CameraFilterPackLegacy_Color_Chromatic_Aberration::Offset
+    IL_0062 Callvirt UnityEngine.Material::SetFloat
+    IL_0067 Ldarg_0 
+    IL_0068 Call CameraFilterPackLegacy_Color_Chromatic_Aberration::get_material
+    IL_006D Ldstr _ScreenResolution
+    IL_0072 Ldarg_1 
+    IL_0073 Callvirt UnityEngine.Texture::get_width
+    IL_0078 Conv_r4 
+    IL_0079 Ldarg_1 
+    IL_007A Callvirt UnityEngine.Texture::get_height
+    IL_007F Conv_r4 
+    IL_0080 Ldc_r4 0
+    IL_0085 Ldc_r4 0
+    IL_008A Newobj UnityEngine.Vector4::.ctor
+    IL_008F Callvirt UnityEngine.Material::SetVector
+    IL_0094 Ldarg_1 
+    IL_0095 Ldarg_2 
+    IL_0096 Ldarg_0 
+    IL_0097 Call CameraFilterPackLegacy_Color_Chromatic_Aberration::get_material
+    IL_009C Call UnityEngine.Graphics::Blit
+    IL_00A1 Ret 
+    IL_00A2 Ldarg_1 
+    IL_00A3 Ldarg_2 
+    IL_00A4 Call UnityEngine.Graphics::Blit
+    IL_00A9 Ret 
+    필드 읽기 CameraFilterPackLegacy_Color_Chromatic_Aberration::SCShader
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 CameraFilterPackLegacy_Color_Chromatic_Aberration::TimeX
+    호출 UnityEngine.Time::get_deltaTime
+    필드 쓰기 CameraFilterPackLegacy_Color_Chromatic_Aberration::TimeX
+    호출 CameraFilterPackLegacy_Color_Chromatic_Aberration::get_material
+    호출 UnityEngine.Material::SetFloat
+    필드 읽기 CameraFilterPackLegacy_Color_Chromatic_Aberration::Offset
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Material::SetVector
+    호출 UnityEngine.Graphics::Blit
+
+== CameraFilterPackLegacy_Color_Contrast
+OnRenderImage
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld CameraFilterPackLegacy_Color_Contrast::SCShader
+    IL_0006 Ldnull 
+    IL_0007 Call UnityEngine.Object::op_Inequality
+    IL_000C Brfalse 145
+    IL_0011 Ldarg_0 
+    IL_0012 Ldarg_0 
+    IL_0013 Ldfld CameraFilterPackLegacy_Color_Contrast::TimeX
+    IL_0018 Call UnityEngine.Time::get_deltaTime
+    IL_001D Add 
+    IL_001E Stfld CameraFilterPackLegacy_Color_Contrast::TimeX
+    IL_0023 Ldarg_0 
+    IL_0024 Ldfld CameraFilterPackLegacy_Color_Contrast::TimeX
+    IL_0029 Ldc_r4 100
+    IL_002E Ble_un_s 11
+    IL_0030 Ldarg_0 
+    IL_0031 Ldc_r4 0
+    IL_0036 Stfld CameraFilterPackLegacy_Color_Contrast::TimeX
+    IL_003B Ldarg_0 
+    IL_003C Call CameraFilterPackLegacy_Color_Contrast::get_material
+    IL_0041 Ldstr _Contrast
+    IL_0046 Ldarg_0 
+    IL_0047 Ldfld CameraFilterPackLegacy_Color_Contrast::Contrast
+    IL_004C Callvirt UnityEngine.Material::SetFloat
+    IL_0051 Ldarg_0 
+    IL_0052 Call CameraFilterPackLegacy_Color_Contrast::get_material
+    IL_0057 Ldstr _TimeX
+    IL_005C Ldarg_0 
+    IL_005D Ldfld CameraFilterPackLegacy_Color_Contrast::TimeX
+    IL_0062 Callvirt UnityEngine.Material::SetFloat
+    IL_0067 Ldarg_0 
+    IL_0068 Call CameraFilterPackLegacy_Color_Contrast::get_material
+    IL_006D Ldstr _ScreenResolution
+    IL_0072 Ldarg_1 
+    IL_0073 Callvirt UnityEngine.Texture::get_width
+    IL_0078 Conv_r4 
+    IL_0079 Ldarg_1 
+    IL_007A Callvirt UnityEngine.Texture::get_height
+    IL_007F Conv_r4 
+    IL_0080 Ldc_r4 0
+    IL_0085 Ldc_r4 0
+    IL_008A Newobj UnityEngine.Vector4::.ctor
+    IL_008F Callvirt UnityEngine.Material::SetVector
+    IL_0094 Ldarg_1 
+    IL_0095 Ldarg_2 
+    IL_0096 Ldarg_0 
+    IL_0097 Call CameraFilterPackLegacy_Color_Contrast::get_material
+    IL_009C Call UnityEngine.Graphics::Blit
+    IL_00A1 Ret 
+    IL_00A2 Ldarg_1 
+    IL_00A3 Ldarg_2 
+    IL_00A4 Call UnityEngine.Graphics::Blit
+    IL_00A9 Ret 
+    필드 읽기 CameraFilterPackLegacy_Color_Contrast::SCShader
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 CameraFilterPackLegacy_Color_Contrast::TimeX
+    호출 UnityEngine.Time::get_deltaTime
+    필드 쓰기 CameraFilterPackLegacy_Color_Contrast::TimeX
+    호출 CameraFilterPackLegacy_Color_Contrast::get_material
+    필드 읽기 CameraFilterPackLegacy_Color_Contrast::Contrast
+    호출 UnityEngine.Material::SetFloat
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Material::SetVector
+    호출 UnityEngine.Graphics::Blit
+
+== CameraFilterPackLegacy_Color_GrayScale
+OnRenderImage
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld CameraFilterPackLegacy_Color_GrayScale::SCShader
+    IL_0006 Ldnull 
+    IL_0007 Call UnityEngine.Object::op_Inequality
+    IL_000C Brfalse 145
+    IL_0011 Ldarg_0 
+    IL_0012 Ldarg_0 
+    IL_0013 Ldfld CameraFilterPackLegacy_Color_GrayScale::TimeX
+    IL_0018 Call UnityEngine.Time::get_deltaTime
+    IL_001D Add 
+    IL_001E Stfld CameraFilterPackLegacy_Color_GrayScale::TimeX
+    IL_0023 Ldarg_0 
+    IL_0024 Ldfld CameraFilterPackLegacy_Color_GrayScale::TimeX
+    IL_0029 Ldc_r4 100
+    IL_002E Ble_un_s 11
+    IL_0030 Ldarg_0 
+    IL_0031 Ldc_r4 0
+    IL_0036 Stfld CameraFilterPackLegacy_Color_GrayScale::TimeX
+    IL_003B Ldarg_0 
+    IL_003C Call CameraFilterPackLegacy_Color_GrayScale::get_material
+    IL_0041 Ldstr _TimeX
+    IL_0046 Ldarg_0 
+    IL_0047 Ldfld CameraFilterPackLegacy_Color_GrayScale::TimeX
+    IL_004C Callvirt UnityEngine.Material::SetFloat
+    IL_0051 Ldarg_0 
+    IL_0052 Call CameraFilterPackLegacy_Color_GrayScale::get_material
+    IL_0057 Ldstr _Intensity
+    IL_005C Ldarg_0 
+    IL_005D Ldfld CameraFilterPackLegacy_Color_GrayScale::Intensity
+    IL_0062 Callvirt UnityEngine.Material::SetFloat
+    IL_0067 Ldarg_0 
+    IL_0068 Call CameraFilterPackLegacy_Color_GrayScale::get_material
+    IL_006D Ldstr _ScreenResolution
+    IL_0072 Ldarg_1 
+    IL_0073 Callvirt UnityEngine.Texture::get_width
+    IL_0078 Conv_r4 
+    IL_0079 Ldarg_1 
+    IL_007A Callvirt UnityEngine.Texture::get_height
+    IL_007F Conv_r4 
+    IL_0080 Ldc_r4 0
+    IL_0085 Ldc_r4 0
+    IL_008A Newobj UnityEngine.Vector4::.ctor
+    IL_008F Callvirt UnityEngine.Material::SetVector
+    IL_0094 Ldarg_1 
+    IL_0095 Ldarg_2 
+    IL_0096 Ldarg_0 
+    IL_0097 Call CameraFilterPackLegacy_Color_GrayScale::get_material
+    IL_009C Call UnityEngine.Graphics::Blit
+    IL_00A1 Ret 
+    IL_00A2 Ldarg_1 
+    IL_00A3 Ldarg_2 
+    IL_00A4 Call UnityEngine.Graphics::Blit
+    IL_00A9 Ret 
+    필드 읽기 CameraFilterPackLegacy_Color_GrayScale::SCShader
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 CameraFilterPackLegacy_Color_GrayScale::TimeX
+    호출 UnityEngine.Time::get_deltaTime
+    필드 쓰기 CameraFilterPackLegacy_Color_GrayScale::TimeX
+    호출 CameraFilterPackLegacy_Color_GrayScale::get_material
+    호출 UnityEngine.Material::SetFloat
+    필드 읽기 CameraFilterPackLegacy_Color_GrayScale::Intensity
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Material::SetVector
+    호출 UnityEngine.Graphics::Blit
+
+== CameraFilterPackLegacy_Distortion_FishEye
+OnRenderImage
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld CameraFilterPackLegacy_Distortion_FishEye::SCShader
+    IL_0006 Ldnull 
+    IL_0007 Call UnityEngine.Object::op_Inequality
+    IL_000C Brfalse 145
+    IL_0011 Ldarg_0 
+    IL_0012 Ldarg_0 
+    IL_0013 Ldfld CameraFilterPackLegacy_Distortion_FishEye::TimeX
+    IL_0018 Call UnityEngine.Time::get_deltaTime
+    IL_001D Add 
+    IL_001E Stfld CameraFilterPackLegacy_Distortion_FishEye::TimeX
+    IL_0023 Ldarg_0 
+    IL_0024 Ldfld CameraFilterPackLegacy_Distortion_FishEye::TimeX
+    IL_0029 Ldc_r4 100
+    IL_002E Ble_un_s 11
+    IL_0030 Ldarg_0 
+    IL_0031 Ldc_r4 0
+    IL_0036 Stfld CameraFilterPackLegacy_Distortion_FishEye::TimeX
+    IL_003B Ldarg_0 
+    IL_003C Call CameraFilterPackLegacy_Distortion_FishEye::get_material
+    IL_0041 Ldstr _TimeX
+    IL_0046 Ldarg_0 
+    IL_0047 Ldfld CameraFilterPackLegacy_Distortion_FishEye::TimeX
+    IL_004C Callvirt UnityEngine.Material::SetFloat
+    IL_0051 Ldarg_0 
+    IL_0052 Call CameraFilterPackLegacy_Distortion_FishEye::get_material
+    IL_0057 Ldstr _Distortion
+    IL_005C Ldarg_0 
+    IL_005D Ldfld CameraFilterPackLegacy_Distortion_FishEye::Distortion
+    IL_0062 Callvirt UnityEngine.Material::SetFloat
+    IL_0067 Ldarg_0 
+    IL_0068 Call CameraFilterPackLegacy_Distortion_FishEye::get_material
+    IL_006D Ldstr _ScreenResolution
+    IL_0072 Ldarg_1 
+    IL_0073 Callvirt UnityEngine.Texture::get_width
+    IL_0078 Conv_r4 
+    IL_0079 Ldarg_1 
+    IL_007A Callvirt UnityEngine.Texture::get_height
+    IL_007F Conv_r4 
+    IL_0080 Ldc_r4 0
+    IL_0085 Ldc_r4 0
+    IL_008A Newobj UnityEngine.Vector4::.ctor
+    IL_008F Callvirt UnityEngine.Material::SetVector
+    IL_0094 Ldarg_1 
+    IL_0095 Ldarg_2 
+    IL_0096 Ldarg_0 
+    IL_0097 Call CameraFilterPackLegacy_Distortion_FishEye::get_material
+    IL_009C Call UnityEngine.Graphics::Blit
+    IL_00A1 Ret 
+    IL_00A2 Ldarg_1 
+    IL_00A3 Ldarg_2 
+    IL_00A4 Call UnityEngine.Graphics::Blit
+    IL_00A9 Ret 
+    필드 읽기 CameraFilterPackLegacy_Distortion_FishEye::SCShader
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 CameraFilterPackLegacy_Distortion_FishEye::TimeX
+    호출 UnityEngine.Time::get_deltaTime
+    필드 쓰기 CameraFilterPackLegacy_Distortion_FishEye::TimeX
+    호출 CameraFilterPackLegacy_Distortion_FishEye::get_material
+    호출 UnityEngine.Material::SetFloat
+    필드 읽기 CameraFilterPackLegacy_Distortion_FishEye::Distortion
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Material::SetVector
+    호출 UnityEngine.Graphics::Blit
+
+== CameraFilterPackLegacy_FX_Hexagon_Black
+OnRenderImage
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld CameraFilterPackLegacy_FX_Hexagon_Black::SCShader
+    IL_0006 Ldnull 
+    IL_0007 Call UnityEngine.Object::op_Inequality
+    IL_000C Brfalse 145
+    IL_0011 Ldarg_0 
+    IL_0012 Ldarg_0 
+    IL_0013 Ldfld CameraFilterPackLegacy_FX_Hexagon_Black::TimeX
+    IL_0018 Call UnityEngine.Time::get_deltaTime
+    IL_001D Add 
+    IL_001E Stfld CameraFilterPackLegacy_FX_Hexagon_Black::TimeX
+    IL_0023 Ldarg_0 
+    IL_0024 Ldfld CameraFilterPackLegacy_FX_Hexagon_Black::TimeX
+    IL_0029 Ldc_r4 100
+    IL_002E Ble_un_s 11
+    IL_0030 Ldarg_0 
+    IL_0031 Ldc_r4 0
+    IL_0036 Stfld CameraFilterPackLegacy_FX_Hexagon_Black::TimeX
+    IL_003B Ldarg_0 
+    IL_003C Call CameraFilterPackLegacy_FX_Hexagon_Black::get_material
+    IL_0041 Ldstr _TimeX
+    IL_0046 Ldarg_0 
+    IL_0047 Ldfld CameraFilterPackLegacy_FX_Hexagon_Black::TimeX
+    IL_004C Callvirt UnityEngine.Material::SetFloat
+    IL_0051 Ldarg_0 
+    IL_0052 Call CameraFilterPackLegacy_FX_Hexagon_Black::get_material
+    IL_0057 Ldstr _Value
+    IL_005C Ldarg_0 
+    IL_005D Ldfld CameraFilterPackLegacy_FX_Hexagon_Black::Value
+    IL_0062 Callvirt UnityEngine.Material::SetFloat
+    IL_0067 Ldarg_0 
+    IL_0068 Call CameraFilterPackLegacy_FX_Hexagon_Black::get_material
+    IL_006D Ldstr _ScreenResolution
+    IL_0072 Ldarg_1 
+    IL_0073 Callvirt UnityEngine.Texture::get_width
+    IL_0078 Conv_r4 
+    IL_0079 Ldarg_1 
+    IL_007A Callvirt UnityEngine.Texture::get_height
+    IL_007F Conv_r4 
+    IL_0080 Ldc_r4 0
+    IL_0085 Ldc_r4 0
+    IL_008A Newobj UnityEngine.Vector4::.ctor
+    IL_008F Callvirt UnityEngine.Material::SetVector
+    IL_0094 Ldarg_1 
+    IL_0095 Ldarg_2 
+    IL_0096 Ldarg_0 
+    IL_0097 Call CameraFilterPackLegacy_FX_Hexagon_Black::get_material
+    IL_009C Call UnityEngine.Graphics::Blit
+    IL_00A1 Ret 
+    IL_00A2 Ldarg_1 
+    IL_00A3 Ldarg_2 
+    IL_00A4 Call UnityEngine.Graphics::Blit
+    IL_00A9 Ret 
+    필드 읽기 CameraFilterPackLegacy_FX_Hexagon_Black::SCShader
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 CameraFilterPackLegacy_FX_Hexagon_Black::TimeX
+    호출 UnityEngine.Time::get_deltaTime
+    필드 쓰기 CameraFilterPackLegacy_FX_Hexagon_Black::TimeX
+    호출 CameraFilterPackLegacy_FX_Hexagon_Black::get_material
+    호출 UnityEngine.Material::SetFloat
+    필드 읽기 CameraFilterPackLegacy_FX_Hexagon_Black::Value
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Material::SetVector
+    호출 UnityEngine.Graphics::Blit
+
+== CameraFilterPackLegacy_Light_Water2
+OnRenderImage
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld CameraFilterPackLegacy_Light_Water2::SCShader
+    IL_0006 Ldnull 
+    IL_0007 Call UnityEngine.Object::op_Inequality
+    IL_000C Brfalse 211
+    IL_0011 Ldarg_0 
+    IL_0012 Ldarg_0 
+    IL_0013 Ldfld CameraFilterPackLegacy_Light_Water2::TimeX
+    IL_0018 Call UnityEngine.Time::get_deltaTime
+    IL_001D Add 
+    IL_001E Stfld CameraFilterPackLegacy_Light_Water2::TimeX
+    IL_0023 Ldarg_0 
+    IL_0024 Ldfld CameraFilterPackLegacy_Light_Water2::TimeX
+    IL_0029 Ldc_r4 100
+    IL_002E Ble_un_s 11
+    IL_0030 Ldarg_0 
+    IL_0031 Ldc_r4 0
+    IL_0036 Stfld CameraFilterPackLegacy_Light_Water2::TimeX
+    IL_003B Ldarg_0 
+    IL_003C Call CameraFilterPackLegacy_Light_Water2::get_material
+    IL_0041 Ldstr _TimeX
+    IL_0046 Ldarg_0 
+    IL_0047 Ldfld CameraFilterPackLegacy_Light_Water2::TimeX
+    IL_004C Callvirt UnityEngine.Material::SetFloat
+    IL_0051 Ldarg_0 
+    IL_0052 Call CameraFilterPackLegacy_Light_Water2::get_material
+    IL_0057 Ldstr _Value
+    IL_005C Ldarg_0 
+    IL_005D Ldfld CameraFilterPackLegacy_Light_Water2::Speed
+    IL_0062 Callvirt UnityEngine.Material::SetFloat
+    IL_0067 Ldarg_0 
+    IL_0068 Call CameraFilterPackLegacy_Light_Water2::get_material
+    IL_006D Ldstr _Value2
+    IL_0072 Ldarg_0 
+    IL_0073 Ldfld CameraFilterPackLegacy_Light_Water2::Speed_X
+    IL_0078 Callvirt UnityEngine.Material::SetFloat
+    IL_007D Ldarg_0 
+    IL_007E Call CameraFilterPackLegacy_Light_Water2::get_material
+    IL_0083 Ldstr _Value3
+    IL_0088 Ldarg_0 
+    IL_0089 Ldfld CameraFilterPackLegacy_Light_Water2::Speed_Y
+    IL_008E Callvirt UnityEngine.Material::SetFloat
+    IL_0093 Ldarg_0 
+    IL_0094 Call CameraFilterPackLegacy_Light_Water2::get_material
+    IL_0099 Ldstr _Value4
+    IL_009E Ldarg_0 
+    IL_009F Ldfld CameraFilterPackLegacy_Light_Water2::Intensity
+    IL_00A4 Callvirt UnityEngine.Material::SetFloat
+    IL_00A9 Ldarg_0 
+    IL_00AA Call CameraFilterPackLegacy_Light_Water2::get_material
+    IL_00AF Ldstr _ScreenResolution
+    IL_00B4 Ldarg_1 
+    IL_00B5 Callvirt UnityEngine.Texture::get_width
+    IL_00BA Conv_r4 
+    IL_00BB Ldarg_1 
+    IL_00BC Callvirt UnityEngine.Texture::get_height
+    IL_00C1 Conv_r4 
+    IL_00C2 Ldc_r4 0
+    IL_00C7 Ldc_r4 0
+    IL_00CC Newobj UnityEngine.Vector4::.ctor
+    IL_00D1 Callvirt UnityEngine.Material::SetVector
+    IL_00D6 Ldarg_1 
+    IL_00D7 Ldarg_2 
+    IL_00D8 Ldarg_0 
+    IL_00D9 Call CameraFilterPackLegacy_Light_Water2::get_material
+    IL_00DE Call UnityEngine.Graphics::Blit
+    IL_00E3 Ret 
+    IL_00E4 Ldarg_1 
+    IL_00E5 Ldarg_2 
+    IL_00E6 Call UnityEngine.Graphics::Blit
+    IL_00EB Ret 
+    필드 읽기 CameraFilterPackLegacy_Light_Water2::SCShader
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 CameraFilterPackLegacy_Light_Water2::TimeX
+    호출 UnityEngine.Time::get_deltaTime
+    필드 쓰기 CameraFilterPackLegacy_Light_Water2::TimeX
+    호출 CameraFilterPackLegacy_Light_Water2::get_material
+    호출 UnityEngine.Material::SetFloat
+    필드 읽기 CameraFilterPackLegacy_Light_Water2::Speed
+    필드 읽기 CameraFilterPackLegacy_Light_Water2::Speed_X
+    필드 읽기 CameraFilterPackLegacy_Light_Water2::Speed_Y
+    필드 읽기 CameraFilterPackLegacy_Light_Water2::Intensity
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Material::SetVector
+    호출 UnityEngine.Graphics::Blit
+
+== CameraFilterPackLegacy_Sharpen_Sharpen
+OnRenderImage
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld CameraFilterPackLegacy_Sharpen_Sharpen::SCShader
+    IL_0006 Ldnull 
+    IL_0007 Call UnityEngine.Object::op_Inequality
+    IL_000C Brfalse 167
+    IL_0011 Ldarg_0 
+    IL_0012 Ldarg_0 
+    IL_0013 Ldfld CameraFilterPackLegacy_Sharpen_Sharpen::TimeX
+    IL_0018 Call UnityEngine.Time::get_deltaTime
+    IL_001D Add 
+    IL_001E Stfld CameraFilterPackLegacy_Sharpen_Sharpen::TimeX
+    IL_0023 Ldarg_0 
+    IL_0024 Ldfld CameraFilterPackLegacy_Sharpen_Sharpen::TimeX
+    IL_0029 Ldc_r4 100
+    IL_002E Ble_un_s 11
+    IL_0030 Ldarg_0 
+    IL_0031 Ldc_r4 0
+    IL_0036 Stfld CameraFilterPackLegacy_Sharpen_Sharpen::TimeX
+    IL_003B Ldarg_0 
+    IL_003C Call CameraFilterPackLegacy_Sharpen_Sharpen::get_material
+    IL_0041 Ldstr _TimeX
+    IL_0046 Ldarg_0 
+    IL_0047 Ldfld CameraFilterPackLegacy_Sharpen_Sharpen::TimeX
+    IL_004C Callvirt UnityEngine.Material::SetFloat
+    IL_0051 Ldarg_0 
+    IL_0052 Call CameraFilterPackLegacy_Sharpen_Sharpen::get_material
+    IL_0057 Ldstr _ScreenResolution
+    IL_005C Ldarg_1 
+    IL_005D Callvirt UnityEngine.Texture::get_width
+    IL_0062 Conv_r4 
+    IL_0063 Ldarg_1 
+    IL_0064 Callvirt UnityEngine.Texture::get_height
+    IL_0069 Conv_r4 
+    IL_006A Ldc_r4 0
+    IL_006F Ldc_r4 0
+    IL_0074 Newobj UnityEngine.Vector4::.ctor
+    IL_0079 Callvirt UnityEngine.Material::SetVector
+    IL_007E Ldarg_0 
+    IL_007F Call CameraFilterPackLegacy_Sharpen_Sharpen::get_material
+    IL_0084 Ldstr _Value
+    IL_0089 Ldarg_0 
+    IL_008A Ldfld CameraFilterPackLegacy_Sharpen_Sharpen::Value
+    IL_008F Callvirt UnityEngine.Material::SetFloat
+    IL_0094 Ldarg_0 
+    IL_0095 Call CameraFilterPackLegacy_Sharpen_Sharpen::get_material
+    IL_009A Ldstr _Value2
+    IL_009F Ldarg_0 
+    IL_00A0 Ldfld CameraFilterPackLegacy_Sharpen_Sharpen::Value2
+    IL_00A5 Callvirt UnityEngine.Material::SetFloat
+    IL_00AA Ldarg_1 
+    IL_00AB Ldarg_2 
+    IL_00AC Ldarg_0 
+    IL_00AD Call CameraFilterPackLegacy_Sharpen_Sharpen::get_material
+    IL_00B2 Call UnityEngine.Graphics::Blit
+    IL_00B7 Ret 
+    IL_00B8 Ldarg_1 
+    IL_00B9 Ldarg_2 
+    IL_00BA Call UnityEngine.Graphics::Blit
+    IL_00BF Ret 
+    필드 읽기 CameraFilterPackLegacy_Sharpen_Sharpen::SCShader
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 CameraFilterPackLegacy_Sharpen_Sharpen::TimeX
+    호출 UnityEngine.Time::get_deltaTime
+    필드 쓰기 CameraFilterPackLegacy_Sharpen_Sharpen::TimeX
+    호출 CameraFilterPackLegacy_Sharpen_Sharpen::get_material
+    호출 UnityEngine.Material::SetFloat
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Material::SetVector
+    필드 읽기 CameraFilterPackLegacy_Sharpen_Sharpen::Value
+    필드 읽기 CameraFilterPackLegacy_Sharpen_Sharpen::Value2
+    호출 UnityEngine.Graphics::Blit
+
+== scrCamera
+  SetupRTCam
+    IL_0000 Ldarg_0 
+    IL_0001 Ldarg_1 
+    IL_0002 Stfld scrCamera::useRTCam
+    IL_0007 Ldarg_1 
+    IL_0008 Brtrue_s 3
+    IL_000A Ldnull 
+    IL_000B Br_s 6
+    IL_000D Ldarg_0 
+    IL_000E Ldfld scrCamera::camRT
+    IL_0013 Stloc_0 
+    IL_0014 Ldarg_0 
+    IL_0015 Ldfld scrCamera::Bgcamstatic
+    IL_001A Ldloc_0 
+    IL_001B Callvirt UnityEngine.Camera::set_targetTexture
+    IL_0020 Ldarg_0 
+    IL_0021 Ldfld scrCamera::BGcam
+    IL_0026 Ldloc_0 
+    IL_0027 Callvirt UnityEngine.Camera::set_targetTexture
+    IL_002C Ldarg_0 
+    IL_002D Ldfld scrCamera::camobj
+    IL_0032 Ldloc_0 
+    IL_0033 Callvirt UnityEngine.Camera::set_targetTexture
+    IL_0038 Ldarg_0 
+    IL_0039 Ldfld scrCamera::Overlaycam
+    IL_003E Callvirt UnityEngine.Component::get_gameObject
+    IL_0043 Ldarg_1 
+    IL_0044 Callvirt UnityEngine.GameObject::SetActive
+    IL_0049 Ldarg_0 
+    IL_004A Ldfld scrCamera::quad
+    IL_004F Ldarg_1 
+    IL_0050 Callvirt UnityEngine.GameObject::SetActive
+    IL_0055 Ret 
+    필드 쓰기 scrCamera::useRTCam
+    필드 읽기 scrCamera::camRT
+    필드 읽기 scrCamera::Bgcamstatic
+    호출 UnityEngine.Camera::set_targetTexture
+    필드 읽기 scrCamera::BGcam
+    필드 읽기 scrCamera::camobj
+    필드 읽기 scrCamera::Overlaycam
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrCamera::quad
+  Update
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld scrCamera::skipUpdate
+    IL_0006 Brfalse_s 1
+    IL_0008 Ret 
+    IL_0009 Ldarg_0 
+    IL_000A Ldfld scrCamera::useRTCam
+    IL_000F Brfalse 166
+    IL_0014 Ldarg_0 
+    IL_0015 Call scrCamera::get_camRTNeedsRecreation
+    IL_001A Brfalse 155
+    IL_001F Ldarg_0 
+    IL_0020 Ldfld scrCamera::camRT
+    IL_0025 Ldnull 
+    IL_0026 Call UnityEngine.Object::op_Inequality
+    IL_002B Brfalse_s 11
+    IL_002D Ldarg_0 
+    IL_002E Ldfld scrCamera::camRT
+    IL_0033 Callvirt UnityEngine.RenderTexture::Release
+    IL_0038 Ldarg_0 
+    IL_0039 Call UnityEngine.Screen::get_width
+    IL_003E Call UnityEngine.Screen::get_height
+    IL_0043 Ldc_i4_s 24
+    IL_0045 Newobj UnityEngine.RenderTexture::.ctor
+    IL_004A Stfld scrCamera::camRT
+    IL_004F Ldarg_0 
+    IL_0050 Ldfld scrCamera::useRTCam
+    IL_0055 Brfalse_s 7
+    IL_0057 Ldarg_0 
+    IL_0058 Ldc_i4_1 
+    IL_0059 Call scrCamera::SetupRTCam
+    IL_005E Ldarg_0 
+    IL_005F Ldfld scrCamera::Overlaycam
+    IL_0064 Callvirt UnityEngine.Camera::get_orthographicSize
+    IL_0069 Ldc_r4 2
+    IL_006E Mul 
+    IL_006F Stloc_0 
+    IL_0070 Ldloc_0 
+    IL_0071 Call UnityEngine.Screen::get_width
+    IL_0076 Conv_r4 
+    IL_0077 Mul 
+    IL_0078 Call UnityEngine.Screen::get_height
+    IL_007D Conv_r4 
+    IL_007E Div 
+    IL_007F Stloc_1 
+    IL_0080 Ldarg_0 
+    IL_0081 Ldfld scrCamera::quad
+    IL_0086 Callvirt UnityEngine.GameObject::get_transform
+    IL_008B Ldloc_1 
+    IL_008C Ldloc_0 
+    IL_008D Ldc_r4 1
+    IL_0092 Newobj UnityEngine.Vector3::.ctor
+    IL_0097 Callvirt UnityEngine.Transform::set_localScale
+    IL_009C Ldarg_0 
+    IL_009D Ldfld scrCamera::enableCustomFPS
+    IL_00A2 Brtrue_s 22
+    IL_00A4 Ldarg_0 
+    IL_00A5 Ldfld scrCamera::camQuadMesh
+    IL_00AA Callvirt UnityEngine.Renderer::get_material
+    IL_00AF Ldarg_0 
+    IL_00B0 Ldfld scrCamera::camRT
+    IL_00B5 Callvirt UnityEngine.Material::set_mainTexture
+
+== VideoBloom
+  get_masterAmount
+    IL_0000 Ldarg_0 
+    IL_0001 Ldfld VideoBloom::MasterAmount
+    IL_0006 Ret 
+    필드 읽기 VideoBloom::MasterAmount
+  set_masterAmount
+    IL_0000 Ldarg_0 
+    IL_0001 Ldarg_1 
+    IL_0002 Stfld VideoBloom::MasterAmount
+    IL_0007 Ret 
+    필드 쓰기 VideoBloom::MasterAmount
+  CheckResources
+    IL_0000 Ldarg_0 
+    IL_0001 Ldarg_0 
+    IL_0002 Ldarg_0 
+    IL_0003 Ldfld VideoBloom::videoBloomShader
+    IL_0008 Ldarg_0 
+    IL_0009 Ldfld VideoBloom::videoBloomMaterial
+    IL_000E Call PostEffectsBase::CheckShaderAndCreateMaterial
+    IL_0013 Stfld VideoBloom::videoBloomMaterial
+    IL_0018 Ldarg_0 
+    IL_0019 Ldfld PostEffectsBase::isSupported
+    IL_001E Brtrue_s 6
+    IL_0020 Ldarg_0 
+    IL_0021 Call PostEffectsBase::ReportAutoDisable
+    IL_0026 Ldarg_0 
+    IL_0027 Ldfld PostEffectsBase::isSupported
+    IL_002C Ret 
+    필드 읽기 VideoBloom::videoBloomShader
+    필드 읽기 VideoBloom::videoBloomMaterial
+    호출 PostEffectsBase::CheckShaderAndCreateMaterial
+    필드 쓰기 VideoBloom::videoBloomMaterial
+    필드 읽기 PostEffectsBase::isSupported
+    호출 PostEffectsBase::ReportAutoDisable
+  videoBlurGetMaxScaleFor
+    IL_0000 Ldarg_1 
+    IL_0001 Conv_r8 
+    IL_0002 Stloc_0 
+    IL_0003 Ldloc_0 
+    IL_0004 Ldc_r8 4621819117588971520
+    IL_000D Blt_s 55
+    IL_000F Ldloc_0 
+    IL_0010 Ldc_r8 4630309627302713596
+    IL_0019 Blt_s 20
+    IL_001B Ldc_r8 4605380978949069210
+    IL_0024 Ldloc_0 
+    IL_0025 Call System.Math::Sqrt
+    IL_002A Conv_r4 
+    IL_002B Conv_r8 
+    IL_002C Mul 
+    IL_002D Br_s 44
+    IL_002F Ldc_r8 4593756936109246827
+    IL_0038 Ldloc_0 
+    IL_0039 Mul 
+    IL_003A Ldc_r8 4596184160135617410
+    IL_0043 Add 
+    IL_0044 Br_s 21
+    IL_0046 Ldc_r8 4591870180066957722
+    IL_004F Ldloc_0 
+    IL_0050 Mul 
+    IL_0051 Ldc_r8 4609291981426671414
+    IL_005A Mul 
+    IL_005B Stloc_1 
+    IL_005C Ldloc_1 
+    IL_005D Ldc_r8 0
+    IL_0066 Ble_s 3
+    IL_0068 Ldloc_1 
+    IL_0069 Conv_r4 
+    IL_006A Ret 
+    IL_006B Ldc_r4 0
+    IL_0070 Ret 
+    호출 System.Math::Sqrt
+  Awake
+    IL_0000 Ldarg_0 
+    IL_0001 Callvirt PostEffectsBase::CheckResources
+    IL_0006 Brtrue_s 7
+    IL_0008 Ldarg_0 
+    IL_0009 Ldc_i4_0 
+    IL_000A Call UnityEngine.Behaviour::set_enabled
+    IL_000F Ret 
+    호출 PostEffectsBase::CheckResources
+    호출 UnityEngine.Behaviour::set_enabled
+  BloomBlit
+    IL_0000 Ldarg_0 
+    IL_0001 Ldarg_s 4
+    IL_0003 Call VideoBloom::videoBlurGetMaxScaleFor
+    IL_0008 Stloc_0 
+    IL_0009 Ldloc_0 
+    IL_000A Conv_i4 
+    IL_000B Stloc_1 
+    IL_000C Ldloc_0 
+    IL_000D Ldloc_1 
+    IL_000E Conv_r4 
+    IL_000F Sub 
+    IL_0010 Stloc_2 
+    IL_0011 Ldarg_0 
+    IL_0012 Ldarg_s 5
+    IL_0014 Call VideoBloom::videoBlurGetMaxScaleFor
+    IL_0019 Stloc_0 
+    IL_001A Ldloc_0 
+    IL_001B Conv_i4 
+    IL_001C Stloc_3 
+    IL_001D Ldc_r4 1
+    IL_0022 Stloc_s 4
+    IL_0024 Ldarg_1 
+    IL_0025 Callvirt UnityEngine.Texture::get_width
+    IL_002A Stloc_s 5
+    IL_002C Ldarg_1 
+    IL_002D Callvirt UnityEngine.Texture::get_height
+    IL_0032 Stloc_s 6
+    IL_0034 Ldloc_1 
+    IL_0035 Brtrue_s 7
+    IL_0037 Ldc_r4 -1
+    IL_003C Br_s 5
+    IL_003E Ldc_r4 1
+    IL_0043 Stloc_s 7
+    IL_0045 Ldarg_s 4
+    IL_0047 Ldc_r4 0
+    IL_004C Bne_un_s 8
+    IL_004E Ldarg_1 
+    IL_004F Ldarg_2 
+    IL_0050 Call UnityEngine.Graphics::Blit
+    IL_0055 Ret 
+    IL_0056 Ldloc_s 5
+    IL_0058 Ldloc_s 6
+    IL_005A Ldc_i4_0 
+    IL_005B Ldc_i4_2 
+    IL_005C Call UnityEngine.RenderTexture::GetTemporary
+    IL_0061 Stloc_s 10
+    IL_0063 Ldloc_s 10
+    IL_0065 Ldc_i4_1 
+    IL_0066 Callvirt UnityEngine.Texture::set_filterMode
+    IL_006B Ldloc_s 10
+    IL_006D Ldc_i4_1 
+    IL_006E Callvirt UnityEngine.Texture::set_wrapMode
+    IL_0073 Ldarg_1 
+    IL_0074 Ldloc_s 10
+    IL_0076 Call UnityEngine.Graphics::Blit
+    IL_007B Ldnull 
+    IL_007C Stloc_s 11
+    IL_007E Ldc_i4_0 
+    IL_007F Stloc_s 9
+    IL_0081 Br 174
+    IL_0086 Ldloc_s 9
+    IL_0088 Ldc_i4_2 
+    IL_0089 Rem 
+    IL_008A Brtrue_s 7
+    IL_008C Ldc_r4 1
+    IL_0091 Br_s 5
+    IL_0093 Ldc_r4 -1
+    IL_0098 Stloc_s 7
+    IL_009A Ldloca_s 8
+    IL_009C Ldloc_s 7
+    IL_009E Ldloc_s 4
+    IL_00A0 Mul 
+    IL_00A1 Ldc_r4 1.3333334
+    IL_00A6 Mul 
+    IL_00A7 Ldloc_s 4
+    IL_00A9 Ldc_r4 0.33333334
+    IL_00AE Mul 
+    IL_00AF Ldloc_s 7
+    IL_00B1 Ldloc_s 4
+    IL_00B3 Mul 
+    IL_00B4 Ldc_r4 0.33333334
+    IL_00B9 Mul 
+    IL_00BA Ldloc_s 4
+    IL_00BC Neg 
+    IL_00BD Ldc_r4 1.3333334
+    IL_00C2 Mul 
+    IL_00C3 Call UnityEngine.Vector4::.ctor
+    IL_00C8 Ldarg_0 
+    IL_00C9 Ldfld VideoBloom::videoBloomMaterial
+    IL_00CE Ldsfld VideoBloom::Param0
+    IL_00D3 Ldloc_s 8
+    IL_00D5 Callvirt UnityEngine.Material::SetVector
+    IL_00DA Ldloc_s 5
+    IL_00DC Ldloc_s 6
+    IL_00DE Ldc_i4_0 
+    IL_00DF Ldc_i4_2 
+    IL_00E0 Call UnityEngine.RenderTexture::GetTemporary
+    IL_00E5 Stloc_s 11
+    IL_00E7 Ldloc_s 11
+    IL_00E9 Ldc_i4_1 
+    IL_00EA Callvirt UnityEngine.Texture::set_filterMode
+    IL_00EF Ldloc_s 11
+    IL_00F1 Ldc_i4_1 
+    IL_00F2 Callvirt UnityEngine.Texture::set_wrapMode
+    IL_00F7 Ldarg_0 
+    IL_00F8 Ldfld VideoBloom::videoBloomMaterial
+    IL_00FD Ldsfld VideoBloom::MainTex
+    IL_0102 Ldloc_s 10
+    IL_0104 Callvirt UnityEngine.Material::SetTexture
+    IL_0109 Ldloc_s 10
+    IL_010B Ldloc_s 11
+    IL_010D Ldarg_0 
+    IL_010E Ldfld VideoBloom::videoBloomMaterial
+    IL_0113 Ldc_i4_0 
+    IL_0114 Call UnityEngine.Graphics::Blit
+    IL_0119 Ldloc_s 10
+    IL_011B Call UnityEngine.RenderTexture::ReleaseTemporary
+    IL_0120 Ldloc_s 11
+    IL_0122 Stloc_s 10
+    IL_0124 Ldloc_s 4
+    IL_0126 Ldc_r4 1.4142135
+    IL_012B Mul 
+    IL_012C Stloc_s 4
+    IL_012E Ldloc_s 9
+    IL_0130 Ldc_i4_1 
+    IL_0131 Add 
+    IL_0132 Stloc_s 9
+    IL_0134 Ldloc_s 9
+    IL_0136 Ldloc_1 
+    IL_0137 Blt -182
+    IL_013C Ldloc_s 11
+    IL_013E Call UnityEngine.RenderTexture::ReleaseTemporary
+    IL_0143 Ldloca_s 8
+    IL_0145 Ldloc_s 7
+    IL_0147 Neg 
+    IL_0148 Ldloc_s 4
+    IL_014A Mul 
+    IL_014B Ldc_r4 1.3333334
+    IL_0150 Mul 
+    IL_0151 Ldloc_s 4
+    IL_0153 Ldc_r4 0.33333334
+    IL_0158 Mul 
+    IL_0159 Ldloc_s 7
+    IL_015B Neg 
+    IL_015C Ldloc_s 4
+    IL_015E Mul 
+    IL_015F Ldc_r4 0.33333334
+    IL_0164 Mul 
+    IL_0165 Ldloc_s 4
+    IL_0167 Neg 
+    IL_0168 Ldc_r4 1.3333334
+    IL_016D Mul 
+    IL_016E Call UnityEngine.Vector4::.ctor
+    IL_0173 Ldarg_0 
+    IL_0174 Ldfld VideoBloom::videoBloomMaterial
+    IL_0179 Ldsfld VideoBloom::Param0
+    IL_017E Ldloc_s 8
+    IL_0180 Callvirt UnityEngine.Material::SetVector
+    IL_0185 Ldarg_0 
+    IL_0186 Ldfld VideoBloom::videoBloomMaterial
+    IL_018B Ldsfld VideoBloom::Param2
+    IL_0190 Ldloc_2 
+    IL_0191 Callvirt UnityEngine.Material::SetFloat
+    IL_0196 Ldarg_0 
+    IL_0197 Ldfld VideoBloom::videoBloomMaterial
+    IL_019C Ldsfld VideoBloom::MainTex
+    IL_01A1 Ldloc_s 10
+    IL_01A3 Callvirt UnityEngine.Material::SetTexture
+    IL_01A8 Ldloc_s 10
+    IL_01AA Ldarg_2 
+    IL_01AB Ldarg_0 
+    IL_01AC Ldfld VideoBloom::videoBloomMaterial
+    IL_01B1 Ldc_i4_1 
+    IL_01B2 Call UnityEngine.Graphics::Blit
+    IL_01B7 Ldarg_3 
+    IL_01B8 Ldnull 
+    IL_01B9 Call UnityEngine.Object::op_Inequality
+    IL_01BE Brfalse 316
+    IL_01C3 Ldnull 
+    IL_01C4 Stloc_s 12
+    IL_01C6 Br 174
+    IL_01CB Ldloc_s 9
+    IL_01CD Ldc_i4_2 
+    IL_01CE Rem 
+    IL_01CF Brtrue_s 7
+    IL_01D1 Ldc_r4 1
+    IL_01D6 Br_s 5
+    IL_01D8 Ldc_r4 -1
+    IL_01DD Stloc_s 7
+    IL_01DF Ldloca_s 8
+    IL_01E1 Ldloc_s 7
+    IL_01E3 Ldloc_s 4
+    IL_01E5 Mul 
+    IL_01E6 Ldc_r4 1.3333334
+    IL_01EB Mul 
+    IL_01EC Ldloc_s 4
+    IL_01EE Ldc_r4 0.33333334
+    IL_01F3 Mul 
+    IL_01F4 Ldloc_s 7
+    IL_01F6 Ldloc_s 4
+    IL_01F8 Mul 
+    IL_01F9 Ldc_r4 0.33333334
+    IL_01FE Mul 
+    IL_01FF Ldloc_s 4
+    IL_0201 Neg 
+    IL_0202 Ldc_r4 1.3333334
+    IL_0207 Mul 
+    IL_0208 Call UnityEngine.Vector4::.ctor
+    IL_020D Ldarg_0 
+    IL_020E Ldfld VideoBloom::videoBloomMaterial
+    IL_0213 Ldsfld VideoBloom::Param0
+    IL_0218 Ldloc_s 8
+    IL_021A Callvirt UnityEngine.Material::SetVector
+    IL_021F Ldloc_s 5
+    IL_0221 Ldloc_s 6
+    IL_0223 Ldc_i4_0 
+    IL_0224 Ldc_i4_2 
+    IL_0225 Call UnityEngine.RenderTexture::GetTemporary
+    IL_022A Stloc_s 12
+    IL_022C Ldloc_s 12
+    IL_022E Ldc_i4_1 
+    IL_022F Callvirt UnityEngine.Texture::set_filterMode
+    IL_0234 Ldloc_s 12
+    IL_0236 Ldc_i4_1 
+    IL_0237 Callvirt UnityEngine.Texture::set_wrapMode
+    IL_023C Ldarg_0 
+    IL_023D Ldfld VideoBloom::videoBloomMaterial
+    IL_0242 Ldsfld VideoBloom::MainTex
+    IL_0247 Ldloc_s 10
+    IL_0249 Callvirt UnityEngine.Material::SetTexture
+    IL_024E Ldloc_s 10
+    IL_0250 Ldloc_s 12
+    IL_0252 Ldarg_0 
+    IL_0253 Ldfld VideoBloom::videoBloomMaterial
+    IL_0258 Ldc_i4_0 
+    IL_0259 Call UnityEngine.Graphics::Blit
+    IL_025E Ldloc_s 10
+    IL_0260 Call UnityEngine.RenderTexture::ReleaseTemporary
+    IL_0265 Ldloc_s 12
+    IL_0267 Stloc_s 10
+    IL_0269 Ldloc_s 4
+    IL_026B Ldc_r4 1.4142135
+    IL_0270 Mul 
+    IL_0271 Stloc_s 4
+    IL_0273 Ldloc_s 9
+    IL_0275 Ldc_i4_1 
+    IL_0276 Add 
+    IL_0277 Stloc_s 9
+    IL_0279 Ldloc_s 9
+    IL_027B Ldloc_3 
+    IL_027C Blt -182
+    IL_0281 Ldloc_s 12
+    IL_0283 Call UnityEngine.RenderTexture::ReleaseTemporary
+    IL_0288 Ldloca_s 8
+    IL_028A Ldloc_s 7
+    IL_028C Neg 
+    IL_028D Ldloc_s 4
+    IL_028F Mul 
+    IL_0290 Ldc_r4 1.3333334
+    IL_0295 Mul 
+    IL_0296 Ldloc_s 4
+    IL_0298 Ldc_r4 0.33333334
+    IL_029D Mul 
+    IL_029E Ldloc_s 7
+    IL_02A0 Neg 
+    IL_02A1 Ldloc_s 4
+    IL_02A3 Mul 
+    IL_02A4 Ldc_r4 0.33333334
+    IL_02A9 Mul 
+    IL_02AA Ldloc_s 4
+    IL_02AC Neg 
+    IL_02AD Ldc_r4 1.3333334
+    IL_02B2 Mul 
+    IL_02B3 Call UnityEngine.Vector4::.ctor
+    IL_02B8 Ldarg_0 
+    IL_02B9 Ldfld VideoBloom::videoBloomMaterial
+    IL_02BE Ldsfld VideoBloom::Param0
+    IL_02C3 Ldloc_s 8
+    IL_02C5 Callvirt UnityEngine.Material::SetVector
+    IL_02CA Ldarg_0 
+    IL_02CB Ldfld VideoBloom::videoBloomMaterial
+    IL_02D0 Ldsfld VideoBloom::Param2
+    IL_02D5 Ldloc_0 
+    IL_02D6 Ldloc_3 
+    IL_02D7 Conv_r4 
+    IL_02D8 Sub 
+    IL_02D9 Callvirt UnityEngine.Material::SetFloat
+    IL_02DE Ldarg_0 
+    IL_02DF Ldfld VideoBloom::videoBloomMaterial
+    IL_02E4 Ldsfld VideoBloom::MainTex
+    IL_02E9 Ldloc_s 10
+    IL_02EB Callvirt UnityEngine.Material::SetTexture
+    IL_02F0 Ldloc_s 10
+    IL_02F2 Ldarg_3 
+    IL_02F3 Ldarg_0 
+    IL_02F4 Ldfld VideoBloom::videoBloomMaterial
+    IL_02F9 Ldc_i4_1 
+    IL_02FA Call UnityEngine.Graphics::Blit
+    IL_02FF Ldloc_s 10
+    IL_0301 Call UnityEngine.RenderTexture::ReleaseTemporary
+    IL_0306 Ret 
+    호출 VideoBloom::videoBlurGetMaxScaleFor
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Graphics::Blit
+    호출 UnityEngine.RenderTexture::GetTemporary
+    호출 UnityEngine.Texture::set_filterMode
+    호출 UnityEngine.Texture::set_wrapMode
+    호출 UnityEngine.Vector4::.ctor
+    필드 읽기 VideoBloom::videoBloomMaterial
+    정적필드 읽기 VideoBloom::Param0
+    호출 UnityEngine.Material::SetVector
+    정적필드 읽기 VideoBloom::MainTex
+    호출 UnityEngine.Material::SetTexture
+    호출 UnityEngine.RenderTexture::ReleaseTemporary
+    정적필드 읽기 VideoBloom::Param2
+    호출 UnityEngine.Material::SetFloat
+    호출 UnityEngine.Object::op_Inequality
+  OnRenderImage
+    IL_0000 Ldarg_1 
+    IL_0001 Ldnull 
+    IL_0002 Call UnityEngine.Object::op_Equality
+    IL_0007 Brfalse_s 11
+    IL_0009 Ldstr source is null
+    IL_000E Call UnityEngine.MonoBehaviour::print
+    IL_0013 Ret 
+    IL_0014 Ldarg_0 
+    IL_0015 Ldfld VideoBloom::MediumAmount
+    IL_001A Ldc_r4 0
+    IL_001F Bne_un_s 13
+    IL_0021 Ldarg_0 
+    IL_0022 Ldfld VideoBloom::LargeAmount
+    IL_0027 Ldc_r4 0
+    IL_002C Beq_s 13
+    IL_002E Ldarg_0 
+    IL_002F Ldfld VideoBloom::MasterAmount
+    IL_0034 Ldc_r4 0
+    IL_0039 Bne_un_s 8
+    IL_003B Ldarg_1 
+    IL_003C Ldarg_2 
+    IL_003D Call UnityEngine.Graphics::Blit
+    IL_0042 Ret 
+    IL_0043 Ldc_r4 198
+    IL_0048 Ldarg_1 
+    IL_0049 Callvirt UnityEngine.Texture::get_height
+    IL_004E Conv_r4 
+    IL_004F Div 
+    IL_0050 Stloc_0 
+    IL_0051 Ldloc_0 
+    IL_0052 Ldarg_1 
+    IL_0053 Callvirt UnityEngine.Texture::get_width
+    IL_0058 Conv_r4 
+    IL_0059 Mul 
+    IL_005A Conv_i4 
+    IL_005B Stloc_1 
+    IL_005C Ldloc_0 
+    IL_005D Ldarg_1 
+    IL_005E Callvirt UnityEngine.Texture::get_height
+    IL_0063 Conv_r4 
+    IL_0064 Mul 
+    IL_0065 Conv_i4 
+    IL_0066 Stloc_2 
+    IL_0067 Ldloca_s 3
+    IL_0069 Ldc_r4 0.5
+    IL_006E Ldarg_0 
+    IL_006F Ldfld VideoBloom::MasterAmount
+    IL_0074 Mul 
+    IL_0075 Ldarg_0 
+    IL_0076 Ldfld VideoBloom::MediumAmount
+    IL_007B Mul 
+    IL_007C Ldc_r4 0.5
+    IL_0081 Ldarg_0 
+    IL_0082 Ldfld VideoBloom::MasterAmount
+    IL_0087 Mul 
+    IL_0088 Ldarg_0 
+    IL_0089 Ldfld VideoBloom::LargeAmount
+    IL_008E Mul 
+    IL_008F Ldc_r4 0
+    IL_0094 Ldc_r4 0
+    IL_0099 Call UnityEngine.Vector4::.ctor
+    IL_009E Ldloca_s 4
+    IL_00A0 Ldarg_0 
+    IL_00A1 Ldflda VideoBloom::Tint
+    IL_00A6 Ldfld UnityEngine.Color::r
+    IL_00AB Ldarg_0 
+    IL_00AC Ldflda VideoBloom::Tint
+    IL_00B1 Ldfld UnityEngine.Color::g
+    IL_00B6 Ldarg_0 
+    IL_00B7 Ldflda VideoBloom::Tint
+    IL_00BC Ldfld UnityEngine.Color::b
+    IL_00C1 Ldc_r4 1
+    IL_00C6 Call UnityEngine.Vector4::.ctor
+    IL_00CB Ldarg_0 
+    IL_00CC Ldfld VideoBloom::KernelSize
+    IL_00D1 Ldarg_0 
+    IL_00D2 Ldfld VideoBloom::MediumKernelScale
+    IL_00D7 Mul 
+    IL_00D8 Ldloc_0 
+    IL_00D9 Mul 
+    IL_00DA Stloc_s 5
+    IL_00DC Ldarg_0 
+    IL_00DD Ldfld VideoBloom::KernelSize
+    IL_00E2 Ldarg_0 
+    IL_00E3 Ldfld VideoBloom::LargeKernelScale
+    IL_00E8 Mul 
+    IL_00E9 Ldloc_0 
+    IL_00EA Mul 
+    IL_00EB Stloc_s 6
+    IL_00ED Ldloc_1 
+    IL_00EE Ldloc_2 
+    IL_00EF Ldc_i4_0 
+    IL_00F0 Ldc_i4_2 
+    IL_00F1 Call UnityEngine.RenderTexture::GetTemporary
+    IL_00F6 Stloc_s 7
+    IL_00F8 Ldloc_1 
+    IL_00F9 Ldloc_2 
+    IL_00FA Ldc_i4_0 
+    IL_00FB Ldc_i4_2 
+    IL_00FC Call UnityEngine.RenderTexture::GetTemporary
+    IL_0101 Stloc_s 8
+    IL_0103 Ldnull 
+    IL_0104 Stloc_s 9
+    IL_0106 Ldloc_s 7
+    IL_0108 Ldc_i4_1 
+    IL_0109 Callvirt UnityEngine.Texture::set_filterMode
+    IL_010E Ldloc_s 7
+    IL_0110 Ldc_i4_1 
+    IL_0111 Callvirt UnityEngine.Texture::set_wrapMode
+    IL_0116 Ldloc_s 8
+    IL_0118 Ldc_i4_1 
+    IL_0119 Callvirt UnityEngine.Texture::set_filterMode
+    IL_011E Ldloc_s 8
+    IL_0120 Ldc_i4_1 
+    IL_0121 Callvirt UnityEngine.Texture::set_wrapMode
+    IL_0126 Ldloc_0 
+    IL_0127 Ldc_r4 0.99
+    IL_012C Ble_un_s 39
+    IL_012E Ldarg_0 
+    IL_012F Ldfld VideoBloom::videoBloomMaterial
+    IL_0134 Ldsfld VideoBloom::Param2
+    IL_0139 Ldarg_0 
+    IL_013A Ldfld VideoBloom::Threshold
+    IL_013F Callvirt UnityEngine.Material::SetFloat
+    IL_0144 Ldarg_1 
+    IL_0145 Ldloc_s 7
+    IL_0147 Ldarg_0 
+    IL_0148 Ldfld VideoBloom::videoBloomMaterial
+    IL_014D Ldc_i4_2 
+    IL_014E Call UnityEngine.Graphics::Blit
+    IL_0153 Br_s 87
+    IL_0155 Ldc_i4_2 
+    IL_0156 Ldloc_1 
+    IL_0157 Mul 
+    IL_0158 Ldc_i4_2 
+    IL_0159 Ldloc_2 
+    IL_015A Mul 
+    IL_015B Ldc_i4_0 
+    IL_015C Ldc_i4_2 
+    IL_015D Call UnityEngine.RenderTexture::GetTemporary
+    IL_0162 Stloc_s 9
+    IL_0164 Ldloc_s 9
+    IL_0166 Ldc_i4_1 
+    IL_0167 Callvirt UnityEngine.Texture::set_filterMode
+    IL_016C Ldloc_s 9
+    IL_016E Ldc_i4_1 
+    IL_016F Callvirt UnityEngine.Texture::set_wrapMode
+    IL_0174 Ldarg_1 
+    IL_0175 Ldloc_s 9
+    IL_0177 Call UnityEngine.Graphics::Blit
+    IL_017C Ldarg_0 
+    IL_017D Ldfld VideoBloom::videoBloomMaterial
+    IL_0182 Ldsfld VideoBloom::Param2
+    IL_0187 Ldarg_0 
+    IL_0188 Ldfld VideoBloom::Threshold
+    IL_018D Callvirt UnityEngine.Material::SetFloat
+    IL_0192 Ldloc_s 9
+    IL_0194 Ldloc_s 7
+    IL_0196 Ldarg_0 
+    IL_0197 Ldfld VideoBloom::videoBloomMaterial
+    IL_019C Ldc_i4_2 
+    IL_019D Call UnityEngine.Graphics::Blit
+    IL_01A2 Ldloc_s 9
+    IL_01A4 Call UnityEngine.RenderTexture::ReleaseTemporary
+    IL_01A9 Ldnull 
+    IL_01AA Stloc_s 9
+    IL_01AC Ldarg_0 
+    IL_01AD Ldfld VideoBloom::LargeAmount
+    IL_01B2 Ldc_r4 0
+    IL_01B7 Beq_s 27
+    IL_01B9 Ldloc_1 
+    IL_01BA Ldloc_2 
+    IL_01BB Ldc_i4_0 
+    IL_01BC Ldc_i4_2 
+    IL_01BD Call UnityEngine.RenderTexture::GetTemporary
+    IL_01C2 Stloc_s 9
+    IL_01C4 Ldloc_s 9
+    IL_01C6 Ldc_i4_1 
+    IL_01C7 Callvirt UnityEngine.Texture::set_filterMode
+    IL_01CC Ldloc_s 9
+    IL_01CE Ldc_i4_1 
+    IL_01CF Callvirt UnityEngine.Texture::set_wrapMode
+    IL_01D4 Ldarg_0 
+    IL_01D5 Ldloc_s 7
+    IL_01D7 Ldloc_s 8
+    IL_01D9 Ldloc_s 9
+    IL_01DB Ldloc_s 5
+    IL_01DD Ldloc_s 6
+    IL_01DF Ldloc_s 5
+    IL_01E1 Bge_s 4
+    IL_01E3 Ldloc_s 5
+    IL_01E5 Br_s 2
+    IL_01E7 Ldloc_s 6
+    IL_01E9 Call VideoBloom::BloomBlit
+    IL_01EE Ldarg_0 
+    IL_01EF Ldfld VideoBloom::videoBloomMaterial
+    IL_01F4 Ldsfld VideoBloom::MainTex
+    IL_01F9 Ldarg_1 
+    IL_01FA Callvirt UnityEngine.Material::SetTexture
+    IL_01FF Ldarg_0 
+    IL_0200 Ldfld VideoBloom::videoBloomMaterial
+    IL_0205 Ldsfld VideoBloom::MediumBloom
+    IL_020A Ldloc_s 8
+    IL_020C Callvirt UnityEngine.Material::SetTexture
+    IL_0211 Ldarg_0 
+    IL_0212 Ldfld VideoBloom::videoBloomMaterial
+    IL_0217 Ldsfld VideoBloom::LargeBloom
+    IL_021C Ldloc_s 9
+    IL_021E Callvirt UnityEngine.Material::SetTexture
+    IL_0223 Ldarg_0 
+    IL_0224 Ldfld VideoBloom::videoBloomMaterial
+    IL_0229 Ldsfld VideoBloom::Param0
+    IL_022E Ldloc_3 
+    IL_022F Callvirt UnityEngine.Material::SetVector
+    IL_0234 Ldarg_0 
+    IL_0235 Ldfld VideoBloom::videoBloomMaterial
+    IL_023A Ldsfld VideoBloom::Param1
+    IL_023F Ldloc_s 4
+    IL_0241 Callvirt UnityEngine.Material::SetVector
+    IL_0246 Ldarg_1 
+    IL_0247 Ldarg_2 
+    IL_0248 Ldarg_0 
+    IL_0249 Ldfld VideoBloom::videoBloomMaterial
+    IL_024E Ldarg_0 
+    IL_024F Ldfld VideoBloom::BlendMode
+    IL_0254 Ldc_i4_1 
+    IL_0255 Beq_s 3
+    IL_0257 Ldc_i4_3 
+    IL_0258 Br_s 1
+    IL_025A Ldc_i4_4 
+    IL_025B Call UnityEngine.Graphics::Blit
+    IL_0260 Ldloc_s 7
+    IL_0262 Call UnityEngine.RenderTexture::ReleaseTemporary
+    IL_0267 Ldloc_s 8
+    IL_0269 Call UnityEngine.RenderTexture::ReleaseTemporary
+    IL_026E Ldloc_s 9
+    IL_0270 Ldnull 
+    IL_0271 Call UnityEngine.Object::op_Inequality
+    IL_0276 Brfalse_s 7
+    IL_0278 Ldloc_s 9
+    IL_027A Call UnityEngine.RenderTexture::ReleaseTemporary
+    IL_027F Ret 
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.MonoBehaviour::print
+    필드 읽기 VideoBloom::MediumAmount
+    필드 읽기 VideoBloom::LargeAmount
+    필드 읽기 VideoBloom::MasterAmount
+    호출 UnityEngine.Graphics::Blit
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Vector4::.ctor
+    필드 읽기 VideoBloom::Tint
+    필드 읽기 UnityEngine.Color::r
+    필드 읽기 UnityEngine.Color::g
+    필드 읽기 UnityEngine.Color::b
+    필드 읽기 VideoBloom::KernelSize
+    필드 읽기 VideoBloom::MediumKernelScale
+    필드 읽기 VideoBloom::LargeKernelScale
+    호출 UnityEngine.RenderTexture::GetTemporary
+    호출 UnityEngine.Texture::set_filterMode
+    호출 UnityEngine.Texture::set_wrapMode
+    필드 읽기 VideoBloom::videoBloomMaterial
+    정적필드 읽기 VideoBloom::Param2
+    필드 읽기 VideoBloom::Threshold
+    호출 UnityEngine.Material::SetFloat
+    호출 UnityEngine.RenderTexture::ReleaseTemporary
+    호출 VideoBloom::BloomBlit
+    정적필드 읽기 VideoBloom::MainTex
+    호출 UnityEngine.Material::SetTexture
+    정적필드 읽기 VideoBloom::MediumBloom
+    정적필드 읽기 VideoBloom::LargeBloom
+    정적필드 읽기 VideoBloom::Param0
+    호출 UnityEngine.Material::SetVector
+    정적필드 읽기 VideoBloom::Param1
+    필드 읽기 VideoBloom::BlendMode
+    호출 UnityEngine.Object::op_Inequality
+  .ctor
+    IL_0000 Ldarg_0 
+    IL_0001 Ldc_r4 0.75
+    IL_0006 Stfld VideoBloom::Threshold
+    IL_000B Ldarg_0 
+    IL_000C Ldc_r4 0.5
+    IL_0011 Stfld VideoBloom::MasterAmount
+    IL_0016 Ldarg_0 
+    IL_0017 Ldc_r4 1
+    IL_001C Stfld VideoBloom::MediumAmount
+    IL_0021 Ldarg_0 
+    IL_0022 Ldc_r4 1
+    IL_0027 Ldc_r4 1
+    IL_002C Ldc_r4 1
+    IL_0031 Ldc_r4 1
+    IL_0036 Newobj UnityEngine.Color::.ctor
+    IL_003B Stfld VideoBloom::Tint
+    IL_0040 Ldarg_0 
+    IL_0041 Ldc_r4 50
+    IL_0046 Stfld VideoBloom::KernelSize
+    IL_004B Ldarg_0 
+    IL_004C Ldc_r4 1
+    IL_0051 Stfld VideoBloom::MediumKernelScale
+    IL_0056 Ldarg_0 
+    IL_0057 Ldc_r4 3
+    IL_005C Stfld VideoBloom::LargeKernelScale
+    IL_0061 Ldarg_0 
+    IL_0062 Ldc_i4_1 
+    IL_0063 Stfld VideoBloom::HighQuality
+    IL_0068 Ldarg_0 
+    IL_0069 Call PostEffectsBase::.ctor
+    IL_006E Ret 
+    필드 쓰기 VideoBloom::Threshold
+    필드 쓰기 VideoBloom::MasterAmount
+    필드 쓰기 VideoBloom::MediumAmount
+    호출 UnityEngine.Color::.ctor
+    필드 쓰기 VideoBloom::Tint
+    필드 쓰기 VideoBloom::KernelSize
+    필드 쓰기 VideoBloom::MediumKernelScale
+    필드 쓰기 VideoBloom::LargeKernelScale
+    필드 쓰기 VideoBloom::HighQuality
+    호출 PostEffectsBase::.ctor
+  .cctor
+    IL_0000 Ldstr _Param0
+    IL_0005 Call UnityEngine.Shader::PropertyToID
+    IL_000A Stsfld VideoBloom::Param0
+    IL_000F Ldstr _MainTex
+    IL_0014 Call UnityEngine.Shader::PropertyToID
+    IL_0019 Stsfld VideoBloom::MainTex
+    IL_001E Ldstr _Param2
+    IL_0023 Call UnityEngine.Shader::PropertyToID
+    IL_0028 Stsfld VideoBloom::Param2
+    IL_002D Ldstr _MediumBloom
+    IL_0032 Call UnityEngine.Shader::PropertyToID
+    IL_0037 Stsfld VideoBloom::MediumBloom
+    IL_003C Ldstr _LargeBloom
+    IL_0041 Call UnityEngine.Shader::PropertyToID
+    IL_0046 Stsfld VideoBloom::LargeBloom
+    IL_004B Ldstr _Param1
+    IL_0050 Call UnityEngine.Shader::PropertyToID
+    IL_0055 Stsfld VideoBloom::Param1
+    IL_005A Ret 
+    호출 UnityEngine.Shader::PropertyToID
+    정적필드 쓰기 VideoBloom::Param0
+    정적필드 쓰기 VideoBloom::MainTex
+    정적필드 쓰기 VideoBloom::Param2
+    정적필드 쓰기 VideoBloom::MediumBloom
+    정적필드 쓰기 VideoBloom::LargeBloom
+    정적필드 쓰기 VideoBloom::Param1
+== VideoBloom+TweakMode
+== VideoBloom+BlendingMode
