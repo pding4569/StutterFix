@@ -9,7 +9,7 @@ namespace StutterFix
 {
     internal static partial class DecoAnim
     {
-        internal static bool GroupEnabled = true;
+        internal static bool GroupEnabled;
         private static bool groupProbe, groupVerify;
         private static long groupSerial, groupFrames, groupCount, groupRecords, groupTicks, groupChecks, groupMismatch;
         private static long groupVerifyErrors;
@@ -119,6 +119,102 @@ namespace StutterFix
             try { Step(r, td); }
             catch (Exception ex) { r.Running = false; Error(ex); }
         }
+        // Only progress fields are changed before setPos. Restore these if the
+        // combined setter fails, then let each axis use its own safety boundary.
+        private struct PairProgress
+        {
+            private float pos, change, last;
+            private bool started, stepped;
+            internal PairProgress(Rec r) { pos = r.Pos; change = r.FChange; last = r.FLast; started = r.Started; stepped = r.Stepped; }
+            internal void Restore(Rec r) { r.Pos = pos; r.FChange = change; r.FLast = last; r.Started = started; r.Stepped = stepped; }
+        }
+        private static void GroupPair(Rec r, Rec n, float td, float to, float e, bool done, bool verify)
+        {
+            var sr = new PairProgress(r); var sn = new PairProgress(n);
+            GroupExpected xr = default, xn = default;
+            bool check = verify;
+            if (check)
+            {
+                try
+                {
+                    xr = new GroupExpected(r, td); xn = new GroupExpected(n, td);
+                    // StepPair's final input, not the intermediate X-only field.
+                    xr.Pivot.y = xn.Pivot.y; xn.Pivot.x = xr.Pivot.x;
+                }
+                catch { check = false; groupVerifyErrors++; }
+            }
+            try
+            {
+                if (!r.Started) Startup(r);
+                if (!n.Started) Startup(n);
+                r.Pos = n.Pos = to; r.Stepped = n.Stepped = true;
+                r.FLast = r.FStart + r.FChange * e;
+                n.FLast = n.FStart + n.FChange * e;
+                var xy = new Vector2(done ? r.FEnd : r.FLast, done ? n.FEnd : n.FLast);
+                var off = pivotOffRef(r.D);
+                if (check)
+                {
+                    try
+                    {
+                        groupChecks++;
+                        if (!GroupV(xy, xr.Pivot) || !GroupV(off, xr.Offset))
+                        {
+                            groupMismatch++;
+                            if (groupFirst == "none") groupFirst = "pair setPos input(x,y,off)";
+                        }
+                    }
+                    catch { groupVerifyErrors++; }
+                }
+                setPos(r.D, xy, off);
+                Steps += 2; PairSteps++;
+                if (groupProbe) groupRecords += 2;
+                if (done) { r.Running = n.Running = false; Completed += 2; }
+            }
+            catch
+            {
+                sr.Restore(r); sn.Restore(n); GroupReason(5);
+                GroupIndividual(r, td); GroupIndividual(n, td);
+                return;
+            }
+            if (check)
+            {
+                try { CheckGroup(r, xr); CheckGroup(n, xn); }
+                catch { groupVerifyErrors++; }
+            }
+        }
+        private static void GroupApply(Rec r, float e, bool done)
+        {
+            // Avoid ApplyE -> OnUpdate -> OnComplete switches for these keys.
+            // Keep the scale startup/read/write order, including ScaleY after X.
+            r.Stepped = true;
+            switch (r.Key)
+            {
+                case 5:
+                    r.FLast = r.FStart + r.FChange * e;
+                    if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FLast;
+                    else setRot(r.D, r.FLast);
+                    if (done)
+                    {
+                        r.Running = false; Completed++;
+                        if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FEnd;
+                        else setRot(r.D, r.FEnd);
+                    }
+                    return;
+                case 7: case 8:
+                    var v = scaleRef(r.D);
+                    if (r.Key == 7) v.x = r.VStart.x + r.VChange.x * e;
+                    else v.y = r.VStart.y + r.VChange.y * e;
+                    r.VLast = v;
+                    if (MoveApply.DeferTransform(r.D)) scaleRef(r.D) = v;
+                    else setScale(r.D, v);
+                    if (done) { r.Running = false; Completed++; }
+                    return;
+                default:
+                    ApplyE(r, e); OnUpdate(r);
+                    if (done) { r.Running = false; Completed++; OnComplete(r); }
+                    return;
+            }
+        }
         private static void StepGroup(int at, int count, float td)
         {
             var first = recs[at];
@@ -140,9 +236,18 @@ namespace StutterFix
             {
                 var r = recs[at + j];
                 // A setter may cancel/reuse a later record. Preserve its new state.
-                if (!state.Same(r) || GroupNative(r))
+                if (j != 0 && (!state.Same(r) || GroupNative(r)))
                 {
                     GroupReason(2); GroupIndividual(r, td); continue;
+                }
+                if (r.Key == 1 && PairXY && j + 1 < count && recs[at + j + 1].Key == 2
+                    && (object)setPos != null && PairAllowed())
+                {
+                    var n = recs[at + j + 1];
+                    if (state.Same(n) && !GroupNative(n))
+                    {
+                        GroupPair(r, n, td, to, e, done, verify); j++; continue;
+                    }
                 }
                 Steps++;
                 if (groupProbe) groupRecords++;
@@ -156,11 +261,10 @@ namespace StutterFix
                         try { expected = new GroupExpected(r, td); }
                         catch { check = false; groupVerifyErrors++; }
                     }
-                    if (!r.Started) Startup(r); // Scale Y reads AFTER Scale X's setter.
-                    r.Pos = to; r.Stepped = true;
-                    ApplyE(r, e);
-                    OnUpdate(r);
-                    if (done) { r.Running = false; Completed++; OnComplete(r); }
+                    // Startup precedes position advancement just as in Step.
+                    if (!r.Started) Startup(r);
+                    r.Pos = to;
+                    GroupApply(r, e, done);
                     if (check)
                     {
                         try { CheckGroup(r, expected); }
@@ -182,7 +286,7 @@ namespace StutterFix
         {
             internal float Pos, FLast, FChange;
             internal bool Done;
-            internal Vector2 VLast, VStart, VChange, Pivot, Scale;
+            internal Vector2 VLast, VStart, VChange, Pivot, Scale, Offset;
             internal float Rot;
             internal GroupExpected(Rec r, float td)
             {
@@ -190,6 +294,7 @@ namespace StutterFix
                 // Independent Step oracle: same float operation order, independent Eval.
                 float ease = ZeroTween.Eval(r.E, Pos, r.Dur, r.Over, r.Period);
                 Pivot = pivotPosRef(r.D); Scale = scaleRef(r.D); Rot = rotRef(r.D);
+                Offset = pivotOffRef(r.D);
                 FChange = r.Started ? r.FChange : r.FEnd - r.FStart;
                 FLast = r.FLast; VStart = r.VStart; VChange = r.VChange; VLast = r.VLast;
                 if (r.Key == 7 || r.Key == 8)
@@ -264,10 +369,85 @@ namespace StutterFix
             groupAdjacent = groupSeparated = 0; groupLastCount = 0; groupFirst = "none";
             Array.Clear(groupSizes, 0, groupSizes.Length); Array.Clear(groupFallback, 0, groupFallback.Length); groupOrders.Clear(); groupCensus.Clear();
         }
+#if DEV || AUTOTEST
+        private static string GroupBench()
+        {
+            const int groups = 2150, repeat = 200;
+            // Isolated temporary workload; never advance the live animations.
+            var live = recs.ToArray();
+            var oldSet = setPos; var oldRot = setRot; var oldScale = setScale;
+            bool oldProbe = groupProbe, oldVerify = groupVerify, oldPair = PairXY;
+            bool oldDefer = MoveApply.DeferRotScale;
+            int oldPairOk = pairOk;
+            long oldSteps = Steps, oldCompleted = Completed, oldPairs = PairSteps;
+            var root = new GameObject("groupstep-bench");
+            try
+            {
+                recs.Clear(); groupProbe = groupVerify = false; PairXY = true; pairOk = 1;
+                // Dummy decorations must never enter live MoveApply late lists.
+                MoveApply.DeferRotScale = false;
+                setRot = (d, v) => rotRef(d) = v;
+                setScale = (d, v) => scaleRef(d) = v;
+                for (int i = 0; i < groups; i++)
+                {
+                    var d = (scrDecoration)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(scrVisualDecoration));
+                    var go = new GameObject("gs" + i); go.transform.SetParent(root.transform, false);
+                    d.pivotTrans = go.transform; scaleRef(d) = Vector2.one;
+                    foreach (int key in new[] { 1, 2, 5, 7, 8 })
+                        recs.Add(new Rec { D = d, Key = key, Dur = 1000000f, E = Ease.OutCubic,
+                            Over = 1.70158f, FStart = 2f, FEnd = 15f, VEnd = new Vector2(2f, 3f) });
+                }
+                double fields = 0, engine = 0;
+                for (int mode = 0; mode < 2; mode++)
+                {
+                    bool writeTransform = mode == 1;
+                    setPos = (d, v, off) =>
+                    {
+                        pivotPosRef(d) = v;
+                        if (writeTransform) d.pivotTrans.localPosition = new Vector3(v.x, v.y, 0f);
+                    };
+                    for (int warm = 0; warm < 5; warm++) GroupBenchFrame();
+                    long t = Stopwatch.GetTimestamp();
+                    for (int frame = 0; frame < repeat; frame++) GroupBenchFrame();
+                    double us = (Stopwatch.GetTimestamp() - t) * 1e6 / Stopwatch.Frequency / repeat / groups;
+                    if (mode == 0) fields = us; else engine = us;
+                }
+                return "GroupStep v2 N=2150 keys=1,2,5,7,8 R=200 us/group fields=" + fields.ToString("F4")
+                    + " +Transform=" + engine.ToString("F4") + " ms/frame=" + (engine * groups / 1000).ToString("F3")
+                    + " budget<=1us=" + (engine <= 1)
+                    + "; includes GroupCount+StepGroup, DeferTransform disabled fast check;"
+                    + " surrogate setPos writes pivotPosVec + localPosition once, rotation/scale setters store fields;"
+                    + " excludes real game SetPosition/UpdatePosition chain, live defer eligibility/list bookkeeping, native prepare, Compact, census, verification;"
+                    + " standalone bench runs even in Dev/Prof (live grouping stays suppressed)";
+            }
+            finally
+            {
+                recs.Clear(); recs.AddRange(live);
+                setPos = oldSet; setRot = oldRot; setScale = oldScale;
+                groupProbe = oldProbe; groupVerify = oldVerify; PairXY = oldPair; pairOk = oldPairOk;
+                MoveApply.DeferRotScale = oldDefer;
+                Steps = oldSteps; Completed = oldCompleted; PairSteps = oldPairs;
+                UnityEngine.Object.Destroy(root);
+            }
+        }
+        private static void GroupBenchFrame()
+        {
+            for (int at = 0; at < recs.Count;)
+            {
+                int count = GroupCount(at);
+                if (count > 1) StepGroup(at, count, 1f / 120f);
+                else GroupIndividual(recs[at], 1f / 120f);
+                at += count;
+            }
+        }
+#endif
         internal static string GroupCommand(string arg)
         {
             switch ((arg ?? "").Trim().ToLowerInvariant())
             {
+#if DEV || AUTOTEST
+                case "bench": return GroupBench();
+#endif
                 case "verify": ResetGroup(); groupProbe = groupVerify = true; break;
                 case "verify off": groupVerify = false; break;
                 case "probe": ResetGroup(); groupProbe = true; groupVerify = false; break;

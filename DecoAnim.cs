@@ -520,9 +520,10 @@ namespace StutterFix
                         {
                             int count = GroupCount(i);
                             if (count > 1) { StepGroup(i, count, td); i += count - 1; continue; }
-                            GroupIndividual(r, td); continue;
+                            // A singleton may still form the existing PairXY
+                            // (its two axes need not have matching clocks/ease).
                         }
-                        GroupReason(1); // Keep the existing native Apply + PairXY path.
+                        else GroupReason(1); // Keep the existing native Apply + PairXY path.
                     }
                     // 같은 장식의 위치 X·Y 가 나란히 있으면(한 효과가 만든 짝) 한 번의 SetPosition 으로 합친다
                     if (r.Key == 1 && PairXY && !Prof && i + 1 < recs.Count && (object)setPos != null && PairAllowed())
