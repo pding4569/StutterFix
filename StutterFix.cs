@@ -92,10 +92,12 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
 #if DEV || AUTOTEST
             if (has("matprobe")) { MatProbe.Install(new HarmonyLib.Harmony("StutterFix.matprobe")); Entry.Logger.Log("[재질 만들기] matprobe 파일이 있어 곡 중 재질 만들기를 잼"); }
 #endif
+            if (has("lazysprite-off")) { LazySprite.Enabled = false; Entry.Logger.Log("[투명 장식] lazysprite-off 파일이 있어 이미지 미루기 끔"); }
             if (has("floorlate-off")) { FloorLateFix.Enabled = false; Entry.Logger.Log("[타일 LateUpdate] floorlate-off 파일이 있어 위치·크기 읽기를 원래대로 함"); }
             if (has("tc-no-glow")) { TileCull.CullGlow = false; Entry.Logger.Log("[화면 밖 타일] tc-no-glow 파일이 있어 타일 발광은 끄지 않음"); }
             if (has("tc-old-pin")) { TileCull.PinOnScript = true; Entry.Logger.Log("[화면 밖 타일] tc-old-pin 파일이 있어 타일 스크립트가 돌면 예전처럼 관리에서 뺌"); }
             if (has("fastopa-off")) { global::StutterFix.FloorAnim.FastOpa = false; Entry.Logger.Log("[타일 이동] fastopa-off 파일이 있어 불투명도 전용 빠른 경로를 끔"); }
+            if (has("deco-split-probe")) { FastMove.Probe = true; Entry.Logger.Log("[장식 이동 쪼개 보기] deco-split-probe 파일이 있어 큰 효과를 단계별로 잼"); }
             if (has("tilecull-verify.txt")) { TileCull.Verify = true; TileCull.VerifyInstall(); Entry.Logger.Log("[화면 밖 타일 검증] tilecull-verify.txt 파일이 있어 그리기마다 검사함"); }
             if (has("tilecull-min.txt")) { try { TileCull.MinFloors = int.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "tilecull-min.txt")).Trim()); Entry.Logger.Log("[화면 밖 타일] 최소 타일 수 " + TileCull.MinFloors); } catch { } }
             if (has("ffx-verify.txt")) { FfxReuse.Verify = true; Entry.Logger.Log("[효과 재사용 검증] ffx-verify.txt 파일이 있어 효과 붙이기마다 원래 방식과 비교함"); }

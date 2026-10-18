@@ -1061,7 +1061,8 @@ namespace StutterFix
                     Log("[타일 진단] 타일 " + n + " 스크립트 켜짐 " + scriptOn + " 본체 렌더러 켜짐 " + rootOn + " | 발광(topGlow) 없음 " + glowNull + " 켜짐 " + glowOn + " 활성 " + glowActive + " 켜짐인데 알파0 " + glowAlpha0 + " 보임 " + glowVisible);
                     return true;
                 }
-                case "deferstate": Log("[색 바꾸기 미루기] "+RecolorDefer.State+" | 화면 밖 타일: "+TileCull.Counters+" | 타일 이동 효과 시작 합계 "+global::StutterFix.FloorAnim.StartMs.ToString("F1")+"ms"); return true;
+                case "decosig": Log("[장식 상태 기록] "+DecoSig.Run(modDir,arg)+" | "+LazySprite.State); return true;
+                case "deferstate": Log("[색 바꾸기 미루기] "+RecolorDefer.State+" | "+LazySprite.State+" | 화면 밖 타일: "+TileCull.Counters+" | 타일 이동 효과 시작 합계 "+global::StutterFix.FloorAnim.StartMs.ToString("F1")+"ms"); return true;
                 case "moduleidentity":Log("[실행 모듈 식별] mvid="+typeof(Main).Module.ModuleVersionId);return true;
                 case "arenastate":Log("[계산 영역 시험] requested="+NativeMotion.ArenaRequested+" active="+NativeMotion.ArenaActive+" native_allocator="+NativeMotion.NativeArenaActive+" column_alignment_or="+NativeMotion.ArenaAlignment);return true;
                 case "pinarena":Log("[페이지 고정 시험] requested="+NativeMotion.PinRequested+" pinned="+NativeMotion.ArenaPinned+" working_set="+PinnedArenaOwner.WorkingSetSnapshot()+" original="+PinnedArenaOwner.OriginalSnapshot+" status="+PinnedArenaOwner.Status);return true;

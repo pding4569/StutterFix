@@ -52,6 +52,7 @@ namespace StutterFix
                 var m = AccessTools.Method(typeof(scrVisualDecoration), "ApplyColor");
                 h.Patch(m, postfix: new HarmonyMethod(typeof(InvisibleSkip), nameof(After)));
                 InstallLazy(h);
+                LazySprite.Install(h);
                 Main.Entry.Logger.Log("[투명 장식] 설치");
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[투명 장식] 설치 실패: " + ex.Message); }
@@ -100,6 +101,7 @@ namespace StutterFix
             }
             else if (Unhide(r, inst) && CountShown())
             {
+                if (LazySprite.Count > 0) LazySprite.Flush(inst);   // 미뤄 둔 이미지를 그리기 전에
                 r.forceRenderingOff = false;
                 Toggles++;
                 // 정답 표본이어도 모드가 위치를 미뤄 둔 장식(장식 이동 루프가 바로 미룸)이면 미룬 것을 반영한다. 정답 비교는 미룬 적 없는 것만.
@@ -137,6 +139,7 @@ namespace StutterFix
         }
         private static void RestoreAllCore()
         {
+            LazySprite.FlushAll();
             ApplyAllLazy();
             foreach (var r in hidden.Keys)
                 if (r != null) r.forceRenderingOff = false;
@@ -229,6 +232,19 @@ namespace StutterFix
             // (개발자용 정답 표본은 LazyPrefix 에서만 뽑는다. 여기서도 빼면 미리 확인이 개발자용에서 한 번도 성립하지 않는다)
             return true;
         }
+        // 이미지 바꾸기 미루기(LazySprite)용: LazyCan 과 같되 시차 부품은 따지지 않는다(이미지는 위치와 상관없다). 못 탄 이유를 돌려준다(0 이면 가능).
+        internal static int SpriteLazyWhy(scrDecoration d)
+        {
+            if (!Enabled || applyingAll || SceneReset.Resetting || !Hitch.Playing) return 1;
+            if (colorRef(d).a > 0f) return 2;
+            var v = d as scrVisualDecoration;
+            if ((object)v == null) return 3;
+            if (d.hitbox != 0) return 4;
+            var r = rendererRef(v);
+            if ((object)r == null || !hidden.ContainsKey(r)) return 5;
+            if (isMask(v)) return 6;
+            return 0;
+        }
         // 개발자용: 빠른 길을 못 탄 이유별 수 (꺼짐/재생 아님, 보임, 이미지 장식 아님, 히트박스, 안 그리는 목록에 없음, 마스크, 시차 없음, 정답 표본)
         internal static readonly long[] LazyNo = new long[8];
         private static bool No(int why) { if (Edition.Dev) LazyNo[why]++; return false; }
@@ -319,6 +335,7 @@ namespace StutterFix
         internal static int RestartLazyN, LastAllN; internal static double RestartLazyMs, LastAllMs;   // 재시작 시간 나누기용 (GcControl.RestartParts), 곡 끝 기록용
         internal static void ApplyAllLazy()
         {
+            LazySprite.FlushAll();
             if (lazy.Count == 0) return;
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             var list = new List<scrDecoration>(lazy);

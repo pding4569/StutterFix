@@ -108,6 +108,7 @@
     <Compile Include="TimerPeriodLease.cs" />
     <Compile Include="PhysicsPause.cs" />
     <Compile Include="RecolorDefer.cs" />
+    <Compile Include="LazySprite.cs" />
     <Compile Include="FloorLateFix.cs" />
     <Compile Include="ParticleDump.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileSig.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

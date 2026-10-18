@@ -474,7 +474,11 @@ namespace StutterFix
                 TextureManager.CustomSprite cs;
                 string key = tImg(fx) ?? string.Empty;
                 if (!sprites.TryGetValue(key, out cs)) cs = null;   // GetValueOrDefault(키, null)
-                setSprite(vis, cs, false);
+                // 투명한 장식은 이미지 바꾸기를 보일 때까지 미룬다(LazySprite). 이 효과가 크기·부드럽게·마스크까지 바꾸면 원래대로.
+                bool others = sizeUsed(fx) || smoothUsed(fx) || maskTypeUsed(fx) || maskTargetUsed(fx) || maskDepthUsed(fx) || maskFrontUsed(fx) || maskBackUsed(fx);
+                if (others) LazySprite.No[0]++;
+                if (!others && LazySprite.CanDefer(vis)) LazySprite.Defer(vis, cs);
+                else setSprite(vis, cs, false);
             }
             if (sizeUsed(fx)) setTexScale(vis, tSize(fx));
             if (smoothUsed(fx)) { smoothingRef(vis) = tSmooth(fx); setSprite(vis, null, true); }
@@ -532,6 +536,7 @@ namespace StutterFix
         private static void Run(ffxMoveDecorationsPlus fx)
         {
             Effects++; DecoCount += src.Count;
+            LazySprite.BeginEffect();
             if (!float.IsNaN(tScale(fx))) tScaleV2(fx) = new Vector2(tScale(fx), tScale(fx));
             Vector2 sc = tScaleV2(fx);
             bool placement = mtUsed(fx) && (int)mtRef(fx) != 7, relative = (int)mtRef(fx) == 7, move = !fdt(fx);
@@ -560,6 +565,7 @@ namespace StutterFix
             if (par) Use(11);
 
             InstantMove.InLoop = true;
+            long pt0 = Probe ? SwTs() : 0, pScaleT = 0, pVisT = 0, pImgT = 0, pOtherT = 0; int pVisChanged = 0;
             try
             {
                 var targets = src;
@@ -609,23 +615,45 @@ namespace StutterFix
                         if (pvy) { InstantMove.Begin(); InstantMove.CPivY(fx, dec, d); }
                     }
                     if (rot) { InstantMove.Begin(); InstantMove.CRot(fx, dec, d); }
+                    long q0 = Probe ? SwTs() : 0;
                     if (scale)
                     {
                         if (sx) { InstantMove.Begin(); InstantMove.CScale(dec, d, 7, sc, k); }
                         if (sy) { InstantMove.Begin(); InstantMove.CScale(dec, d, 8, sc, k); }
                     }
+                    if (Probe) { long q1 = SwTs(); pScaleT += q1 - q0; q0 = q1; }
                     if (col) { InstantMove.Begin(); InstantMove.CCol(fx, dec, d); }
                     if (opa) { InstantMove.Begin(); InstantMove.COpa(fx, dec, d); }
                     if (par) { InstantMove.Begin(); InstantMove.CParMul(dec, d, parTarget, k); }
                     InstantMove.DecoEnd();
+                    long q2 = Probe ? SwTs() : 0;
                     if (vis) setVisible(dec, visV ? !forceHideRef(dec) : false);
+                    if (Probe) { long q3 = SwTs(); pVisT += q3 - q2; q2 = q3; }
                     if (dep) setDepth(dec, depth);
                     if (img) ImageBlock(fx, dec);   // 깊이 다음: 이미지·원래 크기·부드럽게·마스크
+                    if (Probe) pImgT += SwTs() - q2;
                 }
             }
-            finally { InstantMove.InLoop = false; InstantMove.DecoEnd(); }
+            finally
+            {
+                InstantMove.InLoop = false; InstantMove.DecoEnd();
+                if (Probe)
+                {
+                    double f = System.Diagnostics.Stopwatch.Frequency / 1000.0, total = (SwTs() - pt0) / f;
+                    if (total >= 1.0 && probeLogged < 60)
+                    {
+                        probeLogged++;
+                        Main.Entry.Logger.Log(string.Format("[장식 이동 쪼개 보기] 곡 {0:F1}초 장식 {1}개 합계 {2:F2}ms: 크기 {3:F2}, 보이기 {4:F2}, 깊이·이미지 {5:F2}, 나머지 {6:F2} | 크기={7}{8} 보이기={9}({10}) 이미지={11} 길이={12}",
+                            scrConductor.instance != null ? scrConductor.instance.songposition_minusi : -1.0, src.Count, total, pScaleT / f, pVisT / f, pImgT / f, total - (pScaleT + pVisT + pImgT) / f,
+                            sx ? "X" : "", sy ? "Y" : "", vis, visV, img, durRef(fx)));
+                    }
+                }
+            }
         }
 
+        internal static bool Probe;
+        private static int probeLogged;
+        private static long SwTs() { return System.Diagnostics.Stopwatch.GetTimestamp(); }
         private static readonly bool[] used = new bool[32];
         private static int usedCount;
         private static void Use(int k) { if (!used[k]) { used[k] = true; usedCount++; } }
