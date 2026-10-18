@@ -25,7 +25,7 @@ namespace StutterFix
 
         private static void ConfigureGroup(string path)
         {
-            GroupEnabled = !System.IO.File.Exists(System.IO.Path.Combine(path, "groupstep-off"));
+            GroupEnabled = System.IO.File.Exists(System.IO.Path.Combine(path, "groupstep-on"));   // 2026-10-19 A/B 에서 켜면 느려서(DecoAnim 1.87→2.29ms) 기본 끔. v2 에서 위치 쌍 합치기를 되살린 뒤 다시 판단
             groupProbe = groupVerify = false;
             groupAllowed = 0; groupCompatibility = "pending";
             ResetGroup();

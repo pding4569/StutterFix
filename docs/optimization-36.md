@@ -832,3 +832,17 @@ Codex 가 넣은 `UpdateCostProbe.Frame` 호출이 프레임 갱신(`UpdatePrefi
 - `Eval` 묶음: 같은 (Pos, Dur, Ease) 기록 묶음은 5개짜리 55k·3개짜리 24k·1개짜리 68k 이나 `Eval` 이 호출당 0.055µs 라 합쳐도 프레임당 0.2ms 미만(부풀린 값). Ease 는 Linear 33%, OutCubic 46%, InCubic 21% 라 NativeMotion(Linear 만)은 효과가 작다. 애니메이션 사전 조회 장식당 5회는 효과 시작 때만(`FastMove.Run` 프레임당 0.19ms 이내).
 - 보이는 장식의 `SetPosition` 생략(posfast): 위치는 `pivotOffsetVec` 을 안 바꾸고 `UpdateScreenClamp` 도 clampToScreen 일 때만 값을 바꾸므로(Arche 15개) clampToScreen==false 장식은 `pivotPosVec` 만 쓰는 것이 가능해 보이나, 기대 이득은 부풀림을 보정하면 프레임당 0.3~0.5ms(3~5%) 이하로 추정. 구현 위험(상태 불일치 반례를 Codex 가 보고) 대비 작아 보류.
 결론: Update 단계 4.64ms 는 약 4,500번의 작은 기록 갱신과 장식당 엔진 설정(위치·색 각 ~900번)에 퍼져 있어 하나의 큰 비용이 없다.
+
+## 2026-10-19 밤: TightLate(장식 LateUpdate 전용 빠른 길) — 기본 켬
+
+Codex 구현(`TightLate.cs`, `docs/handoff/codex-tightlate-20261019-result.md`): 장식 목록에서 조건을 통과한 장식(정확히 scrVisualDecoration, 히트박스·마스크·메시 없음, 보임 `rendererEnabled && alpha != 0`, 부모가 원점·무회전·단위 크기, 시차 clamp/축 고정 없음)은 장식마다 캐시한 배열 슬롯만 읽고 계산한 뒤 Transform 쓰기 3개(position·rotation·localScale)로 처리. 이전 FuseLate 실패 원인(장식마다 ConditionalWeakTable·부모 확인 비용)을 피해 정적 캐시는 슬롯 배열로.
+- 더미 Transform 2,150개 마이크로 벤치: 장식당 0.29~0.30µs(프레임 0.63ms).
+- 비트 대조 `tightlate verify` Arche 전곡 157,512번 **불일치 0**, 기존 `late-verify` 대조 7.3M번 다름 0.
+- 화면 조건 2560×1440 120Hz(모니터 꺼짐). 같은 DLL, 판마다 새 프로세스, `tightlate-off` 파일 켬/끔 ABBA(끔·켬·켬·끔), 곡 257.7~278.8초 `fuse`: 장식 관리자 LateUpdate **1.42·1.35 → 1.06·1.07ms**, 같은 21초 프레임 2,999·3,107 → 3,187·3,226개. 270초 구간 93·96 → 102·102 FPS(+8%), 260초 135·141 → 143·146, 1% low 103·105 → 109·110, 0.1% low 79·84 → 87·89.
+- 곡 끝 `decosig` 켬/끔: 차이는 기존과 같은 성격(카메라 시점 차 pivot world 좌표, 계속 도는 회전 17개)만.
+
+## 2026-10-19 밤: GroupStep(같은 이벤트 속성 5개 한 번에) v1 — 느려서 기본 끔
+
+Codex 구현(`DecoAnim.GroupStep.cs`). 비트 대조 `groupstep verify` 525,634번 불일치 0. 그러나 TightLate 켠 상태 A/B(끔 → 켬): DecoAnim 갱신 1.87 → 2.29ms, 같은 21초 프레임 3,217 → 3,068개(−4.6%). 원인: 묶음 안에서 위치 X·Y 를 각각 `SetPosition` 으로 불러(PairXY 가 합치던 것을 잃음) 두 번째 호출 약 0.4ms 증가. → 위치 쌍 합치기를 되살린 v2 를 Codex 에 맡김.
+## 2026-10-19 밤: GPU 무손실 점검(Codex) — 새 최적화 없음
+`docs/handoff/codex-gpufree-20261019-result.md`: 깊이/스텐실 축소(SpriteMask 가 스텐실 사용 가능성), RT 형식·clear, 필터 중립 경로, 안개 R8 텍스처(RGB 상수 조건 4개 이미지 모두 실패) 모두 비트 동일 증명 불가 → 적용 0.
