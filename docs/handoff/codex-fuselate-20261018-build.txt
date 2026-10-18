@@ -1,0 +1,26 @@
+PlayerAuto
+E:\StutterFixWork\StutterFix\SettingsWindow.cs(94,35): warning CS0414: 'SettingsWindow.tabX' 필드가 할당되었지만 사용되지 않았습니다. [E:\StutterFixWork\StutterFix\StutterFix.csproj]
+    경고 35개
+    오류 0개
+
+경과 시간: 00:00:05.89
+bin/PlayerAuto/StutterFix.dll SHA256 afab60e232693cba084f1278c6f266ca69010d70d8fd0bd905c7d56568da9054
+
+Player
+E:\StutterFixWork\StutterFix\SettingsWindow.cs(81,22): warning CS0414: 'SettingsWindow.needCenter' 필드가 할당되었지만 사용되지 않았습니다. [E:\StutterFixWork\StutterFix\StutterFix.csproj]
+    경고 19개
+    오류 0개
+
+경과 시간: 00:00:05.77
+bin/Player/StutterFix.dll SHA256 f96eb4bc8a9c4984b76d328e40a72c19b9712ec3b635abbb0630b3bbff046d02
+
+Dev
+E:\StutterFixWork\StutterFix\SettingsWindow.cs(94,35): warning CS0414: 'SettingsWindow.tabX' 필드가 할당되었지만 사용되지 않았습니다. [E:\StutterFixWork\StutterFix\StutterFix.csproj]
+    경고 35개
+    오류 0개
+
+경과 시간: 00:00:06.37
+bin/Debug/StutterFix.dll SHA256 e68a84e1da607496069ff68b66540dafe789ba1721611a753247ca4e38a75bd3
+
+Final PlayerAuto Prefix IL assertions: PASS
+Vector3 subtraction; Vector2 division; four Vector2 multiplications; WithZ; SetPositionAndRotation.

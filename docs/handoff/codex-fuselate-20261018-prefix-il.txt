@@ -1,0 +1,420 @@
+
+	.method public hidebysig static 
+		bool Prefix (
+			class ['Assembly-CSharp']scrDecoration __instance
+		) cil managed 
+	{
+		// Method begins at RVA 0x9caf8
+		// Header size: 12
+		// Code size: 903 (0x387)
+		.maxstack 5
+		.locals init (
+			[0] class ['Assembly-CSharp']scrDecoration,
+			[1] class ['Assembly-CSharp']scrParallax,
+			[2] class [UnityEngine.CoreModule]UnityEngine.Transform,
+			[3] int32,
+			[4] class [UnityEngine.CoreModule]UnityEngine.Transform,
+			[5] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2,
+			[6] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2,
+			[7] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2,
+			[8] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2,
+			[9] float32,
+			[10] float32,
+			[11] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2,
+			[12] valuetype [UnityEngine.CoreModule]UnityEngine.Vector3,
+			[13] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2,
+			[14] bool,
+			[15] bool,
+			[16] bool,
+			[17] bool,
+			[18] bool,
+			[19] bool,
+			[20] bool,
+			[21] bool,
+			[22] bool,
+			[23] bool,
+			[24] bool,
+			[25] bool,
+			[26] bool,
+			[27] bool,
+			[28] bool,
+			[29] bool
+		)
+
+		IL_0000: nop
+		IL_0001: ldsfld bool StutterFix.FuseLate::bypass
+		IL_0006: stloc.s 14
+		IL_0008: ldloc.s 14
+		IL_000a: brfalse.s IL_0014
+
+		IL_000c: ldc.i4.1
+		IL_000d: stloc.s 15
+		IL_000f: br IL_0384
+
+		IL_0014: ldsfld bool StutterFix.FuseLate::Enabled
+		IL_0019: ldc.i4.0
+		IL_001a: ceq
+		IL_001c: stloc.s 16
+		IL_001e: ldloc.s 16
+		IL_0020: brfalse.s IL_002f
+
+		IL_0022: ldc.i4.0
+		IL_0023: call bool StutterFix.FuseLate::Original(int32)
+		IL_0028: stloc.s 15
+		IL_002a: br IL_0384
+
+		IL_002f: ldarg.0
+		IL_0030: stloc.0
+		IL_0031: ldloc.0
+		IL_0032: callvirt instance class [netstandard]System.Type [netstandard]System.Object::GetType()
+		IL_0037: ldtoken ['Assembly-CSharp']scrVisualDecoration
+		IL_003c: call class [netstandard]System.Type [netstandard]System.Type::GetTypeFromHandle(valuetype [netstandard]System.RuntimeTypeHandle)
+		IL_0041: call bool [netstandard]System.Type::op_Inequality(class [netstandard]System.Type, class [netstandard]System.Type)
+		IL_0046: stloc.s 17
+		IL_0048: ldloc.s 17
+		IL_004a: brfalse.s IL_0059
+
+		IL_004c: ldc.i4.1
+		IL_004d: call bool StutterFix.FuseLate::Original(int32)
+		IL_0052: stloc.s 15
+		IL_0054: br IL_0384
+
+		IL_0059: ldloc.0
+		IL_005a: ldfld class ['Assembly-CSharp']scrPlanet ['Assembly-CSharp']scrDecoration::followPlanet
+		IL_005f: ldnull
+		IL_0060: cgt.un
+		IL_0062: stloc.s 18
+		IL_0064: ldloc.s 18
+		IL_0066: brfalse.s IL_0075
+
+		IL_0068: ldc.i4.2
+		IL_0069: call bool StutterFix.FuseLate::Original(int32)
+		IL_006e: stloc.s 15
+		IL_0070: br IL_0384
+
+		IL_0075: ldloc.0
+		IL_0076: ldfld bool ['Assembly-CSharp']scrDecoration::stickToFloor
+		IL_007b: stloc.s 19
+		IL_007d: ldloc.s 19
+		IL_007f: brfalse.s IL_008e
+
+		IL_0081: ldc.i4.3
+		IL_0082: call bool StutterFix.FuseLate::Original(int32)
+		IL_0087: stloc.s 15
+		IL_0089: br IL_0384
+
+		IL_008e: ldloc.0
+		IL_008f: ldfld bool ['Assembly-CSharp']scrDecoration::lockRotation
+		IL_0094: stloc.s 20
+		IL_0096: ldloc.s 20
+		IL_0098: brfalse.s IL_00a7
+
+		IL_009a: ldc.i4.4
+		IL_009b: call bool StutterFix.FuseLate::Original(int32)
+		IL_00a0: stloc.s 15
+		IL_00a2: br IL_0384
+
+		IL_00a7: ldloc.0
+		IL_00a8: ldfld class ['Assembly-CSharp']scrParallax ['Assembly-CSharp']scrDecoration::parallax
+		IL_00ad: stloc.1
+		IL_00ae: ldloc.1
+		IL_00af: ldnull
+		IL_00b0: call bool [UnityEngine.CoreModule]UnityEngine.Object::op_Equality(class [UnityEngine.CoreModule]UnityEngine.Object, class [UnityEngine.CoreModule]UnityEngine.Object)
+		IL_00b5: brtrue.s IL_00c8
+
+		IL_00b7: ldsfld class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, bool> StutterFix.FuseLate::inited
+		IL_00bc: ldloc.1
+		IL_00bd: callvirt instance !1& class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, bool>::Invoke(!0)
+		IL_00c2: ldind.u1
+		IL_00c3: ldc.i4.0
+		IL_00c4: ceq
+		IL_00c6: br.s IL_00c9
+
+		IL_00c8: ldc.i4.1
+
+		IL_00c9: stloc.s 21
+		IL_00cb: ldloc.s 21
+		IL_00cd: brfalse.s IL_00dc
+
+		IL_00cf: ldc.i4.5
+		IL_00d0: call bool StutterFix.FuseLate::Original(int32)
+		IL_00d5: stloc.s 15
+		IL_00d7: br IL_0384
+
+		IL_00dc: ldloc.0
+		IL_00dd: ldfld class [UnityEngine.CoreModule]UnityEngine.Transform ['Assembly-CSharp']scrDecoration::pivotTrans
+		IL_00e2: stloc.2
+		IL_00e3: ldloc.2
+		IL_00e4: brfalse.s IL_00fa
+
+		IL_00e6: ldsfld class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, class [UnityEngine.CoreModule]UnityEngine.Transform> StutterFix.FuseLate::cached
+		IL_00eb: ldloc.1
+		IL_00ec: callvirt instance !1& class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, class [UnityEngine.CoreModule]UnityEngine.Transform>::Invoke(!0)
+		IL_00f1: ldind.ref
+		IL_00f2: ldloc.2
+		IL_00f3: ceq
+		IL_00f5: ldc.i4.0
+		IL_00f6: ceq
+		IL_00f8: br.s IL_00fb
+
+		IL_00fa: ldc.i4.1
+
+		IL_00fb: stloc.s 22
+		IL_00fd: ldloc.s 22
+		IL_00ff: brfalse.s IL_010e
+
+		IL_0101: ldc.i4.6
+		IL_0102: call bool StutterFix.FuseLate::Original(int32)
+		IL_0107: stloc.s 15
+		IL_0109: br IL_0384
+
+		IL_010e: ldloc.1
+		IL_010f: ldfld bool ['Assembly-CSharp']scrParallax::clampToScreen
+		IL_0114: stloc.s 23
+		IL_0116: ldloc.s 23
+		IL_0118: brfalse.s IL_0127
+
+		IL_011a: ldc.i4.7
+		IL_011b: call bool StutterFix.FuseLate::Original(int32)
+		IL_0120: stloc.s 15
+		IL_0122: br IL_0384
+
+		IL_0127: ldloc.1
+		IL_0128: ldfld bool ['Assembly-CSharp']scrParallax::dontAlterX
+		IL_012d: brtrue.s IL_0137
+
+		IL_012f: ldloc.1
+		IL_0130: ldfld bool ['Assembly-CSharp']scrParallax::dontAlterY
+		IL_0135: br.s IL_0138
+
+		IL_0137: ldc.i4.1
+
+		IL_0138: stloc.s 24
+		IL_013a: ldloc.s 24
+		IL_013c: brfalse.s IL_014b
+
+		IL_013e: ldc.i4.8
+		IL_013f: call bool StutterFix.FuseLate::Original(int32)
+		IL_0144: stloc.s 15
+		IL_0146: br IL_0384
+
+		IL_014b: ldsfld class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, bool> StutterFix.FuseLate::isDecoration
+		IL_0150: ldloc.1
+		IL_0151: callvirt instance !1& class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, bool>::Invoke(!0)
+		IL_0156: ldind.u1
+		IL_0157: brfalse.s IL_0167
+
+		IL_0159: ldloc.1
+		IL_015a: ldfld class ['Assembly-CSharp']scrDecoration ['Assembly-CSharp']scrParallax::decoration
+		IL_015f: ldloc.0
+		IL_0160: ceq
+		IL_0162: ldc.i4.0
+		IL_0163: ceq
+		IL_0165: br.s IL_0168
+
+		IL_0167: ldc.i4.1
+
+		IL_0168: stloc.s 25
+		IL_016a: ldloc.s 25
+		IL_016c: brfalse.s IL_017c
+
+		IL_016e: ldc.i4.s 9
+		IL_0170: call bool StutterFix.FuseLate::Original(int32)
+		IL_0175: stloc.s 15
+		IL_0177: br IL_0384
+
+		IL_017c: call class ['Assembly-CSharp']scnGame ['Assembly-CSharp']ADOBase::get_customLevel()
+		IL_0181: ldnull
+		IL_0182: call bool [UnityEngine.CoreModule]UnityEngine.Object::op_Equality(class [UnityEngine.CoreModule]UnityEngine.Object, class [UnityEngine.CoreModule]UnityEngine.Object)
+		IL_0187: brfalse.s IL_0194
+
+		IL_0189: ldloc.1
+		IL_018a: callvirt instance bool [UnityEngine.CoreModule]UnityEngine.Behaviour::get_enabled()
+		IL_018f: ldc.i4.0
+		IL_0190: ceq
+		IL_0192: br.s IL_0195
+
+		IL_0194: ldc.i4.0
+
+		IL_0195: stloc.s 26
+		IL_0197: ldloc.s 26
+		IL_0199: brfalse.s IL_01a9
+
+		IL_019b: ldc.i4.s 10
+		IL_019d: call bool StutterFix.FuseLate::Original(int32)
+		IL_01a2: stloc.s 15
+		IL_01a4: br IL_0384
+
+		IL_01a9: ldsfld bool StutterFix.FuseLate::inManager
+		IL_01ae: brtrue.s IL_01b7
+
+		IL_01b0: call int32 [UnityEngine.CoreModule]UnityEngine.Time::get_frameCount()
+		IL_01b5: br.s IL_01bc
+
+		IL_01b7: ldsfld int32 StutterFix.FuseLate::cameraFrame
+
+		IL_01bc: stloc.3
+		IL_01bd: ldloc.2
+		IL_01be: ldloc.3
+		IL_01bf: call bool StutterFix.FuseLate::Identity(class [UnityEngine.CoreModule]UnityEngine.Transform, int32)
+		IL_01c4: ldc.i4.0
+		IL_01c5: ceq
+		IL_01c7: stloc.s 27
+		IL_01c9: ldloc.s 27
+		IL_01cb: brfalse.s IL_01db
+
+		IL_01cd: ldc.i4.s 11
+		IL_01cf: call bool StutterFix.FuseLate::Original(int32)
+		IL_01d4: stloc.s 15
+		IL_01d6: br IL_0384
+
+		IL_01db: ldloc.1
+		IL_01dc: ldfld class [UnityEngine.CoreModule]UnityEngine.Transform ['Assembly-CSharp']scrParallax::cameraTransform
+		IL_01e1: stloc.s 4
+		IL_01e3: ldloc.s 4
+		IL_01e5: ldnull
+		IL_01e6: call bool [UnityEngine.CoreModule]UnityEngine.Object::op_Equality(class [UnityEngine.CoreModule]UnityEngine.Object, class [UnityEngine.CoreModule]UnityEngine.Object)
+		IL_01eb: stloc.s 28
+		IL_01ed: ldloc.s 28
+		IL_01ef: brfalse.s IL_01fe
+
+		IL_01f1: ldc.i4.5
+		IL_01f2: call bool StutterFix.FuseLate::Original(int32)
+		IL_01f7: stloc.s 15
+		IL_01f9: br IL_0384
+
+		IL_01fe: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::get_zero()
+		IL_0203: stloc.s 5
+		IL_0205: ldloc.0
+		IL_0206: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 ['Assembly-CSharp']scrDecoration::pivotPosVec
+		IL_020b: ldloc.s 5
+		IL_020d: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Addition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0212: stloc.s 6
+		IL_0214: ldsfld class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2> StutterFix.FuseLate::start
+		IL_0219: ldloc.1
+		IL_021a: callvirt instance !1& class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2>::Invoke(!0)
+		IL_021f: ldloc.s 6
+		IL_0221: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0226: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_022b: stobj [UnityEngine.CoreModule]UnityEngine.Vector2
+		IL_0230: ldloc.1
+		IL_0231: ldloc.s 6
+		IL_0233: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0238: stfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 ['Assembly-CSharp']scrParallax::posCamAtStart
+		IL_023d: ldloc.s 4
+		IL_023f: ldloc.3
+		IL_0240: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 StutterFix.FuseLate::CameraPosition(class [UnityEngine.CoreModule]UnityEngine.Transform, int32)
+		IL_0245: ldloc.1
+		IL_0246: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 ['Assembly-CSharp']scrParallax::posCamAtStart
+		IL_024b: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector3::op_Subtraction(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3, valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0250: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0255: ldloc.1
+		IL_0256: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 ['Assembly-CSharp']scrParallax::get_multiplier()
+		IL_025b: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Multiply(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0260: ldsfld class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2> StutterFix.FuseLate::start
+		IL_0265: ldloc.1
+		IL_0266: callvirt instance !1& class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2>::Invoke(!0)
+		IL_026b: ldobj [UnityEngine.CoreModule]UnityEngine.Vector2
+		IL_0270: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Addition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0275: stloc.s 7
+		IL_0277: ldloc.0
+		IL_0278: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 ['Assembly-CSharp']scrDecoration::parallaxOffset
+		IL_027d: ldloc.0
+		IL_027e: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 ['Assembly-CSharp']scrDecoration::get_camScaleMultiplier()
+		IL_0283: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Multiply(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0288: ldloc.0
+		IL_0289: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 ['Assembly-CSharp']scrDecoration::textureScaleMultiplier
+		IL_028e: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Division(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0293: stloc.s 8
+		IL_0295: ldsfld class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2> StutterFix.FuseLate::end
+		IL_029a: ldloc.1
+		IL_029b: callvirt instance !1& class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2>::Invoke(!0)
+		IL_02a0: ldloc.s 7
+		IL_02a2: ldloc.s 8
+		IL_02a4: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Addition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_02a9: stobj [UnityEngine.CoreModule]UnityEngine.Vector2
+		IL_02ae: ldloc.0
+		IL_02af: ldfld float32 ['Assembly-CSharp']scrDecoration::rotAngle
+		IL_02b4: stloc.s 9
+		IL_02b6: ldloc.0
+		IL_02b7: ldloc.s 9
+		IL_02b9: stfld float32 ['Assembly-CSharp']scrDecoration::rotAngle
+		IL_02be: ldloc.0
+		IL_02bf: ldfld float32 ['Assembly-CSharp']scrDecoration::startRot
+		IL_02c4: ldloc.s 9
+		IL_02c6: add
+		IL_02c7: stloc.s 10
+		IL_02c9: ldloc.0
+		IL_02ca: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 ['Assembly-CSharp']scrDecoration::scaleVec
+		IL_02cf: stloc.s 11
+		IL_02d1: ldloc.0
+		IL_02d2: ldloc.s 11
+		IL_02d4: stfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 ['Assembly-CSharp']scrDecoration::scaleVec
+		IL_02d9: ldloc.s 11
+		IL_02db: ldloc.0
+		IL_02dc: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 ['Assembly-CSharp']scrDecoration::get_camScaleMultiplier()
+		IL_02e1: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Multiply(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_02e6: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector3::get_one()
+		IL_02eb: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_02f0: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Multiply(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_02f5: ldc.r4 1
+		IL_02fa: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 ['Assembly-CSharp']ExtensionMethods::WithZ(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, float32)
+		IL_02ff: stloc.s 12
+		IL_0301: ldsfld class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2> StutterFix.FuseLate::end
+		IL_0306: ldloc.1
+		IL_0307: callvirt instance !1& class ['0Harmony']HarmonyLib.AccessTools/FieldRef`2<class ['Assembly-CSharp']scrParallax, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2>::Invoke(!0)
+		IL_030c: ldobj [UnityEngine.CoreModule]UnityEngine.Vector2
+		IL_0311: stloc.s 13
+		IL_0313: ldloc.2
+		IL_0314: ldloc.s 13
+		IL_0316: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector2::x
+		IL_031b: ldloc.s 13
+		IL_031d: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector2::y
+		IL_0322: ldc.r4 0.0
+		IL_0327: newobj instance void [UnityEngine.CoreModule]UnityEngine.Vector3::.ctor(float32, float32, float32)
+		IL_032c: ldc.r4 0.0
+		IL_0331: ldc.r4 0.0
+		IL_0336: ldloc.s 10
+		IL_0338: call valuetype [UnityEngine.CoreModule]UnityEngine.Quaternion [UnityEngine.CoreModule]UnityEngine.Quaternion::Euler(float32, float32, float32)
+		IL_033d: callvirt instance void [UnityEngine.CoreModule]UnityEngine.Transform::SetPositionAndRotation(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3, valuetype [UnityEngine.CoreModule]UnityEngine.Quaternion)
+		IL_0342: nop
+		IL_0343: ldloc.2
+		IL_0344: ldloc.s 12
+		IL_0346: callvirt instance void [UnityEngine.CoreModule]UnityEngine.Transform::set_localScale(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_034b: nop
+		IL_034c: ldsfld int64 StutterFix.FuseLate::fast
+		IL_0351: ldc.i4.1
+		IL_0352: conv.i8
+		IL_0353: add
+		IL_0354: stsfld int64 StutterFix.FuseLate::fast
+		IL_0359: ldsfld bool StutterFix.FuseLate::Verify
+		IL_035e: brfalse.s IL_036f
+
+		IL_0360: ldsfld int64 StutterFix.FuseLate::fast
+		IL_0365: ldc.i4.s 63
+		IL_0367: conv.i8
+		IL_0368: and
+		IL_0369: ldc.i4.0
+		IL_036a: conv.i8
+		IL_036b: ceq
+		IL_036d: br.s IL_0370
+
+		IL_036f: ldc.i4.0
+
+		IL_0370: stloc.s 29
+		IL_0372: ldloc.s 29
+		IL_0374: brfalse.s IL_037f
+
+		IL_0376: ldloc.0
+		IL_0377: ldloc.1
+		IL_0378: ldloc.2
+		IL_0379: call void StutterFix.FuseLate::Check(class ['Assembly-CSharp']scrDecoration, class ['Assembly-CSharp']scrParallax, class [UnityEngine.CoreModule]UnityEngine.Transform)
+		IL_037e: nop
+
+		IL_037f: ldc.i4.0
+		IL_0380: stloc.s 15
+		IL_0382: br.s IL_0384
+
+		IL_0384: ldloc.s 15
+		IL_0386: ret
+	} // end of method FuseLate::Prefix

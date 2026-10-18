@@ -353,7 +353,7 @@ namespace StutterFix
                 if (c.opcode == OpCodes.Ldfld && fi != null && fi.Name == "allDecorations" && fi.DeclaringType == typeof(scrDecorationManager))
                 {
                     c.opcode = OpCodes.Call;
-                    c.operand = AccessTools.Method(typeof(Dormancy), nameof(Dormancy.List));
+                    c.operand = AccessTools.Method(typeof(TightLate), nameof(TightLate.List));
                     lists++;
                 }
                 yield return c;

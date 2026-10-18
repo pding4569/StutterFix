@@ -1,0 +1,10 @@
+﻿.codex/config.toml unchanged=True
+ExitFix.cs unchanged=True
+FuseProbe.cs unchanged=True
+MoveApply.cs unchanged=True
+PerfOverlay.cs unchanged=True
+SettingsWindow.cs unchanged=True
+FuseLate.cs unchanged=True
+StutterFix.cs original_content_preserved=True
+AutoTest.cs original_content_preserved=True
+StutterFix.csproj original_content_preserved=True

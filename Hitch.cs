@@ -264,6 +264,7 @@ BlendProbe.Report();
 
         private static void SongEnded()
         {
+            TightLate.Forget();
             try
             {
                 Resilience.Phase("메뉴·편집");

@@ -1,0 +1,447 @@
+Assembly-CSharp.dll SHA256: 6ba2cfb8d260962d3c8a3e4409f60e8e98293ca9b2d2eca4875096bd02d40230
+
+	.method public hidebysig 
+		instance void UpdatePosition () cil managed 
+	{
+		// Method begins at RVA 0x5d438
+		// Header size: 12
+		// Code size: 242 (0xf2)
+		.maxstack 3
+		.locals init (
+			[0] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2,
+			[1] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2
+		)
+
+		IL_0000: call class scrController ADOBase::get_controller()
+		IL_0005: callvirt instance bool scrController::get_paused()
+		IL_000a: brtrue.s IL_001a
+
+		IL_000c: ldarg.0
+		IL_000d: ldfld class scrPlanet scrDecoration::followPlanet
+		IL_0012: ldnull
+		IL_0013: call bool [UnityEngine.CoreModule]UnityEngine.Object::op_Inequality(class [UnityEngine.CoreModule]UnityEngine.Object, class [UnityEngine.CoreModule]UnityEngine.Object)
+		IL_0018: brtrue.s IL_0021
+
+		IL_001a: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::get_zero()
+		IL_001f: br.s IL_0036
+
+		IL_0021: ldarg.0
+		IL_0022: ldfld class scrPlanet scrDecoration::followPlanet
+		IL_0027: callvirt instance class [UnityEngine.CoreModule]UnityEngine.Transform [UnityEngine.CoreModule]UnityEngine.Component::get_transform()
+		IL_002c: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Transform::get_position()
+		IL_0031: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+
+		IL_0036: stloc.0
+		IL_0037: ldarg.0
+		IL_0038: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrDecoration::pivotPosVec
+		IL_003d: ldloc.0
+		IL_003e: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Addition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0043: stloc.1
+		IL_0044: ldarg.0
+		IL_0045: ldfld bool scrDecoration::stickToFloor
+		IL_004a: brfalse.s IL_0073
+
+		IL_004c: ldloc.1
+		IL_004d: ldarg.0
+		IL_004e: ldfld class scrFloor scrDecoration::parentFloor
+		IL_0053: callvirt instance class [UnityEngine.CoreModule]UnityEngine.Transform [UnityEngine.CoreModule]UnityEngine.Component::get_transform()
+		IL_0058: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Transform::get_position()
+		IL_005d: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0062: ldarg.0
+		IL_0063: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrDecoration::startPos
+		IL_0068: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Subtraction(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_006d: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Addition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0072: stloc.1
+
+		IL_0073: ldarg.0
+		IL_0074: ldfld class [UnityEngine.CoreModule]UnityEngine.Transform scrDecoration::pivotTrans
+		IL_0079: ldloc.1
+		IL_007a: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_007f: callvirt instance void [UnityEngine.CoreModule]UnityEngine.Transform::set_localPosition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0084: ldarg.0
+		IL_0085: ldfld class scrParallax scrDecoration::parallax
+		IL_008a: ldloc.1
+		IL_008b: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0090: callvirt instance void scrParallax::SetNewStartPosition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0095: ldarg.0
+		IL_0096: ldfld class scrParallax scrDecoration::parallax
+		IL_009b: ldloc.1
+		IL_009c: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_00a1: stfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 scrParallax::posCamAtStart
+		IL_00a6: call class scnGame ADOBase::get_customLevel()
+		IL_00ab: ldnull
+		IL_00ac: call bool [UnityEngine.CoreModule]UnityEngine.Object::op_Inequality(class [UnityEngine.CoreModule]UnityEngine.Object, class [UnityEngine.CoreModule]UnityEngine.Object)
+		IL_00b1: brtrue.s IL_00c0
+
+		IL_00b3: ldarg.0
+		IL_00b4: ldfld class scrParallax scrDecoration::parallax
+		IL_00b9: callvirt instance bool [UnityEngine.CoreModule]UnityEngine.Behaviour::get_enabled()
+		IL_00be: brfalse.s IL_00cb
+
+		IL_00c0: ldarg.0
+		IL_00c1: ldfld class scrParallax scrDecoration::parallax
+		IL_00c6: callvirt instance void scrParallax::SetTrans()
+
+		IL_00cb: ldarg.0
+		IL_00cc: ldarg.0
+		IL_00cd: ldfld float32 scrDecoration::rotAngle
+		IL_00d2: call instance void scrDecoration::SetRotation(float32)
+		IL_00d7: ldarg.0
+		IL_00d8: ldarg.0
+		IL_00d9: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrDecoration::scaleVec
+		IL_00de: callvirt instance void scrDecoration::SetScale(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_00e3: ldarg.0
+		IL_00e4: ldfld bool scrDecoration::stickToFloor
+		IL_00e9: brfalse.s IL_00f1
+
+		IL_00eb: ldarg.0
+		IL_00ec: callvirt instance void scrDecoration::ApplyColor()
+
+		IL_00f1: ret
+	} // end of method scrDecoration::UpdatePosition
+
+
+	.method public hidebysig 
+		instance void SetRotation (
+			float32 angle
+		) cil managed 
+	{
+		// Method begins at RVA 0x5d14c
+		// Header size: 12
+		// Code size: 122 (0x7a)
+		.maxstack 4
+		.locals init (
+			[0] float32,
+			[1] valuetype [UnityEngine.CoreModule]UnityEngine.Quaternion
+		)
+
+		IL_0000: ldarg.0
+		IL_0001: ldarg.1
+		IL_0002: stfld float32 scrDecoration::rotAngle
+		IL_0007: ldarg.0
+		IL_0008: ldfld float32 scrDecoration::startRot
+		IL_000d: ldarg.1
+		IL_000e: add
+		IL_000f: stloc.0
+		IL_0010: ldarg.0
+		IL_0011: ldfld bool scrDecoration::stickToFloor
+		IL_0016: brfalse.s IL_0032
+
+		IL_0018: ldloc.0
+		IL_0019: ldarg.0
+		IL_001a: ldfld class scrFloor scrDecoration::parentFloor
+		IL_001f: callvirt instance class [UnityEngine.CoreModule]UnityEngine.Transform [UnityEngine.CoreModule]UnityEngine.Component::get_transform()
+		IL_0024: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Transform::get_eulerAngles()
+		IL_0029: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector3::z
+		IL_002e: add
+		IL_002f: stloc.0
+		IL_0030: br.s IL_005e
+
+		IL_0032: ldarg.0
+		IL_0033: ldfld bool scrDecoration::lockRotation
+		IL_0038: brfalse.s IL_005e
+
+		IL_003a: ldloc.0
+		IL_003b: call class scrController ADOBase::get_controller()
+		IL_0040: ldfld class scrCamera scrController::camy
+		IL_0045: callvirt instance class [UnityEngine.CoreModule]UnityEngine.Transform [UnityEngine.CoreModule]UnityEngine.Component::get_transform()
+		IL_004a: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Quaternion [UnityEngine.CoreModule]UnityEngine.Transform::get_rotation()
+		IL_004f: stloc.1
+		IL_0050: ldloca.s 1
+		IL_0052: call instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Quaternion::get_eulerAngles()
+		IL_0057: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector3::z
+		IL_005c: add
+		IL_005d: stloc.0
+
+		IL_005e: ldarg.0
+		IL_005f: ldfld class [UnityEngine.CoreModule]UnityEngine.Transform scrDecoration::pivotTrans
+		IL_0064: ldc.r4 0.0
+		IL_0069: ldc.r4 0.0
+		IL_006e: ldloc.0
+		IL_006f: call valuetype [UnityEngine.CoreModule]UnityEngine.Quaternion [UnityEngine.CoreModule]UnityEngine.Quaternion::Euler(float32, float32, float32)
+		IL_0074: callvirt instance void [UnityEngine.CoreModule]UnityEngine.Transform::set_rotation(valuetype [UnityEngine.CoreModule]UnityEngine.Quaternion)
+		IL_0079: ret
+	} // end of method scrDecoration::SetRotation
+
+
+	.method public hidebysig newslot virtual 
+		instance void SetScale (
+			valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scale
+		) cil managed 
+	{
+		// Method begins at RVA 0x5d1d4
+		// Header size: 12
+		// Code size: 84 (0x54)
+		.maxstack 3
+		.locals init (
+			[0] valuetype [UnityEngine.CoreModule]UnityEngine.Vector3
+		)
+
+		IL_0000: ldarg.0
+		IL_0001: ldarg.1
+		IL_0002: stfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrDecoration::scaleVec
+		IL_0007: ldarg.0
+		IL_0008: ldfld bool scrDecoration::stickToFloor
+		IL_000d: brtrue.s IL_0016
+
+		IL_000f: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector3::get_one()
+		IL_0014: br.s IL_0026
+
+		IL_0016: ldarg.0
+		IL_0017: ldfld class scrFloor scrDecoration::parentFloor
+		IL_001c: callvirt instance class [UnityEngine.CoreModule]UnityEngine.Transform [UnityEngine.CoreModule]UnityEngine.Component::get_transform()
+		IL_0021: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Transform::get_localScale()
+
+		IL_0026: stloc.0
+		IL_0027: ldarg.0
+		IL_0028: ldfld class [UnityEngine.CoreModule]UnityEngine.Transform scrDecoration::pivotTrans
+		IL_002d: ldarg.1
+		IL_002e: ldarg.0
+		IL_002f: call instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrDecoration::get_camScaleMultiplier()
+		IL_0034: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Multiply(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0039: ldloc.0
+		IL_003a: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_003f: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Multiply(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0044: ldc.r4 1
+		IL_0049: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 ExtensionMethods::WithZ(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, float32)
+		IL_004e: callvirt instance void [UnityEngine.CoreModule]UnityEngine.Transform::set_localScale(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0053: ret
+	} // end of method scrDecoration::SetScale
+
+
+	.method public hidebysig 
+		instance void LogicUpdate (
+			bool disableUpdateShader
+		) cil managed 
+	{
+		// Method begins at RVA 0x5e7b3
+		// Header size: 1
+		// Code size: 48 (0x30)
+		.maxstack 8
+
+		IL_0000: ldarg.0
+		IL_0001: callvirt instance bool scrDecoration::GetVisible()
+		IL_0006: brfalse.s IL_000e
+
+		IL_0008: ldarg.0
+		IL_0009: call instance void scrDecoration::UpdatePosition()
+
+		IL_000e: call class scnGame ADOBase::get_customLevel()
+		IL_0013: call bool [UnityEngine.CoreModule]UnityEngine.Object::op_Implicit(class [UnityEngine.CoreModule]UnityEngine.Object)
+		IL_0018: brfalse.s IL_0021
+
+		IL_001a: ldarg.0
+		IL_001b: ldarg.1
+		IL_001c: callvirt instance void scrDecoration::UpdateShader(bool)
+
+		IL_0021: ldarg.0
+		IL_0022: call instance bool scrDecoration::get_useHitbox()
+		IL_0027: brfalse.s IL_002f
+
+		IL_0029: ldarg.0
+		IL_002a: call instance void scrDecoration::UpdateHitboxState()
+
+		IL_002f: ret
+	} // end of method scrDecoration::LogicUpdate
+
+
+	.method private hidebysig 
+		instance void Init () cil managed 
+	{
+		// Method begins at RVA 0x68e9c
+		// Header size: 12
+		// Code size: 96 (0x60)
+		.maxstack 2
+		.locals init (
+			[0] class scrDecoration
+		)
+
+		IL_0000: ldarg.0
+		IL_0001: ldfld bool scrParallax::inited
+		IL_0006: brfalse.s IL_0009
+
+		IL_0008: ret
+
+		IL_0009: ldarg.0
+		IL_000a: ldarg.0
+		IL_000b: call instance class [UnityEngine.CoreModule]UnityEngine.Transform [UnityEngine.CoreModule]UnityEngine.Component::get_transform()
+		IL_0010: stfld class [UnityEngine.CoreModule]UnityEngine.Transform scrParallax::cachedTransform
+		IL_0015: ldarg.0
+		IL_0016: ldarg.0
+		IL_0017: ldfld class [UnityEngine.CoreModule]UnityEngine.Transform scrParallax::cachedTransform
+		IL_001c: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Transform::get_position()
+		IL_0021: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0026: stfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrParallax::startPosition
+		IL_002b: ldarg.0
+		IL_002c: call class scrController ADOBase::get_controller()
+		IL_0031: ldfld class scrCamera scrController::camy
+		IL_0036: callvirt instance class [UnityEngine.CoreModule]UnityEngine.Transform [UnityEngine.CoreModule]UnityEngine.Component::get_transform()
+		IL_003b: stfld class [UnityEngine.CoreModule]UnityEngine.Transform scrParallax::cameraTransform
+		IL_0040: ldarg.0
+		IL_0041: ldloca.s 0
+		IL_0043: call instance bool [UnityEngine.CoreModule]UnityEngine.Component::TryGetComponent<class scrDecoration>(!!0&)
+		IL_0048: brfalse.s IL_0058
+
+		IL_004a: ldarg.0
+		IL_004b: ldloc.0
+		IL_004c: stfld class scrDecoration scrParallax::decoration
+		IL_0051: ldarg.0
+		IL_0052: ldc.i4.1
+		IL_0053: stfld bool scrParallax::isDecoration
+
+		IL_0058: ldarg.0
+		IL_0059: ldc.i4.1
+		IL_005a: stfld bool scrParallax::inited
+		IL_005f: ret
+	} // end of method scrParallax::Init
+
+
+	.method public hidebysig 
+		instance void SetNewStartPosition (
+			valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 startPosition
+		) cil managed 
+	{
+		// Method begins at RVA 0x68f10
+		// Header size: 1
+		// Code size: 13 (0xd)
+		.maxstack 8
+
+		IL_0000: ldarg.0
+		IL_0001: ldarg.1
+		IL_0002: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0007: stfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrParallax::startPosition
+		IL_000c: ret
+	} // end of method scrParallax::SetNewStartPosition
+
+
+	.method public hidebysig 
+		instance void SetTrans () cil managed 
+	{
+		// Method begins at RVA 0x68f20
+		// Header size: 12
+		// Code size: 360 (0x168)
+		.maxstack 4
+		.locals init (
+			[0] valuetype [UnityEngine.CoreModule]UnityEngine.Vector3,
+			[1] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2,
+			[2] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2,
+			[3] valuetype [UnityEngine.CoreModule]UnityEngine.Rect,
+			[4] valuetype [UnityEngine.CoreModule]UnityEngine.Vector2
+		)
+
+		IL_0000: ldarg.0
+		IL_0001: call instance void scrParallax::Init()
+		IL_0006: ldarg.0
+		IL_0007: ldfld class [UnityEngine.CoreModule]UnityEngine.Transform scrParallax::cachedTransform
+		IL_000c: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Transform::get_position()
+		IL_0011: stloc.0
+		IL_0012: ldarg.0
+		IL_0013: ldfld bool scrParallax::clampToScreen
+		IL_0018: brfalse.s IL_0097
+
+		IL_001a: call class scrController ADOBase::get_controller()
+		IL_001f: ldfld class scrCamera scrController::camy
+		IL_0024: ldfld class [UnityEngine.CoreModule]UnityEngine.Camera scrCamera::camobj
+		IL_0029: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Rect [UnityEngine.CoreModule]UnityEngine.Camera::get_pixelRect()
+		IL_002e: stloc.3
+		IL_002f: ldloca.s 4
+		IL_0031: ldloca.s 3
+		IL_0033: call instance float32 [UnityEngine.CoreModule]UnityEngine.Rect::get_width()
+		IL_0038: ldarg.0
+		IL_0039: ldflda valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrParallax::screenRelativePos
+		IL_003e: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector2::x
+		IL_0043: mul
+		IL_0044: ldloca.s 3
+		IL_0046: call instance float32 [UnityEngine.CoreModule]UnityEngine.Rect::get_height()
+		IL_004b: ldarg.0
+		IL_004c: ldflda valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrParallax::screenRelativePos
+		IL_0051: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector2::y
+		IL_0056: mul
+		IL_0057: call instance void [UnityEngine.CoreModule]UnityEngine.Vector2::.ctor(float32, float32)
+		IL_005c: call class scrController ADOBase::get_controller()
+		IL_0061: ldfld class scrCamera scrController::camy
+		IL_0066: ldfld class [UnityEngine.CoreModule]UnityEngine.Camera scrCamera::camobj
+		IL_006b: ldloca.s 3
+		IL_006d: call instance float32 [UnityEngine.CoreModule]UnityEngine.Rect::get_x()
+		IL_0072: ldloca.s 3
+		IL_0074: call instance float32 [UnityEngine.CoreModule]UnityEngine.Rect::get_y()
+		IL_0079: newobj instance void [UnityEngine.CoreModule]UnityEngine.Vector2::.ctor(float32, float32)
+		IL_007e: ldloc.s 4
+		IL_0080: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Addition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0085: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_008a: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Camera::ScreenToWorldPoint(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_008f: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0094: stloc.1
+		IL_0095: br.s IL_00f3
+
+		IL_0097: ldarg.0
+		IL_0098: ldfld class [UnityEngine.CoreModule]UnityEngine.Transform scrParallax::cameraTransform
+		IL_009d: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Transform::get_position()
+		IL_00a2: ldarg.0
+		IL_00a3: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 scrParallax::posCamAtStart
+		IL_00a8: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector3 [UnityEngine.CoreModule]UnityEngine.Vector3::op_Subtraction(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3, valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_00ad: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Implicit(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_00b2: ldarg.0
+		IL_00b3: call instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrParallax::get_multiplier()
+		IL_00b8: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Multiply(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_00bd: ldarg.0
+		IL_00be: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrParallax::startPosition
+		IL_00c3: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Addition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_00c8: stloc.1
+		IL_00c9: ldarg.0
+		IL_00ca: ldfld bool scrParallax::dontAlterX
+		IL_00cf: brfalse.s IL_00de
+
+		IL_00d1: ldloca.s 1
+		IL_00d3: ldloc.0
+		IL_00d4: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector3::x
+		IL_00d9: stfld float32 [UnityEngine.CoreModule]UnityEngine.Vector2::x
+
+		IL_00de: ldarg.0
+		IL_00df: ldfld bool scrParallax::dontAlterY
+		IL_00e4: brfalse.s IL_00f3
+
+		IL_00e6: ldloca.s 1
+		IL_00e8: ldloc.0
+		IL_00e9: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector3::y
+		IL_00ee: stfld float32 [UnityEngine.CoreModule]UnityEngine.Vector2::y
+
+		IL_00f3: ldarg.0
+		IL_00f4: ldfld bool scrParallax::isDecoration
+		IL_00f9: brtrue.s IL_0102
+
+		IL_00fb: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::get_zero()
+		IL_0100: br.s IL_012d
+
+		IL_0102: ldarg.0
+		IL_0103: ldfld class scrDecoration scrParallax::decoration
+		IL_0108: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrDecoration::parallaxOffset
+		IL_010d: ldarg.0
+		IL_010e: ldfld class scrDecoration scrParallax::decoration
+		IL_0113: callvirt instance valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrDecoration::get_camScaleMultiplier()
+		IL_0118: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Multiply(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_011d: ldarg.0
+		IL_011e: ldfld class scrDecoration scrParallax::decoration
+		IL_0123: ldfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrDecoration::textureScaleMultiplier
+		IL_0128: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Division(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+
+		IL_012d: stloc.2
+		IL_012e: ldarg.0
+		IL_012f: ldloc.1
+		IL_0130: ldloc.2
+		IL_0131: call valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 [UnityEngine.CoreModule]UnityEngine.Vector2::op_Addition(valuetype [UnityEngine.CoreModule]UnityEngine.Vector2, valuetype [UnityEngine.CoreModule]UnityEngine.Vector2)
+		IL_0136: stfld valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrParallax::endPosition
+		IL_013b: ldarg.0
+		IL_013c: ldfld class [UnityEngine.CoreModule]UnityEngine.Transform scrParallax::cachedTransform
+		IL_0141: ldarg.0
+		IL_0142: ldflda valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrParallax::endPosition
+		IL_0147: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector2::x
+		IL_014c: ldarg.0
+		IL_014d: ldflda valuetype [UnityEngine.CoreModule]UnityEngine.Vector2 scrParallax::endPosition
+		IL_0152: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector2::y
+		IL_0157: ldloc.0
+		IL_0158: ldfld float32 [UnityEngine.CoreModule]UnityEngine.Vector3::z
+		IL_015d: newobj instance void [UnityEngine.CoreModule]UnityEngine.Vector3::.ctor(float32, float32, float32)
+		IL_0162: callvirt instance void [UnityEngine.CoreModule]UnityEngine.Transform::set_position(valuetype [UnityEngine.CoreModule]UnityEngine.Vector3)
+		IL_0167: ret
+	} // end of method scrParallax::SetTrans

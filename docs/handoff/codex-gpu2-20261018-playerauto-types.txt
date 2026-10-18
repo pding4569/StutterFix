@@ -1,0 +1,335 @@
+﻿== StutterFix.GpuProbe : UnityEngine.MonoBehaviour
+  필드 static Id
+  필드 static ScopeCount
+  필드 static FirstEffect
+  필드 static instance
+  필드 cameras
+  필드 effects
+  필드 names
+  필드 issue
+  필드 anchor
+  필드 callback
+  필드 frame
+  필드 cameraCount
+  필드 effectCount
+  필드 sampled
+  필드 sampledFrames
+  필드 unknownCameras
+  필드 unknownEffects
+  메서드 static intptr gp_event()
+  메서드 static uint64 gp_status(int32)
+  메서드 static int32 gp_snapshot(uint64[], int32)
+  메서드 static void Command(string)
+  메서드 static void StartProbe()
+  메서드 void Refresh()
+  메서드 void Issue(int32, intptr)
+  메서드 static void PreCull(UnityEngine.Camera)
+  메서드 static void PreRender(UnityEngine.Camera)
+  메서드 static void Before(object, ref int32)
+  메서드 static System.Exception After(System.Exception, int32)
+  메서드 System.Collections.IEnumerator EndFrames()
+  메서드 static boolean get_Active()
+  메서드 static StutterFix.GpuProbe+Window Snapshot()
+  메서드 static void Report()
+  메서드 static void Stop()
+  메서드 void .ctor()
+== StutterFix.GpuHide : UnityEngine.MonoBehaviour
+  필드 static instance
+  필드 saved
+  필드 restored
+  필드 enforceTicks
+  필드 enforceCalls
+  필드 overwrites
+  필드 enforceFrame
+  필드 group
+  필드 seconds
+  필드 initiallyOn
+  필드 candidates
+  필드 hiding
+  메서드 static boolean get_Busy()
+  메서드 static void Command(string)
+  메서드 static boolean Select(string, UnityEngine.Renderer, int32)
+  메서드 System.Collections.IEnumerator Run()
+  메서드 System.Collections.IEnumerator Measure(string, System.Action`1<StutterFix.GpuProbe+Window>)
+  메서드 void Enforce(UnityEngine.Camera)
+  메서드 void Restore()
+  메서드 void OnDisable()
+  메서드 void OnDestroy()
+  메서드 static void Stop()
+  메서드 void .ctor()
+== StutterFix.GpuCensus : UnityEngine.MonoBehaviour
+  필드 static textureDescriptions
+  필드 static nativeAvailable
+  필드 static pending
+  메서드 static int32 gp_texture_info(intptr, uint32[])
+  메서드 static string Clean(string)
+  메서드 static string F(double)
+  메서드 static string TextureInfo(UnityEngine.Texture)
+  메서드 static string RtInfo(UnityEngine.Camera)
+  메서드 static double Area(UnityEngine.Camera, UnityEngine.Bounds)
+  메서드 static boolean get_Busy()
+  메서드 static void Stop()
+  메서드 static void Run()
+  메서드 void OnDestroy()
+  메서드 System.Collections.IEnumerator Timeout()
+  메서드 static void Capture(UnityEngine.Camera)
+  메서드 static UnityEngine.Bounds SpriteBounds(UnityEngine.SpriteRenderer)
+  메서드 static boolean IsDecoration(UnityEngine.Renderer)
+  메서드 static string PathOf(UnityEngine.Transform)
+  메서드 static int32 Runs(StutterFix.GpuCensus+Draw[], int32, boolean)
+  메서드 static void RunNow(UnityEngine.Camera)
+  메서드 void .ctor()
+  메서드 static void <Area>g__Include|8_0(UnityEngine.Vector3, ref StutterFix.GpuCensus+<>c__DisplayClass8_0)
+== StutterFix.GpuClock : System.Object
+  필드 static state
+  필드 static dev
+  필드 static reasonsOk
+  필드 static Status
+  필드 static ClockGraphics
+  필드 static ClockMem
+  필드 static ReasonIdle
+  메서드 static intptr LoadLibraryW(string)
+  메서드 static int32 nvmlInit()
+  메서드 static int32 nvmlDeviceGetHandleByIndex(uint32, ref intptr)
+  메서드 static int32 nvmlDeviceGetClockInfo(intptr, int32, ref uint32)
+  메서드 static int32 nvmlDeviceGetPerformanceState(intptr, ref int32)
+  메서드 static int32 nvmlDeviceGetUtilizationRates(intptr, ref StutterFix.GpuClock+Utilization)
+  메서드 static int32 nvmlDeviceGetCurrentClocksThrottleReasons(intptr, ref uint64)
+  메서드 static StutterFix.GpuClock+Sample Read()
+  메서드 static void Init()
+  메서드 static void .cctor()
+== StutterFix.GpuProbe+CameraScope : System.Object
+  필드 Camera
+  필드 Id
+  필드 End
+  메서드 void .ctor()
+== StutterFix.GpuProbe+Window : System.Object
+  필드 Completed
+  필드 Means
+  필드 Frame
+  메서드 void .ctor()
+== StutterFix.GpuProbe+<>O : System.Object
+  필드 static <0>__PreCull
+  필드 static <1>__PreRender
+== StutterFix.GpuProbe+<EndFrames>d__29 : System.Object
+  필드 <>1__state
+  필드 <>2__current
+  필드 <>4__this
+  필드 <eof>5__1
+  메서드 void .ctor(int32)
+  메서드 void System.IDisposable.Dispose()
+  메서드 boolean MoveNext()
+  메서드 object System.Collections.Generic.IEnumerator<System.Object>.get_Current()
+  메서드 void System.Collections.IEnumerator.Reset()
+  메서드 object System.Collections.IEnumerator.get_Current()
+== StutterFix.GpuHide+Saved : System.ValueType
+  필드 Renderer
+  필드 Off
+== StutterFix.GpuHide+<>c : System.Object
+  필드 static <>9
+  필드 static <>9__16_0
+  필드 static <>9__16_1
+  필드 static <>9__16_2
+  필드 static <>9__16_3
+  필드 static <>9__16_4
+  필드 static <>9__16_5
+  필드 static <>9__16_6
+  필드 static <>9__16_7
+  필드 static <>9__16_8
+  필드 static <>9__16_10
+  필드 static <>9__16_13
+  메서드 static void .cctor()
+  메서드 void .ctor()
+  메서드 boolean <Run>b__16_0(UnityEngine.Renderer)
+  메서드 int32 <Run>b__16_1(UnityEngine.Renderer)
+  메서드 scrDecoration <Run>b__16_2(UnityEngine.Renderer)
+  메서드 boolean <Run>b__16_3(scrDecoration)
+  메서드 int32 <Run>b__16_4(scrDecoration)
+  메서드 int32 <Run>b__16_5(int32)
+  메서드 <>f__AnonymousType0`2<int32,int32> <Run>b__16_6(int32, int32)
+  메서드 int32 <Run>b__16_7(<>f__AnonymousType0`2<int32,int32>)
+  메서드 int32 <Run>b__16_8(<>f__AnonymousType0`2<int32,int32>)
+  메서드 boolean <Run>b__16_10(UnityEngine.Camera)
+  메서드 boolean <Run>b__16_13(string)
+== StutterFix.GpuHide+<>c__DisplayClass15_0 : System.Object
+  필드 name
+  메서드 void .ctor()
+  메서드 boolean <Select>b__0(UnityEngine.SortingLayer)
+== StutterFix.GpuHide+<>c__DisplayClass15_1 : System.Object
+  필드 name
+  메서드 void .ctor()
+  메서드 boolean <Select>b__1(UnityEngine.Material)
+== StutterFix.GpuHide+<>c__DisplayClass16_0 : System.Object
+  필드 before
+  필드 hidden
+  필드 after
+  메서드 void .ctor()
+  메서드 void <Run>b__9(StutterFix.GpuProbe+Window)
+  메서드 void <Run>b__11(StutterFix.GpuProbe+Window)
+  메서드 void <Run>b__12(StutterFix.GpuProbe+Window)
+== StutterFix.GpuHide+<Measure>d__17 : System.Object
+  필드 <>1__state
+  필드 <>2__current
+  필드 phase
+  필드 receive
+  필드 <>4__this
+  필드 <start>5__1
+  필드 <w>5__2
+  필드 <retry>5__3
+  메서드 void .ctor(int32)
+  메서드 void System.IDisposable.Dispose()
+  메서드 boolean MoveNext()
+  메서드 object System.Collections.Generic.IEnumerator<System.Object>.get_Current()
+  메서드 void System.Collections.IEnumerator.Reset()
+  메서드 object System.Collections.IEnumerator.get_Current()
+== StutterFix.GpuHide+<Run>d__16 : System.Object
+  필드 <>1__state
+  필드 <>2__current
+  필드 <>4__this
+  필드 <>8__1
+  필드 <rs>5__2
+  필드 <ids>5__3
+  필드 <camera>5__4
+  필드 <planes>5__5
+  필드 <>s__6
+  필드 <>s__7
+  필드 <r>5__8
+  필드 <d>5__9
+  필드 <>s__10
+  필드 <item>5__11
+  필드 <r>5__12
+  필드 <baseline>5__13
+  필드 <>s__14
+  필드 <key>5__15
+  필드 <b>5__16
+  필드 <h>5__17
+  필드 <hv>5__18
+  필드 <a>5__19
+  필드 <av>5__20
+  메서드 void .ctor(int32)
+  메서드 void System.IDisposable.Dispose()
+  메서드 boolean MoveNext()
+  메서드 void <>m__Finally1()
+  메서드 object System.Collections.Generic.IEnumerator<System.Object>.get_Current()
+  메서드 void System.Collections.IEnumerator.Reset()
+  메서드 object System.Collections.IEnumerator.get_Current()
+== StutterFix.GpuCensus+Draw : System.Object
+  필드 Renderer
+  필드 Material
+  필드 Texture
+  필드 Area
+  필드 AlphaZero
+  필드 PropertyBlock
+  필드 Distance
+  필드 Group
+  필드 Textures
+  필드 Keywords
+  필드 Slot
+  메서드 void .ctor()
+== StutterFix.GpuCensus+<>O : System.Object
+  필드 static <0>__Capture
+== StutterFix.GpuCensus+<>c : System.Object
+  필드 static <>9
+  필드 static <>9__21_0
+  필드 static <>9__21_1
+  필드 static <>9__21_25
+  필드 static <>9__21_2
+  필드 static <>9__21_3
+  필드 static <>9__21_4
+  필드 static <>9__21_5
+  필드 static <>9__21_6
+  필드 static <>9__21_7
+  필드 static <>9__21_8
+  필드 static <>9__21_9
+  필드 static <>9__21_10
+  필드 static <>9__21_11
+  필드 static <>9__21_12
+  필드 static <>9__21_13
+  필드 static <>9__21_14
+  필드 static <>9__21_15
+  필드 static <>9__21_16
+  필드 static <>9__21_17
+  필드 static <>9__21_18
+  필드 static <>9__21_19
+  필드 static <>9__21_26
+  필드 static <>9__21_20
+  필드 static <>9__21_21
+  필드 static <>9__21_22
+  필드 static <>9__21_23
+  필드 static <>9__21_24
+  필드 static <>9__21_27
+  필드 static <>9__21_28
+  필드 static <>9__21_29
+  필드 static <>9__21_31
+  필드 static <>9__21_30
+  필드 static <>9__21_32
+  필드 static <>9__21_33
+  필드 static <>9__21_34
+  필드 static <>9__21_35
+  필드 static <>9__21_36
+  메서드 static void .cctor()
+  메서드 void .ctor()
+  메서드 boolean <RunNow>b__21_0(UnityEngine.Camera)
+  메서드 single <RunNow>b__21_1(UnityEngine.Camera)
+  메서드 string <RunNow>b__21_25(string)
+  메서드 boolean <RunNow>b__21_2(UnityEngine.MonoBehaviour)
+  메서드 int32 <RunNow>b__21_3(StutterFix.GpuCensus+Draw)
+  메서드 int32 <RunNow>b__21_4(StutterFix.GpuCensus+Draw)
+  메서드 int32 <RunNow>b__21_5(StutterFix.GpuCensus+Draw)
+  메서드 single <RunNow>b__21_6(StutterFix.GpuCensus+Draw)
+  메서드 int32 <RunNow>b__21_7(StutterFix.GpuCensus+Draw)
+  메서드 int32 <RunNow>b__21_8(StutterFix.GpuCensus+Draw)
+  메서드 double <RunNow>b__21_9(StutterFix.GpuCensus+Draw)
+  메서드 boolean <RunNow>b__21_10(StutterFix.GpuCensus+Draw)
+  메서드 double <RunNow>b__21_11(StutterFix.GpuCensus+Draw)
+  메서드 boolean <RunNow>b__21_12(StutterFix.GpuCensus+Draw)
+  메서드 boolean <RunNow>b__21_13(StutterFix.GpuCensus+Draw)
+  메서드 boolean <RunNow>b__21_14(StutterFix.GpuCensus+Draw)
+  메서드 boolean <RunNow>b__21_15(StutterFix.GpuCensus+Draw)
+  메서드 int32 <RunNow>b__21_16(StutterFix.GpuCensus+Draw)
+  메서드 int32 <RunNow>b__21_17(StutterFix.GpuCensus+Draw)
+  메서드 int32 <RunNow>b__21_18(StutterFix.GpuCensus+Draw)
+  메서드 int32 <RunNow>b__21_19(System.Linq.IGrouping`2<int32,StutterFix.GpuCensus+Draw>)
+  메서드 int32 <RunNow>b__21_20(System.Linq.IGrouping`2<int32,StutterFix.GpuCensus+Draw>)
+  메서드 int32 <RunNow>b__21_26(StutterFix.GpuCensus+Draw)
+  메서드 boolean <RunNow>b__21_21(StutterFix.GpuCensus+Draw)
+  메서드 UnityEngine.Texture <RunNow>b__21_22(StutterFix.GpuCensus+Draw)
+  메서드 int32 <RunNow>b__21_23(UnityEngine.Texture)
+  메서드 UnityEngine.Texture <RunNow>b__21_24(System.Linq.IGrouping`2<int32,UnityEngine.Texture>)
+  메서드 string <RunNow>b__21_27(UnityEngine.Texture)
+  메서드 string <RunNow>b__21_28(System.Linq.IGrouping`2<string,UnityEngine.Texture>)
+  메서드 string <RunNow>b__21_29(StutterFix.GpuCensus+Draw)
+  메서드 double <RunNow>b__21_30(System.Linq.IGrouping`2<string,StutterFix.GpuCensus+Draw>)
+  메서드 double <RunNow>b__21_31(StutterFix.GpuCensus+Draw)
+  메서드 double <RunNow>b__21_32(StutterFix.GpuCensus+Draw)
+  메서드 boolean <RunNow>b__21_33(StutterFix.GpuCensus+Draw)
+  메서드 boolean <RunNow>b__21_34(StutterFix.GpuCensus+Draw)
+  메서드 double <RunNow>b__21_35(StutterFix.GpuCensus+Draw)
+  메서드 boolean <RunNow>b__21_36(StutterFix.GpuCensus+Draw)
+== StutterFix.GpuCensus+<>c__DisplayClass8_0 : System.ValueType
+  필드 c
+  필드 x0
+  필드 y0
+  필드 x1
+  필드 y1
+== StutterFix.GpuCensus+<Timeout>d__15 : System.Object
+  필드 <>1__state
+  필드 <>2__current
+  필드 <>4__this
+  메서드 void .ctor(int32)
+  메서드 void System.IDisposable.Dispose()
+  메서드 boolean MoveNext()
+  메서드 object System.Collections.Generic.IEnumerator<System.Object>.get_Current()
+  메서드 void System.Collections.IEnumerator.Reset()
+  메서드 object System.Collections.IEnumerator.get_Current()
+== StutterFix.GpuClock+Utilization : System.ValueType
+  필드 Gpu
+  필드 Memory
+== StutterFix.GpuClock+Sample : System.ValueType
+  필드 Ok
+  필드 Gr
+  필드 Mem
+  필드 Util
+  필드 PState
+  필드 Reasons
+(22개 형식)

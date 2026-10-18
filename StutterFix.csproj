@@ -190,6 +190,7 @@
     <Compile Include="MergeProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="ZeroTween.cs" />
     <Compile Include="MoveApply.cs" />
+    <Compile Include="TightLate.cs" />
     <Compile Include="MoveDeltaPolicy.cs" />
     <Compile Include="NativeMotion.cs" />
     <Compile Include="CompiledTagTable.cs" />

@@ -59,6 +59,7 @@ namespace StutterFix
             if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
             // (개발자용 시험) 모드 폴더의 파일로 멈춘 동안 화면 다시 내보내기를 바꾼다: present-keepalive 켬(효과 없어 기본은 끔), present-flip 보통 Present, present-screen-check 화면 비교
             if (Edition.Dev || Edition.AutoTest) DevPresentFlags(modEntry.Path);
+            TightLate.Enabled = !System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "tightlate-off"));
             if (Edition.AutoTest) {
 #if DEV || AUTOTEST
 AutoTest.Init(modEntry.Path);
@@ -213,6 +214,7 @@ UiProf.Install(harmony);
 #endif
 
                 MoveApply.Install(harmony);
+                TightLate.Install(harmony);
                 Dormancy.Install(harmony);
                 ImagePrefetch.Install(harmony);
 #if DEV || AUTOTEST
@@ -532,6 +534,8 @@ Try(RenderCallbackScan.Shutdown);
 
             foreach (var id in HarmonyIds)
                 Try(() => new Harmony(id).UnpatchAll(id));
+
+            Try(TightLate.Uninstall);
 
             Entry.Logger.Log("꺼짐: 패치와 감시를 모두 풀었음");
         }

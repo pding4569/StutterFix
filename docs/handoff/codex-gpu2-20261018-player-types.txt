@@ -1,0 +1,29 @@
+﻿== StutterFix.GpuClock : System.Object
+  필드 static state
+  필드 static dev
+  필드 static reasonsOk
+  필드 static Status
+  필드 static ClockGraphics
+  필드 static ClockMem
+  필드 static ReasonIdle
+  메서드 static intptr LoadLibraryW(string)
+  메서드 static int32 nvmlInit()
+  메서드 static int32 nvmlDeviceGetHandleByIndex(uint32, ref intptr)
+  메서드 static int32 nvmlDeviceGetClockInfo(intptr, int32, ref uint32)
+  메서드 static int32 nvmlDeviceGetPerformanceState(intptr, ref int32)
+  메서드 static int32 nvmlDeviceGetUtilizationRates(intptr, ref StutterFix.GpuClock+Utilization)
+  메서드 static int32 nvmlDeviceGetCurrentClocksThrottleReasons(intptr, ref uint64)
+  메서드 static StutterFix.GpuClock+Sample Read()
+  메서드 static void Init()
+  메서드 static void .cctor()
+== StutterFix.GpuClock+Utilization : System.ValueType
+  필드 Gpu
+  필드 Memory
+== StutterFix.GpuClock+Sample : System.ValueType
+  필드 Ok
+  필드 Gr
+  필드 Mem
+  필드 Util
+  필드 PState
+  필드 Reasons
+(3개 형식)
