@@ -89,6 +89,9 @@ TimeProbe.Install(new HarmonyLib.Harmony("StutterFix.timeprobe"));
 AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
 #endif
  }
+#if DEV || AUTOTEST
+            if (has("matprobe")) { MatProbe.Install(new HarmonyLib.Harmony("StutterFix.matprobe")); Entry.Logger.Log("[재질 만들기] matprobe 파일이 있어 곡 중 재질 만들기를 잼"); }
+#endif
             if (has("floorlate-off")) { FloorLateFix.Enabled = false; Entry.Logger.Log("[타일 LateUpdate] floorlate-off 파일이 있어 위치·크기 읽기를 원래대로 함"); }
             if (has("tc-no-glow")) { TileCull.CullGlow = false; Entry.Logger.Log("[화면 밖 타일] tc-no-glow 파일이 있어 타일 발광은 끄지 않음"); }
             if (has("tc-old-pin")) { TileCull.PinOnScript = true; Entry.Logger.Log("[화면 밖 타일] tc-old-pin 파일이 있어 타일 스크립트가 돌면 예전처럼 관리에서 뺌"); }

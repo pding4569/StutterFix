@@ -1038,6 +1038,7 @@ namespace StutterFix
                 case "renderthreadstopfixture":RenderThreadScheduling.Shutdown();Log("[렌더 스레드 내리기 시험] "+RenderThreadScheduling.FixtureState);return true;
                 case "constantringstate":Log("[보간 상수 버퍼 링] "+FrameGen.DescribeConstantRing());return true;
                 case "tilesig": Log("[타일 상태 기록] "+TileSig.Run(modDir,arg)); Log("[색 바꾸기 미루기] "+RecolorDefer.State); return true;
+                case "matstate": Log("[재질 만들기] "+MatProbe.State); return true;
                 case "psdump": Log("[파티클 목록] "+ParticleDump.Run(arg.Length>0?int.Parse(arg):8)); return true;
                 case "floordiag":
                 {
