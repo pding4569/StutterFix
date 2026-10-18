@@ -60,6 +60,7 @@ namespace StutterFix
             // (개발자용 시험) 모드 폴더의 파일로 멈춘 동안 화면 다시 내보내기를 바꾼다: present-keepalive 켬(효과 없어 기본은 끔), present-flip 보통 Present, present-screen-check 화면 비교
             if (Edition.Dev || Edition.AutoTest) DevPresentFlags(modEntry.Path);
             TightLate.Enabled = !System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "tightlate-off"));
+            TightLate.SkipSame = !System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "tightskip-off"));
             if (Edition.AutoTest) {
 #if DEV || AUTOTEST
 AutoTest.Init(modEntry.Path);

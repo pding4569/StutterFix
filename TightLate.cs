@@ -23,7 +23,14 @@ namespace StutterFix
             internal Transform Pivot;
             internal int Epoch = -1;
             internal bool ParentOK, Rejected;
+            // 직전에 엔진에 쓴 값(입력). 같으면 설정자를 건너뛴다(같은 값을 다시 써도 엔진 상태는 같고, 다음 렌더 갱신만 헛일이다).
+            internal bool Has;
+            internal int LastFrame = -100;   // 마지막으로 빠른 길에서 처리한 Unity 프레임 (건너뛴 프레임이 있으면 직전 값을 믿지 않는다)
+            internal Vector3 LastPos, LastScale;
+            internal Quaternion LastRot;
         }
+        internal static bool SkipSame = true;   // 모드 폴더 tightskip-off 파일로 끔
+        internal static long writes, skipPos, skipRot, skipScale;
         private static readonly Dictionary<scrDecoration, Entry> records = new Dictionary<scrDecoration, Entry>(new RefEq());
         private static readonly List<scrDecoration> empty = new List<scrDecoration>(0);
         private static Entry[] slots = Array.Empty<Entry>();
@@ -135,11 +142,15 @@ namespace StutterFix
             if (reason != 0)
             {
                 reasons[reason]++;
+                if (e != null) e.Has = false;   // 원래 경로가 Transform 을 쓸 수 있다
                 // Preserve Unity's destroyed-object null test on fallback, as the original manager does.
                 if (d != null) MoveApply.LogicMaybe(d, true);
                 return false;
             }
-            Apply(e.D, e.D.parallax, e.Pivot, cam);
+            int fc = Time.frameCount;
+            if (e.LastFrame != fc - 1 && e.LastFrame != fc) e.Has = false;   // 지난 프레임을 건너뛰었다(숨김·잠듦·원래 경로 등): 처음부터 다시 쓴다
+            e.LastFrame = fc;
+            Apply(e, e.D, e.D.parallax, e.Pivot, cam);
 #if DEV || AUTOTEST
             if (Verify && (++sample & 63) == 0) Compare(e);
 #endif
@@ -160,7 +171,7 @@ namespace StutterFix
                 || !ReferenceEquals(p.cameraTransform, camera) || p.clampToScreen || p.dontAlterX || p.dontAlterY) return 5;
             if (e.Epoch != epoch || !ReferenceEquals(e.Pivot, pivot))
             {
-                e.Pivot = pivot; e.ParentOK = ReferenceEquals(pivot.parent, parent); e.Epoch = epoch;
+                e.Pivot = pivot; e.ParentOK = ReferenceEquals(pivot.parent, parent); e.Epoch = epoch; e.Has = false;
             }
             if (!parentOK || !e.ParentOK) return 6;
             return 0;
@@ -197,7 +208,9 @@ namespace StutterFix
             }
             compatibility = "ok"; return true;
         }
-        private static void Apply(scrDecoration d, scrParallax p, Transform pivot, Vector3 camera)
+        private static bool Same(Vector3 a, Vector3 b) => BitConverter.SingleToInt32Bits(a.x) == BitConverter.SingleToInt32Bits(b.x) && BitConverter.SingleToInt32Bits(a.y) == BitConverter.SingleToInt32Bits(b.y) && BitConverter.SingleToInt32Bits(a.z) == BitConverter.SingleToInt32Bits(b.z);
+        private static bool Same(Quaternion a, Quaternion b) => BitConverter.SingleToInt32Bits(a.x) == BitConverter.SingleToInt32Bits(b.x) && BitConverter.SingleToInt32Bits(a.y) == BitConverter.SingleToInt32Bits(b.y) && BitConverter.SingleToInt32Bits(a.z) == BitConverter.SingleToInt32Bits(b.z) && BitConverter.SingleToInt32Bits(a.w) == BitConverter.SingleToInt32Bits(b.w);
+        private static void Apply(Entry e, scrDecoration d, scrParallax p, Transform pivot, Vector3 camera)
         {
             Vector2 pos = d.pivotPosVec + Vector2.zero;
             Vector3 pos3 = pos;
@@ -209,10 +222,20 @@ namespace StutterFix
             Vector2 offset = d.parallaxOffset * camScale / d.textureScaleMultiplier;
             Vector2 result = u + offset;
             end(p) = result;
-            pivot.position = new Vector3(result.x, result.y, 0f);
-            pivot.rotation = Quaternion.Euler(0f, 0f, d.startRot + d.rotAngle);
+            var np = new Vector3(result.x, result.y, 0f);
+            var nr = Quaternion.Euler(0f, 0f, d.startRot + d.rotAngle);
             Vector2 scale = d.scaleVec * camScale * (Vector2)Vector3.one;
-            pivot.localScale = new Vector3(scale.x, scale.y, 1f);
+            var ns = new Vector3(scale.x, scale.y, 1f);
+            writes++;
+            if (SkipSame && e.Has)
+            {
+                if (Same(np, e.LastPos)) skipPos++; else { pivot.position = np; e.LastPos = np; }
+                if (Same(nr, e.LastRot)) skipRot++; else { pivot.rotation = nr; e.LastRot = nr; }
+                if (Same(ns, e.LastScale)) skipScale++; else { pivot.localScale = ns; e.LastScale = ns; }
+                return;
+            }
+            pivot.position = np; pivot.rotation = nr; pivot.localScale = ns;
+            e.LastPos = np; e.LastRot = nr; e.LastScale = ns; e.Has = true;
         }
 #if DEV || AUTOTEST
         private struct Snapshot
@@ -300,6 +323,7 @@ namespace StutterFix
             + " batch/last=" + lastProcessed + " processed=" + processed + " frames=" + frames + " invalidations=" + invalidations
             + " loop-ms/frame=" + (frames == 0 ? 0 : loopTicks * 1000.0 / Stopwatch.Frequency / frames).ToString("F4")
             + " manager-frames=" + managerFrames + " manager-ms/frame=" + (managerFrames == 0 ? 0 : managerTicks * 1000.0 / Stopwatch.Frequency / managerFrames).ToString("F4")
+            + " writes=" + writes + " skipped(pos/rot/scale)=" + skipPos + "/" + skipRot + "/" + skipScale + " skipSame=" + SkipSame
             + " verify=" + Verify + " checked=" + checks + " mismatch=" + mismatches + " first=" + first
             + " compatibility=" + compatibility
             + " excluded(type/hitbox-mask-mesh/hidden/follow-stick-lock/parallax/parent/rejected)=" + string.Join("/", reasons);
