@@ -864,6 +864,8 @@ namespace StutterFix
                 case "filterhalf": FilterHalfProbe.Command(arg); return true;
                 case "waitsong": return now - stepStart > 5f && !Hitch.Playing;
                 case "filtergpu": FilterGpuProbe.Command(arg); return true;
+                case "gpuprobe": GpuProbe.Command(arg); return true;
+                case "gpucensus": GpuCensus.Run(); return true;
                 case "filteridentity":
                     FilterIdentityProbe.Command(arg); return true;
                 case "patchhot":

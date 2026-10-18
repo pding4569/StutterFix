@@ -786,3 +786,14 @@ F7(컬링 경계가 바뀐 메시·발광 경계를 포함하는 보장)은 이�
 FPS: HELLO 244/244(켬/끔), Arche 377.
 
 **따로 남긴 것**: 모드 다시 불러오기(Ctrl+F5) 뒤 맵을 열면 게임이 로그 없이 꺼진다(맵 파일 읽은 직후). 오늘 아침 커밋(83facdf)에서도 같아 오늘 변경 탓은 아니다. 디스크 캐시·이미지 미리 풀기를 꺼도 같다.
+
+## 2026-10-18 Arche 90 FPS 구간: 장식마다 엔진 쓰기 합치기(FuseLate) — 넣지 않음
+
+연구 도구 `fuse begin/end`·`decostruct`(FuseProbe.cs): 260~276초 프레임당 효과 시작 30개 0.20ms(같은 장식을 1.3초마다 다시 시작하지만 싸다), 모드 애니메이션 갱신 2.78ms, 장식 관리자 LateUpdate 2.10ms. 애니메이션 도는 장식 1,970개는 모두 가장 단순한 갈래.
+그래서 이벤트를 하나로 묶기보다 UpdatePosition 의 엔진 호출(localPosition 쓰기→position 읽기→카메라 위치 읽기→position 쓰기→rotation→localScale)을 같은 계산으로 SetPositionAndRotation + localScale 두 번으로 줄이는 것을 Codex 가 구현(`docs/handoff/codex-fuselate-20261018-result.md`).
+결과: 비트 비교 15만 713번 다름 0, 곡 끝 장식 상태 같음. 그런데 sf_ab 4판: 관리자 LateUpdate 끔 2.39·2.48ms → 켬 2.65·2.66ms, 270초 96·98 → 95 FPS. 조건 검사·부모 캐시(ConditionalWeakTable) 비용이 줄인 Transform 쓰기 4번보다 크다 → **이 구간의 메인 스레드 비용은 Transform 엔진 호출이 아니다.** 지웠다.
+
+## 2026-10-18 Arche GPU 나누기 (`gpuprobe`, `gpucensus`, Codex 구현 `docs/handoff/codex-gpu-20261018-result.md`)
+
+D3D11 타임스탬프(8프레임에 1번): 곡 약 258초 GPU 6.41ms 중 본 카메라(Camera) 6.21ms, BGMovingCam 0.08, OverlayCam 0.08, BGStaticCam 0.01. 켜진 필터(구형 CameraFilterPackLegacy_* 10개 남짓 + VideoBloom)는 각 0.04~0.15ms, 합 약 0.8ms → **장면 그리기(장식) 약 5.4ms 가 대부분**. 230초: 3.85ms(Camera 3.68).
+census 첫 판은 본 카메라 후보 6개만 셌다(장식 2,695개를 화면 밖으로 분류 — 도구의 판정 오류로 보임, 수정 요청).

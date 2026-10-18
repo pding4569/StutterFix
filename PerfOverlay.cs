@@ -841,11 +841,14 @@ namespace StutterFix
                     else sFpsLabel = T("진짜 FPS · 출력 대기", "Real FPS · output pending"); // Keep the measured real FPS; unchanged counters are not a measured output rate.
                 }
                 // While generation is OFF, Unity FPS estimates output without connecting Present.
-                else if (C.OverlayFpsSource > 0) sFpsLabel = T("표시≈FPS", "Output≈FPS");
+                else if (C.OverlayFpsSource > 0 && FrameGen.Active) sFpsLabel = T("표시≈FPS", "Output≈FPS");
                 outputSample = counting; outputCount = count; outputStamp = stamp;
                 outputEpoch = FrameGen.CounterEpoch; outputFrame = Time.frameCount;
             }
             else outputSample = false;
+            // 프레임 늘리기가 꺼져 있으면 진짜와 표시가 같다: 'FPS' 하나만 (진짜/표시를 나눠 적으면 같은 숫자가 두 번 나왔다)
+            showReal = C.OverlayFpsSource == 2 && FrameGen.Active;
+            if (!FrameGen.Active) sFpsLabel = "FPS";
             sMs = avg.ToString("F1") + " ms";
             sMsShort = avg.ToString("F1") + "ms";
             if (recentCount >= 30)
@@ -877,7 +880,6 @@ namespace StutterFix
                 {
                     string saved = ImagePrefetch.LastSavedMB >= 1024f ? (ImagePrefetch.LastSavedMB / 1024f).ToString("F1") + "GB" : ImagePrefetch.LastSavedMB.ToString("F0") + "MB";
                     sImg = T("이미지 ", "Images ") + ImagePrefetch.LastShrunk + T("장을 긴 변 ", " capped at ") + ImagePrefetch.LastSide + T(" 으로 줄여 VRAM -", " px, VRAM -") + saved;
-                    sVramShort += " -" + (ImagePrefetch.LastSavedMB / 1024f).ToString("F1") + "G";
                 }
                 else if (ImagePrefetch.MaxSide != 0 && ImagePrefetch.AnyLoad)
                     sImg = T("이미지 원본 그대로", "Images at full size") + (ImagePrefetch.MaxSide == ImagePrefetch.Auto ? T(" (자동)", " (auto)") : "");
@@ -935,14 +937,19 @@ namespace StutterFix
         private void CollectCompact()
         {
             compact.Clear(); compactLoad.Clear();
-            if (C.OverlayFpsSource == 2) { compact.Add(sRealFpsShort); compactLoad.Add(-1); }
+            if (showReal) { compact.Add(sRealFpsShort); compactLoad.Add(-1); }
             if (C.CmMs) { compact.Add(sMsShort); compactLoad.Add(-1); }
             if (C.CmLow) { compact.Add(sLowShort); compactLoad.Add(-1); }
             if (C.CmCpu) { compact.Add(sCpuShort); compactLoad.Add(cpuBar); }
             if (C.CmGpu) { compact.Add(sGpuShort); compactLoad.Add(gpuBar); }
             if (C.CmVram) { compact.Add(sVramShort); compactLoad.Add(vramWarn ? 1f : vramBar); }
             if (C.CmRam) { compact.Add(sRamShort); compactLoad.Add(ramBar); }
+            // 미니의 칸 넓이: 글자에 맞춘다 (고정 74 였을 때 'VRAM 4.2G' 같은 긴 값이 옆 칸에 붙어 넘쳤다)
+            compactW.Clear();
+            for (int i = 0; i < compact.Count; i++) compactW.Add(sLine != null ? Mathf.Max(56f, Mathf.Ceil(sLine.CalcSize(new GUIContent(compact[i])).x) + 22f) : 74f);
         }
+        private readonly List<float> compactW = new List<float>(6);
+        private bool showReal;
 
         // ── 모양 ───────────────────────────────────────────────────────
         private static Color Hex(int rgb, float a = 1f) { return new Color(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f, a); }
@@ -1036,14 +1043,14 @@ namespace StutterFix
         private float MiniWidth()
         {
             float w = 16 + 96;                       // 점 + FPS
-            for (int i = 0; i < compact.Count; i++) w += 74;
+            for (int i = 0; i < compact.Count; i++) w += i < compactW.Count ? compactW[i] : 74f;
             return w + 70 + 14;                      // 그래프
         }
 
         private float PanelHeight()
         {
             float h = 66;                          // FPS 머리
-            if (C.OverlayFpsSource == 2) h += 15;
+            if (showReal) h += 15;
             if (C.OvGraph) h += 54;
             if (C.OvSession) h += 52;
             int rows = (C.OvCpu ? 1 : 0) + (C.OvGpu ? 1 : 0) + (C.OvVram ? 1 : 0) + (C.OvRam ? 1 : 0);
@@ -1323,8 +1330,9 @@ namespace StutterFix
             for (int i = 0; i < compact.Count; i++)
             {
                 Fill(new Rect(x, r.y + 12, 1, r.height - 24), new Color(1, 1, 1, 0.08f), 0);
-                WithColor(sLine, compactLoad[i] < 0 ? Fg : LoadColor(compactLoad[i], Fg), new Rect(x, r.y, 74, r.height), compact[i]);
-                x += 74;
+                float cw = i < compactW.Count ? compactW[i] : 74f;
+                WithColor(sLine, compactLoad[i] < 0 ? Fg : LoadColor(compactLoad[i], Fg), new Rect(x, r.y, cw, r.height), compact[i]);
+                x += cw;
             }
             Fill(new Rect(x, r.y + 12, 1, r.height - 24), new Color(1, 1, 1, 0.08f), 0);
             Graph(new Rect(x + 10, r.y + 12, 64, r.height - 24), 32, false);
@@ -1347,7 +1355,7 @@ namespace StutterFix
             Label(new Rect(ix + iw - 120, cy + 6, 120, 16), sMs, sValue);
             Label(new Rect(ix + iw - 120, cy + 25, 120, 14), sLow, sSub);
             cy += 58;
-            if (C.OverlayFpsSource == 2) { Label(new Rect(ix, cy, iw, 13), sRealFpsShort + " FPS", sLabel); cy += 15; }
+            if (showReal) { Label(new Rect(ix, cy, iw, 13), sRealFpsShort + " FPS", sLabel); cy += 15; }
 
             if (C.OvGraph) { Graph(new Rect(ix, cy, iw, 42), GraphN, true); cy += 54; }
 

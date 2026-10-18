@@ -1955,115 +1955,114 @@ namespace StutterFix
         {
             var c = Main.Config;
             int sub = Sub();
-            if (sub == 0) SubHeading(T("표시", "Display"), T("게임 화면 끝에 프레임, CPU, GPU, VRAM, RAM 사용량을 띄웁니다. 끊기면 왜 끊겼는지 알려 줍니다. 모니터를 잡고 끌면 위치를 옮길 수 있습니다.",
-                "Shows frame time, CPU, GPU, VRAM and RAM at the screen edge and tells you why a hitch happened. Drag it to move it."));
             bool ch = false;
 
             if (sub == 0)
             {
-            GUILayout.BeginVertical(sCard);
+            SubHeading(T("표시", "Display"), T("게임 화면 끝에 FPS, CPU, GPU, VRAM, RAM 을 띄우고, 끊기면 원인을 알려 줍니다. 모니터를 잡고 끌면 옮길 수 있습니다.",
+                "Shows FPS, CPU, GPU, VRAM and RAM at the screen edge and tells you why a hitch happened. Drag it to move it."));
+            BeginGroup();
+            BeginRow();
             GUILayout.Label(T("표시 방식", "Style"), sBody);
-            GUILayout.Space(3);
-            P(T("게임 중 " + Hotkey.Name(c.OverlayKey, c.OverlayMods) + " 로 차례로 바꿀 수 있습니다 (홈에서 키 변경). 아이콘은 누르면 상세 정보가 펼쳐집니다.",
+            P(T("게임 중 " + Hotkey.Name(c.OverlayKey, c.OverlayMods) + " 로 차례로 바꿉니다(홈에서 키 변경). 아이콘을 누르면 상세가 펼쳐집니다.",
                 "Cycle with " + Hotkey.Name(c.OverlayKey, c.OverlayMods) + " in game (change it on Home). Click the icon to expand it."), sDim);
-            GUILayout.Space(10);
+            GUILayout.Space(6);
             ch |= Segment("ovmode", ref c.OverlayMode, new[] { T("끔", "Off"), T("아이콘", "Icon"), T("미니", "Mini"), T("상세", "Detail") });
-            GUILayout.Space(12);
+            EndRow();
+            BeginRow();
+            GUILayout.Label(T("붙일 곳", "Edge"), sBody);
+            GUILayout.Space(6);
             int side = c.OverlayRight ? 1 : 0;
             if (Segment("ovside", ref side, new[] { T("왼쪽 끝", "Left edge"), T("오른쪽 끝", "Right edge") })) { c.OverlayRight = side == 1; ch = true; }
-            GUILayout.EndVertical();
-            GUILayout.Space(12);
-
-            // 모양
-            GUILayout.BeginVertical(sCard);
-            GUILayout.Label(T("모양", "Look"), sBody);
-            GUILayout.Space(8);
+            EndRow();
+            BeginRow();
             ch |= Slider("ovop", ref c.OverlayOpacity, 0.3f, 1f, T("불투명도", "Opacity"), (c.OverlayOpacity * 100).ToString("F0") + "%");
+            EndRow();
+            BeginRow();
             ch |= Slider("ovscale", ref c.OverlayScale, 0.7f, 1.6f, T("크기", "Size"), (c.OverlayScale * 100).ToString("F0") + "%");
+            EndRow();
+            BeginRow();
             ch |= Slider("ovy", ref c.OverlayY, 0f, 1f, T("세로 위치", "Vertical position"), c.OverlayY < 0.34f ? T("위", "Top") : c.OverlayY > 0.66f ? T("아래", "Bottom") : T("가운데", "Middle"));
-            GUILayout.EndVertical();
-            GUILayout.Space(12);
-
+            EndRow();
+            EndGroup();
             }
             if (sub == 1)
             {
-            SubHeading(T("항목", "Items"), T("모니터에 띄울 값을 고릅니다. 고른 것은 흰색으로 바뀝니다.", "Choose what the monitor shows. Selected items turn white."));
+            SubHeading(T("항목", "Items"), T("모니터에 띄울 값을 고릅니다. 고른 것은 흰색입니다.", "Choose what the monitor shows. Selected items are white."));
+            BeginGroup();
+            BeginRow();
             GUILayout.Label(T("FPS 표시", "FPS display"), sBody);
+            P(T("프레임 늘리기를 켰을 때만 다릅니다. 자동은 켜면 표시 FPS(화면에 올라간 장 수, 주사율을 넘지 않음), 끄면 진짜 FPS 입니다. 프레임 시간·1% low·끊김은 언제나 진짜 프레임 기준입니다.",
+                "Only matters with frame generation on. Auto shows output FPS (pictures that reach the screen, never above the refresh rate) when it is on, real FPS otherwise. Frame time, 1% low and hitches always use real frames."), sDim);
+            GUILayout.Space(6);
             int fpsSource = c.OverlayFpsSource + 1;
             if (Segment("ovfpssource", ref fpsSource, new[] { T("자동", "Auto"), T("진짜", "Real"), T("표시", "Output"), T("둘 다", "Both") })) { c.OverlayFpsSource = fpsSource - 1; ch = true; }
-            P(T("기본값인 자동은 프레임 늘리기를 켜면 표시 FPS, 끄면 진짜 FPS를 보여 줍니다. 직접 고른 표시 방식은 유지합니다. 표시 FPS는 생성 프레임까지 합쳐 실제로 화면에 올라간 장 수라서 모니터 주사율보다 높아지지 않습니다. 진짜 FPS가 주사율보다 높으면 표시 FPS가 더 낮게 나오는 것이 정상입니다. 프레임 시간·1% low·끊김·이번 곡 통계는 진짜 프레임 기준입니다.",
-                "Auto, the default, shows output FPS when frame generation is active and real FPS otherwise. Manual selections are retained. Output FPS counts pictures that actually reach the screen, generated ones included, so it never exceeds the refresh rate; with real FPS above the refresh rate it is normal for it to be lower. Frame time, 1% low, hitches and level statistics always use real frames."), sDim);
-            GUILayout.Space(12);
-            GUILayout.BeginVertical(sCard);
-            GUILayout.Label(T("아이콘·미니에 보여 줄 항목", "Items in icon and mini"), sBody);
-            GUILayout.Space(3);
-            P(T("FPS 는 항상 보입니다. 사용률이 75%를 넘으면 주황, 90%를 넘으면 빨강으로 바뀝니다.",
-                "FPS is always shown. Usage turns orange above 75% and red above 90%."), sDim);
-            GUILayout.Space(10);
+            EndRow();
+            BeginRow();
+            GUILayout.Label(T("아이콘·미니", "Icon and mini"), sBody);
+            P(T("FPS 는 항상 보입니다. 사용률이 75% 를 넘으면 주황, 90% 를 넘으면 빨강.", "FPS is always shown. Usage turns orange above 75%, red above 90%."), sDim);
+            GUILayout.Space(6);
             GUILayout.BeginHorizontal();
             ch |= Chip(ref c.CmMs, T("프레임 시간", "Frame time"));
             ch |= Chip(ref c.CmLow, "1% low");
             ch |= Chip(ref c.CmCpu, "CPU");
             ch |= Chip(ref c.CmGpu, "GPU");
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(8);
-            GUILayout.BeginHorizontal();
             ch |= Chip(ref c.CmVram, "VRAM");
             ch |= Chip(ref c.CmRam, "RAM");
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-            GUILayout.EndVertical();
-            GUILayout.Space(12);
-
-            // 상세 정보에 보여 줄 항목
-            GUILayout.BeginVertical(sCard);
-            GUILayout.Label(T("상세 정보에 보여 줄 항목", "Items in the detail view"), sBody);
-            GUILayout.Space(10);
+            EndRow();
+            BeginRow();
+            GUILayout.Label(T("상세", "Detail view"), sBody);
+            GUILayout.Space(6);
             GUILayout.BeginHorizontal();
             ch |= Chip(ref c.OvGraph, T("그래프", "Graph"));
+            ch |= Chip(ref c.OvSession, T("이번 곡", "This level"));
             ch |= Chip(ref c.OvCpu, "CPU");
             ch |= Chip(ref c.OvGpu, "GPU");
-            ch |= Chip(ref c.OvVram, "VRAM");
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(8);
             GUILayout.BeginHorizontal();
+            ch |= Chip(ref c.OvVram, "VRAM");
             ch |= Chip(ref c.OvRam, "RAM");
             ch |= Chip(ref c.OvGc, T("메모리 정리", "GC"));
             ch |= Chip(ref c.OvHitchList, T("최근 끊김", "Recent hitches"));
-            ch |= Chip(ref c.OvSession, T("이번 곡", "This level"));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-            GUILayout.EndVertical();
-            GUILayout.Space(12);
-
+            EndRow();
+            EndGroup();
             }
             if (sub == 2)
             {
             SubHeading(T("끊김 알림", "Hitch alerts"), T("프레임이 튀면 그 순간 원인을 화면에 띄웁니다.", "Shows the cause on screen the moment a frame spikes."));
-            GUILayout.BeginVertical(sCard);
-            P(T("프레임이 튀면 원인을 띄웁니다: 모드 작업(보라), 메모리 정리, 효과 몰림, GPU 과부하, 게임 처리, 게임 바깥(윈도우나 다른 프로그램). 같은 원인이 연달아 나면 ×2, ×3 으로 묶습니다.",
-                "Shows the likely cause when a frame spikes: mod work (purple), memory cleanup, effect burst, GPU overload, game logic, or something outside the game. Repeats are grouped (×2, ×3)."), sDim);
-            GUILayout.Space(10);
+            BeginGroup();
+            BeginRow();
+            GUILayout.Label(T("알림", "Alerts"), sBody);
+            P(T("원인: 모드 작업(보라), 메모리 정리, 효과 몰림, GPU 과부하, 게임 처리, 게임 바깥(윈도우·다른 프로그램). 같은 원인이 이어지면 ×2, ×3 으로 묶습니다.",
+                "Causes: mod work (purple), memory cleanup, effect burst, GPU overload, game logic, or outside the game. Repeats are grouped (×2, ×3)."), sDim);
+            GUILayout.Space(6);
             int style = !c.HitchAlerts ? 0 : c.AlertDetailed ? 2 : 1;
             if (Segment("alertstyle", ref style, new[] { T("끔", "Off"), T("간단", "Simple"), T("자세히", "Detailed") }))
             {
                 c.HitchAlerts = style > 0; c.AlertDetailed = style == 2; ch = true;
             }
-            GUILayout.Space(10);
+            EndRow();
+            BeginRow();
+            GUILayout.Label(T("위치", "Position"), sBody);
+            GUILayout.Space(6);
             ch |= Segment("alertpos", ref c.AlertPos, new[] { T("모니터 옆", "Beside monitor"), T("화면 위", "Top center"), T("화면 아래", "Bottom center") });
-            GUILayout.Space(12);
+            EndRow();
+            BeginRow();
             ch |= Slider("alertms", ref c.AlertMs, 20f, 100f, T("알림 기준", "Alert above"), c.AlertMs.ToString("F0") + "ms");
-            P(T("이보다 긴 프레임만 알립니다. 33ms 는 60fps 기준 두 프레임이 밀린 것입니다.",
-                "Only frames longer than this are reported. 33ms is two frames at 60 fps."), sDim);
-            GUILayout.EndVertical();
-            GUILayout.Space(12);
-            InfoCard(new[]
-            {
-                T("VRAM 넘침", "VRAM spill"), T("VRAM 줄에 주황색 '넘침'이 뜨면 그래픽 메모리가 모자라 시스템 램으로 밀려난 것입니다. 이때 곡 중에 멈출 수 있습니다.",
-                    "An orange 'spill' on the VRAM row means video memory ran out and data moved to system RAM, which can cause mid-song freezes."),
-            });
+            P(T("이보다 긴 프레임만 알립니다. 33ms 는 60fps 에서 두 프레임 밀린 것입니다.", "Only frames longer than this are reported. 33 ms is two frames at 60 fps."), sDim);
+            EndRow();
+            BeginRow();
+            GUILayout.Label(T("VRAM 넘침", "VRAM spill"), sBody);
+            P(T("VRAM 줄에 주황색 '넘침'이 뜨면 그래픽 메모리가 모자라 시스템 램으로 밀려난 것입니다. 곡 중에 멈출 수 있습니다.",
+                "An orange 'spill' on the VRAM row means video memory ran out and data moved to system RAM; this can cause mid-song freezes."), sDim);
+            EndRow();
+            EndGroup();
             }
             if (ch) Save();
         }
