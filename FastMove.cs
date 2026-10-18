@@ -565,7 +565,7 @@ namespace StutterFix
             if (par) Use(11);
 
             InstantMove.InLoop = true;
-            long pt0 = Probe ? SwTs() : 0, pScaleT = 0, pVisT = 0, pImgT = 0, pOtherT = 0; int pVisChanged = 0;
+            long pt0 = Probe ? SwTs() : 0, pScaleT = 0, pVisT = 0, pImgT = 0, pOtherT = 0, pHeadT = 0, pColT = 0; int pVisChanged = 0;
             try
             {
                 var targets = src;
@@ -596,6 +596,7 @@ namespace StutterFix
                         if (img) ImageBlock(fx, dec);   // 깊이 다음: 이미지·원래 크기·부드럽게·마스크
                         continue;
                     }
+                    long qh = Probe ? SwTs() : 0;
                     InstantMove.DecoStart(AllDead(d));
                     if (placement) setPlacement(dec, mt);
                     if (pos)
@@ -616,17 +617,20 @@ namespace StutterFix
                     }
                     if (rot) { InstantMove.Begin(); InstantMove.CRot(fx, dec, d); }
                     long q0 = Probe ? SwTs() : 0;
+                    if (Probe) pHeadT += q0 - qh;
                     if (scale)
                     {
                         if (sx) { InstantMove.Begin(); InstantMove.CScale(dec, d, 7, sc, k); }
                         if (sy) { InstantMove.Begin(); InstantMove.CScale(dec, d, 8, sc, k); }
                     }
-                    if (Probe) { long q1 = SwTs(); pScaleT += q1 - q0; q0 = q1; }
+                    long qs = 0;
+                    if (Probe) { long q1 = SwTs(); pScaleT += q1 - q0; q0 = q1; qs = q1; }
                     if (col) { InstantMove.Begin(); InstantMove.CCol(fx, dec, d); }
                     if (opa) { InstantMove.Begin(); InstantMove.COpa(fx, dec, d); }
                     if (par) { InstantMove.Begin(); InstantMove.CParMul(dec, d, parTarget, k); }
                     InstantMove.DecoEnd();
                     long q2 = Probe ? SwTs() : 0;
+                    if (Probe) pColT += q2 - qs;
                     if (vis) setVisible(dec, visV ? !forceHideRef(dec) : false);
                     if (Probe) { long q3 = SwTs(); pVisT += q3 - q2; q2 = q3; }
                     if (dep) setDepth(dec, depth);
@@ -643,9 +647,9 @@ namespace StutterFix
                     if (total >= 1.0 && probeLogged < 60)
                     {
                         probeLogged++;
-                        Main.Entry.Logger.Log(string.Format("[장식 이동 쪼개 보기] 곡 {0:F1}초 장식 {1}개 합계 {2:F2}ms: 크기 {3:F2}, 보이기 {4:F2}, 깊이·이미지 {5:F2}, 나머지 {6:F2} | 크기={7}{8} 보이기={9}({10}) 이미지={11} 길이={12}",
-                            scrConductor.instance != null ? scrConductor.instance.songposition_minusi : -1.0, src.Count, total, pScaleT / f, pVisT / f, pImgT / f, total - (pScaleT + pVisT + pImgT) / f,
-                            sx ? "X" : "", sy ? "Y" : "", vis, visV, img, durRef(fx)));
+                        Main.Entry.Logger.Log(string.Format("[장식 이동 쪼개 보기] 곡 {0:F1}초 장식 {1}개 합계 {2:F2}ms: 위치·회전 {13:F2}, 색·투명도 {14:F2}, 크기 {3:F2}, 보이기 {4:F2}, 깊이·이미지 {5:F2}, 나머지 {6:F2} | 크기={7}{8} 보이기={9}({10}) 이미지={11} 길이={12}",
+                            scrConductor.instance != null ? scrConductor.instance.songposition_minusi : -1.0, src.Count, total, pScaleT / f, pVisT / f, pImgT / f, total - (pScaleT + pVisT + pImgT + pHeadT + pColT) / f,
+                            sx ? "X" : "", sy ? "Y" : "", vis, visV, img, durRef(fx), pHeadT / f, pColT / f) + " | 쓰는 것 위치" + pos + " 회전" + rot + " 색" + col + " 투명도" + opa + " 시차" + par + " 배치" + placement);
                     }
                 }
             }
