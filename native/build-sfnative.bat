@@ -29,7 +29,9 @@ cl /nologo /c /O2 /GL /MT /Brepro /W3 "%~dp0sfnative\sfnative.c" "%~dp0sfnative\
 if errorlevel 1 exit /b 1
 cl /nologo /c /std:c++17 /EHsc /O2 /MT /Brepro /W4 /WX "%~dp0sfnative\framegen.cpp"
 if errorlevel 1 exit /b 1
-link /nologo /DLL /LTCG /Brepro /OUT:sfnative.dll sfnative.obj sfinflate.obj cpu_features.obj utils.obj sfdxt.obj sfdxt_sse2.obj sfdxt_sse4.obj sfdxt_avx2.obj sfmotion.obj sfmotion_sse2.obj sfmotion_sse4.obj sfmotion_avx2.obj sfmotion_avx512skx.obj framegen.obj d3d11.lib dxgi.lib d3dcompiler.lib user32.lib
+cl /nologo /c /std:c++17 /O2 /fp:strict /arch:SSE2 /MT /Brepro /W4 /WX "%~dp0sfnative\decobatch.cpp"
+if errorlevel 1 exit /b 1
+link /nologo /DLL /LTCG /Brepro /OUT:sfnative.dll sfnative.obj sfinflate.obj cpu_features.obj utils.obj sfdxt.obj sfdxt_sse2.obj sfdxt_sse4.obj sfdxt_avx2.obj sfmotion.obj sfmotion_sse2.obj sfmotion_sse4.obj sfmotion_avx2.obj sfmotion_avx512skx.obj framegen.obj decobatch.obj d3d11.lib dxgi.lib d3dcompiler.lib user32.lib
 if errorlevel 1 exit /b 1
 copy /y sfnative.dll "%~dp0sfnative.dll" >nul
 if errorlevel 1 exit /b 1
