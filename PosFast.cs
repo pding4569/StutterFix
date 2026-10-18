@@ -117,7 +117,9 @@ namespace StutterFix
             // Raw game IL writes screenRelativePos unconditionally, even without clamp.
             // Retain the requested pivot-only store only when that omitted write is bit-identical.
             // CameraAspect was already rejected, so no screen aspect calculation is needed.
-            if (reason == 0 && !Bit(Screen(pos, r.D.pivotOffsetVec), r.D.parallax.screenRelativePos)) reason = 13;
+            // 2026-10-19: screenRelativePos 는 clampToScreen==false 이고 placement 가 Camera 계열이 아니면 아무도 읽지 않는 죽은 상태다
+            // (IL 전수: 읽는 곳은 scrParallax.SetTrans 의 clampToScreen 분기 하나뿐, 쓰는 곳은 UpdateScreenClamp 뿐이고 clamp 가 켜질 때는
+            // UpdateScreenClamp 가 그 시점의 위치로 다시 계산한다). 그래서 이 값의 비트 동일은 요구하지 않는다.
             if (reason == 0 && !MoveApply.SkipForLate(r.D)) reason = 11;
             if (reason != 0) { full++; reasons[reason]++; e.Has = false; return false; }
             r.D.pivotPosVec = pos;
@@ -159,7 +161,7 @@ namespace StutterFix
             checkedN++;
             string field = !Bit(pos,d.pivotPosVec) ? "pivotPosVec" : !Bit(off,d.pivotOffsetVec) ? "pivotOffsetVec"
                 : !Bit(child,d.childTransform.localPosition) ? "child.localPosition"
-                : !Bit(screen,p.screenRelativePos) ? "screenRelativePos" : clamp != p.clampToScreen ? "clampToScreen" : null;
+                : clamp != p.clampToScreen ? "clampToScreen" : null;   // screenRelativePos 는 clamp 꺼짐일 때 죽은 상태라 비교하지 않는다
             if (field == null) return;
             mismatch++; e.Rejected = true; e.Has = false;
             if (first == "none") first = d.name + " field=" + field;
@@ -225,7 +227,6 @@ namespace StutterFix
             int reason = MemoGuard(ref e,d);
             if (reason != 0) return reason;
             var pos = new Vector2(value, -value);
-            if (!Bit(Screen(pos,d.pivotOffsetVec), d.parallax.screenRelativePos)) return 13;
             MoveApply.RegisterLate(d, set, list);
             d.pivotPosVec = pos;
             return 0;
