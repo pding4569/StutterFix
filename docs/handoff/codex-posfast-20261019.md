@@ -1,0 +1,19 @@
+# Codex 작업 D: PosFast — 보이는 장식의 위치 애니메이션에서 `SetPosition` 체인 생략 — 게임 실행·Mods 설치·커밋 금지
+
+결과: `docs/handoff/codex-posfast-20261019-result.md` (**apply_patch 로 UTF-8 BOM, 쓴 뒤 한글 확인**), 한국어, 추측은 "추정". 빌드 셋 오류 0. 켜기: 모드 폴더 `posfast-on` 파일(기본 끔; Claude 가 A/B 로 이득을 확인한 뒤 기본값을 바꾼다). 검증 명령 `posfast verify|state`.
+
+## 배경 (Claude 실측, Arche 곡 257.8~278.8초 21초 창, 2560×1440 120Hz, 판마다 새 프로세스)
+
+- 지금 `DecoAnim` 갱신이 프레임당 1.88ms(창 평균, 가장 무거운 270초는 약 3.3ms). 그중 위치 애니메이션 한 스텝이 `StepPair`(위치 X·Y 쌍) 또는 `Step`+`OnUpdate`(`SetPositionX/Y`) → 모드 패치 체인(`InvisibleSkip.LazyPrefix`, `MoveApply` 트랜스파일러가 바꾼 `SetLocal`/`ClampNow`/`UpdateNow`, `Dormancy` …) → 게임 `scrDecoration.SetPosition(pivotPos, pivotOffset)`. 관측 도구(`updatecost`, 부풀려짐 보정 약 0.4배) 기준 `SetPosition` 1.4µs(안의 `UpdateScreenClamp` 0.06µs), 프레임당 약 890번 → 실제 약 0.45ms.
+- 이미 해 둔 것: 보이는 이미지 장식은 회전·크기를 필드에만 저장(`MoveApply.DeferTransform`)하고, 새로 넣은 **TightLate**(`TightLate.cs`)가 매니저 LateUpdate 에서 조건을 통과한 장식의 `UpdatePosition` 상당(위치·회전·크기 엔진 쓰기)을 얇은 루프로 처리한다(A/B 로 270초 구간 +8% 확인됨). 위치도 `UpdateNow`→`SkipForLate`(LateUpdate 가 이번 프레임 그 장식에 `UpdatePosition` 을 부를 것이므로 건너뜀) 구조.
+- 가설: `SetPosition` 의 나머지 부분은 위치 애니메이션 중에는 매번 같은 값을 쓴다 — `SetPosition`(게임 IL, `docs/handoff/codex-updatecost-20261018-decoration-il.txt` 등 참고): `parallax==null` 이면 반환, `vector=(pivotOffset+croppedPivotOffset)/trueScaleMultiplier`, `pivotPosVec=pivotPos`, `childTransform.localPosition=vector`, (에디터: 선택 테두리), `pivotOffsetVec=pivotOffset`, `UpdateScreenClamp()`, `UpdatePosition()`. 위치 애니메이션은 `pivotOffset` 을 안 바꾸므로 `pivotPosVec` 만 바뀐다. `UpdateScreenClamp()` 는 `parallax.clampToScreen`(placementType 이 Camera 계열일 때만 참)일 때만 `screenRelativePos` 를 `pivotPosVec` 에서 다시 계산한다(Arche 에서 clamp 장식 15개). `UpdatePosition()` 은 LateUpdate 에 맡긴다.
+- 지난 Codex 보고(깨진 문서)에서 "상태 불일치 반례가 있어 보류" 였다. 그 반례가 무엇인지 코드/IL 로 다시 찾아 명확히 정리할 것(예: `croppedPivotOffset` 이 `ffxMoveDecorationsPlus.StartEffect` 에서 바뀜, `trueScaleMultiplier` 가 `SetTextureScaleMultiplier`/Setup 에서 바뀜, 첫 `SetPosition` 전 child 위치, `SetParallax` 가 `UpdateScreenClamp` 를 직접 부름 등).
+
+## 할 일
+
+1. **조건 엄밀화**: 장식별 메모(구조체 배열 슬롯 — TightLate 의 `Entry`/슬롯 방식을 참고하되 DecoAnim 쪽에서 쓸 가벼운 구조, 장식마다 `Dictionary` 를 프레임마다 조회하지 말 것: 효과 시작(`FastMove`/`NewRec`)에서 `Rec` 에 메모 참조를 달거나 장식→슬롯 인덱스를 한 번 정해 `Rec` 에 저장)에 마지막 **완전한** `SetPosition` 때의 `pivotOffsetVec`, `croppedPivotOffset`, `trueScaleMultiplier` 의 비트와 `placementType`/`clampToScreen` 을 기억한다. 위치 스텝 때: 정확히 `scrVisualDecoration`, `parallax != null`, `!clampToScreen`(그리고 placementType 이 clamp 를 켜지 않음), `ADOBase.editor == null`, `MoveApply.SkipForLate` 가 참(보이는 장식·재생 중), `pivotOffsetVec`·`croppedPivotOffset`·`trueScaleMultiplier` 가 메모와 비트 동일, 다른 모드가 `SetPosition`/`SetPositionX/Y`/`UpdateScreenClamp` 를 패치하지 않음(`Harmony.GetPatchInfo`, `DecoAnim.PairAllowed` 와 같은 방식) 이면 → `pivotPosVec` 필드만 새 값으로 쓰고 `SkipForLate` 의 등록(`lateSkippedSet.Add`)은 그대로 한다(= 원래 `UpdateNow` 가 한 일). 하나라도 어긋나면 기존 경로(완전한 `SetPosition`)로 가고 그 결과로 메모를 갱신.
+   `StepPair` 와 `Step` 의 위치 키(1,2) 두 곳. 한 축 예외 폴백과 완료(OnComplete) 처리는 기존과 동일.
+2. **`posfast verify`**: 생략한 호출의 1/64 를 같은 프레임에 원래 `SetPosition(pivotPos, pivotOffset)` 을 다시 실행해(부작용 없음 근거: 같은 입력이면 같은 결과를 쓰는 함수임 — 증명할 것) 전후 `pivotPosVec`, `pivotOffsetVec`, `childTransform.localPosition`, `parallax.screenRelativePos/clampToScreen` 를 비트 비교, 불일치는 개수·첫 예(장식 이름·필드)를 로그. 불일치가 나면 그 장식만 이후 원래 경로로(메모 무효화).
+3. **마이크로 벤치**: `posfast bench` 로 더미 장식(`TightLate` 의 `Bench` 처럼 `GetUninitializedObject`+더미 Transform)에서 생략 경로 vs 완전한 `SetPosition` 체인 흉내(실제 체인은 게임 코드라 더미로는 못 부르니 생략 경로 µs 만)를 재서 결과에 적는다(생략 경로 예산 장식당 0.15µs 이하: 필드 비교 몇 개 + 필드 쓰기 + `SkipForLate`).
+4. 통계: 생략 횟수/완전 호출 횟수/이유별(조건 불일치 종류별) 개수.
+5. 결과 문서에 예상 이득(식: 프레임당 위치 스텝 수 × (체인 µs − 생략 경로 µs), 우리가 잰 값 `SetPosition` 실제 약 0.5µs/호출 가정)과 Claude 가 돌릴 순서(`posfast-on` 파일 켬/끔 새 프로세스 ABBA, `fuse begin/end` 로 DecoAnim 갱신 ms, `posfast verify` 곡 전체, 곡 끝 `decosig` 대조)를 적어라.
