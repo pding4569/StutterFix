@@ -846,3 +846,4 @@ Codex 구현(`TightLate.cs`, `docs/handoff/codex-tightlate-20261019-result.md`):
 Codex 구현(`DecoAnim.GroupStep.cs`). 비트 대조 `groupstep verify` 525,634번 불일치 0. 그러나 TightLate 켠 상태 A/B(끔 → 켬): DecoAnim 갱신 1.87 → 2.29ms, 같은 21초 프레임 3,217 → 3,068개(−4.6%). 원인: 묶음 안에서 위치 X·Y 를 각각 `SetPosition` 으로 불러(PairXY 가 합치던 것을 잃음) 두 번째 호출 약 0.4ms 증가. → 위치 쌍 합치기를 되살린 v2 를 Codex 에 맡김.
 ## 2026-10-19 밤: GPU 무손실 점검(Codex) — 새 최적화 없음
 `docs/handoff/codex-gpufree-20261019-result.md`: 깊이/스텐실 축소(SpriteMask 가 스텐실 사용 가능성), RT 형식·clear, 필터 중립 경로, 안개 R8 텍스처(RGB 상수 조건 4개 이미지 모두 실패) 모두 비트 동일 증명 불가 → 적용 0.
+- TightLate 같은 값 건너뛰기: 검증 불일치 0(164,934번), 건너뛴 비율 위치 1%·회전 9%·크기 34% → 기본 끔(tightskip-on)
