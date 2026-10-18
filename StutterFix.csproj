@@ -179,6 +179,7 @@
     <Compile Include="Precheck.cs" />
     <Compile Include="FrameParts.cs" />
     <Compile Include="DecoAnim.cs" />
+    <Compile Include="DecoAnim.FastLane.cs" />
     <Compile Include="PosFast.cs" />
     <Compile Include="DecoAnim.GroupStep.cs" />
     <Compile Include="UpdateEvalMemo.cs" />

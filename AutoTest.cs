@@ -1067,16 +1067,19 @@ namespace StutterFix
                 case "decosig": Log("[장식 상태 기록] "+DecoSig.Run(modDir,arg)+" | "+LazySprite.State); return true;
                 case "fuse": Log("[합치기 연구] " + (arg == "begin" ? FuseProbe.Begin() : FuseProbe.End())); return true;
                 case "phasereport": PhaseWatch.ReportSong(); return true;
+#if AUTOTEST
                 case "decosamp": if (arg == "begin") { DecoAnim.SampReset(); DecoAnim.SampOn = true; Log("[decosamp] 시작"); } else { DecoAnim.SampOn = false; Log("[decosamp] " + DecoAnim.SampReport()); } return true;
                 case "decoablate":
                     { int m = 0; foreach (var k in arg.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)) m |= 1 << int.Parse(k); DecoAnim.AblateMask = m; Log("[ablate] 건너뛸 키 비트마스크 " + m + " (" + arg + ") — 측정 전용, 화면이 달라진다"); }
                     return true;
+#endif
                 case "cpubreak": Log("[CPU 분해] " + (arg == "on" ? CpuBreak.On() : arg == "begin" ? CpuBreak.Begin() : CpuBreak.End())); return true;
                 case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
                 case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;
                 case "tightlate": Log("[tightlate] " + TightLate.Command(arg)); return true;
                 case "posfast": Log("[posfast] " + PosFast.Command(arg)); return true;
                 case "groupstep": Log("[groupstep] " + DecoAnim.GroupCommand(arg)); return true;
+                case "fastlane": Log("[fastlane] " + DecoAnim.FastCommand(arg)); return true;
                 case "offscreenstat": Log("[offscreenstat] " + (arg == "begin" ? OffscreenProbe.Begin() : arg == "end" ? OffscreenProbe.End() : "offscreenstat begin|end")); return true;
                 case "decostruct": Log("[합치기 연구] " + FuseProbe.Struct()); return true;
                 case "animstat": Log("[장식 애니메이션 상태] "+DecoAnim.Stat()+" | "+Dormancy.Stat()+" | 위치 X·Y 합침 "+DecoAnim.PairSteps+" | 회전·크기 LateUpdate 에 맡김 "+MoveApply.RotScaleDeferred+" 위치 맡김 "+MoveApply.LateSkips+" 대조 "+MoveApply.LateChecked+" 다름 "+MoveApply.LateMismatch+" 목록에 없음 "+MoveApply.LateNotInList); return true;

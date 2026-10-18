@@ -5,6 +5,7 @@ using DG.Tweening;
 using UnityEngine;
 
 namespace UnityEngine {
+    static class Time { internal static float smoothDeltaTime=1f/120,deltaTime=1f/120; }
     struct Vector2 {
         public float x,y;
         public Vector2(float a,float b){x=a;y=b;}
@@ -23,6 +24,13 @@ namespace HarmonyLib {
     static class Harmony { internal static PatchInfo GetPatchInfo(MethodBase m)=>null; }
 }
 namespace StutterFix {
+    static class UpdateEvalMemo { internal static void NewFrame(){} }
+    static class PosFast {
+        internal static bool Enabled=false;
+        internal static bool Try(DecoAnim.Rec r,Vector2 v)=>false;
+        internal static void Completing(DecoAnim.Rec r){}
+        internal static void Remember(DecoAnim.Rec r){}
+    }
     static class NativeMotion { internal static bool Enabled,Failed; }
     static class Edition { internal const bool Dev=false; }
     static class MoveApply { internal static bool DeferTransform(scrDecoration d)=>d.Deferred; }
@@ -33,6 +41,9 @@ namespace StutterFix {
     }
     internal static partial class DecoAnim {
         private static readonly List<Rec> recs=new List<Rec>();
+        private static double LastFrameMs,UpdateMs;
+        private static long Frames;
+        private static void PrepareNative(float td){}
         private static long activeNativeEpoch,Steps,Completed,profN;
         private static readonly long[] ProfN=new long[16],ProfApply=new long[16],ProfSet=new long[16];
         private const bool Prof=false;
@@ -63,10 +74,12 @@ namespace StutterFix {
         private static void Apply(Rec r,float to,bool native=false)=>ApplyE(r,ZeroTween.Eval(r.E,to,r.Dur,r.Over,r.Period));
         private static void Hit(int key) {
             if(benchStubs)return;
+            var callback=onHit;onHit=null;callback?.Invoke();
             trace.Add(key); calls++;
             if(mutation && calls==1) { recs[2].Pos+=0.25f; recs[3].Running=false; }
             if(calls==throwCall)throw new InvalidOperationException("injected setter");
         }
+        private static Action onHit;
         private static void setPosX(scrDecoration d,float f,Vector2 off){Hit(1);d.Pivot.x=f;}
         private static void setPosY(scrDecoration d,float f,Vector2 off){Hit(2);d.Pivot.y=f;}
         private static void setRot(scrDecoration d,float f){Hit(5);d.Rot=f;}
@@ -77,6 +90,7 @@ namespace StutterFix {
         private static void setParOffY(scrDecoration d,float f){}
         private static void setOpa(scrDecoration d,float f){}
         private static void setCol(scrDecoration d,Color f){}
+        private static void PositionUpdate(Rec r,float f){if(r.Key==1)setPosX(r.D,f,pivotOffRef(r.D));else setPosY(r.D,f,pivotOffRef(r.D));}
 
         private static void Require(bool b,string why){if(!b)throw new Exception(why);}
         private static void Setup(bool deferred,Ease ease,int fail,bool mutate,float pos,float dur,int[] keys) {
@@ -184,7 +198,129 @@ namespace StutterFix {
             // No Verify/Census/Stopwatch calls are performed by StepGroup with probe off.
             Console.WriteLine("PASS scalar cases="+cases+" pair cases="+pairCases+"; state guards=7; native/duplicate/separated/mutation/oracle-exception/pair-fallback PASS; probe-off 10000 frames allocated="+allocated);
             BenchOffline();
+            FastOffline();
         }
+        private static void FastOffline()
+        {
+            fastCompatible=true; FastLane=FastInline=FastCache=true;
+            benchStubs=true; mutation=false; PairXY=false; fastVerify=true;
+            int cases=0;
+            foreach(int[] keys in new[]{new[]{5,7,8},new[]{8,7,5},new[]{7,7,8},new[]{5,1,8}})
+            foreach(bool deferred in new[]{false,true})
+            foreach(Ease ease in (Ease[])Enum.GetValues(typeof(Ease)))
+            foreach(float dt in new[]{0f,.016f,1f,1.1f,-.02f})
+            {
+                if(ease==Ease.INTERNAL_Custom || ease==Ease.INTERNAL_Zero)continue;
+                Setup(deferred,ease,0,false,0,1,keys); foreach(var r in recs)GroupIndividual(r,dt); string expected=Signature();
+                Setup(deferred,ease,0,false,0,1,keys); FastInvalidate();
+                foreach(var r in recs){Steps++;if(!FastTryStep(r,dt))Step(r,dt);}
+                Require(expected==Signature(),"fast parity "+ease+" "+dt+" "+string.Join(",",keys));cases++;
+            }
+            Require(fastMismatch==0,"fast verify mismatch");
+            Console.WriteLine("FAST PASS cases="+cases+" "+FastCommand("state"));
+            // Exercise the actual production compactor and sticky dirty gate.
+            for(int mask=0;mask<256;mask++){
+                recs.Clear();fastDirty=false;
+                var dead=new List<Rec>();var alive=new List<Rec>();
+                for(int i=0;i<8;i++){
+                    var r=new Rec{Running=(mask&(1<<i))==0,InList=true};recs.Add(r);
+                    if(r.Running)alive.Add(r);else {dead.Add(r);fastDirty=true;}
+                }
+                Require(FastMaySkipCompact()==(mask==0),"compact gate");
+                // All InList bits must survive until the end-of-frame pass.
+                foreach(var r in dead)Require(r.InList,"early reuse");
+                Compact();Require(recs.Count==alive.Count,"compact size");
+                for(int i=0;i<recs.Count;i++)Require(ReferenceEquals(recs[i],alive[i]),"compact stable order");
+                foreach(var r in dead)Require(!r.InList,"removed InList");
+            }
+            recs.Clear();recs.Add(new Rec{Running=false,InList=true});fastDirty=false;fastSerial=63;
+            Require(!FastMaySkipCompact() && !FastLane && fastMismatch==1,"compact verify catches omitted dirty");
+            FastLane=true;fastMismatch=0;fastVerify=false;Compact();
+            Console.WriteLine("FAST COMPACT PASS 256 stable-order/InList cases; verify fail-closed PASS");
+            int updateCases=0;
+            foreach(bool grouped in new[]{false,true})foreach(bool pair in new[]{false,true})
+            foreach(float dt in new[]{0f,.016f,1f,1.1f,-.02f})foreach(int fail in new[]{0,1,2,4})
+            {
+                string baseline=null;
+                for(int mode=0;mode<2;mode++){
+                    Setup(false,Ease.OutCubic,fail,false,0,1,new[]{1,2,5,7,8});
+                    GroupEnabled=grouped;PairXY=pair;benchStubs=false;FastLane=mode==1;fastDirty=false;
+                    UnityEngine.Time.deltaTime=UnityEngine.Time.smoothDeltaTime=dt;
+                    UpdatePrefix();UpdatePrefix();
+                    string state=Signature();
+                    if(mode==0)baseline=state;else Require(state==baseline,"UpdatePrefix compact parity");
+                }
+                updateCases++;
+            }
+            GroupEnabled=false;FastLane=true;benchStubs=true;
+            string callbackBaseline=null;
+            for(int mode=0;mode<2;mode++){
+                Setup(false,Ease.OutCubic,0,false,0,1,new[]{5,7,8});
+                FastLane=mode==1;PairXY=false;benchStubs=false;fastDirty=false;
+                UnityEngine.Time.deltaTime=UnityEngine.Time.smoothDeltaTime=.016f;
+                onHit=()=>{
+                    Complete(recs[0]);
+                    Require(recs[0].InList,"completed record released inside callback");
+                    recs.Add(new Rec{D=recs[1].D,Key=5,Dur=1,E=Ease.OutCubic,FEnd=12,InList=true});
+                };
+                // Setup's records need the same list membership as NewRec.
+                foreach(var r in recs)r.InList=true;
+                UpdatePrefix();
+                if(mode==0)callbackBaseline=Signature();else Require(callbackBaseline==Signature(),"append + complete earlier record");
+            }
+            FastLane=true;benchStubs=true;
+            Console.WriteLine("FAST UPDATE PASS actual UpdatePrefix cases="+updateCases+" (pair/group/dt/exception)");
+            Console.WriteLine("FAST UPDATE callback append/earlier Complete/InList timing PASS");
+            fastVerify=false;
+            const int n=2150,repeat=200;
+            foreach(int key in new[]{5,7,8,14,15,16})
+            {
+                recs.Clear();
+                benchPairs.Clear();
+                for(int i=0;i<n;i++)recs.Add(new Rec{D=new scrDecoration{Deferred=true},Key=key==14?1:key,Dur=1000000,E=Ease.OutCubic,FEnd=15,VEnd=new Vector2(2,3),Over=1.70158f,InList=true});
+                if(key==14)foreach(var r in recs)benchPairs[r]=new Rec{D=r.D,Key=2,Dur=r.Dur,E=r.E,FEnd=r.FEnd,Over=r.Over};
+                var samples=new double[7];
+                string line="FAST BENCH key="+key+" us/call baseline/fast median=";
+                for(int mode=0;mode<2;mode++)
+                {
+                    for(int warm=0;warm<10;warm++)BenchFastTick(key,mode);
+                    for(int s=0;s<7;s++){
+                        long t=System.Diagnostics.Stopwatch.GetTimestamp();
+                        for(int f=0;f<repeat;f++)BenchFastTick(key,mode);
+                        samples[s]=(System.Diagnostics.Stopwatch.GetTimestamp()-t)*1e6/System.Diagnostics.Stopwatch.Frequency/repeat/n;
+                    }
+                    Array.Sort(samples);line+=samples[3].ToString("F4")+"/";
+                }
+                Console.WriteLine(line);
+            }
+            recs.Clear();GroupEnabled=false;PairXY=false;fastVerify=false;
+            for(int i=0;i<6417;i++)recs.Add(new Rec{D=new scrDecoration{Deferred=true},Key=5,Dur=1000000,E=Ease.OutCubic,FEnd=15});
+            UnityEngine.Time.deltaTime=UnityEngine.Time.smoothDeltaTime=1f/120;
+            foreach(bool enabled in new[]{false,true}){
+                FastLane=enabled;fastDirty=false;
+                for(int warm=0;warm<100;warm++)UpdatePrefix();
+                var samples=new double[7];long alloc=GC.GetAllocatedBytesForCurrentThread();
+                for(int s=0;s<7;s++){
+                    long t=System.Diagnostics.Stopwatch.GetTimestamp();
+                    for(int f=0;f<repeat;f++)UpdatePrefix();
+                    samples[s]=(System.Diagnostics.Stopwatch.GetTimestamp()-t)*1000.0/System.Diagnostics.Stopwatch.Frequency/repeat;
+                }
+                alloc=GC.GetAllocatedBytesForCurrentThread()-alloc;Array.Sort(samples);
+                Require(alloc==0,"production Update allocation");
+                Console.WriteLine("FAST WHOLE UPDATE enabled="+enabled+" 6417 records ms/frame median="+samples[3].ToString("F4")+" allocated="+alloc);
+            }
+        }
+        private static void BenchFastTick(int key,int mode)
+        {
+            if(key==16){if(mode==0)Compact();else if(fastDirty)Compact();return;}
+            foreach(var r in recs){
+                if(key==15){if(!r.Running)throw new Exception();continue;}
+                if(key==14){var next=benchPairs[r];StepPair(r,next,1f/120);continue;}
+                fastLast=r.D;
+                if(mode==0)Step(r,1f/120);else FastTryStep(r,1f/120);
+            }
+        }
+        private static readonly Dictionary<Rec,Rec> benchPairs=new Dictionary<Rec,Rec>();
         private static void BenchOffline() {
             const int groups=2150,repeat=200;
             groupProbe=groupVerify=false; PairXY=true;throwCall=0;mutation=false;benchStubs=true;trace.Clear();

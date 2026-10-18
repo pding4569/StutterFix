@@ -19,8 +19,9 @@ def block(marker):
 
 parts = [block('internal sealed class Rec')]
 parts += [block('private static void ' + name + '(') for name in
-          ('Startup', 'ApplyE', 'OnUpdate', 'OnComplete', 'Step', 'StepPair')]
-fixture = 'using System; using DG.Tweening; using UnityEngine;\nnamespace StutterFix { internal static partial class DecoAnim {\n' + '\n'.join(parts) + '\n} }\n'
+          ('Startup', 'ApplyE', 'OnUpdate', 'OnComplete', 'Step', 'StepPair', 'Compact', 'CompactRecords', 'Complete')]
+parts += [block('public static void UpdatePrefix(')]
+fixture = 'using System; using System.Collections.Generic; using DG.Tweening; using UnityEngine;\nnamespace StutterFix { internal static partial class DecoAnim {\n' + '\n'.join(parts) + '\n} }\n'
 (here / 'obj').mkdir(exist_ok=True)
 (here / 'obj/ProductionFixture.cs').write_text(fixture, encoding='utf-8')
 subprocess.run(['dotnet', 'run', '--project', str(here / 'GroupStepCheck.csproj'), '-c', 'Release'], check=True)

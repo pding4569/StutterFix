@@ -109,6 +109,7 @@ namespace StutterFix
                 if (!ZeroTween.CanEase) { Main.Entry.Logger.Log("[장식 애니메이션] 이징 함수가 없어 끔"); return; }
                 UpdateEvalMemo.Configure(Main.Entry.Path);
                 ConfigureGroup(Main.Entry.Path);
+                ConfigureFastLane(Main.Entry.Path);
                 var d = typeof(scrDecoration);
                 setPosX = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionX", new[] { typeof(float), typeof(Vector2) }));
                 setPosY = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionY", new[] { typeof(float), typeof(Vector2) }));
@@ -391,7 +392,7 @@ namespace StutterFix
             if (Prof && (++profN & 15) == 0) { long a0 = System.Diagnostics.Stopwatch.GetTimestamp(); Apply(r, to, true); long a1 = System.Diagnostics.Stopwatch.GetTimestamp(); OnUpdate(r); long a2 = System.Diagnostics.Stopwatch.GetTimestamp(); int k = r.Key & 15; ProfN[k]++; ProfApply[k] += a1 - a0; ProfSet[k] += a2 - a1; }
             else { Apply(r, to, true);
             OnUpdate(r); }
-            if (done) { r.Running = false; Completed++; OnComplete(r); }
+            if (done) { r.Running = false; fastDirty = true; Completed++; OnComplete(r); }
         }
         // 위치 X(r)·Y(n) 짝: 원래는 X 진행 -> SetPositionX(값) [-> 끝나면 SetPositionX(끝값)] -> Y 진행 -> SetPositionY(값) [-> SetPositionY(끝값)].
         // SetPositionX/Y 는 SetPosition(pivotPosVec.WithX/Y(v), 오프셋) 이고 SetPosition 의 결과(pivotPosVec, 자식 위치, 화면 고정 값, UpdatePosition)는
@@ -412,8 +413,8 @@ namespace StutterFix
                 setPos(r.D, pos, pivotOffRef(r.D));
                 PosFast.Remember(r);
             }
-            if (dr) { r.Running = false; Completed++; }
-            if (dn) { n.Running = false; Completed++; }
+            if (dr) { r.Running = false; fastDirty = true; Completed++; }
+            if (dn) { n.Running = false; fastDirty = true; Completed++; }
         }
 
         private static void PositionUpdate(Rec r, float value)
@@ -430,6 +431,7 @@ namespace StutterFix
         // Kill(true) / KillAll(true): 끝 위치로 한 번 (시작 전이면 시작 처리부터)
         private static void Complete(Rec r)
         {
+            fastDirty = true;
             if (!r.Running) return;
             if (!r.Started) Startup(r);
             r.Pos = r.Dur;
@@ -446,7 +448,7 @@ namespace StutterFix
             var r = t.id as Rec;
             if (r == null) return true;
             if (complete) { Killed++; Complete(r); }
-            else if (r.Running) { r.Running = false; Dropped++; if (r.Shadow != null) r.Shadow.Kill(false); }
+            else if (r.Running) { r.Running = false; fastDirty = true; Dropped++; if (r.Shadow != null) r.Shadow.Kill(false); }
             return false;   // 표 자체는 꺼진 객체라 DOTween 에 넘길 것이 없다
         }
         // Complete(t) / Complete(t, withCallbacks): 트위너는 어느 쪽이든 끝값 + OnComplete (DOTween 과 같음)
@@ -479,6 +481,7 @@ namespace StutterFix
         }
         public static void KillAllPrefix(bool complete)
         {
+            fastDirty = true;
             if (recs.Count == 0) { LastFrameMs = 0; return; }
             var copy = recs.ToArray();
             foreach (var r in copy)
@@ -558,12 +561,13 @@ namespace StutterFix
                 for (int i = 0; i < recs.Count; i++)
                 {
                     var r = recs[i];
-                    if (!r.Running) continue;
+                    if (!r.Running) { fastDirty = true; continue; }
 #if AUTOTEST
                     if (AblateMask != 0 && r.Key >= 0 && r.Key < 31 && (AblateMask & (1 << r.Key)) != 0) continue;   // (측정 전용) 이 키의 기록은 진행하지 않는다: 비용 귀속용
 #endif
                     if (GroupEnabled && !Prof && GroupAllowed())
                     {
+                        fastDirty = true;
                         if (!GroupNative(r))
                         {
                             int count = GroupCount(i);
@@ -584,7 +588,7 @@ namespace StutterFix
                             long sp0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
 #endif
                             try { StepPair(r, n, td); }
-                            catch (Exception ex) { r.Running = false; n.Running = false; Error(ex); }
+                            catch (Exception ex) { r.Running = false; n.Running = false; fastDirty = true; Error(ex); }
 #if AUTOTEST
                             if (sampFrame) { sampTicks[14] += System.Diagnostics.Stopwatch.GetTimestamp() - sp0; sampCalls[14]++; }
 #endif
@@ -597,7 +601,7 @@ namespace StutterFix
                     long ss0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
 #endif
                     try { Step(r, td); }
-                    catch (Exception ex) { r.Running = false; Error(ex); }   // DOTween 안전 모드: 예외가 나면 그 애니메이션을 끝냄
+                    catch (Exception ex) { r.Running = false; fastDirty = true; Error(ex); }   // DOTween 안전 모드: 예외가 나면 그 애니메이션을 끝냄
 #if AUTOTEST
                     if (sampFrame) { int sk = r.Key >= 0 && r.Key < 14 ? r.Key : 15; sampTicks[sk] += System.Diagnostics.Stopwatch.GetTimestamp() - ss0; sampCalls[sk]++; }
 #endif
@@ -606,7 +610,10 @@ namespace StutterFix
 #if AUTOTEST
             long sampCompact0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
 #endif
-            if (!Edition.Dev) Compact();
+            if (!Edition.Dev)
+            {
+                if (!FastMaySkipCompact()) Compact();
+            }
 #if AUTOTEST
             if (sampFrame) { long now = System.Diagnostics.Stopwatch.GetTimestamp(); sampCompactTicks += now - sampCompact0; sampLoopTicks += now - sampFrameStart; sampFrames++; sampRecs += recs.Count; }
 #endif
@@ -650,14 +657,19 @@ namespace StutterFix
 
         private static void Compact()
         {
+            CompactRecords(recs);
+            fastDirty = false;
+        }
+        private static void CompactRecords(List<Rec> records)
+        {
             int w = 0;
-            for (int i = 0; i < recs.Count; i++)
+            for (int i = 0; i < records.Count; i++)
             {
-                var r = recs[i];
-                if (r.Running || (Edition.Dev && r.Shadow != null)) recs[w++] = r;
+                var r = records[i];
+                if (r.Running || (Edition.Dev && r.Shadow != null)) records[w++] = r;
                 else r.InList = false;
             }
-            if (w < recs.Count) recs.RemoveRange(w, recs.Count - w);
+            if (w < records.Count) records.RemoveRange(w, records.Count - w);
         }
 
         private static void Error(Exception ex)
