@@ -138,6 +138,9 @@ namespace StutterFix
             Run(__instance);
             double ms = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             StartMs += ms;
+#if DEV || AUTOTEST
+            if (ms > 3 && heavyLogged < 40) { heavyLogged++; Main.Entry.Logger.Log(string.Format("[타일 이동 효과] {0:F2}ms 타일 {1}개 길이 {2:F2} 불투명도만 {3} | 위치 {4} 회전 {5} 크기 {6} 불투명도 {7} | 값 위치 {8} 회전 {9} 크기 {10}", ms, Tiles - tiles0, durRef(__instance), opaOnlyLast, posUsedRef(__instance), rotUsedRef(__instance), scaleUsedRef(__instance), opaUsedRef(__instance), tPosRef(__instance), tRotRef(__instance), tScaleRef(__instance))); }
+#endif
             if (Prof && ms > 5 && profLogged < 40)
             {
                 profLogged++;
@@ -162,6 +165,13 @@ namespace StutterFix
             };
             ZeroTween.EaseParams(c.Ease, out c.Over, out c.Period);
             c.Zero = !(c.Dur > 0f);
+            // 위치·크기를 "쓴다"고 표시돼도 값이 둘 다 비어 있으면(NaN) 원래 TweenFloor 도 아무것도 안 한다(HELLO 8,933칸 효과가 그렇다).
+            bool posNone = !c.PosUsed || (float.IsNaN(c.Pos.x) && float.IsNaN(c.Pos.y));
+            bool scaleNone = !c.ScaleUsed || (float.IsNaN(c.Scale.x) && float.IsNaN(c.Scale.y));
+            c.OpaOnlyZero = FastOpa && c.Zero && c.OpaUsed && posNone && !c.RotUsed && scaleNone;
+#if DEV || AUTOTEST
+            opaOnlyLast = c.OpaOnlyZero;
+#endif
             if (c.Zero) { c.K = ZeroTween.EaseEnd(c.Ease); ZeroEffects++; }
             Effects++;
             var floors = lmRef(fx).listFloors;
@@ -186,12 +196,17 @@ namespace StutterFix
             public float Opacity, Dur, Over, Period;
             public Ease Ease;
             public bool Zero; public float K;   // 길이 0: 이징 끝점
+            public bool OpaOnlyZero;            // 길이 0 이고 불투명도만 바꾸는 효과 (위치·회전·크기 안 씀)
             public float Start;                 // (저사양 나누기) 늦게 만든 애니메이션이 이미 지났어야 할 시간
         }
 
         // (개발자용) 효과 하나 안의 시간 나눔: 타일 앞부분(transform·벡터) / 위치 / 회전 / 크기 / 불투명도 / 짝
         private static readonly bool Prof = Edition.Dev;
+        internal static bool FastOpa = true;
         private static int profLogged;
+#if DEV || AUTOTEST
+        private static int heavyLogged; internal static bool opaOnlyLast;
+#endif
         private static long pHead, pPos, pRot, pScale, pOpa, pKillN, pRunning, pNewObj;
         private static long TS() { return System.Diagnostics.Stopwatch.GetTimestamp(); }
 
@@ -212,8 +227,25 @@ namespace StutterFix
             return null;
         }
 
+        // 불투명도만 바꾸는 길이 0 효과(HELLO 8,933칸·2,357칸·1,799칸 등)의 타일 하나. 원래 TweenFloor 에서 이 갈래가 안 쓰는
+        // transform 읽기, startPos·startRot 계산을 뺀다. 나머지(material 읽기, 이전 불투명도 애니메이션 정리, 값 비교·쓰기)는 순서까지 같다.
+        private static void OpaZero(scrFloor target, ref Ctx c)
+        {
+            Tiles++;
+            _ = target.floorRenderer.material;   // 원래도 읽는다 (재질 복사본을 만들고, floorRenderer 가 없으면 같은 자리에서 예외)
+            var mt = target.moveTweens;
+            if (mt.Count != 0) Prev(mt, global::TweenType.Opacity, false);
+            if (!Mathf.Approximately(target.opacity, c.Opacity))
+            {
+                target.opacity = c.Opacity;
+                target.dontChangeMySprite = true;
+            }
+            MaybeShadow();
+        }
+
         private static void TweenFloor(scrFloor target, ref Ctx c)
         {
+            if (c.OpaOnlyZero) { OpaZero(target, ref c); return; }
             long a = Prof ? TS() : 0, b;
             Tiles++;
             Transform tt = target.transform;
