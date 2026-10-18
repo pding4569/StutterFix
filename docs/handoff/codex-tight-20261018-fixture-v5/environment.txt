@@ -1,0 +1,6 @@
+unity=6000.3.10f1
+api=Direct3D11
+gpu=NVIDIA GeForce RTX 4060 Ti
+colorspace=Gamma
+Tile_available=False
+shader=Sprites/Default

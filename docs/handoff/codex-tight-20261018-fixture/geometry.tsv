@@ -1,0 +1,2 @@
+image	input	mip	pad	method	vertices	triangles	area_ratio	full_bounds	new_bounds	keep_bounds	uv_max_error
+fog.png	original	False	2	bbox	4	2	1.00000005034058	Center: (0.00, 0.00, 0.00), Extents: (3.41, 3.41, 0.10)	Center: (0.00, 0.00, 0.00), Extents: (3.41, 3.41, 0.10)	Center: (0.00, 0.00, 0.00), Extents: (3.41, 3.41, 0.10)	1.77980830073921E-08

@@ -1,0 +1,4 @@
+fog.png cap1024_dxt 682x682 actual=RGBA32 NOT DXT5
+fog.png cap1024_dxt 682x682 actual=RGBA32 NOT DXT5
+nes_black_fog.png cap1024_dxt 682x682 actual=RGBA32 NOT DXT5
+nes_black_fog.png cap1024_dxt 682x682 actual=RGBA32 NOT DXT5

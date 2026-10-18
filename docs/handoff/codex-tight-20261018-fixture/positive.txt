@@ -1,0 +1,1 @@
+cut alpha=1 entire sprite: (1106229, 368743, 3, 98772)

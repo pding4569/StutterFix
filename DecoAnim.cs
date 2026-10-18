@@ -563,6 +563,8 @@ namespace StutterFix
 
         // (자동 시험 animstat) 지금 도는 애니메이션: 종류별 수와 그중 안 그리는(투명) 장식 대상 수
 #if DEV || AUTOTEST
+        // Probe-only live view: never mutate or retain its records.
+        internal static System.Collections.Generic.IReadOnlyList<Rec> ProbeRecords => recs;
         internal static HashSet<scrDecoration> RunningDecorations()
         {
             var set = new HashSet<scrDecoration>();

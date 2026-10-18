@@ -1,0 +1,83 @@
+﻿{
+  "completed": true,
+  "validation_count": 990,
+  "mismatches": 832,
+  "repeat_mismatches": 0,
+  "invisible": 0,
+  "max_error": 19,
+  "groups": {
+    "bbox": {
+      "tested": 221,
+      "mismatch": 192,
+      "max_error": 19,
+      "first_fail": {
+        "image": "nes_large_fog.png",
+        "input": "original",
+        "mip": "False",
+        "filter": "Bilinear",
+        "pad": "2",
+        "method": "bbox",
+        "rt": "3440",
+        "angle": "0",
+        "scale": "0.7",
+        "flip": "False",
+        "pivot": "(0.50, 0.50)",
+        "layers": "1",
+        "diff_bytes": "80",
+        "diff_pixels": "78",
+        "max_error": "1",
+        "repeat_bytes": "0",
+        "visible_bytes": "404012"
+      }
+    },
+    "grid16": {
+      "tested": 428,
+      "mismatch": 320,
+      "max_error": 15,
+      "first_fail": {
+        "image": "fog.png",
+        "input": "original",
+        "mip": "False",
+        "filter": "Bilinear",
+        "pad": "2",
+        "method": "grid16",
+        "rt": "3440",
+        "angle": "0",
+        "scale": "0.7",
+        "flip": "False",
+        "pivot": "(0.50, 0.50)",
+        "layers": "1",
+        "diff_bytes": "136",
+        "diff_pixels": "127",
+        "max_error": "1",
+        "repeat_bytes": "0",
+        "visible_bytes": "637017"
+      }
+    },
+    "tight": {
+      "tested": 341,
+      "mismatch": 320,
+      "max_error": 19,
+      "first_fail": {
+        "image": "fog.png",
+        "input": "original",
+        "mip": "False",
+        "filter": "Bilinear",
+        "pad": "2",
+        "method": "tight",
+        "rt": "3440",
+        "angle": "0",
+        "scale": "0.7",
+        "flip": "False",
+        "pivot": "(0.50, 0.50)",
+        "layers": "1",
+        "diff_bytes": "139",
+        "diff_pixels": "130",
+        "max_error": "1",
+        "repeat_bytes": "0",
+        "visible_bytes": "637017"
+      }
+    }
+  }
+}
+Census {"BGStaticCam#94430": {"fog_aabb_pixels": {}, "group_count": 0, "renderer_count": {}, "draw_count": {}, "fog_area_screens": 0.0}, "OverlayCam#94432": {"fog_aabb_pixels": {}, "group_count": 0, "renderer_count": {}, "draw_count": {}, "fog_area_screens": 0.0}, "BGMovingCam#94426": {"fog_aabb_pixels": {}, "group_count": 0, "renderer_count": {}, "draw_count": {}, "fog_area_screens": 0.0}, "Camera#94428": {"fog_aabb_pixels": {"fog.png": 6261370.097000003, "nes_large_fog.png": 162623250.04199994}, "group_count": 204, "renderer_count": {"fog.png": 110, "nes_large_fog.png": 94}, "draw_count": {"fog.png": 110, "nes_large_fog.png": 94}, "fog_area_screens": 34.09330994408106}}

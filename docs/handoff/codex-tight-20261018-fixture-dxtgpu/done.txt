@@ -1,0 +1,1 @@
+completed; fail-fast per method/pad/input/mip/filter/resolution; unvisited transforms are NOT validated

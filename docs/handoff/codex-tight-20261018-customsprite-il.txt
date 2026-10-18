@@ -1,0 +1,22 @@
+﻿== TextureManager+CustomSprite
+  .ctor
+    호출 System.Object::.ctor
+    필드 쓰기 TextureManager+CustomSprite::texture
+    필드 쓰기 TextureManager+CustomSprite::fileLastModified
+    필드 쓰기 TextureManager+CustomSprite::pixelsPerUnit
+    필드 쓰기 TextureManager+CustomSprite::spriteType
+    필드 쓰기 TextureManager+CustomSprite::isInternal
+    필드 쓰기 TextureManager+CustomSprite::isFromBundle
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Rect::.ctor
+    호출 UnityEngine.Vector2::get_one
+    호출 UnityEngine.Vector2::op_Division
+    호출 UnityEngine.Sprite::Create
+    필드 쓰기 TextureManager+CustomSprite::sprite
+  Dispose
+    필드 읽기 TextureManager+CustomSprite::isFromBundle
+    필드 읽기 TextureManager+CustomSprite::texture
+    호출 제네릭 UnityEngine.AddressableAssets.Addressables::Release
+    필드 읽기 TextureManager+CustomSprite::isInternal
+    호출 UnityEngine.Object::Destroy

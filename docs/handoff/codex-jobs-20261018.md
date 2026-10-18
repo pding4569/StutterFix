@@ -1,0 +1,24 @@
+# Codex 작업 6: 장식 LateUpdate 위치 갱신을 작업 스레드(IJobParallelForTransform)로 — 1단계: 그림자 비교 도구 (게임 실행·Mods 설치·커밋 금지)
+
+결과: `docs/handoff/codex-jobs-20261018-result.md`(한국어, 추측은 "추정"). 새 코드는 `DecoJobShadow.cs`(DEV/AUTOTEST 전용, FuseProbe.cs/CpuBreak.cs/OffscreenProbe.cs 와 같은 Compile 조건), AutoTest.cs·csproj·StutterFix.cs 에는 최소 줄. **제품 동작은 바꾸지 않는다**(1단계는 계산만 따로 하고 비교). 빌드 셋(`-p:Edition=Player -p:AutoTestBuild=1`, `-p:Edition=Player`, 기본) 오류 0.
+
+## 배경 (Claude 실측)
+
+Arche 곡 270초 구간은 CPU 메인 스레드 병목(10.47ms/프레임, GPU 4.7ms): Update 스크립트 4.64 + LateUpdate 스크립트 2.71 + 그리기 제출 1.70 ...
+- `scrDecorationManager.LateUpdate` 가 프레임당 1.9~2.4ms: 깨어 있는 장식 약 2,150개마다 `scrDecoration.LogicUpdate` → `UpdatePosition` (장식당 약 1.0µs). 내용: `pivotTrans.localPosition=...`, `parallax.SetNewStartPosition/posCamAtStart`, `parallax.SetTrans()`(cachedTransform.position 읽기·카메라 위치 읽기·position 쓰기), `SetRotation(rotAngle)`, `SetScale(scaleVec)`.
+- `DecoAnim`(모드)의 애니메이션 갱신 2.4~3.5ms: 약 11,700개 애니메이션(속성 값 계산 + 일부 엔진 쓰기).
+- 지난 시도: (1) FuseLate(장식마다 엔진 쓰기 6→2 합치기, 비트 단위 동일)는 오히려 느려졌다(LateUpdate 2.4→2.65ms): 엔진 호출 횟수가 주된 비용이 아니거나 우리가 넣은 검사·캐시 비용이 더 컸다. (2) 화면 밖 건너뛰기는 측정으로 폐기: 애니메이션 도는 장식의 77% 가 실제로 카메라 화면 안(bounds), 100% 마진 밖은 2.3% 뿐(`docs/handoff/codex-offscreen-20261018-result.md`, 이번에 측정: 곡 252.8~277.8초). 그래서 일을 줄이는 것이 아니라 **다른 스레드로 옮기는** 것을 검토한다.
+- 게임 엔진에 `UnityEngine.Jobs.TransformAccessArray` 와 `IJobParallelForTransform` 이 있다(UnityEngine.CoreModule.dll 에 이름 존재). `Unity.Collections`·`Unity.Burst` DLL 도 Managed 폴더에 있음(Burst 컴파일은 모드 코드에 못 쓸 수 있음 — 확인).
+
+## 1단계 목표: 위험 없는 사전 검증 (제품 동작 변경 0)
+
+A. **API·제약 조사**: ILSpy/ilscan 으로 이 Unity(6000.3.21f1) 의 `TransformAccessArray`(생성·Add/RemoveAtSwapBack/SetTransforms 비용, 읽기 전용/쓰기 가능 정책 `desiredJobCount`), `TransformAccess`(position/rotation/localPosition/localRotation/localScale 읽기·쓰기 가능 여부, worldToLocalMatrix 등), 잡 스케줄링(`IJobParallelForTransformExtensions.Schedule`, `ScheduleReadOnly`), 비-Burst(Mono) 잡의 제약(managed 참조 불가, 블리터블 구조체만, NativeArray/Unity.Collections 사용 가능 여부, 안전 검사 `ENABLE_UNITY_COLLECTIONS_CHECKS` 가 릴리스 플레이어에서 꺼져 있는지), 모드 DLL(netstandard2.1)에서 이 타입을 참조할 수 있는지(참조 DLL 추가가 필요하면 `StutterFix.csproj` 의 참조 방식 확인, 어떤 Managed DLL 이 필요한지), Mono 에서 잡 Execute 가 실제로 병렬 실행되는지(작업 스레드 수: 이 PC 6코어, 메인 포함 `JobsUtility.JobWorkerCount`).
+   `Quaternion.Euler(0,0,z)` 와 `Vector2`/`Vector3` 연산이 잡 안(작업 스레드)에서 쓸 수 있는지(스레드 안전 표시 [ThreadSafe]/`Unity.Mathematics` 와의 비트 동일성 — 원래 게임 코드는 `Quaternion.Euler`, `Vector2` 연산자, `Vector3` 변환을 쓴다. 같은 연산을 쓰되 `Unity.Mathematics.quaternion.EulerXYZ` 와는 비트가 다를 수 있으니 반드시 확인).
+B. **그림자 계산 `decojob shadow begin|end`**: 장식 관리자 LateUpdate 가 끝난 직후(Postfix, 이미 FuseProbe 와 같은 방식으로 `scrDecorationManager.LateUpdate` 에 Harmony postfix) 에, 조건을 통과하는 장식들(정확히 `scrVisualDecoration`, `followPlanet` 없음(관리 참조 null), `stickToFloor`·`lockRotation`·`clampToScreen`·`dontAlterX/Y` 모두 false, 부모가 원점·회전 없음·크기 1 — FuseLate 때 `docs/handoff/codex-fuselate-20261018-result.md` 에 정리된 조건과 IL 근거를 참고(git 에서 삭제됨: `git show cd8522f^..` 가 아니라 `git log --all -- FuseLate.cs` 로 찾아 `git show <commit>:FuseLate.cs`; 결과 문서 `docs/handoff/codex-fuselate-20261018-result.md`·`...-il.txt` 는 남아 있음))에 대해 **값만 따로 계산**해 NativeArray 에 저장하고 실제 Transform 값과 비트 비교한다:
+   - 입력(메인 스레드가 프레임당 장식마다 읽는 관리 필드: pivotPosVec, rotAngle, scaleVec, startRot, camScaleMultiplier, textureScaleMultiplier, parallaxOffset, parallax.multiplier_x/y, parallax 의 startPosition/posCamAtStart(UpdatePosition 이 매번 P 로 덮음) 등)와 카메라 위치(프레임당 한 번), 출력(position.xy, z, rotation(Quaternion), localScale).
+   - 계산 순서는 원래와 같은 연산 순서(Vector3 뺄셈 → Vector2 변환 → 성분별 곱 → 덧셈, `FuseLate` 때 확인한 IL 순서)로. 이것을 (i) 메인 스레드 순차 루프 (ii) `IJobParallelFor`(NativeArray 입력만, Transform 쓰기 없음)로 둘 다 계산해 서로 비트 비교하고 실제 Transform(`pivotTrans.position/rotation/localScale`)과도 비교.
+   - 보고: 비교한 개수, 비트 불일치 0 여부(+0/-0 구분), 불일치 시 첫 예. 
+C. **비용 측정(그림자)**: 위 두 계산과 NativeArray 채우기(관리 필드 → 배열 복사: 이것이 메인 스레드에 남는 비용, 장식당 µs), 잡 Schedule/Complete 시간, 잡 실행 시간(작업 스레드 합), `TransformAccessArray` 에 2,150개를 넣는 비용·장식 목록이 프레임마다 바뀔 때(Dormancy) 갱신 비용을 Stopwatch 로 재서 `decojob shadow end` 가 프레임당 ms 로 보고한다. 이 판의 FPS 는 성능 A/B 에 쓰지 않는다. 핵심 질문: **"메인 스레드에서 입력을 모으는 비용 + 스케줄 비용" 이 "원래 LateUpdate 장식 갱신 1.9~2.4ms" 보다 충분히 작은가?** 장식당 입력 복사가 이미 1µs 이면 이득 없음.
+D. **설계 판단(구현 금지)**: B 가 비트 동일이고 C 에서 이득이 보이면, 2단계(실제 쓰기)를 어떻게 하는지: 원래 LogicUpdate 순회를 건너뛰고(조건을 통과한 장식만; MoveApply.LogicMaybe/Dormancy 가 이미 순회를 가로채는 구조를 확인) 잡이 Transform 에 쓰는 방식, 잡 완료 시점(렌더 전, `Camera.onPreCull`/PlayerLoop 위치), 이 사이에 장식 Transform 을 읽는 코드(`GetDecorationWorldSize`, UpdateShader 마스크, 편집기 기즈모, `DecoAnim` 이 같은 프레임 Update 에서 쓰는 값 — DecoAnim 은 Update 단계라 LateUpdate 보다 먼저), PACL2 모드 등)와의 순서, 곡 끝/다시 시작/편집 복귀/모드 끄기에서의 정리, 장식 집합이 바뀔 때(Dormancy 깨움/재웠음, `LazySprite`, 새 장식) TransformAccessArray 갱신, `MoveApply.DeferTransform`(회전·크기를 LateUpdate 에 맡기는 기존 장치)과의 결합. 기대 이득 ms 를 C 의 숫자로 계산해 적어라.
+
+Claude 가 게임에서 돌릴 명령 순서(Arche 255~280초, `decojob shadow begin` ... `end`, `fusestate` 없음)도 적어라. 예전 Mods 설치물은 건드리지 마라.

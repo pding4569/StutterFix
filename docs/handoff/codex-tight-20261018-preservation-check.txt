@@ -1,0 +1,6 @@
+hashed files=471; changed=5
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\session.lock
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll.53667.cache
+E:\StutterFixWork\StutterFix\AutoTest.cs
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\autotest.done
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll

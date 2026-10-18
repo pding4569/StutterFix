@@ -1,0 +1,47 @@
+﻿== StutterFix.OffscreenProbe : System.Object
+  필드 static labels
+  필드 static parLabels
+  필드 static states
+  필드 static expired
+  필드 static renderers
+  필드 static planes
+  필드 static margins
+  필드 static totals
+  필드 static runs
+  필드 static color
+  필드 static parallax
+  필드 static active
+  필드 static frame
+  필드 static samples
+  필드 static firstFrame
+  필드 static lastFrame
+  필드 static startFrame
+  필드 static startSong
+  필드 static lastSong
+  필드 static ticks
+  필드 static entriesNear
+  필드 static entriesFar
+  필드 static xy
+  필드 static all
+  필드 static farXY
+  필드 static farSaved
+  필드 static farDecos
+  필드 static unsafeFar
+  필드 static depthExcluded
+  필드 static renderExcluded
+  필드 static duplicateCallbacks
+  필드 static aborted
+  메서드 static string Begin()
+  메서드 static void Stop()
+  메서드 static single Song()
+  메서드 static boolean Finite(single)
+  메서드 static boolean Valid(UnityEngine.Bounds)
+  메서드 static int32 Bin(int32)
+  메서드 static void Close(StutterFix.OffscreenProbe+State, boolean)
+  메서드 static boolean Side(UnityEngine.Plane, UnityEngine.Bounds)
+  메서드 static void Capture(UnityEngine.Camera)
+  메서드 static void Sample(UnityEngine.Camera)
+  메서드 static int32 Classify(scrDecoration, UnityEngine.Camera)
+  메서드 static string End()
+  메서드 static void .cctor()
+(1개 형식)

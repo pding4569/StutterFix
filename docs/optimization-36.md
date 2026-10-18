@@ -808,3 +808,10 @@ census 첫 판은 본 카메라 후보 6개만 셌다(장식 2,695개를 화면 
 
 Codex 3차(`docs/handoff/codex-gpu3-20261018-result.md`, 독립 Unity Editor D3D11 fixture): 동률 정렬 144조건 — 재질 공유 99/144, 공유+아틀라스 96/144 픽셀 불일치. 동률일 때 원본은 재질 ID 순, 공유+같은 텍스처는 렌더러 생성 순이라 규칙이 다르다. 광선(3400~3699 타일 × 50개 = 15,000개)은 depth/order 동률이라 안전 정책으로는 전부 제외. 아틀라스 표본화(실제 Arche PNG 18종, padding 1/4/16): mip 없음에서도 1,296조건 중 616조건 최대 1~2byte 차이, mip 있음 최대 57 — 패딩으로 0차이를 못 만들었다. 게임 소비자: `GetDecorationPixelsSizeInUnits`·`SetTextureScaleMultiplier` 는 sprite.texture 전체 크기를 읽어 아틀라스가 깨뜨린다. → 재질 공유·아틀라스 모두 **구현하지 않음**.
 남은 방향: 채우기 줄이기(큰 안개를 그리는 면적). 완전 투명 영역만 건너뛰는 Tight 메시는 fog 20~49% 면적이지만 Bilinear 가장자리 때문에 같은 종류의 픽셀 차이 위험이 있어 따로 증명해야 한다. alpha≤8 영역은 그림이 바뀌므로 동일성 조건을 깬다.
+
+## 2026-10-18 Arche 270초 CPU: 단계 분해와 폐기한 두 방향
+
+PhaseWatch(깨끗한 판, 240초 210 FPS·270초 95 FPS): 270초 구간 메인 10.47ms = Update 스크립트 4.64 + LateUpdate 스크립트 2.71 + FinishFrameRendering 1.70 + UpdateAllRenderers 0.49 + 캔버스 0.4 + 기타. cpubreak(254~269초 평균): 게임 스크립트 합 3.06ms 중 장식 관리자 LateUpdate 1.92, scrVfxPlus 0.31, 타일 스크립트 0.22, 지휘자 0.12, DOTween 0.09. 모드 DecoAnim 2.4~3.5ms.
+**화면 밖 장식 건너뛰기는 폐기** (offscreenstat, 곡 252.8~277.8초 2,496프레임): 애니메이션 도는 장식(시차 그 밖 갈래) 프레임당 약 808개 중 화면 안 624개(77%), 마진 0~100% 이내 99개, 마진 100% 밖 18.6개(2.3%), 알파 0 66개. 균일 단가 가정 추정 절약 0.046ms.
+**안개 Tight 메시 폐기** (Codex 독립 D3D11, 990조건 중 832조건 차이, Bilinear 최대 1 byte): bbox·격자 16·Unity Tight 세 방식 모두 0 byte 조건 탈락. 지오메트리 API 는 `SetVertexCount/SetIndices` 경로만 가능(OverrideGeometry 는 이 Editor 에서 거부).
+다음 후보: 장식 LateUpdate 위치 계산을 작업 스레드(IJobParallelForTransform)로 옮기는 1단계 그림자 비교(`docs/handoff/codex-jobs-20261018.md`).

@@ -1,0 +1,8 @@
+AutoTest.cs: only planned insertion; original newline/BOM retained
+DecoAnim.cs: only planned insertion; original newline/BOM retained
+StutterFix.cs: only planned insertion; original newline/BOM retained
+StutterFix.csproj: only planned insertion; original newline/BOM retained
+baseline files=472
+Mods/StutterFix files unchanged=298
+other pre-existing source/config unchanged=170
+unexpected modifications=0
