@@ -847,3 +847,12 @@ Codex 구현(`DecoAnim.GroupStep.cs`). 비트 대조 `groupstep verify` 525,634�
 ## 2026-10-19 밤: GPU 무손실 점검(Codex) — 새 최적화 없음
 `docs/handoff/codex-gpufree-20261019-result.md`: 깊이/스텐실 축소(SpriteMask 가 스텐실 사용 가능성), RT 형식·clear, 필터 중립 경로, 안개 R8 텍스처(RGB 상수 조건 4개 이미지 모두 실패) 모두 비트 동일 증명 불가 → 적용 0.
 - TightLate 같은 값 건너뛰기: 검증 불일치 0(164,934번), 건너뛴 비율 위치 1%·회전 9%·크기 34% → 기본 끔(tightskip-on)
+
+## 2026-10-19 밤: GroupStep v2·PosFast — 이득 없어 기본 끔, 최종 구성 회귀 검증
+
+- **GroupStep v2**(위치 쌍 합치기 되살림, 묶음당 0.52~0.58µs 벤치): 비트 대조 668,583번 불일치 0이나 A/B 에서 DecoAnim 1.88 → 2.07ms, 프레임 3,223 → 3,143개 → 여전히 느려서 기본 끔(`groupstep-on`). 묶음 처리는 기존 StepPair 루프보다 이득이 없다.
+- **PosFast**(보이는 장식의 `SetPosition` 체인 생략, Codex 구현 + Claude 가 `screenRelativePos` 죽은 상태 비교 제거: IL 전수로 읽는 곳은 `scrParallax.SetTrans` 의 clamp 분기뿐, 쓰는 곳은 `UpdateScreenClamp` 뿐): 생략 819만 번(96%), 비트 대조 128,033번 불일치 0. A/B: DecoAnim 1.87 → 1.79ms, 프레임 3,253 → 3,261개(+0.2%) → 효과 무시 수준이라 기본 끔(`posfast-on`). 관측 도구(`updatecost`)가 호출 하나의 비용을 부풀려 보여 줬던 것이다(실제 `SetPosition` 체인은 호출당 약 0.09µs).
+- **TightLate 같은 값 건너뛰기**: 건너뛴 비율 위치 1%·회전 9%·크기 34% → 이득 작아 기본 끔(`tightskip-on`).
+- HELLO 전곡 TightLate 켬/끔: 관리자 LateUpdate 0.33/0.33ms(같음), 프레임 수 차이는 판 간 잡음(±3%). HELLO 비트 대조 22,351번 불일치 0.
+- 최종 구성(TightLate 켬, 나머지 끔) 전곡: Arche 평균 401 FPS, 끊김 0, 시작 연출 뒤 최악 21ms, 1% low 110/0.1% low 87. HELLO 평균 284 FPS, 끊김 0, 최악 28ms, 1% low 157. 화면 2560×1440 120Hz.
+- Arche 270초 구간(CPU 병목) 최종: 93·96 FPS → 102 FPS(TightLate, +8%), 이후 시도들(GroupStep·PosFast·건너뛰기)은 추가 이득 없음. 남은 비용: 모드 장식 애니메이션 약 1.9ms(창 평균), 관리자 LateUpdate 약 1.0ms, 엔진 렌더 제출·갱신 약 2.3ms.
