@@ -815,3 +815,20 @@ PhaseWatch(깨끗한 판, 240초 210 FPS·270초 95 FPS): 270초 구간 메인 1
 **화면 밖 장식 건너뛰기는 폐기** (offscreenstat, 곡 252.8~277.8초 2,496프레임): 애니메이션 도는 장식(시차 그 밖 갈래) 프레임당 약 808개 중 화면 안 624개(77%), 마진 0~100% 이내 99개, 마진 100% 밖 18.6개(2.3%), 알파 0 66개. 균일 단가 가정 추정 절약 0.046ms.
 **안개 Tight 메시 폐기** (Codex 독립 D3D11, 990조건 중 832조건 차이, Bilinear 최대 1 byte): bbox·격자 16·Unity Tight 세 방식 모두 0 byte 조건 탈락. 지오메트리 API 는 `SetVertexCount/SetIndices` 경로만 가능(OverrideGeometry 는 이 Editor 에서 거부).
 다음 후보: 장식 LateUpdate 위치 계산을 작업 스레드(IJobParallelForTransform)로 옮기는 1단계 그림자 비교(`docs/handoff/codex-jobs-20261018.md`).
+
+## 2026-10-19 작업 스레드(IJobParallelForTransform) 사전 검증 — 이득 없음, 폐기
+
+`decojob shadow`(Codex `DecoJobShadow.cs`), Arche 곡 250.8~275.8초 약 2,500프레임, 장식 약 1,130개/프레임 비교 약 280~300만 번(3회):
+- 순차 계산 vs 작업 스레드 계산: 비트 불일치 **0**. 순차 계산 vs 실제 Transform: 위치(x,y,z)와 크기(x,y,z) 불일치 **0**. 회전은 x·y 가 +0/-0 부호만 다르고(0 차이), z·w 는 약 8~20% 장식에서 마지막 비트가 다르다 — `Transform.rotation` 설정자가 내부에서 정규화하기 때문(`Quaternion.Normalize` 로도 안 맞음, 엔진 내부 구현).
+- 더미 오브젝트 4,000개 `decojob writetest`: 메인 스레드 설정자(position/rotation/localScale=) 로 쓴 뒤 읽은 값 vs 작업 스레드 `TransformAccess` 로 쓴 뒤 읽은 값 **불일치 0**(±0 포함). 즉 쓰기를 옮겨도 값은 같다.
+- 그러나 비용: 장식 2,150개 Transform 쓰기 3개(position·rotation·localScale)를 **메인 스레드에서 해도 프레임당 0.204ms**, 작업 스레드 스케줄+완료 0.188ms. 입력 모으기 0.11 + TransformAccessArray 동기화 0.19~0.23 까지 더하면 작업 스레드 쪽이 더 비싸다(합 약 0.4~0.5ms). → LateUpdate 장식 관리자 1.9~2.4ms 의 주된 비용은 엔진 쓰기가 아니라 장식당 관리 코드(GetVisible, 패치 체인, 시차 계산, 카메라/Transform 읽기 등)다.
+
+## 2026-10-19 Update 단계(DecoAnim) 장식당 비용 분해 (`updatecost`, Codex 구현, Claude 가 위치 오류 수정)
+
+Codex 가 넣은 `UpdateCostProbe.Frame` 호출이 프레임 갱신(`UpdatePrefix`)이 아니라 `KillAllPrefix` 안에 들어가 프레임 수가 0으로 나오던 것을 고침. 결과 문서(`codex-updatecost-20261018-result.md`)는 쓰는 도중 한글이 '?' 로 손실되어 읽을 수 없다(Codex 사용량 한도 직전으로 추정) — 다시 쓰게 해야 함.
+곡 252~278초 1,481프레임, 1/16 표본(관측 비용으로 DecoAnim 이 3.3→8.2ms 로 부풀어 절대값은 못 쓰고 구성만 본다):
+- 프레임당 호출: `Step` 2,785 + `StepPair` 880(2기록씩) → 기록 갱신 약 4,500, 장식 약 920개, 기록 하나 `Apply` 0.47µs + `OnUpdate` 0.62µs, `ZeroTween.Eval` 0.055µs.
+- 엔진 쪽 설정: `SetPosition` 프레임당 894번 1.39µs(안의 `UpdateScreenClamp` 0.064µs), `SetColor` 728번 1.05µs(`ApplyColor` 0.82µs; 가시 장식 색 단계 104만 번 중 값이 같은 것 8번 — 건너뛸 값이 없음), `DeferTransform` 2,095번 0.34µs, `SkipForLate` 0.10µs.
+- `Eval` 묶음: 같은 (Pos, Dur, Ease) 기록 묶음은 5개짜리 55k·3개짜리 24k·1개짜리 68k 이나 `Eval` 이 호출당 0.055µs 라 합쳐도 프레임당 0.2ms 미만(부풀린 값). Ease 는 Linear 33%, OutCubic 46%, InCubic 21% 라 NativeMotion(Linear 만)은 효과가 작다. 애니메이션 사전 조회 장식당 5회는 효과 시작 때만(`FastMove.Run` 프레임당 0.19ms 이내).
+- 보이는 장식의 `SetPosition` 생략(posfast): 위치는 `pivotOffsetVec` 을 안 바꾸고 `UpdateScreenClamp` 도 clampToScreen 일 때만 값을 바꾸므로(Arche 15개) clampToScreen==false 장식은 `pivotPosVec` 만 쓰는 것이 가능해 보이나, 기대 이득은 부풀림을 보정하면 프레임당 0.3~0.5ms(3~5%) 이하로 추정. 구현 위험(상태 불일치 반례를 Codex 가 보고) 대비 작아 보류.
+결론: Update 단계 4.64ms 는 약 4,500번의 작은 기록 갱신과 장식당 엔진 설정(위치·색 각 ~900번)에 퍼져 있어 하나의 큰 비용이 없다.

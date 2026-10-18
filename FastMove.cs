@@ -573,6 +573,9 @@ namespace StutterFix
                 {
                     var dec = targets[i];
                     var d = tweensRef(dec);
+#if DEV || AUTOTEST
+                    UpdateCostProbe.DictionaryDecoration(anim);
+#endif
                     if (anim)
                     {
                         // 원래 블록 순서: 배치 -> 위치X/Y -> 시차 오프셋X/Y -> 피벗X/Y -> 회전 -> 크기X/Y -> 색 -> 불투명도 -> 시차 배율 -> 보이기 -> 깊이

@@ -106,6 +106,7 @@ namespace StutterFix
             try
             {
                 if (!ZeroTween.CanEase) { Main.Entry.Logger.Log("[장식 애니메이션] 이징 함수가 없어 끔"); return; }
+                UpdateEvalMemo.Configure(Main.Entry.Path);
                 var d = typeof(scrDecoration);
                 setPosX = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionX", new[] { typeof(float), typeof(Vector2) }));
                 setPosY = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionY", new[] { typeof(float), typeof(Vector2) }));
@@ -170,6 +171,9 @@ namespace StutterFix
         private static void KillKey(Dictionary<global::TweenType, Tween> d, int key)
         {
             Tween t;
+#if DEV || AUTOTEST
+            UpdateCostProbe.DictionaryRead();
+#endif
             if (d.TryGetValue((global::TweenType)key, out t)) t.Kill(true);
         }
         private static Rec NewRec(scrDecoration dec, Dictionary<global::TweenType, Tween> d, int key, float dur, Ease ease)
@@ -178,6 +182,9 @@ namespace StutterFix
             // 표 안의 기록(Rec)도 목록에서 빠졌으면 같이 다시 쓴다. 한 판에 수십만 개가 생기던 것이라(곡 중엔 GC 를 멈춰 두어 그대로 쌓였다)
             // 같은 장식·같은 속성을 계속 옮기는 맵에서는 대부분 새로 만들지 않는다.
             Tween old; Rec oldR = null; Rec r;
+#if DEV || AUTOTEST
+            UpdateCostProbe.DictionaryRead();
+#endif
             bool reuseProxy = d.TryGetValue((global::TweenType)key, out old) && (object)old != null && (oldR = old.id as Rec) != null && !oldR.Running && (!Edition.Dev || oldR.Shadow == null);
             if (reuseProxy && !oldR.InList && ReferenceEquals(oldR.D, dec) && oldR.Key == key)
             {
@@ -195,6 +202,9 @@ namespace StutterFix
             if (!reuseProxy) NewProxies++;
             r.Proxy = reuseProxy ? old : FloorAnim.NewProxy();   // 리플렉션 생성(하나 약 2us) 대신 생성자 호출기
             r.Proxy.id = r;
+#if DEV || AUTOTEST
+            UpdateCostProbe.DictionaryWrite();
+#endif
             d[(global::TweenType)key] = r.Proxy;
             recs.Add(r); r.InList = true; Created++;
             if (recs.Count > Peak) Peak = recs.Count;
@@ -312,7 +322,9 @@ namespace StutterFix
                     r.FLast=value;return;
                 }
             }
-            float e = ZeroTween.Eval(r.E, pos, r.Dur, r.Over, r.Period);
+            float e = nativeStep && UpdateEvalMemo.Enabled
+                ? UpdateEvalMemo.Eval(r.E, pos, r.Dur, r.Over, r.Period)
+                : ZeroTween.Eval(r.E, pos, r.Dur, r.Over, r.Period);
             switch (r.Key)
             {
                 // DOTween ColorPlugin 과 같은 모양: 성분마다 "시작 += 변화 x 이징" (색 연산자로 하면 곱을 한 번 더 반올림해 끝자리가 달랐다)
@@ -326,6 +338,10 @@ namespace StutterFix
         }
         private static void OnUpdate(Rec r)
         {
+#if DEV || AUTOTEST
+            if (UpdateCostProbe.InWindow && (r.Key == 9 || r.Key == 10))
+                UpdateCostProbe.ColorStep(r, colRef(r.D), opaRef(r.D));
+#endif
             switch (r.Key)
             {
                 case 1: setPosX(r.D, r.FLast, pivotOffRef(r.D)); break;
@@ -476,6 +492,10 @@ namespace StutterFix
         }
         public static void UpdatePrefix()
         {
+            UpdateEvalMemo.NewFrame();
+#if DEV || AUTOTEST
+            UpdateCostProbe.Frame(recs);
+#endif
             if (recs.Count == 0) { LastFrameMs = 0; return; }
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
@@ -509,6 +529,9 @@ namespace StutterFix
             if (!Edition.Dev) Compact();
             LastFrameMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             UpdateMs += LastFrameMs;
+#if DEV || AUTOTEST
+            UpdateCostProbe.FrameEnd(LastFrameMs);
+#endif
         }
 
         // 개발자용: DOTween 이 짝을 갱신한 뒤 비교

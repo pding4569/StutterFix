@@ -1068,6 +1068,8 @@ namespace StutterFix
                 case "fuse": Log("[합치기 연구] " + (arg == "begin" ? FuseProbe.Begin() : FuseProbe.End())); return true;
                 case "phasereport": PhaseWatch.ReportSong(); return true;
                 case "cpubreak": Log("[CPU 분해] " + (arg == "on" ? CpuBreak.On() : arg == "begin" ? CpuBreak.Begin() : CpuBreak.End())); return true;
+                case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
+                case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;
                 case "offscreenstat": Log("[offscreenstat] " + (arg == "begin" ? OffscreenProbe.Begin() : arg == "end" ? OffscreenProbe.End() : "offscreenstat begin|end")); return true;
                 case "decostruct": Log("[합치기 연구] " + FuseProbe.Struct()); return true;
                 case "animstat": Log("[장식 애니메이션 상태] "+DecoAnim.Stat()+" | "+Dormancy.Stat()+" | 위치 X·Y 합침 "+DecoAnim.PairSteps+" | 회전·크기 LateUpdate 에 맡김 "+MoveApply.RotScaleDeferred+" 위치 맡김 "+MoveApply.LateSkips+" 대조 "+MoveApply.LateChecked+" 다름 "+MoveApply.LateMismatch+" 목록에 없음 "+MoveApply.LateNotInList); return true;

@@ -1,0 +1,5 @@
+AutoTest.cs: previous jobs content retained exactly after removing only updatecost additions (normalized newlines/BOM)
+StutterFix.cs: previous jobs content retained exactly after removing only updatecost additions (normalized newlines/BOM)
+StutterFix.csproj: previous jobs content retained exactly after removing only updatecost additions (normalized newlines/BOM)
+DecoJobShadow.cs: byte-identical SHA256=d9eadc1f39b3d8487115633c3c5c5328ec1d93bd23a09543ea14f2b90efff4e1
+Mods/StutterFix: all 297 files and file set unchanged (SHA256)

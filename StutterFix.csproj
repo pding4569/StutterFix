@@ -116,6 +116,7 @@
     <Compile Include="ParticleDump.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileSig.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FuseProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DecoJobShadow.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="OffscreenProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="CpuBreak.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="HalfRender.cs" />
@@ -178,6 +179,8 @@
     <Compile Include="Precheck.cs" />
     <Compile Include="FrameParts.cs" />
     <Compile Include="DecoAnim.cs" />
+    <Compile Include="UpdateEvalMemo.cs" />
+    <Compile Include="UpdateCostProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="RestartAdvisor.cs" />
     <Compile Include="UiDraw.cs" />
     <Compile Include="LogExport.cs" />

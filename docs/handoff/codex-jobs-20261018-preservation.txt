@@ -1,0 +1,8 @@
+﻿HEAD at start=ac274367322efe2c9ddc4d9929deaacc6268bdc3
+HEAD at final check=6101ae243d6d2e224f503cb74171684d631d42c3
+HEAD changed externally during this task: 6101ae2 adds only docs/handoff/codex-updatecost-20261018.md
+No commit command was issued by this task; external commit preserved
+Mods/StutterFix file hashes unchanged: 297 files
+Final shadow IL: no Transform setters or scrDecoration.UpdatePosition calls
+Source integration: +1 line each in AutoTest.cs / StutterFix.cs / StutterFix.csproj
+Build hooks not invoked; no game process launched

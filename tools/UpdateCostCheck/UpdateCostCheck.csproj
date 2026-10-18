@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><DefineConstants>AUTOTEST</DefineConstants><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup><Compile Include="Program.cs"/><Compile Include="../../UpdateEvalMemo.cs" Link="UpdateEvalMemo.cs"/>
+  <Reference Include="DOTween"><HintPath>D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed/DOTween.dll</HintPath></Reference></ItemGroup>
+</Project>

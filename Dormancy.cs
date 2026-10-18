@@ -75,6 +75,10 @@ namespace StutterFix
             catch (Exception ex) { broken = true; Main.Entry.Logger.Log("[잠든 장식] 설치 실패: " + ex.Message); }
         }
 
+        #if DEV || AUTOTEST
+        internal static bool ProbeDormant(scrDecoration d) { return dormant.Contains(d); }
+        #endif
+
         public static void WakePost(scrVisualDecoration __instance) { Wake(__instance); }
         public static void WakeBase(scrDecoration __instance) { hbDirty = true; Wake(__instance); }
         internal static void MarkHitboxDirty() { hbDirty = true; }   // ExitFix: Setup 을 건너뛴 장식이 있을 때 (Setup 뒤에 하던 것과 같게)
