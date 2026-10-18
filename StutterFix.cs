@@ -160,6 +160,7 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
                 TextFix.Install(harmony);
                 EffectScan.Install(harmony);   // 효과 나누기가 이 패치를 통해 돈다
                 RecolorSplit.Install(harmony);
+                RecolorDefer.Install(harmony);
                 ZeroTween.Install(harmony);
                 InstantMove.Install(harmony);
                 MoveProf.Install(harmony);
@@ -460,6 +461,7 @@ ParticleTextWatch.Install(harmony);
             Try(GameScreenButton.Remove);
             Try(LowEnd.Shutdown);
             Try(PhysicsPause.Shutdown);
+            Try(RecolorDefer.Shutdown);
             Try(HalfRender.Shutdown);
             Try(ParticleFix.Shutdown);
             Try(Resilience.Shutdown);
@@ -816,6 +818,8 @@ BlendProbe.Tick();
             ApplyExperimentalOptions();
             EffectBudget.Enabled = E("EffectSplit", Config.EffectSplit);
             RecolorSplit.Enabled = E("RecolorSplit", Config.RecolorSplit);
+            RecolorDefer.Enabled = E("RecolorDefer", Config.RecolorDefer);
+            if (!RecolorDefer.Enabled) RecolorDefer.FlushAll();
             TweenFix.Enabled = E("TweenGuard", Config.TweenGuard);
             HitTextFade.Enabled = E("HitTextFade", Config.HitTextFade);
             HitMeterFade.Enabled = E("HitMeterFade", Config.HitMeterFade);
@@ -1079,6 +1083,7 @@ BlendProbe.Tick();
         public string AssetDiskCachePath = "";
         public bool EffectSplit = true;
         public bool RecolorSplit = true;
+        public bool RecolorDefer = true;    // 화면 밖 타일의 색 바꾸기 엔진 호출을 타일이 다시 켜질 때로 미룸. HELLO 12ms+ 프레임 102 -> 66~77, Arche 358 -> 288, 곡 끝 타일 상태 대조 차이 0
         public bool TweenGuard = true;
         public bool ZeroTween = true;       // 길이 0 인 즉시 이동을 애니메이션 없이 처리
         public bool SkipSameText = true;

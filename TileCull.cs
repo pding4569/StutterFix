@@ -51,6 +51,9 @@ namespace StutterFix
         private static readonly Dictionary<Renderer, int> culled = new Dictionary<Renderer, int>(RefEq<Renderer>.I);
         private static readonly Dictionary<GameObject, int> byGo = new Dictionary<GameObject, int>(RefEq<GameObject>.I);
         private static readonly List<int> outList = new List<int>();
+        private static readonly Dictionary<scrFloor, int> floorIndex = new Dictionary<scrFloor, int>(RefEq<scrFloor>.I);
+        // 지금 렌더러를 꺼 둔(화면 밖) 타일인가 (RecolorDefer 가 엔진 호출을 미룰 수 있는지 묻는다)
+        internal static bool IsCulled(scrFloor f) { int i; return active && floorIndex.TryGetValue(f, out i) && st[i] == 1; }
         private static int rx0, ry0, rx1, ry1;   // 지금 켠 칸 범위 (포함)
         private static bool haveRect;
         private static int lastStep = -10, frames;
@@ -294,6 +297,7 @@ namespace StutterFix
                 long cellWidth=(long)x1-x0+1,cellHeight=(long)y1-y0+1;
                 if (cellWidth<=0 || cellHeight<=0 || cellWidth>200000 || cellHeight>200000 || cellWidth*cellHeight>200000) { StopAll(); return; }   // 너무 멀리 줌아웃: 하지 않음
                 Move(x0, y0, x1, y1);
+                RecolorDefer.AfterStep();
                 if (++frames % 30 == 0) Requalify();
             }
             catch (Exception ex) { StopAll(); Main.Entry.Logger.Log("[화면 밖 타일] 오류로 멈춤: " + ex.Message); loopLost = true; }
@@ -309,13 +313,14 @@ namespace StutterFix
             int n = list.Count;
             builtList = list;
             fl = list.ToArray(); rend = new Renderer[n]; bnd = new Bounds[n]; st = new byte[n]; want = new bool[n]; cover = new int[n]; quiet = new int[n];
-            cells.Clear(); culled.Clear(); byGo.Clear(); haveRect = false;
+            cells.Clear(); culled.Clear(); byGo.Clear(); floorIndex.Clear(); haveRect = false;
             for (int i = 0; i < n; i++)
             {
                 var f = fl[i];
                 st[i] = 3;
                 if (f == null) continue;
                 byGo[f.gameObject] = i;
+                floorIndex[f] = i;
                 var fr = f.floorRenderer;
                 var r = fr != null ? fr.renderer : null;
                 if (r == null || !(r is MeshRenderer) || r.gameObject != f.gameObject) continue;
@@ -378,6 +383,7 @@ namespace StutterFix
         {
             if (st[i] != 1) return;
             var r = rend[i];
+            RecolorDefer.FlushFloor(fl[i]);   // 미뤄 둔 색·스타일을 렌더러를 켜기 전에 적용
             culled.Remove(r);
             st[i] = 0;
             if (r != null && want[i]) r.enabled = true;
@@ -471,9 +477,10 @@ namespace StutterFix
         public static void StopAll()
         {
             if (!active) return;
+            RecolorDefer.FlushAll();
             active = false;
             foreach (var kv in culled) { var r = kv.Key; if (r != null && want[kv.Value]) r.enabled = true; }
-            culled.Clear(); cells.Clear(); byGo.Clear(); haveRect = false;
+            culled.Clear(); cells.Clear(); byGo.Clear(); floorIndex.Clear(); haveRect = false;
             fl = new scrFloor[0]; rend = new Renderer[0]; builtList = null;
             if (Verify || Edition.Dev) Main.Entry.Logger.Log("[화면 밖 타일] 멈춤: 끔 " + Culls + "번, 켬 " + Unculls + "번, 움직여 뺌 " + Pins + "번, 게임의 enabled 읽기/쓰기 대신 " + ReadHits + "번"
                 + (Verify ? " | 검증: 화면과 겹친 꺼진 타일 " + Violations + "번, 꺼진 채 움직인 타일 " + Moved + "번" : ""));

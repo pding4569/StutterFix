@@ -705,3 +705,12 @@ SF집계오류0/0/0·정상 종료3/3·원본 복원5/5×3. Arche 성능·전체
 |6|scrConductor.Update 안 히트사운드 문자열|전체 0.164ms|0.006MB/s|안 함|
 |7|scrHitTextManager.ShowHitText|0.001ms|목록 밖|안 함|
 일곱 개를 합쳐도 프레임당 0.14ms(프레임 5.4ms 의 2.6%, 측정 비용 포함 상한)라 FPS 220 vs 218 같은 잡음 안이다. 곡 중 큰 비용은 ffxRecolorFloorPlus(한 번 7~10ms, 42KB), scrFloor.Update(0.22ms)다.
+
+## 2026-10-18 타일 색 바꾸기(ffxRecolorFloorPlus) 미루기와 작업 스레드 실험
+
+원인(HELLO 실측): 타일 하나 6.5us(SetTrackStyle 3.2 / ColorFloor 1.5 / UpdateAngle 1.1), 한 효과가 타일 4,800개를 칠해 한 번에 7~10ms. 기존 구간 나누기(RecolorSplit)는 조각 하나 2.6ms가 프레임마다 1~2개씩 몇 프레임 이어졌다.
+방법(`RecolorDefer.cs`, 기본 켬, 설정창 "화면 밖 타일 색 바꾸기 미루기"): TileCull 이 렌더러를 꺼 둔 타일에서 UpdateAngle / SetTrackStyle / ColorFloor 의 엔진 호출만 기록하고(관리 값 styleNum·special* 필드·specialTimeOffset 은 원래 식 그대로 즉시), 타일이 켜지기 직전(Uncull)·움직여 관리에서 뺄 때·전부 켤 때 적용. 색은 같은 DOTween 을 만들어 끝내거나(앞의 것) 지난 시간만큼 Goto(마지막). 프레임마다 0.6ms 는 먼저 들어온 순서로 미리 적용해 쌓인 양을 줄인다(타일 이동 효과가 한꺼번에 움직여 밀린 것을 적용하는 프레임이 8ms 가 되던 것).
+검증: 곡 전체 끝 타일 상태 대조(`tilesig`, 타일 14,721개 x 스타일·메시·재질 8값·색·special 필드): HELLO·Arche 모두 비색 필드 차이 0, 단색(Single) 타일 색 차이 0(처음에는 SetColor(끝값)이 DOTween 끝값과 마지막 비트가 달라 13개가 달랐고 같은 DOTween 을 쓰게 고쳐 0). 움직이는 색(Glow·Blink·Rainbow)은 끄고 켠 두 판 사이뿐 아니라 끈 판 두 번 사이에도 같은 만큼 다르다(곡 끝 시각 차이). `culltest` 5곳(미룬 타일 2~4천 개 있는 때) 다른 픽셀 0. 다시 하기 2번 오류 0.
+HELLO PlayerAuto ABBA: 끔 12ms 초과 102·102 / 16ms 초과 40·34 / 1% low 113 / 0.1% low 63·65 → 켬 66·70 / 30·30 / 116 / 69·71. 곡 중 효과가 가장 무거운 프레임 26~32ms → 17~22ms(137초·165초 색 바꾸기 프레임이 상위 8개에서 사라짐). Arche 12ms 초과 358 → 288, 16ms 초과 29 → 22.
+파티클: HELLO 곡 중 켜진 파티클 시스템 47개, 재생 19~21개, 입자 약 9천 개 중 안 보이는 것 3% — 모두 보이는 행성 꼬리(Planet/Pivot/Tail, 입자 약 470개, 방출 501/s)다. 끌 대상이 없고, ParticleSystem*UpdateAll 11~18ms 는 작업 스레드를 기다리는 구간(무작위 시각)이다.
+작업 스레드(Job.Worker 0~4, Background 16개) 우선순위를 곡 중 올려 봤으나 16ms 초과 38 → 67, 20ms 초과 15 → 33, 0.1% low 63 → 52 로 나빠져 지웠다.

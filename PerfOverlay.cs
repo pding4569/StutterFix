@@ -601,7 +601,8 @@ namespace StutterFix
                 for (int i = songHist.Length - 1; i >= 0; i--) { acc += songHist[i]; if (acc > skip) return 1000.0 / ((i + 0.5) / 10.0); }
                 return 0;
             }
-            return string.Format(" | 1% low {0:F0} FPS, 0.1% low {1:F0} FPS", Low(0.01), Low(0.001));
+            long Over(int tenthMs) { long c = 0; for (int i = tenthMs; i < songHist.Length; i++) c += songHist[i]; return c; }
+            return string.Format(" | 1% low {0:F0} FPS, 0.1% low {1:F0} FPS | 12ms 초과 {2}개, 16ms 초과 {3}개, 20ms 초과 {4}개", Low(0.01), Low(0.001), Over(120), Over(160), Over(200));
         }
 #endif
         internal static string SongSummary()

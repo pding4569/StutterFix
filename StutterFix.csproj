@@ -107,6 +107,9 @@
     <Compile Include="LowEnd.cs" />
     <Compile Include="TimerPeriodLease.cs" />
     <Compile Include="PhysicsPause.cs" />
+    <Compile Include="RecolorDefer.cs" />
+    <Compile Include="ParticleDump.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="TileSig.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="HalfRender.cs" />
     <Compile Include="FrameGen.cs" />
     <Compile Include="DeadlineSnapshotGate.cs" />

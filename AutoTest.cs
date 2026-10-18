@@ -1037,6 +1037,9 @@ namespace StutterFix
                 case "renderthreadstate":Log("[렌더 스레드 예약 상태] "+RenderThreadScheduling.FixtureState);return true;
                 case "renderthreadstopfixture":RenderThreadScheduling.Shutdown();Log("[렌더 스레드 내리기 시험] "+RenderThreadScheduling.FixtureState);return true;
                 case "constantringstate":Log("[보간 상수 버퍼 링] "+FrameGen.DescribeConstantRing());return true;
+                case "tilesig": Log("[타일 상태 기록] "+TileSig.Run(modDir,arg)); Log("[색 바꾸기 미루기] "+RecolorDefer.State); return true;
+                case "psdump": Log("[파티클 목록] "+ParticleDump.Run(arg.Length>0?int.Parse(arg):8)); return true;
+                case "deferstate": Log("[색 바꾸기 미루기] "+RecolorDefer.State); return true;
                 case "moduleidentity":Log("[실행 모듈 식별] mvid="+typeof(Main).Module.ModuleVersionId);return true;
                 case "arenastate":Log("[계산 영역 시험] requested="+NativeMotion.ArenaRequested+" active="+NativeMotion.ArenaActive+" native_allocator="+NativeMotion.NativeArenaActive+" column_alignment_or="+NativeMotion.ArenaAlignment);return true;
                 case "pinarena":Log("[페이지 고정 시험] requested="+NativeMotion.PinRequested+" pinned="+NativeMotion.ArenaPinned+" working_set="+PinnedArenaOwner.WorkingSetSnapshot()+" original="+PinnedArenaOwner.OriginalSnapshot+" status="+PinnedArenaOwner.Status);return true;

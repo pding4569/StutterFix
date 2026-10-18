@@ -19,7 +19,7 @@ namespace StutterFix
             new[] { "scrController", "OnLandOnPortal" }, new[] { "scrPlayer", "UpdateHoldBehavior" }, new[] { "scrPlanet", "AutoShouldHitNow" }, new[] { "scrConductor", "PropagateOnBeat" },
             new[] { "scrVfxPlus", "Update" }, new[] { "scrPlanet", "MarkFail" }, new[] { "scrFloor", "UpdateAngle" }, new[] { "scrCamera", "Update" }, new[] { "scrPlayer", "CheckPostHoldFail" },
             new[] { "ADOFAI.Common.Platform.Windows.PlatformHelperWindows", "Update" }, new[] { "UnityEngine.AudioSource", "GetSpectrumData" }, new[] { "AsyncInputUtils", "UpdateOffsetTime" },
-            new[] { "ffxPlusBase", "StartEffect" }, new[] { "scrFloor", "TweenOpacity" }, new[] { "scrVisualDecoration", "UpdateShader" }, new[] { "ffxSetFilterAdvancedPlus", "StartEffect" }, new[] { "scrPlanet", "Update" }, new[] { "scrPlanet", "ScrubToFloorNumber" }, new[] { "scrConductor", "Update" },
+            new[] { "ffxPlusBase", "StartEffect" }, new[] { "scrFloor", "TweenOpacity" }, new[] { "scrVisualDecoration", "UpdateShader" }, new[] { "ffxSetFilterAdvancedPlus", "StartEffect" }, new[] { "scrPlanet", "Update" }, new[] { "scrFloor", "UpdateAngle" }, new[] { "scrFloor", "SetTrackStyle" }, new[] { "scrFloor", "ColorFloor" }, new[] { "scrFloor", "TweenColor" }, new[] { "ffxRecolorFloorPlus", "StartEffect" }, new[] { "scrPlanet", "ScrubToFloorNumber" }, new[] { "scrConductor", "Update" },
         };
         private static readonly Dictionary<MethodBase, int> index = new Dictionary<MethodBase, int>();
         private static readonly List<string> names = new List<string>();
