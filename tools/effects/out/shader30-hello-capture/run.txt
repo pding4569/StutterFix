@@ -1,0 +1,49 @@
+걸린 시간 196초, 로그 C:\Users\나로컴\AppData\Local\StutterFix\runs\20261009-154408-shader29-preset-hello.log
+설정 덮어씀(끝나고 되돌림): FxColor=false(새로 넣음), FxSharp=false(새로 넣음), FxAA=false(새로 넣음), FxGlow=false(새로 넣음), FxLight=false(새로 넣음), FxVignette=false(새로 넣음), FxLut=false(새로 넣음), LowHalfRender=false, LowSharpen=false, LowFsr=false, FxPreset=0(새로 넣음), FrameGenOutside=0(새로 넣음), FrameGenRefresh=false(새로 넣음), FrameStats=false, LowRenderScale=100
+
+=== 설치 상태 ===
+오류 없음
+
+=== 자동 시험 ===
+[화면효과상태] enabled=True ready=True failed=False frames=14825 reused=0 glow_rest=3516 custom_source_skipped=2444 coordinator=True size=3440x1440 status=
+[화면효과시각] song_s=22.014021378359757 unity_frame=25790 effect_frame=25789 glow=False
+[프레임상태] active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=
+[프레임시각] frame=25791 ticks=1123477561 hz=10000000
+다시 하기
+화면 효과 미리 설정: 6
+자동 플레이 켬 (재생 때마다 다시 맞춤)
+키 누름
+[예약 캡처] target_song_s=20 request_song_s=20.003025513491593 unity_frame=31595
+[예약 화면] window=3440x1440 display=3440x1440 hz=164.999 sync=0
+[화면효과상태] enabled=True ready=True failed=False frames=19935 reused=0 glow_rest=3583 custom_source_skipped=3272 coordinator=True size=3440x1440 status=
+[화면효과시각] song_s=22.003460388979875 unity_frame=31728 effect_frame=31727 glow=True
+[프레임상태] active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=
+[프레임시각] frame=31729 ticks=1380809908 hz=10000000
+다시 하기
+화면 효과 미리 설정: 0
+자동 플레이 켬 (재생 때마다 다시 맞춤)
+키 누름
+[예약 캡처] target_song_s=20 request_song_s=20.003832321963273 unity_frame=37710
+[예약 화면] window=3440x1440 display=3440x1440 hz=164.999 sync=0
+[화면효과상태] enabled=False ready=False failed=False frames=20878 reused=0 glow_rest=3583 custom_source_skipped=3272 coordinator=False size=0x0 status=
+[화면효과시각] song_s=22.007511597475968 unity_frame=38033 effect_frame=32670 glow=True
+[프레임상태] active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=
+[프레임시각] frame=38034 ticks=1638110803 hz=10000000
+다시 하기
+화면 효과 미리 설정: 0
+설정 FxRays = True (묶음 끝에 False 로 되돌림)
+설정 FxRaysAmount = 1.5 (묶음 끝에 0.8 로 되돌림)
+설정 FxGlowThreshold = 0.3 (묶음 끝에 0.75 로 되돌림)
+설정 FxToneMap = True (묶음 끝에 False 로 되돌림)
+자동 플레이 켬 (재생 때마다 다시 맞춤)
+키 누름
+[예약 캡처] target_song_s=20 request_song_s=20.000515442690812 unity_frame=44020
+[예약 화면] window=3440x1440 display=3440x1440 hz=164.999 sync=0
+[화면효과상태] enabled=True ready=True failed=False frames=25184 reused=0 glow_rest=3583 custom_source_skipped=4093 coordinator=True size=3440x1440 status=
+[화면효과시각] song_s=22.011122208437882 unity_frame=44155 effect_frame=44154 glow=False
+[프레임상태] active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=
+[프레임시각] frame=44156 ticks=1895510949 hz=10000000
+바꾼 설정 되돌림
+끝 - 게임을 끕니다
+
+플레이 기록 없음

@@ -1,0 +1,17 @@
+﻿
+      호출 scrVisualDecoration::SetSprite
+      필드 읽기 ffxMoveDecorationsPlus::originalSizeUsed
+      필드 읽기 ffxMoveDecorationsPlus::targetOriginalSize
+      호출 scrVisualDecoration::SetTextureScaleMultiplier
+      필드 읽기 ffxMoveDecorationsPlus::cropPivotOffsetUsed
+      필드 읽기 ffxMoveDecorationsPlus::targetCropPivotOffset
+>     필드 쓰기 scrDecoration::croppedPivotOffset
+      호출 scrDecoration::SetPosition
+      필드 읽기 ffxMoveDecorationsPlus::smoothingUsed
+      필드 읽기 ffxMoveDecorationsPlus::targetSmoothing
+      필드 쓰기 scrVisualDecoration::smoothing
+      필드 읽기 ffxMoveDecorationsPlus::maskingTypeUsed
+      필드 읽기 ffxMoveDecorationsPlus::targetMaskingType
+      호출 scrVisualDecoration::SetMaskingType
+
+

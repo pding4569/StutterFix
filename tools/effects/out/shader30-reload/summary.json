@@ -1,0 +1,48 @@
+{
+  "scope": "Functional/visual only; reload, retry and screenshot excluded from performance.",
+  "strong_neon_and_rays": true,
+  "identity": {
+    "before_sha256": "905efdafaf60b3c49bff8963e482d2626c1e1cbf89eed4c50f63aed236069370",
+    "before_mvid": "23b0442a-6029-4842-9379-7699efeaaff1",
+    "after_sha256": "c2cc9bc50c3aefe894d766103c18ff4d3664e40db4d23c521f85ed0532959897",
+    "after_mvid": "4618ce69-f5ec-4976-93da-967ffc4e12d4"
+  },
+  "before_sha256": "905efdafaf60b3c49bff8963e482d2626c1e1cbf89eed4c50f63aed236069370",
+  "after_sha256": "c2cc9bc50c3aefe894d766103c18ff4d3664e40db4d23c521f85ed0532959897",
+  "phases": [
+    {
+      "name": "before",
+      "why": "끝",
+      "seconds": 56.93457913398743
+    },
+    {
+      "name": "reload",
+      "why": "다시 불러오기",
+      "seconds": 1.0997297763824463
+    },
+    {
+      "name": "after",
+      "why": "끝",
+      "seconds": 27.571428298950195
+    }
+  ],
+  "fx_states": [
+    "enabled=True ready=True failed=False frames=2827 reused=0 glow_rest=0 custom_source_skipped=744 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=101 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=3040 reused=0 glow_rest=0 custom_source_skipped=757 coordinator=True size=3440x1440 status=",
+    "enabled=False ready=False failed=False frames=3436 reused=0 glow_rest=0 custom_source_skipped=757 coordinator=False size=0x0 status="
+  ],
+  "fg_states": [
+    "active=True native_installed=1 sources=8868 generated=10999 runtime_initialized=True status=",
+    "active=True native_installed=1 sources=100 generated=304 runtime_initialized=True status=",
+    "active=True native_installed=1 sources=3796 generated=11755 runtime_initialized=True status=",
+    "active=False native_installed=0 sources=4185 generated=12943 runtime_initialized=True status="
+  ],
+  "fresh_static_frames": [
+    2827,
+    101
+  ],
+  "capture_metadata": [
+    "요청 곡 10.359초, 배율 4, frame 12876"
+  ]
+}

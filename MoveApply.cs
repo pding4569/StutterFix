@@ -252,14 +252,19 @@ namespace StutterFix
         }
         internal static bool VerifyLate;   // (자동 시험 late-verify 파일) 개발자용 LateUpdate 결과 대조를 자동 시험 빌드에서도
 
-        private static bool SkipForLate(scrDecoration d)
+        internal static bool SkipForLate(scrDecoration d)
         {
             if (!LateSkip || !Enabled || (object)d == null || !Hitch.Playing || SceneReset.Resetting) return false;
             if (managerLateFrame != UnityEngine.Time.frameCount - 1) return false;   // 이번 프레임 LateUpdate 가 이미 시작됐거나, 지난 프레임에 안 돌았다
             if (d.hitbox != 0 || !d.GetVisible()) return false;
-            if (lateSkippedSet.Add(d)) lateSkipped.Add(d);
+            RegisterLate(d, lateSkippedSet, lateSkipped);
             LateSkips++;
             return true;
+        }
+
+        internal static void RegisterLate(scrDecoration d, HashSet<scrDecoration> set, List<scrDecoration> list)
+        {
+            if (set.Add(d)) list.Add(d);
         }
 
         public static void ManagerLatePrefix() { managerLateFrame = UnityEngine.Time.frameCount; Dormancy.NewFrame(); }

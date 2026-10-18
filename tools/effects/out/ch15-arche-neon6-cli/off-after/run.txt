@@ -1,0 +1,30 @@
+걸린 시간 100초, 로그 E:\StutterFixWork\StutterFix\tools\effects\out\sf-runs\20261009-181653-framegen-normal.log
+설정 덮어씀(끝나고 되돌림): FxColor=false(새로 넣음), FxSharp=false(새로 넣음), FxAA=false(새로 넣음), FxGlow=false(새로 넣음), FxLight=false(새로 넣음), FxVignette=false(새로 넣음), FxLut=false(새로 넣음), FxGlowStack=false(새로 넣음), FxToneMap=false(새로 넣음), FxRays=false(새로 넣음), FxStreak=false(새로 넣음), FxFlare=false(새로 넣음), FxChromatic=false(새로 넣음), FxGrain=false(새로 넣음), FxCrt=false(새로 넣음), FxPixel=false(새로 넣음), FxPosterize=false(새로 넣음), FxBlur=false(새로 넣음), LowHalfRender=false, LowSharpen=false, LowFsr=false, LowRenderScale=100, FxPreset=0(새로 넣음), FrameGenOutside=4(새로 넣음), FrameGenRefresh=false(새로 넣음), FrameGenRefreshRest=false(새로 넣음), FrameStats=false
+
+=== 설치 상태 ===
+오류 없음
+
+=== 자동 시험 ===
+시작: 15단계 - wait 3 / fgstate / game D:\얼불춤 맵 파일\Arche\backup.adofai / auto on / press / wait 10 / fgstate / fxstate / wait 35 / fgstate / fxstate / set FrameGenOutside 0 / wait 3 / fgstate / quit
+UMM 창 닫음
+[프레임상태] active=True native_installed=1 sources=979 generated=0 runtime_initialized=True status=
+[프레임시각] frame=980 ticks=180303941 hz=10000000
+게임 화면으로 맵 열기: D:\얼불춤 맵 파일\Arche\backup.adofai
+게임 화면 맵 열림 (19.3초, 2초 기다림 포함)
+자동 플레이 켬 (재생 때마다 다시 맞춤)
+키 누름
+[프레임상태] active=True native_installed=1 sources=10110 generated=13179 runtime_initialized=True status=
+[프레임시각] frame=10111 ticks=542827724 hz=10000000
+[화면효과상태] enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=
+[화면효과시각] song_s=7.8900009323842824 unity_frame=10112 effect_frame=-1 glow=False
+[프레임상태] active=True native_installed=1 sources=20737 generated=45139 runtime_initialized=True status=
+[프레임시각] frame=20738 ticks=892912575 hz=10000000
+[화면효과상태] enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=False size=0x0 status=
+[화면효과시각] song_s=42.897837274242193 unity_frame=20739 effect_frame=-1 glow=False
+설정 FrameGenOutside = 0 (묶음 끝에 4 로 되돌림)
+[프레임상태] active=False native_installed=0 sources=20739 generated=45147 runtime_initialized=True status=
+[프레임시각] frame=21857 ticks=923026675 hz=10000000
+바꾼 설정 되돌림
+끝 - 게임을 끕니다
+
+플레이 기록 없음

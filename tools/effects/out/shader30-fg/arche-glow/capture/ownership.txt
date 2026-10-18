@@ -1,0 +1,1 @@
+world_copies=0 world_retains=9676 screen_copies=9676 flushes=9676 query_marks=0 query_ready=0 query_pending=0

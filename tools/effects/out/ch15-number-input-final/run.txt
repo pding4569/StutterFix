@@ -1,0 +1,32 @@
+걸린 시간 62초, 로그 E:\StutterFixWork\StutterFix\tools\effects\out\sf-runs\20261009-182958-fx-number-input.log
+설정 덮어씀(끝나고 되돌림): FxColor=true(새로 넣음), FxSharp=false(새로 넣음), FxAA=false(새로 넣음), FxGlow=false(새로 넣음), FxVignette=false(새로 넣음), FxLut=false(새로 넣음), FxLight=false(새로 넣음), FxToneMap=false(새로 넣음), FxRays=false(새로 넣음), FxStreak=false(새로 넣음), FxFlare=false(새로 넣음), FxChromatic=false(새로 넣음), FxGrain=false(새로 넣음), FxCrt=false(새로 넣음), FxPixel=false(새로 넣음), FxPosterize=false(새로 넣음), FxBlur=false(새로 넣음), LowHalfRender=false, LowFsr=false, LowSharpen=false, FxVibrance=0.55(새로 넣음), FxContrast=1.12(새로 넣음), FxBrightness=0(새로 넣음), FxTemperature=0(새로 넣음), FxPreset=6(새로 넣음), LowRenderScale=100, FrameGenOutside=4(새로 넣음), FrameGenRefresh=false(새로 넣음), FrameGenRefreshRest=false(새로 넣음), FrameStats=false
+
+=== 설치 상태 ===
+오류 없음
+
+=== 자동 시험 ===
+시작: 31단계 - wait 3 / game D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai / auto on / press / wait 10 / ui 8 / wait 2 / fxinput fxvib 0.75 / wait 0.2 / fxpersist / fxinput fxvib 9 / wait 0.2 / fxpersist / fxinput fxvib - / wait 0.2 / fxpersist / fxinput fxvib NaN / wait 0.2 / fxpersist / fxinput fxvib -0.25 / wait 0.2 / fxpersist / fxstate / shot fx-number-input / wait 1 / fxstate / ui close / set FrameGenOutside 0 / wait 2 / fgstate / quit
+UMM 창 닫음
+게임 화면으로 맵 열기: D:/얼불춤 맵 파일/HELLO (BPM) 2026/level.adofai
+게임 화면 맵 열림 (14.2초, 2초 기다림 포함)
+자동 플레이 켬 (재생 때마다 다시 맞춤)
+키 누름
+설정 창: 8
+[화면효과저장] float_fields=23 mismatches=0 preset=4
+[화면효과저장] float_fields=23 mismatches=0 preset=4
+[화면효과저장] float_fields=23 mismatches=0 preset=4
+[화면효과저장] float_fields=23 mismatches=0 preset=4
+[화면효과저장] float_fields=23 mismatches=0 preset=4
+[화면효과상태] enabled=True ready=True failed=False frames=2983 reused=0 glow_rest=0 custom_source_skipped=719 coordinator=True size=3440x1440 status=
+[화면효과시각] song_s=11.460335236391984 unity_frame=9485 effect_frame=9484 glow=False
+화면 캡처: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\shots\fx-number-input.png | 요청 곡 11.464초, 배율 4, frame 9486
+[화면효과상태] enabled=True ready=True failed=False frames=3123 reused=0 glow_rest=0 custom_source_skipped=719 coordinator=True size=3440x1440 status=
+[화면효과시각] song_s=12.476910096011125 unity_frame=9625 effect_frame=9624 glow=False
+설정 창: close
+설정 FrameGenOutside = 0 (묶음 끝에 4 로 되돌림)
+[프레임상태] active=False native_installed=0 sources=9626 generated=11655 runtime_initialized=True status=
+[프레임시각] frame=10038 ticks=552011183 hz=10000000
+바꾼 설정 되돌림
+끝 - 게임을 끕니다
+
+플레이 기록 없음

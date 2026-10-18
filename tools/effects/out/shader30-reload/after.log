@@ -1,0 +1,139 @@
+[StutterFix] 꺼짐: 패치와 감시를 모두 풀었음
+[StutterFix] Inactive.
+[StutterFix] 내리는 중 (다시 불러오기)
+[StutterFix] Version '2.5.3'. Loading.
+[StutterFix] [화면 효과] 번들 준비 Direct3D11
+[StutterFix] [저사양] 게임 우선순위 높음
+[StutterFix] [저사양] 윈도우 절전 제한 끔, 타이머 1ms 켬
+[StutterFix] [저사양] 선명도 보정 셰이더 찾음
+[StutterFix] patched scnGame.Awake
+[StutterFix] patched scnEditor.SwitchToEditMode
+[StutterFix] patched scrTextDecoration.SetText (같은 글자 건너뛰기)
+[StutterFix] patched Shadow.effectColor (같은 그림자 색 건너뛰기)
+[StutterFix] patched <SetCollider>d__23.MoveNext
+[StutterFix] [효과] StartEffect 87개, 걸러내기 0개 감쌈
+[StutterFix] RecolorSplit: StartEffect 인자 1개
+[StutterFix] patched ffxRecolorFloorPlus.StartEffect (구간 나누기)
+[StutterFix] [즉시 이동] OnUpdate 건너뛸 짝 9개, 타입으로 판별 가능 9개 (예상 9개)
+[StutterFix] [즉시 이동] 설치
+[StutterFix] [즉시 이동 직접] 필요한 지역 변수를 못 찾아 적용 안 함
+[StutterFix] [즉시 이동 직접] 설치: 속성 블록 0개 (예상 9개)
+[StutterFix] [즉시 이동 직접] 필요한 지역 변수를 못 찾아 적용 안 함
+[StutterFix] [장식 이동 루프] 설치
+[StutterFix] [미리 확인] 설치
+[StutterFix] [장식 애니메이션] 설치
+[StutterFix] [타일 애니메이션] 설치
+[StutterFix] [저사양] 설치 (게임 화면 해상도 사용 가능)
+[StutterFix] [파티클] 설치 (바꾼 호출 2곳)
+[StutterFix] [누수] 설치 (사용자 지정 FPS 화면 버퍼, 옛 편집기 종료 콜백)
+[StutterFix] [로딩] 이미지 파일 시각 캐시 설치 (바꾼 곳 2)
+[StutterFix] [로딩] 에디터 재생 시작 때 장식 다시 설정 줄이기 설치 (맵 연 뒤 첫 재생 포함)
+[StutterFix] [로딩] 에디터에서 다시 할 때 클릭용 충돌 상자 켜지 않기 설치
+[StutterFix] [로딩] 같은 이미지 장식 목록 넣기 빠르게 설치
+[StutterFix] [맵 파일 읽기] 빠른 JSON 해석기 설치 (GDMiniJSON.Json)
+[StutterFix] [맵 파일 읽기] 이벤트로 바꾸기의 열거형 변환 캐시 설치 (바꾼 곳 3)
+[StutterFix] [맵 파일 읽기] 여러 코어로 이벤트 만들기 설치
+[StutterFix] [장식 한 번에 복제] 설치
+[StutterFix] [판정 글자] 사라질 때 색만 바꾸기 설치
+[StutterFix] [오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 0개)
+[StutterFix] [즉시 이동 직접] 필요한 지역 변수를 못 찾아 적용 안 함
+[StutterFix] [연출 끄기] 설치 (효과 19종)
+[StutterFix] [이미지 압축] 설치
+[StutterFix] [즉시 이동 직접] 필요한 지역 변수를 못 찾아 적용 안 함
+[StutterFix] [장식 마무리] 설치
+[StutterFix] [잠든 장식] 설치
+[StutterFix] [이미지] 빠른 압축 풀기(libdeflate): 사용 중
+[StutterFix] [이미지] 네이티브 필터 되돌리기·DXT 압축(sfnative): 사용 중
+[StutterFix] [이미지] JPG 풀기(libjpeg-turbo): 사용 중
+[StutterFix] [이미지] 스프라이트 크기 보정 설치 (큰 이미지 줄이기용)
+[StutterFix] [이미지] 미리 풀기 설치
+[StutterFix] [투명 장식] 위치 늦게 반영 설치
+[StutterFix] [투명 장식] 설치
+[StutterFix] tween fix installed
+[StutterFix] [장면 정리] 설치
+[StutterFix] [전환] 설치
+[StutterFix] [나가기] 설치
+[StutterFix] end hook: scnEditor.SwitchToEditMode
+[StutterFix] end hook: scrController.FailAction
+[StutterFix] end hook: scrController.Fail2Action
+[StutterFix] end hook: scrController.OnLandOnPortal
+[StutterFix] end hook: scrController.QuitToMainMenu
+[StutterFix] end hook: scnEditor.QuitToMenu
+[StutterFix] end hook: scnEditor.TryQuitToMenu
+[StutterFix] end hook: scnEditor.SaveAndQuit
+[StutterFix] restart hook: scrController.Restart
+[StutterFix] restart hook: scnEditor.Play
+[StutterFix] restart hook: scrController.ResetCustomLevel
+[StutterFix] gc control installed
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [쓰레기 줄이기] 비동기 키 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 마우스 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] 레거시 키보드 입력: 임시 객체 없이
+[StutterFix] [쓰레기 줄이기] scrFloor.Update: 볼륨 색 모드용 객체를 필요한 타일만 새로 만듦
+[StutterFix] [미리 컴파일] 모드 함수 2141개 433ms, 게임 함수(효과·장식·타일·행성·지휘자) 1111개 16ms
+[StutterFix] 켜짐: 패치 설치 완료 (플레이어용)
+[StutterFix] 지금 Direct3D11 / LegacyJobified
+[StutterFix] [첫 판 FPS] 응답 없음 창 끔
+[StutterFix] [자동 시험] 시작: 24단계 - keep / wait 2 / fxstate / fgstate / retry / wait 3 / auto on / press / wait 12 / fxstate / fgstate / shot fx-reload / wait 2 / set FrameGenOutside 0 / set FxColor false / set FxSharp false / set FxGlow false / set FxVignette false / set FxGlowStack false / set FxToneMap false / set FxRays false / wait 2 / fxstate / fgstate
+[StutterFix] [프레임 통계] 게임 기본: 꺼짐, 이 모드: 안 켬 -> 이번 실행 꺼짐
+[StutterFix] Active.
+[StutterFix] [상태] Fail2  -> 플레이
+Shader warmup: 204 shaders 1486 combinations 0.003s
+[StutterFix] [셰이더] 곡 시작: 셰이더 204개, 새 필터 109개(필터 텍스처 14개) 미리 준비 18ms
+[StutterFix] [저사양] 그래픽 설정: 품질 단계 Default, 안티에일리어싱 0x, 수직동기 0, 그림자 Disable, 텍스처 0, 이방성 Disable, 파티클 레이캐스트 256, 소프트 파티클 False | 카메라 OverlayCam: MSAA False, HDR False, 경로 Forward, 대상 화면, 깊이 -1.63, 컬링 100000 | 카메라 BGStaticCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.63, 컬링 800 | 카메라 BGMovingCam: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1.11, 컬링 400 | 카메라 Camera: MSAA False, HDR False, 경로 Forward, 대상 3440x1440, 깊이 -1, 컬링 9F397 | 화면 3440x1440 FullScreenWindow, 그래픽카드 NVIDIA GeForce RTX 4060 Ti
+[StutterFix] [다른 모드] Quartz 최적화: 켜진 것 없음
+[StutterFix] [자동 시험] 묶음이 끝나도 게임을 끄지 않음
+[StutterFix] [프레임생성 바깥] 기본 꺼짐; 공 포함; 원래 스왑체인; 배율 2..8
+[StutterFix] [다른 모드] 같은 게임 함수를 고치는 곳 31개: scnEditor.SwitchToEditMode (quartz.module.planetcolors, quartz.module.uihider) | ffxCheckpoint.StartEffect (quartz.module.visualtweaks) | ffxMenuPlanetSpeedChange.StartEffect (quartz.module.mainmenu) | ffxBloomPlus.StartEffect (quartz.module.effectremover) | ffxFlashPlus.StartEffect (quartz.module.effectremover) | ffxHallOfMirrorsPlus.StartEffect (quartz.module.effectremover) | ffxMoveFloorPlus.StartEffect (quartz.module.effectremover) | ffxScreenScrollPlus.StartEffect (quartz.module.effectremover) | ffxScreenTilePlus.StartEffect (quartz.module.effectremover) | ffxSetFilterAdvancedPlus.StartEffect (quartz.module.effectremover) | ffxShakeScreenPlus.StartEffect (quartz.module.effectremover) | scrParticleDecoration.Update (quartz.module.optimizer) | scrParticleDecoration.ResetParticle (quartz.module.optimizer) | scrCamera.SetCustomFrameRate (quartz.module.optimizer) | scnEditor.Play (YouTubeStream, Quartz, quartz.module.planetcolors) | LevelData.Decode (quartz.module.effectremover) | TextureManager.LoadTexture (quartz.module.optimizer) | RDString.Get (YouTubeStream) | scnGame.ResetScene (quartz.module.planetcolors) | scnGame.LoadLevel (YouTubeStream) | scnGame.ApplyEventsToFloors (quartz.module.visualtweaks) | scnGame.ApplyEvent (quartz.module.keylimiter) | scrConductor.PlayHitTimes (quartz.module.optimizer) | scrPlanet.MoveToNextFloor (quartz.module.uihider, Quartz) | scrController.FailAction (quartz.module.optimizer) | scrController.OnLandOnPortal (quartz.module.uihider) | scrController.QuitToMainMenu (quartz.module.tuf) | scrController.Restart (quartz.module.optimizer, Quartz) | scnGame.Play (quartz.module.keylimiter, Quartz, quartz.module.autodeafen, quartz.module.combo, quartz.module.judgement) | scnEditor.OpenLevelCo (Quartz) | scrFloor.LightUp (quartz.module.visualtweaks)
+[StutterFix] [프레임생성 바깥] mode=0
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[StutterFix] [프레임생성 바깥] mode=4
+[StutterFix] [프레임생성 바깥] scene=3440x1440 snapshot=3440x1440 planets, trails, glow and game filters retained in the scene
+[StutterFix] [자동 시험] [화면효과상태] enabled=True ready=True failed=False frames=101 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=
+[StutterFix] [자동 시험] [화면효과시각] song_s=23.502130966982804 unity_frame=9178 effect_frame=9177 glow=True
+[StutterFix] [자동 시험] [프레임상태] active=True native_installed=1 sources=100 generated=304 runtime_initialized=True status=
+[StutterFix] [자동 시험] [프레임시각] frame=9179 ticks=649303528 hz=10000000
+[StutterFix] [곡] 평균 53 FPS (19.0ms), 가장 긴 프레임 1060ms, 곡 시작 연출 뒤 가장 긴 프레임 0ms, 끊김 0번, 프레임 101개 | 모드가 쓴 시간 평균 1.22ms/프레임 | 가장 무거운 프레임 8개: | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2
+[곡] 10초 구간별 FPS (메인/렌더 스레드/화면 대기 ms): 0s 53(0.0/0.0/0.0/0.0/0.0, 242/0개) | 가장 높은 구간 0s 53 FPS | 같은 그림자 색 건너뛰기 721회 | 파티클 장식: 같은 값 넣기 11330번 중 0번 건너뜀, 화면 밖 멈춤 55개 | 저사양: 우선순위 높음, 절전 제한 끔 True, 음악 반응 계산 건너뜀 0번 (돈 것 0번), 해상도 배율 100%, 게임 화면 3440x1440, 선명도 보정 0프레임
+[StutterFix] [장식 이동] 애니메이션 없이 처리 0개 | 표본 비교 0개 중 다름 0 | 콜백 없는 것 0 | 미룬 것 없음
+[StutterFix] [투명 장식] 지금 안 그리는 투명 장식 0개, 곡 중 최대 0개 | 색 바뀜 102번 확인, 그리기 켜고 끈 것 0번, 쓴 시간 약 0.1ms, 가장 많이 쓴 프레임 약 0.10ms (64번에 한 번 재서 추정)
+[StutterFix] GC 재개 (ResetCustomLevel) 정리 생략: 지난 정리 뒤 쌓인 것 5MB < 192MB (힙 397MB)
+[StutterFix] [자동 시험] 다시 하기
+[StutterFix] [전환] 다시 하기 223ms
+[Quartz] [AutoDeafen] desired deaf = True
+[StutterFix] [모니터] 곡 시작 연출 구간 끝: 타일 512 -> 0 (0.6초)
+[StutterFix] [상태] Start  -> 플레이
+[StutterFix] tween capacity set to 40000/25000
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[Quartz] [AutoDeafen] desired deaf = False
+[StutterFix] [자동 시험] 키 누름
+Hash needs data to generate hash
+[StutterFix] [상태] Countdown  -> 플레이
+[StutterFix] [모니터] 58ms -> 원인 불명 / gpu 0.0 cpu 0.0 (수집 0번) 효과 0.0 모드 0.1(모니터 그리기) gc 0 | 곡 5.0초, 다시 보이게 된 장식 0개 | 시각 17:00:43.098
+[JALib INFO 17:00:43.688 #10246] JALogger cache removed 3 entries, current cache size: 0
+[StutterFix] [상태] PlayerControl  -> 플레이
+[StutterFix] [자동 시험] [화면효과상태] enabled=True ready=True failed=False frames=3040 reused=0 glow_rest=0 custom_source_skipped=757 coordinator=True size=3440x1440 status=
+[StutterFix] [자동 시험] [화면효과시각] song_s=10.34829948504921 unity_frame=12874 effect_frame=12873 glow=True
+[StutterFix] [자동 시험] [프레임상태] active=True native_installed=1 sources=3796 generated=11755 runtime_initialized=True status=
+[StutterFix] [자동 시험] [프레임시각] frame=12875 ticks=799523413 hz=10000000
+[StutterFix] [자동 시험] 화면 캡처: D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\shots\fx-reload.png | 요청 곡 10.359초, 배율 4, frame 12876
+[StutterFix] [자동 시험] 설정 FrameGenOutside = 0 (묶음 끝에 4 로 되돌림)
+[StutterFix] [자동 시험] 설정 FxColor = False (묶음 끝에 True 로 되돌림)
+[StutterFix] [자동 시험] 설정 FxSharp = False (묶음 끝에 True 로 되돌림)
+[StutterFix] [자동 시험] 설정 FxGlow = False (묶음 끝에 True 로 되돌림)
+[StutterFix] [자동 시험] 설정 FxVignette = False (묶음 끝에 True 로 되돌림)
+[StutterFix] [자동 시험] 설정 FxGlowStack = False (묶음 끝에 True 로 되돌림)
+[StutterFix] [자동 시험] 설정 FxToneMap = False (묶음 끝에 True 로 되돌림)
+[StutterFix] [자동 시험] 설정 FxRays = False (묶음 끝에 True 로 되돌림)
+[StutterFix] [자동 시험] [화면효과상태] enabled=False ready=False failed=False frames=3436 reused=0 glow_rest=0 custom_source_skipped=757 coordinator=False size=0x0 status=
+[StutterFix] [자동 시험] [화면효과시각] song_s=14.40193889697548 unity_frame=13708 effect_frame=13269 glow=False
+[StutterFix] [자동 시험] [프레임상태] active=False native_installed=0 sources=4185 generated=12943 runtime_initialized=True status=
+[StutterFix] [자동 시험] [프레임시각] frame=13709 ticks=840105177 hz=10000000
+[StutterFix] [화면 효과] 번들 준비 Direct3D11
+[StutterFix] [자동 시험] 바꾼 설정 되돌림
+[StutterFix] [자동 시험] 묶음 끝: 끝
+[StutterFix] [프레임생성 바깥] 기본 꺼짐; 공 포함; 원래 스왑체인; 배율 2..8
+[Quartz] [AutoDeafen] desired deaf = True
+[StutterFix] [프레임생성 바깥] mode=0
+[StutterFix] [프레임생성 바깥] mode=4
+[StutterFix] [프레임생성 바깥] scene=3440x1440 snapshot=3440x1440 planets, trails, glow and game filters retained in the scene

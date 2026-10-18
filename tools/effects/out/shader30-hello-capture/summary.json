@@ -1,0 +1,288 @@
+{
+  "scope": "Visual only; full retry and identical song target. Original PNG bytes preserved. Contact sheet downsized4x. Capture-frame FX identity is recorded at UnityEndOfFrame; no optical timestamp, performance, latency or subjective quality conclusion.",
+  "conditions": "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+  "capture_screen_samples": [
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ],
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ],
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ],
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ],
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ],
+    [
+      "3440",
+      "1440",
+      "3440",
+      "1440",
+      "164.999",
+      "0"
+    ]
+  ],
+  "captures": [
+    {
+      "profile": "clear",
+      "target_song_s": 20.0,
+      "request_song_s": 20.001984101138078,
+      "capture_frame_state": [
+        "20",
+        "20.001984101138078",
+        "13892",
+        "13892",
+        "True",
+        "False",
+        "3440",
+        "1440"
+      ],
+      "request_unity_frame": 13892,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "a9441542efed9c33227348526ecb28450139344fb33342b6623da000b8957418",
+      "scene_pair": {
+        "scope": "Same capture frame scene before/after FX; UI excluded. Not a different-run preset pixel identity test.",
+        "changed_pixels": 3703861,
+        "total_pixels": 4953600,
+        "mean_abs_rgb": 4.335598352713179,
+        "max_abs_rgb": 39,
+        "input_max_channel": 255,
+        "output_max_channel": 255,
+        "input_rgb255_pixels": 844962,
+        "output_rgb255_pixels": 930553,
+        "sha256": {
+          "clear.scene-input.png": "d4f6292d167d7409cbe7e688a217423fe53254cf600fd01071d15eae6d1afe60",
+          "clear.scene-output.png": "66db03b2f47307386985169429e1e748a4ab7231d28f729fa10b4b0b59b233bb"
+        }
+      }
+    },
+    {
+      "profile": "clear-strong",
+      "target_song_s": 20.0,
+      "request_song_s": 20.000898819766007,
+      "capture_frame_state": [
+        "20",
+        "20.000898819766007",
+        "19893",
+        "19893",
+        "True",
+        "False",
+        "3440",
+        "1440"
+      ],
+      "request_unity_frame": 19893,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "d958d79bcdee30330ca90a05828d12b01e33b2db18ff5610be10e814e1aff277",
+      "scene_pair": {
+        "scope": "Same capture frame scene before/after FX; UI excluded. Not a different-run preset pixel identity test.",
+        "changed_pixels": 3723550,
+        "total_pixels": 4953600,
+        "mean_abs_rgb": 12.096166289836347,
+        "max_abs_rgb": 66,
+        "input_max_channel": 255,
+        "output_max_channel": 255,
+        "input_rgb255_pixels": 846320,
+        "output_rgb255_pixels": 1037153,
+        "sha256": {
+          "clear-strong.scene-input.png": "0e0f3d3070f19fd4c2ce01efc004229069179d4d603fe883ba2291f667640dd3",
+          "clear-strong.scene-output.png": "5fc9eb7ba63a42b5d3d96bfe18ab91c25f572a2f165a4d3fb41ca0db7e454369"
+        }
+      }
+    },
+    {
+      "profile": "neon",
+      "target_song_s": 20.0,
+      "request_song_s": 20.003712158999406,
+      "capture_frame_state": [
+        "20",
+        "20.003712158999406",
+        "25696",
+        "25696",
+        "True",
+        "False",
+        "3440",
+        "1440"
+      ],
+      "request_unity_frame": 25696,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "3be7547c82f1aa128f8bb9d4f70f0543507e5d0966025576dfc473d531162873",
+      "scene_pair": {
+        "scope": "Same capture frame scene before/after FX; UI excluded. Not a different-run preset pixel identity test.",
+        "changed_pixels": 4214171,
+        "total_pixels": 4953600,
+        "mean_abs_rgb": 8.605526485788113,
+        "max_abs_rgb": 46,
+        "input_max_channel": 255,
+        "output_max_channel": 255,
+        "input_rgb255_pixels": 825365,
+        "output_rgb255_pixels": 376599,
+        "sha256": {
+          "neon.scene-input.png": "3b560952aaf5c1f392c94dc49e39cef05dbf9870651ba6abde285e85473fe505",
+          "neon.scene-output.png": "0f572c380fafebbfbe595ba4ba42ff4c74bf78b2955993660fe3edf2063d9d77"
+        }
+      }
+    },
+    {
+      "profile": "neon-strong",
+      "target_song_s": 20.0,
+      "request_song_s": 20.003025513491593,
+      "capture_frame_state": [
+        "20",
+        "20.003025513491593",
+        "31595",
+        "31595",
+        "True",
+        "True",
+        "3440",
+        "1440"
+      ],
+      "request_unity_frame": 31595,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "ac713a430db2f0e3fdc410150c9e368bf1328e2fad96b89b7bb3611bf9a91ff6",
+      "scene_pair": {
+        "scope": "Same capture frame scene before/after FX; UI excluded. Not a different-run preset pixel identity test.",
+        "changed_pixels": 4863962,
+        "total_pixels": 4953600,
+        "mean_abs_rgb": 23.26794654392765,
+        "max_abs_rgb": 101,
+        "input_max_channel": 255,
+        "output_max_channel": 224,
+        "input_rgb255_pixels": 831307,
+        "output_rgb255_pixels": 0,
+        "sha256": {
+          "neon-strong.scene-input.png": "3959b402c161fd2aece5544fba2b03fa002e0df49cc7601411f14f2aa4a615c5",
+          "neon-strong.scene-output.png": "32d14060848e27246134a841cf378ec22e6673b750b5e3df19a4c9eaedab8441"
+        }
+      }
+    },
+    {
+      "profile": "off",
+      "target_song_s": 20.0,
+      "request_song_s": 20.003832321963273,
+      "capture_frame_state": [
+        "20",
+        "20.003832321963273",
+        "37710",
+        "32670",
+        "False",
+        "True",
+        "3440",
+        "1440"
+      ],
+      "request_unity_frame": 37710,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "da3f1109b8cd70e5a0be381358b136dfb047e1faddd91228efe77b99045daa52",
+      "scene_pair": null
+    },
+    {
+      "profile": "rays",
+      "target_song_s": 20.0,
+      "request_song_s": 20.000515442690812,
+      "capture_frame_state": [
+        "20",
+        "20.000515442690812",
+        "44020",
+        "44020",
+        "True",
+        "False",
+        "3440",
+        "1440"
+      ],
+      "request_unity_frame": 44020,
+      "resolution": [
+        3440,
+        1440
+      ],
+      "sha256": "bf4ed3da66ab54829501b5272ca0710dafd76d86a217c2874823ae1b65dab2d3",
+      "scene_pair": {
+        "scope": "Same capture frame scene before/after FX; UI excluded. Not a different-run preset pixel identity test.",
+        "changed_pixels": 4953600,
+        "total_pixels": 4953600,
+        "mean_abs_rgb": 38.741509407299745,
+        "max_abs_rgb": 222,
+        "input_max_channel": 255,
+        "output_max_channel": 224,
+        "input_rgb255_pixels": 830304,
+        "output_rgb255_pixels": 0,
+        "sha256": {
+          "rays.scene-input.png": "98f9b4986cb2e3506f6b85d0f4175b89fb9fa9801984e0b5eb6ce6f220999b12",
+          "rays.scene-output.png": "b1b646dd001953d2fc26c405bb9b291703d69ac8c875b5f1834afee1ff550d7f"
+        }
+      }
+    }
+  ],
+  "fx_states": [
+    "enabled=True ready=True failed=False frames=4660 reused=0 glow_rest=0 custom_source_skipped=829 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=9835 reused=0 glow_rest=0 custom_source_skipped=1648 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=14825 reused=0 glow_rest=3516 custom_source_skipped=2444 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=19935 reused=0 glow_rest=3583 custom_source_skipped=3272 coordinator=True size=3440x1440 status=",
+    "enabled=False ready=False failed=False frames=20878 reused=0 glow_rest=3583 custom_source_skipped=3272 coordinator=False size=0x0 status=",
+    "enabled=True ready=True failed=False frames=25184 reused=0 glow_rest=3583 custom_source_skipped=4093 coordinator=True size=3440x1440 status="
+  ],
+  "framegen_states": [
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=",
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=",
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=",
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=",
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status=",
+    "active=False native_installed=0 sources=0 generated=0 runtime_initialized=False status="
+  ],
+  "managed_sha256": "4d0d4c6c0ed6fd7600d7e0d1d1a1ad3eed4569e755f7d19b3cf3a36e7642ed45",
+  "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [
+      {
+        "fps": 239.0,
+        "worst": 1438.0,
+        "count": 1
+      }
+    ],
+    "errors": 0
+  }
+}

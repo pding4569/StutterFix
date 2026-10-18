@@ -1071,6 +1071,7 @@ namespace StutterFix
                 case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
                 case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;
                 case "tightlate": Log("[tightlate] " + TightLate.Command(arg)); return true;
+                case "posfast": Log("[posfast] " + PosFast.Command(arg)); return true;
                 case "groupstep": Log("[groupstep] " + DecoAnim.GroupCommand(arg)); return true;
                 case "offscreenstat": Log("[offscreenstat] " + (arg == "begin" ? OffscreenProbe.Begin() : arg == "end" ? OffscreenProbe.End() : "offscreenstat begin|end")); return true;
                 case "decostruct": Log("[합치기 연구] " + FuseProbe.Struct()); return true;

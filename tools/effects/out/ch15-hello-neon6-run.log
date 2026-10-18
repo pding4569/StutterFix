@@ -1,0 +1,12 @@
+START off-before
+Native original restored exactly
+Traceback (most recent call last):
+  File "E:\StutterFixWork\StutterFix\tools\effects\measure_without_admin.py", line 75, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "E:\StutterFixWork\StutterFix\tools\effects\measure_without_admin.py", line 39, in main
+    with (a.out/(name+'.log')).open('w',encoding='utf8') as f:subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT,check=True)
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\나로컴\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['C:\\Users\\나로컴\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe', 'E:\\StutterFixWork\\StutterFix\\tools\\framegenlab\\normal_smoke.py', '--map', 'D:\\얼불춤 맵 파일\\HELLO (BPM) 2026\\level.adofai', '--out', 'tools\\effects\\out\\ch15-hello-neon6\\off-before', '--mode', '4', '--no-shot', '--fx-state', '--settings', 'tools\\effects\\out\\ch15-hello-neon6\\off-before.json']' returned non-zero exit status 1.

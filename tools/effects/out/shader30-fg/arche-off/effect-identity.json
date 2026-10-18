@@ -1,0 +1,1408 @@
+{
+  "scope": "Explicit completed FX frame keys, not nearest callback or current config. Both endpoints must have executed glow. Identity does not prove a visible pixel change.",
+  "triplets": 175,
+  "confirmed_glow_triplets": 0,
+  "unknown": 175,
+  "rows": [
+    {
+      "index": 0,
+      "song_s": 20.000466373,
+      "new_frame": 13909,
+      "old_frame": 13908,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 1,
+      "song_s": 20.019617607,
+      "new_frame": 13914,
+      "old_frame": 13913,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 2,
+      "song_s": 20.038121228,
+      "new_frame": 13919,
+      "old_frame": 13918,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 3,
+      "song_s": 20.054944788,
+      "new_frame": 13924,
+      "old_frame": 13923,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 4,
+      "song_s": 20.063405706,
+      "new_frame": 13929,
+      "old_frame": 13928,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 5,
+      "song_s": 20.08081411,
+      "new_frame": 13934,
+      "old_frame": 13933,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 6,
+      "song_s": 20.100580805,
+      "new_frame": 13940,
+      "old_frame": 13939,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 7,
+      "song_s": 20.118250482,
+      "new_frame": 13945,
+      "old_frame": 13944,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 8,
+      "song_s": 20.137511833,
+      "new_frame": 13950,
+      "old_frame": 13949,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 9,
+      "song_s": 20.156475987,
+      "new_frame": 13955,
+      "old_frame": 13954,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 10,
+      "song_s": 20.174806662,
+      "new_frame": 13961,
+      "old_frame": 13960,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 11,
+      "song_s": 20.19284498,
+      "new_frame": 13966,
+      "old_frame": 13965,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 12,
+      "song_s": 20.210841142,
+      "new_frame": 13971,
+      "old_frame": 13970,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 13,
+      "song_s": 20.221466654,
+      "new_frame": 13977,
+      "old_frame": 13976,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 14,
+      "song_s": 20.236059418,
+      "new_frame": 13982,
+      "old_frame": 13981,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 15,
+      "song_s": 20.25351774,
+      "new_frame": 13987,
+      "old_frame": 13986,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 16,
+      "song_s": 20.276858405,
+      "new_frame": 13992,
+      "old_frame": 13991,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 17,
+      "song_s": 20.29448884,
+      "new_frame": 13997,
+      "old_frame": 13996,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 18,
+      "song_s": 20.311898777,
+      "new_frame": 14002,
+      "old_frame": 14001,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 19,
+      "song_s": 20.333465314,
+      "new_frame": 14007,
+      "old_frame": 14006,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 20,
+      "song_s": 20.349588983,
+      "new_frame": 14013,
+      "old_frame": 14012,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 21,
+      "song_s": 20.36786477,
+      "new_frame": 14018,
+      "old_frame": 14017,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 22,
+      "song_s": 20.376934637,
+      "new_frame": 14023,
+      "old_frame": 14022,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 23,
+      "song_s": 20.394812219,
+      "new_frame": 14029,
+      "old_frame": 14028,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 24,
+      "song_s": 20.4132353,
+      "new_frame": 14034,
+      "old_frame": 14033,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 25,
+      "song_s": 20.4325386,
+      "new_frame": 14039,
+      "old_frame": 14038,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 26,
+      "song_s": 20.450633693,
+      "new_frame": 14044,
+      "old_frame": 14043,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 27,
+      "song_s": 20.468313888,
+      "new_frame": 14049,
+      "old_frame": 14048,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 28,
+      "song_s": 20.487536066,
+      "new_frame": 14055,
+      "old_frame": 14054,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 29,
+      "song_s": 20.50826457,
+      "new_frame": 14060,
+      "old_frame": 14059,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 30,
+      "song_s": 20.523044508,
+      "new_frame": 14066,
+      "old_frame": 14065,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 31,
+      "song_s": 20.533020609,
+      "new_frame": 14072,
+      "old_frame": 14071,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 32,
+      "song_s": 20.549688659,
+      "new_frame": 14077,
+      "old_frame": 14076,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 33,
+      "song_s": 20.571660153,
+      "new_frame": 14082,
+      "old_frame": 14081,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 34,
+      "song_s": 20.589463122,
+      "new_frame": 14087,
+      "old_frame": 14086,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 35,
+      "song_s": 20.605171793,
+      "new_frame": 14093,
+      "old_frame": 14092,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 36,
+      "song_s": 20.623795236,
+      "new_frame": 14098,
+      "old_frame": 14097,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 37,
+      "song_s": 20.642429583,
+      "new_frame": 14103,
+      "old_frame": 14102,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 38,
+      "song_s": 20.662485931,
+      "new_frame": 14109,
+      "old_frame": 14108,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 39,
+      "song_s": 20.679358118,
+      "new_frame": 14115,
+      "old_frame": 14114,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 40,
+      "song_s": 20.687246912,
+      "new_frame": 14120,
+      "old_frame": 14119,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 41,
+      "song_s": 20.705463998,
+      "new_frame": 14125,
+      "old_frame": 14124,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 42,
+      "song_s": 20.723937187,
+      "new_frame": 14130,
+      "old_frame": 14129,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 43,
+      "song_s": 20.742741394,
+      "new_frame": 14135,
+      "old_frame": 14134,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 44,
+      "song_s": 20.761913889,
+      "new_frame": 14141,
+      "old_frame": 14140,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 45,
+      "song_s": 20.780349693,
+      "new_frame": 14146,
+      "old_frame": 14145,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 46,
+      "song_s": 20.798533244,
+      "new_frame": 14151,
+      "old_frame": 14150,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 47,
+      "song_s": 20.817748171,
+      "new_frame": 14156,
+      "old_frame": 14155,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 48,
+      "song_s": 20.837087966,
+      "new_frame": 14162,
+      "old_frame": 14161,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 49,
+      "song_s": 20.853562209,
+      "new_frame": 14167,
+      "old_frame": 14166,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 50,
+      "song_s": 20.860928171,
+      "new_frame": 14173,
+      "old_frame": 14172,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 51,
+      "song_s": 20.880843854,
+      "new_frame": 14178,
+      "old_frame": 14177,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 52,
+      "song_s": 20.898546411,
+      "new_frame": 14183,
+      "old_frame": 14182,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 53,
+      "song_s": 20.91694262,
+      "new_frame": 14188,
+      "old_frame": 14187,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 54,
+      "song_s": 20.936456193,
+      "new_frame": 14194,
+      "old_frame": 14193,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 55,
+      "song_s": 20.954528524,
+      "new_frame": 14199,
+      "old_frame": 14198,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 56,
+      "song_s": 20.973196619,
+      "new_frame": 14205,
+      "old_frame": 14204,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 57,
+      "song_s": 20.989149683,
+      "new_frame": 14210,
+      "old_frame": 14209,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 58,
+      "song_s": 21.007047849,
+      "new_frame": 14214,
+      "old_frame": 14213,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 59,
+      "song_s": 21.015623829,
+      "new_frame": 14219,
+      "old_frame": 14218,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 60,
+      "song_s": 21.032637232,
+      "new_frame": 14224,
+      "old_frame": 14223,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 61,
+      "song_s": 21.039248102,
+      "new_frame": 14229,
+      "old_frame": 14228,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 62,
+      "song_s": 21.060579889,
+      "new_frame": 14234,
+      "old_frame": 14233,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 63,
+      "song_s": 21.079391695,
+      "new_frame": 14239,
+      "old_frame": 14238,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 64,
+      "song_s": 21.098723047,
+      "new_frame": 14245,
+      "old_frame": 14244,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 65,
+      "song_s": 21.116544971,
+      "new_frame": 14250,
+      "old_frame": 14249,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 66,
+      "song_s": 21.136429266,
+      "new_frame": 14256,
+      "old_frame": 14255,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 67,
+      "song_s": 21.15658056,
+      "new_frame": 14262,
+      "old_frame": 14261,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 68,
+      "song_s": 21.174120332,
+      "new_frame": 14267,
+      "old_frame": 14266,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 69,
+      "song_s": 21.180885904,
+      "new_frame": 14273,
+      "old_frame": 14272,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 70,
+      "song_s": 21.201243949,
+      "new_frame": 14278,
+      "old_frame": 14277,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 71,
+      "song_s": 21.218604739,
+      "new_frame": 14283,
+      "old_frame": 14282,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 72,
+      "song_s": 21.235565067,
+      "new_frame": 14289,
+      "old_frame": 14288,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 73,
+      "song_s": 21.255526178,
+      "new_frame": 14295,
+      "old_frame": 14294,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 74,
+      "song_s": 21.27395588,
+      "new_frame": 14300,
+      "old_frame": 14299,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 75,
+      "song_s": 21.292042039,
+      "new_frame": 14306,
+      "old_frame": 14305,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 76,
+      "song_s": 21.308420014,
+      "new_frame": 14311,
+      "old_frame": 14310,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 77,
+      "song_s": 21.325510614,
+      "new_frame": 14317,
+      "old_frame": 14316,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 78,
+      "song_s": 21.336255573,
+      "new_frame": 14322,
+      "old_frame": 14321,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 79,
+      "song_s": 21.355192774,
+      "new_frame": 14328,
+      "old_frame": 14327,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 80,
+      "song_s": 21.375169558,
+      "new_frame": 14333,
+      "old_frame": 14332,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 81,
+      "song_s": 21.391247385,
+      "new_frame": 14339,
+      "old_frame": 14338,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 82,
+      "song_s": 21.40963526,
+      "new_frame": 14344,
+      "old_frame": 14343,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 83,
+      "song_s": 21.42927038,
+      "new_frame": 14350,
+      "old_frame": 14349,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 84,
+      "song_s": 21.446536267,
+      "new_frame": 14355,
+      "old_frame": 14354,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 85,
+      "song_s": 21.465914362,
+      "new_frame": 14360,
+      "old_frame": 14359,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 86,
+      "song_s": 21.484106966,
+      "new_frame": 14365,
+      "old_frame": 14364,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 87,
+      "song_s": 21.492380733,
+      "new_frame": 14370,
+      "old_frame": 14369,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 88,
+      "song_s": 21.508579843,
+      "new_frame": 14376,
+      "old_frame": 14375,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 89,
+      "song_s": 21.526625353,
+      "new_frame": 14381,
+      "old_frame": 14380,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 90,
+      "song_s": 21.54612936,
+      "new_frame": 14386,
+      "old_frame": 14385,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 91,
+      "song_s": 21.564842813,
+      "new_frame": 14392,
+      "old_frame": 14391,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 92,
+      "song_s": 21.583908686,
+      "new_frame": 14397,
+      "old_frame": 14396,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 93,
+      "song_s": 21.600413448,
+      "new_frame": 14403,
+      "old_frame": 14402,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 94,
+      "song_s": 21.618288629,
+      "new_frame": 14408,
+      "old_frame": 14407,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 95,
+      "song_s": 21.638081503,
+      "new_frame": 14413,
+      "old_frame": 14412,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 96,
+      "song_s": 21.647247904,
+      "new_frame": 14419,
+      "old_frame": 14418,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 97,
+      "song_s": 21.661728511,
+      "new_frame": 14424,
+      "old_frame": 14423,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 98,
+      "song_s": 21.684287027,
+      "new_frame": 14429,
+      "old_frame": 14428,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 99,
+      "song_s": 21.701182186,
+      "new_frame": 14435,
+      "old_frame": 14434,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 100,
+      "song_s": 21.719723523,
+      "new_frame": 14440,
+      "old_frame": 14439,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 101,
+      "song_s": 21.739466098,
+      "new_frame": 14446,
+      "old_frame": 14445,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 102,
+      "song_s": 21.757486932,
+      "new_frame": 14451,
+      "old_frame": 14450,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 103,
+      "song_s": 21.777426363,
+      "new_frame": 14456,
+      "old_frame": 14455,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 104,
+      "song_s": 21.795384042,
+      "new_frame": 14462,
+      "old_frame": 14461,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 105,
+      "song_s": 21.811355602,
+      "new_frame": 14467,
+      "old_frame": 14466,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 106,
+      "song_s": 21.822588568,
+      "new_frame": 14473,
+      "old_frame": 14472,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 107,
+      "song_s": 21.839247339,
+      "new_frame": 14479,
+      "old_frame": 14478,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 108,
+      "song_s": 21.857573076,
+      "new_frame": 14484,
+      "old_frame": 14483,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 109,
+      "song_s": 21.877477123,
+      "new_frame": 14490,
+      "old_frame": 14489,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 110,
+      "song_s": 21.894859621,
+      "new_frame": 14495,
+      "old_frame": 14494,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 111,
+      "song_s": 21.913244025,
+      "new_frame": 14500,
+      "old_frame": 14499,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 112,
+      "song_s": 21.929454264,
+      "new_frame": 14505,
+      "old_frame": 14504,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 113,
+      "song_s": 21.949228876,
+      "new_frame": 14511,
+      "old_frame": 14510,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 114,
+      "song_s": 21.967687442,
+      "new_frame": 14516,
+      "old_frame": 14515,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 115,
+      "song_s": 21.973487094,
+      "new_frame": 14521,
+      "old_frame": 14520,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 116,
+      "song_s": 21.994553201,
+      "new_frame": 14527,
+      "old_frame": 14526,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 117,
+      "song_s": 22.01104988,
+      "new_frame": 14532,
+      "old_frame": 14531,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 118,
+      "song_s": 22.031246774,
+      "new_frame": 14538,
+      "old_frame": 14537,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 119,
+      "song_s": 22.05014933,
+      "new_frame": 14543,
+      "old_frame": 14542,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 120,
+      "song_s": 22.068371262,
+      "new_frame": 14548,
+      "old_frame": 14547,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 121,
+      "song_s": 22.086579457,
+      "new_frame": 14553,
+      "old_frame": 14552,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 122,
+      "song_s": 22.103749194,
+      "new_frame": 14557,
+      "old_frame": 14556,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 123,
+      "song_s": 22.123117597,
+      "new_frame": 14562,
+      "old_frame": 14561,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 124,
+      "song_s": 22.132330589,
+      "new_frame": 14568,
+      "old_frame": 14567,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 125,
+      "song_s": 22.14858114,
+      "new_frame": 14574,
+      "old_frame": 14573,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 126,
+      "song_s": 22.167437305,
+      "new_frame": 14579,
+      "old_frame": 14578,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 127,
+      "song_s": 22.188215073,
+      "new_frame": 14585,
+      "old_frame": 14584,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 128,
+      "song_s": 22.204186623,
+      "new_frame": 14590,
+      "old_frame": 14589,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 129,
+      "song_s": 22.223248117,
+      "new_frame": 14596,
+      "old_frame": 14595,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 130,
+      "song_s": 22.239390144,
+      "new_frame": 14600,
+      "old_frame": 14599,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 131,
+      "song_s": 22.261431329,
+      "new_frame": 14606,
+      "old_frame": 14605,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 132,
+      "song_s": 22.276616775,
+      "new_frame": 14611,
+      "old_frame": 14610,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 133,
+      "song_s": 22.285342072,
+      "new_frame": 14616,
+      "old_frame": 14615,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 134,
+      "song_s": 22.293622778,
+      "new_frame": 14622,
+      "old_frame": 14621,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 135,
+      "song_s": 22.310893688,
+      "new_frame": 14627,
+      "old_frame": 14626,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 136,
+      "song_s": 22.331556982,
+      "new_frame": 14633,
+      "old_frame": 14632,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 137,
+      "song_s": 22.35029661,
+      "new_frame": 14639,
+      "old_frame": 14638,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 138,
+      "song_s": 22.36722779,
+      "new_frame": 14644,
+      "old_frame": 14643,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 139,
+      "song_s": 22.387704434,
+      "new_frame": 14649,
+      "old_frame": 14648,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 140,
+      "song_s": 22.406494052,
+      "new_frame": 14654,
+      "old_frame": 14653,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 141,
+      "song_s": 22.424380328,
+      "new_frame": 14659,
+      "old_frame": 14658,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 142,
+      "song_s": 22.442921274,
+      "new_frame": 14665,
+      "old_frame": 14664,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 143,
+      "song_s": 22.450445764,
+      "new_frame": 14670,
+      "old_frame": 14669,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 144,
+      "song_s": 22.468580835,
+      "new_frame": 14676,
+      "old_frame": 14675,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 145,
+      "song_s": 22.488106363,
+      "new_frame": 14682,
+      "old_frame": 14681,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 146,
+      "song_s": 22.505799517,
+      "new_frame": 14687,
+      "old_frame": 14686,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 147,
+      "song_s": 22.524688417,
+      "new_frame": 14692,
+      "old_frame": 14691,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 148,
+      "song_s": 22.543247812,
+      "new_frame": 14698,
+      "old_frame": 14697,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 149,
+      "song_s": 22.561500714,
+      "new_frame": 14703,
+      "old_frame": 14702,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 150,
+      "song_s": 22.580924035,
+      "new_frame": 14708,
+      "old_frame": 14707,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 151,
+      "song_s": 22.599913232,
+      "new_frame": 14714,
+      "old_frame": 14713,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 152,
+      "song_s": 22.617287946,
+      "new_frame": 14719,
+      "old_frame": 14718,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 153,
+      "song_s": 22.624073618,
+      "new_frame": 14725,
+      "old_frame": 14724,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 154,
+      "song_s": 22.644423403,
+      "new_frame": 14730,
+      "old_frame": 14729,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 155,
+      "song_s": 22.66197377,
+      "new_frame": 14735,
+      "old_frame": 14734,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 156,
+      "song_s": 22.678846948,
+      "new_frame": 14740,
+      "old_frame": 14739,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 157,
+      "song_s": 22.695919626,
+      "new_frame": 14745,
+      "old_frame": 14744,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 158,
+      "song_s": 22.717741691,
+      "new_frame": 14750,
+      "old_frame": 14749,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 159,
+      "song_s": 22.732412572,
+      "new_frame": 14755,
+      "old_frame": 14754,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 160,
+      "song_s": 22.751658504,
+      "new_frame": 14760,
+      "old_frame": 14759,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 161,
+      "song_s": 22.768892877,
+      "new_frame": 14766,
+      "old_frame": 14765,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 162,
+      "song_s": 22.780329836,
+      "new_frame": 14771,
+      "old_frame": 14770,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 163,
+      "song_s": 22.796047246,
+      "new_frame": 14777,
+      "old_frame": 14776,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 164,
+      "song_s": 22.816031091,
+      "new_frame": 14783,
+      "old_frame": 14782,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 165,
+      "song_s": 22.835694146,
+      "new_frame": 14788,
+      "old_frame": 14787,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 166,
+      "song_s": 22.852581613,
+      "new_frame": 14794,
+      "old_frame": 14793,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 167,
+      "song_s": 22.870754642,
+      "new_frame": 14799,
+      "old_frame": 14798,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 168,
+      "song_s": 22.890593164,
+      "new_frame": 14805,
+      "old_frame": 14804,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 169,
+      "song_s": 22.905914896,
+      "new_frame": 14810,
+      "old_frame": 14809,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 170,
+      "song_s": 22.927375494,
+      "new_frame": 14815,
+      "old_frame": 14814,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 171,
+      "song_s": 22.933549984,
+      "new_frame": 14821,
+      "old_frame": 14820,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 172,
+      "song_s": 22.953631396,
+      "new_frame": 14826,
+      "old_frame": 14825,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 173,
+      "song_s": 22.972973459,
+      "new_frame": 14832,
+      "old_frame": 14831,
+      "known": false,
+      "glow_both": false
+    },
+    {
+      "index": 174,
+      "song_s": 22.988073587,
+      "new_frame": 14837,
+      "old_frame": 14836,
+      "known": false,
+      "glow_both": false
+    }
+  ]
+}

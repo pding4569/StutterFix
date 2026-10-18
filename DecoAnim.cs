@@ -48,6 +48,7 @@ namespace StutterFix
         internal sealed class Rec
         {
             public scrDecoration D; public int Key; public Tween Proxy;
+            internal int PosSlot = -1, PosGeneration;
             public float Dur, Pos; public bool Started, Running = true, Stepped;
             public Ease E; public float Over, Period;
             public float FStart, FEnd, FChange, FLast;          // 1,2 위치  5 회전  10 불투명도
@@ -199,6 +200,7 @@ namespace StutterFix
             if (FuseProbe.On) FuseProbe.NewRec(dec, key, dur, (object)old != null, oldR != null && oldR.Running);
 #endif
             r.NativeEpoch = 0;
+            PosFast.Bind(r);
             ZeroTween.EaseParams(ease, out r.Over, out r.Period);
             if (!reuseProxy) NewProxies++;
             r.Proxy = reuseProxy ? old : FloorAnim.NewProxy();   // 리플렉션 생성(하나 약 2us) 대신 생성자 호출기
@@ -349,8 +351,8 @@ namespace StutterFix
 #endif
             switch (r.Key)
             {
-                case 1: setPosX(r.D, r.FLast, pivotOffRef(r.D)); break;
-                case 2: setPosY(r.D, r.FLast, pivotOffRef(r.D)); break;
+                case 1: if (PosFast.Enabled) PositionUpdate(r, r.FLast); else setPosX(r.D, r.FLast, pivotOffRef(r.D)); break;
+                case 2: if (PosFast.Enabled) PositionUpdate(r, r.FLast); else setPosY(r.D, r.FLast, pivotOffRef(r.D)); break;
                 case 3: setPivX(r.D, r.FLast); break;
                 case 4: setPivY(r.D, r.FLast); break;
                 case 5: if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FLast; else setRot(r.D, r.FLast); break;
@@ -363,6 +365,7 @@ namespace StutterFix
 
         private static void OnComplete(Rec r)
         {
+            if (PosFast.Enabled && (r.Key == 1 || r.Key == 2)) PosFast.Completing(r);
             switch (r.Key)
             {
                 case 1: setPosX(r.D, r.FEnd, pivotOffRef(r.D)); break;
@@ -375,6 +378,7 @@ namespace StutterFix
                 case 9: setCol(r.D, r.CEnd); break;
                 case 10: setOpa(r.D, r.FEnd); break;
             }
+            if (PosFast.Enabled && (r.Key == 1 || r.Key == 2)) PosFast.Remember(r);
         }
         private static void Step(Rec r, float td)
         {
@@ -402,9 +406,25 @@ namespace StutterFix
             Apply(r, tr, true);
             Apply(n, tn, true);
             float x = dr ? r.FEnd : r.FLast, y = dn ? n.FEnd : n.FLast;
-            setPos(r.D, new Vector2(x, y), pivotOffRef(r.D));
+            var pos = new Vector2(x, y);
+            if (!PosFast.Try(r, pos))
+            {
+                setPos(r.D, pos, pivotOffRef(r.D));
+                PosFast.Remember(r);
+            }
             if (dr) { r.Running = false; Completed++; }
             if (dn) { n.Running = false; Completed++; }
+        }
+
+        private static void PositionUpdate(Rec r, float value)
+        {
+            var pos = pivotPosRef(r.D);
+            if (r.Key == 1) pos.x = value; else pos.y = value;
+            if (PosFast.Try(r, pos)) return;
+            // Keep the original axis setter and exception boundary on fallback.
+            if (r.Key == 1) setPosX(r.D, value, pivotOffRef(r.D));
+            else setPosY(r.D, value, pivotOffRef(r.D));
+            PosFast.Remember(r);
         }
 
         // Kill(true) / KillAll(true): 끝 위치로 한 번 (시작 전이면 시작 처리부터)

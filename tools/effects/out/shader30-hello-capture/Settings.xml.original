@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <TweenerCapacity>40000</TweenerCapacity>
+  <SequenceCapacity>25000</SequenceCapacity>
+  <SkipAssetUnload>true</SkipAssetUnload>
+  <SkipIdleParticles>true</SkipIdleParticles>
+  <LeakFix>true</LeakFix>
+  <LoadCache>true</LoadCache>
+  <LegacyGfxJobs>true</LegacyGfxJobs>
+  <NoGhosting>true</NoGhosting>
+  <FrameStats>true</FrameStats>
+  <FlipModel>1</FlipModel>
+  <CheckUpdates>true</CheckUpdates>
+  <GcPause>true</GcPause>
+  <EffectSplit>true</EffectSplit>
+  <RecolorSplit>true</RecolorSplit>
+  <TweenGuard>true</TweenGuard>
+  <ZeroTween>true</ZeroTween>
+  <SkipSameText>true</SkipSameText>
+  <ImagePrefetch>true</ImagePrefetch>
+  <ShaderWarm>true</ShaderWarm>
+  <FastBlend>true</FastBlend>
+  <SkipInvisible>true</SkipInvisible>
+  <LazyHidden>true</LazyHidden>
+  <InstantDirect>true</InstantDirect>
+  <SkipSame>true</SkipSame>
+  <FastLoop>true</FastLoop>
+  <Precheck>true</Precheck>
+  <FloorAnim>true</FloorAnim>
+  <HitTextFade>true</HitTextFade>
+  <HitMeterFade>true</HitMeterFade>
+  <EffectsOff />
+  <GameScreenButton>true</GameScreenButton>
+  <NoFxAheadSec>1.5</NoFxAheadSec>
+  <NoFx>false</NoFx>
+  <FiltersOff />
+  <HideJudgeAll>false</HideJudgeAll>
+  <HideJudgePerfect>true</HideJudgePerfect>
+  <NoPlayZoom>true</NoPlayZoom>
+  <DecoAnim>true</DecoAnim>
+  <FilterTypeCache>true</FilterTypeCache>
+  <MeshWarm>true</MeshWarm>
+  <SoundWarm>true</SoundWarm>
+  <JitWarm>true</JitWarm>
+  <LowPriority>true</LowPriority>
+  <LowNoThrottle>true</LowNoThrottle>
+  <LowMenuFps>0</LowMenuFps>
+  <CrashStreak>0</CrashStreak>
+  <LowNoFft>false</LowNoFft>
+  <LowFloorSplit>false</LowFloorSplit>
+  <LowPauseParticles>true</LowPauseParticles>
+  <LowCompressImages>true</LowCompressImages>
+  <LowRenderScale>100</LowRenderScale>
+  <LowSharpUpscale>false</LowSharpUpscale>
+  <LowFsr>true</LowFsr>
+  <LowImageCap>0</LowImageCap>
+  <LowSharpen>false</LowSharpen>
+  <LowSharpenValue>4</LowSharpenValue>
+  <LowHalfRender>false</LowHalfRender>
+  <LowAutoRes>false</LowAutoRes>
+  <LowAutoFps>144</LowAutoFps>
+  <LowAutoMin>50</LowAutoMin>
+  <ExpFsChanged>false</ExpFsChanged>
+  <ExpFullscreen>0</ExpFullscreen>
+  <MaxQueuedFrames>0</MaxQueuedFrames>
+  <LowSplit>0</LowSplit>
+  <ReopenLevel />
+  <LastEditorLevel>C:\Users\나로컴\Documents\ChatGPT\Adofai Gen\out\megalo-rest-reviewed\level.adofai</LastEditorLevel>
+  <TuneVer>1</TuneVer>
+  <TuneBackup>LowAutoRes=False;LowAutoFps=240</TuneBackup>
+  <TuneNotice />
+  <TuneLast>CPU 98점 · GPU 122점 · RAM 24GB (이 모드 개발 PC = 100점)</TuneLast>
+  <MoveFinish>true</MoveFinish>
+  <DormantSkip>true</DormantSkip>
+  <ImageMaxSide>-1</ImageMaxSide>
+  <ImageAutoVer>1</ImageAutoVer>
+  <VramCaps>D:\얼불춤 맵 파일\HELLO (BPM) 2026\level.adofai	3072
+D:/얼불춤 맵 파일/PLUM MEGAMIX - Plum/level.adofai	2048
+</VramCaps>
+  <Language>ko</Language>
+  <WindowKey>Insert</WindowKey>
+  <WindowMods>0</WindowMods>
+  <OverlayKey>Insert</OverlayKey>
+  <OverlayMods>1</OverlayMods>
+  <ShowOverlay>false</ShowOverlay>
+  <OverlayMode>1</OverlayMode>
+  <OverlayRight>false</OverlayRight>
+  <OverlayY>0.460877985</OverlayY>
+  <OverlayOpacity>0.75</OverlayOpacity>
+  <OverlayScale>1</OverlayScale>
+  <OvCpu>true</OvCpu>
+  <OvGpu>true</OvGpu>
+  <OvVram>true</OvVram>
+  <OvRam>true</OvRam>
+  <OvGc>true</OvGc>
+  <OvGraph>true</OvGraph>
+  <OvHitchList>true</OvHitchList>
+  <OvSession>true</OvSession>
+  <CmMs>true</CmMs>
+  <CmLow>false</CmLow>
+  <CmCpu>true</CmCpu>
+  <CmGpu>true</CmGpu>
+  <CmVram>true</CmVram>
+  <CmRam>false</CmRam>
+  <AlertMs>33</AlertMs>
+  <AlertDetailed>true</AlertDetailed>
+  <AlertPos>0</AlertPos>
+  <HitchAlerts>true</HitchAlerts>
+</Settings>

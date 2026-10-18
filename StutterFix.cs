@@ -61,6 +61,7 @@ namespace StutterFix
             if (Edition.Dev || Edition.AutoTest) DevPresentFlags(modEntry.Path);
             TightLate.Enabled = !System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "tightlate-off"));
             TightLate.SkipSame = System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "tightskip-on"));   // 2026-10-19: 건너뛴 비율 위치 1%·회전 9%·크기 34% 로 이득이 작아 기본 끔
+            PosFast.Configure(modEntry.Path);
             if (Edition.AutoTest) {
 #if DEV || AUTOTEST
 AutoTest.Init(modEntry.Path);
@@ -537,6 +538,7 @@ Try(RenderCallbackScan.Shutdown);
                 Try(() => new Harmony(id).UnpatchAll(id));
 
             Try(TightLate.Uninstall);
+            Try(PosFast.Uninstall);
 
             Entry.Logger.Log("꺼짐: 패치와 감시를 모두 풀었음");
         }

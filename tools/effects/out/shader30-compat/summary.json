@@ -1,0 +1,30 @@
+{
+  "scope": "Normal PlayerAuto strong neon+rays at4x; FSR67, HalfRender suspension/resume, deadline snapshot-rest and all OFF. Functional only, not motion/pixel equivalence, FPS loss or latency.",
+  "fx": [
+    "enabled=True ready=True failed=False frames=2131 reused=0 glow_rest=0 custom_source_skipped=753 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=2720 reused=0 glow_rest=0 custom_source_skipped=753 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=3077 reused=352 glow_rest=0 custom_source_skipped=753 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=3443 reused=353 glow_rest=0 custom_source_skipped=753 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=4416 reused=353 glow_rest=0 custom_source_skipped=753 coordinator=True size=3440x1440 status=",
+    "enabled=False ready=False failed=False frames=4419 reused=353 glow_rest=0 custom_source_skipped=753 coordinator=False size=0x0 status="
+  ],
+  "fg": [
+    "active=True native_installed=1 sources=9231 generated=11305 runtime_initialized=True status=",
+    "active=True native_installed=1 sources=9819 generated=13085 runtime_initialized=True status=",
+    "active=False native_installed=0 sources=9823 generated=13095 runtime_initialized=True status=",
+    "active=True native_installed=1 sources=365 generated=1098 runtime_initialized=True status=",
+    "active=True native_installed=1 sources=1339 generated=1112 runtime_initialized=True status=",
+    "active=False native_installed=0 sources=1340 generated=1112 runtime_initialized=True status="
+  ],
+  "conditions": [
+    "수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 165Hz, 창 3440x1440, 앞서 준비하는 프레임 2"
+  ],
+  "metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  },
+  "managed_sha256": "079e47cb926c7c9126db2e9aac05fef7b3452bcf4f879e6136b11c773d5f6e5f",
+  "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a"
+}

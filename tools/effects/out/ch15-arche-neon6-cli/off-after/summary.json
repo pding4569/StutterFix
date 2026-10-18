@@ -1,0 +1,111 @@
+{
+  "mode": 4,
+  "refresh": false,
+  "refresh_rest": false,
+  "full_song": false,
+  "switch": false,
+  "compatibility_settings": {
+    "FxColor": false,
+    "FxSharp": false,
+    "FxAA": false,
+    "FxGlow": false,
+    "FxLight": false,
+    "FxVignette": false,
+    "FxLut": false,
+    "FxGlowStack": false,
+    "FxToneMap": false,
+    "FxRays": false,
+    "FxStreak": false,
+    "FxFlare": false,
+    "FxChromatic": false,
+    "FxGrain": false,
+    "FxCrt": false,
+    "FxPixel": false,
+    "FxPosterize": false,
+    "FxBlur": false,
+    "LowHalfRender": false,
+    "LowSharpen": false,
+    "LowFsr": false,
+    "LowRenderScale": 100,
+    "FxPreset": 0
+  },
+  "monitor_smoke": false,
+  "monitor_samples": [],
+  "managed_sha256": "079e47cb926c7c9126db2e9aac05fef7b3452bcf4f879e6136b11c773d5f6e5f",
+  "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+  "states": [
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 979,
+      "generated": 0,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 10110,
+      "generated": 13179,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 20737,
+      "generated": 45139,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": false,
+      "installed": 0,
+      "sources": 20739,
+      "generated": 45147,
+      "runtime_initialized": true,
+      "status": ""
+    }
+  ],
+  "clocks": [
+    {
+      "frame": 980,
+      "ticks": 180303941,
+      "hz": 10000000
+    },
+    {
+      "frame": 10111,
+      "ticks": 542827724,
+      "hz": 10000000
+    },
+    {
+      "frame": 20738,
+      "ticks": 892912575,
+      "hz": 10000000
+    },
+    {
+      "frame": 21857,
+      "ticks": 923026675,
+      "hz": 10000000
+    }
+  ],
+  "sample": {
+    "seconds": 35.0084851,
+    "unity_frames": 10627,
+    "real_fps": 303.554980161081,
+    "submitted": 42587,
+    "output_fps": 1216.4765164317264,
+    "output_over_source": 4.007433894796273,
+    "off_output_inferred_from_unity": false
+  },
+  "observed_submission_ratios": [
+    4.007433894796273
+  ],
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  },
+  "no_research_directory": true
+}

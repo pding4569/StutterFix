@@ -1,0 +1,1 @@
+outputs=45477 frame_begins=15717 frame_ends=15717 worker_error=0 sync_requested=0 sync_preserved_off=0 sync_forced_zero_active=0

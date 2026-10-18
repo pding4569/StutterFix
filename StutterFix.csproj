@@ -179,6 +179,7 @@
     <Compile Include="Precheck.cs" />
     <Compile Include="FrameParts.cs" />
     <Compile Include="DecoAnim.cs" />
+    <Compile Include="PosFast.cs" />
     <Compile Include="DecoAnim.GroupStep.cs" />
     <Compile Include="UpdateEvalMemo.cs" />
     <Compile Include="UpdateCostProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

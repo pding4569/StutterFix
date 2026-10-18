@@ -1,0 +1,1 @@
+variant=3 scale=8 block_size=8 skipped_pairs=7 generated=18847 new_picture=16027 both_changed_samples=203463 moving_samples=511549 samples_per_frame=256 threshold=3/255 minimum_samples=4 window=5..45

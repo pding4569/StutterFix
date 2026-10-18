@@ -1,0 +1,41 @@
+{
+  "states": [
+    "enabled=False ready=False failed=False frames=0 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=0x0 status=",
+    "enabled=True ready=True failed=False frames=428 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=False ready=False failed=False frames=1039 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=0x0 status=",
+    "enabled=True ready=True failed=False frames=1664 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=2414 reused=0 glow_rest=0 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=3157 reused=0 glow_rest=560 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=3970 reused=0 glow_rest=759 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=4603 reused=0 glow_rest=759 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=True ready=True failed=False frames=5104 reused=312 glow_rest=759 custom_source_skipped=0 coordinator=True size=3440x1440 status=",
+    "enabled=False ready=False failed=False frames=5190 reused=397 glow_rest=759 custom_source_skipped=0 coordinator=False size=0x0 status="
+  ],
+  "fixture": [
+    "off_pixels=57600 mismatch=0",
+    "preset=1 changed=28130 total=57600 source_altered=0",
+    "preset=2 changed=57493 total=57600 source_altered=0",
+    "preset=3 changed=57570 total=57600 source_altered=0",
+    "light_pass=1",
+    "profile=clear-strong changed=57568 total=57600 source_altered=0 max_channel=255",
+    "profile=neon-strong changed=57600 total=57600 source_altered=0 max_channel=224",
+    "profile=rays changed=57578 total=57600 source_altered=0 max_channel=255",
+    "profile=streak changed=57558 total=57600 source_altered=0 max_channel=255",
+    "profile=flare changed=57509 total=57600 source_altered=0 max_channel=255",
+    "profile=tone changed=41212 total=57600 source_altered=0 max_channel=224",
+    "profile=chromatic changed=55983 total=57600 source_altered=0 max_channel=255",
+    "profile=grain changed=52681 total=57600 source_altered=0 max_channel=255",
+    "profile=crt changed=57583 total=57600 source_altered=0 max_channel=255",
+    "profile=pixel changed=57600 total=57600 source_altered=0 max_channel=255",
+    "profile=posterize changed=57545 total=57600 source_altered=0 max_channel=255",
+    "profile=blur changed=57600 total=57600 source_altered=0 max_channel=174",
+    "identity_lut_max_byte_error=0"
+  ],
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  },
+  "scope": "Visual/functional only; no performance inference"
+}

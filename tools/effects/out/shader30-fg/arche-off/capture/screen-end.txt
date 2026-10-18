@@ -1,0 +1,1 @@
+window_width=3440 window_height=1440 display_width=3440 display_height=1440 refresh_hz=164.999 sync=0

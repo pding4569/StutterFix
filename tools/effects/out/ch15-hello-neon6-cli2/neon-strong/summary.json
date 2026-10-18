@@ -1,0 +1,124 @@
+{
+  "mode": 4,
+  "refresh": false,
+  "refresh_rest": false,
+  "full_song": false,
+  "switch": false,
+  "compatibility_settings": {
+    "FxColor": true,
+    "FxSharp": true,
+    "FxAA": false,
+    "FxGlow": true,
+    "FxLight": false,
+    "FxVignette": true,
+    "FxLut": false,
+    "FxGlowStack": true,
+    "FxToneMap": true,
+    "FxRays": false,
+    "FxStreak": false,
+    "FxFlare": false,
+    "FxChromatic": false,
+    "FxGrain": false,
+    "FxCrt": false,
+    "FxPixel": false,
+    "FxPosterize": false,
+    "FxBlur": false,
+    "LowHalfRender": false,
+    "LowSharpen": false,
+    "LowFsr": false,
+    "LowRenderScale": 100,
+    "FxPreset": 6,
+    "FxVibrance": 0.55,
+    "FxContrast": 1.12,
+    "FxBrightness": -0.1,
+    "FxTemperature": 0,
+    "FxSharpAmount": 0.4,
+    "FxGlowAmount": 1.2,
+    "FxGlowThreshold": 0.28,
+    "FxVignetteAmount": 0.15,
+    "FxCeiling": 0.97,
+    "FxRaysAmount": 0.8,
+    "FxRaysX": 0.5,
+    "FxRaysY": 0.25,
+    "FxRaysLength": 0.8
+  },
+  "monitor_smoke": false,
+  "monitor_samples": [],
+  "managed_sha256": "079e47cb926c7c9126db2e9aac05fef7b3452bcf4f879e6136b11c773d5f6e5f",
+  "native_sha256": "2feb4edaddb4bc6a7f7802f49fb9e07708d95891d3f210620e9c9e59aa36093a",
+  "states": [
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 845,
+      "generated": 0,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 8436,
+      "generated": 10062,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": true,
+      "installed": 1,
+      "sources": 14879,
+      "generated": 29842,
+      "runtime_initialized": true,
+      "status": ""
+    },
+    {
+      "active": false,
+      "installed": 0,
+      "sources": 14882,
+      "generated": 29849,
+      "runtime_initialized": true,
+      "status": ""
+    }
+  ],
+  "clocks": [
+    {
+      "frame": 846,
+      "ticks": 186786820,
+      "hz": 10000000
+    },
+    {
+      "frame": 8437,
+      "ticks": 490464503,
+      "hz": 10000000
+    },
+    {
+      "frame": 14881,
+      "ticks": 840627828,
+      "hz": 10000000
+    },
+    {
+      "frame": 15334,
+      "ticks": 870886476,
+      "hz": 10000000
+    }
+  ],
+  "sample": {
+    "seconds": 35.0163325,
+    "unity_frames": 6444,
+    "real_fps": 184.028410171168,
+    "submitted": 26223,
+    "output_fps": 748.8791123399345,
+    "output_over_source": 4.0693668528864055,
+    "off_output_inferred_from_unity": false
+  },
+  "observed_submission_ratios": [
+    4.069998447927984
+  ],
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  },
+  "no_research_directory": true
+}

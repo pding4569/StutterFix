@@ -1,0 +1,141 @@
+{
+  "label": "fg29-arche-glow",
+  "mode": 4,
+  "block_flow": true,
+  "cost_split": true,
+  "image_gate": false,
+  "camera_blend": true,
+  "scene_pair": false,
+  "filter_pair": false,
+  "screen_border": false,
+  "layer_probe": false,
+  "expected_inactive": false,
+  "compatibility_settings": {
+    "FxColor": true,
+    "FxSharp": true,
+    "FxAA": false,
+    "FxGlow": true,
+    "FxLight": false,
+    "FxVignette": true,
+    "FxLut": false,
+    "LowHalfRender": false,
+    "LowSharpen": false,
+    "LowFsr": false,
+    "LowRenderScale": 100,
+    "FxPreset": 6,
+    "FxVibrance": 0.55,
+    "FxContrast": 1.12,
+    "FxBrightness": -0.1,
+    "FxGlowAmount": 1.2,
+    "FxGlowThreshold": 0.28,
+    "FxGlowStack": true,
+    "FxToneMap": true,
+    "FxCeiling": 0.97
+  },
+  "visual_smoke": true,
+  "native": {
+    "seconds": 17.996880699996836,
+    "source_seconds": 17.996044799976517,
+    "source_frames": 5374,
+    "output_frames": 21530,
+    "real_output_frames": 5374,
+    "generated_frames": 16156,
+    "real_fps": 298.56560481595443,
+    "output_fps": 1196.262861263718,
+    "generated_gpu_ms": {
+      "mean": 0.13496195295865313,
+      "p95": 0.183296,
+      "maximum": 0.786432
+    },
+    "gpu_coverage": 16156,
+    "output_worst_ms": 4.960499994922429,
+    "output_over_33ms": 0,
+    "source_worst_ms": 12.087499955669045,
+    "source_over_33ms": 0,
+    "prediction_camera_px": null,
+    "prediction_red_px": null,
+    "prediction_blue_px": null,
+    "prediction_horizon_ms": null,
+    "prediction_samples": 0,
+    "source_age_ms": {
+      "mean": 3.3281162230750185,
+      "p95": 4.1097,
+      "maximum": 12.0875
+    },
+    "missing_camera_callbacks": 4,
+    "scene_fps": 298.3433337533704,
+    "scheduler": {
+      "samples": 5374,
+      "expected_generated": 16122,
+      "reset_miss_lock": 0,
+      "reset_miss_next_before_due": 0,
+      "reset_miss_worker_late": 0,
+      "continuous_miss_lock": 3,
+      "continuous_miss_timer": 125,
+      "worker_wait_ms": {
+        "mean": 0.21461239300334947,
+        "p95": 0.6905,
+        "maximum": 3.629
+      },
+      "source_hold_ms": {
+        "mean": 0.6188308336434686,
+        "p95": 0.8889,
+        "maximum": 3.697
+      }
+    },
+    "prediction_metrics_scope": "Not applicable: actual image motion; base/pulse payload holds planet envelopes",
+    "block_flow": {
+      "variant": "3",
+      "scale": "8",
+      "block_size": "8",
+      "skipped_pairs": "7",
+      "generated": "18847",
+      "new_picture": "16027",
+      "both_changed_samples": "203463",
+      "moving_samples": "511549",
+      "samples_per_frame": "256",
+      "threshold": "3/255",
+      "minimum_samples": "4",
+      "window": "5..45"
+    },
+    "block_variant": 3,
+    "new_picture_metric_expected_outputs": 18847,
+    "interpolated_timeline_to_render_ms": {
+      "mean": 3.3383902573090096,
+      "p95": 4.0911,
+      "maximum": 32.3016
+    },
+    "interpolated_timeline_to_submit_ms": {
+      "mean": 3.5436591014100216,
+      "p95": 4.347,
+      "maximum": 32.3722
+    }
+  },
+  "safety": {
+    "outputs": "44423",
+    "frame_begins": "15624",
+    "frame_ends": "15624",
+    "worker_error": "0",
+    "sync_requested": "0",
+    "sync_preserved_off": "0",
+    "sync_forced_zero_active": "0"
+  },
+  "game_metrics": {
+    "runs": [],
+    "hitches": [],
+    "songs": [],
+    "errors": 0
+  },
+  "build": {
+    "managed_sha256": "ca90fa578d2eb4cb857e9e83e572c6dcf47ceb64cebb26c40ee6c0134ccfe26f",
+    "native_sha256": "c2db7d568f8736e56014ca8c5c2708341d723dbb0bdea54579f18c9ca1cc8526"
+  },
+  "refresh": false,
+  "refresh_rest": false,
+  "scene_metrics": {
+    "seconds": 17.995762900041882,
+    "frames": 5370,
+    "real_fps": 298.3480072404991,
+    "state": "active=True native_installed=1 sources=15625 generated=28796 runtime_initialized=True status= overflow=0"
+  }
+}

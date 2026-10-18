@@ -1,0 +1,727 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Channel LicenseClient-나로컴 doesn't exist
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 24505 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-10-10T17:15:53Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 84596)
+
+COMMAND LINE ARGUMENTS:
+D:\StutterFixTools\UnityEditors\6000.3.10f1\Editor\Unity.exe
+-batchmode
+-quit
+-nographics
+-projectPath
+C:/SFBundle/Fsr3
+-executeMethod
+BuildEffects.Build
+-logFile
+E:\StutterFixWork\StutterFix\tools\effects\out\bundle\build.log
+Successfully changed project path to: C:/SFBundle/Fsr3
+C:/SFBundle/Fsr3
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [3560]  Target information:
+
+Player connection [3560]  * "[IP] 192.168.0.9 [Port] 55504 [Flags] 2 [Guid] 3119056438 [EditorId] 3119056438 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-UJA68AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [3560] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [3560] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-91060" after 0.4 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴" at "2026-10-10T17:15:54.2031997Z"
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              36f2bb7a521b43ff9de4c4e1e6aae3df
+  Correlation Id:          3bd486a8dfef660913df5188b52b457e
+  External correlation Id: 7478660590152126706
+  Machine Id:              ooNE0R16id3ypk/QQXRV4Tmz/MA=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-나로컴" (connect: 0.85s, validation: 0.05s, handshake: 1.57s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴-notifications" at "2026-10-10T17:15:55.8223172Z"
+[Licensing::Module] Connected to LicensingClient (PId: 84596, launch time: 0.00, total connection time: 2.47s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14569629307665-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 2.51s
+[Licensing::Module] Licensing is initialized (took 1.97s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Artifact Garbage Collection - Removed 1 unused hashed content files
+Refreshing native plugins compatible for Editor in 0.39 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.10f1 (e35f0c77bd8e)
+[Subsystems] Discovering subsystems at path D:/StutterFixTools/UnityEditors/6000.3.10f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/SFBundle/Fsr3/Assets
+Forcing GfxDevice: Null
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Initialize mono
+Mono path[0] = 'D:/StutterFixTools/UnityEditors/6000.3.10f1/Editor/Data/Managed'
+Mono path[1] = 'D:/StutterFixTools/UnityEditors/6000.3.10f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'D:/StutterFixTools/UnityEditors/6000.3.10f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56060
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: D:/StutterFixTools/UnityEditors/6000.3.10f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.001679 seconds.
+- Loaded All Assemblies, in  0.503 seconds
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:False
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.538 seconds
+Domain Reload Profiling: 1040ms
+	BeginReloadAssembly (123ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (7ms)
+	RebuildCommonClasses (54ms)
+	RebuildNativeTypeToScriptingClass (20ms)
+	initialDomainReloadingComplete (58ms)
+	LoadAllAssembliesAndSetupDomain (246ms)
+		LoadAssemblies (115ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (243ms)
+			TypeCache.Refresh (240ms)
+				TypeCache.ScanAssembly (223ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (539ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (487ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (60ms)
+			SetLoadedEditorAssemblies (6ms)
+			BeforeProcessingInitializeOnLoad (117ms)
+			ProcessInitializeOnLoadAttributes (208ms)
+			ProcessInitializeOnLoadMethodAttributes (96ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 51 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.collab-proxy@2.11.3 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.collab-proxy@e566cd3e7623)
+    com.unity.inputsystem@1.18.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.inputsystem@57d0e36f6123)
+    com.unity.timeline@1.8.10 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.timeline@7f8b2fb101b6)
+    com.unity.visualscripting@1.9.9 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.visualscripting@191c0d7e3b69)
+    com.unity.ide.visualstudio@2.0.26 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.ide.visualstudio@a99d56dec63f)
+    com.unity.ide.rider@3.0.39 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.ide.rider@4504839d03f7)
+    com.unity.editorcoroutines@1.0.1 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.editorcoroutines@54394ed3283c)
+    com.unity.performance.profile-analyzer@1.3.1 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.performance.profile-analyzer@311968ce4be7)
+    com.unity.testtools.codecoverage@1.3.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.testtools.codecoverage@19a841221620)
+    com.unity.settings-manager@2.1.1 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.settings-manager@0b8638c5ce86)
+  Built-in packages:
+    com.unity.feature.development@1.0.2 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.feature.development@767aadbc6eb7)
+    com.unity.multiplayer.center@1.0.1 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.ugui@2.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.ugui@bb329a87fcdc)
+    com.unity.modules.accessibility@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.test-framework@1.6.0 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d)
+    com.unity.ext.nunit@2.0.5 (location: C:\SFBundle\Fsr3\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.01 seconds
+Starting: D:\StutterFixTools\UnityEditors\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/SFBundle/Fsr3
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 0s164ms
+*** Tundra build success (0.13 seconds), 0 items updated, 473 evaluated
+AssetDatabase: script compilation time: 0.606661s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.914 seconds
+Refreshing native plugins compatible for Editor in 0.91 ms, found 3 plugins.
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.931 seconds
+Domain Reload Profiling: 1844ms
+	BeginReloadAssembly (322ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (14ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (173ms)
+	RebuildCommonClasses (50ms)
+	RebuildNativeTypeToScriptingClass (18ms)
+	initialDomainReloadingComplete (30ms)
+	LoadAllAssembliesAndSetupDomain (492ms)
+		LoadAssemblies (334ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (250ms)
+			TypeCache.Refresh (194ms)
+				TypeCache.ScanAssembly (183ms)
+			BuildScriptInfoCaches (46ms)
+			ResolveRequiredComponents (7ms)
+	FinalizeReload (932ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (757ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (28ms)
+			SetLoadedEditorAssemblies (5ms)
+			BeforeProcessingInitializeOnLoad (199ms)
+			ProcessInitializeOnLoadAttributes (453ms)
+			ProcessInitializeOnLoadMethodAttributes (67ms)
+			AfterProcessingInitializeOnLoad (3ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (13ms)
+Start importing Assets/Effects/ScreenEffects.shader using Guid(7900f7b4cecde124d80a262c104337e4) (ShaderImporter)Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+ -> (artifact id: 'aa7f26a15b39a4d3f6f64f917c00657c') in 0.0659619 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.03 seconds
+Refreshing native plugins compatible for Editor in 1.93 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=b34e1015dc9290647b0a8af21d367c28): Total: 3.151 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=1 (actual=1, local cache=0, cache server=0)
+		Asset DB Process Time: managed=3 ms, native=1313 ms
+		Asset DB Callback time: managed=226 ms, native=39 ms
+		Scripting: domain reloads=1, domain reload time=915 ms, compile time=609 ms, other=43 ms
+		Project Asset Count: scripts=754, non-scripts=879
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 15.795ms
+	ApplyChangesToAssetFolders: 0.618ms
+	Scan: 70.882ms
+	OnSourceAssetsModified: 3.329ms
+	CategorizeAssetsWithTransientArtifact: 45.495ms
+	ProcessAssetsWithTransientArtifactChanges: 59.821ms
+	CategorizeAssets: 15.034ms
+	ImportOutOfDateAssets: 1009.127ms (329.933ms without children)
+		ImportManagerImport: 68.766ms (2.510ms without children)
+			ImportInProcess: 66.225ms
+			UpdateCategorizedAssets: 0.031ms
+		CompileScripts: 609.307ms
+		ReloadNativeAssets: 0.000ms
+		UnloadImportedAssets: 0.178ms
+		ReloadImportedAssets: 0.000ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.353ms
+		InitializingProgressBar: 0.007ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 0.582ms
+	PostProcessAllAssets: 243.950ms
+	Hotreload: 4.487ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.003ms
+	UnloadStreamsBegin: 1.703ms
+	PersistCurrentRevisions: 0.118ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 2.037ms
+	Untracked: 1680.784ms
+
+Application.AssetDatabase Initial Refresh End
+Scanning for USB devices : 2.759ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-Fsr3
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3914 unused Assets / (4.0 MB). Loaded Objects now: 4509.
+Memory consumption went from 135.9 MB to 131.9 MB.
+Total: 9.748400 ms (FindLiveObjects: 0.527900 ms CreateObjectMapping: 0.527800 ms MarkObjects: 6.517400 ms  DeleteObjects: 2.174000 ms)
+
+Asset Pipeline Refresh (id=62f0cd40ee67fdf46902aa3a0f97a072): Total: 0.016 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=d5e6f6190cb13824681c7b2a9f458fbe): Total: 0.022 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Start importing Assets/Effects/ScreenEffects.shader using Guid(7900f7b4cecde124d80a262c104337e4) (ShaderImporter) -> (artifact id: 'aa7f26a15b39a4d3f6f64f917c00657c') in 0.0352661 seconds
+Refreshing native plugins compatible for Editor in 0.95 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=206c904b6d48ec5429cc4e617710a592): Total: 0.077 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/ProjectSettings.asset using Guid(00000000000000004000000000000000) (LibraryAssetImporter) -> (artifact id: 'da0c9fbcde8e5a1960ff4e45ad7e62cf') in 0.0029979 seconds
+Refreshing native plugins compatible for Editor in 1.00 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=6eab8b2af397a6349aebb0b54af8e8c5): Total: 0.038 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Starting: D:\StutterFixTools\UnityEditors\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aESkipCompile.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
+WorkingDir: C:/SFBundle/Fsr3
+ExitCode: 0 Duration: 0s79ms
+*** Tundra build success (0.05 seconds), 0 items updated, 3 evaluated
+Asset Pipeline Refresh (id=b54e89757d12eef46adc3b7f06dd7a5f): Total: 0.002 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+[ScriptCompilation] Requested script compilation because: Recompiling scripts for player build.
+BuildPlayer: start building target 19
+Total cache size 68144612
+Total cache size after purge 68144612, took 00:00:00.1168609
+Starting: D:\StutterFixTools\UnityEditors\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aP.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
+WorkingDir: C:/SFBundle/Fsr3
+ExitCode: 0 Duration: 0s101ms
+[138/176    0s] CopyFiles Library/PlayerScriptAssemblies/UnityEngine.UI.dll
+[139/176    0s] CopyFiles Library/PlayerScriptAssemblies/UnityEngine.UI.pdb
+[140/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Timeline.dll
+[141/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Multiplayer.Center.Common.dll
+[142/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.TextMeshPro.pdb
+[143/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Timeline.pdb
+[144/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.004.dll
+[145/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Multiplayer.Center.Common.pdb
+[146/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.TextMeshPro.dll
+[147/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.004.pdb
+[153/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.dll
+[154/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.ForUI.dll
+[157/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.ForUI.pdb
+[159/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.pdb
+[160/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Core.pdb
+[161/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Core.dll
+[167/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Flow.pdb
+[168/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Flow.dll
+[170/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.DocCodeExamples.pdb
+[171/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.DocCodeExamples.dll
+[172/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.State.dll
+[173/176    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.State.pdb
+*** Tundra build success (0.08 seconds), 22 items updated, 176 evaluated
+Compiling shader "StutterFix/ScreenEffects"
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.01 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (vp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass  (vp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.01 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+Serialized binary data for shader StutterFix/ScreenEffects in 0.00s
+    d3d11 (total internal programs: 32, unique: 17)
+
+***Player size statistics***
+Total compressed size 25.5 KB. Total uncompressed size 126.1 KB.
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 40 unused Assets / (0.8 MB). Loaded Objects now: 4545.
+Memory consumption went from 122.1 MB to 121.4 MB.
+Total: 7.492400 ms (FindLiveObjects: 0.258000 ms CreateObjectMapping: 0.153600 ms MarkObjects: 6.674000 ms  DeleteObjects: 0.405700 ms)
+
+
+***Player size statistics***
+Total compressed size 1.5 KB. Total uncompressed size 4.1 KB.
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 0 unused Assets / (0 B). Loaded Objects now: 4547.
+Memory consumption went from 119.1 MB to 119.1 MB.
+Total: 7.580800 ms (FindLiveObjects: 0.255500 ms CreateObjectMapping: 0.151900 ms MarkObjects: 7.151400 ms  DeleteObjects: 0.020000 ms)
+
+
+-------------------------------------------------------------------------------
+Bundle Name: stutterfix_effects
+Compressed Size:25.5 kb
+Uncompressed usage by category (Percentages based on user generated assets only):
+Textures               0.0 kb	 0.0% 
+Meshes                 0.0 kb	 0.0% 
+Animations             0.0 kb	 0.0% 
+Sounds                 0.0 kb	 0.0% 
+Shaders                49.3 kb	 39.1% 
+Other Assets           0.2 kb	 0.1% 
+Levels                 0.0 kb	 0.0% 
+File headers           76.6 kb	 60.8% 
+Total User Assets      126.1 kb	 100.0% 
+Complete build size    126.1 kb
+Used Assets and files from the Resources folder, sorted by uncompressed size:
+ 49.3 kb	 39.1% Assets/Effects/ScreenEffects.shader
+ 0.2 kb	 0.1% AssetBundle Object
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+Bundle Name: EffectsOutput
+Compressed Size:1.5 kb
+Uncompressed usage by category (Percentages based on user generated assets only):
+Textures               0.0 kb	 0.0% 
+Meshes                 0.0 kb	 0.0% 
+Animations             0.0 kb	 0.0% 
+Sounds                 0.0 kb	 0.0% 
+Shaders                0.0 kb	 0.0% 
+Other Assets           0.2 kb	 4.5% 
+Levels                 0.0 kb	 0.0% 
+File headers           3.9 kb	 95.5% 
+Total User Assets      4.1 kb	 100.0% 
+Complete build size    4.1 kb
+Used Assets and files from the Resources folder, sorted by uncompressed size:
+ 0.1 kb	 2.5% AssetBundle Object
+ 0.1 kb	 2.1% Built-in AssetBundleManifest: AssetBundleManifest
+-------------------------------------------------------------------------------
+Total cache size 68144612
+Total cache size after purge 68144612, took 00:00:00.1104440
+Batchmode quit successfully invoked - shutting down!
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-나로컴-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-나로컴 channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+Exiting batchmode successfully now!
+Exiting without the bug reporter. Application will terminate with return code 0

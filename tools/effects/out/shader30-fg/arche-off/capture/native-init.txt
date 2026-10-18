@@ -1,0 +1,8 @@
+start thread=44044
+immediate thread=44044
+protection interface thread=44044
+protection enabled thread=44044
+existing swapchain; deferred created thread=44044
+queries created thread=44044
+shaders compiled thread=44044
+worker ready thread=44044

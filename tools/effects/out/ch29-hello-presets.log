@@ -1,0 +1,8 @@
+Installed originals and existing shots restored exactly
+Traceback (most recent call last):
+  File "C:\Users\나로컴\Documents\StutterFix\tools\effects\capture_presets.py", line 83, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "C:\Users\나로컴\Documents\StutterFix\tools\effects\capture_presets.py", line 48, in main
+    raise RuntimeError('Four identical actual3440x1440/165Hz conditions required')
+RuntimeError: Four identical actual3440x1440/165Hz conditions required

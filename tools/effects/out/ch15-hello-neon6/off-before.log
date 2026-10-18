@@ -1,0 +1,13 @@
+Installed managed/native DLL and exact settings restored
+Traceback (most recent call last):
+  File "E:\StutterFixWork\StutterFix\tools\framegenlab\normal_smoke.py", line 165, in <module>
+    main()
+  File "E:\StutterFixWork\StutterFix\tools\framegenlab\normal_smoke.py", line 80, in main
+    summary, metrics = sf.sf_run(steps, settings={**extra, 'FrameGenOutside': a.mode, 'FrameGenRefresh': a.refresh, 'FrameGenRefreshRest':a.refresh_rest, 'FrameStats': False, 'LowHalfRender': False},
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\StutterFixWork\StutterFix\tools\sfmeasure\server.py", line 222, in sf_run
+    return _run(steps, settings, timeout_min, tag, presentmon)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\StutterFixWork\StutterFix\tools\sfmeasure\server.py", line 249, in _run
+    raise RuntimeError("90초 안에 게임이 켜지지 않음 (Steam 확인)")
+RuntimeError: 90초 안에 게임이 켜지지 않음 (Steam 확인)

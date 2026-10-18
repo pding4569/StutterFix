@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "E:\StutterFixWork\StutterFix\tools\effects\measure_without_admin.py", line 77, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "E:\StutterFixWork\StutterFix\tools\effects\measure_without_admin.py", line 18, in main
+    if sf.game_running():raise RuntimeError('Existing game must be closed normally')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Existing game must be closed normally
