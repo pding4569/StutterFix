@@ -29,7 +29,7 @@ namespace StutterFix
     //
     // 개발자용 검증: 64개 중 1개는 진짜 DOTween 애니메이션을 옆에 같이 돌려(값은 따로 받아 둠, 장식은 안 건드림) 매 프레임 두 값을
     // 비트 단위로 비교하고, 끝나는 프레임도 비교한다.
-    internal static class DecoAnim
+    internal static partial class DecoAnim
     {
         internal static bool Enabled = true;
         internal static bool Installed;
@@ -107,6 +107,7 @@ namespace StutterFix
             {
                 if (!ZeroTween.CanEase) { Main.Entry.Logger.Log("[장식 애니메이션] 이징 함수가 없어 끔"); return; }
                 UpdateEvalMemo.Configure(Main.Entry.Path);
+                ConfigureGroup(Main.Entry.Path);
                 var d = typeof(scrDecoration);
                 setPosX = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionX", new[] { typeof(float), typeof(Vector2) }));
                 setPosY = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionY", new[] { typeof(float), typeof(Vector2) }));
@@ -325,6 +326,10 @@ namespace StutterFix
             float e = nativeStep && UpdateEvalMemo.Enabled
                 ? UpdateEvalMemo.Eval(r.E, pos, r.Dur, r.Over, r.Period)
                 : ZeroTween.Eval(r.E, pos, r.Dur, r.Over, r.Period);
+            ApplyE(r, e);
+        }
+        private static void ApplyE(Rec r, float e)
+        {
             switch (r.Key)
             {
                 // DOTween ColorPlugin 과 같은 모양: 성분마다 "시작 += 변화 x 이징" (색 연산자로 하면 곱을 한 번 더 반올림해 끝자리가 달랐다)
@@ -497,6 +502,7 @@ namespace StutterFix
             UpdateCostProbe.Frame(recs);
 #endif
             if (recs.Count == 0) { LastFrameMs = 0; return; }
+            GroupFrameStart();
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
             float td = dt * 1f;   // 애니메이션마다의 timeScale 은 1
@@ -508,6 +514,16 @@ namespace StutterFix
                 {
                     var r = recs[i];
                     if (!r.Running) continue;
+                    if (GroupEnabled && !Prof && GroupAllowed())
+                    {
+                        if (!GroupNative(r))
+                        {
+                            int count = GroupCount(i);
+                            if (count > 1) { StepGroup(i, count, td); i += count - 1; continue; }
+                            GroupIndividual(r, td); continue;
+                        }
+                        GroupReason(1); // Keep the existing native Apply + PairXY path.
+                    }
                     // 같은 장식의 위치 X·Y 가 나란히 있으면(한 효과가 만든 짝) 한 번의 SetPosition 으로 합친다
                     if (r.Key == 1 && PairXY && !Prof && i + 1 < recs.Count && (object)setPos != null && PairAllowed())
                     {
@@ -527,8 +543,10 @@ namespace StutterFix
                 }
             }
             if (!Edition.Dev) Compact();
-            LastFrameMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            long elapsedTicks = System.Diagnostics.Stopwatch.GetTimestamp() - t0;
+            LastFrameMs = elapsedTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             UpdateMs += LastFrameMs;
+            if (groupProbe) groupTicks += elapsedTicks;
 #if DEV || AUTOTEST
             UpdateCostProbe.FrameEnd(LastFrameMs);
 #endif
@@ -622,7 +640,7 @@ namespace StutterFix
             string[] nm = { "?", "위치X", "위치Y", "피벗X", "피벗Y", "회전", "?", "크기X", "크기Y", "색", "투명도", "시차", "시차오프X", "시차오프Y", "?", "?" };
             for (int k = 0; k < 16; k++) if (n[k] > 0) sb.Append(' ').Append(nm[k]).Append(' ').Append(n[k]).Append('[').Append(h[k]).Append(']');
             sb.Append(" | 이번 프레임 갱신 ").Append(LastFrameMs.ToString("F2")).Append("ms");
-            return sb.ToString();
+            return sb.ToString() + GroupStat();
         }
         internal static string Summary()
         {
@@ -638,8 +656,8 @@ namespace StutterFix
                 string[] nm = { "", "위치X", "위치Y", "피벗X", "피벗Y", "회전", "", "크기X", "크기Y", "색", "불투명도", "시차배율", "시차X", "시차Y" };
                 for (int k = 1; k <= 13; k++) if (ProfN[k] > 0) s += string.Format(", {0} 계산 {1:F2}+설정 {2:F2}us", nm[k], ProfApply[k] / tk / ProfN[k], ProfSet[k] / tk / ProfN[k]);
             }
-            return s;
+            return s + GroupStat();
         }
-        internal static void ResetStats() { Array.Clear(MismatchByKey, 0, 16); Created = Completed = Killed = Dropped = Frames = VerifyN = VerifySteps = VerifyMismatch = Errors = 0; Peak = 0; UpdateMs = 0; First = ""; Reused = 0; NewProxies = 0; Steps = 0; Array.Clear(ProfN, 0, 16); Array.Clear(ProfApply, 0, 16); Array.Clear(ProfSet, 0, 16); }
+        internal static void ResetStats() { ResetGroup(); Array.Clear(MismatchByKey, 0, 16); Created = Completed = Killed = Dropped = Frames = VerifyN = VerifySteps = VerifyMismatch = Errors = 0; Peak = 0; UpdateMs = 0; First = ""; Reused = 0; NewProxies = 0; Steps = 0; Array.Clear(ProfN, 0, 16); Array.Clear(ProfApply, 0, 16); Array.Clear(ProfSet, 0, 16); }
     }
 }
