@@ -856,3 +856,7 @@ Codex 구현(`DecoAnim.GroupStep.cs`). 비트 대조 `groupstep verify` 525,634�
 - HELLO 전곡 TightLate 켬/끔: 관리자 LateUpdate 0.33/0.33ms(같음), 프레임 수 차이는 판 간 잡음(±3%). HELLO 비트 대조 22,351번 불일치 0.
 - 최종 구성(TightLate 켬, 나머지 끔) 전곡: Arche 평균 401 FPS, 끊김 0, 시작 연출 뒤 최악 21ms, 1% low 110/0.1% low 87. HELLO 평균 284 FPS, 끊김 0, 최악 28ms, 1% low 157. 화면 2560×1440 120Hz.
 - Arche 270초 구간(CPU 병목) 최종: 93·96 FPS → 102 FPS(TightLate, +8%), 이후 시도들(GroupStep·PosFast·건너뛰기)은 추가 이득 없음. 남은 비용: 모드 장식 애니메이션 약 1.9ms(창 평균), 관리자 LateUpdate 약 1.0ms, 엔진 렌더 제출·갱신 약 2.3ms.
+
+## 2026-10-19 밤: 알파 정확히 0 조각 버리기(discard) — 적용 안 함
+
+Codex 독립 Editor D3D11 시험(`codex-alphadiscard-20261019-result.md`, `tools/gpuprobe/Gpu5Discard.cs`): 게임 `Sprites/Tile` 의 실제 PS(샘플 → 색 곱 → `rgb*=a`, Blend One/OneMinusSrcAlpha, ZWrite Off, 스텐실 Keep)를 재현해 `a==0 && rgb==0` 이면 discard. RGBA byte 동일성 1,728+72조건 **불일치 0**. GPU 시간: 큰 안개 100장·3440×1440·면적 0.5배 1.856→1.464ms(−0.39ms, −21%)이나, 실제 Arche 본 카메라(안개 비중·면적 가정 반영) 절약 추정은 0.08~0.26ms → 0.3ms 기준 미달이고 이 구간은 CPU 병목(메인 약 10ms)이라 체감 이득이 없다. AssetBundle 로 셰이더를 싣는 작업량 대비 가치가 작아 보류(나중에 GPU 가 병목이 되면 재검토: 설계 조건은 결과 문서).
