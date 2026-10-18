@@ -58,7 +58,7 @@ namespace StutterFix
             if (Config.NoGhosting) WindowGhost.Disable();   // 첫 판 FPS 떨어짐 막기 (WindowGhost.cs)
             if (Edition.Dev) WindowGhost.StartWatch();   // 윈도우의 멈춘 창 판정 기록
             // (개발자용 시험) 모드 폴더의 파일로 멈춘 동안 화면 다시 내보내기를 바꾼다: present-keepalive 켬(효과 없어 기본은 끔), present-flip 보통 Present, present-screen-check 화면 비교
-            if (Edition.Dev) DevPresentFlags(modEntry.Path);
+            if (Edition.Dev || Edition.AutoTest) DevPresentFlags(modEntry.Path);
             if (Edition.AutoTest) {
 #if DEV || AUTOTEST
 AutoTest.Init(modEntry.Path);

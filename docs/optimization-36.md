@@ -692,3 +692,16 @@ SF집계오류0/0/0·정상 종료3/3·원본 복원5/5×3. Arche 성능·전체
 1. 곡 중 30ms 넘는 프레임(HELLO 전곡 한 판 12~20개, 시각 무작위, CPU 4ms·GPU 3ms인데 프레임만 30~44ms = 메인 스레드가 윈도우에 밀림). 메인 스레드 우선순위(ThreadSchedulingMode=1) 단독 14개, 0번 코어 제외 단독 14개, 메모리 묶음(01·31·36) 단독 11개로 효과 없음. **메인+렌더 스레드 우선순위를 같이 켜야** 줄어듦: HELLO 12·20개 → 0·1·2개, 1% low 106~108 → 113~116, 0.1% low 48~51 → 62~66, 평균 214~216 → 220 FPS. Arche 11 → 3개(1% low 92→94, 0.1% low 71→75). 기본 켬으로 반영. 07·09·13(CPU 묶음)은 10·12개로 효과 없어 기본 끔 유지.
 2. 디스크 캐시 느림의 원인: 상한 512MB가 Windflower(1.6GB)를 계속 밀어냄(적중 40%), 읽기마다 관리 SHA-256, 쓰기마다 폴더 훑기·정렬, 읽기마다 수정시각 쓰기, 블록 이중 복사. 8바이트 단위 64비트 검사합·총량 한 번 계산·복사 제거·저장 위치 C: LocalAppData·상한 3GB로 고침. 두 번째 열기 Windflower 11.8 → 9.7초, HELLO 12.9 → 11.6초(첫 열기는 +0.1~1.2초). 남은 공간이 상한+4GB보다 적으면 스스로 끔. 기본 켬.
 3. 39ms 한 번: 맵의 특정 지점이 아니라 위 1번의 무작위 윈도우 스케줄링 지연. 해결은 1번.
+
+## 2026-10-18 바닐라 병목 7곳 실측 (HELLO 전곡, 개발자용 time-probe/alloc-probe)
+
+|번호|대상|프레임당 시간(측정 비용 포함)|할당|판단|
+|---|---|---:|---:|---|
+|1|ffxSetFilterAdvancedPlus.StartEffect|0.001ms (0.1번/프레임, 한 번 14us)|목록 20위 밖|효과 종류별 시간도 0ms. 패치 안 함|
+|2|CameraFilterPack OnRenderImage 문자열 Set*|-|목록 밖|371개 필터를 Harmony 로 바꾸면 곡 시작 패치만 수 초(앞서 측정: 수백 패치 4초). 이득 없음, 안 함|
+|3|scrVisualDecoration.UpdateShader|0.028ms (69번, 한 번 0.4us)|목록 밖|안 함|
+|4|scrPlanet.MoveToNextFloor|0.024ms|0.009MB/s (120B x 78/s)|안 함|
+|5|scrPlanet.Update (OverlapCircleAll)|0.086ms (24번, 한 번 3.6us)|0.016MB/s (평균 3B)|할당이 거의 없음(빈 배열 재사용), 안 함|
+|6|scrConductor.Update 안 히트사운드 문자열|전체 0.164ms|0.006MB/s|안 함|
+|7|scrHitTextManager.ShowHitText|0.001ms|목록 밖|안 함|
+일곱 개를 합쳐도 프레임당 0.14ms(프레임 5.4ms 의 2.6%, 측정 비용 포함 상한)라 FPS 220 vs 218 같은 잡음 안이다. 곡 중 큰 비용은 ffxRecolorFloorPlus(한 번 7~10ms, 42KB), scrFloor.Update(0.22ms)다.

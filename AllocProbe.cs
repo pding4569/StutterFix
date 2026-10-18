@@ -23,6 +23,7 @@ namespace StutterFix
             new[] { "scrPlayer", "UpdateHoldKeys" }, new[] { "scrPlayer", "CheckPreHoldFail" }, new[] { "scrPlayer", "HitHoldFloorsIfStartedAtHold" }, new[] { "scrPlayer", "CheckPostHoldFail" },
             new[] { "scnEditor", "UpdateSelectedFloor" }, new[] { "scnEditor", "OttoUpdate" }, new[] { "CustomStandaloneInputModule", "GetPointerData" }, new[] { "RDInputType_Keyboard", "MainIgnoreActive" },
             new[] { "scrPlayer", "OttoHoldHit" }, new[] { "scrPlayer", "HitAutoFloors" }, new[] { "RDInput", "GetMain" }, new[] { "scrPlanet", "AsyncRefreshAngles" }, new[] { "scrPlanet", "AutoShouldHitNow" },
+            new[] { "scrVisualDecoration", "UpdateShader" }, new[] { "scrHitTextManager", "ShowHitText" }, new[] { "scrConductor", "PlayHitTimes" },
         };
         private static readonly Dictionary<MethodBase, int> index = new Dictionary<MethodBase, int>();
         private static readonly List<string> names = new List<string>();
