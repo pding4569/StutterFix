@@ -18,7 +18,7 @@ namespace StutterFix
             return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(s + m));
         }
         [MethodImpl(MethodImplOptions.NoInlining)] private static float Dbl(float s, float c, float e) { return (float)((double)s + (double)c * (double)e); }
-        [MethodImpl(MethodImplOptions.NoInlining)] private static float Fma(float s, float c, float e) { return (float)Math.FusedMultiplyAdd((double)c, (double)e, (double)s); }
+        [MethodImpl(MethodImplOptions.NoInlining)] private static float Fma(float s, float c, float e) { return (float)((double)c * (double)e + (double)s);   // 곱은 double 에서 정확하고 합은 한 번 반올림: FMA 와 사실상 같다 }
         [MethodImpl(MethodImplOptions.NoInlining)] private static float ViaStruct(Pair p, float e) { return p.s + p.c * e; }
         [MethodImpl(MethodImplOptions.NoInlining)] private static float Div(float t, float d) { return t / d; }
         [MethodImpl(MethodImplOptions.NoInlining)] private static float DivStrict(float t, float d) { return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(t / d)); }
