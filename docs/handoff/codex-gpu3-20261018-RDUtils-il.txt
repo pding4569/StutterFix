@@ -1,0 +1,466 @@
+== RDUtils
+  TryParseJPEG
+    호출 System.IO.Stream::Seek
+    호출 System.IO.Stream::ReadByte
+  TryParseGIF
+    호출 System.IO.Stream::Seek
+    호출 System.IO.Stream::ReadByte
+  TryParsePNG
+    호출 System.IO.Stream::Seek
+    호출 제네릭 System.Span`1::op_Implicit
+    호출 System.IO.Stream::Read
+    호출 System.Text.Encoding::get_ASCII
+    호출 System.Text.Encoding::GetBytes
+    호출 제네릭 System.Linq.Enumerable::SequenceEqual
+    호출 System.IO.Stream::ReadByte
+  GetImageDimensions
+    호출 System.IO.File::OpenRead
+    호출 제네릭 System.Span`1::op_Implicit
+    호출 System.IO.Stream::Read
+    호출 System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray
+    호출 제네릭 System.Linq.Enumerable::SequenceEqual
+    호출 RDUtils::TryParsePNG
+    호출 UnityEngine.Vector2Int::.ctor
+    호출 RDUtils::TryParseJPEG
+    호출 RDUtils::TryParseGIF
+    호출 System.IDisposable::Dispose
+    호출 UnityEngine.Vector2Int::get_zero
+  GetMixerGroup
+    호출 AudioManager::get_Instance
+    필드 읽기 AudioManager::Mixer
+    호출 UnityEngine.Audio.AudioMixer::FindMatchingGroups
+  GetMixerGroup
+    호출 AudioManager::get_Instance
+    필드 읽기 AudioManager::Mixer
+    호출 System.Object::ToString
+    호출 UnityEngine.Audio.AudioMixer::FindMatchingGroups
+  SetMixerParameter
+    호출 AudioManager::get_Instance
+    필드 읽기 AudioManager::Mixer
+    호출 UnityEngine.Audio.AudioMixer::SetFloat
+    호출 System.String::Concat
+    호출 UnityEngine.Debug::LogWarning
+  SetMixerVolume
+    호출 RDUtils::SetMixerParameter
+  GetMixerParameter
+    호출 AudioManager::get_Instance
+    필드 읽기 AudioManager::Mixer
+    호출 UnityEngine.Audio.AudioMixer::GetFloat
+  PitchPercentToSemitones
+    호출 System.Math::Log
+  PitchSemitonestoPercent
+    호출 System.Math::Pow
+  GetAvailableDirectoryName
+    호출 System.Int32::ToString
+    호출 System.String::Concat
+    호출 RDDirectory::Exists
+    호출 RDFile::Exists
+  IsHex
+    호출 System.String::get_Chars
+    호출 System.String::get_Length
+  HexToColor
+    호출 RDUtils::TryHexToColor
+  TryHexToColor
+    호출 System.String::get_Length
+    호출 System.String::Substring
+    호출 System.Byte::TryParse
+    호출 UnityEngine.Color32::.ctor
+    호출 UnityEngine.Color32::op_Implicit
+    호출 UnityEngine.Color::get_black
+  ToHex
+    호출 System.String::Concat
+    필드 읽기 UnityEngine.Color::r
+    호출 RDUtils::ToByte
+    필드 읽기 UnityEngine.Color::g
+    필드 읽기 UnityEngine.Color::b
+    호출 System.String::Format
+    필드 읽기 UnityEngine.Color::a
+  ToRichTagOpener
+    필드 읽기 UnityEngine.Color::r
+    호출 RDUtils::ToByte
+    필드 읽기 UnityEngine.Color::g
+    필드 읽기 UnityEngine.Color::b
+    호출 System.String::Format
+  ToByte
+    호출 UnityEngine.Mathf::Clamp01
+  StringToVector2
+    호출 System.String::StartsWith
+    호출 System.String::EndsWith
+    호출 System.String::get_Length
+    호출 System.String::Substring
+    호출 System.String::Split
+    호출 System.Single::Parse
+    호출 UnityEngine.Vector2::.ctor
+  StringToFloatPair
+    호출 System.String::StartsWith
+    호출 System.String::EndsWith
+    호출 System.String::get_Length
+    호출 System.String::Substring
+    호출 System.String::Split
+    호출 System.Single::Parse
+    호출 제네릭 System.Tuple`2::.ctor
+  StringToStringTuple
+    호출 System.String::StartsWith
+    호출 System.String::EndsWith
+    호출 System.String::get_Length
+    호출 System.String::Substring
+    호출 System.String::Split
+    호출 제네릭 System.Tuple`2::.ctor
+  GetRandomFloat
+    호출 ADOFAI.LevelEvent::GetFloat
+  GetRandomInt
+    호출 ADOFAI.LevelEvent::GetInt
+  GetRandomVector2
+    호출 ADOFAI.LevelEvent::get_Item
+  ParseEnum
+    호출 제네릭 System.Enum::TryParse
+    호출 System.Object::ToString
+    호출 System.String::Concat
+    호출 UnityEngine.Debug::LogWarning
+  ToEnum
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::Parse
+    호출 System.Object::ToString
+    호출 System.String::Concat
+    호출 UnityEngine.Debug::LogWarning
+  GetValues
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+  SpawnIfNotFound
+    호출 UnityEngine.GameObject::Find
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Object::op_Inequality
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 UnityEngine.Object::set_name
+    호출 UnityEngine.GameObject::.ctor
+  OutQuad
+    호출 UnityEngine.Mathf::Pow
+  ShowDebugLabel
+    호출 UnityEngine.Rect::.ctor
+    호출 UnityEngine.GUI::Label
+  Clamp
+    호출 System.Math::Max
+    호출 System.Math::Min
+  Clamp01
+    호출 RDUtils::Clamp
+  CycleColor
+    호출 System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray
+    호출 UnityEngine.Random::get_value
+    호출 UnityEngine.Mathf::FloorToInt
+    호출 RDExtensions::ARGBToColor
+    호출 UnityEngine.Color::op_Equality
+  Rotate2D
+    호출 UnityEngine.Transform::get_localEulerAngles
+    필드 읽기 UnityEngine.Vector3::x
+    필드 읽기 UnityEngine.Vector3::y
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Transform::set_localEulerAngles
+    필드 읽기 UnityEngine.Vector3::z
+  CeilToNearestMultiple
+    호출 UnityEngine.Mathf::Round
+    호출 RDUtils::WithinSmallMargin
+    호출 UnityEngine.Mathf::Ceil
+  WithinSmallMargin
+    호출 UnityEngine.Mathf::Abs
+  Create
+    호출 UnityEngine.GameObject::.ctor
+    호출 GOExtensions::Instantiate
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+  CheckForProcess
+    호출 System.Diagnostics.Process::GetProcessesByName
+  IsDigitsOnly
+    호출 System.String::get_Chars
+    호출 System.String::get_Length
+  Pop
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAt
+  GetHue
+    필드 읽기 UnityEngine.Color::r
+    호출 UnityEngine.Mathf::RoundToInt
+    필드 읽기 UnityEngine.Color::g
+    필드 읽기 UnityEngine.Color::b
+    호출 UnityEngine.Mathf::Min
+    호출 UnityEngine.Mathf::Max
+  GetColor
+    호출 RDConstants::get_data
+    호출 RDConstants::GetPlanetColor
+  Add
+    호출 제네릭 System.Collections.Generic.List`1::Add
+  BreakRichText
+    호출 System.String::get_Length
+    호출 System.String::ToCharArray
+    호출 System.String::Insert
+  RemoveRichTags
+    호출 System.String::ToCharArray
+    호출 System.String::Remove
+    호출 System.String::get_Length
+  IsXtra
+    호출 WorldData::get_dict
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 WorldData::get_isXtra
+    호출 WorldData::get_isCrown
+  IsCrownWorld
+    호출 WorldData::get_dict
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 WorldData::get_isCrown
+  IsMuseDashWorld
+    호출 WorldData::get_dict
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 WorldData::get_isMuseDash
+  IsTechWorld
+    호출 RDEditorUtils::IsNullOrEmpty
+    호출 WorldData::get_dict
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    필드 읽기 WorldData::isTech
+  Approximately
+    필드 읽기 UnityEngine.Vector2::x
+    호출 UnityEngine.Mathf::Approximately
+    필드 읽기 UnityEngine.Vector2::y
+  ApproximatelyXY
+    필드 읽기 UnityEngine.Vector3::x
+    호출 UnityEngine.Mathf::Approximately
+    필드 읽기 UnityEngine.Vector3::y
+  TrimAllSpaces
+    정적필드 읽기 System.String::Empty
+    호출 System.String::Replace
+  IsTaro
+    정적필드 읽기 NeoCosmosManager::instance
+    호출 DLCManager::IsDLCLevel
+  IsTaroScene
+    정적필드 읽기 NeoCosmosManager::instance
+    호출 DLCManager::IsDLCScene
+  IsVega
+    정적필드 읽기 VegaDLCManager::instance
+    호출 DLCManager::IsDLCLevel
+  IsVegaScene
+    정적필드 읽기 VegaDLCManager::instance
+    호출 DLCManager::IsDLCScene
+  CheckDLCLevelPlayable
+    정적필드 읽기 DLCManager::DLCManagers
+    호출 제네릭 System.Collections.Generic.HashSet`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::get_Current
+    호출 DLCManager::IsDLCLevel
+    필드 읽기 DLCManager::installed
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  IsBossLevel
+    호출 System.String::EndsWith
+  GetDateOfChineseNewYear
+    호출 System.Globalization.ChineseLunisolarCalendar::.ctor
+    호출 System.Globalization.GregorianCalendar::.ctor
+    호출 System.DateTime::get_UtcNow
+    호출 System.DateTime::get_Year
+    호출 System.Globalization.Calendar::ToDateTime
+    호출 System.Globalization.Calendar::GetYear
+    호출 System.Globalization.Calendar::GetMonth
+    호출 System.Globalization.Calendar::GetDayOfMonth
+    호출 제네릭 System.ValueTuple`3::.ctor
+  IsSubDirectoryOf
+    호출 System.IO.DirectoryInfo::.ctor
+    호출 System.IO.DirectoryInfo::get_Parent
+    호출 System.IO.FileSystemInfo::get_FullName
+    호출 System.String::ToLower
+    호출 System.String::op_Equality
+    호출 System.String::Format
+    호출 UnityEngine.Debug::Log
+  HasConnectionError
+    호출 UnityEngine.Networking.UnityWebRequest::get_result
+  SanitizeProtocolPath
+    호출 System.Uri::EscapeDataString
+    정적필드 읽기 System.IO.Path::PathSeparator
+    호출 System.Uri::HexEscape
+    호출 System.Char::ToString
+    호출 System.String::Replace
+    정적필드 읽기 System.IO.Path::DirectorySeparatorChar
+    정적필드 읽기 System.IO.Path::AltDirectorySeparatorChar
+    정적필드 읽기 System.IO.Path::VolumeSeparatorChar
+  ToFileUri
+    호출 System.Uri::.ctor
+    호출 System.Uri::get_IsFile
+    호출 System.Object::ToString
+  get_targetFrameRate
+    호출 UnityEngine.Application::get_targetFrameRate
+  set_targetFrameRate
+    호출 UnityEngine.Application::set_targetFrameRate
+  FlooredModulo
+    호출 System.Math::Floor
+  NormalizedSin
+    호출 UnityEngine.Mathf::Sin
+  GenerateHash
+    호출 System.IO.File::Exists
+    호출 System.IO.File::OpenRead
+    호출 System.IO.BinaryReader::.ctor
+    호출 System.IO.BinaryReader::ReadBytes
+    호출 제네릭 UnityEngine.Hash128::Append
+    호출 System.IO.Stream::get_Position
+    호출 System.IO.Stream::get_Length
+    호출 System.IDisposable::Dispose
+    호출 System.Object::ToString
+  IsNoneConditionalTag
+    정적필드 읽기 RDUtils::noneTags
+    호출 제네릭 System.Linq.Enumerable::Contains
+  NullIfEmptyConditionalTag
+    호출 System.String::IsNullOrEmpty
+    호출 RDUtils::IsNoneConditionalTag
+  GameIsModded
+    호출 System.AppDomain::get_CurrentDomain
+    호출 System.AppDomain::GetAssemblies
+    정적필드 읽기 RDUtils+<>c::<>9__72_0
+    정적필드 읽기 RDUtils+<>c::<>9
+    호출 RDUtils+<>c::<GameIsModded>b__72_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 RDUtils+<>c::<>9__72_0
+    호출 제네릭 System.Linq.Enumerable::Any
+  UnCamelCase
+    호출 System.Text.RegularExpressions.Regex::Replace
+    호출 System.String::get_Chars
+    호출 System.Char::ToUpper
+    호출 System.Char::ToString
+    호출 System.String::get_Length
+    호출 System.String::Substring
+    호출 System.String::Concat
+    호출 System.Enum::HasFlag
+    호출 System.String::Replace
+    호출 System.String::Trim
+  NullIfEmpty
+    호출 System.String::IsNullOrEmpty
+  SetIfNaN
+    호출 System.Single::IsNaN
+  HitMarginTextScaleMultiplierFromInternalSettingsValue
+  CheckHidden
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 Persistence::get_hideHitMargin
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    호출 HitMarginHelper::IsPerfect
+  get_earlyText
+    호출 RDString::Get
+    호출 System.String::Replace
+  get_lateText
+    호출 RDString::Get
+    호출 System.String::Replace
+  get_hiddenText
+    정적필드 읽기 RDUtils::HiddenTextOpener
+    호출 RDString::Get
+    호출 System.String::Concat
+  ToLocalized
+    호출 RDUtils::ToLocalizedBase
+  ToShortLocalized
+    호출 RDUtils::ToLocalizedBase
+  ToLocalizedBase
+    호출 System.String::Format
+    호출 RDString::Get
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 HitMarginHelper::IsPerfect
+    호출 System.String::Concat
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+  FormatWithTextMode
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 Persistence::get_hitMarginPerfectText
+    호출 제네릭 System.Nullable`1::.ctor
+    호출 Persistence::get_hitMarginText
+    호출 Persistence::get_hitMarginColor
+    호출 Persistence::get_hideHitMargin
+    호출 RDUtils::CheckHidden
+    호출 RDUtils::get_hiddenText
+    정적필드 읽기 ColourSchemeHitMargin+Extended::FastColor
+    호출 RDUtils::ToRichTagOpener
+    정적필드 읽기 ColourSchemeHitMargin+Extended::SlowColor
+    호출 Persistence::get_swapHitMarginFastSlowColor
+    호출 HitMarginHelper::IsPerfect
+    호출 System.String::Concat
+    호출 System.String::Format
+    호출 RDString::Get
+    호출 RDUtils::ToShortLocalized
+    호출 RDUtils::get_lateText
+    호출 RDUtils::get_earlyText
+    호출 RDUtils::ToLocalized
+    호출 System.String::Replace
+    호출 HitMarginHelper::ToXScore
+    호출 HitMarginHelper::IsShowXPerfect
+    호출 RDC::get_hitMarginColoursBySettings
+    호출 ColourSchemeHitMargin::SelectByHitMargin
+  FormattingExample
+    호출 RDUtils+<>c__DisplayClass93_0::.ctor
+    필드 쓰기 RDUtils+<>c__DisplayClass93_0::perfectTextPreset
+    필드 쓰기 RDUtils+<>c__DisplayClass93_0::textPreset
+    필드 쓰기 RDUtils+<>c__DisplayClass93_0::colorPreset
+    필드 쓰기 RDUtils+<>c__DisplayClass93_0::hidePreset
+    필드 쓰기 RDUtils+<>c__DisplayClass93_0::swapHitMarginFastSlowColor
+    필드 읽기 RDUtils+<>c__DisplayClass93_0::perfectTextPreset
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 Persistence::get_hitMarginPerfectText
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    호출 HitMarginHelper::IsShowXPerfect
+    정적필드 읽기 RDUtils::DisplayedHitMargins
+    정적필드 읽기 RDUtils::DisplayedHitMarginsWithXPerfectEnabled
+    호출 UnityEngine.Color::get_gray
+    호출 RDUtils::ToRichTagOpener
+    호출 System.String::Concat
+    호출 RDUtils+<>c__DisplayClass93_0::<FormattingExample>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Select
+    정적필드 읽기 RDUtils+<>c::<>9__93_1
+    정적필드 읽기 RDUtils+<>c::<>9
+    호출 RDUtils+<>c::<FormattingExample>b__93_1
+    정적필드 쓰기 RDUtils+<>c::<>9__93_1
+    호출 제네릭 System.Linq.Enumerable::Where
+    호출 System.String::Join
+  FastSlowFormattingExample
+    정적필드 읽기 ColourSchemeHitMargin+Extended::FastColor
+    호출 RDUtils::ToRichTagOpener
+    정적필드 읽기 ColourSchemeHitMargin+Extended::SlowColor
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 Persistence::get_swapHitMarginFastSlowColor
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    호출 RDUtils::get_earlyText
+    호출 System.String::Concat
+    호출 RDUtils::get_lateText
+    호출 UnityEngine.Color::get_gray
+  GetForceColorFormattedEPerfectText
+    호출 Persistence::get_betterELPerfectVisibility
+    호출 RDConstants::get_data
+    필드 읽기 RDConstants::hitMarginColours
+    필드 읽기 RDConstants::hitMarginColoursUI
+    필드 읽기 ColourSchemeHitMargin::colourLittleEarly
+    호출 RDUtils::ToRichTagOpener
+    호출 RDUtils::ToLocalized
+    호출 System.String::Concat
+  XAccuracyToString
+    호출 System.Math::Round
+    호출 System.Double::ToString
+    호출 System.String::get_Length
+    호출 System.String::Remove
+    호출 System.String::Concat
+  CheckTouched
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+  ToRandomCurve
+    호출 제네릭 System.Tuple`2::get_Item1
+    호출 제네릭 System.Tuple`2::get_Item2
+    호출 UnityEngine.ParticleSystem+MinMaxCurve::.ctor
+  ToLinearCurve
+    호출 제네릭 System.Tuple`2::get_Item1
+    호출 제네릭 System.Tuple`2::get_Item2
+    호출 UnityEngine.AnimationCurve::Linear
+    호출 UnityEngine.ParticleSystem+MinMaxCurve::.ctor
+  GetFloorAtPosition
+    호출 UnityEngine.LayerMask::NameToLayer
+    호출 UnityEngine.Physics2D::OverlapPoint
+    호출 제네릭 UnityEngine.Component::GetComponent
+  SetPointSamplingVariant
+    호출 UnityEngine.Material::EnableKeyword
+    호출 UnityEngine.Material::DisableKeyword
+  WithMinMaxConstant
+    호출 UnityEngine.ParticleSystem+MinMaxCurve::set_constantMin
+    호출 UnityEngine.ParticleSystem+MinMaxCurve::set_constantMax
+  .cctor
+    정적필드 쓰기 RDUtils::noneTags
+    호출 UnityEngine.Color::.ctor
+    호출 RDUtils::ToRichTagOpener
+    정적필드 쓰기 RDUtils::HiddenTextOpener
+    호출 System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray
+    정적필드 쓰기 RDUtils::DisplayedHitMarginsWithXPerfectEnabled
+    정적필드 쓰기 RDUtils::DisplayedHitMargins

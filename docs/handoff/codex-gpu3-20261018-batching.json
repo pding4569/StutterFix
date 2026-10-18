@@ -1,0 +1,15 @@
+{
+  "file": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\globalgamemanagers",
+  "sha256": "19d0f02bdac70e76bac4f36556199976e3515886cbfa13a3ca9d2b3da6788401",
+  "serialized_version": 22,
+  "unity_version": "6000.3.21f1",
+  "target_platform": 19,
+  "enable_type_tree": 0,
+  "type_count": 20,
+  "editor_LoadSerializedFileAndForget_object_count": 0,
+  "dynamic_batching": null,
+  "release_batches_count": null,
+  "release_setpass_calls_count": null,
+  "release_draw_calls_count": null,
+  "reason": "stripped type tree; Editor deserializer returned zero objects; no release runtime queries authorized"
+}

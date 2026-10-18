@@ -1,0 +1,621 @@
+{
+  "file": "D:\\얼불춤 맵 파일\\Arche\\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai",
+  "sha256": "026873b89f05ea94b86b83634a938ac053593ebea6cb832d8134e4a8084f8064",
+  "parsed_object_lines": 137452,
+  "parse_errors": [],
+  "ray_add_events": 22960,
+  "ray_images": {
+    "nev_travel_30.png": 5090,
+    "nev_travel_60.png": 710,
+    "nev_travel_90.png": 7100,
+    "nev_travel_180.png": 5890,
+    "nev_travel_150.png": 3330,
+    "nev_travel_120.png": 380,
+    "nev_travel_midspin.png": 10,
+    "nev_travel_360.png": 450
+  },
+  "ray_depth_counts": {
+    "-21": 359,
+    "-20": 359,
+    "-19": 359,
+    "-18": 359,
+    "-17": 359,
+    "-16": 359,
+    "-15": 359,
+    "-14": 359,
+    "-13": 359,
+    "-12": 359,
+    "-11": 359,
+    "-10": 860,
+    "-9": 860,
+    "-8": 860,
+    "-7": 860,
+    "-6": 860,
+    "-5": 860,
+    "-4": 860,
+    "-3": 860,
+    "-2": 860,
+    "-1": 860,
+    "0": 359,
+    "1": 359,
+    "2": 359,
+    "3": 359,
+    "4": 359,
+    "5": 359,
+    "6": 359,
+    "7": 359,
+    "8": 359,
+    "9": 359,
+    "10": 359,
+    "11": 359,
+    "12": 359,
+    "13": 359,
+    "14": 359,
+    "15": 359,
+    "16": 359,
+    "17": 359,
+    "18": 359,
+    "19": 359,
+    "20": 359,
+    "21": 359,
+    "22": 359,
+    "23": 359,
+    "24": 359,
+    "25": 359,
+    "26": 359,
+    "27": 359,
+    "28": 359
+  },
+  "floor_window_events": 73314,
+  "floor_window_types": {
+    "MoveDecorations": 54729,
+    "MoveTrack": 1206,
+    "MoveCamera": 236,
+    "SetFilter": 185,
+    "Flash": 66,
+    "Twirl": 80,
+    "Bloom": 6,
+    "RecolorTrack": 2,
+    "Bookmark": 1,
+    "ShakeScreen": 1,
+    "AddDecoration": 16802
+  },
+  "floor_window_ray_add_events": 15000,
+  "first_rays": [
+    [
+      109110,
+      {
+        "floor": 2485,
+        "eventType": "AddDecoration",
+        "decorationImage": "nev_travel_30.png",
+        "position": [
+          0,
+          0
+        ],
+        "relativeTo": "Tile",
+        "pivotOffset": [
+          0,
+          0
+        ],
+        "rotation": 0,
+        "scale": [
+          100,
+          -100
+        ],
+        "tile": [
+          1,
+          1
+        ],
+        "color": "00000000",
+        "opacity": 13.7991,
+        "depth": -1,
+        "parallax": [
+          0,
+          0
+        ],
+        "tag": "nevRays nevRayGroup.2485 nevShadowRays.true nevShadowGroup.2485_true nevRayLayer.1 nevRayID.2485_1 ",
+        "imageSmoothing": "Enabled",
+        "failHitbox": "Disabled",
+        "failHitboxType": "Box",
+        "failHitboxScale": [
+          100,
+          100
+        ],
+        "failHitboxOffset": [
+          0,
+          0
+        ],
+        "failHitboxRotation": 0,
+        "components": ""
+      }
+    ],
+    [
+      109111,
+      {
+        "floor": 2485,
+        "eventType": "AddDecoration",
+        "decorationImage": "nev_travel_30.png",
+        "position": [
+          -0.04878049,
+          -0.04878049
+        ],
+        "relativeTo": "Tile",
+        "pivotOffset": [
+          0,
+          0
+        ],
+        "rotation": 0,
+        "scale": [
+          102.5,
+          -102.5
+        ],
+        "tile": [
+          1,
+          1
+        ],
+        "color": "00000000",
+        "opacity": 12.41919,
+        "depth": -2,
+        "parallax": [
+          -2.5,
+          -2.5
+        ],
+        "tag": "nevRays nevRayGroup.2485 nevShadowRays.true nevShadowGroup.2485_true nevRayLayer.2 nevRayID.2485_2 ",
+        "imageSmoothing": "Enabled",
+        "failHitbox": "Disabled",
+        "failHitboxType": "Box",
+        "failHitboxScale": [
+          100,
+          100
+        ],
+        "failHitboxOffset": [
+          0,
+          0
+        ],
+        "failHitboxRotation": 0,
+        "components": ""
+      }
+    ],
+    [
+      109112,
+      {
+        "floor": 2485,
+        "eventType": "AddDecoration",
+        "decorationImage": "nev_travel_30.png",
+        "position": [
+          -0.09637121,
+          -0.09637121
+        ],
+        "relativeTo": "Tile",
+        "pivotOffset": [
+          0,
+          0
+        ],
+        "rotation": 0,
+        "scale": [
+          105.0625,
+          -105.0625
+        ],
+        "tile": [
+          1,
+          1
+        ],
+        "color": "00000000",
+        "opacity": 11.03928,
+        "depth": -3,
+        "parallax": [
+          -5.0625,
+          -5.0625
+        ],
+        "tag": "nevRays nevRayGroup.2485 nevShadowRays.true nevShadowGroup.2485_true nevRayLayer.3 nevRayID.2485_3 ",
+        "imageSmoothing": "Enabled",
+        "failHitbox": "Disabled",
+        "failHitboxType": "Box",
+        "failHitboxScale": [
+          100,
+          100
+        ],
+        "failHitboxOffset": [
+          0,
+          0
+        ],
+        "failHitboxRotation": 0,
+        "components": ""
+      }
+    ]
+  ],
+  "window_image_swaps": [
+    [
+      66955,
+      {
+        "floor": 3489,
+        "eventType": "MoveDecorations",
+        "duration": 0,
+        "tag": "s.2f",
+        "decorationImage": "nev_f4_bw.png",
+        "angleOffset": 180,
+        "ease": "Linear",
+        "eventTag": ""
+      }
+    ],
+    [
+      80091,
+      {
+        "floor": 3559,
+        "eventType": "MoveDecorations",
+        "duration": 0,
+        "tag": "vg1",
+        "decorationImage": "nev_circular_white_vignette.png",
+        "scale": [
+          1400,
+          1400
+        ],
+        "opacity": 100,
+        "angleOffset": 0,
+        "ease": "Linear",
+        "eventTag": ""
+      }
+    ],
+    [
+      80255,
+      {
+        "floor": 3559,
+        "eventType": "MoveDecorations",
+        "duration": 0,
+        "tag": "gdd",
+        "decorationImage": "nes_outline_letterbox_with_grid.png",
+        "color": "ffffff",
+        "angleOffset": 0,
+        "ease": "Linear",
+        "eventTag": ""
+      }
+    ],
+    [
+      80298,
+      {
+        "floor": 3559,
+        "eventType": "MoveDecorations",
+        "duration": 0,
+        "tag": "tl1",
+        "decorationImage": "nev_text_lyrics1.png",
+        "scale": [
+          80,
+          80
+        ],
+        "color": "ffffffff",
+        "angleOffset": 0,
+        "ease": "Linear",
+        "eventTag": ""
+      }
+    ],
+    [
+      80321,
+      {
+        "floor": 3559,
+        "eventType": "MoveDecorations",
+        "duration": 0,
+        "tag": "fm",
+        "decorationImage": "fragments_density_3.png",
+        "angleOffset": 0,
+        "ease": "Linear",
+        "eventTag": ""
+      }
+    ],
+    [
+      84292,
+      {
+        "floor": 3581,
+        "eventType": "MoveDecorations",
+        "duration": 0,
+        "tag": "s.3f",
+        "decorationImage": "nev_f7_bw.png",
+        "angleOffset": 180,
+        "ease": "Linear",
+        "eventTag": ""
+      }
+    ],
+    [
+      97810,
+      {
+        "floor": 3653,
+        "eventType": "MoveDecorations",
+        "duration": 0,
+        "tag": "gd.2 gd.3 gd.4 gd.5 gd.6 gd.7 gd.8 gd.9",
+        "decorationImage": "Grid_Double.png",
+        "angleOffset": 0,
+        "ease": "Linear",
+        "eventTag": ""
+      }
+    ],
+    [
+      102376,
+      {
+        "floor": 3677,
+        "eventType": "MoveDecorations",
+        "duration": 0,
+        "tag": "s.4f",
+        "decorationImage": "nev_f24_bw.jpg",
+        "angleOffset": 180,
+        "ease": "Linear",
+        "eventTag": ""
+      }
+    ],
+    [
+      120538,
+      {
+        "floor": 3400,
+        "eventType": "AddDecoration",
+        "decorationImage": "fog.png",
+        "position": [
+          12.44749,
+          -11.54552
+        ],
+        "relativeTo": "Tile",
+        "pivotOffset": [
+          1.033236,
+          -4.20102
+        ],
+        "rotation": 0,
+        "scale": [
+          20,
+          20
+        ],
+        "tile": [
+          1,
+          1
+        ],
+        "color": "ffffff00",
+        "opacity": 0,
+        "depth": -65,
+        "parallax": [
+          45.22877,
+          45.22877
+        ],
+        "tag": "nesFires nesFireGroup.24 nesFireID.24_1 ",
+        "imageSmoothing": "Enabled",
+        "failHitbox": "Disabled",
+        "failHitboxType": "Box",
+        "failHitboxScale": [
+          100,
+          100
+        ],
+        "failHitboxOffset": [
+          0,
+          0
+        ],
+        "failHitboxRotation": 0,
+        "components": ""
+      }
+    ],
+    [
+      120539,
+      {
+        "floor": 3400,
+        "eventType": "AddDecoration",
+        "decorationImage": "fog.png",
+        "position": [
+          12.44749,
+          -11.54552
+        ],
+        "relativeTo": "Tile",
+        "pivotOffset": [
+          1.033236,
+          -4.20102
+        ],
+        "rotation": 0,
+        "scale": [
+          20,
+          20
+        ],
+        "tile": [
+          1,
+          1
+        ],
+        "color": "ffffff00",
+        "opacity": 0,
+        "depth": -65,
+        "parallax": [
+          45.22877,
+          45.22877
+        ],
+        "tag": "nesFires nesFireGroup.24 nesFireID.24_2 ",
+        "imageSmoothing": "Enabled",
+        "failHitbox": "Disabled",
+        "failHitboxType": "Box",
+        "failHitboxScale": [
+          100,
+          100
+        ],
+        "failHitboxOffset": [
+          0,
+          0
+        ],
+        "failHitboxRotation": 0,
+        "components": ""
+      }
+    ],
+    [
+      120540,
+      {
+        "floor": 3400,
+        "eventType": "AddDecoration",
+        "decorationImage": "fog.png",
+        "position": [
+          12.44749,
+          -11.54552
+        ],
+        "relativeTo": "Tile",
+        "pivotOffset": [
+          1.033236,
+          -4.20102
+        ],
+        "rotation": 0,
+        "scale": [
+          20,
+          20
+        ],
+        "tile": [
+          1,
+          1
+        ],
+        "color": "ffffff00",
+        "opacity": 0,
+        "depth": -65,
+        "parallax": [
+          45.22877,
+          45.22877
+        ],
+        "tag": "nesFires nesFireGroup.24 nesFireID.24_3 ",
+        "imageSmoothing": "Enabled",
+        "failHitbox": "Disabled",
+        "failHitboxType": "Box",
+        "failHitboxScale": [
+          100,
+          100
+        ],
+        "failHitboxOffset": [
+          0,
+          0
+        ],
+        "failHitboxRotation": 0,
+        "components": ""
+      }
+    ],
+    [
+      120541,
+      {
+        "floor": 3400,
+        "eventType": "AddDecoration",
+        "decorationImage": "nev_travel_180.png",
+        "position": [
+          0,
+          0
+        ],
+        "relativeTo": "Tile",
+        "pivotOffset": [
+          0,
+          0
+        ],
+        "rotation": 180,
+        "scale": [
+          25,
+          25
+        ],
+        "tile": [
+          1,
+          1
+        ],
+        "color": "00000000",
+        "opacity": 0.417812,
+        "depth": 28,
+        "parallax": [
+          75,
+          75
+        ],
+        "tag": "nevRays nevRayGroup.3400 nevShadowRays.true nevShadowGroup.3400_true nevRayLayer.1 nevRayID.3400_1 ",
+        "imageSmoothing": "Enabled",
+        "failHitbox": "Disabled",
+        "failHitboxType": "Box",
+        "failHitboxScale": [
+          100,
+          100
+        ],
+        "failHitboxOffset": [
+          0,
+          0
+        ],
+        "failHitboxRotation": 0,
+        "components": ""
+      }
+    ]
+  ],
+  "fog_images": {
+    "nes_large_fog.png": 1,
+    "nes_black_fog.png": 1,
+    "fog.png": 4965,
+    "nev_fog.png": 101
+  },
+  "window_ray_per_floor_distribution": {
+    "50": 300
+  },
+  "window_ray_depth_counts": {
+    "-21": 300,
+    "-20": 300,
+    "-19": 300,
+    "-18": 300,
+    "-17": 300,
+    "-16": 300,
+    "-15": 300,
+    "-14": 300,
+    "-13": 300,
+    "-12": 300,
+    "-11": 300,
+    "-10": 300,
+    "-9": 300,
+    "-8": 300,
+    "-7": 300,
+    "-6": 300,
+    "-5": 300,
+    "-4": 300,
+    "-3": 300,
+    "-2": 300,
+    "-1": 300,
+    "0": 300,
+    "1": 300,
+    "2": 300,
+    "3": 300,
+    "4": 300,
+    "5": 300,
+    "6": 300,
+    "7": 300,
+    "8": 300,
+    "9": 300,
+    "10": 300,
+    "11": 300,
+    "12": 300,
+    "13": 300,
+    "14": 300,
+    "15": 300,
+    "16": 300,
+    "17": 300,
+    "18": 300,
+    "19": 300,
+    "20": 300,
+    "21": 300,
+    "22": 300,
+    "23": 300,
+    "24": 300,
+    "25": 300,
+    "26": 300,
+    "27": 300,
+    "28": 300
+  },
+  "window_ray_images": {
+    "nev_travel_180.png": 4400,
+    "nev_travel_30.png": 3600,
+    "nev_travel_150.png": 2400,
+    "nev_travel_90.png": 3950,
+    "nev_travel_60.png": 400,
+    "nev_travel_360.png": 250
+  },
+  "example_floors": {
+    "3440": {
+      "nev_travel_90.png": 50
+    },
+    "3441": {
+      "nev_travel_90.png": 50
+    },
+    "3442": {
+      "nev_travel_180.png": 50
+    },
+    "3443": {
+      "nev_travel_30.png": 50
+    }
+  },
+  "window_ray_tile_values": {
+    "[1, 1]": 15000
+  },
+  "window_ray_smoothing": {
+    "Enabled": 15000
+  }
+}

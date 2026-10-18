@@ -1,0 +1,159 @@
+== TextureManager
+  LoadNewSprite
+    호출 TextureManager::LoadTexture
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Rect::.ctor
+    호출 UnityEngine.Vector2::get_one
+    호출 UnityEngine.Vector2::op_Division
+    호출 UnityEngine.Sprite::Create
+  LoadNewSpriteFromUri
+    호출 제네릭 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder`1::Create
+    필드 쓰기 TextureManager+<LoadNewSpriteFromUri>d__5::<>t__builder
+    필드 쓰기 TextureManager+<LoadNewSpriteFromUri>d__5::uri
+    필드 쓰기 TextureManager+<LoadNewSpriteFromUri>d__5::pixelsPerUnit
+    필드 쓰기 TextureManager+<LoadNewSpriteFromUri>d__5::spriteType
+    필드 쓰기 TextureManager+<LoadNewSpriteFromUri>d__5::<>1__state
+    필드 읽기 TextureManager+<LoadNewSpriteFromUri>d__5::<>t__builder
+    호출 제네릭 제네릭 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder`1::Start
+    호출 제네릭 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder`1::get_Task
+  LoadTextureFromUri
+    호출 제네릭 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder`1::Create
+    필드 쓰기 TextureManager+<LoadTextureFromUri>d__6::<>t__builder
+    필드 쓰기 TextureManager+<LoadTextureFromUri>d__6::uri
+    필드 쓰기 TextureManager+<LoadTextureFromUri>d__6::<>1__state
+    필드 읽기 TextureManager+<LoadTextureFromUri>d__6::<>t__builder
+    호출 제네릭 제네릭 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder`1::Start
+    호출 제네릭 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder`1::get_Task
+  LoadTexture
+    정적필드 읽기 GCS::internalLevelName
+    호출 System.String::Split
+    호출 System.IO.Path::GetFileNameWithoutExtension
+    호출 System.String::Concat
+    호출 ADOBase::get_isDLCLevel
+    호출 제네릭 UnityEngine.AddressableAssets.Addressables::LoadAssetAsync
+    호출 제네릭 UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle`1::WaitForCompletion
+    호출 제네릭 UnityEngine.Resources::Load
+    호출 UnityEngine.Object::op_Inequality
+    호출 ADOBase::get_isBundleLevel
+    호출 RDEditorUtils::ToFeaturedDLCPath
+    호출 RDFile::Exists
+    호출 RDFile::ReadAllBytes
+    호출 UnityEngine.Texture2D::.ctor
+    호출 UnityEngine.ImageConversion::LoadImage
+    호출 TextureManager::ShrinkImage
+    호출 System.IO.Path::GetFileName
+    호출 UnityEngine.Object::set_name
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Texture::get_isReadable
+    호출 UnityEngine.Texture2D::Apply
+    호출 UnityEngine.Texture::set_wrapMode
+  ShrinkImage
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Debug::LogWarning
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Mathf::Max
+    호출 TextureScale::.ctor
+    호출 UnityEngine.Mathf::RoundToInt
+    호출 TextureScale::Bilinear
+  AddTexture
+    호출 RDEditorUtils::IsNullOrEmpty
+    필드 읽기 TextureManager::customTextures
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 System.IO.FileInfo::.ctor
+    호출 System.IO.FileSystemInfo::get_LastWriteTimeUtc
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 TextureManager+CustomTexture::fileLastModified
+    호출 System.DateTime::Compare
+    호출 TextureManager::UnloadTexture
+    호출 제네릭 UnityEngine.Resources::Load
+    호출 UnityEngine.Object::op_Implicit
+    호출 TextureManager::LoadTexture
+    호출 ADOBase::get_isBundleLevel
+    호출 TextureManager+CustomTexture::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    필드 쓰기 TextureManager+CustomTexture::inUse
+  GetOrAddSprite
+    호출 RDEditorUtils::IsNullOrEmpty
+    필드 읽기 TextureManager::customSprites
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 System.IO.FileInfo::.ctor
+    호출 System.IO.FileSystemInfo::get_LastWriteTimeUtc
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 TextureManager+CustomSprite::fileLastModified
+    호출 System.DateTime::Compare
+    호출 TextureManager::UnloadSprite
+    호출 TextureManager::LoadTexture
+    정적필드 읽기 GCS::internalLevelName
+    호출 ADOBase::get_isBundleLevel
+    호출 TextureManager+CustomSprite::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    필드 쓰기 TextureManager+CustomSprite::inUse
+  ToString
+    필드 읽기 TextureManager::customTextures
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Key
+    호출 System.String::Concat
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  MarkAllUnused
+    필드 읽기 TextureManager::customSprites
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Values
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::get_Current
+    필드 쓰기 TextureManager+CustomSprite::inUse
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 TextureManager::customTextures
+    필드 쓰기 TextureManager+CustomTexture::inUse
+  Unload
+    호출 TextureManager::UnloadAllTextures
+    호출 TextureManager::UnloadAllSprites
+  UnloadAllTextures
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 TextureManager::customTextures
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Value
+    필드 읽기 TextureManager+CustomTexture::inUse
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Key
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 TextureManager::UnloadTexture
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+  UnloadTexture
+    필드 읽기 TextureManager::customTextures
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 TextureManager+CustomTexture::Dispose
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Remove
+  UnloadAllSprites
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 TextureManager::customSprites
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Value
+    필드 읽기 TextureManager+CustomSprite::inUse
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Key
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 TextureManager::UnloadSprite
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+  UnloadSprite
+    필드 읽기 TextureManager::customSprites
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 TextureManager+CustomSprite::Dispose
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Remove
+  .ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 TextureManager::customTextures
+    필드 쓰기 TextureManager::customSprites
+    호출 System.Object::.ctor
