@@ -515,6 +515,9 @@ namespace StutterFix
             }
             if(NativeMotion.Run(n))activeNativeEpoch=token;
         }
+#if AUTOTEST
+        internal static int AblateMask;   // 자동 시험 decoablate: 키 비트마스크. 화면이 달라지는 측정 전용 설정
+#endif
         public static void UpdatePrefix()
         {
             UpdateEvalMemo.NewFrame();
@@ -534,6 +537,9 @@ namespace StutterFix
                 {
                     var r = recs[i];
                     if (!r.Running) continue;
+#if AUTOTEST
+                    if (AblateMask != 0 && r.Key >= 0 && r.Key < 31 && (AblateMask & (1 << r.Key)) != 0) continue;   // (측정 전용) 이 키의 기록은 진행하지 않는다: 비용 귀속용
+#endif
                     if (GroupEnabled && !Prof && GroupAllowed())
                     {
                         if (!GroupNative(r))
