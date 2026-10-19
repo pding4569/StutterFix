@@ -33,7 +33,7 @@ namespace StutterFix
             internal Quaternion LastRot;
         }
         internal static bool SkipSame = true;   // 모드 폴더 tightskip-off 파일로 끔
-        internal static bool EulerMemo;          // 모드 폴더 eulermemo-on 파일로 켬 (같은 각도의 Quaternion.Euler 결과 재사용, 순수 함수라 비트 동일)
+        internal static bool EulerMemo = true;   // 모드 폴더 eulermemo-off 파일로 끔 (같은 각도의 Quaternion.Euler 결과 재사용, 순수 함수라 비트 동일)
         private static bool eulerValid; private static int eulerBits; private static Quaternion eulerQ; internal static long eulerCalls, eulerHits;
         internal static long writes, skipPos, skipRot, skipScale;
         private static readonly Dictionary<scrDecoration, Entry> records = new Dictionary<scrDecoration, Entry>(new RefEq());

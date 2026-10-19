@@ -900,3 +900,8 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - 곡 252~273초 창, 새 프로세스: A(없음) LateUpdate 1.28ms, 모드 애니메이션 갱신 1.92ms, 창 프레임 2,846 / B(`decogpu begin 10000`, 232개 관리) LateUpdate 1.60ms(+0.32, 프로토타입 계산 포함), 갱신 2.00ms, 창 프레임 2,368(−17%). 같은 장면 비교(`decogpu compare` 512x288): 최대 채널 차이 227, 변한 픽셀 0.55% — 겹침 순서·블렌드 차이.
 - 결론: C# 에서 장식당 행렬을 계산해 일괄 제출하는 방식은 기존 개별 Transform 쓰기보다 느리고 화면도 달라진다. 이득 가능성은 계산을 GPU 셰이더로 옮기고 곡 시각·카메라 상수만 올리는 방식뿐이나, 그래도 장식당 상태 갱신(필드 → 버퍼)이 남고 sortingOrder 가 장식마다 달라 배치가 안 되므로 기대 이득이 작다. 이 방향은 여기서 중단(코드는 DEV/AUTOTEST 전용 `DecoGpu.cs` 로 보존, 제품 영향 없음).
 - 참고: 곡 250초에 애니메이션 기록이 도는 장식은 약 250개, 매 프레임 쓰는 장식의 대부분은 애니메이션이 아니라 카메라 시차로 위치가 바뀌는 것(TightLate 대상).
+
+## 2026-10-19 밤: 게임 업데이트(6000.3.25f1) 대응, TightLate Euler 재사용 — 기본 켬(`eulermemo-off` 로 끔)
+- Steam 자동 업데이트로 19:53 에 `Assembly-CSharp.dll` 이 바뀜(유니티 6000.3.21f1 → 6000.3.25f1, 해시 f692210f…). `RDInput.GetMainPressKeys` 가 `List<AnyKeyCode>` 반환에서 `void (List)` 로 바뀌어 다른 모드(Quartz)의 패치가 매 프레임 `MissingMethodException`, 자동 플레이도 입력이 안 먹어 곡이 안 감. StutterFix 는 `AllocFix.InstallInput` 이 `GetSpecialInput` 반환형(List→void) 불일치로 설치 실패 → 반환형이 옛 모양이 아니면 입력 후킹을 끄고 로그(`게임 코드가 바뀌어 끔`). 게임이 `RDInput` 정적 버퍼로 스스로 임시 객체를 줄인 것으로 보임. 시험 동안만 Quartz 를 `ModsOff` 로 임시 이동.
+- `TightLate.Apply` 의 `Quaternion.Euler(0,0,startRot+angle)` 를 직전 장식과 같은 각도 비트면 재사용(순수 함수라 비트 동일): 적중 약 79%. Arche 252~273초 A/B/A(Quartz 끔): LateUpdate A 1.25·1.25 → B 1.18·1.18ms, 창 프레임 2,925·2,931 → 2,946·2,948.
+- 쌍둥이 이벤트 → 단일 묶음 애니메이션: 기록당 관리 비용(시계·완료·Eval)이 약 0.06~0.1µs 라 기록 4,500개가 전부 쌍둥이여도 상한 약 0.45ms(70% 면 0.3ms, 프레임 +3~4%). 장식마다 쓰기(필드·Transform·색)는 남아 DecoEngine 과 같은 한계 → 구현 보류.
