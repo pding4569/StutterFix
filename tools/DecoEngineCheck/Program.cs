@@ -35,7 +35,7 @@ namespace UnityEngine
         public static Vector3 operator -(Vector3 a,Vector3 b)=>new Vector3(a.x-b.x,a.y-b.y,a.z-b.z);
     }
     struct Quaternion { public float x,y,z,w; public static Quaternion Euler(float x,float y,float z)=>new Quaternion {z=z,w=1}; }
-    struct Color {public float r,g,b,a;}
+    struct Color {public float r,g,b,a; public Color(float r,float g,float b,float a){this.r=r;this.g=g;this.b=b;this.a=a;} public static Color white=>new Color(1,1,1,1);}
     static class Time { public static int frameCount; }
 }
 enum DecPlacementType { Global,Tile,Camera,CameraAspect }
@@ -45,6 +45,10 @@ class scrDecoration
     public Transform childTransform=new Transform(),pivotTrans=new Transform(); public scrParallax parallax=new scrParallax();
     public Vector2 pivotPosVec,pivotOffsetVec,croppedPivotOffset,scaleVec=Vector2.one,textureScaleMultiplier=Vector2.one,parallaxOffset;
     public float rotAngle,scaleMultiplier=1,startRot;
+    public Color color=Color.white; public float opacity=100;
+    public bool Visible=true,ThrowUpdate; public int Updates;
+    public bool GetVisible()=>Visible;
+    public void UpdatePosition(){if(ThrowUpdate)throw new InvalidOperationException("injected UpdatePosition");Updates++;pivotTrans.position=pivotPosVec;}
     public Vector2 trueScaleMultiplier=>scaleMultiplier*textureScaleMultiplier;
     public DecPlacementType placementType;
     public string name="surrogate";
@@ -65,20 +69,24 @@ namespace StutterFix
     class Info {public string Id="StutterFix";}
     class Logger {public void Log(string s)=>Console.WriteLine(s);}
     static class Hitch { public static bool Playing; }
+    static class MoveApply { internal static bool LateSkip=true,DeferRotScale=true; }
     static class ZeroTween
     {
         internal static int ThrowAfter;
         public static float Eval(DG.Tweening.Ease e,float p,float d,float o,float period)
         { if(ThrowAfter>0 && --ThrowAfter==0)throw new InvalidOperationException("injected Eval"); if(e==DG.Tweening.Ease.Linear)return p/d; float t=p/d-1f; return t*t*t+1f; }
     }
-    static class TightLate
+    static partial class TightLate
     {
-        internal class Entry {internal scrDecoration D; internal Transform Pivot; internal DecoEngine.State Engine; internal bool Rejected,EngineRejected;}
+        internal class Entry {internal scrDecoration D; internal Transform Pivot; internal DecoEngine.State Engine; internal bool Rejected,EngineRejected,Has; internal int EngineDeferredFrame=-100;}
         internal static long writes,skipPos,skipRot,skipScale;
+        internal static long EngineFixups;
+        internal static int PendingCount=>engineDeferred.Count;
         internal static int Reason;
         private static readonly Dictionary<scrDecoration,Entry> entries=new Dictionary<scrDecoration,Entry>();
         internal static Entry EngineEntry(scrDecoration d)
         { if(!entries.TryGetValue(d,out var e))entries[d]=e=new Entry{D=d,Pivot=d.pivotTrans};return Reason==0&&!e.EngineRejected?e:null; }
+        internal static Entry EngineEntry(scrDecoration d,out int missing){missing=0;return EngineEntry(d);}
         internal static int EngineReason(Entry e)=>Reason;
         internal static Entry EngineBenchEntry(scrDecoration d)=>EngineEntry(d);
         internal static int EngineBenchReason(Entry e,Transform t)=>Reason;
@@ -111,6 +119,7 @@ namespace StutterFix
 static class Program
 {
     static int assertions;
+    static void Tick(float td) { DecoEngine.BeginFrame(); DecoEngine.Update(td); DecoEngine.EndFrame(); }
     static void Assert(bool condition,string message) {assertions++;if(!condition)throw new Exception(message);}
     static bool Same(float a,float b)=>BitConverter.SingleToInt32Bits(a)==BitConverter.SingleToInt32Bits(b);
     static DecoAnim.Rec Make(scrDecoration d,int key,float duration=2)
@@ -119,7 +128,7 @@ static class Program
             VStart=new Vector2(1,1),VEnd=new Vector2(4,5),VChange=new Vector2(3,4),E=DG.Tweening.Ease.OutCubic};
         DecoAnim.EngineRecords.Add(r);DecoEngine.Dirty=true;return r;
     }
-    static void Reset(){DecoAnim.DropAll();TightLate.Reason=0;ADOBase.editor=null;}
+    static void Reset(){TightLate.EngineLatePostfix();DecoAnim.DropAll();TightLate.Reason=0;ADOBase.editor=null;}
     static void Main()
     {
         string path=Path.Combine(Path.GetTempPath(),"sf-decoengine-check-"+Guid.NewGuid().ToString("N"));
@@ -130,41 +139,112 @@ static class Program
             var d=new scrVisualDecoration();var x=Make(d,1);var y=Make(d,2);var rot=Make(d,5);var sx=Make(d,7);var sy=Make(d,8);
             DecoEngine.Admit();Assert(DecoEngine.Count==1 && DecoAnim.EngineRecords.Count==0,"exclusive ownership");
             DecoEngine.Command("verify");
-            DecoEngine.Update(.5f);
+            Tick(.5f);
             Assert(Same(d.pivotPosVec.x,6.046875f) && Same(d.rotAngle,6.046875f),"scalar progression");
             Assert(Same(d.scaleVec.x,2.734375f) && Same(d.scaleVec.y,3.3125f),"scale axes");
             var list=new List<scrDecoration>();DecoEngine.Collect(list,new HashSet<scrDecoration>());Assert(list.Count==1,"collect");
             DecoEngine.ReleaseRecord(x);Assert(DecoEngine.Count==0 && DecoAnim.EngineRecords.Count==5,"release all channels");
             for(int i=1;i<5;i++)Assert(DecoAnim.EngineRecords[i-1].EngineOrder<DecoAnim.EngineRecords[i].EngineOrder,"restored order");
-            Reset();d=new scrVisualDecoration();x=Make(d,1);Make(d,9);DecoEngine.Admit();Assert(DecoEngine.Count==0,"mixed color excluded");
+            Reset();d=new scrVisualDecoration();x=Make(d,1);Make(d,9);DecoEngine.Admit();
+            Assert(DecoEngine.Count==1,"changing alpha admitted");Tick(.5f);
+            Assert(DecoEngine.Count==0&&Same(x.Pos,0),"uncertain alpha returns before stepping");
             Reset();d=new scrVisualDecoration();x=Make(d,1);var color=Make(d,9);color.CStart.a=color.CEnd.a=1;DecoEngine.Admit();
             Assert(DecoEngine.Count==1&&DecoAnim.EngineRecords.Count==1&&ReferenceEquals(DecoAnim.EngineRecords[0],color),"RGB-only color coexists in original loop");
+            // The original color loop is deliberately retained; only transforms
+            // are owned. Check every intermediate value, including completion.
+            Reset();d=new scrVisualDecoration();x=Make(d,1);color=Make(d,9,1);
+            color.CStart.a=1;color.CEnd.a=0;color.CChange.a=-1;color.E=DG.Tweening.Ease.Linear;
+            DecoEngine.Admit();Tick(.25f);
+            Assert(DecoEngine.Count==1&&Same(x.Pos,.25f)&&Same(color.Pos,0),"fade interior owned, color not advanced");
+            color.Pos=.75f;d.color.a=.25f;Tick(.25f);
+            Assert(DecoEngine.Count==0&&Same(x.Pos,.25f),"zero completion exits BEFORE transform clock");
+            Assert(DecoAnim.EngineRecords.Count==2&&ReferenceEquals(DecoAnim.EngineRecords[0],x),"transition restores original creation order");
+            Reset();d=new scrVisualDecoration();x=Make(d,1);var opacity=Make(d,10,1);
+            opacity.FStart=100;opacity.FEnd=0;opacity.FChange=-100;opacity.E=DG.Tweening.Ease.Linear;
+            DecoEngine.Admit();Tick(.5f);Assert(DecoEngine.Count==1,"opacity interior owned");
+            opacity.Pos=.5f;Tick(.5f);Assert(DecoEngine.Count==0,"opacity zero endpoint fallback");
+            Reset();d=new scrVisualDecoration();x=Make(d,1);color=Make(d,9,1);
+            color.CStart.a=1;color.CEnd.a=1;color.CChange.a=float.NaN;DecoEngine.Admit();Tick(.1f);
+            Assert(DecoEngine.Count==0&&Same(x.Pos,0),"nonfinite alpha conservatively falls back");
+            // Same-key kill detaches only that slot; the actual Complete callbacks
+            // still run in DecoAnim. Model their published result before NewRec.
+            Reset();d=new scrVisualDecoration();x=Make(d,1);y=Make(d,2);DecoEngine.Admit();
+            var retained=y.Engine;DecoEngine.DetachRecord(x);x.Running=false;d.pivotPosVec.x=x.FEnd;
+            Assert(DecoEngine.Count==1&&retained.N==1&&ReferenceEquals(y.Engine,retained),"kill retains other channel");
+            var preparation=DecoEngine.PrepareNew(d,1);var replacement=Make(d,1);replacement.FStart=d.pivotPosVec.x;
+            DecoEngine.BindNew(preparation,replacement);DecoEngine.Admit();
+            Assert(DecoEngine.Count==1&&ReferenceEquals(replacement.Engine,retained)&&retained.N==2,"same-key slot attachment without state restore");
+            Assert(Same(replacement.FStart,9)&&!replacement.InList&&DecoAnim.EngineRecords.Count==0,"completion end read before new start, no duplicate membership");
+            // Last slot and newly added key survive Update until original first Step.
+            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();retained=x.Engine;
+            DecoEngine.DetachRecord(x);x.Running=false;preparation=DecoEngine.PrepareNew(d,5);
+            rot=Make(d,5);DecoEngine.BindNew(preparation,rot);Tick(.1f);
+            Assert(DecoEngine.Count==1&&retained.N==0,"pending empty owner retained");
+            DecoEngine.Admit();Assert(ReferenceEquals(rot.Engine,retained),"new key attaches to retained empty state");
+            preparation=DecoEngine.PrepareNew(d,9);color=Make(d,9);color.Started=false;
+            color.CStart.a=1;color.CEnd.a=0;color.E=DG.Tweening.Ease.Linear;DecoEngine.BindNew(preparation,color);
+            Tick(.1f);Assert(DecoEngine.Count==1,"new unstarted color is predicted from end-start");
+            DecoEngine.PrepareNew(d,3);Assert(DecoEngine.Count==0,"unsupported new key releases before first setter");
+            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();
+            preparation=DecoEngine.PrepareNew(d,2);y=Make(d,2);DecoEngine.BindNew(preparation,y);
+            var unsupported=Make(d,3);DecoEngine.Admit();
+            Assert(DecoEngine.Count==0&&DecoAnim.EngineRecords.Count==3,"late admission rejection restores without duplicate new records");
+            var unique=new HashSet<DecoAnim.Rec>(DecoAnim.EngineRecords);Assert(unique.Count==3,"one-list invariant after attached-then-rejected");
+            Reset();d=new scrVisualDecoration();color=Make(d,9);d.color.a=0;DecoEngine.Dirty=false;
+            DecoEngine.AlphaWillSet(color,.1f);Assert(DecoEngine.Dirty,"unhide schedules re-admission without dictionary lookup");
+            Reset();d=new scrVisualDecoration();x=Make(d,1);color=Make(d,9,1);
+            color.CStart.a=1;color.CChange.a=-1;color.CEnd.a=1;color.E=DG.Tweening.Ease.Linear;
+            DecoEngine.Admit();Tick(1);Assert(DecoEngine.Count==0&&Same(x.Pos,0),"OnUpdate zero before positive OnComplete must still fallback");
             Reset();d=new scrVisualDecoration();x=Make(d,1);x.Shadow=new DG.Tweening.Tween();DecoEngine.Admit();Assert(DecoEngine.Count==0,"shadow excluded");
             Reset();d=new scrVisualDecoration();x=Make(d,1);x.Started=false;DecoEngine.Admit();Assert(DecoEngine.Count==0,"startup must precede admission");
-            Reset();d=new scrVisualDecoration();x=Make(d,1,.1f);DecoEngine.Admit();long completed=DecoAnim.Completed;DecoEngine.Update(.2f);
+            Reset();d=new scrVisualDecoration();x=Make(d,1,.1f);DecoEngine.Admit();long completed=DecoAnim.Completed;Tick(.2f);
             Assert(!x.Running && !x.InList && x.Engine==null && DecoEngine.Count==0,"completion detaches");
             Assert(Same(d.pivotPosVec.x,9f)&&DecoAnim.Completed==completed+1,"completion exact FEnd");
-            Reset();d=new scrVisualDecoration();x=Make(d,7,.1f);DecoEngine.Admit();DecoEngine.Update(.2f);Assert(Same(d.scaleVec.x,4f),"scale completes using plugin value");
-            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();TightLate.Reason=3;DecoEngine.Update(.5f);
+            Reset();d=new scrVisualDecoration();x=Make(d,7,.1f);DecoEngine.Admit();Tick(.2f);Assert(Same(d.scaleVec.x,4f),"scale completes using plugin value");
+            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();TightLate.Reason=3;Tick(.5f);
             Assert(DecoAnim.EngineRecords.Count==1&&Same(x.Pos,0f),"eligibility exit does not advance twice");
-            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();d.pivotOffsetVec=new Vector2(1,0);DecoEngine.Update(.5f);
+            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();d.pivotOffsetVec=new Vector2(1,0);Tick(.5f);
             Assert(DecoEngine.Count==0&&Same(x.Pos,0f),"offset mutation returns original");
-            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();d.childTransform.localPosition=new Vector3(10,0,0);DecoEngine.Update(.5f);
+            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();d.childTransform.localPosition=new Vector3(10,0,0);Tick(.5f);
             Assert(DecoEngine.Count==0&&Same(x.Pos,0f),"external child mutation returns original");
-            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();d.childTransform.ThrowRead=true;DecoEngine.Update(.5f);
+            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();d.childTransform.ThrowRead=true;Tick(.5f);
             Assert(DecoEngine.Count==0&&Same(x.Pos,0f),"native guard exception is decoration-local");
             Assert(DecoAnim.EngineRecords.Count==1&&x.Engine==null,"native guard exception restores ownership");
             Reset();DecoEngine.Command("verify off");Time.frameCount=99;d=new scrVisualDecoration();
             x=Make(d,1,2);y=Make(d,2,3);rot=Make(d,5,4);DecoEngine.Admit();ZeroTween.ThrowAfter=2;
-            DecoEngine.Update(.5f);
+            Tick(.5f);
             Assert(DecoEngine.Count==0&&DecoAnim.EngineRecords.Count==3,"exception releases whole decoration");
             Assert(x.EngineSkipFrame==99&&y.EngineSkipFrame!=99&&rot.EngineSkipFrame!=99,"only advanced records suppress duplicate frame");
             Assert(Same(x.Pos,.5f)&&Same(y.Pos,0)&&Same(rot.Pos,0),"partial advance clocks preserved");
             DecoEngine.Dirty=true;DecoEngine.Admit();Assert(DecoEngine.Count==0,"exception decoration stays excluded");
             DecoEngine.Command("verify");
-            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();d.pivotPosVec=new Vector2(100,200);DecoEngine.Update(.1f);
+            Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();d.pivotPosVec=new Vector2(100,200);Tick(.1f);
             Assert(Same(d.pivotPosVec.y,200),"unowned axis preserves intervening effect");
             Reset();d=new scrVisualDecoration();x=Make(d,1);DecoEngine.Admit();DecoEngine.DropLevel();Assert(!x.Running&&DecoEngine.Count==0&&DecoAnim.EngineRecords.Count==0,"level boundary drops");
+            Reset();d=new scrVisualDecoration();x=Make(d,1);y=Make(d,2,10000);DecoEngine.Admit();retained=x.Engine;
+            for(int wave=0;wave<200;wave++)
+            {
+                DecoEngine.DetachRecord(x);x.Running=false;d.pivotPosVec.x=x.FEnd;
+                preparation=DecoEngine.PrepareNew(d,1);
+                x.FStart=d.pivotPosVec.x;x.FEnd=x.FStart+1;x.FChange=1;x.Pos=0;x.Running=true;x.Started=false;
+                x.EngineOrder=DecoEngine.NextOrder();x.InList=true;DecoAnim.EngineRecords.Add(x);DecoEngine.Dirty=true;
+                DecoEngine.BindNew(preparation,x);Tick(.01f);
+                // Model the original first Startup/Step; later steps use production Advance.
+                x.Started=true;x.Pos=.01f;d.pivotPosVec.x=x.FStart+x.FChange*ZeroTween.Eval(x.E,x.Pos,x.Dur,x.Over,x.Period);
+                DecoEngine.Admit();Tick(.01f);
+                Assert(ReferenceEquals(x.Engine,retained)&&ReferenceEquals(y.Engine,retained)&&retained.N==2,"repeated same-Rec reuse retains owner");
+                Assert(!x.InList&&DecoAnim.EngineRecords.Count==0,"reuse wave has exactly one owner/list membership");
+            }
+            Assert(DecoEngine.Command("bench 101").StartsWith("usage:"),"bench percent validation");
+            Reset();d=new scrVisualDecoration();x=Make(d,1,.1f);DecoEngine.Admit();var entry=x.Engine.LateEntry;
+            Tick(.2f);Assert(DecoEngine.Count==0&&TightLate.PendingCount==1,"last completion keeps deferred entry until manager postfix");
+            TightLate.EngineDefer(entry);Assert(TightLate.PendingCount==1,"late registration deduplicated with frame integer");
+            d.Visible=false;TightLate.EngineLatePostfix();
+            Assert(d.Updates==1&&TightLate.PendingCount==0&&Same(d.pivotTrans.position.x,d.pivotPosVec.x),"hidden after update gets original late fixup even after state recycle");
+            Time.frameCount++;TightLate.EngineDefer(entry);d.Visible=true;TightLate.EngineLatePostfix();
+            Assert(d.Updates==1,"visible late endpoint needs no hidden fixup");
+            Time.frameCount++;TightLate.EngineDefer(entry);d.Visible=false;d.ThrowUpdate=true;TightLate.EngineLatePostfix();
+            Assert(entry.EngineRejected&&TightLate.PendingCount==0,"fixup exception drains and rejects entry");
             // Randomized independent clocks/eases and deliberately reversed scale order.
             var rng=new Random(19);
             for(int run=0;run<128;run++)
@@ -185,7 +265,7 @@ static class Program
                         else {float value=done?r.FEnd:r.FStart+r.FChange*e;if(r.Key==1)pos.x=value;else if(r.Key==2)pos.y=value;else angle=value;}
                         running[i]=!done;
                     }
-                    DecoEngine.Update(td);
+                    Tick(td);
                     Assert(Same(pos.x,d.pivotPosVec.x)&&Same(pos.y,d.pivotPosVec.y)&&Same(angle,d.rotAngle),"random scalar fields");
                     Assert(Same(scale.x,d.scaleVec.x)&&Same(scale.y,d.scaleVec.y),"random scale fields");
                     for(int i=0;i<5;i++)Assert(Same(clock[i],rs[i].Pos)&&running[i]==rs[i].Running,"random clock/lifecycle");

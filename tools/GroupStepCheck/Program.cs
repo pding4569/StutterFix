@@ -32,6 +32,10 @@ namespace StutterFix {
         internal static bool Enabled;
         internal static int Count => 0;
         internal static void ReleaseRecord(DecoAnim.Rec r) {}
+        internal static void DetachRecord(DecoAnim.Rec r) {}
+        internal static void AlphaWillSet(DecoAnim.Rec r,float next) {}
+        internal static void BeginFrame() {}
+        internal static void EndFrame() {}
         internal static void Update(float td) {}
         internal static void Admit() {}
     }

@@ -21,6 +21,7 @@ namespace StutterFix
         {
             internal DecoEngine.State Engine;
             internal bool EngineRejected;
+            internal int EngineDeferredFrame = -100;
             internal scrDecoration D;
             internal Transform Pivot;
             internal int Epoch = -1;
@@ -35,6 +36,13 @@ namespace StutterFix
         internal static long writes, skipPos, skipRot, skipScale;
         private static readonly Dictionary<scrDecoration, Entry> records = new Dictionary<scrDecoration, Entry>(new RefEq());
         private static readonly List<scrDecoration> empty = new List<scrDecoration>(0);
+        private static readonly List<Entry> engineDeferred = new List<Entry>();
+        internal static long EngineFixups;
+        internal static void EngineDefer(Entry e)
+        {
+            if (e.EngineDeferredFrame == Time.frameCount) return;
+            e.EngineDeferredFrame = Time.frameCount; engineDeferred.Add(e);
+        }
         private static Entry[] slots = Array.Empty<Entry>();
         private static readonly AccessTools.FieldRef<scrDecoration, bool> rendererOn = AccessTools.FieldRefAccess<scrDecoration, bool>("rendererEnabled");
         private static readonly AccessTools.FieldRef<scrDecoration, Color> rendererColor = AccessTools.FieldRefAccess<scrDecoration, Color>("rendererColor");
@@ -71,6 +79,8 @@ namespace StutterFix
                 finalizer: new HarmonyMethod(typeof(TightLate), nameof(ReorderEnd)));
             h.Patch(AccessTools.Method(typeof(scrDecorationManager), "LateUpdate"),
                 prefix: new HarmonyMethod(typeof(TightLate), nameof(ManagerStart)) { priority = Priority.First },
+                postfix: new HarmonyMethod(typeof(TightLate), nameof(EngineLatePostfix))
+                    { priority = Priority.Low, before = new[] { "StutterFix.fuseprobe" } },
                 finalizer: new HarmonyMethod(typeof(TightLate), nameof(ManagerEnd)) { priority = Priority.Last });
             installed = true;
         }
@@ -80,6 +90,7 @@ namespace StutterFix
         {
             DecoEngine.RestoreAll();
             records.Clear(); Array.Clear(slots, 0, slots.Length); owner = completedOwner = null;
+            engineDeferred.Clear();
             ownerCamera = null; parentTransform = cameraTransform = null; preparedEpoch = -1;
             completedFrame = -1; Invalidate();
         }
@@ -91,7 +102,25 @@ namespace StutterFix
         }
         public static void ManagerEnd(long __state)
         {
+            if (engineDeferred.Count != 0) EngineLatePostfix(); // exception recovery; normal postfix already drained it
             if (__state != 0) { managerTicks += Stopwatch.GetTimestamp() - __state; managerFrames++; }
+        }
+        public static void EngineLatePostfix()
+        {
+            // Same final input/time as MoveApply.ManagerLatePostfix's hidden
+            // fixup. Keep entries even when the final Rec completed or the owner
+            // was released after Update. No per-decoration HashSet registration.
+            for (int i = 0; i < engineDeferred.Count; i++)
+            {
+                var e = engineDeferred[i];
+                if (e.EngineDeferredFrame == -100) continue;
+                e.EngineDeferredFrame = -100;
+                var d = e.D;
+                if (d == null) continue;
+                try { if (!d.GetVisible()) { d.UpdatePosition(); e.Has = false; EngineFixups++; } }
+                catch { e.EngineRejected = true; }
+            }
+            engineDeferred.Clear();
         }
 
         // Called at exactly the old allDecorations load, after manager mask preparation.
@@ -183,15 +212,25 @@ namespace StutterFix
             if (!parentOK || !e.ParentOK) return 6;
             return 0;
         }
-        internal static Entry EngineEntry(scrDecoration d)
+        internal static Entry EngineEntry(scrDecoration d, out int missing)
         {
+            missing = 0;
             if (!installed || !Enabled || !compatible || !Hitch.Playing || SceneReset.Resetting
-                || !MoveApply.Enabled || !Dormancy.Enabled || preparedEpoch != epoch) return null;
-            if (!records.TryGetValue(d, out var e) || e.EngineRejected || e.LastFrame != Time.frameCount - 1) return null;
-            return EngineReason(e) == 0 ? e : null;
+                || !MoveApply.Enabled || !Dormancy.Enabled || preparedEpoch != epoch) { missing = 1; return null; }
+            if (!records.TryGetValue(d, out var e)) { missing = 2; return null; }
+            if (e.EngineRejected) { missing = 3; return null; }
+            int reason = Eligible(e, parentTransform, parentIdentity, cameraTransform);
+            if (reason != 0) { missing = reason == 3 ? 4 : 5; return null; }
+            // Admission follows the original Step. A just-unhidden decoration can
+            // safely join now: this Late will establish its first current input.
+            // Stale cached Transform values must never suppress that first write.
+            if (e.LastFrame != Time.frameCount - 1 && e.LastFrame != Time.frameCount) { e.Has = false; missing = 6; }
+            else if (e.LastFrame == Time.frameCount) missing = 7;
+            return e;
         }
         internal static int EngineReason(Entry e)
         {
+            if (e.EngineRejected) return 7;
             if (!installed || !Enabled || !compatible || !Hitch.Playing || SceneReset.Resetting
                 || !MoveApply.Enabled || !Dormancy.Enabled || preparedEpoch != epoch) return 7;
             if (e.LastFrame != Time.frameCount - 1 && e.LastFrame != Time.frameCount) return 7;

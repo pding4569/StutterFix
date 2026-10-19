@@ -1,0 +1,36 @@
+{
+  "path": "D:\\얼불춤 맵 파일\\Arche\\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai",
+  "sha256": "026873b89f05ea94b86b83634a938ac053593ebea6cb832d8134e4a8084f8064",
+  "actions": 108617,
+  "decorations": 28835,
+  "repeat_events": 13,
+  "scope": "Read actual Arche events offline; never modify maps or launch the game.\n\nTarget-zero counts are exact source counts. Start values below are a STATIC\nlast-target model (Kill(true)), not observed runtime values or frame transitions.\nRepeat expansion, checkpoints and other event writers are deliberately excluded.\n",
+  "counts": {
+    "color": {
+      "source_events": 14928,
+      "source_target_zero": 7405,
+      "positive_duration_events": 13601,
+      "positive_duration_target_zero": 6179,
+      "bindings": 132274,
+      "model_start_zero": 79943,
+      "target_zero_bindings": 79973,
+      "model_either_endpoint_zero": 109035,
+      "model_zero_sign_changes": 58154,
+      "source_target_zero_percent": 49.604769560557344,
+      "model_either_endpoint_zero_percent": 82.43116561077763
+    },
+    "opacity": {
+      "source_events": 908,
+      "source_target_zero": 348,
+      "positive_duration_events": 345,
+      "positive_duration_target_zero": 218,
+      "bindings": 20218,
+      "model_start_zero": 6776,
+      "target_zero_bindings": 6862,
+      "model_either_endpoint_zero": 13341,
+      "model_zero_sign_changes": 13044,
+      "source_target_zero_percent": 38.32599118942731,
+      "model_either_endpoint_zero_percent": 65.98575526758334
+    }
+  }
+}

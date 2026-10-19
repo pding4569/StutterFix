@@ -197,7 +197,7 @@ namespace StutterFix
         }
         private static Rec NewRec(scrDecoration dec, Dictionary<global::TweenType, Tween> d, int key, float dur, Ease ease)
         {
-            DecoEngine.ReleaseDecoration(dec);
+            var engine = DecoEngine.PrepareNew(dec, key);
             // 같은 칸에 끝난 표가 있으면 다시 쓴다 (그 칸만 이 표를 가리키고, 방금 끊었다). 없으면 새 꺼진 객체 (active = false)
             // 표 안의 기록(Rec)도 목록에서 빠졌으면 같이 다시 쓴다. 한 판에 수십만 개가 생기던 것이라(곡 중엔 GC 를 멈춰 두어 그대로 쌓였다)
             // 같은 장식·같은 속성을 계속 옮기는 맵에서는 대부분 새로 만들지 않는다.
@@ -232,6 +232,7 @@ namespace StutterFix
 #endif
             d[(global::TweenType)key] = r.Proxy;
             recs.Add(r); r.InList = true; Created++;
+            DecoEngine.BindNew(engine, r);
             if (recs.Count > Peak) Peak = recs.Count;
             return r;
         }
@@ -258,6 +259,7 @@ namespace StutterFix
             float start = opaRef(dec);
             var r = NewRec(dec, d, 10, dur, ease);
             r.FStart = start; r.FEnd = target;
+            DecoEngine.AlphaEvent(r);
             MaybeShadowF(r);
         }
         internal static void Col(scrDecoration dec, Dictionary<global::TweenType, Tween> d, Color target, float dur, Ease ease)
@@ -266,6 +268,7 @@ namespace StutterFix
             var start = colRef(dec);
             var r = NewRec(dec, d, 9, dur, ease);
             r.CStart = start; r.CEnd = target;
+            DecoEngine.AlphaEvent(r);
             if (Sample()) r.Shadow = DOTween.To(() => r.CStart, c => { r.SC = c; r.SStepped = true; }, r.CEnd, r.Dur).SetEase(ease).OnComplete(() => r.SDone = true);
         }
         internal static void Scale(scrDecoration dec, Dictionary<global::TweenType, Tween> d, int key, Vector2 target, float dur, Ease ease)
@@ -387,8 +390,8 @@ namespace StutterFix
                 case 5: if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FLast; else setRot(r.D, r.FLast); break;
                 case 12: setParOffX(r.D, r.FLast); break;
                 case 13: setParOffY(r.D, r.FLast); break;
-                case 9: setCol(r.D, r.CLast); break;
-                case 10: setOpa(r.D, r.FLast); break;
+                case 9: DecoEngine.AlphaWillSet(r, r.CLast.a); setCol(r.D, r.CLast); break;
+                case 10: DecoEngine.AlphaWillSet(r, r.FLast); setOpa(r.D, r.FLast); break;
             }
         }
 
@@ -404,8 +407,8 @@ namespace StutterFix
                 case 5: if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FEnd; else setRot(r.D, r.FEnd); break;
                 case 12: setParOffX(r.D, r.FEnd); break;
                 case 13: setParOffY(r.D, r.FEnd); break;
-                case 9: setCol(r.D, r.CEnd); break;
-                case 10: setOpa(r.D, r.FEnd); break;
+                case 9: DecoEngine.AlphaWillSet(r, r.CEnd.a); setCol(r.D, r.CEnd); break;
+                case 10: DecoEngine.AlphaWillSet(r, r.FEnd); setOpa(r.D, r.FEnd); break;
             }
             if (PosFast.Enabled && (r.Key == 1 || r.Key == 2)) PosFast.Remember(r);
         }
@@ -459,7 +462,7 @@ namespace StutterFix
         // Kill(true) / KillAll(true): 끝 위치로 한 번 (시작 전이면 시작 처리부터)
         private static void Complete(Rec r)
         {
-            DecoEngine.ReleaseRecord(r);
+            DecoEngine.DetachRecord(r);
             if (r.BatchSlot >= 0) BatchRelease(r, true);
             BatchShadowCancel(r);
             fastDirty = true;
@@ -479,7 +482,7 @@ namespace StutterFix
             if ((object)t == null) return true;
             var r = t.id as Rec;
             if (r == null) return true;
-            DecoEngine.ReleaseRecord(r);
+            DecoEngine.DetachRecord(r);
             if (r.BatchSlot >= 0) BatchRelease(r, true);
             BatchShadowCancel(r);
             if (complete) { Killed++; Complete(r); }
@@ -595,6 +598,7 @@ namespace StutterFix
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
             float td = dt * 1f;   // 애니메이션마다의 timeScale 은 1
             Frames++;
+            DecoEngine.BeginFrame();
             bool batchRan = false;
 #if AUTOTEST
             bool sampFrame = SampOn && (Frames & 15) == 0;
@@ -671,6 +675,7 @@ namespace StutterFix
             }
             BatchShadowEnd();
             DecoEngine.Admit();
+            DecoEngine.EndFrame();
 #if AUTOTEST
             long sampCompact0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
 #endif
