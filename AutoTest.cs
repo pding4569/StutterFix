@@ -1080,7 +1080,7 @@ namespace StutterFix
                 case "phasereport": PhaseWatch.ReportSong(); return true;
 #if AUTOTEST
                 case "decosamp": if (arg == "begin") { DecoAnim.SampReset(); DecoAnim.SampOn = true; Log("[decosamp] 시작"); } else { DecoAnim.SampOn = false; Log("[decosamp] " + DecoAnim.SampReport()); } return true;
-                case "profsamp": Log("[profsamp] " + (arg.StartsWith("begin") ? ProfSamp.Begin(arg.Substring(5)) : ProfSamp.End())); return true;
+                case "profsamp": Log("[profsamp] " + (arg.StartsWith("begin") ? ProfSamp.Begin(arg.Substring(5)) : ProfSamp.End(arg.Contains("frames") ? modDir : null))); return true;
                 case "floatsem": Log("[floatsem] " + FloatSem.Run()); return true;
                 case "hitsound": Log("[히트음 예약 묶기] " + HitSoundBatch.Command(arg)); return true;
                 case "decoablate":

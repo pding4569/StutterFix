@@ -112,7 +112,8 @@ namespace StutterFix
             cache[addr] = s; return s;
         }
 
-        internal static string End()
+        internal static string End() { return End(null); }
+        internal static string End(string framesDir)
         {
             if (!run && count == 0) return "시작 안 함";
             run = false; if (thread != null) thread.Join(2000); t1 = Stopwatch.GetTimestamp();
@@ -155,6 +156,25 @@ namespace StutterFix
                     bool g; string n = Resolve(ip, domain, out g);
                     if (g && seen.Add(n)) incl[n] = (incl.TryGetValue(n, out int b) ? b : 0) + 1;
                 }
+            }
+            if (framesDir != null)
+            {
+                // 표본마다 프레임을 한 줄로 (UnityPlayer 는 RVA 만): tools/symrva 가 PDB 로 함수 이름을 푼다
+                var fb = new StringBuilder();
+                for (int i = 0; i < count; i++)
+                {
+                    for (int d = 0; d < Depth; d++)
+                    {
+                        ulong ip = ips[i * Depth + d]; if (ip == 0) break;
+                        bool g; string n = Resolve(ip, domain, out g);
+                        if (d > 0) fb.Append(';');
+                        if (g) fb.Append("M:").Append(n);
+                        else if (n.StartsWith("[UnityPlayer.dll+0x")) fb.Append("U:").Append(n.Substring(19, n.Length - 20));
+                        else fb.Append("X:").Append(n);
+                    }
+                    fb.Append((char)10);
+                }
+                try { System.IO.File.WriteAllText(System.IO.Path.Combine(framesDir, "profsamp-frames.txt"), fb.ToString()); } catch { }
             }
             var sbo = new StringBuilder();
             sbo.Append("표본 ").Append(count).Append("개 / ").Append(secs.ToString("F1")).Append("초 (").Append(hzUsed).Append("Hz 요청), 관리 코드 리프 ").Append((100.0 * managedLeaf / Math.Max(1, count)).ToString("F1")).Append("%\n");
