@@ -63,7 +63,11 @@ namespace StutterFix
         internal static void Configure(string path)
         {
             RestoreAll();
+#if DEV || AUTOTEST
             Enabled = File.Exists(Path.Combine(path, "decoengine-on"));
+#else
+            Enabled = false;
+#endif
             Dirty = Enabled;
             compatibility = Enabled ? "pending" : "off";
             if (!Enabled) return;

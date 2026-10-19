@@ -61,7 +61,11 @@ namespace StutterFix
             if (Edition.Dev || Edition.AutoTest) DevPresentFlags(modEntry.Path);
             TightLate.Enabled = !System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "tightlate-off"));
             TightLate.EulerMemo = !System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "eulermemo-off"));   // 기본 켬(2026-10-19: LateUpdate 1.25→1.18ms, 비트 동일)
+#if DEV || AUTOTEST
             TightLate.SkipSame = System.IO.File.Exists(System.IO.Path.Combine(modEntry.Path, "tightskip-on"));   // 2026-10-19: 건너뛴 비율 위치 1%·회전 9%·크기 34% 로 이득이 작아 기본 끔
+#else
+            TightLate.SkipSame = false;
+#endif
             PosFast.Configure(modEntry.Path);
             ColorFast.Configure(modEntry.Path);
             if (Edition.AutoTest) {
@@ -794,6 +798,7 @@ BlendProbe.Tick();
             MemoryBudget.Enabled=Config.GcDynamicBudget;
             UploadBudget.Configure(Config.AsyncUploadBudget);
             FastJsonParser.PoolStrings=Config.JsonStringPool;
+            DecoAnim.FastCompact=Config.DecoFastCompact;
             AssetDiskCache.Configure(Config.AssetDiskCache,Config.AssetDiskCacheMB,Config.AssetDiskCachePath);
             MoveApply.EpsilonSkip=effective("MoveEpsilon",Config.MoveEpsilon);
             NativeMotion.Configure(effective("NativeMotion",Config.NativeMotion),Config.NativeMotionArena,Config.NativeMotionPinArena);
@@ -1101,7 +1106,8 @@ BlendProbe.Tick();
         public bool NativeMotion = false;
         public bool NativeMotionArena = false;
         public bool NativeMotionPinArena = false;
-        public bool TagIndex = true;
+        public bool DecoFastCompact = false;
+        public bool TagIndex = false;
         public bool TagIndexNativePlans = false;
         public bool ParticleCatchup = false;
         public bool MapProfilesEnabled = false;
@@ -1112,8 +1118,8 @@ BlendProbe.Tick();
         public bool ThreadPerformanceCores = false;
         public bool ThreadAvoidLogicalZero = false;
         public string MapProfilesPath = "";
-        public bool AsyncUploadBudget = true;
-        public bool JsonStringPool = true;
+        public bool AsyncUploadBudget = false;
+        public bool JsonStringPool = false;
         public bool AssetDiskCache = true;  // 기본 켬(내장 드라이브 C: 의 LocalAppData). 두 번째 열기부터 Windflower 11.8 -> 9.7초, HELLO 12.9 -> 11.6초. 첫 열기는 +0.1~1.2초(쓰기). 빈 공간이 모자라면 저절로 꺼진다
         public int AssetDiskCacheMB = 3072;   // 무거운 맵 하나(Windflower)가 1.6GB. 512MB 는 계속 밀어내서 적중 40%였다
         public string AssetDiskCachePath = "";

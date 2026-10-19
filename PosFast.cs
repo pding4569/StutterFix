@@ -30,7 +30,11 @@ namespace StutterFix
         internal static void Configure(string path)
         {
             Forget();
+#if DEV || AUTOTEST
             Enabled = System.IO.File.Exists(System.IO.Path.Combine(path, "posfast-on"));
+#else
+            Enabled = false;
+#endif
         }
         internal static void Uninstall() { Enabled = false; verify = false; Forget(); }
         internal static void Forget()

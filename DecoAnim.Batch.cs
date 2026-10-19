@@ -36,7 +36,11 @@ namespace StutterFix
         private static void ConfigureBatch(string path)
         {
             BatchRestoreAll();
+#if DEV || AUTOTEST
             batchOn = System.IO.File.Exists(System.IO.Path.Combine(path, "decobatch-on"));
+#else
+            batchOn = false;
+#endif
             batchVerify = false;
             if (!batchOn) return;
             BatchAllocate();

@@ -18,6 +18,7 @@ namespace StutterFix
         {
             Enabled = false; valid = false;
             Calls = Hits = Checks = Mismatch = 0;
+#if DEV || AUTOTEST
             if (!File.Exists(Path.Combine(dir, "evalmemo-on")) || File.Exists(Path.Combine(dir, "evalmemo-off"))) return;
             // Even a mathematically pure original can have an impure external patch.
             var t = AccessTools.TypeByName("DG.Tweening.Core.Easing.EaseManager");
@@ -29,6 +30,7 @@ namespace StutterFix
                     if (info != null) foreach (var owner in info.Owners) return;
                 }
             Enabled = true;
+#endif
         }
         internal static void NewFrame() { valid = false; }
         internal static float Eval(Ease ease, float time, float duration, float over, float period)

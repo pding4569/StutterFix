@@ -46,7 +46,7 @@ namespace StutterFix
         internal static void ScrollForTest(float y) { if (Instance != null) Instance.scroll.y = y; }
         internal static void ShowForTest(int p, int sub = 0)
         {
-            if (Instance != null && p >= 0 && p < 9) { Instance.subSel[p] = sub; EditingText = false; GUIUtility.keyboardControl = 0; }
+            if (Instance != null && p >= 0 && p < 9) { var tabs = Instance.SubDefs(p, out _); Instance.subSel[p] = tabs == null ? 0 : Mathf.Clamp(sub, 0, tabs.Length - 1); EditingText = false; GUIUtility.keyboardControl = 0; }
             if (Instance == null) return;
             if (p == -2) { Instance.SetOpen(false); return; }
             Instance.SetOpen(true);
@@ -1058,7 +1058,7 @@ namespace StutterFix
         {
             var c = Main.Config;
             bool ch = false;
-            int sub = Sub();
+            int sub = Mathf.Clamp(Sub(), 0, 4);
             if (sub == 0)
             {
                 SubHeading(T("기본", "Essentials"), T("끊김이 가장 큰 곳(메모리 정리, 효과 몰림, 타일 수천 개 바꾸기)입니다. 모두 켜 두는 것을 권장합니다.",
@@ -1090,63 +1090,19 @@ namespace StutterFix
                     T("길이가 있는 타일 이동(위치·회전·크기·불투명도)의 애니메이션을 DOTween 대신 모드가 돌립니다. 타일 수천 개를 한 번에 옮기는 효과가 시작될 때의 끊김을 줄입니다. 시간 누적, 이징, 끊기는 DOTween 과 똑같이 합니다.",
                       "Runs tile move animations (position, rotation, scale, opacity) in the mod instead of DOTween, reducing the hitch when an effect moves thousands of tiles at once. Timing, easing and kill behavior match DOTween."), null);
                 EndGroup();
-                SubHeading(T("로딩·메모리 실험", "Loading and memory experiments"), T("검증 중인 후보입니다. 기본으로 꺼져 있습니다.", "Candidates under validation; disabled by default."));
+                SubHeading(T("맵 파일 캐시", "Level disk cache"), "");
                 BeginGroup();
-                ch |= Option("gcbudget", ref c.GcDynamicBudget, T("메모리 한도 자동 조절 (실험)", "Adaptive memory budget (experimental)"),
-                    T("남은 RAM과 게임의 메모리 사용량에 맞춰 정리 한도를 조절합니다. 메모리 정리 미루기와 함께 사용합니다.",
-                      "Adjusts the cleanup budget to available RAM and game memory usage. Requires deferred memory cleanup."), null);
-                ch |= Option("jsonpool", ref c.JsonStringPool, T("맵 문자열 재사용 (실험)", "Reuse level strings (experimental)"),
-                    T("맵을 읽는 동안 반복되는 짧은 문자열과 검색 버퍼를 재사용합니다.", "Reuses repeated short strings and scratch lookup buffers while reading a level."), null);
-                ch |= Option("diskcache", ref c.AssetDiskCache, T("맵 파일 디스크 캐시 (실험)", "Level disk cache (experimental)"),
-                    T("다시 여는 맵의 이미지 압축 결과와 JSON 해석 결과를 내장 드라이브(C:)에 저장합니다. 두 번째 열기부터 약 1~2초 빨라지고 맵마다 1~2GB를 씁니다. 기본 최대 3GB이며 남은 공간이 모자라면 저절로 꺼지고 파일이 바뀌면 다시 만듭니다.",
-                      "Stores compressed images and parsed JSON on the internal drive (C:) for revisits. Opens ~1-2 s faster from the second time and uses 1-2 GB per heavy level. Default maximum 3 GB; turns itself off when free space is low and rebuilds changed files."), null);
-                ch |= Option("uploadbudget", ref c.AsyncUploadBudget, T("로딩 업로드 예산 (실험)", "Loading upload budget (experimental)"),
-                    T("이미지 미리 읽기 중 업로드 예산을 늘리고 끝나면 원래 설정으로 되돌립니다. 비동기 업로드가 가능한 에셋에 적용됩니다.",
-                      "Raises upload budgets during image prefetch, then restores original settings. Applies to assets eligible for asynchronous upload."), null);
+                ch |= Option("diskcache", ref c.AssetDiskCache, T("맵 파일 디스크 캐시", "Level disk cache"),
+                    T("다시 여는 맵의 이미지 압축 결과와 JSON 해석 결과를 내장 드라이브(C:)에 저장합니다. 첫 열기는 캐시 쓰기로 약 0.1~1.2초 더 걸릴 수 있습니다. 두 번째 열기부터 약 1~2초 빨라지고 맵마다 1~2GB를 씁니다. 기본 최대 3GB이며 남은 공간이 모자라면 저절로 꺼지고 파일이 바뀌면 다시 만듭니다.",
+                      "Stores compressed images and parsed JSON on the internal drive (C:) for revisits. Cache writes can add about 0.1–1.2 s to the first load. Opens ~1-2 s faster from the second time and uses 1-2 GB per heavy level. Default maximum 3 GB; turns itself off when free space is low and rebuilds changed files."), null);
                 EndGroup();
-                SubHeading(T("장식 이동 실험", "Decoration movement experiments"), "");
+                SubHeading(T("메인·렌더 스레드 우선순위", "Main and render thread priority"), "");
                 BeginGroup();
-                ch |= Option("moveepsilon", ref c.MoveEpsilon, T("미세 위치 쓰기 생략 (실험)", "Skip tiny position writes (experimental)"),
-                    T("곡 중 실제 위치와의 차이가 각 축 0.000001 미만이면 위치 쓰기를 생략합니다. 위치·시차·회전 처리 순서는 유지합니다.",
-                      "Skips position writes during play when each axis changes by less than 0.000001. Preserves position, parallax and rotation order."), null);
-                ch |= Option("nativemotion", ref c.NativeMotion, T("장식 숫자 계산 묶기 (실험)", "Batch decoration arithmetic (experimental)"),
-                    T("직선 이징의 위치·회전·불투명도 계산이 512개 이상이면 네이티브 SIMD로 계산합니다. 나머지 이징과 실제 장식 갱신 순서는 기존 경로를 씁니다.",
-                      "Uses native SIMD for at least 512 linear position, rotation or opacity values. Other easing and decoration updates keep their existing order."), null);
-                ch |= Option("motionarena",ref c.NativeMotionArena,T("계산 버퍼를 비관리 메모리에 (실험)","Unmanaged arithmetic buffers (experimental)"),
-                    T("숫자 계산 묶기의 버퍼 1.25MiB를 64바이트 정렬 영역에서 재사용합니다. 다른 게임 객체와 맵 데이터는 그대로입니다.","Reuses 1.25 MiB of 64-byte aligned storage for batched arithmetic. Other game objects and level data remain unchanged."),null,1,c.NativeMotion?null:T("장식 숫자 계산 묶기","Batch decoration arithmetic"));
-                ch |= Option("motionpin",ref c.NativeMotionPinArena,T("계산 버퍼를 RAM에 고정 (실험)","Lock arithmetic buffers in RAM (experimental)"),
-                    T("자기 소유 계산 버퍼 1.25MiB만 별도 페이지에 고정합니다. RAM 여유가 적거나 윈도우가 거부하면 기존 할당을 씁니다. 끄면 페이지와 작업 집합 설정을 복구합니다.","Locks only the owned 1.25 MiB arithmetic buffer in private pages. Keeps the previous allocation if RAM is low or Windows rejects it; disabling releases pages and restores owned working-set changes."),null,2,c.NativeMotion&&c.NativeMotionArena?null:T("비관리 계산 버퍼","Unmanaged arithmetic buffers"));
-                ch |= Option("tagindex", ref c.TagIndex, T("장식 태그 색인 (실험)", "Decoration tag index (experimental)"),
-                    T("재생 준비 때 태그에 번호를 붙여 반복 조회를 줄입니다. 태그 표의 변경을 감지할 수 없거나 표가 바뀌면 기존 조회를 씁니다.",
-                      "Indexes tags at playback preparation. Falls back when table changes cannot be tracked or the table changes."), null);
-                ch |= Option("tagprimitive",ref c.TagIndexNativePlans,T("태그 번호를 비관리 메모리에 (실험)","Unmanaged tag numbers (experimental)"),T("태그 색인의 정수 번호만 최대 8MiB 영역에 보관합니다. 게임 객체 참조는 유지하며, 영역이 부족하거나 실패하면 기존 배열을 씁니다. GC·성능 개선은 확인 중입니다.","Stores only integer tag IDs in up to 8 MiB of unmanaged storage. Keeps game object references; uses arrays on capacity or allocation failure. GC/performance effects are under validation."),null,1,c.TagIndex?null:T("장식 태그 색인","Decoration tag index"));
-                ch |= Option("inputframewait",ref c.FrameQueueDelay,T("입력 프레임 대기 보정 (실험)","Input frame wait correction (experimental)"),
-                    T("키 메시지를 받은 뒤 게임이 확인할 때까지의 대기만 보정합니다. 게임의 비동기 입력을 쓰면 추가로 적용하지 않습니다. 지원되지 않는 입력은 그대로 처리하며 기본 꺼짐입니다.","Corrects only the wait between receiving a key message and the game checking it. Adds nothing when game async input is active. Keeps unsupported input unchanged; off by default."),null);
-                ch |= Option("particlecatchup", ref c.ParticleCatchup, T("입자 복귀 따라잡기 (실험)", "Catch up returning particles (experimental)"),
-                    T("화면 밖 입자 멈추기와 함께 사용하면 다시 보일 때 지난 시간을 따라잡습니다. 돌아오는 순간의 추가 비용은 확인 중입니다.",
-                      "With offscreen particle pause, catches up elapsed time when particles return. Return-time cost is under validation."), null);
-                EndGroup();
-                SubHeading(T("맵별 화면 설정", "Per-level rendering settings"), "");
-                BeginGroup();
-                P(T("게임 스레드 예약","Game thread scheduling"),sBody);
-                ch |= Segment("threadmode",ref c.ThreadSchedulingMode,new[]{T("끔","Off"),T("우선순위","Priority"),T("오디오 방식","Audio task")});
-                P(T("곡 중에만 게임 스레드를 높은 우선순위로 돌리고 곡 밖에서 원래대로 돌립니다. 아래 '렌더 스레드도 적용'과 함께 켤 때 곡 중 30ms 넘는 끊김이 크게 줄었습니다(HELLO 12~20개 → 0~1개, Arche 11 → 3개). 방송·녹화 프로그램이 CPU를 덜 받을 수 있습니다.","Raises the game thread priority only during a song and restores it afterwards. Together with 'Also apply to render thread' below it cut 30 ms+ hitches a lot (HELLO 12-20 -> 0-1, Arche 11 -> 3). Streaming/recording apps may get less CPU."),sDim);
+                int threadMode = c.ThreadSchedulingMode == 0 ? 0 : 1;
+                if (Segment("threadmode", ref threadMode, new[] { T("끔", "Off"), T("우선순위", "Priority") })) { c.ThreadSchedulingMode = threadMode; ch = true; }
+                P(T("곡 중 메인·렌더 스레드 우선순위를 함께 높이면 끊김이 줄어듭니다. 곡 밖에서는 원래대로 복구합니다. 두 설정 모두 기본 켬이며 방송·녹화 프로그램이 CPU를 덜 받을 수 있습니다.", "Raising main and render thread priority together reduces hitches. Restores outside play. Both settings are on by default; streaming or recording apps may get less CPU time."), sDim);
                 ch |= Option("threadrender",ref c.ThreadRenderScheduling,T("렌더 스레드도 적용","Also apply to render thread"),
                     T("위 우선순위·코어 선택을 렌더 스레드에도 적용하고 곡 밖·모드 내리기에서 복구합니다. 오디오 방식 예약은 메인 스레드에만 적용합니다. 우선순위와 함께 기본 켬입니다.","Applies the priority/core choices to the render thread; restores outside play and on unload. Audio-task registration applies to the main thread only. On by default together with priority."),null);
-                ch |= Option("threadpcores",ref c.ThreadPerformanceCores,T("고성능 코어만 사용 (실험)","Performance cores only (experimental)"),T("윈도우가 서로 다른 코어 등급을 알려줄 때만 메인 스레드에 적용합니다. 구분할 수 없으면 기존 배치를 유지합니다.","Restricts the main thread only when Windows reports heterogeneous core classes. Otherwise keeps the original placement."),null);
-                ch |= Option("threadavoidzero",ref c.ThreadAvoidLogicalZero,T("0번 논리 코어 제외 (실험)","Avoid logical CPU 0 (experimental)"),T("곡 중 메인 스레드의 허용 코어에서 0번만 뺍니다. 남는 코어가 없으면 적용하지 않으며 곡 밖에서 복구합니다. 인터럽트 감소나 성능 개선은 확인 안 됨입니다.","Excludes logical CPU 0 from the main thread during play. Keeps placement if no eligible core remains and restores outside play. Interrupt or performance improvements are unverified."),null);
-                ch |= Option("physicspause",ref c.PhysicsPause,T("곡 중 물리 시뮬레이션 중지 (실험)","Pause physics simulation during play (experimental)"),
-                    T("게임은 물리 엔진의 움직임 계산을 쓰지 않고 판정 영역 질의만 씁니다. 곡 중에는 시뮬레이션 단계를 멈춰 CPU를 아낍니다. 충돌 콜백에 기대는 다른 모드는 멈출 수 있어 기본 꺼짐이며, 곡이 끝나면 원래 값으로 되돌립니다.",
-                      "The game only uses physics queries, not simulation. Stops the simulation step during a song to save CPU. Mods relying on collision callbacks may stop working, so it is off by default; restored when the song ends."),
-                    null);
-                EndGroup();
-                BeginGroup();
-                ch |= Option("mapprofiles", ref c.MapProfilesEnabled, T("맵별 화면 설정 저장 (실험)", "Remember rendering settings per level (experimental)"),
-                    T("다음 맵 열기부터 색감·선명도·해상도·프레임 늘리기 설정을 맵 내용 해시별로 저장하고 불러옵니다. 입력·전체 화면·시스템 설정은 전역으로 유지합니다.",
-                      "From the next level load, remembers effects, scale and frame generation by level content hash. Input, fullscreen and system settings remain global."), null);
-                if(c.MapProfilesEnabled&&MapProfiles.Status.Length>0)P(MapProfiles.Status,sDim);
-                ch |= Option("hitchheatmap", ref c.HitchHeatmap, T("끊긴 타일 상위 5개 기록 (실험)", "Record top 5 hitch tiles (experimental)"),
-                    T("기존 모니터가 잡은 끊김의 타일 번호와 시간을 기록합니다. 일시정지는 기록을 지우지 않으며, 완주는 포탈 도착으로 구분합니다.","Records the floor and duration of hitches detected by the existing monitor. Pause keeps records; portal arrival marks completion."),null);
                 EndGroup();
             }
             else if (sub == 1)
@@ -1166,7 +1122,6 @@ namespace StutterFix
                 ch |= Option("shader", ref c.ShaderWarm, T("그래픽 미리 준비", "Shader warm-up"),
                     T("곡이 시작될 때 그래픽 준비를 미리 해 두어, 효과가 처음 나올 때의 끊김을 줄입니다.",
                       "Prepares shaders when a level starts, reducing the hitch the first time an effect appears."), null);
-                ch |= Option("filteridentity", ref c.FilterIdentity, T("중립 필터 건너뛰기", "Skip identity filters"), T("픽셀 대조를 통과한 필터만 중립 값일 때 건너뜁니다.", "Bypass only pixel-verified filters at neutral values."), null);
                 ch |= Option("filtertype", ref c.FilterTypeCache, T("고급 필터 빠르게 끄기", "Faster advanced filter reset"),
                     T("고급 필터의 \"다른 필터 끄기\"가 쓴 필터마다 형식을 새로 찾느라(한 번 약 0.7ms) 한 프레임에 수십 ms 멈추던 것을 없앱니다. 결과는 같습니다.",
                       "The advanced filter's \"disable others\" looked up each used filter's type from scratch (about 0.7 ms each), stalling a frame for tens of ms. Results are identical."), null);
@@ -1201,7 +1156,7 @@ namespace StutterFix
                     T("무거운 맵", "Heavy maps"));
                 EndGroup();
             }
-            else
+            else if (sub == 3)
             {
                 SubHeading(T("장식 이동", "Decoration moves"), T("장식을 옮기는 효과를 가볍게 처리합니다. 들여 쓴 기능은 위 기능이 켜져 있을 때만 동작합니다.",
                     "Lighter decoration move effects. Indented features only work while the feature above them is on."));
@@ -1240,6 +1195,75 @@ namespace StutterFix
                       "Batches position finishing per decoration, skips unchanged writes and editor-only work while playing, and leaves visible decorations' position recompute to the game's own once-per-frame pass."), null);
                 EndGroup();
             }
+            else if (sub == 4)
+            {
+                SubHeading(T("실험", "Experimental"), T("기본으로 꺼져 있는 검증 중인 기능입니다. 문제가 생기면 끄세요.", "Features under validation, disabled by default. Turn them off if problems occur."));
+                BeginGroup();
+                ch |= Option("gcbudget", ref c.GcDynamicBudget, T("메모리 한도 자동 조절 (실험)", "Adaptive memory budget (experimental)"),
+                    T("남은 RAM과 게임의 메모리 사용량에 맞춰 정리 한도를 조절합니다. 메모리 정리 미루기와 함께 사용합니다.",
+                      "Adjusts the cleanup budget to available RAM and game memory usage. Requires deferred memory cleanup."), null);
+                ch |= Option("jsonpool", ref c.JsonStringPool, T("맵 문자열 재사용 (실험)", "Reuse level strings (experimental)"),
+                    T("맵을 읽는 동안 반복되는 짧은 문자열과 검색 버퍼를 재사용합니다.", "Reuses repeated short strings and scratch lookup buffers while reading a level."), null);
+                ch |= Option("uploadbudget", ref c.AsyncUploadBudget, T("로딩 업로드 예산 (실험)", "Loading upload budget (experimental)"),
+                    T("이미지 미리 읽기 중 업로드 예산을 늘리고 끝나면 원래 설정으로 되돌립니다. 비동기 업로드가 가능한 에셋에 적용됩니다.",
+                      "Raises upload budgets during image prefetch, then restores original settings. Applies to assets eligible for asynchronous upload."), null);
+                EndGroup();
+                SubHeading(T("장식 이동 실험", "Decoration movement experiments"), "");
+                BeginGroup();
+                ch |= Option("moveepsilon", ref c.MoveEpsilon, T("미세 위치 쓰기 생략 (실험)", "Skip tiny position writes (experimental)"),
+                    T("곡 중 실제 위치와의 차이가 각 축 0.000001 미만이면 위치 쓰기를 생략합니다. 위치·시차·회전 처리 순서는 유지합니다.",
+                      "Skips position writes during play when each axis changes by less than 0.000001. Preserves position, parallax and rotation order."), null);
+                ch |= Option("nativemotion", ref c.NativeMotion, T("장식 숫자 계산 묶기 (실험)", "Batch decoration arithmetic (experimental)"),
+                    T("직선 이징의 위치·회전·불투명도 계산이 512개 이상이면 네이티브 SIMD로 계산합니다. 나머지 이징과 실제 장식 갱신 순서는 기존 경로를 씁니다.",
+                      "Uses native SIMD for at least 512 linear position, rotation or opacity values. Other easing and decoration updates keep their existing order."), null);
+                ch |= Option("motionarena",ref c.NativeMotionArena,T("계산 버퍼를 비관리 메모리에 (실험)","Unmanaged arithmetic buffers (experimental)"),
+                    T("숫자 계산 묶기의 버퍼 1.25MiB를 64바이트 정렬 영역에서 재사용합니다. 다른 게임 객체와 맵 데이터는 그대로입니다.","Reuses 1.25 MiB of 64-byte aligned storage for batched arithmetic. Other game objects and level data remain unchanged."),null,1,c.NativeMotion?null:T("장식 숫자 계산 묶기","Batch decoration arithmetic"));
+                ch |= Option("motionpin",ref c.NativeMotionPinArena,T("계산 버퍼를 RAM에 고정 (실험)","Lock arithmetic buffers in RAM (experimental)"),
+                    T("자기 소유 계산 버퍼 1.25MiB만 별도 페이지에 고정합니다. RAM 여유가 적거나 윈도우가 거부하면 기존 할당을 씁니다. 끄면 페이지와 작업 집합 설정을 복구합니다.","Locks only the owned 1.25 MiB arithmetic buffer in private pages. Keeps the previous allocation if RAM is low or Windows rejects it; disabling releases pages and restores owned working-set changes."),null,2,c.NativeMotion&&c.NativeMotionArena?null:T("비관리 계산 버퍼","Unmanaged arithmetic buffers"));
+                ch |= Option("tagindex", ref c.TagIndex, T("장식 태그 색인 (실험)", "Decoration tag index (experimental)"),
+                    T("재생 준비 때 태그에 번호를 붙여 반복 조회를 줄입니다. 태그 표의 변경을 감지할 수 없거나 표가 바뀌면 기존 조회를 씁니다.",
+                      "Indexes tags at playback preparation. Falls back when table changes cannot be tracked or the table changes."), null);
+                ch |= Option("tagprimitive",ref c.TagIndexNativePlans,T("태그 번호를 비관리 메모리에 (실험)","Unmanaged tag numbers (experimental)"),T("태그 색인의 정수 번호만 최대 8MiB 영역에 보관합니다. 게임 객체 참조는 유지하며, 영역이 부족하거나 실패하면 기존 배열을 씁니다. GC·성능 개선은 확인 중입니다.","Stores only integer tag IDs in up to 8 MiB of unmanaged storage. Keeps game object references; uses arrays on capacity or allocation failure. GC/performance effects are under validation."),null,1,c.TagIndex?null:T("장식 태그 색인","Decoration tag index"));
+                ch |= Option("inputframewait",ref c.FrameQueueDelay,T("입력 프레임 대기 보정 (실험)","Input frame wait correction (experimental)"),
+                    T("키 메시지를 받은 뒤 게임이 확인할 때까지의 대기만 보정합니다. 게임의 비동기 입력을 쓰면 추가로 적용하지 않습니다. 지원되지 않는 입력은 그대로 처리하며 기본 꺼짐입니다.","Corrects only the wait between receiving a key message and the game checking it. Adds nothing when game async input is active. Keeps unsupported input unchanged; off by default."),null);
+                ch |= Option("particlecatchup", ref c.ParticleCatchup, T("입자 복귀 따라잡기 (실험)", "Catch up returning particles (experimental)"),
+                    T("화면 밖 입자 멈추기와 함께 사용하면 다시 보일 때 지난 시간을 따라잡습니다. 돌아오는 순간의 추가 비용은 확인 중입니다.",
+                      "With offscreen particle pause, catches up elapsed time when particles return. Return-time cost is under validation."), null);
+                EndGroup();
+                SubHeading(T("스레드·물리 실험", "Thread and physics experiments"), "");
+                BeginGroup();
+                bool audioTask = c.ThreadSchedulingMode == 2;
+                if (Option("threadaudio", ref audioTask, T("메인 스레드 오디오 방식 예약 (실험)", "Main thread audio-task scheduling"),
+                    T("메인 스레드에 MMCSS 오디오 방식 예약을 씁니다. 단독 이득은 확인되지 않았습니다. 끄면 일반 우선순위로 돌아갑니다.", "Uses MMCSS audio-task scheduling on the main thread. Independent gains are unverified. Disabling returns to normal priority."), null)) { c.ThreadSchedulingMode = audioTask ? 2 : 1; ch = true; }
+                ch |= Option("threadpcores",ref c.ThreadPerformanceCores,T("고성능 코어만 사용 (실험)","Performance cores only (experimental)"),T("윈도우가 서로 다른 코어 등급을 알려줄 때만 메인 스레드에 적용합니다. 구분할 수 없으면 기존 배치를 유지합니다.","Restricts the main thread only when Windows reports heterogeneous core classes. Otherwise keeps the original placement."),null);
+                ch |= Option("threadavoidzero",ref c.ThreadAvoidLogicalZero,T("0번 논리 코어 제외 (실험)","Avoid logical CPU 0 (experimental)"),T("곡 중 메인 스레드의 허용 코어에서 0번만 뺍니다. 남는 코어가 없으면 적용하지 않으며 곡 밖에서 복구합니다. 인터럽트 감소나 성능 개선은 확인 안 됨입니다.","Excludes logical CPU 0 from the main thread during play. Keeps placement if no eligible core remains and restores outside play. Interrupt or performance improvements are unverified."),null);
+                ch |= Option("physicspause",ref c.PhysicsPause,T("곡 중 물리 시뮬레이션 중지 (실험)","Pause physics simulation during play (experimental)"),
+                    T("게임은 물리 엔진의 움직임 계산을 쓰지 않고 판정 영역 질의만 씁니다. 곡 중에는 시뮬레이션 단계를 멈춰 CPU를 아낍니다. 충돌 콜백에 기대는 다른 모드는 멈출 수 있어 기본 꺼짐이며, 곡이 끝나면 원래 값으로 되돌립니다.",
+                      "The game only uses physics queries, not simulation. Stops the simulation step during a song to save CPU. Mods relying on collision callbacks may stop working, so it is off by default; restored when the song ends."),
+                    null);
+                EndGroup();
+                SubHeading(T("맵별 화면 설정·기록", "Per-level rendering settings and records"), "");
+                BeginGroup();
+                ch |= Option("mapprofiles", ref c.MapProfilesEnabled, T("맵별 화면 설정 저장 (실험)", "Remember rendering settings per level (experimental)"),
+                    T("다음 맵 열기부터 색감·선명도·해상도·프레임 늘리기 설정을 맵 내용 해시별로 저장하고 불러옵니다. 입력·전체 화면·시스템 설정은 전역으로 유지합니다.",
+                      "From the next level load, remembers effects, scale and frame generation by level content hash. Input, fullscreen and system settings remain global."), null);
+                if(c.MapProfilesEnabled&&MapProfiles.Status.Length>0)P(MapProfiles.Status,sDim);
+                ch |= Option("hitchheatmap", ref c.HitchHeatmap, T("끊긴 타일 상위 5개 기록 (실험)", "Record top 5 hitch tiles (experimental)"),
+                    T("기존 모니터가 잡은 끊김의 타일 번호와 시간을 기록합니다. 일시정지는 기록을 지우지 않으며, 완주는 포탈 도착으로 구분합니다.","Records the floor and duration of hitches detected by the existing monitor. Pause keeps records; portal arrival marks completion."),null);
+                EndGroup();
+                SubHeading(T("그리기·타이머 실험", "Rendering and timer experiments"), "");
+                BeginGroup();
+                ch |= Option("filteridentity", ref c.FilterIdentity, T("중립 필터 건너뛰기", "Skip identity filters"), T("픽셀 대조를 통과한 필터만 중립 값일 때 건너뜁니다.", "Bypass only pixel-verified filters at neutral values."), null);
+                ch |= Option("timerhalf", ref c.TimerHalfMs, T("타이머 0.5ms 요청 (실험)", "0.5 ms timer request (experimental)"),
+                    T("윈도우 타이머 정밀도를 0.5ms 까지 요청해 프레임 대기가 덜 튀게 합니다. 이미 다른 프로그램이 올려 둔 컴퓨터에서는 차이가 없습니다. 끄거나 게임을 끝내면 우리가 올린 요청만 내립니다.",
+                      "Requests 0.5 ms Windows timer resolution for steadier frame waits. No difference if another program already raised it. Turning it off releases only our own request."),
+                    null);
+                ch |= Option("framegenconstantring",ref c.FrameGenConstantRing,T("보간 업로드 버퍼 재사용 (실험)","Reuse interpolation upload buffers (experimental)"),
+                    T("우리 보간 상수 버퍼 3개만 GPU 완료 확인 뒤 번갈아 씁니다. 미지원·혼잡 시 기존 방식으로 돌아가며 GPU를 기다리지 않습니다. 성능 개선은 확인 중이고 기본 꺼짐입니다.","Rotates three owned interpolation constant buffers only after GPU completion. Falls back without a GPU wait if unsupported or busy. Performance is under validation; off by default."),null);
+                ch |= Option("fastcompact", ref c.DecoFastCompact, T("장식 목록 정리 생략 (실험)", "Skip decoration list compaction (experimental)"),
+                    T("끝난 장식 애니메이션이 없으면 목록 정리를 생략합니다. 단독 끊김 개선은 확인되지 않았습니다.", "Skips list compaction when no decoration animations have finished. Independent hitch improvements are unverified."), null);
+                EndGroup();
+            }
             if (ch) Save();
         }
 
@@ -1266,7 +1290,7 @@ namespace StutterFix
         private string[] SubDefs(int p, out int[] icons)
         {
             icons = null;
-            if (p == 1) { icons = new[] { IcBolt, IcClock, IcEye, IcMove }; return new[] { T("기본", "Essentials"), T("미리 준비", "Warm-up"), T("그리기", "Rendering"), T("장식 이동", "Decoration moves") }; }
+            if (p == 1) { icons = new[] { IcBolt, IcClock, IcEye, IcMove, IcFlask }; return new[] { T("기본", "Essentials"), T("미리 준비", "Warm-up"), T("그리기", "Rendering"), T("장식 이동", "Decoration moves"), T("실험", "Experimental") }; }
             if (p == 4) { icons = new[] { IcEye, IcTiles, IcBolt }; return new[] { T("표시", "Display"), T("항목", "Items"), T("끊김 알림", "Hitch alerts") }; }
             if (p == 5) { icons = new[] { IcTune, IcChip, IcTiles, IcCard, IcFlask }; return new[] { T("PC 맞춤", "PC fit"), T("컴퓨터", "System"), T("게임", "Game"), T("그래픽카드", "Graphics card"), T("실험", "Experimental") }; }
             if (p == 6)
@@ -1772,8 +1796,6 @@ namespace StutterFix
             }
             if (frameGen)
             {
-                if(Option("framegenconstantring",ref c.FrameGenConstantRing,T("보간 업로드 버퍼 재사용 (실험)","Reuse interpolation upload buffers (experimental)"),
-                    T("우리 보간 상수 버퍼 3개만 GPU 완료 확인 뒤 번갈아 씁니다. 미지원·혼잡 시 기존 방식으로 돌아가며 GPU를 기다리지 않습니다. 성능 개선은 확인 중이고 기본 꺼짐입니다.","Rotates three owned interpolation constant buffers only after GPU completion. Falls back without a GPU wait if unsupported or busy. Performance is under validation; off by default."),null))Save();
                 int frameMode=c.FrameGenRefresh?0:1;
                 if(Segment("framegenmode",ref frameMode,new[] {T("주사율 맞춤 · 추천","Match refresh · Recommended"),T("2~8배","2–8×")})) {
                     c.FrameGenRefresh=frameMode==0;Save();
@@ -1878,10 +1900,6 @@ namespace StutterFix
             ch |= Option("lowthrottle", ref c.LowNoThrottle, T("윈도우 절전 제한 끄기", "No Windows power throttling"),
                 T("윈도우 11 이 게임을 '효율 모드'로 느린 코어에 몰아넣지 않게 하고, 타이머 정밀도를 1ms 로 올려 프레임 간격이 덜 흔들리게 합니다. 노트북에 효과가 큽니다. 전기를 조금 더 씁니다.",
                   "Keeps Windows 11 from putting the game in efficiency mode and raises the timer resolution to 1 ms for steadier frame pacing. Helps laptops most; uses slightly more power."),
-                null);
-            ch |= Option("timerhalf", ref c.TimerHalfMs, T("타이머 0.5ms 요청 (실험)", "0.5 ms timer request (experimental)"),
-                T("윈도우 타이머 정밀도를 0.5ms 까지 요청해 프레임 대기가 덜 튀게 합니다. 이미 다른 프로그램이 올려 둔 컴퓨터에서는 차이가 없습니다. 끄거나 게임을 끝내면 우리가 올린 요청만 내립니다.",
-                  "Requests 0.5 ms Windows timer resolution for steadier frame waits. No difference if another program already raised it. Turning it off releases only our own request."),
                 null);
             BeginRow();
             GUILayout.Label(T("메뉴·에디터 FPS 제한", "Menu / editor FPS limit"), sBody);

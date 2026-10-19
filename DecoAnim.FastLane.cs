@@ -7,7 +7,7 @@ namespace StutterFix
 {
     internal static partial class DecoAnim
     {
-        internal static bool FastLane = true, FastCache, FastInline, FastCompact = true;
+        internal static bool FastLane = true, FastCache, FastInline, FastCompact = false;
         private static bool fastCompatible, fastVerify;
         private static scrDecoration fastLast;
         private static long fastInlineN, fastFallback, fastHits, fastInvalidations, fastChecks, fastMismatch;
