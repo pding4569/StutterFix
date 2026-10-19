@@ -215,7 +215,14 @@ namespace StutterFix
                 if (!Finite(time) || !Finite(volume) || time < AudioSettings.dspTime || (i > 0 && time < s.Times[i - 1]))
                     throw new NotSupportedException("invalid/past/unsorted event");
                 var clip = am.FindOrLoadAudioClip("snd" + (HitSound)VoiceType.GetValue(item));
-                if (clip == null || clip.loadType != AudioClipLoadType.DecompressOnLoad || clip.loadState != AudioDataLoadState.Loaded ||
+                // 게임 히트음은 CompressedInMemory 이고 처음 쓰기 전에는 Unloaded 다(2026-10-20 실게임 확인). 스트리밍만 막고, 안 불러온 클립은 짧게 불러온다.
+                if (clip != null && clip.loadType != AudioClipLoadType.Streaming && clip.loadState == AudioDataLoadState.Unloaded) clip.LoadAudioData();
+                if (clip != null && clip.loadState == AudioDataLoadState.Loading)
+                {
+                    int loadDeadline = Environment.TickCount + 200;
+                    while (clip.loadState == AudioDataLoadState.Loading && unchecked(Environment.TickCount - loadDeadline) < 0) Thread.Sleep(1);
+                }
+                if (clip == null || clip.loadType == AudioClipLoadType.Streaming || clip.loadState != AudioDataLoadState.Loaded ||
                     clip.samples <= 0 || clip.frequency < 8000 || clip.frequency > 96000 || clip.channels < 1 || clip.channels > 2 ||
                     (double)clip.samples / clip.frequency > 8)
                     throw new NotSupportedException("unreadable/streaming/compressed/long clip [" + (clip == null ? "null" : clip.name + " loadType=" + clip.loadType + " loadState=" + clip.loadState + " samples=" + clip.samples + " freq=" + clip.frequency + " ch=" + clip.channels + " sec=" + ((double)clip.samples / System.Math.Max(1, clip.frequency)).ToString("F2")) + "]");
