@@ -33,6 +33,8 @@ namespace StutterFix
             internal Quaternion LastRot;
         }
         internal static bool SkipSame = true;   // 모드 폴더 tightskip-off 파일로 끔
+        internal static bool EulerMemo;          // 모드 폴더 eulermemo-on 파일로 켬 (같은 각도의 Quaternion.Euler 결과 재사용, 순수 함수라 비트 동일)
+        private static bool eulerValid; private static int eulerBits; private static Quaternion eulerQ; internal static long eulerCalls, eulerHits;
         internal static long writes, skipPos, skipRot, skipScale;
         private static readonly Dictionary<scrDecoration, Entry> records = new Dictionary<scrDecoration, Entry>(new RefEq());
         private static readonly List<scrDecoration> empty = new List<scrDecoration>(0);
@@ -340,7 +342,14 @@ namespace StutterFix
             Vector2 result = u + offset;
             end(p) = result;
             var np = new Vector3(result.x, result.y, 0f);
-            var nr = Quaternion.Euler(0f, 0f, d.startRot + angle);
+            Quaternion nr;
+            if (EulerMemo)
+            {
+                float ang = d.startRot + angle; int ab = BitConverter.SingleToInt32Bits(ang); eulerCalls++;
+                if (eulerValid && ab == eulerBits) { nr = eulerQ; eulerHits++; }
+                else { nr = Quaternion.Euler(0f, 0f, ang); eulerQ = nr; eulerBits = ab; eulerValid = true; }
+            }
+            else nr = Quaternion.Euler(0f, 0f, d.startRot + angle);
             Vector2 scale = scaling * camScale * (Vector2)Vector3.one;
             var ns = new Vector3(scale.x, scale.y, 1f);
             if (e.Engine != null && DecoEngine.ShouldVerify(e.Engine))
@@ -443,7 +452,7 @@ namespace StutterFix
             + " batch/last=" + lastProcessed + " processed=" + processed + " frames=" + frames + " invalidations=" + invalidations
             + " loop-ms/frame=" + (frames == 0 ? 0 : loopTicks * 1000.0 / Stopwatch.Frequency / frames).ToString("F4")
             + " manager-frames=" + managerFrames + " manager-ms/frame=" + (managerFrames == 0 ? 0 : managerTicks * 1000.0 / Stopwatch.Frequency / managerFrames).ToString("F4")
-            + " writes=" + writes + " skipped(pos/rot/scale)=" + skipPos + "/" + skipRot + "/" + skipScale + " skipSame=" + SkipSame
+            + " writes=" + writes + " skipped(pos/rot/scale)=" + skipPos + "/" + skipRot + "/" + skipScale + " skipSame=" + SkipSame + " eulerMemo=" + EulerMemo + " euler(hit/calls)=" + eulerHits + "/" + eulerCalls
             + " verify=" + Verify + " checked=" + checks + " mismatch=" + mismatches + " first=" + first
             + " compatibility=" + compatibility
             + " excluded(type/hitbox-mask-mesh/hidden/follow-stick-lock/parallax/parent/rejected)=" + string.Join("/", reasons);
