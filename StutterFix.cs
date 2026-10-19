@@ -50,7 +50,7 @@ namespace StutterFix
             if (Edition.Dev) LogLoadedCopies();
             InstallAll();
             if (Config.FlipModel < 0) { Config.FlipModel = BootConfig.FlipNow() ? 1 : 0; try { Config.Save(modEntry); } catch { } }   // 처음: 지금 boot.config 상태를 따른다
-            BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1);
+            BootConfig.Apply(Config.LegacyGfxJobs, Config.FlipModel == 1, false);
             modEntry.Logger.Log(BootConfig.Describe());
             WindowGhost.MainThread = Environment.CurrentManagedThreadId;
             WindowGhost.MainNativeThread = WindowGhost.GetCurrentThreadId();
@@ -255,6 +255,7 @@ UiProf.Install(harmony);
                 Try(() => TypeCache.Install(harmony));   // 고급 필터 형식 찾기 기억 (TypeCache.cs)
                 Try(() => MeshWarm.Install(harmony));   // 색 바꾸기가 곡 중에 만들 타일 메시 미리 만들기 (MeshWarm.cs)
                 Try(() => SoundWarm.Install(harmony));   // 곡 중에 처음 쓰는 효과음 미리 불러오기 (SoundWarm.cs)
+                Try(HitSoundBatch.Install);
                 if (Edition.Dev || MeasureBuild || AutoTestBuild) {
 #if DEV || AUTOTEST
 Try(() => ScriptProbe.Install(harmony));
@@ -478,6 +479,7 @@ ParticleTextWatch.Install(harmony);
             Try(FilterHalfPerf.Stop);
 #endif
             Try(FrameGen.Shutdown);
+            Try(HitSoundBatch.Shutdown);
             Try(MemoryBudget.Reset);
             Try(NativeMotion.Reset);
             Try(OptimizationModules.Shutdown);
@@ -908,6 +910,7 @@ BlendProbe.Tick();
             FilterIdentity.Enabled = E("FilterIdentity", Config.FilterIdentity);
             global::StutterFix.MeshWarm.Enabled = E("MeshWarm", Config.MeshWarm);
             global::StutterFix.SoundWarm.Enabled = E("SoundWarm", Config.SoundWarm);
+            global::StutterFix.HitSoundBatch.Enabled = E("HitSoundBatch", Config.HitSoundBatch);
             ImagePrefetch.Enabled = E("ImagePrefetch", Config.ImagePrefetch);
             ShaderWarm.Enabled = E("ShaderWarm", Config.ShaderWarm);
             FastBlend.Enabled = E("FastBlend", Config.FastBlend);
@@ -1155,6 +1158,7 @@ BlendProbe.Tick();
         public bool FilterTypeCache = true; // 고급 필터의 형식 찾기(Type.GetType, 한 번 약 0.7ms) 결과를 기억
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기
         public bool SoundWarm = true;
+        public bool HitSoundBatch = false;
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음

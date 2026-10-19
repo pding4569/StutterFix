@@ -1202,6 +1202,9 @@ namespace StutterFix
                 ch |= Option("gcbudget", ref c.GcDynamicBudget, T("메모리 한도 자동 조절 (실험)", "Adaptive memory budget (experimental)"),
                     T("남은 RAM과 게임의 메모리 사용량에 맞춰 정리 한도를 조절합니다. 메모리 정리 미루기와 함께 사용합니다.",
                       "Adjusts the cleanup budget to available RAM and game memory usage. Requires deferred memory cleanup."), null);
+                ch |= Option("hitsoundbatch", ref c.HitSoundBatch, T("히트음 예약 묶기 (실험)", "Batch hit sound scheduling (experimental)"),
+                    T("타일마다 히트음을 하나씩 예약하는 대신 미리 합쳐 예약합니다. 소리 타이밍·음량이 달라질 수 있어 기본으로 꺼져 있습니다.",
+                      "Mixes hit sounds ahead of time instead of scheduling one per tile. Timing and volume may differ; disabled by default."), null);
                 ch |= Option("jsonpool", ref c.JsonStringPool, T("맵 문자열 재사용 (실험)", "Reuse level strings (experimental)"),
                     T("맵을 읽는 동안 반복되는 짧은 문자열과 검색 버퍼를 재사용합니다.", "Reuses repeated short strings and scratch lookup buffers while reading a level."), null);
                 ch |= Option("uploadbudget", ref c.AsyncUploadBudget, T("로딩 업로드 예산 (실험)", "Loading upload budget (experimental)"),

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 using UnityModManagerNet;
@@ -16,7 +17,67 @@ namespace StutterFix
     internal static class Compat
     {
         internal static bool Quartz, QuartzOptimizer;
-        internal static bool QSmoothGC, QCollectOnLoad, QPriority, QSkipIdleParticles, QPauseOffscreenParticles, QSkipNoOpFilters, QLeakGuard, QLossyTexture, QFastBloom, QCacheScreenScale;
+        internal static bool QSmoothGC, QCollectOnLoad, QPriority, QSkipIdleParticles, QPauseOffscreenParticles, QSkipNoOpFilters, QLeakGuard, QLossyTexture, QFastBloom, QCacheScreenScale, QRenderAllHitSounds;
+        private const string QuartzHitOwner = "quartz.module.optimizer";
+        private static readonly List<Patch> suspendedHitPostfixes = new List<Patch>();
+        internal static bool HitSoundGuardReady = true;
+        internal static string HitSoundGuardState = "inactive";
+
+        // Suspend just the exact Quartz hit-sound postfix, retaining its registration
+        // metadata. Never unpatch the optimizer owner wholesale. Return true when a
+        // wrapper was changed: an already-running wrapper can still call its old postfix.
+        internal static bool EnsureHitSoundGuard()
+        {
+            if (!HitSoundBatch.Enabled) return false;
+            try
+            {
+                var target = AccessTools.Method(typeof(scrConductor), "PlayHitTimes");
+                var info = Harmony.GetPatchInfo(target);
+                var found = new List<Patch>();
+                if (info != null) foreach (var p in info.Postfixes)
+                {
+                    if (p.owner != QuartzHitOwner) continue;
+                    var method = p.PatchMethod;
+                    if (method.Name != "Postfix" || method.DeclaringType == null ||
+                        method.DeclaringType.Name != "PlayHitTimesPatch" ||
+                        method.DeclaringType.DeclaringType?.Name != "HitSoundRendererPatches")
+                        throw new NotSupportedException("unrecognized Quartz PlayHitTimes postfix");
+                    foreach (var other in info.Postfixes)
+                        if (other.PatchMethod == method && other.owner != QuartzHitOwner)
+                            throw new NotSupportedException("Quartz postfix also registered by another owner");
+                    found.Add(p);
+                }
+                if (found.Count > 1) throw new NotSupportedException("multiple Quartz hit postfixes");
+                foreach (var patch in found)
+                {
+                    suspendedHitPostfixes.Clear(); // A module reload replaces the previous registration.
+                    suspendedHitPostfixes.Add(patch);
+                    new Harmony(QuartzHitOwner).Unpatch(target, patch.PatchMethod);
+                }
+                HitSoundGuardReady = true;
+                HitSoundGuardState = suspendedHitPostfixes.Count == 0 ? "no Quartz hit postfix" : "suspended exact Quartz postfix";
+                return found.Count != 0;
+            }
+            catch (Exception ex) { HitSoundGuardReady = false; HitSoundGuardState = ex.Message; return false; }
+        }
+        internal static void ReleaseHitSoundGuard()
+        {
+            var target = AccessTools.Method(typeof(scrConductor), "PlayHitTimes");
+            var mod = UnityModManager.FindMod("Quartz");
+            if (mod != null && mod.Active && Harmony.HasAnyPatches(QuartzHitOwner))
+                foreach (var patch in suspendedHitPostfixes)
+                {
+                    bool present = false;
+                    var info = Harmony.GetPatchInfo(target);
+                    if (info != null) foreach (var p in info.Postfixes)
+                        if (p.owner == QuartzHitOwner && p.PatchMethod == patch.PatchMethod) present = true;
+                    if (!present) new Harmony(QuartzHitOwner).Patch(target, postfix: new HarmonyMethod(patch.PatchMethod) {
+                        priority = patch.priority, before = patch.before, after = patch.after, debug = patch.debug });
+                }
+            suspendedHitPostfixes.Clear();
+            HitSoundGuardReady = true;
+            HitSoundGuardState = "inactive";
+        }
         private static float nextRead = -100f;
         private static DateTime optTime;
 
@@ -69,6 +130,7 @@ namespace StutterFix
                 QSkipIdleParticles = Flag(j, "SkipIdleParticles"); QPauseOffscreenParticles = Flag(j, "PauseOffscreenParticles");
                 QSkipNoOpFilters = Flag(j, "SkipNoOpScreenFilters"); QLeakGuard = Flag(j, "LeakGuard"); QLossyTexture = Flag(j, "LossyTextureCompression");
                 QFastBloom = Flag(j, "FastBloom"); QCacheScreenScale = Flag(j, "CacheScreenScale");
+                QRenderAllHitSounds = Flag(j, "RenderAllHitSounds");
                 Main.Entry.Logger.Log("[다른 모드] Quartz 최적화: " + Describe());
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[다른 모드] Quartz 설정 읽기 실패: " + ex.Message); }
@@ -76,7 +138,7 @@ namespace StutterFix
 
         private static void SetAll(bool v)
         {
-            QSmoothGC = QCollectOnLoad = QPriority = QSkipIdleParticles = QPauseOffscreenParticles = QSkipNoOpFilters = QLeakGuard = QLossyTexture = QFastBloom = QCacheScreenScale = v;
+            QSmoothGC = QCollectOnLoad = QPriority = QSkipIdleParticles = QPauseOffscreenParticles = QSkipNoOpFilters = QLeakGuard = QLossyTexture = QFastBloom = QCacheScreenScale = QRenderAllHitSounds = v;
             optTime = default(DateTime);
         }
         private static bool Flag(string json, string key) { return Regex.IsMatch(json, "\"" + key + "\"\\s*:\\s*true"); }
@@ -89,6 +151,7 @@ namespace StutterFix
             if (QSmoothGC) on.Add("부드러운 GC"); if (QCollectOnLoad) on.Add("로드 시 힙 정리"); if (QPriority) on.Add("우선순위");
             if (QSkipIdleParticles) on.Add("변화 없는 파티클"); if (QPauseOffscreenParticles) on.Add("화면 밖 파티클"); if (QSkipNoOpFilters) on.Add("효과 없는 필터");
             if (QLeakGuard) on.Add("메모리 누수"); if (QLossyTexture) on.Add("텍스처 압축"); if (QFastBloom) on.Add("빠른 블룸"); if (QCacheScreenScale) on.Add("화면 크기 재조정");
+            if (QRenderAllHitSounds) on.Add("히트음 예약 묶기");
             return on.Count > 0 ? string.Join(", ", on.ToArray()) : "켜진 것 없음";
         }
 

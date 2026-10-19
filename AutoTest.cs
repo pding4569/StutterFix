@@ -1082,6 +1082,7 @@ namespace StutterFix
                 case "decosamp": if (arg == "begin") { DecoAnim.SampReset(); DecoAnim.SampOn = true; Log("[decosamp] 시작"); } else { DecoAnim.SampOn = false; Log("[decosamp] " + DecoAnim.SampReport()); } return true;
                 case "profsamp": Log("[profsamp] " + (arg.StartsWith("begin") ? ProfSamp.Begin(arg.Substring(5)) : ProfSamp.End())); return true;
                 case "floatsem": Log("[floatsem] " + FloatSem.Run()); return true;
+                case "hitsound": Log("[히트음 예약 묶기] " + HitSoundBatch.Command(arg)); return true;
                 case "decoablate":
                     { int m = 0; foreach (var k in arg.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)) m |= 1 << int.Parse(k); DecoAnim.AblateMask = m; Log("[ablate] 건너뛸 키 비트마스크 " + m + " (" + arg + ") — 측정 전용, 화면이 달라진다"); }
                     return true;

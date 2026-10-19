@@ -50,6 +50,8 @@
     <Compile Include="MeshWarm.cs" />
     <Compile Include="DecoDiag.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="SoundWarm.cs" />
+    <Compile Include="HitSoundBatch.cs" />
+    <Compile Include="HitSoundMix.cs" />
     <Compile Include="FloorAnim.cs" />
     <Compile Include="JitWarm.cs" />
     <Compile Include="ScriptProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

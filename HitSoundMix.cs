@@ -1,0 +1,69 @@
+using System;
+using System.Threading;
+
+namespace StutterFix
+{
+    // Pure PCM arithmetic. No Unity objects or other-mod implementation is used here.
+    internal static class HitSoundMix
+    {
+        internal sealed class Voice
+        {
+            internal float[] Pcm;
+            internal long Start;
+            internal float Gain;
+        }
+
+        internal static long Sample(double seconds, int rate)
+            => checked((long)Math.Round(seconds * rate, MidpointRounding.AwayFromZero));
+
+        internal static void Render(Voice[] voices, int channels, long start, float[] output,
+            Func<bool> cancelled)
+        {
+            Array.Clear(output, 0, output.Length);
+            long end = start + output.Length / channels;
+            foreach (var v in voices)
+            {
+                if (cancelled()) return;
+                long a = Math.Max(start, v.Start), b = Math.Min(end, v.Start + v.Pcm.Length / channels);
+                if (a >= b) continue;
+                int src = checked((int)((a - v.Start) * channels));
+                int dst = checked((int)((a - start) * channels));
+                int count = checked((int)((b - a) * channels));
+                for (int i = 0; i < count; i++)
+                {
+                    if ((i & 4095) == 0 && cancelled()) return;
+                    output[dst + i] += v.Pcm[src + i] * v.Gain;
+                }
+            }
+        }
+
+        // Independent voice/channel/frame traversal for explicit diagnostics and offline fixtures.
+        internal static double Verify(Voice[] voices, int channels, long start, float[] actual,
+            float[] expected, Func<bool> cancelled, out long differences)
+        {
+            Array.Clear(expected, 0, expected.Length);
+            foreach (var v in voices)
+            {
+                if (cancelled()) break;
+                int frames = v.Pcm.Length / channels;
+                int first = (int)Math.Max(0, start - v.Start);
+                int last = (int)Math.Min(frames, start + actual.Length / channels - v.Start);
+                for (int c = 0; c < channels; c++)
+                    for (int f = first; f < last; f++)
+                    {
+                        if ((f & 4095) == 0 && cancelled()) break;
+                        expected[(int)(v.Start + f - start) * channels + c] += v.Pcm[f * channels + c] * v.Gain;
+                    }
+            }
+            double max = 0;
+            differences = 0;
+            for (int i = 0; i < actual.Length; i++)
+            {
+                double delta = Math.Abs((double)expected[i] - actual[i]);
+                if (delta != 0) differences++;
+                if (delta > max) max = delta;
+            }
+            return max;
+        }
+    }
+}
