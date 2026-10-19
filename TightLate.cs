@@ -28,14 +28,13 @@ namespace StutterFix
             internal bool ParentOK, Rejected;
             // 직전에 엔진에 쓴 값(입력). 같으면 설정자를 건너뛴다(같은 값을 다시 써도 엔진 상태는 같고, 다음 렌더 갱신만 헛일이다).
             internal bool Has;
-            internal Vector2 FPos, FScale; internal float FAng; internal bool FHas;   // 통계용: 직전 필드 값
             internal int LastFrame = -100;   // 마지막으로 빠른 길에서 처리한 Unity 프레임 (건너뛴 프레임이 있으면 직전 값을 믿지 않는다)
             internal Vector3 LastPos, LastScale;
             internal Quaternion LastRot;
         }
         internal static bool SkipSame = true;   // 모드 폴더 tightskip-off 파일로 끔
         internal static bool EulerMemo = true;   // 모드 폴더 eulermemo-off 파일로 끔 (같은 각도의 Quaternion.Euler 결과 재사용, 순수 함수라 비트 동일)
-        internal static long fldCalls, fldPosSame, fldRotSame, fldScaleSame, fldAllSame; internal static long parCalls, parMulNonZero, parMulOne, parOffNonZero, camMoved; private static Vector3 lastCamSeen;
+        internal static long parCalls, parMulNonZero, parMulOne, parOffNonZero, camMoved; private static Vector3 lastCamSeen;
         private static bool eulerValid; private static int eulerBits; private static Quaternion eulerQ; internal static long eulerCalls, eulerHits;
         internal static long writes, skipPos, skipRot, skipScale;
         private static readonly Dictionary<scrDecoration, Entry> records = new Dictionary<scrDecoration, Entry>(new RefEq());
@@ -334,8 +333,6 @@ namespace StutterFix
             Vector2 position, float angle, Vector2 scaling)
         {
             parCalls++;
-            if (e.FHas) { bool ps = Same(position, e.FPos), rs = BitConverter.SingleToInt32Bits(angle) == BitConverter.SingleToInt32Bits(e.FAng), ss = Same(scaling, e.FScale); if (ps) fldPosSame++; if (rs) fldRotSame++; if (ss) fldScaleSame++; if (ps && rs && ss) fldAllSame++; fldCalls++; }
-            e.FPos = position; e.FAng = angle; e.FScale = scaling; e.FHas = true;
             if (p.multiplier_x != 0f || p.multiplier_y != 0f) { parMulNonZero++; if (p.multiplier_x == 1f && p.multiplier_y == 1f) parMulOne++; }
             if (d.parallaxOffset.x != 0f || d.parallaxOffset.y != 0f) parOffNonZero++;
             Vector2 pos = position + Vector2.zero;
@@ -459,7 +456,7 @@ namespace StutterFix
             + " batch/last=" + lastProcessed + " processed=" + processed + " frames=" + frames + " invalidations=" + invalidations
             + " loop-ms/frame=" + (frames == 0 ? 0 : loopTicks * 1000.0 / Stopwatch.Frequency / frames).ToString("F4")
             + " manager-frames=" + managerFrames + " manager-ms/frame=" + (managerFrames == 0 ? 0 : managerTicks * 1000.0 / Stopwatch.Frequency / managerFrames).ToString("F4")
-            + " writes=" + writes + " skipped(pos/rot/scale)=" + skipPos + "/" + skipRot + "/" + skipScale + " skipSame=" + SkipSame + " parallax(calls/mulNonZero/mulOne/offsetNonZero)=" + parCalls + "/" + parMulNonZero + "/" + parMulOne + "/" + parOffNonZero + " fields-same(calls/pos/rot/scale/all)=" + fldCalls + "/" + fldPosSame + "/" + fldRotSame + "/" + fldScaleSame + "/" + fldAllSame + " eulerMemo=" + EulerMemo + " euler(hit/calls)=" + eulerHits + "/" + eulerCalls
+            + " writes=" + writes + " skipped(pos/rot/scale)=" + skipPos + "/" + skipRot + "/" + skipScale + " skipSame=" + SkipSame + " parallax(calls/mulNonZero/mulOne/offsetNonZero)=" + parCalls + "/" + parMulNonZero + "/" + parMulOne + "/" + parOffNonZero + " eulerMemo=" + EulerMemo + " euler(hit/calls)=" + eulerHits + "/" + eulerCalls
             + " verify=" + Verify + " checked=" + checks + " mismatch=" + mismatches + " first=" + first
             + " compatibility=" + compatibility
             + " excluded(type/hitbox-mask-mesh/hidden/follow-stick-lock/parallax/parent/rejected)=" + string.Join("/", reasons);
