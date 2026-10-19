@@ -164,15 +164,13 @@ namespace StutterFix
             foreach (var kv in Top(leaf, 40)) sbo.Append(kv.Key).Append(' ').Append((100.0 * kv.Value / count).ToString("F1")).Append("%\n  ");
             sbo.Append("\n[관리 함수 포함(스택 어디든)] ");
             foreach (var kv in Top(incl, 40)) sbo.Append(kv.Key).Append(' ').Append((100.0 * kv.Value / count).ToString("F1")).Append("%\n  ");
-            sbo.Append("
-[리프(네이티브면 가장 가까운 관리 함수 포함) ← 호출자] ");
+            sbo.Append("\n[리프(네이티브면 가장 가까운 관리 함수 포함) ← 호출자] ");
             var nearTot = new Dictionary<string, int>(); foreach (var kv in callers) { int t = 0; foreach (var c in kv.Value.Values) t += c; nearTot[kv.Key] = t; }
             foreach (var kv in Top(nearTot, 30))
             {
                 sbo.Append(kv.Key).Append(' ').Append((100.0 * kv.Value / count).ToString("F1")).Append("% ← ");
                 foreach (var c in Top(callers[kv.Key], 3)) sbo.Append(c.Key).Append(' ').Append((100.0 * c.Value / count).ToString("F1")).Append("%; ");
-                sbo.Append("
-  ");
+                sbo.Append("\n  ");
             }
             ips = null; count = 0; cache.Clear();
             return sbo.ToString();
