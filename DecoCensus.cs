@@ -15,7 +15,7 @@ namespace StutterFix
     // 을 센다. 곡 중에만 쓰고 성능 판에서는 끈다(표본 프레임마다 2.9만 개 훑음).
     internal static class DecoCensus
     {
-        private struct Snap { internal bool Vis; internal float Px, Py, Rot, Sx, Sy, R, G, B, A; internal int Sprite, Tex, Mat, Layer, Order; }
+        private struct Snap { internal bool Vis; internal float Px, Py, Rot, Sx, Sy, R, G, B, A; internal int Sprite, Tex, Mat, Var, Layer, Order; }
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> ppRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("pivotPosVec");
         private static readonly AccessTools.FieldRef<scrDecoration, float> rotRef = AccessTools.FieldRefAccess<scrDecoration, float>("rotAngle");
         private static readonly AccessTools.FieldRef<scrDecoration, Vector2> scRef = AccessTools.FieldRefAccess<scrDecoration, Vector2>("scaleVec");
@@ -28,13 +28,18 @@ namespace StutterFix
         private static readonly double[] hist = new double[5], histSp = new double[5];
         private static int minMoved = int.MaxValue, maxMoved;
         private static float firstSong, lastSong;
+        private static readonly Dictionary<int, string> matKey = new Dictionary<int, string>();
+        private static readonly Dictionary<string, int> varIds = new Dictionary<string, int>();
+        private static double sumVarN, sumRunsAllTexVar, sumRunsMovedTexVar, sumDrawGroups, sumPure, sumPosRot, sumPosScale, sumPosRotScale, sumOther, sumColor, sumPureGroups;
+        private static readonly double[] histPure = new double[5];
+        private static string topVars = "";
 
         internal static string Begin(string arg)
         {
             Stop(); int g; if (int.TryParse((arg ?? "").Trim(), out g) && g >= 2) gap = g; else gap = 12;
             pairs = 0; haveA = false; lastTaken = -100; aborted = null; minMoved = int.MaxValue; maxMoved = 0;
             sumVis = sumMoved = sumTex = sumMat = sumSprite = sumOrder = sumRunsAll = sumRunsMoved = sumMotionGroups = sumMotionSpriteGroups = sumDup = 0;
-            Array.Clear(hist, 0, 5); Array.Clear(histSp, 0, 5);
+            Array.Clear(hist, 0, 5); Array.Clear(histSp, 0, 5); Array.Clear(histPure, 0, 5); sumVarN = sumRunsAllTexVar = sumRunsMovedTexVar = sumDrawGroups = sumPure = sumPosRot = sumPosScale = sumPosRotScale = sumOther = sumColor = sumPureGroups = 0; matKey.Clear(); varIds.Clear();
             firstSong = Song(); lastSong = firstSong; active = true; Camera.onPreRender += Capture;
             return "시작 (간격 " + gap + "프레임, 곡 " + firstSong.ToString("F1") + "초)";
         }
@@ -65,12 +70,21 @@ namespace StutterFix
                 var col = colRef(v); if (col.a <= 0f) continue;
                 var pp = ppRef(v); var sc = scRef(v); var mat = sr.sharedMaterial; var tex = sr.sprite.texture;
                 s[i].Vis = true; s[i].Px = pp.x; s[i].Py = pp.y; s[i].Rot = rotRef(v); s[i].Sx = sc.x; s[i].Sy = sc.y; s[i].R = col.r; s[i].G = col.g; s[i].B = col.b; s[i].A = col.a;
-                s[i].Sprite = sr.sprite.GetInstanceID(); s[i].Tex = tex != null ? tex.GetInstanceID() : 0; s[i].Mat = mat != null ? mat.GetInstanceID() : 0;
+                int mid = mat != null ? mat.GetInstanceID() : 0; string mk;
+                if (!matKey.TryGetValue(mid, out mk)) { mk = mat == null ? "null" : mat.shader.name + "|" + string.Join(",", mat.shaderKeywords) + "|q" + mat.renderQueue; matKey[mid] = mk; }
+                string vk = mk + "|m" + (int)sr.maskInteraction + (sr.flipX ? "|fx" : "") + (sr.flipY ? "|fy" : ""); int vid; if (!varIds.TryGetValue(vk, out vid)) { vid = varIds.Count + 1; varIds[vk] = vid; }
+                s[i].Var = vid; s[i].Sprite = sr.sprite.GetInstanceID(); s[i].Tex = tex != null ? tex.GetInstanceID() : 0; s[i].Mat = mat != null ? mat.GetInstanceID() : 0;
                 s[i].Layer = SortingLayer.GetLayerValueFromID(sr.sortingLayerID); s[i].Order = sr.sortingOrder;
             }
         }
         private static long Q(float d, float k) { return (long)Math.Round(d * k); }
         private static int Bin(int n) { return n == 1 ? 0 : n == 2 ? 1 : n <= 5 ? 2 : n <= 20 ? 3 : 4; }
+        private static int RunsTV(List<int> l, Snap[] s)
+        {
+            int r = 0;
+            for (int k = 0; k < l.Count; k++) if (k == 0 || s[l[k]].Tex != s[l[k - 1]].Tex || s[l[k]].Var != s[l[k - 1]].Var || s[l[k]].Layer != s[l[k - 1]].Layer || s[l[k]].Order != s[l[k - 1]].Order) r++;
+            return r;
+        }
         private static int Runs(List<int> l, Snap[] s)
         {
             int r = 0;
@@ -93,8 +107,15 @@ namespace StutterFix
             var mg = new Dictionary<ValueTuple<long, long, long, long, long>, int>();
             var mgs = new Dictionary<ValueTuple<long, long, long, long, long, int>, int>();
             var dup = new Dictionary<ValueTuple<long, long, long, long, long, int>, int>();
+            var pure = new Dictionary<ValueTuple<long, long>, int>(); var vars = new HashSet<int>();
             foreach (int i in moved)
             {
+                bool dp = a[i].Px != b[i].Px || a[i].Py != b[i].Py, dr = a[i].Rot != b[i].Rot, ds = a[i].Sx != b[i].Sx || a[i].Sy != b[i].Sy;
+                bool dc = a[i].R != b[i].R || a[i].G != b[i].G || a[i].B != b[i].B || a[i].A != b[i].A;
+                if (dc) sumColor++;
+                if (dp && !dr && !ds) { sumPure++; var pk = ValueTuple.Create(Q(b[i].Px - a[i].Px, 1000), Q(b[i].Py - a[i].Py, 1000)); int pc; pure.TryGetValue(pk, out pc); pure[pk] = pc + 1; }
+                else if (dp && dr && !ds) sumPosRot++; else if (dp && !dr && ds) sumPosScale++; else if (dp && dr && ds) sumPosRotScale++; else sumOther++;
+                vars.Add(b[i].Var);
                 sprites.Add(b[i].Sprite); texs.Add(b[i].Tex); mats.Add(b[i].Mat); orders.Add(((long)b[i].Layer << 32) | (uint)b[i].Order);
                 var key = ValueTuple.Create(Q(b[i].Px - a[i].Px, 1000), Q(b[i].Py - a[i].Py, 1000), Q(b[i].Rot - a[i].Rot, 100), Q(b[i].Sx - a[i].Sx, 1000), Q(b[i].Sy - a[i].Sy, 1000));
                 int c; mg.TryGetValue(key, out c); mg[key] = c + 1;
@@ -106,6 +127,7 @@ namespace StutterFix
             Comparison<int> cmp = (x, y) => { int d = bs[x].Layer.CompareTo(bs[y].Layer); if (d != 0) return d; d = bs[x].Order.CompareTo(bs[y].Order); return d != 0 ? d : x.CompareTo(y); };
             visIdx.Sort(cmp); moved.Sort(cmp);
             pairs++; sumVis += vis; sumMoved += moved.Count; sumTex += texs.Count; sumMat += mats.Count; sumSprite += sprites.Count; sumOrder += orders.Count;
+            sumVarN += vars.Count; sumRunsAllTexVar += RunsTV(visIdx, b); sumRunsMovedTexVar += RunsTV(moved, b); sumPureGroups += pure.Count; foreach (var kv in pure) histPure[Bin(kv.Value)] += kv.Value;
             sumRunsAll += Runs(visIdx, b); sumRunsMoved += Runs(moved, b); sumMotionGroups += mg.Count; sumMotionSpriteGroups += mgs.Count;
             int dupDecos = 0; foreach (var kv in dup) if (kv.Value > 1) dupDecos += kv.Value;
             sumDup += dupDecos;
@@ -126,6 +148,9 @@ namespace StutterFix
             sb.Append("  그리기 순서 줄에서 (텍스처,재질)이 이어지는 구간: 보이는 전체 ").Append((sumRunsAll / p).ToString("F0")).Append(" / 움직인 것만 ").Append((sumRunsMoved / p).ToString("F0")).Append('\n');
             sb.Append("  같은 움직임(위치·회전·크기 변화량 같음) 그룹 ").Append((sumMotionGroups / p).ToString("F0")).Append("개, 장식 수 기준 그룹 크기 분포 1:").Append(Pct(hist, 0)).Append(" 2:").Append(Pct(hist, 1)).Append(" 3~5:").Append(Pct(hist, 2)).Append(" 6~20:").Append(Pct(hist, 3)).Append(" 21+:").Append(Pct(hist, 4)).Append('\n');
             sb.Append("  같은 스프라이트+같은 움직임 그룹 ").Append((sumMotionSpriteGroups / p).ToString("F0")).Append("개, 분포 1:").Append(Pct(histSp, 0)).Append(" 2:").Append(Pct(histSp, 1)).Append(" 3~5:").Append(Pct(histSp, 2)).Append(" 6~20:").Append(Pct(histSp, 3)).Append(" 21+:").Append(Pct(histSp, 4)).Append('\n');
+            sb.Append("  재질 종류(셰이더·키워드·큐·마스크·뒤집기 기준, 인스턴스 아님) 움직인 장식 중 ").Append((sumVarN / p).ToString("F1")).Append(" | (레이어·순서값·텍스처·재질종류)가 이어지는 구간(=정렬대로 그릴 때 최소 그리기 횟수) 보이는 전체 ").Append((sumRunsAllTexVar / p).ToString("F0")).Append(" / 움직인 것만 ").Append((sumRunsMovedTexVar / p).ToString("F0")).Append((char)10);
+            sb.Append("  바뀐 값 종류(움직인 장식 평균): 위치만 ").Append((sumPure / p).ToString("F0")).Append(" 위치+회전 ").Append((sumPosRot / p).ToString("F0")).Append(" 위치+크기 ").Append((sumPosScale / p).ToString("F0")).Append(" 위치+회전+크기 ").Append((sumPosRotScale / p).ToString("F0")).Append(" 그 밖 ").Append((sumOther / p).ToString("F0")).Append(" | 색도 바뀐 것 ").Append((sumColor / p).ToString("F0")).Append((char)10);
+            sb.Append("  위치만 바뀌는 장식의 같은 변화량 그룹 ").Append((sumPureGroups / p).ToString("F0")).Append("개, 분포 1:").Append(Pct(histPure, 0)).Append(" 2:").Append(Pct(histPure, 1)).Append(" 3~5:").Append(Pct(histPure, 2)).Append(" 6~20:").Append(Pct(histPure, 3)).Append(" 21+:").Append(Pct(histPure, 4)).Append((char)10);
             sb.Append("  같은 자리·같은 모양·같은 스프라이트로 겹친 중복 장식 ").Append((sumDup / p).ToString("F0")).Append("개(움직인 것 중)");
             return sb.ToString();
         }
