@@ -34,6 +34,7 @@ namespace StutterFix
 
         internal static void Destroy()
         {
+            UiInputBlock.Clear(bootNoticeOwner);
             if (Instance == null) return;
             if (Open) Instance.FinishClose();   // 모드를 끌 때는 애니메이션 없이 바로
             UnityEngine.Object.Destroy(Instance.gameObject);
@@ -91,6 +92,92 @@ namespace StutterFix
         private Vector2 scroll;
         private bool cursorWas;
         private bool built;
+        private static readonly object bootNoticeOwner = new object();
+        private static bool bootNoticeDismissed, bootNoticeTest;
+        private static float bootNoticeShown, bootNoticeArmUntil;
+        private bool bootNoticeVisible;
+        private GUIStyle bootNoticeBody;
+        private string bootNoticeSource, bootNoticeWrapped;
+        private float bootNoticeWidth;
+
+#if DEV || AUTOTEST
+        internal static string BootNoticeCommand(string command)
+        {
+            switch (command.Trim().ToLowerInvariant())
+            {
+                case "show": bootNoticeTest = true; bootNoticeDismissed = false; bootNoticeShown = 0f; break;
+                case "reset": bootNoticeTest = false; bootNoticeDismissed = false; bootNoticeShown = 0f; break;
+                case "state": return BootNoticeState();
+                default: return "bootnotice show|state|reset";
+            }
+            bootNoticeArmUntil = 0f;
+            return BootNoticeState();
+        }
+        private static string BootNoticeState()
+        {
+            return "bootnotice: needsRestart=" + BootConfig.NeedsRestart + ", resetByOutside=" + BootConfig.ResetByOutside
+                + ", test=" + bootNoticeTest + ", dismissed=" + bootNoticeDismissed + ", shown=" + bootNoticeShown.ToString("F1");
+        }
+#endif
+
+        private void TickBootNotice()
+        {
+            bootNoticeVisible = false;
+            if (!bootNoticeDismissed && bootNoticeShown < 20f && (BootConfig.NeedsRestart || bootNoticeTest)
+                && !Open && !Hitch.Playing && !ADOBase.isLevelEditor)
+            {
+                string scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+                bootNoticeVisible = scene != "" && scene != "scnGame" && scene != "scnEditor"
+                    && scene != "scnSplash" && scene != "scnLoading" && scene != "scnIntro";
+                if (bootNoticeVisible) bootNoticeShown = Mathf.Min(20f, bootNoticeShown + Time.unscaledDeltaTime);
+            }
+            if (!bootNoticeVisible) UiInputBlock.Clear(bootNoticeOwner);
+        }
+
+        private void DrawBootNotice()
+        {
+            if (!built) Build();
+            if (bootNoticeBody == null) bootNoticeBody = new GUIStyle(sBody) { fontSize = 13, wordWrap = false, normal = { textColor = Hex(0x8A8F98) } };
+            float sc = ScaleNow(), width = Mathf.Min(560f, Screen.width / sc - 24f);
+            string body = BootConfig.ResetByOutside || bootNoticeTest
+                ? T("Steam 업데이트로 그래픽 설정(boot.config)이 초기화됐습니다. StutterFix 가 다시 써 뒀지만 게임을 한 번 다시 시작해야 적용됩니다. 그 전에는 프레임이 낮게 나올 수 있습니다.",
+                    "Steam updates reset the graphics settings (boot.config). StutterFix restored them, but you need to restart the game once to apply them. Frame rates may be lower until then.")
+                : T("그래픽 설정을 바꿨습니다. 다시 시작하면 적용됩니다.", "Graphics settings changed. Restart the game to apply them.");
+            string block = RestartAdvisor.RecentBlock();
+            if (bootNoticeSource != body || bootNoticeWidth != width)
+            {
+                bootNoticeSource = body; bootNoticeWidth = width;
+                bootNoticeWrapped = Wrapped(body, bootNoticeBody, width - 32f);
+            }
+            body = bootNoticeWrapped;
+            if (block != null) block = Wrapped(block, bootNoticeBody, width - 32f);
+            float textHeight = bootNoticeBody.CalcHeight(new GUIContent(body), width - 32f);
+            float blockHeight = block == null ? 0f : bootNoticeBody.CalcHeight(new GUIContent(block), width - 32f) + 8f;
+            var card = new Rect((Screen.width / sc - width) / 2f, 24f, width, 88f + textHeight + blockHeight);
+            UiInputBlock.Place(bootNoticeOwner, new Rect(card.x * sc, card.y * sc, card.width * sc, card.height * sc));
+            var matrix = GUI.matrix;
+            try
+            {
+                GUI.matrix = Matrix4x4.Scale(new Vector3(sc, sc, 1f));
+                Fill(card, Page, 6);
+                GUI.Label(new Rect(card.x + 16, card.y + 12, width - 32, 24), T("한 번 다시 시작해 주세요", "Please restart once"), sRowTitle);
+                GUI.Label(new Rect(card.x + 16, card.y + 40, width - 32, textHeight), body, bootNoticeBody);
+                if (block != null) GUI.Label(new Rect(card.x + 16, card.y + 44 + textHeight, width - 32, blockHeight), block, bootNoticeBody);
+                float y = card.yMax - 36;
+                bool armed = Time.realtimeSinceStartup < bootNoticeArmUntil;
+                if (GUI.Button(new Rect(card.x + 16, y, width - 130, 28), armed ? T("한 번 더 누르면 재시작", "Click again to restart") : T("지금 다시 시작", "Restart now"), sPrimary))
+                {
+                    if (armed) { RestartAdvisor.Restart(RestartAdvisor.WillReopen()); bootNoticeArmUntil = RestartAdvisor.RecentBlock() != null ? Time.realtimeSinceStartup + 6f : 0f; }
+                    else bootNoticeArmUntil = Time.realtimeSinceStartup + 3f;
+                }
+                if (GUI.Button(new Rect(card.xMax - 102, y, 86, 28), T("나중에", "Later"), sBody))
+                {
+                    bootNoticeDismissed = true;
+                    UiInputBlock.Clear(bootNoticeOwner);
+                }
+            }
+            finally { GUI.matrix = matrix; }
+        }
         private float scale = 1f, warmedScale = -1f;
         // ── 애니메이션 ─────────────────────────────────────────────────
         // show: 창이 나타난 정도(0~1). 닫을 때도 0까지 내려간 뒤에야 실제로 닫는다.
@@ -154,6 +241,7 @@ namespace StutterFix
         private void Update()
         {
             if (Main.Config == null) return;
+            TickBootNotice();
             // 닫혀 있고 곡이 도는 동안에는 OnGUI 가 아무것도 그리지 않는다(PreWarm·업데이트 알림 모두 곡 중엔 건너뜀). 유니티가 프레임마다
             // GUILayout 준비를 하지 않게 끈다. 여는 키는 이 Update 에서 받으므로 열리면 같은 프레임의 OnGUI 전에 다시 켜진다.
             useGUILayout = Open || closing || !Hitch.Playing;
@@ -315,7 +403,7 @@ namespace StutterFix
 
         private void OnGUI()
         {
-            if (!Open) { PreWarm(); Updater.DrawNotice(false); return; }
+            if (!Open) { PreWarm(); if (bootNoticeVisible && !Hitch.Playing && !ADOBase.isLevelEditor) DrawBootNotice(); else Updater.DrawNotice(false); return; }
             if (!built) Build();
             CaptureKey();
 

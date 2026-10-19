@@ -45,7 +45,7 @@ namespace StutterFix
             reasons.Clear();
             try
             {
-                if (BootConfig.Status != null && BootConfig.Status.Contains("다음 실행"))
+                if (BootConfig.NeedsRestart)
                     reasons.Add(SettingsWindow.T("멀티스레드 그리기 설정을 바꿨습니다 (다시 켜야 적용)", "Multithreaded rendering was changed (applies after restart)"));
                 if (dllPath != null && File.Exists(dllPath) && File.GetLastWriteTimeUtc(dllPath) > dllTime.AddSeconds(1))
                     reasons.Add(SettingsWindow.T("모드 파일이 새 버전으로 바뀌었습니다", "The mod file was updated"));

@@ -1315,6 +1315,9 @@ namespace StutterFix
                 case "uiscroll":
                     SettingsWindow.ScrollForTest(float.Parse(arg, System.Globalization.CultureInfo.InvariantCulture));
                     return true;
+                case "bootnotice":
+                    Log(SettingsWindow.BootNoticeCommand(arg));
+                    return true;
                 case "shot":
                 {
                     // shot <이름>: 화면 캡처를 모드 폴더 shots/<이름>.png 로 (그 프레임 끝에 저장된다)

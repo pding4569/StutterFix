@@ -28,6 +28,11 @@ namespace StutterFix
         private const string ModeKey = "gfx-threading-mode";
 
         internal static string Status = "";
+        internal static bool NeedsRestart { get; private set; }
+        internal static bool ResetByOutside { get; private set; }
+        private static bool captured, runningBitblt, wroteSettings;
+        private static bool runningJobs;
+        private static string runningMode;
 
         private static string ConfigPath { get { return Path.Combine(Application.dataPath, "boot.config"); } }
         private static string BackupPath { get { return ConfigPath + ".stutterfix-backup"; } }
@@ -75,7 +80,7 @@ namespace StutterFix
             catch { return false; }
         }
 
-        internal static void Apply(bool enable, bool flip)
+        internal static void Apply(bool enable, bool flip, bool userChange = true)
         {
             try
             {
@@ -83,6 +88,22 @@ namespace StutterFix
                 if (!File.Exists(path)) { Status = "boot.config 없음"; return; }
 
                 var lines = new List<string>(File.ReadAllLines(path));
+                if (!captured)
+                {
+                    // SystemInfo reflects command-line overrides as well as boot.config.
+                    string mode = SystemInfo.renderingThreadingMode.ToString();
+                    runningJobs = mode.Contains("Jobified") || mode.Contains("Split");
+                    runningMode = Value(lines, ModeKey);
+                    runningBitblt = Find(lines, BitbltKey) >= 0;
+                    foreach (string arg in Environment.GetCommandLineArgs())
+                    {
+                        if (arg == "-force-d3d11-bitblt-model") runningBitblt = true;
+                        if (arg == "-force-d3d11-flip-model") runningBitblt = false;
+                    }
+                    captured = true;
+                }
+                bool outside = !userChange && ((enable && Find(lines, JobsKey) < 0)
+                    || (flip && Find(lines, BitbltKey) >= 0));
                 if ((enable || flip) && !File.Exists(BackupPath)) File.Copy(path, BackupPath);
 
                 // 원래 값은 백업에서 가져온다. 백업이 없으면 바꾼 적이 없다는 뜻이다.
@@ -110,6 +131,14 @@ namespace StutterFix
                 if (changed || repair)
                 {
                     File.WriteAllText(path, string.Join(nl, lines.ToArray()) + nl);
+                    if (changed) wroteSettings = true;
+                    bool pending = wroteSettings && (enable != runningJobs
+                        || (Find(lines, BitbltKey) >= 0) != runningBitblt
+                        || Value(lines, ModeKey) != runningMode);
+                    if (pending && (!NeedsRestart || ResetByOutside != outside))
+                        Main.Entry.Logger.Log("[그래픽 설정] 이번 실행은 boot.config 가 적용되지 않았습니다 (" + (outside ? "외부 초기화" : "사용자 변경") + ")");
+                    NeedsRestart = pending;
+                    ResetByOutside = pending && outside;
                     if (repair && !changed) Main.Entry.Logger.Log("boot.config 줄 끝을 원래대로(LF) 고침 (다음 실행부터 적용)");
                     Main.Entry.Logger.Log("boot.config 수정: " + (enable ? JobsKey + "=" + JobsValue + " 추가" : JobsKey + " 제거") + ", 화면 출력 " + (flip ? "최신(Flip)" : "원래대로") + " (다음 실행부터 적용)");
                     Status = Describe() + " | 다음 실행부터 적용됩니다";
