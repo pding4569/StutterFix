@@ -47,7 +47,6 @@ namespace StutterFix
 
         internal sealed class Rec
         {
-            internal int WakeEpoch = -1;   // Dormancy.SleepEpoch 가 이 값이면 이 기록의 장식은 깨어 있다 (Wake 해시 조회 생략용)
             internal int BatchSlot = -1;
             internal long BatchOrder;
 #if DEV || AUTOTEST
@@ -204,7 +203,7 @@ namespace StutterFix
             if (reuseProxy && !oldR.InList && ReferenceEquals(oldR.D, dec) && oldR.Key == key)
             {
                 r = oldR; Reused++;
-                r.Pos = 0f; r.Started = false; r.Running = true; r.Stepped = false; r.WakeEpoch = -1;
+                r.Pos = 0f; r.Started = false; r.Running = true; r.Stepped = false;
                 r.Shadow = null; r.SDone = false; r.SStepped = false;
                 r.Dur = dur; r.E = ease;
             }
@@ -379,8 +378,8 @@ namespace StutterFix
                 case 5: if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FLast; else setRot(r.D, r.FLast); break;
                 case 12: setParOffX(r.D, r.FLast); break;
                 case 13: setParOffY(r.D, r.FLast); break;
-                case 9: { int ep = Dormancy.SleepEpoch; if (r.WakeEpoch == ep) Dormancy.AwakeHint = r.D; setCol(r.D, r.CLast); Dormancy.AwakeHint = null; r.WakeEpoch = ep; break; }
-                case 10: { int ep = Dormancy.SleepEpoch; if (r.WakeEpoch == ep) Dormancy.AwakeHint = r.D; setOpa(r.D, r.FLast); Dormancy.AwakeHint = null; r.WakeEpoch = ep; break; }
+                case 9: setCol(r.D, r.CLast); break;
+                case 10: setOpa(r.D, r.FLast); break;
             }
         }
 

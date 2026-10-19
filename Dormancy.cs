@@ -83,15 +83,8 @@ namespace StutterFix
         public static void WakeBase(scrDecoration __instance) { hbDirty = true; Wake(__instance); }
         internal static void MarkHitboxDirty() { hbDirty = true; }   // ExitFix: Setup 을 건너뛴 장식이 있을 때 (Setup 뒤에 하던 것과 같게)
 
-        // 색·불투명도 단계마다 불리는 Wake 의 해시 조회(dormant.Remove)를 줄인다 (표본 프로파일 1.9%).
-        // 잠든 장식은 Sleep() 으로만 dormant 에 들어가고 그때마다 SleepEpoch 가 오른다. DecoAnim 기록이 "SleepEpoch 가 같은 채로 이미 한 번 깨웠다" 면
-        // 그 장식은 지금 dormant 에 없다 → 그 호출 동안 AwakeHint 로 알려 Wake 를 건너뛴다.
-        internal static int SleepEpoch;
-        internal static scrDecoration AwakeHint;
-        private static int sleptSincePrepare;
         private static void Wake(scrDecoration d)
         {
-            if (ReferenceEquals(d, AwakeHint)) return;
             if (dormant.Count == 0 || (object)d == null) return;
             if (dormant.Remove(d)) { woken.Add(d); Wakes++; }
         }
@@ -124,16 +117,14 @@ namespace StutterFix
                 source = all; sourceCount = all.Count; sourceVersion = ver; lastDisable = disable;
                 awake.Clear(); awake.AddRange(all);
                 inAwake.Clear(); foreach (var d in all) if ((object)d != null) inAwake.Add(d);
-                dormant.Clear(); woken.Clear(); sleptSincePrepare = 0;
+                dormant.Clear(); woken.Clear();
                 Rebuilds++;
                 return;
             }
 
             // 지난 프레임에 잠든 것으로 표시된 것을 빼고, 그 사이 깨운 것을 넣는다
-            // 새로 잠든 장식이 없으면 걸러낼 것이 없다: 매 프레임 깨어 있는 장식 전체를 해시 조회하고 배열에 다시 쓰던 것(프로파일 합 약 2%)을 생략
-            if (dormant.Count > 0 && sleptSincePrepare > 0)
+            if (dormant.Count > 0)
             {
-                sleptSincePrepare = 0;
                 int w = 0;
                 for (int i = 0; i < awake.Count; i++)
                 {
@@ -205,7 +196,7 @@ namespace StutterFix
         internal static void Sleep(scrDecoration d)
         {
             if (!Enabled || broken || source == null) return;
-            if (dormant.Add(d)) { Slept++; SleepEpoch++; sleptSincePrepare++; }
+            if (dormant.Add(d)) Slept++;
         }
 
         // (측정용) 매 프레임 훑는(깨어 있는) 장식 중 실제로 화면에 안 그려진 것(카메라 밖) 수. 화면 밖 장식 갱신을 미루면 얼마나 줄지 가늠한다.
@@ -246,7 +237,7 @@ namespace StutterFix
         {
             if (source == null && dormant.Count == 0) return;
             source = null; sourceCount = -1; sourceVersion = -1;
-            awake.Clear(); dormant.Clear(); woken.Clear(); inAwake.Clear(); sleptSincePrepare = 0; SleepEpoch++;
+            awake.Clear(); dormant.Clear(); woken.Clear(); inAwake.Clear();
         }
 
         internal static string Stat()
