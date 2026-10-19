@@ -1,0 +1,22 @@
+using System;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
+public static class BuildDecoGpu {
+ public static void Build() {
+  PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64,false);
+  PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64,new[]{UnityEngine.Rendering.GraphicsDeviceType.Direct3D11});
+  PlayerSettings.stripUnusedMeshComponents=false;
+  // Explicitly retain instancing variants in asset bundles.
+  var settings=new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/GraphicsSettings.asset")[0]);
+  var p=settings.FindProperty("m_InstancingStripping"); if(p==null)throw new Exception("instancing stripping setting missing");
+  p.intValue=2;settings.ApplyModifiedProperties(); // KeepAll (StripUnused=0 would remove INSTANCING_ON)
+  AssetDatabase.ImportAsset("Assets/DecoGpu/DecoGpu.shader",ImportAssetOptions.ForceSynchronousImport|ImportAssetOptions.ForceUpdate);
+  var s=AssetDatabase.LoadAssetAtPath<Shader>("Assets/DecoGpu/DecoGpu.shader");
+  if(!s || ShaderUtil.ShaderHasError(s))throw new Exception("DecoGpu shader failed");
+  Directory.CreateDirectory("DecoGpuOutput");
+  var b=new AssetBundleBuild{assetBundleName="stutterfix_decogpu",assetNames=new[]{"Assets/DecoGpu/DecoGpu.shader"}};
+  if(BuildPipeline.BuildAssetBundles("DecoGpuOutput",new[]{b},BuildAssetBundleOptions.ChunkBasedCompression | BuildAssetBundleOptions.ForceRebuildAssetBundle,BuildTarget.StandaloneWindows64)==null)throw new Exception("bundle failed");
+  File.WriteAllText("DecoGpuOutput/build.txt","OK Unity "+Application.unityVersion);
+ }
+}

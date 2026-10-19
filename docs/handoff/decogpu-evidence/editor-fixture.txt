@@ -1,0 +1,11 @@
+Unity Editor 6000.3.10f1, Direct3D11, Gamma
+Synthetic Sprites/Default vs bundled Hidden/StutterFix/DecoGpu
+128x128 ARGB32 linear RT, 2 sprites, explicit sortingOrder 0/1
+case=0 changed=858/16384 max=2
+case=1 changed=992/16384 max=2
+case=2 changed=993/16384 max=2
+case=3 changed=1062/16384 max=1
+cases=4 changed-total=3905 maximum=2
+scope=Editor-SpritesDefault-synthetic-not-game
+Bundle SHA256=790486639AB1393D1CCA39B6F93A99160610BA7FE6F9F527C8FF9A952B423452
+Vertex/fragment instancing variants: before=2, after-built-in-stripping=2

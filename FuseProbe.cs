@@ -19,6 +19,7 @@ namespace StutterFix
         private static long frames0, fxStarts, recNew, recRestart, recCut, animTicks0;
         private static int frameAt;
         private static double animMs0;
+        private static long gpuTicks0;
         private static readonly Dictionary<scrDecoration, int> perDeco = new Dictionary<scrDecoration, int>();
         private static readonly int[] durHist = new int[8];   // 0~0.05 ~0.1 ~0.2 ~0.5 ~1 ~2 ~5 그 이상 (초, 곡 시간)
 
@@ -54,6 +55,7 @@ namespace StutterFix
             Install();
             On = true; lateTicks = fxTicks = 0; fxStarts = recNew = recRestart = recCut = 0; perDeco.Clear(); Array.Clear(durHist, 0, durHist.Length);
             frameAt = Time.frameCount; animMs0 = DecoAnim.UpdateMs;
+            gpuTicks0 = DecoGpu.TotalTicks;
             return "세기 시작 (곡 " + SongTime() + "초)";
         }
         private static string SongTime() { var c = scrConductor.instance; return c == null ? "?" : c.songposition_minusi.ToString("F1"); }
@@ -67,7 +69,8 @@ namespace StutterFix
             return string.Format("곡 {0}초까지 {1}프레임 | 프레임당: 장식 관리자 LateUpdate {2:F2}ms, 장식 이동 효과 시작 {3:F2}개 {4:F2}ms, 모드 애니메이션 갱신 {5:F2}ms | 애니메이션 기록 {6}개 (프레임당 {7:F1}) 중 같은 장식·속성 다시 시작 {8}, 끝나기 전에 끊고 다시 {9} | 장식 {10}개가 받음(7개 넘게 받은 장식 {11}, 가장 많이 {12}) | 길이 <0.05 {13} <0.1 {14} <0.2 {15} <0.5 {16} <1 {17} <2 {18} <5 {19} 그 이상 {20}",
                 SongTime(), f, lateTicks / tk / f, (double)fxStarts / f, fxTicks / tk / f, (DecoAnim.UpdateMs - animMs0) / f,
                 recNew, (double)recNew / f, recRestart, recCut, perDeco.Count, multi, maxPer,
-                durHist[0], durHist[1], durHist[2], durHist[3], durHist[4], durHist[5], durHist[6], durHist[7]);
+                durHist[0], durHist[1], durHist[2], durHist[3], durHist[4], durHist[5], durHist[6], durHist[7])
+                + " | DecoGpu 계산·제출 " + ((DecoGpu.TotalTicks - gpuTicks0) / tk / f).ToString("F3") + "ms (LateUpdate 밖, GPU 시간 아님)";
         }
 
         private static FieldInfo F(Type t, string n) { return AccessTools.Field(t, n); }

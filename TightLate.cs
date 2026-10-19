@@ -174,6 +174,9 @@ namespace StutterFix
         }
         private static bool Process(Entry e, scrDecoration d, Transform parent, bool parentOK, Transform camera, Vector3 cam)
         {
+#if DEV || AUTOTEST
+            if (DecoGpu.SkipLate(d)) { if (e != null) e.Has = false; return true; }
+#endif
             int reason = Eligible(e, parent, parentOK, camera);
             if (reason == 3 && e.Engine != null && Eligible(e, parent, parentOK, camera, true) == 0)
             {

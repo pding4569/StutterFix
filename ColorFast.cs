@@ -68,6 +68,15 @@ namespace StutterFix
         internal static bool TryOpacity(scrDecoration d, float value) => TrySet(d, default(Color), value, true);
         private static bool TrySet(scrDecoration d, Color c, float o, bool onlyOpacity)
         {
+#if DEV || AUTOTEST
+            if (DecoGpu.Owns(d))
+            {
+                if (onlyOpacity) opacity(d) = o; else color(d) = c;
+                var dc = color(d); dc.a = dc.a * opacity(d) * 1f;
+                rendered(d) = dc;
+                return true;
+            }
+#endif
             if (!Enabled) return false; // default off: no counters, hash lookup, clock or native calls
             if (!compatible || failed) return No(0);
             if ((object)d == null || d.GetType() != typeof(scrVisualDecoration)) return No(1);

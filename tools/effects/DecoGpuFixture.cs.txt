@@ -1,0 +1,56 @@
+// Unity Editor only. Synthetic Sprites/Default fixture, not the game or its Tile shader.
+using System;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Rendering;
+public static class DecoGpuFixture {
+ public static void Run() {
+  AssetBundle bundle=null; GameObject root=null; RenderTexture rt=null; Texture2D tex=null,a=null,b=null;
+  Sprite sprite=null;Mesh mesh=null;Material normal=null,instanced=null;CommandBuffer cb=null;Camera camera=null;
+  try {
+   bundle=AssetBundle.LoadFromFile(Path.GetFullPath("DecoGpuOutput/stutterfix_decogpu"));
+   if(!bundle)throw new Exception("bundle missing");
+   var shader=bundle.LoadAsset<Shader>("Assets/DecoGpu/DecoGpu.shader");
+   if(!shader || !shader.isSupported || !SystemInfo.supportsInstancing)throw new Exception("instancing unsupported");
+   root=new GameObject("DecoGpuFixture");camera=root.AddComponent<Camera>();camera.enabled=false;
+   camera.orthographic=true;camera.orthographicSize=1;camera.transform.position=new Vector3(0,0,-10);
+   camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.1f,.2f,.3f,1);camera.allowHDR=false;camera.allowMSAA=false;camera.cullingMask=1<<30;
+   rt=new RenderTexture(128,128,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear);rt.Create();camera.targetTexture=rt;
+   tex=new Texture2D(8,8,TextureFormat.RGBA32,false,true);tex.filterMode=FilterMode.Bilinear;tex.wrapMode=TextureWrapMode.Clamp;
+   var pixels=new Color[64];for(int n=0;n<64;n++)pixels[n]=new Color((n%8)/7f,.6f,(n/8)/7f,.55f);tex.SetPixels(pixels);tex.Apply();
+   sprite=Sprite.Create(tex,new Rect(0,0,8,8),new Vector2(.5f,.5f),8,0,SpriteMeshType.FullRect);
+   normal=new Material(Shader.Find("Sprites/Default"));instanced=new Material(shader){enableInstancing=true,mainTexture=tex};
+   var rs=new SpriteRenderer[2];
+   for(int n=0;n<2;n++){var go=new GameObject("sprite"+n);go.layer=30;go.transform.SetParent(root.transform);rs[n]=go.AddComponent<SpriteRenderer>();rs[n].sprite=sprite;rs[n].sharedMaterial=normal;rs[n].sortingOrder=n;}
+   mesh=new Mesh();mesh.vertices=Array.ConvertAll(sprite.vertices,p=>new Vector3(p.x,p.y,0));mesh.uv=sprite.uv;mesh.triangles=Array.ConvertAll(sprite.triangles,x=>(int)x);
+   cb=new CommandBuffer();camera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha,cb);
+   int cases=0,maximum=0;long changedTotal=0;var output=new System.Text.StringBuilder();
+   for(int variant=0;variant<4;variant++) {
+    var matrices=new Matrix4x4[2];var colors=new Vector4[2];
+    for(int n=0;n<2;n++){
+     rs[n].forceRenderingOff=false;rs[n].color=new Color(.8f-n*.3f,.7f,.9f,.75f);
+     var tr=rs[n].transform;tr.position=new Vector3(n==0?-.25f:.25f,0,0);tr.rotation=Quaternion.Euler(0,0,variant*17);tr.localScale=new Vector3(.8f+variant*.1f,.8f,1);
+     rs[n].flipX=(variant&1)!=0;rs[n].flipY=(variant&2)!=0;
+     matrices[n]=tr.localToWorldMatrix*Matrix4x4.Scale(new Vector3(rs[n].flipX?-1:1,rs[n].flipY?-1:1,1));colors[n]=rs[n].color;
+    }
+    cb.Clear();camera.Render();a=Read(rt);
+    foreach(var r in rs)r.forceRenderingOff=true;
+    var mpb=new MaterialPropertyBlock();mpb.SetVectorArray("_InstanceTint",colors);cb.DrawMeshInstanced(mesh,0,instanced,0,matrices,2,mpb);
+    camera.Render();b=Read(rt);var aa=a.GetPixels32();var bb=b.GetPixels32();int changed=0,max=0;
+    for(int n=0;n<aa.Length;n++){var x=aa[n];var y=bb[n];int d=Math.Max(Math.Max(Math.Abs(x.r-y.r),Math.Abs(x.g-y.g)),Math.Max(Math.Abs(x.b-y.b),Math.Abs(x.a-y.a)));if(d>0)changed++;max=Math.Max(max,d);}
+    maximum=Math.Max(maximum,max);changedTotal+=changed;cases++;output.AppendLine("case="+variant+" changed="+changed+"/"+aa.Length+" max="+max);
+    UnityEngine.Object.DestroyImmediate(a);a=null;UnityEngine.Object.DestroyImmediate(b);b=null;
+   }
+   output.AppendLine("cases="+cases+" changed-total="+changedTotal+" maximum="+maximum+" api="+SystemInfo.graphicsDeviceType+" color-space="+QualitySettings.activeColorSpace+" scope=Editor-SpritesDefault-synthetic-not-game");
+   File.WriteAllText("DecoGpuOutput/fixture.txt",output.ToString());
+   // Any nonzero difference is evidence, not hidden with a tolerance/pass label.
+   Debug.Log(output.ToString());
+  } finally {
+   if(camera && cb!=null)camera.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha,cb);cb?.Release();
+   foreach(var o in new UnityEngine.Object[]{root,mesh,normal,instanced,sprite,tex,a,b})if(o)UnityEngine.Object.DestroyImmediate(o);
+   if(rt){rt.Release();UnityEngine.Object.DestroyImmediate(rt);}if(bundle)bundle.Unload(true);
+  }
+ }
+ static Texture2D Read(RenderTexture rt){var old=RenderTexture.active;try{RenderTexture.active=rt;var t=new Texture2D(rt.width,rt.height,TextureFormat.RGBA32,false,true);t.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0);t.Apply();return t;}finally{RenderTexture.active=old;}}
+}

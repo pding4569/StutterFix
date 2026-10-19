@@ -1,0 +1,396 @@
+#if DEV || AUTOTEST
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using HarmonyLib;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+namespace StutterFix
+{
+    // Explicit render-side experiment. Never enabled by configuration or load.
+    // The command buffer is a separate transparent band: NOT a transparent-sort replacement.
+    internal sealed class DecoGpu : MonoBehaviour
+    {
+        const string PatchId = "StutterFix.decogpu";
+        static DecoGpu session;
+        static readonly AccessTools.FieldRef<scrDecoration, Color> ColorField = AccessTools.FieldRefAccess<scrDecoration, Color>("color");
+        static readonly AccessTools.FieldRef<scrDecoration, float> Opacity = AccessTools.FieldRefAccess<scrDecoration, float>("opacity");
+        static readonly AccessTools.FieldRef<scrDecoration, Color> Rendered = AccessTools.FieldRefAccess<scrDecoration, Color>("rendererColor");
+        static readonly AccessTools.FieldRef<scrCamera, Camera> GameCamera = AccessTools.FieldRefAccess<scrCamera, Camera>("camobj");
+        static readonly AccessTools.FieldRef<scrParallax, Vector2> StartPos = AccessTools.FieldRefAccess<scrParallax, Vector2>("startPosition");
+        static readonly AccessTools.FieldRef<scrParallax, Vector2> EndPos = AccessTools.FieldRefAccess<scrParallax, Vector2>("endPosition");
+        internal static long TotalTicks;
+        static long restores, restoreMismatch;
+        static string last = "not run";
+        sealed class Item
+        {
+            internal scrVisualDecoration D;
+            internal SpriteRenderer R;
+            internal Sprite Sprite;
+            internal Material Source;
+            internal TightLate.Entry Entry;
+            internal bool Off;
+            internal int Layer, Order, UnityLayer;
+            internal Matrix4x4 Child;
+            internal Transform ChildTransform;
+            internal Vector2 Offset, Cropped, TextureScale;
+            internal float ScaleMultiplier;
+            internal Color Tint;
+            internal string Signature;
+        }
+        sealed class Batch
+        {
+            internal Mesh Mesh;
+            internal Material Material;
+            internal readonly List<Item> Items = new List<Item>();
+            internal readonly Matrix4x4[] Matrices = new Matrix4x4[1023];
+            internal readonly Vector4[] Colors = new Vector4[1023];
+            internal readonly MaterialPropertyBlock Props = new MaterialPropertyBlock();
+        }
+        readonly Dictionary<scrDecoration, Item> owned = new Dictionary<scrDecoration, Item>();
+        readonly List<Batch> batches = new List<Batch>();
+        Camera camera;
+        scrDecorationManager manager;
+        CommandBuffer commands;
+        AssetBundle bundle;
+        Shader shader;
+        Harmony harmony;
+        bool stopping, comparing;
+        long computeTicks, submitTicks, calls, draws;
+        int currentDraws;
+        static readonly int TintId = Shader.PropertyToID("_InstanceTint");
+
+        internal static bool Owns(scrDecoration d) => session != null && !session.stopping
+            && (object)d != null && session.owned.ContainsKey(d);
+        internal static bool SkipLate(scrDecoration d)
+        {
+            if (!Owns(d)) return false;
+            var s = session;
+            var i = s.owned[d];
+            if (!s.Valid(i)) { Stop(); return false; }
+            return true;
+        }
+        internal static string Command(string arg)
+        {
+            var words = arg.Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+            if (words.Length == 0) return "decogpu begin [limit=500]|end|state|compare";
+            if (words[0] == "end") { last="explicit end"; Stop(); return State(); }
+            if (words[0] == "state") return State();
+            if (words[0] == "compare") return session == null ? "decogpu inactive" : session.Compare();
+            if (words[0] != "begin") return "decogpu begin [limit=500]|end|state|compare";
+            if (session != null) return "already active; " + State();
+            int cap = words.Length > 1 ? int.Parse(words[1], CultureInfo.InvariantCulture) : 500;
+            if (cap < 1 || cap > 10000) throw new ArgumentOutOfRangeException("limit", "1..10000");
+            if (!Hitch.Playing || SceneReset.Resetting || !TightLate.Enabled || !ColorFast.Enabled || DecoEngine.Enabled
+                || ADOBase.controller == null || !ADOBase.controller.disableV15Features)
+                return "requires playing legacy map, TightLate+ColorFast on, DecoEngine off";
+            if (GraphicsSettings.currentRenderPipeline != null || !SystemInfo.supportsInstancing)
+                return "requires Built-in RP + instancing";
+            // Check hooks before installing ours. No per-frame reflection/patch enumeration.
+            foreach (var t in new[] {typeof(scrDecoration), typeof(scrVisualDecoration)})
+                foreach (var m in t.GetMethods(AccessTools.all))
+                {
+                    if (m.Name != "UpdatePosition" && m.Name != "LogicUpdate" && m.Name != "ApplyColor"
+                        && m.Name != "SetColor" && m.Name != "SetOpacity") continue;
+                    var p = Harmony.GetPatchInfo(m);
+                    if (p != null && p.Owners.Any(x => x != Main.Entry.Info.Id && x != "StutterFix.fuseprobe"))
+                        return "foreign hook: " + t.Name + "." + m.Name;
+                }
+            var go = new GameObject("StutterFix.DecoGpu") {hideFlags = HideFlags.HideAndDontSave};
+            var s = go.AddComponent<DecoGpu>(); session = s;
+            try { s.Begin(cap); last = "active; separate transparent band, visual equivalence UNVERIFIED"; }
+            catch { Stop(); throw; }
+            return State();
+        }
+        static void Log(string s) => Main.Entry.Logger.Log("[decogpu] " + s);
+        static string Key(Material m)
+        {
+            if (!m || !m.shader) return "none";
+            var parts = new List<string> {m.shader.name, "queue=" + m.renderQueue, "keywords=" + string.Join(",", m.shaderKeywords)};
+            for (int n = 0; n < m.shader.GetPropertyCount(); n++)
+            {
+                string k = m.shader.GetPropertyName(n);
+                switch (m.shader.GetPropertyType(n))
+                {
+                    case ShaderPropertyType.Color: parts.Add(k + "=" + m.GetColor(k).ToString("R")); break;
+                    case ShaderPropertyType.Vector: parts.Add(k + "=" + m.GetVector(k).ToString("R")); break;
+                    case ShaderPropertyType.Float: case ShaderPropertyType.Range: parts.Add(k + "=" + m.GetFloat(k).ToString("R", CultureInfo.InvariantCulture)); break;
+                    case ShaderPropertyType.Texture:
+                        var tex = m.GetTexture(k); parts.Add(k + "=" + (tex ? tex.GetInstanceID() : 0) + "/" + m.GetTextureScale(k) + "/" + m.GetTextureOffset(k)); break;
+                }
+            }
+            return string.Join(";", parts);
+        }
+        void Survey(List<scrDecoration> running)
+        {
+            var sprites = new HashSet<int>(); var textures = new HashSet<int>(); var materials = new HashSet<int>();
+            var groups = new SortedDictionary<string, int>(); var sizes = new int[5];
+            int image = 0, mask = 0, hitbox = 0, mesh = 0, visible = 0;
+            foreach (var d in running)
+            {
+                if (!d) continue;
+                if (d.hitbox != 0) hitbox++;
+                var v = d as scrVisualDecoration; if (!v) continue; image++;
+                if (v.isMask()) mask++;
+                if ((bool)AccessTools.Field(typeof(scrVisualDecoration), "meshRendererEnabled").GetValue(v)) mesh++;
+                var r = v.spriteRenderer; if (!r || !r.sprite) continue;
+                if (d.GetVisible()) visible++;
+                sprites.Add(r.sprite.GetInstanceID()); textures.Add(r.sprite.texture.GetInstanceID());
+                if (r.sharedMaterial) materials.Add(r.sharedMaterial.GetInstanceID());
+                string k = "tex=" + r.sprite.texture.GetInstanceID() + ";layer=" + r.sortingLayerName + "/" + r.sortingLayerID
+                    + ";order=" + r.sortingOrder + ";" + Key(r.sharedMaterial);
+                groups.TryGetValue(k, out int c); groups[k] = c + 1;
+                var b = r.bounds; float minX = float.PositiveInfinity, maxX = float.NegativeInfinity, minY = minX, maxY = maxX;
+                for (int a = 0; a < 8; a++)
+                {
+                    var p = camera.WorldToScreenPoint(b.center + Vector3.Scale(b.extents, new Vector3((a&1)==0?-1:1,(a&2)==0?-1:1,(a&4)==0?-1:1)));
+                    minX = Mathf.Min(minX,p.x); maxX = Mathf.Max(maxX,p.x); minY = Mathf.Min(minY,p.y); maxY = Mathf.Max(maxY,p.y);
+                }
+                float side = Mathf.Max(maxX-minX,maxY-minY);
+                sizes[side < 128 ? 0 : side < 512 ? 1 : side < 1024 ? 2 : side < 2048 ? 3 : 4]++;
+            }
+            Log("survey running=" + running.Count + " image=" + image + " visible=" + visible + " mask=" + mask + " hitbox=" + hitbox
+                + " mesh=" + mesh + " sprites/textures/materials=" + sprites.Count + "/" + textures.Count + "/" + materials.Count
+                + " bounds-longest-pixels(<128/512/1024/2048/rest)=" + string.Join("/", sizes)
+                + " pipeline=" + (GraphicsSettings.currentRenderPipeline == null ? "Built-in" : "SRP") + " unity=" + Application.unityVersion);
+            foreach (var g in groups) Log("group count=" + g.Value + " " + g.Key);
+        }
+        void Begin(int cap)
+        {
+            camera = GameCamera(ADOBase.controller.camy);
+            if (!camera || camera.actualRenderingPath != RenderingPath.Forward) throw new InvalidOperationException("forward game camera required");
+            var running = new List<scrDecoration>(DecoAnim.RunningDecorations());
+            Survey(running); // setup cost intentionally outside measurement
+            using (var stream = typeof(DecoGpu).Assembly.GetManifestResourceStream("StutterFix.decogpu"))
+            {
+                if (stream == null) throw new InvalidOperationException("build effects/stutterfix_decogpu first (Unity Editor required)");
+                var bytes = new byte[stream.Length]; int n = 0;
+                while (n < bytes.Length) { int r = stream.Read(bytes,n,bytes.Length-n); if (r == 0) throw new System.IO.EndOfStreamException(); n += r; }
+                bundle = AssetBundle.LoadFromMemory(bytes);
+            }
+            if (!bundle) throw new InvalidOperationException("bundle load failed");
+            shader = bundle.LoadAsset<Shader>("Assets/DecoGpu/DecoGpu.shader");
+            if (!shader || !shader.isSupported) throw new InvalidOperationException("instancing shader unavailable");
+            foreach (var d in running)
+            {
+                if (owned.Count >= cap) break;
+                if (!d || d.GetType() != typeof(scrVisualDecoration)) continue;
+                var v = (scrVisualDecoration)d; var r = v.spriteRenderer;
+                var e = TightLate.EngineEntry(d, out int missing);
+                if (e == null || e.Engine != null || TightLate.EngineReason(e) != 0 || !r || !r.sprite
+                    || !r.enabled || r.forceRenderingOff || !r.gameObject.activeInHierarchy || r.HasPropertyBlock()
+                    || r.maskInteraction != SpriteMaskInteraction.None || r.drawMode != SpriteDrawMode.Simple
+                    || r.GetComponentInParent<SortingGroup>() != null || v.repeatX != 1 || v.repeatY != 1
+                    || !r.sharedMaterial || !r.sharedMaterial.shader || r.sharedMaterial.shaderKeywords.Length != 0
+                    || (r.sharedMaterial.shader.name != "Sprites/Default" && r.sharedMaterial.shader.name != "Sprites/Tile")
+                    || r.sharedMaterial.passCount != 1 || r.sprite.associatedAlphaSplitTexture != null
+                    || (camera.cullingMask & (1 << r.gameObject.layer)) == 0) continue;
+                if (manager != null && manager != d.manager) continue;
+                manager = d.manager;
+                var m = r.sharedMaterial;
+                owned.Add(d, new Item {D=v, R=r, Sprite=r.sprite, Source=m, Entry=e, Off=r.forceRenderingOff,
+                    Layer=r.sortingLayerID, Order=r.sortingOrder, UnityLayer=r.gameObject.layer,
+                    Child=d.pivotTrans.worldToLocalMatrix * r.transform.localToWorldMatrix,
+                    ChildTransform=d.childTransform, Offset=d.pivotOffsetVec, Cropped=d.croppedPivotOffset,
+                    TextureScale=d.textureScaleMultiplier, ScaleMultiplier=d.scaleMultiplier,
+                    Tint=m.HasProperty("_Color")?m.GetColor("_Color"):Color.white, Signature=Key(m)});
+            }
+            if (owned.Count == 0) throw new InvalidOperationException("no clean supported images; see survey/rejection criteria");
+            // Stable deterministic approximation only. Native tie-sort and foreign renderers are not reproduced.
+            var ordered = owned.Values.OrderBy(x => SortingLayer.GetLayerValueFromID(x.Layer)).ThenBy(x => x.Order).ThenBy(x => x.D.GetInstanceID());
+            Batch current = null; Item prev = null;
+            foreach (var i in ordered)
+            {
+                if (current == null || current.Items.Count == 1023 || prev.Sprite != i.Sprite || prev.Signature != i.Signature
+                    || prev.Layer != i.Layer || prev.Order != i.Order)
+                {
+                    current = new Batch(); batches.Add(current);
+                    var v = i.Sprite.vertices; var uv = i.Sprite.uv; var tri = i.Sprite.triangles;
+                    current.Mesh = new Mesh {name="DecoGpu.sprite", hideFlags=HideFlags.HideAndDontSave};
+                    current.Mesh.vertices = Array.ConvertAll(v, p => new Vector3(p.x,p.y,0));
+                    current.Mesh.uv = uv; current.Mesh.triangles = Array.ConvertAll(tri, x => (int)x);
+                    current.Mesh.RecalculateBounds();
+                    current.Material = new Material(shader) {enableInstancing=true, hideFlags=HideFlags.HideAndDontSave};
+                    current.Material.mainTexture = i.Sprite.texture;
+                }
+                current.Items.Add(i); prev = i;
+            }
+            commands = new CommandBuffer {name="StutterFix.DecoGpu (experimental transparent band)"};
+            camera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, commands);
+            harmony = new Harmony(PatchId);
+            harmony.Patch(AccessTools.Method(typeof(scrVisualDecoration), "ApplyColor"), prefix: new HarmonyMethod(typeof(DecoGpu), nameof(ApplyColorPrefix)));
+            foreach (var type in new[] { typeof(scrDecoration), typeof(scrVisualDecoration) })
+                foreach (var method in type.GetMethods(AccessTools.all))
+                    if (method.DeclaringType == type && (method.Name == "Setup" || method.Name == "SetSprite"
+                        || method.Name == "SetBlendMode" || method.Name == "SetMaskingType" || method.Name == "SetTile"
+                        || method.Name == "SetVisible" || method.Name == "EnableMeshRenderer"))
+                        harmony.Patch(method, prefix: new HarmonyMethod(typeof(DecoGpu), nameof(BoundaryPrefix)));
+            Camera.onPreCull += PreCull;
+            foreach (var i in owned.Values) i.R.forceRenderingOff = true;
+        }
+        public static bool ApplyColorPrefix(scrVisualDecoration __instance)
+        {
+            if (!Owns(__instance)) return true;
+            if (__instance.stickToFloor) { Stop(); return true; }
+            Color c = ColorField(__instance); c.a = c.a * Opacity(__instance) * 1f; Rendered(__instance) = c;
+            return false;
+        }
+        public static void BoundaryPrefix(scrDecoration __instance)
+        {
+            if (Owns(__instance)) { last="automatic fallback: game mutation boundary"; Stop(); }
+        }
+        bool Valid(Item i) => i.D && i.R && i.Entry != null && TightLate.EngineReason(i.Entry) == 0
+            && i.R.sprite == i.Sprite && i.R.sharedMaterial == i.Source && i.R.sortingLayerID == i.Layer
+            && i.R.sortingOrder == i.Order && i.R.gameObject.layer == i.UnityLayer && !i.R.HasPropertyBlock()
+            && !i.D.isMask() && i.D.repeatX == 1 && i.D.repeatY == 1
+            && ReferenceEquals(i.D.childTransform,i.ChildTransform) && i.D.pivotOffsetVec == i.Offset
+            && i.D.croppedPivotOffset == i.Cropped && i.D.textureScaleMultiplier == i.TextureScale
+            && i.D.scaleMultiplier == i.ScaleMultiplier;
+        void Update()
+        {
+            if (stopping) return;
+            if (!Hitch.Playing || SceneReset.Resetting || Time.timeScale == 0 || !manager || !camera
+                || !ADOBase.controller || GameCamera(ADOBase.controller.camy) != camera
+                || ADOBase.controller.paused
+                || !TightLate.Enabled || !ColorFast.Enabled || DecoEngine.Enabled) { Stop(); return; }
+            // No full property enumeration, string creation or extra Transform reads here.
+            // Game mutation setters end the session; foreign direct material/child writes are unsupported.
+        }
+        void PreCull(Camera c)
+        {
+            if (c != camera || stopping || comparing) return;
+            try { Build(); }
+            catch (Exception e) { last="render failure: " + e.Message; Stop(); Log(last); }
+        }
+        void Build()
+        {
+            long aggregateStart = Stopwatch.GetTimestamp();
+            long t = Stopwatch.GetTimestamp(); commands.Clear(); currentDraws = 0;
+            Vector3 cam = camera.transform.position;
+            foreach (var b in batches)
+            {
+                int n = 0;
+                foreach (var i in b.Items)
+                {
+                    if (!Valid(i)) throw new InvalidOperationException("eligibility changed");
+                    var d=i.D; var p=d.parallax; Vector2 pos=d.pivotPosVec + Vector2.zero;
+                    StartPos(p)=pos; p.posCamAtStart=pos;
+                    Vector2 u=(Vector2)(cam-p.posCamAtStart)*new Vector2(p.multiplier_x,p.multiplier_y)+StartPos(p);
+                    Vector2 cs=1f*(d.scaleMultiplier*d.textureScaleMultiplier);
+                    Vector2 result=u+d.parallaxOffset*cs/d.textureScaleMultiplier; EndPos(p)=result;
+                    Vector2 scale=d.scaleVec*cs*(Vector2)Vector3.one;
+                    var matrix=Matrix4x4.TRS(new Vector3(result.x,result.y,0),Quaternion.Euler(0,0,d.startRot+d.rotAngle),new Vector3(scale.x,scale.y,1))*i.Child;
+                    // Sprite flips are renderer metadata, not Transform values.
+                    matrix *= Matrix4x4.Scale(new Vector3(i.R.flipX?-1:1,i.R.flipY?-1:1,1));
+                    b.Matrices[n]=matrix; b.Colors[n]=Rendered(d)*i.Tint; n++;
+                    i.R.forceRenderingOff=true; // InvisibleSkip may have changed it during ApplyColor.
+                }
+                long beforeSubmit=Stopwatch.GetTimestamp(); computeTicks += beforeSubmit-t;
+                b.Props.SetVectorArray(TintId,b.Colors);
+                commands.DrawMeshInstanced(b.Mesh,0,b.Material,0,b.Matrices,n,b.Props); currentDraws++;
+                long after=Stopwatch.GetTimestamp(); submitTicks+=after-beforeSubmit; t=after;
+            }
+            calls++; draws+=currentDraws;
+            // All batches' aggregate times, with two timestamps per batch; no per-item clocks.
+            TotalTicks += Stopwatch.GetTimestamp() - aggregateStart;
+        }
+        string Compare()
+        {
+            // Two synchronous renders, isolated from performance evidence. No game Update between them.
+            // Pixel comparison includes command-band ordering and shader differences by design.
+            RenderTexture oldTarget=camera.targetTexture, oldActive=RenderTexture.active;
+            var rt=RenderTexture.GetTemporary(512,288,24,RenderTextureFormat.ARGB32);
+            Texture2D a=null,b=null;
+            var snapshots=new List<Tuple<Item,Vector3,Quaternion,Vector3,Color,bool>>();
+            try
+            {
+                Build(); comparing=true;
+                foreach(var i in owned.Values)
+                {
+                    var p=i.D.pivotTrans;
+                    snapshots.Add(Tuple.Create(i,p.position,p.rotation,p.localScale,i.R.color,i.R.forceRenderingOff));
+                    i.D.UpdatePosition(); i.R.color=Rendered(i.D); i.R.forceRenderingOff=i.Off;
+                }
+                commands.Clear(); camera.targetTexture=rt;
+                camera.Render(); a=Read(rt);
+                foreach(var i in owned.Values) i.R.forceRenderingOff=true;
+                Build(); camera.Render(); b=Read(rt);
+                var aa=a.GetPixels32();var bb=b.GetPixels32();int max=0,changed=0;
+                for(int n=0;n<aa.Length;n++)
+                {
+                    var x=aa[n];var y=bb[n];int delta=Math.Max(Math.Max(Math.Abs(x.r-y.r),Math.Abs(x.g-y.g)),Math.Max(Math.Abs(x.b-y.b),Math.Abs(x.a-y.a)));
+                    max=Math.Max(max,delta);if(delta!=0)changed++;
+                }
+                return "[decogpu] compare 512x288 max-channel="+max+" changed="+changed+"/"+aa.Length+" ratio="+((double)changed/aa.Length).ToString("F6",CultureInfo.InvariantCulture)
+                    +"; synchronous Camera.Render x2; temporal callbacks/filters may differ; NOT performance evidence";
+            }
+            finally
+            {
+                camera.targetTexture=oldTarget;RenderTexture.active=oldActive;
+                foreach(var s in snapshots) if(s.Item1.D && s.Item1.R)
+                {var p=s.Item1.D.pivotTrans;p.position=s.Item2;p.rotation=s.Item3;p.localScale=s.Item4;s.Item1.R.color=s.Item5;s.Item1.R.forceRenderingOff=s.Item6;}
+                if(a)Destroy(a);if(b)Destroy(b);RenderTexture.ReleaseTemporary(rt);comparing=false;
+            }
+        }
+        static Texture2D Read(RenderTexture rt)
+        {
+            RenderTexture.active=rt;var t=new Texture2D(rt.width,rt.height,TextureFormat.RGBA32,false);
+            try { t.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0);t.Apply();return t; }
+            catch { Destroy(t);throw; }
+        }
+        internal static string State()
+        {
+            var s=session; double k=1000.0/Stopwatch.Frequency;
+            return "[decogpu] active="+(s!=null)+" managed="+(s==null?0:s.owned.Count)+" batches="+(s==null?0:s.batches.Count)
+                +" draws-last="+(s==null?0:s.currentDraws)+" renders="+(s==null?0:s.calls)+" restore="+restores+" restore-mismatch="+restoreMismatch
+                +(s==null?"":" compute-ms/render="+(s.computeTicks*k/Math.Max(1,s.calls)).ToString("F4")+" submit-ms/render="+(s.submitTicks*k/Math.Max(1,s.calls)).ToString("F4")+" draws-total="+s.draws)
+                +" status="+last;
+        }
+        internal static void Stop()
+        {
+            var s=session;if(s==null || s.stopping)return;s.stopping=true;
+            if(last.StartsWith("active",StringComparison.Ordinal))last="stopped (lifecycle/eligibility/unload)";
+            Camera.onPreCull-=s.PreCull;
+            try
+            {
+                if(s.camera && s.commands!=null)s.camera.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha,s.commands);
+                try { s.harmony?.UnpatchAll(PatchId); }
+                catch(Exception e) { restoreMismatch++;Log("unpatch failed: "+e.Message); }
+                foreach(var i in s.owned.Values)
+                {
+                    if(!i.R)continue;
+                    try
+                    {
+                        // Animation fields have advanced: restore CURRENT fields, never rewind begin values.
+                        if(i.D)
+                        {
+                            Vector2 pos=i.D.pivotPosVec,scale=i.D.scaleVec; float angle=i.D.rotAngle;
+                            Color rendered=Rendered(i.D); bool enabled=i.R.enabled; var material=i.R.sharedMaterial;
+                            i.D.UpdatePosition();i.R.color=rendered;i.Entry.Has=false;
+                            var p=i.D.pivotTrans; var wp=p.position;var wr=p.rotation;var ws=p.localScale;
+                            // Original evaluation twice must be idempotent, and source fields must survive.
+                            i.D.UpdatePosition();
+                            if(p.position!=wp || p.rotation!=wr || p.localScale!=ws || i.D.pivotPosVec!=pos
+                                || i.D.scaleVec!=scale || i.D.rotAngle!=angle || Rendered(i.D)!=rendered
+                                || i.R.color!=rendered || i.R.enabled!=enabled || i.R.sharedMaterial!=material)restoreMismatch++;
+                        }
+                    }
+                    catch(Exception e){restoreMismatch++;Log("restore position failed: "+e.Message);}
+                    finally {i.R.forceRenderingOff=i.Off;restores++;if(i.R.forceRenderingOff!=i.Off)restoreMismatch++;}
+                }
+            }
+            finally
+            {
+                s.commands?.Release();s.commands=null;
+                foreach(var b in s.batches){if(b.Mesh)Destroy(b.Mesh);if(b.Material)Destroy(b.Material);}
+                s.batches.Clear();s.owned.Clear();if(s.bundle)s.bundle.Unload(true);
+                session=null;Destroy(s.gameObject);
+            }
+        }
+        void OnDestroy(){if(session==this)Stop();}
+    }
+}
+#endif
