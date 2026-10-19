@@ -191,7 +191,11 @@ namespace StutterFix
             if (prefab == null || prefab.playOnAwake || prefab.loop || prefab.spatialBlend != 0 || prefab.spatialize || prefab.panStereo != 0 ||
                 prefab.ignoreListenerPause || prefab.ignoreListenerVolume || prefab.reverbZoneMix != 0 ||
                 prefab.gameObject.GetComponents<Component>().Length != 2 || prefab.transform.childCount != 0)
-                throw new NotSupportedException("source has 3D/loop/pan/reverb/filter or custom components");
+                throw new NotSupportedException("source has 3D/loop/pan/reverb/filter or custom components [" + (prefab == null ? "null" :
+                    "playOnAwake=" + prefab.playOnAwake + " loop=" + prefab.loop + " spatialBlend=" + prefab.spatialBlend + " spatialize=" + prefab.spatialize +
+                    " pan=" + prefab.panStereo + " ignorePause=" + prefab.ignoreListenerPause + " ignoreVolume=" + prefab.ignoreListenerVolume +
+                    " reverb=" + prefab.reverbZoneMix + " comps=" + string.Join("+", System.Array.ConvertAll(prefab.gameObject.GetComponents<Component>(), x => x == null ? "null" : x.GetType().Name)) +
+                    " children=" + prefab.transform.childCount) + "]");
             var s = new Session { Conductor = c, Original = list, Origin = double.PositiveInfinity,
                 SongClock = c.dspTimeSong, Pitch = c.song.pitch, HitVolume = c.hitSoundVolume,
                 Group = c.hitSoundGroup != null ? c.hitSoundGroup : am.fallbackMixerGroup,
