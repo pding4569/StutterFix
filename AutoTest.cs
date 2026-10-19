@@ -872,6 +872,7 @@ namespace StutterFix
                 case "animbench": return MicroBench.Step("animbench", arg);
                 case "matbench": return MicroBench.Step("matbench", arg);
                 case "instbench": return InstBench.Step(arg);
+                case "meshbench": return MeshBench.Step(arg);
                 case "fxslot": FxSlots.Command(arg); return true;
                 case "filterhalfperf": FilterHalfPerf.Command(arg); return true;
                 case "filterhalf": FilterHalfProbe.Command(arg); return true;
@@ -1683,6 +1684,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             MicroBench.Cancel();
             InstBench.Cancel();
+            MeshBench.Cancel();
 #endif
             if (keep) { EndBatch(why); return; }
             if (finished) return;

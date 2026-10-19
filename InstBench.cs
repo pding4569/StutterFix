@@ -26,6 +26,25 @@ namespace StutterFix
         static double Ms(long ticks) { return ticks * 1000.0 / Stopwatch.Frequency; }
         static string F(double value) { return value.ToString("F6", CultureInfo.InvariantCulture); }
 
+        // Shared synthetic workload: meshbench must use the exact renderer reference values.
+        internal struct Layout
+        {
+            internal Vector3 Origin, Right, Up;
+            internal Quaternion Rotation;
+            internal float Width, Height, Cell;
+            internal int Columns, Rows;
+            internal void Value(int frame, int i, out Vector3 p, out Quaternion r, out Vector3 s, out Color c)
+            {
+                float phase = ((frame * 13 + i * 7) % 360) / 360f;
+                float x = ((i % Columns + .5f) / Columns - .5f) * Width;
+                float y = ((i / Columns + .5f) / Rows - .5f) * Height;
+                p = Origin + Right * (x + (phase - .5f) * Cell * .2f) + Up * (y + (phase - .5f) * Cell * .1f);
+                r = Rotation * Quaternion.Euler(0, 0, phase * 360);
+                s = new Vector3(Cell * (.8f + phase * .2f), Cell * (.8f + phase * .1f), 1);
+                c = new Color(.5f + phase * .5f, 1 - phase * .5f, .75f, .6f + phase * .4f);
+            }
+        }
+
         internal static bool Step(string arg)
         {
             if (finished)
@@ -102,6 +121,7 @@ namespace StutterFix
             Quaternion rotation;
             float width, height, cell;
             int columns, rows;
+            Layout layout;
             Texture2D[] textures;
             Sprite[] sprites;
             SpriteRenderer[] renderers;
@@ -138,6 +158,8 @@ namespace StutterFix
                 right = camera.transform.right; up = camera.transform.up; rotation = camera.transform.rotation;
                 columns = Mathf.CeilToInt(Mathf.Sqrt(n * width / height)); rows = (n + columns - 1) / columns;
                 cell = Mathf.Min(width / columns, height / rows) * .6f;
+                layout = new Layout { Origin = origin, Right = right, Up = up, Rotation = rotation,
+                    Width = width, Height = height, Cell = cell, Columns = columns, Rows = rows };
                 mainSamples = new double[frames]; frameSamples = new double[frames];
                 screenWidth = Screen.width; screenHeight = Screen.height;
                 vsync = QualitySettings.vSyncCount; targetFps = Application.targetFrameRate;
@@ -237,13 +259,7 @@ namespace StutterFix
 
             void Value(int i, out Vector3 p, out Quaternion r, out Vector3 s, out Color c)
             {
-                float phase = ((frame * 13 + i * 7) % 360) / 360f;
-                float x = ((i % columns + .5f) / columns - .5f) * width;
-                float y = ((i / columns + .5f) / rows - .5f) * height;
-                p = origin + right * (x + (phase - .5f) * cell * .2f) + up * (y + (phase - .5f) * cell * .1f);
-                r = rotation * Quaternion.Euler(0, 0, phase * 360);
-                s = new Vector3(cell * (.8f + phase * .2f), cell * (.8f + phase * .1f), 1);
-                c = new Color(.5f + phase * .5f, 1 - phase * .5f, .75f, .6f + phase * .4f);
+                layout.Value(frame, i, out p, out r, out s, out c);
             }
 
             void Update()
