@@ -16,6 +16,9 @@ B. **게임 쪽 이벤트 시스템** (`tools/ilscan`, `FIELDS=1`, 게임 Manage
 C. **자동 변환 의미 보존**: 굽기 변환이 현재 `DecoAnim`/`FastMove` 결과와 **비트 동일**하려면 무엇을 지켜야 하나(시작값 읽기 시점 `Startup`, Kill/Complete/겹침, 같은 프레임 여러 이벤트 순서, `GetVisible` 변화, `ExitFix` 가벼운 다시 설정, 에디터 되돌아가기 재생). 현재 코드(`FastMove.cs`, `DecoAnim*.cs`, `MoveApply.cs`)를 읽고, DecoEngine(`docs/handoff/codex-decoengine-20261019.md`)과 어떻게 합쳐지는지(DecoEngine 이 장식 단위 엔진이므로 굽기 결과를 그 엔진의 구간 배열로 공급하는 구조 제안).
 D. **단계 계획**: 위험·이득이 큰 순으로 3~4단계 로드맵(각 단계 예상 이득 식, 검증 방법: 비트 비교, 곡 끝 `decosig`, 맵 열기 시간), 그리고 사용자에게 물어야 할 결정 사항 목록(모드 필수 맵 허용 여부 등).
 
+## 추가 단서 (사용자 제보): PACL2 에 에디터 새 효과 추가 선례가 있다
+다른 모드 **PACL2**(`D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\ModsOff\PACL2\PACL2.dll`, 지금은 ModsOff 에 꺼져 있음. 에셋 `win\PACL2_assets.bundle`)가 에디터 이벤트 칸에 새 효과를 넣은 것으로 보인다(글자 장식 `_textDecorationsOnPlay`·`VariableStateManager`·`FollowDecoration`/`OrbitDecoration` 등 — CLAUDE.md 참고). B 항목에서 **PACL2 가 새 이벤트 종류를 어떻게 등록했는지**를 IL(`ILScan`, 이 DLL 직접; 필요하면 `mcp ilspy` 디컴파일 대신 `tools/ilscan`)로 조사해라: `LevelEventType`/`GlobalArray` 표에 어떻게 끼웠는지(Harmony 패치 대상 메서드), 속성 정의, 에디터 패널·버튼·아이콘·로컬라이즈, 저장/불러오기, 모드 없이 열었을 때의 동작(PACL2 맵을 모드 없이 열면 무엇이 일어나는가). 그 방식을 그대로 따르는 설계를 우선 제안. PACL2 코드는 읽기만 하고 복사·재배포하지 말 것(구조 파악용, 이름·방식만 기록).
+
 ## 주의
 - 이 판단은 조사 결과로 한다: 굽기 가능 비율이 낮거나 이득이 작으면 그렇게 쓸 것(과장 금지). 숫자는 실제 맵에서 센 값만 사실로, 나머지는 추정.
 - 맵 JSON 분석은 읽기 전용. 큰 파일은 스트리밍/한 번 파싱 후 요약만 문서에 남기고 거대한 중간 파일은 `tools/decotrack-research/out/` 에 두되 커밋 대상 크기(수 MB)를 넘기지 말 것.
