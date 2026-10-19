@@ -25,7 +25,7 @@ namespace StutterFix
             Uninstall();
             direct = samples = checkedN = mismatch = 0; Array.Clear(fallback, 0, fallback.Length);
             failed = false; first = "none";
-            Enabled = File.Exists(Path.Combine(path, "colorfast-on"));
+            Enabled = !File.Exists(Path.Combine(path, "colorfast-off"));   // 기본 켬: 모드 폴더 colorfast-off 파일로 끔
             if (!Enabled) return;
             try
             {
@@ -120,7 +120,7 @@ namespace StutterFix
         {
             if (Hitch.Playing || ADOBase.customLevel != null || ADOBase.editor != null || Precheck.Active != 0)
                 return "menu only; close the level first";
-            if (!Enabled || !compatible || failed) return "requires colorfast-on and compatibility=ok: " + State();
+            if (!Enabled || !compatible || failed) return "requires colorfast enabled (no colorfast-off) and compatibility=ok: " + State();
             var root = new GameObject("colorfast-bench"); root.SetActive(false);
             bool oldVerify = verify;
             long oldDirect = direct, oldSamples = samples;
