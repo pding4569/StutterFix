@@ -1,0 +1,117 @@
+﻿# HELLO 곡 46~61초 (알파 6000.3.25f1, 3440x1440, 자동 플레이, Quartz 없음, 기본 설정, profsamp 1000Hz 15초)
+[profsamp] 표본 15006개 / 15.0초 (1000Hz 요청), 관리 코드 리프 16.5%
+[네이티브 모듈별 리프] [UnityPlayer.dll] 65.2%, [ntdll.dll] 12.6%, [mono-2.0-bdwgc.dll] 4.5%, [?] 0.7%, [KERNEL32.DLL] 0.1%, [win32u.dll] 0.1%, [steamclient64.dll] 0.1%, [gameoverlayrenderer64.dll] 0.1%, 
+[리프 상위] [ntdll.dll+0x9E0F4] 10.5%
+  [UnityPlayer.dll+0x179CCDF] 3.0%
+  [UnityPlayer.dll+0x179CD24] 1.4%
+  [UnityPlayer.dll+0x179B0FA] 1.3%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.LateUpdate_Patch1 0.9%
+  [UnityPlayer.dll+0x1C5747B] 0.9%
+  [mono-2.0-bdwgc.dll+0x4D6426] 0.9%
+  [UnityPlayer.dll+0x179B0EB] 0.8%
+  [UnityPlayer.dll+0x179B0DF] 0.8%
+  [UnityPlayer.dll+0x10805E] 0.8%
+  [UnityPlayer.dll+0xC1F1D4] 0.7%
+  [?] 0.7%
+  [UnityPlayer.dll+0x179CD64] 0.7%
+  [UnityPlayer.dll+0x670984] 0.7%
+  [UnityPlayer.dll+0xC1F1F4] 0.6%
+  [UnityPlayer.dll+0xC32724] 0.6%
+  [UnityPlayer.dll+0x7793FA] 0.6%
+  UnityEngine.Object:IsNativeObjectAlive 0.6%
+  [UnityPlayer.dll+0xC20CCA] 0.6%
+  [ntdll.dll+0x9E394] 0.6%
+  [ntdll.dll+0xA0FD4] 0.5%
+  [UnityPlayer.dll+0x179CD40] 0.5%
+  [UnityPlayer.dll+0x17A5F21] 0.5%
+  [UnityPlayer.dll+0x56E8A1] 0.5%
+  [UnityPlayer.dll+0x179CCFF] 0.5%
+  [UnityPlayer.dll+0x110156] 0.5%
+  [UnityPlayer.dll+0xC1F4AE] 0.5%
+  [UnityPlayer.dll+0x779C99] 0.5%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.Update_Patch1 0.4%
+  [UnityPlayer.dll+0x3E463E] 0.4%
+  [UnityPlayer.dll+0x17ADDF7] 0.4%
+  [UnityPlayer.dll+0xC1F50C] 0.4%
+  [UnityPlayer.dll+0xC3272B] 0.4%
+  [UnityPlayer.dll+0x3E4A1E] 0.4%
+  [UnityPlayer.dll+0x778E91] 0.4%
+  [UnityPlayer.dll+0xC20CB9] 0.4%
+  StutterFix.TightLate:Apply 0.4%
+  [UnityPlayer.dll+0x2FDEDA] 0.4%
+  [UnityPlayer.dll+0x17A831F] 0.4%
+  [UnityPlayer.dll+0x1A5044] 0.3%
+  
+[관리 함수 포함(스택 어디든)] (wrapper runtime-invoke) object:runtime_invoke_void__this__ 21.1%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecorationManager.LateUpdate_Patch7 4.2%
+  StutterFix.TightLate:List 4.1%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:DG.Tweening.Core.DOTweenComponent.Update_Patch6 4.1%
+  StutterFix.TightLate:Process 3.4%
+  StutterFix.MoveApply:LogicMaybe 2.3%
+  scrDecoration:LogicUpdate 2.2%
+  StutterFix.DecoAnim:UpdatePrefix 2.1%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecoration.UpdatePosition_Patch0 2.1%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.LateUpdate_Patch1 1.8%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.Update_Patch1 1.8%
+  StutterFix.DecoAnim:Step 1.6%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrVfxPlus.Update_Patch3 1.6%
+  DG.Tweening.Core.TweenManager:Update 1.6%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:ffxPlusBase.StartEffect_Patch2 1.4%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrConductor.Update_Patch1 1.4%
+  StutterFix.DecoAnim:OnUpdate 1.3%
+  Rewired.InputManager_Base:DoUpdate 1.3%
+  scrController:UpdateInput 1.2%
+  DG.Tweening.Tween:DoGoto 1.2%
+  Rewired.InputManager_Base:Update 1.2%
+  scrPlayer:Simulated_PlayerControl_Update 1.1%
+  scrController:ProcessKeyInputs 1.1%
+  UnityEngine.Material:SetColor 1.0%
+  UnityEngine.Material:SetFloat 1.0%
+  UnityEngine.Material:SetColorImpl 1.0%
+  Rewired.ReInput:akQfnDbPZywVjhOOFyyXxeKyxzCb 1.0%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:ffxMoveFloorPlus.StartEffect_Patch4 0.9%
+  StutterFix.FloorAnim:StartPrefix 0.9%
+  FloorMeshRenderer:set_color 0.9%
+  UnityEngine.Material:SetFloatImpl 0.9%
+  StutterFix.FloorAnim:Run 0.9%
+  scrPlayer:<Simulated_PlayerControl_Update>g__WhileFloorNotChange|69_0 0.9%
+  scrPlayer:Hit 0.9%
+  YzAwSQuwclVncgAOlFEYukVTLseR:HJLvPqWZjXiyepqQTSvDgxaDdDsV 0.9%
+  scrPlayer:OttoHoldHit 0.9%
+  (wrapper write-barrier) object:wbarrier_conc 0.9%
+  StutterFix.FloorAnim:TweenFloor 0.8%
+  StutterFix.TightLate:Apply 0.8%
+  DG.Tweening.Core.TweenerCore`3<UnityEngine.Color, UnityEngine.Color, DG.Tweening.Plugins.Options.ColorOptions>:ApplyTween 0.8%
+  
+[리프(네이티브면 가장 가까운 관리 함수 포함) ← 호출자] [ntdll.dll+0x9E0F4] 10.5% ← (없음) 10.5%; 
+  [UnityPlayer.dll+0x179CCDF] 3.0% ← (없음) 3.0%; 
+  [UnityPlayer.dll+0x179CD24] 1.4% ← (없음) 1.4%; 
+  [UnityPlayer.dll+0x179B0FA] 1.3% ← (없음) 1.3%; 
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.LateUpdate_Patch1 0.9% ← (wrapper runtime-invoke) object:runtime_invoke_void__this__ 0.9%; (없음) 0.0%; 
+  [UnityPlayer.dll+0x1C5747B] 0.9% ← (없음) 0.9%; 
+  [UnityPlayer.dll+0x179B0EB] 0.8% ← (없음) 0.8%; 
+  [UnityPlayer.dll+0x179B0DF] 0.8% ← (없음) 0.8%; 
+  [UnityPlayer.dll+0x10805E] 0.8% ← (없음) 0.8%; 
+  [UnityPlayer.dll+0xC1F1D4] 0.7% ← (없음) 0.7%; 
+  [UnityPlayer.dll+0x179CD64] 0.7% ← (없음) 0.7%; 
+  [UnityPlayer.dll+0xC1F1F4] 0.6% ← (없음) 0.6%; 
+  [UnityPlayer.dll+0xC32724] 0.6% ← (없음) 0.6%; 
+  [UnityPlayer.dll+0x7793FA] 0.6% ← (없음) 0.6%; 
+  [UnityPlayer.dll+0x670984] 0.6% ← (없음) 0.6%; 
+  UnityEngine.Object:IsNativeObjectAlive 0.6% ← UnityEngine.Object:op_Equality 0.5%; UnityEngine.Object:op_Inequality 0.1%; UnityEngine.Object:op_Implicit 0.0%; 
+  [UnityPlayer.dll+0xC20CCA] 0.6% ← (없음) 0.6%; 
+  [ntdll.dll+0x9E394] 0.6% ← (없음) 0.6%; 
+  [ntdll.dll+0xA0FD4] 0.5% ← (없음) 0.5%; 
+  [UnityPlayer.dll+0x179CD40] 0.5% ← (없음) 0.5%; 
+  [UnityPlayer.dll+0x56E8A1] 0.5% ← (없음) 0.5%; 
+  [UnityPlayer.dll+0x17A5F21] 0.5% ← (없음) 0.5%; 
+  [UnityPlayer.dll+0x179CCFF] 0.5% ← (없음) 0.5%; 
+  [UnityPlayer.dll+0xC1F4AE] 0.5% ← (없음) 0.5%; 
+  [UnityPlayer.dll+0x779C99] 0.5% ← (없음) 0.5%; 
+  [mono-2.0-bdwgc.dll+0x4D6426] 0.5% ← (없음) 0.5%; 
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrFloor.Update_Patch1 0.4% ← (wrapper runtime-invoke) object:runtime_invoke_void__this__ 0.4%; (없음) 0.0%; 
+  [UnityPlayer.dll+0x3E463E] 0.4% ← (없음) 0.4%; 
+  [UnityPlayer.dll+0xC1F50C] 0.4% ← (없음) 0.4%; 
+  [UnityPlayer.dll+0x17ADDF7] 0.4% ← (없음) 0.4%; 
+  
+[StutterFix] [자동 시험] 

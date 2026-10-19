@@ -1,0 +1,117 @@
+﻿# Arche 곡 262~277초 (알파 6000.3.25f1, 3440x1440, 자동 플레이, Quartz 없음, 기본 설정, profsamp 1000Hz 15초)
+[profsamp] 표본 15002개 / 15.0초 (1000Hz 요청), 관리 코드 리프 47.6%
+[네이티브 모듈별 리프] [UnityPlayer.dll] 42.5%, [mono-2.0-bdwgc.dll] 5.0%, [ntdll.dll] 3.2%, [?] 1.1%, [win32u.dll] 0.1%, [KERNEL32.DLL] 0.1%, [steamclient64.dll] 0.1%, [KERNELBASE.dll] 0.0%, 
+[리프 상위] StutterFix.TightLate:Apply 4.1%
+  StutterFix.DecoAnim:UpdatePrefix 3.2%
+  StutterFix.DecoAnim:CompactRecords 2.9%
+  UnityEngine.Object:IsNativeObjectAlive 2.3%
+  StutterFix.TightLate:Eligible 2.1%
+  [ntdll.dll+0xA0FD4] 1.8%
+  System.Collections.Generic.HashSet`1<T_REF>:AddIfNotPresent 1.8%
+  [mono-2.0-bdwgc.dll+0x4D6426] 1.7%
+  [UnityPlayer.dll+0x672D18] 1.6%
+  System.Collections.Generic.HashSet`1<T_REF>:Contains 1.5%
+  DG.Tweening.Core.Easing.EaseManager:Evaluate 1.5%
+  StutterFix.DecoAnim:ApplyE 1.4%
+  StutterFix.DecoAnim:Apply 1.4%
+  [UnityPlayer.dll+0x5AB7F] 1.3%
+  System.Collections.Generic.Dictionary`2<TKey_REF, TValue_REF>:FindEntry 1.2%
+  StutterFix.DecoAnim:StepPair 1.2%
+  [?] 1.1%
+  [UnityPlayer.dll+0x8F4C7] 1.0%
+  [UnityPlayer.dll+0x3320E3] 1.0%
+  (wrapper stelemref) object:virt_stelemref_class 1.0%
+  StutterFix.ZeroTween:Eval 0.9%
+  (wrapper delegate-invoke) <Module>:invoke_single_Ease_EaseFunction_single_single_single_single 0.9%
+  StutterFix.ColorFast:TrySet 0.8%
+  [UnityPlayer.dll+0x56E8A1] 0.8%
+  [UnityPlayer.dll+0x3B69C9] 0.8%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecoration.SetPosition_Patch1 0.8%
+  (wrapper managed-to-native) object:__icall_wrapper_mono_gc_wbarrier_generic_nostore_internal 0.7%
+  System.Collections.Generic.List`1<T_REF>:get_Item 0.7%
+  StutterFix.DecoAnim:Step 0.6%
+  [UnityPlayer.dll+0x60EC2B] 0.6%
+  [UnityPlayer.dll+0xCD249] 0.6%
+  [UnityPlayer.dll+0x672CA4] 0.6%
+  [UnityPlayer.dll+0x60EC31] 0.6%
+  [UnityPlayer.dll+0x67643E] 0.5%
+  System.Collections.Generic.Dictionary`2<UnityEngine.SpriteRenderer, int>:FindEntry 0.5%
+  [UnityPlayer.dll+0x31C8F0] 0.5%
+  UnityEngine.Object:CompareBaseObjects 0.5%
+  [UnityPlayer.dll+0x31C922] 0.5%
+  (wrapper stelemref) object:virt_stelemref_sealed_class 0.5%
+  [UnityPlayer.dll+0x3C74CE] 0.5%
+  
+[관리 함수 포함(스택 어디든)] (wrapper runtime-invoke) object:runtime_invoke_void__this__ 59.3%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:DG.Tweening.Core.DOTweenComponent.Update_Patch6 32.9%
+  StutterFix.DecoAnim:UpdatePrefix 31.4%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecorationManager.LateUpdate_Patch7 17.8%
+  StutterFix.TightLate:List 17.0%
+  StutterFix.DecoAnim:Step 12.1%
+  StutterFix.TightLate:Process 11.7%
+  StutterFix.DecoAnim:StepPair 11.2%
+  StutterFix.TightLate:Apply 8.9%
+  (wrapper delegate-invoke) System.Action`3<scrDecoration, UnityEngine.Vector2, UnityEngine.Vector2>:invoke_void_T1_T2_T3 8.0%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecoration.SetPosition_Patch1 8.0%
+  StutterFix.DecoAnim:Apply 7.4%
+  StutterFix.DecoAnim:OnUpdate 5.9%
+  StutterFix.DecoAnim:Compact 4.7%
+  StutterFix.DecoAnim:CompactRecords 4.6%
+  StutterFix.MoveApply:SetLocal 3.9%
+  UnityEngine.Transform:set_position 3.6%
+  StutterFix.MoveApply:SkipForLate 3.6%
+  StutterFix.ZeroTween:Eval 3.2%
+  StutterFix.Dormancy:List 3.1%
+  StutterFix.Dormancy:Prepare 3.0%
+  StutterFix.DecoAnim:ApplyE 2.9%
+  (wrapper write-barrier) object:wbarrier_conc 2.8%
+  System.Collections.Generic.List`1<T_REF>:set_Item 2.7%
+  StutterFix.MoveApply:RegisterLate 2.7%
+  StutterFix.MoveApply:DeferTransform 2.7%
+  UnityEngine.Object:op_Equality 2.6%
+  UnityEngine.Transform:get_localPosition 2.6%
+  System.Collections.Generic.HashSet`1<T_REF>:Add 2.5%
+  StutterFix.ColorFast:TryColor 2.4%
+  UnityEngine.Object:IsNativeObjectAlive 2.3%
+  System.Collections.Generic.HashSet`1<T_REF>:AddIfNotPresent 2.3%
+  (wrapper delegate-invoke) <Module>:invoke_single_Ease_EaseFunction_single_single_single_single 2.3%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrVfxPlus.Update_Patch3 2.2%
+  StutterFix.ColorFast:TrySet 2.2%
+  StutterFix.TightLate:Eligible 2.1%
+  (wrapper stelemref) object:virt_stelemref_sealed_class 2.0%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:ffxPlusBase.StartEffect_Patch2 2.0%
+  StutterFix.MoveApply:UpdateNow 1.7%
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:ffxMoveDecorationsPlus.StartEffect_Patch7 1.7%
+  
+[리프(네이티브면 가장 가까운 관리 함수 포함) ← 호출자] StutterFix.TightLate:Apply 4.1% ← StutterFix.TightLate:Apply 3.8%; StutterFix.TightLate:Process 0.3%; 
+  StutterFix.DecoAnim:UpdatePrefix 3.2% ← (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:DG.Tweening.Core.DOTweenComponent.Update_Patch6 3.2%; 
+  StutterFix.DecoAnim:CompactRecords 2.9% ← StutterFix.DecoAnim:Compact 2.9%; 
+  UnityEngine.Object:IsNativeObjectAlive 2.3% ← UnityEngine.Object:op_Equality 2.2%; UnityEngine.Object:op_Inequality 0.1%; UnityEngine.Object:op_Implicit 0.0%; 
+  StutterFix.TightLate:Eligible 2.1% ← StutterFix.TightLate:Process 2.1%; StutterFix.TightLate:List 0.0%; 
+  [ntdll.dll+0xA0FD4] 1.8% ← (없음) 1.8%; 
+  System.Collections.Generic.HashSet`1<T_REF>:AddIfNotPresent 1.8% ← System.Collections.Generic.HashSet`1<T_REF>:Add 1.7%; (없음) 0.0%; 
+  [UnityPlayer.dll+0x672D18] < UnityEngine.Transform:get_localPosition 1.6% ← StutterFix.MoveApply:SetLocal 1.6%; 
+  [mono-2.0-bdwgc.dll+0x4D6426] < (wrapper write-barrier) object:wbarrier_conc 1.5% ← (wrapper stelemref) object:virt_stelemref_sealed_class 0.9%; (wrapper stelemref) object:virt_stelemref_class 0.2%; System.Collections.Generic.HashSet`1<T_REF>:AddIfNotPresent 0.2%; 
+  System.Collections.Generic.HashSet`1<T_REF>:Contains 1.5% ← StutterFix.Dormancy:Prepare 1.5%; StutterFix.Dormancy:List 0.0%; 
+  DG.Tweening.Core.Easing.EaseManager:Evaluate 1.5% ← (wrapper delegate-invoke) <Module>:invoke_single_Ease_EaseFunction_single_single_single_single 1.4%; (없음) 0.0%; StutterFix.ZeroTween:Eval 0.0%; 
+  StutterFix.DecoAnim:ApplyE 1.4% ← StutterFix.DecoAnim:Apply 1.4%; StutterFix.DecoAnim:Step 0.0%; StutterFix.DecoAnim:StepPair 0.0%; 
+  StutterFix.DecoAnim:Apply 1.4% ← StutterFix.DecoAnim:Step 0.8%; StutterFix.DecoAnim:StepPair 0.5%; (없음) 0.0%; 
+  [UnityPlayer.dll+0x5AB7F] < UnityEngine.Transform:set_position 1.3% ← StutterFix.TightLate:Apply 1.3%; 
+  System.Collections.Generic.Dictionary`2<TKey_REF, TValue_REF>:FindEntry 1.2% ← System.Collections.Generic.Dictionary`2<TKey_REF, TValue_REF>:TryGetValue 1.2%; StutterFix.TightLate:List 0.0%; UnityEngine.UI.GraphicRegistry:GetRaycastableGraphicsForCanvas 0.0%; 
+  StutterFix.DecoAnim:StepPair 1.2% ← StutterFix.DecoAnim:UpdatePrefix 1.2%; (없음) 0.0%; (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:DG.Tweening.Core.DOTweenComponent.Update_Patch6 0.0%; 
+  [UnityPlayer.dll+0x8F4C7] < UnityEngine.Renderer:get_forceRenderingOff 1.0% ← StutterFix.ColorFast:TrySet 1.0%; 
+  [UnityPlayer.dll+0x3320E3] 1.0% ← (없음) 1.0%; 
+  (wrapper stelemref) object:virt_stelemref_class 1.0% ← System.Collections.Generic.List`1<T_REF>:set_Item 0.8%; StutterFix.MoveApply:RegisterLate 0.1%; StutterFix.MoveApply:SkipForLate 0.0%; 
+  StutterFix.ZeroTween:Eval 0.9% ← StutterFix.DecoAnim:Apply 0.9%; StutterFix.DecoAnim:Step 0.0%; StutterFix.FloorAnim:Apply 0.0%; 
+  (wrapper delegate-invoke) <Module>:invoke_single_Ease_EaseFunction_single_single_single_single 0.9% ← StutterFix.ZeroTween:Eval 0.8%; StutterFix.DecoAnim:Apply 0.0%; (없음) 0.0%; 
+  StutterFix.ColorFast:TrySet 0.8% ← StutterFix.ColorFast:TryColor 0.8%; 
+  [UnityPlayer.dll+0x56E8A1] 0.8% ← (없음) 0.8%; 
+  [UnityPlayer.dll+0x3B69C9] 0.8% ← (없음) 0.8%; 
+  (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecoration.SetPosition_Patch1 0.8% ← (wrapper delegate-invoke) System.Action`3<scrDecoration, UnityEngine.Vector2, UnityEngine.Vector2>:invoke_void_T1_T2_T3 0.8%; 
+  (wrapper managed-to-native) object:__icall_wrapper_mono_gc_wbarrier_generic_nostore_internal 0.7% ← (wrapper write-barrier) object:wbarrier_conc 0.7%; (wrapper stelemref) object:virt_stelemref_sealed_class 0.0%; (없음) 0.0%; 
+  System.Collections.Generic.List`1<T_REF>:get_Item 0.7% ← StutterFix.DecoAnim:UpdatePrefix 0.2%; StutterFix.TightLate:List 0.1%; StutterFix.DecoAnim:CompactRecords 0.1%; 
+  StutterFix.DecoAnim:Step 0.6% ← StutterFix.DecoAnim:UpdatePrefix 0.6%; (없음) 0.0%; 
+  [UnityPlayer.dll+0x60EC2B] 0.6% ← (없음) 0.6%; 
+  [UnityPlayer.dll+0xCD249] < UnityEngine.Transform:set_position 0.6% ← StutterFix.TightLate:Apply 0.6%; 
+  
+[StutterFix] [자동 시험] 
