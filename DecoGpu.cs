@@ -81,6 +81,7 @@ namespace StutterFix
             var s = session;
             if (!s.originalsHidden || s.comparing) return false;
             var i = s.owned[d];
+            if (i.Entry != null) i.Entry.LastFrame = Time.frameCount;   // Late 를 건너뛰는 동안에도 엔트리를 최신으로 (아니면 다음 프레임 EngineReason=7)
             var reason = s.InvalidReason(i);
             if (reason != null) { Stop("SkipLate " + Describe(i) + " " + reason); return false; }
             return true;
