@@ -463,11 +463,19 @@ namespace StutterFix
             for (int j = 0; j < s.N; j++)
             {
                 var r = s.Slots[j]; if (r == null) continue; r.Engine = null;
-                if (r.Running) { if (!r.InList) { r.InList = true; DecoAnim.EngineRecords.Add(r); } }
+                if (r.Running) { if (!r.InList) { r.InList = true; InsertOrdered(DecoAnim.EngineRecords, r); } }
                 else r.InList = false;
             }
-            Remove(s); DecoAnim.EngineRecords.Sort((a, b) => a.EngineOrder.CompareTo(b.EngineOrder));
+            Remove(s);
             DecoAnim.EngineDirty(); Dirty = true;
+        }
+        // EngineRecords stays sorted by EngineOrder (creation order); re-entering records
+        // are inserted by binary search instead of re-sorting the whole list (was ~17% of the main thread).
+        private static void InsertOrdered(List<DecoAnim.Rec> list, DecoAnim.Rec r)
+        {
+            int lo = 0, hi = list.Count;
+            while (lo < hi) { int mid = (lo + hi) >> 1; if (list[mid].EngineOrder <= r.EngineOrder) lo = mid + 1; else hi = mid; }
+            list.Insert(lo, r);
         }
         private static void Remove(State s)
         {
