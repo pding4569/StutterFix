@@ -1,0 +1,23 @@
+# Codex 작업 P: DecoGpu 1단계 — "새 장식 이동 전용 일괄 렌더링" 설계 + 프로토타입 (개별 Transform·SpriteRenderer 매 프레임 쓰기 우회) — 게임 실행·Mods 설치·커밋 금지
+
+결과: `docs/handoff/codex-decogpu-20261019-result.md` (**apply_patch 로 UTF-8 BOM, 쓴 뒤 `Get-Content -Encoding UTF8` 로 한글 확인**), 한국어, 추측은 "추정". 빌드 셋(Dev/Player/PlayerAuto) 오류 0. 프로토타입 코드는 **DEV/AUTOTEST 전용**(FuseProbe/GpuProbe 와 같은 Compile 조건, 제품 동작 변경 0, 기본 꺼짐). 명령 `decogpu begin|end|state|compare`.
+
+## 배경 (사용자 방향, 2026-10-19)
+기존 일반 장식 경로(Arche 곡 252~273초)는 개별 C++ `Transform`/`SpriteRenderer` 쓰기 하한선에 가깝다(DecoEngine 4 라운드: 기록 관리만 합쳐서는 이득 없음; 남은 비용 = 장식당 엔진 쓰기 + `FinishFrameRendering`). 그래서 **구조를 바꾸는 방법을 "새로 만든 장식 이동 효과를 쓰는 장식에만" 적용**하려 한다. 기존 맵의 일반 `MoveDecorations`·마스크·특수 블렌드·히트박스·다른 모드 훅이 걸린 장식은 기존 경로 그대로. 이 작업은 그 전용 구조의 **설계 + "얼마나 줄어드는지" 프로토타입**이다(효과 이름·에디터 칸은 이번 범위 아님; 기존 맵에서 안개·광선 이동 장식을 임의로 "새 경로 장식"으로 지정해 시험).
+
+## 실측 기준 (Claude, Arche 곡 252~273초)
+- 메인 스레드 프레임 약 7~10ms: 모드 애니메이션 갱신 1.80ms, 장식 관리자 LateUpdate 1.17ms(TightLate: 장식당 `pivotTrans.position/rotation/localScale` setter 3개), 엔진 렌더 제출·갱신(`FinishFrameRendering` 등) 약 1.7~2.3ms, `spriteRenderer.color` 쓰기(ColorFast 후) 약 0.3ms. 깨어 있는 장식 약 2,100개(`animstat`: 위치X·Y 1,786, 회전 1,848, 크기 1,610, 색 1,833). 카메라 GPU는 안개 스프라이트 때문에 픽셀 병목(약 78%, 총 GPU 4.7~6ms).
+- 장식은 `scrVisualDecoration`: 장식마다 `SpriteRenderer` + 장식별 `Material` 복제(`SetBlendMode`/`SetSprite`/`ExitFix.LightOne` 경로)가 있고, 이전 시도에서 **재질 공유+아틀라스는 정렬(tie-sort)·샘플링 차이로 폐기**, Tight 메시는 832/990 바이트 차이로 폐기. 즉 픽셀 동일성이 어려운 영역이다. **새 장식 이동 전용이므로 기존 맵과의 비트 동일은 요구하지 않지만**, 같은 맵 내 겹침 순서·블렌드·샘플링이 눈으로 같아야 하고, 어떤 차이가 나는지 측정해서 보고해야 한다.
+- 모드는 이미 셰이더 에셋번들을 내장한다(`effects/stutterfix_effects`, `fsr/stutterfix_fsr` → csproj `EmbeddedResource`, 빌드 스크립트 `tools/effects/build_effects.ps1`). 새 셰이더는 같은 방식으로 추가 가능한지(Unity 에디터 필요 여부, 번들 제작 절차) 조사해라. 에디터 없이 가능한 대안(런타임 `Shader.Find` 로 게임 내 기존 셰이더 사용, `Graphics.RenderMeshInstanced`/`DrawMeshInstanced` + MaterialPropertyBlock, 정점 색)도 평가.
+
+## 해야 할 일
+1. **조사(데이터)**: Arche 252초 시점 깨어 있는 장식 약 2,100개의 구성을 기존 도구(`decostruct`/`DecorationAudit`/`FuseProbe.Struct`)나 새 `decogpu begin` 요약으로 재라: 스프라이트·텍스처 종류 수, 재질/셰이더 이름·키워드·블렌드 모드·색 속성 분포, `sortingLayer`/`sortingOrder` 분포(겹침 순서 규칙), 마스크·히트박스·메시 장식 비율, 장식 크기(화면 픽셀) 분포(안개 대형 스프라이트 비율), 같은 텍스처·재질 묶음 크기(배치 가능 단위). 어떤 장식이 "깨끗한 이미지 장식"(전용 구조 적합)인지 기준을 제안.
+2. **설계안** (결과 문서 앞부분): (a) 데이터 구조(장식별 `시작/끝 위치·회전·크기·색, 시작 곡 시각, 길이, 이징 코드, 시차, 타일 기준점` 연속 배열/구조화 버퍼; 이징은 `ZeroTween.Eval` 와 같은 다항식 계열만 지원하고 나머지는 기존 경로), (b) 계산 위치: (A) GPU 셰이더(구조화 버퍼 + 곡 시각·카메라 상수만 매 프레임) 대 (B) C#/네이티브 일괄 계산 후 인스턴싱/정점 제출 — 각각의 CPU/GPU 비용 추정, Unity 6000.3 Mono·Built-in RP(또는 이 게임의 파이프라인; 확인) 제약, (c) 그리기 제출 방식(`Graphics.RenderMeshInstanced`, 텍스처별 배치 수, 텍스처 배열/아틀라스 문제와 샘플링 동일성), (d) 겹침 순서 보존(`sortingOrder`·생성 순서·투명 정렬 규칙을 어떻게 재현하나; 기존 장식·타일·행성과 같은 카메라에서 섞일 때), (e) 색/블렌드/시차/타일 기준점 처리, (f) 복원 경계: 곡 끝·일시정지·에디터 복귀·일반 효과가 그 장식을 다시 건드릴 때 원래 `scrDecoration` 필드와 `Transform`/`SpriteRenderer` 상태로 되돌리는 절차, `Dormancy`/`forceRenderingOff` 와의 상호작용, `Main.Unload` 해제.
+3. **프로토타입(측정용, DEV/AUTOTEST)**: `decogpu begin` 이 그 시점에 조건을 만족하는 장식 N개(전부 또는 `decogpu begin 500` 처럼 상한)를 골라 (i) 원래 `SpriteRenderer` 를 끄고(`forceRenderingOff=true` 또는 `enabled=false`; 그 장식의 TightLate Transform 쓰기와 `spriteRenderer.color` 쓰기는 건너뜀 — 필드는 `DecoAnim` 이 계속 진행), (ii) 한 번의 일괄 계산으로 매 프레임 장식의 최종 위치·회전·크기·색(필드 `pivotPosVec`/`rotAngle`/`scaleVec`/`rendererColor` 등에서 읽어 TightLate.Apply 식으로 계산; 이번 측정은 "렌더 측 쓰기·제출만 대체" 비용을 재는 것이므로 애니메이션 진행은 기존 `DecoAnim` 그대로), (iii) 텍스처/재질 묶음별 인스턴스 그리기로 같은 카메라에 제출. `decogpu end` 로 원래 상태 완전 복원(복원 후 장식 상태·렌더러 상태가 begin 전과 같음을 검사). `state` 는 관리 장식 수, 배치 수, draw call 수, 프레임당 CPU ms(계산·제출), 복원 횟수를 보고. **`FuseProbe` 에 새 항목을 추가해 같은 창에서 "모드 애니메이션 갱신 / 장식 관리자 LateUpdate / (프로토타입 시간)" 이 나오게**(`decogpu` 켠 판과 끈 판의 `fuse` 비교로 메인 스레드 변화를 재고, `FinishFrameRendering` 변화는 `profsamp` 표본으로 비교).
+4. **정확도 확인 장치**: 가능하면 `decogpu compare`: 같은 프레임에서 원래 렌더(렌더러 켬)와 프로토타입 렌더(렌더러 끔 + 일괄)를 각각 작은 RT 로 그려 픽셀 차이(최대 채널 차이, 차이 픽셀 비율)를 보고(`Camera.Render` 두 번 또는 `AsyncGPUReadback`; 성능 측정 판과 분리). 불가능하면 `shot` 캡처 두 장 비교 절차를 문서화.
+5. 결과 문서에 **예상 효과 표**: 현재 3.0ms(애니메이션 1.8 + Late 1.17) + FinishFrameRendering 일부 + color 쓰기 대비, 프로토타입 후 메인 스레드/GPU ms 추정, 그리고 Claude 가 돌릴 순서(곡 252~273초 `waitsongpos 252` + `decogpu begin` + `fuse`/`profsamp`, ABBA 새 프로세스, 복원 검사, `decogpu compare`). 판단 기준: 메인 스레드(Update+Late+FinishFrameRendering)가 의미 있게(>1.5ms) 줄고 GPU 시간이 늘지 않으며, 겹침/색 차이가 설명 가능한 범위일 때만 2단계(새 효과 구현) 가치가 있음.
+
+## 규칙
+- 제품 코드 경로(기본 켬 기능)는 건드리지 않는다. 새 파일 `DecoGpu.cs` + 최소 연결(AutoTest.cs 명령 한 줄, FuseProbe 항목, csproj 에 셰이더 번들이 필요하면 조건부 `EmbeddedResource`).
+- 새로 건 Harmony/렌더 콜백/GameObject/메시/머티리얼은 `end`·`Main.Unload` 에서 전부 해제(누수 0).
+- 불확실한 건 "추정/미확인"으로 표기. 에디터 없이 못 만드는 것(예: 셰이더 번들)은 그 사실과 대안을 명시.
