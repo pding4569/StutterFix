@@ -910,3 +910,22 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - 처리 장식 프레임당 약 1,310개(3.84M 호출 / 2,923프레임). 시차 배율이 0 이 아닌 것 99.9%, 그중 (1,1)=카메라 고정은 2.4%뿐 → 배율이 제각각인 층 시차. 시차 오프셋(`parallaxOffset`) 0이 아닌 것 0개.
 - 직전 프레임 대비 필드가 그대로인 비율(호출 기준): 위치 7.5%, 회전 7.0%, 크기 28.4%, **셋 다 그대로 5.0%**. 즉 위치가 바뀌는 92.5%는 카메라가 아니라 **장식 자신의 애니메이션**(곡 270초대엔 장식 약 1,900개가 위치·회전·크기 애니메이션 중) 때문이다. 카메라만 때문에 위치가 바뀌는 장식은 최대 5%.
 - 따라서 시차를 카메라 부모 노드로 옮기거나(배율별 그룹: world = m·cam + (1−m)·pos) 같은 값 쓰기를 막아도 줄일 수 있는 쓰기는 최대 5% 수준(약 0.06ms). 애니메이션 중인 장식은 어차피 자기 값을 매 프레임 써야 한다. 시도하지 않음.
+
+## 2026-10-20 밤: Arche 90 FPS 구간(곡 262~277초) 추가 시도 — 코드만으로는 이득 없음, 히트음 묶기만 +4.7%
+
+모든 값은 모니터 끈 조건(2560x1440 120Hz), 에디터 `open` + `seek 262 8` 구간 시험(장식 약 2,176개·애니메이션 12,061개로 전곡 재생의 270초 구간과 같은 규모, 모드 갱신 2.6~2.8ms·Late 1.5ms로 같은 크기), 판마다 새로 켬. 같은 조건끼리만 비교.
+- **구간 시험은 쓸 만하다**: 곡 전체(5분)가 아니라 한 판 약 2.5분(맵 열기 34초 + 재생 12초). 장식 애니메이션 수·비용이 전곡 재생과 일치.
+- **N1 (Codex, 브랜치 `codex/night-arche` c6cefb5, 합치지 않음)**: 변경 없는 프레임의 레코드 정리 생략(`DecoFastCompact`, 그룹 경로 dirty 표시 보완) + 연속 같은 장식 Late 등록 생략(`lateregistermemo`, 중복 984만 번 생략). 정확성은 `tightlate verify`·`late-verify`·오프라인 4만 조건 통과. 성능: 기준 갱신 2.72·2.82·2.74·2.75ms / Late 1.44·1.53·1.52·1.50 → 켠 판 갱신 2.69·2.63(등록)·2.69·2.73·2.59(정리) / Late 1.52·1.51·1.45·1.49·1.45. 차이 −0.05~−0.1ms(노이즈 폭 안). **채택하지 않음.**
+- **N2 마이크로벤치 (`animbench`/`matbench`, 개발자용 전용, 커밋 5dd135a)**, 장식 2,000개 위치·회전·크기 쓰기, HELLO 열린 편집기:
+  | 방식 | 메인 스레드 합 ms/프레임 |
+  |---|---:|
+  | 메인 `localPosition/Rotation/Scale` | 0.55~0.62 (쓰기 0.36~0.43 + 입력 준비 0.19) |
+  | 월드 `position/rotation` | 0.71 |
+  | `TransformAccessArray` + `IJobParallelForTransform` | 0.20 (Complete 전 읽기는 1.2ms 대기: 강제 동기화) |
+  | 위 + 쿼터니언 계산도 job 안(Mono, Burst 없음) | 0.11 |
+  | Animator + AnimationScriptPlayable | 1.00 (Evaluate 0.81) |
+  → 장식 쓰기 방식을 바꿔 얻을 수 있는 건 프레임당 최대 약 0.35~0.45ms(약 4~5%). 게임 안에서는 쓰기 외 관리 코드가 대부분이라 이 상한에도 못 미친다(10-19 DecoJob shadow 결과와 같음). 새 장식 이동 방식(D)은 쓰기 쪽에서 큰 이득이 나오지 않는다.
+  - `Material.SetFloat(string)` 0.103µs, `SetFloat(int id)` 0.039µs, `SetColor(string)` 0.122µs, `SetColor(id)` 0.054µs, 같은 값/다른 값 차이 없음(엔진 내부 같은 값 생략 없음), 없는 프로퍼티 0.154µs. 10-20 조사의 SetFloatImpl 0.342ms(HELLO 후반)가 문자열 변환 몫 약 60%라 해도 ID 치환 절감은 최대 약 0.2ms, Arche는 없음 → B 보류.
+- **메인 스레드 네이티브 함수까지 푼 프로파일** (`profsamp end frames` + `tools/symrva`, UnityPlayer 6000.3.25f1 PDB는 심볼 서버에서 받아 `E:\StutterFixWork\symbols\`): Arche 262~277초 15,002표본 리프 합계: 모드 관리 코드 20.6% / 게임·BCL 관리 코드 16.5% / Unity Transform 변경·쓰기 10.5%(`TransformChangeDispatch::ScanAndHandleChangesJob` 1.9·`Transform::GetLocalPosition` 1.9·`SetGlobalT` 1.7·`SpriteRendererTransformChangedJob` 1.1·`ClearJob` 1.0) / 렌더 준비·그리기 9.6% / 컬링 3.2% / FMOD 2.3% / mono 런타임 3.4% / 작업 대기 1.5%. 어느 한 함수도 2%를 넘지 않는다 — **큰 한 방이 없는 평평한 프로파일**.
+- **히트음 예약 묶기 구간 A/B (같은 구간, 설정만 바꿈, 2쌍)**: 끔 137·136 FPS(창 프레임 1,471·1,464) / 켬 143·143 FPS(1,542·1,531) → **+4.7%**. 장식 비용(갱신 2.5ms·Late 1.5ms)은 같고 나머지 프레임 몫이 줄어든다.
+- 도구 정리: `pack.sh` 에 CompatCheck 추가(설치된 게임 + `gamerefs/stable-*` 사본, 경고만, 알려진 `ffxChangeTrack.floor` 제외). `tools/symrva`.
