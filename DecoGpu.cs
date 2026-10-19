@@ -363,8 +363,20 @@ namespace StutterFix
         }
         public static void BoundaryPrefix(scrDecoration __instance, MethodBase __originalMethod)
         {
-            if (Owns(__instance)) Stop("boundary " + __originalMethod.DeclaringType.Name + "." + __originalMethod.Name
-                + " id=" + __instance.GetInstanceID() + " comparing=" + session.comparing);
+            if (!Owns(__instance)) return;
+            if (session.comparing) { Stop("boundary " + __originalMethod.DeclaringType.Name + "." + __originalMethod.Name + " id=" + __instance.GetInstanceID() + " comparing=True"); return; }
+            session.Evict(__instance, __originalMethod.Name);
+        }
+        static int evictedTotal; static string lastEvict = "";
+        // 게임이 그 장식의 스프라이트·재질·보임 등을 바꾸는 순간: 세션 전체를 끝내지 않고 그 장식만 원래 경로로 돌려보낸다.
+        void Evict(scrDecoration d, string why)
+        {
+            if (!owned.TryGetValue(d, out var i)) return;
+            owned.Remove(d);
+            foreach (var b in batches) if (b.Items.Remove(i)) break;
+            try { if (i.R) { i.R.forceRenderingOff = i.Off; i.R.color = Rendered(i.D); } if (i.Entry != null) i.Entry.Has = false; } catch { }
+            evictedTotal++; lastEvict = why;
+            if (owned.Count == 0) Stop("all evicted (last " + why + ")");
         }
         static string Describe(Item i) => "id=" + (i.D ? i.D.GetInstanceID() : 0);
         string InvalidReason(Item i, bool inLoop = false)
@@ -504,7 +516,7 @@ namespace StutterFix
                 +" draws-last="+(s==null?0:s.currentDraws)+" renders="+(s==null?0:s.calls)+" restore="+restores+" restore-mismatch="+restoreMismatch
                 +(s==null?stoppedState:" preCull-all="+s.preCullCalls+" preCull-selected="+s.selectedPreCull+" postRender-selected="+s.postRenderCalls+" originals-hidden="+s.originalsHidden)
                 +(s==null?"":" compute-ms/render="+(s.computeTicks*k/Math.Max(1,s.calls)).ToString("F4")+" submit-ms/render="+(s.submitTicks*k/Math.Max(1,s.calls)).ToString("F4")+" draws-total="+s.draws)
-                +" status="+last+" first-stop="+firstStop;
+                +" evicted="+evictedTotal+"("+lastEvict+") status="+last+" first-stop="+firstStop;
         }
         internal static void Stop() => Stop("Unload/external Stop");
         static void Stop(string reason)
