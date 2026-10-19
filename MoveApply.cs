@@ -252,12 +252,14 @@ namespace StutterFix
         }
         internal static bool VerifyLate;   // (자동 시험 late-verify 파일) 개발자용 LateUpdate 결과 대조를 자동 시험 빌드에서도
 
+        private static scrDecoration lastLateD;   // 마지막으로 lateSkippedSet 에 등록한 장식 (집합을 비울 때 함께 비움)
         internal static bool SkipForLate(scrDecoration d)
         {
             if (!LateSkip || !Enabled || (object)d == null || !Hitch.Playing || SceneReset.Resetting) return false;
             if (managerLateFrame != UnityEngine.Time.frameCount - 1) return false;   // 이번 프레임 LateUpdate 가 이미 시작됐거나, 지난 프레임에 안 돌았다
             if (d.hitbox != 0 || !d.GetVisible()) return false;
-            RegisterLate(d, lateSkippedSet, lateSkipped);
+            // 같은 장식의 기록(위치·회전·크기)이 연달아 오므로 직전에 등록한 장식이면 해시 조회를 건너뛴다 (프로파일 1.7%)
+            if (!ReferenceEquals(d, lastLateD)) { lastLateD = d; RegisterLate(d, lateSkippedSet, lateSkipped); }
             LateSkips++;
             return true;
         }
@@ -299,6 +301,7 @@ namespace StutterFix
             }
             lateSkipped.Clear();
             lateSkippedSet.Clear();
+            lastLateD = null;
         }
 
         private static readonly AccessTools.FieldRef<scrDecoration, Transform> pivotRef = AccessTools.FieldRefAccess<scrDecoration, Transform>("pivotTrans");
