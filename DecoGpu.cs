@@ -371,7 +371,7 @@ namespace StutterFix
         {
             if (!i.D || !i.R || i.Entry == null) return "destroyed/entry missing";
             int reason = TightLate.EngineReason(i.Entry);
-            if (reason != 0) return "TightLate.EngineReason=" + reason;
+            if (reason != 0) return "TightLate.EngineReason=" + reason + " [" + TightLate.EngineReasonDetail(i.Entry) + "]";
             if (i.R.sprite != i.Sprite) return "sprite changed";
             if (i.R.sharedMaterial != i.Source) return "material changed";
             if (i.R.sortingLayerID != i.Layer || i.R.sortingOrder != i.Order || i.R.gameObject.layer != i.UnityLayer)

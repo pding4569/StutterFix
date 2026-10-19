@@ -244,6 +244,17 @@ namespace StutterFix
             else if (e.LastFrame == Time.frameCount) missing = 7;
             return e;
         }
+        internal static string EngineReasonDetail(Entry e)
+        {
+            var l = new List<string>();
+            if (e.EngineRejected) l.Add("EngineRejected");
+            if (!installed) l.Add("!installed"); if (!Enabled) l.Add("!Enabled"); if (!compatible) l.Add("!compatible");
+            if (!Hitch.Playing) l.Add("!Hitch.Playing"); if (SceneReset.Resetting) l.Add("SceneReset.Resetting");
+            if (!MoveApply.Enabled) l.Add("!MoveApply.Enabled"); if (!Dormancy.Enabled) l.Add("!Dormancy.Enabled");
+            if (preparedEpoch != epoch) l.Add("epoch " + preparedEpoch + "!=" + epoch);
+            if (completedFrame != Time.frameCount - 1 && completedFrame != Time.frameCount) l.Add("completedFrame=" + completedFrame + " fc=" + Time.frameCount);
+            return string.Join(",", l);
+        }
         internal static int EngineReason(Entry e)
         {
             if (e.EngineRejected) return 7;
