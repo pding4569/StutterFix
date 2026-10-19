@@ -1096,6 +1096,17 @@ namespace StutterFix
                 case "groupstep": Log("[groupstep] " + DecoAnim.GroupCommand(arg)); return true;
                 case "fastlane": Log("[fastlane] " + DecoAnim.FastCommand(arg)); return true;
                 case "offscreenstat": Log("[offscreenstat] " + (arg == "begin" ? OffscreenProbe.Begin() : arg == "end" ? OffscreenProbe.End() : "offscreenstat begin|end")); return true;
+                case "census":
+                    {
+                        // 누적 추적: 유니티 객체 종류별 개수·힙·프로세스 메모리 (플레이를 반복할 때 무엇이 쌓이는지)
+                        var sb = new System.Text.StringBuilder("[census]");
+                        void C<T>(string n) where T : UnityEngine.Object { try { sb.Append(' ').Append(n).Append('=').Append(Resources.FindObjectsOfTypeAll<T>().Length); } catch { } }
+                        C<GameObject>("GameObject"); C<Transform>("Transform"); C<scrDecoration>("deco"); C<scrFloor>("floor"); C<SpriteRenderer>("SpriteRenderer");
+                        C<Renderer>("Renderer"); C<Material>("Material"); C<Texture2D>("Texture2D"); C<RenderTexture>("RT"); C<Sprite>("Sprite"); C<Mesh>("Mesh");
+                        C<MonoBehaviour>("MonoBehaviour"); C<Component>("Component");
+                        sb.Append(" heapMB=").Append((GC.GetTotalMemory(false) >> 20)).Append(" workingMB=").Append((System.Diagnostics.Process.GetCurrentProcess().WorkingSet64 >> 20));
+                        sb.Append(" | ").Append(TightLate.State()); Log(sb.ToString()); return true;
+                    }
                 case "decostruct": Log("[합치기 연구] " + FuseProbe.Struct()); return true;
                 case "decogpu": Log(DecoGpu.Command(arg)); return true;
                 case "animstat": Log("[장식 애니메이션 상태] "+DecoAnim.Stat()+" | "+Dormancy.Stat()+" | 위치 X·Y 합침 "+DecoAnim.PairSteps+" | 회전·크기 LateUpdate 에 맡김 "+MoveApply.RotScaleDeferred+" 위치 맡김 "+MoveApply.LateSkips+" 대조 "+MoveApply.LateChecked+" 다름 "+MoveApply.LateMismatch+" 목록에 없음 "+MoveApply.LateNotInList); return true;
