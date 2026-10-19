@@ -391,8 +391,8 @@ namespace StutterFix
                 case 5: if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FLast; else setRot(r.D, r.FLast); break;
                 case 12: setParOffX(r.D, r.FLast); break;
                 case 13: setParOffY(r.D, r.FLast); break;
-                case 9: DecoEngine.AlphaWillSet(r, r.CLast.a); setCol(r.D, r.CLast); break;
-                case 10: DecoEngine.AlphaWillSet(r, r.FLast); setOpa(r.D, r.FLast); break;
+                case 9: DecoEngine.AlphaWillSet(r, r.CLast.a); if (!ColorFast.Enabled || !ColorFast.TryColor(r.D, r.CLast)) setCol(r.D, r.CLast); break;
+                case 10: DecoEngine.AlphaWillSet(r, r.FLast); if (!ColorFast.Enabled || !ColorFast.TryOpacity(r.D, r.FLast)) setOpa(r.D, r.FLast); break;
             }
         }
 
@@ -408,8 +408,8 @@ namespace StutterFix
                 case 5: if (MoveApply.DeferTransform(r.D)) rotRef(r.D) = r.FEnd; else setRot(r.D, r.FEnd); break;
                 case 12: setParOffX(r.D, r.FEnd); break;
                 case 13: setParOffY(r.D, r.FEnd); break;
-                case 9: DecoEngine.AlphaWillSet(r, r.CEnd.a); setCol(r.D, r.CEnd); break;
-                case 10: DecoEngine.AlphaWillSet(r, r.FEnd); setOpa(r.D, r.FEnd); break;
+                case 9: DecoEngine.AlphaWillSet(r, r.CEnd.a); if (!ColorFast.Enabled || !ColorFast.TryColor(r.D, r.CEnd)) setCol(r.D, r.CEnd); break;
+                case 10: DecoEngine.AlphaWillSet(r, r.FEnd); if (!ColorFast.Enabled || !ColorFast.TryOpacity(r.D, r.FEnd)) setOpa(r.D, r.FEnd); break;
             }
             if (PosFast.Enabled && (r.Key == 1 || r.Key == 2)) PosFast.Remember(r);
         }

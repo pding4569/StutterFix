@@ -1091,6 +1091,7 @@ namespace StutterFix
                 case "tightlate": Log("[tightlate] " + TightLate.Command(arg)); return true;
                 case "decoengine": Log("[decoengine] " + DecoEngine.Command(arg)); return true;
                 case "posfast": Log("[posfast] " + PosFast.Command(arg)); return true;
+                case "colorfast": Log("[colorfast] " + ColorFast.Command(arg)); return true;
                 case "groupstep": Log("[groupstep] " + DecoAnim.GroupCommand(arg)); return true;
                 case "fastlane": Log("[fastlane] " + DecoAnim.FastCommand(arg)); return true;
                 case "offscreenstat": Log("[offscreenstat] " + (arg == "begin" ? OffscreenProbe.Begin() : arg == "end" ? OffscreenProbe.End() : "offscreenstat begin|end")); return true;
