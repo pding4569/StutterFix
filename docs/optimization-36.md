@@ -886,3 +886,9 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - 이유(프로파일 B4): 엔진 Update 17.5% + Late 9.4% 가 장식당 1µs 이상. 엔진이 못 줄이는 공통 비용이 크다 — 레거시 색 사슬(`Step`/`OnUpdate`/`SetColor`/`ApplyColor` 약 12%), `Transform` setter(위치 3.2%), 입장·자격 재검사(`Admit` 4.2%, `Eligible` 3.9%). 기록 단위 사슬을 없애도 장식당 엔진 호출(Transform·SpriteRenderer 색)은 남는다.
 - 교훈: 이 구간의 비용은 "기록 하나씩 처리하는 관리 코드"보다 장식당 엔진 쓰기(Transform·색) 쪽이 크다. 관리 코드만 합쳐서는 한계가 있다. 코드는 `DecoEngine.cs`(기본 끔, `decoengine-on`)로 보존.
 - 새 효과/맵 열 때 굽기(DecoTrack, `docs/handoff/codex-decotrack-research-20261019-result.md`)의 프레임 이득도 같은 이유로 작을 것으로 추정(효과 시작 비용은 창에서 0.15ms/프레임뿐). 맵 열기·메모리 이득은 별도.
+
+## ColorFast (보임→보임 색 직통 경로) — 채택, 기본 켬 (`colorfast-off` 로 끔) (2026-10-19)
+- 게임 `ApplyColor` 는 `rendererColor = color.WithAlpha(color.a*opacity*f)` 저장과 `spriteRenderer.color` 쓰기 한 번뿐(`UpdateRendererEnable` 없음). 직전·새 알파가 모두 양수이고 정확한 `scrVisualDecoration`·`!stickToFloor`·`Precheck.Active==0` 이면 `DecoAnim` 키 9/10 의 델리게이트→`SetColor`→`ApplyColor` Harmony 사슬(`InvisibleSkip.After`, `Dormancy.WakePost`)을 거치지 않고 같은 필드·같은 엔진 쓰기만 한다. 경계(`<=0 ↔ >0`, 잠든 장식)는 원래 경로. `spriteRenderer.color` 쓰기는 생략하지 않음(같은 값 dirty 부수효과 불확실).
+- 정확성: `colorfast verify` 15만 6천 번 불일치 0(Arche), 5,413 불일치 0(HELLO). 곡 끝 `decosig` 켬/끔: 색 차이 없음, 차이는 기존과 같은 성격(카메라 시점 pivot world 25,690개 + 계속 도는 회전 17개)만.
+- Arche 곡 252~273초 새 프로세스 ABBA(A=끔, B=켬): 모드 애니메이션 갱신 A 1.93·1.94ms → B 1.82·1.80ms(−0.12ms), LateUpdate 1.15·1.16 → 1.17·1.18(+0.02), 창 프레임 A 3,013·3,006 → B 3,058·3,058(+1.6%). 전곡: Arche 397→398~400 FPS 끊김 같음, HELLO 283 FPS 끊김 0.
+- `TightLate.SkipSame` 은 소스 선언은 true 이지만 로드 때 `tightskip-on` 파일 유무로 덮어써 실제 기본은 꺼짐(주석이 틀렸다).
