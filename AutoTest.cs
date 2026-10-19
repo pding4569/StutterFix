@@ -28,7 +28,7 @@ namespace StutterFix
     {
         private static List<string> steps;
         private static int idx;
-        private static float stepStart, waitSec;
+        private static float stepStart, waitSec; private static double waitTarget;
         private static bool started, prevAuto, autoChanged, desiredAuto;
 #if AUTOTEST
         private static long missionStepTicks;
@@ -274,6 +274,15 @@ namespace StutterFix
                         else if (endSeen && endAt == 0f) { endAt = now; Log(string.Format("곡 끝남 ({0:F0}초)", now - stepStart)); }
                         if (endAt > 0f && now - endAt >= 2f) return true;
                         if (now - stepStart >= waitSec) { Log("곡이 끝나지 않음 (" + waitSec + "초)"); return true; }
+                        return false;
+                    }
+                case "waitsongpos":
+                    {
+                        // waitsongpos <곡 초> [최대 대기 초=400]: 곡 시계가 그 값에 닿을 때까지 (창을 판마다 같은 곡 시각에 맞춘다)
+                        if (waitSec == 0f) { var sp2 = arg.Split(' '); waitTarget = double.Parse(sp2[0], System.Globalization.CultureInfo.InvariantCulture); waitSec = sp2.Length > 1 ? float.Parse(sp2[1], System.Globalization.CultureInfo.InvariantCulture) : 400f; }
+                        var c2 = scrConductor.instance;
+                        if (c2 != null && Hitch.Playing && c2.songposition_minusi >= waitTarget) return true;
+                        if (now - stepStart >= waitSec) throw new Exception("곡 시계가 " + waitTarget + "초에 닿지 않음");
                         return false;
                     }
                 case "wait":
