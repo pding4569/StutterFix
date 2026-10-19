@@ -120,6 +120,7 @@ namespace StutterFix
             double secs = (t1 - t0) / (double)Stopwatch.Frequency;
             IntPtr domain = IntPtr.Zero; try { domain = mono_get_root_domain(); } catch (Exception ex) { return "mono_get_root_domain 실패: " + ex.Message; }
             var leaf = new Dictionary<string, int>(); var incl = new Dictionary<string, int>(); var mod = new Dictionary<string, int>();
+            var callers = new Dictionary<string, Dictionary<string, int>>();   // 관리 리프 → 가장 가까운 관리 호출자 (리프가 관리 함수이거나 네이티브면 그 위의 첫 관리 함수)
             int managedLeaf = 0;
             for (int i = 0; i < count; i++)
             {
@@ -128,6 +129,25 @@ namespace StutterFix
                 if (mg) managedLeaf++;
                 leaf[l] = (leaf.TryGetValue(l, out int a) ? a : 0) + 1;
                 if (!mg) { int p = l.IndexOf('+'); string m = p > 0 ? l.Substring(0, p) + "]" : l; mod[m] = (mod.TryGetValue(m, out int c) ? c : 0) + 1; }
+                // 리프(또는 리프가 네이티브면 가장 가까운 관리 함수) 와 그 바로 위 호출자(관리 함수)
+                {
+                    string near = null, up = null; int found = 0;
+                    for (int d = 0; d < Depth && found < 2; d++)
+                    {
+                        ulong ip = ips[i * Depth + d]; if (ip == 0) break;
+                        bool g; string n = Resolve(ip, domain, out g);
+                        if (!g) { if (found == 0 && d == 0) near = n; continue; }
+                        if (near == null || found > 0 || d > 0 && near != null && found == 0) { }
+                        if (found == 0) { if (near == null) near = n; else near = near + " < " + n; }
+                        else up = n;
+                        found++;
+                    }
+                    if (near != null)
+                    {
+                        Dictionary<string, int> cd; if (!callers.TryGetValue(near, out cd)) callers[near] = cd = new Dictionary<string, int>();
+                        string u = up ?? "(없음)"; cd[u] = (cd.TryGetValue(u, out int cc) ? cc : 0) + 1;
+                    }
+                }
                 var seen = new HashSet<string>();
                 for (int d = 0; d < Depth; d++)
                 {
@@ -144,6 +164,16 @@ namespace StutterFix
             foreach (var kv in Top(leaf, 40)) sbo.Append(kv.Key).Append(' ').Append((100.0 * kv.Value / count).ToString("F1")).Append("%\n  ");
             sbo.Append("\n[관리 함수 포함(스택 어디든)] ");
             foreach (var kv in Top(incl, 40)) sbo.Append(kv.Key).Append(' ').Append((100.0 * kv.Value / count).ToString("F1")).Append("%\n  ");
+            sbo.Append("
+[리프(네이티브면 가장 가까운 관리 함수 포함) ← 호출자] ");
+            var nearTot = new Dictionary<string, int>(); foreach (var kv in callers) { int t = 0; foreach (var c in kv.Value.Values) t += c; nearTot[kv.Key] = t; }
+            foreach (var kv in Top(nearTot, 30))
+            {
+                sbo.Append(kv.Key).Append(' ').Append((100.0 * kv.Value / count).ToString("F1")).Append("% ← ");
+                foreach (var c in Top(callers[kv.Key], 3)) sbo.Append(c.Key).Append(' ').Append((100.0 * c.Value / count).ToString("F1")).Append("%; ");
+                sbo.Append("
+  ");
+            }
             ips = null; count = 0; cache.Clear();
             return sbo.ToString();
         }
