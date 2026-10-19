@@ -70,7 +70,8 @@ namespace StutterFix
                 SongTime(), f, lateTicks / tk / f, (double)fxStarts / f, fxTicks / tk / f, (DecoAnim.UpdateMs - animMs0) / f,
                 recNew, (double)recNew / f, recRestart, recCut, perDeco.Count, multi, maxPer,
                 durHist[0], durHist[1], durHist[2], durHist[3], durHist[4], durHist[5], durHist[6], durHist[7])
-                + " | DecoGpu 계산·제출 " + ((DecoGpu.TotalTicks - gpuTicks0) / tk / f).ToString("F3") + "ms (LateUpdate 밖, GPU 시간 아님)";
+                + " | DecoGpu 계산·제출 " + ((DecoGpu.TotalTicks - gpuTicks0) / tk / f).ToString("F3") + "ms (LateUpdate 밖, GPU 시간 아님, compare 제외)"
+                + " | " + DecoGpu.State();
         }
 
         private static FieldInfo F(Type t, string n) { return AccessTools.Field(t, n); }

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -25,6 +27,9 @@ namespace StutterFix
         internal static long TotalTicks;
         static long restores, restoreMismatch;
         static string last = "not run";
+        static string firstStop = "none";
+        static string stoppedState = "";
+        const CameraEvent DrawEvent = CameraEvent.BeforeForwardAlpha;
         sealed class Item
         {
             internal scrVisualDecoration D;
@@ -59,6 +64,11 @@ namespace StutterFix
         Shader shader;
         Harmony harmony;
         bool stopping, comparing;
+        bool originalsHidden;
+        int beginFrame;
+        long preCullCalls, selectedPreCull, postRenderCalls;
+        readonly Dictionary<int, int> observedCameras = new Dictionary<int, int>();
+        readonly MaterialPropertyBlock sourceBlock = new MaterialPropertyBlock();
         long computeTicks, submitTicks, calls, draws;
         int currentDraws;
         static readonly int TintId = Shader.PropertyToID("_InstanceTint");
@@ -69,18 +79,21 @@ namespace StutterFix
         {
             if (!Owns(d)) return false;
             var s = session;
+            if (!s.originalsHidden || s.comparing) return false;
             var i = s.owned[d];
-            if (!s.Valid(i)) { Stop(); return false; }
+            var reason = s.InvalidReason(i);
+            if (reason != null) { Stop("SkipLate " + Describe(i) + " " + reason); return false; }
             return true;
         }
         internal static string Command(string arg)
         {
             var words = arg.Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            if (words.Length == 0) return "decogpu begin [limit=500]|end|state|compare";
-            if (words[0] == "end") { last="explicit end"; Stop(); return State(); }
+            if (words.Length == 0) return "decogpu begin [limit=500]|end|state|compare|probe";
+            if (words[0] == "end") { Stop("explicit end"); return State(); }
             if (words[0] == "state") return State();
+            if (words[0] == "probe") return Probe();
             if (words[0] == "compare") return session == null ? "decogpu inactive" : session.Compare();
-            if (words[0] != "begin") return "decogpu begin [limit=500]|end|state|compare";
+            if (words[0] != "begin") return "decogpu begin [limit=500]|end|state|compare|probe";
             if (session != null) return "already active; " + State();
             int cap = words.Length > 1 ? int.Parse(words[1], CultureInfo.InvariantCulture) : 500;
             if (cap < 1 || cap > 10000) throw new ArgumentOutOfRangeException("limit", "1..10000");
@@ -99,13 +112,112 @@ namespace StutterFix
                     if (p != null && p.Owners.Any(x => x != Main.Entry.Info.Id && x != "StutterFix.fuseprobe"))
                         return "foreign hook: " + t.Name + "." + m.Name;
                 }
-            var go = new GameObject("StutterFix.DecoGpu") {hideFlags = HideFlags.HideAndDontSave};
-            var s = go.AddComponent<DecoGpu>(); session = s;
-            try { s.Begin(cap); last = "active; separate transparent band, visual equivalence UNVERIFIED"; }
-            catch { Stop(); throw; }
+            GameObject go = null;
+            firstStop = "none"; stoppedState = "";
+            try
+            {
+                go = new GameObject("StutterFix.DecoGpu") {hideFlags = HideFlags.HideAndDontSave};
+                var s = go.AddComponent<DecoGpu>(); session = s;
+                s.Begin(cap); last = "active; awaiting first camera submission; visual equivalence UNVERIFIED";
+            }
+            catch (Exception e)
+            {
+                string reason = "begin failure " + e.GetType().Name + ": " + e.Message;
+                Stop(reason);
+                if (firstStop == "none") { firstStop = reason; last = "stopped: " + reason; }
+                if (go && session == null) Destroy(go);
+                throw;
+            }
             return State();
         }
         static void Log(string s) => Main.Entry.Logger.Log("[decogpu] " + s);
+        static readonly string[] BlockColors = { "_Color", "_RendererColor" };
+        static readonly string[] BlendFields = { "OverlayColorPropertyId", "OverlayTexturePropertyId", "OverlayTextureSTPropertyId",
+            "BlendStencilCompPropertyId", "NormalStencilCompPropertyId", "StencilIdPropertyId" };
+        static readonly Dictionary<string, int> BlendProperties = new Dictionary<string, int>();
+        static void PrepareBlockProperties()
+        {
+            if (BlendProperties.Count == BlendFields.Length) return;
+            BlendProperties.Clear();
+            // Explicit commands only; property IDs come from the installed game, not guessed shader names.
+            var type = typeof(scrVisualDecoration).Assembly.GetType("BlendModes.ShaderUtilities");
+            if (type == null) throw new InvalidOperationException("BlendModes.ShaderUtilities missing");
+            foreach (string name in BlendFields)
+            {
+                var field = AccessTools.Field(type, name);
+                if (field == null || field.FieldType != typeof(int)) throw new InvalidOperationException("missing blend property " + name);
+                BlendProperties.Add(name, (int)field.GetValue(null));
+            }
+        }
+        static string BlockReason(SpriteRenderer r, MaterialPropertyBlock block)
+        {
+            block.Clear(); r.GetPropertyBlock(block);
+            foreach (var property in BlendProperties)
+                if (block.HasProperty(property.Value)) return "MPB unsupported blend/mask property " + property.Key;
+            if (block.HasTexture("_MainTex") && block.GetTexture("_MainTex") != r.sprite.texture) return "MPB _MainTex override";
+            if (block.HasTexture("_AlphaTex") && block.GetTexture("_AlphaTex")) return "MPB _AlphaTex override";
+            if (block.HasFloat("_EnableExternalAlpha") && block.GetFloat("_EnableExternalAlpha") != 0) return "MPB external alpha";
+            foreach (string name in BlockColors)
+                if (block.HasColor(name) && block.GetColor(name) != Color.white && block.GetColor(name) != r.color)
+                    return "MPB " + name + "=" + block.GetColor(name);
+            if (block.HasVector("_Flip"))
+            {
+                var f = block.GetVector("_Flip");
+                if (f.x != (r.flipX ? -1 : 1) || f.y != (r.flipY ? -1 : 1)) return "MPB _Flip=" + f;
+            }
+            return null; // Unknown/custom properties cannot be enumerated through MPB; pixel compare remains required.
+        }
+        static string Probe()
+        {
+            PrepareBlockProperties();
+            var output = new StringBuilder("[decogpu] probe\n");
+            var sc = ADOBase.controller ? ADOBase.controller.camy : null;
+            Camera selected = sc ? GameCamera(sc) : null;
+            var candidates = TightLate.AllDecorations();
+            var block = new MaterialPropertyBlock(); int samples = 0;
+            foreach (var c in Resources.FindObjectsOfTypeAll<Camera>())
+            {
+                if (!c || !c.gameObject.scene.IsValid()) continue;
+                int seen = 0; if (session != null) session.observedCameras.TryGetValue(c.GetInstanceID(), out seen);
+                var layers = new SortedDictionary<int, int>();
+                foreach (var d in candidates) if (d is scrVisualDecoration v && v && v.spriteRenderer)
+                {
+                    int layer = v.spriteRenderer.gameObject.layer;
+                    if ((c.cullingMask & (1 << layer)) != 0) { layers.TryGetValue(layer, out int n); layers[layer] = n + 1; }
+                }
+                var rt = c.targetTexture;
+                output.AppendLine("camera=" + c.name + " id=" + c.GetInstanceID() + " selected=" + (c == selected)
+                    + " path=" + c.actualRenderingPath + " enabled=" + c.enabled + " active=" + c.gameObject.activeInHierarchy
+                    + " depth=" + c.depth + " mask=" + c.cullingMask + " target=" + (rt ? rt.name + "/" + rt.GetInstanceID() + "/" + rt.width + "x" + rt.height : "screen")
+                    + " preCull-seen=" + seen + " candidate-layers=" + string.Join(",", layers.Select(x => x.Key + ":" + x.Value)));
+                foreach (CameraEvent ev in Enum.GetValues(typeof(CameraEvent)))
+                    foreach (var cb in c.GetCommandBuffers(ev)) output.AppendLine("  buffer " + ev + " " + cb.name + " bytes=" + cb.sizeInBytes);
+            }
+            foreach (var d in candidates)
+            {
+                if (!(d is scrVisualDecoration v) || !v || !v.spriteRenderer || !v.spriteRenderer.sprite || !d.GetVisible()) continue;
+                var r = v.spriteRenderer; string reason = BlockReason(r, block);
+                output.Append("MPB id=" + d.GetInstanceID() + " layer=" + r.gameObject.layer + " shader=" + (r.sharedMaterial ? r.sharedMaterial.shader.name : "none")
+                    + " has=" + r.HasPropertyBlock() + " known-reject=" + (reason ?? "none"));
+                foreach (var name in new[] { "_MainTex", "_AlphaTex", "_Color", "_RendererColor", "_Flip", "_EnableExternalAlpha" })
+                {
+                    if (block.HasTexture(name)) { var tex = block.GetTexture(name); output.Append(" " + name + "=tex:" + (tex ? tex.GetInstanceID() : 0)); }
+                    else if (block.HasColor(name)) output.Append(" " + name + "=" + block.GetColor(name));
+                    else if (block.HasVector(name)) output.Append(" " + name + "=" + block.GetVector(name));
+                    else if (block.HasFloat(name)) output.Append(" " + name + "=" + block.GetFloat(name));
+                }
+                foreach (var property in BlendProperties)
+                {
+                    int id = property.Value;
+                    if (block.HasColor(id)) output.Append(" " + property.Key + "=" + block.GetColor(id));
+                    else if (block.HasTexture(id)) { var tex = block.GetTexture(id); output.Append(" " + property.Key + "=tex:" + (tex ? tex.GetInstanceID() : 0)); }
+                    else if (block.HasVector(id)) output.Append(" " + property.Key + "=" + block.GetVector(id));
+                    else if (block.HasFloat(id)) output.Append(" " + property.Key + "=" + block.GetFloat(id));
+                }
+                output.AppendLine(); if (++samples == 16) break;
+            }
+            return output + State();
+        }
         static string Key(Material m)
         {
             if (!m || !m.shader) return "none";
@@ -160,6 +272,7 @@ namespace StutterFix
         }
         void Begin(int cap)
         {
+            PrepareBlockProperties();
             camera = GameCamera(ADOBase.controller.camy);
             if (!camera || camera.actualRenderingPath != RenderingPath.Forward) throw new InvalidOperationException("forward game camera required");
             var running = new List<scrDecoration>(DecoAnim.RunningDecorations());
@@ -185,7 +298,8 @@ namespace StutterFix
                 if (e.Engine != null) { why[7]++; continue; }
                 if (!r || !r.sprite) { why[8]++; continue; }
                 if (!r.enabled || r.forceRenderingOff || !r.gameObject.activeInHierarchy) { why[9]++; continue; }
-                // HasPropertyBlock() is true for every SpriteRenderer with a sprite (internal texture block); pixel compare decides fidelity
+                // Internal sprite texture blocks are normal; reject unsupported known overrides.
+                if (BlockReason(r, sourceBlock) != null) { why[10]++; continue; }
                 if (r.maskInteraction != SpriteMaskInteraction.None) { why[14]++; continue; }
                 if (r.drawMode != SpriteDrawMode.Simple) { why[15]++; continue; }
                 if (r.GetComponentInParent<SortingGroup>() != null) { why[6]++; continue; }
@@ -225,7 +339,7 @@ namespace StutterFix
                 current.Items.Add(i); prev = i;
             }
             commands = new CommandBuffer {name="StutterFix.DecoGpu (experimental transparent band)"};
-            camera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, commands);
+            camera.AddCommandBuffer(DrawEvent, commands);
             harmony = new Harmony(PatchId);
             harmony.Patch(AccessTools.Method(typeof(scrVisualDecoration), "ApplyColor"), prefix: new HarmonyMethod(typeof(DecoGpu), nameof(ApplyColorPrefix)));
             foreach (var type in new[] { typeof(scrDecoration), typeof(scrVisualDecoration) })
@@ -235,43 +349,69 @@ namespace StutterFix
                         || method.Name == "SetVisible" || method.Name == "EnableMeshRenderer"))
                         harmony.Patch(method, prefix: new HarmonyMethod(typeof(DecoGpu), nameof(BoundaryPrefix)));
             Camera.onPreCull += PreCull;
-            foreach (var i in owned.Values) i.R.forceRenderingOff = true;
+            Camera.onPostRender += PostRender;
+            beginFrame = Time.frameCount;
+            // Keep originals visible until the first successful command submission.
         }
         public static bool ApplyColorPrefix(scrVisualDecoration __instance)
         {
-            if (!Owns(__instance)) return true;
-            if (__instance.stickToFloor) { Stop(); return true; }
+            if (!Owns(__instance) || !session.originalsHidden || session.comparing) return true;
+            if (__instance.stickToFloor) { Stop("ApplyColor stickToFloor id=" + __instance.GetInstanceID()); return true; }
             Color c = ColorField(__instance); c.a = c.a * Opacity(__instance) * 1f; Rendered(__instance) = c;
             return false;
         }
-        public static void BoundaryPrefix(scrDecoration __instance)
+        public static void BoundaryPrefix(scrDecoration __instance, MethodBase __originalMethod)
         {
-            if (Owns(__instance)) { last="automatic fallback: game mutation boundary"; Stop(); }
+            if (Owns(__instance)) Stop("boundary " + __originalMethod.DeclaringType.Name + "." + __originalMethod.Name
+                + " id=" + __instance.GetInstanceID() + " comparing=" + session.comparing);
         }
-        bool Valid(Item i) => i.D && i.R && i.Entry != null && TightLate.EngineReason(i.Entry) == 0
-            && i.R.sprite == i.Sprite && i.R.sharedMaterial == i.Source && i.R.sortingLayerID == i.Layer
-            && i.R.sortingOrder == i.Order && i.R.gameObject.layer == i.UnityLayer && !i.R.HasPropertyBlock()
-            && !i.D.isMask() && i.D.repeatX == 1 && i.D.repeatY == 1
-            && ReferenceEquals(i.D.childTransform,i.ChildTransform) && i.D.pivotOffsetVec == i.Offset
-            && i.D.croppedPivotOffset == i.Cropped && i.D.textureScaleMultiplier == i.TextureScale
-            && i.D.scaleMultiplier == i.ScaleMultiplier;
+        static string Describe(Item i) => "id=" + (i.D ? i.D.GetInstanceID() : 0);
+        string InvalidReason(Item i)
+        {
+            if (!i.D || !i.R || i.Entry == null) return "destroyed/entry missing";
+            int reason = TightLate.EngineReason(i.Entry);
+            if (reason != 0) return "TightLate.EngineReason=" + reason;
+            if (i.R.sprite != i.Sprite) return "sprite changed";
+            if (i.R.sharedMaterial != i.Source) return "material changed";
+            if (i.R.sortingLayerID != i.Layer || i.R.sortingOrder != i.Order || i.R.gameObject.layer != i.UnityLayer)
+                return "sorting/layer changed current=" + i.R.sortingLayerID + "/" + i.R.sortingOrder + "/" + i.R.gameObject.layer;
+            if (!i.R.enabled || !i.R.gameObject.activeInHierarchy) return "renderer disabled/inactive";
+            if (i.R.maskInteraction != SpriteMaskInteraction.None || i.R.drawMode != SpriteDrawMode.Simple
+                || i.D.isMask() || i.D.repeatX != 1 || i.D.repeatY != 1) return "mask/drawMode/repeat changed";
+            if (!ReferenceEquals(i.D.childTransform,i.ChildTransform) || i.D.pivotOffsetVec != i.Offset
+                || i.D.croppedPivotOffset != i.Cropped || i.D.textureScaleMultiplier != i.TextureScale
+                || i.D.scaleMultiplier != i.ScaleMultiplier) return "child/pivot/scale changed";
+            return null;
+        }
         void Update()
         {
             if (stopping) return;
-            if (!Hitch.Playing || SceneReset.Resetting || Time.timeScale == 0 || !manager || !camera
-                || !ADOBase.controller || GameCamera(ADOBase.controller.camy) != camera
-                || ADOBase.controller.paused
-                || !TightLate.Enabled || !ColorFast.Enabled || DecoEngine.Enabled) { Stop(); return; }
+            string reason = !Hitch.Playing ? "not playing" : SceneReset.Resetting ? "SceneReset.Resetting"
+                : Time.timeScale == 0 ? "timeScale=0" : !manager ? "manager missing" : !camera ? "camera missing"
+                : !ADOBase.controller || !ADOBase.controller.camy ? "controller/camy missing"
+                : GameCamera(ADOBase.controller.camy) != camera ? "camobj changed"
+                : ADOBase.controller.paused ? "paused" : !TightLate.Enabled ? "TightLate disabled"
+                : !ColorFast.Enabled ? "ColorFast disabled" : DecoEngine.Enabled ? "DecoEngine enabled" : null;
+            if (reason != null) { Stop("Update " + reason); return; }
+            if (calls == 0 && Time.frameCount - beginFrame > 120) { Stop("Update no selected PreCull for 120 frames; run probe"); return; }
             // No full property enumeration, string creation or extra Transform reads here.
             // Game mutation setters end the session; foreign direct material/child writes are unsupported.
         }
         void PreCull(Camera c)
         {
+            if (!c || stopping) return;
+            preCullCalls++;
+            // Bounded camera names/counts, emitted only on explicit probe, never per-frame logging.
+            int id = c.GetInstanceID();
+            if (observedCameras.TryGetValue(id, out int count)) observedCameras[id] = count + 1;
+            else if (observedCameras.Count < 32) observedCameras.Add(id, 1);
             if (c != camera || stopping || comparing) return;
+            selectedPreCull++;
             try { Build(); }
-            catch (Exception e) { last="render failure: " + e.Message; Stop(); Log(last); }
+            catch (Exception e) { Stop("PreCull " + e.GetType().Name + ": " + e.Message); Log(last); }
         }
-        void Build()
+        void PostRender(Camera c) { if (!stopping && !comparing && c == camera) postRenderCalls++; }
+        void Build(bool measure = true)
         {
             long aggregateStart = Stopwatch.GetTimestamp();
             long t = Stopwatch.GetTimestamp(); commands.Clear(); currentDraws = 0;
@@ -281,7 +421,8 @@ namespace StutterFix
                 int n = 0;
                 foreach (var i in b.Items)
                 {
-                    if (!Valid(i)) throw new InvalidOperationException("eligibility changed");
+                    string reason = InvalidReason(i) ?? BlockReason(i.R, sourceBlock);
+                    if (reason != null) throw new InvalidOperationException(Describe(i) + " " + reason);
                     var d=i.D; var p=d.parallax; Vector2 pos=d.pivotPosVec + Vector2.zero;
                     StartPos(p)=pos; p.posCamAtStart=pos;
                     Vector2 u=(Vector2)(cam-p.posCamAtStart)*new Vector2(p.multiplier_x,p.multiplier_y)+StartPos(p);
@@ -292,19 +433,21 @@ namespace StutterFix
                     // Sprite flips are renderer metadata, not Transform values.
                     matrix *= Matrix4x4.Scale(new Vector3(i.R.flipX?-1:1,i.R.flipY?-1:1,1));
                     b.Matrices[n]=matrix; b.Colors[n]=Rendered(d)*i.Tint; n++;
-                    i.R.forceRenderingOff=true; // InvisibleSkip may have changed it during ApplyColor.
                 }
-                long beforeSubmit=Stopwatch.GetTimestamp(); computeTicks += beforeSubmit-t;
+                long beforeSubmit=Stopwatch.GetTimestamp(); if (measure) computeTicks += beforeSubmit-t;
                 b.Props.SetVectorArray(TintId,b.Colors);
                 commands.DrawMeshInstanced(b.Mesh,0,b.Material,0,b.Matrices,n,b.Props); currentDraws++;
-                long after=Stopwatch.GetTimestamp(); submitTicks+=after-beforeSubmit; t=after;
+                long after=Stopwatch.GetTimestamp(); if (measure) submitTicks+=after-beforeSubmit; t=after;
             }
-            calls++; draws+=currentDraws;
+            foreach (var i in owned.Values) i.R.forceRenderingOff = true;
+            originalsHidden = true;
+            if (measure) { calls++; draws+=currentDraws; }
             // All batches' aggregate times, with two timestamps per batch; no per-item clocks.
-            TotalTicks += Stopwatch.GetTimestamp() - aggregateStart;
+            if (measure) TotalTicks += Stopwatch.GetTimestamp() - aggregateStart;
         }
         string Compare()
         {
+            if (calls == 0 || postRenderCalls == 0) return "[decogpu] compare refused: wait for selected PreCull and PostRender; " + State();
             // Two synchronous renders, isolated from performance evidence. No game Update between them.
             // Pixel comparison includes command-band ordering and shader differences by design.
             RenderTexture oldTarget=camera.targetTexture, oldActive=RenderTexture.active;
@@ -313,7 +456,7 @@ namespace StutterFix
             var snapshots=new List<Tuple<Item,Vector3,Quaternion,Vector3,Color,bool>>();
             try
             {
-                Build(); comparing=true;
+                comparing=true;
                 foreach(var i in owned.Values)
                 {
                     var p=i.D.pivotTrans;
@@ -321,9 +464,13 @@ namespace StutterFix
                     i.D.UpdatePosition(); i.R.color=Rendered(i.D); i.R.forceRenderingOff=i.Off;
                 }
                 commands.Clear(); camera.targetTexture=rt;
-                camera.Render(); a=Read(rt);
+                camera.Render();
+                if (stopping || session != this) throw new InvalidOperationException("compare interrupted: " + firstStop);
+                a=Read(rt);
                 foreach(var i in owned.Values) i.R.forceRenderingOff=true;
-                Build(); camera.Render(); b=Read(rt);
+                Build(false); camera.Render();
+                if (stopping || session != this) throw new InvalidOperationException("compare interrupted: " + firstStop);
+                b=Read(rt);
                 var aa=a.GetPixels32();var bb=b.GetPixels32();int max=0,changed=0;
                 for(int n=0;n<aa.Length;n++)
                 {
@@ -333,12 +480,14 @@ namespace StutterFix
                 return "[decogpu] compare 512x288 max-channel="+max+" changed="+changed+"/"+aa.Length+" ratio="+((double)changed/aa.Length).ToString("F6",CultureInfo.InvariantCulture)
                     +"; synchronous Camera.Render x2; temporal callbacks/filters may differ; NOT performance evidence";
             }
+            catch (Exception e) { Stop("compare " + e.GetType().Name + ": " + e.Message); throw; }
             finally
             {
-                camera.targetTexture=oldTarget;RenderTexture.active=oldActive;
-                foreach(var s in snapshots) if(s.Item1.D && s.Item1.R)
+                if (camera) camera.targetTexture=oldTarget;RenderTexture.active=oldActive;
+                foreach(var s in snapshots) if(!stopping && s.Item1.D && s.Item1.R)
                 {var p=s.Item1.D.pivotTrans;p.position=s.Item2;p.rotation=s.Item3;p.localScale=s.Item4;s.Item1.R.color=s.Item5;s.Item1.R.forceRenderingOff=s.Item6;}
                 if(a)Destroy(a);if(b)Destroy(b);RenderTexture.ReleaseTemporary(rt);comparing=false;
+                if (!stopping) try { Build(false); } catch (Exception e) { Stop("compare rebuild " + e.Message); }
             }
         }
         static Texture2D Read(RenderTexture rt)
@@ -352,17 +501,23 @@ namespace StutterFix
             var s=session; double k=1000.0/Stopwatch.Frequency;
             return "[decogpu] active="+(s!=null)+" managed="+(s==null?0:s.owned.Count)+" batches="+(s==null?0:s.batches.Count)
                 +" draws-last="+(s==null?0:s.currentDraws)+" renders="+(s==null?0:s.calls)+" restore="+restores+" restore-mismatch="+restoreMismatch
+                +(s==null?stoppedState:" preCull-all="+s.preCullCalls+" preCull-selected="+s.selectedPreCull+" postRender-selected="+s.postRenderCalls+" originals-hidden="+s.originalsHidden)
                 +(s==null?"":" compute-ms/render="+(s.computeTicks*k/Math.Max(1,s.calls)).ToString("F4")+" submit-ms/render="+(s.submitTicks*k/Math.Max(1,s.calls)).ToString("F4")+" draws-total="+s.draws)
-                +" status="+last;
+                +" status="+last+" first-stop="+firstStop;
         }
-        internal static void Stop()
+        internal static void Stop() => Stop("Unload/external Stop");
+        static void Stop(string reason)
         {
             var s=session;if(s==null || s.stopping)return;s.stopping=true;
-            if(last.StartsWith("active",StringComparison.Ordinal))last="stopped (lifecycle/eligibility/unload)";
+            if (firstStop == "none") firstStop = reason + " frame=" + Time.frameCount;
+            last="stopped: " + firstStop;
+            stoppedState=" stopped-renders="+s.calls+" stopped-draws="+s.draws+" preCull-all="+s.preCullCalls+" preCull-selected="+s.selectedPreCull+" postRender-selected="+s.postRenderCalls;
             Camera.onPreCull-=s.PreCull;
+            Camera.onPostRender-=s.PostRender;
             try
             {
-                if(s.camera && s.commands!=null)s.camera.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha,s.commands);
+                try { if(s.camera && s.commands!=null)s.camera.RemoveCommandBuffer(DrawEvent,s.commands); }
+                catch(Exception e) { restoreMismatch++;Log("remove command buffer failed: "+e.Message); }
                 try { s.harmony?.UnpatchAll(PatchId); }
                 catch(Exception e) { restoreMismatch++;Log("unpatch failed: "+e.Message); }
                 foreach(var i in s.owned.Values)
@@ -390,13 +545,15 @@ namespace StutterFix
             }
             finally
             {
-                s.commands?.Release();s.commands=null;
+                try { s.commands?.Release(); }
+                catch(Exception e) { restoreMismatch++;Log("release command buffer failed: "+e.Message); }
+                s.commands=null;
                 foreach(var b in s.batches){if(b.Mesh)Destroy(b.Mesh);if(b.Material)Destroy(b.Material);}
                 s.batches.Clear();s.owned.Clear();if(s.bundle)s.bundle.Unload(true);
                 session=null;Destroy(s.gameObject);
             }
         }
-        void OnDestroy(){if(session==this)Stop();}
+        void OnDestroy(){if(session==this)Stop("OnDestroy");}
     }
 }
 #endif
