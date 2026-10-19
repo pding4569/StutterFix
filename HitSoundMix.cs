@@ -16,6 +16,14 @@ namespace StutterFix
         internal static long Sample(double seconds, int rate)
             => checked((long)Math.Round(seconds * rate, MidpointRounding.AwayFromZero));
 
+        // At most two native layouts at one common, even sample rate. Keeping the
+        // rate common makes every half-second boundary identical in both groups.
+        internal static void RequireFormat(int commonRate, int rate, int channels)
+        {
+            if (rate < 8000 || rate > 96000 || (rate & 1) != 0 || rate != commonRate || channels < 1 || channels > 2)
+                throw new NotSupportedException("unsupported native PCM format or mixed sample rates");
+        }
+
         internal static void Render(Voice[] voices, int channels, long start, float[] output,
             Func<bool> cancelled)
         {
