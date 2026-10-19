@@ -185,7 +185,10 @@ namespace StutterFix
                 if (e.Engine != null) { why[7]++; continue; }
                 if (!r || !r.sprite) { why[8]++; continue; }
                 if (!r.enabled || r.forceRenderingOff || !r.gameObject.activeInHierarchy) { why[9]++; continue; }
-                if (r.HasPropertyBlock() || r.maskInteraction != SpriteMaskInteraction.None || r.drawMode != SpriteDrawMode.Simple || r.GetComponentInParent<SortingGroup>() != null) { why[10]++; continue; }
+                if (r.HasPropertyBlock()) { why[10]++; continue; }
+                if (r.maskInteraction != SpriteMaskInteraction.None) { why[14]++; continue; }
+                if (r.drawMode != SpriteDrawMode.Simple) { why[15]++; continue; }
+                if (r.GetComponentInParent<SortingGroup>() != null) { why[6]++; continue; }
                 if (v.repeatX != 1 || v.repeatY != 1) { why[11]++; continue; }
                 if (!r.sharedMaterial || !r.sharedMaterial.shader || r.sharedMaterial.shaderKeywords.Length != 0
                     || (r.sharedMaterial.shader.name != "Sprites/Default" && r.sharedMaterial.shader.name != "Sprites/Tile")
@@ -201,7 +204,7 @@ namespace StutterFix
                     TextureScale=d.textureScaleMultiplier, ScaleMultiplier=d.scaleMultiplier,
                     Tint=m.HasProperty("_Color")?m.GetColor("_Color"):Color.white, Signature=Key(m)});
             }
-            if (owned.Count == 0) throw new InvalidOperationException("no clean supported images; candidates=" + all.Count + " why[notVisual,noTL,tlMissing1..5(1..5),engineOwned,noSprite,renderOff,pb/mask/group,repeat,material,cullmask]=" + string.Join("/", why));
+            if (owned.Count == 0) throw new InvalidOperationException("no clean supported images; candidates=" + all.Count + " why[notVisual,noTL,tlMissing1..5(1..5),engineOwned,noSprite,renderOff,propertyBlock,repeat,material,cullmask,mask,drawMode; [6]=sortingGroup]=" + string.Join("/", why));
             // Stable deterministic approximation only. Native tie-sort and foreign renderers are not reproduced.
             var ordered = owned.Values.OrderBy(x => SortingLayer.GetLayerValueFromID(x.Layer)).ThenBy(x => x.Order).ThenBy(x => x.D.GetInstanceID());
             Batch current = null; Item prev = null;
