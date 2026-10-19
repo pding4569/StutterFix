@@ -38,6 +38,12 @@ namespace StutterFix
         {
             Entry = modEntry;
             Config = UnityModManager.ModSettings.Load<Settings>(modEntry);
+            if (Config.DefaultsGen < 1)
+            {
+                // 2026-10-20: 히트음 예약 묶기와 화면 밖 파티클 멈추기를 기본 켬으로 (예전 설정 파일에는 false 가 적혀 있어 한 번만 덮어쓴다. 설정창에서 끄면 그대로 유지)
+                Config.HitSoundBatch = true; Config.LowPauseParticles = true; Config.DefaultsGen = 1;
+                try { Config.Save(modEntry); } catch { }
+            }
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
             modEntry.OnGUI = OnGUI;
@@ -1158,7 +1164,8 @@ BlendProbe.Tick();
         public bool FilterTypeCache = true; // 고급 필터의 형식 찾기(Type.GetType, 한 번 약 0.7ms) 결과를 기억
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기
         public bool SoundWarm = true;
-        public bool HitSoundBatch = false;
+        public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬)
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음
@@ -1169,7 +1176,7 @@ BlendProbe.Tick();
         public int CrashStreak = 0;         // 연속 비정상 종료 횟수 (2 이상이면 안전 모드)
         public bool LowNoFft = true;        // Volume 타일이 없으면 음악 주파수 분석 건너뛰기 (프레임당 0.073ms, HELLO 2026 곡 11,322프레임 중 4번만 돎. 새 설치부터 기본 켬)
         public bool LowFloorSplit = false;    // (저사양) 타일이 많은 타일 이동 효과를 여러 프레임에 나눠 처리
-        public bool LowPauseParticles = false; // (저사양) 화면 밖 파티클 장식 시뮬레이션 멈추기
+        public bool LowPauseParticles = true; // 화면 밖 파티클 장식 시뮬레이션 멈추기 (2026-10-20 기본 켬)
         public bool LowCompressImages = false; // (저사양) 장식 이미지를 DXT 로 압축해서 올리기 (그래픽 메모리 1/4, 여러 코어로 미리 압축)
         public int LowRenderScale = 100;    // 게임 화면(카메라) 해상도 배율 % (10~100), 100 = 원래대로
         public bool LowSharpUpscale = false; // 작게 그린 게임 화면을 선명하게(도트처럼) 늘리기

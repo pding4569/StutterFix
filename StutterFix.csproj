@@ -125,6 +125,7 @@
     <EmbeddedResource Include="effects/stutterfix_decogpu" LogicalName="StutterFix.decogpu" Condition="('$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1') And Exists('effects/stutterfix_decogpu')" />
     <Compile Include="DecoBatchShadow.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DecoJobShadow.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DecoCensus.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="OffscreenProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="CpuBreak.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FloatSem.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

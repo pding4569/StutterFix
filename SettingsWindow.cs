@@ -1290,9 +1290,6 @@ namespace StutterFix
                 ch |= Option("gcbudget", ref c.GcDynamicBudget, T("메모리 한도 자동 조절 (실험)", "Adaptive memory budget (experimental)"),
                     T("남은 RAM과 게임의 메모리 사용량에 맞춰 정리 한도를 조절합니다. 메모리 정리 미루기와 함께 사용합니다.",
                       "Adjusts the cleanup budget to available RAM and game memory usage. Requires deferred memory cleanup."), null);
-                ch |= Option("hitsoundbatch", ref c.HitSoundBatch, T("히트음 예약 묶기 (실험)", "Batch hit sound scheduling (experimental)"),
-                    T("타일마다 히트음을 하나씩 예약하는 대신 미리 합쳐 예약합니다. 소리 타이밍·음량이 달라질 수 있어 기본으로 꺼져 있습니다.",
-                      "Mixes hit sounds ahead of time instead of scheduling one per tile. Timing and volume may differ; disabled by default."), null);
                 ch |= Option("jsonpool", ref c.JsonStringPool, T("맵 문자열 재사용 (실험)", "Reuse level strings (experimental)"),
                     T("맵을 읽는 동안 반복되는 짧은 문자열과 검색 버퍼를 재사용합니다.", "Reuses repeated short strings and scratch lookup buffers while reading a level."), null);
                 ch |= Option("uploadbudget", ref c.AsyncUploadBudget, T("로딩 업로드 예산 (실험)", "Loading upload budget (experimental)"),
@@ -2013,6 +2010,10 @@ namespace StutterFix
             ch |= Option("lowparticle", ref c.LowPauseParticles, T("화면 밖 파티클 멈추기", "Pause off-screen particles"),
                 T("파티클 장식이 화면 밖에 있는 동안 시뮬레이션을 멈춰 CPU 를 아낍니다. 파티클이 많은 맵에서 효과가 있습니다. 다시 화면에 들어오면 멈춘 곳부터 이어가서 원래와 모양·시점이 조금 달라질 수 있습니다." + (Compat.QPauseOffscreenParticles ? " (지금은 Quartz 가 같은 일을 하고 있어 쉬는 중)" : ""),
                   "Stops simulating particle decorations while they are off-screen to save CPU on particle-heavy levels. When they come back on screen they resume where they stopped, so they may look slightly different from the original." + (Compat.QPauseOffscreenParticles ? " (Idle now: Quartz is doing the same)" : "")),
+                null);
+            ch |= Option("hitsoundbatch", ref c.HitSoundBatch, T("히트음 예약 묶기", "Batch hit sound scheduling"),
+                T("타일마다 히트음을 하나씩 예약하는 대신 0.5초 단위로 미리 합쳐 예약해 곡 중 CPU 를 아낍니다(Arche 전곡 약 +6.6%). 사용자 지정 히트음 등 지원하지 않는 경우는 자동으로 원래 방식으로 돌아갑니다. 소리 타이밍·음량이 아주 조금 달라질 수 있습니다.",
+                  "Mixes hit sounds ahead of time in 0.5 s segments instead of scheduling one per tile, saving CPU during play (about +6.6% on a heavy map). Unsupported cases such as custom hit sounds fall back to the original path automatically. Timing and volume may differ very slightly."),
                 null);
             ch |= Option("lowfft", ref c.LowNoFft, T("음악 반응 계산 끄기", "Skip music spectrum analysis"),
                 T("게임은 매 프레임 음악 주파수를 분석하는데, 이 값을 쓰는 곳은 타일 색 방식 'Volume' 뿐입니다. 그 방식을 쓰는 타일이 없으면 분석을 건너뜁니다. 곡 도중 타일이 Volume 으로 바뀌면 바로 다시 켜며, 그 첫 한 프레임만 색이 한 프레임 늦을 수 있습니다.",
