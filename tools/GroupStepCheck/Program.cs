@@ -16,7 +16,8 @@ namespace UnityEngine {
         public static Color operator -(Color x,Color y)=>new Color{r=x.r-y.r,g=x.g-y.g,b=x.b-y.b,a=x.a-y.a};
     }
 }
-class scrDecoration { internal Vector2 Pivot=new Vector2(3,-2), Scale=new Vector2(2,4); internal float Rot=7; internal bool Deferred; }
+class scrDecoration { internal Vector2 Pivot=new Vector2(3,-2), Scale=new Vector2(2,4); internal float Rot=7; internal bool Deferred; internal Color Color = new Color {a=1}; internal float Opacity=1; internal bool GetVisible()=>Deferred; }
+class scrVisualDecoration : scrDecoration { }
 class scrParallax { internal Vector2 multiplier; }
 namespace HarmonyLib {
     static class AccessTools { internal const BindingFlags all=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Static|BindingFlags.Instance; }
@@ -32,6 +33,7 @@ namespace StutterFix {
         internal static void Remember(DecoAnim.Rec r){}
     }
     static class NativeMotion { internal static bool Enabled,Failed; }
+    static class InvisibleSkip { internal static bool MaskOrUnknown(scrVisualDecoration d)=>false; }
     static class Edition { internal const bool Dev=false; }
     static class MoveApply { internal static bool DeferTransform(scrDecoration d)=>d.Deferred; }
     static class ZeroTween {
@@ -68,6 +70,9 @@ namespace StutterFix {
         private static ref Vector2 pivotPosRef(scrDecoration d)=>ref d.Pivot;
         private static ref Vector2 scaleRef(scrDecoration d)=>ref d.Scale;
         private static ref float rotRef(scrDecoration d)=>ref d.Rot;
+        private static ref Color colRef(scrDecoration d)=>ref d.Color;
+        private static ref float opaRef(scrDecoration d)=>ref d.Opacity;
+        private static void DropAll(){ BatchRestoreAll(); foreach(var r in recs)r.Running=false; recs.Clear(); }
         private static Vector2 pivotOffRef(scrDecoration d)=>new Vector2(0.125f,-0.75f);
         private static scrParallax parallaxRef(scrDecoration d)=>new scrParallax();
         private static void Error(Exception ex){errors++;}
@@ -88,8 +93,8 @@ namespace StutterFix {
         private static void setPivY(scrDecoration d,float f){}
         private static void setParOffX(scrDecoration d,float f){}
         private static void setParOffY(scrDecoration d,float f){}
-        private static void setOpa(scrDecoration d,float f){}
-        private static void setCol(scrDecoration d,Color f){}
+        private static void setOpa(scrDecoration d,float f){d.Opacity=f;}
+        private static void setCol(scrDecoration d,Color f){d.Color=f;}
         private static void PositionUpdate(Rec r,float f){if(r.Key==1)setPosX(r.D,f,pivotOffRef(r.D));else setPosY(r.D,f,pivotOffRef(r.D));}
 
         private static void Require(bool b,string why){if(!b)throw new Exception(why);}
@@ -118,7 +123,94 @@ namespace StutterFix {
                 else GroupIndividual(recs[i],dt);
             }
         }
+        private static string BatchCase(bool enabled, int[] keys, Ease ease, float td, int scenario)
+        {
+            BatchRestoreAll(); recs.Clear(); batchFree.Clear(); batchRetired.Clear(); batchUsed=batchCount=0;
+            batchSchedule.Clear(); batchPending.Clear(); batchReturned.Clear();
+            if(br==null)BatchAllocate();
+            batchOn=enabled; batchVerify=true; batchSerial=0; batchChecks=batchMismatch=0;
+            GroupEnabled=false; PairXY=true; fastDirty=true; FastLane=true;
+            Completed=Steps=errors=0; pairThrows=false; throwCall=0; mutation=false; calls=0; trace.Clear(); onHit=null;
+            var ds=new[]{new scrVisualDecoration{Deferred=true},new scrVisualDecoration{Deferred=true}};
+            var owned=new List<Rec>();
+            foreach(var d in ds)foreach(int key in keys)
+            {
+                var r=new Rec{D=d,Key=key,E=ease,Dur=1,Over=1.70158f,Period=0.3f,FStart=11.25f,FEnd=-17.75f,VEnd=new Vector2(-3,8),BatchOrder=++batchOrder,InList=true};
+                recs.Add(r);owned.Add(r);
+            }
+            float oldDelta=Time.deltaTime,oldSmooth=Time.smoothDeltaTime;
+            Time.deltaTime=Time.smoothDeltaTime=td;
+            for(int f=0;f<7;f++)
+            {
+                if(scenario==1 && f==2)ds[0].Deferred=false;
+                if(scenario==1 && f==4)ds[0].Deferred=true;
+                if(scenario==2 && f==2) { ds[0].Opacity=0; ds[1].Color=new Color{a=0}; }
+                if(scenario==2 && f==4) { ds[0].Opacity=1; ds[1].Color=new Color{a=1}; }
+                if(scenario==3 && f==3)Complete(owned[0]);
+                if(scenario==4 && f==3)NativeMotion.Enabled=true;
+                UpdatePrefix();
+                Require(batchMismatch==0,"batch verification "+batchFirst);
+            }
+            NativeMotion.Enabled=false; Time.deltaTime=oldDelta;Time.smoothDeltaTime=oldSmooth;
+            var sb=new System.Text.StringBuilder();
+            foreach(var r in owned)
+            {
+                if(r.BatchSlot>=0)BatchSync(r.BatchSlot);
+                sb.Append(r.Key+":"+r.Running+":"+r.Started+":"+r.Stepped+":"+r.InList+":");
+                foreach(float v in new[]{r.Pos,r.FLast,r.VLast.x,r.VLast.y,r.D.Pivot.x,r.D.Pivot.y,r.D.Rot,r.D.Scale.x,r.D.Scale.y,r.D.Opacity,r.D.Color.a})sb.Append(B(v)+",");
+            }
+            sb.Append("done="+Completed+" steps="+Steps+" errors="+errors);
+            BatchRestoreAll();recs.Clear();batchOn=false;
+            return sb.ToString();
+        }
+        private static void BatchTests()
+        {
+            int count=0;
+            foreach(int[] keys in new[]{new[]{1,2,5,7,8},new[]{7,8,1,2,5},new[]{8,7,5,2,1},new[]{1,2,10,5,7,8},new[]{5,9,7,8},new[]{7,8}})
+            foreach(Ease ease in new[]{Ease.Linear,Ease.OutCubic,Ease.OutBack,Ease.OutBounce,Ease.InElastic,Ease.Flash})
+            foreach(float td in new[]{0.016f,0.5f,1f,-0.02f,0f})
+            foreach(int scenario in new[]{0,1,2,3,4})
+            {
+                string baseline=BatchCase(false,keys,ease,td,scenario);
+                string actual=BatchCase(true,keys,ease,td,scenario);
+                Require(actual==baseline,"resident parity keys="+string.Join(",",keys)+" ease="+ease+" td="+td+" scenario="+scenario+"\n"+baseline+"\n"+actual);
+                count++;
+            }
+            Console.WriteLine("BATCH PASS actual UpdatePrefix parity cases="+count+" (7 frames, merge/order/scale startup/color/opacity/hidden/Complete/native fallback/zero dt)");
+            // Force slot holes, natural completion, live admission failure and
+            // re-enrollment in one run; a released schedule entry must never
+            // advance a newly reused slot a second time.
+            BatchRestoreAll();recs.Clear();batchVerify=false;batchOn=true;GroupEnabled=false;PairXY=true;
+            var dummy=new scrVisualDecoration{Deferred=true};
+            for(int wave=0;wave<40;wave++)
+            {
+                foreach(int key in new[]{1,2,5,7,8})recs.Add(new Rec{D=dummy,Key=key,E=Ease.OutBounce,Dur=.025f,Over=1.7f,FEnd=3,VEnd=new Vector2(3,4),BatchOrder=++batchOrder,InList=true});
+                dummy.Deferred=true;UpdatePrefix();dummy.Deferred=wave%2==0;UpdatePrefix();UpdatePrefix();
+                Require(batchCount==0,"slot leak wave "+wave);
+                Require(batchDecorationIds.Count==0,"decoration leak wave "+wave);
+            }
+            var stable=new Rec{D=dummy,Key=5,E=Ease.Linear,Dur=1000000,FEnd=4,BatchOrder=++batchOrder,InList=true};
+            dummy.Deferred=true; recs.Add(stable);UpdatePrefix();
+            for(int f=0;f<100;f++)UpdatePrefix();
+            long before=GC.GetAllocatedBytesForCurrentThread();
+            for(int f=0;f<10000;f++)UpdatePrefix();
+            long alloc=GC.GetAllocatedBytesForCurrentThread()-before;
+            Require(alloc==0,"batch steady allocation "+alloc);
+            BatchForget();Require(batchCount==0 && batchDecorationIds.Count==0 && recs.Count==0,"forget leak");
+            var fault=new Rec{D=dummy,Key=5,E=Ease.Linear,Dur=1,FStart=2,FEnd=4,BatchOrder=++batchOrder,InList=true};
+            recs.Add(fault);UpdatePrefix();BatchSync(fault.BatchSlot);
+            var expectedFault=new GroupExpected(fault,Time.deltaTime);
+            bs[fault.BatchSlot]=999;batchVerify=true;batchSerial=15;
+            UpdatePrefix();
+            Require(batchMismatch>0 && B(dummy.Rot)==B(expectedFault.Rot),"calculation mismatch fallback");
+            Require(!BatchAllowed(),"mismatch must disable resident path");
+            BatchForget();batchMismatch=0;batchFirst="none";
+            batchOn=false;
+            Console.WriteLine("BATCH lifecycle PASS 40 reuse/fallback/completion waves; steady 10000 frames allocated="+alloc+"; Forget references=0; injected mismatch restored baseline and disabled batch");
+            PairXY=false; batchVerify=false;
+        }
         internal static void Main() {
+            BatchTests();
             int cases=0;
             int[][] orders={new[]{1,2,5,7,8},new[]{7,8,1,2,5},new[]{8,7,5,2,1},new[]{1,5,7},new[]{7,8},new[]{1,2}};
             foreach(var keys in orders)foreach(bool deferred in new[]{false,true})

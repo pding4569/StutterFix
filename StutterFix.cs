@@ -506,6 +506,7 @@ ParticleTextWatch.Install(harmony);
             // 곡 중에 내리면 원래 게임이 이미 끝냈을 일을 마저 한다: 밀린 효과·타일 색 조각 실행, 모드 애니메이션은 끝값으로(Kill(true) 와 같음)
             if (Hitch.Playing) Try(EffectBudget.FlushAll);
             Try(global::StutterFix.DecoAnim.FinishAll);
+            Try(global::StutterFix.DecoAnim.BatchUninstall);
             Try(global::StutterFix.FloorAnim.FinishAll);
             Try(RestoreQueued);
             Try(EffectBudget.Reset);       // 색 나누기 대기열도 같이 비운다

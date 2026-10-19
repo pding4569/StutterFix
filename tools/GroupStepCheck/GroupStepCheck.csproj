@@ -6,6 +6,7 @@
     <Compile Include="obj/ProductionFixture.cs" />
     <Compile Include="../../DecoAnim.GroupStep.cs" Link="DecoAnim.GroupStep.cs" />
     <Compile Include="../../DecoAnim.FastLane.cs" Link="DecoAnim.FastLane.cs" />
+    <Compile Include="../../DecoAnim.Batch.cs" Link="DecoAnim.Batch.cs" />
     <Reference Include="DOTween"><HintPath>D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed/DOTween.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

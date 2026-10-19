@@ -47,6 +47,8 @@ namespace StutterFix
 
         internal sealed class Rec
         {
+            internal int BatchSlot = -1;
+            internal long BatchOrder;
 #if DEV || AUTOTEST
             internal int BatchShadowSlot = -1;
 #endif
@@ -113,6 +115,7 @@ namespace StutterFix
                 UpdateEvalMemo.Configure(Main.Entry.Path);
                 ConfigureGroup(Main.Entry.Path);
                 ConfigureFastLane(Main.Entry.Path);
+                ConfigureBatch(Main.Entry.Path);
                 var d = typeof(scrDecoration);
                 setPosX = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionX", new[] { typeof(float), typeof(Vector2) }));
                 setPosY = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionY", new[] { typeof(float), typeof(Vector2) }));
@@ -163,6 +166,11 @@ namespace StutterFix
         internal static void CollectMoving(List<scrDecoration> into, HashSet<scrDecoration> seen)
         {
             into.Clear(); seen.Clear();
+            if (batchCount != 0)
+            {
+                foreach (var r in BatchView()) if (r.Running && r.D != null && BatchKey(r.Key) && seen.Add(r.D)) into.Add(r.D);
+                return;
+            }
             for (int i = 0; i < recs.Count; i++)
             {
                 var r = recs[i];
@@ -204,6 +212,7 @@ namespace StutterFix
             if (FuseProbe.On) FuseProbe.NewRec(dec, key, dur, (object)old != null, oldR != null && oldR.Running);
 #endif
             r.NativeEpoch = 0;
+            if (batchOn) r.BatchOrder = ++batchOrder;
             PosFast.Bind(r);
             ZeroTween.EaseParams(ease, out r.Over, out r.Period);
             if (!reuseProxy) NewProxies++;
@@ -441,6 +450,7 @@ namespace StutterFix
         // Kill(true) / KillAll(true): 끝 위치로 한 번 (시작 전이면 시작 처리부터)
         private static void Complete(Rec r)
         {
+            if (r.BatchSlot >= 0) BatchRelease(r, true);
             BatchShadowCancel(r);
             fastDirty = true;
             if (!r.Running) return;
@@ -459,6 +469,7 @@ namespace StutterFix
             if ((object)t == null) return true;
             var r = t.id as Rec;
             if (r == null) return true;
+            if (r.BatchSlot >= 0) BatchRelease(r, true);
             BatchShadowCancel(r);
             if (complete) { Killed++; Complete(r); }
             else if (r.Running) { r.Running = false; fastDirty = true; Dropped++; if (r.Shadow != null) r.Shadow.Kill(false); }
@@ -476,6 +487,7 @@ namespace StutterFix
         internal static long Listed;
         public static void PlayingPostfix(List<Tween> __0, ref List<Tween> __result)
         {
+            if (batchOn) BatchRestoreAll();
             int n = 0;
             for (int i = 0; i < recs.Count; i++) if (recs[i].Running) n++;
             if (n == 0) return;
@@ -494,8 +506,9 @@ namespace StutterFix
         }
         public static void KillAllPrefix(bool complete)
         {
+            if (batchOn) BatchRestoreAll();
             fastDirty = true;
-            if (recs.Count == 0) { LastFrameMs = 0; return; }
+            if (recs.Count == 0 && batchCount == 0) { LastFrameMs = 0; return; }
             var copy = recs.ToArray();
             foreach (var r in copy)
             {
@@ -535,7 +548,7 @@ namespace StutterFix
 #if AUTOTEST
         internal static bool SampOn;
         internal static readonly long[] sampTicks = new long[16], sampCalls = new long[16];
-        internal static long sampCompactTicks, sampLoopTicks, sampFrames, sampRecs;
+        internal static long sampCompactTicks, sampLoopTicks, sampFrames, sampRecs, sampBatchTicks;
         internal static string SampReport()
         {
             double tk = System.Diagnostics.Stopwatch.Frequency / 1e6; long f = Math.Max(1, sampFrames);
@@ -546,9 +559,10 @@ namespace StutterFix
             for (int k = 0; k < 16; k++) if (sampCalls[k] > 0)
             { double ms = sampTicks[k] / tk / 1000.0 / f; sum += ms; sb.Append(nm[k]).Append(" 프레임당 ").Append((sampCalls[k] / (double)f).ToString("F0")).Append("번 ").Append((sampTicks[k] / tk / sampCalls[k]).ToString("F2")).Append("us = ").Append(ms.ToString("F3")).Append("ms, "); }
             sb.Append("호출 합 ").Append(sum.ToString("F3")).Append("ms");
+            sb.Append(" | batch 포함 ").Append((sampBatchTicks / tk / 1000.0 / f).ToString("F3")).Append("ms/frame (merge+maintenance 포함, 전체 루프에 이미 포함)");
             return sb.ToString();
         }
-        internal static void SampReset() { Array.Clear(sampTicks, 0, 16); Array.Clear(sampCalls, 0, 16); sampCompactTicks = sampLoopTicks = sampFrames = sampRecs = 0; }
+        internal static void SampReset() { Array.Clear(sampTicks, 0, 16); Array.Clear(sampCalls, 0, 16); sampBatchTicks = sampCompactTicks = sampLoopTicks = sampFrames = sampRecs = 0; }
 #endif
 #if AUTOTEST
         internal static int AblateMask;   // 자동 시험 decoablate: 키 비트마스크. 화면이 달라지는 측정 전용 설정
@@ -556,15 +570,17 @@ namespace StutterFix
         public static void UpdatePrefix()
         {
             UpdateEvalMemo.NewFrame();
+            if (batchCount != 0 && !BatchAllowed()) BatchRestoreAll();
 #if DEV || AUTOTEST
             UpdateCostProbe.Frame(recs);
 #endif
-            if (recs.Count == 0) { LastFrameMs = 0; return; }
+            if (recs.Count == 0 && batchCount == 0) { LastFrameMs = 0; return; }
             GroupFrameStart();
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
             float td = dt * 1f;   // 애니메이션마다의 timeScale 은 1
             Frames++;
+            bool batchRan = false;
 #if AUTOTEST
             bool sampFrame = SampOn && (Frames & 15) == 0;
             long sampFrameStart = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
@@ -572,6 +588,19 @@ namespace StutterFix
             if (!(td < 1E-06f && td > -1E-06f))
             {
                 BatchShadowBegin(td);
+                if (batchOn && BatchAllowed())
+                {
+#if AUTOTEST
+                    long batchStart = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+#endif
+                    BatchFrame(td); batchRan = true;
+#if AUTOTEST
+                    if (sampFrame) sampBatchTicks += System.Diagnostics.Stopwatch.GetTimestamp() - batchStart;
+#endif
+                }
+                else
+                {
+                if (batchCount != 0) BatchRestoreAll();
                 PrepareNative(td);
                 for (int i = 0; i < recs.Count; i++)
                 {
@@ -621,6 +650,7 @@ namespace StutterFix
                     if (sampFrame) { int sk = r.Key >= 0 && r.Key < 14 ? r.Key : 15; sampTicks[sk] += System.Diagnostics.Stopwatch.GetTimestamp() - ss0; sampCalls[sk]++; }
 #endif
                 }
+                }
             }
 #if AUTOTEST
             long sampCompact0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
@@ -628,10 +658,10 @@ namespace StutterFix
             BatchShadowEnd();
             if (!Edition.Dev)
             {
-                if (!FastMaySkipCompact()) Compact();
+                if (!batchRan && !FastMaySkipCompact()) Compact();
             }
 #if AUTOTEST
-            if (sampFrame) { long now = System.Diagnostics.Stopwatch.GetTimestamp(); sampCompactTicks += now - sampCompact0; sampLoopTicks += now - sampFrameStart; sampFrames++; sampRecs += recs.Count; }
+            if (sampFrame) { long now = System.Diagnostics.Stopwatch.GetTimestamp(); sampCompactTicks += now - sampCompact0; sampLoopTicks += now - sampFrameStart; sampFrames++; sampRecs += recs.Count + batchCount; }
 #endif
             long elapsedTicks = System.Diagnostics.Stopwatch.GetTimestamp() - t0;
             LastFrameMs = elapsedTicks * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
@@ -682,6 +712,7 @@ namespace StutterFix
             for (int i = 0; i < records.Count; i++)
             {
                 var r = records[i];
+                if (r.BatchSlot >= 0) continue; // InList means owned by recs OR a resident slot.
                 if (r.Running || (Edition.Dev && r.Shadow != null)) records[w++] = r;
                 else { BatchShadowCancel(r); r.InList = false; }
             }
@@ -700,18 +731,18 @@ namespace StutterFix
         // (자동 시험 animstat) 지금 도는 애니메이션: 종류별 수와 그중 안 그리는(투명) 장식 대상 수
 #if DEV || AUTOTEST
         // Probe-only live view: never mutate or retain its records.
-        internal static System.Collections.Generic.IReadOnlyList<Rec> ProbeRecords => recs;
+        internal static System.Collections.Generic.IReadOnlyList<Rec> ProbeRecords => batchCount == 0 ? recs : new List<Rec>(BatchView());
         internal static HashSet<scrDecoration> RunningDecorations()
         {
             var set = new HashSet<scrDecoration>();
-            foreach (var r in recs) if (r != null && r.Running) set.Add(r.D);
+            foreach (var r in BatchView()) if (r != null && r.Running) set.Add(r.D);
             return set;
         }
         // 장식마다 도는 속성 조합 (위치X=1 위치Y=2 회전=5 크기X=7 크기Y=8 색=9 투명도=10) -> 가장 흔한 것들
         internal static string KeyCombos()
         {
             var per = new Dictionary<scrDecoration, int>();
-            foreach (var r in recs) if (r != null && r.Running && r.Key >= 0 && r.Key < 31) { int m; per.TryGetValue(r.D, out m); per[r.D] = m | (1 << r.Key); }
+            foreach (var r in BatchView()) if (r != null && r.Running && r.Key >= 0 && r.Key < 31) { int m; per.TryGetValue(r.D, out m); per[r.D] = m | (1 << r.Key); }
             var cnt = new Dictionary<int, int>();
             foreach (var kv in per) { int c; cnt.TryGetValue(kv.Value, out c); cnt[kv.Value] = c + 1; }
             var l = new List<KeyValuePair<int, int>>(cnt); l.Sort((a, b) => b.Value.CompareTo(a.Value));
@@ -724,7 +755,7 @@ namespace StutterFix
         {
             var n = new int[16]; var h = new int[16]; int run = 0;
             var decs = new System.Collections.Generic.HashSet<scrDecoration>(); var hidDecs = new System.Collections.Generic.HashSet<scrDecoration>();
-            foreach (var r in recs)
+            foreach (var r in BatchView())
             {
                 if (r == null || !r.Running || r.Key < 0 || r.Key >= 16) continue;
                 run++; n[r.Key]++; decs.Add(r.D);

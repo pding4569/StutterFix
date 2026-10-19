@@ -264,6 +264,7 @@ BlendProbe.Report();
 
         private static void SongEnded()
         {
+            DecoAnim.BatchForget();
             TightLate.Forget();
             try
             {
@@ -299,7 +300,6 @@ BlendProbe.Report();
             if (!Edition.Dev || !Enabled) { SongEnded(); return; }
             if (songTime < 1f || reported) return;   // 곡이 끝나면 여러 경로에서 불릴 수 있다
             reported = true;
-
             SongEnded();
 #if DEV || AUTOTEST
             SlowScan.ReportSong();
