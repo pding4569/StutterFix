@@ -1665,6 +1665,7 @@ namespace StutterFix
             GUI.SetNextControlName(control);
             fxSlotName = GUILayout.TextField(fxSlotName, 32, sInput, GUILayout.ExpandWidth(true), GUILayout.Height(30));
             if (finish) { GUI.FocusControl(null); GUIUtility.keyboardControl = 0; Event.current.Use(); }
+            GUILayout.Space(6);
             if (Btn(T("지금 설정 저장", "Save current settings"), sSecondary, GUILayout.Height(32)))
                 if (FxSlots.Save(c, fxSlotName, false, out fxSlotMsg)) changed = presetChanged = true;
             if (c.FxSlots != null)
@@ -1672,8 +1673,10 @@ namespace StutterFix
                 {
                     var slot = c.FxSlots[i];
                     if (slot == null) continue;
+                    GUILayout.Space(8);
                     // Name and actions use separate rows; long names cannot push buttons out.
                     P(slot.Name ?? "", sBody);
+                    GUILayout.Space(2);
                     GUILayout.BeginHorizontal();
                     if (Btn(T("적용", "Apply"), sSecondary, GUILayout.Height(30)))
                     {
