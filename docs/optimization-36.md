@@ -869,3 +869,20 @@ Codex 독립 Editor D3D11 시험(`codex-alphadiscard-20261019-result.md`, `tools
 **표본 프로파일러(`profsamp begin [Hz]`/`end`)**: 메인 스레드를 1,000Hz 로 잠깐 멈춰 RIP 와 RBP 체인 반환 주소를 배열에 저장(멈춘 동안 할당·잠금 없음)하고 끝난 뒤 `mono_jit_info_table_find`/`mono_method_full_name` 으로 관리 함수 이름을 푼다(네이티브는 모듈+RVA). 함수 계측이 없어 비용이 부풀지 않는다. 곡 258~279초 21,003표본(관리 코드 리프 46.8%, UnityPlayer 43%, mono 5%, ntdll 2.6%): `DOTweenComponent.Update`(DecoAnim 포함) 29.8%, `scrDecorationManager.LateUpdate`(TightLate) 15.6%, `DecoAnim.UpdatePrefix` 28.2%(Step 12.5·StepPair 9.9·Compact 3.2·SetColor 5.0·Apply 6.4), 해시 연산 합 약 7.4%(`Dormancy.Wake` 의 `HashSet.Remove` 1.9, `RegisterLate` 의 `HashSet.Add` 1.7, `Dormancy.Prepare` 의 `Contains` 1.0, `Dictionary<SpriteRenderer,int>` 1.5), `Object.op_Equality` 1.9, GC 쓰기 장벽·`stelemref` 약 3, `MoveApply.SetLocal` 의 `get_localPosition` 2.0.
 **해시 조회 줄이기 시도**(Dormancy.Wake 힌트, Prepare 거르기 생략, SkipForLate 등록 중복 생략; 비트 대조·곡 끝 상태 동일): 프로파일상 합 약 4.6%(0.3ms)로 보였으나 A/B 에서 3,246 vs 3,251프레임, DecoAnim 1.87 vs 1.84ms 로 효과 없음 → 되돌림(revert). 프로파일의 1~2% 항목은 A/B 해상도(±1%) 아래다.
 최종(HEAD 9cd147f): Arche 전곡 평균 400 FPS(끊김 0, 시작 연출 뒤 최악 21ms, 1% low 110, 270초 구간 103 FPS), HELLO 286 FPS(끊김 0, 최악 18ms, 1% low 157). 화면 2560×1440 120Hz.
+
+## DecoEngine (장식 단위 엔진) — 실게임 결과: 이득 없음, 기본 끔 유지 (2026-10-19)
+
+Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세스, 검증 끔. 합 = 모드 애니메이션 갱신 + 장식 관리자 LateUpdate.
+| 판 | 갱신 | Late | 합 | 창 프레임 |
+|---|---:|---:|---:|---:|
+| 엔진 끔 | 1.90 | 1.14 | 3.04 | 3,030 |
+| 1단계 (소유율 1%, 알파 변화 장식은 못 가짐) | 2.52 | 1.10 | 3.62 | - |
+| 2단계-a (소유율 81%, 복귀 때 전체 List.Sort) | 3.43 | 1.07 | 4.50 | 2,503 |
+| 정렬을 이진 삽입으로 (fb4fe3f) | 2.25 | 1.19 | 3.44 | 2,861 |
+| 핫패스 줄이기 (16ca13e, Codex L) | 1.83 | 1.19 | 3.02 | 3,031 |
+| 영구 소유 (2969c38, Codex M) | 2.20 | 1.23 | 3.43 | 2,875 |
+- 정확성은 모두 통과: `decoengine verify` 55만~368만 번 불일치 0.
+- 4번 고쳐도 엔진 끔(3.04)보다 나아지지 않았다. 영구 소유로 복귀(16k/창)는 0 이 됐지만 알파 보존 프레임 재생·입장 스캔·해시 조회가 같은 만큼 먹었다.
+- 이유(프로파일 B4): 엔진 Update 17.5% + Late 9.4% 가 장식당 1µs 이상. 엔진이 못 줄이는 공통 비용이 크다 — 레거시 색 사슬(`Step`/`OnUpdate`/`SetColor`/`ApplyColor` 약 12%), `Transform` setter(위치 3.2%), 입장·자격 재검사(`Admit` 4.2%, `Eligible` 3.9%). 기록 단위 사슬을 없애도 장식당 엔진 호출(Transform·SpriteRenderer 색)은 남는다.
+- 교훈: 이 구간의 비용은 "기록 하나씩 처리하는 관리 코드"보다 장식당 엔진 쓰기(Transform·색) 쪽이 크다. 관리 코드만 합쳐서는 한계가 있다. 코드는 `DecoEngine.cs`(기본 끔, `decoengine-on`)로 보존.
+- 새 효과/맵 열 때 굽기(DecoTrack, `docs/handoff/codex-decotrack-research-20261019-result.md`)의 프레임 이득도 같은 이유로 작을 것으로 추정(효과 시작 비용은 창에서 0.15ms/프레임뿐). 맵 열기·메모리 이득은 별도.
