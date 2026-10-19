@@ -185,7 +185,7 @@ namespace StutterFix
                 if (e.Engine != null) { why[7]++; continue; }
                 if (!r || !r.sprite) { why[8]++; continue; }
                 if (!r.enabled || r.forceRenderingOff || !r.gameObject.activeInHierarchy) { why[9]++; continue; }
-                if (r.HasPropertyBlock()) { why[10]++; continue; }
+                // HasPropertyBlock() is true for every SpriteRenderer with a sprite (internal texture block); pixel compare decides fidelity
                 if (r.maskInteraction != SpriteMaskInteraction.None) { why[14]++; continue; }
                 if (r.drawMode != SpriteDrawMode.Simple) { why[15]++; continue; }
                 if (r.GetComponentInParent<SortingGroup>() != null) { why[6]++; continue; }
