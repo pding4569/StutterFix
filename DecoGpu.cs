@@ -230,7 +230,7 @@ namespace StutterFix
             harmony.Patch(AccessTools.Method(typeof(scrVisualDecoration), "ApplyColor"), prefix: new HarmonyMethod(typeof(DecoGpu), nameof(ApplyColorPrefix)));
             foreach (var type in new[] { typeof(scrDecoration), typeof(scrVisualDecoration) })
                 foreach (var method in type.GetMethods(AccessTools.all))
-                    if (method.DeclaringType == type && (method.Name == "Setup" || method.Name == "SetSprite"
+                    if (method.DeclaringType == type && !method.IsAbstract && method.GetMethodBody() != null && (method.Name == "Setup" || method.Name == "SetSprite"
                         || method.Name == "SetBlendMode" || method.Name == "SetMaskingType" || method.Name == "SetTile"
                         || method.Name == "SetVisible" || method.Name == "EnableMeshRenderer"))
                         harmony.Patch(method, prefix: new HarmonyMethod(typeof(DecoGpu), nameof(BoundaryPrefix)));
