@@ -112,6 +112,7 @@ namespace StutterFix
         private GUIStyle sWindow, sShadow, sTitle, sSub, sH1, sLead, sBody, sDim, sSmall, sTag, sCard, sCardDark, sNav, sNavOn, sNavText,
             sPrimary, sClose, sTab, sTabOn, sStat, sStatDark, sStatLabel, sStatLabelDark, sScroll, sThumb,
             sSegKnob, sSegText, sSegOnText, sSliderValue, sChip, sChipOn;
+        private GUIStyle sInput;   // 이름 입력 칸(칩과 같은 옅은 면, 포커스 때 한 단계 밝게)
         private Texture2D tWhite, tMark;
 
         private const float W = 900f, H = 590f, SideW = 196f, HeaderH = 62f;
@@ -1662,7 +1663,7 @@ namespace StutterFix
             bool finish = GUI.GetNameOfFocusedControl() == control && Event.current.type == EventType.KeyDown &&
                 (Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Escape);
             GUI.SetNextControlName(control);
-            fxSlotName = GUILayout.TextField(fxSlotName, sBody, GUILayout.ExpandWidth(true), GUILayout.Height(30));
+            fxSlotName = GUILayout.TextField(fxSlotName, 32, sInput, GUILayout.ExpandWidth(true), GUILayout.Height(30));
             if (finish) { GUI.FocusControl(null); GUIUtility.keyboardControl = 0; Event.current.Use(); }
             if (Btn(T("지금 설정 저장", "Save current settings"), sSecondary, GUILayout.Height(32)))
                 if (FxSlots.Save(c, fxSlotName, false, out fxSlotMsg)) changed = presetChanged = true;
@@ -2975,6 +2976,11 @@ namespace StutterFix
             sChip.padding = new RectOffset(12, 12, 0, 0);
             sChip.hover.background = Card(Surface2, Surface2, 6, 0, 0, 0f); sChip.hover.textColor = Ink;
             // 고른 항목 칩: 주황으로 채우면 한 줄에 여러 개가 너무 시끄러워, 한 단계 밝은 회색 + 어두운 주황 테두리
+            sInput = new GUIStyle(sChip) { alignment = TextAnchor.MiddleLeft, clipping = TextClipping.Clip, wordWrap = false };
+            sInput.padding = new RectOffset(12, 12, 0, 0);
+            sInput.normal.textColor = Ink; sInput.hover.textColor = Ink; sInput.focused.textColor = Ink;
+            sInput.hover.background = sInput.normal.background;
+            sInput.focused.background = Card(Surface2, Surface2, 6, 0, 0, 0f);
             sChipOn = Styled(Card(Ink, Ink, 6, 0, 0, 0f), 7);   // 고른 칩: 밝은 면
             sChipOn.normal.textColor = OnAccent; sChipOn.fontSize = 13; sChipOn.fontStyle = FontStyle.Bold; sChipOn.alignment = TextAnchor.MiddleCenter;
             sChipOn.padding = new RectOffset(12, 12, 0, 0);
