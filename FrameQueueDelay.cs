@@ -132,8 +132,8 @@ namespace StutterFix
             {
                 foreach(double phase in new[]{0.0,Math.PI*4+.1257})for(int i=0;i<=20;i++)
                 {
-                    long timestamp=now-i*25000;correcting=false;AsyncInputUtils.AdjustAngle(player,now);double atPoll=planet.angle;
-                    AsyncInputUtils.AdjustAngle(player,timestamp);double atReceive=planet.angle;
+                    long timestamp=now-i*25000;correcting=false;TickCompat.Adjust(player,now);double atPoll=planet.angle;
+                    TickCompat.Adjust(player,timestamp);double atReceive=planet.angle;
                     double initial=atPoll+phase,difference=atReceive-atPoll;planet.angle=initial;
                     double expected=difference==0?initial:initial+difference;
                     correcting=true;baseDspTick=now-offset;dspTick=timestamp-offset;Adjust(player,timestamp);
@@ -153,5 +153,13 @@ namespace StutterFix
     internal static class TickCompat
     {
         internal static void Set<T>(ref T field, long value) where T : struct { field = (T)System.Convert.ChangeType(value, typeof(T)); }
+        private static System.Reflection.MethodInfo adjust;
+        // AsyncInputUtils.AdjustAngle(scrPlayer, long|ulong) — 시험 코드에서만 쓴다
+        internal static void Adjust(scrPlayer player, long tick)
+        {
+            if (adjust == null) adjust = HarmonyLib.AccessTools.Method(typeof(AsyncInputUtils), "AdjustAngle");
+            var pt = adjust.GetParameters()[1].ParameterType;
+            adjust.Invoke(null, new object[] { player, System.Convert.ChangeType(tick, pt) });
+        }
     }
 }
