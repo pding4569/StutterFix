@@ -38,6 +38,10 @@ namespace StutterFix
         private static readonly List<scrDecoration> empty = new List<scrDecoration>(0);
         private static readonly List<Entry> engineDeferred = new List<Entry>();
         internal static long EngineFixups;
+        private static readonly long[] engineAdmissionReasons = new long[8];
+        internal static string EngineAdmissionReasons => string.Join("/", engineAdmissionReasons);
+        internal static bool EngineAdmissionVisible(scrDecoration d)
+            => rendererOn(d) && rendererColor(d).a != 0f;
         internal static void EngineDefer(Entry e)
         {
             if (e.EngineDeferredFrame == Time.frameCount) return;
@@ -220,6 +224,7 @@ namespace StutterFix
             if (!records.TryGetValue(d, out var e)) { missing = 2; return null; }
             if (e.EngineRejected) { missing = 3; return null; }
             int reason = Eligible(e, parentTransform, parentIdentity, cameraTransform);
+            if (reason != 0) engineAdmissionReasons[reason]++;
             if (reason != 0) { missing = reason == 3 ? 4 : 5; return null; }
             // Admission follows the original Step. A just-unhidden decoration can
             // safely join now: this Late will establish its first current input.

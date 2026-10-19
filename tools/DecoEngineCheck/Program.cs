@@ -73,14 +73,17 @@ namespace StutterFix
     static class ZeroTween
     {
         internal static int ThrowAfter;
+        internal static int EvalCalls;
         public static float Eval(DG.Tweening.Ease e,float p,float d,float o,float period)
-        { if(ThrowAfter>0 && --ThrowAfter==0)throw new InvalidOperationException("injected Eval"); if(e==DG.Tweening.Ease.Linear)return p/d; float t=p/d-1f; return t*t*t+1f; }
+        { EvalCalls++; if(ThrowAfter>0 && --ThrowAfter==0)throw new InvalidOperationException("injected Eval"); if(e==DG.Tweening.Ease.Linear)return p/d; float t=p/d-1f; return t*t*t+1f; }
     }
     static partial class TightLate
     {
         internal class Entry {internal scrDecoration D; internal Transform Pivot; internal DecoEngine.State Engine; internal bool Rejected,EngineRejected,Has; internal int EngineDeferredFrame=-100;}
         internal static long writes,skipPos,skipRot,skipScale;
         internal static long EngineFixups;
+        internal static string EngineAdmissionReasons=>"surrogate";
+        internal static bool EngineAdmissionVisible(scrDecoration d)=>d.Visible;
         internal static int PendingCount=>engineDeferred.Count;
         internal static int Reason;
         private static readonly Dictionary<scrDecoration,Entry> entries=new Dictionary<scrDecoration,Entry>();
@@ -136,6 +139,7 @@ static class Program
         try
         {
             DecoEngine.Configure(path);Assert(DecoEngine.Enabled,"flag");
+            DecoEngine.Command("stats on");
             var d=new scrVisualDecoration();var x=Make(d,1);var y=Make(d,2);var rot=Make(d,5);var sx=Make(d,7);var sy=Make(d,8);
             DecoEngine.Admit();Assert(DecoEngine.Count==1 && DecoAnim.EngineRecords.Count==0,"exclusive ownership");
             DecoEngine.Command("verify");
@@ -236,6 +240,37 @@ static class Program
                 Assert(!x.InList&&DecoAnim.EngineRecords.Count==0,"reuse wave has exactly one owner/list membership");
             }
             Assert(DecoEngine.Command("bench 101").StartsWith("usage:"),"bench percent validation");
+            // Production guard scheduling: managed changes remain immediate;
+            // native-only writes have the explicitly bounded sampling delay.
+            Reset();DecoEngine.Command("verify off");Time.frameCount=1000;
+            d=new scrVisualDecoration();x=Make(d,1,100);DecoEngine.Admit();
+            int due=x.Engine.ChildCheckFrame;
+            Assert(due>1000&&due<=1016,"admission staggers first native check");
+            d.childTransform.localPosition=new Vector3(10,0,0);
+            for(int frame=1001;frame<due;frame++){Time.frameCount=frame;Tick(.001f);Assert(DecoEngine.Count==1,"documented native-only window");}
+            Time.frameCount=due;Tick(.001f);Assert(DecoEngine.Count==0,"sample detects native-only mutation at due frame");
+            Reset();d=new scrVisualDecoration();x=Make(d,1,100);DecoEngine.Admit();
+            d.pivotOffsetVec=new Vector2(1,0);Tick(.001f);Assert(DecoEngine.Count==0&&Same(x.Pos,0),"managed guard remains immediate without verify");
+            Reset();d=new scrVisualDecoration();x=Make(d,1,100);DecoEngine.Admit();
+            due=x.Engine.ChildCheckFrame;Time.frameCount=due;Tick(.001f);
+            Assert(x.Engine.ChildCheckFrame==due+16,"steady-state native checks separated by sixteen frames");
+            d.childTransform.ThrowRead=true;Time.frameCount=due+16;Tick(.001f);
+            Assert(DecoEngine.Count==0,"sampled native exception restores original records");
+            // Keep a full five-channel state unchanged until completion. Shared
+            // ease must match every clock/parameter bit; mask survives no-op compaction.
+            Reset();d=new scrVisualDecoration();int[] sharedKeys={1,2,5,7,8};var shared=new DecoAnim.Rec[5];
+            for(int i=0;i<5;i++)shared[i]=Make(d,sharedKeys[i],100);
+            DecoEngine.Admit();retained=shared[0].Engine;int calls=ZeroTween.EvalCalls;
+            Tick(.01f);Assert(ZeroTween.EvalCalls-calls==1,"identical five channels evaluate once");
+            Assert(retained.N==5&&retained.Mask==((1<<1)|(1<<2)|(1<<5)|(1<<7)|(1<<8)),"no-completion mask retained");
+            shared[2].Period=BitConverter.Int32BitsToSingle(unchecked((int)0x80000000));calls=ZeroTween.EvalCalls;
+            Tick(.01f);Assert(ZeroTween.EvalCalls-calls==3,"signed-zero ease parameter does not share");
+            shared[1].Running=false;Tick(.01f);
+            Assert(retained.N==4&&(retained.Mask&(1<<2))==0&&!shared[1].InList&&shared[1].Engine==null,"dead slot compacts once and clears mask");
+            DecoEngine.Command("verify");
+            Reset();d=new scrVisualDecoration();d.Visible=false;x=Make(d,1);Make(d,9);DecoEngine.Admit();
+            Assert(DecoEngine.Count==0&&DecoAnim.EngineRecords.Count==2,"hidden prefilter preserves original records");
+            d.Visible=true;DecoEngine.Dirty=true;DecoEngine.Admit();Assert(DecoEngine.Count==1,"unhidden record re-admits");
             Reset();d=new scrVisualDecoration();x=Make(d,1,.1f);DecoEngine.Admit();var entry=x.Engine.LateEntry;
             Tick(.2f);Assert(DecoEngine.Count==0&&TightLate.PendingCount==1,"last completion keeps deferred entry until manager postfix");
             TightLate.EngineDefer(entry);Assert(TightLate.PendingCount==1,"late registration deduplicated with frame integer");

@@ -1,0 +1,82 @@
+﻿ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\AdofaiGenBridge\AdofaiGenBridge.dll
+SHA256 064ADF1A83BF88174307F8D5A08CB8CDB9D9F8097AAB8243D25C78D40C3BB745
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\JALib.Bootstrap.dll
+SHA256 B6FACA98BBD34A8A4170337B7CA4BF982A966E2B015B2FB70F189FE3FEA67233
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\JALib.dll
+SHA256 B628E9837E1C12AF021F0858D1610081952609CDE417316FEFE966053329FD60
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\JAMod.Bootstrap.dll
+SHA256 D5A6CDA1A4E0868A09ABBC715E61D2E720CC59221025CCB83875BA3692D840D0
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\lib\DnsClient.dll
+SHA256 267D11337A0F3D1023A4AB8D1B5B11DDDEB5DDC99F075220EA872D620CFBD547
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\lib\System.Buffers.dll
+SHA256 ACCCCFBE45D9F08FFEED9916E37B33E98C65BE012CFFF6E7FA7B67210CE1FEFB
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\lib\System.Collections.Immutable.dll
+SHA256 5BAA117252EE684E26903603596854B649BC25EDDCB0CDEF3B100658FC3C334C
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\lib\System.Memory.dll
+SHA256 C4F030A2CBA7DA7CDCF493257C24560E203D355904AEE490D645A935842F834A
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\lib\System.Numerics.Vectors.dll
+SHA256 20C2FA81B8C70D651099D762954F285FD4F942E63B2D7217C145DAB8D4B2F4C9
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\JALib\lib\System.Runtime.CompilerServices.Unsafe.dll
+SHA256 08CBD7278B66F1E68425A82D4B97181A4130D93E3DD91831407ABA7212CCDACF
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\QuartzUmm.Bootstrap.dll
+SHA256 A72F20639E292232EA59EE0BB5DF0E1E54079EFAAEA71FFA8249D0E1EC241FED
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\Runtime\versions\2.0.0\QuartzUmm.dll
+SHA256 B4963DF8F957922985A81B943AE2309E9688E7B6CD02D9B68579E89FA504A4CA
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\Runtime\versions\2.0.0\QuartzUmm.UpdateEngine.dll
+SHA256 3C601A5458FC5EA14B9950298D14B051043E97EEE0E28A6A168EF12F42719B45
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\Runtime\versions\2.0.0-alpha-137\QuartzUmm.dll
+SHA256 65E75DAFAC6EF03D061471CB7079E94AD7A5132C5FAAE79A39E14B94803E1A88
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\Runtime\versions\2.0.0-alpha-137\QuartzUmm.UpdateEngine.dll
+SHA256 CBD550B83F9CE63C19B726E3C1046D8660B86F1D17E1BD9E089C30F687064D9B
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Runtime\versions\2.0.0-alpha-121\QuartzUmm.dll
+SHA256 714A98A97F9333861D86495B82947DB0E91BDA9ECA43D8AAC73D736EB6A1BB25
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Runtime\versions\2.0.0-alpha-121\QuartzUmm.UpdateEngine.dll
+SHA256 08CA290AA36F8B380E471153AA6E96FEF7896B01236DAE28171F8FB675AE4966
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Runtime\versions\2.0.0-alpha-122\QuartzUmm.dll
+SHA256 64D8E8BD8CBF7584795B740DC15C6B7B0A4D70214597DB9C63D980BFCF90EF29
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Runtime\versions\2.0.0-alpha-122\QuartzUmm.UpdateEngine.dll
+SHA256 7749186CF254FAB9A08E0A194C202A324172E8D9CFBA8A935D863A65EAD4AA89
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Runtime\versions\2.0.0-alpha-123\QuartzUmm.dll
+SHA256 CF4257909719F425FC705B1367EDCFC897623850A8C049D88F86726B1BBF4533
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Runtime\versions\2.0.0-alpha-123\QuartzUmm.UpdateEngine.dll
+SHA256 09A4131D9CED10052B601A8FB34A64E4804CBD8EA3297351F8BDF74CF27C6D87
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Runtime\versions\2.0.0-alpha-124\QuartzUmm.dll
+SHA256 622928030FEF2FE33ABC91C7768CE39519002F5BB25BCAB21A7F9E76DC91C88F
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\Quartz\UserData\Runtime\versions\2.0.0-alpha-124\QuartzUmm.UpdateEngine.dll
+SHA256 E4AF6AF95D6FA3399448F0537212436F0B6975E618C3577F60507F029FC4EFFC
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\libdeflate.dll
+SHA256 212D8BA3B6B0826A41AB002B7C1727FCF92682CC11703060F44293A9AF2A78C2
+SKIP native PE (no managed metadata)
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\sfnative.dll
+SHA256 30E8A8306EB3F3565FC6D09C94DB4F3EB85B6E6254228710F000739399437766
+SKIP native PE (no managed metadata)
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll
+SHA256 AF5A03E03A7439A1183C2665F53808BEF9EDC9AC52D76F0C240744681CCDBD20
+StutterFix.ExitFix::Sabotage1 [child-ref + local-write]
+  Callvirt UnityEngine.Transform::set_localPosition
+StutterFix.HalfRender::ResetQuad
+  Callvirt UnityEngine.Transform::set_localPosition
+StutterFix.HalfRender::ApplyVariant
+  Callvirt UnityEngine.Transform::set_localPosition
+StutterFix.LoadFix::Snapshot
+  Ldflda scrDecoration::hitbox
+StutterFix.DecoEngine::Bench
+  Stfld scrDecoration::parallax
+  Stfld scrDecoration::pivotTrans
+  Stfld scrDecoration::childTransform
+  Stfld scrDecoration::textureScaleMultiplier
+  Stfld scrDecoration::scaleMultiplier
+StutterFix.MoveApply::SetLocal
+  Callvirt UnityEngine.Transform::set_localPosition
+StutterFix.TightLate::EngineBenchEntry
+  Stfld scrParallax::decoration
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\turbojpeg.dll
+SHA256 6AB563B85C6A032620E285D23B25B8D9B48D90FC86DD998BF3BE7F2D7AE3C61F
+SKIP native PE (no managed metadata)
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\TUFHelperLite.zip_unzip\TUFHelperLite\TUFHelperLite.dll
+SHA256 790EFAAF8BFE3828009F56E0D16C6A1F0D9920322696880B50AFDDD5BF7C36BF
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\YouTubeStream\YouTubeStream.dll
+SHA256 24E96FA17932426CB03307C2F0205904DFFBEC134C5CD3CB2755622A89B79F2E
+ASSEMBLY D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\YouTubeStream\__MACOSX\YouTubeStream-1.0.4\._YouTubeStream.dll
+SHA256 3801DA729F673B431534E34487AA17884CD355C57F7DD6EB430750DEB498E738
+SKIP macOS resource fork

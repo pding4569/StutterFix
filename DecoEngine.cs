@@ -26,6 +26,7 @@ namespace StutterFix
             internal Transform Child;
             internal Vector2 Offset, Cropped, Multiplier;
             internal Vector3 ChildPosition;
+            internal int ChildCheckFrame;
             internal DecPlacementType Placement;
             internal Vector2 Position, Scale;
             internal float Angle;
@@ -47,6 +48,8 @@ namespace StutterFix
         private static readonly long[] missing = new long[8];
         private static long alphaFallbacks, replacements, attachments, allSteps, stepStart;
         private static long colorEvents, opacityEvents, colorZero, opacityZero;
+        private static long hiddenAdmissions, easeHits, easeMisses, slotCompactions, childReads;
+        private static bool stats;
         private static int lastMissingFrame = -100;
         private static string compatibility = "off", first = "none";
         internal static int Count => active.Count;
@@ -190,6 +193,10 @@ namespace StutterFix
                     existing.Slots[at] = r; existing.Mask |= 1 << r.Key; r.Engine = existing; attachments++;
                     continue;
                 }
+                // Hidden records remain in their original loop. Avoid renting a
+                // candidate, hashing it again and running full eligibility only
+                // to report missing[4]. AlphaWillSet schedules a fresh admission.
+                if (!TightLate.EngineAdmissionVisible(r.D)) { hiddenAdmissions++; continue; }
                 if (!candidates.TryGetValue(r.D, out var s)) { s = Rent(r.D); candidates.Add(r.D, s); }
                 if (!Key(r.Key)) { if (!Independent(r)) { s.Blocked = true; if (s.Why == 0) s.Why = r.Key == 9 ? 1 : r.Key == 10 ? 2 : 3; }
                     else if (r.Key == 9) s.Color = r; else s.Opacity = r; continue; }
@@ -216,6 +223,7 @@ namespace StutterFix
                 s.Child = s.D.childTransform; s.Offset = s.D.pivotOffsetVec; s.Cropped = s.D.croppedPivotOffset;
                 s.Multiplier = s.D.trueScaleMultiplier; s.Placement = s.D.placementType;
                 s.ChildPosition = s.Child.localPosition;
+                s.ChildCheckFrame = Time.frameCount + 1 + (int)(admissions & 15);
                 s.Sample = (++admissions & 15) == 0;
                 s.Position = s.D.pivotPosVec; s.Scale = s.D.scaleVec; s.Angle = s.D.rotAngle;
                 active.Add(s); owned.Add(s.D, s);
@@ -250,10 +258,19 @@ namespace StutterFix
         private static bool Same(Vector2 a, Vector2 b) => Same(a.x, b.x) && Same(a.y, b.y);
         private static bool Same(Vector3 a, Vector3 b) => Same(a.x, b.x) && Same(a.y, b.y) && Same(a.z, b.z);
         internal static bool ShouldVerify(State s) => verify && s.Sample;
-        private static bool Stable(State s) => ReferenceEquals(s.Child, s.D.childTransform)
-            && Same(s.Offset, s.D.pivotOffsetVec) && Same(s.Cropped, s.D.croppedPivotOffset)
-            && Same(s.Multiplier, s.D.trueScaleMultiplier) && s.Placement == s.D.placementType
-            && Same(s.ChildPosition, s.Child.localPosition);
+        private static bool Stable(State s)
+        {
+            if (!ReferenceEquals(s.Child, s.D.childTransform)
+                || !Same(s.Offset, s.D.pivotOffsetVec) || !Same(s.Cropped, s.D.croppedPivotOffset)
+                || !Same(s.Multiplier, s.D.trueScaleMultiplier) || s.Placement != s.D.placementType) return false;
+            // No managed-field proof for arbitrary external Transform writers.
+            // Spread the native guard over 16 frames; verify retains strict
+            // per-frame checking. A native-only mutation can escape for 15 frames.
+            if (!verify && unchecked(Time.frameCount - s.ChildCheckFrame) < 0) return true;
+            childReads++;
+            s.ChildCheckFrame = unchecked(Time.frameCount + 16);
+            return Same(s.ChildPosition, s.Child.localPosition);
+        }
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal static void Update(float td)
         {
@@ -308,21 +325,25 @@ namespace StutterFix
             long previousMismatch = mismatches;
             int originalCount = s.N;
             bool hasEase = false;
+            bool compact = false;
+            bool countEase = stats;
+            int hits = 0, misses = 0;
             float lastPos = 0, lastDur = 0, lastOver = 0, lastPeriod = 0, lastEase = 0;
             Ease lastType = default(Ease);
             for (int j = 0; j < s.N; j++)
             {
                 var r = s.Slots[j];
                 if (r == null) continue;
-                if (!r.Running) { r.Engine = null; r.InList = false; s.Slots[j] = null; continue; }
+                if (!r.Running) { r.Engine = null; r.InList = false; s.Slots[j] = null; compact = true; continue; }
                 float to = r.Pos + td; bool done = to >= r.Dur;
                 if (done) to = r.Dur;
                 float e;
                 if (hasEase && lastType == r.E && Same(lastPos, to) && Same(lastDur, r.Dur)
-                    && Same(lastOver, r.Over) && Same(lastPeriod, r.Period)) e = lastEase;
+                    && Same(lastOver, r.Over) && Same(lastPeriod, r.Period)) { e = lastEase; if (countEase) hits++; }
                 else
                 {
                     e = ZeroTween.Eval(r.E, to, r.Dur, r.Over, r.Period);
+                    if (countEase) misses++;
                     hasEase = true; lastType = r.E; lastPos = to; lastDur = r.Dur;
                     lastOver = r.Over; lastPeriod = r.Period; lastEase = e;
                 }
@@ -344,13 +365,21 @@ namespace StutterFix
                     else s.Angle = value;
                 }
                 DecoAnim.Steps++;
-                if (done) { r.Running = false; r.Engine = null; r.InList = false; DecoAnim.Completed++; s.Slots[j] = null; }
+                if (done) { r.Running = false; r.Engine = null; r.InList = false; DecoAnim.Completed++; s.Slots[j] = null; compact = true; }
                 if (verify && s.Sample) CheckValue(r, reference, j);
             }
-            int w = 0;
-            for (int j = 0; j < s.N; j++) if (s.Slots[j] != null) s.Slots[w++] = s.Slots[j];
-            Array.Clear(s.Slots, w, s.N - w); s.N = w;
-            s.Mask = 0; for (int j = 0; j < s.N; j++) s.Mask |= 1 << s.Slots[j].Key;
+            if (countEase) { easeHits += hits; easeMisses += misses; }
+            if (compact)
+            {
+                slotCompactions++;
+                int w = 0, mask = 0;
+                for (int j = 0; j < s.N; j++)
+                {
+                    var r = s.Slots[j]; if (r == null) continue;
+                    s.Slots[w++] = r; mask |= 1 << r.Key;
+                }
+                Array.Clear(s.Slots, w, s.N - w); s.N = w; s.Mask = mask;
+            }
             Publish(s);
             if (verify && s.Sample)
             {
@@ -486,13 +515,15 @@ namespace StutterFix
         internal static void RestoreAll() { while (active.Count != 0) Release(active[active.Count - 1]); }
         internal static void Forget() { RestoreAll(); owned.Clear(); candidates.Clear(); pool.Clear(); lastMissingFrame = -100; Dirty = Enabled; }
         internal static void DropLevel() { if (active.Count != 0) DecoAnim.DropAll(); Forget(); }
-        internal static void Uninstall() { RestoreAll(); Forget(); Enabled = verify = false; }
+        internal static void Uninstall() { RestoreAll(); Forget(); Enabled = verify = stats = false; }
         internal static void Collect(List<scrDecoration> into, HashSet<scrDecoration> seen)
         { foreach (var s in active) if (seen.Add(s.D)) into.Add(s.D); }
         internal static string Command(string arg)
         {
             if (arg == "verify") verify = true;
             if (arg == "verify off") verify = false;
+            if (arg == "stats on") stats = true;
+            if (arg == "stats off") stats = false;
             if (arg == "bench") return Bench(0);
             if (arg.StartsWith("bench ", StringComparison.Ordinal))
                 return int.TryParse(arg.Substring(6), out int percent) && percent >= 0 && percent <= 100
@@ -505,6 +536,9 @@ namespace StutterFix
                 + " rec/frame=" + (frames == 0 ? 0 : records / (double)frames).ToString("F2")
                 + " admissions=" + admissions + " sync=" + syncs + " restores=" + restores + " fallback=" + fallbacks + " reasons=" + string.Join("/", reasons) + " rej=" + string.Join("/", rej)
                 + " missing=" + string.Join("/", missing) + " alpha-fallback=" + alphaFallbacks
+                + " missing-eligible=" + TightLate.EngineAdmissionReasons
+                + " hidden-admission-records=" + hiddenAdmissions + " child-reads=" + childReads
+                + " compact=" + slotCompactions + " stats=" + stats + " ease-hit/miss=" + easeHits + "/" + easeMisses
                 + " detach=" + replacements + " attach=" + attachments
                 + " late-fixup=" + TightLate.EngineFixups
                 + " alpha-events=" + colorEvents + "/" + opacityEvents + " zero-endpoints=" + colorZero + "/" + opacityZero

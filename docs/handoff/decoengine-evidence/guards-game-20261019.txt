@@ -1,0 +1,319 @@
+﻿scrFloatTween::Start
+  Callvirt UnityEngine.Transform::set_localPosition
+ADOStartup::DecodeLevelEventInfoList
+  Stfld ADOFAI.LevelEventInfo::isDecoration
+PlanetarySystem::ResetPlanets
+  Callvirt UnityEngine.Transform::set_localPosition
+PlanetarySystem::LoadPlanetColors
+  Callvirt UnityEngine.Transform::set_localPosition
+scnGame::ApplyEventsToFloors
+  Stfld scrFloor::stickToFloor
+scnGame::Play
+  Callvirt UnityEngine.Transform::set_localPosition
+scnGame::PrepVfx
+  Stfld ffxCustomBackgroundPlus::parallax
+scnGame::ResetScene
+  Callvirt UnityEngine.Transform::set_localPosition
+scrCamera::Rewind
+  Callvirt UnityEngine.Transform::set_localPosition
+scrCamera::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+scrCamera::SetToFreeMode
+  Callvirt UnityEngine.Transform::set_localPosition
+scrController::OnLandOnPortal
+  Callvirt UnityEngine.Transform::set_localPosition
+scrLevelMaker::DrawMultiPlanet
+  Callvirt UnityEngine.Transform::set_localPosition
+CUIColorPicker::Setup
+  Callvirt UnityEngine.Transform::set_localPosition
+WorldLightsDisplay_Crown::UpdateStates
+  Callvirt UnityEngine.Transform::set_localPosition
+WorldLightsDisplay_Gems::UpdateStates
+  Callvirt UnityEngine.Transform::set_localPosition
+WorldLightsDisplay_Lanterns::UpdateStates
+  Callvirt UnityEngine.Transform::set_localPosition
+MonsterChase::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+MedalLayout::Generate
+  Callvirt UnityEngine.Transform::set_localPosition
+scrCreditsText::Setup
+  Callvirt UnityEngine.Transform::set_localPosition
+scrCreditsText::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+EndscreenLanterns::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+EndscreenLanterns::Show
+  Callvirt UnityEngine.Transform::set_localPosition
+LevelSelectCutsceneController::PassedLevel6Cutscene
+  Callvirt UnityEngine.Transform::set_localPosition
+scrHitTextMesh::Show
+  Callvirt UnityEngine.Transform::set_localPosition
+scrHitTextMesh::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+scrCustomBackgroundSprite::Awake
+  Stfld scrCustomBackgroundSprite::parallax
+scrCustomBackgroundSprite::LateUpdate
+  Callvirt UnityEngine.Transform::set_localPosition
+  Stfld scrParallax::dontAlterX
+  Stfld scrParallax::dontAlterY
+scrCustomBackgroundSprite::SetCustomBG
+  Stfld scrParallax::dontAlterX
+  Stfld scrParallax::dontAlterY
+scrDecoration::Awake
+  Stfld scrDecoration::hitbox
+scrDecoration::SetPosition [child-ref + local-write]
+  Callvirt UnityEngine.Transform::set_localPosition
+  Stfld scrDecoration::pivotOffsetVec
+scrDecoration::SetParallax
+  Stfld scrDecoration::placementType
+scrDecoration::UpdateScreenClamp
+  Stfld scrParallax::clampToScreen
+scrDecoration::UpdatePosition
+  Callvirt UnityEngine.Transform::set_localPosition
+scrDecoration::SetPlacementType
+  Stfld scrDecoration::placementType
+  Stfld scrDecoration::followPlanet
+scrDecoration::Setup
+  Ldflda scrDecoration::stickToFloor
+  Stfld scrDecoration::hitbox
+  Stfld scrDecoration::scaleMultiplier
+  Stfld scrDecoration::lockRotation
+  Stfld scrDecoration::lockScale
+  Stfld scrDecoration::croppedPivotOffset
+scrDecoration::.ctor
+  Stfld scrDecoration::scaleMultiplier
+  Stfld scrDecoration::textureScaleMultiplier
+scrDecorationManager::CreateDecoration
+  Stfld scrDecoration::pivotTrans
+  Stfld scrDecoration::childTransform
+  Stfld scrDecoration::parallax
+scrDecorationManager::UpdateHitboxSizes
+  Callvirt UnityEngine.Transform::set_localPosition
+scrFloor::Awake
+  Stfld scrFloor::stickToFloor
+scrLockToCamera::.ctor
+  Stfld scrLockToCamera::lockScale
+  Stfld scrLockToCamera::scaleMultiplier
+scrObjectDecoration::SetType
+  Stfld scrDecoration::childTransform
+scrOptionsWindows::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+scrParallax::Init
+  Stfld scrParallax::cachedTransform
+  Stfld scrParallax::cameraTransform
+  Stfld scrParallax::decoration
+  Stfld scrParallax::isDecoration
+  Stfld scrParallax::inited
+scrPlanetCopyCam::.ctor
+  Stfld scrPlanetCopyCam::parallax
+scrScroller::Start
+  Stfld scrScroller::cameraTransform
+scrVisualDecoration::EnableMeshRenderer
+  Stfld scrVisualDecoration::meshRendererEnabled
+scrVisualDecoration::SetTextureScaleMultiplier
+  Stfld scrDecoration::textureScaleMultiplier
+scrVisualDecoration::SetMaskingType
+  Stfld scrVisualDecoration::maskingType
+RDExtensions::LocalMoveX
+  Callvirt UnityEngine.Transform::set_localPosition
+RDExtensions::LocalMoveY
+  Callvirt UnityEngine.Transform::set_localPosition
+RDExtensions::LocalMoveZ
+  Callvirt UnityEngine.Transform::set_localPosition
+RDExtensions::LocalMoveXY
+  Callvirt UnityEngine.Transform::set_localPosition
+RDExtensions::LocalMoveXY
+  Callvirt UnityEngine.Transform::set_localPosition
+RDExtensions::TranslateX
+  Callvirt UnityEngine.Transform::set_localPosition
+RDExtensions::TranslateY
+  Callvirt UnityEngine.Transform::set_localPosition
+RDExtensions::TranslateZ
+  Callvirt UnityEngine.Transform::set_localPosition
+scrThingShake::set_x
+  Callvirt UnityEngine.Transform::set_localPosition
+scrThingShake::set_y
+  Callvirt UnityEngine.Transform::set_localPosition
+TweakableDropdown::ReloadList
+  Callvirt UnityEngine.Transform::set_localPosition
+TweakableDropdown::ResetItemPosition
+  Callvirt UnityEngine.Transform::set_localPosition
+TweakableDropdown::UpdateItemPosition
+  Callvirt UnityEngine.Transform::set_localPosition
+ffxDamageRat::<StartEffect>b__8_2
+  Callvirt UnityEngine.Transform::set_localPosition
+ffxCustomBackgroundPlus::StartEffect
+  Ldflda ffxCustomBackgroundPlus::parallax
+ffxMoveDecorationsPlus::StartEffect
+  Stfld scrDecoration::croppedPivotOffset
+AchievementDisplay::<Advance>b__38_1
+  Callvirt UnityEngine.Transform::set_localPosition
+AchievementDisplay::<Update>b__39_2
+  Callvirt UnityEngine.Transform::set_localPosition
+PlayerBubble::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+SpinningPlanets::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+PathGeneratorOld::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+PauseLevel::Init
+  Stfld PauseLevel::inited
+PauseMenu::UpdatePausePlanetRender
+  Callvirt UnityEngine.Transform::set_localPosition
+PausePlanets::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+ZodiacBackground::SpawnRow
+  Callvirt UnityEngine.Transform::set_localPosition
+ZodiacBackgroundAnimal::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+TNOBG_controller::Start
+  Callvirt UnityEngine.Transform::set_localPosition
+ConstantShake::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::Awake
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::AnimateBoss
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::AnimateEmbers
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::UpdateFloorAngles
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::UpdateFloorAnglesFromBack
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::BossInPoi
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::BossInSquare
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::SetHandsPos
+  Callvirt UnityEngine.Transform::set_localPosition
+DivineIntervention::ShowFinalResults
+  Callvirt UnityEngine.Transform::set_localPosition
+LaserSpawner::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+OverseerIdle::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Mawaru::SetupFonts
+  Callvirt UnityEngine.Transform::set_localPosition
+Mawaru::QuadSetup
+  Callvirt UnityEngine.Transform::set_localPosition
+Mawaru::HardstyleSetup
+  Callvirt UnityEngine.Transform::set_localPosition
+Mawaru::DefendUpdate
+  Callvirt UnityEngine.Transform::set_localPosition
+Mawaru::Defend2Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Mawaru::FinaleUpdate
+  Callvirt UnityEngine.Transform::set_localPosition
+Mawaru_Oskari::Start
+  Callvirt UnityEngine.Transform::set_localPosition
+PauseMedals::Init
+  Stfld PauseMedals::inited
+scrSpike::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+NewLife::Start
+  Callvirt UnityEngine.Transform::set_localPosition
+NewLife::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+SingSing::BGTransition
+  Callvirt UnityEngine.Transform::set_localPosition
+SingSing::EndingUpdate
+  Callvirt UnityEngine.Transform::set_localPosition
+SingSing_Notefield::Spawn
+  Callvirt UnityEngine.Transform::set_localPosition
+SingSing_Notefield::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Sef::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+ThirdSun::UpdateFloorAngles
+  Callvirt UnityEngine.Transform::set_localPosition
+ThirdSun::SefFloat
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene1::CreateNameEntry
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene1::SkewNameEntry
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene2::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene3::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene4::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene5a::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene5b::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene5c::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene5d::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene5e::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene6::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene7a::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene7b::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene7c::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene7d::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+Cutscene8::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+MeshTestBG::UpdateFloorAngles
+  Callvirt UnityEngine.Transform::set_localPosition
+PuzzleRoom::Update
+  Stfld scrFloor::stickToFloor
+  Callvirt UnityEngine.Transform::set_localPosition
+TaroCutsceneScript::DisplayText
+  Callvirt UnityEngine.Transform::set_localPosition
+TaroCutsceneScript::Awake
+  Callvirt UnityEngine.Transform::set_localPosition
+TaroCutsceneScript::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+TrailerScene1::Drunk
+  Callvirt UnityEngine.Transform::set_localPosition
+TrailerScene2::UpdateFloorAngles
+  Callvirt UnityEngine.Transform::set_localPosition
+TrailerScene3::Float
+  Callvirt UnityEngine.Transform::set_localPosition
+TrailerScene3::UpdateFloorAngles
+  Callvirt UnityEngine.Transform::set_localPosition
+testdropdowninstantiator::SpawnDropdown
+  Callvirt UnityEngine.Transform::set_localPosition
+TMPro.Examples.CameraController::Awake
+  Stfld TMPro.Examples.CameraController::cameraTransform
+Rewired.Demos.DualShock4SpecialFeaturesExample::HandleTouchpad
+  Callvirt UnityEngine.Transform::set_localPosition
+Rewired.Demos.UIPointer::OnScreenPositionChanged
+  Callvirt UnityEngine.Transform::set_localPosition
+MobileMenu.MobileMenuMap::SetMapCenter
+  Callvirt UnityEngine.Transform::set_localPosition
+MobileMenu.MobileMenuMorePage::Init
+  Callvirt UnityEngine.Transform::set_localPosition
+MobileMenu.PlanetColorSwapper::PositionClouds
+  Callvirt UnityEngine.Transform::set_localPosition
+MobileMenu.PlanetColorSwapper::Update
+  Callvirt UnityEngine.Transform::set_localPosition
+MobileMenu.MobileMenuHare::Reposition
+  Callvirt UnityEngine.Transform::set_localPosition
+MobileMenu.MobileMenuPortalScreen::Instantiate
+  Callvirt UnityEngine.Transform::set_localPosition
+ADOFAI.FloorFX.ffxSetParticlePlus::StartEffect
+  Stfld scrDecoration::lockRotation
+  Stfld scrDecoration::lockScale
+ADOFAI.FloorFX.ffxSetParticlePlus::Decode
+  Stfld ADOFAI.FloorFX.ffxSetParticlePlus::lockRotation
+  Stfld ADOFAI.FloorFX.ffxSetParticlePlus::lockScale
+CUIColorPicker+<>c__DisplayClass19_0::<Setup>b__4
+  Callvirt UnityEngine.Transform::set_localPosition
+CUIColorPicker+<>c__DisplayClass19_0::<Setup>b__5
+  Callvirt UnityEngine.Transform::set_localPosition
+PathGenerator2+<Animate>d__11::MoveNext
+  Callvirt UnityEngine.Transform::set_localPosition
+Kickback+<DoKick>d__13::MoveNext
+  Callvirt UnityEngine.Transform::set_localPosition
+Screenshake+<DoShake>d__14::MoveNext
+  Callvirt UnityEngine.Transform::set_localPosition

@@ -23,7 +23,9 @@ static class Program
         if (args.Length < 2) { Console.WriteLine("ILScan <dll> <호출이름>   (TYPES=형식 / METHOD=형식 [FIELDS=1])"); return 1; }
         using var fs = File.OpenRead(args[0]);
         pe = new PEReader(fs);
+        if (!pe.HasMetadata) { Console.WriteLine("SKIP native PE (no managed metadata)"); return 0; }
         md = pe.GetMetadataReader();
+        if (Environment.GetEnvironmentVariable("DECO_GUARDS") == "1") { DecoGuards(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_READERS") == "1") { DecoReaders(); return 0; }
         string types = Environment.GetEnvironmentVariable("TYPES");
         string method = Environment.GetEnvironmentVariable("METHOD");
@@ -224,6 +226,39 @@ static class Program
                 string row = MethodTitle(mh) + "\t" + op + "\t" + target;
                 if (seen.Add(row)) Console.WriteLine(row);
             }
+        }
+    }
+
+    // Audit all methods, including closures and foreign assemblies. This reports
+    // references, not alias/data-flow proof: a Transform write may target any child.
+    static void DecoGuards()
+    {
+        var names = new HashSet<string> { "childTransform", "pivotOffsetVec", "croppedPivotOffset",
+            "textureScaleMultiplier", "scaleMultiplier", "placementType", "hitbox", "maskingType",
+            "meshRendererEnabled", "followPlanet", "stickToFloor", "lockRotation", "lockScale",
+            "parallax", "pivotTrans", "inited", "isDecoration", "cachedTransform", "decoration",
+            "cameraTransform", "clampToScreen", "dontAlterX", "dontAlterY" };
+        foreach (var mh in md.MethodDefinitions)
+        {
+            var rows = new HashSet<string>();
+            bool child = false, localWrite = false;
+            foreach (var (op, tok) in Tokens(md.GetMethodDefinition(mh)))
+            {
+                if ((tok >> 24) == 0x70) continue;
+                var h = Handle(tok);
+                if (h.Kind != HandleKind.MethodDefinition && h.Kind != HandleKind.MemberReference
+                    && h.Kind != HandleKind.FieldDefinition && h.Kind != HandleKind.MethodSpecification) continue;
+                string member = MemberName(h);
+                string shortName = member.Substring(member.LastIndexOf("::", StringComparison.Ordinal) + 2);
+                if (member == "scrDecoration::childTransform") child = true;
+                if (IsCall(op) && (shortName == "set_localPosition" || shortName == "SetLocalPositionAndRotation")) localWrite = true;
+                if ((names.Contains(shortName) && (op == ILOpCode.Stfld || op == ILOpCode.Ldflda))
+                    || (IsCall(op) && (shortName == "set_localPosition" || shortName == "SetLocalPositionAndRotation")))
+                    rows.Add(op + " " + member);
+            }
+            if (rows.Count == 0) continue;
+            Console.WriteLine(MethodTitle(mh) + (child && localWrite ? " [child-ref + local-write]" : ""));
+            foreach (string row in rows) Console.WriteLine("  " + row);
         }
     }
 
