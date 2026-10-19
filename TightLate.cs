@@ -175,6 +175,13 @@ namespace StutterFix
         private static bool Process(Entry e, scrDecoration d, Transform parent, bool parentOK, Transform camera, Vector3 cam)
         {
             int reason = Eligible(e, parent, parentOK, camera);
+            if (reason == 3 && e.Engine != null && Eligible(e, parent, parentOK, camera, true) == 0)
+            {
+                // Hidden residents stay owned. LogicMaybe retains the original
+                // shader/hidden behavior; it does not write UpdatePosition here.
+                e.Engine.Visible = false; e.Has = false; e.LastFrame = Time.frameCount;
+                MoveApply.LogicMaybe(d, true); return false;
+            }
             if (reason != 0)
             {
                 if (e != null && e.Engine != null) DecoEngine.ExitDecoration(d, reason);
@@ -196,14 +203,14 @@ namespace StutterFix
 #endif
             return true;
         }
-        private static int Eligible(Entry e, Transform parent, bool parentOK, Transform camera)
+        private static int Eligible(Entry e, Transform parent, bool parentOK, Transform camera, bool allowHidden = false)
         {
             if (e == null || e.D.GetType() != typeof(scrVisualDecoration)) return 1;
             var d = e.D; var v = (scrVisualDecoration)d;
             if (e.Rejected) return 7;
             // Exact GetVisible equivalence for non-mask, hitbox-free visual decorations.
             if (d.hitbox != 0 || v.isMask() || meshOn(v)) return 2;
-            if (!rendererOn(d) || rendererColor(d).a == 0f) return 3;
+            if (!allowHidden && (!rendererOn(d) || rendererColor(d).a == 0f)) return 3;
             if ((object)d.followPlanet != null || d.stickToFloor || d.lockRotation || d.lockScale) return 4;
             var p = d.parallax; var pivot = d.pivotTrans;
             if ((object)p == null || (object)pivot == null || !inited(p) || !isDeco(p)
@@ -238,8 +245,14 @@ namespace StutterFix
             if (e.EngineRejected) return 7;
             if (!installed || !Enabled || !compatible || !Hitch.Playing || SceneReset.Resetting
                 || !MoveApply.Enabled || !Dormancy.Enabled || preparedEpoch != epoch) return 7;
-            if (e.LastFrame != Time.frameCount - 1 && e.LastFrame != Time.frameCount) return 7;
-            return Eligible(e, parentTransform, parentIdentity, cameraTransform);
+            // Dormancy may remove a hidden resident from the manager list. The
+            // manager heartbeat, rather than that entry's visible heartbeat,
+            // proves that deferral is available on the next visible frame.
+            if (completedFrame != Time.frameCount - 1 && completedFrame != Time.frameCount) return 7;
+            int reason = Eligible(e, parentTransform, parentIdentity, cameraTransform);
+            if (reason == 3 && e.Engine != null)
+                reason = Eligible(e, parentTransform, parentIdentity, cameraTransform, true);
+            return reason;
         }
         internal static void EngineApply(Entry e, Vector3 cam, Vector2 pos, float angle, Vector2 scale)
             => Apply(e, e.D, e.D.parallax, e.Pivot, cam, pos, angle, scale);

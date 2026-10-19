@@ -48,6 +48,7 @@ namespace StutterFix
         internal sealed class Rec
         {
             internal DecoEngine.State Engine;
+            internal DecoEngine.State OwnerHint;
             internal long EngineOrder;
             internal int EngineSkipFrame = -1;
             internal int BatchSlot = -1;
@@ -197,7 +198,6 @@ namespace StutterFix
         }
         private static Rec NewRec(scrDecoration dec, Dictionary<global::TweenType, Tween> d, int key, float dur, Ease ease)
         {
-            var engine = DecoEngine.PrepareNew(dec, key);
             // 같은 칸에 끝난 표가 있으면 다시 쓴다 (그 칸만 이 표를 가리키고, 방금 끊었다). 없으면 새 꺼진 객체 (active = false)
             // 표 안의 기록(Rec)도 목록에서 빠졌으면 같이 다시 쓴다. 한 판에 수십만 개가 생기던 것이라(곡 중엔 GC 를 멈춰 두어 그대로 쌓였다)
             // 같은 장식·같은 속성을 계속 옮기는 맵에서는 대부분 새로 만들지 않는다.
@@ -206,6 +206,7 @@ namespace StutterFix
             UpdateCostProbe.DictionaryRead();
 #endif
             bool reuseProxy = d.TryGetValue((global::TweenType)key, out old) && (object)old != null && (oldR = old.id as Rec) != null && !oldR.Running && (!Edition.Dev || oldR.Shadow == null);
+            var engine = DecoEngine.PrepareNew(dec, key, oldR);
             if (reuseProxy && !oldR.InList && ReferenceEquals(oldR.D, dec) && oldR.Key == key)
             {
                 r = oldR; Reused++;
@@ -424,6 +425,23 @@ namespace StutterFix
             else { Apply(r, to, true);
             OnUpdate(r); }
             if (done) { r.Running = false; fastDirty = true; Completed++; OnComplete(r); }
+        }
+        // Alpha-boundary lane: original arithmetic and setter/lazy semantics.
+        // Color records remain in recs; EngineSkipFrame prevents a second Step.
+        internal static bool EngineReplayStep(Rec r, float td)
+        {
+            Steps++;
+            try { Step(r, td); return true; }
+            catch (Exception ex) { r.Running = false; fastDirty = true; Error(ex); return false; }
+        }
+        internal static bool EngineReplayPair(Rec r, Rec n, float td, out bool success)
+        {
+            success = true;
+            if (!PairXY || Prof || (object)setPos == null || !PairAllowed()) return false;
+            Steps += 2; PairSteps++;
+            try { StepPair(r, n, td); }
+            catch (Exception ex) { r.Running = n.Running = false; fastDirty = true; Error(ex); success = false; }
+            return true;
         }
         // 위치 X(r)·Y(n) 짝: 원래는 X 진행 -> SetPositionX(값) [-> 끝나면 SetPositionX(끝값)] -> Y 진행 -> SetPositionY(값) [-> SetPositionY(끝값)].
         // SetPositionX/Y 는 SetPosition(pivotPosVec.WithX/Y(v), 오프셋) 이고 SetPosition 의 결과(pivotPosVec, 자식 위치, 화면 고정 값, UpdatePosition)는

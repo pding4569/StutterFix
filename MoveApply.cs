@@ -257,6 +257,9 @@ namespace StutterFix
             if (!LateSkip || !Enabled || (object)d == null || !Hitch.Playing || SceneReset.Resetting) return false;
             if (managerLateFrame != UnityEngine.Time.frameCount - 1) return false;   // 이번 프레임 LateUpdate 가 이미 시작됐거나, 지난 프레임에 안 돌았다
             if (d.hitbox != 0 || !d.GetVisible()) return false;
+            var resident = DecoEngine.Replaying;
+            if (resident != null && ReferenceEquals(resident.D, d))
+            { TightLate.EngineDefer(resident.LateEntry); LateSkips++; return true; }
             RegisterLate(d, lateSkippedSet, lateSkipped);
             LateSkips++;
             return true;

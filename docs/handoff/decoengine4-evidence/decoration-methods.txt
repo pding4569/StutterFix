@@ -1,0 +1,537 @@
+﻿== scrDecoration
+  get_gameObjectName
+  get_decorationName
+  get_useHitbox
+    필드 읽기 scrDecoration::hitbox
+  get_trueScaleMultiplier
+    필드 읽기 scrDecoration::scaleMultiplier
+    필드 읽기 scrDecoration::textureScaleMultiplier
+    호출 UnityEngine.Vector2::op_Multiply
+  get_camScaleMultiplier
+    필드 읽기 scrDecoration::lockScale
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::camy
+    필드 읽기 scrCamera::camobj
+    호출 UnityEngine.Camera::get_orthographicSize
+    호출 ADOBase::get_customLevel
+    필드 읽기 scnGame::levelData
+    호출 ADOFAI.LevelData::get_camZoom
+    호출 scrDecoration::get_trueScaleMultiplier
+    호출 UnityEngine.Vector2::op_Multiply
+  GetVisible
+    필드 읽기 scrDecoration::rendererEnabled
+    호출 scrDecoration::GetAlpha
+  SetVisible
+  GetAlpha
+  SetDepth
+  HitFloor
+  ApplyColor
+  Awake
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scrDecoration::parallax
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 읽기 scrDecoration::pivotTrans
+    호출 UnityEngine.Transform::get_localScale
+    호출 UnityEngine.Vector2::op_Implicit
+    필드 쓰기 scrDecoration::scaleVec
+    필드 읽기 scrDecoration::canHitPlanets
+    필드 쓰기 scrDecoration::hitbox
+  Start
+    필드 쓰기 scrDecoration::hitOnce
+    필드 읽기 scrDecoration::parentFloorNum
+    호출 ADOBase::get_lm
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::targetDecorations
+    호출 제네릭 System.Collections.Generic.List`1::Add
+  SetPosition
+    필드 읽기 scrDecoration::parallax
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 scrDecoration::croppedPivotOffset
+    호출 UnityEngine.Vector2::op_Addition
+    호출 scrDecoration::get_trueScaleMultiplier
+    호출 UnityEngine.Vector2::op_Division
+    필드 쓰기 scrDecoration::pivotPosVec
+    필드 읽기 scrDecoration::childTransform
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Transform::set_localPosition
+    호출 ADOBase::get_editor
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scrDecoration::selectionBordersObject
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.GameObject::get_transform
+    필드 읽기 scnEditor::decPivot
+    호출 ADOFAI.DecorationPivot::UpdatePivotCrossImage
+    필드 쓰기 scrDecoration::pivotOffsetVec
+    호출 scrDecoration::UpdateScreenClamp
+    호출 scrDecoration::UpdatePosition
+  SetPositionX
+    필드 읽기 scrDecoration::pivotPosVec
+    호출 ExtensionMethods::WithX
+    호출 scrDecoration::SetPosition
+  SetPositionY
+    필드 읽기 scrDecoration::pivotPosVec
+    호출 ExtensionMethods::WithY
+    호출 scrDecoration::SetPosition
+  SetPivotX
+    필드 읽기 scrDecoration::pivotPosVec
+    필드 읽기 scrDecoration::pivotOffsetVec
+    호출 ExtensionMethods::WithX
+    호출 scrDecoration::SetPosition
+  SetPivotY
+    필드 읽기 scrDecoration::pivotPosVec
+    필드 읽기 scrDecoration::pivotOffsetVec
+    호출 ExtensionMethods::WithY
+    호출 scrDecoration::SetPosition
+  SetParallaxOffsetX
+    필드 읽기 scrDecoration::parallaxOffset
+    호출 ExtensionMethods::WithX
+    필드 쓰기 scrDecoration::parallaxOffset
+    필드 읽기 scrDecoration::parallax
+    호출 scrParallax::SetTrans
+  SetParallaxOffsetY
+    필드 읽기 scrDecoration::parallaxOffset
+    호출 ExtensionMethods::WithY
+    필드 쓰기 scrDecoration::parallaxOffset
+    필드 읽기 scrDecoration::parallax
+    호출 scrParallax::SetTrans
+  SetRotation
+    필드 쓰기 scrDecoration::rotAngle
+    필드 읽기 scrDecoration::startRot
+    필드 읽기 scrDecoration::stickToFloor
+    필드 읽기 scrDecoration::parentFloor
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_eulerAngles
+    필드 읽기 UnityEngine.Vector3::z
+    필드 읽기 scrDecoration::lockRotation
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::camy
+    호출 UnityEngine.Transform::get_rotation
+    호출 UnityEngine.Quaternion::get_eulerAngles
+    필드 읽기 scrDecoration::pivotTrans
+    호출 UnityEngine.Quaternion::Euler
+    호출 UnityEngine.Transform::set_rotation
+  SetScale
+    필드 쓰기 scrDecoration::scaleVec
+    필드 읽기 scrDecoration::stickToFloor
+    호출 UnityEngine.Vector3::get_one
+    필드 읽기 scrDecoration::parentFloor
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_localScale
+    필드 읽기 scrDecoration::pivotTrans
+    호출 scrDecoration::get_camScaleMultiplier
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 ExtensionMethods::WithZ
+    호출 UnityEngine.Transform::set_localScale
+  SetParallax
+    필드 읽기 scrDecoration::parallax
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 UnityEngine.Vector2::x
+    필드 쓰기 scrParallax::multiplier_x
+    필드 읽기 UnityEngine.Vector2::y
+    필드 쓰기 scrParallax::multiplier_y
+    필드 쓰기 scrDecoration::placementType
+    호출 scrDecoration::UpdateScreenClamp
+  SetColor
+    필드 쓰기 scrDecoration::color
+    호출 scrDecoration::ApplyColor
+  SetOpacity
+    필드 쓰기 scrDecoration::opacity
+    호출 scrDecoration::ApplyColor
+  GetDecorationWorldSize
+    호출 UnityEngine.Vector2::get_zero
+  ShowSelectionBorders
+    필드 읽기 scrDecoration::selectionBordersObject
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.GameObject::SetActive
+    정적필드 읽기 scrDecoration::hoverColor
+    호출 UnityEngine.Color::get_white
+    필드 읽기 scrDecoration::decType
+    필드 읽기 scrVisualDecoration::bordersRenderer
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.SpriteRenderer::set_color
+    필드 읽기 scrTextDecoration::bordersRenderer
+    호출 UnityEngine.UI.Graphic::set_color
+    필드 읽기 scrObjectDecoration::bordersRenderer
+    필드 읽기 scrParticleDecoration::selectionBorders
+    호출 UnityEngine.Object::op_Implicit
+  ShowHitboxBorders
+    필드 읽기 scrDecoration::hitboxBordersObject
+    호출 UnityEngine.Object::op_Inequality
+    호출 scrDecoration::get_useHitbox
+    호출 UnityEngine.GameObject::SetActive
+  UpdateScreenClamp
+    필드 읽기 scrDecoration::parallax
+    필드 읽기 scrDecoration::placementType
+    필드 쓰기 scrParallax::clampToScreen
+    필드 읽기 scrDecoration::pivotPosVec
+    필드 읽기 scrDecoration::pivotOffsetVec
+    호출 UnityEngine.Vector2::op_Addition
+    필드 읽기 UnityEngine.Vector2::x
+    호출 UnityEngine.Screen::get_height
+    호출 UnityEngine.Screen::get_width
+    호출 UnityEngine.Vector2::op_Division
+    호출 UnityEngine.Vector2::.ctor
+    필드 쓰기 scrParallax::screenRelativePos
+  UpdatePosition
+    호출 ADOBase::get_controller
+    호출 scrController::get_paused
+    필드 읽기 scrDecoration::followPlanet
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Vector2::get_zero
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Vector2::op_Implicit
+    필드 읽기 scrDecoration::pivotPosVec
+    호출 UnityEngine.Vector2::op_Addition
+    필드 읽기 scrDecoration::stickToFloor
+    필드 읽기 scrDecoration::parentFloor
+    필드 읽기 scrDecoration::startPos
+    호출 UnityEngine.Vector2::op_Subtraction
+    필드 읽기 scrDecoration::pivotTrans
+    호출 UnityEngine.Transform::set_localPosition
+    필드 읽기 scrDecoration::parallax
+    호출 scrParallax::SetNewStartPosition
+    필드 쓰기 scrParallax::posCamAtStart
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Behaviour::get_enabled
+    호출 scrParallax::SetTrans
+    필드 읽기 scrDecoration::rotAngle
+    호출 scrDecoration::SetRotation
+    필드 읽기 scrDecoration::scaleVec
+    호출 scrDecoration::SetScale
+    호출 scrDecoration::ApplyColor
+  UpdateShader
+  HitboxTriggerAction
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scrPlanet::iFrames
+    호출 UnityEngine.Time::get_frameCount
+    필드 쓰기 scrDecoration::lastHitFrame
+    필드 읽기 scrDecoration::hitOnce
+    필드 쓰기 scrDecoration::hitOnce
+    호출 UnityEngine.Time::get_unscaledTime
+    필드 쓰기 scrDecoration::lastTriggerTime
+    필드 읽기 scrDecoration::hitbox
+    호출 RDC::get_auto
+    호출 UnityEngine.Object::op_Equality
+    호출 ADOBase::get_controller
+    호출 scrController::get_chosenPlanet
+    호출 scrPlanet::Die
+    필드 읽기 scrPlanet::player
+    호출 scrPlayer::DieByHitbox
+    필드 읽기 scrDecoration::hitboxEvents
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 ffxPlusBase::StartEffectWithOffset
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  CheckHitboxHit
+    호출 scrDecoration::get_useHitbox
+    필드 읽기 scrDecoration::hitboxDetectTarget
+    호출 제네릭 UnityEngine.Pool.CollectionPool`2::Get
+    필드 읽기 scrDecoration::activeCollider
+    정적필드 읽기 scrDecoration::hitboxContactFilter
+    호출 UnityEngine.Collider2D::Overlap
+    필드 읽기 scrDecoration::manager
+    필드 읽기 scrDecorationManager::hitboxCollidersToDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrDecoration+<>c__DisplayClass102_0::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 쓰기 scrDecoration+<>c__DisplayClass102_0::deco
+    필드 읽기 scrDecoration::hitboxDecoTags
+    호출 scrDecoration+<>c__DisplayClass102_0::<CheckHitboxHit>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Any
+    호출 scrDecoration::HitboxTriggerAction
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 UnityEngine.Pool.CollectionPool`2::Release
+  UpdateHitboxState
+    필드 읽기 scrDecoration::hitOnce
+    필드 읽기 scrDecoration::hitboxTriggerType
+    호출 UnityEngine.Time::get_frameCount
+    필드 읽기 scrDecoration::lastHitFrame
+    필드 쓰기 scrDecoration::hitOnce
+    호출 UnityEngine.Time::get_unscaledTime
+    필드 읽기 scrDecoration::lastTriggerTime
+    필드 읽기 scrDecoration::hitboxRepeatInterval
+  OnDestroy
+    필드 읽기 scrDecoration::eventTweens
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Values
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::get_Current
+    호출 DG.Tweening.TweenExtensions::Kill
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 UnityEngine.Component::get_gameObject
+    호출 ffxSetFilterAdvancedPlus::CleanVariables
+  SetPlacementType
+    필드 쓰기 scrDecoration::placementType
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 ADOBase::get_controller
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 scrLevelMaker::get_instance
+    필드 읽기 scrLevelMaker::listFloors
+    호출 UnityEngine.Vector3::get_zero
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 쓰기 scrDecoration::followPlanet
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 UnityEngine.Mathf::Clamp
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    필드 읽기 UnityEngine.Vector3::x
+    필드 읽기 UnityEngine.Vector3::y
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.Vector2::op_Addition
+    호출 scrController::get_planetRed
+    호출 scrController::get_planetBlue
+    호출 scrController::get_planetGreen
+    호출 UnityEngine.Vector2::op_Division
+    필드 쓰기 scrDecoration::startPos
+  Setup
+    필드 쓰기 scrDecoration::sourceLevelEvent
+    정적필드 읽기 GCS::speedTrialMode
+    호출 UnityEngine.Vector2::get_one
+    호출 UnityEngine.Vector2::get_zero
+    호출 UnityEngine.Color::get_clear
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Implicit
+    호출 System.String::IsNullOrEmpty
+    호출 System.String::StartsWith
+    호출 ADOBase::get_levelPath
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::Combine
+    필드 읽기 scnGame::imgHolder
+    호출 TextureManager::GetOrAddSprite
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    호출 ADOFAI.LevelEvent::GetBool
+    호출 System.Object::ToString
+    호출 RDUtils::NullIfEmpty
+    호출 ADOFAI.LevelEvent::GetColor
+    호출 ADOFAI.LevelEvent::GetInt
+    호출 scrDecoration::get_gameObjectName
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::set_name
+    정적필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_DecorationsList::stringItemNoTag
+    호출 System.String::Concat
+    필드 쓰기 scrDecoration::decorationTag
+    호출 제네릭 ADOFAI.LevelEvent::TryGetAndSet
+    호출 UnityEngine.Vector2::op_Division
+    호출 UnityEngine.Vector2::op_Inequality
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+    호출 ADOBase::get_controller
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Vector2::op_Multiply
+    필드 읽기 scrDecoration::stickToFloor
+    필드 읽기 scrDecoration::syncFloorDepth
+    필드 읽기 scrDecoration::decType
+    호출 System.String::Trim
+    호출 GDMiniJSON.Json::Deserialize
+    호출 scrDecoration::SetPlacementType
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Key
+    호출 System.Type::GetType
+    호출 System.Type::op_Inequality
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Type::IsSubclassOf
+    필드 읽기 scrDecoration::childTransform
+    호출 UnityEngine.GameObject::AddComponent
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Value
+    호출 System.Type::GetField
+    호출 System.Reflection.FieldInfo::op_Inequality
+    호출 System.Reflection.FieldInfo::SetValue
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 ADOBase::get_lm
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 System.Math::Clamp
+    필드 쓰기 scrDecoration::parentFloorNum
+    필드 읽기 scrDecoration::parentFloorNum
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 쓰기 scrDecoration::parentFloor
+    호출 System.String::Split
+    필드 읽기 scrDecoration::tags
+    호출 제네릭 System.Array::Empty
+    호출 제네릭 System.Linq.Enumerable::Except
+    호출 제네릭 System.Linq.Enumerable::ToArray
+    호출 제네릭 System.Collections.Generic.HashSet`1::.ctor
+    필드 쓰기 scrDecoration::tags
+    호출 제네릭 System.Collections.Generic.HashSet`1::get_Count
+    호출 제네릭 System.Collections.Generic.HashSet`1::Add
+    필드 읽기 scrDecoration::manager
+    필드 읽기 scrDecorationManager::taggedDecorations
+    호출 제네릭 System.Collections.Generic.HashSet`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::MoveNext
+    호출 System.Object::Equals
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAll
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_parent
+    호출 UnityEngine.Application::get_isPlaying
+    호출 scrTextDecoration::InitText
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 ADOFAI.LevelEvent::GetStringLocalized
+    호출 scrTextDecoration::SetText
+    호출 scrTextDecoration::SetFont
+    호출 RDEditorUtils::IsNullOrEmpty
+    호출 System.IO.Path::GetFileNameWithoutExtension
+    호출 제네릭 UnityEngine.Resources::Load
+    필드 읽기 scrDecorationManager::imageHolder
+    필드 읽기 TextureManager::customSprites
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    필드 읽기 scrDecorationManager::notFoundSprite
+    필드 읽기 scrDecorationManager::defaultSprite
+    필드 쓰기 scrVisualDecoration::smoothing
+    호출 scrVisualDecoration::SetBlendMode
+    호출 scrVisualDecoration::SetSprite
+    호출 scrVisualDecoration::SetTile
+    호출 scrVisualDecoration::SetTextureScaleMultiplier
+    호출 scrVisualDecoration::SetMaskingType
+    호출 scrVisualDecoration::SetMaskingTarget
+    호출 제네릭 System.Nullable`1::.ctor
+    호출 scrVisualDecoration::SetMaskingDepth
+    필드 쓰기 scrDecoration::hitbox
+    호출 scrDecoration::get_useHitbox
+    호출 제네릭 System.Linq.Enumerable::ToList
+    필드 쓰기 scrDecoration::hitboxEventTags
+    필드 읽기 scrDecorationManager::hitboxEventTags
+    필드 읽기 scrDecoration::hitboxEventTags
+    호출 제네릭 System.Collections.Generic.HashSet`1::UnionWith
+    필드 읽기 scrDecorationManager::hitboxEventTagDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryAdd
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    필드 쓰기 scrDecoration::hitboxScale
+    필드 읽기 scrDecoration::hitboxOffset
+    필드 읽기 scrDecoration::hitboxRotation
+    필드 읽기 scrDecoration::hitboxDetectTarget
+    필드 읽기 scrDecoration::hitboxTargetPlanet
+    필드 읽기 scrDecoration::hitboxTriggerType
+    필드 쓰기 scrDecoration::hitboxRepeatInterval
+    필드 쓰기 scrDecoration::hitboxDecoTags
+    호출 scrDecoration::UpdateHitbox
+    호출 scrObjectDecoration::SetType
+    호출 scrObjectDecoration::SetPlanetColorType
+    호출 scrObjectDecoration::SetPlanetColor
+    호출 scrObjectDecoration::SetPlanetTailColor
+    호출 scrObjectDecoration::SetFloorMidspin
+    호출 scrObjectDecoration::SetFloorAngle
+    호출 scrObjectDecoration::SetFloorColor
+    호출 scrObjectDecoration::SetFloorStyle
+    호출 scrObjectDecoration::SetFloorGlowEnabled
+    호출 scrObjectDecoration::SetFloorGlowColor
+    호출 scrObjectDecoration::SetFloorRedSwirl
+    호출 scrObjectDecoration::SetFloorIcon
+    호출 scrObjectDecoration::SetFloorIconAngle
+    호출 scrObjectDecoration::SetFloorIconFlipped
+    호출 scrObjectDecoration::SetFloorIconOutlines
+    필드 읽기 scrObjectDecoration::bubble
+    필드 쓰기 PlayerBubble::floor
+    필드 쓰기 PlayerBubble::appearStartOffset
+    필드 쓰기 PlayerBubble::appearEndOffset
+    필드 쓰기 PlayerBubble::disappearOffset
+    필드 쓰기 PlayerBubble::spawnOffset
+    호출 ADOBase::get_editor
+    호출 UnityEngine.Object::op_Inequality
+    호출 scnEditor::get_floors
+    호출 PlayerBubble::Validate
+    호출 ADOBase::get_isEditingLevel
+    호출 PlayerBubble::ResetBubble
+    호출 제네릭 System.Collections.Generic.CollectionExtensions::GetValueOrDefault
+    호출 scrParticleDecoration::set_atStart
+    호출 scrParticleDecoration::SetSprite
+    필드 읽기 scrParticleDecoration::particleSystem
+    호출 UnityEngine.ParticleSystem::Stop
+    호출 UnityEngine.ParticleSystem::Clear
+    호출 scrParticleDecoration::set_autoPlay
+    호출 scrParticleDecoration::ResetParticle
+    호출 scrParticleDecoration::SetMaskingType
+    필드 쓰기 scrDecoration::startRot
+    필드 쓰기 scrDecoration::scaleVec
+    필드 쓰기 scrDecoration::scaleMultiplier
+    필드 쓰기 scrDecoration::parallaxOffset
+    필드 쓰기 scrDecoration::lockRotation
+    필드 쓰기 scrDecoration::lockScale
+    필드 쓰기 scrDecoration::croppedPivotOffset
+    필드 읽기 scrDecoration::startPos
+    호출 scrDecoration::SetPosition
+    호출 scrDecoration::SetScale
+    호출 scrDecoration::SetDepth
+    호출 scrDecoration::SetParallax
+    호출 scrDecoration::SetColor
+    호출 scrDecoration::SetOpacity
+    필드 읽기 ADOFAI.LevelEvent::visible
+    필드 읽기 scrDecoration::forceHide
+    호출 scrDecoration::SetVisible
+    호출 scrDecoration::SetRotation
+    정적필드 쓰기 SpriteAlphaMaskUtils::doRefreshMaskCache
+    호출 제네릭 UnityEngine.Component::GetComponents
+    정적필드 읽기 scrDecoration+<>c::<>9__106_0
+    정적필드 읽기 scrDecoration+<>c::<>9
+    호출 scrDecoration+<>c::<Setup>b__106_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 scrDecoration+<>c::<>9__106_0
+    호출 제네릭 System.Linq.Enumerable::Where
+    필드 쓰기 scrDecoration::cfpCache
+    호출 ADOBase::get_isLevelEditor
+    호출 scrDecoration::SetCollider
+  UpdateHitbox
+  SetCollider
+    필드 읽기 scrDecoration::editorCollider
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 UnityEngine.Behaviour::set_enabled
+  LogicUpdate
+    호출 scrDecoration::GetVisible
+    호출 scrDecoration::UpdatePosition
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Implicit
+    호출 scrDecoration::UpdateShader
+    호출 scrDecoration::get_useHitbox
+    호출 scrDecoration::UpdateHitboxState
+  .ctor
+    필드 쓰기 scrDecoration::scaleMultiplier
+    호출 UnityEngine.Vector2::get_one
+    필드 쓰기 scrDecoration::textureScaleMultiplier
+    필드 쓰기 scrDecoration::opacity
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 scrDecoration::eventTweens
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 scrDecoration::hitEffects
+    필드 쓰기 scrDecoration::hitboxEventTags
+    필드 쓰기 scrDecoration::hitboxEvents
+    필드 쓰기 scrDecoration::hitboxScale
+    호출 UnityEngine.Vector2::get_zero
+    필드 쓰기 scrDecoration::hitboxOffset
+    필드 쓰기 scrDecoration::parentFloorNum
+    호출 UnityEngine.Color::get_white
+    필드 쓰기 scrDecoration::rendererColor
+    필드 쓰기 scrDecoration::rendererEnabled
+    호출 ADOBase::.ctor
+  .cctor
+    호출 UnityEngine.LayerMask::op_Implicit
+    필드 쓰기 UnityEngine.ContactFilter2D::layerMask
+    필드 쓰기 UnityEngine.ContactFilter2D::useLayerMask
+    정적필드 쓰기 scrDecoration::hitboxContactFilter
+    호출 UnityEngine.Color::get_cyan
+    정적필드 쓰기 scrDecoration::hoverColor

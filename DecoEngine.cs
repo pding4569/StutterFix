@@ -22,6 +22,7 @@ namespace StutterFix
             internal bool Blocked; internal int Why;
             internal bool Sample;
             internal bool Pending;
+            internal bool Visible;
             internal DecoAnim.Rec Color, Opacity;
             internal Transform Child;
             internal Vector2 Offset, Cropped, Multiplier;
@@ -39,6 +40,8 @@ namespace StutterFix
         private static readonly Dictionary<scrDecoration, State> owned = new Dictionary<scrDecoration, State>(new RefEq());
         private static readonly Dictionary<scrDecoration, State> candidates = new Dictionary<scrDecoration, State>(new RefEq());
         private static readonly List<State> active = new List<State>();
+        private static int activeCount;
+        internal static State Replaying;
         private static readonly Stack<State> pool = new Stack<State>();
         internal static bool Enabled, Dirty;
         private static bool verify;
@@ -49,10 +52,13 @@ namespace StutterFix
         private static long alphaFallbacks, replacements, attachments, allSteps, stepStart;
         private static long colorEvents, opacityEvents, colorZero, opacityZero;
         private static long hiddenAdmissions, easeHits, easeMisses, slotCompactions, childReads;
+        private static long retainedAlphaFrames, replaySteps, excluded, admissionScans, listCompactions;
+        private static long hintHits, boundaryLookups;
+        private static long startupReplayFrames;
         private static bool stats;
         private static int lastMissingFrame = -100;
         private static string compatibility = "off", first = "none";
-        internal static int Count => active.Count;
+        internal static int Count => activeCount;
         internal static long NextOrder() => Enabled ? ++serial : 0;
         internal static void Configure(string path)
         {
@@ -87,7 +93,7 @@ namespace StutterFix
         {
             // Color setters stay in original order. Before moving any transform
             // ahead of them, AlphaSafe checks every possible intermediate factor.
-            return (r.Key == 9 || r.Key == 10) && Finite(r);
+            return (r.Key == 9 || r.Key == 10) && Finite(r) && r.Shadow == null && r.BatchSlot < 0;
         }
         private static bool Positive(float v) => v >= .000001f && v <= 100f;
         private static bool AlphaRecordSafe(DecoAnim.Rec r, float td)
@@ -119,22 +125,34 @@ namespace StutterFix
         }
         internal static void AlphaWillSet(DecoAnim.Rec r, float next)
         {
-            if (Enabled && Positive(next) && !Positive(r.Key == 9 ? r.D.color.a : r.D.opacity)) Dirty = true;
+            // A resident alpha replay already owns the decoration. Do not scan
+            // every legacy record merely because it became visible again.
+            if (Enabled && Replaying == null && Positive(next) && !Positive(r.Key == 9 ? r.D.color.a : r.D.opacity)) Dirty = true;
         }
-        // Effect-boundary lookup only. A newly created transform runs Startup
-        // and its first Step in the original loop, then joins the retained state.
-        internal static State PrepareNew(scrDecoration d, int key)
+        // Effect-boundary lookup only. New resident slots use the ordered
+        // replay lane for their first Startup/Step before the normal fast lane.
+        internal static State PrepareNew(scrDecoration d, int key, DecoAnim.Rec previous = null)
         {
-            if (!Enabled || active.Count == 0 || !owned.TryGetValue(d, out var s)) return null;
-            if (!Key(key) && key != 9 && key != 10) { Release(s); return null; }
+            if (!Enabled || activeCount == 0) return null;
+            var s = previous == null ? null : previous.OwnerHint;
+            if (s != null && ReferenceEquals(s.D, d) && s.LateEntry != null && ReferenceEquals(s.LateEntry.Engine, s)) hintHits++;
+            else { boundaryLookups++; if (!owned.TryGetValue(d, out s)) return null; }
+            if (!Key(key) && key != 9 && key != 10) { Exclude(s); return null; }
             s.Pending = true;
             return s;
         }
         internal static void BindNew(State s, DecoAnim.Rec r)
         {
             if (s == null) return;
+            r.OwnerHint = s;
             if (r.Key == 9) s.Color = r;
             if (r.Key == 10) s.Opacity = r;
+            if (!Key(r.Key)) return;
+            if ((s.Mask & (1 << r.Key)) != 0 || s.N == s.Slots.Length) { Exclude(s); return; }
+            int at = s.N++;
+            while (at > 0 && s.Slots[at - 1].EngineOrder > r.EngineOrder)
+            { s.Slots[at] = s.Slots[at - 1]; at--; }
+            s.Slots[at] = r; s.Mask |= 1 << r.Key; r.Engine = s; attachments++;
         }
         internal static void DetachRecord(DecoAnim.Rec r)
         {
@@ -169,6 +187,7 @@ namespace StutterFix
             if (!Enabled || !Dirty) return;
             Dirty = false;
             if (!Allowed) return;
+            admissionScans++;
             bool retryMissing = lastMissingFrame != Time.frameCount - 1 && lastMissingFrame != Time.frameCount;
             bool sawMissing = false;
             var list = DecoAnim.EngineRecords;
@@ -176,8 +195,12 @@ namespace StutterFix
             {
                 var r = list[i];
                 if (!r.Running || (object)r.D == null) continue;
-                if (owned.TryGetValue(r.D, out var existing))
+                var existing = r.OwnerHint;
+                if (existing == null || !ReferenceEquals(existing.D, r.D)
+                    || existing.LateEntry == null || !ReferenceEquals(existing.LateEntry.Engine, existing)) owned.TryGetValue(r.D, out existing);
+                if (existing != null)
                 {
+                    if (ReferenceEquals(r.Engine, existing)) continue;
                     if (!Key(r.Key))
                     {
                         if (Independent(r)) { if (r.Key == 9) existing.Color = r; else existing.Opacity = r; }
@@ -190,7 +213,7 @@ namespace StutterFix
                     int at = existing.N++;
                     while (at > 0 && existing.Slots[at - 1].EngineOrder > r.EngineOrder)
                     { existing.Slots[at] = existing.Slots[at - 1]; at--; }
-                    existing.Slots[at] = r; existing.Mask |= 1 << r.Key; r.Engine = existing; attachments++;
+                    existing.Slots[at] = r; existing.Mask |= 1 << r.Key; r.Engine = r.OwnerHint = existing; attachments++;
                     continue;
                 }
                 // Hidden records remain in their original loop. Avoid renting a
@@ -226,8 +249,9 @@ namespace StutterFix
                 s.ChildCheckFrame = Time.frameCount + 1 + (int)(admissions & 15);
                 s.Sample = (++admissions & 15) == 0;
                 s.Position = s.D.pivotPosVec; s.Scale = s.D.scaleVec; s.Angle = s.D.rotAngle;
-                active.Add(s); owned.Add(s.D, s);
-                for (int j = 0; j < s.N; j++) s.Slots[j].Engine = s;
+                s.Visible = true;
+                active.Add(s); activeCount++; owned.Add(s.D, s);
+                for (int j = 0; j < s.N; j++) s.Slots[j].Engine = s.Slots[j].OwnerHint = s;
             }
             candidates.Clear();
             // One follow-up for the first manager encounter. Orphan decorations
@@ -235,14 +259,15 @@ namespace StutterFix
             if (sawMissing) { if (retryMissing) Dirty = true; lastMissingFrame = Time.frameCount; }
             for (int i = active.Count - 1; i >= 0; i--)
             {
-                var s = active[i]; s.Pending = false;
-                if (s.Blocked) Release(s); else if (s.N == 0) Remove(s);
+                var s = active[i]; if (s == null) continue;
+                s.Pending = false;
+                if (s.Blocked) Exclude(s);
             }
             int w = 0;
             for (int i = 0; i < list.Count; i++)
                 if (list[i].Engine == null) list[w++] = list[i]; else list[i].InList = false;
-            if (w < list.Count) list.RemoveRange(w, list.Count - w);
-            DecoAnim.EngineDirty();
+            if (w < list.Count)
+            { list.RemoveRange(w, list.Count - w); listCompactions++; DecoAnim.EngineDirty(); }
         }
         private static bool Finite(DecoAnim.Rec r) => !float.IsNaN(r.Pos) && !float.IsInfinity(r.Pos)
             && !float.IsNaN(r.Dur) && !float.IsInfinity(r.Dur) && r.Dur > 0f;
@@ -276,22 +301,33 @@ namespace StutterFix
         {
             if (active.Count == 0) return;
             if (!Allowed || ADOBase.editor != null) { RestoreAll(); return; }
-            for (int i = 0; i < active.Count;)
+            for (int i = 0; i < active.Count; i++)
             {
                 var s = active[i];
-                int reason;
+                if (s == null || (s.N == 0 && !s.Pending)) continue;
+                int reason; bool alphaSafe;
                 try
                 {
                     reason = TightLate.EngineReason(s.LateEntry);
                     if (reason == 0 && !Stable(s)) reason = 9;
-                    if (reason == 0 && !AlphaSafe(s, td)) { alphaFallbacks++; reason = 3; }
+                    alphaSafe = reason == 0 && AlphaSafe(s, td);
                 }
                 catch
                 {
-                    s.LateEntry.EngineRejected = true; reasons[7]++; Release(s); fallbacks++; continue;
+                    reasons[7]++; Exclude(s); fallbacks++; continue;
                 }
-                if (reason != 0) { reasons[reason]++; Release(s); fallbacks++; continue; }
-                try { if (s.N != 0) TightLate.EngineDefer(s.LateEntry); Advance(s, td); }
+                if (reason != 0) { reasons[reason]++; Exclude(s); fallbacks++; continue; }
+                // New resident slots also use the ordered lane for Startup;
+                // scale must capture the state after all preceding callbacks.
+                bool replay = !alphaSafe || NeedsStartup(s);
+                if (replay && !ReplaySafe(s))
+                { alphaFallbacks++; reasons[3]++; Exclude(s); fallbacks++; continue; }
+                try
+                {
+                    s.Visible = TightLate.EngineAdmissionVisible(s.D);
+                    if (!replay) { if (s.N != 0) TightLate.EngineDefer(s.LateEntry); Advance(s, td); }
+                    else { if (!alphaSafe) retainedAlphaFrames++; else startupReplayFrames++; ReplayFrame(s, td); }
+                }
                 catch (Exception ex)
                 {
                     // No replay of a partially advanced frame. Publish current
@@ -301,19 +337,105 @@ namespace StutterFix
                     for (int j = 0; j < s.N; j++)
                         if ((s.Advanced & (1 << j)) != 0 && s.Slots[j] != null) s.Slots[j].EngineSkipFrame = Time.frameCount;
                     Publish(s);
-                    s.LateEntry.EngineRejected = true;
-                    Release(s); fallbacks++;
+                    Exclude(s); fallbacks++;
                     Main.Entry.Logger.Log("[decoengine] fallback " + ex.GetType().Name); continue;
                 }
                 decorations++;
                 if (s.LateEntry.EngineRejected)
                 {
                     for (int j = 0; j < s.N; j++) s.Slots[j].EngineSkipFrame = Time.frameCount;
-                    Release(s); fallbacks++; continue;
+                    Exclude(s); fallbacks++; continue;
                 }
-                if (s.N == 0 && !s.Pending) { Remove(s); continue; }
-                i++;
             }
+        }
+        private static bool ReplaySafe(State s)
+        {
+            for (int j = 0; j < s.N; j++)
+                if (s.Slots[j].Running && (!Finite(s.Slots[j]) || s.Slots[j].Shadow != null || s.Slots[j].BatchSlot >= 0)) return false;
+            return ReplayAlphaSafe(s.Color) && ReplayAlphaSafe(s.Opacity);
+        }
+        private static bool NeedsStartup(State s)
+        {
+            for (int j = 0; j < s.N; j++) if (s.Slots[j].Running && !s.Slots[j].Started) return true;
+            return (s.Color != null && s.Color.Running && !s.Color.Started)
+                || (s.Opacity != null && s.Opacity.Running && !s.Opacity.Started);
+        }
+        private static bool Number(float f) => !float.IsNaN(f) && !float.IsInfinity(f);
+        private static bool ReplayAlphaSafe(DecoAnim.Rec r) => r == null || !r.Running
+            || (Independent(r) && (r.Key == 9
+                ? Number(r.CStart.a) && Number(r.Started ? r.CChange.a : r.CEnd.a - r.CStart.a) && Number(r.CEnd.a)
+                : Number(r.FStart) && Number(r.Started ? r.FChange : r.FEnd - r.FStart) && Number(r.FEnd)));
+        // Keep resident slots and all hash membership unchanged on alpha edges.
+        // Reuse the original setter/lazy-move semantics when visibility may change
+        // between records; simply publishing all fields at once is incorrect here.
+        private static void ReplayFrame(State s, float td)
+        {
+            // Merge three already ordered streams using stack locals. No scratch
+            // array writes, reference sorting, or collection membership changes.
+            int slot = 0;
+            bool compact = false;
+            var color = s.Color != null && s.Color.Running ? s.Color : null;
+            var opacity = s.Opacity != null && s.Opacity.Running ? s.Opacity : null;
+            s.Advanced = 0;
+            long beforeMismatch = mismatches;
+            var reference = verify && s.Sample ? Reference(s, td) : default(Expected);
+            var previous = Replaying;
+            Replaying = s;
+            try
+            {
+                while (slot < s.N || color != null || opacity != null)
+                {
+                    while (slot < s.N && !s.Slots[slot].Running) { slot++; compact = true; }
+                    var r = slot < s.N ? s.Slots[slot] : null;
+                    int transformSlot = slot;
+                    if (color != null && (r == null || color.EngineOrder < r.EngineOrder)) { r = color; transformSlot = -1; }
+                    if (opacity != null && (r == null || opacity.EngineOrder < r.EngineOrder)) { r = opacity; transformSlot = -1; }
+                    if (r == null) break;
+                    if (transformSlot >= 0) { slot++; s.Advanced |= 1 << transformSlot; }
+                    else if (ReferenceEquals(r, color)) color = null;
+                    else opacity = null;
+                    // Mark before callbacks: recovery must never step it twice.
+                    r.EngineSkipFrame = Time.frameCount;
+                    // Consecutive creation IDs prove original global adjacency;
+                    // never pair across a color/opacity or another decoration.
+                    if (transformSlot >= 0 && r.Key == 1 && slot < s.N)
+                    {
+                        var y = s.Slots[slot];
+                        if (y.Key == 2 && y.Running && y.EngineOrder == r.EngineOrder + 1
+                            && DecoAnim.EngineReplayPair(r, y, td, out bool success))
+                        {
+                            y.EngineSkipFrame = Time.frameCount; s.Advanced |= 1 << slot; slot++;
+                            if (!success) s.LateEntry.EngineRejected = true;
+                            if (!r.Running || !y.Running) compact = true;
+                            records += 2; replaySteps += 2; continue;
+                        }
+                    }
+                    if (!DecoAnim.EngineReplayStep(r, td)) s.LateEntry.EngineRejected = true;
+                    if (Key(r.Key)) { records++; if (!r.Running) compact = true; }
+                    replaySteps++;
+                }
+            }
+            finally { Replaying = previous; }
+            if (verify && s.Sample)
+            {
+                for (int j = 0; j < s.N; j++) if ((s.Advanced & (1 << j)) != 0) CheckValue(s.Slots[j], reference, j);
+                Check(Same(s.D.pivotPosVec, reference.Position) && Same(s.D.scaleVec, reference.Scale)
+                    && Same(s.D.rotAngle, reference.Angle), "replay-fields");
+                if (mismatches != beforeMismatch) s.LateEntry.EngineRejected = true;
+            }
+            if (compact)
+            {
+                int w = 0, mask = 0;
+                for (int j = 0; j < s.N; j++)
+                {
+                    var r = s.Slots[j];
+                    if (r.Running) { s.Slots[w++] = r; mask |= 1 << r.Key; }
+                    else { r.Engine = null; r.InList = false; }
+                }
+                slotCompactions++; Array.Clear(s.Slots, w, s.N - w); s.N = w; s.Mask = mask;
+            }
+            s.Position = s.D.pivotPosVec; s.Angle = s.D.rotAngle; s.Scale = s.D.scaleVec;
+            s.Visible = TightLate.EngineAdmissionVisible(s.D);
         }
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void Advance(State s, float td)
@@ -414,15 +536,18 @@ namespace StutterFix
             for (int j = 0; j < s.N; j++)
             {
                 var r = s.Slots[j];
+                if (!r.Running) continue;
                 float pos = r.Pos + td; bool done = false;
                 if (pos >= r.Dur) { pos = r.Dur; done = true; }
                 float e = ZeroTween.Eval(r.E, pos, r.Dur, r.Over, r.Period);
                 var v = x.Scale; float f = 0f;
-                if (r.Key == 7) { v.x = r.VStart.x + r.VChange.x * e; x.Scale = v; }
-                else if (r.Key == 8) { v.y = r.VStart.y + r.VChange.y * e; x.Scale = v; }
+                var begin = r.Started ? r.VStart : x.Scale;
+                var change = r.Started ? r.VChange : r.VEnd - begin;
+                if (r.Key == 7) { v.x = begin.x + change.x * e; x.Scale = v; }
+                else if (r.Key == 8) { v.y = begin.y + change.y * e; x.Scale = v; }
                 else
                 {
-                    f = r.FStart + r.FChange * e;
+                    f = r.FStart + (r.Started ? r.FChange : r.FEnd - r.FStart) * e;
                     float final = done ? r.FEnd : f;
                     if (r.Key == 1) x.Position.x = final; else if (r.Key == 2) x.Position.y = final; else x.Angle = final;
                 }
@@ -433,8 +558,9 @@ namespace StutterFix
         private static void CheckValue(DecoAnim.Rec r, Expected reference, int index)
         {
             var x = reference.Get(index);
-            Check(Same(r.Pos, x.Pos) && r.Stepped && r.Running == !x.Done
-                && (r.Key == 7 || r.Key == 8 ? Same(r.VLast, x.V) : Same(r.FLast, x.F)), "key=" + r.Key);
+            bool same = Same(r.Pos, x.Pos) && r.Stepped && r.Running == !x.Done
+                && (r.Key == 7 || r.Key == 8 ? Same(r.VLast, x.V) : Same(r.FLast, x.F));
+            Check(same, same ? null : "key=" + r.Key);
         }
         private static void Check(bool same, string field)
         {
@@ -482,7 +608,7 @@ namespace StutterFix
             if (active.Count != 0 && (object)d != null && owned.TryGetValue(d, out var s)) Release(s);
         }
         internal static void ExitDecoration(scrDecoration d, int reason)
-        { if (active.Count == 0) return; reasons[reason]++; fallbacks++; ReleaseDecoration(d); }
+        { if (activeCount == 0) return; reasons[reason]++; fallbacks++; if (owned.TryGetValue(d, out var s)) Exclude(s); }
         internal static void ReleaseRecord(DecoAnim.Rec r) { if (r.Engine != null) Release(r.Engine); }
         private static void Release(State s)
         {
@@ -498,6 +624,12 @@ namespace StutterFix
             Remove(s);
             DecoAnim.EngineDirty(); Dirty = true;
         }
+        private static void Exclude(State s)
+        {
+            // This entry is the per-level PermanentlyExcluded bit; admission
+            // never retries it until TightLate.Forget destroys the entry table.
+            s.LateEntry.EngineRejected = true; excluded++; Release(s);
+        }
         // EngineRecords stays sorted by EngineOrder (creation order); re-entering records
         // are inserted by binary search instead of re-sorting the whole list (was ~17% of the main thread).
         private static void InsertOrdered(List<DecoAnim.Rec> list, DecoAnim.Rec r)
@@ -509,15 +641,18 @@ namespace StutterFix
         private static void Remove(State s)
         {
             s.LateEntry.Engine = null; owned.Remove(s.D);
-            int i = s.Index, last = active.Count - 1;
-            active[i] = active[last]; active[i].Index = i; active.RemoveAt(last); Recycle(s);
+            active[s.Index] = null; activeCount--; Recycle(s);
         }
-        internal static void RestoreAll() { while (active.Count != 0) Release(active[active.Count - 1]); }
+        internal static void RestoreAll()
+        {
+            for (int i = 0; i < active.Count; i++) if (active[i] != null) Release(active[i]);
+            active.Clear();
+        }
         internal static void Forget() { RestoreAll(); owned.Clear(); candidates.Clear(); pool.Clear(); lastMissingFrame = -100; Dirty = Enabled; }
         internal static void DropLevel() { if (active.Count != 0) DecoAnim.DropAll(); Forget(); }
         internal static void Uninstall() { RestoreAll(); Forget(); Enabled = verify = stats = false; }
         internal static void Collect(List<scrDecoration> into, HashSet<scrDecoration> seen)
-        { foreach (var s in active) if (seen.Add(s.D)) into.Add(s.D); }
+        { foreach (var s in active) if (s != null && seen.Add(s.D)) into.Add(s.D); }
         internal static string Command(string arg)
         {
             if (arg == "verify") verify = true;
@@ -528,8 +663,8 @@ namespace StutterFix
             if (arg.StartsWith("bench ", StringComparison.Ordinal))
                 return int.TryParse(arg.Substring(6), out int percent) && percent >= 0 && percent <= 100
                     ? Bench(percent) : "usage: bench [alpha-transition-percent 0..100]";
-            int currentRecords = 0; foreach (var s in active) currentRecords += s.N;
-            return "enabled=" + Enabled + " compatibility=" + compatibility + " owned=" + active.Count
+            int currentRecords = 0; foreach (var s in active) if (s != null) currentRecords += s.N;
+            return "enabled=" + Enabled + " compatibility=" + compatibility + " owned=" + activeCount + " slots=" + active.Count
                 + " owned-rec=" + currentRecords + " owned-steps=" + records + " all-steps=" + allSteps
                 + " ownership%=" + (allSteps == 0 ? 0 : 100.0 * records / allSteps).ToString("F2")
                 + " frames=" + frames + " deco-frames=" + decorations + " deco/frame=" + (frames == 0 ? 0 : decorations / (double)frames).ToString("F2")
@@ -539,6 +674,10 @@ namespace StutterFix
                 + " missing-eligible=" + TightLate.EngineAdmissionReasons
                 + " hidden-admission-records=" + hiddenAdmissions + " child-reads=" + childReads
                 + " compact=" + slotCompactions + " stats=" + stats + " ease-hit/miss=" + easeHits + "/" + easeMisses
+                + " retained-alpha-frames=" + retainedAlphaFrames + " replay-steps=" + replaySteps + " permanent-excluded=" + excluded
+                + " admission-scans=" + admissionScans + " list-compactions=" + listCompactions
+                + " boundary-hint/hash=" + hintHits + "/" + boundaryLookups
+                + " startup-replay-frames=" + startupReplayFrames
                 + " detach=" + replacements + " attach=" + attachments
                 + " late-fixup=" + TightLate.EngineFixups
                 + " alpha-events=" + colorEvents + "/" + opacityEvents + " zero-endpoints=" + colorZero + "/" + opacityZero
