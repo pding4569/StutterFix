@@ -226,6 +226,7 @@ namespace StutterFix
             if (!parentOK || !e.ParentOK) return 6;
             return 0;
         }
+        internal static List<scrDecoration> AllDecorations() { var l = new List<scrDecoration>(records.Count); foreach (var k in records.Keys) l.Add(k); return l; }
         internal static Entry EngineEntry(scrDecoration d, out int missing)
         {
             missing = 0;

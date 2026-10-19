@@ -174,20 +174,23 @@ namespace StutterFix
             if (!bundle) throw new InvalidOperationException("bundle load failed");
             shader = bundle.LoadAsset<Shader>("Assets/DecoGpu/DecoGpu.shader");
             if (!shader || !shader.isSupported) throw new InvalidOperationException("instancing shader unavailable");
-            foreach (var d in running)
+            var all = TightLate.AllDecorations(); var why = new int[16];
+            foreach (var d in all)
             {
                 if (owned.Count >= cap) break;
-                if (!d || d.GetType() != typeof(scrVisualDecoration)) continue;
+                if (!d || d.GetType() != typeof(scrVisualDecoration)) { why[0]++; continue; }
                 var v = (scrVisualDecoration)d; var r = v.spriteRenderer;
                 var e = TightLate.EngineEntry(d, out int missing);
-                if (e == null || e.Engine != null || TightLate.EngineReason(e) != 0 || !r || !r.sprite
-                    || !r.enabled || r.forceRenderingOff || !r.gameObject.activeInHierarchy || r.HasPropertyBlock()
-                    || r.maskInteraction != SpriteMaskInteraction.None || r.drawMode != SpriteDrawMode.Simple
-                    || r.GetComponentInParent<SortingGroup>() != null || v.repeatX != 1 || v.repeatY != 1
-                    || !r.sharedMaterial || !r.sharedMaterial.shader || r.sharedMaterial.shaderKeywords.Length != 0
+                if (e == null) { why[1 + Mathf.Min(missing, 5)]++; continue; }
+                if (e.Engine != null) { why[7]++; continue; }
+                if (!r || !r.sprite) { why[8]++; continue; }
+                if (!r.enabled || r.forceRenderingOff || !r.gameObject.activeInHierarchy) { why[9]++; continue; }
+                if (r.HasPropertyBlock() || r.maskInteraction != SpriteMaskInteraction.None || r.drawMode != SpriteDrawMode.Simple || r.GetComponentInParent<SortingGroup>() != null) { why[10]++; continue; }
+                if (v.repeatX != 1 || v.repeatY != 1) { why[11]++; continue; }
+                if (!r.sharedMaterial || !r.sharedMaterial.shader || r.sharedMaterial.shaderKeywords.Length != 0
                     || (r.sharedMaterial.shader.name != "Sprites/Default" && r.sharedMaterial.shader.name != "Sprites/Tile")
-                    || r.sharedMaterial.passCount != 1 || r.sprite.associatedAlphaSplitTexture != null
-                    || (camera.cullingMask & (1 << r.gameObject.layer)) == 0) continue;
+                    || r.sharedMaterial.passCount != 1 || r.sprite.associatedAlphaSplitTexture != null) { why[12]++; continue; }
+                if ((camera.cullingMask & (1 << r.gameObject.layer)) == 0) { why[13]++; continue; }
                 if (manager != null && manager != d.manager) continue;
                 manager = d.manager;
                 var m = r.sharedMaterial;
@@ -198,7 +201,7 @@ namespace StutterFix
                     TextureScale=d.textureScaleMultiplier, ScaleMultiplier=d.scaleMultiplier,
                     Tint=m.HasProperty("_Color")?m.GetColor("_Color"):Color.white, Signature=Key(m)});
             }
-            if (owned.Count == 0) throw new InvalidOperationException("no clean supported images; see survey/rejection criteria");
+            if (owned.Count == 0) throw new InvalidOperationException("no clean supported images; candidates=" + all.Count + " why[notVisual,noTL,tlMissing1..5(1..5),engineOwned,noSprite,renderOff,pb/mask/group,repeat,material,cullmask]=" + string.Join("/", why));
             // Stable deterministic approximation only. Native tie-sort and foreign renderers are not reproduced.
             var ordered = owned.Values.OrderBy(x => SortingLayer.GetLayerValueFromID(x.Layer)).ThenBy(x => x.Order).ThenBy(x => x.D.GetInstanceID());
             Batch current = null; Item prev = null;
