@@ -19,7 +19,7 @@ namespace StutterFix
             internal TightLate.Entry LateEntry;
             internal readonly DecoAnim.Rec[] Slots = new DecoAnim.Rec[5];
             internal int N, Index, Mask, Advanced;
-            internal bool Blocked;
+            internal bool Blocked; internal int Why;
             internal bool Sample;
             internal Transform Child;
             internal Vector2 Offset, Cropped, Multiplier;
@@ -41,6 +41,7 @@ namespace StutterFix
         private static bool verify;
         private static long serial, admissions, frames, decorations, records, syncs, restores, fallbacks, checkedValues, mismatches;
         private static readonly long[] reasons = new long[10];
+        private static readonly long[] rej = new long[9]; // 1색alpha변화 2불투명도 3기타키 4미시작/무한 5키중복 6빈 7엔트리없음 8자식변경
         private static string compatibility = "off", first = "none";
         internal static int Count => active.Count;
         internal static long NextOrder() => Enabled ? ++serial : 0;
@@ -88,7 +89,7 @@ namespace StutterFix
         private static State Rent(scrDecoration d)
         {
             var s = pool.Count == 0 ? new State() : pool.Pop();
-            s.D = d; s.N = s.Mask = 0; s.Blocked = false; s.LateEntry = null;
+            s.D = d; s.N = s.Mask = 0; s.Blocked = false; s.Why = 0; s.LateEntry = null;
             s.Sample = false;
             return s;
         }
@@ -109,10 +110,10 @@ namespace StutterFix
                 var r = list[i];
                 if (!r.Running || (object)r.D == null) continue;
                 if (!candidates.TryGetValue(r.D, out var s)) { s = Rent(r.D); candidates.Add(r.D, s); }
-                if (!Key(r.Key)) { if (!Independent(r)) s.Blocked = true; continue; }
-                if (!r.Started || r.Shadow != null || r.BatchSlot >= 0 || !Finite(r)) { s.Blocked = true; continue; }
+                if (!Key(r.Key)) { if (!Independent(r)) { s.Blocked = true; if (s.Why == 0) s.Why = r.Key == 9 ? 1 : r.Key == 10 ? 2 : 3; } continue; }
+                if (!r.Started || r.Shadow != null || r.BatchSlot >= 0 || !Finite(r)) { s.Blocked = true; if (s.Why == 0) s.Why = 4; continue; }
                 int bit = 1 << r.Key;
-                if ((s.Mask & bit) != 0 || s.N == 5) { s.Blocked = true; continue; }
+                if ((s.Mask & bit) != 0 || s.N == 5) { s.Blocked = true; if (s.Why == 0) s.Why = 5; continue; }
                 s.Mask |= bit; s.Slots[s.N++] = r;
             }
             foreach (var pair in candidates)
@@ -122,7 +123,8 @@ namespace StutterFix
                 try
                 {
                     e = s.Blocked || s.N == 0 ? null : TightLate.EngineEntry(s.D);
-                    if (e == null || !StableChild(s.D)) { reasons[8]++; Recycle(s); continue; }
+                    if (e == null || !StableChild(s.D))
+                    { reasons[8]++; rej[s.Blocked ? s.Why : s.N == 0 ? 6 : e == null ? 7 : 8]++; Recycle(s); continue; }
                 }
                 catch { reasons[8]++; Recycle(s); continue; }
                 s.LateEntry = e; s.Index = active.Count; e.Engine = s;
@@ -392,7 +394,7 @@ namespace StutterFix
             return "enabled=" + Enabled + " compatibility=" + compatibility + " owned=" + active.Count
                 + " frames=" + frames + " deco/frame=" + (frames == 0 ? 0 : decorations / (double)frames).ToString("F2")
                 + " rec/frame=" + (frames == 0 ? 0 : records / (double)frames).ToString("F2")
-                + " admissions=" + admissions + " sync=" + syncs + " restores=" + restores + " fallback=" + fallbacks + " reasons=" + string.Join("/", reasons)
+                + " admissions=" + admissions + " sync=" + syncs + " restores=" + restores + " fallback=" + fallbacks + " reasons=" + string.Join("/", reasons) + " rej=" + string.Join("/", rej)
                 + " verify=" + verify + " checks=" + checkedValues + " mismatch=" + mismatches + " first=" + first;
         }
         private static string Bench()
