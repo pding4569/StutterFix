@@ -37,6 +37,20 @@ dotnet build tools/LoadCheck -v q --nologo -c Release -o tools/LoadCheck/bin
 tools/LoadCheck/bin/LoadCheck.exe bin/Debug/StutterFix.dll
 tools/LoadCheck/bin/LoadCheck.exe bin/Player/StutterFix.dll
 
+# 게임 버전 호환 미리 확인 (CompatCheck): 지금 설치된 게임과, 있으면 안정판 사본(E:\StutterFixWork\gamerefs\stable-*)에 대해
+# 우리 DLL 이 쓰는 게임 필드·메서드가 다 있는지 본다. 없는 것이 있으면 경고만 하고(알려진 try/catch 안 항목 제외) 멈추지 않는다 -
+# 직접 참조는 그 게임 버전에서 JIT 때 MissingFieldException 으로 DecoAnim 등을 통째로 꺼 버린다(2026-10-20 안정판 croppedPivotOffset).
+compat_check() {
+  local dll="$1" mdir="$2" label="$3"
+  [ -d "$mdir" ] || return 0
+  local out; out=$(tools/CompatCheck/bin/CompatCheck.exe "$dll" "$mdir" 2>&1) || true
+  echo "[CompatCheck $label] $(echo "$out" | head -1)"
+  echo "$out" | tail -n +2 | grep -v "ffxChangeTrack.floor" | grep -E "FIELD|METHOD|TYPE|CTOR" | sed 's/^/  경고 /' || true
+}
+dotnet build tools/CompatCheck -v q --nologo -c Release -o tools/CompatCheck/bin
+compat_check bin/Player/StutterFix.dll "/d/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed" "설치된 게임"
+for d in /e/StutterFixWork/gamerefs/stable-*; do compat_check bin/Player/StutterFix.dll "$d" "$(basename "$d")"; done
+
 rm -rf dist && mkdir -p dist/player/StutterFix dist/developer/StutterFix
 cp bin/Player/StutterFix.dll Info.json dist/player/StutterFix/
 cp bin/Debug/StutterFix.dll dist/developer/StutterFix/
