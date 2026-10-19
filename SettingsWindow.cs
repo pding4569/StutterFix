@@ -15,6 +15,14 @@ namespace StutterFix
     {
         internal static SettingsWindow Instance;
         internal static bool Open;
+        internal static bool EditingText;
+
+        internal static void InstallInputGuard(HarmonyLib.Harmony harmony)
+        {
+            harmony.Patch(HarmonyLib.AccessTools.Method(typeof(scnEditor), "HandleKeyboardActions"),
+                prefix: new HarmonyLib.HarmonyMethod(typeof(SettingsWindow), nameof(AllowEditorKeyboard)));
+        }
+        private static bool AllowEditorKeyboard() => !EditingText;
 
         internal static void Create()
         {
@@ -38,7 +46,7 @@ namespace StutterFix
         internal static void ScrollForTest(float y) { if (Instance != null) Instance.scroll.y = y; }
         internal static void ShowForTest(int p, int sub = 0)
         {
-            if (Instance != null && p >= 0 && p < 9) Instance.subSel[p] = sub;
+            if (Instance != null && p >= 0 && p < 9) { Instance.subSel[p] = sub; EditingText = false; GUIUtility.keyboardControl = 0; }
             if (Instance == null) return;
             if (p == -2) { Instance.SetOpen(false); return; }
             Instance.SetOpen(true);
@@ -134,6 +142,8 @@ namespace StutterFix
             panelT = 0f;
             capturing = -1;
             Hotkey.Capturing = false;
+            EditingText = false;
+            GUIUtility.keyboardControl = 0;
             closing = false;
             show = 0f;
             Cursor.visible = cursorWas;
@@ -150,7 +160,7 @@ namespace StutterFix
             if (!Open) return;
             SampleFrame();
             // Esc: 패널이 펼쳐져 있으면 패널만 접고, 한 번 더 누르면 아이콘 줄까지 닫는다
-            if (!closing && !Hotkey.Capturing && Input.GetKeyDown(KeyCode.Escape)) { if (panelOpen) panelOpen = false; else SetOpen(false); }
+            if (!closing && !Hotkey.Capturing && !EditingText && Input.GetKeyDown(KeyCode.Escape)) { if (panelOpen) panelOpen = false; else SetOpen(false); }
             Cursor.visible = true;   // 곡 중에는 게임이 커서를 숨긴다
 
             float dt = Time.unscaledDeltaTime;
@@ -168,6 +178,8 @@ namespace StutterFix
         private void GoTo(int p)
         {
             if (p == page) return;
+            EditingText = false;
+            GUIUtility.keyboardControl = 0;
             page = p;
             scroll = Vector2.zero;
             pageT = 0f;
@@ -176,7 +188,7 @@ namespace StutterFix
         // 창 위를 누를 때 뒤의 게임 UI(에디터 버튼 등)가 같이 눌리지 않게 막는다 (실시간 모니터와 같이 쓴다).
         private void SetUiBlocked(bool block) { if (!block) UiInputBlock.Clear(this); }
 
-        private void OnDisable() { UiInputBlock.Clear(this); }
+        private void OnDisable() { EditingText = false; UiInputBlock.Clear(this); }
         private void OnDestroy() { UiInputBlock.Remove(this); }
 
         // ── Insert 로 여는 창: 오른쪽 끝의 아이콘 줄 + 아이콘을 누르면 옆에 펼쳐지는 기능 패널 ──
@@ -482,7 +494,7 @@ namespace StutterFix
 
         private void TogglePanel(int i)
         {
-            if (panelOpen && page == i) { panelOpen = false; return; }
+            if (panelOpen && page == i) { panelOpen = false; EditingText = false; GUIUtility.keyboardControl = 0; return; }
             if (page != i) GoTo(i);
             panelOpen = true;
         }
@@ -541,7 +553,7 @@ namespace StutterFix
                     bool hov = r.Contains(ev.mousePosition);
                     GUI.Label(r, gc, i == sel ? sTabOn : hov ? sTabHover : sTab);
                     if (i == sel) { selX = r.x + 10f; selW = w - 20f; }
-                    if (ev.type == EventType.MouseDown && ev.button == 0 && r.Contains(ev.mousePosition)) { ev.Use(); if (i != sel) { subSel[page] = i; scroll = Vector2.zero; pageT = 0f; } }
+                    if (ev.type == EventType.MouseDown && ev.button == 0 && r.Contains(ev.mousePosition)) { ev.Use(); if (i != sel) { subSel[page] = i; scroll = Vector2.zero; pageT = 0f; EditingText = false; GUIUtility.keyboardControl = 0; } }
                     x += w + 2f;
                 }
                 if (railPage != page || railY < 0) { railY = selX; railPage = page; }
@@ -592,6 +604,9 @@ namespace StutterFix
             GUILayout.EndScrollView();
             GUILayout.EndArea();
             GUI.color = oldC;
+            string focusedText = GUI.GetNameOfFocusedControl();
+            EditingText = !closing && panelOpen && GUIUtility.keyboardControl != 0 &&
+                (focusedText == "fxslot-name" || focusedText.StartsWith("fxvalue-", StringComparison.Ordinal));
         }
 
         // ── 아이콘 그림: 이미지 파일 없이 모양을 계산해 만든다 (가장자리는 4x4 표본으로 부드럽게) ──
@@ -1300,7 +1315,7 @@ namespace StutterFix
                 if (ev.type == EventType.MouseDown && ev.button == 0 && r.Contains(ev.mousePosition))
                 {
                     ev.Use();
-                    if (i != sel) { subSel[page] = i; scroll = Vector2.zero; pageT = 0f; }
+                    if (i != sel) { subSel[page] = i; scroll = Vector2.zero; pageT = 0f; EditingText = false; GUIUtility.keyboardControl = 0; }
                 }
             }
         }
@@ -1467,6 +1482,7 @@ namespace StutterFix
         }
 
         private string fxLutEdit, fxLutSaved, fxShareMsg;
+        private string fxSlotName = "", fxSlotMsg;
         private bool fxOnlyOn;   // 켜짐 갈래: 켜진 효과의 줄만 그린다
         private int FxExtraCount(Settings c, string group)
         {
@@ -1557,7 +1573,10 @@ namespace StutterFix
                 int on=FxCount(0);
                 GUILayout.BeginHorizontal();
                 P(on>0?T("켜진 쉐이더 "+on+"개","Active shaders: "+on):T("켜진 쉐이더가 없습니다.","No shader is active."),sTag,GUILayout.ExpandWidth(true));
-                if(on>0 && Btn(T("모두 끄기","Turn all off"),sSecondary,GUILayout.Width(120),GUILayout.Height(32))){foreach(var f in typeof(Settings).GetFields())if(f.Name.StartsWith("Fx") && f.FieldType==typeof(bool))f.SetValue(c,false);c.FxPreset=0;ch=presetChanged=true;}
+                if(on>0 && Btn(T("모두 끄기","Turn all off"),sSecondary,GUILayout.Width(120),GUILayout.Height(32)))
+                { if(FxSlots.TurnOff(c,out fxSlotMsg))ch=presetChanged=true; }
+                else if(on==0 && !string.IsNullOrEmpty(c.FxLastOn) && Btn(T("다시 켜기","Turn back on"),sSecondary,GUILayout.Width(120),GUILayout.Height(32)))
+                { if(FxSlots.Restore(c,out fxSlotMsg)){ScreenEffects.Apply();ch=presetChanged=true;} }
                 GUILayout.EndHorizontal();
                 GUILayout.Space(8);
                 if(on==0) P(T("위에서 모양을 고르거나, 왼쪽의 기본·빛·색 조정·질감·렌즈 갈래에서 하나씩 켜 보세요. 켠 쉐이더는 여기에 모입니다.","Pick a look above, or turn effects on one by one in the tabs on the left. Active shaders gather here."),sDim);
@@ -1574,6 +1593,7 @@ namespace StutterFix
                     fxOnlyOn=false;
                     EndGroup();
                 }
+                DrawFxSlots(c, ref ch, ref presetChanged);
             }
             else if(tab==1)
             {
@@ -1633,6 +1653,44 @@ namespace StutterFix
             if(ch){if(!presetChanged)c.FxPreset=4;Save();}
         }
         private bool FxSlider(string key,ref float value,float min,float max,string title){return Slider(key,ref value,min,max,title,value.ToString("F2"),true);}
+        private void DrawFxSlots(Settings c, ref bool changed, ref bool presetChanged)
+        {
+            SubHeading(T("내 프리셋", "My presets"), T("이름을 붙여 최대 12개 저장합니다. LUT 파일과 경로는 포함하지 않습니다.", "Save up to 12 named presets. LUT files and paths are excluded."));
+            BeginGroup();
+            P(T("이름 (최대 32자)", "Name (up to 32 characters)"), sDim);
+            const string control = "fxslot-name";
+            bool finish = GUI.GetNameOfFocusedControl() == control && Event.current.type == EventType.KeyDown &&
+                (Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Escape);
+            GUI.SetNextControlName(control);
+            fxSlotName = GUILayout.TextField(fxSlotName, sBody, GUILayout.ExpandWidth(true), GUILayout.Height(30));
+            if (finish) { GUI.FocusControl(null); GUIUtility.keyboardControl = 0; Event.current.Use(); }
+            if (Btn(T("지금 설정 저장", "Save current settings"), sSecondary, GUILayout.Height(32)))
+                if (FxSlots.Save(c, fxSlotName, false, out fxSlotMsg)) changed = presetChanged = true;
+            if (c.FxSlots != null)
+                for (int i = 0; i < c.FxSlots.Count; ++i)
+                {
+                    var slot = c.FxSlots[i];
+                    if (slot == null) continue;
+                    // Name and actions use separate rows; long names cannot push buttons out.
+                    P(slot.Name ?? "", sBody);
+                    GUILayout.BeginHorizontal();
+                    if (Btn(T("적용", "Apply"), sSecondary, GUILayout.Height(30)))
+                    {
+                        if (FxSlots.Apply(c, slot.Name, out fxSlotMsg))
+                        {
+                            ScreenEffects.Apply(); changed = presetChanged = true;
+                            fxSlotMsg = T("적용했습니다. 켜진 쉐이더 ", "Applied. Active shaders: ") + FxSlots.ActiveCount(c);
+                        }
+                    }
+                    if (Btn(T("덮어쓰기", "Overwrite"), sSecondary, GUILayout.Height(30)))
+                        if (FxSlots.Save(c, slot.Name, true, out fxSlotMsg)) changed = presetChanged = true;
+                    bool deleted = Btn(T("삭제", "Delete"), sSecondary, GUILayout.Height(30));
+                    GUILayout.EndHorizontal();
+                    if (deleted && FxSlots.Delete(c, slot.Name, out fxSlotMsg)) { changed = presetChanged = true; break; }
+                }
+            if (!string.IsNullOrEmpty(fxSlotMsg)) P(fxSlotMsg, sDim);
+            EndGroup();
+        }
         // 더 많은 효과: FxExtras.All 표 그대로 (켬 스위치 + 값 막대). 값이 바뀌면 직접 조절로 저장된다.
         private void DrawFxExtras(Settings c,ref bool ch,string only)
         {

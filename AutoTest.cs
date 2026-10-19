@@ -869,6 +869,7 @@ namespace StutterFix
                     Finish("끝");
                     return true;
 #if DEV || AUTOTEST
+                case "fxslot": FxSlots.Command(arg); return true;
                 case "filterhalfperf": FilterHalfPerf.Command(arg); return true;
                 case "filterhalf": FilterHalfProbe.Command(arg); return true;
                 case "waitsong": return now - stepStart > 5f && !Hitch.Playing;

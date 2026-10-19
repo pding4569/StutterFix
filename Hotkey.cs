@@ -22,7 +22,7 @@ namespace StutterFix
 
         internal static bool Down(KeyCode key, int mods)
         {
-            return !Capturing && key != KeyCode.None && Input.GetKeyDown(key) && Mods() == mods;
+            return !Capturing && !SettingsWindow.EditingText && key != KeyCode.None && Input.GetKeyDown(key) && Mods() == mods;
         }
 
         internal static bool IsModifier(KeyCode k)

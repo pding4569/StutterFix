@@ -172,6 +172,7 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
             try
             {
                 var harmony = new Harmony(Entry.Info.Id);
+                SettingsWindow.InstallInputGuard(harmony);
                 // 실제 수정 (두 버전 공통)
                 PatchUnloadCallers(harmony);
                 TextFix.Install(harmony);
@@ -593,7 +594,7 @@ Try(RenderCallbackScan.Shutdown);
         private static void OnUpdateBody(UnityModManager.ModEntry modEntry, float dt)
         {
             // Ctrl+F5: 게임을 켠 채로 새 DLL을 불러온다. 옛 코드는 여기서 바로 빠져나가야 한다.
-            if (Edition.Dev && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.F5))
+            if (Edition.Dev && !SettingsWindow.EditingText && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.F5))
             {
                 RequestReload();
                 return;
@@ -1182,6 +1183,8 @@ BlendProbe.Tick();
         public int FrameGenBlur = 0;         // 움직임 흐림(모션 블러): 0 끔, 1 약(진짜 프레임 간격의 30%), 2 중(60%), 3 강(100%). 카메라·흐름으로 움직이는 내용만, 화면 고정 UI·공은 선명
         public int FrameGenBlend = 1;        // 못 믿는 곳의 겹침: 0 끔(가까운 진짜 그림), 1 공 둘레만 섞기, 2 전체 섞기 (움직임이 고름)
         public int FxPreset = 0;
+        public List<FxSlot> FxSlots = new List<FxSlot>();
+        public string FxLastOn = "";
         public bool FxColor=false, FxSharp=false, FxAA=false, FxGlow=false, FxVignette=false, FxLut=false, FxLight=false;
         public bool FxGlowStack=false, FxToneMap=false, FxRays=false, FxStreak=false, FxFlare=false;
         public bool FxChromatic=false, FxGrain=false, FxCrt=false, FxPixel=false, FxPosterize=false, FxBlur=false;
