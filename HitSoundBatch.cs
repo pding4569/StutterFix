@@ -218,7 +218,7 @@ namespace StutterFix
                 if (clip == null || clip.loadType != AudioClipLoadType.DecompressOnLoad || clip.loadState != AudioDataLoadState.Loaded ||
                     clip.samples <= 0 || clip.frequency < 8000 || clip.frequency > 96000 || clip.channels < 1 || clip.channels > 2 ||
                     (double)clip.samples / clip.frequency > 8)
-                    throw new NotSupportedException("unreadable/streaming/compressed/long clip");
+                    throw new NotSupportedException("unreadable/streaming/compressed/long clip [" + (clip == null ? "null" : clip.name + " loadType=" + clip.loadType + " loadState=" + clip.loadState + " samples=" + clip.samples + " freq=" + clip.frequency + " ch=" + clip.channels + " sec=" + ((double)clip.samples / System.Math.Max(1, clip.frequency)).ToString("F2")) + "]");
                 if (s.Rate == 0) { s.Rate = clip.frequency; s.Channels = clip.channels; }
                 if (s.Rate != clip.frequency || s.Channels != clip.channels)
                     throw new NotSupportedException("mixed sample rate/channel layout (no guessed resampling)");
