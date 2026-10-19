@@ -188,8 +188,9 @@ namespace StutterFix
                     throw new NotSupportedException("custom AudioManager path: " + name);
             }
             var prefab = am.audioSourcePrefab;
-            if (prefab == null || prefab.playOnAwake || prefab.loop || prefab.spatialBlend != 0 || prefab.spatialize || prefab.panStereo != 0 ||
-                prefab.ignoreListenerPause || prefab.ignoreListenerVolume || prefab.reverbZoneMix != 0 ||
+            // 유니티 AudioSource 기본값(playOnAwake=true, reverbZoneMix=1)은 클립 없이 만들어지고 장면에 AudioReverbZone 이 없으면 소리에 영향이 없다(2026-10-20 실게임 확인: 게임 프리팹이 기본값 그대로).
+            if (prefab == null || prefab.loop || prefab.spatialBlend != 0 || prefab.spatialize || prefab.panStereo != 0 ||
+                prefab.ignoreListenerPause || prefab.ignoreListenerVolume || UnityEngine.Object.FindObjectsOfType<AudioReverbZone>().Length != 0 ||
                 prefab.gameObject.GetComponents<Component>().Length != 2 || prefab.transform.childCount != 0)
                 throw new NotSupportedException("source has 3D/loop/pan/reverb/filter or custom components [" + (prefab == null ? "null" :
                     "playOnAwake=" + prefab.playOnAwake + " loop=" + prefab.loop + " spatialBlend=" + prefab.spatialBlend + " spatialize=" + prefab.spatialize +
