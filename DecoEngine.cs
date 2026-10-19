@@ -171,7 +171,7 @@ namespace StutterFix
             }
             r.Engine = null; r.InList = false; replacements++;
         }
-        private static bool Allowed => Enabled && compatibility == "ok" && DecoAnim.EngineAllowed;
+        private static bool Allowed => Enabled && compatibility == "ok" && DecoAnim.EngineAllowed && CropField.Exists;
         private static State Rent(scrDecoration d)
         {
             var s = pool.Count == 0 ? new State() : pool.Pop();
@@ -247,7 +247,7 @@ namespace StutterFix
                 }
                 catch { reasons[8]++; Recycle(s); continue; }
                 s.LateEntry = e; s.Index = active.Count; e.Engine = s;
-                s.Child = s.D.childTransform; s.Offset = s.D.pivotOffsetVec; s.Cropped = s.D.croppedPivotOffset;
+                s.Child = s.D.childTransform; s.Offset = s.D.pivotOffsetVec; s.Cropped = CropField.Get(s.D);
                 s.Multiplier = s.D.trueScaleMultiplier; s.Placement = s.D.placementType;
                 s.ChildPosition = s.Child.localPosition;
                 s.ChildCheckFrame = Time.frameCount + 1 + (int)(admissions & 15);
@@ -279,7 +279,7 @@ namespace StutterFix
         {
             if (ADOBase.editor != null || (object)d.childTransform == null || d.parallax.clampToScreen
                 || d.placementType == DecPlacementType.Camera || d.placementType == DecPlacementType.CameraAspect) return false;
-            Vector3 expected = (d.pivotOffsetVec + d.croppedPivotOffset) / d.trueScaleMultiplier;
+            Vector3 expected = (d.pivotOffsetVec + CropField.Get(d)) / d.trueScaleMultiplier;
             var actual = d.childTransform.localPosition;
             return Same(actual.x, expected.x) && Same(actual.y, expected.y) && Same(actual.z, expected.z);
         }
@@ -290,7 +290,7 @@ namespace StutterFix
         private static bool Stable(State s)
         {
             if (!ReferenceEquals(s.Child, s.D.childTransform)
-                || !Same(s.Offset, s.D.pivotOffsetVec) || !Same(s.Cropped, s.D.croppedPivotOffset)
+                || !Same(s.Offset, s.D.pivotOffsetVec) || !Same(s.Cropped, CropField.Get(s.D))
                 || !Same(s.Multiplier, s.D.trueScaleMultiplier) || s.Placement != s.D.placementType) return false;
             // No managed-field proof for arbitrary external Transform writers.
             // Spread the native guard over 16 frames; verify retains strict

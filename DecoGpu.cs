@@ -315,7 +315,7 @@ namespace StutterFix
                 owned.Add(d, new Item {D=v, R=r, Sprite=r.sprite, Source=m, Entry=e, Off=r.forceRenderingOff,
                     Layer=r.sortingLayerID, Order=r.sortingOrder, UnityLayer=r.gameObject.layer,
                     Child=d.pivotTrans.worldToLocalMatrix * r.transform.localToWorldMatrix,
-                    ChildTransform=d.childTransform, Offset=d.pivotOffsetVec, Cropped=d.croppedPivotOffset,
+                    ChildTransform=d.childTransform, Offset=d.pivotOffsetVec, Cropped=CropField.Get(d),
                     TextureScale=d.textureScaleMultiplier, ScaleMultiplier=d.scaleMultiplier,
                     Tint=m.HasProperty("_Color")?m.GetColor("_Color"):Color.white, Signature=Key(m)});
             }
@@ -392,7 +392,7 @@ namespace StutterFix
             if (i.R.maskInteraction != SpriteMaskInteraction.None || i.R.drawMode != SpriteDrawMode.Simple
                 || i.D.isMask() || i.D.repeatX != 1 || i.D.repeatY != 1) return "mask/drawMode/repeat changed";
             if (!ReferenceEquals(i.D.childTransform,i.ChildTransform) || i.D.pivotOffsetVec != i.Offset
-                || i.D.croppedPivotOffset != i.Cropped || i.D.textureScaleMultiplier != i.TextureScale
+                || CropField.Get(i.D) != i.Cropped || i.D.textureScaleMultiplier != i.TextureScale
                 || i.D.scaleMultiplier != i.ScaleMultiplier) return "child/pivot/scale changed";
             return null;
         }

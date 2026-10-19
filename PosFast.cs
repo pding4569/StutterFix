@@ -108,7 +108,7 @@ namespace StutterFix
             if (!e.Has) return 8;
             if (!ReferenceEquals(e.Child, d.childTransform) || !ReferenceEquals(e.Parallax, d.parallax)
                 || e.Placement != d.placementType || e.Clamp != d.parallax.clampToScreen) return 9;
-            if (!Bit(e.Offset,d.pivotOffsetVec) || !Bit(e.Cropped,d.croppedPivotOffset)
+            if (!Bit(e.Offset,d.pivotOffsetVec) || !Bit(e.Cropped,CropField.Get(d))
                 || !Bit(e.Scale,d.trueScaleMultiplier)) return 10;
             return 0;
         }
@@ -148,9 +148,9 @@ namespace StutterFix
             if (e.Rejected || Eligible(d) != 0) return;
             // Read only on fallback: do not seed from an incomplete/lazy/epsilon-skipped write.
             Vector2 scale = d.trueScaleMultiplier;
-            Vector3 expected = (d.pivotOffsetVec + d.croppedPivotOffset) / scale;
+            Vector3 expected = (d.pivotOffsetVec + CropField.Get(d)) / scale;
             if (!Bit(d.childTransform.localPosition, expected)) return;
-            e.Offset = d.pivotOffsetVec; e.Cropped = d.croppedPivotOffset; e.Scale = scale;
+            e.Offset = d.pivotOffsetVec; e.Cropped = CropField.Get(d); e.Scale = scale;
             e.Placement = d.placementType; e.Clamp = d.parallax.clampToScreen;
             e.Parallax = d.parallax; e.Child = d.childTransform; e.Has = true;
         }

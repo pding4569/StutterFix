@@ -92,7 +92,7 @@ namespace StutterFix
                 // Reading fresh AudioSettings.dspTime here could add an unintended phase change.
                 double delivered=pollGameDsp-(pollQpc-received)/(double)Stopwatch.Frequency;
                 if(!double.IsFinite(delivered)||delivered<0||delivered>long.MaxValue/10000000.0)return;
-                __state=new Scope{Active=true,Prior=correcting,PriorDsp=dspTick,PriorBase=baseDspTick,PriorTarget=AsyncInputManager.targetSongTick};
+                __state=new Scope{Active=true,Prior=correcting,PriorDsp=dspTick,PriorBase=baseDspTick,PriorTarget=Convert.ToInt64(AsyncInputManager.targetSongTick)};
                 dspTick=(long)(delivered*10000000.0);baseDspTick=(long)(pollGameDsp*10000000.0);correcting=true;__0=timestamp;LastDelayMs=delay;usedFrame=Time.frameCount;
             }
             catch{if(__state.Active)Restore(__state);__state=default;}
@@ -100,25 +100,25 @@ namespace StutterFix
         private static bool Adjust(scrPlayer __0,long __1)
         {
             if(!correcting)return true;
-            long old=AsyncInputManager.targetSongTick;
+            long old=Convert.ToInt64(AsyncInputManager.targetSongTick);
             scrPlanet planet=null;double angle=0;
             try
             {
                 if(__0==null||__0.planetarySystem==null||__0.planetarySystem.chosenPlanet==null)return true;
                 planet=__0.planetarySystem.chosenPlanet;angle=planet.angle;
                 if(dspTick==baseDspTick)return false;
-                AsyncInputManager.targetSongTick=baseDspTick;planet.AsyncRefreshAngles();double atPoll=planet.angle;
-                AsyncInputManager.targetSongTick=dspTick;planet.AsyncRefreshAngles();double atReceive=planet.angle;
+                TickCompat.Set(ref AsyncInputManager.targetSongTick,baseDspTick);planet.AsyncRefreshAngles();double atPoll=planet.angle;
+                TickCompat.Set(ref AsyncInputManager.targetSongTick,dspTick);planet.AsyncRefreshAngles();double atReceive=planet.angle;
                 double difference=atReceive-atPoll;
                 if(!double.IsFinite(difference)||!double.IsFinite(angle+difference))throw new InvalidOperationException("Invalid game angle delta");
                 // Preserve the legacy path's existing phase, calibration and accumulated turns.
                 // Only the angle traversed between reception and polling is removed.
                 planet.angle=difference==0?angle:angle+difference;Corrected++;return false;
             }
-            catch{if(planet!=null)planet.angle=angle;AsyncInputManager.targetSongTick=old;return true;}
+            catch{if(planet!=null)planet.angle=angle;TickCompat.Set(ref AsyncInputManager.targetSongTick,old);return true;}
         }
         private static Exception End(Exception __exception,Scope __state){if(__state.Active)Restore(__state);return __exception;}
-        private static void Restore(Scope state){correcting=state.Prior;dspTick=state.PriorDsp;baseDspTick=state.PriorBase;AsyncInputManager.targetSongTick=state.PriorTarget;}
+        private static void Restore(Scope state){correcting=state.Prior;dspTick=state.PriorDsp;baseDspTick=state.PriorBase;TickCompat.Set(ref AsyncInputManager.targetSongTick,state.PriorTarget);}
 #if DEV || AUTOTEST
         internal static string AngleFixture()
         {
@@ -126,7 +126,7 @@ namespace StutterFix
             var player=ADOBase.controller.playerOne;var planet=player.planetarySystem.chosenPlanet;
             var f=typeof(AsyncInputManager).GetField("offsetTick",AccessTools.all);var ready=typeof(AsyncInputManager).GetField("offsetTickUpdated",AccessTools.all);
             if(f==null||ready==null||!(bool)ready.GetValue(null))return "applied=0 game-clock-not-calibrated";
-            long offset=(long)f.GetValue(null),now=DateTime.UtcNow.Ticks,oldTarget=AsyncInputManager.targetSongTick,oldDsp=dspTick,oldBase=baseDspTick,oldCount=Corrected;
+            long offset=(long)f.GetValue(null),now=DateTime.UtcNow.Ticks,oldTarget=Convert.ToInt64(AsyncInputManager.targetSongTick),oldDsp=dspTick,oldBase=baseDspTick,oldCount=Corrected;
             double oldAngle=planet.angle;bool oldScope=correcting;int mismatch=0,checks=0;
             try
             {
@@ -142,10 +142,16 @@ namespace StutterFix
                 if(mismatch!=0)throw new InvalidOperationException("Game relative input angle mismatch "+mismatch);
                 return "game_delta_conditions="+checks+" mismatch="+mismatch+" hit_calls=0 input_injected=0 preserves_existing_phase=1 zero_delay_unchanged=1 physical_keys_not_tested=1";
             }
-            finally{planet.angle=oldAngle;AsyncInputManager.targetSongTick=oldTarget;dspTick=oldDsp;baseDspTick=oldBase;correcting=oldScope;Corrected=oldCount;}
+            finally{planet.angle=oldAngle;TickCompat.Set(ref AsyncInputManager.targetSongTick,oldTarget);dspTick=oldDsp;baseDspTick=oldBase;correcting=oldScope;Corrected=oldCount;}
         }
 #endif
         private static void FocusChanged(bool focused){if(clock!=null)clock.Clear();sampleFrame=-1;usedFrame=-1;}
         public void Uninstall(){Enabled=false;Application.focusChanged-=FocusChanged;if(clock!=null){clock.Dispose();clock=null;}sampleFrame=-1;correcting=false;}
+    }
+
+    // 게임 버전에 따라 AsyncInputManager.targetSongTick 이 long(3.4 알파)이거나 ulong(일반 버전)이다. 둘 다 컴파일·동작하게 한다.
+    internal static class TickCompat
+    {
+        internal static void Set<T>(ref T field, long value) where T : struct { field = (T)System.Convert.ChangeType(value, typeof(T)); }
     }
 }

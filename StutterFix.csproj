@@ -79,6 +79,7 @@
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="FxShare.cs" />
     <Compile Include="FxSlots.cs" />
+    <Compile Include="CropField.cs" />
     <Compile Include="FxExtras.cs" />
     <Compile Include="PerfOverlay.cs" />
     <Compile Include="PresentWatch.cs" />
