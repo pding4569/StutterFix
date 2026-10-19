@@ -82,7 +82,7 @@ namespace StutterFix
             if (!s.originalsHidden || s.comparing) return false;
             var i = s.owned[d];
             if (i.Entry != null) i.Entry.LastFrame = Time.frameCount;   // Late 를 건너뛰는 동안에도 엔트리를 최신으로 (아니면 다음 프레임 EngineReason=7)
-            var reason = s.InvalidReason(i);
+            var reason = s.InvalidReason(i, true);
             if (reason != null) { Stop("SkipLate " + Describe(i) + " " + reason); return false; }
             return true;
         }
@@ -367,10 +367,10 @@ namespace StutterFix
                 + " id=" + __instance.GetInstanceID() + " comparing=" + session.comparing);
         }
         static string Describe(Item i) => "id=" + (i.D ? i.D.GetInstanceID() : 0);
-        string InvalidReason(Item i)
+        string InvalidReason(Item i, bool inLoop = false)
         {
             if (!i.D || !i.R || i.Entry == null) return "destroyed/entry missing";
-            int reason = TightLate.EngineReason(i.Entry);
+            int reason = inLoop ? TightLate.EngineReasonInLoop(i.Entry) : TightLate.EngineReason(i.Entry);
             if (reason != 0) return "TightLate.EngineReason=" + reason + " [" + TightLate.EngineReasonDetail(i.Entry) + "]";
             if (i.R.sprite != i.Sprite) return "sprite changed";
             if (i.R.sharedMaterial != i.Source) return "material changed";

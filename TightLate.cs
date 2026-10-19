@@ -269,6 +269,17 @@ namespace StutterFix
                 reason = Eligible(e, parentTransform, parentIdentity, cameraTransform, true);
             return reason;
         }
+        // List() 안(Process 루프)에서는 completedFrame 이 아직 -1 이다(ManagerStart 가 지움, 루프 끝에서 채움). 그 검사만 뺀 판.
+        internal static int EngineReasonInLoop(Entry e)
+        {
+            if (e.EngineRejected) return 7;
+            if (!installed || !Enabled || !compatible || !Hitch.Playing || SceneReset.Resetting
+                || !MoveApply.Enabled || !Dormancy.Enabled || preparedEpoch != epoch) return 7;
+            int reason = Eligible(e, parentTransform, parentIdentity, cameraTransform);
+            if (reason == 3 && e.Engine != null)
+                reason = Eligible(e, parentTransform, parentIdentity, cameraTransform, true);
+            return reason;
+        }
         internal static void EngineApply(Entry e, Vector3 cam, Vector2 pos, float angle, Vector2 scale)
             => Apply(e, e.D, e.D.parallax, e.Pivot, cam, pos, angle, scale);
         internal static Entry EngineBenchEntry(scrDecoration d)
