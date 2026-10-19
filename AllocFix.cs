@@ -87,6 +87,9 @@ namespace StutterFix
             var main = AccessTools.Method(typeof(RDInputType_AsyncKeyboard), "Main", new[] { typeof(ButtonState) });
             var gsc = AccessTools.Method(typeof(RDInputType), "GetStateCount");
             var gsi = AccessTools.Method(typeof(RDInputType_AsyncKeyboard), "GetSpecialInput");
+            // 2026-10-19 게임 업데이트(Unity 6000.3.25): GetSpecialInput 이 List 를 돌려주지 않고 인자 목록을 채우는 void 로 바뀌었고 RDInput 에 정적 버퍼가 생겼다
+            // (게임이 직접 임시 객체를 줄임). 옛 모양이 아니면 입력 쪽은 건드리지 않는다.
+            if (gsi != null && gsi.ReturnType != typeof(List<AsyncKeyCode>)) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임 코드가 바뀌어(GetSpecialInput " + gsi.ReturnType.Name + ") 끔"); return; }
             if (main == null || gsc == null || gsi == null) { Main.Entry.Logger.Log("[쓰레기 줄이기] 비동기 키 입력: 게임 코드 모양이 달라 끔"); return; }
             mainKeysRef = AccessTools.FieldRefAccess<RDInputType_AsyncKeyboard, SkyHook.KeyLabel[]>("mainKeys");
             getStateCount = AccessTools.MethodDelegate<Func<RDInputType, ButtonState, RDInputType.MainStateCount>>(gsc);
