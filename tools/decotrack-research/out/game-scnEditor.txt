@@ -1,0 +1,4759 @@
+﻿== scnEditor
+  DragCamera
+    필드 읽기 scnEditor::camera
+    호출 UnityEngine.Component::get_transform
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    필드 읽기 UnityEngine.Vector3::x
+    필드 읽기 UnityEngine.Vector3::y
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Transform::set_position
+  DragTilesStart
+    필드 읽기 scnEditor::floorPositionsAtDragStart
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Clear
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 쓰기 scnEditor::pointerDownObjectType
+  DragTiles
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scnEditor::floorPositionsAtDragStart
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 UnityEngine.Vector3::op_Addition
+    호출 UnityEngine.Component::get_transform
+    필드 읽기 UnityEngine.Vector3::x
+    필드 읽기 UnityEngine.Vector3::y
+    호출 UnityEngine.Transform::get_position
+    필드 읽기 UnityEngine.Vector3::z
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Transform::set_position
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  DragDecorationsStart
+    필드 읽기 scnEditor::lockPathEditing
+    호출 SaveStateScope::.ctor
+    필드 읽기 scnEditor::decorationPositionsAtDragStart
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Clear
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrDecorationManager::GetDecoration
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+    호출 UnityEngine.Vector2::get_zero
+    호출 ADOBase::get_controller
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 UnityEngine.Vector2::op_Equality
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 ExtensionMethods::xy
+    필드 읽기 scrController::camy
+    필드 읽기 scrDecoration::parallax
+    필드 읽기 scrParallax::posCamAtStart
+    호출 UnityEngine.Vector2::op_Subtraction
+    호출 scrParallax::get_multiplier
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 쓰기 scnEditor::pointerDownObjectType
+  DragDecorations
+    필드 읽기 UnityEngine.Vector3::x
+    호출 UnityEngine.Mathf::Abs
+    필드 읽기 scnEditor::addXDragCache
+    필드 읽기 UnityEngine.Vector3::y
+    필드 읽기 scnEditor::addYDragCache
+    필드 쓰기 scnEditor::addXDragCache
+    필드 쓰기 scnEditor::addYDragCache
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrDecorationManager::GetDecoration
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 ADOFAI.LevelEvent::locked
+    필드 읽기 scrDecoration::forceLock
+    필드 읽기 scnEditor::decorationPositionsAtDragStart
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 ExtensionMethods::xy
+    호출 scnEditor::GetDecorationDragDelta
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    필드 읽기 UnityEngine.Vector2::x
+    필드 쓰기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    필드 쓰기 UnityEngine.Vector2::y
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 UnityEngine.Vector2::op_Addition
+    호출 scnEditor::get_holdingShift
+    호출 UnityEngine.Vector2::.ctor
+    호출 ADOFAI.LevelEvent::get_Item
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 UnityEngine.Mathf::Clamp
+    호출 scrLevelMaker::get_instance
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Vector2::op_Subtraction
+    호출 ADOBase::get_controller
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Vector2::op_Division
+    호출 ADOFAI.LevelEvent::set_Item
+    필드 읽기 scrDecoration::pivotOffsetVec
+    호출 scrDecoration::SetPosition
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::SelectionDecorationIsSingle
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::UpdatePropertyText
+  DragEventIndicatorStart
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::get_parent
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.Object::op_Inequality
+    필드 쓰기 scnEditor::draggedEvIndicator
+    필드 읽기 scnEditor::draggedEvIndicator
+    호출 scnEditor::get_holdingControl
+    필드 읽기 ADOFAI.EventIndicator::evnt
+    필드 읽기 ADOFAI.LevelEvent::active
+    호출 scnEditor::EnableEvent
+    필드 쓰기 scnEditor::cancelDrag
+    필드 읽기 ADOFAI.EventIndicator::circle
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    필드 쓰기 scnEditor::evIndPosAtDragStart
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::ShowPanelOfEvent
+    필드 읽기 ADOFAI.EventIndicator::editable
+    호출 UnityEngine.Color::.ctor
+    호출 UnityEngine.SpriteRenderer::set_color
+  DragEventIndicator
+    필드 읽기 scnEditor::evIndPosAtDragStart
+    호출 UnityEngine.Vector3::op_Addition
+    필드 읽기 scnEditor::draggedEvIndicator
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Vector3::op_Subtraction
+    호출 UnityEngine.Vector3::get_up
+    호출 UnityEngine.Vector3::Angle
+    필드 읽기 UnityEngine.Vector3::x
+    필드 읽기 ADOFAI.EventIndicator::floor
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::isCCW
+    호출 scrMisc::GetAngleMoved
+    필드 읽기 scrFloor::exitangle
+    호출 UnityEngine.Mathf::Abs
+    호출 UnityEngine.Mathf::Pow
+    필드 읽기 scrFloor::midSpin
+    호출 UnityEngine.Mathf::Lerp
+    호출 scnEditor::get_holdingShift
+    호출 UnityEngine.Mathf::RoundToInt
+    호출 UnityEngine.Quaternion::Euler
+    호출 UnityEngine.Transform::set_rotation
+  DragTransformHandlesStart
+    필드 읽기 ADOFAI.TransformGizmo::holder
+    호출 TransformGizmoHolder::DragStart
+  DragTransformHandles
+    필드 읽기 scnEditor::draggingGizmo
+    필드 읽기 ADOFAI.TransformGizmo::holder
+    호출 TransformGizmoHolder::Drag
+  GetDecorationDragDelta
+    호출 UnityEngine.Vector2::get_one
+    필드 읽기 scrDecoration::parallax
+    호출 scrParallax::get_multiplier
+    호출 UnityEngine.Vector2::op_Subtraction
+    필드 읽기 UnityEngine.Vector2::x
+    필드 쓰기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    필드 쓰기 UnityEngine.Vector2::y
+    호출 UnityEngine.Vector2::op_Division
+  DrawX
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.Vector2::op_Addition
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Debug::DrawLine
+  get_selectedFirstFloor
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+  get_holdingShift
+    호출 RDInput::get_holdingShift
+  get_holdingControl
+    호출 RDInput::get_holdingControl
+  get_holdingAlt
+    호출 RDInput::get_holdingAlt
+  get_floors
+    필드 읽기 scnEditor::customLevel
+    필드 읽기 scnGame::levelMaker
+    필드 읽기 scrLevelMaker::listFloors
+  get_levelData
+    필드 읽기 scnEditor::customLevel
+    필드 읽기 scnGame::levelData
+  get_events
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::levelEvents
+  get_decorations
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::decorations
+  get_allDecorations
+    호출 scrDecorationManager::get_instance
+    필드 읽기 scrDecorationManager::allDecorations
+  get_pausedInPlayMode
+    필드 읽기 scnEditor::_pausedInPlayMode
+  set_pausedInPlayMode
+    필드 쓰기 scnEditor::_pausedInPlayMode
+    필드 읽기 scnEditor::_pausedInPlayMode
+    호출 scrCamera::get_instance
+    필드 읽기 scrCamera::enableCustomFPS
+    필드 쓰기 scnEditor::wasUsingCustomFrameRate
+    필드 읽기 scrCamera::frameRate
+    필드 쓰기 scnEditor::lastCustomFrameRate
+    호출 scrCamera::SetCustomFrameRate
+    필드 읽기 scnEditor::wasUsingCustomFrameRate
+    필드 읽기 scnEditor::lastCustomFrameRate
+  get_playMode
+    호출 scnEditor::get_pausedInPlayMode
+    호출 ADOBase::get_controller
+    호출 scrController::get_paused
+  get_shouldHideEditorUIForAutoplay
+    호출 RDC::get_auto
+    호출 Persistence::get_hideEditorUIDuringAutoplay
+  get_shouldHideGameplayUIForAutoplay
+    호출 RDC::get_auto
+    호출 Persistence::get_hideGameplayUIDuringAutoplay
+  get_highBPM
+    필드 읽기 scnEditor::customLevel
+    필드 읽기 scnGame::highestBPM
+  get_isOldLevel
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::isOldLevel
+  get_currentSelectTarget
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_userIsEditingAnInputField
+    필드 읽기 scnEditor::eventSystem
+    호출 UnityEngine.EventSystems.EventSystem::get_currentSelectedGameObject
+    호출 UnityEngine.Object::op_Equality
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 UnityEngine.Object::op_Inequality
+    호출 TMPro.TMP_InputField::get_isFocused
+  get_unsavedChanges
+    필드 읽기 scnEditor::_unsavedChanges
+  set_unsavedChanges
+    필드 쓰기 scnEditor::_unsavedChanges
+    호출 scnEditor::RefreshFilenameText
+  UpdateCanvasScalerResolution
+    호출 UnityEngine.Screen::get_height
+    호출 UnityEngine.Mathf::Clamp
+    호출 UnityEngine.Screen::get_width
+    필드 읽기 scnEditor::canvasScaler
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.UI.CanvasScaler::set_referenceResolution
+    필드 읽기 scnEditor::ottoCanvas
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.UI.CanvasScaler::get_referenceResolution
+    호출 Persistence::set_editorScale
+  Awake
+    호출 RDString::LoadLevelEditorFonts
+    호출 scrPlayerManager::SetPlayerCount
+    정적필드 쓰기 scnEditor::instance
+    호출 scnEditor::LoadGameScene
+  RegisterKeybinds
+    필드 읽기 scnEditor::keybindManager
+    호출 ADOFAI.Editor.EditorKeybind::.ctor
+    호출 ADOFAI.Editor.Actions.CreateMidspinFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.EditorKeybindManager::RegisterKeybind
+    호출 ADOFAI.Editor.Actions.Create360FloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.PlayEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.PlayWithSpeedEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CopyFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CutFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.PasteFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.PasteFloorWithoutDecorationsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.UndoEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.RedoEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CreateArbitraryFloorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SelectPreviousFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SelectNextFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.MoveSelectionLeftEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.MoveSelectionRightEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SelectFirstFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SelectLastFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SelectToFirstFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SelectToLastFloorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.DeleteFloorsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.DeletePrecedingFloorsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.DeleteSubsequentFloorsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ToggleFileActionsPanelEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.DeselectAllEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.FlipFloorsHorizontalEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.FlipFloorsVerticalEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.RotateFloors90CounterClockwiseEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.RotateFloors90ClockwiseEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.RotateFloors180EditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CreatePentagonEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CreateUpsideDownPentagonEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CreateHeptagonEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CreateUpsideDownHeptagonEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CopyEventsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CutEventsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CopyAllSameTypeEventsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CutAllSameTypeEventsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.PasteEventsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CopyTrackColorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.PasteTrackColorEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.PasteTrackColorSingleTileEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CopyHitSoundEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.PasteHitSoundSingleTileEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.LockSelectedDecorationsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.DuplicateDecorationsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.DeleteDecorationsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ToggleBookmarkEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SelectPreviousBookmarkEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SelectNextBookmarkEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ToggleFindFloorPanelEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ToggleFindCommentPanelEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ToggleAutoEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ToggleNoFailEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SaveLevelEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SaveLevelAsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.OpenLevelEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.OpenUrlEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.OpenRecentEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.NewLevelEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.OpenPreferencesEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ZoomOutCameraEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ZoomInCameraEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ZoomOutUiEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ZoomInUiEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CyclePreviousEventTabEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CycleNextEventTabEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CyclePreviousSelectedEventEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CycleNextSelectedEventEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ShowPreviousEventPageEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ShowNextEventPageEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ShowFirstEventPageEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ShowLastEventPageEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.TryQuitToMenuEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ToggleShortcutsPanelEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ShowCopyrightPopupEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.OpenLogDirectoryEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ToggleFloorNumsEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.ShowCurrentFloorNumberEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.AddNumberedEventEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.SelectEventCategoryEditorAction::.ctor
+    호출 ADOFAI.Editor.Actions.CreateFloorWithCharOrAngleEditorAction::.ctor
+  TryApplicationQuit
+    호출 scnEditor::get_unsavedChanges
+    필드 읽기 scnEditor::forceQuit
+    호출 scnEditor::get_playMode
+    호출 scnEditor::TogglePause
+    호출 scnEditor::<TryApplicationQuit>b__440_0
+    호출 System.Action::.ctor
+    호출 scnEditor::CheckUnsavedChanges
+  ApplicationQuit
+    필드 쓰기 scnEditor::forceQuit
+    호출 UnityEngine.Application::Quit
+  CheckUnsavedChanges
+    호출 scnEditor::get_unsavedChanges
+    호출 scnEditor::ShowPopup
+    필드 쓰기 scnEditor::quitLevelAction
+    필드 쓰기 scnEditor::closePopupImmediately
+    호출 System.Action::Invoke
+  SaveAndQuit
+    호출 scnEditor::SaveLevel
+    호출 ADOBase::get_levelPath
+    호출 System.String::IsNullOrEmpty
+    호출 scnEditor::DoQuitAction
+  DoQuitAction
+    필드 읽기 scnEditor::closePopupImmediately
+    호출 scnEditor::ShowPopup
+    필드 읽기 scnEditor::quitLevelAction
+    호출 System.Action::Invoke
+    필드 쓰기 scnEditor::closePopupImmediately
+  TryQuitToMenu
+    호출 scnEditor::<TryQuitToMenu>b__445_0
+    호출 System.Action::.ctor
+    호출 scnEditor::CheckUnsavedChanges
+  QuitToMenu
+    호출 scnEditor::TryApplicationQuit
+    호출 제네릭 System.Func`1::.ctor
+    호출 UnityEngine.Application::remove_wantsToQuit
+    정적필드 읽기 GCS::customLevelPaths
+    호출 ADOBase::get_loader
+    호출 scrLoader::LoadSceneWithTransition
+    호출 ADOBase::get_controller
+    호출 scrController::QuitToMainMenu
+  RefreshFilenameText
+    호출 ADOBase::get_levelPath
+    호출 System.String::IsNullOrEmpty
+    호출 System.IO.Path::GetFileName
+    호출 RDString::Get
+    호출 scnEditor::get_unsavedChanges
+    호출 System.String::Concat
+    필드 읽기 scnEditor::filenameText
+    호출 TMPro.TMP_Text::set_text
+    호출 TMPro.TMP_Text::set_fontStyle
+  LoadGameScene
+    정적필드 읽기 scnGame::instance
+    호출 UnityEngine.Object::op_Inequality
+    필드 쓰기 scnEditor::fromScnGame
+    호출 UnityEngine.SceneManagement.SceneManager::LoadScene
+  Start
+    정적필드 읽기 scnGame::instance
+    필드 쓰기 scnEditor::customLevel
+    호출 UnityEngine.EventSystems.EventSystem::get_current
+    필드 쓰기 scnEditor::eventSystem
+    호출 scnEditor::TryApplicationQuit
+    호출 제네릭 System.Func`1::.ctor
+    호출 UnityEngine.Application::add_wantsToQuit
+    필드 쓰기 scnEditor::ottoBlinkCounter
+    호출 scnEditor::<Start>g__LoadLevelEventSprites|450_0
+    호출 scnEditor::<Start>g__LoadLevelCategorySprites|450_1
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 scnEditor::canvasScaler
+    호출 Persistence::get_editorScale
+    호출 scnEditor::UpdateCanvasScalerResolution
+    호출 UnityEngine.Shader::Find
+    필드 쓰기 scnEditor::spritesDefaultShader
+    필드 읽기 scnEditor::lockBackground
+    호출 UnityEngine.UI.Graphic::get_color
+    필드 쓰기 scnEditor::defaultLockColor
+    필드 읽기 scnEditor::lockIcon
+    필드 쓰기 scnEditor::defaultLockIconColor
+    호출 UnityEngine.Material::.ctor
+    필드 쓰기 scnEditor::lineMaterial
+    필드 읽기 scnEditor::lineMaterial
+    필드 읽기 scnEditor::floorConnectorTex
+    호출 UnityEngine.Material::SetTexture
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.Vector4::op_Implicit
+    호출 UnityEngine.Material::SetVector
+    호출 UnityEngine.Material::SetFloat
+    정적필드 쓰기 GCS::filteredEvent
+    호출 UnityEngine.LayerMask::GetMask
+    호출 UnityEngine.LayerMask::op_Implicit
+    필드 쓰기 scnEditor::floorLayerMask
+    필드 쓰기 scnEditor::foregroundMask
+    필드 쓰기 scnEditor::handlesLayerMask
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::camy
+    필드 읽기 scrCamera::camobj
+    필드 쓰기 scnEditor::camera
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 scnEditor::preparedAudioClips
+    필드 읽기 scnEditor::prefsContainer
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 scnEditor::LoadEditorProperties
+    필드 읽기 scnEditor::ottoAudioSrc
+    호출 UnityEngine.AudioSource::set_ignoreListenerPause
+    필드 읽기 scnEditor::interfaceAudioSrc
+    필드 읽기 scnEditor::floorButtonCanvas
+    호출 UnityEngine.Time::get_unscaledTime
+    필드 쓰기 scnEditor::backupTimer
+    호출 Persistence::GetDisableRewindButton
+    필드 읽기 scnEditor::rewind
+    필드 읽기 scnEditor::playPause
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Vector3::op_Subtraction
+    호출 UnityEngine.Transform::set_position
+    정적필드 쓰기 scnEditor::lastTimeStatsUploaded
+    호출 ADOFAI.Editor.EditorKeybindManager::.ctor
+    필드 쓰기 scnEditor::keybindManager
+    호출 scnEditor::RegisterKeybinds
+    호출 scnEditor::CloseAllPanels
+    호출 scnEditor::TogglePause
+    호출 scnEditor::UpdateSongAndLevelSettings
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::HideAllInspectorTabs
+    호출 ADOFAI.InspectorPanel::ShowInspector
+    필드 읽기 scnEditor::propertyControlDecorationsList
+    호출 scnEditor::OnDecorationSelected
+    호출 제네릭 System.Action`1::.ctor
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl_List::OnItemSelected
+    호출 scnEditor::OnDecorationAllItemsDeselected
+    호출 System.Action::.ctor
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl_List::OnAllItemsDeselected
+    필드 읽기 scnEditor::propertyHelpImage
+    호출 RDExtensions::ScaleXY
+    필드 읽기 scnEditor::popupPanel
+    필드 읽기 scnEditor::buttonNew
+    호출 제네릭 UnityEngine.Component::GetComponentInChildren
+    호출 RDString::Get
+    호출 RDEditorUtils::KeyComboToString
+    호출 System.String::Concat
+    호출 TMPro.TMP_Text::set_text
+    필드 읽기 scnEditor::buttonOpen
+    필드 읽기 scnEditor::buttonOpenURL
+    필드 읽기 scnEditor::buttonSave
+    필드 읽기 scnEditor::buttonSaveAs
+    필드 읽기 scnEditor::buttonPreferences
+    필드 읽기 scnEditor::buttonHelp
+    필드 읽기 scnEditor::buttonDiscord
+    호출 UnityEngine.Transform::GetChild
+    필드 읽기 scnEditor::notificationOkButton
+    필드 읽기 scnEditor::selectingFloorIDText
+    호출 scnEditor::SetupHelpMenu
+    호출 UnityEngine.UI.Button::get_onClick
+    호출 scnEditor::<Start>b__450_2
+    호출 UnityEngine.Events.UnityAction::.ctor
+    호출 UnityEngine.Events.UnityEvent::AddListener
+    호출 scnEditor::<Start>b__450_3
+    필드 읽기 scnEditor::buttonExit
+    호출 scnEditor::<Start>b__450_4
+    필드 읽기 scnEditor::buttonSettings
+    정적필드 읽기 scnEditor+<>c::<>9__450_5
+    정적필드 읽기 scnEditor+<>c::<>9
+    호출 scnEditor+<>c::<Start>b__450_5
+    정적필드 쓰기 scnEditor+<>c::<>9__450_5
+    호출 scnEditor::ShowPreferences
+    호출 scnEditor::SetupFindFloorPanel
+    필드 읽기 scnEditor::buttonFileActionDropdown
+    호출 scnEditor::<Start>b__450_6
+    호출 scnEditor::<Start>b__450_7
+    호출 scnEditor::<Start>b__450_8
+    필드 읽기 scnEditor::buttonOpenRecent
+    호출 scnEditor::<Start>b__450_9
+    호출 scnEditor::<Start>b__450_10
+    호출 scnEditor::<Start>b__450_11
+    호출 scnEditor::<Start>b__450_12
+    호출 scnEditor::<Start>b__450_13
+    필드 읽기 scnEditor::buttonCloseHelp
+    호출 scnEditor::<Start>b__450_14
+    호출 scnEditor::<Start>b__450_15
+    필드 읽기 scnEditor::buttonD
+    호출 scnEditor::<Start>b__450_16
+    필드 읽기 scnEditor::buttonE
+    호출 scnEditor::<Start>b__450_17
+    필드 읽기 scnEditor::buttonW
+    호출 scnEditor::<Start>b__450_18
+    필드 읽기 scnEditor::buttonQ
+    호출 scnEditor::<Start>b__450_19
+    필드 읽기 scnEditor::buttonA
+    호출 scnEditor::<Start>b__450_20
+    필드 읽기 scnEditor::buttonZ
+    호출 scnEditor::<Start>b__450_21
+    필드 읽기 scnEditor::buttonS
+    호출 scnEditor::<Start>b__450_22
+    필드 읽기 scnEditor::buttonC
+    호출 scnEditor::<Start>b__450_23
+    필드 읽기 scnEditor::buttonT
+    호출 scnEditor::<Start>b__450_24
+    필드 읽기 scnEditor::buttonG
+    호출 scnEditor::<Start>b__450_25
+    필드 읽기 scnEditor::buttonF
+    호출 scnEditor::<Start>b__450_26
+    필드 읽기 scnEditor::buttonB
+    호출 scnEditor::<Start>b__450_27
+    필드 읽기 scnEditor::buttonBackQuoteT
+    호출 scnEditor::<Start>b__450_28
+    필드 읽기 scnEditor::buttonBackQuoteY
+    호출 scnEditor::<Start>b__450_29
+    필드 읽기 scnEditor::buttonBackQuoteV
+    호출 scnEditor::<Start>b__450_30
+    필드 읽기 scnEditor::buttonBackQuoteB
+    호출 scnEditor::<Start>b__450_31
+    필드 읽기 scnEditor::buttonJ
+    호출 scnEditor::<Start>b__450_32
+    필드 읽기 scnEditor::buttonH
+    호출 scnEditor::<Start>b__450_33
+    필드 읽기 scnEditor::buttonN
+    호출 scnEditor::<Start>b__450_34
+    필드 읽기 scnEditor::buttonM
+    호출 scnEditor::<Start>b__450_35
+    필드 읽기 scnEditor::buttonBackQuoteJ
+    호출 scnEditor::<Start>b__450_36
+    필드 읽기 scnEditor::buttonBackQuoteH
+    호출 scnEditor::<Start>b__450_37
+    필드 읽기 scnEditor::buttonBackQuoteN
+    호출 scnEditor::<Start>b__450_38
+    필드 읽기 scnEditor::buttonBackQuoteM
+    호출 scnEditor::<Start>b__450_39
+    필드 읽기 scnEditor::buttonSpace
+    호출 scnEditor::<Start>b__450_40
+    필드 읽기 scnEditor::buttonTab
+    호출 scnEditor::<Start>b__450_41
+    필드 읽기 scnEditor::buttonAuto
+    호출 scnEditor::<Start>b__450_42
+    필드 읽기 scnEditor::buttonNextPage
+    호출 scnEditor::<Start>b__450_43
+    필드 읽기 scnEditor::buttonPrevPage
+    호출 scnEditor::<Start>b__450_44
+    필드 읽기 scnEditor::buttonNoFail
+    호출 scnEditor::<Start>b__450_45
+    필드 읽기 scnEditor::buttonUnlockKeyLimiter
+    호출 scnEditor::<Start>b__450_46
+    필드 읽기 scnEditor::floorButtonArbitrary
+    호출 TMPro.TMP_InputField::get_onEndEdit
+    호출 scnEditor::<Start>b__450_47
+    호출 제네릭 UnityEngine.Events.UnityAction`1::.ctor
+    호출 제네릭 UnityEngine.Events.UnityEvent`1::AddListener
+    필드 읽기 scnEditor::popupSaveOk
+    호출 scnEditor::<Start>b__450_48
+    필드 읽기 scnEditor::popupSaveSaveAs
+    호출 scnEditor::<Start>b__450_49
+    필드 읽기 scnEditor::popupURLDownload
+    호출 scnEditor::<Start>b__450_50
+    필드 읽기 scnEditor::popupURLCancel
+    호출 scnEditor::<Start>b__450_51
+    필드 읽기 scnEditor::popupCopyrightAccept
+    호출 scnEditor::<Start>b__450_52
+    필드 읽기 scnEditor::popupCopyrightReturn
+    호출 scnEditor::<Start>b__450_53
+    필드 읽기 scnEditor::popupParamsCancel
+    호출 scnEditor::<Start>b__450_54
+    필드 읽기 scnEditor::popupMissingFilesCancel
+    호출 scnEditor::<Start>b__450_55
+    필드 읽기 scnEditor::popupOggCancel
+    호출 scnEditor::<Start>b__450_56
+    필드 읽기 scnEditor::popupOggConvert
+    호출 scnEditor::<Start>b__450_57
+    필드 읽기 scnEditor::popupOkOk
+    호출 scnEditor::<Start>b__450_58
+    필드 읽기 scnEditor::popupLargeOkOk
+    호출 scnEditor::<Start>b__450_59
+    필드 읽기 scnEditor::popupSpoilerOk
+    호출 scnEditor::<Start>b__450_60
+    필드 읽기 scnEditor::popupConfirmOk
+    호출 scnEditor::<Start>b__450_61
+    필드 읽기 scnEditor::popupConfirmCancel
+    호출 scnEditor::<Start>b__450_62
+    필드 읽기 scnEditor::popupUnsavedChangesCancel
+    호출 scnEditor::<Start>b__450_63
+    필드 읽기 scnEditor::popupUnsavedChangesDiscard
+    호출 scnEditor::<Start>b__450_64
+    필드 읽기 scnEditor::popupUnsavedChangesSave
+    호출 scnEditor::<Start>b__450_65
+    필드 읽기 scnEditor::popupSteamDeckContinue
+    호출 scnEditor::<Start>b__450_66
+    필드 읽기 scnEditor::popupSteamDeckExit
+    호출 scnEditor::<Start>b__450_67
+    호출 UnityEngine.GameObject::.ctor
+    필드 쓰기 scnEditor::floorConnectors
+    필드 읽기 scnEditor::floorConnectors
+    호출 UnityEngine.Object::set_name
+    호출 UnityEngine.Material::GetFloat
+    호출 DG.Tweening.ShortcutExtensions::DOFloat
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetLoops
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 scnEditor::RefreshFilenameText
+    호출 RDC::get_runningOnSteamDeck
+    호출 Persistence::get_passedSteamDeckWarning
+    호출 scnEditor::ShowPopup
+    호출 Persistence::get_acceptedAgreement
+    정적필드 읽기 DiscordController::instance
+    호출 DiscordController::UpdatePresence
+    호출 Persistence::GetDefaultDifficulty
+    정적필드 쓰기 GCS::difficulty
+    호출 ADOBase::get_uiController
+    필드 읽기 scrUIController::difficultyContainer
+    필드 읽기 scnEditor::editorDifficultySelector
+    필드 읽기 scnEditor::autoImage
+    호출 Persistence::get_showUnlockKeyLimiterButton
+    호출 scnEditor::SetUnlockKeyLimiter
+    필드 쓰기 scnEditor::initialized
+    호출 scnEditor::ShowEventPicker
+    정적필드 읽기 scnEditor::levelToOpenOnLoad
+    호출 System.String::IsNullOrEmpty
+    호출 scnEditor::OpenLevelCo
+    호출 UnityEngine.MonoBehaviour::StartCoroutine
+    정적필드 쓰기 scnEditor::levelToOpenOnLoad
+    필드 읽기 scnEditor::fromScnGame
+    호출 scnEditor::SwitchToEditMode
+    호출 UnityEngine.SceneManagement.SceneManager::GetSceneByName
+    호출 UnityEngine.SceneManagement.SceneManager::SetActiveScene
+    호출 scrCamera::get_instance
+    호출 scrCamera::SetupRTCam
+  SetupHelpMenu
+    필드 읽기 scnEditor::keybindManager
+    호출 ADOFAI.Editor.EditorKeybindManager::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Key
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Value
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor+<>c__DisplayClass451_0::.ctor
+    호출 ADOFAI.Editor.Actions.EditorAction::get_sectionKey
+    호출 ADOFAI.Editor.Actions.EditorAction::get_descriptionKey
+    필드 쓰기 scnEditor+<>c__DisplayClass451_0::description
+    필드 읽기 scnEditor+<>c__DisplayClass451_0::description
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 scnEditor::shortcutsDictionary
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 scnEditor+<>c__DisplayClass451_0::<SetupHelpMenu>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::FindIndex
+    필드 읽기 ADOFAI.Editor.EditorKeybind::modifierMask
+    필드 읽기 ADOFAI.Editor.EditorKeybind::key
+    호출 System.Enum::HasFlag
+    필드 읽기 ADOFAI.Editor.EditorKeybind::ctrlIsCmd
+    호출 ADOFAI.EditorConstants+EditorKeyShortcut::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 ADOFAI.EditorConstants+EditorKeyShortcut::keyCode
+    필드 쓰기 ADOFAI.EditorConstants+EditorKeyShortcut::otherKeyCode
+    필드 쓰기 ADOFAI.EditorConstants+EditorKeyShortcut::otherKeyModifierMask
+    호출 제네릭 System.Collections.Generic.List`1::set_Item
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 System.Collections.IEnumerator::MoveNext
+    필드 읽기 scnEditor::shortcutTitle
+    호출 RDString::Get
+    호출 TMPro.TMP_Text::set_text
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 scnEditor+<>c__DisplayClass451_1::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass451_1::<>4__this
+    필드 읽기 scnEditor::shortcutTabPrefab
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 UnityEngine.GameObject::get_transform
+    필드 읽기 scnEditor::shortcutTabsContainer
+    호출 UnityEngine.Transform::SetParent
+    호출 System.Object::ToString
+    호출 UnityEngine.Object::set_name
+    호출 제네릭 UnityEngine.GameObject::GetComponentInChildren
+    호출 System.String::Format
+    필드 쓰기 scnEditor+<>c__DisplayClass451_1::copyIndex
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 UnityEngine.UI.Button::get_onClick
+    호출 scnEditor+<>c__DisplayClass451_1::<SetupHelpMenu>b__1
+    호출 UnityEngine.Events.UnityAction::.ctor
+    호출 UnityEngine.Events.UnityEvent::AddListener
+    필드 읽기 scnEditor::shortcutTabs
+    필드 읽기 scnEditor::shortcutContentPrefab
+    필드 읽기 scnEditor::shortcutContentContainer
+    필드 읽기 scnEditor::shortcutContent
+    호출 UnityEngine.Transform::GetChild
+    호출 RDString::get_isCJK
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.UI.HorizontalOrVerticalLayoutGroup::set_spacing
+    필드 읽기 scnEditor::shortcutTextPrefab
+    호출 UnityEngine.Component::get_transform
+    필드 읽기 ADOFAI.EditorConstants+EditorKeyShortcut::key
+    필드 읽기 ADOFAI.EditorConstants+EditorKeyShortcut::usingCtrl
+    필드 읽기 ADOFAI.EditorConstants+EditorKeyShortcut::usingShift
+    필드 읽기 ADOFAI.EditorConstants+EditorKeyShortcut::usingAlt
+    필드 읽기 ADOFAI.EditorConstants+EditorKeyShortcut::ctrlIsCmd
+    호출 RDEditorUtils::KeyComboToString
+    정적필드 읽기 System.String::Empty
+    필드 읽기 ADOFAI.EditorConstants+EditorKeyShortcut::otherKeyCode
+    필드 읽기 ADOFAI.EditorConstants+EditorKeyShortcut::otherKeyModifierMask
+    필드 쓰기 ADOFAI.EditorConstants+EditorKeyShortcut::usingCtrl
+    필드 쓰기 ADOFAI.EditorConstants+EditorKeyShortcut::usingShift
+    필드 쓰기 ADOFAI.EditorConstants+EditorKeyShortcut::usingAlt
+    호출 System.String::Concat
+    호출 UnityEngine.Canvas::ForceUpdateCanvases
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    호출 UnityEngine.GameObject::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+  UpdateSelectedFloor
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 읽기 scnEditor::lastSelectedFloorsCount
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::lastSelectedFloor
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 UnityEngine.Object::op_Inequality
+    필드 쓰기 scnEditor::lastSelectedFloor
+    필드 쓰기 scnEditor::lastSelectedFloorsCount
+    호출 scnEditor::OnSelectedFloorChange
+  UpdateDecorationObjects
+    필드 읽기 scnEditor::customLevel
+    호출 scnGame::UpdateDecorationObjects
+    필드 쓰기 scnEditor::refreshDecSprites
+  UpdateBackgroundSprites
+    필드 읽기 scnEditor::customLevel
+    호출 scnGame::UpdateBackgroundSprites
+    필드 쓰기 scnEditor::refreshBgSprites
+  UpdateDecorationObject
+    호출 scnEditor+<>c__DisplayClass455_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass455_0::e
+    필드 읽기 scnEditor+<>c__DisplayClass455_0::e
+    필드 읽기 ADOFAI.LevelEvent::isFake
+    호출 ADOFAI.LevelEvent::ApplyPropertiesToRealEvents
+    호출 scnEditor::get_allDecorations
+    호출 scnEditor+<>c__DisplayClass455_0::<UpdateDecorationObject>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Find
+    호출 UnityEngine.Object::op_Inequality
+    호출 scrDecoration::Setup
+    호출 scrDecoration::UpdateHitbox
+    호출 scrDecoration::ShowHitboxBorders
+  GoToDecoration
+    호출 scrDecorationManager::GetDecoration
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 ExtensionMethods::xy
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::camy
+    필드 읽기 scrDecoration::parallax
+    필드 읽기 scrParallax::posCamAtStart
+    호출 UnityEngine.Vector2::op_Subtraction
+    호출 scrParallax::get_multiplier
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 ExtensionMethods::WithZ
+    호출 scnEditor::DoCameraJump
+  ShowPreferences
+    호출 scnEditor::CloseAllPanels
+    필드 읽기 scnEditor::prefsMenu
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.RectTransform::get_pivot
+    호출 ExtensionMethods::WithY
+    호출 UnityEngine.RectTransform::set_pivot
+    필드 읽기 scnEditor::prefsContainer
+    호출 UnityEngine.Color::get_black
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.UI.Graphic::set_color
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 DG.Tweening.DOTweenModuleUI::DOColor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 DG.Tweening.DOTweenModuleUI::DOPivotY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+  HidePreferences
+    필드 읽기 scnEditor::prefsContainer
+    호출 UnityEngine.Color::get_black
+    호출 ExtensionMethods::WithAlpha
+    호출 DG.Tweening.DOTweenModuleUI::DOColor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 scnEditor::<HidePreferences>b__458_0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnComplete
+    필드 읽기 scnEditor::prefsMenu
+    호출 UnityEngine.Component::get_transform
+    호출 DG.Tweening.DOTweenModuleUI::DOPivotY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+  ShowParticleEditor
+    호출 scnEditor::ShowFileActionsPanel
+    필드 읽기 scnEditor::particleEditor
+    호출 ADOFAI.Editor.ParticleEditor.ParticleEditor::SetEvent
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.RectTransform::get_pivot
+    호출 ExtensionMethods::WithY
+    호출 UnityEngine.RectTransform::set_pivot
+    필드 읽기 scnEditor::particleEditorContainer
+    호출 UnityEngine.Color::get_black
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.UI.Graphic::set_color
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 DG.Tweening.DOTweenModuleUI::DOColor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 DG.Tweening.DOTweenModuleUI::DOPivotY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+  HideParticleEditor
+    필드 읽기 scnEditor::particleEditorContainer
+    호출 UnityEngine.Color::get_black
+    호출 ExtensionMethods::WithAlpha
+    호출 DG.Tweening.DOTweenModuleUI::DOColor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 scnEditor::<HideParticleEditor>b__460_0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnComplete
+    필드 읽기 scnEditor::particleEditor
+    호출 UnityEngine.Component::get_transform
+    호출 DG.Tweening.DOTweenModuleUI::DOPivotY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+  UpdateImageLoadResult
+    필드 읽기 scnEditor::isLoading
+    필드 읽기 scnEditor::isUnauthorizedAccess
+    필드 쓰기 scnEditor::isUnauthorizedAccess
+    필드 읽기 scnEditor::errorImageResult
+    호출 System.Object::ToString
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryAdd
+  ShowImageLoadResult
+    필드 읽기 scnEditor::errorImageResult
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Count
+    호출 RDString::Get
+    호출 System.String::Concat
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Value
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Key
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scnEditor::isUnauthorizedAccess
+    호출 scnEditor::ShowNotificationPopup
+  GetFindPanelProps
+    필드 읽기 scnEditor::findType
+    필드 읽기 ADOFAI.Property::control
+    필드 읽기 scnEditor::findValue
+    호출 제네릭 System.ValueTuple`2::.ctor
+  SetupFindFloorPanel
+    호출 scnEditor+<>c__DisplayClass464_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass464_0::<>4__this
+    호출 scnEditor::GetFindPanelProps
+    필드 읽기 제네릭 System.ValueTuple`2::Item1
+    필드 쓰기 scnEditor+<>c__DisplayClass464_0::typeControl
+    필드 읽기 제네릭 System.ValueTuple`2::Item2
+    필드 쓰기 scnEditor+<>c__DisplayClass464_0::valueControl
+    필드 읽기 scnEditor+<>c__DisplayClass464_0::typeControl
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Toggle::buttonsDict
+    필드 읽기 scnEditor::findFloorPanelTitle
+    호출 RDString::Get
+    호출 TMPro.TMP_Text::set_text
+    필드 읽기 scnEditor::findType
+    필드 읽기 scnEditor::findValue
+    필드 읽기 ADOFAI.Property::label
+    필드 읽기 ADOFAI.Property::key
+    호출 System.String::Concat
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl_Toggle::buttonsDict
+    필드 읽기 ADOFAI.Property::controlContainer
+    호출 제네릭 UnityEngine.Component::GetComponentsInChildren
+    호출 scnEditor+<>c__DisplayClass464_1::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass464_1::CS$<>8__locals1
+    호출 System.Object::ToString
+    필드 쓰기 scnEditor+<>c__DisplayClass464_1::curEnumStr
+    호출 제네릭 UnityEngine.Component::GetComponentInChildren
+    필드 읽기 scnEditor+<>c__DisplayClass464_1::curEnumStr
+    필드 읽기 scnEditor+<>c__DisplayClass464_1::CS$<>8__locals1
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    호출 UnityEngine.UI.Button::get_onClick
+    호출 scnEditor+<>c__DisplayClass464_1::<SetupFindFloorPanel>b__2
+    호출 UnityEngine.Events.UnityAction::.ctor
+    호출 UnityEngine.Events.UnityEvent::AddListener
+    필드 읽기 scnEditor+<>c__DisplayClass464_0::valueControl
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_Text::get_onEndEdit
+    호출 scnEditor+<>c__DisplayClass464_0::<SetupFindFloorPanel>g__ValidateFloorValue|0
+    호출 제네릭 UnityEngine.Events.UnityAction`1::.ctor
+    호출 제네릭 UnityEngine.Events.UnityEvent`1::AddListener
+    필드 읽기 scnEditor::findButton
+    호출 scnEditor+<>c__DisplayClass464_0::<SetupFindFloorPanel>b__1
+  LateUpdate
+    필드 읽기 scnEditor::levelEditorCanvas
+    호출 scnEditor::get_playMode
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::pauseMenu
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 UnityEngine.Behaviour::set_enabled
+    호출 scrUIController::get_instance
+    필드 읽기 scrUIController::canvas
+    필드 읽기 scnEditor::playPause
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 UnityEngine.UI.Selectable::set_interactable
+    필드 읽기 scnEditor::playPauseIcon
+    필드 읽기 scnEditor::pauseButtonIcon
+    필드 읽기 scnEditor::playButtonIcon
+    호출 UnityEngine.UI.Image::set_sprite
+    필드 읽기 scnEditor::buttonToggleAngleInput
+    호출 scnEditor::get_isOldLevel
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scnEditor::showingFileActions
+    호출 scnEditor::get_controlPressChanged
+    호출 scnEditor::UpdateOpenRecentLabel
+    호출 FloorMesh::UpdateAllRequired
+  Update
+    정적필드 읽기 scnGame::instance
+    호출 UnityEngine.Object::op_Equality
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::pauseMenu
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 scrController::get_paused
+    호출 AsyncInputManager::get_isActive
+    호출 scrController::UpdateInput
+    필드 읽기 scnEditor::thumbnailMaker
+    호출 UnityEngine.GameObject::SetActive
+    호출 RDC::get_runningOnSteamDeck
+    필드 읽기 scnEditor::steamDeckWarningPassed
+    호출 RDInput::get_cancelPress
+    호출 scnEditor::QuitToMenu
+    호출 scnEditor::UpdateSelectedFloor
+    호출 scnEditor::OttoUpdate
+    필드 읽기 scnEditor::refreshBgSprites
+    호출 scnEditor::UpdateBackgroundSprites
+    필드 읽기 scnEditor::refreshDecSprites
+    호출 scnEditor::UpdateDecorationObjects
+    호출 UnityEngine.Input::GetKeyDown
+    호출 scnEditor::get_playMode
+    호출 scnEditor::SwitchToEditMode
+    호출 RDC::get_auto
+    호출 Persistence::get_disableLevelEditorPause
+    호출 scnEditor::set_pausedInPlayMode
+    필드 읽기 scnEditor::buttonAuto
+    호출 scnEditor::get_pausedInPlayMode
+    호출 UnityEngine.UI.Selectable::set_interactable
+    필드 읽기 scnEditor::blinkTimer
+    호출 DG.Tweening.TweenExtensions::TogglePause
+    호출 scrController::TogglePauseGame
+    호출 UnityEngine.Time::get_unscaledTime
+    필드 읽기 scnEditor::backupTimer
+    필드 읽기 scnEditor::backupInterval
+    필드 쓰기 scnEditor::backupTimer
+    호출 scnEditor::SaveBackup
+    필드 읽기 scnEditor::eventSystem
+    호출 UnityEngine.EventSystems.EventSystem::get_currentInputModule
+    호출 CustomStandaloneInputModule::GetPointerData
+    호출 UnityEngine.EventSystems.PointerEventData::get_pointerCurrentRaycast
+    필드 읽기 UnityEngine.EventSystems.RaycastResult::module
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.EventSystems.RaycastResult::get_gameObject
+    호출 UnityEngine.GameObject::get_transform
+    호출 제네릭 UnityEngine.Component::TryGetComponent
+    호출 UnityEngine.Transform::get_parent
+    필드 읽기 scnEditor::prefsContainer
+    호출 UnityEngine.GameObject::get_activeInHierarchy
+    필드 읽기 scnEditor::particleEditorContainer
+    호출 RDInput::get_mouseScrollDelta
+    필드 읽기 UnityEngine.Vector2::y
+    호출 UnityEngine.Mathf::Abs
+    호출 scnEditor::get_holdingControl
+    필드 읽기 scnEditor::speedIndicator
+    호출 EditorSpeedIndicator::MoreSpeed
+    호출 EditorSpeedIndicator::LessSpeed
+    호출 Persistence::get_editorUseLegacyZoom
+    호출 scnEditor::ZoomCamera
+    호출 UnityEngine.Input::GetMouseButtonDown
+    호출 UnityEngine.Input::get_mousePosition
+    필드 쓰기 scnEditor::mousePosition0
+    필드 읽기 scrController::camy
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    필드 쓰기 scnEditor::cameraPositionAtDragStart
+    호출 UnityEngine.Input::GetMouseButton
+    필드 읽기 scnEditor::mousePosition0
+    호출 UnityEngine.Vector3::op_Subtraction
+    호출 UnityEngine.Screen::get_height
+    호출 UnityEngine.Vector3::op_Division
+    필드 읽기 scnEditor::camera
+    호출 UnityEngine.Camera::get_orthographicSize
+    호출 UnityEngine.Vector3::op_Multiply
+    필드 읽기 scnEditor::cameraPositionAtDragStart
+    호출 scnEditor::DragCamera
+    호출 scnEditor::get_shouldHideEditorUIForAutoplay
+    필드 읽기 scnEditor::controlsTip
+    호출 UnityEngine.UI.Text::set_text
+    필드 읽기 scnEditor::ottoCanvas
+    호출 RDString::Get
+    호출 scrController::UpdateErrorMeterVisibility
+    필드 읽기 scnEditor::selectingFloorIDText
+    정적필드 읽기 scnEditor::selectingFloorID
+    호출 scnEditor::get_userIsEditingAnInputField
+    정적필드 쓰기 scnEditor::selectingFloorID
+    필드 읽기 scnEditor::selectingFloorIDTextMoving
+    필드 읽기 scnEditor::selectingFloorIDRectTransform
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 쓰기 scnEditor::selectingFloorIDTextMoving
+    호출 scrMisc::PositionY
+    호출 scnEditor::HandleKeyboardActions
+    호출 scnEditor::HandleMouseActions
+  ZoomCamera
+    호출 scnEditor+<>c__DisplayClass468_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass468_0::<>4__this
+    호출 scrCamera::get_instance
+    필드 쓰기 scnEditor+<>c__DisplayClass468_0::cam
+    필드 읽기 scnEditor::camUserSizeMultiplier
+    필드 읽기 scnEditor::scrollSpeed
+    호출 UnityEngine.Mathf::Clamp
+    필드 쓰기 scnEditor::camUserSizeMultiplier
+    호출 scnEditor::get_playMode
+    필드 읽기 scnEditor+<>c__DisplayClass468_0::cam
+    필드 쓰기 scrCamera::userSizeMultiplier
+    호출 scnEditor+<>c__DisplayClass468_0::<ZoomCamera>b__0
+    호출 제네릭 DG.Tweening.Core.DOGetter`1::.ctor
+    호출 scnEditor+<>c__DisplayClass468_0::<ZoomCamera>b__1
+    호출 제네릭 DG.Tweening.Core.DOSetter`1::.ctor
+    호출 DG.Tweening.DOTween::To
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 쓰기 scnEditor+<>c__DisplayClass468_0::transitionValue
+    호출 UnityEngine.Input::get_mousePosition
+    필드 쓰기 scnEditor+<>c__DisplayClass468_0::startMousePos
+    필드 읽기 scrCamera::userSizeMultiplier
+    필드 쓰기 scnEditor+<>c__DisplayClass468_0::startSizeMultiplier
+    필드 읽기 scnEditor::_anchorZoomTween
+    호출 DG.Tweening.TweenExtensions::Kill
+    호출 scnEditor+<>c__DisplayClass468_0::<ZoomCamera>g__UpdateZoom|2
+    호출 scnEditor+<>c__DisplayClass468_0::<ZoomCamera>b__3
+    필드 쓰기 scnEditor::_anchorZoomTween
+  HandleKeyboardActions
+    필드 읽기 scnEditor::showingPopup
+    호출 ADOFAI.Editor.EditorKeybind::.ctor
+    호출 ADOFAI.Editor.EditorKeybind::IsPressed
+    호출 scnEditor::ShowPopup
+    호출 scnEditor::get_userIsEditingAnInputField
+    필드 읽기 scnEditor::prefsContainer
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_activeSelf
+    필드 읽기 scnEditor::particleEditorContainer
+    필드 읽기 scnEditor::keybindManager
+    호출 ADOFAI.Editor.EditorKeybindManager::ExecutePressedActions
+  CycleObjectSelection
+    호출 scnEditor::ObjectsAtMouse
+    호출 scnEditor::DeselectFloors
+    호출 scnEditor::DeselectAllDecorations
+    호출 scnEditor::SmartObjectSelect
+    호출 UnityEngine.GameObject::get_transform
+    호출 제네릭 UnityEngine.Component::TryGetComponent
+    호출 scnEditor::get_holdingShift
+    호출 scnEditor::SelectionIsEmpty
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::MultiSelectFloors
+    호출 제네릭 System.Linq.Enumerable::Last
+    필드 읽기 scnEditor::multiSelectPoint
+    호출 UnityEngine.Object::op_Equality
+    호출 scnEditor::SelectFloor
+    정적필드 읽기 scnEditor::selectingFloorID
+    호출 scnEditor::SelectionDecorationIsEmpty
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 ADOFAI.LevelEvent::get_Item
+    필드 읽기 scrFloor::seqID
+    필드 쓰기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::UpdatePropertyText
+    정적필드 쓰기 scnEditor::selectingFloorID
+    호출 UnityEngine.Transform::get_parent
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 scrDecoration::GetVisible
+    필드 읽기 ADOFAI.LevelEvent::locked
+    필드 읽기 scrDecoration::forceLock
+    호출 scnEditor::SelectDecoration
+    호출 UnityEngine.Object::op_Inequality
+  HandleMouseActions
+    호출 UnityEngine.Input::GetKey
+    호출 UnityEngine.Input::get_mouseScrollDelta
+    호출 UnityEngine.Vector2::get_zero
+    호출 UnityEngine.Vector2::op_Inequality
+    호출 scnEditor::ShowPropertyHelp
+    필드 읽기 scnEditor::fileActionsPanel
+    호출 RDEditorUtils::CheckPointerInObject
+    필드 읽기 scnEditor::showingFileActions
+    필드 읽기 scnEditor::hoveringFileActions
+    필드 쓰기 scnEditor::hoveringFileActions
+    호출 제네릭 System.ValueTuple`2::.ctor
+    필드 읽기 scnEditor::fileIcon
+    필드 읽기 제네릭 System.ValueTuple`2::Item1
+    호출 DG.Tweening.DOTweenModuleUI::DOFade
+    필드 읽기 제네릭 System.ValueTuple`2::Item2
+    호출 DG.Tweening.TweenSettingsExtensions::From
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 읽기 scnEditor::fileArrow
+    필드 읽기 scnEditor::findFloorPanel
+    필드 읽기 scnEditor::hoveringFindFloorPanel
+    필드 쓰기 scnEditor::hoveringFindFloorPanel
+    필드 읽기 scnEditor::findArrow
+    필드 읽기 scnEditor::floorButtonLeftRightCanvas
+    호출 UnityEngine.Component::get_gameObject
+    호출 scnEditor::get_holdingShift
+    필드 읽기 scnEditor::freeAngleMode
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scnEditor::floorButtonExtraCanvas
+    필드 읽기 scnEditor::floorButtonExtraBackQuoteCanvas
+    필드 읽기 scnEditor::floorButtonPrimaryCanvas
+    필드 읽기 scnEditor::tabIndicator
+    호출 ADOFAI.KeyIndicator::SetKeyCode
+    호출 UnityEngine.EventSystems.EventSystem::get_current
+    호출 UnityEngine.EventSystems.EventSystem::IsPointerOverGameObject
+    필드 읽기 scnEditor::draggedEvIndicator
+    호출 scnEditor::get_userIsEditingAnInputField
+    필드 읽기 scnEditor::showingPopup
+    호출 scnEditor::get_holdingAlt
+    필드 읽기 scnEditor::speedIndicator
+    호출 scnEditor::get_holdingControl
+    호출 UnityEngine.Input::GetMouseButtonUp
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 ADOFAI.EventIndicator::editable
+    필드 읽기 scnEditor::dragging
+    필드 읽기 ADOFAI.EventIndicator::floor
+    필드 읽기 scrFloor::entryangle
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_rotation
+    호출 UnityEngine.Quaternion::get_eulerAngles
+    필드 읽기 UnityEngine.Vector3::z
+    필드 읽기 scrFloor::isCCW
+    호출 scrMisc::GetAngleMoved
+    필드 읽기 ADOFAI.EventIndicator::evnt
+    호출 UnityEngine.Mathf::Round
+    호출 ADOFAI.LevelEvent::set_Item
+    호출 scnEditor::ApplyEventsToFloors
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::ShowPanelOfEvent
+    필드 읽기 ADOFAI.EventIndicator::circle
+    호출 UnityEngine.Color::get_white
+    호출 UnityEngine.SpriteRenderer::set_color
+    필드 쓰기 scnEditor::draggedEvIndicator
+    필드 읽기 scnEditor::pointerDownObjectType
+    호출 UnityEngine.Vector3::get_zero
+    호출 scnEditor::SelectionIsEmpty
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 ADOFAI.LevelEvent::.ctor
+    호출 scnEditor::get_events
+    호출 scnEditor::<HandleMouseActions>b__471_0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAll
+    호출 scnEditor::get_floors
+    호출 UnityEngine.Transform::get_position
+    필드 읽기 scrFloor::startPos
+    호출 UnityEngine.Vector3::op_Subtraction
+    필드 쓰기 scnEditor::dragGridSize
+    필드 읽기 scnEditor::dragGridSize
+    호출 ADOBase::get_controller
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Vector3::op_Division
+    필드 읽기 UnityEngine.Vector3::x
+    필드 읽기 UnityEngine.Vector3::y
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Vector3::op_Multiply
+    호출 UnityEngine.Vector2::.ctor
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 EventsArray`1::Add
+    호출 scnEditor::RemakePath
+    필드 읽기 scnEditor::floorButtonCanvas
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Transform::set_position
+    호출 ADOFAI.InspectorPanel::ShowInspector
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    호출 scnEditor::SelectFloor
+    호출 제네릭 System.Linq.Enumerable::First
+    호출 제네릭 System.Linq.Enumerable::Last
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scnEditor::<HandleMouseActions>b__471_1
+    호출 scnEditor::<HandleMouseActions>b__471_2
+    호출 scnEditor::MultiSelectFloors
+    필드 쓰기 scnEditor::multiSelectPoint
+    필드 쓰기 scnEditor::pointerDownObjectType
+    필드 읽기 scnEditor::freeAngle
+    호출 scnEditor::CreateFloor
+    호출 scnEditor::CycleObjectSelection
+    호출 ADOBase::get_isEditingLevel
+    정적필드 읽기 Analytics::editorMakingTime
+    호출 UnityEngine.Time::get_unscaledDeltaTime
+    정적필드 쓰기 Analytics::editorMakingTime
+    정적필드 읽기 Analytics::editorPlayingTime
+    정적필드 쓰기 Analytics::editorPlayingTime
+    호출 UnityEngine.Time::get_unscaledTime
+    정적필드 읽기 scnEditor::lastTimeStatsUploaded
+    호출 Analytics::UploadStatsToSteam
+    정적필드 쓰기 scnEditor::lastTimeStatsUploaded
+    호출 scnEditor::get_isOldLevel
+    호출 UnityEngine.Input::GetMouseButton
+    필드 쓰기 scnEditor::freeAngleMode
+    필드 읽기 scnEditor::camera
+    호출 UnityEngine.Camera::get_orthographicSize
+    호출 UnityEngine.Camera::get_aspect
+    호출 UnityEngine.Input::get_mousePosition
+    호출 UnityEngine.Screen::get_height
+    호출 ExtensionMethods::WithZ
+    호출 UnityEngine.Vector3::op_Addition
+    호출 UnityEngine.Vector3::get_up
+    호출 UnityEngine.Vector3::Angle
+    필드 쓰기 scnEditor::freeAngle
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::SetAngle
+    필드 읽기 scrFloor::exitangle
+    호출 UnityEngine.Mathf::Cos
+    호출 UnityEngine.Mathf::Sin
+    필드 읽기 scrFloor::offsetPos
+    호출 ADOBase::get_lm
+    호출 scrLevelMaker::RefreshAngles
+    호출 scnEditor::get_playMode
+    호출 UnityEngine.Input::GetMouseButtonDown
+    필드 쓰기 scnEditor::mousePosition0
+    필드 읽기 scrController::camy
+    필드 쓰기 scnEditor::cameraPositionAtDragStart
+    필드 읽기 scnEditor::draggingGizmo
+    필드 읽기 ADOFAI.TransformGizmo::holder
+    호출 TransformGizmoHolder::DragEnd
+    필드 읽기 scnEditor::lastHoveredGizmo
+    필드 쓰기 scnEditor::draggingGizmo
+    호출 UnityEngine.Object::op_Equality
+    호출 scnEditor::ObjectsAtMouse
+    호출 scnEditor::SmartObjectSelect
+    호출 UnityEngine.GameObject::get_transform
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::isOldLevel
+    호출 UnityEngine.Transform::get_parent
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 scnEditor::DragTilesStart
+    호출 제네릭 UnityEngine.Component::TryGetComponent
+    호출 scnEditor::SelectionDecorationIsEmpty
+    필드 읽기 scnEditor::selectedDecorations
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+    호출 scnEditor::DragDecorationsStart
+    호출 scnEditor::DragEventIndicatorStart
+    호출 scnEditor::DragTransformHandlesStart
+    필드 읽기 TransformGizmoHolder::forUI
+    필드 쓰기 scnEditor::cancelDrag
+    호출 scnEditor::ShowFileActionsPanel
+    필드 읽기 scnEditor::shortcutsPanel
+    호출 scnEditor::ShowShortcutsPanel
+    호출 scnEditor::ShowFindFloorPanel
+    필드 읽기 scnEditor::findCommentPanel
+    필드 읽기 ADOFAI.Editor.Panels.FindCommentPanel::findArrow
+    호출 scnEditor::ShowFindCommentPanel
+    필드 읽기 scnEditor::mousePosition0
+    필드 읽기 scnEditor::cancelDrag
+    필드 읽기 scnEditor::cameraPositionAtDragStart
+    호출 scnEditor::DragTiles
+    호출 scnEditor::DragDecorations
+    호출 scnEditor::DragCamera
+    호출 scnEditor::DragTransformHandles
+    호출 scnEditor::DragEventIndicator
+    호출 UnityEngine.Vector3::op_Inequality
+    필드 쓰기 scnEditor::dragging
+  ChangeCursor
+  GetBookmarkInDirection
+    호출 scnEditor+<>c__DisplayClass473_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass473_0::seqID
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::levelEvents
+    정적필드 읽기 scnEditor+<>c::<>9__473_0
+    정적필드 읽기 scnEditor+<>c::<>9
+    호출 scnEditor+<>c::<GetBookmarkInDirection>b__473_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 scnEditor+<>c::<>9__473_0
+    호출 제네릭 System.Linq.Enumerable::Where
+    정적필드 읽기 scnEditor+<>c::<>9__473_1
+    호출 scnEditor+<>c::<GetBookmarkInDirection>b__473_1
+    정적필드 쓰기 scnEditor+<>c::<>9__473_1
+    호출 제네릭 System.Linq.Enumerable::Select
+    호출 제네릭 System.Linq.Enumerable::ToList
+    호출 제네릭 System.Collections.Generic.List`1::Sort
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+    호출 제네릭 System.Collections.Generic.List`1::Insert
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 scnEditor+<>c__DisplayClass473_0::seqID
+    호출 scnEditor+<>c__DisplayClass473_0::<GetBookmarkInDirection>b__3
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::FindLastIndex
+    호출 System.Math::Max
+    호출 scnEditor+<>c__DisplayClass473_0::<GetBookmarkInDirection>b__2
+    호출 제네릭 System.Collections.Generic.List`1::FindIndex
+    호출 System.Math::Min
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+  SelectBookmark
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scnEditor::SelectionIsEmpty
+    호출 System.Math::Abs
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 scnEditor::SelectionIsSingle
+    호출 제네릭 System.Linq.Enumerable::Last
+    호출 scnEditor::GetBookmarkInDirection
+    호출 scnEditor::SelectFloor
+  ShowFindFloorPanel
+    호출 scnEditor+<>c__DisplayClass475_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass475_0::show
+    필드 읽기 scnEditor+<>c__DisplayClass475_0::show
+    필드 쓰기 scnEditor::showingFindFloorPanel
+    필드 읽기 scnEditor::findFloorPanel
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 scnEditor+<>c__DisplayClass475_0::rt
+    필드 읽기 scnEditor::findFloorPanelCloseHeight
+    필드 읽기 scnEditor::findFloorPanelOpenHeight
+    필드 읽기 scnEditor+<>c__DisplayClass475_0::rt
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    필드 읽기 scnEditor::UIPanelEaseDur
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 읽기 scnEditor::UIPanelEaseMode
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 scnEditor+<>c__DisplayClass475_0::<ShowFindFloorPanel>b__0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnComplete
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 scnEditor::ShowShortcutsPanel
+  ShowFindCommentPanel
+    호출 scnEditor+<>c__DisplayClass476_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass476_0::show
+    필드 읽기 scnEditor+<>c__DisplayClass476_0::show
+    필드 쓰기 scnEditor::showingFindCommentPanel
+    필드 읽기 scnEditor::findCommentPanel
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 scnEditor+<>c__DisplayClass476_0::obj
+    필드 읽기 scnEditor::findCommentPanelCloseHeight
+    필드 읽기 scnEditor::findCommentPanelOpenHeight
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    필드 읽기 scnEditor::UIPanelEaseDur
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 읽기 scnEditor::UIPanelEaseMode
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 scnEditor+<>c__DisplayClass476_0::<ShowFindCommentPanel>b__0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnComplete
+    필드 읽기 scnEditor+<>c__DisplayClass476_0::obj
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 ADOFAI.Editor.Panels.FindCommentPanel::findValue
+    필드 읽기 ADOFAI.Property::control
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Text::inputField
+    호출 UnityEngine.UI.Selectable::Select
+    호출 scnEditor::ShowShortcutsPanel
+  ToggleFindFloorPanel
+    필드 읽기 scnEditor::showingFindFloorPanel
+    호출 scnEditor::ShowFindFloorPanel
+  ToggleFindCommentPanel
+    필드 읽기 scnEditor::showingFindCommentPanel
+    호출 scnEditor::ShowFindCommentPanel
+  CloseAllPanels
+    필드 읽기 scnEditor::fileActionsPanel
+    호출 UnityEngine.Object::op_Inequality
+    호출 scnEditor::ShowFileActionsPanel
+    필드 읽기 scnEditor::shortcutsPanel
+    호출 scnEditor::ShowShortcutsPanel
+    필드 읽기 scnEditor::findFloorPanel
+    호출 scnEditor::ShowFindFloorPanel
+    필드 읽기 scnEditor::findCommentPanel
+    호출 UnityEngine.Component::get_gameObject
+    호출 scnEditor::ShowFindCommentPanel
+  CloseAllInspectors
+    필드 읽기 scnEditor::settingsPanel
+    호출 ADOFAI.InspectorPanel::ShowInspector
+    필드 읽기 scnEditor::levelEventsPanel
+  SelectBookmarkOrFloor
+    호출 scnEditor::GetFindPanelProps
+    필드 읽기 제네릭 System.ValueTuple`2::Item1
+    필드 읽기 제네릭 System.ValueTuple`2::Item2
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl::get_text
+    호출 System.Int32::TryParse
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 System.Math::Min
+    호출 System.Math::Max
+    호출 제네릭 System.Enum::Parse
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::SelectFloor
+    호출 scnEditor::SelectBookmark
+  EnableEvent
+    필드 쓰기 ADOFAI.LevelEvent::active
+    호출 scnEditor::ApplyEventsToFloors
+  ShowEvent
+    필드 쓰기 ADOFAI.LevelEvent::visible
+    호출 scnEditor::UpdateEventVisibility
+  ForceHideEvent
+    필드 쓰기 scrDecoration::forceHide
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 scnEditor::UpdateEventVisibility
+  LockEvent
+    필드 쓰기 ADOFAI.LevelEvent::locked
+  ForceLockEvent
+    필드 쓰기 scrDecoration::forceLock
+  UpdateEventVisibility
+    호출 scnEditor+<>c__DisplayClass487_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass487_0::e
+    호출 scnEditor::get_allDecorations
+    호출 scnEditor+<>c__DisplayClass487_0::<UpdateEventVisibility>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Find
+    필드 읽기 scnEditor+<>c__DisplayClass487_0::e
+    필드 읽기 ADOFAI.LevelEvent::visible
+    필드 읽기 scrDecoration::forceHide
+    호출 scrDecoration::SetVisible
+  SwitchToEditMode
+    정적필드 쓰기 GCS::speedTrialMode
+    정적필드 쓰기 GCS::editorQuickPitchedPlaying
+    정적필드 쓰기 GCS::practiceMode
+    정적필드 쓰기 GCS::currentSpeedTrial
+    호출 scnEditor::set_pausedInPlayMode
+    필드 읽기 scnEditor::buttonAuto
+    호출 UnityEngine.UI.Selectable::set_interactable
+    필드 읽기 scnEditor::controlsTip
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 쓰기 scnEditor::lastCustomFrameRate
+    필드 쓰기 scnEditor::wasUsingCustomFrameRate
+    필드 쓰기 scnEditor::inStrictlyEditingMode
+    필드 쓰기 scnEditor::mpWarned
+    호출 scrFlash::FlashKill
+    호출 ADOBase::get_conductor
+    호출 scrConductor::KillAllSounds
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrConductor::song
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 UnityEngine.AudioSource::set_pitch
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::currentSeqID
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 System.Math::Min
+    필드 읽기 scrController::camy
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 scrUIController::get_instance
+    호출 scrUIController::SetToTransparent
+    호출 ADOBase::get_uiController
+    필드 읽기 scrUIController::difficultyContainer
+    필드 읽기 scrUIController::modifiersContainer
+    호출 scrUIController::HideEndscreenLanterns
+    호출 scnEditor::TogglePause
+    호출 scnEditor::ClearFloorGlows
+    호출 scnEditor::get_holdingShift
+    필드 읽기 scnEditor::selectedFloorCached
+    필드 읽기 scnEditor::decorationWasSelected
+    호출 SaveStateScope::.ctor
+    필드 읽기 scnEditor::lastSelectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::SelectDecoration
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::SelectFloor
+    필드 쓰기 scrController::gameworld
+    호출 scnEditor::DrawHolds
+    호출 scnEditor::DrawFloorOffsetLines
+    호출 scnEditor::DrawFloorNums
+    호출 scnEditor::DrawMultiPlanet
+    필드 읽기 scnEditor::lineMaterial
+    호출 UnityEngine.Material::GetFloat
+    호출 DG.Tweening.ShortcutExtensions::DOFloat
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetLoops
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 scrController::get_instance
+    필드 읽기 scrController::dummyPlanets
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 PlanetRenderer::DisableParticles
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    필드 읽기 scnEditor::camera
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Vector2::Distance
+    호출 ExtensionMethods::WithZ
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    호출 DG.Tweening.ShortcutExtensions::DOMove
+    필드 읽기 scnEditor::editorDifficultySelector
+    호출 RDC::get_noHud
+    호출 EditorDifficultySelector::SetChangeable
+    필드 읽기 scnEditor::autoImage
+    필드 읽기 scnEditor::buttonNoFail
+    호출 UnityEngine.Vector3::get_one
+    호출 DG.Tweening.ShortcutExtensions::DOScale
+    필드 읽기 scrController::noFail
+    필드 읽기 scnEditor::grayColor
+    호출 UnityEngine.Color::get_white
+    호출 UnityEngine.UI.Graphic::set_color
+    필드 읽기 scnEditor::buttonUnlockKeyLimiter
+    호출 Persistence::get_showUnlockKeyLimiterButton
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::ShowEmptyDecorations
+    호출 scrDecorationManager::ToggleClickableBoxColliderForLevelEditor
+    호출 UnityEngine.Resources::UnloadUnusedAssets
+    정적필드 쓰기 scrController::checkpointsUsed
+    호출 scrController::get_mistakesManager
+    호출 scrMistakesManager::Reset
+    필드 쓰기 scrController::maximumUsedKeys
+    호출 ADOBase::get_playerManager
+    필드 읽기 scrPlayerManager::deadPlayersQueue
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    필드 읽기 scrController::endLevelInfo
+    필드 쓰기 scrMistakesManager+EndLevelInfo::endLevelType
+    필드 쓰기 scrMistakesManager+EndLevelInfo::newBestType
+    필드 쓰기 scnEditor::cacheSelectedEventIndex
+    호출 UnityEngine.Cursor::get_visible
+    호출 UnityEngine.Cursor::set_visible
+    호출 scrController::EnableHallOfMirrors
+    호출 scrCamera::get_instance
+    호출 scrCamera::SetupRTCam
+  ObjectsAtMouse
+    호출 UnityEngine.Time::get_frameCount
+    필드 읽기 scnEditor::lastFrameUpdated
+    필드 쓰기 scnEditor::lastFrameUpdated
+    호출 UnityEngine.Input::get_mousePosition
+    필드 읽기 scnEditor::camera
+    호출 UnityEngine.Camera::ScreenToWorldPoint
+    호출 ExtensionMethods::xy
+    정적필드 읽기 scrFloor::LongDimensions
+    호출 UnityEngine.Vector2::get_magnitude
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Vector2::Distance
+    호출 제네릭 UnityEngine.Component::TryGetComponent
+    호출 FloorMesh::GenerateCollider
+    필드 읽기 FloorMesh::polygonCollider
+    호출 UnityEngine.Behaviour::set_enabled
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scrFloor::GenerateCollider
+    호출 UnityEngine.Object::set_name
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 UnityEngine.Vector2::get_zero
+    필드 읽기 scnEditor::foregroundMask
+    호출 UnityEngine.LayerMask::op_Implicit
+    호출 UnityEngine.Physics2D::RaycastAll
+    필드 읽기 scnEditor::floorLayerMask
+    호출 제네릭 System.Linq.Enumerable::Concat
+    호출 제네릭 System.Linq.Enumerable::ToArray
+    필드 쓰기 scnEditor::foundObjects
+    호출 UnityEngine.RaycastHit2D::get_collider
+    필드 읽기 scnEditor::foundObjects
+    호출 UnityEngine.Object::get_name
+    호출 System.String::op_Equality
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Transform::get_parent
+    정적필드 읽기 scnEditor+<>c::<>9__491_0
+    정적필드 읽기 scnEditor+<>c::<>9
+    호출 scnEditor+<>c::<ObjectsAtMouse>b__491_0
+    호출 제네릭 System.Comparison`1::.ctor
+    정적필드 쓰기 scnEditor+<>c::<>9__491_0
+    호출 제네릭 System.Array::Sort
+    호출 UnityEngine.Object::DestroyImmediate
+  GizmoAtMouse
+    호출 UnityEngine.Input::get_mousePosition
+    필드 읽기 scnEditor::camera
+    호출 UnityEngine.Camera::ScreenToWorldPoint
+    호출 ExtensionMethods::xy
+    호출 UnityEngine.Vector2::get_zero
+    필드 읽기 scnEditor::handlesLayerMask
+    호출 UnityEngine.LayerMask::op_Implicit
+    호출 UnityEngine.Physics2D::RaycastAll
+    호출 UnityEngine.RaycastHit2D::get_collider
+    호출 제네릭 UnityEngine.Component::TryGetComponent
+  SmartObjectSelect
+    호출 scnEditor::ObjectsAtMouse
+    필드 읽기 scnEditor::previouslyFoundObjects
+    호출 UnityEngine.Object::op_Inequality
+    필드 쓰기 scnEditor::selectedObjectIndexOfBunch
+    필드 쓰기 scnEditor::previouslyFoundObjects
+    필드 읽기 scnEditor::selectedObjectIndexOfBunch
+  FilterEventType
+    필드 읽기 scnEditor::eventButtons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Value
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEventButton::type
+    호출 ADOFAI.LevelEventButton::ShowAsFiltered
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    필드 읽기 scnEditor::filteredEventType
+    필드 쓰기 scnEditor::filteredEventType
+    정적필드 쓰기 GCS::filteredEvent
+    호출 scnEditor::ApplyEventsToFloors
+  OnSelectedFloorChange
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 scrFloor::seqID
+    호출 ADOFAI.InspectorPanel::ShowTabsForFloor
+    호출 scnEditor::UpdateFloorDirectionButtons
+    호출 scnEditor::ShowEventPicker
+    호출 scnEditor::ShowEventIndicators
+    호출 scnEditor::SelectionIsEmpty
+    호출 scnEditor::get_playMode
+    호출 scnEditor::DeselectFloors
+    호출 ADOFAI.InspectorPanel::ShowInspector
+    호출 ADOFAI.InspectorPanel::HideAllInspectorTabs
+    호출 scnEditor::DestroyEventIndicators
+    필드 쓰기 scnEditor::selectedObjectIndexOfBunch
+    호출 scnEditor::ClearPopupBlocker
+  ShowEventIndicators
+    호출 scnEditor+<>c__DisplayClass496_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass496_0::floor
+    필드 읽기 scnEditor+<>c__DisplayClass496_0::floor
+    호출 UnityEngine.Object::op_Equality
+    호출 scnEditor::DestroyEventIndicators
+    호출 scnEditor::get_events
+    필드 읽기 scnEditor+<>c__DisplayClass496_0::<>9__0
+    호출 scnEditor+<>c__DisplayClass496_0::<ShowEventIndicators>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass496_0::<>9__0
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 ADOFAI.LevelEvent::ContainsKey
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::prefab_eventIndicator
+    호출 UnityEngine.Component::get_transform
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 ADOFAI.EventIndicator::Init
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scnEditor::EventCircle
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrFloor::isCCW
+    호출 UnityEngine.UI.Image::set_fillClockwise
+    필드 읽기 scrFloor::entryangle
+    호출 UnityEngine.Quaternion::Euler
+    호출 UnityEngine.Transform::set_rotation
+    필드 읽기 scrFloor::exitangle
+    호출 scrMisc::GetAngleMoved
+    호출 UnityEngine.Mathf::Abs
+    호출 UnityEngine.Mathf::Pow
+    호출 UnityEngine.UI.Image::set_fillAmount
+  DestroyEventIndicators
+    필드 읽기 scnEditor::EventCircle
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 UnityEngine.GameObject::FindGameObjectsWithTag
+    호출 UnityEngine.Object::Destroy
+  ShowFileActionsPanel
+    필드 쓰기 scnEditor::showingFileActions
+    필드 읽기 scnEditor::fileIcon
+    호출 UnityEngine.Color::get_white
+    호출 ExtensionMethods::WithAlpha
+    필드 읽기 scnEditor::UIPanelEaseDur
+    호출 DG.Tweening.DOTweenModuleUI::DOColor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 읽기 scnEditor::fileArrow
+    필드 읽기 scnEditor::fileActionsPanel
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 읽기 scnEditor::filePanelCloseWidth
+    필드 읽기 scnEditor::filePanelOpenWidth
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosY
+    필드 읽기 scnEditor::UIPanelEaseMode
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    필드 읽기 scnEditor::fileSpriteDown
+    필드 읽기 scnEditor::fileSpriteUp
+    호출 UnityEngine.UI.Image::set_sprite
+    호출 scnEditor::UpdateOpenRecentLabel
+  UpdateOpenRecentLabel
+    호출 Persistence::GetLastOpenedLevel
+    호출 System.IO.File::Exists
+    호출 System.IO.Path::GetFileNameWithoutExtension
+    호출 System.String::op_Equality
+    호출 System.String::StartsWith
+    정적필드 읽기 System.String::Empty
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.DirectoryInfo::.ctor
+    호출 System.IO.FileSystemInfo::get_Name
+    호출 System.String::Format
+    호출 UnityEngine.Debug::Log
+    호출 RDEditorUtils::IsNullOrEmpty
+    호출 System.IO.Path::Combine
+    호출 System.String::Concat
+    호출 scnEditor::get_controlPressed
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    호출 RDString::Get
+    호출 RDEditorUtils::KeyComboToString
+    필드 읽기 scnEditor::buttonOpenRecent
+    호출 제네릭 UnityEngine.Component::GetComponentInChildren
+    호출 TMPro.TMP_Text::set_text
+  ShowShortcutsPanel
+    필드 쓰기 scnEditor::showingShortcuts
+    필드 읽기 scnEditor::shortcutsPanel
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 읽기 scnEditor::shortcutsPanelCloseHeight
+    필드 읽기 scnEditor::shortcutsPanelOpenHeight
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    필드 읽기 scnEditor::UIPanelEaseDur
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 읽기 scnEditor::UIPanelEaseMode
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 scnEditor::CloseAllPanels
+    호출 scnEditor::ShowEventPicker
+    호출 scnEditor::CloseAllInspectors
+    호출 scnEditor::ShowShortcutTab
+  ShowShortcutTab
+    필드 읽기 scnEditor::shortcutTabs
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 제네릭 UnityEngine.GameObject::GetComponentInChildren
+    호출 UnityEngine.Color::get_white
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.UI.Graphic::set_color
+    호출 UnityEngine.Color::get_black
+    필드 읽기 scnEditor::shortcutContent
+    호출 UnityEngine.GameObject::SetActive
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::GetChild
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.UI.Scrollbar::set_value
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+  ToggleFileActionsPanel
+    필드 읽기 scnEditor::showingFileActions
+    호출 scnEditor::ShowFileActionsPanel
+  ToggleShortcutsPanel
+    필드 읽기 scnEditor::showingShortcuts
+    호출 scnEditor::ShowShortcutsPanel
+  ShowSelectedFloorsAsDeselected
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Object::op_Inequality
+    호출 scnEditor::ShowDeselectedColor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  DeselectFloors
+    호출 scnEditor::SelectionIsEmpty
+    호출 SaveStateScope::.ctor
+    호출 DG.Tweening.DOTween::Kill
+    호출 scnEditor::ShowSelectedFloorsAsDeselected
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::HideAllInspectorTabs
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 scnEditor::SelectFloorInfo
+    호출 scnEditor::UpdateSelectedFloor
+    호출 System.IDisposable::Dispose
+  FloorWasCreatedOrDeleted
+    필드 쓰기 scnEditor+<>c__DisplayClass506_0::e
+    필드 쓰기 scnEditor+<>c__DisplayClass506_0::floorID
+    필드 쓰기 scnEditor+<>c__DisplayClass506_0::offset
+    호출 scnEditor::<FloorWasCreatedOrDeleted>g__HandleKey|506_0
+  DeleteFloor
+    필드 읽기 scnEditor::lockPathEditing
+    호출 SaveStateScope::.ctor
+    호출 scnEditor+<>c__DisplayClass507_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass507_0::sequenceID
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 System.String::get_Length
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scnEditor::get_isOldLevel
+    호출 scnEditor::get_events
+    필드 읽기 scnEditor+<>c__DisplayClass507_0::<>9__1
+    호출 scnEditor+<>c__DisplayClass507_0::<DeleteFloor>b__1
+    호출 제네릭 System.Predicate`1::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass507_0::<>9__1
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::EventHasBackgroundSprite
+    필드 쓰기 scnEditor::refreshBgSprites
+    호출 ADOFAI.LevelEvent::get_IsDecoration
+    필드 쓰기 scnEditor::refreshDecSprites
+    필드 읽기 scnEditor+<>c__DisplayClass507_0::sequenceID
+    호출 scnEditor::FloorWasCreatedOrDeleted
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor+<>c__DisplayClass507_0::<DeleteFloor>b__0
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAll
+    호출 scnEditor::OffsetFloorIDsInEvents
+    호출 scnEditor::RemoveCharFloor
+    호출 scnEditor::RemoveFloatFloor
+    호출 scnEditor::RemakePath
+    호출 scnEditor::UpdateSelectedFloor
+  RemoveCharFloor
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 System.String::Remove
+    필드 쓰기 ADOFAI.LevelData::pathData
+  RemoveFloatFloor
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAt
+  UpdateFloorDirectionButtons
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::PreviousFloor
+    필드 읽기 scrFloor::entryangle
+    호출 UnityEngine.Mathf::Abs
+    필드 읽기 scnEditor::floorDirectionButtons
+    호출 scnEditor::UpdateDirectionButton
+    필드 읽기 scnEditor::floorButtonCanvas
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Transform::set_position
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+  OffsetFloorIDsInEvents
+    호출 scnEditor::get_events
+    호출 scnEditor::get_decorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 쓰기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 쓰기 scnEditor::refreshDecSprites
+  UpdateDirectionButton
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 ADOFAI.FloorDirectionButton::btnType
+    호출 UnityEngine.Mathf::Approximately
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::FloorIsMidspinOr360
+    필드 쓰기 ADOFAI.FloorDirectionButton::delete
+    호출 UnityEngine.Component::get_gameObject
+    필드 읽기 ADOFAI.FloorDirectionButton::delete
+    필드 읽기 scrFloor::seqID
+    호출 UnityEngine.GameObject::SetActive
+    호출 ADOFAI.FloorDirectionButton::Init
+  FloorPointsBackwards
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::PreviousFloor
+    호출 ADOFAI.FloorHelper::TryGetPathInDegrees
+    필드 읽기 scrFloor::entryangle
+    호출 UnityEngine.Mathf::Abs
+    호출 UnityEngine.Mathf::Approximately
+  FloorPointsBackwards
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::PreviousFloor
+    필드 읽기 scrFloor::entryangle
+    호출 UnityEngine.Mathf::Abs
+    호출 UnityEngine.Mathf::Approximately
+  FloorIsMidspinOr360
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    필드 읽기 scrFloor::isCCW
+    호출 scrMisc::GetAngleMoved
+    호출 scrMisc::ApproximatelyFloor
+  MoveCameraToFloor
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_localPosition
+    호출 ExtensionMethods::WithZ
+    필드 읽기 scnEditor::camera
+    필드 읽기 scnEditor::cameraSelectDuration
+    호출 DG.Tweening.ShortcutExtensions::DOMove
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+  MoveCameraToDecoration
+    호출 scrDecorationManager::GetDecoration
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 ExtensionMethods::xy
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::camy
+    필드 읽기 scrDecoration::parallax
+    필드 읽기 scrParallax::posCamAtStart
+    호출 UnityEngine.Vector2::op_Subtraction
+    호출 scrParallax::get_multiplier
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 ExtensionMethods::WithZ
+    호출 scnEditor::DoCameraJump
+  DoCameraJump
+    필드 읽기 scnEditor::camera
+    호출 UnityEngine.Component::get_transform
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    호출 DG.Tweening.ShortcutExtensions::DOMove
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+  CreateFloor
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::PreviousFloor
+    필드 읽기 scrFloor::entryangle
+    호출 UnityEngine.Mathf::Abs
+    호출 scnEditor::FloorPointsBackwards
+    호출 scnEditor::FloorIsMidspinOr360
+    호출 UnityEngine.Object::op_Inequality
+    호출 scnEditor::DeleteFloor
+    호출 scnEditor::get_floors
+    호출 scnEditor::SelectFloor
+    호출 scnEditor::MoveCameraToFloor
+    호출 scnEditor::get_events
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::FloorWasCreatedOrDeleted
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::OffsetFloorIDsInEvents
+    호출 scnEditor::InsertCharFloor
+    필드 읽기 scnEditor::buttonD
+    필드 읽기 scnEditor::buttonW
+    필드 읽기 scnEditor::buttonA
+    필드 읽기 scnEditor::buttonS
+    필드 읽기 scnEditor::buttonE
+    필드 읽기 scnEditor::buttonQ
+    필드 읽기 scnEditor::buttonZ
+    필드 읽기 scnEditor::buttonC
+    필드 읽기 scnEditor::buttonG
+    필드 읽기 scnEditor::buttonT
+    필드 읽기 scnEditor::buttonF
+    필드 읽기 scnEditor::buttonB
+    필드 읽기 scnEditor::buttonH
+    필드 읽기 scnEditor::buttonJ
+    필드 읽기 scnEditor::buttonM
+    필드 읽기 scnEditor::buttonN
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Component::get_transform
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    필드 읽기 scnEditor::floorButtonPulseSize
+    호출 RDExtensions::ScaleXY
+    필드 읽기 scnEditor::floorButtonPulseDuration
+    호출 DG.Tweening.ShortcutExtensions::DOScale
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+  CreateFloor
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::PreviousFloor
+    필드 읽기 scrFloor::entryangle
+    호출 UnityEngine.Mathf::Abs
+    호출 scnEditor::FloorPointsBackwards
+    호출 scnEditor::FloorIsMidspinOr360
+    호출 UnityEngine.Object::op_Inequality
+    호출 scnEditor::DeleteFloor
+    호출 scnEditor::get_floors
+    호출 scnEditor::SelectFloor
+    호출 scnEditor::MoveCameraToFloor
+    호출 scnEditor::OffsetFloorIDsInEvents
+    호출 scnEditor::InsertFloatFloor
+    필드 읽기 scnEditor::buttonD
+    필드 읽기 scnEditor::buttonW
+    필드 읽기 scnEditor::buttonA
+    필드 읽기 scnEditor::buttonS
+    필드 읽기 scnEditor::buttonE
+    필드 읽기 scnEditor::buttonQ
+    필드 읽기 scnEditor::buttonZ
+    필드 읽기 scnEditor::buttonC
+    필드 읽기 scnEditor::buttonG
+    필드 읽기 scnEditor::buttonT
+    필드 읽기 scnEditor::buttonF
+    필드 읽기 scnEditor::buttonB
+    필드 읽기 scnEditor::buttonH
+    필드 읽기 scnEditor::buttonJ
+    필드 읽기 scnEditor::buttonM
+    필드 읽기 scnEditor::buttonN
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Component::get_transform
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    필드 읽기 scnEditor::floorButtonPulseSize
+    호출 RDExtensions::ScaleXY
+    필드 읽기 scnEditor::floorButtonPulseDuration
+    호출 DG.Tweening.ShortcutExtensions::DOScale
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::UpdateDecorationObjects
+  CreateFloorWithCharOrAngle
+    필드 읽기 scnEditor::lockPathEditing
+    호출 scnEditor::get_isOldLevel
+    호출 scnEditor::CreateFloor
+    호출 ADOFAI.FloorHelper::TryGetPathInDegrees
+  CreateArbitraryFloor
+    호출 scnEditor::get_isOldLevel
+    호출 scnEditor::GetArbitraryAngleFromField
+    필드 읽기 scnEditor::floorButtonArbitrary
+    호출 System.Globalization.CultureInfo::get_InvariantCulture
+    호출 System.Single::ToString
+    호출 TMPro.TMP_InputField::set_text
+    호출 UnityEngine.Mathf::Abs
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::isCCW
+    필드 읽기 scnEditor::useAbsoluteArbitraryAngle
+    필드 읽기 scrFloor::floatDirection
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  GetArbitraryAngleFromField
+    필드 읽기 scnEditor::floorButtonArbitrary
+    호출 TMPro.TMP_InputField::get_text
+    호출 System.Single::TryParse
+    호출 System.Data.DataTable::.ctor
+    호출 System.Data.DataTable::Compute
+    호출 RDEditorUtils::DecodeFloat
+  ToggleAngleInputMode
+    필드 읽기 scnEditor::floorButtonContainer
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scnEditor::floorButtonArbitraryContainer
+    필드 읽기 scnEditor::buttonToggleAngleInput
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 읽기 scnEditor::show8DirectionSprite
+    호출 UnityEngine.UI.Image::set_sprite
+    필드 읽기 scnEditor::showArbitraryAngleSprite
+  SwitchArbitraryMode
+    필드 읽기 scnEditor::useAbsoluteArbitraryAngle
+    필드 쓰기 scnEditor::useAbsoluteArbitraryAngle
+  CreateArbitraryMidspin
+    호출 scnEditor::get_isOldLevel
+    호출 scnEditor::GetArbitraryAngleFromField
+    필드 읽기 scnEditor::floorButtonArbitrary
+    호출 System.Single::ToString
+    호출 TMPro.TMP_InputField::set_text
+    호출 UnityEngine.Mathf::Abs
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::isCCW
+    필드 읽기 scnEditor::useAbsoluteArbitraryAngle
+    필드 읽기 scrFloor::floatDirection
+    호출 scnEditor::get_floors
+    필드 읽기 scrFloor::seqID
+    호출 System.Math::Max
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  InsertCharFloor
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 System.Char::ToString
+    호출 System.String::Insert
+    필드 쓰기 ADOFAI.LevelData::pathData
+    호출 scnEditor::RemakePath
+  InsertFloatFloor
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::Insert
+    호출 scnEditor::RemakePath
+  RemakePath
+    필드 읽기 scnEditor::customLevel
+    호출 scnGame::RemakePath
+    호출 scnEditor::DrawFloorOffsetLines
+    호출 scnEditor::DrawHolds
+    호출 scnEditor::DrawFloorNums
+    호출 scnEditor::DrawMultiPlanet
+  DrawFloorNums
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Behaviour::get_enabled
+    필드 읽기 scrFloor::editorNumText
+    호출 UnityEngine.Component::get_gameObject
+    필드 읽기 scnEditor::showFloorNums
+    호출 scnEditor::get_playMode
+    필드 읽기 scrFloor::isFake
+    호출 UnityEngine.GameObject::SetActive
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  DrawHolds
+    필드 읽기 scnEditor::customLevel
+    필드 읽기 scnGame::levelMaker
+    호출 scrLevelMaker::DrawHolds
+  DrawMultiPlanet
+    필드 읽기 scnEditor::customLevel
+    필드 읽기 scnGame::levelMaker
+    호출 scrLevelMaker::DrawMultiPlanet
+    필드 읽기 scnEditor::mpWarned
+    호출 scnEditor::ShowPopup
+    필드 쓰기 scnEditor::mpWarned
+  DrawFloorOffsetLines
+    필드 읽기 scnEditor::floorConnectorGOs
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 UnityEngine.Vector3::get_zero
+    호출 scnEditor::get_events
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::prevfloor
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scrFloor::holdLength
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 ADOBase::get_controller
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    필드 읽기 scrFloor::exitangle
+    호출 scrController::get_baseFloorDimensions
+    필드 읽기 UnityEngine.Vector2::x
+    호출 UnityEngine.Mathf::Cos
+    호출 UnityEngine.Mathf::Sin
+    필드 읽기 UnityEngine.Vector3::x
+    필드 읽기 UnityEngine.Vector3::y
+    필드 읽기 UnityEngine.Vector2::y
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Vector3::op_Addition
+    필드 읽기 UnityEngine.Vector3::z
+    호출 UnityEngine.Vector3::Distance
+    호출 UnityEngine.GameObject::.ctor
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    호출 UnityEngine.LineRenderer::set_positionCount
+    필드 읽기 scnEditor::lineMaterial
+    호출 UnityEngine.Renderer::set_material
+    호출 UnityEngine.LineRenderer::set_textureMode
+    호출 ADOFAI.LevelEvent::GetBool
+    필드 읽기 scnEditor::lineGreen
+    호출 UnityEngine.LineRenderer::set_startColor
+    필드 읽기 scnEditor::lineYellow
+    호출 UnityEngine.LineRenderer::set_endColor
+    필드 읽기 scnEditor::linePurple
+    필드 읽기 scnEditor::lineBlue
+    호출 UnityEngine.LineRenderer::SetPosition
+    호출 UnityEngine.LineRenderer::set_startWidth
+    호출 UnityEngine.LineRenderer::set_endWidth
+    호출 UnityEngine.Object::set_name
+    필드 읽기 scnEditor::floorConnectors
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::set_parent
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 ADOFAI.LevelEvent::get_Item
+  ClearAllFloorOffsets
+    필드 읽기 scnEditor::floorConnectorGOs
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+  SelectFloor
+    호출 UnityEngine.Object::op_Equality
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::DeselectAllFloors
+    호출 DG.Tweening.DOTween::Kill
+    호출 scnEditor::ShowSelectedFloorsAsDeselected
+    필드 읽기 scnEditor::lastSelectedFloor
+    호출 UnityEngine.Object::op_Implicit
+    호출 scnEditor::ShowDeselectedColor
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scnEditor::SelectFloorInfo
+    호출 scnEditor::ShowSelectedColor
+    필드 읽기 scnEditor::camera
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Vector2::Distance
+    호출 ExtensionMethods::WithZ
+    호출 scnEditor::DoCameraJump
+    호출 scnEditor::UpdateSelectedFloor
+    정적필드 쓰기 scnEditor::selectingFloorID
+    호출 System.IDisposable::Dispose
+  SearchByComment
+    호출 scnEditor+<>c__DisplayClass538_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass538_0::text
+    필드 읽기 scnEditor+<>c__DisplayClass538_0::text
+    호출 System.String::ToLowerInvariant
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::levelEvents
+    호출 scnEditor+<>c__DisplayClass538_0::<SearchByComment>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Where
+    정적필드 읽기 scnEditor+<>c::<>9__538_1
+    정적필드 읽기 scnEditor+<>c::<>9
+    호출 scnEditor+<>c::<SearchByComment>b__538_1
+    정적필드 쓰기 scnEditor+<>c::<>9__538_1
+    호출 제네릭 System.Linq.Enumerable::Select
+    호출 제네릭 System.Linq.Enumerable::Distinct
+    정적필드 읽기 scnEditor+<>c::<>9__538_2
+    호출 scnEditor+<>c::<SearchByComment>b__538_2
+    정적필드 쓰기 scnEditor+<>c::<>9__538_2
+    호출 제네릭 System.Linq.Enumerable::OrderBy
+    호출 제네릭 System.Linq.Enumerable::ToArray
+  SelectFirstFloor
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::SelectFloor
+  NextFloor
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::IndexOf
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+  PreviousFloor
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::IndexOf
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+  MultiSelectFloors
+    호출 scnEditor::DeselectAllFloors
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::IndexOf
+    호출 scnEditor::SelectFloor
+    호출 scnEditor::UpdateSelectedFloor
+    필드 쓰기 scnEditor::multiSelectPoint
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scnEditor::SelectFloorInfo
+    호출 DG.Tweening.DOTween::Kill
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::ShowSelectedColor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  DeselectAllFloors
+    호출 scnEditor::ShowSelectedFloorsAsDeselected
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+  SelectionIsEmpty
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+  SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 UnityEngine.Object::op_Inequality
+  SelectFloorInfo
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scnEditor::SelectFloorInfo
+  SelectFloorInfo
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 scnEditor::findFloorSelectedInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 System.Int32::ToString
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    호출 RDString::Get
+    호출 TMPro.TMP_Text::set_text
+  SelectDecoration
+    호출 scrDecorationManager::GetDecoration
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 scnEditor::SelectDecoration
+  SelectDecoration
+    호출 SaveStateScope::.ctor
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+    호출 scnEditor::get_holdingControl
+    호출 scnEditor::DeselectDecoration
+    호출 scnEditor::get_holdingShift
+    호출 scnEditor::DeselectAllDecorations
+    호출 scnEditor::DeselectFloors
+    호출 scrDecorationManager::GetDecoration
+    호출 UnityEngine.Object::op_Equality
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 Persistence::get_disableCameraDecorationFocus
+    호출 ADOBase::get_editor
+    호출 scnEditor::MoveCameraToDecoration
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::ShowSelectionBorders
+    호출 scnEditor::SelectionDecorationIsSingle
+    필드 읽기 scnEditor::decPivot
+    호출 ADOFAI.DecorationPivot::UpdatePivotCrossImage
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 읽기 scnEditor::decTransformGizmo
+    호출 DecoTransformGizmoHolder::Setup
+    호출 TransformGizmoHolder::UpdateGizmosVisibility
+    호출 scrDecorationManager::GetDecorationIndex
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::ShowInspector
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    필드 읽기 scnEditor::propertyControlDecorationsList
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl_List::lastSelectedIndex
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_List::RefreshItemsList
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_List::RefreshScrollRectPosition
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_List::OnItemSelected
+    호출 제네릭 System.Action`1::Invoke
+    정적필드 쓰기 scnEditor::selectingFloorID
+    호출 System.IDisposable::Dispose
+  DeselectDecoration
+    호출 SaveStateScope::.ctor
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scnEditor::DeselectAllDecorations
+    호출 scrDecorationManager::GetDecoration
+    호출 UnityEngine.Object::op_Equality
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::ShowSelectionBorders
+    필드 읽기 scnEditor::decTransformGizmo
+    호출 TransformGizmoHolder::UpdateGizmosVisibility
+    호출 제네릭 System.Collections.Generic.List`1::Remove
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::SelectDecoration
+    호출 System.IDisposable::Dispose
+  DeselectAllDecorations
+    호출 scnEditor::SelectionDecorationIsEmpty
+    호출 SaveStateScope::.ctor
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::ShowInspector
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::ClearDecorationBorders
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    필드 읽기 scnEditor::propertyControlDecorationsList
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_List::RefreshItemsList
+    필드 읽기 scnEditor::decPivot
+    호출 ADOFAI.DecorationPivot::UpdatePivotCrossImage
+    필드 읽기 scnEditor::decTransformGizmo
+    호출 TransformGizmoHolder::UpdateGizmosVisibility
+    호출 ADOFAI.InspectorPanel::HideAllInspectorTabs
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_List::OnAllItemsDeselected
+    호출 System.Action::Invoke
+    정적필드 쓰기 scnEditor::selectingFloorID
+    호출 System.IDisposable::Dispose
+  SelectionDecorationIsEmpty
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+  SelectionDecorationIsSingle
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+  FlipFloor
+    필드 읽기 scrFloor::seqID
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::get_isOldLevel
+    필드 읽기 scrFloor::stringDirection
+    호출 ADOFAI.FloorHelper::Transform
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 System.String::Remove
+    호출 System.Char::ToString
+    호출 System.String::Insert
+    필드 쓰기 ADOFAI.LevelData::pathData
+    필드 읽기 scrFloor::floatDirection
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAt
+    호출 제네릭 System.Collections.Generic.List`1::Insert
+    호출 scnEditor::RemakePath
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::SelectFloor
+    호출 System.IDisposable::Dispose
+  FlipSelection
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 제네릭 System.Linq.Enumerable::Last
+    필드 읽기 scnEditor::multiSelectPoint
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::FlipFloor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::RemakePath
+    호출 scnEditor::get_floors
+    호출 scnEditor::MultiSelectFloors
+    필드 쓰기 scnEditor::multiSelectPoint
+  RotateFloor
+    필드 읽기 scnEditor::lockPathEditing
+    필드 읽기 scrFloor::seqID
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::get_isOldLevel
+    필드 읽기 scrFloor::stringDirection
+    호출 ADOFAI.FloorHelper::Transform
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 System.String::Remove
+    필드 쓰기 ADOFAI.LevelData::pathData
+    호출 System.Char::ToString
+    호출 System.String::Insert
+    필드 읽기 scrFloor::floatDirection
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAt
+    호출 제네릭 System.Collections.Generic.List`1::Insert
+    호출 scnEditor::RemakePath
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::SelectFloor
+    호출 System.IDisposable::Dispose
+  RotateSelection
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 제네릭 System.Linq.Enumerable::Last
+    필드 읽기 scnEditor::multiSelectPoint
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::RotateFloor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::RemakePath
+    호출 scnEditor::get_floors
+    호출 scnEditor::MultiSelectFloors
+    필드 쓰기 scnEditor::multiSelectPoint
+  RotateFloor180
+    필드 읽기 scrFloor::seqID
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::get_isOldLevel
+    필드 읽기 scrFloor::stringDirection
+    호출 ADOFAI.FloorHelper::Transform
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 System.String::Remove
+    필드 쓰기 ADOFAI.LevelData::pathData
+    호출 System.Char::ToString
+    호출 System.String::Insert
+    필드 읽기 scrFloor::floatDirection
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAt
+    호출 제네릭 System.Collections.Generic.List`1::Insert
+    호출 scnEditor::RemakePath
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::SelectFloor
+    호출 System.IDisposable::Dispose
+  RotateSelection180
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 제네릭 System.Linq.Enumerable::Last
+    필드 읽기 scnEditor::multiSelectPoint
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::RotateFloor180
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::RemakePath
+    호출 scnEditor::get_floors
+    호출 scnEditor::MultiSelectFloors
+    필드 쓰기 scnEditor::multiSelectPoint
+  CopyOfFloor
+    호출 scnEditor+<>c__DisplayClass560_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass560_0::floor
+    필드 쓰기 scnEditor+<>c__DisplayClass560_0::<>4__this
+    필드 읽기 scnEditor+<>c__DisplayClass560_0::floor
+    필드 읽기 scrFloor::seqID
+    호출 scnEditor::get_isOldLevel
+    필드 읽기 scrFloor::stringDirection
+    호출 ADOFAI.FloorHelper::TryGetPathInDegrees
+    필드 읽기 scrFloor::floatDirection
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 ADOFAI.InspectorPanel::selectedEventType
+    호출 scnEditor::get_events
+    호출 scnEditor+<>c__DisplayClass560_0::<CopyOfFloor>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    필드 읽기 ADOFAI.InspectorPanel::selectedEvent
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scnEditor+<>c__DisplayClass560_0::<CopyOfFloor>b__1
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::CopyEvent
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::get_allDecorations
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 ADOFAI.LevelEvent::get_Item
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 scnEditor+FloorData::.ctor
+  CopyEvent
+    호출 ADOFAI.LevelEvent::CopyShallow
+    필드 쓰기 ADOFAI.LevelEvent::floor
+  CopyTrackColor
+    호출 scnEditor+<>c__DisplayClass564_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass564_0::floor
+    호출 scnEditor::get_events
+    호출 scnEditor+<>c__DisplayClass564_0::<CopyTrackColor>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 제네릭 System.Linq.Enumerable::Any
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::CopyEvent
+    필드 쓰기 scnEditor::copiedTrackColor
+    호출 scnEditor::ShowNotification
+  PasteTrackColor
+    호출 scnEditor+<>c__DisplayClass565_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass565_0::id
+    필드 읽기 scnEditor+<>c__DisplayClass565_0::id
+    필드 읽기 scnEditor::copiedTrackColor
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::get_events
+    호출 scnEditor+<>c__DisplayClass565_0::<PasteTrackColor>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAll
+    호출 scnEditor::CopyEvent
+    호출 제네릭 EventsArray`1::Add
+    호출 scnEditor::ApplyEventsToFloors
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::SelectFloor
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 scnEditor::selectedFloors
+    필드 읽기 scrFloor::seqID
+    호출 ADOFAI.InspectorPanel::ShowTabsForFloor
+    필드 쓰기 ADOFAI.InspectorPanel::selectedEventType
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    호출 scnEditor::ShowEventIndicators
+    호출 scnEditor::ShowNotification
+    호출 System.IDisposable::Dispose
+  PasteTrackColorSingleTile
+    호출 scnEditor+<>c__DisplayClass566_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass566_0::id
+    필드 읽기 scnEditor+<>c__DisplayClass566_0::id
+    필드 읽기 scnEditor::copiedTrackColor
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 scnEditor+<>c__DisplayClass566_1::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass566_1::i
+    호출 scnEditor::get_events
+    호출 scnEditor+<>c__DisplayClass566_1::<PasteTrackColorSingleTile>b__1
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 제네릭 System.Linq.Enumerable::Any
+    필드 읽기 scnEditor+<>c__DisplayClass566_1::i
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::CopyEvent
+    필드 쓰기 scnEditor::previousTrackColor
+    호출 scnEditor+<>c__DisplayClass566_0::<PasteTrackColorSingleTile>b__0
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAll
+    호출 제네릭 EventsArray`1::Add
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scnEditor+<>c__DisplayClass566_0::<PasteTrackColorSingleTile>b__2
+    필드 읽기 scnEditor::previousTrackColor
+    호출 scnEditor::ApplyEventsToFloors
+    호출 scnEditor::SelectFloor
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 scnEditor::selectedFloors
+    필드 읽기 scrFloor::seqID
+    호출 ADOFAI.InspectorPanel::ShowTabsForFloor
+    필드 쓰기 ADOFAI.InspectorPanel::selectedEventType
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    호출 scnEditor::ShowEventIndicators
+    호출 scnEditor::ShowNotification
+    호출 System.IDisposable::Dispose
+  CopyHitSound
+    호출 scnEditor+<>c__DisplayClass569_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass569_0::floor
+    호출 scnEditor::get_events
+    호출 scnEditor+<>c__DisplayClass569_0::<CopyHitSound>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 제네릭 System.Linq.Enumerable::Any
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::CopyEvent
+    필드 쓰기 scnEditor::copiedHitsound
+    호출 scnEditor::ShowNotification
+  PasteHitsoundSingleTile
+    호출 scnEditor+<>c__DisplayClass570_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass570_0::id
+    필드 읽기 scnEditor+<>c__DisplayClass570_0::id
+    필드 읽기 scnEditor::copiedHitsound
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 scnEditor+<>c__DisplayClass570_1::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass570_1::i
+    호출 scnEditor::get_events
+    호출 scnEditor+<>c__DisplayClass570_1::<PasteHitsoundSingleTile>b__1
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 제네릭 System.Linq.Enumerable::Any
+    필드 읽기 scnEditor+<>c__DisplayClass570_1::i
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::CopyEvent
+    필드 쓰기 scnEditor::previousHitsound
+    호출 scnEditor+<>c__DisplayClass570_0::<PasteHitsoundSingleTile>b__0
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAll
+    호출 제네릭 EventsArray`1::Add
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scnEditor+<>c__DisplayClass570_0::<PasteHitsoundSingleTile>b__2
+    필드 읽기 scnEditor::previousHitsound
+    호출 scnEditor::ApplyEventsToFloors
+    호출 scnEditor::SelectFloor
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 scnEditor::selectedFloors
+    필드 읽기 scrFloor::seqID
+    호출 ADOFAI.InspectorPanel::ShowTabsForFloor
+    필드 쓰기 ADOFAI.InspectorPanel::selectedEventType
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    호출 scnEditor::ShowEventIndicators
+    호출 scnEditor::ShowNotification
+    호출 System.IDisposable::Dispose
+  CopyFloor
+    필드 읽기 scnEditor::clipboard
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 scnEditor::CopyOfFloor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 쓰기 scnEditor::clipboardContent
+    호출 scnEditor::FlashTile
+  MultiCopyFloors
+    필드 읽기 scnEditor::clipboard
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::CopyFloor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  CopyDecoration
+    필드 읽기 scnEditor::dragging
+    필드 읽기 scnEditor::clipboard
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 ADOFAI.LevelEvent::Copy
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 쓰기 scnEditor::clipboardContent
+  MultiCopyDecorations
+    필드 읽기 scnEditor::clipboard
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    필드 읽기 scnEditor::selectedDecorations
+    호출 scnEditor::<MultiCopyDecorations>b__574_0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::OrderBy
+    호출 제네릭 System.Linq.Enumerable::ToList
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::CopyDecoration
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  DuplicateDecorations
+    필드 읽기 scnEditor::dragging
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::MultiCopyDecorations
+    호출 scnEditor::PasteDecorations
+    호출 System.IDisposable::Dispose
+  CutFloor
+    호출 scnEditor+<>c__DisplayClass576_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass576_0::<>4__this
+    호출 SaveStateScope::.ctor
+    필드 읽기 scrFloor::seqID
+    필드 쓰기 scnEditor+<>c__DisplayClass576_0::id
+    호출 scnEditor::CopyFloor
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 ADOFAI.InspectorPanel::selectedEventType
+    호출 scnEditor::get_events
+    호출 scnEditor+<>c__DisplayClass576_0::<CutFloor>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    필드 읽기 ADOFAI.InspectorPanel::selectedEvent
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scnEditor+<>c__DisplayClass576_0::<CutFloor>b__1
+    호출 scnEditor::get_decorations
+    호출 scnEditor+<>c__DisplayClass576_0::<CutFloor>b__2
+    호출 제네릭 System.Collections.Generic.List`1::AddRange
+    호출 scnEditor::RemoveEvents
+    호출 scnEditor::ApplyEventsToFloors
+    필드 읽기 scnEditor+<>c__DisplayClass576_0::id
+    호출 ADOFAI.InspectorPanel::ShowTabsForFloor
+    호출 scnEditor::ShowEventIndicators
+    호출 System.IDisposable::Dispose
+  MultiCutFloors
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::MultiCopyFloors
+    호출 scnEditor::DeleteMultiSelection
+    호출 System.IDisposable::Dispose
+  PasteFloors
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 scnEditor::clipboard
+    호출 제네릭 System.Linq.Enumerable::Any
+    필드 읽기 scnEditor::clipboardContent
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 scnEditor::get_isOldLevel
+    필드 읽기 scnEditor+FloorData::stringDirection
+    호출 scnEditor::FloorPointsBackwards
+    필드 읽기 scnEditor+FloorData::floatDirection
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scnEditor::OffsetFloorIDsInEvents
+    필드 읽기 scnEditor+FloorData::levelEventData
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 System.Char::ToString
+    호출 System.String::Insert
+    필드 쓰기 ADOFAI.LevelData::pathData
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::Insert
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::get_events
+    호출 scnEditor::CopyEvent
+    호출 제네릭 EventsArray`1::Add
+    호출 scnEditor::EventHasBackgroundSprite
+    필드 쓰기 scnEditor::refreshBgSprites
+    호출 ADOFAI.LevelEvent::get_IsDecoration
+    필드 쓰기 scnEditor::refreshDecSprites
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scnEditor+FloorData::attachedDecorations
+    호출 scnEditor::AddDecoration
+    호출 제네릭 System.Linq.Enumerable::Count
+    호출 scnEditor::RemakePath
+    호출 scnEditor::get_floors
+    호출 scnEditor::SelectFloor
+    호출 scnEditor::MoveCameraToFloor
+    호출 scnEditor::FlashTile
+  CutDecoration
+    필드 읽기 scnEditor::dragging
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::CopyDecoration
+    호출 scnEditor::RemoveEvent
+    호출 System.IDisposable::Dispose
+  MultiCutDecorations
+    필드 읽기 scnEditor::dragging
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::MultiCopyDecorations
+    호출 scnEditor::DeleteMultiSelectionDecorations
+    호출 System.IDisposable::Dispose
+  PasteDecorations
+    필드 읽기 scnEditor::clipboard
+    호출 제네릭 System.Linq.Enumerable::Any
+    필드 읽기 scnEditor::clipboardContent
+    필드 읽기 scnEditor::dragging
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 scnEditor::SelectionIsEmpty
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Object::op_Inequality
+    호출 ADOFAI.LevelEvent::Copy
+    호출 ADOFAI.LevelEvent::set_Item
+    필드 읽기 scrFloor::seqID
+    필드 쓰기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::SelectionDecorationIsEmpty
+    필드 읽기 scnEditor::selectedDecorations
+    호출 scnEditor::<PasteDecorations>b__581_0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Max
+    호출 scnEditor::<PasteDecorations>b__581_1
+    호출 제네릭 System.Linq.Enumerable::OrderBy
+    호출 제네릭 System.Linq.Enumerable::ToList
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::decorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::IndexOf
+    호출 scnEditor::AddDecoration
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scnEditor::DeselectAllDecorations
+    호출 scnEditor::SelectDecoration
+    호출 제네릭 System.Linq.Enumerable::Last
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::ShowInspector
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    필드 읽기 scnEditor::propertyControlDecorationsList
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_List::RefreshScrollRectPosition
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+  FlashTile
+    필드 읽기 scrFloor::seqID
+    호출 System.Int32::ToString
+    호출 System.String::Concat
+    호출 DG.Tweening.DOTween::Kill
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::SetFlash
+    호출 FloorRenderer::TweenFlash
+  FlashDecoration
+  ShowSelectedColor
+    호출 scnEditor+<>c__DisplayClass584_0::.ctor
+    필드 읽기 scrFloor::floorRenderer
+    필드 쓰기 scnEditor+<>c__DisplayClass584_0::floorRenderer
+    필드 읽기 scnEditor+<>c__DisplayClass584_0::floorRenderer
+    필드 읽기 FloorRenderer::deselectedColor
+    호출 scnEditor::SelectedColors
+    필드 쓰기 UnityEngine.Color::a
+    호출 scnEditor::<ShowSelectedColor>g__GetOverlayColor|584_1
+    호출 FloorRenderer::set_color
+    호출 scnEditor+<>c__DisplayClass584_0::<ShowSelectedColor>b__2
+    호출 제네릭 DG.Tweening.Core.DOGetter`1::.ctor
+    호출 scnEditor+<>c__DisplayClass584_0::<ShowSelectedColor>b__3
+    호출 제네릭 DG.Tweening.Core.DOSetter`1::.ctor
+    호출 DG.Tweening.DOTween::To
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetLoops
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetId
+  ShowDeselectedColor
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 FloorRenderer::deselectedColor
+    호출 scrFloor::SetColor
+  ShowSelectedColorForLastSelectedFloor
+    필드 읽기 scnEditor::lastSelectedFloor
+    호출 UnityEngine.Object::op_Implicit
+    호출 DG.Tweening.DOTween::TweensById
+    호출 DG.Tweening.DOTween::Kill
+    호출 scnEditor::ShowSelectedColor
+  OnDecorationSelected
+    호출 scnEditor::SelectionIsEmpty
+    호출 scnEditor::DeselectFloors
+    호출 scnEditor::ShowSelectedColorForLastSelectedFloor
+  OnDecorationAllItemsDeselected
+    필드 읽기 scnEditor::lastSelectedFloor
+    호출 UnityEngine.Object::op_Implicit
+    호출 scnEditor::SelectionIsEmpty
+    호출 DG.Tweening.DOTween::Kill
+    호출 scnEditor::ShowDeselectedColor
+  PasteEvents
+    호출 scnEditor+<>c__DisplayClass589_0::.ctor
+    필드 읽기 scnEditor+FloorData::levelEventData
+    필드 읽기 scrFloor::seqID
+    필드 쓰기 scnEditor+<>c__DisplayClass589_0::id
+    필드 읽기 scnEditor+FloorData::attachedDecorations
+    호출 제네릭 System.Linq.Enumerable::Any
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::get_events
+    호출 scnEditor+<>c__DisplayClass589_0::<PasteEvents>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAll
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 scnEditor+<>c__DisplayClass589_1::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass589_1::CS$<>8__locals1
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 쓰기 scnEditor+<>c__DisplayClass589_1::ev
+    호출 scnEditor::get_selectedFirstFloor
+    필드 읽기 scnEditor+<>c__DisplayClass589_1::ev
+    필드 읽기 ADOFAI.LevelEvent::info
+    호출 ADOFAI.LevelEventInfo::get_allowFirstFloorCheck
+    정적필드 읽기 ADOFAI.EditorConstants::soloTypes
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 제네릭 System.Collections.Generic.HashSet`1::Contains
+    호출 scnEditor+<>c__DisplayClass589_1::<PasteEvents>b__1
+    호출 제네릭 System.Collections.Generic.List`1::Exists
+    필드 읽기 scnEditor+<>c__DisplayClass589_1::CS$<>8__locals1
+    필드 읽기 scnEditor+<>c__DisplayClass589_0::<>9__2
+    호출 scnEditor+<>c__DisplayClass589_0::<PasteEvents>b__2
+    필드 쓰기 scnEditor+<>c__DisplayClass589_0::<>9__2
+    필드 읽기 scnEditor+<>c__DisplayClass589_0::<>9__3
+    호출 scnEditor+<>c__DisplayClass589_0::<PasteEvents>b__3
+    필드 쓰기 scnEditor+<>c__DisplayClass589_0::<>9__3
+    필드 읽기 scnEditor+<>c__DisplayClass589_0::<>9__4
+    호출 scnEditor+<>c__DisplayClass589_0::<PasteEvents>b__4
+    필드 쓰기 scnEditor+<>c__DisplayClass589_0::<>9__4
+    필드 읽기 scnEditor+<>c__DisplayClass589_0::<>9__5
+    호출 scnEditor+<>c__DisplayClass589_0::<PasteEvents>b__5
+    필드 쓰기 scnEditor+<>c__DisplayClass589_0::<>9__5
+    호출 scnEditor::EventHasBackgroundSprite
+    필드 쓰기 scnEditor::refreshBgSprites
+    호출 ADOFAI.LevelEvent::get_IsDecoration
+    필드 쓰기 scnEditor::refreshDecSprites
+    필드 읽기 scnEditor+<>c__DisplayClass589_0::id
+    호출 scnEditor::CopyEvent
+    호출 제네릭 EventsArray`1::Add
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::ApplyEventsToFloors
+    호출 scnEditor::AddDecoration
+    호출 scnEditor::SelectFloor
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 scnEditor::selectedFloors
+    호출 ADOFAI.InspectorPanel::ShowTabsForFloor
+    필드 쓰기 ADOFAI.InspectorPanel::selectedEventType
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    호출 scnEditor::ShowEventIndicators
+  DeselectAnyUIGameObject
+    호출 UnityEngine.EventSystems.EventSystem::get_current
+    호출 UnityEngine.EventSystems.EventSystem::SetSelectedGameObject
+  TogglePause
+    호출 scnEditor::ResetScene
+  ResetScene
+    필드 쓰기 scnEditor::autoFailed
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::HideAllInspectorTabs
+    호출 ADOFAI.InspectorPanel::ShowInspector
+    호출 scnEditor::UpdateSongAndLevelSettings
+    필드 읽기 scnEditor::customLevel
+    호출 scnGame::ResetScene
+    필드 쓰기 scnEditor::refreshDecSprites
+    필드 읽기 scnEditor::propertyControlDecorationsList
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_List::ClearDragCache
+    호출 scnEditor::DeselectAnyUIGameObject
+  ClearFloorGlows
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrFloor::bottomGlow
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrFloor::topGlow
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  UpdateSongAndLevelSettings
+    필드 읽기 scnEditor::settingsPanel
+    필드 읽기 ADOFAI.InspectorPanel::panelsList
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    필드 읽기 ADOFAI.LevelData::songSettings
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    필드 읽기 ADOFAI.LevelData::eventSettings
+    필드 읽기 ADOFAI.LevelData::decorationSettings
+    호출 ADOFAI.PropertiesPanel::SetProperties
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 ADOFAI.InspectorPanel::ShowPanel
+  EventHasBackgroundSprite
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 System.Object::ToString
+    호출 System.String::IsNullOrEmpty
+  PauseIfUnpaused
+    호출 scnEditor::get_playMode
+    호출 scnEditor::TogglePause
+  OpenLevel
+    호출 scnEditor::<OpenLevel>b__597_0
+    호출 System.Action::.ctor
+    호출 scnEditor::CheckUnsavedChanges
+  OpenLevel
+    호출 scnEditor::PauseIfUnpaused
+    호출 scnEditor::OpenLevelCo
+    호출 UnityEngine.MonoBehaviour::StartCoroutine
+    호출 scnEditor::ShowPopup
+  SanitizeLevelPath
+    호출 System.String::Replace
+    호출 System.Uri::UnescapeDataString
+  OpenLevelCo
+    호출 scnEditor+<OpenLevelCo>d__600::.ctor
+    필드 쓰기 scnEditor+<OpenLevelCo>d__600::<>4__this
+    필드 쓰기 scnEditor+<OpenLevelCo>d__600::definedLevelPath
+  OpenRecent
+    호출 scnEditor+<>c__DisplayClass601_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass601_0::<>4__this
+    호출 Persistence::GetLastOpenedLevel
+    필드 쓰기 scnEditor+<>c__DisplayClass601_0::recentLevel
+    필드 읽기 scnEditor+<>c__DisplayClass601_0::recentLevel
+    호출 System.IO.File::Exists
+    호출 scnEditor::OpenDirectory
+    호출 scnEditor+<>c__DisplayClass601_0::<OpenRecent>b__0
+    호출 System.Action::.ctor
+    호출 scnEditor::CheckUnsavedChanges
+  get_controlPressed
+    호출 UnityEngine.Input::GetKey
+  get_controlPressChanged
+    호출 UnityEngine.Input::GetKeyDown
+    호출 UnityEngine.Input::GetKeyUp
+  OpenDirectory
+    호출 scnEditor::get_controlPressed
+    호출 System.IO.Path::GetDirectoryName
+    호출 RDEditorUtils::RevealInExplorer
+  GetDataPathFromURL
+    호출 System.Uri::.ctor
+    호출 System.Uri::get_Segments
+    호출 Persistence::get_DataPath
+    호출 System.String::Concat
+    호출 System.IO.Directory::Exists
+    호출 RDDirectory::CreateDirectory
+    호출 System.IO.Path::Combine
+    호출 System.String::Replace
+  FindAdofaiLevelOnDirectory
+    호출 System.IO.Directory::GetFiles
+    호출 System.IO.Path::GetFileName
+    호출 System.String::op_Equality
+    호출 System.String::StartsWith
+    호출 System.String::Concat
+    호출 UnityEngine.MonoBehaviour::print
+  StartLevelDownload
+    필드 읽기 scnEditor::levelLinkInput
+    호출 TMPro.TMP_InputField::get_text
+    호출 RDEditorUtils::IsNullOrEmpty
+    필드 읽기 scnEditor::downloadCancellation
+    호출 System.Threading.CancellationTokenSource::Cancel
+    호출 System.Threading.CancellationTokenSource::.ctor
+    필드 쓰기 scnEditor::downloadCancellation
+    호출 System.Threading.CancellationTokenSource::get_Token
+    호출 scnEditor::OpenLevelFromURL
+    호출 Cysharp.Threading.Tasks.UniTaskExtensions::Forget
+  CancelDownload
+    필드 읽기 scnEditor::downloadingLevel
+    필드 쓰기 scnEditor::downloadingLevel
+    필드 읽기 scnEditor::downloadCancellation
+    호출 System.Threading.CancellationTokenSource::Cancel
+    필드 읽기 scnEditor::www
+    호출 UnityEngine.Networking.UnityWebRequest::Dispose
+    필드 읽기 scnEditor::popupURLDownload
+    호출 UnityEngine.UI.Selectable::set_interactable
+    호출 제네릭 UnityEngine.Component::GetComponentInChildren
+    호출 RDString::Get
+    호출 TMPro.TMP_Text::set_text
+    호출 scnEditor::ShowPopup
+  OpenLevelFromURL
+    호출 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder::Create
+    필드 쓰기 scnEditor+<OpenLevelFromURL>d__611::<>t__builder
+    필드 쓰기 scnEditor+<OpenLevelFromURL>d__611::<>4__this
+    필드 쓰기 scnEditor+<OpenLevelFromURL>d__611::<>1__state
+    필드 읽기 scnEditor+<OpenLevelFromURL>d__611::<>t__builder
+    호출 제네릭 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder::Start
+    호출 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder::get_Task
+  OnApplicationQuit
+    호출 Persistence::get_DataPath
+    호출 System.String::Concat
+    호출 System.IO.Directory::Exists
+    호출 System.IO.Directory::Delete
+  ExportInternalLevel
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::isOldLevel
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 scnEditor::get_events
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 System.String::Insert
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    필드 읽기 scrFloor::speed
+    호출 UnityEngine.Mathf::Approximately
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  SaveLevel
+    호출 ADOBase::get_levelPath
+    호출 System.String::IsNullOrEmpty
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::Encode
+    호출 RDFile::WriteAllText
+    호출 RDString::Get
+    호출 scnEditor::ShowNotification
+    호출 scnEditor::set_unsavedChanges
+    호출 UnityEngine.Debug::LogError
+    호출 scnEditor::ShowNotificationPopup
+    호출 System.Exception::get_Message
+    호출 System.String::Concat
+    호출 UnityEngine.Debug::Log
+    호출 scnEditor::SaveLevelAs
+    호출 scnEditor::CloseAllPanels
+    호출 UnityEngine.Application::get_isEditor
+    호출 scnEditor::ExportInternalLevel
+  SaveLevelAs
+    호출 scnEditor::SaveLevelAsCo
+    호출 UnityEngine.MonoBehaviour::StartCoroutine
+  SaveLevelAsCo
+    호출 scnEditor+<SaveLevelAsCo>d__616::.ctor
+    필드 쓰기 scnEditor+<SaveLevelAsCo>d__616::<>4__this
+    필드 쓰기 scnEditor+<SaveLevelAsCo>d__616::newLevel
+    필드 쓰기 scnEditor+<SaveLevelAsCo>d__616::path
+  NewLevel
+    호출 Persistence::GetLastUsedFolder
+    호출 RDString::Get
+    정적필드 읽기 GCS::levelTextExtensions
+    호출 UnityFileDialog.FileBrowser::SaveFile
+    호출 System.String::IsNullOrEmpty
+    호출 scnEditor::ClearAllFloorOffsets
+    호출 scnEditor::DeselectAnyUIGameObject
+    호출 scnEditor::DeselectFloors
+    호출 scnEditor::DeselectAllDecorations
+    호출 scnEditor::SaveLevelAs
+    호출 System.String::get_Length
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::Setup
+    호출 scnEditor::get_events
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::ClearDecorations
+    필드 읽기 ADOFAI.LevelData::decorations
+    필드 읽기 scnEditor::selectedDecorations
+    호출 scnEditor::UpdateSongAndLevelSettings
+    필드 읽기 scnEditor::customLevel
+    호출 scnGame::ReloadAssets
+    호출 scnEditor::UpdateDecorationObjects
+    호출 scnEditor::RemakePath
+    호출 scnGame::ReloadSong
+    필드 읽기 scnEditor::undoStates
+    필드 읽기 scnEditor::redoStates
+    호출 scnEditor::ShowNotification
+    호출 scnEditor::CloseAllPanels
+  ShowPopup
+    호출 scnEditor+<>c__DisplayClass620_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass620_0::<>4__this
+    필드 쓰기 scnEditor+<>c__DisplayClass620_0::show
+    필드 읽기 scnEditor::popupIsAnimating
+    필드 읽기 scnEditor+<>c__DisplayClass620_0::show
+    필드 쓰기 scnEditor::showingPopup
+    필드 읽기 scnEditor::popupWindow
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 RDString::Get
+    필드 읽기 scnEditor::savePopupContainer
+    필드 읽기 scnEditor::savePopupText
+    호출 TMPro.TMP_Text::set_text
+    필드 읽기 scnEditor::urlPopupContainer
+    필드 읽기 scnEditor::publishWindow
+    필드 읽기 PublishWindow::windowContainer
+    호출 PublishWindow::Init
+    호출 scnEditor::ShowEventPicker
+    호출 scnEditor::CloseAllInspectors
+    필드 읽기 scnEditor::copyrightPopupContainer
+    호출 System.String::Replace
+    필드 읽기 scnEditor::copyrightText
+    필드 읽기 scnEditor::spoilerPopupContainer
+    필드 읽기 scnEditor::spoilerPopupText
+    필드 읽기 scnEditor::paramsPopupContainer
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::GetMissingParams
+    호출 ADOFAI.LevelData::get_artist
+    호출 System.String::Trim
+    호출 RDEditorUtils::IsNullOrEmpty
+    호출 GCS::get_isDev
+    호출 RDInput::get_holdingShift
+    호출 scnEditor::ApprovalLevelForArtist
+    호출 ADOFAI.LevelData::get_artistPermission
+    호출 System.String::op_Inequality
+    호출 ADOFAI.LevelData::get_specialArtistType
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    호출 System.String::Concat
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    필드 읽기 scnEditor::paramsPopupText
+    필드 읽기 scnEditor::missingFilesPopupContainer
+    호출 scnEditor::GetMissingFiles
+    호출 System.Text.StringBuilder::.ctor
+    호출 System.Text.StringBuilder::Append
+    필드 읽기 scnEditor::missingFilesPopupText
+    호출 System.Object::ToString
+    필드 읽기 scnEditor::oggPopupContainer
+    필드 읽기 scnEditor::popupOggCancel
+    호출 UnityEngine.UI.Selectable::set_interactable
+    필드 읽기 scnEditor::popupOggConvert
+    필드 읽기 scnEditor::oggConversionBar
+    필드 읽기 scnEditor::oggConversionBarText
+    필드 읽기 scnEditor::okPopupContainer
+    필드 읽기 scnEditor::okPopupText
+    필드 읽기 scnEditor::unsavedChangesPopupContainer
+    필드 쓰기 scnEditor::stallFileDialog
+    호출 scnEditor+<>c__DisplayClass620_0::<ShowPopup>b__1
+    호출 DG.Tweening.TweenCallback::.ctor
+    필드 쓰기 scnEditor::popupOkCallback
+    필드 읽기 scnEditor::steamDeckPopupContainer
+    필드 읽기 scnEditor::largeOkPopupContainer
+    필드 읽기 scnEditor::largeOkPopupText
+    정적필드 읽기 GCS::steamBranchName
+    필드 읽기 scnEditor::confirmPopupContainer
+    필드 읽기 scnEditor::popupPanel
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 DG.Tweening.ShortcutExtensions::DOKill
+    호출 RDExtensions::SetAnchorPosY
+    호출 UnityEngine.Color::get_black
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.UI.Graphic::set_color
+    호출 UnityEngine.RectTransform::get_anchoredPosition
+    필드 읽기 UnityEngine.Vector2::x
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.RectTransform::set_anchoredPosition
+    호출 scnEditor::CloseAllPanels
+    호출 DG.Tweening.DOTweenModuleUI::DOColor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    필드 쓰기 scnEditor::popupIsAnimating
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosY
+    필드 읽기 scnEditor::panelHideEase
+    필드 읽기 scnEditor::panelShowEase
+    호출 scnEditor+<>c__DisplayClass620_0::<ShowPopup>b__0
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnComplete
+  ConfirmPopup
+    호출 scnEditor::ShowPopup
+    필드 읽기 scnEditor::confirmPopupText
+    호출 TMPro.TMP_Text::set_text
+    필드 쓰기 scnEditor::popupConfirmCallback
+  ShowNotification
+    호출 scnEditor+<>c__DisplayClass622_0::.ctor
+    필드 읽기 scnEditor::notificationText
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 scnEditor+<>c__DisplayClass622_0::rt
+    필드 쓰기 scnEditor+<>c__DisplayClass622_0::hidePos
+    필드 읽기 scnEditor::notificationSeq
+    호출 DG.Tweening.Tween::get_active
+    호출 DG.Tweening.TweenExtensions::Kill
+    호출 TMPro.TMP_Text::set_text
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 UnityEngine.Color::get_white
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    호출 UnityEngine.UI.Graphic::set_color
+    호출 DG.Tweening.DOTween::Sequence
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 읽기 scnEditor+<>c__DisplayClass622_0::rt
+    필드 읽기 scnEditor+<>c__DisplayClass622_0::hidePos
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosX
+    호출 DG.Tweening.TweenSettingsExtensions::Append
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 DG.Tweening.TweenSettingsExtensions::AppendInterval
+    호출 scnEditor+<>c__DisplayClass622_0::<ShowNotification>b__0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnKill
+    필드 쓰기 scnEditor::notificationSeq
+  ShowNotificationPopupBase
+    필드 읽기 scnEditor::notificationPopupContent
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 UnityEngine.Behaviour::set_enabled
+    호출 TMPro.TMP_Text::set_text
+    필드 읽기 scnEditor::notificationPopupContainer
+    호출 UnityEngine.GameObject::SetActive
+    호출 UnityEngine.Canvas::ForceUpdateCanvases
+    호출 TMPro.TMP_Text::get_rectTransform
+    호출 UnityEngine.RectTransform::get_rect
+    호출 UnityEngine.Rect::get_height
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 scnEditor::notificationPopupScrollview
+    필드 읽기 scnEditor::notificationPopupTitle
+    필드 읽기 scnEditor::notificationPopupScrollviewContent
+    호출 scrMisc::SizeDeltaY
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 읽기 scnEditor::notificationPopupScrollviewVertical
+    필드 읽기 scnEditor::notificationPopupScrollviewHorizontal
+    필드 읽기 scnEditor::notificationPopupWindow
+    호출 UnityEngine.Color::get_black
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.UI.Graphic::set_color
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.RectTransform::set_anchoredPosition
+    필드 읽기 scnEditor::filePanelMoveDuration
+    호출 DG.Tweening.DOTweenModuleUI::DOColor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosY
+    필드 읽기 scnEditor::panelShowEase
+    필드 읽기 scnEditor::notificationPopupActions
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+  ShowNotificationPopup
+    호출 scnEditor+<>c__DisplayClass624_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass624_0::callbackAction
+    필드 쓰기 scnEditor+<>c__DisplayClass624_0::<>4__this
+    호출 scnEditor::ShowNotificationPopupBase
+    필드 읽기 scnEditor::notificationPopupActionsContainer
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scnEditor::notificationOkButton
+    호출 UnityEngine.UI.Button::get_onClick
+    호출 scnEditor+<>c__DisplayClass624_0::<ShowNotificationPopup>b__0
+    호출 UnityEngine.Events.UnityAction::.ctor
+    호출 UnityEngine.Events.UnityEvent::AddListener
+  ShowNotificationPopup
+    호출 scnEditor::ShowNotificationPopupBase
+    필드 읽기 scnEditor::notificationPopupActionsContainer
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scnEditor::notificationOkButton
+    필드 읽기 scnEditor::notificationPopupActions
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 scnEditor+<>c__DisplayClass625_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass625_0::notificationAction
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 제네릭 UnityEngine.GameObject::GetComponentInChildren
+    필드 읽기 scnEditor+<>c__DisplayClass625_0::notificationAction
+    필드 읽기 scnEditor+NotificationAction::text
+    호출 UnityEngine.Object::set_name
+    호출 TMPro.TMP_Text::set_text
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::SetParent
+    호출 RDExtensions::ScaleXY
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 UnityEngine.UI.Button::get_onClick
+    호출 scnEditor+<>c__DisplayClass625_0::<ShowNotificationPopup>b__0
+    호출 UnityEngine.Events.UnityAction::.ctor
+    호출 UnityEngine.Events.UnityEvent::AddListener
+  CloseNotificationPopup
+    필드 읽기 scnEditor::notificationPopupWindow
+    필드 읽기 scnEditor::filePanelMoveDuration
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 읽기 scnEditor::panelHideEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 scnEditor::<CloseNotificationPopup>b__626_0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnComplete
+  ShowEventsPage
+    필드 읽기 scnEditor::eventButtons
+    필드 읽기 scnEditor::currentCategory
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scnEditor::get_selectedFirstFloor
+    필드 읽기 ADOFAI.LevelEventButton::info
+    호출 ADOFAI.LevelEventInfo::get_allowFirstFloorCheck
+    호출 UnityEngine.Component::get_gameObject
+    필드 읽기 ADOFAI.LevelEventButton::page
+    호출 UnityEngine.GameObject::SetActive
+    호출 ADOFAI.LevelEventButton::set_enableButton
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::UpdateCategoryVisibility
+  RepositionEventButtons
+    필드 읽기 scnEditor::eventButtons
+    필드 읽기 scnEditor::currentCategory
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.RectTransform::get_sizeDelta
+    필드 읽기 UnityEngine.Vector2::x
+    호출 RDExtensions::SetAnchorPosX
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  UpdateCategoryVisibility
+    필드 읽기 scnEditor::categoryTabs
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.CategoryTab::levelEventCategory
+    필드 읽기 scnEditor::eventButtons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 scnEditor::<UpdateCategoryVisibility>b__629_1
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Any
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::<UpdateCategoryVisibility>b__629_0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Find
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 scnEditor::CycleEventsPage
+  CycleEventsPage
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    필드 읽기 scnEditor::currentCategory
+    호출 System.Array::IndexOf
+    호출 System.Array::get_Length
+    호출 Persistence::get_disableEventsPageRepeat
+    호출 UnityEngine.Mathf::Repeat
+    호출 UnityEngine.Mathf::Clamp
+    필드 읽기 scnEditor::eventButtons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 scnEditor::<CycleEventsPage>b__630_0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Any
+    호출 scnEditor::SetCategory
+  ShowNextPage
+    호출 scnEditor::CycleEventsPage
+  ShowPrevPage
+    호출 scnEditor::CycleEventsPage
+  SetCategory
+    필드 읽기 scnEditor::levelEventsBar
+    호출 제네릭 UnityEngine.Component::GetComponentsInChildren
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 쓰기 scnEditor::currentCategory
+    필드 읽기 scnEditor::eventButtons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 쓰기 scnEditor::maxPage
+    필드 읽기 scnEditor::currentPage
+    필드 읽기 scnEditor::maxPage
+    호출 System.Math::Min
+    필드 쓰기 scnEditor::currentPage
+    호출 scnEditor::ShowEventsPage
+    호출 scnEditor::ShowEventPicker
+  AddFavoriteEvent
+    필드 읽기 scnEditor::favoriteEvents
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 Persistence::SetFavoriteEditorEvents
+    호출 scnEditor::SetupFavoritesCategory
+  RemoveFavoriteEvent
+    필드 읽기 scnEditor::favoriteEvents
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+    호출 제네릭 System.Collections.Generic.List`1::Remove
+    호출 Persistence::SetFavoriteEditorEvents
+    호출 scnEditor::SetupFavoritesCategory
+  SetupFavoritesCategory
+    호출 Persistence::get_favoriteEditorEvents
+    필드 쓰기 scnEditor::favoriteEvents
+    필드 읽기 scnEditor::eventButtons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    정적필드 읽기 GCS::levelEventsInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Values
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEventInfo::name
+    호출 제네릭 RDUtils::ParseEnum
+    호출 ADOFAI.LevelEventInfo::get_isActive
+    필드 읽기 ADOFAI.LevelEventInfo::isDecoration
+    필드 읽기 scnEditor::favoriteEvents
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+    필드 읽기 scnEditor::prefab_levelEventButton
+    필드 읽기 scnEditor::levelEventsBarButtons
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 UnityEngine.RectTransform::get_sizeDelta
+    필드 읽기 UnityEngine.Vector2::x
+    호출 RDExtensions::SetAnchorPosX
+    호출 ADOFAI.LevelEventButton::Init
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::MoveNext
+    필드 읽기 scnEditor::currentCategory
+    호출 scnEditor::SetCategory
+  DecideInspectorTabsAtSelected
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 ADOFAI.InspectorPanel::ShowTabsForFloor
+  AddEventAtSelected
+    호출 scnEditor+<>c__DisplayClass638_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass638_0::eventType
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::lockPathEditing
+    필드 읽기 scnEditor::whitelistedEvents
+    필드 읽기 scnEditor+<>c__DisplayClass638_0::eventType
+    호출 제네릭 System.Linq.Enumerable::Contains
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    필드 쓰기 scnEditor+<>c__DisplayClass638_0::sequenceID
+    호출 scnEditor::get_events
+    호출 scnEditor+<>c__DisplayClass638_0::<AddEventAtSelected>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Exists
+    호출 scnEditor+<>c__DisplayClass638_0::<AddEventAtSelected>b__1
+    호출 RDString::Get
+    호출 scnEditor::ShowNotification
+    호출 scnEditor+<>c__DisplayClass638_0::<AddEventAtSelected>b__2
+    호출 scnEditor+<>c__DisplayClass638_0::<AddEventAtSelected>b__3
+    필드 읽기 scrFloor::nextfloor
+    호출 UnityEngine.Object::op_Equality
+    호출 SaveStateScope::.ctor
+    호출 scnEditor+<>c__DisplayClass638_0::<AddEventAtSelected>b__4
+    호출 제네릭 System.Collections.Generic.List`1::Find
+    정적필드 읽기 ADOFAI.EditorConstants::toggleableTypes
+    호출 제네릭 System.Collections.Generic.HashSet`1::Contains
+    정적필드 읽기 ADOFAI.EditorConstants::soloTypes
+    호출 scnEditor+<>c__DisplayClass638_0::<AddEventAtSelected>b__5
+    호출 ADOFAI.LevelEvent::.ctor
+    필드 읽기 scrFloor::exitangle
+    호출 UnityEngine.Mathf::Sin
+    호출 UnityEngine.Mathf::Cos
+    호출 UnityEngine.Vector2::.ctor
+    호출 ADOFAI.LevelEvent::set_Item
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 EventsArray`1::Add
+    호출 scnEditor::RemoveEvent
+    호출 scnEditor::DecideInspectorTabsAtSelected
+    필드 읽기 scnEditor+<>c__DisplayClass638_0::sequenceID
+    호출 scnEditor::AddEvent
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 쓰기 ADOFAI.InspectorPanel::selectedEventType
+    호출 scnEditor+<>c__DisplayClass638_0::<AddEventAtSelected>b__6
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    호출 scnEditor::ApplyEventsToFloors
+    호출 scnEditor::ShowEventIndicators
+    호출 System.IDisposable::Dispose
+  AddEvent
+    호출 scnEditor+<>c__DisplayClass639_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass639_0::floorID
+    필드 읽기 scnEditor+<>c__DisplayClass639_0::floorID
+    호출 ADOFAI.LevelEvent::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass639_0::newLevelEvent
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 ADOFAI.InspectorPanel::selectedEvent
+    호출 Persistence::get_disableAutoAngleOffset
+    호출 ADOFAI.LevelEvent::ContainsKey
+    필드 읽기 scnEditor+<>c__DisplayClass639_0::newLevelEvent
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 ADOFAI.LevelEvent::set_Item
+    호출 scnEditor::get_events
+    호출 제네릭 EventsArray`1::Add
+    정적필드 읽기 scnEditor+<>c::<>9__639_0
+    정적필드 읽기 scnEditor+<>c::<>9
+    호출 scnEditor+<>c::<AddEvent>b__639_0
+    호출 제네릭 System.Predicate`1::.ctor
+    정적필드 쓰기 scnEditor+<>c::<>9__639_0
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 scnEditor+<>c__DisplayClass639_0::<AddEvent>b__1
+    정적필드 읽기 scnEditor+<>c::<>9__639_2
+    호출 scnEditor+<>c::<AddEvent>b__639_2
+    호출 제네릭 System.Comparison`1::.ctor
+    정적필드 쓰기 scnEditor+<>c::<>9__639_2
+    호출 제네릭 System.Collections.Generic.List`1::Sort
+    호출 scnEditor+<>c__DisplayClass639_0::<AddEvent>b__3
+    호출 제네릭 System.Collections.Generic.List`1::FindLast
+  AddDecoration
+    호출 scnEditor::CreateDecoration
+    호출 scnEditor::AddDecoration
+  AddDecoration
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::decorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 DecorationsArray`1::Insert
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::CreateDecoration
+    호출 System.IDisposable::Dispose
+  CreateDecoration
+    호출 ADOFAI.LevelEvent::.ctor
+    호출 UnityEngine.Camera::get_main
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 ADOFAI.LevelEvent::set_Item
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    필드 쓰기 ADOFAI.LevelEvent::floor
+    호출 UnityEngine.Vector2::get_zero
+    필드 읽기 UnityEngine.Vector3::x
+    필드 읽기 UnityEngine.Vector3::y
+    호출 UnityEngine.Vector2::.ctor
+    호출 ADOBase::get_controller
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Vector2::op_Division
+  RemoveEvent
+    호출 SaveStateScope::.ctor
+    호출 ADOFAI.LevelEvent::get_IsDecoration
+    호출 scnEditor::get_decorations
+    호출 제네릭 System.Collections.Generic.List`1::Remove
+    필드 읽기 scnEditor::selectedDecorations
+    필드 읽기 scnEditor::decTransformGizmo
+    호출 TransformGizmoHolder::UpdateGizmosVisibility
+    호출 scnEditor::UpdateDecorationObjects
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    호출 ADOFAI.InspectorPanel::HideAllInspectorTabs
+    필드 쓰기 scnEditor::refreshBgSprites
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 읽기 scnEditor::decPivot
+    호출 ADOFAI.DecorationPivot::UpdatePivotCrossImage
+    호출 scnEditor::get_events
+    호출 scnEditor::EventHasBackgroundSprite
+    호출 System.IDisposable::Dispose
+  RemoveEvents
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::RemoveEvent
+    호출 System.IDisposable::Dispose
+  RemoveEventAtSelected
+    정적필드 읽기 GCS::levelEventsInfo
+    호출 System.Object::ToString
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 ADOFAI.LevelEventInfo::isDecoration
+    호출 scnEditor::DeleteMultiSelectionDecorations
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::EventNumOfTab
+    호출 scnEditor::GetSelectedFloorEvents
+    필드 읽기 scnEditor::lockPathEditing
+    필드 읽기 scnEditor::whitelistedEvents
+    호출 제네릭 System.Linq.Enumerable::Contains
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::RemoveEvent
+    호출 UnityEngine.Mathf::Clamp
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    호출 scnEditor::DecideInspectorTabsAtSelected
+    호출 scnEditor::ApplyEventsToFloors
+    필드 읽기 scnEditor::selectedFloors
+    호출 scnEditor::ShowEventIndicators
+    필드 읽기 scnEditor::floorButtonCanvas
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Transform::set_position
+    호출 scnEditor::RemakePath
+    호출 System.IDisposable::Dispose
+  OnGUI
+    호출 RDC::get_debug
+    호출 scrVfxPlus::get_instance
+    필드 읽기 scrVfxPlus::videoBG
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Video.VideoPlayer::get_time
+    호출 System.Double::ToString
+    호출 ADOBase::get_conductor
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::get_time
+    호출 System.String::Format
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 UnityEngine.Video.VideoPlayer::get_isPlaying
+    필드 읽기 scrVfxPlus::hasPlayed
+    호출 UnityEngine.Video.VideoPlayer::get_isPrepared
+    호출 System.String::Concat
+    호출 UnityEngine.Rect::.ctor
+    호출 UnityEngine.GUI::Label
+    필드 읽기 scnEditor::customLevel
+    필드 읽기 scnGame::imgHolder
+    호출 System.Object::ToString
+  LoadEditorProperties
+    호출 System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 System.Array::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    필드 읽기 scnEditor::eventButtons
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    정적필드 읽기 GCS::levelEventsInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Values
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEventInfo::name
+    호출 제네릭 RDUtils::ParseEnum
+    호출 제네릭 System.Linq.Enumerable::Contains
+    호출 ADOFAI.LevelEventInfo::get_isActive
+    필드 읽기 ADOFAI.LevelEventInfo::categories
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 scnEditor::prefab_levelEventButton
+    필드 읽기 scnEditor::levelEventsBarButtons
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 UnityEngine.RectTransform::get_sizeDelta
+    필드 읽기 UnityEngine.Vector2::x
+    호출 RDExtensions::SetAnchorPosX
+    호출 ADOFAI.LevelEventButton::Init
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::MoveNext
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 읽기 scnEditor::prefab_eventCategoryTab
+    필드 읽기 scnEditor::levelEventsBarCategories
+    호출 RDExtensions::SetAnchorPosY
+    호출 ADOFAI.CategoryTab::Init
+    필드 읽기 scnEditor::categoryTabs
+    호출 scnEditor::SetupFavoritesCategory
+    필드 읽기 scnEditor::currentCategory
+    호출 scnEditor::SetCategory
+    필드 읽기 scnEditor::settingsPanel
+    정적필드 읽기 GCS::settingsInfo
+    호출 ADOFAI.InspectorPanel::Init
+    필드 읽기 scnEditor::levelEventsPanel
+  ToggleAuto
+    호출 RDC::get_auto
+    호출 RDC::set_auto
+    필드 쓰기 scnEditor::autoFailed
+    필드 읽기 scnEditor::ottoAudioSrc
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::soundEffects
+    호출 scnEditor::get_highBPM
+    호출 UnityEngine.AudioSource::set_clip
+    호출 RDString::Get
+    호출 scnEditor::ShowNotification
+    호출 UnityEngine.AudioSource::Play
+    호출 scnEditor::get_playMode
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::unlockKeyLimiter
+    필드 읽기 scnEditor::buttonUnlockKeyLimiter
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+  OttoUpdate
+    필드 읽기 scnEditor::buttonAuto
+    호출 RDEditorUtils::CheckPointerInObject
+    호출 scnEditor::OttoPetUpdate
+    필드 쓰기 scnEditor::autoPetTime
+    호출 scnEditor::get_highBPM
+    호출 UnityEngine.Color::get_white
+    호출 UnityEngine.Color::get_red
+    필드 읽기 scnEditor::isOttoBlinking
+    호출 RDC::get_auto
+    필드 읽기 scnEditor::autoFailed
+    필드 읽기 scnEditor::autoPetTime
+    필드 읽기 scnEditor::autoImage
+    호출 scnEditor::get_playMode
+    필드 읽기 scnEditor::autoSprites
+    호출 UnityEngine.UI.Image::set_sprite
+    호출 UnityEngine.UI.Graphic::set_color
+    필드 읽기 scnEditor::grayColor
+    호출 UnityEngine.Color::op_Multiply
+  OttoBlink
+    호출 ADOBase::get_controller
+    호출 scrController::GetAutoBlinkDuration
+    필드 읽기 scnEditor::ottoBlinkCounter
+    호출 RDC::get_auto
+    필드 쓰기 scnEditor::ottoBlinkCounter
+    필드 읽기 scnEditor::autoImage
+    필드 읽기 scnEditor::autoSprites
+    호출 UnityEngine.UI.Image::set_sprite
+    필드 읽기 scnEditor::blinkTimer
+    호출 DG.Tweening.Tween::get_active
+    호출 DG.Tweening.TweenExtensions::Kill
+    호출 DG.Tweening.DOTween::Sequence
+    호출 DG.Tweening.TweenSettingsExtensions::AppendInterval
+    호출 scnEditor::<OttoBlink>b__650_0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnComplete
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 scnEditor::<OttoBlink>b__650_1
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnKill
+    필드 쓰기 scnEditor::blinkTimer
+    필드 쓰기 scnEditor::isOttoBlinking
+  OttoPetUpdate
+    호출 UnityEngine.Time::get_unscaledTime
+    호출 RDC::get_auto
+    필드 읽기 scnEditor::lastOttoPetPosition
+    호출 UnityEngine.Input::get_mousePosition
+    호출 UnityEngine.Vector3::op_Inequality
+    필드 읽기 scnEditor::autoPetTime
+    호출 UnityEngine.Time::get_unscaledDeltaTime
+    필드 쓰기 scnEditor::autoPetTime
+    필드 쓰기 scnEditor::lastOttoPetTime
+    필드 쓰기 scnEditor::lastOttoPetPosition
+  ToggleNoFail
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::noFail
+    필드 쓰기 scrController::noFail
+    필드 읽기 scnEditor::buttonNoFail
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.Color::get_white
+    호출 UnityEngine.UI.Graphic::set_color
+    필드 읽기 scnEditor::interfaceAudioSrc
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::soundEffects
+    호출 UnityEngine.AudioSource::PlayOneShot
+    호출 RDString::Get
+    호출 scnEditor::ShowNotification
+    필드 읽기 scnEditor::grayColor
+  ToggleUnlockKeyLimiter
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::unlockKeyLimiter
+    호출 scnEditor::SetUnlockKeyLimiter
+  SetUnlockKeyLimiter
+    호출 ADOBase::get_controller
+    필드 쓰기 scrController::unlockKeyLimiter
+    필드 읽기 scnEditor::unlockKeyLimiterImage
+    필드 읽기 scnEditor::grayColor
+    호출 UnityEngine.Color::get_white
+    호출 UnityEngine.UI.Graphic::set_color
+    필드 읽기 scnEditor::interfaceAudioSrc
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::soundEffects
+    호출 UnityEngine.AudioSource::PlayOneShot
+    호출 System.String::Concat
+    호출 RDString::Get
+    호출 scnEditor::ShowNotification
+  DeleteSubsequentFloors
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Linq.Enumerable::Count
+    호출 scnEditor::DeleteFloor
+    호출 scnEditor::SelectFloor
+    호출 System.IDisposable::Dispose
+  DeletePrecedingFloors
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 scnEditor::DeleteFloor
+    호출 scnEditor::get_floors
+    호출 scnEditor::SelectFloor
+    호출 System.IDisposable::Dispose
+  DeleteSingleSelection
+    필드 읽기 scnEditor::lockPathEditing
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 SaveStateScope::.ctor
+    호출 scnEditor::DeleteFloor
+    호출 scnEditor::SelectFloor
+    호출 System.IDisposable::Dispose
+  DeleteMultiSelection
+    필드 읽기 scnEditor::lockPathEditing
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 SaveStateScope::.ctor
+    호출 제네릭 System.Linq.Enumerable::Last
+    호출 scnEditor::DeselectAllFloors
+    호출 scnEditor::DeleteFloor
+    호출 scnEditor::get_floors
+    호출 scnEditor::SelectFloor
+    호출 제네릭 System.Linq.Enumerable::Count
+    호출 System.IDisposable::Dispose
+  DeleteMultiSelectionDecorations
+    호출 scnEditor::SelectionDecorationIsEmpty
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 scnEditor::RemoveEvents
+    필드 읽기 scnEditor::decTransformGizmo
+    호출 TransformGizmoHolder::UpdateGizmosVisibility
+  GetSelectedFloorEvents
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 scnEditor::GetFloorEvents
+  GetFloorEvents
+    호출 ADOFAI.EditorConstants::IsSetting
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 scnEditor::get_events
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  ShowEventPicker
+    필드 읽기 scnEditor::levelEventsBar
+    호출 UnityEngine.RectTransform::get_sizeDelta
+    필드 읽기 UnityEngine.Vector2::y
+    필드 읽기 scnEditor::levelEventsBarCategories
+    호출 DG.Tweening.DOTweenModuleUI::DOAnchorPosY
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 읽기 scnEditor::UIPanelEaseMode
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    필드 읽기 scnEditor::categoryTabs
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scnEditor::currentCategory
+    필드 읽기 ADOFAI.CategoryTab::levelEventCategory
+    호출 ADOFAI.CategoryTab::SetSelected
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scnEditor::currentPage
+    호출 scnEditor::ShowEventsPage
+    필드 읽기 scnEditor::eventPickerText
+    호출 TMPro.TMP_Text::set_text
+    필드 읽기 scnEditor::categoryText
+  SaveBackup
+    호출 scnEditor::get_playMode
+    호출 ADOBase::get_levelPath
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 scnEditor::saveBackupLastFrame
+    필드 읽기 scnEditor::saveStateLastFrame
+    호출 scnEditor::get_unsavedChanges
+    호출 System.IO.Path::GetFileNameWithoutExtension
+    호출 System.String::op_Equality
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::Encode
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.String::Concat
+    호출 RDFile::WriteAllText
+  OpenDiscord
+    호출 ADOBase::get_platformHelper
+    호출 ADOFAI.Common.Platform.IPlatformHelper::OpenURL
+  SelectedColors
+    필드 읽기 UnityEngine.Color::r
+    필드 읽기 UnityEngine.Color::g
+    필드 읽기 UnityEngine.Color::b
+    호출 UnityEngine.Color::.ctor
+    호출 UnityEngine.Color::RGBToHSV
+    호출 UnityEngine.Mathf::Clamp01
+    호출 UnityEngine.Color::HSVToRGB
+  Undo
+    호출 scnEditor::UndoOrRedo
+  Redo
+    호출 scnEditor::UndoOrRedo
+  UndoOrRedo
+    필드 읽기 scnEditor::changingState
+    필드 읽기 scnEditor::undoStates
+    필드 읽기 scnEditor::redoStates
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Linq.Enumerable::Last
+    필드 읽기 scnEditor+LevelState::data
+    호출 SaveStateScope::.ctor
+    호출 제네릭 RDUtils::Pop
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 scnEditor+LevelState::selectedDecorationIndices
+    필드 읽기 scnEditor::customLevel
+    필드 쓰기 scnGame::levelData
+    호출 scnEditor::DeselectFloors
+    호출 scnEditor::RemakePath
+    호출 scnEditor::DeselectAllDecorations
+    호출 scnEditor::UpdateDecorationObjects
+    필드 읽기 scnGame::levelData
+    필드 읽기 ADOFAI.LevelData::decorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scnEditor::SelectDecoration
+    호출 scnEditor::SelectionDecorationIsEmpty
+    필드 읽기 scnEditor::selectedDecorations
+    필드 읽기 scnEditor::levelEventsPanel
+    호출 ADOFAI.InspectorPanel::ShowInspector
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.InspectorPanel::ShowPanel
+    필드 읽기 scnEditor::propertyControlDecorationsList
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_List::RefreshItemsList
+    필드 읽기 scnEditor+LevelState::selectedFloors
+    호출 scnEditor::get_floors
+    호출 scnEditor::MultiSelectFloors
+    호출 scnEditor::SelectFloor
+    필드 읽기 scnEditor+LevelState::floorEventType
+    필드 읽기 scnEditor+LevelState::floorEventTypeIndex
+    필드 읽기 scnEditor::settingsPanel
+    필드 읽기 scnEditor+LevelState::settingsEventType
+    필드 읽기 scnEditor::particleEditor
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_activeSelf
+    필드 읽기 ADOFAI.Editor.ParticleEditor.ParticleEditor::SelectedEvent
+    호출 scnEditor::HideParticleEditor
+    호출 ADOFAI.Editor.ParticleEditor.ParticleEditor::SetEvent
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAt
+    호출 System.IDisposable::Dispose
+  SaveState
+    필드 읽기 scnEditor::changingState
+    필드 읽기 scnEditor::initialized
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 scnEditor::SelectionIsEmpty
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::Copy
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scrDecorationManager::GetDecorationIndex
+    호출 scnEditor+LevelState::.ctor
+    필드 읽기 scnEditor::settingsPanel
+    필드 읽기 ADOFAI.InspectorPanel::selectedEventType
+    필드 쓰기 scnEditor+LevelState::settingsEventType
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 쓰기 scnEditor+LevelState::floorEventType
+    필드 읽기 scnEditor+LevelState::floorEventType
+    호출 ADOFAI.InspectorPanel::EventNumOfTab
+    필드 쓰기 scnEditor+LevelState::floorEventTypeIndex
+    필드 읽기 scnEditor::undoStates
+    필드 읽기 scnEditor::redoStates
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 제네릭 System.Collections.Generic.List`1::RemoveAt
+    호출 scnEditor::set_unsavedChanges
+    호출 UnityEngine.Time::get_frameCount
+    필드 쓰기 scnEditor::saveStateLastFrame
+  ApplyEventsToFloors
+    필드 읽기 scnEditor::customLevel
+    호출 scnEditor::get_floors
+    호출 scnGame::ApplyEventsToFloors
+    호출 scnEditor::DrawFloorOffsetLines
+    호출 scnEditor::DrawHolds
+    호출 scnEditor::DrawMultiPlanet
+    필드 쓰기 scnEditor::refreshDecSprites
+  Play
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 ADOBase::get_playerManager
+    호출 scrPlayerManager::UnlockAllPlayerInput
+    필드 읽기 scnEditor::controlsTip
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 쓰기 scnEditor::ottoBlinkCounter
+    호출 scnEditor::get_holdingControl
+    정적필드 쓰기 GCS::editorQuickPitchedPlaying
+    호출 Persistence::get_shortcutPlaySpeed
+    필드 쓰기 scnEditor::playbackSpeed
+    필드 쓰기 scnEditor::decorationWasSelected
+    호출 scnEditor::SelectionIsSingle
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    필드 읽기 scnEditor::levelEventsPanel
+    필드 읽기 ADOFAI.InspectorPanel::cacheEventIndex
+    필드 쓰기 scnEditor::cacheSelectedEventIndex
+    호출 scnEditor::SelectionDecorationIsEmpty
+    필드 읽기 scnEditor::lastSelectedFloor
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 scnEditor::lastSelectedDecorations
+    필드 쓰기 scnEditor::selectedFloorCached
+    호출 scnEditor::DeselectAnyUIGameObject
+    호출 scnEditor::DeselectFloors
+    호출 scnEditor::DeselectAllDecorations
+    호출 scnEditor::ClearPopupBlocker
+    호출 scnEditor::ClearFloorGlows
+    호출 ADOBase::get_conductor
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 scnEditor::RemakePath
+    필드 읽기 scnEditor::floorConnectorGOs
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    필드 읽기 scrFloor::editorNumText
+    호출 ADOBase::get_controller
+    필드 쓰기 scrController::currentSeqID
+    호출 GCS::set_checkpointNum
+    필드 읽기 scnEditor::customLevel
+    호출 scnGame::ReloadAssets
+    호출 scnGame::Play
+    호출 scnEditor::DrawHolds
+    호출 scnEditor::DrawMultiPlanet
+    필드 읽기 scnEditor::editorDifficultySelector
+    호출 EditorDifficultySelector::SetChangeable
+    필드 읽기 scnEditor::buttonNoFail
+    호출 UnityEngine.UI.Selectable::set_interactable
+    필드 읽기 scnEditor::buttonUnlockKeyLimiter
+    호출 Persistence::get_showUnlockKeyLimiterButton
+    필드 읽기 scrController::unlockKeyLimiter
+    호출 scnEditor::SetUnlockKeyLimiter
+    호출 RDC::get_auto
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::ShowEmptyDecorations
+    호출 scrDecorationManager::ToggleClickableBoxColliderForLevelEditor
+    호출 Persistence::GetHideCursorWhilePlaying
+    호출 UnityEngine.Cursor::set_visible
+  ShowExportWindow
+    호출 GCS::get_isDev
+    정적필드 읽기 GCS::steamBranchName
+    호출 RDEditorUtils::IsNullOrEmpty
+    정적필드 읽기 GCNS::stableBranches
+    호출 제네릭 System.Linq.Enumerable::Contains
+    호출 scnEditor::ShowPopup
+    정적필드 읽기 GCS::customLevelId
+    호출 ADOBase::get_levelPath
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::GetMissingParams
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 ADOFAI.LevelData::get_songFilename
+    호출 System.String::Split
+    호출 제네릭 System.Linq.Enumerable::Last
+    호출 System.String::op_Equality
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::Combine
+    필드 쓰기 scnEditor::soundToConvert
+    호출 scnEditor::GetMissingFiles
+  GetExportLevelTempDirectory
+    호출 System.IO.Path::GetRandomFileName
+    호출 System.IO.Path::GetFileNameWithoutExtension
+    호출 Persistence::get_DataPath
+    호출 System.IO.Path::Combine
+    호출 RDUtils::GetAvailableDirectoryName
+  GetExportLevelFiles
+    호출 scnEditor::GetExportLevelFiles
+  GetExportLevelFiles
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::Encode
+    호출 ADOBase::get_levelPath
+    호출 RDFile::WriteAllText
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass679_0::includedFiles
+    호출 System.IO.Path::GetDirectoryName
+    필드 쓰기 scnEditor+<>c__DisplayClass679_0::levelDir
+    호출 System.IO.Directory::Exists
+    호출 RDDirectory::CreateDirectory
+    호출 System.IO.Path::Combine
+    호출 System.IO.File::Copy
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scnGame::GetWorldPaths
+    호출 System.Int32::ToString
+    호출 System.String::Concat
+    호출 제네릭 System.Collections.Generic.List`1::AddRange
+    필드 읽기 scnEditor+<>c__DisplayClass679_0::includedFiles
+    호출 ADOFAI.LevelData::get_previewImage
+    호출 scnEditor::<GetExportLevelFiles>g__AddFile|679_0
+    호출 ADOFAI.LevelData::get_previewIcon
+    호출 ADOFAI.LevelData::get_artistPermission
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 RDFile::ReadAllText
+    호출 GDMiniJSON.Json::Deserialize
+    호출 ADOFAI.LevelData::.ctor
+    호출 ADOFAI.LevelData::Decode
+    호출 ADOFAI.LevelData::RefreshRequiredDLC
+    호출 ADOFAI.LevelData::get_requiredDLC
+    호출 제네릭 Utils::AddMany
+    호출 ADOFAI.LevelData::get_bgImage
+    호출 ADOFAI.LevelData::get_songFilename
+    호출 ADOFAI.LevelData::get_bgVideo
+    필드 읽기 ADOFAI.LevelData::levelEvents
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.LevelEvent::GetString
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 RDEditorUtils::IsNullOrEmpty
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 ADOFAI.LevelData::decorations
+    호출 제네릭 System.Linq.Enumerable::Distinct
+    호출 제네릭 System.Linq.Enumerable::ToArray
+  MakeThumbnail
+    호출 ADOBase::get_levelPath
+    호출 System.IO.Path::GetDirectoryName
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::get_previewImage
+    호출 System.IO.Path::Combine
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::sprite_defaultPortal
+    호출 UnityEngine.Sprite::get_texture
+    호출 System.IO.File::Exists
+    호출 System.IO.File::ReadAllBytes
+    호출 UnityEngine.Texture2D::.ctor
+    호출 UnityEngine.ImageConversion::LoadImage
+    필드 읽기 scnEditor::thumbnailMaker
+    호출 ADOFAI.LevelData::get_previewIconColor
+    호출 WorkshopThumbnailMaker::MakeThumbnail
+  ExportLevel
+    호출 Persistence::GetLastUsedFolder
+    호출 RDString::Get
+    호출 UnityFileDialog.FileBrowser::SaveFile
+    호출 System.String::IsNullOrEmpty
+    호출 System.String::EndsWith
+    호출 System.String::Concat
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::Encode
+    호출 ADOBase::get_levelPath
+    호출 RDFile::WriteAllText
+    호출 scnEditor::GetExportLevelTempDirectory
+    호출 scnEditor::GetExportLevelFiles
+    호출 제네릭 System.Linq.Enumerable::Distinct
+    호출 제네릭 System.Linq.Enumerable::ToArray
+    호출 ZipUtils::Zip
+    호출 scnEditor::ShowNotification
+    호출 UnityEngine.Debug::Log
+    호출 scnEditor::PublishToSteam
+    호출 Cysharp.Threading.Tasks.UniTaskExtensions::Forget
+  PublishToSteam
+    호출 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder::Create
+    필드 쓰기 scnEditor+<PublishToSteam>d__682::<>t__builder
+    필드 쓰기 scnEditor+<PublishToSteam>d__682::<>4__this
+    필드 쓰기 scnEditor+<PublishToSteam>d__682::updateId
+    필드 쓰기 scnEditor+<PublishToSteam>d__682::<>1__state
+    필드 읽기 scnEditor+<PublishToSteam>d__682::<>t__builder
+    호출 제네릭 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder::Start
+    호출 Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder::get_Task
+  AcceptAgreement
+    호출 scnEditor::ShowPopup
+    호출 Persistence::set_acceptedAgreement
+    호출 Persistence::Save
+    호출 scnEditor::ShowEventPicker
+    필드 읽기 scnEditor::settingsPanel
+    호출 ADOFAI.InspectorPanel::ShowInspector
+  DeclineAgreement
+    호출 ADOBase::get_controller
+    호출 scrController::QuitToMainMenu
+  ShowPropertyHelp
+    호출 scnEditor+<>c__DisplayClass685_0::.ctor
+    필드 쓰기 scnEditor+<>c__DisplayClass685_0::buttonURL
+    필드 쓰기 scnEditor+<>c__DisplayClass685_0::<>4__this
+    필드 읽기 scnEditor::animatingPropertyHelp
+    필드 읽기 scnEditor::showingPropertyHelp
+    필드 쓰기 scnEditor::animatingPropertyHelp
+    필드 쓰기 scnEditor::showingPropertyHelp
+    필드 읽기 scnEditor+<>c__DisplayClass685_0::buttonURL
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 scnEditor::propertyHelpURLButton
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scnEditor::propertyHelpText
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 TMPro.TMP_Text::set_text
+    필드 읽기 scnEditor::propertyHelpContainer
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Transform::set_position
+    호출 UnityEngine.RectTransform::get_anchoredPosition
+    필드 읽기 UnityEngine.Vector2::y
+    호출 scrMisc::AnchorPosY
+    필드 읽기 scnEditor::propertyHelpImage
+    호출 UnityEngine.Behaviour::set_enabled
+    호출 UnityEngine.Canvas::ForceUpdateCanvases
+    호출 UnityEngine.RectTransform::get_rect
+    호출 UnityEngine.Rect::get_height
+    호출 scrMisc::SizeDeltaY
+    호출 UnityEngine.GameObject::get_activeSelf
+    필드 읽기 scnEditor::propertyHelpURLButtonText
+    호출 UnityEngine.UI.Button::get_onClick
+    호출 UnityEngine.Events.UnityEventBase::RemoveAllListeners
+    호출 scnEditor+<>c__DisplayClass685_0::<ShowPropertyHelp>b__1
+    호출 UnityEngine.Events.UnityAction::.ctor
+    호출 UnityEngine.Events.UnityEvent::AddListener
+    필드 읽기 UnityEngine.Vector3::x
+    호출 UnityEngine.Rect::get_width
+    호출 UnityEngine.Screen::get_width
+    호출 UnityEngine.Vector3::get_one
+    호출 ExtensionMethods::WithX
+    호출 TMPro.TMP_Text::get_transform
+    호출 UnityEngine.Transform::set_localScale
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Vector3::get_zero
+    호출 DG.Tweening.ShortcutExtensions::DOScale
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 scnEditor+<>c__DisplayClass685_0::<ShowPropertyHelp>b__0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnComplete
+  GetMissingFiles
+    호출 scnEditor::GetExportLevelTempDirectory
+    호출 scnEditor::GetExportLevelFiles
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 RDFile::Exists
+    호출 System.IO.Path::GetFileName
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  ApprovalLevelForArtist
+    호출 System.String::ToLower
+    호출 System.String::Trim
+    호출 System.Text.RegularExpressions.Regex::.ctor
+    호출 System.Text.RegularExpressions.Regex::Replace
+    정적필드 읽기 EditorWebServices::artists
+    필드 읽기 ArtistData::nameLowercase
+    호출 System.String::op_Equality
+    필드 읽기 ArtistData::approvalLevel
+  oggConCallback
+    필드 읽기 scnEditor::oggConversionBar
+    호출 UnityEngine.UI.Slider::set_value
+    필드 읽기 scnEditor::oggConversionBarText
+    호출 RDString::Get
+    호출 System.String::Format
+    호출 TMPro.TMP_Text::set_text
+  SetLevelSong
+    호출 scnEditor::get_levelData
+    호출 ADOFAI.LevelData::set_songFilename
+    호출 scnEditor::UpdateSongAndLevelSettings
+    필드 읽기 scnEditor::customLevel
+    호출 scnGame::ReloadSong
+  ConvertSoundToOggCo
+    호출 scnEditor+<ConvertSoundToOggCo>d__690::.ctor
+    필드 쓰기 scnEditor+<ConvertSoundToOggCo>d__690::<>4__this
+    필드 쓰기 scnEditor+<ConvertSoundToOggCo>d__690::successfulCallback
+  PushPopupBlocker
+    필드 읽기 scnEditor::_currentPopupSortOrder
+    필드 읽기 scnEditor::popupBlocker
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.UI.Button::get_onClick
+    호출 UnityEngine.Events.UnityEventBase::RemoveAllListeners
+    호출 scnEditor::PopPopupBlocker
+    호출 UnityEngine.Events.UnityAction::.ctor
+    호출 UnityEngine.Events.UnityEvent::AddListener
+    호출 UnityEngine.Canvas::set_sortingOrder
+    필드 읽기 scnEditor::_popupStack
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 쓰기 scnEditor::_currentPopupSortOrder
+  ClearPopupBlocker
+    호출 scnEditor::PopPopupBlocker
+    필드 읽기 scnEditor::_popupStack
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+  PopPopupBlocker
+    필드 읽기 scnEditor::_popupStack
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::Remove
+    호출 System.Action::Invoke
+    필드 읽기 scnEditor::popupBlocker
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scnEditor::_currentPopupSortOrder
+    필드 쓰기 scnEditor::_currentPopupSortOrder
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.Canvas::set_sortingOrder
+  ZoomOutUI
+    호출 Persistence::get_editorScale
+    호출 scnEditor::UpdateCanvasScalerResolution
+  ZoomInUI
+    호출 Persistence::get_editorScale
+    호출 scnEditor::UpdateCanvasScalerResolution
+  ToggleShortcutsLock
+    필드 읽기 scnEditor::lockPathEditing
+    호출 scnEditor::LockPathEditing
+  LockPathEditing
+    필드 쓰기 scnEditor::lockPathEditing
+    필드 읽기 scnEditor::lockBackground
+    필드 읽기 scnEditor::lockPathEditing
+    필드 읽기 scnEditor::defaultLockColor
+    필드 읽기 scnEditor::shortcutsLockColor
+    호출 UnityEngine.UI.Graphic::set_color
+    필드 읽기 scnEditor::lockIcon
+    필드 읽기 scnEditor::defaultLockIconColor
+    필드 읽기 scnEditor::shortcutsLockIconColor
+    필드 읽기 scnEditor::lockSpriteOff
+    필드 읽기 scnEditor::lockSpriteOn
+    호출 UnityEngine.UI.Image::set_sprite
+    필드 읽기 scnEditor::floorButtonContainer
+    호출 UnityEngine.GameObject::SetActive
+  .ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 scnEditor::floorPositionsAtDragStart
+    필드 쓰기 scnEditor::decorationPositionsAtDragStart
+    필드 쓰기 scnEditor::pointerDownObjectType
+    필드 쓰기 scnEditor::addXDragCache
+    호출 UnityEngine.Color::.ctor
+    필드 쓰기 scnEditor::grayColor
+    필드 쓰기 scnEditor::lineGreen
+    필드 쓰기 scnEditor::lineYellow
+    필드 쓰기 scnEditor::linePurple
+    필드 쓰기 scnEditor::lineBlue
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 scnEditor::notificationPopupActions
+    필드 쓰기 scnEditor::shortcutTabs
+    필드 쓰기 scnEditor::shortcutContent
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    필드 쓰기 scnEditor::shortcutsDictionary
+    필드 쓰기 scnEditor::favoriteEvents
+    필드 쓰기 scnEditor::eventButtons
+    필드 쓰기 scnEditor::categoryTabs
+    필드 쓰기 scnEditor::maxPage
+    필드 쓰기 scnEditor::selectedFloors
+    필드 쓰기 scnEditor::selectedDecorations
+    필드 쓰기 scnEditor::clipboard
+    필드 쓰기 scnEditor::clipboardIndices
+    필드 쓰기 scnEditor::camUserSizeMultiplier
+    필드 쓰기 scnEditor::backupInterval
+    필드 쓰기 scnEditor::editingColor
+    호출 UnityEngine.Color::get_white
+    필드 쓰기 scnEditor::defaultButtonColor
+    필드 쓰기 scnEditor::undoStates
+    필드 쓰기 scnEditor::redoStates
+    필드 쓰기 scnEditor::floorConnectorGOs
+    필드 쓰기 scnEditor::dragGridSize
+    필드 쓰기 scnEditor::_popupStack
+    필드 쓰기 scnEditor::_currentPopupSortOrder
+    필드 쓰기 scnEditor::errorImageResult
+    필드 쓰기 scnEditor::whitelistedEvents
+    필드 쓰기 scnEditor::lastFrameUpdated
+    필드 쓰기 scnEditor::playbackSpeed
+    호출 ADOBase::.ctor
+  .cctor
+    정적필드 쓰기 scnEditor::applyEventsToFloorsOnPlay
+    정적필드 쓰기 scnEditor::selectingFloorID
+    정적필드 쓰기 scnEditor::editorHasBeenEntered
+    정적필드 쓰기 scnEditor::levelToOpenOnLoad
+  <TryApplicationQuit>b__440_0
+    호출 scnEditor::ApplicationQuit
+  <TryQuitToMenu>b__445_0
+    호출 scnEditor::QuitToMenu
+  <Start>g__LoadLevelEventSprites|450_0
+    정적필드 읽기 GCS::levelEventIcons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    정적필드 쓰기 GCS::levelEventIcons
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 System.Array::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 System.Object::ToString
+    호출 System.String::Concat
+    호출 제네릭 UnityEngine.Resources::Load
+    호출 UnityEngine.Object::op_Inequality
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  <Start>g__LoadLevelCategorySprites|450_1
+    정적필드 읽기 GCS::eventCategoryIcons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    정적필드 쓰기 GCS::eventCategoryIcons
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 System.Array::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 System.Object::ToString
+    호출 System.String::Concat
+    호출 제네릭 UnityEngine.Resources::Load
+    호출 UnityEngine.Object::op_Inequality
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  <Start>b__450_2
+    호출 scnEditor::Play
+  <Start>b__450_3
+    호출 scnEditor::SelectFirstFloor
+    호출 scnEditor::DeselectAnyUIGameObject
+  <Start>b__450_4
+    호출 scnEditor::TryQuitToMenu
+  <Start>b__450_6
+    필드 읽기 scnEditor::customLevel
+    필드 읽기 scnGame::levelPath
+    호출 scnEditor::OpenDirectory
+    호출 scnEditor::ToggleFileActionsPanel
+  <Start>b__450_7
+    호출 scnEditor::NewLevel
+  <Start>b__450_8
+    호출 scnEditor::OpenLevel
+  <Start>b__450_9
+    호출 scnEditor::OpenRecent
+  <Start>b__450_10
+    호출 scnEditor::<Start>b__450_68
+    호출 System.Action::.ctor
+    호출 scnEditor::CheckUnsavedChanges
+  <Start>b__450_68
+    호출 scnEditor::ShowPopup
+  <Start>b__450_11
+    호출 scnEditor::SaveLevel
+  <Start>b__450_12
+    호출 scnEditor::SaveLevelAs
+  <Start>b__450_13
+    호출 scnEditor::ShowShortcutsPanel
+  <Start>b__450_14
+    호출 scnEditor::ShowShortcutsPanel
+  <Start>b__450_15
+    호출 scnEditor::OpenDiscord
+  <Start>b__450_16
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_17
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_18
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_19
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_20
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_21
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_22
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_23
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_24
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_25
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_26
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_27
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_28
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_29
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_30
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_31
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_32
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_33
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_34
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_35
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_36
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_37
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_38
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_39
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_40
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::floatDirection
+    호출 ADOFAI.FloorHelper::Transform
+    필드 읽기 scrFloor::stringDirection
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_41
+    호출 scnEditor::CreateFloorWithCharOrAngle
+  <Start>b__450_42
+    호출 scnEditor::ToggleAuto
+  <Start>b__450_43
+    호출 scnEditor::ShowNextPage
+  <Start>b__450_44
+    호출 scnEditor::ShowPrevPage
+  <Start>b__450_45
+    호출 scnEditor::ToggleNoFail
+  <Start>b__450_46
+    호출 scnEditor::ToggleUnlockKeyLimiter
+  <Start>b__450_47
+    호출 scnEditor::GetArbitraryAngleFromField
+    필드 읽기 scnEditor::floorButtonArbitrary
+    호출 System.Single::ToString
+    호출 TMPro.TMP_InputField::set_text
+  <Start>b__450_48
+    호출 scnEditor::ShowPopup
+  <Start>b__450_49
+    호출 scnEditor::SaveLevelAs
+    호출 scnEditor::ShowPopup
+  <Start>b__450_50
+    호출 scnEditor::StartLevelDownload
+  <Start>b__450_51
+    호출 scnEditor::CancelDownload
+  <Start>b__450_52
+    호출 scnEditor::AcceptAgreement
+  <Start>b__450_53
+    호출 scnEditor::DeclineAgreement
+  <Start>b__450_54
+    호출 scnEditor::ShowPopup
+  <Start>b__450_55
+    호출 scnEditor::ShowPopup
+  <Start>b__450_56
+    호출 scnEditor::ShowPopup
+  <Start>b__450_57
+    필드 읽기 scnEditor::soundConversionCallback
+    호출 scnEditor::ConvertSoundToOggCo
+    호출 UnityEngine.MonoBehaviour::StartCoroutine
+  <Start>b__450_58
+    필드 읽기 scnEditor::popupOkCallback
+    호출 scnEditor::ShowPopup
+    호출 DG.Tweening.TweenCallback::Invoke
+  <Start>b__450_59
+    필드 읽기 scnEditor::popupOkCallback
+    호출 scnEditor::ShowPopup
+    호출 DG.Tweening.TweenCallback::Invoke
+  <Start>b__450_60
+    필드 읽기 scnEditor::popupOkCallback
+    호출 scnEditor::ShowPopup
+    호출 DG.Tweening.TweenCallback::Invoke
+  <Start>b__450_61
+    호출 scnEditor::ShowPopup
+    필드 읽기 scnEditor::popupConfirmCallback
+    호출 DG.Tweening.TweenCallback::Invoke
+    필드 쓰기 scnEditor::popupConfirmCallback
+  <Start>b__450_62
+    호출 scnEditor::ShowPopup
+  <Start>b__450_63
+    호출 scnEditor::ShowPopup
+  <Start>b__450_64
+    호출 scnEditor::DoQuitAction
+  <Start>b__450_65
+    호출 scnEditor::SaveAndQuit
+  <Start>b__450_66
+    필드 쓰기 scnEditor::steamDeckWarningPassed
+    호출 Persistence::set_passedSteamDeckWarning
+    호출 Persistence::get_acceptedAgreement
+    호출 scnEditor::ShowPopup
+  <Start>b__450_67
+    호출 scnEditor::QuitToMenu
+  <HidePreferences>b__458_0
+    필드 읽기 scnEditor::prefsContainer
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+  <HideParticleEditor>b__460_0
+    필드 읽기 scnEditor::particleEditorContainer
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+  <HandleMouseActions>b__471_0
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::seqID
+    필드 읽기 ADOFAI.LevelEvent::eventType
+  <HandleMouseActions>b__471_1
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Linq.Enumerable::First
+    필드 읽기 scrFloor::seqID
+    필드 읽기 ADOFAI.LevelEvent::eventType
+  <HandleMouseActions>b__471_2
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 읽기 scnEditor::selectedFloors
+    호출 제네릭 System.Linq.Enumerable::Last
+    필드 읽기 scrFloor::seqID
+    필드 읽기 ADOFAI.LevelEvent::eventType
+  <FloorWasCreatedOrDeleted>g__HandleKey|506_0
+    필드 읽기 scnEditor+<>c__DisplayClass506_0::e
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+    호출 제네릭 System.Tuple`2::get_Item2
+    호출 제네릭 System.Tuple`2::get_Item1
+    필드 읽기 scnEditor+<>c__DisplayClass506_0::floorID
+    필드 읽기 scnEditor+<>c__DisplayClass506_0::offset
+    호출 제네릭 System.Tuple`2::.ctor
+    호출 ADOFAI.LevelEvent::set_Item
+  <MultiCopyDecorations>b__574_0
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::decorations
+    호출 제네릭 System.Collections.Generic.List`1::IndexOf
+  <PasteDecorations>b__581_0
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::decorations
+    호출 제네릭 System.Collections.Generic.List`1::IndexOf
+  <PasteDecorations>b__581_1
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::decorations
+    호출 제네릭 System.Collections.Generic.List`1::IndexOf
+  <ShowSelectedColor>g__GetOverlayValue|584_0
+  <ShowSelectedColor>g__GetOverlayColor|584_1
+    필드 읽기 UnityEngine.Color::r
+    호출 scnEditor::<ShowSelectedColor>g__GetOverlayValue|584_0
+    필드 쓰기 UnityEngine.Color::r
+    필드 읽기 UnityEngine.Color::g
+    필드 쓰기 UnityEngine.Color::g
+    필드 읽기 UnityEngine.Color::b
+    필드 쓰기 UnityEngine.Color::b
+    필드 읽기 UnityEngine.Color::a
+    필드 쓰기 UnityEngine.Color::a
+  <OpenLevel>b__597_0
+    호출 scnEditor::PauseIfUnpaused
+    호출 scnEditor::OpenLevelCo
+    호출 UnityEngine.MonoBehaviour::StartCoroutine
+  <OpenLevelCo>b__600_0
+    필드 읽기 scnEditor::notificationPopupContent
+    호출 TMPro.TMP_Text::get_text
+    호출 ExtensionMethods::CopyToClipboard
+    호출 RDString::Get
+    호출 scnEditor::ShowNotification
+  <OpenLevelCo>b__600_1
+    호출 scnEditor::CloseNotificationPopup
+  <SaveLevelAsCo>g__Save|616_0
+    호출 System.String::IsNullOrEmpty
+    호출 scnEditor::SanitizeLevelPath
+    호출 System.String::EndsWith
+    호출 System.String::Concat
+    필드 읽기 scnEditor::customLevel
+    필드 쓰기 scnGame::levelPath
+    호출 scnEditor::RefreshFilenameText
+    호출 Persistence::UpdateLastUsedFolder
+    호출 Persistence::UpdateLastOpenedLevel
+    정적필드 읽기 DiscordController::instance
+    호출 DiscordController::UpdatePresence
+    호출 scnEditor::SaveLevel
+  <CloseNotificationPopup>b__626_0
+    필드 읽기 scnEditor::notificationPopupContainer
+    호출 UnityEngine.GameObject::SetActive
+  <UpdateCategoryVisibility>b__629_1
+    호출 scnEditor::get_selectedFirstFloor
+    필드 읽기 ADOFAI.LevelEventButton::info
+    호출 ADOFAI.LevelEventInfo::get_allowFirstFloorCheck
+  <UpdateCategoryVisibility>b__629_0
+    필드 읽기 ADOFAI.CategoryTab::levelEventCategory
+    필드 읽기 scnEditor::currentCategory
+  <CycleEventsPage>b__630_0
+    호출 scnEditor::get_selectedFirstFloor
+    필드 읽기 ADOFAI.LevelEventButton::info
+    호출 ADOFAI.LevelEventInfo::get_allowFirstFloorCheck
+  <OttoBlink>b__650_0
+    필드 쓰기 scnEditor::isOttoBlinking
+  <OttoBlink>b__650_1
+    필드 쓰기 scnEditor::isOttoBlinking
+  <GetExportLevelFiles>g__AddFile|679_0
+    호출 RDEditorUtils::IsNullOrEmpty
+    필드 읽기 scnEditor+<>c__DisplayClass679_0::includedFiles
+    필드 읽기 scnEditor+<>c__DisplayClass679_0::levelDir
+    호출 System.IO.Path::Combine
+    호출 제네릭 System.Collections.Generic.List`1::Add
+  <PublishToSteam>b__682_1
+    필드 읽기 scnEditor::publishWindow
+    필드 읽기 PublishWindow::UploadProgress
+    호출 제네릭 R3.ReactiveProperty`1::set_Value

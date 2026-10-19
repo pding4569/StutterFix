@@ -1,0 +1,22 @@
+﻿== ADOFAI.LevelEventButton : ADOBase
+  필드 button
+  필드 icon
+  필드 page
+  필드 keyCode
+  필드 type
+  필드 info
+  필드 showingAsFiltered
+  필드 baseColor
+  필드 _enableButton
+  필드 pointInButton
+  메서드 boolean get_enableButton()
+  메서드 void set_enableButton(boolean)
+  메서드 void Init(ADOFAI.LevelEventType, int32, int32)
+  메서드 void OnClicky()
+  메서드 void OnPointerEnter(UnityEngine.EventSystems.PointerEventData)
+  메서드 void OnPointerExit(UnityEngine.EventSystems.PointerEventData)
+  메서드 void ShowAsSelected(boolean)
+  메서드 void ShowAsFiltered(boolean)
+  메서드 void OnPointerClick(UnityEngine.EventSystems.PointerEventData)
+  메서드 void .ctor()
+(1개 형식)

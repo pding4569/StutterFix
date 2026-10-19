@@ -1,0 +1,555 @@
+﻿== ADOFAI.LevelData
+  get_Hash
+    호출 ADOFAI.LevelData::get_artist
+    호출 RDEditorUtils::IsNullOrEmpty
+    호출 ADOFAI.LevelData::get_song
+    호출 ADOFAI.LevelData::get_author
+    호출 UnityEngine.Debug::LogError
+    필드 읽기 ADOFAI.LevelData::_hash
+    호출 System.String::IsNullOrEmpty
+    호출 System.String::Concat
+    호출 MD5Hash::GetHash
+    필드 쓰기 ADOFAI.LevelData::_hash
+  get_settings
+    필드 읽기 ADOFAI.LevelData::songSettings
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    필드 읽기 ADOFAI.LevelData::eventSettings
+    필드 읽기 ADOFAI.LevelData::decorationSettings
+  GetCustomLevelName
+    호출 RDFile::ReadAllText
+    호출 GDMiniJSON.Json::Deserialize
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 RDEditorUtils::IsNullOrEmpty
+    호출 System.String::Trim
+    호출 System.String::EndsWith
+    호출 System.String::IndexOf
+    호출 System.String::Substring
+    호출 System.String::Concat
+    호출 RDUtils::RemoveRichTags
+  .ctor
+    호출 제네릭 EventsArray`1::.ctor
+    필드 쓰기 ADOFAI.LevelData::levelEvents
+    호출 제네릭 DecorationsArray`1::.ctor
+    필드 쓰기 ADOFAI.LevelData::decorations
+    호출 System.Object::.ctor
+    호출 ADOFAI.LevelData::Setup
+  Setup
+    정적필드 읽기 scnGame::instance
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scnGame::forceOldLevelStyle
+    필드 쓰기 ADOFAI.LevelData::isOldLevel
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 ADOFAI.LevelData::angleData
+    필드 쓰기 ADOFAI.LevelData::pathData
+    정적필드 읽기 GCS::settingsInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 ADOFAI.LevelEvent::.ctor
+    필드 쓰기 ADOFAI.LevelData::songSettings
+    필드 쓰기 ADOFAI.LevelData::levelSettings
+    필드 쓰기 ADOFAI.LevelData::trackSettings
+    필드 쓰기 ADOFAI.LevelData::backgroundSettings
+    필드 쓰기 ADOFAI.LevelData::cameraSettings
+    필드 쓰기 ADOFAI.LevelData::miscSettings
+    필드 쓰기 ADOFAI.LevelData::eventSettings
+    필드 쓰기 ADOFAI.LevelData::decorationSettings
+  LoadLevel
+    호출 ADOBase::get_isInternalLevel
+    호출 System.String::Split
+    호출 제네릭 System.Linq.Enumerable::First
+    호출 WorldData::get_dict
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 WorldData::index
+    호출 제네릭 System.Linq.Enumerable::Last
+    필드 읽기 WorldData::levelCount
+    호출 System.String::op_Equality
+    호출 System.Int32::Parse
+    호출 System.Int32::ToString
+    호출 System.String::Concat
+    필드 읽기 WorldData::isDLC
+    호출 제네릭 UnityEngine.AddressableAssets.Addressables::LoadAssetAsync
+    호출 제네릭 UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle`1::WaitForCompletion
+    호출 UnityEngine.TextAsset::get_text
+    호출 제네릭 UnityEngine.AddressableAssets.Addressables::Release
+    호출 제네릭 UnityEngine.Resources::Load
+    호출 ADOBase::get_isBundleLevel
+    호출 RDFile::ReadAllText
+    호출 GDMiniJSON.Json::Deserialize
+    호출 ADOFAI.LevelData::Decode
+    정적필드 쓰기 ADOFAI.LevelData::shouldTryMigrate
+    필드 읽기 ADOFAI.LevelData::version
+    호출 System.String::Replace
+  Encode
+    호출 ADOFAI.LevelData::EncodeToDictionary
+    호출 System.Text.Json.JsonSerializerOptions::.ctor
+    호출 System.Text.Encodings.Web.JavaScriptEncoder::get_UnsafeRelaxedJsonEscaping
+    호출 System.Text.Json.JsonSerializerOptions::set_Encoder
+    호출 System.Text.Json.JsonSerializerOptions::set_DefaultIgnoreCondition
+    호출 System.Text.Json.JsonSerializerOptions::get_Converters
+    호출 ADOFAI.Serialization.LevelArrayConverter::.ctor
+    호출 제네릭 System.Collections.Generic.ICollection`1::Add
+    호출 System.Text.Json.JsonSerializerOptions::set_WriteIndented
+    호출 제네릭 System.Text.Json.JsonSerializer::Serialize
+  EncodeToDictionary
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 읽기 ADOFAI.LevelData::isOldLevel
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::ToArray
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    필드 읽기 ADOFAI.LevelData::songSettings
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::Encode
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::Deconstruct
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 ADOFAI.LevelData::legacyFlash
+    필드 읽기 ADOFAI.LevelData::legacyCamRelativeTo
+    필드 읽기 ADOFAI.LevelData::legacyTween
+    필드 읽기 ADOFAI.LevelData::disableV15Features
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 ADOFAI.LevelData::levelEvents
+    정적필드 읽기 ADOFAI.LevelData+<>c::<>9__30_0
+    정적필드 읽기 ADOFAI.LevelData+<>c::<>9
+    호출 ADOFAI.LevelData+<>c::<EncodeToDictionary>b__30_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 ADOFAI.LevelData+<>c::<>9__30_0
+    호출 제네릭 System.Linq.Enumerable::OrderBy
+    호출 제네릭 System.Linq.Enumerable::ToList
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::info
+    호출 ADOFAI.LevelEventInfo::get_isActive
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    필드 읽기 ADOFAI.LevelData::decorations
+  Decode
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 System.Convert::ToInt32
+    필드 쓰기 ADOFAI.LevelData::version
+    필드 읽기 ADOFAI.LevelData::version
+    필드 쓰기 ADOFAI.LevelData::legacyFlash
+    호출 RDEditorUtils::DecodeBool
+    필드 쓰기 ADOFAI.LevelData::isOldLevel
+    필드 쓰기 ADOFAI.LevelData::legacyCamRelativeTo
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::Decode
+    필드 읽기 ADOFAI.LevelData::songSettings
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    필드 읽기 ADOFAI.LevelData::eventSettings
+    필드 읽기 ADOFAI.LevelData::decorationSettings
+    호출 UnityEngine.Application::get_isPlaying
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 RDEditorUtils::CheckModsDependency
+    필드 읽기 ADOFAI.LevelData::isOldLevel
+    호출 RDEditorUtils::DecodeString
+    필드 쓰기 ADOFAI.LevelData::pathData
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 ADOFAI.LevelData::angleData
+    호출 ADOFAI.FloorHelper::MigratePathData
+    정적필드 읽기 scnGame::instance
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scnGame::forceOldLevelStyle
+    호출 RDEditorUtils::DecodeFloatArray
+    필드 읽기 ADOFAI.LevelData::pathData
+    호출 System.String::get_Length
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 System.Math::Max
+    호출 제네릭 EventsArray`1::.ctor
+    필드 쓰기 ADOFAI.LevelData::levelEvents
+    호출 제네릭 DecorationsArray`1::.ctor
+    필드 쓰기 ADOFAI.LevelData::decorations
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    호출 ADOFAI.LevelEvent::.ctor
+    필드 읽기 ADOFAI.LevelEvent::info
+    호출 ADOFAI.LevelEventInfo::get_taroDLCCheck
+    호출 ADOFAI.LevelEventInfo::get_isActive
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 ADOFAI.LevelEvent::get_IsDecoration
+    필드 읽기 ADOFAI.LevelData::decorations
+    호출 제네릭 DecorationsArray`1::Add
+    필드 읽기 ADOFAI.LevelData::levelEvents
+    호출 제네릭 EventsArray`1::Add
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 ADOFAI.MinimizedFloorData::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.HashSet`1::.ctor
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 제네릭 System.Collections.Generic.HashSet`1::Add
+    호출 제네릭 System.Collections.Generic.HashSet`1::Remove
+    호출 제네릭 ADOFAI.LevelEvent::GetNullable
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 System.String::get_Chars
+    호출 ADOFAI.FloorHelper::TryGetPathInDegrees
+    필드 읽기 ADOFAI.MinimizedFloorData::entryangle
+    필드 쓰기 ADOFAI.MinimizedFloorData::exitangle
+    호출 제네릭 System.Collections.Generic.HashSet`1::Contains
+    필드 쓰기 ADOFAI.MinimizedFloorData::midspin
+    필드 읽기 ADOFAI.MinimizedFloorData::numPlanets
+    호출 scrMisc::GetInverseAnglePerBeatMultiplanet
+    필드 읽기 ADOFAI.MinimizedFloorData::ccw
+    필드 읽기 ADOFAI.MinimizedFloorData::midspin
+    필드 읽기 ADOFAI.MinimizedFloorData::exitangle
+    호출 scrMisc::GetAngleMoved
+    호출 System.Math::Abs
+    필드 쓰기 ADOFAI.MinimizedFloorData::turnaround
+    필드 읽기 ADOFAI.MinimizedFloorData::holdLength
+    필드 쓰기 ADOFAI.MinimizedFloorData::angleLength
+    호출 ADOFAI.LevelData+<>c__DisplayClass31_0::.ctor
+    필드 쓰기 ADOFAI.LevelData+<>c__DisplayClass31_0::levelEvent
+    필드 읽기 ADOFAI.LevelData+<>c__DisplayClass31_0::levelEvent
+    필드 읽기 ADOFAI.MinimizedFloorData::turnaround
+    호출 ADOFAI.LevelEvent::set_Item
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    호출 System.Exception::.ctor
+    호출 ADOFAI.LevelData+<>c__DisplayClass31_0::<Decode>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::FirstOrDefault
+    필드 읽기 ADOFAI.LevelEvent::active
+    호출 UnityEngine.Mathf::RoundToInt
+    호출 제네릭 System.Collections.Generic.List`1::AddRange
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    필드 읽기 ADOFAI.PropertyInfo::value_default
+    필드 쓰기 ADOFAI.LevelData::legacyTween
+    필드 쓰기 ADOFAI.LevelData::disableV15Features
+  Copy
+    호출 ADOFAI.LevelData::.ctor
+    필드 읽기 ADOFAI.LevelData::pathData
+    필드 쓰기 ADOFAI.LevelData::pathData
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 ADOFAI.LevelData::angleData
+    필드 읽기 ADOFAI.LevelData::isOldLevel
+    필드 쓰기 ADOFAI.LevelData::isOldLevel
+    필드 읽기 ADOFAI.LevelData::legacyFlash
+    필드 쓰기 ADOFAI.LevelData::legacyFlash
+    필드 읽기 ADOFAI.LevelData::legacyCamRelativeTo
+    필드 쓰기 ADOFAI.LevelData::legacyCamRelativeTo
+    필드 읽기 ADOFAI.LevelData::legacyTween
+    필드 쓰기 ADOFAI.LevelData::legacyTween
+    호출 제네릭 EventsArray`1::.ctor
+    필드 쓰기 ADOFAI.LevelData::levelEvents
+    필드 읽기 ADOFAI.LevelData::version
+    필드 쓰기 ADOFAI.LevelData::version
+    필드 읽기 ADOFAI.LevelData::levelEvents
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 ADOFAI.LevelEvent::Copy
+    호출 제네릭 EventsArray`1::Add
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 ADOFAI.LevelData::decorations
+    호출 제네릭 DecorationsArray`1::Add
+    필드 읽기 ADOFAI.LevelData::songSettings
+    필드 쓰기 ADOFAI.LevelData::songSettings
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    필드 쓰기 ADOFAI.LevelData::levelSettings
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    필드 쓰기 ADOFAI.LevelData::trackSettings
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    필드 쓰기 ADOFAI.LevelData::backgroundSettings
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    필드 쓰기 ADOFAI.LevelData::cameraSettings
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    필드 쓰기 ADOFAI.LevelData::miscSettings
+    필드 읽기 ADOFAI.LevelData::eventSettings
+    필드 쓰기 ADOFAI.LevelData::eventSettings
+    필드 읽기 ADOFAI.LevelData::decorationSettings
+    필드 쓰기 ADOFAI.LevelData::decorationSettings
+  get_requiredDLC
+    필드 읽기 ADOFAI.LevelData::_requiredDLC
+  RefreshRequiredDLC
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 ADOFAI.LevelData::levelEvents
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::taroDLC
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    정적필드 읽기 NeoCosmosManager::instance
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1::ToArray
+    필드 쓰기 ADOFAI.LevelData::_requiredDLC
+  get_fullCaption
+    호출 ADOFAI.LevelData::get_fullCaptionTagged
+    호출 RDUtils::RemoveRichTags
+  get_fullCaptionTagged
+    호출 ADOFAI.LevelData::get_song
+    호출 RDEditorUtils::IsNullOrEmpty
+    호출 ADOFAI.LevelData::get_artist
+    호출 System.String::Trim
+    호출 System.String::EndsWith
+    호출 System.String::IndexOf
+    호출 System.String::Substring
+    호출 System.String::Concat
+  get_artist
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  set_artist
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::set_Item
+  get_specialArtistType
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_song
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_author
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_previewImage
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  set_previewImage
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::set_Item
+  get_previewIcon
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::GetString
+  set_previewIcon
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::set_Item
+  get_previewIconColor
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::GetColor
+  get_previewSongStart
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_previewSongDuration
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_seizureWarning
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_levelDesc
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_levelTags
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_artistPermission
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  set_artistPermission
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::set_Item
+  get_artistLinks
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_difficulty
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::GetInt
+  get_songFilename
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  set_songFilename
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::set_Item
+  get_bpm
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_volume
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_pitch
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_offset
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_hitsound
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_hitsoundVolume
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_separateCountdownTime
+    필드 읽기 ADOFAI.LevelData::levelSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_countdownTicks
+    필드 읽기 ADOFAI.LevelData::songSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackColorType
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackColor
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::GetColor
+  get_trackShadowColor
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::GetNullableColor
+  get_secondaryTrackColor
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::GetColor
+  get_trackColorAnimDuration
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackColorPulse
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackPulseLength
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackStyle
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackTextureScale
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackGlowIntensity
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_tileShape
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackTexture
+    정적필드 읽기 scnGame::instance
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 scnGame::levelPath
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::Combine
+    필드 읽기 scnGame::imgHolder
+    호출 TextureManager::AddTexture
+    필드 읽기 TextureManager+CustomTexture::texture
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Texture::set_wrapMode
+  get_trackAnimation
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackDisappearAnimation
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackBeatsAhead
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_trackBeatsBehind
+    필드 읽기 ADOFAI.LevelData::trackSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_backgroundColor
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::GetColor
+  get_bgImage
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_bgImageColor
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::GetColor
+  get_bgParallax
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 UnityEngine.Vector2::op_Division
+  get_bgTiling
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_bgLooping
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_bgFitScreen
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_bgLockRot
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_bgSmoothing
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_bgShowDefaultBGIfNoImage
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_bgShowDefaultBGTile
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_bgDefaultBGTileColor
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::GetColor
+  get_showBGShape
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_bgShapeType
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_bgDefaultBGShapeColor
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::GetColor
+  get_scalingRatio
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_camRelativeTo
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_camPosition
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_camRotation
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 System.Object::ToString
+    호출 System.Convert::ToSingle
+  get_camZoom
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_pulseCamOnLandingFloor
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_camEnabledOnLowVFX
+    필드 읽기 ADOFAI.LevelData::cameraSettings
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+  get_bgVideo
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_floorIconOutlines
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_stickToFloors
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::GetBool
+  get_planetEase
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_planetEaseParts
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_planetEasePartBehavior
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::get_Item
+  get_defaultTextColor
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::GetColor
+  get_defaultTextShadowColor
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::GetColor
+  GetMissingParams
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 ADOFAI.LevelData::get_artist
+    호출 System.String::Trim
+    호출 System.String::op_Equality
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 ADOFAI.LevelData::get_song
+    호출 ADOFAI.LevelData::get_author
+    호출 ADOFAI.LevelData::get_previewImage

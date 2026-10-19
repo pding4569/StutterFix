@@ -17,8 +17,10 @@ namespace StutterFix
             public bool Equals(scrDecoration a, scrDecoration b) => ReferenceEquals(a, b);
             public int GetHashCode(scrDecoration d) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(d);
         }
-        private sealed class Entry
+        internal sealed class Entry
         {
+            internal DecoEngine.State Engine;
+            internal bool EngineRejected;
             internal scrDecoration D;
             internal Transform Pivot;
             internal int Epoch = -1;
@@ -76,6 +78,7 @@ namespace StutterFix
         public static Exception ReorderEnd(Exception __exception) { Invalidate(); return __exception; }
         internal static void Forget()
         {
+            DecoEngine.RestoreAll();
             records.Clear(); Array.Clear(slots, 0, slots.Length); owner = completedOwner = null;
             ownerCamera = null; parentTransform = cameraTransform = null; preparedEpoch = -1;
             completedFrame = -1; Invalidate();
@@ -141,6 +144,7 @@ namespace StutterFix
             int reason = Eligible(e, parent, parentOK, camera);
             if (reason != 0)
             {
+                if (e != null && e.Engine != null) DecoEngine.ExitDecoration(d, reason);
                 reasons[reason]++;
                 if (e != null) e.Has = false;   // 원래 경로가 Transform 을 쓸 수 있다
                 // Preserve Unity's destroyed-object null test on fallback, as the original manager does.
@@ -150,9 +154,12 @@ namespace StutterFix
             int fc = Time.frameCount;
             if (e.LastFrame != fc - 1 && e.LastFrame != fc) e.Has = false;   // 지난 프레임을 건너뛰었다(숨김·잠듦·원래 경로 등): 처음부터 다시 쓴다
             e.LastFrame = fc;
-            Apply(e, e.D, e.D.parallax, e.Pivot, cam);
+            bool engine = e.Engine != null;
+            if (e.Engine != null) DecoEngine.Late(e.Engine, cam);
+            else Apply(e, e.D, e.D.parallax, e.Pivot, cam);
 #if DEV || AUTOTEST
-            if (Verify && (++sample & 63) == 0) Compare(e);
+            bool lateSample = engine && MoveApply.VerifyLate && ((MoveApply.LateChecked++ & 31) == 0);
+            if ((Verify && (++sample & 63) == 0) || lateSample) Compare(e, lateSample);
 #endif
             return true;
         }
@@ -176,6 +183,30 @@ namespace StutterFix
             if (!parentOK || !e.ParentOK) return 6;
             return 0;
         }
+        internal static Entry EngineEntry(scrDecoration d)
+        {
+            if (!installed || !Enabled || !compatible || !Hitch.Playing || SceneReset.Resetting
+                || !MoveApply.Enabled || !Dormancy.Enabled || preparedEpoch != epoch) return null;
+            if (!records.TryGetValue(d, out var e) || e.EngineRejected || e.LastFrame != Time.frameCount - 1) return null;
+            return EngineReason(e) == 0 ? e : null;
+        }
+        internal static int EngineReason(Entry e)
+        {
+            if (!installed || !Enabled || !compatible || !Hitch.Playing || SceneReset.Resetting
+                || !MoveApply.Enabled || !Dormancy.Enabled || preparedEpoch != epoch) return 7;
+            if (e.LastFrame != Time.frameCount - 1 && e.LastFrame != Time.frameCount) return 7;
+            return Eligible(e, parentTransform, parentIdentity, cameraTransform);
+        }
+        internal static void EngineApply(Entry e, Vector3 cam, Vector2 pos, float angle, Vector2 scale)
+            => Apply(e, e.D, e.D.parallax, e.Pivot, cam, pos, angle, scale);
+        internal static Entry EngineBenchEntry(scrDecoration d)
+        {
+            var p = d.parallax;
+            rendererOn(d) = true; rendererColor(d) = Color.white;
+            inited(p) = true; isDeco(p) = true; cached(p) = d.pivotTrans; p.decoration = d;
+            return new Entry { D = d, Pivot = d.pivotTrans, ParentOK = true, Epoch = epoch };
+        }
+        internal static int EngineBenchReason(Entry e, Transform parent) => Eligible(e, parent, true, null);
         private static bool Identity(Transform t)
         {
             var p = t.position; var r = t.rotation; var s = t.lossyScale;
@@ -211,8 +242,11 @@ namespace StutterFix
         private static bool Same(Vector3 a, Vector3 b) => BitConverter.SingleToInt32Bits(a.x) == BitConverter.SingleToInt32Bits(b.x) && BitConverter.SingleToInt32Bits(a.y) == BitConverter.SingleToInt32Bits(b.y) && BitConverter.SingleToInt32Bits(a.z) == BitConverter.SingleToInt32Bits(b.z);
         private static bool Same(Quaternion a, Quaternion b) => BitConverter.SingleToInt32Bits(a.x) == BitConverter.SingleToInt32Bits(b.x) && BitConverter.SingleToInt32Bits(a.y) == BitConverter.SingleToInt32Bits(b.y) && BitConverter.SingleToInt32Bits(a.z) == BitConverter.SingleToInt32Bits(b.z) && BitConverter.SingleToInt32Bits(a.w) == BitConverter.SingleToInt32Bits(b.w);
         private static void Apply(Entry e, scrDecoration d, scrParallax p, Transform pivot, Vector3 camera)
+            => Apply(e, d, p, pivot, camera, d.pivotPosVec, d.rotAngle, d.scaleVec);
+        private static void Apply(Entry e, scrDecoration d, scrParallax p, Transform pivot, Vector3 camera,
+            Vector2 position, float angle, Vector2 scaling)
         {
-            Vector2 pos = d.pivotPosVec + Vector2.zero;
+            Vector2 pos = position + Vector2.zero;
             Vector3 pos3 = pos;
             start(p) = pos3;
             p.posCamAtStart = pos;
@@ -223,9 +257,11 @@ namespace StutterFix
             Vector2 result = u + offset;
             end(p) = result;
             var np = new Vector3(result.x, result.y, 0f);
-            var nr = Quaternion.Euler(0f, 0f, d.startRot + d.rotAngle);
-            Vector2 scale = d.scaleVec * camScale * (Vector2)Vector3.one;
+            var nr = Quaternion.Euler(0f, 0f, d.startRot + angle);
+            Vector2 scale = scaling * camScale * (Vector2)Vector3.one;
             var ns = new Vector3(scale.x, scale.y, 1f);
+            if (e.Engine != null && DecoEngine.ShouldVerify(e.Engine))
+                DecoEngine.CheckLate(e.Engine, camera, start(p), p.posCamAtStart, end(p), np, nr, ns);
             writes++;
             if (SkipSame && e.Has)
             {
@@ -252,7 +288,7 @@ namespace StutterFix
         private static bool Bit(Vector2 a, Vector2 b) => Bit(a.x, b.x) && Bit(a.y, b.y);
         private static bool Bit(Vector3 a, Vector3 b) => Bit(a.x, b.x) && Bit(a.y, b.y) && Bit(a.z, b.z);
         private static bool Bit(Quaternion a, Quaternion b) => Bit(a.x, b.x) && Bit(a.y, b.y) && Bit(a.z, b.z) && Bit(a.w, b.w);
-        private static void Compare(Entry e)
+        private static void Compare(Entry e, bool lateSample = false)
         {
             var a = Read(e);
             // TightLate never prefixes UpdatePosition: direct call runs the original path and all existing patches.
@@ -261,6 +297,7 @@ namespace StutterFix
             if (Bit(a.P,b.P) && Bit(a.R,b.R) && Bit(a.S,b.S) && Bit(a.Cam,b.Cam)
                 && Bit(a.Start,b.Start) && Bit(a.End,b.End) && Bit(a.Scale,b.Scale) && Bit(a.Angle,b.Angle)) return;
             mismatches++; e.Rejected = true; // persist for this decoration until the level is released
+            if (lateSample) MoveApply.LateMismatch++;
             if (first == "none") first = e.D.name + " position=" + Bit(a.P,b.P) + " rotation=" + Bit(a.R,b.R)
                 + " scale=" + Bit(a.S,b.S) + " parallax=" + (Bit(a.Cam,b.Cam) && Bit(a.Start,b.Start) && Bit(a.End,b.End))
                 + " fast/original position=" + a.P.ToString("R") + "/" + b.P.ToString("R")

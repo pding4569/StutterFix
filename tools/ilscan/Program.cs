@@ -24,6 +24,7 @@ static class Program
         using var fs = File.OpenRead(args[0]);
         pe = new PEReader(fs);
         md = pe.GetMetadataReader();
+        if (Environment.GetEnvironmentVariable("DECO_READERS") == "1") { DecoReaders(); return 0; }
         string types = Environment.GetEnvironmentVariable("TYPES");
         string method = Environment.GetEnvironmentVariable("METHOD");
         bool fields = Environment.GetEnvironmentVariable("FIELDS") == "1";
@@ -188,6 +189,42 @@ static class Program
             }
         }
         Console.WriteLine("(" + hits + "곳)");
+    }
+
+    // All types, not just scrDecoration: consumers often live in closures/mods.
+    static void DecoReaders()
+    {
+        var targets = new HashSet<string> {
+            "scrDecoration::pivotPosVec", "scrDecoration::pivotOffsetVec", "scrDecoration::rotAngle", "scrDecoration::scaleVec",
+            "scrParallax::startPosition", "scrParallax::posCamAtStart", "scrParallax::endPosition",
+            "scrParallax::GetPositionWithParallax", "scrDecoration::GetDecorationWorldSize" };
+        var reflectionNames = new HashSet<string> { "pivotPosVec", "pivotOffsetVec", "rotAngle", "scaleVec",
+            "startPosition", "posCamAtStart", "endPosition", "FollowDecoration", "OrbitDecoration" };
+        foreach (var mh in md.MethodDefinitions)
+        {
+            var seen = new HashSet<string>();
+            foreach (var (op, tok) in Tokens(md.GetMethodDefinition(mh)))
+            {
+                if (op == ILOpCode.Ldstr)
+                {
+                    string value = md.GetUserString(MetadataTokens.UserStringHandle(tok & 0xFFFFFF));
+                    if (reflectionNames.Contains(value))
+                    {
+                        string reflectionRow = MethodTitle(mh) + "\tStringReference\t" + value;
+                        if (seen.Add(reflectionRow)) Console.WriteLine(reflectionRow);
+                    }
+                    continue;
+                }
+                if (!(IsCall(op) || op == ILOpCode.Ldfld || op == ILOpCode.Ldflda)) continue;
+                var h = Handle(tok);
+                if (h.Kind != HandleKind.MethodDefinition && h.Kind != HandleKind.MemberReference
+                    && h.Kind != HandleKind.FieldDefinition && h.Kind != HandleKind.MethodSpecification) continue;
+                string target = MemberName(h);
+                if (!targets.Contains(target) && !target.EndsWith("::GetDecorationWorldSize")) continue;
+                string row = MethodTitle(mh) + "\t" + op + "\t" + target;
+                if (seen.Add(row)) Console.WriteLine(row);
+            }
+        }
     }
 
     static IEnumerable<TypeDefinitionHandle> MatchTypes(string part)

@@ -1,0 +1,89 @@
+﻿== PACL2.CustomFFX.Variables.LevelEventInfoBuilder
+  .ctor
+    호출 System.Object::.ctor
+    필드 쓰기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_eventType
+    필드 쓰기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_category
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_propertiesInfo
+    호출 ADOFAI.LevelEventInfo::.ctor
+    필드 읽기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_eventType
+    호출 System.Object::ToString
+    필드 쓰기 ADOFAI.LevelEventInfo::name
+    필드 쓰기 ADOFAI.LevelEventInfo::type
+    필드 쓰기 ADOFAI.LevelEventInfo::isDecoration
+    필드 쓰기 ADOFAI.LevelEventInfo::useGroups
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_category
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 쓰기 ADOFAI.LevelEventInfo::categories
+    필드 쓰기 ADOFAI.LevelEventInfo::executionTime
+    호출 제네릭 System.Nullable`1::.ctor
+    필드 쓰기 ADOFAI.LevelEventInfo::allowFirstFloor
+    필드 읽기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_propertiesInfo
+    필드 쓰기 ADOFAI.LevelEventInfo::propertiesInfo
+    필드 쓰기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_levelEventInfo
+  MakeKey
+    호출 System.String::Join
+  MakeTypeKeyFromPropertyValue
+    호출 System.Type::GetTypeFromHandle
+    호출 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::MakeTypeKey
+    호출 System.ArgumentException::.ctor
+  MakeTypeKey
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Type::op_Equality
+    호출 System.Type::get_IsEnum
+    호출 System.Reflection.MemberInfo::get_Name
+    호출 System.String::Concat
+    호출 System.Object::ToString
+    호출 System.ArgumentException::.ctor
+  Build
+    필드 읽기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_levelEventInfo
+  UnitToString
+    호출 System.ArgumentOutOfRangeException::.ctor
+  MakeProperty
+    필드 읽기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_eventType
+    호출 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::MakeKey
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    호출 제네릭 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::MakeTypeKeyFromPropertyValue
+    호출 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::UnitToString
+    필드 읽기 제네릭 PACL2.CustomFFX.Variables.ScalarPropertyValue`1::value
+    호출 제네릭 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::MatchPropertyValue
+    필드 읽기 제네릭 PACL2.CustomFFX.Variables.ScalarPropertyValue`1::range
+    호출 제네릭 System.Tuple`2::get_Item1
+    호출 제네릭 System.Tuple`2::get_Item2
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 제네릭 PACL2.CustomFFX.Variables.MinMaxPropertyValue`1::min
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 제네릭 PACL2.CustomFFX.Variables.MinMaxPropertyValue`1::max
+    필드 읽기 PACL2.CustomFFX.Variables.TextPropertyValue::value
+    호출 System.String::Format
+    호출 System.ArgumentException::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 PACL2.CustomFFX.Variables.PropertyConstraint::name
+    필드 읽기 PACL2.CustomFFX.Variables.PropertyConstraint::value
+    호출 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::PropertyConstraintValueToString
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_levelEventInfo
+    호출 ADOFAI.PropertyInfo::.ctor
+    필드 읽기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_propertiesInfo
+    필드 읽기 ADOFAI.PropertyInfo::name
+  MatchPropertyValue
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Type::get_IsEnum
+    호출 System.Object::ToString
+    호출 System.Type::op_Equality
+    필드 읽기 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::_eventType
+    호출 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::MakeKey
+  PropertyConstraintValueToString
+    호출 System.Int32::ToString
+    호출 System.Single::ToString
+    호출 System.Object::ToString
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    호출 System.String::Format
+    호출 System.Object::GetType
+    호출 System.String::Concat
+    호출 System.ArgumentException::.ctor

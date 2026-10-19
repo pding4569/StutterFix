@@ -1,0 +1,103 @@
+﻿== PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration
+  PrepVfx
+    호출 scrDecorationManager::get_instance
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_targetTag
+    호출 scrDecorationManager::GetTaggedDecorations
+    호출 제네릭 System.Linq.Enumerable::ToArray
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_targetDecorations
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_tag
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_decorations
+  DoFollow
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass12_0::.ctor
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass12_0::<>4__this
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass12_0::mapper
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass12_0::followFunc
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass12_0::mapper
+    호출 제네릭 System.Func`2::Invoke
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass12_0::start
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass12_0::<DoFollow>b__0
+    호출 제네릭 DG.Tweening.Core.DOSetter`1::.ctor
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followRatio
+    필드 읽기 ffxPlusBase::duration
+    호출 DG.Tweening.DOTween::To
+    필드 읽기 ffxPlusBase::ease
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenExtensions::Done
+  StartEffect
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_decorations
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::.ctor
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::dec
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followPosition
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::dec
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_0
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_0
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__1
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+FollowFunc::.ctor
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::DoFollow
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_2
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_2
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_2
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__3
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followPivot
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_4
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_4
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_4
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__5
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_6
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_6
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_6
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__7
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followRotation
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_8
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_8
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_8
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__9
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followScale
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_10
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_10
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_10
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__11
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_12
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_12
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_12
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__13
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followParallax
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_14
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_14
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_14
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__15
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_16
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_16
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_16
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__17
+    필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followParallaxOffset
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_18
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_18
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_18
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__19
+    정적필드 읽기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_20
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<StartEffect>b__14_20
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c::<>9__14_20
+    호출 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration+<>c__DisplayClass14_0::<StartEffect>b__21
+  Decode
+    호출 ADOFAI.LevelEvent::GetFloat
+    필드 읽기 ffxPlusBase::crotchet
+    필드 쓰기 ffxPlusBase::duration
+    호출 ADOFAI.LevelEvent::GetString
+    호출 System.String::Split
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_tag
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_targetTag
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followRatio
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followPosition
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followPivot
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followRotation
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followScale
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followParallax
+    필드 쓰기 PACL2.CustomFFX.Advanced.FollowDecoration.ffxFollowDecoration::_followParallaxOffset
+    필드 쓰기 ffxPlusBase::ease
+  .ctor
+    호출 ffxPlusBase::.ctor

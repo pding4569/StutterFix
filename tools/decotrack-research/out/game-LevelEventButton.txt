@@ -1,0 +1,81 @@
+﻿== ADOFAI.LevelEventButton
+  get_enableButton
+    필드 읽기 ADOFAI.LevelEventButton::_enableButton
+  set_enableButton
+    필드 쓰기 ADOFAI.LevelEventButton::_enableButton
+    호출 UnityEngine.Color::get_gray
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.Color::get_white
+    필드 쓰기 ADOFAI.LevelEventButton::baseColor
+    필드 읽기 ADOFAI.LevelEventButton::pointInButton
+    호출 ADOFAI.LevelEventButton::ShowAsSelected
+  Init
+    필드 쓰기 ADOFAI.LevelEventButton::page
+    필드 쓰기 ADOFAI.LevelEventButton::type
+    정적필드 읽기 GCS::levelEventsInfo
+    호출 System.Object::ToString
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 쓰기 ADOFAI.LevelEventButton::info
+    필드 쓰기 ADOFAI.LevelEventButton::keyCode
+    필드 읽기 ADOFAI.LevelEventButton::icon
+    정적필드 읽기 GCS::levelEventIcons
+    호출 UnityEngine.UI.Image::set_sprite
+    필드 읽기 ADOFAI.LevelEventButton::button
+    호출 UnityEngine.UI.Button::get_onClick
+    호출 ADOFAI.LevelEventButton::OnClicky
+    호출 UnityEngine.Events.UnityAction::.ctor
+    호출 UnityEngine.Events.UnityEvent::AddListener
+    호출 ADOFAI.LevelEventButton::ShowAsSelected
+  OnClicky
+    호출 ADOFAI.LevelEventButton::get_enableButton
+    호출 UnityEngine.Input::GetKey
+    호출 ADOBase::get_editor
+    필드 읽기 ADOFAI.LevelEventButton::type
+    호출 scnEditor::FilterEventType
+    호출 scnEditor::AddEventAtSelected
+    필드 읽기 scnEditor::filteredEventType
+    호출 ADOFAI.LevelEventButton::ShowAsFiltered
+  OnPointerEnter
+    필드 쓰기 ADOFAI.LevelEventButton::pointInButton
+    호출 ADOFAI.LevelEventButton::get_enableButton
+    호출 ADOFAI.LevelEventButton::ShowAsSelected
+  OnPointerExit
+    필드 쓰기 ADOFAI.LevelEventButton::pointInButton
+    호출 ADOFAI.LevelEventButton::get_enableButton
+    호출 ADOFAI.LevelEventButton::ShowAsSelected
+  ShowAsSelected
+    필드 읽기 ADOFAI.LevelEventButton::icon
+    호출 ADOFAI.LevelEventButton::get_enableButton
+    필드 읽기 ADOFAI.LevelEventButton::baseColor
+    필드 읽기 UnityEngine.Color::a
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.UI.Graphic::set_color
+    호출 ADOBase::get_editor
+    필드 읽기 scnEditor::eventPickerText
+    필드 읽기 ADOFAI.LevelEventButton::type
+    호출 System.String::Format
+    호출 RDString::Get
+    호출 TMPro.TMP_Text::set_text
+  ShowAsFiltered
+    필드 읽기 ADOFAI.LevelEventButton::icon
+    호출 UnityEngine.Color::get_white
+    호출 UnityEngine.Color::get_cyan
+    필드 쓰기 ADOFAI.LevelEventButton::baseColor
+    호출 UnityEngine.UI.Graphic::set_color
+    필드 쓰기 ADOFAI.LevelEventButton::showingAsFiltered
+    호출 ADOFAI.LevelEventButton::ShowAsSelected
+  OnPointerClick
+    호출 ADOFAI.LevelEventButton::get_enableButton
+    호출 UnityEngine.EventSystems.PointerEventData::get_button
+    호출 ADOBase::get_editor
+    필드 읽기 scnEditor::currentCategory
+    필드 읽기 ADOFAI.LevelEventButton::type
+    호출 scnEditor::RemoveFavoriteEvent
+    필드 읽기 scnEditor::eventPickerText
+    호출 TMPro.TMP_Text::set_text
+    호출 scnEditor::AddFavoriteEvent
+  .ctor
+    호출 UnityEngine.Color::get_white
+    필드 쓰기 ADOFAI.LevelEventButton::baseColor
+    필드 쓰기 ADOFAI.LevelEventButton::_enableButton
+    호출 ADOBase::.ctor

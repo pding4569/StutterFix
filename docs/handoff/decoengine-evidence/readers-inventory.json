@@ -1,0 +1,1866 @@
+[
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Accessibility.dll",
+    "sha256": "b742a3d706344b3117c9239e34f5385d9339239f9419883b3ea795f85d110afe",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Assembly-CSharp-firstpass.dll",
+    "sha256": "7addef3c50c8c45a10275967f46cbce2eba058ffe7e6051c8460f03338f64741",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Assembly-CSharp.dll",
+    "sha256": "6ba2cfb8d260962d3c8a3e4409f60e8e98293ca9b2d2eca4875096bd02d40230",
+    "exit": 0,
+    "rows": [
+      "DecoTransformGizmoHolder::LateUpdate\tLdfld\tscrDecoration::pivotPosVec",
+      "DecoTransformGizmoHolder::LateUpdate\tCallvirt\tscrDecoration::GetDecorationWorldSize",
+      "DecoTransformGizmoHolder::LateUpdate\tLdfld\tscrDecoration::pivotOffsetVec",
+      "DecoTransformGizmoHolder::LateUpdate\tCallvirt\tscrParallax::GetPositionWithParallax",
+      "DecoTransformGizmoHolder::DragStart\tCallvirt\tscrParallax::GetPositionWithParallax",
+      "DecoTransformGizmoHolder::Drag\tCallvirt\tscrParallax::GetPositionWithParallax",
+      "DecoTransformGizmoHolder::Drag\tLdfld\tscrDecoration::pivotOffsetVec",
+      "DecoTransformGizmoHolder::Drag\tCallvirt\tscrDecoration::GetDecorationWorldSize",
+      "scnEditor::DragDecorationsStart\tLdfld\tscrParallax::posCamAtStart",
+      "scnEditor::DragDecorations\tLdfld\tscrDecoration::pivotOffsetVec",
+      "scnEditor::GoToDecoration\tLdfld\tscrParallax::posCamAtStart",
+      "scnEditor::MoveCameraToDecoration\tLdfld\tscrParallax::posCamAtStart",
+      "scrCustomBackgroundSprite::LateUpdate\tLdfld\tscrParallax::posCamAtStart",
+      "scrDecoration::SetPositionX\tLdfld\tscrDecoration::pivotPosVec",
+      "scrDecoration::SetPositionY\tLdfld\tscrDecoration::pivotPosVec",
+      "scrDecoration::SetPivotX\tLdfld\tscrDecoration::pivotPosVec",
+      "scrDecoration::SetPivotX\tLdfld\tscrDecoration::pivotOffsetVec",
+      "scrDecoration::SetPivotY\tLdfld\tscrDecoration::pivotPosVec",
+      "scrDecoration::SetPivotY\tLdfld\tscrDecoration::pivotOffsetVec",
+      "scrDecoration::UpdateScreenClamp\tLdfld\tscrDecoration::pivotPosVec",
+      "scrDecoration::UpdateScreenClamp\tLdfld\tscrDecoration::pivotOffsetVec",
+      "scrDecoration::UpdatePosition\tLdfld\tscrDecoration::pivotPosVec",
+      "scrDecoration::UpdatePosition\tLdfld\tscrDecoration::rotAngle",
+      "scrDecoration::UpdatePosition\tLdfld\tscrDecoration::scaleVec",
+      "scrDecorationManager::UpdateBordersSizes\tLdfld\tscrDecoration::scaleVec",
+      "scrDecorationManager::FinishUpdateDecorations\tLdfld\tscrDecoration::pivotOffsetVec",
+      "scrParallax::SetTrans\tLdfld\tscrParallax::posCamAtStart",
+      "scrParallax::SetTrans\tLdfld\tscrParallax::startPosition",
+      "scrParallax::SetTrans\tLdflda\tscrParallax::endPosition",
+      "scrParallax::GetPositionWithParallax\tLdfld\tscrParallax::endPosition",
+      "scrVisualDecoration::UpdateShader\tLdfld\tscrDecoration::scaleVec",
+      "ffxMoveDecorationsPlus::StartEffect\tLdfld\tscrDecoration::pivotPosVec",
+      "ffxMoveDecorationsPlus::StartEffect\tLdfld\tscrDecoration::pivotOffsetVec",
+      "ffxMoveDecorationsPlus::StartEffect\tLdfld\tscrDecoration::rotAngle",
+      "ADOFAI.DecorationPivot::UpdatePivotCrossImage\tLdfld\tscrDecoration::pivotPosVec",
+      "ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__28\tLdfld\tscrDecoration::scaleVec",
+      "ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__30\tLdfld\tscrDecoration::scaleVec",
+      "ffxMoveDecorationsPlus+<>c__DisplayClass47_1::<StartEffect>b__3\tLdfld\tscrDecoration::pivotOffsetVec",
+      "ffxMoveDecorationsPlus+<>c__DisplayClass47_1::<StartEffect>b__7\tLdfld\tscrDecoration::pivotOffsetVec",
+      "ffxMoveDecorationsPlus+<>c__DisplayClass47_2::<StartEffect>b__2\tLdfld\tscrDecoration::pivotOffsetVec",
+      "ffxMoveDecorationsPlus+<>c__DisplayClass47_3::<StartEffect>b__6\tLdfld\tscrDecoration::pivotOffsetVec"
+    ],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\DemiLib.dll",
+    "sha256": "924b7530120c080c6acefd20dbab1947c631278836c58f1b466899ad6cd02be2",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\DOTween.dll",
+    "sha256": "8e90fc43ab564a5a51424af56531ab074a5a2e9cab271b2d653d287954237b83",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\DOTweenPro.dll",
+    "sha256": "db5225f6db87969a03b48a56e2dc3828b38384adca44da0f89248a2bb483b056",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Facepunch.Steamworks.Win64.dll",
+    "sha256": "4a29a25c92d45910fc64a878aa94e174ed0450e95e31b082c3287442993f8e37",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\I18N.CJK.dll",
+    "sha256": "0b7fd9bc20da736ad311fd35c7cf05851bc89ccb1f18af167b1868dae62c6242",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\I18N.dll",
+    "sha256": "0ddd1f2a9e945943aa6629505b9ffa10bdf5760c70fda924702bf22ce089d030",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\I18N.MidEast.dll",
+    "sha256": "d0c612292d84278e2a5379dd47f07cb192887c89b7dc2acbed95502dcc6b6a28",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\I18N.Other.dll",
+    "sha256": "974bdd056ade20331a96e54927498b0038eeabd70ff8f03cad7518152533d93e",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\I18N.Rare.dll",
+    "sha256": "dc55ced9318961fc69de5fa67072ed7e2a526175840c08715dbd8b6fec2882cc",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\I18N.West.dll",
+    "sha256": "e827a090dc5ff235461ba4051d28f6c433cf5e7b32ccbfc1565b53445e11e149",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Interop.SpeechLib.dll",
+    "sha256": "07e3077e0d3d8e6c07c689933857523b5a79d4f75ed80d250114747510db2169",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Microsoft.Bcl.AsyncInterfaces.dll",
+    "sha256": "80678203bd0203a6594f4e330b22543c0de5059382bb1c9334b7868b8f31b1bc",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Microsoft.Bcl.TimeProvider.dll",
+    "sha256": "d9941b9603506c46e2aaf8b44166c93646b55ebea0d365792b405c2562753442",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Mono.Data.Sqlite.dll",
+    "sha256": "91914602f682e0d4278dec0c1f29e3a781fc63c8c3fd7dc864e6ad3f9b95fd38",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Mono.Posix.dll",
+    "sha256": "b34b6f9e38161e3725aad3b98c7fc31947766cdf5d1626f4d7cd3d609ace07d7",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Mono.Security.dll",
+    "sha256": "618009319dbf3ae374f9b5dc0d0522e1e1bdd172200c120a5471747b7991a584",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Mono.WebBrowser.dll",
+    "sha256": "2c53f84d7f24d2de7aaab8ea5bf0630550a77eba81dd80475744e976e5ed54ab",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\mscorlib.dll",
+    "sha256": "6c76e06e6d44cf0f39bf59e6a90770968b70093ad4c1572dfbc5e46e431c5fbf",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\netstandard.dll",
+    "sha256": "6ae62e082dc494a2433984177f60ca4db5fae69b1f360a8b33754172b310b8c5",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Newtonsoft.Json.dll",
+    "sha256": "a56146202232958f46bd6a28b5a7da166aea123ee0d646735a46e5c341dfbf1f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Novell.Directory.Ldap.dll",
+    "sha256": "edda9b5bcfb8851eb53d8426849e3e1c99b48f117216f06749a365bf0b9951fc",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Ookii.Dialogs.dll",
+    "sha256": "5c8805ddf818a2c0a3a44a235e904a9896bd6aa8ede4d5ff386ccf945f808df7",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Purchasing.Common.dll",
+    "sha256": "11d51381aace06cb87863d2cbd9fd6dd1c3d370f7413ae2650a3381ca7cf3f19",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\R3.dll",
+    "sha256": "4ac9ec66b56f4cbd139e4c7f99a6e0df6e4bb4c2707635880df8dd04ace291eb",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\R3.Unity.dll",
+    "sha256": "836370888f9429feca9f8ab234d9372b0dc14e071806215a5784cbbf2099f2e4",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\R3.Unity.TextMeshPro.dll",
+    "sha256": "e36a81277ea0ca409c7d58f3626a3b3e1a71078fc5a6a7607c84c774b24b6904",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\R3.Unity.XRInteractionToolkit.dll",
+    "sha256": "c3ee809d51695725430e4fcd353d24f8f3a1aaa5e86cc39fcd8181766f3dfe46",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\RDTools.dll",
+    "sha256": "32fc02e56fb17a088dff6368bc50a8bc760f35ca04a5af8d9f76f599b592b0c9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Rewired_Core.dll",
+    "sha256": "2cb69dd4a5131ba7b2e1a98cda507e0ad2dabcdc159eca1abbce93d030a7f5b4",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Rewired_Windows.dll",
+    "sha256": "c1f9b103ece19f2107459c0e7691dfa4e3d3fcf331a1bdff68395579f82f88e0",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Rewired_Windows_Functions.dll",
+    "sha256": "1cdeedefb0588c7ca05b1357cca87f6f3c042add165ac6114be7a553e759f1ae",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\SkyHook.Unity.dll",
+    "sha256": "ff02550957e1e2d3c5b451492d20857a3f2fb6d64ddab7a640b669362d778a48",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Buffers.dll",
+    "sha256": "762f8fdbe975e05b76be5fe996c53ce7c75e4a2830f2f50b02a5948ef6ba0aeb",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Collections.Immutable.dll",
+    "sha256": "69e57ac412200e47fe7b5f933a30c594e1fc1517498c88920aabc702f5ea00a7",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.ComponentModel.Annotations.dll",
+    "sha256": "77357a44be285c75f40780b6c8482effbd9ee537d27f5b8128a812954cbc2f6f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.ComponentModel.Composition.dll",
+    "sha256": "0c3e81771a5fe9657bea02887996de72606c3cb247e4fbe413f743f40e2af244",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.ComponentModel.DataAnnotations.dll",
+    "sha256": "699b9cbbcb9725b2a4ea0bac1a500978a1a6461cf1ccd3ae68d6e147a9538066",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Configuration.dll",
+    "sha256": "04907729e87a101e62d3a5c93cfa16688bee745d05440d6daa0c541964be27ab",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Core.dll",
+    "sha256": "a5e7d47313da0eca0b92a901a30498f5e970916faf63b70b74dd62b09760ed72",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Data.DataSetExtensions.dll",
+    "sha256": "498f14c37d83f946a47a79e01de777e62f269ee9c3820f2026b59ab1c1b9222f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Data.dll",
+    "sha256": "427478545ce66b632414ca838088ea073f250ed16b21c70005f48cb571350e47",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Design.dll",
+    "sha256": "cebadc09aa1c1ab3cc134decd836eb393a7228106fe14b80cdf1c360ab4989e3",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.DirectoryServices.dll",
+    "sha256": "a5b4eb329a500d3db2831ea72ee665c53afe836d283d6910422be9fae1452e98",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.dll",
+    "sha256": "7019d6b6dbfa07cf30f62e7d3ccb969f70cbf001fd72112938ffb535c7f75d81",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Drawing.Design.dll",
+    "sha256": "7a164a0926ac4b751ee812245b8d4941cd837ded866532efc8e000adc7fd9135",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Drawing.dll",
+    "sha256": "e182e688223acedb8135227e8fbff17d5ed22f47f81141aa9cb96ef1ab9926fc",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.EnterpriseServices.dll",
+    "sha256": "84af394ad863e31407eb2b9555ca7e96a9f1966630f5d7f0eec54f0011f6babc",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.IO.Compression.dll",
+    "sha256": "80421a67b4162a5f1b4aad6a8327c6d1fb4b04dedd39dae14a770b812594fae2",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.IO.Compression.FileSystem.dll",
+    "sha256": "2730d2a27f9362259a406ea14727e5f0a71bc21a6825be94f8623a84bd9f9c79",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.IO.Hashing.dll",
+    "sha256": "ac7ac3e83805b0b621c48b90543dc733c9a89106835278618357d6187e3da74e",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Memory.dll",
+    "sha256": "c4f030a2cba7da7cdcf493257c24560e203d355904aee490d645a935842f834a",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Net.Http.dll",
+    "sha256": "3cd3ac19050d5031c13644cd87958ad8029b79ce16c7747faf3d0542e7fb45a3",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Numerics.dll",
+    "sha256": "ac9224b32355a09f09b706cab568384f64cf8116825c5911cef1e13221c61c38",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Numerics.Vectors.dll",
+    "sha256": "1c3395a5f0c7aa066c19ee5f6fcd44b64f5bd4d76d476d5d62c4f0bb53517989",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Runtime.CompilerServices.Unsafe.dll",
+    "sha256": "37768488e8ef45729bc7d9a2677633c6450042975bb96516e186da6cb9cd0dcf",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Runtime.dll",
+    "sha256": "e0a7334b7ba419aaab6bd3bb6992d693e689341a9178172c9bf99c2aa6a085bd",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Runtime.Serialization.dll",
+    "sha256": "1152ef687dbe39e0ccb6b9a68f6501004415a729072df29abab3bc7c66840217",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Runtime.Serialization.Formatters.Soap.dll",
+    "sha256": "3d123948b045f88b4b4ec87c64018941e2cd69c622a88cf83cc65736f226184f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Security.dll",
+    "sha256": "2101a4dd4475285f96b1ac3ba1715a52aa8067690709e675cc49a9eb8ed901a4",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.ServiceModel.Internals.dll",
+    "sha256": "888ec94a59c127854871b76afa49fdcefdf723c0f0b6fd78e87f73a8495b63b5",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Text.Encodings.Web.dll",
+    "sha256": "57a3af74a0e44f87d33b2de139b2475bb782f82a4c3e7886f1509dc5e79cf87b",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Text.Json.dll",
+    "sha256": "f581f390c784fb3e67024ab96a26a67cd057645005ec46f84a0ba8aa4f89e92d",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Threading.Channels.dll",
+    "sha256": "31c7e3704c0477c53d9306362dc6abe741088efb7a7b4e46cded0169cf7bb0b2",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Threading.Tasks.Extensions.dll",
+    "sha256": "96150abdca5df4446b376560e069d59b3550212deda8cbdd316272f6b834f597",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Transactions.dll",
+    "sha256": "f65dbc257d26a361dcc01edd58bf3e542d186c8ee492a4f7a62b0dd7d59f7050",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.ValueTuple.dll",
+    "sha256": "f341fdcd30bfe1615b8cdcb0da0fb8c60dfae0b7aaf9238fe1cd5b721df16eb1",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Web.ApplicationServices.dll",
+    "sha256": "75a58b443c7f8227ecfb434a05b4989898d340898ccc28d3f4c2b9d9cd1708b6",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Web.dll",
+    "sha256": "2ff485e3ba4e554be132e56517440f56a26ff35f6c3d9b31b661461b556036d8",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Web.Services.dll",
+    "sha256": "03e8a3f59dff84a84691f0a4df080e63583a36f544502dea39c9592e5f3e8b93",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Windows.Forms.dll",
+    "sha256": "90b524d667b6d0b919801b80f11e64760480f8f68ac3d9abe797c26a57fc19a3",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Xml.dll",
+    "sha256": "79194220adfcf027a334c87b1adcc6d07b9660a4061e04b3d9500c10d30f7d49",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\System.Xml.Linq.dll",
+    "sha256": "4f5d6bf313cbf091e7bff83d07dd03ed93d0ecb3ddb025ae786aadd6b5f477fb",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UniTask.Addressables.dll",
+    "sha256": "569ffd9f9cb72b8b1c80fcef4b9092815fe5d3ad53905c56e16153ae042d8514",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UniTask.dll",
+    "sha256": "53bb8f2a30ca3855ffd86616cbed105371c18b99b185b98158e0d490593c9b28",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UniTask.DOTween.dll",
+    "sha256": "f7c7a9be99e5f205243c11e4da1d02e2f404c8af8301fef21998dd1789353c4d",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UniTask.Linq.dll",
+    "sha256": "ea530a6c096bff260bb9d71219b977c01a8a2ff6763dd0d7be2ff9ca18a0c5a3",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UniTask.TextMeshPro.dll",
+    "sha256": "24a4a75355b8afa6d98b91cac56780e6329f41725129090ed14701c3fe6a156e",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Addressables.dll",
+    "sha256": "efe574c230f5b296d92b5bd68aa89435d5937a25ba438a5d222919fd6d31b130",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Burst.dll",
+    "sha256": "6f10e553889605e64e7dced2700655eea76f7f1468af5cce484b803f72843cfe",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Burst.Unsafe.dll",
+    "sha256": "9d9c1ff52411decbee5d9f0d1cd61ebeaa222077aa77a52101ea3debafae98e2",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Collections.dll",
+    "sha256": "6c865d0a5a0a29afa9b53d67f25fe4436f944de564ff239db82f2d06cbe877d4",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Collections.LowLevel.ILSupport.dll",
+    "sha256": "ff50383f807f9692e4913b97e47d86fefcb8faa33d6d48cd3e3fd6fc7ffb448d",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.InternalAPIEngineBridge.004.dll",
+    "sha256": "24bc8e07aef3665af74e0a1d560faaf996205e4856e1965d30f0339122a990d2",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Mathematics.dll",
+    "sha256": "3fc129c9d0590e4a3b1e5711ce82106c7c16fa7069ddeab576287e895c62467a",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.MemoryProfiler.dll",
+    "sha256": "eed4d719c6eb304dd1d4cd7ebf4a186d7bf2229588a1cb2b10f0f4dd9f679bac",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Profiling.Core.dll",
+    "sha256": "9a6e59b7ad03e3d6512fc09c2ebc96b0230c1802ce108766e51785a9f3f55478",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Purchasing.AppleMacosStub.dll",
+    "sha256": "5740ebf16798e410f8877793cd4d06ad6ec69e5715735af6a0fda5750369f715",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Purchasing.AppleStub.dll",
+    "sha256": "79dc7058db8d4e1c414619003a9ba09ef55d7fc00aaed9d1263d62a285390126",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Purchasing.Codeless.dll",
+    "sha256": "6dee3f34c7e52eca0f62bc1b346451f9b69e838bb3d8618f237f94f07a4d3f45",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Purchasing.dll",
+    "sha256": "239fd3b57e2d6a9a06ae1083e70bd3237877b204415f47c77d495af1201c0c48",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Purchasing.SecurityCore.dll",
+    "sha256": "02177430df2cbdbdf7d294b7aa653c7580ca9e74c53e9e9c6c03d6577e9601af",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Purchasing.SecurityStub.dll",
+    "sha256": "bea3ba704003adc40cdce73963a1db9de9dbb727aca6042716f0831fa8f5a2f1",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Purchasing.Stores.dll",
+    "sha256": "839b76e44d143db94a8e0bf7ee4415601cf9bf0d26e8fe4490b7d94acecd8f2d",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Purchasing.Utilities.dll",
+    "sha256": "614af1ab18a6c163b930a5217ee39c9a65a28a61eff6b6096971e463c188f064",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.ResourceManager.dll",
+    "sha256": "0cd8af1311abbfe0955d48f331c2c988011234a190893ecc9a10b1ac9b7720c3",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.ScriptableBuildPipeline.dll",
+    "sha256": "7b99068f4ab8ed5fc43ecc3a62b9abb7299a8698224c2a651ab61c0f2d5657eb",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Analytics.dll",
+    "sha256": "518d574e0b7900a772953c3e2c21f0b72774adcab10f3f3df4f4f8f4d7fad9b9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Components.dll",
+    "sha256": "157af0926ce2bdbf835290a555abe5053cb1509a4ccf0f0dd156e0260993c011",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Configuration.dll",
+    "sha256": "a32e06e292d40411093fb27e69288b1e62f8636fe234dab679c94eeabb559816",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Device.dll",
+    "sha256": "d099fd87e2732fbab8b701291369f7f4213fdce6bb0d44eb415ebacdd06cf7cc",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.dll",
+    "sha256": "97307ce95e5b04bc7d9e82df3594214f324d71b23ee98af48109be0987d6e7f4",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Environments.dll",
+    "sha256": "4a89172851a9c76b27d5fc079d4a235e53ed513ad420b5042d3212148249cfcf",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Environments.Internal.dll",
+    "sha256": "e782c29cbfe15470213f426cb5fc2499c393eba2426da7039c9ddacb49e588a7",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Internal.dll",
+    "sha256": "aa8edfa0385a3840d3b1a6aa519ff2a9b6e0dd82bfd175aee3f4d9486c862b9d",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Networking.dll",
+    "sha256": "aa405c33ff4f186fa55e263897471b95326fe995681baf5cc023b695456a35b9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Registration.dll",
+    "sha256": "19f215e6368d9eb30da5c6b6e32ffdc6b3abe271064f6cbf72b3faaa4ddb5119",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Scheduler.dll",
+    "sha256": "a204d2dbbfa787cb30e6338321dfb87f88e81e6ddc47c5d6e274c09073ea2c6f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Telemetry.dll",
+    "sha256": "310488b69a91c702b6c4a3164b59842174b2aa8ef921c911bb5c5afc0b268f99",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.Services.Core.Threading.dll",
+    "sha256": "6eec60dba0e2e0f3953d8e7ed2c898996ababe90c0e85f754f009790a6e73628",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Unity.TextMeshPro.dll",
+    "sha256": "3f8d1c17623579a753cb5ed7d12a8a201da4154f5db7f4ede760d00631d29ab9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.AccessibilityModule.dll",
+    "sha256": "b938cb9a95f53d398f884c9e64f0cca94dadb1e46161a9703c4e8d626049f73a",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.AdaptivePerformanceModule.dll",
+    "sha256": "9bf45a2fc40d8223e3ad9e066b614e982d9e4cba3c4c54a7ba2904090885f794",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.AIModule.dll",
+    "sha256": "6c7175da9f74b999bb21308729972c626da8e0aa4fe885f8f94bbb968f98ddc7",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.AMDModule.dll",
+    "sha256": "81cae0a385ab12b78f1d1c5b32463a7d74be5e12213518bea2328f87cbf3267a",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.AndroidJNIModule.dll",
+    "sha256": "775359cbaa592bce728b36bfd150c11c457d95c771e8669adabfe193e3edce13",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.AnimationModule.dll",
+    "sha256": "d35bc846afbdf0d404b743296fc26303db8f9eed5dca2d0172078f62652b5659",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ARModule.dll",
+    "sha256": "04057a2c10d7b3775f469c23c732da29b64c7642378607fadf35bb9fc651363b",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.AssetBundleModule.dll",
+    "sha256": "7e3ce4d7c118bf933fd36da08ddbce84f9cfa2063d81d51fabd9d557ec19df42",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.AudioModule.dll",
+    "sha256": "c6e1f30f2f481773971371b0ea65383ec80bca8574f7d7db3385ae07655db93d",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ClothModule.dll",
+    "sha256": "5d1e50260bb45ee6cbf7b3905356e48dfca89f840d51fbc1fa79666b91f6a805",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ClusterInputModule.dll",
+    "sha256": "2d319b6d5e9195f26d85e31ac93a1ea6a8de869dacdb0163d06a0ad2743dbcac",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ClusterRendererModule.dll",
+    "sha256": "978343f296bf550d8bbeb11a159aeae93dd739919355ed02acda86c9e00bf8e9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ContentLoadModule.dll",
+    "sha256": "bc86a7a83ef517632b8d616b6505567b9362b4b1ce648e17e2d68d4c1c968a82",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.CoreModule.dll",
+    "sha256": "9d7c73852c89503f348b05a8337f280fa813cf8e885d52c86a8c9580e68ec76b",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.CrashReportingModule.dll",
+    "sha256": "15fb1de26e84c876ca51af99d5445c0634ed3f4ffe8ff8dd4fc0fb4ee1eb36d2",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.DirectorModule.dll",
+    "sha256": "1415c13a6951425eb83b281ce2c22985ac1b671d052760bd56b46652d4b125af",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.dll",
+    "sha256": "1908e048275864af9cd99fd78e7c9d0f9ebd08c271830b575da213951b3393e9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.DSPGraphModule.dll",
+    "sha256": "1860e8e8258763c550713a192592a6518ad36ea21b217da074c4766e4af7fb02",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.GameCenterModule.dll",
+    "sha256": "7104f4a9250469fd511f7c66731a6cbcaf9e9305507d65d10e41b214cd8a4573",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.GIModule.dll",
+    "sha256": "af152bc998967d23c2c208bfe18ac32844dab6f8b19e16b21537191547be4383",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.GraphicsStateCollectionSerializerModule.dll",
+    "sha256": "fac5a539925fbfd71648412da7a63dea6dc07d336ff9818fa515aad4dcee1124",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.GridModule.dll",
+    "sha256": "f300e06a4431b535bf9ebfea4292f96c6f46c7d36feccdd5144224c38d2dc8d5",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.HierarchyCoreModule.dll",
+    "sha256": "bf0dc55d5287447f2db62f2c8830b4a18ab7c992090a97d6416184b7f76294b9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.HierarchyModule.dll",
+    "sha256": "dec942f79f73cd4c422839d8fca4dfd0cca3a2883d772a06dd4565a0c54d8d26",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.HotReloadModule.dll",
+    "sha256": "b23da30d411aa5fcd1446b346eec73aea5cb723c5dd547855a0ecacaeafc8b94",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.IdentifiersModule.dll",
+    "sha256": "0358cd6cd686c340797700e6e11321b7d9e2e03196dcab4164831336960cdc09",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ImageConversionModule.dll",
+    "sha256": "dccc9ccfb963999d0f56e75e7f03b139dfb4360765cb9821d68905d8e3bb983d",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.IMGUIModule.dll",
+    "sha256": "4cac987739607c9ac2f4dd00a83c083faf43a4fd331312895a5c833d1e3cf4da",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.InputForUIModule.dll",
+    "sha256": "05a7b03438b888ca8354125ab69139a8fdc41380b251887086593f4f41193909",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.InputLegacyModule.dll",
+    "sha256": "2606ef2449dcc94220a349fa13c8a46ab337c8e68175c19a0cfa1efe16d8adce",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.InputModule.dll",
+    "sha256": "2d7b2cf3ecb9f2815835bdc8f3919a79ada4829e4ec1cfd513a069c8eae95220",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.InsightsModule.dll",
+    "sha256": "2f112d7cb9a57199e805eac1c8657afed4bd006e3aae62c117958938f5d7133b",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.JSONSerializeModule.dll",
+    "sha256": "b5a4d55026fb3a339b8036fa0a71c7056d8c1f22bc92a64d2c7b50bd16fe0ff1",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.LocalizationModule.dll",
+    "sha256": "984ec80263a72d8ec1357f71b91f9bb4edb7aa8fe3fbe3f9963777f20223aa36",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.MarshallingModule.dll",
+    "sha256": "a7927ac8a453bef37ad7a8e399f90160a5f2eb4c21c0ca51e9548576025ca3c6",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.MultiplayerModule.dll",
+    "sha256": "acf1c328505c1c72557b2e40636bc13a67ca8df53478cc8867eee9956035584a",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.NVIDIAModule.dll",
+    "sha256": "08b0ecf62a12b3948dc85f37e8452c363bcb718828bfcb6dc55061f48bc33eaf",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ParticleSystemModule.dll",
+    "sha256": "50531fd98b502bb1e34a93709f1e1de588c69d12d6ddd8ab6d7528b5fc76e3f9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.PerformanceReportingModule.dll",
+    "sha256": "776da621a59c52f1bf1411590569d0fb6e700d0c297fd9f3f390f1c2c044dcf5",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Physics2DModule.dll",
+    "sha256": "2d8146faef524030f9ced62547cf065f353af34b7aaae483290aa503ab3b2e63",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.PhysicsBackendPhysXModule.dll",
+    "sha256": "5667d6732f1680a1eecd6263c3a00d11656d9fdb67be86463777805bdcf31c3e",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.PhysicsModule.dll",
+    "sha256": "111dbf28bc7f52939ba3263aa097c34c824f6392f4534330a6729e04f056f085",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ProfilerModule.dll",
+    "sha256": "05c799d69eb42e909bc85c9dd75ef16b8ba899812812001c9e7fa71f0b8c840a",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.PropertiesModule.dll",
+    "sha256": "67c369be2be35fde1b3ab82672e141142d593030f5f59f075a41322fefb08ac6",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.AppleCore.dll",
+    "sha256": "60d9d747acb1d7c18b57b75b933ddf7822a9eac233526194625f5a0f96a9c020",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.AppleMacosStub.dll",
+    "sha256": "a7cd892db20c3ef049489cd2cd680720b5c0550c5fc16cdb6c0c0d76d80080ab",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.AppleStub.dll",
+    "sha256": "9b9ed0fb75154992d63ce41e855c20843e2db39dbecda5491a16b38e0c4ddfe2",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.Codeless.dll",
+    "sha256": "8a6733b061460ce6c6a82645166f1e4c367b5b7a988020b3997f6a2886d90464",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.dll",
+    "sha256": "80eb5c2b99185b5cce7173e8c4fbaa4fb14e970f6dff1a6bacae69643f0db42f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.SecurityCore.dll",
+    "sha256": "29d0fd48a4be480e00917a389091100d50cb961e0b8f425a6baa44f89ff21093",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.SecurityStub.dll",
+    "sha256": "96a215f83688eeeac7eaad27560bf43ea86745388e03ab36b6d7553c4bd716f6",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.Stores.dll",
+    "sha256": "0b36de59d505cb57e2168ae6ed4cec2c6c533c355f353ff8fe67b059b7c97cdf",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.WinRTCore.dll",
+    "sha256": "d218798b66933f10ed933dff6d3ebae245fc9463f8c7a45f8a22d80417dba066",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.Purchasing.WinRTStub.dll",
+    "sha256": "7719a3a9e618a200bcd7a49442004ed8c18253a34d34fc6b41df227c838eb6d9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.RenderAs2DModule.dll",
+    "sha256": "75260cf6e28b4d0722619b702576e99c0dc745d8051b67d0b28609f61bf1ff82",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll",
+    "sha256": "92da1547ab20fe2c5ddf24154e8c2b9410decd2dd5d2e861cc7ab850f156dbcb",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ScreenCaptureModule.dll",
+    "sha256": "9719a51d44409a5fe1a0d8a09941370f6917098223eb4e0c5a91a2cb14c9d870",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ShaderRuntimeModule.dll",
+    "sha256": "75d3475fb66e7683cb6b899c794ee6dc74496193dc86bda5bd351f2f94e9e34f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.ShaderVariantAnalyticsModule.dll",
+    "sha256": "58905bb22aa76cf176e0d26cb5bc59a5678f4ea4e040e67bef8064c151697e35",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.SharedInternalsModule.dll",
+    "sha256": "58899aa9aa119b2ecafb1a41167d967167d9542dbe8f2f1882a62a96c6151391",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.SpriteMaskModule.dll",
+    "sha256": "d28c6ac9d8bab5b79d0887599cbc8ec21c6069eb0019efb1d2abfd258d02156f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.SpriteShapeModule.dll",
+    "sha256": "c41f362c94817bb38fb2136ff82b7bf0ebfae5f8fa53276df547e09667b28ec1",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.StreamingModule.dll",
+    "sha256": "6b953a6877294447752889f8fc77424b632422e3b0e83814857fb8af15756517",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.SubstanceModule.dll",
+    "sha256": "6f2d6fc5f08357405375c797652f35eb6f8a62ab35858dc4f2de7b3ff429b290",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.SubsystemsModule.dll",
+    "sha256": "926ff6d3495d8722af436153063a22ef62ae39f4e3f3a2d657939555fcb935ab",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.TerrainModule.dll",
+    "sha256": "77cb4042c3fdc4eebe2ccb006dc171477eeb2b3628973735fbe6db24b601071d",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.TerrainPhysicsModule.dll",
+    "sha256": "9023c9fb3efdfe49d49348c09a9b1e59eed40a8b04d57e592ff0392ba5f52d6c",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.TextCoreFontEngineModule.dll",
+    "sha256": "bd8d2db5008a6b200275938b76249254cdea2a3854e04dcc9ee36246eb5b1798",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.TextCoreTextEngineModule.dll",
+    "sha256": "e259924a4588f7a2c09d68342e6fadc6a44e1471d020632600d89edc44f06bd9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.TextRenderingModule.dll",
+    "sha256": "1807c017e2d32a6143423aeec12af3a8a354174ce9cb97b853d8c49bce9661c3",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.TilemapModule.dll",
+    "sha256": "231b46bcedd2c267490ae0d376fc444c64ea69f63b281a536d45e9557c75994f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.TLSModule.dll",
+    "sha256": "b84e55abcefa836699f9226acd38ceebbc7f6028462d149530c6d1f04bcac67f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UI.dll",
+    "sha256": "7c98d2d0cc584302a6c673c9e1abf76765ccd9fb17e04cf4bcdf6e353932f362",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UIElementsModule.dll",
+    "sha256": "43ac212ba5b7e4388bc78aaa7319b30697ff65d660d9927753b920f6ebb1e874",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UIModule.dll",
+    "sha256": "a5bd71b67273ee23cf66dbbb368caed7baa178fea8e5c83d3918c73e45650282",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UmbraModule.dll",
+    "sha256": "340b29e1a683604597d56742d285751e29a32f39e95fabb5d25f23b87d51733c",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityAnalyticsCommonModule.dll",
+    "sha256": "9801408f619fcf7593762965b3c0ed19764f14a8f5ea7bffa5dfdf50b92c403f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityAnalyticsModule.dll",
+    "sha256": "b63e23118ce510d66ddd550ec9c975067ec572620dbe9290080f11ff262a5e3a",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityConnectModule.dll",
+    "sha256": "19f83b05aa0e9017b2d4a1618418324c7f4b06364e8363317761a45c84e62858",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityConsentModule.dll",
+    "sha256": "51d01896a417916decc234362880df087c585d2835befe4bee8f67d0338692b8",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityCurlModule.dll",
+    "sha256": "17a917401c997837e04cb041530dffd70f11db910592b6bcc26d6d9b7c48d439",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityTestProtocolModule.dll",
+    "sha256": "7360877878a36bf20b12319ef80fb8e8d2e6b3b88069a2567ea7cd1260a86ce8",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityWebRequestAssetBundleModule.dll",
+    "sha256": "8456f735b1e579bc4ebdc792181c60b567a34a850fef0af5c667124f73e0ef25",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityWebRequestAudioModule.dll",
+    "sha256": "5af0cebc11eff4b1f3eb1a972981f7043ffce2d5dd21ef8b121d5d14a710cfa9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityWebRequestModule.dll",
+    "sha256": "4d6488302d28b9af1dbc344f44930ebdb43be2ca253e2fd9ec6d67d97b7f7974",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityWebRequestTextureModule.dll",
+    "sha256": "1657aecd9a482b0ed7644d5d51972bc51a771391ff78c9dd562599fe93733381",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.UnityWebRequestWWWModule.dll",
+    "sha256": "de4f56c0285f4ade09f9eb5bc46255777e3f8daeead712577226bed150a62931",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.VectorGraphicsModule.dll",
+    "sha256": "ce967bc80735f45f183f0ae1395a67067c0a9841b7c2cd83d7ea0c622405c4dc",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.VehiclesModule.dll",
+    "sha256": "fcd9d44b967ba40c0d0eac7be8e90fd0c6b1b9a2bb5f13496a18804a9e0cbe28",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.VFXModule.dll",
+    "sha256": "524d2cd3caa42f9b338b0e4547c3b69ecfac143b28eaf5c72b3173b4dcdd3b96",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.VideoModule.dll",
+    "sha256": "9f5f6e01ed017dc64a8380f04ea7f0b3ff529ddc7c7afa4dc8e78bc397716c89",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.VirtualTexturingModule.dll",
+    "sha256": "3e5c37ed06a3cc12cc41d1c1a491c95f844d292741a4aea9aeb7e28a7d9afb71",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.VRModule.dll",
+    "sha256": "8c3d91a08f37f87019d58f079b6b9b03f10907bde5da8c2c0209841b179a4c43",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.WindModule.dll",
+    "sha256": "59a021dcd451443b866a407eead2d6647c793abfead8676290f413db80f5d6ea",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.XRModule.dll",
+    "sha256": "108e2c56e20e34b14bf1b3527c99e5aa0b985df2080addb202b5a3ad98e0f7e4",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityFileDialog.dll",
+    "sha256": "130d1031e18c4ae86b1fdb4a056ae1eb45c8b3d5d92d720d1ed02275ada9fa4d",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityModManager\\0Harmony.dll",
+    "sha256": "df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityModManager\\dnlib.dll",
+    "sha256": "54c7968cfbdda0e9fddfa0f844d2dbef3bb3a5a4d2d7462d5413eac3fd0614ca",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityModManager\\UnityModManager.dll",
+    "sha256": "5b4c5da3896d4b353330315dc0aeea06d984520bca990b2b611ed86da89d9003",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\XTUtilities.dll",
+    "sha256": "8cbf77c48ace0b23196cc9a9465b18dea8d67cf097ccbfbb233acb041939f3fc",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\AdofaiGenBridge\\AdofaiGenBridge.dll",
+    "sha256": "064adf1a83bf88174307f8d5a08cb8cdb9d9f8097aab8243d25c78d40c3bb745",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\JALib\\JALib.Bootstrap.dll",
+    "sha256": "b6faca98bbd34a8a4170337b7ca4bf982a966e2b015b2fb70f189fe3fea67233",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\JALib\\JALib.dll",
+    "sha256": "b628e9837e1c12af021f0858d1610081952609cde417316fefe966053329fd60",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\JALib\\JAMod.Bootstrap.dll",
+    "sha256": "d5a6cda1a4e0868a09abbc715e61d2e720cc59221025ccb83875ba3692d840d0",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\JALib\\lib\\DnsClient.dll",
+    "sha256": "267d11337a0f3d1023a4ab8d1b5b11dddeb5ddc99f075220ea872d620cfbd547",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\JALib\\lib\\System.Buffers.dll",
+    "sha256": "accccfbe45d9f08ffeed9916e37b33e98c65be012cfff6e7fa7b67210ce1fefb",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\JALib\\lib\\System.Collections.Immutable.dll",
+    "sha256": "5baa117252ee684e26903603596854b649bc25eddcb0cdef3b100658fc3c334c",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\JALib\\lib\\System.Memory.dll",
+    "sha256": "c4f030a2cba7da7cdcf493257c24560e203d355904aee490d645a935842f834a",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\JALib\\lib\\System.Numerics.Vectors.dll",
+    "sha256": "20c2fa81b8c70d651099d762954f285fd4f942e63b2d7217c145dab8d4b2f4c9",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\JALib\\lib\\System.Runtime.CompilerServices.Unsafe.dll",
+    "sha256": "08cbd7278b66f1e68425a82d4b97181a4130d93e3dd91831407aba7212ccdacf",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\QuartzUmm.Bootstrap.dll",
+    "sha256": "a72f20639e292232ea59ee0bb5df0e1e54079efaaea71ffa8249d0e1ec241fed",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\Runtime\\versions\\2.0.0\\QuartzUmm.dll",
+    "sha256": "b4963df8f957922985a81b943ae2309e9688e7b6cd02d9b68579e89fa504a4ca",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\Runtime\\versions\\2.0.0\\QuartzUmm.UpdateEngine.dll",
+    "sha256": "3c601a5458fc5ea14b9950298d14b051043e97eee0e28a6a168ef12f42719b45",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\Runtime\\versions\\2.0.0-alpha-137\\QuartzUmm.dll",
+    "sha256": "65e75dafac6ef03d061471cb7079e94ad7a5132c5faae79a39e14b94803e1a88",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\Runtime\\versions\\2.0.0-alpha-137\\QuartzUmm.UpdateEngine.dll",
+    "sha256": "cbd550b83f9ce63c19b726e3c1046d8660b86f1d17e1bd9e089c30f687064d9b",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\UserData\\Runtime\\versions\\2.0.0-alpha-121\\QuartzUmm.dll",
+    "sha256": "714a98a97f9333861d86495b82947db0e91bda9eca43d8aac73d736eb6a1bb25",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\UserData\\Runtime\\versions\\2.0.0-alpha-121\\QuartzUmm.UpdateEngine.dll",
+    "sha256": "08ca290aa36f8b380e471153aa6e96fef7896b01236dae28171f8fb675ae4966",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\UserData\\Runtime\\versions\\2.0.0-alpha-122\\QuartzUmm.dll",
+    "sha256": "64d8e8bd8cbf7584795b740dc15c6b7b0a4d70214597db9c63d980bfcf90ef29",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\UserData\\Runtime\\versions\\2.0.0-alpha-122\\QuartzUmm.UpdateEngine.dll",
+    "sha256": "7749186cf254fab9a08e0a194c202a324172e8d9cfba8a935d863a65ead4aa89",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\UserData\\Runtime\\versions\\2.0.0-alpha-123\\QuartzUmm.dll",
+    "sha256": "cf4257909719f425fc705b1367edcfc897623850a8c049d88f86726b1bbf4533",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\UserData\\Runtime\\versions\\2.0.0-alpha-123\\QuartzUmm.UpdateEngine.dll",
+    "sha256": "09a4131d9ced10052b601a8fb34a64e4804cbd8ea3297351f8bdf74cf27c6d87",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\UserData\\Runtime\\versions\\2.0.0-alpha-124\\QuartzUmm.dll",
+    "sha256": "622928030fef2fe33abc91c7768ce39519002f5bb25bcab21a7f9e76dc91c88f",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\Quartz\\UserData\\Runtime\\versions\\2.0.0-alpha-124\\QuartzUmm.UpdateEngine.dll",
+    "sha256": "e4af6af95d6fa3399448f0537212436f0b6975e618c3577f60507f029fc4effc",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\StutterFix\\libdeflate.dll",
+    "sha256": "212d8ba3b6b0826a41ab002b7c1727fcf92682cc11703060f44293a9af2a78c2",
+    "exit": 3762504530,
+    "rows": [],
+    "error": "Unhandled exception. System.InvalidOperationException: PE image does not have metadata.\n   at System.Reflection.PortableExecutable.PEReader.GetMetadataBlock()\n   at System.Reflection.Metadata.PEReaderExtensions.GetMetadataReader(PEReader peReader, MetadataReaderOptions options, MetadataStringDecoder utf8Decoder)\n   at Program.Main(String[] args) in E:\\StutterFixWork\\StutterFix\\tools\\ilscan\\Program.cs:line 26\n"
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\StutterFix\\sfnative.dll",
+    "sha256": "30e8a8306eb3f3565fc6d09c94db4f3eb85b6e6254228710f000739399437766",
+    "exit": 3762504530,
+    "rows": [],
+    "error": "Unhandled exception. System.InvalidOperationException: PE image does not have metadata.\n   at System.Reflection.PortableExecutable.PEReader.GetMetadataBlock()\n   at System.Reflection.Metadata.PEReaderExtensions.GetMetadataReader(PEReader peReader, MetadataReaderOptions options, MetadataStringDecoder utf8Decoder)\n   at Program.Main(String[] args) in E:\\StutterFixWork\\StutterFix\\tools\\ilscan\\Program.cs:line 26\n"
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\StutterFix\\StutterFix.dll",
+    "sha256": "acdd6d6cb8b9260499b88cc34226a3db6f65716d61d33a733c8dc4ac880b2a09",
+    "exit": 0,
+    "rows": [
+      "StutterFix.ExitFix::Read\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.ExitFix::Read\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.ExitFix::Read\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.ExitFix::Read\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.ExitFix::Same\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.ExitFix::Same\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.ExitFix::Same\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.ExitFix::Same\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.ExitFix::LightOne\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.LoadFix::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.LoadFix::.cctor\tStringReference\trotAngle",
+      "StutterFix.LoadFix::.cctor\tStringReference\tscaleVec",
+      "StutterFix.InvisibleSkip::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.InvisibleSkip::.cctor\tStringReference\tpivotOffsetVec",
+      "StutterFix.InstantMove::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.InstantMove::.cctor\tStringReference\tpivotOffsetVec",
+      "StutterFix.InstantMove::.cctor\tStringReference\trotAngle",
+      "StutterFix.InstantMove::.cctor\tStringReference\tscaleVec",
+      "StutterFix.FastMove::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.FastMove::.cctor\tStringReference\tpivotOffsetVec",
+      "StutterFix.FastMove::.cctor\tStringReference\tscaleVec",
+      "StutterFix.FastMove::.cctor\tStringReference\trotAngle",
+      "StutterFix.Precheck::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.DecoAnim::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.DecoAnim::.cctor\tStringReference\tpivotOffsetVec",
+      "StutterFix.DecoAnim::.cctor\tStringReference\trotAngle",
+      "StutterFix.DecoAnim::.cctor\tStringReference\tscaleVec",
+      "StutterFix.PosFast::MemoGuard\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.PosFast::Remember\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.ZeroTween::Snap\tStringReference\tpivotPosVec",
+      "StutterFix.ZeroTween::Snap\tStringReference\tpivotOffsetVec",
+      "StutterFix.ZeroTween::Snap\tStringReference\tscaleVec",
+      "StutterFix.ZeroTween::Snap\tStringReference\trotAngle",
+      "StutterFix.TightLate::Apply\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.TightLate::Apply\tLdfld\tscrParallax::posCamAtStart",
+      "StutterFix.TightLate::Apply\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.TightLate::Apply\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.TightLate::.cctor\tStringReference\tstartPosition",
+      "StutterFix.TightLate::.cctor\tStringReference\tendPosition"
+    ],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\StutterFix\\turbojpeg.dll",
+    "sha256": "6ab563b85c6a032620e285d23b25b8d9b48d90fc86dd998bf3be7f2d7ae3c61f",
+    "exit": 3762504530,
+    "rows": [],
+    "error": "Unhandled exception. System.InvalidOperationException: PE image does not have metadata.\n   at System.Reflection.PortableExecutable.PEReader.GetMetadataBlock()\n   at System.Reflection.Metadata.PEReaderExtensions.GetMetadataReader(PEReader peReader, MetadataReaderOptions options, MetadataStringDecoder utf8Decoder)\n   at Program.Main(String[] args) in E:\\StutterFixWork\\StutterFix\\tools\\ilscan\\Program.cs:line 26\n"
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\TUFHelperLite.zip_unzip\\TUFHelperLite\\TUFHelperLite.dll",
+    "sha256": "790efaaf8bfe3828009f56e0d16c6a1f0d9920322696880b50afddd5bf7c36bf",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\YouTubeStream\\__MACOSX\\YouTubeStream-1.0.4\\._YouTubeStream.dll",
+    "sha256": "3801da729f673b431534e34487aa17884cd355c57f7dd6eb430750deb498e738",
+    "exit": 3762504530,
+    "rows": [],
+    "error": "Unhandled exception. System.BadImageFormatException: Image is too small.\n   at System.Reflection.Throw.ImageTooSmall()\n   at System.Reflection.PortableExecutable.SectionHeader..ctor(PEBinaryReader& reader)\n   at System.Reflection.PortableExecutable.PEHeaders.ReadSectionHeaders(PEBinaryReader& reader)\n   at System.Reflection.PortableExecutable.PEHeaders..ctor(Stream peStream, Int32 size, Boolean isLoadedImage)\n   at System.Reflection.PortableExecutable.PEReader.InitializePEHeaders()\n   at System.Reflection.PortableExecutable.PEReader.GetMetadataBlock()\n   at System.Reflection.Metadata.PEReaderExtensions.GetMetadataReader(PEReader peReader, MetadataReaderOptions options, MetadataStringDecoder utf8Decoder)\n   at Program.Main(String[] args) in E:\\StutterFixWork\\StutterFix\\tools\\ilscan\\Program.cs:line 26\n"
+  },
+  {
+    "path": "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\Mods\\YouTubeStream\\YouTubeStream.dll",
+    "sha256": "24e96fa17932426cb03307c2f0205904dffbec134c5cd3cb2755622a89b79f2e",
+    "exit": 0,
+    "rows": [],
+    "error": ""
+  },
+  {
+    "path": "E:\\StutterFixWork\\StutterFix\\bin\\Debug\\StutterFix.dll",
+    "sha256": "c3ae0f87ac29736695791083385f44533f129c1f502e1d0e26dd72f61a1b8ac9",
+    "exit": 0,
+    "rows": [
+      "StutterFix.ExitFix::Read\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.ExitFix::Read\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.ExitFix::Read\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.ExitFix::Read\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.ExitFix::Same\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.ExitFix::Same\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.ExitFix::Same\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.ExitFix::Same\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.ExitFix::LightOne\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.DecoSig::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.DecoSig::.cctor\tStringReference\tpivotOffsetVec",
+      "StutterFix.DecoSig::.cctor\tStringReference\trotAngle",
+      "StutterFix.DecoSig::.cctor\tStringReference\tscaleVec",
+      "StutterFix.DecoAnim::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.DecoAnim::.cctor\tStringReference\tpivotOffsetVec",
+      "StutterFix.DecoAnim::.cctor\tStringReference\trotAngle",
+      "StutterFix.DecoAnim::.cctor\tStringReference\tscaleVec",
+      "StutterFix.DecoJobShadow::Sample\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.DecoJobShadow::Sample\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.DecoJobShadow::Sample\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.LoadFix::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.LoadFix::.cctor\tStringReference\trotAngle",
+      "StutterFix.LoadFix::.cctor\tStringReference\tscaleVec",
+      "StutterFix.InvisibleSkip::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.InvisibleSkip::.cctor\tStringReference\tpivotOffsetVec",
+      "StutterFix.InstantMove::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.InstantMove::.cctor\tStringReference\tpivotOffsetVec",
+      "StutterFix.InstantMove::.cctor\tStringReference\trotAngle",
+      "StutterFix.InstantMove::.cctor\tStringReference\tscaleVec",
+      "StutterFix.FastMove::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.FastMove::.cctor\tStringReference\tpivotOffsetVec",
+      "StutterFix.FastMove::.cctor\tStringReference\tscaleVec",
+      "StutterFix.FastMove::.cctor\tStringReference\trotAngle",
+      "StutterFix.Precheck::.cctor\tStringReference\tpivotPosVec",
+      "StutterFix.DecoEngine::Admit\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.DecoEngine::Admit\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.DecoEngine::Admit\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.DecoEngine::Admit\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.DecoEngine::StableChild\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.DecoEngine::Stable\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.DecoEngine::Advance\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.DecoEngine::Advance\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.DecoEngine::Advance\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.DecoEngine::Reference\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.DecoEngine::Reference\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.DecoEngine::Reference\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.DecoEngine::Late\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.DecoEngine::Late\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.DecoEngine::Late\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.DecoEngine::CheckLate\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.DecoEngine::CheckLate\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.DecoEngine::CheckLate\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.PosFast::MemoGuard\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.PosFast::Remember\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.PosFast::Compare\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.PosFast::Compare\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.PosFast::Compare\tStringReference\tpivotOffsetVec",
+      "StutterFix.PosFast::Compare\tStringReference\tpivotPosVec",
+      "StutterFix.PosFast::Bench\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.PosFast::Bench\tLdfld\tscrDecoration::pivotOffsetVec",
+      "StutterFix.ZeroTween::Snap\tStringReference\tpivotPosVec",
+      "StutterFix.ZeroTween::Snap\tStringReference\tpivotOffsetVec",
+      "StutterFix.ZeroTween::Snap\tStringReference\tscaleVec",
+      "StutterFix.ZeroTween::Snap\tStringReference\trotAngle",
+      "StutterFix.TightLate::Apply\tLdfld\tscrDecoration::pivotPosVec",
+      "StutterFix.TightLate::Apply\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.TightLate::Apply\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.TightLate::Apply\tLdfld\tscrParallax::posCamAtStart",
+      "StutterFix.TightLate::Read\tLdfld\tscrParallax::posCamAtStart",
+      "StutterFix.TightLate::Read\tLdfld\tscrDecoration::scaleVec",
+      "StutterFix.TightLate::Read\tLdfld\tscrDecoration::rotAngle",
+      "StutterFix.TightLate::.cctor\tStringReference\tstartPosition",
+      "StutterFix.TightLate::.cctor\tStringReference\tendPosition"
+    ],
+    "error": ""
+  }
+]

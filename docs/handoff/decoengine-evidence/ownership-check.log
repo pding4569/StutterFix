@@ -1,0 +1,4 @@
+﻿E:\StutterFixWork\StutterFix\tools\DecoEngineCheck\Program.cs(104,29): warning CS0414: 'DecoAnim.fastDirty' 필드가 할당되었지만 사용되지 않았습니다. [E:\StutterFixWork\StutterFix\tools\DecoEngineCheck\DecoEngineCheck.csproj]
+[decoengine] fallback InvalidOperationException
+PASS assertions=358430; production DecoEngine.cs linked; net8 surrogate only, no Unity/Mono performance claim
+enabled=True compatibility=ok owned=0 frames=28590 deco/frame=1.00 rec/frame=3.19 admissions=139 sync=28586 restores=9 fallback=5 reasons=0/0/0/1/0/0/0/1/4/2 verify=True checks=7124 mismatch=0 first=none

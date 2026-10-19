@@ -1,0 +1,24 @@
+﻿== PACL2.CustomFFX.CustomLevelEventInfoFactory
+  GetSoloTypeCustomLevelEvents
+    호출 제네릭 System.Collections.Generic.HashSet`1::.ctor
+    호출 제네릭 System.Collections.Generic.HashSet`1::Add
+    정적필드 읽기 PACL2.CustomFFX.CustomLevelEventInfoFactory+<>c::<>9__2_0
+    정적필드 읽기 PACL2.CustomFFX.CustomLevelEventInfoFactory+<>c::<>9
+    호출 PACL2.CustomFFX.CustomLevelEventInfoFactory+<>c::<GetSoloTypeCustomLevelEvents>b__2_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 PACL2.CustomFFX.CustomLevelEventInfoFactory+<>c::<>9__2_0
+    호출 제네릭 System.Linq.Enumerable::Select
+    호출 제네릭 System.Linq.Enumerable::ToHashSet
+  CreateComponentFromEvent
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+  MakeLevelEventInfo
+    호출 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::.ctor
+    호출 제네릭 PACL2.CustomFFX.Variables.ScalarPropertyValue`1::.ctor
+    호출 제네릭 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::MakeProperty
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 PACL2.CustomFFX.Variables.PropertyConstraint::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 PACL2.CustomFFX.Variables.MinMaxPropertyValue`1::.ctor
+    호출 PACL2.CustomFFX.Variables.TextPropertyValue::.ctor
+    호출 System.ArgumentOutOfRangeException::.ctor
+    호출 PACL2.CustomFFX.Variables.LevelEventInfoBuilder::Build

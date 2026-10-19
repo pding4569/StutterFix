@@ -1,0 +1,292 @@
+﻿== ffxMoveDecorationsPlus
+  get_eventTweens
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 ffxMoveDecorationsPlus::decManager
+    필드 읽기 ffxMoveDecorationsPlus::targetTags
+    호출 scrDecorationManager::GetTaggedDecorations
+    정적필드 읽기 ffxMoveDecorationsPlus+<>c::<>9__45_0
+    정적필드 읽기 ffxMoveDecorationsPlus+<>c::<>9
+    호출 ffxMoveDecorationsPlus+<>c::<get_eventTweens>b__45_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 ffxMoveDecorationsPlus+<>c::<>9__45_0
+    호출 제네릭 System.Linq.Enumerable::SelectMany
+    호출 제네릭 System.Collections.Generic.List`1::AddRange
+  Awake
+    호출 ffxPlusBase::Awake
+    필드 쓰기 ffxPlusBase::hifiEffect
+    호출 ADOBase::get_levelIsMikoSkip
+  StartEffect
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::visualQuality
+    호출 ADOBase::get_isOfficialLevel
+    호출 Persistence::get_forceVisualSettings
+    호출 ADOBase::get_levelIsMikoSkip
+    필드 읽기 ffxMoveDecorationsPlus::targetScale
+    호출 System.Single::IsNaN
+    호출 UnityEngine.Vector2::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus::targetScaleV2
+    호출 ffxPlusBase::AdjustDurationForHardbake
+    필드 읽기 ffxMoveDecorationsPlus::decManager
+    필드 읽기 ffxMoveDecorationsPlus::targetTags
+    호출 scrDecorationManager::GetTaggedDecorations
+    호출 제네릭 System.Collections.Generic.IEnumerable`1::GetEnumerator
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<>4__this
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::dec
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::dec
+    필드 읽기 scrDecoration::eventTweens
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 ffxMoveDecorationsPlus::movementTypeUsed
+    필드 읽기 ffxMoveDecorationsPlus::movementType
+    호출 scrDecoration::SetPlacementType
+    필드 읽기 ffxMoveDecorationsPlus::targetScaleV2
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Vector2::op_Implicit
+    필드 읽기 ffxMoveDecorationsPlus::forceDontTweenMovement
+    필드 읽기 ffxMoveDecorationsPlus::positionUsed
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_1::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_1::CS$<>8__locals1
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_1::CS$<>8__locals1
+    필드 읽기 scrDecoration::startPos
+    필드 읽기 scrDecoration::pivotPosVec
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_1::startPos
+    필드 읽기 ffxMoveDecorationsPlus::targetPos
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_2::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_2::CS$<>8__locals2
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 DG.Tweening.TweenExtensions::Kill
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_2::CS$<>8__locals2
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_2::newPos
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_2::<StartEffect>b__0
+    호출 제네릭 DG.Tweening.Core.DOGetter`1::.ctor
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_2::<StartEffect>b__1
+    호출 제네릭 DG.Tweening.Core.DOSetter`1::.ctor
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_1::startPos
+    필드 읽기 ffxPlusBase::duration
+    호출 DG.Tweening.DOTween::To
+    필드 읽기 ffxPlusBase::ease
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_2::<StartEffect>b__2
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnUpdate
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_1::<StartEffect>b__3
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnComplete
+    호출 제네릭 DG.Tweening.TweenExtensions::Done
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_3::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_3::CS$<>8__locals3
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_3::CS$<>8__locals3
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_3::newPos
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_3::<StartEffect>b__4
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_3::<StartEffect>b__5
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_3::<StartEffect>b__6
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_1::<StartEffect>b__7
+    필드 읽기 ffxMoveDecorationsPlus::parallaxOffsetUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetParallaxOffset
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_4::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_4::CS$<>8__locals4
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_4::CS$<>8__locals4
+    필드 읽기 scrDecoration::parallaxOffset
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_4::newPos
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_4::<StartEffect>b__8
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_4::<StartEffect>b__9
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_4::<StartEffect>b__10
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__11
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_5::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_5::CS$<>8__locals5
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_5::CS$<>8__locals5
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_5::newPos
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_5::<StartEffect>b__12
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_5::<StartEffect>b__13
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_5::<StartEffect>b__14
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__15
+    필드 읽기 ffxMoveDecorationsPlus::pivotUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetPivot
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_6::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_6::CS$<>8__locals6
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_6::CS$<>8__locals6
+    필드 읽기 scrDecoration::pivotOffsetVec
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_6::newPivot
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_6::<StartEffect>b__16
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_6::<StartEffect>b__17
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_6::<StartEffect>b__18
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__19
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_7::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_7::CS$<>8__locals7
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_7::CS$<>8__locals7
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_7::newPivot
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_7::<StartEffect>b__20
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_7::<StartEffect>b__21
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_7::<StartEffect>b__22
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__23
+    필드 읽기 ffxMoveDecorationsPlus::rotationUsed
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_8::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_8::CS$<>8__locals8
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_8::CS$<>8__locals8
+    필드 읽기 scrDecoration::rotAngle
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_8::newRot
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_8::<StartEffect>b__24
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_8::<StartEffect>b__25
+    필드 읽기 ffxMoveDecorationsPlus::targetRot
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_8::<StartEffect>b__26
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__27
+    필드 읽기 ffxMoveDecorationsPlus::scaleUsed
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__28
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__29
+    호출 DG.Tweening.TweenSettingsExtensions::SetOptions
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__30
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__31
+    필드 읽기 ffxMoveDecorationsPlus::colorUsed
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_9::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_9::CS$<>8__locals9
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_9::CS$<>8__locals9
+    필드 읽기 scrDecoration::color
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_9::newColor
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_9::<StartEffect>b__32
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_9::<StartEffect>b__33
+    필드 읽기 ffxMoveDecorationsPlus::targetColor
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_9::<StartEffect>b__34
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__35
+    필드 읽기 ffxMoveDecorationsPlus::opacityUsed
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_10::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_10::CS$<>8__locals10
+    필드 읽기 ffxMoveDecorationsPlus+<>c__DisplayClass47_10::CS$<>8__locals10
+    필드 읽기 scrDecoration::opacity
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_10::newOpacity
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_10::<StartEffect>b__36
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_10::<StartEffect>b__37
+    필드 읽기 ffxMoveDecorationsPlus::targetOpacity
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_10::<StartEffect>b__38
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__39
+    필드 읽기 ffxMoveDecorationsPlus::parallaxUsed
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_11::.ctor
+    필드 읽기 scrDecoration::parallax
+    호출 scrParallax::get_multiplier
+    필드 쓰기 ffxMoveDecorationsPlus+<>c__DisplayClass47_11::newParallax
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_11::<StartEffect>b__40
+    호출 ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__41
+    필드 읽기 ffxMoveDecorationsPlus::targetParallax
+    호출 UnityEngine.Vector2::op_Division
+    필드 읽기 ffxMoveDecorationsPlus::visibleUsed
+    필드 읽기 ffxMoveDecorationsPlus::visible
+    필드 읽기 scrDecoration::forceHide
+    호출 scrDecoration::SetVisible
+    필드 읽기 ffxMoveDecorationsPlus::depthUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetDepth
+    호출 scrDecoration::SetDepth
+    필드 읽기 ffxMoveDecorationsPlus::imageFilenameUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetImageFilename
+    호출 System.String::IsNullOrEmpty
+    호출 scrDecorationManager::get_instance
+    필드 읽기 scrDecorationManager::imageHolder
+    필드 읽기 TextureManager::customSprites
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 scrParticleDecoration::SetSprite
+    정적필드 읽기 System.String::Empty
+    호출 제네릭 System.Collections.Generic.CollectionExtensions::GetValueOrDefault
+    호출 scrVisualDecoration::SetSprite
+    필드 읽기 ffxMoveDecorationsPlus::originalSizeUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetOriginalSize
+    호출 scrVisualDecoration::SetTextureScaleMultiplier
+    필드 읽기 ffxMoveDecorationsPlus::cropPivotOffsetUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetCropPivotOffset
+    필드 쓰기 scrDecoration::croppedPivotOffset
+    호출 scrDecoration::SetPosition
+    필드 읽기 ffxMoveDecorationsPlus::smoothingUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetSmoothing
+    필드 쓰기 scrVisualDecoration::smoothing
+    필드 읽기 ffxMoveDecorationsPlus::maskingTypeUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetMaskingType
+    호출 scrVisualDecoration::SetMaskingType
+    필드 읽기 ffxMoveDecorationsPlus::maskingTargetUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetmaskingTarget
+    호출 scrVisualDecoration::SetMaskingTarget
+    필드 읽기 ffxMoveDecorationsPlus::useMaskingDepthUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetUseMaskingDepth
+    호출 scrVisualDecoration::SetMaskingDepth
+    필드 읽기 ffxMoveDecorationsPlus::maskingFrontDepthUsed
+    필드 읽기 ffxMoveDecorationsPlus::maskingBackDepthUsed
+    필드 읽기 ffxMoveDecorationsPlus::targetMaskingFrontDepth
+    호출 제네릭 System.Nullable`1::.ctor
+    필드 읽기 ffxMoveDecorationsPlus::targetMaskingBackDepth
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  Decode
+    호출 ADOBase::get_controller
+    호출 scrController::get_tileSize
+    호출 scnGame::get_suitableDecManager
+    필드 쓰기 ffxMoveDecorationsPlus::decManager
+    호출 ADOFAI.LevelEvent::GetFloat
+    필드 읽기 ffxPlusBase::crotchet
+    필드 쓰기 ffxPlusBase::duration
+    호출 ADOFAI.LevelEvent::get_Item
+    필드 쓰기 ffxMoveDecorationsPlus::movementType
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 쓰기 ffxMoveDecorationsPlus::movementTypeUsed
+    호출 ADOFAI.LevelEvent::GetBool
+    필드 쓰기 ffxMoveDecorationsPlus::visible
+    필드 쓰기 ffxMoveDecorationsPlus::visibleUsed
+    호출 ADOFAI.LevelEvent::GetString
+    필드 쓰기 ffxMoveDecorationsPlus::targetImageFilename
+    필드 쓰기 ffxMoveDecorationsPlus::imageFilenameUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetOriginalSize
+    필드 쓰기 ffxMoveDecorationsPlus::originalSizeUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetCropPivotOffset
+    필드 쓰기 ffxMoveDecorationsPlus::cropPivotOffsetUsed
+    호출 ADOFAI.LevelEvent::GetInt
+    필드 쓰기 ffxMoveDecorationsPlus::targetDepth
+    필드 쓰기 ffxMoveDecorationsPlus::depthUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetParallax
+    필드 쓰기 ffxMoveDecorationsPlus::parallaxUsed
+    필드 쓰기 ffxMoveDecorationsPlus::parallaxOffsetUsed
+    호출 UnityEngine.Vector2::op_Multiply
+    필드 쓰기 ffxMoveDecorationsPlus::targetParallaxOffset
+    필드 쓰기 ffxMoveDecorationsPlus::positionUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetPos
+    필드 쓰기 ffxMoveDecorationsPlus::pivotUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetPivot
+    필드 쓰기 ffxMoveDecorationsPlus::targetRot
+    필드 쓰기 ffxMoveDecorationsPlus::rotationUsed
+    호출 UnityEngine.Vector2::op_Division
+    필드 쓰기 ffxMoveDecorationsPlus::targetScaleV2
+    필드 쓰기 ffxMoveDecorationsPlus::scaleUsed
+    호출 ADOFAI.LevelEvent::GetColor
+    필드 쓰기 ffxMoveDecorationsPlus::targetColor
+    필드 쓰기 ffxMoveDecorationsPlus::colorUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetOpacity
+    필드 쓰기 ffxMoveDecorationsPlus::opacityUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetSmoothing
+    필드 쓰기 ffxMoveDecorationsPlus::smoothingUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetMaskingType
+    필드 쓰기 ffxMoveDecorationsPlus::maskingTypeUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetUseMaskingDepth
+    필드 쓰기 ffxMoveDecorationsPlus::useMaskingDepthUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetMaskingFrontDepth
+    필드 쓰기 ffxMoveDecorationsPlus::maskingFrontDepthUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetMaskingBackDepth
+    필드 쓰기 ffxMoveDecorationsPlus::maskingBackDepthUsed
+    호출 System.Object::ToString
+    호출 System.String::Split
+    필드 읽기 ffxMoveDecorationsPlus::targetTags
+    호출 제네릭 System.Collections.Generic.List`1::AddRange
+    필드 쓰기 ffxPlusBase::ease
+  .ctor
+    필드 쓰기 ffxMoveDecorationsPlus::movementTypeUsed
+    필드 쓰기 ffxMoveDecorationsPlus::positionUsed
+    필드 쓰기 ffxMoveDecorationsPlus::pivotUsed
+    필드 쓰기 ffxMoveDecorationsPlus::rotationUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetScale
+    필드 쓰기 ffxMoveDecorationsPlus::scaleUsed
+    필드 쓰기 ffxMoveDecorationsPlus::colorUsed
+    필드 쓰기 ffxMoveDecorationsPlus::targetOpacity
+    필드 쓰기 ffxMoveDecorationsPlus::opacityUsed
+    필드 쓰기 ffxMoveDecorationsPlus::parallaxOffsetUsed
+    필드 쓰기 ffxMoveDecorationsPlus::visible
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 ffxMoveDecorationsPlus::targetTags
+    호출 ffxPlusBase::.ctor

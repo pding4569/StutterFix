@@ -1,0 +1,114 @@
+﻿== ADOFAI.LevelData : System.Object
+  필드 _hash
+  필드 pathData
+  필드 angleData
+  필드 levelEvents
+  필드 decorations
+  필드 songSettings
+  필드 levelSettings
+  필드 trackSettings
+  필드 backgroundSettings
+  필드 cameraSettings
+  필드 miscSettings
+  필드 eventSettings
+  필드 decorationSettings
+  필드 version
+  필드 legacyFlash
+  필드 legacyCamRelativeTo
+  필드 isOldLevel
+  필드 oldCameraFollowStyle
+  필드 legacyTween
+  필드 disableV15Features
+  필드 static shouldTryMigrate
+  필드 _requiredDLC
+  메서드 string get_Hash()
+  메서드 ADOFAI.LevelEvent[] get_settings()
+  메서드 static string GetCustomLevelName(string)
+  메서드 void .ctor(boolean)
+  메서드 void Setup()
+  메서드 boolean LoadLevel(string, ref ADOFAI.LoadResult)
+  메서드 string Encode()
+  메서드 System.Collections.Generic.Dictionary`2<string,object> EncodeToDictionary()
+  메서드 void Decode(System.Collections.Generic.Dictionary`2<string,object>, ref ADOFAI.LoadResult)
+  메서드 ADOFAI.LevelData Copy()
+  메서드 DLCManager[] get_requiredDLC()
+  메서드 void RefreshRequiredDLC()
+  메서드 string get_fullCaption()
+  메서드 string get_fullCaptionTagged()
+  메서드 string get_artist()
+  메서드 void set_artist(string)
+  메서드 SpecialArtistType get_specialArtistType()
+  메서드 string get_song()
+  메서드 string get_author()
+  메서드 string get_previewImage()
+  메서드 void set_previewImage(string)
+  메서드 string get_previewIcon()
+  메서드 void set_previewIcon(string)
+  메서드 UnityEngine.Color get_previewIconColor()
+  메서드 int32 get_previewSongStart()
+  메서드 int32 get_previewSongDuration()
+  메서드 boolean get_seizureWarning()
+  메서드 string get_levelDesc()
+  메서드 string get_levelTags()
+  메서드 string get_artistPermission()
+  메서드 void set_artistPermission(string)
+  메서드 string get_artistLinks()
+  메서드 int32 get_difficulty()
+  메서드 string get_songFilename()
+  메서드 void set_songFilename(string)
+  메서드 single get_bpm()
+  메서드 int32 get_volume()
+  메서드 int32 get_pitch()
+  메서드 int32 get_offset()
+  메서드 HitSound get_hitsound()
+  메서드 int32 get_hitsoundVolume()
+  메서드 boolean get_separateCountdownTime()
+  메서드 int32 get_countdownTicks()
+  메서드 TrackColorType get_trackColorType()
+  메서드 UnityEngine.Color get_trackColor()
+  메서드 System.Nullable`1<UnityEngine.Color> get_trackShadowColor()
+  메서드 UnityEngine.Color get_secondaryTrackColor()
+  메서드 single get_trackColorAnimDuration()
+  메서드 TrackColorPulse get_trackColorPulse()
+  메서드 int32 get_trackPulseLength()
+  메서드 TrackStyle get_trackStyle()
+  메서드 single get_trackTextureScale()
+  메서드 single get_trackGlowIntensity()
+  메서드 TileShape get_tileShape()
+  메서드 UnityEngine.Texture2D get_trackTexture()
+  메서드 TrackAnimationType get_trackAnimation()
+  메서드 TrackAnimationType2 get_trackDisappearAnimation()
+  메서드 single get_trackBeatsAhead()
+  메서드 single get_trackBeatsBehind()
+  메서드 UnityEngine.Color get_backgroundColor()
+  메서드 string get_bgImage()
+  메서드 UnityEngine.Color get_bgImageColor()
+  메서드 UnityEngine.Vector2 get_bgParallax()
+  메서드 boolean get_bgTiling()
+  메서드 boolean get_bgLooping()
+  메서드 boolean get_bgFitScreen()
+  메서드 boolean get_bgLockRot()
+  메서드 boolean get_bgSmoothing()
+  메서드 boolean get_bgShowDefaultBGIfNoImage()
+  메서드 boolean get_bgShowDefaultBGTile()
+  메서드 UnityEngine.Color get_bgDefaultBGTileColor()
+  메서드 boolean get_showBGShape()
+  메서드 BGShapeType get_bgShapeType()
+  메서드 UnityEngine.Color get_bgDefaultBGShapeColor()
+  메서드 single get_scalingRatio()
+  메서드 CamMovementType get_camRelativeTo()
+  메서드 UnityEngine.Vector2 get_camPosition()
+  메서드 single get_camRotation()
+  메서드 single get_camZoom()
+  메서드 boolean get_pulseCamOnLandingFloor()
+  메서드 boolean get_camEnabledOnLowVFX()
+  메서드 string get_bgVideo()
+  메서드 boolean get_floorIconOutlines()
+  메서드 boolean get_stickToFloors()
+  메서드 DG.Tweening.Ease get_planetEase()
+  메서드 int32 get_planetEaseParts()
+  메서드 EasePartBehavior get_planetEasePartBehavior()
+  메서드 UnityEngine.Color get_defaultTextColor()
+  메서드 UnityEngine.Color get_defaultTextShadowColor()
+  메서드 System.Collections.Generic.List`1<string> GetMissingParams()
+(1개 형식)

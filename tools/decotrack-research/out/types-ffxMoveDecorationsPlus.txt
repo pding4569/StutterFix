@@ -1,0 +1,51 @@
+﻿== ffxMoveDecorationsPlus : ffxPlusBase
+  필드 decManager
+  필드 movementType
+  필드 movementTypeUsed
+  필드 targetPos
+  필드 positionUsed
+  필드 targetRot
+  필드 pivotUsed
+  필드 targetPivot
+  필드 rotationUsed
+  필드 targetScale
+  필드 targetScaleV2
+  필드 scaleUsed
+  필드 targetColor
+  필드 colorUsed
+  필드 targetOpacity
+  필드 opacityUsed
+  필드 targetParallax
+  필드 targetParallaxOffset
+  필드 parallaxOffsetUsed
+  필드 parallaxUsed
+  필드 visible
+  필드 visibleUsed
+  필드 targetImageFilename
+  필드 imageFilenameUsed
+  필드 targetOriginalSize
+  필드 originalSizeUsed
+  필드 targetCropPivotOffset
+  필드 cropPivotOffsetUsed
+  필드 targetDepth
+  필드 depthUsed
+  필드 targetSmoothing
+  필드 smoothingUsed
+  필드 targetMaskingType
+  필드 maskingTypeUsed
+  필드 targetmaskingTarget
+  필드 maskingTargetUsed
+  필드 targetUseMaskingDepth
+  필드 useMaskingDepthUsed
+  필드 targetMaskingFrontDepth
+  필드 maskingFrontDepthUsed
+  필드 targetMaskingBackDepth
+  필드 maskingBackDepthUsed
+  필드 targetTags
+  필드 forceDontTweenMovement
+  메서드 System.Collections.Generic.IEnumerable`1<DG.Tweening.Tween> get_eventTweens()
+  메서드 void Awake()
+  메서드 void StartEffect(scrPlanet)
+  메서드 void Decode(ADOFAI.LevelEvent)
+  메서드 void .ctor()
+(1개 형식)

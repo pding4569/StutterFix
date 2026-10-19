@@ -1,0 +1,93 @@
+﻿== ffxPlusBase
+  get_instanceID
+    호출 UnityEngine.Object::GetInstanceID
+  get_eventTweens
+  Awake
+    호출 scrCamera::get_instance
+    필드 쓰기 ffxPlusBase::cam
+    호출 scrController::get_instance
+    필드 쓰기 ffxPlusBase::ctrl
+    호출 scrConductor::get_instance
+    필드 쓰기 ffxPlusBase::cond
+    호출 scrVfxPlus::get_instance
+    필드 쓰기 ffxPlusBase::vfx
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 ffxPlusBase::floor
+    필드 읽기 ffxPlusBase::conditionalInfo
+    필드 쓰기 ffxPlusBase::conditionalInfo
+  get_runOnHit
+  Decode
+  PrepVfx
+  StartEffect
+    호출 ffxPlusBase::StartEffect
+  StartEffect
+  StartEffectWithOffset
+    호출 ffxPlusBase+<>c__DisplayClass31_0::.ctor
+    필드 쓰기 ffxPlusBase+<>c__DisplayClass31_0::<>4__this
+    필드 쓰기 ffxPlusBase+<>c__DisplayClass31_0::planet
+    호출 ADOBase::get_conductor
+    필드 읽기 scrConductor::bpm
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::get_pitch
+    필드 읽기 ffxPlusBase::floor
+    필드 읽기 scrFloor::speed
+    필드 읽기 ffxPlusBase::degreeOffset
+    호출 ffxPlusBase+<>c__DisplayClass31_0::<StartEffectWithOffset>b__0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 DG.Tweening.DOVirtual::DelayedCall
+  SetStartTime
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 읽기 scrFloor::entryTime
+    필드 읽기 scrFloor::speed
+    필드 쓰기 ffxPlusBase::startTime
+    필드 쓰기 ffxPlusBase::degreeOffset
+  ScrubToTime
+    필드 읽기 ffxPlusBase::startTime
+    호출 ffxPlusBase::StartEffect
+    필드 쓰기 ffxPlusBase::triggered
+    필드 읽기 ffxPlusBase::duration
+    호출 UnityEngine.Mathf::Approximately
+    호출 ADOBase::get_currentLevel
+    호출 System.String::op_Equality
+    호출 ffxPlusBase::get_eventTweens
+    호출 제네릭 System.Collections.Generic.IEnumerable`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    호출 DG.Tweening.TweenExtensions::Kill
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 ffxPlusBase::cond
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::get_pitch
+    호출 scrConductor::get_calibration_i
+    호출 DG.Tweening.Tween::get_active
+    호출 DG.Tweening.TweenExtensions::Goto
+    필드 읽기 ffxPlusBase::vfx
+    필드 읽기 scrVfxPlus::pausedTweens
+    호출 제네릭 System.Collections.Generic.List`1::Add
+  Kill
+    호출 ffxPlusBase::get_eventTweens
+    호출 제네릭 System.Collections.Generic.IEnumerable`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    호출 DG.Tweening.TweenExtensions::Kill
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  AdjustDurationForHardbake
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 ffxPlusBase::duration
+    호출 scrConductor::get_instance
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::get_pitch
+    필드 쓰기 ffxPlusBase::duration
+  IsAllowedByVisualSettings
+    필드 읽기 ffxPlusBase::hifiEffect
+    필드 읽기 ffxPlusBase::disableIfMinFx
+    필드 읽기 ffxPlusBase::disableIfMaxFx
+  OnDrawGizmos
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Gizmos::DrawIcon
+  .ctor
+    필드 쓰기 ffxPlusBase::ease
+    호출 ADOBase::.ctor

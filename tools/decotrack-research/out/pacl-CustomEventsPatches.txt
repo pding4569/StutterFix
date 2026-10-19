@@ -1,0 +1,180 @@
+﻿== PACL2.Features.CustomEvents.CustomEventsPatches
+  ScnGameApplyEventTranspiler
+    호출 PACL2.IL.ILEditor::.ctor
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Ldloc_S
+    호출 PACL2.IL.ILEditor+PatternMatcher::OpCode
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Stloc_S
+    호출 PACL2.IL.ILEditor::GetIndicesByPattern
+    호출 PACL2.IL.ILEditor::DetachLabel
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Ldloc_1
+    호출 HarmonyLib.CodeInstruction::.ctor
+    필드 쓰기 HarmonyLib.CodeInstruction::labels
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Call
+    호출 System.Type::GetTypeFromHandle
+    호출 HarmonyLib.AccessToolsExtensions::Method
+    호출 PACL2.IL.ILEditor::ReplaceCode
+    호출 PACL2.IL.ILEditor::get_Result
+  FPSCounterUpdate
+    호출 PACL2.IL.ILEditor::.ctor
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Stloc_2
+    호출 PACL2.IL.ILEditor+PatternMatcher::OpCode
+    호출 PACL2.IL.ILEditor::GetIndicesByPattern
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Ldsfld
+    호출 System.Type::GetTypeFromHandle
+    호출 HarmonyLib.AccessToolsExtensions::Field
+    호출 HarmonyLib.CodeInstruction::.ctor
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Ldc_I4_S
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Ldloc_2
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Call
+    호출 HarmonyLib.AccessToolsExtensions::Method
+    호출 PACL2.IL.ILEditor::InsertCodeAfter
+    호출 PACL2.IL.ILEditor::get_Result
+  ScrPlanetSwitchChosenTranspiler
+    호출 PACL2.IL.ILEditor::.ctor
+    호출 PACL2.IL.ILEditor+PatternMatcher::Call
+    호출 PACL2.IL.ILEditor::GetIndicesByPattern
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Ldarg_0
+    호출 HarmonyLib.CodeInstruction::.ctor
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Ldloca_S
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Call
+    호출 System.Type::GetTypeFromHandle
+    호출 HarmonyLib.AccessTools::Method
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Ldsfld
+    호출 HarmonyLib.AccessToolsExtensions::Field
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Ldfld
+    호출 HarmonyLib.AccessToolsExtensions::Property
+    호출 System.Reflection.PropertyInfo::GetGetMethod
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Mul
+    정적필드 읽기 System.Reflection.Emit.OpCodes::Conv_R4
+    호출 HarmonyLib.AccessToolsExtensions::Method
+    호출 PACL2.IL.ILEditor::InsertCodeAfter
+    호출 PACL2.IL.ILEditor::get_Result
+  ScrMarginTrackerAddHitPrefix
+    정적필드 읽기 PACL2.CustomFFX.Variables.VariableStateManager::Instance
+    호출 PACL2.CustomFFX.Variables.VariableStateManager::GetValueFromTag
+    호출 PACL2.CustomFFX.Variables.VariableStateManager::SetTaggedVariable
+  ScrMiscIsValidHit
+    정적필드 읽기 PACL2.CustomFFX.Constraints.JudgeLimiter.JudgeLimitStateManager::Instance
+    호출 PACL2.CustomFFX.Constraints.JudgeLimiter.JudgeLimitStateManager::Validate
+  LevelDataEncodePrefix
+    필드 읽기 ADOFAI.LevelData::levelEvents
+    호출 PACL2.Utilities.CustomLevelModDependencyManager::UpdateRequiredMods
+  ScnGamePlayPrefix
+    정적필드 읽기 PACL2.CustomFFX.Advanced.Program.Methods.ProgramMethod::Effects
+    호출 제네릭 System.Collections.Generic.HashSet`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::get_Current
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.HashSet`1::Clear
+    정적필드 읽기 PACL2.CustomFFX.Constraints.KeyLimiter.KeyLimitStateManager::Instance
+    호출 PACL2.CustomFFX.Constraints.KeyLimiter.KeyLimitStateManager::ResetKeys
+    정적필드 읽기 PACL2.CustomFFX.Constraints.JudgeLimiter.JudgeLimitStateManager::Instance
+    호출 PACL2.CustomFFX.Constraints.JudgeLimiter.JudgeLimitStateManager::Reset
+    정적필드 읽기 PACL2.CustomFFX.Variables.VariableStateManager::Instance
+    호출 PACL2.CustomFFX.Variables.VariableStateManager::ResetVariables
+    정적필드 읽기 PACL2.CustomFFX.Constraints.DetailedJudgement.DetailedJudgementStateManager::Instance
+    호출 PACL2.CustomFFX.Constraints.DetailedJudgement.DetailedJudgementStateManager::Reset
+  RefreshAllTextPatch
+    정적필드 읽기 PACL2.CustomFFX.Variables.VariableStateManager::Instance
+    호출 PACL2.CustomFFX.Variables.VariableStateManager::RefreshAllTextDecorations
+  ScnGameUpdate
+    호출 scrController::get_instance
+    호출 scrController::get_paused
+    정적필드 읽기 PACL2.CustomFFX.Variables.VariableStateManager::Instance
+    호출 PACL2.CustomFFX.Variables.VariableStateManager::get_TextApplied
+    호출 PACL2.CustomFFX.Variables.VariableStateManager::UpdateTexts
+  RDEditorUtilsCheckModsDependencyPrefix
+    호출 제네릭 System.Linq.Enumerable::ToHashSet
+    호출 PACL2.Utilities.CustomLevelModDependencyManager::FindRequiredModsAndRemove
+    호출 제네릭 System.Linq.Enumerable::ToArray
+  TypeGetTypePrefix
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass10_0::.ctor
+    필드 쓰기 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass10_0::typeName
+    정적필드 읽기 PACL2.Features.CustomEvents.CustomEventsUtils::TypeGetTypeExecuteOriginal
+    정적필드 쓰기 PACL2.Features.CustomEvents.CustomEventsUtils::TypeGetTypeExecuteOriginal
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Type::get_Assembly
+    호출 System.Reflection.Assembly::GetTypes
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass10_0::<TypeGetTypePrefix>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::FirstOrDefault
+    호출 System.Type::op_Equality
+  ScnEditorLoadLevelEventSpritesPostfix
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 System.Array::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 System.Object::ToString
+    호출 System.String::Concat
+    호출 제네릭 PACL2.Core.ModUtil::LoadAsset
+    정적필드 읽기 GCS::levelEventIcons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  ScnEditorLoadLevelCategorySpritesPostfix
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 System.Array::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 System.Object::ToString
+    호출 System.String::Concat
+    호출 제네릭 PACL2.Core.ModUtil::LoadAsset
+    정적필드 읽기 GCS::eventCategoryIcons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  EnumGetValuesPrefix
+    정적필드 읽기 PACL2.Features.CustomEvents.CustomEventsUtils::EnumGetValuesExecuteOriginal
+    정적필드 쓰기 PACL2.Features.CustomEvents.CustomEventsUtils::EnumGetValuesExecuteOriginal
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Type::op_Equality
+    호출 System.Enum::GetValues
+    호출 제네릭 System.Linq.Enumerable::Cast
+    호출 제네릭 System.Linq.Enumerable::Concat
+    호출 제네릭 System.Linq.Enumerable::ToArray
+  RDUtilsParseEnumForLevelEventCategoryPrefix
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass14_0::.ctor
+    필드 쓰기 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass14_0::str
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 제네릭 System.Linq.Enumerable::Cast
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass14_0::<RDUtilsParseEnumForLevelEventCategoryPrefix>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::FirstOrDefault
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 제네릭 System.Nullable`1::get_Value
+  RDUtilsParseEnumForLevelEventTypePrefix
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass15_0::.ctor
+    필드 쓰기 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass15_0::str
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 제네릭 System.Linq.Enumerable::Cast
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass15_0::<RDUtilsParseEnumForLevelEventTypePrefix>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::FirstOrDefault
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 제네릭 System.Nullable`1::get_Value
+  EnumToStringPrefix
+    정적필드 읽기 PACL2.Features.CustomEvents.CustomEventsUtils::EnumToStringExecuteOriginal
+    정적필드 쓰기 PACL2.Features.CustomEvents.CustomEventsUtils::EnumToStringExecuteOriginal
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass16_0::.ctor
+    필드 쓰기 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass16_0::<let>5__2
+    필드 쓰기 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass16_0::<lec>5__3
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 제네릭 System.Linq.Enumerable::Cast
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass16_0::<EnumToStringPrefix>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::FirstOrDefault
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 System.Object::ToString
+    필드 읽기 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass16_0::<let>5__2
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass16_0::<EnumToStringPrefix>b__1
+    필드 읽기 PACL2.Features.CustomEvents.CustomEventsPatches+<>c__DisplayClass16_0::<lec>5__3
+  RDStringGetWithCheckPrefix
+    정적필드 읽기 PACL2.Core.Main::Instance
+    호출 JALib.Core.JAMod::get_Localization
+    호출 JALib.Core.JALocalization::TryGet
+  .ctor
+    호출 System.Object::.ctor

@@ -1,0 +1,312 @@
+﻿== ADOFAI.LevelEvent
+  get_Item
+    호출 제네릭 ADOFAI.LevelEvent::Get
+  set_Item
+    필드 읽기 ADOFAI.LevelEvent::data
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+  get_IsDecoration
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::isDecoration
+  TryGenericCast
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Type::op_Equality
+    호출 RDUtils::HexToColor
+    호출 ADOFAI.Editor.Models.SerializedMinMaxGradient::ToMinMaxGradient
+    호출 UnityEngine.Debug::LogException
+  Get
+    필드 읽기 ADOFAI.LevelEvent::data
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 제네릭 ADOFAI.LevelEvent::TryGenericCast
+  TryGet
+    필드 읽기 ADOFAI.LevelEvent::data
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 제네릭 ADOFAI.LevelEvent::TryGenericCast
+  TryGetAndSet
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 ADOFAI.LevelEvent::data
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 제네릭 ADOFAI.LevelEvent::TryGenericCast
+  GetData
+    필드 읽기 ADOFAI.LevelEvent::data
+  ContainsKey
+    필드 읽기 ADOFAI.LevelEvent::data
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+  GetFloat
+    호출 제네릭 ADOFAI.LevelEvent::Get
+  GetString
+    호출 제네릭 ADOFAI.LevelEvent::Get
+  GetInt
+    호출 제네릭 ADOFAI.LevelEvent::Get
+  GetBool
+    호출 제네릭 ADOFAI.LevelEvent::Get
+  GetTile
+    호출 제네릭 ADOFAI.LevelEvent::Get
+  GetFloatPair
+    호출 제네릭 ADOFAI.LevelEvent::Get
+  GetColor
+    필드 읽기 ADOFAI.LevelEvent::data
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 RDUtils::HexToColor
+  GetMinMaxGradient
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    호출 ADOFAI.Editor.Models.SerializedMinMaxGradient::ToMinMaxGradient
+  GetIfEnabled
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 제네릭 ADOFAI.LevelEvent::Get
+  GetNullableColor
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 ADOFAI.LevelEvent::GetColor
+    호출 제네릭 System.Nullable`1::.ctor
+  GetNullable
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    호출 제네릭 System.Nullable`1::.ctor
+  GetStringLocalized
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 ADOFAI.PropertyInfo::string_localizable
+    호출 System.String::IndexOf
+    호출 System.String::Substring
+    호출 RDString::GetWithCheck
+    호출 System.String::Concat
+  .ctor
+    호출 ADOFAI.LevelEvent::.ctor
+  .ctor
+    호출 ADOFAI.LevelEvent::.ctor
+  .ctor
+    필드 쓰기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 ADOFAI.LevelEvent::realEvents
+    필드 쓰기 ADOFAI.LevelEvent::active
+    필드 쓰기 ADOFAI.LevelEvent::visible
+    호출 System.Object::.ctor
+    필드 쓰기 ADOFAI.LevelEvent::eventType
+    필드 쓰기 ADOFAI.LevelEvent::locked
+    정적필드 읽기 GCS::levelEventTypeString
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    정적필드 읽기 GCS::levelEventsInfo
+    필드 쓰기 ADOFAI.LevelEvent::info
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 ADOFAI.LevelEvent::data
+    필드 쓰기 ADOFAI.LevelEvent::disabled
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Keys
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::data
+    필드 읽기 ADOFAI.PropertyInfo::value_default
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    필드 읽기 ADOFAI.PropertyInfo::startEnabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  .ctor
+    필드 쓰기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 ADOFAI.LevelEvent::realEvents
+    필드 쓰기 ADOFAI.LevelEvent::active
+    필드 쓰기 ADOFAI.LevelEvent::visible
+    호출 System.Object::.ctor
+    호출 ADOFAI.LevelEvent::Decode
+  Decode
+    필드 쓰기 ADOFAI.LevelEvent+<>c__DisplayClass39_0::dict
+    필드 쓰기 ADOFAI.LevelEvent+<>c__DisplayClass39_0::<>4__this
+    필드 읽기 ADOFAI.LevelEvent+<>c__DisplayClass39_0::dict
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 RDUtils::ParseEnum
+    필드 쓰기 ADOFAI.LevelEvent::eventType
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    정적필드 읽기 GCS::levelEventsInfo
+    정적필드 읽기 GCS::settingsInfo
+    필드 쓰기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEvent::info
+    호출 ADOFAI.LevelEventInfo::get_taroDLCCheck
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    필드 쓰기 ADOFAI.LevelEvent::floor
+    필드 쓰기 ADOFAI.LevelEvent::active
+    필드 쓰기 ADOFAI.LevelEvent::visible
+    필드 쓰기 ADOFAI.LevelEvent::locked
+    호출 ADOFAI.LevelEvent::FixDefaultValues
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 ADOFAI.LevelEvent::data
+    필드 쓰기 ADOFAI.LevelEvent::disabled
+    호출 ADOFAI.LevelEvent::get_enableProEvents
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Key
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Value
+    필드 읽기 ADOFAI.PropertyInfo::pro
+    필드 읽기 ADOFAI.PropertyInfo::name
+    호출 System.String::op_Equality
+    호출 ADOFAI.LevelEvent::<Decode>g__MigrateComponentsObject|39_0
+    필드 읽기 ADOFAI.PropertyInfo::encode
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    필드 읽기 ADOFAI.LevelEvent::data
+    필드 읽기 ADOFAI.PropertyInfo::value_default
+    필드 읽기 ADOFAI.PropertyInfo::type
+    필드 읽기 ADOFAI.PropertyInfo::enumType
+    호출 System.Enum::ToObject
+    호출 System.Enum::Parse
+    호출 System.Convert::ToSingle
+    호출 System.Convert::ToInt32
+    호출 UnityEngine.Vector2::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Object::ToString
+    호출 제네릭 System.Tuple`2::.ctor
+    호출 RDEditorUtils::DecodeModsArray
+    호출 System.String::Concat
+    호출 GDMiniJSON.Json::Deserialize
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 Newtonsoft.Json.Linq.JObject::FromObject
+    호출 제네릭 Newtonsoft.Json.Linq.JToken::ToObject
+  FixDefaultValues
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Keys
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 System.String::op_Equality
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Remove
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 제네릭 RDUtils::ParseEnum
+    호출 System.Object::ToString
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryAdd
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  Encode
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 System.Object::ToString
+    필드 읽기 ADOFAI.LevelEvent::active
+    필드 읽기 ADOFAI.LevelEvent::visible
+    필드 읽기 ADOFAI.LevelEvent::locked
+    필드 읽기 ADOFAI.LevelEvent::data
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Keys
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    필드 읽기 ADOFAI.PropertyInfo::canBeDisabled
+    필드 읽기 ADOFAI.PropertyInfo::encode
+    호출 System.String::op_Equality
+    필드 읽기 ADOFAI.PropertyInfo::type
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 System.Convert::ToDecimal
+    호출 RDEditorUtils::EncodeVector2
+    호출 RDEditorUtils::EncodeTile
+    호출 RDEditorUtils::EncodeFilterProperties
+    호출 RDEditorUtils::EncodeFloatPair
+    호출 RDEditorUtils::EncodeVector2Range
+    호출 System.String::Concat
+    호출 UnityEngine.Debug::LogWarning
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  EscapeTextForJSON
+    호출 System.String::IsNullOrEmpty
+    호출 System.String::Replace
+  Copy
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEvent::data
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    필드 읽기 ADOFAI.LevelEvent::active
+    필드 읽기 ADOFAI.LevelEvent::visible
+    필드 읽기 ADOFAI.LevelEvent::locked
+    호출 ADOFAI.LevelEvent::.ctor
+  CopyShallow
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEvent::data
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 ADOFAI.LevelEvent::.ctor
+  ToString
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 System.Object::ToString
+    호출 System.String::Concat
+    필드 읽기 ADOFAI.LevelEvent::data
+    호출 제네릭 System.Collections.Generic.Dictionary`2::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Key
+    호출 제네릭 System.Collections.Generic.KeyValuePair`2::get_Value
+    호출 System.String::Format
+    호출 제네릭 System.Collections.Generic.Dictionary`2+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  ApplyPropertiesToRealEvents
+    필드 읽기 ADOFAI.LevelEvent::data
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Keys
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 ADOFAI.LevelEvent::realEvents
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    필드 읽기 ADOFAI.PropertyInfo::name
+    호출 System.String::op_Equality
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 쓰기 ADOFAI.LevelEvent::floor
+    필드 읽기 ADOFAI.PropertyInfo::type
+    필드 읽기 UnityEngine.Vector2::x
+    호출 System.Single::IsNaN
+    필드 쓰기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    필드 쓰기 UnityEngine.Vector2::y
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection+Enumerator::MoveNext
+    호출 ADOFAI.LevelEvent::get_IsDecoration
+    호출 ADOBase::get_isEditingLevel
+    호출 ADOBase::get_editor
+    호출 scnEditor::UpdateDecorationObject
+  get_enableProEvents
+    호출 Persistence::get_enableProEvents
+    호출 ADOBase::get_isOfficialLevel
+    호출 UnityEngine.Application::get_isEditor
+    호출 RDC::get_hideProEvents
+  <Decode>g__MigrateComponentsObject|39_0
+    정적필드 읽기 scnGame::instance
+    필드 읽기 scnGame::levelData
+    필드 읽기 ADOFAI.LevelData::version
+    필드 읽기 ADOFAI.LevelEvent+<>c__DisplayClass39_0::dict
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 System.String::IsNullOrEmpty
+    호출 System.String::Trim
+    호출 System.String::Concat
+    호출 GDMiniJSON.Json::Deserialize
+    필드 읽기 ADOFAI.LevelEvent::data
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    호출 System.Math::Abs
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 ADOFAI.LevelData::get_camZoom
+    호출 UnityEngine.Vector2::.ctor

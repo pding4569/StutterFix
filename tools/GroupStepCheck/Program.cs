@@ -5,7 +5,7 @@ using DG.Tweening;
 using UnityEngine;
 
 namespace UnityEngine {
-    static class Time { internal static float smoothDeltaTime=1f/120,deltaTime=1f/120; }
+    static class Time { internal static float smoothDeltaTime=1f/120,deltaTime=1f/120; internal static int frameCount; }
     struct Vector2 {
         public float x,y;
         public Vector2(float a,float b){x=a;y=b;}
@@ -25,6 +25,16 @@ namespace HarmonyLib {
     static class Harmony { internal static PatchInfo GetPatchInfo(MethodBase m)=>null; }
 }
 namespace StutterFix {
+    // Engine is default-off in this baseline/GroupStep fixture; its production
+    // ownership loop has a separate linked-source DecoEngineCheck fixture.
+    static class DecoEngine {
+        internal sealed class State {}
+        internal static bool Enabled;
+        internal static int Count => 0;
+        internal static void ReleaseRecord(DecoAnim.Rec r) {}
+        internal static void Update(float td) {}
+        internal static void Admit() {}
+    }
     static class UpdateEvalMemo { internal static void NewFrame(){} }
     static class PosFast {
         internal static bool Enabled=false;

@@ -1080,6 +1080,7 @@ namespace StutterFix
                 case "updatecost": Log("[updatecost] " + UpdateCostProbe.Command(arg)); return true;
                 case "decojob": Log("[decojob] " + DecoJobShadow.Command(arg)); return true;
                 case "tightlate": Log("[tightlate] " + TightLate.Command(arg)); return true;
+                case "decoengine": Log("[decoengine] " + DecoEngine.Command(arg)); return true;
                 case "posfast": Log("[posfast] " + PosFast.Command(arg)); return true;
                 case "groupstep": Log("[groupstep] " + DecoAnim.GroupCommand(arg)); return true;
                 case "fastlane": Log("[fastlane] " + DecoAnim.FastCommand(arg)); return true;

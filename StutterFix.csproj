@@ -182,6 +182,7 @@
     <Compile Include="Precheck.cs" />
     <Compile Include="FrameParts.cs" />
     <Compile Include="DecoAnim.cs" />
+    <Compile Include="DecoEngine.cs" />
     <Compile Include="DecoAnim.Batch.cs" />
     <Compile Include="DecoAnim.FastLane.cs" />
     <Compile Include="PosFast.cs" />

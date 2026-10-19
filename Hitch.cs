@@ -264,6 +264,7 @@ BlendProbe.Report();
 
         private static void SongEnded()
         {
+            DecoEngine.DropLevel();
             DecoAnim.BatchForget();
             TightLate.Forget();
             try

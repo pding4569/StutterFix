@@ -1,0 +1,38 @@
+﻿== ffxPlusBase : ADOBase
+  필드 hifiEffect
+  필드 disableIfMinFx
+  필드 disableIfMaxFx
+  필드 startTime
+  필드 startEffectOffset
+  필드 duration
+  필드 ease
+  필드 triggered
+  필드 degreeOffset
+  필드 conditionalInfo
+  필드 runManually
+  필드 sourceLevelEvent
+  필드 cam
+  필드 ctrl
+  필드 cond
+  필드 floor
+  필드 vfx
+  필드 floors
+  필드 floorID
+  필드 crotchet
+  메서드 int32 get_instanceID()
+  메서드 System.Collections.Generic.IEnumerable`1<DG.Tweening.Tween> get_eventTweens()
+  메서드 void Awake()
+  메서드 boolean get_runOnHit()
+  메서드 void Decode(ADOFAI.LevelEvent)
+  메서드 void PrepVfx()
+  메서드 void StartEffect()
+  메서드 void StartEffect(scrPlanet)
+  메서드 void StartEffectWithOffset(scrPlanet)
+  메서드 void SetStartTime(single, single)
+  메서드 void ScrubToTime(single)
+  메서드 void Kill()
+  메서드 void AdjustDurationForHardbake()
+  메서드 boolean IsAllowedByVisualSettings(VisualQuality, VisualEffects)
+  메서드 void OnDrawGizmos()
+  메서드 void .ctor()
+(1개 형식)

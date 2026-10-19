@@ -1,0 +1,374 @@
+
+.class public auto ansi sealed DecPlacementType
+	extends [mscorlib]System.Enum
+{
+	// Fields
+	.field public specialname rtspecialname int32 value__
+	.field public static literal valuetype DecPlacementType Tile = int32(0)
+	.field public static literal valuetype DecPlacementType Global = int32(1)
+	.field public static literal valuetype DecPlacementType RedPlanet = int32(2)
+	.field public static literal valuetype DecPlacementType BluePlanet = int32(3)
+	.field public static literal valuetype DecPlacementType GreenPlanet = int32(4)
+	.field public static literal valuetype DecPlacementType Camera = int32(5)
+	.field public static literal valuetype DecPlacementType CameraAspect = int32(6)
+	.field public static literal valuetype DecPlacementType LastPosition = int32(7)
+} // end of class DecPlacementType
+
+
+	.method public hidebysig specialname rtspecialname 
+		instance void .ctor (
+			int32 newFloor,
+			valuetype ADOFAI.LevelEventType 'type'
+		) cil managed 
+	{
+		// Method begins at RVA 0x10ec9c
+		// Header size: 12
+		// Code size: 15 (0xf)
+		.maxstack 9
+		IL_0000: ldarg.0
+		IL_0001: ldarg.1
+		IL_0002: ldarg.2
+		IL_0003: ldnull
+		IL_0004: ldnull
+		IL_0005: ldnull
+		IL_0006: ldc.i4.1
+		IL_0007: ldc.i4.1
+		IL_0008: ldc.i4.0
+		IL_0009: call instance void ADOFAI.LevelEvent::.ctor(int32, valuetype ADOFAI.LevelEventType, class ADOFAI.LevelEventInfo, class [mscorlib]System.Collections.Generic.Dictionary`2<string, object>, class [mscorlib]System.Collections.Generic.Dictionary`2<string, bool>, bool, bool, bool)
+		IL_000e: ret
+	} // end of method LevelEvent::.ctor
+
+
+	.method public hidebysig specialname rtspecialname 
+		instance void .ctor (
+			int32 newFloor,
+			valuetype ADOFAI.LevelEventType 'type',
+			class ADOFAI.LevelEventInfo customInfo
+		) cil managed 
+	{
+		// Method begins at RVA 0x10ecb8
+		// Header size: 12
+		// Code size: 15 (0xf)
+		.maxstack 9
+		IL_0000: ldarg.0
+		IL_0001: ldarg.1
+		IL_0002: ldarg.2
+		IL_0003: ldarg.3
+		IL_0004: ldnull
+		IL_0005: ldnull
+		IL_0006: ldc.i4.1
+		IL_0007: ldc.i4.1
+		IL_0008: ldc.i4.0
+		IL_0009: call instance void ADOFAI.LevelEvent::.ctor(int32, valuetype ADOFAI.LevelEventType, class ADOFAI.LevelEventInfo, class [mscorlib]System.Collections.Generic.Dictionary`2<string, object>, class [mscorlib]System.Collections.Generic.Dictionary`2<string, bool>, bool, bool, bool)
+		IL_000e: ret
+	} // end of method LevelEvent::.ctor
+
+
+	.method public hidebysig specialname rtspecialname 
+		instance void .ctor (
+			int32 newFloor,
+			valuetype ADOFAI.LevelEventType 'type',
+			class ADOFAI.LevelEventInfo customInfo,
+			class [mscorlib]System.Collections.Generic.Dictionary`2<string, object> data,
+			class [mscorlib]System.Collections.Generic.Dictionary`2<string, bool> disabled,
+			bool active,
+			bool visible,
+			bool locked
+		) cil managed 
+	{
+		// Method begins at RVA 0x10ecd4
+		// Header size: 12
+		// Code size: 286 (0x11e)
+		.maxstack 4
+		.locals init (
+			[0] string,
+			[1] valuetype [mscorlib]System.Collections.Generic.Dictionary`2/KeyCollection/Enumerator<string, class ADOFAI.PropertyInfo>,
+			[2] string,
+			[3] class ADOFAI.PropertyInfo
+		)
+		IL_0000: ldarg.0
+		IL_0001: ldc.i4.m1
+		IL_0002: stfld int32 ADOFAI.LevelEvent::floor
+		IL_0007: ldarg.0
+		IL_0008: newobj instance void class [mscorlib]System.Collections.Generic.List`1<class ADOFAI.LevelEvent>::.ctor()
+		IL_000d: stfld class [mscorlib]System.Collections.Generic.List`1<class ADOFAI.LevelEvent> ADOFAI.LevelEvent::realEvents
+		IL_0012: ldarg.0
+		IL_0013: ldc.i4.1
+		IL_0014: stfld bool ADOFAI.LevelEvent::active
+		IL_0019: ldarg.0
+		IL_001a: ldc.i4.1
+		IL_001b: stfld bool ADOFAI.LevelEvent::visible
+		IL_0020: ldarg.0
+		IL_0021: call instance void [mscorlib]System.Object::.ctor()
+		IL_0026: ldarg.0
+		IL_0027: ldarg.1
+		IL_0028: stfld int32 ADOFAI.LevelEvent::floor
+		IL_002d: ldarg.0
+		IL_002e: ldarg.2
+		IL_002f: stfld valuetype ADOFAI.LevelEventType ADOFAI.LevelEvent::eventType
+		IL_0034: ldarg.0
+		IL_0035: ldarg.s visible
+		IL_0037: stfld bool ADOFAI.LevelEvent::visible
+		IL_003c: ldarg.0
+		IL_003d: ldarg.s locked
+		IL_003f: stfld bool ADOFAI.LevelEvent::locked
+		IL_0044: ldarg.0
+		IL_0045: ldarg.s active
+		IL_0047: stfld bool ADOFAI.LevelEvent::active
+		IL_004c: ldsfld class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventType, string> GCS::levelEventTypeString
+		IL_0051: ldarg.0
+		IL_0052: ldfld valuetype ADOFAI.LevelEventType ADOFAI.LevelEvent::eventType
+		IL_0057: callvirt instance !1 class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventType, string>::get_Item(!0)
+		IL_005c: stloc.0
+		IL_005d: ldarg.0
+		IL_005e: ldarg.3
+		IL_005f: brtrue.s IL_006e
+		IL_0061: ldsfld class [mscorlib]System.Collections.Generic.Dictionary`2<string, class ADOFAI.LevelEventInfo> GCS::levelEventsInfo
+		IL_0066: ldloc.0
+		IL_0067: callvirt instance !1 class [mscorlib]System.Collections.Generic.Dictionary`2<string, class ADOFAI.LevelEventInfo>::get_Item(!0)
+		IL_006c: br.s IL_006f
+		IL_006e: ldarg.3
+		IL_006f: stfld class ADOFAI.LevelEventInfo ADOFAI.LevelEvent::info
+		IL_0074: ldarg.s data
+		IL_0076: brtrue IL_0103
+		IL_007b: ldarg.0
+		IL_007c: newobj instance void class [mscorlib]System.Collections.Generic.Dictionary`2<string, object>::.ctor()
+		IL_0081: stfld class [mscorlib]System.Collections.Generic.Dictionary`2<string, object> ADOFAI.LevelEvent::data
+		IL_0086: ldarg.0
+		IL_0087: newobj instance void class [mscorlib]System.Collections.Generic.Dictionary`2<string, bool>::.ctor()
+		IL_008c: stfld class [mscorlib]System.Collections.Generic.Dictionary`2<string, bool> ADOFAI.LevelEvent::disabled
+		IL_0091: ldarg.0
+		IL_0092: ldfld class ADOFAI.LevelEventInfo ADOFAI.LevelEvent::info
+		IL_0097: ldfld class [mscorlib]System.Collections.Generic.Dictionary`2<string, class ADOFAI.PropertyInfo> ADOFAI.LevelEventInfo::propertiesInfo
+		IL_009c: callvirt instance class [mscorlib]System.Collections.Generic.Dictionary`2/KeyCollection<!0, !1> class [mscorlib]System.Collections.Generic.Dictionary`2<string, class ADOFAI.PropertyInfo>::get_Keys()
+		IL_00a1: callvirt instance valuetype [mscorlib]System.Collections.Generic.Dictionary`2/KeyCollection/Enumerator<!0, !1> class [mscorlib]System.Collections.Generic.Dictionary`2/KeyCollection<string, class ADOFAI.PropertyInfo>::GetEnumerator()
+		IL_00a6: stloc.1
+		.try
+		{
+			IL_00a7: br.s IL_00ea
+			// loop start (head: IL_00ea)
+				IL_00a9: ldloca.s 1
+				IL_00ab: call instance !0 valuetype [mscorlib]System.Collections.Generic.Dictionary`2/KeyCollection/Enumerator<string, class ADOFAI.PropertyInfo>::get_Current()
+				IL_00b0: stloc.2
+				IL_00b1: ldarg.0
+				IL_00b2: ldfld class ADOFAI.LevelEventInfo ADOFAI.LevelEvent::info
+				IL_00b7: ldfld class [mscorlib]System.Collections.Generic.Dictionary`2<string, class ADOFAI.PropertyInfo> ADOFAI.LevelEventInfo::propertiesInfo
+				IL_00bc: ldloc.2
+				IL_00bd: callvirt instance !1 class [mscorlib]System.Collections.Generic.Dictionary`2<string, class ADOFAI.PropertyInfo>::get_Item(!0)
+				IL_00c2: stloc.3
+				IL_00c3: ldarg.0
+				IL_00c4: ldfld class [mscorlib]System.Collections.Generic.Dictionary`2<string, object> ADOFAI.LevelEvent::data
+				IL_00c9: ldloc.2
+				IL_00ca: ldloc.3
+				IL_00cb: ldfld object ADOFAI.PropertyInfo::value_default
+				IL_00d0: callvirt instance void class [mscorlib]System.Collections.Generic.Dictionary`2<string, object>::set_Item(!0, !1)
+				IL_00d5: ldarg.0
+				IL_00d6: ldfld class [mscorlib]System.Collections.Generic.Dictionary`2<string, bool> ADOFAI.LevelEvent::disabled
+				IL_00db: ldloc.2
+				IL_00dc: ldloc.3
+				IL_00dd: ldfld bool ADOFAI.PropertyInfo::startEnabled
+				IL_00e2: ldc.i4.0
+				IL_00e3: ceq
+				IL_00e5: callvirt instance void class [mscorlib]System.Collections.Generic.Dictionary`2<string, bool>::set_Item(!0, !1)
+				IL_00ea: ldloca.s 1
+				IL_00ec: call instance bool valuetype [mscorlib]System.Collections.Generic.Dictionary`2/KeyCollection/Enumerator<string, class ADOFAI.PropertyInfo>::MoveNext()
+				IL_00f1: brtrue.s IL_00a9
+			// end loop
+			IL_00f3: leave.s IL_011d
+		} // end .try
+		finally
+		{
+			IL_00f5: ldloca.s 1
+			IL_00f7: constrained. valuetype [mscorlib]System.Collections.Generic.Dictionary`2/KeyCollection/Enumerator<string, class ADOFAI.PropertyInfo>
+			IL_00fd: callvirt instance void [mscorlib]System.IDisposable::Dispose()
+			IL_0102: endfinally
+		} // end handler
+		IL_0103: ldarg.0
+		IL_0104: ldarg.s data
+		IL_0106: newobj instance void class [mscorlib]System.Collections.Generic.Dictionary`2<string, object>::.ctor(class [mscorlib]System.Collections.Generic.IDictionary`2<!0, !1>)
+		IL_010b: stfld class [mscorlib]System.Collections.Generic.Dictionary`2<string, object> ADOFAI.LevelEvent::data
+		IL_0110: ldarg.0
+		IL_0111: ldarg.s disabled
+		IL_0113: newobj instance void class [mscorlib]System.Collections.Generic.Dictionary`2<string, bool>::.ctor(class [mscorlib]System.Collections.Generic.IDictionary`2<!0, !1>)
+		IL_0118: stfld class [mscorlib]System.Collections.Generic.Dictionary`2<string, bool> ADOFAI.LevelEvent::disabled
+		IL_011d: ret
+	} // end of method LevelEvent::.ctor
+
+
+	.method public hidebysig specialname rtspecialname 
+		instance void .ctor (
+			class [mscorlib]System.Collections.Generic.Dictionary`2<string, object> dict
+		) cil managed 
+	{
+		// Method begins at RVA 0x10ee10
+		// Header size: 1
+		// Code size: 49 (0x31)
+		.maxstack 8
+		IL_0000: ldarg.0
+		IL_0001: ldc.i4.m1
+		IL_0002: stfld int32 ADOFAI.LevelEvent::floor
+		IL_0007: ldarg.0
+		IL_0008: newobj instance void class [mscorlib]System.Collections.Generic.List`1<class ADOFAI.LevelEvent>::.ctor()
+		IL_000d: stfld class [mscorlib]System.Collections.Generic.List`1<class ADOFAI.LevelEvent> ADOFAI.LevelEvent::realEvents
+		IL_0012: ldarg.0
+		IL_0013: ldc.i4.1
+		IL_0014: stfld bool ADOFAI.LevelEvent::active
+		IL_0019: ldarg.0
+		IL_001a: ldc.i4.1
+		IL_001b: stfld bool ADOFAI.LevelEvent::visible
+		IL_0020: ldarg.0
+		IL_0021: call instance void [mscorlib]System.Object::.ctor()
+		IL_0026: ldarg.0
+		IL_0027: ldarg.1
+		IL_0028: ldnull
+		IL_0029: ldc.i4.0
+		IL_002a: call instance valuetype ADOFAI.LevelEvent/DecodeResult ADOFAI.LevelEvent::Decode(class [mscorlib]System.Collections.Generic.Dictionary`2<string, object>, string, bool)
+		IL_002f: pop
+		IL_0030: ret
+	} // end of method LevelEvent::.ctor
+
+
+	.method assembly hidebysig static 
+		void '<Start>g__LoadLevelEventSprites|450_0' () cil managed 
+	{
+		.custom instance void [mscorlib]System.Runtime.CompilerServices.CompilerGeneratedAttribute::.ctor() = (
+			01 00 00 00
+		)
+		// Method begins at RVA 0x4ddc0
+		// Header size: 12
+		// Code size: 130 (0x82)
+		.maxstack 3
+		.locals init (
+			[0] class [mscorlib]System.Collections.IEnumerator,
+			[1] object,
+			[2] class [UnityEngine.CoreModule]UnityEngine.Sprite,
+			[3] class [mscorlib]System.IDisposable
+		)
+		IL_0000: ldsfld class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventType, class [UnityEngine.CoreModule]UnityEngine.Sprite> GCS::levelEventIcons
+		IL_0005: brfalse.s IL_0008
+		IL_0007: ret
+		IL_0008: newobj instance void class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventType, class [UnityEngine.CoreModule]UnityEngine.Sprite>::.ctor()
+		IL_000d: stsfld class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventType, class [UnityEngine.CoreModule]UnityEngine.Sprite> GCS::levelEventIcons
+		IL_0012: ldtoken ADOFAI.LevelEventType
+		IL_0017: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
+		IL_001c: call class [mscorlib]System.Array [mscorlib]System.Enum::GetValues(class [mscorlib]System.Type)
+		IL_0021: callvirt instance class [mscorlib]System.Collections.IEnumerator [mscorlib]System.Array::GetEnumerator()
+		IL_0026: stloc.0
+		.try
+		{
+			IL_0027: br.s IL_0066
+			// loop start (head: IL_0066)
+				IL_0029: ldloc.0
+				IL_002a: callvirt instance object [mscorlib]System.Collections.IEnumerator::get_Current()
+				IL_002f: stloc.1
+				IL_0030: ldstr "LevelEditor/LevelEvents/"
+				IL_0035: ldloc.1
+				IL_0036: brtrue.s IL_003b
+				IL_0038: ldnull
+				IL_0039: br.s IL_0041
+				IL_003b: ldloc.1
+				IL_003c: callvirt instance string [mscorlib]System.Object::ToString()
+				IL_0041: call string [mscorlib]System.String::Concat(string, string)
+				IL_0046: call !!0 [UnityEngine.CoreModule]UnityEngine.Resources::Load<class [UnityEngine.CoreModule]UnityEngine.Sprite>(string)
+				IL_004b: stloc.2
+				IL_004c: ldloc.2
+				IL_004d: ldnull
+				IL_004e: call bool [UnityEngine.CoreModule]UnityEngine.Object::op_Inequality(class [UnityEngine.CoreModule]UnityEngine.Object, class [UnityEngine.CoreModule]UnityEngine.Object)
+				IL_0053: brfalse.s IL_0066
+				IL_0055: ldsfld class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventType, class [UnityEngine.CoreModule]UnityEngine.Sprite> GCS::levelEventIcons
+				IL_005a: ldloc.1
+				IL_005b: unbox.any ADOFAI.LevelEventType
+				IL_0060: ldloc.2
+				IL_0061: callvirt instance void class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventType, class [UnityEngine.CoreModule]UnityEngine.Sprite>::Add(!0, !1)
+				IL_0066: ldloc.0
+				IL_0067: callvirt instance bool [mscorlib]System.Collections.IEnumerator::MoveNext()
+				IL_006c: brtrue.s IL_0029
+			// end loop
+			IL_006e: leave.s IL_0081
+		} // end .try
+		finally
+		{
+			IL_0070: ldloc.0
+			IL_0071: isinst [mscorlib]System.IDisposable
+			IL_0076: stloc.3
+			IL_0077: ldloc.3
+			IL_0078: brfalse.s IL_0080
+			IL_007a: ldloc.3
+			IL_007b: callvirt instance void [mscorlib]System.IDisposable::Dispose()
+			IL_0080: endfinally
+		} // end handler
+		IL_0081: ret
+	} // end of method scnEditor::'<Start>g__LoadLevelEventSprites|450_0'
+
+
+	.method assembly hidebysig static 
+		void '<Start>g__LoadLevelCategorySprites|450_1' () cil managed 
+	{
+		.custom instance void [mscorlib]System.Runtime.CompilerServices.CompilerGeneratedAttribute::.ctor() = (
+			01 00 00 00
+		)
+		// Method begins at RVA 0x4de60
+		// Header size: 12
+		// Code size: 130 (0x82)
+		.maxstack 3
+		.locals init (
+			[0] class [mscorlib]System.Collections.IEnumerator,
+			[1] object,
+			[2] class [UnityEngine.CoreModule]UnityEngine.Sprite,
+			[3] class [mscorlib]System.IDisposable
+		)
+		IL_0000: ldsfld class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventCategory, class [UnityEngine.CoreModule]UnityEngine.Sprite> GCS::eventCategoryIcons
+		IL_0005: brfalse.s IL_0008
+		IL_0007: ret
+		IL_0008: newobj instance void class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventCategory, class [UnityEngine.CoreModule]UnityEngine.Sprite>::.ctor()
+		IL_000d: stsfld class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventCategory, class [UnityEngine.CoreModule]UnityEngine.Sprite> GCS::eventCategoryIcons
+		IL_0012: ldtoken ADOFAI.LevelEventCategory
+		IL_0017: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
+		IL_001c: call class [mscorlib]System.Array [mscorlib]System.Enum::GetValues(class [mscorlib]System.Type)
+		IL_0021: callvirt instance class [mscorlib]System.Collections.IEnumerator [mscorlib]System.Array::GetEnumerator()
+		IL_0026: stloc.0
+		.try
+		{
+			IL_0027: br.s IL_0066
+			// loop start (head: IL_0066)
+				IL_0029: ldloc.0
+				IL_002a: callvirt instance object [mscorlib]System.Collections.IEnumerator::get_Current()
+				IL_002f: stloc.1
+				IL_0030: ldstr "LevelEditor/EventCategories/"
+				IL_0035: ldloc.1
+				IL_0036: brtrue.s IL_003b
+				IL_0038: ldnull
+				IL_0039: br.s IL_0041
+				IL_003b: ldloc.1
+				IL_003c: callvirt instance string [mscorlib]System.Object::ToString()
+				IL_0041: call string [mscorlib]System.String::Concat(string, string)
+				IL_0046: call !!0 [UnityEngine.CoreModule]UnityEngine.Resources::Load<class [UnityEngine.CoreModule]UnityEngine.Sprite>(string)
+				IL_004b: stloc.2
+				IL_004c: ldloc.2
+				IL_004d: ldnull
+				IL_004e: call bool [UnityEngine.CoreModule]UnityEngine.Object::op_Inequality(class [UnityEngine.CoreModule]UnityEngine.Object, class [UnityEngine.CoreModule]UnityEngine.Object)
+				IL_0053: brfalse.s IL_0066
+				IL_0055: ldsfld class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventCategory, class [UnityEngine.CoreModule]UnityEngine.Sprite> GCS::eventCategoryIcons
+				IL_005a: ldloc.1
+				IL_005b: unbox.any ADOFAI.LevelEventCategory
+				IL_0060: ldloc.2
+				IL_0061: callvirt instance void class [mscorlib]System.Collections.Generic.Dictionary`2<valuetype ADOFAI.LevelEventCategory, class [UnityEngine.CoreModule]UnityEngine.Sprite>::Add(!0, !1)
+				IL_0066: ldloc.0
+				IL_0067: callvirt instance bool [mscorlib]System.Collections.IEnumerator::MoveNext()
+				IL_006c: brtrue.s IL_0029
+			// end loop
+			IL_006e: leave.s IL_0081
+		} // end .try
+		finally
+		{
+			IL_0070: ldloc.0
+			IL_0071: isinst [mscorlib]System.IDisposable
+			IL_0076: stloc.3
+			IL_0077: ldloc.3
+			IL_0078: brfalse.s IL_0080
+			IL_007a: ldloc.3
+			IL_007b: callvirt instance void [mscorlib]System.IDisposable::Dispose()
+			IL_0080: endfinally
+		} // end handler
+		IL_0081: ret
+	} // end of method scnEditor::'<Start>g__LoadLevelCategorySprites|450_1'

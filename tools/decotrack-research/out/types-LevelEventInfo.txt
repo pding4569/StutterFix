@@ -1,0 +1,18 @@
+﻿== ADOFAI.LevelEventInfo : System.Object
+  필드 name
+  필드 type
+  필드 pro
+  필드 taroDLC
+  필드 propertiesInfo
+  필드 categories
+  필드 executionTime
+  필드 allowFirstFloor
+  필드 isDecoration
+  필드 useGroups
+  필드 groups
+  필드 stretchViewport
+  메서드 boolean get_allowFirstFloorCheck()
+  메서드 boolean get_taroDLCCheck()
+  메서드 boolean get_isActive()
+  메서드 void .ctor()
+(1개 형식)

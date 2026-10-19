@@ -1,0 +1,51 @@
+﻿== PACL2.Features.CustomEvents.CustomEventsFeature
+  .ctor
+    호출 System.Type::GetTypeFromHandle
+    호출 PACL2.Features.FeaturesBase::.ctor
+    호출 JALib.Core.Feature::get_Patcher
+    필드 쓰기 JALib.Core.Patch.JAPatcher::usingWaiting
+    호출 JALib.Tools.SimpleReflect::Methods
+    호출 System.Reflection.MemberInfo::get_Name
+    호출 System.String::Contains
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches::ScnEditorLoadLevelEventSpritesPostfix
+    호출 System.Action::.ctor
+    호출 JALib.Core.Patch.JAPatchAttribute::.ctor
+    호출 JALib.Core.Patch.JAPatcher::AddPatch
+    호출 PACL2.Features.CustomEvents.CustomEventsPatches::ScnEditorLoadLevelCategorySpritesPostfix
+  OnEnable
+    호출 JALib.Core.Feature::OnEnable
+    호출 PACL2.Features.CustomEvents.CustomEventsFeature::AddCustomEvents
+    호출 PACL2.Utilities.PACL2UtilExtensions::ResetEditorSceneWithBackupIfEditor
+  OnDisable
+    호출 JALib.Core.Feature::OnDisable
+    호출 PACL2.Features.CustomEvents.CustomEventsFeature::RemoveCustomEvents
+    호출 PACL2.Utilities.PACL2UtilExtensions::ResetEditorSceneWithBackupIfEditor
+  AddCustomEvents
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 System.Array::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 PACL2.CustomFFX.CustomLevelEventInfoFactory::MakeLevelEventInfo
+    호출 System.Object::ToString
+    정적필드 읽기 GCS::levelEventsInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    정적필드 읽기 GCS::levelEventTypeString
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    정적필드 읽기 ADOFAI.EditorConstants::soloTypes
+    호출 PACL2.CustomFFX.CustomLevelEventInfoFactory::GetSoloTypeCustomLevelEvents
+    호출 제네릭 System.Collections.Generic.HashSet`1::UnionWith
+  RemoveCustomEvents
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    호출 System.Array::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 System.Object::ToString
+    정적필드 읽기 GCS::levelEventsInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Remove
+    정적필드 읽기 GCS::levelEventTypeString
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    정적필드 읽기 ADOFAI.EditorConstants::soloTypes
+    호출 PACL2.CustomFFX.CustomLevelEventInfoFactory::GetSoloTypeCustomLevelEvents
+    호출 제네릭 System.Collections.Generic.HashSet`1::ExceptWith

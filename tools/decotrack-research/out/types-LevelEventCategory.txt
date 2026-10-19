@@ -1,0 +1,11 @@
+﻿== ADOFAI.LevelEventCategory : System.Enum
+  필드 value__
+  필드 static Gameplay
+  필드 static TrackFx
+  필드 static DecorationFx
+  필드 static VisualFx
+  필드 static FxModifiers
+  필드 static Conveniences
+  필드 static Jank
+  필드 static Favorites
+(1개 형식)

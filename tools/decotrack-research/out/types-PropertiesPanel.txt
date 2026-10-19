@@ -1,0 +1,32 @@
+﻿== ADOFAI.PropertiesPanel : ADOBase
+  필드 layout
+  필드 scrollRect
+  필드 content
+  필드 contentLayout
+  필드 viewport
+  필드 contentSizeFitter
+  필드 tabButtons
+  필드 properties
+  필드 levelEventType
+  필드 inspectorPanel
+  필드 propertySelectables
+  필드 eventSystem
+  필드 static dontRenderKeys
+  필드 <tabContainer>k__BackingField
+  필드 <selectedTab>k__BackingField
+  메서드 UnityEngine.RectTransform get_tabContainer()
+  메서드 void set_tabContainer(UnityEngine.RectTransform)
+  메서드 string get_selectedTab()
+  메서드 void set_selectedTab(string)
+  메서드 void Awake()
+  메서드 void Update()
+  메서드 void Init(ADOFAI.InspectorPanel, ADOFAI.LevelEventInfo)
+  메서드 void RenderControl(string, ADOFAI.PropertyInfo)
+  메서드 void UpdateEnabledButton(ADOFAI.Property, boolean)
+  메서드 void SetupCheckmark(ADOFAI.Property, ADOFAI.LevelEditor.Controls.PropertyControl)
+  메서드 void SetProperties(ADOFAI.LevelEvent, boolean)
+  메서드 boolean IsControlFullyVisible(UnityEngine.RectTransform)
+  메서드 void SelectTab(string)
+  메서드 void .ctor()
+  메서드 static void .cctor()
+(1개 형식)

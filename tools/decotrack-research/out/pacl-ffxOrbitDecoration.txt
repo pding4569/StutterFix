@@ -1,0 +1,60 @@
+﻿== PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration
+  PrepVfx
+    호출 scrDecorationManager::get_instance
+    필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_centerTag
+    호출 scrDecorationManager::GetTaggedDecorations
+    호출 제네릭 System.Linq.Enumerable::ToArray
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_centerDecorations
+    필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_tag
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_decorations
+  StartEffect
+    필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_centerDecorations
+    정적필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c::<>9__8_0
+    정적필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c::<>9
+    호출 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c::<StartEffect>b__8_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c::<>9__8_0
+    호출 제네릭 PACL2.CustomFFX.Advanced.DecorationUtil::GetAverage
+    필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_decorations
+    호출 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::.ctor
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::<>4__this
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::dec
+    필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::dec
+    필드 읽기 scrDecoration::pivotPosVec
+    호출 UnityEngine.Vector2::op_Subtraction
+    호출 UnityEngine.Vector2::get_magnitude
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::norm
+    필드 읽기 UnityEngine.Vector2::y
+    필드 읽기 UnityEngine.Vector2::x
+    호출 UnityEngine.Mathf::Atan2
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::srcOrbitDirection
+    필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::srcOrbitDirection
+    필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_amount
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::dstOrbitDirection
+    필드 읽기 scrDecoration::rotAngle
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::srcDecRotation
+    필드 읽기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::srcDecRotation
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::dstDecRotation
+    호출 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration+<>c__DisplayClass8_0::<StartEffect>b__1
+    호출 제네릭 DG.Tweening.Core.DOSetter`1::.ctor
+    필드 읽기 ffxPlusBase::duration
+    호출 DG.Tweening.DOTween::To
+    필드 읽기 ffxPlusBase::ease
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenExtensions::Done
+  Decode
+    호출 ADOFAI.LevelEvent::GetFloat
+    필드 읽기 ffxPlusBase::crotchet
+    필드 쓰기 ffxPlusBase::duration
+    호출 ADOFAI.LevelEvent::GetString
+    호출 System.String::Split
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_tag
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_centerTag
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_amount
+    호출 ADOFAI.LevelEvent::GetBool
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_lockRotation
+    필드 쓰기 PACL2.CustomFFX.Advanced.OrbitDecoration.ffxOrbitDecoration::_dstRadiusMultiplier
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    필드 쓰기 ffxPlusBase::ease
+  .ctor
+    호출 ffxPlusBase::.ctor

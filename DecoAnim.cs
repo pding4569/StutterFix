@@ -47,6 +47,9 @@ namespace StutterFix
 
         internal sealed class Rec
         {
+            internal DecoEngine.State Engine;
+            internal long EngineOrder;
+            internal int EngineSkipFrame = -1;
             internal int BatchSlot = -1;
             internal long BatchOrder;
 #if DEV || AUTOTEST
@@ -116,6 +119,7 @@ namespace StutterFix
                 ConfigureGroup(Main.Entry.Path);
                 ConfigureFastLane(Main.Entry.Path);
                 ConfigureBatch(Main.Entry.Path);
+                DecoEngine.Configure(Main.Entry.Path);
                 var d = typeof(scrDecoration);
                 setPosX = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionX", new[] { typeof(float), typeof(Vector2) }));
                 setPosY = AccessTools.MethodDelegate<SetXY>(AccessTools.Method(d, "SetPositionY", new[] { typeof(float), typeof(Vector2) }));
@@ -166,6 +170,7 @@ namespace StutterFix
         internal static void CollectMoving(List<scrDecoration> into, HashSet<scrDecoration> seen)
         {
             into.Clear(); seen.Clear();
+            DecoEngine.Collect(into, seen);
             if (batchCount != 0)
             {
                 foreach (var r in BatchView()) if (r.Running && r.D != null && BatchKey(r.Key) && seen.Add(r.D)) into.Add(r.D);
@@ -192,6 +197,7 @@ namespace StutterFix
         }
         private static Rec NewRec(scrDecoration dec, Dictionary<global::TweenType, Tween> d, int key, float dur, Ease ease)
         {
+            DecoEngine.ReleaseDecoration(dec);
             // 같은 칸에 끝난 표가 있으면 다시 쓴다 (그 칸만 이 표를 가리키고, 방금 끊었다). 없으면 새 꺼진 객체 (active = false)
             // 표 안의 기록(Rec)도 목록에서 빠졌으면 같이 다시 쓴다. 한 판에 수십만 개가 생기던 것이라(곡 중엔 GC 를 멈춰 두어 그대로 쌓였다)
             // 같은 장식·같은 속성을 계속 옮기는 맵에서는 대부분 새로 만들지 않는다.
@@ -204,6 +210,7 @@ namespace StutterFix
             {
                 r = oldR; Reused++;
                 r.Pos = 0f; r.Started = false; r.Running = true; r.Stepped = false;
+                r.EngineSkipFrame = -1;
                 r.Shadow = null; r.SDone = false; r.SStepped = false;
                 r.Dur = dur; r.E = ease;
             }
@@ -212,6 +219,8 @@ namespace StutterFix
             if (FuseProbe.On) FuseProbe.NewRec(dec, key, dur, (object)old != null, oldR != null && oldR.Running);
 #endif
             r.NativeEpoch = 0;
+            r.EngineOrder = DecoEngine.NextOrder();
+            DecoEngine.Dirty = true;
             if (batchOn) r.BatchOrder = ++batchOrder;
             PosFast.Bind(r);
             ZeroTween.EaseParams(ease, out r.Over, out r.Period);
@@ -450,6 +459,7 @@ namespace StutterFix
         // Kill(true) / KillAll(true): 끝 위치로 한 번 (시작 전이면 시작 처리부터)
         private static void Complete(Rec r)
         {
+            DecoEngine.ReleaseRecord(r);
             if (r.BatchSlot >= 0) BatchRelease(r, true);
             BatchShadowCancel(r);
             fastDirty = true;
@@ -469,6 +479,7 @@ namespace StutterFix
             if ((object)t == null) return true;
             var r = t.id as Rec;
             if (r == null) return true;
+            DecoEngine.ReleaseRecord(r);
             if (r.BatchSlot >= 0) BatchRelease(r, true);
             BatchShadowCancel(r);
             if (complete) { Killed++; Complete(r); }
@@ -487,6 +498,7 @@ namespace StutterFix
         internal static long Listed;
         public static void PlayingPostfix(List<Tween> __0, ref List<Tween> __result)
         {
+            DecoEngine.RestoreAll();
             if (batchOn) BatchRestoreAll();
             int n = 0;
             for (int i = 0; i < recs.Count; i++) if (recs[i].Running) n++;
@@ -506,9 +518,10 @@ namespace StutterFix
         }
         public static void KillAllPrefix(bool complete)
         {
+            DecoEngine.RestoreAll();
             if (batchOn) BatchRestoreAll();
             fastDirty = true;
-            if (recs.Count == 0 && batchCount == 0) { LastFrameMs = 0; return; }
+            if (recs.Count == 0 && batchCount == 0 && DecoEngine.Count == 0) { LastFrameMs = 0; return; }
             var copy = recs.ToArray();
             foreach (var r in copy)
             {
@@ -518,6 +531,7 @@ namespace StutterFix
                 r.InList = false;
             }
             recs.Clear();
+            DecoEngine.Forget();
         }
 
         // scnGame.ResetScene 앞(SceneReset): 게임이 재생 중인 DOTween 을 Kill() (완료 없이) 하는 것과 같이, 진행 중인 표를 그 자리에서 버린다.
@@ -560,6 +574,7 @@ namespace StutterFix
             { double ms = sampTicks[k] / tk / 1000.0 / f; sum += ms; sb.Append(nm[k]).Append(" 프레임당 ").Append((sampCalls[k] / (double)f).ToString("F0")).Append("번 ").Append((sampTicks[k] / tk / sampCalls[k]).ToString("F2")).Append("us = ").Append(ms.ToString("F3")).Append("ms, "); }
             sb.Append("호출 합 ").Append(sum.ToString("F3")).Append("ms");
             sb.Append(" | batch 포함 ").Append((sampBatchTicks / tk / 1000.0 / f).ToString("F3")).Append("ms/frame (merge+maintenance 포함, 전체 루프에 이미 포함)");
+            if (DecoEngine.Enabled) sb.Append(" | decoengine: ").Append(DecoEngine.Command("state"));
             return sb.ToString();
         }
         internal static void SampReset() { Array.Clear(sampTicks, 0, 16); Array.Clear(sampCalls, 0, 16); sampBatchTicks = sampCompactTicks = sampLoopTicks = sampFrames = sampRecs = 0; }
@@ -574,7 +589,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             UpdateCostProbe.Frame(recs);
 #endif
-            if (recs.Count == 0 && batchCount == 0) { LastFrameMs = 0; return; }
+            if (recs.Count == 0 && batchCount == 0 && DecoEngine.Count == 0) { LastFrameMs = 0; return; }
             GroupFrameStart();
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
@@ -587,6 +602,7 @@ namespace StutterFix
 #endif
             if (!(td < 1E-06f && td > -1E-06f))
             {
+                DecoEngine.Update(td);
                 BatchShadowBegin(td);
                 if (batchOn && BatchAllowed())
                 {
@@ -606,6 +622,7 @@ namespace StutterFix
                 {
                     var r = recs[i];
                     if (!r.Running) { fastDirty = true; continue; }
+                    if (DecoEngine.Enabled && r.EngineSkipFrame == Time.frameCount) continue;
 #if AUTOTEST
                     if (AblateMask != 0 && r.Key >= 0 && r.Key < 31 && (AblateMask & (1 << r.Key)) != 0) continue;   // (측정 전용) 이 키의 기록은 진행하지 않는다: 비용 귀속용
 #endif
@@ -652,10 +669,11 @@ namespace StutterFix
                 }
                 }
             }
+            BatchShadowEnd();
+            DecoEngine.Admit();
 #if AUTOTEST
             long sampCompact0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
 #endif
-            BatchShadowEnd();
             if (!Edition.Dev)
             {
                 if (!batchRan && !FastMaySkipCompact()) Compact();
@@ -712,7 +730,7 @@ namespace StutterFix
             for (int i = 0; i < records.Count; i++)
             {
                 var r = records[i];
-                if (r.BatchSlot >= 0) continue; // InList means owned by recs OR a resident slot.
+                if (r.BatchSlot >= 0 || r.Engine != null) continue; // resident ownership is not a recs entry
                 if (r.Running || (Edition.Dev && r.Shadow != null)) records[w++] = r;
                 else { BatchShadowCancel(r); r.InList = false; }
             }
@@ -748,6 +766,7 @@ namespace StutterFix
             var l = new List<KeyValuePair<int, int>>(cnt); l.Sort((a, b) => b.Value.CompareTo(a.Value));
             var sb = new System.Text.StringBuilder();
             for (int i = 0; i < l.Count && i < 6; i++) { sb.Append(i > 0 ? ", " : "").Append('{'); bool f = true; for (int k = 0; k < 31; k++) if ((l[i].Key & (1 << k)) != 0) { sb.Append(f ? "" : "+").Append(k); f = false; } sb.Append("} ").Append(l[i].Value); }
+            if (DecoEngine.Enabled) sb.Append(" | decoengine: ").Append(DecoEngine.Command("state"));
             return sb.ToString();
         }
 #endif

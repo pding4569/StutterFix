@@ -1,0 +1,407 @@
+﻿== ADOFAI.PropertiesPanel
+  get_tabContainer
+    필드 읽기 ADOFAI.PropertiesPanel::<tabContainer>k__BackingField
+  set_tabContainer
+    필드 쓰기 ADOFAI.PropertiesPanel::<tabContainer>k__BackingField
+  get_selectedTab
+    필드 읽기 ADOFAI.PropertiesPanel::<selectedTab>k__BackingField
+  set_selectedTab
+    필드 쓰기 ADOFAI.PropertiesPanel::<selectedTab>k__BackingField
+  Awake
+    필드 읽기 ADOFAI.PropertiesPanel::content
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 ADOFAI.PropertiesPanel::contentLayout
+  Update
+    호출 UnityEngine.Input::GetKeyDown
+    호출 ADOFAI.PropertiesPanel+<>c__DisplayClass23_0::.ctor
+    필드 읽기 ADOFAI.PropertiesPanel::eventSystem
+    호출 UnityEngine.EventSystems.EventSystem::get_current
+    필드 쓰기 ADOFAI.PropertiesPanel::eventSystem
+    필드 읽기 ADOFAI.PropertiesPanel::propertySelectables
+    호출 ADOBase::get_editor
+    호출 scnEditor::get_playMode
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.EventSystems.EventSystem::get_currentSelectedGameObject
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass23_0::currentSel
+    호출 ADOFAI.PropertiesPanel+<>c__DisplayClass23_0::<Update>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::FindIndex
+    필드 읽기 ADOFAI.PropertiesPanel+<>c__DisplayClass23_0::currentSel
+    호출 RDInput::get_holdingControl
+    호출 RDInput::get_holdingShift
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 ADOFAI.PropertiesPanel+PropertySelectable::control
+    필드 읽기 ADOFAI.PropertiesPanel+PropertySelectable::isPropertyCheckbox
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl::propertyInfo
+    필드 읽기 ADOFAI.PropertyInfo::canBeDisabled
+    필드 읽기 ADOFAI.PropertiesPanel::inspectorPanel
+    필드 읽기 ADOFAI.InspectorPanel::selectedEvent
+    필드 읽기 ADOFAI.LevelEvent::isFake
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    필드 읽기 ADOFAI.PropertyInfo::name
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 ADOFAI.PropertiesPanel::get_selectedTab
+    호출 ADOFAI.PropertyInfo::CheckIfEnabled
+    필드 읽기 ADOFAI.PropertiesPanel+PropertySelectable::selectable
+    필드 읽기 ADOFAI.PropertiesPanel+PropertySelectable::propertyRef
+    필드 읽기 ADOFAI.Property::checkImage
+    필드 읽기 ADOFAI.Property::checkbgImage
+    호출 UnityEngine.UI.Selectable::set_targetGraphic
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl::propertyTransform
+    호출 ADOFAI.PropertiesPanel::IsControlFullyVisible
+    필드 읽기 ADOFAI.PropertiesPanel::content
+    호출 UnityEngine.RectTransform::get_anchoredPosition
+    필드 읽기 UnityEngine.Vector2::y
+    호출 UnityEngine.RectTransform::get_rect
+    호출 UnityEngine.Rect::get_height
+    필드 읽기 ADOFAI.PropertiesPanel::viewport
+    호출 RDExtensions::SetAnchorPosY
+    호출 제네릭 UnityEngine.Component::TryGetComponent
+    호출 UnityEngine.EventSystems.PointerEventData::.ctor
+    호출 UnityEngine.UI.InputField::OnPointerClick
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.EventSystems.BaseEventData::.ctor
+    호출 UnityEngine.EventSystems.EventSystem::SetSelectedGameObject
+  Init
+    필드 쓰기 ADOFAI.PropertiesPanel::inspectorPanel
+    호출 UnityEngine.EventSystems.EventSystem::get_current
+    필드 쓰기 ADOFAI.PropertiesPanel::eventSystem
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Keys
+    필드 읽기 ADOFAI.LevelEventInfo::stretchViewport
+    필드 읽기 ADOFAI.PropertiesPanel::contentSizeFitter
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 읽기 ADOFAI.PropertiesPanel::content
+    호출 UnityEngine.Vector2::get_zero
+    호출 UnityEngine.RectTransform::set_anchorMin
+    호출 UnityEngine.Vector2::get_one
+    호출 UnityEngine.RectTransform::set_anchorMax
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection+Enumerator::get_Current
+    정적필드 읽기 ADOFAI.PropertiesPanel::dontRenderKeys
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 ADOFAI.PropertyInfo::controlType
+    호출 UnityEngine.Application::get_isEditor
+    호출 RDC::get_hideProEvents
+    필드 읽기 ADOFAI.PropertyInfo::pro
+    호출 Persistence::get_enableProEvents
+    호출 ADOFAI.PropertiesPanel::RenderControl
+    호출 제네릭 System.Collections.Generic.Dictionary`2+KeyCollection+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  RenderControl
+    호출 ADOFAI.PropertiesPanel+<>c__DisplayClass25_0::.ctor
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_0::<>4__this
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_0::propertyKey
+    필드 읽기 ADOFAI.PropertyInfo::levelEventInfo
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 ADOFAI.PropertyInfo::type
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::prefab_controlBrowse
+    필드 읽기 RDConstants::prefab_controlText
+    필드 읽기 ADOFAI.PropertyInfo::stringDropdown
+    필드 읽기 RDConstants::prefab_controlToggle
+    필드 읽기 ADOFAI.PropertyInfo::name
+    호출 System.String::op_Equality
+    호출 ADOFAI.PropertiesPanel+<>c__DisplayClass25_1::.ctor
+    호출 System.Type::GetTypeFromHandle
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_1::parentType
+    호출 System.Reflection.Assembly::GetExecutingAssembly
+    호출 System.Reflection.Assembly::GetTypes
+    호출 ADOFAI.PropertiesPanel+<>c__DisplayClass25_1::<RenderControl>b__1
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Where
+    호출 제네릭 System.Collections.Generic.IEnumerable`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    호출 System.Object::ToString
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 System.Type::get_Assembly
+    정적필드 읽기 ADOFAI.PropertiesPanel+<>c::<>9__25_2
+    정적필드 읽기 ADOFAI.PropertiesPanel+<>c::<>9
+    호출 ADOFAI.PropertiesPanel+<>c::<RenderControl>b__25_2
+    정적필드 쓰기 ADOFAI.PropertiesPanel+<>c::<>9__25_2
+    정적필드 읽기 ffxSetFilterAdvancedPlus::blacklistedFilterKeywords
+    호출 System.String::Contains
+    호출 제네릭 System.Linq.Enumerable::Any
+    호출 System.Reflection.MemberInfo::get_Name
+    호출 System.String::Replace
+    호출 RDUtils::UnCamelCase
+    호출 System.String::Concat
+    호출 RDString::GetWithCheck
+    필드 쓰기 ADOFAI.PropertyInfo::enumTypeString
+    호출 System.Enum::GetValues
+    호출 System.Array::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    필드 읽기 ADOFAI.PropertyInfo::slider
+    필드 읽기 RDConstants::prefab_controlSlider
+    필드 읽기 RDConstants::prefab_controlLongText
+    필드 읽기 ADOFAI.PropertyInfo::enumType
+    호출 System.Type::op_Equality
+    필드 읽기 ADOFAI.LevelEventInfo::isDecoration
+    호출 GCS::get_isDev
+    필드 읽기 ADOFAI.PropertyInfo::enumExceptions
+    호출 제네릭 System.Linq.Enumerable::Contains
+    필드 읽기 RDConstants::prefab_controlColor
+    필드 읽기 RDConstants::prefab_controlBool
+    필드 읽기 RDConstants::prefab_controlVector2
+    필드 읽기 RDConstants::prefab_controlTile
+    필드 읽기 RDConstants::prefab_floatPair
+    필드 읽기 RDConstants::prefab_minMaxGradient
+    필드 읽기 RDConstants::prefab_vector2Range
+    필드 읽기 RDConstants::prefab_controlExport
+    필드 읽기 RDConstants::prefab_controlRating
+    필드 읽기 RDConstants::prefab_controlDecorationsList
+    필드 읽기 RDConstants::prefab_controlEventsList
+    필드 읽기 RDConstants::prefab_controlFilterProperties
+    필드 읽기 RDConstants::prefab_controlParticlePlayback
+    필드 읽기 RDConstants::prefab_controlNote
+    필드 읽기 RDConstants::prefab_property
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 UnityEngine.GameObject::get_transform
+    필드 읽기 ADOFAI.PropertiesPanel::content
+    호출 UnityEngine.Transform::SetParent
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_0::property
+    필드 읽기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_0::property
+    호출 UnityEngine.Component::get_gameObject
+    필드 읽기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_0::propertyKey
+    호출 UnityEngine.Object::set_name
+    필드 쓰기 ADOFAI.Property::key
+    호출 ADOFAI.Property::set_info
+    필드 읽기 ADOFAI.Property::controlContainer
+    필드 쓰기 ADOFAI.Property::control
+    필드 읽기 ADOFAI.Property::control
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl::propertyInfo
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl::propertiesPanel
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl::propertyTransform
+    필드 읽기 ADOFAI.PropertyInfo::enumTypeString
+    필드 읽기 ADOFAI.PropertyInfo::browsable
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl::EnumSetup
+    필드 읽기 ADOFAI.PropertiesPanel::scrollRect
+    호출 제네릭 UnityEngine.GameObject::TryGetComponent
+    필드 쓰기 SmoothScrollRect::enabled
+    호출 UnityEngine.UI.ScrollRect::get_horizontalScrollbar
+    호출 UnityEngine.UI.ScrollRect::set_horizontalScrollbar
+    호출 UnityEngine.UI.ScrollRect::get_verticalScrollbar
+    호출 UnityEngine.UI.ScrollRect::set_verticalScrollbar
+    필드 읽기 ADOFAI.Property::label
+    호출 TMPro.TMP_Text::get_transform
+    호출 UnityEngine.Transform::get_parent
+    호출 UnityEngine.GameObject::SetActive
+    호출 ADOBase::get_editor
+    호출 UnityEngine.UI.ScrollRect::get_content
+    필드 쓰기 scnEditor::decorationsListContent
+    필드 읽기 scnEditor::decorationsListContent
+    호출 UnityEngine.UI.ScrollRect::set_content
+    호출 UnityEngine.UI.ScrollRect::set_vertical
+    호출 UnityEngine.UI.ScrollRect::get_viewport
+    호출 UnityEngine.UI.ScrollRect::set_viewport
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.RectTransform::get_offsetMin
+    호출 ExtensionMethods::WithY
+    호출 UnityEngine.RectTransform::set_offsetMin
+    호출 UnityEngine.RectTransform::get_offsetMax
+    호출 UnityEngine.RectTransform::set_offsetMax
+    필드 쓰기 scnEditor::propertyControlDecorationsList
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl_List::parentReferenceRT
+    필드 쓰기 scnEditor::eventsListContent
+    필드 읽기 scnEditor::eventsListContent
+    필드 쓰기 scnEditor::propertyControlEventsList
+    필드 읽기 ADOFAI.PropertyInfo::placeholder
+    필드 읽기 ADOFAI.LevelEventInfo::name
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Text::inputField
+    호출 TMPro.TMP_InputField::get_placeholder
+    호출 TMPro.TMP_Text::set_text
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Text::linkFloorIDButton
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Text::goToFloorButton
+    호출 TMPro.TMP_InputField::set_characterLimit
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Vector2::inputX
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Vector2::inputY
+    필드 읽기 ADOFAI.PropertyInfo::vector2_allowEmpty
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_FloatPair::control
+    필드 읽기 ADOFAI.PropertyInfo::floatPairMin
+    필드 쓰기 ADOFAI.Editor.Components.MinMaxControl::min
+    필드 읽기 ADOFAI.PropertyInfo::floatPairMax
+    필드 쓰기 ADOFAI.Editor.Components.MinMaxControl::max
+    필드 쓰기 ADOFAI.Editor.Components.MinMaxControl::clamp
+    필드 읽기 ADOFAI.PropertyInfo::floatPairIsRange
+    필드 쓰기 ADOFAI.Editor.Components.MinMaxControl::isRange
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Vector2Range::controlX
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Vector2Range::controlY
+    필드 읽기 ADOFAI.Property::key
+    필드 읽기 ADOFAI.Property::helpExists
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_0::helpString
+    호출 ADOFAI.PropertiesPanel+<>c__DisplayClass25_2::.ctor
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_2::CS$<>8__locals1
+    필드 읽기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_2::CS$<>8__locals1
+    필드 읽기 ADOFAI.Property::helpButton
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_2::helpButton
+    필드 읽기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_2::helpButton
+    필드 읽기 ADOFAI.Property::enabledButton
+    호출 ExtensionMethods::WithX
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_2::buttonText
+    필드 쓰기 ADOFAI.PropertiesPanel+<>c__DisplayClass25_2::buttonURL
+    호출 UnityEngine.UI.Button::get_onClick
+    호출 ADOFAI.PropertiesPanel+<>c__DisplayClass25_2::<RenderControl>b__3
+    호출 UnityEngine.Events.UnityAction::.ctor
+    호출 UnityEngine.Events.UnityEvent::AddListener
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl::Setup
+    호출 ADOFAI.Property::get_info
+    필드 읽기 ADOFAI.PropertyInfo::hasRandomValue
+    필드 읽기 ADOFAI.PropertyInfo::randValueKey
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl::randomControl
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 ADOFAI.Property::randomButton
+    호출 ADOFAI.PropertiesPanel+<>c__DisplayClass25_0::<RenderControl>b__4
+    호출 ADOFAI.PropertiesPanel+<>c__DisplayClass25_0::<RenderControl>b__0
+    필드 읽기 ADOFAI.PropertyInfo::canBeDisabled
+    호출 UnityEngine.UI.Selectable::get_colors
+    정적필드 읽기 ADOFAI.InspectorPanel::selectionColor
+    호출 UnityEngine.UI.ColorBlock::set_selectedColor
+    호출 UnityEngine.UI.Selectable::set_colors
+    호출 ADOFAI.PropertiesPanel+PropertySelectable::.ctor
+    필드 읽기 ADOFAI.PropertiesPanel::propertySelectables
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl::get_selectables
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    필드 읽기 ADOFAI.PropertiesPanel::properties
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+  UpdateEnabledButton
+    필드 읽기 ADOFAI.Property::enabledButton
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.Vector2::get_zero
+    호출 UnityEngine.RectTransform::set_anchorMin
+    호출 UnityEngine.Vector2::get_one
+    호출 UnityEngine.RectTransform::set_anchorMax
+    호출 UnityEngine.RectTransform::set_offsetMin
+    호출 UnityEngine.RectTransform::set_offsetMax
+    호출 UnityEngine.RectTransform::set_anchoredPosition
+    호출 UnityEngine.RectTransform::set_sizeDelta
+    호출 UnityEngine.Vector2::.ctor
+    필드 읽기 ADOFAI.Property::helpExists
+    호출 UnityEngine.RectTransform::get_offsetMax
+    호출 ExtensionMethods::WithX
+  SetupCheckmark
+    필드 읽기 ADOFAI.PropertiesPanel::inspectorPanel
+    필드 읽기 ADOFAI.InspectorPanel::selectedEvent
+    필드 읽기 ADOFAI.LevelEvent::isFake
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl::propertyInfo
+    필드 읽기 ADOFAI.PropertyInfo::canBeDisabled
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    필드 읽기 ADOFAI.PropertyInfo::name
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    필드 읽기 ADOFAI.Property::offText
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 ADOFAI.Property::enabledCheckmark
+    호출 UnityEngine.Component::get_gameObject
+    필드 읽기 ADOFAI.Property::enabledButton
+    호출 ADOFAI.PropertiesPanel::UpdateEnabledButton
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::get_parent
+  SetProperties
+    호출 ADOFAI.LevelEvent::GetData
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Keys
+    호출 제네릭 System.Linq.Enumerable::ToList
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.PropertiesPanel::properties
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 ADOFAI.Property::control
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl::propertyInfo
+    필드 읽기 ADOFAI.PropertyInfo::type
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 UnityEngine.Vector2::ToString
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl::set_text
+    필드 읽기 ADOFAI.PropertyInfo::hasRandomValue
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl::randomControl
+    필드 읽기 ADOFAI.PropertyInfo::randValueKey
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl::SetRandomLayout
+    호출 ADOFAI.LevelEvent::GetTile
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_Tile::set_tileValue
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl_FilterProperties::enableProperties
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Remove
+    호출 ADOFAI.LevelEvent::GetBool
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_Bool::set_value
+    호출 scrDecorationManager::GetDecoration
+    필드 쓰기 ADOFAI.LevelEditor.Controls.PropertyControl_ParticlePlayback::Decoration
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_ParticlePlayback::Decoration
+    호출 UnityEngine.Debug::Log
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_FloatPair::control
+    호출 제네릭 System.Tuple`2::.ctor
+    호출 제네릭 System.Tuple`2::get_Item1
+    필드 쓰기 ADOFAI.Editor.Components.MinMaxControl::start
+    호출 제네릭 System.Tuple`2::get_Item2
+    필드 쓰기 ADOFAI.Editor.Components.MinMaxControl::end
+    호출 ADOFAI.Editor.Components.MinMaxControl::RefreshInput
+    호출 UnityEngine.Vector2::get_zero
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Vector2Range::controlX
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Vector2Range::controlY
+    필드 읽기 UnityEngine.Vector2::y
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl_MinMaxGradient::SetValue
+    호출 System.Object::ToString
+    필드 읽기 ADOFAI.PropertyInfo::stringDropdown
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_Toggle::dropdown
+    필드 읽기 TweakableDropdown::items
+    호출 제네릭 System.Linq.Enumerable::First
+    필드 읽기 TweakableDropdownItem::value
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl::ToggleOthersEnabled
+    필드 읽기 ADOFAI.PropertiesPanel::inspectorPanel
+    필드 읽기 ADOFAI.InspectorPanel::selectedEvent
+    호출 ADOFAI.PropertiesPanel::SetupCheckmark
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl::OnSelectedEventChanged
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 ADOBase::get_editor
+    호출 scnEditor::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 UnityEngine.Mathf::Clamp
+    호출 System.Int32::ToString
+  IsControlFullyVisible
+    필드 읽기 ADOFAI.PropertiesPanel::content
+    호출 UnityEngine.RectTransform::get_anchoredPosition
+    필드 읽기 UnityEngine.Vector2::y
+    호출 UnityEngine.RectTransform::get_rect
+    호출 UnityEngine.Rect::get_height
+    필드 읽기 ADOFAI.PropertiesPanel::viewport
+  SelectTab
+    호출 ADOFAI.PropertiesPanel::set_selectedTab
+    필드 읽기 ADOFAI.PropertiesPanel::tabButtons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Values
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::get_Current
+    호출 ADOFAI.Editor.PropertiesSubTabButton::get_groupName
+    호출 System.String::op_Equality
+    호출 ADOFAI.Editor.PropertiesSubTabButton::SetSelected
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 ADOFAI.PropertiesPanel::properties
+    호출 UnityEngine.Component::get_gameObject
+    호출 ADOFAI.Property::get_info
+    필드 읽기 ADOFAI.PropertyInfo::groupName
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 ADOFAI.Property::control
+    호출 ADOFAI.LevelEditor.Controls.PropertyControl::UpdateEnabled
+  .ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 ADOFAI.PropertiesPanel::tabButtons
+    필드 쓰기 ADOFAI.PropertiesPanel::properties
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 ADOFAI.PropertiesPanel::propertySelectables
+    호출 ADOBase::.ctor
+  .cctor
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    정적필드 쓰기 ADOFAI.PropertiesPanel::dontRenderKeys

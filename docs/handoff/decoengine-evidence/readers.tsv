@@ -1,0 +1,154 @@
+﻿assembly	method	op	target
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	DecoTransformGizmoHolder::LateUpdate	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	DecoTransformGizmoHolder::LateUpdate	Callvirt	scrDecoration::GetDecorationWorldSize
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	DecoTransformGizmoHolder::LateUpdate	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	DecoTransformGizmoHolder::LateUpdate	Callvirt	scrParallax::GetPositionWithParallax
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	DecoTransformGizmoHolder::DragStart	Callvirt	scrParallax::GetPositionWithParallax
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	DecoTransformGizmoHolder::Drag	Callvirt	scrParallax::GetPositionWithParallax
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	DecoTransformGizmoHolder::Drag	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	DecoTransformGizmoHolder::Drag	Callvirt	scrDecoration::GetDecorationWorldSize
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scnEditor::DragDecorationsStart	Ldfld	scrParallax::posCamAtStart
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scnEditor::DragDecorations	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scnEditor::GoToDecoration	Ldfld	scrParallax::posCamAtStart
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scnEditor::MoveCameraToDecoration	Ldfld	scrParallax::posCamAtStart
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrCustomBackgroundSprite::LateUpdate	Ldfld	scrParallax::posCamAtStart
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::SetPositionX	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::SetPositionY	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::SetPivotX	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::SetPivotX	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::SetPivotY	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::SetPivotY	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::UpdateScreenClamp	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::UpdateScreenClamp	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::UpdatePosition	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::UpdatePosition	Ldfld	scrDecoration::rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecoration::UpdatePosition	Ldfld	scrDecoration::scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecorationManager::UpdateBordersSizes	Ldfld	scrDecoration::scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrDecorationManager::FinishUpdateDecorations	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrParallax::SetTrans	Ldfld	scrParallax::posCamAtStart
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrParallax::SetTrans	Ldfld	scrParallax::startPosition
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrParallax::SetTrans	Ldflda	scrParallax::endPosition
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrParallax::GetPositionWithParallax	Ldfld	scrParallax::endPosition
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	scrVisualDecoration::UpdateShader	Ldfld	scrDecoration::scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ffxMoveDecorationsPlus::StartEffect	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ffxMoveDecorationsPlus::StartEffect	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ffxMoveDecorationsPlus::StartEffect	Ldfld	scrDecoration::rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ADOFAI.DecorationPivot::UpdatePivotCrossImage	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__28	Ldfld	scrDecoration::scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ffxMoveDecorationsPlus+<>c__DisplayClass47_0::<StartEffect>b__30	Ldfld	scrDecoration::scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ffxMoveDecorationsPlus+<>c__DisplayClass47_1::<StartEffect>b__3	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ffxMoveDecorationsPlus+<>c__DisplayClass47_1::<StartEffect>b__7	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ffxMoveDecorationsPlus+<>c__DisplayClass47_2::<StartEffect>b__2	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll	ffxMoveDecorationsPlus+<>c__DisplayClass47_3::<StartEffect>b__6	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ExitFix::Read	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ExitFix::Read	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ExitFix::Read	Ldfld	scrDecoration::scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ExitFix::Read	Ldfld	scrDecoration::rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ExitFix::Same	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ExitFix::Same	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ExitFix::Same	Ldfld	scrDecoration::scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ExitFix::Same	Ldfld	scrDecoration::rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ExitFix::LightOne	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.LoadFix::.cctor	StringReference	pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.LoadFix::.cctor	StringReference	rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.LoadFix::.cctor	StringReference	scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.InvisibleSkip::.cctor	StringReference	pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.InvisibleSkip::.cctor	StringReference	pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.InstantMove::.cctor	StringReference	pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.InstantMove::.cctor	StringReference	pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.InstantMove::.cctor	StringReference	rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.InstantMove::.cctor	StringReference	scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.FastMove::.cctor	StringReference	pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.FastMove::.cctor	StringReference	pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.FastMove::.cctor	StringReference	scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.FastMove::.cctor	StringReference	rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.Precheck::.cctor	StringReference	pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.DecoAnim::.cctor	StringReference	pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.DecoAnim::.cctor	StringReference	pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.DecoAnim::.cctor	StringReference	rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.DecoAnim::.cctor	StringReference	scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.PosFast::MemoGuard	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.PosFast::Remember	Ldfld	scrDecoration::pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ZeroTween::Snap	StringReference	pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ZeroTween::Snap	StringReference	pivotOffsetVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ZeroTween::Snap	StringReference	scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.ZeroTween::Snap	StringReference	rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.TightLate::Apply	Ldfld	scrDecoration::pivotPosVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.TightLate::Apply	Ldfld	scrParallax::posCamAtStart
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.TightLate::Apply	Ldfld	scrDecoration::rotAngle
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.TightLate::Apply	Ldfld	scrDecoration::scaleVec
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.TightLate::.cctor	StringReference	startPosition
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\StutterFix.dll	StutterFix.TightLate::.cctor	StringReference	endPosition
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ExitFix::Read	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ExitFix::Read	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ExitFix::Read	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ExitFix::Read	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ExitFix::Same	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ExitFix::Same	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ExitFix::Same	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ExitFix::Same	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ExitFix::LightOne	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoSig::.cctor	StringReference	pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoSig::.cctor	StringReference	pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoSig::.cctor	StringReference	rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoSig::.cctor	StringReference	scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoAnim::.cctor	StringReference	pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoAnim::.cctor	StringReference	pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoAnim::.cctor	StringReference	rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoAnim::.cctor	StringReference	scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoJobShadow::Sample	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoJobShadow::Sample	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoJobShadow::Sample	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.LoadFix::.cctor	StringReference	pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.LoadFix::.cctor	StringReference	rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.LoadFix::.cctor	StringReference	scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.InvisibleSkip::.cctor	StringReference	pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.InvisibleSkip::.cctor	StringReference	pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.InstantMove::.cctor	StringReference	pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.InstantMove::.cctor	StringReference	pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.InstantMove::.cctor	StringReference	rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.InstantMove::.cctor	StringReference	scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.FastMove::.cctor	StringReference	pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.FastMove::.cctor	StringReference	pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.FastMove::.cctor	StringReference	scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.FastMove::.cctor	StringReference	rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.Precheck::.cctor	StringReference	pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Admit	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Admit	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Admit	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Admit	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::StableChild	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Stable	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Advance	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Advance	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Advance	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Reference	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Reference	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Reference	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Late	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Late	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::Late	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::CheckLate	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::CheckLate	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.DecoEngine::CheckLate	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.PosFast::MemoGuard	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.PosFast::Remember	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.PosFast::Compare	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.PosFast::Compare	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.PosFast::Compare	StringReference	pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.PosFast::Compare	StringReference	pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.PosFast::Bench	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.PosFast::Bench	Ldfld	scrDecoration::pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ZeroTween::Snap	StringReference	pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ZeroTween::Snap	StringReference	pivotOffsetVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ZeroTween::Snap	StringReference	scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.ZeroTween::Snap	StringReference	rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.TightLate::Apply	Ldfld	scrDecoration::pivotPosVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.TightLate::Apply	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.TightLate::Apply	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.TightLate::Apply	Ldfld	scrParallax::posCamAtStart
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.TightLate::Read	Ldfld	scrParallax::posCamAtStart
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.TightLate::Read	Ldfld	scrDecoration::scaleVec
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.TightLate::Read	Ldfld	scrDecoration::rotAngle
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.TightLate::.cctor	StringReference	startPosition
+E:\StutterFixWork\StutterFix\bin\Debug\StutterFix.dll	StutterFix.TightLate::.cctor	StringReference	endPosition

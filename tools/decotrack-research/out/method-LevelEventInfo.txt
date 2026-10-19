@@ -1,0 +1,20 @@
+﻿== ADOFAI.LevelEventInfo
+  get_allowFirstFloorCheck
+    필드 읽기 ADOFAI.LevelEventInfo::allowFirstFloor
+    호출 제네릭 System.Nullable`1::get_HasValue
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+  get_taroDLCCheck
+    호출 ADOBase::get_isOfficialLevel
+    정적필드 읽기 NeoCosmosManager::instance
+    필드 읽기 DLCManager::installed
+    필드 읽기 ADOFAI.LevelEventInfo::taroDLC
+  get_isActive
+    필드 읽기 ADOFAI.LevelEventInfo::pro
+    호출 ADOFAI.LevelEvent::get_enableProEvents
+    호출 ADOFAI.LevelEventInfo::get_taroDLCCheck
+  .ctor
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 ADOFAI.LevelEventInfo::groups
+    호출 System.Object::.ctor

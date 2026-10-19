@@ -1,0 +1,592 @@
+﻿== scrLevelMaker
+  get_instance
+    호출 UnityEngine.Application::get_isPlaying
+    호출 UnityEngine.SceneManagement.SceneManager::GetActiveScene
+    호출 UnityEngine.SceneManagement.Scene::get_handle
+    호출 ADOBase::get_isMobileMenu
+    정적필드 읽기 scrLevelMaker::sceneInstanceID
+    호출 UnityEngine.SceneManagement.SceneHandle::op_Implicit
+    호출 UnityEngine.SceneManagement.SceneHandle::op_Inequality
+    정적필드 쓰기 scrLevelMaker::sceneInstanceID
+    정적필드 읽기 scrLevelMaker::_instance
+    호출 UnityEngine.Object::op_Equality
+    호출 제네릭 UnityEngine.Object::FindFirstObjectByType
+    정적필드 쓰기 scrLevelMaker::_instance
+    호출 scrLevelMaker::Init
+  UpdatePlayerHitFloors
+    필드 읽기 scrLevelMaker::listFloors
+    정적필드 읽기 scrLevelMaker+<>c::<>9__30_0
+    정적필드 읽기 scrLevelMaker+<>c::<>9
+    호출 scrLevelMaker+<>c::<UpdatePlayerHitFloors>b__30_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 scrLevelMaker+<>c::<>9__30_0
+    호출 제네릭 System.Linq.Enumerable::Where
+    호출 제네릭 System.Linq.Enumerable::ToList
+    필드 쓰기 scrLevelMaker::PlayerHitFloors
+  GetFloorContainer
+    호출 UnityEngine.GameObject::Find
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.GameObject::.ctor
+  Awake
+    정적필드 쓰기 scrLevelMaker::_instance
+    호출 scrLevelMaker::Init
+  Init
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 scrLevelMaker::lm2
+  FixListFloors
+    호출 제네릭 UnityEngine.Object::FindObjectsByType
+    정적필드 읽기 scrLevelMaker+<>c::<>9__34_0
+    정적필드 읽기 scrLevelMaker+<>c::<>9
+    호출 scrLevelMaker+<>c::<FixListFloors>b__34_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 scrLevelMaker+<>c::<>9__34_0
+    호출 제네릭 System.Linq.Enumerable::OrderBy
+    호출 제네릭 System.Linq.Enumerable::ToList
+    필드 쓰기 scrLevelMaker::listFloors
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 UnityEngine.Debug::Log
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 scrLevelMaker::lm2
+    필드 읽기 scrLevelMaker::lm2
+    필드 쓰기 scrLevelMaker2::listFloorClone
+  CopyProperties
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 scrLevelMaker::lm2
+    호출 scrConductor::get_instance
+    필드 읽기 scrLevelMaker::addoffset
+    필드 쓰기 scrConductor::addoffset
+    필드 읽기 scrLevelMaker::bpm_forUnityUseOnly
+    필드 쓰기 scrConductor::bpm
+    필드 읽기 scrConductor::song
+    필드 읽기 scrLevelMaker::pitch_forUnityUseOnly
+    호출 UnityEngine.AudioSource::set_pitch
+    필드 읽기 scrLevelMaker::volume_forUnityUseOnly
+    호출 UnityEngine.AudioSource::set_volume
+    호출 scrController::get_instance
+    필드 읽기 scrLevelMaker::lm2
+    필드 읽기 scrLevelMaker2::BigTiles
+    필드 쓰기 scrController::tileShape
+    필드 읽기 scrLevelMaker::caption
+    필드 쓰기 scrController::caption
+  OldToNewAngle
+  MakeLevel
+    필드 읽기 scrLevelMaker::isOldLevel
+    호출 scrLevelMaker::InstantiateStringFloors
+    호출 scrLevelMaker::InstantiateFloatFloors
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 scrLevelMaker::lm2
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 쓰기 scrFloor::styleNum
+    필드 읽기 scrLevelMaker::isgameworld
+    호출 scrFloor::UpdateAngle
+    필드 읽기 scrLevelMaker::lm2
+    필드 읽기 scrLevelMaker2::tilecolor
+    호출 scrFloor::SetTileColor
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scrFloor::SetSortingOrder
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    필드 쓰기 scrFloor::startPos
+    호출 UnityEngine.Transform::get_rotation
+    호출 UnityEngine.Quaternion::get_eulerAngles
+    필드 쓰기 scrFloor::startRot
+    필드 읽기 scrFloor::startRot
+    필드 쓰기 scrFloor::tweenRot
+    호출 UnityEngine.Vector3::get_zero
+    필드 쓰기 scrFloor::offsetPos
+    필드 읽기 scrFloor::isportal
+    호출 UnityEngine.Application::get_isPlaying
+    호출 scrFloor::SpawnPortalParticles
+    정적필드 읽기 ADOFAI.LevelData::shouldTryMigrate
+    호출 ADOBase::get_editor
+    호출 UnityEngine.Object::op_Implicit
+    호출 scnEditor::get_levelData
+    필드 읽기 ADOFAI.LevelData::version
+    정적필드 쓰기 ADOFAI.LevelData::shouldTryMigrate
+    필드 읽기 ADOFAI.LevelData::levelEvents
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    필드 읽기 ADOFAI.LevelEvent::floor
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    호출 System.Math::Abs
+    호출 scrMisc::GetAngleMoved
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 ADOFAI.LevelEvent::set_Item
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  InstantiateStringFloors
+    호출 UnityEngine.Application::get_isPlaying
+    호출 scrLevelMaker::GetFloorContainer
+    필드 읽기 scrLevelMaker::leveldata
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 System.String::get_Length
+    호출 RDConstants::get_data
+    필드 읽기 RDConstants::floorSpriteDefault
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::DestroyImmediate
+    호출 제네릭 System.Collections.Generic.List`1::RemoveRange
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 ADOBase::get_conductor
+    필드 읽기 scrConductor::onBeats
+    필드 읽기 scrLevelMaker::spriteFloor
+    호출 UnityEngine.Vector3::get_zero
+    호출 UnityEngine.Quaternion::get_identity
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::set_parent
+    필드 쓰기 scrFloor::hasLit
+    필드 쓰기 scrFloor::entryangle
+    호출 UnityEngine.Object::set_name
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scrLevelMaker::ResetFloor
+    호출 UnityEngine.Mathf::Sin
+    호출 scrController::get_instance
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Application::get_isEditor
+    호출 System.String::get_Chars
+    호출 System.String::Substring
+    호출 System.String::Replace
+    호출 System.Globalization.CultureInfo::get_InvariantCulture
+    호출 System.Single::TryParse
+    필드 읽기 scrFloor::entryangle
+    호출 scrMisc::incrementAngle
+    호출 ADOFAI.FloorHelper::PathIdToRadians
+    호출 scrMisc::getVectorFromAngle
+    호출 UnityEngine.Vector3::op_Addition
+    필드 쓰기 scrFloor::exitangle
+    필드 쓰기 scrFloor::nextfloor
+    필드 쓰기 scrFloor::stringDirection
+    필드 쓰기 scrFloor::seqID
+    필드 쓰기 scrFloor::midSpin
+    필드 읽기 scrLevelMaker::lm2
+    필드 읽기 scrLevelMaker2::BigTiles
+    호출 System.String::Contains
+    필드 쓰기 scrFloor::speed
+    필드 쓰기 scrFloor::floorIcon
+    호출 scrFloor::SetIconAngle
+    필드 쓰기 scrFloor::isCCW
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::gameworld
+    필드 쓰기 scrFloor::isportal
+    필드 쓰기 scrFloor::levelnumber
+    호출 scrFloor::CheckPortalSprite
+    호출 scrFloor::UpdateIconSprite
+    호출 제네릭 System.Linq.Enumerable::Last
+  ResetFloor
+    호출 UnityEngine.Component::get_gameObject
+    필드 읽기 scrFloor::thisTransform
+    호출 UnityEngine.Quaternion::get_identity
+    호출 UnityEngine.Transform::SetPositionAndRotation
+    호출 UnityEngine.Vector3::get_one
+    호출 UnityEngine.Transform::set_localScale
+    호출 제네릭 UnityEngine.GameObject::GetComponents
+    호출 UnityEngine.Object::DestroyImmediate
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Material::CopyPropertiesFromMaterial
+    호출 scrFloor::Reset
+  InstantiateFloatFloors
+    호출 UnityEngine.Application::get_isPlaying
+    호출 UnityEngine.GameObject::Find
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.GameObject::.ctor
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 읽기 scrLevelMaker::floorAngles
+    호출 RDConstants::get_data
+    필드 읽기 RDConstants::floorMeshDefault
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::DestroyImmediate
+    호출 제네릭 System.Collections.Generic.List`1::RemoveRange
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 ADOBase::get_conductor
+    필드 읽기 scrConductor::onBeats
+    필드 읽기 scrLevelMaker::meshFloor
+    호출 UnityEngine.Vector3::get_zero
+    호출 UnityEngine.Quaternion::get_identity
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::set_parent
+    필드 쓰기 scrFloor::hasLit
+    필드 쓰기 scrFloor::entryangle
+    호출 UnityEngine.Object::set_name
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scrLevelMaker::ResetFloor
+    호출 scrController::get_instance
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Application::get_isEditor
+    필드 읽기 scrFloor::entryangle
+    필드 쓰기 scrFloor::exitangle
+    호출 scrMisc::getVectorFromAngle
+    호출 UnityEngine.Vector3::op_Addition
+    호출 UnityEngine.GameObject::get_gameObject
+    필드 쓰기 scrFloor::nextfloor
+    필드 쓰기 scrFloor::floatDirection
+    필드 쓰기 scrFloor::seqID
+    필드 쓰기 scrFloor::isCCW
+    필드 쓰기 scrFloor::speed
+    필드 쓰기 scrFloor::midSpin
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::gameworld
+    필드 쓰기 scrFloor::isportal
+    필드 쓰기 scrFloor::levelnumber
+  CalculateFloorAngleLengths
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 쓰기 scrFloor::entryangle
+    호출 ADOBase::get_conductor
+    호출 scrConductor::get_adjustedCountdownTicks
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    필드 읽기 scrFloor::isCCW
+    호출 scrMisc::GetAngleMoved
+    필드 쓰기 scrFloor::angleLength
+  CalculateSingleFloorAngleLength
+    필드 읽기 scrLevelMaker::listFloors
+    필드 읽기 scrFloor::seqID
+    호출 System.Math::Max
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 쓰기 scrFloor::prevfloor
+    필드 읽기 scrFloor::numPlanets
+    호출 scrMisc::GetInverseAnglePerBeatMultiplanet
+    필드 읽기 scrFloor::isCCW
+    필드 읽기 scrFloor::midSpin
+    필드 읽기 scrFloor::prevfloor
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    호출 scrMisc::GetAngleMoved
+    호출 System.Math::Abs
+    필드 쓰기 scrFloor::turnaround
+    필드 읽기 scrFloor::holdLength
+    필드 쓰기 scrFloor::angleLength
+  CalculateFloorEntryTimes
+    호출 ADOBase::get_conductor
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::get_pitch
+    필드 쓰기 scrLevelMaker::highestBPM
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scrConductor::get_adjustedCountdownTicks
+    필드 읽기 scrConductor::crotchetAtStart
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    필드 읽기 scrFloor::speed
+    필드 읽기 scrConductor::bpm
+    필드 읽기 scrFloor::isCCW
+    호출 scrMisc::GetTimeBetweenAngles
+    필드 쓰기 scrFloor::entryTime
+    필드 쓰기 scrFloor::entryTimePitchAdj
+    필드 쓰기 scrFloor::prevfloor
+    필드 읽기 scrFloor::numPlanets
+    호출 scrMisc::GetInverseAnglePerBeatMultiplanet
+    필드 읽기 scrFloor::midSpin
+    필드 읽기 scrFloor::prevfloor
+    호출 scrMisc::GetAngleMoved
+    필드 읽기 scrFloor::holdLength
+    필드 읽기 scrFloor::extraBeats
+    필드 읽기 scrLevelMaker::highestBPM
+    필드 쓰기 scrFloor::entryBeat
+    호출 scrLevelMaker::CalculateSingleFloorAngleLength
+  ClearFreeroam
+    필드 읽기 scrLevelMaker::listFreeroam
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 FreeroamArea::get_Count
+    호출 FreeroamArea::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::DestroyImmediate
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 FreeroamArea::Clear
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 scrLevelMaker::listFreeroamStartTiles
+  DrawFreeroam
+    호출 scrLevelMaker::ClearFreeroam
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrFloor::freeroam
+    호출 scrLevelMaker::MakeFreeroamGrid
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  MakeFreeroamGrid
+    호출 scrLevelMaker::GetFloorContainer
+    필드 쓰기 scrLevelMaker::floorContainer
+    필드 읽기 scrFloor::radiusScale
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_localScale
+    필드 읽기 UnityEngine.Vector3::x
+    필드 쓰기 scrFloor::radiusScale
+    호출 scrController::get_instance
+    호출 scrController::get_tileSize
+    필드 읽기 scrFloor::freeroamDimensions
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    호출 FreeroamArea::.ctor
+    필드 읽기 scrLevelMaker::listFreeroam
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 scrLevelMaker::listFreeroamStartTiles
+    필드 읽기 scrFloor::freeroamOffset
+    호출 UnityEngine.Mathf::Cos
+    호출 UnityEngine.Mathf::Sin
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Vector3::op_Multiply
+    호출 UnityEngine.Mathf::Floor
+    호출 UnityEngine.Vector3::get_right
+    호출 UnityEngine.Vector3::op_Addition
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 scrLevelMaker::meshFloor
+    호출 UnityEngine.Quaternion::get_identity
+    호출 제네릭 UnityEngine.Object::Instantiate
+    필드 읽기 scrFloor::seqID
+    호출 System.String::Format
+    호출 UnityEngine.Object::set_name
+    호출 UnityEngine.GameObject::get_gameObject
+    필드 읽기 scrLevelMaker::floorContainer
+    호출 UnityEngine.Transform::set_parent
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 scrFloor::prevfloor
+    필드 읽기 scrFloor::nextfloor
+    필드 쓰기 scrFloor::nextfloor
+    필드 쓰기 scrFloor::freeroam
+    필드 쓰기 scrFloor::freeroamGenerated
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 쓰기 scrFloor::freeroamRegion
+    호출 UnityEngine.Vector2Int::.ctor
+    필드 쓰기 scrFloor::freeroamPosition
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 읽기 FloorMeshRenderer::floorMesh
+    필드 읽기 scrFloor::freeroamFloors
+    필드 읽기 scrFloor::isCCW
+    필드 쓰기 scrFloor::isCCW
+    필드 읽기 scrFloor::numPlanets
+    필드 쓰기 scrFloor::numPlanets
+    호출 제네릭 System.Linq.Enumerable::Last
+    호출 FreeroamArea::Add
+    필드 읽기 scrFloor::angleCorrectionType
+    필드 쓰기 scrFloor::angleCorrectionType
+    필드 쓰기 scrFloor::floatDirection
+    필드 쓰기 scrFloor::stringDirection
+    필드 읽기 scrFloor::styleNum
+    필드 쓰기 scrFloor::styleNum
+    필드 읽기 scrFloor::initialTrackStyle
+    필드 쓰기 scrFloor::initialTrackStyle
+    필드 쓰기 scrFloor::seqID
+    필드 쓰기 scrFloor::entryangle
+    필드 쓰기 scrFloor::exitangle
+    필드 읽기 scrFloor::speed
+    필드 쓰기 scrFloor::speed
+    호출 UnityEngine.Vector3::get_up
+    호출 UnityEngine.Transform::set_localScale
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::get_color
+    호출 scrFloor::SetColor
+    호출 scrFloor::SetTrackStyle
+    호출 ADOBase::get_controller
+    호출 scrController::get_baseFloorDimensions
+    호출 UnityEngine.Mathf::Lerp
+    호출 FloorMesh::set__length
+    호출 FloorMesh::set__width
+    필드 쓰기 scrFloor::startPos
+    호출 UnityEngine.Transform::get_rotation
+    호출 UnityEngine.Quaternion::get_eulerAngles
+    필드 쓰기 scrFloor::startRot
+    필드 읽기 scrFloor::startRot
+    필드 쓰기 scrFloor::tweenRot
+    호출 scrFloor::UpdateAngle
+  ColorFreeroam
+    필드 읽기 scrLevelMaker::listFreeroam
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 FreeroamArea::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    필드 읽기 FreeroamArea::parentFloor
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Material::GetColor
+    호출 scrFloor::SetColor
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::set_enabled
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+  DrawHolds
+    호출 UnityEngine.GameObject::Find
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.GameObject::.ctor
+    필드 쓰기 scrLevelMaker::holdContainer
+    필드 읽기 scrLevelMaker::holdMaterial
+    호출 RDConstants::get_data
+    필드 읽기 RDConstants::holdShader
+    호출 UnityEngine.Material::.ctor
+    필드 쓰기 scrLevelMaker::holdMaterial
+    필드 읽기 scrLevelMaker::lm2
+    필드 읽기 scrLevelMaker2::holdTex
+    호출 UnityEngine.Material::SetTexture
+    호출 UnityEngine.Material::set_renderQueue
+    필드 읽기 scrLevelMaker::holdGOs
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    필드 읽기 scrLevelMaker::listFloors
+    필드 읽기 scrFloor::holdLength
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    호출 UnityEngine.Object::set_name
+    호출 UnityEngine.GameObject::get_transform
+    필드 읽기 scrLevelMaker::holdContainer
+    호출 UnityEngine.Transform::set_parent
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 UnityEngine.MeshFilter::get_mesh
+    호출 UnityEngine.Mesh::Clear
+    호출 UnityEngine.Renderer::set_material
+    필드 쓰기 scrHoldRenderer::m_mesh
+    필드 쓰기 scrHoldRenderer::m_meshRenderer
+    필드 쓰기 scrFloor::holdRenderer
+    필드 쓰기 scrHoldRenderer::startFloor
+    호출 scrHoldRenderer::CreateMesh
+    호출 scrHoldRenderer::Unfill
+  DrawMultiPlanet
+    호출 scrController::get_instance
+    호출 scrController::get_paused
+    필드 읽기 scrController::dummyPlanets
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scrController::multiPlanetLines
+    호출 RDC::get_hideTaroGimmicks
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    필드 읽기 scrLevelMaker::listFloors
+    정적필드 읽기 GCS::FOOL_SWIRL
+    필드 읽기 scrFloor::isCCW
+    필드 읽기 scrFloor::numPlanets
+    호출 System.Math::Max
+    필드 읽기 scrFloor::seqID
+    호출 GCS::get_checkpointNum
+    필드 읽기 scrFloor::entryangle
+    호출 scrMisc::GetInverseAnglePerBeatMultiplanet
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Mathf::Sin
+    호출 UnityEngine.Mathf::Cos
+    호출 UnityEngine.Vector3::.ctor
+    호출 scrController::get_planetRed
+    필드 읽기 scrPlanet::planetRenderer
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 읽기 PlanetRenderer::ringComp
+    호출 UnityEngine.Behaviour::set_enabled
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Vector3::get_zero
+    호출 UnityEngine.Transform::set_localScale
+    필드 읽기 PlanetRenderer::sprite
+    호출 PlanetSprite::set_visible
+    호출 System.String::Format
+    호출 UnityEngine.Object::set_name
+    호출 PlanetRenderer::EnableCustomColor
+    호출 UnityEngine.Color::.ctor
+    호출 PlanetRenderer::SetPlanetColor
+    호출 PlanetRenderer::SetTailColor
+    호출 PlanetRenderer::SetEmojiMode
+    필드 쓰기 PlanetRenderer::attachedDummyFloor
+    호출 PlanetRenderer::DisableParticles
+    호출 제네릭 UnityEngine.Component::GetComponentsInChildren
+    호출 UnityEngine.Renderer::set_sortingOrder
+    호출 PlanetRenderer::Destroy
+    필드 읽기 scrFloor::dummyPlanets
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 UnityEngine.Vector3::x
+    필드 읽기 UnityEngine.Vector3::y
+    필드 읽기 UnityEngine.Vector3::z
+    호출 UnityEngine.Transform::set_localPosition
+    호출 UnityEngine.Transform::SetParent
+    호출 UnityEngine.GameObject::.ctor
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    호출 UnityEngine.LineRenderer::set_positionCount
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::set_parent
+    필드 읽기 scrController::lineMaterial
+    호출 UnityEngine.Renderer::set_material
+    호출 UnityEngine.LineRenderer::set_textureMode
+    호출 UnityEngine.Renderer::set_sortingLayerName
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::get_sortingOrder
+    호출 UnityEngine.LineRenderer::set_startWidth
+    호출 UnityEngine.LineRenderer::set_endWidth
+    필드 읽기 scrController::lineColor
+    필드 읽기 scrFloor::opacity
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.LineRenderer::set_startColor
+    호출 UnityEngine.LineRenderer::set_endColor
+    호출 System.Int32::ToString
+    호출 System.String::Concat
+    호출 UnityEngine.LineRenderer::set_useWorldSpace
+    호출 UnityEngine.LineRenderer::SetPosition
+    필드 쓰기 scrFloor::multiplanetLine
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Transform::set_position
+    호출 UnityEngine.Transform::get_eulerAngles
+    호출 UnityEngine.Transform::set_eulerAngles
+    호출 UnityEngine.Vector3::op_Addition
+    호출 UnityEngine.Vector3::get_one
+    호출 UnityEngine.Vector3::op_Multiply
+    호출 UnityEngine.Material::GetFloat
+    호출 DG.Tweening.ShortcutExtensions::DOFloat
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetLoops
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+  RefreshAngles
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrFloor::UpdateAngle
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  .ctor
+    필드 쓰기 scrLevelMaker::isgameworld
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 scrLevelMaker::listFloors
+    필드 쓰기 scrLevelMaker::listFreeroam
+    필드 쓰기 scrLevelMaker::listFreeroamStartTiles
+    호출 제네릭 System.Array::Empty
+    필드 쓰기 scrLevelMaker::PlayerHitFloors
+    필드 쓰기 scrLevelMaker::holdGOs
+    호출 ADOBase::.ctor

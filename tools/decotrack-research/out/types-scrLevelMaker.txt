@@ -1,0 +1,53 @@
+﻿== scrLevelMaker : ADOBase
+  필드 static FloorAngleEpsilon
+  필드 static FloorContainerName
+  필드 spriteFloor
+  필드 meshFloor
+  필드 caption
+  필드 addoffset
+  필드 lockChanges
+  필드 isgameworld
+  필드 isOldLevel
+  필드 useInitialTrackStyle
+  필드 hideDifficultyUI
+  필드 leveldata
+  필드 floorAngles
+  필드 listFloors
+  필드 listFreeroam
+  필드 listFreeroamStartTiles
+  필드 bpm_forUnityUseOnly
+  필드 pitch_forUnityUseOnly
+  필드 volume_forUnityUseOnly
+  필드 highestBPM
+  필드 holdContainer
+  필드 lm2
+  필드 PlayerHitFloors
+  필드 holdGOs
+  필드 holdMaterial
+  필드 floorContainer
+  필드 static _instance
+  필드 static sceneInstanceID
+  메서드 static scrLevelMaker get_instance()
+  메서드 void UpdatePlayerHitFloors()
+  메서드 UnityEngine.GameObject GetFloorContainer()
+  메서드 void Awake()
+  메서드 void Init()
+  메서드 void FixListFloors()
+  메서드 void CopyProperties()
+  메서드 static double OldToNewAngle(double)
+  메서드 System.Collections.Generic.List`1<scrFloor> MakeLevel()
+  메서드 void InstantiateStringFloors()
+  메서드 void ResetFloor(scrFloor, UnityEngine.Vector3, UnityEngine.Material)
+  메서드 void InstantiateFloatFloors()
+  메서드 void CalculateFloorAngleLengths()
+  메서드 double CalculateSingleFloorAngleLength(scrFloor)
+  메서드 void CalculateFloorEntryTimes()
+  메서드 void ClearFreeroam()
+  메서드 void DrawFreeroam()
+  메서드 void MakeFreeroamGrid(scrFloor)
+  메서드 void ColorFreeroam()
+  메서드 void DrawHolds(boolean)
+  메서드 int32 DrawMultiPlanet(boolean)
+  메서드 void RefreshAngles()
+  메서드 void .ctor()
+(1개 형식)

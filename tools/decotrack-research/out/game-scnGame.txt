@@ -1,0 +1,1343 @@
+﻿== scnGame
+  GetFloorConditionalEvents
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 scrFloor::perfectEffects
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 scrFloor::earlyPerfectEffects
+    필드 읽기 scrFloor::latePerfectEffects
+    필드 읽기 scrFloor::veryEarlyEffects
+    필드 읽기 scrFloor::veryLateEffects
+    필드 읽기 scrFloor::tooEarlyEffects
+    필드 읽기 scrFloor::tooLateEffects
+    필드 읽기 scrFloor::lossEffects
+    필드 읽기 scrFloor::onCheckpointEffects
+  get_floors
+    호출 scrLevelMaker::get_instance
+    필드 읽기 scrLevelMaker::listFloors
+  get_events
+    필드 읽기 scnGame::levelData
+    필드 읽기 ADOFAI.LevelData::levelEvents
+  get_decorations
+    필드 읽기 scnGame::levelData
+    필드 읽기 ADOFAI.LevelData::decorations
+  get_paused
+    호출 scrController::get_instance
+    호출 scrController::get_paused
+  get_filterToComp
+    호출 scrVfxPlus::get_instance
+    필드 읽기 scrVfxPlus::filterToComp
+  get_suitableDecManager
+    정적필드 읽기 scnGame::instance
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 scnGame::decManager
+    호출 UnityEngine.GameObject::Find
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+  PrepVfx
+    호출 scnGame::get_floors
+    호출 scnGame::get_events
+    호출 scnGame::PrepVfx
+  Awake
+    정적필드 쓰기 scnGame::instance
+    호출 ADOBase::get_isScnGame
+    정적필드 읽기 GCS::internalLevelName
+    호출 RDEditorUtils::IsNullOrEmpty
+    정적필드 읽기 GCS::customLevelPaths
+    호출 Persistence::get_savedCurrentLevel
+    호출 scrController::IsWorldAndLevelInternalLevel
+    정적필드 쓰기 GCS::internalLevelName
+    필드 쓰기 scnGame::isLoading
+    호출 scnGame::printesp
+    호출 ADOBase::FlushUnusedMemory
+    호출 UnityEngine.Resources::UnloadUnusedAssets
+    호출 UnityEngine.Time::get_frameCount
+    필드 쓰기 scnGame::startFrame
+    호출 ADOFAI.LevelData::.ctor
+    필드 쓰기 scnGame::levelData
+    호출 scrLevelMaker::get_instance
+    필드 쓰기 scnGame::levelMaker
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::camy
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 scnGame::camera
+    호출 UnityEngine.GameObject::Find
+    필드 쓰기 scnGame::flash
+    호출 TextureManager::.ctor
+    필드 쓰기 scnGame::imgHolder
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 ffxSetFilterAdvancedPlus::ResetVariables
+    필드 읽기 scnGame::videoBG
+    호출 scnGame::PrepareCompleted
+    호출 UnityEngine.Video.VideoPlayer+EventHandler::.ctor
+    호출 UnityEngine.Video.VideoPlayer::add_prepareCompleted
+    호출 scnGame::VideoErrorReceived
+    호출 UnityEngine.Video.VideoPlayer+ErrorEventHandler::.ctor
+    호출 UnityEngine.Video.VideoPlayer::add_errorReceived
+  Update
+    정적필드 읽기 GCS::customLevelPaths
+    호출 ADOBase::get_isInternalLevel
+    호출 ADOBase::get_isLevelEditor
+    호출 UnityEngine.Time::get_frameCount
+    필드 읽기 scnGame::startFrame
+    정적필드 읽기 GCS::internalLevelName
+    정적필드 읽기 GCS::customLevelIndex
+    호출 scnGame::LoadAndPlayLevel
+    필드 읽기 scnGame::camera
+    호출 UnityEngine.Camera::get_orthographicSize
+    호출 UnityEngine.Camera::get_aspect
+    호출 UnityEngine.Vector2::.ctor
+    호출 scrCamera::get_instance
+    필드 읽기 scrCamera::flashPlusRendererBg
+    호출 UnityEngine.Component::get_transform
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    호출 RDExtensions::ScaleXY
+    필드 읽기 scrCamera::flashPlusRendererFg
+    필드 읽기 scrCamera::flashEndscreen
+    필드 읽기 scnGame::flash
+    호출 UnityEngine.GameObject::get_transform
+  DisableFilters
+    호출 scnGame::get_filterToComp
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Values
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection::GetEnumerator
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::get_Current
+    호출 UnityEngine.Behaviour::set_enabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2+ValueCollection+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 ffxSetFilterAdvancedPlus::ResetAllFilters
+  LoadLevel
+    호출 ADOBase::FlushUnusedMemory
+    호출 UnityEngine.Resources::UnloadUnusedAssets
+    호출 scnGame::printesp
+    필드 쓰기 scnGame::isLoading
+    필드 읽기 scnGame::levelData
+    호출 ADOFAI.LevelData::LoadLevel
+    필드 쓰기 scnGame::levelPath
+    호출 scrUIController::get_instance
+    호출 scrUIController::LevelFinishedLoading
+  LoadAndPlayLevel
+    호출 scnGame::LoadLevel
+    호출 ADOBase::get_isLevelEditor
+    호출 ADOBase::get_editor
+    필드 읽기 scnEditor::filenameText
+    호출 System.IO.Path::GetFileName
+    호출 TMPro.TMP_Text::set_text
+    호출 TMPro.TMP_Text::set_fontStyle
+    호출 ADOBase::get_isInternalLevel
+    호출 System.String::Split
+    호출 System.String::op_Inequality
+    호출 System.String::Concat
+    호출 제네릭 UnityEngine.Resources::Load
+    필드 쓰기 scnGame::customWorldMaterial
+    호출 scnGame::RemakePath
+    호출 scnGame::ReloadAssets
+    호출 scnGame::UpdateDecorationObjects
+    호출 scnGame::get_floors
+    호출 scnGame::ApplyEventsToFloors
+    필드 읽기 scnGame::decManager
+    호출 scrDecorationManager::FinishUpdateDecorations
+    필드 읽기 scnGame::levelMaker
+    호출 scrLevelMaker::DrawMultiPlanet
+    호출 scrLevelMaker::DrawHolds
+    정적필드 읽기 DiscordController::instance
+    호출 DiscordController::UpdatePresence
+    호출 scnGame::Play
+    호출 UnityEngine.SceneManagement.SceneManager::LoadScene
+    호출 RDConstants::get_data
+    필드 읽기 RDConstants::prefab_errorCanvas
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 System.String::Format
+    호출 RDString::Get
+    호출 ErrorCanvas::ShowError
+  ReloadAssets
+    필드 읽기 scnGame::levelEditor
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scnGame::imgHolder
+    호출 TextureManager::MarkAllUnused
+    호출 scnGame::printesp
+    호출 scnGame::ReloadSong
+    호출 scnGame::UpdateBackgroundSprites
+    호출 scnGame::UpdateDecorationObjects
+    필드 읽기 scnGame::decManager
+    호출 scrDecorationManager::ResetDecorations
+    호출 scnGame::UpdateFloorSprites
+    호출 scnGame::SetBackground
+    호출 scnGame::UpdateVideo
+    호출 scnGame::ReloadCustomSounds
+    호출 TextureManager::Unload
+  ApplyEventsToFloors
+    필드 읽기 scnGame::levelData
+    호출 ADOBase::get_lm
+    호출 scnGame::get_events
+    호출 scnGame::ApplyEventsToFloors
+  ApplyEventsToFloors
+    필드 쓰기 scnGame+<>c__DisplayClass49_0::floors
+    필드 쓰기 scnGame+<>c__DisplayClass49_0::events
+    필드 쓰기 scnGame+<>c__DisplayClass49_0::levelData
+    필드 읽기 scnGame+<>c__DisplayClass49_0::floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 scnGame+<>c__DisplayClass49_0::events
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 ADOFAI.LevelEvent::active
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 scnGame+<>c__DisplayClass49_0::levelData
+    호출 ADOFAI.LevelData::get_bpm
+    호출 scrConductor::get_instance
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::get_pitch
+    정적필드 읽기 GCS::speedTrialMode
+    정적필드 읽기 GCS::editorQuickPitchedPlaying
+    정적필드 읽기 GCS::currentSpeedTrial
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 UnityEngine.Component::GetComponents
+    호출 UnityEngine.Object::DestroyImmediate
+    필드 읽기 scrFloor::plusEffects
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 scrLevelMaker::CalculateSingleFloorAngleLength
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnGame::<ApplyEventsToFloors>g__ApplyCoreEventsToFloors|49_0
+    호출 scrLevelMaker::CalculateFloorEntryTimes
+    호출 ADOFAI.LevelData::get_planetEase
+    호출 ADOFAI.LevelData::get_planetEaseParts
+    호출 ADOFAI.LevelData::get_planetEasePartBehavior
+    호출 ADOFAI.LevelData::get_stickToFloors
+    호출 ADOFAI.LevelData::get_trackColor
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::color1
+    호출 ADOFAI.LevelData::get_secondaryTrackColor
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::color2
+    호출 ADOFAI.LevelData::get_trackShadowColor
+    호출 ADOFAI.LevelData::get_trackColorType
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::colorType
+    호출 ADOFAI.LevelData::get_trackColorAnimDuration
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::colorAnimDur
+    호출 ADOFAI.LevelData::get_trackColorPulse
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::pulseType
+    호출 ADOFAI.LevelData::get_trackTexture
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::texture
+    호출 ADOFAI.LevelData::get_trackTextureScale
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::textureScale
+    호출 ADOFAI.LevelData::get_trackPulseLength
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::pulseLength
+    필드 읽기 scrFloor::seqID
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::startOfColorChange
+    호출 ADOFAI.LevelData::get_floorIconOutlines
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::outline
+    호출 ADOFAI.LevelData::get_tileShape
+    호출 ADOFAI.LevelData::get_trackAnimation
+    호출 ADOFAI.LevelData::get_trackDisappearAnimation
+    호출 ADOFAI.LevelData::get_trackStyle
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::style
+    호출 ADOFAI.LevelData::get_trackBeatsAhead
+    호출 ADOFAI.LevelData::get_trackBeatsBehind
+    호출 ADOFAI.LevelData::get_trackGlowIntensity
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::glowMult
+    호출 UnityEngine.Vector2::get_zero
+    필드 읽기 scnGame+<>c__DisplayClass49_2::color1
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempColor1
+    필드 읽기 scnGame+<>c__DisplayClass49_2::color2
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempColor2
+    필드 읽기 scnGame+<>c__DisplayClass49_2::colorType
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempColorType
+    필드 읽기 scnGame+<>c__DisplayClass49_2::colorAnimDur
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempColorAnimDur
+    필드 읽기 scnGame+<>c__DisplayClass49_2::pulseType
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempPulseType
+    필드 읽기 scnGame+<>c__DisplayClass49_2::texture
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempTexture
+    필드 읽기 scnGame+<>c__DisplayClass49_2::textureScale
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempTextureScale
+    필드 읽기 scnGame+<>c__DisplayClass49_2::pulseLength
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempPulseLength
+    필드 읽기 scnGame+<>c__DisplayClass49_2::startOfColorChange
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempStartOfColorChange
+    필드 읽기 scnGame+<>c__DisplayClass49_2::outline
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempOutline
+    필드 읽기 scnGame+<>c__DisplayClass49_2::style
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempStyle
+    필드 읽기 scnGame+<>c__DisplayClass49_2::glowMult
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempGlowMult
+    호출 UnityEngine.Vector2::op_Addition
+    필드 읽기 scrFloor::speed
+    필드 읽기 scrFloor::isCCW
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.LevelEvent::get_Item
+    필드 읽기 ADOFAI.LevelEvent::disabled
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempColor1
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempColor2
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempColorAnimDur
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempColorType
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempPulseType
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempPulseLength
+    호출 ADOFAI.LevelEvent::GetBool
+    호출 System.String::IsNullOrEmpty
+    호출 ADOBase::get_customLevel
+    필드 읽기 scnGame::levelPath
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::Combine
+    정적필드 읽기 scnGame::instance
+    필드 읽기 scnGame::imgHolder
+    호출 TextureManager::AddTexture
+    필드 읽기 TextureManager+CustomTexture::texture
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempTexture
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Texture::set_wrapMode
+    호출 ADOFAI.LevelEvent::GetFloat
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempStartOfColorChange
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempOutline
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempTextureScale
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempStyle
+    필드 읽기 scnGame+<>c__DisplayClass49_2::tempGlowMult
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    호출 scrMisc::GetAngleMoved
+    호출 System.Math::Abs
+    필드 쓰기 scrFloor::holdDistance
+    필드 쓰기 scrFloor::holdLength
+    호출 System.Convert::ToSingle
+    호출 UnityEngine.Mathf::Cos
+    호출 UnityEngine.Mathf::Sin
+    호출 UnityEngine.Vector2::.ctor
+    필드 읽기 scrFloor::holdDistance
+    호출 ADOBase::get_controller
+    호출 scrController::get_tileSize
+    호출 UnityEngine.Vector2::op_Multiply
+    필드 읽기 scrFloor::showHoldTiming
+    호출 scrController::get_instance
+    호출 scrController::get_paused
+    호출 scnGame::IDFromTile
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    필드 읽기 scrFloor::startPos
+    필드 읽기 scrFloor::offsetPos
+    호출 UnityEngine.Vector3::op_Addition
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Vector2::op_Subtraction
+    호출 제네릭 ADOFAI.LevelEvent::TryGetAndSet
+    필드 읽기 scrFloor::prevfloor
+    필드 읽기 scrFloor::midSpin
+    호출 System.Math::Min
+    호출 UnityEngine.Debug::Log
+    필드 쓰기 scrFloor::numPlanets
+    호출 ADOFAI.LevelEvent::GetInt
+    호출 ADOFAI.LevelEvent::GetColor
+    호출 scnGame::<ApplyEventsToFloors>g__MoveColorTrackTempValues|49_6
+    필드 쓰기 scrFloor::isSafe
+    필드 쓰기 scrFloor::auto
+    필드 쓰기 scrFloor::shouldBeAutoPlayed
+    호출 scrFloor::set_showStatusText
+    필드 쓰기 scrFloor::hideJudgment
+    필드 쓰기 scrFloor::hideIcon
+    필드 쓰기 scrFloor::marginScale
+    필드 쓰기 scrFloor::lengthMult
+    필드 쓰기 scrFloor::widthMult
+    필드 쓰기 scrFloor::planetEase
+    필드 쓰기 scrFloor::planetEaseParts
+    필드 쓰기 scrFloor::planetEasePartBehavior
+    필드 쓰기 scrFloor::stickToFloor
+    필드 읽기 scrFloor::radiusScale
+    호출 UnityEngine.Component::get_transform
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Transform::set_position
+    필드 쓰기 scrFloor::offsetPos
+    필드 쓰기 scrFloor::customTexture
+    필드 쓰기 scrFloor::customTextureScale
+    필드 쓰기 scrFloor::outline
+    호출 UnityEngine.Color::get_white
+    호출 scrFloor::SetColor
+    필드 쓰기 scrFloor::styleNum
+    호출 scrFloor::UpdateAngle
+    호출 scrFloor::SetTrackStyle
+    필드 읽기 scrFloor::changeTrack
+    필드 쓰기 ffxChangeTrack::color1
+    필드 쓰기 ffxChangeTrack::color2
+    필드 쓰기 ffxChangeTrack::colorType
+    필드 쓰기 ffxChangeTrack::colorAnimDuration
+    필드 쓰기 ffxChangeTrack::pulseType
+    필드 쓰기 ffxChangeTrack::pulseLength
+    필드 쓰기 ffxChangeTrack::startOfColorChange
+    필드 쓰기 ffxChangeTrack::texture
+    필드 쓰기 ffxChangeTrack::animationType
+    필드 쓰기 ffxChangeTrack::animationType2
+    필드 쓰기 ffxChangeTrack::tilesAhead
+    필드 쓰기 ffxChangeTrack::tilesBehind
+    필드 쓰기 scrFloor::glowMultiplier
+    호출 UnityEngine.Transform::set_localScale
+    필드 쓰기 scrFloor::startScale
+    호출 UnityEngine.Mathf::Max
+    호출 scrFloor::SetOpacity
+    필드 쓰기 scrFloor::opacityVal
+    필드 쓰기 scrFloor::rotationOffset
+    호출 scrFloor::SetRotation
+    호출 UnityEngine.Object::op_Inequality
+    필드 쓰기 scnGame::highestBPM
+    호출 scrLevelMaker::ClearFreeroam
+    필드 읽기 scrFloor::nextfloor
+    호출 UnityEngine.Object::op_Equality
+    필드 쓰기 scrFloor::freeroamRegion
+    필드 쓰기 scrFloor::freeroam
+    필드 쓰기 scrFloor::freeroamDimensions
+    필드 쓰기 scrFloor::freeroamOffset
+    필드 쓰기 scrFloor::freeroamEndEarlyBeats
+    필드 쓰기 scrFloor::freeroamEndEase
+    필드 읽기 scrFloor::moveCamAtFreeroamEnd
+    필드 읽기 scrFloor::freeroamSoundOnBeat
+    필드 읽기 scrFloor::freeroamSoundOffBeat
+    호출 scrLevelMaker::MakeFreeroamGrid
+    필드 읽기 scrFloor::freeroamDimensions
+    필드 읽기 scrLevelMaker::listFreeroam
+    필드 읽기 scrFloor::freeroamRegion
+    호출 FreeroamArea::get_Item
+    필드 쓰기 scrFloor::floorIcon
+    호출 scrFloor::UpdateIconSprite
+    필드 쓰기 scrFloor::isSwirl
+    필드 쓰기 scrFloor::isLandable
+    호출 UnityEngine.Vector3::get_one
+    호출 UnityEngine.Vector3::op_Multiply
+    호출 UnityEngine.Transform::get_position
+    필드 쓰기 scrFloor::startPos
+    필드 쓰기 scrFloor::freeroamRemoved
+    필드 쓰기 scrFloor::isWarning
+    필드 읽기 ADOFAI.LevelData::legacyFlash
+    정적필드 쓰기 ffxFlashPlus::legacyFlash
+    필드 읽기 ADOFAI.LevelData::legacyCamRelativeTo
+    정적필드 쓰기 ffxCameraPlus::legacyRelativeTo
+    호출 scrVfx::get_instance
+    필드 읽기 scrVfx::currentColourScheme
+    호출 ADOFAI.LevelData::get_defaultTextColor
+    필드 쓰기 ColourScheme::colourText
+    호출 ADOFAI.LevelData::get_defaultTextShadowColor
+    필드 쓰기 ColourScheme::colourTextShadow
+    정적필드 읽기 scnGame+<>c::<>9__49_7
+    정적필드 읽기 scnGame+<>c::<>9
+    호출 scnGame+<>c::<ApplyEventsToFloors>b__49_7
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 scnGame+<>c::<>9__49_7
+    호출 제네릭 System.Linq.Enumerable::Where
+    호출 제네릭 System.Collections.Generic.List`1::AddRange
+    필드 쓰기 scrFloor::usedCustomFloorIcon
+    정적필드 읽기 scnGame+<>c::<>9__49_9
+    호출 scnGame+<>c::<ApplyEventsToFloors>b__49_9
+    정적필드 쓰기 scnGame+<>c::<>9__49_9
+    호출 제네릭 System.Linq.Enumerable::Any
+    필드 쓰기 scrFloor::eventIcon
+    정적필드 읽기 GCS::filteredEvent
+    정적필드 읽기 scnGame+<>c::<>9__49_10
+    호출 scnGame+<>c::<ApplyEventsToFloors>b__49_10
+    호출 제네릭 System.Predicate`1::.ctor
+    정적필드 쓰기 scnGame+<>c::<>9__49_10
+    호출 제네릭 System.Collections.Generic.List`1::Find
+    호출 System.Object::ToString
+    호출 제네릭 RDUtils::ParseEnum
+    호출 UnityEngine.Mathf::Abs
+    필드 읽기 scrFloor::holdLength
+    필드 읽기 scrFloor::numPlanets
+    정적필드 읽기 scnGame+<>c::<>9__49_8
+    호출 scnGame+<>c::<ApplyEventsToFloors>b__49_8
+    정적필드 쓰기 scnGame+<>c::<>9__49_8
+    호출 제네릭 System.Collections.Generic.List`1::Exists
+    필드 읽기 scrFloor::usedCustomFloorIcon
+    호출 scrFloor::UpdateCommentGlow
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    정적필드 읽기 scnGame+<>c::<>9__49_11
+    호출 scnGame+<>c::<ApplyEventsToFloors>b__49_11
+    정적필드 쓰기 scnGame+<>c::<>9__49_11
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 ADOFAI.LevelEvent::GetString
+    호출 System.String::Split
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Tuple`4::.ctor
+    정적필드 읽기 scnGame+<>c::<>9__49_12
+    호출 scnGame+<>c::<ApplyEventsToFloors>b__49_12
+    정적필드 쓰기 scnGame+<>c::<>9__49_12
+    호출 RDUtils::NullIfEmptyConditionalTag
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    필드 쓰기 scrFloor::hasConditionalChange
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Keys
+    호출 제네릭 System.Linq.Enumerable::Contains
+    호출 제네릭 System.Tuple`4::get_Item1
+    호출 제네릭 System.Tuple`4::get_Item2
+    호출 제네릭 System.Tuple`4::get_Item3
+    호출 제네릭 System.Tuple`4::get_Item4
+    필드 읽기 scrFloor::entryBeat
+    호출 제네릭 System.Nullable`1::.ctor
+    호출 scnGame::ApplyEvent
+    정적필드 읽기 ADOFAI.EditorConstants::soloTypes
+    호출 제네릭 System.Collections.Generic.HashSet`1::Contains
+    호출 RDUtils::IsNoneConditionalTag
+    호출 System.String::op_Equality
+    필드 쓰기 ffxPlusBase::conditionalInfo
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    호출 제네릭 System.Collections.Generic.List`1::Insert
+    필드 쓰기 ffxPlusBase::startTime
+    필드 쓰기 ffxPlusBase::duration
+    호출 ADOFAI.LevelData::get_camPosition
+    필드 쓰기 ffxCameraPlus::targetPos
+    호출 ADOFAI.LevelData::get_camRotation
+    필드 쓰기 ffxCameraPlus::targetRot
+    호출 ADOFAI.LevelData::get_camZoom
+    필드 쓰기 ffxCameraPlus::targetZoom
+    필드 쓰기 ffxPlusBase::ease
+    호출 ADOFAI.LevelData::get_camRelativeTo
+    필드 쓰기 ffxCameraPlus::movementType
+    호출 ADOFAI.LevelData::get_camEnabledOnLowVFX
+    필드 쓰기 ffxCameraPlus::dontDisable
+    호출 scrLevelMaker::UpdatePlayerHitFloors
+  ApplyEvent
+    호출 제네릭 System.Nullable`1::get_HasValue
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 UnityEngine.Component::get_gameObject
+    필드 읽기 scrFloor::speed
+    정적필드 읽기 scnGame::instance
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    필드 쓰기 ffxPlusBase::floorID
+    필드 쓰기 ffxPlusBase::floors
+    필드 쓰기 ffxPlusBase::crotchet
+    호출 ffxPlusBase::Decode
+    필드 읽기 scrFloor::plusEffects
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+    호출 ffxPlusBase::SetStartTime
+    호출 System.String::IsNullOrEmpty
+    호출 System.String::Split
+    호출 scrDecorationManager::get_instance
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scrDecorationManager::hitboxEventTagDecorations
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrDecoration::hitboxEvents
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 쓰기 ffxPlusBase::runManually
+    필드 쓰기 ffxPlusBase::sourceLevelEvent
+  IDFromTile
+    호출 제네릭 System.Tuple`2::get_Item2
+    호출 제네릭 System.Tuple`2::get_Item1
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 UnityEngine.Mathf::Clamp
+  StringToTile
+    호출 System.String::StartsWith
+    호출 System.String::EndsWith
+    호출 System.String::get_Length
+    호출 System.String::Substring
+    호출 System.String::Split
+    호출 System.Int32::Parse
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::Parse
+    호출 제네릭 System.Tuple`2::.ctor
+  UpdateDecorationObjects
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::visualQuality
+    호출 ADOBase::get_isOfficialLevel
+    호출 Persistence::get_forceVisualSettings
+    호출 ADOBase::get_levelIsMikoSkip
+    필드 읽기 scnGame::decManager
+    호출 scrDecorationManager::ClearDecorations
+    호출 scnGame::get_decorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 ADOFAI.LevelEvent::active
+    호출 scrDecorationManager::CreateDecoration
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+    호출 System.String::StartsWith
+    호출 System.String::IsNullOrEmpty
+    호출 ADOBase::IsNotAMikoSkipMandatorySprite
+    필드 읽기 scnGame::levelPath
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::Combine
+    필드 읽기 scnGame::imgHolder
+    호출 TextureManager::GetOrAddSprite
+    호출 ADOBase::get_editor
+    호출 scnEditor::UpdateImageLoadResult
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 scnGame::get_events
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 제네릭 ADOFAI.LevelEvent::TryGetAndSet
+    호출 RDEditorUtils::IsNullOrEmpty
+  RemakePath
+    호출 ADOBase::get_conductor
+    필드 읽기 scnGame::levelData
+    호출 scrConductor::SetupConductorWithLevelData
+    필드 읽기 scnGame::levelMaker
+    호출 UnityEngine.Object::op_Equality
+    호출 scrLevelMaker::get_instance
+    필드 쓰기 scnGame::levelMaker
+    필드 읽기 ADOFAI.LevelData::pathData
+    필드 쓰기 scrLevelMaker::leveldata
+    필드 읽기 ADOFAI.LevelData::angleData
+    호출 제네릭 System.Collections.Generic.List`1::ToArray
+    필드 쓰기 scrLevelMaker::floorAngles
+    필드 읽기 ADOFAI.LevelData::isOldLevel
+    필드 쓰기 scrLevelMaker::isOldLevel
+    호출 ADOFAI.LevelData::get_tileShape
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 scrLevelMaker2::BigTiles
+    호출 ADOBase::get_controller
+    필드 쓰기 scrController::tileShape
+    호출 scrLevelMaker::MakeLevel
+    호출 scrConductor::get_instance
+    호출 ADOFAI.LevelData::get_countdownTicks
+    필드 쓰기 scrConductor::countdownTicks
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::ResetDecorationHitboxEvents
+    호출 scnGame::get_floors
+    호출 scnGame::ApplyEventsToFloors
+    호출 scrLevelMaker::DrawHolds
+    호출 scrLevelMaker::DrawMultiPlanet
+  ReloadCustomSounds
+    호출 scnGame::ReloadCustomSoundsCo
+    호출 UnityEngine.MonoBehaviour::StartCoroutine
+  ReloadCustomSoundsCo
+    호출 scnGame+<ReloadCustomSoundsCo>d__58::.ctor
+    필드 쓰기 scnGame+<ReloadCustomSoundsCo>d__58::<>4__this
+    필드 쓰기 scnGame+<ReloadCustomSoundsCo>d__58::force
+  LoadSoundCo
+    호출 scnGame+<LoadSoundCo>d__59::.ctor
+    필드 쓰기 scnGame+<LoadSoundCo>d__59::<>4__this
+    필드 쓰기 scnGame+<LoadSoundCo>d__59::filename
+  UpdateBackgroundSprites
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scnGame::backgroundsLoaded
+    호출 scnGame::get_events
+    정적필드 읽기 scnGame+<>c::<>9__60_0
+    정적필드 읽기 scnGame+<>c::<>9
+    호출 scnGame+<>c::<UpdateBackgroundSprites>b__60_0
+    호출 제네릭 System.Predicate`1::.ctor
+    정적필드 쓰기 scnGame+<>c::<>9__60_0
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 System.Object::ToString
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 scnGame::levelPath
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::Combine
+    필드 읽기 scnGame::imgHolder
+    호출 TextureManager::GetOrAddSprite
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 쓰기 scnGame::backgroundsLoaded
+  UpdateFloorSprites
+    호출 scnGame::printesp
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scnGame::floorSpritesLoaded
+    호출 scnGame::get_events
+    정적필드 읽기 scnGame+<>c::<>9__61_0
+    정적필드 읽기 scnGame+<>c::<>9
+    호출 scnGame+<>c::<UpdateFloorSprites>b__61_0
+    호출 제네릭 System.Predicate`1::.ctor
+    정적필드 쓰기 scnGame+<>c::<>9__61_0
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 scnGame::levelPath
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::Combine
+    필드 읽기 scnGame::imgHolder
+    호출 TextureManager::AddTexture
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 쓰기 scnGame::floorSpritesLoaded
+  Play
+    필드 읽기 scnGame::levelData
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+    호출 System.Type::GetType
+    호출 System.Type::op_Inequality
+    호출 System.Activator::CreateInstance
+    호출 scrController::get_instance
+    필드 쓰기 scrController::level
+    호출 scnGame::printesp
+    호출 scnGame::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 scrConductor::get_instance
+    호출 ADOBase::get_customLevel
+    호출 ADOFAI.LevelEvent::get_Item
+    필드 쓰기 scrController::customTxtCongrats
+    필드 쓰기 scrController::customTxtPurePerfect
+    필드 읽기 scrController::txtLevelName
+    호출 UnityEngine.UI.Text::get_text
+    필드 쓰기 scrController::originalLevelName
+    호출 ffxSetDefaultText::UpdateHudTexts
+    정적필드 읽기 scrController::checkpointsUsed
+    필드 쓰기 scnGame::checkpointsUsed
+    필드 쓰기 scrController::gameworld
+    호출 ADOFAI.LevelData::get_fullCaptionTagged
+    호출 ADOBase::get_isInternalLevel
+    필드 쓰기 scrController::caption
+    필드 읽기 scrConductor::onBeats
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 AudioManager::get_Instance
+    호출 AudioManager::StopAllSounds
+    호출 scrCamera::get_instance
+    호출 scrCamera::Rewind
+    필드 읽기 scnGame::camParent
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Vector3::get_zero
+    호출 UnityEngine.Transform::set_position
+    호출 scrConductor::Rewind
+    호출 scrController::set_paused
+    호출 scrController::Awake_Rewind
+    호출 scrUIController::get_instance
+    필드 읽기 scrUIController::canvas
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 쓰기 scrCamera::zoomSize
+    호출 UnityEngine.Input::GetKey
+    필드 쓰기 scrCamera::userSizeMultiplier
+    호출 ADOBase::get_editor
+    호출 UnityEngine.Object::op_Inequality
+    필드 쓰기 scnEditor::camUserSizeMultiplier
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 scrCamera::SetHoldOffset
+    호출 UnityEngine.Vector2::get_zero
+    필드 쓰기 scrCamera::lastEventRelativePosition
+    필드 쓰기 scrCamera::lastUsedMovementType
+    호출 scrVfxPlus::get_instance
+    필드 쓰기 scrVfxPlus::vidOffset
+    호출 scrCamera::SetupRTCam
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 ADOBase::get_playerManager
+    호출 scrPlayerManager::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    필드 읽기 scrPlayer::planetarySystem
+    필드 읽기 PlanetarySystem::planetRed
+    필드 읽기 PlanetarySystem::planetBlue
+    호출 scrPlayer::Rewind
+    호출 scrPlayer::get_marginTracker
+    호출 scrMarginTracker::Reset
+    필드 쓰기 scrMarginTracker::startSeqID
+    필드 읽기 PlanetarySystem::planetList
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Transform::set_localPosition
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 UnityEngine.Vector3::get_right
+    필드 읽기 scrFloor::isCCW
+    필드 쓰기 PlanetarySystem::isCW
+    필드 읽기 scrFloor::speed
+    필드 쓰기 PlanetarySystem::speed
+    필드 읽기 scrFloor::seqID
+    필드 쓰기 PlanetarySystem::chosenPlanet
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 ADOBase::get_isLevelEditor
+    호출 scrConductor::Start
+    호출 scnGame::FinishCustomLevelLoading
+    호출 scrController::Start_Rewind
+    필드 쓰기 scnEditor::inStrictlyEditingMode
+    필드 읽기 scrFloor::planetEase
+    필드 쓰기 scrController::rotationEase
+    필드 쓰기 scrController::startedFromCheckpoint
+    호출 RDC::get_auto
+    필드 쓰기 scrConductor::fastTakeoff
+    필드 쓰기 scrController::forceNoCountdown
+    필드 읽기 scrController::txtAllStrictClear
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrController::txtCongrats
+    필드 읽기 scrController::detailedResults
+    필드 읽기 scrController::txtPercent
+    호출 scrController::WaitForStartCo
+    호출 UnityEngine.MonoBehaviour::StartCoroutine
+  FinishCustomLevelLoading
+    호출 ADOBase::get_isLevelEditor
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::ResetDecorationHitboxEvents
+    호출 scnGame::get_floors
+    호출 scnGame::ApplyEventsToFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 제네릭 UnityEngine.Component::GetComponents
+    필드 쓰기 ffxPlusBase::triggered
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 ADOBase::get_controller
+    필드 쓰기 scrController::conditionalFloor
+    호출 scrController::ResetInputEventFfx
+    호출 ADOBase::get_playerManager
+    호출 scrPlayerManager::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    필드 읽기 scrPlayer::planetarySystem
+    필드 읽기 PlanetarySystem::chosenPlanet
+    호출 scrPlanet::FirstFloorAngleSetup
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 scrDecorationManager::ResetDecorations
+    필드 읽기 scrFloor::seqID
+    필드 읽기 scrFloor::topGlow
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 scnGame::UpdateVideo
+    호출 scnGame::PrepVfx
+    호출 ADOBase::get_isCLSLevel
+    정적필드 읽기 GCS::useNoFail
+    정적필드 읽기 GCS::useUnlockKeyLimiter
+    필드 읽기 scnGame::levelData
+    호출 ADOFAI.LevelData::get_Hash
+    호출 Persistence::IncrementCustomWorldAttempts
+    호출 GCS::get_checkpointNum
+    필드 쓰기 scrController::currentSeqID
+  PrepVfx
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 scrVfxPlus::get_instance
+    호출 scrVfxPlus::Reset
+    호출 scrConductor::get_instance
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrFloor::changeTrack
+    호출 ffxChangeTrack::PrepFloor
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    필드 쓰기 scrFloor::startPos
+    필드 읽기 scrFloor::opacityVal
+    호출 scrFloor::SetOpacity
+    필드 읽기 scrFloor::seqID
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    정적필드 읽기 scnGame+<>c::<>9__64_2
+    정적필드 읽기 scnGame+<>c::<>9
+    호출 scnGame+<>c::<PrepVfx>b__64_2
+    호출 제네릭 System.Predicate`1::.ctor
+    정적필드 쓰기 scnGame+<>c::<>9__64_2
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    호출 ADOFAI.LevelEvent::GetInt
+    호출 ADOFAI.LevelEvent::GetFloat
+    호출 ADOFAI.LevelEvent::GetString
+    호출 System.String::Split
+    호출 제네릭 System.Tuple`2::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    정적필드 읽기 scnGame+<>c::<>9__64_3
+    호출 scnGame+<>c::<PrepVfx>b__64_3
+    정적필드 쓰기 scnGame+<>c::<>9__64_3
+    정적필드 읽기 scnGame::ConditionalEventTags
+    호출 제네릭 ADOFAI.LevelEvent::TryGet
+    호출 System.String::IsNullOrEmpty
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Tuple`2::get_Item1
+    호출 제네릭 System.Tuple`2::get_Item2
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    필드 읽기 scrConductor::bpm
+    호출 ffxPlusBase::SetStartTime
+    호출 ADOFAI.LevelEvent::GetColor
+    필드 쓰기 ffxCustomBackgroundPlus::color
+    필드 쓰기 ffxCustomBackgroundPlus::filePath
+    필드 쓰기 ffxCustomBackgroundPlus::imageColor
+    호출 제네릭 ADOFAI.LevelEvent::Get
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 ADOFAI.PropertyInfo::CheckIfEnabled
+    호출 UnityEngine.Vector2::get_one
+    호출 UnityEngine.Vector2::op_Division
+    필드 쓰기 ffxCustomBackgroundPlus::parallax
+    호출 ADOFAI.LevelEvent::get_Item
+    필드 쓰기 ffxCustomBackgroundPlus::tiled
+    필드 쓰기 ffxCustomBackgroundPlus::fitScreen
+    필드 쓰기 ffxCustomBackgroundPlus::scalingRatio
+    필드 쓰기 ffxCustomBackgroundPlus::originalSize
+    호출 ADOFAI.LevelEvent::GetBool
+    필드 쓰기 ffxCustomBackgroundPlus::looping
+    필드 쓰기 ffxCustomBackgroundPlus::lockRot
+    필드 쓰기 ffxCustomBackgroundPlus::imageSmoothing
+    필드 읽기 scrFloor::plusEffects
+    호출 RDUtils::IsNoneConditionalTag
+    호출 System.String::op_Equality
+    필드 쓰기 ffxPlusBase::conditionalInfo
+    호출 scnGame::GetFloorConditionalEvents
+    호출 제네릭 System.Collections.Generic.IEnumerable`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    호출 제네릭 System.Collections.Generic.HashSet`1::Clear
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 ffxPlusBase::conditionalInfo
+    호출 제네릭 System.Collections.Generic.IReadOnlyList`1::get_Item
+    호출 제네릭 System.Collections.Generic.HashSet`1::Add
+    필드 쓰기 ffxPlusBase::triggered
+    필드 쓰기 scrFloor::hasConditionalChange
+    필드 읽기 ffxPlusBase::runManually
+    호출 ffxPlusBase::get_runOnHit
+    필드 읽기 scrVfxPlus::effects
+    호출 ffxPlusBase::PrepVfx
+    호출 scrVfxPlus::ScrubToTime
+    호출 제네릭 System.Collections.Generic.List`1::GetRange
+    정적필드 읽기 scnGame+<>c::<>9__64_4
+    호출 scnGame+<>c::<PrepVfx>b__64_4
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 scnGame+<>c::<>9__64_4
+    호출 제네릭 System.Linq.Enumerable::LastOrDefault
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scrFloor::onCheckpointEffects
+    호출 제네릭 System.Collections.Generic.HashSet`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::get_Current
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::MoveNext
+    정적필드 읽기 scnGame+<>c::<>9__64_0
+    호출 scnGame+<>c::<PrepVfx>b__64_0
+    정적필드 쓰기 scnGame+<>c::<>9__64_0
+    호출 제네릭 System.Linq.Enumerable::OrderBy
+    정적필드 읽기 scnGame+<>c::<>9__64_1
+    호출 scnGame+<>c::<PrepVfx>b__64_1
+    정적필드 쓰기 scnGame+<>c::<>9__64_1
+    호출 제네릭 System.Linq.Enumerable::ThenBy
+    호출 제네릭 System.Linq.Enumerable::ToList
+    필드 쓰기 scrVfxPlus::effects
+  UpdateVideo
+    필드 읽기 scnGame::levelData
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::GetString
+    호출 RDEditorUtils::IsNullOrEmpty
+    필드 읽기 scnGame::videoBG
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 ADOBase::get_isInternalLevel
+    정적필드 읽기 GCS::internalLevelName
+    호출 System.String::Split
+    호출 System.IO.Path::GetFileNameWithoutExtension
+    호출 System.String::Concat
+    호출 ADOBase::get_isDLCLevel
+    호출 제네릭 UnityEngine.AddressableAssets.Addressables::LoadAssetAsync
+    호출 제네릭 UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle`1::WaitForCompletion
+    호출 UnityEngine.Video.VideoPlayer::set_clip
+    호출 제네릭 UnityEngine.Resources::Load
+    호출 ADOBase::get_isBundleLevel
+    필드 읽기 scnGame::levelPath
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::Combine
+    호출 System.IO.File::Exists
+    호출 scnGame::printesp
+    호출 UnityEngine.Video.VideoPlayer::set_url
+    호출 UnityEngine.Video.VideoPlayer::Stop
+    호출 UnityEngine.Video.VideoPlayer::Prepare
+    호출 ADOFAI.LevelEvent::GetBool
+    호출 UnityEngine.Video.VideoPlayer::set_isLooping
+  PrepareCompleted
+  VideoErrorReceived
+  UpdateTrackColors
+  SetBackground
+    호출 scnGame::printesp
+    호출 scrCamera::get_instance
+    필드 읽기 scrCamera::Bgcamstatic
+    필드 읽기 scnGame::levelData
+    호출 ADOFAI.LevelData::get_backgroundColor
+    호출 UnityEngine.Camera::set_backgroundColor
+    호출 ADOFAI.LevelData::get_bgImage
+    호출 System.String::IsNullOrEmpty
+    호출 scnGame::ShowTutorialBackground
+    호출 Persistence::get_visualQuality
+    필드 읽기 scnGame::levelPath
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::Combine
+    필드 읽기 scnGame::custBG
+    호출 scrCustomBackgroundSprite::SetBaseSprite
+    필드 읽기 scrCustomBackgroundSprite::baseSprite
+    호출 ADOFAI.LevelData::get_bgImageColor
+    호출 ADOFAI.LevelData::get_bgTiling
+    호출 ADOFAI.LevelData::get_bgLooping
+    호출 ADOFAI.LevelData::get_bgFitScreen
+    호출 ADOFAI.LevelData::get_scalingRatio
+    호출 ADOFAI.LevelData::get_bgLockRot
+    호출 ADOFAI.LevelData::get_bgSmoothing
+    호출 scrCustomBackgroundSprite::SetCustomBG
+    필드 읽기 scrCustomBackgroundSprite::parallax
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 ADOFAI.PropertyInfo::CheckIfEnabled
+    호출 ADOFAI.LevelData::get_bgParallax
+    필드 읽기 UnityEngine.Vector2::x
+    필드 쓰기 scrParallax::multiplier_x
+    필드 읽기 UnityEngine.Vector2::y
+    필드 쓰기 scrParallax::multiplier_y
+    호출 제네릭 ADOFAI.LevelEvent::GetIfEnabled
+    호출 System.String::Concat
+    호출 제네릭 UnityEngine.Resources::Load
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scnGame::editorBG
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scnGame::customEditorBG
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Object::Destroy
+    호출 제네릭 UnityEngine.Object::Instantiate
+    필드 쓰기 scnGame::customEditorBG
+    호출 UnityEngine.Object::set_name
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 scnGame::tutorialBackground
+    필드 쓰기 scnGame::usingCustomTutorialBackground
+    호출 UnityEngine.Object::op_Equality
+    필드 쓰기 scrCustomBackgroundSprite::baseSprite
+    호출 UnityEngine.Color::get_white
+    호출 ADOFAI.LevelData::get_bgShowDefaultBGIfNoImage
+    호출 ADOFAI.LevelData::get_bgShowDefaultBGTile
+    호출 ADOFAI.LevelData::get_showBGShape
+    필드 읽기 scnGame::usingCustomTutorialBackground
+    필드 읽기 scnGame::tutorialBackground
+    필드 읽기 TutorialBackground::tile
+    호출 UnityEngine.Component::get_gameObject
+    호출 ADOFAI.LevelData::get_bgDefaultBGTileColor
+    호출 TutorialBackground::SetTileColor
+    호출 ADOFAI.LevelData::get_bgShapeType
+    호출 TutorialBackground::SetShapeType
+    호출 ADOFAI.LevelData::get_bgDefaultBGShapeColor
+    호출 TutorialBackground::SetShapeColor
+  SetStartingBG
+    호출 scnGame::printesp
+    필드 읽기 scnGame::custBG
+    필드 읽기 scrCustomBackgroundSprite::baseSprite
+    호출 scnGame::ShowTutorialBackground
+    필드 읽기 scnGame::levelData
+    호출 ADOFAI.LevelData::get_bgImageColor
+    호출 ADOFAI.LevelData::get_bgTiling
+    호출 ADOFAI.LevelData::get_bgLooping
+    호출 ADOFAI.LevelData::get_bgFitScreen
+    호출 ADOFAI.LevelData::get_scalingRatio
+    호출 ADOFAI.LevelData::get_bgLockRot
+    호출 scrCustomBackgroundSprite::SetCustomBG
+    필드 읽기 scrCustomBackgroundSprite::parallax
+    필드 읽기 ADOFAI.LevelData::backgroundSettings
+    필드 읽기 ADOFAI.LevelEvent::info
+    필드 읽기 ADOFAI.LevelEventInfo::propertiesInfo
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 ADOFAI.PropertyInfo::CheckIfEnabled
+    호출 ADOFAI.LevelData::get_bgParallax
+    필드 읽기 UnityEngine.Vector2::x
+    필드 쓰기 scrParallax::multiplier_x
+    필드 읽기 UnityEngine.Vector2::y
+    필드 쓰기 scrParallax::multiplier_y
+    호출 UnityEngine.Color::get_white
+    호출 ADOFAI.LevelData::get_bgShowDefaultBGIfNoImage
+  ShowTutorialBackground
+    필드 읽기 scnGame::customEditorBG
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scnGame::editorBG
+  SetFxPlusFromComponents
+    호출 scrConductor::get_instance
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::get_color
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrConductor::bpm
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::get_pitch
+    필드 읽기 scrFloor::speed
+    호출 제네릭 UnityEngine.Component::GetComponents
+    필드 읽기 ffxPlusBase::degreeOffset
+    호출 ffxPlusBase::SetStartTime
+    필드 읽기 scrFloor::plusEffects
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 ffxPlusBase::duration
+    필드 쓰기 ffxPlusBase::duration
+    필드 읽기 scrFloor::changeTrack
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 ffxChangeTrack::color1
+    호출 UnityEngine.Color::get_clear
+    호출 UnityEngine.Color::op_Equality
+    필드 읽기 ffxChangeTrack::color2
+    필드 읽기 ffxChangeTrack::colorType
+    필드 읽기 ffxChangeTrack::animationType
+    필드 읽기 ffxChangeTrack::animationType2
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    필드 쓰기 ffxChangeTrack::color1
+    필드 쓰기 ffxChangeTrack::color2
+    필드 쓰기 ffxChangeTrack::colorType
+    필드 쓰기 ffxChangeTrack::animationType
+    필드 쓰기 ffxChangeTrack::animationType2
+    필드 쓰기 scrFloor::changeTrack
+    호출 scrFloor::SetColor
+    필드 읽기 scrFloor::seqID
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  ReloadSong
+    필드 읽기 scnGame::levelData
+    호출 ADOFAI.LevelData::get_songFilename
+    호출 System.String::IsNullOrEmpty
+    호출 AudioManager::get_Instance
+    필드 읽기 scnGame::currentSongKey
+    필드 읽기 AudioManager::audioLib
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Remove
+    필드 읽기 AudioManager::audioLibHandles
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 제네릭 UnityEngine.AddressableAssets.Addressables::Release
+    호출 scrConductor::get_instance
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::set_clip
+    호출 scnGame::ReloadSongCo
+    호출 UnityEngine.MonoBehaviour::StartCoroutine
+  ReloadSongCo
+    호출 scnGame+<ReloadSongCo>d__75::.ctor
+    필드 쓰기 scnGame+<ReloadSongCo>d__75::<>4__this
+    필드 쓰기 scnGame+<ReloadSongCo>d__75::force
+  GetWorldPaths
+    필드 읽기 scnGame::levelPath
+    호출 scnGame::GetWorldPaths
+  GetWorldPaths
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 System.IO.Path::GetDirectoryName
+    호출 System.IO.Path::GetFileNameWithoutExtension
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 System.String::op_Equality
+    호출 System.Int32::ToString
+    호출 System.String::Concat
+    호출 System.IO.Path::Combine
+    호출 RDFile::Exists
+    호출 제네릭 System.Collections.Generic.List`1::ToArray
+  ResetScene
+    필드 쓰기 scnGame::isLoading
+    호출 scnGame::printesp
+    호출 scrUIController::get_instance
+    필드 읽기 scrUIController::txtCountdown
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 scrCountdown::CancelGo
+    호출 ADOBase::get_controller
+    필드 쓰기 scrController::conditionalFloor
+    호출 scrController::ResetInputEventFfx
+    호출 scnGame::ReloadAssets
+    호출 scrCamera::get_instance
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Transform::set_localPosition
+    호출 UnityEngine.Quaternion::get_identity
+    호출 UnityEngine.Transform::set_rotation
+    필드 읽기 scnGame::camParent
+    호출 UnityEngine.Vector3::get_zero
+    호출 UnityEngine.Transform::set_position
+    필드 쓰기 scrCamera::followMode
+    필드 쓰기 scrCamera::zoomSize
+    호출 UnityEngine.Vector2::op_Implicit
+    필드 쓰기 scrCamera::shake
+    호출 scrCamera::SetCustomFrameRate
+    호출 scrController::EnableHallOfMirrors
+    필드 읽기 scrCamera::Bgcamstatic
+    필드 읽기 scnGame::levelData
+    호출 ADOFAI.LevelData::get_backgroundColor
+    호출 UnityEngine.Camera::set_backgroundColor
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 쓰기 ScreenTile::tileX
+    필드 쓰기 ScreenTile::tileY
+    호출 scnGame::DisableFilters
+    호출 scnGame::SetStartingBG
+    필드 읽기 scnGame::videoBG
+    호출 UnityEngine.Video.VideoPlayer::get_isPlaying
+    호출 UnityEngine.Video.VideoPlayer::Stop
+    호출 scnGame::ResetPlanetsPosition
+    정적필드 읽기 scrLivesCounter::instance
+    호출 scrLivesCounter::Reset
+    호출 ADOBase::get_isLevelEditor
+    호출 scnGame::get_paused
+    호출 scrController::TogglePauseGame
+    호출 ADOBase::get_isScnGame
+    호출 UnityEngine.GameObject::FindGameObjectsWithTag
+    호출 UnityEngine.Object::Destroy
+    호출 ADOBase::get_playerManager
+    호출 scrPlayerManager::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    필드 읽기 scrPlayer::missesOnCurrFloor
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scrController::typingLetters
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 DG.Tweening.DOTween::PlayingTweens
+    정적필드 읽기 scnGame::_isIndependentUpdateField
+    호출 System.Reflection.FieldInfo::GetValue
+    호출 DG.Tweening.TweenExtensions::Kill
+    필드 읽기 scrCamera::flashPlusRendererBg
+    호출 UnityEngine.Renderer::get_material
+    호출 UnityEngine.Color::get_clear
+    호출 UnityEngine.Material::set_color
+    필드 읽기 scrCamera::flashPlusRendererFg
+    필드 읽기 scrCamera::flashEndscreen
+    호출 scrVfxPlus::get_instance
+    호출 scrVfxPlus::Reset
+    호출 scnGame::RemakePath
+    호출 scnGame::get_floors
+    호출 제네릭 UnityEngine.Component::GetComponents
+    필드 쓰기 ffxPlusBase::triggered
+    호출 scrFloor::ResetToLevelStart
+    필드 읽기 scnGame::decManager
+    호출 scrDecorationManager::ResetDecorations
+    필드 읽기 scrController::txtLevelNameOriginalPosition
+    호출 제네릭 System.Nullable`1::get_HasValue
+    필드 읽기 scrController::txtLevelName
+    호출 UnityEngine.UI.Graphic::get_rectTransform
+    호출 제네릭 System.Nullable`1::get_Value
+    호출 UnityEngine.RectTransform::set_anchoredPosition
+    필드 읽기 scrController::originalLevelName
+    호출 UnityEngine.UI.Text::set_text
+    호출 scrVfx::get_instance
+    필드 읽기 scrVfx::currentColourScheme
+    필드 읽기 ADOFAI.LevelData::miscSettings
+    호출 ADOFAI.LevelEvent::GetColor
+    필드 쓰기 ColourScheme::colourText
+    필드 쓰기 ColourScheme::colourTextShadow
+    호출 ffxSetDefaultText::UpdateHudTexts
+    호출 ADOBase::get_conductor
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::Stop
+  ResetPlanetsPosition
+    호출 ADOBase::get_playerManager
+    호출 scrPlayerManager::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    필드 읽기 scrPlayer::planetarySystem
+    호출 scnGame::get_floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 읽기 PlanetarySystem::planetRed
+    호출 UnityEngine.Component::get_transform
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Transform::set_position
+    필드 읽기 PlanetarySystem::planetBlue
+    호출 PlanetarySystem::ResetPlanets
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scrPlayerManager::hitTextManager
+    필드 읽기 scrHitTextManager::hitTextContainer
+    호출 UnityEngine.GameObject::SetActive
+  printesp
+    호출 System.String::IsNullOrEmpty
+  OnDestroy
+    필드 읽기 scnGame::imgHolder
+    호출 TextureManager::Unload
+  .ctor
+    호출 ADOBase::.ctor
+  .cctor
+    정적필드 쓰기 scnGame::ConditionalEventTags
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Type::GetField
+    정적필드 쓰기 scnGame::_isIndependentUpdateField
+  <ApplyEventsToFloors>g__ApplyCoreEventsToFloors|49_0
+    필드 읽기 scnGame+<>c__DisplayClass49_0::floors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 읽기 scnGame+<>c__DisplayClass49_0::events
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 ADOFAI.LevelEvent::floor
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 scnGame+<>c__DisplayClass49_0::levelData
+    호출 ADOFAI.LevelData::get_bpm
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 쓰기 scrFloor::extraBeats
+    필드 읽기 scrFloor::seqID
+    정적필드 읽기 scnGame+<>c::<>9__49_1
+    정적필드 읽기 scnGame+<>c::<>9
+    호출 scnGame+<>c::<ApplyEventsToFloors>b__49_1
+    호출 제네릭 System.Predicate`1::.ctor
+    정적필드 쓰기 scnGame+<>c::<>9__49_1
+    호출 제네릭 System.Collections.Generic.List`1::FindAll
+    정적필드 읽기 scnGame+<>c::<>9__49_2
+    호출 scnGame+<>c::<ApplyEventsToFloors>b__49_2
+    호출 제네릭 System.Converter`2::.ctor
+    정적필드 쓰기 scnGame+<>c::<>9__49_2
+    호출 제네릭 제네릭 System.Collections.Generic.List`1::ConvertAll
+    호출 제네릭 System.Linq.Enumerable::Distinct
+    호출 제네릭 System.Linq.Enumerable::Count
+    호출 제네릭 System.Linq.Enumerable::ToList
+    호출 제네릭 System.Collections.Generic.List`1::Sort
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    필드 쓰기 scrFloor::isSwirl
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    필드 읽기 scrFloor::nextfloor
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scrFloor::midSpin
+    필드 읽기 scrFloor::extraBeats
+    호출 ADOFAI.LevelEvent::GetFloat
+    호출 ADOFAI.LevelEvent::GetInt
+    필드 쓰기 scrFloor::countdownTicks
+    호출 제네릭 ADOFAI.LevelEvent::TryGetAndSet
+    필드 쓰기 scrFloor::angleCorrectionType
+    필드 읽기 scrFloor::angleLength
+    호출 System.Math::Max
+    필드 읽기 scrFloor::freeroamSoundOnBeat
+    필드 읽기 scrFloor::freeroamSoundOffBeat
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 UnityEngine.Object::op_Implicit
+    필드 쓰기 scrFloor::holdLength
+    호출 System.Math::Min
+    호출 UnityEngine.Debug::Log
+    필드 읽기 scrFloor::prevfloor
+    필드 쓰기 scrFloor::numPlanets
+    필드 쓰기 scrFloor::tapsNeeded
+    필드 쓰기 scrFloor::tapsSoFar
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    호출 scrMisc::ApproximatelyFloor
+    호출 scrMisc::GetAngleMoved
+    호출 scnGame+<>c__DisplayClass49_1::.ctor
+    필드 쓰기 scnGame+<>c__DisplayClass49_1::angleOffset
+    호출 scnGame+<>c__DisplayClass49_1::<ApplyEventsToFloors>b__3
+    호출 제네릭 System.Collections.Generic.List`1::FindLast
+    호출 scnGame+<>c__DisplayClass49_1::<ApplyEventsToFloors>b__4
+    호출 제네릭 System.Collections.Generic.List`1::Find
+    호출 scnGame+<>c__DisplayClass49_1::<ApplyEventsToFloors>b__5
+    필드 읽기 scnGame+<>c__DisplayClass49_1::angleOffset
+    필드 쓰기 scrFloor::radiusScale
+    필드 쓰기 scrFloor::speed
+    필드 쓰기 scrFloor::isCCW
+    필드 쓰기 scrFloor::lengthMult
+    필드 쓰기 scrFloor::widthMult
+    호출 ADOBase::get_playerManager
+    호출 scrPlayerManager::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    필드 읽기 scrPlayer::planetarySystem
+    필드 쓰기 PlanetarySystem::maxPlanetColors
+    호출 System.Collections.IEnumerator::MoveNext
+  <ApplyEventsToFloors>g__MoveColorTrackTempValues|49_6
+    필드 읽기 scnGame+<>c__DisplayClass49_2::color1
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempColor1
+    필드 읽기 scnGame+<>c__DisplayClass49_2::color2
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempColor2
+    필드 읽기 scnGame+<>c__DisplayClass49_2::colorType
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempColorType
+    필드 읽기 scnGame+<>c__DisplayClass49_2::colorAnimDur
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempColorAnimDur
+    필드 읽기 scnGame+<>c__DisplayClass49_2::pulseType
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempPulseType
+    필드 읽기 scnGame+<>c__DisplayClass49_2::texture
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempTexture
+    필드 읽기 scnGame+<>c__DisplayClass49_2::textureScale
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempTextureScale
+    필드 읽기 scnGame+<>c__DisplayClass49_2::pulseLength
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempPulseLength
+    필드 읽기 scnGame+<>c__DisplayClass49_2::startOfColorChange
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempStartOfColorChange
+    필드 읽기 scnGame+<>c__DisplayClass49_2::outline
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempOutline
+    필드 읽기 scnGame+<>c__DisplayClass49_2::style
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempStyle
+    필드 읽기 scnGame+<>c__DisplayClass49_2::glowMult
+    필드 쓰기 scnGame+<>c__DisplayClass49_2::tempGlowMult

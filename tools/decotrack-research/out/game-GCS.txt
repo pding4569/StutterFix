@@ -1,0 +1,147 @@
+﻿== GCS
+  get_checkpointNum
+    정적필드 읽기 GCS::_checkpointNum
+  set_checkpointNum
+    정적필드 쓰기 GCS::_checkpointNum
+  isTrans
+    호출 Persistence::GetPlayerColor
+    호출 UnityEngine.Color::.ctor
+    필드 쓰기 GCS+<>c__DisplayClass50_0::customPink
+    필드 쓰기 GCS+<>c__DisplayClass50_0::customBlue
+    호출 GCS::<isTrans>g__IsPink|50_0
+    호출 GCS::<isTrans>g__IsBlue|50_1
+  isNB
+    호출 Persistence::GetPlayerColor
+    필드 읽기 PlanetColor::preset
+  get_isTester
+    호출 GCS::get_isDev
+    호출 System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray
+    정적필드 읽기 DiscordController::currentUserID
+    호출 제네릭 System.Linq.Enumerable::Contains
+  get_isDev
+    호출 UnityEngine.Application::get_isEditor
+    호출 System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray
+    정적필드 읽기 DiscordController::currentUserID
+    호출 제네릭 System.Linq.Enumerable::Contains
+    정적필드 읽기 GCS::steamBranchName
+    호출 System.String::op_Equality
+  get_allowDebug
+    호출 GCS::get_isTester
+    정적필드 읽기 GCNS::devBranches
+    정적필드 읽기 GCS::steamBranchName
+    호출 제네릭 System.Linq.Enumerable::Contains
+  get_isInternalBranch
+    정적필드 읽기 GCNS::internalBranches
+    정적필드 읽기 GCS::steamBranchName
+    호출 제네릭 System.Linq.Enumerable::Contains
+  .ctor
+    호출 System.Object::.ctor
+  .cctor
+    정적필드 쓰기 GCS::savedCheckpointNum
+    정적필드 쓰기 GCS::worldEntrance
+    정적필드 쓰기 GCS::lastLevelPlayed
+    정적필드 쓰기 GCS::lastVisitedScene
+    정적필드 쓰기 GCS::wasInCalibration
+    정적필드 쓰기 GCS::longIntroThresholdSec
+    정적필드 쓰기 GCS::customInternalUseCheckpoint
+    정적필드 쓰기 GCS::hitMarginLimit
+    정적필드 쓰기 GCS::speedTrialMode
+    정적필드 쓰기 GCS::speedTrialModeBeforePractice
+    정적필드 쓰기 GCS::currentSpeedTrial
+    정적필드 쓰기 GCS::nextSpeedRun
+    정적필드 쓰기 GCS::speedRunBeforePractice
+    정적필드 쓰기 GCS::difficulty
+    정적필드 쓰기 GCS::typingMode
+    정적필드 쓰기 GCS::practiceMode
+    정적필드 쓰기 GCS::practiceLength
+    정적필드 쓰기 GCS::practiceSpeed
+    정적필드 쓰기 GCS::transMode
+    정적필드 쓰기 GCS::customLevelPaths
+    정적필드 쓰기 GCS::loadCustomFromBundle
+    정적필드 쓰기 GCS::customLevelIndex
+    정적필드 쓰기 GCS::internalLevelName
+    정적필드 쓰기 GCS::customLevelId
+    정적필드 쓰기 GCS::seenCutscene2_1a
+    정적필드 쓰기 GCS::seenCutscene2_1b
+    정적필드 쓰기 GCS::seenCutscene3_1
+    정적필드 쓰기 GCS::seenCutscene4_2
+    정적필드 쓰기 GCS::seenCutscene4_4
+    정적필드 쓰기 GCS::seenCutscene4_6
+    정적필드 쓰기 GCS::seenCutscene4_12
+    정적필드 쓰기 GCS::seenCutsceneP_1
+    정적필드 쓰기 GCS::seenCutscene5_1
+    정적필드 쓰기 GCS::seenCutscene5_3
+    정적필드 쓰기 GCS::seenCutscene5_4
+    정적필드 쓰기 GCS::seenCutscene5_x
+    정적필드 쓰기 GCS::seenCutscene4b_1
+    정적필드 쓰기 GCS::enableCutsceneT5
+    정적필드 쓰기 GCS::banished
+    정적필드 쓰기 GCS::puzzle
+    정적필드 쓰기 GCS::staticPlanetColors
+    정적필드 쓰기 GCS::showFPS
+    정적필드 쓰기 GCS::playDeathSound
+    정적필드 쓰기 GCS::playWilhelm
+    정적필드 쓰기 GCS::editorQuickPitchedPlaying
+    정적필드 쓰기 GCS::DisableAllZooming
+    정적필드 쓰기 GCS::turnOnBenchmarkMode
+    정적필드 쓰기 GCS::levelEventTypeString
+    정적필드 쓰기 GCS::filteredEvent
+    정적필드 쓰기 GCS::FOOL_SWIRL
+    정적필드 쓰기 GCS::FOOL_JOKER
+    정적필드 쓰기 GCS::lofiVersion
+    정적필드 쓰기 GCS::webVersion
+    정적필드 쓰기 GCS::bb
+    정적필드 쓰기 GCS::d_vibrate
+    정적필드 쓰기 GCS::d_dontShowTitles
+    정적필드 쓰기 GCS::d_recording
+    정적필드 쓰기 GCS::d_forceGoldPlanets
+    정적필드 쓰기 GCS::d_stationary
+    정적필드 쓰기 GCS::d_kong
+    정적필드 쓰기 GCS::d_newgrounds
+    정적필드 쓰기 GCS::d_booth
+    정적필드 쓰기 GCS::d_drumcontroller
+    정적필드 쓰기 GCS::d_boothDisablePossibleMessUpButtons
+    정적필드 쓰기 GCS::d_judges
+    정적필드 쓰기 GCS::d_hitsounds
+    정적필드 쓰기 GCS::d_oldConductor
+    정적필드 쓰기 GCS::d_webglConductor
+    정적필드 쓰기 GCS::webHasSetResolution
+    정적필드 쓰기 GCS::streamMP3Loading
+    정적필드 쓰기 GCS::d_customhitmargins
+    정적필드 쓰기 GCS::HITMARGIN_COUNTED
+    정적필드 쓰기 GCS::SupportedAudioFiles
+    정적필드 쓰기 GCS::SupportedImageFiles
+    정적필드 쓰기 GCS::SupportedVideoFiles
+    정적필드 쓰기 GCS::levelZipExtensions
+    정적필드 쓰기 GCS::levelTextExtensions
+    정적필드 읽기 GCS::levelTextExtensions
+    정적필드 읽기 GCS::levelZipExtensions
+    호출 제네릭 System.Linq.Enumerable::Concat
+    호출 제네릭 System.Linq.Enumerable::ToArray
+    정적필드 쓰기 GCS::levelExtensions
+    호출 System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray
+    정적필드 쓰기 GCS::SpecialKeys
+    정적필드 쓰기 GCS::LevelSelectKeys
+    정적필드 쓰기 GCS::CLSKeys
+    정적필드 쓰기 GCS::joystickButtons
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Enum::GetValues
+    정적필드 쓰기 GCS::HitMarginTypes
+    정적필드 쓰기 GCS::InvisibleHitMargins
+    호출 제네릭 System.Linq.Enumerable::Cast
+    호출 System.Linq.Enumerable::Max
+    정적필드 쓰기 GCS::HighestDifficultyValue
+  <isTrans>g__IsPink|50_0
+    필드 읽기 PlanetColor::preset
+    필드 읽기 PlanetColor::customColor
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    필드 읽기 GCS+<>c__DisplayClass50_0::customPink
+    호출 scrMisc::ColorsAreCloseEnough
+  <isTrans>g__IsBlue|50_1
+    필드 읽기 PlanetColor::preset
+    필드 읽기 PlanetColor::customColor
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    필드 읽기 GCS+<>c__DisplayClass50_0::customBlue
+    호출 scrMisc::ColorsAreCloseEnough
