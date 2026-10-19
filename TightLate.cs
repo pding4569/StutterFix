@@ -34,6 +34,7 @@ namespace StutterFix
         }
         internal static bool SkipSame = true;   // 모드 폴더 tightskip-off 파일로 끔
         internal static bool EulerMemo = true;   // 모드 폴더 eulermemo-off 파일로 끔 (같은 각도의 Quaternion.Euler 결과 재사용, 순수 함수라 비트 동일)
+        internal static long parCalls, parMulNonZero, parMulOne, parOffNonZero, camMoved; private static Vector3 lastCamSeen;
         private static bool eulerValid; private static int eulerBits; private static Quaternion eulerQ; internal static long eulerCalls, eulerHits;
         internal static long writes, skipPos, skipRot, skipScale;
         private static readonly Dictionary<scrDecoration, Entry> records = new Dictionary<scrDecoration, Entry>(new RefEq());
@@ -331,6 +332,9 @@ namespace StutterFix
         private static void Apply(Entry e, scrDecoration d, scrParallax p, Transform pivot, Vector3 camera,
             Vector2 position, float angle, Vector2 scaling)
         {
+            parCalls++;
+            if (p.multiplier_x != 0f || p.multiplier_y != 0f) { parMulNonZero++; if (p.multiplier_x == 1f && p.multiplier_y == 1f) parMulOne++; }
+            if (d.parallaxOffset.x != 0f || d.parallaxOffset.y != 0f) parOffNonZero++;
             Vector2 pos = position + Vector2.zero;
             Vector3 pos3 = pos;
             start(p) = pos3;
@@ -452,7 +456,7 @@ namespace StutterFix
             + " batch/last=" + lastProcessed + " processed=" + processed + " frames=" + frames + " invalidations=" + invalidations
             + " loop-ms/frame=" + (frames == 0 ? 0 : loopTicks * 1000.0 / Stopwatch.Frequency / frames).ToString("F4")
             + " manager-frames=" + managerFrames + " manager-ms/frame=" + (managerFrames == 0 ? 0 : managerTicks * 1000.0 / Stopwatch.Frequency / managerFrames).ToString("F4")
-            + " writes=" + writes + " skipped(pos/rot/scale)=" + skipPos + "/" + skipRot + "/" + skipScale + " skipSame=" + SkipSame + " eulerMemo=" + EulerMemo + " euler(hit/calls)=" + eulerHits + "/" + eulerCalls
+            + " writes=" + writes + " skipped(pos/rot/scale)=" + skipPos + "/" + skipRot + "/" + skipScale + " skipSame=" + SkipSame + " parallax(calls/mulNonZero/mulOne/offsetNonZero)=" + parCalls + "/" + parMulNonZero + "/" + parMulOne + "/" + parOffNonZero + " eulerMemo=" + EulerMemo + " euler(hit/calls)=" + eulerHits + "/" + eulerCalls
             + " verify=" + Verify + " checked=" + checks + " mismatch=" + mismatches + " first=" + first
             + " compatibility=" + compatibility
             + " excluded(type/hitbox-mask-mesh/hidden/follow-stick-lock/parallax/parent/rejected)=" + string.Join("/", reasons);
