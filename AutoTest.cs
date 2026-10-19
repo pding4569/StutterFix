@@ -567,7 +567,7 @@ namespace StutterFix
                     }
                 case "unload":
                     { var usw = System.Diagnostics.Stopwatch.StartNew(); var op = Resources.UnloadUnusedAssets(); Log("에셋 정리 요청 (" + usw.ElapsedMilliseconds + "ms)"); return true; }
-                case "census":
+                case "objcensus":
                     LeakGuard.CensusNow(arg.Length > 0 ? arg : "자동 시험");
                     { var all = Resources.FindObjectsOfTypeAll<scrFloor>(); int act = 0; foreach (var f in all) if (f.gameObject.activeInHierarchy) act++; Log("타일 오브젝트 전체 " + all.Length + "개(켜진 것 " + act + "), 지금 맵 목록 " + (ADOBase.lm != null ? ADOBase.lm.listFloors.Count : -1) + "개, 박자 알림 목록 " + (scrConductor.instance != null ? scrConductor.instance.onBeats.Count : -1) + "개"); }
                     return true;
