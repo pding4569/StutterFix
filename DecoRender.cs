@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,6 +23,7 @@ namespace StutterFix
         static string lastSelection = "not run", lastChanges = "none";
         static string lastOrders = "not run", lastColorFormat = "not run";
         static string lastKeys = "not run";
+        static string lastRuns = "not run";
         static readonly AccessTools.FieldRef<scrVisualDecoration, bool> MeshOn =
             AccessTools.FieldRefAccess<scrVisualDecoration, bool>("meshRendererEnabled");
         const int Padding = 4;
@@ -69,7 +70,7 @@ namespace StutterFix
         }
         sealed class KeySelection
         {
-            internal int Total, Eligible, Renderers, Block, MinMaterial, MaxMaterial;
+            internal int Total, Eligible, Renderers;
             internal string Rejected;
             internal readonly Dictionary<string, int> Reasons = new Dictionary<string, int>();
         }
@@ -79,6 +80,9 @@ namespace StutterFix
             internal MeshRenderer Renderer;
             internal Mesh Mesh;
             internal Material Material;
+            internal Texture OriginalTexture, AtlasTexture;
+            internal bool Borrowed;
+            internal string RunKey;
             internal readonly List<Item> Items = new List<Item>();
             internal readonly List<Vector3> Positions = new List<Vector3>();
             internal readonly List<Color> Colors = new List<Color>();
@@ -91,6 +95,7 @@ namespace StutterFix
         readonly List<Item> items = new List<Item>();
         readonly List<Atlas> atlases = new List<Atlas>();
         readonly List<Group> groups = new List<Group>();
+        readonly HashSet<int> ownRenderers = new HashSet<int>();
         readonly MaterialPropertyBlock block = new MaterialPropertyBlock();
         readonly Dictionary<int, int> cameras = new Dictionary<int, int>();
         scrDecorationManager manager;
@@ -104,8 +109,8 @@ namespace StutterFix
         bool stopping, comparing, initialized, startedPlaying;
         string outputDir;
         bool observing, floatColor;
-        string edge = "high", matid = "none";
-        const int MaterialAttempts = 64;
+        int movingCandidates, unmanagedBreaks;
+        readonly Dictionary<string, int> observationChanges = new Dictionary<string, int>();
         int observeTarget, observeFrames, observeFrame = -1, detailEvents, selected;
         long atlasBytes;
         readonly Dictionary<string, int> excluded = new Dictionary<string, int>();
@@ -139,7 +144,7 @@ namespace StutterFix
             if (arg == "state") { Log(State()); return true; }
             var args = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             int frames = 20;
-            string edgeArg = "high", matArg = "none"; bool floatArg = false, validArgs = true;
+            bool floatArg = false, validArgs = true;
             int option = 1;
             int parsedFrames;
             if (args.Length > 1 && int.TryParse(args[1], out parsedFrames)) { frames = parsedFrames; option = 2; }
@@ -147,15 +152,10 @@ namespace StutterFix
                 switch (args[n])
                 {
                     case "floatcolor": floatArg = true; break;
-                    case "edge=low": edgeArg = "low"; break;
-                    case "edge=high": edgeArg = "high"; break;
-                    case "matid=above": matArg = "above"; break;
-                    case "matid=below": matArg = "below"; break;
-                    case "matid=none": matArg = "none"; break;
                     default: validArgs = false; break;
                 }
             if (args.Length == 0 || args[0] != "on" || !validArgs || frames < 1 || frames > 600)
-            { Log("decorender on [frames=20,1..600] [floatcolor] [edge=low|high(default)] [matid=above|below|none(default)]|off|compare|state"); return true; }
+            { Log("decorender on [frames=20,1..600] [floatcolor]|off|compare|state"); return true; }
             if (onWaiting)
             {
                 if (session && session.observing) return false;
@@ -168,7 +168,7 @@ namespace StutterFix
                 var go = new GameObject("StutterFix.DecoRender") { hideFlags = HideFlags.HideAndDontSave };
                 session = go.AddComponent<DecoRender>();
                 session.observeTarget = frames;
-                session.floatColor = floatArg; session.edge = edgeArg; session.matid = matArg;
+                session.floatColor = floatArg;
                 session.Begin(modDir);
                 onWaiting = session.observing;
                 lastStop = "none";
@@ -210,6 +210,7 @@ namespace StutterFix
             if (t.wrapModeU != TextureWrapMode.Clamp || t.wrapModeV != TextureWrapMode.Clamp) return "wrap";
             if (t.width > 2048 || t.height > 2048) return "large-texture";
             if (r.drawMode != SpriteDrawMode.Simple) return "other";
+            if (r.spriteSortPoint != SpriteSortPoint.Center) return "sprite-sort-point";
             return null;
         }
 
@@ -226,9 +227,9 @@ namespace StutterFix
             lastOrders = "pending-observation";
             lastKeys = "observing";
             lastColorFormat = floatColor ? "Float32x4(explicit-buffer)" : "UNorm8x4(Color32)";
-            foreach (var key in new[] { "split-order", "repeat-not-one", "point-sampling", "pixel-snap", "maintex-st", "shader", "special-keyword", "wrap", "large-texture", "static", "mask-hitbox-mesh", "other", "material-unsupported", "atlas-budget", "changed-during-observation" }) { excluded[key] = 0; excludedKeys[key] = 0; }
+            foreach (var key in new[] { "repeat-not-one", "point-sampling", "pixel-snap", "maintex-st", "shader", "special-keyword", "wrap", "large-texture", "static", "mask-hitbox-mesh", "other", "material-unsupported", "atlas-budget", "changed-during-observation" }) { excluded[key] = 0; excludedKeys[key] = 0; }
             excludedKeys["changed"] = 0;
-            foreach (var reason in new[] { "not-edge-block", "missing-material" }) { excluded[reason] = 0; excludedKeys[reason] = 0; }
+            foreach (var field in new[] { "sprite", "material", "sortingOrder", "sortingLayer", "mask", "other" }) observationChanges[field] = 0;
             foreach (var key in new[] { "sprite", "material", "material-properties", "sortingOrder", "sortingLayer", "mask", "destroyed", "renderer-owner", "unityLayer", "sortingGroup", "drawMode", "repeat", "wrap", "restored-items", "restored-keys" }) changes[key] = 0;
             int index = 0;
             var visuals = new HashSet<scrVisualDecoration>();
@@ -270,16 +271,9 @@ namespace StutterFix
 
         void FinishObservation()
         {
-            SelectEdgeBlocks();
-            RejectStaticKeys();
+            movingCandidates = items.FindAll(i => i.Moved).Count;
+            items.RemoveAll(i => { if (i.Moved) return false; Count(excluded, "static"); return true; });
             FinishSelection();
-        }
-        void RejectStaticKeys()
-        {
-            var moving = new HashSet<string>();
-            foreach (var item in items) if (item.Moved) moving.Add(OrderKey(item));
-            foreach (var key in new List<string>(keys.Keys))
-                if (keys[key].Rejected == null && !moving.Contains(key)) RejectKey(key, "static");
         }
         void FinishSelection()
         {
@@ -312,7 +306,7 @@ namespace StutterFix
                 Log("budget exclude texture=" + largest.GetInstanceID() + " size=" + largest.width + "x" + largest.height
                     + " decorations=" + removed + " planned-bytes=" + atlasBytes + " source-pixels=" + sourcePixels);
             }
-            ExcludeUnsafeOrders();
+
             // Keep the already planned page coordinates, but do not allocate unused textures/pages.
             var used = new HashSet<Image>();
             foreach (var item in items) used.Add(item.Image);
@@ -337,65 +331,15 @@ namespace StutterFix
             foreach (var item in items)
             { item.Vertices = item.Sprite.vertices; item.Triangles = item.Sprite.triangles; item.UV = item.Sprite.uv; vertexCount += item.Vertices.Length; }
             foreach (var atlas in atlases) BuildAtlas(atlas);
-            var map = new Dictionary<string, Group>();
-            foreach (var item in items)
-            {
-                string key = GroupKey(item);
-                Group g;
-                if (!map.TryGetValue(key, out g))
-                {
-                    g = new Group(); groups.Add(g); map.Add(key, g); // Register before allocations, for failure cleanup.
-                    g.Object = new GameObject("decorender-group-" + (groups.Count - 1)) { hideFlags = HideFlags.HideAndDontSave, layer = item.UnityLayer };
-                    g.Renderer = g.Object.AddComponent<MeshRenderer>(); g.Renderer.enabled = false;
-                    g.Mesh = new Mesh { name = "DecoRender world vertices", indexFormat = IndexFormat.UInt32 };
-                    g.Mesh.MarkDynamic(); g.Object.AddComponent<MeshFilter>().sharedMesh = g.Mesh;
-                    g.Material = CreateGroupMaterial(item);
-                    MaterialState(item.R, g.Material);
-                    g.Material.mainTexture = item.Image.Atlas.Texture;
-                    if (g.Material.shader.name == "Sprites/Tile")
-                    {
-                        g.Material.SetFloat("RepeatX", 1); g.Material.SetFloat("RepeatY", 1);
-                        g.Material.SetFloat("PixelSnap", 0);
-                    }
-                    g.Material.enableInstancing = false; // Use uniform _RendererColor, not sprite instancing arrays.
-                    if (g.Material.HasProperty("_RendererColor")) g.Material.SetColor("_RendererColor", Color.white);
-                    if (g.Material.HasProperty("_Flip")) g.Material.SetVector("_Flip", new Vector4(1, 1, 1, 1));
-                    g.Renderer.sharedMaterial = g.Material;
-                    g.Renderer.sortingLayerID = item.Layer; g.Renderer.sortingOrder = item.Order;
-                    g.Renderer.shadowCastingMode = ShadowCastingMode.Off; g.Renderer.receiveShadows = false;
-                    g.Renderer.lightProbeUsage = LightProbeUsage.Off; g.Renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
-                    Log("group=" + (groups.Count - 1) + " layerID=" + item.Layer + " order=" + item.Order
-                        + " unityLayer=" + item.UnityLayer + " atlas=" + atlases.IndexOf(item.Image.Atlas)
-                        + " shader=" + item.Source.shader.name + " keywords=" + string.Join(",", item.Source.shaderKeywords)
-                        + " queue=" + item.Source.renderQueue + " passes=" + item.Source.passCount
-                        + " _Color=" + (g.Material.HasProperty("_Color") ? g.Material.GetColor("_Color").ToString("R") : "absent")
-                        + " vertex-color=SpriteRenderer.color _RendererColor=white-if-declared; Tile vertex input=float4(saved D3D11 asm); color uniforms=미확인");
-                }
-                g.Items.Add(item);
-            }
-            // Supply nonempty topology before the first camera cull. Positions are placeholders;
-            // the replacement stays disabled until PreCull, then receives world positions in PreRender.
-            foreach (var g in groups)
-            {
-                // Frozen back-to-front order: signed material instance ID, then renderer ID.
-                g.Items.Sort(CompareItems);
-                foreach (var i in g.Items)
-                {
-                    int offset = g.Positions.Count;
-                    foreach (var v in i.Vertices) { g.Positions.Add(Vector3.zero); g.Colors.Add(Color.clear); g.UV.Add(Vector2.zero); }
-                    foreach (var t in i.Triangles) g.Indices.Add(offset + t);
-                }
-                UploadMesh(g, false);
-            }
+            RebuildRuns(mainCamera);
             observing = false; selected = items.Count;
             lastSelection = "selected=" + selected + " excluded={" + Counts(excluded) + "} source-textures=" + images.Count
                 + " atlas-bytes=" + atlasBytes + "/" + AtlasBudget;
             Log(lastSelection);
-            Log("selected=" + items.Count + " source textures=" + images.Count
-                + "; order=fixed back-to-front ascending original sharedMaterial.GetInstanceID(),then Renderer.GetInstanceID()"
-                + "; instanceID tie is an experimental heuristic, NOT Unity's guaranteed internal tie order"
-                + "; edge=" + edge + "; matid=" + matid + "; split-order exclusion; vertex-color=" + lastColorFormat
-                + "; cameras=" + Camera.allCamerasCount);
+            Log("on " + RunState() + "; order=queue ascending,distance descending,signed material-ID ascending(back-to-front)"
+                + "; direction-evidence=decorender-5 CSV analysis materials 50/50,49/50,50/50; raw CSV currently unavailable"
+                + "; borrowed source material; vertex-color=" + lastColorFormat);
+
         }
 
         void RegisterDecoration(string key, string reason)
@@ -412,14 +356,9 @@ namespace StutterFix
             if (selection.Rejected != null) return;
             selection.Rejected = reason; Count(excludedKeys, reason);
             int removed = items.RemoveAll(i => OrderKey(i) == key);
-            if (reason != "not-edge-block")
-            {
-                excluded[reason] += removed;
-                selection.Reasons[reason] = removed;
-            }
+            excluded[reason] += removed;
+            selection.Reasons[reason] = removed;
         }
-        static int CompareItems(Item a, Item b)
-        { int c = a.MaterialId.CompareTo(b.MaterialId); return c != 0 ? c : a.Id.CompareTo(b.Id); }
         static bool SourceOff(Item i) => i.Hidden ? i.WasOff : i.R.forceRenderingOff;
         static bool SourceVisible(Item i) => i.R.enabled && i.R.gameObject.activeInHierarchy
             && !SourceOff(i) && i.R.color.a != 0;
@@ -448,110 +387,174 @@ namespace StutterFix
             {
                 var k = keys[key]; int count; perKey.TryGetValue(key, out count);
                 detail.Append('[').Append(key).Append(":candidates=").Append(k.Eligible)
-                    .Append(",renderers=").Append(k.Renderers).Append(",edge-block=").Append(k.Block)
+                    .Append(",renderers=").Append(k.Renderers)
                     .Append(",managed=").Append(observing ? 0 : count).Append(",reason=").Append(k.Rejected ?? "managed")
                     .Append(",reasons={").Append(Counts(k.Reasons)).Append("}]");
             }
-            return "edge=" + edge + " matid=" + matid + " managed-keys=" + (observing ? 0 : managed.Count) + " managed-visible=" + (observing ? 0 : visible)
+            return "managed-keys=" + (observing ? 0 : managed.Count) + " managed-visible=" + (observing ? 0 : visible)
                 + " managed-hidden=" + (observing ? 0 : items.Count - visible) + " excluded-keys=" + rejected
                 + " excluded-key-reasons={" + Counts(excludedKeys) + "} emitted-vertices=" + vertices + " keys=" + detail;
         }
 
         static string OrderKey(int layer, int order) => layer + "/" + order;
         static string OrderKey(Item item) => OrderKey(item.Layer, item.Order);
-        string GroupKey(Item item) => OrderKey(item) + "/" + atlases.IndexOf(item.Image.Atlas)
-            + "/" + item.UnityLayer + "/" + item.Signature;
+        string GroupKey(Item i) => OrderKey(i) + "/" + atlases.IndexOf(i.Image.Atlas)
+            + "/" + i.UnityLayer + "/" + i.Signature + "/z=" + i.R.transform.position.z.ToString("R", CultureInfo.InvariantCulture);
 
-        void SelectEdgeBlocks()
+        static float SortDistance(Renderer r, Camera camera)
         {
-            var byRenderer = new Dictionary<int, Item>();
-            foreach (var item in items) byRenderer[item.Id] = item;
-            var all = new Dictionary<string, List<Renderer>>();
-            // Resources also sees scene renderers carrying DontSave; exclude prefab/asset objects.
-            var renderers = Resources.FindObjectsOfTypeAll<Renderer>();
-            foreach (var r in renderers)
+            var mode = camera.transparencySortMode;
+            if (mode == TransparencySortMode.Default) mode = GraphicsSettings.transparencySortMode;
+            if (mode == TransparencySortMode.CustomAxis)
+                return Vector3.Dot(r.bounds.center, camera.transparencySortMode == TransparencySortMode.Default
+                    ? GraphicsSettings.transparencySortAxis : camera.transparencySortAxis);
+            return mode == TransparencySortMode.Perspective || (mode == TransparencySortMode.Default && !camera.orthographic)
+                ? Vector3.Distance(r.bounds.center, camera.transform.position)
+                : Vector3.Dot(r.bounds.center - camera.transform.position, camera.transform.forward);
+        }
+        static void Borrow(Group g, bool on)
+        {
+            if (!g.Material || g.Borrowed == on) return;
+            if (on) { g.OriginalTexture = g.Material.mainTexture; g.Material.mainTexture = g.AtlasTexture; }
+            else g.Material.mainTexture = g.OriginalTexture;
+            g.Borrowed = on;
+        }
+        static void ReleaseGroup(Group g)
+        {
+            if (g.Renderer) g.Renderer.enabled = false;
+            Borrow(g, false);
+            if (g.Object) Destroy(g.Object);
+            if (g.Mesh) Destroy(g.Mesh);
+            // Material belongs to the game. Never destroy it.
+        }
+        Group CreateRun(List<Item> members, string key)
+        {
+            var i = members[0];
+            var g = new Group { Material = i.Source, AtlasTexture = i.Image.Atlas.Texture, RunKey = key };
+            groups.Add(g); // Failure cleanup owns the group before any allocations.
+            g.Items.AddRange(members);
+            g.Object = new GameObject("decorender-run") { hideFlags = HideFlags.HideAndDontSave, layer = i.UnityLayer };
+            g.Renderer = g.Object.AddComponent<MeshRenderer>(); g.Renderer.enabled = false;
+            ownRenderers.Add(g.Renderer.GetInstanceID()); // Keep IDs through deferred Destroy this frame.
+            g.Mesh = new Mesh { name = "DecoRender run", indexFormat = IndexFormat.UInt32 };
+            g.Mesh.MarkDynamic(); g.Object.AddComponent<MeshFilter>().sharedMesh = g.Mesh;
+            g.Renderer.sharedMaterial = g.Material;
+            g.Renderer.sortingLayerID = i.Layer; g.Renderer.sortingOrder = i.Order;
+            g.Renderer.shadowCastingMode = ShadowCastingMode.Off; g.Renderer.receiveShadows = false;
+            g.Renderer.lightProbeUsage = LightProbeUsage.Off; g.Renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
+            // Keep game material properties intact. Sprite-specific uniforms and effective MPB
+            // values go on this renderer only; the material ID remains the source ID.
+            i.R.GetPropertyBlock(block);
+            block.SetColor("_RendererColor", Color.white); block.SetVector("_Flip", new Vector4(1, 1, 1, 1));
+            block.SetTexture("_MainTex", g.AtlasTexture);
+            g.Renderer.SetPropertyBlock(block);
+            foreach (var member in members)
             {
-                if (!r.gameObject.scene.IsValid() || !r.gameObject.scene.isLoaded) continue;
+                int offset = g.Positions.Count;
+                foreach (var v in member.Vertices) { g.Positions.Add(Vector3.zero); g.Colors.Add(Color.clear); g.UV.Add(Vector2.zero); }
+                foreach (var t in member.Triangles) g.Indices.Add(offset + t);
+            }
+            UploadMesh(g, false); // Nonempty topology must exist before the first cull.
+            return g;
+        }
+        void RebuildRuns(Camera camera)
+        {
+            // Re-audit even hidden external renderers: they can move/change sorting or be created.
+            var old = new List<Group>(groups);
+            var all = new Dictionary<string, List<Renderer>>();
+            var uses = new Dictionary<int, int>();
+            var unsafeKeys = new HashSet<string>();
+            foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+            {
+                if (!r.gameObject.scene.IsValid() || !r.gameObject.scene.isLoaded || ownRenderers.Contains(r.GetInstanceID())) continue;
+                foreach (var m in r.sharedMaterials) if (m) { int n; uses.TryGetValue(m.GetInstanceID(), out n); uses[m.GetInstanceID()] = n + 1; }
+                // A SortingGroup sorts at its own key, which may differ from every child key.
+                foreach (var sg in r.GetComponentsInParent<SortingGroup>(true))
+                    unsafeKeys.Add(OrderKey(sg.sortingLayerID, sg.sortingOrder));
                 string key = OrderKey(r.sortingLayerID, r.sortingOrder);
                 if (!keys.ContainsKey(key)) continue;
-                List<Renderer> list;
-                if (!all.TryGetValue(key, out list)) all[key] = list = new List<Renderer>();
+                List<Renderer> list; if (!all.TryGetValue(key, out list)) all[key] = list = new List<Renderer>();
                 list.Add(r);
             }
-            var keep = new HashSet<int>();
-            foreach (var pair in keys)
+            var candidates = new Dictionary<int, Item>();
+            // A material shared with any other renderer is unsafe to lend, even outside this key.
+            for (int n = items.Count - 1; n >= 0; n--)
             {
-                var k = pair.Value; List<Renderer> list;
-                if (!all.TryGetValue(pair.Key, out list) || k.Rejected != null) continue;
-                k.Renderers = list.Count;
-                if (list.Exists(r => !r.sharedMaterial))
-                { RejectKey(pair.Key, "missing-material"); continue; }
-                list.Sort((x, y) => x.sharedMaterial.GetInstanceID().CompareTo(y.sharedMaterial.GetInstanceID()));
-                // Material ties have no proven renderer order. Consume the entire material bucket
-                // only if every renderer in it is eligible; otherwise it is a barrier in both directions.
-                int pos = edge == "low" ? 0 : list.Count - 1, step = edge == "low" ? 1 : -1;
-                while (pos >= 0 && pos < list.Count)
+                var i = items[n]; int count;
+                if (!uses.TryGetValue(i.MaterialId, out count) || count != 1)
                 {
-                    int id = list[pos].sharedMaterial.GetInstanceID(), end = pos;
-                    bool eligible = true;
-                    while (end >= 0 && end < list.Count && list[end].sharedMaterial.GetInstanceID() == id)
-                    { eligible &= byRenderer.ContainsKey(list[end].GetInstanceID()); end += step; }
-                    if (!eligible) break;
-                    for (; pos != end; pos += step)
+                    RestoreSource(i); items.RemoveAt(n);
+                    if (i.Vertices != null) vertexCount -= i.Vertices.Length;
+                    Count(excluded, "shared-material"); continue;
+                }
+                candidates[i.Id] = i;
+            }
+            var plans = new List<List<Item>>(); unmanagedBreaks = 0;
+            foreach (var pair in all)
+            {
+                var list = pair.Value; keys[pair.Key].Renderers = list.Count;
+                // Unknown submesh queues or SortingGroup ownership cannot be represented by
+                // this renderer-level comparator. Restore candidates individually in this key.
+                if (unsafeKeys.Contains(pair.Key) || list.Exists(r => !r.sharedMaterial || r.sharedMaterials.Length != 1 || r.GetComponentInParent<SortingGroup>()))
+                {
+                    for (int n = items.Count - 1; n >= 0; n--) if (OrderKey(items[n]) == pair.Key)
                     {
-                        keep.Add(list[pos].GetInstanceID()); k.Block++;
-                        if (k.Block == 1) k.MinMaterial = k.MaxMaterial = id;
-                        else { k.MinMaterial = Math.Min(k.MinMaterial, id); k.MaxMaterial = Math.Max(k.MaxMaterial, id); }
+                        var i = items[n]; RestoreSource(i); items.RemoveAt(n);
+                        if (i.Vertices != null) vertexCount -= i.Vertices.Length;
+                        Count(excluded, "unsupported-order");
                     }
+                    continue;
+                }
+                list.Sort((a,b) => {
+                    int c = (a.sharedMaterial ? a.sharedMaterial.renderQueue : int.MinValue).CompareTo(b.sharedMaterial ? b.sharedMaterial.renderQueue : int.MinValue);
+                    if (c == 0) c = SortDistance(b, camera).CompareTo(SortDistance(a, camera));
+                    if (c == 0) c = (a.sharedMaterial ? a.sharedMaterial.GetInstanceID() : 0).CompareTo(b.sharedMaterial ? b.sharedMaterial.GetInstanceID() : 0);
+                    return c != 0 ? c : a.GetInstanceID().CompareTo(b.GetInstanceID());
+                });
+                List<Item> run = null; bool gap = false, hadRun = false;
+                foreach (var r in list)
+                {
+                    Item i;
+                    if (!candidates.TryGetValue(r.GetInstanceID(), out i)) { if (hadRun) gap = true; run = null; continue; }
+                    if (gap) { unmanagedBreaks++; gap = false; }
+                    // Different pages, z, queues, Unity layers or effective uniforms also split a run.
+                    var mode = camera.transparencySortMode == TransparencySortMode.Default ? GraphicsSettings.transparencySortMode : camera.transparencySortMode;
+                    var axis = mode == TransparencySortMode.CustomAxis
+                        ? (camera.transparencySortMode == TransparencySortMode.Default ? GraphicsSettings.transparencySortAxis : camera.transparencySortAxis)
+                        : camera.transform.forward;
+                    bool merge = mode != TransparencySortMode.Perspective && (mode != TransparencySortMode.Default || camera.orthographic)
+                        && axis.x == 0 && axis.y == 0;
+                    if (!merge || run == null || GroupKey(run[0]) != GroupKey(i) || SortDistance(run[0].R, camera) != SortDistance(r, camera))
+                    { run = new List<Item>(); plans.Add(run); }
+                    run.Add(i); hadRun = true;
                 }
             }
-            for (int n = items.Count - 1; n >= 0; n--)
-                if (!keep.Contains(items[n].Id))
-                { Count(excluded, "not-edge-block"); Count(keys[OrderKey(items[n])].Reasons, "not-edge-block"); items.RemoveAt(n); }
-            foreach (var pair in keys)
-                if (pair.Value.Rejected == null && pair.Value.Block == 0) RejectKey(pair.Key, "not-edge-block");
-            lastOrders = "scan-renderers=" + renderers.Length + " edge=" + edge
-                + "; loaded-scene-only; inactive/disabled/forceOff/alpha0/DontSave included; equal-material mixed bucket stops block";
-            Log("order-audit " + lastOrders);
-        }
-
-        void ExcludeUnsafeOrders()
-        {
-            // Multiple groups cannot preserve the block's internal order with one sorting key.
-            var planned = new Dictionary<string, HashSet<string>>();
-            foreach (var i in items)
+            var used = new HashSet<Group>();
+            foreach (var plan in plans)
             {
-                string key = OrderKey(i); HashSet<string> set;
-                if (!planned.TryGetValue(key, out set)) planned[key] = set = new HashSet<string>();
-                set.Add(GroupKey(i));
+                string key = GroupKey(plan[0]); Group match = null;
+                foreach (var g in old)
+                {
+                    if (used.Contains(g) || g.RunKey != key || g.Items.Count != plan.Count) continue;
+                    bool same = true; for (int n = 0; n < plan.Count; n++) same &= ReferenceEquals(g.Items[n], plan[n]);
+                    if (same) { match = g; break; }
+                }
+                if (match == null) match = CreateRun(plan, key);
+                used.Add(match);
             }
-            foreach (var pair in planned) if (pair.Value.Count > 1) RejectKey(pair.Key, "split-order");
-            foreach (var pair in keys)
-                Log("key-selection key=" + pair.Key + " total=" + pair.Value.Total + " candidates=" + pair.Value.Eligible
-                    + " renderers=" + pair.Value.Renderers + " edge-block=" + pair.Value.Block
-                    + " material-min=" + pair.Value.MinMaterial + " material-max=" + pair.Value.MaxMaterial
-                    + " reason=" + (pair.Value.Rejected ?? "managed") + " reasons={" + Counts(pair.Value.Reasons) + "}");
+            foreach (var g in old) if (!used.Contains(g)) { ReleaseGroup(g); groups.Remove(g); }
+            // Original memberships on unaffected runs and their material instances are retained.
+            lastOrders = "queue ascending; distance descending; signed material-ID ascending=back-to-front; hidden renderers included; per-camera live audit";
         }
-
-        Material CreateGroupMaterial(Item item)
+        string RunState()
         {
-            var k = keys[OrderKey(item)]; Material result = null;
-            int attempts = 0; bool matched = false;
-            for (; attempts < MaterialAttempts; )
-            {
-                if (result) DestroyImmediate(result);
-                result = new Material(item.Source) { name = "DecoRender atlas material", hideFlags = HideFlags.HideAndDontSave };
-                attempts++;
-                int id = result.GetInstanceID();
-                matched = matid == "none" || (matid == "above" ? id > k.MaxMaterial : id < k.MinMaterial);
-                if (matched) break;
-            }
-            int actual = result.GetInstanceID();
-            Log("group-material key=" + OrderKey(item) + " requested=" + matid + " attempts=" + attempts + "/" + MaterialAttempts
-                + " matched=" + matched + " new-Material(source)-id=" + actual + " block-min=" + k.MinMaterial
-                + " block-max=" + k.MaxMaterial + " position=" + (actual < k.MinMaterial ? "below" : actual > k.MaxMaterial ? "above" : "inside")
-                + (matched ? "" : "; placement FAILED; retaining last material for explicit experiment"));
-            return result;
+            int one = 0, small = 0, medium = 0, large = 0; var managedKeys = new HashSet<string>();
+            foreach (var g in groups) { int n = g.Items.Count; if (n == 1) one++; else if (n <= 5) small++; else if (n <= 20) medium++; else large++; }
+            foreach (var i in items) managedKeys.Add(OrderKey(i));
+            return "moving-candidates=" + movingCandidates + " runs=" + groups.Count + " taken=" + (observing ? 0 : items.Count)
+                + " average-run=" + F((double)items.Count / Math.Max(1, groups.Count))
+                + " run-sizes={1=" + one + " 2~5=" + small + " 6~20=" + medium + " 21+=" + large + "} unmanaged-breaks=" + unmanagedBreaks
+                + " keys=" + managedKeys.Count + " observation-change-fields={" + Counts(observationChanges) + "}";
         }
 
         void UploadMesh(Group group, bool bounds)
@@ -783,7 +786,9 @@ namespace StutterFix
             try
             {
                 if (!ValidSession()) { Stop("pre-cull transition"); return; }
+                foreach (var g in groups) Borrow(g, false);
                 PruneChanged();
+                RebuildRuns(camera);
                 // Unity culls BEFORE onPreRender. Register current source bounds and enable the
                 // replacement before that cull, including the very first frame. Vertex transforms
                 // are still sampled later, exclusively in onPreRender after game LateUpdate.
@@ -842,13 +847,14 @@ namespace StutterFix
         bool Changed(Item i, string field, object before, object after)
         {
             Count(changes, field);
+            if (observing) Count(observationChanges, observationChanges.ContainsKey(field) ? field : "other");
             if (detailEvents++ < DetailLimit)
                 Log("change index=" + i.Index + " renderer=" + i.Id + " field=" + field + " before={" + before + "} after={" + after + "}");
             return true;
         }
         void PruneChanged()
         {
-            var changedKeys = new HashSet<string>();
+            var removed = new List<Item>();
             foreach (var i in items)
             {
                 bool remove = false;
@@ -867,6 +873,7 @@ namespace StutterFix
                             "hitbox=" + i.D.hitbox + " mask=" + i.D.isMask() + " mesh=" + MeshOn(i.D) + " interaction=" + r.maskInteraction);
                     if (r.GetComponentInParent<SortingGroup>()) remove |= Changed(i, "sortingGroup", "none", "present");
                     if (r.drawMode != SpriteDrawMode.Simple) remove |= Changed(i, "drawMode", SpriteDrawMode.Simple, r.drawMode);
+                    if (r.spriteSortPoint != SpriteSortPoint.Center) remove |= Changed(i, "sprite-sort-point", SpriteSortPoint.Center, r.spriteSortPoint);
                     if (i.D.repeatX != i.RepeatX || i.D.repeatY != i.RepeatY)
                         remove |= Changed(i, "repeat", i.RepeatX + "," + i.RepeatY, i.D.repeatX + "," + i.D.repeatY);
                     if (!remove)
@@ -884,50 +891,25 @@ namespace StutterFix
                 }
                 if (remove)
                 {
-                    changedKeys.Add(OrderKey(i));
-                    // A changed renderer can enter another managed key; restore that key too.
-                    if (i.R)
-                    {
-                        string destination = OrderKey(i.R.sortingLayerID, i.R.sortingOrder);
-                        if (keys.ContainsKey(destination) && keys[destination].Rejected == null) changedKeys.Add(destination);
-                    }
+                    removed.Add(i);
                 }
             }
-            foreach (var key in changedKeys)
+            foreach (var i in removed)
             {
-                if (observing)
-                {
-                    int before = items.Count;
-                    RejectKey(key, "changed-during-observation");
-                    changes["restored-items"] += before - items.Count;
-                }
-                else RestoreKey(key);
-                Count(changes, "restored-keys");
-            }
-        }
-
-        void RestoreKey(string key)
-        {
-            keys[key].Rejected = "changed"; Count(excludedKeys, "changed");
-            for (int n = items.Count - 1; n >= 0; n--)
-            {
-                var i = items[n];
-                if (OrderKey(i) != key) continue;
-                RestoreSource(i);
-                foreach (var g in groups) g.Items.Remove(i);
-                items.RemoveAt(n);
+                RestoreSource(i); items.Remove(i);
                 if (i.Vertices != null) vertexCount -= i.Vertices.Length;
                 Count(changes, "restored-items");
+                if (observing) Count(excluded, "changed-during-observation");
             }
-            // Clear the old mesh before this camera can render any restored originals.
-            foreach (var g in groups)
-                if (g.Items.Count == 0) { g.Mesh.Clear(false); g.Renderer.enabled = false; g.Positions.Clear(); g.Indices.Clear(); }
+            // RebuildRuns sees restored originals as barriers and replaces only affected runs.
         }
 
         void Build(Camera camera, bool measure)
         {
             long start = Stopwatch.GetTimestamp();
+            foreach (var g in groups) Borrow(g, false);
             PruneChanged();
+            RebuildRuns(camera);
             foreach (var i in items)
             {
                 i.Matrix = i.R.transform.localToWorldMatrix; i.Color = i.R.color;
@@ -953,6 +935,7 @@ namespace StutterFix
                 UploadMesh(g, true); g.Renderer.enabled = g.Indices.Count != 0;
             }
             foreach (var i in items) HideSource(i);
+            foreach (var g in groups) Borrow(g, true);
             if (measure)
             {
                 long ticks = Stopwatch.GetTimestamp() - start; buildTicks += ticks; buildCount++;
@@ -978,6 +961,7 @@ namespace StutterFix
             finally
             {
                 // Our temporary force-off must not mask the game's next visibility update.
+                foreach (var g in groups) Borrow(g, false);
                 foreach (var i in items) RestoreSource(i);
                 foreach (var g in groups) if (g.Renderer) g.Renderer.enabled = false;
             }
@@ -986,7 +970,9 @@ namespace StutterFix
         void Takeover(bool on)
         {
             if (on && stopping) return;
+            if (!on) foreach (var g in groups) Borrow(g, false);
             foreach (var i in items) if (on) HideSource(i); else RestoreSource(i);
+            if (on) foreach (var g in groups) Borrow(g, true);
             foreach (var g in groups) if (g.Renderer) g.Renderer.enabled = on && g.Indices.Count != 0;
         }
         bool SnapshotUnchanged()
@@ -999,7 +985,7 @@ namespace StutterFix
                     || i.R.sharedMaterial != i.Source || i.R.sortingLayerID != i.Layer || i.R.sortingOrder != i.Order
                     || i.R.gameObject.layer != i.UnityLayer || i.D.spriteRenderer != i.R
                     || i.D.hitbox != 0 || i.D.isMask() || MeshOn(i.D) || i.R.maskInteraction != SpriteMaskInteraction.None
-                    || i.R.drawMode != SpriteDrawMode.Simple || i.R.GetComponentInParent<SortingGroup>()
+                    || i.R.drawMode != SpriteDrawMode.Simple || i.R.spriteSortPoint != SpriteSortPoint.Center || i.R.GetComponentInParent<SortingGroup>()
                     || i.D.repeatX != i.RepeatX || i.D.repeatY != i.RepeatY
                     || SourceVisible(i) != i.Visible
                     || MaterialState(i.R, null) != i.Signature) return false;
@@ -1137,6 +1123,7 @@ namespace StutterFix
                     .Append(" builds=").Append(s.buildCount).Append(" cameras=").Append(s.cameras.Count).Append(" comparePending=").Append(s.pending);
             }
             return result.Append(" vertex-color=").Append(lastColorFormat).Append(" order-audit={").Append(lastOrders).Append('}')
+                .Append(" run-state={").Append(s ? s.RunState() : lastRuns).Append('}')
                 .Append(" key-state={").Append(s ? s.KeyState() : lastKeys).Append('}')
                 .Append(" tile-vertex-input=Float32x4(saved-D3D11-asm) tile-color=미확인(vertex=SpriteRenderer.color,_Color=effective-source,_RendererColor=white-if-declared;compare-required)")
                 .Append(" selection={").Append(lastSelection).Append("} changes={").Append(s ? Counts(s.changes) : lastChanges).Append("} detail-limit=").Append(DetailLimit).Append(" stop=").Append(lastStop).Append(" lastCompare={").Append(lastCompare).Append('}').ToString();
@@ -1145,14 +1132,15 @@ namespace StutterFix
         static void Stop(string reason)
         {
             var s = session; if (!s || s.stopping) return;
-            s.stopping = true; lastStop = reason; lastChanges = Counts(s.changes); lastKeys = s.KeyState();
+            s.stopping = true; lastRuns = s.RunState(); lastStop = reason; lastChanges = Counts(s.changes); lastKeys = s.KeyState();
             Camera.onPreCull -= s.PreCull; Camera.onPreRender -= s.PreRender; Camera.onPostRender -= s.PostRender;
             if (s.pending != 0) { lastCompare = "cancelled: " + reason; compareFinished = true; }
             // Disable immediately: Destroy is deferred until end of frame.
             foreach (var g in s.groups) if (g.Renderer) g.Renderer.enabled = false;
+            foreach (var g in s.groups) Borrow(g, false);
             foreach (var i in s.items) RestoreSource(i);
             foreach (var g in s.groups)
-            { if (g.Object) Destroy(g.Object); if (g.Mesh) Destroy(g.Mesh); if (g.Material) Destroy(g.Material); }
+                ReleaseGroup(g);
             foreach (var a in s.atlases) if (a.Texture) Destroy(a.Texture);
             session = null; Destroy(s.gameObject); Log("stopped: " + reason + "; original forceRenderingOff restored");
         }
