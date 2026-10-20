@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using HarmonyLib;
 using UnityEngine;
@@ -20,6 +21,7 @@ namespace StutterFix
         static string lastCompare = "not run", lastStop = "none";
         static bool compareFinished, onWaiting;
         static string lastSelection = "not run", lastChanges = "none";
+        static string lastOrders = "not run", lastColorFormat = "not run";
         static readonly AccessTools.FieldRef<scrVisualDecoration, bool> MeshOn =
             AccessTools.FieldRefAccess<scrVisualDecoration, bool>("meshRendererEnabled");
         static readonly AccessTools.FieldRef<scrDecoration, bool> RendererOn =
@@ -62,6 +64,20 @@ namespace StutterFix
             internal Color Color;
             internal bool FlipX, FlipY, Visible;
         }
+        [StructLayout(LayoutKind.Sequential)]
+        struct FloatVertex
+        {
+            internal Vector3 Position;
+            internal Color Color;
+            internal Vector2 UV;
+        }
+        sealed class OrderAudit
+        {
+            internal int Managed, Unmanaged;
+            internal readonly Dictionary<string, int> Kinds = new Dictionary<string, int>();
+            internal readonly List<string> Examples = new List<string>();
+            internal readonly HashSet<string> Groups = new HashSet<string>();
+        }
         sealed class Group
         {
             internal GameObject Object;
@@ -71,6 +87,8 @@ namespace StutterFix
             internal readonly List<Item> Items = new List<Item>();
             internal readonly List<Vector3> Positions = new List<Vector3>();
             internal readonly List<Color> Colors = new List<Color>();
+            internal readonly List<Color32> ByteColors = new List<Color32>();
+            internal readonly List<FloatVertex> FloatVertices = new List<FloatVertex>();
             internal readonly List<Vector2> UV = new List<Vector2>();
             internal readonly List<int> Indices = new List<int>();
             internal Bounds CullBounds;
@@ -90,7 +108,7 @@ namespace StutterFix
         double lastBuildMs;
         bool stopping, comparing, initialized, startedPlaying;
         string outputDir;
-        bool observing;
+        bool observing, floatColor;
         int observeTarget, observeFrames, observeFrame = -1, detailEvents, selected;
         long atlasBytes;
         readonly Dictionary<string, int> excluded = new Dictionary<string, int>();
@@ -122,9 +140,10 @@ namespace StutterFix
             if (arg == "state") { Log(State()); return true; }
             var args = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             int frames = 20;
-            if (args.Length == 0 || args[0] != "on" || args.Length > 2
-                || (args.Length == 2 && (!int.TryParse(args[1], out frames) || frames < 1 || frames > 600)))
-            { Log("decorender on [frames=20, 1..600]|off|compare|state"); return true; }
+            if (args.Length == 0 || args[0] != "on" || args.Length > 3
+                || (args.Length >= 2 && (!int.TryParse(args[1], out frames) || frames < 1 || frames > 600))
+                || (args.Length == 3 && args[2] != "floatcolor"))
+            { Log("decorender on [frames=20, 1..600] [floatcolor]|off|compare|state"); return true; }
             if (onWaiting)
             {
                 if (session && session.observing) return false;
@@ -137,6 +156,7 @@ namespace StutterFix
                 var go = new GameObject("StutterFix.DecoRender") { hideFlags = HideFlags.HideAndDontSave };
                 session = go.AddComponent<DecoRender>();
                 session.observeTarget = frames;
+                session.floatColor = args.Length == 3;
                 session.Begin(modDir);
                 onWaiting = session.observing;
                 lastStop = "none";
@@ -191,7 +211,9 @@ namespace StutterFix
             decorationList = manager.allDecorations; startedPlaying = Hitch.Playing;
             outputDir = Path.Combine(modDir, "shots");
             lastSelection = "observing"; lastChanges = "none";
-            foreach (var key in new[] { "repeat-not-one", "point-sampling", "pixel-snap", "maintex-st", "shader", "special-keyword", "wrap", "large-texture", "static", "mask-hitbox-mesh", "other", "material-unsupported", "atlas-budget", "changed-during-observation" }) excluded[key] = 0;
+            lastOrders = "pending-observation";
+            lastColorFormat = floatColor ? "Float32x4(explicit-buffer)" : "UNorm8x4(Color32)";
+            foreach (var key in new[] { "shared-order", "split-order", "repeat-not-one", "point-sampling", "pixel-snap", "maintex-st", "shader", "special-keyword", "wrap", "large-texture", "static", "mask-hitbox-mesh", "other", "material-unsupported", "atlas-budget", "changed-during-observation" }) excluded[key] = 0;
             foreach (var key in new[] { "sprite", "material", "material-properties", "sortingOrder", "sortingLayer", "mask", "destroyed", "renderer-owner", "unityLayer", "sortingGroup", "drawMode", "repeat", "wrap", "restored-items" }) changes[key] = 0;
             int index = 0;
             foreach (var d in manager.allDecorations)
@@ -246,6 +268,20 @@ namespace StutterFix
                 Log("budget exclude texture=" + largest.GetInstanceID() + " size=" + largest.width + "x" + largest.height
                     + " decorations=" + removed + " planned-bytes=" + atlasBytes + " source-pixels=" + sourcePixels);
             }
+            ExcludeUnsafeOrders();
+            // Keep the already planned page coordinates, but do not allocate unused textures/pages.
+            var used = new HashSet<Image>();
+            foreach (var item in items) used.Add(item.Image);
+            var unused = new List<Texture2D>();
+            foreach (var pair in images) if (!used.Contains(pair.Value)) unused.Add(pair.Key);
+            foreach (var texture in unused) images.Remove(texture);
+            atlasBytes = 0;
+            for (int n = atlases.Count - 1; n >= 0; n--)
+            {
+                atlases[n].Images.RemoveAll(image => !used.Contains(image));
+                if (atlases[n].Images.Count == 0) atlases.RemoveAt(n);
+                else atlasBytes += AtlasBytes(atlases[n]);
+            }
             foreach (var image in images.Values)
             {
                 var t = image.Source;
@@ -260,8 +296,7 @@ namespace StutterFix
             var map = new Dictionary<string, Group>();
             foreach (var item in items)
             {
-                string key = item.Layer + "/" + item.Order + "/" + atlases.IndexOf(item.Image.Atlas)
-                    + "/" + item.UnityLayer + "/" + item.Signature;
+                string key = GroupKey(item);
                 Group g;
                 if (!map.TryGetValue(key, out g))
                 {
@@ -290,7 +325,7 @@ namespace StutterFix
                         + " shader=" + item.Source.shader.name + " keywords=" + string.Join(",", item.Source.shaderKeywords)
                         + " queue=" + item.Source.renderQueue + " passes=" + item.Source.passCount
                         + " _Color=" + (g.Material.HasProperty("_Color") ? g.Material.GetColor("_Color").ToString("R") : "absent")
-                        + " vertex-color=SpriteRenderer.color _RendererColor=white-if-declared; Sprites/Tile color equation=미확인");
+                        + " vertex-color=SpriteRenderer.color _RendererColor=white-if-declared; Tile vertex input=float4(saved D3D11 asm); color uniforms=미확인");
                 }
                 g.Items.Add(item);
             }
@@ -304,7 +339,7 @@ namespace StutterFix
                     foreach (var v in i.Vertices) { g.Positions.Add(Vector3.zero); g.Colors.Add(Color.clear); g.UV.Add(Vector2.zero); }
                     foreach (var t in i.Triangles) g.Indices.Add(offset + t);
                 }
-                g.Mesh.SetVertices(g.Positions); g.Mesh.SetColors(g.Colors); g.Mesh.SetUVs(0, g.UV); g.Mesh.SetTriangles(g.Indices, 0, false);
+                UploadMesh(g, false);
             }
             observing = false; selected = items.Count;
             lastSelection = "selected=" + selected + " excluded={" + Counts(excluded) + "} source-textures=" + images.Count
@@ -313,7 +348,118 @@ namespace StutterFix
             Log("selected=" + items.Count + " source textures=" + images.Count
                 + "; order=sortingLayer/order,queue,descending camera distance,ascending original Renderer instanceID"
                 + "; instanceID tie is an experimental heuristic, NOT Unity's guaranteed internal tie order"
-                + "; same-order external renderer/atlas/material interleaving not preserved; cameras=" + Camera.allCamerasCount);
+                + "; shared-order/split-order keys excluded at selection; vertex-color=" + lastColorFormat
+                + "; cameras=" + Camera.allCamerasCount);
+        }
+
+        static string OrderKey(int layer, int order) => layer + "/" + order;
+        static string OrderKey(Item item) => OrderKey(item.Layer, item.Order);
+        string GroupKey(Item item) => OrderKey(item) + "/" + atlases.IndexOf(item.Image.Atlas)
+            + "/" + item.UnityLayer + "/" + item.Signature;
+
+        static string RendererKind(Renderer renderer)
+        {
+            // Classification is diagnostic only; exclusion covers every Renderer regardless of kind/state.
+            bool deco = false, tile = false;
+            foreach (var component in renderer.GetComponentsInParent<Component>(true))
+            {
+                if (!component) continue;
+                string type = component.GetType().Name;
+                if (type.IndexOf("Planet", StringComparison.OrdinalIgnoreCase) >= 0) return "planet";
+                if (type == "scrFloor" || type.IndexOf("Tile", StringComparison.OrdinalIgnoreCase) >= 0) tile = true;
+                if (component is scrDecoration) deco = true;
+            }
+            return deco ? "other-deco" : tile ? "tile" : "other";
+        }
+
+        void ExcludeUnsafeOrders()
+        {
+            var audits = new Dictionary<string, OrderAudit>();
+            var managed = new HashSet<int>();
+            foreach (var item in items)
+            {
+                string key = OrderKey(item); OrderAudit audit;
+                if (!audits.TryGetValue(key, out audit)) audits.Add(key, audit = new OrderAudit());
+                audit.Managed++; audit.Groups.Add(GroupKey(item)); managed.Add(item.Id);
+            }
+            // One scene-wide scan, after observation/static/budget exclusions, before our renderers exist.
+            var renderers = UnityEngine.Object.FindObjectsOfType<Renderer>();
+            int unmanaged = 0;
+            foreach (var renderer in renderers)
+            {
+                string key = OrderKey(renderer.sortingLayerID, renderer.sortingOrder); OrderAudit audit;
+                if (!audits.TryGetValue(key, out audit)) audits.Add(key, audit = new OrderAudit());
+                if (managed.Contains(renderer.GetInstanceID())) continue;
+                unmanaged++; audit.Unmanaged++;
+                string kind = RendererKind(renderer) + "/" + renderer.GetType().Name;
+                Count(audit.Kinds, kind);
+                if (audit.Examples.Count < 4)
+                    audit.Examples.Add(kind + ":" + Identity(renderer) + "(enabled=" + renderer.enabled
+                        + ",forceOff=" + renderer.forceRenderingOff + ")");
+            }
+            var keys = new List<string>(audits.Keys); keys.Sort(StringComparer.Ordinal);
+            var shared = new HashSet<string>(); var split = new HashSet<string>();
+            int sharedItems = 0, splitItems = 0, splitAllKeys = 0, splitAllItems = 0, details = 0;
+            var detailText = new StringBuilder();
+            foreach (var key in keys)
+            {
+                var audit = audits[key];
+                if (audit.Managed == 0) continue;
+                bool isShared = audit.Unmanaged != 0, isSplit = audit.Groups.Count > 1;
+                if (isSplit) { splitAllKeys++; splitAllItems += audit.Managed; }
+                // Exclusive exclusion counts: shared-order takes priority over split-order.
+                if (isShared) { shared.Add(key); sharedItems += audit.Managed; }
+                else if (isSplit) { split.Add(key); splitItems += audit.Managed; }
+                if ((!isShared && !isSplit) || details++ >= DetailLimit) continue;
+                string detail = "key=" + key + " managed=" + audit.Managed + " unmanaged=" + audit.Unmanaged
+                    + " groups=" + audit.Groups.Count + " kinds={" + Counts(audit.Kinds) + "} examples={"
+                    + string.Join(";", audit.Examples) + "}";
+                Log("order-collision " + detail); detailText.Append('[').Append(detail).Append(']');
+            }
+            for (int n = items.Count - 1; n >= 0; n--)
+            {
+                string key = OrderKey(items[n]);
+                string reason = shared.Contains(key) ? "shared-order" : split.Contains(key) ? "split-order" : null;
+                if (reason != null) { Count(excluded, reason); items.RemoveAt(n); }
+            }
+            lastOrders = "scan-renderers=" + renderers.Length + " scan-keys=" + audits.Count + " unmanaged=" + unmanaged
+                + " shared-order-keys=" + shared.Count + " shared-order-items=" + sharedItems
+                + " split-order-keys=" + split.Count + " split-order-items=" + splitItems
+                + " split-detected-keys=" + splitAllKeys + " split-detected-items=" + splitAllItems
+                + " details=" + detailText + "; one-snapshot-after-observation; kind=ancestor-component-heuristic";
+            Log("order-audit " + lastOrders);
+        }
+
+        void UploadMesh(Group group, bool bounds)
+        {
+            var mesh = group.Mesh;
+            mesh.Clear(false);
+            if (group.Positions.Count == 0) return;
+            if (floatColor)
+            {
+                group.FloatVertices.Clear();
+                for (int n = 0; n < group.Positions.Count; n++)
+                    group.FloatVertices.Add(new FloatVertex { Position = group.Positions[n], Color = group.Colors[n], UV = group.UV[n] });
+                mesh.SetVertexBufferParams(group.FloatVertices.Count,
+                    new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+                    new VertexAttributeDescriptor(VertexAttribute.Color, VertexAttributeFormat.Float32, 4),
+                    new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2));
+                if (group.FloatVertices.Count != 0)
+                    mesh.SetVertexBufferData(group.FloatVertices, 0, 0, group.FloatVertices.Count);
+            }
+            else
+            {
+                group.ByteColors.Clear();
+                foreach (var color in group.Colors) group.ByteColors.Add(color);
+                mesh.SetVertices(group.Positions); mesh.SetColors(group.ByteColors); mesh.SetUVs(0, group.UV);
+            }
+            mesh.SetTriangles(group.Indices, 0, bounds);
+            // Check actual storage, rather than assuming a SetColors overload's format.
+            var expected = floatColor ? VertexAttributeFormat.Float32 : VertexAttributeFormat.UNorm8;
+            if (mesh.GetVertexAttributeFormat(VertexAttribute.Color) != expected
+                || mesh.GetVertexAttributeDimension(VertexAttribute.Color) != 4
+                || (floatColor && (Marshal.SizeOf(typeof(FloatVertex)) != 36 || mesh.GetVertexBufferStride(0) != 36)))
+                throw new InvalidOperationException("vertex color layout mismatch: " + expected);
         }
 
         // Compare all shader-declared effective values, not material instance IDs. This preserves
@@ -656,8 +802,7 @@ namespace StutterFix
                     }
                     foreach (var t in i.Triangles) g.Indices.Add(offset + t);
                 }
-                g.Mesh.Clear(); g.Mesh.SetVertices(g.Positions); g.Mesh.SetColors(g.Colors); g.Mesh.SetUVs(0, g.UV);
-                g.Mesh.SetTriangles(g.Indices, 0, true); g.Renderer.enabled = g.Indices.Count != 0;
+                UploadMesh(g, true); g.Renderer.enabled = g.Indices.Count != 0;
             }
             foreach (var i in items) i.R.forceRenderingOff = true;
             if (measure)
@@ -831,7 +976,8 @@ namespace StutterFix
                     .Append(" build-ms/mean-frame=").Append(F(s.buildTicks * 1000.0 / Stopwatch.Frequency / Math.Max(1, s.measuredFrames)))
                     .Append(" builds=").Append(s.buildCount).Append(" cameras=").Append(s.cameras.Count).Append(" comparePending=").Append(s.pending);
             }
-            return result.Append(" tile-color=미확인(vertex=SpriteRenderer.color,_Color=effective-source,_RendererColor=white-if-declared;compare-required)")
+            return result.Append(" vertex-color=").Append(lastColorFormat).Append(" order-audit={").Append(lastOrders).Append('}')
+                .Append(" tile-vertex-input=Float32x4(saved-D3D11-asm) tile-color=미확인(vertex=SpriteRenderer.color,_Color=effective-source,_RendererColor=white-if-declared;compare-required)")
                 .Append(" selection={").Append(lastSelection).Append("} changes={").Append(s ? Counts(s.changes) : lastChanges).Append("} detail-limit=").Append(DetailLimit).Append(" stop=").Append(lastStop).Append(" lastCompare={").Append(lastCompare).Append('}').ToString();
         }
         internal static void Stop() => Stop("off/unload/reset");
