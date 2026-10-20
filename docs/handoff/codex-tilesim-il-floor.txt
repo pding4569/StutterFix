@@ -1,0 +1,1103 @@
+﻿== scrFloor
+  get_isCustomPortal
+    필드 읽기 scrFloor::usedCustomFloorIcon
+    필드 읽기 scrFloor::floorIcon
+  get_checkIsPortal
+    필드 읽기 scrFloor::isportal
+    호출 scrFloor::get_isCustomPortal
+  get_entryTimeAfterExtraBeats
+    필드 읽기 scrFloor::entryTime
+    필드 읽기 scrFloor::conductor
+    필드 읽기 scrConductor::crotchetAtStart
+    필드 읽기 scrFloor::extraBeats
+    필드 읽기 scrFloor::speed
+  get_showStatusText
+    필드 읽기 scrFloor::auto
+    필드 읽기 scrFloor::_showStatusText
+  set_showStatusText
+    필드 쓰기 scrFloor::_showStatusText
+  get_lm2
+    호출 ADOBase::get_lm
+    필드 읽기 scrLevelMaker::lm2
+  Awake
+    필드 읽기 scrFloor::controller
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Component::get_transform
+    필드 쓰기 scrFloor::thisTransform
+    호출 scrController::get_instance
+    필드 쓰기 scrFloor::controller
+    호출 scrConductor::get_instance
+    필드 쓰기 scrFloor::conductor
+    호출 RDConstants::get_data
+    필드 쓰기 scrFloor::gc
+    호출 scrVfx::get_instance
+    필드 쓰기 scrFloor::vfx
+    호출 scrVfxPlus::get_instance
+    필드 쓰기 scrFloor::vfxPlus
+    필드 읽기 scrFloor::thisTransform
+    호출 UnityEngine.Transform::get_position
+    필드 쓰기 scrFloor::startPos
+    호출 UnityEngine.Transform::get_rotation
+    호출 UnityEngine.Quaternion::get_eulerAngles
+    필드 쓰기 scrFloor::startRot
+    필드 읽기 scrFloor::startRot
+    필드 쓰기 scrFloor::tweenRot
+    필드 읽기 scrFloor::floorRenderer
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 scrFloor::floorRenderer
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    필드 쓰기 FloorRenderer::renderer
+    필드 쓰기 scrFloor::legacyFloorSpriteRenderer
+    필드 읽기 scrFloor::setHitsound
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Implicit
+    필드 쓰기 scrFloor::setHitsound
+    필드 읽기 scrController::gameworld
+    필드 읽기 scrFloor::bottomGlow
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::prefab_topGlow
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::SetParent
+    호출 UnityEngine.Object::set_name
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 scrFloor::topGlow
+    필드 읽기 scrFloor::topGlow
+    필드 읽기 scrFloor::dontChangeMySprite
+    호출 RDExtensions::ScaleXY
+    필드 쓰기 ToggleVisible::scriptToToggle
+    호출 ADOBase::get_isScnGame
+    필드 읽기 scrController::stickToFloor
+    필드 쓰기 scrFloor::stickToFloor
+    필드 읽기 scrFloor::conductor
+    필드 읽기 scrConductor::onBeats
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 scrFloor::changeTrack
+    호출 제네릭 UnityEngine.Component::TryGetComponent
+  CheckPortalSprite
+    호출 scrFloor::get_checkIsPortal
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::sprPortal
+    호출 scrFloor::SetIconSprite
+  Reset
+    필드 쓰기 scrFloor::speed
+    필드 쓰기 scrFloor::rotatecamera
+    필드 쓰기 scrFloor::isLandable
+    필드 쓰기 scrFloor::isCCW
+    필드 쓰기 scrFloor::tapsNeeded
+    필드 쓰기 scrFloor::tapsSoFar
+    필드 쓰기 scrFloor::midSpin
+    필드 쓰기 scrFloor::planetEase
+    필드 쓰기 scrFloor::planetEaseParts
+    필드 쓰기 scrFloor::planetEasePartBehavior
+    필드 쓰기 scrFloor::holdLength
+    필드 쓰기 scrFloor::holdCompletion
+    필드 쓰기 scrFloor::holdCompletionEased
+    필드 쓰기 scrFloor::holdDistance
+    필드 쓰기 scrFloor::holdOpacity
+    필드 쓰기 scrFloor::extendAnim
+    필드 쓰기 scrFloor::numPlanets
+    필드 쓰기 scrFloor::isSwirl
+    필드 쓰기 scrFloor::isWarning
+    필드 읽기 scrFloor::dummyPlanets
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    필드 쓰기 scrFloor::dontChangeMySprite
+    필드 쓰기 scrFloor::floorIcon
+    필드 쓰기 scrFloor::arrColorsBottomGlow
+    필드 쓰기 scrFloor::hasLit
+    필드 쓰기 scrFloor::customSpriteRange
+    필드 쓰기 scrFloor::minLitSprite
+    필드 쓰기 scrFloor::maxLitSprite
+    필드 쓰기 scrFloor::isportal
+    필드 쓰기 scrFloor::levelnumber
+    필드 쓰기 scrFloor::arguments
+    필드 쓰기 scrFloor::isSafe
+    필드 쓰기 scrFloor::auto
+    호출 scrFloor::set_showStatusText
+    필드 쓰기 scrFloor::hideJudgment
+    필드 쓰기 scrFloor::hideIcon
+    필드 쓰기 scrFloor::exitangle
+    필드 쓰기 scrFloor::entryangle
+    필드 쓰기 scrFloor::angleLength
+    필드 쓰기 scrFloor::entryTime
+    필드 쓰기 scrFloor::entryTimePitchAdj
+    필드 쓰기 scrFloor::entryBeat
+    필드 쓰기 scrFloor::nextfloor
+    필드 쓰기 scrFloor::styleNum
+    필드 읽기 scrFloor::plusEffects
+    필드 쓰기 scrFloor::freeroam
+    필드 쓰기 scrFloor::freeroamGenerated
+    필드 쓰기 scrFloor::freeroamRegion
+    필드 읽기 scrFloor::freeroamFloors
+    필드 쓰기 scrFloor::freeroamSoundOnBeat
+    필드 쓰기 scrFloor::freeroamSoundOffBeat
+    필드 쓰기 scrFloor::extraBeats
+    필드 쓰기 scrFloor::angleCorrectionType
+    필드 쓰기 scrFloor::freeroamEndEarlyBeats
+    필드 쓰기 scrFloor::countdownTicks
+    필드 쓰기 scrFloor::marginScale
+    필드 쓰기 scrFloor::radiusScale
+    필드 쓰기 scrFloor::stringDirection
+    필드 쓰기 scrFloor::floatDirection
+    호출 UnityEngine.Color::get_clear
+    필드 쓰기 scrFloor::specialColor1
+    필드 쓰기 scrFloor::specialColor2
+    필드 쓰기 scrFloor::specialColorType
+    필드 쓰기 scrFloor::specialColorTypeStart
+    필드 쓰기 scrFloor::specialAnimDuration
+    필드 쓰기 scrFloor::specialColorPulse
+    필드 쓰기 scrFloor::specialPulseLength
+    필드 쓰기 scrFloor::specialTimeOffset
+    필드 쓰기 scrFloor::opacity
+    필드 쓰기 scrFloor::glowMultiplier
+    필드 쓰기 scrFloor::isBookmarked
+    호출 UnityEngine.Vector3::get_zero
+    필드 쓰기 scrFloor::startPos
+    필드 쓰기 scrFloor::startRot
+    필드 쓰기 scrFloor::tweenRot
+    필드 쓰기 scrFloor::offsetPos
+    필드 쓰기 scrFloor::customTexture
+    필드 쓰기 scrFloor::customTextureScale
+    필드 쓰기 scrFloor::initialTrackStyle
+    필드 쓰기 scrFloor::hasConditionalChange
+    필드 읽기 scrFloor::perfectEffects
+    호출 제네릭 System.Collections.Generic.HashSet`1::Clear
+    필드 읽기 scrFloor::earlyPerfectEffects
+    필드 읽기 scrFloor::latePerfectEffects
+    필드 읽기 scrFloor::veryEarlyEffects
+    필드 읽기 scrFloor::veryLateEffects
+    필드 읽기 scrFloor::tooEarlyEffects
+    필드 읽기 scrFloor::tooLateEffects
+    필드 읽기 scrFloor::lossEffects
+    필드 읽기 scrFloor::moveTweens
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Clear
+    필드 쓰기 scrFloor::eventIcon
+    필드 읽기 scrFloor::targetDecorations
+    필드 읽기 scrFloor::lastTaps
+    필드 쓰기 scrFloor::oriScaleBottomGlow
+    필드 쓰기 scrFloor::opacityLastFrame
+    필드 쓰기 scrFloor::glowMultiplierLastFrame
+    필드 쓰기 scrFloor::iconScale
+    필드 쓰기 scrFloor::iconSpriteScale
+    필드 쓰기 scrFloor::lastIconSprite
+    필드 쓰기 scrFloor::lastIconOutlineSprite
+    필드 읽기 scrFloor::iconsprite
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.SpriteRenderer::set_sprite
+    필드 읽기 scrFloor::outlineSprite
+    필드 읽기 scrFloor::topGlow
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::Destroy
+    필드 읽기 scrFloor::bottomGlow
+    호출 UnityEngine.Application::get_isPlaying
+    호출 제네릭 UnityEngine.Component::GetComponentsInChildren
+    호출 UnityEngine.Object::get_name
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::animatedPortalPrefab
+    호출 System.String::op_Equality
+    호출 scrFloor::Awake
+    호출 scrFloor::Start
+    필드 쓰기 scrFloor::didRunStart
+  Start
+    필드 쓰기 scrFloor::didRunStart
+    호출 UnityEngine.Application::get_isPlaying
+    정적필드 읽기 scnGame::instance
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scnGame::customWorldMaterial
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Material::.ctor
+    호출 FloorRenderer::SetMaterial
+    호출 scrFloor::UpdateGlowSortingOrder
+    호출 scrFloor::CheckPortalSprite
+    필드 읽기 scrFloor::bottomGlow
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_localScale
+    필드 읽기 UnityEngine.Vector3::x
+    필드 쓰기 scrFloor::oriScaleBottomGlow
+    필드 읽기 scrFloor::vfx
+    필드 읽기 scrVfx::tileFlashStyle
+    필드 읽기 scrFloor::hasLit
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrFloor::isFake
+    필드 읽기 scrFloor::topGlow
+    필드 읽기 scrFloor::freeroamGenerated
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::collider180
+    필드 읽기 scrFloor::thisTransform
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 scrFloor::coll
+    필드 읽기 scrFloor::coll
+    호출 UnityEngine.Behaviour::set_enabled
+    호출 scrFloor::UpdateIconSprite
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::get_isVisible
+    필드 읽기 scrFloor::holdLength
+    필드 읽기 scrFloor::prevfloor
+    호출 scrFloor::<Start>g__RandomVector4|179_0
+    정적필드 읽기 scrFloor::randomOffsets
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    필드 읽기 scrFloor::seqID
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 읽기 scrFloor::controller
+    필드 읽기 scrController::gameworld
+    필드 읽기 scrFloor::freeroam
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Material::SetVector
+    호출 ADOBase::get_customLevel
+    호출 ADOBase::get_lm
+    필드 읽기 scrLevelMaker::useInitialTrackStyle
+    필드 읽기 scrFloor::initialTrackStyle
+    호출 scrFloor::SetTrackStyle
+    호출 ADOBase::get_isFreeroamScene
+    필드 읽기 RDConstants::prefab_bottomGlow
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::SetParent
+    호출 UnityEngine.Object::set_name
+    필드 쓰기 scrFloor::bottomGlow
+    호출 UnityEngine.Object::op_Equality
+    호출 제네릭 UnityEngine.GameObject::AddComponent
+    호출 UnityEngine.Vector2::get_one
+    호출 UnityEngine.BoxCollider2D::set_size
+  GenerateCollider
+    필드 읽기 scrFloor::entryangle
+    호출 UnityEngine.Mathf::RoundToInt
+    필드 읽기 scrFloor::exitangle
+    호출 UnityEngine.Mathf::DeltaAngle
+    호출 UnityEngine.Mathf::Abs
+    호출 ADOBase::get_editor
+    필드 읽기 scnEditor::Collider15
+    필드 읽기 scnEditor::Collider30
+    필드 읽기 scnEditor::Collider45
+    필드 읽기 scnEditor::Collider60
+    필드 읽기 scnEditor::Collider75
+    필드 읽기 scnEditor::Collider90
+    필드 읽기 scnEditor::Collider105
+    필드 읽기 scnEditor::Collider120
+    필드 읽기 scnEditor::Collider135
+    필드 읽기 scnEditor::Collider165
+    필드 읽기 scnEditor::Collider180
+    호출 UnityEngine.Component::get_transform
+    호출 제네릭 UnityEngine.Object::Instantiate
+  UpdateIconSprite
+    호출 UnityEngine.Application::get_isPlaying
+    호출 제네릭 UnityEngine.Component::GetComponentsInChildren
+    필드 읽기 scrFloor::controller
+    필드 읽기 scrController::gameworld
+    필드 읽기 scrFloor::nextfloor
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 scrFloor::isFake
+    필드 읽기 scrFloor::usedCustomFloorIcon
+    호출 scrFloor::get_isCustomPortal
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::sprPortal
+    호출 scrFloor::SetIconSprite
+    호출 scrFloor::SpawnPortalParticles
+    호출 scrFloor::get_checkIsPortal
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::Destroy
+    호출 Persistence::get_animateSpeedChange
+    필드 읽기 scrFloor::floorIcon
+    필드 쓰기 scrFloor::floorIcon
+    호출 scrFloor::SetIconScale
+    호출 scrFloor::SetIconAngle
+    호출 UnityEngine.Color::get_white
+    호출 scrFloor::SetIconColor
+    호출 scrFloor::SetIconFlipped
+    필드 읽기 scrFloor::hideIcon
+    필드 읽기 RDConstants::sprIconRabbit
+    필드 읽기 RDConstants::sprOutlineRabbit
+    호출 scrFloor::SetIconOutlineSprite
+    필드 읽기 RDConstants::sprIconDoubleRabbit
+    필드 읽기 RDConstants::sprOutlineDoubleRabbit
+    필드 읽기 RDConstants::sprIconSnail
+    필드 읽기 RDConstants::sprOutlineSnail
+    필드 읽기 RDConstants::sprIconDoubleSnail
+    필드 읽기 RDConstants::sprOutlineDoubleSnail
+    호출 scrController::get_paused
+    필드 읽기 RDConstants::sprIconSameSpeed
+    필드 읽기 RDConstants::sprOutlineSameSpeed
+    호출 ADOBase::get_isLevelEditor
+    호출 ADOBase::get_editor
+    호출 scnEditor::get_pausedInPlayMode
+    필드 읽기 scrFloor::eventIcon
+    정적필드 읽기 scnEditor::instance
+    필드 읽기 scnEditor::vfxIconColor
+    필드 읽기 RDConstants::sprIconVfx
+    정적필드 읽기 GCS::levelEventIcons
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 scrController::isPuzzleRoom
+    필드 읽기 scrFloor::isSwirl
+    필드 읽기 scrFloor::seqID
+    필드 읽기 scrFloor::isCCW
+    호출 ADOBase::get_lm
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    필드 읽기 scrFloor::freeroamGenerated
+    정적필드 읽기 GCS::speedTrialMode
+    정적필드 읽기 GCS::hitMarginLimit
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 System.Int32::ToString
+    호출 System.String::Concat
+    호출 UnityEngine.Debug::Log
+    호출 UnityEngine.Object::op_Inequality
+    호출 GCS::get_checkpointNum
+    필드 읽기 ffxCheckpoint::checkpointTileOffset
+    필드 읽기 RDConstants::sprIconCheckpointLit
+    필드 읽기 RDConstants::sprIconCheckpoint
+    필드 읽기 RDConstants::sprOutlineCheckpoint
+    필드 읽기 RDConstants::sprIconMultiPlanetThreeMore
+    필드 읽기 RDConstants::sprOutlineMultiPlanetThreeMore
+    필드 읽기 RDConstants::sprIconMultiPlanetThreeLess
+    필드 읽기 RDConstants::sprOutlineMultiPlanetThreeLess
+    필드 읽기 RDConstants::sprIconMultiPlanetTwo
+    필드 읽기 RDConstants::sprOutlineMultiPlanetTwo
+    필드 읽기 RDConstants::sprIconHoldArrowLong
+    필드 읽기 RDConstants::sprOutlineHoldArrowLong
+    필드 읽기 RDConstants::sprIconHoldArrowShort
+    필드 읽기 RDConstants::sprOutlineHoldArrowShort
+    필드 읽기 RDConstants::sprIconHoldReleaseLong
+    필드 읽기 RDConstants::sprOutlineHoldReleaseLong
+    필드 읽기 RDConstants::sprIconHoldReleaseShort
+    필드 읽기 RDConstants::sprOutlineHoldReleaseShort
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    호출 scrMisc::GetAngleMoved
+    호출 UnityEngine.Mathf::Abs
+    필드 읽기 scrFloor::midSpin
+    필드 읽기 scrFloor::redSwirl
+    필드 읽기 RDConstants::sprIconSwirlBlue
+    필드 읽기 RDConstants::sprIconSwirlRed
+    호출 scrFloor::get_lm2
+    필드 읽기 scrLevelMaker2::BigTiles
+    호출 scrMisc::mod
+    필드 읽기 RDConstants::sprOutlineSwirl
+    필드 읽기 scrFloor::outlineSprite
+    필드 읽기 scrFloor::outline
+    호출 UnityEngine.Renderer::set_enabled
+    필드 쓰기 scrFloor::opacityLastFrame
+  SetIconSprite
+    필드 읽기 scrFloor::lastIconSprite
+    호출 UnityEngine.Object::op_Equality
+    필드 쓰기 scrFloor::lastIconSprite
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Application::get_isPlaying
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Sprite::get_texture
+    호출 UnityEngine.Material::SetTexture
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Sprite::get_pixelsPerUnit
+    필드 쓰기 scrFloor::iconSpriteScale
+    필드 읽기 scrFloor::iconScale
+    호출 scrFloor::SetIconScale
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::tex_clear
+    필드 읽기 scrFloor::iconsprite
+    호출 UnityEngine.SpriteRenderer::set_sprite
+    필드 읽기 RDConstants::prefab_floorIcon
+    필드 읽기 scrFloor::thisTransform
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 UnityEngine.Object::set_name
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 쓰기 scrFloor::iconsprite
+    호출 scrFloor::UpdateIconSortingOrder
+  SetIconOutlineSprite
+    필드 읽기 scrFloor::outline
+    필드 읽기 scrFloor::lastIconOutlineSprite
+    호출 UnityEngine.Object::op_Equality
+    필드 쓰기 scrFloor::lastIconOutlineSprite
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Application::get_isPlaying
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Sprite::get_texture
+    호출 UnityEngine.Material::SetTexture
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Sprite::get_pixelsPerUnit
+    필드 쓰기 scrFloor::iconSpriteScale
+    필드 읽기 scrFloor::iconScale
+    호출 scrFloor::SetIconScale
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::tex_clear
+    필드 읽기 scrFloor::outlineSprite
+    호출 UnityEngine.SpriteRenderer::set_sprite
+  SetIconFlipped
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Material::SetInt
+    필드 읽기 scrFloor::iconsprite
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.SpriteRenderer::set_flipX
+    필드 읽기 scrFloor::outlineSprite
+  SetIconColor
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Material::SetColor
+    필드 읽기 scrFloor::iconsprite
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.SpriteRenderer::set_color
+  SetIconAngle
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Material::SetFloat
+    필드 읽기 scrFloor::iconsprite
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Transform::set_localEulerAngles
+  SetIconScale
+    필드 쓰기 scrFloor::iconScale
+    필드 읽기 scrFloor::iconSpriteScale
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Material::SetFloat
+    필드 읽기 scrFloor::iconsprite
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Component::get_transform
+    호출 RDExtensions::ScaleXY
+  UpdateCommentGlow
+    호출 UnityEngine.Application::get_isPlaying
+    호출 Persistence::get_markFloorWithComment
+    호출 RDUtils::HexToColor
+    호출 ExtensionMethods::WithAlpha
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Color::get_clear
+    호출 UnityEngine.Material::SetColor
+  LightUp
+    필드 쓰기 scrFloor::hasLit
+    정적필드 읽기 GCS::typingMode
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::prefabLetterPress
+    필드 읽기 scrFloor::thisTransform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Transform::get_rotation
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 UnityEngine.Input::get_inputString
+    호출 System.String::ToUpper
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    필드 읽기 scrLetterPress::letterText
+    호출 UnityEngine.UI.Text::set_text
+    필드 읽기 scrFloor::controller
+    필드 읽기 scrController::typingLetters
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    정적필드 읽기 GCS::hitMarginLimit
+    호출 scrFloor::SetToRandomColor
+    필드 읽기 scrFloor::vfx
+    필드 읽기 scrVfx::tileFlashStyle
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::set_sortingLayerName
+    필드 읽기 scrFloor::disableGlow
+    필드 읽기 scrFloor::bottomGlow
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrFloor::topGlow
+    필드 읽기 scrFloor::targetDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrDecoration::HitFloor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  Update
+    호출 scrFloor+<>c__DisplayClass190_0::.ctor
+    필드 쓰기 scrFloor+<>c__DisplayClass190_0::<>4__this
+    필드 읽기 scrFloor::didRunStart
+    호출 scrFloor::Start
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 scrFloor::specialColorType
+    호출 UnityEngine.Time::get_time
+    필드 읽기 scrFloor::specialTimeOffset
+    필드 읽기 scrFloor::specialAnimDuration
+    호출 UnityEngine.Mathf::Cos
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 scrFloor::specialColor1
+    필드 읽기 scrFloor::specialColor2
+    호출 UnityEngine.Color::Lerp
+    호출 FloorRenderer::set_color
+    호출 FloorRenderer::get_color
+    필드 읽기 UnityEngine.Color::a
+    호출 UnityEngine.Color::RGBToHSV
+    호출 UnityEngine.Color::HSVToRGB
+    호출 ExtensionMethods::WithAlpha
+    호출 DG.Tweening.DOVirtual::EasedValue
+    필드 읽기 scrFloor::vfxPlus
+    필드 읽기 scrVfxPlus::vTrackerFloat
+    필드 읽기 scrVolumeTrackerFloat::output
+    필드 쓰기 scrFloor+<>c__DisplayClass190_0::v
+    호출 DG.Tweening.DOTween::Sequence
+    필드 읽기 scrFloor::specialColorPulse
+    필드 읽기 scrFloor+<>c__DisplayClass190_0::v
+    호출 DG.Tweening.TweenSettingsExtensions::AppendInterval
+    호출 scrFloor+<>c__DisplayClass190_0::<Update>b__0
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 DG.Tweening.TweenSettingsExtensions::AppendCallback
+    필드 읽기 scrFloor::floorIcon
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::snailSpritesArr
+    필드 읽기 RDConstants::rabbitSpritesArr
+    호출 ADOBase::get_isLevelEditor
+    호출 ADOBase::get_editor
+    호출 scnEditor::get_pausedInPlayMode
+    필드 읽기 scrFloor::controller
+    호출 scrController::get_paused
+    필드 읽기 scrController::gameworld
+    필드 읽기 scrController::currentSeqID
+    필드 읽기 scrFloor::seqID
+    필드 읽기 scrFloor::isFake
+    호출 scrFloor::SetIconSprite
+    호출 scrFloor::SetIconOutlineSprite
+    필드 읽기 scrFloor::graySetSpeedIcon
+    필드 읽기 scrFloor::conductor
+    필드 읽기 scrConductor::bpm
+    필드 읽기 scrFloor::speed
+    호출 scrConductor::get_songposition_minusi
+    호출 UnityEngine.Mathf::Floor
+  LateUpdate
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 scrFloor::nextfloor
+    호출 UnityEngine.Object::op_Equality
+    필드 쓰기 scrFloor::holdLength
+    필드 읽기 scrFloor::controller
+    필드 읽기 scrController::gameworld
+    호출 scrController::get_currFloor
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scrFloor::freeroamGenerated
+    필드 읽기 scrFloor::lastPos
+    필드 읽기 scrFloor::thisTransform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Vector3::op_Inequality
+    필드 읽기 scrFloor::lastScale
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_localScale
+    필드 쓰기 scrFloor::isTweening
+    필드 읽기 scrFloor::opacityLastFrame
+    필드 읽기 scrFloor::opacity
+    필드 쓰기 scrFloor::isFading
+    필드 읽기 scrFloor::glowMultiplierLastFrame
+    필드 읽기 scrFloor::glowMultiplier
+    필드 쓰기 scrFloor::isChangingGlowMult
+    필드 읽기 scrFloor::isFading
+    필드 읽기 FloorRenderer::material
+    정적필드 읽기 scrFloor::ShaderProperty_Alpha
+    호출 UnityEngine.Material::SetFloat
+    호출 scrController::get_paused
+    호출 UnityEngine.Color::.ctor
+    호출 scrFloor::SetIconColor
+    필드 읽기 scrFloor::isFake
+    필드 읽기 scrFloor::topGlow
+    호출 UnityEngine.SpriteRenderer::set_color
+    필드 읽기 scrFloor::outlineSprite
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scrFloor::outline
+    필드 읽기 scrFloor::dummyPlanets
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 읽기 scrFloor::multiplanetLine
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 PlanetRenderer::sprite
+    호출 PlanetSprite::get_color
+    호출 ExtensionMethods::WithAlpha
+    호출 PlanetRenderer::SetPlanetColor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 읽기 scrFloor::isChangingGlowMult
+    필드 읽기 scrController::currentSeqID
+    필드 읽기 scrFloor::seqID
+    호출 UnityEngine.LineRenderer::get_startColor
+    호출 UnityEngine.LineRenderer::set_startColor
+    호출 UnityEngine.LineRenderer::get_endColor
+    호출 UnityEngine.LineRenderer::set_endColor
+    호출 PlanetRenderer::SetTailColor
+    필드 읽기 scrFloor::isTweening
+    호출 UnityEngine.Transform::set_position
+    필드 쓰기 scrFloor::lastPos
+    필드 쓰기 scrFloor::lastScale
+    필드 쓰기 scrFloor::opacityLastFrame
+    필드 쓰기 scrFloor::glowMultiplierLastFrame
+  OnBecameVisible
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 읽기 scrFloor::controller
+    필드 읽기 scrController::gameworld
+    필드 읽기 scrFloor::nextfloor
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scrFloor::holdLength
+    필드 읽기 scrFloor::prevfloor
+    필드 읽기 scrFloor::editorNumText
+    호출 ADOBase::get_isLevelEditor
+    호출 UnityEngine.Component::get_gameObject
+    호출 ADOBase::get_editor
+    필드 읽기 scnEditor::showFloorNums
+    호출 scnEditor::get_playMode
+    필드 읽기 scrFloor::isFake
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrLetterPress::letterText
+    필드 읽기 scrFloor::seqID
+    호출 System.Int32::ToString
+    호출 UnityEngine.UI.Text::set_text
+  OnBecameInvisible
+    필드 읽기 scrFloor::topGlow
+    호출 UnityEngine.Renderer::get_isVisible
+    필드 읽기 scrFloor::controller
+    호출 UnityEngine.Object::op_Inequality
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scrController::currentSeqID
+    필드 읽기 scrFloor::seqID
+    호출 scrController::get_instance
+    필드 읽기 scrFloor::holdLength
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 읽기 scrFloor::editorNumText
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+  OnBeat
+    필드 읽기 scrFloor::dontChangeMySprite
+    필드 읽기 scrFloor::vfx
+    필드 읽기 scrVfx::overrideTileSprites
+    필드 읽기 scrFloor::hasLit
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 scrVfx::unlitTile
+    호출 FloorRenderer::set_sprite
+    호출 scrFloor::SetToRandomColor
+  SetTileColor
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::set_color
+  SetToRandomColor
+    필드 읽기 scrFloor::dontChangeMySprite
+    필드 읽기 scrFloor::vfx
+    필드 읽기 scrVfx::tileFlashStyle
+    필드 읽기 scrVfx::arrTileFlashColours
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Random::Range
+    호출 UnityEngine.Mathf::FloorToInt
+    호출 FloorRenderer::get_color
+    필드 읽기 UnityEngine.Color::a
+    호출 ExtensionMethods::WithAlpha
+    호출 FloorRenderer::set_color
+    필드 읽기 scrFloor::topGlow
+    호출 UnityEngine.Color::get_clear
+    호출 UnityEngine.SpriteRenderer::set_color
+    필드 읽기 scrFloor::bottomGlow
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.SpriteRenderer::get_color
+    필드 읽기 scrFloor::arrColorsBottomGlow
+    필드 읽기 scrFloor::conductor
+    필드 읽기 scrConductor::beatNumber
+    필드 읽기 scrFloor::seqID
+    필드 읽기 scrFloor::glowMultiplier
+    호출 UnityEngine.Color::get_white
+    필드 읽기 scrFloor::controller
+    필드 읽기 scrController::gameworld
+    필드 읽기 scrFloor::customSpriteRange
+    필드 읽기 scrFloor::minLitSprite
+    필드 읽기 scrVfx::overrideStyle
+    필드 읽기 scrVfx::arrLitTiles
+    필드 읽기 scrFloor::maxLitSprite
+    필드 쓰기 scrFloor::randomNumberForLitAndGlow
+    필드 읽기 scrFloor::thisTransform
+    호출 UnityEngine.Transform::get_position
+    필드 읽기 UnityEngine.Vector3::x
+    호출 UnityEngine.Mathf::Round
+    필드 읽기 UnityEngine.Vector3::y
+    호출 UnityEngine.Mathf::Abs
+    필드 읽기 scrVfx::overrideTileSprites
+    필드 읽기 scrFloor::randomNumberForLitAndGlow
+    호출 FloorRenderer::set_sprite
+    필드 읽기 scrVfx::overrideGlowSprites
+    필드 읽기 scrVfx::arrTopGlowSprites
+    호출 UnityEngine.SpriteRenderer::set_sprite
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Mathf::Min
+  SpawnPortalParticles
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::animatedPortalPrefab
+    호출 UnityEngine.Component::get_transform
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::get_name
+    호출 UnityEngine.Object::set_name
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::get_sortingOrder
+    필드 읽기 scrPortalParticles::glowSprite
+    호출 UnityEngine.Renderer::set_sortingOrder
+    호출 제네릭 UnityEngine.Component::GetComponentInChildren
+    필드 읽기 scrPortalParticles::cap
+    필드 읽기 scrPortalParticles::icon
+    정적필드 읽기 GCS::practiceMode
+    호출 UnityEngine.Color::get_gray
+    필드 쓰기 scrPortalParticles::color
+    정적필드 읽기 GCS::speedTrialMode
+    필드 쓰기 scrPortalParticles::speedTrial
+  UpdateAngle
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    호출 FloorRenderer::SetAngle
+    필드 읽기 FloorMeshRenderer::floorMesh
+    필드 읽기 scrFloor::midSpin
+    호출 FloorMesh::set__curvaturePoints
+    호출 scrFloor::SetSpriteFromChar
+  SetSpriteFromChar
+    필드 읽기 scrFloor::entryangle
+    필드 읽기 scrFloor::exitangle
+    호출 scrMisc::getAcuteAngle
+    호출 UnityEngine.Mathf::RoundToInt
+    필드 읽기 scrFloor::midSpin
+    호출 scrFloor::get_lm2
+    필드 읽기 scrLevelMaker2::arr0
+    필드 읽기 scrLevelMaker2::arrMidspin
+    필드 읽기 scrLevelMaker2::arr15
+    필드 읽기 scrLevelMaker2::arr30
+    필드 읽기 scrLevelMaker2::arr45
+    필드 읽기 scrLevelMaker2::arr60
+    필드 읽기 scrLevelMaker2::arr75
+    필드 읽기 scrLevelMaker2::BigTiles
+    필드 읽기 scrLevelMaker2::arrBend
+    필드 읽기 scrLevelMaker2::arr90
+    필드 읽기 scrLevelMaker2::arr105
+    필드 읽기 scrLevelMaker2::arr108
+    필드 읽기 scrLevelMaker2::arr120
+    필드 읽기 scrLevelMaker2::arr128
+    필드 읽기 scrLevelMaker2::arr135
+    필드 읽기 scrLevelMaker2::arr150
+    필드 읽기 scrLevelMaker2::arr165
+    필드 읽기 scrLevelMaker2::arrStraight
+    필드 읽기 scrLevelMaker2::arr180
+    호출 scrMisc::mod
+    필드 읽기 scrFloor::freeroamGenerated
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 scrFloor::styleNum
+    호출 scrMisc::GetRandInt
+    호출 FloorRenderer::set_sprite
+    필드 읽기 scrLevelMaker2::freeRoam
+    호출 UnityEngine.Component::get_transform
+    호출 scrMisc::Rotate2DCW
+  SetTrackStyle
+    필드 쓰기 scrFloor::initialTrackStyle
+    필드 읽기 scrFloor::floorRenderer
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 scrFloor::customTexture
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::tex_floorTileNone
+    필드 읽기 RDConstants::tex_floorTileDefault
+    필드 읽기 RDConstants::tex_gem
+    필드 읽기 scrFloor::customTextureScale
+    필드 읽기 RDConstants::tex_perlinNone
+    필드 읽기 RDConstants::tex_perlinDefault
+    필드 읽기 scrFloor::controller
+    호출 scrController::get_baseFloorDimensions
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    필드 읽기 scrFloor::lengthMult
+    필드 읽기 scrFloor::widthMult
+    필드 읽기 RDConstants::tex_floorEdgeBasic
+    호출 UnityEngine.Color::get_clear
+    필드 읽기 RDConstants::tex_floorEdgeMinimal
+    필드 읽기 scrFloor::tapsNeeded
+    필드 읽기 scrFloor::tapsSoFar
+    필드 읽기 RDConstants::tex_floorEdgeNeon
+    필드 읽기 RDConstants::tex_floorEdgeNeon2
+    호출 UnityEngine.Color::get_white
+    호출 ExtensionMethods::WithAlpha
+    필드 읽기 RDConstants::tex_floorEdgeNeonLight
+    호출 UnityEngine.Color::get_black
+    필드 읽기 RDConstants::tex_floorEdgeDefault
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 제네릭 System.Nullable`1::get_Value
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Material::SetTexture
+    호출 UnityEngine.Material::SetFloat
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Material::SetColor
+    필드 읽기 scrFloor::freeroamGenerated
+    필드 읽기 FloorMeshRenderer::floorMesh
+    호출 FloorMesh::set__length
+    호출 FloorMesh::set__width
+    호출 FloorMesh::set__isSprite
+    호출 UnityEngine.Material::SetInt
+    필드 읽기 scrFloor::freeroamArea
+    필드 읽기 FreeroamArea::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrFloor::SetTrackStyle
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  ForceSnap
+  TweenRotation
+    호출 scrFloor::<TweenRotation>b__203_0
+    호출 제네릭 DG.Tweening.Core.DOGetter`1::.ctor
+    호출 scrFloor::<TweenRotation>b__203_1
+    호출 제네릭 DG.Tweening.Core.DOSetter`1::.ctor
+    필드 읽기 scrFloor::startRot
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Vector3::op_Addition
+    필드 읽기 UnityEngine.Vector3::z
+    호출 DG.Tweening.DOTween::To
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 scrFloor::<TweenRotation>b__203_2
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnUpdate
+  TweenOpacity
+    호출 scrFloor::<TweenOpacity>b__204_0
+    호출 제네릭 DG.Tweening.Core.DOGetter`1::.ctor
+    호출 scrFloor::<TweenOpacity>b__204_1
+    호출 제네릭 DG.Tweening.Core.DOSetter`1::.ctor
+    호출 DG.Tweening.DOTween::To
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    필드 쓰기 scrFloor::opacity
+    필드 쓰기 scrFloor::dontChangeMySprite
+  SetColor
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::set_color
+    필드 쓰기 FloorRenderer::deselectedColor
+    필드 읽기 scrFloor::freeroamArea
+    필드 읽기 FreeroamArea::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 FloorRenderer::cachedColor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  TweenColor
+    호출 scrFloor+<>c__DisplayClass206_0::.ctor
+    필드 쓰기 scrFloor+<>c__DisplayClass206_0::<>4__this
+    호출 UnityEngine.Application::get_isPlaying
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::get_color
+    필드 쓰기 scrFloor+<>c__DisplayClass206_0::currentColor
+    필드 읽기 scrFloor::moveTweens
+    호출 scrFloor+<>c__DisplayClass206_0::<TweenColor>b__0
+    호출 제네릭 DG.Tweening.Core.DOGetter`1::.ctor
+    호출 scrFloor+<>c__DisplayClass206_0::<TweenColor>b__1
+    호출 제네릭 DG.Tweening.Core.DOSetter`1::.ctor
+    호출 DG.Tweening.DOTween::To
+    호출 scrFloor+<>c__DisplayClass206_0::<TweenColor>b__2
+    호출 DG.Tweening.TweenCallback::.ctor
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::OnUpdate
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetDelay
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+  MoveToBack
+    호출 scrFloor::SetSortingOrder
+  MoveBackBy
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::get_sortingOrder
+    호출 scrFloor::SetSortingOrder
+  SetSortingOrder
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::set_sortingOrder
+    필드 읽기 scrFloor::outlineSprite
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Renderer::set_sortingOrder
+    호출 scrFloor::UpdateIconSortingOrder
+    호출 scrFloor::UpdateGlowSortingOrder
+  UpdateGlowSortingOrder
+    필드 읽기 scrFloor::topGlow
+    호출 UnityEngine.Object::op_Implicit
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::get_sortingOrder
+    호출 UnityEngine.Renderer::set_sortingOrder
+    필드 읽기 scrFloor::isFake
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::get_sortingLayerName
+    호출 UnityEngine.Renderer::set_sortingLayerName
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_layer
+    호출 UnityEngine.GameObject::set_layer
+    필드 읽기 scrFloor::bottomGlow
+  UpdateIconSortingOrder
+    필드 읽기 scrFloor::iconsprite
+    호출 UnityEngine.Object::op_Inequality
+    필드 읽기 scrFloor::floorRenderer
+    호출 FloorRenderer::get_sortingOrder
+    호출 UnityEngine.Renderer::set_sortingOrder
+  ColorFloor
+    필드 읽기 scrFloor::controller
+    필드 읽기 scrController::visualEffects
+    필드 쓰기 scrFloor::specialColorType
+    필드 쓰기 scrFloor::specialColorTypeStart
+    필드 쓰기 scrFloor::specialColor1
+    필드 쓰기 scrFloor::specialColor2
+    필드 쓰기 scrFloor::specialAnimDuration
+    필드 쓰기 scrFloor::specialColorPulse
+    필드 쓰기 scrFloor::specialPulseLength
+    필드 읽기 scrFloor::floorRenderer
+    호출 scrFloor::TweenColor
+    필드 읽기 scrFloor::freeroamGenerated
+    필드 읽기 scrFloor::seqID
+    필드 읽기 scrFloor::freeroamPosition
+    호출 UnityEngine.Vector2Int::get_x
+    호출 UnityEngine.Vector2Int::get_y
+    호출 UnityEngine.Color::get_white
+    호출 scrFloor::SetColor
+    호출 FloorRenderer::set_color
+    호출 FloorRenderer::get_color
+    필드 읽기 UnityEngine.Color::a
+    호출 UnityEngine.Color::RGBToHSV
+    호출 UnityEngine.Color::HSVToRGB
+    호출 ExtensionMethods::WithAlpha
+    필드 쓰기 scrFloor::specialTimeOffset
+    필드 읽기 scrFloor::freeroamArea
+    필드 읽기 FreeroamArea::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrFloor::ColorFloor
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  SetRotation
+    필드 읽기 scrFloor::startRot
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Vector3::op_Addition
+    필드 쓰기 scrFloor::tweenRot
+    필드 읽기 scrFloor::thisTransform
+    필드 읽기 scrFloor::tweenRot
+    호출 UnityEngine.Transform::set_eulerAngles
+  SetOpacity
+    호출 UnityEngine.Application::get_isPlaying
+    호출 scrFloor::TweenOpacity
+  ToggleCollider
+    필드 쓰기 scrFloor::collShouldBeEnabled
+    필드 읽기 scrFloor::coll
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Behaviour::set_enabled
+  ResetToLevelStart
+    필드 읽기 scrFloor::thisTransform
+    필드 읽기 scrFloor::startRot
+    필드 읽기 UnityEngine.Vector3::z
+    필드 읽기 scrFloor::rotationOffset
+    호출 ExtensionMethods::WithZ
+    필드 읽기 scrFloor::startPos
+    호출 UnityEngine.Transform::set_position
+    호출 UnityEngine.Transform::set_eulerAngles
+    필드 쓰기 scrFloor::tweenRot
+    필드 읽기 scrFloor::opacityVal
+    필드 쓰기 scrFloor::opacity
+    필드 읽기 scrFloor::freeroamGenerated
+    필드 읽기 scrFloor::startScale
+    호출 UnityEngine.Transform::set_localScale
+    필드 읽기 scrFloor::initialTrackStyle
+    호출 scrFloor::SetTrackStyle
+    필드 읽기 scrFloor::freeroam
+    필드 읽기 scrFloor::freeroamFloors
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrFloor::freeroamRemoved
+    호출 scrFloor::ResetToLevelStart
+    필드 쓰기 scrFloor::startScale
+    필드 쓰기 scrFloor::isLandable
+    호출 scrFloor::ToggleCollider
+    필드 읽기 scrFloor::topGlow
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 scrFloor::isCCW
+    필드 쓰기 scrFloor::isCCW
+    호출 scrFloor::UpdateIconSprite
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    필드 쓰기 scrFloor::tapsSoFar
+    호출 scrFloor::UpdateMultitapTexture
+  UpdateMultitapTexture
+    필드 읽기 scrFloor::initialTrackStyle
+    필드 읽기 scrFloor::tapsNeeded
+    필드 읽기 scrFloor::tapsSoFar
+    필드 읽기 scrFloor::gc
+    필드 읽기 RDConstants::tex_floorEdgeNeon
+    필드 읽기 RDConstants::tex_floorEdgeNeon2
+    필드 읽기 scrFloor::floorRenderer
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Material::SetTexture
+  .ctor
+    필드 쓰기 scrFloor::speed
+    필드 쓰기 scrFloor::isLandable
+    필드 쓰기 scrFloor::tapsNeeded
+    필드 쓰기 scrFloor::planetEase
+    필드 쓰기 scrFloor::planetEaseParts
+    필드 쓰기 scrFloor::holdLength
+    필드 쓰기 scrFloor::styleNum
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    필드 쓰기 scrFloor::plusEffects
+    필드 쓰기 scrFloor::stringDirection
+    필드 쓰기 scrFloor::floatDirection
+    필드 쓰기 scrFloor::opacity
+    필드 쓰기 scrFloor::glowMultiplier
+    필드 쓰기 scrFloor::holdOpacity
+    필드 쓰기 scrFloor::extendAnim
+    호출 제네릭 System.Collections.Generic.HashSet`1::.ctor
+    필드 쓰기 scrFloor::perfectEffects
+    필드 쓰기 scrFloor::earlyPerfectEffects
+    필드 쓰기 scrFloor::latePerfectEffects
+    필드 쓰기 scrFloor::veryEarlyEffects
+    필드 쓰기 scrFloor::veryLateEffects
+    필드 쓰기 scrFloor::tooEarlyEffects
+    필드 쓰기 scrFloor::tooLateEffects
+    필드 쓰기 scrFloor::lossEffects
+    필드 쓰기 scrFloor::onCheckpointEffects
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 scrFloor::moveTweens
+    필드 쓰기 scrFloor::targetDecorations
+    필드 쓰기 scrFloor::lastTaps
+    필드 쓰기 scrFloor::opacityLastFrame
+    필드 쓰기 scrFloor::glowMultiplierLastFrame
+    필드 쓰기 scrFloor::lengthMult
+    필드 쓰기 scrFloor::widthMult
+    필드 쓰기 scrFloor::opacityVal
+    필드 쓰기 scrFloor::freeroamFloors
+    필드 쓰기 scrFloor::angleCorrectionType
+    필드 쓰기 scrFloor::freeroamEndEase
+    필드 쓰기 scrFloor::moveCamAtFreeroamEnd
+    필드 쓰기 scrFloor::collShouldBeEnabled
+    필드 쓰기 scrFloor::marginScale
+    필드 쓰기 scrFloor::radiusScale
+    필드 쓰기 scrFloor::freeroamSoundOnBeat
+    필드 쓰기 scrFloor::freeroamSoundOffBeat
+    필드 쓰기 scrFloor::numPlanets
+    필드 쓰기 scrFloor::dummyPlanets
+    필드 쓰기 scrFloor::iconScale
+    필드 쓰기 scrFloor::iconSpriteScale
+    호출 ADOBase::.ctor
+  .cctor
+    호출 UnityEngine.Vector2::.ctor
+    정적필드 쓰기 scrFloor::LongDimensions
+    정적필드 쓰기 scrFloor::ShortDimensions
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    정적필드 쓰기 scrFloor::randomOffsets
+  <Start>g__RandomVector4|179_0
+    호출 ADOBase::get_randomFloat
+    호출 UnityEngine.Vector4::.ctor
+  <TweenRotation>b__203_0
+    필드 읽기 scrFloor::tweenRot
+    필드 읽기 UnityEngine.Vector3::z
+  <TweenRotation>b__203_1
+    필드 읽기 scrFloor::tweenRot
+    필드 쓰기 UnityEngine.Vector3::z
+  <TweenRotation>b__203_2
+    필드 읽기 scrFloor::thisTransform
+    필드 읽기 scrFloor::tweenRot
+    호출 UnityEngine.Transform::set_eulerAngles
+  <TweenOpacity>b__204_0
+    필드 읽기 scrFloor::opacity
+  <TweenOpacity>b__204_1
+    필드 쓰기 scrFloor::opacity

@@ -1,0 +1,988 @@
+﻿== FloorIcon : System.Enum
+  필드 value__
+  필드 static None
+  필드 static Snail
+  필드 static DoubleSnail
+  필드 static Rabbit
+  필드 static DoubleRabbit
+  필드 static Swirl
+  필드 static SwirlCW
+  필드 static SameSpeed
+  필드 static OneVfx
+  필드 static Vfx
+  필드 static Checkpoint
+  필드 static HoldArrowShort
+  필드 static HoldArrowLong
+  필드 static HoldReleaseShort
+  필드 static HoldReleaseLong
+  필드 static MultiPlanetTwo
+  필드 static MultiPlanetThreeMore
+  필드 static MultiPlanetThreeLess
+  필드 static ForceNone
+  필드 static AnimatedSnail
+  필드 static AnimatedRabbit
+  필드 static AnimatedDoubleSnail
+  필드 static AnimatedDoubleRabbit
+  필드 static Decoration
+  필드 static Portal
+== FloorType : System.Enum
+  필드 value__
+  필드 static Sprite
+  필드 static Mesh
+== FindFloorType : System.Enum
+  필드 value__
+  필드 static Floor
+  필드 static Bookmark
+== CustomFloorIcon : System.Enum
+  필드 value__
+  필드 static None
+  필드 static Snail
+  필드 static DoubleSnail
+  필드 static Rabbit
+  필드 static DoubleRabbit
+  필드 static Swirl
+  필드 static Checkpoint
+  필드 static HoldArrowShort
+  필드 static HoldArrowLong
+  필드 static HoldReleaseShort
+  필드 static HoldReleaseLong
+  필드 static MultiPlanetTwo
+  필드 static MultiPlanetThreeMore
+  필드 static Portal
+== FloorDecorationColorType : System.Enum
+  필드 value__
+  필드 static Single
+  필드 static Glow
+  필드 static Blink
+  필드 static Switch
+  필드 static Rainbow
+  필드 static Volume
+== FloorDecorationType : System.Enum
+  필드 value__
+  필드 static Normal
+  필드 static Midspin
+== FloorDirectionButtonType : System.Enum
+  필드 value__
+  필드 static D
+  필드 static W
+  필드 static A
+  필드 static S
+  필드 static E
+  필드 static Q
+  필드 static Z
+  필드 static C
+  필드 static Y
+  필드 static V
+  필드 static T
+  필드 static B
+  필드 static H
+  필드 static J
+  필드 static N
+  필드 static M
+  필드 static BackQuoteY
+  필드 static BackQuoteV
+  필드 static BackQuoteT
+  필드 static BackQuoteB
+  필드 static BackQuoteH
+  필드 static BackQuoteJ
+  필드 static BackQuoteN
+  필드 static BackQuoteM
+  필드 static Space
+  필드 static Tab
+== scrFloor : ADOBase
+  필드 static SortingOrderOffset
+  필드 static gizmoIconFilename
+  필드 static checkpointIconFilename
+  필드 static NonStandardExtraLength
+  필드 static NonStandardExtraWidth
+  필드 static LongDimensions
+  필드 static ShortDimensions
+  필드 static ShaderProperty_Alpha
+  필드 static ShaderProperty_Color
+  필드 static randomOffsets
+  필드 floorRenderer
+  필드 legacyFloorSpriteRenderer
+  필드 iconsprite
+  필드 outlineSprite
+  필드 topGlow
+  필드 bottomGlow
+  필드 disableGlow
+  필드 editorNumText
+  필드 seqID
+  필드 speed
+  필드 rotatecamera
+  필드 isLandable
+  필드 isCCW
+  필드 tapsNeeded
+  필드 tapsSoFar
+  필드 midSpin
+  필드 planetEase
+  필드 planetEaseParts
+  필드 planetEasePartBehavior
+  필드 holdLength
+  필드 unstable
+  필드 isSafe
+  필드 stickToFloor
+  필드 isFake
+  필드 graySetSpeedIcon
+  필드 redSwirl
+  필드 dontChangeMySprite
+  필드 floorIcon
+  필드 usedCustomFloorIcon
+  필드 arrColorsBottomGlow
+  필드 hasLit
+  필드 customSpriteRange
+  필드 minLitSprite
+  필드 maxLitSprite
+  필드 outline
+  필드 isportal
+  필드 levelnumber
+  필드 arguments
+  필드 exitangle
+  필드 entryangle
+  필드 angleLength
+  필드 entryTime
+  필드 entryTimePitchAdj
+  필드 prevfloor
+  필드 nextfloor
+  필드 styleNum
+  필드 plusEffects
+  필드 entryBeat
+  필드 turnaround
+  필드 stringDirection
+  필드 floatDirection
+  필드 specialColor1
+  필드 specialColor2
+  필드 specialColorType
+  필드 specialColorTypeStart
+  필드 specialAnimDuration
+  필드 specialColorPulse
+  필드 specialPulseLength
+  필드 specialTimeOffset
+  필드 opacity
+  필드 glowMultiplier
+  필드 holdOpacity
+  필드 extendAnim
+  필드 isBookmarked
+  필드 startPos
+  필드 startRot
+  필드 startScale
+  필드 tweenRot
+  필드 offsetPos
+  필드 customTexture
+  필드 customTextureScale
+  필드 initialTrackStyle
+  필드 hasConditionalChange
+  필드 perfectEffects
+  필드 earlyPerfectEffects
+  필드 latePerfectEffects
+  필드 veryEarlyEffects
+  필드 veryLateEffects
+  필드 tooEarlyEffects
+  필드 tooLateEffects
+  필드 lossEffects
+  필드 onCheckpointEffects
+  필드 moveTweens
+  필드 eventIcon
+  필드 setHitsound
+  필드 setGameSound
+  필드 targetDecorations
+  필드 lastTaps
+  필드 oriScaleBottomGlow
+  필드 controller
+  필드 conductor
+  필드 gc
+  필드 vfx
+  필드 vfxPlus
+  필드 opacityLastFrame
+  필드 glowMultiplierLastFrame
+  필드 didRunStart
+  필드 lengthMult
+  필드 widthMult
+  필드 holdGO
+  필드 holdCompletion
+  필드 holdCompletionEased
+  필드 holdRenderer
+  필드 holdDistance
+  필드 showHoldTiming
+  필드 opacityVal
+  필드 rotationOffset
+  필드 freeroam
+  필드 freeroamGenerated
+  필드 freeroamRegion
+  필드 freeroamRemoved
+  필드 freeroamFloors
+  필드 extraBeats
+  필드 angleCorrectionType
+  필드 freeroamEndEarlyBeats
+  필드 freeroamOffset
+  필드 freeroamDimensions
+  필드 freeroamEndEase
+  필드 moveCamAtFreeroamEnd
+  필드 coll
+  필드 collShouldBeEnabled
+  필드 countdownTicks
+  필드 marginScale
+  필드 grade
+  필드 radiusScale
+  필드 isWarning
+  필드 auto
+  필드 shouldBeAutoPlayed
+  필드 _showStatusText
+  필드 hideJudgment
+  필드 hideIcon
+  필드 freeroamSoundOnBeat
+  필드 freeroamSoundOffBeat
+  필드 numPlanets
+  필드 isSwirl
+  필드 multiplanetLine
+  필드 dummyPlanets
+  필드 isTweening
+  필드 isFading
+  필드 isChangingGlowMult
+  필드 lastPos
+  필드 lastRot
+  필드 lastScale
+  필드 forceUpdating
+  필드 thisTransform
+  필드 storedPos
+  필드 storedRot
+  필드 perpendicularAngleVector
+  필드 freeroamArea
+  필드 freeroamPosition
+  필드 iconScale
+  필드 iconSpriteScale
+  필드 lastIconSprite
+  필드 lastIconOutlineSprite
+  필드 changeTrack
+  필드 randomNumberForLitAndGlow
+  메서드 boolean get_isCustomPortal()
+  메서드 boolean get_checkIsPortal()
+  메서드 double get_entryTimeAfterExtraBeats()
+  메서드 boolean get_showStatusText()
+  메서드 void set_showStatusText(boolean)
+  메서드 static scrLevelMaker2 get_lm2()
+  메서드 void Awake()
+  메서드 void CheckPortalSprite()
+  메서드 void Reset()
+  메서드 void Start()
+  메서드 UnityEngine.GameObject GenerateCollider()
+  메서드 void UpdateIconSprite(boolean)
+  메서드 void SetIconSprite(UnityEngine.Sprite)
+  메서드 void SetIconOutlineSprite(UnityEngine.Sprite)
+  메서드 void SetIconFlipped(boolean)
+  메서드 void SetIconColor(UnityEngine.Color)
+  메서드 void SetIconAngle(single)
+  메서드 void SetIconScale(single)
+  메서드 void UpdateCommentGlow(boolean)
+  메서드 void LightUp()
+  메서드 void Update()
+  메서드 void LateUpdate()
+  메서드 void OnBecameVisible()
+  메서드 void OnBecameInvisible()
+  메서드 void OnBeat()
+  메서드 void SetTileColor(UnityEngine.Color)
+  메서드 void SetToRandomColor()
+  메서드 void SpawnPortalParticles()
+  메서드 void UpdateAngle(boolean)
+  메서드 void SetSpriteFromChar(boolean)
+  메서드 void SetTrackStyle(TrackStyle, boolean, System.Nullable`1<UnityEngine.Color>)
+  메서드 void ForceSnap()
+  메서드 DG.Tweening.Tween TweenRotation(single, single, DG.Tweening.Ease)
+  메서드 DG.Tweening.Tween TweenOpacity(single, single, DG.Tweening.Ease)
+  메서드 void SetColor(UnityEngine.Color)
+  메서드 DG.Tweening.Tween TweenColor(UnityEngine.Color, single, DG.Tweening.Ease, single)
+  메서드 void MoveToBack()
+  메서드 void MoveBackBy(int32)
+  메서드 void SetSortingOrder(int32)
+  메서드 void UpdateGlowSortingOrder()
+  메서드 void UpdateIconSortingOrder()
+  메서드 void ColorFloor(TrackColorType, UnityEngine.Color, UnityEngine.Color, single, TrackColorPulse, single, int32, single, DG.Tweening.Ease)
+  메서드 void SetRotation(single)
+  메서드 void SetOpacity(single)
+  메서드 void ToggleCollider(boolean)
+  메서드 void ResetToLevelStart()
+  메서드 void UpdateMultitapTexture()
+  메서드 void .ctor()
+  메서드 static void .cctor()
+  메서드 UnityEngine.Vector4 <Start>g__RandomVector4|179_0()
+  메서드 single <TweenRotation>b__203_0()
+  메서드 void <TweenRotation>b__203_1(single)
+  메서드 void <TweenRotation>b__203_2()
+  메서드 single <TweenOpacity>b__204_0()
+  메서드 void <TweenOpacity>b__204_1(single)
+== scrMenuMovingFloor : UnityEngine.MonoBehaviour
+  필드 moving
+  필드 xtraState
+  필드 xtraHidden
+  필드 originalPos
+  필드 coll
+  필드 xtraIslandEntrance
+  필드 entranceToXtraIsland
+  필드 gemIsInTaroWorld
+  메서드 void Awake()
+  메서드 void Start()
+  메서드 void ResetPos(boolean)
+  메서드 void RunAnimationGlobal(boolean)
+  메서드 void RunAnimation(boolean)
+  메서드 void XtraPop(boolean)
+  메서드 void Hop()
+  메서드 void Hop2Xtra()
+  메서드 void Xtra2Front()
+  메서드 void ExitTaroWorld()
+  메서드 void ReturnToTaroWorld()
+  메서드 void MoveCamera(boolean)
+  메서드 void MoveCameraX(boolean)
+  메서드 void .ctor()
+  메서드 void <XtraPop>b__12_0()
+  메서드 void <Hop>b__13_0()
+  메서드 void <ReturnToTaroWorld>b__18_0()
+== ffxTractorbeamFloors : ffxPlusBase
+  필드 tractorbeamSource
+  필드 tileRange
+  필드 origin
+  메서드 boolean get_runOnHit()
+  메서드 void StartEffect(scrPlanet)
+  메서드 void AbductFloor(single, single, single)
+  메서드 void .ctor()
+== ffxFloorDisappear_ZeroBehind : ffxPlusBase
+  필드 parent
+  메서드 void StartEffect(scrPlanet)
+  메서드 void .ctor()
+== ffxFloorAppearPlus : ffxPlusBase
+  필드 prevFloor
+  필드 tilesAhead
+  필드 animType
+  메서드 System.Collections.Generic.IEnumerable`1<DG.Tweening.Tween> get_eventTweens()
+  메서드 void Awake()
+  메서드 void SetStartTime(single, single)
+  메서드 void StartEffect(scrPlanet)
+  메서드 void ScrubToTime(single)
+  메서드 void FloorSetup()
+  메서드 void .ctor()
+  메서드 single <StartEffect>b__7_0()
+  메서드 void <StartEffect>b__7_1(single)
+== ffxFloorDisappearPlus : ffxPlusBase
+  필드 tilesBehind
+  필드 animType
+  필드 static maxID_debug
+  메서드 System.Collections.Generic.IEnumerable`1<DG.Tweening.Tween> get_eventTweens()
+  메서드 void Awake()
+  메서드 void SetStartTime(single, single)
+  메서드 void StartEffect(scrPlanet)
+  메서드 void .ctor()
+  메서드 static void .cctor()
+== ffxMoveFloorPlus : ffxPlusBase
+  필드 levelMaker
+  필드 start
+  필드 end
+  필드 targetPos
+  필드 positionUsed
+  필드 targetRot
+  필드 rotationUsed
+  필드 targetScale
+  필드 targetScaleV2
+  필드 scaleUsed
+  필드 targetOpacity
+  필드 opacityUsed
+  필드 gapLength
+  메서드 System.Collections.Generic.IEnumerable`1<DG.Tweening.Tween> get_eventTweens()
+  메서드 void Awake()
+  메서드 void Start()
+  메서드 void StartEffect(scrPlanet)
+  메서드 void Decode(ADOFAI.LevelEvent)
+  메서드 void .ctor()
+  메서드 void <StartEffect>g__TweenFloor|17_0(scrFloor, ref ffxMoveFloorPlus+<>c__DisplayClass17_0)
+== ffxRecolorFloorPlus : ffxPlusBase
+  필드 levelMaker
+  필드 start
+  필드 end
+  필드 color1
+  필드 color2
+  필드 colorType
+  필드 colorAnimDuration
+  필드 pulseType
+  필드 pulseLength
+  필드 style
+  필드 trackTexture
+  필드 trackTextureScale
+  필드 glowMult
+  필드 gapLength
+  필드 usedColor1
+  필드 usedColor2
+  필드 usedColorType
+  필드 usedColorAnimDuration
+  필드 usedPulseType
+  필드 usedPulseLength
+  필드 usedStyle
+  필드 usedTrackTexture
+  필드 usedTrackTextureScale
+  필드 usedGlowMult
+  필드 tweenTypes
+  메서드 System.Collections.Generic.IEnumerable`1<DG.Tweening.Tween> get_eventTweens()
+  메서드 void Awake()
+  메서드 void StartEffect(scrPlanet)
+  메서드 void Decode(ADOFAI.LevelEvent)
+  메서드 void .ctor()
+  메서드 boolean <get_eventTweens>b__26_0(scrFloor)
+  메서드 System.Collections.Generic.IEnumerable`1<DG.Tweening.Tween> <get_eventTweens>b__26_1(scrFloor)
+  메서드 boolean <get_eventTweens>b__26_2(System.Collections.Generic.KeyValuePair`2<TweenType,DG.Tweening.Tween>)
+== FloorMesh : UnityEngine.MonoBehaviour
+  필드 static angle5
+  필드 static angle30
+  필드 static angle45
+  필드 static angle90
+  필드 static angle120
+  필드 static angle180
+  필드 static angle250
+  필드 static angle270
+  필드 static angle360
+  필드 static leftTurn
+  필드 static rightTurn
+  필드 static angleEpsilon
+  필드 static rayEpsilon
+  필드 static knittingLevel
+  필드 static shadowWidth
+  필드 static uTurnOffset
+  필드 static defaultCurvaturePoints
+  필드 static darkMagenta
+  필드 static darkCyan
+  필드 static darkGreen
+  필드 static darkGray
+  필드 static orange
+  필드 static lightBlue
+  필드 static floorMeshesThatNeedUpdate
+  필드 static cache
+  필드 static polygons
+  필드 static connections
+  필드 static mainPolygon0
+  필드 static mainPolygon0Conn
+  필드 static mainPolygon1
+  필드 static mainPolygon1Conn
+  필드 static mainPolygon2
+  필드 static mainPolygon2Conn
+  필드 static mainPolygon3
+  필드 static cwShadowPolygon0
+  필드 static cwShadowPolygonConn
+  필드 static cwShadowPolygon1
+  필드 static ccwShadowPolygon0
+  필드 static ccwShadowPolygonConn
+  필드 static ccwShadowPolygon1
+  필드 static diamondShadowOuterVertexDistance
+  필드 static uvs
+  필드 static uvs2
+  필드 static meshIndices
+  필드 angle0
+  필드 angle1
+  필드 width
+  필드 length
+  필드 curvaturePoints
+  필드 isSprite
+  필드 isHexagon
+  필드 useFInset2
+  필드 cacheKey
+  필드 polygonCollider
+  필드 meshFilter
+  필드 meshRenderer
+  필드 shortAngle
+  필드 cornerCenterRadius
+  필드 cornerCenterApothem
+  필드 curvatureSliceAngle
+  필드 angleDifference
+  필드 insetDistance0
+  필드 insetDistance1
+  필드 insetDistance2
+  필드 cornerPointIndex
+  필드 pathOverlaps
+  필드 cornerRaysIntersectBeforeSpikes
+  필드 origin
+  필드 bisectorIntersection
+  필드 cornerCircleCenter
+  메서드 single get__angle0()
+  메서드 void set__angle0(single)
+  메서드 single get__angle1()
+  메서드 void set__angle1(single)
+  메서드 single get__width()
+  메서드 void set__width(single)
+  메서드 single get__length()
+  메서드 void set__length(single)
+  메서드 int32 get__curvaturePoints()
+  메서드 void set__curvaturePoints(int32)
+  메서드 boolean get__isSprite()
+  메서드 void set__isSprite(boolean)
+  메서드 boolean get__isHexagon()
+  메서드 void set__isHexagon(boolean)
+  메서드 boolean get__useFInset2()
+  메서드 void set__useFInset2(boolean)
+  메서드 void set_meshChanged(boolean)
+  메서드 void Awake()
+  메서드 static void UpdateAllRequired()
+  메서드 void UpdateMesh()
+  메서드 void GenerateCollider()
+  메서드 void KnitTriangles(System.Collections.Generic.List`1<UnityEngine.Vector2>, System.Collections.Generic.List`1<int32>, int32, int32, boolean)
+  메서드 void GenerateMesh()
+  메서드 void GetPositions(single, single, single, single, int32)
+  메서드 void PrintState()
+  메서드 void WeldConnectionsForVertices(System.Collections.Generic.List`1<UnityEngine.Vector2>, System.Collections.Generic.List`1<int32>, System.Collections.Generic.List`1<UnityEngine.Vector2>, int32, int32)
+  메서드 void WeldWithPreviousVertexConnection(System.Collections.Generic.List`1<UnityEngine.Vector2>, System.Collections.Generic.List`1<int32>, System.Collections.Generic.List`1<UnityEngine.Vector2>, int32)
+  메서드 boolean AnglesAreEqual(single, single)
+  메서드 single Float(int32)
+  메서드 System.Collections.Generic.List`1<!!0> MakeListByRepeatingMember(!!0, int32)
+  메서드 UnityEngine.Vector2[] CreateCircleArc(UnityEngine.Vector2, single, single, single, int32, ref single)
+  메서드 single SmallestAngleBetweenTwoAngles(single, single)
+  메서드 single Mod(single, single)
+  메서드 int32 Mod(int32, int32)
+  메서드 single ModAngle360(single)
+  메서드 static boolean LinesIntersect(UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2)
+  메서드 UnityEngine.Vector2 GetLineIntersection(Segment, Segment)
+  메서드 boolean ccw(UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2)
+  메서드 boolean GetSegmentIntersect(UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2)
+  메서드 UnityEngine.Vector2[] QuadraticBezierCurve(UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2, int32)
+  메서드 UnityEngine.Vector2 QuadraticBezierPoint(UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2, single)
+  메서드 single Determinant(UnityEngine.Vector2, UnityEngine.Vector2)
+  메서드 UnityEngine.Vector2 GenerateNormal(Segment, single)
+  메서드 single Projection(Segment, UnityEngine.Vector2)
+  메서드 Segment GetBisector(UnityEngine.Vector2, UnityEngine.Vector2, UnityEngine.Vector2)
+  메서드 single Atan2ToAngle(single, single)
+  메서드 void .ctor()
+  메서드 static void .cctor()
+  메서드 static UnityEngine.Vector2 <GenerateMesh>g__GenerateNthVertex|102_0(int32, single)
+  메서드 int32 <GetPositions>g__GeneratePolygon|103_0(System.Collections.Generic.List`1<UnityEngine.Vector2>, boolean, ref FloorMesh+<>c__DisplayClass103_0)
+  메서드 System.Collections.Generic.List`1<UnityEngine.Vector2> <GetPositions>g__CreateInsetFromPolygon|103_1(System.Collections.Generic.List`1<UnityEngine.Vector2>, single, ref FloorMesh+<>c__DisplayClass103_0)
+== FloorMeshRenderer : FloorRenderer
+  필드 floorMesh
+  필드 polygonCollider
+  메서드 UnityEngine.Color get_color()
+  메서드 void set_color(UnityEngine.Color)
+  메서드 UnityEngine.Sprite get_sprite()
+  메서드 void set_sprite(UnityEngine.Sprite)
+  메서드 void Awake()
+  메서드 void SetAngle(single, single)
+  메서드 void .ctor()
+== FloorRenderer : ADOBase
+  필드 static ShaderProperty_Flash
+  필드 renderer
+  필드 deselectedColor
+  필드 material
+  필드 cachedColor
+  메서드 UnityEngine.Color get_color()
+  메서드 void set_color(UnityEngine.Color)
+  메서드 UnityEngine.Sprite get_sprite()
+  메서드 void set_sprite(UnityEngine.Sprite)
+  메서드 void SetAngle(single, single)
+  메서드 int32 get_sortingOrder()
+  메서드 void set_sortingOrder(int32)
+  메서드 void SetFlash(single)
+  메서드 void TweenFlash(single, single, string)
+  메서드 void Awake()
+  메서드 void SetMaterial(UnityEngine.Material)
+  메서드 void .ctor()
+== FloorSpriteRenderer : FloorRenderer
+  필드 iconSprite
+  메서드 UnityEngine.SpriteRenderer get_spriteRenderer()
+  메서드 UnityEngine.Color get_color()
+  메서드 void set_color(UnityEngine.Color)
+  메서드 UnityEngine.Sprite get_sprite()
+  메서드 void set_sprite(UnityEngine.Sprite)
+  메서드 void SetAngle(single, single)
+  메서드 void .ctor()
+== FloorMeshOld : UnityEngine.MonoBehaviour
+  필드 circle
+  필드 start
+  필드 end
+  필드 renderers
+  필드 startAngle
+  필드 endAngle
+  필드 border
+  필드 width
+  필드 length
+  필드 height
+  필드 index
+  필드 material
+  메서드 void Update()
+  메서드 void UpdateMesh()
+  메서드 void UpdateMaterial()
+  메서드 void ScaleXY(UnityEngine.Transform, single, single)
+  메서드 void ScaleXZ(UnityEngine.Transform, single, single)
+  메서드 void .ctor()
+== ADOFAI.FloorDirectionButton : ADOBase
+  필드 btnType
+  필드 button
+  필드 deleteIcon
+  필드 text
+  필드 textShifted
+  필드 colorDeleteIdle
+  필드 colorDeleteHover
+  필드 colorDeletePressed
+  필드 colorNormalIdle
+  필드 colorNormalHover
+  필드 colorNormalPressed
+  필드 spriteButtonLong
+  필드 spriteButtonShort
+  필드 hitbox
+  필드 delete
+  메서드 void Start()
+  메서드 void Init()
+  메서드 void .ctor()
+== ADOFAI.MinimizedFloorData : System.Object
+  필드 entryangle
+  필드 exitangle
+  필드 angleLength
+  필드 ccw
+  필드 midspin
+  필드 turnaround
+  필드 numPlanets
+  필드 holdLength
+  메서드 void .ctor(double, double, boolean, boolean, boolean, int32, int32)
+== ADOFAI.FloorHelper : System.Object
+  필드 static PathAngle0
+  필드 static PathAngle45
+  필드 static PathAngle60
+  필드 static PathAngle90
+  필드 static PathAngle135
+  필드 static PathAngle150
+  필드 static PathAngle180
+  필드 static PathAngle240
+  필드 static PathAngle270
+  필드 static PathAngle225
+  필드 static PathAngle330
+  필드 static PathAngle315
+  필드 static PathAngle30
+  필드 static PathAngle120
+  필드 static PathAngle210
+  필드 static PathAngle300
+  필드 static PathAngle15
+  필드 static PathAngle75
+  필드 static PathAngle105
+  필드 static PathAngle165
+  필드 static PathAngle195
+  필드 static PathAngle255
+  필드 static PathAngle285
+  필드 static PathAngle345
+  필드 static PathAngleMidspin
+  필드 static PathAngle60Add
+  필드 static PathAngle300Add
+  필드 static PathAngle120CW
+  필드 static PathAngle120CCW
+  필드 static PathAngle108CW
+  필드 static PathAngle108CCW
+  필드 static PathAngle128CW
+  필드 static PathAngle128CCW
+  필드 static PathAngle210CW
+  필드 static MidSpinAngle
+  필드 static SAngle
+  메서드 static char Transform(char, ADOFAI.FloorHelper+TransformOperation)
+  메서드 static char RotateBy90(char, boolean)
+  메서드 static char FlipHorizontally(char)
+  메서드 static char FlipVertically(char)
+  메서드 static System.Nullable`1<double> PathIdToRadiansCommon(char)
+  메서드 static double PathIdToRadiansPartial(char)
+  메서드 static double PathIdToRadians(char, double, boolean)
+  메서드 static single[] MigratePathData(string)
+  메서드 static boolean TryGetPathInDegrees(char, ref single)
+  메서드 static single Transform(single, ADOFAI.FloorHelper+TransformOperation)
+  메서드 static single ReturnIfMidspin(single, System.Func`1<single>)
+  메서드 static single RotateBy90(single, boolean)
+  메서드 static single FlipHorizontally(single)
+  메서드 static single FlipVertically(single)
+== ADOFAI.FloorFX.ffxEmitParticlePlus : ffxPlusBase
+  필드 targetTags
+  필드 decManager
+  필드 count
+  메서드 void StartEffect(scrPlanet)
+  메서드 void Decode(ADOFAI.LevelEvent)
+  메서드 void .ctor()
+== ADOFAI.FloorFX.ffxSetParticlePlus : ffxPlusBase
+  필드 targetTags
+  필드 decManager
+  필드 color
+  필드 colorOverLifetime
+  필드 targetMode
+  필드 maxParticles
+  필드 sizeOverLifetime
+  필드 particleLifetime
+  필드 particleSize
+  필드 rotationOverTime
+  필드 velocity
+  필드 shapeType
+  필드 shapeRadius
+  필드 emissionRate
+  필드 simulationSpeed
+  필드 arc
+  필드 arcMode
+  필드 limitVelocityOverLifetime
+  필드 lockRotation
+  필드 lockScale
+  필드 useColor
+  필드 useColorOverLifetime
+  필드 useTargetMode
+  필드 useMaxParticles
+  필드 useParticleLifetime
+  필드 useParticleSize
+  필드 useSizeOverLifetime
+  필드 useRotationOverTime
+  필드 useVelocity
+  필드 useShapeType
+  필드 useShapeRadius
+  필드 useEmissionRate
+  필드 useSimulationSpeed
+  필드 useArc
+  필드 useArcMode
+  필드 useLimitVelocityOverLifetime
+  필드 useLockRotation
+  필드 useLockScale
+  메서드 System.Collections.Generic.IEnumerable`1<DG.Tweening.Tween> get_eventTweens()
+  메서드 void StartEffect(scrPlanet)
+  메서드 void ScrubToTime(single)
+  메서드 void Decode(ADOFAI.LevelEvent)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.ToggleFindFloorPanelEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.SelectNextFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.SelectPreviousFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.ToggleFloorNumsEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.CopyFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.Create360FloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.CreateArbitraryFloorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.CreateFloorWithCharOrAngleEditorAction : ADOFAI.Editor.Actions.EditorAction
+  필드 angle
+  필드 angleFunc
+  필드 chara
+  필드 charaFunc
+  필드 pulseFloorButtons
+  필드 fullSpin
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void .ctor(single, char, boolean, boolean)
+  메서드 void .ctor(System.Func`1<single>, System.Func`1<char>, boolean, boolean)
+  메서드 void Execute(scnEditor)
+== ADOFAI.Editor.Actions.CreateMidspinFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 string get_descriptionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.CutFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.DeleteFloorsEditorAction : ADOFAI.Editor.Actions.EditorAction
+  필드 backwards
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void .ctor(boolean)
+  메서드 void Execute(scnEditor)
+== ADOFAI.Editor.Actions.DeletePrecedingFloorsEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.DeleteSubsequentFloorsEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.FlipFloorsHorizontalEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.FlipFloorsVerticalEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.PasteFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.PasteFloorWithoutDecorationsEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.RotateFloors180EditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.RotateFloors90ClockwiseEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 string get_descriptionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.RotateFloors90CounterClockwiseEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 string get_descriptionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.SelectFirstFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.SelectLastFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.SelectToFirstFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.SelectToLastFloorEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== ADOFAI.Editor.Actions.ShowCurrentFloorNumberEditorAction : ADOFAI.Editor.Actions.EditorAction
+  메서드 ADOFAI.Editor.Actions.EditorTabKey get_sectionKey()
+  메서드 void Execute(scnEditor)
+  메서드 void .ctor()
+== scnEditor+FloorData : System.ValueType
+  필드 stringDirection
+  필드 floatDirection
+  필드 levelEventData
+  필드 attachedDecorations
+  메서드 void .ctor(char, single, System.Collections.Generic.List`1<ADOFAI.LevelEvent>, System.Collections.Generic.List`1<ADOFAI.LevelEvent>)
+== scrFloor+<>c__DisplayClass190_0 : System.Object
+  필드 <>4__this
+  필드 v
+  메서드 void .ctor()
+  메서드 void <Update>b__0()
+== scrFloor+<>c__DisplayClass206_0 : System.Object
+  필드 currentColor
+  필드 <>4__this
+  메서드 void .ctor()
+  메서드 UnityEngine.Color <TweenColor>b__0()
+  메서드 void <TweenColor>b__1(UnityEngine.Color)
+  메서드 void <TweenColor>b__2()
+== scrMenuMovingFloor+<>c__DisplayClass14_0 : System.Object
+  필드 <>4__this
+  필드 cam
+  메서드 void .ctor()
+  메서드 void <Hop2Xtra>b__0()
+  메서드 void <Hop2Xtra>b__1()
+  메서드 void <Hop2Xtra>b__2()
+== scrMenuMovingFloor+<>c__DisplayClass15_0 : System.Object
+  필드 <>4__this
+  필드 cam
+  메서드 void .ctor()
+  메서드 void <Xtra2Front>b__0()
+  메서드 void <Xtra2Front>b__1()
+== ffxTractorbeamFloors+<>c__DisplayClass6_0 : System.Object
+  필드 <>4__this
+  필드 duration
+  메서드 void .ctor()
+  메서드 void <AbductFloor>b__0()
+== ffxMoveFloorPlus+<>c__DisplayClass17_0 : System.ValueType
+  필드 targetPosV3
+  필드 targetRotVec
+  필드 <>4__this
+  필드 targetScaleVec
+== ffxMoveFloorPlus+<>c__DisplayClass17_1 : System.Object
+  필드 targetTransform
+  필드 target
+  메서드 void .ctor()
+  메서드 single <StartEffect>b__1()
+  메서드 void <StartEffect>b__2(single)
+  메서드 single <StartEffect>b__3()
+  메서드 void <StartEffect>b__4(single)
+  메서드 single <StartEffect>b__5()
+  메서드 void <StartEffect>b__6(single)
+  메서드 void <StartEffect>b__7()
+== ffxRecolorFloorPlus+<>c : System.Object
+  필드 static <>9
+  필드 static <>9__26_3
+  메서드 static void .cctor()
+  메서드 void .ctor()
+  메서드 DG.Tweening.Tween <get_eventTweens>b__26_3(System.Collections.Generic.KeyValuePair`2<TweenType,DG.Tweening.Tween>)
+== ffxRecolorFloorPlus+<>c__DisplayClass28_0 : System.Object
+  필드 target
+  메서드 void .ctor()
+  메서드 void <StartEffect>b__0(TweenType)
+  메서드 single <StartEffect>b__1()
+  메서드 void <StartEffect>b__2(single)
+== FloorMesh+MeshCache : System.Object
+  필드 mesh
+  필드 polygon
+  메서드 void .ctor()
+== FloorMesh+<>c__DisplayClass103_0 : System.ValueType
+  필드 ccwCornerPoints
+  필드 ccwIntersection
+  필드 cwCornerPoints
+  필드 cwIntersection
+  필드 zeroAngle
+  필드 startMore
+  필드 endLess
+  필드 piAngle
+  필드 endMore
+  필드 startLess
+  필드 isPathOverlapping
+  필드 overlappingPoints
+  필드 <>4__this
+== ADOFAI.FloorHelper+TransformOperation : System.Enum
+  필드 value__
+  필드 static ClockwiseRotation90
+  필드 static ClockwiseRotation180
+  필드 static ClockwiseRotation270
+  필드 static VerticalFlip
+  필드 static HorizontalFlip
+== ADOFAI.FloorHelper+<>c__DisplayClass48_0 : System.Object
+  필드 angle
+  필드 clockwise
+  메서드 void .ctor()
+  메서드 single <RotateBy90>b__0()
+== ADOFAI.FloorHelper+<>c__DisplayClass49_0 : System.Object
+  필드 angle
+  메서드 void .ctor()
+  메서드 single <FlipHorizontally>b__0()
+== ADOFAI.FloorHelper+<>c__DisplayClass50_0 : System.Object
+  필드 angle
+  메서드 void .ctor()
+  메서드 single <FlipVertically>b__0()
+== ADOFAI.FloorFX.ffxSetParticlePlus+<>c : System.Object
+  필드 static <>9
+  필드 static <>9__39_0
+  메서드 static void .cctor()
+  메서드 void .ctor()
+  메서드 System.Collections.Generic.IEnumerable`1<DG.Tweening.Tween> <get_eventTweens>b__39_0(scrDecoration)
+== ADOFAI.FloorFX.ffxSetParticlePlus+<>c__DisplayClass40_0 : System.Object
+  필드 dec
+  메서드 void .ctor()
+  메서드 single <StartEffect>b__16()
+  메서드 void <StartEffect>b__17(single)
+== ADOFAI.FloorFX.ffxSetParticlePlus+<>c__DisplayClass40_1 : System.Object
+  필드 main
+  필드 rotationModule
+  필드 velocityModule
+  필드 shapeModule
+  필드 emissionModule
+  메서드 void .ctor()
+  메서드 int32 <StartEffect>b__0()
+  메서드 void <StartEffect>b__1(int32)
+  메서드 UnityEngine.ParticleSystem+MinMaxCurve <StartEffect>b__2()
+  메서드 void <StartEffect>b__3(UnityEngine.ParticleSystem+MinMaxCurve)
+  메서드 UnityEngine.ParticleSystem+MinMaxCurve <StartEffect>b__4()
+  메서드 void <StartEffect>b__5(UnityEngine.ParticleSystem+MinMaxCurve)
+  메서드 UnityEngine.ParticleSystem+MinMaxCurve <StartEffect>b__6()
+  메서드 void <StartEffect>b__7(UnityEngine.ParticleSystem+MinMaxCurve)
+  메서드 UnityEngine.ParticleSystem+MinMaxCurve <StartEffect>b__8()
+  메서드 void <StartEffect>b__9(UnityEngine.ParticleSystem+MinMaxCurve)
+  메서드 UnityEngine.ParticleSystem+MinMaxCurve <StartEffect>b__10()
+  메서드 void <StartEffect>b__11(UnityEngine.ParticleSystem+MinMaxCurve)
+  메서드 single <StartEffect>b__12()
+  메서드 void <StartEffect>b__13(single)
+  메서드 single <StartEffect>b__14()
+  메서드 void <StartEffect>b__15(single)
+  메서드 single <StartEffect>b__18()
+  메서드 void <StartEffect>b__19(single)
+(69개 형식)

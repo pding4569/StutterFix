@@ -1,0 +1,39 @@
+﻿== FloorRenderer
+  get_color
+  set_color
+  get_sprite
+  set_sprite
+  SetAngle
+  get_sortingOrder
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::get_sortingOrder
+  set_sortingOrder
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::set_sortingOrder
+  SetFlash
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::get_material
+    정적필드 읽기 FloorRenderer::ShaderProperty_Flash
+    호출 UnityEngine.Material::SetFloat
+  TweenFlash
+    필드 읽기 FloorRenderer::material
+    정적필드 읽기 FloorRenderer::ShaderProperty_Flash
+    호출 DG.Tweening.ShortcutExtensions::DOFloat
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetId
+  Awake
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 FloorRenderer::renderer
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::get_material
+    필드 쓰기 FloorRenderer::material
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Object::op_Equality
+    호출 FloorRenderer::get_color
+    필드 쓰기 FloorRenderer::deselectedColor
+  SetMaterial
+    필드 읽기 FloorRenderer::renderer
+    필드 쓰기 FloorRenderer::material
+    호출 UnityEngine.Renderer::set_material
+  .ctor
+    호출 ADOBase::.ctor

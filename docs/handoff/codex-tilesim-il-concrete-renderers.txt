@@ -1,0 +1,51 @@
+﻿== FloorMeshRenderer
+  get_color
+    필드 읽기 FloorRenderer::material
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::get_name
+    호출 System.String::Concat
+    호출 UnityEngine.Debug::Log
+    호출 UnityEngine.Color::get_magenta
+    정적필드 읽기 scrFloor::ShaderProperty_Color
+    호출 UnityEngine.Material::GetColor
+  set_color
+    필드 읽기 FloorRenderer::material
+    정적필드 읽기 scrFloor::ShaderProperty_Color
+    호출 UnityEngine.Material::SetColor
+    필드 쓰기 FloorRenderer::cachedColor
+  get_sprite
+  set_sprite
+  Awake
+    호출 FloorRenderer::Awake
+    필드 읽기 FloorMeshRenderer::floorMesh
+    필드 읽기 FloorMeshRenderer::polygonCollider
+    필드 쓰기 FloorMesh::polygonCollider
+    필드 읽기 FloorRenderer::renderer
+    호출 UnityEngine.Renderer::set_sortingLayerName
+  SetAngle
+    필드 읽기 FloorMeshRenderer::floorMesh
+    호출 FloorMesh::set__angle0
+    호출 FloorMesh::set__angle1
+  .ctor
+    호출 FloorRenderer::.ctor
+== FloorSpriteRenderer
+  get_spriteRenderer
+    필드 읽기 FloorRenderer::renderer
+  get_color
+    호출 FloorSpriteRenderer::get_spriteRenderer
+    호출 UnityEngine.SpriteRenderer::get_color
+  set_color
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 읽기 scrFloor::seqID
+    호출 FloorSpriteRenderer::get_spriteRenderer
+    호출 UnityEngine.SpriteRenderer::set_color
+  get_sprite
+    호출 FloorSpriteRenderer::get_spriteRenderer
+    호출 UnityEngine.SpriteRenderer::get_sprite
+  set_sprite
+    호출 FloorSpriteRenderer::get_spriteRenderer
+    호출 UnityEngine.SpriteRenderer::set_sprite
+  SetAngle
+  .ctor
+    호출 FloorRenderer::.ctor

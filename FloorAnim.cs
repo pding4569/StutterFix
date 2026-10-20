@@ -575,6 +575,9 @@ namespace StutterFix
             recs.Add(r); r.InList = true; Created++;
             if (recs.Count > Peak) Peak = recs.Count;
             lastNew = r;
+#if DEV || AUTOTEST
+            if (TileSim.Capturing) TileSim.Created(r);
+#endif
             return r;
         }
         private static global::TweenType TT(int key)
@@ -619,14 +622,28 @@ namespace StutterFix
                 case PY: r.FStart = r.T.position.y; break;
                 case ROT: r.FStart = r.F.tweenRot.z; break;
                 case OPA: r.FStart = r.F.opacity; break;
-                case SX: case SY: r.VStart = r.T.localScale; r.VChange = r.VEnd - r.VStart; return;
+                case SX: case SY:
+                    r.VStart = r.T.localScale; r.VChange = r.VEnd - r.VStart;
+#if DEV || AUTOTEST
+                    if (TileSim.Capturing) TileSim.Started(r);
+#endif
+                    return;
             }
             r.FChange = r.FEnd - r.FStart;
+#if DEV || AUTOTEST
+            if (TileSim.Capturing) TileSim.Started(r);
+#endif
         }
         // setter (+ 회전은 OnUpdate). DOTween FloatPlugin: 시작 + 변화 x 이징 / Vector3Plugin 축 제한: getter() 의 그 축만 바꿔 setter
         private static void Apply(Rec r, float pos)
         {
+#if DEV || AUTOTEST
+            long evalStamp = TileCost.EvalBegin();
+#endif
             float e = ZeroTween.Eval(r.E, pos, r.Dur, r.Over, r.Period);
+#if DEV || AUTOTEST
+            TileCost.EvalEnd(evalStamp);
+#endif
             switch (r.Key)
             {
                 case PX: { float v = r.FStart + r.FChange * e; r.FLast = v; var p = r.T.position; r.T.position = new Vector3(v, p.y, p.z); break; }
@@ -647,6 +664,9 @@ namespace StutterFix
             r.Stepped = true;
             Apply(r, to);
             if (done) { r.Running = false; Completed++; }
+#if DEV || AUTOTEST
+            if (TileSim.Capturing) TileSim.Stepped(r);
+#endif
         }
         private static void Complete(Rec r)
         {
@@ -657,6 +677,9 @@ namespace StutterFix
             r.Stepped = true;
             try { Apply(r, r.Dur); }
             catch (Exception ex) { Error(ex); }
+#if DEV || AUTOTEST
+            if (TileSim.Capturing) TileSim.Completed(r);
+#endif
             if (Edition.Dev && r.Shadow != null && r.Shadow.active) { try { r.Shadow.Complete(true); } catch { } }
         }
 
@@ -666,7 +689,14 @@ namespace StutterFix
             var r = t.id as Rec;
             if (r == null) return true;
             if (complete) { if (r.Running) Killed++; Complete(r); }
-            else if (r.Running) { r.Running = false; Dropped++; if (r.Shadow != null) r.Shadow.Kill(false); }
+            else if (r.Running)
+            {
+                r.Running = false; Dropped++;
+#if DEV || AUTOTEST
+                if (TileSim.Capturing) TileSim.Cancelled(r);
+#endif
+                if (r.Shadow != null) r.Shadow.Kill(false);
+            }
             return false;
         }
         public static bool CompletePrefix(Tween t)
@@ -701,7 +731,13 @@ namespace StutterFix
             foreach (var r in copy)
             {
                 if (complete) Complete(r);
-                else if (r.Running) { r.Running = false; Dropped++; }
+                else if (r.Running)
+                {
+                    r.Running = false; Dropped++;
+#if DEV || AUTOTEST
+                    if (TileSim.Capturing) TileSim.Cancelled(r);
+#endif
+                }
                 r.InList = false;
             }
             recs.Clear();
@@ -711,8 +747,18 @@ namespace StutterFix
 
         public static void UpdatePrefix()
         {
+#if DEV || AUTOTEST
+            if (TileSim.Capturing) TileSim.BeginFrame(recs, false);
+#endif
             if (jobs.Count > 0) SplitTick();
-            if (recs.Count == 0) { LastFrameMs = 0; AddElapsed(); return; }
+            if (recs.Count == 0)
+            {
+                LastFrameMs = 0; AddElapsed();
+#if DEV || AUTOTEST
+                if (TileSim.Capturing) TileSim.EndFrame(recs, 0f);
+#endif
+                return;
+            }
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
             float td = dt * 1f;
@@ -732,7 +778,15 @@ namespace StutterFix
             if (!Edition.Dev) Compact();
             LastFrameMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             UpdateMs += LastFrameMs;
+#if DEV || AUTOTEST
+            if (TileSim.Capturing) TileSim.EndFrame(recs, td);
+#endif
         }
+
+#if DEV || AUTOTEST
+        internal static List<Rec> SimRecords() { return recs; }
+        internal static bool SimDefaultPath() { return jobs.Count == 0; }
+#endif
 
         // 남은 타일의 애니메이션이 이번 갱신까지 지났어야 할 시간 (DOTween 과 같은 dt, 너무 작으면 진행 안 함)
         private static void AddElapsed()
