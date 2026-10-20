@@ -40,3 +40,8 @@
 3. **S10**: C 렌더러 대체 연결 — 사전에 IL 스캔 목록(읽는 곳)을 Codex 가 먼저 만들고, 읽는 곳이 없으면 건너뛰기 구현, 있으면 최소 갱신 구현. `DecoRender` 가 값을 `TightLate` SoA 로 받는 경로.
 4. **S11**: D 계산 대체 + E 견고성(Unload·편집기·재생 상태 머신·Resilience·설정 UI) 일부.
 (그 사이 내 일: 게임 측정 자동화 스위트, 기본 on/off A/B, 문서/커밋.)
+
+## 2026-10-20 밤 추가 측정 (로드맵 수정)
+- `decocensus hide`(깨어 있는 장식 SpriteRenderer 를 전부 forceRenderingOff — 렌더러 개체 비용 상한 진단): Arche 곡 252~272초 8초 창 프레임 끔 843·832 → 숨김 888·887(+6%). **렌더러 개체를 없애는 것만으로 얻는 건 약 0.5ms/프레임**(합성 벤치의 -1.0~-1.4ms 는 Transform 쓰기·계층 갱신까지 포함된 값이었다).
+- `decorender`(S8 개선판) 켬: PreCull 46% → 24.6% 로 줄었지만 프레임은 끈 판의 약 60%(485 vs 820/8초). 남은 비용 = 장식마다 사전/집합 조회(`Capture`, `GatherWork`, `Takeover`, `HashSet.Add`, `Dictionary.TryGetValue`) + `TightLate` 의 SoA 캡처.
+- **결론**: 이득은 (1) 렌더러 개체 0.5ms + (2) Transform/색 쓰기 0.4ms + (3) `DecoAnim`/`TightLate` 관리·계산 2~2.5ms 를 **새 파이프라인이 한꺼번에 대체**할 때만 나온다(합 -2.5~-2.9ms, 약 27%). 부분 대체(렌더만)로는 관리 코드 비용이 이득을 먹는다. 그래서 다음 Codex 과제(S9)는 부분 단계가 아니라 **DecoPipeline v1**: 가져간 장식의 갱신(Rec 평가 → 시차/카메라/피벗 계산 → 정점)을 SoA 배열 + 워커 스레드로 끝까지 대체하고, 기존 `DecoAnim`/`TightLate`/Transform/SpriteRenderer 쓰기를 그 장식에서 건너뛴다.
