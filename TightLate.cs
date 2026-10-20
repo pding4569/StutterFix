@@ -112,6 +112,7 @@ namespace StutterFix
             if (__state != 0) { managerTicks += Stopwatch.GetTimestamp() - __state; managerFrames++; }
 #if DEV || AUTOTEST
             DecoBake.SignatureFrame();
+            DecoBake.CanaryFrame();
 #endif
         }
 #if DEV || AUTOTEST

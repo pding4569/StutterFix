@@ -397,6 +397,14 @@ namespace StutterFix
             var r = rendererRef(v);
             return (object)r != null && hidden.ContainsKey(r);
         }
+#if DEV || AUTOTEST
+        internal static bool BakeHideMismatch(scrVisualDecoration d, float alpha)
+        {
+            var r = rendererRef(d);
+            if (!Enabled || (object)r == null || !AlphaMeansVisibility(r)) return false;
+            return r.forceRenderingOff != (alpha <= 0f);
+        }
+#endif
 
         internal static void ResetPeak()
         {

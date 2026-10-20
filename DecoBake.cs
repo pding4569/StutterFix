@@ -221,10 +221,11 @@ namespace StutterFix
         // Existing FastMove prefix calls this before deciding which implementation runs.
         internal static void ObserveStart(ffxMoveDecorationsPlus fx)
         {
-            if (!enabled || !DecoSim.Capturing) return;
+            if (!enabled) return;
             try
             {
-                DecoSim.RecordBakeStart(new StartStamp { Source = fx.GetInstanceID(), Frame = Time.frameCount, Song = scrConductor.instance.songposition_minusi });
+                AdoptStart(fx);
+                if (DecoSim.Capturing) DecoSim.RecordBakeStart(new StartStamp { Source = fx.GetInstanceID(), Frame = Time.frameCount, Song = scrConductor.instance.songposition_minusi });
             }
             catch (Exception e) { Fail("시작 관찰 " + e.Message); }
         }

@@ -30,7 +30,7 @@ class P
         if (a.Length > 1 && (a[1] == "--bake" || a[1] == "--no-bake"))
         {
             bool want = a[1] == "--bake";
-            string[] bakeTypes = { "StutterFix.DecoBake", "StutterFix.DecoBakeCore", "StutterFix.DecoBakeCore+AdoptState" };
+            string[] bakeTypes = { "StutterFix.DecoBake", "StutterFix.DecoBakeCore", "StutterFix.DecoBakeCore+AdoptState", "StutterFix.BakeLive" };
             bool have = bakeTypes.All(t => asm.GetType(t, false) != null);
             Console.WriteLine("DecoBake 개발 타입: " + have + ", 기대: " + want);
             if (have != want) return 3;

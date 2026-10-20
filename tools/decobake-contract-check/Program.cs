@@ -440,3 +440,81 @@ bool changedPast = false;
 try { DecoBakeCore.ValidateAdoptRemainder(new[] { bindPast }, new[] { Event(0, 2, 9) }, 5); }
 catch (InvalidOperationException) { changedPast = true; }
 Require(changedPast, "adopt rebind rejects changed remaining effect even if its scheduled time has passed");
+
+// bake-9: same production live scheduler, exact Rec float addition, no Unity execution.
+var triggerTable = Compile(Decoration(),new[] { Event(0,2,10,source:101), Event(.5,2,2,relative:true,source:102), Event(4,0,30,source:103) });
+var live = new BakeLive(triggerTable);
+var liveWrites = new Dictionary<int,float>();
+void LiveWrite(int s,float v) { liveWrites[s] = v; }
+live.Resync(-1,LiveWrite);
+Require(live.Start(101,0,LiveWrite),"live observes actual source");
+float originalPos = 0;
+for (int f = 0; f < 17; f++)
+{
+    float dt = f%2 == 0 ? .0137f : .0213f; originalPos += dt;
+    live.Step(100+f,false,LiveWrite,dt,f);
+    RequireSilent(BitConverter.SingleToInt32Bits(live.Last[0]) == BitConverter.SingleToInt32Bits(originalPos/2*10),"live float Rec accumulation");
+}
+Require(true,"live source progression matches Rec float accumulation despite unrelated song clock");
+float relativeBefore = live.Last[0];
+live.Start(102,17,LiveWrite);
+Require(live.Last[0] == 10,"live replacement completes outgoing tween before new interpolation");
+live.Step(100,false,LiveWrite,.1f,17);
+Require(live.Last[0] == 10+(relativeBefore+2-10)*.05f,"live relative target reads current before Kill(true)");
+float pausedValue = live.Last[0]; live.Step(100,false,LiveWrite,0,18);
+Require(live.Last[0] == pausedValue && live.Evaluated == 0,"live pause/tiny dt does not advance float source");
+live.Start(103,19,LiveWrite);
+Require(live.Last[0] == 30,"live zero duration writes immediately at trigger, without waiting for next update");
+live.Step(100,false,LiveWrite,.1f,19);
+Require(live.Evaluated == 0,"live ended/zero duration channels absent from traversal");
+var lateLive = new BakeLive(triggerTable); lateLive.Resync(-1,LiveWrite);
+lateLive.Step(0,false,LiveWrite,.1f,0); // Update already passed.
+Require(lateLive.Evaluated == 0,"live does not dispatch unobserved future scheduled source");
+lateLive.Start(101,0,LiveWrite);
+lateLive.Step(.1,false,LiveWrite,.1f,1);
+Require(lateLive.Last[0] == .5f,"live trigger after update advances first on next update");
+lateLive.Stop(0,LiveWrite);
+Require(!lateLive.Enabled && lateLive.Last[0] == 10,"live recovery completes current triggered segment and relinquishes ownership");
+var constant = new BakeLive(Compile(Decoration(),new[] { Event(0,10,0,source:5) }));
+constant.Resync(-1,LiveWrite); constant.Start(5,0,LiveWrite); constant.Step(1,false,LiveWrite,.1f,1);
+Require(constant.Evaluated == 0,"live constant plateau is removed on trigger");
+var twinEvent = Event(0,2,10,source:44); twinEvent.Values[1] = 20;
+var twinTable = Compile(Decoration(),new[] { twinEvent }); var twinLive = new BakeLive(twinTable);
+twinLive.Resync(-1,LiveWrite); twinLive.Start(44,0,LiveWrite); twinLive.Step(0,false,LiveWrite,.1f,0);
+Require(twinLive.Last[0] == .5f && twinLive.Last[1] == 1 && twinLive.SourcesEvaluated == 1,
+    "live multi-channel source shares one dt addition per frame");
+var canaryLive = new BakeLive(twinTable); canaryLive.Owned[0] = false; int forbiddenWrites = 0;
+canaryLive.Resync(-1,(s,v) => forbiddenWrites++); canaryLive.Start(44,0,(s,v) => forbiddenWrites++);
+canaryLive.Step(.1,false,(s,v) => forbiddenWrites++,.1f,0); canaryLive.Stop(0,(s,v) => forbiddenWrites++);
+Require(forbiddenWrites == 0 && canaryLive.Last[0] == .5f,"live canary evaluates without writes and stop leaves its progress untouched");
+var fallbackLive = new BakeLive(twinTable); fallbackLive.Step(.5,true,LiveWrite,0,0);
+Require(fallbackLive.Last[0] == 2.5f,"live seek uses stateless tb fallback");
+fallbackLive.Step(.6,false,LiveWrite,.1f,1);
+Require(fallbackLive.Fallback == 2 && fallbackLive.Anchored == 0,"live exposes unobserved seek-active fallback channels");
+Console.WriteLine("bake9 live production fixture passed; Unity setters, frame ordering, canary budget and real performance remain unverified");
+var simultaneous = new BakeLive(triggerTable); simultaneous.Resync(-1,LiveWrite);
+simultaneous.Start(101,0,LiveWrite); simultaneous.Start(102,0,LiveWrite); simultaneous.Step(0,false,LiveWrite,.1f,0);
+Require(simultaneous.Last[0] == 10+(2-10)*.05f,"live same-frame sources keep trigger order and pre-completion relative base");
+var scaleLiveEvent = Event(0,2,0,source:81); scaleLiveEvent.Values[0] = float.NaN; scaleLiveEvent.Values[5] = 1;
+var scaleLiveDeco = Decoration(); scaleLiveDeco.Initial[5] = 1e20f;
+var scaleLive = new BakeLive(Compile(scaleLiveDeco,new[] { scaleLiveEvent }));
+scaleLive.Resync(-1,LiveWrite); scaleLive.Start(81,0,LiveWrite); scaleLive.Step(2,false,LiveWrite,2,0);
+Require(scaleLive.Last[5] == 0,"live scale endpoint retains plugin cancellation arithmetic rather than target assignment");
+int beforeStopEval = scaleLive.Evaluated; scaleLive.Step(3,false,LiveWrite,.1f,1);
+Require(beforeStopEval == 1 && scaleLive.Evaluated == 0,"live exact endpoint is emitted once then removed");
+var invalidLive = new BakeLive(twinTable); invalidLive.Resync(-1,LiveWrite); bool invalidLiveDt = false;
+try { invalidLive.Step(0,false,LiveWrite,float.NaN,0); } catch (InvalidOperationException) { invalidLiveDt = true; }
+Require(invalidLiveDt,"live nonfinite dt fails before progression");
+var parLiveEvent = Event(0,0,0,source:83); parLiveEvent.Values[0] = float.NaN; parLiveEvent.Values[12] = 1;
+var parLiveDeco = Decoration(); parLiveDeco.Initial[12] = 1e20f;
+var parLive = new BakeLive(Compile(parLiveDeco,new[] { parLiveEvent })); parLive.Resync(-1,LiveWrite); parLive.Start(83,0,LiveWrite);
+Require(parLive.Last[12] == 0,"live parallax multiplier zero endpoint uses plugin arithmetic");
+Console.WriteLine("bake9 extra trigger/endpoint/nonfinite checks passed");
+var failedCommit = new BakeLive(twinTable); failedCommit.Resync(-1,LiveWrite); failedCommit.Start(44,0,LiveWrite);
+failedCommit.Step(2,false,LiveWrite,2,0); liveWrites[0] = -100;
+failedCommit.Stop(2,LiveWrite);
+Require(liveWrites[0] == 10,"live recovery forces ended cached values after a downstream setter did not commit");
+var failRecoveryLive = new BakeLive(twinTable); failRecoveryLive.Resync(-1,LiveWrite); int liveRecoveryVisits = 0;
+try { failRecoveryLive.Stop(0,(s,v) => { liveRecoveryVisits++; if (s==0) throw new Exception("injected recovery"); }); }
+catch (Exception) { }
+Require(!failRecoveryLive.Enabled && liveRecoveryVisits == 16,"live recovery relinquishes ownership and continues other channels after setter failure");
