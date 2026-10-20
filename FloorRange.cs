@@ -2,362 +2,284 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Reflection.Emit;
 using HarmonyLib;
 using UnityEngine;
-
 namespace StutterFix
 {
-    // Research only. Zero-duration opacity has no tween/proxy registration and no
-    // Transform mutation. Other channels/durations deliberately retain FloorAnim.
+    // No deferred state or readers. A complete uninterrupted sweep renews clean certificates.
     internal static class FloorRange
     {
-        private static bool enabled, ready, busy, shadow;
-        private static Harmony patches;
-        private static List<scrFloor> floors;
-        private static FloorRangeLedger ledger;
-        private static int[] visibleCounts;
-        private static bool[] culled;
-        private static readonly Dictionary<scrFloor, int> indices = new Dictionary<scrFloor, int>();
-        private static readonly Dictionary<string, long> reasons = new Dictionary<string, long>();
-        private static readonly HashSet<MethodBase> patched = new HashSet<MethodBase>();
-        private static Action<int, float> apply = Apply;
-        private static long accepted, chunks, eager, materialized, comparisons, mismatch, patchFailures;
-        private static long large, largeZero, largeDuration, largeOpa, largePos, largeRot, largeScale;
-        private static long startTicks, enqueueTicks, eagerTicks, pullTicks, tickTicks, verifyTicks;
-        private static int sweep;
-        private static bool mismatchLatched;
-        private static int ownerThread;
-        private static bool listening;
-        private static bool lifecycleReady;
-        private static volatile bool coverageChanged;
-        private static readonly FieldInfo opacity = AccessTools.Field(typeof(scrFloor), "opacity");
-        private static readonly FieldInfo sprite = AccessTools.Field(typeof(scrFloor), "dontChangeMySprite");
-        private static readonly FieldInfo tweens = AccessTools.Field(typeof(scrFloor), "moveTweens");
-        private static readonly FieldInfo renderer = AccessTools.Field(typeof(scrFloor), "floorRenderer");
-
-        private static void Log(string s) { Main.Entry.Logger.Log("[타일구간] " + s); }
-        private static void Reason(string s) { long n; reasons.TryGetValue(s, out n); reasons[s] = n + 1; }
-        internal static void Configure(bool on) { enabled = on; }
-        internal static void Install(Harmony harmony)
+        internal const byte Position=1, Rotation=2, Scale=4, Opacity=8, All=15;
+        internal sealed class Chunk
         {
-            if (!listening) { AppDomain.CurrentDomain.AssemblyLoad += AssemblyLoaded; listening = true; }
-            lifecycleReady = false;
-            try
-            {
-                var method = AccessTools.Method(typeof(scnGame), "ApplyEventsToFloors", new[] { typeof(List<scrFloor>), typeof(ADOFAI.LevelData), typeof(scrLevelMaker), typeof(List<ADOFAI.LevelEvent>) });
-                if (method == null) { Reason("prepare-hook-missing"); return; }
-                harmony.Patch(method, postfix: new HarmonyMethod(typeof(FloorRange), nameof(PreparedHook)));
-                var constructors = typeof(FreeroamArea).GetConstructors(AccessTools.all);
-                if (constructors.Length == 0) { Reason("freeroam-hook-missing"); return; }
-                foreach (var ctor in constructors)
-                    harmony.Patch(ctor, prefix: new HarmonyMethod(typeof(FloorRange), nameof(FreeroamCreated)));
-                lifecycleReady = true;
-            }
-            catch (Exception ex) { Reason("lifecycle-install:" + ex.GetType().Name); Log(Status()); }
+            internal byte Dirty, Checking;
+            internal int Cursor, Generation, CheckGeneration;
+            internal float BaseOpacity;
+            internal bool UniformOpacity=true, Blocked;
         }
-        public static void FreeroamCreated() { if (ready) { Reason("freeroam-created-reprepare"); ResetMap(); } }
-        public static void PreparedHook()
+        private static bool enabled, ready, shadow, verifying, mismatchLatched;
+        private static List<scrFloor> floors;
+        private static Chunk[] chunks;
+        private static int count, sweep;
+        private static readonly Dictionary<scrFloor,int> indices=new Dictionary<scrFloor,int>();
+        private static readonly Dictionary<Transform,int> transforms=new Dictionary<Transform,int>();
+        private static readonly Dictionary<string,long> reasons=new Dictionary<string,long>();
+        private static long effects, skipped, processed, hookCalls, hookHits, dirtyMarks, lateChanges, samples, comparisons, mismatch;
+        private static long startTicks, classifyTicks, skipTicks, legacyTicks, safetyTicks, hookTicks;
+        private static double perTileMs;
+        private static int pipelineDepth, pipelineFrame=-1;
+        private static long pipelineStamp, pipelineTicks, pipelinePeak, pipelinePrevious, pipelineTotal;
+        internal static void PipelineEnter()
         {
-            if (!enabled) return;
-            try { Prepare(); Log(Status()); }
-            catch (Exception ex) { ready = false; Reason("prepare-exception:" + ex.GetType().Name); Log(Status()); }
+            if(!enabled) return;
+            if(pipelineDepth++!=0) return;
+            if(pipelineFrame!=Time.frameCount)
+            { pipelinePrevious=pipelineTicks; pipelineFrame=Time.frameCount; pipelineTicks=0; }
+            pipelineStamp=Stopwatch.GetTimestamp();
+        }
+        internal static void PipelineExit()
+        {
+            if(!enabled||pipelineDepth==0) return;
+            if(--pipelineDepth==0)
+            {
+                long elapsed=Stopwatch.GetTimestamp()-pipelineStamp;
+                pipelineTicks+=elapsed; pipelineTotal+=elapsed;
+                if(pipelineTicks>pipelinePeak) pipelinePeak=pipelineTicks;
+            }
+        }
+        internal static void Log(string s) { Main.Entry.Logger.Log("[타일구간] "+s); }
+        internal static void Reason(string s) { long n; reasons.TryGetValue(s,out n); reasons[s]=n+1; }
+        internal static void Configure(bool on) { enabled=on; }
+        internal static void Install(Harmony h) { FloorRangeWriters.InstallLifecycle(h); }
+        public static void PreparedHook() { if(enabled) SafePrepare(); }
+        private static void SafePrepare()
+        {
+            try { Prepare(); }
+            catch(Exception ex) { ResetMap(); Reason("prepare:"+ex.GetType().Name); }
+            Log(Status());
         }
         internal static void Command(string arg)
         {
-            switch (arg.Trim())
+            switch(arg.Trim())
             {
-                case "on": enabled = true; shadow = false; Prepare(); break;
-                case "shadow": enabled = true; shadow = true; Prepare(); break;
+                case "on": enabled=true; shadow=false; SafePrepare(); return;
+                case "shadow": enabled=true; shadow=true; SafePrepare(); return;
                 case "off": Shutdown(); break;
                 case "flush": Flush("command"); break;
                 case "status": break;
-                default: Log("tilerange on/shadow/off/flush/status; on/shadow는 맵 준비 뒤 재생 전에 실행"); return;
+                default: Log("tilerange on/shadow/off/flush/status; on/shadow는 재생 전 정지 상태에서"); return;
             }
             Log(Status());
         }
-
-        // Explicit one-time preparation: never enumerate tiles in StartEffect.
-        // Patching reads/writes is also done here, before accepting any range.
         private static void Prepare()
         {
-            Flush("prepare"); ClearMap();
-            if (!lifecycleReady || opacity == null || sprite == null || tweens == null || renderer == null)
-            { Reason("lifecycle-or-fields-unavailable"); return; }
-            ownerThread = System.Threading.Thread.CurrentThread.ManagedThreadId;
-            coverageChanged = false;
-            if (!listening) { AppDomain.CurrentDomain.AssemblyLoad += AssemblyLoaded; listening = true; }
-            var list = ADOBase.lm == null ? null : ADOBase.lm.listFloors;
-            if (list == null) { Reason("prepare-no-map"); return; }
-            if (patches == null) patches = new Harmony("StutterFix.FloorRange.Research");
-            bool ok = InstallReaders();
-            if (!ok) { Reason("reader-coverage-failed"); return; }
-            floors = list; ledger = new FloorRangeLedger(list.Count);
-            visibleCounts = new int[ledger.Chunks.Length]; culled = new bool[list.Count];
-            for (int i = 0; i < list.Count; i++)
+            ResetMap(); mismatchLatched=false;
+            if(!FloorRangeWriters.Install()) { Reason("writer-install-failed"); return; }
+            var list=ADOBase.lm==null ? null : ADOBase.lm.listFloors;
+            if(list==null || list.Count==0) { Reason("prepare-no-map"); return; }
+            floors=list; count=list.Count; chunks=new Chunk[(count+63)/64];
+            for(int ch=0;ch<chunks.Length;ch++) chunks[ch]=new Chunk();
+            for(int i=0;i<count;i++)
             {
-                var f = list[i];
-                if (f == null || indices.ContainsKey(f)) { ledger.Chunks[i / 64].Blocked = true; Reason("null-or-alias-floor"); continue; }
-                indices.Add(f, i);
-                culled[i] = TileCull.IsCulled(f);
-                if (!culled[i]) visibleCounts[i / 64]++;
-                if (f.freeroamArea != null || f.floorRenderer == null || f.moveTweens == null)
-                { ledger.Chunks[i / 64].Blocked = true; Reason("freeroam-or-missing-state"); continue; }
-                // Real DOTween callbacks cannot be delayed. A later dictionary
-                // exposure also fences its chunk through ReadTweens below.
-                foreach (var t in f.moveTweens.Values)
-                    if ((object)t != null && t.active && !(t.id is FloorAnim.Rec))
-                    { ledger.Chunks[i / 64].Blocked = true; Reason("real-tween-at-prepare"); break; }
+                var f=list[i]; var ch=chunks[i/64];
+                if(f==null || indices.ContainsKey(f) || f.transform==null || transforms.ContainsKey(f.transform))
+                { ch.Blocked=true; Reason("prepare-null-alias"); continue; }
+                indices.Add(f,i); transforms.Add(f.transform,i);
+                if((i&63)==0) ch.BaseOpacity=f.opacityVal;
+                else if(!Bits(ch.BaseOpacity,f.opacityVal)) ch.UniformOpacity=false;
+                ch.Dirty|=ActualDirty(f,ch.BaseOpacity);
             }
-            ready = true;
-            Log("prepared floors=" + list.Count + " chunks=" + ledger.Chunks.Length + " patched=" + patched.Count + " shadow=" + shadow);
+            ready=true;
+            Log("prepared floors="+count+" chunks="+chunks.Length+" writers="+FloorRangeWriters.Installed+" shadow="+shadow);
         }
-
-        internal static bool TryStart(List<scrFloor> list, int start, int end, int step, ref FloorAnim.Ctx c)
+        private static bool HasRunning(scrFloor f)
         {
-            if (step > 0 && (long)end - start >= 0 && ((long)end - start) / step + 1 >= 1000)
+            if(f.moveTweens==null) return true;
+            foreach(var t in f.moveTweens.Values)
             {
-                large++; if (c.Zero) largeZero++; else largeDuration++;
-                if (c.OpaOnly) largeOpa++;
-                if (c.PosUsed && !(float.IsNaN(c.Pos.x) && float.IsNaN(c.Pos.y))) largePos++;
-                if (c.RotUsed) largeRot++;
-                if (c.ScaleUsed && !(float.IsNaN(c.Scale.x) && float.IsNaN(c.Scale.y))) largeScale++;
+                if((object)t==null) continue;
+                var r=t.id as FloorAnim.Rec;
+                if(r!=null ? r.Running : t.active) return true;
             }
-            if (!enabled) return false;
-            if (coverageChanged) { Flush("assembly-load"); Reason("assembly-set-changed-reprepare"); return false; }
-            if (!ready || !ReferenceEquals(list, floors) || list.Count != ledger.Count)
-            { Reason("not-prepared-or-map-changed"); return false; }
-            if (mismatchLatched) { Reason("shadow-mismatch-latched"); return false; }
-            if (FloorAnim.Split) { Reason("split-enabled"); return false; }
-            if (TileSim.Capturing) { Reason("tilesim-capture"); return false; }
-            if (!c.Zero) { Reason("duration-not-supported"); return false; }
-            if (!c.OpaOnly) { Reason("non-opacity-channel"); return false; }
-            if (step != 1 || start < 0 || end >= list.Count || end < start)
-            { Reason("gap-or-invalid-range"); return false; }
-            if (end - start + 1 < 1000) { Reason("below-1000"); return false; }
-            long begin = Stopwatch.GetTimestamp();
-            accepted++;
-            var entry = new FloorRangeLedger.Entry { Start = start, End = end, Opacity = c.Opacity };
-            for (int ch = start / 64; ch <= end / 64; ch++)
+            return false;
+        }
+        private static byte ActualDirty(scrFloor f,float opacity)
+        {
+            if(f==null || f.freeroamArea!=null || f.floorRenderer==null || f.floorRenderer.material==null || HasRunning(f)) return All;
+            var t=f.transform; var p=t.position; var s=t.localScale; byte mask=0;
+            var bp=f.startPos+new Vector3(0f,0f,0f);
+            if(!Mathf.Approximately(p.x,bp.x) || !Mathf.Approximately(p.y,bp.y)) mask|=Position;
+            if(!Mathf.Approximately(t.eulerAngles.z,(f.startRot+new Vector3(0f,0f,0f)).z)) mask|=Rotation;
+            if(!s.ApproximatelyXY(s.WithX(1f)) || !s.ApproximatelyXY(s.WithY(1f))) mask|=Scale;
+            if(!Mathf.Approximately(f.opacity,opacity)) mask|=Opacity;
+            return mask;
+        }
+        internal static void Mark(scrFloor f,byte channels=All)
+        {
+            if(!ready || verifying) return;
+            PipelineEnter(); long t=Stopwatch.GetTimestamp(); hookCalls++; int i;
+            if(!ReferenceEquals(f,null) && indices.TryGetValue(f,out i)) { hookHits++; MarkIndex(i,channels); }
+            hookTicks+=Stopwatch.GetTimestamp()-t;
+            PipelineExit();
+        }
+        internal static void Mark(Transform transform,byte channels)
+        {
+            if(!ready || verifying) return;
+            PipelineEnter(); long t=Stopwatch.GetTimestamp(); hookCalls++; int i;
+            if(!ReferenceEquals(transform,null) && transforms.TryGetValue(transform,out i)) { hookHits++; MarkIndex(i,channels); }
+            hookTicks+=Stopwatch.GetTimestamp()-t;
+            PipelineExit();
+        }
+        private static void MarkIndex(int i,byte channels)
+        { var c=chunks[i/64]; c.Dirty|=channels; c.Generation++; dirtyMarks++; }
+        internal static void BeforeLegacy(scrFloor f) { Mark(f); }
+        // Compatibility sites from T2: there is no deferred state to drain.
+        internal static void Materialize(scrFloor f,string reason) { }
+        internal static void SetCulled(scrFloor f,bool value) { }
+        internal static void Flush(string reason) { }
+        internal static void ResetMap()
+        { ready=false; floors=null; chunks=null; indices.Clear(); transforms.Clear(); count=sweep=0; }
+        internal static void Shutdown() { ResetMap(); enabled=shadow=false; FloorRangeWriters.Shutdown(); }
+        private static bool Target(ref FloorAnim.Ctx c,out byte mask)
+        {
+            mask=0;
+            if(c.PosUsed)
             {
-                long t = Stopwatch.GetTimestamp();
-                bool added = ledger.Append(ch, entry);
-                enqueueTicks += Stopwatch.GetTimestamp() - t;
-                if (added) { chunks++; continue; }
-                Reason(ledger.Chunks[ch].Blocked ? "chunk-fenced" : "chunk-depth-32");
-                t = Stopwatch.GetTimestamp();
-                // Fallback is local to the chunk, and preserves ordering of every
-                // older zero effect (overwrite is not a global Stop).
-                int lo = Math.Max(start, ch * 64), hi = Math.Min(end, ch * 64 + 63);
-                for (int i = lo; i <= hi; i++)
+                if((!float.IsNaN(c.Pos.x)&&c.Pos.x!=0f)||(!float.IsNaN(c.Pos.y)&&c.Pos.y!=0f)) return false;
+                if(!float.IsNaN(c.Pos.x)||!float.IsNaN(c.Pos.y)) mask|=Position;
+            }
+            if(c.RotUsed) { if(c.Rot.z!=0f) return false; mask|=Rotation; }
+            if(c.ScaleUsed)
+            {
+                if((!float.IsNaN(c.Scale.x)&&c.Scale.x!=1f)||(!float.IsNaN(c.Scale.y)&&c.Scale.y!=1f)) return false;
+                if(!float.IsNaN(c.Scale.x)||!float.IsNaN(c.Scale.y)) mask|=Scale;
+            }
+            if(c.OpaUsed) mask|=Opacity;
+            return mask!=0;
+        }
+        internal static bool TryStart(List<scrFloor> list,int start,int end,int step,ref FloorAnim.Ctx c)
+        {
+            if(!enabled) return false;
+            if(!ready||!ReferenceEquals(list,floors)||list.Count!=count) { Reason("not-ready-map-changed"); return false; }
+            if(mismatchLatched) { Reason("shadow-mismatch-latched"); return false; }
+            if(FloorAnim.Split||FloorAnim.RangePending) { Reason("split-or-pending"); return false; }
+            if(TileSim.Capturing) { Reason("tilesim-capture"); return false; }
+            if(step!=1||start<0||end>=count||end<start) { Reason("gap-or-invalid-range"); return false; }
+            if(end-start+1<1000) { Reason("below-1000"); return false; }
+            byte mask;
+            if(!Target(ref c,out mask)) { Reason("non-default-target"); return false; }
+            long begin=Stopwatch.GetTimestamp(), classify=0, skip=0, legacy=0;
+            int skippedChunks=0, dirtyChunks=0, done=0, examined=0; effects++;
+            for(int k=start/64;k<=end/64;k++)
+            {
+                long t=Stopwatch.GetTimestamp(); var ch=chunks[k];
+                int lo=Math.Max(start,k*64), hi=Math.Min(end,k*64+63);
+                bool clean=!mismatchLatched&&!ch.Blocked&&(ch.Dirty&mask)==0;
+                // Approximately is not transitive: target must have the exact
+                // baseline bits against which every tile was certified.
+                if(c.OpaUsed&&(!ch.UniformOpacity||!Bits(c.Opacity,ch.BaseOpacity)))
+                { clean=false; Reason("chunk-opacity-target"); }
+                classify+=Stopwatch.GetTimestamp()-t; examined++; t=Stopwatch.GetTimestamp();
+                int lastOracle=-1;
+                if(clean&&shadow)
                 {
-                    Materialize(list[i], "chunk-fallback");
-                    FloorAnim.RangeLegacy(list[i], ref c); eager++;
+                    // Preflight all samples before executing any oracle.
+                    for(int i=lo;i<=hi;i++) if((i&15)==0&&!NoOp(floors[i],ref c))
+                    { clean=false; lateChanges++; mismatch++; mismatchLatched=true; MarkIndex(i,All); Reason("shadow-preflight");
+                      if(mismatch<=8) Log("mismatch preflight tile="+i+" actual path would write or complete a tween"); break; }
                 }
-                eagerTicks += Stopwatch.GetTimestamp() - t;
+                if(clean)
+                {
+                    if(shadow) for(int i=lo;i<=hi;i++) if((i&15)==0)
+                    { lastOracle=i; if(!Verify(floors[i],i,ref c)) { clean=false; break; } }
+                    if(clean) { skippedChunks++; skipped++; skip+=Stopwatch.GetTimestamp()-t; continue; }
+                }
+                skip+=Stopwatch.GetTimestamp()-t;
+                dirtyChunks++; Reason(ch.Blocked?"chunk-blocked":"chunk-dirty"); t=Stopwatch.GetTimestamp();
+                for(int i=lo;i<=hi;i++)
+                { if(!((i&15)==0&&i<=lastOracle)) FloorAnim.RangeLegacy(list[i],ref c); done++; }
+                legacy+=Stopwatch.GetTimestamp()-t;
             }
-            startTicks += Stopwatch.GetTimestamp() - begin;
-            Log("start tiles=" + (end - start + 1) + " ms=" + Ms(Stopwatch.GetTimestamp() - begin).ToString("F3") + " deferred-chunks-total=" + chunks + " eager-tiles-total=" + eager);
+            long elapsed=Stopwatch.GetTimestamp()-begin;
+            if(done>0) perTileMs=Ms(legacy)/done;
+            processed+=done; classifyTicks+=classify; skipTicks+=skip; legacyTicks+=legacy; startTicks+=elapsed;
+            Log(string.Format("start effects={0} chunks={1} skipped-chunks={2} dirty-chunks={3} tiles-processed={4} start-ms={5:F3} original-ms-estimate={6:F3} estimate-source={7} classify-ms={8:F3} skip-shadow-ms={9:F3} original-ms={10:F3} unaccounted-ms={11:F3}",
+                effects,examined,skippedChunks,dirtyChunks,done,Ms(elapsed),perTileMs*(end-start+1),perTileMs>0?"observed-dirty-tiles":"unavailable",Ms(classify),Ms(skip),Ms(legacy),Ms(elapsed-classify-skip-legacy)));
             return true;
         }
-
-        private static void Apply(int i, float target)
+        private static bool NoOp(scrFloor f,ref FloorAnim.Ctx c)
         {
-            var f = floors[i];
-            // Complete a known FloorAnim record before capturing the candidate
-            // baseline. Real tweens were excluded before acceptance.
-            FloorAnim.RangeCompleteOpacity(f);
-            bool verify = shadow && ((i & 15) == 0 || Visible(f));
-            if (!verify) { FloorAnim.RangeWriteOpacity(f, target); materialized++; return; }
-            long stamp = Stopwatch.GetTimestamp();
-            var t = f.transform; var p = t.position; var r = t.eulerAngles; var s = t.localScale;
-            float before = f.opacity; bool beforeSprite = f.dontChangeMySprite;
-            FloorAnim.RangeWriteOpacity(f, target);
-            float expected = f.opacity; bool expectedSprite = f.dontChangeMySprite;
-            var candidateP = t.position; var candidateR = t.eulerAngles; var candidateS = t.localScale;
-            f.opacity = before; f.dontChangeMySprite = beforeSprite;
-            // Independent original FloorAnim path is the oracle, with its normal
-            // dontChangeMySprite side effect and completed predecessor.
-            FloorAnim.RangeReferenceOpacity(f, target);
+            if(f.freeroamArea!=null||HasRunning(f)||f.floorRenderer==null||f.floorRenderer.material==null) return false;
+            var t=f.transform; var p=t.position; var s=t.localScale; var v=f.startPos+c.Pos;
+            if(c.PosUsed&&((!float.IsNaN(v.x)&&!Mathf.Approximately(p.x,v.x))||(!float.IsNaN(v.y)&&!Mathf.Approximately(p.y,v.y)))) return false;
+            if(c.RotUsed&&!Mathf.Approximately(t.eulerAngles.z,(f.startRot+c.Rot).z)) return false;
+            if(c.ScaleUsed&&((!float.IsNaN(c.Scale.x)&&!s.ApproximatelyXY(s.WithX(c.Scale.x)))||(!float.IsNaN(c.Scale.y)&&!s.ApproximatelyXY(s.WithY(c.Scale.y))))) return false;
+            return !c.OpaUsed||Mathf.Approximately(f.opacity,c.Opacity);
+        }
+        private static bool Verify(scrFloor f,int i,ref FloorAnim.Ctx c)
+        {
+            var t=f.transform; var p=t.position; var r=t.eulerAngles; var s=t.localScale;
+            var tr=f.tweenRot; float o=f.opacity; bool sprite=f.dontChangeMySprite;
+            var mt=f.moveTweens; var entries=new List<KeyValuePair<global::TweenType,DG.Tweening.Tween>>(mt);
+            verifying=true;
+            try { FloorAnim.RangeLegacy(f,ref c); } finally { verifying=false; }
+            bool same=Bits(p,t.position)&&Bits(r,t.eulerAngles)&&Bits(s,t.localScale)&&Bits(tr,f.tweenRot)&&Bits(o,f.opacity)
+                &&sprite==f.dontChangeMySprite&&ReferenceEquals(mt,f.moveTweens)&&mt.Count==entries.Count;
+            foreach(var pair in entries)
+            { DG.Tweening.Tween value; same&=mt.TryGetValue(pair.Key,out value)&&ReferenceEquals(pair.Value,value); }
             comparisons++;
-            if (!Bits(expected, f.opacity) || expectedSprite != f.dontChangeMySprite || !Bits(p, candidateP) || !Bits(r, candidateR) || !Bits(s, candidateS) || !Bits(candidateP, t.position) || !Bits(candidateR, t.eulerAngles) || !Bits(candidateS, t.localScale))
+            if(!same)
             {
-                mismatch++; mismatchLatched = true;
-                if (mismatch <= 8) Log("mismatch tile=" + i + " opacity expected=" + expected.ToString("R") + " actual=" + f.opacity.ToString("R")
-                    + " sprite=" + expectedSprite + "/" + f.dontChangeMySprite
-                    + " position-bits=" + Hex(candidateP) + "/" + Hex(t.position)
-                    + " euler-bits=" + Hex(candidateR) + "/" + Hex(t.eulerAngles)
-                    + " scale-bits=" + Hex(candidateS) + "/" + Hex(t.localScale));
+                mismatch++; mismatchLatched=true; MarkIndex(i,All);
+                if(mismatch<=8) Log("mismatch tile="+i+" position="+Hex(p)+"/"+Hex(t.position)+" rotation="+Hex(r)+"/"+Hex(t.eulerAngles)
+                    +" scale="+Hex(s)+"/"+Hex(t.localScale)+" opacity="+o.ToString("R")+"/"+f.opacity.ToString("R")+" tweens="+entries.Count+"/"+mt.Count);
             }
-            verifyTicks += Stopwatch.GetTimestamp() - stamp; materialized++;
+            return same;
         }
-        private static bool Bits(float a, float b) { return BitConverter.SingleToInt32Bits(a) == BitConverter.SingleToInt32Bits(b); }
-        private static bool Bits(Vector3 a, Vector3 b) { return Bits(a.x,b.x) && Bits(a.y,b.y) && Bits(a.z,b.z); }
-        private static string Hex(Vector3 v) { return BitConverter.SingleToInt32Bits(v.x).ToString("X8") + "," + BitConverter.SingleToInt32Bits(v.y).ToString("X8") + "," + BitConverter.SingleToInt32Bits(v.z).ToString("X8"); }
-        private static bool Visible(scrFloor f) { return !TileCull.IsCulled(f); }
-        internal static void SetCulled(scrFloor f, bool value)
-        {
-            int i;
-            if (!ready || !indices.TryGetValue(f, out i) || culled[i] == value) return;
-            culled[i] = value; visibleCounts[i / 64] += value ? -1 : 1;
-        }
-
-        internal static void Materialize(scrFloor f, string reason)
-        {
-            if (!ready || busy || ReferenceEquals(f, null)) return;
-            int i; if (!indices.TryGetValue(f, out i)) return;
-            var ch = ledger.Chunks[i / 64];
-            if (ch.Entries.Count == 0 || ch.Cursor[i % 64] == ch.Entries.Count) return;
-            long t = Stopwatch.GetTimestamp(); busy = true;
-            try { ledger.Drain(i, apply); Reason("materialize:" + reason); }
-            catch (Exception ex) { ch.Blocked = true; Reason("materialize-error:" + ex.GetType().Name); throw; }
-            finally { busy = false; pullTicks += Stopwatch.GetTimestamp() - t; }
-        }
-        private static void Fence(scrFloor f, string reason)
-        {
-            Materialize(f, reason);
-            int i;
-            if (ready && !ReferenceEquals(f, null) && indices.TryGetValue(f, out i))
-            { ledger.Chunks[i / 64].Blocked = true; Reason("fence:" + reason); }
-        }
-        internal static void BeforeLegacy(scrFloor f) { Materialize(f, "legacy-floor"); }
         internal static void Tick()
         {
-            if (!ready) return;
-            if (coverageChanged) { Flush("assembly-load"); ClearMap(); Reason("assembly-set-changed-reprepare"); return; }
-            if (ADOBase.lm == null || !ReferenceEquals(floors, ADOBase.lm.listFloors) || floors.Count != ledger.Count)
-            { ClearMap(); Reason("map-invalidated"); return; }
-            long t = Stopwatch.GetTimestamp();
-            int current = ADOBase.controller == null || ADOBase.controller.currFloor == null ? -10000 : ADOBase.controller.currFloor.seqID;
-            // Chunk visibility is maintained by TileCull events. Unknown/cull-off
-            // chunks are conservatively visible; no native query or full tile scan.
-            int swept = ledger.Chunks.Length == 0 ? -1 : sweep++ % ledger.Chunks.Length;
-            for (int ch = 0; ch < ledger.Chunks.Length; ch++)
+            if(!ready) return;
+            if(ADOBase.lm==null||!ReferenceEquals(floors,ADOBase.lm.listFloors)||floors.Count!=count)
+            { ResetMap(); Reason("tick-map-changed"); return; }
+            PipelineEnter(); long t=Stopwatch.GetTimestamp();
+            // 1/32 chunks per frame, four samples per chunk. Renewal needs every
+            // tile with no intervening hooked write, not just four matches.
+            int budget=Math.Max(1,(chunks.Length+31)/32);
+            for(int n=0;n<budget;n++)
             {
-                if (ledger.Chunks[ch].Entries.Count == 0) continue;
-                bool full = ch == swept || visibleCounts[ch] > 0 || (current >= ch * 64 - 128 && current < ch * 64 + 64 + 128);
-                if (!full && !shadow) continue;
-                int hi = Math.Min(floors.Count, ch * 64 + 64);
-                for (int i = ch * 64; i < hi; i++)
+                int k=sweep; sweep=(sweep+1)%chunks.Length; var ch=chunks[k]; if(ch.Blocked) continue;
+                if(ch.Cursor==0||ch.CheckGeneration!=ch.Generation)
+                { ch.Cursor=0; ch.Checking=0; ch.CheckGeneration=ch.Generation; }
+                int size=Math.Min(64,count-k*64);
+                for(int j=0;j<4&&ch.Cursor<size;j++,ch.Cursor++)
                 {
-                    if (full || (shadow && (i & 15) == 0))
-                        Materialize(floors[i], ch == swept ? "sweep" : "visible-player-sample");
+                    int i=k*64+ch.Cursor; var f=floors[i]; int tracked;
+                    if(f==null||!indices.TryGetValue(f,out tracked)||tracked!=i||!transforms.TryGetValue(f.transform,out tracked)||tracked!=i)
+                    { ch.Blocked=true; ch.Dirty=All; Reason("safety-identity-changed"); break; }
+                    byte actual=ActualDirty(f,ch.BaseOpacity); samples++;
+                    if((actual&~ch.Dirty)!=0) { lateChanges++; ch.Dirty|=actual; Reason("late-write-detected"); }
+                    ch.Checking|=actual;
                 }
+                if(ch.Cursor>=size) { ch.Dirty=ch.Checking; ch.Cursor=0; }
             }
-            tickTicks += Stopwatch.GetTimestamp() - t;
+            safetyTicks+=Stopwatch.GetTimestamp()-t;
+            PipelineExit();
         }
-        internal static void Flush(string reason)
-        {
-            if (!ready || busy) return;
-            for (int ch = 0; ch < ledger.Chunks.Length; ch++)
-                if (ledger.Chunks[ch].Entries.Count != 0)
-                    for (int i = ch * 64; i < Math.Min(floors.Count, ch * 64 + 64); i++) Materialize(floors[i], reason);
-        }
-        internal static void ResetMap() { Flush("map-reset"); ClearMap(); }
-        private static void ClearMap() { ready = false; floors = null; ledger = null; visibleCounts = null; culled = null; indices.Clear(); sweep = 0; }
-        internal static void Shutdown()
-        {
-            Flush("unload"); ClearMap(); enabled = shadow = false;
-            if (patches != null) patches.UnpatchAll(patches.Id);
-            patches = null; patched.Clear();
-            if (listening) { AppDomain.CurrentDomain.AssemblyLoad -= AssemblyLoaded; listening = false; }
-        }
-        private static void AssemblyLoaded(object sender, AssemblyLoadEventArgs args)
-        {
-            if (!ready) return;
-            var loaded = args.LoadedAssembly;
-            if (loaded.IsDynamic) return;
-            bool relevant = false;
-            try { foreach (var reference in loaded.GetReferencedAssemblies()) if (reference.Name == typeof(scrFloor).Assembly.GetName().Name) relevant = true; }
-            catch { relevant = true; }
-            if (!relevant) return;
-            coverageChanged = true;
-            // Loading on the main thread flushes before the new assembly's code
-            // can observe an old field. Background loads fence new acceptance;
-            // the next main-thread tick drains pending work (see documented limit).
-            if (System.Threading.Thread.CurrentThread.ManagedThreadId == ownerThread) Flush("assembly-load");
-        }
-        private static double Ms(long ticks) { return ticks * 1000.0 / Stopwatch.Frequency; }
+        private static bool Bits(float a,float b) { return BitConverter.SingleToInt32Bits(a)==BitConverter.SingleToInt32Bits(b); }
+        private static bool Bits(Vector3 a,Vector3 b) { return Bits(a.x,b.x)&&Bits(a.y,b.y)&&Bits(a.z,b.z); }
+        private static string Hex(Vector3 v) { return BitConverter.SingleToInt32Bits(v.x).ToString("X8")+","+BitConverter.SingleToInt32Bits(v.y).ToString("X8")+","+BitConverter.SingleToInt32Bits(v.z).ToString("X8"); }
+        private static double Ms(long t) { return t*1000.0/Stopwatch.Frequency; }
         private static string Status()
         {
-            long pending = 0; if (ledger != null) foreach (var c in ledger.Chunks) pending += c.Entries.Count;
-            string s = "enabled=" + enabled + " ready=" + ready + " shadow=" + shadow + " effects=" + accepted + " chunks=" + chunks + " eager=" + eager + " pending=" + pending + " apply=" + materialized + " verify=" + comparisons + " mismatch=" + mismatch + " patch-fail=" + patchFailures;
-            s += " large=" + large + " zero=" + largeZero + " duration=" + largeDuration + " opa-only=" + largeOpa + " pos=" + largePos + " rot=" + largeRot + " scale=" + largeScale;
-            s += string.Format(" start-ms={0:F3} enqueue-ms={1:F3} eager-ms={2:F3} unaccounted-ms={3:F3} pull-ms={4:F3} tick-ms={5:F3} verify-ms={6:F3}", Ms(startTicks), Ms(enqueueTicks), Ms(eagerTicks), Ms(startTicks-enqueueTicks-eagerTicks), Ms(pullTicks), Ms(tickTicks), Ms(verifyTicks));
-            foreach (var pair in reasons) s += " | " + pair.Key + "=" + pair.Value;
+            string s="enabled="+enabled+" ready="+ready+" shadow="+shadow+" patch-fail="+FloorRangeWriters.Failures+" patched="+FloorRangeWriters.Installed
+                +" effects="+effects+" skipped-chunks="+skipped+" tiles-processed="+processed+" verify="+comparisons+" mismatch="+mismatch+" mismatch-latched="+mismatchLatched
+                +" hook-calls="+hookCalls+" hook-normal="+hookHits+" dirty-marks="+dirtyMarks+" safety-samples="+samples+" late-changes="+lateChanges;
+            s+=string.Format(" start-ms={0:F3} classify-ms={1:F3} skip-shadow-ms={2:F3} original-ms={3:F3} unaccounted-ms={4:F3} safety-ms={5:F3} hook-ms={6:F3}",
+                Ms(startTicks),Ms(classifyTicks),Ms(skipTicks),Ms(legacyTicks),Ms(startTicks-classifyTicks-skipTicks-legacyTicks),Ms(safetyTicks),Ms(hookTicks));
+            s+=" pipeline-frame="+pipelineFrame+" pipeline-ms="+Ms(pipelineTicks).ToString("F3")+" pipeline-previous-ms="+Ms(pipelinePrevious).ToString("F3")
+                +" pipeline-peak-ms="+Ms(pipelinePeak).ToString("F3")+" pipeline-total-ms="+Ms(pipelineTotal).ToString("F3")+" hook-untracked="+(hookCalls-hookHits);
+            foreach(var pair in reasons) s+=" | "+pair.Key+"="+pair.Value;
             return s;
-        }
-
-        public static float ReadOpacity(scrFloor f) { Materialize(f, "opacity-read"); return f.opacity; }
-        public static void WriteOpacity(scrFloor f, float v) { Materialize(f, "opacity-write"); f.opacity = v; }
-        public static bool ReadSprite(scrFloor f) { Materialize(f, "sprite-read"); return f.dontChangeMySprite; }
-        public static void WriteSprite(scrFloor f, bool v) { Materialize(f, "sprite-write"); f.dontChangeMySprite = v; }
-        public static Dictionary<global::TweenType, DG.Tweening.Tween> ReadTweens(scrFloor f) { Fence(f, "dictionary-alias"); return f.moveTweens; }
-        public static void WriteTweens(scrFloor f, Dictionary<global::TweenType, DG.Tweening.Tween> v) { Fence(f, "dictionary-write"); f.moveTweens = v; }
-        public static FloorRenderer ReadRenderer(scrFloor f) { Materialize(f, "renderer-read"); return f.floorRenderer; }
-        public static void WriteRenderer(scrFloor f, FloorRenderer v) { Fence(f, "renderer-write"); f.floorRenderer = v; }
-        public static IEnumerable<CodeInstruction> Rewrite(IEnumerable<CodeInstruction> source)
-        {
-            foreach (var ins in source)
-            {
-                var fi = ins.operand as FieldInfo;
-                if (fi != null && (fi == opacity || fi == sprite || fi == tweens || fi == renderer))
-                {
-                    string name = fi == opacity ? "Opacity" : fi == sprite ? "Sprite" : fi == tweens ? "Tweens" : "Renderer";
-                    if (ins.opcode == OpCodes.Ldfld || ins.opcode == OpCodes.Stfld)
-                    {
-                        name = (ins.opcode == OpCodes.Ldfld ? "Read" : "Write") + name;
-                        ins.opcode = OpCodes.Call; ins.operand = AccessTools.Method(typeof(FloorRange), name);
-                    }
-                    else if (ins.opcode == OpCodes.Ldflda) throw new InvalidOperationException("floor field address escape");
-                }
-                yield return ins;
-            }
-        }
-        private static bool InstallReaders()
-        {
-            bool ok = true;
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                string name = assembly.GetName().Name;
-                if (assembly.IsDynamic || name.StartsWith("System") || name.StartsWith("UnityEngine") || name.StartsWith("UnityEditor") || name == "mscorlib" || name == "netstandard" || name.StartsWith("Mono.") || name.Contains("Harmony")) continue;
-                bool referencesFloor = assembly == typeof(scrFloor).Assembly || assembly == typeof(FloorRange).Assembly;
-                foreach (var reference in assembly.GetReferencedAssemblies()) if (reference.Name == typeof(scrFloor).Assembly.GetName().Name) referencesFloor = true;
-                if (!referencesFloor) continue;
-                Type[] types;
-                try { types = assembly.GetTypes(); }
-                catch (ReflectionTypeLoadException ex) { types = ex.Types; }
-                catch { Reason("scan-types-failed:" + name); ok = false; continue; }
-                foreach (var type in types)
-                {
-                    if (type == null) { ok = false; continue; }
-                    if (type == typeof(FloorRange) || type == typeof(FloorRangeLedger) || type.DeclaringType == typeof(FloorRangeLedger) || type == typeof(FloorAnim) || type.DeclaringType == typeof(FloorAnim)) continue;
-                    var methods = new List<MethodBase>(type.GetMethods(AccessTools.all | BindingFlags.DeclaredOnly));
-                    methods.AddRange(type.GetConstructors(AccessTools.all | BindingFlags.DeclaredOnly));
-                    foreach (var method in methods)
-                    {
-                        if (patched.Contains(method) || method.IsAbstract) continue;
-                        try
-                        {
-                            if (method.GetMethodBody() == null) continue;
-                            bool hit = false;
-                            // Harmony's optional ILGenerator parameter refers to
-                            // framework mscorlib; reflect across that ABI boundary.
-                            var read = AccessTools.Method(typeof(PatchProcessor), "GetOriginalInstructions");
-                            var args = new object[read.GetParameters().Length]; args[0] = method;
-                            foreach (var ins in (IEnumerable<CodeInstruction>)read.Invoke(null, args))
-                                if (ins.operand is FieldInfo fi && (fi == opacity || fi == sprite || fi == tweens || fi == renderer)) { hit = true; break; }
-                            if (!hit) continue;
-                            if (method.ContainsGenericParameters) throw new InvalidOperationException("generic reader");
-                            patches.Patch(method, transpiler: new HarmonyMethod(typeof(FloorRange), nameof(Rewrite)));
-                            patched.Add(method);
-                        }
-                        catch (Exception ex) { patchFailures++; ok = false; Reason("patch:" + type.FullName + "." + method.Name + ":" + ex.GetType().Name); }
-                    }
-                }
-            }
-            return ok;
         }
     }
 }

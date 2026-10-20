@@ -1,0 +1,55 @@
+﻿== ffxFloorDisappearPlus
+  get_eventTweens
+    필드 읽기 ffxPlusBase::floor
+    필드 읽기 scrFloor::moveTweens
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Values
+  Awake
+    호출 ffxPlusBase::Awake
+  SetStartTime
+    필드 읽기 ffxPlusBase::floor
+    필드 읽기 scrFloor::speed
+    필드 읽기 scrFloor::seqID
+    호출 scrLevelMaker::get_instance
+    필드 읽기 scrLevelMaker::listFloors
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    필드 읽기 scrFloor::nextfloor
+    필드 읽기 scrFloor::entryTime
+    필드 읽기 ffxFloorDisappearPlus::tilesBehind
+    필드 쓰기 ffxPlusBase::startTime
+    필드 쓰기 ffxPlusBase::triggered
+    필드 읽기 ffxPlusBase::cond
+    필드 읽기 scrConductor::song
+    호출 UnityEngine.AudioSource::get_pitch
+    호출 UnityEngine.Mathf::Min
+    필드 쓰기 ffxPlusBase::duration
+  StartEffect
+    호출 ffxPlusBase::AdjustDurationForHardbake
+    필드 읽기 ffxPlusBase::floor
+    필드 읽기 scrFloor::nextfloor
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Random::Range
+    필드 읽기 ffxFloorDisappearPlus::animType
+    호출 scrFloor::MoveBackBy
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Vector3::get_zero
+    필드 읽기 ffxPlusBase::duration
+    호출 DG.Tweening.ShortcutExtensions::DOScale
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenExtensions::Done
+    호출 UnityEngine.Transform::get_position
+    호출 DG.Tweening.ShortcutExtensions::DOMove
+    호출 scrFloor::MoveToBack
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Vector3::op_Addition
+    호출 scrFloor::TweenRotation
+    호출 scrFloor::TweenOpacity
+    필드 읽기 scrFloor::moveTweens
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 DG.Tweening.TweenExtensions::Kill
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+  .ctor
+    필드 쓰기 ffxFloorDisappearPlus::tilesBehind
+    호출 ffxPlusBase::.ctor
+  .cctor
+    정적필드 쓰기 ffxFloorDisappearPlus::maxID_debug

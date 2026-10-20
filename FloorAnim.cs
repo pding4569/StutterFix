@@ -124,6 +124,14 @@ namespace StutterFix
 
         // ── 효과 시작 ──
         public static bool StartPrefix(ffxMoveFloorPlus __instance, bool __runOriginal)
+#if DEV || AUTOTEST
+        {
+            FloorRange.PipelineEnter();
+            try { return StartCore(__instance, __runOriginal); }
+            finally { FloorRange.PipelineExit(); }
+        }
+        private static bool StartCore(ffxMoveFloorPlus __instance, bool __runOriginal)
+#endif
         {
             if (!__runOriginal) return false;
             if (!Active || !Hitch.Playing) return true;
@@ -466,21 +474,7 @@ namespace StutterFix
             if (f.freeroamArea != null)
                 foreach (var lf in f.freeroamArea.listFloors) if (lf.isLandable) TweenFloor(lf, ref c);
         }
-        internal static void RangeCompleteOpacity(scrFloor f)
-        {
-            Prev(f.moveTweens, global::TweenType.Opacity, false);
-        }
-        internal static void RangeWriteOpacity(scrFloor f, float target)
-        {
-            Tiles++;
-            _ = f.floorRenderer.material;
-            if (!Mathf.Approximately(f.opacity, target)) { f.opacity = target; f.dontChangeMySprite = true; }
-        }
-        internal static void RangeReferenceOpacity(scrFloor f, float target)
-        {
-            var c = new Ctx { Zero = true, OpaOnly = true, OpaUsed = true, Opacity = target };
-            OpaOnly(f, ref c);
-        }
+        internal static bool RangePending { get { return jobs.Count != 0; } }
 #endif
 
         // ── 길이 0 (즉시 이동) ──
@@ -588,6 +582,9 @@ namespace StutterFix
         }
         private static Rec New(scrFloor f, Transform tt, Dictionary<global::TweenType, Tween> mt, int key, global::TweenType tk, Tween old, ref Ctx c)
         {
+#if DEV || AUTOTEST
+            FloorRange.Mark(f);
+#endif
             // 같은 칸의 끝난 표를 다시 쓴다 (방금 Kill(true) 로 끝냈거나 이미 끝난 것). 기록이 목록에서 빠졌으면 기록도 다시 쓴다.
             Rec oldR = (object)old == null ? null : old.id as Rec; Rec r;
             bool reuseProxy = oldR != null && !oldR.Running && (!Edition.Dev || oldR.Shadow == null);
@@ -711,6 +708,9 @@ namespace StutterFix
         private static void Complete(Rec r)
         {
             if (!r.Running) return;
+#if DEV || AUTOTEST
+            FloorRange.Mark(r.F);
+#endif
             if (!r.Started) Startup(r);
             r.Pos = r.Dur;
             r.Running = false;
@@ -807,6 +807,14 @@ namespace StutterFix
         internal static void FinishAll() { KillAllPrefix(true); }
 
         public static void UpdatePrefix()
+#if DEV || AUTOTEST
+        {
+            FloorRange.PipelineEnter();
+            try { UpdateCore(); }
+            finally { FloorRange.PipelineExit(); }
+        }
+        private static void UpdateCore()
+#endif
         {
 #if DEV || AUTOTEST
             FloorRange.Tick();
@@ -860,6 +868,14 @@ namespace StutterFix
         }
 
         public static void UpdatePostfix()
+#if DEV || AUTOTEST
+        {
+            FloorRange.PipelineEnter();
+            try { UpdatePostCore(); }
+            finally { FloorRange.PipelineExit(); }
+        }
+        private static void UpdatePostCore()
+#endif
         {
             if (!Edition.Dev || recs.Count == 0) return;
             for (int i = 0; i < recs.Count; i++)

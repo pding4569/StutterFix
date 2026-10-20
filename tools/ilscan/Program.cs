@@ -25,6 +25,7 @@ static class Program
         pe = new PEReader(fs);
         if (!pe.HasMetadata) { Console.WriteLine("SKIP native PE (no managed metadata)"); return 0; }
         md = pe.GetMetadataReader();
+        if (Environment.GetEnvironmentVariable("TILE_WRITERS") == "1") { TileWriters(); return 0; }
         if (Environment.GetEnvironmentVariable("TILE_READERS") == "1") { TileReaders(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_GUARDS") == "1") { DecoGuards(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_READERS") == "1") { DecoReaders(); return 0; }
@@ -195,6 +196,32 @@ static class Program
     }
 
     // Conservative reference inventory. Transform aliases are not data-flow proof.
+    static void TileWriters()
+    {
+        foreach (var mh in md.MethodDefinitions)
+        {
+            var rows = new List<string>(); bool floor = MethodTitle(mh).StartsWith("scrFloor::") || MethodTitle(mh).StartsWith("scrFloor+");
+            foreach (var (op, tok) in Tokens(md.GetMethodDefinition(mh)))
+            {
+                if (op == ILOpCode.Ldstr) continue;
+                var h = Handle(tok);
+                if (h.Kind != HandleKind.MethodDefinition && h.Kind != HandleKind.MemberReference && h.Kind != HandleKind.FieldDefinition && h.Kind != HandleKind.MethodSpecification) continue;
+                string member = MemberName(h), name = ShortName(h);
+                if (member.StartsWith("scrFloor::")) floor = true;
+                if ((member.StartsWith("scrFloor::") && (op == ILOpCode.Stfld || op == ILOpCode.Ldflda))
+                    || (IsCall(op) && member.StartsWith("UnityEngine.Transform::") && (name.StartsWith("set_") || name.StartsWith("Set") || name == "Translate" || name == "Rotate")))
+                    rows.Add(op + " " + member);
+            }
+            if (MethodTitle(mh) == "scrFloor::TweenRotation") rows.Add("Tween creation: invalidate before deferred callback");
+            if (MethodTitle(mh) == "ffxMoveFloorPlus::StartEffect") { floor = true; rows.Add("Original body: invalidate research certificates"); }
+            if (MethodTitle(mh) == "ffxFloorDisappearPlus::StartEffect" || MethodTitle(mh) == "scrFloor::MoveToBack" || MethodTitle(mh) == "scrFloor::MoveBackBy")
+            { floor = true; rows.Add("Tween creation: invalidate before deferred callback"); }
+            if (!floor || rows.Count == 0) continue;
+            Console.WriteLine(MethodTitle(mh) + " token=0x" + MetadataTokens.GetToken(mh).ToString("X8") + " signature=" + Convert.ToHexString(md.GetBlobBytes(md.GetMethodDefinition(mh).Signature)));
+            foreach (string row in rows.Distinct()) Console.WriteLine("  " + row);
+        }
+    }
+
     static void TileReaders()
     {
         var fields = new HashSet<string> { "opacity", "dontChangeMySprite", "floorRenderer", "startPos", "startRot", "tweenRot", "moveTweens", "freeroamArea" };

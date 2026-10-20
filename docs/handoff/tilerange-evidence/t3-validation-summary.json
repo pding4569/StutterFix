@@ -1,0 +1,38 @@
+{
+  "scope": "T3 default-off DEV/AUTOTEST write invalidation and pristine skips; no game/install/commit/profsamp",
+  "builds": {
+    "dev": {
+      "sha256": "ebc1fedae1eda8dfa2182d7fc99564945a3dc64d205091605b4293a6d0eabf39",
+      "errors": 0,
+      "warnings": 38,
+      "types": {
+        "FloorRange": true,
+        "FloorRangeWriters": true,
+        "FloorRangeLedger": false
+      }
+    },
+    "player": {
+      "sha256": "842aa8d2ae42134097061de352691e2a10d2ecddb2b0eefb6bb99f840c2296e7",
+      "errors": 0,
+      "warnings": 36,
+      "types": {
+        "FloorRange": false,
+        "FloorRangeWriters": false,
+        "FloorRangeLedger": false
+      }
+    },
+    "autotest": {
+      "sha256": "57cd008871c860eb567e40cc456ad6fa1df9f30f5b51cf71b7cf124dcc6160c4",
+      "errors": 0,
+      "warnings": 38,
+      "types": {
+        "FloorRange": true,
+        "FloorRangeWriters": true,
+        "FloorRangeLedger": false
+      }
+    }
+  },
+  "fixture": "PASS T3 checks=70; production FloorRange; modeled Unity/FloorAnim/writer detours, no game performance claim",
+  "writer_metadata": "PASS metadata targets=53 exact=1 each; effect fields and material field verified; no Harmony detours executed",
+  "loadcheck": "Debug/StutterFix.dll: FieldRefAccess(이름) 266곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 5(실행 중 확인)"
+}

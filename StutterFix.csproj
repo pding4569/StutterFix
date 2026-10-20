@@ -54,7 +54,8 @@
     <Compile Include="HitSoundMix.cs" />
     <Compile Include="FloorAnim.cs" />
     <Compile Include="FloorRange.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="FloorRangeLedger.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="FloorRangeWriters.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="FloorRangeWriterManifest.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileSim.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileCost.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="JitWarm.cs" />
