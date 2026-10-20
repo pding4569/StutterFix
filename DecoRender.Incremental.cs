@@ -36,6 +36,17 @@ namespace StutterFix
         int collectCount, nativeReads, poseHits;
         long soaChecks, soaMismatches, verifySequence;
         double collectMs, topologyMs;
+        readonly Samples auditSamples = new Samples(), dirtySamples = new Samples(), changeSamples = new Samples(), layoutSamples = new Samples(),
+            scheduleSamples = new Samples(), waitSamples = new Samples(), otherSamples = new Samples(),
+            unaccountedSamples = new Samples(), drawOnSamples = new Samples(), drawOffSamples = new Samples();
+        readonly Samples frameCpuSamples = new Samples();
+        double frameCpuMs;
+        int frameCpuFrame = -1;
+        double auditMs, dirtyMs, changeMs, layoutMs, scheduleMs, waitMs, otherMs;
+        int auditFrame = -1, polledBarriers, eventBarriers, ignoredBarriers, dirtyLogFrames;
+        long layoutResets, dirtyFrames, changedSum, awakeSum;
+        int dirtyUnwritten, dirtyPose, dirtyVisibility;
+        static double Milliseconds(long ticks) => ticks * 1000.0 / Stopwatch.Frequency;
         readonly Samples totalSamples = new Samples(), collectSamples = new Samples(),
             computeSamples = new Samples(), uploadSamples = new Samples(), topologySamples = new Samples();
 
@@ -45,13 +56,15 @@ namespace StutterFix
             readonly double[] values = new double[Window];
             int count, next;
             double sum;
-            internal void Add(double v) { if (count == Window) sum -= values[next]; else count++; sum += v; values[next] = v; next = (next + 1) % Window; }
+            long calls;
+            internal void Add(double v) { calls++; if (count == Window) sum -= values[next]; else count++; sum += v; values[next] = v; next = (next + 1) % Window; }
             internal string State() {
                 var copy = new double[count]; Array.Copy(values, copy, count); Array.Sort(copy);
                 return "mean=" + F(sum / Math.Max(1, count)) + ",p99="
-                    + F(count == 0 ? 0 : copy[Math.Max(0, (int)Math.Ceiling(count * .99) - 1)]) + ",n=" + count;
+                    + F(count == 0 ? 0 : copy[Math.Max(0, (int)Math.Ceiling(count * .99) - 1)])
+                    + ",max=" + F(count == 0 ? 0 : copy[count - 1]) + ",n=" + count + ",calls=" + calls;
             }
-            internal void Clear() { count = next = 0; sum = 0; }
+            internal void Clear() { count = next = 0; sum = 0; calls = 0; }
         }
         struct Geometry
         {
@@ -138,6 +151,18 @@ namespace StutterFix
 
         void ResetLayout()
         {
+            layoutResets++;
+            // Existing runs retain their meshes. Preserve output for them across slot relocation;
+            // only a newly created run needs its members written again.
+            var retained = new HashSet<Item>();
+            var oldStarts = new Dictionary<Item, int>();
+            FloatVertex[] oldFloats = null; ByteVertex[] oldBytes = null;
+            if (layoutReady) {
+                if (floatColor) { oldFloats = new FloatVertex[floatOutput.Length]; floatOutput.CopyTo(oldFloats); }
+                else { oldBytes = new ByteVertex[byteOutput.Length]; byteOutput.CopyTo(oldBytes); }
+                foreach (var g in groups) foreach (var i in g.Items)
+                    if (i.Written && ReferenceEquals(i.Run, g)) { retained.Add(i); oldStarts[i] = i.Start; }
+            }
             DisposeBuffers(); residents.Clear(); pivots.Clear(); previousAwake.Clear(); signalled.Clear();
             int count = items.Count, vertices = 0;
             px = new float[count]; py = new float[count]; pz = new float[count];
@@ -151,7 +176,10 @@ namespace StutterFix
             for (int n = 0; n < count; n++)
             {
                 var i = items[n]; i.Slot = n;
-                i.Written = false; i.Visible = false; i.PoseFrame = -1; i.PoseValidated = false; i.LocalBounds = i.Sprite.bounds;
+                i.Written = retained.Contains(i);
+                if (!i.Written) i.Visible = false;
+                else if (i.Visible) i.Run.VisibleItems.Add(i);
+                i.PoseFrame = -1; i.PoseValidated = false; i.LocalBounds = i.Sprite.bounds;
                 residents[i.D] = i;
                 i.Uniforms = ReadUniforms(i.R);
                 var pivot = i.D.pivotTrans;
@@ -177,7 +205,12 @@ namespace StutterFix
                 for (int n = 0; n < i.Vertices.Length; n++) {
                     localVertices[i.Start + n] = i.Vertices[n]; var uv = i.UV[n];
                     atlasUV[i.Start + n] = new Vector2((i.Image.X + uv.x * width) / a.Width, (i.Image.Y + uv.y * height) / a.Height);
+                    if (retained.Contains(i)) {
+                        if (floatColor) floatOutput[i.Start + n] = oldFloats[oldStarts[i] + n];
+                        else byteOutput[i.Start + n] = oldBytes[oldStarts[i] + n];
+                    }
                 }
+                if (i.Visible) i.Run.HasVisible = true;
             }
             layoutReady = true; fullBuild = true; workFrame = -1;
         }
@@ -195,9 +228,7 @@ namespace StutterFix
             workFrame = Time.frameCount;
             work.Clear(); workSet.Clear(); awakeSet.Clear();
             if (initial) foreach (var i in items) AddWork(i);
-            // A sleeping run leader still lends its material to visible members. Audit that
-            // one source per run as well; it never emits geometry unless it is awake/visible.
-            foreach (var g in groups) if (g.Items.Count != 0) AddWork(g.Items[0]);
+            // Sleeping sources keep their cached geometry. Uniform changes arrive via Notify.
             foreach (var i in previousAwake) AddWork(i);
             previousAwake.Clear();
             foreach (var d in Dormancy.RenderAwake(manager)) {
@@ -238,8 +269,14 @@ namespace StutterFix
         {
             long start = Stopwatch.GetTimestamp(); bool initial = !layoutReady;
             if (initial) ResetLayout();
+            layoutMs += Milliseconds(Stopwatch.GetTimestamp() - start);
+            long dirtyStart = Stopwatch.GetTimestamp();
             GatherWork(initial || fullBuild); fullBuild = false;
+            dirtyMs += Milliseconds(Stopwatch.GetTimestamp() - dirtyStart);
+            long collectStart = Stopwatch.GetTimestamp();
             changedItems = uploadedVertices = nativeReads = poseHits = 0; collectCount = work.Count;
+            dirtyUnwritten = dirtyPose = dirtyVisibility = 0;
+            long changeTicks = 0;
             changedGeometry.Clear();
             foreach (var i in work)
             {
@@ -255,24 +292,35 @@ namespace StutterFix
                     color = i.R.color; cr[slot] = color.r; cg[slot] = color.g; cb[slot] = color.b; ca[slot] = color.a;
                 }
                 bool flipX = visible ? i.R.flipX : i.FlipX, flipY = visible ? i.R.flipY : i.FlipY;
+                long changeStart = Stopwatch.GetTimestamp();
                 bool moved = !MatrixEqual(i.Matrix, matrix) || !ColorEqual(i.Color, color) || i.FlipX != flipX || i.FlipY != flipY;
                 i.Dirty = !i.Written || moved || i.Visible != visible;
+                if (!i.Written) dirtyUnwritten++;
+                else if (i.Visible != visible) dirtyVisibility++;
+                else if (moved) dirtyPose++;
                 if (i.Visible != visible) { if (visible) i.Run.VisibleItems.Add(i); else i.Run.VisibleItems.Remove(i); }
                 // A z change invalidates the run ordering. Use originals until the next full rebuild.
                 if (i.Written && visible && !SameBits(i.Matrix.m23, matrix.m23)) { topologyDirty = true; fallbackKeys.Add(OrderKey(i)); }
                 if (moved && !i.Moved) movingCandidates++;
                 i.Moved |= moved; i.Matrix = matrix; i.Color = color; i.FlipX = flipX; i.FlipY = flipY; i.Visible = visible;
-                if (!i.Dirty) continue;
+                if (!i.Dirty) { changeTicks += Stopwatch.GetTimestamp() - changeStart; continue; }
                 i.Run.BoundsDirty = true;
                 geometry[changedGeometry.Count] = new Geometry { Matrix = matrix, Color = color, Start = i.Start,
                     Count = i.Vertices.Length, Visible = visible, FlipX = flipX, FlipY = flipY };
                 changedGeometry.Add(i); i.Written = true;
+                changeTicks += Stopwatch.GetTimestamp() - changeStart;
             }
-            collectMs = (Stopwatch.GetTimestamp() - start) * 1000.0 / Stopwatch.Frequency;
+            changeMs = Milliseconds(changeTicks);
+            collectMs = Milliseconds(Stopwatch.GetTimestamp() - collectStart) - changeMs;
             changedItems = changedGeometry.Count;
             long computeStart = Stopwatch.GetTimestamp();
-            if (changedItems != 0) new VerticesJob { Inputs = geometry, Local = localVertices, UV = atlasUV,
-                Floats = floatOutput, Bytes = byteOutput, FloatColor = floatColor }.Schedule(changedItems, 32).Complete();
+            JobHandle handle = default;
+            if (changedItems != 0) handle = new VerticesJob { Inputs = geometry, Local = localVertices, UV = atlasUV,
+                Floats = floatOutput, Bytes = byteOutput, FloatColor = floatColor }.Schedule(changedItems, 32);
+            long waitStart = Stopwatch.GetTimestamp();
+            scheduleMs = Milliseconds(waitStart - computeStart);
+            if (changedItems != 0) handle.Complete();
+            waitMs = Milliseconds(Stopwatch.GetTimestamp() - waitStart);
             computeMs = (Stopwatch.GetTimestamp() - computeStart) * 1000.0 / Stopwatch.Frequency;
             long uploadStart = Stopwatch.GetTimestamp();
             // Only dirty item ranges are uploaded. Stable, sleeping ranges retain degenerate geometry.
@@ -303,22 +351,80 @@ namespace StutterFix
                 if (!first) { g.CullBounds.Expand(.01f); g.Renderer.bounds = g.CullBounds; }
             }
             uploadMs = (Stopwatch.GetTimestamp() - uploadStart) * 1000.0 / Stopwatch.Frequency;
+            long tailStart = Stopwatch.GetTimestamp();
+            dirtyFrames++; changedSum += changedItems; awakeSum += awakeSet.Count;
+            if (dirtyLogFrames++ < 10) Log("dirty frame=" + Time.frameCount + " changed=" + changedItems
+                + " awake=" + awakeSet.Count + " unwritten=" + dirtyUnwritten + " pose=" + dirtyPose
+                + " visibility=" + dirtyVisibility + " layout-resets=" + layoutResets);
+            otherMs += Milliseconds(Stopwatch.GetTimestamp() - tailStart);
         }
         string IncrementalState() => " build-cpu-ms/window2048={total:" + totalSamples.State() + " collect:" + collectSamples.State()
             + " vertices-job+wait:" + computeSamples.State() + " upload+bounds:" + uploadSamples.State()
             + " topology:" + topologySamples.State() + "} collect-items=" + collectCount + " soa-hits=" + poseHits
             + " transform-fallbacks=" + nativeReads + " soa-verify=" + verifySoA + " soa-checks=" + soaChecks + " soa-mismatches=" + soaMismatches;
+        string StageState() => "\n stage-ms/window2048 (mean,p99,max,n,calls):"
+            + "\n audit=" + auditSamples.State() + "\n dirty+prune=" + dirtySamples.State()
+            + "\n change-compare=" + changeSamples.State()
+            + "\n layout=" + layoutSamples.State() + "\n collect=" + collectSamples.State()
+            + "\n job-schedule=" + scheduleSamples.State() + "\n job-wait=" + waitSamples.State()
+            + "\n upload+bounds=" + uploadSamples.State() + "\n topology=" + topologySamples.State()
+            + "\n other=" + otherSamples.State() + "\n unaccounted-ms=" + unaccountedSamples.State()
+            + "\n draw-on/callback=" + drawOnSamples.State() + "\n draw-off/callback=" + drawOffSamples.State()
+            + "\n build+draw/completed-frame=" + frameCpuSamples.State()
+            + "\n barrier-poll=" + polledBarriers + " barrier-event=" + eventBarriers + " barrier-ignored=" + ignoredBarriers
+            + " layout-resets=" + layoutResets + " dirty-mean=" + F((double)changedSum / Math.Max(1, dirtyFrames))
+            + " awake-mean=" + F((double)awakeSum / Math.Max(1, dirtyFrames))
+            + " dirty-last/unwritten=" + dirtyUnwritten + "/pose=" + dirtyPose + "/visibility=" + dirtyVisibility;
         void ResetBuildStats()
         {
             totalSamples.Clear(); collectSamples.Clear(); computeSamples.Clear(); uploadSamples.Clear(); topologySamples.Clear();
+            foreach (var s in new[] { auditSamples, dirtySamples, changeSamples, layoutSamples, scheduleSamples, waitSamples,
+                otherSamples, unaccountedSamples, drawOnSamples, drawOffSamples }) s.Clear();
+            frameCpuSamples.Clear(); frameCpuMs = 0; frameCpuFrame = -1;
+            dirtyFrames = changedSum = awakeSum = 0; dirtyLogFrames = 0;
             buildTicks = buildCount = measuredFrames = frameTicks = 0;
             lastBuildMs = collectMs = computeMs = uploadMs = topologyMs = 0;
             // Preserve cumulative correctness failures and all geometry/session ownership.
         }
 
+        void AuditLateBarriers()
+        {
+            if (auditFrame == Time.frameCount) return;
+            auditFrame = Time.frameCount;
+            // New topology must be created before culling. A late change therefore falls back
+            // to originals for the affected keys until the next frame's normal rebuild.
+            foreach (var watch in LiveBarrierChecks())
+            {
+                var r = watch.R;
+                bool wasDrawing = watch.Enabled && watch.Active && !watch.ForceOff;
+                bool enabled = r && r.enabled, active = r && r.gameObject.activeInHierarchy, off = r && r.forceRenderingOff;
+                bool drawing = enabled && active && !off;
+                // Waiting renderers need only the three visibility reads. Sorting is irrelevant until they draw.
+                string key = drawing ? OrderKey(r.sortingLayerID, r.sortingOrder) : watch.Key;
+                var material = drawing ? r.sharedMaterial : null;
+                int queue = material ? material.renderQueue : int.MinValue, id = material ? material.GetInstanceID() : 0;
+                float distance = drawing ? SortDistance(r, mainCamera) : watch.Distance;
+                if (wasDrawing != drawing || (drawing && (key != watch.Key || queue != watch.Queue
+                    || id != watch.Material || !SameBits(distance, watch.Distance))))
+                {
+                    topologyDirty = true; fallbackKeys.Add(watch.Key);
+                    if (r) fallbackKeys.Add(key);
+                    if (watch.Owner && watch.Owner.spriteRenderer)
+                        fallbackKeys.Add(OrderKey(watch.Owner.spriteRenderer.sortingLayerID, watch.Owner.spriteRenderer.sortingOrder));
+                }
+                watch.Enabled = enabled; watch.Active = active; watch.ForceOff = off;
+                watch.Key = key; watch.Queue = queue; watch.Material = id; watch.Distance = distance;
+            }
+            foreach (var d in notifiedOwners) { bool mesh;
+                Item i;
+                if (meshStates.TryGetValue(d, out mesh) && mesh && residents.TryGetValue(d, out i))
+                    { fallbackKeys.Add(OrderKey(i)); topologyDirty = true; }
+            }
+            notifiedOwners.Clear();
+        }
         void IndexBarriers()
         {
-            ownerBarriers.Clear(); liveBarriers.Clear(); meshStates.Clear();
+            ownerBarriers.Clear(); liveBarriers.Clear(); meshStates.Clear(); ignoredBarriers = 0;
             foreach (var i in items) meshStates[i.D] = MeshOn(i.D);
             foreach (var w in barrierWatches) {
                 if (!ReferenceEquals(w.Owner, null)) {
@@ -328,16 +434,21 @@ namespace StutterFix
                     meshStates[w.Owner] = MeshOn(w.Owner);
                 }
                 // No per-frame walk of the disabled child-mesh population, even in managed code.
-                if (ReferenceEquals(w.Owner, null) || (w.Enabled && w.Active && !w.ForceOff)) liveBarriers.Add(w);
+                if (ReferenceEquals(w.Owner, null)) {
+                    // Active objects with disabled renderers (e.g. tile meshes) can start drawing.
+                    // Inactive waiting objects are classified once and never polled.
+                    if (w.Active) liveBarriers.Add(w); else ignoredBarriers++;
+                }
             }
         }
         IEnumerable<BarrierWatch> LiveBarrierChecks()
         {
             barrierChecks.Clear();
+            polledBarriers = liveBarriers.Count; eventBarriers = 0;
             foreach (var w in liveBarriers) barrierChecks.Add(w);
             foreach (var d in notifiedOwners) {
                 List<BarrierWatch> list;
-                if (ownerBarriers.TryGetValue(d, out list)) foreach (var w in list) barrierChecks.Add(w);
+                if (ownerBarriers.TryGetValue(d, out list)) foreach (var w in list) if (barrierChecks.Add(w)) eventBarriers++;
             }
             return barrierChecks;
         }

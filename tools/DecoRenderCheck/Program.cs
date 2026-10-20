@@ -15,6 +15,8 @@ namespace Unity.Collections {
         Storage data;
         public NativeArray(int count, Allocator allocator) { data = new Storage { Values = new T[count] }; Allocations.Live++; }
         public bool IsCreated => data != null && data.Live;
+        public int Length => data.Values.Length;
+        public void CopyTo(T[] target) => Array.Copy(data.Values, target, data.Values.Length);
         public T this[int n] { get => data.Values[n]; set => data.Values[n] = value; }
         public void Dispose() { if (!IsCreated) throw new Exception("double dispose"); data.Live = false; Allocations.Live--; }
     }
@@ -39,7 +41,7 @@ namespace UnityEngine.Rendering { enum MeshUpdateFlags { DontRecalculateBounds }
 namespace UnityEngine {
     class Object { public static implicit operator bool(Object o) => o != null; }
     class GameObject : Object { public bool activeInHierarchy = true; }
-    class Material : Object {}
+    class Material : Object { public int renderQueue=3000; public int GetInstanceID()=>1; }
     class Texture : Object { public int width=8,height=8; }
     class Sprite : Object { public Bounds bounds = new Bounds(Vector3.zero,new Vector3(2,2,0)); }
     struct Vector2 {
@@ -79,9 +81,15 @@ namespace UnityEngine {
         public Vector3 position=>localPosition; public Quaternion rotation=>localRotation;
         public Matrix4x4 localToWorldMatrix { get { var m=Matrix4x4.TRS(localPosition,localRotation,localScale);return parent?parent.localToWorldMatrix*m:m; } }
     }
-    class SpriteRenderer : Object {
+    class Camera : Object {}
+    class Renderer : Object {
+        public bool enabled=true,forceRenderingOff; public GameObject gameObject=new GameObject();
+        public int sortingLayerID,sortingOrder; public Material sharedMaterial=new Material();
+        public float Distance;
+    }
+    class SpriteRenderer : Renderer {
         public Transform transform=new Transform(); public Color color=new Color(1,1,1,1);
-        public bool enabled=true,flipX,flipY,forceRenderingOff; public GameObject gameObject=new GameObject();
+        public bool flipX,flipY;
     }
     class MeshRenderer : Object { public Bounds bounds; public bool enabled; }
     class Mesh {
@@ -92,7 +100,7 @@ namespace UnityEngine {
     }
     static class Time { public static int frameCount; }
 }
-class scrDecoration { public Transform pivotTrans; public Color Color=new Color(1,1,1,1); public bool Enabled=true; }
+class scrDecoration : UnityEngine.Object { public SpriteRenderer spriteRenderer; public Transform pivotTrans; public Color Color=new Color(1,1,1,1); public bool Enabled=true; }
 class scrDecorationManager { public List<scrDecoration> Awake=new List<scrDecoration>(); }
 namespace StutterFix {
     static class Dormancy {
@@ -121,13 +129,17 @@ namespace StutterFix {
             internal Matrix4x4 Matrix,ChildMatrix;internal Color Color;internal Bounds LocalBounds;
             internal Transform PivotTransform,RenderTransform;internal MaterialSnapshot Uniforms;
         }
-        sealed class BarrierWatch {internal scrDecoration Owner;internal bool Enabled,Active,ForceOff;internal string Key;}
+        sealed class BarrierWatch {internal scrDecoration Owner;internal bool Enabled,Active,ForceOff;internal string Key="0/0";internal Renderer R;internal int Queue,Material;internal float Distance;}
+        Camera mainCamera=new Camera();
+        static float SortDistance(Renderer r,Camera c)=>r.Distance;
+        static string OrderKey(int layer,int order)=>layer+"/"+order;
         readonly List<BarrierWatch> barrierWatches=new List<BarrierWatch>();
         sealed class Group {
             internal List<Item> Items=new List<Item>(),VisibleItems=new List<Item>();internal bool HasVisible,Fresh,BoundsDirty;
             internal Mesh Mesh=new Mesh();internal MeshRenderer Renderer=new MeshRenderer();internal Bounds CullBounds;
         }
         static string F(double x)=>x.ToString("F6",CultureInfo.InvariantCulture);
+        static void Log(string value) {}
         static string OrderKey(Item i)=>"0/0";
         static bool SourceOff(Item i)=>i.R.forceRenderingOff;
         static bool MeshOn(scrDecoration d)=>false;
@@ -155,6 +167,18 @@ namespace StutterFix {
                 if(floating)Assert(((FloatVertex)g.Mesh.Data[8]).Color.a==0,"hidden float alpha zero");
                 else Assert(((ByteVertex)g.Mesh.Data[8]).Color.a==0,"hidden byte alpha zero");
                 Time.frameCount++;s.Build();Assert(s.changedItems==0&&s.uploadedVertices==0,"stable frame uploads nothing");
+                Assert(!s.work.Contains(c),"sleeping run member is not visited on stable frame");
+                Time.frameCount++;Notify(a.D);Capture(a.D,a.D.pivotTrans.position,a.D.pivotTrans.rotation,a.D.pivotTrans.localScale);s.Build();
+                Assert(s.changedItems==0,"notification and repeated identical capture do not mark dirty");
+                Time.frameCount++;s.ResetLayout();s.Build();
+                Assert(s.changedItems==0&&s.uploadedVertices==0,"unchanged topology retains written geometry");
+                Assert(g.HasVisible&&g.VisibleItems.Count==2,"retained visibility survives layout refresh");
+                var newRun=new Group();s.groups.Add(newRun);var extra=s.Add(newRun,40);
+                Time.frameCount++;s.ResetLayout();s.Build();
+                Assert(s.changedItems==1&&s.dirtyUnwritten==1,"new run writes only its members");
+                Assert(s.uploadedVertices==4,"retained run is not reuploaded for new run");
+                if(floating)Assert(s.floatOutput[a.Start].Position.x==9,"float output retained across allocation");
+                else Assert(s.byteOutput[a.Start].Position.x==9,"byte output retained across allocation");
                 Time.frameCount++;s.manager.Awake.Remove(a.D);Dormancy.Sleeping.Add(a.D);Notify(a.D);
                 s.GatherWork(false); // PrepareFrame gathers once, Build must retain the retiring item.
                 s.Build();Assert(s.changedItems==1&&g.VisibleItems.Count==1,"sleep clears only retiring geometry");
@@ -176,6 +200,36 @@ namespace StutterFix {
             }
             var stats=new Samples();for(int n=1;n<=3000;n++)stats.Add(n);
             Assert(stats.State().Contains("n=2048"),"bounded timing window");
+            Assert(stats.State().Contains("max=3000.000000")&&stats.State().Contains("calls=3000"),"max and lifetime call count");
+            stats.Clear();Assert(stats.State().Contains("calls=0"),"stage reset clears calls");
+            {
+                var s=new DecoRender();var owner=new scrDecoration();
+                var child=new BarrierWatch{Owner=owner,Enabled=true,Active=true};
+                var tile=new BarrierWatch{Active=true,Enabled=false};
+                var dormant=new BarrierWatch{Active=false};
+                s.barrierWatches.AddRange(new[]{child,tile,dormant});s.IndexBarriers();
+                Assert(s.liveBarriers.Count==1&&s.liveBarriers[0]==tile,"only active non-decoration objects polled");
+                Assert(s.ignoredBarriers==1,"inactive waiting objects classified once");
+                var checksNow=new List<BarrierWatch>(s.LiveBarrierChecks());
+                Assert(checksNow.Count==1,"child meshes never polled even when enabled");
+                s.notifiedOwners.Add(owner);checksNow=new List<BarrierWatch>(s.LiveBarrierChecks());
+                Assert(checksNow.Count==2&&checksNow.Contains(child),"child checked only on owner event");
+                s.notifiedOwners.Clear();tile.R=new Renderer{enabled=false};
+                Time.frameCount++;s.AuditLateBarriers();
+                Assert(!s.topologyDirty,"waiting visibility unchanged skips topology");
+                tile.R.enabled=true;s.AuditLateBarriers();
+                Assert(!s.topologyDirty,"second camera does not audit again");
+                Time.frameCount++;s.AuditLateBarriers();
+                Assert(s.topologyDirty&&s.fallbackKeys.Contains("0/0"),"drawing transition invalidates affected key");
+                s.topologyDirty=false;Time.frameCount++;s.AuditLateBarriers();
+                Assert(!s.topologyDirty,"cached drawing state prevents repeated rebuild");
+                tile.R.Distance=5;Time.frameCount++;s.AuditLateBarriers();
+                Assert(s.topologyDirty,"drawing barrier order movement remains guarded");
+                s.topologyDirty=false;tile.R.enabled=false;Time.frameCount++;s.AuditLateBarriers();
+                Assert(s.topologyDirty,"drawing to waiting transition rebuilds");
+                s.topologyDirty=false;tile.R.Distance=9;Time.frameCount++;s.AuditLateBarriers();
+                Assert(!s.topologyDirty,"waiting movement does not reset layout");
+            }
             {
                 Time.frameCount=100;Dormancy.Sleeping.Clear();
                 var s=session=new DecoRender();var g=new Group();s.groups.Add(g);var i=s.Add(g,10);

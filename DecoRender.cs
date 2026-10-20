@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST
+#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -488,7 +488,7 @@ namespace StutterFix
                     ? GraphicsSettings.transparencySortAxis : camera.transparencySortAxis);
             return mode == TransparencySortMode.Perspective || (mode == TransparencySortMode.Default && !camera.orthographic)
                 ? Vector3.Distance(r.bounds.center, camera.transform.position)
-                : Vector3.Dot(r.bounds.center - camera.transform.position, camera.transform.forward);
+                : Vector3.Dot(r.bounds.center, camera.transform.forward); // Camera translation is common to every sort key.
         }
         static void Borrow(Group g, bool on)
         {
@@ -535,7 +535,7 @@ namespace StutterFix
             UploadMesh(g); // Nonempty topology must exist before the first cull.
             return g;
         }
-        void RebuildRuns(Camera camera)
+        bool RebuildRuns(Camera camera)
         {
             // Re-audit even hidden external renderers: they can move/change sorting or be created.
             var old = new List<Group>(groups);
@@ -663,31 +663,10 @@ namespace StutterFix
             foreach (var g in old) if (!used.Contains(g)) { ReleaseGroup(g); groups.Remove(g); }
             // Original memberships on unaffected runs and their material instances are retained.
             lastOrders = "queue ascending; distance descending; signed material-ID ascending=back-to-front; hidden managed sources included; active barriers only; awake/event live audit; merge-cameras=" + mergeCameras;
+            return old.Count != groups.Count || old.Exists(g => !used.Contains(g));
         }
         static bool Drawing(Renderer r) => r && r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff;
 
-        void AuditLateBarriers()
-        {
-            // New topology must be created before culling. A late change therefore falls back
-            // to originals for the affected keys until the next frame's normal rebuild.
-            foreach (var watch in LiveBarrierChecks())
-            {
-                var r = watch.R;
-                if (!r || r.enabled != watch.Enabled || r.gameObject.activeInHierarchy != watch.Active
-                    || r.forceRenderingOff != watch.ForceOff || OrderKey(r.sortingLayerID, r.sortingOrder) != watch.Key
-                    || (r.sharedMaterial ? r.sharedMaterial.renderQueue : int.MinValue) != watch.Queue
-                    || (r.sharedMaterial ? r.sharedMaterial.GetInstanceID() : 0) != watch.Material
-                    || !SameBits(SortDistance(r, mainCamera), watch.Distance))
-                {
-                    topologyDirty = true; fallbackKeys.Add(watch.Key);
-                    if (r) fallbackKeys.Add(OrderKey(r.sortingLayerID, r.sortingOrder));
-                    if (watch.Owner && watch.Owner.spriteRenderer)
-                        fallbackKeys.Add(OrderKey(watch.Owner.spriteRenderer.sortingLayerID, watch.Owner.spriteRenderer.sortingOrder));
-                }
-            }
-            foreach (var i in work) if (i.D && MeshOn(i.D)) { fallbackKeys.Add(OrderKey(i)); topologyDirty = true; }
-            notifiedOwners.Clear();
-        }
         int VisibleRunCount()
         {
             int count = 0;
@@ -969,7 +948,10 @@ namespace StutterFix
         void PrepareFrame()
         {
             if (preparedFrame == Time.frameCount) return;
+            if (frameCpuFrame >= 0) frameCpuSamples.Add(frameCpuMs);
+            frameCpuMs = 0; frameCpuFrame = Time.frameCount;
             long start = Stopwatch.GetTimestamp();
+            auditMs = dirtyMs = changeMs = layoutMs = scheduleMs = waitMs = otherMs = 0;
             var sceneCameras = SceneCameras();
             var current = new HashSet<int>();
             bool previousMerge = mergeCameras;
@@ -992,24 +974,38 @@ namespace StutterFix
             if (previousMerge != mergeCameras) topologyDirty = true;
             foreach (var g in groups) Borrow(g, false);
             fallbackKeys.Clear();
+            otherMs = Milliseconds(Stopwatch.GetTimestamp() - start);
+            long dirtyStart = Stopwatch.GetTimestamp();
             GatherWork(false);
             PruneChanged(work);
+            dirtyMs = Milliseconds(Stopwatch.GetTimestamp() - dirtyStart);
+            long auditStart = Stopwatch.GetTimestamp();
             AuditLateBarriers();
+            auditMs = Milliseconds(Stopwatch.GetTimestamp() - auditStart);
             long topologyStart = Stopwatch.GetTimestamp();
+            bool resetLayout = false;
             if (topologyDirty) {
-                RebuildRuns(mainCamera); ResetLayout(); topologyDirty = false;
+                resetLayout = RebuildRuns(mainCamera); topologyDirty = false;
             }
             topologyMs = (Stopwatch.GetTimestamp() - topologyStart) * 1000.0 / Stopwatch.Frequency;
-            long preBuildTicks = Stopwatch.GetTimestamp() - start;
+            long layoutStart = Stopwatch.GetTimestamp();
+            if (resetLayout) ResetLayout();
+            layoutMs = Milliseconds(Stopwatch.GetTimestamp() - layoutStart);
             Build();
-            collectMs += preBuildTicks * 1000.0 / Stopwatch.Frequency - topologyMs;
+            long otherStart = Stopwatch.GetTimestamp();
             SampleVisibleRuns();
             preparedFrame = Time.frameCount;
+            otherMs += Milliseconds(Stopwatch.GetTimestamp() - otherStart);
             long ticks = Stopwatch.GetTimestamp() - start;
             buildTicks += ticks; buildCount++; measuredFrames++;
             frameTicks = ticks; lastBuildMs = ticks * 1000.0 / Stopwatch.Frequency;
+            frameCpuMs += lastBuildMs;
             totalSamples.Add(lastBuildMs); collectSamples.Add(collectMs); computeSamples.Add(computeMs);
             uploadSamples.Add(uploadMs); topologySamples.Add(topologyMs);
+            auditSamples.Add(auditMs); dirtySamples.Add(dirtyMs); changeSamples.Add(changeMs); layoutSamples.Add(layoutMs);
+            scheduleSamples.Add(scheduleMs); waitSamples.Add(waitMs); otherSamples.Add(otherMs);
+            unaccountedSamples.Add(lastBuildMs - (auditMs + dirtyMs + changeMs + layoutMs + collectMs
+                + scheduleMs + waitMs + uploadMs + topologyMs + otherMs));
         }
         void PreCull(Camera camera)
         {
@@ -1139,17 +1135,21 @@ namespace StutterFix
             }
             finally
             {
+                long drawStart = Stopwatch.GetTimestamp();
                 // Our temporary force-off must not mask the game's next visibility update.
                 foreach (var g in groups) Borrow(g, false);
                 foreach (var i in hiddenSources) RestoreSource(i);
                 hiddenSources.Clear();
                 foreach (var g in groups) if (g.Renderer) g.Renderer.enabled = false;
+                double drawMs = Milliseconds(Stopwatch.GetTimestamp() - drawStart);
+                drawOffSamples.Add(drawMs); frameCpuMs += drawMs;
             }
         }
 
         void Takeover(bool on)
         {
             if (on && stopping) return;
+            long drawStart = Stopwatch.GetTimestamp();
             if (!on) foreach (var g in groups) Borrow(g, false);
             foreach (var g in groups)
             {
@@ -1161,6 +1161,8 @@ namespace StutterFix
                 else foreach (var i in g.VisibleItems) RestoreSource(i);
                 if (g.Renderer) g.Renderer.enabled = take && g.HasVisible;
             }
+            double drawMs = Milliseconds(Stopwatch.GetTimestamp() - drawStart);
+            (on ? drawOnSamples : drawOffSamples).Add(drawMs); frameCpuMs += drawMs;
         }
         bool SnapshotUnchanged()
         {
@@ -1314,7 +1316,7 @@ namespace StutterFix
                     .Append(" changed-items=").Append(s.changedItems).Append(" uploaded-vertices=").Append(s.uploadedVertices)
                     .Append(" prepared-frame=").Append(s.preparedFrame).Append(" builds=").Append(s.buildCount).Append(" cameras=").Append(s.cameras.Count).Append(" comparePending=").Append(s.pending);
             }
-            if (s) result.Append(s.IncrementalState());
+            if (s) result.Append(s.IncrementalState()).Append(s.StageState());
             return result.Append(" vertex-color=").Append(lastColorFormat).Append(" order-audit={").Append(lastOrders).Append('}')
                 .Append(" run-state={").Append(s ? s.RunState() : lastRuns).Append('}')
                 .Append(" key-state={").Append(s ? s.KeyState() : lastKeys).Append('}')

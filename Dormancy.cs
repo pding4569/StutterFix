@@ -84,6 +84,7 @@ namespace StutterFix
 
         public static void WakePost(scrVisualDecoration __instance) {
 #if DEV || AUTOTEST
+            DecoRender.ObserveMesh(__instance, meshOnRef(__instance));
             DecoRender.Notify(__instance);
 #endif
             Wake(__instance);
