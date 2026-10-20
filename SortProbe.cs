@@ -17,7 +17,8 @@ namespace StutterFix
             "z-small", "z-large", "materials", "queue", "textures", "sprites",
             "enable", "force-off", "move", "reparent", "mesh-first", "mesh-last", "mixed-random" };
         static readonly string[] Hypotheses = { "id-asc", "id-desc", "creation-asc", "creation-desc",
-            "sibling-asc", "sibling-desc", "distance-id", "distance-sibling", "queue-distance-id", "material-id", "mesh-before-sprite" };
+            "sibling-asc", "sibling-desc", "distance-id", "distance-sibling", "queue-distance-id", "material-id", "mesh-before-sprite", "priority-asc", "priority-desc" };
+        static readonly string[] PriorityCases = { "priority-unc" };
         static readonly string[] MeshCases = { "mesh-material-below", "mesh-material-above", "mesh-material-six" };
         static readonly List<string> invalidReasons = new List<string>();
         static string observationPhase;
@@ -26,7 +27,7 @@ namespace StutterFix
         {
             internal int Repeat, Seed, Index;
             internal string Directory;
-            internal bool MeshMaterial;
+            internal bool MeshMaterial, Priority;
             internal readonly List<string> Invalid = new List<string>();
             internal readonly Dictionary<string, int[]> Counts = new Dictionary<string, int[]>();
         }
@@ -50,7 +51,7 @@ namespace StutterFix
             {
                 var a = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 int repeat = 50, seed = 20261020;
-                if (a.Length < 1 || (a[0] != "all" && a[0] != "mesh-material") || a.Length > 3 ||
+                if (a.Length < 1 || (a[0] != "all" && a[0] != "mesh-material" && a[0] != "priority") || a.Length > 3 ||
                     (a.Length > 1 && (!int.TryParse(a[1], out repeat) || repeat < 50 || repeat > 200)) ||
                     (a.Length > 2 && !int.TryParse(a[2], out seed)))
                 { Log("sortprobe all|mesh-material [repeats=50,50..200] [seed=20261020]|state|stop"); return true; }
@@ -61,7 +62,7 @@ namespace StutterFix
                     Directory.CreateDirectory(dir);
                     File.WriteAllText(Path.Combine(dir, "trials.csv"),
                         "case,n,trial,seed,initial_top,pre_mutation_top,post_mutation_top,before_back_to_front,after_back_to_front,changed,stable,valid,details\n", Encoding.UTF8);
-                    current = new Run { Repeat = repeat, Seed = seed, Directory = dir, MeshMaterial = a[0] == "mesh-material" };
+                    current = new Run { Repeat = repeat, Seed = seed, Directory = dir, MeshMaterial = a[0] == "mesh-material", Priority = a[0] == "priority" };
                     File.WriteAllText(Path.Combine(dir, "environment.txt"),
                         "unity=" + Application.unityVersion + "\ngpu=" + SystemInfo.graphicsDeviceName + "\napi=" + SystemInfo.graphicsDeviceType +
                         "\nseed=" + seed + "\nrepeat=" + repeat + "\nmvid=" + typeof(Main).Module.ModuleVersionId +
@@ -76,7 +77,7 @@ namespace StutterFix
                 int perCase = current.Repeat * (current.MeshMaterial ? 1 : 3);
                 int ci = current.Index / perCase, n = current.MeshMaterial ? (ci == 2 ? 6 : 2) : new[] { 2, 3, 6 }[(current.Index % perCase) / current.Repeat];
                 int trial = current.Index % current.Repeat;
-                var cases = current.MeshMaterial ? MeshCases : Cases;
+                var cases = current.MeshMaterial ? MeshCases : current.Priority ? PriorityCases : Cases;
                 Trial(cases[ci], n, trial);
                 current.Index++;
                 if (current.Index % current.Repeat == 0) Log(cases[ci] + " n=" + n + " complete");
@@ -182,10 +183,23 @@ namespace StutterFix
                         x.R.sharedMaterial = Material(owned, shader, tex);
                         if (name == "queue") x.R.sharedMaterial.renderQueue = 3000 + k;
                     }
+                    if (name == "priority-unc") x.R.rendererPriority = k;
+                    if (name == "priority" || name == "priority-materials" || name == "priority-z")
+                    {
+                        x.R.rendererPriority = k;   // targets 는 섞인 순서라 k 와 label 은 무관: 우선순위 순열
+                        if (name == "priority-materials") x.R.sharedMaterial = Material(owned, shader, tex);
+                        if (name == "priority-z") { var v = x.R.transform.position; v.z += (n-1-k) * .2f; x.R.transform.position = v; }   // 거리 순서는 우선순위와 반대로
+                    }
                     if (name == "textures" && x.R is SpriteRenderer ts) ts.sprite = Sprite(owned, Texture(owned));
                     if (name == "sprites" && x.R is SpriteRenderer s) s.sprite = Sprite(owned, tex);
                     if (name == "mixed-random")
                     { x.R.transform.SetSiblingIndex(rng.Next(n)); x.R.transform.position += cam.transform.forward * (rng.Next(3)-1)*.1f; }
+                }
+                if (name == "priority-unc")
+                {
+                    // 우선순위(targets 순열)와 무관한 별도 순열로 재질을 만든다: 재질 ID 순서와 우선순위 상관을 끊는다.
+                    var perm2 = Enumerable.Range(0, n).ToArray(); Shuffle(perm2, rng);
+                    foreach (int label in perm2) items[label].R.sharedMaterial = Material(owned, shader, tex);
                 }
                 var details = new StringBuilder();
                 bool placement = true;
@@ -299,6 +313,8 @@ namespace StutterFix
             return items.OrderBy(x => x, Comparer<Item>.Create((a,b) => {
                 int v = 0;
                 if (h == 10) v = (a.R is MeshRenderer ? 0 : 1).CompareTo(b.R is MeshRenderer ? 0 : 1);
+                if (h == 11) v = a.R.rendererPriority.CompareTo(b.R.rendererPriority);
+                if (h == 12) v = b.R.rendererPriority.CompareTo(a.R.rendererPriority);
                 if (h == 8) v = a.R.sharedMaterial.renderQueue.CompareTo(b.R.sharedMaterial.renderQueue);
                 if (v == 0 && h >= 6 && h <= 8) v = Distance(b,cam).CompareTo(Distance(a,cam));
                 if (v == 0 && h == 9) v = a.R.sharedMaterial.GetInstanceID().CompareTo(b.R.sharedMaterial.GetInstanceID());
