@@ -63,7 +63,8 @@ namespace StutterFix
             internal bool Written, Dirty;
             internal string GroupKey;
             internal Group Run;
-            internal int Slot, Start, Offset, PoseFrame = -1;
+            internal int Slot, Start, Offset, PoseFrame = -1, ExactPoseFrame = -1;
+            internal Matrix4x4 ExactPose;
             internal Matrix4x4 ChildMatrix;
             internal Transform PivotTransform, RenderTransform;
             internal bool ChildIdentity;
@@ -143,7 +144,13 @@ namespace StutterFix
         string outputDir;
         bool observing, floatColor;
         bool scopeAll = true, mergeCameras = true;
-        float preparedSortZ = float.NaN;
+        struct CameraSortSnapshot
+        {
+            internal TransparencySortMode Mode;
+            internal Vector3 Axis, Position;
+            internal bool Orthographic;
+        }
+        readonly Dictionary<int, CameraSortSnapshot> preparedCameraSort = new Dictionary<int, CameraSortSnapshot>();
         readonly HashSet<int> cameraSet = new HashSet<int>();
         readonly Dictionary<int, string> rejectionReasons = new Dictionary<int, string>();
         const int RunSampleWindow = 120;
@@ -416,7 +423,8 @@ namespace StutterFix
             foreach (var item in items)
             { item.Vertices = item.Sprite.vertices; item.Triangles = item.Sprite.triangles; item.UV = item.Sprite.uv; vertexCount += item.Vertices.Length; }
             foreach (var atlas in atlases) BuildAtlas(atlas);
-            RebuildRuns(mainCamera);
+            TopologyCause("on"); RebuildRuns(mainCamera);
+            LogTopologyBuild("full/on");
             Build(); // Initial on statistics include actual emitted geometry.
             SampleVisibleRuns();
             observing = false; selected = items.Count;
@@ -477,7 +485,7 @@ namespace StutterFix
         static string OrderKey(int layer, int order) => layer + "/" + order;
         static string OrderKey(Item item) => OrderKey(item.Layer, item.Order);
         string GroupKey(Item i) => OrderKey(i) + "/" + atlases.IndexOf(i.Image.Atlas)
-            + "/" + i.UnityLayer + "/" + i.Signature + "/z=" + i.R.transform.position.z.ToString("R", CultureInfo.InvariantCulture);
+            + "/" + i.UnityLayer + "/" + i.Signature;
 
         static float SortDistance(Renderer r, Camera camera)
         {
@@ -966,13 +974,19 @@ namespace StutterFix
                     : c.transform.forward;
                 if (mode == TransparencySortMode.Perspective || (mode == TransparencySortMode.Default && !c.orthographic)
                     || axis.x != 0 || axis.y != 0) mergeCameras = false;
-                if (c == mainCamera) {
-                    if (!float.IsNaN(preparedSortZ) && !SameBits(preparedSortZ, axis.z)) topologyDirty = true;
-                    preparedSortZ = axis.z;
-                }
+                // Camera-specific snapshots prevent one camera from overwriting another.
+                // Translation participates only in perspective distance; it cancels in axis sorting.
+                var sort = new CameraSortSnapshot { Mode = mode, Orthographic = c.orthographic, Axis = axis,
+                    Position = mode == TransparencySortMode.Perspective || (mode == TransparencySortMode.Default && !c.orthographic)
+                        ? c.transform.position : Vector3.zero };
+                CameraSortSnapshot prior;
+                if (preparedCameraSort.TryGetValue(c.GetInstanceID(), out prior) &&
+                    (prior.Mode != sort.Mode || prior.Orthographic != sort.Orthographic
+                        || !SameBits(prior.Axis, sort.Axis) || !SameBits(prior.Position, sort.Position))) DirtyAllKeys("sort-axis");
+                preparedCameraSort[c.GetInstanceID()] = sort;
             }
-            if (!cameraSet.SetEquals(current)) { Stop("scene camera list changed"); return; }
-            if (previousMerge != mergeCameras) topologyDirty = true;
+            if (!cameraSet.SetEquals(current)) { TopologyCause("camera-list"); Stop("scene camera list changed"); return; }
+            if (previousMerge != mergeCameras) DirtyAllKeys("merge-cameras");
             cameraMs = Milliseconds(Stopwatch.GetTimestamp() - cameraStart);
             long borrowStart = Stopwatch.GetTimestamp();
             foreach (var g in groups) Borrow(g, false);
@@ -991,10 +1005,9 @@ namespace StutterFix
             long topologyStart = Stopwatch.GetTimestamp();
             bool resetLayout = false;
             topologyChangedLast = 0;
-            if (topologyDirty) {
-                topologyChangedLast = keys.Count; topologyKeyChanges += topologyChangedLast;
-                resetLayout = RebuildRuns(mainCamera); topologyDirty = false;
-            } else if (topologyKeys.Count != 0) resetLayout = RebuildChangedKeys(mainCamera);
+            if (topologyDirty) { DirtyAllKeys("other"); topologyDirty = false; }
+            if (topologyKeys.Count != 0) resetLayout = RebuildChangedKeys(mainCamera);
+            LogTopologyBuild(topologyChangedLast == 0 ? "stable" : "keys");
             topologyMs = (Stopwatch.GetTimestamp() - topologyStart) * 1000.0 / Stopwatch.Frequency;
             long layoutStart = Stopwatch.GetTimestamp();
             if (resetLayout) ResetLayout();
@@ -1124,13 +1137,16 @@ namespace StutterFix
             foreach (var i in removed)
             {
                 rejectionReasons[i.Id] = "changed";
-                RestoreSource(i); items.Remove(i); topologyDirty = true;
-                if (i.Moved) movingCandidates = Math.Max(0, movingCandidates - 1);
-                if (i.Vertices != null) vertexCount -= i.Vertices.Length;
+                RetireKey(OrderKey(i), "prune");
+                if (i.R) {
+                    string currentKey = OrderKey(i.R.sortingLayerID, i.R.sortingOrder);
+                    if (currentKey != OrderKey(i)) RetireKey(currentKey, "prune-key-migration");
+                    if (i.R.sharedMaterial) RetireMaterialUsers(i.R.sharedMaterial.GetInstanceID());
+                }
                 Count(changes, "restored-items");
                 if (observing) Count(excluded, "changed-during-observation");
             }
-            // RebuildRuns sees restored originals as barriers and replaces only affected runs.
+            // Key planning sees restored originals as barriers and replaces only affected runs.
         }
 
         void PostRender(Camera camera)

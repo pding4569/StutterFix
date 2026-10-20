@@ -355,18 +355,21 @@ namespace StutterFix
             if (e.Engine != null && DecoEngine.ShouldVerify(e.Engine))
                 DecoEngine.CheckLate(e.Engine, camera, start(p), p.posCamAtStart, end(p), np, nr, ns);
             writes++;
-#if DEV || AUTOTEST
-            DecoRender.Capture(d, np, nr, ns);
-#endif
             if (SkipSame && e.Has)
             {
                 if (Same(np, e.LastPos)) skipPos++; else { pivot.position = np; e.LastPos = np; }
                 if (Same(nr, e.LastRot)) skipRot++; else { pivot.rotation = nr; e.LastRot = nr; }
                 if (Same(ns, e.LastScale)) skipScale++; else { pivot.localScale = ns; e.LastScale = ns; }
+#if DEV || AUTOTEST
+                DecoRender.Capture(d, np, nr, ns);
+#endif
                 return;
             }
             pivot.position = np; pivot.rotation = nr; pivot.localScale = ns;
             e.LastPos = np; e.LastRot = nr; e.LastScale = ns; e.Has = true;
+#if DEV || AUTOTEST
+            DecoRender.Capture(d, np, nr, ns);
+#endif
         }
 #if DEV || AUTOTEST
         private struct Snapshot

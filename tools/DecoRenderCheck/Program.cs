@@ -128,6 +128,7 @@ namespace StutterFix {
             internal scrDecoration D;internal SpriteRenderer R;internal Sprite Sprite=new Sprite();internal Image Image=new Image();
             internal Vector2[] Vertices,UV;internal int Slot,Start,Offset,PoseFrame=-1;internal Group Run;
             internal bool NativeFallback,PoseRejected,PoseValidated,ChildIdentity,Written,Visible,Dirty,Moved,FlipX,FlipY;
+            internal int Index, MaterialId, ExactPoseFrame=-1; internal Matrix4x4 ExactPose;
             internal Matrix4x4 Matrix,ChildMatrix;internal Color Color;internal Bounds LocalBounds;
             internal Transform PivotTransform,RenderTransform;internal MaterialSnapshot Uniforms;
         }
@@ -146,9 +147,13 @@ namespace StutterFix {
             internal List<Item> Items=new List<Item>(),VisibleItems=new List<Item>();internal bool HasVisible,Fresh,BoundsDirty;
             internal Mesh Mesh=new Mesh();internal MeshRenderer Renderer=new MeshRenderer();internal Bounds CullBounds;
         }
+        int vertexCount;
+        static void RestoreSource(Item i) { i.R.forceRenderingOff=false; }
+        static void Count(Dictionary<string,int> counts,string key) { counts.TryGetValue(key,out int n);counts[key]=n+1; }
+        static string Counts(Dictionary<string,int> counts)=>string.Join(" ",counts);
         static string F(double x)=>x.ToString("F6",CultureInfo.InvariantCulture);
         static void Log(string value) {}
-        static string OrderKey(Item i)=>"0/0";
+        static string OrderKey(Item i)=>OrderKey(i.R.sortingLayerID,i.R.sortingOrder);
         static bool SourceOff(Item i)=>i.R.forceRenderingOff;
         static bool MeshOn(scrDecoration d)=>false;
         static bool MatrixEqual(Matrix4x4 a,Matrix4x4 b)=>a.Equals(b);
@@ -255,7 +260,7 @@ namespace StutterFix {
                 r.enabled=true;Time.frameCount++;s.AuditLateBarriers();
                 Assert(!s.topologyDirty&&s.reorderKeys.Count==0,"waiting retains comparator snapshot on reactivation");
                 s.topologyKeys.Clear();w.RequiresDiscovery=true;r.enabled=false;Time.frameCount++;s.AuditLateBarriers();
-                r.enabled=true;Time.frameCount++;s.AuditLateBarriers();Assert(s.topologyDirty,"unsupported barrier activation uses safe full discovery");
+                r.enabled=true;Time.frameCount++;s.AuditLateBarriers();Assert(!s.topologyDirty&&s.retiredKeys.Contains("0/0"),"unsupported barrier retires only affected key");
             }
             var stats=new Samples();for(int n=1;n<=3000;n++)stats.Add(n);
             Assert(stats.State().Contains("n=2048"),"bounded timing window");
@@ -303,9 +308,45 @@ namespace StutterFix {
                 child.localPosition=new Vector3(3,0,0);RecordLocal(child,child.localPosition);s.Build();
                 Assert(((ByteVertex)g.Mesh.Data[0]).Position.x==12,"child SetLocal recorded after pivot capture");
                 s.preparedFrame=Time.frameCount;Notify(i.D);Assert(s.fallbackKeys.Contains("0/0"),"late notification falls back this frame");
-                s.meshStates[i.D]=false;ObserveMesh(i.D,true);Assert(s.topologyDirty,"observed mesh field transition dirties topology");
+                s.meshStates[i.D]=false;ObserveMesh(i.D,true);Assert(!s.topologyDirty&&s.retiredKeys.Contains("0/0"),"mesh field transition retires key without global discovery");
                 s.topologyDirty=false;ObserveMesh(i.D,true);Assert(!s.topologyDirty,"unchanged mesh field does not rebuild runs");
                 s.DisposeBuffers();Assert(Unity.Collections.Allocations.Live==0,"child-path buffers released");
+            }
+            {
+                Time.frameCount=200; Dormancy.Sleeping.Clear();
+                var s=session=new DecoRender(); var g=new Group();s.groups.Add(g);var i=s.Add(g,10);
+                s.manager.Awake.Add(i.D);s.Build();
+                s.orderedState[i.R]=new RenderOrder {Distance=0};
+                Time.frameCount++;i.R.transform.localPosition=new Vector3(10,0,.000001f);s.Build();
+                Assert(s.zChangedItems==1&&!s.topologyDirty&&s.topologyKeys.Count==0,"world-z noise alone does not invalidate sort distance");
+                Time.frameCount++;i.R.Distance=2;s.Build();
+                Assert(!s.topologyDirty&&s.reorderKeys.Contains("0/0")&&s.fallbackKeys.Contains("0/0"),"actual comparator change queues one key and late fallback");
+                s.topologyFullRebuilds=1;s.ResetBuildStats();
+                Assert(s.topologyFullRebuilds==1,"stats reset preserves session full-discovery counter");
+                Assert(s.zChangedItems==0&&s.topologyCauses["world-z"]==0,"stats reset clears cause statistics");
+                i.D.pivotTrans.parent=new Transform {localScale=new Vector3(2,2,1)};
+                Time.frameCount++;Capture(i.D,i.D.pivotTrans.position,i.D.pivotTrans.rotation,i.D.pivotTrans.localScale);s.Build();
+                Assert(i.PoseRejected&&s.nativeReads==1,"parent-composed matrix mismatch remains strict");
+                Time.frameCount++;Capture(i.D,i.D.pivotTrans.position,i.D.pivotTrans.rotation,i.D.pivotTrans.localScale);s.Build();
+                Assert(s.exactPoseBuildHits==1&&s.captureMatrixReads==1&&s.nativeReads==0,"rejected TRS uses counted post-setter exact cache");
+                Assert(MatrixEqual(i.Matrix,i.R.transform.localToWorldMatrix),"cached fallback matrix is bit exact");
+                RecordLocal(i.D.pivotTrans,new Vector3(11,0,0));
+                Assert(i.ExactPoseFrame==-1&&i.PoseFrame==-1,"later pivot setter invalidates both captured forms");
+                s.DisposeBuffers();Assert(Unity.Collections.Allocations.Live==0,"new fixtures release buffers");
+            }
+            {
+                var s=session=new DecoRender();var g=new Group();s.groups.Add(g);var a=s.Add(g,1);var b=s.Add(g,2);
+                var other=new Group{SortKey="0/5"};s.groups.Add(other);var c=s.Add(other,3);c.R.sortingOrder=5;
+                s.manager.Awake.AddRange(new[]{a.D,b.D,c.D});Time.frameCount++;s.Build();
+                s.orderedKeys["0/0"]=new List<Renderer>{a.R,b.R};s.orderedKeys["0/5"]=new List<Renderer>{c.R};
+                foreach(var i in s.items){s.orderedCandidates[i.R]=i;s.orderedState[i.R]=new RenderOrder();}
+                s.runsByKey["0/0"]=new List<Group>{g};s.runsByKey["0/5"]=new List<Group>{other};
+                s.RetireKey("0/0","setup");
+                Assert(s.items.Count==1&&s.items[0]==c&&!s.residents.ContainsKey(a.D),"unsupported setup retires entire affected key, preserves other residents");
+                Assert(s.RebuildChangedKeys(s.mainCamera)&&!s.groups.Contains(g)&&s.groups.Contains(other),"retired key drops runs without touching other key");
+                Assert(s.topologyRebuilds==1&&s.topologyFullRebuilds==0,"retirement uses key planner only");
+                s.ResetLayout();s.Build();Assert(s.changedItems==0,"retained other key geometry survives retirement layout");
+                s.DisposeBuffers();Assert(Unity.Collections.Allocations.Live==0,"retirement buffers released");
             }
             Console.WriteLine("DecoRender incremental control-flow checks="+checks+" failures=0; fake Unity/Jobs, no performance or pixel claim");
             session=null;

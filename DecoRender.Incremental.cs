@@ -35,11 +35,14 @@ namespace StutterFix
         int workFrame = -1;
         int collectCount, nativeReads, poseHits;
         long soaChecks, soaMismatches, verifySequence;
+        long soaPositionRejects, soaRotationRejects, soaScaleRejects, soaMatrixRejects, soaColorRejects;
         double collectMs, topologyMs;
         double cameraMs, borrowMs, pruneMs;
         readonly Samples cameraSamples = new Samples(), borrowSamples = new Samples(), pruneSamples = new Samples();
         readonly Samples preCullSamples = new Samples(), preRenderSamples = new Samples(),
             buildRemainderSamples = new Samples(), pollSamples = new Samples(), ownerSamples = new Samples();
+        long captureMatrixReads, exactPoseHits;
+        int exactPoseBuildHits;
         long captureCalls, captureMapped, captureMisses, captureCold, poseStale, poseRejectedReads, localInvalidations;
         readonly Samples auditSamples = new Samples(), dirtySamples = new Samples(), changeSamples = new Samples(), layoutSamples = new Samples(),
             scheduleSamples = new Samples(), waitSamples = new Samples(), otherSamples = new Samples(),
@@ -115,13 +118,21 @@ namespace StutterFix
         {
             Notify(d);
             var s = session;
-            if (!ReferenceEquals(s, null) && s.layoutReady && !s.stopping) s.topologyDirty = true;
+            if (!ReferenceEquals(s, null) && s.layoutReady && !s.stopping) s.RetireOwner(d, "setup");
         }
         internal static void ObserveMesh(scrDecoration d, bool enabled)
         {
             var s = session; bool old;
             if (ReferenceEquals(s, null) || !s.layoutReady || s.stopping || !s.meshStates.TryGetValue(d, out old) || old == enabled) return;
-            s.meshStates[d] = enabled; Notify(d); s.topologyDirty = true;
+            s.meshStates[d] = enabled; Notify(d); s.RetireOwner(d, "mesh-active");
+        }
+        void RetireOwner(scrDecoration d, string cause)
+        {
+            Item i;
+            if (residents.TryGetValue(d, out i)) RetireKey(OrderKey(i), cause);
+            else TopologyCause(cause);
+            List<BarrierWatch> list;
+            if (ownerBarriers.TryGetValue(d, out list)) foreach (var w in list) RetireKey(w.Key, cause);
         }
         internal static void RecordLocal(Transform t, Vector3 position)
         {
@@ -132,6 +143,7 @@ namespace StutterFix
                     i.ChildMatrix.m03 = position.x; i.ChildMatrix.m13 = position.y; i.ChildMatrix.m23 = position.z;
                     i.ChildIdentity = MatrixEqual(i.ChildMatrix, Matrix4x4.identity);
                 } else { i.PoseFrame = -1; s.localInvalidations++; }
+                i.ExactPoseFrame = -1;
                 s.signalled.Add(i);
                 if (s.preparedFrame == Time.frameCount && !s.comparing) s.fallbackKeys.Add(OrderKey(i));
             }
@@ -151,6 +163,13 @@ namespace StutterFix
             var c = RenderColor(d);
             s.cr[n] = c.r; s.cg[n] = c.g; s.cb[n] = c.b; s.ca[n] = c.a;
             i.PoseFrame = Time.frameCount;
+            // Capture is called AFTER the native setters. Rejected TRS reconstruction is
+            // cached exactly, with its native read counted separately (no claimed free speedup).
+            i.ExactPoseFrame = -1;
+            if (i.NativeFallback && i.RenderTransform) {
+                i.ExactPose = i.RenderTransform.localToWorldMatrix; i.ExactPoseFrame = Time.frameCount;
+                s.captureMatrixReads++;
+            }
             if (s.preparedFrame == Time.frameCount && !s.comparing) s.fallbackKeys.Add(OrderKey(i));
         }
         static readonly HarmonyLib.AccessTools.FieldRef<scrDecoration, Color> RenderColor =
@@ -277,6 +296,7 @@ namespace StutterFix
         }
         Matrix4x4 ReadMatrix(Item i)
         {
+            if (i.ExactPoseFrame == Time.frameCount) { exactPoseHits++; exactPoseBuildHits++; return i.ExactPose; }
             if (i.PoseFrame == Time.frameCount && !i.NativeFallback)
             {
                 int n = i.Slot;
@@ -287,8 +307,11 @@ namespace StutterFix
                 if (!i.PoseValidated || (verifySoA && (++verifySequence & 63) == 0)) {
                     soaChecks++; var t = i.D.pivotTrans;
                     var actual = i.R.transform.localToWorldMatrix;
-                    if (!SameBits(t.position, p) || !SameBits(t.rotation, q) || !SameBits(t.localScale, scale)
-                        || !MatrixEqual(actual, matrix) || !ColorEqual(i.R.color, new Color(cr[n], cg[n], cb[n], ca[n]))) {
+                    bool positionOK = SameBits(t.position, p), rotationOK = SameBits(t.rotation, q), scaleOK = SameBits(t.localScale, scale);
+                    bool matrixOK = MatrixEqual(actual, matrix), colorOK = ColorEqual(i.R.color, new Color(cr[n], cg[n], cb[n], ca[n]));
+                    if (!positionOK || !rotationOK || !scaleOK || !matrixOK || !colorOK) {
+                        if (!positionOK) soaPositionRejects++; if (!rotationOK) soaRotationRejects++; if (!scaleOK) soaScaleRejects++;
+                        if (!matrixOK) soaMatrixRejects++; if (!colorOK) soaColorRejects++;
                         soaMismatches++; i.NativeFallback = i.PoseRejected = true; nativeReads++; return actual;
                     }
                     i.PoseValidated = true;
@@ -313,7 +336,7 @@ namespace StutterFix
             GatherWork(initial || fullBuild); fullBuild = false;
             dirtyMs += Milliseconds(Stopwatch.GetTimestamp() - dirtyStart);
             long collectStart = Stopwatch.GetTimestamp();
-            changedItems = uploadedVertices = nativeReads = poseHits = 0; collectCount = work.Count;
+            changedItems = uploadedVertices = nativeReads = poseHits = exactPoseBuildHits = 0; collectCount = work.Count;
             dirtyUnwritten = dirtyPose = dirtyVisibility = 0;
             long changeTicks = 0;
             changedGeometry.Clear();
@@ -338,8 +361,15 @@ namespace StutterFix
                 else if (i.Visible != visible) dirtyVisibility++;
                 else if (moved) dirtyPose++;
                 if (i.Visible != visible) { if (visible) i.Run.VisibleItems.Add(i); else i.Run.VisibleItems.Remove(i); }
-                // A z change invalidates the run ordering. Use originals until the next full rebuild.
-                if (i.Written && visible && !SameBits(i.Matrix.m23, matrix.m23)) { topologyDirty = true; fallbackKeys.Add(OrderKey(i)); }
+                // Compare the SAME renderer sort distance used by topology, not raw world-z bits.
+                // Geometry is collected after culling starts: fall back this frame, reorder this key next frame.
+                if (i.Written && visible) {
+                    if (!SameBits(i.Matrix.m23, matrix.m23)) RecordZChange(i, i.Matrix.m23, matrix.m23);
+                    RenderOrder order;
+                    if (orderedState.TryGetValue(i.R, out order) && !SameBits(order.Distance, SortDistance(i.R, mainCamera))) {
+                        DirtyKey(OrderKey(i), "sort-distance"); fallbackKeys.Add(OrderKey(i));
+                    }
+                }
                 if (moved && !i.Moved) movingCandidates++;
                 i.Moved |= moved; i.Matrix = matrix; i.Color = color; i.FlipX = flipX; i.FlipY = flipY; i.Visible = visible;
                 if (!i.Dirty) { changeTicks += Stopwatch.GetTimestamp() - changeStart; continue; }
@@ -406,7 +436,10 @@ namespace StutterFix
             + " topology:" + topologySamples.State() + "} collect-items=" + collectCount + " soa-hits=" + poseHits
             + " transform-fallbacks=" + nativeReads + " soa-verify=" + verifySoA + " soa-checks=" + soaChecks + " soa-mismatches=" + soaMismatches
             + " capture-calls=" + captureCalls + " mapped=" + captureMapped + " nonresident=" + captureMisses + " cold=" + captureCold
-            + " stale-pose=" + poseStale + " rejected-pose=" + poseRejectedReads + " local-invalidations=" + localInvalidations;
+            + " stale-pose=" + poseStale + " rejected-pose=" + poseRejectedReads + " local-invalidations=" + localInvalidations
+            + " pose-cache-hits-total=" + (poseHits + exactPoseBuildHits) + " exact-pose-hits=" + exactPoseHits + " capture-matrix-reads=" + captureMatrixReads
+            + " soa-reject-reasons={position:" + soaPositionRejects + ",rotation:" + soaRotationRejects + ",scale:" + soaScaleRejects
+            + ",matrix:" + soaMatrixRejects + ",color:" + soaColorRejects + "}" + TopologyCauseState();
         string StageState() => "\n stage-ms/window2048 (mean,p99,max,n,calls):"
             + "\n audit=" + auditSamples.State() + "\n dirty+prune=" + dirtySamples.State()
             + "\n change-compare=" + changeSamples.State()
@@ -436,7 +469,13 @@ namespace StutterFix
             cameraSamples.Clear(); borrowSamples.Clear(); pruneSamples.Clear();
             preCullSamples.Clear(); preRenderSamples.Clear(); buildRemainderSamples.Clear(); pollSamples.Clear(); ownerSamples.Clear();
             captureCalls = captureMapped = captureMisses = captureCold = poseStale = poseRejectedReads = localInvalidations = 0;
-            topologyKeyChanges = topologyRebuilds = topologyFullRebuilds = 0; topologyChangedLast = 0;
+            topologyKeyChanges = topologyRebuilds = 0; topologyChangedLast = 0;
+            // Full discovery is a session counter: stats reset must not hide repeated discovery.
+            foreach (var cause in new List<string>(topologyCauses.Keys)) topologyCauses[cause] = 0;
+            topologyCauseItems.Clear(); pendingCauseItems.Clear();
+            pendingCauses.Clear(); lastTopologyCause = lastBuildCauses = "none";
+            pendingZItems = 0; pendingMaxDeltaZ = 0; pendingZExamples.Clear();
+            zChangedItems = zSamples = 0; maxDeltaZ = 0; zExamples.Clear(); captureMatrixReads = exactPoseHits = 0;
             frameCpuSamples.Clear(); frameCpuMs = 0; frameCpuFrame = -1;
             dirtyFrames = changedSum = awakeSum = 0; dirtyLogFrames = 0;
             buildTicks = buildCount = measuredFrames = frameTicks = 0;
@@ -466,15 +505,22 @@ namespace StutterFix
                     || id != watch.Material || !SameBits(distance, watch.Distance))))
                 {
                     topologyKeys.Add(watch.Key); topologyKeys.Add(key);
-                    if (drawing && watch.RequiresDiscovery) topologyDirty = true;
+                    TopologyCause("watch");
+                    if (drawing && watch.RequiresDiscovery) { RetireKey(watch.Key, "watch-unsupported"); if (key != watch.Key) RetireKey(key, "watch-unsupported"); }
                     // A change in comparator fields requires sorting this key again; visibility alone does not.
                     if (drawing && (key != watch.Key || queue != watch.Queue || id != watch.Material
                         || !SameBits(distance, watch.Distance))) {
                         reorderKeys.Add(watch.Key); reorderKeys.Add(key);
                         // Key migration and material/submesh ownership require discovery for safety.
-                        if (key != watch.Key || id != watch.Material) topologyDirty = true;
+                        if (key != watch.Key) {
+                            List<Renderer> oldList, newList;
+                            if (orderedKeys.TryGetValue(watch.Key, out oldList)) oldList.Remove(r);
+                            if (!orderedKeys.TryGetValue(key, out newList)) orderedKeys[key] = newList = new List<Renderer>();
+                            if (!newList.Contains(r)) newList.Add(r);
+                        }
+                        if (id != watch.Material) { RetireKey(key, "watch-material"); RetireMaterialUsers(id); }
                     }
-                    if (watch.Owner && residents.ContainsKey(watch.Owner) && MeshOn(watch.Owner)) topologyDirty = true;
+                    if (watch.Owner && residents.ContainsKey(watch.Owner) && MeshOn(watch.Owner)) RetireOwner(watch.Owner, "mesh-active");
                     fallbackKeys.Add(watch.Key);
                     if (r) fallbackKeys.Add(key);
                     if (watch.Owner && watch.Owner.spriteRenderer)
@@ -488,7 +534,7 @@ namespace StutterFix
             foreach (var d in notifiedOwners) { bool mesh;
                 Item i;
                 if (meshStates.TryGetValue(d, out mesh) && mesh && residents.TryGetValue(d, out i))
-                    { fallbackKeys.Add(OrderKey(i)); topologyDirty = true; }
+                    { RetireKey(OrderKey(i), "mesh-owner-event"); }
             }
             notifiedOwners.Clear();
             ownerSamples.Add(Milliseconds(Stopwatch.GetTimestamp() - ownerStart));

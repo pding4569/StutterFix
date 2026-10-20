@@ -16,6 +16,82 @@ namespace StutterFix
         long topologyKeyChanges, topologyRebuilds, topologyFullRebuilds;
         int topologyChangedLast;
 
+        readonly Dictionary<string, int> topologyCauses = new Dictionary<string, int> {
+            {"on",0}, {"world-z",0}, {"sort-distance",0}, {"sort-axis",0}, {"merge-cameras",0},
+            {"mesh-active",0}, {"setup",0}, {"watch",0}, {"other",0}, {"camera-list",0}, {"prune",0}
+        };
+        readonly Dictionary<string, int> pendingCauses = new Dictionary<string, int>();
+        readonly HashSet<string> retiredKeys = new HashSet<string>();
+        readonly Dictionary<string, int> topologyCauseItems = new Dictionary<string, int>();
+        readonly Dictionary<string, int> pendingCauseItems = new Dictionary<string, int>();
+        string lastTopologyCause = "none", lastBuildCauses = "none";
+        int topologyCauseLogs, zChangedItems, zSamples, pendingZItems;
+        double pendingMaxDeltaZ;
+        readonly System.Text.StringBuilder pendingZExamples = new System.Text.StringBuilder();
+        double maxDeltaZ;
+        readonly System.Text.StringBuilder zExamples = new System.Text.StringBuilder();
+
+        void TopologyCause(string cause, int affectedItems = 0)
+        {
+            Count(topologyCauses, cause); Count(pendingCauses, cause); lastTopologyCause = cause;
+            for (int n = 0; n < affectedItems; n++) CountCauseItem(cause);
+        }
+        void CountCauseItem(string cause)
+        { Count(topologyCauseItems, cause); Count(pendingCauseItems, cause); }
+        void DirtyKey(string key, string cause, bool reorder = true)
+        {
+            TopologyCause(cause, cause == "sort-distance" ? 1 : 0); topologyKeys.Add(key);
+            if (reorder) reorderKeys.Add(key);
+        }
+        void DirtyAllKeys(string cause)
+        {
+            TopologyCause(cause, items.Count);
+            foreach (var key in orderedKeys.Keys) { topologyKeys.Add(key); reorderKeys.Add(key); }
+        }
+        // Unsupported structural changes retire only this key for the rest of the session.
+        // Never rediscover the entire scene from a per-frame decoration notification.
+        void RetireKey(string key, string cause)
+        {
+            DirtyKey(key, cause); fallbackKeys.Add(key);
+            if (!retiredKeys.Add(key)) return;
+            for (int n = items.Count - 1; n >= 0; n--) {
+                var i = items[n]; if (OrderKey(i) != key) continue;
+                CountCauseItem(cause); RestoreSource(i); orderedCandidates.Remove(i.R); residents.Remove(i.D);
+                items.RemoveAt(n); vertexCount -= i.Vertices.Length;
+                if (i.Moved) movingCandidates = Math.Max(0, movingCandidates - 1);
+            }
+        }
+        void RetireMaterialUsers(int materialId)
+        {
+            var affected = new HashSet<string>();
+            foreach (var i in items) if (i.MaterialId == materialId) affected.Add(OrderKey(i));
+            foreach (var key in affected) RetireKey(key, "shared-material-event");
+        }
+        void RecordZChange(Item i, float oldZ, float newZ)
+        {
+            TopologyCause("world-z", 1); zChangedItems++; pendingZItems++;
+            pendingMaxDeltaZ = Math.Max(pendingMaxDeltaZ, Math.Abs((double)newZ - oldZ));
+            if (pendingZItems <= 10) pendingZExamples.Append('(').Append(i.Index).Append(',')
+                .Append(oldZ.ToString("R", System.Globalization.CultureInfo.InvariantCulture)).Append(',')
+                .Append(newZ.ToString("R", System.Globalization.CultureInfo.InvariantCulture)).Append(") ");
+            maxDeltaZ = Math.Max(maxDeltaZ, Math.Abs((double)newZ - oldZ));
+            if (zSamples++ < 10) zExamples.Append('(').Append(i.Index).Append(',')
+                .Append(oldZ.ToString("R", System.Globalization.CultureInfo.InvariantCulture)).Append(',')
+                .Append(newZ.ToString("R", System.Globalization.CultureInfo.InvariantCulture)).Append(") ");
+        }
+        void LogTopologyBuild(string mode)
+        {
+            lastBuildCauses = Counts(pendingCauses);
+            if (topologyCauseLogs++ < 20) Log("topology-cause build=" + topologyCauseLogs + " mode=" + mode
+                + " causes={" + lastBuildCauses + "} cause-items={" + Counts(pendingCauseItems) + "} changed-keys=" + topologyChangedLast
+                + " z-items=" + pendingZItems + " max-abs-dz=" + pendingMaxDeltaZ.ToString("R", System.Globalization.CultureInfo.InvariantCulture) + " first10={" + pendingZExamples + "}");
+            pendingCauses.Clear(); pendingCauseItems.Clear(); pendingZItems = 0; pendingMaxDeltaZ = 0; pendingZExamples.Clear();
+        }
+        string TopologyCauseState() => "\n topology-causes={" + Counts(topologyCauses) + "} last=" + lastTopologyCause
+            + " cause-items/events={" + Counts(topologyCauseItems) + "}"
+            + " last-build={" + lastBuildCauses + "} pending={" + Counts(pendingCauses) + "} retired-keys=" + retiredKeys.Count
+            + " z-items=" + zChangedItems + " max-abs-dz=" + maxDeltaZ.ToString("R", System.Globalization.CultureInfo.InvariantCulture) + " first10={" + zExamples + "}";
+
         void SortKeyRenderers(List<Renderer> list, Camera camera)
         {
             var order = orderedState;
@@ -33,7 +109,7 @@ namespace StutterFix
         }
 
         // Visibility-only changes use the on-time order, including waiting barriers.
-        // Structural/setup changes still take the conservative discovery path below.
+        // Unsupported structural/setup changes retire their affected key to originals.
         bool RebuildChangedKeys(Camera camera)
         {
             bool changed = false;
@@ -55,7 +131,7 @@ namespace StutterFix
                 foreach (var r in list) {
                     if (!r) continue;
                     Item i;
-                    if (!orderedCandidates.TryGetValue(r, out i)) {
+                    if (retiredKeys.Contains(key) || !orderedCandidates.TryGetValue(r, out i)) {
                         if (Drawing(r)) run = null;
                         continue;
                     }
