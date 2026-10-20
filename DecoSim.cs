@@ -72,6 +72,8 @@ namespace StutterFix
         internal struct Frame
         {
             internal float Dt;
+            internal float RawDt, SmoothDt;
+            internal bool UseSmooth;
             internal double SongTime, BakeTime;
             internal float Pitch, TweenScale, PixelsPerWorld;
             internal int UnityFrame;
@@ -272,7 +274,8 @@ namespace StutterFix
             if (tape.Frames.Count >= MaxFrames || !Reserve(128)) { if (Capturing) Stop("프레임 12000개 상한", false); return; }
             var conductor = scrConductor.instance;
             var camera = scrCamera.instance == null ? null : scrCamera.instance.camobj;
-            tape.Frames.Add(new Frame { Dt = td, SongTime = conductor == null ? double.NaN : conductor.songposition_minusi,
+            tape.Frames.Add(new Frame { Dt = td, RawDt = Time.deltaTime, SmoothDt = Time.smoothDeltaTime, UseSmooth = DOTween.useSmoothDeltaTime,
+                SongTime = conductor == null ? double.NaN : conductor.songposition_minusi,
                 BakeTime = DecoBake.BakeTime,
                 Pitch = conductor?.song == null ? float.NaN : conductor.song.pitch, TweenScale = DOTween.timeScale,
                 PixelsPerWorld = camera != null && camera.orthographic ? 1440f / (2f * camera.orthographicSize) : float.NaN,

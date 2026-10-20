@@ -39,6 +39,21 @@ namespace StutterFix
                 c != null && c.hasSongStarted && ADOBase.controller != null && !ADOBase.controller.paused);
         }
         private static readonly Dictionary<scrDecoration, DecoBakeCore.Decoration> initial = new Dictionary<scrDecoration, DecoBakeCore.Decoration>();
+        private static scrDecoration[] baselineObjects;
+        private static int[] baselineIds;
+        private static DecoBakeCore.Decoration[] baselineDecorations;
+        private static DecoBakeCore.Event[] baselineEvents;
+        private static int baselineSortedCount, baselineSupported = -1;
+        private static void ClearBaseline()
+        {
+            baselineObjects = null; baselineIds = null; baselineDecorations = null; baselineEvents = null;
+            baselineSupported = -1; baselineSortedCount = 0;
+        }
+        private static void ValidateBaseline()
+        {
+            if (!DecoBakeCore.SameInstances(manager.allDecorations, baselineObjects, baselineIds, d => d.GetInstanceID()))
+                throw new InvalidOperationException("기준 스냅샷 재사용 거부: 장식 개수/순서/인스턴스 ID/객체 변경; 맵 다시 open 필요");
+        }
         internal struct StartStamp { internal int Source, Frame; internal double Song; }
         private static IEnumerator collector;
         private static Task<DecoBakeCore.Table> job;
@@ -135,7 +150,7 @@ namespace StutterFix
         }
         internal static void Shutdown()
         {
-            enabled = false; CancelBuild(); initial.Clear(); manager = null; effectList = null; prepFloors = null;
+            enabled = false; CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepFloors = null;
             DecoSim.ForgetBake();
             table = null;
             patches?.UnpatchAll(Owner); patches = null; status = "꺼짐";
@@ -143,7 +158,7 @@ namespace StutterFix
         internal static void ForgetLevel()
         {
             if (!enabled) return;
-            CancelBuild(); initial.Clear(); manager = null; effectList = null; prepFloors = null; status = "새 맵 스냅샷 대기";
+            CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepFloors = null; status = "새 맵 스냅샷 대기";
             setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1;
         }
         private static void SetupPostfix(scrDecoration __instance)
@@ -154,7 +169,10 @@ namespace StutterFix
             {
                 if (ready || collector != null || job != null) CancelBuild();
                 var d = __instance;
-                if (manager != d.manager) { initial.Clear(); manager = d.manager; setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1; }
+                if (manager != d.manager) { initial.Clear(); ClearBaseline(); manager = d.manager; setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1; }
+                // Setup can run again during seek. Never replace pre-scrub values with animated values.
+                if (initial.ContainsKey(d)) return;
+                if (baselineObjects != null) throw new InvalidOperationException("기준 스냅샷 재사용 거부: 새 장식 객체 Setup; 맵 다시 open 필요");
                 if (initial.Count >= MaxDecorations && !initial.ContainsKey(d)) throw new InvalidOperationException("장식 상한");
                 var row = new DecoBakeCore.Decoration { Id = d.GetInstanceID(), OriginalX = d.startPos.x, OriginalY = d.startPos.y };
                 if (d.sourceLevelEvent != null && d.sourceLevelEvent.TryGet<Vector2>("position", out var sourcePosition))
@@ -222,6 +240,8 @@ namespace StutterFix
                 status = "메인 스냅샷 수집 중";
                 prepFloors = __0;
                 collector = Collect(__0, generation);
+                if (baselineObjects != null) { ValidateBaseline(); Log("기준 스냅샷 재사용 장식=" + baselineObjects.Length
+                    + " 전체예약효과=" + baselineSortedCount + " 현재예약효과=" + effectList.Count + " 최초지원=" + baselineSupported); }
             }
             catch (Exception e) { Fail("PrepVfx " + e.Message); }
         }
@@ -272,6 +292,16 @@ namespace StutterFix
         }
         private static IEnumerator Collect(List<scrFloor> floors, int epoch)
         {
+            if (baselineObjects != null)
+            {
+                ValidateBaseline();
+                var snapshot = baselineDecorations;
+                var savedEvents = baselineEvents; float savedPitch = frozenPitch, savedScale = frozenScale;
+                cancellation = new CancellationTokenSource(); var savedToken = cancellation.Token;
+                job = Task.Run(() => DecoBakeCore.Compile(DecoBakeCore.CloneDecorations(snapshot), savedEvents, savedPitch, savedScale, EvaluateEase, savedToken));
+                status = "기준 스냅샷 재굽기 중";
+                yield break;
+            }
             var all = manager.allDecorations;
             int count = all.Count, effects = effectList.Count, refs = 0;
             if (count > MaxDecorations) throw new InvalidOperationException("장식 상한");
@@ -345,7 +375,10 @@ namespace StutterFix
             Stage(4);
             cancellation = new CancellationTokenSource(); var token = cancellation.Token;
             var copied = events.ToArray();
-            job = Task.Run(() => DecoBakeCore.Compile(decs, copied, pitch, tweenScale, EvaluateEase, token));
+            // Freeze the COMPLETE first timeline, before Compile can add computed reasons.
+            baselineObjects = all.ToArray(); baselineIds = decs.Select(d => d.Id).ToArray();
+            baselineDecorations = decs; baselineEvents = copied; baselineSortedCount = effects;
+            job = Task.Run(() => DecoBakeCore.Compile(DecoBakeCore.CloneDecorations(decs), copied, pitch, tweenScale, EvaluateEase, token));
             status = "작업 스레드 굽기 중";
         }
         private static float EvaluateEase(int id, float t, float dur, float over, float period) => ZeroTween.Eval((Ease)id, t, dur, over, period);
@@ -354,7 +387,8 @@ namespace StutterFix
             if (!enabled) return;
             try
             {
-                if (ready && (manager != scrDecorationManager.instance || effectList != scrVfxPlus.instance?.effects)) { ForgetLevel(); return; }
+                if (ready && manager != scrDecorationManager.instance) { Fail("기준 스냅샷 재사용 거부: 장식 manager 변경; 맵 다시 open 필요"); return; }
+                if (ready && effectList != scrVfxPlus.instance?.effects) { Reprepare(); return; }
                 if ((ready || collector != null || job != null) && (scrConductor.instance?.song == null
                     || scrConductor.instance.song.pitch != frozenPitch || DOTween.timeScale != frozenScale
                     || DOTween.defaultEaseOvershootOrAmplitude != frozenOver || DOTween.defaultEasePeriod != frozenPeriod))
@@ -372,12 +406,16 @@ namespace StutterFix
                 if (job != null && job.IsCompleted)
                 {
                     var completed = job; job = null; table = completed.GetAwaiter().GetResult();
+                    ValidateBaseline();
+                    if (baselineSupported >= 0 && table.Supported != baselineSupported)
+                        throw new InvalidOperationException("기준 재굽기 지원 수 불일치: 최초=" + baselineSupported + " 현재=" + table.Supported);
+                    baselineSupported = table.Supported;
                     ready = true;
                     heapDelta = GC.GetTotalMemory(false) - heapBefore; workerWallMs = wall.Elapsed.TotalMilliseconds;
                     publishedSnapshotMs = snapshotMs; publishedMaxMs = snapshotMaxMs;
                     publishedSetupMs = setupMs; publishedSetupMaxMs = setupFrameMaxMs; publishedTagMaxMs = tagMoveNextMaxMs;
                     Array.Copy(stageMs, publishedStages, stageMs.Length); Array.Copy(stageMaxMs, publishedStageMax, stageMaxMs.Length);
-                    publishedSortedCount = effectList.Count;
+                    publishedSortedCount = baselineSortedCount;
                     status = "준비됨 (읽기/계산만)";
                     Log(status + " 장식=" + table.Decorations.Length + " 지원=" + table.Supported + " 이벤트=" + table.Events + " 구간=" + table.Segments);
                 }
@@ -555,6 +593,9 @@ namespace StutterFix
             foreach (var p in reasons.OrderByDescending(x => x.Value)) Log("미지원 " + p.Key + " 장식=" + p.Value + " 비율=" + N(100.0 * p.Value / Math.Max(1, table.Decorations.Length)) + "%");
             Phase(tape, table);
             Diagnose(tape, table, top.OrderByDescending(x => x.Value).Take(3).Select(x => x.Key));
+            var scaleTop = stats[5].Top.Concat(stats[6].Top).GroupBy(x => x.Key)
+                .Select(g => new { Id = g.Key, Error = g.Max(x => x.Value) }).OrderByDescending(x => x.Error).Take(3).Select(x => x.Id);
+            Diagnose(tape, table, scaleTop, true);
         }
         private sealed class DiagnosticRow
         {
@@ -570,7 +611,7 @@ namespace StutterFix
             if (s.Key == 9) { var c = end ? s.CE : s.CS; return channel == 7 ? c.r : channel == 8 ? c.g : channel == 9 ? c.b : c.a; }
             return end ? s.FE : s.FS;
         }
-        private static void Diagnose(DecoSim.Tape tape, DecoBakeCore.Table table, IEnumerable<int> targets)
+        private static void Diagnose(DecoSim.Tape tape, DecoBakeCore.Table table, IEnumerable<int> targets, bool scaleOnly = false)
         {
             var states = new Dictionary<int, DecoSim.State>();
             foreach (var state in tape.Initial) states[state.Token] = state;
@@ -588,7 +629,7 @@ namespace StutterFix
                     for (int i = frame.SampleBegin; i < frame.SampleEnd; i++)
                     {
                         var s = tape.Samples[i]; if (tape.DecorationIds[s.Decoration] != id) continue;
-                        int c = Channel(s.Key); if (c < 0) continue;
+                        int c = Channel(s.Key); if (c < 0 || (scaleOnly && c != 5 && c != 6)) continue;
                         int n = s.Key == 9 ? 4 : s.Key == 11 ? 2 : 1;
                         for (int v = 0; v < n; v++)
                         {
@@ -596,14 +637,14 @@ namespace StutterFix
                             if (s.Key == 8) value = s.Y;
                             if (!DecoBakeCore.Finite(value) || !DecoBakeCore.Finite(frame.SongTime)) continue;
                             rows.Add(new DiagnosticRow { Frame = frame, Channel = c + v, Actual = value, Token = s.Token, Position = s.Position,
-                                Error = Math.Abs((double)table.Eval(d, c + v, frame.SongTime) - value) });
+                                Error = Math.Abs((double)table.Eval(d, c + v, frame.BakeTime) - value) });
                         }
                     }
                 }
                 if (rows.Count == 0) continue;
                 var worst = rows.OrderByDescending(x => x.Error).First();
                 var channelRows = rows.Where(x => x.Channel == worst.Channel).ToList();
-                Log("진단 장식=" + id + " 초기pivot=" + N(table.Decorations[d].Initial[0]) + "," + N(table.Decorations[d].Initial[1])
+                Log((scaleOnly ? "크기상위3 " : "") + "진단 장식=" + id + " 초기pivot=" + N(table.Decorations[d].Initial[0]) + "," + N(table.Decorations[d].Initial[1])
                     + " startPos=" + N(table.Decorations[d].OriginalX) + "," + N(table.Decorations[d].OriginalY)
                     + " Global원점=" + N(table.Decorations[d].GlobalX) + "," + N(table.Decorations[d].GlobalY));
                 foreach (var e in table.InputEvents)
@@ -616,8 +657,13 @@ namespace StutterFix
                         Log("진단 실제StartEffect source=" + e.Source + " frame=" + stamp.Frame + " song=" + N(stamp.Song) + " song-T0=" + N(stamp.Song - e.T0));
                     for (int c = 0; c < DecoBakeCore.Channels; c++)
                         foreach (var s in table.Tracks[d * DecoBakeCore.Channels + c]) if (s.Source == e.Source)
-                            Log("진단 구간 " + Names[c] + " start=" + N(s.Start) + " end=" + N(s.End) + " target=" + N(s.Target) + " replacement=" + s.Replacement);
+                            Log("진단 구간 " + Names[c] + " T0=" + N(s.T0) + " start=" + N(s.Start) + " end=" + N(s.End) + " target=" + N(s.Target) + " replacement=" + s.Replacement);
                 }
+                foreach (var token in rows.Select(x => x.Token).Distinct())
+                    if (states.TryGetValue(token, out var rec))
+                        foreach (int c in rows.Where(x => x.Token == token).Select(x => x.Channel).Distinct())
+                            Log("진단 Startup 장식=" + id + " token=" + token + " 채널=" + Names[c] + " ease=" + rec.Ease
+                                + " duration=" + N(rec.Duration) + " start=" + N(StateValue(rec, c, false)) + " target=" + N(StateValue(rec, c, true)));
                 var first = channelRows[0];
                 var moved = channelRows.FirstOrDefault(x => x.Token == first.Token && x.Actual != first.Actual);
                 var firstMoving = rows.FirstOrDefault(x => x.Position > 0 && states.TryGetValue(x.Token, out var state)
@@ -631,10 +677,17 @@ namespace StutterFix
                     + "; 캡처 전 시작은 좌측절단, 첫값변화는 동일 token 표본 간 비교");
                 int center = channelRows.IndexOf(worst), begin = Math.Max(0, Math.Min(center - 6, channelRows.Count - 12));
                 foreach (var r in channelRows.Skip(begin).Take(12))
+                {
+                    double speed = DecoBakeCore.Speed(table, d, r.Channel, r.Frame.BakeTime);
+                    double seconds = r.Error / speed;
                     Log("진단 행 장식=" + id + " 채널=" + Names[r.Channel] + " frame=" + r.Frame.UnityFrame
                         + " songposition_minusi=" + N(r.Frame.SongTime) + " actual=" + N(r.Actual)
                         + " tb=" + N(r.Frame.BakeTime) + " tbBaked=" + N(table.Eval(d, r.Channel, r.Frame.BakeTime))
-                        + " baked=" + N(table.Eval(d, r.Channel, r.Frame.SongTime)) + " dt=" + N(r.Frame.Dt) + " RecPos=" + N(r.Position));
+                        + " baked=" + N(table.Eval(d, r.Channel, r.Frame.SongTime)) + " dt=" + N(r.Frame.Dt) + " RecPos=" + N(r.Position)
+                        + " rawDt=" + N(r.Frame.RawDt) + " smoothDt=" + N(r.Frame.SmoothDt) + " useSmooth=" + r.Frame.UseSmooth
+                        + " 시간오차ms=" + (DecoBakeCore.Finite(seconds) ? N(seconds * 1000) : "NA")
+                        + " 시간오차프레임=" + (r.Frame.Dt > 0 && DecoBakeCore.Finite(seconds) ? N(seconds / (r.Frame.Dt * r.Frame.Pitch / r.Frame.TweenScale)) : "NA"));
+                }
                 // Bound work independently of capture FPS. Use one channel to avoid mixing physical units.
                 var fit = channelRows.Where((r, i) => i % Math.Max(1, (channelRows.Count + 511) / 512) == 0).ToArray();
                 Func<double, double> loss = shift => { double sum = 0; foreach (var r in fit) {

@@ -10,11 +10,11 @@ using DG.Tweening;
 
 namespace UnityEngine
 {
-    public static class Time { public static int frameCount; }
+    public static class Time { public static int frameCount; public static float deltaTime, smoothDeltaTime; }
     public struct Vector2 { public float x, y; public Vector2(float x, float y) { this.x = x; this.y = y; } }
     public struct Color { public float r, g, b, a; public Color(float r, float g, float b, float a) { this.r = r; this.g = g; this.b = b; this.a = a; } }
 }
-namespace DG.Tweening { public enum Ease { Linear, InQuad } public static class DOTween { public static float timeScale = 1; } }
+namespace DG.Tweening { public enum Ease { Linear, InQuad } public static class DOTween { public static float timeScale = 1; public static bool useSmoothDeltaTime; } }
 public class scrConductor
 {
     public static scrConductor instance = new scrConductor(); public static float calibration_i;

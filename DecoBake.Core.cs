@@ -33,6 +33,26 @@ namespace StutterFix
             }
         }
         internal sealed class SnapshotChangedException : InvalidOperationException { }
+        internal static bool SameInstances<T>(IList<T> current, T[] saved, int[] ids, Func<T, int> id) where T : class
+        {
+            if (saved == null || ids == null || current.Count != saved.Length || ids.Length != saved.Length) return false;
+            for (int i = 0; i < saved.Length; i++)
+                if (current[i] == null || !ReferenceEquals(current[i], saved[i]) || id(current[i]) != ids[i]) return false;
+            return true;
+        }
+        internal static Decoration[] CloneDecorations(Decoration[] source)
+        {
+            var copy = new Decoration[source.Length];
+            for (int i = 0; i < source.Length; i++)
+            {
+                var d = source[i];
+                var c = new Decoration { Id = d.Id, Initial = (float[])d.Initial.Clone(), OriginalX = d.OriginalX, OriginalY = d.OriginalY,
+                    GlobalX = d.GlobalX, GlobalY = d.GlobalY, ScaleUnitsX = d.ScaleUnitsX, ScaleUnitsY = d.ScaleUnitsY };
+                foreach (string reason in d.Reasons) c.Reasons.Add(reason);
+                copy[i] = c;
+            }
+            return copy;
+        }
         // A coroutine may resume after seek mutated a list in place. Check BEFORE indexing.
         internal static T SnapshotItem<T>(IList<T> list, int index, int count, int epoch, int currentEpoch)
         {

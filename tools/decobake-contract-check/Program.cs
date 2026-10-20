@@ -239,6 +239,52 @@ foreach (bool buffer in new[] { false, true })
 }
 var pitchClock = new DecoBakeCore.SongClock(); pitchClock.Step(0, 0, 2, .5, true);
 Require(Math.Abs(pitchClock.Step(.02, .005, 2, .5, true) - .02) < 1e-12, "Rec 델타의 tweenScale 제거/pitch 반영");
+// Bake-7: immutable first timeline survives consumed scheduling lists and repeated Setup.
+var identities = new[] { new object(), new object() }; var identityList = identities.ToList();
+var identityIds = new[] { 10, 20 };
+int Identity(object o) => ReferenceEquals(o, identities[0]) ? 10 : 20;
+Require(DecoBakeCore.SameInstances(identityList, identities, identityIds, Identity), "동일 맵 객체/ID 목록 재사용");
+identityList[1] = new object();
+Require(!DecoBakeCore.SameInstances(identityList, identities, identityIds, Identity), "같은 ID라도 재생성 객체 거부");
+identityList = identities.Reverse().ToList();
+Require(!DecoBakeCore.SameInstances(identityList, identities, identityIds, Identity), "목록 순서 변경 거부");
+identityList.RemoveAt(0);
+Require(!DecoBakeCore.SameInstances(identityList, identities, identityIds, Identity), "목록 개수 변경 거부");
+var savedDecs = new[] { Decoration() }; var savedEvents = new[] { Event(0, 4, 8), ScaleEvent(1, 3, 5, 6) };
+var firstBake = DecoBakeCore.Compile(DecoBakeCore.CloneDecorations(savedDecs), savedEvents, 1, 1, ActualEase, CancellationToken.None);
+var consumed = savedEvents.ToList(); consumed.RemoveAt(0);
+var rebuilt = DecoBakeCore.Compile(DecoBakeCore.CloneDecorations(savedDecs), savedEvents, 1, 1, ActualEase, CancellationToken.None);
+Require(firstBake.Supported == rebuilt.Supported && firstBake.Segments == rebuilt.Segments
+    && firstBake.Eval(0, 0, 2) == rebuilt.Eval(0, 0, 2), "seek로 예약 목록 소모 후 기준 재굽기 지원/구간/과거값 보존");
+var cloned = DecoBakeCore.CloneDecorations(savedDecs); cloned[0].Initial[0] = 999; cloned[0].Reasons.Add("changed");
+Require(savedDecs[0].Initial[0] != 999 && savedDecs[0].Reasons.Count == 0, "재굽기 배열/제외사유 깊은 복사");
+foreach (bool smoothedDelta in new[] { false, true })
+foreach (double stall in new[] { .03, .06 })
+{
+    var heavyClock = new DecoBakeCore.SongClock(); var rng = new Random(707);
+    double truth = 262, previous = truth, filtered = .011;
+    var errors = new List<double>(); int longFrames = 0;
+    heavyClock.Step(truth, 0, 1, 1, true);
+    for (int i = 1; truth < 276; i++)
+    {
+        double dt = i % 97 == 0 ? stall : .011 + (rng.NextDouble() * 2 - 1) * .002;
+        if (dt > .02) longFrames++;
+        truth += dt; filtered += .1 * (dt - filtered);
+        double tweenDt = smoothedDelta ? filtered : dt;
+        double raw = truth + (rng.NextDouble() * 2 - 1) * .006;
+        double tb = heavyClock.Step(raw, tweenDt, 1, 1, true);
+        RequireSilent(tb >= previous, "무거운 합성 구간 단조(역행 seek 없음)"); previous = tb;
+        errors.Add(Math.Abs(tb - truth) * 1000);
+    }
+    errors.Sort();
+    Console.WriteLine($"bake7 합성262~276 dt={(smoothedDelta ? "EMA0.1(게임 smoothDeltaTime 재현 아님)" : "실제프레임")} 기본11±2ms stall={stall*1000:F0}ms n={errors.Count} 긴프레임={longFrames} 최대={errors[^1]:F6}ms p99={errors[(int)((errors.Count-1)*.99)]:F6}ms 재동기={heavyClock.Resyncs}; 1% 시정수@11ms={-.011/Math.Log(.99):F6}s @480FPS={-(1.0/480)/Math.Log(.99):F6}s");
+    Require(errors.All(double.IsFinite), "무거운 구간 시계 유한값");
+}
+var thresholdClock = new DecoBakeCore.SongClock(); thresholdClock.Step(262, 0, 1, 1, true);
+Require(Math.Abs(thresholdClock.Step(262.06, .011, 1, 1, true) - 262.01149) < 1e-9
+    && thresholdClock.Resyncs == 1, "60ms 긴 프레임이어도 예측차49ms이면 50ms 재동기 미발동");
+Require(thresholdClock.Step(262.13, .011, 1, 1, true) == 262.13 && thresholdClock.Resyncs == 2,
+    "예측차50ms 초과시 재동기");
 var mutable = new List<int> { 10, 20 }; int oldCount = mutable.Count;
 mutable.RemoveAt(1); bool recovered = false;
 try { DecoBakeCore.SnapshotItem(mutable, 1, oldCount, 1, 1); }
