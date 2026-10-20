@@ -11,6 +11,18 @@ namespace StutterFix
     {
         internal const int Channels = 16;
         internal const int ScaleX = 5, ScaleY = 6;
+        // scrVfxPlus.Update compares this directly with songposition_minusi.
+        internal static double ScheduledTime(double startTime, double startEffectOffset) => startTime - startEffectOffset;
+        internal static double FitOffset(Func<double, double> loss)
+        {
+            double offset = 0, best = loss(0), step = .125;
+            for (int i = -256; i <= 256; i++) { double candidate = i * step, error = loss(candidate);
+                if (error < best) { best = error; offset = candidate; } }
+            for (int pass = 0; pass < 3; pass++) { double origin = offset; step /= 10;
+                for (int i = -10; i <= 10; i++) { double candidate = Math.Max(-32, Math.Min(32, origin + i * step)), error = loss(candidate);
+                    if (error < best) { best = error; offset = candidate; } } }
+            return offset;
+        }
         internal delegate float EaseFn(int id, float t, float duration, float over, float period);
         internal sealed class Decoration
         {
@@ -44,6 +56,7 @@ namespace StutterFix
         }
         internal sealed class Table
         {
+            internal Event[] InputEvents; // Diagnostic snapshot only; excluded from track payload.
             internal Decoration[] Decorations;
             internal Segment[][] Tracks;
             internal bool[] Replaced;
@@ -57,6 +70,52 @@ namespace StutterFix
                 var track = Tracks[d * Channels + channel];
                 int index = Find(track, songTime);
                 return index < 0 ? Decorations[d].Initial[channel] : Value(track[index], songTime, Pitch, TweenScale, Ease);
+            }
+        }
+        // Benchmark-only scheduler: one cursor per channel, dispatches starts in song-time order.
+        // Construction and warm seek are outside measured steady frames. No Unity writes.
+        internal sealed class ActiveEvaluator
+        {
+            private struct Start { internal int Slot, Index; internal double Time; }
+            private readonly Table table;
+            private readonly Start[] starts;
+            private readonly int[] cursor, active, position;
+            private int next, count;
+            private double last = double.NegativeInfinity;
+            internal int Evaluated, Dispatched;
+            internal ActiveEvaluator(Table table)
+            {
+                this.table = table;
+                cursor = new int[table.Tracks.Length]; active = new int[cursor.Length]; position = new int[cursor.Length];
+                var items = new List<Start>();
+                for (int slot = 0; slot < cursor.Length; slot++)
+                    for (int i = 0; i < table.Tracks[slot].Length; i++)
+                        items.Add(new Start { Slot = slot, Index = i, Time = table.Tracks[slot][i].T0 });
+                items.Sort((a, b) => { int c = a.Time.CompareTo(b.Time); if (c != 0) return c;
+                    c = a.Slot.CompareTo(b.Slot); return c != 0 ? c : a.Index.CompareTo(b.Index); });
+                starts = items.ToArray(); Reset();
+            }
+            private void Reset() { next = count = 0; last = double.NegativeInfinity;
+                for (int i = 0; i < cursor.Length; i++) { cursor[i] = -1; position[i] = -1; } }
+            internal double Step(double time)
+            {
+                if (time < last) Reset();
+                last = time; Evaluated = Dispatched = 0;
+                while (next < starts.Length && starts[next].Time <= time)
+                {
+                    var s = starts[next++]; cursor[s.Slot] = s.Index; Dispatched++;
+                    if (position[s.Slot] < 0) { position[s.Slot] = count; active[count++] = s.Slot; }
+                }
+                double sum = 0;
+                for (int i = 0; i < count;)
+                {
+                    int slot = active[i]; var s = table.Tracks[slot][cursor[slot]];
+                    sum += Value(s, time, table.Pitch, table.TweenScale, table.Ease); Evaluated++;
+                    if ((time - s.T0) / table.Pitch * table.TweenScale >= s.Duration)
+                    { position[slot] = -1; int moved = active[--count]; active[i] = moved; if (i < count) position[moved] = i; }
+                    else i++;
+                }
+                return sum;
             }
         }
         internal static float[] EmptyValues()
@@ -105,7 +164,7 @@ namespace StutterFix
             var sw = Stopwatch.StartNew();
             var lists = new List<Segment>[decorations.Length * Channels];
             var globalOrigin = new bool[decorations.Length];
-            var result = new Table { Decorations = decorations, Events = events.Length, Pitch = pitch, TweenScale = tweenScale,
+            var result = new Table { InputEvents = events, Decorations = decorations, Events = events.Length, Pitch = pitch, TweenScale = tweenScale,
                 Ease = ease, Replaced = new bool[decorations.Length], Tracks = new Segment[lists.Length][] };
             // Propagate every exclusion before compiling anything: one unsupported branch excludes the entire decoration.
             double previous = double.NegativeInfinity;

@@ -1,0 +1,56 @@
+Assembly-CSharp SHA256=F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF; ILSpy static excerpts, game not launched; original decompiled line numbers below.
+117: 	{
+118: 		scrFloor component = base.gameObject.GetComponent<scrFloor>();
+119: 		startTime = component.entryTime + (double)(degreeOffset * (MathF.PI / 180f) / MathF.PI * (60f / (bpm * component.speed)));
+120: 		this.degreeOffset = degreeOffset;
+121: 	}
+122: 
+123: 	public virtual void ScrubToTime(float t)
+124: 	{
+125: 		if ((double)t < startTime)
+126: 		{
+127: 			return;
+128: 		}
+129: 		StartEffect();
+130: 		triggered = true;
+131: 		double num = startTime + (double)duration;
+132: 		bool flag = Mathf.Approximately(t, (float)num);
+133: 		if (ADOBase.currentLevel == "XO-X" && this is ffxCameraPlus)
+134: 		{
+135: 			flag = true;
+136: 		}
+137: 		if (eventTweens == null)
+138: 		{
+139: 			return;
+140: 		}
+141: 		if ((double)t >= num || flag)
+142: 		{
+143: 			foreach (Tween eventTween in eventTweens)
+144: 			{
+145: 				eventTween?.Kill(complete: true);
+146: 			}
+147: 			return;
+148: 		}
+149: 		float num2 = (t - (float)startTime) / cond.song.pitch - scrConductor.calibration_i;
+150: 		foreach (Tween eventTween2 in eventTweens)
+151: 		{
+152: 			if (eventTween2 != null)
+153: 			{
+154: 				bool num3 = Mathf.Approximately(num2, 0f);
+155: 				if (eventTween2.active)
+156: 				{
+157: 					eventTween2.Goto(num2, andPlay: true);
+158: 				}
+159: 				if (!num3)
+160: 				{
+161: 					vfx.pausedTweens.Add(eventTween2);
+162: 				}
+163: 			}
+164: 		}
+165: 	}
+166: 
+167: 	public virtual void Kill()
+168: 	{
+169: 		if (eventTweens == null)
+170: 		{
+171: 			return;

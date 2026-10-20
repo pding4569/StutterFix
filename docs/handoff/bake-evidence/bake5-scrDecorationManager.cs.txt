@@ -1,0 +1,17 @@
+Assembly-CSharp SHA256=F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF; ILSpy static excerpts, game not launched; original decompiled line numbers below.
+109: 	public IEnumerable<scrDecoration> GetTaggedDecorations(IEnumerable<string> tags)
+110: 	{
+111: 		return tags.Where((string t) => taggedDecorations.ContainsKey(t)).SelectMany((string t) => taggedDecorations[t]).Distinct();
+112: 	}
+113: 
+114: 	public IEnumerable<T> GetTaggedDecorations<T>(IEnumerable<string> tags) where T : scrDecoration
+115: 	{
+116: 		return (from dec in GetTaggedDecorations(tags)
+117: 			where dec is T
+118: 			select dec).Cast<T>();
+119: 	}
+120: 
+121: 	public IEnumerable<scrDecoration> GetTaggedDecorations(params string[] tags)
+122: 	{
+123: 		return GetTaggedDecorations((IEnumerable<string>)tags);
+124: 	}

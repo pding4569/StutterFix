@@ -173,6 +173,27 @@ try { DecoBakeCore.Compile(new[] { Decoration() }, new[] { Event(0, 1, 1) }, 1, 
 Require(cancelled, "Unload/세대 변경 취소");
 Console.WriteLine("굽기 프로토타입 fixture 통과. 게임 실행/설치/Mono 런타임 측정은 하지 않음.");
 
+Require(DecoBakeCore.ScheduledTime(12, 2) == 10, "예약시계는 startTime-startEffectOffset, 별도 calibration/addoffset 보정 없음");
+var clockFixture = Compile(Decoration(), new[] { Event(DecoBakeCore.ScheduledTime(12, 2), 8, 80) });
+double Loss(double offset) => Enumerable.Range(0, 100).Average(i => {
+    double song = 11 + i * .04;
+    double actual = clockFixture.Eval(0, 0, song + .75);
+    double error = clockFixture.Eval(0, 0, song + offset) - actual;
+    return error * error;
+});
+double fitted = DecoBakeCore.FitOffset(Loss);
+Require(Math.Abs(fitted - .75) <= .000125 && Loss(fitted) < 1e-9, "진단 오프셋 부호/알려진 +0.75초 복원과 값 잔차");
+Require(DecoBakeCore.FitOffset(_ => 1) == 0, "평탄 손실은 임의의 -32초를 선택하지 않고 0 유지(시간 식별 증거 아님)");
+var cursorTable = Compile(Decoration(), new[] { Event(1, 2, 10), Event(2, 1, 20), Event(4, 0, 30) });
+var cursor = new DecoBakeCore.ActiveEvaluator(cursorTable);
+Require(cursor.Step(0) == 0 && cursor.Evaluated == 0, "활성 평가: 미래 예약은 평가하지 않음");
+Require(cursor.Step(1.5) == cursorTable.Eval(0, 0, 1.5) && cursor.Evaluated == 1, "활성 평가: 예약 dispatch와 채널 커서");
+Require(cursor.Step(2.5) == cursorTable.Eval(0, 0, 2.5) && cursor.Dispatched == 1, "활성 평가: 교체 구간으로 커서 이동");
+Require(cursor.Step(3) == 20 && cursor.Evaluated == 1 && cursor.Step(3.5) == 0 && cursor.Evaluated == 0, "활성 평가: 완료값 한 번 후 비활성 제거");
+Require(cursor.Step(4) == 30 && cursor.Step(4) == 0, "활성 평가: 길이0 및 같은 시각 중복 호출");
+Require(cursor.Step(1.5) == cursorTable.Eval(0, 0, 1.5), "활성 평가: 되감기는 명시적 scheduler 초기화");
+Require(System.Runtime.InteropServices.Marshal.SizeOf<DecoBakeCore.Segment>() == 48, "Segment 실제 unmanaged stride 48B, payload 산식과 일치");
+
 if (args.Contains("--bench"))
 {
     // Only shape/scale smoke evidence. One target per event is deliberately sparse and is NOT the Arche event fanout.
@@ -197,6 +218,12 @@ if (args.Contains("--bench"))
     Console.WriteLine($"합성 희소 fixture(.NET8, Arche 아님): 장식={decorationCount}, 이벤트={eventCount}, 대상참조={eventCount}, 구간={baked.Segments}");
     Console.WriteLine($"worker함수 굽기={compileMs:F3}ms, payload={baked.PayloadBytes}B, GC전heap차={afterBytes-beforeBytes}B, 16채널평가중앙={samples[16]:F3}ms, p99={samples[31]:F3}ms, checksum={checksum:R}");
     Require(baked.Supported == decorationCount && baked.Events == eventCount, "합성 크기 처리 완료");
+    var activeEval = new DecoBakeCore.ActiveEvaluator(baked); activeEval.Step(30);
+    var activeSamples = new List<double>(); int channels = 0;
+    for (int i = 1; i <= 720; i++) { sw.Restart(); checksum += activeEval.Step(30 + i / 60.0);
+        activeSamples.Add(sw.Elapsed.TotalMilliseconds); channels += activeEval.Evaluated; }
+    activeSamples.Sort();
+    Console.WriteLine($"합성 evalActive(.NET8, Arche/Unity 아님): frames=720, 중앙={activeSamples[360]:F6}ms, p99={activeSamples[712]:F6}ms, 평균채널={channels/720.0:F3}, checksum={checksum:R}; scheduler 구축/첫seek 제외");
 }
 
 static void RequireSilent(bool condition, string label) { if (!condition) throw new InvalidOperationException(label); }

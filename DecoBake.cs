@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,6 +42,24 @@ namespace StutterFix
         private static double setupMs, setupFrameMs, setupFrameMaxMs;
         private static int setupFrame = -1;
         private static int publishedSortedCount;
+        private static readonly string[] StageNames = { "장식복사", "효과읽기", "태그열거", "조건효과", "worker전달" };
+        private static readonly double[] stageMs = new double[5];
+        private static readonly double[] stageSlice = new double[5], stageMaxMs = new double[5];
+        private static double tagMoveNextMaxMs;
+        private static double publishedSetupMs, publishedSetupMaxMs, publishedTagMaxMs;
+        private static readonly double[] publishedStages = new double[5], publishedStageMax = new double[5];
+        private static int stage;
+        private static long stageBegin;
+        private static void Stage(int value) { long now = Stopwatch.GetTimestamp();
+            if (stageBegin != 0) { double ms = (now - stageBegin) * 1000.0 / Stopwatch.Frequency; stageMs[stage] += ms; stageSlice[stage] += ms; }
+            stage = value; stageBegin = now; }
+        private static IEnumerable<scrDecoration> TimedTargets(ffxMoveDecorationsPlus f)
+        {
+            using (var iterator = f.decManager.GetTaggedDecorations((IEnumerable<string>)f.targetTags).GetEnumerator())
+                while (true) { long begin = Stopwatch.GetTimestamp(); bool more = iterator.MoveNext();
+                    tagMoveNextMaxMs = Math.Max(tagMoveNextMaxMs, (Stopwatch.GetTimestamp() - begin) * 1000.0 / Stopwatch.Frequency);
+                    if (!more) yield break; yield return iterator.Current; }
+        }
         internal static int Generation => ready ? generation : -1;
         internal static DecoBakeCore.Table CaptureTable => ready ? table : null;
         internal static bool Enabled => enabled;
@@ -181,6 +199,8 @@ namespace StutterFix
                 effectList = scrVfxPlus.instance.effects;
                 if (effectList == null || effectList.Count > MaxEvents) throw new InvalidOperationException("효과 목록/상한");
                 wall = Stopwatch.StartNew(); snapshotMs = setupMs; snapshotMaxMs = setupFrameMaxMs; heapBefore = GC.GetTotalMemory(false);
+                Array.Clear(stageMs, 0, stageMs.Length); stage = 0; stageBegin = 0;
+                Array.Clear(stageMaxMs, 0, stageMaxMs.Length); tagMoveNextMaxMs = 0;
                 frozenPitch = scrConductor.instance.song.pitch; frozenScale = DOTween.timeScale;
                 frozenOver = DOTween.defaultEaseOvershootOrAmplitude; frozenPeriod = DOTween.defaultEasePeriod;
                 status = "메인 스냅샷 수집 중";
@@ -205,7 +225,7 @@ namespace StutterFix
         }
         private static DecoBakeCore.Event CopyEvent(ffxMoveDecorationsPlus f)
         {
-            var e = new DecoBakeCore.Event { T0 = f.startTime - f.startEffectOffset, Duration = f.duration,
+            var e = new DecoBakeCore.Event { T0 = DecoBakeCore.ScheduledTime(f.startTime, f.startEffectOffset), Duration = f.duration,
                 StartTime = f.startTime, StartEffectOffset = f.startEffectOffset, AngleOffset = f.degreeOffset,
                 Source = f.GetInstanceID(), Ease = (int)f.ease, RelativePosition = f.movementType == DecPlacementType.LastPosition,
                 ResetGlobalOrigin = f.movementTypeUsed && f.movementType == DecPlacementType.Global, Reasons = Reasons(f) };
@@ -265,31 +285,35 @@ namespace StutterFix
                 if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); }
             }
             // Copy the game's final sorted sequence. Repeat-expanded objects remain distinct Source IDs.
+            Stage(1);
             for (int i = 0; i < effects; i++)
             {
                 var fx = effectList[i]; ordered.Add(fx);
                 if (fx is ffxMoveDecorationsPlus f)
                 {
                     var e = CopyEvent(f); var targets = new List<int>();
-                    foreach (var d in f.decManager.GetTaggedDecorations((IEnumerable<string>)f.targetTags))
+                    Stage(2);
+                    foreach (var d in TimedTargets(f))
                     {
                         if (!ids.TryGetValue(d, out int id)) throw new InvalidOperationException("대상/초기값 불일치");
                         targets.Add(id); if (++refs > MaxTargetRefs) throw new InvalidOperationException("대상 참조 상한");
                         if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); }
                     }
                     e.Targets = targets.ToArray(); events.Add(e);
+                    Stage(1);
                 }
                 else if (UnknownWriter(fx))
                     foreach (var d in decs) { d.Reasons.Add("다른 장식 효과/태그 변경 가능"); if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); } }
                 if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); }
             }
             // Conditional/manual effects are omitted by PrepVfx. Include their possible targets in exclusion counts.
+            Stage(3);
             foreach (var floor in floors)
             foreach (var fx in floor.plusEffects)
             {
                 if (fx is ffxMoveDecorationsPlus f && !ordered.Contains(fx))
                 {
-                    foreach (var d in f.decManager.GetTaggedDecorations((IEnumerable<string>)f.targetTags))
+                    foreach (var d in TimedTargets(f))
                     {
                         if (!ids.TryGetValue(d, out int id)) throw new InvalidOperationException("조건 대상 불일치");
                         decs[id].Reasons.Add("예약 목록 밖/조건/수동/타격");
@@ -301,6 +325,7 @@ namespace StutterFix
                 if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); }
             }
             if (epoch != generation || manager.allDecorations.Count != count || effectList.Count != effects) throw new InvalidOperationException("수집 중 맵 변경");
+            Stage(4);
             cancellation = new CancellationTokenSource(); var token = cancellation.Token;
             var copied = events.ToArray();
             job = Task.Run(() => DecoBakeCore.Compile(decs, copied, pitch, tweenScale, EvaluateEase, token));
@@ -319,7 +344,10 @@ namespace StutterFix
                 { Fail("수집 후 pitch/DOTween 배율/이징 기본값 변경: 고정 계약에서 제외"); return; }
                 if (collector != null)
                 {
-                    var sw = Stopwatch.StartNew(); bool more = collector.MoveNext();
+                    Array.Clear(stageSlice, 0, stageSlice.Length);
+                    var sw = Stopwatch.StartNew(); stageBegin = Stopwatch.GetTimestamp(); bool more = collector.MoveNext();
+                    Stage(stage); stageBegin = 0;
+                    for (int i = 0; i < stageSlice.Length; i++) stageMaxMs[i] = Math.Max(stageMaxMs[i], stageSlice[i]);
                     double ms = sw.Elapsed.TotalMilliseconds; snapshotMs += ms;
                     snapshotMaxMs = Math.Max(snapshotMaxMs, ms + (setupFrame == Time.frameCount ? setupFrameMs : 0));
                     if (!more) collector = null;
@@ -330,6 +358,8 @@ namespace StutterFix
                     ready = true;
                     heapDelta = GC.GetTotalMemory(false) - heapBefore; workerWallMs = wall.Elapsed.TotalMilliseconds;
                     publishedSnapshotMs = snapshotMs; publishedMaxMs = snapshotMaxMs;
+                    publishedSetupMs = setupMs; publishedSetupMaxMs = setupFrameMaxMs; publishedTagMaxMs = tagMoveNextMaxMs;
+                    Array.Copy(stageMs, publishedStages, stageMs.Length); Array.Copy(stageMaxMs, publishedStageMax, stageMaxMs.Length);
                     publishedSortedCount = effectList.Count;
                     status = "준비됨 (읽기/계산만)";
                     Log(status + " 장식=" + table.Decorations.Length + " 지원=" + table.Supported + " 이벤트=" + table.Events + " 구간=" + table.Segments);
@@ -358,6 +388,36 @@ namespace StutterFix
                 + " Prep후완료wallMs=" + N(workerWallMs) + " 표payloadMiB=" + N(table.PayloadBytes / 1048576.0)
                 + " 프로세스heap변화MiB=" + N(heapDelta / 1048576.0) + " eval중앙ms=" + N(timings[16]) + " evalp99ms=" + N(timings[31]) + " checksum=" + N(checksum));
             Log("메모리 payload는 객체 header/임시 list/스냅샷 제외; heap변화는 다른 게임 할당 포함. Arche 실수집 수와 지원율을 함께 판단.");
+            Log("수집단계CPUms Setup=" + N(publishedSetupMs) + " Setup동일프레임최대ms=" + N(publishedSetupMaxMs)
+                + " " + string.Join(" ", StageNames.Select((name, i) => name + "=" + N(publishedStages[i])))
+                + " 단계최대sliceMs=" + string.Join(" ", StageNames.Select((name, i) => name + "=" + N(publishedStageMax[i])))
+                + " 태그단일MoveNext최대ms=" + N(publishedTagMaxMs)
+                + "; Collect 협력예산4ms, Setup postfix는 게임의 동기 호출이므로 yield 불가; GC/단일 API 호출은 예산을 넘길 수 있음");
+            Log("evalAll 정의=지원 장식 전체*16채널 이진탐색, t=pass*2.125초; 프레임 활성 비용 아님. payload: 구간="
+                + table.Segments + "*48=" + table.Segments * 48L + "B, 트랙참조=" + table.Tracks.Length * (long)IntPtr.Size
+                + "B, 장식추정=" + table.Decorations.Length * (DecoBakeCore.Channels * 4L + 32) + "B; header/진단 InputEvents 별도");
+            long targetRefs = 0; foreach (var e in table.InputEvents) targetRefs += e.Targets.Length;
+            Log("추가보유 진단 InputEvents=" + table.InputEvents.Length + " targetRefs=" + targetRefs
+                + " 목표배열payloadB=" + table.InputEvents.Length * (DecoBakeCore.Channels * 4L) + " 대상배열payloadB=" + targetRefs * 4L
+                + " 참조배열payloadB=" + table.InputEvents.Length * (long)IntPtr.Size
+                + " 트랙비어있지않음=" + table.Tracks.Count(x => x.Length != 0)
+                + "; 진단 snapshot 객체/배열header/Reasons 및 scheduler 구축 메모리는 표payload 밖. evalActive scheduler는 bench 지역 객체");
+            var tape = DecoSim.BakeTape;
+            if (tape?.BakeTable != table || !tape.Valid || tape.Frames.Count < 2 || tape.BakeInvalidReason.Length != 0) { Log("evalActive 관측 불가: 같은 표의 유효한 완료 테이프 필요"); return; }
+            var active = new DecoBakeCore.ActiveEvaluator(table);
+            active.Step(tape.Frames[0].SongTime); // Warm seek excluded; dispatch + endpoint writes included thereafter.
+            var activeTimes = new List<double>(); int evaluated = 0, dispatched = 0;
+            for (int i = 1; i < tape.Frames.Count; i++)
+            {
+                if (tape.Frames[i].SongTime < tape.Frames[i - 1].SongTime) { Log("evalActive 관측 불가: 비단조 테이프, seek 초기화 비용 분리 필요"); return; }
+                var sw = Stopwatch.StartNew(); checksum += active.Step(tape.Frames[i].SongTime);
+                activeTimes.Add(sw.Elapsed.TotalMilliseconds); evaluated += active.Evaluated; dispatched += active.Dispatched;
+            }
+            activeTimes.Sort();
+            Log("evalActive 프레임n=" + activeTimes.Count + " 중앙ms=" + N(activeTimes[activeTimes.Count / 2])
+                + " p99ms=" + N(activeTimes[(int)Math.Ceiling(activeTimes.Count * .99) - 1])
+                + " 채널평균=" + N((double)evaluated / activeTimes.Count) + " 예약dispatch=" + dispatched
+                + " checksum=" + N(checksum) + "; 커서+시각순 시작 dispatch+활성 채널+완료값1회, 초기구축/첫 seek 제외, Unity setter/렌더 제외; 목표<=0.5ms");
         }
         private sealed class Errors
         {
@@ -420,9 +480,9 @@ namespace StutterFix
                     }
                 }
             }
-            Log("verify 표본=DecoSim 인덱스%4==0 Rec.Step 출력; 완료 이벤트의 중간 Kill 값은 최종 프레임과 혼합하지 않음. 제외표본=" + skipped + " 시계변경제외프레임=" + badClock + " 비유한=" + nonfinite);
+            Log("verify 표본=" + (tape.Moving ? "지원 활성 Rec, Key별 최초32슬롯" : "인덱스%4==0") + " Rec.Step 출력; 완료 이벤트의 중간 Kill 값은 최종 프레임과 혼합하지 않음. 제외표본=" + skipped + " 시계변경제외프레임=" + badClock + " 비유한=" + nonfinite);
             for (int c = 0; c < stats.Length; c++)
-                Log(Names[c] + " n=" + stats[c].Values.Count + " 최대절대=" + (stats[c].Values.Count == 0 ? "NA" : N(stats[c].Max)) + " p99=" + N(stats[c].P99())
+                Log(Names[c] + " n=" + stats[c].Values.Count + (stats[c].Values.Count == 0 ? " 관측 불가(활성 지원 Rec 없음)" : "") + " 최대절대=" + (stats[c].Values.Count == 0 ? "NA" : N(stats[c].Max)) + " p99=" + N(stats[c].P99())
                     + " 교체장식n=" + stats[c].ReplacementN + " 교체최대=" + (stats[c].ReplacementN == 0 ? "NA" : N(stats[c].ReplacementMax)) + " 교체p99=" + N(stats[c].ReplacementP99())
                     + " 상위장식8=" + string.Join(";", stats[c].Top.OrderByDescending(x => x.Value).Take(8).Select(x => table.Decorations[x.Key].Id + ":" + N(x.Value))));
             for (int axis = 0; axis < 2; axis++)
@@ -445,6 +505,114 @@ namespace StutterFix
             Log("지원=" + table.Supported + "/" + table.Decorations.Length + " 비율=" + N(100.0 * table.Supported / Math.Max(1, table.Decorations.Length)) + "% (사유별 중복 가능)");
             foreach (var p in reasons.OrderByDescending(x => x.Value)) Log("미지원 " + p.Key + " 장식=" + p.Value + " 비율=" + N(100.0 * p.Value / Math.Max(1, table.Decorations.Length)) + "%");
             Phase(tape, table);
+            Diagnose(tape, table, top.OrderByDescending(x => x.Value).Take(3).Select(x => x.Key));
+        }
+        private sealed class DiagnosticRow
+        {
+            internal DecoSim.Frame Frame;
+            internal int Channel, Token;
+            internal float Actual, Position;
+            internal double Error;
+        }
+        private static float StateValue(DecoSim.State s, int channel, bool end)
+        {
+            if (s.Key == 7 || s.Key == 8 || s.Key == 11) { var v = end ? s.VE : s.VS;
+                return channel == 6 || channel == 13 ? v.y : v.x; }
+            if (s.Key == 9) { var c = end ? s.CE : s.CS; return channel == 7 ? c.r : channel == 8 ? c.g : channel == 9 ? c.b : c.a; }
+            return end ? s.FE : s.FS;
+        }
+        private static void Diagnose(DecoSim.Tape tape, DecoBakeCore.Table table, IEnumerable<int> targets)
+        {
+            var states = new Dictionary<int, DecoSim.State>();
+            foreach (var state in tape.Initial) states[state.Token] = state;
+            foreach (var ev in tape.Events) if (ev.Kind == DecoSim.Kind.Startup) states[ev.State.Token] = ev.State;
+            Log("진단시계 calibration_i=" + N(tape.Calibration) + " addoffset=" + N(tape.AddOffset)
+                + " pitch=" + N(table.Pitch) + " dspTimeSongPosZero=" + N(tape.DspZero)
+                + " separateCountdownTime=" + tape.SeparateCountdown + " countdown곡초=" + N(tape.CountdownSeconds)
+                + " editor=" + tape.EditorPath + "; offset 부호: baked(songposition_minusi+offset) 대 actual, 진단만/보정 적용 없음");
+            foreach (int d in targets)
+            {
+                int id = table.Decorations[d].Id; var rows = new List<DiagnosticRow>();
+                foreach (var frame in tape.Frames)
+                {
+                    if (frame.Pitch != table.Pitch || frame.TweenScale != table.TweenScale || !DecoBakeCore.Finite(frame.SongTime)) continue;
+                    for (int i = frame.SampleBegin; i < frame.SampleEnd; i++)
+                    {
+                        var s = tape.Samples[i]; if (tape.DecorationIds[s.Decoration] != id) continue;
+                        int c = Channel(s.Key); if (c < 0) continue;
+                        int n = s.Key == 9 ? 4 : s.Key == 11 ? 2 : 1;
+                        for (int v = 0; v < n; v++)
+                        {
+                            float value = v == 0 ? s.X : v == 1 ? s.Y : v == 2 ? s.Z : s.W;
+                            if (s.Key == 8) value = s.Y;
+                            if (!DecoBakeCore.Finite(value) || !DecoBakeCore.Finite(frame.SongTime)) continue;
+                            rows.Add(new DiagnosticRow { Frame = frame, Channel = c + v, Actual = value, Token = s.Token, Position = s.Position,
+                                Error = Math.Abs((double)table.Eval(d, c + v, frame.SongTime) - value) });
+                        }
+                    }
+                }
+                if (rows.Count == 0) continue;
+                var worst = rows.OrderByDescending(x => x.Error).First();
+                var channelRows = rows.Where(x => x.Channel == worst.Channel).ToList();
+                Log("진단 장식=" + id + " 초기pivot=" + N(table.Decorations[d].Initial[0]) + "," + N(table.Decorations[d].Initial[1])
+                    + " startPos=" + N(table.Decorations[d].OriginalX) + "," + N(table.Decorations[d].OriginalY)
+                    + " Global원점=" + N(table.Decorations[d].GlobalX) + "," + N(table.Decorations[d].GlobalY));
+                foreach (var e in table.InputEvents)
+                {
+                    if (Array.IndexOf(e.Targets, d) < 0) continue;
+                    Log("진단 효과 장식=" + id + " source=" + e.Source + " T0=" + N(e.T0) + " startTime=" + N(e.StartTime)
+                        + " startEffectOffset=" + N(e.StartEffectOffset) + " duration=" + N(e.Duration) + " ease=" + e.Ease
+                        + " relative=" + e.RelativePosition + " resetGlobal=" + e.ResetGlobalOrigin);
+                    foreach (var stamp in tape.BakeStarts) if (stamp.Source == e.Source)
+                        Log("진단 실제StartEffect source=" + e.Source + " frame=" + stamp.Frame + " song=" + N(stamp.Song) + " song-T0=" + N(stamp.Song - e.T0));
+                    for (int c = 0; c < DecoBakeCore.Channels; c++)
+                        foreach (var s in table.Tracks[d * DecoBakeCore.Channels + c]) if (s.Source == e.Source)
+                            Log("진단 구간 " + Names[c] + " start=" + N(s.Start) + " end=" + N(s.End) + " target=" + N(s.Target) + " replacement=" + s.Replacement);
+                }
+                var first = channelRows[0];
+                var moved = channelRows.FirstOrDefault(x => x.Token == first.Token && x.Actual != first.Actual);
+                var firstMoving = rows.FirstOrDefault(x => x.Position > 0 && states.TryGetValue(x.Token, out var state)
+                    && x.Actual != StateValue(state, x.Channel, false));
+                Log("진단 Rec 처음 움직임 관측 장식=" + id + " " + (firstMoving == null ? "관측 불가" : "frame=" + firstMoving.Frame.UnityFrame
+                    + " song=" + N(firstMoving.Frame.SongTime) + " 채널=" + Names[firstMoving.Channel] + " RecPos=" + N(firstMoving.Position))
+                    + "; Rec 시작값과 다른 첫 캡처 표본, 캡처 이전 시작은 정확한 최초 프레임을 알 수 없음");
+                Log("진단 Rec 최초관측 장식=" + id + " 채널=" + Names[worst.Channel] + " frame=" + first.Frame.UnityFrame
+                    + " song=" + N(first.Frame.SongTime) + " RecPos=" + N(first.Position)
+                    + " 첫값변화=" + (moved == null ? "관측 불가" : "frame=" + moved.Frame.UnityFrame + " song=" + N(moved.Frame.SongTime))
+                    + "; 캡처 전 시작은 좌측절단, 첫값변화는 동일 token 표본 간 비교");
+                int center = channelRows.IndexOf(worst), begin = Math.Max(0, Math.Min(center - 6, channelRows.Count - 12));
+                foreach (var r in channelRows.Skip(begin).Take(12))
+                    Log("진단 행 장식=" + id + " 채널=" + Names[r.Channel] + " frame=" + r.Frame.UnityFrame
+                        + " songposition_minusi=" + N(r.Frame.SongTime) + " actual=" + N(r.Actual)
+                        + " baked=" + N(table.Eval(d, r.Channel, r.Frame.SongTime)) + " dt=" + N(r.Frame.Dt) + " RecPos=" + N(r.Position));
+                // Bound work independently of capture FPS. Use one channel to avoid mixing physical units.
+                var fit = channelRows.Where((r, i) => i % Math.Max(1, (channelRows.Count + 511) / 512) == 0).ToArray();
+                Func<double, double> loss = shift => { double sum = 0; foreach (var r in fit) {
+                    double error = table.Eval(d, r.Channel, r.Frame.SongTime + shift) - (double)r.Actual; sum += error * error; } return sum / fit.Length; };
+                double offset = DecoBakeCore.FitOffset(loss);
+                double max = 0, sumSq = 0; foreach (var r in channelRows) { double error = Math.Abs((double)table.Eval(d, r.Channel, r.Frame.SongTime + offset) - r.Actual); max = Math.Max(max, error); sumSq += error * error; }
+                double timeSq = 0, timeMax = 0; int timeN = 0;
+                foreach (var r in channelRows)
+                {
+                    if (!states.TryGetValue(r.Token, out var state) || r.Position <= 0 || r.Position >= state.Duration) continue;
+                    var track = table.Tracks[d * DecoBakeCore.Channels + r.Channel];
+                    int index = DecoBakeCore.Find(track, r.Frame.SongTime + offset); if (index < 0) continue;
+                    var segment = track[index];
+                    if (segment.Duration != state.Duration || segment.Ease != (int)state.Ease
+                        || segment.Start != StateValue(state, r.Channel, false) || segment.Target != StateValue(state, r.Channel, true)) continue;
+                    double residual = r.Frame.SongTime + offset - (segment.T0 + r.Position * (double)table.Pitch / table.TweenScale);
+                    timeSq += residual * residual; timeMax = Math.Max(timeMax, Math.Abs(residual)); timeN++;
+                }
+                Log("진단 상수시간오프셋초=" + N(offset) + " 탐색범위=[-32,+32] 최종격자초=" + N(.000125) + " fitN=" + fit.Length
+                    + " 전체잔차n=" + channelRows.Count + " RMS원단위=" + N(Math.Sqrt(sumSq / channelRows.Count)) + " 최대원단위=" + N(max)
+                    + " offset0RMS=" + N(Math.Sqrt(loss(0))) + " actual범위=" + N(channelRows.Max(x => x.Actual) - channelRows.Min(x => x.Actual))
+                    + " calibration*pitch차초=" + N(offset - tape.Calibration * table.Pitch)
+                    + " addoffset차초=" + N(offset - tape.AddOffset) + " countdown차초=" + N(offset - tape.CountdownSeconds)
+                    + "; 유계격자최소/유일해 보장없음, 평탄/반복/교체 구간은 식별불가. 위 잔차는 값 단위");
+                Log("진단 시간잔차 장식=" + id + " n=" + timeN + " RMS곡초=" + (timeN == 0 ? "관측 불가" : N(Math.Sqrt(timeSq / timeN)))
+                    + " 최대곡초=" + (timeN == 0 ? "관측 불가" : N(timeMax))
+                    + "; 시작/목표/길이/ease 일치하는 진행중 Rec만, (song+fitOffset)-(T0+RecPos*pitch/tweenScale); 반복 Source 모호성은 남음");
+            }
         }
         private static void Phase(DecoSim.Tape tape, DecoBakeCore.Table table)
         {
