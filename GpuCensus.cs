@@ -96,7 +96,7 @@ namespace StutterFix
         }
         internal static void Run()
         {
-            if (GpuHide.Busy) throw new InvalidOperationException("gpuhide active; use a separate census run");
+            if (GpuHide.Busy || GpuSplit.Active) throw new InvalidOperationException("gpuhide/gpusplit active; use a separate census run");
             Stop();
             var go = new GameObject("StutterFix.GpuCensus"); DontDestroyOnLoad(go);
             pending = go.AddComponent<GpuCensus>();

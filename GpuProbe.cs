@@ -162,6 +162,7 @@ namespace StutterFix
         }
         internal static void Stop()
         {
+            GpuSplit.Stop();
             GpuHide.Stop();
             var p = instance; if (p == null) return;
             instance = null;

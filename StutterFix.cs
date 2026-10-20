@@ -478,6 +478,7 @@ ParticleTextWatch.Install(harmony);
             Try(DecoRender.Stop);
             Try(FilterGpuProbe.Stop);
             Try(GpuHide.Stop);
+            Try(GpuSplit.Stop);
             Try(GpuCensus.Stop);
             Try(OffscreenProbe.Stop);
             Try(DecoJobShadow.Stop);

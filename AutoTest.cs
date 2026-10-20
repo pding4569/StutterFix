@@ -886,6 +886,7 @@ namespace StutterFix
                 case "fxoff": ArcheGpuResearch.Select(arg); return true;
                 case "gpucensus": GpuCensus.Run(); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;
+                case "gpusplit": GpuSplit.Command(arg); return true;
                 case "filteridentity":
                     FilterIdentityProbe.Command(arg); return true;
                 case "patchhot":
