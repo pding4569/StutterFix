@@ -45,7 +45,7 @@ namespace StutterFix
                     var candidates=new List<MethodBase>(type.GetMethods(Declared));
                     candidates.AddRange(type.GetConstructors(Declared));
                     foreach(var m in candidates)
-                        if(m.Name==spec.Name && Hex(m.Module.ResolveSignature(m.MetadataToken))==spec.Signature)
+                        if(m.Name==spec.Name && SigShapeMatches(m,spec.Signature))
                         { if(found!=null) throw new AmbiguousMatchException(spec.Name); found=m; }
                     if(found==null) throw new MissingMethodException(spec.Type,spec.Name+" signature="+spec.Signature);
                     HarmonyMethod prefix=null, transpiler=null;
@@ -65,6 +65,15 @@ namespace StutterFix
         }
         internal static void Shutdown()
         { if(patches!=null) patches.UnpatchAll(patches.Id); patches=null; Installed=0; }
+        // Mono 의 Module.ResolveSignature 는 메서드 토큰을 못 풀어서(오프라인 서명 blob 비교 불가) 호출 규약·인자 수로 맞춘다. 같은 이름이 여럿이면 AmbiguousMatchException 으로 거부.
+        private static bool SigShapeMatches(MethodBase m, string hex)
+        {
+            int cc=Convert.ToInt32(hex.Substring(0,2),16);
+            int idx=2; if((cc&0x10)!=0) idx=4;
+            int count=Convert.ToInt32(hex.Substring(idx,2),16);
+            bool hasThis=(cc&0x20)!=0;
+            return m.GetParameters().Length==count && !m.IsStatic==hasThis;
+        }
         private static string Hex(byte[] bytes) { return BitConverter.ToString(bytes).Replace("-",""); }
         public static void FloorPrefix(scrFloor __instance) { FloorRange.Mark(__instance); }
         public static void OwnerPrefix(scrFloor __0) { FloorRange.Mark(__0); }
