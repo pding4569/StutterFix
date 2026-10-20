@@ -44,6 +44,12 @@ namespace StutterFix
                 Config.HitSoundBatch = true; Config.LowPauseParticles = true; Config.DefaultsGen = 1;
                 try { Config.Save(modEntry); } catch { }
             }
+            if (Config.DefaultsGen < 2)
+            {
+                // 2026-10-21: 타이머 0.5ms 요청을 기본 켬으로 (체감이 크다는 제보. 시험하던 PC 는 ISLC 가 이미 0.5ms 로 고정해 둬서 차이를 못 봤다). 예전 설정 파일에는 false 가 적혀 있어 한 번만 덮어쓴다.
+                Config.TimerHalfMs = true; Config.DefaultsGen = 2;
+                try { Config.Save(modEntry); } catch { }
+            }
             Resilience.Init();   // 비정상 종료 감지 (안전 모드면 이번 실행 동안 일부 기능을 끔)
 
             modEntry.OnGUI = OnGUI;
@@ -1168,12 +1174,12 @@ BlendProbe.Tick();
         public bool MeshWarm = true;        // 색 바꾸기가 곡 중에 만들 타일 메시를 재생 준비 때 미리 만들기
         public bool SoundWarm = true;
         public bool HitSoundBatch = true;   // 2026-10-20: 기본 켬 (Arche 전곡 +6.6%, 막히면 자동으로 원래 방식). 저사양 페이지에 있다
-        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬)
+        public int DefaultsGen = 0;         // 기본값을 바꿔 한 번 덮어쓴 세대 (1 = 히트음 묶기·화면 밖 파티클 멈추기 켬, 2 = 타이머 0.5ms 켬)
         public bool JitWarm = true;         // 모드·게임 효과 함수를 켤 때 미리 컴파일 (곡 초반 첫 효과의 JIT)       // 곡 중에 처음 쓰는 효과음(박자 소리 등)을 재생 준비 때 미리 불러오기
         // 저사양 (화면·동작이 아주 조금 달라질 수 있어 기본 꺼짐)
         public bool LowPriority = false;    // 게임 우선순위 높음
         public bool PhysicsPause = false;   // 곡 중 물리 시뮬레이션 중지(Script 모드), 기본 끔
-        public bool TimerHalfMs = false;    // 타이머 0.5ms 요청(NtSetTimerResolution), 기본 끔
+        public bool TimerHalfMs = true;     // 타이머 0.5ms 요청(NtSetTimerResolution), 2.8.2 부터 기본 켬
         public bool LowNoThrottle = false;  // 윈도우 절전 제한 끄기 + 타이머 1ms
         public int LowMenuFps = 0;          // 플레이 중이 아닐 때(메뉴·에디터) FPS 제한 (0 끔, 30, 60)
         public int CrashStreak = 0;         // 연속 비정상 종료 횟수 (2 이상이면 안전 모드)
