@@ -67,16 +67,9 @@ namespace StutterFix
             internal Color Color;
             internal Vector2 UV;
         }
-        sealed class OrderAudit
-        {
-            internal int Managed, Unmanaged;
-            internal readonly Dictionary<string, int> Kinds = new Dictionary<string, int>();
-            internal readonly List<string> Examples = new List<string>();
-            internal readonly HashSet<string> Groups = new HashSet<string>();
-        }
         sealed class KeySelection
         {
-            internal int Total, Eligible;
+            internal int Total, Eligible, Renderers, Block, MinMaterial, MaxMaterial;
             internal string Rejected;
             internal readonly Dictionary<string, int> Reasons = new Dictionary<string, int>();
         }
@@ -111,6 +104,8 @@ namespace StutterFix
         bool stopping, comparing, initialized, startedPlaying;
         string outputDir;
         bool observing, floatColor;
+        string edge = "high", matid = "none";
+        const int MaterialAttempts = 64;
         int observeTarget, observeFrames, observeFrame = -1, detailEvents, selected;
         long atlasBytes;
         readonly Dictionary<string, int> excluded = new Dictionary<string, int>();
@@ -144,10 +139,23 @@ namespace StutterFix
             if (arg == "state") { Log(State()); return true; }
             var args = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             int frames = 20;
-            if (args.Length == 0 || args[0] != "on" || args.Length > 3
-                || (args.Length >= 2 && (!int.TryParse(args[1], out frames) || frames < 1 || frames > 600))
-                || (args.Length == 3 && args[2] != "floatcolor"))
-            { Log("decorender on [frames=20, 1..600] [floatcolor]|off|compare|state"); return true; }
+            string edgeArg = "high", matArg = "none"; bool floatArg = false, validArgs = true;
+            int option = 1;
+            int parsedFrames;
+            if (args.Length > 1 && int.TryParse(args[1], out parsedFrames)) { frames = parsedFrames; option = 2; }
+            for (int n = option; n < args.Length; n++)
+                switch (args[n])
+                {
+                    case "floatcolor": floatArg = true; break;
+                    case "edge=low": edgeArg = "low"; break;
+                    case "edge=high": edgeArg = "high"; break;
+                    case "matid=above": matArg = "above"; break;
+                    case "matid=below": matArg = "below"; break;
+                    case "matid=none": matArg = "none"; break;
+                    default: validArgs = false; break;
+                }
+            if (args.Length == 0 || args[0] != "on" || !validArgs || frames < 1 || frames > 600)
+            { Log("decorender on [frames=20,1..600] [floatcolor] [edge=low|high(default)] [matid=above|below|none(default)]|off|compare|state"); return true; }
             if (onWaiting)
             {
                 if (session && session.observing) return false;
@@ -160,7 +168,7 @@ namespace StutterFix
                 var go = new GameObject("StutterFix.DecoRender") { hideFlags = HideFlags.HideAndDontSave };
                 session = go.AddComponent<DecoRender>();
                 session.observeTarget = frames;
-                session.floatColor = args.Length == 3;
+                session.floatColor = floatArg; session.edge = edgeArg; session.matid = matArg;
                 session.Begin(modDir);
                 onWaiting = session.observing;
                 lastStop = "none";
@@ -218,8 +226,9 @@ namespace StutterFix
             lastOrders = "pending-observation";
             lastKeys = "observing";
             lastColorFormat = floatColor ? "Float32x4(explicit-buffer)" : "UNorm8x4(Color32)";
-            foreach (var key in new[] { "shared-order", "split-order", "repeat-not-one", "point-sampling", "pixel-snap", "maintex-st", "shader", "special-keyword", "wrap", "large-texture", "static", "mask-hitbox-mesh", "other", "material-unsupported", "atlas-budget", "changed-during-observation", "key-not-fully-eligible" }) { excluded[key] = 0; excludedKeys[key] = 0; }
+            foreach (var key in new[] { "split-order", "repeat-not-one", "point-sampling", "pixel-snap", "maintex-st", "shader", "special-keyword", "wrap", "large-texture", "static", "mask-hitbox-mesh", "other", "material-unsupported", "atlas-budget", "changed-during-observation" }) { excluded[key] = 0; excludedKeys[key] = 0; }
             excludedKeys["changed"] = 0;
+            foreach (var reason in new[] { "not-edge-block", "missing-material" }) { excluded[reason] = 0; excludedKeys[reason] = 0; }
             foreach (var key in new[] { "sprite", "material", "material-properties", "sortingOrder", "sortingLayer", "mask", "destroyed", "renderer-owner", "unityLayer", "sortingGroup", "drawMode", "repeat", "wrap", "restored-items", "restored-keys" }) changes[key] = 0;
             int index = 0;
             var visuals = new HashSet<scrVisualDecoration>();
@@ -253,8 +262,6 @@ namespace StutterFix
                     Id = r.GetInstanceID(), WasOff = r.forceRenderingOff, RepeatX = v.repeatX, RepeatY = v.repeatY,
                     Matrix = r.transform.localToWorldMatrix, Color = r.color, FlipX = r.flipX, FlipY = r.flipY });
             }
-            foreach (var pair in keys)
-                if (pair.Value.Total != pair.Value.Eligible) RejectKey(pair.Key, "key-not-fully-eligible");
             observing = true; initialized = true;
             Camera.onPreCull += PreCull; Camera.onPreRender += PreRender; Camera.onPostRender += PostRender;
             Log("observing frames=" + observeTarget + " candidates=" + items.Count + " excluded={" + Counts(excluded)
@@ -263,6 +270,7 @@ namespace StutterFix
 
         void FinishObservation()
         {
+            SelectEdgeBlocks();
             RejectStaticKeys();
             FinishSelection();
         }
@@ -341,7 +349,7 @@ namespace StutterFix
                     g.Renderer = g.Object.AddComponent<MeshRenderer>(); g.Renderer.enabled = false;
                     g.Mesh = new Mesh { name = "DecoRender world vertices", indexFormat = IndexFormat.UInt32 };
                     g.Mesh.MarkDynamic(); g.Object.AddComponent<MeshFilter>().sharedMesh = g.Mesh;
-                    g.Material = new Material(item.Source) { name = "DecoRender atlas material", hideFlags = HideFlags.HideAndDontSave };
+                    g.Material = CreateGroupMaterial(item);
                     MaterialState(item.R, g.Material);
                     g.Material.mainTexture = item.Image.Atlas.Texture;
                     if (g.Material.shader.name == "Sprites/Tile")
@@ -386,7 +394,7 @@ namespace StutterFix
             Log("selected=" + items.Count + " source textures=" + images.Count
                 + "; order=fixed back-to-front ascending original sharedMaterial.GetInstanceID(),then Renderer.GetInstanceID()"
                 + "; instanceID tie is an experimental heuristic, NOT Unity's guaranteed internal tie order"
-                + "; whole-key eligibility/shared-order/split-order exclusions; vertex-color=" + lastColorFormat
+                + "; edge=" + edge + "; matid=" + matid + "; split-order exclusion; vertex-color=" + lastColorFormat
                 + "; cameras=" + Camera.allCamerasCount);
         }
 
@@ -396,16 +404,19 @@ namespace StutterFix
             if (!keys.TryGetValue(key, out selection)) keys.Add(key, selection = new KeySelection());
             selection.Total++;
             if (reason == null) selection.Eligible++;
-            else Count(selection.Reasons, reason);
+            else { Count(selection.Reasons, reason); Count(excluded, reason); }
         }
         void RejectKey(string key, string reason)
         {
             var selection = keys[key];
             if (selection.Rejected != null) return;
             selection.Rejected = reason; Count(excludedKeys, reason);
-            // Count all decorations in the key, including ineligible members never added to items.
-            excluded[reason] += selection.Total;
-            items.RemoveAll(i => OrderKey(i) == key);
+            int removed = items.RemoveAll(i => OrderKey(i) == key);
+            if (reason != "not-edge-block")
+            {
+                excluded[reason] += removed;
+                selection.Reasons[reason] = removed;
+            }
         }
         static int CompareItems(Item a, Item b)
         { int c = a.MaterialId.CompareTo(b.MaterialId); return c != 0 ? c : a.Id.CompareTo(b.Id); }
@@ -422,16 +433,28 @@ namespace StutterFix
         string KeyState()
         {
             var managed = new HashSet<string>(); int visible = 0, vertices = 0, rejected = 0;
+            var perKey = new Dictionary<string, int>();
             foreach (var i in items)
             {
                 managed.Add(OrderKey(i));
+                Count(perKey, OrderKey(i));
                 if (i.R && SourceVisible(i)) visible++;
             }
             foreach (var g in groups) vertices += g.Positions.Count;
             foreach (var pair in excludedKeys) rejected += pair.Value;
-            return "managed-keys=" + (observing ? 0 : managed.Count) + " managed-visible=" + (observing ? 0 : visible)
+            var detail = new StringBuilder();
+            var sorted = new List<string>(keys.Keys); sorted.Sort(StringComparer.Ordinal);
+            foreach (var key in sorted)
+            {
+                var k = keys[key]; int count; perKey.TryGetValue(key, out count);
+                detail.Append('[').Append(key).Append(":candidates=").Append(k.Eligible)
+                    .Append(",renderers=").Append(k.Renderers).Append(",edge-block=").Append(k.Block)
+                    .Append(",managed=").Append(observing ? 0 : count).Append(",reason=").Append(k.Rejected ?? "managed")
+                    .Append(",reasons={").Append(Counts(k.Reasons)).Append("}]");
+            }
+            return "edge=" + edge + " matid=" + matid + " managed-keys=" + (observing ? 0 : managed.Count) + " managed-visible=" + (observing ? 0 : visible)
                 + " managed-hidden=" + (observing ? 0 : items.Count - visible) + " excluded-keys=" + rejected
-                + " excluded-key-reasons={" + Counts(excludedKeys) + "} emitted-vertices=" + vertices;
+                + " excluded-key-reasons={" + Counts(excludedKeys) + "} emitted-vertices=" + vertices + " keys=" + detail;
         }
 
         static string OrderKey(int layer, int order) => layer + "/" + order;
@@ -439,76 +462,96 @@ namespace StutterFix
         string GroupKey(Item item) => OrderKey(item) + "/" + atlases.IndexOf(item.Image.Atlas)
             + "/" + item.UnityLayer + "/" + item.Signature;
 
-        static string RendererKind(Renderer renderer)
+        void SelectEdgeBlocks()
         {
-            // Classification is diagnostic only; exclusion covers every Renderer regardless of kind/state.
-            bool deco = false, tile = false;
-            foreach (var component in renderer.GetComponentsInParent<Component>(true))
+            var byRenderer = new Dictionary<int, Item>();
+            foreach (var item in items) byRenderer[item.Id] = item;
+            var all = new Dictionary<string, List<Renderer>>();
+            // Resources also sees scene renderers carrying DontSave; exclude prefab/asset objects.
+            var renderers = Resources.FindObjectsOfTypeAll<Renderer>();
+            foreach (var r in renderers)
             {
-                if (!component) continue;
-                string type = component.GetType().Name;
-                if (type.IndexOf("Planet", StringComparison.OrdinalIgnoreCase) >= 0) return "planet";
-                if (type == "scrFloor" || type.IndexOf("Tile", StringComparison.OrdinalIgnoreCase) >= 0) tile = true;
-                if (component is scrDecoration) deco = true;
+                if (!r.gameObject.scene.IsValid() || !r.gameObject.scene.isLoaded) continue;
+                string key = OrderKey(r.sortingLayerID, r.sortingOrder);
+                if (!keys.ContainsKey(key)) continue;
+                List<Renderer> list;
+                if (!all.TryGetValue(key, out list)) all[key] = list = new List<Renderer>();
+                list.Add(r);
             }
-            return deco ? "other-deco" : tile ? "tile" : "other";
+            var keep = new HashSet<int>();
+            foreach (var pair in keys)
+            {
+                var k = pair.Value; List<Renderer> list;
+                if (!all.TryGetValue(pair.Key, out list) || k.Rejected != null) continue;
+                k.Renderers = list.Count;
+                if (list.Exists(r => !r.sharedMaterial))
+                { RejectKey(pair.Key, "missing-material"); continue; }
+                list.Sort((x, y) => x.sharedMaterial.GetInstanceID().CompareTo(y.sharedMaterial.GetInstanceID()));
+                // Material ties have no proven renderer order. Consume the entire material bucket
+                // only if every renderer in it is eligible; otherwise it is a barrier in both directions.
+                int pos = edge == "low" ? 0 : list.Count - 1, step = edge == "low" ? 1 : -1;
+                while (pos >= 0 && pos < list.Count)
+                {
+                    int id = list[pos].sharedMaterial.GetInstanceID(), end = pos;
+                    bool eligible = true;
+                    while (end >= 0 && end < list.Count && list[end].sharedMaterial.GetInstanceID() == id)
+                    { eligible &= byRenderer.ContainsKey(list[end].GetInstanceID()); end += step; }
+                    if (!eligible) break;
+                    for (; pos != end; pos += step)
+                    {
+                        keep.Add(list[pos].GetInstanceID()); k.Block++;
+                        if (k.Block == 1) k.MinMaterial = k.MaxMaterial = id;
+                        else { k.MinMaterial = Math.Min(k.MinMaterial, id); k.MaxMaterial = Math.Max(k.MaxMaterial, id); }
+                    }
+                }
+            }
+            for (int n = items.Count - 1; n >= 0; n--)
+                if (!keep.Contains(items[n].Id))
+                { Count(excluded, "not-edge-block"); Count(keys[OrderKey(items[n])].Reasons, "not-edge-block"); items.RemoveAt(n); }
+            foreach (var pair in keys)
+                if (pair.Value.Rejected == null && pair.Value.Block == 0) RejectKey(pair.Key, "not-edge-block");
+            lastOrders = "scan-renderers=" + renderers.Length + " edge=" + edge
+                + "; loaded-scene-only; inactive/disabled/forceOff/alpha0/DontSave included; equal-material mixed bucket stops block";
+            Log("order-audit " + lastOrders);
         }
 
         void ExcludeUnsafeOrders()
         {
-            var audits = new Dictionary<string, OrderAudit>();
-            var managed = new HashSet<int>();
-            foreach (var item in items)
+            // Multiple groups cannot preserve the block's internal order with one sorting key.
+            var planned = new Dictionary<string, HashSet<string>>();
+            foreach (var i in items)
             {
-                string key = OrderKey(item); OrderAudit audit;
-                if (!audits.TryGetValue(key, out audit)) audits.Add(key, audit = new OrderAudit());
-                audit.Managed++; audit.Groups.Add(GroupKey(item)); managed.Add(item.Id);
+                string key = OrderKey(i); HashSet<string> set;
+                if (!planned.TryGetValue(key, out set)) planned[key] = set = new HashSet<string>();
+                set.Add(GroupKey(i));
             }
-            // One scene-wide scan, after observation/static/budget exclusions, before our renderers exist.
-            var renderers = UnityEngine.Object.FindObjectsOfType<Renderer>(true);
-            int unmanaged = 0;
-            foreach (var renderer in renderers)
-            {
-                string key = OrderKey(renderer.sortingLayerID, renderer.sortingOrder); OrderAudit audit;
-                if (!audits.TryGetValue(key, out audit)) audits.Add(key, audit = new OrderAudit());
-                if (managed.Contains(renderer.GetInstanceID())) continue;
-                unmanaged++; audit.Unmanaged++;
-                string kind = RendererKind(renderer) + "/" + renderer.GetType().Name;
-                Count(audit.Kinds, kind);
-                if (audit.Examples.Count < 4)
-                    audit.Examples.Add(kind + ":" + Identity(renderer) + "(enabled=" + renderer.enabled
-                        + ",forceOff=" + renderer.forceRenderingOff + ")");
-            }
-            var auditKeys = new List<string>(audits.Keys); auditKeys.Sort(StringComparer.Ordinal);
-            var shared = new HashSet<string>(); var split = new HashSet<string>();
-            int sharedItems = 0, splitItems = 0, splitAllKeys = 0, splitAllItems = 0, details = 0;
-            var detailText = new StringBuilder();
-            foreach (var key in auditKeys)
-            {
-                var audit = audits[key];
-                if (audit.Managed == 0) continue;
-                bool isShared = audit.Unmanaged != 0, isSplit = audit.Groups.Count > 1;
-                if (isSplit) { splitAllKeys++; splitAllItems += audit.Managed; }
-                // Exclusive exclusion counts: shared-order takes priority over split-order.
-                if (isShared) { shared.Add(key); sharedItems += audit.Managed; }
-                else if (isSplit) { split.Add(key); splitItems += audit.Managed; }
-                if ((!isShared && !isSplit) || details++ >= DetailLimit) continue;
-                string detail = "key=" + key + " managed=" + audit.Managed + " unmanaged=" + audit.Unmanaged
-                    + " groups=" + audit.Groups.Count + " kinds={" + Counts(audit.Kinds) + "} examples={"
-                    + string.Join(";", audit.Examples) + "}";
-                Log("order-collision " + detail); detailText.Append('[').Append(detail).Append(']');
-            }
-            foreach (var key in shared) RejectKey(key, "shared-order");
-            foreach (var key in split) RejectKey(key, "split-order");
+            foreach (var pair in planned) if (pair.Value.Count > 1) RejectKey(pair.Key, "split-order");
             foreach (var pair in keys)
-                Log("key-selection key=" + pair.Key + " total=" + pair.Value.Total + " eligible=" + pair.Value.Eligible
-                    + " reason=" + (pair.Value.Rejected ?? "managed") + " eligibility-reasons={" + Counts(pair.Value.Reasons) + "}");
-            lastOrders = "scan-renderers=" + renderers.Length + " scan-keys=" + audits.Count + " unmanaged=" + unmanaged
-                + " shared-order-keys=" + shared.Count + " shared-order-items=" + sharedItems
-                + " split-order-keys=" + split.Count + " split-order-items=" + splitItems
-                + " split-detected-keys=" + splitAllKeys + " split-detected-items=" + splitAllItems
-                + " details=" + detailText + "; one-snapshot-after-observation; kind=ancestor-component-heuristic";
-            Log("order-audit " + lastOrders);
+                Log("key-selection key=" + pair.Key + " total=" + pair.Value.Total + " candidates=" + pair.Value.Eligible
+                    + " renderers=" + pair.Value.Renderers + " edge-block=" + pair.Value.Block
+                    + " material-min=" + pair.Value.MinMaterial + " material-max=" + pair.Value.MaxMaterial
+                    + " reason=" + (pair.Value.Rejected ?? "managed") + " reasons={" + Counts(pair.Value.Reasons) + "}");
+        }
+
+        Material CreateGroupMaterial(Item item)
+        {
+            var k = keys[OrderKey(item)]; Material result = null;
+            int attempts = 0; bool matched = false;
+            for (; attempts < MaterialAttempts; )
+            {
+                if (result) DestroyImmediate(result);
+                result = new Material(item.Source) { name = "DecoRender atlas material", hideFlags = HideFlags.HideAndDontSave };
+                attempts++;
+                int id = result.GetInstanceID();
+                matched = matid == "none" || (matid == "above" ? id > k.MaxMaterial : id < k.MinMaterial);
+                if (matched) break;
+            }
+            int actual = result.GetInstanceID();
+            Log("group-material key=" + OrderKey(item) + " requested=" + matid + " attempts=" + attempts + "/" + MaterialAttempts
+                + " matched=" + matched + " new-Material(source)-id=" + actual + " block-min=" + k.MinMaterial
+                + " block-max=" + k.MaxMaterial + " position=" + (actual < k.MinMaterial ? "below" : actual > k.MaxMaterial ? "above" : "inside")
+                + (matched ? "" : "; placement FAILED; retaining last material for explicit experiment"));
+            return result;
         }
 
         void UploadMesh(Group group, bool bounds)

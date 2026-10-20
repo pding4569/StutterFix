@@ -17,12 +17,17 @@ namespace StutterFix
             "z-small", "z-large", "materials", "queue", "textures", "sprites",
             "enable", "force-off", "move", "reparent", "mesh-first", "mesh-last", "mixed-random" };
         static readonly string[] Hypotheses = { "id-asc", "id-desc", "creation-asc", "creation-desc",
-            "sibling-asc", "sibling-desc", "distance-id", "distance-sibling", "queue-distance-id", "material-id" };
+            "sibling-asc", "sibling-desc", "distance-id", "distance-sibling", "queue-distance-id", "material-id", "mesh-before-sprite" };
+        static readonly string[] MeshCases = { "mesh-material-below", "mesh-material-above", "mesh-material-six" };
+        static readonly List<string> invalidReasons = new List<string>();
+        static string observationPhase;
         static Run current;
         sealed class Run
         {
             internal int Repeat, Seed, Index;
             internal string Directory;
+            internal bool MeshMaterial;
+            internal readonly List<string> Invalid = new List<string>();
             internal readonly Dictionary<string, int[]> Counts = new Dictionary<string, int[]>();
         }
         sealed class Item
@@ -45,10 +50,10 @@ namespace StutterFix
             {
                 var a = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 int repeat = 50, seed = 20261020;
-                if (a.Length < 1 || a[0] != "all" || a.Length > 3 ||
+                if (a.Length < 1 || (a[0] != "all" && a[0] != "mesh-material") || a.Length > 3 ||
                     (a.Length > 1 && (!int.TryParse(a[1], out repeat) || repeat < 50 || repeat > 200)) ||
                     (a.Length > 2 && !int.TryParse(a[2], out seed)))
-                { Log("sortprobe all [repeats=50,50..200] [seed=20261020]|state|stop"); return true; }
+                { Log("sortprobe all|mesh-material [repeats=50,50..200] [seed=20261020]|state|stop"); return true; }
                 if (!EditorReady()) { Log("REFUSED: open editor and stop playback first"); return true; }
                 try
                 {
@@ -56,7 +61,7 @@ namespace StutterFix
                     Directory.CreateDirectory(dir);
                     File.WriteAllText(Path.Combine(dir, "trials.csv"),
                         "case,n,trial,seed,initial_top,pre_mutation_top,post_mutation_top,before_back_to_front,after_back_to_front,changed,stable,valid,details\n", Encoding.UTF8);
-                    current = new Run { Repeat = repeat, Seed = seed, Directory = dir };
+                    current = new Run { Repeat = repeat, Seed = seed, Directory = dir, MeshMaterial = a[0] == "mesh-material" };
                     File.WriteAllText(Path.Combine(dir, "environment.txt"),
                         "unity=" + Application.unityVersion + "\ngpu=" + SystemInfo.graphicsDeviceName + "\napi=" + SystemInfo.graphicsDeviceType +
                         "\nseed=" + seed + "\nrepeat=" + repeat + "\nmvid=" + typeof(Main).Module.ModuleVersionId +
@@ -68,13 +73,14 @@ namespace StutterFix
             try
             {
                 if (!EditorReady()) { Finish("aborted: editor/playback changed"); return true; }
-                int perCase = current.Repeat * 3;
-                int ci = current.Index / perCase, n = new[] { 2, 3, 6 }[(current.Index % perCase) / current.Repeat];
+                int perCase = current.Repeat * (current.MeshMaterial ? 1 : 3);
+                int ci = current.Index / perCase, n = current.MeshMaterial ? (ci == 2 ? 6 : 2) : new[] { 2, 3, 6 }[(current.Index % perCase) / current.Repeat];
                 int trial = current.Index % current.Repeat;
-                Trial(Cases[ci], n, trial);
+                var cases = current.MeshMaterial ? MeshCases : Cases;
+                Trial(cases[ci], n, trial);
                 current.Index++;
-                if (current.Index % current.Repeat == 0) Log(Cases[ci] + " n=" + n + " complete");
-                if (current.Index == Cases.Length * perCase) { Finish("complete"); return true; }
+                if (current.Index % current.Repeat == 0) Log(cases[ci] + " n=" + n + " complete");
+                if (current.Index == cases.Length * perCase) { Finish("complete"); return true; }
                 return false;
             }
             catch (Exception e) { Finish("FAILED: " + e); return true; }
@@ -108,6 +114,7 @@ namespace StutterFix
 
         static void Trial(string name, int n, int trial)
         {
+            invalidReasons.Clear(); observationPhase = "setup";
             var owned = new List<Object>();
             var previous = RenderTexture.active; bool srgb = GL.sRGBWrite;
             try
@@ -154,7 +161,8 @@ namespace StutterFix
                     var go = Go(owned, "item" + label, layer); go.transform.SetParent(p0, false);
                     go.transform.SetPositionAndRotation(cam.transform.position + cam.transform.forward * 10, cam.transform.rotation);
                     Renderer r;
-                    bool mesh = ((name == "mesh-first" || name == "mesh-last") && label == meshLabel) || (name == "mixed-random" && rng.Next(2) == 0);
+                    bool mesh = ((name == "mesh-first" || name == "mesh-last") && label == meshLabel) || (name == "mixed-random" && rng.Next(2) == 0)
+                        || (name.StartsWith("mesh-material-", StringComparison.Ordinal) && label < n / 2);
                     if (mesh) { go.AddComponent<MeshFilter>().sharedMesh = Quad(owned, color); r = go.AddComponent<MeshRenderer>(); }
                     else { var s = go.AddComponent<SpriteRenderer>(); s.sprite = sprite; s.color = color; r = s; }
                     r.sharedMaterial = shared; r.sortingLayerID = 0; r.sortingOrder = 1;
@@ -180,6 +188,30 @@ namespace StutterFix
                     { x.R.transform.SetSiblingIndex(rng.Next(n)); x.R.transform.position += cam.transform.forward * (rng.Next(3)-1)*.1f; }
                 }
                 var details = new StringBuilder();
+                bool placement = true;
+                if (name.StartsWith("mesh-material-", StringComparison.Ordinal))
+                {
+                    // Random assignment breaks the correlation between creation/type and material IDs.
+                    foreach (int label in targets) items[label].R.sharedMaterial = Material(owned, shader, tex);
+                    if (n == 2)
+                    {
+                        placement = false;
+                        for (int attempt = 1; attempt <= 64; attempt++)
+                        {
+                            int meshId = items[0].R.sharedMaterial.GetInstanceID(), spriteId = items[1].R.sharedMaterial.GetInstanceID();
+                            bool match = name == "mesh-material-below" ? meshId < spriteId : meshId > spriteId;
+                            details.Append("placement-attempt=").Append(attempt).Append(":mesh-mat=").Append(meshId)
+                                .Append(":sprite-mat=").Append(spriteId).Append(":matched=").Append(match).Append(';');
+                            if (match) { placement = true; break; }
+                            if (attempt == 64) break;
+                            // Replace alternating sides; never assume newly allocated IDs increase.
+                            int side = attempt % 2;
+                            var old = items[side].R.sharedMaterial;
+                            items[side].R.sharedMaterial = Material(owned, shader, tex);
+                            Object.DestroyImmediate(old);
+                        }
+                    }
+                }
                 if (current.Index == 0)
                     File.AppendAllText(Path.Combine(current.Directory, "environment.txt"), "source_camera=" + source.name +
                         "\nsource_sort=" + source.transparencySortMode + "\nsource_axis=" + source.transparencySortAxis +
@@ -191,10 +223,13 @@ namespace StutterFix
                 for (int k = 0; k < n; k++) { foreach (var x in items) x.R.enabled = x.Label == k; colors[k] = Pixel(cam, rt, read); }
                 foreach (var x in items) x.R.enabled = true;
                 bool valid = true;
-                for (int a = 0; a < n; a++) for (int b = a+1; b < n; b++) if (Difference(colors[a], colors[b]) < 15) valid = false;
+                if (!placement) Invalid(ref valid, "material-ID placement failed after 64 attempts; requested case not satisfied");
+                for (int a = 0; a < n; a++) for (int b = a+1; b < n; b++) if (Difference(colors[a], colors[b]) < 15) Invalid(ref valid, "solo colors too close: " + a + "/" + b);
+                observationPhase = "initial";
                 int initialTop = Decode(items, initialPixel, colors, ref valid);
+                observationPhase = "before";
                 int[] before = Observe(items, cam, rt, read, colors, ref valid);
-                if (initialTop != before[n-1]) valid = false;
+                if (initialTop != before[n-1]) Invalid(ref valid, "initial top differs from before order: " + initialTop + "/" + before[n-1]);
                 int preMutationTop = Winner(items,cam,rt,read,colors,ref valid);
                 var mutation = (Item[])items.Clone(); Shuffle(mutation, rng);
                 foreach (var x in mutation)
@@ -204,11 +239,17 @@ namespace StutterFix
                     if (name == "move") { var v = x.R.transform.position; x.R.transform.position = v + cam.transform.right * 5; cam.Render(); x.R.transform.position = v; }
                     if (name == "reparent") x.R.transform.SetParent(x.R.transform.parent == p0 ? p1 : p0, true);
                 }
+                observationPhase = "after";
                 int postMutationTop = Winner(items,cam,rt,read,colors,ref valid);
                 int[] after = Observe(items, cam, rt, read, colors, ref valid);
-                if (postMutationTop != after[n-1]) valid = false;
+                if (postMutationTop != after[n-1]) Invalid(ref valid, "post-mutation top differs from after order: " + postMutationTop + "/" + after[n-1]);
                 bool stable = true;
-                for (int k = 0; k < 3; k++) stable &= after.SequenceEqual(Observe(items, cam, rt, read, colors, ref valid));
+                for (int k = 0; k < 3; k++)
+                {
+                    observationPhase = "repeat-" + k;
+                    bool same = after.SequenceEqual(Observe(items, cam, rt, read, colors, ref valid)); stable &= same;
+                    if (!same) Invalid(ref valid, "repeated no-mutation order differs from after order");
+                }
                 foreach (var x in items)
                     details.AppendFormat(CultureInfo.InvariantCulture, "label={0}:kind={1}:id={2}:created={3}:parent={4}:sibling={5}:z={6:R}:distance={7:R}:mat={8}:queue={9}:sprite={10}:tex={11};",
                         x.Label, x.R.GetType().Name, x.R.GetInstanceID(), x.Creation, x.R.transform.parent.name,
@@ -222,7 +263,15 @@ namespace StutterFix
                 // A repeated no-mutation discrepancy is evidence of instability even if later reads settle.
                 if (valid && !new[] { "enable", "force-off", "move", "reparent" }.Contains(name) && !before.SequenceEqual(after)) counts[4]++;
                 for (int h = 0; h < Hypotheses.Length; h++)
-                    if (valid && after.SequenceEqual(Predict(items, cam, h))) counts[5+h]++;
+                    if (valid && (h == 10 ? MeshBeforeSprite(items, after) : after.SequenceEqual(Predict(items, cam, h)))) counts[5+h]++;
+                if (!valid)
+                {
+                    string reason = string.Join("; ", invalidReasons);
+                    details.Append("invalid-reasons=").Append(reason).Append(';');
+                    current.Invalid.Add("- " + name + " n=" + n + " trial=" + trial + " seed=" + seed + ": " + reason
+                        + "; before=" + Join(before) + "; after=" + Join(after)
+                        + "; label:kind:material=" + string.Join(" ", items.Select(x => x.Label + ":" + x.R.GetType().Name + ":" + x.R.sharedMaterial.GetInstanceID())));
+                }
                 File.AppendAllText(Path.Combine(current.Directory, "trials.csv"),
                     string.Join(",", name, n, trial, seed, initialTop, preMutationTop, postMutationTop, Quote(Join(before)), Quote(Join(after)), !before.SequenceEqual(after), stable, valid, Quote(details.ToString())) + "\n", Encoding.UTF8);
             }
@@ -249,6 +298,7 @@ namespace StutterFix
         {
             return items.OrderBy(x => x, Comparer<Item>.Create((a,b) => {
                 int v = 0;
+                if (h == 10) v = (a.R is MeshRenderer ? 0 : 1).CompareTo(b.R is MeshRenderer ? 0 : 1);
                 if (h == 8) v = a.R.sharedMaterial.renderQueue.CompareTo(b.R.sharedMaterial.renderQueue);
                 if (v == 0 && h >= 6 && h <= 8) v = Distance(b,cam).CompareTo(Distance(a,cam));
                 if (v == 0 && h == 9) v = a.R.sharedMaterial.GetInstanceID().CompareTo(b.R.sharedMaterial.GetInstanceID());
@@ -262,6 +312,14 @@ namespace StutterFix
                 }
                 return v == 0 ? a.R.GetInstanceID().CompareTo(b.R.GetInstanceID()) : v;
             })).Select(x => x.Label).ToArray();
+        }
+        static bool MeshBeforeSprite(Item[] items, int[] order)
+        {
+            bool spriteSeen = false;
+            foreach (int label in order)
+                if (items[label].R is SpriteRenderer) spriteSeen = true;
+                else if (items[label].R is MeshRenderer && spriteSeen) return false;
+            return true;
         }
         static Color32 Pixel(Camera cam, RenderTexture rt, Texture2D read)
         {
@@ -280,7 +338,7 @@ namespace StutterFix
         {
             int winner = -1, matches = 0;
             foreach (var x in items) if (x.R.enabled && Difference(c,colors[x.Label]) <= 6) { winner = x.Label; matches++; }
-            if (matches != 1) valid = false;
+            if (matches != 1) Invalid(ref valid, "pixel decode matches=" + matches);
             return winner;
         }
         static int[] Observe(Item[] items, Camera cam, RenderTexture rt, Texture2D read, Color32[] colors, ref bool valid)
@@ -297,19 +355,24 @@ namespace StutterFix
                 if (w >= 0) wins[w]++;
             }
             var order = items.OrderBy(x => wins[x.Label]).Select(x => x.Label).ToArray();
-            for (int k = 0; k < items.Length; k++) if (wins[order[k]] != k) valid = false;
+            for (int k = 0; k < items.Length; k++) if (wins[order[k]] != k) Invalid(ref valid, "pairwise non-transitive wins=" + string.Join(" ", wins));
             foreach (var x in items) x.R.enabled = true;
-            if (top != order[order.Length-1]) valid = false;
+            if (top != order[order.Length-1]) Invalid(ref valid, "full-group top differs from pairwise top");
             for (int k = order.Length-1; k >= 0; k--)
             {
-                if (Winner(items,cam,rt,read,colors,ref valid) != order[k]) valid = false;
+                if (Winner(items,cam,rt,read,colors,ref valid) != order[k]) Invalid(ref valid, "peeling differs from pairwise order at " + k);
                 items[order[k]].R.enabled = false;
             }
             foreach (var x in items) x.R.enabled = true;
-            if (Winner(items,cam,rt,read,colors,ref valid) != top) valid = false;
+            if (Winner(items,cam,rt,read,colors,ref valid) != top) Invalid(ref valid, "full-group top changed after visibility toggles");
             return order;
         }
         static string Join(int[] order) { return string.Join(" ", order); }
+        static void Invalid(ref bool valid, string reason)
+        {
+            valid = false; reason = observationPhase + ": " + reason;
+            if (!invalidReasons.Contains(reason)) invalidReasons.Add(reason);
+        }
         static string Quote(string s) { return "\"" + s.Replace("\"", "\"\"") + "\""; }
         static void Finish(string status)
         {
@@ -317,6 +380,7 @@ namespace StutterFix
             if (r == null) return;
             var s = new StringBuilder("# sortprobe runtime report\n\nStatus: " + status + "\n\n");
             s.AppendLine("Order = back to front. Rates use valid trials only; invalid trials are excluded explicitly. A 100% match is bounded evidence, not an engine guarantee.");
+            s.AppendLine("mesh-before-sprite hypothesis checks all mesh/sprite cross pairs (mesh behind sprite); within-type ties are unconstrained. material-id checks full signed material-ID order.");
             s.AppendLine("\n|case/n|total|valid|stable|changed|no-mutation changed|" + string.Join("|", Hypotheses) + "|");
             s.AppendLine("|---|---:|---:|---:|---:|---:|" + string.Join("|", Hypotheses.Select(_ => "---:")) + "|");
             foreach (var kv in r.Counts)
@@ -327,6 +391,7 @@ namespace StutterFix
                     s.Append('|').Append(c[1] == 0 ? "N/A" : (100.0*c[i]/c[1]).ToString("F2",CultureInfo.InvariantCulture) + "% (" + c[i] + "/" + c[1] + ")");
                 s.AppendLine("|");
             }
+            s.AppendLine("## 무효 표본 원인 (표본당 한 줄)\n" + (r.Invalid.Count == 0 ? "없음" : string.Join("\n", r.Invalid)) + "\n");
             s.AppendLine("\n## 표본 내 가장 간단한 설명 후보\n");
             foreach (var kv in r.Counts)
             {

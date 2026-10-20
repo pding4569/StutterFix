@@ -1,0 +1,1558 @@
+﻿# 기존 sortprobe 무효 표본 분석
+
+읽기 전용 원본: `D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\sortprobe\20261020-012144-430-3127f337\trials.csv`
+CSV SHA256: `208ef63efa773229c260e4398ae26fa80552edbdbb830182fa3b661211b0f5eb`
+
+총 2550행, valid=False 1550행. 아래에 무효 표본마다 한 줄씩 기록했다.
+기존 CSV에는 내부 pairwise/peeling 검사 실패 지점이 없다. 아래 원인은 CSV에서 직접 확인되는 불일치이고, 엔진 내부 원인을 확정하지 않는다. 동일 재질/큐/거리는 details에서 판단한다. 새 SortProbe는 검사 단계별 invalid-reasons를 기록한다.
+
+- creation n=2 trial=0 seed=20261020: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=1 seed=20268939: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=2 seed=20276858: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=3 seed=20284777: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=4 seed=20292696: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=5 seed=20300615: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=6 seed=20308534: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=7 seed=20316453: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=8 seed=20324372: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=9 seed=20332291: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=10 seed=20340210: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=11 seed=20348129: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=12 seed=20356048: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=13 seed=20363967: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=14 seed=20371886: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=15 seed=20379805: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=16 seed=20387724: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=17 seed=20395643: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=18 seed=20403562: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=19 seed=20411481: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=20 seed=20419400: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=21 seed=20427319: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=22 seed=20435238: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=23 seed=20443157: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=24 seed=20451076: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=25 seed=20458995: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=26 seed=20466914: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=27 seed=20474833: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=28 seed=20482752: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=29 seed=20490671: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=30 seed=20498590: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=31 seed=20506509: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=32 seed=20514428: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=33 seed=20522347: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=34 seed=20530266: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=35 seed=20538185: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=36 seed=20546104: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=37 seed=20554023: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=38 seed=20561942: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=39 seed=20569861: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=40 seed=20577780: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=41 seed=20585699: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=42 seed=20593618: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=43 seed=20601537: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=44 seed=20609456: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=45 seed=20617375: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=46 seed=20625294: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=47 seed=20633213: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=48 seed=20641132: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=2 trial=49 seed=20649051: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=0 seed=20656970: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=1 seed=20664889: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=2 seed=20672808: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=3 seed=20680727: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=4 seed=20688646: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=5 seed=20696565: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=6 seed=20704484: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=7 seed=20712403: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=8 seed=20720322: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=9 seed=20728241: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=10 seed=20736160: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=11 seed=20744079: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=12 seed=20751998: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=13 seed=20759917: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=14 seed=20767836: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=15 seed=20775755: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=16 seed=20783674: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=17 seed=20791593: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=18 seed=20799512: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=19 seed=20807431: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=20 seed=20815350: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=21 seed=20823269: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=22 seed=20831188: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=23 seed=20839107: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=24 seed=20847026: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=25 seed=20854945: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=26 seed=20862864: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=27 seed=20870783: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=28 seed=20878702: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=29 seed=20886621: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=30 seed=20894540: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=31 seed=20902459: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=32 seed=20910378: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=33 seed=20918297: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=34 seed=20926216: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=35 seed=20934135: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=36 seed=20942054: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=37 seed=20949973: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=38 seed=20957892: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=39 seed=20965811: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=40 seed=20973730: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=41 seed=20981649: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=42 seed=20989568: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=43 seed=20997487: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=44 seed=21005406: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=45 seed=21013325: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=46 seed=21021244: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=47 seed=21029163: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=48 seed=21037082: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=3 trial=49 seed=21045001: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation n=6 trial=0 seed=21052920: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=1 seed=21060839: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=2 seed=21068758: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=3 seed=21076677: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=4 seed=21084596: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=5 seed=21092515: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=6 seed=21100434: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=7 seed=21108353: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=8 seed=21116272: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=9 seed=21124191: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=10 seed=21132110: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=11 seed=21140029: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=12 seed=21147948: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=13 seed=21155867: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=14 seed=21163786: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=15 seed=21171705: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=16 seed=21179624: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=17 seed=21187543: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=18 seed=21195462: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=19 seed=21203381: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=20 seed=21211300: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=21 seed=21219219: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=22 seed=21227138: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=23 seed=21235057: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=24 seed=21242976: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=25 seed=21250895: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=26 seed=21258814: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=27 seed=21266733: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=28 seed=21274652: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=29 seed=21282571: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=30 seed=21290490: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=31 seed=21298409: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=32 seed=21306328: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=33 seed=21314247: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=34 seed=21322166: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=35 seed=21330085: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=36 seed=21338004: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=37 seed=21345923: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=38 seed=21353842: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=39 seed=21361761: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=40 seed=21369680: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=41 seed=21377599: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=42 seed=21385518: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=43 seed=21393437: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=44 seed=21401356: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=45 seed=21409275: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=46 seed=21417194: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=47 seed=21425113: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=48 seed=21433032: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation n=6 trial=49 seed=21440951: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- creation-reverse n=2 trial=0 seed=21448870: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=1 seed=21456789: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=2 seed=21464708: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=3 seed=21472627: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=4 seed=21480546: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=5 seed=21488465: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=6 seed=21496384: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=7 seed=21504303: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=8 seed=21512222: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=9 seed=21520141: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=10 seed=21528060: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=11 seed=21535979: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=12 seed=21543898: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=13 seed=21551817: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=14 seed=21559736: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=15 seed=21567655: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=16 seed=21575574: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=17 seed=21583493: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=18 seed=21591412: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=19 seed=21599331: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=20 seed=21607250: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=21 seed=21615169: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=22 seed=21623088: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=23 seed=21631007: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=24 seed=21638926: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=25 seed=21646845: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=26 seed=21654764: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=27 seed=21662683: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=28 seed=21670602: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=29 seed=21678521: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=30 seed=21686440: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=31 seed=21694359: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=32 seed=21702278: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=33 seed=21710197: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=34 seed=21718116: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=35 seed=21726035: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=36 seed=21733954: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=37 seed=21741873: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=38 seed=21749792: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=39 seed=21757711: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=40 seed=21765630: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=41 seed=21773549: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=42 seed=21781468: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=43 seed=21789387: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=44 seed=21797306: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=45 seed=21805225: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=46 seed=21813144: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=47 seed=21821063: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=48 seed=21828982: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=2 trial=49 seed=21836901: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=0 seed=21844820: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=1 seed=21852739: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=2 seed=21860658: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=3 seed=21868577: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=4 seed=21876496: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=5 seed=21884415: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=6 seed=21892334: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=7 seed=21900253: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=8 seed=21908172: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=9 seed=21916091: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=10 seed=21924010: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=11 seed=21931929: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=12 seed=21939848: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=13 seed=21947767: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=14 seed=21955686: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=15 seed=21963605: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=16 seed=21971524: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=17 seed=21979443: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=18 seed=21987362: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=19 seed=21995281: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=20 seed=22003200: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=21 seed=22011119: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=22 seed=22019038: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=23 seed=22026957: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=24 seed=22034876: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=25 seed=22042795: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=26 seed=22050714: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=27 seed=22058633: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=28 seed=22066552: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=29 seed=22074471: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=30 seed=22082390: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=31 seed=22090309: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=32 seed=22098228: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=33 seed=22106147: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=34 seed=22114066: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=35 seed=22121985: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=36 seed=22129904: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=37 seed=22137823: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=38 seed=22145742: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=39 seed=22153661: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=40 seed=22161580: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=41 seed=22169499: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=42 seed=22177418: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=43 seed=22185337: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=44 seed=22193256: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=45 seed=22201175: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=46 seed=22209094: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=47 seed=22217013: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=48 seed=22224932: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=3 trial=49 seed=22232851: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- creation-reverse n=6 trial=0 seed=22240770: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=1 seed=22248689: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=2 seed=22256608: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=3 seed=22264527: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=4 seed=22272446: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=5 seed=22280365: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=6 seed=22288284: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=7 seed=22296203: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=8 seed=22304122: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=9 seed=22312041: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=10 seed=22319960: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=11 seed=22327879: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=12 seed=22335798: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=13 seed=22343717: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=14 seed=22351636: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=15 seed=22359555: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=16 seed=22367474: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=17 seed=22375393: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=18 seed=22383312: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=19 seed=22391231: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=20 seed=22399150: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=21 seed=22407069: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=22 seed=22414988: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=23 seed=22422907: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=24 seed=22430826: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=25 seed=22438745: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=26 seed=22446664: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=27 seed=22454583: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=28 seed=22462502: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=29 seed=22470421: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=30 seed=22478340: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=31 seed=22486259: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=32 seed=22494178: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=33 seed=22502097: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=34 seed=22510016: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=35 seed=22517935: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=36 seed=22525854: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=37 seed=22533773: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=38 seed=22541692: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=39 seed=22549611: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=40 seed=22557530: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=41 seed=22565449: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=42 seed=22573368: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=43 seed=22581287: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=44 seed=22589206: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=45 seed=22597125: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=46 seed=22605044: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=47 seed=22612963: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=48 seed=22620882: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- creation-reverse n=6 trial=49 seed=22628801: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=2 trial=0 seed=22636720: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=1 seed=22644639: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=2 seed=22652558: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=3 seed=22660477: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=4 seed=22668396: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=5 seed=22676315: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=6 seed=22684234: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=7 seed=22692153: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=8 seed=22700072: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=9 seed=22707991: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=10 seed=22715910: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=11 seed=22723829: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=12 seed=22731748: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=13 seed=22739667: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=14 seed=22747586: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=15 seed=22755505: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=16 seed=22763424: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=17 seed=22771343: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=18 seed=22779262: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=19 seed=22787181: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=20 seed=22795100: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=21 seed=22803019: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=22 seed=22810938: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=23 seed=22818857: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=24 seed=22826776: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=25 seed=22834695: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=26 seed=22842614: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=27 seed=22850533: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=28 seed=22858452: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=29 seed=22866371: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=30 seed=22874290: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=31 seed=22882209: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=32 seed=22890128: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=33 seed=22898047: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=34 seed=22905966: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=35 seed=22913885: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=36 seed=22921804: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=37 seed=22929723: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=38 seed=22937642: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=39 seed=22945561: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=40 seed=22953480: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=41 seed=22961399: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=42 seed=22969318: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=43 seed=22977237: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=44 seed=22985156: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=45 seed=22993075: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=46 seed=23000994: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=47 seed=23008913: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=48 seed=23016832: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=2 trial=49 seed=23024751: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=0 seed=23032670: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=1 seed=23040589: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=2 seed=23048508: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=3 seed=23056427: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=4 seed=23064346: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=5 seed=23072265: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=6 seed=23080184: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=7 seed=23088103: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=8 seed=23096022: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=9 seed=23103941: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=10 seed=23111860: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=11 seed=23119779: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=12 seed=23127698: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=13 seed=23135617: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=14 seed=23143536: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=15 seed=23151455: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=16 seed=23159374: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=17 seed=23167293: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=18 seed=23175212: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=19 seed=23183131: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=20 seed=23191050: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=21 seed=23198969: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=22 seed=23206888: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=23 seed=23214807: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=24 seed=23222726: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=25 seed=23230645: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=26 seed=23238564: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=27 seed=23246483: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=28 seed=23254402: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=29 seed=23262321: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=30 seed=23270240: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=31 seed=23278159: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=32 seed=23286078: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=33 seed=23293997: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=34 seed=23301916: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=35 seed=23309835: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=36 seed=23317754: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=37 seed=23325673: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=38 seed=23333592: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=39 seed=23341511: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=40 seed=23349430: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=41 seed=23357349: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=42 seed=23365268: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=43 seed=23373187: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=44 seed=23381106: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=45 seed=23389025: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=46 seed=23396944: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=47 seed=23404863: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=48 seed=23412782: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=3 trial=49 seed=23420701: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- siblings n=6 trial=0 seed=23428620: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=1 seed=23436539: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=2 seed=23444458: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=3 seed=23452377: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=4 seed=23460296: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=5 seed=23468215: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=6 seed=23476134: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=7 seed=23484053: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=8 seed=23491972: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=9 seed=23499891: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=10 seed=23507810: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=11 seed=23515729: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=12 seed=23523648: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=13 seed=23531567: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=14 seed=23539486: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=15 seed=23547405: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=16 seed=23555324: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=17 seed=23563243: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=18 seed=23571162: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=19 seed=23579081: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=20 seed=23587000: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=21 seed=23594919: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=22 seed=23602838: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=23 seed=23610757: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=24 seed=23618676: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=25 seed=23626595: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=26 seed=23634514: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=27 seed=23642433: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=28 seed=23650352: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=29 seed=23658271: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=30 seed=23666190: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=31 seed=23674109: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=32 seed=23682028: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=33 seed=23689947: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=34 seed=23697866: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=35 seed=23705785: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=36 seed=23713704: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=37 seed=23721623: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=38 seed=23729542: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=39 seed=23737461: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=40 seed=23745380: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=41 seed=23753299: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=42 seed=23761218: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=43 seed=23769137: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=44 seed=23777056: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=45 seed=23784975: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=46 seed=23792894: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=47 seed=23800813: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- siblings n=6 trial=48 seed=23808732: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- siblings n=6 trial=49 seed=23816651: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=2 trial=0 seed=23824570: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=1 seed=23832489: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=2 seed=23840408: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=3 seed=23848327: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=4 seed=23856246: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=5 seed=23864165: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=6 seed=23872084: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=7 seed=23880003: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=8 seed=23887922: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=9 seed=23895841: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=10 seed=23903760: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=11 seed=23911679: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=12 seed=23919598: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=13 seed=23927517: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=14 seed=23935436: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=15 seed=23943355: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=16 seed=23951274: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=17 seed=23959193: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=18 seed=23967112: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=19 seed=23975031: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=20 seed=23982950: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=21 seed=23990869: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=22 seed=23998788: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=23 seed=24006707: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=24 seed=24014626: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=25 seed=24022545: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=26 seed=24030464: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=27 seed=24038383: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=28 seed=24046302: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=29 seed=24054221: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=30 seed=24062140: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=31 seed=24070059: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=32 seed=24077978: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=33 seed=24085897: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=34 seed=24093816: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=35 seed=24101735: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=36 seed=24109654: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=37 seed=24117573: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=38 seed=24125492: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=39 seed=24133411: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=40 seed=24141330: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=41 seed=24149249: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=42 seed=24157168: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=43 seed=24165087: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=44 seed=24173006: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=45 seed=24180925: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=46 seed=24188844: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=47 seed=24196763: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=48 seed=24204682: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=2 trial=49 seed=24212601: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=0 seed=24220520: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=1 seed=24228439: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=2 seed=24236358: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=3 seed=24244277: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=4 seed=24252196: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=5 seed=24260115: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=6 seed=24268034: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=7 seed=24275953: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=8 seed=24283872: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=9 seed=24291791: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=10 seed=24299710: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=11 seed=24307629: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=12 seed=24315548: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=13 seed=24323467: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=14 seed=24331386: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=15 seed=24339305: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=16 seed=24347224: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=17 seed=24355143: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=18 seed=24363062: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=19 seed=24370981: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=20 seed=24378900: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=21 seed=24386819: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=22 seed=24394738: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=23 seed=24402657: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=24 seed=24410576: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=25 seed=24418495: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=26 seed=24426414: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=27 seed=24434333: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=28 seed=24442252: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=29 seed=24450171: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=30 seed=24458090: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=31 seed=24466009: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=32 seed=24473928: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=33 seed=24481847: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=34 seed=24489766: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=35 seed=24497685: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=36 seed=24505604: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=37 seed=24513523: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=38 seed=24521442: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=39 seed=24529361: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=40 seed=24537280: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=41 seed=24545199: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=42 seed=24553118: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=43 seed=24561037: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=44 seed=24568956: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=45 seed=24576875: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=46 seed=24584794: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=47 seed=24592713: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=48 seed=24600632: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=3 trial=49 seed=24608551: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- parents n=6 trial=0 seed=24616470: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=1 seed=24624389: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- parents n=6 trial=2 seed=24632308: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- parents n=6 trial=3 seed=24640227: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=4 seed=24648146: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=5 seed=24656065: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=6 seed=24663984: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=7 seed=24671903: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=8 seed=24679822: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=9 seed=24687741: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=10 seed=24695660: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=11 seed=24703579: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=12 seed=24711498: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=13 seed=24719417: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- parents n=6 trial=14 seed=24727336: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=15 seed=24735255: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=16 seed=24743174: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=17 seed=24751093: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=18 seed=24759012: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=19 seed=24766931: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=20 seed=24774850: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=21 seed=24782769: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=22 seed=24790688: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=23 seed=24798607: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=24 seed=24806526: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- parents n=6 trial=25 seed=24814445: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- parents n=6 trial=26 seed=24822364: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=27 seed=24830283: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=28 seed=24838202: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=29 seed=24846121: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=30 seed=24854040: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=31 seed=24861959: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=32 seed=24869878: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=33 seed=24877797: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=34 seed=24885716: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=35 seed=24893635: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=36 seed=24901554: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- parents n=6 trial=37 seed=24909473: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- parents n=6 trial=38 seed=24917392: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=39 seed=24925311: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=40 seed=24933230: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=41 seed=24941149: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=42 seed=24949068: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=43 seed=24956987: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=44 seed=24964906: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=45 seed=24972825: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=46 seed=24980744: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- parents n=6 trial=47 seed=24988663: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- parents n=6 trial=48 seed=24996582: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- parents n=6 trial=49 seed=25004501: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=2 trial=0 seed=30951670: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=1 seed=30959589: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=2 seed=30967508: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=3 seed=30975427: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=4 seed=30983346: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=5 seed=30991265: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=6 seed=30999184: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=7 seed=31007103: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=8 seed=31015022: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=9 seed=31022941: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=10 seed=31030860: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=11 seed=31038779: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=12 seed=31046698: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=13 seed=31054617: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=14 seed=31062536: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=15 seed=31070455: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=16 seed=31078374: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=17 seed=31086293: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=18 seed=31094212: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=19 seed=31102131: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=20 seed=31110050: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=21 seed=31117969: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=22 seed=31125888: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=23 seed=31133807: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=24 seed=31141726: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=25 seed=31149645: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=26 seed=31157564: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=27 seed=31165483: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=28 seed=31173402: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=29 seed=31181321: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=30 seed=31189240: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=31 seed=31197159: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=32 seed=31205078: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=33 seed=31212997: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=34 seed=31220916: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=35 seed=31228835: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=36 seed=31236754: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=37 seed=31244673: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=38 seed=31252592: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=39 seed=31260511: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=40 seed=31268430: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=41 seed=31276349: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=42 seed=31284268: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=43 seed=31292187: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=44 seed=31300106: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=45 seed=31308025: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=46 seed=31315944: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=47 seed=31323863: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=48 seed=31331782: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=2 trial=49 seed=31339701: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=0 seed=31347620: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=1 seed=31355539: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=2 seed=31363458: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=3 seed=31371377: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=4 seed=31379296: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=5 seed=31387215: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=6 seed=31395134: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=7 seed=31403053: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=8 seed=31410972: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=9 seed=31418891: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=10 seed=31426810: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=11 seed=31434729: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=12 seed=31442648: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=13 seed=31450567: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=14 seed=31458486: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=15 seed=31466405: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=16 seed=31474324: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=17 seed=31482243: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=18 seed=31490162: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=19 seed=31498081: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=20 seed=31506000: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=21 seed=31513919: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=22 seed=31521838: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=23 seed=31529757: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=24 seed=31537676: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=25 seed=31545595: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=26 seed=31553514: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=27 seed=31561433: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=28 seed=31569352: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=29 seed=31577271: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=30 seed=31585190: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=31 seed=31593109: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=32 seed=31601028: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=33 seed=31608947: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=34 seed=31616866: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=35 seed=31624785: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=36 seed=31632704: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=37 seed=31640623: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=38 seed=31648542: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=39 seed=31656461: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=40 seed=31664380: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=41 seed=31672299: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=42 seed=31680218: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=43 seed=31688137: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=44 seed=31696056: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=45 seed=31703975: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=46 seed=31711894: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=47 seed=31719813: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=48 seed=31727732: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=3 trial=49 seed=31735651: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- sprites n=6 trial=0 seed=31743570: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=1 seed=31751489: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=2 seed=31759408: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=3 seed=31767327: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=4 seed=31775246: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=5 seed=31783165: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=6 seed=31791084: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=7 seed=31799003: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- sprites n=6 trial=8 seed=31806922: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- sprites n=6 trial=9 seed=31814841: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=10 seed=31822760: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=11 seed=31830679: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=12 seed=31838598: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=13 seed=31846517: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=14 seed=31854436: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=15 seed=31862355: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=16 seed=31870274: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=17 seed=31878193: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=18 seed=31886112: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=19 seed=31894031: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- sprites n=6 trial=20 seed=31901950: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- sprites n=6 trial=21 seed=31909869: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=22 seed=31917788: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=23 seed=31925707: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=24 seed=31933626: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=25 seed=31941545: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=26 seed=31949464: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=27 seed=31957383: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=28 seed=31965302: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=29 seed=31973221: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=30 seed=31981140: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- sprites n=6 trial=31 seed=31989059: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- sprites n=6 trial=32 seed=31996978: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=33 seed=32004897: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=34 seed=32012816: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=35 seed=32020735: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=36 seed=32028654: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=37 seed=32036573: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=38 seed=32044492: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=39 seed=32052411: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=40 seed=32060330: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=41 seed=32068249: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=42 seed=32076168: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- sprites n=6 trial=43 seed=32084087: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- sprites n=6 trial=44 seed=32092006: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=45 seed=32099925: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=46 seed=32107844: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=47 seed=32115763: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=48 seed=32123682: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- sprites n=6 trial=49 seed=32131601: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=2 trial=0 seed=32139520: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=1 seed=32147439: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=2 seed=32155358: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=3 seed=32163277: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=4 seed=32171196: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=5 seed=32179115: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=6 seed=32187034: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=7 seed=32194953: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=8 seed=32202872: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=9 seed=32210791: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=10 seed=32218710: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=11 seed=32226629: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=12 seed=32234548: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=13 seed=32242467: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=14 seed=32250386: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=15 seed=32258305: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=16 seed=32266224: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=17 seed=32274143: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=18 seed=32282062: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=19 seed=32289981: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=20 seed=32297900: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=21 seed=32305819: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=22 seed=32313738: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=23 seed=32321657: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=24 seed=32329576: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=25 seed=32337495: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=26 seed=32345414: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=27 seed=32353333: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=28 seed=32361252: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=29 seed=32369171: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=30 seed=32377090: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=31 seed=32385009: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=32 seed=32392928: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=33 seed=32400847: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=34 seed=32408766: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=35 seed=32416685: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=36 seed=32424604: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=37 seed=32432523: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=38 seed=32440442: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=39 seed=32448361: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=40 seed=32456280: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=41 seed=32464199: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=42 seed=32472118: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=43 seed=32480037: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=44 seed=32487956: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=45 seed=32495875: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=46 seed=32503794: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=47 seed=32511713: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- enable n=2 trial=48 seed=32519632: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=2 trial=49 seed=32527551: 초기 top=1와 before 최상단=0 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=0 seed=32535470: 변경 후 top=1와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=1 seed=32543389: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=2 seed=32551308: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=3 seed=32559227: 초기 top=0와 before 최상단=2 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=4 seed=32567146: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=5 seed=32575065: 초기 top=0와 before 최상단=2 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=6 seed=32582984: 초기 top=1와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=7 seed=32590903: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=8 seed=32598822: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=1와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=9 seed=32606741: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=10 seed=32614660: before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=11 seed=32622579: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=12 seed=32630498: 변경 후 top=0와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=13 seed=32638417: 변경 후 top=1와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=14 seed=32646336: 초기 top=0와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=15 seed=32654255: 초기 top=0와 before 최상단=2 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=16 seed=32662174: 초기 top=0와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=17 seed=32670093: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=18 seed=32678012: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=1와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=19 seed=32685931: 초기 top=1와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=20 seed=32693850: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=1와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=21 seed=32701769: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=22 seed=32709688: 변경 후 top=0와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=23 seed=32717607: before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=24 seed=32725526: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=25 seed=32733445: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=1와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=26 seed=32741364: 초기 top=0와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=27 seed=32749283: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=28 seed=32757202: 초기 top=0와 before 최상단=2 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=29 seed=32765121: 초기 top=1와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=30 seed=32773040: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=31 seed=32780959: 초기 top=1와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=32 seed=32788878: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=33 seed=32796797: 변경 후 top=1와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=34 seed=32804716: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=35 seed=32812635: 변경 후 top=0와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=36 seed=32820554: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=37 seed=32828473: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=38 seed=32836392: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=1와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=39 seed=32844311: 초기 top=0와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=40 seed=32852230: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=41 seed=32860149: 초기 top=1와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=42 seed=32868068: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=0와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=43 seed=32875987: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=1와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=44 seed=32883906: 초기 top=1와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=45 seed=32891825: 변경 후 top=0와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=46 seed=32899744: 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=47 seed=32907663: 변경 후 top=0와 after 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=3 trial=48 seed=32915582: before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- enable n=3 trial=49 seed=32923501: 초기 top=0와 before 최상단=2 불일치; 후속 무변경 반복 순서 불안정(stable=False); 동일 mat,queue,distance
+- enable n=6 trial=0 seed=32931420: 초기 top=0와 before 최상단=5 불일치; 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=1 seed=32939339: 초기 top=1와 before 최상단=5 불일치; 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=2 seed=32947258: 초기 top=2와 before 최상단=5 불일치; 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=3 seed=32955177: 초기 top=2와 before 최상단=5 불일치; 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=4 seed=32963096: 초기 top=3와 before 최상단=5 불일치; 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=5 seed=32971015: 초기 top=3와 before 최상단=5 불일치; 변경 후 top=0와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=6 seed=32978934: 초기 top=4와 before 최상단=5 불일치; 변경 후 top=3와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=7 seed=32986853: 초기 top=4와 before 최상단=5 불일치; 변경 후 top=0와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=8 seed=32994772: 변경 후 top=3와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=9 seed=33002691: 변경 후 top=0와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=10 seed=33010610: 초기 top=0와 before 최상단=5 불일치; 변경 후 top=3와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=11 seed=33018529: 초기 top=0와 before 최상단=5 불일치; 변경 후 top=0와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=12 seed=33026448: 초기 top=1와 before 최상단=5 불일치; 변경 후 top=2와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=13 seed=33034367: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=14 seed=33042286: 초기 top=2와 before 최상단=5 불일치; 변경 후 top=2와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=15 seed=33050205: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=16 seed=33058124: 초기 top=3와 before 최상단=5 불일치; 변경 후 top=2와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=17 seed=33066043: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=18 seed=33073962: 초기 top=4와 before 최상단=5 불일치; 변경 후 top=2와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=19 seed=33081881: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=20 seed=33089800: 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=21 seed=33097719: 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=22 seed=33105638: 초기 top=0와 before 최상단=5 불일치; 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=23 seed=33113557: 초기 top=0와 before 최상단=5 불일치; 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=24 seed=33121476: 초기 top=1와 before 최상단=5 불일치; 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=25 seed=33129395: 초기 top=1와 before 최상단=5 불일치; 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=26 seed=33137314: 초기 top=2와 before 최상단=5 불일치; 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=27 seed=33145233: 초기 top=2와 before 최상단=5 불일치; 변경 후 top=3와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=28 seed=33153152: 초기 top=3와 before 최상단=5 불일치; 변경 후 top=0와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=29 seed=33161071: 초기 top=3와 before 최상단=5 불일치; 변경 후 top=3와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=30 seed=33168990: 초기 top=4와 before 최상단=5 불일치; 변경 후 top=0와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=31 seed=33176909: 변경 후 top=3와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=32 seed=33184828: 변경 후 top=0와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=33 seed=33192747: 초기 top=0와 before 최상단=5 불일치; 변경 후 top=3와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=34 seed=33200666: 초기 top=0와 before 최상단=5 불일치; 변경 후 top=0와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=35 seed=33208585: 초기 top=1와 before 최상단=5 불일치; 변경 후 top=2와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=36 seed=33216504: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=37 seed=33224423: 초기 top=2와 before 최상단=5 불일치; 변경 후 top=2와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=38 seed=33232342: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=39 seed=33240261: 초기 top=3와 before 최상단=5 불일치; 변경 후 top=2와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=40 seed=33248180: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=41 seed=33256099: 초기 top=4와 before 최상단=5 불일치; 변경 후 top=2와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=42 seed=33264018: 초기 top=4와 before 최상단=5 불일치; 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=43 seed=33271937: 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=44 seed=33279856: 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=45 seed=33287775: 초기 top=0와 before 최상단=5 불일치; 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=46 seed=33295694: 초기 top=0와 before 최상단=5 불일치; 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=47 seed=33303613: 초기 top=1와 before 최상단=5 불일치; 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=48 seed=33311532: 초기 top=1와 before 최상단=5 불일치; 변경 후 top=4와 after 최상단=5 불일치; 동일 mat,queue,distance
+- enable n=6 trial=49 seed=33319451: 초기 top=2와 before 최상단=5 불일치; 변경 후 top=1와 after 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=2 trial=0 seed=33327370: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=1 seed=33335289: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=2 seed=33343208: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=3 seed=33351127: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=4 seed=33359046: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=5 seed=33366965: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=6 seed=33374884: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=7 seed=33382803: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=8 seed=33390722: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=9 seed=33398641: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=10 seed=33406560: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=11 seed=33414479: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=12 seed=33422398: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=13 seed=33430317: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=14 seed=33438236: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=15 seed=33446155: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=16 seed=33454074: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=17 seed=33461993: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=18 seed=33469912: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=19 seed=33477831: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=20 seed=33485750: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=21 seed=33493669: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=22 seed=33501588: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=23 seed=33509507: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=24 seed=33517426: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=25 seed=33525345: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=26 seed=33533264: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=27 seed=33541183: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=28 seed=33549102: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=29 seed=33557021: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=30 seed=33564940: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=31 seed=33572859: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=32 seed=33580778: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=33 seed=33588697: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=34 seed=33596616: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=35 seed=33604535: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=36 seed=33612454: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=37 seed=33620373: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=38 seed=33628292: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=39 seed=33636211: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=40 seed=33644130: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=41 seed=33652049: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=42 seed=33659968: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=43 seed=33667887: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=44 seed=33675806: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=45 seed=33683725: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=46 seed=33691644: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=47 seed=33699563: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=48 seed=33707482: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=2 trial=49 seed=33715401: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=0 seed=33723320: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=1 seed=33731239: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=2 seed=33739158: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=3 seed=33747077: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=4 seed=33754996: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=5 seed=33762915: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=6 seed=33770834: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=7 seed=33778753: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=8 seed=33786672: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=9 seed=33794591: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=10 seed=33802510: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=11 seed=33810429: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=12 seed=33818348: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=13 seed=33826267: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=14 seed=33834186: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=15 seed=33842105: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=16 seed=33850024: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=17 seed=33857943: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=18 seed=33865862: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=19 seed=33873781: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=20 seed=33881700: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=21 seed=33889619: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=22 seed=33897538: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=23 seed=33905457: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=24 seed=33913376: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=25 seed=33921295: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=26 seed=33929214: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=27 seed=33937133: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=28 seed=33945052: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=29 seed=33952971: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=30 seed=33960890: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=31 seed=33968809: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=32 seed=33976728: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=33 seed=33984647: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=34 seed=33992566: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=35 seed=34000485: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=36 seed=34008404: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=37 seed=34016323: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=38 seed=34024242: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=39 seed=34032161: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=40 seed=34040080: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=41 seed=34047999: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=42 seed=34055918: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=43 seed=34063837: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=44 seed=34071756: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=45 seed=34079675: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=46 seed=34087594: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=47 seed=34095513: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=48 seed=34103432: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=3 trial=49 seed=34111351: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- force-off n=6 trial=0 seed=34119270: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=1 seed=34127189: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=2 seed=34135108: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=3 seed=34143027: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=4 seed=34150946: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=5 seed=34158865: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=6 seed=34166784: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=7 seed=34174703: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=8 seed=34182622: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=9 seed=34190541: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- force-off n=6 trial=10 seed=34198460: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- force-off n=6 trial=11 seed=34206379: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=12 seed=34214298: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=13 seed=34222217: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=14 seed=34230136: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=15 seed=34238055: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=16 seed=34245974: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=17 seed=34253893: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=18 seed=34261812: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=19 seed=34269731: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=20 seed=34277650: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=21 seed=34285569: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- force-off n=6 trial=22 seed=34293488: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- force-off n=6 trial=23 seed=34301407: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=24 seed=34309326: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=25 seed=34317245: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=26 seed=34325164: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=27 seed=34333083: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=28 seed=34341002: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=29 seed=34348921: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=30 seed=34356840: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=31 seed=34364759: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=32 seed=34372678: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=33 seed=34380597: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- force-off n=6 trial=34 seed=34388516: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=35 seed=34396435: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=36 seed=34404354: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=37 seed=34412273: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=38 seed=34420192: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=39 seed=34428111: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=40 seed=34436030: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=41 seed=34443949: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=42 seed=34451868: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=43 seed=34459787: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=44 seed=34467706: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- force-off n=6 trial=45 seed=34475625: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- force-off n=6 trial=46 seed=34483544: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=47 seed=34491463: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=48 seed=34499382: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- force-off n=6 trial=49 seed=34507301: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=2 trial=0 seed=34515220: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=1 seed=34523139: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=2 seed=34531058: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=3 seed=34538977: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=4 seed=34546896: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=5 seed=34554815: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=6 seed=34562734: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=7 seed=34570653: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=8 seed=34578572: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=9 seed=34586491: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=10 seed=34594410: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=11 seed=34602329: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=12 seed=34610248: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=13 seed=34618167: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=14 seed=34626086: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=15 seed=34634005: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=16 seed=34641924: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=17 seed=34649843: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=18 seed=34657762: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=19 seed=34665681: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=20 seed=34673600: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=21 seed=34681519: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=22 seed=34689438: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=23 seed=34697357: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=24 seed=34705276: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=25 seed=34713195: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=26 seed=34721114: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=27 seed=34729033: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=28 seed=34736952: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=29 seed=34744871: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=30 seed=34752790: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=31 seed=34760709: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=32 seed=34768628: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=33 seed=34776547: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=34 seed=34784466: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=35 seed=34792385: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=36 seed=34800304: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=37 seed=34808223: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=38 seed=34816142: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=39 seed=34824061: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=40 seed=34831980: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=41 seed=34839899: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=42 seed=34847818: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=43 seed=34855737: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=44 seed=34863656: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=45 seed=34871575: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=46 seed=34879494: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=47 seed=34887413: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=48 seed=34895332: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=2 trial=49 seed=34903251: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=0 seed=34911170: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=1 seed=34919089: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=2 seed=34927008: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=3 seed=34934927: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=4 seed=34942846: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=5 seed=34950765: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=6 seed=34958684: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=7 seed=34966603: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=8 seed=34974522: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=9 seed=34982441: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=10 seed=34990360: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=11 seed=34998279: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=12 seed=35006198: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=13 seed=35014117: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=14 seed=35022036: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=15 seed=35029955: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=16 seed=35037874: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=17 seed=35045793: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=18 seed=35053712: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=19 seed=35061631: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=20 seed=35069550: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=21 seed=35077469: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=22 seed=35085388: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=23 seed=35093307: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=24 seed=35101226: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=25 seed=35109145: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=26 seed=35117064: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=27 seed=35124983: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=28 seed=35132902: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=29 seed=35140821: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=30 seed=35148740: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=31 seed=35156659: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=32 seed=35164578: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=33 seed=35172497: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=34 seed=35180416: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=35 seed=35188335: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=36 seed=35196254: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=37 seed=35204173: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=38 seed=35212092: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=39 seed=35220011: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=40 seed=35227930: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=41 seed=35235849: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=42 seed=35243768: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=43 seed=35251687: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=44 seed=35259606: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=45 seed=35267525: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=46 seed=35275444: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=47 seed=35283363: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=48 seed=35291282: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=3 trial=49 seed=35299201: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- move n=6 trial=0 seed=35307120: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- move n=6 trial=1 seed=35315039: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=2 seed=35322958: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=3 seed=35330877: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=4 seed=35338796: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=5 seed=35346715: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=6 seed=35354634: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=7 seed=35362553: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=8 seed=35370472: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=9 seed=35378391: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=10 seed=35386310: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- move n=6 trial=11 seed=35394229: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- move n=6 trial=12 seed=35402148: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=13 seed=35410067: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=14 seed=35417986: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=15 seed=35425905: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=16 seed=35433824: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=17 seed=35441743: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=18 seed=35449662: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=19 seed=35457581: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=20 seed=35465500: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=21 seed=35473419: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=22 seed=35481338: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- move n=6 trial=23 seed=35489257: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- move n=6 trial=24 seed=35497176: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=25 seed=35505095: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=26 seed=35513014: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=27 seed=35520933: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=28 seed=35528852: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=29 seed=35536771: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=30 seed=35544690: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=31 seed=35552609: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=32 seed=35560528: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=33 seed=35568447: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=34 seed=35576366: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- move n=6 trial=35 seed=35584285: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- move n=6 trial=36 seed=35592204: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=37 seed=35600123: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=38 seed=35608042: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=39 seed=35615961: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=40 seed=35623880: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=41 seed=35631799: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=42 seed=35639718: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=43 seed=35647637: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=44 seed=35655556: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=45 seed=35663475: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- move n=6 trial=46 seed=35671394: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- move n=6 trial=47 seed=35679313: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=48 seed=35687232: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- move n=6 trial=49 seed=35695151: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=2 trial=0 seed=35703070: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=1 seed=35710989: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=2 seed=35718908: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=3 seed=35726827: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=4 seed=35734746: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=5 seed=35742665: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=6 seed=35750584: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=7 seed=35758503: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=8 seed=35766422: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=9 seed=35774341: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=10 seed=35782260: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=11 seed=35790179: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=12 seed=35798098: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=13 seed=35806017: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=14 seed=35813936: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=15 seed=35821855: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=16 seed=35829774: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=17 seed=35837693: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=18 seed=35845612: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=19 seed=35853531: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=20 seed=35861450: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=21 seed=35869369: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=22 seed=35877288: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=23 seed=35885207: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=24 seed=35893126: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=25 seed=35901045: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=26 seed=35908964: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=27 seed=35916883: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=28 seed=35924802: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=29 seed=35932721: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=30 seed=35940640: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=31 seed=35948559: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=32 seed=35956478: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=33 seed=35964397: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=34 seed=35972316: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=35 seed=35980235: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=36 seed=35988154: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=37 seed=35996073: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=38 seed=36003992: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=39 seed=36011911: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=40 seed=36019830: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=41 seed=36027749: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=42 seed=36035668: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=43 seed=36043587: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=44 seed=36051506: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=45 seed=36059425: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=46 seed=36067344: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=47 seed=36075263: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=48 seed=36083182: before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=2 trial=49 seed=36091101: 초기 top=1와 before 최상단=0 불일치; before=1 0 -> after=0 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=0 seed=36099020: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=1 seed=36106939: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=2 seed=36114858: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=3 seed=36122777: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=4 seed=36130696: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=5 seed=36138615: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=6 seed=36146534: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=7 seed=36154453: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=8 seed=36162372: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=9 seed=36170291: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=10 seed=36178210: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=11 seed=36186129: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=12 seed=36194048: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=13 seed=36201967: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=14 seed=36209886: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=15 seed=36217805: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=16 seed=36225724: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=17 seed=36233643: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=18 seed=36241562: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=19 seed=36249481: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=20 seed=36257400: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=21 seed=36265319: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=22 seed=36273238: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=23 seed=36281157: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=24 seed=36289076: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=25 seed=36296995: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=26 seed=36304914: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=27 seed=36312833: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=28 seed=36320752: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=29 seed=36328671: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=30 seed=36336590: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=31 seed=36344509: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=32 seed=36352428: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=33 seed=36360347: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=34 seed=36368266: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=35 seed=36376185: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=36 seed=36384104: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=37 seed=36392023: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=38 seed=36399942: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=39 seed=36407861: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=40 seed=36415780: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=41 seed=36423699: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=42 seed=36431618: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=43 seed=36439537: 초기 top=0와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=44 seed=36447456: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=45 seed=36455375: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=46 seed=36463294: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=47 seed=36471213: 초기 top=1와 before 최상단=2 불일치; 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=48 seed=36479132: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=3 trial=49 seed=36487051: 변경 후 top=2와 after 최상단=1 불일치; before=0 1 2 -> after=0 2 1 순서 변화; 동일 mat,queue,distance
+- reparent n=6 trial=0 seed=36494970: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=1 seed=36502889: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=2 seed=36510808: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=3 seed=36518727: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=4 seed=36526646: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=5 seed=36534565: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=6 seed=36542484: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=7 seed=36550403: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=8 seed=36558322: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=9 seed=36566241: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=10 seed=36574160: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=11 seed=36582079: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=12 seed=36589998: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=13 seed=36597917: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=14 seed=36605836: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=15 seed=36613755: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=16 seed=36621674: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=17 seed=36629593: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=18 seed=36637512: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=19 seed=36645431: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=20 seed=36653350: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=21 seed=36661269: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=22 seed=36669188: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=23 seed=36677107: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=24 seed=36685026: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=25 seed=36692945: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=26 seed=36700864: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=27 seed=36708783: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=28 seed=36716702: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=29 seed=36724621: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=30 seed=36732540: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=31 seed=36740459: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=32 seed=36748378: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=33 seed=36756297: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=34 seed=36764216: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=35 seed=36772135: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=36 seed=36780054: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=37 seed=36787973: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=38 seed=36795892: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=39 seed=36803811: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=40 seed=36811730: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=41 seed=36819649: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=42 seed=36827568: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=43 seed=36835487: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=44 seed=36843406: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=45 seed=36851325: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=46 seed=36859244: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=47 seed=36867163: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- reparent n=6 trial=48 seed=36875082: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- reparent n=6 trial=49 seed=36883001: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=0 seed=37286870: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=1 seed=37294789: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=3 trial=2 seed=37302708: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=3 seed=37310627: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=4 seed=37318546: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=5 seed=37326465: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=6 seed=37334384: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=7 seed=37342303: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=8 seed=37350222: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=3 trial=9 seed=37358141: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=10 seed=37366060: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=11 seed=37373979: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=12 seed=37381898: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=13 seed=37389817: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=14 seed=37397736: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=15 seed=37405655: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=16 seed=37413574: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=17 seed=37421493: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=18 seed=37429412: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=19 seed=37437331: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=3 trial=20 seed=37445250: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=21 seed=37453169: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=22 seed=37461088: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=3 trial=23 seed=37469007: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=24 seed=37476926: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=25 seed=37484845: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=26 seed=37492764: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=27 seed=37500683: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=28 seed=37508602: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=29 seed=37516521: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=30 seed=37524440: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=31 seed=37532359: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=32 seed=37540278: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=33 seed=37548197: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=34 seed=37556116: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=35 seed=37564035: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=36 seed=37571954: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=37 seed=37579873: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=38 seed=37587792: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=39 seed=37595711: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=40 seed=37603630: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=41 seed=37611549: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=42 seed=37619468: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=43 seed=37627387: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=3 trial=44 seed=37635306: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=45 seed=37643225: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=46 seed=37651144: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=3 trial=47 seed=37659063: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=3 trial=48 seed=37666982: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-first n=3 trial=49 seed=37674901: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=0 seed=37682820: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=6 trial=1 seed=37690739: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=2 seed=37698658: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=3 seed=37706577: 초기 top=3와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=4 seed=37714496: 초기 top=1와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=5 seed=37722415: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=6 seed=37730334: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=7 seed=37738253: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=8 seed=37746172: 초기 top=3와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=9 seed=37754091: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=6 trial=10 seed=37762010: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=11 seed=37769929: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=6 trial=12 seed=37777848: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=13 seed=37785767: 초기 top=3와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=14 seed=37793686: 초기 top=2와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=15 seed=37801605: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-first n=6 trial=16 seed=37809524: 초기 top=5와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=17 seed=37817443: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=18 seed=37825362: 초기 top=0와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=19 seed=37833281: 초기 top=1와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=20 seed=37841200: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=21 seed=37849119: 초기 top=0와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=22 seed=37857038: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=23 seed=37864957: 초기 top=1와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=24 seed=37872876: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=25 seed=37880795: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=26 seed=37888714: 초기 top=1와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=27 seed=37896633: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=28 seed=37904552: 초기 top=3와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=29 seed=37912471: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=30 seed=37920390: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=31 seed=37928309: 초기 top=0와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=32 seed=37936228: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=33 seed=37944147: 초기 top=0와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=34 seed=37952066: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=35 seed=37959985: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=36 seed=37967904: 초기 top=1와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=37 seed=37975823: 초기 top=0와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=38 seed=37983742: 초기 top=3와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=39 seed=37991661: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=40 seed=37999580: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=41 seed=38007499: 초기 top=2와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=42 seed=38015418: 초기 top=3와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=43 seed=38023337: 초기 top=4와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=44 seed=38031256: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=45 seed=38039175: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=46 seed=38047094: 초기 top=0와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=47 seed=38055013: 초기 top=2와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-first n=6 trial=48 seed=38062932: 초기 top=1와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-first n=6 trial=49 seed=38070851: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=3 trial=0 seed=38474720: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=1 seed=38482639: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=2 seed=38490558: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=3 seed=38498477: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=4 seed=38506396: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=5 seed=38514315: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=3 trial=6 seed=38522234: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=7 seed=38530153: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=8 seed=38538072: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=9 seed=38545991: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=10 seed=38553910: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=11 seed=38561829: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=12 seed=38569748: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=3 trial=13 seed=38577667: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=14 seed=38585586: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=15 seed=38593505: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=16 seed=38601424: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=3 trial=17 seed=38609343: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=18 seed=38617262: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=19 seed=38625181: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=20 seed=38633100: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=21 seed=38641019: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=22 seed=38648938: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=23 seed=38656857: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=24 seed=38664776: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=25 seed=38672695: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=26 seed=38680614: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=27 seed=38688533: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=28 seed=38696452: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=29 seed=38704371: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=30 seed=38712290: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=3 trial=31 seed=38720209: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=32 seed=38728128: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=33 seed=38736047: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=34 seed=38743966: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=35 seed=38751885: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=36 seed=38759804: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=37 seed=38767723: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=3 trial=38 seed=38775642: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=39 seed=38783561: 초기 top=2와 before 최상단=1 불일치; 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=40 seed=38791480: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=3 trial=41 seed=38799399: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=42 seed=38807318: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=43 seed=38815237: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=44 seed=38823156: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=45 seed=38831075: before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=46 seed=38838994: 변경 후 top=2와 after 최상단=1 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=47 seed=38846913: 초기 top=0와 before 최상단=2 불일치; 동일 mat,queue,distance
+- mesh-last n=3 trial=48 seed=38854832: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=3 trial=49 seed=38862751: 초기 top=1와 before 최상단=0 불일치; before=2 1 0 -> after=2 0 1 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=0 seed=38870670: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=1 seed=38878589: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=2 seed=38886508: 초기 top=5와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=3 seed=38894427: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=6 trial=4 seed=38902346: 초기 top=0와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=5 seed=38910265: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=6 seed=38918184: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=7 seed=38926103: 초기 top=1와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=8 seed=38934022: 초기 top=2와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=9 seed=38941941: 초기 top=1와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=10 seed=38949860: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=11 seed=38957779: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=12 seed=38965698: 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=13 seed=38973617: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=6 trial=14 seed=38981536: before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=15 seed=38989455: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=16 seed=38997374: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=17 seed=39005293: 초기 top=1와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=18 seed=39013212: 초기 top=1와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=19 seed=39021131: 초기 top=0와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=20 seed=39029050: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=21 seed=39036969: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=22 seed=39044888: 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=23 seed=39052807: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=6 trial=24 seed=39060726: 초기 top=4와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=25 seed=39068645: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=6 trial=26 seed=39076564: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
+- mesh-last n=6 trial=27 seed=39084483: 초기 top=0와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=28 seed=39092402: 초기 top=0와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=29 seed=39100321: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=30 seed=39108240: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=31 seed=39116159: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=32 seed=39124078: 초기 top=2와 before 최상단=4 불일치; 변경 후 top=5와 after 최상단=4 불일치; before=3 0 1 2 5 4 -> after=3 0 2 1 5 4 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=33 seed=39131997: 초기 top=3와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=34 seed=39139916: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=35 seed=39147835: 초기 top=2와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=36 seed=39155754: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=37 seed=39163673: before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=38 seed=39171592: 초기 top=0와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=39 seed=39179511: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=40 seed=39187430: 초기 top=0와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=41 seed=39195349: 초기 top=1와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=42 seed=39203268: 초기 top=1와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=43 seed=39211187: 초기 top=2와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=44 seed=39219106: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=45 seed=39227025: 초기 top=3와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=46 seed=39234944: 초기 top=4와 before 최상단=5 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=47 seed=39242863: 초기 top=4와 before 최상단=5 불일치; before=2 1 0 3 4 5 -> after=2 0 1 3 4 5 순서 변화; 동일 mat,queue,distance
+- mesh-last n=6 trial=48 seed=39250782: 초기 top=0와 before 최상단=4 불일치; 동일 mat,queue,distance
+- mesh-last n=6 trial=49 seed=39258701: 요약 열로 실패 지점 식별 불가; 기존 CSV에 내부 pairwise/peeling/색 디코드 진단 없음; 동일 mat,queue,distance
