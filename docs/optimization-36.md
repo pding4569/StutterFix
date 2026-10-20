@@ -986,3 +986,10 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - 켜는 순간 14.6초 정지(`candidate-classification+sets 6.6초`, `order-sets+mesh-build 3.8초`, `install-hooks 2.1초`, `atlas-decode-blit 0.7초`, `AnalyzeLevel 0.7초`). `decopipe compare` 는 원본 쪽 동기화를 고쳤어도 최대 20/255 이상치가 남음(원인 미확정). 화면 비교에서 `decorender` 단독(재질 빌림 + 구간 메시)은 최대 1~2/255 였다.
 - 움직이는 장식 1,857개 중 661개(36%)만 가져감(이미지가 바뀌는 장식 598, wrap 398, 순서 장벽 189 등이 제외).
 - 결론: 개념(구운 표 → 배치 평가 → 구간 그룹 메시, 재질 빌림으로 정렬 동률 해결)은 값·화면 모두 성립하지만, **현재 구현의 프레임당 관리 비용(소유 장식 1.7만 개의 훅·사전·검사·구성)이 예산의 수 배~10배**라 이득이 안 난다. 패치 반복(S8~S17)으로는 한 단계씩 줄어도 합이 안 내려와, 목표 예산(≤2ms)을 맞추려면 설계 처음부터(이벤트·태그 구간 기술자로 장식 수와 무관한 시작·갱신, 검사 대신 맵 열 때 사전 판정) 다시 짜야 한다. 브랜치: codex/night-decorender2, codex/night-decopipe, 도구는 개발자용.
+
+## 2026-10-20 밤: T3 타일 pristine 청크 건너뛰기 — 게임 첫 시험 결과(건너뜀 0개), 훅이 매 프레임 모든 청크를 더럽힘
+- 구현(브랜치 `codex/night-tilerange`): 읽기 훅을 모두 없애고 쓰기 훅 53개(이름·서명으로 정확히 하나만 선택)로 64타일 청크의 dirty 비트를 관리, clean 청크는 효과 시작에서 타일에 접근하지 않고 통째로 건너뜀. 오프라인 70검사·빌드 3종 오류 0·LoadCheck 0.
+- **게임 첫 시험은 훅 53개 전부 실패했다**: Codex 가 서명 blob 을 `Module.ResolveSignature(MetadataToken)` 로 비교했는데 Mono 에서는 메서드 토큰을 풀지 못한다(`Token ... is not valid in the scope of module`). 이름+인자 수+호출 규약으로 바꿔 53개 설치 성공(eb8e0c3). 오프라인(메타데이터 리더)에서만 검증한 것의 한계.
+- **Lost Requiem 531.8초 `tilerange shadow`**: `patch-fail=0 patched=53`, shadow 불일치 0·늦게 발견된 변경 0. 하지만 **건너뛴 청크 0개**(타일 8,171개 전부 원래 경로), 효과 시작 25.7ms(끔 기준 22~25ms과 같음). 8초 동안 훅이 **198만 번** 불림(=타일 8,171개 × 약 242프레임, 매 프레임 모든 타일) → 모든 청크가 항상 dirty. 안전망 `safety-ms` 147(8초), 훅 `hook-ms` 174 — 이득 없이 비용만.
+- 의심: `scrFloor.LateUpdate` 가 `lastPos`·`lastScale`·`opacityLastFrame`·`glowMultiplierLastFrame` 에 매 프레임 쓰는 "지난 프레임 값 장부"를 상태 변경으로 표시. 확인하려면 사이트별 호출 수 계수 필요 → 후속 임무 `docs/handoff/codex-tilerange-3-20261020.md`(Codex 사용량 초기화 20:43 뒤 맡길 예정).
+- 릴리스 영향 없음: 기본 꺼짐·개발/자동 시험 빌드 전용, 2.8.0 에 포함 안 됨.
