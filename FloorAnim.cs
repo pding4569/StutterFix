@@ -176,6 +176,9 @@ namespace StutterFix
             Effects++;
             var floors = lmRef(fx).listFloors;
             int end = endRef(fx), step = 1 + gapRef(fx);
+#if DEV || AUTOTEST
+            if (FloorRange.TryStart(floors, startRef(fx), end, step, ref c)) return;
+#endif
             if (Split && (end - startRef(fx)) / step + 1 > SplitMin) { RunSplit(floors, startRef(fx), end, step, c); return; }
             bool pend = jobs.Count > 0;
             for (int i = startRef(fx); i <= end; i += step)
@@ -189,7 +192,7 @@ namespace StutterFix
             }
         }
 
-        private struct Ctx
+        internal struct Ctx
         {
             public Vector3 Pos, Rot, Scale;
             public bool PosUsed, RotUsed, ScaleUsed, OpaUsed;
@@ -247,6 +250,9 @@ namespace StutterFix
 
         private static void TweenFloor(scrFloor target, ref Ctx c)
         {
+#if DEV || AUTOTEST
+            FloorRange.BeforeLegacy(target);
+#endif
             if (c.OpaOnly) { OpaOnly(target, ref c); return; }
             long a = Prof ? TS() : 0, b;
             Tiles++;
@@ -445,7 +451,37 @@ namespace StutterFix
             }
             for (int i = jobs.Count - 1; i >= 0; i--) if (jobs[i].Pending.Count == 0) jobs.RemoveAt(i);
         }
-        public static void FlushPrefix() { if (jobs.Count > 0) Flush(); }
+        public static void FlushPrefix()
+        {
+#if DEV || AUTOTEST
+            FloorRange.Flush("external-effect-scrub");
+#endif
+            if (jobs.Count > 0) Flush();
+        }
+
+#if DEV || AUTOTEST
+        internal static void RangeLegacy(scrFloor f, ref Ctx c)
+        {
+            TweenFloor(f, ref c);
+            if (f.freeroamArea != null)
+                foreach (var lf in f.freeroamArea.listFloors) if (lf.isLandable) TweenFloor(lf, ref c);
+        }
+        internal static void RangeCompleteOpacity(scrFloor f)
+        {
+            Prev(f.moveTweens, global::TweenType.Opacity, false);
+        }
+        internal static void RangeWriteOpacity(scrFloor f, float target)
+        {
+            Tiles++;
+            _ = f.floorRenderer.material;
+            if (!Mathf.Approximately(f.opacity, target)) { f.opacity = target; f.dontChangeMySprite = true; }
+        }
+        internal static void RangeReferenceOpacity(scrFloor f, float target)
+        {
+            var c = new Ctx { Zero = true, OpaOnly = true, OpaUsed = true, Opacity = target };
+            OpaOnly(f, ref c);
+        }
+#endif
 
         // ── 길이 0 (즉시 이동) ──
         // 원래: DOTween.To(...).SetEase(ease).Done() -> Done 이 길이 0 이면 그 자리에서 Complete:
@@ -656,6 +692,10 @@ namespace StutterFix
         }
         private static void Step(Rec r, float td)
         {
+#if DEV || AUTOTEST
+            FloorRange.BeforeLegacy(r.F);
+            if (!r.Running) return;
+#endif
             if (!r.Started) Startup(r);
             float to = r.Pos + td;
             bool done = false;
@@ -688,6 +728,9 @@ namespace StutterFix
             if ((object)t == null) return true;
             var r = t.id as Rec;
             if (r == null) return true;
+#if DEV || AUTOTEST
+            FloorRange.BeforeLegacy(r.F);
+#endif
             if (complete) { if (r.Running) Killed++; Complete(r); }
             else if (r.Running)
             {
@@ -704,10 +747,19 @@ namespace StutterFix
             if ((object)t == null) return true;
             var r = t.id as Rec;
             if (r == null) return true;
+#if DEV || AUTOTEST
+            FloorRange.BeforeLegacy(r.F);
+#endif
             if (r.Running) { Killed++; Complete(r); }
             return false;
         }
-        public static void PlayingPrefix() { if (jobs.Count > 0) Flush(); }
+        public static void PlayingPrefix()
+        {
+#if DEV || AUTOTEST
+            FloorRange.Flush("playing-tweens");
+#endif
+            if (jobs.Count > 0) Flush();
+        }
         public static void PlayingPostfix(List<Tween> __0, ref List<Tween> __result)
         {
             int n = 0;
@@ -725,6 +777,9 @@ namespace StutterFix
         }
         public static void KillAllPrefix(bool complete)
         {
+#if DEV || AUTOTEST
+            FloorRange.Flush("kill-all");
+#endif
             if (jobs.Count > 0) Flush();
             if (recs.Count == 0) return;
             var copy = recs.ToArray();
@@ -742,12 +797,19 @@ namespace StutterFix
             }
             recs.Clear();
         }
-        internal static void DropAll() { jobs.Clear(); KillAllPrefix(false); }
+        internal static void DropAll()
+        {
+#if DEV || AUTOTEST
+            FloorRange.ResetMap();
+#endif
+            jobs.Clear(); KillAllPrefix(false);
+        }
         internal static void FinishAll() { KillAllPrefix(true); }
 
         public static void UpdatePrefix()
         {
 #if DEV || AUTOTEST
+            FloorRange.Tick();
             if (TileSim.Capturing) TileSim.BeginFrame(recs, false);
 #endif
             if (jobs.Count > 0) SplitTick();

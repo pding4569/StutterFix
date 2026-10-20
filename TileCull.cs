@@ -397,12 +397,19 @@ namespace StutterFix
             var g = glowR[i];
             if (!ReferenceEquals(g, null) && g != null && g.enabled) { wantGlow[i] = true; culled[g] = -(i + 1); g.enabled = false; }
             st[i] = 1;
+#if DEV || AUTOTEST
+            FloorRange.SetCulled(fl[i], true);
+#endif
             if (Verify) fl[i].transform.hasChanged = false;
             Culls++;
         }
         private static void Uncull(int i)
         {
             if (st[i] != 1) return;
+#if DEV || AUTOTEST
+            FloorRange.Materialize(fl[i], "uncull");
+            FloorRange.SetCulled(fl[i], false);
+#endif
             var r = rend[i];
             RecolorDefer.FlushFloor(fl[i]);   // 미뤄 둔 색·스타일을 렌더러를 켜기 전에 적용
             culled.Remove(r);
@@ -519,6 +526,9 @@ namespace StutterFix
         public static void StopAll()
         {
             if (!active) return;
+#if DEV || AUTOTEST
+            FloorRange.Flush("tilecull-stop");
+#endif
             RecolorDefer.FlushAll();
             active = false;
             foreach (var kv in culled) { var r = kv.Key; int v = kv.Value; if (r != null && (v >= 0 ? want[v] : wantGlow[-v - 1])) r.enabled = true; }

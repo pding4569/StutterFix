@@ -25,6 +25,7 @@ static class Program
         pe = new PEReader(fs);
         if (!pe.HasMetadata) { Console.WriteLine("SKIP native PE (no managed metadata)"); return 0; }
         md = pe.GetMetadataReader();
+        if (Environment.GetEnvironmentVariable("TILE_READERS") == "1") { TileReaders(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_GUARDS") == "1") { DecoGuards(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_READERS") == "1") { DecoReaders(); return 0; }
         string types = Environment.GetEnvironmentVariable("TYPES");
@@ -191,6 +192,29 @@ static class Program
             }
         }
         Console.WriteLine("(" + hits + "곳)");
+    }
+
+    // Conservative reference inventory. Transform aliases are not data-flow proof.
+    static void TileReaders()
+    {
+        var fields = new HashSet<string> { "opacity", "dontChangeMySprite", "floorRenderer", "startPos", "startRot", "tweenRot", "moveTweens", "freeroamArea" };
+        var transforms = new HashSet<string> { "get_position", "get_eulerAngles", "get_rotation", "get_localScale", "get_localPosition", "get_transform" };
+        foreach (var mh in md.MethodDefinitions)
+        {
+            var seen = new HashSet<string>();
+            foreach (var (op, tok) in Tokens(md.GetMethodDefinition(mh)))
+            {
+                if (op == ILOpCode.Ldstr) continue;
+                var h = Handle(tok);
+                if (h.Kind != HandleKind.MethodDefinition && h.Kind != HandleKind.MemberReference && h.Kind != HandleKind.FieldDefinition && h.Kind != HandleKind.MethodSpecification) continue;
+                string target = MemberName(h), name = ShortName(h);
+                bool field = target.StartsWith("scrFloor::") && fields.Contains(name);
+                bool transform = IsCall(op) && transforms.Contains(name);
+                if (!field && !transform) continue;
+                string row = MethodTitle(mh) + "\t" + op + "\t" + target;
+                if (seen.Add(row)) Console.WriteLine(row);
+            }
+        }
     }
 
     // All types, not just scrDecoration: consumers often live in closures/mods.

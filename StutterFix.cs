@@ -115,6 +115,9 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
             if (has("tc-no-glow")) { TileCull.CullGlow = false; Entry.Logger.Log("[화면 밖 타일] tc-no-glow 파일이 있어 타일 발광은 끄지 않음"); }
             if (has("tc-old-pin")) { TileCull.PinOnScript = true; Entry.Logger.Log("[화면 밖 타일] tc-old-pin 파일이 있어 타일 스크립트가 돌면 예전처럼 관리에서 뺌"); }
             if (has("fastopa-off")) { global::StutterFix.FloorAnim.FastOpa = false; Entry.Logger.Log("[타일 이동] fastopa-off 파일이 있어 불투명도 전용 빠른 경로를 끔"); }
+#if DEV || AUTOTEST
+            global::StutterFix.FloorRange.Configure(has("tilerange-on"));
+#endif
             if (has("deco-split-probe")) { FastMove.Probe = true; Entry.Logger.Log("[장식 이동 쪼개 보기] deco-split-probe 파일이 있어 큰 효과를 단계별로 잼"); }
             if (has("tilecull-verify.txt")) { TileCull.Verify = true; TileCull.VerifyInstall(); Entry.Logger.Log("[화면 밖 타일 검증] tilecull-verify.txt 파일이 있어 그리기마다 검사함"); }
             if (has("tilecull-min.txt")) { try { TileCull.MinFloors = int.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "tilecull-min.txt")).Trim()); Entry.Logger.Log("[화면 밖 타일] 최소 타일 수 " + TileCull.MinFloors); } catch { } }
@@ -201,6 +204,9 @@ AllocProbe.Install(new HarmonyLib.Harmony("StutterFix.allocprobe"));
                 Precheck.Install(harmony);
                 DecoAnim.Install(harmony);
                 FloorAnim.Install(harmony);   // 길이 있는 타일 이동 애니메이션을 모드가 직접 (FloorAnim.cs)
+#if DEV || AUTOTEST
+                FloorRange.Install(harmony);
+#endif
                 LowEnd.Install(harmony);
                 ParticleFix.Install(harmony);
                 LeakGuard.Install(harmony);
@@ -473,6 +479,7 @@ ParticleTextWatch.Install(harmony);
 #if DEV || AUTOTEST
             Try(FreeFpsProbe.Restore);
             Try(TileSim.Shutdown);
+            Try(FloorRange.Shutdown);
             Try(TileCost.Shutdown);
             Try(DecoGpu.Stop);
             Try(DecoRender.Stop);

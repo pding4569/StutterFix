@@ -1,0 +1,43 @@
+{
+  "scope": "default-off DEV/AUTOTEST zero-opacity research; T2 incomplete; no game execution/install/commit",
+  "builds": {
+    "dev": {
+      "sha256": "098c2d1043203aec0517ec1ad5dee43bc643788cea8b42a3da5fcedeb56f49d4",
+      "errors": 0,
+      "warnings": 38,
+      "research_types": {
+        "FloorRange": true,
+        "FloorRangeLedger": true
+      }
+    },
+    "player": {
+      "sha256": "842aa8d2ae42134097061de352691e2a10d2ecddb2b0eefb6bb99f840c2296e7",
+      "errors": 0,
+      "warnings": 36,
+      "research_types": {
+        "FloorRange": false,
+        "FloorRangeLedger": false
+      }
+    },
+    "autotest": {
+      "sha256": "9b46a71b1b714bfbdb0bf0f783a1bf8012b6e4046f942d76e30a772bdbd91478",
+      "errors": 0,
+      "warnings": 38,
+      "research_types": {
+        "FloorRange": true,
+        "FloorRangeLedger": true
+      }
+    }
+  },
+  "fixtures": {
+    "ledger": "PASS assertions=128767 applies=7418592; 90000 tiles => 1407 chunk appends, 0.065ms (.NET8, not Unity/Mono/game performance)",
+    "integration": "PASS integration checks=69; real FloorRange source, modeled Unity state and patch registration; engine detours untested"
+  },
+  "readers": {
+    "files": 231,
+    "failed": 0,
+    "rows": 3101,
+    "non_pe_skipped": 1
+  },
+  "loadcheck": "Debug/StutterFix.dll: FieldRefAccess(이름) 266곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 5(실행 중 확인)"
+}

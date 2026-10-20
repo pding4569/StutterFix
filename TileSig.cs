@@ -68,6 +68,7 @@ namespace StutterFix
         internal static string Run(string dir, string name)
         {
             RecolorDefer.FlushAll();
+            FloorRange.Flush("tilesig");
             try { FloorMesh.UpdateAllRequired(); } catch { }
             var list = ADOBase.lm == null ? null : ADOBase.lm.listFloors;
             if (list == null) return "타일 목록 없음";
@@ -86,6 +87,11 @@ namespace StutterFix
                       .Append((int)f.specialColorPulse).Append('|').Append(F(f.specialPulseLength)).Append('|').Append(F(f.specialTimeOffset)).Append('|')
                       .Append(Tex(f.customTexture)).Append('|').Append(F(f.customTextureScale)).Append('|').Append(F(f.opacity));
                     var fr = f.floorRenderer;
+                    var tr = f.transform;
+                    var p = tr.position; var r = tr.eulerAngles; var s = tr.localScale;
+                    sb.Append("|p=").Append(F(p.x)).Append(',').Append(F(p.y)).Append(',').Append(F(p.z))
+                      .Append("|r=").Append(F(r.x)).Append(',').Append(F(r.y)).Append(',').Append(F(r.z))
+                      .Append("|s=").Append(F(s.x)).Append(',').Append(F(s.y)).Append(',').Append(F(s.z));
                     sb.Append("|c=").Append(fr == null ? "null" : C(fr.color));
                     var fm = fr as FloorMeshRenderer;
                     if (fm == null) { meshless++; sb.Append("|nomesh"); }
