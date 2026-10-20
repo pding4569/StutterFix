@@ -65,6 +65,35 @@ Require(replacement.Eval(0, 0, -1) == 0 && replacement.Eval(0, 0, 99) == 6 && re
     "미래/과거/되감기 평가가 같은 입력에서 같은 값");
 var instant = Compile(Decoration(), new[] { Event(2, 0, 7), Event(2, 0, 3, true, 2) });
 Require(instant.Eval(0, 0, 1.999) == 0 && instant.Eval(0, 0, 2) == 10, "길이0 즉시 적용/동일T0 원본 순서/상대 반복");
+var tile = Decoration(105); tile.OriginalX = 105; tile.GlobalX = 5;
+Require(DecoBakeCore.PlacementReason("Tile", false) == null, "Tile 정적 초기 배치 허용");
+var resetOrigin = Event(2, 0, float.NaN); resetOrigin.ResetGlobalOrigin = true;
+var tileTrack = Compile(tile, new[] { Event(0, 0, 2), resetOrigin, Event(3, 0, 4), Event(4, 0, 2, true) });
+Require(tileTrack.Supported == 1 && tileTrack.Eval(0, 0, 0) == 107 && tileTrack.Eval(0, 0, 2) == 107
+    && tileTrack.Eval(0, 0, 3) == 9 && tileTrack.Eval(0, 0, 4) == 11 && tileTrack.Eval(0, 0, -1) == 105,
+    "Tile Setup 원점/위치 없는 Global 전환/생략 시 원점 유지/LastPosition/되감기");
+var globalNow = Event(0, 0, 4); globalNow.ResetGlobalOrigin = true;
+Require(Compile(tile, new[] { globalNow }).Eval(0, 0, 0) == 9, "같은 효과 Global 변경이 목표 계산에 선행");
+Require(DecoBakeCore.MovementReason("Tile", false) == null && DecoBakeCore.MovementReason("LastPosition", true) == null,
+    "disabled Tile은 재배치 안 함, LastPosition은 원점 유지");
+foreach (var example in new[] { ("Tile", true), ("Camera", false), ("CameraAspect", false) })
+{
+    var dynamicDec = Decoration();
+    dynamicDec.Reasons.Add(DecoBakeCore.PlacementReason(example.Item1, example.Item2)!);
+    var dynamicTable = Compile(dynamicDec, new[] { Event(0, 1, 2), ScaleEvent(1, 1, 2, 2) });
+    Require(dynamicTable.Supported == 0 && dynamicTable.Segments == 0, example.Item1 + " 동적 초기 배치는 크기 포함 장식 전체 제외");
+}
+foreach (string placement in new[] { "Tile", "Camera", "CameraAspect" })
+{
+    var dynamicEvent = Event(2, 1, 3);
+    dynamicEvent.Reasons = new[] { DecoBakeCore.MovementReason(placement, true)! };
+    var dynamicTable = Compile(Decoration(), new[] { Event(0, 1, 2), dynamicEvent });
+    Require(dynamicTable.Supported == 0 && dynamicTable.Segments == 0, placement + " 나중 동적 배치 변경도 앞선 트랙 전부 제외");
+}
+// Camera raw snapshot alone can be constant; projection still changes with zoom.
+float screenCoordinate = 5f / 20f + .5f;
+Require(screenCoordinate == .75f && (screenCoordinate - .5f) * 20 != (screenCoordinate - .5f) * 40,
+    "Camera 정적 좌표 fixture도 줌에 따른 월드 투영은 동적: 정적 지원 갈래 없음");
 var repeat = Compile(Decoration(), new[] { Event(0, 1, 2, true, 1), Event(2, 1, 2, true, 2), Event(4, 1, 2, true, 3) });
 Require(repeat.Segments == 3 && repeat.Eval(0, 0, 5) == 6 && repeat.Tracks[0][2].Source == 3, "전개된 반복 인스턴스를 합치지 않는다");
 var pitchTable = Compile(Decoration(), new[] { Event(1, 2, 10) }, 2, .5f);

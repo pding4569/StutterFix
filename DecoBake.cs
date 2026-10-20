@@ -123,6 +123,13 @@ namespace StutterFix
                 if (manager != d.manager) { initial.Clear(); manager = d.manager; setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1; }
                 if (initial.Count >= MaxDecorations && !initial.ContainsKey(d)) throw new InvalidOperationException("장식 상한");
                 var row = new DecoBakeCore.Decoration { Id = d.GetInstanceID(), OriginalX = d.startPos.x, OriginalY = d.startPos.y };
+                if (d.sourceLevelEvent != null && d.sourceLevelEvent.TryGet<Vector2>("position", out var sourcePosition))
+                {
+                    // Same multiply/order as SetPlacementType(Global), without calling a setter.
+                    var global = sourcePosition * ADOBase.controller.tileSize;
+                    row.GlobalX = global.x; row.GlobalY = global.y;
+                }
+                else row.Reasons.Add("Global 기준 원본 위치 없음");
                 var c = d.color; var p = d.parallax == null ? Vector2.zero : d.parallax.multiplier;
                 row.Initial = new[] { d.pivotPosVec.x, d.pivotPosVec.y, d.pivotOffsetVec.x, d.pivotOffsetVec.y, d.rotAngle,
                     d.scaleVec.x, d.scaleVec.y, c.r, c.g, c.b, c.a, d.opacity, p.x, p.y, d.parallaxOffset.x, d.parallaxOffset.y };
@@ -136,9 +143,12 @@ namespace StutterFix
                 if (d.useHitbox || d.hitboxEvents.Count != 0) row.Reasons.Add("히트박스/충돌");
                 if (d.sourceLevelEvent != null && d.sourceLevelEvent.TryGet<MaskingType>("maskingType", out var mask) && mask != MaskingType.None) row.Reasons.Add("초기 마스크");
                 if (d.parallax == null) row.Reasons.Add("시차 부품 없음");
-                if (d.placementType != DecPlacementType.Global) row.Reasons.Add("초기 배치 Global 이외");
+                var placementReason = DecoBakeCore.PlacementReason(d.placementType.ToString(), d.stickToFloor);
+                if (placementReason != null) row.Reasons.Add(placementReason);
                 if (d.lockRotation || d.lockScale || d.stickToFloor || d.followPlanet != null) row.Reasons.Add("추종/고정/바닥 배치");
                 if (row.Initial.Any(v => !DecoBakeCore.Finite(v))) row.Reasons.Add("초기값 비유한");
+                if (!DecoBakeCore.Finite(row.OriginalX) || !DecoBakeCore.Finite(row.OriginalY)
+                    || !DecoBakeCore.Finite(row.GlobalX) || !DecoBakeCore.Finite(row.GlobalY)) row.Reasons.Add("초기값 비유한");
                 initial[d] = row;
             }
             catch (Exception e) { Fail("초기값 수집 " + e.Message); }
@@ -187,7 +197,8 @@ namespace StutterFix
             if (f.imageFilenameUsed || f.originalSizeUsed || f.smoothingUsed || f.cropPivotOffsetUsed) r.Add("이미지/원래크기/크롭/wrap");
             if (f.maskingTypeUsed || f.maskingTargetUsed || f.useMaskingDepthUsed || f.maskingFrontDepthUsed || f.maskingBackDepthUsed) r.Add("마스크 변경");
             if (f.visibleUsed || f.depthUsed) r.Add("가시성/깊이 변경");
-            if (f.movementTypeUsed && f.movementType != DecPlacementType.LastPosition && f.movementType != DecPlacementType.Global) r.Add("Global 이외 배치 변경");
+            var movementReason = DecoBakeCore.MovementReason(f.movementType.ToString(), f.movementTypeUsed);
+            if (movementReason != null) r.Add(movementReason);
             if (!Enum.IsDefined(typeof(Ease), f.ease) || f.ease == Ease.INTERNAL_Custom || f.ease == Ease.Unset) r.Add("미확인/사용자 이징");
             if (!DecoBakeCore.Finite(f.duration) || f.duration < 0) r.Add("길이 비유한/음수");
             return r.ToArray();
@@ -196,7 +207,8 @@ namespace StutterFix
         {
             var e = new DecoBakeCore.Event { T0 = f.startTime - f.startEffectOffset, Duration = f.duration,
                 StartTime = f.startTime, StartEffectOffset = f.startEffectOffset, AngleOffset = f.degreeOffset,
-                Source = f.GetInstanceID(), Ease = (int)f.ease, RelativePosition = f.movementType == DecPlacementType.LastPosition, Reasons = Reasons(f) };
+                Source = f.GetInstanceID(), Ease = (int)f.ease, RelativePosition = f.movementType == DecPlacementType.LastPosition,
+                ResetGlobalOrigin = f.movementTypeUsed && f.movementType == DecPlacementType.Global, Reasons = Reasons(f) };
             // Same parameters as DecoAnim.EaseParams -> Tween.SetEase, without touching ZeroTween's shared proxy.
             e.Over = frozenOver;
             if (f.ease == Ease.Flash || f.ease == Ease.InFlash || f.ease == Ease.OutFlash || f.ease == Ease.InOutFlash) e.Over = (int)e.Over;
@@ -242,6 +254,7 @@ namespace StutterFix
                 ids.Add(d, i);
                 if (!initial.TryGetValue(d, out var source)) throw new InvalidOperationException("초기 Setup 누락");
                 var row = new DecoBakeCore.Decoration { Id = source.Id, Initial = (float[])source.Initial.Clone(), OriginalX = source.OriginalX, OriginalY = source.OriginalY,
+                    GlobalX = source.GlobalX, GlobalY = source.GlobalY,
                     ScaleUnitsX = source.ScaleUnitsX, ScaleUnitsY = source.ScaleUnitsY };
                 foreach (var reason in source.Reasons) row.Reasons.Add(reason);
                 if (foreignWriter) row.Reasons.Add("외부 모드 장식 setter 패치");
@@ -423,7 +436,11 @@ namespace StutterFix
             Log("위치 축별 화면환산(1440 높이/직교 카메라) n=" + pixels.Values.Count + " 최대px=" + (pixels.Values.Count == 0 ? "NA" : N(pixels.Max)) + " p99px=" + N(pixels.P99())
                 + " 제안기준<=0.01px; pivotPosVec 진단이며 시차/피벗/회전 합성 후 렌더 위치 검증은 별도");
             Log("상위장식8(속성 원단위 최대; 단위 혼합 순위) " + string.Join("; ", top.OrderByDescending(x => x.Value).Take(8).Select(x => table.Decorations[x.Key].Id + ":" + N(x.Value))));
-            var reasons = new Dictionary<string, int>();
+            var reasons = new Dictionary<string, int> {
+                ["Tile-동적 바닥 추종"] = 0, ["Tile-동적 효과 시점 재배치"] = 0,
+                ["Camera-동적 화면 투영"] = 0, ["Camera-동적 배치 변경"] = 0,
+                ["초기 배치 미지원"] = 0
+            };
             foreach (var d in table.Decorations) foreach (string reason in d.Reasons) { reasons.TryGetValue(reason, out int n); reasons[reason] = n + 1; }
             Log("지원=" + table.Supported + "/" + table.Decorations.Length + " 비율=" + N(100.0 * table.Supported / Math.Max(1, table.Decorations.Length)) + "% (사유별 중복 가능)");
             foreach (var p in reasons.OrderByDescending(x => x.Value)) Log("미지원 " + p.Key + " 장식=" + p.Value + " 비율=" + N(100.0 * p.Value / Math.Max(1, table.Decorations.Length)) + "%");
