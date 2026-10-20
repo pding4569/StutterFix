@@ -1090,6 +1090,23 @@ namespace StutterFix
                 case "profsamp": Log("[profsamp] " + (arg.StartsWith("begin") ? ProfSamp.Begin(arg.Substring(5)) : ProfSamp.End(arg.Contains("frames") ? modDir : null))); return true;
                 case "floatsem": Log("[floatsem] " + FloatSem.Run()); return true;
                 case "hitsound": Log("[히트음 예약 묶기] " + HitSoundBatch.Command(arg)); return true;
+                case "audioplaying":
+                    {
+                        // 재생 중인 AudioSource 목록(곡 제외) - 죽은 뒤에도 히트음이 남는지 보는 진단 (AUTOTEST 전용)
+                        var sb = new System.Text.StringBuilder(); int n = 0, total = 0;
+                        var song = scrConductor.instance != null ? scrConductor.instance.song : null;
+                        foreach (var a in UnityEngine.Object.FindObjectsOfType<AudioSource>())
+                        {
+                            if (a == null || !a.isPlaying) continue; total++;
+                            if (a == song) continue;
+                            n++; if (n > 30) continue;
+                            string path = a.gameObject.name; var t = a.transform.parent; int d = 0; while (t != null && d++ < 3) { path = t.name + "/" + path; t = t.parent; }
+                            sb.Append((char)10).Append("   ").Append(path).Append(" clip=").Append(a.clip != null ? a.clip.name : "null").Append(" t=").Append(a.time.ToString("F2")).Append("/").Append(a.clip != null ? a.clip.length.ToString("F2") : "?")
+                              .Append(" vol=").Append(a.volume.ToString("F2")).Append(" mixer=").Append(a.outputAudioMixerGroup != null ? a.outputAudioMixerGroup.name : "none");
+                        }
+                        Log("[audioplaying] 재생 중 " + total + "개(곡 제외 " + n + "개) state=" + (ADOBase.controller != null ? ADOBase.controller.state.ToString() : "?") + " songpos=" + (scrConductor.instance != null ? scrConductor.instance.songposition_minusi.ToString("F2") : "?") + sb);
+                        return true;
+                    }
                 case "decoablate":
                     { int m = 0; foreach (var k in arg.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)) m |= 1 << int.Parse(k); DecoAnim.AblateMask = m; Log("[ablate] 건너뛸 키 비트마스크 " + m + " (" + arg + ") — 측정 전용, 화면이 달라진다"); }
                     return true;

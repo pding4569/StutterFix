@@ -109,11 +109,13 @@ namespace StutterFix
                     postfix: new HarmonyMethod(typeof(HitSoundBatch), nameof(AfterPrepare)) { priority = Priority.First });
                 harmony.Patch(AccessTools.Method(typeof(scrConductor), "Update"),
                     prefix: new HarmonyMethod(typeof(HitSoundBatch), nameof(BeforeUpdate)) { priority = Priority.First });
-                PatchStop(typeof(AudioManager), "StopAllSounds");
-                PatchStop(typeof(scrConductor), "Rewind");
-                foreach (var name in new[] { "Restart", "FailAction", "OnLandOnPortal", "QuitToMainMenu" })
-                    PatchStop(typeof(scrController), name);
-                PatchStop(typeof(scnEditor), "SwitchToEditMode");
+                PatchStop(typeof(AudioManager), "StopAllSounds", nameof(StopPrefix));
+                PatchStop(typeof(scrConductor), "Rewind", nameof(StopPrefix));
+                foreach (var name in new[] { "Restart", "FailAction", "QuitToMainMenu" })
+                    PatchStop(typeof(scrController), name, nameof(StopPrefix));
+                // 끝까지 깬 곡은 마지막 소리가 이어서 나야 하므로 남은 예약을 게임에 돌려준다.
+                PatchStop(typeof(scrController), "OnLandOnPortal", nameof(PortalPrefix));
+                PatchStop(typeof(scnEditor), "SwitchToEditMode", nameof(StopPrefix));
                 SceneManager.activeSceneChanged += SceneChanged;
                 AudioSettings.OnAudioConfigurationChanged += AudioChanged;
                 installed = true;
@@ -128,13 +130,16 @@ namespace StutterFix
             }
         }
 
-        private static void PatchStop(Type type, string name)
+        private static void PatchStop(Type type, string name, string prefix)
         {
             foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
                 if (method.Name == name)
-                    harmony.Patch(method, prefix: new HarmonyMethod(typeof(HitSoundBatch), nameof(StopPrefix)));
+                    harmony.Patch(method, prefix: new HarmonyMethod(typeof(HitSoundBatch), prefix));
         }
-        public static void StopPrefix() { Release("game stop/rebuild", true, false); }
+        // 죽음/다시 하기/나가기: 이 판은 끝났으므로 아직 안 들려준 히트음을 게임에 돌려주면 안 된다.
+        // (돌려주면 게임이 5초 앞 예약 창을 다시 채우고, 상태가 Fail 로 바뀌기 전 한 프레임 사이에 예약돼 죽은 뒤에도 소리가 난다. 2.8.1 수정)
+        public static void StopPrefix() { Release("game stop/rebuild", true, false, false); }
+        public static void PortalPrefix() { Release("level end", true, false); }
         private static void SceneChanged(Scene a, Scene b) { Release("scene changed", true, false); }
         private static void AudioChanged(bool changed) { Release("audio configuration changed", true, false); }
         public static void BeforePrepare(out bool __state)
@@ -395,7 +400,7 @@ namespace StutterFix
             peakUploadBytes = Math.Max(peakUploadBytes, lastUploadBytes);
         }
 
-        private static void Release(string why, bool restore, bool replayTails = true)
+        private static void Release(string why, bool restore, bool replayTails = true, bool giveBack = true)
         {
             reason = why;
             var s = current; current = null;
@@ -412,8 +417,9 @@ namespace StutterFix
                 {
                 double now = AudioSettings.dspTime;
                 int first = s.Original.Count;
-                for (int i = 0; i < s.Original.Count; i++)
-                    if ((double)VoiceTime.GetValue(s.Original[i]) >= now) { first = i; break; }
+                if (giveBack)
+                    for (int i = 0; i < s.Original.Count; i++)
+                        if ((double)VoiceTime.GetValue(s.Original[i]) >= now) { first = i; break; }
                 Cursor(s.Conductor) = first;
                 // Rebuild only tails which started before handback. Future entries remain
                 // the original game's responsibility; no game sources are stopped here.
