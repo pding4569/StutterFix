@@ -78,6 +78,7 @@ namespace StutterFix
         internal static void ForgetLevel() { list.Clear(); src = null; if (shape.Targets != null) shape.Targets = null; shape.Sources.Clear(); stamp.Clear(); TagIndex.Forget();
 #if DEV || AUTOTEST
             DecoBake.ForgetLevel();
+            FloorBake.ForgetLevel();
 #endif
         }
         private static bool running, bypass;

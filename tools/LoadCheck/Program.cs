@@ -27,6 +27,22 @@ class P
 
         var asm = Assembly.LoadFrom(a[0]);
         var mod = asm.ManifestModule;
+        if (a.Contains("--tilebake") || a.Contains("--no-tilebake"))
+        {
+            bool want = a.Contains("--tilebake");
+            bool runtime = asm.GetType("StutterFix.FloorBake", false) != null;
+            bool core = asm.GetType("StutterFix.FloorBakeCore", false) != null;
+            Console.WriteLine("FloorBake 개발 타입: " + runtime + "/" + core + ", 기대: " + want);
+            if (runtime != want || core != want) return 4;
+            if (want)
+            {
+                var game = Assembly.LoadFrom(Path.Combine(managed, "Assembly-CSharp.dll"));
+                var eventType = game.GetType("ADOFAI.LevelEvent", true);
+                CheckHook(game.GetType("scnGame", true), "PrepVfx", true,
+                    new[] { typeof(List<>).MakeGenericType(game.GetType("scrFloor", true)), typeof(int), typeof(List<>).MakeGenericType(eventType), typeof(bool) });
+                CheckHook(game.GetType("scrVfxPlus", true), "ScrubToTime", false, new[] { typeof(float) });
+            }
+        }
         if (a.Length > 1 && (a[1] == "--bake" || a[1] == "--no-bake"))
         {
             bool want = a[1] == "--bake";

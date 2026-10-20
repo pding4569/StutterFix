@@ -10,13 +10,22 @@ using DG.Tweening;
 namespace UnityEngine
 {
     public struct Vector3 { public float x,y,z; public Vector3(float x,float y,float z) { this.x=x; this.y=y; this.z=z; } }
+    public static class Time { public static int frameCount; }
+    public class Camera { public bool orthographic = true; public float pixelHeight = 1440, orthographicSize = 5; }
 }
-namespace DG.Tweening { public enum Ease { Linear, InQuad } }
-public class scrFloor { }
+namespace DG.Tweening { public enum Ease { Linear, InQuad } public static class DOTween { public static float timeScale = 1; } }
+public class scrFloor { public int GetInstanceID() => 123; }
+public class scrConductor { public static scrConductor instance = new scrConductor(); public double songposition_minusi; public Song song = new Song(); public class Song { public float pitch = 1; } }
+public class scrCamera { public static scrCamera instance = new scrCamera(); public Camera camobj = new Camera(); }
 public class Level { public List<scrFloor> listFloors = new List<scrFloor>(); }
 public class ADOBase { public static Level lm = new Level(); }
 namespace StutterFix
 {
+    internal static class FloorBake {
+        internal static FloorBakeCore.Table CaptureTable;
+        internal static int Generation = 7;
+        internal struct Start { internal int Source, Frame; internal double Song; }
+    }
     internal static class Hitch { internal static bool Playing; }
     internal static class TileCost { internal static bool Active; }
     internal static class ZeroTween
@@ -141,7 +150,22 @@ static class Program
         Require(!TileSim.Capturing,"invalidate path change");
         before=StutterFix.Main.Entry.Logger.Lines.Count; TileSim.Command("verify");
         Require(StutterFix.Main.Entry.Logger.Lines.Skip(before).Any(s=>s.Contains("유효한 완료 테이프 없음")),"reject invalid tape");
-        FloorAnim.DefaultPath=true; TileSim.Shutdown(); Hitch.Playing=false;
+        FloorAnim.DefaultPath=true; TileSim.Shutdown();
+        FloorBake.CaptureTable = FloorBakeCore.Compile(new[] { new FloorBakeCore.Tile { Id=123, Initial=new float[6] } },
+            Array.Empty<FloorBakeCore.Event>(), 1, 1, (id,t,d,o,p)=>t/d, System.Threading.CancellationToken.None);
+        TileSim.Command("capture 4");
+        UnityEngine.Time.frameCount=200; scrConductor.instance.songposition_minusi=530;
+        TileSim.RecordBakeStart(new FloorBake.Start { Source=9, Frame=200, Song=530 });
+        Deadline(); Frame(.1f);
+        var tape=TileSim.BakeTape;
+        Require(tape.BakeTable==FloorBake.CaptureTable && tape.BakeGeneration==7 && tape.TileIds[0]==123,"bake table/identity/generation frozen");
+        Require(tape.Frames[0].SongTime==530 && tape.Frames[0].UnityFrame==200 && tape.Frames[0].PixelsPerWorld==144,"clock/frame/actual viewport scale recorded");
+        Require(tape.Starts.Count==1 && tape.Starts[0].Source==9,"start instance recorded");
+        TileSim.InvalidateBake("changed"); Require(tape.BakeInvalid=="changed","old tape invalidated explicitly");
+        TileSim.Command("capture 4"); Frame(.1f);
+        scrConductor.instance.songposition_minusi=529; Deadline(); Frame(.1f);
+        Require(TileSim.BakeTape.BakeInvalid.Contains("backwards"),"backward clock invalidates bake comparison");
+        TileSim.Shutdown(); Hitch.Playing=false;
         Console.WriteLine("TileSim fixture passed="+checks+"; synthetic .NET only; no Unity/Mono claim");
     }
     static void Main(string[] args) { Run(); }

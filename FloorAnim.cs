@@ -125,6 +125,9 @@ namespace StutterFix
         // ── 효과 시작 ──
         public static bool StartPrefix(ffxMoveFloorPlus __instance, bool __runOriginal)
         {
+#if DEV || AUTOTEST
+            if (__runOriginal && FloorBake.Enabled) FloorBake.ObserveStart(__instance);
+#endif
             if (!__runOriginal) return false;
             if (!Active || !Hitch.Playing) return true;
             if (EffectBudget.InCatchUp) { whyNot[0]++; Fallbacks++; return true; }

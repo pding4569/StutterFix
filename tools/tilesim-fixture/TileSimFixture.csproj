@@ -4,5 +4,8 @@
     <DefineConstants>AUTOTEST</DefineConstants><EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <NoWarn>CS0649</NoWarn>
   </PropertyGroup>
-  <ItemGroup><Compile Include="../../TileSim.cs" Link="TileSim.cs" /><Compile Include="Program.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../TileSim.cs" Link="TileSim.cs" /><Compile Include="Program.cs" />
+    <Compile Include="../../FloorBake.Core.cs" Link="FloorBake.Core.cs" />
+    <Compile Include="../../DecoBake.Core.cs" Link="DecoBake.Core.cs" />
+  </ItemGroup>
 </Project>

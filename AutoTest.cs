@@ -875,6 +875,7 @@ namespace StutterFix
                 case "meshbench": return MeshBench.Step(arg);
                 case "decosim": DecoSim.Command(arg); return true;
                 case "decobake": return DecoBake.Step(arg);
+                case "tilebake": return FloorBake.Step(arg);
                 case "tilesim": TileSim.Command(arg); return true;
                 case "tilecost": TileCost.Command(arg); return true;
                 case "fxslot": FxSlots.Command(arg); return true;

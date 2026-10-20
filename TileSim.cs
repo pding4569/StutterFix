@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -16,6 +17,15 @@ namespace StutterFix
         private const long Limit = 512L * 1024 * 1024;
         private const int MaxTiles = 100000, MaxSlots = 200000, MaxFrames = 12000;
         private static Tape tape;
+        internal static Tape BakeTape => Capturing ? null : tape;
+        internal static void InvalidateBake(string reason) { if (tape?.BakeTable != null) tape.BakeInvalid = reason; }
+        internal static void ForgetBake() {
+            if (tape == null) return;
+            tape.BakeTable = null; tape.BakeGeneration = -1; tape.Starts.Clear(); tape.BakeInvalid = "tilebake off/unload";
+        }
+        internal static void RecordBakeStart(FloorBake.Start stamp) {
+            if (Capturing && tape.BakeTable != null && tape.Starts.Count < 300000 && Reserve(32)) tape.Starts.Add(stamp);
+        }
         private static readonly Dictionary<scrFloor, int> floors = new Dictionary<scrFloor, int>();
         private static readonly Dictionary<FloorAnim.Rec, int> tokens = new Dictionary<FloorAnim.Rec, int>();
         private static readonly Dictionary<int, int> slots = new Dictionary<int, int>();
@@ -58,10 +68,18 @@ namespace StutterFix
         internal struct Frame
         {
             internal float Dt;
+            internal double SongTime;
+            internal int UnityFrame;
+            internal float Pitch, TweenScale, PixelsPerWorld;
             internal int EventBegin, EventEnd, SampleBegin, SampleEnd, Evaluated;
         }
         internal sealed class Tape
         {
+            internal FloorBakeCore.Table BakeTable;
+            internal int BakeGeneration;
+            internal int[] TileIds;
+            internal string BakeInvalid = "";
+            internal readonly List<FloorBake.Start> Starts = new List<FloorBake.Start>();
             internal int TileCount, SlotCount;
             internal long Reserved;
             internal bool Valid = true;
@@ -110,6 +128,11 @@ namespace StutterFix
                 var all = ADOBase.lm?.listFloors;
                 if (all == null || all.Count > MaxTiles) { Reject("floor-list-missing-or-limit"); return; }
                 tape = new Tape { TileCount = all.Count };
+                tape.BakeTable = FloorBake.CaptureTable; tape.BakeGeneration = FloorBake.Generation;
+                if (tape.BakeTable != null && (tape.BakeTable.Tiles.Length != all.Count || tape.BakeTable.Tiles.Where((x, i) => all[i] == null || x.Id != all[i].GetInstanceID()).Any()))
+                    tape.BakeInvalid = "capture/table tile identity mismatch";
+                tape.TileIds = new int[all.Count];
+                for (int i = 0; i < all.Count; i++) tape.TileIds[i] = all[i] == null ? 0 : all[i].GetInstanceID();
                 // Includes dictionary capacity, references and replay/output headroom.
                 tape.Reserved = 1024 * 1024 + all.Count * 128L;
                 serial = 0; inFrame = false; stepCount = 0;
@@ -223,7 +246,15 @@ namespace StutterFix
             if (FloorAnim.Errors != initialErrors) { Stop("FloorAnim 예외 발생", false); return; }
             if (!inFrame) { Stop("프레임 경계 누락", false); return; }
             if (tape.Frames.Count >= MaxFrames || !Reserve(128)) { if (Capturing) Stop("프레임 12000개 상한", false); return; }
-            tape.Frames.Add(new Frame { Dt = td, EventBegin = frameEvent, EventEnd = tape.Events.Count,
+            var conductor = scrConductor.instance;
+            var camera = scrCamera.instance == null ? null : scrCamera.instance.camobj;
+            if (tape.BakeTable != null && tape.Frames.Count != 0 && conductor != null
+                && conductor.songposition_minusi < tape.Frames[tape.Frames.Count - 1].SongTime)
+                tape.BakeInvalid = "song clock moved backwards during capture";
+            tape.Frames.Add(new Frame { Dt = td, SongTime = conductor == null ? double.NaN : conductor.songposition_minusi,
+                UnityFrame = Time.frameCount, Pitch = conductor?.song == null ? float.NaN : conductor.song.pitch,
+                TweenScale = DOTween.timeScale, PixelsPerWorld = camera != null && camera.orthographic ? camera.pixelHeight / (2f * camera.orthographicSize) : float.NaN,
+                EventBegin = frameEvent, EventEnd = tape.Events.Count,
                 SampleBegin = frameSample, SampleEnd = tape.Samples.Count, Evaluated = stepCount });
             inFrame = false;
             if (Stopwatch.GetTimestamp() >= deadline) Stop("완료", true);

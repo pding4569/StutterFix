@@ -1,0 +1,10 @@
+게임 실행·설치·커밋 없이 기본 꺼짐인 개발 전용 tilebake 그림자 프로토타입을 구현했다.
+FloorBake.Core는 DecoBake 구간/검색/이징을 재사용하고 곡 시각 기반 순수 Eval을 제공한다.
+교체 완료 후 시작값, 원점 상대 위치·회전, 길이 0, OpaOnly, NaN 미사용 축을 처리한다.
+크기 변경·회전 wrap·조건·다른 writer·자유 이동 등 미지원은 타일 전체 제외 사유로 집계한다.
+tilebake on/off/ready/verify/bench와 TileSim 곡 시각·프레임·ID·화면 환산·시작 관찰을 추가했다.
+fixture 이징 3,465개 대조와 기존 TileSim 확장 17개 검사를 통과했다.
+DEV/Player/PlayerAuto Release 빌드 오류 0, LoadCheck 오류 0, 일반 Player에서 새 타입 제외 확인.
+합성 8,171/90,000타일·효과 4,097개 굽기 127.423/199.087ms; 실맵/Mono 측정이 아니다.
+실게임 지원율·오차·시작 위상·시작 비용 제거는 미검증; seek 후 530초 대기 순서를 보고서에 적었다.
+상세 결과: docs/handoff/codex-tilebake-20261020-result.md; 근거: docs/handoff/tilebake-evidence/.

@@ -1,0 +1,94 @@
+﻿SOURCE scnGame.txt lines 1686-1716
+	public static void PrepVfx(List<scrFloor> floors, int seqID, List<LevelEvent> events = null, bool remakeFloors = true)
+	{
+		List<LevelEvent>[] array = new List<LevelEvent>[floors.Count];
+		if (events != null)
+		{
+			int num = 0;
+			for (num = 0; num < array.Length; num++)
+			{
+				array[num] = new List<LevelEvent>();
+			}
+			for (num = 0; num < events.Count; num++)
+			{
+				LevelEvent levelEvent = events[num];
+				array[levelEvent.floor].Add(levelEvent);
+			}
+		}
+		scrVfxPlus scrVfxPlus2 = scrVfxPlus.instance;
+		scrVfxPlus2.Reset();
+		scrConductor scrConductor2 = scrConductor.instance;
+		foreach (scrFloor floor in floors)
+		{
+			floor.changeTrack.PrepFloor(remakeFloors);
+			floor.startPos = floor.transform.position;
+			if (floor.opacityVal != 1f)
+			{
+				floor.SetOpacity(floor.opacityVal);
+			}
+			if (remakeFloors && events != null)
+			{
+				List<LevelEvent> list = array[floor.seqID];
+				Dictionary<string, Tuple<int, float>> dictionary = new Dictionary<string, Tuple<int, float>>();
+SOURCE scnGame.txt lines 1808-1839
+				}
+				else if (plusEffect.runManually)
+				{
+					plusEffect.triggered = true;
+				}
+				else if (!plusEffect.runOnHit)
+				{
+					scrVfxPlus2.effects.Add(plusEffect);
+				}
+				plusEffect.PrepVfx();
+			}
+		}
+		if (seqID == 0)
+		{
+			scrVfxPlus2.ScrubToTime(0f);
+		}
+		else
+		{
+			scrFloor scrFloor2 = floors.GetRange(0, seqID + 1).LastOrDefault((scrFloor f) => f.onCheckpointEffects.Count > 0);
+			if ((bool)scrFloor2)
+			{
+				foreach (ffxPlusBase onCheckpointEffect in scrFloor2.onCheckpointEffects)
+				{
+					onCheckpointEffect.triggered = false;
+					scrVfxPlus2.effects.Add(onCheckpointEffect);
+				}
+			}
+		}
+		scrVfxPlus2.effects = (from fx in scrVfxPlus2.effects
+			orderby fx.startTime - fx.startEffectOffset, fx.floor.seqID
+			select fx).ToList();
+	}
+SOURCE scrFloor.txt lines 1316-1331
+	private void LateUpdate()
+	{
+		if (!Application.isPlaying)
+		{
+			return;
+		}
+		if (nextfloor == null)
+		{
+			holdLength = -1;
+		}
+		if (!controller.gameworld && (bool)controller.currFloor && !controller.currFloor.freeroamGenerated)
+		{
+			return;
+		}
+		isTweening = lastPos != thisTransform.position || lastScale != floorRenderer.transform.localScale;
+		isFading = opacityLastFrame != opacity;
+SOURCE scrFloor.txt lines 1379-1389
+			}
+			if (isTweening)
+			{
+				multiplanetLine.transform.position = base.transform.position;
+			}
+		}
+		lastPos = thisTransform.position;
+		lastScale = floorRenderer.transform.localScale;
+		opacityLastFrame = opacity;
+		glowMultiplierLastFrame = glowMultiplier;
+	}
