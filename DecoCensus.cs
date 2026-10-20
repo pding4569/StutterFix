@@ -175,6 +175,27 @@ namespace StutterFix
             }
             return sb.ToString();
         }
+        // (개발자용 decocensus hide begin|end) 깨어 있는 장식의 SpriteRenderer 를 forceRenderingOff 로 숨겨 "렌더러 개체 비용"만 잰다(화면은 망가짐, 진단 전용)
+        private static bool hiding; private static int hideFrame = -1; private static readonly List<SpriteRenderer> hidden = new List<SpriteRenderer>(); private static readonly HashSet<SpriteRenderer> hiddenSet = new HashSet<SpriteRenderer>(); private static long hiddenWrites;
+        internal static string Hide(string arg)
+        {
+            if (arg.Trim().StartsWith("begin")) { if (hiding) return "이미 숨기는 중"; hiding = true; hiddenWrites = 0; Camera.onPreCull += HidePreCull; return "숨기기 시작"; }
+            Camera.onPreCull -= HidePreCull; hiding = false;
+            foreach (var sr in hidden) { if (sr != null) sr.forceRenderingOff = false; }
+            string r = "숨긴 렌더러 " + hidden.Count + "개, 쓰기 " + hiddenWrites + "번, 끝냄"; hidden.Clear(); hiddenSet.Clear(); return r;
+        }
+        private static void HidePreCull(Camera c)
+        {
+            if (!hiding || c == null || scrCamera.instance == null || c != scrCamera.instance.camobj) return;
+            if (hideFrame == Time.frameCount) return; hideFrame = Time.frameCount;
+            var list = Dormancy.AwakeList;
+            for (int i = 0; i < list.Count; i++)
+            {
+                var v = list[i] as scrVisualDecoration; if (v == null) continue; var sr = v.spriteRenderer; if (sr == null) continue;
+                if (hiddenSet.Contains(sr)) continue;
+                if (sr.enabled && !sr.forceRenderingOff) { sr.forceRenderingOff = true; hidden.Add(sr); hiddenSet.Add(sr); hiddenWrites++; }
+            }
+        }
         internal static string End()
         {
             bool was = active; Stop();

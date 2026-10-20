@@ -41,6 +41,7 @@ namespace StutterFix
         private static AccessTools.FieldRef<List<scrDecoration>, int> versionRef;
 
         private static readonly List<scrDecoration> awake = new List<scrDecoration>();
+        internal static List<scrDecoration> AwakeList { get { return awake; } }
         private static readonly HashSet<scrDecoration> dormant = new HashSet<scrDecoration>(RefEq.Instance);
         private static readonly List<scrDecoration> woken = new List<scrDecoration>();
         private static readonly HashSet<scrDecoration> inAwake = new HashSet<scrDecoration>(RefEq.Instance);   // awake 목록에 이미 있는지 (같은 장식이 두 번 들어가 한 프레임에 두 번 처리되는 것을 막는다)
