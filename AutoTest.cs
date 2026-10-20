@@ -1117,6 +1117,7 @@ namespace StutterFix
                 case "decostruct": Log("[합치기 연구] " + FuseProbe.Struct()); return true;
                 case "decogpu": Log(DecoGpu.Command(arg)); return true;
                 case "decorender": return DecoRender.Step(arg, modDir);
+                case "sortprobe": return SortProbe.Step(arg, modDir);
                 case "animstat": Log("[장식 애니메이션 상태] "+DecoAnim.Stat()+" | "+Dormancy.Stat()+" | 위치 X·Y 합침 "+DecoAnim.PairSteps+" | 회전·크기 LateUpdate 에 맡김 "+MoveApply.RotScaleDeferred+" 위치 맡김 "+MoveApply.LateSkips+" 대조 "+MoveApply.LateChecked+" 다름 "+MoveApply.LateMismatch+" 목록에 없음 "+MoveApply.LateNotInList); return true;
                 case "deferstate": Log("[색 바꾸기 미루기] "+RecolorDefer.State+" | "+LazySprite.State+" | 화면 밖 타일: "+TileCull.Counters+" | 타일 이동 효과 시작 합계 "+global::StutterFix.FloorAnim.StartMs.ToString("F1")+"ms"); return true;
                 case "moduleidentity":Log("[실행 모듈 식별] mvid="+typeof(Main).Module.ModuleVersionId);return true;
@@ -1687,6 +1688,7 @@ namespace StutterFix
             MicroBench.Cancel();
             InstBench.Cancel();
             MeshBench.Cancel();
+            SortProbe.Cancel();
 #endif
             if (keep) { EndBatch(why); return; }
             if (finished) return;
