@@ -146,7 +146,9 @@ namespace StutterFix
             return !onWaiting;
         }
 
-        static string Exclusion(scrVisualDecoration d)
+        float EffectiveFloat(Material m, string name) => block.HasFloat(name) ? block.GetFloat(name) : m.GetFloat(name);
+
+        string Exclusion(scrVisualDecoration d)
         {
             if (!d || d.GetType() != typeof(scrVisualDecoration)) return "other";
             var r = d.spriteRenderer;
@@ -156,11 +158,23 @@ namespace StutterFix
                 || !RendererOn(d) || RendererColor(d).a == 0 || r.color.a == 0) return "other";
             var m = r.sharedMaterial; var t = r.sprite.texture;
             if (!m || !m.shader || !t || r.sprite.associatedAlphaSplitTexture) return "other";
-            if (m.shader.name == "Sprites/Tile" || d.repeatX != 1 || d.repeatY != 1) return "tiling-shader";
+            bool tile = m.shader.name == "Sprites/Tile";
             // Explicit allowlist: names that merely start with Sprites/Default may run custom code.
-            if (m.shader.name != "Sprites/Default" || m.passCount != 1) return "shader";
+            if ((!tile && m.shader.name != "Sprites/Default") || m.passCount != 1) return "shader";
+            // Count point sampling separately even when another keyword is also present.
+            if (Array.IndexOf(m.shaderKeywords, "USE_POINT_SAMPLING") >= 0) return "point-sampling";
             foreach (var keyword in m.shaderKeywords)
-                if (keyword != "PIXELSNAP_ON") return "special-keyword";
+                if (tile || keyword != "PIXELSNAP_ON") return "special-keyword";
+            block.Clear(); r.GetPropertyBlock(block);
+            if (d.repeatX != 1 || d.repeatY != 1) return "repeat-not-one";
+            if (tile)
+            {
+                if (!m.HasProperty("RepeatX") || !m.HasProperty("RepeatY") || !m.HasProperty("PixelSnap")) return "shader";
+                if (EffectiveFloat(m, "RepeatX") != 1 || EffectiveFloat(m, "RepeatY") != 1) return "repeat-not-one";
+                if (EffectiveFloat(m, "PixelSnap") != 0) return "pixel-snap";
+            }
+            if (!m.GetTextureScale("_MainTex").Equals(Vector2.one) || !m.GetTextureOffset("_MainTex").Equals(Vector2.zero)
+                || (block.HasVector("_MainTex_ST") && !block.GetVector("_MainTex_ST").Equals(new Vector4(1, 1, 0, 0)))) return "maintex-st";
             if (t.wrapModeU != TextureWrapMode.Clamp || t.wrapModeV != TextureWrapMode.Clamp) return "wrap";
             if (t.width > 2048 || t.height > 2048) return "large-texture";
             if (r.drawMode != SpriteDrawMode.Simple) return "other";
@@ -177,7 +191,7 @@ namespace StutterFix
             decorationList = manager.allDecorations; startedPlaying = Hitch.Playing;
             outputDir = Path.Combine(modDir, "shots");
             lastSelection = "observing"; lastChanges = "none";
-            foreach (var key in new[] { "tiling-shader", "shader", "special-keyword", "wrap", "large-texture", "static", "mask-hitbox-mesh", "other", "material-unsupported", "atlas-budget", "changed-during-observation" }) excluded[key] = 0;
+            foreach (var key in new[] { "repeat-not-one", "point-sampling", "pixel-snap", "maintex-st", "shader", "special-keyword", "wrap", "large-texture", "static", "mask-hitbox-mesh", "other", "material-unsupported", "atlas-budget", "changed-during-observation" }) excluded[key] = 0;
             foreach (var key in new[] { "sprite", "material", "material-properties", "sortingOrder", "sortingLayer", "mask", "destroyed", "renderer-owner", "unityLayer", "sortingGroup", "drawMode", "repeat", "wrap", "restored-items" }) changes[key] = 0;
             int index = 0;
             foreach (var d in manager.allDecorations)
@@ -259,6 +273,11 @@ namespace StutterFix
                     g.Material = new Material(item.Source) { name = "DecoRender atlas material", hideFlags = HideFlags.HideAndDontSave };
                     MaterialState(item.R, g.Material);
                     g.Material.mainTexture = item.Image.Atlas.Texture;
+                    if (g.Material.shader.name == "Sprites/Tile")
+                    {
+                        g.Material.SetFloat("RepeatX", 1); g.Material.SetFloat("RepeatY", 1);
+                        g.Material.SetFloat("PixelSnap", 0);
+                    }
                     g.Material.enableInstancing = false; // Use uniform _RendererColor, not sprite instancing arrays.
                     if (g.Material.HasProperty("_RendererColor")) g.Material.SetColor("_RendererColor", Color.white);
                     if (g.Material.HasProperty("_Flip")) g.Material.SetVector("_Flip", new Vector4(1, 1, 1, 1));
@@ -269,7 +288,9 @@ namespace StutterFix
                     Log("group=" + (groups.Count - 1) + " layerID=" + item.Layer + " order=" + item.Order
                         + " unityLayer=" + item.UnityLayer + " atlas=" + atlases.IndexOf(item.Image.Atlas)
                         + " shader=" + item.Source.shader.name + " keywords=" + string.Join(",", item.Source.shaderKeywords)
-                        + " queue=" + item.Source.renderQueue + " passes=" + item.Source.passCount);
+                        + " queue=" + item.Source.renderQueue + " passes=" + item.Source.passCount
+                        + " _Color=" + (g.Material.HasProperty("_Color") ? g.Material.GetColor("_Color").ToString("R") : "absent")
+                        + " vertex-color=SpriteRenderer.color _RendererColor=white-if-declared; Sprites/Tile color equation=미확인");
                 }
                 g.Items.Add(item);
             }
@@ -310,7 +331,7 @@ namespace StutterFix
                 if ((flip.x != 1 || flip.y != 1) && (flip.x != (r.flipX ? -1 : 1) || flip.y != (r.flipY ? -1 : 1)))
                     throw new InvalidOperationException("custom MPB _Flip unsupported");
             }
-            if (block.HasVector("_MainTex_ST") && block.GetVector("_MainTex_ST") != new Vector4(1, 1, 0, 0))
+            if (block.HasVector("_MainTex_ST") && !block.GetVector("_MainTex_ST").Equals(new Vector4(1, 1, 0, 0)))
                 throw new InvalidOperationException("custom MPB _MainTex_ST unsupported");
             if (block.HasTexture("_AlphaTex") && block.GetTexture("_AlphaTex"))
                 throw new InvalidOperationException("MPB split-alpha unsupported");
@@ -337,7 +358,7 @@ namespace StutterFix
                         if (n == "_MainTex")
                         {
                             if (block.HasTexture(id) && t != r.sprite.texture) throw new InvalidOperationException("MPB _MainTex override");
-                            if (m.GetTextureScale(n) != Vector2.one || m.GetTextureOffset(n) != Vector2.zero)
+                            if (!m.GetTextureScale(n).Equals(Vector2.one) || !m.GetTextureOffset(n).Equals(Vector2.zero))
                                 throw new InvalidOperationException("nonidentity _MainTex scale/offset unsupported by atlas remapping");
                         }
                         else key.Append(t ? t.GetInstanceID() : 0);
@@ -810,7 +831,8 @@ namespace StutterFix
                     .Append(" build-ms/mean-frame=").Append(F(s.buildTicks * 1000.0 / Stopwatch.Frequency / Math.Max(1, s.measuredFrames)))
                     .Append(" builds=").Append(s.buildCount).Append(" cameras=").Append(s.cameras.Count).Append(" comparePending=").Append(s.pending);
             }
-            return result.Append(" selection={").Append(lastSelection).Append("} changes={").Append(s ? Counts(s.changes) : lastChanges).Append("} detail-limit=").Append(DetailLimit).Append(" stop=").Append(lastStop).Append(" lastCompare={").Append(lastCompare).Append('}').ToString();
+            return result.Append(" tile-color=미확인(vertex=SpriteRenderer.color,_Color=effective-source,_RendererColor=white-if-declared;compare-required)")
+                .Append(" selection={").Append(lastSelection).Append("} changes={").Append(s ? Counts(s.changes) : lastChanges).Append("} detail-limit=").Append(DetailLimit).Append(" stop=").Append(lastStop).Append(" lastCompare={").Append(lastCompare).Append('}').ToString();
         }
         internal static void Stop() => Stop("off/unload/reset");
         static void Stop(string reason)
