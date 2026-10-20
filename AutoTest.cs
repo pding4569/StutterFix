@@ -1101,7 +1101,7 @@ namespace StutterFix
                 case "colorfast": Log("[colorfast] " + ColorFast.Command(arg)); return true;
                 case "groupstep": Log("[groupstep] " + DecoAnim.GroupCommand(arg)); return true;
                 case "fastlane": Log("[fastlane] " + DecoAnim.FastCommand(arg)); return true;
-                case "decocensus": Log("[decocensus] " + (arg.StartsWith("begin") ? DecoCensus.Begin(arg.Substring(5)) : DecoCensus.End())); return true;
+                case "decocensus": Log("[decocensus] " + (arg.StartsWith("begin") ? DecoCensus.Begin(arg.Substring(5)) : arg.StartsWith("props") ? DecoCensus.ShaderProps() : DecoCensus.End())); return true;
                 case "offscreenstat": Log("[offscreenstat] " + (arg == "begin" ? OffscreenProbe.Begin() : arg == "end" ? OffscreenProbe.End() : "offscreenstat begin|end")); return true;
                 case "objcensus":
                     {

@@ -154,6 +154,27 @@ namespace StutterFix
             if (moved.Count < minMoved) minMoved = moved.Count;
             if (moved.Count > maxMoved) maxMoved = moved.Count;
         }
+        internal static string ShaderProps()
+        {
+            var list = scrDecorationManager.instance.allDecorations; var sb = new StringBuilder(); int shown = 0; var seen = new HashSet<string>();
+            for (int i = 0; i < list.Count && shown < 4; i++)
+            {
+                var v = list[i] as scrVisualDecoration; if (v == null || v.spriteRenderer == null || !v.spriteRenderer.enabled) continue;
+                var m = v.spriteRenderer.sharedMaterial; if (m == null) continue; var sh = m.shader;
+                string key = sh.name + "|" + string.Join(",", m.shaderKeywords); if (!seen.Add(key + "|" + (v.spriteRenderer.sprite != null ? v.spriteRenderer.sprite.texture.wrapModeU.ToString() : ""))) continue;
+                shown++; sb.Append("shader=").Append(sh.name).Append(" keywords=").Append(string.Join(",", m.shaderKeywords)).Append(" queue=").Append(m.renderQueue).Append(" passes=").Append(m.passCount).Append(" props:");
+                int pc = sh.GetPropertyCount();
+                for (int p = 0; p < pc; p++)
+                {
+                    string n = sh.GetPropertyName(p); var t = sh.GetPropertyType(p); sb.Append(' ').Append(n).Append('(').Append(t).Append(')');
+                    if (t == UnityEngine.Rendering.ShaderPropertyType.Float || t == UnityEngine.Rendering.ShaderPropertyType.Range) sb.Append('=').Append(m.GetFloat(n).ToString("R"));
+                    else if (t == UnityEngine.Rendering.ShaderPropertyType.Vector || t == UnityEngine.Rendering.ShaderPropertyType.Color) sb.Append('=').Append(m.GetVector(n).ToString("F3"));
+                    else if (t == UnityEngine.Rendering.ShaderPropertyType.Texture) sb.Append("=st").Append(m.GetTextureScale(n).ToString("F2")).Append(m.GetTextureOffset(n).ToString("F2"));
+                }
+                sb.Append(" | wrap=").Append(v.spriteRenderer.sprite != null ? v.spriteRenderer.sprite.texture.wrapModeU.ToString() : "-").Append((char)10);
+            }
+            return sb.ToString();
+        }
         internal static string End()
         {
             bool was = active; Stop();
