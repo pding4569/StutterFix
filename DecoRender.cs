@@ -18,7 +18,8 @@ namespace StutterFix
     {
         static DecoRender session;
         static string lastCompare = "not run", lastStop = "none";
-        static bool compareFinished;
+        static bool compareFinished, onWaiting;
+        static string lastSelection = "not run", lastChanges = "none";
         static readonly AccessTools.FieldRef<scrVisualDecoration, bool> MeshOn =
             AccessTools.FieldRefAccess<scrVisualDecoration, bool>("meshRendererEnabled");
         static readonly AccessTools.FieldRef<scrDecoration, bool> RendererOn =
@@ -26,12 +27,13 @@ namespace StutterFix
         static readonly AccessTools.FieldRef<scrDecoration, Color> RendererColor =
             AccessTools.FieldRefAccess<scrDecoration, Color>("rendererColor");
         const int Padding = 4;
+        const long AtlasBudget = 4096L * 4096 * 4;
+        const int DetailLimit = 20;
         sealed class Image
         {
             internal Texture2D Source;
             internal Atlas Atlas;
             internal int X, Y;
-            internal bool PreserveUV;
         }
         sealed class Atlas
         {
@@ -52,7 +54,8 @@ namespace StutterFix
             internal Vector2[] Vertices, UV;
             internal ushort[] Triangles;
             internal int Layer, Order, UnityLayer, Id;
-            internal bool WasOff;
+            internal bool WasOff, Moved;
+            internal int Index;
             internal float Distance;
             internal float RepeatX, RepeatY;
             internal Matrix4x4 Matrix;
@@ -80,13 +83,27 @@ namespace StutterFix
         scrDecorationManager manager;
         object decorationList;
         Camera mainCamera;
-        int scene, decorationCount, vertexCount, pending;
+        int scene, vertexCount, pending;
         long resetCount, buildCount, buildTicks, measuredFrames;
         int measuredFrame = -1;
         long frameTicks;
         double lastBuildMs;
         bool stopping, comparing, initialized, startedPlaying;
         string outputDir;
+        bool observing;
+        int observeTarget, observeFrames, observeFrame = -1, detailEvents, selected;
+        long atlasBytes;
+        readonly Dictionary<string, int> excluded = new Dictionary<string, int>();
+        readonly Dictionary<string, int> changes = new Dictionary<string, int>();
+        static void Count(Dictionary<string, int> counts, string reason)
+        { int n; counts.TryGetValue(reason, out n); counts[reason] = n + 1; }
+        static string Counts(Dictionary<string, int> counts)
+        {
+            var keys = new List<string>(counts.Keys); keys.Sort(StringComparer.Ordinal);
+            var result = new StringBuilder();
+            foreach (var key in keys) result.Append(key).Append('=').Append(counts[key]).Append(' ');
+            return result.ToString().TrimEnd();
+        }
 
         static void Log(string s) => Main.Entry.Logger.Log("[decorender] " + s);
         static string F(double x) => x.ToString("F6", CultureInfo.InvariantCulture);
@@ -97,34 +114,57 @@ namespace StutterFix
             {
                 if (compareFinished) { compareFinished = false; Log(lastCompare); return true; }
                 if (!session) { Log("inactive; use decorender on"); return true; }
+                if (session.observing) return false;
                 if (session.pending == 0) { session.pending = 1; Log("compare queued for main-camera post-render"); }
                 return false; // AutoTest retries this step; only ONE comparison is submitted.
             }
-            if (arg == "off") { Stop(); Log(State()); return true; }
+            if (arg == "off") { Stop(); onWaiting = false; Log(State()); return true; }
             if (arg == "state") { Log(State()); return true; }
-            if (arg != "on") { Log("decorender on|off|compare|state"); return true; }
+            var args = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            int frames = 20;
+            if (args.Length == 0 || args[0] != "on" || args.Length > 2
+                || (args.Length == 2 && (!int.TryParse(args[1], out frames) || frames < 1 || frames > 600)))
+            { Log("decorender on [frames=20, 1..600]|off|compare|state"); return true; }
+            if (onWaiting)
+            {
+                if (session && session.observing) return false;
+                onWaiting = false; Log(State()); return true;
+            }
             if (session) { Log(State()); return true; }
             compareFinished = false;
             try
             {
                 var go = new GameObject("StutterFix.DecoRender") { hideFlags = HideFlags.HideAndDontSave };
                 session = go.AddComponent<DecoRender>();
+                session.observeTarget = frames;
                 session.Begin(modDir);
+                onWaiting = session.observing;
                 lastStop = "none";
                 Log(State());
             }
             catch (Exception e) { Stop("on failed: " + e); Log(lastStop); }
-            return true;
+            return !onWaiting;
         }
 
-        static bool Candidate(scrVisualDecoration d)
+        static string Exclusion(scrVisualDecoration d)
         {
-            if (!d || d.GetType() != typeof(scrVisualDecoration) || d.hitbox != 0 || d.isMask() || MeshOn(d)) return false;
+            if (!d || d.GetType() != typeof(scrVisualDecoration)) return "other";
             var r = d.spriteRenderer;
-            return r && r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff && r.sprite
-                && RendererOn(d) && RendererColor(d).a != 0 && r.color.a != 0
-                && r.maskInteraction == SpriteMaskInteraction.None && r.drawMode == SpriteDrawMode.Simple
-                && !r.GetComponentInParent<SortingGroup>();
+            if (d.hitbox != 0 || d.isMask() || MeshOn(d)
+                || (r && (r.maskInteraction != SpriteMaskInteraction.None || r.GetComponentInParent<SortingGroup>()))) return "mask-hitbox-mesh";
+            if (!r || !r.enabled || !r.gameObject.activeInHierarchy || r.forceRenderingOff || !r.sprite
+                || !RendererOn(d) || RendererColor(d).a == 0 || r.color.a == 0) return "other";
+            var m = r.sharedMaterial; var t = r.sprite.texture;
+            if (!m || !m.shader || !t || r.sprite.associatedAlphaSplitTexture) return "other";
+            if (m.shader.name == "Sprites/Tile" || d.repeatX != 1 || d.repeatY != 1) return "tiling-shader";
+            // Explicit allowlist: names that merely start with Sprites/Default may run custom code.
+            if (m.shader.name != "Sprites/Default" || m.passCount != 1) return "shader";
+            foreach (var keyword in m.shaderKeywords)
+                if (keyword != "PIXELSNAP_ON") return "special-keyword";
+            if (t.wrapModeU != TextureWrapMode.Clamp || t.wrapModeV != TextureWrapMode.Clamp) return "wrap";
+            if (t.width > 2048 || t.height > 2048) return "large-texture";
+            if (r.drawMode != SpriteDrawMode.Simple) return "other";
+            return null;
         }
 
         void Begin(string modDir)
@@ -134,38 +174,74 @@ namespace StutterFix
             mainCamera = scrCamera.instance ? scrCamera.instance.camobj : Camera.main;
             if (!manager || !mainCamera || SceneReset.Resetting) throw new InvalidOperationException("decoration manager/camera not ready");
             scene = SceneManager.GetActiveScene().handle; resetCount = SceneReset.Count;
-            decorationCount = manager.allDecorations.Count; decorationList = manager.allDecorations; startedPlaying = Hitch.Playing;
+            decorationList = manager.allDecorations; startedPlaying = Hitch.Playing;
             outputDir = Path.Combine(modDir, "shots");
-            var images = new Dictionary<Texture2D, Image>();
-            int excluded = 0;
+            lastSelection = "observing"; lastChanges = "none";
+            foreach (var key in new[] { "tiling-shader", "shader", "special-keyword", "wrap", "large-texture", "static", "mask-hitbox-mesh", "other", "material-unsupported", "atlas-budget", "changed-during-observation" }) excluded[key] = 0;
+            foreach (var key in new[] { "sprite", "material", "material-properties", "sortingOrder", "sortingLayer", "mask", "destroyed", "renderer-owner", "unityLayer", "sortingGroup", "drawMode", "repeat", "wrap", "restored-items" }) changes[key] = 0;
+            int index = 0;
             foreach (var d in manager.allDecorations)
             {
+                int decorationIndex = index++;
                 var v = d as scrVisualDecoration;
-                if (!Candidate(v)) { excluded++; continue; }
-                var r = v.spriteRenderer; var sprite = r.sprite; var source = r.sharedMaterial;
-                if (!source || !source.shader || sprite.associatedAlphaSplitTexture)
-                    throw new InvalidOperationException("missing material/shader or split-alpha sprite " + r.name);
-                Image image;
-                if (!images.TryGetValue(sprite.texture, out image))
-                {
-                    image = new Image { Source = sprite.texture }; images.Add(sprite.texture, image);
-                    var t = image.Source;
-                    Log("texture id=" + t.GetInstanceID() + " name=" + t.name + " size=" + t.width + "x" + t.height
-                        + " format=" + t.format + "/" + t.graphicsFormat + " wrap=" + t.wrapMode + " U=" + t.wrapModeU
-                        + " V=" + t.wrapModeV + " filter=" + t.filterMode + " mips=" + t.mipmapCount + " readable=" + t.isReadable
-                        + " aniso=" + t.anisoLevel + " bias=" + t.mipMapBias);
-                }
-                // Tiling shaders require original normalized texture coordinates/wrap.
-                if (v.repeatX != 1 || v.repeatY != 1) image.PreserveUV = true;
-                var item = new Item { D = v, R = r, Sprite = sprite, Source = source, Image = image,
-                    Vertices = sprite.vertices, Triangles = sprite.triangles, UV = sprite.uv,
+                string reason = Exclusion(v);
+                if (reason != null) { Count(excluded, reason); continue; }
+                var r = v.spriteRenderer; var sprite = r.sprite;
+                var item = new Item { D = v, R = r, Sprite = sprite, Source = r.sharedMaterial,
+                    Image = new Image { Source = sprite.texture }, Index = decorationIndex,
                     Layer = r.sortingLayerID, Order = r.sortingOrder, UnityLayer = r.gameObject.layer,
-                    Id = r.GetInstanceID(), WasOff = r.forceRenderingOff, RepeatX = v.repeatX, RepeatY = v.repeatY };
-                item.Signature = MaterialState(r, null);
-                items.Add(item); vertexCount += item.Vertices.Length;
+                    Id = r.GetInstanceID(), WasOff = r.forceRenderingOff, RepeatX = v.repeatX, RepeatY = v.repeatY,
+                    Matrix = r.transform.localToWorldMatrix, Color = r.color, FlipX = r.flipX, FlipY = r.flipY };
+                try { item.Signature = MaterialState(r, null); }
+                catch (InvalidOperationException) { Count(excluded, "material-unsupported"); continue; }
+                items.Add(item);
             }
-            if (items.Count == 0) throw new InvalidOperationException("no eligible visible image decorations");
-            foreach (var image in images.Values) Place(image);
+            observing = true; initialized = true;
+            Camera.onPreCull += PreCull; Camera.onPreRender += PreRender; Camera.onPostRender += PostRender;
+            Log("observing frames=" + observeTarget + " candidates=" + items.Count + " excluded={" + Counts(excluded)
+                + "}; sources remain SpriteRenderers; frames counted once per Time.frameCount, sampled every camera PreRender");
+        }
+
+        void FinishObservation()
+        {
+            for (int n = items.Count - 1; n >= 0; n--)
+                if (!items[n].Moved) { Count(excluded, "static"); items.RemoveAt(n); }
+            // Plan before GPU allocation, including sampler splits, padding, power-of-two slack and all mips.
+            Dictionary<Texture2D, Image> images;
+            while (true)
+            {
+                atlases.Clear(); images = new Dictionary<Texture2D, Image>();
+                foreach (var item in items)
+                {
+                    Image image;
+                    if (!images.TryGetValue(item.Sprite.texture, out image))
+                    { image = new Image { Source = item.Sprite.texture }; images.Add(image.Source, image); }
+                    item.Image = image;
+                }
+                var ordered = new List<Image>(images.Values);
+                ordered.Sort((a, b) => { int c = (b.Source.width * b.Source.height).CompareTo(a.Source.width * a.Source.height);
+                    return c != 0 ? c : a.Source.GetInstanceID().CompareTo(b.Source.GetInstanceID()); });
+                foreach (var image in ordered) Place(image);
+                atlasBytes = 0; long sourcePixels = 0;
+                foreach (var image in ordered) sourcePixels += (long)image.Source.width * image.Source.height;
+                foreach (var atlas in atlases) { TrimAtlas(atlas); atlasBytes += AtlasBytes(atlas); }
+                if (atlasBytes <= AtlasBudget && sourcePixels <= 4096L * 4096) break;
+                var largest = ordered[0].Source; int removed = 0;
+                for (int n = items.Count - 1; n >= 0; n--)
+                    if (items[n].Image.Source == largest) { items.RemoveAt(n); Count(excluded, "atlas-budget"); removed++; }
+                Log("budget exclude texture=" + largest.GetInstanceID() + " size=" + largest.width + "x" + largest.height
+                    + " decorations=" + removed + " planned-bytes=" + atlasBytes + " source-pixels=" + sourcePixels);
+            }
+            foreach (var image in images.Values)
+            {
+                var t = image.Source;
+                Log("texture id=" + t.GetInstanceID() + " name=" + t.name + " size=" + t.width + "x" + t.height
+                    + " format=" + t.format + "/" + t.graphicsFormat + " wrap=" + t.wrapMode + " U=" + t.wrapModeU
+                    + " V=" + t.wrapModeV + " filter=" + t.filterMode + " mips=" + t.mipmapCount + " readable=" + t.isReadable
+                    + " aniso=" + t.anisoLevel + " bias=" + t.mipMapBias);
+            }
+            foreach (var item in items)
+            { item.Vertices = item.Sprite.vertices; item.Triangles = item.Sprite.triangles; item.UV = item.Sprite.uv; vertexCount += item.Vertices.Length; }
             foreach (var atlas in atlases) BuildAtlas(atlas);
             var map = new Dictionary<string, Group>();
             foreach (var item in items)
@@ -209,9 +285,11 @@ namespace StutterFix
                 }
                 g.Mesh.SetVertices(g.Positions); g.Mesh.SetColors(g.Colors); g.Mesh.SetUVs(0, g.UV); g.Mesh.SetTriangles(g.Indices, 0, false);
             }
-            initialized = true;
-            Camera.onPreCull += PreCull; Camera.onPreRender += PreRender; Camera.onPostRender += PostRender;
-            Log("selected=" + items.Count + " excluded=" + excluded + " source textures=" + images.Count
+            observing = false; selected = items.Count;
+            lastSelection = "selected=" + selected + " excluded={" + Counts(excluded) + "} source-textures=" + images.Count
+                + " atlas-bytes=" + atlasBytes + "/" + AtlasBudget;
+            Log(lastSelection);
+            Log("selected=" + items.Count + " source textures=" + images.Count
                 + "; order=sortingLayer/order,queue,descending camera distance,ascending original Renderer instanceID"
                 + "; instanceID tie is an experimental heuristic, NOT Unity's guaranteed internal tie order"
                 + "; same-order external renderer/atlas/material interleaving not preserved; cameras=" + Camera.allCamerasCount);
@@ -286,7 +364,7 @@ namespace StutterFix
             var t = image.Source; string sampler = Sampler(t);
             // Mipmapped textures use dedicated atlases: exact source dimensions/LOD and wrap,
             // no cross-image mip bleed. Mipless sources are shelf-packed without downscaling.
-            bool dedicated = image.PreserveUV || t.mipmapCount > 1 || t.width + Padding * 2 > SystemInfo.maxTextureSize
+            bool dedicated = t.mipmapCount > 1 || t.width + Padding * 2 > SystemInfo.maxTextureSize
                 || t.height + Padding * 2 > SystemInfo.maxTextureSize;
             Atlas a = null;
             if (!dedicated)
@@ -324,9 +402,8 @@ namespace StutterFix
             { int k = ((i % (length * 2)) + length * 2) % (length * 2); return k < length ? k : length * 2 - k - 1; }
             return ((i % length) + length) % length;
         }
-        void BuildAtlas(Atlas a)
+        static void TrimAtlas(Atlas a)
         {
-            var source = a.Images[0].Source;
             if (!a.Dedicated)
             {
                 // Trim empty shelf space; power-of-two sizes keep UV scaling stable.
@@ -334,6 +411,16 @@ namespace StutterFix
                 foreach (var image in a.Images) { w = Mathf.Max(w, image.X + image.Source.width + Padding); h = Mathf.Max(h, image.Y + image.Source.height + Padding); }
                 a.Width = Mathf.Min(a.Width, Mathf.NextPowerOfTwo(w)); a.Height = Mathf.Min(a.Height, Mathf.NextPowerOfTwo(h));
             }
+        }
+        static long AtlasBytes(Atlas a)
+        {
+            long bytes = 0;
+            for (int m = 0; m < a.Mips; m++) bytes += (long)Mathf.Max(1, a.Width >> m) * Mathf.Max(1, a.Height >> m) * 4;
+            return bytes;
+        }
+        void BuildAtlas(Atlas a)
+        {
+            var source = a.Images[0].Source;
             a.Texture = new Texture2D(a.Width, a.Height, TextureFormat.RGBA32, a.Mips, a.Linear)
             { name = "DecoRender atlas", hideFlags = HideFlags.HideAndDontSave, filterMode = source.filterMode,
                 wrapModeU = source.wrapModeU, wrapModeV = source.wrapModeV, anisoLevel = source.anisoLevel, mipMapBias = source.mipMapBias };
@@ -396,15 +483,16 @@ namespace StutterFix
         bool ValidSession() => manager && manager == scrDecorationManager.instance && mainCamera
             && scrCamera.instance && mainCamera == scrCamera.instance.camobj && !SceneReset.Resetting
             && SceneReset.Count == resetCount && SceneManager.GetActiveScene().handle == scene
-            && ReferenceEquals(manager.allDecorations, decorationList) && manager.allDecorations.Count == decorationCount
+            && ReferenceEquals(manager.allDecorations, decorationList)
             && (!startedPlaying || Hitch.Playing);
 
         void PreCull(Camera camera)
         {
-            if (stopping || comparing || !initialized) return;
+            if (stopping || comparing || !initialized || observing) return;
             try
             {
                 if (!ValidSession()) { Stop("pre-cull transition"); return; }
+                PruneChanged();
                 // Unity culls BEFORE onPreRender. Register current source bounds and enable the
                 // replacement before that cull, including the very first frame. Vertex transforms
                 // are still sampled later, exclusively in onPreRender after game LateUpdate.
@@ -413,7 +501,6 @@ namespace StutterFix
                     bool haveBounds = false;
                     foreach (var i in g.Items)
                     {
-                        if (!i.D || !i.R) { Stop("owned decoration destroyed before cull"); return; }
                         if (!i.R.enabled || !i.R.gameObject.activeInHierarchy) continue;
                         if (!haveBounds) { g.CullBounds = i.R.bounds; haveBounds = true; }
                         else g.CullBounds.Encapsulate(i.R.bounds);
@@ -440,27 +527,89 @@ namespace StutterFix
                     + " orthographic=" + camera.orthographic + " sortMode=" + camera.transparencySortMode
                     + " sortAxis=" + camera.transparencySortAxis + " graphicsSortMode=" + GraphicsSettings.transparencySortMode
                     + " graphicsSortAxis=" + GraphicsSettings.transparencySortAxis);
+                if (observing)
+                {
+                    PruneChanged();
+                    foreach (var i in items)
+                    {
+                        var matrix = i.R.transform.localToWorldMatrix; var color = i.R.color;
+                        if (!MatrixEqual(matrix, i.Matrix) || !color.Equals(i.Color) || i.FlipX != i.R.flipX || i.FlipY != i.R.flipY) i.Moved = true;
+                        i.Matrix = matrix; i.Color = color; i.FlipX = i.R.flipX; i.FlipY = i.R.flipY;
+                    }
+                    if (observeFrame != Time.frameCount) { observeFrame = Time.frameCount; observeFrames++; }
+                    if (observeFrames >= observeTarget) FinishObservation();
+                    return; // New groups need the NEXT camera's PreCull before takeover.
+                }
                 Build(camera, true);
             }
             catch (Exception e) { Stop("pre-render failed: " + e); }
         }
 
+        static bool MatrixEqual(Matrix4x4 a, Matrix4x4 b)
+        { for (int n = 0; n < 16; n++) if (!a[n].Equals(b[n])) return false; return true; }
+        static string Identity(UnityEngine.Object value) => value ? value.name + "#" + value.GetInstanceID() : "destroyed/null";
+        bool Changed(Item i, string field, object before, object after)
+        {
+            Count(changes, field);
+            if (detailEvents++ < DetailLimit)
+                Log("change index=" + i.Index + " renderer=" + i.Id + " field=" + field + " before={" + before + "} after={" + after + "}");
+            return true;
+        }
+        void PruneChanged()
+        {
+            for (int n = items.Count - 1; n >= 0; n--)
+            {
+                var i = items[n]; bool remove = false;
+                if (!i.D || !i.R) remove = Changed(i, "destroyed", "decoration/renderer alive", "decoration=" + (bool)i.D + " renderer=" + (bool)i.R);
+                else
+                {
+                    var r = i.R;
+                    if (i.D.spriteRenderer != r) remove |= Changed(i, "renderer-owner", Identity(r), Identity(i.D.spriteRenderer));
+                    if (r.sprite != i.Sprite) remove |= Changed(i, "sprite", Identity(i.Sprite), Identity(r.sprite));
+                    if (r.sharedMaterial != i.Source) remove |= Changed(i, "material", Identity(i.Source), Identity(r.sharedMaterial));
+                    if (r.sortingLayerID != i.Layer) remove |= Changed(i, "sortingLayer", i.Layer, r.sortingLayerID);
+                    if (r.sortingOrder != i.Order) remove |= Changed(i, "sortingOrder", i.Order, r.sortingOrder);
+                    if (r.gameObject.layer != i.UnityLayer) remove |= Changed(i, "unityLayer", i.UnityLayer, r.gameObject.layer);
+                    if (i.D.hitbox != 0 || i.D.isMask() || MeshOn(i.D) || r.maskInteraction != SpriteMaskInteraction.None)
+                        remove |= Changed(i, "mask", "hitbox=0 mask=False mesh=False interaction=None",
+                            "hitbox=" + i.D.hitbox + " mask=" + i.D.isMask() + " mesh=" + MeshOn(i.D) + " interaction=" + r.maskInteraction);
+                    if (r.GetComponentInParent<SortingGroup>()) remove |= Changed(i, "sortingGroup", "none", "present");
+                    if (r.drawMode != SpriteDrawMode.Simple) remove |= Changed(i, "drawMode", SpriteDrawMode.Simple, r.drawMode);
+                    if (i.D.repeatX != i.RepeatX || i.D.repeatY != i.RepeatY)
+                        remove |= Changed(i, "repeat", i.RepeatX + "," + i.RepeatY, i.D.repeatX + "," + i.D.repeatY);
+                    if (!remove)
+                    {
+                        try
+                        {
+                            string signature = MaterialState(r, null);
+                            if (signature != i.Signature) remove |= Changed(i, "material-properties", i.Signature, signature);
+                            var t = i.Image.Source;
+                            if (t.wrapModeU != TextureWrapMode.Clamp || t.wrapModeV != TextureWrapMode.Clamp)
+                                remove |= Changed(i, "wrap", "Clamp/Clamp", t.wrapModeU + "/" + t.wrapModeV);
+                        }
+                        catch (Exception e) { remove |= Changed(i, "material-properties", i.Signature, e.Message); }
+                    }
+                }
+                if (!remove) continue;
+                if (i.R) i.R.forceRenderingOff = false;
+                foreach (var g in groups) g.Items.Remove(i);
+                items.RemoveAt(n);
+                if (i.Vertices != null) vertexCount -= i.Vertices.Length;
+                if (observing) Count(excluded, "changed-during-observation");
+                Count(changes, "restored-items");
+            }
+        }
+
         void Build(Camera camera, bool measure)
         {
             long start = Stopwatch.GetTimestamp();
+            PruneChanged();
             var mode = camera.transparencySortMode;
             if (mode == TransparencySortMode.Default) mode = GraphicsSettings.transparencySortMode;
             if (mode == TransparencySortMode.Default) mode = camera.orthographic ? TransparencySortMode.Orthographic : TransparencySortMode.Perspective;
             var axis = camera.transparencySortMode == TransparencySortMode.CustomAxis ? camera.transparencySortAxis : GraphicsSettings.transparencySortAxis;
             foreach (var i in items)
             {
-                if (!i.D || !i.R || i.R.sprite != i.Sprite || i.R.sharedMaterial != i.Source
-                    || i.R.sortingLayerID != i.Layer || i.R.sortingOrder != i.Order || i.R.gameObject.layer != i.UnityLayer
-                    || i.D.hitbox != 0 || i.D.isMask() || MeshOn(i.D) || i.R.maskInteraction != SpriteMaskInteraction.None
-                    || i.D.repeatX != i.RepeatX || i.D.repeatY != i.RepeatY
-                    || i.R.drawMode != SpriteDrawMode.Simple || i.R.GetComponentInParent<SortingGroup>()
-                    || MaterialState(i.R, null) != i.Signature)
-                    throw new InvalidOperationException("owned renderer destroyed or sprite/material/sorting/mask changed; re-run on");
                 i.Matrix = i.R.transform.localToWorldMatrix; i.Color = i.R.color;
                 i.FlipX = i.R.flipX; i.FlipY = i.R.flipY;
                 i.Visible = i.R.enabled && i.R.gameObject.activeInHierarchy && RendererOn(i.D) && RendererColor(i.D).a != 0 && i.Color.a != 0;
@@ -501,7 +650,7 @@ namespace StutterFix
 
         void PostRender(Camera camera)
         {
-            if (stopping || comparing || pending == 0 || camera != mainCamera) return;
+            if (stopping || comparing || observing || pending == 0 || camera != mainCamera) return;
             pending = 0;
             try { Compare(); }
             catch (Exception e) { lastCompare = "compare failed: " + e; Stop(lastCompare); }
@@ -516,14 +665,48 @@ namespace StutterFix
         }
         bool SnapshotUnchanged()
         {
+            try
+            {
             foreach (var i in items)
-                if (!i.D || !i.R || i.R.transform.localToWorldMatrix != i.Matrix || i.R.color != i.Color
+                if (!i.D || !i.R || !MatrixEqual(i.R.transform.localToWorldMatrix, i.Matrix) || i.R.color != i.Color
                     || i.R.flipX != i.FlipX || i.R.flipY != i.FlipY || i.R.sprite != i.Sprite
                     || i.R.sharedMaterial != i.Source || i.R.sortingLayerID != i.Layer || i.R.sortingOrder != i.Order
-                    || i.R.gameObject.layer != i.UnityLayer
+                    || i.R.gameObject.layer != i.UnityLayer || i.D.spriteRenderer != i.R
+                    || i.D.hitbox != 0 || i.D.isMask() || MeshOn(i.D) || i.R.maskInteraction != SpriteMaskInteraction.None
+                    || i.R.drawMode != SpriteDrawMode.Simple || i.R.GetComponentInParent<SortingGroup>()
+                    || i.D.repeatX != i.RepeatX || i.D.repeatY != i.RepeatY
                     || (i.R.enabled && i.R.gameObject.activeInHierarchy && RendererOn(i.D) && RendererColor(i.D).a != 0 && i.R.color.a != 0) != i.Visible
                     || MaterialState(i.R, null) != i.Signature) return false;
             return ValidSession();
+            }
+            catch (Exception) { return false; } // A callback mutation invalidates this sample; finally restores that item.
+        }
+        bool[] SelectedPixels(Camera camera, int width, int height)
+        {
+            var mask = new bool[width * height];
+            foreach (var i in items)
+            {
+                if (!i.Visible || (camera.cullingMask & (1 << i.UnityLayer)) == 0) continue;
+                var bounds = i.R.bounds;
+                float minX = width, minY = height, maxX = 0, maxY = 0;
+                int behind = 0;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    var point = bounds.center + Vector3.Scale(bounds.extents,
+                        new Vector3((corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1));
+                    var screen = camera.WorldToScreenPoint(point);
+                    if (screen.z < camera.nearClipPlane) behind++;
+                    minX = Mathf.Min(minX, screen.x); maxX = Mathf.Max(maxX, screen.x);
+                    minY = Mathf.Min(minY, screen.y); maxY = Mathf.Max(maxY, screen.y);
+                }
+                if (behind == 8) continue;
+                // A box crossing the near plane has an unbounded projection: conservative full image.
+                if (behind != 0) { minX = minY = 0; maxX = width; maxY = height; }
+                int x0 = Mathf.Clamp(Mathf.FloorToInt(minX) - 1, 0, width), x1 = Mathf.Clamp(Mathf.CeilToInt(maxX) + 1, 0, width);
+                int y0 = Mathf.Clamp(Mathf.FloorToInt(minY) - 1, 0, height), y1 = Mathf.Clamp(Mathf.CeilToInt(maxY) + 1, 0, height);
+                for (int y = y0; y < y1; y++) for (int x = x0; x < x1; x++) mask[y * width + x] = true;
+            }
+            return mask;
         }
         void Compare()
         {
@@ -542,6 +725,7 @@ namespace StutterFix
                 c.worldToCameraMatrix = mainCamera.worldToCameraMatrix; c.projectionMatrix = mainCamera.projectionMatrix;
                 c.rect = new Rect(0, 0, 1, 1); c.stereoTargetEye = StereoTargetEyeMask.None;
                 rt = RenderTexture.GetTemporary(w, h, 24, RenderTextureFormat.ARGB32); rt.antiAliasing = 1; c.targetTexture = rt;
+                var selectedPixels = SelectedPixels(c, w, h);
                 Takeover(false); ClearTarget(rt, c.backgroundColor); c.Render(); a = Read(rt);
                 if (stopping) throw new InvalidOperationException("compare interrupted: " + lastStop);
                 bool same = SnapshotUnchanged();
@@ -549,6 +733,8 @@ namespace StutterFix
                 if (stopping) throw new InvalidOperationException("compare interrupted: " + lastStop);
                 var aa = a.GetPixels32(); var bb = b.GetPixels32(); var dd = new Color32[aa.Length];
                 int[] thresholds = { 0, 1, 2, 4, 8 }; long[] counts = new long[5]; int[] max = new int[4];
+                long[] inside = new long[5], outside = new long[5]; long insidePixels = 0;
+                int insideMax = 0, outsideMax = 0;
                 int greatest = -1, location = 0;
                 for (int n = 0; n < aa.Length; n++)
                 {
@@ -556,7 +742,10 @@ namespace StutterFix
                         db = Math.Abs(aa[n].b - bb[n].b), da = Math.Abs(aa[n].a - bb[n].a);
                     max[0] = Math.Max(max[0], dr); max[1] = Math.Max(max[1], dg); max[2] = Math.Max(max[2], db); max[3] = Math.Max(max[3], da);
                     int d = Math.Max(Math.Max(dr, dg), Math.Max(db, da)); if (d > greatest) { greatest = d; location = n; }
-                    for (int k = 0; k < 5; k++) if (d > thresholds[k]) counts[k]++;
+                    if (selectedPixels[n]) { insidePixels++; insideMax = Math.Max(insideMax, d); }
+                    else outsideMax = Math.Max(outsideMax, d);
+                    for (int k = 0; k < 5; k++) if (d > thresholds[k])
+                    { counts[k]++; if (selectedPixels[n]) inside[k]++; else outside[k]++; }
                     // Include alpha-only differences in blue; output alpha remains opaque for inspection.
                     dd[n] = new Color32((byte)Math.Min(255, dr * 16), (byte)Math.Min(255, dg * 16), (byte)Math.Min(255, Math.Max(db, da) * 16), 255);
                 }
@@ -573,13 +762,23 @@ namespace StutterFix
                     .Append(" snapshotStable=").Append(same);
                 for (int k = 0; k < 5; k++) result.Append(" >").Append(thresholds[k]).Append('=').Append(counts[k]).Append('/').Append(aa.Length)
                     .Append(" ratio=").Append(F((double)counts[k] / aa.Length));
+                result.Append(" selected-bounds-pixels=").Append(insidePixels).Append(" inside-max=").Append(insideMax).Append(" outside-max=").Append(outsideMax);
+                for (int k = 0; k < 5; k++)
+                {
+                    long outsidePixels = aa.Length - insidePixels;
+                    result.Append(" inside>").Append(thresholds[k]).Append('=').Append(inside[k]).Append('/').Append(insidePixels)
+                        .Append(" ratio=").Append(F((double)inside[k] / Math.Max(1, insidePixels)))
+                        .Append(" outside>").Append(thresholds[k]).Append('=').Append(outside[k]).Append('/').Append(outsidePixels)
+                        .Append(" ratio=").Append(F((double)outside[k] / Math.Max(1, outsidePixels)));
+                }
+                result.Append(" bounds=union-of-projected-world-AABBs-plus-1px; conservative-region-NOT-object-coverage");
                 result.Append(" files=").Append(prefix).Append("-{original,group,diff16}.png")
                     .Append("; clone camera only; source image effects/command buffers/other cameras NOT copied; temporal/global callbacks may differ; performance UNMEASURED");
                 lastCompare = result.ToString(); File.WriteAllText(prefix + "-metrics.txt", lastCompare, Encoding.UTF8);
             }
             finally
             {
-                if (!stopping) Takeover(true);
+                if (!stopping) { PruneChanged(); Takeover(true); }
                 RenderTexture.active = old; GL.sRGBWrite = oldSRGB;
                 if (go) { var c = go.GetComponent<Camera>(); if (c) c.targetTexture = null; Destroy(go); }
                 if (rt) RenderTexture.ReleaseTemporary(rt);
@@ -599,7 +798,10 @@ namespace StutterFix
             var s = session; var result = new StringBuilder("active=").Append((bool)s);
             if (s)
             {
-                result.Append(" managed=").Append(s.items.Count).Append(" groups=").Append(s.groups.Count)
+                result.Append(" observing=").Append(s.observing).Append(" observation=").Append(s.observeFrames).Append('/').Append(s.observeTarget)
+                    .Append(" excluded={").Append(Counts(s.excluded)).Append("}")
+                    .Append(" atlas-bytes=").Append(s.atlasBytes).Append('/').Append(AtlasBudget)
+                    .Append(" selected=").Append(s.selected).Append(" managed=").Append(s.items.Count).Append(" groups=").Append(s.groups.Count)
                     .Append(" vertices=").Append(s.vertexCount).Append(" atlases=").Append(s.atlases.Count);
                 foreach (var a in s.atlases) result.Append(' ').Append(a.Width).Append('x').Append(a.Height).Append("/mips=").Append(a.Mips);
                 result.Append(" build-ms/last-camera=").Append(F(s.lastBuildMs)).Append(" build-ms/mean-camera=")
@@ -608,13 +810,13 @@ namespace StutterFix
                     .Append(" build-ms/mean-frame=").Append(F(s.buildTicks * 1000.0 / Stopwatch.Frequency / Math.Max(1, s.measuredFrames)))
                     .Append(" builds=").Append(s.buildCount).Append(" cameras=").Append(s.cameras.Count).Append(" comparePending=").Append(s.pending);
             }
-            return result.Append(" stop=").Append(lastStop).Append(" lastCompare={").Append(lastCompare).Append('}').ToString();
+            return result.Append(" selection={").Append(lastSelection).Append("} changes={").Append(s ? Counts(s.changes) : lastChanges).Append("} detail-limit=").Append(DetailLimit).Append(" stop=").Append(lastStop).Append(" lastCompare={").Append(lastCompare).Append('}').ToString();
         }
         internal static void Stop() => Stop("off/unload/reset");
         static void Stop(string reason)
         {
             var s = session; if (!s || s.stopping) return;
-            s.stopping = true; lastStop = reason;
+            s.stopping = true; lastStop = reason; lastChanges = Counts(s.changes);
             Camera.onPreCull -= s.PreCull; Camera.onPreRender -= s.PreRender; Camera.onPostRender -= s.PostRender;
             if (s.pending != 0) { lastCompare = "cancelled: " + reason; compareFinished = true; }
             // Disable immediately: Destroy is deferred until end of frame.
