@@ -271,6 +271,9 @@ namespace StutterFix
             r.CStart = start; r.CEnd = target;
             DecoEngine.AlphaEvent(r);
             if (Sample()) r.Shadow = DOTween.To(() => r.CStart, c => { r.SC = c; r.SStepped = true; }, r.CEnd, r.Dur).SetEase(ease).OnComplete(() => r.SDone = true);
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.Created(r);
+#endif
         }
         internal static void Scale(scrDecoration dec, Dictionary<global::TweenType, Tween> d, int key, Vector2 target, float dur, Ease ease)
         {
@@ -280,6 +283,9 @@ namespace StutterFix
             if (Sample())
                 r.Shadow = DOTween.To(() => r.Started ? r.VStart : scaleRef(r.D), v => { r.SV = v; r.SStepped = true; }, r.VEnd, r.Dur).SetEase(ease)
                     .SetOptions(key == 7 ? AxisConstraint.X : AxisConstraint.Y).OnComplete(() => r.SDone = true);
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.Created(r);
+#endif
         }
         // 피벗 X/Y (키 3/4): 시작 = 만들 때 pivotOffsetVec 의 그 축, OnUpdate/OnComplete = SetPivotX/Y
         internal static void Piv(scrDecoration dec, Dictionary<global::TweenType, Tween> d, int key, float target, float dur, Ease ease)
@@ -308,6 +314,9 @@ namespace StutterFix
             r.VStart = start; r.VEnd = target;
             if (Sample())
                 r.Shadow = DOTween.To(() => r.VStart, v => { r.SV = v; r.SStepped = true; }, r.VEnd, r.Dur).SetEase(ease).OnComplete(() => r.SDone = true);
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.Created(r);
+#endif
         }
         internal static bool HasParallax(scrDecoration dec) { return parallaxRef(dec) != null; }
 
@@ -316,6 +325,9 @@ namespace StutterFix
         private static void MaybeShadowF(Rec r)
         {
             if (Sample()) r.Shadow = DOTween.To(() => r.FStart, v => { r.SF = v; r.SStepped = true; }, r.FEnd, r.Dur).SetEase(r.E).OnComplete(() => r.SDone = true);
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.Created(r);
+#endif
         }
 
         // ── 진행 ──
@@ -330,6 +342,9 @@ namespace StutterFix
                 default: r.FChange = r.FEnd - r.FStart; break;
             }
             BatchShadowStart(r);
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.Started(r);
+#endif
         }
         // Calls and declarations disappear from a normal Player build.
         static partial void BatchShadowStart(Rec r);
@@ -425,6 +440,9 @@ namespace StutterFix
             else { Apply(r, to, true);
             OnUpdate(r); }
             if (done) { r.Running = false; fastDirty = true; Completed++; OnComplete(r); }
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.Stepped(r);
+#endif
         }
         // Alpha-boundary lane: original arithmetic and setter/lazy semantics.
         // Color records remain in recs; EngineSkipFrame prevents a second Step.
@@ -464,6 +482,9 @@ namespace StutterFix
             }
             if (dr) { r.Running = false; fastDirty = true; Completed++; }
             if (dn) { n.Running = false; fastDirty = true; Completed++; }
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) { DecoSim.Stepped(r); DecoSim.Stepped(n); }
+#endif
         }
 
         private static void PositionUpdate(Rec r, float value)
@@ -492,6 +513,9 @@ namespace StutterFix
             try { Apply(r, r.Dur); OnUpdate(r); OnComplete(r); }
             catch (Exception ex) { Error(ex); }
             BatchShadowCancel(r); // Startup can have enrolled an unstarted completion.
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.Completed(r);
+#endif
             if (Edition.Dev && r.Shadow != null && r.Shadow.active) { try { r.Shadow.Complete(true); } catch { } }
         }
 
@@ -505,6 +529,9 @@ namespace StutterFix
             BatchShadowCancel(r);
             if (complete) { Killed++; Complete(r); }
             else if (r.Running) { r.Running = false; fastDirty = true; Dropped++; if (r.Shadow != null) r.Shadow.Kill(false); }
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.Cancelled(r);
+#endif
             return false;   // 표 자체는 꺼진 객체라 DOTween 에 넘길 것이 없다
         }
         // Complete(t) / Complete(t, withCallbacks): 트위너는 어느 쪽이든 끝값 + OnComplete (DOTween 과 같음)
@@ -549,6 +576,9 @@ namespace StutterFix
                 BatchShadowCancel(r);
                 if (complete) Complete(r);
                 else if (r.Running) { r.Running = false; Dropped++; }
+#if DEV || AUTOTEST
+                if (DecoSim.Capturing) DecoSim.Cancelled(r);
+#endif
                 r.InList = false;
             }
             recs.Clear();
@@ -605,10 +635,16 @@ namespace StutterFix
 #endif
         public static void UpdatePrefix()
         {
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.BeginFrame(recs, batchOn || DecoEngine.Enabled || GroupEnabled || NativeMotion.Enabled);
+#endif
             UpdateEvalMemo.NewFrame();
             if (batchCount != 0 && !BatchAllowed()) BatchRestoreAll();
 #if DEV || AUTOTEST
             UpdateCostProbe.Frame(recs);
+#endif
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing && recs.Count == 0 && batchCount == 0 && DecoEngine.Count == 0) DecoSim.EndFrame(recs, 0f);
 #endif
             if (recs.Count == 0 && batchCount == 0 && DecoEngine.Count == 0) { LastFrameMs = 0; return; }
             GroupFrameStart();
@@ -694,6 +730,9 @@ namespace StutterFix
             BatchShadowEnd();
             DecoEngine.Admit();
             DecoEngine.EndFrame();
+#if DEV || AUTOTEST
+            if (DecoSim.Capturing) DecoSim.EndFrame(recs, td);
+#endif
 #if AUTOTEST
             long sampCompact0 = sampFrame ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
 #endif
