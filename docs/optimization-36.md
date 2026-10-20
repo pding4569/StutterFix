@@ -993,3 +993,11 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - **Lost Requiem 531.8초 `tilerange shadow`**: `patch-fail=0 patched=53`, shadow 불일치 0·늦게 발견된 변경 0. 하지만 **건너뛴 청크 0개**(타일 8,171개 전부 원래 경로), 효과 시작 25.7ms(끔 기준 22~25ms과 같음). 8초 동안 훅이 **198만 번** 불림(=타일 8,171개 × 약 242프레임, 매 프레임 모든 타일) → 모든 청크가 항상 dirty. 안전망 `safety-ms` 147(8초), 훅 `hook-ms` 174 — 이득 없이 비용만.
 - 의심: `scrFloor.LateUpdate` 가 `lastPos`·`lastScale`·`opacityLastFrame`·`glowMultiplierLastFrame` 에 매 프레임 쓰는 "지난 프레임 값 장부"를 상태 변경으로 표시. 확인하려면 사이트별 호출 수 계수 필요 → 후속 임무 `docs/handoff/codex-tilerange-3-20261020.md`(Codex 사용량 초기화 20:43 뒤 맡길 예정).
 - 릴리스 영향 없음: 기본 꺼짐·개발/자동 시험 빌드 전용, 2.8.0 에 포함 안 됨.
+
+## 2026-10-20 밤: Arche 258~278초 GPU 연구(Codex 계측 + 게임 측정) — GPU 는 병목이 아니다, 접음
+- 도구(브랜치 `codex/night-archegpu`, 개발/자동 시험 전용·기본 꺼짐): `archegpu on|state|stamp|timeline|off`(카메라·이미지 효과 목록, 콜백 수·첫 RT·파라미터), `fxoff <효과>|none`(선택 효과를 Blit 1회로 대체하는 화면이 바뀌는 진단). 기존 `gpuprobe`(D3D11 timestamp, 1/8 프레임 표본)와 함께 쓴다. 정확한 구간별 이벤트 목록은 `archegpu timeline`+`tools/optimization/archegpu-audit.py` 로 결합.
+- **측정(3440×1440·165Hz 켠 화면, 258~278초, 377프레임 표본, 계측 판이라 FPS 는 성능 수치 아님)**: GPU 프레임 전체(첫 카메라 preCull→프레임 끝) 평균 **4.24ms**(최대 7.65). 그중 본 카메라(`Camera#102298`) 4.06ms, 배경·오버레이 카메라 합 0.16ms.
+- **필터는 작다**: 본 카메라 안의 이미지 효과는 모두 합쳐 **약 0.65ms**(평균 프레임 기여). 가장 큰 것: Light_Water2 0.084, VideoBloom 0.078, Atmosphere_Rain 0.070, CameraMotionBlur 0.064(활성 42프레임에서 0.58ms), Color_Contrast 0.056, Film_Grain 0.044. 나머지 ~3.4ms 는 장면(장식·타일·행성) 그리기. 필터를 전부 공짜로 만들어도 GPU 0.65ms.
+- **결론**: 이 구간 프레임 약 10~11ms 중 GPU 는 약 4~6ms 만 쓴다(PresentMon 은 5~6.6ms). 병목은 CPU(장식 처리 약 5.5ms + 엔진 CPU 약 5ms)이므로 **GPU 를 줄여도 FPS 이득은 거의 없다**. 필터 하나씩 끄는 A/B(`fxoff`)와 겹쳐 그리기·RT 복사 제거는 진행하지 않음.
+- 한계: GPU 경과 시간(timestamp)이지 PresentMon `MsGPUBusy` 와 같지 않음; 258~278초 한 구간만; 장면 그리기 3.4ms 를 줄이는 방법(해상도·겹쳐 그리기)은 화면이 달라진다.
+- 근거: `docs/handoff/archegpu-evidence/arche-258-278-gpuprobe.txt`, Codex 결과 `docs/handoff/codex-archegpu-20261020-result.md`.
