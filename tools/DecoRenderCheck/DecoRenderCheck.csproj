@@ -7,5 +7,6 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="../../DecoRender.Incremental.cs" Link="DecoRender.Incremental.cs" />
+    <Compile Include="../../DecoRender.Topology.cs" Link="DecoRender.Topology.cs" />
   </ItemGroup>
 </Project>

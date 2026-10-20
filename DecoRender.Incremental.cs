@@ -36,6 +36,11 @@ namespace StutterFix
         int collectCount, nativeReads, poseHits;
         long soaChecks, soaMismatches, verifySequence;
         double collectMs, topologyMs;
+        double cameraMs, borrowMs, pruneMs;
+        readonly Samples cameraSamples = new Samples(), borrowSamples = new Samples(), pruneSamples = new Samples();
+        readonly Samples preCullSamples = new Samples(), preRenderSamples = new Samples(),
+            buildRemainderSamples = new Samples(), pollSamples = new Samples(), ownerSamples = new Samples();
+        long captureCalls, captureMapped, captureMisses, captureCold, poseStale, poseRejectedReads, localInvalidations;
         readonly Samples auditSamples = new Samples(), dirtySamples = new Samples(), changeSamples = new Samples(), layoutSamples = new Samples(),
             scheduleSamples = new Samples(), waitSamples = new Samples(), otherSamples = new Samples(),
             unaccountedSamples = new Samples(), drawOnSamples = new Samples(), drawOffSamples = new Samples();
@@ -126,7 +131,7 @@ namespace StutterFix
                 if (ReferenceEquals(t, i.RenderTransform) && !ReferenceEquals(t, i.PivotTransform)) {
                     i.ChildMatrix.m03 = position.x; i.ChildMatrix.m13 = position.y; i.ChildMatrix.m23 = position.z;
                     i.ChildIdentity = MatrixEqual(i.ChildMatrix, Matrix4x4.identity);
-                } else i.PoseFrame = -1;
+                } else { i.PoseFrame = -1; s.localInvalidations++; }
                 s.signalled.Add(i);
                 if (s.preparedFrame == Time.frameCount && !s.comparing) s.fallbackKeys.Add(OrderKey(i));
             }
@@ -134,7 +139,11 @@ namespace StutterFix
         internal static void Capture(scrDecoration d, Vector3 p, Quaternion q, Vector3 scale)
         {
             var s = session; Item i;
-            if (ReferenceEquals(s, null) || !s.layoutReady || s.stopping || !s.residents.TryGetValue(d, out i)) return;
+            if (ReferenceEquals(s, null) || s.stopping) return;
+            s.captureCalls++;
+            if (!s.layoutReady) { s.captureCold++; return; }
+            if (!s.residents.TryGetValue(d, out i)) { s.captureMisses++; return; }
+            s.captureMapped++;
             int n = i.Slot;
             s.px[n] = p.x; s.py[n] = p.y; s.pz[n] = p.z;
             s.qx[n] = q.x; s.qy[n] = q.y; s.qz[n] = q.z; s.qw[n] = q.w;
@@ -149,9 +158,23 @@ namespace StutterFix
         static readonly HarmonyLib.AccessTools.FieldRef<scrDecoration, bool> RenderEnabled =
             HarmonyLib.AccessTools.FieldRefAccess<scrDecoration, bool>("rendererEnabled");
 
+        struct CapturedPose
+        {
+            internal Vector3 P, S;
+            internal Quaternion Q;
+            internal Color C;
+        }
         void ResetLayout()
         {
             layoutResets++;
+            // TightLate ran before PreCull. Slot relocation must not erase that frame's capture.
+            var captured = new Dictionary<Item, CapturedPose>();
+            if (layoutReady) foreach (var i in items) if (i.PoseFrame == Time.frameCount && i.Slot < px.Length) {
+                int n = i.Slot;
+                captured[i] = new CapturedPose { P = new Vector3(px[n], py[n], pz[n]),
+                    Q = new Quaternion(qx[n], qy[n], qz[n], qw[n]), S = new Vector3(sx[n], sy[n], sz[n]),
+                    C = new Color(cr[n], cg[n], cb[n], ca[n]) };
+            }
             // Existing runs retain their meshes. Preserve output for them across slot relocation;
             // only a newly created run needs its members written again.
             var retained = new HashSet<Item>();
@@ -180,6 +203,14 @@ namespace StutterFix
                 if (!i.Written) i.Visible = false;
                 else if (i.Visible) i.Run.VisibleItems.Add(i);
                 i.PoseFrame = -1; i.PoseValidated = false; i.LocalBounds = i.Sprite.bounds;
+                CapturedPose pose;
+                if (captured.TryGetValue(i, out pose)) {
+                    px[n] = pose.P.x; py[n] = pose.P.y; pz[n] = pose.P.z;
+                    qx[n] = pose.Q.x; qy[n] = pose.Q.y; qz[n] = pose.Q.z; qw[n] = pose.Q.w;
+                    sx[n] = pose.S.x; sy[n] = pose.S.y; sz[n] = pose.S.z;
+                    cr[n] = pose.C.r; cg[n] = pose.C.g; cb[n] = pose.C.b; ca[n] = pose.C.a;
+                    i.PoseFrame = Time.frameCount;
+                }
                 residents[i.D] = i;
                 i.Uniforms = ReadUniforms(i.R);
                 var pivot = i.D.pivotTrans;
@@ -234,7 +265,12 @@ namespace StutterFix
             foreach (var d in Dormancy.RenderAwake(manager)) {
                 if (ReferenceEquals(d, null)) continue;
                 awakeSet.Add(d); Item i;
-                if (residents.TryGetValue(d, out i)) { AddWork(i); previousAwake.Add(i); }
+                if (residents.TryGetValue(d, out i)) {
+                    // Dormancy can return the full list. Stable hidden entries need no native reads;
+                    // visible->hidden retirement remains in previousAwake and notifications below.
+                    if (i.Written && !i.Visible && (!RenderEnabled(d) || RenderColor(d).a <= 0)) continue;
+                    AddWork(i); previousAwake.Add(i);
+                }
             }
             foreach (var i in signalled) if (residents.ContainsKey(i.D)) AddWork(i);
             signalled.Clear();
@@ -259,6 +295,7 @@ namespace StutterFix
                 }
                 poseHits++; return matrix;
             }
+            if (i.NativeFallback) poseRejectedReads++; else poseStale++;
             nativeReads++; return i.R.transform.localToWorldMatrix;
         }
         static bool SameBits(float a, float b) => BitConverter.SingleToInt32Bits(a) == BitConverter.SingleToInt32Bits(b);
@@ -267,7 +304,9 @@ namespace StutterFix
 
         void Build()
         {
-            long start = Stopwatch.GetTimestamp(); bool initial = !layoutReady;
+            long start = Stopwatch.GetTimestamp();
+            double priorLayout = layoutMs, priorDirty = dirtyMs, priorOther = otherMs;
+            bool initial = !layoutReady;
             if (initial) ResetLayout();
             layoutMs += Milliseconds(Stopwatch.GetTimestamp() - start);
             long dirtyStart = Stopwatch.GetTimestamp();
@@ -357,11 +396,17 @@ namespace StutterFix
                 + " awake=" + awakeSet.Count + " unwritten=" + dirtyUnwritten + " pose=" + dirtyPose
                 + " visibility=" + dirtyVisibility + " layout-resets=" + layoutResets);
             otherMs += Milliseconds(Stopwatch.GetTimestamp() - tailStart);
+            // Measure orchestration gaps independently of PrepareFrame's phase sum.
+            double remainder = Milliseconds(Stopwatch.GetTimestamp() - start) - (layoutMs - priorLayout
+                + dirtyMs - priorDirty + collectMs + changeMs + scheduleMs + waitMs + uploadMs + otherMs - priorOther);
+            buildRemainderSamples.Add(remainder); otherMs += remainder;
         }
         string IncrementalState() => " build-cpu-ms/window2048={total:" + totalSamples.State() + " collect:" + collectSamples.State()
             + " vertices-job+wait:" + computeSamples.State() + " upload+bounds:" + uploadSamples.State()
             + " topology:" + topologySamples.State() + "} collect-items=" + collectCount + " soa-hits=" + poseHits
-            + " transform-fallbacks=" + nativeReads + " soa-verify=" + verifySoA + " soa-checks=" + soaChecks + " soa-mismatches=" + soaMismatches;
+            + " transform-fallbacks=" + nativeReads + " soa-verify=" + verifySoA + " soa-checks=" + soaChecks + " soa-mismatches=" + soaMismatches
+            + " capture-calls=" + captureCalls + " mapped=" + captureMapped + " nonresident=" + captureMisses + " cold=" + captureCold
+            + " stale-pose=" + poseStale + " rejected-pose=" + poseRejectedReads + " local-invalidations=" + localInvalidations;
         string StageState() => "\n stage-ms/window2048 (mean,p99,max,n,calls):"
             + "\n audit=" + auditSamples.State() + "\n dirty+prune=" + dirtySamples.State()
             + "\n change-compare=" + changeSamples.State()
@@ -371,6 +416,14 @@ namespace StutterFix
             + "\n other=" + otherSamples.State() + "\n unaccounted-ms=" + unaccountedSamples.State()
             + "\n draw-on/callback=" + drawOnSamples.State() + "\n draw-off/callback=" + drawOffSamples.State()
             + "\n build+draw/completed-frame=" + frameCpuSamples.State()
+            + "\n pre-cull/inclusive=" + preCullSamples.State() + "\n pre-render/inclusive=" + preRenderSamples.State()
+            + "\n build-orchestration/subset-other=" + buildRemainderSamples.State()
+            + "\n barrier-poll/subset-audit=" + pollSamples.State() + "\n owner-events/subset-audit=" + ownerSamples.State()
+            + "\n camera-scan/subset-other=" + cameraSamples.State()
+            + "\n borrow-restore/subset-other=" + borrowSamples.State()
+            + "\n prune/subset-dirty=" + pruneSamples.State()
+            + "\n topology-changed-keys-last=" + topologyChangedLast + " total=" + topologyKeyChanges
+            + " key-rebuilds=" + topologyRebuilds + " full-rebuilds=" + topologyFullRebuilds
             + "\n barrier-poll=" + polledBarriers + " barrier-event=" + eventBarriers + " barrier-ignored=" + ignoredBarriers
             + " layout-resets=" + layoutResets + " dirty-mean=" + F((double)changedSum / Math.Max(1, dirtyFrames))
             + " awake-mean=" + F((double)awakeSum / Math.Max(1, dirtyFrames))
@@ -380,6 +433,10 @@ namespace StutterFix
             totalSamples.Clear(); collectSamples.Clear(); computeSamples.Clear(); uploadSamples.Clear(); topologySamples.Clear();
             foreach (var s in new[] { auditSamples, dirtySamples, changeSamples, layoutSamples, scheduleSamples, waitSamples,
                 otherSamples, unaccountedSamples, drawOnSamples, drawOffSamples }) s.Clear();
+            cameraSamples.Clear(); borrowSamples.Clear(); pruneSamples.Clear();
+            preCullSamples.Clear(); preRenderSamples.Clear(); buildRemainderSamples.Clear(); pollSamples.Clear(); ownerSamples.Clear();
+            captureCalls = captureMapped = captureMisses = captureCold = poseStale = poseRejectedReads = localInvalidations = 0;
+            topologyKeyChanges = topologyRebuilds = topologyFullRebuilds = 0; topologyChangedLast = 0;
             frameCpuSamples.Clear(); frameCpuMs = 0; frameCpuFrame = -1;
             dirtyFrames = changedSum = awakeSum = 0; dirtyLogFrames = 0;
             buildTicks = buildCount = measuredFrames = frameTicks = 0;
@@ -393,6 +450,7 @@ namespace StutterFix
             auditFrame = Time.frameCount;
             // New topology must be created before culling. A late change therefore falls back
             // to originals for the affected keys until the next frame's normal rebuild.
+            long pollStart = Stopwatch.GetTimestamp();
             foreach (var watch in LiveBarrierChecks())
             {
                 var r = watch.R;
@@ -407,20 +465,33 @@ namespace StutterFix
                 if (wasDrawing != drawing || (drawing && (key != watch.Key || queue != watch.Queue
                     || id != watch.Material || !SameBits(distance, watch.Distance))))
                 {
-                    topologyDirty = true; fallbackKeys.Add(watch.Key);
+                    topologyKeys.Add(watch.Key); topologyKeys.Add(key);
+                    if (drawing && watch.RequiresDiscovery) topologyDirty = true;
+                    // A change in comparator fields requires sorting this key again; visibility alone does not.
+                    if (drawing && (key != watch.Key || queue != watch.Queue || id != watch.Material
+                        || !SameBits(distance, watch.Distance))) {
+                        reorderKeys.Add(watch.Key); reorderKeys.Add(key);
+                        // Key migration and material/submesh ownership require discovery for safety.
+                        if (key != watch.Key || id != watch.Material) topologyDirty = true;
+                    }
+                    if (watch.Owner && residents.ContainsKey(watch.Owner) && MeshOn(watch.Owner)) topologyDirty = true;
+                    fallbackKeys.Add(watch.Key);
                     if (r) fallbackKeys.Add(key);
                     if (watch.Owner && watch.Owner.spriteRenderer)
                         fallbackKeys.Add(OrderKey(watch.Owner.spriteRenderer.sortingLayerID, watch.Owner.spriteRenderer.sortingOrder));
                 }
                 watch.Enabled = enabled; watch.Active = active; watch.ForceOff = off;
-                watch.Key = key; watch.Queue = queue; watch.Material = id; watch.Distance = distance;
+                if (drawing) { watch.Key = key; watch.Queue = queue; watch.Material = id; watch.Distance = distance; }
             }
+            pollSamples.Add(Milliseconds(Stopwatch.GetTimestamp() - pollStart));
+            long ownerStart = Stopwatch.GetTimestamp();
             foreach (var d in notifiedOwners) { bool mesh;
                 Item i;
                 if (meshStates.TryGetValue(d, out mesh) && mesh && residents.TryGetValue(d, out i))
                     { fallbackKeys.Add(OrderKey(i)); topologyDirty = true; }
             }
             notifiedOwners.Clear();
+            ownerSamples.Add(Milliseconds(Stopwatch.GetTimestamp() - ownerStart));
         }
         void IndexBarriers()
         {

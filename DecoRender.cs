@@ -103,7 +103,7 @@ namespace StutterFix
             internal Renderer R;
             internal scrVisualDecoration Owner;
             internal string Key;
-            internal bool Enabled, Active, ForceOff;
+            internal bool Enabled, Active, ForceOff, RequiresDiscovery;
             internal int Queue, Material;
             internal float Distance;
         }
@@ -538,6 +538,9 @@ namespace StutterFix
         bool RebuildRuns(Camera camera)
         {
             // Re-audit even hidden external renderers: they can move/change sorting or be created.
+            topologyFullRebuilds++;
+            orderedKeys.Clear(); orderedCandidates.Clear(); orderedState.Clear(); runsByKey.Clear();
+            topologyKeys.Clear(); reorderKeys.Clear();
             var old = new List<Group>(groups);
             var all = new Dictionary<string, List<Renderer>>();
             var uses = new Dictionary<int, int>();
@@ -581,15 +584,20 @@ namespace StutterFix
             foreach (var r in sceneRenderers) if (!candidates.ContainsKey(r.GetInstanceID()))
                 barrierWatches.Add(new BarrierWatch { R = r, Key = OrderKey(r.sortingLayerID, r.sortingOrder),
                     Owner = r.GetComponentInParent<scrVisualDecoration>(), Enabled = r.enabled,
+                    RequiresDiscovery = r.sharedMaterials.Length != 1 || r.GetComponentInParent<SortingGroup>(),
                     Active = r.gameObject.activeInHierarchy, ForceOff = r.forceRenderingOff,
                     Queue = r.sharedMaterial ? r.sharedMaterial.renderQueue : int.MinValue,
                     Material = r.sharedMaterial ? r.sharedMaterial.GetInstanceID() : 0, Distance = SortDistance(r, camera) });
             IndexBarriers();
+            foreach (var pair in all) {
+                var ordered = new List<Renderer>(pair.Value);
+                SortKeyRenderers(ordered, camera); orderedKeys[pair.Key] = ordered;
+            }
             foreach (var i in items) i.GroupKey = GroupKey(i);
             var plans = new List<List<Item>>(); unmanagedBreaks = 0; breakReasons.Clear(); waitingReasons.Clear();
             foreach (var pair in all)
             {
-                var list = pair.Value; keys[pair.Key].Renderers = list.Count;
+                var list = new List<Renderer>(orderedKeys[pair.Key]); keys[pair.Key].Renderers = list.Count;
                 // Managed sources remain in the order even while hidden by our takeover.
                 // Waiting unmanaged renderers are watched, but cannot split a run or poison its comparator.
                 list.RemoveAll(r => {
@@ -609,21 +617,7 @@ namespace StutterFix
                     foreach (var r in list) if (Drawing(r)) Count(breakReasons, "unsupported-order:" + r.GetType().Name);
                     continue;
                 }
-                // Read native renderer/material/bounds state once, not O(n log n) times in Sort.
-                var order = new Dictionary<int, RenderOrder>();
-                foreach (var r in list)
-                {
-                    var m = r.sharedMaterial; int id = r.GetInstanceID();
-                    order[id] = new RenderOrder { Queue = m ? m.renderQueue : int.MinValue,
-                        Material = m ? m.GetInstanceID() : 0, Id = id, Distance = SortDistance(r, camera) };
-                }
-                list.Sort((a,b) => {
-                    var x = order[a.GetInstanceID()]; var y = order[b.GetInstanceID()];
-                    int c = x.Queue.CompareTo(y.Queue);
-                    if (c == 0) c = y.Distance.CompareTo(x.Distance);
-                    if (c == 0) c = x.Material.CompareTo(y.Material);
-                    return c != 0 ? c : x.Id.CompareTo(y.Id);
-                });
+                // Already sorted once above, with waiting positions retained in orderedKeys.
                 List<Item> run = null; bool gap = false, hadRun = false;
                 foreach (var r in list)
                 {
@@ -646,6 +640,7 @@ namespace StutterFix
                     run.Add(i); hadRun = true;
                 }
             }
+            foreach (var i in items) orderedCandidates[i.R] = i;
             var used = new HashSet<Group>();
             var oldByFirst = new Dictionary<int, Group>();
             foreach (var g in old) oldByFirst[g.Items[0].Id] = g;
@@ -661,6 +656,11 @@ namespace StutterFix
                 used.Add(match);
             }
             foreach (var g in old) if (!used.Contains(g)) { ReleaseGroup(g); groups.Remove(g); }
+            foreach (var g in groups) {
+                List<Group> list;
+                if (!runsByKey.TryGetValue(g.SortKey, out list)) runsByKey[g.SortKey] = list = new List<Group>();
+                list.Add(g);
+            }
             // Original memberships on unaffected runs and their material instances are retained.
             lastOrders = "queue ascending; distance descending; signed material-ID ascending=back-to-front; hidden managed sources included; active barriers only; awake/event live audit; merge-cameras=" + mergeCameras;
             return old.Count != groups.Count || old.Exists(g => !used.Contains(g));
@@ -952,6 +952,7 @@ namespace StutterFix
             frameCpuMs = 0; frameCpuFrame = Time.frameCount;
             long start = Stopwatch.GetTimestamp();
             auditMs = dirtyMs = changeMs = layoutMs = scheduleMs = waitMs = otherMs = 0;
+            long cameraStart = Stopwatch.GetTimestamp();
             var sceneCameras = SceneCameras();
             var current = new HashSet<int>();
             bool previousMerge = mergeCameras;
@@ -972,21 +973,28 @@ namespace StutterFix
             }
             if (!cameraSet.SetEquals(current)) { Stop("scene camera list changed"); return; }
             if (previousMerge != mergeCameras) topologyDirty = true;
+            cameraMs = Milliseconds(Stopwatch.GetTimestamp() - cameraStart);
+            long borrowStart = Stopwatch.GetTimestamp();
             foreach (var g in groups) Borrow(g, false);
+            borrowMs = Milliseconds(Stopwatch.GetTimestamp() - borrowStart);
             fallbackKeys.Clear();
             otherMs = Milliseconds(Stopwatch.GetTimestamp() - start);
             long dirtyStart = Stopwatch.GetTimestamp();
             GatherWork(false);
+            long pruneStart = Stopwatch.GetTimestamp();
             PruneChanged(work);
+            pruneMs = Milliseconds(Stopwatch.GetTimestamp() - pruneStart);
             dirtyMs = Milliseconds(Stopwatch.GetTimestamp() - dirtyStart);
             long auditStart = Stopwatch.GetTimestamp();
             AuditLateBarriers();
             auditMs = Milliseconds(Stopwatch.GetTimestamp() - auditStart);
             long topologyStart = Stopwatch.GetTimestamp();
             bool resetLayout = false;
+            topologyChangedLast = 0;
             if (topologyDirty) {
+                topologyChangedLast = keys.Count; topologyKeyChanges += topologyChangedLast;
                 resetLayout = RebuildRuns(mainCamera); topologyDirty = false;
-            }
+            } else if (topologyKeys.Count != 0) resetLayout = RebuildChangedKeys(mainCamera);
             topologyMs = (Stopwatch.GetTimestamp() - topologyStart) * 1000.0 / Stopwatch.Frequency;
             long layoutStart = Stopwatch.GetTimestamp();
             if (resetLayout) ResetLayout();
@@ -1002,6 +1010,7 @@ namespace StutterFix
             frameCpuMs += lastBuildMs;
             totalSamples.Add(lastBuildMs); collectSamples.Add(collectMs); computeSamples.Add(computeMs);
             uploadSamples.Add(uploadMs); topologySamples.Add(topologyMs);
+            cameraSamples.Add(cameraMs); borrowSamples.Add(borrowMs); pruneSamples.Add(pruneMs);
             auditSamples.Add(auditMs); dirtySamples.Add(dirtyMs); changeSamples.Add(changeMs); layoutSamples.Add(layoutMs);
             scheduleSamples.Add(scheduleMs); waitSamples.Add(waitMs); otherSamples.Add(otherMs);
             unaccountedSamples.Add(lastBuildMs - (auditMs + dirtyMs + changeMs + layoutMs + collectMs
@@ -1009,6 +1018,7 @@ namespace StutterFix
         }
         void PreCull(Camera camera)
         {
+            long callbackStart = Stopwatch.GetTimestamp();
             if (stopping || comparing || !initialized || observing) return;
             try
             {
@@ -1017,10 +1027,12 @@ namespace StutterFix
                 if (!stopping) Takeover(true);
             }
             catch (Exception e) { Stop("pre-cull failed: " + e); }
+            finally { preCullSamples.Add(Milliseconds(Stopwatch.GetTimestamp() - callbackStart)); }
         }
 
         void PreRender(Camera camera)
         {
+            long callbackStart = Stopwatch.GetTimestamp();
             if (stopping || comparing || !initialized) return;
             try
             {
@@ -1049,6 +1061,7 @@ namespace StutterFix
                 }
             }
             catch (Exception e) { Stop("pre-render failed: " + e); }
+            finally { preRenderSamples.Add(Milliseconds(Stopwatch.GetTimestamp() - callbackStart)); }
         }
 
         static bool MatrixEqual(Matrix4x4 a, Matrix4x4 b)
@@ -1316,7 +1329,7 @@ namespace StutterFix
                     .Append(" changed-items=").Append(s.changedItems).Append(" uploaded-vertices=").Append(s.uploadedVertices)
                     .Append(" prepared-frame=").Append(s.preparedFrame).Append(" builds=").Append(s.buildCount).Append(" cameras=").Append(s.cameras.Count).Append(" comparePending=").Append(s.pending);
             }
-            if (s) result.Append(s.IncrementalState()).Append(s.StageState());
+            if (s) result.Append(s.IncrementalState()).Append(s.StageState()).Append("\n tightlate-context: ").Append(TightLate.State());
             return result.Append(" vertex-color=").Append(lastColorFormat).Append(" order-audit={").Append(lastOrders).Append('}')
                 .Append(" run-state={").Append(s ? s.RunState() : lastRuns).Append('}')
                 .Append(" key-state={").Append(s ? s.KeyState() : lastKeys).Append('}')

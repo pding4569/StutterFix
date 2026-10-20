@@ -83,6 +83,7 @@ namespace UnityEngine {
     }
     class Camera : Object {}
     class Renderer : Object {
+        static int next; readonly int id=++next; public int GetInstanceID()=>id;
         public bool enabled=true,forceRenderingOff; public GameObject gameObject=new GameObject();
         public int sortingLayerID,sortingOrder; public Material sharedMaterial=new Material();
         public float Distance;
@@ -123,18 +124,25 @@ namespace StutterFix {
         sealed class Atlas {internal int Width=32,Height=32;}
         sealed class Image {internal Atlas Atlas=new Atlas();internal Texture Source=new Texture();internal int X=4,Y=4;}
         sealed class Item {
+            internal string GroupKey="g"; internal int Id=>R.GetInstanceID();
             internal scrDecoration D;internal SpriteRenderer R;internal Sprite Sprite=new Sprite();internal Image Image=new Image();
             internal Vector2[] Vertices,UV;internal int Slot,Start,Offset,PoseFrame=-1;internal Group Run;
             internal bool NativeFallback,PoseRejected,PoseValidated,ChildIdentity,Written,Visible,Dirty,Moved,FlipX,FlipY;
             internal Matrix4x4 Matrix,ChildMatrix;internal Color Color;internal Bounds LocalBounds;
             internal Transform PivotTransform,RenderTransform;internal MaterialSnapshot Uniforms;
         }
-        sealed class BarrierWatch {internal scrDecoration Owner;internal bool Enabled,Active,ForceOff;internal string Key="0/0";internal Renderer R;internal int Queue,Material;internal float Distance;}
+        sealed class BarrierWatch {internal scrDecoration Owner;internal bool Enabled,Active,ForceOff,RequiresDiscovery;internal string Key="0/0";internal Renderer R;internal int Queue,Material;internal float Distance;}
+        bool mergeCameras=true;
+        struct RenderOrder { internal int Queue,Material,Id;internal float Distance; }
+        static bool Drawing(Renderer r)=>r && r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff;
+        Group CreateRun(List<Item> plan,string key) {var g=new Group{RunKey=key};g.Items.AddRange(plan);groups.Add(g);return g;}
+        static void ReleaseGroup(Group g) {}
         Camera mainCamera=new Camera();
         static float SortDistance(Renderer r,Camera c)=>r.Distance;
         static string OrderKey(int layer,int order)=>layer+"/"+order;
         readonly List<BarrierWatch> barrierWatches=new List<BarrierWatch>();
         sealed class Group {
+            internal string SortKey="0/0",RunKey="g";
             internal List<Item> Items=new List<Item>(),VisibleItems=new List<Item>();internal bool HasVisible,Fresh,BoundsDirty;
             internal Mesh Mesh=new Mesh();internal MeshRenderer Renderer=new MeshRenderer();internal Bounds CullBounds;
         }
@@ -170,7 +178,10 @@ namespace StutterFix {
                 Assert(!s.work.Contains(c),"sleeping run member is not visited on stable frame");
                 Time.frameCount++;Notify(a.D);Capture(a.D,a.D.pivotTrans.position,a.D.pivotTrans.rotation,a.D.pivotTrans.localScale);s.Build();
                 Assert(s.changedItems==0,"notification and repeated identical capture do not mark dirty");
-                Time.frameCount++;s.ResetLayout();s.Build();
+                Time.frameCount++;
+                Capture(a.D,a.D.pivotTrans.position,a.D.pivotTrans.rotation,a.D.pivotTrans.localScale);
+                s.ResetLayout();s.Build();
+                Assert(s.poseHits>0,"same-frame capture survives topology slot relocation");
                 Assert(s.changedItems==0&&s.uploadedVertices==0,"unchanged topology retains written geometry");
                 Assert(g.HasVisible&&g.VisibleItems.Count==2,"retained visibility survives layout refresh");
                 var newRun=new Group();s.groups.Add(newRun);var extra=s.Add(newRun,40);
@@ -196,7 +207,55 @@ namespace StutterFix {
                 Time.frameCount++;b.R.enabled=false;s.Build();Assert(!g.VisibleItems.Contains(b),"renderer disabled removes geometry");
                 Time.frameCount++;s.manager.Awake.Clear();Dormancy.Sleeping.Add(c.D);Notify(c.D);s.Build();
                 Assert(!g.HasVisible&&g.VisibleItems.Count==0,"empty run disabled");
+                b.D.Enabled=false;s.manager.Awake.Add(b.D);Time.frameCount++;s.Build();
+                Time.frameCount++;s.Build();Assert(!s.work.Contains(b),"stable hidden full-list member avoids collection");
+                b.D.Enabled=true;Time.frameCount++;s.Build();Assert(s.work.Contains(b),"managed visibility wake resumes collection");
                 s.DisposeBuffers();s.DisposeBuffers();Assert(Unity.Collections.Allocations.Live==0,"owned buffers released exactly once");
+            }
+            {
+                var s=new DecoRender(); var original=new Group(); s.groups.Add(original);
+                var a=s.Add(original,0); var b=s.Add(original,0);
+                var untouched=new Group{SortKey="other"}; s.groups.Add(untouched); s.Add(untouched,0);
+                var barrier=new Renderer{enabled=false};
+                s.orderedKeys["0/0"]=new List<Renderer>{a.R,barrier,b.R};
+                s.orderedState[a.R]=new RenderOrder();s.orderedState[b.R]=new RenderOrder();
+                s.orderedCandidates[a.R]=a;s.orderedCandidates[b.R]=b;
+                s.runsByKey["0/0"]=new List<Group>{original};
+                s.topologyKeys.Add("0/0");
+                Assert(!s.RebuildChangedKeys(s.mainCamera),"waiting barrier preserves existing run");
+                Assert(s.groups.Contains(original)&&s.groups.Contains(untouched),"unchanged meshes retained");
+                Assert(s.topologyRebuilds==1&&s.topologyChangedLast==1,"counts changed key once");
+                barrier.enabled=true;s.topologyKeys.Add("0/0");
+                Assert(s.RebuildChangedKeys(s.mainCamera),"active barrier splits cached ordered run");
+                Assert(s.runsByKey["0/0"].Count==2&&!s.groups.Contains(original),"split membership exact");
+                Assert(s.groups.Contains(untouched),"unrelated key mesh retained after split");
+                var left=s.runsByKey["0/0"][0];var right=s.runsByKey["0/0"][1];
+                Assert(!s.RebuildChangedKeys(s.mainCamera)&&s.topologyChangedLast==0,"no changed keys skips planning");
+                Assert(s.topologyRebuilds==2,"stable frame rebuild counter unchanged");
+                barrier.forceRenderingOff=true;s.topologyKeys.Add("0/0");
+                Assert(s.RebuildChangedKeys(s.mainCamera)&&s.runsByKey["0/0"].Count==1,"force-off rejoins cached run");
+                Assert(s.runsByKey["0/0"][0].Items[0]==a&&s.runsByKey["0/0"][0].Items[1]==b,"rejoin keeps exact source order");
+                Assert(s.groups.Contains(untouched)&&!s.groups.Contains(left)&&!s.groups.Contains(right),"only changed key meshes replaced");
+                barrier.forceRenderingOff=false;barrier.gameObject.activeInHierarchy=false;s.topologyKeys.Add("0/0");
+                Assert(!s.RebuildChangedKeys(s.mainCamera),"inactive barrier leaves run intact");
+                s.SortKeyRenderers(new List<Renderer>{b.R,a.R},s.mainCamera);
+                Assert(s.orderedState.ContainsKey(a.R),"explicit reorder refreshes comparator cache");
+                barrier.gameObject.activeInHierarchy=true;barrier.Distance=2;
+                s.topologyKeys.Add("0/0");s.reorderKeys.Add("0/0");
+                Assert(!s.RebuildChangedKeys(s.mainCamera)&&s.runsByKey["0/0"].Count==1,"moved barrier reorders only changed key before planning");
+                Assert(s.orderedKeys["0/0"][0]==barrier,"distance-descending comparator preserved");
+            }
+            {
+                var s=new DecoRender();var r=new Renderer{enabled=false};
+                var w=new BarrierWatch{R=r,Enabled=false,Active=true,Key="0/0",Queue=3000,Material=1};
+                s.barrierWatches.Add(w);s.IndexBarriers();
+                r.enabled=true;Time.frameCount++;s.AuditLateBarriers();
+                Assert(!s.topologyDirty&&s.topologyKeys.Contains("0/0")&&s.reorderKeys.Count==0,"enabled-only change neither rediscovers nor resorts");
+                s.topologyKeys.Clear();r.enabled=false;Time.frameCount++;s.AuditLateBarriers();s.topologyKeys.Clear();
+                r.enabled=true;Time.frameCount++;s.AuditLateBarriers();
+                Assert(!s.topologyDirty&&s.reorderKeys.Count==0,"waiting retains comparator snapshot on reactivation");
+                s.topologyKeys.Clear();w.RequiresDiscovery=true;r.enabled=false;Time.frameCount++;s.AuditLateBarriers();
+                r.enabled=true;Time.frameCount++;s.AuditLateBarriers();Assert(s.topologyDirty,"unsupported barrier activation uses safe full discovery");
             }
             var stats=new Samples();for(int n=1;n<=3000;n++)stats.Add(n);
             Assert(stats.State().Contains("n=2048"),"bounded timing window");
@@ -220,13 +279,16 @@ namespace StutterFix {
                 tile.R.enabled=true;s.AuditLateBarriers();
                 Assert(!s.topologyDirty,"second camera does not audit again");
                 Time.frameCount++;s.AuditLateBarriers();
-                Assert(s.topologyDirty&&s.fallbackKeys.Contains("0/0"),"drawing transition invalidates affected key");
+                Assert(s.topologyKeys.Contains("0/0")&&s.fallbackKeys.Contains("0/0"),"drawing transition invalidates affected key");
+                s.topologyKeys.Clear();
                 s.topologyDirty=false;Time.frameCount++;s.AuditLateBarriers();
                 Assert(!s.topologyDirty,"cached drawing state prevents repeated rebuild");
                 tile.R.Distance=5;Time.frameCount++;s.AuditLateBarriers();
-                Assert(s.topologyDirty,"drawing barrier order movement remains guarded");
+                Assert(s.topologyKeys.Contains("0/0")&&s.reorderKeys.Contains("0/0"),"drawing barrier order movement remains guarded");
+                s.topologyKeys.Clear();
                 s.topologyDirty=false;tile.R.enabled=false;Time.frameCount++;s.AuditLateBarriers();
-                Assert(s.topologyDirty,"drawing to waiting transition rebuilds");
+                Assert(s.topologyKeys.Contains("0/0"),"drawing to waiting transition rebuilds");
+                s.topologyKeys.Clear();
                 s.topologyDirty=false;tile.R.Distance=9;Time.frameCount++;s.AuditLateBarriers();
                 Assert(!s.topologyDirty,"waiting movement does not reset layout");
             }
