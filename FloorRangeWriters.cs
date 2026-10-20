@@ -54,6 +54,7 @@ namespace StutterFix
                     else if(spec.Mode==4) prefix=new HarmonyMethod(typeof(FloorRangeWriters),nameof(EffectPrefix));
                     else if(spec.Mode==5) prefix=new HarmonyMethod(typeof(FloorRangeWriters),nameof(OwnerPrefix));
                     else transpiler=new HarmonyMethod(typeof(FloorRangeWriters),spec.Mode==3?nameof(ResetBody):nameof(Rewrite));
+                    if(prefix!=null) transpiler=new HarmonyMethod(typeof(FloorRangeWriters),nameof(EntrySites));
                     patches.Patch(found,prefix:prefix,transpiler:transpiler);
                     Installed++; FloorRange.Log("writer-ok "+found.DeclaringType.FullName+"::"+found+" signature="+spec.Signature);
                 }
@@ -87,33 +88,112 @@ namespace StutterFix
             if(__instance is ffxFloorAppearPlus) FloorRange.Mark((scrFloor)previousFloor.GetValue(__instance));
         }
         public static void ResetPrefix() { FloorRange.ResetMap(); FloorRange.Reason("lifecycle-invalidated"); }
-        public static IEnumerable<CodeInstruction> ResetBody(IEnumerable<CodeInstruction> source)
+        private static readonly MethodInfo countSite=typeof(FloorRange).GetMethod(nameof(FloorRange.CountSite));
+        private static IEnumerable<CodeInstruction> OriginalInstructions(MethodBase method)
         {
+            // Harmony exposes framework mscorlib.ILGenerator, which cannot be
+            // named by this netstandard build. Cross that ABI at preparation only.
+            foreach(var candidate in typeof(PatchProcessor).GetMethods(BindingFlags.Public|BindingFlags.Static))
+            {
+                var ps=candidate.GetParameters();
+                if(candidate.Name=="GetOriginalInstructions"&&ps.Length==2&&!ps[1].ParameterType.IsByRef)
+                    return (IEnumerable<CodeInstruction>)candidate.Invoke(null,new object[]{method,null});
+            }
+            throw new MissingMethodException("Harmony.GetOriginalInstructions");
+        }
+        public static IEnumerable<CodeInstruction> EntrySites(IEnumerable<CodeInstruction> source,MethodBase __originalMethod)
+        {
+            yield return new CodeInstruction(OpCodes.Ldc_I4,FloorRange.RegisterSite(__originalMethod.DeclaringType.FullName+"::"+__originalMethod+" IL_0000 prefix-mark"));
+            yield return new CodeInstruction(OpCodes.Call,countSite);
+            foreach(var ins in source) yield return ins;
+        }
+        public static IEnumerable<CodeInstruction> ResetBody(IEnumerable<CodeInstruction> source,MethodBase __originalMethod)
+        {
+            yield return new CodeInstruction(OpCodes.Ldc_I4,FloorRange.RegisterSite(__originalMethod.DeclaringType.FullName+"::"+__originalMethod+" IL_0000 reset"));
+            yield return new CodeInstruction(OpCodes.Call,countSite);
             yield return new CodeInstruction(OpCodes.Call,Own(nameof(ResetPrefix)));
             foreach(var ins in source) yield return ins;
         }
-        public static void Address(scrFloor f) { FloorRange.Mark(f); }
-        public static void WriteOpacity(scrFloor f,float v) { FloorRange.Mark(f,FloorRange.Opacity); f.opacity=v; }
-        public static void WriteStartPos(scrFloor f,Vector3 v) { FloorRange.Mark(f,FloorRange.Position); f.startPos=v; }
-        public static void WriteStartRot(scrFloor f,Vector3 v) { FloorRange.Mark(f,FloorRange.Rotation); f.startRot=v; }
-        public static void WriteTweenRot(scrFloor f,Vector3 v) { FloorRange.Mark(f,FloorRange.Rotation); f.tweenRot=v; }
-        public static void Position(Transform t,Vector3 v) { FloorRange.Mark(t,FloorRange.Position); t.position=v; }
-        public static void LocalPosition(Transform t,Vector3 v) { FloorRange.Mark(t,FloorRange.Position); t.localPosition=v; }
-        public static void Euler(Transform t,Vector3 v) { FloorRange.Mark(t,FloorRange.Rotation); t.eulerAngles=v; }
-        public static void LocalEuler(Transform t,Vector3 v) { FloorRange.Mark(t,FloorRange.Rotation); t.localEulerAngles=v; }
-        public static void Scale(Transform t,Vector3 v) { FloorRange.Mark(t,FloorRange.Scale); t.localScale=v; }
-        public static void Rotation(Transform t,Quaternion v) { FloorRange.Mark(t,FloorRange.Rotation); t.rotation=v; }
-        public static void SetTR(Transform t,Vector3 p,Quaternion r) { FloorRange.Mark(t,FloorRange.All); t.SetPositionAndRotation(p,r); }
+        public static void Address(scrFloor f,int site) { FloorRange.CountSite(site); FloorRange.Mark(f); }
+        public static void WriteOpacity(scrFloor f,float v,int site) { FloorRange.CountSite(site); FloorRange.Mark(f,FloorRange.Opacity); f.opacity=v; }
+        public static void WriteStartPos(scrFloor f,Vector3 v,int site) { FloorRange.CountSite(site); FloorRange.Mark(f,FloorRange.Position); f.startPos=v; }
+        public static void WriteStartRot(scrFloor f,Vector3 v,int site) { FloorRange.CountSite(site); FloorRange.Mark(f,FloorRange.Rotation); f.startRot=v; }
+        public static void WriteTweenRot(scrFloor f,Vector3 v,int site) { FloorRange.CountSite(site); FloorRange.Mark(f,FloorRange.Rotation); f.tweenRot=v; }
+        public static void Position(Transform t,Vector3 v,int site) { FloorRange.CountSite(site); FloorRange.Mark(t,FloorRange.Position); t.position=v; }
+        public static void LocalPosition(Transform t,Vector3 v,int site) { FloorRange.CountSite(site); FloorRange.Mark(t,FloorRange.Position); t.localPosition=v; }
+        public static void Euler(Transform t,Vector3 v,int site) { FloorRange.CountSite(site); FloorRange.Mark(t,FloorRange.Rotation); t.eulerAngles=v; }
+        public static void LocalEuler(Transform t,Vector3 v,int site) { FloorRange.CountSite(site); FloorRange.Mark(t,FloorRange.Rotation); t.localEulerAngles=v; }
+        public static void Scale(Transform t,Vector3 v,int site) { FloorRange.CountSite(site); FloorRange.Mark(t,FloorRange.Scale); t.localScale=v; }
+        public static void Rotation(Transform t,Quaternion v,int site) { FloorRange.CountSite(site); FloorRange.Mark(t,FloorRange.Rotation); t.rotation=v; }
+        public static void SetTR(Transform t,Vector3 p,Quaternion r,int site) { FloorRange.CountSite(site); FloorRange.Mark(t,FloorRange.All); t.SetPositionAndRotation(p,r); }
         private static MethodInfo Own(string name)
         { return typeof(FloorRangeWriters).GetMethod(name,BindingFlags.Public|BindingFlags.Static); }
-        public static IEnumerable<CodeInstruction> Rewrite(IEnumerable<CodeInstruction> source)
+        internal static bool IsBookkeeping(string name)
+        { return name=="lastPos"||name=="lastScale"||name=="opacityLastFrame"||name=="glowMultiplierLastFrame"; }
+        private static int InstructionSize(CodeInstruction ins)
         {
+            switch(ins.opcode.OperandType)
+            {
+                case OperandType.InlineNone: return ins.opcode.Size;
+                case OperandType.ShortInlineBrTarget: case OperandType.ShortInlineI: case OperandType.ShortInlineVar: return ins.opcode.Size+1;
+                case OperandType.InlineVar: return ins.opcode.Size+2;
+                case OperandType.InlineI8: case OperandType.InlineR: return ins.opcode.Size+8;
+                case OperandType.InlineSwitch: return ins.opcode.Size+4+4*((Array)ins.operand).Length;
+                default: return ins.opcode.Size+4;
+            }
+        }
+        private static CodeInstruction Site(MethodBase method,int offset,string kind)
+        { return new CodeInstruction(OpCodes.Ldc_I4,FloorRange.RegisterSite(method.DeclaringType.FullName+"::"+method+" IL_"+offset.ToString("X4")+" "+kind)); }
+        private static string WriteKey(CodeInstruction ins)
+        {
+            var f=ins.operand as FieldInfo;
+            if(f!=null&&f.DeclaringType==typeof(scrFloor)&&!IsBookkeeping(f.Name)
+                &&(f.Name=="opacity"||f.Name=="startPos"||f.Name=="startRot"||f.Name=="tweenRot")
+                &&(ins.opcode==OpCodes.Stfld||ins.opcode==OpCodes.Ldflda)) return ins.opcode.Name+"/"+f.Name;
+            var m=ins.operand as MethodInfo;
+            if(m!=null&&m.DeclaringType==typeof(Transform)&&(ins.opcode==OpCodes.Call||ins.opcode==OpCodes.Callvirt))
+                return "transform/"+m;
+            return null;
+        }
+        private static void MoveStarts(CodeInstruction from,CodeInstruction to)
+        {
+            var labels=(IList)typeof(CodeInstruction).GetField("labels").GetValue(from);
+            var dest=(IList)typeof(CodeInstruction).GetField("labels").GetValue(to);
+            foreach(var label in labels) dest.Add(label);
+            labels.Clear();
+            for(int b=from.blocks.Count-1;b>=0;b--)
+                if(from.blocks[b].blockType!=ExceptionBlockType.EndExceptionBlock)
+                { to.blocks.Insert(0,from.blocks[b]); from.blocks.RemoveAt(b); }
+        }
+        public static IEnumerable<CodeInstruction> Rewrite(IEnumerable<CodeInstruction> source,MethodBase __originalMethod)
+        {
+            // Re-read through Harmony's own instruction reader (the same reader
+            // used to patch on Mono), not Module.ResolveSignature/ResolveMethod.
+            // Other transpilers, e.g. FloorLateFix, can change instruction sizes.
+            var offsets=new Dictionary<string,Queue<int>>();
+            int offset=0;
+            foreach(var original in OriginalInstructions(__originalMethod))
+            {
+                string key=WriteKey(original);
+                if(key!=null) { Queue<int> q; if(!offsets.TryGetValue(key,out q)) offsets.Add(key,q=new Queue<int>()); q.Enqueue(offset); }
+                offset+=InstructionSize(original);
+            }
             foreach(var ins in source)
             {
+                int at=0; string key=WriteKey(ins);
+                if(key!=null)
+                {
+                    Queue<int> q;
+                    if(!offsets.TryGetValue(key,out q)||q.Count==0) throw new InvalidOperationException("writer-site-original-mismatch");
+                    at=q.Dequeue();
+                }
                 string wrapper=null;
                 var field=ins.operand as FieldInfo;
                 if(field!=null&&field.DeclaringType==typeof(scrFloor))
                 {
+                    // Explicit deny-list: these retain previous-frame observations,
+                    // not the state certified by FloorRange. Keep their original IL.
+                    if(IsBookkeeping(field.Name)) { yield return ins; continue; }
                     bool tracked=field.Name=="opacity"||field.Name=="startPos"||field.Name=="startRot"||field.Name=="tweenRot";
                     if(tracked&&ins.opcode==OpCodes.Ldflda)
                     {
@@ -122,14 +202,9 @@ namespace StutterFix
                         var dup=new CodeInstruction(OpCodes.Dup);
                         // Harmony is built against framework mscorlib.Label;
                         // cross that ABI through non-generic IList only here.
-                        var labels=(IList)typeof(CodeInstruction).GetField("labels").GetValue(ins);
-                        var dest=(IList)typeof(CodeInstruction).GetField("labels").GetValue(dup);
-                        foreach(var label in labels) dest.Add(label);
-                        labels.Clear();
-                        for(int b=ins.blocks.Count-1;b>=0;b--)
-                            if(ins.blocks[b].blockType!=ExceptionBlockType.EndExceptionBlock)
-                            { dup.blocks.Insert(0,ins.blocks[b]); ins.blocks.RemoveAt(b); }
-                        yield return dup; yield return new CodeInstruction(OpCodes.Call,Own(nameof(Address)));
+                        MoveStarts(ins,dup);
+                        yield return dup; yield return Site(__originalMethod,at,"field-address/"+field.Name);
+                        yield return new CodeInstruction(OpCodes.Call,Own(nameof(Address)));
                     }
                     if(ins.opcode==OpCodes.Stfld)
                     {
@@ -156,7 +231,12 @@ namespace StutterFix
                         case "SetPositionAndRotation": wrapper=nameof(SetTR); break;
                     }
                 }
-                if(wrapper!=null) { ins.opcode=OpCodes.Call; ins.operand=Own(wrapper); }
+                if(wrapper!=null)
+                {
+                    var site=Site(__originalMethod,at,field!=null?"field-write/"+field.Name:"transform-setter/"+method.Name);
+                    MoveStarts(ins,site); yield return site;
+                    ins.opcode=OpCodes.Call; ins.operand=Own(wrapper);
+                }
                 yield return ins;
             }
         }

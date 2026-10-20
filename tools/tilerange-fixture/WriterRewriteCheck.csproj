@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><DefineConstants>AUTOTEST</DefineConstants><NoWarn>CS0649</NoWarn></PropertyGroup>
+  <ItemGroup><Compile Include="../../FloorRangeWriters.cs" Link="FloorRangeWriters.cs"/><Compile Include="../../FloorRangeWriterManifest.cs" Link="FloorRangeWriterManifest.cs"/><Compile Include="WriterRewriteCheck.cs"/></ItemGroup>
+</Project>

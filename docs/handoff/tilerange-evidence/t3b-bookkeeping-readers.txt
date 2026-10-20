@@ -1,0 +1,4 @@
+scrFloor::LateUpdate  IL_0051 ldfld scrFloor::lastPos
+scrFloor::LateUpdate  IL_0069 ldfld scrFloor::lastScale
+scrFloor::LateUpdate  IL_008D ldfld scrFloor::opacityLastFrame
+scrFloor::LateUpdate  IL_00A4 ldfld scrFloor::glowMultiplierLastFrame

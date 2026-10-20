@@ -157,6 +157,17 @@ class PristineIntegration
         c=Default();Check(!FloorRange.TryStart(f,0,2047,1,ref c),"shadow mismatch latches");
         f=Make();FloorRange.Command("shadow");FloorAnim.CorruptOracle=true;FloorAnim.Calls=0;c=Default();
         Check(FloorRange.TryStart(f,0,2047,1,ref c)&&FloorAnim.Calls==2048,"oracle mismatch no double application");FloorAnim.CorruptOracle=false;
+        Check(Status().Contains("sites=False"),"site diagnosis defaults off");
+        int site=FloorRange.RegisterSite("fixture::default-off IL_0000 field-write/opacity");
+        FloorRange.CountSite(site);Check(!Status().Contains("site["),"disabled site counter does not count");
+        FloorRange.Command("sites on");
+        for(int i=0;i<14;i++) { int slot=FloorRange.RegisterSite("fixture::rank"+i); for(int j=0;j<=i;j++)FloorRange.CountSite(slot); }
+        string ranked=Status();
+        Check(ranked.Split(" | site[").Length-1==12,"status reports only top 12 sites");
+        Check(ranked.IndexOf("fixture::rank13")<ranked.IndexOf("fixture::rank12")&&!ranked.Contains("fixture::rank0 "),"sites sorted by calls");
+        FloorRange.Command("sites off");FloorRange.CountSite(site);
+        Check(!Status().Contains("default-off IL_0000 field-write/opacity"),"sites off stops counting");
+        FloorRange.Command("sites on");Check(!Status().Contains("site["),"sites on resets counters without preparation");
         FloorRange.Command("off");Check(!FloorRange.TryStart(f,0,2047,1,ref c),"off rejection");
         Console.WriteLine($"PASS T3 checks={checks}; production FloorRange; modeled Unity/FloorAnim/writer detours, no game performance claim");
     }

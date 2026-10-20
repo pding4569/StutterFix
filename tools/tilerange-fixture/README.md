@@ -3,17 +3,30 @@
 ## T3 current
 
 `TileRangeIntegration.csproj` now compiles production `FloorRange.cs` with
-`PristineIntegration.cs`. The 70 assertions cover clean chunks (including 8,171,
+`PristineIntegration.cs`. The 76 assertions cover clean chunks (including 8,171,
 8,933 and 90,000 tiles), dirty channels, partial edges, active/proxy tweens,
 time-sliced renewal and late-write detection, budget, shadow preflight/oracle
 failure without double application, rejection, map cleanup and failed installation.
+Six assertions check default-off site diagnostics, top-12 ranking and counter reset.
+`WriterRewriteCheck.csproj` adds 16 checks using the production writer transpiler,
+including emitted bookkeeping stores that must preserve values without dirty marks,
+tracked writes, address/setter replacement, labels/exception entry and original IL offsets.
 Unity/FloorAnim and writer installation are models, not engine/detour evidence.
 
 ```powershell
 dotnet run --project tools/tilerange-fixture/TileRangeIntegration.csproj -c Release
+dotnet run --project tools/tilerange-fixture/WriterRewriteCheck.csproj -c Release
 dotnet run --project tools/tilerange-fixture/WriterMetadataCheck.csproj -c Release -- '<Managed>/Assembly-CSharp.dll' FloorRangeWriterManifest.cs
 py -3 tools/tilerange-fixture/summarize-t3.py
 ```
+
+For T3b, save current logs under `t3b-*` and run
+`py -3 tools/tilerange-fixture/summarize-t3.py --t3b` (historical `t3-*` evidence is preserved).
+Run `py -3 tools/tilerange-fixture/audit-t3b.py '<Managed>/Assembly-CSharp.dll'`
+to regenerate all 53 writer bodies, the bookkeeping reader inventory and the audit table.
+In-game diagnosis is off by default: `tilerange sites on` clears site counts and enables
+fixed-slot atomic counts; `tilerange status` reports the top 12; `tilerange sites off`
+stops counting and retains the report. These commands do not reinstall or prepare.
 
 `WriterMetadataCheck` resolves each of the 53 real game methods/constructors by
 name plus signature blob and validates managed bodies and expected fields without

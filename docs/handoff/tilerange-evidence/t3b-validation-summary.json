@@ -1,0 +1,44 @@
+{
+  "scope": "T3 default-off DEV/AUTOTEST write invalidation and pristine skips; no game/install/commit/profsamp",
+  "builds": {
+    "dev": {
+      "sha256": "559ddc890d9390c1b1022f86188834dd6afedd61db99460692dc2da526f40dd3",
+      "errors": 0,
+      "warnings": 38,
+      "types": {
+        "FloorRange": true,
+        "FloorRangeWriters": true,
+        "FloorRangeLedger": false
+      }
+    },
+    "player": {
+      "sha256": "842aa8d2ae42134097061de352691e2a10d2ecddb2b0eefb6bb99f840c2296e7",
+      "errors": 0,
+      "warnings": 36,
+      "types": {
+        "FloorRange": false,
+        "FloorRangeWriters": false,
+        "FloorRangeLedger": false
+      }
+    },
+    "autotest": {
+      "sha256": "5332b313bddd3604904bf13ad311af5f3f4f9f86a7416ca946a239b04efbd669",
+      "errors": 0,
+      "warnings": 38,
+      "types": {
+        "FloorRange": true,
+        "FloorRangeWriters": true,
+        "FloorRangeLedger": false
+      }
+    }
+  },
+  "fixture": "PASS T3 checks=76; production FloorRange; modeled Unity/FloorAnim/writer detours, no game performance claim",
+  "writer_metadata": "PASS metadata targets=53 exact=1 each; effect fields and material field verified; no Harmony detours executed",
+  "loadcheck": "Debug/StutterFix.dll: FieldRefAccess(이름) 266곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 5(실행 중 확인)",
+  "writer_rewrite": "PASS writer-rewrite checks=16; production transpiler and emitted bookkeeping IL; modeled engine/Harmony",
+  "loadchecks": {
+    "dev": "Debug/StutterFix.dll: FieldRefAccess(이름) 266곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 5(실행 중 확인)",
+    "player": "Player/StutterFix.dll: FieldRefAccess(이름) 229곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 5(실행 중 확인)",
+    "autotest": "PlayerAuto/StutterFix.dll: FieldRefAccess(이름) 266곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 5(실행 중 확인)"
+  }
+}

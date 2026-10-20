@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using HarmonyLib;
 using UnityEngine;
 namespace StutterFix
@@ -27,6 +28,30 @@ namespace StutterFix
         private static long effects, skipped, processed, hookCalls, hookHits, dirtyMarks, lateChanges, samples, comparisons, mismatch;
         private static long startTicks, classifyTicks, skipTicks, legacyTicks, safetyTicks, hookTicks;
         private static double perTileMs;
+        private static bool siteDiagnostics;
+        private static readonly long[] siteCalls=new long[4096];
+        private static readonly string[] siteNames=new string[4096];
+        private static int siteCount;
+        internal static int RegisterSite(string name)
+        {
+            // Preparation only. Re-transpiling the same method keeps its slot.
+            for(int i=0;i<siteCount;i++) if(siteNames[i]==name) return i;
+            if(siteCount==siteNames.Length) throw new InvalidOperationException("writer-site-budget");
+            siteNames[siteCount]=name; return siteCount++;
+        }
+        public static void CountSite(int site)
+        { if(siteDiagnostics) Interlocked.Increment(ref siteCalls[site]); }
+        private static string SiteStatus()
+        {
+            string s=" sites="+siteDiagnostics+" site-slots="+siteCount;
+            var order=new List<int>();
+            var snapshot=new long[siteCount];
+            for(int i=0;i<snapshot.Length;i++) { snapshot[i]=Interlocked.Read(ref siteCalls[i]); if(snapshot[i]>0) order.Add(i); }
+            order.Sort((a,b)=>snapshot[b].CompareTo(snapshot[a]));
+            for(int i=0;i<Math.Min(12,order.Count);i++)
+            { int id=order[i]; s+=" | site["+id+"] calls="+snapshot[id]+" "+siteNames[id]; }
+            return s;
+        }
         private static int pipelineDepth, pipelineFrame=-1;
         private static long pipelineStamp, pipelineTicks, pipelinePeak, pipelinePrevious, pipelineTotal;
         internal static void PipelineEnter()
@@ -67,7 +92,9 @@ namespace StutterFix
                 case "off": Shutdown(); break;
                 case "flush": Flush("command"); break;
                 case "status": break;
-                default: Log("tilerange on/shadow/off/flush/status; on/shadow는 재생 전 정지 상태에서"); return;
+                case "sites on": Array.Clear(siteCalls,0,siteCalls.Length); siteDiagnostics=true; break;
+                case "sites off": siteDiagnostics=false; break;
+                default: Log("tilerange on/shadow/off/flush/status/sites on/sites off; on/shadow는 재생 전 정지 상태에서"); return;
             }
             Log(Status());
         }
@@ -139,7 +166,7 @@ namespace StutterFix
         internal static void Flush(string reason) { }
         internal static void ResetMap()
         { ready=false; floors=null; chunks=null; indices.Clear(); transforms.Clear(); count=sweep=0; }
-        internal static void Shutdown() { ResetMap(); enabled=shadow=false; FloorRangeWriters.Shutdown(); }
+        internal static void Shutdown() { ResetMap(); enabled=shadow=siteDiagnostics=false; FloorRangeWriters.Shutdown(); }
         private static bool Target(ref FloorAnim.Ctx c,out byte mask)
         {
             mask=0;
@@ -279,7 +306,7 @@ namespace StutterFix
             s+=" pipeline-frame="+pipelineFrame+" pipeline-ms="+Ms(pipelineTicks).ToString("F3")+" pipeline-previous-ms="+Ms(pipelinePrevious).ToString("F3")
                 +" pipeline-peak-ms="+Ms(pipelinePeak).ToString("F3")+" pipeline-total-ms="+Ms(pipelineTotal).ToString("F3")+" hook-untracked="+(hookCalls-hookHits);
             foreach(var pair in reasons) s+=" | "+pair.Key+"="+pair.Value;
-            return s;
+            return s+SiteStatus();
         }
     }
 }

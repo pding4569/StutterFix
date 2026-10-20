@@ -259,7 +259,7 @@ namespace StutterFix
         private static void TweenFloor(scrFloor target, ref Ctx c)
         {
 #if DEV || AUTOTEST
-            FloorRange.BeforeLegacy(target);
+            FloorRange.CountSite(rangeSite); FloorRange.BeforeLegacy(target);
 #endif
             if (c.OpaOnly) { OpaOnly(target, ref c); return; }
             long a = Prof ? TS() : 0, b;
@@ -583,7 +583,7 @@ namespace StutterFix
         private static Rec New(scrFloor f, Transform tt, Dictionary<global::TweenType, Tween> mt, int key, global::TweenType tk, Tween old, ref Ctx c)
         {
 #if DEV || AUTOTEST
-            FloorRange.Mark(f);
+            FloorRange.CountSite(newSite); FloorRange.Mark(f);
 #endif
             // 같은 칸의 끝난 표를 다시 쓴다 (방금 Kill(true) 로 끝냈거나 이미 끝난 것). 기록이 목록에서 빠졌으면 기록도 다시 쓴다.
             Rec oldR = (object)old == null ? null : old.id as Rec; Rec r;
@@ -668,6 +668,12 @@ namespace StutterFix
 #endif
         }
         // setter (+ 회전은 OnUpdate). DOTween FloatPlugin: 시작 + 변화 x 이징 / Vector3Plugin 축 제한: getter() 의 그 축만 바꿔 setter
+#if DEV || AUTOTEST
+        private static readonly int rangeSite=FloorRange.RegisterSite("FloorAnim::TweenFloor direct-mark"),
+            newSite=FloorRange.RegisterSite("FloorAnim::New direct-mark"), stepSite=FloorRange.RegisterSite("FloorAnim::Step direct-mark"),
+            completeSite=FloorRange.RegisterSite("FloorAnim::Complete direct-mark"), killSite=FloorRange.RegisterSite("FloorAnim::KillPrefix direct-mark"),
+            completePrefixSite=FloorRange.RegisterSite("FloorAnim::CompletePrefix direct-mark");
+#endif
         private static void Apply(Rec r, float pos)
         {
 #if DEV || AUTOTEST
@@ -690,7 +696,7 @@ namespace StutterFix
         private static void Step(Rec r, float td)
         {
 #if DEV || AUTOTEST
-            FloorRange.BeforeLegacy(r.F);
+            FloorRange.CountSite(stepSite); FloorRange.BeforeLegacy(r.F);
             if (!r.Running) return;
 #endif
             if (!r.Started) Startup(r);
@@ -709,7 +715,7 @@ namespace StutterFix
         {
             if (!r.Running) return;
 #if DEV || AUTOTEST
-            FloorRange.Mark(r.F);
+            FloorRange.CountSite(completeSite); FloorRange.Mark(r.F);
 #endif
             if (!r.Started) Startup(r);
             r.Pos = r.Dur;
@@ -729,7 +735,7 @@ namespace StutterFix
             var r = t.id as Rec;
             if (r == null) return true;
 #if DEV || AUTOTEST
-            FloorRange.BeforeLegacy(r.F);
+            FloorRange.CountSite(killSite); FloorRange.BeforeLegacy(r.F);
 #endif
             if (complete) { if (r.Running) Killed++; Complete(r); }
             else if (r.Running)
@@ -748,7 +754,7 @@ namespace StutterFix
             var r = t.id as Rec;
             if (r == null) return true;
 #if DEV || AUTOTEST
-            FloorRange.BeforeLegacy(r.F);
+            FloorRange.CountSite(completePrefixSite); FloorRange.BeforeLegacy(r.F);
 #endif
             if (r.Running) { Killed++; Complete(r); }
             return false;

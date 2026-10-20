@@ -25,6 +25,7 @@ static class Program
         pe = new PEReader(fs);
         if (!pe.HasMetadata) { Console.WriteLine("SKIP native PE (no managed metadata)"); return 0; }
         md = pe.GetMetadataReader();
+        if (Environment.GetEnvironmentVariable("RAW_IL") is string raw && raw.Length > 0) { RawIL(raw); return 0; }
         if (Environment.GetEnvironmentVariable("TILE_WRITERS") == "1") { TileWriters(); return 0; }
         if (Environment.GetEnvironmentVariable("TILE_READERS") == "1") { TileReaders(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_GUARDS") == "1") { DecoGuards(); return 0; }
@@ -196,6 +197,35 @@ static class Program
     }
 
     // Conservative reference inventory. Transform aliases are not data-flow proof.
+    static void RawIL(string filter)
+    {
+        var ops = typeof(System.Reflection.Emit.OpCodes).GetFields().Where(f => f.FieldType == typeof(System.Reflection.Emit.OpCode))
+            .Select(f => (System.Reflection.Emit.OpCode)f.GetValue(null)).ToDictionary(o => unchecked((ushort)o.Value));
+        foreach (var mh in md.MethodDefinitions)
+        {
+            string title = MethodTitle(mh);
+            if (filter != "*" && !title.StartsWith(filter, StringComparison.Ordinal)) continue;
+            var m = md.GetMethodDefinition(mh); if (m.RelativeVirtualAddress == 0) continue;
+            Console.WriteLine(title);
+            var il = pe.GetMethodBody(m.RelativeVirtualAddress).GetILBytes();
+            for (int i = 0; i < il.Length;)
+            {
+                int offset = i; ushort code = il[i++]; if (code == 0xfe) code = (ushort)(0xfe00 | il[i++]);
+                var op = ops[code]; string operand = "";
+                int size = op.OperandType switch {
+                    System.Reflection.Emit.OperandType.InlineNone => 0,
+                    System.Reflection.Emit.OperandType.ShortInlineBrTarget or System.Reflection.Emit.OperandType.ShortInlineI or System.Reflection.Emit.OperandType.ShortInlineVar => 1,
+                    System.Reflection.Emit.OperandType.InlineVar => 2,
+                    System.Reflection.Emit.OperandType.InlineI8 or System.Reflection.Emit.OperandType.InlineR => 8,
+                    System.Reflection.Emit.OperandType.InlineSwitch => 4 + 4 * BitConverter.ToInt32(il, i), _ => 4 };
+                if (op.OperandType == System.Reflection.Emit.OperandType.ShortInlineBrTarget) operand = "IL_" + (i + size + (sbyte)il[i]).ToString("X4");
+                else if (op.OperandType == System.Reflection.Emit.OperandType.InlineBrTarget) operand = "IL_" + (i + size + BitConverter.ToInt32(il, i)).ToString("X4");
+                else if (op.OperandType == System.Reflection.Emit.OperandType.InlineField || op.OperandType == System.Reflection.Emit.OperandType.InlineMethod) operand = MemberName(Handle(BitConverter.ToInt32(il, i)));
+                else if (size > 0) operand = Convert.ToHexString(il.AsSpan(i, size));
+                Console.WriteLine("  IL_" + offset.ToString("X4") + " " + op.Name + " " + operand); i += size;
+            }
+        }
+    }
     static void TileWriters()
     {
         foreach (var mh in md.MethodDefinitions)
