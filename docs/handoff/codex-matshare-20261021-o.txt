@@ -1,0 +1,10 @@
+1. 게임 실행·설치·커밋 없이 구현과 오프라인 검증을 수행했다.
+2. matshare census: 재질 ID/내용 서명/상위 속성 변이/전체·live Run 수 로그를 추가했다.
+3. matshare on|off|state는 DEV 전용·기본 꺼짐이며 PlayerAuto에서도 제외했다.
+4. 태그·특수 장식과 외부 Renderer가 섞인 동률 정렬 묶음은 통째로 공유에서 제외한다.
+5. 실제 signed material ID를 정렬해 Run에 배정하며 생성 방향을 가정하지 않는다.
+6. off/Unload/AutoTest 종료/기존 SceneReset에서 원복하며 새 Harmony 패치는 없다.
+7. 실제 장식 pair의 앞뒤 양성 대조·A/A/B/A RGBA 비교와 SortProbe fixture를 준비했다.
+8. tiling LateUpdate는 변경 키가 있을 때만 getter를 순회하며 재질 값이 아닌 texture wrap을 쓴다.
+9. 빌드 3종 오류 0, LoadCheck 틀림 0, 정책 25,401 checks와 69-step 구조 검사를 통과했다.
+10. 실제 센서스/GPU/draw/정렬/화면 동일성은 미측정이며 전체 화면 동일·절감 채택은 보류한다.

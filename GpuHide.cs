@@ -24,7 +24,7 @@ namespace StutterFix
         internal static void Command(string arg)
         {
             if (arg.Trim() == "off") { Stop(); return; }
-            if (Busy || GpuCensus.Busy || GpuSplit.Active) throw new InvalidOperationException("gpuhide/census/gpusplit already active");
+            if (Busy || GpuCensus.Busy || GpuSplit.Busy) throw new InvalidOperationException("gpuhide/census/gpusplit already active");
             int space = arg.LastIndexOf(' ');
             if (space < 1 || !float.TryParse(arg.Substring(space+1), NumberStyles.Float, CultureInfo.InvariantCulture, out float duration)
                 || float.IsNaN(duration) || float.IsInfinity(duration) || duration < 1 || duration > 30)

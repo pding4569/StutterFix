@@ -1,0 +1,399 @@
+﻿Assembly-CSharp SHA256=F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF
+
+METHOD TextureManager+CustomSprite::Void .ctor(UnityEngine.Texture2D, System.DateTime, Boolean, Boolean, Single, UnityEngine.SpriteMeshType) convention=Standard, HasThis
+0000 ldarg.0 
+0001 call System.Object::Void .ctor()
+0006 ldarg.0 
+0007 ldarg.1 
+0008 stfld TextureManager+CustomSprite::UnityEngine.Texture2D texture
+000D ldarg.0 
+000E ldarg.2 
+000F stfld TextureManager+CustomSprite::System.DateTime fileLastModified
+0014 ldarg.0 
+0015 ldarg.s 05
+0017 stfld TextureManager+CustomSprite::Single pixelsPerUnit
+001C ldarg.0 
+001D ldarg.s 06
+001F stfld TextureManager+CustomSprite::UnityEngine.SpriteMeshType spriteType
+0024 ldarg.0 
+0025 ldarg.3 
+0026 stfld TextureManager+CustomSprite::Boolean isInternal
+002B ldarg.0 
+002C ldarg.s 04
+002E stfld TextureManager+CustomSprite::Boolean isFromBundle
+0033 ldarg.0 
+0034 ldarg.1 
+0035 ldc.r4 0
+003A ldc.r4 0
+003F ldarg.1 
+0040 callvirt UnityEngine.Texture::Int32 get_width()
+0045 conv.r4 
+0046 ldarg.1 
+0047 callvirt UnityEngine.Texture::Int32 get_height()
+004C conv.r4 
+004D newobj UnityEngine.Rect::Void .ctor(Single, Single, Single, Single)
+0052 call UnityEngine.Vector2::UnityEngine.Vector2 get_one()
+0057 ldc.r4 2
+005C call UnityEngine.Vector2::UnityEngine.Vector2 op_Division(UnityEngine.Vector2, Single)
+0061 ldarg.s 05
+0063 ldc.i4.0 
+0064 ldarg.s 06
+0066 call UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType)
+006B stfld TextureManager+CustomSprite::UnityEngine.Sprite sprite
+0070 ret 
+
+METHOD TextureManager::UnityEngine.Sprite LoadNewSprite(System.String, ADOFAI.LoadResult ByRef, Single, UnityEngine.SpriteMeshType) convention=Standard
+0000 ldarg.0 
+0001 ldarg.1 
+0002 ldc.i4.m1 
+0003 call TextureManager::UnityEngine.Texture2D LoadTexture(System.String, ADOFAI.LoadResult ByRef, Int32)
+0008 stloc.0 
+0009 ldloc.0 
+000A ldnull 
+000B call UnityEngine.Object::Boolean op_Equality(UnityEngine.Object, UnityEngine.Object)
+0010 brfalse.s 02
+0012 ldnull 
+0013 ret 
+0014 ldloca.s 01
+0016 ldc.r4 0
+001B ldc.r4 0
+0020 ldloc.0 
+0021 callvirt UnityEngine.Texture::Int32 get_width()
+0026 conv.r4 
+0027 ldloc.0 
+0028 callvirt UnityEngine.Texture::Int32 get_height()
+002D conv.r4 
+002E call UnityEngine.Rect::Void .ctor(Single, Single, Single, Single)
+0033 ldloc.0 
+0034 ldloc.1 
+0035 call UnityEngine.Vector2::UnityEngine.Vector2 get_one()
+003A ldc.r4 2
+003F call UnityEngine.Vector2::UnityEngine.Vector2 op_Division(UnityEngine.Vector2, Single)
+0044 ldarg.2 
+0045 ldc.i4.0 
+0046 ldarg.3 
+0047 call UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType)
+004C ret 
+
+METHOD TextureManager::CustomSprite GetOrAddSprite(System.String, System.String, ADOFAI.LoadResult ByRef) convention=Standard, HasThis
+0000 ldarg.3 
+0001 ldc.i4.3 
+0002 stind.i4 
+0003 ldarg.1 
+0004 call RDEditorUtils::Boolean IsNullOrEmpty(System.String)
+0009 brfalse.s 02
+000B ldnull 
+000C ret 
+000D ldarg.0 
+000E ldfld TextureManager::System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite] customSprites
+0013 ldarg.1 
+0014 callvirt System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite]::Boolean ContainsKey(System.String)
+0019 stloc.0 
+001A ldarg.2 
+001B newobj System.IO.FileInfo::Void .ctor(System.String)
+0020 callvirt System.IO.FileSystemInfo::System.DateTime get_LastWriteTimeUtc()
+0025 stloc.1 
+0026 ldloc.0 
+0027 brfalse.s 1C
+0029 ldarg.0 
+002A ldfld TextureManager::System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite] customSprites
+002F ldarg.1 
+0030 callvirt System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite]::CustomSprite get_Item(System.String)
+0035 ldfld TextureManager+CustomSprite::System.DateTime fileLastModified
+003A ldloc.1 
+003B call System.DateTime::Int32 Compare(System.DateTime, System.DateTime)
+0040 ldc.i4.0 
+0041 ceq 
+0043 br.s 01
+0045 ldc.i4.0 
+0046 ldc.i4.0 
+0047 ceq 
+0049 brfalse.s 49
+004B ldloc.0 
+004C brfalse.s 07
+004E ldarg.0 
+004F ldarg.1 
+0050 call TextureManager::Void UnloadSprite(System.String)
+0055 ldarg.2 
+0056 call RDEditorUtils::Boolean IsNullOrEmpty(System.String)
+005B brfalse.s 02
+005D ldnull 
+005E ret 
+005F ldarg.2 
+0060 ldarg.3 
+0061 ldc.i4.m1 
+0062 call TextureManager::UnityEngine.Texture2D LoadTexture(System.String, ADOFAI.LoadResult ByRef, Int32)
+0067 stloc.2 
+0068 ldarg.3 
+0069 ldind.i4 
+006A brfalse.s 02
+006C ldnull 
+006D ret 
+006E ldarg.0 
+006F ldfld TextureManager::System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite] customSprites
+0074 ldarg.1 
+0075 ldloc.2 
+0076 ldloc.1 
+0077 ldsfld GCS::System.String internalLevelName
+007C ldnull 
+007D cgt.un 
+007F call ADOBase::Boolean get_isBundleLevel()
+0084 ldc.r4 100
+0089 ldc.i4.0 
+008A newobj TextureManager+CustomSprite::Void .ctor(UnityEngine.Texture2D, System.DateTime, Boolean, Boolean, Single, UnityEngine.SpriteMeshType)
+008F callvirt System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite]::Void Add(System.String, CustomSprite)
+0094 ldarg.3 
+0095 ldc.i4.0 
+0096 stind.i4 
+0097 ldarg.0 
+0098 ldfld TextureManager::System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite] customSprites
+009D ldarg.1 
+009E callvirt System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite]::CustomSprite get_Item(System.String)
+00A3 ldc.i4.1 
+00A4 stfld TextureManager+CustomSprite::Boolean inUse
+00A9 ldarg.0 
+00AA ldfld TextureManager::System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite] customSprites
+00AF ldarg.1 
+00B0 callvirt System.Collections.Generic.Dictionary`2[System.String,TextureManager+CustomSprite]::CustomSprite get_Item(System.String)
+00B5 ret 
+
+METHOD scrVisualDecoration::Void SetBlendMode(DecorationBlendMode) convention=Standard, HasThis
+0000 ldarg.1 
+0001 ldc.i4.0 
+0002 cgt.un 
+0004 stloc.0 
+0005 ldarg.0 
+0006 ldarg.1 
+0007 stfld scrVisualDecoration::DecorationBlendMode blendMode
+000C ldarg.0 
+000D ldfld scrVisualDecoration::BlendModes.BlendModeEffect blendModeEffect
+0012 ldloc.0 
+0013 callvirt UnityEngine.Behaviour::Void set_enabled(Boolean)
+0018 ldarg.0 
+0019 ldfld scrVisualDecoration::BlendModes.BlendModeEffect meshBlendModeEffect
+001E ldloc.0 
+001F callvirt UnityEngine.Behaviour::Void set_enabled(Boolean)
+0024 ldloc.0 
+0025 brfalse.s 40
+0027 ldarga.s 01
+0029 constrained. ::DecorationBlendMode
+002F callvirt System.Object::System.String ToString()
+0034 call System.Enum::BlendModes.BlendMode Parse[BlendMode](System.String)
+0039 stloc.1 
+003A ldarg.0 
+003B ldfld scrVisualDecoration::BlendModes.BlendModeEffect blendModeEffect
+0040 ldloc.1 
+0041 callvirt BlendModes.BlendModeEffect::Void set_BlendMode(BlendModes.BlendMode)
+0046 ldarg.0 
+0047 ldfld scrVisualDecoration::BlendModes.BlendModeEffect blendModeEffect
+004C ldarg.0 
+004D ldfld scrVisualDecoration::Boolean smoothing
+0052 ldc.i4.0 
+0053 ceq 
+0055 callvirt BlendModes.BlendModeEffect::Void set_UsePointSampling(Boolean)
+005A ldarg.0 
+005B ldfld scrVisualDecoration::BlendModes.BlendModeEffect meshBlendModeEffect
+0060 ldloc.1 
+0061 callvirt BlendModes.BlendModeEffect::Void set_BlendMode(BlendModes.BlendMode)
+0066 ret 
+0067 ldarg.0 
+0068 ldfld scrVisualDecoration::UnityEngine.SpriteRenderer spriteRenderer
+006D callvirt UnityEngine.Renderer::UnityEngine.Material get_material()
+0072 ldsfld scrDecorationManager::UnityEngine.Shader tileShader
+0077 callvirt UnityEngine.Material::Void set_shader(UnityEngine.Shader)
+007C ldarg.0 
+007D ldfld scrVisualDecoration::UnityEngine.Material meshRendererMat
+0082 ldnull 
+0083 call UnityEngine.Object::Boolean op_Equality(UnityEngine.Object, UnityEngine.Object)
+0088 brfalse.s 18
+008A ldarg.0 
+008B ldsfld scrDecorationManager::UnityEngine.Shader visualDecoShader
+0090 newobj UnityEngine.Material::Void .ctor(UnityEngine.Shader)
+0095 dup 
+0096 ldc.i4.s 3D
+0098 callvirt UnityEngine.Object::Void set_hideFlags(UnityEngine.HideFlags)
+009D stfld scrVisualDecoration::UnityEngine.Material meshRendererMat
+00A2 ldarg.0 
+00A3 ldfld scrVisualDecoration::UnityEngine.MeshRenderer meshRenderer
+00A8 ldarg.0 
+00A9 ldfld scrVisualDecoration::UnityEngine.Material meshRendererMat
+00AE callvirt UnityEngine.Renderer::Void set_material(UnityEngine.Material)
+00B3 ret 
+ENUM SpriteMeshType FullRect=0
+ENUM SpriteMeshType Tight=1
+
+OVERLOAD UnityEngine.Sprite Create(UnityEngine.Rect, UnityEngine.Vector2, Single, UnityEngine.Texture2D)
+param rect UnityEngine.Rect default=<none>
+param pivot UnityEngine.Vector2 default=<none>
+param pixelsToUnits System.Single default=<none>
+param texture UnityEngine.Texture2D default=<none>
+
+METHOD UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Rect, UnityEngine.Vector2, Single, UnityEngine.Texture2D) convention=Standard
+0000 nop 
+0001 ldarg.0 
+0002 ldarg.1 
+0003 ldarg.2 
+0004 ldarg.3 
+0005 call UnityEngine.Sprite::UnityEngine.Sprite CreateSpriteWithoutTextureScripting(UnityEngine.Rect, UnityEngine.Vector2, Single, UnityEngine.Texture2D)
+000A stloc.0 
+000B br.s 00
+000D ldloc.0 
+000E ret 
+
+OVERLOAD UnityEngine.Sprite Create(UnityEngine.Rect, UnityEngine.Vector2, Single)
+param rect UnityEngine.Rect default=<none>
+param pivot UnityEngine.Vector2 default=<none>
+param pixelsToUnits System.Single default=<none>
+
+METHOD UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Rect, UnityEngine.Vector2, Single) convention=Standard
+0000 nop 
+0001 ldarg.0 
+0002 ldarg.1 
+0003 ldarg.2 
+0004 ldnull 
+0005 call UnityEngine.Sprite::UnityEngine.Sprite CreateSpriteWithoutTextureScripting(UnityEngine.Rect, UnityEngine.Vector2, Single, UnityEngine.Texture2D)
+000A stloc.0 
+000B br.s 00
+000D ldloc.0 
+000E ret 
+
+OVERLOAD UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType, UnityEngine.Vector4, Boolean)
+param texture UnityEngine.Texture2D default=<none>
+param rect UnityEngine.Rect default=<none>
+param pivot UnityEngine.Vector2 default=<none>
+param pixelsPerUnit System.Single default=<none>
+param extrude System.UInt32 default=<none>
+param meshType UnityEngine.SpriteMeshType default=<none>
+param border UnityEngine.Vector4 default=<none>
+param generateFallbackPhysicsShape System.Boolean default=<none>
+
+OVERLOAD UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType, UnityEngine.Vector4, Boolean, UnityEngine.SecondarySpriteTexture[])
+param texture UnityEngine.Texture2D default=<none>
+param rect UnityEngine.Rect default=<none>
+param pivot UnityEngine.Vector2 default=<none>
+param pixelsPerUnit System.Single default=<none>
+param extrude System.UInt32 default=<none>
+param meshType UnityEngine.SpriteMeshType default=<none>
+param border UnityEngine.Vector4 default=<none>
+param generateFallbackPhysicsShape System.Boolean default=<none>
+param secondaryTextures UnityEngine.SecondarySpriteTexture[] default=<none>
+
+OVERLOAD UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType, UnityEngine.Vector4)
+param texture UnityEngine.Texture2D default=<none>
+param rect UnityEngine.Rect default=<none>
+param pivot UnityEngine.Vector2 default=<none>
+param pixelsPerUnit System.Single default=<none>
+param extrude System.UInt32 default=<none>
+param meshType UnityEngine.SpriteMeshType default=<none>
+param border UnityEngine.Vector4 default=<none>
+
+METHOD UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType, UnityEngine.Vector4) convention=Standard
+0000 nop 
+0001 ldarg.0 
+0002 ldarg.1 
+0003 ldarg.2 
+0004 ldarg.3 
+0005 ldarg.s 04
+0007 ldarg.s 05
+0009 ldarg.s 06
+000B ldc.i4.0 
+000C call UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType, UnityEngine.Vector4, Boolean)
+0011 stloc.0 
+0012 br.s 00
+0014 ldloc.0 
+0015 ret 
+
+OVERLOAD UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType)
+param texture UnityEngine.Texture2D default=<none>
+param rect UnityEngine.Rect default=<none>
+param pivot UnityEngine.Vector2 default=<none>
+param pixelsPerUnit System.Single default=<none>
+param extrude System.UInt32 default=<none>
+param meshType UnityEngine.SpriteMeshType default=<none>
+
+METHOD UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType) convention=Standard
+0000 nop 
+0001 ldarg.0 
+0002 ldarg.1 
+0003 ldarg.2 
+0004 ldarg.3 
+0005 ldarg.s 04
+0007 ldarg.s 05
+0009 call UnityEngine.Vector4::UnityEngine.Vector4 get_zero()
+000E call UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType, UnityEngine.Vector4)
+0013 stloc.0 
+0014 br.s 00
+0016 ldloc.0 
+0017 ret 
+
+OVERLOAD UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32)
+param texture UnityEngine.Texture2D default=<none>
+param rect UnityEngine.Rect default=<none>
+param pivot UnityEngine.Vector2 default=<none>
+param pixelsPerUnit System.Single default=<none>
+param extrude System.UInt32 default=<none>
+
+METHOD UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32) convention=Standard
+0000 nop 
+0001 ldarg.0 
+0002 ldarg.1 
+0003 ldarg.2 
+0004 ldarg.3 
+0005 ldarg.s 04
+0007 ldc.i4.1 
+0008 call UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32, UnityEngine.SpriteMeshType)
+000D stloc.0 
+000E br.s 00
+0010 ldloc.0 
+0011 ret 
+
+OVERLOAD UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single)
+param texture UnityEngine.Texture2D default=<none>
+param rect UnityEngine.Rect default=<none>
+param pivot UnityEngine.Vector2 default=<none>
+param pixelsPerUnit System.Single default=<none>
+
+METHOD UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single) convention=Standard
+0000 nop 
+0001 ldarg.0 
+0002 ldarg.1 
+0003 ldarg.2 
+0004 ldarg.3 
+0005 ldc.i4.0 
+0006 call UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single, UInt32)
+000B stloc.0 
+000C br.s 00
+000E ldloc.0 
+000F ret 
+
+OVERLOAD UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2)
+param texture UnityEngine.Texture2D default=<none>
+param rect UnityEngine.Rect default=<none>
+param pivot UnityEngine.Vector2 default=<none>
+
+METHOD UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2) convention=Standard
+0000 nop 
+0001 ldarg.0 
+0002 ldarg.1 
+0003 ldarg.2 
+0004 ldc.r4 100
+0009 call UnityEngine.Sprite::UnityEngine.Sprite Create(UnityEngine.Texture2D, UnityEngine.Rect, UnityEngine.Vector2, Single)
+000E stloc.0 
+000F br.s 00
+0011 ldloc.0 
+0012 ret 
+EDITION bin/Release/StutterFix.dll GpuSplit present=True
+EDITION bin/Release/StutterFix.dll GpuSplitPolicy present=True
+EDITION bin/Release/StutterFix.dll GpuSplitGroup present=True
+EDITION bin/Release/StutterFix.dll GpuSplitLedger`1 present=True
+EDITION bin/Release/StutterFix.dll GpuProbe present=True
+EDITION bin/Player/StutterFix.dll GpuSplit present=False
+EDITION bin/Player/StutterFix.dll GpuSplitPolicy present=False
+EDITION bin/Player/StutterFix.dll GpuSplitGroup present=False
+EDITION bin/Player/StutterFix.dll GpuSplitLedger`1 present=False
+EDITION bin/Player/StutterFix.dll GpuProbe present=False
+EDITION bin/PlayerAuto/StutterFix.dll GpuSplit present=True
+EDITION bin/PlayerAuto/StutterFix.dll GpuSplitPolicy present=True
+EDITION bin/PlayerAuto/StutterFix.dll GpuSplitGroup present=True
+EDITION bin/PlayerAuto/StutterFix.dll GpuSplitLedger`1 present=True
+EDITION bin/PlayerAuto/StutterFix.dll GpuProbe present=True

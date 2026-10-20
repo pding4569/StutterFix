@@ -1,0 +1,6 @@
+﻿scnGame::UpdateDecorationObjects  ->  TextureManager::GetOrAddSprite
+scnGame::UpdateBackgroundSprites  ->  TextureManager::GetOrAddSprite
+scrCustomBackgroundSprite::SetBaseSprite  ->  TextureManager::GetOrAddSprite
+scrDecoration::Setup  ->  TextureManager::GetOrAddSprite
+ADOFAI.LevelEditor.Controls.PropertyControl_File::ProcessFile  ->  TextureManager::GetOrAddSprite
+(5곳)

@@ -15,7 +15,11 @@ namespace StutterFix
     {
         static readonly string[] Cases = { "creation", "creation-reverse", "siblings", "parents",
             "z-small", "z-large", "materials", "queue", "textures", "sprites",
-            "enable", "force-off", "move", "reparent", "mesh-first", "mesh-last", "mixed-random" };
+            "enable", "force-off", "move", "reparent", "mesh-first", "mesh-last", "mixed-random"
+#if DEV
+            , "material-reassign", "matshare-runs"
+#endif
+        };
         static readonly string[] Hypotheses = { "id-asc", "id-desc", "creation-asc", "creation-desc",
             "sibling-asc", "sibling-desc", "distance-id", "distance-sibling", "queue-distance-id", "material-id", "mesh-before-sprite" };
         static readonly string[] MeshCases = { "mesh-material-below", "mesh-material-above", "mesh-material-six" };
@@ -177,7 +181,7 @@ namespace StutterFix
                     if (name == "parents") x.R.transform.SetParent(k % 2 == 0 ? p0 : p1, true);
                     if (name == "z-small" || name == "z-large")
                     { var v = x.R.transform.position; v.z += (k - (n-1)*.5f) * (name == "z-small" ? .002f : .2f); x.R.transform.position = v; }
-                    if (name == "materials" || name == "queue" || name == "mixed-random")
+                    if (name == "materials" || name == "queue" || name == "mixed-random" || name == "material-reassign" || name == "matshare-runs")
                     {
                         x.R.sharedMaterial = Material(owned, shader, tex);
                         if (name == "queue") x.R.sharedMaterial.renderQueue = 3000 + k;
@@ -231,6 +235,20 @@ namespace StutterFix
                 int[] before = Observe(items, cam, rt, read, colors, ref valid);
                 if (initialTop != before[n-1]) Invalid(ref valid, "initial top differs from before order: " + initialTop + "/" + before[n-1]);
                 int preMutationTop = Winner(items,cam,rt,read,colors,ref valid);
+#if DEV
+                if (name == "material-reassign" || name == "matshare-runs")
+                {
+                    if (!before.SequenceEqual(items.OrderBy(x => x.R.sharedMaterial.GetInstanceID()).Select(x => x.Label)))
+                        Invalid(ref valid, "source material signed-ID hypothesis failed");
+                    int width = name == "matshare-runs" ? 2 : 1;
+                    var runMaterials = Enumerable.Range(0,(n+width-1)/width).Select(_ => Material(owned,shader,tex)).ToArray();
+                    var ids = runMaterials.Select(m => m.GetInstanceID()).ToArray();
+                    details.Append("allocated-material-ids=").Append(string.Join("/",ids)).Append(";decreasing=")
+                        .Append(ids.Zip(ids.Skip(1),(a,b) => b<a).All(v=>v)).Append(';');
+                    var assigned = MatSharePolicy.MaterialOrder(ids);
+                    for (int k = 0; k < n; k++) items[before[k]].R.sharedMaterial = runMaterials[assigned[k/width]];
+                }
+#endif
                 var mutation = (Item[])items.Clone(); Shuffle(mutation, rng);
                 foreach (var x in mutation)
                 {
@@ -242,6 +260,12 @@ namespace StutterFix
                 observationPhase = "after";
                 int postMutationTop = Winner(items,cam,rt,read,colors,ref valid);
                 int[] after = Observe(items, cam, rt, read, colors, ref valid);
+#if DEV
+                if (name == "material-reassign" && !after.SequenceEqual(before)) Invalid(ref valid, "material reassignment changed full order");
+                if (name == "matshare-runs")
+                    for (int k = 0; k < n; k++)
+                        if (Array.IndexOf(before,after[k])/2 != k/2) Invalid(ref valid, "shared runs crossed boundary");
+#endif
                 if (postMutationTop != after[n-1]) Invalid(ref valid, "post-mutation top differs from after order: " + postMutationTop + "/" + after[n-1]);
                 bool stable = true;
                 for (int k = 0; k < 3; k++)

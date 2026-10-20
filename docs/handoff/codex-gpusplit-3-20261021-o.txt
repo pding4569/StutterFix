@@ -1,0 +1,10 @@
+1. 게임 실행·제어·설치·커밋 0회, 기존 gpusplit-2 작업 유지.
+2. census를 본 카메라 preCull로 이동하고 frustum/행렬/첫 5개 및 live 5개 bounds 로그 추가.
+3. native+변환 localBounds 합집합으로 보수 판정; onscreen=0 실원인과 약 1,300개 복구는 런타임 미확인.
+4. live/visible/invisible/tiny/invisible+tiny를 매 본 카메라 preCull 재분류하고 postRender 복원.
+5. pixeldiff는 실제 입력 RT와 같은 프레임 A0/A1/B/A2를 비교하며 natural/control 실패·선택 0개는 무효.
+6. steps 생성기 255단계: 앞뒤 기준 포함 성능 9창, 별도 픽셀 비교 12표본; 생성/구조 검증만 수행.
+7. DEV/Player/PlayerAuto 빌드 모두 오류 0, 경고 각각 38/36/38.
+8. LoadCheck 266/229/266곳 모두 틀림 0, Player 진단 타입 3종 제외 확인.
+9. GpuSplitCheck 3,965 checks errors=0; steps 검사와 diff 검사 통과.
+10. 실제 GPU/draw/SetPass·픽셀 동일성·순회 손익은 미측정; 제품 최적화 미구현, 채택 보류.

@@ -29,6 +29,35 @@ namespace StutterFix
         int frame = -1, cameraCount, effectCount;
         bool sampled;
         long sampledFrames, unknownCameras, unknownEffects;
+        readonly string[] counterNames = { "Draw Calls Count", "SetPass Calls Count", "Batches Count", "Triangles Count", "Vertices Count" };
+        Unity.Profiling.ProfilerRecorder[] counters;
+        readonly double[] counterSums = new double[5];
+        readonly long[] counterFrames = new long[5];
+        int counterResetFrame;
+        void StartCounters()
+        {
+            counters = new Unity.Profiling.ProfilerRecorder[counterNames.Length];
+            for (int i = 0; i < counters.Length; i++)
+                counters[i] = Unity.Profiling.ProfilerRecorder.StartNew(Unity.Profiling.ProfilerCategory.Render, counterNames[i], 1);
+            ResetCounters();
+        }
+        void ResetCounters()
+        {
+            Array.Clear(counterSums, 0, counterSums.Length); Array.Clear(counterFrames, 0, counterFrames.Length);
+            counterResetFrame = Time.frameCount;
+        }
+        void Update()
+        {
+            // LastValue is the last completed frame, not the current camera's partial work.
+            if (counters == null || Time.frameCount <= counterResetFrame + 1) return;
+            for (int i = 0; i < counters.Length; i++)
+                if (counters[i].Valid && counters[i].Count > 0) { counterSums[i] += counters[i].LastValue; counterFrames[i]++; }
+        }
+        void ReportCounters()
+        {
+            for (int i = 0; i < counterNames.Length; i++)
+                Main.Entry.Logger.Log(FormattableString.Invariant($"[gpuprobe] render_counter={counterNames[i].Replace(' ', '_')} scope=whole-frame valid={(counters != null && counters[i].Valid ? 1 : 0)} frames={counterFrames[i]} mean={(counterFrames[i] == 0 ? "unavailable" : (counterSums[i] / counterFrames[i]).ToString("F3", System.Globalization.CultureInfo.InvariantCulture))}"));
+        }
         internal static void Command(string arg)
         {
             switch (arg.Trim().ToLowerInvariant())
@@ -38,6 +67,7 @@ namespace StutterFix
                 case "reset":
                     if (instance == null) throw new InvalidOperationException("gpuprobe off");
                     instance.Issue(5); instance.sampledFrames = instance.unknownCameras = instance.unknownEffects = 0;
+                    instance.ResetCounters();
                     Main.Entry.Logger.Log("[gpuprobe] reset queued (existing hooks and queries retained)"); break;
                 case "off": Stop(); break;
                 default: throw new ArgumentException("gpuprobe on|state|off|reset");
@@ -59,6 +89,7 @@ namespace StutterFix
                 p.anchor = new RenderTexture(1, 1, 0, RenderTextureFormat.ARGB32); p.anchor.Create();
                 p.Issue(4, p.anchor.GetNativeTexturePtr()); // one-time device acquisition; never per-frame texture pointer access
                 p.Refresh();
+                p.StartCounters();
                 Camera.onPreCull += PreCull; Camera.onPreRender += PreRender;
                 p.StartCoroutine(p.EndFrames());
                 Main.Entry.Logger.Log("[gpuprobe] on sample=1/8 cameras=" + p.cameraCount + " effects=" + p.effectCount + " install/warmup frames excluded; use on again after scene load");
@@ -152,6 +183,7 @@ namespace StutterFix
             var data = new ulong[ScopeCount * 4];
             if (gp_snapshot(data, data.Length) == 0) { Main.Entry.Logger.Log("[gpuprobe] snapshot busy; retry state"); return; }
             ulong n = data[0];
+            p.ReportCounters();
             Main.Entry.Logger.Log($"[gpuprobe] ready={gp_status(0)} completed={n} requested={p.sampledFrames} invalid={gp_status(2)} ring_full={gp_status(3)} overflow={gp_status(4)} not_ready={gp_status(5)} errors={gp_status(6)} effect_outside_camera={gp_status(7)} unknown_camera={p.unknownCameras} unknown_effect={p.unknownEffects}");
             for (int i = 0; i < ScopeCount; i++)
             {
@@ -169,6 +201,7 @@ namespace StutterFix
             Camera.onPreCull -= PreCull; Camera.onPreRender -= PreRender;
             new Harmony(Id).UnpatchAll(Id);
             p.StopAllCoroutines();
+            if (p.counters != null) foreach (var counter in p.counters) counter.Dispose();
             foreach (var c in p.cameras.Values) { if (c.Camera) c.Camera.RemoveCommandBuffer(CameraEvent.AfterEverything, c.End); c.End.Release(); }
             // All native query COM objects are released by an ordered render-thread event, never the main thread.
             if (p.issue != null) { p.Issue(3); p.issue.Release(); }

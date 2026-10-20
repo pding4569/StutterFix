@@ -33,6 +33,9 @@ namespace StutterFix
         public static void Prefix()
         {
             Count++;
+#if DEV
+            MatShare.Stop();
+#endif
 #if DEV || AUTOTEST
             DecoRender.Stop();
 #endif

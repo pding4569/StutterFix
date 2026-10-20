@@ -1,0 +1,22 @@
+﻿QUERY SetSprite
+scrDecoration::Setup  ->  scrVisualDecoration::SetSprite
+scrDecoration::Setup  ->  scrParticleDecoration::SetSprite
+ffxMoveDecorationsPlus::StartEffect  ->  scrParticleDecoration::SetSprite
+ffxMoveDecorationsPlus::StartEffect  ->  scrVisualDecoration::SetSprite
+(4곳)
+QUERY SetTile
+scrDecoration::Setup  ->  scrVisualDecoration::SetTile
+(1곳)
+QUERY SetBlendMode
+scrDecoration::Setup  ->  scrVisualDecoration::SetBlendMode
+BlendModes.BlendModeEffect::set_BlendMode  ->  BlendModes.BlendModeEffect::SetBlendMode
+(2곳)
+QUERY UpdateShader
+scrDecoration::LogicUpdate  ->  scrDecoration::UpdateShader
+(1곳)
+QUERY UpdateDecorationTilingLateUpdate
+scrDecorationManager::LateUpdate  ->  scrDecorationManager::UpdateDecorationTilingLateUpdate
+(1곳)
+QUERY UpdateDecorationTiling
+scrVisualDecoration::SetTile  ->  scrDecorationManager::UpdateDecorationTiling
+(1곳)

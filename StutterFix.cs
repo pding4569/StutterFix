@@ -479,6 +479,9 @@ ParticleTextWatch.Install(harmony);
             Try(FilterGpuProbe.Stop);
             Try(GpuHide.Stop);
             Try(GpuSplit.Stop);
+#if DEV
+            Try(MatShare.Stop);
+#endif
             Try(GpuCensus.Stop);
             Try(OffscreenProbe.Stop);
             Try(DecoJobShadow.Stop);
