@@ -1,0 +1,270 @@
+[StutterFix] [archegpu] camera=93258 enabled=False active=True depth=1 clear=SolidColor mask=131072 hdr=True msaa=False target=backbuffer
+[StutterFix] [archegpu] camera=93260 enabled=True active=False depth=0 clear=Skybox mask=1048576 hdr=True msaa=True target=90944:1000x1000:ARGB32:depth=32:samples=1
+[StutterFix] [archegpu] camera=102296 enabled=True active=True depth=-1.11 clear=Depth mask=1024 hdr=False msaa=False target=backbuffer
+[StutterFix] [archegpu] effect=104330 camera=102296 type=UnityStandardAssets.ImageEffects.Blur enabled=False
+[StutterFix] [archegpu] effect=104284 camera=102296 type=UnityStandardAssets.ImageEffects.BloomAndFlares enabled=False
+[StutterFix] [archegpu] effect=104332 camera=102296 type=UnityStandardAssets.ImageEffects.SunShafts enabled=False
+[StutterFix] [archegpu] effect=104292 camera=102296 type=UnityStandardAssets.ImageEffects.CameraMotionBlur enabled=False
+[StutterFix] [archegpu] effect=104314 camera=102296 type=UnityStandardAssets.ImageEffects.Grayscale enabled=False
+[StutterFix] [archegpu] effect=104324 camera=102296 type=UnityStandardAssets.ImageEffects.Blur enabled=False
+[StutterFix] [archegpu] effect=104320 camera=102296 type=UnityStandardAssets.ImageEffects.Fisheye enabled=False
+[StutterFix] [archegpu] effect=104326 camera=102296 type=UnityStandardAssets.ImageEffects.ScreenOverlay enabled=False
+[StutterFix] [archegpu] camera=102298 enabled=True active=True depth=-1 clear=Nothing mask=652183 hdr=False msaa=False target=backbuffer
+[StutterFix] [archegpu] effect=104290 camera=102298 type=UnityStandardAssets.ImageEffects.Blur enabled=False
+[StutterFix] [archegpu] effect=104306 camera=102298 type=UnityStandardAssets.ImageEffects.SunShafts enabled=False
+[StutterFix] [archegpu] effect=104298 camera=102298 type=UnityStandardAssets.ImageEffects.Grayscale enabled=False
+[StutterFix] [archegpu] effect=105274 camera=102298 type=CameraFilterPackLegacy_Real_VHS enabled=False
+[StutterFix] [archegpu] effect=104772 camera=102298 type=CameraFilterPackLegacy_FX_Funk enabled=False
+[StutterFix] [archegpu] effect=105202 camera=102298 type=CameraFilterPackLegacy_TV_LED enabled=False
+[StutterFix] [archegpu] effect=104544 camera=102298 type=CameraFilterPackLegacy_Noise_TV enabled=False
+[StutterFix] [archegpu] effect=104404 camera=102298 type=CameraFilterPackLegacy_Distortion_FishEye enabled=False
+[StutterFix] [archegpu] effect=105186 camera=102298 type=CameraFilterPackLegacy_TV_50 enabled=False
+[StutterFix] [archegpu] effect=104936 camera=102298 type=CameraFilterPackLegacy_TV_80 enabled=False
+[StutterFix] [archegpu] effect=105312 camera=102298 type=CameraFilterPackLegacy_Drawing_Paper enabled=False
+[StutterFix] [archegpu] effect=104542 camera=102298 type=CameraFilterPackLegacy_TV_ARCADE enabled=False
+[StutterFix] [archegpu] effect=104712 camera=102298 type=CameraFilterPackLegacy_TV_CompressionFX enabled=False
+[StutterFix] [archegpu] effect=104498 camera=102298 type=CameraFilterPackLegacy_FX_Glitch1 enabled=False
+[StutterFix] [archegpu] effect=104486 camera=102298 type=CameraFilterPackLegacy_Distortion_Wave_Horizontal enabled=False
+[StutterFix] [archegpu] effect=105032 camera=102298 type=CameraFilterPackLegacy_Oculus_NightVision1 enabled=False
+[StutterFix] [archegpu] effect=104790 camera=102298 type=CameraFilterPackLegacy_Pixel_Pixelisation enabled=False
+[StutterFix] [archegpu] effect=104622 camera=102298 type=CameraFilterPackLegacy_Color_Sepia enabled=False
+[StutterFix] [archegpu] effect=104928 camera=102298 type=CameraFilterPackLegacy_Color_GrayScale enabled=False
+[StutterFix] [archegpu] effect=104768 camera=102298 type=CameraFilterPackLegacy_Atmosphere_Rain enabled=False
+[StutterFix] [archegpu] effect=104878 camera=102298 type=CameraFilterPackLegacy_Color_Invert enabled=False
+[StutterFix] [archegpu] effect=105338 camera=102298 type=CameraFilterPackLegacy_TV_Video3D enabled=False
+[StutterFix] [archegpu] effect=104470 camera=102298 type=CameraFilterPackLegacy_Blizzard enabled=False
+[StutterFix] [archegpu] effect=105272 camera=102298 type=CameraFilterPackLegacy_Edge_Neon enabled=False
+[StutterFix] [archegpu] effect=104844 camera=102298 type=CameraFilterPackLegacy_FX_8bits_gb enabled=False
+[StutterFix] [archegpu] effect=104412 camera=102298 type=CameraFilterPackLegacy_Atmosphere_Snow_8bits enabled=False
+[StutterFix] [archegpu] effect=105336 camera=102298 type=UnityStandardAssets.ImageEffects.CameraMotionBlur enabled=False
+[StutterFix] [archegpu] effect=104912 camera=102298 type=CameraFilterPackLegacy_Film_Grain enabled=False
+[StutterFix] [archegpu] effect=104968 camera=102298 type=VideoBloom enabled=False
+[StutterFix] [archegpu] effect=105162 camera=102298 type=CameraFilterPackLegacy_Color_Chromatic_Aberration enabled=False
+[StutterFix] [archegpu] effect=104792 camera=102298 type=ScreenTile enabled=False
+[StutterFix] [archegpu] effect=105146 camera=102298 type=ScreenScroll enabled=False
+[StutterFix] [archegpu] effect=104904 camera=102298 type=PolarScreen enabled=False
+[StutterFix] [archegpu] effect=104502 camera=102298 type=CameraFilterPack_Antialiasing_FXAA enabled=False
+[StutterFix] [archegpu] effect=104670 camera=102298 type=CameraFilterPackLegacy_FX_Hexagon_Black enabled=False
+[StutterFix] [archegpu] effect=105282 camera=102298 type=CameraFilterPackLegacy_TV_Posterize enabled=False
+[StutterFix] [archegpu] effect=105134 camera=102298 type=CameraFilterPackLegacy_Blur_Blurry enabled=False
+[StutterFix] [archegpu] effect=104428 camera=102298 type=CameraFilterPackLegacy_Blur_Focus enabled=False
+[StutterFix] [archegpu] effect=104728 camera=102298 type=CameraFilterPackLegacy_Sharpen_Sharpen enabled=False
+[StutterFix] [archegpu] effect=105278 camera=102298 type=CameraFilterPackLegacy_Color_Contrast enabled=False
+[StutterFix] [archegpu] effect=105104 camera=102298 type=CameraFilterPack_Edge_Sigmoid enabled=False
+[StutterFix] [archegpu] effect=104992 camera=102298 type=CameraFilterPackLegacy_Edge_BlackLine enabled=False
+[StutterFix] [archegpu] effect=104460 camera=102298 type=CameraFilterPackLegacy_Pixelisation_OilPaint enabled=False
+[StutterFix] [archegpu] effect=104804 camera=102298 type=CameraFilterPackLegacy_AAA_WaterDrop enabled=False
+[StutterFix] [archegpu] effect=104360 camera=102298 type=CameraFilterPackLegacy_Light_Water2 enabled=False
+[StutterFix] [archegpu] effect=104570 camera=102298 type=CameraFilterPackLegacy_FX_superDot enabled=False
+[StutterFix] [archegpu] effect=104590 camera=102298 type=CameraFilterPackLegacy_Blur_GaussianBlur enabled=False
+[StutterFix] [archegpu] camera=102300 enabled=True active=True depth=-1.63 clear=SolidColor mask=2048 hdr=False msaa=False target=backbuffer
+[StutterFix] [archegpu] effect=104278 camera=102300 type=UnityStandardAssets.ImageEffects.Blur enabled=False
+[StutterFix] [archegpu] effect=104322 camera=102300 type=UnityStandardAssets.ImageEffects.BloomAndFlares enabled=False
+[StutterFix] [archegpu] effect=104288 camera=102300 type=UnityStandardAssets.ImageEffects.SunShafts enabled=False
+[StutterFix] [archegpu] effect=104304 camera=102300 type=UnityStandardAssets.ImageEffects.CameraMotionBlur enabled=False
+[StutterFix] [archegpu] effect=104308 camera=102300 type=UnityStandardAssets.ImageEffects.Grayscale enabled=False
+[StutterFix] [archegpu] camera=102302 enabled=True active=False depth=-1.63 clear=SolidColor mask=1048576 hdr=False msaa=False target=backbuffer
+[StutterFix] [archegpu] effect=105354 camera=102302 type=UnityStandardAssets.ImageEffects.Blur enabled=False
+[StutterFix] [archegpu] effect=105222 camera=102302 type=UnityStandardAssets.ImageEffects.BloomAndFlares enabled=False
+[StutterFix] [archegpu] effect=105258 camera=102302 type=UnityStandardAssets.ImageEffects.SunShafts enabled=False
+[StutterFix] [archegpu] effect=105286 camera=102302 type=UnityStandardAssets.ImageEffects.CameraMotionBlur enabled=False
+[StutterFix] [archegpu] effect=105044 camera=102302 type=UnityStandardAssets.ImageEffects.Grayscale enabled=False
+[StutterFix] [archegpu] camera=102304 enabled=True active=False depth=0 clear=SolidColor mask=256 hdr=True msaa=True target=backbuffer
+[StutterFix] [archegpu] on effects=65 picture_changing_diagnostic=1; fxoff <effect-id|unique-type-name>|none
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [archegpu] stamp song=262.01967107551172 qpc=656165569 qpc_frequency=10000000 utc=2026-10-20T17:00:42.4939833Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.01967107551172 qpc=696131924 qpc_frequency=10000000 utc=2026-10-20T17:00:46.4903190Z
+[StutterFix] [gpuprobe] ready=1 completed=53 requested=54 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=53 calls=53 mean_frame_ms=5.8641 mean_active_ms=5.8641 max_frame_ms=6.6550
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=53 calls=212 mean_frame_ms=5.8483 mean_active_ms=5.8483 max_frame_ms=6.6284
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=53 calls=53 mean_frame_ms=0.0611 mean_active_ms=0.0611 max_frame_ms=0.0614
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=53 calls=53 mean_frame_ms=5.7163 mean_active_ms=5.7163 max_frame_ms=6.5167
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=53 calls=53 mean_frame_ms=0.0102 mean_active_ms=0.0102 max_frame_ms=0.0123
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=53 calls=53 mean_frame_ms=0.0607 mean_active_ms=0.0607 max_frame_ms=0.4137
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=53 calls=53 mean_frame_ms=0.0333 mean_active_ms=0.0333 max_frame_ms=0.0430
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=53 calls=53 mean_frame_ms=0.0432 mean_active_ms=0.0432 max_frame_ms=0.0440
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=53 calls=53 mean_frame_ms=0.0768 mean_active_ms=0.0768 max_frame_ms=0.0778
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=4 calls=4 mean_frame_ms=0.0026 mean_active_ms=0.0343 max_frame_ms=0.0348
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=53 calls=53 mean_frame_ms=0.0321 mean_active_ms=0.0321 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=53 calls=53 mean_frame_ms=0.0847 mean_active_ms=0.0847 max_frame_ms=0.0860
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=53 calls=53 mean_frame_ms=0.0326 mean_active_ms=0.0326 max_frame_ms=0.0338
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=53 calls=53 mean_frame_ms=0.0561 mean_active_ms=0.0561 max_frame_ms=0.0676
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=53 calls=53 mean_frame_ms=0.0332 mean_active_ms=0.0332 max_frame_ms=0.0502
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=53 calls=53 mean_frame_ms=0.0472 mean_active_ms=0.0472 max_frame_ms=0.1065
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=53 calls=53 mean_frame_ms=0.0523 mean_active_ms=0.0523 max_frame_ms=0.0532
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=53 calls=53 mean_frame_ms=0.0325 mean_active_ms=0.0325 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=53 calls=53 mean_frame_ms=0.1041 mean_active_ms=0.1041 max_frame_ms=0.1055
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0158; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=none selected=0 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=deco-image selected=86484 added=86484 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=deco-image selected=86484 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=978
+[StutterFix] [archegpu] stamp song=268.0250116516836 qpc=716195719 qpc_frequency=10000000 utc=2026-10-20T17:00:48.4967803Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=272.0250116516836 qpc=756131535 qpc_frequency=10000000 utc=2026-10-20T17:00:52.4904121Z
+[StutterFix] [gpuprobe] ready=1 completed=28 requested=29 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=28 calls=28 mean_frame_ms=3.2591 mean_active_ms=3.2591 max_frame_ms=5.8747
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=28 calls=112 mean_frame_ms=3.2075 mean_active_ms=3.2075 max_frame_ms=5.7846
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=28 calls=28 mean_frame_ms=0.2640 mean_active_ms=0.2640 max_frame_ms=0.3215
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=28 calls=28 mean_frame_ms=2.6948 mean_active_ms=2.6948 max_frame_ms=5.2541
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=28 calls=28 mean_frame_ms=0.0669 mean_active_ms=0.0669 max_frame_ms=0.1219
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=28 calls=28 mean_frame_ms=0.1818 mean_active_ms=0.1818 max_frame_ms=0.6892
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=28 calls=28 mean_frame_ms=0.1398 mean_active_ms=0.1398 max_frame_ms=0.1731
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=3 calls=3 mean_frame_ms=0.0133 mean_active_ms=0.1246 max_frame_ms=0.1249
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=28 calls=28 mean_frame_ms=0.2327 mean_active_ms=0.2327 max_frame_ms=2.7597
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=28 calls=28 mean_frame_ms=0.3737 mean_active_ms=0.3737 max_frame_ms=0.5304
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=28 calls=28 mean_frame_ms=0.1396 mean_active_ms=0.1396 max_frame_ms=0.1700
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=28 calls=28 mean_frame_ms=0.2226 mean_active_ms=0.2226 max_frame_ms=0.2785
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=28 calls=28 mean_frame_ms=0.1408 mean_active_ms=0.1408 max_frame_ms=0.1720
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=28 calls=28 mean_frame_ms=0.1404 mean_active_ms=0.1404 max_frame_ms=0.1710
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=28 calls=28 mean_frame_ms=0.2239 mean_active_ms=0.2239 max_frame_ms=0.2734
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=28 calls=28 mean_frame_ms=0.1393 mean_active_ms=0.1393 max_frame_ms=0.1700
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=28 calls=28 mean_frame_ms=0.4923 mean_active_ms=0.4923 max_frame_ms=1.6660
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0516; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=deco-image selected=86484 external_unhide_writes=6957
+[StutterFix] [gpusplit] restored=deco-image external_unhide_writes=6960
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=tiles selected=8283 added=8283 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=tiles selected=8283 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [archegpu] stamp song=274.01967107551172 qpc=776136931 qpc_frequency=10000000 utc=2026-10-20T17:00:54.4907203Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=278.005083673168 qpc=815982972 qpc_frequency=10000000 utc=2026-10-20T17:00:58.4757561Z
+[StutterFix] [gpuprobe] ready=1 completed=120 requested=121 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=120 calls=120 mean_frame_ms=1.3704 mean_active_ms=1.3704 max_frame_ms=5.6760
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=120 calls=480 mean_frame_ms=1.3552 mean_active_ms=1.3552 max_frame_ms=5.6648
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=120 calls=120 mean_frame_ms=0.0667 mean_active_ms=0.0667 max_frame_ms=0.0829
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=120 calls=120 mean_frame_ms=1.2269 mean_active_ms=1.2269 max_frame_ms=5.5480
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=120 calls=120 mean_frame_ms=0.0106 mean_active_ms=0.0106 max_frame_ms=0.0154
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=120 calls=120 mean_frame_ms=0.0510 mean_active_ms=0.0510 max_frame_ms=0.0870
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=39 calls=39 mean_frame_ms=0.0150 mean_active_ms=0.0462 max_frame_ms=0.4106
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=13 calls=13 mean_frame_ms=0.0086 mean_active_ms=0.0792 max_frame_ms=0.0809
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=4 calls=4 mean_frame_ms=0.0012 mean_active_ms=0.0361 max_frame_ms=0.0410
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=10 calls=10 mean_frame_ms=0.0028 mean_active_ms=0.0336 max_frame_ms=0.0348
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=10 calls=10 mean_frame_ms=0.0074 mean_active_ms=0.0892 max_frame_ms=0.0932
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Invert#104878 active_frames=81 calls=81 mean_frame_ms=0.0242 mean_active_ms=0.0359 max_frame_ms=0.0440
+[StutterFix] [gpuprobe] effect:Camera/UnityStandardAssets.ImageEffects.CameraMotionBlur#105336 active_frames=29 calls=29 mean_frame_ms=0.1185 mean_active_ms=0.4904 max_frame_ms=0.9943
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=120 calls=120 mean_frame_ms=0.0366 mean_active_ms=0.0366 max_frame_ms=0.0512
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=120 calls=120 mean_frame_ms=0.0610 mean_active_ms=0.0610 max_frame_ms=0.0748
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=10 calls=10 mean_frame_ms=0.0029 mean_active_ms=0.0344 max_frame_ms=0.0358
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=10 calls=10 mean_frame_ms=0.0106 mean_active_ms=0.1276 max_frame_ms=0.2826
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=10 calls=10 mean_frame_ms=0.0045 mean_active_ms=0.0538 max_frame_ms=0.0553
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=120 calls=120 mean_frame_ms=0.0427 mean_active_ms=0.0427 max_frame_ms=0.0983
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=10 calls=10 mean_frame_ms=0.0090 mean_active_ms=0.1077 max_frame_ms=0.1106
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0152; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=tiles selected=8283 external_unhide_writes=0
+[StutterFix] [gpusplit] restored=tiles external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=planets selected=322 added=322 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=planets selected=322 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [archegpu] stamp song=280.00593816535547 qpc=835960824 qpc_frequency=10000000 utc=2026-10-20T17:01:00.4733687Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=284.00367986457422 qpc=875940204 qpc_frequency=10000000 utc=2026-10-20T17:01:04.4713983Z
+[StutterFix] [gpuprobe] ready=1 completed=216 requested=216 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=216 calls=216 mean_frame_ms=1.1757 mean_active_ms=1.1757 max_frame_ms=1.7633
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=216 calls=864 mean_frame_ms=1.1622 mean_active_ms=1.1622 max_frame_ms=1.7490
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=216 calls=216 mean_frame_ms=0.0608 mean_active_ms=0.0608 max_frame_ms=0.0614
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=216 calls=216 mean_frame_ms=1.0483 mean_active_ms=1.0483 max_frame_ms=1.4653
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=216 calls=216 mean_frame_ms=0.0106 mean_active_ms=0.0106 max_frame_ms=0.0164
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=216 calls=216 mean_frame_ms=0.0425 mean_active_ms=0.0425 max_frame_ms=0.4065
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=216 calls=216 mean_frame_ms=0.0337 mean_active_ms=0.0337 max_frame_ms=0.0358
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=20 calls=20 mean_frame_ms=0.0032 mean_active_ms=0.0347 max_frame_ms=0.0369
+[StutterFix] [gpuprobe] effect:Camera/UnityStandardAssets.ImageEffects.CameraMotionBlur#105336 active_frames=216 calls=216 mean_frame_ms=0.4256 mean_active_ms=0.4256 max_frame_ms=0.4342
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=216 calls=216 mean_frame_ms=0.0597 mean_active_ms=0.0597 max_frame_ms=0.2294
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=20 calls=20 mean_frame_ms=0.0032 mean_active_ms=0.0347 max_frame_ms=0.0358
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=216 calls=216 mean_frame_ms=0.0372 mean_active_ms=0.0372 max_frame_ms=0.0532
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0134; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=planets selected=322 external_unhide_writes=0
+[StutterFix] [gpusplit] restored=planets external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=deco-text+deco-particle selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=deco-text+deco-particle selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [archegpu] stamp song=286.0026727844961 qpc=895899133 qpc_frequency=10000000 utc=2026-10-20T17:01:06.4669942Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=290.00261174933985 qpc=935983422 qpc_frequency=10000000 utc=2026-10-20T17:01:10.4757107Z
+[StutterFix] [gpuprobe] ready=1 completed=224 requested=225 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=224 calls=224 mean_frame_ms=1.1227 mean_active_ms=1.1227 max_frame_ms=1.4715
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=224 calls=896 mean_frame_ms=1.1098 mean_active_ms=1.1098 max_frame_ms=1.4592
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=224 calls=224 mean_frame_ms=0.0608 mean_active_ms=0.0608 max_frame_ms=0.0614
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=224 calls=224 mean_frame_ms=0.9973 mean_active_ms=0.9973 max_frame_ms=1.3517
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=224 calls=224 mean_frame_ms=0.0106 mean_active_ms=0.0106 max_frame_ms=0.0164
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=224 calls=224 mean_frame_ms=0.0411 mean_active_ms=0.0411 max_frame_ms=0.0809
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=224 calls=224 mean_frame_ms=0.0339 mean_active_ms=0.0339 max_frame_ms=0.0358
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=27 calls=27 mean_frame_ms=0.0041 mean_active_ms=0.0344 max_frame_ms=0.0358
+[StutterFix] [gpuprobe] effect:Camera/UnityStandardAssets.ImageEffects.CameraMotionBlur#105336 active_frames=224 calls=224 mean_frame_ms=0.4270 mean_active_ms=0.4270 max_frame_ms=0.4352
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=224 calls=224 mean_frame_ms=0.0582 mean_active_ms=0.0582 max_frame_ms=0.2294
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=27 calls=27 mean_frame_ms=0.0042 mean_active_ms=0.0349 max_frame_ms=0.0358
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=224 calls=224 mean_frame_ms=0.0393 mean_active_ms=0.0393 max_frame_ms=0.2099
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0129; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=deco-text+deco-particle selected=0 external_unhide_writes=0
+[StutterFix] [gpusplit] restored=deco-text+deco-particle external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=other selected=61893 added=61893 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=other selected=61893 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [archegpu] stamp song=292.01127874152735 qpc=955942024 qpc_frequency=10000000 utc=2026-10-20T17:01:12.4716227Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=296.00367986457422 qpc=996002885 qpc_frequency=10000000 utc=2026-10-20T17:01:16.4777847Z
+[StutterFix] [gpuprobe] ready=1 completed=64 requested=65 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=64 calls=64 mean_frame_ms=2.2046 mean_active_ms=2.2046 max_frame_ms=3.2000
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=64 calls=256 mean_frame_ms=2.1799 mean_active_ms=2.1799 max_frame_ms=3.1734
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=64 calls=64 mean_frame_ms=0.1303 mean_active_ms=0.1303 max_frame_ms=0.1372
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=64 calls=64 mean_frame_ms=1.9345 mean_active_ms=1.9345 max_frame_ms=2.9307
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=64 calls=64 mean_frame_ms=0.0262 mean_active_ms=0.0262 max_frame_ms=0.0338
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=64 calls=64 mean_frame_ms=0.0889 mean_active_ms=0.0889 max_frame_ms=0.6943
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Real_VHS#105274 active_frames=9 calls=9 mean_frame_ms=0.0120 mean_active_ms=0.0853 max_frame_ms=0.0901
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=64 calls=64 mean_frame_ms=0.0699 mean_active_ms=0.0699 max_frame_ms=0.0737
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_CompressionFX#104712 active_frames=9 calls=9 mean_frame_ms=0.0100 mean_active_ms=0.0711 max_frame_ms=0.0758
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_FX_Glitch1#104498 active_frames=19 calls=19 mean_frame_ms=0.0278 mean_active_ms=0.0936 max_frame_ms=0.0973
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=5 calls=5 mean_frame_ms=0.0055 mean_active_ms=0.0698 max_frame_ms=0.0727
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=9 calls=9 mean_frame_ms=0.0096 mean_active_ms=0.0680 max_frame_ms=0.0717
+[StutterFix] [gpuprobe] effect:Camera/UnityStandardAssets.ImageEffects.CameraMotionBlur#105336 active_frames=64 calls=64 mean_frame_ms=0.8962 mean_active_ms=0.8962 max_frame_ms=1.4735
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=64 calls=64 mean_frame_ms=0.1106 mean_active_ms=0.1106 max_frame_ms=0.1178
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=5 calls=5 mean_frame_ms=0.0055 mean_active_ms=0.0702 max_frame_ms=0.0727
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=64 calls=64 mean_frame_ms=0.0924 mean_active_ms=0.0924 max_frame_ms=0.7107
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0247; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=other selected=61893 external_unhide_writes=0
+[StutterFix] [gpusplit] restored=other external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=all selected=156982 added=156982 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=all selected=156982 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [archegpu] stamp song=298.01967107551172 qpc=1016147469 qpc_frequency=10000000 utc=2026-10-20T17:01:18.4922175Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=302.01967107551172 qpc=1056234976 qpc_frequency=10000000 utc=2026-10-20T17:01:22.5010047Z
+[StutterFix] [gpuprobe] ready=1 completed=30 requested=30 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=30 calls=30 mean_frame_ms=1.7963 mean_active_ms=1.7963 max_frame_ms=5.9505
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=30 calls=120 mean_frame_ms=1.7040 mean_active_ms=1.7040 max_frame_ms=5.8665
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=30 calls=30 mean_frame_ms=0.2721 mean_active_ms=0.2721 max_frame_ms=0.4413
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=30 calls=30 mean_frame_ms=1.0256 mean_active_ms=1.0256 max_frame_ms=5.2234
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=30 calls=30 mean_frame_ms=0.1024 mean_active_ms=0.1024 max_frame_ms=0.2888
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=30 calls=30 mean_frame_ms=0.3039 mean_active_ms=0.3039 max_frame_ms=0.7219
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=6 calls=6 mean_frame_ms=0.0241 mean_active_ms=0.1207 max_frame_ms=0.1464
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_FX_Glitch1#104498 active_frames=5 calls=5 mean_frame_ms=0.0256 mean_active_ms=0.1538 max_frame_ms=0.1731
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=5 calls=5 mean_frame_ms=0.0194 mean_active_ms=0.1161 max_frame_ms=0.1300
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=29 calls=29 mean_frame_ms=0.1423 mean_active_ms=0.1472 max_frame_ms=0.2324
+[StutterFix] [gpuprobe] effect:Camera/UnityStandardAssets.ImageEffects.CameraMotionBlur#105336 active_frames=6 calls=6 mean_frame_ms=0.3955 mean_active_ms=1.9773 max_frame_ms=4.6100
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=30 calls=30 mean_frame_ms=0.2455 mean_active_ms=0.2455 max_frame_ms=0.5816
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=30 calls=30 mean_frame_ms=0.1602 mean_active_ms=0.1602 max_frame_ms=0.4823
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0923; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=all selected=156982 external_unhide_writes=2
+[StutterFix] [gpusplit] restored=all external_unhide_writes=2
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [archegpu] stamp song=304.00221502082422 qpc=1075877422 qpc_frequency=10000000 utc=2026-10-20T17:01:24.4651626Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=308.00367986457422 qpc=1115857048 qpc_frequency=10000000 utc=2026-10-20T17:01:28.4630549Z
+[StutterFix] [gpuprobe] ready=1 completed=252 requested=252 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=252 calls=252 mean_frame_ms=0.5814 mean_active_ms=0.5814 max_frame_ms=0.9523
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=252 calls=1008 mean_frame_ms=0.5682 mean_active_ms=0.5682 max_frame_ms=0.9390
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=252 calls=252 mean_frame_ms=0.0712 mean_active_ms=0.0712 max_frame_ms=0.0758
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=252 calls=252 mean_frame_ms=0.4429 mean_active_ms=0.4429 max_frame_ms=0.8110
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=252 calls=252 mean_frame_ms=0.0124 mean_active_ms=0.0124 max_frame_ms=0.0143
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=252 calls=252 mean_frame_ms=0.0418 mean_active_ms=0.0418 max_frame_ms=0.0451
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=252 calls=252 mean_frame_ms=0.0374 mean_active_ms=0.0374 max_frame_ms=0.0399
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=252 calls=252 mean_frame_ms=0.0587 mean_active_ms=0.0587 max_frame_ms=0.0625
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=252 calls=252 mean_frame_ms=0.0374 mean_active_ms=0.0374 max_frame_ms=0.0399
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0132; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=none selected=0 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)

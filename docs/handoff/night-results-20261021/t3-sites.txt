@@ -1,0 +1,63 @@
+[StutterFix] [타일구간] writer-targets=53 limit=64 game=Assembly-CSharp
+[StutterFix] [타일구간] writer-ok scnGame::Void ApplyEventsToFloors(System.Collections.Generic.List`1[scrFloor], ADOFAI.LevelData, scrLevelMaker, System.Collections.Generic.List`1[ADOFAI.LevelEvent]) signature=000401151280CD0112868012908C1282D0151280CD011290B8
+[StutterFix] [타일구간] writer-ok scnGame::Void PrepVfx(System.Collections.Generic.List`1[scrFloor], Int32, System.Collections.Generic.List`1[ADOFAI.LevelEvent], Boolean) signature=000401151280CD0112868008151280CD011290B802
+[StutterFix] [타일구간] writer-ok scnGame::Void ResetScene(Boolean) signature=20010102
+[StutterFix] [타일구간] writer-ok scrLevelMaker::System.Collections.Generic.List`1[scrFloor] MakeLevel() signature=2000151280CD01128680
+[StutterFix] [타일구간] writer-ok scrLevelMaker::Void ResetFloor(scrFloor, UnityEngine.Vector3, UnityEngine.Material) signature=2003011286801181351261
+[StutterFix] [타일구간] writer-ok scrLevelMaker::Void MakeFreeroamGrid(scrFloor) signature=200101128680
+[StutterFix] [타일구간] writer-ok FreeroamArea::Void .ctor(scrFloor) signature=200101128680
+[StutterFix] [타일구간] writer-ok scrFloor::Void Awake() signature=200001
+[StutterFix] [타일구간] writer-ok scrFloor::Void Reset() signature=200001
+[StutterFix] [타일구간] writer-ok scrFloor::Void LateUpdate() signature=200001
+[StutterFix] [타일구간] writer-ok scrFloor::DG.Tweening.Tween TweenRotation(Single, Single, DG.Tweening.Ease) signature=20031281910C0C11816D
+[StutterFix] [타일구간] writer-ok scrFloor::DG.Tweening.Tween TweenOpacity(Single, Single, DG.Tweening.Ease) signature=20031281910C0C11816D
+[StutterFix] [타일구간] writer-ok scrFloor::Void MoveToBack() signature=200001
+[StutterFix] [타일구간] writer-ok scrFloor::Void MoveBackBy(Int32) signature=20010108
+[StutterFix] [타일구간] writer-ok scrFloor::Void SetRotation(Single) signature=2001010C
+[StutterFix] [타일구간] writer-ok scrFloor::Void ResetToLevelStart() signature=200001
+[StutterFix] [타일구간] writer-ok scrFloor::Void <TweenRotation>b__203_1(Single) signature=2001010C
+[StutterFix] [타일구간] writer-ok scrFloor::Void <TweenRotation>b__203_2() signature=200001
+[StutterFix] [타일구간] writer-ok scrFloor::Void <TweenOpacity>b__204_1(Single) signature=2001010C
+[StutterFix] [타일구간] writer-ok ffxLightBridge::Void Start() signature=200001
+[StutterFix] [타일구간] writer-ok ffxLightBridge::Void StartEffect(scrPlanet) signature=200101128298
+[StutterFix] [타일구간] writer-ok ffxFloorAppearPlus::Void StartEffect(scrPlanet) signature=200101128298
+[StutterFix] [타일구간] writer-ok ffxFloorAppearPlus::Void FloorSetup() signature=200001
+[StutterFix] [타일구간] writer-ok ffxFloorAppearPlus::Void <StartEffect>b__7_1(Single) signature=2001010C
+[StutterFix] [타일구간] writer-ok ffxFloorDisappearPlus::Void StartEffect(scrPlanet) signature=200101128298
+[StutterFix] [타일구간] writer-ok ffxMoveFloorPlus::Void StartEffect(scrPlanet) signature=200101128298
+[StutterFix] [타일구간] writer-ok DivineIntervention::Void Awake() signature=200001
+[StutterFix] [타일구간] writer-ok DivineIntervention::Void Update() signature=200001
+[StutterFix] [타일구간] writer-ok LaserSpawner::Void Update() signature=200001
+[StutterFix] [타일구간] writer-ok Mawaru::Void SoccerUpdate() signature=200001
+[StutterFix] [타일구간] writer-ok Mawaru::Void HighFiveUpdate() signature=200001
+[StutterFix] [타일구간] writer-ok Mawaru::Void RandomizeTiles() signature=200001
+[StutterFix] [타일구간] writer-ok Mawaru::Void DefendUpdate() signature=200001
+[StutterFix] [타일구간] writer-ok Mawaru::Void NishiGoatUpdate() signature=200001
+[StutterFix] [타일구간] writer-ok Mawaru::Void Defend2Update() signature=200001
+[StutterFix] [타일구간] writer-ok Mawaru::Void FinaleUpdate() signature=200001
+[StutterFix] [타일구간] writer-ok SingSing_Notefield::Void Update() signature=200001
+[StutterFix] [타일구간] writer-ok TaroBGScript::Void FloorResetPosition(scrFloor) signature=200101128680
+[StutterFix] [타일구간] writer-ok TaroBGScript::Void FloorBeatVibe(scrFloor, Single, Single, Single, Single, Single) signature=2006011286800C0C0C0C0C
+[StutterFix] [타일구간] writer-ok TaroBGScript::Void FloorDrunkVibe(scrFloor, Single, Single, Single, Single, Single) signature=2006011286800C0C0C0C0C
+[StutterFix] [타일구간] writer-ok TaroBGScript::Void FloorDrunkVibeXPos(scrFloor, Single, Single, Single, Single, Single) signature=2006011286800C0C0C0C0C
+[StutterFix] [타일구간] writer-ok ThirdSun::Void Update() signature=200001
+[StutterFix] [타일구간] writer-ok scnMinesweeper::Void ProcessTile(Int32, UnityEngine.Vector2Int) signature=20020108118245
+[StutterFix] [타일구간] writer-ok scnMinesweeper::Void Fail() signature=200001
+[StutterFix] [타일구간] writer-ok scnMinesweeper::Void EndingUpdate() signature=200001
+[StutterFix] [타일구간] writer-ok Cutscene1::Void Awake() signature=200001
+[StutterFix] [타일구간] writer-ok Cutscene1::Void CreateNameEntry() signature=200001
+[StutterFix] [타일구간] writer-ok Cutscene1::Void SkewNameEntry() signature=200001
+[StutterFix] [타일구간] writer-ok PuzzleRoom::Void Update() signature=200001
+[StutterFix] [타일구간] writer-ok scnTaroMenu2::Void Start() signature=200001
+[StutterFix] [타일구간] writer-ok ffxLightBridge+<>c__DisplayClass9_0::Void <StartEffect>b__1(Single) signature=2001010C
+[StutterFix] [타일구간] writer-ok ffxMoveFloorPlus+<>c__DisplayClass17_1::Void <StartEffect>b__6(Single) signature=2001010C
+[StutterFix] [타일구간] writer-ok ffxMoveFloorPlus+<>c__DisplayClass17_1::Void <StartEffect>b__7() signature=200001
+[StutterFix] [타일구간] prepared floors=15001 chunks=235 writers=53 shadow=True
+[StutterFix] [타일구간] enabled=True ready=True shadow=True patch-fail=0 patched=53 effects=0 skipped-chunks=0 tiles-processed=0 verify=0 mismatch=0 mismatch-latched=False hook-calls=0 hook-normal=0 dirty-marks=0 safety-samples=0 late-changes=0 start-ms=0.000 classify-ms=0.000 skip-shadow-ms=0.000 original-ms=0.000 unaccounted-ms=0.000 safety-ms=0.000 hook-ms=0.000 pipeline-frame=-1 pipeline-ms=0.000 pipeline-previous-ms=0.000 pipeline-peak-ms=0.000 pipeline-total-ms=0.000 hook-untracked=0 sites=False site-slots=158
+[StutterFix] [타일구간] enabled=True ready=True shadow=True patch-fail=0 patched=53 effects=0 skipped-chunks=0 tiles-processed=0 verify=0 mismatch=0 mismatch-latched=False hook-calls=504 hook-normal=504 dirty-marks=504 safety-samples=32 late-changes=0 start-ms=0.000 classify-ms=0.000 skip-shadow-ms=0.000 original-ms=0.000 unaccounted-ms=0.000 safety-ms=0.221 hook-ms=0.040 pipeline-frame=4102 pipeline-ms=0.417 pipeline-previous-ms=0.000 pipeline-peak-ms=0.417 pipeline-total-ms=0.417 hook-untracked=0 sites=True site-slots=158
+[StutterFix] [타일구간] start effects=1 chunks=129 skipped-chunks=0 dirty-chunks=129 tiles-processed=8171 start-ms=25.379 original-ms-estimate=25.315 estimate-source=observed-dirty-tiles classify-ms=0.028 skip-shadow-ms=0.004 original-ms=25.315 unaccounted-ms=0.032
+[StutterFix] [타일 이동 효과] 25.47ms 타일 8171개 길이 1.00 불투명도만 False | 위치 True 회전 True 크기 True 불투명도 True | 값 위치 (0.00, 0.00) 회전 0 크기 (1.00, 1.00)
+[StutterFix] [타일구간] enabled=True ready=True shadow=True patch-fail=0 patched=53 effects=1 skipped-chunks=0 tiles-processed=8171 verify=0 mismatch=0 mismatch-latched=False hook-calls=1996332 hook-normal=1996332 dirty-marks=1996332 safety-samples=59834 late-changes=0 start-ms=25.379 classify-ms=0.028 skip-shadow-ms=0.004 original-ms=25.315 unaccounted-ms=0.032 safety-ms=158.375 hook-ms=174.669 pipeline-frame=5971 pipeline-ms=0.090 pipeline-previous-ms=0.095 pipeline-peak-ms=26.082 pipeline-total-ms=934.849 hook-untracked=0 | below-1000=490 | chunk-opacity-target=129 | chunk-dirty=129 sites=True site-slots=158 | site[2] calls=1963067 FloorAnim::Step direct-mark | site[1] calls=23416 FloorAnim::New direct-mark | site[0] calls=8676 FloorAnim::TweenFloor direct-mark | site[3] calls=669 FloorAnim::Complete direct-mark
+[StutterFix] [타일구간] enabled=True ready=True shadow=True patch-fail=0 patched=53 effects=1 skipped-chunks=0 tiles-processed=8171 verify=0 mismatch=0 mismatch-latched=False hook-calls=1996352 hook-normal=1996352 dirty-marks=1996352 safety-samples=59866 late-changes=0 start-ms=25.379 classify-ms=0.028 skip-shadow-ms=0.004 original-ms=25.315 unaccounted-ms=0.032 safety-ms=158.452 hook-ms=174.671 pipeline-frame=5972 pipeline-ms=0.087 pipeline-previous-ms=0.090 pipeline-peak-ms=26.082 pipeline-total-ms=934.936 hook-untracked=0 | below-1000=490 | chunk-opacity-target=129 | chunk-dirty=129 sites=False site-slots=158 | site[2] calls=1963087 FloorAnim::Step direct-mark | site[1] calls=23416 FloorAnim::New direct-mark | site[0] calls=8676 FloorAnim::TweenFloor direct-mark | site[3] calls=669 FloorAnim::Complete direct-mark
+[StutterFix] [타일구간] prepared floors=15001 chunks=235 writers=53 shadow=True
+[StutterFix] [타일구간] enabled=True ready=True shadow=True patch-fail=0 patched=53 effects=1 skipped-chunks=0 tiles-processed=8171 verify=0 mismatch=0 mismatch-latched=False hook-calls=1996372 hook-normal=1996372 dirty-marks=1996372 safety-samples=59898 late-changes=0 start-ms=25.379 classify-ms=0.028 skip-shadow-ms=0.004 original-ms=25.315 unaccounted-ms=0.032 safety-ms=158.530 hook-ms=174.673 pipeline-frame=5973 pipeline-ms=0.091 pipeline-previous-ms=0.087 pipeline-peak-ms=26.082 pipeline-total-ms=935.027 hook-untracked=0 | below-1000=490 | chunk-opacity-target=129 | chunk-dirty=129 | lifecycle-invalidated=2 sites=False site-slots=158 | site[2] calls=1963087 FloorAnim::Step direct-mark | site[1] calls=23416 FloorAnim::New direct-mark | site[0] calls=8676 FloorAnim::TweenFloor direct-mark | site[3] calls=669 FloorAnim::Complete direct-mark

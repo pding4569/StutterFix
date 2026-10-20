@@ -1,0 +1,21 @@
+[StutterFix] [자동 시험] 시작: 17단계 - timeout 900 / auto on / open D:/얼불춤 맵 파일/Lost Requiem/Ludicin-Lost-Requiem.adofai / tilebake on / play / tilebake ready / stop / seek 524 8 / tilebake ready / waitsongpos 530 120 / tilesim capture 4 / wait 4.5 / tilebake verify / stop / tilebake bench / tilebake off / quit
+[StutterFix] [타일굽기/그림자] 스냅샷 수집 중
+[StutterFix] [타일굽기/그림자] 준비됨 타일=15001 지원=0 효과=7357 구간=0
+[StutterFix] [타일굽기/그림자] 제외 existing-tween tiles=14785 ratio=0.98560096
+[StutterFix] [타일굽기/그림자] 제외 rotation-wrap tiles=2185 ratio=0.145656956
+[StutterFix] [타일굽기/그림자] 제외 unscheduled-conditional/manual/hit tiles=405 ratio=0.0269982001
+[StutterFix] [타일굽기/그림자] 제외 writer:ffxFloorAppearPlus tiles=10785 ratio=0.71895207
+[StutterFix] [타일굽기/그림자] 제외 writer:ffxFloorDisappearPlus tiles=11400 ratio=0.759949337
+[StutterFix] [타일굽기/그림자] 제외 writer-unknown-range:ffxRecolorFloorPlus tiles=15001 ratio=1
+[StutterFix] [타일굽기/그림자] 중단: level/effect-list changed
+[StutterFix] [타일굽기/그림자] 준비됨 타일=15001 지원=0 효과=7359 구간=0
+[StutterFix] [타일굽기/그림자] 제외 existing-tween tiles=14785 ratio=0.98560096
+[StutterFix] [타일굽기/그림자] 제외 rotation-wrap tiles=2185 ratio=0.145656956
+[StutterFix] [타일굽기/그림자] 제외 writer:ffxFloorAppearPlus tiles=10785 ratio=0.71895207
+[StutterFix] [타일굽기/그림자] 제외 writer:ffxFloorDisappearPlus tiles=11400 ratio=0.759949337
+[StutterFix] [타일굽기/그림자] 제외 writer-unknown-range:ffxRecolorFloorPlus tiles=15001 ratio=1
+[StutterFix] [타일시뮬] 캡처 시작 seconds=4 initial=4 타일=15001 표본=타일인덱스%4==0 (Rec 출력/진행 상태)
+[StutterFix] [타일시뮬] 캡처 완료 frames=1072 slots=20 events=32 samples=1712 보수적예약MiB=3.2 valid=True reason-count=1 creates=16 natural-complete=0 complete/kill=0 cancelled=0 excluded-zero-writes=0 excluded-real-overlap=0 excluded-original-effects=0 coverage=FloorAnim-six-keys; ColorFloor/TweenColor는 FloorAnim 기록이 없어 이 검증 범위 밖
+[StutterFix] [타일굽기/그림자] 중단: InvalidOperationException 완료된 유효한 같은 세대 테이프 필요 song clock moved backwards during capture
+[StutterFix] [타일굽기/그림자] 중단: InvalidOperationException 정지/준비 완료 후 bench
+[StutterFix] [타일굽기/그림자] 꺼짐
