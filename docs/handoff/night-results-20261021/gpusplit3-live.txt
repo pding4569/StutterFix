@@ -1,0 +1,555 @@
+[StutterFix] [자동 시험] 시작: 255단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / archegpu on / gpusplit off / gpuprobe off / stop / seek 262 12 / waitsongpos 258 40 / gpuprobe on / archegpu stamp / gpusplit census / waitsongpos 262 20 / archegpu stamp / gpuprobe reset / gpusplit reset / waitsongpos 266 20 / archegpu stamp / gpuprobe state / gpusplit state / gpusplit off / gpuprobe off / stop / gpusplit off / gpuprobe off / stop / seek 262 12 / waitsongpos 258 40 / gpuprobe on / archegpu stamp / gpusplit hide live:invisible / waitsongpos 262 20 / archegpu stamp / gpuprobe reset / gpusplit reset / waitsongpos 266 20 / archegpu stamp / gpuprobe state / gpusplit state / gpusplit off / gpuprobe off / stop / gpusplit off / gpuprobe off / stop / seek 262 12 / waitsongpos 258 40 / gpuprobe on / archegpu stamp / gpusplit census / waitsongpos 262 20 / archeg
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=258.199175470043 qpc=625537028 qpc_frequency=10000000 utc=2026-10-20T17:51:43.5758249Z
+[StutterFix] [gpusplit] camera_geometry frame=18134 callback=True pos=(676.746765, 1109.67773, -10) ortho=True size=12.29725 aspect=1.777778 near=0.3 far=1000 rt=2560x1440 view=1	5.19728965E-05	0	-676.804443
+[StutterFix] [gpusplit] frustum_plane=0 normal=(1, 5.19728965E-05, 0) distance=-654.9427
+[StutterFix] [gpusplit] frustum_plane=1 normal=(-1, -5.19728965E-05, 0) distance=698.6662
+[StutterFix] [gpusplit] frustum_plane=2 normal=(-5.19728965E-05, 1, 0) distance=-1097.345
+[StutterFix] [gpusplit] frustum_plane=3 normal=(5.19728965E-05, -1, 0) distance=1121.94
+[StutterFix] [gpusplit] frustum_plane=4 normal=(0, 0, 1) distance=9.70004
+[StutterFix] [gpusplit] frustum_plane=5 normal=(0, 0, -1) distance=990
+[StutterFix] [gpusplit] bounds_sample renderer=-2637106 unforced_live=False native_center=(0, 0, 0) native_extents=(0.75, 0.75, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(0.75, 0.75, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9791775, -44.617527, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637104 unforced_live=False native_center=(0, 0, 0) native_extents=(1, 1, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(1, 1, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9791775, -44.617527, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637102 unforced_live=False native_center=(0, -0.99999994, 0) native_extents=(0.5, 0.5, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, -1, 0) conservative_extents=(0.5, 0.5, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9791794, -44.6581879, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637100 unforced_live=False native_center=(155.577087, 227.032959, 0) native_extents=(2, 2, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(155.577087, 227.032959, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-11.4207087, -35.3868065, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637098 unforced_live=False native_center=(822.356567, 1568.95569, 0) native_extents=(2.00000048, 2.00000048, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(822.356567, 1568.95569, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(3.83078456, 19.1737099, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-1703752 unforced_live=True native_center=(673.413452, 1151.15405, 0) native_extents=(2.18369699, 2.18369699, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(673.413452, 1151.15405, 0) conservative_extents=(2.18371582, 2.18371582, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.423812866, 2.18641281, 10) alpha=0.02689869
+[StutterFix] [gpusplit] bounds_sample renderer=-1703750 unforced_live=True native_center=(673.413452, 1151.15405, 0) native_extents=(2.18369699, 2.18369699, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(673.413452, 1151.15405, 0) conservative_extents=(2.18371582, 2.18371582, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.423812866, 2.18641281, 10) alpha=0.03150989
+[StutterFix] [gpusplit] bounds_sample renderer=-1703642 unforced_live=True native_center=(677.469788, 1144.43408, 0) native_extents=(2.17472196, 2.17472196, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(677.469788, 1144.43408, 0) conservative_extents=(2.17474365, 2.17468262, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.516576767, 1.91317379, 10) alpha=0.02613015
+[StutterFix] [gpusplit] bounds_sample renderer=-1703640 unforced_live=True native_center=(677.469788, 1144.43408, 0) native_extents=(2.17472196, 2.17472196, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(677.469788, 1144.43408, 0) conservative_extents=(2.17474365, 2.17468262, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.516576767, 1.91317379, 10) alpha=0.03074136
+[StutterFix] [gpusplit] bounds_sample renderer=-1703638 unforced_live=True native_center=(676.662109, 1146.30896, 0) native_extents=(2.81712604, 2.81712604, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(676.662109, 1146.30896, 0) conservative_extents=(2.81713867, 2.81713867, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.49810791, 1.9894067, 10) alpha=0.489101
+[StutterFix] [gpusplit] hide=none selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] image_filters=onscreen,offscreen,big,small,additive,alpha,transparent,unknown,unforced_live threshold_percent=1 all=4807,81677,15100,71384,0,86484,27385,0,1443 enabled_active=1728,27100,9554,19274,0,28828,27385,0,1443 matched_now=86484 matched_enabled_active=28828 matched_already_off=27385 membership=snapshot-union-until-restore
+[StutterFix] [gpusplit] image_live_onscreen_unforced count=1358 projected_aabb_screen_percent_sum=93188463.721 max=19285238.395 sprite_vertices=5432 sprite_triangles=2716 bounds_recovered=0 culling_vs_projection_disagree=0 legacy_vs_culling_disagree=0; geometry not actual draw counters; bounds area unclipped
+[StutterFix] [gpusplit] blend_evidence count=86483 shader=Sprites/Tile keywords= _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [gpusplit] blend_evidence count=1 shader=Sprites/Tile keywords=USE_POINT_SAMPLING _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [archegpu] stamp song=262.01784002082422 qpc=663737103 qpc_frequency=10000000 utc=2026-10-20T17:51:47.3959193Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.01784002082422 qpc=703751150 qpc_frequency=10000000 utc=2026-10-20T17:51:51.3972695Z
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=427 mean=2072.436
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=427 mean=1943.995
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=427 mean=2068.248
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=427 mean=13249.422
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=427 mean=20092.311
+[StutterFix] [gpuprobe] ready=1 completed=54 requested=54 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=54 calls=54 mean_frame_ms=5.8384 mean_active_ms=5.8384 max_frame_ms=6.5546
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=54 calls=216 mean_frame_ms=5.8216 mean_active_ms=5.8216 max_frame_ms=6.5434
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=54 calls=54 mean_frame_ms=0.0607 mean_active_ms=0.0607 max_frame_ms=0.0614
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=54 calls=54 mean_frame_ms=5.7051 mean_active_ms=5.7051 max_frame_ms=6.4287
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=54 calls=54 mean_frame_ms=0.0102 mean_active_ms=0.0102 max_frame_ms=0.0123
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=54 calls=54 mean_frame_ms=0.0456 mean_active_ms=0.0456 max_frame_ms=0.0727
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=54 calls=54 mean_frame_ms=0.0330 mean_active_ms=0.0330 max_frame_ms=0.0399
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=54 calls=54 mean_frame_ms=0.0428 mean_active_ms=0.0428 max_frame_ms=0.0430
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=54 calls=54 mean_frame_ms=0.0768 mean_active_ms=0.0768 max_frame_ms=0.0901
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=4 calls=4 mean_frame_ms=0.0025 mean_active_ms=0.0335 max_frame_ms=0.0348
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=54 calls=54 mean_frame_ms=0.0322 mean_active_ms=0.0322 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=54 calls=54 mean_frame_ms=0.0844 mean_active_ms=0.0844 max_frame_ms=0.0850
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=54 calls=54 mean_frame_ms=0.0327 mean_active_ms=0.0327 max_frame_ms=0.0461
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=54 calls=54 mean_frame_ms=0.0566 mean_active_ms=0.0566 max_frame_ms=0.0717
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=54 calls=54 mean_frame_ms=0.0327 mean_active_ms=0.0327 max_frame_ms=0.0338
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=54 calls=54 mean_frame_ms=0.0493 mean_active_ms=0.0493 max_frame_ms=0.1075
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=54 calls=54 mean_frame_ms=0.0521 mean_active_ms=0.0521 max_frame_ms=0.0532
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=54 calls=54 mean_frame_ms=0.0323 mean_active_ms=0.0323 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=54 calls=54 mean_frame_ms=0.1039 mean_active_ms=0.1039 max_frame_ms=0.1208
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0167; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=none selected=0 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=258.18849431769922 qpc=888155632 qpc_frequency=10000000 utc=2026-10-20T17:52:09.8378220Z
+[StutterFix] [gpusplit] camera_geometry frame=20856 callback=False pos=(676.746033, 1109.67859, 0) ortho=True size=12.29508 aspect=1.777778 near=0.3 far=1000 rt=2560x1440 view=1	0	0	-676.746033
+[StutterFix] [gpusplit] frustum_plane=0 normal=(1, 0, 0) distance=-654.8881
+[StutterFix] [gpusplit] frustum_plane=1 normal=(-1, 0, 0) distance=698.6039
+[StutterFix] [gpusplit] frustum_plane=2 normal=(0, 1, 0) distance=-1097.384
+[StutterFix] [gpusplit] frustum_plane=3 normal=(0, -1, 0) distance=1121.974
+[StutterFix] [gpusplit] frustum_plane=4 normal=(0, 0, 1) distance=-0.2999598
+[StutterFix] [gpusplit] frustum_plane=5 normal=(0, 0, -1) distance=1000
+[StutterFix] [gpusplit] bounds_sample renderer=-2637106 unforced_live=False native_center=(0, 0, 0) native_extents=(0.75, 0.75, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(0.75, 0.75, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9805651, -44.6269302, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637104 unforced_live=False native_center=(0, 0, 0) native_extents=(1, 1, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(1, 1, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9805651, -44.6269302, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637102 unforced_live=False native_center=(0, -0.98666662, 0) native_extents=(0.5, 0.5, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, -0.986666679, 0) conservative_extents=(0.5, 0.5, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9805651, -44.6670532, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637100 unforced_live=False native_center=(155.577087, 227.032959, 0) native_extents=(2, 2, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(155.577087, 227.032959, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-11.4217396, -35.3942566, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637098 unforced_live=False native_center=(822.356567, 1568.95569, 0) native_extents=(2.00000048, 2.00000048, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(822.356567, 1568.95569, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(3.83084178, 19.1772652, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-1703638 unforced_live=True native_center=(676.770325, 1146.11877, 0) native_extents=(2.77045155, 2.77045155, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(676.770325, 1146.11877, 0) conservative_extents=(2.77044678, 2.77050781, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.500555992, 1.98189938, 0) alpha=0.4489491
+[StutterFix] [gpusplit] bounds_sample renderer=-1685606 unforced_live=True native_center=(694.598999, 1132.86377, 0) native_extents=(3.953722, 3.953722, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(694.598999, 1132.86377, 0) conservative_extents=(3.95373535, 3.95373535, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.908387184, 1.44286346, 0) alpha=0.0004530028
+[StutterFix] [gpusplit] bounds_sample renderer=-1685604 unforced_live=True native_center=(693.748901, 1131.75964, 0) native_extents=(3.76544929, 3.76544929, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(693.748901, 1131.75964, 0) conservative_extents=(3.76544189, 3.76550293, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.888940811, 1.39796066, 0) alpha=0.0009060056
+[StutterFix] [gpusplit] bounds_sample renderer=-1685602 unforced_live=True native_center=(692.939209, 1130.70825, 0) native_extents=(3.58614254, 3.58614254, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(692.939209, 1130.70825, 0) conservative_extents=(3.58612061, 3.58618164, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.870419502, 1.35520554, 0) alpha=0.001359008
+[StutterFix] [gpusplit] bounds_sample renderer=-1685600 unforced_live=True native_center=(692.168091, 1129.70679, 0) native_extents=(3.41537309, 3.41537309, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(692.168091, 1129.70679, 0) conservative_extents=(3.41534424, 3.41540527, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.852779388, 1.31447983, 0) alpha=0.001812011
+[StutterFix] [gpusplit] hide=live:invisible selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] image_filters=onscreen,offscreen,big,small,additive,alpha,transparent,unknown,unforced_live threshold_percent=0.01 all=0,86484,0,86484,0,86484,27450,0,1378 enabled_active=0,28828,0,28828,0,28828,27450,0,1378 matched_now=1378 matched_enabled_active=1378 matched_already_off=0 membership=main-preCull-dynamic-postRender-restore
+[StutterFix] [gpusplit] image_live_onscreen_unforced count=0 projected_aabb_screen_percent_sum=0.000 max=0.000 sprite_vertices=0 sprite_triangles=0 bounds_recovered=0 culling_vs_projection_disagree=0 legacy_vs_culling_disagree=0; geometry not actual draw counters; bounds area unclipped
+[StutterFix] [gpusplit] blend_evidence count=86483 shader=Sprites/Tile keywords= _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [gpusplit] blend_evidence count=1 shader=Sprites/Tile keywords=USE_POINT_SAMPLING _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [archegpu] stamp song=262.04982244269922 qpc=926808028 qpc_frequency=10000000 utc=2026-10-20T17:52:13.7028746Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.0391718079336 qpc=966708104 qpc_frequency=10000000 utc=2026-10-20T17:52:17.6929436Z
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=118 mean=2066.178
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=118 mean=1937.246
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=118 mean=2062.169
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=118 mean=13199.034
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=118 mean=20113.492
+[StutterFix] [gpuprobe] ready=1 completed=15 requested=15 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=15 calls=15 mean_frame_ms=11.6053 mean_active_ms=11.6053 max_frame_ms=14.9606
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=15 calls=60 mean_frame_ms=11.5185 mean_active_ms=11.5185 max_frame_ms=14.8849
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=15 calls=15 mean_frame_ms=0.1615 mean_active_ms=0.1615 max_frame_ms=0.1956
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=15 calls=15 mean_frame_ms=10.5290 mean_active_ms=10.5290 max_frame_ms=13.7912
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=15 calls=15 mean_frame_ms=0.0527 mean_active_ms=0.0527 max_frame_ms=0.0635
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=15 calls=15 mean_frame_ms=0.7752 mean_active_ms=0.7752 max_frame_ms=1.6998
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=15 calls=15 mean_frame_ms=0.1079 mean_active_ms=0.1079 max_frame_ms=0.2417
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=15 calls=15 mean_frame_ms=0.1416 mean_active_ms=0.1416 max_frame_ms=0.2232
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=15 calls=15 mean_frame_ms=0.3888 mean_active_ms=0.3888 max_frame_ms=0.8161
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=1 calls=1 mean_frame_ms=0.0067 mean_active_ms=0.1004 max_frame_ms=0.1004
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=15 calls=15 mean_frame_ms=0.0855 mean_active_ms=0.0855 max_frame_ms=0.1044
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=15 calls=15 mean_frame_ms=0.2612 mean_active_ms=0.2612 max_frame_ms=0.3031
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=15 calls=15 mean_frame_ms=0.0856 mean_active_ms=0.0856 max_frame_ms=0.1044
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=15 calls=15 mean_frame_ms=0.1731 mean_active_ms=0.1731 max_frame_ms=0.3185
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=15 calls=15 mean_frame_ms=0.1083 mean_active_ms=0.1083 max_frame_ms=0.2478
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=15 calls=15 mean_frame_ms=0.1322 mean_active_ms=0.1322 max_frame_ms=0.2202
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=15 calls=15 mean_frame_ms=0.1440 mean_active_ms=0.1440 max_frame_ms=0.2079
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=15 calls=15 mean_frame_ms=0.1273 mean_active_ms=0.1273 max_frame_ms=0.6451
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=15 calls=15 mean_frame_ms=0.5220 mean_active_ms=0.5220 max_frame_ms=1.1295
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0868; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=live:invisible selected=305 external_unhide_writes=0
+[StutterFix] [gpusplit] live_frames=120 traversal_mean_ms=22.473488 traversal_worst_ms=24.546200 selected_min=241 selected_max=580 cached_images=86484; includes classification, hide and post-render restore; exclude census/pixeldiff frames
+[StutterFix] [gpusplit] restored=live:invisible external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=258.22050725715235 qpc=1150117207 qpc_frequency=10000000 utc=2026-10-20T17:52:36.0335300Z
+[StutterFix] [gpusplit] camera_geometry frame=22860 callback=True pos=(678.246826, 1109.67529, -10) ortho=True size=12.30327 aspect=1.777778 near=0.3 far=1000 rt=2560x1440 view=1	5.71146957E-05	0	-678.310181
+[StutterFix] [gpusplit] frustum_plane=0 normal=(1, 5.71146993E-05, 0) distance=-656.4377
+[StutterFix] [gpusplit] frustum_plane=1 normal=(-1, -5.71146993E-05, 0) distance=700.1827
+[StutterFix] [gpusplit] frustum_plane=2 normal=(-5.71146957E-05, 1, 0) distance=-1097.333
+[StutterFix] [gpusplit] frustum_plane=3 normal=(5.71146957E-05, -1, 0) distance=1121.94
+[StutterFix] [gpusplit] frustum_plane=4 normal=(0, 0, 1) distance=9.70004
+[StutterFix] [gpusplit] frustum_plane=5 normal=(0, 0, -1) distance=990
+[StutterFix] [gpusplit] bounds_sample renderer=-2637106 unforced_live=False native_center=(0, 0, 0) native_extents=(0.75, 0.75, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(0.75, 0.75, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-15.0060177, -44.5951881, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637104 unforced_live=False native_center=(0, 0, 0) native_extents=(1, 1, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(1, 1, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-15.0060177, -44.5951881, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637102 unforced_live=False native_center=(0, -0.98666662, 0) native_extents=(0.5, 0.5, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, -0.986666679, 0) conservative_extents=(0.5, 0.5, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-15.0060196, -44.6352844, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637100 unforced_live=False native_center=(155.577087, 227.032959, 0) native_extents=(2, 2, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(155.577087, 227.032959, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-11.4492645, -35.3690186, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637098 unforced_live=False native_center=(822.356567, 1568.95569, 0) native_extents=(2.00000048, 2.00000048, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(822.356567, 1568.95569, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(3.79491735, 19.1646385, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-1703752 unforced_live=True native_center=(674.078552, 1151.15125, 0) native_extents=(2.18386555, 2.18386555, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(674.078552, 1151.15125, 0) conservative_extents=(2.18383789, 2.18383789, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.404768944, 2.18557739, 10) alpha=0.02774913
+[StutterFix] [gpusplit] bounds_sample renderer=-1703750 unforced_live=True native_center=(674.078552, 1151.15125, 0) native_extents=(2.18386555, 2.18386555, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(674.078552, 1151.15125, 0) conservative_extents=(2.18383789, 2.18383789, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.404768944, 2.18557739, 10) alpha=0.03250612
+[StutterFix] [gpusplit] bounds_sample renderer=-1703642 unforced_live=True native_center=(678.261292, 1144.43689, 0) native_extents=(2.17653918, 2.17653918, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(678.261292, 1144.43689, 0) conservative_extents=(2.17651367, 2.17651367, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.500377655, 1.91269684, 10) alpha=0.0269563
+[StutterFix] [gpusplit] bounds_sample renderer=-1703640 unforced_live=True native_center=(678.261292, 1144.43689, 0) native_extents=(2.17653918, 2.17653918, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(678.261292, 1144.43689, 0) conservative_extents=(2.17651367, 2.17651367, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.500377655, 1.91269684, 10) alpha=0.03171329
+[StutterFix] [gpusplit] bounds_sample renderer=-1703638 unforced_live=True native_center=(677.306702, 1146.55017, 0) native_extents=(2.86953688, 2.86953688, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(677.306702, 1146.55017, 0) conservative_extents=(2.86950684, 2.86950684, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.47855854, 1.99858093, 10) alpha=0.5383291
+[StutterFix] [gpusplit] hide=none selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] image_filters=onscreen,offscreen,big,small,additive,alpha,transparent,unknown,unforced_live threshold_percent=1 all=4786,81698,15104,71380,0,86484,27386,0,1442 enabled_active=1724,27104,9562,19266,0,28828,27386,0,1442 matched_now=86484 matched_enabled_active=28828 matched_already_off=27386 membership=snapshot-union-until-restore
+[StutterFix] [gpusplit] image_live_onscreen_unforced count=1365 projected_aabb_screen_percent_sum=93099407.661 max=19266585.184 sprite_vertices=5460 sprite_triangles=2730 bounds_recovered=0 culling_vs_projection_disagree=0 legacy_vs_culling_disagree=0; geometry not actual draw counters; bounds area unclipped
+[StutterFix] [gpusplit] blend_evidence count=86483 shader=Sprites/Tile keywords= _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [gpusplit] blend_evidence count=1 shader=Sprites/Tile keywords=USE_POINT_SAMPLING _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [archegpu] stamp song=262.01784002082422 qpc=1188112336 qpc_frequency=10000000 utc=2026-10-20T17:52:39.8333816Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.01784002082422 qpc=1228079852 qpc_frequency=10000000 utc=2026-10-20T17:52:43.8301457Z
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=369 mean=2063.507
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=369 mean=1934.528
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=369 mean=2059.710
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=369 mean=13198.992
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=369 mean=20059.355
+[StutterFix] [gpuprobe] ready=1 completed=46 requested=46 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=46 calls=46 mean_frame_ms=5.8708 mean_active_ms=5.8708 max_frame_ms=7.2735
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=46 calls=184 mean_frame_ms=5.8543 mean_active_ms=5.8543 max_frame_ms=7.2612
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=46 calls=46 mean_frame_ms=0.0607 mean_active_ms=0.0607 max_frame_ms=0.0614
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=46 calls=46 mean_frame_ms=5.7374 mean_active_ms=5.7374 max_frame_ms=7.1516
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=46 calls=46 mean_frame_ms=0.0098 mean_active_ms=0.0098 max_frame_ms=0.0123
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=46 calls=46 mean_frame_ms=0.0464 mean_active_ms=0.0464 max_frame_ms=0.0717
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=46 calls=46 mean_frame_ms=0.0330 mean_active_ms=0.0330 max_frame_ms=0.0379
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=46 calls=46 mean_frame_ms=0.0429 mean_active_ms=0.0429 max_frame_ms=0.0440
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=46 calls=46 mean_frame_ms=0.0765 mean_active_ms=0.0765 max_frame_ms=0.0778
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=3 calls=3 mean_frame_ms=0.0022 mean_active_ms=0.0341 max_frame_ms=0.0358
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=46 calls=46 mean_frame_ms=0.0322 mean_active_ms=0.0322 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=46 calls=46 mean_frame_ms=0.0847 mean_active_ms=0.0847 max_frame_ms=0.0860
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=46 calls=46 mean_frame_ms=0.0324 mean_active_ms=0.0324 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=46 calls=46 mean_frame_ms=0.0556 mean_active_ms=0.0556 max_frame_ms=0.0573
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=46 calls=46 mean_frame_ms=0.0327 mean_active_ms=0.0327 max_frame_ms=0.0348
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=46 calls=46 mean_frame_ms=0.0447 mean_active_ms=0.0447 max_frame_ms=0.1065
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=46 calls=46 mean_frame_ms=0.0520 mean_active_ms=0.0520 max_frame_ms=0.0532
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=46 calls=46 mean_frame_ms=0.0364 mean_active_ms=0.0364 max_frame_ms=0.2191
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=46 calls=46 mean_frame_ms=0.1041 mean_active_ms=0.1041 max_frame_ms=0.1208
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0165; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=none selected=0 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=258.18849431769922 qpc=1411814001 qpc_frequency=10000000 utc=2026-10-20T17:53:02.2031948Z
+[StutterFix] [gpusplit] camera_geometry frame=25348 callback=False pos=(676.746033, 1109.67859, 0) ortho=True size=12.29641 aspect=1.777778 near=0.3 far=1000 rt=2560x1440 view=1	0	0	-676.746033
+[StutterFix] [gpusplit] frustum_plane=0 normal=(0.99999994, 0, 0) distance=-654.8857
+[StutterFix] [gpusplit] frustum_plane=1 normal=(-0.99999994, 0, 0) distance=698.6063
+[StutterFix] [gpusplit] frustum_plane=2 normal=(0, 1, 0) distance=-1097.382
+[StutterFix] [gpusplit] frustum_plane=3 normal=(0, -1, 0) distance=1121.975
+[StutterFix] [gpusplit] frustum_plane=4 normal=(0, 0, 1) distance=-0.2999598
+[StutterFix] [gpusplit] frustum_plane=5 normal=(0, 0, -1) distance=1000
+[StutterFix] [gpusplit] bounds_sample renderer=-2637106 unforced_live=False native_center=(0, 0, 0) native_extents=(0.75, 0.75, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(0.75, 0.75, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9788914, -44.6220512, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637104 unforced_live=False native_center=(0, 0, 0) native_extents=(1, 1, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(1, 1, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9788914, -44.6220512, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637102 unforced_live=False native_center=(0, -0.98666662, 0) native_extents=(0.5, 0.5, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, -0.986666679, 0) conservative_extents=(0.5, 0.5, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9788914, -44.6621704, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637100 unforced_live=False native_center=(155.577087, 227.032959, 0) native_extents=(2, 2, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(155.577087, 227.032959, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-11.4204502, -35.390377, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637098 unforced_live=False native_center=(822.356567, 1568.95569, 0) native_extents=(2.00000048, 2.00000048, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(822.356567, 1568.95569, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(3.83048058, 19.1752472, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-1685606 unforced_live=True native_center=(694.579163, 1132.7168, 0) native_extents=(3.92276001, 3.92276001, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(694.579163, 1132.7168, 0) conservative_extents=(3.92279053, 3.92272949, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.907888412, 1.43678653, 0) alpha=0.0004642212
+[StutterFix] [gpusplit] bounds_sample renderer=-1685604 unforced_live=True native_center=(693.72998, 1131.61975, 0) native_extents=(3.73596191, 3.73596191, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(693.72998, 1131.61975, 0) conservative_extents=(3.73596191, 3.73596191, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.888465881, 1.39217758, 0) alpha=0.0009284423
+[StutterFix] [gpusplit] bounds_sample renderer=-1685602 unforced_live=True native_center=(692.921204, 1130.57495, 0) native_extents=(3.55805922, 3.55805922, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(692.921204, 1130.57495, 0) conservative_extents=(3.55804443, 3.55810547, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.869967461, 1.3496933, 0) alpha=0.001392663
+[StutterFix] [gpusplit] bounds_sample renderer=-1685600 unforced_live=True native_center=(692.151001, 1129.57983, 0) native_extents=(3.38862729, 3.38862729, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(692.151001, 1129.57983, 0) conservative_extents=(3.38861084, 3.38867188, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.852350235, 1.3092308, 0) alpha=0.001856885
+[StutterFix] [gpusplit] bounds_sample renderer=-1685598 unforced_live=True native_center=(691.417419, 1128.6322, 0) native_extents=(3.2272644, 3.2272644, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(691.417419, 1128.6322, 0) conservative_extents=(3.22723389, 3.22729492, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.835571289, 1.27069473, 0) alpha=0.002321105
+[StutterFix] [gpusplit] hide=live:tiny selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] image_filters=onscreen,offscreen,big,small,additive,alpha,transparent,unknown,unforced_live threshold_percent=0.01 all=0,86484,0,86484,0,86484,27451,0,1377 enabled_active=0,28828,0,28828,0,28828,27451,0,1377 matched_now=1377 matched_enabled_active=1377 matched_already_off=0 membership=main-preCull-dynamic-postRender-restore
+[StutterFix] [gpusplit] image_live_onscreen_unforced count=0 projected_aabb_screen_percent_sum=0.000 max=0.000 sprite_vertices=0 sprite_triangles=0 bounds_recovered=0 culling_vs_projection_disagree=0 legacy_vs_culling_disagree=0; geometry not actual draw counters; bounds area unclipped
+[StutterFix] [gpusplit] blend_evidence count=86483 shader=Sprites/Tile keywords= _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [gpusplit] blend_evidence count=1 shader=Sprites/Tile keywords=USE_POINT_SAMPLING _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [archegpu] stamp song=262.04982244269922 qpc=1450412834 qpc_frequency=10000000 utc=2026-10-20T17:53:06.0633349Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.060503595043 qpc=1490623385 qpc_frequency=10000000 utc=2026-10-20T17:53:10.0842059Z
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=120 mean=2022.467
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=120 mean=1893.850
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=120 mean=2018.417
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=120 mean=13087.142
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=120 mean=19910.592
+[StutterFix] [gpuprobe] ready=1 completed=15 requested=15 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=15 calls=15 mean_frame_ms=11.4234 mean_active_ms=11.4234 max_frame_ms=14.3114
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=15 calls=60 mean_frame_ms=11.2927 mean_active_ms=11.2927 max_frame_ms=14.2316
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=15 calls=15 mean_frame_ms=0.1497 mean_active_ms=0.1497 max_frame_ms=0.1833
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=15 calls=15 mean_frame_ms=10.3741 mean_active_ms=10.3741 max_frame_ms=13.4922
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=15 calls=15 mean_frame_ms=0.0582 mean_active_ms=0.0582 max_frame_ms=0.0788
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=15 calls=15 mean_frame_ms=0.7108 mean_active_ms=0.7108 max_frame_ms=1.2769
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=15 calls=15 mean_frame_ms=0.0953 mean_active_ms=0.0953 max_frame_ms=0.1106
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=15 calls=15 mean_frame_ms=0.1303 mean_active_ms=0.1303 max_frame_ms=0.1751
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=15 calls=15 mean_frame_ms=0.4086 mean_active_ms=0.4086 max_frame_ms=1.0086
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=1 calls=1 mean_frame_ms=0.0061 mean_active_ms=0.0911 max_frame_ms=0.0911
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=15 calls=15 mean_frame_ms=0.0808 mean_active_ms=0.0808 max_frame_ms=0.0963
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=15 calls=15 mean_frame_ms=0.2770 mean_active_ms=0.2770 max_frame_ms=0.6380
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=15 calls=15 mean_frame_ms=0.0801 mean_active_ms=0.0801 max_frame_ms=0.0963
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=15 calls=15 mean_frame_ms=0.1664 mean_active_ms=0.1664 max_frame_ms=0.3389
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=15 calls=15 mean_frame_ms=0.0910 mean_active_ms=0.0910 max_frame_ms=0.1628
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=15 calls=15 mean_frame_ms=0.1296 mean_active_ms=0.1296 max_frame_ms=0.2898
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=15 calls=15 mean_frame_ms=0.1681 mean_active_ms=0.1681 max_frame_ms=0.5878
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=15 calls=15 mean_frame_ms=0.0903 mean_active_ms=0.0903 max_frame_ms=0.2191
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=15 calls=15 mean_frame_ms=0.4679 mean_active_ms=0.4679 max_frame_ms=1.0455
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.1307; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=live:tiny selected=39 external_unhide_writes=0
+[StutterFix] [gpusplit] live_frames=122 traversal_mean_ms=22.259554 traversal_worst_ms=24.565600 selected_min=15 selected_max=130 cached_images=86484; includes classification, hide and post-render restore; exclude census/pixeldiff frames
+[StutterFix] [gpusplit] restored=live:tiny external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=258.199175470043 qpc=1673596553 qpc_frequency=10000000 utc=2026-10-20T17:53:28.3814511Z
+[StutterFix] [gpusplit] camera_geometry frame=27577 callback=True pos=(676.74646, 1109.67798, -10) ortho=True size=12.29654 aspect=1.777778 near=0.3 far=1000 rt=2560x1440 view=1	3.17815611E-05	0	-676.781738
+[StutterFix] [gpusplit] frustum_plane=0 normal=(1, 3.17815611E-05, 0) distance=-654.9212
+[StutterFix] [gpusplit] frustum_plane=1 normal=(-1, -3.17815611E-05, 0) distance=698.6423
+[StutterFix] [gpusplit] frustum_plane=2 normal=(-3.17815611E-05, 1, 0) distance=-1097.36
+[StutterFix] [gpusplit] frustum_plane=3 normal=(3.17815611E-05, -1, 0) distance=1121.953
+[StutterFix] [gpusplit] frustum_plane=4 normal=(0, 0, 1) distance=9.70004
+[StutterFix] [gpusplit] frustum_plane=5 normal=(0, 0, -1) distance=990
+[StutterFix] [gpusplit] bounds_sample renderer=-2637106 unforced_live=False native_center=(0, 0, 0) native_extents=(0.75, 0.75, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(0.75, 0.75, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9795437, -44.6206741, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637104 unforced_live=False native_center=(0, 0, 0) native_extents=(1, 1, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(1, 1, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9795437, -44.6206741, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637102 unforced_live=False native_center=(0, -0.98666662, 0) native_extents=(0.5, 0.5, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, -0.986666679, 0) conservative_extents=(0.5, 0.5, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9795437, -44.6607933, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637100 unforced_live=False native_center=(155.577087, 227.032959, 0) native_extents=(2, 2, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(155.577087, 227.032959, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-11.4209757, -35.3892975, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637098 unforced_live=False native_center=(822.356567, 1568.95569, 0) native_extents=(2.00000048, 2.00000048, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(822.356567, 1568.95569, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(3.83077049, 19.1748848, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-1703752 unforced_live=True native_center=(673.411377, 1151.16199, 0) native_extents=(2.18289804, 2.18289804, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(673.411377, 1151.16199, 0) conservative_extents=(2.18292236, 2.18286133, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.42374897, 2.18681717, 10) alpha=0.0228658
+[StutterFix] [gpusplit] bounds_sample renderer=-1703750 unforced_live=True native_center=(673.411377, 1151.16199, 0) native_extents=(2.18289804, 2.18289804, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(673.411377, 1151.16199, 0) conservative_extents=(2.18292236, 2.18286133, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.42374897, 2.18681717, 10) alpha=0.02678566
+[StutterFix] [gpusplit] bounds_sample renderer=-1703642 unforced_live=True native_center=(677.475159, 1144.41467, 0) native_extents=(2.16609859, 2.16609859, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(677.475159, 1144.41467, 0) conservative_extents=(2.16607666, 2.1661377, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.516692162, 1.9124527, 10) alpha=0.0222125
+[StutterFix] [gpusplit] bounds_sample renderer=-1703640 unforced_live=True native_center=(677.475159, 1144.41467, 0) native_extents=(2.16609859, 2.16609859, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(677.475159, 1144.41467, 0) conservative_extents=(2.16607666, 2.1661377, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.516692162, 1.9124527, 10) alpha=0.02613235
+[StutterFix] [gpusplit] bounds_sample renderer=-1703638 unforced_live=True native_center=(676.67865, 1146.28052, 0) native_extents=(2.81043196, 2.81043196, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(676.67865, 1146.28052, 0) conservative_extents=(2.8104248, 2.8104248, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.498476028, 1.98832333, 10) alpha=0.4831656
+[StutterFix] [gpusplit] hide=none selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] image_filters=onscreen,offscreen,big,small,additive,alpha,transparent,unknown,unforced_live threshold_percent=1 all=4806,81678,15101,71383,0,86484,27385,0,1443 enabled_active=1723,27105,9553,19275,0,28828,27385,0,1443 matched_now=86484 matched_enabled_active=28828 matched_already_off=27385 membership=snapshot-union-until-restore
+[StutterFix] [gpusplit] image_live_onscreen_unforced count=1357 projected_aabb_screen_percent_sum=93191661.840 max=19286531.896 sprite_vertices=5428 sprite_triangles=2714 bounds_recovered=0 culling_vs_projection_disagree=0 legacy_vs_culling_disagree=0; geometry not actual draw counters; bounds area unclipped
+[StutterFix] [gpusplit] blend_evidence count=86483 shader=Sprites/Tile keywords= _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [gpusplit] blend_evidence count=1 shader=Sprites/Tile keywords=USE_POINT_SAMPLING _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [archegpu] stamp song=262.01784002082422 qpc=1711852294 qpc_frequency=10000000 utc=2026-10-20T17:53:32.2074873Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.01784002082422 qpc=1751935885 qpc_frequency=10000000 utc=2026-10-20T17:53:36.2156595Z
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=365 mean=2064.553
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=365 mean=1935.403
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=365 mean=2060.570
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=365 mean=13223.701
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=365 mean=20079.400
+[StutterFix] [gpuprobe] ready=1 completed=45 requested=46 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=45 calls=45 mean_frame_ms=6.1268 mean_active_ms=6.1268 max_frame_ms=10.7131
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=45 calls=180 mean_frame_ms=6.1090 mean_active_ms=6.1090 max_frame_ms=10.7028
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=45 calls=45 mean_frame_ms=0.0608 mean_active_ms=0.0608 max_frame_ms=0.0614
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=45 calls=45 mean_frame_ms=5.9913 mean_active_ms=5.9913 max_frame_ms=10.5933
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=45 calls=45 mean_frame_ms=0.0102 mean_active_ms=0.0102 max_frame_ms=0.0133
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=45 calls=45 mean_frame_ms=0.0466 mean_active_ms=0.0466 max_frame_ms=0.1004
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=45 calls=45 mean_frame_ms=0.0331 mean_active_ms=0.0331 max_frame_ms=0.0379
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=45 calls=45 mean_frame_ms=0.0430 mean_active_ms=0.0430 max_frame_ms=0.0430
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=45 calls=45 mean_frame_ms=0.0766 mean_active_ms=0.0766 max_frame_ms=0.0778
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=3 calls=3 mean_frame_ms=0.0022 mean_active_ms=0.0331 max_frame_ms=0.0338
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=45 calls=45 mean_frame_ms=0.0322 mean_active_ms=0.0322 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=45 calls=45 mean_frame_ms=0.0850 mean_active_ms=0.0850 max_frame_ms=0.0983
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=45 calls=45 mean_frame_ms=0.0326 mean_active_ms=0.0326 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=45 calls=45 mean_frame_ms=0.0560 mean_active_ms=0.0560 max_frame_ms=0.0707
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=45 calls=45 mean_frame_ms=0.0327 mean_active_ms=0.0327 max_frame_ms=0.0338
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=45 calls=45 mean_frame_ms=0.0469 mean_active_ms=0.0469 max_frame_ms=0.1075
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=45 calls=45 mean_frame_ms=0.0608 mean_active_ms=0.0608 max_frame_ms=0.4424
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=45 calls=45 mean_frame_ms=0.0325 mean_active_ms=0.0325 max_frame_ms=0.0389
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=45 calls=45 mean_frame_ms=0.1036 mean_active_ms=0.1036 max_frame_ms=0.1044
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0178; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=none selected=0 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=258.2098261048086 qpc=1938572443 qpc_frequency=10000000 utc=2026-10-20T17:53:54.8795093Z
+[StutterFix] [gpusplit] camera_geometry frame=30088 callback=False pos=(676.855713, 1109.67859, 0) ortho=True size=12.25274 aspect=1.777778 near=0.3 far=1000 rt=2560x1440 view=1	0	0	-676.855713
+[StutterFix] [gpusplit] frustum_plane=0 normal=(1, 0, 0) distance=-655.0731
+[StutterFix] [gpusplit] frustum_plane=1 normal=(-1, 0, 0) distance=698.6384
+[StutterFix] [gpusplit] frustum_plane=2 normal=(0, 1, 0) distance=-1097.426
+[StutterFix] [gpusplit] frustum_plane=3 normal=(0, -1, 0) distance=1121.931
+[StutterFix] [gpusplit] frustum_plane=4 normal=(0, 0, 1) distance=-0.2999598
+[StutterFix] [gpusplit] frustum_plane=5 normal=(0, 0, -1) distance=1000
+[StutterFix] [gpusplit] bounds_sample renderer=-2637106 unforced_live=False native_center=(0, 0, 0) native_extents=(0.75, 0.75, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(0.75, 0.75, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-15.0365772, -44.7828674, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637104 unforced_live=False native_center=(0, 0, 0) native_extents=(1, 1, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(1, 1, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-15.0365772, -44.7828674, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637102 unforced_live=False native_center=(0, -0.98666662, 0) native_extents=(0.5, 0.5, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, -0.986666679, 0) conservative_extents=(0.5, 0.5, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-15.0365772, -44.8231316, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637100 unforced_live=False native_center=(155.577087, 227.032959, 0) native_extents=(2, 2, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(155.577087, 227.032959, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-11.4654531, -35.5182915, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637098 unforced_live=False native_center=(822.356567, 1568.95569, 0) native_extents=(2.00000048, 2.00000048, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(822.356567, 1568.95569, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(3.83983421, 19.241806, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-1685606 unforced_live=True native_center=(694.471558, 1131.91882, 0) native_extents=(3.75558877, 3.75558877, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(694.471558, 1131.91882, 0) conservative_extents=(3.75561523, 3.75561523, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.904355049, 1.40756226, 0) alpha=0.0005269538
+[StutterFix] [gpusplit] bounds_sample renderer=-1685604 unforced_live=True native_center=(693.627441, 1130.85986, 0) native_extents=(3.57675123, 3.57675123, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(693.627441, 1130.85986, 0) conservative_extents=(3.57672119, 3.57678223, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.884979248, 1.36434555, 0) alpha=0.001053908
+[StutterFix] [gpusplit] bounds_sample renderer=-1685602 unforced_live=True native_center=(692.823608, 1129.8512, 0) native_extents=(3.40643001, 3.40643001, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(692.823608, 1129.8512, 0) conservative_extents=(3.40643311, 3.40637207, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.866528511, 1.32318497, 0) alpha=0.001580861
+[StutterFix] [gpusplit] bounds_sample renderer=-1685600 unforced_live=True native_center=(692.057983, 1128.89063, 0) native_extents=(3.24421835, 3.24421835, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(692.057983, 1128.89063, 0) conservative_extents=(3.24420166, 3.2442627, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.848954201, 1.28398895, 0) alpha=0.002107815
+[StutterFix] [gpusplit] bounds_sample renderer=-1685598 unforced_live=True native_center=(691.328857, 1127.97571, 0) native_extents=(3.08973193, 3.08973193, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(691.328857, 1127.97571, 0) conservative_extents=(3.08972168, 3.08972168, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.832217216, 1.24665451, 0) alpha=0.002634768
+[StutterFix] [gpusplit] hide=live:invisible+tiny selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] image_filters=onscreen,offscreen,big,small,additive,alpha,transparent,unknown,unforced_live threshold_percent=0.01 all=0,86484,0,86484,0,86484,27452,0,1376 enabled_active=0,28828,0,28828,0,28828,27452,0,1376 matched_now=1376 matched_enabled_active=1376 matched_already_off=0 membership=main-preCull-dynamic-postRender-restore
+[StutterFix] [gpusplit] image_live_onscreen_unforced count=0 projected_aabb_screen_percent_sum=0.000 max=0.000 sprite_vertices=0 sprite_triangles=0 bounds_recovered=0 culling_vs_projection_disagree=0 legacy_vs_culling_disagree=0; geometry not actual draw counters; bounds area unclipped
+[StutterFix] [gpusplit] blend_evidence count=86483 shader=Sprites/Tile keywords= _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [gpusplit] blend_evidence count=1 shader=Sprites/Tile keywords=USE_POINT_SAMPLING _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [archegpu] stamp song=262.0391718079336 qpc=1976890776 qpc_frequency=10000000 utc=2026-10-20T17:53:58.7111053Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.0391718079336 qpc=2016857461 qpc_frequency=10000000 utc=2026-10-20T17:54:02.7077013Z
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=119 mean=2020.975
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=119 mean=1892.294
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=119 mean=2017.168
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=119 mean=13085.504
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=119 mean=19911.504
+[StutterFix] [gpuprobe] ready=1 completed=15 requested=15 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=15 calls=15 mean_frame_ms=11.6150 mean_active_ms=11.6150 max_frame_ms=15.7594
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=15 calls=60 mean_frame_ms=11.5253 mean_active_ms=11.5253 max_frame_ms=15.6518
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=15 calls=15 mean_frame_ms=0.1560 mean_active_ms=0.1560 max_frame_ms=0.1935
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=15 calls=15 mean_frame_ms=10.6966 mean_active_ms=10.6966 max_frame_ms=14.6852
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=15 calls=15 mean_frame_ms=0.0609 mean_active_ms=0.0609 max_frame_ms=0.1352
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=15 calls=15 mean_frame_ms=0.6119 mean_active_ms=0.6119 max_frame_ms=1.0588
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=15 calls=15 mean_frame_ms=0.0974 mean_active_ms=0.0974 max_frame_ms=0.1126
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=15 calls=15 mean_frame_ms=0.1655 mean_active_ms=0.1655 max_frame_ms=0.4239
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=15 calls=15 mean_frame_ms=0.4136 mean_active_ms=0.4136 max_frame_ms=0.8141
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=1 calls=1 mean_frame_ms=0.0063 mean_active_ms=0.0952 max_frame_ms=0.0952
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=15 calls=15 mean_frame_ms=0.0823 mean_active_ms=0.0823 max_frame_ms=0.1024
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=15 calls=15 mean_frame_ms=0.2519 mean_active_ms=0.2519 max_frame_ms=0.3011
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=15 calls=15 mean_frame_ms=0.0826 mean_active_ms=0.0826 max_frame_ms=0.1024
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=15 calls=15 mean_frame_ms=0.1567 mean_active_ms=0.1567 max_frame_ms=0.1894
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=15 calls=15 mean_frame_ms=0.0905 mean_active_ms=0.0905 max_frame_ms=0.1690
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=15 calls=15 mean_frame_ms=0.1294 mean_active_ms=0.1294 max_frame_ms=0.2949
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=15 calls=15 mean_frame_ms=0.1380 mean_active_ms=0.1380 max_frame_ms=0.2140
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=15 calls=15 mean_frame_ms=0.0913 mean_active_ms=0.0913 max_frame_ms=0.2058
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=15 calls=15 mean_frame_ms=0.5664 mean_active_ms=0.5664 max_frame_ms=1.5124
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0897; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=live:invisible+tiny selected=355 external_unhide_writes=0
+[StutterFix] [gpusplit] live_frames=121 traversal_mean_ms=22.359560 traversal_worst_ms=23.651100 selected_min=262 selected_max=590 cached_images=86484; includes classification, hide and post-render restore; exclude census/pixeldiff frames
+[StutterFix] [gpusplit] restored=live:invisible+tiny external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=258.2098261048086 qpc=2201280299 qpc_frequency=10000000 utc=2026-10-20T17:54:21.1502373Z
+[StutterFix] [gpusplit] camera_geometry frame=32317 callback=True pos=(676.746521, 1109.67798, -10) ortho=True size=12.29668 aspect=1.777778 near=0.3 far=1000 rt=2560x1440 view=1	3.42262283E-05	0	-676.784485
+[StutterFix] [gpusplit] frustum_plane=0 normal=(1, 3.42262319E-05, 0) distance=-654.9238
+[StutterFix] [gpusplit] frustum_plane=1 normal=(-1, -3.42262319E-05, 0) distance=698.6453
+[StutterFix] [gpusplit] frustum_plane=2 normal=(-3.42262283E-05, 1, 0) distance=-1097.358
+[StutterFix] [gpusplit] frustum_plane=3 normal=(3.42262283E-05, -1, 0) distance=1121.951
+[StutterFix] [gpusplit] frustum_plane=4 normal=(0, 0, 1) distance=9.70004
+[StutterFix] [gpusplit] frustum_plane=5 normal=(0, 0, -1) distance=990
+[StutterFix] [gpusplit] bounds_sample renderer=-2637106 unforced_live=False native_center=(0, 0, 0) native_extents=(0.75, 0.75, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(0.75, 0.75, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9794331, -44.6200943, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637104 unforced_live=False native_center=(0, 0, 0) native_extents=(1, 1, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(1, 1, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9794331, -44.6200943, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637102 unforced_live=False native_center=(0, -0.98666662, 0) native_extents=(0.5, 0.5, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, -0.986666679, 0) conservative_extents=(0.5, 0.5, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.979434, -44.6602135, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637100 unforced_live=False native_center=(155.577087, 227.032959, 0) native_extents=(2, 2, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(155.577087, 227.032959, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-11.4208918, -35.3888397, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637098 unforced_live=False native_center=(822.356567, 1568.95569, 0) native_extents=(2.00000048, 2.00000048, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(822.356567, 1568.95569, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(3.83075714, 19.1746635, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-1703752 unforced_live=True native_center=(673.411682, 1151.16077, 0) native_extents=(2.18301034, 2.18301034, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(673.411682, 1151.16077, 0) conservative_extents=(2.1829834, 2.1829834, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.423758507, 2.18675232, 10) alpha=0.0234327
+[StutterFix] [gpusplit] bounds_sample renderer=-1703750 unforced_live=True native_center=(673.411682, 1151.16077, 0) native_extents=(2.18301034, 2.18301034, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(673.411682, 1151.16077, 0) conservative_extents=(2.1829834, 2.1829834, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.423758507, 2.18675232, 10) alpha=0.02744974
+[StutterFix] [gpusplit] bounds_sample renderer=-1703642 unforced_live=True native_center=(677.474487, 1144.41748, 0) native_extents=(2.16731119, 2.16731119, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(677.474487, 1144.41748, 0) conservative_extents=(2.16729736, 2.1673584, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.516676903, 1.91255558, 10) alpha=0.0227632
+[StutterFix] [gpusplit] bounds_sample renderer=-1703640 unforced_live=True native_center=(677.474487, 1144.41748, 0) native_extents=(2.16731119, 2.16731119, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(677.474487, 1144.41748, 0) conservative_extents=(2.16729736, 2.1673584, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.516676903, 1.91255558, 10) alpha=0.02678023
+[StutterFix] [gpusplit] bounds_sample renderer=-1703638 unforced_live=True native_center=(676.675415, 1146.28613, 0) native_extents=(2.8117609, 2.8117609, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(676.675415, 1146.28613, 0) conservative_extents=(2.81176758, 2.81176758, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.498402596, 1.98854065, 10) alpha=0.4843386
+[StutterFix] [gpusplit] hide=none selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] image_filters=onscreen,offscreen,big,small,additive,alpha,transparent,unknown,unforced_live threshold_percent=1 all=4810,81674,15097,71387,0,86484,27386,0,1442 enabled_active=1726,27102,9551,19277,0,28828,27386,0,1442 matched_now=86484 matched_enabled_active=28828 matched_already_off=27386 membership=snapshot-union-until-restore
+[StutterFix] [gpusplit] image_live_onscreen_unforced count=1358 projected_aabb_screen_percent_sum=93190459.195 max=19286206.827 sprite_vertices=5432 sprite_triangles=2716 bounds_recovered=0 culling_vs_projection_disagree=0 legacy_vs_culling_disagree=0; geometry not actual draw counters; bounds area unclipped
+[StutterFix] [gpusplit] blend_evidence count=86483 shader=Sprites/Tile keywords= _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [gpusplit] blend_evidence count=1 shader=Sprites/Tile keywords=USE_POINT_SAMPLING _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [archegpu] stamp song=262.01784002082422 qpc=2239533434 qpc_frequency=10000000 utc=2026-10-20T17:54:24.9754294Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.01784002082422 qpc=2279472664 qpc_frequency=10000000 utc=2026-10-20T17:54:28.9692158Z
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=417 mean=2074.755
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=417 mean=1946.444
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=417 mean=2070.628
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=417 mean=13271.271
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=417 mean=20116.926
+[StutterFix] [gpuprobe] ready=1 completed=52 requested=52 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=52 calls=52 mean_frame_ms=5.8749 mean_active_ms=5.8749 max_frame_ms=6.3570
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=52 calls=208 mean_frame_ms=5.8584 mean_active_ms=5.8584 max_frame_ms=6.3468
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=52 calls=52 mean_frame_ms=0.0608 mean_active_ms=0.0608 max_frame_ms=0.0614
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=52 calls=52 mean_frame_ms=5.7400 mean_active_ms=5.7400 max_frame_ms=6.2382
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=52 calls=52 mean_frame_ms=0.0103 mean_active_ms=0.0103 max_frame_ms=0.0113
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=52 calls=52 mean_frame_ms=0.0473 mean_active_ms=0.0473 max_frame_ms=0.1270
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=52 calls=52 mean_frame_ms=0.0333 mean_active_ms=0.0333 max_frame_ms=0.0420
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=52 calls=52 mean_frame_ms=0.0430 mean_active_ms=0.0430 max_frame_ms=0.0440
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=52 calls=52 mean_frame_ms=0.0768 mean_active_ms=0.0768 max_frame_ms=0.0901
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=4 calls=4 mean_frame_ms=0.0026 mean_active_ms=0.0338 max_frame_ms=0.0338
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=52 calls=52 mean_frame_ms=0.0324 mean_active_ms=0.0324 max_frame_ms=0.0461
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=52 calls=52 mean_frame_ms=0.0847 mean_active_ms=0.0847 max_frame_ms=0.0860
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=52 calls=52 mean_frame_ms=0.0324 mean_active_ms=0.0324 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=52 calls=52 mean_frame_ms=0.0558 mean_active_ms=0.0558 max_frame_ms=0.0707
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=52 calls=52 mean_frame_ms=0.0330 mean_active_ms=0.0330 max_frame_ms=0.0471
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=52 calls=52 mean_frame_ms=0.0487 mean_active_ms=0.0487 max_frame_ms=0.1065
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=52 calls=52 mean_frame_ms=0.0593 mean_active_ms=0.0593 max_frame_ms=0.4250
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=52 calls=52 mean_frame_ms=0.0401 mean_active_ms=0.0401 max_frame_ms=0.4168
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=52 calls=52 mean_frame_ms=0.1111 mean_active_ms=0.1111 max_frame_ms=0.4741
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0166; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=none selected=0 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=258.199175470043 qpc=2462684033 qpc_frequency=10000000 utc=2026-10-20T17:54:47.2906296Z
+[StutterFix] [gpusplit] camera_geometry frame=35045 callback=False pos=(676.746033, 1109.67859, 0) ortho=True size=12.29729 aspect=1.777778 near=0.3 far=1000 rt=2560x1440 view=1	0	0	-676.746033
+[StutterFix] [gpusplit] frustum_plane=0 normal=(1, 0, 0) distance=-654.8842
+[StutterFix] [gpusplit] frustum_plane=1 normal=(-1, 0, 0) distance=698.6078
+[StutterFix] [gpusplit] frustum_plane=2 normal=(0, 0.99999994, 0) distance=-1097.381
+[StutterFix] [gpusplit] frustum_plane=3 normal=(0, -0.99999994, 0) distance=1121.976
+[StutterFix] [gpusplit] frustum_plane=4 normal=(0, 0, 1) distance=-0.2999598
+[StutterFix] [gpusplit] frustum_plane=5 normal=(0, 0, -1) distance=1000
+[StutterFix] [gpusplit] bounds_sample renderer=-2637106 unforced_live=False native_center=(0, 0, 0) native_extents=(0.75, 0.75, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(0.75, 0.75, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9777851, -44.6188202, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637104 unforced_live=False native_center=(0, 0, 0) native_extents=(1, 1, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(1, 1, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9777851, -44.6188202, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637102 unforced_live=False native_center=(0, -0.98666662, 0) native_extents=(0.5, 0.5, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, -0.986666679, 0) conservative_extents=(0.5, 0.5, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-14.9777851, -44.6589355, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637100 unforced_live=False native_center=(155.577087, 227.032959, 0) native_extents=(2, 2, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(155.577087, 227.032959, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-11.4195976, -35.3878059, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637098 unforced_live=False native_center=(822.356567, 1568.95569, 0) native_extents=(2.00000048, 2.00000048, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(822.356567, 1568.95569, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(3.83024287, 19.1739159, 0) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-1703638 unforced_live=True native_center=(676.723755, 1146.20203, 0) native_extents=(2.79141808, 2.79141808, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(676.723755, 1146.20203, 0) conservative_extents=(2.79144287, 2.79138184, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.499490738, 1.98501956, 0) alpha=0.466647
+[StutterFix] [gpusplit] bounds_sample renderer=-1685606 unforced_live=True native_center=(694.542053, 1132.44177, 0) native_extents=(3.86494875, 3.86494875, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(694.542053, 1132.44177, 0) conservative_extents=(3.8649292, 3.86499023, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.907011032, 1.42553711, 0) alpha=0.0004854918
+[StutterFix] [gpusplit] bounds_sample renderer=-1685604 unforced_live=True native_center=(693.69458, 1131.35779, 0) native_extents=(3.68090343, 3.68090343, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(693.69458, 1131.35779, 0) conservative_extents=(3.6809082, 3.6809082, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.887628555, 1.38146591, 0) alpha=0.0009709836
+[StutterFix] [gpusplit] bounds_sample renderer=-1685602 unforced_live=True native_center=(692.887512, 1130.32556, 0) native_extents=(3.50562286, 3.50562286, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(692.887512, 1130.32556, 0) conservative_extents=(3.50561523, 3.50561523, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.869170189, 1.3394928, 0) alpha=0.001456475
+[StutterFix] [gpusplit] bounds_sample renderer=-1685600 unforced_live=True native_center=(692.118896, 1129.34229, 0) native_extents=(3.3386879, 3.3386879, 0.100000001) local_center=(0, 0, 0) local_extents=(0.75, 0.75, 0.100000001) conservative_center=(692.118896, 1129.34229, 0) conservative_extents=(3.33868408, 3.33874512, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.85159111, 1.29951477, 0) alpha=0.001941967
+[StutterFix] [gpusplit] hide=live:visible selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] image_filters=onscreen,offscreen,big,small,additive,alpha,transparent,unknown,unforced_live threshold_percent=0.01 all=0,86484,0,86484,0,86484,27451,0,1377 enabled_active=0,28828,0,28828,0,28828,27451,0,1377 matched_now=0 matched_enabled_active=0 matched_already_off=0 membership=main-preCull-dynamic-postRender-restore
+[StutterFix] [gpusplit] image_live_onscreen_unforced count=0 projected_aabb_screen_percent_sum=0.000 max=0.000 sprite_vertices=0 sprite_triangles=0 bounds_recovered=0 culling_vs_projection_disagree=0 legacy_vs_culling_disagree=0; geometry not actual draw counters; bounds area unclipped
+[StutterFix] [gpusplit] blend_evidence count=86483 shader=Sprites/Tile keywords= _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [gpusplit] blend_evidence count=1 shader=Sprites/Tile keywords=USE_POINT_SAMPLING _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [archegpu] stamp song=262.0391718079336 qpc=2501100026 qpc_frequency=10000000 utc=2026-10-20T17:54:51.1318655Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.060503595043 qpc=2541365260 qpc_frequency=10000000 utc=2026-10-20T17:54:55.1583799Z
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=122 mean=234.443
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=122 mean=105.492
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=122 mean=230.270
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=122 mean=9510.459
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=122 mean=12758.115
+[StutterFix] [gpuprobe] ready=1 completed=15 requested=16 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=15 calls=15 mean_frame_ms=7.7526 mean_active_ms=7.7526 max_frame_ms=12.8840
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=15 calls=60 mean_frame_ms=7.6308 mean_active_ms=7.6308 max_frame_ms=12.7734
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=15 calls=15 mean_frame_ms=0.4883 mean_active_ms=0.4883 max_frame_ms=0.6851
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=15 calls=15 mean_frame_ms=6.5201 mean_active_ms=6.5201 max_frame_ms=11.5087
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=15 calls=15 mean_frame_ms=0.1267 mean_active_ms=0.1267 max_frame_ms=0.2243
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=15 calls=15 mean_frame_ms=0.4957 mean_active_ms=0.4957 max_frame_ms=1.0977
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=15 calls=15 mean_frame_ms=0.4875 mean_active_ms=0.4875 max_frame_ms=3.8001
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=15 calls=15 mean_frame_ms=0.3346 mean_active_ms=0.3346 max_frame_ms=0.4680
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=15 calls=15 mean_frame_ms=0.6845 mean_active_ms=0.6845 max_frame_ms=1.2401
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=1 calls=1 mean_frame_ms=0.0155 mean_active_ms=0.2324 max_frame_ms=0.2324
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=15 calls=15 mean_frame_ms=0.2570 mean_active_ms=0.2570 max_frame_ms=0.3604
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=15 calls=15 mean_frame_ms=0.9315 mean_active_ms=0.9315 max_frame_ms=3.6588
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=15 calls=15 mean_frame_ms=0.2701 mean_active_ms=0.2701 max_frame_ms=0.4147
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=15 calls=15 mean_frame_ms=0.4140 mean_active_ms=0.4140 max_frame_ms=0.5868
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=15 calls=15 mean_frame_ms=0.2608 mean_active_ms=0.2608 max_frame_ms=0.3820
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=15 calls=15 mean_frame_ms=0.4374 mean_active_ms=0.4374 max_frame_ms=1.1561
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=15 calls=15 mean_frame_ms=0.4154 mean_active_ms=0.4154 max_frame_ms=0.5796
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=15 calls=15 mean_frame_ms=0.2594 mean_active_ms=0.2594 max_frame_ms=0.3604
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=15 calls=15 mean_frame_ms=0.9181 mean_active_ms=0.9181 max_frame_ms=2.2118
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.1218; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=live:visible selected=1935 external_unhide_writes=0
+[StutterFix] [gpusplit] live_frames=124 traversal_mean_ms=22.921999 traversal_worst_ms=24.574500 selected_min=1570 selected_max=2076 cached_images=86484; includes classification, hide and post-render restore; exclude census/pixeldiff frames
+[StutterFix] [gpusplit] restored=live:visible external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=258.24183904426172 qpc=2726147308 qpc_frequency=10000000 utc=2026-10-20T17:55:13.6366270Z
+[StutterFix] [gpusplit] camera_geometry frame=37217 callback=True pos=(678.24707, 1109.67542, -10) ortho=True size=12.30613 aspect=1.777778 near=0.3 far=1000 rt=2560x1440 view=1	7.44613935E-05	0	-678.329712
+[StutterFix] [gpusplit] frustum_plane=0 normal=(0.99999994, 7.44613935E-05, 0) distance=-656.4521
+[StutterFix] [gpusplit] frustum_plane=1 normal=(-0.99999994, -7.44613935E-05, 0) distance=700.2072
+[StutterFix] [gpusplit] frustum_plane=2 normal=(-7.44613935E-05, 1, 0) distance=-1097.319
+[StutterFix] [gpusplit] frustum_plane=3 normal=(7.44613935E-05, -1, 0) distance=1121.931
+[StutterFix] [gpusplit] frustum_plane=4 normal=(0, 0, 1) distance=9.70004
+[StutterFix] [gpusplit] frustum_plane=5 normal=(0, 0, -1) distance=990
+[StutterFix] [gpusplit] bounds_sample renderer=-2637106 unforced_live=False native_center=(0, 0, 0) native_extents=(0.75, 0.75, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(0.75, 0.75, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-15.0028658, -44.5842514, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637104 unforced_live=False native_center=(0, 0, 0) native_extents=(1, 1, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, 0, 0) conservative_extents=(1, 1, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-15.0028658, -44.5842514, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637102 unforced_live=False native_center=(0, -0.98666662, 0) native_extents=(0.5, 0.5, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(0, -0.986666679, 0) conservative_extents=(0.5, 0.5, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-15.0028667, -44.6243401, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637100 unforced_live=False native_center=(155.577087, 227.032959, 0) native_extents=(2, 2, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(155.577087, 227.032959, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(-11.4468479, -35.3603363, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-2637098 unforced_live=False native_center=(822.356567, 1568.95569, 0) native_extents=(2.00000048, 2.00000048, 0.100000001) local_center=(0, 0, 0) local_extents=(0.5, 0.5, 0.100000001) conservative_center=(822.356567, 1568.95569, 0) conservative_extents=(2, 2, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(3.7943275, 19.160202, 10) alpha=1
+[StutterFix] [gpusplit] bounds_sample renderer=-1703862 unforced_live=True native_center=(666.737061, 1133.53516, 0) native_extents=(2.39375901, 2.39375901, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(666.737061, 1133.53516, 0) conservative_extents=(2.39373779, 2.39379883, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.236985207, 1.46945953, 10) alpha=0.03634216
+[StutterFix] [gpusplit] bounds_sample renderer=-1703754 unforced_live=True native_center=(674.079773, 1151.14648, 0) native_extents=(2.18436933, 2.18436933, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(674.079773, 1151.14648, 0) conservative_extents=(2.18438721, 2.18432617, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.404829025, 2.18498993, 10) alpha=0.02561257
+[StutterFix] [gpusplit] bounds_sample renderer=-1703752 unforced_live=True native_center=(674.079773, 1151.14648, 0) native_extents=(2.18436933, 2.18436933, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(674.079773, 1151.14648, 0) conservative_extents=(2.18438721, 2.18432617, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.404829025, 2.18498993, 10) alpha=0.03028513
+[StutterFix] [gpusplit] bounds_sample renderer=-1703750 unforced_live=True native_center=(674.079773, 1151.14648, 0) native_extents=(2.18436933, 2.18436933, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(674.079773, 1151.14648, 0) conservative_extents=(2.18438721, 2.18432617, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.404829025, 2.18498993, 10) alpha=0.03547687
+[StutterFix] [gpusplit] bounds_sample renderer=-1703642 unforced_live=True native_center=(678.257813, 1144.44922, 0) native_extents=(2.18195415, 2.18195415, 0.100000001) local_center=(0, 0, 0) local_extents=(3.41000009, 3.41000009, 0.100000001) conservative_center=(678.257813, 1144.44922, 0) conservative_extents=(2.1819458, 2.18200684, 0.100000001) native_inside=False conservative_inside=False projection_inside=False viewport=(0.500304222, 1.91286469, 10) alpha=0.02941984
+[StutterFix] [gpusplit] hide=none selected=0 added=0 census_image_text_particle_tiles_planets_other=86484,0,0,8283,322,61893 camera_id=102298 mask=652183 external_unhide_writes=0
+[StutterFix] [gpusplit] image_filters=onscreen,offscreen,big,small,additive,alpha,transparent,unknown,unforced_live threshold_percent=1 all=4888,81596,15100,71384,0,86484,27329,0,1499 enabled_active=1755,27073,9562,19266,0,28828,27329,0,1499 matched_now=86484 matched_enabled_active=28828 matched_already_off=27329 membership=snapshot-union-until-restore
+[StutterFix] [gpusplit] image_live_onscreen_unforced count=1406 projected_aabb_screen_percent_sum=93062703.314 max=19258425.290 sprite_vertices=5624 sprite_triangles=2812 bounds_recovered=0 culling_vs_projection_disagree=0 legacy_vs_culling_disagree=0; geometry not actual draw counters; bounds area unclipped
+[StutterFix] [gpusplit] blend_evidence count=86483 shader=Sprites/Tile keywords= _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [gpusplit] blend_evidence count=1 shader=Sprites/Tile keywords=USE_POINT_SAMPLING _BlendOp=absent _SrcBlend=absent _DstBlend=absent
+[StutterFix] [archegpu] stamp song=262.01784002082422 qpc=2763940679 qpc_frequency=10000000 utc=2026-10-20T17:55:17.4161429Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=266.01784002082422 qpc=2803922968 qpc_frequency=10000000 utc=2026-10-20T17:55:21.4143940Z
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=349 mean=2067.625
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=349 mean=1937.705
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=349 mean=2063.542
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=349 mean=13223.364
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=349 mean=20100.911
+[StutterFix] [gpuprobe] ready=1 completed=44 requested=44 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=44 calls=44 mean_frame_ms=6.9262 mean_active_ms=6.9262 max_frame_ms=21.7969
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=44 calls=176 mean_frame_ms=6.9084 mean_active_ms=6.9084 max_frame_ms=21.7702
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=44 calls=44 mean_frame_ms=0.0610 mean_active_ms=0.0610 max_frame_ms=0.0614
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=44 calls=44 mean_frame_ms=6.7909 mean_active_ms=6.7909 max_frame_ms=21.6566
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=44 calls=44 mean_frame_ms=0.0099 mean_active_ms=0.0099 max_frame_ms=0.0123
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=44 calls=44 mean_frame_ms=0.0467 mean_active_ms=0.0467 max_frame_ms=0.0778
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=44 calls=44 mean_frame_ms=0.0330 mean_active_ms=0.0330 max_frame_ms=0.0379
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=44 calls=44 mean_frame_ms=0.0429 mean_active_ms=0.0429 max_frame_ms=0.0440
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=44 calls=44 mean_frame_ms=0.0767 mean_active_ms=0.0767 max_frame_ms=0.0778
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=3 calls=3 mean_frame_ms=0.0023 mean_active_ms=0.0338 max_frame_ms=0.0358
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=44 calls=44 mean_frame_ms=0.0323 mean_active_ms=0.0323 max_frame_ms=0.0328
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=44 calls=44 mean_frame_ms=0.0852 mean_active_ms=0.0852 max_frame_ms=0.1004
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=44 calls=44 mean_frame_ms=0.0327 mean_active_ms=0.0327 max_frame_ms=0.0379
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=44 calls=44 mean_frame_ms=0.0558 mean_active_ms=0.0558 max_frame_ms=0.0573
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=44 calls=44 mean_frame_ms=0.0328 mean_active_ms=0.0328 max_frame_ms=0.0338
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=44 calls=44 mean_frame_ms=0.0462 mean_active_ms=0.0462 max_frame_ms=0.1075
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=44 calls=44 mean_frame_ms=0.0525 mean_active_ms=0.0525 max_frame_ms=0.0686
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=44 calls=44 mean_frame_ms=0.0328 mean_active_ms=0.0328 max_frame_ms=0.0481
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=44 calls=44 mean_frame_ms=0.1123 mean_active_ms=0.1123 max_frame_ms=0.4700
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0178; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpusplit] state=none selected=0 external_unhide_writes=0
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [archegpu] stamp song=262.11384832160547 qpc=3028020284 qpc_frequency=10000000 utc=2026-10-20T17:55:43.8242353Z
+[StutterFix] [gpusplit] pixeldiff filter=live:invisible valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [archegpu] stamp song=264.01249944465235 qpc=3047103149 qpc_frequency=10000000 utc=2026-10-20T17:55:45.7325072Z
+[StutterFix] [gpusplit] pixeldiff filter=live:invisible valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [archegpu] stamp song=265.8151727844961 qpc=3065078517 qpc_frequency=10000000 utc=2026-10-20T17:55:47.5297925Z
+[StutterFix] [gpusplit] pixeldiff filter=live:invisible valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [archegpu] stamp song=262.10316716926172 qpc=3284391356 qpc_frequency=10000000 utc=2026-10-20T17:56:09.4612723Z
+[StutterFix] [gpusplit] pixeldiff filter=live:tiny valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [archegpu] stamp song=264.01249944465235 qpc=3303521813 qpc_frequency=10000000 utc=2026-10-20T17:56:11.3740291Z
+[StutterFix] [gpusplit] pixeldiff filter=live:tiny valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [archegpu] stamp song=265.8151727844961 qpc=3321427054 qpc_frequency=10000000 utc=2026-10-20T17:56:13.1645869Z
+[StutterFix] [gpusplit] pixeldiff filter=live:tiny valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [archegpu] stamp song=262.11384832160547 qpc=3540765359 qpc_frequency=10000000 utc=2026-10-20T17:56:35.0986595Z
+[StutterFix] [gpusplit] pixeldiff filter=live:invisible+tiny valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [archegpu] stamp song=264.01249944465235 qpc=3559792394 qpc_frequency=10000000 utc=2026-10-20T17:56:37.0014529Z
+[StutterFix] [gpusplit] pixeldiff filter=live:invisible+tiny valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [archegpu] stamp song=265.8151727844961 qpc=3577781872 qpc_frequency=10000000 utc=2026-10-20T17:56:38.8000676Z
+[StutterFix] [gpusplit] pixeldiff filter=live:invisible+tiny valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [archegpu] stamp song=262.11384832160547 qpc=3796831151 qpc_frequency=10000000 utc=2026-10-20T17:57:00.7050891Z
+[StutterFix] [gpusplit] pixeldiff filter=live:visible valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [archegpu] stamp song=264.01249944465235 qpc=3815854989 qpc_frequency=10000000 utc=2026-10-20T17:57:02.6077425Z
+[StutterFix] [gpusplit] pixeldiff filter=live:visible valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [archegpu] stamp song=265.8151727844961 qpc=3833915699 qpc_frequency=10000000 utc=2026-10-20T17:57:04.4135740Z
+[StutterFix] [gpusplit] pixeldiff filter=live:visible valid=0 error=input capture failed: Nothing clear mode requires depth preservation; unsupported
+[StutterFix] [gpusplit] hide=none restored=1
+[StutterFix] [gpusplit] hide=none restored=1

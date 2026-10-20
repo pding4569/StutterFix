@@ -1,0 +1,180 @@
+[StutterFix] [자동 시험] 시작: 15단계 - timeout 900 / auto on / decobake on / open D:/얼불춤 맵 파일/Arche/[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / wait 1 / decobake ready / decosim capture 12 moving / wait 13 / stop / decobake verify / decobake bench / decobake off / quit
+[StutterFix] [장식굽기/그림자] 켜짐: 새 맵 open 대기
+[StutterFix] [장식굽기/그림자] 준비됨 (읽기/계산만) 장식=28835 지원=23631 이벤트=97694 구간=858286
+[StutterFix] [장식굽기/그림자] verify 표본=지원 활성 Rec, Key별 최초32슬롯 Rec.Step 출력; 완료 이벤트의 중간 Kill 값은 최종 프레임과 혼합하지 않음. 제외표본=0 시계변경제외프레임=0 비유한=0
+[StutterFix] [장식굽기/그림자] 시간환산 tb 위치X n=1572 최대ms=7.09311355 p99ms=6.77392896 RMSms=3.99782022 NA=12 프레임n=1572 최대프레임=3.0694492 p99프레임=2.95109543 RMS프레임=1.76082558; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 위치X n=1584 최대절대=90.2973633 p99=84.2294922 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=-587466:90.2973633;-587468:90.2973633;-587470:90.2973633;-587464:11.8189697
+[StutterFix] [장식굽기/그림자] 시간환산 tb 위치Y n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=1584 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 위치Y n=1584 최대절대=0 p99=0 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=-587464:0;-587466:0;-587468:0;-587470:0
+[StutterFix] [장식굽기/그림자] 시간환산 tb 피벗X n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 피벗X n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 피벗Y n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 피벗Y n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 회전 n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 회전 n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 크기X n=190 최대ms=8.58315412 p99ms=7.67022161 RMSms=4.0964173 NA=2 프레임n=190 최대프레임=2.45823608 p99프레임=2.44190238 RMS프레임=1.68775665; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 크기X n=192 최대절대=7.67344666 p99=5.07009888 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=-587464:7.67344666
+[StutterFix] [장식굽기/그림자] 시간환산 tb 크기Y n=190 최대ms=8.58327866 p99ms=7.67072828 RMSms=4.09483592 NA=2 프레임n=190 최대프레임=2.45792246 p99프레임=2.44204148 RMS프레임=1.6870755; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 크기Y n=192 최대절대=0.127890587 p99=0.0845017433 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=-587464:0.127890587
+[StutterFix] [장식굽기/그림자] 시간환산 tb 색R n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 색R n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 색G n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 색G n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 색B n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 색B n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 색A n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 색A n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 불투명도 n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 불투명도 n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 시차X n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 시차X n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 시차Y n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 시차Y n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 시차오프셋X n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 시차오프셋X n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 시간환산 tb 시차오프셋Y n=0 최대ms=NA p99ms=NaN RMSms=NaN NA=0 프레임n=0 최대프레임=NA p99프레임=NaN RMS프레임=NaN; 제안 p99<=2프레임, 곡초 속도 기반 국소 환산
+[StutterFix] [장식굽기/그림자] 시차오프셋Y n=0 관측 불가(활성 지원 Rec 없음) 최대절대=NA p99=NaN 교체장식n=0 교체최대=NA 교체p99=NaN 상위장식8=
+[StutterFix] [장식굽기/그림자] 크기X 상대오차(|차|/|실제|) n=192 최대=0.0445588033 p99=0.0312580432 실제0으로상대NA=0 교체n=0 교체최대=NA 교체p99=NaN 명목축길이px n=192 최대=8658.13005 p99=6227.40465 환산불가=0; 초기 sprite.bounds*trueScaleMultiplier*직교배율, 지연스프라이트/크기0은NA, 회전/시차/피벗/타일링 합성 렌더 오차 아님
+[StutterFix] [장식굽기/그림자] 크기Y 상대오차(|차|/|실제|) n=192 최대=0.0445587388 p99=0.031258078 실제0으로상대NA=0 교체n=0 교체최대=NA 교체p99=NaN 명목축길이px n=192 최대=81.1698464 p99=58.3819832 환산불가=0; 초기 sprite.bounds*trueScaleMultiplier*직교배율, 지연스프라이트/크기0은NA, 회전/시차/피벗/타일링 합성 렌더 오차 아님
+[StutterFix] [장식굽기/그림자] 위치 축별 화면환산(1440 높이/직교 카메라) n=3168 최대px=8887.38735 p99px=6993.96278 제안기준<=0.01px; pivotPosVec 진단이며 시차/피벗/회전 합성 후 렌더 위치 검증은 별도
+[StutterFix] [장식굽기/그림자] 상위장식8(속성 원단위 최대; 단위 혼합 순위) -587466:90.2973633; -587468:90.2973633; -587470:90.2973633; -587464:11.8189697
+[StutterFix] [장식굽기/그림자] 지원=23631/28835 비율=81.9524883% (사유별 중복 가능)
+[StutterFix] [장식굽기/그림자] 미지원 이미지/원래크기/크롭/wrap 장식=5087 비율=17.6417548%
+[StutterFix] [장식굽기/그림자] 미지원 Camera-동적 화면 투영 장식=114 비율=0.39535287%
+[StutterFix] [장식굽기/그림자] 미지원 시차 축 고정/화면 고정 장식=114 비율=0.39535287%
+[StutterFix] [장식굽기/그림자] 미지원 가시성/깊이 변경 장식=22 비율=0.0762961679%
+[StutterFix] [장식굽기/그림자] 미지원 이미지 이외 장식 장식=7 비율=0.0242760534%
+[StutterFix] [장식굽기/그림자] 미지원 Tile-동적 바닥 추종 장식=0 비율=0%
+[StutterFix] [장식굽기/그림자] 미지원 Tile-동적 효과 시점 재배치 장식=0 비율=0%
+[StutterFix] [장식굽기/그림자] 미지원 Camera-동적 배치 변경 장식=0 비율=0%
+[StutterFix] [장식굽기/그림자] 미지원 초기 배치 미지원 장식=0 비율=0%
+[StutterFix] [장식굽기/그림자] 효과시작위상 tb(실제 StartEffect UnityFrame - 테이프 tb T0 통과 UnityFrame) n=10 최소=-1 최대=3 경계/되감기등미대응=0 프레임차별빈도=-1:1,1:4,3:5; 단조 재생 구간만 해석, FastMove 기존 후크 관찰; 제안 절대차<=1프레임, 반복 교차는 stamp에 가장 가까운 프레임
+[StutterFix] [장식굽기/그림자] 진단시계 calibration_i=0.108000003 addoffset=1.41200007 pitch=1 dspTimeSongPosZero=50.2373334 separateCountdownTime=True countdown곡초=1.2 editor=True; offset 부호: baked(songposition_minusi+offset) 대 actual, 진단만/보정 적용 없음
+[StutterFix] [장식굽기/그림자] 진단 장식=-587466 초기pivot=5812.06055,-8.56066036 startPos=5812.06055,-8.56066036 Global원점=5730,0
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587466 source=-2809172 T0=9.89999997 startTime=9.89999997 startEffectOffset=0 duration=0 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809172 frame=20729 song=9.90000021 song-T0=2.38896851E-07
+[StutterFix] [장식굽기/그림자] 진단 구간 불투명도 T0=9.89999997 start=0 end=1 target=1 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587466 source=-2809180 T0=9.89999997 startTime=9.89999997 startEffectOffset=0 duration=0.900000036 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809180 frame=20729 song=9.90000021 song-T0=2.38896851E-07
+[StutterFix] [장식굽기/그림자] 진단 구간 위치X T0=9.89999997 start=5812.06055 end=-5647.93945 target=-5647.93945 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 구간 위치Y T0=9.89999997 start=-8.56066036 end=-8.56066036 target=-8.56066036 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587466 source=-2809336 T0=10.8 startTime=10.8 startEffectOffset=0 duration=0 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809336 frame=21124 song=10.8003718 song-T0=0.000371801083
+[StutterFix] [장식굽기/그림자] 진단 구간 불투명도 T0=10.8 start=1 end=0 target=0 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 Startup 장식=-587466 token=101 채널=위치X ease=Linear duration=0.900000036 start=5812.06055 target=-5647.93945
+[StutterFix] [장식굽기/그림자] 진단 Startup 장식=-587466 token=102 채널=위치Y ease=Linear duration=0.900000036 start=-8.56066036 target=-8.56066036
+[StutterFix] [장식굽기/그림자] 진단 Rec 처음 움직임 관측 장식=-587466 frame=20730 song=9.90556776 채널=위치X RecPos=0.00556820445; Rec 시작값과 다른 첫 캡처 표본, 캡처 이전 시작은 정확한 최초 프레임을 알 수 없음
+[StutterFix] [장식굽기/그림자] 진단 Rec 최초관측 장식=-587466 채널=위치X frame=20730 song=9.90556776 RecPos=0.00556820445 첫값변화=frame=20731 song=9.91066705; 캡처 전 시작은 좌측절단, 첫값변화는 동일 token 표본 간 비교
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20730 songposition_minusi=9.90556776 actual=5741.15869 tb=9.91265959 tbBaked=5650.86133 baked=5741.16406 dt=0.00556820445 RecPos=0.00556820445 rawDt=0.00556820445 smoothDt=0.00259255245 useSmooth=False 시간오차ms=7.09083589 시간오차프레임=1.27345107
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20731 songposition_minusi=9.91066705 actual=5615.81055 tb=9.92238532 tbBaked=5527.02051 baked=5676.23291 dt=0.00984409731 RecPos=0.0154123018 rawDt=0.00984409731 smoothDt=0.00404285733 useSmooth=False 시간오차ms=6.97246933 시간오차프레임=0.708289354
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20732 songposition_minusi=9.9145714 actual=5566.08447 tb=9.92617333 tbBaked=5478.78662 baked=5626.51758 dt=0.00390520133 RecPos=0.019317504 rawDt=0.00390520133 smoothDt=0.00401532045 useSmooth=False 시간오차ms=6.85660594 시간오차프레임=1.75576247
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20733 songposition_minusi=9.92133295 actual=5524.41064 tb=9.929365 tbBaked=5438.146 baked=5540.42041 dt=0.00327280327 RecPos=0.0225903075 rawDt=0.00327280327 smoothDt=0.00386681547 useSmooth=False 시간오차ms=6.77545542 시간오차프레임=2.07022997
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20734 songposition_minusi=9.92438566 actual=5485.54346 tb=9.93233708 tbBaked=5400.30127 baked=5501.54932 dt=0.00305239507 RecPos=0.0256427024 rawDt=0.00305239507 smoothDt=0.00370392576 useSmooth=False 시간오차ms=6.69386503 시간오차프레임=2.19298776
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20735 songposition_minusi=9.92735731 actual=5447.70117 tb=9.93522947 tbBaked=5363.47168 baked=5463.71045 dt=0.00297190342 RecPos=0.0286146067 rawDt=0.00297190342 smoothDt=0.00355751836 useSmooth=False 시간오차ms=6.61434049 시간오차프레임=2.22562431
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20736 songposition_minusi=9.9319998 actual=5411.92578 tb=9.93797868 tbBaked=5328.46484 baked=5404.59619 dt=0.00280960184 RecPos=0.0314242095 rawDt=0.00280960184 smoothDt=0.00340792933 useSmooth=False 시간오차ms=6.55524449 시간오차프레임=2.33315782
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20737 songposition_minusi=9.93495809 actual=5374.26318 tb=9.94087669 tbBaked=5291.56348 baked=5366.92725 dt=0.00295779482 RecPos=0.0343820043 rawDt=0.00295779482 smoothDt=0.00331789977 useSmooth=False 시간오차ms=6.49545542 시간오차프레임=2.19604666
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20738 songposition_minusi=9.93771517 actual=5339.15332 tb=9.9435748 tbBaked=5257.20801 baked=5331.82031 dt=0.00275729876 RecPos=0.037139304 rawDt=0.00275729876 smoothDt=0.00320577528 useSmooth=False 시간오차ms=6.43620326 시간오차프레임=2.33424225
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20739 songposition_minusi=9.94266664 actual=5275.83936 tb=9.94848829 tbBaked=5194.64258 baked=5268.77148 dt=0.00497230003 RecPos=0.0421116054 rawDt=0.00497230003 smoothDt=0.00355907739 useSmooth=False 시간오차ms=6.37618865 시간오차프레임=1.2823419
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20740 songposition_minusi=9.94581472 actual=5235.75244 tb=9.95157828 tbBaked=5155.29688 baked=5228.68604 dt=0.00314820022 RecPos=0.0452598073 rawDt=0.00314820022 smoothDt=0.00347689912 useSmooth=False 시간오차ms=6.31798313 시간오차프레임=2.00685556
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587466 채널=위치X frame=20741 songposition_minusi=9.94858705 actual=5200.45313 tb=9.95429284 tbBaked=5120.73145 baked=5193.38525 dt=0.00277220085 RecPos=0.0480320081 rawDt=0.00277220085 smoothDt=0.00333595532 useSmooth=False 시간오차ms=6.26155321 시간오차프레임=2.25869392
+[StutterFix] [장식굽기/그림자] 진단 상수시간오프셋초=-0.0035 탐색범위=[-32,+32] 최종격자초=0.000125 fitN=396 전체잔차n=396 RMS원단위=49.0341298 최대원단위=105 offset0RMS=65.7774107 actual범위=11389.0981 calibration*pitch차초=-0.111500003 addoffset차초=-1.41550007 countdown차초=-1.2035; 유계격자최소/유일해 보장없음, 평탄/반복/교체 구간은 식별불가. 위 잔차는 값 단위
+[StutterFix] [장식굽기/그림자] 진단 시간잔차 장식=-587466 n=395 RMS곡초=0.00385571656 최대곡초=0.00824607524; 시작/목표/길이/ease 일치하는 진행중 Rec만, (song+fitOffset)-(T0+RecPos*pitch/tweenScale); 반복 Source 모호성은 남음
+[StutterFix] [장식굽기/그림자] 진단 장식=-587468 초기pivot=5812.06055,-8.56066036 startPos=5812.06055,-8.56066036 Global원점=5730,0
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587468 source=-2809172 T0=9.89999997 startTime=9.89999997 startEffectOffset=0 duration=0 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809172 frame=20729 song=9.90000021 song-T0=2.38896851E-07
+[StutterFix] [장식굽기/그림자] 진단 구간 불투명도 T0=9.89999997 start=0 end=1 target=1 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587468 source=-2809180 T0=9.89999997 startTime=9.89999997 startEffectOffset=0 duration=0.900000036 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809180 frame=20729 song=9.90000021 song-T0=2.38896851E-07
+[StutterFix] [장식굽기/그림자] 진단 구간 위치X T0=9.89999997 start=5812.06055 end=-5647.93945 target=-5647.93945 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 구간 위치Y T0=9.89999997 start=-8.56066036 end=-8.56066036 target=-8.56066036 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587468 source=-2809336 T0=10.8 startTime=10.8 startEffectOffset=0 duration=0 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809336 frame=21124 song=10.8003718 song-T0=0.000371801083
+[StutterFix] [장식굽기/그림자] 진단 구간 불투명도 T0=10.8 start=1 end=0 target=0 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 Startup 장식=-587468 token=103 채널=위치X ease=Linear duration=0.900000036 start=5812.06055 target=-5647.93945
+[StutterFix] [장식굽기/그림자] 진단 Startup 장식=-587468 token=104 채널=위치Y ease=Linear duration=0.900000036 start=-8.56066036 target=-8.56066036
+[StutterFix] [장식굽기/그림자] 진단 Rec 처음 움직임 관측 장식=-587468 frame=20730 song=9.90556776 채널=위치X RecPos=0.00556820445; Rec 시작값과 다른 첫 캡처 표본, 캡처 이전 시작은 정확한 최초 프레임을 알 수 없음
+[StutterFix] [장식굽기/그림자] 진단 Rec 최초관측 장식=-587468 채널=위치X frame=20730 song=9.90556776 RecPos=0.00556820445 첫값변화=frame=20731 song=9.91066705; 캡처 전 시작은 좌측절단, 첫값변화는 동일 token 표본 간 비교
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20730 songposition_minusi=9.90556776 actual=5741.15869 tb=9.91265959 tbBaked=5650.86133 baked=5741.16406 dt=0.00556820445 RecPos=0.00556820445 rawDt=0.00556820445 smoothDt=0.00259255245 useSmooth=False 시간오차ms=7.09083589 시간오차프레임=1.27345107
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20731 songposition_minusi=9.91066705 actual=5615.81055 tb=9.92238532 tbBaked=5527.02051 baked=5676.23291 dt=0.00984409731 RecPos=0.0154123018 rawDt=0.00984409731 smoothDt=0.00404285733 useSmooth=False 시간오차ms=6.97246933 시간오차프레임=0.708289354
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20732 songposition_minusi=9.9145714 actual=5566.08447 tb=9.92617333 tbBaked=5478.78662 baked=5626.51758 dt=0.00390520133 RecPos=0.019317504 rawDt=0.00390520133 smoothDt=0.00401532045 useSmooth=False 시간오차ms=6.85660594 시간오차프레임=1.75576247
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20733 songposition_minusi=9.92133295 actual=5524.41064 tb=9.929365 tbBaked=5438.146 baked=5540.42041 dt=0.00327280327 RecPos=0.0225903075 rawDt=0.00327280327 smoothDt=0.00386681547 useSmooth=False 시간오차ms=6.77545542 시간오차프레임=2.07022997
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20734 songposition_minusi=9.92438566 actual=5485.54346 tb=9.93233708 tbBaked=5400.30127 baked=5501.54932 dt=0.00305239507 RecPos=0.0256427024 rawDt=0.00305239507 smoothDt=0.00370392576 useSmooth=False 시간오차ms=6.69386503 시간오차프레임=2.19298776
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20735 songposition_minusi=9.92735731 actual=5447.70117 tb=9.93522947 tbBaked=5363.47168 baked=5463.71045 dt=0.00297190342 RecPos=0.0286146067 rawDt=0.00297190342 smoothDt=0.00355751836 useSmooth=False 시간오차ms=6.61434049 시간오차프레임=2.22562431
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20736 songposition_minusi=9.9319998 actual=5411.92578 tb=9.93797868 tbBaked=5328.46484 baked=5404.59619 dt=0.00280960184 RecPos=0.0314242095 rawDt=0.00280960184 smoothDt=0.00340792933 useSmooth=False 시간오차ms=6.55524449 시간오차프레임=2.33315782
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20737 songposition_minusi=9.93495809 actual=5374.26318 tb=9.94087669 tbBaked=5291.56348 baked=5366.92725 dt=0.00295779482 RecPos=0.0343820043 rawDt=0.00295779482 smoothDt=0.00331789977 useSmooth=False 시간오차ms=6.49545542 시간오차프레임=2.19604666
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20738 songposition_minusi=9.93771517 actual=5339.15332 tb=9.9435748 tbBaked=5257.20801 baked=5331.82031 dt=0.00275729876 RecPos=0.037139304 rawDt=0.00275729876 smoothDt=0.00320577528 useSmooth=False 시간오차ms=6.43620326 시간오차프레임=2.33424225
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20739 songposition_minusi=9.94266664 actual=5275.83936 tb=9.94848829 tbBaked=5194.64258 baked=5268.77148 dt=0.00497230003 RecPos=0.0421116054 rawDt=0.00497230003 smoothDt=0.00355907739 useSmooth=False 시간오차ms=6.37618865 시간오차프레임=1.2823419
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20740 songposition_minusi=9.94581472 actual=5235.75244 tb=9.95157828 tbBaked=5155.29688 baked=5228.68604 dt=0.00314820022 RecPos=0.0452598073 rawDt=0.00314820022 smoothDt=0.00347689912 useSmooth=False 시간오차ms=6.31798313 시간오차프레임=2.00685556
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587468 채널=위치X frame=20741 songposition_minusi=9.94858705 actual=5200.45313 tb=9.95429284 tbBaked=5120.73145 baked=5193.38525 dt=0.00277220085 RecPos=0.0480320081 rawDt=0.00277220085 smoothDt=0.00333595532 useSmooth=False 시간오차ms=6.26155321 시간오차프레임=2.25869392
+[StutterFix] [장식굽기/그림자] 진단 상수시간오프셋초=-0.0035 탐색범위=[-32,+32] 최종격자초=0.000125 fitN=396 전체잔차n=396 RMS원단위=49.0341298 최대원단위=105 offset0RMS=65.7774107 actual범위=11389.0981 calibration*pitch차초=-0.111500003 addoffset차초=-1.41550007 countdown차초=-1.2035; 유계격자최소/유일해 보장없음, 평탄/반복/교체 구간은 식별불가. 위 잔차는 값 단위
+[StutterFix] [장식굽기/그림자] 진단 시간잔차 장식=-587468 n=395 RMS곡초=0.00385571656 최대곡초=0.00824607524; 시작/목표/길이/ease 일치하는 진행중 Rec만, (song+fitOffset)-(T0+RecPos*pitch/tweenScale); 반복 Source 모호성은 남음
+[StutterFix] [장식굽기/그림자] 진단 장식=-587470 초기pivot=5812.06055,-8.56066036 startPos=5812.06055,-8.56066036 Global원점=5730,0
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587470 source=-2809172 T0=9.89999997 startTime=9.89999997 startEffectOffset=0 duration=0 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809172 frame=20729 song=9.90000021 song-T0=2.38896851E-07
+[StutterFix] [장식굽기/그림자] 진단 구간 불투명도 T0=9.89999997 start=0 end=1 target=1 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587470 source=-2809180 T0=9.89999997 startTime=9.89999997 startEffectOffset=0 duration=0.900000036 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809180 frame=20729 song=9.90000021 song-T0=2.38896851E-07
+[StutterFix] [장식굽기/그림자] 진단 구간 위치X T0=9.89999997 start=5812.06055 end=-5647.93945 target=-5647.93945 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 구간 위치Y T0=9.89999997 start=-8.56066036 end=-8.56066036 target=-8.56066036 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587470 source=-2809336 T0=10.8 startTime=10.8 startEffectOffset=0 duration=0 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809336 frame=21124 song=10.8003718 song-T0=0.000371801083
+[StutterFix] [장식굽기/그림자] 진단 구간 불투명도 T0=10.8 start=1 end=0 target=0 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 Startup 장식=-587470 token=105 채널=위치X ease=Linear duration=0.900000036 start=5812.06055 target=-5647.93945
+[StutterFix] [장식굽기/그림자] 진단 Startup 장식=-587470 token=106 채널=위치Y ease=Linear duration=0.900000036 start=-8.56066036 target=-8.56066036
+[StutterFix] [장식굽기/그림자] 진단 Rec 처음 움직임 관측 장식=-587470 frame=20730 song=9.90556776 채널=위치X RecPos=0.00556820445; Rec 시작값과 다른 첫 캡처 표본, 캡처 이전 시작은 정확한 최초 프레임을 알 수 없음
+[StutterFix] [장식굽기/그림자] 진단 Rec 최초관측 장식=-587470 채널=위치X frame=20730 song=9.90556776 RecPos=0.00556820445 첫값변화=frame=20731 song=9.91066705; 캡처 전 시작은 좌측절단, 첫값변화는 동일 token 표본 간 비교
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20730 songposition_minusi=9.90556776 actual=5741.15869 tb=9.91265959 tbBaked=5650.86133 baked=5741.16406 dt=0.00556820445 RecPos=0.00556820445 rawDt=0.00556820445 smoothDt=0.00259255245 useSmooth=False 시간오차ms=7.09083589 시간오차프레임=1.27345107
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20731 songposition_minusi=9.91066705 actual=5615.81055 tb=9.92238532 tbBaked=5527.02051 baked=5676.23291 dt=0.00984409731 RecPos=0.0154123018 rawDt=0.00984409731 smoothDt=0.00404285733 useSmooth=False 시간오차ms=6.97246933 시간오차프레임=0.708289354
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20732 songposition_minusi=9.9145714 actual=5566.08447 tb=9.92617333 tbBaked=5478.78662 baked=5626.51758 dt=0.00390520133 RecPos=0.019317504 rawDt=0.00390520133 smoothDt=0.00401532045 useSmooth=False 시간오차ms=6.85660594 시간오차프레임=1.75576247
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20733 songposition_minusi=9.92133295 actual=5524.41064 tb=9.929365 tbBaked=5438.146 baked=5540.42041 dt=0.00327280327 RecPos=0.0225903075 rawDt=0.00327280327 smoothDt=0.00386681547 useSmooth=False 시간오차ms=6.77545542 시간오차프레임=2.07022997
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20734 songposition_minusi=9.92438566 actual=5485.54346 tb=9.93233708 tbBaked=5400.30127 baked=5501.54932 dt=0.00305239507 RecPos=0.0256427024 rawDt=0.00305239507 smoothDt=0.00370392576 useSmooth=False 시간오차ms=6.69386503 시간오차프레임=2.19298776
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20735 songposition_minusi=9.92735731 actual=5447.70117 tb=9.93522947 tbBaked=5363.47168 baked=5463.71045 dt=0.00297190342 RecPos=0.0286146067 rawDt=0.00297190342 smoothDt=0.00355751836 useSmooth=False 시간오차ms=6.61434049 시간오차프레임=2.22562431
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20736 songposition_minusi=9.9319998 actual=5411.92578 tb=9.93797868 tbBaked=5328.46484 baked=5404.59619 dt=0.00280960184 RecPos=0.0314242095 rawDt=0.00280960184 smoothDt=0.00340792933 useSmooth=False 시간오차ms=6.55524449 시간오차프레임=2.33315782
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20737 songposition_minusi=9.93495809 actual=5374.26318 tb=9.94087669 tbBaked=5291.56348 baked=5366.92725 dt=0.00295779482 RecPos=0.0343820043 rawDt=0.00295779482 smoothDt=0.00331789977 useSmooth=False 시간오차ms=6.49545542 시간오차프레임=2.19604666
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20738 songposition_minusi=9.93771517 actual=5339.15332 tb=9.9435748 tbBaked=5257.20801 baked=5331.82031 dt=0.00275729876 RecPos=0.037139304 rawDt=0.00275729876 smoothDt=0.00320577528 useSmooth=False 시간오차ms=6.43620326 시간오차프레임=2.33424225
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20739 songposition_minusi=9.94266664 actual=5275.83936 tb=9.94848829 tbBaked=5194.64258 baked=5268.77148 dt=0.00497230003 RecPos=0.0421116054 rawDt=0.00497230003 smoothDt=0.00355907739 useSmooth=False 시간오차ms=6.37618865 시간오차프레임=1.2823419
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20740 songposition_minusi=9.94581472 actual=5235.75244 tb=9.95157828 tbBaked=5155.29688 baked=5228.68604 dt=0.00314820022 RecPos=0.0452598073 rawDt=0.00314820022 smoothDt=0.00347689912 useSmooth=False 시간오차ms=6.31798313 시간오차프레임=2.00685556
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587470 채널=위치X frame=20741 songposition_minusi=9.94858705 actual=5200.45313 tb=9.95429284 tbBaked=5120.73145 baked=5193.38525 dt=0.00277220085 RecPos=0.0480320081 rawDt=0.00277220085 smoothDt=0.00333595532 useSmooth=False 시간오차ms=6.26155321 시간오차프레임=2.25869392
+[StutterFix] [장식굽기/그림자] 진단 상수시간오프셋초=-0.0035 탐색범위=[-32,+32] 최종격자초=0.000125 fitN=396 전체잔차n=396 RMS원단위=49.0341298 최대원단위=105 offset0RMS=65.7774107 actual범위=11389.0981 calibration*pitch차초=-0.111500003 addoffset차초=-1.41550007 countdown차초=-1.2035; 유계격자최소/유일해 보장없음, 평탄/반복/교체 구간은 식별불가. 위 잔차는 값 단위
+[StutterFix] [장식굽기/그림자] 진단 시간잔차 장식=-587470 n=395 RMS곡초=0.00385571656 최대곡초=0.00824607524; 시작/목표/길이/ease 일치하는 진행중 Rec만, (song+fitOffset)-(T0+RecPos*pitch/tweenScale); 반복 Source 모호성은 남음
+[StutterFix] [장식굽기/그림자] 진단시계 calibration_i=0.108000003 addoffset=1.41200007 pitch=1 dspTimeSongPosZero=50.2373334 separateCountdownTime=True countdown곡초=1.2 editor=True; offset 부호: baked(songposition_minusi+offset) 대 actual, 진단만/보정 적용 없음
+[StutterFix] [장식굽기/그림자] 크기상위3 진단 장식=-587464 초기pivot=1582.06067,-8.56066036 startPos=1582.06067,-8.56066036 Global원점=1500,0
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587464 source=-2809172 T0=9.89999997 startTime=9.89999997 startEffectOffset=0 duration=0 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809172 frame=20729 song=9.90000021 song-T0=2.38896851E-07
+[StutterFix] [장식굽기/그림자] 진단 구간 불투명도 T0=9.89999997 start=0 end=1 target=1 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587464 source=-2809174 T0=9.89999997 startTime=9.89999997 startEffectOffset=0 duration=0.450000018 ease=21 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809174 frame=20729 song=9.90000021 song-T0=2.38896851E-07
+[StutterFix] [장식굽기/그림자] 진단 구간 크기X T0=9.89999997 start=187.5 end=90 target=90 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 구간 크기Y T0=9.89999997 start=3.125 end=1.5 target=1.5 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587464 source=-2809176 T0=9.89999997 startTime=9.89999997 startEffectOffset=0 duration=0.900000036 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809176 frame=20729 song=9.90000021 song-T0=2.38896851E-07
+[StutterFix] [장식굽기/그림자] 진단 구간 위치X T0=9.89999997 start=1582.06067 end=82.0606689 target=82.0606689 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 구간 위치Y T0=9.89999997 start=-8.56066036 end=-8.56066036 target=-8.56066036 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 효과 장식=-587464 source=-2809336 T0=10.8 startTime=10.8 startEffectOffset=0 duration=0 ease=1 relative=False resetGlobal=False
+[StutterFix] [장식굽기/그림자] 진단 실제StartEffect source=-2809336 frame=21124 song=10.8003718 song-T0=0.000371801083
+[StutterFix] [장식굽기/그림자] 진단 구간 불투명도 T0=10.8 start=1 end=0 target=0 replacement=False
+[StutterFix] [장식굽기/그림자] 진단 Startup 장식=-587464 token=97 채널=크기X ease=OutCirc duration=0.450000018 start=187.5 target=90
+[StutterFix] [장식굽기/그림자] 진단 Startup 장식=-587464 token=98 채널=크기Y ease=OutCirc duration=0.450000018 start=3.125 target=1.5
+[StutterFix] [장식굽기/그림자] 진단 Rec 처음 움직임 관측 장식=-587464 frame=20730 song=9.90556776 채널=크기X RecPos=0.00556820445; Rec 시작값과 다른 첫 캡처 표본, 캡처 이전 시작은 정확한 최초 프레임을 알 수 없음
+[StutterFix] [장식굽기/그림자] 진단 Rec 최초관측 장식=-587464 채널=크기X frame=20730 song=9.90556776 RecPos=0.00556820445 첫값변화=frame=20731 song=9.91066705; 캡처 전 시작은 좌측절단, 첫값변화는 동일 token 표본 간 비교
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20730 songposition_minusi=9.90556776 actual=172.209442 tb=9.91265959 tbBaked=164.535995 baked=172.210007 dt=0.00556820445 RecPos=0.00556820445 rawDt=0.00556820445 smoothDt=0.00259255245 useSmooth=False 시간오차ms=8.58315412 시간오차프레임=1.54145815
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20731 songposition_minusi=9.91066705 actual=162.201416 tb=9.92238532 tbBaked=157.131317 baked=166.396851 dt=0.00984409731 RecPos=0.0154123018 rawDt=0.00984409731 smoothDt=0.00404285733 useSmooth=False 시간오차ms=7.67022161 시간오차프레임=0.779169625
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20732 songposition_minusi=9.9145714 actual=159.23967 tb=9.92617333 tbBaked=154.73317 baked=162.889526 dt=0.00390520133 RecPos=0.019317504 rawDt=0.00390520133 smoothDt=0.00401532045 useSmooth=False 시간오차ms=7.42148511 시간오차프레임=1.90041037
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20733 songposition_minusi=9.92133295 actual=156.99617 tb=9.929365 tbBaked=152.856216 baked=157.835983 dt=0.00327280327 RecPos=0.0225903075 rawDt=0.00327280327 smoothDt=0.00386681547 useSmooth=False 시간오차ms=7.26414993 시간오차프레임=2.21954983
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20734 songposition_minusi=9.92438566 actual=155.05719 tb=9.93233708 tbBaked=151.207382 baked=155.83963 dt=0.00305239507 RecPos=0.0256427024 rawDt=0.00305239507 smoothDt=0.00370392576 useSmooth=False 시간오차ms=7.12614038 시간오차프레임=2.33460617
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20735 songposition_minusi=9.92735731 actual=153.287003 tb=9.93522947 tbBaked=149.682251 baked=154.022934 dt=0.00297190342 RecPos=0.0286146067 rawDt=0.00297190342 smoothDt=0.00355751836 useSmooth=False 시간오차ms=7.00180794 시간오차프레임=2.35600117
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20736 songposition_minusi=9.9319998 actual=151.704529 tb=9.93797868 tbBaked=148.296829 baked=151.390137 dt=0.00280960184 RecPos=0.0314242095 rawDt=0.00280960184 smoothDt=0.00340792933 useSmooth=False 시간오차ms=6.9066646 시간오차프레임=2.45823608
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20737 songposition_minusi=9.93495809 actual=150.121582 tb=9.94087669 tbBaked=146.897018 baked=149.822281 dt=0.00295779482 RecPos=0.0343820043 rawDt=0.00295779482 smoothDt=0.00331789977 useSmooth=False 시간오차ms=6.81693548 시간오차프레임=2.30473576
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20738 songposition_minusi=9.93771517 actual=148.713608 tb=9.9435748 tbBaked=145.644302 baked=148.427109 dt=0.00275729876 RecPos=0.037139304 rawDt=0.00275729876 smoothDt=0.00320577528 useSmooth=False 시간오차ms=6.73305439 시간오차프레임=2.44190238
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20739 songposition_minusi=9.94266664 actual=146.317917 tb=9.94848829 tbBaked=143.474335 baked=146.060806 dt=0.00497230003 RecPos=0.0421116054 rawDt=0.00497230003 smoothDt=0.00355907739 useSmooth=False 시간오차ms=6.64137562 시간오차프레임=1.33567476
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20740 songposition_minusi=9.94581472 actual=144.884705 tb=9.95157828 tbBaked=142.175659 baked=144.638153 dt=0.00314820022 RecPos=0.0452598073 rawDt=0.00314820022 smoothDt=0.00347689912 useSmooth=False 시간오차ms=6.56461453 시간오차프레임=2.08519601
+[StutterFix] [장식굽기/그림자] 진단 행 장식=-587464 채널=크기X frame=20741 songposition_minusi=9.94858705 actual=143.670242 tb=9.95429284 tbBaked=141.072693 baked=143.432068 dt=0.00277220085 RecPos=0.0480320081 rawDt=0.00277220085 smoothDt=0.00333595532 useSmooth=False 시간오차ms=6.49124881 시간오차프레임=2.34155069
+[StutterFix] [장식굽기/그림자] 진단 상수시간오프셋초=0.000375 탐색범위=[-32,+32] 최종격자초=0.000125 fitN=192 전체잔차n=192 RMS원단위=0.653764413 최대원단위=3.83222961 offset0RMS=0.660077217 actual범위=82.2094421 calibration*pitch차초=-0.107625003 addoffset차초=-1.41162507 countdown차초=-1.199625; 유계격자최소/유일해 보장없음, 평탄/반복/교체 구간은 식별불가. 위 잔차는 값 단위
+[StutterFix] [장식굽기/그림자] 진단 시간잔차 장식=-587464 n=191 RMS곡초=0.00386168588 최대곡초=0.00796109224; 시작/목표/길이/ease 일치하는 진행중 Rec만, (song+fitOffset)-(T0+RecPos*pitch/tweenScale); 반복 Source 모호성은 남음
+[StutterFix] [장식굽기/그림자] bench 실수집 장식=28835/맵참조28828 이동효과인스턴스=97694 전체예약효과=111216 원본맵이벤트참조95211(집계단계다름) 구간=858286 worker굽기ms=258.7679 수집CPUms=805.8026 최대메인sliceMs=165.625 Prep후완료wallMs=1580.494 표payloadMiB=45.4490356 프로세스heap변화MiB=302.242188 eval중앙ms=6.6151 evalp99ms=7.4834 checksum=1.34443554E+09
+[StutterFix] [장식굽기/그림자] 메모리 payload는 객체 header/임시 list/스냅샷 제외; heap변화는 다른 게임 할당 포함. Arche 실수집 수와 지원율을 함께 판단.
+[StutterFix] [장식굽기/그림자] 수집단계CPUms Setup=173.5539 Setup동일프레임최대ms=165.625 장식복사=33.3056 효과읽기=287.1373 태그열거=287.4359 조건효과=22.8814 worker전달=1.4447 단계최대sliceMs=장식복사=5.9635 효과읽기=3.1736 태그열거=3.9802 조건효과=4.0088 worker전달=1.4447 태그단일MoveNext최대ms=0.3071; Collect 협력예산4ms, Setup postfix는 게임의 동기 호출이므로 yield 불가; GC/단일 API 호출은 예산을 넘길 수 있음
+[StutterFix] [장식굽기/그림자] evalAll 정의=지원 장식 전체*16채널 이진탐색, t=pass*2.125초; 프레임 활성 비용 아님. payload: 구간=858286*48=41197728B, 트랙참조=3690880B, 장식추정=2768160B; header/진단 InputEvents 별도
+[StutterFix] [장식굽기/그림자] 추가보유 진단 InputEvents=97694 targetRefs=232021 목표배열payloadB=6252416 대상배열payloadB=928084 참조배열payloadB=781552 트랙비어있지않음=208970; 진단 snapshot 객체/배열header/Reasons 및 scheduler 구축 메모리는 표payload 밖. evalActive scheduler는 bench 지역 객체
+[StutterFix] [장식굽기/그림자] evalActive 프레임n=6057 중앙ms=0 p99ms=0.0006 채널평균=0.59253756 예약dispatch=25 checksum=1.34464568E+09 재동기n=0 재동기ms=0; tb 단조 구간, 커서+시각순 시작 dispatch+활성 채널+완료값1회, 초기구축/seek 제외, Unity setter/렌더 제외; 목표<=0.5ms
+[StutterFix] [장식굽기/그림자] 꺼짐
