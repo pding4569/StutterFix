@@ -77,10 +77,23 @@ namespace StutterFix
 
         #if DEV || AUTOTEST
         internal static bool ProbeDormant(scrDecoration d) { return dormant.Contains(d); }
+        // Read the prepared list without advancing Dormancy counters or rebuilding it.
+        internal static List<scrDecoration> RenderAwake(scrDecorationManager mgr)
+            => Enabled && !broken && prepared && ReferenceEquals(source, allRef(mgr)) ? awake : allRef(mgr);
         #endif
 
-        public static void WakePost(scrVisualDecoration __instance) { Wake(__instance); }
-        public static void WakeBase(scrDecoration __instance) { hbDirty = true; Wake(__instance); }
+        public static void WakePost(scrVisualDecoration __instance) {
+#if DEV || AUTOTEST
+            DecoRender.Notify(__instance);
+#endif
+            Wake(__instance);
+        }
+        public static void WakeBase(scrDecoration __instance) {
+#if DEV || AUTOTEST
+            DecoRender.NotifySetup(__instance);
+#endif
+            hbDirty = true; Wake(__instance);
+        }
         internal static void MarkHitboxDirty() { hbDirty = true; }   // ExitFix: Setup 을 건너뛴 장식이 있을 때 (Setup 뒤에 하던 것과 같게)
 
         private static void Wake(scrDecoration d)
@@ -196,6 +209,9 @@ namespace StutterFix
         internal static void Sleep(scrDecoration d)
         {
             if (!Enabled || broken || source == null) return;
+#if DEV || AUTOTEST
+            DecoRender.Notify(d);
+#endif
             if (dormant.Add(d)) Slept++;
         }
 
@@ -219,8 +235,12 @@ namespace StutterFix
         // 맵 파일의 disableV15Features 값과 상관없이 장식 순회는 늘 이 조건(disableShader == true)으로 돈다.
         internal static bool IsDormant(scrDecoration d, bool disableShader)
         {
-            return disableShader && d.hitbox == 0 && d.GetType() == typeof(scrVisualDecoration)
-                && !meshOnRef((scrVisualDecoration)d) && !d.GetVisible();
+            if (!disableShader || d.hitbox != 0 || d.GetType() != typeof(scrVisualDecoration)) return false;
+            bool mesh = meshOnRef((scrVisualDecoration)d);
+#if DEV || AUTOTEST
+            DecoRender.ObserveMesh(d, mesh);
+#endif
+            return !mesh && !d.GetVisible();
         }
 
         // 새 맵 파일을 열 때: 지난 맵 장식 목록·히트박스 목록을 놓는다 (지난 맵 장식 2만 8천 개를 붙잡았다)

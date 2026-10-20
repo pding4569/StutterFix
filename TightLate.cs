@@ -355,6 +355,9 @@ namespace StutterFix
             if (e.Engine != null && DecoEngine.ShouldVerify(e.Engine))
                 DecoEngine.CheckLate(e.Engine, camera, start(p), p.posCamAtStart, end(p), np, nr, ns);
             writes++;
+#if DEV || AUTOTEST
+            DecoRender.Capture(d, np, nr, ns);
+#endif
             if (SkipSame && e.Has)
             {
                 if (Same(np, e.LastPos)) skipPos++; else { pivot.position = np; e.LastPos = np; }

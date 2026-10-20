@@ -214,6 +214,9 @@ namespace StutterFix
             if (EpsilonSkip && Hitch.Playing && MoveDeltaPolicy.Within(cur.x,cur.y,cur.z,v.x,v.y,v.z)) { EpsilonSkips++; return; }
             PosWrites++;
             t.localPosition = v;
+#if DEV || AUTOTEST
+            DecoRender.RecordLocal(t, v);
+#endif
         }
 
         // ── Update 단계에서 보이는 장식의 위치 재계산은 LateUpdate 에 맡긴다 ──
