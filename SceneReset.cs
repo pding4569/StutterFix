@@ -33,6 +33,9 @@ namespace StutterFix
         public static void Prefix()
         {
             Count++;
+#if DEV || AUTOTEST
+            DecoRender.Stop();
+#endif
             TightLate.Forget();
             // 게임의 Kill() 처럼 진행 중인 것은 그 자리에서 버린다 (뒤이어 게임이 Setup 으로 되돌린다)
             try { DecoAnim.DropAll(); } catch (Exception ex) { Main.Entry.Logger.Log("[장면 정리] 장식 애니메이션: " + ex.Message); }

@@ -473,6 +473,7 @@ ParticleTextWatch.Install(harmony);
 #if DEV || AUTOTEST
             Try(FreeFpsProbe.Restore);
             Try(DecoGpu.Stop);
+            Try(DecoRender.Stop);
             Try(FilterGpuProbe.Stop);
             Try(GpuHide.Stop);
             Try(GpuCensus.Stop);
