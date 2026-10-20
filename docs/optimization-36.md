@@ -991,7 +991,9 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - 구현(브랜치 `codex/night-tilerange`): 읽기 훅을 모두 없애고 쓰기 훅 53개(이름·서명으로 정확히 하나만 선택)로 64타일 청크의 dirty 비트를 관리, clean 청크는 효과 시작에서 타일에 접근하지 않고 통째로 건너뜀. 오프라인 70검사·빌드 3종 오류 0·LoadCheck 0.
 - **게임 첫 시험은 훅 53개 전부 실패했다**: Codex 가 서명 blob 을 `Module.ResolveSignature(MetadataToken)` 로 비교했는데 Mono 에서는 메서드 토큰을 풀지 못한다(`Token ... is not valid in the scope of module`). 이름+인자 수+호출 규약으로 바꿔 53개 설치 성공(eb8e0c3). 오프라인(메타데이터 리더)에서만 검증한 것의 한계.
 - **Lost Requiem 531.8초 `tilerange shadow`**: `patch-fail=0 patched=53`, shadow 불일치 0·늦게 발견된 변경 0. 하지만 **건너뛴 청크 0개**(타일 8,171개 전부 원래 경로), 효과 시작 25.7ms(끔 기준 22~25ms과 같음). 8초 동안 훅이 **198만 번** 불림(=타일 8,171개 × 약 242프레임, 매 프레임 모든 타일) → 모든 청크가 항상 dirty. 안전망 `safety-ms` 147(8초), 훅 `hook-ms` 174 — 이득 없이 비용만.
-- 의심: `scrFloor.LateUpdate` 가 `lastPos`·`lastScale`·`opacityLastFrame`·`glowMultiplierLastFrame` 에 매 프레임 쓰는 "지난 프레임 값 장부"를 상태 변경으로 표시. 확인하려면 사이트별 호출 수 계수 필요 → 후속 임무 `docs/handoff/codex-tilerange-3-20261020.md`(Codex 사용량 초기화 20:43 뒤 맡길 예정).
+- 의심(**틀렸음, 아래 정정**): `scrFloor.LateUpdate` 의 "지난 프레임 값 장부" 쓰기를 상태 변경으로 표시.
+- **T3b 결과(Codex, 오프라인)**: 현재 `Rewrite` 는 이미 `opacity/startPos/startRot/tweenRot` 만 추적했고 장부 4개 필드(`lastPos`·`lastScale`·`opacityLastFrame`·`glowMultiplierLastFrame`)는 처음부터 추적 밖이었다. `LateUpdate` 의 유일한 Transform setter(`set_position`, IL_034E)는 `isTweening`·`multiplanetLine` 조건 안쪽이라 타일 매 프레임 쓰기가 아니다. 사이트별 호출 계수 `tilerange sites on|off` 를 추가했다(브랜치 `codex/night-tilerange`).
+- **정정(내 계산 오류)**: "198만 번 = 타일 8,171개 × 프레임마다"는 틀린 나눗셈이었다. 8초 창의 프레임은 약 1,900개(240 FPS)라 프레임당 약 **1,000번**이고, 같은 구간 `tilesim` 이 센 프레임당 활성 타일 애니메이션 2,228개와 같은 자릿수다. 즉 **Lost Requiem 524~535초에는 타일이 실제로 계속 움직이고 있어 청크가 정당하게 dirty 일 수 있다**(그러면 531.8초 "기준값으로 되돌리기" 효과는 움직이는 타일을 실제로 처리해야 하므로 건너뛸 수 없다). 결정은 게임에서 `tilerange sites on` 으로 상위 사이트(FloorAnim 갱신 vs 다른 곳)를 보고 한다. 건너뛸 수 있는 건 타일이 가만히 있을 때의 효과(HELLO 125.6초 3.9ms 등)뿐이라 이득이 작을 가능성이 크다.
 - 릴리스 영향 없음: 기본 꺼짐·개발/자동 시험 빌드 전용, 2.8.0 에 포함 안 됨.
 
 ## 2026-10-20 밤: Arche 258~278초 GPU 연구(Codex 계측 + 게임 측정) — 지금은 병목 아니지만 CPU 를 없애면 GPU 가 바닥
