@@ -73,6 +73,10 @@ namespace StutterFix
             internal bool PoseRejected;
             internal Bounds LocalBounds;
             internal MaterialSnapshot Uniforms;
+            internal GameObject SourceObject;
+            internal bool Resident, CachedEnabled, CachedActive, CachedOff;
+            internal float SortDistance;
+            internal string SortKey;
         }
         [StructLayout(LayoutKind.Sequential)]
         struct FloatVertex
@@ -102,6 +106,7 @@ namespace StutterFix
         sealed class BarrierWatch
         {
             internal Renderer R;
+            internal GameObject SourceObject;
             internal scrVisualDecoration Owner;
             internal string Key;
             internal bool Enabled, Active, ForceOff, RequiresDiscovery;
@@ -272,7 +277,7 @@ namespace StutterFix
                 if (EffectiveFloat(m, "PixelSnap") != 0) return "pixel-snap";
             }
             if (!m.GetTextureScale("_MainTex").Equals(Vector2.one) || !m.GetTextureOffset("_MainTex").Equals(Vector2.zero)
-                || (block.HasVector("_MainTex_ST") && !block.GetVector("_MainTex_ST").Equals(new Vector4(1, 1, 0, 0)))) return "maintex-st";
+                || (block.HasVector(MainTex_STId) && !block.GetVector(MainTex_STId).Equals(new Vector4(1, 1, 0, 0)))) return "maintex-st";
             if (t.wrapModeU != TextureWrapMode.Clamp || t.wrapModeV != TextureWrapMode.Clamp) return "wrap";
             if (t.width > 2048 || t.height > 2048) return "large-texture";
             if (r.drawMode != SpriteDrawMode.Simple) return "other";
@@ -337,6 +342,7 @@ namespace StutterFix
             foreach (var i in items) i.Uniforms = ReadUniforms(i.R);
             LogStaticTextures();
             observing = !scopeAll; initialized = true;
+            InstallChangeHooks();
             Camera.onPreCull += PreCull; Camera.onPreRender += PreRender; Camera.onPostRender += PostRender;
             if (scopeAll) { FinishSelection(); return; }
             Log("observing frames=" + observeTarget + " candidates=" + items.Count + " excluded={" + Counts(excluded)
@@ -450,11 +456,11 @@ namespace StutterFix
             && !SourceOff(i) && i.R.color.a > 0;
         static void HideSource(Item i)
         {
-            if (!i.R || i.Hidden) return;
+            if (i.Hidden || !i.R) return;
             i.WasOff = i.R.forceRenderingOff; i.Hidden = true; i.R.forceRenderingOff = true;
         }
         static void RestoreSource(Item i)
-        { if (i.R && i.Hidden) i.R.forceRenderingOff = i.WasOff; i.Hidden = false; }
+        { if (i.Hidden && i.R) i.R.forceRenderingOff = i.WasOff; i.Hidden = false; }
         string KeyState()
         {
             var managed = new HashSet<string>(); int visible = 0, vertices = 0, rejected = 0;
@@ -483,7 +489,7 @@ namespace StutterFix
         }
 
         static string OrderKey(int layer, int order) => layer + "/" + order;
-        static string OrderKey(Item item) => OrderKey(item.Layer, item.Order);
+        static string OrderKey(Item item) => item.SortKey ?? (item.SortKey = OrderKey(item.Layer, item.Order));
         string GroupKey(Item i) => OrderKey(i) + "/" + atlases.IndexOf(i.Image.Atlas)
             + "/" + i.UnityLayer + "/" + i.Signature;
 
@@ -500,9 +506,9 @@ namespace StutterFix
         }
         static void Borrow(Group g, bool on)
         {
-            if (!g.Material || g.Borrowed == on) return;
-            if (on) { g.OriginalTexture = g.Material.mainTexture; g.Material.mainTexture = g.AtlasTexture; }
-            else g.Material.mainTexture = g.OriginalTexture;
+            if (g.Borrowed == on || !g.Material) return;
+            if (on) { g.OriginalTexture = g.Material.GetTexture(MainTexId); g.Material.SetTexture(MainTexId, g.AtlasTexture); }
+            else g.Material.SetTexture(MainTexId, g.OriginalTexture);
             g.Borrowed = on;
         }
         static void ReleaseGroup(Group g)
@@ -755,18 +761,18 @@ namespace StutterFix
         {
             var m = r.sharedMaterial; var shader = m.shader;
             block.Clear(); r.GetPropertyBlock(block);
-            if (block.HasColor("_RendererColor") && block.GetColor("_RendererColor") != Color.white
-                && block.GetColor("_RendererColor") != r.color)
+            if (block.HasColor(RendererColorId) && block.GetColor(RendererColorId) != Color.white
+                && block.GetColor(RendererColorId) != r.color)
                 throw new InvalidOperationException("custom MPB _RendererColor unsupported");
-            if (block.HasVector("_Flip"))
+            if (block.HasVector(FlipId))
             {
-                var flip = block.GetVector("_Flip");
+                var flip = block.GetVector(FlipId);
                 if ((flip.x != 1 || flip.y != 1) && (flip.x != (r.flipX ? -1 : 1) || flip.y != (r.flipY ? -1 : 1)))
                     throw new InvalidOperationException("custom MPB _Flip unsupported");
             }
-            if (block.HasVector("_MainTex_ST") && !block.GetVector("_MainTex_ST").Equals(new Vector4(1, 1, 0, 0)))
+            if (block.HasVector(MainTex_STId) && !block.GetVector(MainTex_STId).Equals(new Vector4(1, 1, 0, 0)))
                 throw new InvalidOperationException("custom MPB _MainTex_ST unsupported");
-            if (block.HasTexture("_AlphaTex") && block.GetTexture("_AlphaTex"))
+            if (block.HasTexture(AlphaTexId) && block.GetTexture(AlphaTexId))
                 throw new InvalidOperationException("MPB split-alpha unsupported");
             var key = new StringBuilder().Append(shader.GetInstanceID()).Append('|').Append(m.renderQueue)
                 .Append('|').Append(string.Join(",", m.shaderKeywords));
@@ -791,11 +797,11 @@ namespace StutterFix
                         if (n == "_MainTex")
                         {
                             if (block.HasTexture(id) && t != r.sprite.texture) throw new InvalidOperationException("MPB _MainTex override");
-                            if (!m.GetTextureScale(n).Equals(Vector2.one) || !m.GetTextureOffset(n).Equals(Vector2.zero))
+                            if (!m.GetTextureScale(id).Equals(Vector2.one) || !m.GetTextureOffset(id).Equals(Vector2.zero))
                                 throw new InvalidOperationException("nonidentity _MainTex scale/offset unsupported by atlas remapping");
                         }
                         else key.Append(t ? t.GetInstanceID() : 0);
-                        key.Append(m.GetTextureScale(n).ToString("R")).Append(m.GetTextureOffset(n).ToString("R"));
+                        key.Append(m.GetTextureScale(id).ToString("R")).Append(m.GetTextureOffset(id).ToString("R"));
                         if (copy) copy.SetTexture(id, t); break;
                     case ShaderPropertyType.Int:
                         int integer = block.HasInteger(id) ? block.GetInteger(id) : m.GetInteger(id);
@@ -805,8 +811,8 @@ namespace StutterFix
                         key.Append(f.ToString("R", CultureInfo.InvariantCulture)); if (copy) copy.SetFloat(id, f); break;
                 }
             }
-            if ((m.HasProperty("_EnableExternalAlpha") && m.GetFloat("_EnableExternalAlpha") != 0)
-                || (block.HasFloat("_EnableExternalAlpha") && block.GetFloat("_EnableExternalAlpha") != 0))
+            if ((m.HasProperty(EnableExternalAlphaId) && m.GetFloat(EnableExternalAlphaId) != 0)
+                || (block.HasFloat(EnableExternalAlphaId) && block.GetFloat(EnableExternalAlphaId) != 0))
                 throw new InvalidOperationException("external alpha unsupported");
             return key.ToString();
         }
@@ -956,7 +962,8 @@ namespace StutterFix
         void PrepareFrame()
         {
             if (preparedFrame == Time.frameCount) return;
-            if (frameCpuFrame >= 0) frameCpuSamples.Add(frameCpuMs);
+            if (frameCpuFrame >= 0) { frameCpuSamples.Add(frameCpuMs); safetyFrameSamples.Add(frameSafetyMs); }
+            frameSafetyMs = 0;
             frameCpuMs = 0; frameCpuFrame = Time.frameCount;
             long start = Stopwatch.GetTimestamp();
             auditMs = dirtyMs = changeMs = layoutMs = scheduleMs = waitMs = otherMs = 0;
@@ -996,12 +1003,13 @@ namespace StutterFix
             long dirtyStart = Stopwatch.GetTimestamp();
             GatherWork(false);
             long pruneStart = Stopwatch.GetTimestamp();
-            PruneChanged(work);
+            CheckSafetyBudget();
             pruneMs = Milliseconds(Stopwatch.GetTimestamp() - pruneStart);
             dirtyMs = Milliseconds(Stopwatch.GetTimestamp() - dirtyStart);
             long auditStart = Stopwatch.GetTimestamp();
             AuditLateBarriers();
             auditMs = Milliseconds(Stopwatch.GetTimestamp() - auditStart);
+            frameSafetyMs += pruneMs + auditMs;
             long topologyStart = Stopwatch.GetTimestamp();
             bool resetLayout = false;
             topologyChangedLast = 0;
@@ -1033,6 +1041,7 @@ namespace StutterFix
         {
             long callbackStart = Stopwatch.GetTimestamp();
             if (stopping || comparing || !initialized || observing) return;
+            double priorCpu = frameCpuFrame == Time.frameCount ? frameCpuMs : 0;
             try
             {
                 if (!ValidSession()) { Stop(transitionReason); return; }
@@ -1040,13 +1049,18 @@ namespace StutterFix
                 if (!stopping) Takeover(true);
             }
             catch (Exception e) { Stop("pre-cull failed: " + e); }
-            finally { preCullSamples.Add(Milliseconds(Stopwatch.GetTimestamp() - callbackStart)); }
+            finally {
+                double elapsed = Milliseconds(Stopwatch.GetTimestamp() - callbackStart);
+                double overhead = elapsed - (frameCpuMs - priorCpu);
+                preCullSamples.Add(elapsed); callbackOverheadSamples.Add(overhead); frameCpuMs += overhead;
+            }
         }
 
         void PreRender(Camera camera)
         {
             long callbackStart = Stopwatch.GetTimestamp();
             if (stopping || comparing || !initialized) return;
+            double priorCpu = frameCpuMs;
             try
             {
                 if (!ValidSession()) { Stop(transitionReason); return; }
@@ -1074,7 +1088,11 @@ namespace StutterFix
                 }
             }
             catch (Exception e) { Stop("pre-render failed: " + e); }
-            finally { preRenderSamples.Add(Milliseconds(Stopwatch.GetTimestamp() - callbackStart)); }
+            finally {
+                double elapsed = Milliseconds(Stopwatch.GetTimestamp() - callbackStart);
+                double overhead = elapsed - (frameCpuMs - priorCpu);
+                preRenderSamples.Add(elapsed); callbackOverheadSamples.Add(overhead); frameCpuMs += overhead;
+            }
         }
 
         static bool MatrixEqual(Matrix4x4 a, Matrix4x4 b)
@@ -1092,9 +1110,9 @@ namespace StutterFix
                 Log("change index=" + i.Index + " renderer=" + i.Id + " field=" + field + " before={" + before + "} after={" + after + "}");
             return true;
         }
-        void PruneChanged(IEnumerable<Item> candidates = null)
+        void PruneChanged(IEnumerable<Item> candidates = null, bool uniforms = true, bool delayed = false)
         {
-            var removed = new List<Item>();
+            var removed = pruneRemoved; removed.Clear();
             foreach (var i in candidates ?? items)
             {
                 bool remove = false;
@@ -1116,8 +1134,9 @@ namespace StutterFix
                     if (r.spriteSortPoint != SpriteSortPoint.Center) remove |= Changed(i, "sprite-sort-point", SpriteSortPoint.Center, r.spriteSortPoint);
                     if (i.D.repeatX != i.RepeatX || i.D.repeatY != i.RepeatY)
                         remove |= Changed(i, "repeat", i.RepeatX + "," + i.RepeatY, i.D.repeatX + "," + i.D.repeatY);
-                    if (!remove)
+                    if (!remove && uniforms)
                     {
+                        long uniformStart = Stopwatch.GetTimestamp();
                         try
                         {
                             if (i.Uniforms == null) i.Uniforms = ReadUniforms(r);
@@ -1127,10 +1146,12 @@ namespace StutterFix
                                 remove |= Changed(i, "wrap", "Clamp/Clamp", t.wrapModeU + "/" + t.wrapModeV);
                         }
                         catch (Exception e) { remove |= Changed(i, "material-properties", i.Signature, e.Message); }
+                        finally { uniformMs += Milliseconds(Stopwatch.GetTimestamp() - uniformStart); }
                     }
                 }
                 if (remove)
                 {
+                    if (delayed) lateStructuralChanges++;
                     removed.Add(i);
                 }
             }
@@ -1165,19 +1186,24 @@ namespace StutterFix
             finally
             {
                 long drawStart = Stopwatch.GetTimestamp();
+                takeoverActive = false;
                 // Our temporary force-off must not mask the game's next visibility update.
                 foreach (var g in groups) Borrow(g, false);
                 foreach (var i in hiddenSources) RestoreSource(i);
                 hiddenSources.Clear();
                 foreach (var g in groups) if (g.Renderer) g.Renderer.enabled = false;
                 double drawMs = Milliseconds(Stopwatch.GetTimestamp() - drawStart);
-                drawOffSamples.Add(drawMs); frameCpuMs += drawMs;
+                drawOffSamples.Add(drawMs); frameCpuMs += drawMs; frameSafetyMs += drawMs;
             }
         }
 
         void Takeover(bool on)
         {
             if (on && stopping) return;
+            // PreRender usually repeats PreCull with no intervening changes.
+            // PostRender still restores every source before game logic runs again.
+            if (!comparing && on && takeoverActive && takeoverFallbackCount == fallbackKeys.Count) return;
+            takeoverActive = on; takeoverFallbackCount = fallbackKeys.Count;
             long drawStart = Stopwatch.GetTimestamp();
             if (!on) foreach (var g in groups) Borrow(g, false);
             foreach (var g in groups)
@@ -1191,7 +1217,7 @@ namespace StutterFix
                 if (g.Renderer) g.Renderer.enabled = take && g.HasVisible;
             }
             double drawMs = Milliseconds(Stopwatch.GetTimestamp() - drawStart);
-            (on ? drawOnSamples : drawOffSamples).Add(drawMs); frameCpuMs += drawMs;
+            (on ? drawOnSamples : drawOffSamples).Add(drawMs); frameCpuMs += drawMs; frameSafetyMs += drawMs;
         }
         bool SnapshotUnchanged()
         {
@@ -1345,7 +1371,7 @@ namespace StutterFix
                     .Append(" changed-items=").Append(s.changedItems).Append(" uploaded-vertices=").Append(s.uploadedVertices)
                     .Append(" prepared-frame=").Append(s.preparedFrame).Append(" builds=").Append(s.buildCount).Append(" cameras=").Append(s.cameras.Count).Append(" comparePending=").Append(s.pending);
             }
-            if (s) result.Append(s.IncrementalState()).Append(s.StageState()).Append("\n tightlate-context: ").Append(TightLate.State());
+            if (s) result.Append(s.IncrementalState()).Append(s.StageState()).Append(s.SafetyState()).Append("\n tightlate-context: ").Append(TightLate.State());
             return result.Append(" vertex-color=").Append(lastColorFormat).Append(" order-audit={").Append(lastOrders).Append('}')
                 .Append(" run-state={").Append(s ? s.RunState() : lastRuns).Append('}')
                 .Append(" key-state={").Append(s ? s.KeyState() : lastKeys).Append('}')
@@ -1358,6 +1384,7 @@ namespace StutterFix
             var s = session; if (!s || s.stopping) return;
             s.stopping = true; lastRuns = s.RunState(); lastStop = reason; lastChanges = Counts(s.changes); lastKeys = s.KeyState();
             Camera.onPreCull -= s.PreCull; Camera.onPreRender -= s.PreRender; Camera.onPostRender -= s.PostRender;
+            s.RemoveChangeHooks();
             if (s.pending != 0) { lastCompare = "cancelled: " + reason; compareFinished = true; }
             // Disable immediately: Destroy is deferred until end of frame.
             foreach (var g in s.groups) if (g.Renderer) g.Renderer.enabled = false;

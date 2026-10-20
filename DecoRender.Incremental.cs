@@ -107,7 +107,6 @@ namespace StutterFix
             if (ReferenceEquals(s, null) || s.stopping || !s.layoutReady || ReferenceEquals(d, null)) return;
             Item i;
             if (s.residents.TryGetValue(d, out i)) s.signalled.Add(i);
-            s.notifiedOwners.Add(d); // Recheck this owner's disabled child renderers only on notifications.
             if (s.preparedFrame == Time.frameCount && !s.comparing) {
                 if (i != null) s.fallbackKeys.Add(OrderKey(i));
                 else { List<BarrierWatch> list; if (s.ownerBarriers.TryGetValue(d, out list))
@@ -231,6 +230,10 @@ namespace StutterFix
                     i.PoseFrame = Time.frameCount;
                 }
                 residents[i.D] = i;
+                i.Resident = true; i.SourceObject = i.R.gameObject;
+                residentRenderers[i.R] = i; RefreshSourceState(i, false);
+                RenderOrder initialOrder;
+                if (orderedState.TryGetValue(i.R, out initialOrder)) i.SortDistance = initialOrder.Distance;
                 i.Uniforms = ReadUniforms(i.R);
                 var pivot = i.D.pivotTrans;
                 i.PivotTransform = pivot; i.RenderTransform = i.R.transform;
@@ -342,9 +345,9 @@ namespace StutterFix
             changedGeometry.Clear();
             foreach (var i in work)
             {
-                if (!residents.ContainsKey(i.D) || !i.R) continue;
+                if (!i.Resident) continue;
                 bool visible = awakeSet.Contains(i.D) && !Dormancy.ProbeDormant(i.D) && RenderEnabled(i.D)
-                    && i.R.enabled && i.R.gameObject.activeInHierarchy && !SourceOff(i) && RenderColor(i.D).a > 0;
+                    && i.CachedEnabled && i.CachedActive && !i.CachedOff && RenderColor(i.D).a > 0;
                 var color = visible ? (i.PoseFrame == Time.frameCount && !i.NativeFallback ? RenderColor(i.D) : i.R.color) : i.Color;
                 int slot = i.Slot;
                 cr[slot] = color.r; cg[slot] = color.g; cb[slot] = color.b; ca[slot] = color.a;
@@ -363,10 +366,9 @@ namespace StutterFix
                 if (i.Visible != visible) { if (visible) i.Run.VisibleItems.Add(i); else i.Run.VisibleItems.Remove(i); }
                 // Compare the SAME renderer sort distance used by topology, not raw world-z bits.
                 // Geometry is collected after culling starts: fall back this frame, reorder this key next frame.
-                if (i.Written && visible) {
+                if (i.Written && visible && moved) {
                     if (!SameBits(i.Matrix.m23, matrix.m23)) RecordZChange(i, i.Matrix.m23, matrix.m23);
-                    RenderOrder order;
-                    if (orderedState.TryGetValue(i.R, out order) && !SameBits(order.Distance, SortDistance(i.R, mainCamera))) {
+                    if (!SameBits(i.SortDistance, SortDistance(i.R, mainCamera))) {
                         DirtyKey(OrderKey(i), "sort-distance"); fallbackKeys.Add(OrderKey(i));
                     }
                 }
@@ -441,23 +443,23 @@ namespace StutterFix
             + " soa-reject-reasons={position:" + soaPositionRejects + ",rotation:" + soaRotationRejects + ",scale:" + soaScaleRejects
             + ",matrix:" + soaMatrixRejects + ",color:" + soaColorRejects + "}" + TopologyCauseState();
         string StageState() => "\n stage-ms/window2048 (mean,p99,max,n,calls):"
-            + "\n audit=" + auditSamples.State() + "\n dirty+prune=" + dirtySamples.State()
+            + "\n audit/AuditLateBarriers=" + auditSamples.State() + "\n dirty+prune=" + dirtySamples.State()
             + "\n change-compare=" + changeSamples.State()
             + "\n layout=" + layoutSamples.State() + "\n collect=" + collectSamples.State()
             + "\n job-schedule=" + scheduleSamples.State() + "\n job-wait=" + waitSamples.State()
             + "\n upload+bounds=" + uploadSamples.State() + "\n topology=" + topologySamples.State()
             + "\n other=" + otherSamples.State() + "\n unaccounted-ms=" + unaccountedSamples.State()
-            + "\n draw-on/callback=" + drawOnSamples.State() + "\n draw-off/callback=" + drawOffSamples.State()
+            + "\n Takeover/draw-on/callback=" + drawOnSamples.State() + "\n draw-off/callback=" + drawOffSamples.State()
             + "\n build+draw/completed-frame=" + frameCpuSamples.State()
             + "\n pre-cull/inclusive=" + preCullSamples.State() + "\n pre-render/inclusive=" + preRenderSamples.State()
             + "\n build-orchestration/subset-other=" + buildRemainderSamples.State()
             + "\n barrier-poll/subset-audit=" + pollSamples.State() + "\n owner-events/subset-audit=" + ownerSamples.State()
             + "\n camera-scan/subset-other=" + cameraSamples.State()
             + "\n borrow-restore/subset-other=" + borrowSamples.State()
-            + "\n prune/subset-dirty=" + pruneSamples.State()
+            + "\n PruneChanged+budget/subset-dirty=" + pruneSamples.State()
             + "\n topology-changed-keys-last=" + topologyChangedLast + " total=" + topologyKeyChanges
             + " key-rebuilds=" + topologyRebuilds + " full-rebuilds=" + topologyFullRebuilds
-            + "\n barrier-poll=" + polledBarriers + " barrier-event=" + eventBarriers + " barrier-ignored=" + ignoredBarriers
+            + "\n barrier-poll=" + polledBarriers + " barrier-event=" + eventBarriers + " barrier-slow-population=" + ignoredBarriers
             + " layout-resets=" + layoutResets + " dirty-mean=" + F((double)changedSum / Math.Max(1, dirtyFrames))
             + " awake-mean=" + F((double)awakeSum / Math.Max(1, dirtyFrames))
             + " dirty-last/unwritten=" + dirtyUnwritten + "/pose=" + dirtyPose + "/visibility=" + dirtyVisibility;
@@ -467,6 +469,8 @@ namespace StutterFix
             foreach (var s in new[] { auditSamples, dirtySamples, changeSamples, layoutSamples, scheduleSamples, waitSamples,
                 otherSamples, unaccountedSamples, drawOnSamples, drawOffSamples }) s.Clear();
             cameraSamples.Clear(); borrowSamples.Clear(); pruneSamples.Clear();
+            uniformSamples.Clear(); safetySamples.Clear(); callbackOverheadSamples.Clear();
+            safetyFrameSamples.Clear(); frameSafetyMs = 0;
             preCullSamples.Clear(); preRenderSamples.Clear(); buildRemainderSamples.Clear(); pollSamples.Clear(); ownerSamples.Clear();
             captureCalls = captureMapped = captureMisses = captureCold = poseStale = poseRejectedReads = localInvalidations = 0;
             topologyKeyChanges = topologyRebuilds = 0; topologyChangedLast = 0;
@@ -494,7 +498,8 @@ namespace StutterFix
             {
                 var r = watch.R;
                 bool wasDrawing = watch.Enabled && watch.Active && !watch.ForceOff;
-                bool enabled = r && r.enabled, active = r && r.gameObject.activeInHierarchy, off = r && r.forceRenderingOff;
+                bool alive = r && watch.SourceObject;
+                bool enabled = alive && r.enabled, active = alive && watch.SourceObject.activeInHierarchy, off = alive && r.forceRenderingOff;
                 bool drawing = enabled && active && !off;
                 // Waiting renderers need only the three visibility reads. Sorting is irrelevant until they draw.
                 string key = drawing ? OrderKey(r.sortingLayerID, r.sortingOrder) : watch.Key;
@@ -504,6 +509,7 @@ namespace StutterFix
                 if (wasDrawing != drawing || (drawing && (key != watch.Key || queue != watch.Queue
                     || id != watch.Material || !SameBits(distance, watch.Distance))))
                 {
+                    if (!barrierEvents.Contains(watch) && (ReferenceEquals(watch.Owner, null) || !notifiedOwners.Contains(watch.Owner))) lateBarrierChanges++;
                     topologyKeys.Add(watch.Key); topologyKeys.Add(key);
                     TopologyCause("watch");
                     if (drawing && watch.RequiresDiscovery) { RetireKey(watch.Key, "watch-unsupported"); if (key != watch.Key) RetireKey(key, "watch-unsupported"); }
@@ -537,13 +543,15 @@ namespace StutterFix
                     { RetireKey(OrderKey(i), "mesh-owner-event"); }
             }
             notifiedOwners.Clear();
+            barrierEvents.Clear();
             ownerSamples.Add(Milliseconds(Stopwatch.GetTimestamp() - ownerStart));
         }
         void IndexBarriers()
         {
-            ownerBarriers.Clear(); liveBarriers.Clear(); meshStates.Clear(); ignoredBarriers = 0;
+            ownerBarriers.Clear(); liveBarriers.Clear(); meshStates.Clear(); barrierByRenderer.Clear(); ignoredBarriers = 0;
             foreach (var i in items) meshStates[i.D] = MeshOn(i.D);
             foreach (var w in barrierWatches) {
+                w.SourceObject = w.R.gameObject; barrierByRenderer[w.R] = w;
                 if (!ReferenceEquals(w.Owner, null)) {
                     List<BarrierWatch> list;
                     if (!ownerBarriers.TryGetValue(w.Owner, out list)) ownerBarriers[w.Owner] = list = new List<BarrierWatch>();
@@ -551,18 +559,25 @@ namespace StutterFix
                     meshStates[w.Owner] = MeshOn(w.Owner);
                 }
                 // No per-frame walk of the disabled child-mesh population, even in managed code.
-                if (ReferenceEquals(w.Owner, null)) {
-                    // Active objects with disabled renderers (e.g. tile meshes) can start drawing.
-                    // Inactive waiting objects are classified once and never polled.
-                    if (w.Active) liveBarriers.Add(w); else ignoredBarriers++;
-                }
+                if (ReferenceEquals(w.Owner, null) && w.Active) liveBarriers.Add(w);
+                else ignoredBarriers++;
             }
         }
         IEnumerable<BarrierWatch> LiveBarrierChecks()
         {
             barrierChecks.Clear();
-            polledBarriers = liveBarriers.Count; eventBarriers = 0;
-            foreach (var w in liveBarriers) barrierChecks.Add(w);
+            polledBarriers = (liveBarriers.Count + 7) / 8; eventBarriers = 0;
+            for (int n = 0; n < polledBarriers; n++) {
+                if (barrierCursor >= liveBarriers.Count) barrierCursor = 0;
+                barrierChecks.Add(liveBarriers[barrierCursor++]);
+            }
+            // Dormant child meshes and initially inactive objects still have a safety net.
+            int slowCount = (barrierWatches.Count + 127) / 128;
+            for (int n = 0; n < slowCount; n++) {
+                if (slowBarrierCursor >= barrierWatches.Count) slowBarrierCursor = 0;
+                if (barrierChecks.Add(barrierWatches[slowBarrierCursor++])) polledBarriers++;
+            }
+            foreach (var w in barrierEvents) if (barrierChecks.Add(w)) eventBarriers++;
             foreach (var d in notifiedOwners) {
                 List<BarrierWatch> list;
                 if (ownerBarriers.TryGetValue(d, out list)) foreach (var w in list) if (barrierChecks.Add(w)) eventBarriers++;

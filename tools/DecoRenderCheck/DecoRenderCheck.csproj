@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="../../DecoRender.Safety.cs" Link="DecoRender.Safety.cs" />
     <Compile Include="../../DecoRender.Incremental.cs" Link="DecoRender.Incremental.cs" />
     <Compile Include="../../DecoRender.Topology.cs" Link="DecoRender.Topology.cs" />
   </ItemGroup>

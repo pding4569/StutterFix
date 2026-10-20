@@ -28,6 +28,9 @@ namespace Unity.Jobs {
     static class Jobs { public static JobHandle Schedule<T>(this T job, int count, int batch) where T : struct, IJobParallelFor { for (int i=0;i<count;i++) job.Execute(i); return new JobHandle(); } }
 }
 namespace HarmonyLib {
+    class HarmonyMethod { public HarmonyMethod(Type t,string n) {} }
+    class Harmony { public string Id; public Harmony(string id){Id=id;} public void Patch(System.Reflection.MethodInfo m,HarmonyMethod postfix){} public void UnpatchAll(string id){} }
+
     static class AccessTools {
         public delegate ref F FieldRef<T,F>(T instance);
         static ref Color ColorRef(scrDecoration d) => ref d.Color;
@@ -50,6 +53,8 @@ namespace UnityEngine {
     struct Vector3 {
         public float x,y,z; public Vector3(float x,float y,float z) {this.x=x;this.y=y;this.z=z;}
         public static Vector3 zero=>new Vector3();
+        public static float Dot(Vector3 a,Vector3 b)=>a.x*b.x+a.y*b.y+a.z*b.z;
+        public static float Distance(Vector3 a,Vector3 b)=>(float)Math.Sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y)+(a.z-b.z)*(a.z-b.z));
         public static Vector3 operator *(Vector3 a,float f)=>new Vector3(a.x*f,a.y*f,a.z*f);
     }
     struct Quaternion { public float x,y,z,w; public Quaternion(float x,float y,float z,float w){this.x=x;this.y=y;this.z=z;this.w=w;} }
@@ -102,6 +107,7 @@ namespace UnityEngine {
     static class Time { public static int frameCount; }
 }
 class scrDecoration : UnityEngine.Object { public SpriteRenderer spriteRenderer; public Transform pivotTrans; public Color Color=new Color(1,1,1,1); public bool Enabled=true; }
+class scrVisualDecoration : scrDecoration {}
 class scrDecorationManager { public List<scrDecoration> Awake=new List<scrDecoration>(); }
 namespace StutterFix {
     static class Dormancy {
@@ -118,12 +124,15 @@ namespace StutterFix {
         readonly List<Item> items=new List<Item>(); readonly List<Group> groups=new List<Group>();
         readonly scrDecorationManager manager=new scrDecorationManager();
         sealed class MaterialSnapshot {}
+        readonly List<Item> validated = new List<Item>();
+        void PruneChanged(IEnumerable<Item> candidates = null,bool uniforms=true,bool delayed=false) { if(candidates!=null) validated.AddRange(candidates); }
         MaterialSnapshot ReadUniforms(SpriteRenderer r)=>new MaterialSnapshot();
         struct FloatVertex {internal Vector3 Position;internal Color Color;internal Vector2 UV;}
         struct ByteVertex {internal Vector3 Position;internal Color32 Color;internal Vector2 UV;}
         sealed class Atlas {internal int Width=32,Height=32;}
         sealed class Image {internal Atlas Atlas=new Atlas();internal Texture Source=new Texture();internal int X=4,Y=4;}
         sealed class Item {
+            internal GameObject SourceObject; internal bool Resident,CachedEnabled,CachedActive,CachedOff; internal float SortDistance;
             internal string GroupKey="g"; internal int Id=>R.GetInstanceID();
             internal scrDecoration D;internal SpriteRenderer R;internal Sprite Sprite=new Sprite();internal Image Image=new Image();
             internal Vector2[] Vertices,UV;internal int Slot,Start,Offset,PoseFrame=-1;internal Group Run;
@@ -132,7 +141,7 @@ namespace StutterFix {
             internal Matrix4x4 Matrix,ChildMatrix;internal Color Color;internal Bounds LocalBounds;
             internal Transform PivotTransform,RenderTransform;internal MaterialSnapshot Uniforms;
         }
-        sealed class BarrierWatch {internal scrDecoration Owner;internal bool Enabled,Active,ForceOff,RequiresDiscovery;internal string Key="0/0";internal Renderer R;internal int Queue,Material;internal float Distance;}
+        sealed class BarrierWatch {internal GameObject SourceObject;internal scrDecoration Owner;internal bool Enabled,Active,ForceOff,RequiresDiscovery;internal string Key="0/0";internal Renderer R;internal int Queue,Material;internal float Distance;}
         bool mergeCameras=true;
         struct RenderOrder { internal int Queue,Material,Id;internal float Distance; }
         static bool Drawing(Renderer r)=>r && r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff;
@@ -162,7 +171,7 @@ namespace StutterFix {
         static void Assert(bool value,string name){checks++;if(!value)throw new Exception(name);}
         Item Add(Group g,float x) {
             var t=new Transform {localPosition=new Vector3(x,0,0)};
-            var i=new Item {D=new scrDecoration {pivotTrans=t},R=new SpriteRenderer {transform=t},
+            var i=new Item {D=new scrVisualDecoration {pivotTrans=t},R=new SpriteRenderer {transform=t},
                 Vertices=new[]{new Vector2(-1,-1),new Vector2(1,-1),new Vector2(1,1),new Vector2(-1,1)},
                 UV=new[]{new Vector2(0,0),new Vector2(1,0),new Vector2(1,1),new Vector2(0,1)}};
             items.Add(i);g.Items.Add(i);return i;
@@ -209,7 +218,7 @@ namespace StutterFix {
                 Assert(s.soaMismatches==0&&s.soaChecks>0,"first pose checked before adoption");
                 Time.frameCount++;Capture(c.D,new Vector3(99,0,0),c.R.transform.rotation,c.R.transform.localScale);
                 c.PoseValidated=false;s.Build();Assert(c.PoseRejected&&s.soaMismatches==1,"bad pose uses native fallback");
-                Time.frameCount++;b.R.enabled=false;s.Build();Assert(!g.VisibleItems.Contains(b),"renderer disabled removes geometry");
+                Time.frameCount++;b.R.enabled=false;NotifyRenderer(b.R);s.Build();Assert(!g.VisibleItems.Contains(b),"renderer disabled removes geometry");
                 Time.frameCount++;s.manager.Awake.Clear();Dormancy.Sleeping.Add(c.D);Notify(c.D);s.Build();
                 Assert(!g.HasVisible&&g.VisibleItems.Count==0,"empty run disabled");
                 b.D.Enabled=false;s.manager.Awake.Add(b.D);Time.frameCount++;s.Build();
@@ -268,17 +277,17 @@ namespace StutterFix {
             stats.Clear();Assert(stats.State().Contains("calls=0"),"stage reset clears calls");
             {
                 var s=new DecoRender();var owner=new scrDecoration();
-                var child=new BarrierWatch{Owner=owner,Enabled=true,Active=true};
-                var tile=new BarrierWatch{Active=true,Enabled=false};
-                var dormant=new BarrierWatch{Active=false};
+                var child=new BarrierWatch{Owner=owner,Enabled=true,Active=true,R=new Renderer()};
+                var tile=new BarrierWatch{Active=true,Enabled=false,R=new Renderer{enabled=false}};
+                var dormant=new BarrierWatch{Active=false,R=new Renderer{gameObject=new GameObject{activeInHierarchy=false}}};
                 s.barrierWatches.AddRange(new[]{child,tile,dormant});s.IndexBarriers();
                 Assert(s.liveBarriers.Count==1&&s.liveBarriers[0]==tile,"only active non-decoration objects polled");
-                Assert(s.ignoredBarriers==1,"inactive waiting objects classified once");
+                Assert(s.ignoredBarriers==2,"slow safety population classified");
                 var checksNow=new List<BarrierWatch>(s.LiveBarrierChecks());
-                Assert(checksNow.Count==1,"child meshes never polled even when enabled");
+                Assert(checksNow.Count<=2,"bounded live and slow safety checks");
                 s.notifiedOwners.Add(owner);checksNow=new List<BarrierWatch>(s.LiveBarrierChecks());
-                Assert(checksNow.Count==2&&checksNow.Contains(child),"child checked only on owner event");
-                s.notifiedOwners.Clear();tile.R=new Renderer{enabled=false};
+                Assert(checksNow.Count<=3&&checksNow.Contains(child),"child checked only on owner event");
+                s.notifiedOwners.Clear();
                 Time.frameCount++;s.AuditLateBarriers();
                 Assert(!s.topologyDirty,"waiting visibility unchanged skips topology");
                 tile.R.enabled=true;s.AuditLateBarriers();
@@ -319,7 +328,7 @@ namespace StutterFix {
                 s.orderedState[i.R]=new RenderOrder {Distance=0};
                 Time.frameCount++;i.R.transform.localPosition=new Vector3(10,0,.000001f);s.Build();
                 Assert(s.zChangedItems==1&&!s.topologyDirty&&s.topologyKeys.Count==0,"world-z noise alone does not invalidate sort distance");
-                Time.frameCount++;i.R.Distance=2;s.Build();
+                Time.frameCount++;i.R.Distance=2;i.R.transform.localPosition=new Vector3(2,0,3);s.Build();
                 Assert(!s.topologyDirty&&s.reorderKeys.Contains("0/0")&&s.fallbackKeys.Contains("0/0"),"actual comparator change queues one key and late fallback");
                 s.topologyFullRebuilds=1;s.ResetBuildStats();
                 Assert(s.topologyFullRebuilds==1,"stats reset preserves session full-discovery counter");
@@ -347,6 +356,52 @@ namespace StutterFix {
                 Assert(s.topologyRebuilds==1&&s.topologyFullRebuilds==0,"retirement uses key planner only");
                 s.ResetLayout();s.Build();Assert(s.changedItems==0,"retained other key geometry survives retirement layout");
                 s.DisposeBuffers();Assert(Unity.Collections.Allocations.Live==0,"retirement buffers released");
+            }
+            {
+                Time.frameCount=1000;
+                var s=session=new DecoRender();var g=new Group();s.groups.Add(g);
+                for(int n=0;n<1280;n++)s.Add(g,n);
+                s.ResetLayout();
+                var seen=new HashSet<Item>();
+                for(int n=0;n<128;n++) {
+                    Time.frameCount++;s.validated.Clear();s.CheckSafetyBudget();
+                    Assert(s.structuralPolled==10&&s.uniformPolled==4,"bounded structure and uniform budgets");
+                    Assert(s.validated.Count==14,"no awake-population full safety traversal");
+                    foreach(var i in s.validated)seen.Add(i);
+                    s.CheckSafetyBudget();Assert(s.validated.Count==14,"second camera shares safety sweep");
+                }
+                Assert(seen.Count==1280,"round-robin safety covers every resident in 128 frames");
+                var target=s.items[1279];StructurePost((scrVisualDecoration)target.D);
+                Time.frameCount++;s.validated.Clear();s.CheckSafetyBudget();
+                Assert(s.structuralEvents==1&&s.validated.Contains(target),"structure event bypasses poll cursor");
+                target.R.enabled=false;NotifyRenderer(target.R);
+                Assert(!target.CachedEnabled&&s.signalled.Contains(target),"renderer event refreshes visibility immediately");
+                target.R.enabled=true;s.RefreshSourceState(target,true);
+                Assert(s.lateVisibilityChanges==1&&s.fallbackKeys.Contains("0/0"),"missed visibility is counted and falls back");
+                s.ResetBuildStats();Assert(s.lateVisibilityChanges==1,"stats reset preserves delayed-change correctness counters");
+                s.DisposeBuffers();
+            }
+            {
+                Time.frameCount=2000;
+                var s=session=new DecoRender();
+                for(int n=0;n<128;n++) {
+                    var r=new Renderer{enabled=false};
+                    s.barrierWatches.Add(new BarrierWatch{R=r,Active=true,Key="0/"+n});
+                }
+                s.IndexBarriers();var seen=new HashSet<BarrierWatch>();
+                for(int n=0;n<8;n++) {
+                    var sampled=new List<BarrierWatch>(s.LiveBarrierChecks());
+                    Assert(sampled.Count<=17,"barrier checks bounded by fast eighth plus slow 128th");
+                    foreach(var w in sampled)seen.Add(w);
+                }
+                Assert(seen.Count==128,"live barrier sweep covers every renderer within eight frames");
+                var last=s.barrierWatches[127];last.R.enabled=true;
+                s.preparedFrame=Time.frameCount;NotifyRenderer(last.R);
+                Assert(s.barrierEvents.Contains(last)&&s.fallbackKeys.Contains(last.Key),"late TileCull event schedules audit and immediate key fallback");
+                s.AuditLateBarriers();
+                Assert(last.Enabled&&s.lateBarrierChanges==0,"event changes are not counted as missed polling changes");
+                s.RemoveChangeHooks();
+                Assert(s.barrierByRenderer.Count==0&&s.barrierEvents.Count==0,"off clears event indexes and queued changes");
             }
             Console.WriteLine("DecoRender incremental control-flow checks="+checks+" failures=0; fake Unity/Jobs, no performance or pixel claim");
             session=null;

@@ -57,6 +57,7 @@ namespace StutterFix
             for (int n = items.Count - 1; n >= 0; n--) {
                 var i = items[n]; if (OrderKey(i) != key) continue;
                 CountCauseItem(cause); RestoreSource(i); orderedCandidates.Remove(i.R); residents.Remove(i.D);
+                i.Resident = false; residentRenderers.Remove(i.R);
                 items.RemoveAt(n); vertexCount -= i.Vertices.Length;
                 if (i.Moved) movingCandidates = Math.Max(0, movingCandidates - 1);
             }
@@ -99,6 +100,8 @@ namespace StutterFix
                 var m = r.sharedMaterial;
                 order[r] = new RenderOrder { Queue = m ? m.renderQueue : int.MinValue,
                     Material = m ? m.GetInstanceID() : 0, Id = r.GetInstanceID(), Distance = SortDistance(r, camera) };
+                Item candidate;
+                if (orderedCandidates.TryGetValue(r, out candidate)) candidate.SortDistance = order[r].Distance;
             }
             list.Sort((a,b) => {
                 var x = order[a]; var y = order[b]; int c = x.Queue.CompareTo(y.Queue);

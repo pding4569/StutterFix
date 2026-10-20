@@ -73,11 +73,18 @@ namespace StutterFix
         }
 
         // ── 렌더러 enabled 바꿔 끼우기 ──
+        static void SetRenderEnabled(Renderer r, bool value)
+        {
+            r.enabled = value;
+#if DEV || AUTOTEST
+            DecoRender.NotifyRenderer(r);
+#endif
+        }
         public static void SetEnabled(Renderer r, bool v)
         {
             int i;
             if (culled.Count > 0 && culled.TryGetValue(r, out i)) { if (i >= 0) want[i] = v; else wantGlow[-i - 1] = v; ReadHits++; return; }
-            r.enabled = v;
+            SetRenderEnabled(r, v);
         }
         public static bool GetEnabled(Renderer r)
         {
@@ -393,9 +400,9 @@ namespace StutterFix
             if (r == null || !r.enabled) return;   // 게임이 이미 꺼 둔 것은 건드리지 않는다
             want[i] = true;
             culled[r] = i;
-            r.enabled = false;
+            SetRenderEnabled(r, false);
             var g = glowR[i];
-            if (!ReferenceEquals(g, null) && g != null && g.enabled) { wantGlow[i] = true; culled[g] = -(i + 1); g.enabled = false; }
+            if (!ReferenceEquals(g, null) && g != null && g.enabled) { wantGlow[i] = true; culled[g] = -(i + 1); SetRenderEnabled(g, false); }
             st[i] = 1;
             if (Verify) fl[i].transform.hasChanged = false;
             Culls++;
@@ -407,9 +414,9 @@ namespace StutterFix
             RecolorDefer.FlushFloor(fl[i]);   // 미뤄 둔 색·스타일을 렌더러를 켜기 전에 적용
             culled.Remove(r);
             st[i] = 0;
-            if (r != null && want[i]) r.enabled = true;
+            if (r != null && want[i]) SetRenderEnabled(r, true);
             var g = glowR[i];
-            if (!ReferenceEquals(g, null) && culled.Remove(g) && g != null && wantGlow[i]) g.enabled = true;
+            if (!ReferenceEquals(g, null) && culled.Remove(g) && g != null && wantGlow[i]) SetRenderEnabled(g, true);
             Unculls++;
         }
 
@@ -521,7 +528,7 @@ namespace StutterFix
             if (!active) return;
             RecolorDefer.FlushAll();
             active = false;
-            foreach (var kv in culled) { var r = kv.Key; int v = kv.Value; if (r != null && (v >= 0 ? want[v] : wantGlow[-v - 1])) r.enabled = true; }
+            foreach (var kv in culled) { var r = kv.Key; int v = kv.Value; if (r != null && (v >= 0 ? want[v] : wantGlow[-v - 1])) SetRenderEnabled(r, true); }
             culled.Clear(); cells.Clear(); byGo.Clear(); floorIndex.Clear(); haveRect = false;
             fl = new scrFloor[0]; rend = new Renderer[0]; builtList = null;
             if (Verify || Edition.Dev) Main.Entry.Logger.Log("[화면 밖 타일] 멈춤: 끔 " + Culls + "번, 켬 " + Unculls + "번, 움직여 뺌 " + Pins + "번, 게임의 enabled 읽기/쓰기 대신 " + ReadHits + "번"
@@ -603,9 +610,9 @@ namespace StutterFix
                 cam.Render(); tex.ReadPixels(new Rect(0, 0, W, H), 0, 0); a = tex.GetPixels32();
                 cam.Render(); tex.ReadPixels(new Rect(0, 0, W, H), 0, 0); a2 = tex.GetPixels32();
                 var saved = new List<Renderer>();
-                foreach (var kv in culled) if (kv.Value >= 0 ? want[kv.Value] : wantGlow[-kv.Value - 1]) { kv.Key.enabled = true; saved.Add(kv.Key); }
+                foreach (var kv in culled) if (kv.Value >= 0 ? want[kv.Value] : wantGlow[-kv.Value - 1]) { SetRenderEnabled(kv.Key, true); saved.Add(kv.Key); }
                 cam.Render(); tex.ReadPixels(new Rect(0, 0, W, H), 0, 0); b = tex.GetPixels32();
-                foreach (var r in saved) r.enabled = false;
+                foreach (var r in saved) SetRenderEnabled(r, false);
                 return "꺼 둔 타일 " + culled.Count + "개, " + W + "x" + H + " 픽셀 중 다른 것 " + Diff(a2, b) + "개 (대조군: 같은 상태 첫 번째와 두 번째 " + Diff(a, a2) + "개, 끈 필터 " + fx.Count + "개)";
             }
             finally

@@ -8,6 +8,12 @@ namespace StutterFix
 {
     internal sealed partial class DecoRender
     {
+        static readonly int RendererColorId = Shader.PropertyToID("_RendererColor");
+        static readonly int MainTexId = Shader.PropertyToID("_MainTex");
+        static readonly int FlipId = Shader.PropertyToID("_Flip");
+        static readonly int MainTex_STId = Shader.PropertyToID("_MainTex_ST");
+        static readonly int AlphaTexId = Shader.PropertyToID("_AlphaTex");
+        static readonly int EnableExternalAlphaId = Shader.PropertyToID("_EnableExternalAlpha");
         sealed class MaterialSnapshot
         {
             internal Shader Shader;
@@ -58,14 +64,14 @@ namespace StutterFix
             if (keywords.Length != snapshot.Keywords.Length) return false;
             for (int n = 0; n < keywords.Length; n++) if (keywords[n] != snapshot.Keywords[n]) return false;
             block.Clear(); r.GetPropertyBlock(block);
-            if (block.HasColor("_RendererColor") && block.GetColor("_RendererColor") != Color.white
-                && block.GetColor("_RendererColor") != r.color) return false;
-            if (block.HasVector("_Flip")) {
-                var flip = block.GetVector("_Flip");
+            if (block.HasColor(RendererColorId) && block.GetColor(RendererColorId) != Color.white
+                && block.GetColor(RendererColorId) != r.color) return false;
+            if (block.HasVector(FlipId)) {
+                var flip = block.GetVector(FlipId);
                 if ((flip.x != 1 || flip.y != 1) && (flip.x != (r.flipX ? -1 : 1) || flip.y != (r.flipY ? -1 : 1))) return false;
             }
-            if (block.HasVector("_MainTex_ST") && !block.GetVector("_MainTex_ST").Equals(new Vector4(1,1,0,0))) return false;
-            if (block.HasTexture("_AlphaTex") && block.GetTexture("_AlphaTex")) return false;
+            if (block.HasVector(MainTex_STId) && !block.GetVector(MainTex_STId).Equals(new Vector4(1,1,0,0))) return false;
+            if (block.HasTexture(AlphaTexId) && block.GetTexture(AlphaTexId)) return false;
             foreach (var baseline in snapshot.Values) {
                 var value = baseline; ReadUniform(m, ref value);
                 if (value.Type == ShaderPropertyType.Texture) {
@@ -77,8 +83,8 @@ namespace StutterFix
                     if (value.Integer != baseline.Integer) return false;
                 } else for (int n = 0; n < 4; n++) if (!SameBits(value.Value[n], baseline.Value[n])) return false;
             }
-            return (!m.HasProperty("_EnableExternalAlpha") || m.GetFloat("_EnableExternalAlpha") == 0)
-                && (!block.HasFloat("_EnableExternalAlpha") || block.GetFloat("_EnableExternalAlpha") == 0);
+            return (!m.HasProperty(EnableExternalAlphaId) || m.GetFloat(EnableExternalAlphaId) == 0)
+                && (!block.HasFloat(EnableExternalAlphaId) || block.GetFloat(EnableExternalAlphaId) == 0);
         }
     }
 }
