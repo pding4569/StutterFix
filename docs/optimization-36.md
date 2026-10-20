@@ -1023,3 +1023,9 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - Arche 소스 장식 28,835개 기준 **파일상 조건부 후보: bake-2 4개 → bake-3 5개(0.0173%) → bake-4 23,527개(81.59%)**. bake-3 에서 막힌 건 초기 Global 이외 배치 28,830개(99.98%)였다(Tile 28,716, Camera 114). Tile 은 `SetPlacementType` 이 Setup 때 한 번 정하는 정적 원점이라(`stickToFloor` 일 때만 타일 추종) 지원, Camera/CameraAspect 는 화면 투영이 카메라·줌에 종속이라 제외, 효과 시점 `relativeTo=Tile` 은 그 시점 타일 위치를 다시 읽어 제외.
 - 남은 제외: 이미지/원래크기/크롭/wrap 5,087개(17.6%, decorationImage 이벤트), Camera 114, 깊이 22, 텍스트 7; components 미정 228(런타임 확인). **조건부 실제 지원률 범위 0~81.59%**(실게임 확정 아님). 시차 100 이면 정적 Tile 도 카메라를 따라갈 수 있어 굽기의 위치 채널은 pivotPosVec 이고 최종 월드 위치가 아니다(시차 채널은 기존 유지).
 - 다음 확장 1순위: 이미지 이벤트 장식(5,053개 순증). 모든 수치는 이벤트 파일 기반 추정이며 `decobake verify`/`bench` 실측 전이다.
+
+## 2026-10-20 밤: 타일 굽기(tilebake) 프로토타입과 오프라인 지원률 — 나타나기/사라지기 writer 가 지배
+- 브랜치 `codex/night-tilebake`: `FloorBake`(곡 시각 기반 무상태 표, 위치 X/Y·회전·크기 X/Y·불투명도, 그림자 모드), `tilebake on/off/ready/verify/bench`. 크기 지원 후 DOTween 이징 위치 3,465 + 크기 6,930개 비트 대조 차이 0.
+- **오프라인 후보 상한(이벤트 파일 기반)**: Lost Requiem 3,164/15,001(**21.1%**), HELLO 2026 1,238/14,721(**8.4%**). 제외의 대부분은 타일 나타나기/사라지기 효과(`animationType` → `ffxChangeTrack.PrepFloor` 가 FloorAppear/Disappear 컴포넌트를 붙임): LR 78.9%, HELLO 91.6% 가 이 writer 로 제외 추정. 크기·회전 wrap·hitbox 연결은 미정 노출로 별도.
+- **Lost Requiem 531.8초 형태**: floor 14926, 타일 8,171개(6830..15000), 위치(0,0)·회전0·크기100%·OutElastic·**duration 32박**(파일)·불투명도 245%. 크기는 이제 지원하지만 이 효과가 닿는 타일 중 파일 기준 후보는 **2,202/8,171(27%)**, 나머지 5,969개는 다른 writer 때문에 제외 추정 → "531.8초 효과 전체가 굽기 대상"은 성립 안 함.
+- 결론: 타일 굽기는 장식 굽기(후보 81.6%)보다 훨씬 약하다. 다음 확장은 나타나기(LR 단독 +437/HELLO +7,570)·사라지기(LR +1,052) writer 모델링이며, 그 전에는 22~25ms 시작 스파이크를 없애지 못한다(그림자 모드라 어차피 기존 경로가 돈다). 실측(`tilebake verify`) 전.
