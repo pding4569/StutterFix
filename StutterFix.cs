@@ -484,6 +484,7 @@ ParticleTextWatch.Install(harmony);
             Try(UpdateCostProbe.Stop);
             Try(DecoBatchShadow.Stop);
             Try(GpuProbe.Stop);
+            Try(ArcheGpuResearch.Stop);
             Try(FilterHalfProbe.Stop);
             Try(FilterHalfPerf.Stop);
 #endif
@@ -1098,6 +1099,10 @@ BlendProbe.Tick();
 
     public class Settings : UnityModManager.ModSettings
     {
+#if DEV || AUTOTEST
+        // 연구 세션 명령으로만 켬. 저장 값만으로 패치를 설치하지 않는다.
+        public bool ArcheGpuResearch = false;
+#endif
         // 로그에서 확인된 최대치(19530 tweener / 12187 sequence)보다 넉넉하게 잡는다.
         public int TweenerCapacity = 40000;
         public int SequenceCapacity = 25000;
