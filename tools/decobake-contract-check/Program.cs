@@ -69,6 +69,54 @@ var repeat = Compile(Decoration(), new[] { Event(0, 1, 2, true, 1), Event(2, 1, 
 Require(repeat.Segments == 3 && repeat.Eval(0, 0, 5) == 6 && repeat.Tracks[0][2].Source == 3, "전개된 반복 인스턴스를 합치지 않는다");
 var pitchTable = Compile(Decoration(), new[] { Event(1, 2, 10) }, 2, .5f);
 Require(pitchTable.Eval(0, 0, 5) == 5 && pitchTable.Eval(0, 0, 9) == 10, "곡 시각 간격 / 고정pitch * 고정DOTween배율");
+static DecoBakeCore.Event ScaleEvent(double t, float duration, float x, float y, bool relativePosition = false, Ease ease = Ease.Linear)
+{
+    var e = Event(t, duration, float.NaN, relativePosition, ease: ease);
+    DecoBakeCore.CopyScale(e, true, float.NaN, x, y); return e;
+}
+var sizes = Compile(Decoration(), new[] { ScaleEvent(0, 10, 11, 21), ScaleEvent(4, 2, 3, float.NaN, true) });
+Require(sizes.Supported == 1 && sizes.Tracks[5][1].Start == 11 && sizes.Tracks[5][1].End == 3,
+    "크기 교체: 현재5/이전끝11 -> 새시작11, LastPosition도 크기는 상대 덧셈 없이 절대3");
+Require(sizes.Eval(0, 5, 4) == 11 && sizes.Eval(0, 5, 5) == 7 && sizes.Eval(0, 6, 5) == 11,
+    "크기 NaN Y축은 기존 Y 트랙 계속, X 교체가 Y를 덮어쓰지 않음");
+Require(sizes.Eval(0, 5, 100) == 3 && sizes.Eval(0, 5, 5) == 7 && sizes.Eval(0, 5, -1) == 1,
+    "크기 무상태 미래/되감기/시작 이전");
+var sameFrame = Compile(Decoration(), new[] { ScaleEvent(2, 4, 9, 13), ScaleEvent(2, 2, 5, float.NaN), ScaleEvent(2, 0, float.NaN, -2) });
+Require(sameFrame.Tracks[5][1].Start == 9 && sameFrame.Tracks[6][1].Start == 13
+    && sameFrame.Eval(0, 5, 2) == 9 && sameFrame.Eval(0, 6, 2) == -2 && sameFrame.Eval(0, 5, 3) == 7,
+    "첫Step 전 동일시각 여러 크기: Kill(true) 미시작 완료, 축별 순서와 길이0/음수 목표");
+var legacy = ScaleEvent(0, 0, 2, 3);
+DecoBakeCore.CopyScale(legacy, true, 4, 2, 3);
+Require(Compile(Decoration(), new[] { legacy }).Eval(0, 6, 0) == 4, "legacy targetScale scalar 우선, 이미 Decode된 비율 그대로");
+var disabledScale = Event(0, 0, float.NaN);
+DecoBakeCore.CopyScale(disabledScale, false, 4, 2, 3);
+Require(Compile(Decoration(), new[] { disabledScale }).Segments == 0, "미사용/forceDontTweenMovement 크기 채널 미생성");
+var nanScale = Compile(Decoration(), new[] { ScaleEvent(0, 0, float.NaN, float.NaN) });
+Require(nanScale.Segments == 0 && nanScale.Eval(0, 5, 0) == 1, "null에서 Decode된 NaN 양축은 미적용");
+var oddEase = Compile(Decoration(), new[] { ScaleEvent(0, 0, 8, float.NaN, ease: Ease.INTERNAL_Zero) });
+Require(oddEase.Eval(0, 5, 0) == 1 + 7 * ActualEase((int)Ease.INTERNAL_Zero, 1, 1, 1.70158f, 0), "길이0도 실제 EaseManager 끝점 사용");
+var cancellationSize = Decoration(); cancellationSize.Initial[5] = 1e20f;
+var cancellationTrack = Compile(cancellationSize, new[] { ScaleEvent(0, 0, 1, float.NaN) });
+Require(cancellationTrack.Eval(0, 5, 0) == 0, "크기 완료는 목표1 강제 대입이 아닌 float 시작+변화량 산술(상쇄 결과0)");
+var overflowSize = Decoration(); overflowSize.Initial[5] = -float.MaxValue;
+var overflowTrack = Compile(overflowSize, new[] { Event(0, 1, 7), ScaleEvent(2, 1, float.MaxValue, 1) });
+Require(overflowTrack.Supported == 0 && overflowTrack.Segments == 0 && overflowSize.Reasons.Contains("크기 산술 비유한"),
+    "크기 변화량 overflow는 사유를 구분하고 앞의 위치 트랙까지 장식 전체 제외");
+int scaleEaseSamples = 0;
+foreach (Ease ease in Enum.GetValues<Ease>())
+{
+    if (ease == Ease.Unset || ease == Ease.INTERNAL_Custom) continue;
+    var track = Compile(Decoration(), new[] { ScaleEvent(0, 4, -7, 3, ease: ease) });
+    float over = track.Tracks[5][0].Over;
+    for (int i = 1; i <= 100; i++)
+    {
+        float t = i / 25f;
+        float expected = 1 + (-7 - 1) * ActualEase((int)ease, t, 4, over, 0);
+        RequireSilent(BitConverter.SingleToInt32Bits(expected) == BitConverter.SingleToInt32Bits(track.Eval(0, 5, t)), "scale ease " + ease);
+        scaleEaseSamples++;
+    }
+}
+Console.WriteLine("통과: 크기 이징 중간/완료 plugin 산술 " + scaleEaseSamples + "개");
 var excluded = Event(10, 1, 100); excluded.Reasons = new[] { "미지원 fixture" };
 var exclusion = Compile(Decoration(), new[] { Event(0, 1, 10), excluded });
 Require(exclusion.Supported == 0 && exclusion.Segments == 0 && exclusion.Decorations[0].Reasons.Contains("미지원 fixture"), "나중의 미지원도 장식 전체를 제외");

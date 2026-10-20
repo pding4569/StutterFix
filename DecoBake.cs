@@ -126,6 +126,12 @@ namespace StutterFix
                 var c = d.color; var p = d.parallax == null ? Vector2.zero : d.parallax.multiplier;
                 row.Initial = new[] { d.pivotPosVec.x, d.pivotPosVec.y, d.pivotOffsetVec.x, d.pivotOffsetVec.y, d.rotAngle,
                     d.scaleVec.x, d.scaleVec.y, c.r, c.g, c.b, c.a, d.opacity, p.x, p.y, d.parallaxOffset.x, d.parallaxOffset.y };
+                if (d is scrVisualDecoration visual && visual.spriteRenderer != null && visual.spriteRenderer.sprite != null)
+                {
+                    var size = visual.spriteRenderer.sprite.bounds.size;
+                    var multiplier = d.trueScaleMultiplier;
+                    row.ScaleUnitsX = Math.Abs(size.x * multiplier.x); row.ScaleUnitsY = Math.Abs(size.y * multiplier.y);
+                }
                 if (!(d is scrVisualDecoration)) row.Reasons.Add("이미지 이외 장식");
                 if (d.useHitbox || d.hitboxEvents.Count != 0) row.Reasons.Add("히트박스/충돌");
                 if (d.sourceLevelEvent != null && d.sourceLevelEvent.TryGet<MaskingType>("maskingType", out var mask) && mask != MaskingType.None) row.Reasons.Add("초기 마스크");
@@ -181,7 +187,6 @@ namespace StutterFix
             if (f.imageFilenameUsed || f.originalSizeUsed || f.smoothingUsed || f.cropPivotOffsetUsed) r.Add("이미지/원래크기/크롭/wrap");
             if (f.maskingTypeUsed || f.maskingTargetUsed || f.useMaskingDepthUsed || f.maskingFrontDepthUsed || f.maskingBackDepthUsed) r.Add("마스크 변경");
             if (f.visibleUsed || f.depthUsed) r.Add("가시성/깊이 변경");
-            if (f.scaleUsed && !f.forceDontTweenMovement) r.Add("크기 지연 Startup/축 간 읽기 순서");
             if (f.movementTypeUsed && f.movementType != DecPlacementType.LastPosition && f.movementType != DecPlacementType.Global) r.Add("Global 이외 배치 변경");
             if (!Enum.IsDefined(typeof(Ease), f.ease) || f.ease == Ease.INTERNAL_Custom || f.ease == Ease.Unset) r.Add("미확인/사용자 이징");
             if (!DecoBakeCore.Finite(f.duration) || f.duration < 0) r.Add("길이 비유한/음수");
@@ -201,6 +206,7 @@ namespace StutterFix
                 if (f.positionUsed) { e.Values[0] = f.targetPos.x; e.Values[1] = f.targetPos.y; }
                 if (f.pivotUsed) { e.Values[2] = f.targetPivot.x; e.Values[3] = f.targetPivot.y; }
                 if (f.rotationUsed) e.Values[4] = f.targetRot;
+                DecoBakeCore.CopyScale(e, f.scaleUsed, f.targetScale, f.targetScaleV2.x, f.targetScaleV2.y);
                 if (f.parallaxOffsetUsed) { e.Values[14] = f.targetParallaxOffset.x; e.Values[15] = f.targetParallaxOffset.y; }
             }
             if (f.colorUsed) { e.Values[7] = f.targetColor.r; e.Values[8] = f.targetColor.g; e.Values[9] = f.targetColor.b; e.Values[10] = f.targetColor.a; }
@@ -235,7 +241,8 @@ namespace StutterFix
                 if (d == null || ids.ContainsKey(d)) throw new InvalidOperationException("null/중복 장식");
                 ids.Add(d, i);
                 if (!initial.TryGetValue(d, out var source)) throw new InvalidOperationException("초기 Setup 누락");
-                var row = new DecoBakeCore.Decoration { Id = source.Id, Initial = (float[])source.Initial.Clone(), OriginalX = source.OriginalX, OriginalY = source.OriginalY };
+                var row = new DecoBakeCore.Decoration { Id = source.Id, Initial = (float[])source.Initial.Clone(), OriginalX = source.OriginalX, OriginalY = source.OriginalY,
+                    ScaleUnitsX = source.ScaleUnitsX, ScaleUnitsY = source.ScaleUnitsY };
                 foreach (var reason in source.Reasons) row.Reasons.Add(reason);
                 if (foreignWriter) row.Reasons.Add("외부 모드 장식 setter 패치");
                 if (d.parallax != null && (d.parallax.dontAlterX || d.parallax.dontAlterY || d.parallax.clampToScreen)) row.Reasons.Add("시차 축 고정/화면 고정");
@@ -366,6 +373,8 @@ namespace StutterFix
             if (tape.BakeInvalidReason.Length != 0) { Log("거부: 캡처 중 굽기 계약 무효화: " + tape.BakeInvalidReason); return; }
             var byId = new Dictionary<int, int>(); for (int i = 0; i < table.Decorations.Length; i++) byId.Add(table.Decorations[i].Id, i);
             var stats = Enumerable.Range(0, DecoBakeCore.Channels).Select(_ => new Errors()).ToArray();
+            var scaleRelative = new[] { new Errors(), new Errors() }; var scalePixels = new[] { new Errors(), new Errors() };
+            var scaleZero = new int[2]; var scaleNoPixels = new int[2];
             var top = new Dictionary<int, double>(); var pixels = new Errors(); int skipped = 0, badClock = 0, nonfinite = 0;
             foreach (var frame in tape.Frames)
             {
@@ -379,11 +388,20 @@ namespace StutterFix
                     for (int v = 0; v < components; v++)
                     {
                         float actual = v == 0 ? s.X : v == 1 ? s.Y : v == 2 ? s.Z : s.W;
-                        // Scale Y is unsupported as a whole-decoration branch; keep the mapping correct for diagnostics.
                         if (s.Key == 8) actual = s.Y;
                         double error = Math.Abs((double)table.Eval(d, c + v, frame.SongTime) - actual);
                         if (!DecoBakeCore.Finite(error)) { nonfinite++; continue; }
                         stats[c + v].Add(error, table.Replaced[d], d);
+                        if (c == DecoBakeCore.ScaleX || c == DecoBakeCore.ScaleY)
+                        {
+                            int axis = c - DecoBakeCore.ScaleX;
+                            if (actual == 0) scaleZero[axis]++;
+                            else scaleRelative[axis].Add(error / Math.Abs((double)actual), table.Replaced[d], d);
+                            float units = axis == 0 ? table.Decorations[d].ScaleUnitsX : table.Decorations[d].ScaleUnitsY;
+                            if (DecoBakeCore.Finite(units) && units > 0 && DecoBakeCore.Finite(frame.PixelsPerWorld) && frame.PixelsPerWorld > 0)
+                                scalePixels[axis].Add(error * units * frame.PixelsPerWorld, table.Replaced[d], d);
+                            else scaleNoPixels[axis]++;
+                        }
                         if (!top.TryGetValue(d, out double old) || error > old) top[d] = error;
                         if (c < 2 && DecoBakeCore.Finite(frame.PixelsPerWorld) && frame.PixelsPerWorld > 0) pixels.Add(error * frame.PixelsPerWorld, table.Replaced[d]);
                     }
@@ -394,7 +412,15 @@ namespace StutterFix
                 Log(Names[c] + " n=" + stats[c].Values.Count + " 최대절대=" + (stats[c].Values.Count == 0 ? "NA" : N(stats[c].Max)) + " p99=" + N(stats[c].P99())
                     + " 교체장식n=" + stats[c].ReplacementN + " 교체최대=" + (stats[c].ReplacementN == 0 ? "NA" : N(stats[c].ReplacementMax)) + " 교체p99=" + N(stats[c].ReplacementP99())
                     + " 상위장식8=" + string.Join(";", stats[c].Top.OrderByDescending(x => x.Value).Take(8).Select(x => table.Decorations[x.Key].Id + ":" + N(x.Value))));
-            Log("위치 축별 화면환산(3440x1440/직교 카메라) n=" + pixels.Values.Count + " 최대px=" + (pixels.Values.Count == 0 ? "NA" : N(pixels.Max)) + " p99px=" + N(pixels.P99())
+            for (int axis = 0; axis < 2; axis++)
+                Log("크기" + (axis == 0 ? "X" : "Y") + " 상대오차(|차|/|실제|) n=" + scaleRelative[axis].Values.Count
+                    + " 최대=" + (scaleRelative[axis].Values.Count == 0 ? "NA" : N(scaleRelative[axis].Max)) + " p99=" + N(scaleRelative[axis].P99())
+                    + " 실제0으로상대NA=" + scaleZero[axis] + " 교체n=" + scaleRelative[axis].ReplacementN + " 교체최대=" + (scaleRelative[axis].ReplacementN == 0 ? "NA" : N(scaleRelative[axis].ReplacementMax))
+                    + " 교체p99=" + N(scaleRelative[axis].ReplacementP99())
+                    + " 명목축길이px n=" + scalePixels[axis].Values.Count + " 최대=" + (scalePixels[axis].Values.Count == 0 ? "NA" : N(scalePixels[axis].Max))
+                    + " p99=" + N(scalePixels[axis].P99()) + " 환산불가=" + scaleNoPixels[axis]
+                    + "; 초기 sprite.bounds*trueScaleMultiplier*직교배율, 지연스프라이트/크기0은NA, 회전/시차/피벗/타일링 합성 렌더 오차 아님");
+            Log("위치 축별 화면환산(1440 높이/직교 카메라) n=" + pixels.Values.Count + " 최대px=" + (pixels.Values.Count == 0 ? "NA" : N(pixels.Max)) + " p99px=" + N(pixels.P99())
                 + " 제안기준<=0.01px; pivotPosVec 진단이며 시차/피벗/회전 합성 후 렌더 위치 검증은 별도");
             Log("상위장식8(속성 원단위 최대; 단위 혼합 순위) " + string.Join("; ", top.OrderByDescending(x => x.Value).Take(8).Select(x => table.Decorations[x.Key].Id + ":" + N(x.Value))));
             var reasons = new Dictionary<string, int>();

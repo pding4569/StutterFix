@@ -10,12 +10,15 @@ namespace StutterFix
     internal static class DecoBakeCore
     {
         internal const int Channels = 16;
+        internal const int ScaleX = 5, ScaleY = 6;
         internal delegate float EaseFn(int id, float t, float duration, float over, float period);
         internal sealed class Decoration
         {
             internal int Id;
             internal float[] Initial = new float[Channels];
             internal float OriginalX, OriginalY;
+            // Sprite bounds * constant scale multipliers. Nominal axis extent, not final rendered pixels.
+            internal float ScaleUnitsX = float.NaN, ScaleUnitsY = float.NaN;
             internal readonly HashSet<string> Reasons = new HashSet<string>();
         }
         internal sealed class Event
@@ -34,9 +37,10 @@ namespace StutterFix
         internal struct Segment
         {
             internal double T0;
-            internal float Duration, Start, End, Over, Period;
+            internal float Duration, Start, End, Target, Over, Period;
             internal int Ease, Source;
             internal bool Replacement;
+            internal bool IsScale;
         }
         internal sealed class Table
         {
@@ -71,7 +75,15 @@ namespace StutterFix
             float t = (float)((time - s.T0) / pitch * scale);
             if (t >= s.Duration) return s.End;
             if (t <= 0) return s.Start;
-            return s.Start + (s.End - s.Start) * ease(s.Ease, t, s.Duration, s.Over, s.Period);
+            return s.Start + ((s.IsScale ? s.Target : s.End) - s.Start) * ease(s.Ease, t, s.Duration, s.Over, s.Period);
+        }
+        internal static void CopyScale(Event e, bool used, float scalar, float x, float y)
+        {
+            if (!used) return;
+            // Legacy scalar is already decoded; modern Vector2 was divided by 100 in Decode.
+            e.Values[ScaleX] = float.IsNaN(scalar) ? x : scalar;
+            e.Values[ScaleY] = float.IsNaN(scalar) ? y : scalar;
+            // relativeTo only affects position. There is no relative scale branch or SetRelative call.
         }
         internal static bool Finite(double x) { return !double.IsNaN(x) && !double.IsInfinity(x); }
         internal static Table Compile(Decoration[] decorations, Event[] events, float pitch, float tweenScale, EaseFn ease, CancellationToken cancel)
@@ -113,16 +125,31 @@ namespace StutterFix
                         bool replacement = list.Count != 0 && list[list.Count - 1].Duration > 0
                             && (e.T0 - list[list.Count - 1].T0) / pitch * tweenScale < list[list.Count - 1].Duration;
                         float start = list.Count == 0 ? current : list[list.Count - 1].End;
-                        list.Add(new Segment { T0 = e.T0, Duration = e.Duration, Start = start, End = target,
+                        bool isScale = c == ScaleX || c == ScaleY;
+                        // No OnComplete setter for scale: retain plugin arithmetic even at the endpoint.
+                        // ZeroTween's zero-duration proxy evaluates ease at time=duration=1.
+                        float end = isScale ? start + (target - start) * ease(e.Ease,
+                            e.Duration == 0 ? 1 : e.Duration, e.Duration == 0 ? 1 : e.Duration, e.Over, e.Period) : target;
+                        if (isScale && (!Finite(target - start) || !Finite(end)))
+                        { dec.Reasons.Add("크기 산술 비유한"); break; }
+                        list.Add(new Segment { T0 = e.T0, Duration = e.Duration, Start = start, End = end, Target = target, IsScale = isScale,
                             Ease = e.Ease, Over = e.Over, Period = e.Period, Source = e.Source, Replacement = replacement });
                         result.Replaced[d] |= replacement; result.Segments++;
                     }
                 }
             }
+            // A computed scale failure also excludes this decoration's earlier/other channels.
+            for (int d = 0; d < decorations.Length; d++)
+                if (decorations[d].Reasons.Count != 0)
+                    for (int c = 0; c < Channels; c++)
+                    {
+                        int slot = d * Channels + c;
+                        result.Segments -= lists[slot]?.Count ?? 0; lists[slot] = null;
+                    }
             for (int i = 0; i < lists.Length; i++) { cancel.ThrowIfCancellationRequested(); result.Tracks[i] = lists[i]?.ToArray() ?? Array.Empty<Segment>(); }
             foreach (var d in decorations) if (d.Reasons.Count == 0) result.Supported++;
             // Managed array/object headers, temporary lists, input snapshots and GC are measured separately by caller.
-            result.PayloadBytes = result.Segments * 40L + lists.Length * (long)IntPtr.Size + decorations.Length * (Channels * 4L + 16);
+            result.PayloadBytes = result.Segments * 48L + lists.Length * (long)IntPtr.Size + decorations.Length * (Channels * 4L + 24);
             result.CompileMs = sw.Elapsed.TotalMilliseconds;
             return result;
         }
