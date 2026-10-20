@@ -88,6 +88,13 @@ namespace StutterFix
             internal int Queue, Material, Id;
             internal float Distance;
         }
+        sealed class BarrierWatch
+        {
+            internal Renderer R;
+            internal scrVisualDecoration Owner;
+            internal string Key;
+            internal bool Enabled, Active, ForceOff;
+        }
         sealed class Group
         {
             internal GameObject Object;
@@ -124,6 +131,13 @@ namespace StutterFix
         bool scopeAll = true, mergeCameras = true;
         readonly HashSet<int> cameraSet = new HashSet<int>();
         readonly Dictionary<int, string> rejectionReasons = new Dictionary<int, string>();
+        const int RunSampleWindow = 120;
+        readonly Queue<int> visibleRunSamples = new Queue<int>();
+        readonly Queue<int> totalRunSamples = new Queue<int>();
+        int visibleRunSampleFrame = -1, visibleRunSum, totalRunSum;
+        readonly List<BarrierWatch> barrierWatches = new List<BarrierWatch>();
+        readonly HashSet<string> fallbackKeys = new HashSet<string>();
+        readonly Dictionary<string, int> waitingReasons = new Dictionary<string, int>();
         readonly Dictionary<string, int> breakReasons = new Dictionary<string, int>();
         Camera compareCamera;
         int preparedFrame = -1, candidateCount, changedItems, uploadedVertices;
@@ -383,6 +397,8 @@ namespace StutterFix
             { item.Vertices = item.Sprite.vertices; item.Triangles = item.Sprite.triangles; item.UV = item.Sprite.uv; vertexCount += item.Vertices.Length; }
             foreach (var atlas in atlases) BuildAtlas(atlas);
             RebuildRuns(mainCamera);
+            Build(); // Initial on statistics include actual emitted geometry.
+            SampleVisibleRuns();
             observing = false; selected = items.Count;
             lastSelection = "selected=" + selected + " excluded={" + Counts(excluded) + "} source-textures=" + images.Count
                 + " scope=" + (scopeAll ? "all" : "moving") + " atlas-bytes=" + atlasBytes + "/" + atlasBudget;
@@ -506,12 +522,20 @@ namespace StutterFix
             var all = new Dictionary<string, List<Renderer>>();
             var uses = new Dictionary<int, int>();
             var unsafeKeys = new HashSet<string>();
+            var drawingMeshOwners = new HashSet<scrVisualDecoration>();
+            var sceneRenderers = new List<Renderer>();
             foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
             {
                 if (!r.gameObject.scene.IsValid() || !r.gameObject.scene.isLoaded || ownRenderers.Contains(r.GetInstanceID())) continue;
+                sceneRenderers.Add(r);
+                if (r is MeshRenderer && Drawing(r))
+                {
+                    var owner = r.GetComponentInParent<scrVisualDecoration>();
+                    if (owner) drawingMeshOwners.Add(owner);
+                }
                 foreach (var m in r.sharedMaterials) if (m) { int n; uses.TryGetValue(m.GetInstanceID(), out n); uses[m.GetInstanceID()] = n + 1; }
                 // A SortingGroup sorts at its own key, which may differ from every child key.
-                foreach (var sg in r.GetComponentsInParent<SortingGroup>(true))
+                if (Drawing(r)) foreach (var sg in r.GetComponentsInParent<SortingGroup>(true))
                     unsafeKeys.Add(OrderKey(sg.sortingLayerID, sg.sortingOrder));
                 string key = OrderKey(r.sortingLayerID, r.sortingOrder);
                 if (!keys.ContainsKey(key)) continue;
@@ -523,30 +547,43 @@ namespace StutterFix
             for (int n = items.Count - 1; n >= 0; n--)
             {
                 var i = items[n]; int count;
-                if (!uses.TryGetValue(i.MaterialId, out count) || count != 1)
+                bool childMesh = drawingMeshOwners.Contains(i.D);
+                if (childMesh || !uses.TryGetValue(i.MaterialId, out count) || count != 1)
                 {
                     RestoreSource(i); items.RemoveAt(n);
                     if (i.Vertices != null) vertexCount -= i.Vertices.Length;
-                    Count(excluded, "shared-material"); rejectionReasons[i.Id] = "shared-material"; continue;
+                    string reason = childMesh ? "decoration-child-mesh-active" : "shared-material";
+                    Count(excluded, reason); rejectionReasons[i.Id] = reason; continue;
                 }
                 candidates[i.Id] = i;
             }
+            barrierWatches.Clear();
+            foreach (var r in sceneRenderers) if (!candidates.ContainsKey(r.GetInstanceID()))
+                barrierWatches.Add(new BarrierWatch { R = r, Key = OrderKey(r.sortingLayerID, r.sortingOrder),
+                    Owner = r.GetComponentInParent<scrVisualDecoration>(), Enabled = r.enabled,
+                    Active = r.gameObject.activeInHierarchy, ForceOff = r.forceRenderingOff });
             foreach (var i in items) i.GroupKey = GroupKey(i);
-            var plans = new List<List<Item>>(); unmanagedBreaks = 0; breakReasons.Clear();
+            var plans = new List<List<Item>>(); unmanagedBreaks = 0; breakReasons.Clear(); waitingReasons.Clear();
             foreach (var pair in all)
             {
                 var list = pair.Value; keys[pair.Key].Renderers = list.Count;
+                // Managed sources remain in the order even while hidden by our takeover.
+                // Waiting unmanaged renderers are watched, but cannot split a run or poison its comparator.
+                list.RemoveAll(r => {
+                    if (candidates.ContainsKey(r.GetInstanceID()) || Drawing(r)) return false;
+                    Count(waitingReasons, BarrierReason(r)); return true;
+                });
                 // Unknown submesh queues or SortingGroup ownership cannot be represented by
                 // this renderer-level comparator. Restore candidates individually in this key.
                 if (unsafeKeys.Contains(pair.Key) || list.Exists(r => !r.sharedMaterial || r.sharedMaterials.Length != 1 || r.GetComponentInParent<SortingGroup>()))
                 {
-                    foreach (var r in list) Count(breakReasons, "unsupported-order:" + r.GetType().Name);
                     for (int n = items.Count - 1; n >= 0; n--) if (OrderKey(items[n]) == pair.Key)
                     {
                         var i = items[n]; RestoreSource(i); items.RemoveAt(n);
                         if (i.Vertices != null) vertexCount -= i.Vertices.Length;
                         Count(excluded, "unsupported-order"); rejectionReasons[i.Id] = "unsupported-order";
                     }
+                    foreach (var r in list) if (Drawing(r)) Count(breakReasons, "unsupported-order:" + r.GetType().Name);
                     continue;
                 }
                 // Read native renderer/material/bounds state once, not O(n log n) times in Sort.
@@ -602,7 +639,54 @@ namespace StutterFix
             }
             foreach (var g in old) if (!used.Contains(g)) { ReleaseGroup(g); groups.Remove(g); }
             // Original memberships on unaffected runs and their material instances are retained.
-            lastOrders = "queue ascending; distance descending; signed material-ID ascending=back-to-front; hidden renderers included; once-per-frame live audit; merge-cameras=" + mergeCameras;
+            lastOrders = "queue ascending; distance descending; signed material-ID ascending=back-to-front; hidden managed sources included; active barriers only; once-per-frame live audit; merge-cameras=" + mergeCameras;
+        }
+        static bool Drawing(Renderer r) => r && r.enabled && r.gameObject.activeInHierarchy && !r.forceRenderingOff;
+
+        void AuditLateBarriers()
+        {
+            // New topology must be created before culling. A late change therefore falls back
+            // to originals for the affected keys until the next frame's normal rebuild.
+            foreach (var watch in barrierWatches)
+            {
+                var r = watch.R;
+                if (!r || r.enabled != watch.Enabled || r.gameObject.activeInHierarchy != watch.Active
+                    || r.forceRenderingOff != watch.ForceOff || OrderKey(r.sortingLayerID, r.sortingOrder) != watch.Key)
+                {
+                    fallbackKeys.Add(watch.Key);
+                    if (r) fallbackKeys.Add(OrderKey(r.sortingLayerID, r.sortingOrder));
+                    if (watch.Owner && watch.Owner.spriteRenderer)
+                        fallbackKeys.Add(OrderKey(watch.Owner.spriteRenderer.sortingLayerID, watch.Owner.spriteRenderer.sortingOrder));
+                }
+            }
+            foreach (var i in items) if (i.D && MeshOn(i.D)) fallbackKeys.Add(OrderKey(i));
+        }
+        int VisibleRunCount()
+        {
+            int count = 0;
+            foreach (var g in groups) if (g.HasVisible && !fallbackKeys.Contains(OrderKey(g.Items[0]))) count++;
+            return count;
+        }
+        void SampleVisibleRuns()
+        {
+            int count = VisibleRunCount();
+            // Replace this frame's sample when a later camera triggers a fallback.
+            if (visibleRunSampleFrame == Time.frameCount)
+            {
+                var totals = totalRunSamples.ToArray();
+                totalRunSum -= totals[totals.Length - 1]; totalRunSamples.Clear();
+                for (int n = 0; n < totals.Length - 1; n++) totalRunSamples.Enqueue(totals[n]);
+                var values = visibleRunSamples.ToArray();
+                visibleRunSum -= values[values.Length - 1];
+                visibleRunSamples.Clear();
+                for (int n = 0; n < values.Length - 1; n++) visibleRunSamples.Enqueue(values[n]);
+            }
+            else if (visibleRunSamples.Count == RunSampleWindow)
+            {
+                visibleRunSum -= visibleRunSamples.Dequeue(); totalRunSum -= totalRunSamples.Dequeue();
+            }
+            totalRunSamples.Enqueue(groups.Count); totalRunSum += groups.Count;
+            visibleRunSamples.Enqueue(count); visibleRunSum += count; visibleRunSampleFrame = Time.frameCount;
         }
         string BarrierReason(Renderer r)
         {
@@ -618,10 +702,21 @@ namespace StutterFix
             int one = 0, small = 0, medium = 0, large = 0, huge = 0, max = 0; var managedKeys = new HashSet<string>();
             foreach (var g in groups) { int n = g.Items.Count; max = Math.Max(max, n); if (n == 1) one++; else if (n <= 5) small++; else if (n <= 20) medium++; else if (n <= 100) large++; else huge++; }
             foreach (var i in items) managedKeys.Add(OrderKey(i));
+            int totalMax = 0; foreach (var value in totalRunSamples) totalMax = Math.Max(totalMax, value);
+            int visibleMax = 0; foreach (var value in visibleRunSamples) visibleMax = Math.Max(visibleMax, value);
+            int activeBarriers = 0, waitingBarriers = 0;
+            foreach (var count in breakReasons.Values) activeBarriers += count;
+            foreach (var count in waitingReasons.Values) waitingBarriers += count;
             return "scope=" + (scopeAll ? "all" : "moving") + " candidates=" + candidateCount + " moving-candidates=" + movingCandidates + " runs=" + groups.Count + " taken=" + (observing ? 0 : items.Count)
                 + " average-run=" + F((double)items.Count / Math.Max(1, groups.Count))
                 + " max-run=" + max + " run-sizes={1=" + one + " 2~5=" + small + " 6~20=" + medium + " 21~100=" + large + " 101+=" + huge + "} unmanaged-breaks=" + unmanagedBreaks
-                + " barrier-renderers={" + Counts(breakReasons) + "}"
+                + " run-mean=" + F((double)totalRunSum / Math.Max(1, totalRunSamples.Count)) + " run-max=" + totalMax
+                + " visible-runs=" + VisibleRunCount() + " drawing-runs=" + VisibleRunCount()
+                + " visible-run-mean=" + F((double)visibleRunSum / Math.Max(1, visibleRunSamples.Count))
+                + " visible-run-max=" + visibleMax + " visible-run-samples=" + visibleRunSamples.Count + "/" + RunSampleWindow
+                + " active-barriers=" + activeBarriers + " waiting-barriers=" + waitingBarriers
+                + " active-barrier-renderers={" + Counts(breakReasons) + "} waiting-barrier-renderers={" + Counts(waitingReasons) + "}"
+                + " fallback-keys=" + fallbackKeys.Count
                 + " keys=" + managedKeys.Count + " observation-change-fields={" + Counts(observationChanges) + "}";
         }
 
@@ -864,8 +959,10 @@ namespace StutterFix
             if (!cameraSet.SetEquals(current)) { Stop("scene camera list changed"); return; }
             long start = Stopwatch.GetTimestamp();
             foreach (var g in groups) Borrow(g, false);
+            fallbackKeys.Clear();
             PruneChanged(); RebuildRuns(mainCamera);
             Build();
+            SampleVisibleRuns();
             preparedFrame = Time.frameCount;
             long ticks = Stopwatch.GetTimestamp() - start;
             buildTicks += ticks; buildCount++; measuredFrames++;
@@ -908,7 +1005,10 @@ namespace StutterFix
                     if (observeFrames >= observeTarget) FinishObservation();
                     return; // New groups need the NEXT camera's PreCull before takeover.
                 }
-                if (preparedFrame == Time.frameCount) Takeover(true);
+                if (preparedFrame == Time.frameCount)
+                {
+                    AuditLateBarriers(); Takeover(true); SampleVisibleRuns();
+                }
             }
             catch (Exception e) { Stop("pre-render failed: " + e); }
         }
@@ -1020,7 +1120,7 @@ namespace StutterFix
                         first = Math.Min(first, offset); end = offset + i.Vertices.Length;
                         i.Written = true;
                     }
-                    if (i.Visible)
+                    if (i.Visible && i.Vertices.Length != 0)
                     {
                         g.HasVisible = true;
                         if (!haveBounds) { g.CullBounds = i.R.bounds; haveBounds = true; }
@@ -1070,14 +1170,19 @@ namespace StutterFix
         {
             if (on && stopping) return;
             if (!on) foreach (var g in groups) Borrow(g, false);
-            foreach (var i in items) if (on) HideSource(i); else RestoreSource(i);
-            if (on) foreach (var g in groups) Borrow(g, true);
-            foreach (var g in groups) if (g.Renderer) g.Renderer.enabled = on && g.HasVisible;
+            foreach (var g in groups)
+            {
+                bool take = on && !fallbackKeys.Contains(OrderKey(g.Items[0]));
+                Borrow(g, take);
+                foreach (var i in g.Items) if (take) HideSource(i); else RestoreSource(i);
+                if (g.Renderer) g.Renderer.enabled = take && g.HasVisible;
+            }
         }
         bool SnapshotUnchanged()
         {
             try
             {
+            if (fallbackKeys.Count != 0) return false;
             foreach (var i in items)
                 if (!i.D || !i.R || !MatrixEqual(i.R.transform.localToWorldMatrix, i.Matrix) || !ColorEqual(i.R.color, i.Color)
                     || i.R.flipX != i.FlipX || i.R.flipY != i.FlipY || i.R.sprite != i.Sprite
