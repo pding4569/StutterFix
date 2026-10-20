@@ -994,10 +994,12 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - 의심: `scrFloor.LateUpdate` 가 `lastPos`·`lastScale`·`opacityLastFrame`·`glowMultiplierLastFrame` 에 매 프레임 쓰는 "지난 프레임 값 장부"를 상태 변경으로 표시. 확인하려면 사이트별 호출 수 계수 필요 → 후속 임무 `docs/handoff/codex-tilerange-3-20261020.md`(Codex 사용량 초기화 20:43 뒤 맡길 예정).
 - 릴리스 영향 없음: 기본 꺼짐·개발/자동 시험 빌드 전용, 2.8.0 에 포함 안 됨.
 
-## 2026-10-20 밤: Arche 258~278초 GPU 연구(Codex 계측 + 게임 측정) — GPU 는 병목이 아니다, 접음
+## 2026-10-20 밤: Arche 258~278초 GPU 연구(Codex 계측 + 게임 측정) — 지금은 병목 아니지만 CPU 를 없애면 GPU 가 바닥
 - 도구(브랜치 `codex/night-archegpu`, 개발/자동 시험 전용·기본 꺼짐): `archegpu on|state|stamp|timeline|off`(카메라·이미지 효과 목록, 콜백 수·첫 RT·파라미터), `fxoff <효과>|none`(선택 효과를 Blit 1회로 대체하는 화면이 바뀌는 진단). 기존 `gpuprobe`(D3D11 timestamp, 1/8 프레임 표본)와 함께 쓴다. 정확한 구간별 이벤트 목록은 `archegpu timeline`+`tools/optimization/archegpu-audit.py` 로 결합.
 - **측정(3440×1440·165Hz 켠 화면, 258~278초, 377프레임 표본, 계측 판이라 FPS 는 성능 수치 아님)**: GPU 프레임 전체(첫 카메라 preCull→프레임 끝) 평균 **4.24ms**(최대 7.65). 그중 본 카메라(`Camera#102298`) 4.06ms, 배경·오버레이 카메라 합 0.16ms.
 - **필터는 작다**: 본 카메라 안의 이미지 효과는 모두 합쳐 **약 0.65ms**(평균 프레임 기여). 가장 큰 것: Light_Water2 0.084, VideoBloom 0.078, Atmosphere_Rain 0.070, CameraMotionBlur 0.064(활성 42프레임에서 0.58ms), Color_Contrast 0.056, Film_Grain 0.044. 나머지 ~3.4ms 는 장면(장식·타일·행성) 그리기. 필터를 전부 공짜로 만들어도 GPU 0.65ms.
-- **결론**: 이 구간 프레임 약 10~11ms 중 GPU 는 약 4~6ms 만 쓴다(PresentMon 은 5~6.6ms). 병목은 CPU(장식 처리 약 5.5ms + 엔진 CPU 약 5ms)이므로 **GPU 를 줄여도 FPS 이득은 거의 없다**. 필터 하나씩 끄는 A/B(`fxoff`)와 겹쳐 그리기·RT 복사 제거는 진행하지 않음.
+- **지금 상태의 결론**: 이 구간 프레임 약 10~11ms 중 GPU 는 약 4~6ms 만 쓴다(PresentMon 은 5~6.6ms). 현재는 CPU(장식 처리 약 5.5ms + 엔진 CPU 약 5ms)가 병목이라 **지금 GPU 를 줄여도 FPS 는 거의 안 오른다**.
+- **정정(같은 날 사용자 지적)**: 위는 "CPU 가 지금처럼 느릴 때"만 맞다. 목표가 트레이스(굽기+GPU 평가)로 장식 CPU 를 거의 없앤 상태라면 남는 것은 엔진 CPU ~5ms 와 GPU 4.2~6.6ms 이고, 프레임은 둘 중 큰 쪽(겹쳐 돌아서)이라 약 5~6.6ms = **150~200 FPS 대**가 바닥이다. 400 FPS(2.5ms)는 GPU 와 엔진 CPU 를 둘 다 절반 이하로 줄여야 한다. 따라서 GPU 쪽은 접지 않는다.
+- 앞서 쓴 "장식 렌더러를 숨겨도 +6%뿐"은 CPU 병목 상태의 FPS 측정이라 장식의 GPU 몫을 과소평가했을 수 있다. GPU 시간 자체(`gpuprobe`, CPU 병목과 무관)로 장면 그리기 ~3.4ms 를 장식/타일/행성/기타로 나눠 다시 재야 한다(렌더러 그룹별 숨김 + 본 카메라 GPU 시간). 그 몫이 작으면 GPU 바닥이 ~3ms 에 고정되어 목표를 "150~200 FPS + 끊김 0" 으로 잡아야 한다. 필터 A/B(`fxoff`)는 필터 합이 0.65ms 라 우선순위가 낮다.
 - 한계: GPU 경과 시간(timestamp)이지 PresentMon `MsGPUBusy` 와 같지 않음; 258~278초 한 구간만; 장면 그리기 3.4ms 를 줄이는 방법(해상도·겹쳐 그리기)은 화면이 달라진다.
 - 근거: `docs/handoff/archegpu-evidence/arche-258-278-gpuprobe.txt`, Codex 결과 `docs/handoff/codex-archegpu-20261020-result.md`.
