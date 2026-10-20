@@ -110,7 +110,13 @@ namespace StutterFix
         {
             if (engineDeferred.Count != 0) EngineLatePostfix(); // exception recovery; normal postfix already drained it
             if (__state != 0) { managerTicks += Stopwatch.GetTimestamp() - __state; managerFrames++; }
+#if DEV || AUTOTEST
+            DecoBake.SignatureFrame();
+#endif
         }
+#if DEV || AUTOTEST
+        internal static bool CaptureReady => installed;
+#endif
         public static void EngineLatePostfix()
         {
             // Same final input/time as MoveApply.ManagerLatePostfix's hidden

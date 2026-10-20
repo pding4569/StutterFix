@@ -363,3 +363,80 @@ static float Scheduled(float[] deltas)
     }
     return pos;
 }
+
+// Bake-8 exercises the production state driver (not a second implementation).
+var adoptedTable = Compile(Decoration(), new[] { Event(0, 2, 10), Event(4, 0, 30, source: 2) });
+var adopted = new DecoBakeCore.AdoptState(adoptedTable);
+var written = new Dictionary<int, float>(); int writes = 0;
+void WriteAdopt(int slot, float value) { written[slot] = value; writes++; }
+adopted.Step(1, true, WriteAdopt);
+Require(written[0] == 5 && written.Count == 16, "adopt resync evaluates every owned channel");
+adopted.Step(2, false, WriteAdopt); int endWrites = writes;
+Require(written[0] == 10, "adopt just-ended channel receives exact endpoint");
+adopted.Step(3, false, WriteAdopt);
+Require(writes == endWrites, "adopt completed segment is not written again");
+adopted.Step(4, false, WriteAdopt);
+Require(written[0] == 30, "adopt zero-duration endpoint dispatched");
+adopted.Step(.5, true, WriteAdopt);
+Require(written[0] == 2.5f, "adopt backward seek stateless resync");
+adopted.Step(5, true, WriteAdopt);
+Require(written[0] == 30, "adopt forward seek past completed effects");
+written[0] = -100; adopted.Step(5, true, WriteAdopt);
+Require(written[0] == 30, "adopt resync repairs external seek reset even with unchanged cached value");
+var supported = Decoration(); var adoptExcluded = Decoration(); adoptExcluded.Reasons.Add("conditional callback");
+var mixedEvent = Event(0, 2, 10); mixedEvent.Targets = new[] { 0, 1 };
+var mixedTable = DecoBakeCore.Compile(new[] { supported, adoptExcluded }, new[] { mixedEvent }, 1, 1, ActualEase, CancellationToken.None);
+var mixedAdopt = new DecoBakeCore.AdoptState(mixedTable); var slots = new List<int>();
+mixedAdopt.Step(1, true, (s,v) => slots.Add(s));
+Require(mixedAdopt.Owned[0] && !mixedAdopt.Owned[1] && slots.All(s => s < 16),
+    "adopt per-target ownership split for mixed supported/side-effect targets");
+var failedAdopt = new DecoBakeCore.AdoptState(adoptedTable); bool threw = false;
+try { failedAdopt.Step(1, true, (s,v) => throw new InvalidOperationException("injected setter")); }
+catch (InvalidOperationException) { threw = true; }
+Require(threw, "adopt setter failure reaches runtime recovery boundary");
+failedAdopt.Stop(1, WriteAdopt);
+Require(!failedAdopt.Enabled && written[0] == 10, "adopt exception recovery completes in-flight effect and disables ownership");
+int stoppedWrites = writes; failedAdopt.Step(1.5, false, WriteAdopt);
+Require(writes == stoppedWrites, "adopt failed driver cannot suppress/write later original effects");
+var failingRecovery = new DecoBakeCore.AdoptState(adoptedTable); int recoveryVisits = 0;
+try { failingRecovery.Stop(1, (s,v) => { recoveryVisits++; if (s == 0) throw new Exception("first setter"); }); }
+catch (InvalidOperationException) { }
+Require(!failingRecovery.Enabled && recoveryVisits == 16, "adopt recovery continues other channels after a setter fails");
+var badTable = Compile(Decoration(), new[] { Event(0, 2, 10) });
+badTable.Tracks[0][0].End = float.PositiveInfinity;
+var badAdopt = new DecoBakeCore.AdoptState(badTable); bool nonfinite = false;
+try { badAdopt.Step(2, false, WriteAdopt); } catch (InvalidOperationException) { nonfinite = true; }
+Require(nonfinite, "adopt nonfinite evaluated value rejected before write");
+var pausedClock = new DecoBakeCore.SongClock(); pausedClock.Step(1, .01, 1, 1, true);
+pausedClock.Step(1, 0, 1, 1, false); int pauseResyncs = pausedClock.Resyncs;
+pausedClock.Step(1, 0, 1, 1, false);
+Require(pausedClock.Resyncs == pauseResyncs, "adopt paused stationary frame does not repeat full-O resync");
+pausedClock.Step(2, 0, 1, 1, false);
+Require(pausedClock.Resyncs == pauseResyncs+1, "adopt paused seek requests a resync");
+pausedClock.Step(2, .01, 1, 1, true);
+Require(pausedClock.Resyncs == pauseResyncs+2, "adopt resume requests a resync");
+Console.WriteLine("bake8 adopt production-driver fixture passed (offline only; live setter/timing equivalence unproven)");
+var sourceBefore = Event(1, 2, 3, source: 40); var sourceAfter = Event(1, 2, 3, source: 50);
+Require(DecoBakeCore.SameAdoptEvent(sourceBefore, sourceAfter), "adopt same-map source rebind accepts only changed instance ID");
+sourceAfter.Values[0] = 4;
+Require(!DecoBakeCore.SameAdoptEvent(sourceBefore, sourceAfter), "adopt source rebind rejects mutated target");
+sourceAfter.Values[0] = 3; sourceAfter.Targets = new[] { 1 };
+Require(!DecoBakeCore.SameAdoptEvent(sourceBefore, sourceAfter), "adopt source rebind rejects mutated target set");
+sourceAfter.Targets = new[] { 0 }; sourceAfter.Reasons = new[] { "callback" };
+Require(!DecoBakeCore.SameAdoptEvent(sourceBefore, sourceAfter), "adopt source rebind rejects side-effect contract changes");
+var brokenClockAdopt = new DecoBakeCore.AdoptState(adoptedTable);
+brokenClockAdopt.Step(5, true, WriteAdopt);
+try { brokenClockAdopt.Step(double.NaN, false, WriteAdopt); } catch (InvalidOperationException) { }
+brokenClockAdopt.Stop(double.NaN, WriteAdopt);
+Require(!brokenClockAdopt.Enabled && written[0] == 30, "adopt invalid-clock recovery uses last valid song time");
+var bindPast = Event(0, 2, 3); var bindFuture = Event(10, 2, 5, source: 2);
+DecoBakeCore.ValidateAdoptRemainder(new[] { bindPast, bindFuture }, new[] { bindFuture }, 5);
+Require(true, "adopt rebind accepts consumed scheduled prefix after seek/play");
+bool futureDrop = false;
+try { DecoBakeCore.ValidateAdoptRemainder(new[] { bindPast, bindFuture }, Array.Empty<DecoBakeCore.Event>(), 5); }
+catch (InvalidOperationException) { futureDrop = true; }
+Require(futureDrop, "adopt rebind rejects dropped future scheduled effect");
+bool changedPast = false;
+try { DecoBakeCore.ValidateAdoptRemainder(new[] { bindPast }, new[] { Event(0, 2, 9) }, 5); }
+catch (InvalidOperationException) { changedPast = true; }
+Require(changedPast, "adopt rebind rejects changed remaining effect even if its scheduled time has passed");

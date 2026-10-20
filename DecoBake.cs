@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST
+#if DEV || AUTOTEST
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,8 +15,8 @@ using UnityEngine;
 
 namespace StutterFix
 {
-    // Opt-in observer only. Owns no game state, renderer, tween or decoration.
-    internal static class DecoBake
+    // Shadow remains read-only. Explicit development-only adopt owns supported targets.
+    internal static partial class DecoBake
     {
         private const string Owner = "StutterFix.DecoBake.Shadow";
         private const int MaxDecorations = 100000, MaxEvents = 300000, MaxTargetRefs = 4000000;
@@ -108,6 +108,9 @@ namespace StutterFix
         {
             try
             {
+                string command = (arg ?? "").Trim();
+                if (command.StartsWith("adopt ", StringComparison.OrdinalIgnoreCase)) { AdoptCommand(command.Substring(6).ToLowerInvariant()); return; }
+                if (command.StartsWith("adoptsig ", StringComparison.OrdinalIgnoreCase)) { AdoptSignature(command.Substring(9)); return; }
                 switch ((arg ?? "").Trim().ToLowerInvariant())
                 {
                     case "on":
@@ -128,7 +131,7 @@ namespace StutterFix
                     case "off": Shutdown(); Log(status); return;
                     case "verify": Verify(); return;
                     case "bench": Bench(); return;
-                    default: Log("사용: decobake on (맵 open 전) | off | verify | bench; " + status); return;
+                    default: Log("사용: decobake on (맵 open 전) | off | verify | bench | adopt on|off|state | adoptsig 이름 [초] [표시Hz]; " + status); return;
                 }
             }
             catch (Exception e) { Log("실패: " + e.GetType().Name + " " + e.Message); }
@@ -139,8 +142,12 @@ namespace StutterFix
             if (!enabled || status.StartsWith("중단:")) throw new InvalidOperationException("decobake ready: " + status);
             return ready;
         }
-        private static void CancelBuild()
+        private static void CancelBuild(bool preserveAdopt = false)
         {
+            bool resume = preserveAdopt && (Adopting || resumeAdopt);
+            StopAdopt("스냅샷 세대 변경");
+            resumeAdopt = resume;
+            StopSignature();
             DecoSim.InvalidateBake("스냅샷 세대 변경: 재준비");
             generation++; ready = false; collector = null; clock.Reset(); clockFrame = -1;
             cancellation?.Cancel(); cancellation?.Dispose(); cancellation = null;
@@ -167,7 +174,7 @@ namespace StutterFix
             long begin = Stopwatch.GetTimestamp();
             try
             {
-                if (ready || collector != null || job != null) CancelBuild();
+                if (ready || collector != null || job != null) CancelBuild(manager == __instance.manager);
                 var d = __instance;
                 if (manager != d.manager) { initial.Clear(); ClearBaseline(); manager = d.manager; setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1; }
                 // Setup can run again during seek. Never replace pre-scrub values with animated values.
@@ -226,7 +233,7 @@ namespace StutterFix
             if (!enabled) return;
             try
             {
-                CancelBuild();
+                CancelBuild(true);
                 if (manager == null || manager != scrDecorationManager.instance || initial.Count == 0) throw new InvalidOperationException("open 전 on 필요: Setup 초기값 없음");
                 if (ADOBase.isOfficialLevel || ADOBase.levelIsMikoSkip) throw new InvalidOperationException("커스텀 일반 맵만 지원");
                 if (ADOBase.controller.visualQuality != VisualQuality.High) throw new InvalidOperationException("High 시각 설정만 지원");
@@ -416,8 +423,14 @@ namespace StutterFix
                     publishedSetupMs = setupMs; publishedSetupMaxMs = setupFrameMaxMs; publishedTagMaxMs = tagMoveNextMaxMs;
                     Array.Copy(stageMs, publishedStages, stageMs.Length); Array.Copy(stageMaxMs, publishedStageMax, stageMaxMs.Length);
                     publishedSortedCount = baselineSortedCount;
-                    status = "준비됨 (읽기/계산만)";
+                    status = "준비됨 (그림자 기본; adopt 별도)";
                     Log(status + " 장식=" + table.Decorations.Length + " 지원=" + table.Supported + " 이벤트=" + table.Events + " 구간=" + table.Segments);
+                }
+                if (ready && resumeAdopt && Hitch.Playing && !EffectBudget.InCatchUp)
+                {
+                    resumeAdopt = false;
+                    try { AdoptCommand("on"); }
+                    catch (Exception e) { Log("adopt 재채택 거부(그림자 유지): " + e.Message); }
                 }
             }
             catch (DecoBakeCore.SnapshotChangedException) { Reprepare(); }
@@ -427,7 +440,7 @@ namespace StutterFix
         private static void Reprepare()
         {
             DecoSim.InvalidateBake("seek 중 스냅샷 변경: 재준비");
-            CancelBuild(); status = "재준비: 목록/세대 변경"; Log(status);
+            CancelBuild(true); status = "재준비: 목록/세대 변경"; Log(status);
             if (prepFloors != null) PrepPostfix(prepFloors);
         }
         private static void Fail(string why) { DecoSim.InvalidateBake(why); CancelBuild(); status = "중단: " + why; Log(status); }

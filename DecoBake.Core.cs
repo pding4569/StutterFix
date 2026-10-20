@@ -24,6 +24,7 @@ namespace StutterFix
                 if (!Finite(raw)) { Reset(); return double.NaN; }
                 double delta = tweenScale > 0 ? tweenDelta * pitch / tweenScale : 0;
                 double predicted = Time + Math.Max(0, delta);
+                if (!playing && !playingLast && Finite(Time) && raw == rawLast) return Time;
                 if (!Finite(Time) || playing != playingLast || !playing || !Finite(delta)
                     || Math.Abs(raw - predicted) > .05 || raw - rawLast < -.05)
                 { Time = raw; Resyncs++; }
@@ -109,6 +110,33 @@ namespace StutterFix
             internal float[] Values = EmptyValues();
             internal string[] Reasons = Array.Empty<string>();
         }
+        internal static bool SameAdoptEvent(Event a, Event b)
+        {
+            if (a.T0 != b.T0 || a.Duration != b.Duration || a.Ease != b.Ease || a.Over != b.Over || a.Period != b.Period
+                || a.RelativePosition != b.RelativePosition || a.ResetGlobalOrigin != b.ResetGlobalOrigin
+                || a.Values.Length != b.Values.Length || a.Targets.Length != b.Targets.Length || a.Reasons.Length != b.Reasons.Length) return false;
+            for (int i = 0; i < a.Values.Length; i++) if (!a.Values[i].Equals(b.Values[i])) return false;
+            for (int i = 0; i < a.Targets.Length; i++) if (a.Targets[i] != b.Targets[i]) return false;
+            for (int i = 0; i < a.Reasons.Length; i++) if (a.Reasons[i] != b.Reasons[i]) return false;
+            return true; // Source instance ID may change during a same-map seek.
+        }
+        internal static void ValidateAdoptRemainder(Event[] baseline, Event[] remaining, double now)
+        {
+            if (!Finite(now)) throw new InvalidOperationException("adopt binding clock");
+            int index = 0;
+            foreach (var current in remaining)
+            {
+                while (index < baseline.Length && !SameAdoptEvent(baseline[index], current))
+                {
+                    if (baseline[index].T0 > now) throw new InvalidOperationException("adopt future schedule changed");
+                    index++; // The game removes already-started effects from its scheduled list.
+                }
+                if (index == baseline.Length) throw new InvalidOperationException("adopt unmatched scheduled effect");
+                index++;
+            }
+            while (index < baseline.Length)
+                if (baseline[index++].T0 > now) throw new InvalidOperationException("adopt future effect removed");
+        }
         internal struct Segment
         {
             internal double T0;
@@ -160,7 +188,7 @@ namespace StutterFix
             }
             private void Reset() { next = count = 0; last = double.NegativeInfinity;
                 for (int i = 0; i < cursor.Length; i++) { cursor[i] = -1; position[i] = -1; } }
-            internal double Step(double time)
+            internal double Step(double time, Action<int, float> emit = null)
             {
                 if (time < last) Reset();
                 last = time; Evaluated = Dispatched = 0;
@@ -173,12 +201,75 @@ namespace StutterFix
                 for (int i = 0; i < count;)
                 {
                     int slot = active[i]; var s = table.Tracks[slot][cursor[slot]];
-                    sum += Value(s, time, table.Pitch, table.TweenScale, table.Ease); Evaluated++;
+                    float value = Value(s, time, table.Pitch, table.TweenScale, table.Ease);
+                    sum += value; emit?.Invoke(slot, value); Evaluated++;
                     if ((time - s.T0) / table.Pitch * table.TweenScale >= s.Duration)
                     { position[slot] = -1; int moved = active[--count]; active[i] = moved; if (i < count) position[moved] = i; }
                     else i++;
                 }
                 return sum;
+            }
+        }
+        // Shared by the live driver and offline fixtures. No Unity or Rec ownership.
+        internal sealed class AdoptState
+        {
+            internal readonly Table Table;
+            internal readonly bool[] Owned;
+            internal readonly float[] Last;
+            internal bool Enabled = true;
+            private readonly ActiveEvaluator active;
+            private readonly Action<int, float> receive;
+            private Action<int, float> writer;
+            private double lastTime = double.NaN;
+            internal AdoptState(Table table)
+            {
+                Table = table; Owned = new bool[table.Decorations.Length]; Last = new float[table.Tracks.Length];
+                for (int d = 0; d < Owned.Length; d++) Owned[d] = table.Decorations[d].Reasons.Count == 0;
+                for (int s = 0; s < Last.Length; s++) Last[s] = float.NaN;
+                active = new ActiveEvaluator(table); receive = Receive;
+            }
+            private void Receive(int slot, float value)
+            {
+                if (!Owned[slot / Channels]) return;
+                if (!Finite(value)) throw new InvalidOperationException("adopt nonfinite slot=" + slot);
+                if (Last[slot] == value) return;
+                writer(slot, value); Last[slot] = value;
+            }
+            internal void Step(double time, bool resync, Action<int, float> write)
+            {
+                if (!Enabled) return;
+                if (!Finite(time)) throw new InvalidOperationException("adopt clock nonfinite");
+                lastTime = time;
+                writer = write;
+                try
+                {
+                    if (resync)
+                        for (int d = 0; d < Owned.Length; d++) if (Owned[d])
+                            for (int c = 0; c < Channels; c++)
+                            {
+                                int slot = d * Channels + c;
+                                // A seek may have overwritten the live fields despite an identical cached value.
+                                Last[slot] = float.NaN; Receive(slot, Table.Eval(d, c, time));
+                            }
+                    active.Step(time, receive);
+                }
+                finally { writer = null; }
+            }
+            internal void Stop(double time, Action<int, float> write)
+            {
+                Enabled = false; // Stop suppression even if a recovery setter throws.
+                if (!Finite(time)) time = Finite(lastTime) ? lastTime : 0;
+                Exception first = null;
+                for (int d = 0; d < Owned.Length; d++) if (Owned[d])
+                    for (int c = 0; c < Channels; c++)
+                    {
+                        int slot = d * Channels + c; var track = Table.Tracks[slot]; int i = Find(track, time);
+                        // Resync current state, completing every in-flight channel as Kill(true) does.
+                        float v = i < 0 ? Table.Decorations[d].Initial[c] : track[i].End;
+                        try { if (!Finite(v)) throw new InvalidOperationException("adopt recovery nonfinite"); write(slot, v); Last[slot] = v; }
+                        catch (Exception e) { if (first == null) first = e; }
+                    }
+                if (first != null) throw new InvalidOperationException("adopt recovery setter", first);
             }
         }
         internal static float[] EmptyValues()

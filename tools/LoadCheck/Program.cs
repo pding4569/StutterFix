@@ -30,9 +30,14 @@ class P
         if (a.Length > 1 && (a[1] == "--bake" || a[1] == "--no-bake"))
         {
             bool want = a[1] == "--bake";
-            bool have = asm.GetType("StutterFix.DecoBake", false) != null && asm.GetType("StutterFix.DecoBakeCore", false) != null;
+            string[] bakeTypes = { "StutterFix.DecoBake", "StutterFix.DecoBakeCore", "StutterFix.DecoBakeCore+AdoptState" };
+            bool have = bakeTypes.All(t => asm.GetType(t, false) != null);
             Console.WriteLine("DecoBake 개발 타입: " + have + ", 기대: " + want);
             if (have != want) return 3;
+            if (!want && bakeTypes.Any(t => asm.GetType(t, false) != null)) return 3;
+            bool haveSetter = asm.GetType("StutterFix.DecoAnim", true).GetMethod("BakeWrite", BindingFlags.Static | BindingFlags.NonPublic) != null;
+            Console.WriteLine("DecoAnim.BakeWrite: " + haveSetter + ", 기대: " + want);
+            if (haveSetter != want) return 3;
             if (want)
             {
                 var game = Assembly.LoadFrom(Path.Combine(managed, "Assembly-CSharp.dll"));

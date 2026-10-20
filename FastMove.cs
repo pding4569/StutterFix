@@ -113,7 +113,11 @@ namespace StutterFix
             try
             {
                 // 미리 확인이 "아무것도 안 바꾼다" 고 확인해 둔 효과: 효과 앞부분의 필드 쓰기만 하고 건너뛴다
-                if (Precheck.Active != 0 && Precheck.TrySkip(__instance))
+                if (Precheck.Active != 0 &&
+#if DEV || AUTOTEST
+                    !DecoBake.Adopting &&
+#endif
+                    Precheck.TrySkip(__instance))
                 {
                     if (!float.IsNaN(tScale(__instance))) tScaleV2(__instance) = new Vector2(tScale(__instance), tScale(__instance));
                     if (Edition.Dev && (Precheck.Used & 1) == 1) VerifyNoop(__instance);
@@ -122,7 +126,11 @@ namespace StutterFix
                 long hv0 = Edition.Dev ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
                 if (!Take(__instance)) { if (Edition.Dev) Heavy(__instance, hv0, "원래 코드로", false); return Orig(__instance); }   // 원래 코드가 돈다 (아직 아무것도 안 바꿨다)
                 long hv1 = Edition.Dev ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
-                bool sample = Edition.Dev && durRef(__instance) <= 0f && ((Effects + 1) % 16) == 1;   // 길이 있는 효과는 원래 코드로 다시 돌리면 애니메이션을 끊어 버려 검증하지 않는다
+                bool sample = Edition.Dev &&
+#if DEV || AUTOTEST
+                    !DecoBake.Adopting &&
+#endif
+                    durRef(__instance) <= 0f && ((Effects + 1) % 16) == 1;   // 길이 있는 효과는 원래 코드로 다시 돌리면 애니메이션을 끊어 버려 검증하지 않는다
                 if (sample) { hidBefore.Clear(); foreach (var dec in src) hidBefore.Add(InvisibleSkip.IsHidden(dec)); }
                 Run(__instance);
                 if (Edition.Dev) Heavy(__instance, hv0, "대상 찾기 " + ((hv1 - hv0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + "ms", sample);
@@ -131,6 +139,9 @@ namespace StutterFix
             }
             catch (Exception ex)
             {
+#if DEV || AUTOTEST
+                if (DecoBake.Adopting) DecoBake.AdoptFailure(ex);
+#endif
                 // 루프 도중 예외: 게임의 설정 함수가 던진 것이다. 원래 코드도 같은 장식에서 던졌을 것이므로 다시 돌리지 않는다.
                 if (First.Length < 300) First += " [예외: " + ex.GetType().Name + " " + ex.Message + "]";
                 return false;
@@ -153,6 +164,9 @@ namespace StutterFix
         // 원래 코드로 돈다. 원래 코드는 대상 장식의 애니메이션 사전을 바꿀 수 있으므로, 미리 확인 중인 계획이 그 장식을 보고 있으면 취소한다.
         private static bool Orig(ffxMoveDecorationsPlus fx)
         {
+#if DEV || AUTOTEST
+            if (DecoBake.Adopting) DecoBake.StopAdopt("FastMove 원본 우회");
+#endif
             if (Precheck.Active != 0)
             {
                 var mgr = mgrRef(fx);
@@ -540,6 +554,16 @@ namespace StutterFix
         internal static long AnimEffects, ImgEffects;
         private static bool No(int w) { why[w]++; Fallbacks++; if (Edition.Dev) MoveProf.Fallback(w); return false; }
 
+#if DEV || AUTOTEST
+        internal static void CompleteBakeTweens(scrDecoration dec)
+        {
+            DecoEngine.ReleaseDecoration(dec);
+            var d = tweensRef(dec);
+            if (d == null) return;
+            var values = new List<Tween>(d.Values);
+            foreach (var tween in values) if ((object)tween != null) tween.Kill(true);
+        }
+#endif
         private static void Run(ffxMoveDecorationsPlus fx)
         {
             Effects++; DecoCount += src.Count;
@@ -579,6 +603,14 @@ namespace StutterFix
                 for (int i = 0; i < targets.Count; i++)
                 {
                     var dec = targets[i];
+#if DEV || AUTOTEST
+                    if (DecoBake.SkipAdopt(fx, dec, anim ? usedCount : 0))
+                    {
+                        // Placement has no tween; preserve this event's metadata side effect.
+                        if (placement) setPlacement(dec, mt);
+                        continue;
+                    }
+#endif
                     var d = tweensRef(dec);
 #if DEV || AUTOTEST
                     UpdateCostProbe.DictionaryDecoration(anim);
