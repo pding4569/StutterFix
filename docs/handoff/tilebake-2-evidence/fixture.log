@@ -1,0 +1,30 @@
+PASS Kill(true) -> previous endpoint -> new start
+PASS replacement/source instance retained
+PASS offset relative to startPos, not current or previous endpoint
+PASS arbitrary seek/rewind pure evaluation
+PASS zero duration + equal T0 order
+PASS transform zero uses easing endpoint
+PASS OpaOnly/zero opacity direct target + unused NaN axes
+PASS Approximately skips creation after Kill
+PASS late unsupported writer excludes whole tile
+PASS scale axis supported
+PASS Euler wrap explicitly excluded
+PASS invalid duration/target excluded
+PASS DOTween intermediate easing values=3465
+PASS scale Kill(true), NaN X leaves old X running
+PASS scale seek/rewind has no state
+PASS scale X replacement completes X only; NaN Y keeps its own track
+PASS same T0 scale replacement completes even before first Step
+PASS zero scale uses per-axis getter/ease endpoint
+PASS zero X write forces near-Y tween via cached XY comparison
+PASS deferred X does not immediately write: near-Y remains skipped
+PASS frame-dependent cross-axis near skip excludes whole tile including previous tracks
+PASS exact equal Y after completion has no value ambiguity
+PASS both scale NaN: no tracks
+PASS scale change overflow explicitly excludes tile
+PASS 531.8s full baseline reset shape included (synthetic)
+PASS 8171-tile baseline return compiles all six channels (synthetic, not actual map coverage)
+PASS scale DOTween intermediate axis values=6930
+PASS invalid order rejected / cancellation
+PASS songTime / pitch * timeScale contract
+No game launch/install; synthetic evidence is not Lost Requiem measurement.

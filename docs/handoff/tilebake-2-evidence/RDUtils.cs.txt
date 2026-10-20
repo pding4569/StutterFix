@@ -1,0 +1,22 @@
+SOURCE decompiled RDUtils.cs.txt lines 606-625
+
+	public static bool Approximately(this Vector2 v, Vector2 v2)
+	{
+		if (Mathf.Approximately(v.x, v2.x))
+		{
+			return Mathf.Approximately(v.y, v2.y);
+		}
+		return false;
+	}
+
+	public static bool ApproximatelyXY(this Vector3 v, Vector3 v2)
+	{
+		if (Mathf.Approximately(v.x, v2.x))
+		{
+			return Mathf.Approximately(v.y, v2.y);
+		}
+		return false;
+	}
+
+	public static string TrimAllSpaces(this string value)
+

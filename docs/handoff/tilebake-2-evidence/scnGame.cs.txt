@@ -1,0 +1,220 @@
+SOURCE decompiled scnGame.cs.txt lines 318-326
+		int startOfColorChange = floors[0].seqID;
+		bool outline = levelData.floorIconOutlines;
+		_ = levelData.tileShape;
+		TrackAnimationType animationType = levelData.trackAnimation;
+		TrackAnimationType2 animationType2 = levelData.trackDisappearAnimation;
+		bool flag2 = true;
+		TrackStyle style = levelData.trackStyle;
+		float num3 = levelData.trackBeatsAhead;
+		float num4 = levelData.trackBeatsBehind;
+
+SOURCE decompiled scnGame.cs.txt lines 466-484
+				case LevelEventType.AnimateTrack:
+				{
+					flag2 = !item5.disabled["trackAnimation"];
+					bool num15 = !item5.disabled["trackDisappearAnimation"];
+					if (flag2)
+					{
+						animationType = (TrackAnimationType)item5["trackAnimation"];
+						num3 = item5.GetFloat("beatsAhead");
+					}
+					if (num15)
+					{
+						animationType2 = (TrackAnimationType2)item5["trackDisappearAnimation"];
+						num4 = item5.GetFloat("beatsBehind");
+					}
+					num5 = num6;
+					num6 = speed;
+					break;
+				}
+				case LevelEventType.TileDimensions:
+
+SOURCE decompiled scnGame.cs.txt lines 660-681
+			changeTrack.pulseType = tempPulseType;
+			changeTrack.pulseLength = tempPulseLength;
+			changeTrack.startOfColorChange = tempStartOfColorChange;
+			changeTrack.texture = tempTexture;
+			float num18 = speed / num6;
+			float num19 = speed / num5;
+			changeTrack.animationType = animationType;
+			changeTrack.animationType2 = animationType2;
+			changeTrack.tilesAhead = num3 * (flag2 ? num18 : num19);
+			changeTrack.tilesBehind = num4 * (flag2 ? num18 : num19);
+			floor4.glowMultiplier = tempGlowMult;
+			Vector3 startScale = (floor4.transform.localScale = new Vector3(output3, output3, 0f));
+			floor4.startScale = startScale;
+			floor4.SetOpacity(scrController.instance.paused ? Mathf.Max(output2, 0.1f) : output2);
+			floor4.opacityVal = output2;
+			floor4.rotationOffset = output4;
+			floor4.SetRotation(output4);
+			floor4.stickToFloor = output5;
+			output3 = num10;
+			output2 = num9;
+			output4 = num11;
+			output5 = flag;
+
+SOURCE decompiled scnGame.cs.txt lines 970-988
+		Dictionary<int, Dictionary<string, Tuple<int, float, bool, int>>> dictionary = new Dictionary<int, Dictionary<string, Tuple<int, float, bool, int>>>();
+		foreach (LevelEvent item8 in events.FindAll((LevelEvent x) => x.info.type == LevelEventType.RepeatEvents))
+		{
+			if (item8.active)
+			{
+				bool flag9 = (RepeatType)item8["repeatType"] == RepeatType.Beat;
+				int item = (int)item8[flag9 ? "repetitions" : "floorCount"];
+				float item2 = (flag9 ? item8.GetFloat("interval") : (-1f));
+				string[] array3 = (item8.GetString("tag") ?? "").Split(" ");
+				bool item3 = item8.GetBool("executeOnCurrentFloor");
+				int item4 = item8.GetInt("gapLength");
+				if (!dictionary.ContainsKey(item8.floor))
+				{
+					dictionary[item8.floor] = new Dictionary<string, Tuple<int, float, bool, int>>();
+				}
+				string[] array4 = array3;
+				foreach (string key in array4)
+				{
+					dictionary[item8.floor][key] = new Tuple<int, float, bool, int>(item, item2, item3, item4);
+
+SOURCE decompiled scnGame.cs.txt lines 1008-1087
+				};
+				dictionary2.Add(item9.floor, value);
+				floors[item9.floor].hasConditionalChange = true;
+			}
+		}
+		foreach (LevelEvent @event in events)
+		{
+			if (!@event.active)
+			{
+				continue;
+			}
+			int num32 = 0;
+			float num33 = 0f;
+			bool flag10 = false;
+			int floor2 = @event.floor;
+			int num34 = 1;
+			if (@event.TryGet<string>("eventTag", out var output11))
+			{
+				string[] array5 = output11.Split(" ");
+				if (dictionary.Keys.Contains(floor2))
+				{
+					Dictionary<string, Tuple<int, float, bool, int>> dictionary3 = dictionary[floor2];
+					string[] array4 = array5;
+					foreach (string key2 in array4)
+					{
+						if (dictionary3.ContainsKey(key2))
+						{
+							num32 = dictionary3[key2].Item1;
+							num33 = dictionary3[key2].Item2;
+							flag10 = dictionary3[key2].Item3;
+							num34 = dictionary3[key2].Item4;
+							break;
+						}
+					}
+				}
+			}
+			scrFloor scrFloor3 = floors[@event.floor];
+			for (num = 0; num <= num32; num++)
+			{
+				bool flag11 = num33 > 0f;
+				int num35 = scrFloor3.seqID + ((!flag11) ? (num * num34) : 0);
+				if (num35 >= floors.Count)
+				{
+					break;
+				}
+				scrFloor scrFloor4 = floors[num35];
+				float offset = (float)(flag11 ? ((double)(num33 * (float)num * 180f)) : ((flag10 ? 0.0 : (scrFloor4.entryBeat - scrFloor3.entryBeat)) * 180.0));
+				ffxPlusBase ffxPlusBase2 = ApplyEvent(@event, bpm, num2, floors, offset, flag10 ? new int?(scrFloor4.seqID) : ((int?)null));
+				if (EditorConstants.soloTypes.Contains(@event.eventType) || @event.eventType == LevelEventType.RepeatEvents)
+				{
+					break;
+				}
+				if (!dictionary2.Keys.Contains(floor2))
+				{
+					continue;
+				}
+				if (ffxPlusBase2 == null)
+				{
+					break;
+				}
+				bool[] array6 = new bool[9];
+				bool flag12 = false;
+				for (int num36 = 0; num36 < dictionary2[floor2].Length; num36++)
+				{
+					string text2 = dictionary2[floor2][num36];
+					array6[num36] = !text2.IsNoneConditionalTag() && @event.GetString("eventTag") == text2;
+					if (array6[num36])
+					{
+						flag12 = true;
+					}
+				}
+				if (flag12)
+				{
+					ffxPlusBase2.conditionalInfo = array6;
+					break;
+				}
+			}
+		}
+		ffxCameraPlus ffxCameraPlus2 = floors[0].gameObject.AddComponent<ffxCameraPlus>();
+		floors[0].plusEffects.Insert(0, ffxCameraPlus2);
+
+SOURCE decompiled scnGame.cs.txt lines 1357-1380
+		if (!string.IsNullOrEmpty(output2))
+		{
+			string[] array = output2.Split(" ");
+			foreach (string key in array)
+			{
+				scrDecorationManager scrDecorationManager2 = scrDecorationManager.instance;
+				if (scrDecorationManager2 != null)
+				{
+					if (!scrDecorationManager2.hitboxEventTagDecorations.TryGetValue(key, out var value))
+					{
+						continue;
+					}
+					foreach (scrDecoration item in value)
+					{
+						item.hitboxEvents.Add(ffxPlusBase2);
+					}
+				}
+				ffxPlusBase2.runManually = true;
+			}
+		}
+		ffxPlusBase2.sourceLevelEvent = evnt;
+		return ffxPlusBase2;
+	}
+
+
+SOURCE decompiled scnGame.cs.txt lines 1381-1393
+	public static int IDFromTile(Tuple<int, TileRelativeTo> tile, int tileID, List<scrFloor> floors)
+	{
+		return Mathf.Clamp(tile.Item2 switch
+		{
+			TileRelativeTo.ThisTile => tileID + tile.Item1, 
+			TileRelativeTo.Start => tile.Item1, 
+			TileRelativeTo.End => floors.Count - 1 + tile.Item1, 
+			_ => 0, 
+		}, 0, floors.Count - 1);
+	}
+
+	public static Tuple<int, TileRelativeTo> StringToTile(string sTile)
+	{
+
+SOURCE decompiled scnGame.cs.txt lines 1696-1713
+			for (num = 0; num < events.Count; num++)
+			{
+				LevelEvent levelEvent = events[num];
+				array[levelEvent.floor].Add(levelEvent);
+			}
+		}
+		scrVfxPlus scrVfxPlus2 = scrVfxPlus.instance;
+		scrVfxPlus2.Reset();
+		scrConductor scrConductor2 = scrConductor.instance;
+		foreach (scrFloor floor in floors)
+		{
+			floor.changeTrack.PrepFloor(remakeFloors);
+			floor.startPos = floor.transform.position;
+			if (floor.opacityVal != 1f)
+			{
+				floor.SetOpacity(floor.opacityVal);
+			}
+			if (remakeFloors && events != null)
+

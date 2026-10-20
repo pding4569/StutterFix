@@ -34,7 +34,7 @@ Require(near.Eval(0, 0, 1) == 1, "Approximately skips creation after Kill");
 var exclusion = Event(4, 2, 4); exclusion.Reasons = new[] { "other-writer" };
 var excluded = Compile(Tile(), Event(0, 2, 2), exclusion);
 Require(excluded.Supported == 0 && excluded.Segments == 0 && excluded.Tiles[0].Reasons.Contains("other-writer"), "late unsupported writer excludes whole tile");
-Require(Compile(Tile(), Event(0, 1, 2, 3)).Supported == 0, "scale vector startup explicitly excluded");
+Require(Compile(Tile(), Event(0, 1, 2, 3)).Supported == 1, "scale axis supported");
 Require(Compile(Tile(), Event(0, 1, 400, 2)).Supported == 0, "Euler wrap explicitly excluded");
 Require(Compile(Tile(), Event(0, -1, 1)).Supported == 0 && Compile(Tile(), Event(0, 1, float.PositiveInfinity)).Supported == 0, "invalid duration/target excluded");
 int samples = 0;
@@ -49,6 +49,70 @@ foreach (Ease ease in Enum.GetValues<Ease>()) {
     }
 }
 Require(samples == 3465, "DOTween intermediate easing values=" + samples);
+var sx = Event(0, 10, 3, 3); sx.Values[4] = 5;
+var sy = Event(4, 2, 7, 4, id: 2);
+var scaleReplace = Compile(Tile(), sx, sy);
+Require(scaleReplace.Eval(0, 3, 5) == 2 && scaleReplace.Eval(0, 4, 4) == 5 && scaleReplace.Eval(0, 4, 5) == 6,
+    "scale Kill(true), NaN X leaves old X running");
+Require(scaleReplace.Eval(0, 4, 2) == 1.8f && scaleReplace.Eval(0, 4, 8) == 7 && scaleReplace.Eval(0, 4, 2) == 1.8f,
+    "scale seek/rewind has no state");
+var replaceX = Compile(Tile(), sx, Event(4, 2, 7, 3, id: 3));
+Require(replaceX.Eval(0, 3, 4) == 3 && replaceX.Eval(0, 3, 5) == 5 && replaceX.Eval(0, 4, 5) == 3,
+    "scale X replacement completes X only; NaN Y keeps its own track");
+var sameScaleTime = Compile(Tile(), Event(0, 10, 3, 3), Event(0, 2, 7, 3, id: 2));
+Require(sameScaleTime.Eval(0, 3, 0) == 3 && sameScaleTime.Eval(0, 3, 1) == 5,
+    "same T0 scale replacement completes even before first Step");
+var sz = Event(2, 0, 9, 3); sz.Values[4] = 5; sz.ZeroK = .25f;
+Require(Compile(Tile(), sz).Eval(0, 3, 2) == 3 && Compile(Tile(), sz).Eval(0, 4, 2) == 2,
+    "zero scale uses per-axis getter/ease endpoint");
+var tinyY = Event(2, 0, 2, 3); tinyY.Values[4] = 1.0000005f;
+Require(Compile(Tile(), tinyY).Eval(0, 4, 2) == tinyY.Values[4],
+    "zero X write forces near-Y tween via cached XY comparison");
+tinyY.Duration = 2;
+Require(Compile(Tile(), tinyY).Eval(0, 4, 4) == 1,
+    "deferred X does not immediately write: near-Y remains skipped");
+var nearAfterKill = Event(2, 2, 2, 3); nearAfterKill.Values[4] = 5.000001f;
+var ambiguous = Compile(Tile(), sx, nearAfterKill);
+Require(ambiguous.Supported == 0 && ambiguous.Segments == 0
+    && ambiguous.Tiles[0].Reasons.Contains("scale-cross-axis-frame-dependent-skip"),
+    "frame-dependent cross-axis near skip excludes whole tile including previous tracks");
+var exactY = Event(2, 2, 1, 3); exactY.Values[4] = 5;
+Require(Compile(Tile(), sx, exactY).Supported == 1, "exact equal Y after completion has no value ambiguity");
+var bothNaN = Event(1, 3, float.NaN, 3);
+Require(Compile(Tile(), bothNaN).Segments == 0, "both scale NaN: no tracks");
+var hugeScale = Tile(); hugeScale.Initial[3] = -float.MaxValue;
+Require(Compile(hugeScale, Event(0, 1, float.MaxValue, 3)).Tiles[0].Reasons.Contains("scale-arithmetic-nonfinite"),
+    "scale change overflow explicitly excludes tile");
+var returnBase = Event(531.8, 1, 0); returnBase.Values = new[] { 0f, 0f, 0f, 1f, 1f, 1f };
+var large = Tile(); large.Initial = new[] { 2f, 4f, 90f, 2f, 3f, .2f };
+var reset = Compile(large, returnBase);
+Require(reset.Supported == 1 && reset.Eval(0, 3, 532.3) == 1.5f && reset.Eval(0, 4, 532.8) == 1
+    && reset.Eval(0, 0, 532.8) == 0 && reset.Eval(0, 5, 532.8) == 1,
+    "531.8s full baseline reset shape included (synthetic)");
+var tiles8171 = Enumerable.Range(0, 8171).Select(i => {
+    var row = Tile(); row.Id = i; row.Initial = new[] { 2f, 4f, 90f, 2f, 3f, .2f }; return row;
+}).ToArray();
+returnBase.Targets = Enumerable.Range(0, 8171).ToArray();
+var reset8171 = FloorBakeCore.Compile(tiles8171, new[] { returnBase }, 1, 1, EaseValue, CancellationToken.None);
+Require(reset8171.Supported == 8171 && reset8171.Segments == 8171 * 6
+    && Enumerable.Range(0, 8171).All(i => reset8171.Eval(i, 3, 532.3) == 1.5f && reset8171.Eval(i, 4, 532.8) == 1),
+    "8171-tile baseline return compiles all six channels (synthetic, not actual map coverage)");
+int scaleSamples = 0;
+foreach (Ease ease in Enum.GetValues<Ease>()) {
+    if (ease is Ease.Unset or Ease.INTERNAL_Custom or Ease.INTERNAL_Zero) continue;
+    var ev = Event(2, 4, 3.75f, 3, ease); ev.Values[4] = -.25f;
+    var tile = Tile(); tile.Initial[3] = 1.25f; tile.Initial[4] = 2.5f;
+    var baked = Compile(tile, ev);
+    for (int i = 1; i < 100; i++) for (int axis = 3; axis <= 4; axis++) {
+        float time = i / 25f;
+        // Independent Vector3Plugin axis formula with real DOTween easing.
+        float expected = tile.Initial[axis] + (ev.Values[axis] - tile.Initial[axis]) * EaseValue((int)ease, time, 4, ev.Over, 0);
+        if (BitConverter.SingleToInt32Bits(baked.Eval(0, axis, 2 + (double)time)) != BitConverter.SingleToInt32Bits(expected))
+            throw new Exception("scale ease " + ease + " axis=" + axis);
+        scaleSamples++;
+    }
+}
+Require(scaleSamples == 6930, "scale DOTween intermediate axis values=" + scaleSamples);
 bool sorted = false, cancelled = false;
 try { Compile(Tile(), Event(2, 1, 2), Event(1, 1, 2)); } catch (ArgumentException) { sorted = true; }
 try { FloorBakeCore.Compile(new[] { Tile() }, new[] { Event(0, 1, 2) }, 1, 1, EaseValue, new CancellationToken(true)); } catch (OperationCanceledException) { cancelled = true; }

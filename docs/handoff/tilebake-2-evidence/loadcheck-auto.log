@@ -1,0 +1,4 @@
+FloorBake 개발 타입: True/True, 기대: True
+정적 후크 계약 scnGame.PrepVfx 정확일치=1
+정적 후크 계약 scrVfxPlus.ScrubToTime 정확일치=1
+PlayerAuto/StutterFix.dll: FieldRefAccess(이름) 266곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 5(실행 중 확인)

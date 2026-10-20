@@ -315,6 +315,7 @@ namespace StutterFix
             if (TileSim.Capturing || tape == null || !tape.Valid || t == null || tape.BakeInvalid.Length != 0 || tape.Frames.Count == 0)
                 throw new InvalidOperationException("완료된 유효한 같은 세대 테이프 필요 " + tape?.BakeInvalid);
             var stats = Enumerable.Range(0, 6).Select(_ => new Errors()).ToArray(); var pixels = new Errors();
+            var scaleRelative = new[] { new Errors(), new Errors() }; int scaleNearZero = 0;
             int skipped = 0, badClock = 0, nonfinite = 0;
             foreach (var frame in tape.Frames) {
                 if (!DecoBakeCore.Finite(frame.SongTime) || frame.Pitch != t.Pitch || frame.TweenScale != t.Scale) { badClock++; continue; }
@@ -324,11 +325,20 @@ namespace StutterFix
                     double error = Math.Abs((double)t.Eval(d, c, frame.SongTime) - sample.X);
                     if (!DecoBakeCore.Finite(error)) { nonfinite++; continue; }
                     stats[c].Add(d, error);
+                    if (c == 3 || c == 4) {
+                        // Relative to observed Rec output. Near-zero denominators are
+                        // explicitly counted; absolute scale metrics remain available.
+                        if (Math.Abs(sample.X) < 1e-6) scaleNearZero++;
+                        scaleRelative[c - 3].Add(d, error / Math.Max(Math.Abs(sample.X), 1e-6));
+                    }
                     if (c < 2 && DecoBakeCore.Finite(frame.PixelsPerWorld)) pixels.Add(d, error * frame.PixelsPerWorld);
                 }
             }
             string[] names = { "위치X/world", "위치Y/world", "회전/degree", "크기X", "크기Y", "불투명도" };
             for (int c = 0; c < 6; c++) Log(names[c] + " " + stats[c].Report());
+            Log("크기X/상대 " + scaleRelative[0].Report());
+            Log("크기Y/상대 " + scaleRelative[1].Report() + " denominator=max(abs(Rec),1e-6) nearZero=" + scaleNearZero
+                + "; 크기px 미정: 타일/스프라이트 원래 치수와 부모 변환 미수집");
             Log("위치px " + pixels.Report() + " skipped=" + skipped + " badClock=" + badClock + " nonfinite=" + nonfinite + " (Rec 출력, tile%4; 화면상 전체 타일 검증 아님)");
             var stamps = new Dictionary<int, Start>(); foreach (var stamp in tape.Starts) if (!stamps.ContainsKey(stamp.Source)) stamps.Add(stamp.Source, stamp);
             var phases = new Dictionary<int, int>(); int missing = 0;

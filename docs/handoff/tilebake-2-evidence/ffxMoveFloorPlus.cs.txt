@@ -1,0 +1,215 @@
+using System;
+using System.Collections.Generic;
+using ADOFAI;
+using DG.Tweening;
+using UnityEngine;
+
+public class ffxMoveFloorPlus : ffxPlusBase
+{
+	private scrLevelMaker levelMaker;
+
+	public int start;
+
+	public int end;
+
+	public Vector2 targetPos;
+
+	public bool positionUsed = true;
+
+	public float targetRot;
+
+	public bool rotationUsed = true;
+
+	public float targetScale = float.NaN;
+
+	public Vector2 targetScaleV2;
+
+	public bool scaleUsed = true;
+
+	public float targetOpacity;
+
+	public bool opacityUsed = true;
+
+	public int gapLength;
+
+	protected override IEnumerable<Tween> eventTweens
+	{
+		get
+		{
+			List<Tween> list = new List<Tween>();
+			List<scrFloor> listFloors = levelMaker.listFloors;
+			for (int i = start; i <= end; i += 1 + gapLength)
+			{
+				scrFloor scrFloor2 = listFloors[i];
+				list.AddRange(scrFloor2.moveTweens.Values);
+			}
+			return list;
+		}
+	}
+
+	public override void Awake()
+	{
+		base.Awake();
+		levelMaker = ADOBase.lm;
+	}
+
+	private void Start()
+	{
+		if (!float.IsNaN(targetScale))
+		{
+			targetScaleV2 = new Vector2(targetScale, targetScale);
+		}
+	}
+
+	public override void StartEffect(scrPlanet planet)
+	{
+		AdjustDurationForHardbake();
+		if (end < start)
+		{
+			int num = end;
+			end = start;
+			start = num;
+		}
+		Vector3 targetPosV3 = new Vector3(targetPos.x, targetPos.y, 0f);
+		Vector3 targetRotVec = new Vector3(0f, 0f, targetRot);
+		Vector3 targetScaleVec = new Vector3(targetScaleV2.x, targetScaleV2.y, 1f);
+		List<scrFloor> listFloors = levelMaker.listFloors;
+		for (int i = start; i <= end; i += 1 + gapLength)
+		{
+			scrFloor scrFloor2 = listFloors[i];
+			TweenFloor(scrFloor2);
+			if (scrFloor2.freeroamArea == null)
+			{
+				continue;
+			}
+			foreach (scrFloor listFloor in scrFloor2.freeroamArea.listFloors)
+			{
+				if (listFloor.isLandable)
+				{
+					TweenFloor(listFloor);
+				}
+			}
+		}
+		void TweenFloor(scrFloor target)
+		{
+			Transform targetTransform = target.transform;
+			_ = target.floorRenderer.material;
+			Dictionary<TweenType, Tween> moveTweens = target.moveTweens;
+			Vector3 vector = target.startPos + targetPosV3;
+			float z = (target.startRot + targetRotVec).z;
+			if (positionUsed)
+			{
+				if (!float.IsNaN(vector.x))
+				{
+					if (moveTweens.ContainsKey(TweenType.PositionX))
+					{
+						moveTweens[TweenType.PositionX].Kill(complete: true);
+					}
+					if (!Mathf.Approximately(targetTransform.position.x, vector.x))
+					{
+						moveTweens[TweenType.PositionX] = DOTween.To(() => targetTransform.position.x, delegate(float x)
+						{
+							targetTransform.MoveX(x);
+						}, vector.x, duration).SetEase(ease).Done();
+					}
+				}
+				if (!float.IsNaN(vector.y))
+				{
+					if (moveTweens.ContainsKey(TweenType.PositionY))
+					{
+						moveTweens[TweenType.PositionY].Kill(complete: true);
+					}
+					if (!Mathf.Approximately(targetTransform.position.y, vector.y))
+					{
+						moveTweens[TweenType.PositionY] = DOTween.To(() => targetTransform.position.y, delegate(float y)
+						{
+							targetTransform.MoveY(y);
+						}, vector.y, duration).SetEase(ease).Done();
+					}
+				}
+			}
+			if (rotationUsed)
+			{
+				if (moveTweens.ContainsKey(TweenType.Rotation))
+				{
+					moveTweens[TweenType.Rotation].Kill(complete: true);
+				}
+				if (!Mathf.Approximately(targetTransform.eulerAngles.z, z))
+				{
+					moveTweens[TweenType.Rotation] = DOTween.To(() => target.tweenRot.z, delegate(float r)
+					{
+						target.tweenRot.z = r;
+					}, (target.startRot + targetRotVec).z, duration).SetEase(ease).OnUpdate(delegate
+					{
+						targetTransform.eulerAngles = target.tweenRot;
+					})
+						.Done();
+				}
+			}
+			if (scaleUsed)
+			{
+				Vector3 localScale = targetTransform.localScale;
+				if (!float.IsNaN(targetScaleVec.x))
+				{
+					moveTweens.GetValueOrDefault(TweenType.ScaleX)?.Kill(complete: true);
+					Vector3 vector2 = localScale.WithX(targetScaleVec.x);
+					if (!targetTransform.localScale.ApproximatelyXY(vector2))
+					{
+						moveTweens[TweenType.ScaleX] = targetTransform.DOScale(vector2, duration).SetEase(ease).SetOptions(AxisConstraint.X)
+							.Done();
+					}
+				}
+				if (!float.IsNaN(targetScaleVec.y))
+				{
+					moveTweens.GetValueOrDefault(TweenType.ScaleY)?.Kill(complete: true);
+					Vector3 vector3 = localScale.WithY(targetScaleVec.y);
+					if (!targetTransform.localScale.ApproximatelyXY(vector3))
+					{
+						moveTweens[TweenType.ScaleY] = targetTransform.DOScale(vector3, duration).SetEase(ease).SetOptions(AxisConstraint.Y)
+							.Done();
+					}
+				}
+			}
+			if (opacityUsed)
+			{
+				if (moveTweens.ContainsKey(TweenType.Opacity))
+				{
+					moveTweens[TweenType.Opacity].Kill(complete: true);
+				}
+				if (!Mathf.Approximately(target.opacity, targetOpacity))
+				{
+					Tween tween = target.TweenOpacity(targetOpacity, duration, ease);
+					if (tween != null)
+					{
+						moveTweens[TweenType.Opacity] = tween;
+					}
+				}
+			}
+		}
+	}
+
+	public override void Decode(LevelEvent evnt)
+	{
+		duration = evnt.GetFloat("duration") * crotchet;
+		Tuple<int, TileRelativeTo> tile = evnt.GetTile("startTile");
+		start = scnGame.IDFromTile(tile, floorID, floors);
+		Tuple<int, TileRelativeTo> tile2 = evnt.GetTile("endTile");
+		end = scnGame.IDFromTile(tile2, floorID, floors);
+		evnt.TryGetAndSet("gapLength", ref gapLength);
+		Vector2 vector = (Vector2)evnt["positionOffset"];
+		targetPos = ADOBase.controller.tileSize * vector;
+		positionUsed = !evnt.disabled["positionOffset"];
+		targetRot = evnt.GetFloat("rotationOffset");
+		rotationUsed = !evnt.disabled["rotationOffset"];
+		targetScaleV2 = (Vector2)evnt["scale"] / 100f;
+		scaleUsed = !evnt.disabled["scale"];
+		targetOpacity = evnt.GetFloat("opacity") / 100f;
+		opacityUsed = !evnt.disabled["opacity"];
+		evnt.TryGetAndSet("maxVfxOnly", ref disableIfMinFx);
+		if (disableIfMinFx)
+		{
+			hifiEffect = true;
+		}
+		ease = (Ease)evnt["ease"];
+	}
+}

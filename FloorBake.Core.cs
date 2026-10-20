@@ -72,8 +72,6 @@ namespace StutterFix
                     foreach (float v in e.Values) if (float.IsInfinity(v)) tile.Reasons.Add("target-nonfinite");
                     // Euler getter's wrap/Approximately comparison requires a separate rotation model.
                     if (!float.IsNaN(e.Values[2]) && (tile.Rotation + e.Values[2] < 0 || tile.Rotation + e.Values[2] >= 360)) tile.Reasons.Add("rotation-wrap");
-                    // Deferred vector getter and ApproximatelyXY couple axes. Do not invent scalar semantics.
-                    if (!float.IsNaN(e.Values[3]) || !float.IsNaN(e.Values[4])) tile.Reasons.Add("scale-vector-startup");
                 }
             }
             var lists = new List<DecoBakeCore.Segment>[tiles.Length * Channels];
@@ -82,6 +80,21 @@ namespace StutterFix
             {
                 cancel.ThrowIfCancellationRequested();
                 if (tiles[d].Reasons.Count != 0) continue;
+                // StartEffect caches XY before either Kill. Only Y's ApproximatelyXY
+                // test can see a changed OTHER axis. Deferred startup writes its own axis.
+                float cachedX = tiles[d].Initial[3], currentX = cachedX;
+                bool completedX = false;
+                var xlist = lists[d * Channels + 3];
+                if (xlist != null && xlist.Count != 0) {
+                    var old = xlist[xlist.Count - 1];
+                    cachedX = (e.T0 - old.T0) / pitch * scale >= old.Duration
+                        ? Endpoint(old, ease) : DecoBakeCore.Value(old, e.T0, pitch, scale, ease);
+                    currentX = cachedX;
+                    // Even a nominally ended segment can still be waiting for its
+                    // final frame. Don't infer the last displayed X from song time.
+                    completedX = !float.IsNaN(e.Values[3]) && old.Duration > 0;
+                    if (!float.IsNaN(e.Values[3])) currentX = Endpoint(old, ease);
+                }
                 for (int c = 0; c < Channels; c++)
                 {
                     float target = e.Values[c]; if (float.IsNaN(target)) continue;
@@ -95,24 +108,41 @@ namespace StutterFix
                     float start = tiles[d].Initial[c];
                     if (list.Count != 0) {
                         var old = list[list.Count - 1];
-                        start = old.Duration == 0 ? old.End : old.Start + (old.End - old.Start) * ease(old.Ease, old.Duration, old.Duration, old.Over, old.Period);
+                        start = Endpoint(old, ease);
                     }
                     bool replace = list.Count != 0 && list[list.Count - 1].Duration > 0 && (e.T0 - list[list.Count - 1].T0) / pitch * scale < list[list.Count - 1].Duration;
                     bool skip = Approximately(start, target);
+                    if (c == 4 && skip && start != target && !float.IsNaN(e.Values[3])) {
+                        // With a running X, cachedX is the last actual frame value, not
+                        // necessarily Value(T0). A forced near-Y tween changes its output.
+                        if (completedX) { tiles[d].Reasons.Add("scale-cross-axis-frame-dependent-skip"); break; }
+                        skip = Approximately(currentX, cachedX);
+                    }
                     // Opacity duration-zero writes its target directly; transform channels use EaseEnd.
                     float end = skip ? start : e.Duration == 0 && c != 5 ? start + (target - start) * e.ZeroK : target;
+                    if ((c == 3 || c == 4) && (!DecoBakeCore.Finite(target - start) || !DecoBakeCore.Finite(end))) {
+                        tiles[d].Reasons.Add("scale-arithmetic-nonfinite"); break;
+                    }
                     list.Add(new DecoBakeCore.Segment { T0 = e.T0, Duration = skip ? 0 : e.Duration, Start = start, End = end,
                         Ease = e.Ease, Over = e.Over, Period = e.Period, Source = e.Source, Replacement = replace });
                     table.Segments++;
+                    if (c == 3) currentX = skip ? start : e.Duration == 0 ? end : start;
                     if (table.Segments > 4000000) throw new InvalidOperationException("segment-limit");
                 }
             }
-            for (int i = 0; i < lists.Length; i++) table.Tracks[i] = lists[i]?.ToArray() ?? Array.Empty<DecoBakeCore.Segment>();
+            // A semantic exclusion discovered late invalidates ALL earlier channels too.
+            table.Segments = 0;
+            for (int i = 0; i < lists.Length; i++) {
+                table.Tracks[i] = tiles[i / Channels].Reasons.Count == 0 ? lists[i]?.ToArray() ?? Array.Empty<DecoBakeCore.Segment>() : Array.Empty<DecoBakeCore.Segment>();
+                table.Segments += table.Tracks[i].Length;
+            }
             foreach (var tile in tiles) if (tile.Reasons.Count == 0) table.Supported++;
             table.PayloadBytes = table.Segments * 40L + lists.Length * (long)IntPtr.Size + tiles.Length * 40L;
             table.CompileMs = sw.Elapsed.TotalMilliseconds;
             return table;
         }
+        private static float Endpoint(DecoBakeCore.Segment s, DecoBakeCore.EaseFn ease)
+            => s.Duration == 0 ? s.End : s.Start + (s.End - s.Start) * ease(s.Ease, s.Duration, s.Duration, s.Over, s.Period);
         internal static Table Synthetic(int count, DecoBakeCore.EaseFn ease)
         {
             var tiles = new Tile[count];

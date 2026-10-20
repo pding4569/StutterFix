@@ -1,0 +1,70 @@
+SOURCE decompiled scrFloor.cs.txt lines 1320-1340
+			return;
+		}
+		if (nextfloor == null)
+		{
+			holdLength = -1;
+		}
+		if (!controller.gameworld && (bool)controller.currFloor && !controller.currFloor.freeroamGenerated)
+		{
+			return;
+		}
+		isTweening = lastPos != thisTransform.position || lastScale != floorRenderer.transform.localScale;
+		isFading = opacityLastFrame != opacity;
+		isChangingGlowMult = glowMultiplierLastFrame != glowMultiplier;
+		if (isFading)
+		{
+			floorRenderer.material.SetFloat(ShaderProperty_Alpha, opacity);
+			if (!controller.paused)
+			{
+				SetIconColor(new Color(1f, 1f, 1f, opacity));
+			}
+			if (!isFake)
+
+SOURCE decompiled scrFloor.cs.txt lines 1378-1390
+				}
+			}
+			if (isTweening)
+			{
+				multiplanetLine.transform.position = base.transform.position;
+			}
+		}
+		lastPos = thisTransform.position;
+		lastScale = floorRenderer.transform.localScale;
+		opacityLastFrame = opacity;
+		glowMultiplierLastFrame = glowMultiplier;
+	}
+
+
+SOURCE decompiled scrFloor.cs.txt lines 1895-1924
+
+	public void ResetToLevelStart()
+	{
+		Transform transform = thisTransform;
+		Vector3 eulerAngles = startRot.WithZ(startRot.z + rotationOffset);
+		transform.position = startPos;
+		transform.eulerAngles = eulerAngles;
+		tweenRot = eulerAngles;
+		opacity = opacityVal;
+		if (!freeroamGenerated)
+		{
+			transform.localScale = startScale;
+		}
+		SetTrackStyle(initialTrackStyle);
+		if (freeroam && !freeroamGenerated)
+		{
+			foreach (scrFloor freeroamFloor in freeroamFloors)
+			{
+				if (!freeroamFloor.freeroamRemoved)
+				{
+					freeroamFloor.ResetToLevelStart();
+					freeroamFloor.startScale = startScale;
+					freeroamFloor.isLandable = true;
+					freeroamFloor.ToggleCollider(collEn: true);
+					freeroamFloor.topGlow.gameObject.SetActive(value: false);
+					if (freeroamFloor.isCCW != isCCW)
+					{
+						freeroamFloor.isCCW = isCCW;
+						freeroamFloor.UpdateIconSprite();
+					}
+

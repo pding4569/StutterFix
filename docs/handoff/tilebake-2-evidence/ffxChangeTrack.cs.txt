@@ -1,0 +1,74 @@
+using UnityEngine;
+
+public class ffxChangeTrack : ADOBase
+{
+	public scrFloor floor;
+
+	public Color color1 = Color.clear;
+
+	public Color color2 = Color.clear;
+
+	public TrackColorType colorType;
+
+	public float colorAnimDuration;
+
+	public TrackColorPulse pulseType;
+
+	public int pulseLength = 10;
+
+	public int startOfColorChange = -1;
+
+	public TrackAnimationType animationType;
+
+	public TrackAnimationType2 animationType2;
+
+	public float tilesAhead = 3f;
+
+	public float tilesBehind = 4f;
+
+	public Texture2D texture;
+
+	private float animDuration;
+
+	public void Awake()
+	{
+		if (floor == null)
+		{
+			floor = GetComponent<scrFloor>();
+		}
+	}
+
+	public void PrepFloor(bool remakeFloors = true)
+	{
+		floor.ColorFloor(colorType, color1, color2, colorAnimDuration / scrConductor.instance.song.pitch, pulseType, pulseLength, startOfColorChange);
+		if (ADOBase.controller.usingInitialTrackStyles)
+		{
+			floor.SetTrackStyle(floor.initialTrackStyle);
+		}
+		floor.customTexture = texture;
+		if (!remakeFloors)
+		{
+			return;
+		}
+		if (animationType != TrackAnimationType.None)
+		{
+			ffxFloorAppearPlus ffxFloorAppearPlus2 = base.gameObject.AddComponent<ffxFloorAppearPlus>();
+			if (floor.seqID != 0)
+			{
+				ffxFloorAppearPlus2.prevFloor = scrLevelMaker.instance.listFloors[floor.seqID - 1];
+			}
+			ffxFloorAppearPlus2.tilesAhead = tilesAhead;
+			ffxFloorAppearPlus2.animType = animationType;
+			ffxFloorAppearPlus2.SetStartTime(ADOBase.conductor.bpm);
+			floor.plusEffects.Add(ffxFloorAppearPlus2);
+		}
+		if (animationType2 != TrackAnimationType2.None)
+		{
+			ffxFloorDisappearPlus ffxFloorDisappearPlus2 = base.gameObject.AddComponent<ffxFloorDisappearPlus>();
+			ffxFloorDisappearPlus2.tilesBehind = tilesBehind;
+			ffxFloorDisappearPlus2.animType = animationType2;
+			ffxFloorDisappearPlus2.SetStartTime(ADOBase.conductor.bpm);
+			floor.plusEffects.Add(ffxFloorDisappearPlus2);
+		}
+	}
+}
