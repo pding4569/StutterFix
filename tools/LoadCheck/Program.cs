@@ -27,6 +27,22 @@ class P
 
         var asm = Assembly.LoadFrom(a[0]);
         var mod = asm.ManifestModule;
+        if (a.Length > 1 && (a[1] == "--bake" || a[1] == "--no-bake"))
+        {
+            bool want = a[1] == "--bake";
+            bool have = asm.GetType("StutterFix.DecoBake", false) != null && asm.GetType("StutterFix.DecoBakeCore", false) != null;
+            Console.WriteLine("DecoBake 개발 타입: " + have + ", 기대: " + want);
+            if (have != want) return 3;
+            if (want)
+            {
+                var game = Assembly.LoadFrom(Path.Combine(managed, "Assembly-CSharp.dll"));
+                var levelEvent = game.GetType("ADOFAI.LevelEvent", true);
+                var floorList = typeof(List<>).MakeGenericType(game.GetType("scrFloor", true));
+                var eventList = typeof(List<>).MakeGenericType(levelEvent);
+                CheckHook(game.GetType("scrDecoration", true), "Setup", false, new[] { levelEvent, typeof(bool).MakeByRefType(), typeof(bool) });
+                CheckHook(game.GetType("scnGame", true), "PrepVfx", true, new[] { floorList, typeof(int), eventList, typeof(bool) });
+            }
+        }
         Type[] types; try { types = asm.GetTypes(); } catch (ReflectionTypeLoadException ex) { types = ex.Types.Where(t => t != null).ToArray(); }
         int checkedN = 0, bad = 0, dynamicN = 0;
         foreach (var t in types)
@@ -74,6 +90,16 @@ class P
     }
 
     // Harmony AccessTools.FieldRefAccess<T, F>(name) 과 같은 규칙: T 와 부모에서 이름으로 필드를 찾고, 형식 확인
+    static void CheckHook(Type type, string name, bool isStatic, Type[] parameters)
+    {
+        var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+            .Where(m => m.Name == name && !m.IsGenericMethod && m.IsStatic == isStatic && m.ReturnType == typeof(void)
+                && m.CallingConvention == (isStatic ? CallingConventions.Standard : CallingConventions.Standard | CallingConventions.HasThis)
+                && m.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameters)).ToArray();
+        Console.WriteLine("정적 후크 계약 " + type.Name + "." + name + " 정확일치=" + methods.Length);
+        if (methods.Length != 1) throw new InvalidOperationException("후크 모호/없음");
+    }
+
     static string Check(Type owner, Type fieldType, string name)
     {
         if (name == null) return "필드 이름을 IL 에서 못 찾음";

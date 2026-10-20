@@ -1,0 +1,135 @@
+﻿게임 미실행: 현재 DLL의 ILSpy 정적 발췌, 행 번호는 임시 디컴파일 소스 기준.
+
+
+Algorithm : SHA256
+Hash      : F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF
+
+
+
+
+scnGame.cs:1304
+	{
+		int num = customFloorID ?? evnt.floor;
+		GameObject gameObject = floors[num].gameObject;
+		float speed = floors[num].speed;
+		float crotchet = 60f / (bpm * pitch * speed);
+		if (instance == null && evnt.eventType == LevelEventType.CustomBackground)
+		{
+			return null;
+		}
+		ffxPlusBase ffxPlusBase2 = evnt.eventType switch
+scrConductor.cs:793
+	{
+		if (isAudioOutputDeviceChanged)
+		{
+			scrController.CheckForAudioOutputChange();
+			isAudioOutputDeviceChanged = false;
+		}
+		PlatformHelper.instance.Update();
+		bool pause = AudioListener.pause;
+		if (AudioSettings.dspTime != lastReportedPlayheadPosition)
+		{
+			dspTime = AudioSettings.dspTime;
+			lastReportedPlayheadPosition = AudioSettings.dspTime;
+		}
+		else if (!pause && Application.isFocused)
+		{
+			double num = Time.unscaledTimeAsDouble - previousFrameTime;
+			dspTime += num;
+		}
+		previousFrameTime = Time.unscaledTimeAsDouble;
+		if (AsyncInputManager.isActive)
+		{
+			AsyncInputManager.prevFrameTick = AsyncInputManager.currFrameTick;
+			AsyncInputManager.currFrameTick = DateTime.Now.Ticks;
+scrConductor.cs:872
+		crotchetAtStart = 60f / bpm;
+		double num2 = songposition_minusi;
+		if (!GCS.d_oldConductor && !GCS.d_webglConductor)
+		{
+			songposition_minusi = (double)((float)(dspTime - dspTimeSong - (double)calibration_i) * song.pitch) - addoffset;
+		}
+		else
+		{
+			songposition_minusi = (double)(song.time - calibration_i) - addoffset / (double)song.pitch;
+		}
+		deltaSongPos = songposition_minusi - num2;
+		deltaSongPos = Math.Max(deltaSongPos, 0.0);
+		if (songposition_minusi > nextBeatTime)
+		{
+ffxMoveDecorationsPlus.cs:150
+					{
+						if (dictionary.TryGetValue(TweenType.PositionX, out var value))
+						{
+							value.Kill(complete: true);
+						}
+						Vector2 newPos = dec.pivotPosVec;
+						dictionary[TweenType.PositionX] = DOTween.To(() => newPos.x, delegate(float v)
+						{
+							newPos.x = v;
+						}, startPos.x + targetPos.x, duration).SetEase(ease).OnUpdate(delegate
+						{
+							dec.SetPositionX(newPos.x, dec.pivotOffsetVec);
+						})
+							.OnComplete(delegate
+							{
+								dec.SetPositionX(startPos.x + targetPos.x, dec.pivotOffsetVec);
+							})
+							.Done();
+					}
+					if (!float.IsNaN(targetPos.y))
+					{
+						if (dictionary.TryGetValue(TweenType.PositionY, out var value2))
+						{
+							value2.Kill(complete: true);
+						}
+						Vector2 newPos2 = dec.pivotPosVec;
+						dictionary[TweenType.PositionY] = DOTween.To(() => newPos2.y, delegate(float v)
+						{
+							newPos2.y = v;
+						}, startPos.y + targetPos.y, duration).SetEase(ease).OnUpdate(delegate
+ffxPlusBase.cs:180
+	{
+		if (!ADOBase.customLevel)
+		{
+			duration /= scrConductor.instance.song.pitch;
+		}
+	}
+
+	public bool IsAllowedByVisualSettings(VisualQuality visualQuality, VisualEffects visualEffects)
+	{
+		if (hifiEffect && visualQuality != VisualQuality.High)
+		{
+			return false;
+		}
+		if (disableIfMinFx && visualEffects == VisualEffects.Minimum)
+		{
+			return false;
+		}
+		if (disableIfMaxFx && visualEffects == VisualEffects.Full)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.DrawIcon(base.transform.position, "star.png", allowScaling: true);
+	}
+TweenSettingsExtensions.cs:156
+	public static T SetEase<T>(this T t, Ease ease) where T : Tween
+	{
+		if (t == null || !t.active)
+		{
+			return t;
+		}
+		t.easeType = ease;
+		if (EaseManager.IsFlashEase(ease))
+		{
+			t.easeOvershootOrAmplitude = (int)t.easeOvershootOrAmplitude;
+		}
+		t.customEase = null;
+		return t;
+	}
+

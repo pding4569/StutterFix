@@ -16,6 +16,21 @@ namespace StutterFix
         private const long Limit = 512L * 1024 * 1024;
         private const int MaxDecorations = 100000, MaxSlots = 200000, MaxFrames = 12000;
         private static Tape tape;
+        internal static Tape BakeTape => tape;
+        internal static void ForgetBake()
+        {
+            if (tape == null) return;
+            tape.BakeTable = null; tape.BakeGeneration = -1; tape.BakeStarts.Clear();
+        }
+        internal static void InvalidateBake(string reason)
+        {
+            if (Capturing && tape.BakeTable != null) tape.BakeInvalidReason = reason;
+        }
+        internal static void Shutdown()
+        {
+            Capturing = false; inFrame = false; tape = null;
+            decorations.Clear(); tokens.Clear(); slots.Clear(); present.Clear(); removed.Clear();
+        }
         private static readonly Dictionary<scrDecoration, int> decorations = new Dictionary<scrDecoration, int>();
         private static readonly Dictionary<DecoAnim.Rec, int> tokens = new Dictionary<DecoAnim.Rec, int>();
         private static readonly Dictionary<int, int> slots = new Dictionary<int, int>();
@@ -54,10 +69,18 @@ namespace StutterFix
         internal struct Frame
         {
             internal float Dt;
+            internal double SongTime;
+            internal float Pitch, TweenScale, PixelsPerWorld;
+            internal int UnityFrame;
             internal int EventBegin, EventEnd, SampleBegin, SampleEnd, Evaluated;
         }
         internal sealed class Tape
         {
+            internal int BakeGeneration = -1;
+            internal DecoBakeCore.Table BakeTable;
+            internal string BakeInvalidReason = "";
+            internal readonly List<DecoBake.StartStamp> BakeStarts = new List<DecoBake.StartStamp>();
+            internal int[] DecorationIds;
             internal int DecorationCount, SlotCount;
             internal long Reserved;
             internal bool Valid = true;
@@ -99,14 +122,15 @@ namespace StutterFix
                 if (!DecoAnim.SimDefaultPath()) { Log("거부: 연구 경로/ablation을 끄고 기본 경로에서 캡처"); return; }
                 var all = scrDecorationManager.instance?.allDecorations;
                 if (all == null || all.Count > MaxDecorations) { Log("거부: 장식 목록 없음 또는 100000개 상한"); return; }
-                tape = new Tape { DecorationCount = all.Count, Baseline = new Output[all.Count] };
+                tape = new Tape { DecorationCount = all.Count, Baseline = new Output[all.Count],
+                    BakeGeneration = DecoBake.Generation, BakeTable = DecoBake.CaptureTable, DecorationIds = new int[all.Count] };
                 // Includes dictionary capacity, references and replay/output headroom.
                 tape.Reserved = 1024 * 1024 + all.Count * 128L;
                 serial = 0; inFrame = false; stepCount = 0;
                 initialErrors = DecoAnim.Errors;
                 decorations.Clear(); tokens.Clear(); slots.Clear(); present.Clear(); removed.Clear();
                 for (int i = 0; i < all.Count; i++)
-                    if (all[i] != null && !decorations.ContainsKey(all[i])) { decorations.Add(all[i], i); tape.Baseline[i] = DecoAnim.SimOutput(all[i]); }
+                    if (all[i] != null && !decorations.ContainsKey(all[i])) { decorations.Add(all[i], i); tape.Baseline[i] = DecoAnim.SimOutput(all[i]); tape.DecorationIds[i] = all[i].GetInstanceID(); }
                 deadline = Stopwatch.GetTimestamp() + (long)(seconds * Stopwatch.Frequency);
                 Capturing = true;
                 foreach (var r in DecoAnim.SimRecords())
@@ -171,6 +195,12 @@ namespace StutterFix
             tape.Events.Add(new Event { Kind = kind, State = s, HasSample = sample, Sample = sample ? MakeSample(r, s.Slot, s.Token, s.Decoration) : default });
         }
         internal static void Created(DecoAnim.Rec r) { AddEvent(Kind.Create, r, true); }
+        internal static void RecordBakeStart(DecoBake.StartStamp stamp)
+        {
+            if (!Capturing || tape.BakeTable == null) return;
+            if (tape.BakeStarts.Count >= 300000 || !Reserve(64)) { if (Capturing) Stop("굽기 시작 기록 상한", false); return; }
+            tape.BakeStarts.Add(stamp);
+        }
         internal static void Started(DecoAnim.Rec r) { AddEvent(Kind.Startup, r); }
         internal static void Completed(DecoAnim.Rec r) { AddEvent(Kind.Complete, r); }
         internal static void Cancelled(DecoAnim.Rec r) { AddEvent(Kind.Cancel, r); }
@@ -217,7 +247,12 @@ namespace StutterFix
             if (DecoAnim.Errors != initialErrors) { Stop("DecoAnim 예외 발생", false); return; }
             if (!inFrame) { Stop("프레임 경계 누락", false); return; }
             if (tape.Frames.Count >= MaxFrames || !Reserve(128)) { if (Capturing) Stop("프레임 12000개 상한", false); return; }
-            tape.Frames.Add(new Frame { Dt = td, EventBegin = frameEvent, EventEnd = tape.Events.Count,
+            var conductor = scrConductor.instance;
+            var camera = scrCamera.instance == null ? null : scrCamera.instance.camobj;
+            tape.Frames.Add(new Frame { Dt = td, SongTime = conductor == null ? double.NaN : conductor.songposition_minusi,
+                Pitch = conductor?.song == null ? float.NaN : conductor.song.pitch, TweenScale = DOTween.timeScale,
+                PixelsPerWorld = camera != null && camera.orthographic ? 1440f / (2f * camera.orthographicSize) : float.NaN,
+                UnityFrame = Time.frameCount, EventBegin = frameEvent, EventEnd = tape.Events.Count,
                 SampleBegin = frameSample, SampleEnd = tape.Samples.Count, Evaluated = stepCount });
             inFrame = false;
             if (Stopwatch.GetTimestamp() >= deadline) Stop("완료", true);

@@ -75,7 +75,11 @@ namespace StutterFix
             public int GetHashCode(scrDecoration o) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o); }
         }
         private static readonly List<scrDecoration> list = new List<scrDecoration>();
-        internal static void ForgetLevel() { list.Clear(); src = null; if (shape.Targets != null) shape.Targets = null; shape.Sources.Clear(); stamp.Clear(); TagIndex.Forget(); }
+        internal static void ForgetLevel() { list.Clear(); src = null; if (shape.Targets != null) shape.Targets = null; shape.Sources.Clear(); stamp.Clear(); TagIndex.Forget();
+#if DEV || AUTOTEST
+            DecoBake.ForgetLevel();
+#endif
+        }
         private static bool running, bypass;
 
         internal static void Install(Harmony h)
@@ -99,6 +103,9 @@ namespace StutterFix
         // 다른 모드 코드(효과 나누기 등)가 원래 실행을 막았으면 아무것도 안 한다. 맡으면 false(원래 코드 건너뜀).
         public static bool Prefix(ffxMoveDecorationsPlus __instance, object[] __args, bool __runOriginal)
         {
+#if DEV || AUTOTEST
+            if (__runOriginal && !bypass && !running && DecoBake.Enabled) DecoBake.ObserveStart(__instance);
+#endif
             if (!__runOriginal) return false;
             if (bypass || running || !Enabled || !Installed || !Hitch.Playing) return Orig(__instance);
             if (!InstantMove.Enabled || !InstantMove.Patched || !ZeroTween.Enabled || !ZeroTween.Patched || !ZeroTween.CanEase) return Orig(__instance);

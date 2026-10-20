@@ -473,6 +473,8 @@ ParticleTextWatch.Install(harmony);
 #if DEV || AUTOTEST
             Try(FreeFpsProbe.Restore);
             Try(TileSim.Shutdown);
+            Try(DecoBake.Shutdown);
+            Try(DecoSim.Shutdown);
             Try(TileCost.Shutdown);
             Try(DecoGpu.Stop);
             Try(DecoRender.Stop);
@@ -629,6 +631,9 @@ if (Edition.AutoTest && AutoTest.ReloadNow) { AutoTest.ReloadNow = false; Reques
 AutoTest.Tick();
 #endif
 } FrameGen.Tick(); PcTune.Tick(); ThreadScheduling.Tick(); RenderThreadScheduling.Tick(); if(FrameQueueDelay.Enabled)FrameQueueDelay.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (!Hitch.Playing && Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
+#if DEV || AUTOTEST
+            if (DecoBake.Enabled) DecoBake.Tick();
+#endif
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
