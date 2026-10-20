@@ -636,6 +636,7 @@ namespace StutterFix
         public static void UpdatePrefix()
         {
 #if DEV || AUTOTEST
+            DecoBake.AdvanceClock();
             if (DecoSim.Capturing) DecoSim.BeginFrame(recs, batchOn || DecoEngine.Enabled || GroupEnabled || NativeMotion.Enabled);
 #endif
             UpdateEvalMemo.NewFrame();

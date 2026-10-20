@@ -12,3 +12,9 @@
 
 근거는 `docs/handoff/bake-evidence/clock-read-sites.txt`와 결과 보고서에 있다.
 Mono/Unity 실행 결과, GPU 정확도, 실제 맵 성능을 증명하지 않는다.
+
+bake-6는 production `SongClock`도 직접 검사한다. `bake5early-evidence.txt`의 고정 12행은
+raw 첫 시각으로 cold 초기화하고 actual/RecPos를 보정에 쓰지 않는다. 최대/RMS 오차와
+프레임 환산을 출력한다. 600초@480FPS 균등 ±6ms/버퍼 계단형 합성은 최대 2프레임과
+말미 평균 오차를 검사하며, 정지/재개/seek/pitch/스냅샷 세대 변경/활성 커서 되감기도 확인한다.
+`--bench`는 희소 합성 evalAll/evalActive 비용을 덧붙인다. 실게임 성능 증거가 아니다.

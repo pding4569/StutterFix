@@ -11,6 +11,49 @@ namespace StutterFix
     {
         internal const int Channels = 16;
         internal const int ScaleX = 5, ScaleY = 6;
+        // Stateful clock adapter only; Table.Eval remains a stateless function.
+        internal sealed class SongClock
+        {
+            internal double Time { get; private set; } = double.NaN;
+            private double rawLast;
+            private bool playingLast;
+            internal int Resyncs;
+            internal void Reset() { Time = double.NaN; }
+            internal double Step(double raw, double tweenDelta, double pitch, double tweenScale, bool playing)
+            {
+                if (!Finite(raw)) { Reset(); return double.NaN; }
+                double delta = tweenScale > 0 ? tweenDelta * pitch / tweenScale : 0;
+                double predicted = Time + Math.Max(0, delta);
+                if (!Finite(Time) || playing != playingLast || !playing || !Finite(delta)
+                    || Math.Abs(raw - predicted) > .05 || raw - rawLast < -.05)
+                { Time = raw; Resyncs++; }
+                else Time = Math.Max(Time, predicted + .01 * (raw - predicted));
+                rawLast = raw; playingLast = playing;
+                return Time;
+            }
+        }
+        internal sealed class SnapshotChangedException : InvalidOperationException { }
+        // A coroutine may resume after seek mutated a list in place. Check BEFORE indexing.
+        internal static T SnapshotItem<T>(IList<T> list, int index, int count, int epoch, int currentEpoch)
+        {
+            if (epoch != currentEpoch || list.Count != count || (uint)index >= (uint)list.Count)
+                throw new SnapshotChangedException();
+            return list[index];
+        }
+        // Symmetric derivative within one continuous segment; steps/endpoints/flat spans are NA.
+        internal static double Speed(Table table, int d, int channel, double time)
+        {
+            const double h = .0001;
+            var track = table.Tracks[d * Channels + channel];
+            int i = Find(track, time);
+            if (i < 0 || Find(track, time - h) != i || Find(track, time + h) != i) return double.NaN;
+            var s = track[i];
+            double end = s.T0 + s.Duration * table.Pitch / table.TweenScale;
+            if (s.Duration <= 0 || time - h <= s.T0 || time + h >= end) return double.NaN;
+            double speed = Math.Abs((double)Value(s, time + h, table.Pitch, table.TweenScale, table.Ease)
+                - Value(s, time - h, table.Pitch, table.TweenScale, table.Ease)) / (2 * h);
+            return speed > .000001 ? speed : double.NaN;
+        }
         // scrVfxPlus.Update compares this directly with songposition_minusi.
         internal static double ScheduledTime(double startTime, double startEffectOffset) => startTime - startEffectOffset;
         internal static double FitOffset(Func<double, double> loss)

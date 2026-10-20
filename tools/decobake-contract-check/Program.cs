@@ -194,6 +194,75 @@ Require(cursor.Step(4) == 30 && cursor.Step(4) == 0, "활성 평가: 길이0 및
 Require(cursor.Step(1.5) == cursorTable.Eval(0, 0, 1.5), "활성 평가: 되감기는 명시적 scheduler 초기화");
 Require(System.Runtime.InteropServices.Marshal.SizeOf<DecoBakeCore.Segment>() == 48, "Segment 실제 unmanaged stride 48B, payload 산식과 일치");
 
+// Bake-6: exact evidence rows; no actual/RecPos value seeds or calibrates the tested clock.
+string evidence = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../docs/handoff/bake5early-evidence.txt"));
+var rowPattern = new System.Text.RegularExpressions.Regex(@"진단 행 장식=-587466 채널=위치X frame=(\d+) songposition_minusi=([^ ]+) actual=([^ ]+) baked=[^ ]+ dt=([^ ]+) RecPos=([^\s]+)");
+var rows = rowPattern.Matches(File.ReadAllText(evidence)).Select(m => new {
+    Frame = int.Parse(m.Groups[1].Value), Song = double.Parse(m.Groups[2].Value), Actual = double.Parse(m.Groups[3].Value),
+    Dt = double.Parse(m.Groups[4].Value), Rec = double.Parse(m.Groups[5].Value) }).ToArray();
+Require(rows.Length == 12 && rows[0].Frame == 22630 && rows[11].Frame == 22641, "증거 파일 12개 행 고정 재현");
+var smooth = new DecoBakeCore.SongClock();
+var measuredRaw = new List<double>(); var measuredSmooth = new List<double>();
+const double speedX = 11460 / .9;
+foreach (var row in rows)
+{
+    double tb = smooth.Step(row.Song, row.Dt, 1, 1, true);
+    double Eval(double time) => 5812.06055 - speedX * (time - 9.9);
+    RequireSilent(Math.Abs(Eval(9.9 + row.Rec) - row.Actual) < .003, "실측 RecPos/actual 일치");
+    measuredRaw.Add(Math.Abs(Eval(row.Song) - row.Actual) / speedX * 1000);
+    measuredSmooth.Add(Math.Abs(Eval(tb) - row.Actual) / speedX * 1000);
+}
+Console.WriteLine($"실측12행 cold raw 초기화: raw 최대={measuredRaw.Max():F6}ms RMS={Math.Sqrt(measuredRaw.Average(x=>x*x)):F6}ms; tb 최대={measuredSmooth.Max():F6}ms RMS={Math.Sqrt(measuredSmooth.Average(x=>x*x)):F6}ms; raw/tb 원단위최대={measuredRaw.Max()*speedX/1000:F6}/{measuredSmooth.Max()*speedX/1000:F6}");
+Console.WriteLine($"실측12행 tb 최대프레임={measuredSmooth.Select((x,i)=>x/(rows[i].Dt*1000)).Max():F6}; cold 12행만으로 전체 p99 판정 불가");
+Require(measuredSmooth.Max() < measuredRaw.Max() && measuredSmooth.Average(x=>x*x) < measuredRaw.Average(x=>x*x),
+    "실측12행 cold clock 최대/RMS 시간오차 감소(2프레임 기준 충족으로 간주하지 않음)");
+foreach (bool buffer in new[] { false, true })
+{
+    var testClock = new DecoBakeCore.SongClock(); var random = new Random(621);
+    const double dt = 1.0 / 480; double maximum = 0, previous = 0, tail = 0;
+    testClock.Step(0, dt, 1, 1, true);
+    for (int i = 1; i <= 288000; i++)
+    {
+        double truth = i * dt;
+        double jitter = buffer ? ((i % 7) - 3) * .002 : (random.NextDouble() * 2 - 1) * .006;
+        double tb = testClock.Step(truth + jitter, dt, 1, 1, true);
+        RequireSilent(tb >= previous, "합성 지터 단조 보장"); previous = tb;
+        maximum = Math.Max(maximum, Math.Abs(tb-truth));
+        if (i > 280000) tail += tb-truth;
+    }
+    Console.WriteLine($"합성 {(buffer ? "버퍼계단" : "균등±6ms")} 600초@480FPS: 최대={maximum*1000:F6}ms 평균말미={tail/8000*1000:F6}ms");
+    Require(maximum <= dt * 2 && Math.Abs(tail/8000) < .0002, "합성 최대 2프레임 이내/장기 드리프트 없음");
+    Require(testClock.Step(42, dt, 1, 1, false) == 42 && testClock.Step(42, dt, 1, 1, false) == 42, "일시정지 즉시 동기/정지 유지");
+    Require(testClock.Step(12, dt, 1, 1, true) == 12 && testClock.Step(2, dt, 1, 1, true) == 2,
+        "재개/되감기/재시작 즉시 동기");
+    Require(testClock.Step(262, dt, 1, 1, true) == 262, "에디터 임의 점프 즉시 동기");
+}
+var pitchClock = new DecoBakeCore.SongClock(); pitchClock.Step(0, 0, 2, .5, true);
+Require(Math.Abs(pitchClock.Step(.02, .005, 2, .5, true) - .02) < 1e-12, "Rec 델타의 tweenScale 제거/pitch 반영");
+var mutable = new List<int> { 10, 20 }; int oldCount = mutable.Count;
+mutable.RemoveAt(1); bool recovered = false;
+try { DecoBakeCore.SnapshotItem(mutable, 1, oldCount, 1, 1); }
+catch (DecoBakeCore.SnapshotChangedException) { recovered = true; }
+Require(recovered, "seek 후 축소 목록: IndexOutOfRange 대신 재준비 신호");
+recovered = false; mutable.Add(30);
+try { DecoBakeCore.SnapshotItem(mutable, 1, oldCount, 1, 2); }
+catch (DecoBakeCore.SnapshotChangedException) { recovered = true; }
+Require(recovered && DecoBakeCore.SnapshotItem(mutable, 1, mutable.Count, 2, 2) == 30, "동일 크기 새 세대 거부/새 스냅샷 복구");
+Require(Math.Abs(DecoBakeCore.Speed(cursorTable, 0, 0, 1.5) - 5) < .01
+    && double.IsNaN(DecoBakeCore.Speed(cursorTable, 0, 0, 4)), "시간환산 선형 속도/불연속 NA");
+var resetTable = Compile(Decoration(), new[] { Event(-2, 100, 100) });
+var resetCursor = new DecoBakeCore.ActiveEvaluator(resetTable);
+double lastTime = -1; int measuredFrames = 0, resetFrames = 0;
+resetCursor.Step(lastTime);
+foreach (double time in new[] { -.99, -.98, -1.2, -1.19, -1.18, 10, 10.01 })
+{
+    double value = resetCursor.Step(time);
+    RequireSilent(Math.Abs(value - resetTable.Eval(0, 0, time)) < 1e-6, "되감기 전후 커서값 대조");
+    if (time < lastTime || time - lastTime > .05) resetFrames++; else measuredFrames++;
+    lastTime = time;
+}
+Require(measuredFrames == 5 && resetFrames == 2, "카운트다운 되감기/seek 프레임 제외 후 단조 5프레임 측정 지속");
+
 if (args.Contains("--bench"))
 {
     // Only shape/scale smoke evidence. One target per event is deliberately sparse and is NOT the Arche event fanout.

@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../DecoSim.cs" Link="DecoSim.cs" />
+    <Compile Include="../../DecoBake.Core.cs" Link="DecoBake.Core.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

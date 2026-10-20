@@ -72,7 +72,7 @@ namespace StutterFix
         internal struct Frame
         {
             internal float Dt;
-            internal double SongTime;
+            internal double SongTime, BakeTime;
             internal float Pitch, TweenScale, PixelsPerWorld;
             internal int UnityFrame;
             internal int EventBegin, EventEnd, SampleBegin, SampleEnd, Evaluated;
@@ -273,6 +273,7 @@ namespace StutterFix
             var conductor = scrConductor.instance;
             var camera = scrCamera.instance == null ? null : scrCamera.instance.camobj;
             tape.Frames.Add(new Frame { Dt = td, SongTime = conductor == null ? double.NaN : conductor.songposition_minusi,
+                BakeTime = DecoBake.BakeTime,
                 Pitch = conductor?.song == null ? float.NaN : conductor.song.pitch, TweenScale = DOTween.timeScale,
                 PixelsPerWorld = camera != null && camera.orthographic ? 1440f / (2f * camera.orthographicSize) : float.NaN,
                 UnityFrame = Time.frameCount, EventBegin = frameEvent, EventEnd = tape.Events.Count,
