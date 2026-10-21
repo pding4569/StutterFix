@@ -45,6 +45,13 @@ namespace StutterFix
         private static readonly string[] safeOff = { "LoadCache", "DecoAnim", "FloorAnim", "FastLoop", "InstantDirect", "ZeroTween", "Precheck", "DormantSkip",
             "SkipInvisible", "MoveFinish", "FastBlend", "SkipIdleParticles", "LowPauseParticles", "LeakFix", "LowFsr", "LowHalfRender", "LowEnd" };
 
+#if DEV || AUTOTEST
+        internal static void RecordFeatureFailure(string feature, string reason)
+        {
+            int n; lock (sync) { errors.TryGetValue(feature, out n); errors[feature] = ++n; }
+            Main.Entry.Logger.Log("[안정성] " + feature + " 실패 " + n + "회: " + reason);
+        }
+#endif
         internal static bool Off(string key) { lock (sync) return off.Contains(key); }
 
         internal static void Init()   // 여러 번 불려도 한 번만 (UMM 은 Load 다음 OnToggle(true) 도 부른다)

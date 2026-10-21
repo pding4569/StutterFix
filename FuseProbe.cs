@@ -52,6 +52,9 @@ namespace StutterFix
 
         internal static string Begin()
         {
+#if DEV || AUTOTEST
+            DecoBake.BeginAdoptMeasure();
+#endif
             Install();
             On = true; lateTicks = fxTicks = 0; fxStarts = recNew = recRestart = recCut = 0; perDeco.Clear(); Array.Clear(durHist, 0, durHist.Length);
             frameAt = Time.frameCount; animMs0 = DecoAnim.UpdateMs;

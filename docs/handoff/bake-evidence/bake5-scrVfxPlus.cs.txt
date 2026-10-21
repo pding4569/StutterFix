@@ -1,0 +1,76 @@
+Assembly-CSharp SHA256=F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF; ILSpy static excerpts, game not launched; original decompiled line numbers below.
+180: 
+181: 	private void Update()
+182: 	{
+183: 		if (ctrl.paused || !cond.hasSongStarted)
+184: 		{
+185: 			return;
+186: 		}
+187: 		int num;
+188: 		int num2;
+189: 		if (!ADOBase.isOfficialLevel)
+190: 		{
+191: 			num = ((!Persistence.forceVisualSettings) ? 1 : 0);
+192: 			if (num != 0)
+193: 			{
+194: 				num2 = 20;
+195: 				goto IL_003e;
+196: 			}
+197: 		}
+198: 		else
+199: 		{
+200: 			num = 0;
+201: 		}
+202: 		num2 = (int)ADOBase.controller.visualQuality;
+203: 		goto IL_003e;
+204: 		IL_003e:
+205: 		VisualQuality visualQuality = (VisualQuality)num2;
+206: 		VisualEffects visualEffects = ((num != 0) ? VisualEffects.Full : ADOBase.controller.visualEffects);
+207: 		int num3 = 0;
+208: 		while (currentVfxIndex < effects.Count)
+209: 		{
+210: 			ffxPlusBase ffxPlusBase2 = effects[currentVfxIndex];
+211: 			if (ffxPlusBase2 == null)
+212: 			{
+213: 				break;
+214: 			}
+215: 			if (!ffxPlusBase2.triggered)
+216: 			{
+217: 				if (cond.songposition_minusi < ffxPlusBase2.startTime - ffxPlusBase2.startEffectOffset)
+218: 				{
+219: 					break;
+220: 				}
+221: 				if ((!GCS.practiceMode || ADOBase.controller.currentState < States.Fail) && ffxPlusBase2.IsAllowedByVisualSettings(visualQuality, visualEffects))
+222: 				{
+223: 					ffxPlusBase2.StartEffect();
+224: 				}
+225: 				ffxPlusBase2.triggered = true;
+226: 			}
+227: 			currentVfxIndex++;
+228: 			num3++;
+229: 			if (num3 > 1000000)
+230: 			{
+231: 				break;
+232: 			}
+233: 		}
+234: 		if (!(videoBG != null) || !videoBG.gameObject.activeSelf || videoBG.isPlaying || hasPlayed || !videoBG.isPrepared)
+260: 	public void ScrubToTime(float t)
+261: 	{
+262: 		VisualQuality visualQuality = ((!ADOBase.isOfficialLevel && !Persistence.forceVisualSettings) ? VisualQuality.High : ADOBase.controller.visualQuality);
+263: 		VisualEffects visualEffects = (((bool)ADOBase.customLevel && !Persistence.forceVisualSettings) ? VisualEffects.Full : ADOBase.controller.visualEffects);
+264: 		List<ffxPlusBase> list = new List<ffxPlusBase>();
+265: 		foreach (ffxPlusBase effect in effects)
+266: 		{
+267: 			if (!effect.triggered && effect.IsAllowedByVisualSettings(visualQuality, visualEffects))
+268: 			{
+269: 				effect.ScrubToTime(t);
+270: 			}
+271: 			if (effect.triggered)
+272: 			{
+273: 				list.Add(effect);
+274: 			}
+275: 		}
+276: 		foreach (ffxPlusBase item in list)
+277: 		{
+278: 			effects.Remove(item);
+279: 		}

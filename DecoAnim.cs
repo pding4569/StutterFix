@@ -643,6 +643,8 @@ namespace StutterFix
             if (FrameCompare.Paused) return;
 #endif
 #if DEV || AUTOTEST
+            DecoBake.AdvanceClock();
+            DecoBake.AdoptFrame();
             if (DecoSim.Capturing) DecoSim.BeginFrame(recs, batchOn || DecoEngine.Enabled || GroupEnabled || NativeMotion.Enabled);
 #endif
             UpdateEvalMemo.NewFrame();

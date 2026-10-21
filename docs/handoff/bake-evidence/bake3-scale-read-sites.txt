@@ -1,0 +1,480 @@
+﻿bake-3: 설치본 정적 역컴파일 발췌(게임 프로세스 실행 없음)
+Algorithm : SHA256
+Hash      : F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF
+Path      : D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSha
+            rp.dll
+Algorithm : SHA256
+Hash      : 8E90FC43AB564A5A51424AF56531AB074A5A2E9CAB271B2D653D287954237B83
+Path      : D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\DOTween.dll
+
+=== bake3-ffx.cs.txt 원본 역컴파일 줄 114-148 ===
+ 114: 			hifiEffect = false;
+ 115: 		}
+ 116: 	}
+ 117: 
+ 118: 	public override void StartEffect(scrPlanet planet)
+ 119: 	{
+ 120: 		if (ADOBase.controller.visualQuality == VisualQuality.Low && (ADOBase.isOfficialLevel || Persistence.forceVisualSettings) && !ADOBase.levelIsMikoSkip)
+ 121: 		{
+ 122: 			return;
+ 123: 		}
+ 124: 		if (!float.IsNaN(targetScale))
+ 125: 		{
+ 126: 			targetScaleV2 = new Vector2(targetScale, targetScale);
+ 127: 		}
+ 128: 		AdjustDurationForHardbake();
+ 129: 		foreach (scrDecoration dec in decManager.GetTaggedDecorations(targetTags))
+ 130: 		{
+ 131: 			Dictionary<TweenType, Tween> dictionary = dec.eventTweens;
+ 132: 			bool num = dec is scrVisualDecoration;
+ 133: 			bool flag = dec is scrParticleDecoration;
+ 134: 			scrVisualDecoration scrVisualDecoration2 = null;
+ 135: 			if (num)
+ 136: 			{
+ 137: 				scrVisualDecoration2 = (scrVisualDecoration)dec;
+ 138: 			}
+ 139: 			if ((bool)ADOBase.customLevel && movementTypeUsed && movementType != DecPlacementType.LastPosition)
+ 140: 			{
+ 141: 				dec.SetPlacementType(movementType);
+ 142: 			}
+ 143: 			Vector2 endValue = new Vector3(targetScaleV2.x, targetScaleV2.y);
+ 144: 			if (!forceDontTweenMovement)
+ 145: 			{
+ 146: 				if (positionUsed)
+ 147: 				{
+ 148: 					Vector2 startPos = ((movementType == DecPlacementType.LastPosition) ? dec.pivotPosVec : dec.startPos);
+
+=== bake3-ffx.cs.txt 원본 역컴파일 줄 296-324 ===
+ 296: 				if (scaleUsed)
+ 297: 				{
+ 298: 					if (!float.IsNaN(endValue.x))
+ 299: 					{
+ 300: 						if (dictionary.TryGetValue(TweenType.ScaleX, out var value8))
+ 301: 						{
+ 302: 							value8.Kill(complete: true);
+ 303: 						}
+ 304: 						dictionary[TweenType.ScaleX] = DOTween.To(() => dec.scaleVec, delegate(Vector2 v)
+ 305: 						{
+ 306: 							dec.SetScale(v);
+ 307: 						}, endValue, duration).SetEase(ease).SetOptions(AxisConstraint.X)
+ 308: 							.Done();
+ 309: 					}
+ 310: 					if (!float.IsNaN(endValue.y))
+ 311: 					{
+ 312: 						if (dictionary.TryGetValue(TweenType.ScaleY, out var value9))
+ 313: 						{
+ 314: 							value9.Kill(complete: true);
+ 315: 						}
+ 316: 						dictionary[TweenType.ScaleY] = DOTween.To(() => dec.scaleVec, delegate(Vector2 v)
+ 317: 						{
+ 318: 							dec.SetScale(v);
+ 319: 						}, endValue, duration).SetEase(ease).SetOptions(AxisConstraint.Y)
+ 320: 							.Done();
+ 321: 					}
+ 322: 				}
+ 323: 			}
+ 324: 			if (colorUsed)
+
+=== bake3-ffx.cs.txt 원본 역컴파일 줄 434-484 ===
+ 434: 		decManager = scnGame.suitableDecManager;
+ 435: 		duration = evnt.GetFloat("duration") * crotchet;
+ 436: 		movementType = (DecPlacementType)evnt["relativeTo"];
+ 437: 		movementTypeUsed = !evnt.disabled["relativeTo"];
+ 438: 		visible = evnt.GetBool("visible");
+ 439: 		visibleUsed = !evnt.disabled["visible"];
+ 440: 		targetImageFilename = evnt.GetString("decorationImage");
+ 441: 		imageFilenameUsed = !evnt.disabled["decorationImage"];
+ 442: 		targetOriginalSize = (Vector2)evnt["originalSize"];
+ 443: 		originalSizeUsed = !evnt.disabled["originalSize"];
+ 444: 		targetCropPivotOffset = (Vector2)evnt["cropPivotOffset"];
+ 445: 		cropPivotOffsetUsed = !evnt.disabled["cropPivotOffset"];
+ 446: 		targetDepth = evnt.GetInt("depth");
+ 447: 		depthUsed = !evnt.disabled["depth"];
+ 448: 		targetParallax = (Vector2)evnt["parallax"];
+ 449: 		parallaxUsed = !evnt.disabled["parallax"];
+ 450: 		Vector2 vector = (Vector2)evnt["parallaxOffset"];
+ 451: 		parallaxOffsetUsed = !evnt.disabled["parallaxOffset"];
+ 452: 		targetParallaxOffset = tileSize * vector;
+ 453: 		Vector2 vector2 = (Vector2)evnt["positionOffset"];
+ 454: 		positionUsed = !evnt.disabled["positionOffset"];
+ 455: 		targetPos = tileSize * vector2;
+ 456: 		Vector2 vector3 = (Vector2)evnt["pivotOffset"];
+ 457: 		pivotUsed = !evnt.disabled["pivotOffset"];
+ 458: 		targetPivot = tileSize * vector3;
+ 459: 		targetRot = evnt.GetFloat("rotationOffset");
+ 460: 		rotationUsed = !evnt.disabled["rotationOffset"];
+ 461: 		targetScaleV2 = (Vector2)evnt["scale"] / 100f;
+ 462: 		scaleUsed = !evnt.disabled["scale"];
+ 463: 		targetColor = evnt.GetColor("color");
+ 464: 		colorUsed = !evnt.disabled["color"];
+ 465: 		targetOpacity = evnt.GetFloat("opacity") / 100f;
+ 466: 		opacityUsed = !evnt.disabled["opacity"];
+ 467: 		targetSmoothing = evnt.GetBool("imageSmoothing");
+ 468: 		smoothingUsed = !evnt.disabled["imageSmoothing"];
+ 469: 		targetMaskingType = (MaskingType)evnt["maskingType"];
+ 470: 		maskingTypeUsed = !evnt.disabled["maskingType"];
+ 471: 		targetUseMaskingDepth = evnt.GetBool("useMaskingDepth");
+ 472: 		useMaskingDepthUsed = !evnt.disabled["useMaskingDepth"];
+ 473: 		targetMaskingFrontDepth = evnt.GetInt("maskingFrontDepth");
+ 474: 		maskingFrontDepthUsed = !evnt.disabled["maskingFrontDepth"];
+ 475: 		targetMaskingBackDepth = evnt.GetInt("maskingBackDepth");
+ 476: 		maskingBackDepthUsed = !evnt.disabled["maskingBackDepth"];
+ 477: 		string[] array = evnt["tag"].ToString().Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+ 478: 		if (array.Length == 0)
+ 479: 		{
+ 480: 			array = new string[1] { "NO TAG" };
+ 481: 		}
+ 482: 		targetTags.AddRange(array);
+ 483: 		ease = (Ease)evnt["ease"];
+ 484: 	}
+
+=== bake3-decoration.cs.txt 원본 역컴파일 줄 175-179 ===
+ 175: 
+ 176: 	public Vector2 trueScaleMultiplier => scaleMultiplier * textureScaleMultiplier;
+ 177: 
+ 178: 	public Vector2 camScaleMultiplier => (lockScale ? (ADOBase.controller.camy.camobj.orthographicSize * 0.2f / (ADOBase.customLevel.levelData.camZoom / 100f)) : 1f) * trueScaleMultiplier;
+ 179: 
+
+=== bake3-decoration.cs.txt 원본 역컴파일 줄 227-250 ===
+ 227: 	}
+ 228: 
+ 229: 	public void SetPosition(Vector2 pivotPos, Vector2 pivotOffset)
+ 230: 	{
+ 231: 		if (parallax == null)
+ 232: 		{
+ 233: 			return;
+ 234: 		}
+ 235: 		Vector2 vector = (pivotOffset + croppedPivotOffset) / trueScaleMultiplier;
+ 236: 		pivotPosVec = pivotPos;
+ 237: 		childTransform.localPosition = vector;
+ 238: 		if ((bool)ADOBase.editor)
+ 239: 		{
+ 240: 			if (selectionBordersObject != null)
+ 241: 			{
+ 242: 				selectionBordersObject.transform.localPosition = vector;
+ 243: 			}
+ 244: 			ADOBase.editor.decPivot.UpdatePivotCrossImage(enable: true);
+ 245: 		}
+ 246: 		pivotOffsetVec = pivotOffset;
+ 247: 		UpdateScreenClamp();
+ 248: 		UpdatePosition();
+ 249: 	}
+ 250: 
+
+=== bake3-decoration.cs.txt 원본 역컴파일 줄 298-304 ===
+ 298: 	public virtual void SetScale(Vector2 scale)
+ 299: 	{
+ 300: 		scaleVec = scale;
+ 301: 		Vector3 vector = (stickToFloor ? parentFloor.transform.localScale : Vector3.one);
+ 302: 		pivotTrans.localScale = (scale * camScaleMultiplier * vector).WithZ(1f);
+ 303: 	}
+ 304: 
+
+=== bake3-decoration.cs.txt 원본 역컴파일 줄 408-422 ===
+ 408: 		{
+ 409: 			vector2 += (Vector2)parentFloor.transform.position - startPos;
+ 410: 		}
+ 411: 		pivotTrans.localPosition = vector2;
+ 412: 		parallax.SetNewStartPosition(vector2);
+ 413: 		parallax.posCamAtStart = vector2;
+ 414: 		if (ADOBase.customLevel != null || parallax.enabled)
+ 415: 		{
+ 416: 			parallax.SetTrans();
+ 417: 		}
+ 418: 		SetRotation(rotAngle);
+ 419: 		SetScale(scaleVec);
+ 420: 		if (stickToFloor)
+ 421: 		{
+ 422: 			ApplyColor();
+
+=== bake3-decoration.cs.txt 원본 역컴파일 줄 521-558 ===
+ 521: 	public void SetPlacementType(DecPlacementType placementType)
+ 522: 	{
+ 523: 		this.placementType = placementType;
+ 524: 		Vector2 vector = (Vector2)sourceLevelEvent["position"] * ADOBase.controller.tileSize;
+ 525: 		List<scrFloor> listFloors = scrLevelMaker.instance.listFloors;
+ 526: 		Vector3 zero = Vector3.zero;
+ 527: 		int floor = sourceLevelEvent.floor;
+ 528: 		followPlanet = null;
+ 529: 		switch (placementType)
+ 530: 		{
+ 531: 		case DecPlacementType.Tile:
+ 532: 			floor = Mathf.Clamp(floor, 0, listFloors.Count - 1);
+ 533: 			zero = listFloors[floor].transform.position;
+ 534: 			vector += new Vector2(zero.x, zero.y);
+ 535: 			break;
+ 536: 		case DecPlacementType.RedPlanet:
+ 537: 			followPlanet = ADOBase.controller.planetRed;
+ 538: 			break;
+ 539: 		case DecPlacementType.BluePlanet:
+ 540: 			followPlanet = ADOBase.controller.planetBlue;
+ 541: 			break;
+ 542: 		case DecPlacementType.GreenPlanet:
+ 543: 			followPlanet = ADOBase.controller.planetGreen;
+ 544: 			break;
+ 545: 		case DecPlacementType.Camera:
+ 546: 		case DecPlacementType.CameraAspect:
+ 547: 			vector /= ADOBase.controller.tileSize;
+ 548: 			break;
+ 549: 		}
+ 550: 		startPos = vector;
+ 551: 	}
+ 552: 
+ 553: 	public void Setup(LevelEvent ev, out bool spritesLoaded, bool refreshCache = true)
+ 554: 	{
+ 555: 		sourceLevelEvent = ev;
+ 556: 		spritesLoaded = false;
+ 557: 		if (!GCS.speedTrialMode)
+ 558: 		{
+
+=== bake3-decoration.cs.txt 원본 역컴파일 줄 659-679 ===
+ 659: 		base.gameObject.name = text2;
+ 660: 		string stringItemNoTag = PropertyControl_DecorationsList.stringItemNoTag;
+ 661: 		string key = "tag";
+ 662: 		bool flag2 = !string.IsNullOrEmpty(ev[key] as string);
+ 663: 		decorationTag = (flag2 ? ("<noparse>" + (ev[key] as string) + "</noparse>") : stringItemNoTag);
+ 664: 		string output = "";
+ 665: 		ev.TryGetAndSet("components", ref output);
+ 666: 		string text3 = ev["tag"].ToString();
+ 667: 		float num2 = (float)ev["rotation"];
+ 668: 		Vector2 vector3 = (Vector2)ev["scale"] / 100f;
+ 669: 		int depth = (int)ev["depth"];
+ 670: 		Vector2 vector4 = (Vector2)ev["parallax"];
+ 671: 		Vector2 output2;
+ 672: 		Vector2 vector5 = ((vector4 != Vector2.zero && ev.TryGet<Vector2>("parallaxOffset", out output2)) ? (output2 * ADOBase.controller.tileSize) : Vector2.zero);
+ 673: 		bool flag3 = ev.GetBool("lockRotation");
+ 674: 		bool flag4 = ev.GetBool("lockScale");
+ 675: 		ev.TryGetAndSet("stickToFloor", ref stickToFloor);
+ 676: 		ev.TryGetAndSet("syncFloorDepth", ref syncFloorDepth);
+ 677: 		float output3 = 1f;
+ 678: 		ev.TryGetAndSet("scaleMultiplier", ref output3);
+ 679: 		Color clear6 = Color.clear;
+
+=== bake3-decoration.cs.txt 원본 역컴파일 줄 918-930 ===
+ 918: 		startRot = num2;
+ 919: 		scaleVec = vector3;
+ 920: 		scaleMultiplier = output3;
+ 921: 		parallaxOffset = vector5;
+ 922: 		lockRotation = flag3;
+ 923: 		lockScale = flag4;
+ 924: 		croppedPivotOffset = vector2 / 100f;
+ 925: 		SetPosition(startPos, pivotOffset);
+ 926: 		SetScale(vector3 * Vector2.one);
+ 927: 		SetDepth(depth);
+ 928: 		SetParallax(vector4, decPlacementType);
+ 929: 		SetColor(clear6);
+ 930: 		SetOpacity(num3);
+
+=== bake3-visual.cs.txt 원본 역컴파일 줄 260-271 ===
+ 260: 	public override Vector2 GetDecorationWorldSize()
+ 261: 	{
+ 262: 		return (spriteRenderer.sprite?.bounds.size ?? Vector3.zero) * pivotTrans.localScale.xy();
+ 263: 	}
+ 264: 
+ 265: 	public Vector2 GetDecorationPixelsSizeInUnits()
+ 266: 	{
+ 267: 		Sprite sprite = spriteRenderer.sprite;
+ 268: 		Texture2D texture = sprite.texture;
+ 269: 		return new Vector2((float)texture.width / sprite.pixelsPerUnit, (float)texture.height / sprite.pixelsPerUnit);
+ 270: 	}
+ 271: 
+
+=== bake3-visual.cs.txt 원본 역컴파일 줄 436-449 ===
+ 436: 	}
+ 437: 
+ 438: 	public void SetTextureScaleMultiplier(Vector2 originalSize)
+ 439: 	{
+ 440: 		if (!(spriteRenderer.sprite == null))
+ 441: 		{
+ 442: 			Vector2 vector = new Vector2(spriteRenderer.sprite.texture.width, spriteRenderer.sprite.texture.height);
+ 443: 			if (vector.x != 0f && vector.y != 0f && originalSize.x != 0f && originalSize.y != 0f)
+ 444: 			{
+ 445: 				textureScaleMultiplier = new Vector2(originalSize.x / vector.x, originalSize.y / vector.y);
+ 446: 			}
+ 447: 		}
+ 448: 	}
+ 449: 
+
+=== bake3-manager.cs.txt 원본 역컴파일 줄 109-113 ===
+ 109: 	public IEnumerable<scrDecoration> GetTaggedDecorations(IEnumerable<string> tags)
+ 110: 	{
+ 111: 		return tags.Where((string t) => taggedDecorations.ContainsKey(t)).SelectMany((string t) => taggedDecorations[t]).Distinct();
+ 112: 	}
+ 113: 
+
+=== bake3-vector2plugin.cs.txt 원본 역컴파일 줄 1-220 ===
+   1: using System;
+   2: using DG.Tweening.Core;
+   3: using DG.Tweening.Core.Easing;
+   4: using DG.Tweening.Core.Enums;
+   5: using DG.Tweening.Plugins.Core;
+   6: using DG.Tweening.Plugins.Options;
+   7: using UnityEngine;
+   8: 
+   9: namespace DG.Tweening.Plugins;
+  10: 
+  11: public class Vector2Plugin : ABSTweenPlugin<Vector2, Vector2, VectorOptions>
+  12: {
+  13: 	public override void Reset(TweenerCore<Vector2, Vector2, VectorOptions> t)
+  14: 	{
+  15: 	}
+  16: 
+  17: 	public override void SetFrom(TweenerCore<Vector2, Vector2, VectorOptions> t, bool isRelative)
+  18: 	{
+  19: 		Vector2 endValue = t.endValue;
+  20: 		t.endValue = t.getter();
+  21: 		t.startValue = (isRelative ? (t.endValue + endValue) : endValue);
+  22: 		Vector2 pNewValue = t.endValue;
+  23: 		switch (t.plugOptions.axisConstraint)
+  24: 		{
+  25: 		case AxisConstraint.X:
+  26: 			pNewValue.x = t.startValue.x;
+  27: 			break;
+  28: 		case AxisConstraint.Y:
+  29: 			pNewValue.y = t.startValue.y;
+  30: 			break;
+  31: 		default:
+  32: 			pNewValue = t.startValue;
+  33: 			break;
+  34: 		}
+  35: 		if (t.plugOptions.snapping)
+  36: 		{
+  37: 			pNewValue.x = (float)Math.Round(pNewValue.x);
+  38: 			pNewValue.y = (float)Math.Round(pNewValue.y);
+  39: 		}
+  40: 		t.setter(pNewValue);
+  41: 	}
+  42: 
+  43: 	public override void SetFrom(TweenerCore<Vector2, Vector2, VectorOptions> t, Vector2 fromValue, bool setImmediately, bool isRelative)
+  44: 	{
+  45: 		if (isRelative)
+  46: 		{
+  47: 			Vector2 vector = t.getter();
+  48: 			t.endValue += vector;
+  49: 			fromValue += vector;
+  50: 		}
+  51: 		t.startValue = fromValue;
+  52: 		if (setImmediately)
+  53: 		{
+  54: 			Vector2 pNewValue;
+  55: 			switch (t.plugOptions.axisConstraint)
+  56: 			{
+  57: 			case AxisConstraint.X:
+  58: 				pNewValue = t.getter();
+  59: 				pNewValue.x = fromValue.x;
+  60: 				break;
+  61: 			case AxisConstraint.Y:
+  62: 				pNewValue = t.getter();
+  63: 				pNewValue.y = fromValue.y;
+  64: 				break;
+  65: 			default:
+  66: 				pNewValue = fromValue;
+  67: 				break;
+  68: 			}
+  69: 			if (t.plugOptions.snapping)
+  70: 			{
+  71: 				pNewValue.x = (float)Math.Round(pNewValue.x);
+  72: 				pNewValue.y = (float)Math.Round(pNewValue.y);
+  73: 			}
+  74: 			t.setter(pNewValue);
+  75: 		}
+  76: 	}
+  77: 
+  78: 	public override Vector2 ConvertToStartValue(TweenerCore<Vector2, Vector2, VectorOptions> t, Vector2 value)
+  79: 	{
+  80: 		return value;
+  81: 	}
+  82: 
+  83: 	public override void SetRelativeEndValue(TweenerCore<Vector2, Vector2, VectorOptions> t)
+  84: 	{
+  85: 		t.endValue += t.startValue;
+  86: 	}
+  87: 
+  88: 	public override void SetChangeValue(TweenerCore<Vector2, Vector2, VectorOptions> t)
+  89: 	{
+  90: 		switch (t.plugOptions.axisConstraint)
+  91: 		{
+  92: 		case AxisConstraint.X:
+  93: 			t.changeValue = new Vector2(t.endValue.x - t.startValue.x, 0f);
+  94: 			break;
+  95: 		case AxisConstraint.Y:
+  96: 			t.changeValue = new Vector2(0f, t.endValue.y - t.startValue.y);
+  97: 			break;
+  98: 		default:
+  99: 			t.changeValue = t.endValue - t.startValue;
+ 100: 			break;
+ 101: 		}
+ 102: 	}
+ 103: 
+ 104: 	public override float GetSpeedBasedDuration(VectorOptions options, float unitsXSecond, Vector2 changeValue)
+ 105: 	{
+ 106: 		return changeValue.magnitude / unitsXSecond;
+ 107: 	}
+ 108: 
+ 109: 	public override void EvaluateAndApply(VectorOptions options, Tween t, bool isRelative, DOGetter<Vector2> getter, DOSetter<Vector2> setter, float elapsed, Vector2 startValue, Vector2 changeValue, float duration, bool usingInversePosition, int newCompletedSteps, UpdateNotice updateNotice)
+ 110: 	{
+ 111: 		if (t.loopType == LoopType.Incremental)
+ 112: 		{
+ 113: 			startValue += changeValue * (t.isComplete ? (t.completedLoops - 1) : t.completedLoops);
+ 114: 		}
+ 115: 		if (t.isSequenced && t.sequenceParent.loopType == LoopType.Incremental)
+ 116: 		{
+ 117: 			startValue += changeValue * ((t.loopType != LoopType.Incremental) ? 1 : t.loops) * (t.sequenceParent.isComplete ? (t.sequenceParent.completedLoops - 1) : t.sequenceParent.completedLoops);
+ 118: 		}
+ 119: 		float num = EaseManager.Evaluate(t.easeType, t.customEase, elapsed, duration, t.easeOvershootOrAmplitude, t.easePeriod);
+ 120: 		switch (options.axisConstraint)
+ 121: 		{
+ 122: 		case AxisConstraint.X:
+ 123: 		{
+ 124: 			Vector2 pNewValue = getter();
+ 125: 			pNewValue.x = startValue.x + changeValue.x * num;
+ 126: 			if (options.snapping)
+ 127: 			{
+ 128: 				pNewValue.x = (float)Math.Round(pNewValue.x);
+ 129: 			}
+ 130: 			setter(pNewValue);
+ 131: 			return;
+ 132: 		}
+ 133: 		case AxisConstraint.Y:
+ 134: 		{
+ 135: 			Vector2 pNewValue2 = getter();
+ 136: 			pNewValue2.y = startValue.y + changeValue.y * num;
+ 137: 			if (options.snapping)
+ 138: 			{
+ 139: 				pNewValue2.y = (float)Math.Round(pNewValue2.y);
+ 140: 			}
+ 141: 			setter(pNewValue2);
+ 142: 			return;
+ 143: 		}
+ 144: 		}
+ 145: 		startValue.x += changeValue.x * num;
+ 146: 		startValue.y += changeValue.y * num;
+ 147: 		if (options.snapping)
+ 148: 		{
+ 149: 			startValue.x = (float)Math.Round(startValue.x);
+ 150: 			startValue.y = (float)Math.Round(startValue.y);
+ 151: 		}
+ 152: 		setter(startValue);
+ 153: 	}
+ 154: }
+
+=== ADOFAI.LevelEvent.Decode 원본 역컴파일 줄 350-368: null 축 -> NaN ===
+ 350: 			else if (value5.type == PropertyType.Vector2)
+ 351: 			{
+ 352: 				if (obj is float num)
+ 353: 				{
+ 354: 					data.Add(key, new Vector2(num, num));
+ 355: 					continue;
+ 356: 				}
+ 357: 				if (obj is int num2)
+ 358: 				{
+ 359: 					data.Add(key, new Vector2(num2, num2));
+ 360: 					continue;
+ 361: 				}
+ 362: 				List<object> obj2 = obj as List<object>;
+ 363: 				float x = Convert.ToSingle(obj2[0] ?? ((object)float.NaN));
+ 364: 				float y = Convert.ToSingle(obj2[1] ?? ((object)float.NaN));
+ 365: 				data.Add(key, new Vector2(x, y));
+ 366: 			}
+ 367: 			else if (value5.type == PropertyType.Tile)
+ 368: 			{

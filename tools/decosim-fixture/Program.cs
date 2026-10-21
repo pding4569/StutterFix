@@ -10,12 +10,28 @@ using DG.Tweening;
 
 namespace UnityEngine
 {
+    public static class Time { public static int frameCount; public static float deltaTime, smoothDeltaTime; }
     public struct Vector2 { public float x, y; public Vector2(float x, float y) { this.x = x; this.y = y; } }
     public struct Color { public float r, g, b, a; public Color(float r, float g, float b, float a) { this.r = r; this.g = g; this.b = b; this.a = a; } }
 }
-namespace DG.Tweening { public enum Ease { Linear, InQuad } }
+namespace DG.Tweening { public enum Ease { Linear, InQuad } public static class DOTween { public static float timeScale = 1; public static bool useSmoothDeltaTime; } }
+public class scrConductor
+{
+    public static scrConductor instance = new scrConductor(); public static float calibration_i;
+    public double songposition_minusi, addoffset, dspTimeSongPosZero, crotchetAtStart, adjustedCountdownTicks;
+    public bool separateCountdownTime; public Song song = new Song();
+    public class Song { public float pitch = 1; }
+}
+public class scnEditor { public static scnEditor instance; }
+public class scrCamera
+{
+    public static scrCamera instance;
+    public Camera camobj;
+    public class Camera { public bool orthographic; public float orthographicSize; }
+}
 public class scrDecoration
 {
+    public int GetInstanceID() => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(this);
     public Vector2 Position, Scale = new Vector2(1, 1);
     public float Rotation, Opacity = 1;
     public Color Color = new Color(1, 1, 1, 1);
@@ -27,6 +43,13 @@ public class scrDecorationManager
 }
 namespace StutterFix
 {
+    internal static class DecoBake
+    {
+        internal struct StartStamp { internal int Source, Frame; internal double Song; }
+        internal static int Generation => -1;
+        internal static DecoBakeCore.Table CaptureTable => null;
+        internal static double BakeTime => scrConductor.instance.songposition_minusi;
+    }
     internal static class Hitch { internal static bool Playing; }
     internal static class ZeroTween
     {

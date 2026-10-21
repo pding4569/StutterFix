@@ -986,3 +986,20 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - 켜는 순간 14.6초 정지(`candidate-classification+sets 6.6초`, `order-sets+mesh-build 3.8초`, `install-hooks 2.1초`, `atlas-decode-blit 0.7초`, `AnalyzeLevel 0.7초`). `decopipe compare` 는 원본 쪽 동기화를 고쳤어도 최대 20/255 이상치가 남음(원인 미확정). 화면 비교에서 `decorender` 단독(재질 빌림 + 구간 메시)은 최대 1~2/255 였다.
 - 움직이는 장식 1,857개 중 661개(36%)만 가져감(이미지가 바뀌는 장식 598, wrap 398, 순서 장벽 189 등이 제외).
 - 결론: 개념(구운 표 → 배치 평가 → 구간 그룹 메시, 재질 빌림으로 정렬 동률 해결)은 값·화면 모두 성립하지만, **현재 구현의 프레임당 관리 비용(소유 장식 1.7만 개의 훅·사전·검사·구성)이 예산의 수 배~10배**라 이득이 안 난다. 패치 반복(S8~S17)으로는 한 단계씩 줄어도 합이 안 내려와, 목표 예산(≤2ms)을 맞추려면 설계 처음부터(이벤트·태그 구간 기술자로 장식 수와 무관한 시작·갱신, 검사 대신 맵 열 때 사전 판정) 다시 짜야 한다. 브랜치: codex/night-decorender2, codex/night-decopipe, 도구는 개발자용.
+
+## 2026-10-20 밤: T3 타일 pristine 청크 건너뛰기 — 게임 첫 시험 결과(건너뜀 0개), 훅이 매 프레임 모든 청크를 더럽힘
+- 구현(브랜치 `codex/night-tilerange`): 읽기 훅을 모두 없애고 쓰기 훅 53개(이름·서명으로 정확히 하나만 선택)로 64타일 청크의 dirty 비트를 관리, clean 청크는 효과 시작에서 타일에 접근하지 않고 통째로 건너뜀. 오프라인 70검사·빌드 3종 오류 0·LoadCheck 0.
+- **게임 첫 시험은 훅 53개 전부 실패했다**: Codex 가 서명 blob 을 `Module.ResolveSignature(MetadataToken)` 로 비교했는데 Mono 에서는 메서드 토큰을 풀지 못한다(`Token ... is not valid in the scope of module`). 이름+인자 수+호출 규약으로 바꿔 53개 설치 성공(eb8e0c3). 오프라인(메타데이터 리더)에서만 검증한 것의 한계.
+- **Lost Requiem 531.8초 `tilerange shadow`**: `patch-fail=0 patched=53`, shadow 불일치 0·늦게 발견된 변경 0. 하지만 **건너뛴 청크 0개**(타일 8,171개 전부 원래 경로), 효과 시작 25.7ms(끔 기준 22~25ms과 같음). 8초 동안 훅이 **198만 번** 불림(=타일 8,171개 × 약 242프레임, 매 프레임 모든 타일) → 모든 청크가 항상 dirty. 안전망 `safety-ms` 147(8초), 훅 `hook-ms` 174 — 이득 없이 비용만.
+- 의심: `scrFloor.LateUpdate` 가 `lastPos`·`lastScale`·`opacityLastFrame`·`glowMultiplierLastFrame` 에 매 프레임 쓰는 "지난 프레임 값 장부"를 상태 변경으로 표시. 확인하려면 사이트별 호출 수 계수 필요 → 후속 임무 `docs/handoff/codex-tilerange-3-20261020.md`(Codex 사용량 초기화 20:43 뒤 맡길 예정).
+- 릴리스 영향 없음: 기본 꺼짐·개발/자동 시험 빌드 전용, 2.8.0 에 포함 안 됨.
+
+## 2026-10-20 밤: Arche 258~278초 GPU 연구(Codex 계측 + 게임 측정) — 지금은 병목 아니지만 CPU 를 없애면 GPU 가 바닥
+- 도구(브랜치 `codex/night-archegpu`, 개발/자동 시험 전용·기본 꺼짐): `archegpu on|state|stamp|timeline|off`(카메라·이미지 효과 목록, 콜백 수·첫 RT·파라미터), `fxoff <효과>|none`(선택 효과를 Blit 1회로 대체하는 화면이 바뀌는 진단). 기존 `gpuprobe`(D3D11 timestamp, 1/8 프레임 표본)와 함께 쓴다. 정확한 구간별 이벤트 목록은 `archegpu timeline`+`tools/optimization/archegpu-audit.py` 로 결합.
+- **측정(3440×1440·165Hz 켠 화면, 258~278초, 377프레임 표본, 계측 판이라 FPS 는 성능 수치 아님)**: GPU 프레임 전체(첫 카메라 preCull→프레임 끝) 평균 **4.24ms**(최대 7.65). 그중 본 카메라(`Camera#102298`) 4.06ms, 배경·오버레이 카메라 합 0.16ms.
+- **필터는 작다**: 본 카메라 안의 이미지 효과는 모두 합쳐 **약 0.65ms**(평균 프레임 기여). 가장 큰 것: Light_Water2 0.084, VideoBloom 0.078, Atmosphere_Rain 0.070, CameraMotionBlur 0.064(활성 42프레임에서 0.58ms), Color_Contrast 0.056, Film_Grain 0.044. 나머지 ~3.4ms 는 장면(장식·타일·행성) 그리기. 필터를 전부 공짜로 만들어도 GPU 0.65ms.
+- **지금 상태의 결론**: 이 구간 프레임 약 10~11ms 중 GPU 는 약 4~6ms 만 쓴다(PresentMon 은 5~6.6ms). 현재는 CPU(장식 처리 약 5.5ms + 엔진 CPU 약 5ms)가 병목이라 **지금 GPU 를 줄여도 FPS 는 거의 안 오른다**.
+- **정정(같은 날 사용자 지적)**: 위는 "CPU 가 지금처럼 느릴 때"만 맞다. 목표가 트레이스(굽기+GPU 평가)로 장식 CPU 를 거의 없앤 상태라면 남는 것은 엔진 CPU ~5ms 와 GPU 4.2~6.6ms 이고, 프레임은 둘 중 큰 쪽(겹쳐 돌아서)이라 약 5~6.6ms = **150~200 FPS 대**가 바닥이다. 400 FPS(2.5ms)는 GPU 와 엔진 CPU 를 둘 다 절반 이하로 줄여야 한다. 따라서 GPU 쪽은 접지 않는다.
+- 앞서 쓴 "장식 렌더러를 숨겨도 +6%뿐"은 CPU 병목 상태의 FPS 측정이라 장식의 GPU 몫을 과소평가했을 수 있다. GPU 시간 자체(`gpuprobe`, CPU 병목과 무관)로 장면 그리기 ~3.4ms 를 장식/타일/행성/기타로 나눠 다시 재야 한다(렌더러 그룹별 숨김 + 본 카메라 GPU 시간). 그 몫이 작으면 GPU 바닥이 ~3ms 에 고정되어 목표를 "150~200 FPS + 끊김 0" 으로 잡아야 한다. 필터 A/B(`fxoff`)는 필터 합이 0.65ms 라 우선순위가 낮다.
+- 한계: GPU 경과 시간(timestamp)이지 PresentMon `MsGPUBusy` 와 같지 않음; 258~278초 한 구간만; 장면 그리기 3.4ms 를 줄이는 방법(해상도·겹쳐 그리기)은 화면이 달라진다.
+- 근거: `docs/handoff/archegpu-evidence/arche-258-278-gpuprobe.txt`, Codex 결과 `docs/handoff/codex-archegpu-20261020-result.md`.

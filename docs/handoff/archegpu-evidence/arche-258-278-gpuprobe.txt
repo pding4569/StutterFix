@@ -1,0 +1,56 @@
+[StutterFix] [자동 시험] 시작: 19단계 - timeout 600 / auto on / open D:/얼불춤 맵 파일/Arche/[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / archegpu on / gpuprobe on / seek 262 8 / waitsongpos 256 120 / archegpu state / waitsongpos 258 30 / archegpu stamp / gpuprobe reset / waitsongpos 278 60 / archegpu stamp / gpuprobe state / archegpu state / gpuprobe off / archegpu off / stop / quit
+[StutterFix] [archegpu] camera=93260 enabled=True active=False depth=0 clear=Skybox mask=1048576 hdr=True msaa=True target=90944:1000x1000:ARGB32:depth=32:samples=1
+[StutterFix] [archegpu] camera=102296 enabled=True active=True depth=-1.11 clear=Depth mask=1024 hdr=False msaa=False target=backbuffer
+[StutterFix] [archegpu] camera=102298 enabled=True active=True depth=-1 clear=Nothing mask=652183 hdr=False msaa=False target=backbuffer
+[StutterFix] [archegpu] camera=102300 enabled=True active=True depth=-1.63 clear=SolidColor mask=2048 hdr=False msaa=False target=backbuffer
+[StutterFix] [archegpu] camera=102302 enabled=True active=False depth=-1.63 clear=SolidColor mask=1048576 hdr=False msaa=False target=backbuffer
+[StutterFix] [archegpu] camera=102304 enabled=True active=False depth=0 clear=SolidColor mask=256 hdr=True msaa=True target=backbuffer
+[StutterFix] [archegpu] on effects=65 picture_changing_diagnostic=1; fxoff <effect-id|unique-type-name>|none
+[StutterFix] [gpuprobe] on sample=1/8 cameras=7 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [archegpu] stamp song=256.00807439582422 qpc=585356978 qpc_frequency=10000000 utc=2026-10-20T10:39:46.7242230Z
+[StutterFix] [archegpu] active=True selected=0 bypassed=0 song=256.00807439582422
+[StutterFix] [archegpu] effect=104404 type=CameraFilterPackLegacy_Distortion_FishEye enabled=True active=True calls=432 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Distortion=0.5
+[StutterFix] [archegpu] effect=104928 type=CameraFilterPackLegacy_Color_GrayScale enabled=True active=True calls=432 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Intensity=-1
+[StutterFix] [archegpu] effect=104768 type=CameraFilterPackLegacy_Atmosphere_Rain enabled=True active=True calls=432 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Fade=1 Intensity=-0.03 DirectionX=0.12 Size=1.5 Speed=0.275 Distortion=0.05 StormFlashOnOff=1
+[StutterFix] [archegpu] effect=104968 type=VideoBloom enabled=True active=True calls=432 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 tweakMode=Basic Threshold=0 MasterAmount=25 MediumAmount=1 LargeAmount=0 Tint=RGBA(0.191, 0.012, 0.309, 1.000) KernelSize=50 MediumKernelScale=1 LargeKernelScale=3 BlendMode=Add HighQuality=True
+[StutterFix] [archegpu] effect=105162 type=CameraFilterPackLegacy_Color_Chromatic_Aberration enabled=True active=True calls=432 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Offset=0
+[StutterFix] [archegpu] effect=104428 type=CameraFilterPackLegacy_Blur_Focus enabled=True active=True calls=432 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 CenterX=0 CenterY=0 _Size=1 _Eyes=2
+[StutterFix] [archegpu] effect=104728 type=CameraFilterPackLegacy_Sharpen_Sharpen enabled=True active=True calls=432 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Value=4 Value2=1.23
+[StutterFix] [archegpu] effect=105278 type=CameraFilterPackLegacy_Color_Contrast enabled=True active=True calls=432 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Contrast=1.61
+[StutterFix] [archegpu] effect=104360 type=CameraFilterPackLegacy_Light_Water2 enabled=True active=True calls=228 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Speed=0.2 Speed_X=0.2 Speed_Y=0.3 Intensity=0
+[StutterFix] [archegpu] stamp song=258.008989923168 qpc=605358515 qpc_frequency=10000000 utc=2026-10-20T10:39:48.7244213Z
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [archegpu] stamp song=278.003374688793 qpc=805245717 qpc_frequency=10000000 utc=2026-10-20T10:40:08.7133920Z
+[StutterFix] [gpuprobe] ready=1 completed=377 requested=378 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=377 calls=377 mean_frame_ms=4.2437 mean_active_ms=4.2437 max_frame_ms=7.6462
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=377 calls=1508 mean_frame_ms=4.2281 mean_active_ms=4.2281 max_frame_ms=7.6206
+[StutterFix] [gpuprobe] camera:BGMovingCam#102296 active_frames=377 calls=377 mean_frame_ms=0.0825 mean_active_ms=0.0825 max_frame_ms=0.0932
+[StutterFix] [gpuprobe] camera:Camera#102298 active_frames=377 calls=377 mean_frame_ms=4.0649 mean_active_ms=4.0649 max_frame_ms=7.4793
+[StutterFix] [gpuprobe] camera:BGStaticCam#102300 active_frames=377 calls=377 mean_frame_ms=0.0122 mean_active_ms=0.0122 max_frame_ms=0.0154
+[StutterFix] [gpuprobe] camera:OverlayCam#102302 active_frames=377 calls=377 mean_frame_ms=0.0686 mean_active_ms=0.0686 max_frame_ms=0.1239
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_FishEye#104404 active_frames=268 calls=268 mean_frame_ms=0.0324 mean_active_ms=0.0456 max_frame_ms=0.3871
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_TV_80#104936 active_frames=131 calls=131 mean_frame_ms=0.0198 mean_active_ms=0.0569 max_frame_ms=0.0573
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Drawing_Paper#105312 active_frames=149 calls=149 mean_frame_ms=0.0407 mean_active_ms=0.1030 max_frame_ms=0.1085
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Distortion_Wave_Horizontal#104486 active_frames=28 calls=28 mean_frame_ms=0.0034 mean_active_ms=0.0453 max_frame_ms=0.0522
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_GrayScale#104928 active_frames=226 calls=226 mean_frame_ms=0.0262 mean_active_ms=0.0437 max_frame_ms=0.2970
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Atmosphere_Rain#104768 active_frames=226 calls=226 mean_frame_ms=0.0700 mean_active_ms=0.1168 max_frame_ms=0.3686
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Invert#104878 active_frames=109 calls=109 mean_frame_ms=0.0129 mean_active_ms=0.0448 max_frame_ms=0.0532
+[StutterFix] [gpuprobe] effect:Camera/UnityStandardAssets.ImageEffects.CameraMotionBlur#105336 active_frames=42 calls=42 mean_frame_ms=0.0643 mean_active_ms=0.5774 max_frame_ms=0.6267
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Film_Grain#104912 active_frames=377 calls=377 mean_frame_ms=0.0439 mean_active_ms=0.0439 max_frame_ms=0.0563
+[StutterFix] [gpuprobe] effect:Camera/VideoBloom#104968 active_frames=377 calls=377 mean_frame_ms=0.0776 mean_active_ms=0.0776 max_frame_ms=0.3031
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Chromatic_Aberration#105162 active_frames=226 calls=226 mean_frame_ms=0.0270 mean_active_ms=0.0451 max_frame_ms=0.2980
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Blur_Focus#104428 active_frames=221 calls=221 mean_frame_ms=0.0447 mean_active_ms=0.0762 max_frame_ms=0.3738
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Sharpen_Sharpen#104728 active_frames=226 calls=226 mean_frame_ms=0.0430 mean_active_ms=0.0718 max_frame_ms=0.2550
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Color_Contrast#105278 active_frames=377 calls=377 mean_frame_ms=0.0556 mean_active_ms=0.0556 max_frame_ms=0.1014
+[StutterFix] [gpuprobe] effect:Camera/CameraFilterPackLegacy_Light_Water2#104360 active_frames=226 calls=226 mean_frame_ms=0.0835 mean_active_ms=0.1394 max_frame_ms=0.1423
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0156; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [archegpu] stamp song=278.0098749329336 qpc=805311695 qpc_frequency=10000000 utc=2026-10-20T10:40:08.7198400Z
+[StutterFix] [archegpu] active=True selected=0 bypassed=0 song=278.0098749329336
+[StutterFix] [archegpu] effect=104404 type=CameraFilterPackLegacy_Distortion_FishEye enabled=True active=True calls=2999 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Distortion=0.47
+[StutterFix] [archegpu] effect=105312 type=CameraFilterPackLegacy_Drawing_Paper enabled=True active=True calls=1207 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Pencil_Color=RGBA(0.000, 0.000, 0.000, 1.000) Pencil_Size=0.0008 Pencil_Correction=1.1 Intensity=1 Speed_Animation=1 Corner_Lose=0.5 Fade_Paper_to_BackColor=0 Fade_With_Original=0 Back_Color=RGBA(1.000, 1.000, 1.000, 1.000)
+[StutterFix] [archegpu] effect=105336 type=UnityStandardAssets.ImageEffects.CameraMotionBlur enabled=True active=True calls=341 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 filterType=Reconstruction preview=False movementScale=0 rotationScale=1 maxVelocity=8 minVelocity=0.1 velocityScale=1.5 softZDistance=0.005 velocityDownsample=1 jitter=0.05 showVelocity=False showVelocityScale=1
+[StutterFix] [archegpu] effect=104912 type=CameraFilterPackLegacy_Film_Grain enabled=True active=True calls=3028 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Value=9.6
+[StutterFix] [archegpu] effect=104968 type=VideoBloom enabled=True active=True calls=3876 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 tweakMode=Basic Threshold=0.22 MasterAmount=20 MediumAmount=1 LargeAmount=0 Tint=RGBA(0.882, 0.231, 0.231, 1.000) KernelSize=50 MediumKernelScale=1 LargeKernelScale=3 BlendMode=Add HighQuality=True
+[StutterFix] [archegpu] effect=105278 type=CameraFilterPackLegacy_Color_Contrast enabled=True active=True calls=3875 first_callback_rt=3440x1440:ARGB32:sRGB=False:samples=1->3440x1440:ARGB32 Contrast=1.25
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+EXIT 0

@@ -1,0 +1,113 @@
+Assembly-CSharp SHA256=F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF; ILSpy static excerpts, game not launched; original decompiled line numbers below.
+250: 
+251: 	private Coroutine startMusicCoroutine;
+252: 
+253: 	private Coroutine toggleHasSongStartedCourotine;
+254: 
+255: 	private bool hasSetMidspinHitsound;
+256: 
+257: 	public static float calibration_i => (float)currentPreset.inputOffset / 1000f;
+258: 
+259: 	public static float calibration_v => (float)visualOffset / 1000f;
+260: 
+261: 	public float adjustedCountdownTicks => (float)countdownTicks / countdownSpeedMultiplier;
+262: 
+263: 	public double dspTimeSongPosZero => dspTimeSong + addoffset / (double)song.pitch;
+264: 
+265: 	public double songposition_minusi
+266: 	{
+267: 		get
+268: 		{
+269: 			if (!GCS.d_webglConductor)
+270: 			{
+271: 				return _songposition_minusi;
+272: 			}
+273: 			if (song != null)
+274: 			{
+275: 				return _songposition_minusi - (double)scrMisc.Remap(song.pitch, 1f, 1.8f, 0f, 0.074f);
+276: 			}
+277: 			return _songposition_minusi;
+278: 		}
+279: 		set
+280: 		{
+281: 			_songposition_minusi = value;
+282: 		}
+283: 	}
+284: 
+285: 	public float[] spectrum
+286: 	{
+287: 		get
+288: 		{
+289: 			getSpectrum = true;
+290: 			return _spectrum;
+291: 		}
+292: 	}
+293: 
+294: 	public static scrConductor instance
+295: 	{
+296: 		get
+297: 		{
+298: 			if (_instance == null)
+299: 			{
+300: 				_instance = UnityEngine.Object.FindAnyObjectByType<scrConductor>();
+301: 			}
+302: 			return _instance;
+303: 		}
+304: 	}
+305: 
+306: 	public double songposition_minusv => songposition_minusi + (double)calibration_i - (double)calibration_v;
+307: 
+308: 	public bool onBeatHappened => Time.frameCount == onBeatFrame;
+309: 
+310: 	private void Awake()
+868: 					nextHitSoundToSchedule++;
+869: 				}
+870: 			}
+871: 		}
+872: 		crotchetAtStart = 60f / bpm;
+873: 		double num2 = songposition_minusi;
+874: 		if (!GCS.d_oldConductor && !GCS.d_webglConductor)
+875: 		{
+876: 			songposition_minusi = (double)((float)(dspTime - dspTimeSong - (double)calibration_i) * song.pitch) - addoffset;
+877: 		}
+878: 		else
+879: 		{
+880: 			songposition_minusi = (double)(song.time - calibration_i) - addoffset / (double)song.pitch;
+881: 		}
+882: 		deltaSongPos = songposition_minusi - num2;
+883: 		deltaSongPos = Math.Max(deltaSongPos, 0.0);
+884: 		if (songposition_minusi > nextBeatTime)
+950: 		}
+951: 		onBeatFrame = Time.frameCount;
+952: 	}
+953: 
+954: 	[Obsolete("This method isn't used!!")]
+955: 	public void ScrubMusicToTile(int tileID)
+956: 	{
+957: 		AudioListener.pause = true;
+958: 		AudioManager.Instance.StopAllSounds();
+959: 		song.SetScheduledStartTime(dspTime);
+960: 		double num = (separateCountdownTime ? (crotchetAtStart * (double)adjustedCountdownTicks) : 0.0);
+961: 		song.time = (float)(ADOBase.lm.listFloors[tileID].entryTime + addoffset - num);
+962: 		dspTimeSong = dspTime - ADOBase.lm.listFloors[tileID].entryTimePitchAdj - addoffset / (double)song.pitch;
+963: 		foreach (scrPlayer item in ADOBase.playerManager)
+964: 		{
+965: 			item.lastHit = ADOBase.lm.listFloors[tileID].entryTime;
+966: 		}
+967: 		StartCoroutine(DesyncFix());
+968: 	}
+969: 
+970: 	public void ScrubMusicToTime(double newTime)
+971: 	{
+972: 		double num = newTime / (double)song.pitch;
+973: 		AudioManager.Instance.StopAllSounds();
+974: 		if (song.clip != null)
+975: 		{
+976: 			song.SetScheduledStartTime(dspTime + 0.10000000149011612);
+977: 			double num2 = (separateCountdownTime ? (crotchetAtStart * (double)countdownTicks) : 0.0);
+978: 			song.time = (float)(newTime + addoffset - num2);
+979: 		}
+980: 		dspTimeSong = dspTime - num - addoffset / (double)song.pitch + 0.10000000149011612;
+981: 		foreach (scrPlayer item in ADOBase.playerManager)
+982: 		{
+983: 			item.lastHit = newTime;
