@@ -1,0 +1,16 @@
+[StutterFix] [자동 시험] 시작: 144단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco reset / stop / seek 262 12 / waitsongpos 262 40 / livedeco profile begin / waitsongpos 276 40 / livedeco profile end / stop / livedeco off / stop / seek 262 12 / waitsongpos 262 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 262 A B A2 / framecmp clear / framecmp ui include / resume / stop / livedeco off / stop / seek 262 12 / waitsongpos 270 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 270 A B A2 / framecmp clear / framecmp ui include / resume / stop / livedeco off / stop / seek 262 12 / waitsongpos 276 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 276 A B A2 / framecmp cle
+[StutterFix] [livedeco2] reset variant=B
+[StutterFix] [livedeco2] PROFILE_BEGIN mode=off fps_evidence=0
+[StutterFix] [livedeco2] PROFILE key=1 samples=174266 apply_us=0.072866 set_us=0.562924
+[StutterFix] [livedeco2] PROFILE key=2 samples=173911 apply_us=0.073281 set_us=0.216343
+[StutterFix] [livedeco2] PROFILE key=5 samples=175018 apply_us=0.073331 set_us=0.129199
+[StutterFix] [livedeco2] PROFILE key=7 samples=139711 apply_us=0.142760 set_us=0.027674
+[StutterFix] [livedeco2] PROFILE key=8 samples=139787 apply_us=0.134887 set_us=0.030378
+[StutterFix] [livedeco2] PROFILE key=9 samples=157321 apply_us=0.073243 set_us=0.262872
+[StutterFix] [livedeco2] PROFILE key=10 samples=558 apply_us=0.079391 set_us=0.575806
+[StutterFix] [livedeco2] PROFILE_SET_SHARE samples=960572 set_pct=70.130186 scope=sampled-Step-Apply-OnUpdate includes_scale_setters_in_apply=1 full_DecoAnim_share_proven=0
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco] pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED
+[StutterFix] [livedeco] on=False released=1 reason=BadImageFormatException:Method has no body
+[StutterFix] [livedeco2] GATE2=ERROR reason=BadImageFormatException:Method has no body final_on=False
+[StutterFix] [자동 시험] 단계 실패 'livedeco on': Method has no body

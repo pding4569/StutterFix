@@ -69,6 +69,7 @@ namespace StutterFix
         private static bool TrySet(scrDecoration d, Color c, float o, bool onlyOpacity)
         {
 #if DEV || AUTOTEST
+            if (LiveDeco.TryColor(d, c, o, onlyOpacity)) return true;
             if (DecoGpu.Owns(d))
             {
                 if (onlyOpacity) opacity(d) = o; else color(d) = c;

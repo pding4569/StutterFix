@@ -10,8 +10,7 @@ using UnityEngine.Rendering;
 
 namespace StutterFix
 {
-    // Gate 1 only. No scene objects, textures, materials, meshes or Harmony patches are created.
-    internal static class LiveDeco
+    internal static partial class LiveDeco
     {
         sealed class Row
         {
@@ -30,13 +29,13 @@ namespace StutterFix
         {
             switch (arg.Trim())
             {
-                case "off": Stop(); Log("on=False gate=1 restored=1 mutations=0"); return true;
-                case "state": Log("on=False gate=1 pending=" + requested + " prototype_available=0"); return true;
-                case "on": throw new InvalidOperationException("livedeco gate 1 runtime results required; renderer prototype not implemented");
+                case "off": Stop(); Log("on=False gate=2 restored=1"); return true;
+                case "state": Log(RuntimeState()); return true;
+                case "on": StartRuntime(); return true;
                 case "census":
                     if (!requested)
                     {
-                        if (MatShare.Active || FrameCompare.Paused || !Hitch.Playing)
+                        if (runtime != null || MatShare.Active || FrameCompare.Paused || !Hitch.Playing)
                             throw new InvalidOperationException("livedeco census requires natural playback with matshare off and framecmp resumed");
                         if (SceneReset.Resetting || GpuSplit.Busy || GpuHide.Busy || GpuCensus.Busy)
                             throw new InvalidOperationException("scene resetting or GPU diagnostics busy");
@@ -50,7 +49,7 @@ namespace StutterFix
                     var error = failure; Stop();
                     if (error != null) throw new InvalidOperationException("livedeco census failed", error);
                     return true;
-                default: throw new ArgumentException("livedeco census|off|state (gate 1 only)");
+                default: return Gate2Command(arg);
             }
         }
         static void OnPreCull(Camera camera)
@@ -62,6 +61,8 @@ namespace StutterFix
         }
         internal static void Stop()
         {
+            CancelGate2Profile();
+            StopRuntime();
             Camera.onPreCull -= OnPreCull;
             pending = null; requested = done = false; failure = null;
         }

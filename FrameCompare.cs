@@ -21,6 +21,9 @@ namespace StutterFix
             internal int Width, Height, Frame;
             internal FrameCompareState State;
             internal string Mode;
+            internal bool LiveDeco;
+            internal int LiveDecoOwned;
+            internal double Song;
         }
         static FrameCompare instance;
         internal static bool Paused { get; private set; }
@@ -262,7 +265,9 @@ namespace StutterFix
                 pending.width != w || pending.height != h || pending.GetData<byte>().Length != checked(w * h * 4))
                 throw new InvalidOperationException("readback RT/data dimensions changed");
             shots[name] = new Shot { Pixels = pending.GetData<byte>().ToArray(), Width = w, Height = h, Frame = frame, State = state,
-                Mode = $"filtersOff={filtersOff},includeUi={includeUi},device={SystemInfo.graphicsDeviceType},color={QualitySettings.activeColorSpace}" };
+                Mode = $"filtersOff={filtersOff},includeUi={includeUi},device={SystemInfo.graphicsDeviceType},color={QualitySettings.activeColorSpace}",
+                LiveDeco = LiveDeco.Active, LiveDecoOwned = LiveDeco.OwnedCount,
+                Song = scrConductor.instance ? scrConductor.instance.songposition_minusi : double.NaN };
             Log($"grab {name} valid=1 {w}x{h} frame={frame} {state.Summary} {shots[name].Mode} disabledFilters={filters.Count} disabledCanvases={canvases.Count} maskedCameras={masks.Count}");
             ReleasePending(false);
         }
@@ -288,6 +293,17 @@ namespace StutterFix
             Log(string.Format(Inv, "diff {0} {1} threshold={2} maxRGBA={3} changed={4}/{5} ratio={6:R} PSNR={7:R} top32(bottom-left,x,y,w,h,L1)={8}",
                 a, b, threshold, string.Join(",", r.Max), r.Changed, r.OutsidePixels, r.Ratio, r.Psnr, r.Regions));
             return r;
+        }
+        internal static bool Gate2Pixels(int time, string a, string b, string a2, out long changed, out int max, out string regions, out long restored)
+        {
+            var p = Get(); p.RequirePaused();
+            if (!p.centerMask || !p.shots.TryGetValue(a, out var x) || !p.shots.TryGetValue(b, out var y) || !p.shots.TryGetValue(a2, out var z))
+                throw new InvalidOperationException("gate2 missing shots/center mask");
+            var diff = p.Diff(a, b, 0); var restore = p.Diff(a, a2, 0);
+            changed = diff.Changed; max = diff.Max.Max(); regions = diff.Regions; restored = restore.Changed;
+            return !x.LiveDeco && y.LiveDeco && y.LiveDecoOwned > 0 && !z.LiveDeco &&
+                Math.Abs(x.Song - time) <= 0.25 && Math.Abs(y.Song - x.Song) < 1e-6 && Math.Abs(z.Song - x.Song) < 1e-6 &&
+                restore.Changed == 0 && x.State.Compare(z.State).Changed == 0;
         }
         void ApplyCapture()
         {

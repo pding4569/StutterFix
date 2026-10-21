@@ -35,7 +35,12 @@ namespace StutterFix
         internal static bool Installed;
         internal static long Created, Completed, Killed, Dropped, Frames, VerifyN, VerifySteps, VerifyMismatch, Errors;
         // (측정용) 매 프레임 DOTween 갱신 앞에서 가장 먼저 돌아서 다른 측정(함수별, 애니메이션 갱신)에 안 잡혔다. 따로 잰다.
+#if DEV || AUTOTEST
+        internal static bool LiveDecoProfile;
+        internal static bool Prof => Edition.Dev || Main.MeasureBuild || LiveDecoProfile;
+#else
         internal static readonly bool Prof = Edition.Dev || Main.MeasureBuild;
+#endif
         private static long profN;
         internal static readonly long[] ProfN = new long[16], ProfApply = new long[16], ProfSet = new long[16];
         internal static long Steps;
@@ -138,6 +143,27 @@ namespace StutterFix
                     CanPivotParallax = setPivX != null && setPivY != null && setParOffX != null && setParOffY != null;
                 }
                 catch (Exception ex) { CanPivotParallax = false; Main.Entry.Logger.Log("[장식 애니메이션] 피벗·시차 함수를 못 찾아 그 효과는 원래대로: " + ex.Message); }
+#if DEV || AUTOTEST
+                // These delegates can predate the opt-in Harmony session. Guard the
+                // call sites as well, including paired XY and completion callbacks.
+                var rawPos = setPos; var rawX = setPosX; var rawY = setPosY;
+                var rawRot = setRot; var rawScale = setScale; var rawColor = setCol; var rawOpacity = setOpa;
+                setPos = (v, p, off) => { if (!LiveDeco.TryPosition(v, p, off)) rawPos(v, p, off); };
+                setPosX = (v, x, off) => { if (!LiveDeco.TryPosition(v, new Vector2(x, v.pivotPosVec.y), off)) rawX(v, x, off); };
+                setPosY = (v, y, off) => { if (!LiveDeco.TryPosition(v, new Vector2(v.pivotPosVec.x, y), off)) rawY(v, y, off); };
+                setRot = (v, x) => { if (!LiveDeco.TryRotation(v, x)) rawRot(v, x); };
+                setScale = (v, x) => { if (!LiveDeco.TryScale(v, x)) rawScale(v, x); };
+                setCol = (v, c) => { if (!LiveDeco.TryColor(v, c, 0, false)) rawColor(v, c); };
+                setOpa = (v, x) => { if (!LiveDeco.TryColor(v, default, x, true)) rawOpacity(v, x); };
+                if (CanPivotParallax)
+                {
+                    var rawPivotX = setPivX; var rawPivotY = setPivY; var rawParX = setParOffX; var rawParY = setParOffY;
+                    setPivX = (v, x) => { if (!LiveDeco.TryPosition(v, v.pivotPosVec, new Vector2(x, v.pivotOffsetVec.y))) rawPivotX(v, x); };
+                    setPivY = (v, y) => { if (!LiveDeco.TryPosition(v, v.pivotPosVec, new Vector2(v.pivotOffsetVec.x, y))) rawPivotY(v, y); };
+                    setParOffX = (v, x) => { if (!LiveDeco.TryParallaxOffset(v, x, true)) rawParX(v, x); };
+                    setParOffY = (v, y) => { if (!LiveDeco.TryParallaxOffset(v, y, false)) rawParY(v, y); };
+                }
+#endif
                 var kill = AccessTools.Method(typeof(TweenExtensions), "Kill", new[] { typeof(Tween), typeof(bool) });
                 h.Patch(kill, prefix: new HarmonyMethod(typeof(DecoAnim), nameof(KillPrefix)) { priority = Priority.First });
                 foreach (var m in typeof(DOTween).GetMethods(AccessTools.all))

@@ -198,6 +198,8 @@ static class Program
     {
         var targets = new HashSet<string> {
             "scrDecoration::pivotPosVec", "scrDecoration::pivotOffsetVec", "scrDecoration::rotAngle", "scrDecoration::scaleVec",
+            "scrDecoration::pivotTrans", "scrDecoration::childTransform",
+            "SpriteAlphaMask::pivotTrans", "SpriteAlphaMask::childTrans",
             "scrParallax::startPosition", "scrParallax::posCamAtStart", "scrParallax::endPosition",
             "scrParallax::GetPositionWithParallax", "scrDecoration::GetDecorationWorldSize" };
         var reflectionNames = new HashSet<string> { "pivotPosVec", "pivotOffsetVec", "rotAngle", "scaleVec",

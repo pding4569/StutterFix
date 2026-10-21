@@ -80,6 +80,36 @@ for (int trial = 0; trial < 1000; trial++)
     Check(result.Counts.Sum() == original.Count(x => x.Owned), "partition exhaustive");
 }
 Console.WriteLine($"LiveDeco policy/anchor model: {checks} checks passed; synthetic, no Unity sorting or pixels proven");
+int atlasChecks = checks;
+foreach (int w in new[] { 1, 2, 3, 4, 5, 31, 32, 63 }) foreach (int h in new[] { 1, 2, 5, 16, 31 })
+{
+    var src = Enumerable.Range(0, w * h).ToArray(); var padded = LiveDecoAtlasPolicy.Extrude(src, w, h);
+    int stride = LiveDecoAtlasPolicy.Align(w + 4);
+    for (int y = 0; y < LiveDecoAtlasPolicy.Align(h + 4); y++) for (int x = 0; x < stride; x++)
+        Check(padded[y * stride + x] == src[Math.Clamp(y - 2, 0, h - 1) * w + Math.Clamp(x - 2, 0, w - 1)], "true edge extrusion including corners");
+}
+for (int trial = 0; trial < 100; trial++)
+{
+    const int size = 128; var shelf = new LiveDecoAtlasPolicy.Shelf(size); var occupied = new HashSet<(int, int)>();
+    for (int t = 0; t < 50; t++)
+    {
+        int w = random.Next(1, 34), h = random.Next(1, 34);
+        if (!shelf.Place(w, h, out int x, out int y)) continue;
+        Check(x % 2 == 0 && y % 2 == 0 && (x - 2) % 4 == 0 && (y - 2) % 4 == 0, "even origin and block alignment");
+        Check(x >= 2 && y >= 2 && x + w + 2 <= size && y + h + 2 <= size, "padding in bounds");
+        for (int py = y - 2; py < y - 2 + LiveDecoAtlasPolicy.Align(h + 4); py++)
+            for (int px = x - 2; px < x - 2 + LiveDecoAtlasPolicy.Align(w + 4); px++) Check(occupied.Add((px, py)), "padded regions do not overlap");
+        foreach (float uv in new[] { 0f, 0.1234567f, 0.5f, 1f })
+            Check(LiveDecoAtlasPolicy.UV(x, w, size, uv) == (float)((double)x / size + (double)uv * ((double)(x + w) / size - (double)x / size)), "single double-to-float UV conversion");
+    }
+}
+Check(LiveDecoAtlasPolicy.Verdict(0, true, true, true, 100, 115) == "PASS", "exact 15 percent boundary");
+Check(LiveDecoAtlasPolicy.Verdict(0, true, true, true, 100, 114.99) == "NO_GAIN", "gain below threshold");
+Check(LiveDecoAtlasPolicy.Verdict(1, true, true, true, 100, 150) == "PIXEL_FAIL", "one pixel never passes");
+Check(LiveDecoAtlasPolicy.Verdict(0, false, true, true, 100, 150) == "ERROR", "restore required");
+Check(LiveDecoAtlasPolicy.Verdict(0, true, false, true, 100, 150) == "ERROR", "three valid pixels required");
+Check(LiveDecoAtlasPolicy.Verdict(0, true, true, false, 100, 150) == "ERROR", "four valid samples required");
+Console.WriteLine($"LiveDeco atlas/gate policy: {checks - atlasChecks} checks passed; packing, extrusion, rounding, verdict boundaries; GPU untested");
 if (args.Length == 3)
 {
     int start = checks;
@@ -87,7 +117,7 @@ if (args.Length == 3)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
-        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder" })
+        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoAtlas", "LiveDecoAtlasPolicy" })
             Check(names.Contains(name) == (i != 0), "edition types " + name + " " + args[i]);
         if (i == 0) Check(!md.TypeReferences.Any(h => md.GetString(md.GetTypeReference(h).Name).StartsWith("LiveDeco")
             || md.GetString(md.GetTypeReference(h).Name) == "SceneRenderOrder"), "Player no experiment type references");

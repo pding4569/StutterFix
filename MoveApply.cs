@@ -244,6 +244,9 @@ namespace StutterFix
         internal static long RotScaleDeferred;
         internal static bool DeferTransform(scrDecoration d)
         {
+#if DEV || AUTOTEST
+            if (LiveDeco.SkipTransform(d)) return true;
+#endif
             if (!DeferRotScale || (object)d == null || d.GetType() != typeof(scrVisualDecoration)) return false;
             if (InvisibleSkip.MaskOrUnknown((scrVisualDecoration)d)) return false;   // 마스크: 대상 장식의 UpdateShader 가 이 Transform 을 읽는다
             if (!SkipForLate(d)) return false;
@@ -378,6 +381,9 @@ namespace StutterFix
 
         public static void UpdateNow(scrDecoration d)
         {
+#if DEV || AUTOTEST
+            if (LiveDeco.SkipTransform(d)) return;
+#endif
             if (SkipForLate(d)) return;
             if (depth > 0 && Enabled) { Mark(d); return; }
             update(d);

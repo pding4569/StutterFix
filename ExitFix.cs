@@ -130,7 +130,11 @@ namespace StutterFix
             filled = 0; baseList = null; baseCount = 0; haveBase = false;
             touched.Clear();
         }
-        public static void LoadLevelPrefix() { try { Forget(); } catch { } try { FfxReuse.Prune(); } catch { } try { EffectBudget.ForgetDecos(); } catch { } try { Dormancy.ForgetLevel(); } catch { } try { LoadFix.ForgetLevel(); } catch { } try { BeatFix.ForgetLevel(); } catch { } try { MeshWarm.ForgetLevel(); } catch { } try { FastMove.ForgetLevel(); } catch { } }
+        public static void LoadLevelPrefix() {
+#if DEV || AUTOTEST
+            LiveDeco.Stop();
+#endif
+            try { Forget(); } catch { } try { FfxReuse.Prune(); } catch { } try { EffectBudget.ForgetDecos(); } catch { } try { Dormancy.ForgetLevel(); } catch { } try { LoadFix.ForgetLevel(); } catch { } try { BeatFix.ForgetLevel(); } catch { } try { MeshWarm.ForgetLevel(); } catch { } try { FastMove.ForgetLevel(); } catch { } }
         private static int baseCount;
         private static bool haveBase;
         private sealed class RefEq : IEqualityComparer<scrDecoration>

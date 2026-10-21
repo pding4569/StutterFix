@@ -3,5 +3,6 @@
   <ItemGroup>
     <Compile Include="../../../SceneRenderOrder.cs" Link="SceneRenderOrder.cs" />
     <Compile Include="../../../LiveDecoPolicy.cs" Link="LiveDecoPolicy.cs" />
+    <Compile Include="../../../LiveDecoAtlasPolicy.cs" Link="LiveDecoAtlasPolicy.cs" />
   </ItemGroup>
 </Project>

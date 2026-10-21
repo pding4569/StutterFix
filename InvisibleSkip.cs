@@ -69,6 +69,9 @@ namespace StutterFix
 
         public static void After(scrVisualDecoration __instance)
         {
+#if DEV || AUTOTEST
+            if (LiveDeco.Owns(__instance)) return;
+#endif
             if (!Enabled) return;
             // 시간 재기 자체가 호출 한 번 비용과 비슷해서(첫 판: 286만 번에 492ms), 64번에 한 번만 재고 64배로 친다.
             bool sample = (++Calls & 63) == 0;
