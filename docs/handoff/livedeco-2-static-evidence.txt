@@ -1,0 +1,53 @@
+﻿Read-only local game assembly analysis; no Unity methods invoked.
+Assembly-CSharp.dll SHA256=F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF
+Tool: ilspycmd 9.1.0.7988 -t scrVisualDecoration
+
+EnableMeshRenderer:
+	private void EnableMeshRenderer(bool enabled)
+	{
+		if (enabled != meshRendererEnabled)
+		{
+			meshRendererObj.SetActive(enabled);
+		}
+		meshRendererEnabled = enabled;
+	}
+
+UpdateShader mesh branch (sprite disabled, mesh object activated):
+					if (spriteRenderer.enabled)
+					{
+						spriteRenderer.enabled = false;
+					}
+					meshRenderer.transform.localScale = new Vector3((float)texture.width / 100f, (float)texture.height / 100f, 1f);
+					EnableMeshRenderer(enabled: true);
+					meshRenderer.material.mainTexture = (hasShader ? ((Texture)rt) : ((Texture)texture));
+				}
+				return;
+			}
+		}
+		EnableMeshRenderer(enabled: false);
+
+SetBlendMode:
+	public void SetBlendMode(DecorationBlendMode blendMode)
+	{
+		bool flag = blendMode != DecorationBlendMode.None;
+		this.blendMode = blendMode;
+		blendModeEffect.enabled = flag;
+		meshBlendModeEffect.enabled = flag;
+		if (flag)
+		{
+			BlendMode blendMode2 = Enum.Parse<BlendMode>(blendMode.ToString());
+			blendModeEffect.BlendMode = blendMode2;
+			blendModeEffect.UsePointSampling = !smoothing;
+			meshBlendModeEffect.BlendMode = blendMode2;
+			return;
+		}
+		spriteRenderer.material.shader = scrDecorationManager.tileShader;
+		if (meshRendererMat == null)
+		{
+			meshRendererMat = new Material(scrDecorationManager.visualDecoShader)
+			{
+				hideFlags = HideFlags.HideAndDontSave
+			};
+		}
+		meshRenderer.material = meshRendererMat;
+	}

@@ -10,7 +10,7 @@ using UnityEngine.Rendering;
 
 namespace StutterFix
 {
-    // Gate 1 only. No objects, textures, materials, meshes or Harmony patches are created.
+    // Gate 1 only. No scene objects, textures, materials, meshes or Harmony patches are created.
     internal static class LiveDeco
     {
         sealed class Row
@@ -85,6 +85,104 @@ namespace StutterFix
                     + " mesh_shader=" + (m.sharedMaterial && m.sharedMaterial.shader ? m.sharedMaterial.shader.name : "missing"));
         }
 
+        // MPB has no property-name iterator. This is a named probe, never a proof
+        // that unqueried properties are absent. Nonempty provisional candidates
+        // make the final gate inconclusive, even if its numerical model passes.
+        sealed class BlockCensus
+        {
+            readonly MaterialPropertyBlock rendererBlock = new MaterialPropertyBlock();
+            readonly MaterialPropertyBlock slotBlock = new MaterialPropertyBlock();
+            readonly Dictionary<int, string[]> shaderNames = new Dictionary<int, string[]>();
+            internal readonly SortedDictionary<string, int> Names = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            internal readonly SortedDictionary<string, int> States = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            internal readonly SortedDictionary<string, int> Custom = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            internal bool Nonempty;
+
+            static readonly string[] Defaults = { "_MainTex", "_MainTex_ST", "_Color", "_RendererColor", "_Flip", "_EnableExternalAlpha", "_AlphaTex", "_AlphaTex_ST" };
+            // Names recovered from ShaderUtilities, ADOStartup and SpriteAlphaMask.
+            static IEnumerable<string> KnownNames()
+            {
+                foreach (string n in Defaults) yield return n;
+                foreach (string n in new[] { "_BLENDMODES_OverlayColor", "_BLENDMODES_OverlayTexture", "_BLENDMODES_OverlayTexture_ST",
+                    "_BLENDMODES_StencilId", "_BLENDMODES_BlendStencilComp", "_BLENDMODES_NormalStencilComp",
+                    "RepeatX", "RepeatY", "_Opacity", "_Tile", "_ARot", "_VisibleOutsideMask", "_DisableTexture1" }) yield return n;
+                for (int i = 1; i <= 5; i++)
+                {
+                    yield return "_Texture" + i;
+                    if (i == 1) continue;
+                    foreach (string suffix in new[] { "Scale", "Pos", "Rot" }) yield return "_Texture" + i + suffix;
+                    yield return "_DisableTexture" + i;
+                }
+            }
+            string[] ProbeNames(Material material)
+            {
+                var shader = material ? material.shader : null;
+                int id = shader ? shader.GetInstanceID() : 0;
+                if (shaderNames.TryGetValue(id, out var names)) return names;
+                var all = new SortedSet<string>(KnownNames(), StringComparer.Ordinal);
+                if (shader) for (int i = 0; i < shader.GetPropertyCount(); i++)
+                {
+                    string name = shader.GetPropertyName(i); all.Add(name);
+                    if (shader.GetPropertyType(i) == ShaderPropertyType.Texture) all.Add(name + "_ST");
+                }
+                names = all.ToArray(); shaderNames.Add(id, names); return names;
+            }
+            static string Types(MaterialPropertyBlock block, string name)
+            {
+                string types = "";
+                if (block.HasTexture(name)) types += "texture,";
+                if (block.HasFloat(name)) types += "float,";
+                if (block.HasVector(name)) types += "vector,";
+                if (block.HasColor(name)) types += "color,";
+                if (block.HasMatrix(name)) types += "matrix,";
+                if (block.HasInteger(name)) types += "integer,";
+                if (block.HasBuffer(name)) types += "buffer,";
+                if (block.HasConstantBuffer(name)) types += "constant-buffer,";
+                return types.Length == 0 ? "other" : types.TrimEnd(',');
+            }
+            internal string Read(SpriteRenderer renderer, Material[] materials)
+            {
+                rendererBlock.Clear(); slotBlock.Clear(); Nonempty = false;
+                bool has = renderer.HasPropertyBlock();
+                if (has) renderer.GetPropertyBlock(rendererBlock);
+                // Eligible images have one material. Other images are diagnosed at
+                // slot 0 only and are still rejected by the material-slots guard.
+                if (has && materials.Length != 0) renderer.GetPropertyBlock(slotBlock, 0);
+                var effective = slotBlock.isEmpty ? rendererBlock : slotBlock;
+                Nonempty = !effective.isEmpty;
+                Increment(States, "has=" + has + ",renderer_empty=" + rendererBlock.isEmpty + ",slot0_empty=" + slotBlock.isEmpty
+                    + ",effective=" + (slotBlock.isEmpty ? "renderer" : "slot0"));
+                string firstCustom = null; int observed = 0;
+                foreach (string name in ProbeNames(materials.Length == 0 ? null : materials[0]))
+                {
+                    if (rendererBlock.HasProperty(name)) Increment(Names, "renderer:" + name + ":" + Types(rendererBlock, name));
+                    if (slotBlock.HasProperty(name)) Increment(Names, "slot0:" + name + ":" + Types(slotBlock, name));
+                    if (!effective.HasProperty(name)) continue;
+                    observed++; Increment(Names, "effective:" + name + ":" + Types(effective, name));
+                    bool basic = Defaults.Contains(name);
+                    if (!basic || !DefaultValue(effective, name, renderer))
+                    {
+                        Increment(Custom, name);
+                        if (firstCustom == null) firstCustom = name;
+                    }
+                }
+                if (firstCustom != null) return "property-block-custom:" + firstCustom;
+                return Nonempty && observed == 0 ? "property-block-unresolved" : null;
+            }
+            static bool DefaultValue(MaterialPropertyBlock block, string name, SpriteRenderer renderer)
+            {
+                if (name == "_MainTex") return block.HasTexture(name) && renderer.sprite && block.GetTexture(name) == renderer.sprite.texture;
+                if (name == "_AlphaTex") return block.HasTexture(name) && !block.GetTexture(name);
+                if (name == "_EnableExternalAlpha") return block.HasFloat(name) && block.GetFloat(name) == 0;
+                if (name == "_Color" || name == "_RendererColor")
+                    return block.HasColor(name) && (block.GetColor(name).Equals(Color.white) || block.GetColor(name).Equals(renderer.color));
+                if (!block.HasVector(name)) return false;
+                var value = block.GetVector(name);
+                if (name == "_Flip") return value.x == (renderer.flipX ? -1 : 1) && value.y == (renderer.flipY ? -1 : 1);
+                return value.Equals(new Vector4(1, 1, 0, 0)); // identity texture ST only
+            }
+        }
+
         static string Reason(scrVisualDecoration d, SpriteRenderer r, Material[] materials, Camera camera)
         {
             if ((camera.cullingMask & (1 << r.gameObject.layer)) == 0) return "camera-layer";
@@ -105,9 +203,6 @@ namespace StutterFix
             if (m.shader.name != "Sprites/Tile" || m.passCount != 1 || m.renderQueue != 3000) return "shader-pass-queue";
             if (!m.GetShaderPassEnabled(m.GetPassName(0))) return "disabled-pass";
             if (m.shaderKeywords.Length != 0) return "keywords";
-            // Engine-owned sprite MPBs may be normal. Do not pretend we can enumerate
-            // and bake arbitrary overrides with Unity's non-enumerating MPB API.
-            if (r.HasPropertyBlock()) return "property-block-unverified";
             return null;
         }
         static string Signature(Material material)
@@ -151,6 +246,7 @@ namespace StutterFix
             var barriers = new SortedDictionary<string, int>(StringComparer.Ordinal);
             var signatures = new Dictionary<int, string>();
             var rows = new List<Row>();
+            var blocks = new BlockCensus(); int provisionalBlocks = 0;
             foreach (var renderer in Resources.FindObjectsOfTypeAll<Renderer>())
             {
                 if (!Live(renderer)) continue;
@@ -159,7 +255,12 @@ namespace StutterFix
                 string reason = decoration ? Reason(decoration, decoration.spriteRenderer, materials, camera) : "nonimage";
                 if (decoration)
                 {
-                    if (reason == null || reason == "property-block-unverified") basic++;
+                    string blockReason = blocks.Read(decoration.spriteRenderer, materials);
+                    if (reason == null)
+                    {
+                        basic++; reason = blockReason;
+                        if (reason == null && blocks.Nonempty) provisionalBlocks++;
+                    }
                     if (reason == null) owned++;
                     else Increment(reasons, reason);
                 }
@@ -188,14 +289,21 @@ namespace StutterFix
             if (result.Candidates != owned || owned + reasons.Values.Sum() != live || meshStates.Values.Sum() != decorations.Count)
                 throw new InvalidOperationException("census partition mismatch");
             bool orderSupported = grouped == 0 && missingMaterials == 0 && unsupportedQueues == 0;
-            string verdict = LiveDecoPolicy.Gate(live, result, orderSupported);
+            string numericVerdict = LiveDecoPolicy.Gate(live, result, orderSupported);
+            string verdict = LiveDecoPolicy.Gate(live, result, orderSupported, provisionalBlocks == 0);
             double song = scrConductor.instance ? scrConductor.instance.songposition_minusi : double.NaN;
             Log("census frame=" + Time.frameCount + " song=" + song.ToString("F6", CultureInfo.InvariantCulture)
                 + " camera_id=" + camera.GetInstanceID() + " camera_mask=" + camera.cullingMask
-                + " phase=main-preCull classifier_version=2 live_definition=enabled-active-unforced frustum_filter=0 alpha_filter=0");
+                + " phase=main-preCull classifier_version=3 live_definition=enabled-active-unforced frustum_filter=0 alpha_filter=0");
             Log("images_all=" + decorations.Count + " live=" + live + " basic_candidates=" + basic
                 + " owned_candidates=" + owned + " coverage_pct=" + (live == 0 ? 0 : 100.0 * owned / live).ToString("F3", CultureInfo.InvariantCulture)
                 + " remaining_live=" + (live - owned) + " renderer_material_slots=" + rows.Count);
+            Log("property_block_names=" + (blocks.Names.Count == 0 ? "none-observed" : string.Join(";", blocks.Names.Select(p => p.Key + "=" + p.Value)))
+                + " scope=all-sprite-live slot_scope=0 counts=renderers-per-name-type name_enumeration_complete=0");
+            foreach (var p in blocks.States) Log("property_block_state=" + p.Key + " count=" + p.Value);
+            foreach (var p in blocks.Custom) Log("property_block_custom=" + p.Key + " count=" + p.Value + " scope=all-sprite-live-effective-slot0");
+            Log("property_block_provisional_candidates=" + provisionalBlocks + " numeric_gate=" + numericVerdict
+                + " final_gate_requires=complete-property-block-verification");
             Log("mesh_diagnostics images_all=" + decorations.Count + " mesh_only_live=" + meshOnly
                 + " mesh_and_sprite_live=" + meshAndSprite + " legacy_mesh_false_rejects=" + legacyFalseRejects
                 + " distribution_total=" + meshStates.Values.Sum() + " image_union_live=" + (live + meshOnly)

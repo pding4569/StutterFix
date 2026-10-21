@@ -1,0 +1,242 @@
+﻿== BlendModes.BlendModeEffect
+  get_ShaderFamily
+    필드 읽기 BlendModes.BlendModeEffect::shaderFamily
+  set_ShaderFamily
+    호출 BlendModes.BlendModeEffect::SetShaderFamily
+  get_BlendMode
+    필드 읽기 BlendModes.BlendModeEffect::blendMode
+  set_BlendMode
+    호출 BlendModes.BlendModeEffect::SetBlendMode
+  get_RenderMode
+    필드 읽기 BlendModes.BlendModeEffect::renderMode
+  set_RenderMode
+    호출 BlendModes.BlendModeEffect::SetRenderMode
+  get_MaskMode
+    필드 읽기 BlendModes.BlendModeEffect::maskMode
+  set_MaskMode
+    호출 BlendModes.BlendModeEffect::SetMaskMode
+  get_MaskBehaviour
+    필드 읽기 BlendModes.BlendModeEffect::maskBehaviour
+  set_MaskBehaviour
+    호출 BlendModes.BlendModeEffect::SetMaskBehaviour
+  get_OverlayColor
+    필드 읽기 BlendModes.BlendModeEffect::overlayColor
+  set_OverlayColor
+    호출 BlendModes.BlendModeEffect::SetOverlayColor
+  get_OverlayTexture
+    필드 읽기 BlendModes.BlendModeEffect::overlayTexture
+  set_OverlayTexture
+    호출 BlendModes.BlendModeEffect::SetOverlayTexture
+  get_OverlayTextureOffset
+    필드 읽기 BlendModes.BlendModeEffect::overlayTextureOffset
+  set_OverlayTextureOffset
+    호출 BlendModes.BlendModeEffect::SetOverlayTextureOffset
+  get_OverlayTextureScale
+    필드 읽기 BlendModes.BlendModeEffect::overlayTextureScale
+  set_OverlayTextureScale
+    호출 BlendModes.BlendModeEffect::SetOverlayTextureScale
+  get_FramebufferEnabled
+    필드 읽기 BlendModes.BlendModeEffect::framebufferEnabled
+  set_FramebufferEnabled
+    호출 BlendModes.BlendModeEffect::SetFramebufferEnabled
+  get_UnifiedGrabEnabled
+    필드 읽기 BlendModes.BlendModeEffect::unifiedGrabEnabled
+  set_UnifiedGrabEnabled
+    호출 BlendModes.BlendModeEffect::SetUnifiedGrabEnabled
+  get_ShareMaterial
+    필드 읽기 BlendModes.BlendModeEffect::shareMaterial
+  set_ShareMaterial
+    호출 BlendModes.BlendModeEffect::SetShareMaterial
+  get_IsComponentExtensionValid
+    필드 읽기 BlendModes.BlendModeEffect::сomponentExtension
+    호출 UnityEngine.Component::get_gameObject
+    호출 BlendModes.ComponentExtension::IsValidFor
+  get_UsePointSampling
+    필드 읽기 BlendModes.BlendModeEffect::usePointSampling
+  set_UsePointSampling
+    필드 쓰기 BlendModes.BlendModeEffect::usePointSampling
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  get_ShaderResources
+    정적필드 읽기 BlendModes.BlendModeEffect::cachedShaderResources
+    호출 BlendModes.ShaderResources::Load
+    정적필드 쓰기 BlendModes.BlendModeEffect::cachedShaderResources
+  IsShaderFamilySupported
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 BlendModes.BlendModeEffect::сomponentExtension
+    호출 BlendModes.BlendModeEffect::get_ShaderResources
+    호출 UnityEngine.Object::op_Implicit
+    호출 BlendModes.ComponentExtension::get_SupportedShaderFamilies
+    호출 제네릭 System.Linq.Enumerable::Contains
+    호출 BlendModes.ShaderResources::GetShaderFamilies
+  GetComponentExtension
+    필드 읽기 BlendModes.BlendModeEffect::сomponentExtension
+  SetShaderFamily
+    필드 읽기 BlendModes.BlendModeEffect::shaderFamily
+    호출 System.String::op_Equality
+    필드 쓰기 BlendModes.BlendModeEffect::shaderFamily
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetBlendMode
+    필드 읽기 BlendModes.BlendModeEffect::blendMode
+    필드 쓰기 BlendModes.BlendModeEffect::blendMode
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetRenderMode
+    필드 읽기 BlendModes.BlendModeEffect::renderMode
+    필드 쓰기 BlendModes.BlendModeEffect::renderMode
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetMaskMode
+    필드 읽기 BlendModes.BlendModeEffect::maskMode
+    필드 쓰기 BlendModes.BlendModeEffect::maskMode
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetMaskBehaviour
+    필드 읽기 BlendModes.BlendModeEffect::maskBehaviour
+    필드 쓰기 BlendModes.BlendModeEffect::maskBehaviour
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetOverlayColor
+    필드 읽기 BlendModes.BlendModeEffect::overlayColor
+    호출 UnityEngine.Color::op_Equality
+    필드 쓰기 BlendModes.BlendModeEffect::overlayColor
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetOverlayTexture
+    필드 읽기 BlendModes.BlendModeEffect::overlayTexture
+    호출 UnityEngine.Object::op_Equality
+    필드 쓰기 BlendModes.BlendModeEffect::overlayTexture
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetOverlayTextureOffset
+    필드 읽기 BlendModes.BlendModeEffect::overlayTextureOffset
+    호출 UnityEngine.Vector2::op_Equality
+    필드 쓰기 BlendModes.BlendModeEffect::overlayTextureOffset
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetOverlayTextureScale
+    필드 읽기 BlendModes.BlendModeEffect::overlayTextureScale
+    호출 UnityEngine.Vector2::op_Equality
+    필드 쓰기 BlendModes.BlendModeEffect::overlayTextureScale
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetFramebufferEnabled
+    필드 읽기 BlendModes.BlendModeEffect::framebufferEnabled
+    필드 쓰기 BlendModes.BlendModeEffect::framebufferEnabled
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetUnifiedGrabEnabled
+    필드 읽기 BlendModes.BlendModeEffect::unifiedGrabEnabled
+    필드 쓰기 BlendModes.BlendModeEffect::unifiedGrabEnabled
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  SetShareMaterial
+    필드 읽기 BlendModes.BlendModeEffect::shareMaterial
+    필드 쓰기 BlendModes.BlendModeEffect::shareMaterial
+    호출 BlendModes.BlendModeEffect::SetMaterialProperties
+  SetMaterialDirty
+    필드 쓰기 BlendModes.BlendModeEffect::isMaterialDirty
+  InitializeComponentExtension
+    호출 BlendModes.BlendModeEffect::get_IsComponentExtensionValid
+    호출 UnityEngine.Component::get_gameObject
+    필드 읽기 BlendModes.BlendModeEffect::componentExtensionState
+    호출 BlendModes.ComponentExtension::CreateForObject
+    필드 쓰기 BlendModes.BlendModeEffect::сomponentExtension
+    필드 읽기 BlendModes.BlendModeEffect::сomponentExtension
+    호출 BlendModes.ComponentExtension::OnEffectEnabled
+    호출 BlendModes.BlendModeEffect::get_ShaderFamily
+    호출 System.String::IsNullOrEmpty
+    호출 BlendModes.ComponentExtension::get_DefaultShaderFamily
+    호출 BlendModes.BlendModeEffect::set_ShaderFamily
+    호출 BlendModes.BlendModeEffect::SetMaterialProperties
+  SetMaterialProperties
+    호출 UnityEngine.Behaviour::get_enabled
+    필드 읽기 BlendModes.BlendModeEffect::сomponentExtension
+    호출 BlendModes.BlendModeEffect::get_ShaderResources
+    호출 UnityEngine.Object::op_Implicit
+    호출 BlendModes.BlendModeEffect::get_ShaderFamily
+    호출 BlendModes.BlendModeEffect::IsShaderFamilySupported
+    호출 BlendModes.BlendModeEffect::get_MaskMode
+    호출 BlendModes.BlendModeEffect::get_RenderMode
+    호출 BlendModes.BlendModeEffect::get_FramebufferEnabled
+    호출 BlendModes.BlendModeEffect::get_UnifiedGrabEnabled
+    호출 BlendModes.ShaderUtilities::BuildShaderName
+    호출 BlendModes.ShaderResources::ShaderExists
+    호출 BlendModes.BlendModeEffect::get_ShareMaterial
+    호출 BlendModes.ComponentExtension::AllowMaterialSharing
+    호출 BlendModes.ShaderResources::GetShaderByName
+    호출 BlendModes.SharedMaterials::GetSharedFor
+    필드 쓰기 BlendModes.BlendModeEffect::blendMaterial
+    필드 읽기 BlendModes.BlendModeEffect::blendMaterial
+    호출 BlendModes.ComponentExtension::OnEffectMaterialCreated
+    호출 UnityEngine.Material::get_shader
+    호출 UnityEngine.Object::get_name
+    호출 System.String::op_Inequality
+    호출 BlendModes.BlendModeEffect::CreateBlendMaterial
+    호출 BlendModes.BlendModeEffect::get_BlendMode
+    호출 BlendModes.ShaderUtilities::SelectBlendModeKeyword
+    호출 BlendModes.ComponentExtension::GetPropertyBlock
+    호출 BlendModes.BlendModeEffect::SetOverlayMaterialProperties
+    호출 BlendModes.BlendModeEffect::SetMaskMaterialProperties
+    호출 BlendModes.ComponentExtension::SetPropertyBlock
+    필드 읽기 BlendModes.BlendModeEffect::shaderFamily
+    호출 System.String::Format
+    호출 System.String::op_Equality
+    호출 BlendModes.BlendModeEffect::get_UsePointSampling
+    호출 RDUtils::SetPointSamplingVariant
+    호출 BlendModes.ComponentExtension::ApplyShaderProperties
+    호출 BlendModes.ComponentExtension::SetRenderMaterial
+    필드 쓰기 BlendModes.BlendModeEffect::isMaterialDirty
+  SetOverlayMaterialProperties
+    정적필드 읽기 BlendModes.ShaderUtilities::OverlayColorPropertyId
+    호출 BlendModes.BlendModeEffect::get_OverlayColor
+    호출 UnityEngine.MaterialPropertyBlock::SetColor
+    정적필드 읽기 BlendModes.ShaderUtilities::OverlayTexturePropertyId
+    호출 BlendModes.BlendModeEffect::get_OverlayTexture
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Texture2D::get_whiteTexture
+    호출 UnityEngine.MaterialPropertyBlock::SetTexture
+    정적필드 읽기 BlendModes.ShaderUtilities::OverlayTextureSTPropertyId
+    호출 BlendModes.BlendModeEffect::get_OverlayTextureScale
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    호출 BlendModes.BlendModeEffect::get_OverlayTextureOffset
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.MaterialPropertyBlock::SetVector
+    호출 UnityEngine.Material::SetColor
+    호출 UnityEngine.Material::SetTexture
+    호출 UnityEngine.Material::SetTextureOffset
+    호출 UnityEngine.Material::SetTextureScale
+  SetMaskMaterialProperties
+    호출 BlendModes.BlendModeEffect::get_MaskMode
+    호출 BlendModes.BlendModeEffect::get_MaskBehaviour
+    정적필드 읽기 BlendModes.ShaderUtilities::BlendStencilCompPropertyId
+    호출 UnityEngine.MaterialPropertyBlock::SetFloat
+    정적필드 읽기 BlendModes.ShaderUtilities::NormalStencilCompPropertyId
+    정적필드 읽기 BlendModes.ShaderUtilities::StencilIdPropertyId
+    호출 UnityEngine.Material::SetFloat
+  CreateBlendMaterial
+    호출 UnityEngine.Material::.ctor
+    호출 UnityEngine.Object::set_hideFlags
+  PreloadShaderResources
+    호출 BlendModes.ShaderResources::Load
+    정적필드 쓰기 BlendModes.BlendModeEffect::cachedShaderResources
+  Reset
+    호출 BlendModes.BlendModeEffect::InitializeComponentExtension
+  Awake
+    호출 BlendModes.BlendModeEffect::InitializeComponentExtension
+  OnEnable
+    호출 BlendModes.BlendModeEffect::InitializeComponentExtension
+  OnDisable
+    필드 읽기 BlendModes.BlendModeEffect::сomponentExtension
+    호출 BlendModes.ComponentExtension::OnEffectDisabled
+  OnValidate
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  OnDidApplyAnimationProperties
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  OnRenderImage
+    필드 읽기 BlendModes.BlendModeEffect::сomponentExtension
+    호출 BlendModes.ComponentExtension::OnEffectRenderImage
+  Update
+    필드 읽기 BlendModes.BlendModeEffect::isMaterialDirty
+    호출 BlendModes.BlendModeEffect::SetMaterialProperties
+  .ctor
+    호출 UnityEngine.Color::get_white
+    필드 쓰기 BlendModes.BlendModeEffect::overlayColor
+    호출 UnityEngine.Vector2::get_zero
+    필드 쓰기 BlendModes.BlendModeEffect::overlayTextureOffset
+    호출 UnityEngine.Vector2::get_one
+    필드 쓰기 BlendModes.BlendModeEffect::overlayTextureScale
+    호출 BlendModes.ComponentExtensionState::.ctor
+    필드 쓰기 BlendModes.BlendModeEffect::componentExtensionState
+    필드 쓰기 BlendModes.BlendModeEffect::isMaterialDirty
+    호출 UnityEngine.MonoBehaviour::.ctor

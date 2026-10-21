@@ -47,6 +47,8 @@ var four = LiveDecoPolicy.Count(Enumerable.Range(0, 4).Select(i => Row(i, true))
 Check(LiveDecoPolicy.Gate(5, four, true) == "PASS", "80 percent passes");
 Check(LiveDecoPolicy.Gate(6, four, true) == "FAIL", "below 80 fails");
 Check(LiveDecoPolicy.Gate(5, four, false) == "INCONCLUSIVE", "unsupported ordering never passes");
+Check(LiveDecoPolicy.Gate(5, four, true, false) == "INCONCLUSIVE", "named MPB probes cannot certify numerical pass");
+Check(LiveDecoPolicy.Gate(6, four, true, false) == "INCONCLUSIVE", "unverified MPB candidates do not certify numerical failure either");
 foreach (int n in new[] { 200, 201 })
 {
     var many = LiveDecoPolicy.Count(Enumerable.Range(0, n).Select(i => Row(i, true, order: i)).ToArray());

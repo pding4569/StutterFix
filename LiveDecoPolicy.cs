@@ -59,10 +59,10 @@ namespace StutterFix
             }
             return result;
         }
-        internal static string Gate(int live, Result r, bool orderSupported)
+        internal static string Gate(int live, Result r, bool orderSupported, bool propertyBlocksVerified = true)
         {
             if (live <= 0) return "INCONCLUSIVE";
-            if (!orderSupported || r.AmbiguousTies != 0) return "INCONCLUSIVE";
+            if (!orderSupported || !propertyBlocksVerified || r.AmbiguousTies != 0) return "INCONCLUSIVE";
             return r.MeshRuns <= 200 && (long)r.Candidates * 5 >= (long)live * 4 ? "PASS" : "FAIL";
         }
     }

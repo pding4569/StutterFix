@@ -1,0 +1,45 @@
+﻿Read-only source property-name evidence; no runtime distribution implied.
+SOURCE E:/StutterFixWork/decompiled/Assembly-CSharp/BlendModes/ShaderUtilities.cs
+21: public static readonly int OverlayColorPropertyId = Shader.PropertyToID("_BLENDMODES_OverlayColor");
+23: public static readonly int OverlayTexturePropertyId = Shader.PropertyToID("_BLENDMODES_OverlayTexture");
+25: public static readonly int OverlayTextureSTPropertyId = Shader.PropertyToID("_BLENDMODES_OverlayTexture_ST");
+27: public static readonly int StencilIdPropertyId = Shader.PropertyToID("_BLENDMODES_StencilId");
+29: public static readonly int BlendStencilCompPropertyId = Shader.PropertyToID("_BLENDMODES_BlendStencilComp");
+31: public static readonly int NormalStencilCompPropertyId = Shader.PropertyToID("_BLENDMODES_NormalStencilComp");
+108: TransferMaterialProperty(Shader.PropertyToID(propertyName), propertyType, fromMaterial, toMaterial);
+SOURCE E:/StutterFixWork/decompiled/Assembly-CSharp/SpriteAlphaMask.cs
+5: public static int ShaderProperty_Texture1 = Shader.PropertyToID("_Texture1");
+7: public static int ShaderProperty_DisableTexture1 = Shader.PropertyToID("_DisableTexture1");
+9: public static int ShaderProperty_Texture2 = Shader.PropertyToID("_Texture2");
+11: public static int ShaderProperty_Texture2Scale = Shader.PropertyToID("_Texture2Scale");
+13: public static int ShaderProperty_Texture2Pos = Shader.PropertyToID("_Texture2Pos");
+15: public static int ShaderProperty_Texture2Rot = Shader.PropertyToID("_Texture2Rot");
+17: public static int ShaderProperty_Texture3 = Shader.PropertyToID("_Texture3");
+19: public static int ShaderProperty_Texture3Scale = Shader.PropertyToID("_Texture3Scale");
+21: public static int ShaderProperty_Texture3Pos = Shader.PropertyToID("_Texture3Pos");
+23: public static int ShaderProperty_Texture3Rot = Shader.PropertyToID("_Texture3Rot");
+25: public static int ShaderProperty_DisableTexture3 = Shader.PropertyToID("_DisableTexture3");
+27: public static int ShaderProperty_Texture4 = Shader.PropertyToID("_Texture4");
+29: public static int ShaderProperty_Texture4Scale = Shader.PropertyToID("_Texture4Scale");
+31: public static int ShaderProperty_Texture4Pos = Shader.PropertyToID("_Texture4Pos");
+33: public static int ShaderProperty_Texture4Rot = Shader.PropertyToID("_Texture4Rot");
+35: public static int ShaderProperty_DisableTexture4 = Shader.PropertyToID("_DisableTexture4");
+37: public static int ShaderProperty_Texture5 = Shader.PropertyToID("_Texture5");
+39: public static int ShaderProperty_Texture5Scale = Shader.PropertyToID("_Texture5Scale");
+41: public static int ShaderProperty_Texture5Pos = Shader.PropertyToID("_Texture5Pos");
+43: public static int ShaderProperty_Texture5Rot = Shader.PropertyToID("_Texture5Rot");
+45: public static int ShaderProperty_DisableTexture5 = Shader.PropertyToID("_DisableTexture5");
+47: public static int ShaderProperty_RGB = Shader.PropertyToID("_MainTex");
+49: public static int ShaderProperty_A = Shader.PropertyToID("_AlphaTex");
+51: public static int ShaderProperty_ARot = Shader.PropertyToID("_ARot");
+53: public static int ShaderProperty_VisibleOutsideMask = Shader.PropertyToID("_VisibleOutsideMask");
+SOURCE E:/StutterFixWork/decompiled/Assembly-CSharp/ADOStartup.cs
+249: scrFloor.ShaderProperty_Color = Shader.PropertyToID("_Color");
+250: scrFloor.ShaderProperty_Alpha = Shader.PropertyToID("_Alpha");
+251: FloorRenderer.ShaderProperty_Flash = Shader.PropertyToID("_Flash");
+252: scrDecorationManager.ShaderProperty_RepeatX = Shader.PropertyToID("RepeatX");
+253: scrDecorationManager.ShaderProperty_RepeatY = Shader.PropertyToID("RepeatY");
+256: scrDecorationManager.ShaderProperty_MainTex = Shader.PropertyToID("_MainTex");
+258: scrDecorationManager.ShaderProperty_Opacity = Shader.PropertyToID("_Opacity");
+259: scrDecorationManager.ShaderProperty_Tile = Shader.PropertyToID("_Tile");
+Assembly-CSharp SHA256=F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF

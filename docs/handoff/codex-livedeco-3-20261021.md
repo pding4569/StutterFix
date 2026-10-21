@@ -16,3 +16,6 @@ live=2269, basic_candidates=2226(98.1%) 이지만 **전부 `property-block-unver
 게임 실행·설치·커밋·푸시 금지(자동 루프가 한다). `.codex/config.toml` 수정 금지. 장식 이름·헤르츠 맵 이름 등 비공개 사항 언급 금지.
 설계 한계로 안 되는 경우(예: 장식마다 서로 다른 커스텀 속성이 실제로 있음)는 결과 문서에 속성 이름·개수로 구체적으로 적고 멈춰라.
 결과는 `docs/handoff/codex-livedeco-3-20261021-result.md`, 10줄 요약은 `-o` 파일 하나로.
+
+## 게임 코드 읽기 (참고)
+게임 Assembly-CSharp 디컴파일 C# 소스: `E:\StutterFixWork\decompiled\Assembly-CSharp\<타입>.cs` (예: scrVisualDecoration.cs, scrDecoration.cs, BlendModes). 설명은 `E:\StutterFixWork\decompiled\README.txt`. 호출 관계 확정은 tools/ilscan 으로 교차 확인한다(디컴파일은 근사). 읽기 전용, 수정 금지.

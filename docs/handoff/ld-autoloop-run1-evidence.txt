@@ -1,0 +1,67 @@
+[StutterFix] [자동 시험] 시작: 25단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco off / archegpu on / stop / seek 262 12 / waitsongpos 262 40 / archegpu stamp / livedeco census / livedeco state / stop / stop / seek 262 12 / waitsongpos 270 40 / archegpu stamp / livedeco census / livedeco state / stop / livedeco off / archegpu off / quit
+[StutterFix] [livedeco] on=False gate=1 restored=1 mutations=0
+[StutterFix] [livedeco] census frame=19961 song=262.028491 camera_id=102298 camera_mask=652183 phase=main-preCull classifier_version=3 live_definition=enabled-active-unforced frustum_filter=0 alpha_filter=0
+[StutterFix] [livedeco] images_all=28828 live=2079 basic_candidates=2040 owned_candidates=2040 coverage_pct=98.124 remaining_live=39 renderer_material_slots=2463
+[StutterFix] [livedeco] property_block_names=effective:_MainTex:texture=2079;renderer:_MainTex:texture=2079 scope=all-sprite-live slot_scope=0 counts=renderers-per-name-type name_enumeration_complete=0
+[StutterFix] [livedeco] property_block_state=has=True,renderer_empty=False,slot0_empty=True,effective=renderer count=2079
+[StutterFix] [livedeco] property_block_provisional_candidates=2040 numeric_gate=PASS final_gate_requires=complete-property-block-verification
+[StutterFix] [livedeco] mesh_diagnostics images_all=28828 mesh_only_live=0 mesh_and_sprite_live=0 legacy_mesh_false_rejects=2079 distribution_total=28828 image_union_live=2079 gate_denominator=sprite-live
+[StutterFix] [livedeco] mesh_state sprite_live=False mesh_exists=True mesh_mode=False blend=None(0) sprite_effect=enabled:False,active:False mesh_effect=enabled:False,active:False mesh_enabled=True mesh_active_self=False mesh_active_hierarchy=False mesh_forced_off=False mesh_scene_valid=True mesh_live=False mesh_camera_layer=True mesh_shared_material=True mesh_shader=Hidden/BlendModes/VisualDeco/Grab count=26749 images_pct=92.788 sprite_live_pct=0.000 union_live_pct=0.000
+[StutterFix] [livedeco] mesh_state sprite_live=True mesh_exists=True mesh_mode=False blend=None(0) sprite_effect=enabled:False,active:False mesh_effect=enabled:False,active:False mesh_enabled=True mesh_active_self=False mesh_active_hierarchy=False mesh_forced_off=False mesh_scene_valid=True mesh_live=False mesh_camera_layer=True mesh_shared_material=True mesh_shader=Hidden/BlendModes/VisualDeco/Grab count=2079 images_pct=7.212 sprite_live_pct=100.000 union_live_pct=100.000
+[StutterFix] [livedeco] barrier_runs=14 mesh_runs=78 key_splits=64 signature_splits=0 unity_layer_splits=0 ambiguous_material_ties=0 sorting_groups=0 opaque_slots=0 missing_materials=0
+[StutterFix] [livedeco] remaining_reason=keywords count=1 live_pct=0.048
+[StutterFix] [livedeco] remaining_reason=repeat count=38 live_pct=1.828
+[StutterFix] [livedeco] barrier_type=LineRenderer slots=2
+[StutterFix] [livedeco] barrier_type=MeshRenderer slots=233
+[StutterFix] [livedeco] barrier_type=ParticleSystemRenderer slots=25
+[StutterFix] [livedeco] barrier_type=SpriteRenderer slots=124
+[StutterFix] [livedeco] barrier_type=image:keywords slots=1
+[StutterFix] [livedeco] barrier_type=image:repeat slots=38
+[StutterFix] [livedeco] candidate_signature count=2040 content=2:GI=15:EmissiveIsBlack;9:PixelSnap=8:00000000;7:RepeatX=8:3F800000;7:RepeatY=8:3F800000;8:_BlendOp=8:<absent>;6:_Color=35:3F800000,3F800000,3F800000,3F800000;5:_Cull=8:<absent>;9:_DstBlend=8:<absent>;8:_MainTex=41:atlas:3F800000,3F800000,00000000,00000000;9:_SrcBlend=8:<absent>;6:_ZTest=8:<absent>;7:_ZWrite=8:<absent>;13:doubleSidedGI=5:False;10:instancing=5:False;8:keywords=0:;21:pass:<Unnamed Pass 0>=4:True;5:queue=4:3000;6:shader=3:770
+[StutterFix] [livedeco] run=0 members=1 first_renderer=-690358 borrowed_material=-833124 sorting_layer_value=-6 order=-1050 queue=3000 distance=10
+[StutterFix] [livedeco] run=1 members=1 first_renderer=-690218 borrowed_material=-832776 sorting_layer_value=-6 order=-808 queue=3000 distance=10
+[StutterFix] [livedeco] run=2 members=1 first_renderer=-690214 borrowed_material=-832768 sorting_layer_value=-6 order=-806 queue=3000 distance=10
+[StutterFix] [livedeco] run=3 members=1 first_renderer=-690210 borrowed_material=-832760 sorting_layer_value=-6 order=-804 queue=3000 distance=10
+[StutterFix] [livedeco] run=4 members=1 first_renderer=-690206 borrowed_material=-832752 sorting_layer_value=-6 order=-802 queue=3000 distance=10
+[StutterFix] [livedeco] run=5 members=1 first_renderer=-690202 borrowed_material=-832740 sorting_layer_value=-6 order=-800 queue=3000 distance=10
+[StutterFix] [livedeco] run=6 members=1 first_renderer=-589024 borrowed_material=-598672 sorting_layer_value=-6 order=-100 queue=3000 distance=10
+[StutterFix] [livedeco] run=7 members=2 first_renderer=-589194 borrowed_material=-599340 sorting_layer_value=-6 order=-50 queue=3000 distance=10
+[StutterFix] [livedeco] run=8 members=33 first_renderer=-1693796 borrowed_material=-2723280 sorting_layer_value=-6 order=-28 queue=3000 distance=10
+[StutterFix] [livedeco] run=9 members=33 first_renderer=-1693798 borrowed_material=-2723284 sorting_layer_value=-6 order=-27 queue=3000 distance=10
+[StutterFix] [livedeco] run=10 members=33 first_renderer=-1693800 borrowed_material=-2723288 sorting_layer_value=-6 order=-26 queue=3000 distance=10
+[StutterFix] [livedeco] run=11 members=33 first_renderer=-1693802 borrowed_material=-2723292 sorting_layer_value=-6 order=-25 queue=3000 distance=10
+[StutterFix] [livedeco] GATE1=INCONCLUSIVE required_mesh_runs_le=200 required_coverage_ge=80 runtime_snapshot_only=1 atlas_assumed=1 draw_estimate_only=1 census_cpu_ms=571.476
+[StutterFix] [livedeco] on=False gate=1 pending=False prototype_available=0
+[StutterFix] [livedeco] census frame=23302 song=270.017840 camera_id=102298 camera_mask=652183 phase=main-preCull classifier_version=3 live_definition=enabled-active-unforced frustum_filter=0 alpha_filter=0
+[StutterFix] [livedeco] images_all=28828 live=2266 basic_candidates=2223 owned_candidates=2223 coverage_pct=98.102 remaining_live=43 renderer_material_slots=2660
+[StutterFix] [livedeco] property_block_names=effective:_MainTex:texture=2266;renderer:_MainTex:texture=2266 scope=all-sprite-live slot_scope=0 counts=renderers-per-name-type name_enumeration_complete=0
+[StutterFix] [livedeco] property_block_state=has=True,renderer_empty=False,slot0_empty=True,effective=renderer count=2266
+[StutterFix] [livedeco] property_block_provisional_candidates=2223 numeric_gate=PASS final_gate_requires=complete-property-block-verification
+[StutterFix] [livedeco] mesh_diagnostics images_all=28828 mesh_only_live=0 mesh_and_sprite_live=0 legacy_mesh_false_rejects=2266 distribution_total=28828 image_union_live=2266 gate_denominator=sprite-live
+[StutterFix] [livedeco] mesh_state sprite_live=False mesh_exists=True mesh_mode=False blend=None(0) sprite_effect=enabled:False,active:False mesh_effect=enabled:False,active:False mesh_enabled=True mesh_active_self=False mesh_active_hierarchy=False mesh_forced_off=False mesh_scene_valid=True mesh_live=False mesh_camera_layer=True mesh_shared_material=True mesh_shader=Hidden/BlendModes/VisualDeco/Grab count=26562 images_pct=92.140 sprite_live_pct=0.000 union_live_pct=0.000
+[StutterFix] [livedeco] mesh_state sprite_live=True mesh_exists=True mesh_mode=False blend=None(0) sprite_effect=enabled:False,active:False mesh_effect=enabled:False,active:False mesh_enabled=True mesh_active_self=False mesh_active_hierarchy=False mesh_forced_off=False mesh_scene_valid=True mesh_live=False mesh_camera_layer=True mesh_shared_material=True mesh_shader=Hidden/BlendModes/VisualDeco/Grab count=2266 images_pct=7.860 sprite_live_pct=100.000 union_live_pct=100.000
+[StutterFix] [livedeco] barrier_runs=11 mesh_runs=71 key_splits=60 signature_splits=0 unity_layer_splits=0 ambiguous_material_ties=0 sorting_groups=0 opaque_slots=0 missing_materials=0
+[StutterFix] [livedeco] remaining_reason=keywords count=1 live_pct=0.044
+[StutterFix] [livedeco] remaining_reason=repeat count=42 live_pct=1.853
+[StutterFix] [livedeco] barrier_type=LineRenderer slots=2
+[StutterFix] [livedeco] barrier_type=MeshRenderer slots=241
+[StutterFix] [livedeco] barrier_type=ParticleSystemRenderer slots=25
+[StutterFix] [livedeco] barrier_type=SpriteRenderer slots=126
+[StutterFix] [livedeco] barrier_type=image:keywords slots=1
+[StutterFix] [livedeco] barrier_type=image:repeat slots=42
+[StutterFix] [livedeco] candidate_signature count=2223 content=2:GI=15:EmissiveIsBlack;9:PixelSnap=8:00000000;7:RepeatX=8:3F800000;7:RepeatY=8:3F800000;8:_BlendOp=8:<absent>;6:_Color=35:3F800000,3F800000,3F800000,3F800000;5:_Cull=8:<absent>;9:_DstBlend=8:<absent>;8:_MainTex=41:atlas:3F800000,3F800000,00000000,00000000;9:_SrcBlend=8:<absent>;6:_ZTest=8:<absent>;7:_ZWrite=8:<absent>;13:doubleSidedGI=5:False;10:instancing=5:False;8:keywords=0:;21:pass:<Unnamed Pass 0>=4:True;5:queue=4:3000;6:shader=3:770
+[StutterFix] [livedeco] run=0 members=1 first_renderer=-690358 borrowed_material=-833124 sorting_layer_value=-6 order=-1050 queue=3000 distance=10
+[StutterFix] [livedeco] run=1 members=2 first_renderer=-589194 borrowed_material=-599340 sorting_layer_value=-6 order=-50 queue=3000 distance=10
+[StutterFix] [livedeco] run=2 members=37 first_renderer=-1711042 borrowed_material=-2757772 sorting_layer_value=-6 order=-28 queue=3000 distance=10
+[StutterFix] [livedeco] run=3 members=37 first_renderer=-1711044 borrowed_material=-2757776 sorting_layer_value=-6 order=-27 queue=3000 distance=10
+[StutterFix] [livedeco] run=4 members=37 first_renderer=-1711046 borrowed_material=-2757780 sorting_layer_value=-6 order=-26 queue=3000 distance=10
+[StutterFix] [livedeco] run=5 members=37 first_renderer=-1711048 borrowed_material=-2757784 sorting_layer_value=-6 order=-25 queue=3000 distance=10
+[StutterFix] [livedeco] run=6 members=37 first_renderer=-1711050 borrowed_material=-2757788 sorting_layer_value=-6 order=-24 queue=3000 distance=10
+[StutterFix] [livedeco] run=7 members=37 first_renderer=-1711052 borrowed_material=-2757792 sorting_layer_value=-6 order=-23 queue=3000 distance=10
+[StutterFix] [livedeco] run=8 members=37 first_renderer=-1711054 borrowed_material=-2757796 sorting_layer_value=-6 order=-22 queue=3000 distance=10
+[StutterFix] [livedeco] run=9 members=37 first_renderer=-1711056 borrowed_material=-2757800 sorting_layer_value=-6 order=-21 queue=3000 distance=10
+[StutterFix] [livedeco] run=10 members=37 first_renderer=-1711058 borrowed_material=-2757804 sorting_layer_value=-6 order=-20 queue=3000 distance=10
+[StutterFix] [livedeco] run=11 members=37 first_renderer=-1711060 borrowed_material=-2757808 sorting_layer_value=-6 order=-19 queue=3000 distance=10
+[StutterFix] [livedeco] GATE1=INCONCLUSIVE required_mesh_runs_le=200 required_coverage_ge=80 runtime_snapshot_only=1 atlas_assumed=1 draw_estimate_only=1 census_cpu_ms=542.772
+[StutterFix] [livedeco] on=False gate=1 pending=False prototype_available=0
+[StutterFix] [livedeco] on=False gate=1 restored=1 mutations=0
