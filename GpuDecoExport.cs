@@ -53,6 +53,12 @@ namespace StutterFix
         static void ExportGpu(string path)
         {
             CheckGpuPrepareBudget();
+            string output = Path.GetFullPath(path);
+            if (File.Exists(output))
+            {
+                GpuLog("GPUDECO_G1=ERROR stage=export reason=output_exists path=" + output);
+                throw new IOException("export: 기존 정답 파일 보존; 생성기로 새 출력 폴더를 지정하세요: " + output);
+            }
             var watch = Stopwatch.StartNew();
             if (!ready || table == null || Adopting || LiveDecoRenderer.Active) throw new InvalidOperationException("export: bake ready, adopt/livedeco off 필요");
             if (!ADOBase.controller || !ADOBase.controller.paused || Time.timeScale != 0) throw new InvalidOperationException("export: framecmp pause 필요");
@@ -108,7 +114,7 @@ namespace StutterFix
                 item.Triangles = r.sprite.triangles.Select(x => (int)x).ToArray(); items.Add(item);
             }
             data.Items = items.ToArray();
-            string output = Path.GetFullPath(path); Directory.CreateDirectory(Path.GetDirectoryName(output));
+            Directory.CreateDirectory(Path.GetDirectoryName(output));
             using (var stream = new FileStream(output, FileMode.CreateNew, FileAccess.Write, FileShare.None)) data.Write(stream);
             CheckGpuPrepareBudget();
             if (gpuExports == 0 && gpuPrepareWatch != null)
@@ -120,10 +126,12 @@ namespace StutterFix
             GpuLog("prepare_ms=" + watch.Elapsed.TotalMilliseconds.ToString("F6", CultureInfo.InvariantCulture) + " phase=export owned=" + items.Count + " awake=" + data.Awake
                 + " raw=" + data.RawTime.ToString("R", CultureInfo.InvariantCulture) + " tb=" + data.BakeTime.ToString("R", CultureInfo.InvariantCulture) + " path=" + output);
             GpuLog("export_reject " + string.Join(" ", reasons.Select(x => x.Key + "=" + x.Value)));
+            GpuLog("coverage=" + ((double)items.Count / Math.Max(1, data.Awake)).ToString("F6", CultureInfo.InvariantCulture)
+                + " auxiliary=" + GpuDecoCoverage.Auxiliary(data.Awake));
             gpuExports++;
-            if (items.Count < 800)
+            if (GpuDecoCoverage.OwnedLow(data.Awake, items.Count))
             {
-                gpuExportOwnedLow = true; GpuLog("GPUDECO_G1=OWNED_LOW stage=export owned=" + items.Count);
+                gpuExportOwnedLow = true; GpuLog("GPUDECO_G1=OWNED_LOW stage=export owned=" + items.Count + " awake=" + data.Awake + " required_coverage=0.7");
                 throw new InvalidOperationException("GPUDECO_G1=OWNED_LOW; 이후 시험 중단");
             }
         }

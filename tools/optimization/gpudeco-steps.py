@@ -2,12 +2,17 @@
 import argparse
 import json
 from pathlib import Path
+from uuid import uuid4
 
 
-def build(chart, export_dir):
+def build(chart, export_dir=None):
+    if export_dir is None:
+        export_dir = Path(__file__).resolve().parents[1] / 'gpudeco-lab' / 'exports' / ('run-' + uuid4().hex)
     chart, export_dir = Path(chart), Path(export_dir).resolve()
     if 'Arche' not in str(chart) or not chart.name.endswith('FULL.adofai'):
         raise ValueError('Arche *FULL.adofai 경로만 허용합니다')
+    if export_dir.exists() and (not export_dir.is_dir() or any(export_dir.glob('*.gpudeco'))):
+        raise ValueError('기존 export 보존: 새 출력 폴더를 지정하세요: ' + str(export_dir))
     steps = ['timeout 420', 'auto on', 'decobake on', 'gpudeco off',
              'gpudeco reset', 'gpudeco prepare', 'open ' + str(chart),
              'select 0', 'play', 'gpudeco scheduled', 'pause',
@@ -28,8 +33,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--chart', type=Path, required=True)
     parser.add_argument('--output', type=Path)
-    parser.add_argument('--export-dir', type=Path,
-                        default=Path(__file__).resolve().parents[1] / 'gpudeco-lab' / 'exports')
+    parser.add_argument('--export-dir', type=Path, help='새 출력 폴더 (기본: 고유 run 하위 폴더)')
     args = parser.parse_args()
     try:
         value = build(args.chart, args.export_dir)

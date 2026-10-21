@@ -4,6 +4,14 @@ using System.IO;
 
 namespace StutterFix
 {
+    // Shared by the exporter and offline lab. Sparse scenes remain auxiliary
+    // measurements; coverage is a gate only when enough decorations are awake.
+    internal static class GpuDecoCoverage
+    {
+        internal static bool Auxiliary(int awake) => awake < 800;
+        internal static bool OwnedLow(int awake, int owned) => !Auxiliary(awake) && (long)owned * 10 < (long)awake * 7;
+    }
+
     // Versioned diagnostic interchange, never a product asset or a live frame buffer.
     internal sealed class GpuDecoData
     {

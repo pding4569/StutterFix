@@ -1,0 +1,90 @@
+unable to open database file
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Channel LicenseClient-나로컴 doesn't exist
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 24505 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-10-21T15:19:50Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 8468)
+Assertion failed on expression: 'SUCCEEDED(hr)'
+Assertion failed on expression: 'SUCCEEDED(hr)'
+Assertion failed on expression: 'ERROR_SUCCESS == status'
+
+COMMAND LINE ARGUMENTS:
+E:\Unity\Editor\6000.3.10f1\Editor\Unity.exe
+-batchmode
+-quit
+-force-d3d11
+-projectPath
+E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+-executeMethod
+GpuDecoLab.Verify
+-gpudecoInput
+E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports
+-logFile
+E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\round5-verify-editor.txt
+Successfully changed project path to: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [9412]  Target information:
+
+Player connection [9412]  * "[IP] 192.168.0.9 [Port] 55504 [Flags] 2 [Guid] 1116158973 [EditorId] 1116158973 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-UJA68AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [9412] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [9412] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Starting IPC server.
+Waiting for clients to connect on \\.\pipe\Unity-LicenseClient-나로컴, press Ctrl-C to exit.
+Unable to retrieve BIOS serial number. Exception: System.Management.ManagementException: 액세스가 거부되었습니다. 
+   at System.Management.ManagementException.ThrowWithExtendedInfo(ManagementStatus errorCode)
+   at System.Management.ManagementObjectSearcher.Get()
+   at Unity.Licensing.Platform.SystemInfo.WindowsSystemInformation.get_BIOSIdentifier()
+An error occurred when retrieving the network adapter information. Exception: System.Management.ManagementException: 액세스가 거부되었습니다. 
+   at System.Management.ManagementException.ThrowWithExtendedInfo(ManagementStatus errorCode)
+   at System.Management.ManagementObjectSearcher.Get()
+   at Unity.Licensing.Platform.SystemInfo.WindowsSystemInformation.GetMacAddressesWindows()
+[Package Manager] Could not connect to IPC stream "Upm-13440" after 30.0 seconds.
+[Package Manager] Could not establish a connection with the Unity Package Manager local server process.
+Exiting without the bug reporter. Application will terminate with return code 1Unable to retrieve the device model information. Exception: System.Management.ManagementException: 액세스가 거부되었습니다. 
+   at System.Management.ManagementException.ThrowWithExtendedInfo(ManagementStatus errorCode)
+   at System.Management.ManagementObjectSearcher.Get()
+   at Unity.Licensing.Platform.SystemInfo.WindowsSystemInformation.get_DeviceModel()
+Shut down.

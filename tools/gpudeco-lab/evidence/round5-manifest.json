@@ -1,0 +1,105 @@
+﻿{
+    "date":  "2026-10-22",
+    "task":  "codex-al-gg-4",
+    "source_sha256":  {
+                          "GpuDecoData.cs":  "4EF3A6AD0D42A11AB7E3E601B9446CE999B3BEE026FC2AD3EE8C8C0CB4DB13C1",
+                          "GpuDecoExport.cs":  "D6886C3206E6F0C527862FDDBC98E74AD565161A941D2310C2EC916A9F1E037B",
+                          "DecoBake.Core.cs":  "FAD53CFD97AF35C1175C2B6127B0DA022817187667FF5704770E3AD4444680D6",
+                          "DecoAnim.cs":  "244DB39481658FFFF46205450B2D03100E52E30785251823523C54D452F43D87",
+                          "tools/gpudeco-lab/GpuDecoAudit.cs":  "A9CB414EC1C3B51F2DF5E6F2BDAD8B011F5E729C48F8F0F1E83C2ACC83CC7603",
+                          "tools/gpudeco-lab/GpuDecoLab.cs":  "C3790585AD666E92385B22D68645A0B071FA857A54C4451188C8B37C72E68A37",
+                          "tools/gpudeco-lab/GpuDeco.compute":  "D7CEA2427AB1BBA005399008F421DB536B0943CB457DE8D6917E1E12C106A07E",
+                          "tools/optimization/gpudeco-steps.py":  "7F5AA163ABE9CD9629816364513C8FDDA1D2ED73B33345CC28C42C507843B8D5",
+                          "tools/optimization/test-gpudeco-steps.py":  "F8A1421D288C3096CCF7B59F0BA7DDF0A36492EE107E93DFC08898A219DBA1C0",
+                          "tools/gpudeco-lab/data-check/Program.cs":  "82E341C9034C3F2D00A6EE48FDB03360547F4ACECB7FA541668D350ABF6D1CBD"
+                      },
+    "inputs":  [
+                   {
+                       "file":  "262.gpudeco",
+                       "bytes":  3234752,
+                       "sha256":  "A13DB1C00F03BBDF5754E7BF1C994AD10310D75862FC5EA61E2ECF756352AB80",
+                       "unchanged":  true
+                   },
+                   {
+                       "file":  "270.gpudeco",
+                       "bytes":  3507369,
+                       "sha256":  "BF6A3A2A4299AED828D836D2C9FD6C6F7DA5139BBD2242BA11DD566BC326ED83",
+                       "unchanged":  true
+                   },
+                   {
+                       "file":  "276.gpudeco",
+                       "bytes":  18284,
+                       "sha256":  "8A1B53B1CA6A3BF2F6E0B48571122FC6EAE465AA27220677E9F55EFF2B1FDA0F",
+                       "unchanged":  true
+                   }
+               ],
+    "evidence_sha256":  {
+                            "round5-build-auto.txt":  "7381940E334B9668ED9B73B948D38199D1868FA9674132EA5B258EAD7CEEE9CC",
+                            "round5-build-dev.txt":  "57414AC2A90966ACC849D7CF09D92C156AE7072AD6D486E5F645CE4F40D7BCE4",
+                            "round5-build-player.txt":  "9AEE6A57A7AB45BC9E0AB6CB8964206DDBD798ECE9551F749A9602E4D0CD209E",
+                            "round5-check-framecmp-steps.txt":  "A7543154584ADEE5780A7CF3F4D16A437DF7019BB03AB86524F60F1E35A43EC8",
+                            "round5-check-shader.txt":  "47378201780576D8D4ACB9EF67C6208D35D6CDACB6ADA27E8C058CD167E0E218",
+                            "round5-data.txt":  "65177559F4A9EA295EDE9216FB45AF3FA7116C3785D00F097ACD909ED127FCE5",
+                            "round5-DecoBakeContractCheck.txt":  "4AFA7D909257B128B08B570179E3E0750A8DCEE8459AF72CEE81B028C9700331",
+                            "round5-DecoSimFixture.txt":  "CD3AC994CD7E4C763BBCA1B87D23C7A7E3ECB8603CF032FF3E07F72FFB2DB42B",
+                            "round5-export-steps.json":  "55FFCAE11804B20404661C70D86566362D941E762890A070B1879DCC1A939C6C",
+                            "round5-FrameCompareCheck.txt":  "6D966E95252F65A9AB3FFAA991C442FD6998628C7E110A1973514C09E7398ABC",
+                            "round5-lab-compile.txt":  "4D8C61D1D09AC64B25C585BA80A2DB2CC0FCF395CCF49011FA5E928BB8EA830F",
+                            "round5-LiveDecoCheck.txt":  "7DEFF16C7EF282A02E40AD0C7E668CA8403D9AE18154961EC0966983546EE464",
+                            "round5-LiveDecoDeltaCheck.txt":  "D5D063C24B4A9A59F4C7001434C67F5C602579E8B301C482B60626F4EE28B225",
+                            "round5-LiveDecoGeometryCheck.txt":  "1ABC8EAF97D2B452C6DDFB472789D9AAC477914DAA93C193E4C444882F74124D",
+                            "round5-loadcheck-auto.txt":  "F0C531238C85B21602C417A1A75CD2CA7C24A20F8FA135B5E27A49DDF5BD53F3",
+                            "round5-loadcheck-dev.txt":  "978D7D54E3F873D4CD6E53D2F884E3A01AE235DD7BC99A83E810B75E2052F636",
+                            "round5-loadcheck-player.txt":  "C15A618EDAA6AB802DC77291B88A3E8B2739F5ECCBD1F2C1219A4B50F05E2F5C",
+                            "round5-steps.txt":  "816CC28F12262AAD8C3F65682FDE607EC766D3324DBDB0F17AEEC434133F3686",
+                            "round5-test-livedeco2-steps.txt":  "794749CA0B50680C6BB8A953CD96C105C24DE3AF1601E2F7ACFFF5EE08FC21ED",
+                            "round5-verify.txt":  "E114D5600F581BA8412FF8A20E27646B0AA6F51FBD50BE0AB8165FAC3CEC5930",
+                            "round5-verify-direct-editor.txt":  "7B7916B289B23B53CD08495062C709C729DF759BAFE02384EC1584AF6C092DBC",
+                            "round5-verify-editor.txt":  "9A8F7ADED1D1784613E30D92E8C22EFF83E02E0DA1503C9ACF97AF063AD117FA",
+                            "round5-verify-fresh-editor.txt":  "1F4E3775948BE2846C703E91375BA99321D6289E3FD08B8EDEEE180153F6914F",
+                            "round5-vfx-il.txt":  "7E5A34F8B163D9A82E4CAA5EBF560601AE3B54F5A41E5DD0EFE2C7EC27C247AA"
+                        },
+    "excluded_evidence":  {
+                              "file":  "round5-stale-verify-not-current.txt",
+                              "reason":  "stale prior result copied after editor failed before entry; not current evidence"
+                          },
+    "coverage_policy":  "awake \u003e= 800 \u0026\u0026 owned/awake \u003c 0.7",
+    "primary":  [
+                    262,
+                    270
+                ],
+    "auxiliary":  [
+                      276
+                  ],
+    "result":  "GPUDECO_G1=G0_FAIL G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED",
+    "editor_exit":  1,
+    "failed_editor_attempts":  [
+                                   1,
+                                   198
+                               ],
+    "build_errors":  [
+                         0,
+                         0,
+                         0
+                     ],
+    "build_warnings":  [
+                           38,
+                           4,
+                           38
+                       ],
+    "loadcheck_mismatches":  [
+                                 0,
+                                 0,
+                                 0
+                             ],
+    "prohibited_actions":  {
+                               "install":  0,
+                               "config_edit":  0,
+                               "commit":  0,
+                               "login":  0,
+                               "push":  0,
+                               "forced_process_termination":  0,
+                               "game_launch":  0
+                           },
+    "disposition":  "STOPPED_DESIGN_LIMIT"
+}

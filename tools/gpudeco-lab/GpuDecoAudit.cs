@@ -16,29 +16,35 @@ public static partial class GpuDecoLab
         Require(at >= 0 && at + 1 < args.Length, "-gpudecoInput <export directory> required");
         var files = Directory.GetFiles(args[at + 1], "*.gpudeco").OrderBy(x => x).ToArray();
         Require(files.Length == 3, "exactly three paused snapshots required");
-        string fingerprint = null; bool pass = true, low = false; int measured = 0;
+        string fingerprint = null; bool pass = true, auxiliaryPass = true, low = false; int measured = 0, primary = 0;
         foreach (string file in files)
         {
             GpuDecoData data; using (var stream = File.OpenRead(file)) data = GpuDecoData.Read(stream);
             fingerprint = fingerprint ?? data.Fingerprint; Require(data.Fingerprint == fingerprint, "export table changed");
             Log("[gpudeco-lab] export=" + Path.GetFileName(file) + " owned=" + data.Items.Length + " awake=" + data.Awake
                 + " coverage=" + N((double)data.Items.Length / Math.Max(1, data.Awake)) + " raw=" + N(data.RawTime) + " tb=" + N(data.BakeTime));
-            if (data.Items.Length < 800) { low = true; Log("[gpudeco-lab] stop=OWNED_LOW required=800 owned=" + data.Items.Length); break; }
+            bool auxiliary = GpuDecoCoverage.Auxiliary(data.Awake);
+            Log("[gpudeco-lab] auxiliary=" + auxiliary + " reason=" + (auxiliary ? "awake_below_800" : "primary_coverage_gate"));
+            if (GpuDecoCoverage.OwnedLow(data.Awake, data.Items.Length)) { low = true; Log("[gpudeco-lab] stop=OWNED_LOW required_coverage=0.7"); break; }
             var unsupported = data.Items.Where(d => d.Tracks.Any(t => t.Any(s => !Supported(s.Ease)))).ToArray();
             Log("[gpudeco-lab] unsupported_ease_decorations=" + unsupported.Length + " fallback=original-path");
             data.Items = data.Items.Except(unsupported).ToArray();
-            if (data.Items.Length < 800) { low = true; Log("[gpudeco-lab] stop=OWNED_LOW after_ease_filter=" + data.Items.Length); break; }
-            Require(data.Awake > 0 && (double)data.Items.Length / data.Awake >= .7, "coverage below 70 percent");
-            using (var gpu = new Evaluation(Shader(), data))
+            if (GpuDecoCoverage.OwnedLow(data.Awake, data.Items.Length)) { low = true; Log("[gpudeco-lab] stop=OWNED_LOW after_ease_filter=" + data.Items.Length + " required_coverage=0.7"); break; }
+            bool samplePass = true;
+            if (data.Items.Length == 0) Log("[gpudeco-lab] auxiliary_empty=True G0=NO_SAMPLES");
+            else using (var gpu = new Evaluation(Shader(), data))
             {
                 var result = gpu.Dispatch(data.BakeTime, true);
-                pass &= Compare(data, result.values, result.vertices, true);
+                samplePass = Compare(data, result.values, result.vertices, true);
                 Attribute(data, result.values, result.vertices);
             }
+            if (auxiliary) auxiliaryPass &= samplePass;
+            else { primary++; pass &= samplePass; }
             measured++;
         }
-        Log("GPUDECO_G0_OFFLINE=" + (pass && measured == 3 ? "PASS" : "FAIL") + " measured=" + measured + "/3 start_phase=UNMEASURED");
-        if (!pass || measured != 3 || low)
+        Log("GPUDECO_G0_OFFLINE=" + (pass && measured == 3 && primary == 2 && !low ? "PASS" : "FAIL") + " measured=" + measured
+            + "/3 primary=" + primary + "/2 auxiliary=" + (auxiliaryPass ? "PASS" : "FAIL") + " start_phase=UNMEASURED");
+        if (!pass || measured != 3 || primary != 2 || low)
             throw new GateFailure("GPUDECO_G1=" + (low ? "OWNED_LOW" : "G0_FAIL")
                 + " G0=" + (pass ? "INCOMPLETE" : "FAIL") + " game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED");
         Log("GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=game_pixel_capture_required integration=BLOCKED");

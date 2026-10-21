@@ -1,5 +1,18 @@
 
-## codex-al-gg-3 — 2026-10-22 (최신, 설계 한계로 중단)
+## codex-al-gg-4 — 2026-10-22 (최신, G0 설계 한계로 중단)
+
+- 직전 run3은 기존262.gpudeco 재생성 시 CreateNew 충돌로 중단됐다. 원본 보존·새 고유run 폴더 기본값·명시적 기존 export 폴더 생성 전 거부·런타임 조기 오류를 반영했다. 고정 경로의 옛 JSON은 자동 수정되지 않는다. 같은 게임 시험 재실행을 요청하지 않는다.
+- 최신 사용자 정정 적용: **awake≥800 && owned/awake<70%만 OWNED_LOW**, exporter/lab 공통 정책이며 GPU 미지원 이징 제외 후에도 검사한다. 이전 절대800개 기준과 276초 실패 판정은 폐기한다. 276초 소유17/awake24는 보조로 측정했다.
+- Unity6000.3.10f1 직접/RTX4060Ti/D3D11 실제3파일 측정: 주262초 정점최대/평균81.501349/1.920398px·초과5936/6920, 주270초65.618709/2.890432px·초과6796/7500. 276초 보조68정점·272RGBA 최대/평균0·초과0, 16슬롯도 모두0. 주 소유율81.0684/82.5991%는 통과했다.
+- `measured=3/3 primary=2/2 auxiliary=PASS`지만 G0_FAIL·exit1이다. 276초를 억지로 실패시킨 원인은 제거했지만 주시점의 오차는 그대로다. 최종RGBA 최대0.001122171/0.006678127·초과0/72, 실제 필드→정점 최대0.004081598/0.007796900px·초과0. 이번에도 전역시계201후보로 해결되지 않았다.
+- 원본 scrVfxPlus.Update 디컴파일/현재 설치DLL IL로 실제Update 트리거 재확인. 원본float Rec.Pos 누적과 예약T0/tb 무상태표가 다르며 v1에는 실제소스 시작/진행/dt이력이 없다. 시간역산 제품보정·새GPU연결·네이티브전환·새번들0. 현재 설계 한계로 중단한다.
+- 3종Release오류0/0/0(기존경고38/4/38), LoadCheck277/229/277·불일치0·일반Player제외, 랩C#오류/경고0, SM5 3커널, 데이터/소유율경계21·출력충돌/steps·bake/live·DecoSim12·framecmp·ld2a 정책/geometry/delta·생성기 통과. 관계없는 합성성능/번들 재시험은 하지 않았다.
+- 초기 샌드박스 UPM IPC실패exit1, 다음 entitlement exit198 보존. 클라이언트 자연종료 뒤 새 직접실행은 실제측정/의도한exit1. 초기 이전verify복사본은 stale로 격리하고 최종근거에서 제외했다. 강제종료·로그인·설치·게임실행·커밋·푸시·config수정0회. 기존export SHA2563개일치.
+- 결과/랩결과/README/10줄요약 최신화, round5-*로그와manifest 보존. 게임G1/G2·실제시작위상·GPUtimestamp 미측정. GPUDECO_G1=G0_FAIL G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED
+
+---
+
+## codex-al-gg-3 — 2026-10-22 (이전, 276초 판정은 gg-4로 정정)
 
 - 직전 외부 시험은 실제 export 3개를 만들었다. 첫 export182998.1268ms, bake worker514.9991ms. 기존 준비 순서를 되돌리거나 시간 상한을 더 늘리지 않았다.
 - 262초 소유1730/awake2134(81.0684%), 270초1875/2270(82.5991%), 276초17/24(70.8333%). **276초는 현재 awake를 전부 지원해도24<800**이라 OWNED_LOW다. 잠든 장식으로 수를 채우거나 시점/800개 기준을 바꾸지 않았다. 감소 원인이 맵 연출인지 추적 누락인지는 확정하지 않는다.
@@ -107,3 +120,22 @@
 
 - 시험 핵심 줄:
   - [StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export
+
+## 회차 4
+- Codex 요약: 인계대로 수정·검증하고 설계 한계를 기록한 뒤 중단했습니다.
+
+- export 파일 충돌·276초 `OWNED_LOW` 오판 수정
+- 3종 빌드·LoadCheck·관련 fixture 통과
+- 실제 G0 최대 오차 **81.50px / 65.62px**로 실패. G1은 미측정
+
+게임 실행·설치·커밋은 하지 않았습니다.
+
+[결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result.md) · [10줄 요약](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result-o.txt)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export
+  - [StutterFix] [gpudeco] prepare_ms=184257.511800 phase=first_export includes=open,bake,seek,export bake_wall_ms=511.294100
+  - [StutterFix] [gpudeco] prepare_ms=4675.029100 phase=export owned=1730 awake=2134 raw=262.01784002082422 tb=262.00576381071068 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149
+  - [StutterFix] [gpudeco] prepare_ms=4645.123000 phase=export owned=1875 awake=2268 raw=270.01600896613672 tb=270.00624654298775 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149
+  - [StutterFix] [gpudeco] prepare_ms=4439.191700 phase=export owned=17 awake=24 raw=276.005327813793 tb=275.99734248026226 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149fa963a

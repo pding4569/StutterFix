@@ -1,4 +1,38 @@
-# gpudeco-1 최신 결과 — codex-al-gg-3 (2026-10-22)
+# gpudeco-1 최신 결과 — codex-al-gg-4 (2026-10-22)
+
+**Unity 6000.3.10f1 직접 실행·D3D11·기존 AssetBundle 방식을 유지한다. 파일 충돌과 OWNED_LOW 판정을 수정했고 실제 export 3개를 모두 측정했다. 276초는 보조 측정으로 통과했지만 262·270초 G0는 실패하므로, 곡 시각 표 설계의 한계를 기록하고 게임 연결을 중단한다.** `GPUDECO_G1=PASS`는 달성하지 못했다. 게임 실행·설치·커밋·푸시·config 수정·로그인은 0회다.
+
+## 이번 수정과 실제 수치
+
+- 직전 [run3](gg-autoloop-run3-evidence.txt)는 262초 export가 이미 존재해 `FileMode.CreateNew`에서 실패했다. 기존 정답 파일은 보존한다. steps 생성기의 기본 출력은 매번 고유한 `exports/run-<UUID>/`이며, 명시한 폴더에 기존 `.gpudeco`가 있으면 **게임 준비 이전인 생성 단계에서 거부**한다. 런타임도 정적 데이터 수집 전에 충돌을 설명한다. 경쟁 조건에 대한 CreateNew 보호는 유지한다. 이전 고정 경로 JSON은 자동으로 수정되지 않으며 재사용 시 계속 거부된다. 이번에는 새 게임 시험을 요청하지 않는다.
+- 최신 정정대로 exporter와 lab이 공통 `GpuDecoCoverage`를 쓴다. **awake ≥800이고 owned/awake <70%일 때만 OWNED_LOW**다. GPU 미지원 이징 제외 후에도 같은 검사를 한다. awake <800이면 보조 측정을 끝까지 진행하며 주 판정은 고밀도 2곳에 한정한다. 허용 오차·소유율·시점을 추가 완화하지 않았다.
+- [이번 실제 GPU 로그](../../tools/gpudeco-lab/evidence/round5-verify.txt)는 `measured=3/3 primary=2/2 auxiliary=PASS`다. 아래 수치는 기존 정답 파일을 이번 수정본으로 평가한 결과다. 원본 3파일 SHA256은 이전 manifest와 일치한다.
+
+|시점|소유/awake|정점 최대 / 평균 px|0.01px 초과|최종 RGBA 최대 / 평균|1/255 초과|
+|---|---|---|---|---|---|
+|262 주 판정|1730/2134 (81.0684%)|81.501349211 / 1.920398382|5936/6920|0.001122171059 / 0.000043840684|0/27680|
+|270 주 판정|1875/2270 (82.5991%)|65.618709400 / 2.890432067|6796/7500|0.006678126752 / 0.000108363689|72/30000|
+|276 보조|17/24 (70.8333%)|0 / 0|0/68|0 / 0|0/272|
+
+16슬롯별 최대·평균·화면 환산·초과 수는 이번 로그의 `[gpudeco] G0` 48줄에 보존했다. 276초는 모든 슬롯의 오차가 0이다. 별도의 실제 이벤트 시작 위상·게임 픽셀·G2 FPS·GPU timestamp는 **UNMEASURED**다.
+
+## 중단 근거와 검증
+
+시간 의미의 차이는 판정 오류와 별개다. `scrVfxPlus.Update` 디컴파일의 `songposition_minusi >= startTime-startEffectOffset` 뒤 `StartEffect` 호출을 [설치 DLL IL](../../tools/gpudeco-lab/evidence/round5-vfx-il.txt)로 다시 확인했다. `DecoAnim.Step/StepPair`는 실제 시작 후 float 진행값에 dt를 누적하지만 `DecoBakeCore.Value`는 예약 T0와 tb의 차를 평가한다. v1 export는 소스별 실제 시작·Rec.Pos·dt 이력을 담지 않는다. 실제 필드로 만든 CPU 정점은 최대 0.004081598/0.007796900px·초과0인데 CPU 표부터 실제 필드와 다르다. 전역 시계 201후보에서도 최소 최대오차는 14.535930/16.227838px다. 이번에는 시간 보정·정답 역산을 제품에 적용하지 않았고 기존 실패 경로를 성능 성공으로 반복하지 않았다. 실제 트리거/진행 상태를 GPU 입력으로 바꾸는 구현은 현재 무상태 곡 시각 표의 범위를 넘으므로 진행하지 않았다.
+
+- 3종 Release Dev/Player/PlayerAuto **오류0/0/0**, 기존 경고38/4/38. LoadCheck **277/229/277곳·불일치0**, 일반 Player의 bake/GpuDecoData/GpuStep 제외 확인.
+- 랩 C# 오류0·경고0, SM5 3커널 컴파일 통과. 데이터·소유율 경계 **21건**, 새 출력 폴더/기존 파일 보존/기존 steps 순서 검사, bake/live 계약·DecoSim12·framecmp·ld2a 정책/geometry/delta·생성기 회귀 통과. 현재 수정과 관계없는 합성 성능·번들 시험은 다시 돌리지 않았다.
+- 최초 샌드박스 실행은 UPM IPC 30초 실패(exit1), 다음 직접 호출은 기존 클라이언트 entitlement 실패(exit198)였다. 해당 클라이언트가 자연 종료한 뒤 새 직접 실행에서 RTX4060Ti/D3D11로 **의도한 G0 실패 exit1**을 확인했다. 강제 종료·로그인·설치·라이선스 수정은 하지 않았다. 이전 verify 파일이 남아 있던 최초 복사본은 `round5-stale-verify-not-current.txt`로 격리했고 이번 근거로 사용하지 않는다. 최종 에디터 로그의 `primary=2/2`와 새 결과를 함께 확인했다.
+
+[최종 에디터 로그](../../tools/gpudeco-lab/evidence/round5-verify-fresh-editor.txt) · [입력/소스/검증 해시](../../tools/gpudeco-lab/evidence/round5-manifest.json) · [랩 결과](codex-gpudeco-lab-result.md) · [10줄 요약](codex-gpudeco-1-result-o.txt).
+
+**GPUDECO_G1=G0_FAIL G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED**
+
+아래는 당시 기록이다. 특히 gg-3의 “276초 절대800개 미달로 중단” 판정은 이번 최신 정정으로 대체한다.
+
+---
+
+# 이전 gpudeco-1 결과 — codex-al-gg-3 (2026-10-22)
 
 **선택: Unity 6000.3.10f1 직접 실행·D3D11·기존 AssetBundle 경로를 유지했다. 실제 Arche export 3개가 확보됐지만, 262·270초 G0가 실패하고 276초 소유가 17개로 800개 조건을 충족하지 못했다. 현재 곡 시각 표 설계의 한계를 수치로 확인했으므로 게임 연결을 진행하지 않고 중단한다.** 게임 G1 픽셀·G2 성능은 미측정이며 `GPUDECO_G1=PASS`는 달성하지 못했다.
 

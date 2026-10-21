@@ -1,0 +1,17 @@
+[StutterFix] [자동 시험] 시작: 50단계 - timeout 420 / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco prepare / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / gpudeco scheduled / pause / wait 60 / decobake state / wait 60 / decobake ready / resume / stop / gpuprobe off / gpusplit off / matshare off / livedeco off / stop / seek 262 12 / decobake ready / waitsongpos 262 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149fa963add1c4d6ba68d\262.gpudeco / resume / stop / seek 270 12 / decobake ready / waitsongpos 270 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149fa963add1c4d6ba68d\270.gpudeco / resume / stop / seek 276 12 / decobake ready / waitsongpos 276 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149fa963add1c4d6ba68d\276.gpudeco / resume / gpudeco off / gpudeco result / stop / decobake off / quit
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] export_result_reset=True
+[StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=2 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] prepare_ms=184257.511800 phase=first_export includes=open,bake,seek,export bake_wall_ms=511.294100
+[StutterFix] [gpudeco] prepare_ms=4675.029100 phase=export owned=1730 awake=2134 raw=262.01784002082422 tb=262.00576381071068 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149fa963add1c4d6ba68d\262.gpudeco
+[StutterFix] [gpudeco] export_reject bake-unsupported=375 repeat-tile=22
+[StutterFix] [gpudeco] coverage=0.810684 auxiliary=False
+[StutterFix] [gpudeco] prepare_ms=4645.123000 phase=export owned=1875 awake=2268 raw=270.01600896613672 tb=270.00624654298775 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149fa963add1c4d6ba68d\270.gpudeco
+[StutterFix] [gpudeco] export_reject bake-unsupported=372 repeat-tile=14
+[StutterFix] [gpudeco] coverage=0.826720 auxiliary=False
+[StutterFix] [gpudeco] prepare_ms=4439.191700 phase=export owned=17 awake=24 raw=276.005327813793 tb=275.99734248026226 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149fa963add1c4d6ba68d\276.gpudeco
+[StutterFix] [gpudeco] export_reject 
+[StutterFix] [gpudeco] coverage=0.708333 auxiliary=True
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] GPUDECO_G1=ERROR stage=export-lab exports=3 reason=real_export_G0_and_game_pixels_required

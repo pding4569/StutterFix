@@ -1,6 +1,7 @@
 """Export-stage sequencing and fail-closed contract, no game execution."""
 import importlib.util
 from pathlib import Path
+from uuid import uuid4
 
 source = Path(__file__).with_name('gpudeco-steps.py')
 spec = importlib.util.spec_from_file_location('gpudeco_steps', source)
@@ -35,3 +36,22 @@ for path in ('Other FULL.adofai', 'Arche/chart.adofai'):
     else:
         raise AssertionError('chart restriction absent')
 print('gpudeco export steps: PASS (3 paused snapshots; no on/PASS before actual lab gate)')
+folder = source.resolve().parents[2] / 'obj' / ('gpudeco steps ' + uuid4().hex)
+folder.mkdir(parents=True)
+try:
+    saved = folder / '262.gpudeco'
+    saved.write_bytes(b'preserved truth')
+    try:
+        module.build(Path('Arche FULL.adofai'), folder)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('existing export accepted before expensive game preparation')
+    assert saved.read_bytes() == b'preserved truth'
+finally:
+    saved.unlink(missing_ok=True)
+    folder.rmdir()
+a = module.build(Path('Arche FULL.adofai'))
+b = module.build(Path('Arche FULL.adofai'))
+assert [s for s in a['steps'] if s.startswith('gpudeco export ')] != [s for s in b['steps'] if s.startswith('gpudeco export ')]
+print('gpudeco export collision: PASS (unique default; occupied explicit directory rejected; truth preserved)')

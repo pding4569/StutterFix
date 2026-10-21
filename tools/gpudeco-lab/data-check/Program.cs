@@ -5,6 +5,13 @@ void Check(bool ok,string why) { checks++; if(!ok) throw new Exception(why); }
 byte[] Save(GpuDecoData data) { using var stream=new MemoryStream(); data.Write(stream); return stream.ToArray(); }
 GpuDecoData Load(byte[] bytes) { using var stream=new MemoryStream(bytes); return GpuDecoData.Read(stream); }
 void Reject(byte[] bytes,string why) { try { Load(bytes); } catch (Exception ex) when (ex is IOException || ex is InvalidDataException) { checks++; return; } throw new Exception(why); }
+Check(!GpuDecoCoverage.OwnedLow(24,17) && GpuDecoCoverage.Auxiliary(24), "sparse 276s must remain auxiliary");
+Check(!GpuDecoCoverage.OwnedLow(799,0), "sparse scene incorrectly gated");
+Check(GpuDecoCoverage.OwnedLow(800,559), "below 70 percent accepted");
+Check(!GpuDecoCoverage.OwnedLow(800,560) && !GpuDecoCoverage.Auxiliary(800), "70 percent boundary rejected");
+Check(GpuDecoCoverage.OwnedLow(801,560), "fractional coverage truncated");
+Check(!GpuDecoCoverage.OwnedLow(1000,700), "owned below 800 at 70 percent rejected");
+Check(!GpuDecoCoverage.OwnedLow(2134,1730) && !GpuDecoCoverage.OwnedLow(2270,1875), "real primary coverage rejected");
 var item=new GpuDecoData.Item { Placement="Global",Triangles=new[]{0,2,1,2,3,1} };
 for(int ch=0;ch<16;ch++) item.Tracks[ch]=Array.Empty<DecoBakeCore.Segment>();
 item.Tracks[5]=new[] {

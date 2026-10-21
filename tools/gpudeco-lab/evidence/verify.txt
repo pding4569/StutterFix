@@ -1,5 +1,6 @@
 [gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
 [gpudeco-lab] export=262.gpudeco owned=1730 awake=2134 coverage=0.8106841612 raw=262.019823663 tb=262.007032884
+[gpudeco-lab] auxiliary=False reason=primary_coverage_gate
 [gpudeco-lab] unsupported_ease_decorations=0 fallback=original-path
 [gpudeco] G0 t=262.019823663 ch=pos slot=0 max=0.0415649414063 mean=0.00392142058797 max_px=7.58769071428 mean_px=0.274528754509 over_tol=1291 raw_units=True source=game-export
 [gpudeco] G0 t=262.019823663 ch=pos slot=1 max=12251.40625 mean=7.1077852635 max_px=81.5013492107 mean_px=1.87037695597 over_tol=1470 raw_units=True source=game-export
@@ -68,6 +69,7 @@
 [gpudeco-audit] uniform_clock_best_mean offset_ms=-4 max_px=25.0773382187 mean_px=1.12995297803 over_tol=5968
 [gpudeco-audit] uniform_clock_best_max offset_ms=-6 max_px=14.5359297439 mean_px=1.27742789231 over_tol=6125
 [gpudeco-lab] export=270.gpudeco owned=1875 awake=2270 coverage=0.825991189427 raw=270.017992609 tb=270.007684929
+[gpudeco-lab] auxiliary=False reason=primary_coverage_gate
 [gpudeco-lab] unsupported_ease_decorations=0 fallback=original-path
 [gpudeco] G0 t=270.017992609 ch=pos slot=0 max=0.0787963867188 mean=0.0109602864583 max_px=13.7381375907 mean_px=0.732738096623 over_tol=1527 raw_units=True source=game-export
 [gpudeco] G0 t=270.017992609 ch=pos slot=1 max=10311.40625 mean=5.53972916667 max_px=65.6187094003 mean_px=2.73020820422 over_tol=1697 raw_units=True source=game-export
@@ -139,6 +141,48 @@
 [gpudeco-audit] uniform_clock_best_mean offset_ms=-8.5 max_px=49.9001592398 mean_px=1.40887044771 over_tol=6474
 [gpudeco-audit] uniform_clock_best_max offset_ms=-6 max_px=16.2278384831 mean_px=1.43486631622 over_tol=6761
 [gpudeco-lab] export=276.gpudeco owned=17 awake=24 coverage=0.708333333333 raw=276.007341974 tb=276.002174482
-[gpudeco-lab] stop=OWNED_LOW required=800 owned=17
-GPUDECO_G0_OFFLINE=FAIL measured=2/3 start_phase=UNMEASURED
-GPUDECO_G1=OWNED_LOW G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED
+[gpudeco-lab] auxiliary=True reason=awake_below_800
+[gpudeco-lab] unsupported_ease_decorations=0 fallback=original-path
+[gpudeco] G0 t=276.007341974 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.007341974 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco-lab] table samples=272 max=0 mean=0
+[gpudeco-lab] vertices samples=68 max_px=0 mean_px=0 over_tol=0
+[gpudeco-lab] renderer_color samples=272 max=0 mean=0 over_tol=0
+[gpudeco-audit] geometry_actual_fields_vs_sprite max_px=0 mean_px=0 over_tol=0
+[gpudeco-audit] geometry_gpu_vs_cpu_table max_px=0 mean_px=0 over_tol=0
+[gpudeco-audit] geometry_gpu_vs_gpu_fields max_px=0 mean_px=0 over_tol=0
+[gpudeco-audit] slot=0 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=14
+[gpudeco-audit] slot=1 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=14
+[gpudeco-audit] slot=2 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=3 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=4 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=14
+[gpudeco-audit] slot=5 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=16
+[gpudeco-audit] slot=6 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=16
+[gpudeco-audit] slot=7 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=1
+[gpudeco-audit] slot=8 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=1
+[gpudeco-audit] slot=9 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=1
+[gpudeco-audit] slot=10 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=1
+[gpudeco-audit] slot=11 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=14
+[gpudeco-audit] slot=12 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=13 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=14 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=15 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] uniform_clock_scan candidates=201 range_ms=-50..50 step_ms=0.5 oracle=True changes_gate=False
+[gpudeco-audit] uniform_clock_best_mean offset_ms=-50 max_px=0 mean_px=0 over_tol=0
+[gpudeco-audit] uniform_clock_best_max offset_ms=-50 max_px=0 mean_px=0 over_tol=0
+GPUDECO_G0_OFFLINE=FAIL measured=3/3 primary=2/2 auxiliary=PASS start_phase=UNMEASURED
+GPUDECO_G1=G0_FAIL G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED
