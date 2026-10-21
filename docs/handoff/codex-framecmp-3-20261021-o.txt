@@ -1,0 +1,10 @@
+1. 게임 실행·설치·커밋 없이 framecmp-3 구현과 오프라인 검증을 완료했다.
+2. diff/noise에 다중 mask·maskpct를 추가하고 왼쪽 아래 좌표·합집합으로 집계한다.
+3. 기본 center는 중앙 가로·세로 각 20%이며 mask center|none으로 설정한다.
+4. 제외 안팎 변경 수를 분리하고 maxRGBA·비율·PSNR·top32는 밖만 계산한다.
+5. 잡음 비영·상태 불안정은 경고 후 계속하며 밖 0이면 noise outside=0을 출력한다.
+6. PlanetRenderer.LateUpdate의 unscaledTime 경로를 찾고 pause 중 콜백·재생 파티클 고정과 복구를 추가했다.
+7. 29단계 생성기·예제 JSON과 최종 framecmp RESULT를 추가했고 잡음 있는 양성 대조는 INCONCLUSIVE다.
+8. 최종 Developer·Player·PlayerAuto 빌드 오류 0, LoadCheck 266·229·266곳 틀림 0이다.
+9. fixture 50개·순서 검사 24개 통과, 일반 Player의 framecmp 타입·참조 제외를 확인했다.
+10. 실제 잡음 제거·A/A2·A/B·양성 검출·완주는 미검증이며 상세 근거는 같은 이름의 result.md에 있다.

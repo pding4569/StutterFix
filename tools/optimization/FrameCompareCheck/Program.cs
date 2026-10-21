@@ -31,6 +31,32 @@ foreach (int bad in new[] { -1, 256 })
 bool mismatch = false; try { FrameCompareMetrics.Compare(a, new byte[4], 65, 35, 0); } catch (ArgumentException) { mismatch = true; }
 Check(mismatch, "dimensions guard");
 Console.WriteLine($"FrameCompareMetrics: {n} checks passed (offline RGBA8 only; no live GPU evidence)");
+int maskStart = n;
+var pixels = new byte[100 * 100 * 4]; var altered = (byte[])pixels.Clone();
+altered[(50 * 100 + 50) * 4] = 4;
+altered[0] = 7;
+var center = FrameCompareMetrics.Mask.Parse("maskpct=0.5,0.5,0.2,0.2");
+r = FrameCompareMetrics.Compare(pixels, altered, 100, 100, 0, new[] { center });
+Check(r.InsideChanged == 1 && r.Changed == 1 && r.InsidePixels == 400 && r.OutsidePixels == 9600, "center mask inside/outside counts");
+Check(r.Max[0] == 7 && r.Ratio == 1.0 / 9600 && r.Regions == "(0,0,32,32):7", "outside metrics only");
+Check(Math.Abs(r.Psnr - 10 * Math.Log10(255.0 * 255 * 9600 * 4 / 49)) < 1e-10, "outside PSNR denominator");
+r = FrameCompareMetrics.Compare(pixels, altered, 100, 100, 0, new[] { center, center, FrameCompareMetrics.Mask.Parse("mask=-1,-1,2,2") });
+Check(r.Changed == 0 && r.InsideChanged == 2 && r.InsidePixels == 401, "overlapping masks union; clipped negative origin");
+Check(double.IsPositiveInfinity(r.Psnr), "excluded-only differences yield outside zero");
+Check(FrameCompareMetrics.Compare(pixels, altered, 100, 100, 0).Changed == 2, "none retains full frame");
+r = FrameCompareMetrics.Compare(pixels, altered, 100, 100, 4, new[] { center });
+Check(r.InsideChanged == 0 && r.Changed == 1, "threshold applies inside and outside");
+var edge = FrameCompareMetrics.Mask.Parse("mask=0,0,1,1");
+Check(edge.Contains(0, 0, 100, 100) && !edge.Contains(1, 0, 100, 100) && !edge.Contains(0, 1, 100, 100), "bottom-left half-open edges");
+r = FrameCompareMetrics.Compare(pixels, altered, 100, 100, 0, new[] { FrameCompareMetrics.Mask.Parse("maskpct=0.5,0.5,1,1") });
+Check(r.OutsidePixels == 0 && double.IsNaN(r.Ratio) && double.IsNaN(r.Psnr), "no outside evidence not perfect score");
+foreach (var invalid in new[] { "mask=1,2,0,4", "mask=NaN,0,1,1", "mask=0,Infinity,1,1", "maskpct=50,50,20,20", "mask=1,2,3", "bogus=0,0,1,1" })
+{
+    bool rejected = false;
+    try { FrameCompareMetrics.Mask.Parse(invalid); } catch (ArgumentException) { rejected = true; }
+    Check(rejected, "mask guard " + invalid);
+}
+Console.WriteLine($"FrameCompare masks: {n - maskStart} checks passed (synthetic; no live evidence)");
 int stateStart = n;
 FrameCompareState Snapshot(bool visible, string field, string value)
 {

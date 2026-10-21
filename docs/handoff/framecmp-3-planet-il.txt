@@ -1,0 +1,437 @@
+﻿== PlanetRenderer
+  get_planetColor
+    필드 읽기 PlanetRenderer::<planetColor>k__BackingField
+  set_planetColor
+    필드 쓰기 PlanetRenderer::<planetColor>k__BackingField
+  get_samuraiMode
+    필드 읽기 PlanetRenderer::<samuraiMode>k__BackingField
+  set_samuraiMode
+    필드 쓰기 PlanetRenderer::<samuraiMode>k__BackingField
+  get_emojiMode
+    필드 읽기 PlanetRenderer::<emojiMode>k__BackingField
+  set_emojiMode
+    필드 쓰기 PlanetRenderer::<emojiMode>k__BackingField
+  get_rainbow
+    필드 읽기 PlanetRenderer::<rainbow>k__BackingField
+  set_rainbow
+    필드 쓰기 PlanetRenderer::<rainbow>k__BackingField
+  get_rainbowHue
+    호출 UnityEngine.Time::get_unscaledTime
+  get_appearanceRenderers
+    필드 읽기 PlanetRenderer::sprite
+    필드 읽기 PlanetSprite::meshRenderer
+    필드 읽기 PlanetRenderer::coreParticles
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 읽기 PlanetRenderer::tailParticles
+    필드 읽기 PlanetRenderer::sparks
+    필드 읽기 PlanetRenderer::ring
+    필드 읽기 PlanetRenderer::glow
+  Awake
+    필드 읽기 PlanetRenderer::ring
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 쓰기 PlanetRenderer::ringComp
+    필드 쓰기 PlanetRenderer::sprite
+    필드 읽기 PlanetRenderer::sprite
+    호출 PlanetSprite::Init
+    호출 scrController::get_coopMode
+    필드 읽기 PlanetRenderer::tailParticles
+    필드 읽기 PlanetRenderer::tailParticlesCoop
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::get_name
+    호출 UnityEngine.Object::set_name
+    호출 UnityEngine.GameObject::SetActive
+    호출 System.String::Concat
+    필드 쓰기 PlanetRenderer::tailParticles
+  LateUpdate
+    호출 PlanetRenderer::get_emojiMode
+    필드 읽기 PlanetRenderer::faceHolder
+    호출 UnityEngine.Component::get_transform
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::camy
+    호출 UnityEngine.Transform::get_rotation
+    호출 UnityEngine.Quaternion::get_eulerAngles
+    필드 읽기 UnityEngine.Vector3::z
+    호출 UnityEngine.Quaternion::Euler
+    호출 UnityEngine.Transform::set_rotation
+    호출 PlanetRenderer::get_rainbow
+    필드 읽기 PlanetRenderer::ringComp
+    호출 UnityEngine.Object::op_Inequality
+    호출 PlanetRenderer::get_rainbowHue
+    호출 UnityEngine.Color::HSVToRGB
+    필드 읽기 PlanetRenderer::sprite
+    호출 PlanetSprite::set_color
+    호출 PlanetRenderer::SetRingColor
+    호출 PlanetRenderer::SetTailColor
+    호출 PlanetRenderer::SetCoreColor
+    호출 PlanetRenderer::SetFaceColor
+    호출 ADOBase::get_isExpo
+    호출 PlanetSprite::get_visible
+    호출 scrController::get_playerOne
+    필드 읽기 scrPlayer::missCooldownActive
+    호출 UnityEngine.Time::get_unscaledTime
+    호출 PlanetSprite::get_color
+    호출 ExtensionMethods::WithAlpha
+  Revive
+    필드 읽기 PlanetRenderer::sprite
+    호출 PlanetSprite::set_visible
+    필드 읽기 PlanetRenderer::ringComp
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 읽기 PlanetRenderer::ring
+    호출 UnityEngine.Renderer::set_enabled
+    필드 읽기 PlanetRenderer::glow
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 UnityEngine.ParticleSystem::Play
+    필드 읽기 PlanetRenderer::coreParticles
+    필드 읽기 PlanetRenderer::sparks
+    필드 읽기 PlanetRenderer::deathExplosion
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 PlanetRenderer::faceHolder
+    호출 PlanetRenderer::get_emojiMode
+  SetColor
+    호출 PlanetRenderer::set_planetColor
+    필드 읽기 PlanetColor::preset
+    호출 PlanetRenderer::EnableDefaultFireAndIceColor
+    호출 PlanetRenderer::DisableAllSpecialPlanets
+    호출 PlanetRenderer::SwitchToGold
+    호출 PlanetRenderer::EnableCustomColor
+    호출 PlanetRenderer::SetRainbow
+    호출 PlanetRenderer::SwitchToOverseer
+    호출 PlanetColor::ToRealColor
+    호출 PlanetRenderer::SetPlanetColor
+    호출 PlanetRenderer::SetTailColor
+  SetColorAndSave
+    호출 PlanetRenderer::SetColor
+    호출 Persistence::SetPlayerColor
+  SwitchToGold
+    필드 읽기 PlanetRenderer::planetGold
+    호출 PlanetRenderer::ToggleSpecialPlanet
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::goldExplosionColor1
+    필드 읽기 RDConstants::goldExplosionColor2
+    호출 PlanetRenderer::SetExplosionColor
+    필드 읽기 PlanetRenderer::ringComp
+    호출 scrRing::get_color
+    호출 ExtensionMethods::WithAlpha
+    호출 PlanetRenderer::SetFaceColor
+    호출 PlanetRenderer::get_planetColor
+    호출 PlanetColor::ToRealColor
+    호출 PlanetRenderer::SetRingColor
+  RemoveGold
+    필드 읽기 PlanetRenderer::planetGold
+    호출 PlanetRenderer::ToggleSpecialPlanet
+  SwitchToOverseer
+    필드 읽기 PlanetRenderer::planetOverseer
+    호출 PlanetRenderer::ToggleSpecialPlanet
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::overseerExplosionColor1
+    필드 읽기 RDConstants::overseerExplosionColor2
+    호출 PlanetRenderer::SetExplosionColor
+    필드 읽기 PlanetRenderer::sprite
+    호출 UnityEngine.Color::.ctor
+    호출 PlanetSprite::set_color
+    필드 읽기 PlanetRenderer::ringComp
+    호출 scrRing::get_color
+    호출 ExtensionMethods::WithAlpha
+    호출 PlanetRenderer::SetFaceColor
+    호출 PlanetRenderer::get_planetColor
+    호출 PlanetColor::ToRealColor
+    호출 PlanetRenderer::SetRingColor
+  RemoveOverseer
+    필드 읽기 PlanetRenderer::planetOverseer
+    호출 PlanetRenderer::ToggleSpecialPlanet
+  ToggleSpecialPlanet
+    필드 쓰기 PlanetRenderer+<>c__DisplayClass50_0::<>4__this
+    필드 쓰기 PlanetRenderer+<>c__DisplayClass50_0::on
+    필드 읽기 PlanetRenderer+<>c__DisplayClass50_0::on
+    호출 PlanetRenderer::DisableAllSpecialPlanets
+    호출 UnityEngine.GameObject::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.GameObject::get_transform
+    필드 쓰기 PlanetRenderer+<>c__DisplayClass50_0::t
+    호출 PlanetRenderer::<ToggleSpecialPlanet>g__SetBasePlanetElementsActive|50_1
+    호출 PlanetRenderer::<ToggleSpecialPlanet>g__SetupNewPlanetElements|50_0
+  DisableAllSpecialPlanets
+    필드 읽기 PlanetRenderer::planetGold
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 PlanetRenderer::RemoveGold
+    필드 읽기 PlanetRenderer::planetOverseer
+    호출 PlanetRenderer::RemoveOverseer
+  EnableCustomColor
+    호출 PlanetRenderer::DisableAllSpecialPlanets
+    필드 읽기 PlanetRenderer::sprite
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::tex_planetWhite
+    호출 PlanetSprite::set_sprite
+  EnableDefaultFireAndIceColor
+    호출 PlanetRenderer::SetRainbow
+    호출 PlanetRenderer::DisableAllSpecialPlanets
+    필드 읽기 PlanetRenderer::sprite
+    호출 UnityEngine.Color::get_white
+    호출 PlanetSprite::set_color
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::tex_planetBlue
+    필드 읽기 RDConstants::tex_planetRed
+    호출 PlanetSprite::set_sprite
+    호출 UnityEngine.Color::get_blue
+    호출 UnityEngine.Color::get_red
+    호출 PlanetRenderer::SetRingColor
+    호출 PlanetRenderer::SetTailColor
+    호출 PlanetRenderer::SetFaceColor
+    호출 PlanetRenderer::SetCoreColor
+  SetPlanetColor
+    필드 읽기 PlanetRenderer::sprite
+    호출 UnityEngine.Object::op_Equality
+    호출 PlanetRenderer::SetRainbow
+    호출 PlanetSprite::set_color
+    호출 PlanetRenderer::SetRingColor
+    호출 PlanetRenderer::SetCoreColor
+    호출 PlanetRenderer::SetFaceColor
+  SetRingColor
+    필드 읽기 PlanetRenderer::ringComp
+    필드 읽기 UnityEngine.Color::a
+    호출 ExtensionMethods::WithAlpha
+    호출 scrRing::set_color
+  SetTailColor
+    필드 읽기 PlanetRenderer::sprite
+    호출 UnityEngine.Object::op_Equality
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 UnityEngine.Color::.ctor
+    호출 UnityEngine.Color::op_Multiply
+    호출 PlanetRenderer::SetParticleSystemColor
+    호출 PlanetRenderer::SetExplosionColor
+  SetExplosionColor
+    필드 읽기 PlanetRenderer::deathExplosion
+    호출 UnityEngine.ParticleSystem::get_main
+    호출 UnityEngine.Gradient::.ctor
+    호출 UnityEngine.Color::get_clear
+    호출 UnityEngine.Color::op_Inequality
+    호출 UnityEngine.GradientColorKey::.ctor
+    호출 UnityEngine.GradientAlphaKey::.ctor
+    호출 UnityEngine.Gradient::SetKeys
+    호출 UnityEngine.Gradient::set_mode
+    호출 UnityEngine.ParticleSystem+MinMaxGradient::.ctor
+    호출 UnityEngine.ParticleSystem+MinMaxGradient::set_mode
+    호출 UnityEngine.ParticleSystem+MainModule::set_startColor
+  GetPlanetColor
+    필드 읽기 PlanetRenderer::sprite
+    호출 PlanetSprite::get_color
+  GetTailColor
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 UnityEngine.ParticleSystem::get_main
+    호출 UnityEngine.ParticleSystem+MainModule::get_startColor
+    호출 UnityEngine.ParticleSystem+MinMaxGradient::get_color
+  SetCoreColor
+    필드 읽기 PlanetRenderer::glow
+    호출 UnityEngine.SpriteRenderer::get_color
+    필드 읽기 UnityEngine.Color::a
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.SpriteRenderer::set_color
+    필드 읽기 PlanetRenderer::coreParticles
+    호출 UnityEngine.ParticleSystem::get_main
+    호출 UnityEngine.ParticleSystem+MinMaxGradient::.ctor
+    호출 UnityEngine.ParticleSystem+MainModule::set_startColor
+    호출 PlanetRenderer::SetParticleSystemColor
+  SetLayer
+    호출 UnityEngine.SortingLayer::NameToID
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.Renderer::set_sortingLayerID
+    필드 읽기 PlanetRenderer::coreParticles
+    필드 읽기 PlanetRenderer::sparks
+    필드 읽기 PlanetRenderer::ring
+    필드 읽기 PlanetRenderer::sprite
+    필드 읽기 PlanetSprite::meshRenderer
+    필드 읽기 PlanetRenderer::glow
+    필드 읽기 PlanetRenderer::samuraiSprite
+    필드 읽기 PlanetRenderer::faceDetails
+    필드 읽기 PlanetRenderer::faceSprite
+  SetParticleSystemColor
+    호출 UnityEngine.ParticleSystem::get_main
+    호출 UnityEngine.ParticleSystem+MinMaxGradient::.ctor
+    호출 UnityEngine.ParticleSystem+MainModule::set_startColor
+    호출 UnityEngine.Color::get_black
+    호출 UnityEngine.Color::Lerp
+    호출 UnityEngine.ParticleSystem::get_colorOverLifetime
+    호출 UnityEngine.Gradient::.ctor
+    호출 UnityEngine.GradientColorKey::.ctor
+    호출 UnityEngine.Color::.ctor
+    호출 UnityEngine.Color::op_Multiply
+    호출 UnityEngine.GradientAlphaKey::.ctor
+    호출 UnityEngine.Gradient::SetKeys
+    필드 읽기 PlanetRenderer::tailParticlesCoop
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.ParticleSystem+MinMaxGradient::set_mode
+    호출 UnityEngine.ParticleSystem+ColorOverLifetimeModule::set_color
+  SetFaceColor
+    필드 읽기 PlanetRenderer::faceSprite
+    호출 UnityEngine.SpriteRenderer::set_color
+  SetRainbow
+    호출 PlanetRenderer::set_rainbow
+  LoadPlanetColor
+    필드 읽기 PlanetRenderer::objectDecoration
+    호출 UnityEngine.Object::op_Inequality
+    호출 PlanetRenderer::SetRainbow
+    호출 Persistence::GetSamuraiMode
+    호출 PlanetRenderer::ToggleSamurai
+    호출 Persistence::GetEmojiMode
+    호출 PlanetRenderer::SetEmojiMode
+    호출 Persistence::GetPlayerColor
+    호출 PlanetRenderer::set_planetColor
+    필드 읽기 PlanetColor::preset
+    정적필드 읽기 GCS::d_forceGoldPlanets
+    호출 PlanetRenderer::DisableAllSpecialPlanets
+    호출 PlanetRenderer::SwitchToGold
+    호출 PlanetRenderer::SwitchToOverseer
+    호출 PlanetRenderer::EnableCustomColor
+    호출 PlanetRenderer::EnableDefaultFireAndIceColor
+    호출 UnityEngine.Color::.ctor
+    호출 UnityEngine.Color::get_white
+    호출 제네릭 System.ValueTuple`2::.ctor
+    호출 UnityEngine.Color::get_black
+    필드 읽기 PlanetColor::customColor
+    호출 제네릭 System.Nullable`1::get_Value
+    호출 RDUtils::GetColor
+    필드 읽기 제네릭 System.ValueTuple`2::Item1
+    필드 읽기 제네릭 System.ValueTuple`2::Item2
+    호출 PlanetRenderer::SetPlanetColor
+    호출 PlanetRenderer::SetTailColor
+    정적필드 읽기 scrLogoText::instance
+    호출 scrLogoText::UpdateColors
+  ToggleSamurai
+    호출 PlanetRenderer::set_samuraiMode
+    필드 읽기 PlanetRenderer::samuraiSprite
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.SpriteRenderer::set_maskInteraction
+    호출 PlanetRenderer::ToggleAllSpecialPlanetsSamuraiMode
+    호출 Persistence::GetEmojiMode
+    호출 PlanetRenderer::SetEmojiMode
+  ToggleSpecialPlanetSamuraiMode
+    호출 UnityEngine.GameObject::get_transform
+    호출 System.String::Concat
+    호출 UnityEngine.Transform::Find
+    호출 제네릭 UnityEngine.Component::GetComponent
+    호출 UnityEngine.SpriteRenderer::set_maskInteraction
+  ToggleAllSpecialPlanetsSamuraiMode
+    필드 읽기 PlanetRenderer::planetGold
+    호출 PlanetRenderer::ToggleSpecialPlanetSamuraiMode
+    필드 읽기 PlanetRenderer::planetOverseer
+  SetEmojiMode
+    필드 읽기 PlanetRenderer::samuraiSprite
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 PlanetRenderer::set_emojiMode
+    필드 읽기 PlanetRenderer::faceHolder
+    호출 UnityEngine.GameObject::SetActive
+    호출 PlanetRenderer::ChangeFace
+  ChangeFace
+    호출 PlanetRenderer::get_emojiMode
+    호출 ADOBase::get_gc
+    필드 읽기 RDConstants::faceBaseSprites
+    호출 UnityEngine.Random::Range
+    필드 읽기 PlanetRenderer::faceIndex
+    필드 쓰기 PlanetRenderer::faceIndex
+    필드 읽기 PlanetRenderer::faceSprite
+    호출 UnityEngine.SpriteRenderer::set_sprite
+    필드 읽기 PlanetRenderer::faceDetails
+    필드 읽기 RDConstants::faceBaseDetailSprites
+    필드 읽기 PlanetRenderer::facePulseTween
+    호출 DG.Tweening.TweenExtensions::Kill
+    필드 읽기 PlanetRenderer::faceHolder
+    호출 RDExtensions::ScaleXY
+    호출 UnityEngine.Vector3::get_one
+    호출 DG.Tweening.ShortcutExtensions::DOScale
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetEase
+    호출 제네릭 DG.Tweening.TweenSettingsExtensions::SetUpdate
+    필드 쓰기 PlanetRenderer::facePulseTween
+  PlayParticles
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 UnityEngine.ParticleSystem::Play
+    필드 읽기 PlanetRenderer::coreParticles
+    필드 읽기 PlanetRenderer::sparks
+  DisableParticles
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 UnityEngine.ParticleSystem::Stop
+    필드 읽기 PlanetRenderer::coreParticles
+    필드 읽기 PlanetRenderer::deathExplosion
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 PlanetRenderer::sparks
+  StopParticles
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 UnityEngine.ParticleSystem::Stop
+    필드 읽기 PlanetRenderer::coreParticles
+    필드 읽기 PlanetRenderer::sparks
+    필드 읽기 PlanetRenderer::deathExplosion
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+  ClearParticles
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 UnityEngine.ParticleSystem::Clear
+    필드 읽기 PlanetRenderer::coreParticles
+    필드 읽기 PlanetRenderer::sparks
+  Explode
+    호출 PlanetRenderer::Destroy
+    필드 읽기 PlanetRenderer::deathExplosion
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    호출 UnityEngine.ParticleSystem::get_main
+    호출 UnityEngine.ParticleSystem+MainModule::get_startLifetime
+    호출 UnityEngine.ParticleSystem+MinMaxCurve::set_constant
+    호출 UnityEngine.ParticleSystem+MainModule::set_startLifetime
+    호출 UnityEngine.ParticleSystem::get_emission
+    호출 UnityEngine.ParticleSystem+MinMaxCurve::op_Implicit
+    호출 UnityEngine.ParticleSystem+Burst::.ctor
+    호출 UnityEngine.ParticleSystem+EmissionModule::SetBursts
+  Destroy
+    필드 읽기 PlanetRenderer::sprite
+    호출 PlanetSprite::set_visible
+    필드 읽기 PlanetRenderer::ring
+    호출 UnityEngine.Renderer::set_enabled
+    필드 쓰기 PlanetRenderer::onlyRing
+    필드 읽기 PlanetRenderer::faceHolder
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 PlanetRenderer::samuraiSprite
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 UnityEngine.ParticleSystem::Stop
+    필드 읽기 PlanetRenderer::coreParticles
+    필드 읽기 PlanetRenderer::deathExplosion
+    호출 UnityEngine.ParticleSystem::Clear
+    필드 읽기 PlanetRenderer::glow
+    필드 읽기 PlanetRenderer::sparks
+  .ctor
+    필드 쓰기 PlanetRenderer::faceIndex
+    호출 ADOBase::.ctor
+  <ToggleSpecialPlanet>g__SetupNewPlanetElements|50_0
+    필드 읽기 PlanetRenderer+<>c__DisplayClass50_0::t
+    호출 System.String::Concat
+    호출 UnityEngine.Transform::Find
+    호출 제네릭 UnityEngine.Component::GetComponent
+    필드 읽기 PlanetRenderer::coreParticles
+    필드 쓰기 PlanetRenderer::coreParticles
+    필드 읽기 PlanetRenderer::tailParticles
+    필드 쓰기 PlanetRenderer::tailParticles
+    필드 읽기 PlanetRenderer::sparks
+    필드 쓰기 PlanetRenderer::sparks
+    필드 읽기 PlanetRenderer::ring
+    필드 쓰기 PlanetRenderer::ring
+    필드 읽기 PlanetRenderer::glow
+    필드 쓰기 PlanetRenderer::glow
+    필드 읽기 PlanetRenderer+<>c__DisplayClass50_0::on
+    호출 UnityEngine.Component::get_transform
+    필드 읽기 PlanetRenderer::sprite
+    필드 쓰기 PlanetRenderer::sprite
+  <ToggleSpecialPlanet>g__SetBasePlanetElementsActive|50_1
+    필드 읽기 PlanetRenderer::tailParticles
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::SetActive
+    필드 읽기 PlanetRenderer::sparks
+    필드 읽기 PlanetRenderer::coreParticles
+    필드 읽기 PlanetRenderer::glow
+    필드 읽기 PlanetRenderer::sprite
+    호출 PlanetSprite::set_visible

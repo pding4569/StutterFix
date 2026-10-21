@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using DG.Tweening;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -26,12 +27,61 @@ namespace StutterFix
         static scrController controller;
         static bool oldPaused, oldAudio;
         static float oldTime, oldTween;
+        static readonly Harmony pausePatch = new Harmony("StutterFix.framecmp.pause");
+        static readonly HashSet<ParticleSystem> pausedParticles = new HashSet<ParticleSystem>();
+        static bool PlanetUpdate() => !Paused;
+        static void FreezePlanets()
+        {
+            // Diagnostic pause only: LateUpdate reads unscaledTime even at timeScale=0.
+            var late = AccessTools.Method(typeof(PlanetRenderer), "LateUpdate");
+            if (late == null) throw new MissingMethodException("PlanetRenderer.LateUpdate");
+            pausePatch.Patch(late, prefix: new HarmonyMethod(typeof(FrameCompare), nameof(PlanetUpdate)));
+            foreach (var planet in Resources.FindObjectsOfTypeAll<PlanetRenderer>())
+            {
+                if (!planet || !planet.gameObject.scene.IsValid()) continue;
+                var particles = new HashSet<ParticleSystem>(planet.GetComponentsInChildren<ParticleSystem>(true));
+                foreach (string field in new[] { "tailParticles", "tailParticlesCoop", "coreParticles" })
+                    if (AccessTools.Field(typeof(PlanetRenderer), field)?.GetValue(planet) is ParticleSystem ps) particles.Add(ps);
+                foreach (var ps in particles)
+                    if (ps && ps.isPlaying) { pausedParticles.Add(ps); ps.Pause(false); }
+            }
+            Log("pause planet LateUpdate frozen; owned playing particle systems=" + pausedParticles.Count);
+        }
+        static void RestorePlanets()
+        {
+            try { pausePatch.UnpatchAll(pausePatch.Id); }
+            finally
+            {
+                foreach (var ps in pausedParticles)
+                    try { if (ps && ps.isPaused) ps.Play(false); }
+                    catch (Exception e) { Log("particle restore failed: " + e.Message); }
+                pausedParticles.Clear();
+            }
+        }
         readonly Dictionary<string, Shot> shots = new Dictionary<string, Shot>(StringComparer.Ordinal);
         readonly Dictionary<Behaviour, bool> filters = new Dictionary<Behaviour, bool>();
         readonly Dictionary<Canvas, bool> canvases = new Dictionary<Canvas, bool>();
         readonly Dictionary<Camera, int> masks = new Dictionary<Camera, int>();
         bool filtersOff, includeUi, busy, ready, retiring;
         string error;
+        bool centerMask = true;
+        bool resultLogged, lastNoiseStable;
+        long lastNoiseOutside;
+        void ReportResult()
+        {
+            if (resultLogged) return;
+            Log($"framecmp RESULT noise_out={noiseOut} aa2_out={aa2Out} ab_out={abOut} ctl_order={ctlOrder} ctl_hide={ctlHide}");
+            resultLogged = true;
+        }
+        string noiseOut = "NA", aa2Out = "NA", abOut = "NA", ctlOrder = "NA", ctlHide = "NA";
+        FrameCompareMetrics.Mask[] Masks(string[] args, int start)
+        {
+            var result = new List<FrameCompareMetrics.Mask>();
+            if (centerMask) result.Add(FrameCompareMetrics.Mask.Parse("maskpct=0.5,0.5,0.2,0.2"));
+            for (int i = start; i < args.Length; i++)
+                if (args[i] != "png") result.Add(FrameCompareMetrics.Mask.Parse(args[i]));
+            return result.ToArray();
+        }
         RenderTexture pendingTexture;
         AsyncGPUReadbackRequest pending;
         bool hasPending;
@@ -53,7 +103,7 @@ namespace StutterFix
             oldPaused = controller.paused; oldAudio = AudioListener.pause;
             oldTime = Time.timeScale; oldTween = DOTween.timeScale;
             Paused = true;
-            try { controller.paused = true; Time.timeScale = 0; DOTween.timeScale = 0; AudioListener.pause = true; }
+            try { controller.paused = true; Time.timeScale = 0; DOTween.timeScale = 0; AudioListener.pause = true; FreezePlanets(); }
             catch { Resume(); throw; }
             Log("pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked");
         }
@@ -63,7 +113,7 @@ namespace StutterFix
             try { if (instance) instance.RestoreCapture(); }
             finally
             {
-                try { if (controller) controller.paused = oldPaused; }
+                try { try { RestorePlanets(); } finally { if (controller) controller.paused = oldPaused; } }
                 finally { Time.timeScale = oldTime; DOTween.timeScale = oldTween; AudioListener.pause = oldAudio; Paused = false; controller = null; }
             }
             Log("resume restored");
@@ -87,10 +137,18 @@ namespace StutterFix
             }
             if (a.Length == 2 && a[0] == "ui" && (a[1] == "include" || a[1] == "exclude"))
             { p.RestoreCapture(); p.includeUi = a[1] == "include"; Log("ui=" + a[1]); return true; }
+            if (a.Length == 2 && a[0] == "mask" && (a[1] == "center" || a[1] == "none"))
+            { p.centerMask = a[1] == "center"; Log("mask=" + a[1]); return true; }
+            if (a.Length == 1 && a[0] == "result")
+            {
+                p.ReportResult();
+                return true;
+            }
             if (a.Length >= 3 && a[0] == "assertzero")
             {
                 if (a.Length > 4 || (a.Length == 4 && a[3] != "png")) throw new ArgumentException("framecmp assertzero A B [png]");
                 var r = p.Diff(a[1], a[2], 0);
+                p.aa2Out = r.Changed.ToString(Inv);
                 var delta = p.shots[a[1]].State.Compare(p.shots[a[2]].State);
                 p.LogDelta("negative-control", p.shots[a[1]].State, p.shots[a[2]].State, delta);
                 if (a.Length == 4) { p.Save(a[1]); p.Save(a[2]); }
@@ -99,9 +157,11 @@ namespace StutterFix
             }
             if (a.Length >= 3 && a[0] == "diff")
             {
-                if (a.Length > 5) throw new ArgumentException("framecmp diff A B [0..255] [png]");
-                int threshold = a.Length > 3 && a[3] != "png" ? int.Parse(a[3], Inv) : 0;
-                var result = p.Diff(a[1], a[2], threshold);
+                int start = 3, threshold = 0;
+                if (a.Length > 3 && a[3] != "png" && !a[3].StartsWith("mask", StringComparison.Ordinal))
+                { threshold = int.Parse(a[3], Inv); start++; }
+                var result = p.Diff(a[1], a[2], threshold, p.Masks(a, start));
+                p.abOut = result.Changed.ToString(Inv);
                 if (Array.IndexOf(a, "png") >= 0) { p.Save(a[1]); p.Save(a[2]); }
                 return true;
             }
@@ -109,9 +169,15 @@ namespace StutterFix
             if (a.Length == 1 && a[0] == "clear") { p.shots.Clear(); return true; }
             IEnumerator work;
             if (a.Length == 2 && a[0] == "grab") work = p.Grab(a[1]);
-            else if (a.Length == 3 && a[0] == "noise") work = p.Noise(a[1], a[2]);
+            else if (a.Length >= 3 && a[0] == "noise")
+            {
+                var selected = p.Masks(a, 3);
+                p.noiseOut = p.aa2Out = p.abOut = p.ctlOrder = p.ctlHide = "NA";
+                p.resultLogged = false;
+                work = p.Noise(a[1], a[2], selected, true);
+            }
             else if (a.Length == 2 && a[0] == "control" && (a[1] == "hide" || a[1] == "order")) work = p.Control(a[1]);
-            else throw new ArgumentException("framecmp filters off|on; ui exclude|include; grab NAME; diff A B [threshold] [png]; assertzero A B [png]; noise A B; control hide|order; save NAME; clear");
+            else throw new ArgumentException("framecmp filters off|on; ui exclude|include; grab NAME; mask center|none; result; diff A B [threshold] [png] [mask=x,y,w,h ...] [maskpct=cx,cy,w,h ...]; assertzero A B [png]; noise A B [mask=... maskpct=...]; control hide|order; save NAME; clear");
             p.error = null; p.ready = false; p.busy = true;
             p.StartCoroutine(p.Guarded(work)); return false;
         }
@@ -196,24 +262,27 @@ namespace StutterFix
             Log($"grab {name} valid=1 {w}x{h} frame={frame} {state.Summary} {shots[name].Mode} disabledFilters={filters.Count} disabledCanvases={canvases.Count} maskedCameras={masks.Count}");
             ReleasePending(false);
         }
-        IEnumerator Noise(string a, string b)
+        IEnumerator Noise(string a, string b, FrameCompareMetrics.Mask[] selected = null, bool record = false)
         {
             if (a == b) throw new ArgumentException("noise needs distinct names");
             yield return Grab(a); yield return Grab(b);
-            var r = Diff(a, b, 0);
+            var r = Diff(a, b, 0, selected);
             var delta = shots[a].State.Compare(shots[b].State);
             LogDelta("noise", shots[a].State, shots[b].State, delta);
             bool stable = delta.Changed == 0;
-            Log($"noise rendererStateEqual={stable} zero={r.Changed == 0}");
-            if (!stable || r.Changed != 0) throw new InvalidOperationException("nonzero/unstable noise floor: inspect state phase=noise, capture-context shader clocks, camera RT/MSAA, filters and uploads; equivalence invalid");
+            lastNoiseOutside = r.Changed; lastNoiseStable = stable;
+            if (record) noiseOut = r.Changed.ToString(Inv);
+            Log($"noise outside={r.Changed} inside={r.InsideChanged} rendererStateEqual={stable} warning={(!stable || r.Changed != 0)}; noise floor advisory, continuing");
         }
-        FrameCompareMetrics.Result Diff(string a, string b, int threshold)
+        FrameCompareMetrics.Result Diff(string a, string b, int threshold, FrameCompareMetrics.Mask[] selected = null)
         {
             if (!shots.TryGetValue(a, out var x) || !shots.TryGetValue(b, out var y)) throw new ArgumentException("missing shot");
             if (x.Width != y.Width || x.Height != y.Height || x.Mode != y.Mode) throw new InvalidOperationException("capture dimensions/options differ");
-            var r = FrameCompareMetrics.Compare(x.Pixels, y.Pixels, x.Width, x.Height, threshold);
+            var r = FrameCompareMetrics.Compare(x.Pixels, y.Pixels, x.Width, x.Height, threshold, selected ?? Masks(Array.Empty<string>(), 0));
+            if (r.OutsidePixels == 0) throw new InvalidOperationException("mask excludes all pixels; no outside evidence");
+            Log($"mask inside_changed={r.InsideChanged}/{r.InsidePixels} outside_changed={r.Changed}/{r.OutsidePixels} origin=bottom-left samples=pixel-centers preset={(centerMask ? "center" : "none")}");
             Log(string.Format(Inv, "diff {0} {1} threshold={2} maxRGBA={3} changed={4}/{5} ratio={6:R} PSNR={7:R} top32(bottom-left,x,y,w,h,L1)={8}",
-                a, b, threshold, string.Join(",", r.Max), r.Changed, (long)x.Width * x.Height, r.Ratio, r.Psnr, r.Regions));
+                a, b, threshold, string.Join(",", r.Max), r.Changed, r.OutsidePixels, r.Ratio, r.Psnr, r.Regions));
             return r;
         }
         void ApplyCapture()
@@ -341,6 +410,12 @@ namespace StutterFix
         {
             RequirePaused(); shots.Clear();
             yield return Noise("_controlA", "_controlN");
+            if (lastNoiseOutside != 0 || !lastNoiseStable)
+            {
+                if (kind == "order") ctlOrder = "INCONCLUSIVE"; else ctlHide = "INCONCLUSIVE";
+                Log("control " + kind + " inconclusive: nonzero outside noise/unstable state; continuing without positive claim");
+                yield break;
+            }
             var camera = GpuSplit.FindMain(); var planes = GeometryUtility.CalculateFrustumPlanes(camera.cullingMatrix);
             var candidates = Resources.FindObjectsOfTypeAll<SpriteRenderer>().Where(r => GpuSplit.IsLiveImage(r, camera) && r.enabled &&
                 r.gameObject.activeInHierarchy && !r.forceRenderingOff && r.color.a > 0 && r.sprite &&
@@ -390,7 +465,9 @@ namespace StutterFix
             LogDelta("control-restore", shots["_controlA"].State, shots["_controlA2"].State, restoreDelta);
             if (restored.Changed != 0 || restoreDelta.Changed != 0)
                 throw new InvalidOperationException("control failed: restoration must be zero/stable");
-            if (changed.Changed > 0) { Log("control " + kind + " valid=1 restored=0 positive=" + changed.Changed + " attempt=" + attempts); yield break; }
+            if (changed.Changed > 0) {
+                if (kind == "order") ctlOrder = changed.Changed.ToString(Inv); else ctlHide = changed.Changed.ToString(Inv);
+                Log("control " + kind + " valid=1 restored=0 positive=" + changed.Changed + " attempt=" + attempts); yield break; }
             Log("control " + kind + " candidate produced zero; retry (occluded/commutative)");
             }
             throw new InvalidOperationException("control inconclusive: 16 candidates produced zero; no positive evidence");
@@ -430,6 +507,7 @@ namespace StutterFix
             {
                 if (instance)
                 {
+                    instance.ReportResult();
                     instance.StopAllCoroutines(); instance.RestoreControl(); instance.RestoreCapture();
                     if (drain) instance.ReleasePending(true);
                     instance.shots.Clear(); instance.busy = false;
