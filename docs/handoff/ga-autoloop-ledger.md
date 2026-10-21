@@ -1,3 +1,14 @@
+## codex-al-ga-3 자동 반복 3회차 — 2026-10-21 (r9, 첫 소유를 메인 카메라 PreCull로 이동)
+- 시작 HEAD 12b62cc, 작업 트리 깨끗함. 게임 실행·설치·커밋·푸시·config 변경 없음.
+- 최신 전달 run2(19:05)와 기존 전체 al-ga-2.log를 읽기 전용 감사. 원본 SHA256·행 번호·스택·카메라 디컴파일/IL 교차확인 보존.
+- 기존 262/270초 live2127/2263, owned2026/2165(95.251528%/95.669465%), 276초17/17. 재생 중 유지 증거는 없음. scan0.000100~0.000900ms로 전체 스캔 제거 효과는 관측됐으나 paused delta약2.7ms·vertex약0.59ms·첫enable39.243초가 남음.
+- 기존 PIXEL262/270/276=439553/130006/0, maxdiff6/5/0, aa2_out0·stableTrue. off0=124.133396FPS/8.055850ms만 완료. 켬 창 앞 camera_z0→-10 오류로 GATE2=ERROR. 과거−87%를 새 켬 FPS로 전용하지 않음.
+- 게임 Update의 Vector2 localPosition(Z=0)→LateUpdate.SetPosition(Z=-10)과 Begin 동기 RenderFrame이 충돌. 첫 소유/검증/키 생성을 메인 카메라 첫 PreCull로 이동, 이후 Z/축/모드/마스크 변경 거절 유지. 초기 실패·취소 복원과 ready상태 구별.
+- renderer_version8, prepare/register/patch/first_render/wait_first_cull 계측과 activation/steady 비용 분리. 3초 warmup/OWNED_LOW 시계는 첫 소유 렌더 완료 후 시작. 전체 스캔 재도입·임계 완화·steps/픽셀/제외 영역 변경 없음.
+- 생산 시작/정렬29건·소스계약5건 통과. !starting 예외를 없앤 대조본 exit1, 수정본 통과. 실제 Unity callback/수명/성능 증명은 아님.
+- 빌드 오류0/0/0·LoadCheck 틀림0/0/0, 정책106479/gate18/edition42/hook22, Dormancy20/계층2729/바운드482/스크립트15/캐시40/업로드32, 델타5918737/쓰기133/MatShare25401/FrameCompare/생성기24·25·132 통과.
+- 결과·10줄요약·r9 증거/검증 기록 갱신. 수정 후 소유율·비용·픽셀·FPS·실게임 수명 미측정, GATE2=PASS 미달성. 동일 코드 게임 시험 반복 실행/요청 없음.
+
 ## codex-al-ga-2 자동 반복 2회차 — 2026-10-21 (r8, 비교용 pause 초기화 수정)
 - 시작 HEAD 31e44fe, 작업 트리 깨끗함. 게임 실행·설치·커밋·푸시·config 변경 없음.
 - 파일 수정 시각으로 최신 run1(18:44)을 선택했다. Prof979110표본/set_pct69.121312%/valid=True 뒤 첫 livedeco on이 Dormancy live tracking is not ready로 중단, GATE2=ERROR. 소유/픽셀/FPS는 미도달이다.
@@ -262,3 +273,25 @@
   - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=2026 runs=1234 vertex_ms=0.586400 upload_ms=0.068400 reconcile_ms=2.732000 delta_ms=2.732000 scan_ms=0.000300 audit_ms=0.000000 awake=2127 dorm
   - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2026 runs=1234 dirty=984 scan_ms=0.000300 vertex_ms=0.586400 upload_ms=0.068400 transition_ms=39243.351600 audits=4 missed=0
   - [StutterFix] [livedeco] begin variant=A renderer_version=7 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events change_methods=1723 change_sites=4039 enable_transition_ms=14632.802600 e
+
+## 회차 3
+- Codex 요약: 카메라 Z 전환(0→−10) 때문에 시험이 중단되던 경로를 수정했습니다. 첫 소유·검증을 `PreCull`로 옮겼습니다.
+
+- 3종 빌드·LoadCheck 오류 0, 신규 29건·기존 회귀 검사 통과.
+- 게임 실행·설치·커밋 없음.
+- 수정 후 실게임 픽셀·FPS는 미측정으로, **Gate 2 통과는 미확인**입니다.
+
+[결과 문서](E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-result.md)에 근거와 남은 한계를 기록했습니다.
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=13354.685000 prepare_ms=5.101600 register_ms=1318.962600 patch_ms=12030.008700
+  - [StutterFix] [livedeco] begin variant=A renderer_version=8 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events change_methods=1723 change_sites=4039 enable_transition_ms=13704.717400 p
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 phase=activation owned=2025 runs=1244 vertex_ms=1.014800 upload_ms=2.790800 reconcile_ms=346.173200 delta_ms=314.929100 scan_ms=0.001100 audit_ms=2.7
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2025 runs=1244 dirty=157254 phase=activation scan_ms=0.001100 vertex_ms=1.014800 upload_ms=2.790800 transition_ms=13704.717400 audits=1 m
+  - [StutterFix] [livedeco] cost per_frame=1 samples=4 phase=steady owned=2025 runs=1244 vertex_ms=0.602650 upload_ms=0.070525 reconcile_ms=3.363150 delta_ms=3.363150 scan_ms=0.000200 audit_ms=0.590900 aw
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2025 runs=1244 dirty=5661 phase=steady scan_ms=0.000200 vertex_ms=0.602650 upload_ms=0.070525 transition_ms=13704.717400 audits=2 missed=
+  - [StutterFix] [livedeco] cost per_frame=1 samples=2 phase=steady owned=2025 runs=1244 vertex_ms=0.580850 upload_ms=0.071050 reconcile_ms=2.572900 delta_ms=2.572900 scan_ms=0.000150 audit_ms=1.103650 aw
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2025 runs=1244 dirty=1976 phase=steady scan_ms=0.000150 vertex_ms=0.580850 upload_ms=0.071050 transition_ms=13704.717400 audits=3 missed=
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 phase=steady owned=2025 runs=1244 vertex_ms=0.575800 upload_ms=0.068500 reconcile_ms=2.578600 delta_ms=2.578600 scan_ms=0.000100 audit_ms=0.000000 aw
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2025 runs=1244 dirty=988 phase=steady scan_ms=0.000100 vertex_ms=0.575800 upload_ms=0.068500 transition_ms=13704.717400 audits=3 missed=0
+  - [StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=13666.814500 prepare_ms=2.538600 register_ms=1248.603700 patch_ms=12415.634700
+  - [StutterFix] [livedeco] begin variant=A renderer_version=8 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events change_methods=1723 change_sites=4039 enable_transition_ms=14006.710500 p

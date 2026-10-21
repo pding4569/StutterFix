@@ -94,7 +94,9 @@ namespace StutterFix
         static Camera camera;
         static scrDecorationManager manager;
         static GameObject root;
-        static bool restoring, topology;
+        static bool restoring, topology, starting;
+        static long enableBegin, enableAlloc, setupEnd;
+        static double prepareMs, registerMs, patchMs;
         static int lastFrame = -1, ownedCount, frameSamples;
         static long reset;
         static long computeTicks, uploadTicks, reconcileTicks, scanTicks, uploadCalls, heapDelta;
@@ -140,12 +142,12 @@ namespace StutterFix
         internal static bool Active => root && !restoring;
         internal static int Owned => ownedCount;
         internal static double TransitionMs => transitionMs;
-        internal static float EnabledSeconds => Time.realtimeSinceStartup - enabledAt;
+        internal static float EnabledSeconds => starting ? 0 : Time.realtimeSinceStartup - enabledAt;
         static void Log(string s) => Main.Entry.Logger.Log("[livedeco] " + s);
         static string Ms(long ticks, int n = 1) => (ticks * 1000.0 / Stopwatch.Frequency / Math.Max(1, n)).ToString("F6", Inv);
         internal static string State() => "on=" + Active + " gate=2 variant=A owned=" + ownedCount
             + " runs=" + runs.Count + " registry=" + sources.Count + " transitions=" + transitionCount
-            + " restored=" + restoredCount + " error=" + error + " atlas=0";
+            + " restored=" + restoredCount + " error=" + error + " atlas=0 ready=" + (Active && !starting);
 
         // Exact signature selection, performed only on explicit enable/admission.
         static MethodInfo One(Type type, string name, int count)
@@ -174,8 +176,8 @@ namespace StutterFix
                 throw new InvalidOperationException("requires orthographic Z sorting and identity manager parent");
             if (DecoGpu.Active) throw new InvalidOperationException("competing owner");
             error = "none"; reset = SceneReset.Count; lastFrame = -1;
-            long enableBegin = Stopwatch.GetTimestamp();
-            long enableAlloc = GC.GetAllocatedBytesForCurrentThread();
+            enableBegin = Stopwatch.GetTimestamp();
+            enableAlloc = GC.GetAllocatedBytesForCurrentThread();
                 Dormancy.PrepareLiveTracking(manager);
                 Log("live_tracking ready=1 playing=" + Hitch.Playing + " capture_paused=" + FrameCompare.Paused
                     + " awake=" + Dormancy.AwakeList.Count);
@@ -189,9 +191,15 @@ namespace StutterFix
                             && !id.StartsWith("StutterFix.", StringComparison.Ordinal)))
                             throw new InvalidOperationException("foreign decoration hook: " + method.Name);
                     }
+                prepareMs = (Stopwatch.GetTimestamp() - enableBegin) * 1000.0 / Stopwatch.Frequency;
+                starting = true;
+                nextReport = float.PositiveInfinity;
                 root = new GameObject("StutterFix.LiveDeco.A") { hideFlags = HideFlags.HideAndDontSave };
                 root.AddComponent<LiveDecoLifetime>();
+                long stage = Stopwatch.GetTimestamp();
                 Register();
+                registerMs = (Stopwatch.GetTimestamp() - stage) * 1000.0 / Stopwatch.Frequency;
+                stage = Stopwatch.GetTimestamp();
                 harmony = new Harmony(PatchId);
                 Hook(typeof(scrDecoration), "UpdatePosition", 0, nameof(PositionPrefix));
                 Hook(typeof(scrDecoration), "SetPosition", 2, nameof(SetPositionPrefix));
@@ -217,24 +225,39 @@ namespace StutterFix
                 Hook(typeof(scrController), "Restart", 1, nameof(LifecyclePrefix));
                 Hook(typeof(scrController), "QuitToMainMenu", 0, nameof(LifecyclePrefix));
                 Hook(typeof(scnGame), "OnDestroy", 0, nameof(LifecyclePrefix));
+                patchMs = (Stopwatch.GetTimestamp() - stage) * 1000.0 / Stopwatch.Frequency;
+                setupEnd = Stopwatch.GetTimestamp();
                 Camera.onPreCull += PreCull;
-                // Includes vertex check and first upload; originals hide only after a valid run exists.
-                enabledAt = Time.realtimeSinceStartup; nextReport = enabledAt + 1;
-                RenderFrame();
-                transitionMs = (Stopwatch.GetTimestamp() - enableBegin) * 1000.0 / Stopwatch.Frequency;
-                if (ownedCount == 0) throw new InvalidOperationException("no eligible images; see rejection counts");
-                lastFrame = -1; // Re-evaluate after this frame's camera LateUpdate.
-                Log("begin variant=A renderer_version=7 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events"
-                    + " change_methods=" + LiveDecoChanges.Methods + " change_sites=" + LiveDecoChanges.Sites
-                    + " enable_transition_ms=" + transitionMs.ToString("F6", Inv)
-                    + " enable_allocated_bytes=" + (GC.GetAllocatedBytesForCurrentThread() - enableAlloc)
-                    + " watched_objects=" + watchers.Count
-                    + " bounds_policy=screen-pixels threshold_px=0.01 visibility_policy=logical-visible"
-                    + " currentRenderPipeline=null atlas=0 material_clone=0 " + State());
+                // Update temporarily puts scrCamera at Z=0. LateUpdate restores Z=-10.
+                // No ownership, sort keys, or vertex validation until this camera's PreCull.
+                Log("activation pending=1 first_render=main-camera-PreCull setup_ms=" + Ms(setupEnd - enableBegin)
+                    + " prepare_ms=" + prepareMs.ToString("F6", Inv) + " register_ms=" + registerMs.ToString("F6", Inv)
+                    + " patch_ms=" + patchMs.ToString("F6", Inv));
                 LiveDecoGate2.RendererStarted();
             }
             catch (Exception ex)
             { Log("ERROR " + ex.ToString()); Stop(); camera = null; manager = null; throw; }
+        }
+        static void StartRendering()
+        {
+                long firstCull = Stopwatch.GetTimestamp();
+                RenderFrame();
+                if (ownedCount == 0) throw new InvalidOperationException("no eligible images; see rejection counts");
+                long ready = Stopwatch.GetTimestamp();
+                transitionMs = ((setupEnd - enableBegin) + (ready - firstCull)) * 1000.0 / Stopwatch.Frequency;
+                // Warmup and OWNED_LOW count actual owned rendering, excluding setup/admission.
+                starting = false; enabledAt = Time.realtimeSinceStartup; nextReport = enabledAt + 1;
+                Log("begin variant=A renderer_version=8 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events"
+                    + " change_methods=" + LiveDecoChanges.Methods + " change_sites=" + LiveDecoChanges.Sites
+                    + " enable_transition_ms=" + transitionMs.ToString("F6", Inv)
+                    + " prepare_ms=" + prepareMs.ToString("F6", Inv) + " register_ms=" + registerMs.ToString("F6", Inv)
+                    + " patch_ms=" + patchMs.ToString("F6", Inv) + " first_render_ms=" + Ms(ready - firstCull)
+                    + " wait_first_cull_ms=" + Ms(firstCull - setupEnd) + " camera_z=" + sortCameraZ.ToString("R", Inv)
+                    + " enable_allocated_bytes=" + (GC.GetAllocatedBytesForCurrentThread() - enableAlloc)
+                    + " watched_objects=" + watchers.Count
+                    + " bounds_policy=screen-pixels threshold_px=0.01 visibility_policy=logical-visible"
+                    + " currentRenderPipeline=null atlas=0 material_clone=0 " + State());
+                ReportCost("activation");
         }
         static void Register()
         {
@@ -407,11 +430,12 @@ namespace StutterFix
                 : camera.transform.forward;
             if (axis.x != 0 || axis.y != 0 || axis.z == 0 || !Finite(axis.z)) return false;
             float z = camera.transform.position.z;
-            if (Active && (axis.z != sortAxisZ || z != sortCameraZ || mode != sortMode || camera.cullingMask != sortMask))
+            if (!Finite(z)) return false;
+            if (Active && !starting && (axis.z != sortAxisZ || z != sortCameraZ || mode != sortMode || camera.cullingMask != sortMask))
                 throw new InvalidOperationException("sort-context-changed axis=" + sortAxisZ + "->" + axis.z
                     + " camera_z=" + sortCameraZ + "->" + z + " mode=" + sortMode + "->" + mode
                     + " mask=" + sortMask + "->" + camera.cullingMask);
-            if (!Active) { sortAxisZ = axis.z; sortCameraZ = z; sortMode = mode; sortMask = camera.cullingMask; }
+            if (!Active || starting) { sortAxisZ = axis.z; sortCameraZ = z; sortMode = mode; sortMask = camera.cullingMask; }
             return true;
         }
         static bool Live(Source s)
@@ -685,7 +709,7 @@ namespace StutterFix
         static void PreCull(Camera c)
         {
             if (!Active || c != camera || lastFrame == Time.frameCount) return;
-            try { RenderFrame(); }
+            try { if (starting) StartRendering(); else RenderFrame(); }
             catch (Exception e)
             {
                 error = e.GetType().Name + ":" + e.Message;
@@ -989,10 +1013,10 @@ namespace StutterFix
             long bytes = GC.GetAllocatedBytesForCurrentThread() - alloc; allocatedBytes += bytes;
             if (transitionCount == transitions && checkCount == checkedBefore) { steadyAllocatedBytes += bytes; steadySamples++; }
             if (Time.realtimeSinceStartup >= nextReport) { nextReport = Time.realtimeSinceStartup + 1f; ReportCost(); }
-            if (!FrameCompare.Paused && EnabledSeconds >= 3 && EnabledSeconds <= 5 && ownedCount < 800)
+            if (!starting && !FrameCompare.Paused && EnabledSeconds >= 3 && EnabledSeconds <= 5 && ownedCount < 800)
                 LiveDecoGate2.OwnedLow(ownedCount, awakeImages);
         }
-        static void ReportCost()
+        static void ReportCost(string phase = "steady")
         {
             if (frameSamples == 0) return;
             if (checkCount != 0) Log("vertexcheck max_err=" + checkMax.ToString("R", Inv) + " count=" + checkCount
@@ -1004,7 +1028,7 @@ namespace StutterFix
             foreach (var p in rejected) Log("excluded reason=" + p.Key + " count=" + p.Value);
             foreach (var p in releaseReasons) Log("released reason=" + p.Key + " count=" + p.Value);
             rejected.Clear(); releaseReasons.Clear();
-            Log("cost per_frame=1 samples=" + frameSamples + " owned=" + ownedCount + " runs=" + runs.Count
+            Log("cost per_frame=1 samples=" + frameSamples + " phase=" + phase + " owned=" + ownedCount + " runs=" + runs.Count
                 + " vertex_ms=" + Ms(computeTicks, frameSamples) + " upload_ms=" + Ms(uploadTicks, frameSamples)
                 + " reconcile_ms=" + Ms(reconcileTicks + deltaTicks, frameSamples) + " delta_ms=" + Ms(deltaTicks, frameSamples)
                 + " scan_ms=" + Ms(scanTicks, frameSamples) + " audit_ms=" + Ms(auditTicks, frameSamples)
@@ -1021,7 +1045,7 @@ namespace StutterFix
                 + " heap_delta=" + heapDelta + " heap_scope=frame-work-excludes-cost-and-vertex-logs");
             double song = scrConductor.instance ? scrConductor.instance.songposition_minusi : double.NaN;
             Log("owned_ts t=" + song.ToString("F6", Inv) + " awake=" + awakeImages + " owned=" + ownedCount
-                + " runs=" + runs.Count + " dirty=" + dirtySources + " scan_ms=" + Ms(scanTicks, frameSamples)
+                + " runs=" + runs.Count + " dirty=" + dirtySources + " phase=" + phase + " scan_ms=" + Ms(scanTicks, frameSamples)
                 + " vertex_ms=" + Ms(computeTicks, frameSamples) + " upload_ms=" + Ms(uploadTicks, frameSamples)
                 + " transition_ms=" + transitionMs.ToString("F6", Inv) + " audits=" + auditCount + " missed=" + missed);
             computeTicks = uploadTicks = reconcileTicks = scanTicks = uploadCalls = heapDelta = 0; frameSamples = 0;
@@ -1036,9 +1060,9 @@ namespace StutterFix
         internal static void Stop()
         {
             Camera.onPreCull -= PreCull;
-            if (!root && harmony == null) return;
+            if (!root && harmony == null) { starting = false; return; }
             LiveDecoGate2.RendererStopped();
-            ReportCost(); restoring = true;
+            ReportCost(starting ? "activation" : "steady"); restoring = true;
             if (root) root.SetActive(false);
             try
             {
@@ -1056,7 +1080,8 @@ namespace StutterFix
                 finally
                 {
                     if (root) { root.SetActive(false); UnityEngine.Object.Destroy(root); }
-                    root = null; harmony = null; camera = null; manager = null;
+                    root = null; harmony = null; camera = null; manager = null; starting = false;
+                    enableBegin = enableAlloc = setupEnd = 0; prepareMs = registerMs = patchMs = 0;
                     sources.Clear(); known.Clear(); images.Clear(); ordered.Clear(); runs.Clear();
                     pending.Clear(); watchers.Clear(); repair.Clear(); invalidRuns.Clear();
                     freeVertices.Clear(); vertexEnd = 0; awakeImages = 0;

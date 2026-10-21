@@ -1,0 +1,30 @@
+﻿r9 offline validation; no game execution, installation, commit, push, or config changes.
+HEAD=12b62cc
+Existing measurements: run2 / al-ga-2.log only. Coverage 262=2026/2127=95.251528%; 270=2165/2263=95.669465%; 276=17/17.
+Existing off0 FPS=124.133396 ms=8.055850. On FPS/gain missing. Existing GATE2=ERROR camera_z=0->-10.
+Build Dev/Player/PlayerAuto errors=0/0/0 warnings=38/4/38 (incremental output). LoadCheck checked=276/229/276 bad=0/0/0.
+Production activation/sort=29 pass. Source scheduling/warmup/cleanup contracts=5 pass. Old sort guard negative control=expected exit1.
+Policy=106479 gate=18 edition=42 hooks=22. Dormancy=20. Geometry=2729 bounds=482 scripts=15 cache=40 uploads=32.
+Delta=5918737 mutations=6000. Writes=133. MatShare=25401. FrameCompare=11/15/15/17/21/2. Generator checks/steps=24/25/132.
+First-run negative fixture initially waited after an unhandled assertion; its run-owned process was stopped. Harness now catches and returns1; fresh negative1/positive0 both completed.
+An initial framecmp script filename was absent; located check-framecmp-steps.py and ran it successfully. No implementation failure remains.
+No new ownership, scan/reconcile/vertex/upload/activation timing, live pixels/FPS, Mono allocation, or Unity lifetime measurements. Gate2 PASS remains unachieved.
+UTF-8/replacement-character check=9 files pass; summary=10 lines; git diff --check=pass.
+Task Observer v3.5.0 read; no new skill improvement observations. Memory/skill files unchanged.
+LiveDecoRenderer.cs sha256=A748831CAA8F1823491BF5357DF908C27A2636EAD9A8908833E47AB5958E0427
+tools/optimization/LiveDecoActivationCheck/Adapters.cs sha256=B150A9B030F9169C2506D8072602329A59277F971F61543C23A0F69A71278171
+tools/optimization/LiveDecoActivationCheck/Program.cs sha256=73B2B184B67024443E718ABCE46CA65B85812AF3CD257795C2D1FF697458497F
+tools/optimization/LiveDecoActivationCheck/extract.py sha256=659DF880C783E2EF39C7F68441DDFF1A4900FE14C03185F249BC7E1D06F7073D
+tools/optimization/LiveDecoActivationCheck/LiveDecoActivationCheck.csproj sha256=CF6F569C1B2B04BB4794D06479B5EAA790025EF9A74C0F90EC9137E8703CC79A
+tools/optimization/LiveDecoActivationCheck/README.md sha256=4AA5CA06589FBE4D8E019BC3E932E6702DBBA5373319AD58101FCD29195136F3
+docs/handoff/codex-gate2-A-result.md sha256=863CADD3D7B4C52210A245E354C0D17712AA99C6E466067D77C4D57BBFDE9A7C
+docs/handoff/codex-gate2-A-o.txt sha256=9D3F42C6F3A5799D203CADD61B3F0D3A26DF27F60CA2723A64A02EA0E3796C1A
+docs/handoff/ga-autoloop-ledger.md sha256=8F11554C791073E1367B8CC325BE3B9621B71B85973C15A5DD4C684AFAAF48A4
+bin/Release/StutterFix.dll sha256=D2E7F4C0993751F080C923FEBDE97BD5A66A9D9F9CD03E58AA04C9532F24F725
+bin/Player/StutterFix.dll sha256=EC5E84E099D707764DEC5C827C0D2CC187E04E63F58BAB94E93F8BD0837A5BE3
+bin/PlayerAuto/StutterFix.dll sha256=1320A5AACB46245A6C1636D0F07D4F60E524AA52EE6897050DC0096ED1510BAD
+docs/handoff/gate2-A-r9-prior-evidence.txt sha256=D41F86CCE2E88F33E9BF4C96990F9C53A444AAF301E49467872CE775A4C5FC68
+docs/handoff/gate2-A-r9-camera-il.log sha256=41642D3B67105EB65BED602272C131A2B0D535BB5B95E26D630A5CF9301053C0
+docs/handoff/gate2-A-r9-activation-fixture.log sha256=5292782498F619BBF0E6153D54D75605F91452C1FDF78543C530A3883685560A
+docs/handoff/gate2-A-r9-activation-negative.log sha256=66128F830CB1BDA914136E72FD8F4DB7C8F385A2DD919C31BA7DDB76B32DA06A
+docs/handoff/gate2-A-r9-activation-extract.log sha256=60E2B2622CF796CF50AF6F24EEA2322030CA06D6D91263D1617CF9A5F5ED1EAB

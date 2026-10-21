@@ -1,10 +1,10 @@
-1. 최신 전달은 수정 시각이 가장 늦은 run1이며 첫 livedeco on에서 Dormancy live tracking is not ready로 중단했다.
-2. Prof979110표본/set_pct69.121312%/valid=True, 소유·픽셀·FPS는 미도달, 기존 판정 GATE2=ERROR다.
-3. 비교용 pause로 Hitch.Playing이 꺼지면 Dormancy가 source/awake를 지워 Begin의 readiness와 충돌하는 경로를 찾았다.
-4. DEV/AutoTest의 FrameCompare.Paused 동안 목록·깨움/잠듦을 유지하며 일반 정지·해제의 초기화는 유지한다.
-5. 명시적 Begin에서 원본 소유 전에 관리자 목록을 한 번 준비하고 초기화 비용은 enable_transition에 포함한다.
-6. 실패 시 enabled/broken/logicSkip/playing/capturePaused/source를 전체 스택과 함께 남기고 복원한다.
-7. 실제 Dormancy.cs 수명20건 통과, playing-only 대조본은 pause-owner 검사에서 실패하고 수정본은 통과했다.
-8. 3종 빌드 오류0/0/0·LoadCheck 틀림0/0/0·Player 제외·기존 정책/델타/쓰기/FrameCompare/132단계 검사를 통과했다.
-9. 소유90%·scan≤0.05ms·정점≤0.5ms·업로드≤0.4ms·FPS+15%·픽셀0·실게임 수명은 수정 후 미측정이다.
-10. 결과·장부·r8 증거 갱신. 게임 실행·설치·커밋·푸시·config·메모리·스킬 변경 없음. Gate2 통과 미확인이다.
+1. 최신 run2와 기존 전체 al-ga-2.log를 감사했다. 재생 첫 켬 앞 camera_z0→-10 오류로 GATE2=ERROR다.
+2. 기존 262/270초 소유2026/2127·2165/2263(95.251528%·95.669465%), 276초17/17이며 재생 중 유지 증거는 없다.
+3. 기존 scan0.000100~0.000900ms, paused delta약2.7ms·vertex약0.59ms·첫enable39.243초가 남아 FPS 이득을 증명하지 못한다.
+4. 기존 픽셀262/270/276=439553/130006/0·최대6/5/0·복원0이며 off0=124.133396FPS만 완료, 켬 FPS는 없다.
+5. 게임 Update의 Vector2 localPosition(Z=0)→LateUpdate.SetPosition(Z=-10)을 디컴파일·설치DLL IL로 교차확인했다.
+6. 첫 소유·정점 검증·정렬 키 생성을 메인 카메라 PreCull로 이동했다. 이후 Z/축/모드/마스크 변경 중단과 오류 복원을 유지한다.
+7. renderer_version8·ready상태·prepare/register/patch/first_render/wait_first_cull·activation/steady 비용 분리, 첫 소유 완료 후 warmup 시작이다.
+8. 생산 시작/정렬29건·소스계약5건 통과, !starting 예외 제거 대조본 exit1/수정본 통과. 실게임 callback·수명 증명은 아니다.
+9. 3종 빌드 오류0/0/0·LoadCheck 틀림0/0/0·Player 제외·기존 정책/수명/델타/쓰기/FrameCompare/132단계 검사를 통과했다.
+10. 결과·장부·r9 증거 갱신. 게임 실행·설치·커밋·푸시·config 변경 없음. 수정 후 실측 없음, GATE2=PASS 미달성이다.
