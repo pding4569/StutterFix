@@ -1,0 +1,28 @@
+[StutterFix] [자동 시험] 시작: 129단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco2 reset / stop / seek 262 12 / waitsongpos 262 40 / livedeco2 profilebegin / waitsongpos 276 40 / livedeco2 profileend / stop / livedeco off / stop / seek 262 12 / waitsongpos 262 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 262 / resume / livedeco off / stop / seek 270 12 / waitsongpos 270 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 270 / resume / livedeco off / stop / seek 276 12 / waitsongpos 276 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 276 / resume / livedeco off / stop / seek 262 12 / waitsongpos 252 40 / livedeco off / waitsongpos 262 40 / fuse begin / livedeco2 begin off 0 / waitso
+[StutterFix] [livedeco2] reset variant=A
+[StutterFix] [livedeco2] PROFILE begin enabled=True mode=off previous=False pairxy_suppressed=1 groupstep_suppressed=1
+[StutterFix] [livedeco2] PROFILE key=1 samples=175912 apply_us=0.072401 set_us=0.514160
+[StutterFix] [livedeco2] PROFILE key=2 samples=176009 apply_us=0.073391 set_us=0.193980
+[StutterFix] [livedeco2] PROFILE key=5 samples=177314 apply_us=0.072205 set_us=0.123540
+[StutterFix] [livedeco2] PROFILE key=7 samples=141669 apply_us=0.134965 set_us=0.027859
+[StutterFix] [livedeco2] PROFILE key=8 samples=141759 apply_us=0.130019 set_us=0.027733
+[StutterFix] [livedeco2] PROFILE key=9 samples=159459 apply_us=0.073796 set_us=0.270250
+[StutterFix] [livedeco2] PROFILE key=10 samples=580 apply_us=0.073448 set_us=0.513448
+[StutterFix] [livedeco2] PROFILE samples=972702 set_pct=69.249446 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000244140625 quad_bounds_err=0.100000016 local_bounds_z=0.2
+[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
+[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000091 local_bounds_z=0.2
+[StutterFix] [livedeco] transition frame=23975 owned=1472 runs=1100 created=1100 reused=0 destroyed=0 reconcile_ms=36.642200
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=2087 excluded=615 nested_admitted=1472 visibility_admitted=1472 threshold=0.0001 vertex_max_err=0.00013647876 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb
+[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1472 runs=1100 vertex_ms=2.619300 upload_ms=2.535200 reconcile_ms=36.642200 scan_ms=841.307000 upload_calls=1100.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=37040128 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] excluded reason=bounds-error count=611
+[StutterFix] [livedeco] excluded reason=vertex-error count=4
+[StutterFix] [livedeco] excluded reason=repeat-tile count=38
+[StutterFix] [livedeco] excluded reason=keywords count=1
+[StutterFix] [livedeco] begin variant=A renderer_version=4 bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=1472 runs=1100 registry=157254 transitions=1 restored=0 error=none atlas=0
+[StutterFix] [livedeco] cost per_frame=1 samples=9 owned=1472 runs=1100 vertex_ms=2.567067 upload_ms=1.363356 reconcile_ms=0.000000 scan_ms=34.416711 upload_calls=1100.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=9 heap_delta=40960 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco2] PIXEL t=262 song=262.017840 ab_out=2278 maxdiff=5 aa2_out=769 stable=False regions=(1376,864,32,32):1904;(1344,864,32,32):968;(896,992,32,32):189;(832,992,32,32):177;(864,992,32,32):142
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco2] GATE2=ERROR reason=unstable_baseline variant=A on=False

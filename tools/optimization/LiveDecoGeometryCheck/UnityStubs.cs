@@ -13,6 +13,7 @@ namespace UnityEngine
         public float x, y, z;
         public Vector3(float x, float y, float z) { this.x = x; this.y = y; this.z = z; }
         public static Vector3 zero => new Vector3();
+        public static Vector3 operator +(Vector3 a, Vector3 b) => From(a.Native + b.Native);
         internal N.Vector3 Native => new N.Vector3(x, y, z);
         internal static Vector3 From(N.Vector3 v) => new Vector3(v.X, v.Y, v.Z);
     }
@@ -22,6 +23,15 @@ namespace UnityEngine
         internal N.Quaternion Native => new N.Quaternion(x, y, z, w);
         internal static Quaternion Z(float angle)
         { var q = N.Quaternion.CreateFromAxisAngle(N.Vector3.UnitZ, angle); return new Quaternion { x = q.X, y = q.Y, z = q.Z, w = q.W }; }
+        public static Vector3 operator *(Quaternion q, Vector3 v) => Vector3.From(N.Vector3.Transform(v.Native, q.Native));
+    }
+    public struct Bounds
+    {
+        public Vector3 min, max;
+        public Bounds(Vector3 center, Vector3 size)
+        { min = Vector3.From(center.Native - size.Native / 2); max = Vector3.From(center.Native + size.Native / 2); }
+        public void Encapsulate(Vector3 v)
+        { min = Vector3.From(N.Vector3.Min(min.Native, v.Native)); max = Vector3.From(N.Vector3.Max(max.Native, v.Native)); }
     }
     public struct Matrix4x4
     {

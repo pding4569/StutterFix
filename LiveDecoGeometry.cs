@@ -16,11 +16,11 @@ namespace StutterFix
         }
         readonly List<Node> nodes = new List<Node>();
         readonly Transform pivot, child, renderer;
-        readonly Matrix4x4 above;
+        readonly Matrix4x4 above, shape;
         internal readonly Vector3[] Shape = new Vector3[4];
         internal int Depth => nodes.Count;
-        LiveDecoGeometry(Transform pivot, Transform child, Transform renderer, Matrix4x4 above)
-        { this.pivot = pivot; this.child = child; this.renderer = renderer; this.above = above; }
+        LiveDecoGeometry(Transform pivot, Transform child, Transform renderer, Matrix4x4 above, Matrix4x4 shape)
+        { this.pivot = pivot; this.child = child; this.renderer = renderer; this.above = above; this.shape = shape; }
 
         internal static LiveDecoGeometry Capture(Transform pivot, Transform child, Transform renderer,
             Vector2[] corners, bool flipX, bool flipY)
@@ -46,7 +46,7 @@ namespace StutterFix
             { var x = path[n]; above = Matrix4x4.TRS(x.Position, x.Rotation, x.Scale) * above; }
             var c = path[childIndex];
             var shape = Matrix4x4.TRS(Vector3.zero, c.Rotation, c.Scale) * below;
-            var result = new LiveDecoGeometry(pivot, child, renderer, above);
+            var result = new LiveDecoGeometry(pivot, child, renderer, above, shape);
             result.nodes.AddRange(path);
             for (int n = 0; n < 4; n++)
             {
@@ -67,6 +67,26 @@ namespace StutterFix
             return true;
         }
         internal Vector3 Offset(Vector2 logical) => above.MultiplyPoint3x4(logical);
+
+        // Renderer.localBounds is a culling box, not the flat sprite polygon.
+        // Transform all eight corners with the same logical pose as the vertices.
+        // localBounds already includes the renderer's flip; do not flip it twice.
+        internal Bounds WorldBounds(Bounds localBounds, Vector3 offset, Vector3 position,
+            Quaternion rotation, Vector2 scale)
+        {
+            Vector3 min = localBounds.min, max = localBounds.max;
+            var result = new Bounds();
+            for (int n = 0; n < 8; n++)
+            {
+                var point = new Vector3((n & 1) == 0 ? min.x : max.x,
+                    (n & 2) == 0 ? min.y : max.y, (n & 4) == 0 ? min.z : max.z);
+                Vector3 local = above.MultiplyVector(shape.MultiplyPoint3x4(point)) + offset;
+                local = rotation * new Vector3(local.x * scale.x, local.y * scale.y, local.z);
+                Vector3 world = position + local;
+                if (n == 0) result = new Bounds(world, Vector3.zero); else result.Encapsulate(world);
+            }
+            return result;
+        }
     }
 }
 #endif

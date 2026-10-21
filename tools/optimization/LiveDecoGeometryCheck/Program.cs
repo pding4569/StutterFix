@@ -75,6 +75,53 @@ Check(LiveDecoGeometry.Capture(deepRoot, deepChild, deepLeaf, corners, false, fa
     "depth limit must fail closed");
 Console.WriteLine($"LiveDeco production hierarchy algorithm: {checks} checks passed; managed math adapter, no Unity pixels/performance proven");
 
+int boundsStart = checks;
+// Reproduce the old category error: exact flat vertices vs a thick culling AABB.
+var flatPivot = new Transform(); var flatChild = new Transform { parent = flatPivot };
+var flatGeometry = LiveDecoGeometry.Capture(flatPivot, flatChild, flatChild, corners, false, false);
+var paddedBox = new Bounds(new Vector3(0, 0, 0), new Vector3(4, 2, .2f));
+var flatBox = new Bounds(new Vector3(0, 0, 0), new Vector3(4, 2, 0));
+Check(N.Vector3.Distance(flatBox.min.Native, paddedBox.min.Native) > .099f, "old flat-box comparison must fail with 0.1 error");
+var corrected = flatGeometry.WorldBounds(paddedBox, Vector3.zero, Vector3.zero, Quaternion.Z(0), new Vector2(1, 1));
+Check(corrected.min.Equals(paddedBox.min) && corrected.max.Equals(paddedBox.max), "matching culling boxes must pass without widening tolerance");
+// An asymmetric localBounds already describes a flipped renderer; do not flip it again.
+for (int sample = 0; sample < 160; sample++)
+{
+    var pivot = new Transform(); var top = pivot;
+    for (int n = 0; n < sample % 3; n++) top = Node(top);
+    var child = Node(top); top = child;
+    for (int n = 0; n < sample / 3 % 3; n++) top = Node(top);
+    var renderer = top;
+    if (sample % 5 == 0) child.localScale = new Vector3(0, -2, .5f);
+    bool flipX = (sample & 1) != 0, flipY = (sample & 2) != 0;
+    var geometry = LiveDecoGeometry.Capture(pivot, child, renderer, corners, flipX, flipY);
+    var box = new Bounds(new Vector3(flipX ? -.3f : .3f, flipY ? .2f : -.2f, .07f), new Vector3(4, 2, .2f));
+    var logicalOffset = new Vector2(Rand(), Rand());
+    var position = new Vector3(Rand(), Rand(), 0); var rotation = Quaternion.Z(Rand());
+    var scale = new Vector2(sample % 7 == 0 ? 0 : Rand(), Rand());
+    var actual = geometry.WorldBounds(box, geometry.Offset(logicalOffset), position, rotation, scale);
+    var referenceMin = new N.Vector3(float.PositiveInfinity); var referenceMax = new N.Vector3(float.NegativeInfinity);
+    for (int n = 0; n < 8; n++)
+    {
+        var point = new N.Vector3((n & 1) == 0 ? box.min.x : box.max.x,
+            (n & 2) == 0 ? box.min.y : box.max.y, (n & 4) == 0 ? box.min.z : box.max.z);
+        for (var t = renderer; t != pivot; t = t.parent)
+        {
+            point *= t.localScale.Native;
+            point = N.Vector3.Transform(point, t.localRotation.Native);
+            point += t == child ? new N.Vector3(logicalOffset.x, logicalOffset.y, 0) : t.localPosition.Native;
+        }
+        point *= new N.Vector3(scale.x, scale.y, 1);
+        point = N.Vector3.Transform(point, rotation.Native) + position.Native;
+        referenceMin = N.Vector3.Min(referenceMin, point); referenceMax = N.Vector3.Max(referenceMax, point);
+    }
+    Check(N.Vector3.Distance(actual.min.Native, referenceMin) < .0001f, "logical culling min must match independent eight-corner reference");
+    Check(N.Vector3.Distance(actual.max.Native, referenceMax) < .0001f, "logical culling max must match independent eight-corner reference");
+    // The same 1e-4 bound must continue to detect actual translation errors.
+    Check(N.Vector3.Distance(actual.min.Native, referenceMin + new N.Vector3(.001f, 0, 0)) > .0001f, "incorrect pose must still fail");
+}
+Console.WriteLine($"LiveDeco production culling bounds algorithm: {checks - boundsStart} checks passed; includes old 0.1 false rejection, no Unity bounds thickness assumed");
+
 int scriptStart = checks;
 var decoration = new scrVisualDecoration();
 var sprite = new SpriteRenderer();

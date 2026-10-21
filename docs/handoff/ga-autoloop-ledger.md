@@ -1,4 +1,15 @@
 
+## codex-al-ga-3 수정 — 2026-10-21 (검증 로그 run4)
+- 시작 HEAD 4e59c35, 작업 트리 깨끗함. 계층·프로파일·ToggleVisible 수정 유지.
+- run2 전달 실측: 소유/구간 0/0, 정점 검사 2,087개 전부 제외, max_err=0.100000374. Prof samples=987,093 / set_pct=69.311975% / valid=True. 픽셀/FPS 미도달.
+- 정점 검사와 평면 정점 AABB 대 컬링 AABB 차이를 한 max_err에 합친 코드 오류를 찾았다. 두께 0.2의 컬링 상자는 동일 정점이어도 옛 비교에서 0.1 오차를 냄을 합성 재현했다. 실게임 localBounds 두께·구성별 오차가 없어 전체 실패 원인의 확정은 보류.
+- 정점 직접 비교를 유지하고 실제 localBounds 8모서리를 같은 논리 계층/피벗 변환으로 계산해 bounds와 비교한다. 두 검사 모두 1e-4 유지, bounds-error 분리. 추가 계산은 입장 검사에만 수행.
+- renderer_version=4, vertex_max_err/bounds_max_err/quad_bounds_max_err, 첫 최대 3개 vertexdetail의 local_bounds_z 로그 추가. 고정 0.1 보정·성공 기준 완화 없음.
+- 지정 디컴파일·설치 게임 장식/시차 IL·CoreModule bounds/localBounds API 교차확인. 게임 DLL 해시 기존과 동일. 게임 메서드 실행 없음.
+- 3종 빌드 오류 0/0/0, LoadCheck 틀림 0/0/0, 생산 계층 2,729·새 바운드 482·스크립트 15건 통과. 구간 106,460·판정 18·edition 31·패치 대상 17개 및 기존 MatShare/FrameCompare·25/129단계 생성기 통과.
+- 게임 실행·설치·커밋·푸시·config 수정 없음. 소유/실픽셀/FPS/GC/수명은 수정 후 미측정. GATE2=PASS 미달성. 동일 코드 게임 시험 반복 없음.
+- 결과 문서 최신 run4 절·10줄 요약 갱신. 자동 루프는 수정 코드의 분리 오차·실제 bounds 두께·소유/구간 후 기존 픽셀/ABBA를 확인한다.
+
 ## 회차 1
 - Codex 요약: 변형 A 구현과 오프라인 검증을 완료했습니다.
 
@@ -66,3 +77,22 @@
   - [StutterFix] [livedeco] transition frame=23871 owned=0 runs=0 created=0 reused=0 destroyed=0 reconcile_ms=0.331300
   - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=0 runs=0 vertex_ms=0.791000 upload_ms=0.766600 reconcile_ms=0.331300 scan_ms=842.840100 upload_calls=0.000 allocated_bytes=0 steady_allocated_b
   - [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False
+
+## 회차 3
+- Codex 요약: 인계대로 정점·컬링 바운드 비교 오류를 수정했습니다.
+
+- 3종 빌드·LoadCheck 오류 0.
+- 새 바운드 검사 482건과 기존 fixture 통과.
+- 결과 문서·장부·10줄 요약 갱신.
+- 게임 실행·설치·커밋 없음.
+
+실게임 원인 확정과 수정 후 픽셀·FPS는 미측정이므로 **Gate 2 PASS는 아직 아닙니다.**
+
+[결과 문서](/E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] transition frame=23975 owned=1472 runs=1100 created=1100 reused=0 destroyed=0 reconcile_ms=36.642200
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1472 runs=1100 vertex_ms=2.619300 upload_ms=2.535200 reconcile_ms=36.642200 scan_ms=841.307000 upload_calls=1100.000 allocated_bytes=0 steady_a
+  - [StutterFix] [livedeco] cost per_frame=1 samples=9 owned=1472 runs=1100 vertex_ms=2.567067 upload_ms=1.363356 reconcile_ms=0.000000 scan_ms=34.416711 upload_calls=1100.000 allocated_bytes=0 steady_all
+  - [StutterFix] [livedeco2] GATE2=ERROR reason=unstable_baseline variant=A on=False

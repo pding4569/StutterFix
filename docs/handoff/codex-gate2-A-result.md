@@ -1,3 +1,55 @@
+# Gate 2 A 최신 수정 — 정점과 컬링 바운드 비교 오류 (2026-10-21, 로그 run4)
+
+**검증 코드의 서로 다른 도형 비교를 수정하고 오프라인 검증을 완료했다. 실게임 원인 확정·소유·픽셀·FPS는 미측정이며 Gate 2 PASS를 선언하지 않는다.** codex-al-ga-3.md·장부·run2 증거를 먼저 읽었다. 시작 HEAD는 `4e59c35`, 작업 트리는 깨끗했다. 기존 계층·프로파일·ToggleVisible 수정은 유지했다. 게임 실행·설치·커밋·푸시·config 수정은 하지 않았다.
+
+## 전달 실측
+
+출처는 [ga-autoloop-run2-evidence.txt](ga-autoloop-run2-evidence.txt)이며 이번 세션의 게임 측정값이 아니다. 소유/구간 0/0, vertexcheck count=2,087 / excluded=2,087 / max_err=0.100000374. 제외는 vertex-error 2,087개 / repeat-tile 38개 / keywords 1개다. no eligible images로 GATE2=ERROR, 픽셀/FPS 미도달이다. scan_ms=842.840100은 입장 실패 프레임 비용이며 정상 프레임 비용으로 쓰지 않는다.
+
+프로파일은 samples=987,093 / set_pct=69.311975% / valid=True다. PairXY/GroupStep 억제 상태의 Step 표본 Apply/OnUpdate 설정 비율이며 StepPair·OnComplete·setter 뒤 엔진 작업은 포함하지 않는다. 앞서 실패한 계층/스크립트 허용 방식을 다시 바꾸거나 같은 게임 시험을 반복하지 않았다.
+
+## 원인과 수정
+
+기존 Admit은 실제 정점 네 개와 계산 정점을 비교한 뒤, 계산 정점으로 만든 **두께 0인 AABB**와 **Renderer의 컬링 AABB**인 bounds의 min/max 차이도 같은 max_err에 넣었다. 이 둘은 같은 도형이 아니다. 컬링 상자의 Z 두께가 0.2이면 정확히 같은 정점도 이 비교에서 0.1 오차를 만든다. 새 회귀 검사에서 이 잘못된 탈락을 재현했다.
+
+**실게임 로그에는 정점/바운드별 오차와 실제 localBounds 두께가 없으므로, 2,087개 모두의 오차가 Z 두께 때문이라고 단정할 수 없다.** 0.100000374는 이 코드 오류와 부합한다. 고정값 0.1을 빼거나 허용 오차를 늘리지 않았다.
+
+- 실제 월드 정점 네 개는 기존처럼 TransformPoint와 직접 비교한다. `1e-4` 초과/비유한 값은 vertex-error로 거부한다.
+- 실제 **Renderer.localBounds의 8개 모서리**를 캐시한 고정 계층·논리 child 오프셋·논리 피벗 위치/회전/크기로 변환해 월드 AABB를 만든다. 이를 Renderer.bounds와 비교해 `1e-4` 초과/비유한 값은 별도 bounds-error로 거부한다. 로컬 바운드의 flip을 재차 적용하지 않는다. 렌더러/바운드 값을 변경하지 않는다.
+- 추가 계산은 소유 입장 검증에서만 수행한다. 정상 프레임의 정점/업로드 루프에 추가 바운드 계산/배열 할당은 없다. Transform·색 쓰기 차단과 off/해제 복원은 유지한다.
+- 시작 표시는 `renderer_version=4 bounds_policy=renderer-local-aabb`. vertexcheck에 vertex_max_err / bounds_max_err / quad_bounds_max_err / bounds_source를 추가한다. max_err는 같은 도형끼리의 두 검사 중 최댓값이며 옛 평면 상자 비교 값은 quad_bounds_max_err로만 보고한다.
+- 검사 프레임의 첫 최대 3개에 vertexdetail의 vertex_err / bounds_err / quad_bounds_err / local_bounds_z를 기록한다. 전체 탈락 때도 로그가 남는다. 기존 제외 정책과 픽셀/FPS 기준은 유지했다.
+
+지정 디컴파일 scrDecoration.cs의 SetPosition/SetRotation/SetScale/UpdatePosition과 scrParallax.cs의 SetTrans를 읽고 [장식 IL](gate2-A-run4-decoration-il.log)·[시차 IL](gate2-A-run4-parallax-il.log)과 대조했다. child 오프셋은 `(pivotOffset + croppedPivotOffset) / trueScaleMultiplier`, 피벗 위치는 Vector2 localPosition 설정 후 시차 적용, 회전은 startRot+rotAngle 및 카메라 잠금, 스케일 Z는 1이다. 기존 논리 수식을 바꿀 증거는 없었다. Transform 소비자 감사/제외는 아래 기존 결과 범위를 유지한다.
+
+[CoreModule IL](gate2-A-run4-renderer-api-il.log)에서 get_localBounds와 get_bounds가 서로 다른 native injected getter임을 확인했다. 관리 IL로 실제 네이티브 상자 두께를 증명하지 않는다. [게임 DLL SHA256](gate2-A-run4-game-hash.txt)은 `F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF`로 기존과 같다. ilscan은 메타데이터만 읽었다. 없는 로드맵은 정식 체크아웃에서, freeze 결과는 wt-freeze에서 읽기만 했다. freeze의 새 실게임 수치는 없었다.
+
+## 오프라인 검증
+
+| 검사 | 결과 | 로그 |
+|---|---|---|
+| Release DEV / Player / PlayerAuto | 오류 0/0/0, 경고 38/4/38 | gate2-A-run4-build-dev.log / -player.log / -auto.log |
+| LoadCheck DEV / Player / PlayerAuto | 276/229/276곳, 틀림 0/0/0 | gate2-A-run4-loadcheck-dev.log / -player.log / -auto.log |
+| 생산 계층 / 새 생산 바운드 / 스크립트 판정 | 2,729 / 482 / 15 checks 통과 | [geometry](gate2-A-run4-geometry-fixture.log) |
+| 구간·앵커 / Gate 2 판정 / edition / 패치 대상 | 106,460 / 18 / 31 / 17 checks 통과 | [fixture](gate2-A-run4-fixture.log) |
+| MatShare / FrameCompare | 25,401 / 11+15+14+17+13 checks 통과 | gate2-A-run4-matshare-fixture.log / -framecmp-fixture.log |
+| Gate 1 / Gate 2 생성기 | 25 / 129단계, UTF-8 CLI 통과 | gate2-A-run4-gate1-steps-fixture.log / -steps-fixture.log |
+| git diff --check | 통과 | 최종 로컬 검사 |
+
+새 검사는 생산 WorldBounds를 직접 연결해 두께 0.2의 옛 0.1 오탈락 재현·올바른 바운드 일치·비대칭 flip 바운드·중간 계층·음수/0 크기·Z 크기·회전·논리 오프셋과 독립 8모서리 순차 변환의 일치·실제 0.001 위치 차이 검출을 검사한다. System.Numerics 어댑터이므로 Unity native bounds·Mono float·실픽셀·성능 검증은 아니다. 일반 Player에는 실험 타입/참조가 없다. LoadCheck 동적 이름 5곳과 Harmony 실제 실행은 런타임 확인 대상이다.
+
+## 자동 루프 인계와 미측정
+
+기존 129단계 프로파일→262/270/276초 픽셀·복원→off/on/on/off 262→276초 FPS 생성기는 유지한다. 변경된 코드에서 vertexdetail의 local_bounds_z 및 세 오차, vertexcheck의 분리 최댓값과 제외 사유, owned/runs·visibility_admitted·비용을 확인한다. 옛 quad 오차만 약 0.1이고 vertex/bounds 오차는 1e-4 이하라면 비교 도형 차이가 직접 확인된다. 실제 정점/바운드 오차가 남으면 해당 사유로 계속 거부한다.
+
+**수정 후 소유·구간·실정점·픽셀·FPS·GC·재시작/사망/맵 재열기/언로드 복원은 모두 미측정**이다. 약 1,200구간은 예상치다. 세 시점 ab_out=0, 복원/기준 상태 안정성과 ABBA 켬 평균 FPS +15%를 모두 만족해야 PASS다. 설계 한계로 확정할 근거는 아직 없고 비교 코드의 수정 가능한 오류를 고쳤다. 코드 변경 없는 같은 게임 시험의 재실행은 하지 않았다.
+
+task-observer v3.5.0 관찰 반환(사용자 범위 쓰기 없음): 문제 — 정점과 컬링 AABB처럼 다른 양을 한 최댓값으로 합치면 실제 변환 오류를 구별하기 어렵다. 개선 — 같은 도형끼리 비교하고 구성별 오차·원본 바운드 두께를 기록한다. 원칙 — 합성 재현으로 확인한 코드 오류와 실게임 원인 추정/미측정을 구분한다.
+
+---
+
+아래는 보존한 이전 수정 결과다.
+
 # Gate 2 A 최신 수정 — ToggleVisible 오분류 (2026-10-21, 로그 run3)
 
 **표준 프리팹의 ToggleVisible을 외부 자식 스크립트로 거부하는 원인을 수정했다. 오프라인 검증은 통과했고 수정 후 소유 수·픽셀·FPS는 미측정이다. Gate 2 PASS를 선언하지 않는다.** codex-al-ga-2.md의 장부와 최신 증거부터 읽고 기존 계층/프로파일 수정을 보존했다. 시작 시 작업 트리는 깨끗했고 HEAD는 863096b였다. 게임 실행·설치·커밋·푸시·config 수정은 하지 않았다.

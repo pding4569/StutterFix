@@ -45,6 +45,7 @@ namespace StutterFix
             internal ushort[] Indices;
             internal readonly Vector3[] World = new Vector3[4];
             internal LiveDecoGeometry Geometry;
+            internal Bounds PredictedBounds;
             internal bool FlipX, FlipY;
             internal bool Owned, Rejected, OriginalOff, Hidden;
             internal bool WasLive;
@@ -93,7 +94,7 @@ namespace StutterFix
         static long transitionCount, restoredCount;
         static long allocatedBytes, steadyAllocatedBytes;
         static int steadySamples;
-        static float checkMax;
+        static float checkMax, checkVertexMax, checkBoundsMax, checkQuadBoundsMax;
         static int checkCount, checkRejected, checkNested, checkVisibility;
         static string error = "none";
         static readonly List<Source> sources = new List<Source>();
@@ -182,7 +183,7 @@ namespace StutterFix
                 RenderFrame();
                 if (ownedCount == 0) throw new InvalidOperationException("no eligible images; see rejection counts");
                 lastFrame = -1; // Re-evaluate after this frame's camera LateUpdate.
-                Log("begin variant=A renderer_version=3 visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 " + State());
+                Log("begin variant=A renderer_version=4 bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 " + State());
                 LiveDecoGate2.RendererStarted();
             }
             catch { Stop(); throw; }
@@ -287,27 +288,37 @@ namespace StutterFix
             // Do not depend on stale engine state on re-entry.
             restoring = true;
             try { i.D.UpdatePosition(); } finally { restoring = false; }
-            Compute(i);
-            float max = 0;
+            Compute(i, true);
+            float vertexError = 0;
             for (int v = 0; v < 4; v++)
             {
                 Vector3 local = i.Corners[v];
                 if (i.R.flipX) local.x = -local.x;
                 if (i.R.flipY) local.y = -local.y;
-                max = Mathf.Max(max, Vector3.Distance(i.World[v], i.R.transform.TransformPoint(local)));
+                vertexError = Mathf.Max(vertexError, Vector3.Distance(i.World[v], i.R.transform.TransformPoint(local)));
             }
             var bounds = new Bounds(i.World[0], Vector3.zero);
             for (int v = 1; v < 4; v++) bounds.Encapsulate(i.World[v]);
-            max = Mathf.Max(max, Vector3.Distance(bounds.min, i.R.bounds.min), Vector3.Distance(bounds.max, i.R.bounds.max));
+            var actualBounds = i.R.bounds;
+            float quadBoundsError = Mathf.Max(Vector3.Distance(bounds.min, actualBounds.min), Vector3.Distance(bounds.max, actualBounds.max));
+            float boundsError = Mathf.Max(Vector3.Distance(i.PredictedBounds.min, actualBounds.min), Vector3.Distance(i.PredictedBounds.max, actualBounds.max));
+            float max = Mathf.Max(vertexError, boundsError);
+            checkVertexMax = Mathf.Max(checkVertexMax, vertexError);
+            checkBoundsMax = Mathf.Max(checkBoundsMax, boundsError);
+            checkQuadBoundsMax = Mathf.Max(checkQuadBoundsMax, quadBoundsError);
+            if (checkCount < 3) Log("vertexdetail vertex_err=" + vertexError.ToString("R", Inv)
+                + " bounds_err=" + boundsError.ToString("R", Inv) + " quad_bounds_err=" + quadBoundsError.ToString("R", Inv)
+                + " local_bounds_z=" + i.R.localBounds.size.z.ToString("R", Inv));
             checkCount++; checkMax = Mathf.Max(checkMax, max);
-            if (!Finite(max) || max > Limit) { checkRejected++; Reject(i, "vertex-error"); return; }
+            if (!Finite(vertexError) || vertexError > Limit) { checkRejected++; Reject(i, "vertex-error"); return; }
+            if (!Finite(boundsError) || boundsError > Limit) { checkRejected++; Reject(i, "bounds-error"); return; }
             if (i.Geometry.Depth > 1) checkNested++;
             foreach (var component in i.Scripts)
                 if (component && component.isActiveAndEnabled && component.GetType() == typeof(ToggleVisible)) checkVisibility++;
             i.OriginalOff = i.R.forceRenderingOff; i.Owned = true; i.Version++; ownedCount++; topology = true;
         }
         static bool Finite(float f) => !float.IsNaN(f) && !float.IsInfinity(f);
-        static void Compute(Image i)
+        static void Compute(Image i, bool validateBounds = false)
         {
             var d = i.D; var p = d.parallax;
             Vector2 position = d.pivotPosVec + Vector2.zero;
@@ -346,6 +357,9 @@ namespace StutterFix
                     throw new InvalidOperationException("nonfinite/out-of-fixed-bounds vertex");
                 i.World[n] = v;
             }
+            if (validateBounds)
+                i.PredictedBounds = i.Geometry.WorldBounds(i.R.localBounds, pivotOffset,
+                    new Vector3(world.x, world.y, 0), rotation, scale);
         }
         static void Release(Image i)
         {
@@ -578,7 +592,8 @@ namespace StutterFix
             lastFrame = Time.frameCount;
             long heap = GC.GetTotalMemory(false), alloc = GC.GetAllocatedBytesForCurrentThread(), transitions = transitionCount;
             long scan = Stopwatch.GetTimestamp();
-            checkMax = 0; checkCount = checkRejected = checkNested = checkVisibility = 0;
+            checkMax = checkVertexMax = checkBoundsMax = checkQuadBoundsMax = 0;
+            checkCount = checkRejected = checkNested = checkVisibility = 0;
             if (refreshRegistry) Register();
             Scan(); scanTicks += Stopwatch.GetTimestamp() - scan;
             long compute = Stopwatch.GetTimestamp();
@@ -615,7 +630,9 @@ namespace StutterFix
             if (transitionCount == transitions && checkCount == 0) { steadyAllocatedBytes += bytes; steadySamples++; }
             if (checkCount != 0) Log("vertexcheck max_err=" + checkMax.ToString("R", Inv) + " count=" + checkCount
                 + " excluded=" + checkRejected + " nested_admitted=" + checkNested
-                + " visibility_admitted=" + checkVisibility + " threshold=0.0001");
+                + " visibility_admitted=" + checkVisibility + " threshold=0.0001"
+                + " vertex_max_err=" + checkVertexMax.ToString("R", Inv) + " bounds_max_err=" + checkBoundsMax.ToString("R", Inv)
+                + " quad_bounds_max_err=" + checkQuadBoundsMax.ToString("R", Inv) + " bounds_source=renderer-local-aabb");
             if (frameSamples >= 120 || checkCount != 0) ReportCost();
             if (rejected.Count != 0 && frameSamples == 0)
             { foreach (var p in rejected) Log("excluded reason=" + p.Key + " count=" + p.Value); rejected.Clear(); }

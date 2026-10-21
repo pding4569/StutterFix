@@ -1,0 +1,6 @@
+Command: dotnet run --project tools/optimization/LiveDecoGeometryCheck -c Release
+Exit code: 0
+Observed stdout (recorded from this session's tool result):
+LiveDeco production hierarchy algorithm: 2729 checks passed; managed math adapter, no Unity pixels/performance proven
+LiveDeco production culling bounds algorithm: 482 checks passed; includes old 0.1 false rejection, no Unity bounds thickness assumed
+LiveDeco production script/binding policy: 15 checks passed; managed roles only, no Unity callbacks proven
