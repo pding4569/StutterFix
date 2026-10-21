@@ -24,7 +24,7 @@ namespace StutterFix
             AccessTools.FieldRefAccess<scrVisualDecoration, bool>("meshRendererEnabled");
         static readonly AccessTools.FieldRef<scrVisualDecoration, DecorationBlendMode> BlendMode =
             AccessTools.FieldRefAccess<scrVisualDecoration, DecorationBlendMode>("blendMode");
-        static void Log(string s) => Main.Entry.Logger.Log("[livedeco] " + s);
+        internal static void Log(string s) => Main.Entry.Logger.Log("[livedeco] " + s);
         internal static bool Step(string arg)
         {
             switch (arg.Trim())

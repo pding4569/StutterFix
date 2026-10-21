@@ -122,6 +122,7 @@ Check(LiveDecoAtlasPolicy.Verdict(0, false, true, true, 100, 150) == "ERROR", "r
 Check(LiveDecoAtlasPolicy.Verdict(0, true, false, true, 100, 150) == "ERROR", "three valid pixels required");
 Check(LiveDecoAtlasPolicy.Verdict(0, true, true, false, 100, 150) == "ERROR", "four valid samples required");
 Console.WriteLine($"LiveDeco atlas/gate policy: {checks - atlasChecks} checks passed; packing, extrusion, rounding, verdict boundaries; GPU untested");
+checks += AtlasPlanFixture.Run();
 if (args.Length == 3)
 {
     int start = checks;

@@ -1,0 +1,30 @@
+[StutterFix] [자동 시험] 시작: 144단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco reset / stop / seek 262 12 / waitsongpos 262 40 / livedeco profile begin / waitsongpos 276 40 / livedeco profile end / stop / livedeco off / stop / seek 262 12 / waitsongpos 262 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 262 A B A2 / framecmp clear / framecmp ui include / resume / stop / livedeco off / stop / seek 262 12 / waitsongpos 270 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 270 A B A2 / framecmp clear / framecmp ui include / resume / stop / livedeco off / stop / seek 262 12 / waitsongpos 276 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 276 A B A2 / framecmp cle
+[StutterFix] [livedeco2] reset variant=B
+[StutterFix] [livedeco2] PROFILE_BEGIN mode=off fps_evidence=0
+[StutterFix] [livedeco2] PROFILE key=1 samples=175296 apply_us=0.072904 set_us=0.548886
+[StutterFix] [livedeco2] PROFILE key=2 samples=175409 apply_us=0.072976 set_us=0.208146
+[StutterFix] [livedeco2] PROFILE key=5 samples=176833 apply_us=0.073611 set_us=0.122711
+[StutterFix] [livedeco2] PROFILE key=7 samples=141058 apply_us=0.136686 set_us=0.027612
+[StutterFix] [livedeco2] PROFILE key=8 samples=141128 apply_us=0.134378 set_us=0.031175
+[StutterFix] [livedeco2] PROFILE key=9 samples=159055 apply_us=0.073421 set_us=0.265182
+[StutterFix] [livedeco2] PROFILE key=10 samples=581 apply_us=0.073494 set_us=0.584509
+[StutterFix] [livedeco2] PROFILE_SET_SHARE samples=969360 set_pct=69.856397 scope=sampled-Step-Apply-OnUpdate includes_scale_setters_in_apply=1 full_DecoAnim_share_proven=0
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco] patch_plan version=2 targets=18 abstract_declarations_skipped=2
+[StutterFix] [livedeco] pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED
+[StutterFix] [livedeco] admission version=4 hierarchy=renderer-to-pivot logical_child=1 max_depth=16 editing=True diagnostic_playback_pause=True
+[StutterFix] [livedeco] hierarchy renderer_is_child=False child_parent_is_pivot=True depth=2 path=None count=2127
+[StutterFix] [livedeco] atlas_source reason=atlas-wrap-nonclamp textures=13
+[StutterFix] [livedeco] atlas_source reason=eligible textures=25
+[StutterFix] [livedeco] atlas_plan version=5 textures=25 sampler_groups=1 padded_bytes=300096384 budget_bytes=536870912 max_size=16384
+[StutterFix] [livedeco] atlas_sampler group=0 filter=Bilinear srgb=False aniso=1 textures=25 max_width=5000 max_height=5000 padded_bytes=300096384
+[StutterFix] [livedeco] atlas_plan_page index=0 size=8192 filter=Bilinear srgb=False aniso=1 bytes=268435456
+[StutterFix] [livedeco] atlas_plan_page index=1 size=8192 filter=Bilinear srgb=False aniso=1 bytes=268435456
+[StutterFix] [livedeco] atlas_plan_ready pages=2 reserved_bytes=536870912 allocated_bytes=0
+[StutterFix] [livedeco] cost frame=22468 vertex_ms=13648.0586 upload_ms=6.9079 runs_ms=6513.1056 runs=81 owned=1808 live=2127 new_runs=81 reused_runs=0 heap_delta=0 stable_alloc_bytes=0 transition_alloc_bytes=0 atlas_pages=2 atlas_textures=25 atlas_bytes=536870912
+[StutterFix] [livedeco] vertexcheck max_err=0.0001220703125 count=1810 excluded=2 threshold=0.0001
+[StutterFix] [livedeco] remaining_reason=atlas-wrap-nonclamp count=279
+[StutterFix] [livedeco] remaining_reason=repeat-or-drawmode count=38
+[StutterFix] [livedeco] remaining_reason=vertex-error count=2
+[StutterFix] [livedeco] on=True gate=2 variant=B owned=1808 runs=81 failure=none pixel_equivalence=UNVERIFIED default_off=1
+[StutterFix] [livedeco] on=False released=1 reason=none

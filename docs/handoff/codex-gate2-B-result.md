@@ -1,6 +1,55 @@
 # Gate 2 변형 B 결과 — 2026-10-21
 
-**최신 4회차: live 2,074개 모두 `child-hierarchy`로 거절된 증거를 분석하고 단일 child 변환 계산을 실제 renderer→pivot 계층 합성으로 수정했다. 3종 빌드·LoadCheck·회귀 검사는 통과했다. 실제 소유 수·픽셀·FPS 및 GATE2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+**최신 5회차: `atlas-vram-budget-512MiB` 중단을 분석하고, sampler별 페이지 계획과 총 512MiB 예산 검사를 결합했다. 계획한 좌표를 실제 할당에도 사용한다. 3종 빌드·LoadCheck·회귀 검사는 통과했다. 실제 아틀라스·소유 수·픽셀·FPS 및 GATE2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+
+## 5회차 — sampler별 아틀라스 계획과 총 메모리 예산
+
+시작 git status/diff는 깨끗했다. 장부와 [최신 전달 증거](gb-autoloop-run2-evidence.txt)를 먼저 읽었다. admission version=4를 지나 `renderer_is_child=False child_parent_is_pivot=True depth=2 path=None count=2127`을 기록한 뒤 최초 on에서 `atlas-vram-budget-512MiB final_on=False`로 중단됐다. 이전 추상 대상·진단 정지·계층 수정은 보존했다. 이 로그는 정점·픽셀 실패나 성능 이득 없음의 근거가 아니다.
+
+### 확인한 결함과 증거 범위
+
+기존 Plan은 모든 sampler의 텍스처를 한 Shelf에 배치해 전역 preferredSize 하나를 골랐다. 실제 Get은 filter/sRGB/aniso별로 페이지를 분리하면서 **각 페이지에 그 전역 크기를 재사용**했다. 계획 당시의 좌표도 버리고 소유 편입 순서로 재배치했다. 따라서 단일 큰 페이지 또는 sampler 분리에 따른 같은 크기의 페이지 중복으로 예산을 넘길 수 있다. RGBA32 8192² 한 장은 256MiB, 세 장은 768MiB이며 16384² 한 장은 1024MiB다.
+
+전달 로그에는 원본 텍스처의 크기·sampler별 수·이미 할당한 페이지 수가 없다. **실제 실패가 위 두 경로 중 어느 쪽인지, 원본 내용 자체가 512MiB를 초과했는지는 미확인**이다. 이들을 확정한 원인이라고 단정하지 않고, 코드로 확인한 계획/할당 불일치를 수정했다.
+
+게임 관리 코드는 `E:/StutterFixWork/decompiled/Assembly-CSharp/scrVisualDecoration.cs:206–245`의 두 SetSprite가 wrapMode=Clamp를 쓰고, `scrDecorationManager.cs:425–450`의 tiling 갱신이 공유 텍스처 wrapModeU/V를 바꾸는 것을 확인했다. [실제 DLL ilscan](gate2-B-run5-sampler-il.log)의 SetPointSamplingVariant·set_wrapMode·set_wrapModeU/V 호출과 교차 확인했다. 게임 메서드는 실행하지 않았다. 이 코드는 정적인 sampler 고정을 보장하지 않으므로 편입 후 sampler 변화 검사도 유지·보강했다.
+
+### 수정
+
+- 생산과 fixture가 같은 `LiveDecoAtlasPolicy.Plan`을 사용한다. filter/sRGB/aniso별로 분리한 뒤 그룹마다 2048부터 장치 한도까지 2의 거듭제곱 정사각 페이지를 열거한다(장치 한도가 작으면 그 이하). 높이·너비 내림차순 first-fit Shelf로 각 그룹의 배치를 만든다. 한 장이 예산을 초과하는 크기는 후보에 넣지 않는다.
+- 그룹별 배치 조합을 총 **536,870,912B 이내**에서 선택한다. 열거된 조합 중 페이지 수가 가장 적은 것을 택하고, 페이지 수가 같으면 총 바이트가 작은 것을 택한다. 이는 그룹별 동일 크기 정사각 Shelf 후보 안의 선택이며, 임의 직사각형·혼합 크기 페이지의 전역 최적 배치를 증명하지 않는다.
+- 계획의 실제 Shelf 상태와 페이지/좌표를 반환하고 모든 초기 입력의 영역을 예약한다. Get은 해당 좌표를 그대로 쓰고, 해당 페이지가 처음 필요할 때 Texture2D를 할당한다. 편입 순서가 달라도 배치가 달라지지 않는다. 나중에 새로 live가 된 텍스처는 예약되지 않은 같은 sampler의 빈 공간 또는 필요한 크기의 새 페이지를 쓴다. 기존 UV·페이지를 재배치하지 않으며, 새 페이지는 초기 미할당 예약까지 포함한 총 예산으로 검사한다.
+- `atlas_plan version=5`, 원본 제외 분포, sampler별 텍스처 수/최대 크기/padded_bytes, 예정 페이지별 크기/바이트, reserved_bytes/allocated_bytes, 성장 요청·실패 로그를 추가했다. 계획이 실패하면 GPU 페이지를 할당하기 전에 입력 규모와 이유가 남는다. cost의 atlas_pages/atlas_bytes는 실제 할당한 페이지/바이트다. CPU readable 사본·readback 임시 메모리는 이 GPU 페이지 예산과 별도다.
+- Entry.Valid에 너비·높이·aniso·sRGB 검사를 추가했다. 기존 filter/wrap/mip 검사도 유지한다. 변경된 캐시 엔트리를 그대로 재사용하지 않고 ERROR/복원으로 종료한다. 기존 논리 setter/색 차단, 정점 오차 1e-4, 원본 복원, 2px extrusion·4px 배치·double UV 계산·RGBA32 경로, Player 제외·기본 꺼짐·엄격 판정은 유지했다.
+
+### 오프라인 검증
+
+| 검사 | 결과 | 근거 |
+|---|---|---|
+| Release Dev / Player / PlayerAuto | 오류 0/0/0, 경고 38/4/38 | gate2-B-run5-build-dev/player/auto.log |
+| LoadCheck Dev / Player / Auto | 275/229/275곳, 틀림 0/0/0 | gate2-B-run5-loadcheck-dev/player/auto.log |
+| 새 공유 아틀라스 계획 | 118,278 checks | gate2-B-run5-fixture.log |
+| 기존 계층 포함 LiveDeco / 아틀라스·판정 | 23,009 / 1,052,924 checks | 같은 로그 |
+| LiveDeco edition / 실제 DLL 패치 계획 | 22 / 38 checks | 같은 로그 / gate2-B-run5-patch-check.log |
+| FrameCompare | RGBA 11, mask 15, state 14, control 49, edition 13 | gate2-B-run5-framecmp-fixture.log |
+| MatShare / 진단 edition | 25,401 checks / 진단 32·필수 6·폐기 5 타입 조건 통과 | gate2-B-run5-matshare-fixture.log / gate2-B-run5-edition-check.log |
+| Gate1/Gate2 steps | 25/144단계·UTF-8 CLI 통과 | gate2-B-run5-gate1-steps-check.log / gate2-B-run5-steps-check.log |
+
+합성 회귀 입력 ①2044² 텍스처 17개는 기존 한 장 계산 16384²=1024MiB 대신 8192² 두 장=512MiB로 계획한다. ②같은 크기 텍스처 5개씩 sampler 3그룹은 전역 8192²를 세 그룹에 복제한 768MiB 대신 총 다섯 장=512MiB로 계획한다. **Arche의 실측 텍스처나 실제 할당 결과가 아니다.** 패딩 포함 내용 자체가 예산을 넘는 33개 입력은 계속 거절한다. 역순 편입·초기 예약과 후속 영역의 비중첩·sampler 분리·결정적 좌표·동일 페이지 수에서 최소 바이트 선택·80개 무작위 입력도 검사한다.
+
+첫 fixture 실행은 장치 한도 128에서 sampler 두 그룹을 단일 최소 페이지 예산으로 허용한다고 잘못 설정해 실패했다. 해당 시험 예산/기대값을 최소 페이지 두 장으로 바로잡았으며, 생산 예산과 통과 기준은 변경하지 않았다. 첫 로그는 gate2-B-run5-plan-first.log에 보존했다. 실패한 오프라인 검사 프로세스가 apphost 파일을 잡고 있어 해당 실행의 PID·경로를 확인해 종료한 뒤 최종 검사를 완료했다. 최종 fixture 빌드는 경고/오류 0/0이다.
+
+LoadCheck의 기존 동적 이름 5곳과 기존 빌드 경고는 남는다. 일반 Player DLL 및 전달 144 steps JSON 해시는 run4와 동일하다. [최종 산출물·소스 해시](gate2-B-run5-artifacts.txt)를 남겼다. 순수 배치·메타데이터·IL 검사는 Unity native 할당/정점·픽셀·게임 Mono GC·VRAM 피크·FPS 증명이 아니다.
+
+### 판정과 다음 관측
+
+전달 ProfSet은 **971,762표본 / 69.830267%**다. sampled Step/Apply/OnUpdate 표본 시간 비율이며, 전체 DecoAnim/native 쓰기 몫은 미입증이다.
+
+**GATE2=PASS 미확인.** 실제 소유/런·정점·픽셀/복원·GC/VRAM·FPS는 미측정이다. 현재 증거로 RGBA32가 구조적으로 예산을 만족할 수 없다고 결론 내릴 수 없다. 변경된 Dev/Auto DLL과 기존 144 steps를 인계한다. 다음 외부 시험은 기존 admission version=4와 새 atlas_plan version=5, atlas_sampler/atlas_plan_page/ready/failed를 먼저 확인한다. padded_bytes가 예산을 초과하면 이 전체 원본 텍스처 RGBA32·패딩 방식으로 전부 담을 수 없는 수치 근거가 된다. padded_bytes가 예산 이하면 단순 면적만으로 가능/불가능을 단정하지 말고 sampler별 페이지와 배치 여유를 봐야 한다. 새 배치에서도 페이지 수 증가에 따른 런 수·FPS 이득은 미보장이다.
+
+소유가 생겨도 262/270/276초 모두 ab_out=0·복원과 자연 재생 ABBA 평균 FPS +15%가 필요하다. 1/255 차이를 PASS로 세지 않으며, Texture2DArray 비교는 아래에 보존했다. 게이트 3·워커 분할·예산 상향·텍스처 축소는 하지 않았다. 게임 실행·설치·커밋·푸시·config 수정은 하지 않았다.
+
+task-observer v3.5.0 관찰은 report-back으로 반환한다. 문제: 단일 페이지의 수용 가능성으로 크기를 정한 뒤 실제 할당에서는 sampler별로 복제하여 총 메모리 한도를 뒤늦게 초과할 수 있다. 개선: 실제 분리 키와 모든 페이지를 포함해 계획하고, 계획 좌표를 할당과 공유하며 원본 면적·예약·할당을 구분해 남긴다. 원칙: 자원 계획과 실행은 같은 분할 규칙·배치 결과·총예산을 사용해야 한다. 유형은 프로젝트 내부 구현/검증 관찰이다. 사용자 범위 관찰 저장소는 쓰기 범위 밖이므로 스킬·메모리는 수정하지 않았다.
 
 ## 4회차 — 실제 renderer 계층 합성
 
@@ -129,7 +178,7 @@ FrameCompare control에는 정지 출처 32조합을 추가했다. 위 검사는
 
 압축 내부 영역을 4px CopyTexture로 복사하는 것만으로는 임의 DXT 경계 블록의 바이트 보존과 실제 가장자리 색으로 만든 2px extrusion을 함께 보장하지 못한다. 현재 구현은 재압축을 넣지 않고 허용된 RGBA32로 대체한다. **DXT 바이트 그대로 복사하는 최적화는 구현하지 않았다.**
 
-각 원본 텍스처 전체를 최소 2px의 실제 가장자리/모서리 색으로 확장한다. 배치 사각형은 4px 단위, 내용 원점은 짝수 픽셀이다. 원래 sprite UV를 double의 uMin/uMax로 변환하고 마지막에 float로 한 번만 내린다. 자동 리사이즈·텍스처 축소·재압축은 하지 않는다. filter/sRGB/aniso가 다른 소스는 별도 페이지로 나누고, mip chain 및 non-Clamp wrap은 제외 사유별 개수를 남긴다. 페이지는 최소 2048이고 필요하면 더 크며 GPU RGBA32 예산은 최대 512MiB이다. CPU readable 사본 메모리는 별도로 든다. 페이지가 여러 장이면 런 수도 증가한다.
+각 원본 텍스처 전체를 최소 2px의 실제 가장자리/모서리 색으로 확장한다. 배치 사각형은 4px 단위, 내용 원점은 짝수 픽셀이다. 원래 sprite UV를 double의 uMin/uMax로 변환하고 마지막에 float로 한 번만 내린다. 자동 리사이즈·텍스처 축소·재압축은 하지 않는다. filter/sRGB/aniso가 다른 소스는 별도 페이지로 나누고, mip chain 및 non-Clamp wrap은 제외 사유별 개수를 남긴다. 최신 5회차는 위 절처럼 sampler별 다중 페이지를 총 512MiB 안에서 계획하고 실제 좌표도 공유한다. 최소 페이지 크기는 2048(장치 한도가 작으면 그 이하)이다. CPU readable 사본 메모리는 별도로 든다. 페이지가 여러 장이면 런 수도 증가한다.
 
 | 경로 | 텍스처/UV 특성 | 남는 위험·비용 |
 |---|---|---|

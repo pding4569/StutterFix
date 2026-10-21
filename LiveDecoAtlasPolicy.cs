@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace StutterFix
 {
@@ -6,6 +8,95 @@ namespace StutterFix
     internal static class LiveDecoAtlasPolicy
     {
         internal const int Pad = 2;
+        internal const long ByteLimit = 512L * 1024 * 1024;
+        internal readonly struct Source
+        {
+            internal readonly int Width, Height, Group;
+            internal Source(int width, int height, int group) { Width = width; Height = height; Group = group; }
+        }
+        internal readonly struct Slot
+        {
+            internal readonly int Page, X, Y;
+            internal Slot(int page, int x, int y) { Page = page; X = x; Y = y; }
+        }
+        internal sealed class Layout
+        {
+            internal readonly List<Shelf> Pages = new List<Shelf>();
+            internal readonly List<int> Groups = new List<int>();
+            internal Slot[] Slots;
+            internal long Bytes;
+        }
+        sealed class Choice
+        {
+            internal long Bytes;
+            internal int Pages;
+            internal Choice Previous;
+            internal Layout Layout;
+        }
+        // Initial-only planning. Enumerate uniform-size shelf layouts per
+        // sampler; among those choose the fewest pages within the TOTAL budget
+        // (lower bytes break ties). This is not an optimal rectangle packer.
+        // Return the actual shelves/coordinates: admission order cannot repack.
+        internal static Layout Plan(Source[] sources, int maxSize, long budget = ByteLimit)
+        {
+            if (maxSize < 8 || budget < 0) throw new ArgumentException("atlas limits");
+            var frontier = new List<Choice> { new Choice() };
+            foreach (var group in Enumerable.Range(0, sources.Length).GroupBy(i => sources[i].Group).OrderBy(g => g.Key))
+            {
+                int[] indices = group.OrderByDescending(i => sources[i].Height).ThenByDescending(i => sources[i].Width).ThenBy(i => i).ToArray();
+                var options = new List<Layout>();
+                int first = 8;
+                while (first < 2048 && first <= maxSize / 2) first *= 2;
+                for (int size = first; size <= maxSize && (long)size * size * 4 <= budget; size *= 2)
+                {
+                    var option = new Layout { Slots = new Slot[sources.Length] };
+                    bool fits = true;
+                    foreach (int i in indices)
+                    {
+                        var s = sources[i];
+                        if (s.Width < 1 || s.Height < 1) throw new ArgumentException("texture dimensions");
+                        if (Align(checked(s.Width + 4)) > size || Align(checked(s.Height + 4)) > size) { fits = false; break; }
+                        int page = 0, x = 0, y = 0;
+                        for (; page < option.Pages.Count; page++) if (option.Pages[page].Place(s.Width, s.Height, out x, out y)) break;
+                        if (page == option.Pages.Count)
+                        {
+                            option.Pages.Add(new Shelf(size)); option.Groups.Add(group.Key);
+                            option.Bytes += (long)size * size * 4;
+                            if (option.Bytes > budget) { fits = false; break; }
+                            if (!option.Pages[page].Place(s.Width, s.Height, out x, out y)) throw new InvalidOperationException("atlas-placement");
+                        }
+                        option.Slots[i] = new Slot(page, x, y);
+                    }
+                    if (fits) options.Add(option);
+                    if (size > maxSize / 2) break;
+                }
+                var next = new SortedDictionary<long, Choice>();
+                foreach (var previous in frontier) foreach (var option in options)
+                {
+                    long bytes = previous.Bytes + option.Bytes;
+                    int pages = previous.Pages + option.Pages.Count;
+                    if (bytes <= budget && (!next.TryGetValue(bytes, out var old) || pages < old.Pages))
+                        next[bytes] = new Choice { Bytes = bytes, Pages = pages, Previous = previous, Layout = option };
+                }
+                // A state using more bytes for no fewer pages cannot help a later group.
+                frontier.Clear(); int bestPages = int.MaxValue;
+                foreach (var state in next.Values) if (state.Pages < bestPages) { frontier.Add(state); bestPages = state.Pages; }
+                if (frontier.Count == 0) throw new InvalidOperationException("atlas-vram-budget-512MiB");
+            }
+            var best = frontier.OrderBy(c => c.Pages).ThenBy(c => c.Bytes).First();
+            var result = new Layout { Slots = new Slot[sources.Length], Bytes = best.Bytes };
+            var selected = new Stack<Layout>();
+            for (var c = best; c.Layout != null; c = c.Previous) selected.Push(c.Layout);
+            while (selected.Count != 0)
+            {
+                var part = selected.Pop(); int offset = result.Pages.Count;
+                for (int i = 0; i < sources.Length; i++)
+                    if (sources[i].Group == part.Groups[0])
+                    { var slot = part.Slots[i]; result.Slots[i] = new Slot(slot.Page + offset, slot.X, slot.Y); }
+                result.Pages.AddRange(part.Pages); result.Groups.AddRange(part.Groups);
+            }
+            return result;
+        }
         internal static int Align(int x) => checked((x + 3) & ~3);
         internal sealed class Shelf
         {

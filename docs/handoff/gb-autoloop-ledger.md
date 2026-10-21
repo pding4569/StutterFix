@@ -83,3 +83,26 @@
 
 - 시험 핵심 줄:
   - [StutterFix] [livedeco2] GATE2=ERROR reason=InvalidOperationException:atlas-vram-budget-512MiB final_on=False
+
+## 회차 5 — sampler별 아틀라스 계획과 총 예산 (2026-10-21)
+- 시작 git status/diff는 깨끗했다. 최신 run2 전달은 admission version=4, renderer!=child/child.parent=pivot/depth=2/path=None 2127개를 지나 atlas-vram-budget-512MiB로 중단했다. 실제 페이지 크기·개수·원본 분포는 없어 단일 거대 페이지/그룹별 중복/내용 자체 초과 중 어느 경로인지 미확인이다.
+- 기존 Plan은 sampler를 합친 한 장으로 preferredSize를 정하고 Get은 그룹별로 그 크기의 페이지를 따로 만들며 계획 좌표도 버렸다. 전역 크기·실제 분리·편입 순서가 일치하지 않는 결함을 수정했다. 이전 추상/정지/계층 수정은 보존했다.
+- 생산/fixture 공유 Plan이 sampler별 정사각 Shelf 후보를 만들고 총 512MiB 안에서 페이지 수 최소·동수면 바이트 최소 조합을 선택한다. 실제 Shelf·좌표 예약도 Get과 공유하고, 신규 live 입력은 예약을 침범하지 않는다. GPU 페이지는 필요할 때 할당하며 초기 미할당 예약도 성장 예산에 포함한다.
+- atlas_plan version=5, 원본 제외/sampler별 수·최대 크기·padded_bytes, 페이지 크기·reserved/allocated bytes·실패 로그를 추가했다. 크기/aniso/sRGB 변화 검사도 보강했다. 기존 2px 패딩·4px 정렬·UV·엄격 판정·기본 꺼짐·Player 제외 유지.
+- 게임 디컴파일 SetSprite·tiling의 wrap 변경을 실제 DLL ilscan으로 대조했다. 합성 회귀 17개 2044²는 단일 1024MiB 대신 2장 512MiB, sampler 3그룹 각 5개는 768MiB 대신 5장 512MiB; 실제 Arche 결과는 아니다. 내용 자체가 예산 초과인 입력은 계속 거절한다.
+- 빌드 Dev/Player/Auto 오류 0/0/0(경고 38/4/38), LoadCheck 275/229/275곳 틀림 0; 새 계획 118278, 기존 LiveDeco 23009, 아틀라스 1052924, edition 22, 패치 38, MatShare 25401, FrameCompare 및 25/144 steps 통과. 첫 fixture의 최소 페이지 예산 오설정은 시험에서 수정하고 실패 로그를 보존했다.
+- 최신 전달 ProfSet 971762표본/69.830267%; 전체 DecoAnim/native 쓰기 몫은 미입증. 일반 Player DLL/전달 JSON 해시는 run4와 동일하다.
+- GATE2=PASS·실제 페이지/소유/런·정점·픽셀/복원·GC/VRAM·FPS는 미확인이다. 현재는 설계 한계 확정이 아니라 계획/할당 불일치를 수정한 상태다. 변경된 DLL과 기존 144 steps 인계; 다음 관측은 atlas_plan version=5와 sampler/페이지/예산 로그다.
+- 게임 실행·설치·커밋·푸시·config 변경 없음. 결과 codex-gate2-B-result.md / codex-gate2-B-o.txt; 근거 gate2-B-run5-* 로그와 artifacts.txt.
+
+## 회차 3
+- Codex 요약: 아틀라스 계획과 실제 할당의 불일치를 수정했습니다. sampler별 배치와 총 512MiB 예산을 함께 계산합니다.
+
+- 3종 빌드 오류 0, LoadCheck·회귀 검사 통과.
+- 결과 문서·장부·10줄 요약 갱신.
+- 게임 실행·설치·커밋 없음.
+- 실제 픽셀·FPS와 `GATE2=PASS`는 미확인입니다.
+
+[결과 문서](/E:/StutterFixWork/wt-ld2b/docs/handoff/codex-gate2-B-result.md)
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] cost frame=22468 vertex_ms=13648.0586 upload_ms=6.9079 runs_ms=6513.1056 runs=81 owned=1808 live=2127 new_runs=81 reused_runs=0 heap_delta=0 stable_alloc_bytes=0 transition_all

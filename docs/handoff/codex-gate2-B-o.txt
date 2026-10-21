@@ -1,10 +1,10 @@
-1. 최신 전달 시험은 live 2074개 전부 child-hierarchy로 거절되어 owned=0/runs=0, vertexcheck count=0에서 중단됐다.
-2. 기존 사유는 세 조건을 합쳐 기록하므로 실패한 세부 조건·실제 계층은 전달 로그만으로 확정할 수 없다.
-3. 게임 디컴파일·ilscan에서 Image 프리팹 생성과 child offset/pivot 갱신을 대조했다; 직렬화 계층은 미확인이다.
-4. 공유 계층 계산으로 renderer→pivot의 실제 local TRS를 합성하고 child 노드 위치만 논리 값으로 대체했다.
-5. 최대 16노드·child 포함을 요구하며 누락/형제/범위 밖 경로는 세부 사유로 제외한다; hierarchy 분포와 admission version=4를 추가했다.
-6. 초기 정점 오차 1e-4·기존 독자 제외·원본 복원·patch_plan version=2·엄격 픽셀/FPS 판정은 유지했다.
-7. Dev/Player/Auto 빌드 오류 0/0/0, LoadCheck 275/229/275곳 틀림 0, 실제 DLL 패치 계획 38 checks 통과다.
-8. 계층 25개 포함 LiveDeco 23009·아틀라스 1052924·edition 22·MatShare 25401·FrameCompare·25/144 steps 검사를 통과했다.
-9. 전달 ProfSet 비율은 967476표본/69.881109%; 실제 소유/정점·픽셀/복원·GC/VRAM·FPS·GATE2=PASS는 미확인이다.
-10. Player 제외·기본 꺼짐·기존 JSON/Player DLL 해시 유지; 게임 실행·설치·커밋·푸시·config 변경 없이 결과와 run4 근거를 인계했다.
+1. 최신 run2 전달은 hierarchy 경로 2127개를 통과한 뒤 atlas-vram-budget-512MiB에서 중단됐고 final_on=False였다.
+2. 실제 페이지/원본 분포는 미기록이므로 단일 거대 페이지·sampler별 중복·내용 초과 중 어느 경로인지는 미확인이다.
+3. 기존 한 장 계획과 sampler별 실제 할당의 불일치·계획 좌표 미사용을 고쳤으며 이전 추상/정지/계층 수정은 보존했다.
+4. 공유 Plan은 sampler별 Shelf 후보를 총 512MiB 안에서 조합해 페이지 수 최소·동수면 바이트 최소를 선택한다.
+5. 초기 페이지/좌표를 예약해 Get과 공유하고 신규 live 입력의 침범을 막는다; GPU 페이지는 필요할 때 할당한다.
+6. atlas_plan version=5와 sampler/페이지/예약·할당/실패 로그 추가; 크기/aniso/sRGB 변화도 검사한다; wrap 변경은 디컴파일·IL 대조했다.
+7. 합성 회귀의 1024→512MiB(2장), sampler 중복 768→512MiB(5장)를 확인했고 새 계획 118278 checks 통과; Arche 실측은 아니다.
+8. 빌드 3종 오류 0/0/0, LoadCheck 틀림 0, LiveDeco 23009·아틀라스 1052924·edition 22·패치 38·기존 회귀/steps 통과다.
+9. 전달 ProfSet은 971762표본/69.830267%; 실제 아틀라스/소유/정점·픽셀/복원·GC/VRAM·FPS·GATE2=PASS는 미확인이다.
+10. 기본 꺼짐·Player 제외·512MiB·엄격 판정·기존 JSON/Player DLL 해시 유지; 게임 실행·설치·커밋·푸시·config 변경 없이 run5 결과를 인계했다.
