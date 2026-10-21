@@ -13,12 +13,13 @@ namespace StutterFix
     {
         private const string Owner = "StutterFix.decofreeze";
         private static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
-        private static readonly string[] Modes = { "off", "pos", "anim", "both" };
+        private static readonly string[] Modes = { "off", "pos", "anim", "both", "tight", "setters" };
+        private static readonly int[] Masks = { 0, 1, 2, 3, 4, 8 };   // 1=둘 다 건너뜀, 2=애니 평가, 4=TightLate 쓰기만, 8=설정 함수·UpdatePosition 만
         private static readonly List<Sample> samples = new List<Sample>();
         private struct Sample { internal int Mode; internal double Ms; }
         private static int mode, modeFrame;
         private static bool installed, session, measuring;
-        private static long position, setters, parallax, tight, animation;
+        private static long position, setters, parallax, tight, animation, kPos, kRot, kScale;
         private static long p0, s0, x0, t0, a0, clock0, errors0;
         private static int frame0, unityErrors;
         private static string firstError;
@@ -28,19 +29,20 @@ namespace StutterFix
 
         private static void Log(string s) { Main.Entry.Logger.Log("[decofreeze] " + s); }
         private static bool Image(scrDecoration d) { return (object)d != null && d.GetType() == typeof(scrVisualDecoration); }
-        private static bool Freeze(scrDecoration d) { return (mode & 1) != 0 && Hitch.Playing && !SceneReset.Resetting && Image(d); }
+        private static bool Freeze(scrDecoration d) { return (Masks[mode] & 9) != 0 && Hitch.Playing && !SceneReset.Resetting && Image(d); }
+        private static bool FreezeTight(scrDecoration d) { return (Masks[mode] & 5) != 0 && Hitch.Playing && !SceneReset.Resetting && Image(d); }
 
         // Direct source hooks also cover the default TightLate bypass and every
         // DecoAnim backend (batch, groups, native and DecoEngine) before evaluation.
         internal static bool SkipTight(scrDecoration d)
         {
-            if (!Freeze(d)) return false;
+            if (!FreezeTight(d)) return false;
             tight++;
             return true;
         }
         internal static bool SkipAnimation()
         {
-            if ((mode & 2) == 0 || !Hitch.Playing || SceneReset.Resetting) return false;
+            if ((Masks[mode] & 2) == 0 || !Hitch.Playing || SceneReset.Resetting) return false;
             animation++;
             return true;
         }
@@ -61,18 +63,18 @@ namespace StutterFix
                 __instance.pivotOffsetVec = __1;
                 Clamp(__instance);
             }
-            setters++;
+            setters++; kPos++;
             return false;
         }
         public static bool RotationPrefix(scrDecoration __instance, float __0)
         {
             if (!Freeze(__instance)) return true;
-            __instance.rotAngle = __0; setters++; return false;
+            __instance.rotAngle = __0; setters++; kRot++; return false;
         }
         public static bool ScalePrefix(scrDecoration __instance, Vector2 __0)
         {
             if (!Freeze(__instance)) return true;
-            __instance.scaleVec = __0; setters++; return false;
+            __instance.scaleVec = __0; setters++; kScale++; return false;
         }
         public static bool ParallaxPrefix(scrParallax __instance)
         {
@@ -114,6 +116,7 @@ namespace StutterFix
             arg = arg.Trim().ToLowerInvariant();
             if (arg == "state") { State(); return; }
             if (arg == "summary") { Summary(); return; }
+            if (arg == "vis") { Vis(); return; }
             if (measuring) throw new InvalidOperationException("decofreeze: fuse end before mode/reset changes");
             if (arg == "reset")
             {
@@ -126,10 +129,27 @@ namespace StutterFix
             SetMode(next);
             State();
         }
+        // 깨어 있는 이미지 장식 중 지금 카메라에 실제로 보이는(Renderer.isVisible) 것의 비율: 안 보이는 장식의 Transform 쓰기를 미룰 수 있는지 가늠
+        private static readonly FieldInfo spriteField = AccessTools.Field(typeof(scrVisualDecoration), "spriteRenderer");
+        private static void Vis()
+        {
+            int awake = 0, visual = 0, vis = 0, off = 0, zeroAlpha = 0, moving = 0;
+            var list = Dormancy.AwakeList;
+            for (int i = 0; i < list.Count; i++)
+            {
+                var d = list[i] as scrVisualDecoration; awake++;
+                if ((object)d == null || d == null) continue;
+                var sr = spriteField.GetValue(d) as SpriteRenderer; if (sr == null) continue;
+                visual++;
+                if (sr.color.a <= 0f) zeroAlpha++;
+                if (sr.isVisible) vis++; else off++;
+            }
+            Log("VIS t=" + (scrConductor.instance != null ? scrConductor.instance.songposition_minusi.ToString("F2", Inv) : "?") + " awake=" + awake + " image=" + visual + " isVisible=" + vis + " notVisible=" + off + " zeroAlpha=" + zeroAlpha);
+        }
         private static void SetMode(int next)
         {
             mode = next; modeFrame = Time.frameCount;
-            position = setters = parallax = tight = animation = 0;
+            position = setters = parallax = tight = animation = kPos = kRot = kScale = 0;
             // Never allow TightLate's optional same-value cache to survive a freeze.
             TightLate.Invalidate();
         }
@@ -140,6 +160,7 @@ namespace StutterFix
         }
         private static void State()
         {
+            Log("KINDS pos_calls=" + kPos + " rot_calls=" + kRot + " scale_calls=" + kScale + " deferred_rotscale=" + MoveApply.RotScaleDeferred + " late_skips=" + MoveApply.LateSkips + " frames=" + Math.Max(1, Time.frameCount - modeFrame));
             Log("STATE mode=" + Modes[mode] + " hooks=" + installed + " measuring=" + measuring + " "
                 + Counts(position, setters, parallax, tight, animation, Math.Max(1, Time.frameCount - modeFrame)));
         }
@@ -168,8 +189,8 @@ namespace StutterFix
             double songEnd = scrConductor.instance == null ? double.NaN : scrConductor.instance.songposition_minusi;
             bool valid = frames > 0 && seconds > 0 && Hitch.Playing && scrConductor.instance != null
                 && songEnd >= 276 && songEnd < 277 && animErrors == 0 && unityErrors == 0 && !Edition.Dev
-                && ((mode & 1) == 0 || position - p0 + tight - t0 > 0)
-                && ((mode & 2) == 0 || animation > a0);
+                && ((Masks[mode] & 13) == 0 || position - p0 + tight - t0 + setters - s0 > 0)
+                && ((Masks[mode] & 2) == 0 || animation > a0);
             if (valid) samples.Add(new Sample { Mode = mode, Ms = ms });
             Log(string.Format(Inv, "RESULT mode={0} fps={1:F3} ms={2:F6} seconds={3:F6} valid={4} decoanim_errors={5} unity_errors={6} dev_shadow={7} {8} song_begin={10:F6} song_end={11:F6} fuse={9}",
                 Modes[mode], frames / seconds, ms, seconds, valid, animErrors, unityErrors, Edition.Dev,
@@ -181,12 +202,12 @@ namespace StutterFix
         private static void Summary()
         {
             if (measuring) throw new InvalidOperationException("decofreeze: fuse end before summary");
-            var sums = new double[4]; var ns = new int[4];
+            var sums = new double[6]; var ns = new int[6];
             foreach (var s in samples) { sums[s.Mode] += s.Ms; ns[s.Mode]++; }
-            string row = "SUMMARY complete=" + (ns[0] == 3 && ns[1] == 2 && ns[2] == 2 && ns[3] == 2)
+            string row = "SUMMARY complete=" + (ns[0] >= 3 && ns[1] >= 2 && ns[4] >= 2 && ns[5] >= 2)
                 + " averaging=arithmetic_mean_of_window_ms";
             double baseline = ns[0] > 0 ? sums[0] / ns[0] : double.NaN;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
             {
                 double mean = ns[i] > 0 ? sums[i] / ns[i] : double.NaN;
                 row += string.Format(Inv, " {0}:n={1},fps={2:F3},ms={3:F6},saved_ms={4:F6}", Modes[i], ns[i], 1000 / mean, mean, baseline - mean);

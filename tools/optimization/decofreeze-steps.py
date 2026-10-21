@@ -3,7 +3,7 @@ import argparse
 import json
 from pathlib import Path
 
-MODES = ('off', 'pos', 'anim', 'both', 'off', 'both', 'anim', 'pos', 'off')
+MODES = ('off', 'setters', 'off')
 
 
 def build(chart):
