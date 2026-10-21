@@ -1,0 +1,4 @@
+Offline audit validation: 25 checks passed. Existing log only; no game, install, build or commit.
+Summary: exactly 10 lines.
+Production sources / generator / project unchanged from HEAD ad65eab.
+Pixel transcription, ABBA arithmetic, dense cohorts and zero target passes verified.

@@ -1,3 +1,82 @@
+# Gate 2 A 6회차 분석 — 전체 장면 폴링 설계의 비용 확인 후 중단 (2026-10-21, 감사 run7)
+
+**현재 구현의 전체 장면 폴링·반복 안전 검사 설계에서 중단한다. 실측 최종 판정은 `GATE2=PIXEL_FAIL`, FPS 이득 −87.875467%다. `GATE2=PASS`는 미달성이다.** 인계의 “안 되는 이유가 설계 한계면 결과 문서에 구체적으로 적고 멈춰라”를 적용했다. 이번에는 소스·빌드 산출물·steps를 변경하지 않았다. 스캔 제거와 성능 목표 달성은 완료하지 못했다. 동일 코드 게임 재시험을 실행하거나 요청하지 않는다.
+
+`codex-al-ga-6.md` → 장부 → run5 전달 증거 → 기존 전체 로그 순으로 읽었다. 시작 HEAD는 `ad65eab`이고 시작 작업 트리는 깨끗했다. 작업 중 외부에서 추가된 `gate2-common.md`의 긴급 지시도 읽고 그 diff를 보존했다. 게임 실행·설치·커밋·푸시·설정 변경은 하지 않았다. 게임 수치는 기존 `E:/StutterFixWork/night-results/al-ga-5.log`의 재분석이다. 전달 파일은 후반 발췌이므로 세 픽셀 표본과 첫 세 FPS 표본을 전체 로그에서 보완했다. [원본 SHA256·행 번호·발췌·집계·현재 소스 해시](gate2-A-run7-analysis.txt)를 남겼다.
+
+## 끝까지 완료된 시험의 실제 결과
+
+| 시점 | 소유 / 구간 | A↔B 변경 픽셀 / 최대 차이 | 잡음 / A↔A2 | stable |
+|---|---:|---:|---:|---|
+| 262초 | 1,490 / 1,113 | 391,798 / 6 | 0 / 0 | True |
+| 270초 | 1,518 / 1,153 | 121,812 / 7 | 0 / 0 | True |
+| 276초 | 17 / 15 | 0 / 0 | 0 / 0 | True |
+
+| 262→276초 ABBA | FPS | ms/프레임 | 프레임 수 |
+|---|---:|---:|---:|
+| off 0 | 122.331735 | 8.174494 | 1,705 |
+| on 1 | 14.682848 | 68.106680 | 204 |
+| on 2 | 14.738163 | 67.851063 | 204 |
+| off 3 | 120.325125 | 8.310816 | 1,683 |
+
+정책과 같은 산술평균 FPS는 off **121.328430**, on **14.7105055**, 이득 **−87.875467028%**다. +15% 목표는 **139.5276945 FPS**, 그 역수에 해당하는 전체 프레임 예산은 **7.167035932ms**다. 예산 환산값을 독립 측정 프레임 시간으로 쓰지 않는다. 이번에는 132단계가 끝까지 진행됐고 마지막에 `variant=A on=False`를 남겼다. 이전 `GPU readback exceeded 15s`는 이번 실행의 중단 원인이 아니다.
+
+Prof는 **873,985표본 / set_pct=70.049131% / valid=True**다. DecoAnim.Step의 Apply/OnUpdate 표본이며, PairXY/GroupStep 억제·StepPair/OnComplete·setter 이후 엔진 비용 제외 한계는 유지한다.
+
+## 긴급 1: 스캔 범위와 비용, 증분 전환 설계의 결손
+
+- `LiveDecoRenderer.Register`(197행)는 `Resources.FindObjectsOfTypeAll<Renderer>()`에서 scene 렌더러를 등록한다. 로그의 registry는 **157,254개**다. FindObjects를 매 프레임 반복하는 코드는 아니다.
+- `RenderFrame`(631~634행)은 **매 프레임 Scan**을 부른다. Scan(477~539행)은 sources 전체를 순회하고 live 소스의 재질 슬롯·정렬 키·소유 상태를 갱신한다. 장식 28,828개에 한정된 순회가 아니다.
+- `GeometryReason`(233행)은 소유 계층·자식 Transform·스크립트·렌더러 상태를 읽는다. `SkipLate`(398행)는 TightLate·UpdatePosition·회전/크기 setter·Parallax 경로에서 같은 검사를 다시 부른다. PreCull의 cost 밖에도 안전 검사와 Harmony 호출 비용이 남는다.
+- Reconcile은 topology 변경 때만 돈다. 측정 창 두 개에서 transition은 **각 204회**, created 합계 **10,027 / 9,861**, destroyed 합계 **11,061 / 10,888**이다. 누적 생성·파괴 횟수이며 동시 존재 개수가 아니다. 멤버·버전·키·소유 변화별 기여량은 로그에 없다.
+
+정지 8프레임 표본의 scan은 262초 **36.045113ms**, 270초 **38.227325ms**, 276초 **27.876138ms**다. 276초에는 소유 17개, vertex **0.019550ms**, upload **0.000850ms**, 업로드 호출 **0**, reconcile **0**이었다. 메시 작업이 거의 없어도 전 장면 스캔은 남는다. 이 관측 스캔 시간은 목표 전체 프레임 예산 7.167ms를 넘는다. 정점·업로드 최적화만으로 현재 설계의 목표를 달성할 근거가 없다. 이를 다른 구현의 물리적 하한으로 일반화하지 않는다.
+
+재생 창 시작과 FPS 종료 사이에 출력된 **samples=1인 cost 표본만** 별도로 집계했다. on 1은 172건, on 2는 171건이다. 전체 204프레임을 완전히 추적한 자료는 아니다.
+
+| 출력 표본 평균 ms | on 1 (172건) | on 2 (171건) |
+|---|---:|---:|
+| scan | 46.211451 | 46.172319 |
+| reconcile | 4.241067 | 4.206554 |
+| vertex | 1.656350 | 1.649179 |
+| upload | 0.676295 | 0.682586 |
+| 네 구간 합계 | 52.785163 | 52.710638 |
+| 같은 창 전체 FPS 측정 프레임 시간 | 68.106680 | 67.851063 |
+
+등록 갱신은 scan에 포함되어 별도 값이 없다. setter/SkipLate/Harmony·원래 게임·엔진·로그·대기 시간도 분리되지 않았다. 표본 범위도 달라 표의 차이를 Harmony 비용으로 간주할 수 없다. 정확한 켬/끔 차이 분해는 **미측정**이다. 호출마다 Stopwatch를 넣거나 추정 잔여를 확정 비용으로 기록하지 않았다.
+
+소유 1,400~1,600개인 단일 프레임 표본은 **109 / 115건**이다. vertex 중앙값 **1.689700 / 1.678800ms**, upload 중앙값 **0.678900 / 0.674800ms**, 두 목표(≤0.5/≤0.4ms) 동시 충족은 **0/109, 0/115**다. 이 표본에서 dirty_images=owned, upload_calls=runs였다. 정지 화면의 더티 생략은 실제 움직이는 이 집합의 갱신을 없애지 못했다.
+
+**스캔 삭제를 구현하지 않은 이유:** 현재 BoundaryPrefix는 장식 Setup/SetSprite/SetTile/SetBlendMode/SetVisible/SetMaskingType/SetTextureScaleMultiplier/SetDepth 일부만 감시한다. Source에는 비소유 타일·행성·기타 렌더러도 있다. 이들의 활성·enabled·forceRenderingOff·재질 슬롯·정렬·거리·계층 변경을 모두 알리는 dirty 등록 경로가 없다. 설치 CoreModule의 [Renderer API 목록](gate2-A-run7-renderer-api.log)에도 이 변경을 통합 통지하는 add_/remove_ 이벤트가 없다. 이 목록을 모든 다른 Unity 타입·콜백 기능의 부재 증명으로 확대하지 않는다.
+
+현재 훅만으로 전환 시 Scan을 돌리면 비소유 장벽 변경을 놓칠 수 있다. GameObject 활성 콜백으로도 Renderer.enabled·재질·정렬 변경을 전부 포괄하지 못한다. 소유 장식 dirty만 추적하거나 검사 주기를 늘리는 것으로 변경 프레임의 정렬 안전성이 확보되지 않는다. 필요한 작업은 **맵/scene 입장에서 변경 작성 경로를 분류하고 소유·비소유 렌더러 모두의 등록/dirty/파괴/reset 프로토콜을 만드는 설계 변경**이다. 이를 구현한 것으로 기록하지 않는다. 중단 범위는 현재 전 장면 폴링·반복 검사 구현이다. 변형 A의 모든 가능한 설계가 불가능하다고 결론 내리지 않는다.
+
+steady GC도 통과로 기록하지 않는다. 단일 프레임 표본의 heap_delta 중앙값은 **935,936 / 921,600바이트**이고, 코드의 CreateRun/멤버·인덱스 배열 생성이 계속 발생한다. heap_delta는 다른 관리 할당·GC도 섞인 힙 변화다. allocated_bytes=0만으로 이 전환 경로의 무할당을 증명할 수 없다.
+
+## 긴급 2: 소유 18개의 원인을 판단할 수 있는 범위
+
+276초 정지 비교는 **새 Begin부터 소유 17개**였고(원본 755~758행), 입장 검사도 **count=17 / excluded=0**이다. 이후 정지 8프레임도 17개다. 끝 시점의 작은 소유 수를 누적 vertex/bounds 오제외 1,400개로 설명할 수 없다. 재생 끝의 18개와 262·270초 약 1,500개는 서로 다른 시점이다.
+
+소유 해제 경로는 Scan의 !Live·GeometryReason/스프라이트/재질 변경, BoundaryPrefix, TryLogicalColor의 alpha≤0이다. Live는 원본 enabled/active/layer/forceRenderingOff를 보고 InvisibleSkip도 알파에 따라 forceRenderingOff를 바꾼다. 기존 로그에는 !Live 세부 사유별 해제 수와 시점별 전체 live 후보 분모가 없다. **17~18개가 곡의 실제 표시 집합인지, 상호작용에 의한 과소 소유인지의 완전한 원인 분리는 미확정**이다. 사유별 관측 없이 가시성·알파 제외를 없애거나 소유 1,500개를 강제하지 않았다.
+
+## 긴급 3: 픽셀 회귀와 코드/IL 확인
+
+이번 262초 **391,798픽셀/최대6**은 이전 run4의 **674/최대2**보다 크다. 시각·소유 집합이 달라 엄밀한 한 변수 대조는 아니다. 5회차에는 Float32 색과 카메라 캐시/계산 등이 함께 바뀌었다. Float32이면 원본 최종 정점/셰이더 입력까지 같다는 이전 가설은 이번 결과로 지지되지 않는다. 관리 SpriteRenderer.color setter가 Float32인 사실만으로 내부 렌더링 정밀도까지 확정할 수 없다.
+
+세 시점 noise=0·restored_fields=0·aa2_out=0이므로 기존 잡음 정지나 GPU 제한 시간을 다시 수정할 근거는 없다. 최대 차이 6/7은 PIXEL_NEAR(최대2)도 넘는다. 색·카메라 기저 계산·CPU 월드 정점과 원본 GPU 변환 반올림·정렬의 기여량은 분리되지 않았다. 이미 실패한 Color32 코드로 단순 복귀하거나 비교 임계·마스크를 늘리지 않았다. 픽셀 0 기준을 유지한다.
+
+지정 디컴파일의 `scrDecorationManager.LateUpdate → LogicUpdate → UpdatePosition`, SetPosition/SetRotation/SetScale, scrParallax.SetTrans, scrVisualDecoration.ApplyColor를 설치 DLL IL과 새로 대조했다. [manager](gate2-A-run7-manager-il.log) · [decoration](gate2-A-run7-decoration-il.log) · [parallax](gate2-A-run7-parallax-il.log) · [visual](gate2-A-run7-visual-il.log). [게임 SHA256](gate2-A-run7-game-hash.txt)는 기존 **F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF**와 같다. ilscan은 메타데이터만 읽었고 게임 메서드를 실행하지 않았다. scrVisualDecoration이 Renderer.enabled·SetActive·sortingOrder를 직접 쓰는 것도 확인했다.
+
+## 검증 상태와 종료
+
+이번 변경은 결과 문서·장부·10줄 요약과 감사 기록이다. 소스·생성기·바이너리를 바꾸지 않아 같은 빌드/fixture를 반복하지 않았다. 기존 run6의 DEV/Player/PlayerAuto 빌드 **오류 0/0/0**, LoadCheck **틀림 0/0/0**, Player 제외 metadata **36건**, 패치 대상 **17개**, 계층 **2,729**·바운드 **482**·스크립트 **15**·캐시 **40**·업로드 **32**, 구간 **106,460**·정책 **18**, FrameCompare **11/15/15/17/21/2**, MatShare **25,401**, 생성기 **24/25/132** 통과 로그를 확인했다. 이들은 이전 오프라인 결과다. 이번 신규 검증은 로그의 판정/산술 재계산·설치 DLL IL 감사·git diff --check다. [감사 검증 25건](gate2-A-run7-validation.txt)은 픽셀 전사·ABBA 산술·소유 표본·목표 미충족·생산 소스/생성기/프로젝트의 HEAD 동일성·요약 정확히 10줄을 확인했다.
+
+워크트리에 없는 로드맵과 freeze 결과는 `E:/StutterFixWork/StutterFix/docs/ROADMAP-EXTREME-20261021.md`, `E:/StutterFixWork/wt-freeze/docs/handoff/codex-freeze-20261021-result.md`에서 읽었다. freeze 문서 자체에는 실측이 없으며 공통 인계의 3.69ms 배경값을 신규 측정으로 쓰지 않았다.
+
+**현재 설계 한계 중단. 스캔 제거·소유 감소 세부 원인 수정·실픽셀 0·FPS +15%·수명 검증은 완료하지 못했다.** 자동 루프 재실행과 동일 코드 재시험 권고는 하지 않는다. 기본 꺼짐·Player 제외·판정 기준·기존 안전 검사를 유지했다. 메모리·스킬 파일은 변경하지 않았다.
+
+---
+
 # Gate 2 A 5회차 수정 — 캡처 제한 시간 분리·정점 캐시·더티 업로드 (2026-10-21, 로그 run6)
 
 **코드 수정과 오프라인 검증 완료. GATE2=PASS 미달성. 수정 후 실픽셀·FPS·정점 0.5ms/업로드 0.4ms 목표는 미측정이다.** `codex-al-ga-5.md` → 장부 → run4 증거 순으로 읽었다. 시작 HEAD는 `ba29aa8`이며 처음 확인한 작업 트리는 깨끗했다. 기존 계층·ToggleVisible·바운드·PlanetSprite 정지를 유지했다. 게임 실행·설치·커밋·푸시・`.codex/config.toml` 수정은 하지 않았다.

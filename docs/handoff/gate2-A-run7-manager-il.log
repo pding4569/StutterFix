@@ -1,0 +1,410 @@
+﻿== scrDecorationManager
+  get_instance
+    정적필드 읽기 scrDecorationManager::_instance
+    호출 UnityEngine.Object::op_Equality
+    호출 제네릭 UnityEngine.Object::FindAnyObjectByType
+    정적필드 쓰기 scrDecorationManager::_instance
+  GetDecoration
+    호출 scrDecorationManager+<>c__DisplayClass29_0::.ctor
+    필드 쓰기 scrDecorationManager+<>c__DisplayClass29_0::source
+    호출 scrDecorationManager::get_instance
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 scrDecorationManager+<>c__DisplayClass29_0::<GetDecoration>b__0
+    호출 제네릭 System.Predicate`1::.ctor
+    호출 제네릭 System.Collections.Generic.List`1::Find
+  GetDecoration
+    호출 scrDecorationManager::get_instance
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+  GetDecorationIndex
+    호출 scrDecorationManager::get_instance
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  GetTaggedDecorations
+    호출 scrDecorationManager::<GetTaggedDecorations>b__32_0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Where
+    호출 scrDecorationManager::<GetTaggedDecorations>b__32_1
+    호출 제네릭 System.Linq.Enumerable::SelectMany
+    호출 제네릭 System.Linq.Enumerable::Distinct
+  GetTaggedDecorations
+    호출 scrDecorationManager::GetTaggedDecorations
+    정적필드 읽기 제네릭 scrDecorationManager+<>c__33`1::<>9__33_0
+    정적필드 읽기 제네릭 scrDecorationManager+<>c__33`1::<>9
+    호출 제네릭 scrDecorationManager+<>c__33`1::<GetTaggedDecorations>b__33_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 제네릭 scrDecorationManager+<>c__33`1::<>9__33_0
+    호출 제네릭 System.Linq.Enumerable::Where
+    호출 제네릭 System.Linq.Enumerable::Cast
+  GetTaggedDecorations
+    호출 scrDecorationManager::GetTaggedDecorations
+  GetTaggedDecorations
+    호출 제네릭 scrDecorationManager::GetTaggedDecorations
+  Awake
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 scrDecorationManager::taggedDecorations
+    필드 쓰기 scrDecorationManager::decorationsWithSameTexture
+    필드 쓰기 scrDecorationManager::hitboxEventTagDecorations
+    정적필드 읽기 scnGame::instance
+    호출 UnityEngine.Object::op_Inequality
+    호출 ADOBase::get_customLevel
+    필드 읽기 scnGame::imgHolder
+    필드 쓰기 scrDecorationManager::imageHolder
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::GetEnumerator
+    호출 System.Collections.IEnumerator::get_Current
+    호출 UnityEngine.Object::get_name
+    호출 System.String::op_Equality
+    호출 System.String::Split
+    필드 읽기 scrDecorationManager::taggedDecorations
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 UnityEngine.Component::GetComponentInChildren
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  Update
+    호출 ADOBase::get_isEditingLevel
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 scrDecoration::CheckHitboxHit
+    호출 scrCamera::get_instance
+    필드 쓰기 scrCamera::lockCustomFrameUpdate
+  LateUpdate
+    호출 ADOBase::get_isEditingLevel
+    호출 scrDecorationManager::UpdateBordersSizes
+    호출 scrDecorationManager::UpdateHitboxSizes
+    호출 scrDecorationManager::UpdateDecorationTilingLateUpdate
+    정적필드 읽기 SpriteAlphaMaskUtils::doRefreshMaskCache
+    호출 SpriteAlphaMaskUtils::RefreshMaskCache
+    호출 scrDecorationManager::UpdateAlphaMaskCacheLateUpdate
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::disableV15Features
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::get_Item
+    호출 UnityEngine.Object::op_Inequality
+    호출 scrDecoration::LogicUpdate
+    호출 scrCamera::get_instance
+    호출 scrCamera::CheckUpdateFrameRateScreen
+  ScaleSprite
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Transform::set_localScale
+  ShowEmptyDecorations
+    호출 scrDecorationManager::get_instance
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrDecoration::sourceLevelEvent
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    필드 읽기 scrDecoration::decType
+    필드 읽기 scrVisualDecoration::spriteRenderer
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    필드 읽기 scrDecorationManager::defaultSprite
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.SpriteRenderer::set_sprite
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  CreateDecoration
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 ADOBase::IsNotAMikoSkipMandatorySprite
+    호출 System.String::StartsWith
+    호출 ADOBase::get_isUnityEditor
+    호출 ADOBase::get_isOfficialLevel
+    호출 System.String::Substring
+    필드 읽기 scrDecorationManager::prefab_prefabDecoration
+    필드 읽기 scrDecorationManager::prefab_visualDecoration
+    필드 읽기 scrDecorationManager::prefab_textDecoration
+    호출 ADOFAI.LevelEvent::GetStringLocalized
+    필드 읽기 scrDecorationManager::prefab_particleDecoration
+    필드 읽기 scrDecorationManager::prefab_objectDecoration
+    호출 System.Object::ToString
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Component::get_transform
+    호출 제네릭 UnityEngine.Object::Instantiate
+    호출 UnityEngine.Object::set_name
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+    호출 System.String::Concat
+    호출 제네릭 UnityEngine.Resources::Load
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.GameObject::.ctor
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Quaternion::get_identity
+    호출 제네릭 GOExtensions::GetOrAddComponent
+    호출 제네릭 RDUtils::ToEnum
+    필드 쓰기 scrPrefabDecoration::prefabType
+    필드 쓰기 scrDecoration::pivotTrans
+    필드 쓰기 scrDecoration::childTransform
+    필드 쓰기 scrDecoration::parallax
+    호출 UnityEngine.Behaviour::set_enabled
+    필드 쓰기 scrDecoration::manager
+    필드 쓰기 scrDecoration::decType
+    호출 scrDecoration::Setup
+    호출 scrDecoration::UpdateHitbox
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::get_Count
+    호출 제네릭 System.Collections.Generic.List`1::Insert
+    호출 scrDecorationManager::TryAddDecorationToDictionary
+  ClearDecorations
+    필드 읽기 scrDecorationManager::taggedDecorations
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Clear
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    필드 읽기 scrDecorationManager::decorationsWithSameTexture
+    필드 읽기 scrDecorationManager::hitboxEventTags
+    호출 제네릭 System.Collections.Generic.HashSet`1::Clear
+    필드 읽기 scrDecorationManager::hitboxEventTagDecorations
+    호출 UnityEngine.Component::get_gameObject
+    호출 제네릭 UnityEngine.GameObject::GetComponentsInChildren
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Object::DestroyImmediate
+  TryAddDecorationToDictionary
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 System.String::IsNullOrEmpty
+    필드 읽기 scrDecorationManager::decorationsWithSameTexture
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+    호출 제네릭 System.Collections.Generic.List`1::Add
+  UpdateDecorationTiling
+    필드 읽기 scrDecorationManager::textureKeysToUpdate
+    호출 제네릭 System.Collections.Generic.HashSet`1::Contains
+    호출 제네릭 System.Collections.Generic.HashSet`1::Add
+  ForceUpdateAlphaMaskCache
+    필드 읽기 scrDecorationManager::decorationsToUpdateAlphaMaskCache
+    호출 제네릭 System.Collections.Generic.HashSet`1::Add
+  ShowSelectionBorders
+    호출 scrDecorationManager::GetDecoration
+    호출 scrDecoration::ShowSelectionBorders
+    호출 scrDecoration::ShowHitboxBorders
+  ShowHoverBorders
+    호출 scrDecorationManager::GetDecoration
+    호출 UnityEngine.Object::op_Equality
+    호출 scrDecoration::ShowSelectionBorders
+    필드 쓰기 scrDecorationManager::hoveredDecoration
+    호출 ADOBase::get_editor
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+  ClearDecorationBorders
+    호출 scrDecorationManager::get_instance
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrDecoration::ShowSelectionBorders
+    호출 scrDecoration::ShowHitboxBorders
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  ToggleClickableBoxColliderForLevelEditor
+    호출 scrDecorationManager::get_instance
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrDecoration::SetCollider
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  UpdateDecorationTilingLateUpdate
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::disableV15Features
+    필드 읽기 scrDecorationManager::textureKeysToUpdate
+    호출 제네릭 System.Collections.Generic.HashSet`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::get_Current
+    호출 RDEditorUtils::IsNullOrEmpty
+    필드 읽기 scrDecorationManager::decorationsWithSameTexture
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrVisualDecoration::spriteRenderer
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Renderer::get_material
+    필드 읽기 scrVisualDecoration::repeatX
+    필드 읽기 scrVisualDecoration::repeatY
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Sprite::get_texture
+    호출 UnityEngine.Texture::set_wrapModeU
+    호출 UnityEngine.Texture::set_wrapModeV
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::MoveNext
+    호출 제네릭 System.Collections.Generic.HashSet`1::Clear
+  UpdateAlphaMaskCacheLateUpdate
+    필드 읽기 scrDecorationManager::decorationsToUpdateAlphaMaskCache
+    호출 제네릭 System.Collections.Generic.HashSet`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::get_Current
+    호출 SpriteAlphaMaskUtils::UpdateAlphaMaskCache
+    호출 제네릭 System.Collections.Generic.HashSet`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+    호출 제네릭 System.Collections.Generic.HashSet`1::Clear
+  UpdateBordersSizes
+    호출 scrCamera::get_instance
+    필드 읽기 scrCamera::camobj
+    호출 UnityEngine.Camera::get_orthographicSize
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 ADOBase::get_editor
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::AddRange
+    필드 읽기 scrDecorationManager::hoveredDecoration
+    호출 scnEditor::get_decorations
+    호출 제네릭 System.Collections.Generic.List`1::Contains
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1::Remove
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrDecorationManager::GetDecoration
+    필드 읽기 scrVisualDecoration::bordersRenderer
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_localScale
+    필드 읽기 scrVisualDecoration::spriteRenderer
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Sprite::get_pixelsPerUnit
+    호출 UnityEngine.Sprite::get_bounds
+    호출 UnityEngine.Bounds::get_size
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 ExtensionMethods::xy
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 UnityEngine.Vector2::op_Division
+    필드 읽기 UnityEngine.Vector3::x
+    호출 UnityEngine.Mathf::Sign
+    필드 읽기 UnityEngine.Vector3::y
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.Vector2::op_Addition
+    필드 읽기 scrDecoration::cachedBorderSize
+    필드 읽기 UnityEngine.Vector2::x
+    호출 UnityEngine.Mathf::Approximately
+    필드 읽기 UnityEngine.Vector2::y
+    호출 UnityEngine.SpriteRenderer::set_size
+    필드 쓰기 scrDecoration::cachedBorderSize
+    호출 UnityEngine.Mathf::Abs
+    호출 UnityEngine.Mathf::Max
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Transform::set_localScale
+    필드 읽기 scrTextDecoration::bordersRenderer
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 UnityEngine.UI.Graphic::get_rectTransform
+    호출 UnityEngine.Vector2::get_zero
+    호출 UnityEngine.RectTransform::set_sizeDelta
+    호출 UnityEngine.Vector3::get_zero
+    필드 읽기 scrTextDecoration::bordersSetSize
+    호출 UnityEngine.Vector2::get_one
+    필드 읽기 scrObjectDecoration::bordersRenderer
+    필드 읽기 scrDecoration::scaleVec
+    필드 읽기 scrObjectDecoration::bordersScaleMultiplier
+    필드 읽기 ADOFAI.LevelEvent::eventType
+    필드 읽기 scrParticleDecoration::selectionBorders
+    필드 읽기 scrParticleDecoration::scale
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  UpdateHitboxSizes
+    호출 ADOBase::get_editor
+    필드 읽기 scnEditor::selectedDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    호출 scrDecorationManager::GetDecoration
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Transform::get_localScale
+    필드 읽기 scrVisualDecoration::hitboxRenderer
+    필드 읽기 scrVisualDecoration::spriteRenderer
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    필드 읽기 scrDecoration::hitboxType
+    필드 읽기 scrDecoration::hitboxScale
+    필드 읽기 scrDecoration::hitboxOffset
+    필드 읽기 scrDecoration::hitboxRotation
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_activeSelf
+    호출 UnityEngine.Camera::get_main
+    호출 UnityEngine.Camera::get_orthographicSize
+    호출 UnityEngine.Sprite::get_bounds
+    호출 UnityEngine.Bounds::get_size
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 ExtensionMethods::xy
+    호출 UnityEngine.Vector2::op_Division
+    호출 UnityEngine.SpriteRenderer::set_size
+    호출 UnityEngine.Vector2::get_one
+    호출 UnityEngine.Vector2::get_magnitude
+    필드 읽기 UnityEngine.Vector3::x
+    호출 UnityEngine.Mathf::Abs
+    필드 읽기 UnityEngine.Vector3::y
+    호출 UnityEngine.Vector2::.ctor
+    필드 읽기 UnityEngine.Vector2::x
+    호출 UnityEngine.Mathf::Max
+    필드 읽기 UnityEngine.Vector2::y
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Transform::set_localScale
+    호출 UnityEngine.Transform::set_localPosition
+    호출 UnityEngine.Vector3::get_zero
+    호출 UnityEngine.Transform::set_localEulerAngles
+    호출 UnityEngine.Vector3::get_forward
+    호출 UnityEngine.Vector3::op_UnaryNegation
+    호출 UnityEngine.Vector3::op_Multiply
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  ResetDecorations
+    필드 읽기 scrDecorationManager::taggedDecorations
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Clear
+    필드 읽기 scrDecorationManager::hitboxEventTags
+    호출 제네릭 System.Collections.Generic.HashSet`1::Clear
+    필드 읽기 scrDecorationManager::hitboxEventTagDecorations
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrDecoration::sourceLevelEvent
+    호출 scrDecoration::Setup
+    필드 쓰기 scrDecoration::hitOnce
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  FinishUpdateDecorations
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrDecoration::placementType
+    호출 scrDecoration::SetPlacementType
+    필드 읽기 scrDecoration::startPos
+    필드 읽기 scrDecoration::pivotOffsetVec
+    호출 scrDecoration::SetPosition
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  ResetDecorationHitboxEvents
+    필드 읽기 scrDecorationManager::allDecorations
+    호출 제네릭 System.Collections.Generic.List`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::get_Current
+    필드 읽기 scrDecoration::hitboxEvents
+    호출 제네릭 System.Collections.Generic.List`1::Clear
+    호출 제네릭 System.Collections.Generic.List`1+Enumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  .ctor
+    호출 제네릭 System.Collections.Generic.HashSet`1::.ctor
+    필드 쓰기 scrDecorationManager::hitboxEventTags
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    필드 쓰기 scrDecorationManager::hitboxCollidersToDecorations
+    필드 쓰기 scrDecorationManager::textureKeysToUpdate
+    필드 쓰기 scrDecorationManager::decorationsToUpdateAlphaMaskCache
+    필드 쓰기 scrDecorationManager::filterOnRenderImageCache
+    호출 ADOBase::.ctor
+  <GetTaggedDecorations>b__32_0
+    필드 읽기 scrDecorationManager::taggedDecorations
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+  <GetTaggedDecorations>b__32_1
+    필드 읽기 scrDecorationManager::taggedDecorations
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item

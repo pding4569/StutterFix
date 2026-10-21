@@ -1,0 +1,107 @@
+Gate 2 A iteration 6 / offline audit run7. Existing evidence only; no game invocation.
+source=E:\StutterFixWork\night-results\al-ga-5.log
+sha256=4f05559b82c683570bf7ab586370f2b0fee41e2b340e86fbc81b0c864430f939
+line_count=7647
+
+L335: [StutterFix] [livedeco2] PROFILE samples=873985 set_pct=70.049131 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+L425: [StutterFix] [framecmp] noise outside=0 inside=0 rendererStateEqual=True warning=False; noise floor advisory, continuing
+L454: [StutterFix] [livedeco] begin variant=A renderer_version=5 color_format=Float32x4 vertex_stride=36 dirty_policy=exact-logical-pose-and-color bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=1490 runs=1113 registry=157254 transitions=1 restored=0 error=none atlas=0
+L472: [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=1490 runs=1113 vertex_ms=0.694400 upload_ms=0.069988 reconcile_ms=0.000000 scan_ms=36.045113 upload_calls=0.000 dirty_images=0.000 skipped_uploads=1113.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=8 heap_delta=40960 heap_scope=frame-work-excludes-cost-and-vertex-logs
+L501: [StutterFix] [framecmp] gate2-baseline noise_valid=True noise_out=0 noise_state_stable=True restored_fields=0 aa2_out=0
+L502: [StutterFix] [livedeco2] PIXEL t=262 song=262.017840 ab_out=391798 maxdiff=6 aa2_out=0 stable=True regions=(1568,832,32,32):4755;(896,352,32,32):4668;(928,352,32,32):3899;(864,352,32,32):3545;(1888,512,32,32):3296
+L579: [StutterFix] [framecmp] noise outside=0 inside=0 rendererStateEqual=True warning=False; noise floor advisory, continuing
+L609: [StutterFix] [livedeco] begin variant=A renderer_version=5 color_format=Float32x4 vertex_stride=36 dirty_policy=exact-logical-pose-and-color bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=1518 runs=1153 registry=157254 transitions=2 restored=1490 error=none atlas=0
+L626: [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=1518 runs=1153 vertex_ms=0.835125 upload_ms=0.105613 reconcile_ms=0.000000 scan_ms=38.227325 upload_calls=0.000 dirty_images=0.000 skipped_uploads=1153.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=8 heap_delta=0 heap_scope=frame-work-excludes-cost-and-vertex-logs
+L654: [StutterFix] [framecmp] gate2-baseline noise_valid=True noise_out=0 noise_state_stable=True restored_fields=0 aa2_out=0
+L655: [StutterFix] [livedeco2] PIXEL t=270 song=270.026660 ab_out=121812 maxdiff=7 aa2_out=0 stable=True regions=(896,352,32,32):4797;(544,384,32,32):4770;(928,352,32,32):4482;(1856,544,32,32):4308;(544,416,32,32):4131
+L732: [StutterFix] [framecmp] noise outside=0 inside=0 rendererStateEqual=True warning=False; noise floor advisory, continuing
+L758: [StutterFix] [livedeco] begin variant=A renderer_version=5 color_format=Float32x4 vertex_stride=36 dirty_policy=exact-logical-pose-and-color bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=17 runs=15 registry=157254 transitions=3 restored=3008 error=none atlas=0
+L775: [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=17 runs=15 vertex_ms=0.019550 upload_ms=0.000850 reconcile_ms=0.000000 scan_ms=27.876138 upload_calls=0.000 dirty_images=0.000 skipped_uploads=15.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=True allocated_bytes=0 steady_allocated_bytes=0 steady_samples=8 heap_delta=0 heap_scope=frame-work-excludes-cost-and-vertex-logs
+L803: [StutterFix] [framecmp] gate2-baseline noise_valid=True noise_out=0 noise_state_stable=True restored_fields=0 aa2_out=0
+L804: [StutterFix] [livedeco2] PIXEL t=276 song=276.005328 ab_out=0 maxdiff=0 aa2_out=0 stable=True regions=
+L842: [StutterFix] [livedeco2] FPS mode=off index=0 fps=122.331735 ms=8.174494 frames=1705 elapsed_s=13.937512 song_begin=262.060504 song_end=276.004290 valid=True
+L889: [StutterFix] [livedeco] begin variant=A renderer_version=5 color_format=Float32x4 vertex_stride=36 dirty_policy=exact-logical-pose-and-color bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=164 runs=97 registry=157254 transitions=4 restored=3025 error=none atlas=0
+L3770: [StutterFix] [livedeco2] FPS mode=on index=1 fps=14.682848 ms=68.106680 frames=204 elapsed_s=13.893763 song_begin=262.145831 song_end=276.044512 valid=True
+L4233: [StutterFix] [livedeco] begin variant=A renderer_version=5 color_format=Float32x4 vertex_stride=36 dirty_policy=exact-logical-pose-and-color bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=178 runs=105 registry=157254 transitions=416 restored=17277 error=none atlas=0
+L7145: [StutterFix] [livedeco2] FPS mode=on index=2 fps=14.738163 ms=67.851063 frames=204 elapsed_s=13.841617 song_begin=262.209826 song_end=276.044512 valid=True
+L7611: [StutterFix] [livedeco2] FPS mode=off index=3 fps=120.325125 ms=8.310816 frames=1683 elapsed_s=13.987104 song_begin=262.027026 song_end=276.004717 valid=True
+L7619: [StutterFix] [livedeco2] GATE2=PIXEL_FAIL reason=outside_pixels_changed gain_pct=-87.875467 variant=A on=False
+
+off_arithmetic_mean_fps=121.328430000
+on_arithmetic_mean_fps=14.710505500
+gain_pct=-87.875467028
+target_fps=139.527694500
+target_frame_ms=7.167035932
+The target frame time is the reciprocal of the arithmetic FPS target, not an independently measured frame-time average.
+
+window=1: only samples=1 cost reports emitted after window begin and before FPS end; not all frames.
+cost_reports=172 line_first=2295 line_last=3730
+owned: min=858.000000 median=1490.500000 mean=1470.087209 max=1705.000000
+runs: min=655.000000 median=1133.500000 mean=1143.168605 max=1503.000000
+vertex_ms: min=0.975300 median=1.679050 mean=1.656350 max=2.113300
+upload_ms: min=0.347800 median=0.673050 mean=0.676295 max=1.016500
+reconcile_ms: min=2.177600 median=4.321350 mean=4.241067 max=6.415500
+scan_ms: min=35.598300 median=45.272950 mean=46.211451 max=70.926200
+upload_calls: min=655.000000 median=1133.500000 mean=1143.168605 max=1503.000000
+dirty_images: min=858.000000 median=1490.500000 mean=1470.087209 max=1705.000000
+heap_delta: min=20480.000000 median=935936.000000 mean=1106420.093023 max=3600384.000000
+mesh_targets_met_reports=0/172; mixed ownership sizes, not an N=1500 benchmark
+transition_reports=204 created_sum=10027 destroyed_sum=11061; sums of logged transitions, not live object counts
+owned_1400_1600_single_frame_reports=109
+owned_1400_1600 vertex_ms: min=1.540100 median=1.689700 max=1.915800
+owned_1400_1600 upload_ms: min=0.571200 median=0.678900 max=0.892700
+owned_1400_1600 scan_ms: min=36.505900 median=45.715300 max=70.926200
+owned_1400_1600 mesh_targets_met=0/109
+
+window=2: only samples=1 cost reports emitted after window begin and before FPS end; not all frames.
+cost_reports=171 line_first=5677 line_last=7104
+owned: min=856.000000 median=1470.000000 mean=1450.345029 max=1671.000000
+runs: min=638.000000 median=1122.000000 mean=1129.888889 max=1474.000000
+vertex_ms: min=0.963900 median=1.664900 mean=1.649179 max=2.202100
+upload_ms: min=0.344700 median=0.670200 mean=0.682586 max=1.038000
+reconcile_ms: min=1.944800 median=4.238600 mean=4.206554 max=5.921400
+scan_ms: min=35.820000 median=45.166000 mean=46.172319 max=68.444800
+upload_calls: min=638.000000 median=1122.000000 mean=1129.888889 max=1474.000000
+dirty_images: min=856.000000 median=1470.000000 mean=1450.345029 max=1671.000000
+heap_delta: min=32768.000000 median=921600.000000 mean=1101033.543860 max=4071424.000000
+mesh_targets_met_reports=0/171; mixed ownership sizes, not an N=1500 benchmark
+transition_reports=204 created_sum=9861 destroyed_sum=10888; sums of logged transitions, not live object counts
+owned_1400_1600_single_frame_reports=115
+owned_1400_1600 vertex_ms: min=1.532300 median=1.678800 max=2.202100
+owned_1400_1600 upload_ms: min=0.569900 median=0.674800 max=0.981100
+owned_1400_1600 scan_ms: min=37.035200 median=45.273400 max=56.544400
+owned_1400_1600 mesh_targets_met=0/115
+workspace_sha256 LiveDecoRenderer.cs 7bf4ef689495530fdc0306f23d40383e8a6fb159665406d5d4569dbc4f182f07
+workspace_sha256 LiveDecoGeometry.cs 9c153965dad03d165d5500afdd2c642e02cebf3f32ffbf984522ed962010803c
+workspace_sha256 LiveDecoScripts.cs eed23e4608eabc2652834a2480c3fc9108e14981fea69faba9242f27933bcf6c
+workspace_sha256 LiveDecoGate2Policy.cs 6f90edd30982e8b867ed0efa04150a9caf9d0617ca3b249790a6d39714494297
+workspace_sha256 DecoAnim.cs da81ce57e4422e46b0e69e0c48e96de9babb8242ddc434b61261c2810ea27ff6
+workspace_sha256 docs/handoff/ga-autoloop-run5-evidence.txt e92fd9ebf07176945cd5eadee5be56190bbb747a69406f1d1bd1ff793d0cdddf
+
+Source locations in current clean HEAD ad65eab:
+LiveDecoRenderer.cs:197: static void Register()
+LiveDecoRenderer.cs:204: foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+LiveDecoRenderer.cs:226: static bool Live(Source s)
+LiveDecoRenderer.cs:233: static string GeometryReason(Image i)
+LiveDecoRenderer.cs:398: internal static bool SkipLate(scrDecoration d)
+LiveDecoRenderer.cs:422: internal static bool TryLogicalColor(scrDecoration d, Color color, float opacity, bool onlyOpacity)
+LiveDecoRenderer.cs:477: static void Scan()
+LiveDecoRenderer.cs:479: foreach (var s in sources)
+LiveDecoRenderer.cs:543: static void Reconcile()
+LiveDecoRenderer.cs:644: var i = run.Members[n]; Compute(i); Color color = Rendered(i.D);
+LiveDecoGeometry.cs:44: internal bool UpdatePose(Vector2 position, Vector2 scale, Vector2 offset, float angle, bool force = false)
+LiveDecoGeometry.cs:102: internal bool Matches(Transform currentPivot, Transform currentChild, Transform currentRenderer)
+LiveDecoScripts.cs:13: internal static string Reason(MonoBehaviour[] scripts, scrVisualDecoration d, SpriteRenderer renderer)
+
+Supplement: ownership admission at 276s and exact FPS window anchors
+L752: [StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=3.05175781E-05 quad_bounds_err=0.100000009 local_bounds_z=0.2
+L753: [StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
+L754: [StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
+L755: [StutterFix] [livedeco] transition frame=26655 owned=17 runs=15 created=15 reused=0 destroyed=0 reconcile_ms=0.470800
+L756: [StutterFix] [livedeco] vertexcheck max_err=3.05175781E-05 count=17 excluded=0 nested_admitted=17 visibility_admitted=17 threshold=0.0001 vertex_max_err=0 bounds_max_err=3.05175781E-05 quad_bounds_max_err=0.100000009 bounds_source=renderer-local-aabb
+L757: [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=17 runs=15 vertex_ms=0.022300 upload_ms=0.016500 reconcile_ms=0.470800 scan_ms=31.181300 upload_calls=15.000 dirty_images=17.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=True allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=278528 heap_scope=frame-work-excludes-cost-and-vertex-logs
+L758: [StutterFix] [livedeco] begin variant=A renderer_version=5 color_format=Float32x4 vertex_stride=36 dirty_policy=exact-logical-pose-and-color bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=17 runs=15 registry=157254 transitions=3 restored=3008 error=none atlas=0
+L837: [StutterFix] [livedeco2] window begin index=0 mode=off song=262.060504
+L2288: [StutterFix] [livedeco2] window begin index=1 mode=on song=262.145831
+L5670: [StutterFix] [livedeco2] window begin index=2 mode=on song=262.209826
+L7606: [StutterFix] [livedeco2] window begin index=3 mode=off song=262.027026

@@ -1,3 +1,16 @@
+## codex-al-ga-6 분석 — 2026-10-21 (감사 run7, 현재 설계 한계로 중단)
+- 시작 HEAD ad65eab, 처음 작업 트리 깨끗함. 작업 중 외부 추가된 gate2-common.md 긴급 지시를 읽고 diff 보존. 게임 실행·설치·커밋·푸시·config·소스·steps·바이너리 변경 없음.
+- run5 전달은 전체 로그 후반 발췌. 기존 al-ga-5.log를 보완 감사하고 원본 SHA256·행 번호·집계·소스 해시를 gate2-A-run7-analysis.txt에 보존. 신규 게임 측정 없음.
+- 262/270/276초 ab_out=391798/121812/0, maxdiff=6/7/0, noise=0·aa2_out=0·stable=True 모두 확인. Float32/캐시 동시 변경으로 한 변수 원인 확정 불가. 이전674/2보다 회귀했지만 시각/소유 집합도 다름. Color32 단순 복귀·기준 완화 없음.
+- ABBA FPS=122.331735/14.682848/14.738163/120.325125, 평균 off121.328430/on14.7105055, gain=-87.875467028%. 최종 GATE2=PIXEL_FAIL/outside_pixels_changed/on=False. 132단계 완료, 이전 GPU 타임아웃 재수정 근거 없음.
+- Prof873985표본/set_pct70.049131%/valid=True. 기존 Step 표본·PairXY/GroupStep 억제·후속 엔진 제외 한계 유지.
+- 매 프레임 Scan 대상 registry157254개. FindObjects는 Register에서만. 소유17개 정지8프레임도 scan27.876138ms, vertex0.019550/upload0.000850/호출0. 목표FPS139.5276945의 프레임 예산7.167035932ms보다 관측 스캔만 큼.
+- on창 samples=1 출력172/171건 평균 scan46.211451/46.172319, reconcile4.241067/4.206554, vertex1.656350/1.649179, upload0.676295/0.682586ms. 각204프레임 전체와 표본 다름. 등록은 scan 포함, Harmony/SkipLate/원래게임/엔진/로그/대기 정확 분해 미측정.
+- 소유1400~1600 표본109/115건, vertex중앙1.689700/1.678800, upload중앙0.678900/0.674800ms, 목표 동시충족0/109·0/115. transition각204회, created합10027/9861·destroyed합11061/10888. 전환 생성과 힙변화가 있어 allocated_bytes=0만으로 GC통과 주장 안 함.
+- 276초 새 Begin부터 owned17, vertexcheck count17/excluded0. 끝시점18개를 262초1500개의 누적오제외로 단정 불가. !Live/alpha/boundary/geometry 세부해제사유와 live분모 없어 과소소유 여부 미확정. 가시성 강제 소유 수정 없음.
+- BoundaryPrefix는 장식 일부 메서드만 감시. 비소유 활성/재질/정렬/계층 변경 dirty 프로토콜 없어 Scan 단순삭제·주기연장으로 안전성 유지 불가. 필요한 것은 입장시 변경작성경로 분류와 scene 등록/dirty/reset 설계. 현재 폴링·반복검사 구현 한계로 중단하며 변형A 전체 불가능으로 일반화 안 함.
+- 지정 디컴파일·설치DLL IL(scrDecoration/manager/parallax/visual), Renderer API와 게임해시를 새로 감사. 게임메서드 실행 없음. 소스/산출물 변경 없어 빌드/fixture 재실행 없이 기존 run6 오류0·fixture통과 로그 확인.
+- 결과 최신6회차 절·10줄요약·run7감사 갱신. 스캔제거·소유감소원인수정·픽셀0·FPS+15%·수명검증 미완료. GATE2=PASS 미달성. 동일 코드 재시험 실행/요청 없음.
 
 ## codex-al-ga-5 수정 — 2026-10-21 (검증 로그 run6)
 - 시작 HEAD ba29aa8, 처음 작업 트리는 깨끗함. 기존 계층·ToggleVisible·바운드·PlanetSprite 정지 유지. gate2-common.md 성능 지침 추가는 외부 변경으로 보존.
@@ -166,3 +179,29 @@
   - [StutterFix] [livedeco2] FPS mode=off index=0 fps=122.331735 ms=8.174494 frames=1705 elapsed_s=13.937512 song_begin=262.060504 song_end=276.004290 valid=True
   - [StutterFix] [livedeco] transition frame=31367 owned=164 runs=97 created=97 reused=0 destroyed=0 reconcile_ms=1.729900
   - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=164 runs=97 vertex_ms=0.100500 upload_ms=0.096200 reconcile_ms=1.729900 scan_ms=65.037800 upload_calls=97.000 dirty_images=164.000 skipped_uplo
+
+## 회차 6
+- Codex 요약: 인계의 **설계 한계 중단 조건**을 적용했습니다. 코드 수정 없이 결과·장부·10줄 요약을 갱신했습니다.
+
+- 기존 시험: `GATE2=PIXEL_FAIL`, FPS 이득 **−87.875467%**.
+- 전체 렌더러 157,254개 스캔 비용이 핵심 병목입니다.
+- 안전한 증분 갱신에 필요한 변경 감지 구조는 미구현입니다.
+- 오프라인 감사 25건·`git diff --check` 통과.
+- 게임 실행·설치·커밋 없음.
+
+[상세 결과](E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] transition frame=23981 owned=1483 runs=1119 created=1119 reused=0 destroyed=0 reconcile_ms=21.219000
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1483 runs=1119 vertex_ms=0.991800 upload_ms=1.839800 reconcile_ms=21.219000 scan_ms=280.456900 upload_calls=1119.000 dirty_images=1483.000 skip
+  - [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=1483 runs=1119 vertex_ms=0.774550 upload_ms=0.089675 reconcile_ms=0.000000 scan_ms=36.990338 upload_calls=0.000 dirty_images=0.000 skipped_uplo
+  - [StutterFix] [livedeco] transition frame=25295 owned=1611 runs=1255 created=1255 reused=0 destroyed=0 reconcile_ms=20.112100
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1611 runs=1255 vertex_ms=0.996900 upload_ms=1.432200 reconcile_ms=20.112100 scan_ms=271.613900 upload_calls=1255.000 dirty_images=1611.000 skip
+  - [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=1611 runs=1255 vertex_ms=0.778138 upload_ms=0.078288 reconcile_ms=0.000000 scan_ms=36.725763 upload_calls=0.000 dirty_images=0.000 skipped_uplo
+  - [StutterFix] [livedeco] transition frame=26804 owned=17 runs=15 created=15 reused=0 destroyed=0 reconcile_ms=0.340000
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=17 runs=15 vertex_ms=0.018000 upload_ms=0.014600 reconcile_ms=0.340000 scan_ms=30.233400 upload_calls=15.000 dirty_images=17.000 skipped_upload
+  - [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=17 runs=15 vertex_ms=0.020550 upload_ms=0.000825 reconcile_ms=0.000000 scan_ms=27.677563 upload_calls=0.000 dirty_images=0.000 skipped_uploads=
+  - [StutterFix] [livedeco2] FPS mode=off index=0 fps=122.358015 ms=8.172738 frames=1706 elapsed_s=13.942691 song_begin=262.060504 song_end=276.004443 valid=True
+  - [StutterFix] [livedeco] transition frame=31503 owned=167 runs=95 created=95 reused=0 destroyed=0 reconcile_ms=1.735800
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=167 runs=95 vertex_ms=0.103700 upload_ms=0.100800 reconcile_ms=1.735800 scan_ms=64.339800 upload_calls=95.000 dirty_images=167.000 skipped_uplo

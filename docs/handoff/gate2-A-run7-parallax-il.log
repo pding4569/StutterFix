@@ -1,0 +1,80 @@
+﻿== scrParallax
+  get_multiplier
+    필드 읽기 scrParallax::multiplier_x
+    필드 읽기 scrParallax::multiplier_y
+    호출 UnityEngine.Vector2::.ctor
+  set_multiplier
+    필드 읽기 UnityEngine.Vector2::x
+    필드 읽기 UnityEngine.Vector2::y
+    필드 쓰기 scrParallax::multiplier_x
+    필드 쓰기 scrParallax::multiplier_y
+  Init
+    필드 읽기 scrParallax::inited
+    호출 UnityEngine.Component::get_transform
+    필드 쓰기 scrParallax::cachedTransform
+    필드 읽기 scrParallax::cachedTransform
+    호출 UnityEngine.Transform::get_position
+    호출 UnityEngine.Vector2::op_Implicit
+    필드 쓰기 scrParallax::startPosition
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::camy
+    필드 쓰기 scrParallax::cameraTransform
+    호출 제네릭 UnityEngine.Component::TryGetComponent
+    필드 쓰기 scrParallax::decoration
+    필드 쓰기 scrParallax::isDecoration
+    필드 쓰기 scrParallax::inited
+  Awake
+    호출 scrParallax::Init
+  SetNewStartPosition
+    호출 UnityEngine.Vector2::op_Implicit
+    필드 쓰기 scrParallax::startPosition
+  SetTrans
+    호출 scrParallax::Init
+    필드 읽기 scrParallax::cachedTransform
+    호출 UnityEngine.Transform::get_position
+    필드 읽기 scrParallax::clampToScreen
+    호출 ADOBase::get_controller
+    필드 읽기 scrController::camy
+    필드 읽기 scrCamera::camobj
+    호출 UnityEngine.Camera::get_pixelRect
+    호출 UnityEngine.Rect::get_width
+    필드 읽기 scrParallax::screenRelativePos
+    필드 읽기 UnityEngine.Vector2::x
+    호출 UnityEngine.Rect::get_height
+    필드 읽기 UnityEngine.Vector2::y
+    호출 UnityEngine.Vector2::.ctor
+    호출 UnityEngine.Rect::get_x
+    호출 UnityEngine.Rect::get_y
+    호출 UnityEngine.Vector2::op_Addition
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Camera::ScreenToWorldPoint
+    필드 읽기 scrParallax::cameraTransform
+    필드 읽기 scrParallax::posCamAtStart
+    호출 UnityEngine.Vector3::op_Subtraction
+    호출 scrParallax::get_multiplier
+    호출 UnityEngine.Vector2::op_Multiply
+    필드 읽기 scrParallax::startPosition
+    필드 읽기 scrParallax::dontAlterX
+    필드 읽기 UnityEngine.Vector3::x
+    필드 쓰기 UnityEngine.Vector2::x
+    필드 읽기 scrParallax::dontAlterY
+    필드 읽기 UnityEngine.Vector3::y
+    필드 쓰기 UnityEngine.Vector2::y
+    필드 읽기 scrParallax::isDecoration
+    호출 UnityEngine.Vector2::get_zero
+    필드 읽기 scrParallax::decoration
+    필드 읽기 scrDecoration::parallaxOffset
+    호출 scrDecoration::get_camScaleMultiplier
+    필드 읽기 scrDecoration::textureScaleMultiplier
+    호출 UnityEngine.Vector2::op_Division
+    필드 쓰기 scrParallax::endPosition
+    필드 읽기 scrParallax::endPosition
+    필드 읽기 UnityEngine.Vector3::z
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Transform::set_position
+  GetPositionWithParallax
+    필드 읽기 scrParallax::endPosition
+  LateUpdate
+    호출 scrParallax::SetTrans
+  .ctor
+    호출 ADOBase::.ctor
