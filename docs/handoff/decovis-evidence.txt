@@ -1,0 +1,11 @@
+[StutterFix] [자동 시험] 시작: 25단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / fuse begin / fuse end / decofreeze reset / stop / seek 258 8 / waitsongpos 262 60 / decofreeze vis / wait 2 / decofreeze vis / wait 2 / decofreeze vis / wait 2 / decofreeze vis / wait 2 / decofreeze vis / wait 2 / decofreeze vis / wait 2 / decofreeze vis / wait 2 / stop / quit
+[StutterFix] [decofreeze] hooks=scrDecoration.UpdatePosition/SetPosition/SetRotation/SetScale,scrParallax.SetTrans; source=TightLate.Process,DecoAnim.UpdatePrefix; default=off
+[StutterFix] [decofreeze] reset samples=0
+[StutterFix] [tightlate] original loop retained: scrDecoration.UpdatePosition owner=StutterFix.decofreeze
+[StutterFix] [decofreeze] VIS t=262.02 awake=2135 image=2128 isVisible=1774 notVisible=354 zeroAlpha=1
+[StutterFix] [decofreeze] VIS t=264.03 awake=2178 image=2171 isVisible=1875 notVisible=296 zeroAlpha=1
+[StutterFix] [decofreeze] VIS t=266.04 awake=2255 image=2248 isVisible=1899 notVisible=349 zeroAlpha=55
+[StutterFix] [decofreeze] VIS t=268.06 awake=1940 image=1933 isVisible=1856 notVisible=77 zeroAlpha=0
+[StutterFix] [decofreeze] VIS t=270.07 awake=2274 image=2267 isVisible=2016 notVisible=251 zeroAlpha=0
+[StutterFix] [decofreeze] VIS t=272.10 awake=2521 image=2514 isVisible=2268 notVisible=246 zeroAlpha=6
+[StutterFix] [decofreeze] VIS t=274.11 awake=1845 image=1838 isVisible=1660 notVisible=178 zeroAlpha=2
