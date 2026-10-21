@@ -5,6 +5,7 @@ using System.Reflection.PortableExecutable;
 int checks = 0;
 void Check(bool value, string label) { checks++; if (!value) throw new Exception(label); }
 checks += HierarchyFixture.Run();
+checks += VertexUpdateFixture.Run();
 // Playback frozen by framecmp makes the game's editor flag true. Only that
 // provenance can bypass the global editor exclusion; actual readers still win.
 for (int bits = 0; bits < 32; bits++)

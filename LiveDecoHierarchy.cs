@@ -15,6 +15,15 @@ namespace StutterFix
             TMatrix Local(TNode node, bool child);
             TMatrix Multiply(TMatrix a, TMatrix b);
         }
+        // Same multiplication order as the live walk: no reassociation of TRS
+        // products (which could introduce a new floating point difference).
+        internal static TMatrix ComposeCached<TNode, TMatrix, TPath>(TMatrix[] locals, int childIndex,
+            TMatrix child, TPath path) where TPath : struct, IPath<TNode, TMatrix>
+        {
+            var matrix = path.Identity;
+            for (int i = 0; i < locals.Length; i++) matrix = path.Multiply(i == childIndex ? child : locals[i], matrix);
+            return matrix;
+        }
         internal static Failure Compose<TNode, TMatrix, TPath>(TNode renderer, TNode child, TNode pivot,
             TPath path, bool calculate, out TMatrix matrix, out int depth) where TPath : struct, IPath<TNode, TMatrix>
         {

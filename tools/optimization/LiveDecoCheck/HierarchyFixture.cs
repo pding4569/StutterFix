@@ -49,6 +49,21 @@ static class HierarchyFixture
                 Check(Vector3.Distance(Vector3.Transform(corner, result * LocalMatrix(pivot, pivot.Position)), Vector3.Transform(corner, expected)) < 1e-4f, "full world corners including flip and logical offset");
             Check(child.Position == new Vector3(-1, 4, 0), "owned calculation never writes transform");
             Check(Compose(renderer, child, pivot, path, false, out var untouched, out depth) == LiveDecoHierarchy.Failure.None && untouched == Matrix4x4.Identity && depth == 4, "validation walks without reading local matrices");
+            var locals = new[] { LocalMatrix(renderer, renderer.Position), LocalMatrix(below, below.Position),
+                LocalMatrix(child, child.Position), LocalMatrix(above, above.Position) };
+            var cached = LiveDecoHierarchy.ComposeCached<Node, Matrix4x4, Path>(locals, 2,
+                LocalMatrix(child, owned ? logical : child.Position), path);
+            Check(cached.Equals(result), "cached multiplication is bit-identical to shared live walk");
+            var nextLogical = logical + new Vector3(.00001f, -2, 0);
+            Compose(renderer, child, pivot, new Path(true, nextLogical), true, out var next, out _);
+            Check(LiveDecoHierarchy.ComposeCached<Node, Matrix4x4, Path>(locals, 2,
+                LocalMatrix(child, nextLogical), path).Equals(next), "logical child updates invalidate cached product without reassociation");
+            locals[0] = LocalMatrix(renderer, renderer.Position + Vector3.One);
+            renderer.Position += Vector3.One;
+            Compose(renderer, child, pivot, path, true, out next, out _);
+            Check(LiveDecoHierarchy.ComposeCached<Node, Matrix4x4, Path>(locals, 2,
+                LocalMatrix(child, owned ? logical : child.Position), path).Equals(next), "refreshed native local updates cached product");
+            renderer.Position -= Vector3.One;
         }
         child.Parent = pivot;
         Check(Compose(child, child, pivot, default, true, out var direct, out int directDepth) == LiveDecoHierarchy.Failure.None && directDepth == 1 && direct == LocalMatrix(child, child.Position), "old direct layout preserved");

@@ -1,10 +1,10 @@
-1. 최신 run2 전달은 hierarchy 경로 2127개를 통과한 뒤 atlas-vram-budget-512MiB에서 중단됐고 final_on=False였다.
-2. 실제 페이지/원본 분포는 미기록이므로 단일 거대 페이지·sampler별 중복·내용 초과 중 어느 경로인지는 미확인이다.
-3. 기존 한 장 계획과 sampler별 실제 할당의 불일치·계획 좌표 미사용을 고쳤으며 이전 추상/정지/계층 수정은 보존했다.
-4. 공유 Plan은 sampler별 Shelf 후보를 총 512MiB 안에서 조합해 페이지 수 최소·동수면 바이트 최소를 선택한다.
-5. 초기 페이지/좌표를 예약해 Get과 공유하고 신규 live 입력의 침범을 막는다; GPU 페이지는 필요할 때 할당한다.
-6. atlas_plan version=5와 sampler/페이지/예약·할당/실패 로그 추가; 크기/aniso/sRGB 변화도 검사한다; wrap 변경은 디컴파일·IL 대조했다.
-7. 합성 회귀의 1024→512MiB(2장), sampler 중복 768→512MiB(5장)를 확인했고 새 계획 118278 checks 통과; Arche 실측은 아니다.
-8. 빌드 3종 오류 0/0/0, LoadCheck 틀림 0, LiveDeco 23009·아틀라스 1052924·edition 22·패치 38·기존 회귀/steps 통과다.
-9. 전달 ProfSet은 971762표본/69.830267%; 실제 아틀라스/소유/정점·픽셀/복원·GC/VRAM·FPS·GATE2=PASS는 미확인이다.
-10. 기본 꺼짐·Player 제외·512MiB·엄격 판정·기존 JSON/Player DLL 해시 유지; 게임 실행·설치·커밋·푸시·config 변경 없이 run5 결과를 인계했다.
+1. 6회차: codex-al-gb-4.md·장부·run3 증거를 읽고 깨끗한 상태에서 이어갔다.
+2. 전달값: live 2127·owned 1808·runs 81, RGBA32 8192² 두 장·512MiB.
+3. 첫 cost 합 20168.0721ms는 편입·아틀라스 처리가 섞인 값이며 정상 프레임 비용이 아니다.
+4. 행 단위 extrusion, UV·중심·계층·회전 캐시와 정확한 논리 입력/색 변경 추적을 추가했다.
+5. 더티 런만 업로드하며 공유 배열 위치가 바뀌어도 런 전체를 다시 채워 이웃 정점을 보존한다.
+6. update/startup version=6과 prepare·vertex·runs·atlas_upload·upload·cpu 비용 로그를 추가했다.
+7. 성능 준비만 pause/on/resume으로 감싸 148 steps 생성; 측정 262→276초는 자연 재생 ABBA다.
+8. 3종 빌드 오류 0/0/0, LoadCheck 틀림 0, 공유 계층31·더티604 및 기존 회귀 검사 통과.
+9. 실제 정점≤0.5ms·업로드≤0.4ms·전체 cpu·픽셀/복원·FPS·GATE2=PASS는 미확인이다.
+10. 게임 실행·설치·커밋·푸시·config 변경 없음; 결과 codex-gate2-B-result.md·run6 로그/해시 참조.

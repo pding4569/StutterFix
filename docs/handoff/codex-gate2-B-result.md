@@ -1,6 +1,69 @@
 # Gate 2 변형 B 결과 — 2026-10-21
 
-**최신 5회차: `atlas-vram-budget-512MiB` 중단을 분석하고, sampler별 페이지 계획과 총 512MiB 예산 검사를 결합했다. 계획한 좌표를 실제 할당에도 사용한다. 3종 빌드·LoadCheck·회귀 검사는 통과했다. 실제 아틀라스·소유 수·픽셀·FPS 및 GATE2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+**최신 6회차: 전달 run3는 소유 1,808개·런 81개까지 도달했다. 초기 비용의 혼합 계측과 매 프레임 UV 재계산·전체 메시 업로드를 수정했다. 성능 창 전에 아틀라스를 준비하는 동안만 진단 정지를 사용하도록 148 steps를 생성했다. 3종 빌드·LoadCheck·회귀 검사는 통과했다. 픽셀·복원·FPS 및 GATE2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+
+## 6회차 — 초기 비용 분리, 불변 데이터 캐시와 더티 런 업로드
+
+`codex-al-gb-4.md`, 장부, [최신 run3 전달 증거](gb-autoloop-run3-evidence.txt)를 먼저 읽었다. 시작 git status/diff는 깨끗했다. 기존 추상 Harmony 대상·진단 정지 출처·실제 계층·sampler별 예산 수정은 보존했다. 작업 트리에 없는 로드맵은 `E:/StutterFixWork/StutterFix/docs/ROADMAP-EXTREME-20261021.md`, freeze 결과는 `E:/StutterFixWork/wt-freeze/docs/handoff/codex-freeze-20261021-result.md`에서 읽기만 했다.
+
+### 전달 수치와 판단 범위
+
+| 전달 run3 항목 | 관측값 |
+|---|---:|
+| ProfSet 표본 / 표본 시간 비율 | 969,360 / 69.856397% |
+| live / owned / runs | 2,127 / 1,808 / 81 |
+| 아틀라스 원본 / 페이지 / GPU 페이지 바이트 | 25 / 8192² 두 장 / 536,870,912B |
+| 원본 패딩 포함 면적 바이트 / sampler 그룹 | 300,096,384B / 1 |
+| 첫 cost vertex_ms / upload_ms / runs_ms | 13,648.0586 / 6.9079 / 6,513.1056 |
+| 첫 cost 합 | 20,168.0721ms |
+| vertexcheck 최대 / 검사 수 / 제외 수 | 0.0001220703125 / 1,810 / 2 |
+| 남은 제외 | wrap-nonclamp 279, repeat-or-drawmode 38, vertex-error 2 |
+
+이번 세션의 신규 게임 측정은 아니다. 1,808개 소유가 생겼으므로 기존 zero-owned/예산 실패를 동일 코드로 반복하지 않았다. 최대 정점 오차는 **제외한 2개를 포함한** 값이며 1e-4 기준을 완화하지 않았다. 런 81개는 단일 아틀라스를 가정한 71~78개 센서스와 달리 실제 두 페이지·제외 장벽을 반영한 관측이다. 80개로 맞추기 위해 순서를 바꾸지 않았다.
+
+로그에는 첫 `on=True`와 정상 `on=False`가 있지만 **PIXEL/FPS/GATE2 최종 판정이나 자동 시험 단계 실패의 구체적 예외는 없다.** 따라서 픽셀 차이·이득 부족·자동 시험 중단의 유일 원인을 확정하지 않는다. ProfSet 역시 sampled Step/Apply/OnUpdate 시간 비율이며 전체 DecoAnim/native 쓰기 몫은 미입증이다.
+
+기존 첫 `vertex_ms`에는 편입 검증과 `Atlas.Get`의 원본 readback/패딩/쓰기, `runs_ms`에는 전체 `Atlas.Upload`가 들어갔다. 20.168초를 정상 프레임 비용이나 순수 정점 계산 비용이라고 해석할 수 없다. 별도로 매 프레임 정점마다 `Atlas.Map`이 Source.width/height와 Page.Texture.width를 읽고, 소유 장식마다 sprite.bounds와 renderer→pivot 계층을 다시 계산하며, 변경 여부와 무관하게 모든 런을 업로드하는 경로는 코드로 확인했다.
+
+기존 성능 준비는 곡 251초에 동기 `on`을 호출하고 262초부터 재려 했다. 준비가 11초보다 길어 곡 시계가 계속 진행하면 시작 창을 건너뛸 수 있다. 전달 20.168초는 **262초 정지 상태 첫 편입** 값이므로 251초 재생 준비도 같은 시간이라는 증명은 아니다. 확인한 시간 여유 문제를 수정했으며, 이를 이번 전달 로그의 실제 중단 예외로 단정하지 않는다.
+
+### 변경
+
+- `LiveDecoAtlasPolicy.Extrude`는 내부 픽셀을 행 단위 Array.Copy로 옮기고 양쪽 가장자리·윗줄·아랫줄을 복제한다. 원래와 같은 2px extrusion·4px 정렬 잉여 패딩을 유지하며 매 내부 픽셀의 clamp 계산을 제거했다. 압축 재인코딩·축소·예산 상향은 하지 않았다.
+- 편입 시 원본 4코너·아틀라스 UV·스프라이트 중심·flip 행렬·renderer→pivot 경로 및 local TRS를 저장한다. 매 프레임 검증에서 local 위치/회전/크기 또는 경로가 바뀌면 캐시를 갱신한다. **계층/수명/입력 검증 자체는 매 프레임 유지**한다. local 값이 같으면 TRS를 재생성하지 않는다. 계층 곱셈 순서도 live walk와 같게 유지한다.
+- 카메라 배율/회전/화면 사각형은 Tick당 한 번 읽고, 카메라·추적 대상 위치는 Transform당 프레임 내 한 번 읽는다. 계산 결과 입력(end/scale/angle)과 계층이 정확히 같으면 기존 행렬을 재사용한다. 각도가 같으면 Quaternion.Euler도 재사용한다. ScreenToWorldPoint 화면 고정 경로와 native 입력/정렬 검사는 남는다. **native 호출 전체 제거나 0.5ms 목표 달성으로 보고하지 않는다.** 게임 수식은 디컴파일 scrDecoration의 camScaleMultiplier/SetRotation/SetScale/UpdatePosition과 scrParallax.SetTrans를 [실제 DLL IL](gate2-B-run6-game-il.log)로 대조했다.
+- 논리 입력·계층·flip·Color32 변화가 있는 멤버만 더티로 표시하고, 새 런·기준 z 변화 또는 더티 멤버가 있는 런만 정점 버퍼를 쓰고 업로드한다. 공유 CPU 배열에서 재사용 런의 시작 위치가 달라질 수 있으므로 **더티 런 전체를 다시 채워** 변경 없는 이웃 정점도 올바른 위치에서 업로드한다. 원본 숨김/복원과 정렬 장벽은 유지한다.
+- `update version=6`, `startup version=6`, 텍스처별 `atlas_copy read_ms/extrude_ms/write_ms`, 페이지별 `atlas_upload`를 남긴다. cost는 `vertex_ms`, 검증/편입을 포함한 `prepare_ms`, `runs_ms`, `atlas_upload_ms`, `upload_ms`와 **그 전체 합에 해당하는 `cpu_ms`**를 기록한다. `changed_members`, `uploaded_runs`, transition/stable도 추가했다. prepare_ms의 readback 비용을 숨기거나 vertex_ms만으로 순이득을 판단하지 않는다. 첫 Begin의 패치/센서스 비용은 startup에 포함되며 Tick의 cpu_ms 밖이다. 주기 로그 문자열 비용은 기존처럼 cost 측정 구간 밖이다.
+- 성능 on 두 창만 `waitsongpos 251 → pause → livedeco on → resume → waitsongpos 262`로 바꿨다. 준비 중 곡 시계 진행을 막고, 재개 후 11곡초 안정화한다. **262→276초 측정 창 내부에는 정지가 없다.** 픽셀 세 시점·ABBA·+15%·ab_out=0·복원·마지막 off 조건은 그대로다. 생성기와 [전달 JSON](gate2-B-steps.json)을 함께 갱신했다(144→148 steps, 동일 Arche 경로).
+
+### 오프라인 검증
+
+| 검사 | 결과 | 근거 |
+|---|---|---|
+| Release Dev / Player / PlayerAuto | 오류 0/0/0, 경고 38/4/38 | gate2-B-run6-build-dev/player/auto.log |
+| LoadCheck Dev / Player / Auto | 275/229/275곳, 틀림 0/0/0 | gate2-B-run6-loadcheck-dev/player/auto.log |
+| 공유 계층 / 더티 업로드 | 31 / 604 checks | gate2-B-run6-fixture.log |
+| LiveDeco 전체 정책 / 아틀라스·판정 / 페이지 계획 | 23,619 / 1,052,924 / 118,278 checks | 같은 로그 |
+| LiveDeco edition / 실제 DLL 패치 계획 | 22 / 38 checks | 같은 로그 / gate2-B-run6-patch-check.log |
+| FrameCompare | RGBA 11, mask 15, state 14, control 49, edition 13 | gate2-B-run6-framecmp-fixture.log |
+| MatShare / 진단 edition | 25,401 / 진단 32·필수 6·폐기 5 타입 조건 통과 | gate2-B-run6-matshare-fixture.log / gate2-B-run6-edition-check.log |
+| Gate1 / Gate2 steps | 25 / 148단계·독립 픽셀·자연 재생 ABBA·UTF-8 CLI 통과 | gate2-B-run6-gate1-steps-check.log / gate2-B-run6-steps-check.log |
+
+계층 fixture는 live walk와 캐시 결과의 **정확한 행렬 일치**, 논리 child 이동·local 변경을 검사한다. 더티 fixture는 새 런·정지 런 건너뜀·단일 멤버 변경·공유 배열 내 이동·이웃 보존·재분할 순서와 200개 무작위 입력을 생산 함수로 검사했다. 워밍업한 더티/정지 루프의 .NET 할당은 0B였다. **게임 Mono GC·native TRS·GPU 업로드·픽셀·실제 성능의 증거는 아니다.** 기존 extrusion 픽셀별 기준식과 비교하는 회귀도 그대로 통과했다.
+
+LoadCheck의 실행 중 이름 5곳과 기존 빌드/FrameCompare fixture 경고는 남는다. 일반 Player의 실험 제외와 기본 꺼짐을 유지했다. [산출물·소스 해시](gate2-B-run6-artifacts.txt)를 남겼다.
+
+### 판정과 다음 관측
+
+**GATE2=PASS 미확인.** 변경 후 픽셀·복원·FPS·정상 프레임 cpu_ms·정점 ≤0.5ms/업로드 ≤0.4ms·Mono GC/VRAM 피크는 미측정이다. 전달 run3에 픽셀 실패 수치가 없어 아틀라스 UV의 1/255 문제나 Texture2DArray 전환 필요성을 확정할 근거도 없다(이전 비교 절은 아래에 보존). 현재는 설계 한계 확정이 아닌 코드상의 반복 작업과 측정 준비 결함을 고친 상태다.
+
+변경된 Dev/PlayerAuto와 **새 148 steps**의 다음 외부 관측은 update/startup version=6, atlas_copy/atlas_upload 분해, transition 이후 stable cost의 prepare/runs/vertex/upload/cpu와 changed_members/uploaded_runs다. 캐시가 있어도 검증·정렬 스캔 native 비용이 남으므로 vertex/upload 목표만 충족해서는 충분하지 않다. 세 시점 모두 ab_out=0·aa2_out=0과 유효 ABBA 평균 FPS +15%를 확인해야 한다. 동일 DLL/기존 144 steps 재시험을 요청하지 않는다.
+
+게임 실행·설치·커밋·푸시·config 수정·게이트3·워커 분할은 하지 않았다. task-observer v3.5.0과 기존 사용자 범위 관찰 헤더·원칙은 읽기만 했으며 별도 스킬·메모리를 변경하지 않았다.
+
+---
+
+보존된 5회차 결과:
 
 ## 5회차 — sampler별 아틀라스 계획과 총 메모리 예산
 

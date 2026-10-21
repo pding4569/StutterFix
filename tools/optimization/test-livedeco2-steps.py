@@ -26,6 +26,8 @@ for i, s in enumerate(steps):
         assert steps[i-2:i] == ['waitsongpos 262 40', 'fuse begin']
         assert steps[i+1:i+4] == ['waitsongpos 276 40', 'livedeco perf end', 'fuse end']
         assert 'pause' not in steps[i:i+4]
+        if s.endswith('on'):
+            assert steps[i-6:i-2] == ['waitsongpos 251 40', 'pause', 'livedeco on', 'resume']
 assert steps[-4:] == ['livedeco off', 'livedeco result', 'framecmp clear', 'quit']
 output = path.parent / ('.livedeco2-steps-' + uuid.uuid4().hex + '.json')
 try:

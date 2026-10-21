@@ -26,7 +26,10 @@ def build(chart):
         steps += ['livedeco off', 'stop', 'seek 262 12',
                   'waitsongpos 251 40']
         if mode == 'on':
-            steps += ['livedeco on']
+            # Atlas readback/extrusion/upload can take longer than the 11 song
+            # seconds before the measuring window. Freeze only during setup;
+            # resume at 251 and settle in natural playback until 262.
+            steps += ['pause', 'livedeco on', 'resume']
         steps += ['waitsongpos 262 40', 'fuse begin', f'livedeco perf begin {mode}',
                   'waitsongpos 276 40', 'livedeco perf end', 'fuse end',
                   'livedeco state', 'livedeco off', 'stop']

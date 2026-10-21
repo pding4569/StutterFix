@@ -1,6 +1,7 @@
 #if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -37,6 +38,7 @@ namespace StutterFix
         internal int Pages { get; private set; }
         internal int Count => entries.Count;
         internal long Bytes { get; private set; }
+        internal long ReadTicks, ExtrudeTicks, WriteTicks, UploadTicks;
         // Bounded experiment, no resizing/repacking an already referenced atlas.
         long reservedBytes;
         internal void Plan(IEnumerable<Texture2D> sources)
@@ -135,9 +137,17 @@ namespace StutterFix
             // Exact compressed interior copies cannot provide a true two-pixel
             // edge extrusion for arbitrary DXT blocks without re-encoding them.
             // Use the explicitly allowed RGBA32 path, never silently recompress.
+            long begin = Stopwatch.GetTimestamp();
             var pixels = Read(t, srgb);
+            long read = Stopwatch.GetTimestamp();
             var extruded = LiveDecoAtlasPolicy.Extrude(pixels, t.width, t.height);
+            long extrude = Stopwatch.GetTimestamp();
             p.Texture.SetPixels32(x - 2, y - 2, LiveDecoAtlasPolicy.Align(t.width + 4), LiveDecoAtlasPolicy.Align(t.height + 4), extruded);
+            long written = Stopwatch.GetTimestamp();
+            ReadTicks += read - begin; ExtrudeTicks += extrude - read; WriteTicks += written - extrude;
+            LiveDeco.Log("atlas_copy width=" + t.width + " height=" + t.height
+                + " read_ms=" + Milliseconds(read - begin) + " extrude_ms=" + Milliseconds(extrude - read)
+                + " write_ms=" + Milliseconds(written - extrude));
             p.Dirty = true;
             entries.Add(t, entry); return entry;
         }
@@ -162,8 +172,16 @@ namespace StutterFix
                 if (rt) RenderTexture.ReleaseTemporary(rt);
             }
         }
+        static string Milliseconds(long ticks) => (ticks * 1000.0 / Stopwatch.Frequency).ToString("F4", System.Globalization.CultureInfo.InvariantCulture);
         internal void Upload()
-        { foreach (var p in pages) if (p.Dirty) { p.Texture.Apply(false, false); p.Dirty = false; } }
+        {
+            foreach (var p in pages) if (p.Dirty)
+            {
+                long begin = Stopwatch.GetTimestamp(); p.Texture.Apply(false, false); p.Dirty = false;
+                long ticks = Stopwatch.GetTimestamp() - begin; UploadTicks += ticks;
+                LiveDeco.Log("atlas_upload size=" + p.Shelf.Size + " bytes=" + (long)p.Shelf.Size * p.Shelf.Size * 4 + " ms=" + Milliseconds(ticks));
+            }
+        }
         public void Dispose()
         { foreach (var p in pages) if (p.Texture) UnityEngine.Object.Destroy(p.Texture); pages.Clear(); entries.Clear(); planned.Clear(); Bytes = reservedBytes = 0; Pages = 0; }
     }

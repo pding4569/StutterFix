@@ -106,3 +106,39 @@
 [결과 문서](/E:/StutterFixWork/wt-ld2b/docs/handoff/codex-gate2-B-result.md)
 - 시험 핵심 줄:
   - [StutterFix] [livedeco] cost frame=22468 vertex_ms=13648.0586 upload_ms=6.9079 runs_ms=6513.1056 runs=81 owned=1808 live=2127 new_runs=81 reused_runs=0 heap_delta=0 stable_alloc_bytes=0 transition_all
+
+## 회차 6 — 초기 비용 분리와 더티 런 업로드 (2026-10-21)
+- 시작 git status/diff는 깨끗했다. run3 전달은 live=2127·owned=1808·runs=81, 25원본/8192² 두 페이지/512MiB까지 도달했다. 이전 추상 대상·정지·계층·계획 수정은 보존했다.
+- 첫 cost 합 20168.0721ms는 vertex_ms에 편입/원본 readback·extrusion·쓰기, runs_ms에 전체 아틀라스 업로드가 섞였다. 정상 프레임 정점 비용이 아니다. 전달에는 PIXEL/FPS/최종 판정·자동 시험 실패 예외가 없어 실제 중단의 유일 원인은 미확정이다.
+- 새 접근: 내부 픽셀 행 단위 복사, 편입 시 UV/중심/계층 캐시, local 변경 때만 TRS 재생성, 각도 변경 때만 회전 생성, 정확한 논리 입력/색 변경 추적, 더티 런만 업로드. 공유 CPU 배열에서 위치가 달라진 런은 변경 없는 이웃까지 전체를 다시 써서 업로드한다. 검증/정렬 native 읽기는 매 프레임 유지한다.
+- update/startup version=6과 atlas_copy/atlas_upload·prepare/vertex/runs/atlas_upload/upload/cpu_ms·changed_members/uploaded_runs·transition/stable을 기록한다. 정점/업로드 수치만으로 전체 이득을 판단하지 않는다.
+- 기존 성능 on 준비는 251→262초의 11곡초보다 동기 준비가 길면 시작 창을 놓칠 수 있다. 성능 준비만 진단 pause/on/resume으로 감싼 148 steps로 생성기·전달 JSON을 함께 변경했다. 자연 재생 ABBA 측정 창·픽셀 3시점·엄격 PASS 조건은 유지했다. 이것이 전달의 실제 실패 예외였다는 주장은 하지 않는다.
+- 디컴파일 scrDecoration의 배율/회전/크기/UpdatePosition 및 scrParallax.SetTrans를 실제 DLL IL과 대조했다. 전달 ProfSet 969360표본/69.856397%는 전체 DecoAnim/native 쓰기 몫 증명이 아니다.
+- 빌드 Dev/Player/Auto 오류 0/0/0(경고 38/4/38), LoadCheck 275/229/275곳 틀림 0. 계층31·더티604(공유 생산 함수/무작위200·.NET 워밍업 할당0B), LiveDeco23619·아틀라스1052924·계획118278·edition22·패치38·MatShare25401·FrameCompare 및25/148 steps 통과. 게임 Mono/native/GPU 증거는 아니다.
+- GATE2=PASS·변경 후 픽셀/복원·FPS·정점≤0.5ms/업로드≤0.4ms·전체 cpu·Mono GC/VRAM 피크는 미확인이다. 설계 한계 확정이 아니라 반복 계산/업로드와 준비 시간 여유 문제를 수정한 상태다. 새 DLL과148 steps의 다음 관측은 version6 및 stable cost 전체 분해다.
+- 게임 실행·설치·커밋·푸시·config 변경 없음. 결과 codex-gate2-B-result.md / codex-gate2-B-o.txt; 근거 gate2-B-run6-* 로그와 artifacts.txt.
+
+## 회차 4
+- Codex 요약: 반복 계산·업로드를 줄이고, 초기 비용 계측과 시험 준비 절차를 수정했습니다.
+
+- 3종 빌드 오류 0, LoadCheck·회귀 검사 통과.
+- 결과 문서·장부·10줄 요약·148단계 시험 JSON 갱신.
+- 게임 실행·설치·커밋·푸시 없음.
+- 실제 픽셀·FPS·비용 목표와 `GATE2=PASS`는 미확인입니다.
+
+[결과 문서](/E:/StutterFixWork/wt-ld2b/docs/handoff/codex-gate2-B-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] atlas_copy width=5000 height=5000 read_ms=2418.7092 extrude_ms=1175.1421 write_ms=14.7505
+  - [StutterFix] [livedeco] atlas_copy width=3840 height=3840 read_ms=2491.6093 extrude_ms=792.9080 write_ms=6.4395
+  - [StutterFix] [livedeco] atlas_copy width=2500 height=2500 read_ms=1096.0453 extrude_ms=340.7590 write_ms=3.3324
+  - [StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=752.5428 extrude_ms=287.3155 write_ms=2.3613
+  - [StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=774.7975 extrude_ms=261.1022 write_ms=2.1070
+  - [StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=851.9842 extrude_ms=256.9039 write_ms=1.8191
+  - [StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=761.7281 extrude_ms=238.6527 write_ms=2.0482
+  - [StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=756.9934 extrude_ms=280.7523 write_ms=1.7922
+  - [StutterFix] [livedeco] atlas_copy width=2880 height=1620 read_ms=890.6300 extrude_ms=266.5175 write_ms=2.0088
+  - [StutterFix] [livedeco] atlas_copy width=960 height=720 read_ms=140.0023 extrude_ms=53.0922 write_ms=0.3528
+  - [StutterFix] [livedeco] atlas_copy width=682 height=682 read_ms=72.1882 extrude_ms=25.7022 write_ms=0.2760
+  - [StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=22.8486 extrude_ms=16.9438 write_ms=0.1486

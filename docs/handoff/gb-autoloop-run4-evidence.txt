@@ -1,0 +1,186 @@
+[StutterFix] [자동 시험] 시작: 148단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco reset / stop / seek 262 12 / waitsongpos 262 40 / livedeco profile begin / waitsongpos 276 40 / livedeco profile end / stop / livedeco off / stop / seek 262 12 / waitsongpos 262 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 262 A B A2 / framecmp clear / framecmp ui include / resume / stop / livedeco off / stop / seek 262 12 / waitsongpos 270 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 270 A B A2 / framecmp clear / framecmp ui include / resume / stop / livedeco off / stop / seek 262 12 / waitsongpos 276 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 276 A B A2 / framecmp cle
+[StutterFix] [livedeco2] reset variant=B
+[StutterFix] [livedeco2] PROFILE_BEGIN mode=off fps_evidence=0
+[StutterFix] [livedeco2] PROFILE key=1 samples=171455 apply_us=0.072872 set_us=0.559893
+[StutterFix] [livedeco2] PROFILE key=2 samples=171589 apply_us=0.072689 set_us=0.209872
+[StutterFix] [livedeco2] PROFILE key=5 samples=172633 apply_us=0.072322 set_us=0.127593
+[StutterFix] [livedeco2] PROFILE key=7 samples=137773 apply_us=0.137872 set_us=0.028003
+[StutterFix] [livedeco2] PROFILE key=8 samples=137806 apply_us=0.135106 set_us=0.028086
+[StutterFix] [livedeco2] PROFILE key=9 samples=155198 apply_us=0.072506 set_us=0.270364
+[StutterFix] [livedeco2] PROFILE key=10 samples=582 apply_us=0.070103 set_us=0.689347
+[StutterFix] [livedeco2] PROFILE_SET_SHARE samples=947036 set_pct=70.270556 scope=sampled-Step-Apply-OnUpdate includes_scale_setters_in_apply=1 full_DecoAnim_share_proven=0
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco] patch_plan version=2 targets=18 abstract_declarations_skipped=2
+[StutterFix] [livedeco] pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED
+[StutterFix] [livedeco] admission version=4 hierarchy=renderer-to-pivot logical_child=1 max_depth=16 editing=True diagnostic_playback_pause=True
+[StutterFix] [livedeco] update version=6 cached_uv=1 cached_hierarchy=1 exact_dirty=1 dirty_upload=1 validation=each-frame cpu_total_includes_validation=1
+[StutterFix] [livedeco] hierarchy renderer_is_child=False child_parent_is_pivot=True depth=2 path=None count=2126
+[StutterFix] [livedeco] atlas_source reason=atlas-wrap-nonclamp textures=13
+[StutterFix] [livedeco] atlas_source reason=eligible textures=25
+[StutterFix] [livedeco] atlas_plan version=5 textures=25 sampler_groups=1 padded_bytes=300096384 budget_bytes=536870912 max_size=16384
+[StutterFix] [livedeco] atlas_sampler group=0 filter=Bilinear srgb=False aniso=1 textures=25 max_width=5000 max_height=5000 padded_bytes=300096384
+[StutterFix] [livedeco] atlas_plan_page index=0 size=8192 filter=Bilinear srgb=False aniso=1 bytes=268435456
+[StutterFix] [livedeco] atlas_plan_page index=1 size=8192 filter=Bilinear srgb=False aniso=1 bytes=268435456
+[StutterFix] [livedeco] atlas_plan_ready pages=2 reserved_bytes=536870912 allocated_bytes=0
+[StutterFix] [livedeco] atlas_copy width=5000 height=5000 read_ms=2418.7092 extrude_ms=1175.1421 write_ms=14.7505
+[StutterFix] [livedeco] atlas_copy width=3840 height=3840 read_ms=2491.6093 extrude_ms=792.9080 write_ms=6.4395
+[StutterFix] [livedeco] atlas_copy width=2500 height=2500 read_ms=1096.0453 extrude_ms=340.7590 write_ms=3.3324
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=752.5428 extrude_ms=287.3155 write_ms=2.3613
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=774.7975 extrude_ms=261.1022 write_ms=2.1070
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=851.9842 extrude_ms=256.9039 write_ms=1.8191
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=761.7281 extrude_ms=238.6527 write_ms=2.0482
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=756.9934 extrude_ms=280.7523 write_ms=1.7922
+[StutterFix] [livedeco] atlas_copy width=2880 height=1620 read_ms=890.6300 extrude_ms=266.5175 write_ms=2.0088
+[StutterFix] [livedeco] atlas_copy width=960 height=720 read_ms=140.0023 extrude_ms=53.0922 write_ms=0.3528
+[StutterFix] [livedeco] atlas_copy width=682 height=682 read_ms=72.1882 extrude_ms=25.7022 write_ms=0.2760
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=22.8486 extrude_ms=16.9438 write_ms=0.1486
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=50.9272 extrude_ms=17.5285 write_ms=0.1384
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=50.5919 extrude_ms=15.9954 write_ms=0.1507
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=53.1788 extrude_ms=15.3759 write_ms=0.1395
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=38.4204 extrude_ms=19.1389 write_ms=0.1520
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=21.1213 extrude_ms=17.4938 write_ms=0.1404
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=21.8437 extrude_ms=16.5606 write_ms=0.1411
+[StutterFix] [livedeco] atlas_copy width=171 height=171 read_ms=6.7588 extrude_ms=0.0385 write_ms=0.0202
+[StutterFix] [livedeco] atlas_copy width=171 height=171 read_ms=6.6740 extrude_ms=0.0464 write_ms=0.0190
+[StutterFix] [livedeco] atlas_copy width=171 height=171 read_ms=6.7616 extrude_ms=0.0703 write_ms=0.0227
+[StutterFix] [livedeco] atlas_copy width=150 height=150 read_ms=2.4218 extrude_ms=0.0459 write_ms=0.0143
+[StutterFix] [livedeco] atlas_copy width=150 height=150 read_ms=1.5041 extrude_ms=0.0447 write_ms=0.0147
+[StutterFix] [livedeco] atlas_copy width=100 height=100 read_ms=5.9739 extrude_ms=0.0240 write_ms=0.0091
+[StutterFix] [livedeco] atlas_copy width=150 height=79 read_ms=1.4701 extrude_ms=0.0236 write_ms=0.0073
+[StutterFix] [livedeco] atlas_upload size=8192 bytes=268435456 ms=0.0292
+[StutterFix] [livedeco] atlas_upload size=8192 bytes=268435456 ms=0.0057
+[StutterFix] [livedeco] cost frame=22759 vertex_ms=3.8677 upload_ms=2.5798 runs_ms=889.8549 runs=79 owned=1809 live=2126 new_runs=79 reused_runs=0 heap_delta=0 stable_alloc_bytes=0 transition_alloc_bytes=0 atlas_pages=2 atlas_textures=25 atlas_bytes=536870912 prepare_ms=19384.6298 atlas_upload_ms=0.1208 cpu_ms=20281.0530 changed_members=1809 uploaded_runs=79 sample=transition
+[StutterFix] [livedeco] vertexcheck max_err=6.103515625E-05 count=1809 excluded=0 threshold=0.0001
+[StutterFix] [livedeco] remaining_reason=atlas-wrap-nonclamp count=279
+[StutterFix] [livedeco] remaining_reason=repeat-or-drawmode count=38
+[StutterFix] [livedeco] on=True gate=2 variant=B owned=1809 runs=79 failure=none pixel_equivalence=UNVERIFIED default_off=1
+[StutterFix] [livedeco] startup version=6 ms=20709.1944 frozen=True
+[StutterFix] [livedeco] on=False released=1 reason=none
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco2] PIXEL t=262 ab_out=75260 maxdiff=10 aa2_out=604 valid=False regions=(1120,416,32,32):2716;(1600,832,32,32):1852;(1120,480,32,32):1836;(1088,512,32,32):1753;(1088,480,32,32):1462
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco] patch_plan version=2 targets=18 abstract_declarations_skipped=2
+[StutterFix] [livedeco] pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED
+[StutterFix] [livedeco] admission version=4 hierarchy=renderer-to-pivot logical_child=1 max_depth=16 editing=True diagnostic_playback_pause=True
+[StutterFix] [livedeco] update version=6 cached_uv=1 cached_hierarchy=1 exact_dirty=1 dirty_upload=1 validation=each-frame cpu_total_includes_validation=1
+[StutterFix] [livedeco] hierarchy renderer_is_child=False child_parent_is_pivot=True depth=2 path=None count=2263
+[StutterFix] [livedeco] atlas_source reason=eligible textures=23
+[StutterFix] [livedeco] atlas_source reason=atlas-wrap-nonclamp textures=11
+[StutterFix] [livedeco] atlas_plan version=5 textures=23 sampler_groups=1 padded_bytes=284939776 budget_bytes=536870912 max_size=16384
+[StutterFix] [livedeco] atlas_sampler group=0 filter=Bilinear srgb=False aniso=1 textures=23 max_width=5000 max_height=5000 padded_bytes=284939776
+[StutterFix] [livedeco] atlas_plan_page index=0 size=8192 filter=Bilinear srgb=False aniso=1 bytes=268435456
+[StutterFix] [livedeco] atlas_plan_page index=1 size=8192 filter=Bilinear srgb=False aniso=1 bytes=268435456
+[StutterFix] [livedeco] atlas_plan_ready pages=2 reserved_bytes=536870912 allocated_bytes=0
+[StutterFix] [livedeco] atlas_copy width=5000 height=5000 read_ms=2903.8165 extrude_ms=18.8933 write_ms=11.0553
+[StutterFix] [livedeco] atlas_copy width=3840 height=3840 read_ms=1361.5920 extrude_ms=14.0646 write_ms=9.2681
+[StutterFix] [livedeco] atlas_copy width=2500 height=2500 read_ms=304.0134 extrude_ms=7.5827 write_ms=5.6863
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=37.9895 extrude_ms=4.1048 write_ms=3.0774
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=37.7749 extrude_ms=3.9605 write_ms=2.8781
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=36.3752 extrude_ms=4.0052 write_ms=2.9206
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=34.3707 extrude_ms=4.0383 write_ms=2.8670
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=36.6464 extrude_ms=3.9146 write_ms=2.5603
+[StutterFix] [livedeco] atlas_copy width=960 height=720 read_ms=10.0023 extrude_ms=0.5344 write_ms=0.3690
+[StutterFix] [livedeco] atlas_copy width=682 height=682 read_ms=3.9009 extrude_ms=0.3979 write_ms=0.3480
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=3.6924 extrude_ms=0.2148 write_ms=0.2354
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=2.9419 extrude_ms=0.2122 write_ms=0.1251
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=7.3374 extrude_ms=0.2096 write_ms=0.2226
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=2.3409 extrude_ms=0.2090 write_ms=0.1299
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=11.6263 extrude_ms=0.2107 write_ms=0.2468
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=2.2700 extrude_ms=0.2282 write_ms=0.1278
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=3.0561 extrude_ms=0.2116 write_ms=0.2259
+[StutterFix] [livedeco] atlas_copy width=171 height=171 read_ms=5.9182 extrude_ms=0.0292 write_ms=0.0185
+[StutterFix] [livedeco] atlas_copy width=171 height=171 read_ms=1.4218 extrude_ms=0.0307 write_ms=0.0182
+[StutterFix] [livedeco] atlas_copy width=171 height=171 read_ms=1.4079 extrude_ms=0.0293 write_ms=0.0173
+[StutterFix] [livedeco] atlas_copy width=150 height=150 read_ms=1.9186 extrude_ms=0.0259 write_ms=0.0162
+[StutterFix] [livedeco] atlas_copy width=150 height=79 read_ms=3.8830 extrude_ms=0.0155 write_ms=0.0083
+[StutterFix] [livedeco] atlas_upload size=8192 bytes=268435456 ms=0.0158
+[StutterFix] [livedeco] atlas_upload size=8192 bytes=268435456 ms=0.0042
+[StutterFix] [livedeco] cost frame=26115 vertex_ms=1.8922 upload_ms=2.8847 runs_ms=251.5821 runs=70 owned=1953 live=2263 new_runs=70 reused_runs=0 heap_delta=0 stable_alloc_bytes=0 transition_alloc_bytes=0 atlas_pages=2 atlas_textures=22 atlas_bytes=536870912 prepare_ms=12328.9267 atlas_upload_ms=0.0654 cpu_ms=12585.3511 changed_members=1953 uploaded_runs=70 sample=transition
+[StutterFix] [livedeco] vertexcheck max_err=0.00013647876039613038 count=1954 excluded=1 threshold=0.0001
+[StutterFix] [livedeco] remaining_reason=atlas-wrap-nonclamp count=266
+[StutterFix] [livedeco] remaining_reason=keywords count=1
+[StutterFix] [livedeco] remaining_reason=repeat-or-drawmode count=42
+[StutterFix] [livedeco] remaining_reason=vertex-error count=1
+[StutterFix] [livedeco] on=True gate=2 variant=B owned=1953 runs=70 failure=none pixel_equivalence=UNVERIFIED default_off=1
+[StutterFix] [livedeco] startup version=6 ms=12999.2903 frozen=True
+[StutterFix] [livedeco] on=False released=1 reason=none
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco2] PIXEL t=270 ab_out=6356 maxdiff=8 aa2_out=1255 valid=False regions=(1568,736,32,32):3270;(1568,704,32,32):2100;(1536,800,32,32):1284;(1536,736,32,32):1197;(1440,352,32,32):837
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco] patch_plan version=2 targets=18 abstract_declarations_skipped=2
+[StutterFix] [livedeco] pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED
+[StutterFix] [livedeco] admission version=4 hierarchy=renderer-to-pivot logical_child=1 max_depth=16 editing=True diagnostic_playback_pause=True
+[StutterFix] [livedeco] update version=6 cached_uv=1 cached_hierarchy=1 exact_dirty=1 dirty_upload=1 validation=each-frame cpu_total_includes_validation=1
+[StutterFix] [livedeco] hierarchy renderer_is_child=False child_parent_is_pivot=True depth=2 path=None count=17
+[StutterFix] [livedeco] atlas_source reason=eligible textures=11
+[StutterFix] [livedeco] atlas_plan version=5 textures=11 sampler_groups=1 padded_bytes=165782016 budget_bytes=536870912 max_size=16384
+[StutterFix] [livedeco] atlas_sampler group=0 filter=Bilinear srgb=False aniso=1 textures=11 max_width=5000 max_height=5000 padded_bytes=165782016
+[StutterFix] [livedeco] atlas_plan_page index=0 size=8192 filter=Bilinear srgb=False aniso=1 bytes=268435456
+[StutterFix] [livedeco] atlas_plan_ready pages=1 reserved_bytes=268435456 allocated_bytes=0
+[StutterFix] [livedeco] atlas_copy width=5000 height=5000 read_ms=345.2589 extrude_ms=18.5766 write_ms=11.6854
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=27.1210 extrude_ms=3.2673 write_ms=2.0847
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=24.5802 extrude_ms=3.2535 write_ms=2.0012
+[StutterFix] [livedeco] atlas_copy width=3222 height=1891 read_ms=32.3401 extrude_ms=4.1538 write_ms=3.0574
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=2.7448 extrude_ms=0.1352 write_ms=0.1258
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.3494 extrude_ms=0.1461 write_ms=0.1339
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.0964 extrude_ms=0.1479 write_ms=0.1253
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.1029 extrude_ms=0.1609 write_ms=0.1698
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.0556 extrude_ms=0.1608 write_ms=0.1250
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.0304 extrude_ms=0.1546 write_ms=0.1210
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.1361 extrude_ms=0.1589 write_ms=0.1194
+[StutterFix] [livedeco] atlas_upload size=8192 bytes=268435456 ms=0.0118
+[StutterFix] [livedeco] cost frame=30522 vertex_ms=0.0581 upload_ms=1.1498 runs_ms=22.8703 runs=4 owned=17 live=17 new_runs=4 reused_runs=0 heap_delta=0 stable_alloc_bytes=0 transition_alloc_bytes=0 atlas_pages=1 atlas_textures=11 atlas_bytes=268435456 prepare_ms=571.7035 atlas_upload_ms=0.0523 cpu_ms=595.8340 changed_members=17 uploaded_runs=4 sample=transition
+[StutterFix] [livedeco] vertexcheck max_err=0 count=17 excluded=0 threshold=0.0001
+[StutterFix] [livedeco] on=True gate=2 variant=B owned=17 runs=4 failure=none pixel_equivalence=UNVERIFIED default_off=1
+[StutterFix] [livedeco] startup version=6 ms=974.8731 frozen=True
+[StutterFix] [livedeco] on=False released=1 reason=none
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco2] PIXEL t=276 ab_out=1574 maxdiff=3 aa2_out=0 valid=True regions=(1856,1280,32,32):105;(1120,1280,32,32):99;(2016,1280,32,32):96;(2400,1280,32,32):96;(448,1280,32,32):93
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco2] PERF_BEGIN mode=off song=262.049822
+[StutterFix] [livedeco2] FPS mode=off index=0 fps=124.939540 ms=8.003871 frames=1742 seconds=13.942744 valid=True
+[StutterFix] [livedeco] on=False gate=2 variant=B owned=0 runs=0 failure=none pixel_equivalence=UNVERIFIED default_off=1
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco] patch_plan version=2 targets=18 abstract_declarations_skipped=2
+[StutterFix] [livedeco] pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED
+[StutterFix] [livedeco] admission version=4 hierarchy=renderer-to-pivot logical_child=1 max_depth=16 editing=True diagnostic_playback_pause=True
+[StutterFix] [livedeco] update version=6 cached_uv=1 cached_hierarchy=1 exact_dirty=1 dirty_upload=1 validation=each-frame cpu_total_includes_validation=1
+[StutterFix] [livedeco] hierarchy renderer_is_child=False child_parent_is_pivot=True depth=2 path=None count=362
+[StutterFix] [livedeco] atlas_source reason=atlas-wrap-nonclamp textures=11
+[StutterFix] [livedeco] atlas_source reason=eligible textures=18
+[StutterFix] [livedeco] atlas_plan version=5 textures=18 sampler_groups=1 padded_bytes=280743104 budget_bytes=536870912 max_size=16384
+[StutterFix] [livedeco] atlas_sampler group=0 filter=Bilinear srgb=False aniso=1 textures=18 max_width=5000 max_height=5000 padded_bytes=280743104
+[StutterFix] [livedeco] atlas_plan_page index=0 size=8192 filter=Bilinear srgb=False aniso=1 bytes=268435456
+[StutterFix] [livedeco] atlas_plan_page index=1 size=8192 filter=Bilinear srgb=False aniso=1 bytes=268435456
+[StutterFix] [livedeco] atlas_plan_ready pages=2 reserved_bytes=536870912 allocated_bytes=0
+[StutterFix] [livedeco] atlas_copy width=5000 height=5000 read_ms=169.5302 extrude_ms=18.2708 write_ms=11.5340
+[StutterFix] [livedeco] atlas_copy width=3840 height=3840 read_ms=625.4483 extrude_ms=10.7251 write_ms=6.3671
+[StutterFix] [livedeco] atlas_copy width=2500 height=2500 read_ms=525.6909 extrude_ms=4.5276 write_ms=2.8356
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=254.5117 extrude_ms=3.2221 write_ms=1.7677
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=216.0635 extrude_ms=3.6023 write_ms=2.4166
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=309.5340 extrude_ms=2.8993 write_ms=2.8531
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=102.6075 extrude_ms=3.0261 write_ms=1.9546
+[StutterFix] [livedeco] atlas_copy width=2048 height=2048 read_ms=30.0420 extrude_ms=2.9279 write_ms=1.7111
+[StutterFix] [livedeco] atlas_copy width=960 height=720 read_ms=6.5578 extrude_ms=0.3702 write_ms=0.3022
+[StutterFix] [livedeco] atlas_copy width=682 height=682 read_ms=2.8203 extrude_ms=0.3823 write_ms=0.2346
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.9704 extrude_ms=0.1311 write_ms=0.1203
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=2.3801 extrude_ms=0.2316 write_ms=0.1186
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.4529 extrude_ms=0.2230 write_ms=0.1460
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.4207 extrude_ms=0.2348 write_ms=0.1213
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.4514 extrude_ms=0.2464 write_ms=0.1247
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.7542 extrude_ms=0.2200 write_ms=0.1348
+[StutterFix] [livedeco] atlas_copy width=512 height=512 read_ms=1.3262 extrude_ms=0.2223 write_ms=0.1321
+[StutterFix] [livedeco] atlas_copy width=100 height=100 read_ms=0.8591 extrude_ms=0.0101 write_ms=0.0082
+[StutterFix] [livedeco] atlas_upload size=8192 bytes=268435456 ms=0.0118
+[StutterFix] [livedeco] atlas_upload size=8192 bytes=268435456 ms=0.0019
+[StutterFix] [livedeco] cost frame=35112 vertex_ms=0.2648 upload_ms=1.0844 runs_ms=34.4626 runs=22 owned=222 live=362 new_runs=22 reused_runs=0 heap_delta=0 stable_alloc_bytes=0 transition_alloc_bytes=0 atlas_pages=2 atlas_textures=18 atlas_bytes=536870912 prepare_ms=2551.6982 atlas_upload_ms=0.0582 cpu_ms=2587.5682 changed_members=222 uploaded_runs=22 sample=transition
+[StutterFix] [livedeco] vertexcheck max_err=6.103515625E-05 count=222 excluded=0 threshold=0.0001
+[StutterFix] [livedeco] remaining_reason=atlas-wrap-nonclamp count=107
+[StutterFix] [livedeco] remaining_reason=repeat-or-drawmode count=33
+[StutterFix] [livedeco] on=True gate=2 variant=B owned=222 runs=22 failure=none pixel_equivalence=UNVERIFIED default_off=1
+[StutterFix] [livedeco] startup version=6 ms=2968.0170 frozen=True
+[StutterFix] [livedeco] on=False released=1 reason=InvalidOperationException:runtime-lifetime
+[StutterFix] [livedeco2] GATE2=ERROR reason=InvalidOperationException:runtime-lifetime final_on=False
+[StutterFix] [livedeco] runtime_error=InvalidOperationException:runtime-lifetime
+[StutterFix] [자동 시험] 단계 실패 'livedeco perf begin on': perf sequence ABBA/start-window/mode

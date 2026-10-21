@@ -26,6 +26,21 @@ namespace StutterFix
         static readonly AccessTools.FieldRef<DecoTransformGizmoHolder, scrDecoration> GizmoDecoration = AccessTools.FieldRefAccess<DecoTransformGizmoHolder, scrDecoration>("currentDec");
         [StructLayout(LayoutKind.Sequential)]
         struct Vertex { internal Vector3 Position; internal Color32 Color; internal Vector2 UV; }
+        readonly struct VertexWriter : LiveDecoPolicy.IVertexWriter<Member, Vertex>
+        {
+            readonly float z;
+            internal VertexWriter(float depth) { z = depth; }
+            public bool Dirty(Member m) => m.VerticesDirty;
+            public void Write(Member m, Vertex[] vertices, int offset)
+            {
+                for (int k = 0; k < 4; k++)
+                {
+                    var point = m.Matrix.MultiplyPoint3x4(m.Corners[k]); point.z -= z;
+                    vertices[offset + k] = new Vertex { Position = point, Color = m.LastColor, UV = m.AtlasUV[k] };
+                }
+                m.VerticesDirty = false;
+            }
+        }
         readonly struct HierarchyPath : LiveDecoHierarchy.IPath<Transform, Matrix4x4>
         {
             readonly bool owned;
@@ -48,9 +63,22 @@ namespace StutterFix
             internal string Signature;
             internal bool Owned, OriginalOff;
             internal Vector2[] Corners, UV;
+            internal Vector2[] AtlasUV;
             internal ushort[] Triangles;
             internal LiveDecoAtlas.Entry Atlas;
             internal Matrix4x4 Matrix;
+            internal Transform[] PathNodes;
+            internal Matrix4x4[] PathLocals;
+            internal Vector3[] PathPositions, PathScales;
+            internal Quaternion[] PathRotations;
+            internal int ChildIndex;
+            internal Quaternion PivotRotation;
+            internal Vector3 SpriteCenter;
+            internal Matrix4x4 Flip;
+            internal bool FlipX, FlipY, GeometryDirty = true, VerticesDirty = true, HasCalculation;
+            internal Vector2 LastEnd, LastScale;
+            internal float LastAngle;
+            internal Color32 LastColor;
             internal Vector3 ChildPosition;
             internal string Rejected;
             internal int InitialHeight, InitialWidth;
@@ -75,6 +103,7 @@ namespace StutterFix
             internal string Signature;
             internal int Layer, Order, UnityLayer;
             internal float Z;
+            internal bool Dirty = true;
         }
         sealed class RowComparer : IComparer<MeshRow>
         { internal static readonly RowComparer Instance = new RowComparer(); public int Compare(MeshRow a, MeshRow b) => a.Key.CompareTo(b.Key); }
@@ -102,7 +131,14 @@ namespace StutterFix
             internal readonly BlockCensus Blocks = new BlockCensus();
             internal Harmony Harmony;
             internal bool Disposing;
+            internal bool TransitionPending;
             internal int Owned, LiveImages, NewRuns, ReusedRuns;
+            internal int ChangedMembers, UploadedRuns;
+            internal readonly Dictionary<Transform, Vector3> Positions = new Dictionary<Transform, Vector3>();
+            internal bool ControllerPaused;
+            internal float LockedScale, CameraAngle;
+            internal Rect CameraRect;
+            internal Camera GameCamera;
             internal double VertexMax;
             internal int VertexCount, VertexRejected;
             internal long ComputeTicks, UploadTicks, RebuildTicks, Samples, StableAllocated, TransitionAllocated;
@@ -124,6 +160,7 @@ namespace StutterFix
                 Log("pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED");
                 Log("admission version=4 hierarchy=renderer-to-pivot logical_child=1 max_depth=" + LiveDecoHierarchy.MaxDepth
                     + " editing=" + ADOBase.isEditingLevel + " diagnostic_playback_pause=" + FrameCompare.FrozenPlayback);
+                Log("update version=6 cached_uv=1 cached_hierarchy=1 exact_dirty=1 dirty_upload=1 validation=each-frame cpu_total_includes_validation=1");
                 EditorGizmos = Resources.FindObjectsOfTypeAll<DecoTransformGizmoHolder>();
                 DecoCount = Manager.allDecorations.Count;
                 foreach (var d in Manager.allDecorations)
@@ -193,6 +230,7 @@ namespace StutterFix
                 if (d.repeatX != 1 || d.repeatY != 1 || r.drawMode != SpriteDrawMode.Simple) return "repeat-or-drawmode";
                 if (!r.sprite || !r.sharedMaterial) return "missing-sprite-material";
                 if (m.Owned && (r.sprite != m.Sprite || r.sharedMaterial != m.Material || !m.Atlas.Valid)) return "input-changed";
+                if (m.Owned) RefreshGeometry(m);
                 if ((Camera.cullingMask & (1 << r.gameObject.layer)) == 0) return "camera-layer";
                 return LiveDecoAtlas.Reason(r.sprite.texture);
             }
@@ -209,27 +247,81 @@ namespace StutterFix
             Matrix4x4 Calculate(Member m, bool publish)
             {
                 var d = m.D; var p = d.parallax;
-                Vector2 follow = !ADOBase.controller.paused && d.followPlanet != null ? (Vector2)d.followPlanet.transform.position : Vector2.zero;
+                Vector2 follow = !ControllerPaused && d.followPlanet != null ? (Vector2)Position(d.followPlanet.transform) : Vector2.zero;
                 Vector2 start = d.pivotPosVec + follow;
                 Vector2 end;
                 if (p.clampToScreen)
                 {
-                    var cam = ADOBase.controller.camy.camobj; var rect = cam.pixelRect;
-                    end = cam.ScreenToWorldPoint(new Vector2(rect.x, rect.y) + new Vector2(rect.width * p.screenRelativePos.x, rect.height * p.screenRelativePos.y));
+                    var rect = CameraRect;
+                    end = GameCamera.ScreenToWorldPoint(new Vector2(rect.x, rect.y) + new Vector2(rect.width * p.screenRelativePos.x, rect.height * p.screenRelativePos.y));
                 }
-                else end = (Vector2)(p.cameraTransform.position - (Vector3)start) * p.multiplier + start;
-                Vector2 camScale = d.camScaleMultiplier;
+                else end = (Vector2)(Position(p.cameraTransform) - (Vector3)start) * p.multiplier + start;
+                Vector2 camScale = (d.lockScale ? LockedScale : 1f) * d.trueScaleMultiplier;
                 end += d.parallaxOffset * camScale / d.textureScaleMultiplier;
                 if (publish) { ParStart(p) = start; p.posCamAtStart = start; ParEnd(p) = end; }
                 float angle = d.startRot + d.rotAngle;
-                if (d.lockRotation) angle += ADOBase.controller.camy.transform.rotation.eulerAngles.z;
+                if (d.lockRotation) angle += CameraAngle;
                 Vector2 scale = d.scaleVec * camScale * (Vector2)Vector3.one;
-                var hierarchy = LiveDecoHierarchy.Compose<Transform, Matrix4x4, HierarchyPath>(m.R.transform, d.childTransform,
-                    d.pivotTrans, new HierarchyPath(m), true, out var childMatrix, out _);
-                if (hierarchy != LiveDecoHierarchy.Failure.None) throw new InvalidOperationException(HierarchyReason(hierarchy));
-                var matrix = Matrix4x4.TRS(new Vector3(end.x, end.y, 0), Quaternion.Euler(0, 0, angle), new Vector3(scale.x, scale.y, 1))
+                if (m.HasCalculation && !m.GeometryDirty && m.LastEnd.Equals(end) && m.LastScale.Equals(scale) && m.LastAngle.Equals(angle)) return m.Matrix;
+                var child = m.PathLocals[m.ChildIndex];
+                var childMatrix = LiveDecoHierarchy.ComposeCached<Transform, Matrix4x4, HierarchyPath>(m.PathLocals, m.ChildIndex, child, default);
+                if (!m.HasCalculation || !m.LastAngle.Equals(angle)) m.PivotRotation = Quaternion.Euler(0, 0, angle);
+                var matrix = Matrix4x4.TRS(new Vector3(end.x, end.y, 0), m.PivotRotation, new Vector3(scale.x, scale.y, 1))
                     * childMatrix;
-                return matrix * Matrix4x4.Scale(new Vector3(m.R.flipX ? -1 : 1, m.R.flipY ? -1 : 1, 1));
+                m.LastEnd = end; m.LastScale = scale; m.LastAngle = angle; m.HasCalculation = true; m.GeometryDirty = false;
+                m.VerticesDirty = true;
+                return matrix * m.Flip;
+            }
+            Vector3 Position(Transform t)
+            {
+                if (!Positions.TryGetValue(t, out var value)) { value = t.position; Positions.Add(t, value); }
+                return value;
+            }
+            void RefreshGeometry(Member m)
+            {
+                // Validation remains explicit and conservative. Capture native
+                // locals here, never inside the corner/UV computation loop.
+                var node = m.R.transform;
+                int depth = 0;
+                while (node != m.D.pivotTrans)
+                {
+                    if (!node || depth == LiveDecoHierarchy.MaxDepth) throw new InvalidOperationException("hierarchy-changed-during-validation");
+                    if (m.PathNodes == null || depth >= m.PathNodes.Length || m.PathNodes[depth] != node)
+                    { CaptureGeometry(m); return; }
+                    bool child = node == m.D.childTransform;
+                    var position = child ? m.ChildPosition : node.localPosition;
+                    var rotation = node.localRotation; var scale = node.localScale;
+                    if (!m.PathPositions[depth].Equals(position) || !m.PathRotations[depth].Equals(rotation) || !m.PathScales[depth].Equals(scale))
+                    {
+                        m.PathPositions[depth] = position; m.PathRotations[depth] = rotation; m.PathScales[depth] = scale;
+                        m.PathLocals[depth] = Matrix4x4.TRS(position, rotation, scale); m.GeometryDirty = true;
+                    }
+                    if (child) m.ChildIndex = depth;
+                    depth++; node = node.parent;
+                }
+                if (depth != m.PathNodes.Length) { CaptureGeometry(m); return; }
+                bool x = m.R.flipX, y = m.R.flipY;
+                if (m.FlipX != x || m.FlipY != y) { m.FlipX = x; m.FlipY = y; m.Flip = Matrix4x4.Scale(new Vector3(x ? -1 : 1, y ? -1 : 1, 1)); m.GeometryDirty = true; }
+            }
+            void CaptureGeometry(Member m)
+            {
+                var nodes = new List<Transform>(); var locals = new List<Matrix4x4>();
+                var positions = new List<Vector3>(); var rotations = new List<Quaternion>(); var scales = new List<Vector3>();
+                var node = m.R.transform; m.ChildIndex = -1;
+                while (node && node != m.D.pivotTrans && nodes.Count < LiveDecoHierarchy.MaxDepth)
+                {
+                    bool child = node == m.D.childTransform;
+                    if (child) m.ChildIndex = nodes.Count;
+                    var position = child ? m.ChildPosition : node.localPosition; var rotation = node.localRotation; var scale = node.localScale;
+                    positions.Add(position); rotations.Add(rotation); scales.Add(scale);
+                    nodes.Add(node); locals.Add(Matrix4x4.TRS(position, rotation, scale));
+                    node = node.parent;
+                }
+                if (node != m.D.pivotTrans || m.ChildIndex < 0) throw new InvalidOperationException("hierarchy-changed-during-capture");
+                m.PathNodes = nodes.ToArray(); m.PathLocals = locals.ToArray();
+                m.PathPositions = positions.ToArray(); m.PathRotations = rotations.ToArray(); m.PathScales = scales.ToArray();
+                m.FlipX = m.R.flipX; m.FlipY = m.R.flipY;
+                m.Flip = Matrix4x4.Scale(new Vector3(m.FlipX ? -1 : 1, m.FlipY ? -1 : 1, 1)); m.GeometryDirty = true;
             }
             bool Admit(Member m)
             {
@@ -252,6 +344,8 @@ namespace StutterFix
                     m.Sprite = sprite; m.Corners = sprite.vertices; m.UV = sprite.uv; m.Triangles = sprite.triangles;
                 }
                 if (m.Corners.Length != 4 || m.UV.Length != 4 || m.Triangles.Length != 6) { m.Material = Materials[0]; m.Rejected = "nonquad-sprite"; Reject(m.Rejected); return false; }
+                m.ChildPosition = m.D.childTransform.localPosition; CaptureGeometry(m);
+                m.SpriteCenter = sprite.bounds.center;
                 m.Matrix = Calculate(m, false);
                 var actual = m.R.transform.localToWorldMatrix * Matrix4x4.Scale(new Vector3(m.R.flipX ? -1 : 1, m.R.flipY ? -1 : 1, 1));
                 double error = 0;
@@ -260,15 +354,16 @@ namespace StutterFix
                 if (double.IsNaN(error) || error > 1e-4) { VertexRejected++; m.Material = Materials[0]; m.Rejected = "vertex-error"; Reject(m.Rejected); return false; }
                 m.Material = Materials[0]; m.Signature = Signature(m.Material); m.Rejected = null;
                 m.Atlas = Atlas.Get(sprite.texture);
-                m.ChildPosition = m.D.childTransform.localPosition;
-                m.OriginalOff = m.R.forceRenderingOff; m.Owned = true; Owned++;
+                m.AtlasUV = new Vector2[4]; for (int k = 0; k < 4; k++) m.AtlasUV[k] = m.Atlas.Map(m.UV[k]);
+                m.VerticesDirty = true;
+                m.OriginalOff = m.R.forceRenderingOff; m.Owned = true; Owned++; TransitionPending = true;
                 return true;
             }
             void Reject(string reason) { if (!Exclusions.ContainsKey(reason)) { Exclusions.Add(reason, 0); ReasonKeys.Add(reason); } Exclusions[reason]++; }
             internal void Release(Member m)
             {
                 if (!m.Owned) return;
-                m.Owned = false; Owned--;
+                m.Owned = false; Owned--; TransitionPending = true;
                 // Disable all old draws until the next incremental partition update.
                 foreach (var run in Runs) if (run.Renderer) run.Renderer.enabled = false;
                 try { if (m.R) { m.R.forceRenderingOff = m.OriginalOff; m.R.color = RenderedColor(m.D); } }
@@ -284,6 +379,14 @@ namespace StutterFix
                 if (!Camera.orthographic || Math.Abs(forward.x) > 1e-6 || Math.Abs(forward.y) > 1e-6 || mode == TransparencySortMode.CustomAxis || mode == TransparencySortMode.Perspective)
                     throw new InvalidOperationException("unsupported-sort-camera");
                 Frame = Time.frameCount; Stamp++; LiveImages = 0;
+                Positions.Clear();
+                ControllerPaused = ADOBase.controller.paused;
+                var camy = ADOBase.controller.camy;
+                GameCamera = camy.camobj; CameraRect = GameCamera.pixelRect;
+                CameraAngle = camy.transform.rotation.eulerAngles.z;
+                LockedScale = GameCamera.orthographicSize * 0.2f / (ADOBase.customLevel.levelData.camZoom / 100f);
+                long calculationTicks = 0;
+                ChangedMembers = UploadedRuns = 0;
                 for (int n = 0; n < ReasonKeys.Count; n++) Exclusions[ReasonKeys[n]] = 0;
                 int previousVertices = VertexCount;
                 foreach (var m in AdmissionOrder)
@@ -292,7 +395,13 @@ namespace StutterFix
                     if (!m.R || !m.R.enabled || !m.R.gameObject.activeInHierarchy || (!m.Owned && m.R.forceRenderingOff)) continue;
                     LiveImages++;
                     if (!m.Owned && !Admit(m)) continue;
+                    long calculationStart = Stopwatch.GetTimestamp();
                     m.Matrix = Calculate(m, true);
+                    Color32 color = RenderedColor(m.D);
+                    if (m.LastColor.r != color.r || m.LastColor.g != color.g || m.LastColor.b != color.b || m.LastColor.a != color.a)
+                    { m.LastColor = color; m.VerticesDirty = true; }
+                    if (m.VerticesDirty) ChangedMembers++;
+                    calculationTicks += Stopwatch.GetTimestamp() - calculationStart;
                 }
                 long computed = Stopwatch.GetTimestamp();
                 Rows.Clear();
@@ -313,10 +422,10 @@ namespace StutterFix
                         var row = cache[slot]; row.Material = material; row.Member = own ? member : null;
                         if (own)
                         {
-                            Vector3 center = member.Matrix.MultiplyPoint3x4(member.Sprite.bounds.center);
+                            Vector3 center = member.Matrix.MultiplyPoint3x4(member.SpriteCenter);
                             if (member.R.spriteSortPoint == SpriteSortPoint.Pivot) center = member.Matrix.MultiplyPoint3x4(Vector3.zero);
                             row.Key = new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(renderer.sortingLayerID), renderer.sortingOrder,
-                                material.renderQueue, Vector3.Dot(center - Camera.transform.position, forward), material.GetInstanceID(), renderer.GetInstanceID(), slot);
+                                material.renderQueue, Vector3.Dot(center - Position(Camera.transform), forward), material.GetInstanceID(), renderer.GetInstanceID(), slot);
                         }
                         else row.Key = MatShare.SortKey(renderer, material, Camera, slot);
                         Rows.Add(row);
@@ -343,43 +452,47 @@ namespace StutterFix
                 Flush(first);
                 foreach (var old in Runs) if (!NextRuns.Contains(old)) DestroyRun(old);
                 Runs.Clear(); Runs.AddRange(NextRuns);
+                long atlasStart = Stopwatch.GetTimestamp();
                 Atlas.Upload();
+                long atlasEnd = Stopwatch.GetTimestamp();
                 if (Vertices.Length < Owned * 4) Array.Resize(ref Vertices, Mathf.NextPowerOfTwo(Owned * 4));
                 long rebuilt = Stopwatch.GetTimestamp();
                 int vertexOffset = 0;
                 foreach (var run in Runs)
                 {
                     run.VertexOffset = vertexOffset;
-                    for (int n = 0; n < run.Members.Length; n++)
-                    {
-                        var m = run.Members[n]; Color32 color = RenderedColor(m.D);
-                        for (int k = 0; k < 4; k++)
-                        {
-                            var point = m.Matrix.MultiplyPoint3x4(m.Corners[k]); point.z -= run.Z;
-                            Vertices[vertexOffset + n * 4 + k] = new Vertex { Position = point, Color = color, UV = m.Atlas.Map(m.UV[k]) };
-                        }
-                    }
+                    run.Dirty = LiveDecoPolicy.UpdateVertices<Member, Vertex, VertexWriter>(run.Members, Vertices,
+                        vertexOffset, run.Dirty, new VertexWriter(run.Z));
                     vertexOffset += run.Members.Length * 4;
                 }
                 long verticesEnd = Stopwatch.GetTimestamp();
                 foreach (var run in Runs)
                 {
-                    run.Mesh.SetVertexBufferData(Vertices, run.VertexOffset, 0, run.Members.Length * 4, 0,
-                        MeshUpdateFlags.DontValidateIndices | MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontNotifyMeshUsers);
+                    if (run.Dirty)
+                    {
+                        run.Mesh.SetVertexBufferData(Vertices, run.VertexOffset, 0, run.Members.Length * 4, 0,
+                            MeshUpdateFlags.DontValidateIndices | MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontNotifyMeshUsers);
+                        UploadedRuns++; run.Dirty = false;
+                    }
                     run.Renderer.enabled = true;
                 }
                 foreach (var m in Members.Values) if (m.Owned) m.R.forceRenderingOff = true;
                 long endTime = Stopwatch.GetTimestamp();
-                ComputeTicks += computed - begin + verticesEnd - rebuilt; RebuildTicks += rebuilt - computed; UploadTicks += endTime - verticesEnd; Samples++;
+                long vertexTicks = calculationTicks + verticesEnd - rebuilt;
+                ComputeTicks += vertexTicks; RebuildTicks += rebuilt - computed; UploadTicks += endTime - verticesEnd; Samples++;
                 long delta = GC.GetAllocatedBytesForCurrentThread() - allocated;
-                bool transition = NewRuns != 0 || VertexCount != previousVertices;
+                bool transition = TransitionPending || NewRuns != 0 || VertexCount != previousVertices;
+                TransitionPending = false;
                 if (transition) TransitionAllocated += delta; else StableAllocated += delta;
                 if (Samples == 1 || transition || Samples % 120 == 0)
                 {
-                    Log("cost frame=" + Frame + " vertex_ms=" + Ms(computed - begin + verticesEnd - rebuilt) + " upload_ms=" + Ms(endTime - verticesEnd)
-                        + " runs_ms=" + Ms(rebuilt - computed) + " runs=" + Runs.Count + " owned=" + Owned + " live=" + LiveImages
+                    Log("cost frame=" + Frame + " vertex_ms=" + Ms(vertexTicks) + " upload_ms=" + Ms(endTime - verticesEnd)
+                        + " runs_ms=" + Ms(rebuilt - computed - (atlasEnd - atlasStart)) + " runs=" + Runs.Count + " owned=" + Owned + " live=" + LiveImages
                         + " new_runs=" + NewRuns + " reused_runs=" + ReusedRuns + " heap_delta=" + delta + " stable_alloc_bytes=" + StableAllocated
-                        + " transition_alloc_bytes=" + TransitionAllocated + " atlas_pages=" + Atlas.Pages + " atlas_textures=" + Atlas.Count + " atlas_bytes=" + Atlas.Bytes);
+                        + " transition_alloc_bytes=" + TransitionAllocated + " atlas_pages=" + Atlas.Pages + " atlas_textures=" + Atlas.Count + " atlas_bytes=" + Atlas.Bytes
+                        + " prepare_ms=" + Ms(computed - begin - calculationTicks) + " atlas_upload_ms=" + Ms(atlasEnd - atlasStart)
+                        + " cpu_ms=" + Ms(endTime - begin) + " changed_members=" + ChangedMembers + " uploaded_runs=" + UploadedRuns
+                        + " sample=" + (transition ? "transition" : "stable"));
                     Log("vertexcheck max_err=" + VertexMax.ToString("R", CultureInfo.InvariantCulture) + " count=" + VertexCount + " excluded=" + VertexRejected + " threshold=0.0001");
                     foreach (var why in Exclusions) if (why.Value != 0) Log("remaining_reason=" + why.Key + " count=" + why.Value);
                 }
@@ -420,8 +533,9 @@ namespace StutterFix
                     match.Renderer.SetPropertyBlock(block); NewRuns++;
                 }
                 else { NextRuns.Add(match); ReusedRuns++; }
-                match.Z = first.Member.Matrix.MultiplyPoint3x4(first.Member.Sprite.bounds.center).z;
-                match.Object.transform.position = new Vector3(0, 0, match.Z);
+                float z = first.Member.Matrix.MultiplyPoint3x4(first.Member.SpriteCenter).z;
+                if (match.Dirty || !match.Z.Equals(z))
+                { match.Z = z; match.Dirty = true; match.Object.transform.position = new Vector3(0, 0, match.Z); }
                 Segment.Clear();
             }
             public void Dispose()
@@ -515,7 +629,9 @@ namespace StutterFix
             if ((FrameCompare.Paused ? !FrameCompare.FrozenPlayback : !Hitch.Playing) || SceneReset.Resetting || MatShare.Active || GpuSplit.Busy || GpuHide.Busy || DecoEngine.Enabled)
                 throw new InvalidOperationException("livedeco runtime requires playback/pause with other render experiments off");
             runtimeFailure = "none"; runtime = new Runtime();
-            try { runtime.Begin(); } catch (Exception e) { runtimeFailure = e.GetType().Name + ":" + e.Message; StopRuntime(); Gate2Error(runtimeFailure); throw; }
+            long begin = Stopwatch.GetTimestamp();
+            try { runtime.Begin(); Log("startup version=6 ms=" + Ms(Stopwatch.GetTimestamp() - begin) + " frozen=" + FrameCompare.FrozenPlayback); }
+            catch (Exception e) { runtimeFailure = e.GetType().Name + ":" + e.Message; StopRuntime(); Gate2Error(runtimeFailure); throw; }
         }
         static void StopRuntime()
         { var s = runtime; if (s == null) return; runtime = null; s.Dispose(); Log("on=False released=1 reason=" + runtimeFailure); }

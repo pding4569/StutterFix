@@ -126,8 +126,17 @@ namespace StutterFix
             if (width < 1 || height < 1 || pixels.Length != checked(width * height)) throw new ArgumentException("pixels");
             int w = Align(checked(width + 2 * Pad)), h = Align(checked(height + 2 * Pad));
             var result = new T[checked(w * h)];
-            for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
-                result[y * w + x] = pixels[Math.Max(0, Math.Min(height - 1, y - Pad)) * width + Math.Max(0, Math.Min(width - 1, x - Pad))];
+            // Copy interiors in bulk; clamp only at row/edge granularity. Large
+            // sources must not execute four clamps for every interior texel.
+            for (int y = 0; y < height; y++)
+            {
+                int src = y * width, dst = (y + Pad) * w;
+                Array.Copy(pixels, src, result, dst + Pad, width);
+                for (int x = 0; x < Pad; x++) result[dst + x] = pixels[src];
+                for (int x = Pad + width; x < w; x++) result[dst + x] = pixels[src + width - 1];
+            }
+            for (int y = 0; y < Pad; y++) Array.Copy(result, Pad * w, result, y * w, w);
+            for (int y = Pad + height; y < h; y++) Array.Copy(result, (Pad + height - 1) * w, result, y * w, w);
             return result;
         }
         internal static string Verdict(int pixels, bool restored, bool pixelsValid, bool fpsValid, double off, double on)

@@ -5,6 +5,22 @@ namespace StutterFix
 {
     internal static class LiveDecoPolicy
     {
+        internal interface IVertexWriter<TMember, TVertex>
+        {
+            bool Dirty(TMember member);
+            void Write(TMember member, TVertex[] vertices, int offset);
+        }
+        internal static bool UpdateVertices<TMember, TVertex, TWriter>(TMember[] members, TVertex[] vertices,
+            int offset, bool force, TWriter writer) where TWriter : struct, IVertexWriter<TMember, TVertex>
+        {
+            bool dirty = force;
+            for (int i = 0; i < members.Length && !dirty; i++) dirty = writer.Dirty(members[i]);
+            if (!dirty) return false;
+            // A reused run can move within the shared CPU array. Rewrite the
+            // ENTIRE dirty run, including unchanged neighbours, before upload.
+            for (int i = 0; i < members.Length; i++) writer.Write(members[i], vertices, offset + i * 4);
+            return true;
+        }
         internal static bool RendererLive(bool exists, bool sceneValid, bool enabled, bool activeInHierarchy, bool forcedOff)
             => exists && sceneValid && enabled && activeInHierarchy && !forcedOff;
 
