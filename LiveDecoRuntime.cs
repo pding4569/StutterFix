@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using HarmonyLib;
 using UnityEngine;
@@ -97,6 +96,16 @@ namespace StutterFix
                 Camera = GpuSplit.FindMain(); Manager = scrDecorationManager.instance;
                 if (!Camera || !Manager) throw new InvalidOperationException("camera/manager missing");
                 if (GraphicsSettings.currentRenderPipeline != null || !Camera.orthographic) throw new InvalidOperationException("requires Built-in orthographic camera");
+                var patches = LiveDecoPatchPlan.Build(typeof(scrDecoration), typeof(scrVisualDecoration), typeof(scrParallax), typeof(Vector2), typeof(Color));
+                // Preflight every target before allocating atlas pages or applying
+                // any hook; a bad target must not leave a partially installed plan.
+                foreach (var patch in patches.Entries)
+                {
+                    var other = HarmonyLib.Harmony.GetPatchInfo(patch.Method);
+                    if (other != null && other.Owners.Any(id => id != Main.Entry.Info.Id && id != "StutterFix.fuseprobe" && id != RuntimeId))
+                        throw new InvalidOperationException("foreign-patch " + patch.Method.DeclaringType.Name + "." + patch.Method.Name);
+                }
+                Log("patch_plan version=2 targets=" + patches.Entries.Count + " abstract_declarations_skipped=" + patches.AbstractDeclarations.Count);
                 Log("pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED");
                 DecoCount = Manager.allDecorations.Count;
                 foreach (var d in Manager.allDecorations)
@@ -119,35 +128,14 @@ namespace StutterFix
                     CachedRows.Add(r.GetInstanceID(), slots);
                 }
                 Harmony = new Harmony(RuntimeId);
-                Patch(typeof(scrDecoration), "UpdatePosition", Type.EmptyTypes, nameof(PositionPrefix));
-                Patch(typeof(scrDecoration), "SetRotation", new[] { typeof(float) }, nameof(RotationPrefix));
-                Patch(typeof(scrDecoration), "SetScale", new[] { typeof(Vector2) }, nameof(ScalePrefix));
-                Patch(typeof(scrDecoration), "SetPosition", new[] { typeof(Vector2), typeof(Vector2) }, nameof(SetPositionPrefix));
-                Patch(typeof(scrDecoration), "SetColor", new[] { typeof(Color) }, nameof(ColorPrefix));
-                Patch(typeof(scrDecoration), "SetOpacity", new[] { typeof(float) }, nameof(OpacityPrefix));
-                Patch(typeof(scrVisualDecoration), "ApplyColor", Type.EmptyTypes, nameof(ApplyColorPrefix));
-                Patch(typeof(scrParallax), "SetTrans", Type.EmptyTypes, nameof(ParallaxPrefix));
-                // Release before structural changes; color/opacity remain managed inputs.
-                foreach (var type in new[] { typeof(scrDecoration), typeof(scrVisualDecoration) })
-                    foreach (var method in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-                        if (new[] { "Setup", "SetSprite", "SetDepth", "SetTile", "SetBlendMode", "SetMaskingType", "SetParallax", "SetVisible", "UpdateHitboxState" }.Contains(method.Name))
-                            Patch(type, method.Name, method.GetParameters().Select(p => p.ParameterType).ToArray(), nameof(StructuralPrefix));
+                foreach (var patch in patches.Entries)
+                    try { Harmony.Patch(patch.Method, prefix: new HarmonyMethod(typeof(LiveDeco), patch.Prefix) { priority = Priority.First }); }
+                    catch (Exception e) { throw new InvalidOperationException("patch-install " + patch.Method.DeclaringType.Name + "." + patch.Method.Name + ":" + e.GetType().Name + ":" + e.Message, e); }
                 Tick();
                 if (Owned == 0) throw new InvalidOperationException("zero-owned-see-exclusions");
                 Camera.onPreCull += RuntimePreCull;
                 SceneManager.activeSceneChanged += RuntimeSceneChanged;
                 Log(RuntimeState());
-            }
-            void Patch(Type type, string name, Type[] args, string prefix)
-            {
-                var found = type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                    .Where(m => m.Name == name && !m.IsStatic && !m.ContainsGenericParameters && m.ReturnType == typeof(void)
-                        && (m.CallingConvention & CallingConventions.HasThis) != 0 && m.GetParameters().Select(p => p.ParameterType).SequenceEqual(args)).ToArray();
-                if (found.Length != 1) throw new InvalidOperationException("patch-target-count=" + found.Length + " " + type.Name + "." + name);
-                var other = HarmonyLib.Harmony.GetPatchInfo(found[0]);
-                if (other != null && other.Owners.Any(id => id != Main.Entry.Info.Id && id != "StutterFix.fuseprobe" && id != RuntimeId))
-                    throw new InvalidOperationException("foreign-patch " + type.Name + "." + name);
-                Harmony.Patch(found[0], prefix: new HarmonyMethod(typeof(LiveDeco), prefix) { priority = Priority.First });
             }
             internal string InputReason(Member m)
             {

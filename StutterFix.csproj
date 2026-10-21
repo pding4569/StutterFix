@@ -76,6 +76,7 @@
     <Compile Include="SceneRenderOrder.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDeco.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoPolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="LiveDecoPatchPlan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoAtlasPolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoAtlas.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoRuntime.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

@@ -117,7 +117,7 @@ if (args.Length == 3)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
-        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoAtlas", "LiveDecoAtlasPolicy" })
+        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoAtlas", "LiveDecoAtlasPolicy", "LiveDecoPatchPlan" })
             Check(names.Contains(name) == (i != 0), "edition types " + name + " " + args[i]);
         if (i == 0) Check(!md.TypeReferences.Any(h => md.GetString(md.GetTypeReference(h).Name).StartsWith("LiveDeco")
             || md.GetString(md.GetTypeReference(h).Name) == "SceneRenderOrder"), "Player no experiment type references");

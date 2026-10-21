@@ -1,6 +1,23 @@
 # Gate 2 변형 B 결과 — 2026-10-21
 
-**기본 꺼짐인 개발용 아틀라스·구간 메시 프로토타입과 자동 시험 입력을 구현했다. 오프라인 검증은 통과했으며, 게임 픽셀·FPS·실제 소유율·실제 구간 수는 미측정이다. GATE2=PASS를 주장하지 않는다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+**2회차: 직전 자동 시험의 `Method has no body`를 일으키는 추상 메서드 패치 경로를 수정했다. 수정 후 3종 빌드·LoadCheck·회귀 검사는 통과했다. 실제 Harmony 설치·픽셀·FPS는 재시험하지 않았으므로 GATE2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+
+## 2회차 오류 분석과 수정
+
+장부와 [직전 자동 시험](gb-autoloop-run1-evidence.txt)을 먼저 확인했다. 최초 `livedeco on`이 `BadImageFormatException:Method has no body`로 끝났고 `final_on=False`였다. 세 시점 픽셀·ABBA FPS까지 진행하지 못했다. 따라서 이 로그는 아틀라스의 픽셀 실패나 이득 없음의 근거가 아니다.
+
+디컴파일 `E:/StutterFixWork/decompiled/Assembly-CSharp/scrDecoration.cs:189,193`은 `SetVisible(bool)`·`SetDepth(int)`가 추상 선언임을 보여 준다. 기존 Runtime.Begin은 구조 setter를 이름으로 모으면서 추상 메서드도 포함해 총 **20개**를 Harmony에 넘기려 했다. `tools/ilscan`의 [메서드 목록](gate2-B-run2-patch-il.log), 실제 DLL의 reflection·PE 메타데이터를 사용하는 [새 회귀 검사](gate2-B-run2-patch-check.log)로 두 선언의 **Abstract=true, RVA=0**을 확인했다. `scrVisualDecoration.cs:327,431`의 재정의에는 실제 본문이 있다. 게임 DLL SHA256은 `F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF`다. 전달 로그에 스택은 없지만, 기존 대상 목록에 본문 없는 메서드가 포함된 코드 결함은 확정했다.
+
+- `LiveDecoPatchPlan.cs`에서 **18개 실제 구현 대상**과 **제외한 추상 선언 2개**를 구분한다. 추상 선언을 제외할 때 실제 visual 재정의가 존재하고 같은 virtual slot인지 검증하므로, SetDepth/SetVisible의 소유 해제 훅은 유지한다. SetSprite 두 오버로드와 나머지 구조 변경 훅도 유지했다.
+- 이름·정확한 인자 타입·인스턴스 호출 규약·void 반환·유일성·관리 본문을 모두 확인한다. 필수 대상이 추상/본문 없음이면 이름을 포함해 실패한다. 다른 모드의 Harmony 소유자 검사도 유지한다. 전체 계획을 아틀라스 할당과 패치 적용 **전에** 검증한다.
+- 설치가 다른 원인으로 실패하면 `patch-install <타입>.<메서드>:<예외>:<내용>`을 남겨 다음 실패 지점을 식별한다. 기존 StopRuntime/UnpatchAll/렌더러 복원 경로는 유지했다.
+- 새 빌드 식별 로그는 `[livedeco] patch_plan version=2 targets=18 abstract_declarations_skipped=2`다. 일반 Player에서는 새 계획 타입도 제외한다. 기본 꺼짐·판정 조건·아틀라스/정점 계산·144-step 시험 입력은 유지했다. 게이트 3은 구현하지 않았다.
+
+새 검사는 생산 코드와 같은 계획 생성기를 링크하고 설치 DLL을 읽는다. **38 checks**로 추상 선언/실제 PE RVA, 본문 존재, 중복 없음, 8개 상태 쓰기 훅, 구조 setter 보존, 두 SetSprite 오버로드, 필수 추상 대상 거절을 확인했다. 게임 메서드·Unity native·Harmony detour는 실행하지 않았다. 명령은 `dotnet run --project tools/optimization/LiveDecoPatchCheck -c Release -- "<게임 Managed>/Assembly-CSharp.dll"`이다.
+
+이는 본문 없는 대상을 배제하는 오프라인 검증이며, 게임 Mono에서 Harmony 설치가 성공했음을 증명하지 않는다. 다음 외부 자동 시험은 **변경된 DLL**로 기존 144 steps를 사용하고 위 version=2 로그부터 확인해야 한다. 이후 owned/runs·vertexcheck·atlas 메모리·GC·픽셀·복원·ABBA FPS를 관측한다. 같은 코드의 실패 시험을 반복하지 않았다. 새 빌드 해시는 [산출물 목록](gate2-B-run2-artifacts.txt)에 기록한다.
+
+공통 명세의 로드맵은 이 워크트리에 없어 `E:/StutterFixWork/StutterFix/docs/ROADMAP-EXTREME-20261021.md`를 읽었다. freeze 결과 문서는 이 워크트리와 canonical 문서 경로 모두에 없었다. 시작 시 이미 변경된 `codex-al-gb-2.md`와 중단 전에 남긴 run2 로그는 이어받았고, 사용자 인계 변경은 보존했다.
 
 공통 명세가 게이트 1을 통과로 결정했으므로 기존 MPB 전체 이름 열거 문제를 다시 중단 조건으로 삼지 않았다. 알려진 커스텀 MPB는 제외하고 미지의 속성 문제는 실제 최종 화면 비교에 남겼다. 작업 중 공통 문서에 추가된 DecoAnim 채널 쓰기 차단 지시도 반영했다. 공통 문서의 추가 3줄은 외부에서 들어온 변경이며 이 작업에서 작성하거나 되돌리지 않았다.
 
@@ -45,7 +62,7 @@
 
 ## DecoAnim 설정 비용
 
-기존 저장 인계 로그에서 ProfApply/ProfSet의 해당 수치 표본은 찾지 못했다. 이번에는 게임 실행이 금지되어 **설정이 1.9ms의 60% 이상이라는 추정을 확인하지 못했다.**
+직전 자동 시험이 전달한 표본은 **960,572개, set_pct=70.130186%**다. 채널별 apply_us/set_us는 위치 X 0.072866/0.562924, 위치 Y 0.073281/0.216343, 회전 0.073331/0.129199, 크기 X 0.142760/0.027674, 크기 Y 0.134887/0.030378, 색 0.073243/0.262872, 불투명도 0.079391/0.575806이다. 이는 표본 Step/Apply/OnUpdate 시간에서 ProfSet 비율이며, DecoAnim 전체 1.9ms의 70.13% 또는 순수 native 쓰기 비율이라는 뜻은 아니다. 특히 크기 setter는 ProfApply에 포함된다. 게임을 새로 실행하지 않고 전달 로그에서 인용한 수치다.
 
 `livedeco profile begin|end`를 추가했다. 기존 ProfN/ProfApply/ProfSet을 차분하여 채널별 apply_us/set_us와 총 표본 시간의 set_pct를 출력한다. PlayerAuto에서도 이 별도 구간 동안만 샘플링을 켜고 원래 상태로 복원한다. 생성 steps는 다른 시험보다 먼저 livedeco가 꺼진 262→276초에서 이를 측정한다. ProfApply에는 ApplyE의 크기 setter가 포함되므로, 출력의 set_pct를 모든 native 쓰기 비중이나 DecoAnim 전체 비용 비중으로 해석하면 안 된다. 프로파일 창은 ABBA FPS 근거에 포함하지 않는다.
 
@@ -61,15 +78,16 @@
 
 | 검사 | 이번 결과 | 근거 |
 |---|---|---|
-| Release Dev / Player / PlayerAuto | 오류 0/0/0, 경고 38/36/38 | gate2-B-build-dev/player/auto.log |
-| LoadCheck Dev / Player / Auto | 274/229/274곳, 틀림 0/0/0 | gate2-B-loadcheck-dev/player/auto.log |
-| 기존 LiveDeco 정렬·앵커 정책 | 22,952 checks 통과 | gate2-B-fixture.log |
+| 실제 게임 DLL 패치 계획 | 38 checks, 본문 있는 18개/추상 제외 2개 | gate2-B-run2-patch-check.log |
+| Release Dev / Player / PlayerAuto | 오류 0/0/0, 경고 38/36/38 | gate2-B-run2-build-dev/player/auto.log |
+| LoadCheck Dev / Player / Auto | 274/229/274곳, 틀림 0/0/0 | gate2-B-run2-loadcheck-dev/player/auto.log |
+| 기존 LiveDeco 정렬·앵커 정책 | 22,952 checks 통과 | gate2-B-run2-fixture.log |
 | 신규 아틀라스·판정 정책 | 1,052,924 checks 통과 | 같은 로그 |
-| LiveDeco edition 메타데이터 | 16 checks, 일반 Player 타입/참조 없음 | 같은 로그 |
-| 기존 MatShare 정책 | 25,401 checks, 오류 0 | gate2-B-matshare-fixture.log |
-| 기존 FrameCompare fixture | RGBA 11 + mask 15 + state 14 + control 17 통과 | gate2-B-framecmp-fixture.log |
-| Gate1 / Gate2 steps | 25 / 144 steps 검증, UTF-8 CLI 통과 | gate2-B-gate1-steps-check.log / gate2-B-steps-check.log |
-| 기존 진단 edition 검사 | 진단 타입 32/32 분리, 런타임 6/6 유지, 폐기 타입 5/5 양쪽 부재 | gate2-B-edition-check.log |
+| LiveDeco edition 메타데이터 | 19 checks, 일반 Player 타입/참조 없음 | 같은 로그 |
+| 기존 MatShare 정책 | 25,401 checks, 오류 0 | gate2-B-run2-matshare-fixture.log |
+| 기존 FrameCompare fixture | RGBA 11 + mask 15 + state 14 + control 17 통과 | gate2-B-run2-framecmp-fixture.log |
+| Gate1 / Gate2 steps | 25 / 144 steps 검증, UTF-8 CLI 통과 | gate2-B-run2-gate1-steps-check.log / gate2-B-run2-steps-check.log |
+| 기존 진단 edition 검사 | 진단 타입 32/32 분리, 런타임 6/6 유지, 폐기 타입 5/5 양쪽 부재 | gate2-B-run2-edition-check.log |
 | 최종 diff/인코딩 | git diff --check 및 UTF-8 문서 검사 통과 | 로컬 검사 |
 
 진단 edition 검사는 처음에 `MaterialPoolFixture`의 Dev 존재를 요구해 실패했다. HEAD 소스 목록·현 csproj·타입 정의에서 재질 풀/크롭 연구 코드가 이미 제거된 것을 확인했다. 검사기의 폐기 타입 5개를 양쪽 빌드 모두 부재여야 하는 조건으로 수정했다. 살아 있는 진단 타입의 Player 제외 요구와 필수 런타임 타입 유지 요구는 유지했다. 실패를 숨기거나 없는 타입을 다시 추가하지 않았다.
@@ -78,8 +96,10 @@ LoadCheck의 동적 필드 이름 5곳은 기존처럼 실행 중 확인 대상�
 
 ## 남은 실제 관측
 
-실제 on의 live/owned/coverage, sampler 제외 분포, atlas 페이지 수/VRAM, 실제 런 수, vertexcheck, 전환 비용, stable_alloc_bytes, 세 시점 ab_out/maxdiff/aa2_out, ProfApply/ProfSet 수치, ABBA FPS가 모두 필요하다. 전달된 센서스의 71~78구간을 이 구현의 실제 구간 수로 대체하지 않는다. 게임 실행 금지를 지키기 위해 이 관측들은 수행하지 않았고, 자동 루프에 입력과 로그 형식을 전달한다.
+실제 on의 live/owned/coverage, sampler 제외 분포, atlas 페이지 수/VRAM, 실제 런 수, vertexcheck, 전환 비용, stable_alloc_bytes, 세 시점 ab_out/maxdiff/aa2_out, ABBA FPS가 필요하다. ProfApply/ProfSet은 위 전달 표본만 확보했다. 전달된 센서스의 71~78구간을 이 구현의 실제 구간 수로 대체하지 않는다. 게임 실행 금지를 지키기 위해 새 게임 관측은 수행하지 않았고, 자동 루프에 변경된 빌드와 기존 입력을 인계한다.
 
 ## 작업 관찰 반환
 
 task-observer v3.5.0을 읽고 기존 사용자 범위 관찰 헤더·활성 원칙을 확인했다. 저장소는 현재 쓰기 허용 범위 밖이므로 수정하지 않고 이 문서로 반환한다. 문제: 게임 메서드 Prefix만 추가하면 이미 바인딩된 setter delegate와 모드의 직접 쓰기 경로가 남을 수 있다. 개선: 논리 필드를 만드는 채널→모드 빠른 길→게임 setter→native 쓰기를 함께 감사하고 모두 같은 소유 검사로 통과시킨다. 원칙: 대체 렌더러의 원본 억제는 표시 플래그뿐 아니라 실제 상태 쓰기 경로 전체를 검증한다. 유형은 프로젝트 내부 구현/검증 관찰이다. 스킬·메모리는 수정하지 않았다.
+
+2회차 관찰도 동일한 report-back 방식으로 반환한다. 문제: LoadCheck는 FieldRefAccess를 검증하고 기존 fixture는 순수 정책/edition을 검증하므로, 런타임에서 이름으로 수집한 추상 Harmony 대상은 둘 다 통과할 수 있다. 개선: 생산 코드의 패치 계획 생성기를 오프라인 검사와 공유하고, 실제 DLL의 본문·추상 여부·구체 override를 패치 전에 검사한다. 원칙: 런타임에 구성하는 훅 목록은 실제 구현의 존재까지 검증해야 한다. 유형은 프로젝트 내부 검증 관찰이며 별도 전역 관찰 파일·스킬·메모리는 수정하지 않았다.

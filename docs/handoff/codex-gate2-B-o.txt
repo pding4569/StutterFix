@@ -1,10 +1,10 @@
-1. Gate 2 변형 B의 개발용 기본 꺼짐 아틀라스·구간 메시 프로토타입을 구현했다.
-2. RGBA32, 2px extrusion, 4px 배치 정렬, double UV 계산 후 float 한 번 변환을 사용한다.
-3. 구간 첫 원본 재질을 빌리고 메시 MPB에만 아틀라스를 바인딩하여 재질 ID 앵커를 보존한다.
-4. UpdatePosition·TightLate·DecoAnim 채널·ColorFast의 native 쓰기를 소유 중 논리 필드 갱신으로 바꿨다.
-5. off/reset/로드/scene/Unload 정리와 현재 child 위치·색·Transform 복원 경로를 추가했다.
+1. 회차 1의 Method has no body 오류는 추상 scrDecoration.SetVisible/SetDepth를 패치 대상으로 모은 결함과 맞는다.
+2. 디컴파일·ilscan·실제 DLL PE/reflection에서 두 메서드의 Abstract=true, RVA=0을 확인했다.
+3. 생산 패치 계획을 분리해 본문 있는 18개만 설치하고 추상 2개를 제외하며 실제 visual 재정의는 유지했다.
+4. 전체 대상·관리 본문·정확한 서명·외부 패치를 적용 전에 확인하고 설치 오류에는 대상 이름을 남긴다.
+5. 실제 DLL 회귀 검사 38 checks 통과; 새 식별 로그는 patch_plan version=2 targets=18 abstract_declarations_skipped=2다.
 6. Dev/Player/Auto 빌드 오류 0/0/0, LoadCheck 274/229/274곳 틀림 0이다.
-7. LiveDeco 22952·아틀라스 정책 1052924·edition 16·MatShare 25401 및 FrameCompare fixture를 통과했다.
-8. 별도 ProfApply/ProfSet 창, 세 시점 픽셀, 자연 재생 ABBA를 담은 144-step JSON을 생성했다.
-9. 실제 픽셀·FPS·구간 수·소유율·GC·설정 비용 비율은 미측정이며 GATE2 통과를 주장하지 않는다.
-10. 게임 실행·설치·커밋·푸시·config 수정 없이 결과와 Texture2DArray 대안을 인계했다.
+7. LiveDeco 22952·아틀라스 1052924·edition 19·MatShare 25401·FrameCompare·steps 검증을 통과했다.
+8. 전달 프로파일 960572표본의 ProfSet 비율은 70.130186%; DecoAnim 전체/native 쓰기 비중은 미입증이다.
+9. 일반 Player 제외·기본 꺼짐·기존 144 steps를 유지했고 게임 Harmony 설치·픽셀·FPS·GATE2 통과는 미확인이다.
+10. 게임 실행·설치·커밋·푸시·config 변경 없이 수정 DLL·해시·로그·결과 문서를 인계했다.
