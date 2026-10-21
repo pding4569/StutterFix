@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings><DefineConstants>DEV</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../LiveDecoGate2.cs" Link="LiveDecoGate2.cs" />
+    <Compile Include="../../../LiveDecoGate2Policy.cs" Link="LiveDecoGate2Policy.cs" />
+  </ItemGroup>
+</Project>

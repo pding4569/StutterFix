@@ -140,6 +140,7 @@ namespace StutterFix
             new VertexAttributeDescriptor(VertexAttribute.Color, VertexAttributeFormat.Float32, 4),
             new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2) };
         internal static bool Active => root && !restoring;
+        internal static bool Ready => Active && !starting;
         internal static int Owned => ownedCount;
         internal static double TransitionMs => transitionMs;
         internal static float EnabledSeconds => starting ? 0 : Time.realtimeSinceStartup - enabledAt;
@@ -247,7 +248,7 @@ namespace StutterFix
                 transitionMs = ((setupEnd - enableBegin) + (ready - firstCull)) * 1000.0 / Stopwatch.Frequency;
                 // Warmup and OWNED_LOW count actual owned rendering, excluding setup/admission.
                 starting = false; enabledAt = Time.realtimeSinceStartup; nextReport = enabledAt + 1;
-                Log("begin variant=A renderer_version=8 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events"
+                Log("begin variant=A renderer_version=9 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events"
                     + " change_methods=" + LiveDecoChanges.Methods + " change_sites=" + LiveDecoChanges.Sites
                     + " enable_transition_ms=" + transitionMs.ToString("F6", Inv)
                     + " prepare_ms=" + prepareMs.ToString("F6", Inv) + " register_ms=" + registerMs.ToString("F6", Inv)

@@ -20,8 +20,12 @@ def build(chart):
                   'framecmp grab A2', 'framecmp diff A B 0', 'framecmp diff A A2 0',
                   f'livedeco2 pixel {sample}', 'resume']
     for index, mode in enumerate(('off', 'on', 'on', 'off')):
-        steps += ['livedeco off', 'stop', 'seek 262 12', 'waitsongpos 252 40',
-                  f'livedeco {mode}', 'waitsongpos 262 40', 'fuse begin',
+        # Hook installation can take longer than the song-time lead-in. Freeze
+        # audio/gameplay during preparation in BOTH modes, then play 258->262
+        # for warmup. Never pause or install hooks inside the measured window.
+        steps += ['livedeco off', 'stop', 'seek 262 12', 'waitsongpos 258 40',
+                  'pause', f'livedeco {mode}', f'livedeco2 ready {mode}', 'resume',
+                  'waitsongpos 262 40', 'fuse begin',
                   f'livedeco2 begin {mode} {index}', 'waitsongpos 276 40',
                   'livedeco2 end', 'fuse end', 'livedeco off']
     steps += ['livedeco off', 'livedeco2 result', 'stop', 'quit']

@@ -1,0 +1,115 @@
+r10 prior-evidence audit. Read-only existing game logs; no new game run.
+HEAD=4d53c77
+Latest handoff by modification time:
+ga-autoloop-run3-evidence.txt mtime_ns=1792578536438808100 bytes=21987
+ga-autoloop-run2-evidence.txt mtime_ns=1792577119554304600 bytes=18432
+ga-autoloop-run1-evidence.txt mtime_ns=1792575897468531300 bytes=2952
+ga-autoloop-run6-evidence.txt mtime_ns=1792558632454985600 bytes=60412
+ga-autoloop-run5-evidence.txt mtime_ns=1792557427502837600 bytes=60409
+ga-autoloop-run4-evidence.txt mtime_ns=1792556036468552800 bytes=6893
+E:\StutterFixWork\wt-ld2a\docs\handoff\ga-autoloop-run3-evidence.txt sha256=ECD1C47E01EA7D1485AC7DF0325CBE050C6FED0AC9F9B82B2904E1137CE2360A
+E:\StutterFixWork\night-results\al-ga-3.log sha256=63771DE1BCCC313A60AE7B6821405F23B4FAD2BB5B9F5D598E93C32F0414AF21
+D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll sha256=F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF
+E:\StutterFixWork\decompiled\Assembly-CSharp\scrConductor.cs sha256=D2A89EC93844FFF6D37EE5D4F313E297A0344BB3CE4A6FB59AC740DBCC823A7C
+Existing run3 key measurements (not post-fix measurements):
+[StutterFix] [livedeco2] PROFILE samples=1002697 set_pct=69.326192 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+[StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=13354.685000 prepare_ms=5.101600 register_ms=1318.962600 patch_ms=12030.008700
+[StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2025 runs=1244 dirty=157254 phase=activation scan_ms=0.001100 vertex_ms=1.014800 upload_ms=2.790800 transition_ms=13704.717400 audits=1 missed=0
+[StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2025 runs=1244 dirty=5661 phase=steady scan_ms=0.000200 vertex_ms=0.602650 upload_ms=0.070525 transition_ms=13704.717400 audits=2 missed=0
+[StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2025 runs=1244 dirty=1976 phase=steady scan_ms=0.000150 vertex_ms=0.580850 upload_ms=0.071050 transition_ms=13704.717400 audits=3 missed=0
+[StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2025 runs=1244 dirty=988 phase=steady scan_ms=0.000100 vertex_ms=0.575800 upload_ms=0.068500 transition_ms=13704.717400 audits=3 missed=0
+[StutterFix] [livedeco2] PIXEL t=262 song=262.017840 ab_out=431703 maxdiff=6 aa2_out=0 stable=True regions=(1280,320,32,32):4732;(896,352,32,32):4017;(736,768,32,32):3980;(1856,512,32,32):3585;(1344,416,32,32):3561
+[StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=13666.814500 prepare_ms=2.538600 register_ms=1248.603700 patch_ms=12415.634700
+[StutterFix] [livedeco] owned_ts t=270.016009 awake=2209 owned=2123 runs=1375 dirty=157254 phase=activation scan_ms=0.000200 vertex_ms=0.827200 upload_ms=1.495700 transition_ms=14006.710500 audits=1 missed=0
+[StutterFix] [livedeco] owned_ts t=270.016009 awake=2209 owned=2123 runs=1375 dirty=4605 phase=steady scan_ms=0.000133 vertex_ms=0.578667 upload_ms=0.076233 transition_ms=14006.710500 audits=2 missed=0
+[StutterFix] [livedeco] owned_ts t=270.016009 awake=2209 owned=2123 runs=1375 dirty=915 phase=steady scan_ms=0.000200 vertex_ms=0.583400 upload_ms=0.078900 transition_ms=14006.710500 audits=3 missed=0
+[StutterFix] [livedeco] owned_ts t=270.016009 awake=2209 owned=2123 runs=1375 dirty=1830 phase=steady scan_ms=0.000200 vertex_ms=0.635000 upload_ms=0.083700 transition_ms=14006.710500 audits=4 missed=0
+[StutterFix] [livedeco] owned_ts t=270.016009 awake=2209 owned=2123 runs=1375 dirty=915 phase=steady scan_ms=0.000500 vertex_ms=0.594300 upload_ms=0.075100 transition_ms=14006.710500 audits=4 missed=0
+[StutterFix] [livedeco2] PIXEL t=270 song=270.016009 ab_out=124277 maxdiff=5 aa2_out=0 stable=True regions=(1056,320,32,32):5232;(960,352,32,32):4599;(1024,320,32,32):4251;(1024,352,32,32):4026;(992,352,32,32):3789
+[StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=14095.849700 prepare_ms=2.763200 register_ms=1262.161000 patch_ms=12830.849000
+[StutterFix] [livedeco] owned_ts t=276.005328 awake=17 owned=17 runs=15 dirty=157254 phase=activation scan_ms=0.000200 vertex_ms=0.017000 upload_ms=0.014000 transition_ms=14133.674000 audits=1 missed=0
+[StutterFix] [livedeco] owned_ts t=276.005328 awake=17 owned=17 runs=15 dirty=1901 phase=steady scan_ms=0.000175 vertex_ms=0.017550 upload_ms=0.000800 transition_ms=14133.674000 audits=2 missed=0
+[StutterFix] [livedeco] owned_ts t=276.005328 awake=17 owned=17 runs=15 dirty=942 phase=steady scan_ms=0.000200 vertex_ms=0.018250 upload_ms=0.000800 transition_ms=14133.674000 audits=3 missed=0
+[StutterFix] [livedeco] owned_ts t=276.005328 awake=17 owned=17 runs=15 dirty=471 phase=steady scan_ms=0.000200 vertex_ms=0.017800 upload_ms=0.000800 transition_ms=14133.674000 audits=3 missed=0
+[StutterFix] [livedeco2] PIXEL t=276 song=276.005328 ab_out=0 maxdiff=0 aa2_out=0 stable=True regions=
+[StutterFix] [livedeco2] FPS mode=off index=0 fps=125.723528 ms=7.953961 frames=1749 elapsed_s=13.911477 song_begin=262.081835 song_end=276.001849 valid=True
+[StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=14519.818300 prepare_ms=2.320100 register_ms=1248.790700 patch_ms=13268.672200
+[StutterFix] [livedeco] owned_ts t=252.005694 awake=361 owned=219 runs=100 dirty=157254 phase=activation scan_ms=0.000200 vertex_ms=0.111500 upload_ms=0.097700 transition_ms=14600.329900 audits=1 missed=0
+[StutterFix] [livedeco] owned_ts t=266.817828 awake=835 owned=643 runs=112 dirty=7299 phase=steady scan_ms=0.000100 vertex_ms=0.385050 upload_ms=0.101250 transition_ms=14603.350500 audits=1 missed=0
+[StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False
+All logged scan range_ms=(0.0001, 0.0011)
+Paused steady owned=2025 logged_frames=7
+  scan_ms range=0.000100..0.000200 weighted_logged_mean=0.000171
+  reconcile_ms range=2.572900..3.363150 weighted_logged_mean=3.025286
+  vertex_ms range=0.575800..0.602650 weighted_logged_mean=0.592586
+  upload_ms range=0.068500..0.071050 weighted_logged_mean=0.070386
+Paused steady owned=2123 logged_frames=7
+  scan_ms range=0.000133..0.000500 weighted_logged_mean=0.000214
+  reconcile_ms range=2.562000..3.574800 weighted_logged_mean=3.015743
+  vertex_ms range=0.578667..0.635000 weighted_logged_mean=0.597672
+  upload_ms range=0.075100..0.083700 weighted_logged_mean=0.078586
+Paused steady owned=17 logged_frames=7
+  scan_ms range=0.000175..0.000200 weighted_logged_mean=0.000186
+  reconcile_ms range=2.078475..2.134600 weighted_logged_mean=2.098871
+  vertex_ms range=0.017550..0.018250 weighted_logged_mean=0.017786
+  upload_ms range=0.000800..0.000800 weighted_logged_mean=0.000800
+Existing coverage 2025/2127=95.204513%
+Existing coverage 2123/2209=96.106836%
+Existing coverage 17/17=100.000000%
+Full-log provenance around failed first on window:
+890: [StutterFix] [자동 시험] [임무단계] waitsongpos 5509.744ms
+891: [StutterFix] [livedeco] live_tracking ready=1 playing=True capture_paused=False awake=368
+892: [StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=14519.818300 prepare_ms=2.320100 register_ms=1248.790700 patch_ms=13268.672200
+893: [StutterFix] [자동 시험] [임무단계] livedeco 14523.822ms
+894: [StutterFix] [livedeco] begin variant=A renderer_version=8 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events change_methods=1723 change_sites=4039 enable_transition_ms=14600.329900 prepare_ms=2.320100 register_ms=1248.790700 patch_ms=13268.672200 first_render_ms=80.511600 wait_first_cull_ms=8.838500 camera_z=-10 enable_allocated_bytes=0 watched_objects=737233 bounds_policy=screen-pixels threshold_px=0.01 visibility_policy=logical-visible currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=219 runs=100 registry=157254 transitions=4 restored=4165 error=none atlas=0 ready=True
+895: [StutterFix] [livedeco] vertexcheck max_err=0.000440130767 count=329 excluded=110 nested_admitted=219 visibility_admitted=219 threshold_px=0.01 pixel_max_err=0.03232858 vertex_max_err=0.000440130767 bounds_max_err=0.000386020227 quad_bounds_max_err=0.100001357 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=92,61,66,110,0,0
+896: [StutterFix] [livedeco] excluded reason=bounds-error-px count=107
+897: [StutterFix] [livedeco] excluded reason=vertex-error-px count=3
+898: [StutterFix] [livedeco] excluded reason=repeat-tile count=32
+899: [StutterFix] [livedeco] cost per_frame=1 samples=1 phase=activation owned=219 runs=100 vertex_ms=0.111500 upload_ms=0.097700 reconcile_ms=80.295500 delta_ms=77.975800 scan_ms=0.000200 audit_ms=1.952100 awake=361 dormancy_awake=371 dirty=157254 cache_hits=0 admissions=361 write_callbacks=1500 watcher_visits=7031 upload_calls=100.000 dirty_images=219.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=True allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=5349376 heap_scope=frame-work-excludes-cost-and-vertex-logs
+900: [StutterFix] [livedeco] owned_ts t=252.005694 awake=361 owned=219 runs=100 dirty=157254 phase=activation scan_ms=0.000200 vertex_ms=0.111500 upload_ms=0.097700 transition_ms=14600.329900 audits=1 missed=0
+901: [StutterFix] [자동 시험] [임무단계] waitsongpos 141.726ms
+902: [StutterFix] [자동 시험] [합치기 연구] 세기 시작 (곡 266.7초)
+903: [StutterFix] [자동 시험] [임무단계] fuse 71.455ms
+904: [StutterFix] [자동 시험] 단계 실패 'livedeco2 begin on 1': invalid ABBA window start
+905: [StutterFix] [livedeco] vertexcheck max_err=0.0003908157 count=531 excluded=68 nested_admitted=463 visibility_admitted=463 threshold_px=0.01 pixel_max_err=0.02799182 vertex_max_err=0.000305175781 bounds_max_err=0.0003908157 quad_bounds_max_err=0.1000006 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=159,90,214,68,0,0
+906: [StutterFix] [livedeco] excluded reason=bounds-error-px count=66
+907: [StutterFix] [livedeco] excluded reason=vertex-error-px count=2
+908: [StutterFix] [livedeco] excluded reason=repeat-tile count=2
+909: [StutterFix] [livedeco] released reason=alpha-zero count=40
+910: [StutterFix] [livedeco] released reason=boundary:SetSprite count=4
+911: [StutterFix] [livedeco] cost per_frame=1 samples=2 phase=steady owned=643 runs=112 vertex_ms=0.385050 upload_ms=0.101250 reconcile_ms=43.774500 delta_ms=42.264200 scan_ms=0.000100 audit_ms=0.000000 awake=835 dormancy_awake=844 dirty=7299 cache_hits=5 admissions=533 write_callbacks=11804 watcher_visits=56198 upload_calls=105.000 dirty_images=466.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=True allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=9326592 heap_scope=frame-work-excludes-cost-and-vertex-logs
+912: [StutterFix] [livedeco] owned_ts t=266.817828 awake=835 owned=643 runs=112 dirty=7299 phase=steady scan_ms=0.000100 vertex_ms=0.385050 upload_ms=0.101250 transition_ms=14603.350500 audits=1 missed=0
+913: [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False
+Decompiled conductor.Update excerpt; IL calls cross-checked separately:
+798: 		}
+799: 		PlatformHelper.instance.Update();
+800: 		bool pause = AudioListener.pause;
+801: 		if (AudioSettings.dspTime != lastReportedPlayheadPosition)
+802: 		{
+803: 			dspTime = AudioSettings.dspTime;
+804: 			lastReportedPlayheadPosition = AudioSettings.dspTime;
+805: 		}
+806: 		else if (!pause && Application.isFocused)
+807: 		{
+808: 			double num = Time.unscaledTimeAsDouble - previousFrameTime;
+809: 			dspTime += num;
+810: 		}
+811: 		previousFrameTime = Time.unscaledTimeAsDouble;
+812: 		if (AsyncInputManager.isActive)
+813: 		{
+872: 		crotchetAtStart = 60f / bpm;
+873: 		double num2 = songposition_minusi;
+874: 		if (!GCS.d_oldConductor && !GCS.d_webglConductor)
+875: 		{
+876: 			songposition_minusi = (double)((float)(dspTime - dspTimeSong - (double)calibration_i) * song.pitch) - addoffset;
+877: 		}
+878: 		else
+879: 		{
+880: 			songposition_minusi = (double)(song.time - calibration_i) - addoffset / (double)song.pitch;
+881: 		}
+Managed control flow: Begin synchronous setup in AutoTest.Update; first PreCull admits at stale song snapshot;
+next conductor.Update catches up from live DSP; waitsongpos uses >= and cannot recover an overshot target.
+Exact failing predicate was not individually logged in run3. Song overshoot is explicit (fuse 266.7s);
+insufficient post-first-cull warmup follows from the 141.726ms wait and 71.455ms fuse step. Other predicates not excluded.
+No on FPS, completed ABBA gain, new ownership history, new pixels, or actual post-fix Unity lifetime evidence.

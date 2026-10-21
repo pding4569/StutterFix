@@ -46,6 +46,11 @@ namespace StutterFix
         }
         internal static bool Step(string arg)
         {
+            try { return StepCore(arg); }
+            catch (Exception ex) { Log("ERROR " + ex.ToString()); throw; }
+        }
+        static bool StepCore(string arg)
+        {
             var a = arg.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (a.Length == 1 && a[0] == "profilebegin")
             {
@@ -78,6 +83,23 @@ namespace StutterFix
             }
             if (a.Length == 1 && a[0] == "reset")
             { RestoreProfile(); LiveDeco.Stop(); evidence = new LiveDecoGate2Policy(); window = -1; running = true; Log("reset variant=A"); return true; }
+            if (a.Length == 2 && a[0] == "ready")
+            {
+                bool on = a[1] == "on";
+                if (a[1] != "on" && a[1] != "off") throw new ArgumentException("mode on|off");
+                if (!running || window != -1 || !FrameCompare.Paused || LiveDecoRenderer.Active != on)
+                    throw new InvalidOperationException("preparation requires paused matching renderer, outside FPS window");
+                if (on && !LiveDecoRenderer.Ready) return false; // Wait for the selected camera's first PreCull.
+                double song = Song;
+                if ((on && LiveDecoRenderer.Owned == 0) || double.IsNaN(song) || double.IsInfinity(song) || Math.Abs(song - 258) > .5)
+                    throw new InvalidOperationException("invalid ABBA preparation song=" + song.ToString("F6", Inv)
+                        + " owned=" + LiveDecoRenderer.Owned);
+                Log("prepared mode=" + a[1] + " song=" + song.ToString("F6", Inv)
+                    + " paused=True ready=" + (!on || LiveDecoRenderer.Ready)
+                    + " transition_ms=" + LiveDecoRenderer.TransitionMs.ToString("F6", Inv)
+                    + " resume_then_play_to=262 minimum_on_warmup_s=3");
+                return true;
+            }
             if (a.Length == 2 && a[0] == "pixel")
             {
                 int t = int.Parse(a[1], Inv), index = t == 262 ? 0 : t == 270 ? 1 : t == 276 ? 2 : -1;
@@ -94,14 +116,20 @@ namespace StutterFix
             if (a.Length == 3 && a[0] == "begin")
             {
                 if (window != -1) throw new InvalidOperationException("window already open");
-                mode = a[1] == "on";
+                bool nextMode = a[1] == "on";
                 if (a[1] != "on" && a[1] != "off") throw new ArgumentException("mode on|off");
-                window = int.Parse(a[2], Inv); songStart = Song;
-                if (window < 0 || window > 3 || mode != LiveDecoGate2Policy.On(window) || FrameCompare.Paused
-                    || mode != LiveDecoRenderer.Active || (mode && LiveDecoRenderer.Owned == 0)
-                    || (mode && LiveDecoRenderer.EnabledSeconds < 3)
-                    || double.IsNaN(songStart) || Math.Abs(songStart - 262) > 0.5)
-                    throw new InvalidOperationException("invalid ABBA window start");
+                int nextWindow = int.Parse(a[2], Inv); double nextSong = Song;
+                if (nextWindow < 0 || nextWindow > 3 || nextMode != LiveDecoGate2Policy.On(nextWindow) || FrameCompare.Paused
+                    || nextMode != LiveDecoRenderer.Active || (nextMode && (!LiveDecoRenderer.Ready || LiveDecoRenderer.Owned == 0))
+                    || (nextMode && LiveDecoRenderer.EnabledSeconds < 3)
+                    || double.IsNaN(nextSong) || double.IsInfinity(nextSong) || Math.Abs(nextSong - 262) > 0.5)
+                    throw new InvalidOperationException("invalid ABBA window start index=" + nextWindow + " mode=" + a[1]
+                        + " song=" + nextSong.ToString("F6", Inv) + " paused=" + FrameCompare.Paused
+                        + " active=" + LiveDecoRenderer.Active + " ready=" + LiveDecoRenderer.Ready + " owned=" + LiveDecoRenderer.Owned
+                        + " warmup_s=" + LiveDecoRenderer.EnabledSeconds.ToString("F3", Inv)
+                        + " transition_ms=" + LiveDecoRenderer.TransitionMs.ToString("F6", Inv));
+                // Commit only an accepted window; a rejected begin cannot poison lifecycle tracking.
+                mode = nextMode; window = nextWindow; songStart = nextSong;
                 frame = Time.frameCount; clock = Stopwatch.GetTimestamp();
                 Log("window begin index=" + window + " mode=" + a[1] + " song=" + songStart.ToString("F6", Inv)
                     + " warmup_excluded_s=" + (mode ? LiveDecoRenderer.EnabledSeconds.ToString("F3", Inv) : "0")
@@ -135,7 +163,7 @@ namespace StutterFix
                 finally { running = false; LiveDeco.Stop(); }
                 return true;
             }
-            throw new ArgumentException("livedeco2 reset|profilebegin|profileend|pixel 262/270/276|begin on/off index|end|result");
+            throw new ArgumentException("livedeco2 reset|profilebegin|profileend|ready on/off|pixel 262/270/276|begin on/off index|end|result");
         }
     }
 }

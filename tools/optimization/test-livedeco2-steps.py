@@ -36,8 +36,9 @@ for i, mode in enumerate(('off', 'on', 'on', 'off')):
     assert steps[n-2:n] == ['waitsongpos 262 40', 'fuse begin']
     assert steps[n+1:n+5] == ['waitsongpos 276 40', 'livedeco2 end', 'fuse end', 'livedeco off']
     start = max(k for k in range(n) if steps[k] == 'stop')
-    assert 'pause' not in steps[start:n+5]
-    assert steps[start+1:start+4] == ['seek 262 12', 'waitsongpos 252 40', f'livedeco {mode}']
+    assert steps[start+1:n-2] == ['seek 262 12', 'waitsongpos 258 40', 'pause',
+                                f'livedeco {mode}', f'livedeco2 ready {mode}', 'resume']
+    assert 'pause' not in steps[n-2:n+5]
 assert steps[-4:] == ['livedeco off', 'livedeco2 result', 'stop', 'quit']
 output = path.parent / ('.livedeco2-steps-' + uuid.uuid4().hex + '.json')
 try:

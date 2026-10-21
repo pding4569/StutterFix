@@ -1,0 +1,60 @@
+r10 offline validation; no game execution, installation, commit, push, or config changes.
+HEAD=4d53c77; initial worktree clean.
+Prior evidence only: latest run3 / al-ga-3.log. Coverage 262=2025/2127=95.204513%; 270=2123/2209=96.106836%; 276=17/17.
+Prior PIXEL=431703/124277/0 maxdiff=6/5/0 aa2_out=0 stable=True. off0 FPS=125.723528 ms=7.953961. On FPS/gain missing.
+Prior setup=14519.818300ms register=1248.790700 patch=13268.672200 first_render=80.511600 transition=14600.329900ms.
+Cause: unpaused synchronous setup consumes the 252->262 lead-in. Full-log fuse starts at 266.7s, then invalid ABBA start. First-cull warmup also insufficient.
+Fix: 258-second paused preparation for both modes, ready acknowledgement after first PreCull, resume and play to 262. Measured 262->276 stays unpaused.
+Ready/start reject nonfinite song times; begin logs all state, full exception stack, commits only accepted window state. Renderer version=9; thresholds unchanged.
+Production Gate2 window fixture=58 pass. Previous HEAD JSON negative=expected exit1, song266.632330 warmup0.016 readyTrue. Current 144-step JSON=exit0.
+Simulation adapts audio, clocks, rendering and lifetime. Actual Unity/DSP readiness/performance/lifetime remain unverified.
+Production activation/sort=29 pass; source contracts=5. Dormancy=20. Geometry=2729 bounds=482 scripts=15 cache=40 uploads=32.
+Build DEV/Player/PlayerAuto errors=0/0/0 warnings=38/4/38. LoadCheck checked=276/229/276 bad=0/0/0; dynamic names=5 each (not runtime-verified).
+Policy=106479 gate=18 edition=42 hooks=22. Ordinary Player excludes experimental types. Delta=5918737 over6000 mutations; writes=133.
+MatShare=25401. FrameCompare=11/15/15/17/21/2. Generator checks/steps=24/25/144; MatShare generator69 steps also passed.
+One initial ilscan used a guessed Data path and failed. Correct csproj GameManaged path succeeded; failed path log retained. No game methods executed.
+One read-only CIM process inventory was denied; the owned fixture session completed normally with exit0. No work blocked on that query.
+Negative adapter initially omitted first cull when legacy JSON lacked ready. Corrected to cull after on in both sequences; final control retains readyTrue, reproducing song/warmup failure.
+One documentation apply_patch was rejected before mutation for duplicate path operations; corrected single update applied. No partial document edit.
+No new ownership history, scan/reconcile/vertex/upload/setup timings, live pixels/FPS, allocation, or actual lifecycle measurements. Gate2 PASS unachieved.
+Task Observer v3.5.0: user-scope log/principles read; no new skill-improvement observations. Report-back here; no memory/skill writes.
+UTF-8/replacement-character check=13 files pass; summary=10 lines; git diff --check=pass; config diff=none; final HEAD=4d53c77.
+LiveDecoGate2.cs sha256=01625067CD78907D366BB1695CF781C29989A2AF580464FDD7A7671C0389A3D8
+LiveDecoRenderer.cs sha256=A54A6C0C863D77B88288B38E322E9FEB9F5143A056B9D70CE2219A2A599205DF
+tools/optimization/livedeco2-steps.py sha256=377E1D27FA65BA645112F8621D51C798C78C70D41A3DF5E9787C6C6C1BA75FCC
+tools/optimization/test-livedeco2-steps.py sha256=2AEA41534893B0F6A1F5BB44A380852F3E8D3BCB0E7C9C9F17B41D83ADBBBA5C
+tools/optimization/LiveDecoWindowCheck/Adapters.cs sha256=9D5DFEE0700AFEEAEEE103C9B5568F196397C95B27DA2FBC8F2D8A20512EA117
+tools/optimization/LiveDecoWindowCheck/Program.cs sha256=9E595698F9C4AD99956841A3D4945ECAEE37D0A7DB08F288DFA846CADDC1C366
+tools/optimization/LiveDecoWindowCheck/LiveDecoWindowCheck.csproj sha256=D422127D37E24AF8BF5849D2CD1643B706A51489DE3E65A6E06B1D34AE32925E
+tools/optimization/LiveDecoWindowCheck/README.md sha256=11F345B1F3439B1E4215CAABA9F16E1C1605FF100D78A386F2A6F70A6129478A
+docs/handoff/codex-gate2-A-result.md sha256=75B7D0464D4EEE6582CC99A08473810DF3890D9CD7753CBDC9F280B5032C6240
+docs/handoff/codex-gate2-A-o.txt sha256=1DD90AE8037B40B4486EB5B1460DD6475F0E842392196E2340E366CA5E46BD27
+docs/handoff/ga-autoloop-ledger.md sha256=6B9C27CCFBAC220416251239FABC8554725F8CA0A0F5F53360C5134BF637E7C3
+bin/Release/StutterFix.dll sha256=55F68A63BD6DC4B1B1F1F90CDDF18B5822DFEA9C8421863FD801B0A30512B05F
+bin/Player/StutterFix.dll sha256=EC5E84E099D707764DEC5C827C0D2CC187E04E63F58BAB94E93F8BD0837A5BE3
+bin/PlayerAuto/StutterFix.dll sha256=8D401805DE4E806DA7660F2EAD6CC65A408608AA5E8FC6DAE82EE857E90119BC
+docs/handoff/gate2-A-r10-activation-extract.log sha256=60E2B2622CF796CF50AF6F24EEA2322030CA06D6D91263D1617CF9A5F5ED1EAB
+docs/handoff/gate2-A-r10-activation-fixture.log sha256=5292782498F619BBF0E6153D54D75605F91452C1FDF78543C530A3883685560A
+docs/handoff/gate2-A-r10-build-auto.log sha256=1EC138559D9678E4EA0B9091D624DC60F07897B9A34C585A38699B451ABC1F13
+docs/handoff/gate2-A-r10-build-dev.log sha256=612DE360770FF7C7F4D7551D78499C8B7029250C32C763476F72E4E685EDC896
+docs/handoff/gate2-A-r10-build-player.log sha256=05F36E9CA662C8937F00A6D783484D9576D47D5024B124B99FB6CA85F9BBF9AA
+docs/handoff/gate2-A-r10-conductor-il.log sha256=952A84370CF558900B1DC65CD72B5801BB2D4409A2732EE3E4405F3C86E06824
+docs/handoff/gate2-A-r10-delta-extract.log sha256=E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855
+docs/handoff/gate2-A-r10-delta-fixture.log sha256=D5D063C24B4A9A59F4C7001434C67F5C602579E8B301C482B60626F4EE28B225
+docs/handoff/gate2-A-r10-dormancy-fixture.log sha256=2DC5EDB1D83D063BFA9ACC156E730E9EEF1F8965790258AD9F3A365559C1457A
+docs/handoff/gate2-A-r10-framecmp-fixture.log sha256=84F43FEC751C07CC6AC32D3626328C4CA187C4B593AC3FCC74E9D73514B231C6
+docs/handoff/gate2-A-r10-framecmp-steps.log sha256=A7543154584ADEE5780A7CF3F4D16A437DF7019BB03AB86524F60F1E35A43EC8
+docs/handoff/gate2-A-r10-geometry-fixture.log sha256=1ABC8EAF97D2B452C6DDFB472789D9AAC477914DAA93C193E4C444882F74124D
+docs/handoff/gate2-A-r10-il-path-error.log sha256=7B4B6B89FBB635FFFCB42C6921391C9F7DC35EAC612BA93A70EEA531C7D890CF
+docs/handoff/gate2-A-r10-livedeco-steps.log sha256=D495278B91F1E7F186B1128063BF2CCA54E656810E0C439C3C0CAE79A1F76876
+docs/handoff/gate2-A-r10-loadcheck-auto.log sha256=4D92400CDD152285FB4B5379A8E37D61BFB0F1501F72BFD5CE7C4546EB05495C
+docs/handoff/gate2-A-r10-loadcheck-dev.log sha256=C7846F4A7925CA31568D87C33CA227F994F18AA3BE10C96AF5DE1C4CC1C7B17F
+docs/handoff/gate2-A-r10-loadcheck-player.log sha256=7157B408971552847A36199AB8FD8E301D0E834A8B6C17987DD0EADFCCAAD766
+docs/handoff/gate2-A-r10-matshare-fixture.log sha256=3819CEBAE48F68EDADB8C5CEAE9C50E5B84BB09EC09AD5CCDCA96956C5F912A0
+docs/handoff/gate2-A-r10-matshare-steps.log sha256=302833F97571192B1F309DD8B7F8AB2B12F0026DB58AC601B6F99062024190B6
+docs/handoff/gate2-A-r10-policy-fixture.log sha256=F712C1C1C8DB0F52C81D425FF57A99774D7EB8DBD9C3876B21DF4C7900F6F8E8
+docs/handoff/gate2-A-r10-prior-evidence.txt sha256=AFEE559198A21F8CF0B4634124D0AD37A3DB96ABAC3B320322D1B316C5FEAA97
+docs/handoff/gate2-A-r10-steps-check.log sha256=794749CA0B50680C6BB8A953CD96C105C24DE3AF1601E2F7ACFFF5EE08FC21ED
+docs/handoff/gate2-A-r10-window-fixture.log sha256=E4B20A36B598C9E9DEDB4E0122F2B2C4A3DA76892E92B3BD6225981C0CF8718B
+docs/handoff/gate2-A-r10-window-negative.log sha256=D761735F4D40919D34AB4102A600A1B704393B8FB76B4355068FBA40B5E158B2
+docs/handoff/gate2-A-r10-writes-fixture.log sha256=F394E7B1E28BFAB5185E06F65A26B4A3597EC320409E291B9CB0C1B613C610A9
