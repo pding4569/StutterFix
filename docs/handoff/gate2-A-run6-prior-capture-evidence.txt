@@ -1,0 +1,24 @@
+﻿source=E:/StutterFixWork/night-results/al-ga-4.log
+sha256=A09973BAE1DBD1FD7EAF58183E0050A82B87AFAAF477487B3230E3A26AC35E0C
+existing run only; no new game execution; chart path omitted
+330: [StutterFix] [livedeco2] PROFILE samples=953430 set_pct=69.633873 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+399: [StutterFix] [framecmp] readback sourceFrame=23149 completionFrame=23152 elapsedFrames=3 elapsedMs=10960.029 rt=2560x1440 screenNow=2560x1440
+413: [StutterFix] [framecmp] readback sourceFrame=23153 completionFrame=23156 elapsedFrames=3 elapsedMs=11486.343 rt=2560x1440 screenNow=2560x1440
+418: [StutterFix] [framecmp] noise outside=0 inside=0 rendererStateEqual=True warning=False; noise floor advisory, continuing
+434: [StutterFix] [framecmp] readback sourceFrame=23160 completionFrame=23163 elapsedFrames=3 elapsedMs=24006.205 rt=2560x1440 screenNow=2560x1440
+441: [StutterFix] [livedeco] transition frame=23165 owned=1478 runs=1114 created=1114 reused=0 destroyed=0 reconcile_ms=21.626100
+443: [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1478 runs=1114 vertex_ms=2.775600 upload_ms=2.702700 reconcile_ms=21.626100 scan_ms=290.741500 upload_calls=1114.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=11124736 heap_scope=frame-work-excludes-cost-and-vertex-logs
+461: [StutterFix] [framecmp] readback sourceFrame=23168 completionFrame=23171 elapsedFrames=3 elapsedMs=11204.690 rt=2560x1440 screenNow=2560x1440
+465: [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=1478 runs=1114 vertex_ms=2.753813 upload_ms=1.437425 reconcile_ms=0.000000 scan_ms=35.655163 upload_calls=1114.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=8 heap_delta=36864 heap_scope=frame-work-excludes-cost-and-vertex-logs
+479: [StutterFix] [framecmp] readback sourceFrame=23177 completionFrame=23180 elapsedFrames=3 elapsedMs=11595.319 rt=2560x1440 screenNow=2560x1440
+494: [StutterFix] [livedeco2] PIXEL t=262 song=262.019824 ab_out=674 maxdiff=2 aa2_out=0 stable=True regions=(800,704,32,32):126;(896,800,32,32):87;(992,960,32,32):73;(864,704,32,32):45;(1600,864,32,32):39
+551: [StutterFix] [framecmp] readback sourceFrame=24473 completionFrame=24476 elapsedFrames=3 elapsedMs=11116.950 rt=2560x1440 screenNow=2560x1440
+566: [StutterFix] [framecmp] readback sourceFrame=24477 completionFrame=24480 elapsedFrames=3 elapsedMs=11093.209 rt=2560x1440 screenNow=2560x1440
+571: [StutterFix] [framecmp] noise outside=0 inside=0 rendererStateEqual=True warning=False; noise floor advisory, continuing
+587: [StutterFix] [framecmp] readback sourceFrame=24484 completionFrame=24486 elapsedFrames=2 elapsedMs=14658.371 rt=2560x1440 screenNow=2560x1440
+593: [StutterFix] [livedeco] transition frame=24488 owned=1577 runs=1230 created=1230 reused=0 destroyed=0 reconcile_ms=88.958400
+595: [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1577 runs=1230 vertex_ms=2.679800 upload_ms=2.200600 reconcile_ms=88.958400 scan_ms=351.548500 upload_calls=1230.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=38727680 heap_scope=frame-work-excludes-cost-and-vertex-logs
+613: [StutterFix] [framecmp] valid=0 error=GPU readback exceeded 15s; pending RT retained until completion
+614: [StutterFix] [자동 시험] 단계 실패 'framecmp grab B': GPU readback exceeded 15s; pending RT retained until completion
+615: [StutterFix] [livedeco] cost per_frame=1 samples=5 owned=1577 runs=1230 vertex_ms=2.727280 upload_ms=1.510000 reconcile_ms=0.000000 scan_ms=34.950140 upload_calls=1230.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=5 heap_delta=0 heap_scope=frame-work-excludes-cost-and-vertex-logs
+616: [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False

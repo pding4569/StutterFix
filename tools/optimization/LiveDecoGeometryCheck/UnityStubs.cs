@@ -23,6 +23,9 @@ namespace UnityEngine
         internal N.Quaternion Native => new N.Quaternion(x, y, z, w);
         internal static Quaternion Z(float angle)
         { var q = N.Quaternion.CreateFromAxisAngle(N.Vector3.UnitZ, angle); return new Quaternion { x = q.X, y = q.Y, z = q.Z, w = q.W }; }
+        public static Quaternion Euler(float x, float y, float z) => Z(z * MathF.PI / 180);
+        public static Quaternion Normalize(Quaternion q)
+        { var n = N.Quaternion.Normalize(q.Native); return new Quaternion { x = n.X, y = n.Y, z = n.Z, w = n.W }; }
         public static Vector3 operator *(Quaternion q, Vector3 v) => Vector3.From(N.Vector3.Transform(v.Native, q.Native));
     }
     public struct Bounds

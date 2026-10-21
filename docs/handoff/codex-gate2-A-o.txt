@@ -1,10 +1,10 @@
-1. codex-al-ga-4.md·장부·run3 증거부터 읽고 HEAD 3b8bdd6의 기존 수정을 유지했다.
-2. 전달 실측은 소유/구간 1,472/1,100, ab_out=2,278, aa2_out=769, unstable_baseline이다.
-3. 기존 전체 로그에서 렌더러를 켜기 전 noise_out=818(262초)/1,194(270초)을 추가 확인했다.
-4. PlanetSprite.LateUpdate가 정지 중 unscaledTime으로 재질 _Frame을 바꾸는 누락을 디컴파일·IL로 확인했다.
-5. PlanetRenderer와 PlanetSprite 두 콜백을 같은 진단 정지 Prefix로 막고 기존 Resume 정리로 해제한다.
-6. 상태 검사에 planetFrame, GatePixel 로그에 잡음·복원 필드 차이를 추가했고 판정 기준은 유지했다.
-7. 생성기는 132단계로 각 noise 직후 assertzero를 수행하며 불안정한 기준에서 소유 시험을 시작하지 않는다.
-8. 3종 빌드·LoadCheck 오류 0, FrameCompare 11/15/15/17/19/2 및 기존 fixture·생성기 통과.
-9. 게임 실행·설치·커밋·푸시·config 수정 없음. 기본 꺼짐·일반 Player 제외·1e-4·픽셀 0·FPS +15% 유지.
-10. 잡음 전체의 원인 기여량·수정 후 소유/픽셀/FPS/GC/수명은 미측정이며 Gate 2 PASS가 아니다.
+1. codex-al-ga-5.md·장부·run4 증거부터 읽고 HEAD ba29aa8의 기존 계층·바운드·정지 수정을 유지했다.
+2. 전달 실측은 소유/구간 1,478/1,114, 262초 ab_out=674/maxdiff=2/aa2_out=0/stable=True다.
+3. 기존 전체 로그에서 270초 framecmp grab B의 GPU readback 15초 타임아웃을 확인하고 출처·발췌를 보존했다.
+4. 동기 상태 감사를 Request 앞으로 옮기고 PlayerLoop 1회 양보 후 GPU 대기를 검사하며 감사·대기 시간을 분리했다.
+5. Color32 추가 양자화를 없애도록 Float32 색·36바이트 정점을 사용하며, 674픽셀 전체 해결은 미확정이다.
+6. 카메라 프레임 캐시·정확한 pose/색 더티 추적·각도 캐시·더티 구간만 업로드하는 경로를 추가했다.
+7. 정점/업로드 목표 0.5/0.4ms·dirty/skip 로그를 추가했지만 수정 후 실측은 없고 기존 scan 약 35ms도 남는다.
+8. 3종 빌드·LoadCheck 오류 0, 신규 캐시 40·업로드 32 및 기존 회귀·132단계 생성기·Player 제외 검사 통과.
+9. 게임 실행·설치·커밋·푸시·config 수정 없음. 기본 꺼짐·1e-4·픽셀 0·FPS +15% 유지, PIXEL_NEAR도 pass=0이다.
+10. 수정 후 실픽셀·FPS·GC·수명과 성능 목표는 미측정이며 GATE2=PASS 미달성이다. 결과·장부·run6 로그를 갱신했다.

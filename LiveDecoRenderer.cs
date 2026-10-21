@@ -30,7 +30,7 @@ namespace StutterFix
         static readonly AccessTools.FieldRef<scrVisualDecoration, DecorationBlendMode> Blend = AccessTools.FieldRefAccess<scrVisualDecoration, DecorationBlendMode>("blendMode");
         static readonly AccessTools.FieldRef<scrDecoration, Color> Rendered = AccessTools.FieldRefAccess<scrDecoration, Color>("rendererColor");
         [StructLayout(LayoutKind.Sequential)]
-        internal struct Vertex { internal Vector3 Position; internal Color32 Color; internal Vector2 UV; }
+        internal struct Vertex { internal Vector3 Position; internal Color Color; internal Vector2 UV; }
         sealed class Image
         {
             internal scrVisualDecoration D;
@@ -43,8 +43,10 @@ namespace StutterFix
             internal string Signature;
             internal Vector2[] Corners, UV;
             internal ushort[] Indices;
-            internal readonly Vector3[] World = new Vector3[4];
+            internal Vector3[] World => Geometry.World;
             internal LiveDecoGeometry Geometry;
+            internal Color UploadedColor;
+            internal bool VertexDirty = true;
             internal Bounds PredictedBounds;
             internal bool FlipX, FlipY;
             internal bool Owned, Rejected, OriginalOff, Hidden;
@@ -82,6 +84,7 @@ namespace StutterFix
             internal float Z;
             internal bool Reused;
             internal bool Enabled;
+            internal bool NeedsUpload = true;
         }
         static Harmony harmony;
         static Camera camera;
@@ -91,6 +94,9 @@ namespace StutterFix
         static int lastFrame = -1, ownedCount, frameSamples;
         static long reset;
         static long computeTicks, uploadTicks, reconcileTicks, scanTicks, uploadCalls, heapDelta;
+        static long dirtyImages, skippedUploads;
+        static Vector2 cameraPosition, screenOrigin, screenX, screenY;
+        static float cameraAngle, cameraScale;
         static long transitionCount, restoredCount;
         static long allocatedBytes, steadyAllocatedBytes;
         static int steadySamples;
@@ -109,7 +115,7 @@ namespace StutterFix
         static readonly Dictionary<string, int> rejected = new Dictionary<string, int>();
         static readonly VertexAttributeDescriptor[] Layout = {
             new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
-            new VertexAttributeDescriptor(VertexAttribute.Color, VertexAttributeFormat.UNorm8, 4),
+            new VertexAttributeDescriptor(VertexAttribute.Color, VertexAttributeFormat.Float32, 4),
             new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2) };
         internal static bool Active => root && !restoring;
         internal static int Owned => ownedCount;
@@ -183,7 +189,7 @@ namespace StutterFix
                 RenderFrame();
                 if (ownedCount == 0) throw new InvalidOperationException("no eligible images; see rejection counts");
                 lastFrame = -1; // Re-evaluate after this frame's camera LateUpdate.
-                Log("begin variant=A renderer_version=4 bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 " + State());
+                Log("begin variant=A renderer_version=5 color_format=Float32x4 vertex_stride=36 dirty_policy=exact-logical-pose-and-color bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 " + State());
                 LiveDecoGate2.RendererStarted();
             }
             catch { Stop(); throw; }
@@ -315,51 +321,59 @@ namespace StutterFix
             if (i.Geometry.Depth > 1) checkNested++;
             foreach (var component in i.Scripts)
                 if (component && component.isActiveAndEnabled && component.GetType() == typeof(ToggleVisible)) checkVisibility++;
-            i.OriginalOff = i.R.forceRenderingOff; i.Owned = true; i.Version++; ownedCount++; topology = true;
+            i.OriginalOff = i.R.forceRenderingOff; i.Owned = true; i.VertexDirty = true; i.Version++; ownedCount++; topology = true;
         }
         static bool Finite(float f) => !float.IsNaN(f) && !float.IsInfinity(f);
+        static void CaptureCamera()
+        {
+            var camy = ADOBase.controller.camy;
+            var t = camy.transform; var c = camy.camobj;
+            cameraPosition = t.position;
+            cameraAngle = t.rotation.eulerAngles.z;
+            cameraScale = c.orthographicSize * .2f / (ADOBase.customLevel.levelData.camZoom / 100f);
+            // Orthographic projection is affine. Cache the screen basis once,
+            // rather than calling ScreenToWorldPoint for each owned decoration.
+            Rect rect = c.pixelRect;
+            screenOrigin = c.ScreenToWorldPoint(new Vector3(rect.x, rect.y, 0));
+            screenX = (Vector2)c.ScreenToWorldPoint(new Vector3(rect.x + rect.width, rect.y, 0)) - screenOrigin;
+            screenY = (Vector2)c.ScreenToWorldPoint(new Vector3(rect.x, rect.y + rect.height, 0)) - screenOrigin;
+        }
         static void Compute(Image i, bool validateBounds = false)
         {
             var d = i.D; var p = d.parallax;
             Vector2 position = d.pivotPosVec + Vector2.zero;
             Vector3 position3 = position;
             Start(p) = position; p.posCamAtStart = position3;
-            Vector2 camScale = d.camScaleMultiplier;
+            Vector2 trueScale = d.scaleMultiplier * d.textureScaleMultiplier;
+            Vector2 camScale = (d.lockScale ? cameraScale : 1f) * trueScale;
             Vector2 world;
             if (p.clampToScreen)
             {
-                var c = ADOBase.controller.camy.camobj; Rect rect = c.pixelRect;
-                Vector2 screen = new Vector2(rect.width * p.screenRelativePos.x, rect.height * p.screenRelativePos.y);
-                world = c.ScreenToWorldPoint(new Vector2(rect.x, rect.y) + screen);
+                world = screenOrigin + screenX * p.screenRelativePos.x + screenY * p.screenRelativePos.y;
             }
             else
             {
-                world = (Vector2)(p.cameraTransform.position - p.posCamAtStart) * new Vector2(p.multiplier_x, p.multiplier_y) + Start(p);
+                world = (cameraPosition - (Vector2)p.posCamAtStart) * new Vector2(p.multiplier_x, p.multiplier_y) + Start(p);
                 if (p.dontAlterX) world.x = position.x;
                 if (p.dontAlterY) world.y = position.y;
             }
             world += d.parallaxOffset * camScale / d.textureScaleMultiplier;
             End(p) = world;
             float angle = d.startRot + d.rotAngle;
-            if (d.lockRotation) angle += ADOBase.controller.camy.transform.rotation.eulerAngles.z;
-            Quaternion rotation = Quaternion.Euler(0, 0, angle);
-            // Transform.rotation normalizes internally; vertexcheck bounds any residual difference.
-            rotation = Quaternion.Normalize(rotation);
+            if (d.lockRotation) angle += cameraAngle;
             Vector2 scale = d.scaleVec * camScale * (Vector2)Vector3.one;
-            Vector2 offset = (d.pivotOffsetVec + d.croppedPivotOffset) / d.trueScaleMultiplier;
-            Vector3 pivotOffset = i.Geometry.Offset(offset);
-            for (int n = 0; n < 4; n++)
+            Vector2 offset = (d.pivotOffsetVec + d.croppedPivotOffset) / trueScale;
+            bool changed = i.Geometry.UpdatePose(world, scale, offset, angle, validateBounds);
+            i.VertexDirty |= changed;
+            if (changed) for (int n = 0; n < 4; n++)
             {
-                Vector3 local = i.Geometry.Shape[n] + pivotOffset;
-                local = rotation * new Vector3(local.x * scale.x, local.y * scale.y, local.z);
-                Vector3 v = new Vector3(world.x + local.x, world.y + local.y, local.z);
+                Vector3 v = i.World[n];
                 if (!Finite(v.x) || !Finite(v.y) || !Finite(v.z) || Mathf.Abs(v.x) > Extent || Mathf.Abs(v.y) > Extent)
                     throw new InvalidOperationException("nonfinite/out-of-fixed-bounds vertex");
-                i.World[n] = v;
             }
             if (validateBounds)
-                i.PredictedBounds = i.Geometry.WorldBounds(i.R.localBounds, pivotOffset,
-                    new Vector3(world.x, world.y, 0), rotation, scale);
+                i.PredictedBounds = i.Geometry.WorldBounds(i.R.localBounds, i.Geometry.Offset(offset),
+                    new Vector3(world.x, world.y, 0), i.Geometry.Rotation, scale);
         }
         static void Release(Image i)
         {
@@ -402,6 +416,7 @@ namespace StutterFix
         public static bool SetPositionPrefix(scrDecoration __instance, Vector2 __0, Vector2 __1)
         {
             if (!Owns(__instance)) return true;
+            if (!__instance.pivotPosVec.Equals(__0) || !__instance.pivotOffsetVec.Equals(__1)) images[__instance].VertexDirty = true;
             __instance.pivotPosVec = __0; __instance.pivotOffsetVec = __1; ScreenClamp(__instance); return false;
         }
         internal static bool TryLogicalColor(scrDecoration d, Color color, float opacity, bool onlyOpacity)
@@ -412,15 +427,28 @@ namespace StutterFix
             if (Rendered(d).a <= 0) Release(images[d]); // Return hidden-state bookkeeping to InvisibleSkip/Dormancy.
             return true;
         }
-        static void RefreshColor(scrDecoration d) => Rendered(d) = d.color.WithAlpha(d.color.a * d.opacity * 1f);
+        static void RefreshColor(scrDecoration d)
+        {
+            var color = d.color.WithAlpha(d.color.a * d.opacity * 1f);
+            if (!Rendered(d).Equals(color)) images[d].VertexDirty = true;
+            Rendered(d) = color;
+        }
         public static bool ColorPrefix(scrDecoration __instance, Color __0) => !TryLogicalColor(__instance, __0, 0, false);
         public static bool OpacityPrefix(scrDecoration __instance, float __0) => !TryLogicalColor(__instance, default(Color), __0, true);
         public static bool ApplyColorPrefix(scrVisualDecoration __instance)
         { if (!Owns(__instance)) return true; RefreshColor(__instance); return false; }
         public static bool RotationPrefix(scrDecoration __instance, float __0)
-        { if (!SkipLate(__instance)) return true; __instance.rotAngle = __0; return false; }
+        {
+            if (!SkipLate(__instance)) return true;
+            if (!__instance.rotAngle.Equals(__0)) images[__instance].VertexDirty = true;
+            __instance.rotAngle = __0; return false;
+        }
         public static bool ScalePrefix(scrDecoration __instance, Vector2 __0)
-        { if (!SkipLate(__instance)) return true; __instance.scaleVec = __0; return false; }
+        {
+            if (!SkipLate(__instance)) return true;
+            if (!__instance.scaleVec.Equals(__0)) images[__instance].VertexDirty = true;
+            __instance.scaleVec = __0; return false;
+        }
         public static bool ParallaxPrefix(scrParallax __instance) => !SkipLate(__instance.decoration);
         public static void BoundaryPrefix(scrDecoration __instance)
         {
@@ -536,7 +564,8 @@ namespace StutterFix
             foreach (var run in runs) if (!run.Reused) { Dispose(run); disposed++; }
             runs.Clear(); runs.AddRange(nextRuns); nextRuns.Clear(); topology = false; transitionCount++;
             int vertices = 0;
-            foreach (var run in runs) { run.Offset = vertices; vertices += run.VertexCount; }
+            foreach (var run in runs)
+            { run.NeedsUpload |= run.Offset != vertices; run.Offset = vertices; vertices += run.VertexCount; }
             if (vertexBuffer.Length < vertices) Array.Resize(ref vertexBuffer, Math.Max(vertices, vertexBuffer.Length * 2));
             long ticks = Stopwatch.GetTimestamp() - begin; reconcileTicks += ticks;
             Log("transition frame=" + Time.frameCount + " owned=" + ownedCount + " runs=" + runs.Count
@@ -562,6 +591,9 @@ namespace StutterFix
             }
             run.Mesh.indexFormat = run.VertexCount > 65535 ? IndexFormat.UInt32 : IndexFormat.UInt16;
             run.Mesh.MarkDynamic(); run.Mesh.SetVertexBufferParams(run.VertexCount, Layout);
+            if (Marshal.SizeOf(typeof(Vertex)) != 36 || run.Mesh.GetVertexBufferStride(0) != 36
+                || run.Mesh.GetVertexAttributeFormat(VertexAttribute.Color) != VertexAttributeFormat.Float32)
+                throw new InvalidOperationException("Float32 color vertex layout mismatch");
             run.Mesh.SetIndices(indices, MeshTopology.Triangles, 0, false);
             run.Mesh.bounds = new Bounds(Vector3.zero, new Vector3(Extent * 2, Extent * 2, 0));
             run.Renderer.sharedMaterial = first.Material;
@@ -591,39 +623,50 @@ namespace StutterFix
             if (DecoGpu.Active || MatShare.Active || DecoEngine.Enabled) throw new InvalidOperationException("competing owner enabled");
             lastFrame = Time.frameCount;
             long heap = GC.GetTotalMemory(false), alloc = GC.GetAllocatedBytesForCurrentThread(), transitions = transitionCount;
-            long scan = Stopwatch.GetTimestamp();
             checkMax = checkVertexMax = checkBoundsMax = checkQuadBoundsMax = 0;
             checkCount = checkRejected = checkNested = checkVisibility = 0;
+            long compute = Stopwatch.GetTimestamp();
+            CaptureCamera();
+            computeTicks += Stopwatch.GetTimestamp() - compute;
+            long scan = Stopwatch.GetTimestamp();
             if (refreshRegistry) Register();
             Scan(); scanTicks += Stopwatch.GetTimestamp() - scan;
-            long compute = Stopwatch.GetTimestamp();
-            foreach (var i in images.Values) if (i.Owned) Compute(i);
-            computeTicks += Stopwatch.GetTimestamp() - compute;
             Reconcile();
             compute = Stopwatch.GetTimestamp();
             foreach (var run in runs)
             {
                 float z = run.Members[0].World[0].z;
-                if (run.Z != z) { run.Z = z; run.Object.transform.position = new Vector3(0, 0, run.Z); }
+                bool depthChanged = run.Z != z;
+                if (depthChanged) { run.Z = z; run.Object.transform.position = new Vector3(0, 0, run.Z); }
+                var uploadState = new LiveDecoUploadState(run.NeedsUpload || depthChanged);
                 for (int n = 0; n < run.Members.Length; n++)
                 {
-                    var i = run.Members[n]; Color32 color = Rendered(i.D);
+                    var i = run.Members[n]; Compute(i); Color color = Rendered(i.D);
+                    if (!uploadState.Fill(i.VertexDirty, !color.Equals(i.UploadedColor))) continue;
+                    dirtyImages++;
                     for (int k = 0; k < 4; k++)
                     {
                         var v = i.World[k]; v.z -= run.Z;
                         vertexBuffer[run.Offset + n * 4 + k] = new Vertex { Position = v, Color = color, UV = i.UV[k] };
                     }
+                    i.UploadedColor = color; i.VertexDirty = false;
+                    // Do not use NeedsUpload here as the per-image fill predicate:
+                    // one dirty image need not cause later unchanged images to fill.
                 }
+                run.NeedsUpload = uploadState.Dirty;
             }
             computeTicks += Stopwatch.GetTimestamp() - compute;
             long upload = Stopwatch.GetTimestamp();
             foreach (var run in runs)
             {
+                if (!run.NeedsUpload) { skippedUploads++; continue; }
                 run.Mesh.SetVertexBufferData(vertexBuffer, run.Offset, 0, run.VertexCount, 0, Flags);
+                run.NeedsUpload = false;
                 if (!run.Enabled) { run.Renderer.enabled = true; run.Enabled = true; }
                 uploadCalls++;
             }
-            foreach (var i in images.Values) if (i.Owned && !i.Hidden) { i.R.forceRenderingOff = true; i.Hidden = true; }
+            foreach (var run in runs) foreach (var i in run.Members)
+                if (!i.Hidden) { i.R.forceRenderingOff = true; i.Hidden = true; }
             uploadTicks += Stopwatch.GetTimestamp() - upload;
             heapDelta += GC.GetTotalMemory(false) - heap; frameSamples++;
             long bytes = GC.GetAllocatedBytesForCurrentThread() - alloc; allocatedBytes += bytes;
@@ -644,10 +687,16 @@ namespace StutterFix
                 + " vertex_ms=" + Ms(computeTicks, frameSamples) + " upload_ms=" + Ms(uploadTicks, frameSamples)
                 + " reconcile_ms=" + Ms(reconcileTicks, frameSamples) + " scan_ms=" + Ms(scanTicks, frameSamples)
                 + " upload_calls=" + (uploadCalls / (double)frameSamples).ToString("F3", Inv)
+                + " dirty_images=" + (dirtyImages / (double)frameSamples).ToString("F3", Inv)
+                + " skipped_uploads=" + (skippedUploads / (double)frameSamples).ToString("F3", Inv)
+                + " vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met="
+                + (computeTicks * 1000.0 / Stopwatch.Frequency / frameSamples <= .5
+                    && uploadTicks * 1000.0 / Stopwatch.Frequency / frameSamples <= .4)
                 + " allocated_bytes=" + allocatedBytes + " steady_allocated_bytes=" + steadyAllocatedBytes + " steady_samples=" + steadySamples
                 + " heap_delta=" + heapDelta + " heap_scope=frame-work-excludes-cost-and-vertex-logs");
             computeTicks = uploadTicks = reconcileTicks = scanTicks = uploadCalls = heapDelta = 0; frameSamples = 0;
             allocatedBytes = steadyAllocatedBytes = 0; steadySamples = 0;
+            dirtyImages = skippedUploads = 0;
         }
         internal static void Stop()
         {

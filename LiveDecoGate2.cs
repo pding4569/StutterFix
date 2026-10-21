@@ -79,7 +79,7 @@ namespace StutterFix
                 evidence.Pixel(index, result.Changed, max, restored == 0, stable);
                 Log("PIXEL t=" + t + " song=" + Song.ToString("F6", Inv) + " ab_out=" + result.Changed
                     + " maxdiff=" + max + " aa2_out=" + restored + " stable=" + stable + " regions=" + result.Regions);
-                if (result.Changed != 0 && max <= 1) Log("PIXEL_NEAR t=" + t + " ab_out=" + result.Changed + " maxdiff=" + max + " pass=0");
+                if (result.Changed != 0 && max <= 2) Log("PIXEL_NEAR t=" + t + " ab_out=" + result.Changed + " maxdiff=" + max + " pass=0");
                 return true;
             }
             if (a.Length == 3 && a[0] == "begin")

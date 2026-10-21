@@ -132,8 +132,18 @@ if (args.Length >= 3)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
-        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoRenderer", "LiveDecoGeometry", "LiveDecoScripts", "LiveDecoLifetime", "LiveDecoGate2", "LiveDecoGate2Policy" })
+        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoRenderer", "LiveDecoGeometry", "LiveDecoUploadState", "LiveDecoScripts", "LiveDecoLifetime", "LiveDecoGate2", "LiveDecoGate2Policy" })
             Check(names.Contains(name) == (i != 0), "edition types " + name + " " + args[i]);
+        if (i != 0)
+        {
+            var vertex = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name) == "Vertex"
+                && md.GetString(md.GetTypeDefinition(t.GetDeclaringType()).Name) == "LiveDecoRenderer");
+            var color = vertex.GetFields().Select(md.GetFieldDefinition).Single(f => md.GetString(f.Name) == "Color");
+            var signature = md.GetBlobReader(color.Signature);
+            Check(signature.ReadByte() == 6 && signature.ReadByte() == 0x11
+                && md.GetString(md.GetTypeReference((TypeReferenceHandle)signature.ReadTypeHandle()).Name) == "Color",
+                "production vertex keeps Float32 Color without Color32 quantization");
+        }
         var decoAnim = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name) == "DecoAnim");
         var prof = decoAnim.GetFields().Select(md.GetFieldDefinition).Single(f => md.GetString(f.Name) == "Prof");
         Check((prof.Attributes & System.Reflection.FieldAttributes.InitOnly) != 0 == (i == 0),

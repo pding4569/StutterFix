@@ -152,6 +152,18 @@ if (args.Length >= 3)
             Check(tokens.Count(t => t.Op == OpCodes.Call && MetadataTokens.Handle(t.Token).Kind == HandleKind.MethodDefinition
                 && md.GetString(md.GetMethodDefinition((MethodDefinitionHandle)MetadataTokens.Handle(t.Token)).Name) == "FreezePlanetUpdate") == 2,
                 "both game callbacks use the production strict hook selector");
+            var grab = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name).StartsWith("<Grab>d__", StringComparison.Ordinal));
+            var move = grab.GetMethods().Select(md.GetMethodDefinition).Single(m => md.GetString(m.Name) == "MoveNext");
+            var calls = Tokens(pe.GetMethodBody(move.RelativeVirtualAddress).GetILBytes())
+                .Where(t => t.Op == OpCodes.Call || t.Op == OpCodes.Callvirt).Select(t => {
+                    var handle = MetadataTokens.Handle(t.Token);
+                    return handle.Kind == HandleKind.MethodDefinition ? md.GetString(md.GetMethodDefinition((MethodDefinitionHandle)handle).Name)
+                        : handle.Kind == HandleKind.MemberReference ? md.GetString(md.GetMemberReference((MemberReferenceHandle)handle).Name) : "";
+                }).ToArray();
+            int request = Array.IndexOf(calls, "Request");
+            Check(request > 0 && calls.Take(request).Count(c => c == "State") == 2
+                && calls.Skip(request + 1).Count(c => c == "State") == 1,
+                "both synchronous submission snapshots precede GPU readback deadline; completion audit follows");
         }
     }
     Console.WriteLine($"FrameCompare edition/pause metadata: {n - editionStart} checks passed; Player absent, both unscaled callbacks included");

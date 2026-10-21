@@ -264,23 +264,33 @@ namespace StutterFix
             try { ScreenCapture.CaptureScreenshotIntoRenderTexture(pendingTexture); }
             finally { RenderTexture.active = active; }
             int frame = Time.frameCount;
-            pending = AsyncGPUReadback.Request(pendingTexture, 0, TextureFormat.RGBA32); hasPending = true;
-            double start = Time.realtimeSinceStartupAsDouble;
+            double auditStart = Time.realtimeSinceStartupAsDouble;
             // Validate submission in the SAME end-of-frame phase. The dedicated RT is
             // immutable while readback is pending; subsequent scene updates cannot alter it.
             var submitted = State(); var submissionDelta = state.Compare(submitted);
             LogDelta("submission", state, submitted, submissionDelta);
             if (submissionDelta.Changed != 0) throw new InvalidOperationException("capture state changed during submission: " + submissionDelta.Details);
+            // State() walks the entire scene (157k renderers in Arche). Do that
+            // before submitting the readback so its CPU time cannot consume the
+            // GPU deadline while this coroutine still owns the main thread.
+            double auditMs = (Time.realtimeSinceStartupAsDouble - auditStart) * 1000;
+            pending = AsyncGPUReadback.Request(pendingTexture, 0, TextureFormat.RGBA32); hasPending = true;
+            double start = Time.realtimeSinceStartupAsDouble;
+            // Always return to the player loop once, allowing queued GPU work
+            // and request completion to progress before testing the deadline.
+            yield return null;
             while (!pending.done)
             {
                 if (Time.realtimeSinceStartupAsDouble - start > 15) throw new TimeoutException("GPU readback exceeded 15s; pending RT retained until completion");
                 yield return null;
             }
+            double waitMs = (Time.realtimeSinceStartupAsDouble - start) * 1000;
             if (pending.hasError) throw new InvalidOperationException($"readback failed {w}x{h} ARGB32->RGBA32 device={SystemInfo.graphicsDeviceType}");
             RequirePaused();
+            double completionAuditStart = Time.realtimeSinceStartupAsDouble;
             var completed = State(); var waitDelta = submitted.Compare(completed);
             LogDelta("readback-wait-advisory", submitted, completed, waitDelta);
-            Log($"readback sourceFrame={frame} completionFrame={Time.frameCount} elapsedFrames={Time.frameCount - frame} elapsedMs={(Time.realtimeSinceStartupAsDouble - start) * 1000:F3} rt={pendingTexture.width}x{pendingTexture.height} screenNow={Screen.width}x{Screen.height}");
+            Log($"readback sourceFrame={frame} completionFrame={Time.frameCount} elapsedFrames={Time.frameCount - frame} elapsedMs={waitMs:F3} submissionAuditMs={auditMs:F3} completionAuditMs={(Time.realtimeSinceStartupAsDouble - completionAuditStart) * 1000:F3} rt={pendingTexture.width}x{pendingTexture.height} screenNow={Screen.width}x{Screen.height}");
             if (!pendingTexture.IsCreated() || pendingTexture.width != w || pendingTexture.height != h ||
                 pending.width != w || pending.height != h || pending.GetData<byte>().Length != checked(w * h * 4))
                 throw new InvalidOperationException("readback RT/data dimensions changed");

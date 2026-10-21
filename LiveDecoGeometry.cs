@@ -4,6 +4,20 @@ using UnityEngine;
 
 namespace StutterFix
 {
+    // A relocated/new run needs every shared-buffer entry filled. In an existing
+    // run a changed member schedules one upload, without dirtying its neighbors.
+    internal struct LiveDecoUploadState
+    {
+        readonly bool fillAll;
+        internal bool Dirty { get; private set; }
+        internal LiveDecoUploadState(bool invalidBuffer) { fillAll = invalidBuffer; Dirty = invalidBuffer; }
+        internal bool Fill(bool poseChanged, bool colorChanged)
+        {
+            bool fill = fillAll || poseChanged || colorChanged;
+            Dirty |= fill; return fill;
+        }
+    }
+
     // Cache fixed local segments, never invert a world matrix (animated scale
     // may be zero). The game's logical offset belongs to Child, not Renderer.
     internal sealed class LiveDecoGeometry
@@ -18,6 +32,34 @@ namespace StutterFix
         readonly Transform pivot, child, renderer;
         readonly Matrix4x4 above, shape;
         internal readonly Vector3[] Shape = new Vector3[4];
+        internal readonly Vector3[] World = new Vector3[4];
+        Vector2 lastPosition, lastScale, lastOffset;
+        float lastAngle;
+        Quaternion rotation;
+        bool poseValid, rotationValid;
+        internal Quaternion Rotation => rotation;
+
+        // Only managed values enter this hot path. Exact comparisons intentionally
+        // retain subpixel changes; no epsilon-based dirty suppression.
+        internal bool UpdatePose(Vector2 position, Vector2 scale, Vector2 offset, float angle, bool force = false)
+        {
+            if (!force && poseValid && position.Equals(lastPosition) && scale.Equals(lastScale)
+                && offset.Equals(lastOffset) && angle.Equals(lastAngle)) return false;
+            if (!rotationValid || !angle.Equals(lastAngle))
+            {
+                rotation = Quaternion.Normalize(Quaternion.Euler(0, 0, angle));
+                rotationValid = true;
+            }
+            Vector3 translated = Offset(offset);
+            for (int n = 0; n < 4; n++)
+            {
+                Vector3 local = Shape[n] + translated;
+                local = rotation * new Vector3(local.x * scale.x, local.y * scale.y, local.z);
+                World[n] = new Vector3(position.x + local.x, position.y + local.y, local.z);
+            }
+            lastPosition = position; lastScale = scale; lastOffset = offset; lastAngle = angle; poseValid = true;
+            return true;
+        }
         internal int Depth => nodes.Count;
         LiveDecoGeometry(Transform pivot, Transform child, Transform renderer, Matrix4x4 above, Matrix4x4 shape)
         { this.pivot = pivot; this.child = child; this.renderer = renderer; this.above = above; this.shape = shape; }

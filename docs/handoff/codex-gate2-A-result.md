@@ -1,3 +1,71 @@
+# Gate 2 A 5회차 수정 — 캡처 제한 시간 분리·정점 캐시·더티 업로드 (2026-10-21, 로그 run6)
+
+**코드 수정과 오프라인 검증 완료. GATE2=PASS 미달성. 수정 후 실픽셀·FPS·정점 0.5ms/업로드 0.4ms 목표는 미측정이다.** `codex-al-ga-5.md` → 장부 → run4 증거 순으로 읽었다. 시작 HEAD는 `ba29aa8`이며 처음 확인한 작업 트리는 깨끗했다. 기존 계층·ToggleVisible·바운드·PlanetSprite 정지를 유지했다. 게임 실행·설치·커밋·푸시・`.codex/config.toml` 수정은 하지 않았다.
+
+워크트리에 없던 로드맵과 freeze 결과는 각각 `E:/StutterFixWork/StutterFix/docs/ROADMAP-EXTREME-20261021.md`, `E:/StutterFixWork/wt-freeze/docs/handoff/codex-freeze-20261021-result.md`에서 읽기만 했다. freeze 결과 문서 자체에는 신규 실측이 없으며, 8.95→5.25ms/3.69ms 절감은 추가된 공통 인계의 배경 수치로 취급한다. 작업 중 발견한 `gate2-common.md`의 성능 지침 추가 diff는 외부 변경이며 보존했다. 이 세션에서 해당 파일을 편집하지 않았다.
+
+## 전달 결과와 실제 중단 지점
+
+출처는 [run4 전달 증거](ga-autoloop-run4-evidence.txt)와 기존 `E:/StutterFixWork/night-results/al-ga-4.log`다. 신규 게임 측정이 아니다. [원본 SHA256·줄 번호·발췌](gate2-A-run6-prior-capture-evidence.txt)를 보존했다.
+
+| 항목 | 262초 | 270초 |
+|---|---:|---:|
+| 소유 / 구간 | 1,478 / 1,114 | 1,577 / 1,230 |
+| N1↔N2 변경 픽셀 / 상태 변화 | 0 / 0 | 0 / 0 |
+| A↔B / 최대 차이 | 674 / 2 | B 캡처 실패 |
+| A↔A2 / stable | 0 / True | 미도달 |
+| 정상 상태 표본 수 | 8 | 5 |
+| vertex_ms / upload_ms | 2.753813 / 1.437425 | 2.727280 / 1.510000 |
+| scan_ms / upload_calls | 35.655163 / 1,114 | 34.950140 / 1,230 |
+| steady_allocated_bytes | 0 | 0 |
+
+최종 중단은 원본 614행의 **`framecmp grab B`: GPU readback exceeded 15s**다. 270초 noise/assertzero는 통과했다. 이전의 잡음·계층·소유 0 실패를 다시 고칠 상황이 아니다. 276초 픽셀·ABBA FPS는 미도달이며 최종 GATE2=ERROR다. Prof는 **samples=953,430 / set_pct=69.633873% / valid=True**다. PairXY/GroupStep을 억제한 Step Apply/OnUpdate 표본이며 StepPair·OnComplete·setter 이후 엔진 비용은 제외한다.
+
+## 코드 수정
+
+1. **GPU 제한 시간에서 동기 상태 감사를 분리했다.** 기존 Grab은 Request와 시작 시각 저장 직후 전체 State()와 비교를 실행했다. 157,254개 렌더러의 CPU 감사 동안 PlayerLoop에 양보하지 않은 시간도 GPU 대기 15초로 셌다. 기존 성공 캡처 elapsedMs도 10,960.029~24,006.205ms여서 GPU 단독 지연으로 해석할 수 없다. 같은 EndOfFrame 안의 두 상태 수집·동일성 검사를 먼저 끝내고 Request→시작 시각→최소 1회 yield→완료/15초 검사를 수행한다. pending RT 수명·실패 정리·읽기 오류 검사는 유지한다. elapsedMs는 요청 대기, submissionAuditMs/completionAuditMs는 CPU 감사로 분리했다. **시간 혼합은 코드로 확인했지만, 기존 실패의 실제 GPU 지연 기여량은 분리 측정이 없어 확정하지 않는다.**
+2. **정점 색의 추가 양자화를 제거했다.** 지정 디컴파일 scrVisualDecoration.ApplyColor와 설치 게임 IL의 경로는 Float32 색을 rendererColor/SpriteRenderer.color에 쓴다. 기존 메시 경로는 이를 Color32로 다시 양자화했다. 0.5도 8비트 UNorm으로 정확히 표현할 수 없으므로 임의의 원본 색을 보존하지 못한다. **공통 문서 초기 Color32 레이아웃은 엄격한 동일 목표와 충돌하므로, 동일 목표를 우선해 색만 Float32x4로 변경했다.** 위치·색·UV 인터리브와 SetVertexBufferData는 유지한다. stride는 24→36바이트, 1,500개×4정점 전량은 144,000→216,000바이트다. 실제 버퍼 stride/색 형식을 입장 때 검사한다. 이 변경이 674픽셀 전부를 해결한다는 주장은 하지 않는다. 정점 변환·래스터화 차이도 가능하다.
+3. **Compute의 장식별 Unity 프로퍼티 읽기를 제거했다.** 카메라 위치·회전·배율·화면 기저를 프레임마다 한 번 캡처한다. 소유 시작 때 구한 로컬 코너·UV·flip·고정 계층 Shape를 재사용하고, Compute는 논리 C# 필드와 스냅샷만 읽는다. camScaleMultiplier의 원래 식과 연산 순서를 유지한다. 카메라 배치형은 직교 화면 기저로 계산하며 입장 때 기존 실제 정점/바운드 1e-4 검사를 그대로 받는다. 이 경로의 실게임 정밀도·소유 비율은 미검증이다.
+4. **정확 비교 더티 추적을 추가했다.** 설정 대체 지점의 위치·피벗·회전·크기·색 변화가 dirty를 세운다. 계산된 월드 위치·크기·피벗·각도도 매 프레임 비교해 카메라 변화와 직접 논리 필드 변경을 검출한다. 각도가 같으면 쿼터니언을 재사용한다. pose가 같으면 4정점 계산을, 색도 같으면 버퍼 채움을 생략한다. 허용 오차·색 반올림·작은 움직임 무시는 없다.
+5. **더티 구간만 업로드한다.** 새 구간·버퍼 오프셋 이동·깊이 변화는 모든 멤버를 채운다. 기존 구간에서 멤버 하나가 바뀌면 그 멤버만 채우고 구간당 업로드 1회를 예약한다. 변하지 않은 다음 프레임은 이전 dirty를 물려받지 않는다. images 사전 전체 순회 대신 현재 소유 구간 멤버를 계산/숨김 처리한다. cost에 dirty_images/skipped_uploads/vertex_target_ms=0.5/upload_target_ms=0.4/mesh_targets_met를 추가했다. vertex_ms에는 공통 카메라 캡처와 정점 계산·채움이 포함된다.
+6. **PIXEL_NEAR는 최대 차이 2까지 별도 기록한다.** pass=0이며 세 시점 ab_out=0·안정성·복원·ABBA 평균 FPS +15%의 PASS 조건은 그대로다. 다른 구간을 한 Mesh로 합치면 단일 Renderer의 layer/order/distance와 첫 재질 ID 정렬을 독립적으로 유지한다는 근거가 없어 적용하지 않았다. 재질 복제·아틀라스·커스텀 셰이더·워커·Gate 3는 추가하지 않았다.
+
+## 오프라인 검증
+
+| 검사 | 결과 | 로그 |
+|---|---|---|
+| Release DEV / Player / PlayerAuto | 오류 0/0/0, 경고 38/4/38 | gate2-A-run6-build-dev.log / -player.log / -auto.log |
+| LoadCheck DEV / Player / PlayerAuto | 276/229/276곳, 틀림 0/0/0 | gate2-A-run6-loadcheck-dev.log / -player.log / -auto.log |
+| 생산 계층 / 바운드 / 스크립트 | 2,729 / 482 / 15 통과 | [geometry](gate2-A-run6-geometry-fixture.log) |
+| 신규 생산 pose 캐시 / 업로드 무효화 | 40 / 32 통과 | 같은 로그 |
+| 구간·앵커 / Gate 2 판정 / edition / 패치 대상 | 106,460 / 18 / 36 / 17 통과 | [fixture](gate2-A-run6-fixture.log) |
+| FrameCompare RGBA / 마스크 / 상태 / 대조 | 11 / 15 / 15 / 17 통과 | [framecmp](gate2-A-run6-framecmp-fixture.log) |
+| FrameCompare edition·정지·실제 Grab IL 순서 / 게임 정지 콜백 | 21 / 2 통과 | 같은 로그 |
+| MatShare / 기존 FrameCompare steps | 25,401 / 24 통과 | gate2-A-run6-matshare-fixture.log / -framecmp-steps-fixture.log |
+| Gate 1 / Gate 2 steps | 25 / 132단계, UTF-8 CLI 통과 | gate2-A-run6-gate1-steps-fixture.log / -steps-fixture.log |
+
+캐시 fixture는 생산 메서드를 관리 수학 어댑터로 컴파일해 독립적인 leaf→pivot→world 연산과 대조한다. 각 필드별 변화·0/음수 크기·1e-6 이동·반복 프레임 비트 보존·재입장 강제 검사를 포함한다. 업로드 fixture는 새/재배치 버퍼·pose-only/color-only 변화·변경 없는 이웃·다음 정지 프레임을 검사한다. 메타데이터 검사는 DEV/PlayerAuto 정점의 Float32 Color, 두 동기 상태 감사가 Request 앞에 있음, 일반 Player의 실험 타입·참조 부재를 확인한다.
+
+지정 디컴파일과 [scrDecoration IL](gate2-A-run6-decoration-il.log)·[scrParallax IL](gate2-A-run6-parallax-il.log)을 대조했다. [게임 DLL 해시](gate2-A-run6-game-hash.txt)는 기존과 같은 F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF다. scrVisualDecoration.ApplyColor는 gate2-A-run6-visual-il.log에서 rendererColor 저장과 SpriteRenderer.color 쓰기를 추가 확인했다. 이 검사들은 Unity/Mono의 실제 렌더링·Harmony 실행·픽셀·성능 증명이 아니다. LoadCheck 동적 이름 5곳과 기존 빌드 경고는 남는다. 보조 검사에서 잘못 지정한 test-framecmp-steps.py는 실제 check-framecmp-steps.py로 정정했고 최종 로그는 24건 통과다.
+
+## 남은 수치와 한계
+
+| 항목 | 이번 수정 후 |
+|---|---|
+| 정점 ≤0.5ms / 업로드 ≤0.4ms (약 1,500개) | 미측정 / 미측정, 달성 주장 안 함 |
+| 정지 프레임 계산·업로드 생략 | 관리 fixture만 통과, Unity 실제 호출 수는 미측정 |
+| 262/270/276초 실픽셀·A/A2 | 미측정 |
+| ABBA 평균 FPS +15% | 미측정 |
+| Unity/Mono steady GC / 재시작·사망·맵 재열기·언로드 | 미측정 |
+
+**전체 scene 안전 스캔은 남아 있다.** 직전 정상 표본 scan_ms=35.655163/34.950140은 정점·업로드보다 훨씬 크다. 이번 변경은 Compute 읽기를 줄였지만 전체 렌더러의 live/외부 장벽/재질·계층 검사는 삭제하지 않았다. SkipLate 반복 안전 검사도 남아 있다. 따라서 메시 목표를 충족해도 전체 FPS +15%를 보장하지 않는다. 서로 다른 구간을 합치거나 안전 검사를 생략해 수치를 맞추지 않았다.
+
+생성기는 132단계를 유지한다. renderer_version=5·Float32x4·분리한 감사 시간·dirty/skip 로그로 변경 코드의 가설을 판별할 수 있다. 실제 GPU 대기 15초 초과는 계속 ERROR다. 동일 코드 재시험을 반복 실행/요청하지 않았으며 게임 실행 없이 여기서 종료한다. 이전 674/2를 PIXEL_NEAR나 PASS로 소급 변경하지 않았다.
+
+task-observer 관찰 반환(사용자 범위 저장소는 읽기만 함, 스킬·메모리 쓰기 없음): 문제 — 비동기 요청 직후 큰 동기 감사를 대기 제한에 포함하면 CPU 지연을 GPU 실패로 오인한다. 개선 — 요청 전 상태 검증과 요청 후 대기를 분리하고 각각 기록한다. 원칙 — 제한 시간은 해당 자원이 진행할 기회를 받은 구간에서 측정하며 전체 작업 시간과 구별한다.
+
+---
+
 # Gate 2 A 최신 수정 — 행성 재질 애니메이션 정지 누락 (2026-10-21, 로그 run5)
 
 **일시정지 중에도 진행하던 PlanetSprite의 재질 애니메이션을 막고 오프라인 검증을 완료했다. 수정 후 실픽셀·FPS는 미측정이며 Gate 2 PASS를 선언하지 않는다.** codex-al-ga-4.md → 장부 → run3 전달 증거 순서로 확인했고, 시작 HEAD는 `3b8bdd6`, 작업 트리는 깨끗했다. 기존 계층·ToggleVisible·바운드 검사는 유지했다. 게임 실행·설치·커밋·푸시·`.codex/config.toml` 수정은 하지 않았다.

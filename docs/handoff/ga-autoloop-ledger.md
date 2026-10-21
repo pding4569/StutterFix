@@ -1,4 +1,16 @@
 
+## codex-al-ga-5 수정 — 2026-10-21 (검증 로그 run6)
+- 시작 HEAD ba29aa8, 처음 작업 트리는 깨끗함. 기존 계층·ToggleVisible·바운드·PlanetSprite 정지 유지. gate2-common.md 성능 지침 추가는 외부 변경으로 보존.
+- run4 전달: 소유/구간 1,478/1,114, 262초 ab_out=674/maxdiff=2/aa2_out=0/stable=True. Prof samples=953,430 / set_pct=69.633873% / valid=True(기존 Step 표본 한계 유지).
+- 기존 al-ga-4.log 614행에서 270초 framecmp grab B GPU readback 15초 타임아웃 확인. 두 시점 noise=0/상태 동일. 전체 로그 출처 해시·발췌 보존. FPS 미도달.
+- Request 직후 전체 scene 동기 상태 감사가 GPU 제한 시간에 포함되는 구조 수정. 동일 EndOfFrame의 상태 검사를 먼저 끝내고 Request→시각→1회 yield→완료/15초 검사. CPU 감사/대기 로그 분리, RT 수명 유지. 기존 GPU 지연의 실제 기여량은 미확정.
+- 정점 색의 Color32 추가 양자화 제거: 엄격한 동일 목표를 우선해 Float32x4/stride36 사용(초기 Color32 명세와의 차이 명시). 재질·텍스처·UV 유지, 레이아웃 검증. 기존 674픽셀 전체 해결 주장은 안 함.
+- Compute의 장식별 Unity 프로퍼티 읽기를 카메라 공통 스냅샷으로 대체. 캐시 Shape/UV·정확한 pose/색 dirty·각도 재사용·현재 구간 멤버 순회·더티 구간만 업로드. 새/재배치 버퍼는 전량 채움.
+- renderer_version=5, dirty_images/skipped_uploads/mesh_targets_met 및 목표 0.5/0.4ms 추가. PIXEL_NEAR 최대2/pass=0, 최종 픽셀0·FPS+15% 기준 유지. 정렬 근거 없이 다른 구간을 병합하지 않음.
+- 빌드 오류 0/0/0, LoadCheck 틀림 0/0/0. 계층2,729·바운드482·스크립트15·캐시40·업로드32·구간106,460·판정18·edition36·패치17·FrameCompare11/15/15/17/21/2·MatShare25,401·steps24/25/132 통과.
+- 게임 실행·설치·커밋·푸시·config 수정 없음. 동일 코드 게임 시험 반복 없음. 수정 후 실픽셀/FPS/GC/수명·정점≤0.5ms/업로드≤0.4ms는 미측정. 기존 scan35.655163/34.950140ms와 SkipLate 반복 안전 검사는 남는다. GATE2=PASS 미달성.
+- 결과 문서 최신 run6 절·10줄 요약·gate2-A-run6-* 로그 갱신. 생성기는132단계 유지, 변경된 코드의 감사/대기 분리·Float32·dirty/skip 수치로 다음 판별 가능. 이 세션은 게임 실행 없이 종료.
+
 ## codex-al-ga-4 수정 — 2026-10-21 (검증 로그 run5)
 - 시작 HEAD 3b8bdd6, 작업 트리 깨끗함. 기존 계층·ToggleVisible·바운드 검사 유지.
 - run3 전달 실측: 소유/구간 1,472/1,100, ab_out=2,278 / maxdiff=5 / aa2_out=769 / stable=False, GATE2=ERROR unstable_baseline. Prof samples=972,702 / set_pct=69.249446% / valid=True(기존 Step 표본 한계 유지). FPS 미도달.
@@ -128,3 +140,29 @@
   - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1577 runs=1230 vertex_ms=2.679800 upload_ms=2.200600 reconcile_ms=88.958400 scan_ms=351.548500 upload_calls=1230.000 allocated_bytes=0 steady_a
   - [StutterFix] [livedeco] cost per_frame=1 samples=5 owned=1577 runs=1230 vertex_ms=2.727280 upload_ms=1.510000 reconcile_ms=0.000000 scan_ms=34.950140 upload_calls=1230.000 allocated_bytes=0 steady_all
   - [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False
+
+## 회차 5
+- Codex 요약: 타임아웃 계산, 색 정밀도, 정점 캐시·더티 업로드를 수정했습니다.
+
+- 3종 빌드·LoadCheck 오류 0, 회귀 검사 통과.
+- 결과 문서·장부·10줄 요약 갱신.
+- 게임 실행·설치·커밋·푸시 없음.
+
+실픽셀·FPS·성능 목표는 미측정이므로 **GATE2=PASS는 미달성**입니다.
+
+[결과 문서](E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] transition frame=23845 owned=1490 runs=1113 created=1113 reused=0 destroyed=0 reconcile_ms=21.075300
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1490 runs=1113 vertex_ms=0.859000 upload_ms=1.700100 reconcile_ms=21.075300 scan_ms=288.621600 upload_calls=1113.000 dirty_images=1490.000 skip
+  - [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=1490 runs=1113 vertex_ms=0.694400 upload_ms=0.069988 reconcile_ms=0.000000 scan_ms=36.045113 upload_calls=0.000 dirty_images=0.000 skipped_uplo
+  - [StutterFix] [livedeco] transition frame=25156 owned=1518 runs=1153 created=1153 reused=0 destroyed=0 reconcile_ms=22.093600
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1518 runs=1153 vertex_ms=1.105100 upload_ms=1.852800 reconcile_ms=22.093600 scan_ms=300.260700 upload_calls=1153.000 dirty_images=1518.000 skip
+  - [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=1518 runs=1153 vertex_ms=0.835125 upload_ms=0.105613 reconcile_ms=0.000000 scan_ms=38.227325 upload_calls=0.000 dirty_images=0.000 skipped_uplo
+  - [StutterFix] [livedeco] transition frame=26655 owned=17 runs=15 created=15 reused=0 destroyed=0 reconcile_ms=0.470800
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=17 runs=15 vertex_ms=0.022300 upload_ms=0.016500 reconcile_ms=0.470800 scan_ms=31.181300 upload_calls=15.000 dirty_images=17.000 skipped_upload
+  - [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=17 runs=15 vertex_ms=0.019550 upload_ms=0.000850 reconcile_ms=0.000000 scan_ms=27.876138 upload_calls=0.000 dirty_images=0.000 skipped_uploads=
+  - [StutterFix] [livedeco2] FPS mode=off index=0 fps=122.331735 ms=8.174494 frames=1705 elapsed_s=13.937512 song_begin=262.060504 song_end=276.004290 valid=True
+  - [StutterFix] [livedeco] transition frame=31367 owned=164 runs=97 created=97 reused=0 destroyed=0 reconcile_ms=1.729900
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=164 runs=97 vertex_ms=0.100500 upload_ms=0.096200 reconcile_ms=1.729900 scan_ms=65.037800 upload_calls=97.000 dirty_images=164.000 skipped_uplo

@@ -166,5 +166,55 @@ scripts = new[] { decoration, decoration.parallax, decoration.blendModeEffect,
 Check(Reason() == null, "existing role references preserved");
 Console.WriteLine($"LiveDeco production script/binding policy: {checks - scriptStart} checks passed; managed roles only, no Unity callbacks proven");
 
+int poseStart = checks;
+// Exercise the actual production cache against an independent S/R/T oracle.
+// Each input changes alone; even subpixel motion must invalidate the cache.
+var poseRoot = new Transform(); var poseChild = Node(poseRoot); var poseLeaf = Node(poseChild);
+var pose = LiveDecoGeometry.Capture(poseRoot, poseChild, poseLeaf, corners, true, false);
+var inputs = new[] {
+    (P: new Vector2(10, 20), S: new Vector2(2, -3), O: new Vector2(1, 2), A: 17f),
+    (P: new Vector2(10.000001f, 20), S: new Vector2(2, -3), O: new Vector2(1, 2), A: 17f),
+    (P: new Vector2(10.000001f, 20), S: new Vector2(0, -3), O: new Vector2(1, 2), A: 17f),
+    (P: new Vector2(10.000001f, 20), S: new Vector2(0, -3), O: new Vector2(-1, 2), A: 17f),
+    (P: new Vector2(10.000001f, 20), S: new Vector2(0, -3), O: new Vector2(-1, 2), A: 17.000002f),
+};
+foreach (var input in inputs)
+{
+    Check(pose.UpdatePose(input.P, input.S, input.O, input.A), "every changed pose component invalidates");
+    for (int k = 0; k < 4; k++)
+    {
+        var expected = new N.Vector3(-corners[k].x, corners[k].y, 0);
+        for (var t = poseLeaf; t != poseRoot; t = t.parent)
+        {
+            expected *= t.localScale.Native;
+            expected = N.Vector3.Transform(expected, t.localRotation.Native);
+            expected += t == poseChild ? new N.Vector3(input.O.x, input.O.y, 0) : t.localPosition.Native;
+        }
+        expected *= new N.Vector3(input.S.x, input.S.y, 1);
+        expected = N.Vector3.Transform(expected, N.Quaternion.CreateFromAxisAngle(N.Vector3.UnitZ, input.A * MathF.PI / 180));
+        expected += new N.Vector3(input.P.x, input.P.y, 0);
+        Check(N.Vector3.Distance(expected, pose.World[k].Native) < 1e-4f, "cached production pose vs leaf-to-world oracle");
+    }
+    var savedWorld = pose.World.Select(v => v.Native).ToArray();
+    Check(!pose.UpdatePose(input.P, input.S, input.O, input.A), "unchanged frame skips vertex computation");
+    Check(savedWorld.SequenceEqual(pose.World.Select(v => v.Native)), "skipped frame preserves all vertex bits");
+    Check(pose.UpdatePose(input.P, input.S, input.O, input.A, true), "admission always validates a fresh pose");
+}
+Console.WriteLine($"LiveDeco production pose/dirty cache: {checks - poseStart} checks passed; exact invalidation, managed adapter only");
+int uploadStart = checks;
+foreach (bool relocated in new[] { false, true })
+foreach (bool positionChanged in new[] { false, true })
+foreach (bool colorChanged in new[] { false, true })
+{
+    var upload = new LiveDecoUploadState(relocated);
+    Check(upload.Fill(positionChanged, colorChanged) == (relocated || positionChanged || colorChanged), "changed member fill");
+    Check(upload.Fill(false, false) == relocated, "dirty member does not dirty unchanged neighbor");
+    Check(upload.Dirty == (relocated || positionChanged || colorChanged), "run upload scheduled once for all member changes");
+    // A subsequent stable frame must not inherit the previous upload bit.
+    var nextFrame = new LiveDecoUploadState(false);
+    Check(!nextFrame.Fill(false, false) && !nextFrame.Dirty, "unchanged next frame skips upload");
+}
+Console.WriteLine($"LiveDeco production upload invalidation: {checks - uploadStart} checks passed; new/relocated buffers, color-only, pose-only, unchanged neighbors");
+
 class DerivedVisibility : ToggleVisible { }
 namespace ForeignScripts { class ToggleVisible : MonoBehaviour { } }
