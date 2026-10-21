@@ -1,0 +1,31 @@
+{
+  "steps": [
+    "timeout 180",
+    "auto on",
+    "open D:\\얼불춤 맵 파일\\Arche\\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai",
+    "gpuprobe off",
+    "gpusplit off",
+    "matshare off",
+    "livedeco off",
+    "archegpu on",
+    "stop",
+    "seek 262 12",
+    "waitsongpos 262 40",
+    "archegpu stamp",
+    "livedeco census",
+    "livedeco state",
+    "stop",
+    "stop",
+    "seek 262 12",
+    "waitsongpos 270 40",
+    "archegpu stamp",
+    "livedeco census",
+    "livedeco state",
+    "stop",
+    "livedeco off",
+    "archegpu off",
+    "quit"
+  ],
+  "timeout_min": 15,
+  "tag": "livedeco-gate1-262-270"
+}

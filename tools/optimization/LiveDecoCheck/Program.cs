@@ -8,6 +8,17 @@ SceneRenderOrder.Key Key(int material, int renderer, int layer = 0, int order = 
     => new(layer, order, queue, distance, material, renderer);
 LiveDecoPolicy.Item Row(int material, bool own, int renderer = 0, int order = 0, string signature = "base", int unityLayer = 0)
     => new(Key(material, renderer, order: order), own, signature, unityLayer);
+// Regression: prefab meshes retain enabled=true while the game deactivates their object.
+for (int bits = 0; bits < 32; bits++)
+{
+    bool exists = (bits & 1) != 0, scene = (bits & 2) != 0, enabled = (bits & 4) != 0,
+        active = (bits & 8) != 0, forced = (bits & 16) != 0;
+    Check(LiveDecoPolicy.RendererLive(exists, scene, enabled, active, forced) == (bits == 15), "mesh live state " + bits);
+}
+var dormantMesh = LiveDecoPolicy.RendererLive(true, true, true, false, false);
+var activeMesh = LiveDecoPolicy.RendererLive(true, true, true, true, false);
+var corrected = LiveDecoPolicy.Count(new[] { Row(-3, !dormantMesh), Row(-2, !activeMesh), Row(-1, !dormantMesh) });
+Check(corrected.Candidates == 2 && corrected.MeshRuns == 2 && corrected.BarrierRuns == 2, "dormant mesh eligible, live mesh remains barrier");
 var empty = LiveDecoPolicy.Count(Array.Empty<LiveDecoPolicy.Item>());
 Check(empty.MeshRuns == 0 && LiveDecoPolicy.Gate(0, empty, true) == "INCONCLUSIVE", "empty is not success");
 Check(Key(int.MinValue, 0).CompareTo(Key(int.MaxValue, 0)) < 0, "signed ID no overflow");

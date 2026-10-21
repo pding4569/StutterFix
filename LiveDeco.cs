@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -20,6 +21,10 @@ namespace StutterFix
         static Camera pending;
         static bool requested, done;
         static Exception failure;
+        static readonly AccessTools.FieldRef<scrVisualDecoration, bool> MeshMode =
+            AccessTools.FieldRefAccess<scrVisualDecoration, bool>("meshRendererEnabled");
+        static readonly AccessTools.FieldRef<scrVisualDecoration, DecorationBlendMode> BlendMode =
+            AccessTools.FieldRefAccess<scrVisualDecoration, DecorationBlendMode>("blendMode");
         static void Log(string s) => Main.Entry.Logger.Log("[livedeco] " + s);
         internal static bool Step(string arg)
         {
@@ -60,8 +65,25 @@ namespace StutterFix
             Camera.onPreCull -= OnPreCull;
             pending = null; requested = done = false; failure = null;
         }
-        static bool Live(Renderer r) => r && r.gameObject.scene.IsValid() && r.enabled
-            && r.gameObject.activeInHierarchy && !r.forceRenderingOff;
+        static bool Live(Renderer r) => r && LiveDecoPolicy.RendererLive(true, r.gameObject.scene.IsValid(),
+            r.enabled, r.gameObject.activeInHierarchy, r.forceRenderingOff);
+
+        static string Blend(scrVisualDecoration d) => BlendMode(d) + "(" + (int)BlendMode(d) + ")";
+        static string Effect(Behaviour effect) => !effect ? "missing" :
+            "enabled:" + effect.enabled + ",active:" + effect.isActiveAndEnabled;
+        static string MeshState(scrVisualDecoration d, Camera camera)
+        {
+            var m = d.meshRenderer;
+            return "sprite_live=" + Live(d.spriteRenderer) + " mesh_exists=" + (bool)m
+                + " mesh_mode=" + MeshMode(d) + " blend=" + Blend(d)
+                + " sprite_effect=" + Effect(d.blendModeEffect) + " mesh_effect=" + Effect(d.meshBlendModeEffect)
+                + (!m ? "" : " mesh_enabled=" + m.enabled + " mesh_active_self=" + m.gameObject.activeSelf
+                    + " mesh_active_hierarchy=" + m.gameObject.activeInHierarchy + " mesh_forced_off=" + m.forceRenderingOff
+                    + " mesh_scene_valid=" + m.gameObject.scene.IsValid() + " mesh_live=" + Live(m)
+                    + " mesh_camera_layer=" + ((camera.cullingMask & (1 << m.gameObject.layer)) != 0)
+                    + " mesh_shared_material=" + (bool)m.sharedMaterial
+                    + " mesh_shader=" + (m.sharedMaterial && m.sharedMaterial.shader ? m.sharedMaterial.shader.name : "missing"));
+        }
 
         static string Reason(scrVisualDecoration d, SpriteRenderer r, Material[] materials, Camera camera)
         {
@@ -69,7 +91,9 @@ namespace StutterFix
             if (d.GetType() != typeof(scrVisualDecoration)) return "subclass";
             if (d.isMask() || r.maskInteraction != SpriteMaskInteraction.None) return "mask";
             if (d.hitbox != 0) return "hitbox";
-            if (d.meshRenderer && d.meshRenderer.enabled) return "mesh-enabled";
+            // The game toggles meshRendererObj.SetActive(), not Renderer.enabled.
+            // A dormant prefab mesh with enabled=true is not a live draw barrier.
+            if (Live(d.meshRenderer)) return "mesh-live:blend=" + Blend(d);
             if (r.GetComponentInParent<SortingGroup>()) return "sorting-group";
             if (!r.sprite || !r.sprite.texture) return "missing-sprite-texture";
             if (r.sprite.associatedAlphaSplitTexture) return "split-alpha";
@@ -102,12 +126,24 @@ namespace StutterFix
         {
             var watch = Stopwatch.StartNew();
             var decorations = new Dictionary<int, scrVisualDecoration>();
+            var meshOwners = new Dictionary<int, scrVisualDecoration>();
+            var meshStates = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            int meshOnly = 0, meshAndSprite = 0, legacyFalseRejects = 0;
             foreach (var d in Resources.FindObjectsOfTypeAll<scrVisualDecoration>())
             {
                 if (!d || !d.gameObject.scene.IsValid() || !d.spriteRenderer) continue;
                 int id = d.spriteRenderer.GetInstanceID();
                 if (decorations.ContainsKey(id)) throw new InvalidOperationException("multiple image owners for renderer " + id);
                 decorations.Add(id, d);
+                Increment(meshStates, MeshState(d, camera));
+                if (d.meshRenderer)
+                {
+                    int meshId = d.meshRenderer.GetInstanceID();
+                    if (meshOwners.ContainsKey(meshId)) throw new InvalidOperationException("multiple image owners for mesh " + meshId);
+                    meshOwners.Add(meshId, d);
+                    if (Live(d.meshRenderer)) { if (Live(d.spriteRenderer)) meshAndSprite++; else meshOnly++; }
+                    if (Live(d.spriteRenderer) && d.meshRenderer.enabled && !Live(d.meshRenderer)) legacyFalseRejects++;
+                }
             }
             int live = decorations.Values.Count(d => Live(d.spriteRenderer));
             int owned = 0, basic = 0, grouped = 0, unsupportedQueues = 0, missingMaterials = 0;
@@ -140,27 +176,40 @@ namespace StutterFix
                     { signature = Signature(m); signatures.Add(m.GetInstanceID(), signature); }
                     rows.Add(new Row { Renderer = renderer, Item = new LiveDecoPolicy.Item(
                         MatShare.SortKey(renderer, m, camera, slot), reason == null, signature, renderer.gameObject.layer) });
-                    if (reason != null) Increment(barriers, decoration ? "image:" + reason : renderer.GetType().Name);
+                    if (reason != null)
+                    {
+                        meshOwners.TryGetValue(renderer.GetInstanceID(), out var meshOwner);
+                        Increment(barriers, decoration ? "image:" + reason : meshOwner ? "image-mesh:blend=" + Blend(meshOwner) : renderer.GetType().Name);
+                    }
                 }
             }
             rows.Sort((a, b) => a.Item.Key.CompareTo(b.Item.Key));
             var result = LiveDecoPolicy.Count(rows.Select(r => r.Item).ToArray());
-            if (result.Candidates != owned || owned + reasons.Values.Sum() != live)
+            if (result.Candidates != owned || owned + reasons.Values.Sum() != live || meshStates.Values.Sum() != decorations.Count)
                 throw new InvalidOperationException("census partition mismatch");
             bool orderSupported = grouped == 0 && missingMaterials == 0 && unsupportedQueues == 0;
             string verdict = LiveDecoPolicy.Gate(live, result, orderSupported);
             double song = scrConductor.instance ? scrConductor.instance.songposition_minusi : double.NaN;
             Log("census frame=" + Time.frameCount + " song=" + song.ToString("F6", CultureInfo.InvariantCulture)
                 + " camera_id=" + camera.GetInstanceID() + " camera_mask=" + camera.cullingMask
-                + " phase=main-preCull live_definition=enabled-active-unforced frustum_filter=0 alpha_filter=0");
+                + " phase=main-preCull classifier_version=2 live_definition=enabled-active-unforced frustum_filter=0 alpha_filter=0");
             Log("images_all=" + decorations.Count + " live=" + live + " basic_candidates=" + basic
                 + " owned_candidates=" + owned + " coverage_pct=" + (live == 0 ? 0 : 100.0 * owned / live).ToString("F3", CultureInfo.InvariantCulture)
                 + " remaining_live=" + (live - owned) + " renderer_material_slots=" + rows.Count);
+            Log("mesh_diagnostics images_all=" + decorations.Count + " mesh_only_live=" + meshOnly
+                + " mesh_and_sprite_live=" + meshAndSprite + " legacy_mesh_false_rejects=" + legacyFalseRejects
+                + " distribution_total=" + meshStates.Values.Sum() + " image_union_live=" + (live + meshOnly)
+                + " gate_denominator=sprite-live");
+            foreach (var p in meshStates) Log("mesh_state " + p.Key + " count=" + p.Value
+                + " images_pct=" + (decorations.Count == 0 ? 0 : 100.0 * p.Value / decorations.Count).ToString("F3", CultureInfo.InvariantCulture)
+                + " sprite_live_pct=" + (live == 0 || !p.Key.StartsWith("sprite_live=True ", StringComparison.Ordinal) ? 0 : 100.0 * p.Value / live).ToString("F3", CultureInfo.InvariantCulture)
+                + " union_live_pct=" + (live + meshOnly == 0 || (!p.Key.StartsWith("sprite_live=True ", StringComparison.Ordinal) && !p.Key.Contains(" mesh_live=True ")) ? 0 : 100.0 * p.Value / (live + meshOnly)).ToString("F3", CultureInfo.InvariantCulture));
             Log("barrier_runs=" + result.BarrierRuns + " mesh_runs=" + result.MeshRuns
                 + " key_splits=" + result.KeySplits + " signature_splits=" + result.SignatureSplits
                 + " unity_layer_splits=" + result.LayerSplits + " ambiguous_material_ties=" + result.AmbiguousTies
                 + " sorting_groups=" + grouped + " opaque_slots=" + unsupportedQueues + " missing_materials=" + missingMaterials);
-            foreach (var p in reasons) Log("remaining_reason=" + p.Key + " count=" + p.Value);
+            foreach (var p in reasons) Log("remaining_reason=" + p.Key + " count=" + p.Value
+                + " live_pct=" + (live == 0 ? 0 : 100.0 * p.Value / live).ToString("F3", CultureInfo.InvariantCulture));
             foreach (var p in barriers) Log("barrier_type=" + p.Key + " slots=" + p.Value);
             foreach (var g in rows.Where(r => r.Item.Owned).GroupBy(r => r.Item.Signature).OrderByDescending(g => g.Count()).Take(10))
                 Log("candidate_signature count=" + g.Count() + " content=" + g.Key);

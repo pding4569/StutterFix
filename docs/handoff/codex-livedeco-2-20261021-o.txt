@@ -1,0 +1,10 @@
+mesh-enabled가 Renderer.enabled만 검사하던 구조적 오류를 확인하고 수정했다.
+게임은 meshRendererObj.SetActive로 메시를 전환한다(로컬 DLL 분석).
+메시 제외는 enabled·activeInHierarchy·forceRenderingOff·scene 상태를 함께 확인한다.
+mesh_state에 존재·활성·재질·blend 모드·두 BlendModeEffect 상태별 분포와 비율을 기록한다.
+메시 전용 장식과 실제 live 메시 장벽은 별도 집계하며 소유 후보로 승격하지 않는다.
+coverage 분모 sprite-live, mesh_runs≤200·coverage≥80%와 기존 정렬·MPB 조건을 유지했다.
+DEV·Player·PlayerAuto 빌드 오류 0, LoadCheck 세 종류 모두 틀림 0이다.
+LiveDeco 22950·edition 10·MatShare 25401 checks 및 Python steps 검증을 통과했다.
+기존 25단계로 livedeco-2-steps.json을 생성했으며 수정 후 GATE1·상태 비율은 미측정이다.
+결과는 codex-livedeco-2-20261021-result.md에 기록했고 게임 실행·설치·커밋은 하지 않았다.

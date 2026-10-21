@@ -5,6 +5,9 @@ namespace StutterFix
 {
     internal static class LiveDecoPolicy
     {
+        internal static bool RendererLive(bool exists, bool sceneValid, bool enabled, bool activeInHierarchy, bool forcedOff)
+            => exists && sceneValid && enabled && activeInHierarchy && !forcedOff;
+
         internal readonly struct Item
         {
             internal readonly SceneRenderOrder.Key Key;
