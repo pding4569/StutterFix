@@ -32,6 +32,7 @@ public static partial class GpuDecoLab
     static bool Supported(int id) => id >= 0 && id <= 31 || id == 36;
     static void Require(bool condition, string reason) { if (!condition) throw new InvalidOperationException(reason); }
     static string N(double v) => v.ToString("G12", Inv);
+    sealed class GateFailure : Exception { internal GateFailure(string verdict) : base(verdict) { } }
     static void Run(Action action, string name)
     {
         Directory.CreateDirectory(Evidence); report.Clear(); int code = 0;
@@ -42,6 +43,7 @@ public static partial class GpuDecoLab
             Log("[gpudeco-lab] editor=" + Application.unityVersion + " device=" + SystemInfo.graphicsDeviceName + " api=" + SystemInfo.graphicsDeviceType);
             action();
         }
+        catch (GateFailure ex) { code = 1; Log(ex.Message); }
         catch (Exception ex) { code = 1; Log("GPUDECO_G1=ERROR stage=lab reason=" + ex); }
         finally { File.WriteAllLines(Path.Combine(Evidence, name + ".txt"), report); }
         EditorApplication.Exit(code);
@@ -222,26 +224,7 @@ public static partial class GpuDecoLab
     }
     static void VerifyBody()
     {
-        string[] args=Environment.GetCommandLineArgs(); int at=Array.IndexOf(args,"-gpudecoInput");
-        Require(at>=0 && at+1<args.Length,"-gpudecoInput <export directory> required");
-        var files=Directory.GetFiles(args[at+1],"*.gpudeco").OrderBy(x=>x).ToArray(); Require(files.Length==3,"exactly three paused snapshots required");
-        string fingerprint=null; var times=new List<double>(); bool pass=true;
-        foreach(string file in files)
-        {
-            GpuDecoData data; using(var stream=File.OpenRead(file)) data=GpuDecoData.Read(stream);
-            fingerprint=fingerprint??data.Fingerprint; Require(data.Fingerprint==fingerprint,"export table changed"); times.Add(data.RawTime);
-            Log("[gpudeco-lab] export="+Path.GetFileName(file)+" owned="+data.Items.Length+" awake="+data.Awake+" raw="+N(data.RawTime)+" tb="+N(data.BakeTime));
-            if(data.Items.Length<800) { Log("GPUDECO_G1=OWNED_LOW owned="+data.Items.Length); return; }
-            var unsupported=data.Items.Where(d=>d.Tracks.Any(t=>t.Any(s=>!Supported(s.Ease)))).ToArray();
-            Log("[gpudeco-lab] unsupported_ease_decorations="+unsupported.Length+" fallback=original-path");
-            data.Items=data.Items.Except(unsupported).ToArray();
-            if(data.Items.Length<800) { Log("GPUDECO_G1=OWNED_LOW after_ease_filter="+data.Items.Length); return; }
-            Require(data.Awake>0 && (double)data.Items.Length/data.Awake>=.7,"fixed coverage below 70 percent");
-            using(var gpu=new Evaluation(Shader(),data)) { var result=gpu.Dispatch(data.BakeTime,true); pass &= Compare(data,result.values,result.vertices,true); }
-        }
-        times.Sort(); Require(times.Zip(new[]{262.0,270.0,276.0},(a,b)=>Math.Abs(a-b)<=1.0/120).All(x=>x),"paused export time outside one 120-Hz frame");
-        Log("GPUDECO_G0_OFFLINE="+(pass?"PASS":"FAIL")+" start_phase=UNMEASURED");
-        Log("GPUDECO_G1="+(pass?"ERROR stage=G1 reason=game_pixel_capture_required":"G0_FAIL"));
+        AuditBody();
     }
     static void BundleBody()
     {

@@ -2,7 +2,9 @@
 
 게임을 열지 않는 **Unity 6000.3.10f1 / D3D11** 프로젝트다. prepare.ps1은 무시되는 project/에 소스와 내장 모듈 참조를 구성한다. 로컬 DOTween.dll은 CPU 정답 참조이며 번들에 넣지 않는다. 제품 Compile 목록에는 랩이 들어가지 않는다.
 
-현재 이징·합성 정점·Raw 메시 그리기·번들 재로드와 **80메시×15서브메시**가 통과했다. 서브메시 경로의 81 dispatch 제출 평균은 0.1522106ms, 합성 픽셀 차이는 0이다. 실제 export가 없어 게임 G0/G1은 미검증이다. 이전 1,000메시의 제출 예산 실패와 구분한다. [랩 결과](../../docs/handoff/codex-gpudeco-lab-result.md)를 본다.
+최신 실제 export 3개는 **262·270초 G0 실패 / 276초 소유17·awake24로 OWNED_LOW**다. 현재 곡 시각 표의 한계를 기록하고 게임 연결을 중단했다. 정점 최대 오차81.501349/65.618709px, 평균1.920398/2.890432px다. 전역 시계201후보에서도 통과하지 못했다. [랩 결과](../../docs/handoff/codex-gpudeco-lab-result.md)를 본다.
+
+기존 이징·합성 정점·Raw 메시·번들 재로드 및 **80메시×15서브메시**의 통과는 합성 범위다(81 dispatch 평균0.1522106ms, 합성 픽셀차이0; 이전 측정). 실제 G0/G1 성공을 뜻하지 않는다. 이번 HLSL 수정 뒤 합성 수치 회귀는 통과했고, 새 번들/게임 적재는 실제 G0 실패로 진행하지 않았다. 이전 비용/서브메시 시험을 그대로 되풀이하지 않는다.
 
 성공한 에디터 직접 호출 형태다. unity run·로그인 대신 이 경로를 쓴다. GPU 시험에 -nographics를 넣으면 Null Device로 실패한다. 각 실행은 5분 안쪽으로 제한하고, 종료를 확인한 후 다음 명령을 실행한다.
 
@@ -35,15 +37,17 @@ Bundle은 Windows64/D3D11 번들 생성 후 같은 에디터에서 LoadFromFile 
 py -3 tools/optimization/gpudeco-steps.py --chart '<Arche *FULL.adofai>' --output '<steps.json>' --export-dir '<새 출력 폴더>'
 ~~~
 
-steps는 timeout 420을 쓴다. 편집 open은 PrepVfx를 호출하지 않으므로 **select 0 → play → gpudeco scheduled → pause**로 실제 첫 준비를 시작/관찰한 뒤 wait 60 두 번과 state/ready를 확인한다. 준비 후 resume/stop하고 262·270·276초를 seek/export한다. gpudeco prepare는 open 이전부터 첫 export까지 **300초 예산**을 추적한다. 초과 시 실패하며 이 시간 안에 실제 준비된다는 실측 근거는 아직 없다. 기존 export를 덮어쓰지 않는다. 후보 800개 미만은 OWNED_LOW로 중단한다. GPU on/G1 PASS 단계는 없다.
+steps는 timeout 420을 쓴다. 편집 open은 PrepVfx를 호출하지 않으므로 **select 0 → play → gpudeco scheduled → pause**로 실제 첫 준비를 시작/관찰한 뒤 wait 60 두 번과 state/ready를 확인한다. 준비 후 resume/stop하고 262·270·276초를 seek/export한다. gpudeco prepare는 open 이전부터 첫 export까지 **300초 예산**을 추적한다. 직전 외부 시험의 실제 첫 export는182998.1268ms였다. 기존 export를 덮어쓰지 않는다. 후보800개 미만은 OWNED_LOW로 중단한다. GPU on/G1 PASS 단계는 없다. 아래는 재현 설명이며, 현재 한계를 확인한 같은 게임 시험을 다시 요청하는 절차가 아니다.
 
-실제 262·270·276초 export 세 파일이 모이면:
+확보된 실제 262·270·276초 export 대조 재현(현재 판정은 의도한 **exit1**, 게임 실행 없음):
 
 ~~~powershell
 & $editor -batchmode -quit -force-d3d11 -projectPath "$lab\project" -executeMethod GpuDecoLab.Verify -gpudecoInput '<export 폴더>' -logFile "$lab\evidence\verify-editor-next.txt" | Out-Null
 ~~~
 
-Verify는 실제 논리값·월드 정점·최종 색과 GPU 값을 채널별 대조한다. Flash/custom을 원본 후보로 제외하고 잔여 800개 미만 또는 활성 대비 70% 미만이면 중단한다. 파일에는 16채널 표·실제 논리값/색·월드 정점·코너/UV/삼각형·변환 기저·잠금/시차·카메라·시각·정렬/재질 식별자가 들어간다. export는 원본 소유권이나 Transform을 변경하지 않는다. 시작 위상·게임 픽셀·소유/복구는 별도 검증 사항이다.
+Verify와 Audit는 `GpuDecoAudit.cs`의 같은 본문을 사용한다. 실제 논리값·월드 정점·최종 색과 GPU 값을 채널별 대조하고, CPU 표·실제 필드·GPU 포즈의 오차 및 전역 시계 진단을 분리한다. Flash/custom은 원본 후보로 제외하고 잔여800개 미만 또는 활성 대비70% 미만이면 중단한다. 실제 G0/소유 실패를 exit1로 반환한다. 역산 시각·201개 시계 후보는 읽기 전용 진단이며 통과 판정/제품 보정에는 사용하지 않는다.
+
+파일에는 16채널 표·실제 논리값/색·월드 정점·코너/UV/삼각형·변환 기저·잠금/시차·카메라·시각·정렬/재질 식별자가 들어간다. 현재 v1에는 Source/Replacement·실제 트윈 시작/진행 상태·과거 dt가 없다. export는 원본 소유권이나 Transform을 변경하지 않는다. 시작 위상은 스냅샷 도달 지연으로 판정하지 않고 UNMEASURED로 기록한다. 게임 픽셀·소유/복구도 별도 검증 사항이다.
 
 게임/에디터를 실행하지 않는 검사:
 

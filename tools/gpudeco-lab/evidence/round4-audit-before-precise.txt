@@ -1,0 +1,137 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco-lab] export=262.gpudeco owned=1730 awake=2134 coverage=0.8106841612 raw=262.019823663 tb=262.007032884
+[gpudeco] G0 t=262.019823663 ch=pos slot=0 max=0.0415649414063 mean=0.00392142058797 max_px=7.58769071428 mean_px=0.274528754509 over_tol=1291 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=pos slot=1 max=12251.421875 mean=7.10779429529 max_px=81.5013492107 mean_px=1.87037695597 over_tol=1470 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=rot slot=4 max=0.682085037231 mean=0.0593510720972 max_px=7.68216187132 mean_px=0.0790052495226 over_tol=1118 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=scale slot=5 max=0.0477801561356 mean=0.00292422175838 max_px=2.73240666023 mean_px=0.152949069304 over_tol=1160 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=scale slot=6 max=0.0477801561356 mean=0.00292422175838 max_px=2.73643669021 mean_px=0.13658629086 over_tol=1123 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=color slot=10 max=0.00926147401333 mean=0.00351304239513 max_px=0 mean_px=0 over_tol=650 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.019823663 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco-lab] table samples=27680 max=0.03125 mean=1.14079370378E-06
+[gpudeco-lab] vertices samples=6920 max_px=81.803387464 mean_px=1.92060506552 over_tol=5936
+[gpudeco-lab] renderer_color samples=27680 max=0.00112217105925 mean=4.38406841815E-05 over_tol=0
+[gpudeco-audit] geometry_actual_fields_vs_sprite max_px=0.00408159801736 mean_px=1.17965260617E-06 over_tol=0
+[gpudeco-audit] geometry_gpu_vs_cpu_table max_px=0.481697728259 mean_px=0.000797491088953 over_tol=16
+[gpudeco-audit] slot=0 cpu_table_vs_actual max=0.0415649414063 mean=0.00392142058797 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=1651 completed=71
+[gpudeco-audit] slot=0 oracle_local_fit_ms min=-19.5303510644 p50=-3.10043502839 p95=4.35665155527 max=8.00958111648 fitted=1650 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=0 index=14147 id=-1506716 flags=0 initial=673.545043945 actual=672.372802734 cpu=672.331237793 gpu=672.331237793 track_index=3
+[gpudeco-audit] segment=2 t0=260.21250257 duration=1.20000004768 start=673.769165039 end=673.545043945 target=673.545043945 ease=9
+[gpudeco-audit] segment=3 t0=261.450002526 duration=0.600000023842 start=673.545043945 end=672.028076172 target=672.028076172 ease=8
+[gpudeco-audit] slot=1 cpu_table_vs_actual max=12251.453125 mean=7.10781235888 gpu_vs_table_max=0.03125 gpu_vs_table_mean=1.8063583815E-05 active=1651 completed=71
+[gpudeco-audit] slot=1 oracle_local_fit_ms min=-11.1493741278 p50=-2.89904583474 p95=8.43551590805 max=9.09207164193 fitted=1650 outside_50ms=1 changes_gate=False
+[gpudeco-audit] worst slot=1 index=391 id=-664512 flags=0 initial=240693.0625 actual=-135387.3125 cpu=-147638.765625 gpu=-147638.734375 track_index=377
+[gpudeco-audit] segment=376 t0=261.825002344 duration=0 start=-239306.9375 end=240693.0625 target=240693.0625 ease=1
+[gpudeco-audit] segment=377 t0=261.825002344 duration=0.225000008941 start=240693.0625 end=-239306.9375 target=-239306.9375 ease=1
+[gpudeco-audit] segment=378 t0=262.050002336 duration=0 start=-239306.9375 end=240693.0625 target=240693.0625 ease=1
+[gpudeco-audit] slot=2 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=3 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=4 cpu_table_vs_actual max=0.682083129883 mean=0.0593509957568 gpu_vs_table_max=1.90734863281E-06 gpu_vs_table_mean=1.65919591592E-07 active=1652 completed=64
+[gpudeco-audit] slot=4 oracle_local_fit_ms min=-13.849771407 p50=-2.96016860517 p95=6.05247318344 max=7.75113537674 fitted=1652 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=4 index=14259 id=-1506940 flags=0 initial=0 actual=-9.11674118042 cpu=-9.7988243103 gpu=-9.79882621765 track_index=2
+[gpudeco-audit] segment=1 t0=260.325002571 duration=1.20000004768 start=-2.10480690002 end=0 target=0 ease=9
+[gpudeco-audit] segment=2 t0=261.537502528 duration=0.600000023842 start=0 end=-20.4473400116 target=-20.4473400116 ease=8
+[gpudeco-audit] slot=5 cpu_table_vs_actual max=0.0477800369263 mean=0.00292421566441 gpu_vs_table_max=4.76837158203E-07 gpu_vs_table_mean=8.36790641608E-09 active=1650 completed=74
+[gpudeco-audit] slot=5 oracle_local_fit_ms min=-11.157539964 p50=-2.96016860517 p95=6.07774556067 max=7.75423481826 fitted=1650 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=5 index=14308 id=-1507038 flags=0 initial=2.73033285141 actual=1.81867098808 cpu=1.77089095116 gpu=1.77089083195 track_index=2
+[gpudeco-audit] segment=1 t0=260.325002571 duration=1.20000004768 start=4.24561405182 end=2.45729994774 target=2.45729994774 ease=9
+[gpudeco-audit] segment=2 t0=261.537502528 duration=0.600000023842 start=2.45729994774 end=1.02496099472 target=1.02496099472 ease=8
+[gpudeco-audit] slot=6 cpu_table_vs_actual max=0.0477800369263 mean=0.00292421566441 gpu_vs_table_max=4.76837158203E-07 gpu_vs_table_mean=8.36790641608E-09 active=1650 completed=74
+[gpudeco-audit] slot=6 oracle_local_fit_ms min=-11.1575697663 p50=-2.96016860517 p95=6.07774556067 max=7.75268509761 fitted=1650 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=6 index=14308 id=-1507038 flags=0 initial=-2.73033285141 actual=-1.81867098808 cpu=-1.77089095116 gpu=-1.77089083195 track_index=2
+[gpudeco-audit] segment=1 t0=260.325002571 duration=1.20000004768 start=-4.24561405182 end=-2.45729994774 target=-2.45729994774 ease=9
+[gpudeco-audit] segment=2 t0=261.537502528 duration=0.600000023842 start=-2.45729994774 end=-1.02496099472 target=-1.02496099472 ease=8
+[gpudeco-audit] slot=7 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=1700 completed=11
+[gpudeco-audit] slot=8 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=1700 completed=11
+[gpudeco-audit] slot=9 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=1700 completed=11
+[gpudeco-audit] slot=10 cpu_table_vs_actual max=0.00926144421101 mean=0.00351303593509 gpu_vs_table_max=5.96046447754E-08 gpu_vs_table_mean=6.46004097999E-09 active=1700 completed=11
+[gpudeco-audit] slot=10 oracle_local_fit_ms min=-11.1575101617 p50=-2.90333570183 p95=6.0550957943 max=7.75232746963 fitted=1700 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=10 index=14259 id=-1506940 flags=0 initial=0 actual=0.117559812963 cpu=0.108298368752 gpu=0.10829833895 track_index=4
+[gpudeco-audit] segment=3 t0=261.525002528 duration=0.0750000029802 start=1 end=0.498039215803 target=0.498039215803 ease=1
+[gpudeco-audit] segment=4 t0=261.537502528 duration=0.600000023842 start=0.498039215803 end=0 target=0 ease=1
+[gpudeco-audit] slot=11 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=27
+[gpudeco-audit] slot=12 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=13 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=14 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=15 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-lab] export=270.gpudeco owned=1875 awake=2270 coverage=0.825991189427 raw=270.017992609 tb=270.007684929
+[gpudeco] G0 t=270.017992609 ch=pos slot=0 max=0.0787963867188 mean=0.0109602864583 max_px=13.7381375907 mean_px=0.732738096623 over_tol=1527 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=pos slot=1 max=10311.3984375 mean=5.539725 max_px=65.6187094003 mean_px=2.73020820422 over_tol=1697 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=rot slot=4 max=0.667371749878 mean=0.0929310956352 max_px=7.50183737899 mean_px=0.124303086506 over_tol=1378 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=scale slot=5 max=0.0706114768982 mean=0.00480101292928 max_px=3.38541711685 mean_px=0.248346869547 over_tol=1462 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=scale slot=6 max=0.0706114768982 mean=0.00480101292928 max_px=3.09513345182 mean_px=0.214548154454 over_tol=1407 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=color slot=10 max=0.0514160990715 mean=0.00697300915296 max_px=0 mean_px=0 over_tol=1300 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.017992609 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco-lab] table samples=30000 max=1.06543302536E-06 mean=1.395866578E-08
+[gpudeco-lab] vertices samples=7500 max_px=65.5875218008 mean_px=2.89041336321 over_tol=6796
+[gpudeco-lab] renderer_color samples=30000 max=0.00667812675238 mean=0.000108363688829 over_tol=72
+[gpudeco-audit] geometry_actual_fields_vs_sprite max_px=0.00779689988121 mean_px=3.11875995249E-06 over_tol=0
+[gpudeco-audit] geometry_gpu_vs_cpu_table max_px=0.124750398099 mean_px=0.000170492210736 over_tol=12
+[gpudeco-audit] slot=0 cpu_table_vs_actual max=0.0787963867188 mean=0.0109602864583 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=1751 completed=116
+[gpudeco-audit] slot=0 oracle_local_fit_ms min=-14.2505284281 p50=-7.68229359466 p95=4.81780165609 max=10.701147432 fitted=1750 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=0 index=22658 id=-1523738 flags=0 initial=667.545043945 actual=668.689453125 cpu=668.768249512 gpu=668.768249512 track_index=3
+[gpudeco-audit] segment=2 t0=268.287502675 duration=1.20000004768 start=668.385192871 end=667.545043945 target=667.545043945 ease=9
+[gpudeco-audit] segment=3 t0=269.55000263 duration=0.600000023842 start=667.545043945 end=670.30090332 target=670.30090332 ease=8
+[gpudeco-audit] slot=1 cpu_table_vs_actual max=10311.3984375 mean=5.539725 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=1751 completed=116
+[gpudeco-audit] slot=1 oracle_local_fit_ms min=-14.2417665454 p50=-6.5122529283 p95=7.57872178923 max=9.15369164426 fitted=1751 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=1 index=391 id=-664512 flags=0 initial=240693.0625 actual=74614.34375 cpu=64302.9453125 gpu=64302.9453125 track_index=449
+[gpudeco-audit] segment=448 t0=269.925002056 duration=0 start=-239306.9375 end=240693.0625 target=240693.0625 ease=1
+[gpudeco-audit] segment=449 t0=269.925002056 duration=0.225000008941 start=240693.0625 end=-239306.9375 target=-239306.9375 ease=1
+[gpudeco-audit] segment=450 t0=270.150002048 duration=0 start=-239306.9375 end=240693.0625 target=240693.0625 ease=1
+[gpudeco-audit] slot=2 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=3 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=4 cpu_table_vs_actual max=0.667371749878 mean=0.0929309810949 gpu_vs_table_max=1.06543302536E-06 gpu_vs_table_mean=1.90635570713E-07 active=1752 completed=114
+[gpudeco-audit] slot=4 oracle_local_fit_ms min=-14.3334980937 p50=-6.53710806517 p95=1.90306674926 max=8.24031006778 fitted=1752 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=4 index=22546 id=-1523514 flags=0 initial=0 actual=-13.4576311111 cpu=-14.125002861 gpu=-14.125002861 track_index=2
+[gpudeco-audit] segment=1 t0=268.200002672 duration=1.20000004768 start=-19.6757507324 end=0 target=0 ease=9
+[gpudeco-audit] segment=2 t0=269.475002627 duration=0.600000023842 start=0 end=-20.1854095459 target=-20.1854095459 ease=8
+[gpudeco-audit] slot=5 cpu_table_vs_actual max=0.0706114768982 mean=0.00480100751718 gpu_vs_table_max=4.76837158203E-07 gpu_vs_table_mean=1.22785568237E-08 active=1750 completed=123
+[gpudeco-audit] slot=5 oracle_local_fit_ms min=-14.3333192798 p50=-6.53688454764 p95=1.90533172577 max=8.35689675301 fitted=1750 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=5 index=24443 id=-1527308 flags=0 initial=2.73033285141 actual=4.83323669434 cpu=4.76262521744 gpu=4.76262521744 track_index=1
+[gpudeco-audit] segment=0 t0=269.850002696 duration=0 start=2.73033285141 end=5.83153057098 target=5.83153057098 ease=1
+[gpudeco-audit] segment=1 t0=269.850002696 duration=1.20000004768 start=5.83153057098 end=2.73033285141 target=2.73033285141 ease=9
+[gpudeco-audit] segment=2 t0=271.125002651 duration=0.600000023842 start=2.73033285141 end=1.50315403938 target=1.50315403938 ease=8
+[gpudeco-audit] slot=6 cpu_table_vs_actual max=0.0706114768982 mean=0.00480100751718 gpu_vs_table_max=4.76837158203E-07 gpu_vs_table_mean=1.22785568237E-08 active=1750 completed=123
+[gpudeco-audit] slot=6 oracle_local_fit_ms min=-14.3333192798 p50=-6.53688454764 p95=1.90533172577 max=8.35689675301 fitted=1750 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=6 index=24443 id=-1527308 flags=0 initial=2.73033285141 actual=4.83323669434 cpu=4.76262521744 gpu=4.76262521744 track_index=1
+[gpudeco-audit] segment=0 t0=269.850002696 duration=0 start=2.73033285141 end=5.83153057098 target=5.83153057098 ease=1
+[gpudeco-audit] segment=1 t0=269.850002696 duration=1.20000004768 start=5.83153057098 end=2.73033285141 target=2.73033285141 ease=9
+[gpudeco-audit] segment=2 t0=271.125002651 duration=0.600000023842 start=2.73033285141 end=1.50315403938 target=1.50315403938 ease=8
+[gpudeco-audit] slot=7 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=1800 completed=56
+[gpudeco-audit] slot=8 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=1800 completed=56
+[gpudeco-audit] slot=9 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=1800 completed=56
+[gpudeco-audit] slot=10 cpu_table_vs_actual max=0.0514160990715 mean=0.00697300418591 gpu_vs_table_max=5.96046447754E-08 gpu_vs_table_mean=8.1459681193E-09 active=1800 completed=56
+[gpudeco-audit] slot=10 oracle_local_fit_ms min=-14.3334384891 p50=-6.53710806517 p95=1.90366279571 max=8.24054848636 fitted=1800 outside_50ms=0 changes_gate=False
+[gpudeco-audit] worst slot=10 index=23274 id=-1524970 flags=0 initial=0 actual=1 cpu=0.948583900928 gpu=0.948583900928 track_index=3
+[gpudeco-audit] segment=2 t0=268.80000268 duration=1.20000004768 start=0 end=1 target=1 ease=1
+[gpudeco-audit] segment=3 t0=270.000002638 duration=0.0750000029802 start=1 end=0.498039215803 target=0.498039215803 ease=1
+[gpudeco-audit] segment=4 t0=270.012502637 duration=0.600000023842 start=0.498039215803 end=0 target=0 ease=1
+[gpudeco-audit] slot=11 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=22
+[gpudeco-audit] slot=12 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=13 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=14 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-audit] slot=15 cpu_table_vs_actual max=0 mean=0 gpu_vs_table_max=0 gpu_vs_table_mean=0 active=0 completed=0
+[gpudeco-lab] export=276.gpudeco owned=17 awake=24 coverage=0.708333333333 raw=276.007341974 tb=276.002174482
+[gpudeco-lab] stop=OWNED_LOW required=800 owned=17
+GPUDECO_G0_OFFLINE=FAIL measured=2/3 start_phase=UNMEASURED
+GPUDECO_G1=OWNED_LOW G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED
+GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: real export failed G0/ownership; stop before game integration
+  at GpuDecoLab.AuditBody () [0x00355] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoAudit.cs:41 
+  at GpuDecoLab.Run (System.Action action, System.String name) [0x000a2] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:43 

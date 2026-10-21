@@ -1,10 +1,10 @@
-1. 선택: Unity 6000.3.10f1 직접 실행·D3D11·기존 AssetBundle 경로.
-2. 게임 실행·설치·커밋·푸시·.codex/config.toml 변경 0회.
-3. 원인: 편집 open은 PrepVfx를 호출하지 않아 첫 재생 전 ready가 300초 대기했다(IL 교차확인).
-4. select 0→play→scheduled(실제 PrepVfx 관찰)→pause→60초 분할 대기→ready로 첫 전체 표 준비 순서를 수정했다.
-5. 80 Raw 메시×15서브메시: 평가+복사 81 dispatch, CPU 제출 평균 0.1522106ms·묶음 최대 0.157122ms.
-6. 8,000정점 GPU 복사 차이 0; 합성 정점 최대 0.000477268022223px·평균 0.0000223719397063px·초과 0.
-7. 1,200분리/80통합·SpriteRenderer/동률정렬 6종 차이 0픽셀; 역전 음성 대조 각 2,304픽셀 차이.
-8. Camera.Render wall 분리 4.237392→통합 3.068427ms(128×128 랩); GPU 시간·게임 FPS는 미측정.
-9. 번들 생성·재로드·이징 대조, 3종 빌드 오류 0·LoadCheck·기존 fixture 통과; 실제 export 0·게임 G0/G1 미검증.
-10. GPUDECO_G1=ERROR stage=G0-real-export reason=real_export_missing
+1. 선택: Unity 6000.3.10f1 직접 실행·D3D11·기존 AssetBundle 경로 유지, 실제 G0 실패로 게임 연결 중단.
+2. 게임 실행·설치·커밋·푸시·.codex/config.toml 수정 0회, 기존 실제 export 3개 원본 보존.
+3. 직전 외부 시험 첫 export 182998.1268ms; 소유/awake 262초1730/2134, 270초1875/2270, 276초17/24.
+4. 실제 GPU 정점 최대/평균: 262초81.501349/1.920398px·초과5936/6920, 270초65.618709/2.890432px·초과6796/7500.
+5. 최종 RGBA 최대/평균0.001122171/0.000043841·초과0, 0.006678127/0.000108364·초과72; 채널별 전체는 최종 로그.
+6. 원본 실제 필드→정점 최대0.004081598/0.007796900px·초과0; CPU 표부터 실제 필드와 다른 시간 의미를 확인.
+7. 전역 시계201후보도 최소 최대오차14.535930/16.227838px로 실패; 276초는 awake전부 소유해도24<800.
+8. HLSL precise로 GPU 포즈 오차 감소(262초4정점 잔여 실패); Verify/Audit 실패 exit1·G0+소유 실패 동시 보존 수정.
+9. 3종Release 오류0·LoadCheck불일치0·일반Player제외·기존fixture·수정shader합성회귀 통과; 게임G1/G2·시작위상 미측정.
+10. GPUDECO_G1=OWNED_LOW G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED

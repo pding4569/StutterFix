@@ -1,5 +1,21 @@
 
-## codex-al-gg-2 후속 — 2026-10-21 (최신)
+## codex-al-gg-3 — 2026-10-22 (최신, 설계 한계로 중단)
+
+- 직전 외부 시험은 실제 export 3개를 만들었다. 첫 export182998.1268ms, bake worker514.9991ms. 기존 준비 순서를 되돌리거나 시간 상한을 더 늘리지 않았다.
+- 262초 소유1730/awake2134(81.0684%), 270초1875/2270(82.5991%), 276초17/24(70.8333%). **276초는 현재 awake를 전부 지원해도24<800**이라 OWNED_LOW다. 잠든 장식으로 수를 채우거나 시점/800개 기준을 바꾸지 않았다. 감소 원인이 맵 연출인지 추적 누락인지는 확정하지 않는다.
+- Unity6000.3.10f1 직접 D3D11/RTX4060Ti로 실제 파일을 대조했다. 수정 후 정점 최대/평균은 **262초81.501349/1.920398px(5936/6920초과)**, **270초65.618709/2.890432px(6796/7500초과)**. 최종RGBA 최대/평균0.001122171/0.000043841 및0.006678127/0.000108364, 초과0/27680 및72/30000. 실제 논리 color.a도650/1300개 초과다.
+- 실제 논리 필드로 만든 CPU 정점↔실제 SpriteRenderer는 최대0.004081598/0.007796900px, 초과0. CPU Table.Eval↔실제 필드부터 큰 차이가 나므로 GPU 이징 하나의 오류로 간주하지 않았다. 원본 Update-trigger+float Rec.Pos 누적과 표의 예약T0+tb 직접 평가 차이를 디컴파일/설치DLL IL로 교차확인했다.
+- HLSL 정점 식에 precise를 추가해 GPU↔CPU표 정점 최대0.481698→0.032653px / 0.124750→0.007797px로 감소했다. 첫 시점4정점은 여전히 실패한다. 수정 뒤 합성 이징101475개·정점8000개·RGBA32000개 초과0을 확인했다. 실제 G0 통과는 아니다.
+- **되풀이하지 않을 접근:** 전역 tb 오프셋만 맞추기. 읽기 전용으로−50~+50ms·201후보를 대조해도 최대오차 최소 후보가14.535930/16.227838px였다. 평균 최소도1.129953/1.408870px. 연속 최적해/실제 시작 위상 증명은 아니며 정답 역산 보정을 제품에 적용하지 않았다. 현재 v1파일은 실제 소스 시작/Rec.Pos/dt 이력을 담지 않는다.
+- 새 GpuDecoAudit.cs는 원인 분해와 실패 요약을 Verify/Audit에 공용 적용한다. 이전 OWNED_LOW→정상return→exit0 결함을 고쳐 실제 실패 exit1·최종G1 한줄에 OWNED_LOW+G0=FAIL을 남긴다. 하드코딩 요청시각±1/120초를 실제 이벤트 시작위상 검사로 사용하지 않는다.
+- 3종Release 오류0(기존경고4/4/4), LoadCheck277/229/277곳 불일치0·일반Player 제외, 랩C#오류/경고0·SM5 3커널·bake/live·데이터14·DecoSim12·서명10·ld2a·Dormancy41·framecmp·steps 통과. WindowCheck 첫 인자 누락 실패를 보존하고 생성JSON 전달 후58건 통과했다.
+- 최초IPC exit1/entitlement exit198 후 클라이언트 부재 확인한 새 직접 실행이 성공했다. 강제 종료·로그인·설치·라이선스 변경0. 이번 실제 G0 실패 뒤 새 번들/게임 연결은 중단했다. 이전 서브메시 비용/번들/픽셀은 역사적 합성 증거로만 유지한다.
+- 게임 실행·설치·커밋·푸시·config수정0회. 결과문서·랩결과·README·10줄요약·round4증거/해시 갱신. 실제 게임G1/G2·이벤트 시작위상·GPUtimestamp는 미측정. 현 설계 한계로 중단하며 같은 게임 시험 반복은 요청하지 않는다.
+- GPUDECO_G1=OWNED_LOW G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED
+
+---
+
+## codex-al-gg-2 후속 — 2026-10-21 (이전)
 
 - 직전 증거의 300001.072ms / `새 맵 스냅샷 대기`는 단순 굽기 지연이 아니었다. 편집 open은 PrepVfx를 호출하지 않는다. 원본 `scnEditor.OpenLevelCo`·`scrController.WaitForStartCo` 디컴파일과 설치 DLL IL 호출 목록으로 교차확인했다. 기존 `open → ready → seek` 순서는 첫 재생 준비를 일으키기 전에 기다렸다.
 - 수정: `select 0 → play → gpudeco scheduled(실제 collector/worker/ready 관찰) → pause → wait 60 → state → wait 60 → ready → resume → stop`, 그 다음 시점 3곳 seek/export. timeout 420·첫 export 300초 예산 유지. 새 steps는 `tools/gpudeco-lab/evidence/round3-export-steps.json`. 생성기/계약 검사는 통과했고 실제 게임 export 성공은 미검증이다.
@@ -76,3 +92,18 @@
   - [StutterFix] [gpudeco] prepare_ms=4623.995800 phase=export owned=1730 awake=2134 raw=262.01982366340235 tb=262.00703288420073 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\262.gpudeco
   - [StutterFix] [gpudeco] prepare_ms=4590.392900 phase=export owned=1875 awake=2270 raw=270.01799260871485 tb=270.0076849285594 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\270.gpudeco
   - [StutterFix] [gpudeco] prepare_ms=4386.468400 phase=export owned=17 awake=24 raw=276.00734197394922 tb=276.0021744821363 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\276.gpudeco
+
+## 회차 3
+- Codex 요약: 인계대로 수정·검증했고, 설계 한계를 기록한 뒤 중단했습니다.
+
+- GPU 산술·실패 판정 수정, 3종 빌드·LoadCheck·회귀 검사 통과.
+- 실제 G0 정점 최대 오차 **81.50px / 65.62px**로 실패.
+- 276초 소유 **17개**로 `OWNED_LOW`. G1은 미통과입니다.
+
+게임 실행·설치·커밋은 하지 않았습니다.
+
+[결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result.md) · [10줄 요약](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result-o.txt)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export

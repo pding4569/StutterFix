@@ -121,22 +121,24 @@ void Evaluate(uint3 thread:SV_DispatchThreadID)
     float v[16];
     [unroll] for(uint ch=0;ch<16;ch++) { v[ch]=Value(i*16+ch); _Values[i*16+ch]=v[ch]; }
     uint b=i*10; float4 c=_Static[b+7], crop=_Static[b+8]; uint flags=(uint)crop.w;
-    float2 trueScale=c.xy, camScale=((flags&1)!=0 ? _Camera.w : 1)*trueScale;
-    float2 position=float2(v[0],v[1]);
-    float2 world=(_Camera.xy-position)*float2(v[12],v[13])+position;
+    precise float2 trueScale=c.xy, camScale=((flags&1)!=0 ? _Camera.w : 1)*trueScale;
+    precise float2 position=float2(v[0],v[1]);
+    // Match the separate float operations of scrParallax.SetTrans. Fusing the
+    // multiply/add loses the game's rounding at large cancelling coordinates.
+    precise float2 world=(_Camera.xy-position)*float2(v[12],v[13])+position;
     if((flags&4)!=0) world.x=position.x;
     if((flags&8)!=0) world.y=position.y;
     world+=float2(v[14],v[15])*camScale/c.zw;
-    float2 offset=(float2(v[2],v[3])+crop.xy)/trueScale;
-    float3 translated=_Static[b+4].xyz+_Static[b+5].xyz*offset.x+_Static[b+6].xyz*offset.y;
-    float angle=_Static[b+9].x+v[4]+((flags&2)!=0 ? _Camera.z : 0);
+    precise float2 offset=(float2(v[2],v[3])+crop.xy)/trueScale;
+    precise float3 translated=_Static[b+4].xyz+_Static[b+5].xyz*offset.x+_Static[b+6].xyz*offset.y;
+    precise float angle=_Static[b+9].x+v[4]+((flags&2)!=0 ? _Camera.z : 0);
     float sn,cs; sincos(angle*(3.1415927410125732421875/180),sn,cs);
-    float2 scale=float2(v[5],v[6])*camScale;
+    precise float2 scale=float2(v[5],v[6])*camScale;
     float4 color=float4(v[7],v[8],v[9],v[10]*v[11]);
     [unroll] for(uint k=0;k<4;k++)
     {
-        float3 local=_Static[b+k].xyz+translated; local.xy*=scale;
-        float3 worldPoint=float3(world+float2(cs*local.x-sn*local.y,sn*local.x+cs*local.y),crop.z+local.z);
+        precise float3 local=_Static[b+k].xyz+translated; local.xy*=scale;
+        precise float3 worldPoint=float3(world+float2(cs*local.x-sn*local.y,sn*local.x+cs*local.y),crop.z+local.z);
         uint address=(i*4+k)*36;
         _Vertices.Store3(address,asuint(worldPoint));
         _Vertices.Store4(address+12,asuint(color));

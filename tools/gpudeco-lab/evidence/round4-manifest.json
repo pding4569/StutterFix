@@ -1,0 +1,123 @@
+﻿{
+    "date":  "2026-10-22",
+    "task":  "codex-al-gg-3",
+    "source_sha256":  {
+                          "GpuDecoExport.cs":  "9A44A9B73EA4F85C9AA0DBFB5BE6A56D583628B0A8677B8AD4A046281A47594E",
+                          "GpuDecoData.cs":  "E41D6C9B0EDDAD15D827281411D620C5A134B36E9940A13F74126DAE62120418",
+                          "DecoBake.Core.cs":  "FAD53CFD97AF35C1175C2B6127B0DA022817187667FF5704770E3AD4444680D6",
+                          "DecoAnim.cs":  "244DB39481658FFFF46205450B2D03100E52E30785251823523C54D452F43D87",
+                          "Dormancy.cs":  "C4A8E9C77EB3B3CB69A52398E8224AE24DB7076EB333CCBEFC21061D1B7C61AD",
+                          "tools/gpudeco-lab/GpuDecoLab.cs":  "C3790585AD666E92385B22D68645A0B071FA857A54C4451188C8B37C72E68A37",
+                          "tools/gpudeco-lab/GpuDecoAudit.cs":  "B576BFFD9A945C996D1284DE86213AA36CC5C655B95F2B3D16F90D8C14C7E972",
+                          "tools/gpudeco-lab/GpuDeco.compute":  "D7CEA2427AB1BBA005399008F421DB536B0943CB457DE8D6917E1E12C106A07E",
+                          "tools/gpudeco-lab/prepare.ps1":  "365CEFFBB1B79A2016FEB7ACCD0D0AB6E0BE81F6998B631921245484328D6EAC",
+                          "tools/gpudeco-lab/compilecheck/CompileCheck.csproj":  "1F777C393AC0744B0698651E480AD9D1B236F2E5A5F5B21E7EC83754FF60A18D"
+                      },
+    "inputs":  [
+                   {
+                       "file":  "262.gpudeco",
+                       "bytes":  3234752,
+                       "sha256":  "A13DB1C00F03BBDF5754E7BF1C994AD10310D75862FC5EA61E2ECF756352AB80"
+                   },
+                   {
+                       "file":  "270.gpudeco",
+                       "bytes":  3507369,
+                       "sha256":  "BF6A3A2A4299AED828D836D2C9FD6C6F7DA5139BBD2242BA11DD566BC326ED83"
+                   },
+                   {
+                       "file":  "276.gpudeco",
+                       "bytes":  18284,
+                       "sha256":  "8A1B53B1CA6A3BF2F6E0B48571122FC6EAE465AA27220677E9F55EFF2B1FDA0F"
+                   }
+               ],
+    "evidence_sha256":  {
+                            "round4-verify-final.txt":  "7B3BC7406F0A79B3F842B183FBA2052FA8D24FDD56572EDC92FDD1227C0BB443",
+                            "round4-verify-final-editor.txt":  "4398290A057DFC3D2E707C6562925F5BD5372AA80EBB342945EB6FB6613CFEF6",
+                            "round4-smoke.txt":  "02247CECAD84194327DD7DF00C703C82AACE89EE5962B3DA9A6EABF3A008DB96",
+                            "round4-smoke-editor.txt":  "D298E6D334B41FC0CBB168855E92BD7979E46DFDF599DB69D340B707121FF562",
+                            "round4-lab-compile-final.txt":  "63B7EFD32BA5051D08CC3CF710C275C1C58C578F31770521FEDB4CD9E9F24AE3",
+                            "round4-shader.txt":  "47378201780576D8D4ACB9EF67C6208D35D6CDACB6ADA27E8C058CD167E0E218",
+                            "round4-build-dev.txt":  "219B35D3F32A36729D6D668F480873E10DD1480D53ACD13561BF7F1F13964147",
+                            "round4-build-player.txt":  "4182E38AF1611F52FBF0235EC1B7A1EC3077C62E1EBEBCC82BC1711739AF0CDF",
+                            "round4-build-auto.txt":  "79838039D103892E530C1A869E82F831FF6B3F9969F7A40C5B9BB71E5D4067D7",
+                            "round4-loadcheck-dev.txt":  "978D7D54E3F873D4CD6E53D2F884E3A01AE235DD7BC99A83E810B75E2052F636",
+                            "round4-loadcheck-player.txt":  "C15A618EDAA6AB802DC77291B88A3E8B2739F5ECCBD1F2C1219A4B50F05E2F5C",
+                            "round4-loadcheck-auto.txt":  "F0C531238C85B21602C417A1A75CD2CA7C24A20F8FA135B5E27A49DDF5BD53F3"
+                        },
+    "actual":  {
+                   "raw_times":  [
+                                     262.01982366340235,
+                                     270.01799260871485,
+                                     276.00734197394922
+                                 ],
+                   "owned":  [
+                                 1730,
+                                 1875,
+                                 17
+                             ],
+                   "awake":  [
+                                 2134,
+                                 2270,
+                                 24
+                             ],
+                   "vertex_max_px":  [
+                                         81.5013492107,
+                                         65.6187094003
+                                     ],
+                   "vertex_mean_px":  [
+                                          1.92039838194,
+                                          2.89043206727
+                                      ],
+                   "vertex_over":  [
+                                       5936,
+                                       6796
+                                   ],
+                   "uniform_clock_minimax_max_px":  [
+                                                        14.5359297439,
+                                                        16.2278384831
+                                                    ],
+                   "G0":  "FAIL",
+                   "G1":  "OWNED_LOW",
+                   "game_pixels":  "UNMEASURED",
+                   "G2":  "UNMEASURED",
+                   "trigger_phase":  "UNMEASURED",
+                   "verify_editor_exit":  1,
+                   "smoke_editor_exit":  0
+               },
+    "checks":  {
+                   "release_errors":  [
+                                          0,
+                                          0,
+                                          0
+                                      ],
+                   "release_warnings":  [
+                                            4,
+                                            4,
+                                            4
+                                        ],
+                   "loadcheck_fieldrefs":  [
+                                               277,
+                                               229,
+                                               277
+                                           ],
+                   "loadcheck_mismatches":  [
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                   "lab_compile_errors":  0,
+                   "lab_compile_warnings":  0,
+                   "shader_kernels":  3,
+                   "window_checks":  58
+               },
+    "prohibited_actions":  {
+                               "game_launch":  0,
+                               "install":  0,
+                               "commit":  0,
+                               "push":  0,
+                               "config_edit":  0,
+                               "login":  0,
+                               "forced_process_termination":  0
+                           },
+    "disposition":  "STOPPED_DESIGN_LIMIT"
+}

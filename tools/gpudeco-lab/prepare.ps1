@@ -13,6 +13,7 @@ $coreSource = Get-Content -LiteralPath (Join-Path $repoRoot 'DecoBake.Core.cs') 
 Set-Content -LiteralPath (Join-Path $projectRoot 'Assets/Editor/DecoBake.Core.cs') -Value ("#define DECOBAKE_FIXTURE`n" + $coreSource) -Encoding utf8
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLab.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoLab.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoSubmeshes.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoSubmeshes.cs')
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoAudit.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoAudit.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDeco.compute') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDeco.compute')
 # Local read-only CPU oracle. Generated directory is ignored and never packaged.
 Copy-Item -LiteralPath (Join-Path $GameManaged 'DOTween.dll') -Destination (Join-Path $projectRoot 'Assets/LocalReferences/DOTween.dll')

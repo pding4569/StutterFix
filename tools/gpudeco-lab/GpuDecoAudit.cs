@@ -1,0 +1,151 @@
+#if UNITY_EDITOR
+using System;
+using System.IO;
+using System.Linq;
+using StutterFix;
+using UnityEngine;
+
+public static partial class GpuDecoLab
+{
+    // Read-only attribution on the exported game truth. Diagnostic clock fits
+    // below are oracles, never corrections to the export or acceptance gates.
+    public static void Audit() => Run(AuditBody, "real-audit");
+    static void AuditBody()
+    {
+        string[] args = Environment.GetCommandLineArgs(); int at = Array.IndexOf(args, "-gpudecoInput");
+        Require(at >= 0 && at + 1 < args.Length, "-gpudecoInput <export directory> required");
+        var files = Directory.GetFiles(args[at + 1], "*.gpudeco").OrderBy(x => x).ToArray();
+        Require(files.Length == 3, "exactly three paused snapshots required");
+        string fingerprint = null; bool pass = true, low = false; int measured = 0;
+        foreach (string file in files)
+        {
+            GpuDecoData data; using (var stream = File.OpenRead(file)) data = GpuDecoData.Read(stream);
+            fingerprint = fingerprint ?? data.Fingerprint; Require(data.Fingerprint == fingerprint, "export table changed");
+            Log("[gpudeco-lab] export=" + Path.GetFileName(file) + " owned=" + data.Items.Length + " awake=" + data.Awake
+                + " coverage=" + N((double)data.Items.Length / Math.Max(1, data.Awake)) + " raw=" + N(data.RawTime) + " tb=" + N(data.BakeTime));
+            if (data.Items.Length < 800) { low = true; Log("[gpudeco-lab] stop=OWNED_LOW required=800 owned=" + data.Items.Length); break; }
+            var unsupported = data.Items.Where(d => d.Tracks.Any(t => t.Any(s => !Supported(s.Ease)))).ToArray();
+            Log("[gpudeco-lab] unsupported_ease_decorations=" + unsupported.Length + " fallback=original-path");
+            data.Items = data.Items.Except(unsupported).ToArray();
+            if (data.Items.Length < 800) { low = true; Log("[gpudeco-lab] stop=OWNED_LOW after_ease_filter=" + data.Items.Length); break; }
+            Require(data.Awake > 0 && (double)data.Items.Length / data.Awake >= .7, "coverage below 70 percent");
+            using (var gpu = new Evaluation(Shader(), data))
+            {
+                var result = gpu.Dispatch(data.BakeTime, true);
+                pass &= Compare(data, result.values, result.vertices, true);
+                Attribute(data, result.values, result.vertices);
+            }
+            measured++;
+        }
+        Log("GPUDECO_G0_OFFLINE=" + (pass && measured == 3 ? "PASS" : "FAIL") + " measured=" + measured + "/3 start_phase=UNMEASURED");
+        if (!pass || measured != 3 || low)
+            throw new GateFailure("GPUDECO_G1=" + (low ? "OWNED_LOW" : "G0_FAIL")
+                + " G0=" + (pass ? "INCOMPLETE" : "FAIL") + " game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED");
+        Log("GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=game_pixel_capture_required integration=BLOCKED");
+    }
+
+    static void Attribute(GpuDecoData data, float[] gpuValues, Vertex[] gpuVertices)
+    {
+        var tables = data.Items.Select(d => new DecoBakeCore.Table {
+            Decorations = new[] { new DecoBakeCore.Decoration { Initial = d.Initial } }, Tracks = d.Tracks,
+            Pitch = data.Pitch, TweenScale = data.TweenScale, Ease = Ease }).ToArray();
+        var cpu = tables.Select(t => Enumerable.Range(0, 16).Select(ch => t.Eval(0, ch, data.BakeTime)).ToArray()).ToArray();
+        double geometryMax = 0, geometrySum = 0, gpuVertexMax = 0, gpuVertexSum = 0, poseMax = 0, poseSum = 0;
+        int geometryOver = 0, gpuVertexOver = 0, poseOver = 0;
+        for (int i = 0; i < data.Items.Length; i++)
+        {
+            var d = data.Items[i]; var logical = CpuVertices(data, d, d.Actual); var table = CpuVertices(data, d, cpu[i]);
+            var gpuFields = new float[16]; Array.Copy(gpuValues, i * 16, gpuFields, 0, 16);
+            var gpuPose = CpuVertices(data, d, gpuFields);
+            for (int k = 0; k < 4; k++)
+            {
+                double error = Vector3.Distance(logical[k], V(d.World, k * 3)) * data.PixelsPerWorld;
+                geometryMax = Math.Max(geometryMax, error); geometrySum += error; if (error > .01) geometryOver++;
+                error = Vector3.Distance(table[k], gpuVertices[i * 4 + k].position) * data.PixelsPerWorld;
+                gpuVertexMax = Math.Max(gpuVertexMax, error); gpuVertexSum += error; if (error > .01) gpuVertexOver++;
+                error = Vector3.Distance(gpuPose[k], gpuVertices[i * 4 + k].position) * data.PixelsPerWorld;
+                poseMax = Math.Max(poseMax, error); poseSum += error; if (error > .01) poseOver++;
+            }
+        }
+        Log("[gpudeco-audit] geometry_actual_fields_vs_sprite max_px=" + N(geometryMax) + " mean_px=" + N(geometrySum / (data.Items.Length * 4)) + " over_tol=" + geometryOver);
+        Log("[gpudeco-audit] geometry_gpu_vs_cpu_table max_px=" + N(gpuVertexMax) + " mean_px=" + N(gpuVertexSum / (data.Items.Length * 4)) + " over_tol=" + gpuVertexOver);
+        Log("[gpudeco-audit] geometry_gpu_vs_gpu_fields max_px=" + N(poseMax) + " mean_px=" + N(poseSum / (data.Items.Length * 4)) + " over_tol=" + poseOver);
+        for (int ch = 0; ch < 16; ch++)
+        {
+            double max = 0, sum = 0, gpuMax = 0, gpuSum = 0; int worst = 0, active = 0, completed = 0;
+            var offsets = new System.Collections.Generic.List<double>(); int noFit = 0;
+            for (int i = 0; i < data.Items.Length; i++)
+            {
+                var d = data.Items[i]; double error = Math.Abs((double)cpu[i][ch] - d.Actual[ch]);
+                if (error > max) { max = error; worst = i; } sum += error;
+                error = Math.Abs((double)gpuValues[i * 16 + ch] - cpu[i][ch]); gpuMax = Math.Max(gpuMax, error); gpuSum += error;
+                int n = DecoBakeCore.Find(d.Tracks[ch], data.BakeTime); if (n < 0) continue;
+                var s = d.Tracks[ch][n];
+                if (s.Duration > 0 && (data.BakeTime - s.T0) / data.Pitch * data.TweenScale < s.Duration)
+                {
+                    active++;
+                    // Infer a per-channel time only on monotone local intervals.
+                    // Remaining error and the offset distribution expose whether
+                    // a single uniform song clock can represent actual fields.
+                    if (s.Ease < 1 || s.Ease > 22) continue;
+                    double lo = Math.Max(s.T0, data.BakeTime - .05), hi = Math.Min(s.T0 + s.Duration * data.Pitch / data.TweenScale, data.BakeTime + .05);
+                    if (DecoBakeCore.Find(d.Tracks[ch], lo) != n || DecoBakeCore.Find(d.Tracks[ch], hi) != n) continue;
+                    float a = tables[i].Eval(0, ch, lo), b = tables[i].Eval(0, ch, hi), target = d.Actual[ch];
+                    if (a == b) continue;
+                    if (target < Math.Min(a, b) || target > Math.Max(a, b)) { noFit++; continue; }
+                    for (int step = 0; step < 32; step++) { double mid = (lo + hi) * .5; float v = tables[i].Eval(0, ch, mid); if ((v < target) == (a < b)) lo = mid; else hi = mid; }
+                    offsets.Add(((lo + hi) * .5 - data.BakeTime) * 1000);
+                }
+                else completed++;
+            }
+            Log("[gpudeco-audit] slot=" + ch + " cpu_table_vs_actual max=" + N(max) + " mean=" + N(sum / data.Items.Length)
+                + " gpu_vs_table_max=" + N(gpuMax) + " gpu_vs_table_mean=" + N(gpuSum / data.Items.Length) + " active=" + active + " completed=" + completed);
+            if (offsets.Count > 0)
+            {
+                offsets.Sort(); Log("[gpudeco-audit] slot=" + ch + " oracle_local_fit_ms min=" + N(offsets[0]) + " p50=" + N(offsets[offsets.Count / 2])
+                    + " p95=" + N(offsets[(offsets.Count - 1) * 95 / 100]) + " max=" + N(offsets[offsets.Count - 1]) + " fitted=" + offsets.Count + " outside_50ms=" + noFit + " changes_gate=False");
+            }
+            if (max > 0)
+            {
+                var d = data.Items[worst]; int n = DecoBakeCore.Find(d.Tracks[ch], data.BakeTime);
+                Log("[gpudeco-audit] worst slot=" + ch + " index=" + d.Index + " id=" + d.Id + " flags=" + d.Flags + " initial=" + N(d.Initial[ch])
+                    + " actual=" + N(d.Actual[ch]) + " cpu=" + N(cpu[worst][ch]) + " gpu=" + N(gpuValues[worst * 16 + ch]) + " track_index=" + n);
+                foreach (int j in Enumerable.Range(Math.Max(0, n - 1), Math.Min(d.Tracks[ch].Length, n + 2) - Math.Max(0, n - 1)))
+                {
+                    var s = d.Tracks[ch][j]; Log("[gpudeco-audit] segment=" + j + " t0=" + N(s.T0) + " duration=" + N(s.Duration) + " start=" + N(s.Start) + " end=" + N(s.End) + " target=" + N(s.Target) + " ease=" + s.Ease);
+                }
+            }
+        }
+        ScanUniformClock(data, tables);
+    }
+
+    static void ScanUniformClock(GpuDecoData data, DecoBakeCore.Table[] tables)
+    {
+        double bestMean = double.PositiveInfinity, bestMeanMax = 0, bestMeanOffset = 0;
+        double bestMax = double.PositiveInfinity, bestMaxMean = 0, bestMaxOffset = 0;
+        int bestMeanOver = 0, bestMaxOver = 0;
+        // Bounded diagnostic search. This does not prove a continuous optimum,
+        // measure trigger phase, modify data, or relax the fixed-time G0 gate.
+        for (int step = -100; step <= 100; step++)
+        {
+            double offset = step * .0005, sum = 0, max = 0; int over = 0;
+            for (int i = 0; i < data.Items.Length; i++)
+            {
+                var fields = new float[16]; for (int ch = 0; ch < 16; ch++) fields[ch] = tables[i].Eval(0, ch, data.BakeTime + offset);
+                var points = CpuVertices(data, data.Items[i], fields);
+                for (int k = 0; k < 4; k++)
+                {
+                    double error = Vector3.Distance(points[k], V(data.Items[i].World, k * 3)) * data.PixelsPerWorld;
+                    sum += error; max = Math.Max(max, error); if (error > .01) over++;
+                }
+            }
+            double mean = sum / (data.Items.Length * 4);
+            if (mean < bestMean) { bestMean = mean; bestMeanMax = max; bestMeanOffset = offset; bestMeanOver = over; }
+            if (max < bestMax) { bestMax = max; bestMaxMean = mean; bestMaxOffset = offset; bestMaxOver = over; }
+        }
+        Log("[gpudeco-audit] uniform_clock_scan candidates=201 range_ms=-50..50 step_ms=0.5 oracle=True changes_gate=False");
+        Log("[gpudeco-audit] uniform_clock_best_mean offset_ms=" + N(bestMeanOffset * 1000) + " max_px=" + N(bestMeanMax) + " mean_px=" + N(bestMean) + " over_tol=" + bestMeanOver);
+        Log("[gpudeco-audit] uniform_clock_best_max offset_ms=" + N(bestMaxOffset * 1000) + " max_px=" + N(bestMax) + " mean_px=" + N(bestMaxMean) + " over_tol=" + bestMaxOver);
+    }
+}
+#endif

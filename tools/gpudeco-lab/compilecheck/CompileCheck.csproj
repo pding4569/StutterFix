@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="../GpuDecoLab.cs" />
     <Compile Include="../GpuDecoSubmeshes.cs" />
+    <Compile Include="../GpuDecoAudit.cs" />
     <Compile Include="../../../DecoBake.Core.cs" />
     <Compile Include="../../../GpuDecoData.cs" />
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(EditorManaged)/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
