@@ -38,3 +38,31 @@
   - [StutterFix] [livedeco] transition frame=24057 owned=0 runs=0 created=0 reused=0 destroyed=0 reconcile_ms=0.311200
   - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=0 runs=0 vertex_ms=0.680900 upload_ms=0.725900 reconcile_ms=0.311200 scan_ms=478.261100 upload_calls=0.000 allocated_bytes=0 steady_allocated_b
   - [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False
+
+## codex-al-ga-2 최신 전달 후 수정 — 2026-10-21 (검증 로그 run3)
+- 시작 HEAD 863096b, 작업 트리는 깨끗했다. 이전 계층/프로파일 수정을 유지하고 새 원인을 수정했다.
+- 최신 전달 시험은 foreign-child-script 2,088개·repeat-tile 38개·keywords 1개 제외, 소유/구간 0/0에서 오류 종료. 픽셀/FPS는 단계 미도달.
+- Prof 표본은 957,795개, set_pct=68.852079%, valid=True. Step 표본 범위이며 PairXY/GroupStep 억제·StepPair/OnComplete/후속 엔진 비용 제외 한계는 그대로다.
+- 현재 설치 sharedassets4.assets 직접 감사: 이미지 프리팹 490의 ToggleVisible 471은 자기 scrVisualDecoration 490에 연결되어 enabled만 설정한다. 디컴파일·IL·관리자 직접 LogicUpdate 호출·기반 타입의 콜백 부재를 교차확인했다. 프리팹 1개의 결과로 2,088개 전체 연결을 단정하지 않는다.
+- 정확한 게임 ToggleVisible 타입 + 자기 sprite Transform + 자기 장식 참조만 허용. 외부/동명/상속/잘못된 연결은 계속 거부하고 캐시된 스크립트의 활성/대상 변경은 소유 중 재검사한다. 콜백/대상 enabled를 강제 변경하지 않는다.
+- renderer_version=3 visibility_policy=bound-self, visibility_admitted 및 구체적 제외 타입/연결 사유 로그 추가. 외부 Harmony 패치 거부에 ToggleVisible 포함. 기본 꺼짐·Player 제외·오차/픽셀/FPS 기준 유지.
+- 3종 빌드 오류 0/0/0, LoadCheck 틀림 0/0/0, 계층 2,729건·스크립트 15건·구간 106,460건·판정 18건·edition 31건·게임 패치 대상 17개 통과. 기존 MatShare/FrameCompare·25/129단계 생성기 통과.
+- 게임 실행·설치·커밋·푸시·config 수정 없음. 동일 게임 시험 재실행 없음. 새 소유/구간/정점/픽셀/FPS/GC/수명은 미측정, GATE2=PASS 미달성.
+- 결과: codex-gate2-A-result.md 최신 절 / codex-gate2-A-o.txt(10줄). 새 도구 livedeco-prefab-audit.py는 표준 라이브러리만 사용하고 에셋을 읽기만 한다. 수정한 코드로 기존 129단계 프로파일→픽셀 3시점→ABBA를 확인할 준비를 마쳤다.
+
+## 회차 2
+- Codex 요약: `ToggleVisible` 오분류를 수정하고 오프라인 검증을 완료했습니다.
+
+- 3종 빌드·LoadCheck 오류 0, 기존·신규 검사 통과.
+- 결과 문서·장부·10줄 요약 갱신.
+- 게임 실행·설치·커밋은 하지 않았습니다.
+
+수정 후 실픽셀·FPS는 미측정이므로 **Gate 2 PASS는 아직 아닙니다.**
+
+[결과 문서](E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] transition frame=23871 owned=0 runs=0 created=0 reused=0 destroyed=0 reconcile_ms=0.331300
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=0 runs=0 vertex_ms=0.791000 upload_ms=0.766600 reconcile_ms=0.331300 scan_ms=842.840100 upload_calls=0.000 allocated_bytes=0 steady_allocated_b
+  - [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False

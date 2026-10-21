@@ -74,3 +74,50 @@ deepLeaf = Node(deepLeaf);
 Check(LiveDecoGeometry.Capture(deepRoot, deepChild, deepLeaf, corners, false, false) == null,
     "depth limit must fail closed");
 Console.WriteLine($"LiveDeco production hierarchy algorithm: {checks} checks passed; managed math adapter, no Unity pixels/performance proven");
+
+int scriptStart = checks;
+var decoration = new scrVisualDecoration();
+var sprite = new SpriteRenderer();
+var toggle = new ToggleVisible { transform = sprite.transform, scriptToToggle = decoration };
+var scripts = new MonoBehaviour[] { decoration, toggle };
+string Reason() => LiveDecoScripts.Reason(scripts, decoration, sprite);
+foreach (bool ignore in new[] { false, true })
+foreach (bool targetActive in new[] { false, true })
+{
+    toggle.ignoreIfDisabled = ignore;
+    decoration.isActiveAndEnabled = targetActive;
+    Check(Reason() == null, "bound prefab callback accepted even when decoration disabled");
+}
+toggle.scriptToToggle = new MonoBehaviour();
+Check(Reason() == "visibility-target:UnityEngine.MonoBehaviour", "foreign target cannot consume stale transform");
+toggle.scriptToToggle = null;
+Check(Reason() == "visibility-target:missing", "missing target rejected");
+toggle.scriptToToggle = new scrVisualDecoration();
+Check(Reason() == "visibility-target:scrVisualDecoration", "other decoration rejected");
+toggle.scriptToToggle = decoration;
+toggle.transform = new Transform();
+Check(Reason() == "visibility-node", "other renderer callback rejected");
+toggle.transform = sprite.transform;
+scripts = new MonoBehaviour[] { new ForeignScripts.ToggleVisible() };
+Check(Reason() == "foreign-child-script:ForeignScripts.ToggleVisible", "same short name cannot bypass exact type");
+scripts = new MonoBehaviour[] { new DerivedVisibility() };
+Check(Reason() == "foreign-child-script:DerivedVisibility", "subclass may override callbacks");
+var unknown = new MonoBehaviour { isActiveAndEnabled = false };
+scripts = new MonoBehaviour[] { toggle, unknown };
+Check(Reason() == null, "inactive unknown script does not run");
+unknown.isActiveAndEnabled = true;
+Check(Reason() == "foreign-child-script:UnityEngine.MonoBehaviour", "activation after admission forces release");
+unknown.Destroyed = true;
+Check(Reason() == null, "destroyed component ignored");
+toggle.scriptToToggle = new MonoBehaviour();
+Check(Reason() != null, "rebinding after admission forces release");
+toggle.scriptToToggle = decoration;
+decoration.parallax = new MonoBehaviour(); decoration.blendModeEffect = new MonoBehaviour();
+decoration.meshBlendModeEffect = new MonoBehaviour(); decoration.spriteAlphaMask = new MonoBehaviour();
+scripts = new[] { decoration, decoration.parallax, decoration.blendModeEffect,
+    decoration.meshBlendModeEffect, decoration.spriteAlphaMask, toggle };
+Check(Reason() == null, "existing role references preserved");
+Console.WriteLine($"LiveDeco production script/binding policy: {checks - scriptStart} checks passed; managed roles only, no Unity callbacks proven");
+
+class DerivedVisibility : ToggleVisible { }
+namespace ForeignScripts { class ToggleVisible : MonoBehaviour { } }

@@ -3,5 +3,8 @@
     <TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings><DefineConstants>DEV</DefineConstants>
   </PropertyGroup>
-  <ItemGroup><Compile Include="../../../LiveDecoGeometry.cs" Link="LiveDecoGeometry.cs" /></ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../LiveDecoGeometry.cs" Link="LiveDecoGeometry.cs" />
+    <Compile Include="../../../LiveDecoScripts.cs" Link="LiveDecoScripts.cs" />
+  </ItemGroup>
 </Project>

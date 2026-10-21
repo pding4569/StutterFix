@@ -51,6 +51,7 @@ namespace StutterFix
             internal int Version;
             internal string Reason;
             internal Renderer[] Dependents;
+            internal MonoBehaviour[] Scripts;
         }
         sealed class Row
         {
@@ -93,7 +94,7 @@ namespace StutterFix
         static long allocatedBytes, steadyAllocatedBytes;
         static int steadySamples;
         static float checkMax;
-        static int checkCount, checkRejected, checkNested;
+        static int checkCount, checkRejected, checkNested, checkVisibility;
         static string error = "none";
         static readonly List<Source> sources = new List<Source>();
         static readonly List<Row> ordered = new List<Row>();
@@ -145,7 +146,7 @@ namespace StutterFix
             try
             {
                 // Refuse foreign hooks before any rendering mutation.
-                foreach (var type in new[] { typeof(scrDecoration), typeof(scrVisualDecoration), typeof(scrParallax) })
+                foreach (var type in new[] { typeof(scrDecoration), typeof(scrVisualDecoration), typeof(scrParallax), typeof(ToggleVisible) })
                     foreach (var method in type.GetMethods(AccessTools.all))
                     {
                         if (method.DeclaringType != type || method.IsAbstract) continue;
@@ -181,7 +182,7 @@ namespace StutterFix
                 RenderFrame();
                 if (ownedCount == 0) throw new InvalidOperationException("no eligible images; see rejection counts");
                 lastFrame = -1; // Re-evaluate after this frame's camera LateUpdate.
-                Log("begin variant=A renderer_version=2 currentRenderPipeline=null atlas=0 material_clone=0 " + State());
+                Log("begin variant=A renderer_version=3 visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 " + State());
                 LiveDecoGate2.RendererStarted();
             }
             catch { Stop(); throw; }
@@ -247,6 +248,7 @@ namespace StutterFix
             if ((d.selectionBordersObject && d.selectionBordersObject.activeInHierarchy)
                 || (d.hitboxBordersObject && d.hitboxBordersObject.activeInHierarchy)) return "editor-borders";
             if (!r.sprite || !r.sprite.texture || r.sprite.associatedAlphaSplitTexture) return "sprite-texture";
+            if (i.Owned) return LiveDecoScripts.Reason(i.Scripts, d, r);
             return null;
         }
         static void Reject(Image i, string why)
@@ -272,11 +274,9 @@ namespace StutterFix
             i.Dependents = i.D.pivotTrans.GetComponentsInChildren<Renderer>(true);
             reason = GeometryReason(i);
             if (reason != null) { Reject(i, reason); return; }
-            foreach (var component in i.D.pivotTrans.GetComponentsInChildren<MonoBehaviour>(true))
-                if (component && component.isActiveAndEnabled && component != i.D && component != i.D.parallax
-                    && component != i.D.blendModeEffect && component != i.D.meshBlendModeEffect
-                    && component != i.D.spriteAlphaMask)
-                { Reject(i, "foreign-child-script"); return; }
+            i.Scripts = i.D.pivotTrans.GetComponentsInChildren<MonoBehaviour>(true);
+            reason = LiveDecoScripts.Reason(i.Scripts, i.D, i.R);
+            if (reason != null) { Reject(i, reason); return; }
             i.Signature = string.Join(";", MatShare.Properties(i.Material).Select(x => x.Key + "=" + x.Value));
             i.Corners = i.Sprite.vertices; i.UV = i.Sprite.uv; i.Indices = i.Sprite.triangles;
             if (i.Corners.Length != 4 || i.UV.Length != 4 || i.Indices.Length != 6) { Reject(i, "nonquad"); return; }
@@ -302,6 +302,8 @@ namespace StutterFix
             checkCount++; checkMax = Mathf.Max(checkMax, max);
             if (!Finite(max) || max > Limit) { checkRejected++; Reject(i, "vertex-error"); return; }
             if (i.Geometry.Depth > 1) checkNested++;
+            foreach (var component in i.Scripts)
+                if (component && component.isActiveAndEnabled && component.GetType() == typeof(ToggleVisible)) checkVisibility++;
             i.OriginalOff = i.R.forceRenderingOff; i.Owned = true; i.Version++; ownedCount++; topology = true;
         }
         static bool Finite(float f) => !float.IsNaN(f) && !float.IsInfinity(f);
@@ -576,7 +578,7 @@ namespace StutterFix
             lastFrame = Time.frameCount;
             long heap = GC.GetTotalMemory(false), alloc = GC.GetAllocatedBytesForCurrentThread(), transitions = transitionCount;
             long scan = Stopwatch.GetTimestamp();
-            checkMax = 0; checkCount = checkRejected = checkNested = 0;
+            checkMax = 0; checkCount = checkRejected = checkNested = checkVisibility = 0;
             if (refreshRegistry) Register();
             Scan(); scanTicks += Stopwatch.GetTimestamp() - scan;
             long compute = Stopwatch.GetTimestamp();
@@ -612,7 +614,8 @@ namespace StutterFix
             long bytes = GC.GetAllocatedBytesForCurrentThread() - alloc; allocatedBytes += bytes;
             if (transitionCount == transitions && checkCount == 0) { steadyAllocatedBytes += bytes; steadySamples++; }
             if (checkCount != 0) Log("vertexcheck max_err=" + checkMax.ToString("R", Inv) + " count=" + checkCount
-                + " excluded=" + checkRejected + " nested_admitted=" + checkNested + " threshold=0.0001");
+                + " excluded=" + checkRejected + " nested_admitted=" + checkNested
+                + " visibility_admitted=" + checkVisibility + " threshold=0.0001");
             if (frameSamples >= 120 || checkCount != 0) ReportCost();
             if (rejected.Count != 0 && frameSamples == 0)
             { foreach (var p in rejected) Log("excluded reason=" + p.Key + " count=" + p.Value); rejected.Clear(); }

@@ -1,3 +1,67 @@
+# Gate 2 A 최신 수정 — ToggleVisible 오분류 (2026-10-21, 로그 run3)
+
+**표준 프리팹의 ToggleVisible을 외부 자식 스크립트로 거부하는 원인을 수정했다. 오프라인 검증은 통과했고 수정 후 소유 수·픽셀·FPS는 미측정이다. Gate 2 PASS를 선언하지 않는다.** codex-al-ga-2.md의 장부와 최신 증거부터 읽고 기존 계층/프로파일 수정을 보존했다. 시작 시 작업 트리는 깨끗했고 HEAD는 863096b였다. 게임 실행·설치·커밋·푸시·config 수정은 하지 않았다.
+
+## 최신 전달 시험
+
+[자동 수집 증거](ga-autoloop-run1-evidence.txt)는 이전 계층/프로파일 수정 이후의 결과다. 이번 세션에서 게임을 측정한 값이 아니다.
+
+| 항목 | 전달 실측 |
+|---|---|
+| 소유 / 구간 | 0 / 0 |
+| 제외 | foreign-child-script 2,088개, repeat-tile 38개, keywords 1개 |
+| 프로파일 | enabled=True, samples=957,795, valid=True |
+| 설정 비율 | set_pct=68.852079% |
+| 실패 | livedeco on: no eligible images, GATE2=ERROR / autotest_aborted |
+| 픽셀 / FPS | 단계 미도달 |
+
+프로파일은 이전 수정으로 표본이 생겼다. **68.852079%는 Step에서 표본 수집한 Apply/OnUpdate의 설정 비중**이다. Prof의 PairXY/GroupStep 억제, StepPair·OnComplete·setter 이후 엔진 작업 제외 한계가 있어 평상시 전체 애니메이션 비용의 비율로 확대하지 않는다. 실패 입장 프레임 scan_ms=478.261100도 정상 재생 프레임 비용이나 FPS 근거가 아니다.
+
+## 원인과 확인 근거
+
+기존 Admit은 자기 장식·parallax·blend·mask 참조 이외의 활성 MonoBehaviour를 모두 foreign-child-script로 거부했다. 게임 표준 이미지 프리팹의 sprite 노드에는 활성 ToggleVisible이 들어 있으므로 이 프리팹은 그 조건에 걸린다.
+
+외부 패키지 설치 없이 표준 라이브러리만 사용하는 [에셋 감사 도구](../../tools/optimization/livedeco-prefab-audit.py)를 추가했다. 현재 설치 sharedassets4.assets의 프리팹 490 → ToggleVisible 471 → **자기 scrVisualDecoration 490** 연결, ignoreIfDisabled=False를 직접 확인했다([프리팹/해시](gate2-A-run3-prefab.log)). 프리팹은 1개 확인했으며 이것만으로 전달된 2,088개 인스턴스가 모두 같은 연결이었다고 단정하지 않는다. 도구는 Unity v22 직렬화 형식만 지원하고 다른 버전은 거부한다.
+
+디컴파일 ToggleVisible.cs와 [설치 DLL IL](gate2-A-run3-visibility-il.log)을 대조했다. OnBecameVisible/Invisible은 scriptToToggle.enabled만 설정하며 invisible 분기에서 자신의 gameObject.activeSelf를 확인한다. Transform·SpriteRenderer.color·장식 논리 값은 읽거나 쓰지 않는다. [관리자 IL](gate2-A-run3-manager-il.log)의 LateUpdate는 enabled 검사 없이 null이 아닌 항목의 LogicUpdate를 직접 부른다. scrVisualDecoration → scrDecoration → ADOBase → RDTools.RDBaseDll의 메서드 목록에 Update/LateUpdate/OnEnable/OnDisable이 없음을 확인했다([visual](gate2-A-run3-visual-types.log), [decoration](gate2-A-run3-decoration-types.log), [ADOBase](gate2-A-run3-adobase-types.log), [RDBaseDll](gate2-A-run3-base-il.log)). 이 연결에서 enabled 변화로 장식 갱신이 중단되거나 Transform 소비 콜백이 추가 실행되는 관리 경로는 확인되지 않았다.
+
+게임 DLL SHA256은 F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF로 이전과 같다([해시](gate2-A-run3-game-hash.txt)). 감사는 파일만 읽고 게임 메서드는 실행하지 않았다. 워크트리에 없는 로드맵은 정식 체크아웃 docs/ROADMAP-EXTREME-20261021.md에서, freeze 결과는 wt-freeze/docs/handoff/codex-freeze-20261021-result.md에서 읽었다. freeze 문서는 오프라인 구현 결과여서 새 실게임 절감 수치로 쓰지 않았다.
+
+## 수정
+
+- 새 LiveDecoScripts.Reason은 **정확한 게임 ToggleVisible 타입 + 자기 SpriteRenderer와 같은 Transform + 자기 장식 대상 참조**일 때만 추가 허용한다. 동명 외부 타입·상속 타입·잘못된/누락된 대상·다른 노드는 거부한다. 콜백이나 enabled를 강제로 변경하지 않는다.
+- 입장 당시 캐시한 스크립트의 활성 상태와 연결을 소유 중 재검사한다. 캐시된 비활성 외부 스크립트가 켜지거나 ToggleVisible 대상이 바뀌면 기존 Release로 복원한다. **입장 후 임의 외부 AddComponent 전부를 실시간 탐지하는 기능은 아니다.** 기존 Setup/경계 사건 재입장 검사를 유지한다.
+- 제외 이유는 foreign-child-script:<전체 타입명>, visibility-node, visibility-target:<타입명 또는 missing>으로 세분화했다. 시작에 renderer_version=3 visibility_policy=bound-self, 정점 검사에 실제 허용된 콜백 수 visibility_admitted를 남긴다. 정점 오차 1e-4 및 마스크·히트박스·반복·특수 블렌드·정렬·텍스처 조건을 유지했다.
+- 외부 Harmony 패치 거부 검사에 ToggleVisible을 포함했다. 새 콜백 패치는 설치하지 않는다. 논리 필드·엔진 쓰기 차단·off/종료 복원은 기존 경로를 유지한다. 일반 Player 제외·기본 꺼짐을 유지한다.
+- 기존 129단계 생성기는 유지했다. 변경된 코드의 프로파일→3시점 픽셀/복원→ABBA 검증을 준비했고 같은 게임 시험은 재실행하지 않았다. 아틀라스·게이트 3·워커 분할은 추가하지 않았다.
+
+## 오프라인 검증
+
+| 검사 | 결과 | 로그 |
+|---|---|---|
+| Release DEV / Player / PlayerAuto | 오류 0/0/0, 경고 38/36/38 | gate2-A-run3-build-dev.log / -player.log / -auto.log |
+| LoadCheck DEV / Player / PlayerAuto | 276/229/276곳, 틀림 0/0/0 | gate2-A-run3-loadcheck-dev.log / -player.log / -auto.log |
+| 생산 계층 / 새 생산 스크립트 판정 | 2,729 / 15 checks 통과 | [geometry](gate2-A-run3-geometry-fixture.log) |
+| 구간/첫 멤버 앵커 / Gate 2 판정 | 106,460 / 18 checks 통과 | [fixture](gate2-A-run3-fixture.log) |
+| edition / 게임 패치 대상 | 31 / 17 checks 통과 | 같은 로그 |
+| MatShare / FrameCompare | 25,401 / 11+15+14+17+13 checks 통과 | gate2-A-run3-matshare-fixture.log / -framecmp-fixture.log |
+| Gate 1 / Gate 2 생성기 | 25 / 129단계, UTF-8 CLI 통과 | gate2-A-run3-gate1-steps-fixture.log / -steps-fixture.log |
+| 현재 설치 프리팹 | 프리팹 1개, 자기 장식 대상 ToggleVisible 1개 | gate2-A-run3-prefab.log |
+| git diff --check | 통과 | 최종 로컬 검사 |
+
+새 fixture는 실제 생산 정책 소스를 연결해 정상 바인딩·자기 장식 비활성 상태·잘못된/누락된 대상·다른 노드·동명 외부 타입·상속 타입·입장 후 대상 변경·캐시된 외부 스크립트 활성화를 검사한다. 관리 어댑터 검사이며 Unity 콜백·렌더링·Mono Harmony 실행·성능 증명이 아니다. LoadCheck 동적 이름 5곳은 런타임 확인 대상이다.
+
+## 자동 시험 인계와 한계
+
+renderer_version=3, visibility_admitted, nested_admitted, vertexcheck max_err/count/excluded, 제외 타입 분포, owned/runs 및 비용을 확인한다. **수정 후 이 값들과 실픽셀·FPS·GC·재시작/사망/맵 재열기/언로드 복원은 미측정**이다. 약 1,200구간은 예상치다. 세 시점 ab_out=0, 복원·기준 상태 안정성, ABBA 켬 평균 FPS ≥ +15%를 모두 만족해야 PASS다. 현재 증거에는 수정 가능한 코드 원인이 있으므로 설계 한계로 확정하지 않았고 성공 조건도 완화하지 않았다.
+
+task-observer v3.5.0 관찰 반환(사용자 범위 스킬/메모리 쓰기 없음): 문제 — 스크립트를 한 제외 이유로 집계하면 표준 프리팹의 보조 컴포넌트와 외부 Transform 소비자를 구별할 수 없다. 개선 — 현재 직렬화 연결과 콜백 IL을 대조한 뒤 정확한 타입·역할·대상 참조로 판정하고 거부 타입을 로그에 남긴다. 원칙 — 증명한 바인딩 범위만 허용하고 실게임 미측정을 구분한다.
+
+---
+
+아래는 보존한 이전 수정 결과다.
+
+
 # Gate 2 A 자동 반복 2회차 결과 — 2026-10-21
 
 **소유 0개로 중단한 계층 판정과 프로파일 표본 0개의 원인을 수정하고 오프라인 검증을 완료했다. 수정 후 게임 측정은 없으며 Gate 2 PASS를 선언하지 않는다.** 중단된 2회차의 미커밋 수정본을 이어서 검토·보완했다. 현재 HEAD는 `7758ce9`이며 커밋하지 않았다. 게임 실행·설치·푸시와 `.codex/config.toml` 수정도 하지 않았다. 아래 1회차 결과는 이력으로 보존한다.
