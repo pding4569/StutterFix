@@ -33,7 +33,7 @@ namespace StutterFix
         public static void Prefix()
         {
             Count++;
-#if DEV
+#if DEV || AUTOTEST
             MatShare.Stop();
 #endif
 #if DEV || AUTOTEST

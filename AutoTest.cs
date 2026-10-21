@@ -887,7 +887,7 @@ namespace StutterFix
                 case "gpucensus": GpuCensus.Run(); return true;
                 case "gpuhide": GpuHide.Command(arg); return true;
                 case "gpusplit": GpuSplit.Command(arg); return true;
-#if DEV
+#if DEV || AUTOTEST
                 case "matshare": MatShare.Command(arg); return true;
 #endif
                 case "filteridentity":
@@ -1692,7 +1692,7 @@ namespace StutterFix
 
         private static void Finish(string why)
         {
-#if DEV
+#if DEV || AUTOTEST
             MatShare.Stop();
 #endif
 #if DEV || AUTOTEST

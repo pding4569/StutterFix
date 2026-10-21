@@ -479,7 +479,7 @@ ParticleTextWatch.Install(harmony);
             Try(FilterGpuProbe.Stop);
             Try(GpuHide.Stop);
             Try(GpuSplit.Stop);
-#if DEV
+#if DEV || AUTOTEST
             Try(MatShare.Stop);
 #endif
             Try(GpuCensus.Stop);

@@ -1,4 +1,4 @@
-#if DEV
+#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.Globalization;
