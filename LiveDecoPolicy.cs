@@ -5,6 +5,12 @@ namespace StutterFix
 {
     internal static class LiveDecoPolicy
     {
+        internal static bool WithinPixelError(float worldError, float pixelsPerWorld)
+            => !float.IsNaN(worldError) && !float.IsInfinity(worldError) && worldError >= 0
+                && !float.IsNaN(pixelsPerWorld) && !float.IsInfinity(pixelsPerWorld) && pixelsPerWorld > 0
+                && worldError * pixelsPerWorld < .01f;
+        internal static bool OwnershipVisible(bool logicalVisible, bool forcedOff, bool owned)
+            => logicalVisible && (!forcedOff || owned);
         internal static bool RendererLive(bool exists, bool sceneValid, bool enabled, bool activeInHierarchy, bool forcedOff)
             => exists && sceneValid && enabled && activeInHierarchy && !forcedOff;
 

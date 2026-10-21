@@ -205,3 +205,24 @@
   - [StutterFix] [livedeco2] FPS mode=off index=0 fps=122.358015 ms=8.172738 frames=1706 elapsed_s=13.942691 song_begin=262.060504 song_end=276.004443 valid=True
   - [StutterFix] [livedeco] transition frame=31503 owned=167 runs=95 created=95 reused=0 destroyed=0 reconcile_ms=1.735800
   - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=167 runs=95 vertex_ms=0.103700 upload_ms=0.100800 reconcile_ms=1.735800 scan_ms=64.339800 upload_calls=95.000 dirty_images=167.000 skipped_uplo
+
+## 회차 7 — Dormancy 이벤트 기반 구조 변경
+
+- 시작부터 있던 Dormancy 변경을 보존하고 Changed/Rebuilt/Audit/Reset을 구현에 연결했다. 게임 실행·설치·커밋·푸시·config 변경 없음.
+- RenderFrame의 전체 renderer Scan/재등록을 제거했다. 깨움/잠듦 델타·정적 승인/거절 캐시·게임/모드 관리 쓰기 통지·색인·부분 구간 재구성·공유 정점 영역 재사용을 구현했다.
+- 논리 가시성과 소유 숨김 비트 분리·InvisibleSkip 충돌 방지·해제 사유와 live 분모 시계열·0.01px 오차/히스토그램·초당 비용/감사·3초 warmup·OWNED_LOW 조기 중단·수명 복원을 추가했다.
+- 새 게임 측정은 없다. 소유 90%·scan≤0.05ms·vertex≤0.5ms·upload≤0.4ms·FPS+15%·픽셀0·실게임 수명은 미검증이다. 픽셀 수정은 1~3의 새 수치 전까지 보류했다.
+- 오프라인: 3종 빌드 오류0/0/0, LoadCheck 틀림0/0/0, 생산 델타5,918,737건·쓰기133건·정책106,479건·gate18건·edition39건·hook22개 및 기존 fixture/132단계 검사 통과.
+- 최신 기존 al-ga-6.log는 262/270/276초 ab_out376530/124332/0, maxdiff6/5/0, FPS gain−87.686140%, GATE2=PIXEL_FAIL이다. 수정 후 측정으로 전용하지 않는다.
+- 결과 문서·10줄 요약·r7 빌드/fixture/기존 증거/소스 감사 갱신. 실제 Mono patch 설치·초기 색인/patch 비용·callback 부하·다른 어셈블리/네이티브/반사/generic 경로의 포괄성은 증명하지 않았다. GATE2=PASS 미달성.
+
+## 회차 1
+- Codex 요약: Dormancy 기반 델타·캐시·부분 구간 갱신을 구현했습니다. 3종 빌드·LoadCheck 오류 0, 오프라인 검증 통과입니다.
+
+게임 실행·설치·커밋은 하지 않았습니다. 실픽셀·FPS는 미측정이므로 **Gate 2 PASS는 미달성**입니다.
+
+[상세 결과](/E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False

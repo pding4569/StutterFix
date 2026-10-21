@@ -4,6 +4,20 @@ using System.Reflection.PortableExecutable;
 
 int checks = 0;
 void Check(bool value, string label) { checks++; if (!value) throw new Exception(label); }
+Check(LiveDecoPolicy.WithinPixelError(.00027f, 36), "large-world float error below 0.01 screen pixel accepted");
+Check(!LiveDecoPolicy.WithinPixelError(.00027f, 40), "same world error above 0.01 screen pixel rejected");
+Check(!LiveDecoPolicy.WithinPixelError(.01f, 1), "exact screen threshold rejected");
+Check(LiveDecoPolicy.WithinPixelError(0, 1440), "zero error accepted");
+foreach (float badScale in new[] { 0, -1, float.NaN, float.PositiveInfinity })
+    Check(!LiveDecoPolicy.WithinPixelError(0, badScale), "invalid projection rejected");
+foreach (float badError in new[] { -1, float.NaN, float.PositiveInfinity })
+    Check(!LiveDecoPolicy.WithinPixelError(badError, 1), "invalid geometry error rejected");
+for (int bits = 0; bits < 8; bits++)
+{
+    bool visible = (bits & 1) != 0, off = (bits & 2) != 0, owner = (bits & 4) != 0;
+    Check(LiveDecoPolicy.OwnershipVisible(visible, off, owner) == (visible && (!off || owner)),
+        "owned original forced-off bit cannot masquerade as sleep; foreign hide remains hidden");
+}
 SceneRenderOrder.Key Key(int material, int renderer, int layer = 0, int order = 0, int queue = 3000, float distance = 1)
     => new(layer, order, queue, distance, material, renderer);
 LiveDecoPolicy.Item Row(int material, bool own, int renderer = 0, int order = 0, string signature = "base", int unityLayer = 0)
@@ -132,7 +146,7 @@ if (args.Length >= 3)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
-        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoRenderer", "LiveDecoGeometry", "LiveDecoUploadState", "LiveDecoScripts", "LiveDecoLifetime", "LiveDecoGate2", "LiveDecoGate2Policy" })
+        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoRenderer", "LiveDecoChanges", "LiveDecoGeometry", "LiveDecoUploadState", "LiveDecoScripts", "LiveDecoLifetime", "LiveDecoGate2", "LiveDecoGate2Policy" })
             Check(names.Contains(name) == (i != 0), "edition types " + name + " " + args[i]);
         if (i != 0)
         {
@@ -166,7 +180,9 @@ if (args.Length == 4)
         ("scrVisualDecoration", "SetSprite", 2), ("scrVisualDecoration", "SetTile", 1),
         ("scrVisualDecoration", "SetBlendMode", 1), ("scrVisualDecoration", "SetVisible", 1),
         ("scrVisualDecoration", "SetMaskingType", 1), ("scrVisualDecoration", "SetTextureScaleMultiplier", 1),
-        ("scrVisualDecoration", "SetDepth", 1) })
+        ("scrVisualDecoration", "SetDepth", 1), ("scrController", "OnLandOnPortal", 3),
+        ("scrController", "FailAction", 4), ("scrController", "Restart", 1),
+        ("scrController", "QuitToMainMenu", 0), ("scnGame", "OnDestroy", 0) })
     {
         var t = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name) == type);
         int matches = t.GetMethods().Select(md.GetMethodDefinition).Count(m => md.GetString(m.Name) == method

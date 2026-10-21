@@ -1,0 +1,13 @@
+Observed offline command output in this session; no game methods invoked.
+python tools/optimization/test-livedeco-steps.py:
+  livedeco steps checks passed: 25 steps; independent 262/270 census; UTF-8 CLI roundtrip; no gate-2 commands
+python tools/optimization/test-livedeco2-steps.py:
+  livedeco2 steps: 132 steps; 3 paused/restored pixels; ABBA unpaused windows; UTF-8 CLI passed
+dotnet run --project tools/optimization/LiveDecoGeometryCheck -c Release --no-restore:
+  LiveDeco production hierarchy algorithm: 2729 checks passed; managed math adapter, no Unity pixels/performance proven
+  LiveDeco production culling bounds algorithm: 482 checks passed; includes old 0.1 false rejection, no Unity bounds thickness assumed
+  LiveDeco production script/binding policy: 15 checks passed; managed roles only, no Unity callbacks proven
+  LiveDeco production pose/dirty cache: 40 checks passed; exact invalidation, managed adapter only
+  LiveDeco production upload invalidation: 32 checks passed; new/relocated buffers, color-only, pose-only, unchanged neighbors
+dotnet run --project tools/optimization/MatShareCheck -c Release --no-restore:
+  MatShareCheck checks=25401 errors=0; pure policy only; Unity sorting fixture requires runtime

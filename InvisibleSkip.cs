@@ -86,6 +86,11 @@ namespace StutterFix
 
         private static void Work(scrVisualDecoration inst)
         {
+#if DEV || AUTOTEST
+            // The live mesh owner controls the original renderer's forced-off bit.
+            // Logical alpha continues to change; release returns bookkeeping here.
+            if (LiveDecoRenderer.Owns(inst)) return;
+#endif
             var r = rendererRef(inst);
             if ((object)r == null) return;
             if (colorRef(inst).a <= 0f)

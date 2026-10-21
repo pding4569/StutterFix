@@ -1678,6 +1678,9 @@ namespace StutterFix
         }
 
         // keep 묶음의 끝: 게임은 켜 둔 채 결과 표시만 남기고 다음 autotest.txt 를 기다린다
+#if DEV || AUTOTEST
+        internal static void StopLiveDecoTest(string why) { Finish(why); }
+#endif
         private static void EndBatch(string why)
         {
 #if DEV || AUTOTEST

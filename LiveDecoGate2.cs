@@ -26,6 +26,15 @@ namespace StutterFix
         static double Song => scrConductor.instance ? scrConductor.instance.songposition_minusi : double.NaN;
         static void Log(string s) => Main.Entry.Logger.Log("[livedeco2] " + s);
         internal static void Fail(string reason) { if (evidence.Error == null) evidence.Error = reason; }
+        internal static void OwnedLow(int owned, int awake)
+        {
+            if (!running) return;
+            running = false; Fail("owned_lt_800_within_5s");
+            RestoreProfile();
+            Log("GATE2=OWNED_LOW reason=" + evidence.Error + " owned=" + owned + " awake=" + awake + " variant=A on=False");
+            LiveDeco.Stop();
+            AutoTest.StopLiveDecoTest("GATE2=OWNED_LOW");
+        }
         internal static void RendererStopped() { if (running && window >= 0 && mode) Fail("renderer_stopped_in_window"); }
         internal static void RendererStarted() { if (running && window >= 0 && !mode) Fail("renderer_started_in_off_window"); }
         internal static void Abort(string reason)
@@ -90,10 +99,13 @@ namespace StutterFix
                 window = int.Parse(a[2], Inv); songStart = Song;
                 if (window < 0 || window > 3 || mode != LiveDecoGate2Policy.On(window) || FrameCompare.Paused
                     || mode != LiveDecoRenderer.Active || (mode && LiveDecoRenderer.Owned == 0)
+                    || (mode && LiveDecoRenderer.EnabledSeconds < 3)
                     || double.IsNaN(songStart) || Math.Abs(songStart - 262) > 0.5)
                     throw new InvalidOperationException("invalid ABBA window start");
                 frame = Time.frameCount; clock = Stopwatch.GetTimestamp();
-                Log("window begin index=" + window + " mode=" + a[1] + " song=" + songStart.ToString("F6", Inv)); return true;
+                Log("window begin index=" + window + " mode=" + a[1] + " song=" + songStart.ToString("F6", Inv)
+                    + " warmup_excluded_s=" + (mode ? LiveDecoRenderer.EnabledSeconds.ToString("F3", Inv) : "0")
+                    + " minimum_on_warmup_s=3 transition_ms=" + LiveDecoRenderer.TransitionMs.ToString("F6", Inv)); return true;
             }
             if (a.Length == 1 && a[0] == "end")
             {

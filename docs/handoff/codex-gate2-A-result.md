@@ -1,3 +1,65 @@
+# Gate 2 A 7회차 — Dormancy 이벤트·정적 캐시·부분 구간 갱신 (2026-10-21)
+
+**소스 수정과 오프라인 검증 완료. 신규 게임 측정이 없으므로 Gate 2 통과·소유 90%·scan ≤0.05ms·정점 ≤0.5ms·업로드 ≤0.4ms·FPS +15%는 미확인이다.** 게임 실행·설치·커밋·푸시·`.codex/config.toml` 변경을 하지 않았다. 시작 시 이미 수정된 `Dormancy.cs`의 `LiveTrackingReady`, Changed/Rebuilt/Audit/Reset 통지를 보존하고 연결했다. 아래 과거 결과도 보존했다.
+
+공통 인계·r7 지시·장부·직전 결과·최신 run6 전달 증거를 읽었다. 전달 파일이 후반 발췌라 기존 `E:/StutterFixWork/night-results/al-ga-6.log`에서 세 픽셀/ABBA 결과를 보완했다. 워크트리에 없는 로드맵과 freeze 결과는 정식 checkout/`wt-freeze`에서 읽기만 했다. [기존 로그 SHA256와 판정](gate2-A-r7-prior-evidence.txt)은 새 실험 결과가 아니다.
+
+## 1. 전체 스캔 제거
+
+- 전체 scene 발견 `Register()`는 명시적인 Begin에서 한 번만 한다. RenderFrame의 Scan/레지스트리 재등록을 제거했다. 빈 프레임은 델타 큐 개수만 확인한다.
+- Dormancy 깨움·잠듦의 논리 가시성 변화만 큐에 넣는다. 매 채널 ApplyColor마다 재판정하지 않는다. 숨김·재표시는 승인/거절 캐시를 유지하고 실제 스프라이트·재질·계층·스크립트 조건 변경은 해당 후보만 무효화한다.
+- 비소유 변경도 추적하도록 게임/모드 어셈블리의 관리 쓰기 지점에 typed delegate 통지를 넣었다. Renderer 정렬/재질/활성/스프라이트, Material 속성, Transform 이동/회전/계층, GameObject 활성/레이어, 스크립트 활성, Instantiate/Destroy/AddComponent를 관측한다. Unity native setter 자체는 Harmony로 패치하지 않는다.
+- 렌더러·재질·Transform 조상·종속 렌더러·자식 스크립트에서 source로 가는 색인을 유지한다. 생성/재부모화는 변경 하위 트리만 등록하고 재색인에서 오래된 연결을 제거한다. 실패는 전체 스택을 `[livedeco] ERROR`로 남기고 복원한다.
+- 전체 정렬 목록/구간을 다시 훑는 Reconcile을 없앴다. 변경 행의 기존 구간과 인접 연결 구간만 재구성한다. 공유 정점 배열의 해제 영역을 병합·재사용하며 영향 없는 구간의 offset/내용은 유지한다.
+- 소유 중 기존 Dormancy 감사는 1초 주기다. 놓친 깨움과 awake 가시성 누락을 세며 `audit_ms`는 dormant 감사와 awake 검사 시간을 포함한다. 카메라 정렬 문맥/마스크가 바뀌면 전체 재스캔 대신 소유를 복원하고 중단한다.
+
+오프라인 수치: 생산 정렬/부분 재구성/정점 영역 관리 메서드를 그대로 추출해 독립적인 전체 분할 oracle과 **6,000회 변경 / 5,918,737건** 대조를 통과했다. 구간 병합/분할, 버퍼 중첩·내용 보존, 정적 프레임의 구간/offset 보존, 동률 해제 통지, 마지막 잠듦 후 전체 반납을 확인했다. [델타 fixture](gate2-A-r7-delta-fixture.log). 실제 프레임 시간의 대리 수치가 아니다.
+
+## 2. 소유 일관성·픽셀 기준 오차
+
+GetVisible의 논리 가시성과 원본을 숨기는 소유 비트를 분리했다. 소유자가 켠 forceRenderingOff는 잠듦으로 취급하지 않으며, 외부에서 숨긴 비소유 렌더러는 계속 제외한다. InvisibleSkip이 소유 중인 원본의 비트를 덮지 않도록 했다. **기존 Live도 소유자의 비트를 예외 처리했으므로, 이것만으로 기존 18개의 원인을 확정하지 않는다.**
+
+owned_ts에 `awake`(현재 live 이미지 sprite 분모), owned/runs/dirty와 비용을 1초마다 남긴다. `dormancy_awake`는 mesh/기타를 포함하는 원래 목록 크기로 별도 기록한다. 해제는 destroyed/renderer-disabled/inactive-hierarchy/logical-invisible/camera-layer/경계 쓰기 등으로 집계한다. 실제 live 감소와 판정 손실을 구분하기 위한 로그이며, 곡 끝 소유 수를 강제로 늘리지 않았다. **새 시계열·90% 소유율·기존 18개 원인의 실증은 미측정이다.**
+
+정점/바운드 오차에 실제 렌더 직교 카메라의 `max(width/(2*size*aspect), height/(2*size))`를 곱해 **엄격히 0.01px 미만**만 통과시킨다. 두 오차를 각각 검사하고 NaN/무한대/유효하지 않은 배율은 거절한다. 0.00027 월드 오차는 배율 36에서 0.00972px로 통과하고 배율 40에서 0.0108px로 제외된다. 실제 Arche 배율/분포로 주장하지 않는다. 히스토그램은 `<0.001 / <0.005 / <0.01 / <0.05 / ≥0.05px / nonfinite` 여섯 구간이며 제외 사유별 개수를 유지한다.
+
+생산 쓰기 통지 **133건** 검사(인자 0~4개, generic/non-generic 생성·파괴·컴포넌트 추가, 반환값/레이블/예외 경계/원래 예외 보존)가 통과했다. 워밍업 후 typed wrapper 10,000회는 관리 adapter에서 추가 할당 0이었다. [쓰기 fixture](gate2-A-r7-changes-fixture.log). 설치 Harmony의 GetOriginalInstructions overload도 [IL metadata](gate2-A-r7-harmony-metadata.log)로 확인했다. **실제 Unity Mono 패치 설치 성공·콜백 비용·GC 무할당 증명이 아니다.**
+
+## 3. 비용·조기 중단·수명
+
+cost에 scan/reconcile/vertex/upload/awake/owned/dirty를 남긴다. 델타 비용은 reconcile_ms에 포함하고 delta_ms로도 구분한다. scan_ms는 큐 확인 비용이다. 초기 발견/색인/패치/메시 준비는 enable_transition_ms·enable_allocated_bytes·watched_objects에 남긴다. 감사는 audit_ms, callback 부하는 write_callbacks/watcher_visits 횟수로 기록한다. 작은 setter마다 Stopwatch를 넣지 않았다. **callback 자체와 게임/엔진을 포함한 정확한 켬/끔 차이 분해는 미측정이다.**
+
+기존 ABBA 생성기는 약 252초에 켜고 262초부터 집계하므로 3초보다 긴 여유가 이미 있다. 132단계를 유지했고 실제 enabled 경과가 3초 미만이면 집계를 거절하며 경과/transition_ms를 기록한다. 자연 재생에서 켠 뒤 **3~5초 사이 owned<800**이면 GATE2=OWNED_LOW를 남기고 자동 시험을 즉시 종료·복원한다. 276초 정지 픽셀 표본에는 조기 중단을 적용하지 않는다.
+
+OnLandOnPortal/FailAction/Restart/QuitToMainMenu/scnGame.OnDestroy 진입 복원과 기존 ResetScene·Dormancy reset/rebuild·맵 다시 열기·Main.Unload·root 파괴 경로를 연결했다. 구간·원본 숨김·Harmony 소유자·watcher/cache/queue/정점 배열을 반납한다. **실제 게임의 실패/재시작/종료 수명 시험은 미실행이다.**
+
+## 4. 픽셀 단계
+
+1~3의 신규 게임 수치를 얻을 수 없는 세션이므로 지시한 순서에 따라 픽셀 수식 수정과 제외 영역 변경은 진행하지 않았다. Float32 색/UV/flip/블렌드/기존 중앙 20% 마스크와 PASS 기준을 유지했다. 최신 기존 증거는 다음과 같다.
+
+| 기존 run6 | 262초 | 270초 | 276초 |
+|---|---:|---:|---:|
+| ab_out | 376,530 | 124,332 | 0 |
+| maxdiff | 6 | 5 | 0 |
+| aa2_out / stable | 0 / True | 0 / True | 0 / True |
+
+기존 ABBA FPS는 **off 122.358015 / on 15.168761 / on 15.062440 / off 123.147474**, 이득 **−87.686140%**, 최종 GATE2=PIXEL_FAIL이다. Prof는 **986,285표본 / set_pct=69.182709% / valid=True**이며 기존 Step 표본·PairXY/GroupStep 억제·OnComplete/후속 엔진 비용 제외 한계를 유지한다.
+
+상위 32×32 구역은 262초 `(896,352), (1856,512), (864,352), (736,768), (1536,224)`, 270초 `(544,384), (960,352), (896,352), (960,320), (992,320)`다. 구역 뒤 로그 숫자는 채널 절대 차이 합이며 변경 픽셀 수가 아니다. 장식 ID/텍스처/알파/블렌드와 연결한 자료가 없어 소유 메시/파티클/행성/텍스트 중 어느 것이 원인인지 확정할 수 없다. **비소유 렌더러 변경이나 추가 비교 제외는 하지 않았다.**
+
+## 검증과 종료
+
+- Release DEV/Player/PlayerAuto 빌드 오류 **0/0/0**, LoadCheck **276/229/276곳 검사, 틀림 0/0/0**.
+- 구간·anchor·화면 오차·소유 가시성 정책 **106,479건**, gate 정책 **18건**, edition metadata **39건**(일반 Player 제외), 게임 hook metadata **22개** 통과.
+- 계층 **2,729**, 바운드 **482**, 스크립트 **15**, 정점 캐시 **40**, 업로드 **32**, MatShare **25,401**, FrameCompare **11/15/15/17/21/2**, 생성기 **25/132단계** 검사 통과.
+- 생산 델타 **5,918,737건**, 쓰기 통지 **133건**, [소스 계약 감사·최종 해시](gate2-A-r7-validation.txt), git diff --check 통과.
+
+정적 변경 감지는 두 관리 어셈블리의 관측 가능한 쓰기 범위다. 다른 어셈블리/네이티브·반사 호출·열린 generic 경로까지 포괄한다고 주장하지 않는다. 초기 등록/색인/패치 비용, 실제 callback 부하, 재생 중 구간 생성/할당, 실소유율, 픽셀 0·성능 목표는 새 실행 증거가 필요하다. 금지된 게임 시험을 실행하거나 동일 코드 반복 시험을 요청하지 않았다. **새 측정 없이 PASS로 승격하지 않고 종료한다.**
+
+작업 관찰 스킬 v3.5.0을 확인했다. 이번 발견은 구현·검증 범위이며 새 스킬 개선 관찰 기록은 없다. 메모리/스킬 파일은 변경하지 않았다.
+
+---
+
 # Gate 2 A 6회차 분석 — 전체 장면 폴링 설계의 비용 확인 후 중단 (2026-10-21, 감사 run7)
 
 **현재 구현의 전체 장면 폴링·반복 안전 검사 설계에서 중단한다. 실측 최종 판정은 `GATE2=PIXEL_FAIL`, FPS 이득 −87.875467%다. `GATE2=PASS`는 미달성이다.** 인계의 “안 되는 이유가 설계 한계면 결과 문서에 구체적으로 적고 멈춰라”를 적용했다. 이번에는 소스·빌드 산출물·steps를 변경하지 않았다. 스캔 제거와 성능 목표 달성은 완료하지 못했다. 동일 코드 게임 재시험을 실행하거나 요청하지 않는다.

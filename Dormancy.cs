@@ -42,6 +42,9 @@ namespace StutterFix
 
         private static readonly List<scrDecoration> awake = new List<scrDecoration>();
         internal static List<scrDecoration> AwakeList { get { return awake; } }
+#if DEV || AUTOTEST
+        internal static bool LiveTrackingReady => Enabled && !broken && MoveApply.LogicSkip && source != null;
+#endif
         private static readonly HashSet<scrDecoration> dormant = new HashSet<scrDecoration>(RefEq.Instance);
         private static readonly List<scrDecoration> woken = new List<scrDecoration>();
         private static readonly HashSet<scrDecoration> inAwake = new HashSet<scrDecoration>(RefEq.Instance);   // awake 목록에 이미 있는지 (같은 장식이 두 번 들어가 한 프레임에 두 번 처리되는 것을 막는다)
@@ -86,7 +89,10 @@ namespace StutterFix
 
         private static void Wake(scrDecoration d)
         {
-            if (dormant.Count == 0 || (object)d == null) return;
+            if ((object)d == null) return;
+#if DEV || AUTOTEST
+            LiveDecoRenderer.DormancyChanged(d);
+#endif
             if (dormant.Remove(d)) { woken.Add(d); Wakes++; }
         }
 
@@ -120,6 +126,9 @@ namespace StutterFix
                 inAwake.Clear(); foreach (var d in all) if ((object)d != null) inAwake.Add(d);
                 dormant.Clear(); woken.Clear();
                 Rebuilds++;
+#if DEV || AUTOTEST
+                LiveDecoRenderer.DormancyRebuilt();
+#endif
                 return;
             }
 
@@ -139,14 +148,30 @@ namespace StutterFix
 
             // 안전망: 잠든 장식을 다시 검사한다
             float now = Time.realtimeSinceStartup;
-            if (dormant.Count > 0 && (Edition.Dev ? Time.frameCount % 30 == 0 : now >= nextAudit))
+            bool auditDue = Edition.Dev ? Time.frameCount % 30 == 0 : now >= nextAudit;
+#if DEV || AUTOTEST
+            if (LiveDecoRenderer.Active) auditDue = now >= nextAudit;
+#endif
+            if (dormant.Count > 0 && auditDue)
             {
+#if DEV || AUTOTEST
+                long liveAuditBegin = System.Diagnostics.Stopwatch.GetTimestamp();
+#endif
                 nextAudit = now + 1f;
                 Audits++;
                 List<scrDecoration> miss = null;
                 foreach (var d in dormant)
                     if (d != null && !IsDormant(d, disable)) (miss ?? (miss = new List<scrDecoration>())).Add(d);
-                if (miss != null) foreach (var d in miss) { dormant.Remove(d); if (inAwake.Add(d)) awake.Add(d); Missed++; }
+                if (miss != null) foreach (var d in miss)
+                {
+                    dormant.Remove(d); if (inAwake.Add(d)) awake.Add(d); Missed++;
+#if DEV || AUTOTEST
+                    LiveDecoRenderer.DormancyChanged(d);
+#endif
+                }
+#if DEV || AUTOTEST
+                LiveDecoRenderer.DormancyAudit(System.Diagnostics.Stopwatch.GetTimestamp() - liveAuditBegin);
+#endif
             }
         }
 
@@ -197,7 +222,13 @@ namespace StutterFix
         internal static void Sleep(scrDecoration d)
         {
             if (!Enabled || broken || source == null) return;
-            if (dormant.Add(d)) Slept++;
+            if (dormant.Add(d))
+            {
+                Slept++;
+#if DEV || AUTOTEST
+                LiveDecoRenderer.DormancyChanged(d);
+#endif
+            }
         }
 
         // (측정용) 매 프레임 훑는(깨어 있는) 장식 중 실제로 화면에 안 그려진 것(카메라 밖) 수. 화면 밖 장식 갱신을 미루면 얼마나 줄지 가늠한다.
@@ -237,6 +268,9 @@ namespace StutterFix
 
         private static void ResetState()
         {
+#if DEV || AUTOTEST
+            LiveDecoRenderer.DormancyReset();
+#endif
             if (source == null && dormant.Count == 0) return;
             source = null; sourceCount = -1; sourceVersion = -1;
             awake.Clear(); dormant.Clear(); woken.Clear(); inAwake.Clear();

@@ -1,19 +1,15 @@
-[StutterFix] [자동 시험] 시작: 129단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco2 reset / stop / seek 262 12 / waitsongpos 262 40 / livedeco2 profilebegin / waitsongpos 276 40 / livedeco2 profileend / stop / livedeco off / stop / seek 262 12 / waitsongpos 262 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 262 / resume / livedeco off / stop / seek 270 12 / waitsongpos 270 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 270 / resume / livedeco off / stop / seek 276 12 / waitsongpos 276 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 276 / resume / livedeco off / stop / seek 262 12 / waitsongpos 252 40 / livedeco off / waitsongpos 262 40 / fuse begin / livedeco2 begin off 0 / waitso
+[StutterFix] [자동 시험] 시작: 132단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco2 reset / stop / seek 262 12 / waitsongpos 262 40 / livedeco2 profilebegin / waitsongpos 276 40 / livedeco2 profileend / stop / livedeco off / stop / seek 262 12 / waitsongpos 262 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp assertzero N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 262 / resume / livedeco off / stop / seek 270 12 / waitsongpos 270 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp assertzero N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 270 / resume / livedeco off / stop / seek 276 12 / waitsongpos 276 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp assertzero N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 276 / resume / livedeco off / stop / seek 262 12 / waitsongpos 252 
 [StutterFix] [livedeco2] reset variant=A
 [StutterFix] [livedeco2] PROFILE begin enabled=True mode=off previous=False pairxy_suppressed=1 groupstep_suppressed=1
-[StutterFix] [livedeco2] PROFILE key=1 samples=173546 apply_us=0.072890 set_us=0.496408
-[StutterFix] [livedeco2] PROFILE key=2 samples=173429 apply_us=0.073455 set_us=0.195652
-[StutterFix] [livedeco2] PROFILE key=5 samples=174433 apply_us=0.072456 set_us=0.125679
-[StutterFix] [livedeco2] PROFILE key=7 samples=139393 apply_us=0.137970 set_us=0.027780
-[StutterFix] [livedeco2] PROFILE key=8 samples=139471 apply_us=0.131619 set_us=0.027699
-[StutterFix] [livedeco2] PROFILE key=9 samples=156999 apply_us=0.071987 set_us=0.268546
-[StutterFix] [livedeco2] PROFILE key=10 samples=524 apply_us=0.070802 set_us=0.599618
-[StutterFix] [livedeco2] PROFILE samples=957795 set_pct=68.852079 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+[StutterFix] [livedeco2] PROFILE key=1 samples=177067 apply_us=0.073801 set_us=0.500283
+[StutterFix] [livedeco2] PROFILE key=2 samples=177566 apply_us=0.073723 set_us=0.196499
+[StutterFix] [livedeco2] PROFILE key=5 samples=178395 apply_us=0.071472 set_us=0.123760
+[StutterFix] [livedeco2] PROFILE key=7 samples=142487 apply_us=0.136266 set_us=0.027309
+[StutterFix] [livedeco2] PROFILE key=8 samples=142498 apply_us=0.131146 set_us=0.027385
+[StutterFix] [livedeco2] PROFILE key=9 samples=160526 apply_us=0.073819 set_us=0.282673
+[StutterFix] [livedeco2] PROFILE key=10 samples=571 apply_us=0.073730 set_us=0.505604
+[StutterFix] [livedeco2] PROFILE samples=979110 set_pct=69.121312 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
 [StutterFix] [livedeco] on=False gate=2 variant=A restored=1
-[StutterFix] [livedeco] transition frame=24057 owned=0 runs=0 created=0 reused=0 destroyed=0 reconcile_ms=0.311200
-[StutterFix] [livedeco] excluded reason=foreign-child-script count=2088
-[StutterFix] [livedeco] excluded reason=repeat-tile count=38
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=0 runs=0 vertex_ms=0.680900 upload_ms=0.725900 reconcile_ms=0.311200 scan_ms=478.261100 upload_calls=0.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=19169280 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [자동 시험] 단계 실패 'livedeco on': no eligible images; see rejection counts
+[StutterFix] [livedeco] ERROR System.InvalidOperationException: Dormancy live tracking is not ready
+[StutterFix] [자동 시험] 단계 실패 'livedeco on': Dormancy live tracking is not ready
 [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False

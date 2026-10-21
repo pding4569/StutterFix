@@ -1,0 +1,12 @@
+Existing game evidence only; this session did not launch/install a game.
+path=E:/StutterFixWork/night-results/al-ga-6.log sha256=bbb51a83605489a73377eab428caec9c082532f0ee310d897caa6a67993df3f8
+[StutterFix] [livedeco2] PIXEL t=262 song=262.017840 ab_out=376530 maxdiff=6 aa2_out=0 stable=True regions=(896,352,32,32):3963;(1856,512,32,32):3473;(864,352,32,32):3359;(736,768,32,32):3224;(1536,224,32,32):3142
+[StutterFix] [livedeco2] PIXEL t=270 song=270.016009 ab_out=124332 maxdiff=5 aa2_out=0 stable=True regions=(544,384,32,32):5466;(960,352,32,32):4371;(896,352,32,32):4161;(960,320,32,32):4029;(992,320,32,32):3954
+[StutterFix] [livedeco2] PIXEL t=276 song=276.005328 ab_out=0 maxdiff=0 aa2_out=0 stable=True regions=
+[StutterFix] [livedeco2] FPS mode=off index=0 fps=122.358015 ms=8.172738 frames=1706 elapsed_s=13.942691 song_begin=262.060504 song_end=276.004443 valid=True
+[StutterFix] [livedeco2] FPS mode=on index=1 fps=15.168761 ms=65.924963 frames=210 elapsed_s=13.844242 song_begin=262.220507 song_end=276.055163 valid=True
+[StutterFix] [livedeco2] FPS mode=on index=2 fps=15.062440 ms=66.390304 frames=209 elapsed_s=13.875574 song_begin=262.156512 song_end=276.044512 valid=True
+[StutterFix] [livedeco2] FPS mode=off index=3 fps=123.147474 ms=8.120345 frames=1720 elapsed_s=13.966994 song_begin=262.028491 song_end=276.004473 valid=True
+off_mean=122.7527445 on_mean=15.1156005 gain_pct=-87.68614049195454037282237710
+[StutterFix] [livedeco2] PROFILE samples=986285 set_pct=69.182709 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+[StutterFix] [livedeco2] GATE2=PIXEL_FAIL reason=outside_pixels_changed gain_pct=-87.686140 variant=A on=False
