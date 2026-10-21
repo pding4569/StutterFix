@@ -1,0 +1,82 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco-lab] rotation_matrix samples=8200 range_degrees=-720..720 max=8.77965582902E-07 mean=1.68589815643E-07
+[gpudeco] G0 t=270 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco-lab] table samples=16 max=0 mean=0
+[gpudeco-lab] vertices samples=4 max_px=0 mean_px=0 over_tol=0
+[gpudeco-lab] renderer_color samples=16 max=0 mean=0 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=0 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=0 frame_samples=0 fallback_slots=16
+[gpudeco-lab] wide_sprite_rotation angle=0 scale_x=1000 half_width=5 PASS
+[gpudeco] G0 t=270 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco-lab] table samples=16 max=0 mean=0
+[gpudeco-lab] vertices samples=4 max_px=0.0703125335276 mean_px=0.0352420890704 over_tol=2
+[gpudeco-lab] renderer_color samples=16 max=0 mean=0 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=0.0703125335276 over_tol=2 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=0 frame_samples=0 fallback_slots=16
+GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: synthetic vertex/value mismatch
+  at GpuDecoLab.Compare (StutterFix.GpuDecoData data, System.Single[] values, GpuDecoLab+Vertex[] vertices, System.Boolean real, System.Boolean anchored, System.Boolean requireSynthetic) [0x00d9c] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:292 
+  at GpuDecoLab.ProbeRotation (UnityEngine.ComputeShader shader) [0x00390] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:390 
+  at GpuDecoLab+<>c.<Rotations>b__25_0 () [0x00000] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:56 
+  at GpuDecoLab.Run (System.Action action, System.String name) [0x000a2] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:46 

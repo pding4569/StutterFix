@@ -1,10 +1,10 @@
-1. Unity6000.3.10f1 직접/D3D11 유지, 소스별 실제 Rec.Pos·현재 구간을 받는 export v2/GPU 앵커 경로 구현.
-2. 게임실행·설치·커밋·푸시·config수정·로그인·강제종료0회, 기존export6개 보존.
-3. 기존 FastMove/Rec 생성에서 실제 source/frame/Start/Target 관찰, 동일소스 진행불일치 거부·완료끝값·표폴백 집계.
-4. 최신run4 실제파일3개는v1·sources0: 소유1730/2134·1875/2268·17/24, OWNED_LOW70%·276보조 유지.
-5. 합성v2왕복2,923,234B·32,000채널·8,000정점, 정점최대/평균0.0000309467/0.0000032826px·초과0.
-6. 합성RGBA최대/평균0.0000002384/0.000000006754·초과0, source37만+7ms→112채널변화/다른소스0.
-7. 곡시각+30초 출력동일·Actual변경 GPU변화0·기존곡시계 음성대조 실패 확인, 실제Arche 개선량 아님.
-8. 업로드+1dispatch CPU제출257/2000소스=0.0075288/0.0132740ms, 합성·게임/80메시복사/GPUtimestamp 제외.
-9. 최종3종빌드오류0·LoadCheck불일치0·일반Player제외·데이터41·관련fixture/SM5/독립Editor exit0, 실제v2/G0/G1미측정.
-10. GPUDECO_G1=ERROR G0=UNMEASURED stage=source-clock reason=v2_real_anchor_export_required integration=BLOCKED
+1. Unity6000.3.10f1 직접/D3D11/번들 유지, 게임실행·설치·커밋·푸시·config수정·로그인·강제종료0회.
+2. run5 실제v2 3파일 원본보존, 첫export182794.6272ms·bake508.5029ms; 실패한전역시계/1000메시 경로 반복0.
+3. 실제시계 없는 동적표102개를 메타데이터로 제외, pending scalar/color 진행0 지원·pending scale 오래된시작값 거부; 새export효과는 미측정.
+4. CPU/GPU 반각cos 차이를 SM5 double 다항식→float quaternion으로 수정,8200각도·대형5경계 회귀 및55640B번들 재로드 통과.
+5. 실제G0 262초:소유1730/2134(81.0684%),정점최대/평균0.00408344949/0.00000118019px,초과0/6920.
+6. 실제G0 270초:소유1773/2269(78.1401%),0.00779684167/0.00000439754px,초과0/7092;276보조17/24·0px,RGBA초과모두0.
+7. 빠른앵커소스1641/1641·1771/1771이한프레임안;트리거시작위상전체이력/GPUtimestamp/게임성능 미측정.
+8. AUTOTEST 정지G1 Raw구간/서브메시·원본재질·복구·실패판정/구역로그 구현,새93단계G1 JSON 생성만 함;게임G1 미측정.
+9. 3종빌드/LoadCheck/일반Player제외·관련fixture 통과;합성80Raw/1200서브메시 CPU0.1473152ms,재생소유/쓰기생략/1회준비 실시간경로 미구현.
+10. GPUDECO_G0_OFFLINE=PASS; GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=paused_runtime_pixels_required

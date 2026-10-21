@@ -41,6 +41,10 @@ class P
             if (haveGpuData != want || haveGpuStep != want) return 3;
             bool haveExport = asm.GetType("StutterFix.DecoBake", false)?.GetMethod("ExportGpu", BindingFlags.Static | BindingFlags.NonPublic) != null;
             Console.WriteLine("GpuDeco export (AUTOTEST only): " + haveExport);
+            bool haveGpuEngine=asm.GetType("StutterFix.GpuDecoGpu",false)!=null;
+            bool haveGpuSnapshot=asm.GetType("StutterFix.GpuDecoSnapshot",false)!=null;
+            Console.WriteLine("GpuDeco shared GPU / paused snapshot: "+haveGpuEngine+"/"+haveGpuSnapshot);
+            if(haveGpuEngine!=want || haveGpuSnapshot!=haveExport)return 3;
             if (!want && haveExport) return 3;
             bool haveSetter = asm.GetType("StutterFix.DecoAnim", true).GetMethod("BakeWrite", BindingFlags.Static | BindingFlags.NonPublic) != null;
             Console.WriteLine("DecoAnim.BakeWrite: " + haveSetter + ", 기대: " + want);

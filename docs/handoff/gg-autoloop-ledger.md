@@ -1,5 +1,23 @@
 
-## codex-al-gg-5 — 2026-10-22 (최신, 소스별 실제 진행값·v2 export)
+## codex-al-gg-6 — 2026-10-22 (최신, 실제 v2 G0 통과·정지 G1 연결)
+
+- run5 실제 v2 세 파일을 읽었다. 첫 export182794.6272ms·bake508.5029ms, 원본은 `run-c8cc4448c4f34c249594694aeab12a85`에 보존. 준비 순서/300초 예산 유지, 전역시계201후보·1,000메시 제출 경로 반복0.
+- 첫 앵커 대조는262초0.0326676px·4정점,270초22.1796161px·8정점 실패. 270초 실제시계 없는 동적 표102개를 정답과 무관한 공통 메타데이터 규칙으로 원본에 남긴다(첫 슬롯:회전2·위치50·알파50). 새 pending scalar/color는 생성시 시작값+진행0, pending scale은 오래된VStart 거부. pending 변경의 새 실제export 효과는 미측정.
+- 262초 대형180도 장식은 CPU quaternion w=-4.37113883e-8/GPU native cos=0이 원인. float 반각/다항식은 대형90도에서0.0703125px 실패도 남겼다. 최종 SM5 double 범위축소/다항식→float quaternion과 sqrt 경계로 해결. RTX4060Ti/D3D11 실행 확인, 다른GPU지원/비용 일반화0.
+- 공용 `GpuDecoGpu.cs` 최종 실제G0:262소유1730/2134(81.0684%), 정점최대/평균0.00408344949/0.00000118019px·초과0/6920. 270소유1773/2269(78.1401%),0.00779684167/0.00000439754px·초과0/7092. 276보조17/24·0px. RGBA초과 모두0.
+- 같은 최종소유집합의 곡시계 경로 정점최대/평균42.51154843/1.92565580px,176.14624709/2.42965828px. 빠른앵커소스1641/1641·1771/1771이 평균프레임9.22750/9.34693ms 안, 정지/종료/폴백 값 기준 통과. 국소위상이며 실제트리거 시작위상 전체이력은 미측정.
+- 회전8200각도 행렬계수최대/평균4.62989e-7/6.26776e-8, 반폭5·가로배율1000의5경계정점사례0px. 새번들55640B 생성·재로드·101475이징/회전통과. 임의 초대형각도·다른GPU의 보장은 아님.
+- 새 AUTOTEST `GpuDecoSnapshot` 정지 G1 연결:새export/동일시각·G0·실제버퍼copy 확인 뒤 원본숨김, 비소유 정렬경계별Raw메시/멤버별서브메시/원본재질. draw off·재개·맵/세대변경·해제/파괴 복구. 새쓰기훅/프레임당전체스캔0. 실제게임 수명/복구/정렬/픽셀은 미검증.
+- 기본생성기는 새93단계G1 JSON:전체필터·mask none·잡음·A/on/B/draw off/A2·3시점판정. 262/270은G0·소유70%·차이0.3%/최대3,276보조. 누락/중복/밀도대체/복구실패는PASS거부. PNG고유접두사·실패구역장식/텍스처/알파/z/블렌드후보 로그. 이전export-only 루프 그대로 반복 금지.
+- 공용실행기 합성채널/정점·소스분리/정답입력독립 통과. 257/2000소스+1dispatch CPU0.0078056/0.0123070ms,80Raw/1200서브메시/81dispatch 평균0.1473152ms·묶음0.137851~0.167101ms,복사0·합성픽셀0. 게임비용/서브메시실제수/게임G1/G2/GPUtimestamp와 구분, 비용합산0.
+- 3종빌드/LoadCheck/일반Player제외·데이터/픽셀판정·bake/live·DecoSim·framecmp·ld2a/geometry/delta·steps/SM5 근거와manifest는round7에 보존. 초기IPCexit1/entitlementexit198 후 자연종료/직접Editor 성공. 게임·설치·로그인·강제종료·커밋·푸시·config변경0.
+- 정지 G1 준비는 각 pause의 진단비용이다. 재생중 원본평가/Transform쓰기 생략·Dormancy 전환구동·재생전1회준비·≤0.3ms 실시간경로는 미구현/미측정이며, 재개때 원본으로 돌아간다. G1이 나중에통과해도 전체실시간목표 완료가 아님.
+- GPUDECO_G0_OFFLINE=PASS measured=3/3 primary=2/2 auxiliary=PASS
+- GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=paused_runtime_pixels_required
+
+---
+
+## codex-al-gg-5 — 2026-10-22 (이전, 소스별 실제 진행값·v2 export)
 
 - run4는 첫 export184257.5118ms·bake511.2941ms에 3파일을 만들었다. 준비 순서·300초 예산을 유지했다. 최신 파일3개는 v1이며 owned/awake=1730/2134,1875/2268,17/24를 현재 리더로 확인했다. 이전81.50/65.62px는 이 새 입력의 재측정값이 아니다.
 - 원본 디컴파일/설치DLL IL로 StartEffect의 상대 기준→Kill(true)→실제 시작값, 현재 Rec.Pos float 진행을 확인했다. 전역 시계 이동201후보·1,000메시 성능·옛 번들 시험을 반복하지 않았다.
@@ -172,3 +190,24 @@
   - [StutterFix] [gpudeco] prepare_ms=4608.814900 phase=export owned=1730 awake=2134 raw=262.0162225891836 tb=262.00338249949118 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c8cc4448c4f34c2
   - [StutterFix] [gpudeco] prepare_ms=4582.164200 phase=export owned=1875 awake=2269 raw=270.01600896613672 tb=270.00644121286507 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c8cc4448c4f34c
   - [StutterFix] [gpudeco] prepare_ms=4331.409900 phase=export owned=17 awake=24 raw=276.005327813793 tb=276.00549467433461 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c8cc4448c4f34c249594
+
+## 회차 6
+- Codex 요약: 실제 v2 **G0는 통과**했습니다. 정점 최대 오차는 **0.00408 / 0.00780px**입니다.
+
+정지 G1 연결·93단계 시험 JSON을 구현했고, 3종 빌드와 검사가 통과했습니다. **게임 G1 실측과 재생 중 구동은 미완료**입니다.
+
+게임 실행·설치·커밋은 하지 않았습니다.
+
+[결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result.md) · [G1 시험 JSON](/E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/evidence/round7-g1-steps.json)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export source_clock_capture=True
+  - [StutterFix] [gpudeco] prepare_ms=183007.730400 phase=first_export includes=open,bake,seek,export bake_wall_ms=590.569000
+  - [StutterFix] [gpudeco] prepare_ms=4546.154600 phase=export owned=1730 awake=2134 raw=262.01784002082422 tb=262.00360795103336 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-276faa32e39743
+  - [StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1730 awake=2134 runs=66 submeshes=1730 dispatches=67 prepare_ms=1534.260200 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS
+  - [StutterFix] [gpudeco] prepare_ms=4574.053000 phase=export owned=1773 awake=2217 raw=270.01600896613672 tb=270.00776393793404 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-276faa32e39743
+  - [StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1773 awake=2217 runs=109 submeshes=1773 dispatches=110 prepare_ms=202.236000 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS
+  - [StutterFix] [gpudeco] prepare_ms=4369.730700 phase=export owned=17 awake=24 raw=276.005327813793 tb=275.99820220604687 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-276faa32e3974320be72
+  - [StutterFix] [gpudeco] on=True scope=paused_G1_only owned=17 awake=24 runs=4 submeshes=17 dispatches=5 prepare_ms=138.324600 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS
+  - [StutterFix] [gpudeco] GPUDECO_G1=PIXEL_FAIL scope=paused_G1 exports=3 reason=PIXEL_FAIL live_animation=UNMEASURED G2=UNMEASURED

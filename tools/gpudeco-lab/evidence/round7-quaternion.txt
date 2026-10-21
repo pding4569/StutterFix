@@ -1,0 +1,258 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco-lab] export=262.gpudeco schema=2 sources=1721 owned=1730 awake=2134 coverage=0.8106841612 raw=262.016222589 tb=262.003382499
+[gpudeco-lab] auxiliary=False reason=primary_coverage_gate
+[gpudeco-lab] unsupported_ease_decorations=0 fallback=original-path
+[gpudeco-lab] comparison_mode=anchored
+[gpudeco] G0 t=262.016222589 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=rot slot=4 max=1.43051147461E-06 mean=2.13080414199E-07 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=scale slot=5 max=2.38418579102E-07 mean=8.43681351987E-09 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=scale slot=6 max=2.38418579102E-07 mean=8.43681351987E-09 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=10 max=5.96046447754E-08 mean=9.82464565707E-09 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco-lab] table samples=27680 max=1.43051147461E-06 mean=1.50260048504E-08
+[gpudeco-lab] vertices samples=6920 max_px=0.0326675958931 mean_px=4.72075085161E-05 over_tol=4
+[gpudeco-lab] renderer_color samples=27680 max=7.45058059692E-09 mean=1.25044481385E-10 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0.00408344948664 over_tol=0 gpu_vs_evaluated_fields_max_px=0.0326675958931 over_tol=4 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=1650 max_ms=0 mean_ms=0 over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=1651 max_ms=0 mean_ms=0 over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=1652 max_ms=0.000832763552342 mean_ms=0.000111523580548 over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=1650 max_ms=0.0122411007198 mean_ms=0.000117615398983 over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=1650 max_ms=0.0122411007198 mean_ms=0.000117615398983 over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=1700 max_ms=7.15170496483E-05 mean_ms=1.20119010986E-05 over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=1641 within_frame=1641 frame_mean_ms=9.22750029713 frame_samples=256 fallback_slots=12376
+[gpudeco-residual] geometry index=342 id=-664406 max_px=0.0326675958931 fields=579.417358398,2193.05566406,0,-1.5,0,1000,8,1,1,1,1,0.600000023842,1,0.999000012875,0,0 constants=1,1,1,1,180,0,0,0 cpu=(5474.54688, 1115.43213, 0) gpu=(5474.54688, 1115.43164, 0)
+[gpudeco-lab] comparison_mode=before_anchor_table
+[gpudeco] G0 t=262.016222589 ch=pos slot=0 max=0.0626220703125 mean=0.00561664559249 max_px=11.4418254616 mean_px=0.393273951571 over_tol=4 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=1 max=3915.625 mean=2.28959805704 max_px=38.4415934673 mean_px=1.85271532072 over_tol=5 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=rot slot=4 max=0.603226661682 mean=0.0695164767732 max_px=3.14126629392 mean_px=0.0959439518345 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=scale slot=5 max=0.0337064266205 mean=0.00243982481905 max_px=1.78666666628 mean_px=0.130974806587 over_tol=11 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=scale slot=6 max=0.0337064266205 mean=0.00243982481905 max_px=1.78510272307 mean_px=0.12350162742 over_tol=10 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=10 max=0.0432313084602 mean=0.00518843970353 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=262.016222589 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco-lab] table samples=27680 max=1.19209289551E-06 mean=1.88803950303E-08
+[gpudeco-lab] vertices samples=6920 max_px=42.5115484294 mean_px=1.92567122783 over_tol=5894
+[gpudeco-lab] renderer_color samples=27680 max=0.00523813813925 mean=6.47486480803E-05 over_tol=32
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0.00408344948664 over_tol=0 gpu_vs_evaluated_fields_max_px=0.0326675958931 over_tol=4 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=1650 max_ms=15.5922563967 mean_ms=4.5589793979 over_frame=200 mode=table
+[gpudeco] phase slot=1 samples=1651 max_ms=15.5878759608 mean_ms=5.0433308621 over_frame=200 mode=table
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=4 samples=1652 max_ms=15.5871828039 mean_ms=4.92323808597 over_frame=200 mode=table
+[gpudeco] phase slot=5 samples=1650 max_ms=15.5873270817 mean_ms=4.92201376772 over_frame=200 mode=table
+[gpudeco] phase slot=6 samples=1650 max_ms=15.5873270817 mean_ms=4.92201376772 over_frame=200 mode=table
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=10 samples=1700 max_ms=15.3721064329 mean_ms=5.00650418473 over_frame=200 mode=table
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=9.22750029713 frame_samples=256 fallback_slots=12376
+[gpudeco-lab] uniform_clock_scan=SKIPPED reason=previously_disproven
+[gpudeco-lab] export=270.gpudeco schema=2 sources=1821 owned=1875 awake=2269 coverage=0.826355222565 raw=270.016008966 tb=270.006441213
+[gpudeco-lab] auxiliary=False reason=primary_coverage_gate
+[gpudeco-lab] unsupported_ease_decorations=0 fallback=original-path
+[gpudeco-lab] comparison_mode=anchored
+[gpudeco] G0 t=270.016008966 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=1 max=0.0078125 mean=4.16666666667E-06 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=rot slot=4 max=0.392539978027 mean=0.000419175043167 max_px=22.1796161188 mean_px=0.0236624155089 over_tol=2 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=scale slot=5 max=1.66893005371E-06 mean=3.19163004557E-08 max_px=0.00389842083678 mean_px=2.07915777961E-06 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=scale slot=6 max=1.66893005371E-06 mean=3.19163004557E-08 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=10 max=0.0430921316147 mean=0.00129164537803 max_px=0 mean_px=0 over_tol=100 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco-lab] table samples=30000 max=0.0078125 mean=2.76482545087E-07
+[gpudeco-lab] vertices samples=7500 max_px=22.1796161188 mean_px=0.0236736914881 over_tol=8
+[gpudeco-lab] renderer_color samples=30000 max=0.00559698045254 mean=2.00727482005E-05 over_tol=48
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0.00779684167355 over_tol=0 gpu_vs_evaluated_fields_max_px=0.00779684167355 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=1750 max_ms=0 mean_ms=0 over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=1751 max_ms=3.66206844889E-06 mean_ms=2.09141544768E-09 over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=1750 max_ms=0.0268667920506 mean_ms=0.000806140558748 over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=1750 max_ms=0.228331410387 mean_ms=0.000599951248833 over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=1750 max_ms=0.228331410387 mean_ms=0.000599951248833 over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=1750 max_ms=3.59035852303E-05 mean_ms=4.11194592921E-06 over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=1771 within_frame=1771 frame_mean_ms=9.34692937881 frame_samples=256 fallback_slots=13994
+[gpudeco-residual] slot=4 anchor=False index=409 id=-664540 actual=112.167823792 evaluated=112.56036377 cpu=112.56036377 source=-2900466 t0=258.00000248 duration=19.2000007629 start=0 target=180 end=180 ease=1 progress=NA
+[gpudeco-residual] slot=4 anchor=False index=410 id=-664542 actual=-112.167823792 evaluated=-112.56036377 cpu=-112.56036377 source=-2900468 t0=258.00000248 duration=19.2000007629 start=0 target=-180 end=-180 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23218 id=-1524850 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23219 id=-1524852 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23220 id=-1524854 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23221 id=-1524856 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23222 id=-1524858 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23223 id=-1524860 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23224 id=-1524862 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23225 id=-1524864 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23226 id=-1524866 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] slot=10 anchor=False index=23227 id=-1524868 actual=0.498039215803 evaluated=0.492694765329 cpu=0.492694765329 source=-2989152 t0=270.000002635 duration=0.600000023842 start=0.498039215803 target=0 end=0 ease=1 progress=NA
+[gpudeco-residual] group slot=4 anchor=False count=2
+[gpudeco-residual] group slot=10 anchor=False count=100
+[gpudeco-lab] comparison_mode=before_anchor_table
+[gpudeco] G0 t=270.016008966 ch=pos slot=0 max=0.0763549804688 mean=0.00977701822917 max_px=13.3170055784 mean_px=0.65367888928 over_tol=53 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=1 max=27592.4296875 mean=14.7466363281 max_px=176.146247089 mean_px=2.14478015745 over_tol=50 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=rot slot=4 max=0.453639030457 mean=0.0617272542561 max_px=22.1796161188 mean_px=0.126608843336 over_tol=72 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=scale slot=5 max=0.10835981369 mean=0.00487759761016 max_px=5.19015677529 mean_px=0.253393583972 over_tol=61 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=scale slot=6 max=0.10835981369 mean=0.00487759761016 max_px=4.82707636082 mean_px=0.219434348825 over_tol=64 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=10 max=0.0430921316147 mean=0.00602916291372 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=270.016008966 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco-lab] table samples=30000 max=1.90734863281E-06 mean=1.86708871411E-08
+[gpudeco-lab] vertices samples=7500 max_px=176.146247089 mean_px=2.32114054004 over_tol=6812
+[gpudeco-lab] renderer_color samples=30000 max=0.00559698045254 mean=9.36958848631E-05 over_tol=48
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0.00779684167355 over_tol=0 gpu_vs_evaluated_fields_max_px=0.00779684167355 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=1700 max_ms=18.4925466728 mean_ms=5.78954934473 over_frame=300 mode=table
+[gpudeco] phase slot=1 samples=1701 max_ms=18.4777834493 mean_ms=5.91377620383 over_frame=351 mode=table
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=4 samples=1702 max_ms=41.8709309896 mean_ms=6.01415312755 over_frame=352 mode=table
+[gpudeco] phase slot=5 samples=1700 max_ms=18.4828674336 mean_ms=5.97190683326 over_frame=350 mode=table
+[gpudeco] phase slot=6 samples=1700 max_ms=18.4828674336 mean_ms=5.97190683326 over_frame=350 mode=table
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=10 samples=1800 max_ms=18.1630493106 mean_ms=6.27481824804 over_frame=400 mode=table
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=9.34692937881 frame_samples=256 fallback_slots=13994
+[gpudeco-lab] uniform_clock_scan=SKIPPED reason=previously_disproven
+[gpudeco-lab] export=276.gpudeco schema=2 sources=0 owned=17 awake=24 coverage=0.708333333333 raw=276.005327814 tb=276.005494674
+[gpudeco-lab] auxiliary=True reason=awake_below_800
+[gpudeco-lab] unsupported_ease_decorations=0 fallback=original-path
+[gpudeco-lab] comparison_mode=anchored
+[gpudeco] G0 t=276.005327814 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco-lab] table samples=272 max=0 mean=0
+[gpudeco-lab] vertices samples=68 max_px=0 mean_px=0 over_tol=0
+[gpudeco-lab] renderer_color samples=272 max=0 mean=0 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=0 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=2.52379989251 frame_samples=256 fallback_slots=272
+[gpudeco-lab] comparison_mode=before_anchor_table
+[gpudeco] G0 t=276.005327814 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco] G0 t=276.005327814 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=game-export
+[gpudeco-lab] table samples=272 max=0 mean=0
+[gpudeco-lab] vertices samples=68 max_px=0 mean_px=0 over_tol=0
+[gpudeco-lab] renderer_color samples=272 max=0 mean=0 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=0 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=1 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=4 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=5 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=6 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=10 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=2.52379989251 frame_samples=256 fallback_slots=272
+[gpudeco-lab] uniform_clock_scan=SKIPPED reason=previously_disproven
+GPUDECO_G0_OFFLINE=FAIL measured=3/3 primary=2/2 auxiliary=PASS start_phase=UNMEASURED
+GPUDECO_G1=G0_FAIL G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED

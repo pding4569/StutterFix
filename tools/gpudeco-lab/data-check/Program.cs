@@ -12,6 +12,25 @@ Check(!GpuDecoCoverage.OwnedLow(800,560) && !GpuDecoCoverage.Auxiliary(800), "70
 Check(GpuDecoCoverage.OwnedLow(801,560), "fractional coverage truncated");
 Check(!GpuDecoCoverage.OwnedLow(1000,700), "owned below 800 at 70 percent rejected");
 Check(!GpuDecoCoverage.OwnedLow(2134,1730) && !GpuDecoCoverage.OwnedLow(2270,1875), "real primary coverage rejected");
+var pixelGate=new GpuDecoPixelGate();
+Check(pixelGate.Verdict(out _) == "ERROR","missing G1 evidence accepted");
+pixelGate.Pixel(0,2134,1730,true,11059,3686400,3,0,true);
+pixelGate.Pixel(1,2269,1773,true,0,3686400,0,0,true);
+pixelGate.Pixel(2,24,17,true,20000,3686400,20,0,true);
+Check(pixelGate.Verdict(out _) == "PASS","primary 0.3 percent boundary or auxiliary rule rejected");
+pixelGate.Pixel(2,24,17,true,0,3686400,0,0,true);
+Check(pixelGate.Verdict(out _) == "ERROR","duplicate pixel evidence accepted");
+var sparsePrimary=new GpuDecoPixelGate(); sparsePrimary.Pixel(0,24,17,true,0,3686400,0,0,true);
+sparsePrimary.Pixel(1,2269,1773,true,0,3686400,0,0,true); sparsePrimary.Pixel(2,24,17,true,0,3686400,0,0,true);
+Check(sparsePrimary.Verdict(out _) == "ERROR","sparse primary substituted for dense scene");
+var badOwned=new GpuDecoPixelGate(); badOwned.Pixel(0,2134,2135,true,0,3686400,0,0,true);
+Check(badOwned.Verdict(out var badOwnedReason)=="ERROR" && badOwnedReason=="invalid_pixel_sample","impossible owned count accepted");
+foreach(var failure in new[]{"ratio","max","restore","stable","g0","owned"}) {
+    var g=new GpuDecoPixelGate();
+    g.Pixel(0,2134,failure=="owned"?100:1730,failure!="g0",failure=="ratio"?11060:0,3686400,failure=="max"?4:0,failure=="restore"?1:0,failure!="stable");
+    g.Pixel(1,2269,1773,true,0,3686400,0,0,true); g.Pixel(2,24,17,true,0,3686400,0,0,true);
+    Check(g.Verdict(out _) != "PASS","G1 failure accepted: "+failure);
+}
 var item=new GpuDecoData.Item { Placement="Global",Triangles=new[]{0,2,1,2,3,1} };
 for(int ch=0;ch<16;ch++) item.Tracks[ch]=Array.Empty<DecoBakeCore.Segment>();
 item.Tracks[5]=new[] {
@@ -42,6 +61,18 @@ loaded=Load(Save(data));
 Check(loaded.Schema==2 && loaded.Sources[0].Progress==.42f && loaded.Sources[0].StartFrame==101,"source progress/start lost");
 Check(loaded.Items[0].Tracks[5][0].Source==77 && loaded.Items[0].Tracks[5][0].Replacement,"source/replacement lost");
 float Linear(int id,float t,float duration,float over,float period)=>t/duration;
+var policy = new GpuDecoData.Item();
+for(int ch=0;ch<16;ch++) policy.Tracks[ch]=Array.Empty<DecoBakeCore.Segment>();
+policy.Tracks[4]=new[]{new DecoBakeCore.Segment { T0=269,Duration=10,Start=0,End=180,Target=180 }};
+Check(data.MotionWithoutClock(policy)==4,"moving fallback without actual clock accepted");
+policy.Actual[4]=float.MaxValue; policy.World[0]=float.MaxValue;
+Check(data.MotionWithoutClock(policy)==4,"ownership predicate used truth fields");
+policy.Anchors[4]=new GpuDecoData.Anchor { Valid=true,Clock=0,Segment=policy.Tracks[4][0] };
+Check(data.MotionWithoutClock(policy)==-1,"observed actual clock rejected");
+policy.Anchors[4]=default; policy.Tracks[4][0].Start=180;
+Check(data.MotionWithoutClock(policy)==-1,"constant fallback rejected");
+policy.Tracks[4][0].Start=0; policy.Tracks[4][0].T0=200;
+Check(data.MotionWithoutClock(policy)==-1,"completed fallback rejected");
 Check(Math.Abs(loaded.Eval(loaded.Items[0],0,Linear)-14.2f)<1e-5,"anchor evaluation did not use real progress");
 loaded.BakeTime+=100;
 Check(Math.Abs(loaded.Eval(loaded.Items[0],0,Linear)-14.2f)<1e-5,"paused anchor changed with song time");

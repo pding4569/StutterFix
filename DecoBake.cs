@@ -146,6 +146,7 @@ namespace StutterFix
         }
         private static void CancelBuild(bool preserveAdopt = false)
         {
+            InvalidateGpuSnapshot();
             bool resume = preserveAdopt && (Adopting || resumeAdopt);
             StopAdopt("스냅샷 세대 변경");
             resumeAdopt = resume;

@@ -120,11 +120,11 @@ namespace StutterFix
         bool hasPending;
         Action restoreControl;
         const int MaxShots = 8;
-        internal static FrameCompareMetrics.Result GatePixel(out long restored, out bool stable)
+        internal static FrameCompareMetrics.Result GatePixel(out long restored, out bool stable, bool maskCenter = true)
         {
             var p = Get(); p.RequirePaused();
             if (p.busy) throw new InvalidOperationException("capture busy");
-            var mask = new[] { FrameCompareMetrics.Mask.Parse("maskpct=0.5,0.5,0.2,0.2") };
+            var mask = maskCenter ? new[] { FrameCompareMetrics.Mask.Parse("maskpct=0.5,0.5,0.2,0.2") } : Array.Empty<FrameCompareMetrics.Mask>();
             var result = p.Diff("A", "B", 0, mask);
             restored = p.Diff("A", "A2", 0, mask).Changed;
             var delta = p.shots["A"].State.Compare(p.shots["A2"].State);
@@ -157,6 +157,9 @@ namespace StutterFix
         }
         internal static void Resume()
         {
+#if AUTOTEST
+            GpuDecoSnapshot.Stop();
+#endif
             if (!Paused) return;
             var resumed = controller;
             try { if (instance) instance.RestoreCapture(); }
@@ -615,15 +618,21 @@ namespace StutterFix
             if (string.IsNullOrEmpty(name) || name.Length > 64 || name.Any(c => !(char.IsLetterOrDigit(c) || c == '_' || c == '-')))
                 throw new ArgumentException("shot name: 1..64 letters/digits/_/-");
         }
-        void Save(string name)
+        internal static void SaveGateShots(string prefix)
+        {
+            var p=Get(); p.RequirePaused();
+            foreach(var name in new[]{"A","B","A2"})p.Save(name,prefix+"-"+name);
+        }
+        void Save(string name,string outputName=null)
         {
             ValidateName(name);
+            outputName=outputName??name; ValidateName(outputName);
             if (!shots.TryGetValue(name, out var s)) throw new ArgumentException("missing shot");
             string dir = Path.Combine(Main.Entry.Path, "framecmp"); Directory.CreateDirectory(dir);
             var t = new Texture2D(s.Width, s.Height, TextureFormat.RGBA32, false, true);
-            try { t.LoadRawTextureData(s.Pixels); t.Apply(false, false); File.WriteAllBytes(Path.Combine(dir, name + ".png"), t.EncodeToPNG()); }
+            try { t.LoadRawTextureData(s.Pixels); t.Apply(false, false); File.WriteAllBytes(Path.Combine(dir, outputName + ".png"), t.EncodeToPNG()); }
             finally { Destroy(t); }
-            Log("saved=" + Path.Combine(dir, name + ".png"));
+            Log("saved=" + Path.Combine(dir, outputName + ".png"));
         }
         internal static void Stop() => StopCore(false);
         internal static void Unload() => StopCore(true);

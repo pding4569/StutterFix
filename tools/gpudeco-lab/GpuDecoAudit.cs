@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using Vertex = StutterFix.GpuDecoGpu.Vertex;
 using System.IO;
 using System.Linq;
 using StutterFix;
@@ -31,6 +32,11 @@ public static partial class GpuDecoLab
             var unsupported = data.Items.Where(d => d.Tracks.Any(t => t.Any(s => !Supported(s.Ease))) || d.Anchors.Any(a=>a.Valid && !Supported(a.Segment.Ease))).ToArray();
             Log("[gpudeco-lab] unsupported_ease_decorations=" + unsupported.Length + " fallback=original-path");
             data.Items = data.Items.Except(unsupported).ToArray();
+            var missingClocks = data.Items.Where(d => data.MotionWithoutClock(d) >= 0).ToArray();
+            foreach (var group in missingClocks.GroupBy(d => data.MotionWithoutClock(d)))
+                Log("[gpudeco-lab] ownership_reject=source-clock-missing slot="+group.Key+" count="+group.Count()+" predicate=metadata_only original_path=True");
+            data.Items = data.Items.Except(missingClocks).ToArray();
+            Log("[gpudeco-lab] eligible="+data.Items.Length+" awake="+data.Awake+" coverage="+N((double)data.Items.Length/Math.Max(1,data.Awake)));
             if (GpuDecoCoverage.OwnedLow(data.Awake, data.Items.Length)) { low = true; Log("[gpudeco-lab] stop=OWNED_LOW after_ease_filter=" + data.Items.Length + " required_coverage=0.7"); break; }
             bool samplePass = true;
             if (data.Items.Length == 0) Log("[gpudeco-lab] auxiliary_empty=True G0=NO_SAMPLES");
@@ -39,6 +45,7 @@ public static partial class GpuDecoLab
                 var result = gpu.Dispatch(data.BakeTime, true);
                 Log("[gpudeco-lab] comparison_mode=anchored");
                 samplePass = Compare(data, result.values, result.vertices, true);
+                DiagnoseResidual(data, result.values, result.vertices);
                 gpu.UseAnchors=false; var baseline=gpu.Dispatch(data.BakeTime,true);
                 Log("[gpudeco-lab] comparison_mode=before_anchor_table");
                 Compare(data,baseline.values,baseline.vertices,true,false);
@@ -55,6 +62,46 @@ public static partial class GpuDecoLab
             throw new GateFailure("GPUDECO_G1=" + (low ? "OWNED_LOW" : "G0_FAIL")
                 + " G0=" + (pass ? "INCOMPLETE" : "FAIL") + " game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED");
         Log("GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=game_pixel_capture_required integration=BLOCKED");
+    }
+
+    // Attribute remaining errors without fitting clocks or copying truth into inputs.
+    static void DiagnoseResidual(GpuDecoData data, float[] values, Vertex[] vertices)
+    {
+        var groups = new System.Collections.Generic.Dictionary<string, int>(); int details = 0;
+        for (int i = 0; i < data.Items.Length; i++)
+        {
+            var d = data.Items[i]; var fields = new float[16]; Array.Copy(values, i*16, fields, 0, 16);
+            var logical = CpuVertices(data, d, d.Actual); var pose = CpuVertices(data, d, fields);
+            double geometry = Enumerable.Range(0,4).Max(k => Vector3.Distance(pose[k], vertices[i*4+k].position))*data.PixelsPerWorld;
+            if (geometry > .01) { Log("[gpudeco-residual] geometry index="+d.Index+" id="+d.Id+" max_px="+N(geometry)
+                +" fields="+string.Join(",",fields.Select(x=>N(x)))+" constants="+string.Join(",",d.Constants.Select(x=>N(x)))
+                +" cpu="+pose[0].ToString("G9")+" gpu="+vertices[i*4].position.ToString("G9"));
+                var shader=Shader(); int kernel=shader.FindKernel("RotationProbe"); float angle=d.Constants[4]+fields[4]+((d.Flags&2)!=0?data.Camera[2]:0);
+                using(var input=new ComputeBuffer(1,16)) using(var output=new ComputeBuffer(1,16)) {
+                    input.SetData(new[]{new Vector4(angle,0,0,0)}); shader.SetBuffer(kernel,"_Probe",input); shader.SetBuffer(kernel,"_RotationOut",output);
+                    shader.SetInt("_Count",1); shader.Dispatch(kernel,1,1,1); var result=new Vector4[1]; output.GetData(result);
+                    var q=Quaternion.Normalize(Quaternion.Euler(0,0,angle));
+                    Log("[gpudeco-residual] rotation angle="+N(angle)+" cpu_q="+q.ToString("G9")+" gpu_qz_qw_sn_cs="+result[0].ToString("G9"));
+                    shader.SetInt("_Count",data.Items.Length);
+                }
+            }
+            for (int ch=0; ch<16; ch++)
+            {
+                double error=Math.Abs((double)fields[ch]-d.Actual[ch]);
+                if(ch>=7 && ch<=11) { if(error<=1.0/255) continue; }
+                else { var shifted=(float[])d.Actual.Clone(); shifted[ch]=fields[ch]; var p=CpuVertices(data,d,shifted);
+                    if(Enumerable.Range(0,4).Max(k=>Vector3.Distance(logical[k],p[k]))*data.PixelsPerWorld<=.01) continue; }
+                var a=d.Anchors[ch]; int n=DecoBakeCore.Find(d.Tracks[ch],data.BakeTime);
+                string key="slot="+ch+" anchor="+a.Valid; groups.TryGetValue(key,out int count); groups[key]=count+1;
+                if(details++>=12) continue;
+                var s=a.Valid?a.Segment:n>=0?d.Tracks[ch][n]:default(DecoBakeCore.Segment);
+                Log("[gpudeco-residual] "+key+" index="+d.Index+" id="+d.Id+" actual="+N(d.Actual[ch])+" evaluated="+N(fields[ch])
+                    +" cpu="+N(data.Eval(d,ch,Ease))+" source="+s.Source+" t0="+N(s.T0)+" duration="+N(s.Duration)
+                    +" start="+N(s.Start)+" target="+N(s.Target)+" end="+N(s.End)+" ease="+s.Ease
+                    +" progress="+(a.Valid&&s.Duration>0?N(data.Sources[a.Clock].Progress):"NA"));
+            }
+        }
+        foreach(var pair in groups) Log("[gpudeco-residual] group "+pair.Key+" count="+pair.Value);
     }
 
     static void Attribute(GpuDecoData data, float[] gpuValues, Vertex[] gpuVertices)

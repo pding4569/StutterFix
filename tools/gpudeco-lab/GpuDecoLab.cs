@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using DG.Tweening;
 using DG.Tweening.Core.Easing;
 using StutterFix;
+using Vertex = StutterFix.GpuDecoGpu.Vertex;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,14 +18,6 @@ using Debug = UnityEngine.Debug;
 // Independent Editor fixture. It never opens a chart or invokes the game.
 public static partial class GpuDecoLab
 {
-    [StructLayout(LayoutKind.Sequential)]
-    struct Segment { public float hi, lo, duration, start, end, target, over, period; public uint ease, scale; }
-    [StructLayout(LayoutKind.Sequential)]
-    struct Track { public uint first, count; public float initial; public uint pad; }
-    [StructLayout(LayoutKind.Sequential)]
-    struct Anchor { public Segment segment; public uint clock, valid; }
-    [StructLayout(LayoutKind.Sequential)]
-    struct Vertex { public Vector3 position; public Color color; public Vector2 uv; }
     static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
     static readonly List<string> report = new List<string>();
     static string Root => Path.GetFullPath(Path.Combine(Application.dataPath, "../.."));
@@ -53,6 +46,7 @@ public static partial class GpuDecoLab
     public static void Smoke() => Run(SmokeBody, "smoke");
     public static void Verify() => Run(VerifyBody, "verify");
     public static void Anchors() => Run(AnchorsBody, "anchors");
+    public static void Rotations() => Run(() => ProbeRotation(Shader()), "rotations");
     public static void Bundle() => Run(BundleBody, "bundle");
     public static void Runs() => Run(RunsBody, "runs");
     static ComputeShader Shader() => AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/Shaders/GpuDeco.compute");
@@ -108,87 +102,8 @@ public static partial class GpuDecoLab
             Require(over==0,"ease probe tolerance exceeded");
         }
     }
-    sealed class Evaluation : IDisposable
-    {
-        readonly ComputeShader shader; readonly GpuDecoData data; readonly int kernel;
-        readonly List<IDisposable> resources = new List<IDisposable>();
-        ComputeBuffer values, progress; readonly float[] sourceProgress; GraphicsBuffer vertices;
-        internal bool UseAnchors = true;
-        internal Mesh Mesh; internal int SegmentCount;
-        internal GraphicsBuffer VertexBuffer => vertices;
-        ComputeBuffer Buffer<T>(IList<T> source, int stride) where T:struct
-        {
-            var b = new ComputeBuffer(Math.Max(1,source.Count),stride); resources.Add(b);
-            if(source.Count>0) b.SetData(source.ToArray()); return b;
-        }
-        internal Evaluation(ComputeShader shader,GpuDecoData data)
-        {
-            this.shader=shader; this.data=data; kernel=shader.FindKernel("Evaluate");
-            sourceProgress=new float[data.Sources.Length];
-            try
-            {
-                var segments=new List<Segment>(); var tracks=new List<Track>(); var anchors=new List<Anchor>(); var shape=new List<Vector4>(); var uv=new List<Vector2>(); var triangles=new List<int>();
-                for(int i=0;i<data.Items.Length;i++)
-                {
-                    var d=data.Items[i];
-                    for(int ch=0;ch<16;ch++)
-                    {
-                        var a=d.Anchors[ch]; var s0=a.Segment;
-                        if(a.Valid) Require(Supported(s0.Ease),"unsupported anchor ease " + s0.Ease);
-                        anchors.Add(new Anchor { valid=a.Valid?1u:0u, clock=(uint)a.Clock, segment=new Segment {
-                            duration=s0.Duration,start=s0.Start,end=s0.End,target=s0.Target,over=s0.Over,period=s0.Period,ease=(uint)s0.Ease,scale=s0.IsScale?1u:0u } });
-                        tracks.Add(new Track { first=(uint)segments.Count,count=(uint)d.Tracks[ch].Length,initial=d.Initial[ch] });
-                        foreach(var s in d.Tracks[ch])
-                        {
-                            Require(Supported(s.Ease),"unsupported ease " + s.Ease + " decoration="+d.Id);
-                            float hi=(float)s.T0;
-                            segments.Add(new Segment { hi=hi,lo=(float)(s.T0-hi),duration=s.Duration,start=s.Start,end=s.End,target=s.Target,over=s.Over,period=s.Period,ease=(uint)s.Ease,scale=s.IsScale?1u:0u });
-                        }
-                    }
-                    for(int v=0;v<4;v++) { shape.Add(new Vector4(d.Shape[v*3],d.Shape[v*3+1],d.Shape[v*3+2],0)); uv.Add(new Vector2(d.UV[v*2],d.UV[v*2+1])); }
-                    for(int v=0;v<3;v++) shape.Add(new Vector4(d.OffsetBasis[v*3],d.OffsetBasis[v*3+1],d.OffsetBasis[v*3+2],0));
-                    var c=d.Constants; shape.Add(new Vector4(c[0],c[1],c[2],c[3])); shape.Add(new Vector4(c[5],c[6],c[7],d.Flags)); shape.Add(new Vector4(c[4],0,0,0));
-                    triangles.AddRange(d.Triangles.Select(x=>i*4+x));
-                }
-                SegmentCount=segments.Count;
-                shader.SetBuffer(kernel,"_Segments",Buffer(segments,40)); shader.SetBuffer(kernel,"_Tracks",Buffer(tracks,16));
-                Require(Marshal.SizeOf<Anchor>()==48,"anchor GPU stride");
-                shader.SetBuffer(kernel,"_Anchors",Buffer(anchors,48));
-                progress=Buffer(data.Sources.Select(s=>s.Progress).ToArray(),4); shader.SetBuffer(kernel,"_Progress",progress);
-                shader.SetBuffer(kernel,"_Static",Buffer(shape,16)); shader.SetBuffer(kernel,"_UV",Buffer(uv,8));
-                values=new ComputeBuffer(data.Items.Length*16,4); resources.Add(values); shader.SetBuffer(kernel,"_Values",values);
-                Mesh=new Mesh { name="GpuDecoLab raw",indexFormat=IndexFormat.UInt32,vertexBufferTarget=GraphicsBuffer.Target.Raw };
-                Mesh.SetVertexBufferParams(data.Items.Length*4,new VertexAttributeDescriptor(VertexAttribute.Position,VertexAttributeFormat.Float32,3),
-                    new VertexAttributeDescriptor(VertexAttribute.Color,VertexAttributeFormat.Float32,4),new VertexAttributeDescriptor(VertexAttribute.TexCoord0,VertexAttributeFormat.Float32,2));
-                Mesh.SetVertexBufferData(new Vertex[data.Items.Length*4],0,0,data.Items.Length*4);
-                Mesh.SetIndices(triangles.ToArray(),MeshTopology.Triangles,0,false); Mesh.bounds=new Bounds(Vector3.zero,Vector3.one*1000000);
-                // The CPU shadow contains only initialization zeros. Discard it
-                // before acquiring the GPU buffer so CPU batching cannot consume it.
-                Mesh.UploadMeshData(true);
-                vertices=Mesh.GetVertexBuffer(0); resources.Add(vertices); shader.SetBuffer(kernel,"_Vertices",vertices);
-                Require(Marshal.SizeOf<Vertex>()==36 && Mesh.GetVertexBufferStride(0)==36,"raw vertex stride");
-                shader.SetFloat("_Pitch",data.Pitch); shader.SetFloat("_TweenScale",data.TweenScale);
-                shader.SetVector("_Camera",new Vector4(data.Camera[0],data.Camera[1],data.Camera[2],data.Camera[3]));
-                shader.SetInt("_Count",data.Items.Length);
-            }
-            catch { Dispose(); throw; }
-        }
-        internal (float[] values,Vertex[] vertices) Dispatch(double time,bool read)
-        {
-            shader.SetInt("_UseAnchors",UseAnchors?1:0);
-            // One upload for source progress. Static geometry/segments are never uploaded here.
-            if(UseAnchors && sourceProgress.Length>0)
-            {
-                for(int i=0;i<sourceProgress.Length;i++) sourceProgress[i]=data.Sources[i].Progress;
-                progress.SetData(sourceProgress);
-            }
-            float hi=(float)time; shader.SetFloat("_TimeHi",hi); shader.SetFloat("_TimeLo",(float)(time-hi));
-            shader.Dispatch(kernel,(data.Items.Length+63)/64,1,1);
-            if(!read) return (null,null);
-            var channels=new float[data.Items.Length*16]; var points=new Vertex[data.Items.Length*4]; values.GetData(channels); vertices.GetData(points); return (channels,points);
-        }
-        public void Dispose() { for(int n=resources.Count-1;n>=0;n--) resources[n].Dispose(); resources.Clear(); if(Mesh) UnityEngine.Object.DestroyImmediate(Mesh); Mesh=null; }
-    }
+    sealed class Evaluation : GpuDecoGpu
+    { internal Evaluation(ComputeShader shader,GpuDecoData data) : base(shader,data) { } }
     static Vector3 V(float[] a,int at) => new Vector3(a[at],a[at+1],a[at+2]);
     static Vector3[] CpuVertices(GpuDecoData data,GpuDecoData.Item d,float[] v)
     {
@@ -358,6 +273,40 @@ public static partial class GpuDecoLab
         var timer=Stopwatch.StartNew(); for(int i=0;i<500;i++) gpu.Dispatch(data.BakeTime,false); timer.Stop();
         Log("[gpudeco-lab] anchor_cost source_upload_count="+data.Sources.Length+" upload_bytes="+(data.Sources.Length*4)+" frames=500 dispatches=1 cpu_submit_ms="+N(timer.Elapsed.TotalMilliseconds/500)+" gpu_timestamp_ms=UNAVAILABLE synthetic=True copy_runs=0");
     }
+    static void ProbeRotation(ComputeShader shader)
+    {
+        var angles=Enumerable.Range(0,8193).Select(i=>-720f+i*(1440f/8192))
+            .Concat(new[]{-540f,-180f,0f,180f,540f,179.99998f,180.00002f}).ToArray();
+        int kernel=shader.FindKernel("RotationProbe"); double maximum=0,sum=0;
+        using(var input=new ComputeBuffer(angles.Length,16)) using(var output=new ComputeBuffer(angles.Length,16))
+        {
+            input.SetData(angles.Select(a=>new Vector4(a,0,0,0)).ToArray());
+            shader.SetBuffer(kernel,"_Probe",input); shader.SetBuffer(kernel,"_RotationOut",output); shader.SetInt("_Count",angles.Length);
+            shader.Dispatch(kernel,(angles.Length+63)/64,1,1); var result=new Vector4[angles.Length]; output.GetData(result);
+            for(int i=0;i<angles.Length;i++) {
+                var q=Quaternion.Normalize(Quaternion.Euler(0,0,angles[i]));
+                if(angles[i]==90 || angles[i]==180 || angles[i]==270) Log("[gpudeco-lab] rotation_endpoint angle="+N(angles[i])+" cpu_q="+q.ToString("G9")+" gpu_qz_qw_sn_cs="+result[i].ToString("G9"));
+                double error=Math.Max(Math.Abs((double)q.w*(q.z*2)-result[i].z),Math.Abs((double)(1-q.z*(q.z*2))-result[i].w));
+                maximum=Math.Max(maximum,error); sum+=error;
+            }
+        }
+        Log("[gpudeco-lab] rotation_matrix samples="+angles.Length+" range_degrees=-720..720 max="+N(maximum)+" mean="+N(sum/angles.Length));
+        Require(maximum<2e-6,"rotation coefficient regression");
+        foreach(float angle in new[]{0f,90f,180f,270f,-180f})
+        {
+            var data=Synthetic(1); var d=data.Items[0];
+            d.Flags=0; d.Constants=new[]{1f,1f,1f,1f,angle,0f,0f,0f};
+            d.Initial=new[]{579.417358398f,2193.05566406f,0f,-1.5f,0f,1000f,8f,1f,1f,1f,1f,.6f,1f,.999f,0f,0f};
+            d.Actual=(float[])d.Initial.Clone(); for(int ch=0;ch<16;ch++) d.Tracks[ch]=Array.Empty<DecoBakeCore.Segment>();
+            // Amplify the observed half-angle error with a five-unit half-width.
+            d.Shape=new[]{-5f,-.5f,0f,5f,-.5f,0f,-5f,.5f,0f,5f,.5f,0f};
+            var world=CpuVertices(data,d,d.Actual); for(int k=0;k<4;k++) {d.World[k*3]=world[k].x;d.World[k*3+1]=world[k].y;d.World[k*3+2]=world[k].z;}
+            d.Color=new[]{1f,1f,1f,.6f};
+            using(var gpu=new Evaluation(shader,data)) { var result=gpu.Dispatch(data.BakeTime,true); DiagnoseResidual(data,result.values,result.vertices); Compare(data,result.values,result.vertices,false); }
+            Log("[gpudeco-lab] wide_sprite_rotation angle="+N(angle)+" scale_x=1000 half_width=5 PASS");
+        }
+        Log("GPUDECO_ROTATION=PASS synthetic=True");
+    }
     static void BundleBody()
     {
         string output=Path.Combine(Evidence,"bundle"); Directory.CreateDirectory(output);
@@ -366,7 +315,7 @@ public static partial class GpuDecoLab
         var manifest=BuildPipeline.BuildAssetBundles(output,new[]{new AssetBundleBuild{assetBundleName="stutterfix_gpudeco",assetNames=new[]{"Assets/Shaders/GpuDeco.compute"}}},BuildAssetBundleOptions.ChunkBasedCompression|BuildAssetBundleOptions.ForceRebuildAssetBundle,BuildTarget.StandaloneWindows64);
         Require(manifest,"bundle build failed");
         var bundle=AssetBundle.LoadFromFile(Path.Combine(output,"stutterfix_gpudeco")); Require(bundle,"bundle load failed");
-        try { Probe(bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute")); } finally { bundle.Unload(true); }
+        try { var shader=bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute"); Probe(shader); ProbeRotation(shader); } finally { bundle.Unload(true); }
         Log("GPUDECO_BUNDLE=PASS editor="+Application.unityVersion+" path="+output);
     }
     static void RunsBody()

@@ -179,3 +179,32 @@ GPU/CPU 표의 예약 시각 평가와 원본 트리거/float 진행 누적의 �
 이전 2회차 판정: real_export_missing_and_1000_run_submit_over_budget. 최신 80메시/1,200서브메시의 제출 예산은 통과했고, 실제 export 부재는 남아 있다.
 
 GPUDECO_G1=ERROR stage=G0-real-export reason=real_export_missing
+# codex-al-gg-6 최신 랩 결과 (2026-10-22)
+
+**실제 v2 3파일 G0 통과. 게임 픽셀 G1은 미측정.** `run-c8cc4448c4f34c249594694aeab12a85` 원본에 공통 메타데이터 소유 정책과 최종 회전 셰이더를 적용했다. 게임/랩은 이제 `GpuDecoGpu.cs` 실행기를 공유한다. [최종 GPU 로그](../../tools/gpudeco-lab/evidence/round7-shared-verify.txt), [채널별 원본 수치](../../tools/gpudeco-lab/evidence/round7-metrics.json), [본 결과](codex-gpudeco-1-result.md).
+
+|시점|소유/awake|정점 최대/평균 px|초과|RGBA 최대/평균|초과|
+|---|---|---|---|---|---|
+|262|1730/2134 (81.0684%)|0.00408344949 / 0.00000118019|0/6920|7.45058e-9 / 1.25044e-10|0/27680|
+|270|1773/2269 (78.1401%)|0.00779684167 / 0.00000439754|0/7092|3.72529e-9 / 5.16405e-11|0/28368|
+|276 보조|17/24|0 / 0|0/68|0 / 0|0/272|
+
+같은 최종 소유 집합의 곡 시계 경로는 정점 최대/평균 42.51154843/1.92565580px, 176.14624709/2.42965828px다. 빠른 앵커 소스 1641/1641·1771/1771이 관찰 평균 한 프레임(9.22750·9.34693ms) 안이다. 정지/완료/폴백 값 기준도 통과했다. 국소 위상 환산이며 별도의 트리거 시작 위상 전체 이력은 미측정이다.
+
+첫 v2 무필터/이전 셰이더는 262초 0.0326676px·4정점, 270초 22.1796161px·8정점 실패였다. 270초의 실제 시계 없는 동적 표를 원본에 남기면서 102개를 제외했다(첫 거부 슬롯: 회전2·위치50·알파50). 정답 오차로 선택하지 않았다. 262초 index342의 반각 cos CPU=-4.37113883e-8/GPU=0 차이는 폭 큰 장식에서 증폭됐다. float 다항식의 대형90도 음성 결과0.0703125px도 보존했다.
+
+최종 SM5 double 범위 축소/다항식→float quaternion은 RTX4060Ti/D3D11에서 실행됐다. 8,200각도 행렬 계수 최대/평균4.62989e-7/6.26776e-8, 대형 0/90/180/270/-180도 다섯 정점 사례0px. 다른 GPU 지원·임의 초대형 각도 전체의 픽셀 정밀도를 보장하지 않는다. [최종 회전 로그](../../tools/gpudeco-lab/evidence/round7-rotations-double.txt).
+
+공용 실행기 합성 32,000채널/8,000정점 최대/평균0.0000309467/0.00000164533px, 최종 RGBA 최대/평균2.38419e-7/6.75395e-9, 초과0. Actual 입력 독립·곡 시계 정지 불변·한 소스만 +7ms→112채널 변경/다른 소스0. 257/2000소스 업로드+1dispatch CPU0.0078056/0.0123070ms. [공용 앵커 로그](../../tools/gpudeco-lab/evidence/round7-shared-anchors.txt).
+
+80 Raw 버퍼/1200서브메시/81dispatch CPU 평균0.1473152ms, 5묶음0.137851~0.167101ms, 복사 불일치0. 합성 분리/통합 및 정렬 픽셀차이0, 재질 역전 음성 대조2304픽셀/최대93~110. [서브메시 로그](../../tools/gpudeco-lab/evidence/round7-shared-submeshes.txt). 합성 Sprites/Default 결과이며 게임 셰이더·새 런타임 클래스·게임 FPS·GPU timestamp는 미측정이다. 별도 비용을 합산하지 않았다.
+
+새 번들55,640B 생성·재로드·이징101475개 및 회전 검증 통과. 초기 IPC exit1/entitlement exit198는 별도 보존했고 자연 종료 후 직접 Editor가 성공했다. 게임/설치/로그인/강제 종료0회.
+
+G1 정지 연결과 [새 JSON](../../tools/gpudeco-lab/evidence/round7-g1-steps.json)은 구현/생성만 했다. 현재 export의 새 pending-start 보완, 실제 게임 순서/재질/복구/픽셀은 다음 게임 측정에서 확인해야 한다. 재생 구동·재생 전1회 준비·0.3ms 실시간 경로는 아직 구현되지 않았다.
+
+`GPUDECO_G0_OFFLINE=PASS measured=3/3 primary=2/2 auxiliary=PASS`
+
+`GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=paused_runtime_pixels_required`
+
+---

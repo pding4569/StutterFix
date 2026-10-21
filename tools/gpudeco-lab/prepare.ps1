@@ -6,7 +6,7 @@ $projectRoot = Join-Path $labRoot 'project'
 foreach ($dir in @('Assets/Editor','Assets/Shaders','Assets/LocalReferences','ProjectSettings','Packages')) {
     New-Item -ItemType Directory -Force -Path (Join-Path $projectRoot $dir) | Out-Null
 }
-foreach ($file in @('DecoBake.Core.cs','GpuDecoData.cs')) {
+foreach ($file in @('DecoBake.Core.cs','GpuDecoData.cs','GpuDecoGpu.cs')) {
     Copy-Item -LiteralPath (Join-Path $repoRoot $file) -Destination (Join-Path $projectRoot "Assets/Editor/$file")
 }
 $coreSource = Get-Content -LiteralPath (Join-Path $repoRoot 'DecoBake.Core.cs') -Raw

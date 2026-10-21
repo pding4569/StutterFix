@@ -14,6 +14,7 @@
     <Compile Include="../GpuDecoAudit.cs" />
     <Compile Include="../../../DecoBake.Core.cs" />
     <Compile Include="../../../GpuDecoData.cs" />
+    <Compile Include="../../../GpuDecoGpu.cs" />
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(EditorManaged)/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.AssetBundleModule"><HintPath>$(EditorManaged)/UnityEngine.AssetBundleModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(EditorManaged)/UnityEngine.ImageConversionModule.dll</HintPath><Private>false</Private></Reference>

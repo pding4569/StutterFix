@@ -1,4 +1,68 @@
-# gpudeco-1 최신 결과 — codex-al-gg-5 (2026-10-22)
+# gpudeco-1 최신 결과 — codex-al-gg-6 (2026-10-22)
+
+**Unity 6000.3.10f1 직접 실행·D3D11·AssetBundle 경로를 유지했다. 실제 v2 세 파일의 오프라인 G0는 통과했다. 게임을 실행하지 않고 정지 화면 G1 연결과 새 시험 JSON까지 구현했으며, 게임 픽셀 G1은 미측정이다.** 게임 실행·설치·커밋·푸시·config 수정·로그인·강제 종료는 하지 않았다.
+
+## 실제 원인과 수정
+
+직전 run5는 첫 export **182794.6272ms**, bake **508.5029ms**에 v2 파일 세 개를 생성했다. 이번 입력은 `exports/run-c8cc4448c4f34c249594694aeab12a85/`의 원본이며 덮어쓰거나 정답에서 앵커를 역산하지 않았다. 준비 순서와 300초 예산을 유지했고, 실패한 전역 시계 201후보·1,000메시 제출 경로는 반복하지 않았다.
+
+1. 첫 실제 v2 측정에서 앵커링 후 정점 최대는 **262초 0.0326676px / 270초 22.1796161px**였다. 270초의 큰 논리 오차는 전부 실제 시계가 없는 표 폴백이었다. 회전 2개와 알파 100개에서 발견됐으며, 첫 거부 채널로 집계하면 회전 2·위치 50·알파 50개다. 공통 `MotionWithoutClock`는 **현재 진행 중인 비상수 표 구간에 실제 앵커가 없으면 그 장식을 원본 경로로 남긴다.** Actual/World/정답 색으로 소유를 고르지 않는다. exporter와 lab이 같은 규칙을 쓴다. 소유율 70% 조건은 유지했다.
+2. exporter는 `!Rec.Started`를 일괄 버렸다. 원본과 현재 `DecoAnim` 코드를 대조하면 scalar/color 시작값은 생성 때 이미 저장되고, scale 시작값은 첫 Startup에서 읽는다. 따라서 아직 첫 Update를 받지 않은 scalar/color/parallax Rec는 실제 진행 0으로 내보내고, pending scale의 오래된 VStart는 사용하지 않도록 수정했다. **이 pending 보완의 새 실제 export 효과는 아직 미측정**이며, 기존 파일을 고쳐 채우지 않았다. 디컴파일과 [설치 DLL IL](../../tools/gpudeco-lab/evidence/round7-move-il.txt)을 교차확인했다.
+3. 262초의 4정점 오차는 index342의 폭이 큰 180도 장식이었다. CPU quaternion의 w는 `-4.37113883e-8`인데 D3D11 native cos 반각은 0이었다. 단순 반각 치환만으로 해결되지 않았고, 일반 float 다항식도 90도 대형 회귀에서 **0.0703125px** 실패했다. 최종 셰이더는 반각 범위 축소·다항식을 **SM5 double 산술**로 계산한 뒤 float quaternion으로 돌아온다. float sqrt의 1 바로 아래 반올림 경계도 보존한다. RTX4060Ti/D3D11에서 실제 실행을 확인했다. 다른 GPU의 double 지원·비용은 보장하지 않는다.
+
+중간 실패는 `round7-residual`, `round7-quaternion`, `round7-policy`, `round7-rotation-*`, `round7-rotations-*`에 보존했다. 단순 float 근사를 통과로 바꾸거나 허용 오차를 늘리지 않았다.
+
+## 실제 G0 최종 수치
+
+현재 게임/랩 공용 `GpuDecoGpu.cs`로 실행한 [최종 로그](../../tools/gpudeco-lab/evidence/round7-shared-verify.txt)와 [Editor 로그](../../tools/gpudeco-lab/evidence/round7-shared-verify-editor.txt)는 exit0이다. 전후 비교는 **같은 최종 소유 집합**을 사용한다. 모든 16채널의 최대·평균·화면 환산·초과 수와 국소 위상 ms는 로그에 있다.
+
+|시점|최종 소유 / awake|곡 시계 정점 최대 / 평균 px|실제 앵커 정점 최대 / 평균 px|0.01px 초과|최종 RGBA 최대 / 평균|
+|---|---|---|---|---|---|
+|262 주|1730/2134, 81.0684%|42.51154843 / 1.92565580|0.00408344949 / 0.00000118019|0/6920|7.45058e-9 / 1.25044e-10|
+|270 주|1773/2269, 78.1401%|176.14624709 / 2.42965828|0.00779684167 / 0.00000439754|0/7092|3.72529e-9 / 5.16405e-11|
+|276 보조|17/24, 70.8333%|0 / 0|0 / 0|0/68|0 / 0|
+
+RGBA의 1/255 초과는 세 시점 모두 0이다. 빠른 앵커 소스는 **1641/1641, 1771/1771**이 평균 한 프레임 **9.22750 / 9.34693ms** 안이며, 소스 위상 비율은 100%다. 정지/완료/폴백의 엄격한 값 기준도 통과했다. 국소 값/속도 환산이며, 별도의 실제 트리거 시작 위상 전체 이력은 `UNMEASURED`다. 276초는 awake<800 보조이며 실패 원인으로 삼지 않았다.
+
+회전 8,200각도(-720..720도)의 행렬 계수 최대/평균 오차는 **4.62989e-7 / 6.26776e-8**이다. 반폭5·가로배율1000의 0/90/180/270/-180도 다섯 합성 정점 사례는 모두 0px였다. 임의의 모든 초대형 장식 각도를 0.01px로 증명한 결과는 아니다. [회전/번들 재로드 로그](../../tools/gpudeco-lab/evidence/round7-bundle.txt).
+
+## 정지 화면 G1 연결과 판정
+
+새 `GpuDecoSnapshot.cs`는 AUTOTEST에만 들어간다. `gpudeco bundle <파일>`과 **같은 일시정지 시점의 새 export** 뒤 `gpudeco on`을 허용한다. GPU 평가기는 랩과 게임이 같은 파일을 사용한다. 실제 GPU 정점/색 G0와 복사 버퍼를 확인한 후에만 원본 `forceRenderingOff`를 설정한다.
+
+- 전체 활성 렌더러의 실제 정렬 키·재질 ID로 경계를 만든다. 비소유 렌더러가 끼는 곳에서 MeshRenderer/Raw 버퍼를 나누고, 각 멤버는 서브메시로 원본 재질을 빌린다. 구간 bounds의 z는 GPU 첫 정점과 같다. `_MainTex`는 서브메시별 원본 스프라이트, `_RendererColor`는 white, `_Flip`은 one이다. 새 게임 재질을 복제하지 않는다.
+- 같은 재질 동률·SortingGroup·지원하지 않는 정렬 축/렌더러 상태는 원본을 숨기기 전에 거부한다. 각 실제 구간 버퍼를 readback해 공용 GPU 정점과 position/color/UV를 정확 비교한다. 정점은 초기 0 외에는 CPU에서 업로드하지 않는다.
+- `gpudeco draw off`는 진단 그리기만 해제하고 다음 시점의 소스 관찰을 유지한다. `off`, 재개, 세대/맵 변경, shutdown/unload/객체 파괴에서도 원본을 복구한다. 프레임마다 전체 장식을 훑지 않으며, 새 전체 census와 readback은 정지 진단 준비에서만 한다.
+- `gpudeco pixel 0|1|2`는 mask 없이 전체 캡처의 잡음·A/A2 픽셀과 상태 복원을 확인한다. 262·270초는 최대 채널 차이≤3, 다른 픽셀≤0.3%, 소유율≥70%가 필요하다. 276초는 보조다. 누락·중복·주 시점 밀도 부족·G0 실패·불안정 기준·복구 실패로 PASS를 만들 수 없다. 차이가 크면 구역별 장식 ID/텍스처/재질/알파/z/블렌드 후보를 출력하며, 화면 bbox 겹침이라는 진단 한계도 표시한다.
+
+새 [93단계 G1 JSON](../../tools/gpudeco-lab/evidence/round7-g1-steps.json)을 생성만 했다. 기본 생성기가 이제 실제 on과 끔→켬→끔, 전체 필터 체인을 포함한다. 이전 export 전용 JSON을 다시 실행해 G1 PASS를 기대하지 않는다. `--export-only`는 자료 수집만 필요한 경우에 남겼다. 게임 실행·설치는 외부 실행자의 범위라 이번에는 수행하지 않았다.
+
+**이 연결은 일시정지 G1 진단용이다.** 진단 준비는 각 일시정지 시점에 일어나고 그 비용은 `prepare_scope=paused_diagnostic`로 별도 출력한다. 재생 중 원본 Rec 생성/Transform 쓰기 생략, Dormancy 전환 소유 구동, 재생 전 1회 준비 및 프레임≤0.3ms의 실시간 경로는 아직 구현/측정되지 않았다. 재개 때 GPU 소유를 해제한다. 정지 G1 PASS가 나와도 실시간 장식 CPU 제거·G2 성능 완료로 해석하면 안 된다.
+
+## 검증과 남은 한계
+
+공용 실행기 재검증: 합성 32,000채널/8,000정점 통과, Actual 정답 입력 독립·정지 시계 불변·한 소스 +7ms 분리 통과. 소스257/2000개 업로드+1dispatch CPU 제출 **0.0078056 / 0.0123070ms**. 80 Raw 버퍼/1,200서브메시/81dispatch 제출 평균 **0.1473152ms**, 다섯 묶음 **0.137851~0.167101ms**, 복사 불일치0. 큰 분리/통합 및 정렬 장난감 픽셀은 0, 음성 재질 역전은 2,304픽셀로 실패했다. 이는 합성 `Sprites/Default`이며 새 게임 렌더러/실제 셰이더/게임 FPS의 증거가 아니다. 서로 다른 제출 비용을 합산하지 않았다. GPU timestamp는 없다.
+
+번들은 **55,640B**를 생성·재로드하고 이징101,475개 및 회전 경계를 통과했다. 3종 Release·LoadCheck·데이터/픽셀 판정·bake/live·DecoSim·framecmp·ld2a/geometry/delta·steps·SM5 검사 근거는 `round7-*`와 manifest에 있다. 일반 Player에는 GpuDeco 데이터/실행기/정지 진단이 없다. 게임 수명·원본 복구·실제 G1은 오프라인 검사로 대체하지 않았다.
+
+|최종 검사|결과|
+|---|---|
+|Release Dev / Player / PlayerAuto|오류0/0/0, 경고38/4/38|
+|LoadCheck|277/229/277곳, 불일치0/0/0|
+|일반 Player / Dev / Auto의 정지 진단 타입|없음 / 없음 / 있음, 공용 GPU 실행기는 일반 Player에 없음|
+|데이터·소유·픽셀 판정 계약|51개 통과, 기준 누락/중복/밀도 대체/복구 실패/허용 초과 음성 대조 포함|
+|랩 C# / SM5|C# 오류·경고0, EaseProbe/Evaluate/CopyRun/RotationProbe 컴파일 통과|
+|게임 G1 / 재생 수명·성능|미측정, 생성한 JSON도 실행하지 않음|
+
+첫 샌드박스 실행의 UPM IPC exit1, 다음 entitlement exit198도 보존했다. 클라이언트 자연 종료 후 직접 Editor가 성공했다. 권한 확장으로 독립 랩만 실행했으며 게임·설치·라이선스 변경·강제 종료는 없었다.
+
+`GPUDECO_G0_OFFLINE=PASS measured=3/3 primary=2/2 auxiliary=PASS`
+
+`GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=paused_runtime_pixels_required`
+
+---
+
+# 이전 gpudeco-1 결과 — codex-al-gg-5 (2026-10-22)
 
 **Unity 6000.3.10f1 직접 실행·D3D11·기존 AssetBundle 방식을 유지했다. 이번 변경은 소스별 실제 `Rec.Pos`를 받는 export v2와 독립 랩 평가다. 합성 검증은 통과했지만 실제 v2 export가 없어 새 방식의 게임 G0/G1은 미측정이다. 게임 연결·새 번들 제작은 진행하지 않았다.**
 

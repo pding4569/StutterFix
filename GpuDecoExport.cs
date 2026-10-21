@@ -22,6 +22,19 @@ namespace StutterFix
         static readonly float[] gpuProgressSteps = new float[256];
         static int gpuFrameCount, gpuFrameCursor;
         static double gpuFrameSum, gpuProgressSum;
+#if AUTOTEST
+        static GpuDecoData gpuLastSnapshot;
+        static int gpuSnapshotGeneration=-1;
+        static string gpuBundlePath;
+        static bool gpuLastG0;
+        static GpuDecoPixelGate gpuPixelGate=new GpuDecoPixelGate();
+#endif
+        internal static void InvalidateGpuSnapshot()
+        {
+#if AUTOTEST
+            GpuDecoSnapshot.Stop(); gpuLastSnapshot=null; gpuSnapshotGeneration=-1; gpuLastG0=false;
+#endif
+        }
         internal static void ResetGpuFrames() { gpuFrameCount = gpuFrameCursor = 0; gpuFrameSum = gpuProgressSum = 0; }
         internal static void ObserveGpuFrame()
         {
@@ -68,19 +81,73 @@ namespace StutterFix
                 if (scheduled) GpuLog("prepare_stage=PrepVfx-observed generation=" + generation + " status=" + status);
                 return scheduled;
             }
-            if (command == "reset") { gpuCapture = false; gpuSource = null; gpuPrepareWatch = null; gpuExportOwnedLow = false; gpuExports = 0; GpuLog("export_result_reset=True"); return true; }
-            if (command == "prepare") { gpuCaptureEpoch++; gpuCapture = true; ResetGpuFrames(); gpuPrepareWatch = Stopwatch.StartNew(); GpuLog("prepare_begin budget_ms=300000 includes=open,bake,seek,export source_clock_capture=True"); return true; }
-            if (command == "off") { gpuCapture = false; gpuSource = null; gpuPrepareWatch = null; GpuLog("on=False owned=0"); return true; }
-            if (command == "state") { GpuLog("on=False stage=export-lab ready=" + ready + " generation=" + Generation); return true; }
-            if (command == "result") { GpuLog("GPUDECO_G1=" + (gpuExportOwnedLow ? "OWNED_LOW" : "ERROR") + " stage=export-lab exports=" + gpuExports + " reason=real_export_G0_and_game_pixels_required"); return true; }
-            if (command == "on") throw new InvalidOperationException("gpudeco: 실제 export G0 및 번들 검증 전 게임 연결 금지");
+            if (command == "reset") { InvalidateGpuSnapshot();
 #if AUTOTEST
+                gpuPixelGate=new GpuDecoPixelGate();
+#endif
+                gpuCapture = false; gpuSource = null; gpuPrepareWatch = null; gpuExportOwnedLow = false; gpuExports = 0; GpuLog("export_result_reset=True"); return true; }
+            if (command == "prepare") { gpuCaptureEpoch++; gpuCapture = true; ResetGpuFrames(); gpuPrepareWatch = Stopwatch.StartNew(); GpuLog("prepare_begin budget_ms=300000 includes=open,bake,seek,export source_clock_capture=True"); return true; }
+            if (command == "off") { InvalidateGpuSnapshot(); gpuCapture = false; gpuSource = null; gpuPrepareWatch = null; GpuLog("on=False owned=0"); return true; }
+            if (command == "state") {
+#if AUTOTEST
+                GpuLog("on="+GpuDecoSnapshot.Active+" owned="+GpuDecoSnapshot.Owned+" stage=paused-G1 ready="+ready+" generation="+Generation);
+#else
+                GpuLog("on=False stage=export-lab ready=" + ready + " generation=" + Generation);
+#endif
+                return true; }
+#if AUTOTEST
+            if(command.StartsWith("bundle ",StringComparison.OrdinalIgnoreCase)){gpuBundlePath=Path.GetFullPath(command.Substring(7).Trim());if(!File.Exists(gpuBundlePath))throw new FileNotFoundException("gpudeco bundle",gpuBundlePath);return true;}
+            if(command=="draw off"){GpuDecoSnapshot.Stop();return true;}
+            if(command=="on"){
+                gpuLastG0=false;
+                try{
+                    if(gpuSnapshotGeneration!=Generation || gpuLastSnapshot==null || string.IsNullOrEmpty(gpuBundlePath))throw new InvalidOperationException("gpudeco: fresh export + bundle <path> required");
+                    gpuLastG0=GpuDecoSnapshot.Start(gpuLastSnapshot,baselineObjects,gpuBundlePath);
+                }
+                catch(Exception e){gpuPixelGate.Error=e.Message.Contains("G0_FAIL")?"G0_FAIL":"renderer_error";GpuLog("GPUDECO_G1="+(gpuPixelGate.Error=="G0_FAIL"?"G0_FAIL":"ERROR")+" stage=paused-render reason="+e.GetType().Name+":"+e.Message);throw;}
+                return true;
+            }
+            if(command.StartsWith("pixel ",StringComparison.OrdinalIgnoreCase)){
+                int index=int.Parse(command.Substring(6),CultureInfo.InvariantCulture);
+                if(GpuDecoSnapshot.Active || gpuLastSnapshot==null || index<0 || index>2 || Math.Abs(gpuLastSnapshot.RawTime-new[]{262,270,276}[index])>.25
+                    || gpuSnapshotGeneration!=Generation || !scrConductor.instance || Math.Abs(scrConductor.instance.songposition_minusi-gpuLastSnapshot.RawTime)>1e-6)
+                    {gpuPixelGate.Error="invalid_pixel_state";GpuLog("GPUDECO_G1=ERROR stage=pixel reason=invalid_pixel_state");throw new InvalidOperationException("gpudeco pixel: draw off + same paused export/sample required");}
+                var r=FrameCompare.GatePixel(out long restored,out bool stable,false);
+                FrameCompare.SaveGateShots("gpudeco-"+new[]{262,270,276}[index]+"-"+DateTime.UtcNow.ToString("yyyyMMddHHmmssfff",CultureInfo.InvariantCulture));
+                gpuPixelGate.Pixel(index,gpuLastSnapshot.Awake,gpuLastSnapshot.Items.Length,gpuLastG0,r.Changed,r.OutsidePixels,r.Max.Max(),restored,stable);
+                GpuLog("G1 sample="+index+" raw="+gpuLastSnapshot.RawTime.ToString("R",CultureInfo.InvariantCulture)+" different="+r.Changed+" pixels="+r.OutsidePixels+" maxdiff="+r.Max.Max()+" aa2="+restored+" stable="+stable+" regions="+r.Regions+" mask=none auxiliary="+GpuDecoCoverage.Auxiliary(gpuLastSnapshot.Awake));
+                if(r.Max.Max()>3 || r.Ratio>.003) TraceGpuPixelRegions(r.Regions);
+                return true;
+            }
+            if(command=="result"){string verdict=gpuPixelGate.Verdict(out string reason);GpuLog("GPUDECO_G1="+(gpuExportOwnedLow?"OWNED_LOW":verdict)+" scope=paused_G1 exports="+gpuExports+" reason="+reason+" live_animation=UNMEASURED G2=UNMEASURED");return true;}
             if (command.StartsWith("export ", StringComparison.OrdinalIgnoreCase)) { ExportGpu(command.Substring(7).Trim()); return true; }
 #endif
+            if(command=="result"){GpuLog("GPUDECO_G1="+(gpuExportOwnedLow?"OWNED_LOW":"ERROR")+" exports="+gpuExports+" reason=AUTOTEST_paused_pixel_gate_required");return true;}
+            if(command=="on")throw new InvalidOperationException("gpudeco on: AUTOTEST paused G1 gate only");
             throw new ArgumentException("gpudeco off|state|scheduled|ready|export <새 파일 경로>(AUTOTEST 전용)");
         }
         static void GpuLog(string s) => Main.Entry.Logger.Log("[gpudeco] " + s);
 #if AUTOTEST
+        static void TraceGpuPixelRegions(string regions)
+        {
+            var cam=GpuSplit.FindMain(); if(!cam || gpuLastSnapshot==null)return;
+            foreach(string token in regions.Split(';')) {
+                int close=token.IndexOf(')'); if(!token.StartsWith("(") || close<0)continue;
+                var v=token.Substring(1,close-1).Split(',').Select(x=>float.Parse(x,CultureInfo.InvariantCulture)).ToArray();
+                if(v.Length!=4)continue; var area=new Rect(v[0],v[1],v[2],v[3]); int count=0;
+                foreach(var item in gpuLastSnapshot.Items) {
+                    var p=Enumerable.Range(0,4).Select(k=>cam.WorldToScreenPoint(new Vector3(item.World[k*3],item.World[k*3+1],item.World[k*3+2]))).ToArray();
+                    var box=Rect.MinMaxRect(p.Min(x=>x.x),p.Min(x=>x.y),p.Max(x=>x.x),p.Max(x=>x.y));
+                    if(!box.Overlaps(area))continue;
+                    var d=baselineObjects[item.Index] as scrVisualDecoration; var m=d?d.spriteRenderer.sharedMaterial:null;
+                    string blend=m?string.Join(",",new[]{"_SrcBlend","_DstBlend","_BlendOp"}.Select(n=>n+"="+(m.HasProperty(n)?m.GetFloat(n).ToString("R",CultureInfo.InvariantCulture):"absent"))):"missing";
+                    GpuLog("G1_region_candidate region="+token+" index="+item.Index+" id="+item.Id+" texture="+item.TextureId+" material="+item.MaterialId
+                        +" layer="+item.Layer+" order="+item.Order+" z="+item.World[2].ToString("R",CultureInfo.InvariantCulture)+" alpha="+item.Color[3].ToString("R",CultureInfo.InvariantCulture)
+                        +" blend="+blend+" attribution=screen_bounds_overlap_only");
+                    if(++count>=8)break;
+                }
+            }
+        }
         static void Put(float[] output, int index, Vector3 v) { output[index] = v.x; output[index+1] = v.y; output[index+2] = v.z; }
         // Export-only enumeration. No frame scan, setter hook, ownership or Transform write.
         // Read the current eventTweens dictionary so recycled/removed records cannot linger.
@@ -90,7 +157,11 @@ namespace StutterFix
             foreach (var pair in d.eventTweens)
             {
                 var r = pair.Value?.id as DecoAnim.Rec;
-                if (r == null || !r.Started || r.GpuStartFrame < 0 || r.GpuGeneration != Generation || r.GpuCaptureEpoch != gpuCaptureEpoch || !ReferenceEquals(r.D, d)) continue;
+                if (r == null || r.GpuStartFrame < 0 || r.GpuGeneration != Generation || r.GpuCaptureEpoch != gpuCaptureEpoch || !ReferenceEquals(r.D, d)) continue;
+                // Scalar/color starts are captured at Rec creation. Before its
+                // first Update their actual progress is zero, not song tb-T0.
+                // Scale reads its start lazily in Startup; never export stale VStart.
+                if (!r.Started && (!r.Running || r.Pos != 0 || r.Key == 7 || r.Key == 8)) continue;
                 if (r.Pos < 0 || r.Dur <= 0 || (!r.Running && r.Pos < r.Dur)) continue;
                 bool completed = !r.Running && r.Pos >= r.Dur;
                 int clock = -1;
@@ -110,6 +181,7 @@ namespace StutterFix
                     // A completed record is an exact endpoint, not a running clock.
                     if (completed) s.Duration = 0;
                     item.Anchors[ch] = new GpuDecoData.Anchor { Valid = true, Clock = clock, Segment = s };
+                    if (!r.Started) { counters.TryGetValue("pending_start", out int pending); counters["pending_start"] = pending + 1; }
                 };
                 switch (r.Key)
                 {
@@ -194,8 +266,11 @@ namespace StutterFix
                 }
                 var origin = geometry.Offset(Vector2.zero); Put(item.OffsetBasis, 0, origin);
                 Put(item.OffsetBasis, 3, geometry.Offset(Vector2.right) - origin); Put(item.OffsetBasis, 6, geometry.Offset(Vector2.up) - origin);
-                item.Triangles = r.sprite.triangles.Select(x => (int)x).ToArray(); items.Add(item);
+                item.Triangles = r.sprite.triangles.Select(x => (int)x).ToArray();
                 ExportGpuAnchors(d, item, sources, sourceIndices, anchorCounts);
+                int missing = data.MotionWithoutClock(item);
+                if (missing >= 0) { string reason = "source-clock-missing-slot-" + missing; reasons.TryGetValue(reason, out int count); reasons[reason] = count + 1; continue; }
+                items.Add(item);
             }
             data.Items = items.ToArray();
             data.Sources = sources.ToArray();
@@ -203,6 +278,7 @@ namespace StutterFix
             data.MeanProgressStep = gpuFrameCount == 0 ? 0 : (float)(gpuProgressSum / gpuFrameCount);
             Directory.CreateDirectory(Path.GetDirectoryName(output));
             using (var stream = new FileStream(output, FileMode.CreateNew, FileAccess.Write, FileShare.None)) data.Write(stream);
+            gpuLastSnapshot=data; gpuSnapshotGeneration=Generation; gpuLastG0=false;
             CheckGpuPrepareBudget();
             if (gpuExports == 0 && gpuPrepareWatch != null)
             {

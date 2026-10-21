@@ -2,13 +2,17 @@
 
 게임을 열지 않는 **Unity 6000.3.10f1 / D3D11** 프로젝트다. prepare.ps1은 무시되는 project/에 소스와 내장 모듈 참조를 구성한다. 로컬 DOTween.dll은 CPU 정답 참조이며 번들에 넣지 않는다. 제품 Compile 목록에는 랩이 들어가지 않는다.
 
-최신 경로는 **소스별 실제 float Rec.Pos + 실제 현재 구간을 받는 export v2**다. 독립 합성32,000채널·8,000정점 시험이 통과했고 정점 최대0.0000309467px, RGBA 최대0.0000002384였다. 최신 실제 run4 파일3개는 v1·sources0이므로 새 방식의 실제 G0/G1은 미측정이다. 이전81.50/65.62px는 과거 입력의 곡 시계 경로 수치이며 최신 run4를 새로 평가한 값이 아니다. [랩 결과](../../docs/handoff/codex-gpudeco-lab-result.md)를 본다.
+최신 실제 **v2 3파일의 오프라인 G0는 통과**했다. 최종 소유율은262초81.0684%·270초78.1401%, 정점 최대0.00408345/0.00779684px, 초과0이다. 276초는 보조이며0px다. 실제 시계 없는 동적 표 장식102개는 정답과 무관한 메타데이터 규칙으로 원본에 남긴다. [랩 결과](../../docs/handoff/codex-gpudeco-lab-result.md)를 본다.
 
-v2 export는 gpudeco prepare 뒤 실제 FastMove.Run에서 생성한 Rec만 관찰한다. export 때 현재 eventTweens의 실제 구간/진행값을 읽고, 같은 소스의 진행값이 다르면 중단한다. 완료 끝값은 보존하고 미관찰/native/direct/미시작은 표 폴백으로 센다. v1은 읽되 v2로 재저장하거나 새 실제 G0의 근거로 쓸 수 없다. OWNED_LOW는 awake≥800이고 소유율<70%일 때만이며276초는 보조다. 실제 v2 G0 전에는 새 번들/게임 연결을 하지 않는다.
+`GpuDecoGpu.cs`는 게임과 랩이 공유한다. 회전은 SM5 double 범위 축소/다항식 후 float quaternion을 써서 대형180도 장식의 native sincos 오차를 제거했다. RTX4060Ti/D3D11에서 확인했으며 다른 GPU의 double 지원/비용은 별도다. 번들55,640B 생성·재로드 및8,200각도/대형 경계 검증을 통과했다.
 
-기존 이징·합성 정점·Raw 메시·번들 재로드 및 **80메시×15서브메시**의 통과는 합성 범위다(81 dispatch 평균0.1522106ms, 합성 픽셀차이0; 이전 측정). 실제 G0/G1 성공을 뜻하지 않는다. 새 번들/게임 적재는 실제 v2 G0 전이라 진행하지 않았다. 이전 비용/서브메시 시험을 그대로 되풀이하지 않는다.
+v2 export는 gpudeco prepare 뒤 실제 FastMove.Run에서 생성한 Rec만 관찰한다. export 때 현재 eventTweens의 실제 구간/진행값을 읽고, 같은 소스의 진행값이 다르면 중단한다. 완료 끝값은 보존한다. 새 pending scalar/color는 생성 시 시작값+실제 진행0을 내보내며 pending scale의 오래된 VStart는 거부한다. 이 pending 보완의 새 실제 export는 미측정이다. 시계 없는 현재 비상수 구간은 공통 소유 정책에서 제외한다. v1은 새 앵커 시험의 근거로 쓸 수 없다. OWNED_LOW는 awake≥800이고 소유율<70%일 때만이다.
 
-새 `GpuDecoLab.Anchors`는 합성 v2 파일 왕복, CPU↔GPU 채널/Raw 정점, 완료 끝값, 곡 시각 변화에 대한 정지 불변성, 한 소스만 진행시키기, Actual 정답 입력 독립성, 기존 곡 시계 음성 대조를 검사한다. 257/2,000개 업로드+1dispatch 비용은0.0075288/0.0132740ms였으며 복사run0·GPUtimestamp없음·게임 비용 제외다. Anchors에 `-gpudecoInput <v1 폴더>`를 주면 실제 v1 입력 거부 음성 대조도 한다. Verify에는 실제 v2 폴더를 준다.
+새 AUTOTEST `gpudeco bundle <파일>` → 같은 일시정지의 export → `on`은 G0를 확인한 뒤 원본을 숨기고 Raw 구간/서브메시를 그리는 **정지 G1 진단**이다. `draw off`가 원본을 복구하며 재개/맵 변경/해제에도 복구한다. 기본 steps 생성기는 이제 전체 화면의 잡음·A/B/A2·3시점 픽셀 판정을 포함한다. 게임 G1은 아직 실행하지 않았다. 재생 중 소유/원본 평가 생략·재생 전1회 준비·실시간 성능은 미구현/미측정이며 정지 진단 준비 비용과 구분한다.
+
+공용 실행기 추출 뒤 **80메시×15서브메시**를 재검증했다. 81dispatch CPU 평균0.1473152ms·묶음0.137851~0.167101ms, 복사 불일치0·합성 픽셀차이0이다. 게임 G1/엔진 비용의 증거가 아니며 GPU timestamp도 없다. 실패한1,000메시 경로는 반복하지 않는다.
+
+`GpuDecoLab.Anchors`는 합성 v2 왕복, CPU↔GPU 채널/Raw 정점, 완료 끝값, 정지 시계 불변, 한 소스 분리, Actual 정답 입력 독립, 곡 시계 음성 대조를 검사한다. 공용 실행기의257/2000소스 업로드+1dispatch 비용은0.0078056/0.0123070ms이며 복사run0·GPUtimestamp없음·게임 비용 제외다. Anchors의 선택적 `-gpudecoInput`에는 v1만 주고, 실제 v2 대조는 Verify로 실행한다.
 
 성공한 에디터 직접 호출 형태다. unity run·로그인 대신 이 경로를 쓴다. GPU 시험에 -nographics를 넣으면 Null Device로 실패한다. 각 실행은 5분 안쪽으로 제한하고, 종료를 확인한 후 다음 명령을 실행한다.
 
@@ -39,17 +43,18 @@ Bundle은 Windows64/D3D11 번들 생성 후 같은 에디터에서 LoadFromFile 
 
 ~~~powershell
 py -3 tools/optimization/gpudeco-steps.py --chart '<Arche *FULL.adofai>' --output '<steps.json>' --export-dir '<새 출력 폴더>'
+# 자료 수집만 하려면 --export-only를 덧붙인다. 생성 자체는 게임을 실행하지 않는다.
 ~~~
 
-steps는 timeout 420을 쓴다. 편집 open은 PrepVfx를 호출하지 않으므로 **select 0 → play → gpudeco scheduled → pause**로 실제 첫 준비를 시작/관찰한 뒤 wait 60 두 번과 state/ready를 확인한다. 준비 후 resume/stop하고 262·270·276초를 seek/export한다. gpudeco prepare는 open 이전부터 첫 export까지 **300초 예산**을 추적한다. 기존 외부 시험의 실제 첫 export는182998.1268ms였다. 기본 출력은 매 생성마다 고유한 `exports/run-<UUID>/`다. 명시한 출력 폴더에 `.gpudeco`가 있으면 생성 단계에서 거부하며 런타임 CreateNew도 유지한다. 기존 고정 경로 JSON은 재사용하지 않는다. awake≥800에서 소유율70% 미만이면 OWNED_LOW로 중단하며, awake<800이면 보조 측정을 계속한다. GPU on/G1 PASS 단계는 없다. 아래는 재현 설명이며, 현재 한계를 확인한 같은 게임 시험을 다시 요청하는 절차가 아니다.
+steps는 timeout420·실제play 준비 관찰·wait60 두 번·첫 export300초 예산을 유지한다. 최신 외부 시험의 첫 export182794.6272ms다. 기본 출력은 매번 고유한 `exports/run-<UUID>/`이며 기존 파일은 거부한다. 기본 G1 모드는 새 번들을 지정하고262·270·276초 각각에서 export→잡음→A→on→B→draw off→A2→판정한다. 중앙 마스크는 쓰지 않는다. awake≥800 소유율70% 미만만 OWNED_LOW이며276초는 보조다. 현재 준비물은 `evidence/round7-g1-steps.json`이다. 이전 export 전용 시험의 그대로 반복이 아니다.
 
-확보된 실제 262·270·276초 export 대조 재현(현재 판정은 의도한 **exit1**, 게임 실행 없음):
+확보된 최신 v2 세 파일 대조 재현(현재 **G0 PASS/exit0**, 게임 실행 없음):
 
 ~~~powershell
 & $editor -batchmode -quit -force-d3d11 -projectPath "$lab\project" -executeMethod GpuDecoLab.Verify -gpudecoInput '<export 폴더>' -logFile "$lab\evidence\verify-editor-next.txt" | Out-Null
 ~~~
 
-Verify와 Audit는 GpuDecoAudit.cs의 같은 본문을 사용한다. 실제 논리값·월드 정점·최종 색과 GPU 값을 채널별로 앵커 전후 대조하고 국소 위상ms와 프레임 평균을 남긴다. 기존 전역 시계201후보는 다시 실행하지 않는다. Flash/custom은 원본 후보로 제외하고 awake≥800에서 잔여 소유율70% 미만이면 중단한다. v1/실제 소스·프레임 표본 누락/G0/소유 실패는 exit1이다. 모든 실제 G0가 통과해도 게임 픽셀 없이는 G1 PASS를 출력하지 않는다. 실행 실패 시 이전 verify.txt가 남을 수 있으므로 새 Editor 로그와 결과 갱신을 함께 확인한다.
+Verify와 Audit는 같은 본문을 쓰며 실제 채널·월드 정점·최종 색을 앵커 전후 대조한다. 전역 시계201후보는 반복하지 않는다. Flash/custom 및 실제 시계 없는 동적 구간은 원본 후보로 제외하고 잔여 소유율70%를 검사한다. v1/실제 소스·프레임 표본 누락/G0/소유 실패는 exit1이다. G0가 통과해도 게임 픽셀 없이는 G1 PASS를 출력하지 않는다. 새 Editor 로그와 결과 갱신을 함께 확인한다.
 
 파일에는 16채널 표·실제 논리값/색·월드 정점·코너/UV/삼각형·변환 기저·잠금/시차·카메라·시각·정렬/재질 식별자가 들어간다. v2는 Source/Replacement·실제 Rec 시작 구간/진행값/트리거 프레임·최근 프레임/tween dt 평균을 추가한다. 과거 dt 전체 이력은 없다. v1에는 이 정보가 없어 앵커 시험을 거부한다. export는 원본 소유권이나 Transform을 변경하지 않는다. 실제 게임의 시작 위상·픽셀·소유/복구는 별도 검증 사항이다.
 

@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using Vertex = StutterFix.GpuDecoGpu.Vertex;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;

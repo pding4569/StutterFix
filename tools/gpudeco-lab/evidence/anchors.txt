@@ -17,9 +17,9 @@
 [gpudeco] G0 t=270 ch=pos slot=14 max=8.94069671631E-08 mean=3.02621743727E-09 max_px=8.58306884766E-06 mean_px=3.85634601116E-07 over_tol=0 raw_units=True source=synthetic
 [gpudeco] G0 t=270 ch=pos slot=15 max=8.94069671631E-08 mean=3.02621743727E-09 max_px=8.58306884766E-06 mean_px=3.83220613003E-07 over_tol=0 raw_units=True source=synthetic
 [gpudeco-lab] table samples=32000 max=5.72204589844E-06 mean=1.53433969679E-08
-[gpudeco-lab] vertices samples=8000 max_px=3.09466945509E-05 mean_px=3.28263115133E-06 over_tol=0
+[gpudeco-lab] vertices samples=8000 max_px=3.09466945509E-05 mean_px=1.64533190409E-06 over_tol=0
 [gpudeco-lab] renderer_color samples=32000 max=2.38418579102E-07 mean=6.75395131111E-09 over_tol=0
-[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=1.91923256807E-05 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=9.59616284035E-06 over_tol=0 gpu_color_formula_over_tol=0
 [gpudeco] phase slot=0 samples=1856 max_ms=0.00740756425564 mean_ms=2.60593393733E-05 over_frame=0 mode=anchored
 [gpudeco] phase slot=1 samples=1856 max_ms=0.00740756425564 mean_ms=2.60593393733E-05 over_frame=0 mode=anchored
 [gpudeco] phase slot=2 samples=1856 max_ms=0.00740756425564 mean_ms=2.60593393733E-05 over_frame=0 mode=anchored
@@ -55,9 +55,9 @@
 [gpudeco] G0 t=270 ch=pos slot=14 max=0.363310068846 mean=0.0851867563407 max_px=28.7741632462 mean_px=6.43965537547 over_tol=1894 raw_units=True source=synthetic
 [gpudeco] G0 t=270 ch=pos slot=15 max=0.363310068846 mean=0.0851867563407 max_px=28.7741632462 mean_px=6.43965544997 over_tol=1894 raw_units=True source=synthetic
 [gpudeco-lab] table samples=32000 max=0.000213623046875 mean=5.2470238461E-07
-[gpudeco-lab] vertices samples=8000 max_px=524.224319458 mean_px=116.225241755 over_tol=7936
+[gpudeco-lab] vertices samples=8000 max_px=524.224319458 mean_px=116.225241721 over_tol=7936
 [gpudeco-lab] renderer_color samples=32000 max=0.941622570157 mean=0.168188957157 over_tol=27176
-[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=3.45994567397E-05 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=3.43322753906E-05 over_tol=0 gpu_color_formula_over_tol=0
 [gpudeco] phase slot=0 samples=1600 max_ms=201439.3201 mean_ms=1921.29080934 over_frame=1599 mode=table
 [gpudeco] phase slot=1 samples=1600 max_ms=29447.4564123 mean_ms=1668.63084615 over_frame=1597 mode=table
 [gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
@@ -76,9 +76,6 @@
 [gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=table
 [gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=8.33333376795 frame_samples=256 fallback_slots=0
 [gpudeco-lab] anchors sources=257 channels=32000 vertices=8000 paused_clock_invariance=True changed_source_channels=112 foreign_changes=0 truth_input_independent=True
-[gpudeco-lab] anchor_cost source_upload_count=257 upload_bytes=1028 frames=500 dispatches=1 cpu_submit_ms=0.0075288 gpu_timestamp_ms=UNAVAILABLE synthetic=True copy_runs=0
-[gpudeco-lab] anchor_cost source_upload_count=2000 upload_bytes=8000 frames=500 dispatches=1 cpu_submit_ms=0.013274 gpu_timestamp_ms=UNAVAILABLE synthetic=True copy_runs=0
-[gpudeco-lab] export=262.gpudeco schema=1 sources=0 owned=1730 awake=2134 coverage=0.8106841612 raw=262.017840021 tb=262.005763811
-[gpudeco-lab] auxiliary=False reason=primary_coverage_gate
-[gpudeco-lab] legacy_source_gate=PASS expected_refusal=GPUDECO_G1=ERROR G0=UNMEASURED stage=source-clock reason=v2_real_anchor_export_required legacy_schema=1 integration=BLOCKED real_G0_evaluated=False
+[gpudeco-lab] anchor_cost source_upload_count=257 upload_bytes=1028 frames=500 dispatches=1 cpu_submit_ms=0.0078056 gpu_timestamp_ms=UNAVAILABLE synthetic=True copy_runs=0
+[gpudeco-lab] anchor_cost source_upload_count=2000 upload_bytes=8000 frames=500 dispatches=1 cpu_submit_ms=0.012307 gpu_timestamp_ms=UNAVAILABLE synthetic=True copy_runs=0
 GPUDECO_ANCHORS=PASS synthetic=True real_anchor_export=False game_G0=UNMEASURED game_G1=UNMEASURED

@@ -12,6 +12,29 @@ namespace StutterFix
         internal static bool OwnedLow(int awake, int owned) => !Auxiliary(awake) && (long)owned * 10 < (long)awake * 7;
     }
 
+    internal sealed class GpuDecoPixelGate
+    {
+        readonly bool[] seen=new bool[3];
+        internal string Error;
+        internal void Pixel(int index,int awake,int owned,bool g0,long changed,long total,int max,long restored,bool stable)
+        {
+            if(index<0 || index>=3 || seen[index] || awake<0 || owned<0 || owned>awake || changed<0 || total<=0 || changed>total || max<0 || max>255){Error="invalid_pixel_sample";return;}
+            seen[index]=true;
+            if(index<2 && GpuDecoCoverage.Auxiliary(awake)){Error="primary_density_missing";return;}
+            if(GpuDecoCoverage.OwnedLow(awake,owned)){Error="OWNED_LOW";return;}
+            if(!g0 && !GpuDecoCoverage.Auxiliary(awake)){Error="G0_FAIL";return;}
+            if(restored!=0 || !stable){Error="unstable_or_unrestored_baseline";return;}
+            if(!GpuDecoCoverage.Auxiliary(awake) && (max>3 || changed*1000>total*3))Error="PIXEL_FAIL";
+        }
+        internal string Verdict(out string reason)
+        {
+            reason=Error;
+            if(Error!=null)return Error=="OWNED_LOW" || Error=="G0_FAIL" || Error=="PIXEL_FAIL"?Error:"ERROR";
+            if(!seen[0] || !seen[1] || !seen[2]){reason="missing_pixel_sample";return "ERROR";}
+            reason="paused_G0_primary_pixels_and_restoration_passed";return "PASS";
+        }
+    }
+
     // Versioned diagnostic interchange, never a product asset or a live frame buffer.
     internal sealed class GpuDecoData
     {
@@ -20,6 +43,21 @@ namespace StutterFix
         internal float MeanFrameSeconds, MeanProgressStep;
         internal int FrameSamples;
         internal SourceClock[] Sources = new SourceClock[0];
+        // A scheduled moving segment cannot stand in for an unobserved actual
+        // source. This metadata-only rule is shared by snapshot export and lab;
+        // it never consults Actual, World or renderer color to choose ownership.
+        internal int MotionWithoutClock(Item d)
+        {
+            for (int ch = 0; ch < 16; ch++)
+            {
+                if (d.Anchors[ch].Valid) continue;
+                int n = DecoBakeCore.Find(d.Tracks[ch], BakeTime); if (n < 0) continue;
+                var s = d.Tracks[ch][n];
+                if (s.Duration > 0 && (BakeTime - s.T0) / Pitch * TweenScale < s.Duration
+                    && s.Start != (s.IsScale ? s.Target : s.End)) return ch;
+            }
+            return -1;
+        }
         internal float Eval(Item d, int ch, DecoBakeCore.EaseFn ease, bool anchored = true)
         {
             var a = d.Anchors[ch];

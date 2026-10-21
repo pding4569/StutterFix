@@ -7,7 +7,7 @@ source = Path(__file__).with_name('gpudeco-steps.py')
 spec = importlib.util.spec_from_file_location('gpudeco_steps', source)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-run = module.build(Path('Arche 한글/Arche FULL.adofai'), Path('exports with spaces'))
+run = module.build(Path('Arche 한글/Arche FULL.adofai'), Path('exports with spaces'), pixels=False)
 steps = run['steps']
 assert steps[0] == 'timeout 420'
 assert steps.index('gpudeco reset') < steps.index('gpudeco prepare') < next(i for i, s in enumerate(steps) if s.startswith('open '))
@@ -56,3 +56,17 @@ a = module.build(Path('Arche FULL.adofai'))
 b = module.build(Path('Arche FULL.adofai'))
 assert [s for s in a['steps'] if s.startswith('gpudeco export ')] != [s for s in b['steps'] if s.startswith('gpudeco export ')]
 print('gpudeco export collision: PASS (unique default; occupied explicit directory rejected; truth preserved)')
+pixel = module.build(Path('Arche FULL.adofai'))
+assert pixel['stage'] == 'paused-g1' and pixel['expected_verdict'] == 'MEASURE'
+p = pixel['steps']
+assert sum(s == 'gpudeco on' for s in p) == 3
+assert sum(s == 'gpudeco draw off' for s in p) == 3
+assert sum(s == 'framecmp mask none' for s in p) == 3
+assert sum(s == 'framecmp filters on' for s in p) == 3
+for i in range(3):
+    at = p.index(f'gpudeco pixel {i}')
+    assert p[at-3:at] == ['framecmp grab A2', 'framecmp assertzero A A2 png', 'framecmp diff A B 0 png']
+    assert p[at+1] == 'resume'
+assert p.index(next(s for s in p if s.startswith('gpudeco bundle '))) < p.index('gpudeco on')
+assert not any('GPUDECO_G1=PASS' in s for s in p)
+print('gpudeco paused G1 steps: PASS (fresh export; unmasked noise/ABA; all three samples; no fabricated PASS)')
