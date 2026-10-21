@@ -42,3 +42,8 @@ Arche 262→276초 프레임 8.0~8.4ms(124 FPS). 장식 정지 맵 2.27ms. 활�
 2. **`tools/gpudeco-lab/`(독립 Unity 프로젝트, 게임과 분리, 제품 빌드에 안 들어감):** 위 파일을 읽어 컴퓨트 셰이더(이징 전부·이진 탐색 평가·정점 식)로 같은 시점의 속성/정점을 계산해 정답과 대조(G0 오프라인 전체: 채널별 최대·평균 오차, 정점 오차), 메시 정점 버퍼(`GraphicsBuffer.Target.Raw`)에 쓰고 그리는 경로와 장식 2,000개·구간 1,000여 개 규모의 디스패치·GPU 시간 비용 측정, 번들 빌드(컴퓨트 셰이더 포함)까지. 랩 결과(오차·비용)가 허용 안이고 번들이 만들어지면 3 으로.
 3. **게임 연결:** 랩의 번들·로직을 모드에 넣고 G1(픽셀)·G2(FPS)를 게임에서 확인(위 단계 정의 그대로).
 랩 시험은 steps 생성기와 별개로 Codex 가 직접 `unity run`(배치 모드)으로 돌려도 된다(게임 실행이 아니므로 허용, 단 오래 걸리면 타임아웃 주의, 한 번에 5분 안쪽으로 쪼갤 것). 랩 결과는 `docs/handoff/codex-gpudeco-lab-result.md` 에 수치로.
+
+## 2회차 추가 사항 (Claude, 1회차 증거 반영)
+1. **게임 시험이 `decobake ready` 대기에서 시간 초과**(명령별 제한 180초; 게임을 끔)로 export 가 한 번도 안 만들어졌다. steps 에서 첫 줄 `timeout 420` 으로 올리고, bake 준비 대기를 `wait 60` 여러 번과 `decobake ready` 확인으로 나눠라(60초 이하 wait 여러 번 방식은 CLAUDE.md/지시서에 이미 기록된 관례). 준비에 걸린 시간을 `[gpudeco] prepare_ms` 로 남겨라. 맵 열기 약 90초 + bake 시간을 합쳐 첫 export 까지 5분 안쪽이어야 한다.
+2. **Unity 라이선스(exit 198)**: `unity license` 상태는 "Unity Personal (Assigned)·활성"이지만 `unity auth status` 는 "로그인되어 있지 않음"이다. 사용자가 `unity auth login` 으로 로그인할 예정이다(제3자 계정 정보는 우리가 다루지 않는다). 로그인 전에는 랩을 돌리지 말고, 로그인 뒤에도 같은 오류면 `unity` 가 쓴 Editor 로그(`%LOCALAPPDATA%\Unity\Editor\Editor.log` 와 배치 모드 `-logFile`)의 실제 메시지를 결과 문서에 적어라. **로그인을 기다리는 동안 게임 쪽 export 와 오프라인 검증(CPU 쪽 fixture, 데이터 계약, steps 가 실제로 export 를 만드는지)을 먼저 끝내라.**
+3. 대안 경로: Editor 가 끝내 안 되면 sfnative.dll 에서 D3D11 컴퓨트를 HLSL 런타임 컴파일(D3DCompile)로 돌리는 경로(지시서의 ②)를 설계 비교로 적어라(구현은 사용자 결정 뒤).
