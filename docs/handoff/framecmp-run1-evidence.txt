@@ -1,0 +1,7 @@
+[StutterFix] [자동 시험] 시작: 27단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / seek 262 8 / waitsongpos 264 40 / pause / framecmp filters off / framecmp ui exclude / framecmp noise N1 N2 / framecmp grab A / gpusplit hide deco-image:small=1 / wait 0.2 / framecmp grab B / gpusplit off / wait 0.2 / framecmp grab A2 / framecmp diff A A2 / framecmp diff A B / framecmp control order / framecmp control hide / framecmp filters on / resume / stop / quit
+[StutterFix] [framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[StutterFix] [framecmp] filters=off (off applies only during each capture)
+[StutterFix] [framecmp] ui=exclude
+[StutterFix] [framecmp] valid=0 error=resolution or renderer state changed during readback
+[StutterFix] [자동 시험] 단계 실패 'framecmp noise N1 N2': resolution or renderer state changed during readback
+[StutterFix] [framecmp] resume restored
