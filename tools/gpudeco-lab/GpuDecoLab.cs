@@ -15,7 +15,7 @@ using UnityEngine.Rendering;
 using Debug = UnityEngine.Debug;
 
 // Independent Editor fixture. It never opens a chart or invokes the game.
-public static class GpuDecoLab
+public static partial class GpuDecoLab
 {
     [StructLayout(LayoutKind.Sequential)]
     struct Segment { public float hi, lo, duration, start, end, target, over, period; public uint ease, scale; }

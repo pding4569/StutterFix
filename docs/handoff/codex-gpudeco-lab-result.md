@@ -1,4 +1,32 @@
-# gpudeco 독립 랩 결과 — 자동 반복 2회차
+# gpudeco 독립 랩 최신 결과 — 서브메시 제안 검증 (2026-10-21)
+
+**Unity 6000.3.10f1 / RTX 4060 Ti / D3D11 직접 실행에서 80개 Raw 메시·1,200개 서브메시 경로가 통과했다. 실제 Arche export는 0개이므로 실제 G0·게임 G1은 미검증이다.** 기존 AssetBundle 경로를 유지하며 네이티브 대안은 구현하지 않았다.
+
+최종 증거: [submeshes.txt](../../tools/gpudeco-lab/evidence/submeshes.txt), [에디터 로그](../../tools/gpudeco-lab/evidence/round3-submeshes-render-editor.txt), [PNG](../../tools/gpudeco-lab/evidence/submeshes.png), [구현](../../tools/gpudeco-lab/GpuDecoSubmeshes.cs). 최신 종합 결과와 export 순서 수정은 [결과 문서](codex-gpudeco-1-result.md) 상단에 있다. 아래 이전 결과의 1,000메시 비용은 당시 경로의 실패 기록이다.
+
+|검사|최신 합성 실측|
+|---|---|
+|규모|2,000장식 / 20,000표 구간 / 80메시 / 메시당 15서브메시|
+|평가+복사|81 dispatch/프레임; 8,000정점 위치·색·UV 불일치 0|
+|CPU 제출 500회|평균 **0.1522106ms**, 5묶음 평균 범위 **0.147147~0.157122ms**|
+|128×128 대규모 분리/통합 그리기|기준 1,573픽셀, 차이 **0픽셀 / 최대 채널 0**|
+|같은 키·비소유 중간 경계·반투명 겹침·생성 순서 6종|원본 SpriteRenderer/개별 메시/서브메시가 모두 **0픽셀 / 최대 0**|
+|재질 역전 음성 대조 6종|각 2,304픽셀 차이, 최대 채널 **93~110**|
+|Camera.Render CPU wall 각 100회|분리 1,200렌더러 **4.237392ms**; 80렌더러/1,200서브메시 **3.068427ms**|
+|합성 정점 최대/평균|**0.000477268022223 / 0.0000223719397063px**, 초과 0|
+|합성 최종 색 최대/평균|**6.55651092529e-7 / 1.30608677864e-8**, 초과 0|
+
+제출 값은 시각 유니폼·평가 dispatch·미리 기록한 80복사 CommandBuffer의 실행을 포함하며 readback·그리기·명령 재생성은 포함하지 않는다. 단일 dispatch 조건은 아직 충족하지 않는다. Camera.Render wall은 컬링·제출·드라이버 대기를 포함할 수 있고 순수 엔진 CPU/GPU 시간은 아니다. 128×128의 `Sprites/Default` 3텍스처 실험이며 실제 `Sprites/Tile`·실게임 FPS·실제 소유/수명·수백 개 재질/렌더러는 미검증이다. 따라서 약 80개라는 실제 경계 추정치와 랩 80개를 동일한 게임 측정으로 취급하지 않는다.
+
+시험 이력: 샌드박스 IPC 실패(exit 1) → 기존 라이선스 클라이언트 경로의 entitlement 실패(exit 198) → 해당 클라이언트 종료 확인 후 새 직접 호출 정상 진입. 로그인/설치/라이선스 변경은 없었다. 첫 픽셀 실패(1,991픽셀, 최대117)는 제출 측정에서 시각이 270.0499로 진행된 GPU와 t=270 CPU 정답을 섞은 시험 결함이었다. GPU 시각·복사 버퍼를 270으로 되돌리고 같은 입력에서 통과했다. 이후 SpriteRenderer 대조군과 Camera.Render 측정을 추가한 최종 실행도 exit 0이다. 이전 실패·중간 통과·최종 로그는 `round3-submeshes-*`로 보존했다.
+
+번들 생성/재로드/101,475개 이징 대조도 이번에 exit 0으로 확인했다([로그](../../tools/gpudeco-lab/evidence/bundle.txt), [에디터](../../tools/gpudeco-lab/evidence/round3-bundle-editor.txt)). 게임 로드는 시험하지 않았다. 합성 통과만으로 `gpudeco on`의 거부를 해제하지 않았다.
+
+최신 판정: **GPUDECO_G1=ERROR stage=G0-real-export reason=real_export_missing**
+
+---
+
+# 이전 gpudeco 독립 랩 결과 — 자동 반복 2회차
 
 **선택: Unity 6000.3.10f1의 기존 AssetBundle 경로를 유지한다. 직접 D3D11 실행에서 수치·Raw 메시 그리기·번들 생성/재로드가 통과했다. 실제 Arche export는 0개이고, 1,000구간 메시의 제출 2.723905ms는 목표 0.3ms를 초과했다. 게임 연결은 진행하지 않았다.**
 
@@ -56,4 +84,6 @@
 
 실제 export **0개**, 실제 소유율·시작 위상·prepare_ms·게임 G0/G1/G2는 **미측정**이다. 실제 데이터와 제출 비용의 선행 조건을 통과하기 전에는 게임 연결로 진행하지 않는다.
 
-GPUDECO_G1=ERROR stage=G0-real-export reason=real_export_missing_and_1000_run_submit_over_budget
+이전 2회차 판정: real_export_missing_and_1000_run_submit_over_budget. 최신 80메시/1,200서브메시의 제출 예산은 통과했고, 실제 export 부재는 남아 있다.
+
+GPUDECO_G1=ERROR stage=G0-real-export reason=real_export_missing

@@ -10,7 +10,9 @@ def build(chart, export_dir):
         raise ValueError('Arche *FULL.adofai 경로만 허용합니다')
     steps = ['timeout 420', 'auto on', 'decobake on', 'gpudeco off',
              'gpudeco reset', 'gpudeco prepare', 'open ' + str(chart),
+             'select 0', 'play', 'gpudeco scheduled', 'pause',
              'wait 60', 'decobake state', 'wait 60', 'decobake ready',
+             'resume', 'stop',
              'gpuprobe off', 'gpusplit off', 'matshare off', 'livedeco off']
     for sample in (262, 270, 276):
         steps += ['stop', f'seek {sample} 12', 'decobake ready',

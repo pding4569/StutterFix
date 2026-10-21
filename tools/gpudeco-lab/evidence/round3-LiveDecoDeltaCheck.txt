@@ -1,0 +1,1 @@
+﻿Production delta/index/arena: 5918737 checks; 6000 mutations vs full partition oracle; no Unity/FPS proof

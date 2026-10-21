@@ -1,0 +1,1 @@
+﻿Production Gate2 window regression: 58 checks passed; legacy long setup rejected, generated paused preparation accepted; no Unity performance proven

@@ -1,0 +1,14 @@
+[StutterFix] [자동 시험] 시작: 50단계 - timeout 420 / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco prepare / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / gpudeco scheduled / pause / wait 60 / decobake state / wait 60 / decobake ready / resume / stop / gpuprobe off / gpusplit off / matshare off / livedeco off / stop / seek 262 12 / decobake ready / waitsongpos 262 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\262.gpudeco / resume / stop / seek 270 12 / decobake ready / waitsongpos 270 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\270.gpudeco / resume / stop / seek 276 12 / decobake ready / waitsongpos 276 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\276.gpudeco / resume / gpudeco off / gpudeco result / stop / decobake off / quit
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] export_result_reset=True
+[StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=2 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] prepare_ms=182998.126800 phase=first_export includes=open,bake,seek,export bake_wall_ms=514.999100
+[StutterFix] [gpudeco] prepare_ms=4623.995800 phase=export owned=1730 awake=2134 raw=262.01982366340235 tb=262.00703288420073 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\262.gpudeco
+[StutterFix] [gpudeco] export_reject bake-unsupported=375 repeat-tile=22
+[StutterFix] [gpudeco] prepare_ms=4590.392900 phase=export owned=1875 awake=2270 raw=270.01799260871485 tb=270.0076849285594 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\270.gpudeco
+[StutterFix] [gpudeco] export_reject bake-unsupported=374 repeat-tile=14
+[StutterFix] [gpudeco] prepare_ms=4386.468400 phase=export owned=17 awake=24 raw=276.00734197394922 tb=276.0021744821363 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\276.gpudeco
+[StutterFix] [gpudeco] export_reject 
+[StutterFix] [gpudeco] GPUDECO_G1=OWNED_LOW stage=export owned=17
+[StutterFix] [자동 시험] 단계 실패 'gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\276.gpudeco': GPUDECO_G1=OWNED_LOW; 이후 시험 중단

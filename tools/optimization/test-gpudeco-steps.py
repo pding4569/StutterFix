@@ -11,7 +11,8 @@ steps = run['steps']
 assert steps[0] == 'timeout 420'
 assert steps.index('gpudeco reset') < steps.index('gpudeco prepare') < next(i for i, s in enumerate(steps) if s.startswith('open '))
 opened = next(i for i, s in enumerate(steps) if s.startswith('open '))
-assert steps[opened+1:opened+5] == ['wait 60', 'decobake state', 'wait 60', 'decobake ready']
+assert steps[opened+1:opened+11] == ['select 0', 'play', 'gpudeco scheduled', 'pause',
+                                   'wait 60', 'decobake state', 'wait 60', 'decobake ready', 'resume', 'stop']
 assert all(float(s.split()[1]) <= 60 for s in steps if s.startswith('wait '))
 assert steps.index('decobake on') < next(i for i, s in enumerate(steps) if s.startswith('open '))
 assert len([s for s in steps if s.startswith('open ')]) == 1

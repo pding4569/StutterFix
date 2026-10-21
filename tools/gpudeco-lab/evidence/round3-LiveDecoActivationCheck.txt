@@ -1,0 +1,1 @@
+﻿Production activation/sort regression: 29 checks passed; managed adapters, no Unity timing/pixels/FPS proven

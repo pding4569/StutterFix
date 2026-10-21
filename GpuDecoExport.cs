@@ -26,6 +26,16 @@ namespace StutterFix
         {
             string command = (arg ?? "").Trim();
             if (command == "ready") return Step("ready");
+            if (command == "scheduled")
+            {
+                CheckGpuPrepareBudget();
+                if (!enabled || status.StartsWith("중단:")) throw new InvalidOperationException("gpudeco scheduled: " + status);
+                // Opening the editor does not call PrepVfx. Wait for the game's
+                // actual play preparation before freezing its captured time scale.
+                bool scheduled = collector != null || job != null || ready;
+                if (scheduled) GpuLog("prepare_stage=PrepVfx-observed generation=" + generation + " status=" + status);
+                return scheduled;
+            }
             if (command == "reset") { gpuPrepareWatch = null; gpuExportOwnedLow = false; gpuExports = 0; GpuLog("export_result_reset=True"); return true; }
             if (command == "prepare") { gpuPrepareWatch = Stopwatch.StartNew(); GpuLog("prepare_begin budget_ms=300000 includes=open,bake,seek,export"); return true; }
             if (command == "off") { gpuPrepareWatch = null; GpuLog("on=False owned=0"); return true; }
@@ -35,7 +45,7 @@ namespace StutterFix
 #if AUTOTEST
             if (command.StartsWith("export ", StringComparison.OrdinalIgnoreCase)) { ExportGpu(command.Substring(7).Trim()); return true; }
 #endif
-            throw new ArgumentException("gpudeco off|state|ready|export <새 파일 경로>(AUTOTEST 전용)");
+            throw new ArgumentException("gpudeco off|state|scheduled|ready|export <새 파일 경로>(AUTOTEST 전용)");
         }
         static void GpuLog(string s) => Main.Entry.Logger.Log("[gpudeco] " + s);
 #if AUTOTEST

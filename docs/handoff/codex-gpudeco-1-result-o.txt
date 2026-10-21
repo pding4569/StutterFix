@@ -1,10 +1,10 @@
 1. 선택: Unity 6000.3.10f1 직접 실행·D3D11·기존 AssetBundle 경로.
 2. 게임 실행·설치·커밋·푸시·.codex/config.toml 변경 0회.
-3. timeout 420·60초 분할 대기·첫 export 300초 예산·prepare_ms를 추가했다.
-4. framecmp 소유 일시정지의 DOTween=0을 배율 변경으로 오인하던 bake 폐기를 수정했다.
-5. GPU 이징 101,475개: 최대 1.97160989046e-6, 평균 2.09635552387e-8, 초과 0.
-6. 합성 정점 8,000개: 최대 0.000477268022223px, 평균 0.0000223719397063px, 초과 0.
-7. UInt32 독립 메시 1,000개: GPU 복사 차이 0, 단일/분할 이미지 차이 0픽셀·최대 0.
-8. 35,399바이트 번들 생성·재로드·수치 대조, 3종 빌드 오류 0·LoadCheck·기존 fixture 통과.
-9. 실제 export 0·게임 G0/G1 미검증, 1,001 dispatch의 제출 2.723905ms로 0.3ms 초과.
-10. GPUDECO_G1=ERROR stage=G0-real-export reason=real_export_missing_and_1000_run_submit_over_budget
+3. 원인: 편집 open은 PrepVfx를 호출하지 않아 첫 재생 전 ready가 300초 대기했다(IL 교차확인).
+4. select 0→play→scheduled(실제 PrepVfx 관찰)→pause→60초 분할 대기→ready로 첫 전체 표 준비 순서를 수정했다.
+5. 80 Raw 메시×15서브메시: 평가+복사 81 dispatch, CPU 제출 평균 0.1522106ms·묶음 최대 0.157122ms.
+6. 8,000정점 GPU 복사 차이 0; 합성 정점 최대 0.000477268022223px·평균 0.0000223719397063px·초과 0.
+7. 1,200분리/80통합·SpriteRenderer/동률정렬 6종 차이 0픽셀; 역전 음성 대조 각 2,304픽셀 차이.
+8. Camera.Render wall 분리 4.237392→통합 3.068427ms(128×128 랩); GPU 시간·게임 FPS는 미측정.
+9. 번들 생성·재로드·이징 대조, 3종 빌드 오류 0·LoadCheck·기존 fixture 통과; 실제 export 0·게임 G0/G1 미검증.
+10. GPUDECO_G1=ERROR stage=G0-real-export reason=real_export_missing

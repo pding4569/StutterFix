@@ -1,0 +1,1 @@
+﻿framecmp steps: 24 checks passed; JSON only, no game launch

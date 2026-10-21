@@ -1,0 +1,70 @@
+﻿[장식시뮬] 사용: decosim capture <초: 0초 초과~120초> [moving] | verify | bench | selftest
+[장식시뮬] 캡처 시작 seconds=120 initial=12 장식=4 표본=장식인덱스%4==0 (Rec 출력/진행 상태)
+[장식시뮬] 캡처 곡 재생 종료 frames=7 slots=12 events=6 samples=46 보수적예약MiB=1.0 valid=True
+[장식시뮬] verify mode=single key=1 comparisons=6 mismatch=0
+[장식시뮬] verify mode=single key=2 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=3 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=4 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=5 comparisons=1 mismatch=0
+[장식시뮬] verify mode=single key=6 comparisons=0 mismatch=0
+[장식시뮬] verify mode=single key=7 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=8 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=9 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=10 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=11 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=12 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=13 comparisons=4 mismatch=0
+[장식시뮬] verify single frames=7 comparisons=47 mismatch=0 (Rec 출력 범위; Transform/렌더 검증 제외)
+[장식시뮬] verify mode=parallel key=1 comparisons=6 mismatch=0
+[장식시뮬] verify mode=parallel key=2 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=3 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=4 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=5 comparisons=1 mismatch=0
+[장식시뮬] verify mode=parallel key=6 comparisons=0 mismatch=0
+[장식시뮬] verify mode=parallel key=7 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=8 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=9 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=10 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=11 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=12 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=13 comparisons=4 mismatch=0
+[장식시뮬] verify parallel frames=7 comparisons=47 mismatch=0 (Rec 출력 범위; Transform/렌더 검증 제외)
+[장식시뮬] 불일치 mode=single frame=1 decoration=0 key=1  ch0 expected=1.628125(0x3FD06666) actual=0.62812495(0x3F20CCCC)
+[장식시뮬] verify mode=single key=1 comparisons=6 mismatch=1
+[장식시뮬] verify mode=single key=2 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=3 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=4 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=5 comparisons=1 mismatch=0
+[장식시뮬] verify mode=single key=6 comparisons=0 mismatch=0
+[장식시뮬] verify mode=single key=7 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=8 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=9 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=10 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=11 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=12 comparisons=4 mismatch=0
+[장식시뮬] verify mode=single key=13 comparisons=4 mismatch=0
+[장식시뮬] verify single frames=7 comparisons=47 mismatch=1 (Rec 출력 범위; Transform/렌더 검증 제외)
+[장식시뮬] 불일치 mode=parallel frame=1 decoration=0 key=1  ch0 expected=1.628125(0x3FD06666) actual=0.62812495(0x3F20CCCC)
+[장식시뮬] verify mode=parallel key=1 comparisons=6 mismatch=1
+[장식시뮬] verify mode=parallel key=2 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=3 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=4 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=5 comparisons=1 mismatch=0
+[장식시뮬] verify mode=parallel key=6 comparisons=0 mismatch=0
+[장식시뮬] verify mode=parallel key=7 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=8 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=9 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=10 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=11 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=12 comparisons=4 mismatch=0
+[장식시뮬] verify mode=parallel key=13 comparisons=4 mismatch=0
+[장식시뮬] verify parallel frames=7 comparisons=47 mismatch=1 (Rec 출력 범위; Transform/렌더 검증 제외)
+[장식시뮬] bench mode=single frames=301 slots=12 evaluations/frame=6.57 starts/frame=0.14 eval mean/p99=0.0004/0.0007ms events mean/p99=0.0001/0.0003ms starts(subset) mean/p99=0.0000/0.0002ms total mean/p99=0.0005/0.0009ms checksum=7DE021FF (≤1ms 판정은 total; p99도 확인; 시작별 타이머 비용 포함)
+[장식시뮬] bench mode=Parallel.For N=6 frames=301 slots=12 evaluations/frame=6.57 starts/frame=0.14 eval mean/p99=0.0048/0.0572ms events mean/p99=0.0001/0.0005ms starts(subset) mean/p99=0.0000/0.0002ms total mean/p99=0.0049/0.0572ms worker범위경과합 mean/p99=0.0014/0.0040ms main-wait=eval 동기 호출 전체(분할+실행+join) checksum=7DE021FF (≤1ms 판정은 total; p99도 확인; 시작별 타이머 비용 포함)
+[장식시뮬] 캡처 시작 seconds=120 initial=0 장식=4 표본=장식인덱스%4==0 (Rec 출력/진행 상태)
+[장식시뮬] 캡처 연구 경로 변경 frames=0 slots=0 events=0 samples=0 보수적예약MiB=1.0 valid=False
+[장식시뮬] 캡처 시작 seconds=120 initial=0 장식=4 표본=장식인덱스%4==0 (Rec 출력/진행 상태)
+[장식시뮬] 캡처 메모리 상한 512MiB frames=0 slots=0 events=0 samples=0 보수적예약MiB=512.0 valid=False
+[장식시뮬] 캡처 시작 seconds=120 initial=1 장식=4 표본=장식인덱스%4==0 (Rec 출력/진행 상태)
+[장식시뮬] 캡처 갱신 중 재진입 lifecycle 이벤트: Create frames=0 slots=1 events=0 samples=1 보수적예약MiB=1.0 valid=False
+fixture passed=12; managed stubs only, no Mono/Unity performance claim

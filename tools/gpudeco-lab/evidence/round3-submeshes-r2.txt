@@ -1,0 +1,36 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco] G0 t=270 ch=pos slot=0 max=5.72204589844E-06 mean=2.24693925702E-07 max_px=0.000343322753906 mean_px=1.41057288274E-05 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=1 max=5.24520874023E-06 mean=2.21843714826E-07 max_px=0.000377655029297 mean_px=1.42592936754E-05 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=rot slot=4 max=0.000213623046875 mean=7.82346370397E-06 max_px=3.83846513614E-05 mean_px=2.70341059877E-06 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=5 max=8.94069671631E-07 mean=7.25835561752E-08 max_px=3.43322753906E-05 mean_px=1.73391081809E-06 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=7 max=6.55651092529E-07 mean=5.22434711456E-08 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco-lab] table samples=32000 max=0.000213623046875 mean=5.24676773239E-07
+[gpudeco-lab] vertices samples=8000 max_px=0.000477268022223 mean_px=2.23719397063E-05 over_tol=0
+[gpudeco-lab] renderer_color samples=32000 max=6.55651092529E-07 mean=1.30608677864E-08 over_tol=0
+[gpudeco-lab] submeshes raw_buffers=80 submeshes=1200 decorations=2000 vertices=8000 mismatches=0
+[gpudeco-lab] cost raw_buffers=80 submeshes=1200 dispatches_per_frame=81 cpu_submit_ms=0.157525 batch_min_ms=0.146661 batch_max_ms=0.175885 batches=0.175885,0.16155,0.153783,0.146661,0.149746 gpu_timestamp_ms=UNAVAILABLE engine_render_cost=UNMEASURED synthetic=True
+[gpudeco-lab] pixels fixture=scale_80x15 changed=0 max_channel=0 covered=1573 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=tied_keys_0 changed=0 max_channel=0 covered=2304 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=reversed_materials_0 changed=2304 max_channel=110 covered=2304 expected_equal=False shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=tied_keys_1 changed=0 max_channel=0 covered=2304 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=reversed_materials_1 changed=2304 max_channel=93 covered=2304 expected_equal=False shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=tied_keys_2 changed=0 max_channel=0 covered=2304 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=reversed_materials_2 changed=2304 max_channel=106 covered=2304 expected_equal=False shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=tied_keys_3 changed=0 max_channel=0 covered=2304 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=reversed_materials_3 changed=2304 max_channel=110 covered=2304 expected_equal=False shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=tied_keys_4 changed=0 max_channel=0 covered=2304 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=reversed_materials_4 changed=2304 max_channel=93 covered=2304 expected_equal=False shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=tied_keys_5 changed=0 max_channel=0 covered=2304 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=reversed_materials_5 changed=2304 max_channel=106 covered=2304 expected_equal=False shader=Sprites/Default game_shader=False
+GPUDECO_LAB_SUBMESH=PASS submit_budget=PASS real_export=False G0=UNMEASURED G1=UNMEASURED

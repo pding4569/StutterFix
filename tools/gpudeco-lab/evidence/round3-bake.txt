@@ -1,0 +1,147 @@
+﻿E:\StutterFixWork\wt-gpu\DecoBake.Core.cs(191,73): warning CS8625: Null 리터럴을 null을 허용하지 않는 참조 형식으로 변환할 수 없습니다. [E:\StutterFixWork\wt-gpu\tools\decobake-contract-check\DecoBakeContractCheck.csproj]
+E:\StutterFixWork\wt-gpu\DecoBake.Live.cs(74,54): warning CS8625: Null 리터럴을 null을 허용하지 않는 참조 형식으로 변환할 수 없습니다. [E:\StutterFixWork\wt-gpu\tools\decobake-contract-check\DecoBakeContractCheck.csproj]
+E:\StutterFixWork\wt-gpu\DecoBake.Live.cs(137,48): warning CS8600: null 리터럴 또는 가능한 null 값을 null을 허용하지 않는 형식으로 변환하는 중입니다. [E:\StutterFixWork\wt-gpu\tools\decobake-contract-check\DecoBakeContractCheck.csproj]
+E:\StutterFixWork\wt-gpu\DecoBake.Core.cs(306,20): warning CS8603: 가능한 null 참조 반환입니다. [E:\StutterFixWork\wt-gpu\tools\decobake-contract-check\DecoBakeContractCheck.csproj]
+E:\StutterFixWork\wt-gpu\DecoBake.Core.cs(310,87): warning CS8603: 가능한 null 참조 반환입니다. [E:\StutterFixWork\wt-gpu\tools\decobake-contract-check\DecoBakeContractCheck.csproj]
+E:\StutterFixWork\wt-gpu\DecoBake.Core.cs(256,36): warning CS8625: Null 리터럴을 null을 허용하지 않는 참조 형식으로 변환할 수 없습니다. [E:\StutterFixWork\wt-gpu\tools\decobake-contract-check\DecoBakeContractCheck.csproj]
+E:\StutterFixWork\wt-gpu\DecoBake.Core.cs(262,35): warning CS8600: null 리터럴 또는 가능한 null 값을 null을 허용하지 않는 형식으로 변환하는 중입니다. [E:\StutterFixWork\wt-gpu\tools\decobake-contract-check\DecoBakeContractCheck.csproj]
+E:\StutterFixWork\wt-gpu\DecoBake.Core.cs(378,83): warning CS8625: Null 리터럴을 null을 허용하지 않는 참조 형식으로 변환할 수 없습니다. [E:\StutterFixWork\wt-gpu\tools\decobake-contract-check\DecoBakeContractCheck.csproj]
+입력 델타의 정확한 합: 60프레임=1.0000000521540642, 120프레임=1.0000000521540642
+누적 Pos: 60프레임=0.9999997 [0x3F7FFFFB], 120프레임=0.9999994 [0x3F7FFFF6]
+통과: 두 델타 이력의 실제 합이 같다
+통과: 같은 시간 합에서도 기존 float 누적 위치 비트가 다르다
+Linear 출력(시작 0, 끝 100, 길이 2): 49.999985 [0x4247FFFC] / 49.99997 [0x4247FFF8]
+곡시각 .25, 예약 .1: 2프레임 진행=0.25 [0x3E800000], 4프레임 진행=0.1875 [0x3E400000]
+통과: 예약 반례의 관측 곡시각이 같다
+통과: 예약을 지난 첫 프레임이 달라 비트 반올림보다 큰 차이가 가능하다
+교체: 직전 현재=4, 이전 목표=10, 상대 +2 -> 새 시작=10, 새 목표=6
+통과: 교체 시 단순 현재값 연결/끝값 기준 상대 계산이 모두 틀릴 수 있다
+계약 검사 통과. .NET float 반례이며 Unity Mono 성능/실게임 대조 증명이 아니다.
+통과: 실제 컴파일러: 현재4/끝10/상대+2 -> 시작10/목표6
+통과: 교체 직전/경계/중간 평가와 이전 구간 cutoff
+통과: 교체 장식 분류
+통과: 미래/과거/되감기 평가가 같은 입력에서 같은 값
+통과: 길이0 즉시 적용/동일T0 원본 순서/상대 반복
+통과: Tile 정적 초기 배치 허용
+통과: Tile Setup 원점/위치 없는 Global 전환/생략 시 원점 유지/LastPosition/되감기
+통과: 같은 효과 Global 변경이 목표 계산에 선행
+통과: disabled Tile은 재배치 안 함, LastPosition은 원점 유지
+통과: Tile 동적 초기 배치는 크기 포함 장식 전체 제외
+통과: Camera 동적 초기 배치는 크기 포함 장식 전체 제외
+통과: CameraAspect 동적 초기 배치는 크기 포함 장식 전체 제외
+통과: Tile 나중 동적 배치 변경도 앞선 트랙 전부 제외
+통과: Camera 나중 동적 배치 변경도 앞선 트랙 전부 제외
+통과: CameraAspect 나중 동적 배치 변경도 앞선 트랙 전부 제외
+통과: Camera 정적 좌표 fixture도 줌에 따른 월드 투영은 동적: 정적 지원 갈래 없음
+통과: 전개된 반복 인스턴스를 합치지 않는다
+통과: 곡 시각 간격 / 고정pitch * 고정DOTween배율
+통과: 크기 교체: 현재5/이전끝11 -> 새시작11, LastPosition도 크기는 상대 덧셈 없이 절대3
+통과: 크기 NaN Y축은 기존 Y 트랙 계속, X 교체가 Y를 덮어쓰지 않음
+통과: 크기 무상태 미래/되감기/시작 이전
+통과: 첫Step 전 동일시각 여러 크기: Kill(true) 미시작 완료, 축별 순서와 길이0/음수 목표
+통과: legacy targetScale scalar 우선, 이미 Decode된 비율 그대로
+통과: 미사용/forceDontTweenMovement 크기 채널 미생성
+통과: null에서 Decode된 NaN 양축은 미적용
+통과: 길이0도 실제 EaseManager 끝점 사용
+통과: 크기 완료는 목표1 강제 대입이 아닌 float 시작+변화량 산술(상쇄 결과0)
+통과: 크기 변화량 overflow는 사유를 구분하고 앞의 위치 트랙까지 장식 전체 제외
+통과: 크기 이징 중간/완료 plugin 산술 3600개
+통과: 나중의 미지원도 장식 전체를 제외
+통과: 게임 DOTween EaseManager 직접 재사용 3465개 중간값/각 완료 목표값
+통과: 예약 정렬이 깨지면 추정 재정렬 대신 거부
+통과: Unload/세대 변경 취소
+굽기 프로토타입 fixture 통과. 게임 실행/설치/Mono 런타임 측정은 하지 않음.
+통과: 예약시계는 startTime-startEffectOffset, 별도 calibration/addoffset 보정 없음
+통과: 진단 오프셋 부호/알려진 +0.75초 복원과 값 잔차
+통과: 평탄 손실은 임의의 -32초를 선택하지 않고 0 유지(시간 식별 증거 아님)
+통과: 활성 평가: 미래 예약은 평가하지 않음
+통과: 활성 평가: 예약 dispatch와 채널 커서
+통과: 활성 평가: 교체 구간으로 커서 이동
+통과: 활성 평가: 완료값 한 번 후 비활성 제거
+통과: 활성 평가: 길이0 및 같은 시각 중복 호출
+통과: 활성 평가: 되감기는 명시적 scheduler 초기화
+통과: Segment 실제 unmanaged stride 48B, payload 산식과 일치
+통과: 증거 파일 12개 행 고정 재현
+실측12행 cold raw 초기화: raw 최대=11.776410ms RMS=10.790334ms; tb 최대=3.881764ms RMS=3.449368ms; raw/tb 원단위최대=149.952957/49.427800
+실측12행 tb 최대프레임=2.034044; cold 12행만으로 전체 p99 판정 불가
+통과: 실측12행 cold clock 최대/RMS 시간오차 감소(2프레임 기준 충족으로 간주하지 않음)
+합성 균등±6ms 600초@480FPS: 최대=1.125132ms 평균말미=-0.013007ms
+통과: 합성 최대 2프레임 이내/장기 드리프트 없음
+통과: 일시정지 즉시 동기/정지 유지
+통과: 재개/되감기/재시작 즉시 동기
+통과: 에디터 임의 점프 즉시 동기
+합성 버퍼계단 600초@480FPS: 최대=0.080396ms 평균말미=-0.000002ms
+통과: 합성 최대 2프레임 이내/장기 드리프트 없음
+통과: 일시정지 즉시 동기/정지 유지
+통과: 재개/되감기/재시작 즉시 동기
+통과: 에디터 임의 점프 즉시 동기
+통과: Rec 델타의 tweenScale 제거/pitch 반영
+통과: 동일 맵 객체/ID 목록 재사용
+통과: 같은 ID라도 재생성 객체 거부
+통과: 목록 순서 변경 거부
+통과: 목록 개수 변경 거부
+통과: seek로 예약 목록 소모 후 기준 재굽기 지원/구간/과거값 보존
+통과: 재굽기 배열/제외사유 깊은 복사
+bake7 합성262~276 dt=실제프레임 기본11±2ms stall=30ms n=1258 긴프레임=12 최대=0.653434ms p99=0.523866ms 재동기=1; 1% 시정수@11ms=1.094491s @480FPS=0.207290s
+통과: 무거운 구간 시계 유한값
+bake7 합성262~276 dt=실제프레임 기본11±2ms stall=60ms n=1225 긴프레임=12 최대=0.653434ms p99=0.523866ms 재동기=1; 1% 시정수@11ms=1.094491s @480FPS=0.207290s
+통과: 무거운 구간 시계 유한값
+bake7 합성262~276 dt=EMA0.1(게임 smoothDeltaTime 재현 아님) 기본11±2ms stall=30ms n=1258 긴프레임=12 최대=19.364241ms p99=14.657373ms 재동기=1; 1% 시정수@11ms=1.094491s @480FPS=0.207290s
+통과: 무거운 구간 시계 유한값
+bake7 합성262~276 dt=EMA0.1(게임 smoothDeltaTime 재현 아님) 기본11±2ms stall=60ms n=1225 긴프레임=12 최대=44.332690ms p99=37.859489ms 재동기=1; 1% 시정수@11ms=1.094491s @480FPS=0.207290s
+통과: 무거운 구간 시계 유한값
+통과: 60ms 긴 프레임이어도 예측차49ms이면 50ms 재동기 미발동
+통과: 예측차50ms 초과시 재동기
+통과: seek 후 축소 목록: IndexOutOfRange 대신 재준비 신호
+통과: 동일 크기 새 세대 거부/새 스냅샷 복구
+통과: 시간환산 선형 속도/불연속 NA
+통과: 카운트다운 되감기/seek 프레임 제외 후 단조 5프레임 측정 지속
+통과: adopt resync evaluates every owned channel
+통과: adopt just-ended channel receives exact endpoint
+통과: adopt completed segment is not written again
+통과: adopt zero-duration endpoint dispatched
+통과: adopt backward seek stateless resync
+통과: adopt forward seek past completed effects
+통과: adopt resync repairs external seek reset even with unchanged cached value
+통과: adopt per-target ownership split for mixed supported/side-effect targets
+통과: adopt setter failure reaches runtime recovery boundary
+통과: adopt exception recovery completes in-flight effect and disables ownership
+통과: adopt failed driver cannot suppress/write later original effects
+통과: adopt recovery continues other channels after a setter fails
+통과: adopt nonfinite evaluated value rejected before write
+통과: adopt paused stationary frame does not repeat full-O resync
+통과: adopt paused seek requests a resync
+통과: adopt resume requests a resync
+bake8 adopt production-driver fixture passed (offline only; live setter/timing equivalence unproven)
+통과: adopt same-map source rebind accepts only changed instance ID
+통과: adopt source rebind rejects mutated target
+통과: adopt source rebind rejects mutated target set
+통과: adopt source rebind rejects side-effect contract changes
+통과: adopt invalid-clock recovery uses last valid song time
+통과: adopt rebind accepts consumed scheduled prefix after seek/play
+통과: adopt rebind rejects dropped future scheduled effect
+통과: adopt rebind rejects changed remaining effect even if its scheduled time has passed
+통과: live observes actual source
+통과: live source progression matches Rec float accumulation despite unrelated song clock
+통과: live replacement completes outgoing tween before new interpolation
+통과: live relative target reads current before Kill(true)
+통과: live pause/tiny dt does not advance float source
+통과: live zero duration writes immediately at trigger, without waiting for next update
+통과: live ended/zero duration channels absent from traversal
+통과: live does not dispatch unobserved future scheduled source
+통과: live trigger after update advances first on next update
+통과: live recovery completes current triggered segment and relinquishes ownership
+통과: live constant plateau is removed on trigger
+통과: live multi-channel source shares one dt addition per frame
+통과: live canary evaluates without writes and stop leaves its progress untouched
+통과: live seek uses stateless tb fallback
+통과: live exposes unobserved seek-active fallback channels
+bake9 live production fixture passed; Unity setters, frame ordering, canary budget and real performance remain unverified
+통과: live same-frame sources keep trigger order and pre-completion relative base
+통과: live scale endpoint retains plugin cancellation arithmetic rather than target assignment
+통과: live exact endpoint is emitted once then removed
+통과: live nonfinite dt fails before progression
+통과: live parallax multiplier zero endpoint uses plugin arithmetic
+bake9 extra trigger/endpoint/nonfinite checks passed
+통과: live recovery forces ended cached values after a downstream setter did not commit
+통과: live recovery relinquishes ownership and continues other channels after setter failure

@@ -1,0 +1,5 @@
+﻿LiveDeco production hierarchy algorithm: 2729 checks passed; managed math adapter, no Unity pixels/performance proven
+LiveDeco production culling bounds algorithm: 482 checks passed; includes old 0.1 false rejection, no Unity bounds thickness assumed
+LiveDeco production script/binding policy: 15 checks passed; managed roles only, no Unity callbacks proven
+LiveDeco production pose/dirty cache: 40 checks passed; exact invalidation, managed adapter only
+LiveDeco production upload invalidation: 32 checks passed; new/relocated buffers, color-only, pose-only, unchanged neighbors

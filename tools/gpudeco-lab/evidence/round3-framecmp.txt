@@ -1,0 +1,7 @@
+﻿E:\StutterFixWork\wt-gpu\FrameCompareState.cs(18,25): warning CS0649: 'FrameCompareState.Summary' 필드에는 할당되지 않으므로 항상 null 기본값을 사용합니다. [E:\StutterFixWork\wt-gpu\tools\optimization\FrameCompareCheck\FrameCompareCheck.csproj]
+FrameCompareMetrics: 11 checks passed (offline RGBA8 only; no live GPU evidence)
+FrameCompare masks: 15 checks passed (synthetic; no live evidence)
+FrameCompareState: 15 checks passed (synthetic snapshots; no Unity lifecycle evidence)
+FrameCompare controls: 17 checks passed (analytic rule model and verdict; no live rendering evidence)
+FrameCompare edition/pause metadata: 21 checks passed; Player absent, both unscaled callbacks included
+FrameCompare installed-game pause hooks: 2 unique exact-signature targets passed; no game methods invoked

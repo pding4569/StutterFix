@@ -1,0 +1,39 @@
+﻿{
+    "source_sha256":  {
+                          "GpuDecoExport.cs":  "9a44a9b73ea4f85c9aa0dbfb5be6a56d583628b0a8677b8ad4a046281a47594e",
+                          "tools/gpudeco-lab/GpuDecoLab.cs":  "8acf53a1c87ef57a0d74958ad0991a4984c99ead8fdd7e3eb79ca82d7bb5d0d1",
+                          "tools/gpudeco-lab/GpuDecoSubmeshes.cs":  "c5f4340c82844ef0f0c92b6920ddd5eafe7c8b50a98de289c3b0452685678a78",
+                          "tools/gpudeco-lab/GpuDeco.compute":  "2602a55d3a65a26fa194dcf62ea228257415826a87bb15522efde2bca209b38d",
+                          "tools/gpudeco-lab/prepare.ps1":  "0a2ff72eb1ececc2dd1614a4fe9be93fb6c8696b9020c321ee70797dc985dab8",
+                          "tools/optimization/gpudeco-steps.py":  "a8ce7e65d57c5266bb9a88939ee0778999e688cad33db543e92ee304921a95ac",
+                          "tools/optimization/test-gpudeco-steps.py":  "270d664d71296581847e15c2f4b0cec5630a4a9c0d7007ec60d8ec140fcb8735"
+                      },
+    "lab":  {
+                "editor":  "6000.3.10f1",
+                "api":  "Direct3D11",
+                "raw_buffers":  80,
+                "submeshes":  1200,
+                "dispatches":  81,
+                "cpu_submit_ms":  0.1522106,
+                "batch_min_ms":  0.147147,
+                "batch_max_ms":  0.157122,
+                "copy_mismatches":  0,
+                "pixels_changed":  0,
+                "max_channel":  0,
+                "sprite_sort_cases":  6,
+                "negative_sort_cases":  6,
+                "game_shader":  false,
+                "real_exports":  0,
+                "game_G0":  "UNMEASURED",
+                "game_G1":  "UNMEASURED",
+                "gpu_timestamp":  "UNAVAILABLE"
+            },
+    "bundle_bytes":  35399,
+    "prohibited_actions":  {
+                               "game_launch":  0,
+                               "install":  0,
+                               "commit":  0,
+                               "push":  0,
+                               "config_edit":  0
+                           }
+}

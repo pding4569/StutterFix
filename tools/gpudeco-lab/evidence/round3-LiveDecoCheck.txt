@@ -1,0 +1,2 @@
+﻿LiveDeco policy/anchor model: 106479 checks passed; synthetic, no Unity sorting or pixels proven
+LiveDeco gate2 policy: 18 checks passed; no runtime pixels/FPS proven

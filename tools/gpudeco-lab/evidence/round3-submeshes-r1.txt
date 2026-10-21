@@ -1,0 +1,28 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco] G0 t=270 ch=pos slot=0 max=5.72204589844E-06 mean=2.24693925702E-07 max_px=0.000343322753906 mean_px=1.41057288274E-05 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=1 max=5.24520874023E-06 mean=2.21843714826E-07 max_px=0.000377655029297 mean_px=1.42592936754E-05 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=rot slot=4 max=0.000213623046875 mean=7.82346370397E-06 max_px=3.83846513614E-05 mean_px=2.70341059877E-06 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=5 max=8.94069671631E-07 mean=7.25835561752E-08 max_px=3.43322753906E-05 mean_px=1.73391081809E-06 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=7 max=6.55651092529E-07 mean=5.22434711456E-08 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco-lab] table samples=32000 max=0.000213623046875 mean=5.24676773239E-07
+[gpudeco-lab] vertices samples=8000 max_px=0.000477268022223 mean_px=2.23719397063E-05 over_tol=0
+[gpudeco-lab] renderer_color samples=32000 max=6.55651092529E-07 mean=1.30608677864E-08 over_tol=0
+[gpudeco-lab] submeshes raw_buffers=80 submeshes=1200 decorations=2000 vertices=8000 mismatches=0
+[gpudeco-lab] cost raw_buffers=80 submeshes=1200 dispatches_per_frame=81 cpu_submit_ms=0.1582938 batch_min_ms=0.153008 batch_max_ms=0.161616 batches=0.161616,0.158678,0.156948,0.161219,0.153008 gpu_timestamp_ms=UNAVAILABLE engine_render_cost=UNMEASURED synthetic=True
+[gpudeco-lab] pixels fixture=scale_80x15 changed=1991 max_channel=117 covered=1573 expected_equal=True shader=Sprites/Default game_shader=False
+GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: pixel oracle failed: scale_80x15
+  at GpuDecoLab.PixelDiff (UnityEngine.Color32[] reference, UnityEngine.Color32[] actual, System.String label, System.Boolean requireEqual) [0x0015d] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoSubmeshes.cs:168 
+  at GpuDecoLab.TextureAndOrderFixture (System.Collections.Generic.List`1[T] gpuMeshes, GpuDecoLab+Vertex[] vertices) [0x00394] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoSubmeshes.cs:129 
+  at GpuDecoLab.SubmeshBody () [0x00309] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoSubmeshes.cs:82 
+  at GpuDecoLab.Run (System.Action action, System.String name) [0x000a2] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:43 
