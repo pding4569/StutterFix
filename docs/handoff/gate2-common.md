@@ -30,3 +30,6 @@ C. 마지막에 요약 한 줄: `[livedeco2] GATE2=PASS` 는 **세 시점 모두
 - 빌드 3종 오류 0(`-c Release` Dev / `-p:Edition=Player` / `-p:Edition=Player -p:AutoTestBuild=1`), LoadCheck·기존 fixture 통과, 일반 Player 에는 이 코드가 없어야 함.
 - 모든 판단은 로그 수치로. 안 되는 이유가 설계 한계면(예: Transform 읽는 코드가 많아 소유 제외 비율이 큼, 픽셀이 구조적으로 다름) 결과 문서에 구체 수치로 적고 멈춰라. 같은 시험을 코드 변경 없이 되풀이 요청하지 마라.
 - 결과 `docs/handoff/codex-gate2-<변형>-result.md` + `-o`(10줄).
+
+## 추가 지시 (Gemini 검토 + DecoAnim.cs 확인, 라운드 도중 추가됨)
+`DecoAnim.cs` 의 채널 갱신(`Apply`/`OnUpdate`/`OnComplete`, 약 380~430행)은 매 채널마다 `setPosX/Y`(→SetPosition), `setRot`, `setScale`, `setCol/ColorFast.TryColor`, `setOpa/ColorFast.TryOpacity` 를 불러 **Transform·SpriteRenderer.color 에 쓴다**(일부는 `MoveApply.DeferTransform` 으로 나중에 한꺼번에). 즉 `UpdatePosition` 만 건너뛰어서는 Transform/렌더러 쓰기가 남는다. **소유 장식은 이 갱신 경로의 Transform·SpriteRenderer(color 포함) 쓰기를 전부 막고**, 논리 필드(`pivotPosVec`, `rotation`, `scaleVec`, 색·불투명도 등 `scrDecoration` 의 C# 필드: 다음 효과가 "현재값"에서 시작하므로 계속 갱신돼야 함)만 갱신하게 하라. 정점은 이 논리 필드에서 계산한다. `DecoAnim.ProfApply/ProfSet`(속성별 "계산+설정" µs, 로그 줄 870행 부근)로 `설정` 비중을 먼저 확인해 결과 문서에 적어라(Gemini 추정: DecoAnim 1.9ms 의 60% 이상이 설정). 게이트 3 후보(평면 `DecoState[]` + 채널 평가 단일 스레드, 필요시 sfnative 1회 호출)는 gate 2 가 통과한 뒤에 한다 — 지금은 만들지 마라. 워커 스레드 분할은 쓰지 않는다(6코어 HT 없음, 스파이크 위험).

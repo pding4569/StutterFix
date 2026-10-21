@@ -18,6 +18,7 @@ namespace StutterFix
     {
         const string PatchId = "StutterFix.decogpu";
         static DecoGpu session;
+        internal static bool Active => session != null && !session.stopping;
         static readonly AccessTools.FieldRef<scrDecoration, Color> ColorField = AccessTools.FieldRefAccess<scrDecoration, Color>("color");
         static readonly AccessTools.FieldRef<scrDecoration, float> Opacity = AccessTools.FieldRefAccess<scrDecoration, float>("opacity");
         static readonly AccessTools.FieldRef<scrDecoration, Color> Rendered = AccessTools.FieldRefAccess<scrDecoration, Color>("rendererColor");

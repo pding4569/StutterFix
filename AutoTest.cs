@@ -895,6 +895,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
                 case "matshare": MatShare.Command(arg); return true;
                 case "livedeco": return LiveDeco.Step(arg);
+                case "livedeco2": return LiveDecoGate2.Step(arg);
 #endif
                 case "filteridentity":
                     FilterIdentityProbe.Command(arg); return true;
@@ -1680,6 +1681,8 @@ namespace StutterFix
         private static void EndBatch(string why)
         {
 #if DEV || AUTOTEST
+            LiveDecoGate2.Abort(why);
+            LiveDeco.Stop();
             FrameCompare.Stop();
 #endif
             if (finished) return;
@@ -1702,6 +1705,7 @@ namespace StutterFix
         private static void Finish(string why)
         {
 #if DEV || AUTOTEST
+            LiveDecoGate2.Abort(why);
             FrameCompare.Stop();
             MatShare.Stop();
             LiveDeco.Stop();

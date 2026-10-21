@@ -14,18 +14,22 @@ namespace StutterFix
             internal readonly bool Owned;
             internal readonly string Signature;
             internal readonly int UnityLayer;
-            internal Item(SceneRenderOrder.Key key, bool owned, string signature = "", int unityLayer = 0)
-            { Key = key; Owned = owned; Signature = signature; UnityLayer = unityLayer; }
+            internal readonly int Texture;
+            internal Item(SceneRenderOrder.Key key, bool owned, string signature = "", int unityLayer = 0, int texture = 0)
+            { Key = key; Owned = owned; Signature = signature; UnityLayer = unityLayer; Texture = texture; }
         }
         internal sealed class Result
         {
-            internal int Candidates, BarrierRuns, MeshRuns, KeySplits, SignatureSplits, LayerSplits, AmbiguousTies;
+            internal int Candidates, BarrierRuns, MeshRuns, KeySplits, SignatureSplits, LayerSplits, TextureSplits, AmbiguousTies;
             internal readonly List<int> First = new List<int>();
             internal readonly List<int> Counts = new List<int>();
         }
+        internal static bool CanJoin(Item a, Item b, bool splitTextures)
+            => a.Owned && b.Owned && a.Key.SameBucket(b.Key) && a.Signature == b.Signature
+                && a.UnityLayer == b.UnityLayer && (!splitTextures || a.Texture == b.Texture);
         // All live scene renderer/material slots, in original sort order. No texture
         // split: gate 1 assumes the atlas problem will be solved in gate 2.
-        internal static Result Count(IReadOnlyList<Item> rows)
+        internal static Result Count(IReadOnlyList<Item> rows, bool splitTextures = false)
         {
             var result = new Result(); bool previousOwned = false;
             for (int i = 0; i < rows.Count; i++)
@@ -42,6 +46,7 @@ namespace StutterFix
                     if (!a.Key.SameBucket(b.Key)) { result.KeySplits++; newRun = true; }
                     else if (a.Signature != b.Signature) { result.SignatureSplits++; newRun = true; }
                     else if (a.UnityLayer != b.UnityLayer) { result.LayerSplits++; newRun = true; }
+                    else if (splitTextures && a.Texture != b.Texture) { result.TextureSplits++; newRun = true; }
                 }
                 if (newRun) { result.MeshRuns++; result.First.Add(i); result.Counts.Add(0); }
                 result.Counts[result.Counts.Count - 1]++;

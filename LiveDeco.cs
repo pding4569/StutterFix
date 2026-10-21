@@ -10,7 +10,7 @@ using UnityEngine.Rendering;
 
 namespace StutterFix
 {
-    // Gate 1 only. No scene objects, textures, materials, meshes or Harmony patches are created.
+    // Gate-1 census plus the explicit, default-off gate-2 A renderer.
     internal static class LiveDeco
     {
         sealed class Row
@@ -30,13 +30,13 @@ namespace StutterFix
         {
             switch (arg.Trim())
             {
-                case "off": Stop(); Log("on=False gate=1 restored=1 mutations=0"); return true;
-                case "state": Log("on=False gate=1 pending=" + requested + " prototype_available=0"); return true;
-                case "on": throw new InvalidOperationException("livedeco gate 1 runtime results required; renderer prototype not implemented");
+                case "off": Stop(); Log("on=False gate=2 variant=A restored=1"); return true;
+                case "state": Log(LiveDecoRenderer.State()); return true;
+                case "on": LiveDecoRenderer.Begin(); return true;
                 case "census":
                     if (!requested)
                     {
-                        if (MatShare.Active || FrameCompare.Paused || !Hitch.Playing)
+                        if (LiveDecoRenderer.Active || MatShare.Active || FrameCompare.Paused || !Hitch.Playing)
                             throw new InvalidOperationException("livedeco census requires natural playback with matshare off and framecmp resumed");
                         if (SceneReset.Resetting || GpuSplit.Busy || GpuHide.Busy || GpuCensus.Busy)
                             throw new InvalidOperationException("scene resetting or GPU diagnostics busy");
@@ -50,7 +50,7 @@ namespace StutterFix
                     var error = failure; Stop();
                     if (error != null) throw new InvalidOperationException("livedeco census failed", error);
                     return true;
-                default: throw new ArgumentException("livedeco census|off|state (gate 1 only)");
+                default: throw new ArgumentException("livedeco census|on|off|state");
             }
         }
         static void OnPreCull(Camera camera)
@@ -62,6 +62,7 @@ namespace StutterFix
         }
         internal static void Stop()
         {
+            LiveDecoRenderer.Stop();
             Camera.onPreCull -= OnPreCull;
             pending = null; requested = done = false; failure = null;
         }
@@ -88,7 +89,7 @@ namespace StutterFix
         // MPB has no property-name iterator. This is a named probe, never a proof
         // that unqueried properties are absent. Nonempty provisional candidates
         // make the final gate inconclusive, even if its numerical model passes.
-        sealed class BlockCensus
+        internal sealed class BlockCensus
         {
             readonly MaterialPropertyBlock rendererBlock = new MaterialPropertyBlock();
             readonly MaterialPropertyBlock slotBlock = new MaterialPropertyBlock();
@@ -183,7 +184,7 @@ namespace StutterFix
             }
         }
 
-        static string Reason(scrVisualDecoration d, SpriteRenderer r, Material[] materials, Camera camera)
+        internal static string Reason(scrVisualDecoration d, SpriteRenderer r, Material[] materials, Camera camera)
         {
             if ((camera.cullingMask & (1 << r.gameObject.layer)) == 0) return "camera-layer";
             if (d.GetType() != typeof(scrVisualDecoration)) return "subclass";

@@ -27,6 +27,7 @@ static class Program
         md = pe.GetMetadataReader();
         if (Environment.GetEnvironmentVariable("DECO_GUARDS") == "1") { DecoGuards(); return 0; }
         if (Environment.GetEnvironmentVariable("DECO_READERS") == "1") { DecoReaders(); return 0; }
+        if (Environment.GetEnvironmentVariable("DECO_TRANSFORMS") == "1") { DecoReaders(); return 0; }
         string types = Environment.GetEnvironmentVariable("TYPES");
         string method = Environment.GetEnvironmentVariable("METHOD");
         bool fields = Environment.GetEnvironmentVariable("FIELDS") == "1";
@@ -202,6 +203,10 @@ static class Program
             "scrParallax::GetPositionWithParallax", "scrDecoration::GetDecorationWorldSize" };
         var reflectionNames = new HashSet<string> { "pivotPosVec", "pivotOffsetVec", "rotAngle", "scaleVec",
             "startPosition", "posCamAtStart", "endPosition", "FollowDecoration", "OrbitDecoration" };
+        if (Environment.GetEnvironmentVariable("DECO_TRANSFORMS") == "1")
+            foreach (string target in new[] { "scrDecoration::pivotTrans", "scrDecoration::childTransform",
+                "scrVisualDecoration::GetDecorationWorldSize", "SpriteAlphaMask::pivotTrans", "SpriteAlphaMask::childTrans" })
+                targets.Add(target);
         foreach (var mh in md.MethodDefinitions)
         {
             var seen = new HashSet<string>();

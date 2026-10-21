@@ -89,6 +89,17 @@ namespace StutterFix
         bool hasPending;
         Action restoreControl;
         const int MaxShots = 8;
+        internal static FrameCompareMetrics.Result GatePixel(out long restored, out bool stable)
+        {
+            var p = Get(); p.RequirePaused();
+            if (p.busy) throw new InvalidOperationException("capture busy");
+            var mask = new[] { FrameCompareMetrics.Mask.Parse("maskpct=0.5,0.5,0.2,0.2") };
+            var result = p.Diff("A", "B", 0, mask);
+            restored = p.Diff("A", "A2", 0, mask).Changed;
+            stable = p.noiseValid && p.lastNoiseStable && p.lastNoiseOutside == 0
+                && p.shots["A"].State.Compare(p.shots["A2"].State).Changed == 0;
+            return result;
+        }
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
         static void Log(string s) => Main.Entry.Logger.Log("[framecmp] " + s);
         static FrameCompare Get()

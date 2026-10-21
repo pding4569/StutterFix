@@ -64,8 +64,10 @@ for (int trial = 0; trial < 1000; trial++)
     int count = random.Next(1, 80);
     var original = Enumerable.Range(0, count).Select(i => new LiveDecoPolicy.Item(
         Key(unchecked(int.MinValue + i * 7919), i, order: random.Next(4), distance: random.Next(3)),
-        random.Next(4) != 0, "base", random.Next(2))).OrderBy(r => r.Key).ToArray();
-    var result = LiveDecoPolicy.Count(original);
+        random.Next(4) != 0, "base", random.Next(2), random.Next(5))).OrderBy(r => r.Key).ToArray();
+    foreach (bool splitTextures in new[] { false, true })
+    {
+    var result = LiveDecoPolicy.Count(original, splitTextures);
     var reconstructed = new List<(SceneRenderOrder.Key Key, int[] Members)>();
     for (int i = 0; i < count; i++)
         if (!original[i].Owned) reconstructed.Add((original[i].Key, new[] { i }));
@@ -74,23 +76,90 @@ for (int trial = 0; trial < 1000; trial++)
         int start = result.First[r], length = result.Counts[r];
         reconstructed.Add((original[start].Key, Enumerable.Range(start, length).ToArray()));
         Check(original.Skip(start).Take(length).All(x => x.Owned && x.Key.SameBucket(original[start].Key)), "anchor bucket invariant");
+        Check(original.Skip(start).Take(length).All(x => LiveDecoPolicy.CanJoin(original[start], x, splitTextures)), "runtime CanJoin matches model partition");
     }
     var expanded = reconstructed.OrderBy(x => x.Key).SelectMany(x => x.Members).ToArray();
     Check(expanded.SequenceEqual(Enumerable.Range(0, count)), "borrowed first-member anchor preserves external order");
     Check(result.Counts.Sum() == original.Count(x => x.Owned), "partition exhaustive");
+    }
 }
 Console.WriteLine($"LiveDeco policy/anchor model: {checks} checks passed; synthetic, no Unity sorting or pixels proven");
-if (args.Length == 3)
+int gateStart = checks;
+var textures = new[] {
+    new LiveDecoPolicy.Item(Key(-4, 1), true, "base", 0, 11),
+    new LiveDecoPolicy.Item(Key(-3, 2), true, "base", 0, 12),
+    new LiveDecoPolicy.Item(Key(-2, 3), true, "base", 0, 12),
+    new LiveDecoPolicy.Item(Key(-1, 4), true, "base", 0, 11) };
+var noAtlas = LiveDecoPolicy.Count(textures, true);
+Check(noAtlas.MeshRuns == 3 && noAtlas.TextureSplits == 2 && noAtlas.Counts.SequenceEqual(new[] { 1, 2, 1 }), "A splits on texture and does not merge nonadjacent images");
+Check(LiveDecoPolicy.Count(textures).MeshRuns == 1, "gate1 atlas estimate preserved");
+LiveDecoGate2Policy Complete(double on = 115, long changed = 0, int max = 0)
+{
+    var p = new LiveDecoGate2Policy();
+    for (int i = 0; i < 3; i++) p.Pixel(i, changed, max, true, true);
+    for (int i = 0; i < 4; i++) p.Window(i, LiveDecoGate2Policy.On(i), LiveDecoGate2Policy.On(i) ? on : 100, true);
+    return p;
+}
+Check(Complete().Verdict(out _) == "PASS", "exact 15 percent passes");
+Check(Complete(114.999999).Verdict(out _) == "NO_GAIN", "no rounded threshold pass");
+Check(Complete(120, 1, 1).Verdict(out _) == "PIXEL_FAIL", "one changed byte is not PASS");
+Check(Complete(120, 500, 255).Verdict(out _) == "PIXEL_FAIL", "visible differences fail");
+Check(new LiveDecoGate2Policy().Verdict(out _) == "ERROR", "missing evidence is ERROR");
+var bad = Complete(); bad.Pixel(0, 0, 0, true, true);
+Check(bad.Verdict(out _) == "ERROR", "duplicate pixel sample rejected");
+bad = new LiveDecoGate2Policy(); bad.Pixel(0, 0, 0, false, true);
+Check(bad.Verdict(out var why) == "ERROR" && why == "restoration_failed", "restoration failure dominates");
+bad = new LiveDecoGate2Policy(); bad.Pixel(0, 0, 0, true, false);
+Check(bad.Verdict(out why) == "ERROR" && why == "unstable_baseline", "unstable baseline fails even at zero pixels");
+foreach (double invalid in new[] { 0, -1, double.NaN, double.PositiveInfinity })
+{
+    bad = new LiveDecoGate2Policy(); bad.Window(0, false, invalid, true);
+    Check(bad.Verdict(out _) == "ERROR", "invalid FPS rejected");
+}
+bad = new LiveDecoGate2Policy(); bad.Window(1, true, 120, true);
+Check(bad.Verdict(out why) == "ERROR" && why == "abba_order", "out-of-order performance rejected");
+bad = new LiveDecoGate2Policy(); bad.Window(0, true, 120, true);
+Check(bad.Verdict(out _) == "ERROR", "wrong ABBA mode rejected");
+bad = Complete(120); bad.Window(0, false, 100, true);
+Check(bad.Verdict(out _) == "ERROR", "duplicate FPS rejected");
+bad = Complete(120); bad.Error = "renderer_failure";
+Check(bad.Verdict(out _) == "ERROR", "runtime error cannot be hidden by good samples");
+Console.WriteLine($"LiveDeco gate2 policy: {checks - gateStart} checks passed; no runtime pixels/FPS proven");
+if (args.Length >= 3)
 {
     int start = checks;
     for (int i = 0; i < 3; i++)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
-        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder" })
+        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoRenderer", "LiveDecoLifetime", "LiveDecoGate2", "LiveDecoGate2Policy" })
             Check(names.Contains(name) == (i != 0), "edition types " + name + " " + args[i]);
         if (i == 0) Check(!md.TypeReferences.Any(h => md.GetString(md.GetTypeReference(h).Name).StartsWith("LiveDeco")
             || md.GetString(md.GetTypeReference(h).Name) == "SceneRenderOrder"), "Player no experiment type references");
     }
     Console.WriteLine($"LiveDeco edition metadata: {checks - start} checks passed; Player absent, DEV/PlayerAuto present");
+}
+if (args.Length == 4)
+{
+    int start = checks;
+    using var stream = File.OpenRead(args[3]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
+    foreach (var (type, method, count) in new[] {
+        ("scrDecoration", "UpdatePosition", 0), ("scrDecoration", "SetPosition", 2),
+        ("scrDecoration", "SetRotation", 1), ("scrDecoration", "SetScale", 1),
+        ("scrDecoration", "SetColor", 1), ("scrDecoration", "SetOpacity", 1),
+        ("scrVisualDecoration", "ApplyColor", 0), ("scrParallax", "SetTrans", 0),
+        ("scrDecoration", "Setup", 3), ("scrVisualDecoration", "SetSprite", 1),
+        ("scrVisualDecoration", "SetSprite", 2), ("scrVisualDecoration", "SetTile", 1),
+        ("scrVisualDecoration", "SetBlendMode", 1), ("scrVisualDecoration", "SetVisible", 1),
+        ("scrVisualDecoration", "SetMaskingType", 1), ("scrVisualDecoration", "SetTextureScaleMultiplier", 1),
+        ("scrVisualDecoration", "SetDepth", 1) })
+    {
+        var t = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name) == type);
+        int matches = t.GetMethods().Select(md.GetMethodDefinition).Count(m => md.GetString(m.Name) == method
+            && (m.Attributes & (System.Reflection.MethodAttributes.Static | System.Reflection.MethodAttributes.Abstract)) == 0
+            && m.GetGenericParameters().Count == 0
+            && m.GetParameters().Select(md.GetParameter).Count(p => p.SequenceNumber > 0) == count);
+        Check(matches == 1, $"unique installed-game instance hook {type}.{method}/{count}: {matches}");
+    }
+    Console.WriteLine($"LiveDeco installed-game hook metadata: {checks - start} unique targets passed; no game methods invoked");
 }
