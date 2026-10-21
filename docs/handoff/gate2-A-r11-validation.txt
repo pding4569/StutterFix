@@ -1,0 +1,40 @@
+r11 offline validation; no game execution, installation, commit, push, or config changes.
+HEAD=02a3e2f; initial worktree clean.
+Existing game evidence only: run4 / al-ga-4.log; provenance and line numbers in gate2-A-r11-prior-evidence.txt.
+Prior coverage 262=2022/2127=95.063470%; 270=2152/2262=95.137047%; 276=17/17.
+Prior PIXEL=427364/133259/0 maxdiff=6/5/0 aa2_out=0 stable=True. off0 FPS=123.331064 ms=8.108257. On FPS/gain missing.
+Prior on preparation 258.017840s owned1294/1349 runs857 setup12883.520200ms transition13102.445500ms.
+Resume immediately causes Dormancy-reset, waitsongpos takes11088.033ms, Begin at269.857836s has activeFalse/readyFalse/owned0. Final ERROR.
+Cause: Main.OnUpdate samples GcControl/Hitch before AutoTest.Resume; manager/camera see stale paused cache in the same frame.
+Fix: successful restored same-controller/same-frame PlaybackContinuity; next frame expires. Both Dormancy and renderer consume it. Normal playing short-circuits new checks.
+Explicit reset/unload/real-stop safeguards retained; FrameCompare teardown clears saved controller/frame. renderer_version10; resume logs frame and tracking.
+No geometry/color/UV/pixel masks or criteria changed. 144 steps, paused258 preparation, unpaused262->276, >=3s warmup, OWNED_LOW retained.
+Dormancy lifecycle=41 pass; links actual Dormancy and extracted production FrameCompare Pause/Resume plus renderer guard.
+Three negative controls compile then fail runtime with expected exit1: legacy Dormancy condition; legacy renderer guard; no resume bridge assignment. Final production extraction passes.
+Managed adapters do not prove actual Unity/Harmony/DSP/lifecycle/pixels/FPS or allocation/performance.
+Build DEV/Player/PlayerAuto errors=0/0/0 warnings=38/36/38. LoadCheck checked=276/229/276 bad=0/0/0; 5 dynamic field names each remain runtime checks.
+Production activation/sort=29, source contracts=5, Gate2 window=58. Policy=106479 gate=18 edition=42 hook metadata=22. Ordinary Player excludes experimental types.
+Geometry hierarchy=2729 bounds=482 scripts=15 cache=40 uploads=32. Delta=5918737 over6000 mutations; write instrumentation=133; MatShare=25401.
+FrameCompare=11/15/15/17/21/2. Generator checks/steps=24/25/144. No generated commands executed in a game.
+Initial automatic extractor MSBuild Exec failed9009 (cmd cannot find py); removed target and used explicit extraction as existing fixtures do.
+Initial uncaught negative renderer exception left own fixture process; verified exact workspace executable path and stopped only PID32624. Added outer catch/exit1.
+The following file-lock build failure was not counted as a valid negative. All three negative sources then passed compilation and failed intended runtime assertions; production reran successfully.
+One apply_patch context verification failed before mutation; corrected context then applied. No user work overwritten.
+No new live ownership time series, scan/reconcile/vertex/upload/transition timings, pixels/FPS, or lifecycle measurements. Gate2 PASS unachieved.
+Task Observer v3.5.0 read user-scope log/principles only; no memory/skill writes. Report-back in result document.
+Final UTF-8/replacement-character check=13 files passed; summary=10 lines; git diff --check=pass; config diff=none; HEAD unchanged02a3e2f.
+Dormancy.cs sha256=c4a8e9c77eb3b3cb69a52398e8224ae24db7076eb333ccbefc21061d1b7c61ad
+FrameCompare.cs sha256=2e06355fbc645a326953df8eb7223a9149cb78c60ff0736f27b0a784f84e1f1d
+LiveDecoRenderer.cs sha256=90d717271c4f97dacd882ec479c9f4fd221ee27d89ddb43765dbbb5daf4c08bb
+docs/handoff/codex-gate2-A-o.txt sha256=538c226c2f08d1b5cf1fe41dcbe4ef6b192fdfd1af44cea375b4c68c2052effd
+docs/handoff/codex-gate2-A-result.md sha256=713c1988e5ac50476f9c7f528d20fb111297234aa6cc63736cb950bc8e318beb
+docs/handoff/ga-autoloop-ledger.md sha256=e4bf5358e46755196645fc61efc878b4576e39d4f8a0d9367863a5a216cc6898
+tools/optimization/DormancyCheck/Adapters.cs sha256=64a7a5b8f4b81e7ea9bd92393975a51dec8b7fb41bf29e02e00d2ef4cab49756
+tools/optimization/DormancyCheck/DormancyCheck.csproj sha256=c37a970e0f7148092122f261e7a1e1f310522de29d6c7528a046427ab35db897
+tools/optimization/DormancyCheck/Program.cs sha256=c05644a8c2be53c9964d2d24c8541d3cbb09dd604ad7f8092da704c2aa0f7159
+tools/optimization/DormancyCheck/README.md sha256=201041cbbe477b4de1c554775597f428c445bf1e6b327a86b89fbe3a01a8e9fd
+tools/optimization/DormancyCheck/extract.py sha256=d14841cc8b069598290afb86e5e8b09dc541362e9d45d3eabc6b959b620150a3
+docs/handoff/gate2-A-r11-prior-evidence.txt sha256=b1fcc1dc9be46b529353a81f17181488c8f6ed6acc2fa427fd07d1befee73c77
+bin/Release/StutterFix.dll sha256=a986bb696a5efb5e8a3222ab95d13781ae113670e06b0ea7c11e720ffbaa1f6e
+bin/Player/StutterFix.dll sha256=ec5e84e099d707764dec5c827c0d2cc187e04e63f58bab94e93f8bd0837a5be3
+bin/PlayerAuto/StutterFix.dll sha256=98240dce55bee0b98ef6c3ff50fd0650686ea2c208a6546c130dce29e25f6a05

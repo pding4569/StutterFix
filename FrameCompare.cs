@@ -27,6 +27,22 @@ namespace StutterFix
         static scrController controller;
         static bool oldPaused, oldAudio;
         static float oldTime, oldTween;
+        static int resumedFrame = -1;
+        static scrController resumedController;
+        // GcControl/Hitch is sampled before AutoTest.Resume in Update. The
+        // manager and camera must keep ownership through that frame's stale
+        // paused sample only; the next Update supplies the real playback state.
+        internal static bool PlaybackContinuity
+        {
+            get
+            {
+                if (Paused) return true;
+                if (resumedFrame != Time.frameCount) { resumedController = null; return false; }
+                return resumedController && resumedController == scrController.instance
+                    && !resumedController.paused && !AudioListener.pause
+                    && Time.timeScale > 0 && DOTween.timeScale > 0;
+            }
+        }
         static readonly Harmony pausePatch = new Harmony("StutterFix.framecmp.pause");
         static readonly HashSet<ParticleSystem> pausedParticles = new HashSet<ParticleSystem>();
         static bool PlanetUpdate() => !Paused;
@@ -123,6 +139,7 @@ namespace StutterFix
         internal static void Pause()
         {
             if (Paused) return;
+            resumedFrame = -1; resumedController = null;
             controller = scrController.instance;
             if (!controller) throw new InvalidOperationException("pause requires a loaded controller");
             oldPaused = controller.paused; oldAudio = AudioListener.pause;
@@ -135,13 +152,18 @@ namespace StutterFix
         internal static void Resume()
         {
             if (!Paused) return;
+            var resumed = controller;
             try { if (instance) instance.RestoreCapture(); }
             finally
             {
                 try { try { RestorePlanets(); } finally { if (controller) controller.paused = oldPaused; } }
                 finally { Time.timeScale = oldTime; DOTween.timeScale = oldTween; AudioListener.pause = oldAudio; Paused = false; controller = null; }
             }
-            Log("resume restored");
+            // This runs only after successful restoration. A failed restore or
+            // an originally paused controller cannot keep a live owner alive.
+            resumedController = resumed;
+            resumedFrame = Time.frameCount;
+            Log("resume restored continuity_frame=" + resumedFrame + " tracking=" + PlaybackContinuity);
         }
         internal static bool Step(string arg)
         {
@@ -613,12 +635,21 @@ namespace StutterFix
                     else { Destroy(instance.gameObject); instance = null; }
                 }
             }
-            finally { Resume(); }
+            finally
+            {
+                try { Resume(); }
+                finally { resumedFrame = -1; resumedController = null; }
+            }
         }
         void OnDestroy()
         {
             RestoreControl(); RestoreCapture(); ReleasePending(true);
-            if (instance == this) { instance = null; Resume(); }
+            if (instance == this)
+            {
+                instance = null;
+                try { Resume(); }
+                finally { resumedFrame = -1; resumedController = null; }
+            }
         }
     }
 }

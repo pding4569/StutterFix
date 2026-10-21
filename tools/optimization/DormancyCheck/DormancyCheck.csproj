@@ -5,4 +5,5 @@
     <DormancySource Condition="'$(DormancySource)' == ''">../../../Dormancy.cs</DormancySource>
   </PropertyGroup>
   <ItemGroup><Compile Include="$(DormancySource)" Link="Dormancy.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="obj/ProductionPause.cs" /></ItemGroup>
 </Project>

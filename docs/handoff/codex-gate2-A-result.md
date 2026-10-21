@@ -1,3 +1,59 @@
+# Gate 2 A 자동 반복 5회차 — 재개 프레임의 오래된 재생 상태로 인한 소유 해제 수정 (2026-10-21, r11)
+
+**재개 직후 `Dormancy-reset`으로 재생 시험이 중단되는 코드 경로를 수정하고 오프라인 검증을 완료했다. 새 실게임 측정은 없으며 `GATE2=PASS`는 미달성이다.** 시작 HEAD `02a3e2f`, 시작 작업 트리는 깨끗했다. 게임 실행·설치·커밋·푸시·`.codex/config.toml` 변경은 하지 않았다.
+
+## 읽은 증거와 단계별 상태
+
+지정 인계·장부·공통 지시(성능·긴급 포함)·기존 결과와 필수 배경 문서를 확인했다. 최신 전달은 수정 시각 기준 **run4(19:53)**다. 기존 전체 `E:/StutterFixWork/night-results/al-ga-4.log`와 게임 디컴파일은 읽기만 했다. 워크트리에 없는 로드맵·freeze 결과는 정식 checkout/`wt-freeze`에서 읽었다. [원본 SHA256·행 번호·집계](gate2-A-r11-prior-evidence.txt)를 보존했다. 아래 표는 모두 **수정 전 run4**다.
+
+| 기존 정지 시점 | live 이미지 / 소유 | 소유율 | 구간 | ab_out / maxdiff | aa2_out / stable |
+|---|---:|---:|---:|---:|---|
+| 262초 | 2,127 / 2,022 | 95.063470% | 1,246 | 427,364 / 6 | 0 / True |
+| 270초 | 2,262 / 2,152 | 95.137047% | 1,439 | 133,259 / 5 | 0 / True |
+| 276초 | 17 / 17 | 100% | 15 | 0 / 0 | 0 / True |
+
+1. **전체 스캔 제거**: 기존 `scan_ms=0.000100~0.000900`이다. Dormancy 이벤트·정적 캐시·증분 큐·1초 감사 구조를 유지했다. 새 프레임당 전체 순회는 없다. 정상 재생에서는 `tracking || PlaybackContinuity`가 단락 평가되어 새 프레임 번호·컨트롤러 검사를 호출하지 않는다.
+2. **소유 유지**: 262/270초 정지는 95% 이상이며 276초는 live 분모도 17개다. 켬 준비의 258.017840초는 1,294/1,349개(95.922906%, 857구간)였다. 이어 재개 직후 초기화로 0개가 된다. 이를 276초의 17개나 가시성 임계 문제와 혼동하지 않았다. 정지/재개 경계의 해제 원인을 아래와 같이 수정했다. 재생 중 전체 소유율 유지는 아직 미측정이다. 0.01px·히스토그램·제외 사유·OWNED_LOW 기준을 유지한다.
+3. **비용·FPS**: 첫 끔만 **123.331064 FPS / 8.108257ms**, 1,719프레임·13.938094초로 완료됐다. 켬·켬·마지막 끔은 미완료이므로 이득률을 계산하지 않는다. Prof는 **993,464표본 / set_pct=68.721148% / valid=True**이며 Step 표본·PairXY/GroupStep 억제·OnComplete/후속 엔진 비용 제외 한계를 유지한다. 이번 수정은 재생 시작 차단을 고친 것이며 비용 개선 수치는 없다.
+4. **픽셀**: 1~3의 재생 확인이 끝나지 않아 색/정점/UV·비교 제외 영역을 바꾸지 않았다. 기존 427,364/133,259개 차이는 PIXEL_NEAR가 아니다. 상위 구역은 262초 `(1344,416), (736,768), (992,896), (672,384), (1376,256)`, 270초 `(544,384), (992,352), (928,352), (544,416), (960,352)`다. 장식 ID·텍스처·알파·블렌드와 연결된 증거가 없어 특정 장식이나 소유 밖 파티클/행성/텍스트 탓으로 확정하지 않는다. 제외 추가·기준 완화는 없다.
+
+| 기존 정지 steady 표본 | 프레임 수 | scan_ms | reconcile_ms (delta 포함) | vertex_ms | upload_ms |
+|---|---:|---:|---:|---:|---:|
+| 262초, 소유 2,022 | 7 | 0.000172 | 3.036400 | 0.569571 | 0.070329 |
+| 270초, 소유 2,152 | 7 | 0.000214 | 3.167571 | 0.632514 | 0.079429 |
+| 276초, 소유 17 | 7 | 0.000143 | 2.693200 | 0.020557 | 0.000800 |
+
+표는 로그의 samples로 가중한 기존 평균이다. 정지 중에도 dirty·delta 비용이 남고 heap 증가도 있다. 정점≤0.5ms·업로드≤0.4ms 동시 목표, 무할당, 재생 FPS+15% 달성을 주장하지 않는다. 첫 262초 enable은 33,718.803700ms였고, 재생 켬 준비는 setup 12,883.520200ms(register 1,244.352700 / patch 11,636.744600), first_render 218.925300ms, transition 13,102.445500ms였다. 준비 비용을 줄였다는 주장은 없다.
+
+## 원인과 수정
+
+전체 로그 **930~950행**: 258초에서 paused/ready 준비 완료 → resume → **`lifecycle Dormancy-reset restore=1`** → waitsongpos **11,088.033ms** → fuse 곡 **269.7초** → Begin **269.857836초, active=False, ready=False, owned=0** → `GATE2=ERROR`다.
+
+관리 코드의 실행 순서가 원인이다. `Main.OnUpdateBody`는 **GcControl.Tick → AutoTest.Tick** 순서다. GcControl은 실제 `controller.paused`를 읽어 `Hitch.Tick`의 캐시 `wasPlaying`을 갱신한다. 같은 Update의 후반에서 AutoTest가 FrameCompare.Resume으로 pause를 해제해도 `Hitch.Playing`은 그 프레임 동안 False다. `Dormancy.List`는 `Hitch.Playing || FrameCompare.Paused`가 둘 다 False라 ResetState를 호출하고, 활성 소유를 Stop한다. 렌더러의 RenderFrame에도 같은 오래된 조건이 있어 Dormancy만 고치면 카메라에서 다시 중단된다.
+
+게임 디컴파일 `scrDecorationManager.LateUpdate` 173~195행은 장식 목록/LogicUpdate를 처리한다. [설치 DLL IL](gate2-A-r11-manager-il.log)에서도 이 호출과 `allDecorations` 읽기를 교차확인했다. `scrConductor`의 DSP 기준 갱신은 기존 r10 분석과 같다. ResetState → Stop → 동기 UnpatchAll 동안 오디오가 진행할 수 있어 시각 건너뜀과 일치하지만, **기존 로그에 Stop/UnpatchAll 단독 시간이 없어 11.088초 전부를 패치 해제 비용으로 확정하지 않는다.** 게임 메서드를 실행하지 않았다.
+
+- FrameCompare에 **성공한 Resume의 해당 프레임에서만 유효한 `PlaybackContinuity`**를 추가했다. 같은 컨트롤러이고 실제 controller/audio/timeScale/DOTween이 재개된 상태일 때만 유지한다. 다음 프레임에는 만료되며 새 Hitch 상태를 따른다. 같은 프레임의 중복 Resume은 유효 상태를 지우지 않는다.
+- Dormancy와 RenderFrame의 기존 pause 유지 조건에 동일한 연속성 판정을 사용한다. 정상 재생 경로는 단락 평가한다. `renderer_version=10`, resume 로그에 `continuity_frame`과 `tracking`을 남긴다. 프레임당 로그는 추가하지 않았다.
+- 원래부터 정지된 controller/audio/scale, 교체된 controller, 복원 예외에는 유지가 성립하지 않는다. 프레임 번호만으로 긴 유예 시간을 주거나 소유가 활성이라는 이유로 실제 정지를 무시하지 않는다. scene generation/reset/manager 검사, ForgetLevel, 명시적 종료 복원은 유지했다. FrameCompare.Stop/Unload/OnDestroy에서는 재개 참조·프레임을 해제한다.
+- **144단계 생성 JSON·258초 양모드 pause/ready 준비·262→276초 측정·최소 3초 워밍업·OWNED_LOW·픽셀0·FPS+15% 기준은 그대로다.** Gate 3로 진행하지 않았다.
+
+## 검증과 한계
+
+확장한 [DormancyCheck](../../tools/optimization/DormancyCheck/README.md)는 실제 Dormancy.cs에 더해 **생산 FrameCompare의 필드/Pause/Resume과 생산 RenderFrame 수명 조건을 그대로 추출**해 연결한다. 재개 전 Hitch=False → 같은 프레임 manager/camera → 다음 프레임 Hitch 갱신 순서를 검사한다. **41건 통과**: pause/wake/sleep, 재개 유지·만료·중복, 실제 정지, 새 scene 목록/맵 해제, 설정 차단, 컨트롤러 교체, 기존 pause/음소거/scale 정지, 복원 예외, scene reset/generation/manager 부재. [수정본](gate2-A-r11-dormancy-fixture.log).
+
+**세 음성 대조 모두 컴파일 성공 후 의도한 실행 검사에서 exit 1**: [Dormancy만 기존 pause 조건](gate2-A-r11-negative-dormancy.log), [렌더러만 기존 수명 조건](gate2-A-r11-negative-renderer.log), [Resume 연속성 설정 제거](gate2-A-r11-negative-resume.log). 마지막에는 실제 소스를 다시 추출해 41건을 통과했다. Unity/Harmony/DSP/행성·파티클 복원은 managed adapter이므로 실게임 수명·FPS·픽셀 증명은 아니다.
+
+- Release DEV / Player / PlayerAuto: 오류 **0/0/0**, 경고 **38/36/38**. LoadCheck **276/229/276곳**, 틀림 **0/0/0**. 동적 필드명 5곳은 실제 실행 확인 대상이다.
+- 시작/정렬 **29**·소스계약 **5**, Gate2 창 **58**, 정책 **106,479**·gate **18**·edition **42**·게임 hook metadata **22** 통과. 일반 Player에는 실험 코드가 없다.
+- 계층 **2,729**·바운드 **482**·스크립트 **15**·캐시 **40**·업로드 **32**, 델타 **5,918,737 / 6,000회 변경**·쓰기 통지 **133**, MatShare **25,401** 통과.
+- FrameCompare **11/15/15/17/21/2**, 생성기 **24/25/144단계** 검사 통과. 로그는 `gate2-A-r11-*`, 최종 검사와 해시는 [검증 기록](gate2-A-r11-validation.txt)에 보존한다.
+- 검사 도구 자동 추출을 MSBuild Exec에 연결하려던 첫 시도는 cmd에서 py를 찾지 못해 9009로 실패했다. 해당 연결을 제거하고 기존 fixture 방식대로 명시적 추출을 사용했다. 초기 음성 대조의 미처리 예외가 검사 프로세스를 남겨 후속 빌드가 파일 잠금으로 실패했다. 경로 확인 후 이 작업 소유 DormancyCheck 프로세스 하나만 종료하고, 최상위 예외 처리를 추가했다. 세 음성 대조와 수정본을 정상 재검증했으며 컴파일 실패를 회귀 검출로 세지 않았다. 게임 프로세스에는 접근하지 않았다.
+
+**새 소유 시계열·비용·전환 시간·3시점 픽셀·ABBA FPS·실게임 복원은 미측정이다.** 단계 3의 재개 차단 수정 상태로 종료한다. 동일 코드 게임 시험을 실행하거나 요청하지 않았다. 작업 관찰 스킬 v3.5.0은 적용했고 사용자 범위 저장소는 읽기만 했다. 이번 검사 도구의 오류는 위에 원인·수정·재검증을 기록했으며 메모리·스킬 파일은 변경하지 않았다.
+
+---
+
 # Gate 2 A 자동 반복 4회차 — 긴 준비가 곡 시각을 넘기는 ABBA 시작 오류 수정 (2026-10-21, r10)
 
 **재생 시험의 시작 차단 원인을 수정하고 오프라인 검증을 완료했다. 수정 후 실게임 측정은 없으며 GATE2=PASS는 미달성이다.** 시작 HEAD `4d53c77`, 작업 트리는 깨끗했다. 게임 실행·설치·커밋·푸시·`.codex/config.toml` 변경은 하지 않았다.

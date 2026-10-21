@@ -1,3 +1,15 @@
+## codex-al-ga-5 자동 반복 5회차 — 2026-10-21 (r11, 재개 프레임 캐시 때문에 발생한 소유 해제 수정)
+- 시작 HEAD 02a3e2f, 작업 트리 깨끗함. 게임 실행·설치·커밋·푸시·config 변경 없음.
+- 최신 run4(19:53)와 전체 al-ga-4.log 읽기 전용 감사. 원본 SHA256·행 번호·가중 집계와 manager 디컴파일/IL 근거 보존.
+- 기존 262/270/276초 live2127/2262/17, owned2022/2152/17(95.063470%/95.137047%/100%), ab_out427364/133259/0, maxdiff6/5/0, aa2_out0·stableTrue. 재생 유지 증명은 아님.
+- 기존 scan0.000100~0.000900ms. 정지262/270 각7프레임 가중평균 reconcile3.036400/3.167571·vertex0.569571/0.632514·upload0.070329/0.079429ms. 비용 목표/FPS/무할당 달성 아님.
+- off0만123.331064FPS/8.108257ms 완료. 258초 준비1294/1349개→resume→Dormancy-reset→wait11.088초→269.857836초 activeFalse/owned0로 GATE2=ERROR. Stop/UnpatchAll 단독 시간은 미계측.
+- Main.Update의 GcControl→AutoTest 순서로 resume 뒤 manager/camera가 전프레임 pause 캐시를 읽음. 성공한 해당 재개 프레임에만 연속성 적용, 다음 프레임·실제정지·맵 교체/해제·복원 예외 보호 유지. 정상 재생은 단락 평가.
+- renderer_version10, 재개 프레임/tracking 로그 추가. 144단계·3초 warmup·OWNED_LOW·픽셀0·FPS+15%·정렬·스캔 제거 기준 유지. 색/UV/제외 영역 변경 없음.
+- 생산 Dormancy+FrameCompare Pause/Resume+renderer 수명 조건41건 통과. Dormancy/renderer/Resume 세 음성 대조는 컴파일 후 실행 검사 exit1, 수정본 최종 통과. 실제 Unity/DSP/수명/성능 증명 아님.
+- 빌드 오류0/0/0·경고38/36/38·LoadCheck 틀림0/0/0, 시작29/계약5/창58/정책106479/gate18/edition42/hook22, 계층2729/바운드482/스크립트15/캐시40/업로드32, 델타5918737/쓰기133/MatShare25401/FrameCompare/생성기24·25·144 통과.
+- 결과·10줄요약·r11 증거/검증 갱신. 새 소유/비용/픽셀/FPS/실게임 복원 미측정, PASS 미달성. 동일 코드 게임 시험 실행/요청 없음.
+
 ## codex-al-ga-4 자동 반복 4회차 — 2026-10-21 (r10, 긴 준비가 곡 시각을 넘기는 ABBA 오류 수정)
 - 시작 HEAD 4d53c77, 작업 트리 깨끗함. 게임 실행·설치·커밋·푸시·config 변경 없음.
 - 최신 run3(19:28)와 기존 전체 al-ga-3.log를 읽기 전용 감사. 원본 SHA256·행 번호·표본 집계·conductor 디컴파일/IL 교차확인 보존.
@@ -333,3 +345,27 @@
   - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2022 runs=1246 dirty=2006 phase=steady scan_ms=0.000150 vertex_ms=0.587350 upload_ms=0.070800 transition_ms=33718.803700 audits=4 missed=
   - [StutterFix] [livedeco] cost per_frame=1 samples=1 phase=steady owned=2022 runs=1246 vertex_ms=0.568200 upload_ms=0.070400 reconcile_ms=2.542200 delta_ms=2.542200 scan_ms=0.000200 audit_ms=0.000000 aw
   - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2022 runs=1246 dirty=1003 phase=steady scan_ms=0.000200 vertex_ms=0.568200 upload_ms=0.070400 transition_ms=33718.803700 audits=4 missed=
+
+## 회차 5
+- Codex 요약: 재개 직후 `Dormancy`가 소유를 해제하던 코드 경로를 수정했습니다.
+
+- 3종 빌드·LoadCheck 오류 0, 회귀 검사 41건과 기존 검사 통과.
+- 게임 실행·설치·커밋·푸시는 하지 않았습니다.
+- 수정 후 실게임 픽셀·FPS는 미측정이며, `GATE2=PASS`는 미달성입니다.
+
+[결과 문서](/E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-result.md) · [10줄 요약](/E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-o.txt)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=25093.782600 prepare_ms=2.749500 register_ms=1394.452900 patch_ms=23696.071700
+  - [StutterFix] [livedeco] begin variant=A renderer_version=10 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events change_methods=1723 change_sites=4039 enable_transition_ms=26182.990200 
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 phase=activation owned=2018 runs=1248 vertex_ms=0.970100 upload_ms=2.252900 reconcile_ms=1085.931700 delta_ms=1027.077000 scan_ms=0.000900 audit_ms=2
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2126 owned=2018 runs=1248 dirty=157254 phase=activation scan_ms=0.000900 vertex_ms=0.970100 upload_ms=2.252900 transition_ms=26182.990200 audits=1 m
+  - [StutterFix] [livedeco] cost per_frame=1 samples=3 phase=steady owned=2018 runs=1248 vertex_ms=0.572000 upload_ms=0.068867 reconcile_ms=3.534200 delta_ms=3.534200 scan_ms=0.000400 audit_ms=1.530000 aw
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2126 owned=2018 runs=1248 dirty=4763 phase=steady scan_ms=0.000400 vertex_ms=0.572000 upload_ms=0.068867 transition_ms=26182.990200 audits=3 missed=
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 phase=steady owned=2018 runs=1248 vertex_ms=0.558600 upload_ms=0.068500 reconcile_ms=2.540000 delta_ms=2.540000 scan_ms=0.000200 audit_ms=2.773900 aw
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2126 owned=2018 runs=1248 dirty=1018 phase=steady scan_ms=0.000200 vertex_ms=0.558600 upload_ms=0.068500 transition_ms=26182.990200 audits=4 missed=
+  - [StutterFix] [livedeco] cost per_frame=1 samples=2 phase=steady owned=2018 runs=1248 vertex_ms=0.567200 upload_ms=0.069100 reconcile_ms=2.660750 delta_ms=2.660750 scan_ms=0.000350 audit_ms=1.145450 aw
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2126 owned=2018 runs=1248 dirty=2036 phase=steady scan_ms=0.000350 vertex_ms=0.567200 upload_ms=0.069100 transition_ms=26182.990200 audits=5 missed=
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 phase=steady owned=2018 runs=1248 vertex_ms=0.568800 upload_ms=0.067500 reconcile_ms=2.528100 delta_ms=2.528100 scan_ms=0.000100 audit_ms=0.000000 aw
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2126 owned=2018 runs=1248 dirty=1018 phase=steady scan_ms=0.000100 vertex_ms=0.568800 upload_ms=0.067500 transition_ms=26182.990200 audits=5 missed=

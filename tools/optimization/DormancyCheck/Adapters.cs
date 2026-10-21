@@ -22,8 +22,10 @@ namespace UnityEngine
 {
     public class Object { public static implicit operator bool(Object value) => value != null; }
     public class SpriteRenderer { public bool enabled = true, forceRenderingOff, isVisible = true; }
-    public static class Time { public static float realtimeSinceStartup; public static int frameCount; }
+    public static class Time { public static float realtimeSinceStartup, timeScale = 1; public static int frameCount; }
+    public static class AudioListener { public static bool pause; }
 }
+namespace DG.Tweening { public static class DOTween { public static float timeScale = 1; } }
 public class scrDecoration { public int hitbox; public bool Visible; public virtual bool GetVisible() => Visible; }
 public class scrVisualDecoration : scrDecoration
 {
@@ -31,13 +33,22 @@ public class scrVisualDecoration : scrDecoration
     public UnityEngine.SpriteRenderer spriteRenderer = new();
 }
 public class scrDecorationManager { public List<scrDecoration> allDecorations = new(); }
-public class scrController { public bool disableV15Features = true; }
-public static class ADOBase { public static scrController controller = new(); }
+public class scrController : UnityEngine.Object { public static scrController instance = new(); public bool disableV15Features = true, paused; }
+public static class ADOBase { public static scrController controller => scrController.instance; }
 namespace StutterFix
 {
     public static class MoveApply { public static bool LogicSkip = true; }
     public static class Hitch { public static bool Playing; }
-    public static class FrameCompare { public static bool Paused; }
+    internal sealed partial class FrameCompare
+    {
+        static FrameCompare instance = new();
+        internal static bool FailRestore;
+        void RestoreCapture() { }
+        static void FreezePlanets() { }
+        static void RestorePlanets() { if (FailRestore) throw new InvalidOperationException("restore adapter failure"); }
+        static void Log(string message) => Console.WriteLine("[framecmp] " + message);
+    }
+    internal static class SceneReset { internal static int Count = 0; internal static bool Resetting; }
     public static class Edition { public const bool Dev = true; }
     public static class Main
     {

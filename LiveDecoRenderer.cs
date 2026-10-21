@@ -248,7 +248,7 @@ namespace StutterFix
                 transitionMs = ((setupEnd - enableBegin) + (ready - firstCull)) * 1000.0 / Stopwatch.Frequency;
                 // Warmup and OWNED_LOW count actual owned rendering, excluding setup/admission.
                 starting = false; enabledAt = Time.realtimeSinceStartup; nextReport = enabledAt + 1;
-                Log("begin variant=A renderer_version=9 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events"
+                Log("begin variant=A renderer_version=10 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events"
                     + " change_methods=" + LiveDecoChanges.Methods + " change_sites=" + LiveDecoChanges.Sites
                     + " enable_transition_ms=" + transitionMs.ToString("F6", Inv)
                     + " prepare_ms=" + prepareMs.ToString("F6", Inv) + " register_ms=" + registerMs.ToString("F6", Inv)
@@ -959,7 +959,7 @@ namespace StutterFix
         }
         static void RenderFrame()
         {
-            if (!manager || reset != SceneReset.Count || SceneReset.Resetting || (!Hitch.Playing && !FrameCompare.Paused))
+            if (!manager || reset != SceneReset.Count || SceneReset.Resetting || (!Hitch.Playing && !FrameCompare.PlaybackContinuity))
                 throw new InvalidOperationException("playback/lifecycle changed");
             if (!SortSupported() || !Identity(manager.transform)) throw new InvalidOperationException("sort/parent changed");
             if (DecoGpu.Active || MatShare.Active || DecoEngine.Enabled) throw new InvalidOperationException("competing owner enabled");

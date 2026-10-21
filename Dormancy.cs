@@ -119,7 +119,7 @@ namespace StutterFix
             var all = allRef(mgr);
             bool tracking = Hitch.Playing;
 #if DEV || AUTOTEST
-            tracking |= FrameCompare.Paused;
+            tracking = tracking || FrameCompare.PlaybackContinuity;
 #endif
             if (!Enabled || broken || !MoveApply.LogicSkip || all == null || !tracking) { ResetState(); return all; }
             if (prepared) return awake;

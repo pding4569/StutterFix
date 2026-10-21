@@ -1,0 +1,41 @@
+Existing run4 game evidence only; no new game execution or installation.
+HEAD=02a3e2f; initial worktree clean; new source renderer_version=10.
+path=E:\StutterFixWork\wt-ld2a\docs\handoff\ga-autoloop-run4-evidence.txt sha256=3d0ab5861fa3bacd39064d457811ab49c3582f982a2d26c730dbf83c6a506e6e
+L11: [StutterFix] [livedeco2] PROFILE samples=993464 set_pct=68.721148 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+L31: [StutterFix] [livedeco2] PIXEL t=262 song=262.017840 ab_out=427364 maxdiff=6 aa2_out=0 stable=True regions=(1344,416,32,32):3700;(736,768,32,32):3653;(992,896,32,32):3411;(672,384,32,32):3312;(1376,256,32,32):3219
+L51: [StutterFix] [livedeco2] PIXEL t=270 song=270.017718 ab_out=133259 maxdiff=5 aa2_out=0 stable=True regions=(544,384,32,32):6003;(992,352,32,32):4866;(928,352,32,32):3888;(544,416,32,32):3873;(960,352,32,32):3810
+L66: [StutterFix] [livedeco2] PIXEL t=276 song=276.005328 ab_out=0 maxdiff=0 aa2_out=0 stable=True regions=
+L69: [StutterFix] [livedeco2] prepared mode=off song=258.017840 paused=True ready=True transition_ms=0.000000 resume_then_play_to=262 minimum_on_warmup_s=3
+L71: [StutterFix] [livedeco2] FPS mode=off index=0 fps=123.331064 ms=8.108257 frames=1719 elapsed_s=13.938094 song_begin=262.060504 song_end=276.004534 valid=True
+L83: [StutterFix] [livedeco2] prepared mode=on song=258.017840 paused=True ready=True transition_ms=13102.445500 resume_then_play_to=262 minimum_on_warmup_s=3
+L84: [StutterFix] [livedeco] lifecycle Dormancy-reset restore=1
+L87: [StutterFix] [livedeco2] ERROR System.InvalidOperationException: invalid ABBA window start index=1 mode=on song=269.857836 paused=False active=False ready=False owned=0 warmup_s=12.008 transition_ms=0.000000
+L89: [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False
+path=E:\StutterFixWork\night-results\al-ga-4.log sha256=0d0220fbea85f6a5b205d9ada200aa25e5b2dd64a3f733beffd7d3e7410dcab9
+L331: [StutterFix] [livedeco2] PROFILE samples=993464 set_pct=68.721148 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+L497: [StutterFix] [livedeco2] PIXEL t=262 song=262.017840 ab_out=427364 maxdiff=6 aa2_out=0 stable=True regions=(1344,416,32,32):3700;(736,768,32,32):3653;(992,896,32,32):3411;(672,384,32,32):3312;(1376,256,32,32):3219
+L657: [StutterFix] [livedeco2] PIXEL t=270 song=270.017718 ab_out=133259 maxdiff=5 aa2_out=0 stable=True regions=(544,384,32,32):6003;(992,352,32,32):4866;(928,352,32,32):3888;(544,416,32,32):3873;(960,352,32,32):3810
+L812: [StutterFix] [livedeco2] PIXEL t=276 song=276.005328 ab_out=0 maxdiff=0 aa2_out=0 stable=True regions=
+L855: [StutterFix] [livedeco2] prepared mode=off song=258.017840 paused=True ready=True transition_ms=0.000000 resume_then_play_to=262 minimum_on_warmup_s=3
+L872: [StutterFix] [livedeco2] FPS mode=off index=0 fps=123.331064 ms=8.108257 frames=1719 elapsed_s=13.938094 song_begin=262.060504 song_end=276.004534 valid=True
+L930: [StutterFix] [livedeco2] prepared mode=on song=258.017840 paused=True ready=True transition_ms=13102.445500 resume_then_play_to=262 minimum_on_warmup_s=3
+L933: [StutterFix] [자동 시험] [임무단계] resume 141.592ms
+L934: [StutterFix] [livedeco] lifecycle Dormancy-reset restore=1
+L938: [StutterFix] [자동 시험] [임무단계] waitsongpos 11088.033ms
+L946: [StutterFix] [livedeco2] ERROR System.InvalidOperationException: invalid ABBA window start index=1 mode=on song=269.857836 paused=False active=False ready=False owned=0 warmup_s=12.008 transition_ms=0.000000
+L950: [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False
+t=262 owned=2022 awake=2127 coverage_pct=95.063470 runs=1246
+t=262 paused_steady_frames=7 weighted_means={'scan_ms': Decimal('0.0001715714285714285714285714286'), 'reconcile_ms': Decimal('3.036400'), 'vertex_ms': Decimal('0.5695714285714285714285714286'), 'upload_ms': Decimal('0.07032857142857142857142857143')}
+t=270 owned=2152 awake=2262 coverage_pct=95.137047 runs=1439
+t=270 paused_steady_frames=7 weighted_means={'scan_ms': Decimal('0.0002142857142857142857142857143'), 'reconcile_ms': Decimal('3.167571428571428571428571429'), 'vertex_ms': Decimal('0.6325142857142857142857142857'), 'upload_ms': Decimal('0.07942857142857142857142857143')}
+t=276 owned=17 awake=17 coverage_pct=100.000000 runs=15
+t=276 paused_steady_frames=7 weighted_means={'scan_ms': Decimal('0.0001428571428571428571428571429'), 'reconcile_ms': Decimal('2.693200'), 'vertex_ms': Decimal('0.02055714285714285714285714286'), 'upload_ms': Decimal('0.000800')}
+prior_scan_range=(Decimal('0.000100'), Decimal('0.000900'))
+source=E:\StutterFixWork\wt-ld2a\FrameCompare.cs sha256=2e06355fbc645a326953df8eb7223a9149cb78c60ff0736f27b0a784f84e1f1d
+source=E:\StutterFixWork\wt-ld2a\Dormancy.cs sha256=c4a8e9c77eb3b3cb69a52398e8224ae24db7076eb333ccbefc21061d1b7c61ad
+source=E:\StutterFixWork\wt-ld2a\LiveDecoRenderer.cs sha256=90d717271c4f97dacd882ec479c9f4fd221ee27d89ddb43765dbbb5daf4c08bb
+source=E:\StutterFixWork\wt-ld2a\StutterFix.cs sha256=4bce94b0ed269158599bc982fe885727052cada6ac6bf20b410aa608b142e010
+source=E:\StutterFixWork\wt-ld2a\GcControl.cs sha256=b6743a552b1e4e046dfca24e43394028249b57ac0d0a11ad9a255e91f0f72e10
+source=E:\StutterFixWork\wt-ld2a\Hitch.cs sha256=ee7d4711d0c398a1b882543d032bf7d306175d85af6ca5159a4a3f2a7314dce5
+source=E:\StutterFixWork\decompiled\Assembly-CSharp\scrDecorationManager.cs sha256=370ceb0ebddef307c3c90939ea8784e73170b476fcd6ba05bcd6982099601459
+source=D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll sha256=f692210f9a342f7eed4be40aad463286ab40bf046599959823942ea02f4ca3ff
