@@ -1,0 +1,2 @@
+command=['py', '-3', 'tools/optimization/LiveDecoDeltaCheck/extract.py']
+exit=0

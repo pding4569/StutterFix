@@ -1,0 +1,3 @@
+command=['py', '-3', 'tools/optimization/test-livedeco2-steps.py']
+exit=0
+livedeco2 steps: 144 steps; 3 paused/restored pixels; ABBA unpaused windows; UTF-8 CLI passed

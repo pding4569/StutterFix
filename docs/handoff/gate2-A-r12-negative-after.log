@@ -1,0 +1,6 @@
+command=['dotnet', 'E:\\StutterFixWork\\wt-ld2a\\tools\\optimization\\LiveDecoChangesCheck\\bin\\Release\\net8.0\\LiveDecoChangesCheck.dll']
+exit=1
+System.Exception: bound-self ignores both sides of notification
+   at StutterFix.NoticeAdapter.<Check>g__Expect|13_0(Boolean valid, String label, <>c__DisplayClass13_0&) in E:\StutterFixWork\wt-ld2a\tools\optimization\LiveDecoChangesCheck\Notices.cs:line 21
+   at StutterFix.NoticeAdapter.Check() in E:\StutterFixWork\wt-ld2a\tools\optimization\LiveDecoChangesCheck\Notices.cs:line 29
+   at Program.<Main>$(String[] args) in E:\StutterFixWork\wt-ld2a\tools\optimization\LiveDecoChangesCheck\Program.cs:line 9

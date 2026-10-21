@@ -1,0 +1,3 @@
+command=['dotnet', 'run', '--no-restore', '--project', 'tools/optimization/MatShareCheck', '-c', 'Release']
+exit=0
+MatShareCheck checks=25401 errors=0; pure policy only; Unity sorting fixture requires runtime

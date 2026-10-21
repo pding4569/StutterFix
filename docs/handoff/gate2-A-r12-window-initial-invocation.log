@@ -1,0 +1,4 @@
+command=['dotnet', 'run', '--project', 'tools/optimization/LiveDecoWindowCheck', '-c', 'Release']
+exit=1
+System.ArgumentException: generated steps JSON required
+   at Program.<Main>$(String[] args) in E:\StutterFixWork\wt-ld2a\tools\optimization\LiveDecoWindowCheck\Program.cs:line 83

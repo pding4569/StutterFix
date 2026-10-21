@@ -1,0 +1,3 @@
+command=['dotnet', 'run', '--project', 'tools/LoadCheck', '-c', 'Release', '--', 'bin/Release/StutterFix.dll']
+exit=0
+Release/StutterFix.dll: FieldRefAccess(이름) 276곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 5(실행 중 확인)

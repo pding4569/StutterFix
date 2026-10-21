@@ -1,0 +1,3 @@
+command=['dotnet', 'run', '--no-restore', '--project', 'tools/optimization/LiveDecoWindowCheck', '-c', 'Release', '--', 'tools/optimization/out/gate2-A-r12-steps.json']
+exit=0
+Production Gate2 window regression: 58 checks passed; legacy long setup rejected, generated paused preparation accepted; no Unity performance proven

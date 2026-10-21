@@ -16,12 +16,50 @@ namespace StutterFix
     internal static class LiveDecoChanges
     {
         internal const int State = 0, Shape = 1, Pose = 2, Hierarchy = 3, Script = 4;
-        sealed class Binding { internal Delegate Call; internal int Kind; }
+        sealed class Binding { internal Delegate Call, Read; internal int Kind; }
+        internal static long EqualityReads, UnchangedWrites, ShadowedPoseWrites;
         static readonly List<Binding> bindings = new List<Binding>();
         static readonly Dictionary<MethodInfo, int> bound = new Dictionary<MethodInfo, int>();
         static readonly MethodInfo readCode = typeof(PatchProcessor).GetMethods().Single(m => m.Name == "GetOriginalInstructions"
             && m.GetParameters().Length == 2 && !m.GetParameters()[1].IsOut);
         internal static int Methods, Sites;
+
+        // Compare only canonical, single-value setters. Never read material(s)
+        // (they clone/allocate), or infer equality of MPBs/commands. In particular
+        // forceRenderingOff must always notify: while owned its native true bit
+        // is ours, so a foreign true write is still an ownership boundary.
+        static Delegate EqualityReader(MethodInfo writer)
+        {
+            if (writer.IsStatic || writer.GetParameters().Length != 1) return null;
+            Type t = writer.DeclaringType; string n = writer.Name, getter = null;
+            if (t == typeof(GameObject) && n == "SetActive") getter = "get_activeSelf";
+            else if ((t == typeof(Behaviour) || typeof(Renderer).IsAssignableFrom(t)) && n == "set_enabled") getter = "get_enabled";
+            else if (t == typeof(Transform) && (n == "set_localPosition" || n == "set_position"
+                || n == "set_localRotation" || n == "set_rotation" || n == "set_localScale")) getter = "get_" + n.Substring(4);
+            if (getter == null) return null;
+            var read = t.GetMethod(getter, BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null);
+            Type value = writer.GetParameters()[0].ParameterType;
+            if (read == null || read.ReturnType != value) throw new MissingMethodException(t.FullName, getter);
+            return read.CreateDelegate(System.Linq.Expressions.Expression.GetFuncType(t, value));
+        }
+
+        static bool Notify<T, A>(Binding b, T obj, A value) where T : UnityEngine.Object
+        {
+            if (b.Read == null || !LiveDecoRenderer.ObservingWrites) return true;
+            A current;
+            // On a destroyed object preserve the original writer's exception,
+            // rather than replacing it with a new getter failure.
+            try { EqualityReads++; current = ((Func<T, A>)b.Read)(obj); }
+            catch { return true; }
+            if (!EqualityComparer<A>.Default.Equals(current, value)) return true;
+            // Owned pivot/child Transforms deliberately lag logical fields.
+            // A foreign write of that stale value must release before writing.
+            if (b.Kind == Pose && LiveDecoRenderer.HasOwnedWatcher(obj))
+            { ShadowedPoseWrites++; return true; }
+            UnchangedWrites++; return false;
+        }
+
+        internal static void ResetCounts() { EqualityReads = UnchangedWrites = ShadowedPoseWrites = 0; }
 
         internal static int Kind(MethodInfo m)
         {
@@ -114,7 +152,7 @@ namespace StutterFix
                 {
                     Type delegateType = returns ? System.Linq.Expressions.Expression.GetFuncType(signature)
                         : System.Linq.Expressions.Expression.GetActionType(signature);
-                    var binding = new Binding { Call = target.CreateDelegate(delegateType), Kind = kind };
+                    var binding = new Binding { Call = target.CreateDelegate(delegateType), Read = EqualityReader(target), Kind = kind };
                     id = bindings.Count; bindings.Add(binding); bound.Add(target, id);
                 }
                 string name = target.IsStatic ? (returns ? "Spawn" : "Destroy") : returns ? "Add" : "Call";
@@ -138,8 +176,10 @@ namespace StutterFix
         }
         static void Call1<T, A>(T obj, A a, int id) where T : UnityEngine.Object
         {
-            var b = bindings[id]; LiveDecoRenderer.BeforeWrite(obj, b.Kind);
-            ((Action<T, A>)b.Call)(obj, a); LiveDecoRenderer.AfterWrite(obj, b.Kind);
+            var b = bindings[id]; bool notify = Notify(b, obj, a);
+            if (notify) LiveDecoRenderer.BeforeWrite(obj, b.Kind);
+            ((Action<T, A>)b.Call)(obj, a);
+            if (notify) LiveDecoRenderer.AfterWrite(obj, b.Kind);
         }
         static void Call2<T, A, B>(T obj, A a, B c, int id) where T : UnityEngine.Object
         {

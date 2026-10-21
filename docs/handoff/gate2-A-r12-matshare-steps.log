@@ -1,0 +1,3 @@
+command=['py', '-3', 'tools/optimization/test-matshare-steps.py']
+exit=0
+matshare steps checks passed: 69 steps; OFF/ON/OFF; isolated compare/fixture

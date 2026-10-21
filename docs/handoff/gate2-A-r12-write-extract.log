@@ -1,0 +1,3 @@
+command=['py', '-3', 'E:\\StutterFixWork\\wt-ld2a\\tools\\optimization\\LiveDecoChangesCheck\\extract.py']
+exit=0
+Extracted actual Queue/ObservingWrites/HasOwnedWatcher/BeforeWrite/AfterWrite without rewriting their bodies

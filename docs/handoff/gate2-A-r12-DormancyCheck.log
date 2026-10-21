@@ -1,0 +1,25 @@
+command=['dotnet', 'run', '--project', 'tools/optimization/DormancyCheck', '-c', 'Release']
+exit=0
+[잠든 장식] 설치
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=0 tracking=True
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=1 tracking=True
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=2 tracking=True
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=3 tracking=True
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=4 tracking=True
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=5 tracking=False
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=6 tracking=False
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=7 tracking=False
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=8 tracking=False
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+[framecmp] resume restored continuity_frame=9 tracking=True
+[framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+Dormancy production lifecycle: 41 checks passed; managed adapters, no live pixels/FPS/lifetime proof

@@ -4,6 +4,10 @@ using HarmonyLib;
 using StutterFix;
 using U = UnityEngine;
 
+try
+{
+NoticeAdapter.Check();
+
 int checks = 0;
 void Check(bool value, string label) { checks++; if (!value) throw new Exception(label); }
 (MethodInfo Wrapper, int Id) Rewrite(MethodInfo target)
@@ -86,4 +90,49 @@ long beforeBytes = GC.GetAllocatedBytesForCurrentThread();
 for (int n = 0; n < 10000; n++) hotCall(renderer, true, hot.Id);
 long wrapperBytes = GC.GetAllocatedBytesForCurrentThread() - beforeBytes;
 Check(wrapperBytes == 0, "typed writer wrapper allocation bytes=" + wrapperBytes);
+LiveDecoChanges.ResetCounts();
+int beforeNoop = LiveDecoRenderer.Before, afterNoop = LiveDecoRenderer.After, writesNoop = renderer.Writes;
+for (int n = 0; n < 10000; n++) hotCall(renderer, true, hot.Id);
+Check(renderer.Writes == writesNoop + 10000, "unchanged setter still executes every original call");
+Check(LiveDecoRenderer.Before == beforeNoop && LiveDecoRenderer.After == afterNoop, "unchanged native state does not enqueue notification work");
+Check(LiveDecoChanges.EqualityReads == 10000 && LiveDecoChanges.UnchangedWrites == 10000, "no-op counters are exact");
+hotCall(renderer, false, hot.Id);
+Check(!renderer.enabled && LiveDecoRenderer.Before == beforeNoop + 1 && LiveDecoRenderer.After == afterNoop + 1, "real visibility edge still notifies both sides");
+var pose = Rewrite(typeof(U.Transform).GetMethod("set_localPosition"));
+var poseCall = (Action<U.Transform, float, int>)pose.Wrapper.CreateDelegate(typeof(Action<U.Transform, float, int>));
+var transform = new U.Transform();
+int poseBefore = LiveDecoRenderer.Before;
+poseCall(transform, 0f, pose.Id);
+Check(LiveDecoRenderer.Before == poseBefore, "unchanged unowned pose avoids dirty queue");
+LiveDecoRenderer.OwnedWatcher = true;
+poseCall(transform, 0f, pose.Id);
+Check(LiveDecoRenderer.Before == poseBefore + 1 && LiveDecoChanges.ShadowedPoseWrites == 1, "stale owned pose retains release-before-write notification");
+LiveDecoRenderer.OwnedWatcher = false;
+poseCall(transform, 1e-7f, pose.Id);
+Check(LiveDecoRenderer.Before == poseBefore + 2 && transform.localPosition == 1e-7f, "sub-epsilon pose changes notify using exact equality");
+transform.GetterFails = true;
+poseCall(transform, 2f, pose.Id);
+Check(LiveDecoRenderer.Before == poseBefore + 3 && transform.Writes == 2, "getter failure falls back to original writer and notification");
+var vectorPose = Rewrite(typeof(U.Transform).GetMethod("set_position"));
+var vectorCall = (Action<U.Transform, (float, float, float), int>)vectorPose.Wrapper.CreateDelegate(typeof(Action<U.Transform, (float, float, float), int>));
+int vectorBefore = LiveDecoRenderer.Before;
+vectorCall(transform, (0f, 0f, 0f), vectorPose.Id);
+vectorCall(transform, (1e-7f, 0f, 0f), vectorPose.Id);
+Check(LiveDecoRenderer.Before == vectorBefore + 1, "struct-valued pose uses exact component equality");
+var offBit = Rewrite(typeof(U.Renderer).GetMethod("set_forceRenderingOff"));
+var offCall = (Action<U.Renderer, bool, int>)offBit.Wrapper.CreateDelegate(typeof(Action<U.Renderer, bool, int>));
+int forceBefore = LiveDecoRenderer.Before;
+renderer.forceRenderingOff = true;
+offCall(renderer, true, offBit.Id);
+Check(LiveDecoRenderer.Before == forceBefore + 1, "foreign same force-off value remains an ownership boundary");
+LiveDecoRenderer.ObservingWrites = false;
+long reads = LiveDecoChanges.EqualityReads;
+hotCall(renderer, false, hot.Id);
+Check(LiveDecoChanges.EqualityReads == reads, "restore/inactive path performs no equality getter");
+LiveDecoRenderer.ObservingWrites = true;
+LiveDecoChanges.ResetCounts();
+Check(LiveDecoChanges.EqualityReads == 0 && LiveDecoChanges.UnchangedWrites == 0 && LiveDecoChanges.ShadowedPoseWrites == 0, "diagnostic reset clears all interval counters");
 Console.WriteLine($"Production write-site instrumentation: {checks} checks; typed arities 0..4, spawn/destroy, labels, EH, exceptions, 10000 zero-allocation calls; no Unity/Harmony installation proof");
+}
+catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+return 0;

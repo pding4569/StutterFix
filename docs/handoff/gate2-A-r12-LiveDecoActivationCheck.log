@@ -1,0 +1,3 @@
+command=['dotnet', 'run', '--project', 'tools/optimization/LiveDecoActivationCheck', '-c', 'Release']
+exit=0
+Production activation/sort regression: 29 checks passed; managed adapters, no Unity timing/pixels/FPS proven

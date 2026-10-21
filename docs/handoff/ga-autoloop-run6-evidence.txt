@@ -1,413 +1,287 @@
-des-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=40
-[StutterFix] [livedeco] excluded reason=vertex-error count=1
+=A restored=1
+[StutterFix] [livedeco2] PIXEL t=276 song=276.005328 ab_out=0 maxdiff=0 aa2_out=0 stable=True regions=
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco2] prepared mode=off song=258.017840 paused=True ready=True transition_ms=0.000000 resume_then_play_to=262 minimum_on_warmup_s=3
+[StutterFix] [livedeco2] window begin index=0 mode=off song=262.060504 warmup_excluded_s=0 minimum_on_warmup_s=3 transition_ms=0.000000
+[StutterFix] [livedeco2] FPS mode=off index=0 fps=124.759392 ms=8.015429 frames=1738 elapsed_s=13.930815 song_begin=262.060504 song_end=276.004595 valid=True
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco] live_tracking ready=1 playing=False capture_paused=True awake=1357
+[StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=9910.763300 prepare_ms=2.393500 register_ms=1216.123500 patch_ms=8692.185300
+[StutterFix] [livedeco] begin variant=A renderer_version=11 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events change_methods=1723 change_sites=4039 enable_transition_ms=10133.056500 prepare_ms=2.393500 register_ms=1216.123500 patch_ms=8692.185300 first_render_ms=222.293200 wait_first_cull_ms=14.268100 camera_z=-10 enable_allocated_bytes=0 watched_objects=742143 bounds_policy=screen-pixels threshold_px=0.01 visibility_policy=logical-visible currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=1289 runs=860 registry=157254 transitions=4 restored=4215 error=none atlas=0 ready=True
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1311 excluded=22 nested_admitted=1289 visibility_admitted=1289 threshold_px=0.01 pixel_max_err=0.0133651216 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=729,224,336,22,0,0
+[StutterFix] [livedeco] excluded reason=repeat-tile count=38
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=22
 [StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32773 owned=1644 runs=1443 created=76 reused=1367 destroyed=86 reconcile_ms=5.266300
-[StutterFix] [livedeco] vertexcheck max_err=0.000172633489 count=128 excluded=49 nested_admitted=79 visibility_admitted=79 threshold=0.0001 vertex_max_err=0.000122070313 bounds_max_err=0.000172633489 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1644 runs=1443 vertex_ms=1.888400 upload_ms=0.830000 reconcile_ms=5.266300 scan_ms=52.316200 upload_calls=1443.000 dirty_images=1644.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1863680 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=48
-[StutterFix] [livedeco] excluded reason=vertex-error count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=1 phase=activation owned=1289 runs=860 vertex_ms=0.507700 upload_ms=0.897600 reconcile_ms=220.875700 delta_ms=203.027500 scan_ms=0.000100 audit_ms=2.071900 awake=1350 dormancy_awake=1357 dirty=157254 cache_hits=0 admissions=1350 write_callbacks=3199 watcher_visits=15791 observer_reads=5466 unchanged_writes=2301 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=860.000 dirty_images=1289.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=22130688 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=258.017840 awake=1350 owned=1289 runs=860 dirty=157254 phase=activation scan_ms=0.000100 vertex_ms=0.507700 upload_ms=0.897600 transition_ms=10133.056500 audits=1 missed=0
+[StutterFix] [livedeco2] prepared mode=on song=258.017840 paused=True ready=True transition_ms=10133.056500 resume_then_play_to=262 minimum_on_warmup_s=3
+[StutterFix] [tightlate] original loop retained: scrDecoration.UpdatePosition owner=StutterFix.livedeco
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=880 excluded=79 nested_admitted=801 visibility_admitted=801 threshold_px=0.01 pixel_max_err=0.02022063 vertex_max_err=6.10351563E-05 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=448,132,221,79,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=29
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=79
+[StutterFix] [livedeco] released reason=alpha-zero count=196
+[StutterFix] [livedeco] cost per_frame=1 samples=31 phase=steady owned=1894 runs=1388 vertex_ms=1.552626 upload_ms=0.683174 reconcile_ms=6.915181 delta_ms=5.224252 scan_ms=0.000071 audit_ms=0.067026 awake=2022 dormancy_awake=2035 dirty=31550 cache_hits=0 admissions=909 write_callbacks=32866 watcher_visits=110561 observer_reads=31409 unchanged_writes=8980 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1083.742 dirty_images=1502.032 skipped_uploads=77.226 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=2 heap_delta=16031744 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=258.849841 awake=2022 owned=1894 runs=1388 dirty=31550 phase=steady scan_ms=0.000071 vertex_ms=1.552626 upload_ms=0.683174 transition_ms=10185.475300 audits=2 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1161 excluded=35 nested_admitted=1126 visibility_admitted=1126 threshold_px=0.01 pixel_max_err=0.019677626 vertex_max_err=6.10351563E-05 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=614,189,323,35,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=40
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=35
+[StutterFix] [livedeco] released reason=alpha-zero count=1082
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=40 phase=steady owned=1937 runs=1288 vertex_ms=2.121443 upload_ms=0.858960 reconcile_ms=7.741515 delta_ms=5.439393 scan_ms=0.000095 audit_ms=0.052348 awake=2083 dormancy_awake=2092 dirty=50476 cache_hits=0 admissions=1201 write_callbacks=41860 watcher_visits=164458 observer_reads=49518 unchanged_writes=14943 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1253.125 dirty_images=1891.125 skipped_uploads=4.475 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=21741568 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=259.841845 awake=2083 owned=1937 runs=1288 dirty=50476 phase=steady scan_ms=0.000095 vertex_ms=2.121443 upload_ms=0.858960 transition_ms=10277.560200 audits=3 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1076 excluded=61 nested_admitted=1015 visibility_admitted=1015 threshold_px=0.01 pixel_max_err=0.020483518 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=529,182,304,61,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=61
+[StutterFix] [livedeco] excluded reason=keywords count=15
+[StutterFix] [livedeco] released reason=alpha-zero count=592
+[StutterFix] [livedeco] cost per_frame=1 samples=15 phase=steady owned=2360 runs=1542 vertex_ms=2.419933 upload_ms=0.974253 reconcile_ms=17.457247 delta_ms=14.933427 scan_ms=0.000080 audit_ms=0.145753 awake=2508 dormancy_awake=2515 dirty=28753 cache_hits=0 admissions=1091 write_callbacks=23151 watcher_visits=94702 observer_reads=25810 unchanged_writes=5954 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1395.333 dirty_images=2130.533 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=18178048 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=260.876513 awake=2508 owned=2360 runs=1542 dirty=28753 phase=steady scan_ms=0.000080 vertex_ms=2.419933 upload_ms=0.974253 transition_ms=10315.417500 audits=4 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=901 excluded=122 nested_admitted=779 visibility_admitted=779 threshold_px=0.01 pixel_max_err=0.0278755631 vertex_max_err=6.10351563E-05 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=444,134,201,122,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=122
+[StutterFix] [livedeco] excluded reason=keywords count=17
+[StutterFix] [livedeco] released reason=alpha-zero count=1241
+[StutterFix] [livedeco] cost per_frame=1 samples=17 phase=steady owned=1898 runs=1201 vertex_ms=2.325659 upload_ms=0.931759 reconcile_ms=29.384024 delta_ms=26.539259 scan_ms=0.000065 audit_ms=0.126965 awake=2122 dormancy_awake=2136 dirty=36359 cache_hits=0 admissions=918 write_callbacks=27201 watcher_visits=112261 observer_reads=31254 unchanged_writes=7303 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1388.353 dirty_images=1999.824 skipped_uploads=7.882 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=-1508147200 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=261.708514 awake=2122 owned=1898 runs=1201 dirty=36359 phase=steady scan_ms=0.000065 vertex_ms=2.325659 upload_ms=0.931759 transition_ms=10363.778500 audits=5 missed=0
+[StutterFix] [livedeco2] window begin index=1 mode=on song=262.060504 warmup_excluded_s=4.204 minimum_on_warmup_s=3 transition_ms=10380.158700
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1344 excluded=167 nested_admitted=1177 visibility_admitted=1177 threshold_px=0.01 pixel_max_err=0.02415882 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=669,181,327,167,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=167
+[StutterFix] [livedeco] excluded reason=keywords count=39
+[StutterFix] [livedeco] released reason=alpha-zero count=1244
+[StutterFix] [livedeco] cost per_frame=1 samples=39 phase=steady owned=1831 runs=1183 vertex_ms=2.399895 upload_ms=0.880713 reconcile_ms=8.355351 delta_ms=6.541500 scan_ms=0.000069 audit_ms=0.055879 awake=2106 dormancy_awake=2117 dirty=74574 cache_hits=0 admissions=1383 write_callbacks=57495 watcher_visits=234760 observer_reads=64156 unchanged_writes=13852 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1273.410 dirty_images=1980.410 skipped_uploads=8.436 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=3178496 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=262.892504 awake=2106 owned=1831 runs=1183 dirty=74574 phase=steady scan_ms=0.000069 vertex_ms=2.399895 upload_ms=0.880713 transition_ms=10434.518700 audits=6 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1232 excluded=80 nested_admitted=1152 visibility_admitted=1152 threshold_px=0.01 pixel_max_err=0.0201323517 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=668,181,303,80,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=80
+[StutterFix] [livedeco] excluded reason=keywords count=40
+[StutterFix] [livedeco] released reason=alpha-zero count=1034
+[StutterFix] [livedeco] cost per_frame=1 samples=40 phase=steady owned=1950 runs=1325 vertex_ms=2.290305 upload_ms=0.913760 reconcile_ms=8.311743 delta_ms=6.270415 scan_ms=0.000073 audit_ms=0.057765 awake=2225 dormancy_awake=2234 dirty=82994 cache_hits=1 admissions=1272 write_callbacks=64125 watcher_visits=270600 observer_reads=71099 unchanged_writes=13650 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1311.150 dirty_images=1843.925 skipped_uploads=7.350 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=3817472 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=263.895159 awake=2225 owned=1950 runs=1325 dirty=82994 phase=steady scan_ms=0.000073 vertex_ms=2.290305 upload_ms=0.913760 transition_ms=10516.171800 audits=7 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1015 excluded=87 nested_admitted=928 visibility_admitted=928 threshold_px=0.01 pixel_max_err=0.0207296479 vertex_max_err=6.10351563E-05 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=533,180,215,87,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=45
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=87
+[StutterFix] [livedeco] released reason=alpha-zero count=879
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=45 phase=steady owned=1998 runs=1343 vertex_ms=2.370564 upload_ms=0.862167 reconcile_ms=6.667300 delta_ms=4.995520 scan_ms=0.000078 audit_ms=0.049011 awake=2214 dormancy_awake=2278 dirty=82035 cache_hits=0 admissions=1060 write_callbacks=63047 watcher_visits=262215 observer_reads=69301 unchanged_writes=13821 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1234.578 dirty_images=1877.867 skipped_uploads=10.733 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=4128768 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=264.919177 awake=2214 owned=1998 runs=1343 dirty=82035 phase=steady scan_ms=0.000078 vertex_ms=2.370564 upload_ms=0.862167 transition_ms=10591.401900 audits=8 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1260 excluded=53 nested_admitted=1207 visibility_admitted=1207 threshold_px=0.01 pixel_max_err=0.01953125 vertex_max_err=0.000122070313 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=672,237,298,53,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=53
+[StutterFix] [livedeco] excluded reason=keywords count=40
+[StutterFix] [livedeco] released reason=alpha-zero count=1122
+[StutterFix] [livedeco] cost per_frame=1 samples=40 phase=steady owned=2083 runs=1452 vertex_ms=2.624820 upload_ms=0.956993 reconcile_ms=8.252180 delta_ms=6.041805 scan_ms=0.000085 audit_ms=0.060555 awake=2257 dormancy_awake=2264 dirty=65385 cache_hits=0 admissions=1300 write_callbacks=51692 watcher_visits=206777 observer_reads=56917 unchanged_writes=12935 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1391.400 dirty_images=2092.550 skipped_uploads=2.725 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=5615616 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=265.932513 awake=2257 owned=2083 runs=1452 dirty=65385 phase=steady scan_ms=0.000085 vertex_ms=2.624820 upload_ms=0.956993 transition_ms=10679.816900 audits=9 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=986 excluded=53 nested_admitted=933 visibility_admitted=933 threshold_px=0.01 pixel_max_err=0.02356619 vertex_max_err=6.10351563E-05 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=502,182,249,53,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=44
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=53
+[StutterFix] [livedeco] released reason=alpha-zero count=1124
+[StutterFix] [livedeco] cost per_frame=1 samples=45 phase=steady owned=1892 runs=1226 vertex_ms=2.566991 upload_ms=0.898122 reconcile_ms=6.469711 delta_ms=4.618380 scan_ms=0.000060 audit_ms=0.049149 awake=2031 dormancy_awake=2097 dirty=61085 cache_hits=0 admissions=1030 write_callbacks=49888 watcher_visits=190136 observer_reads=53909 unchanged_writes=13084 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1320.444 dirty_images=2025.178 skipped_uploads=5.622 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=4685824 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=266.935168 awake=2031 owned=1892 runs=1226 dirty=61085 phase=steady scan_ms=0.000060 vertex_ms=2.566991 upload_ms=0.898122 transition_ms=10763.126800 audits=10 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=972 excluded=142 nested_admitted=830 visibility_admitted=830 threshold_px=0.01 pixel_max_err=0.1965296 vertex_max_err=0.000122070313 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=511,96,223,112,30,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=141
+[StutterFix] [livedeco] excluded reason=keywords count=46
+[StutterFix] [livedeco] excluded reason=vertex-error-px count=1
+[StutterFix] [livedeco] excluded reason=repeat-tile count=19
+[StutterFix] [livedeco] released reason=alpha-zero count=1035
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=49 phase=steady owned=1699 runs=1132 vertex_ms=2.260665 upload_ms=0.772304 reconcile_ms=5.821429 delta_ms=4.347457 scan_ms=0.000076 audit_ms=0.047251 awake=1934 dormancy_awake=1941 dirty=77817 cache_hits=13 admissions=1037 write_callbacks=62068 watcher_visits=241932 observer_reads=65154 unchanged_writes=13177 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1155.510 dirty_images=1777.224 skipped_uploads=11.653 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=4595712 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=267.927172 awake=1934 owned=1699 runs=1132 dirty=77817 phase=steady scan_ms=0.000076 vertex_ms=2.260665 upload_ms=0.772304 transition_ms=10835.351400 audits=11 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1109 excluded=13 nested_admitted=1096 visibility_admitted=1096 threshold_px=0.01 pixel_max_err=0.0155779906 vertex_max_err=0.000122070313 bounds_max_err=0.0002516544 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=592,235,269,13,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=13
+[StutterFix] [livedeco] excluded reason=keywords count=43
+[StutterFix] [livedeco] excluded reason=repeat-tile count=6
+[StutterFix] [livedeco] released reason=alpha-zero count=1063
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=44 phase=steady owned=1817 runs=1173 vertex_ms=2.313152 upload_ms=0.852443 reconcile_ms=7.178739 delta_ms=5.237520 scan_ms=0.000080 audit_ms=0.051225 awake=2039 dormancy_awake=2047 dirty=91245 cache_hits=86 admissions=1158 write_callbacks=67158 watcher_visits=279137 observer_reads=70013 unchanged_writes=12878 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1275.159 dirty_images=1805.364 skipped_uploads=2.568 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=5931008 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=268.951159 awake=2039 owned=1817 runs=1173 dirty=91245 phase=steady scan_ms=0.000080 vertex_ms=2.313152 upload_ms=0.852443 transition_ms=10920.765000 audits=12 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1064 excluded=20 nested_admitted=1044 visibility_admitted=1044 threshold_px=0.01 pixel_max_err=0.0179244149 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=550,199,295,20,0,0
+[StutterFix] [livedeco] excluded reason=repeat-tile count=7
+[StutterFix] [livedeco] excluded reason=keywords count=44
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=20
+[StutterFix] [livedeco] released reason=alpha-zero count=827
+[StutterFix] [livedeco] cost per_frame=1 samples=46 phase=steady owned=2141 runs=1370 vertex_ms=2.510602 upload_ms=0.867443 reconcile_ms=6.387543 delta_ms=4.647093 scan_ms=0.000093 audit_ms=0.048467 awake=2262 dormancy_awake=2270 dirty=73548 cache_hits=107 admissions=1115 write_callbacks=55046 watcher_visits=213413 observer_reads=56516 unchanged_writes=12194 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1300.109 dirty_images=1979.239 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=6545408 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=269.953845 awake=2262 owned=2141 runs=1370 dirty=73548 phase=steady scan_ms=0.000093 vertex_ms=2.510602 upload_ms=0.867443 transition_ms=11000.825700 audits=13 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1206 excluded=8 nested_admitted=1198 visibility_admitted=1198 threshold_px=0.01 pixel_max_err=0.0148720909 vertex_max_err=0.000122070313 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=633,243,322,8,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=40
+[StutterFix] [livedeco] excluded reason=repeat-tile count=7
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=8
+[StutterFix] [livedeco] released reason=alpha-zero count=1119
+[StutterFix] [livedeco] cost per_frame=1 samples=40 phase=steady owned=2300 runs=1869 vertex_ms=2.664123 upload_ms=1.007568 reconcile_ms=8.185570 delta_ms=5.516273 scan_ms=0.000100 audit_ms=0.058815 awake=2414 dormancy_awake=2426 dirty=60842 cache_hits=80 admissions=1253 write_callbacks=45207 watcher_visits=170879 observer_reads=47111 unchanged_writes=11542 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1504.475 dirty_images=2086.225 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=7577600 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=270.977831 awake=2414 owned=2300 runs=1869 dirty=60842 phase=steady scan_ms=0.000100 vertex_ms=2.664123 upload_ms=1.007568 transition_ms=11107.597600 audits=14 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=1117 excluded=12 nested_admitted=1105 visibility_admitted=1105 threshold_px=0.01 pixel_max_err=0.0170705654 vertex_max_err=0.000122070313 bounds_max_err=0.000244140625 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=613,198,294,12,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=37
+[StutterFix] [livedeco] excluded reason=repeat-tile count=7
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=12
+[StutterFix] [livedeco] released reason=alpha-zero count=1131
+[StutterFix] [livedeco] cost per_frame=1 samples=37 phase=steady owned=2369 runs=1925 vertex_ms=2.930416 upload_ms=1.245827 reconcile_ms=8.591878 delta_ms=5.586281 scan_ms=0.000062 audit_ms=0.062973 awake=2501 dormancy_awake=2562 dirty=57791 cache_hits=95 admissions=1161 write_callbacks=43757 watcher_visits=163117 observer_reads=45495 unchanged_writes=11260 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1856.541 dirty_images=2287.892 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=7299072 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=271.991168 awake=2501 owned=2369 runs=1925 dirty=57791 phase=steady scan_ms=0.000062 vertex_ms=2.930416 upload_ms=1.245827 transition_ms=11218.804700 audits=15 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=916 excluded=32 nested_admitted=884 visibility_admitted=884 threshold_px=0.01 pixel_max_err=0.0222567543 vertex_max_err=6.10351563E-05 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=495,150,239,32,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=40
+[StutterFix] [livedeco] excluded reason=repeat-tile count=9
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=32
+[StutterFix] [livedeco] released reason=alpha-zero count=1344
+[StutterFix] [livedeco] cost per_frame=1 samples=40 phase=steady owned=2002 runs=1425 vertex_ms=2.796850 upload_ms=1.074610 reconcile_ms=7.305985 delta_ms=4.857713 scan_ms=0.000065 audit_ms=0.056835 awake=2165 dormancy_awake=2231 dirty=69025 cache_hits=93 admissions=965 write_callbacks=50233 watcher_visits=192877 observer_reads=53810 unchanged_writes=12999 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1611.725 dirty_images=2139.200 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=6090752 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=273.015154 awake=2165 owned=2002 runs=1425 dirty=69025 phase=steady scan_ms=0.000065 vertex_ms=2.796850 upload_ms=1.074610 transition_ms=11316.735600 audits=16 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=855 excluded=13 nested_admitted=842 visibility_admitted=842 threshold_px=0.01 pixel_max_err=0.0159549955 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=452,174,216,13,0,0
+[StutterFix] [livedeco] excluded reason=repeat-tile count=10
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=13
+[StutterFix] [livedeco] excluded reason=keywords count=42
+[StutterFix] [livedeco] released reason=alpha-zero count=1202
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=42 phase=steady owned=1719 runs=1230 vertex_ms=2.609148 upload_ms=0.941036 reconcile_ms=7.145067 delta_ms=4.409602 scan_ms=0.000067 audit_ms=0.055495 awake=1885 dormancy_awake=1947 dirty=70300 cache_hits=78 admissions=907 write_callbacks=50101 watcher_visits=196167 observer_reads=54431 unchanged_writes=13505 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1406.214 dirty_images=1998.452 skipped_uploads=0.905 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=7471104 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=274.028491 awake=1885 owned=1719 runs=1230 dirty=70300 phase=steady scan_ms=0.000067 vertex_ms=2.609148 upload_ms=0.941036 transition_ms=11431.625100 audits=17 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=61 excluded=15 nested_admitted=46 visibility_admitted=46 threshold_px=0.01 pixel_max_err=0.0160292611 vertex_max_err=6.10351563E-05 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=14,7,25,15,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=43
+[StutterFix] [livedeco] excluded reason=repeat-tile count=7
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=15
+[StutterFix] [livedeco] released reason=alpha-zero count=1294
+[StutterFix] [livedeco] cost per_frame=1 samples=69 phase=steady owned=566 runs=514 vertex_ms=1.661113 upload_ms=0.596000 reconcile_ms=2.500136 delta_ms=1.807580 scan_ms=0.000067 audit_ms=0.030419 awake=568 dormancy_awake=670 dirty=110199 cache_hits=95 admissions=111 write_callbacks=73553 watcher_visits=234030 observer_reads=64920 unchanged_writes=18754 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=910.783 dirty_images=1260.565 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=659456 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=275.041827 awake=568 owned=566 runs=514 dirty=110199 phase=steady scan_ms=0.000067 vertex_ms=1.661113 upload_ms=0.596000 transition_ms=11479.411500 audits=18 missed=0
+[StutterFix] [livedeco2] FPS mode=on index=1 fps=51.595154 ms=19.381665 frames=719 elapsed_s=13.935417 song_begin=262.060504 song_end=276.007525 valid=True
+[StutterFix] [livedeco] vertexcheck max_err=0 count=1 excluded=0 nested_admitted=1 visibility_admitted=1 threshold_px=0.01 pixel_max_err=0 vertex_max_err=0 bounds_max_err=0 quad_bounds_max_err=0.1 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=1,0,0,0,0,0
+[StutterFix] [livedeco] released reason=alpha-zero count=549
+[StutterFix] [livedeco] cost per_frame=1 samples=149 phase=steady owned=18 runs=16 vertex_ms=0.109166 upload_ms=0.054330 reconcile_ms=1.470914 delta_ms=1.348865 scan_ms=0.000068 audit_ms=0.012980 awake=18 dormancy_awake=87 dirty=215634 cache_hits=0 admissions=1 write_callbacks=81804 watcher_visits=252946 observer_reads=51559 unchanged_writes=7717 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=80.060 dirty_images=82.718 skipped_uploads=0.101 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=True allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=69632 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=276.018511 awake=18 owned=18 runs=16 dirty=215634 phase=steady scan_ms=0.000068 vertex_ms=0.109166 upload_ms=0.054330 transition_ms=11497.596800 audits=19 missed=0
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco] live_tracking ready=1 playing=False capture_paused=True awake=1357
+[StutterFix] [livedeco] activation pending=1 first_render=main-camera-PreCull setup_ms=10398.592800 prepare_ms=2.746200 register_ms=1217.603600 patch_ms=9178.185200
+[StutterFix] [livedeco] begin variant=A renderer_version=11 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events change_methods=1723 change_sites=4039 enable_transition_ms=10616.497300 prepare_ms=2.746200 register_ms=1217.603600 patch_ms=9178.185200 first_render_ms=217.904500 wait_first_cull_ms=12.768100 camera_z=-10 enable_allocated_bytes=0 watched_objects=742143 bounds_policy=screen-pixels threshold_px=0.01 visibility_policy=logical-visible currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=1295 runs=856 registry=157254 transitions=831 restored=22316 error=none atlas=0 ready=True
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1311 excluded=16 nested_admitted=1295 visibility_admitted=1295 threshold_px=0.01 pixel_max_err=0.01232201 vertex_max_err=0.000122070313 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=712,267,316,16,0,0
+[StutterFix] [livedeco] excluded reason=repeat-tile count=38
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=16
 [StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32774 owned=1650 runs=1442 created=46 reused=1396 destroyed=47 reconcile_ms=4.706600
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=80 excluded=29 nested_admitted=51 visibility_admitted=51 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1650 runs=1442 vertex_ms=1.878900 upload_ms=0.803400 reconcile_ms=4.706600 scan_ms=47.038100 upload_calls=1442.000 dirty_images=1650.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1171456 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=29
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32775 owned=1616 runs=1383 created=44 reused=1339 destroyed=103 reconcile_ms=4.556400
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=64 excluded=18 nested_admitted=46 visibility_admitted=46 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1616 runs=1383 vertex_ms=1.809400 upload_ms=0.737300 reconcile_ms=4.556400 scan_ms=46.130700 upload_calls=1383.000 dirty_images=1616.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=925696 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=18
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32776 owned=1666 runs=1427 created=79 reused=1348 destroyed=35 reconcile_ms=5.391300
-[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=116 excluded=32 nested_admitted=84 visibility_admitted=84 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1666 runs=1427 vertex_ms=1.943200 upload_ms=0.881300 reconcile_ms=5.391300 scan_ms=52.752500 upload_calls=1427.000 dirty_images=1666.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1679360 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=32
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32777 owned=1671 runs=1401 created=49 reused=1352 destroyed=75 reconcile_ms=4.669000
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=118 excluded=37 nested_admitted=81 visibility_admitted=81 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1671 runs=1401 vertex_ms=1.881700 upload_ms=0.785900 reconcile_ms=4.669000 scan_ms=51.544900 upload_calls=1401.000 dirty_images=1671.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1720320 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=37
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32778 owned=1669 runs=1405 created=43 reused=1362 destroyed=39 reconcile_ms=4.525900
-[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=61 excluded=21 nested_admitted=40 visibility_admitted=40 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1669 runs=1405 vertex_ms=1.873200 upload_ms=0.752500 reconcile_ms=4.525900 scan_ms=44.958800 upload_calls=1405.000 dirty_images=1669.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=880640 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=21
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32779 owned=1595 runs=1332 created=42 reused=1290 destroyed=115 reconcile_ms=4.709200
-[StutterFix] [livedeco] vertexcheck max_err=0.00013647876 count=61 excluded=18 nested_admitted=43 visibility_admitted=43 threshold=0.0001 vertex_max_err=6.10351563E-05 bounds_max_err=0.00013647876 quad_bounds_max_err=0.100000151 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1595 runs=1332 vertex_ms=1.982900 upload_ms=0.950100 reconcile_ms=4.709200 scan_ms=45.703100 upload_calls=1332.000 dirty_images=1595.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=884736 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=18
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32780 owned=1517 runs=1246 created=38 reused=1208 destroyed=124 reconcile_ms=4.233600
-[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=71 excluded=24 nested_admitted=47 visibility_admitted=47 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1517 runs=1246 vertex_ms=1.744600 upload_ms=0.738100 reconcile_ms=4.233600 scan_ms=48.229700 upload_calls=1246.000 dirty_images=1517.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1032192 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=24
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000244140625 quad_bounds_err=0.1000003 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000244140625 quad_bounds_err=0.1000003 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32781 owned=1405 runs=1137 created=3 reused=1134 destroyed=112 reconcile_ms=3.304600
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=8 excluded=6 nested_admitted=2 visibility_admitted=2 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1405 runs=1137 vertex_ms=1.656800 upload_ms=0.649900 reconcile_ms=3.304600 scan_ms=38.860200 upload_calls=1137.000 dirty_images=1405.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=118784 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=6
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32782 owned=1409 runs=1137 created=37 reused=1100 destroyed=37 reconcile_ms=3.833900
-[StutterFix] [livedeco] vertexcheck max_err=0.00013647876 count=57 excluded=17 nested_admitted=40 visibility_admitted=40 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.00013647876 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1409 runs=1137 vertex_ms=1.605300 upload_ms=0.625900 reconcile_ms=3.833900 scan_ms=43.359800 upload_calls=1137.000 dirty_images=1409.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=839680 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=17
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32783 owned=1369 runs=1070 created=40 reused=1030 destroyed=107 reconcile_ms=3.813900
-[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=64 excluded=25 nested_admitted=39 visibility_admitted=39 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1369 runs=1070 vertex_ms=1.594700 upload_ms=0.599000 reconcile_ms=3.813900 scan_ms=44.746200 upload_calls=1070.000 dirty_images=1369.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=929792 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=25
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32784 owned=1447 runs=1147 created=78 reused=1069 destroyed=1 reconcile_ms=4.341800
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=117 excluded=37 nested_admitted=80 visibility_admitted=80 threshold=0.0001 vertex_max_err=0.000122070313 bounds_max_err=0.000244140625 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1447 runs=1147 vertex_ms=1.613100 upload_ms=0.650600 reconcile_ms=4.341800 scan_ms=50.174500 upload_calls=1147.000 dirty_images=1447.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1699840 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=36
-[StutterFix] [livedeco] excluded reason=vertex-error count=1
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32785 owned=1414 runs=1117 created=49 reused=1068 destroyed=79 reconcile_ms=3.924600
-[StutterFix] [livedeco] vertexcheck max_err=0.00013647876 count=64 excluded=15 nested_admitted=49 visibility_admitted=49 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.00013647876 quad_bounds_max_err=0.100000091 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1414 runs=1117 vertex_ms=1.583100 upload_ms=0.591700 reconcile_ms=3.924600 scan_ms=44.831900 upload_calls=1117.000 dirty_images=1414.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=921600 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=15
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32786 owned=1452 runs=1156 created=83 reused=1073 destroyed=44 reconcile_ms=4.444700
-[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=114 excluded=31 nested_admitted=83 visibility_admitted=83 threshold=0.0001 vertex_max_err=6.10351563E-05 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1452 runs=1156 vertex_ms=1.602400 upload_ms=0.633900 reconcile_ms=4.444700 scan_ms=49.649200 upload_calls=1156.000 dirty_images=1452.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1662976 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=31
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32787 owned=1502 runs=1194 created=74 reused=1120 destroyed=36 reconcile_ms=4.474700
-[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=116 excluded=30 nested_admitted=86 visibility_admitted=86 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1502 runs=1194 vertex_ms=1.650500 upload_ms=0.655500 reconcile_ms=4.474700 scan_ms=49.889500 upload_calls=1194.000 dirty_images=1502.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1695744 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=30
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32788 owned=1421 runs=1116 created=43 reused=1073 destroyed=121 reconcile_ms=5.067100
-[StutterFix] [livedeco] vertexcheck max_err=0.000172633489 count=61 excluded=17 nested_admitted=44 visibility_admitted=44 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000172633489 quad_bounds_max_err=0.100000151 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1421 runs=1116 vertex_ms=1.708700 upload_ms=0.674600 reconcile_ms=5.067100 scan_ms=45.369800 upload_calls=1116.000 dirty_images=1421.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=901120 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=17
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32789 owned=1498 runs=1194 created=82 reused=1112 destroyed=4 reconcile_ms=4.736800
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=118 excluded=36 nested_admitted=82 visibility_admitted=82 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1498 runs=1194 vertex_ms=1.728700 upload_ms=0.737000 reconcile_ms=4.736800 scan_ms=49.699900 upload_calls=1194.000 dirty_images=1498.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1708032 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=36
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32790 owned=1495 runs=1189 created=36 reused=1153 destroyed=41 reconcile_ms=3.941400
-[StutterFix] [livedeco] vertexcheck max_err=0.00013647876 count=61 excluded=19 nested_admitted=42 visibility_admitted=42 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.00013647876 quad_bounds_max_err=0.100000091 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1495 runs=1189 vertex_ms=1.790800 upload_ms=0.789900 reconcile_ms=3.941400 scan_ms=45.176100 upload_calls=1189.000 dirty_images=1495.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=884736 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=19
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32791 owned=1543 runs=1179 created=87 reused=1092 destroyed=97 reconcile_ms=4.782500
-[StutterFix] [livedeco] vertexcheck max_err=0.000172633489 count=161 excluded=37 nested_admitted=124 visibility_admitted=124 threshold=0.0001 vertex_max_err=0.000122070313 bounds_max_err=0.000172633489 quad_bounds_max_err=0.100000151 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1543 runs=1179 vertex_ms=1.665600 upload_ms=0.659000 reconcile_ms=4.782500 scan_ms=55.580700 upload_calls=1179.000 dirty_images=1543.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=2342912 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=36
-[StutterFix] [livedeco] excluded reason=vertex-error count=1
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32792 owned=1535 runs=1182 created=124 reused=1058 destroyed=121 reconcile_ms=5.293900
-[StutterFix] [livedeco] vertexcheck max_err=0.000172633489 count=164 excluded=40 nested_admitted=124 visibility_admitted=124 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000172633489 quad_bounds_max_err=0.100000091 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1535 runs=1182 vertex_ms=1.678100 upload_ms=0.687400 reconcile_ms=5.293900 scan_ms=56.483700 upload_calls=1182.000 dirty_images=1535.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=2392064 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=40
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32793 owned=1542 runs=1190 created=83 reused=1107 destroyed=75 reconcile_ms=4.710800
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=119 excluded=34 nested_admitted=85 visibility_admitted=85 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1542 runs=1190 vertex_ms=1.699000 upload_ms=0.663700 reconcile_ms=4.710800 scan_ms=50.993900 upload_calls=1190.000 dirty_images=1542.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1748992 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=34
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32794 owned=1542 runs=1218 created=105 reused=1113 destroyed=77 reconcile_ms=5.065500
-[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=114 excluded=34 nested_admitted=80 visibility_admitted=80 threshold=0.0001 vertex_max_err=6.10351563E-05 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1542 runs=1218 vertex_ms=1.762300 upload_ms=0.745200 reconcile_ms=5.065500 scan_ms=50.277100 upload_calls=1218.000 dirty_images=1542.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1675264 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=34
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32795 owned=1578 runs=1261 created=85 reused=1176 destroyed=42 reconcile_ms=4.855900
-[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=115 excluded=30 nested_admitted=85 visibility_admitted=85 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1578 runs=1261 vertex_ms=1.754700 upload_ms=0.714900 reconcile_ms=4.855900 scan_ms=50.273600 upload_calls=1261.000 dirty_images=1578.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=1671168 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=30
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000314 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000314 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32796 owned=1505 runs=1189 created=4 reused=1185 destroyed=76 reconcile_ms=3.509800
-[StutterFix] [livedeco] vertexcheck max_err=0.000122070313 count=6 excluded=2 nested_admitted=4 visibility_admitted=4 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000122070313 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1505 runs=1189 vertex_ms=1.723500 upload_ms=0.646800 reconcile_ms=3.509800 scan_ms=38.437700 upload_calls=1189.000 dirty_images=1505.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=106496 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=2
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000272957521 quad_bounds_err=0.100000374 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.100000374 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32797 owned=1474 runs=1157 created=1 reused=1156 destroyed=33 reconcile_ms=3.289500
-[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=3 excluded=2 nested_admitted=1 visibility_admitted=1 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1474 runs=1157 vertex_ms=1.744700 upload_ms=0.667400 reconcile_ms=3.289500 scan_ms=37.787200 upload_calls=1157.000 dirty_images=1474.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=36864 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=2
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000172633489 quad_bounds_err=0.100000151 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32798 owned=1435 runs=1147 created=31 reused=1116 destroyed=41 reconcile_ms=3.984700
-[StutterFix] [livedeco] vertexcheck max_err=0.000172633489 count=9 excluded=5 nested_admitted=4 visibility_admitted=4 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000172633489 quad_bounds_max_err=0.100000151 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1435 runs=1147 vertex_ms=1.699600 upload_ms=0.675700 reconcile_ms=3.984700 scan_ms=38.387500 upload_calls=1147.000 dirty_images=1435.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=184320 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=5
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32799 owned=1435 runs=1146 created=1 reused=1145 destroyed=2 reconcile_ms=3.173100
-[StutterFix] [livedeco] vertexcheck max_err=0.00013647876 count=4 excluded=2 nested_admitted=2 visibility_admitted=2 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.00013647876 quad_bounds_max_err=0.100000091 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1435 runs=1146 vertex_ms=1.648900 upload_ms=0.654200 reconcile_ms=3.173100 scan_ms=37.074800 upload_calls=1146.000 dirty_images=1435.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=57344 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=2
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32800 owned=1360 runs=1066 created=4 reused=1062 destroyed=84 reconcile_ms=3.230000
-[StutterFix] [livedeco] vertexcheck max_err=0.000172633489 count=14 excluded=5 nested_admitted=9 visibility_admitted=9 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000172633489 quad_bounds_max_err=0.100000091 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1360 runs=1066 vertex_ms=1.554700 upload_ms=0.573700 reconcile_ms=3.230000 scan_ms=38.189700 upload_calls=1066.000 dirty_images=1360.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=208896 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=5
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32801 owned=1280 runs=1019 created=33 reused=986 destroyed=80 reconcile_ms=3.519500
-[StutterFix] [livedeco] vertexcheck max_err=0.000172633489 count=7 excluded=4 nested_admitted=3 visibility_admitted=3 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000172633489 quad_bounds_max_err=0.100000151 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1280 runs=1019 vertex_ms=1.461700 upload_ms=0.538500 reconcile_ms=3.519500 scan_ms=36.921600 upload_calls=1019.000 dirty_images=1280.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=102400 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=4
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32802 owned=1243 runs=984 created=3 reused=981 destroyed=38 reconcile_ms=2.911600
-[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=6 excluded=4 nested_admitted=2 visibility_admitted=2 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1243 runs=984 vertex_ms=1.416000 upload_ms=0.518500 reconcile_ms=2.911600 scan_ms=36.749100 upload_calls=984.000 dirty_images=1243.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=114688 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=4
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32803 owned=1244 runs=985 created=2 reused=983 destroyed=1 reconcile_ms=2.748200
-[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=16 excluded=12 nested_admitted=4 visibility_admitted=4 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1244 runs=985 vertex_ms=1.418600 upload_ms=0.517600 reconcile_ms=2.748200 scan_ms=37.730800 upload_calls=985.000 dirty_images=1244.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=229376 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=12
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.1000003 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32804 owned=1171 runs=938 created=3 reused=935 destroyed=50 reconcile_ms=2.776200
-[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=14 excluded=6 nested_admitted=8 visibility_admitted=8 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1171 runs=938 vertex_ms=1.324500 upload_ms=0.489900 reconcile_ms=2.776200 scan_ms=38.106200 upload_calls=938.000 dirty_images=1171.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=196608 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=6
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32805 owned=1166 runs=937 created=7 reused=930 destroyed=8 reconcile_ms=2.780200
-[StutterFix] [livedeco] vertexcheck max_err=0.000172633489 count=11 excluded=7 nested_admitted=4 visibility_admitted=4 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000172633489 quad_bounds_max_err=0.100000151 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1166 runs=937 vertex_ms=1.333600 upload_ms=0.494900 reconcile_ms=2.780200 scan_ms=38.541000 upload_calls=937.000 dirty_images=1166.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=172032 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=7
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000244140625 quad_bounds_err=0.1000003 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=6.10351563E-05 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32806 owned=1171 runs=940 created=3 reused=937 destroyed=0 reconcile_ms=2.648400
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=13 excluded=8 nested_admitted=5 visibility_admitted=5 threshold=0.0001 vertex_max_err=6.10351563E-05 bounds_max_err=0.000244140625 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1171 runs=940 vertex_ms=1.534600 upload_ms=0.543000 reconcile_ms=2.648400 scan_ms=37.266000 upload_calls=940.000 dirty_images=1171.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=196608 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=8
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32807 owned=1130 runs=904 created=5 reused=899 destroyed=41 reconcile_ms=2.628500
-[StutterFix] [livedeco] vertexcheck max_err=0.00013647876 count=7 excluded=4 nested_admitted=3 visibility_admitted=3 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.00013647876 quad_bounds_max_err=0.100000091 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1130 runs=904 vertex_ms=1.388200 upload_ms=0.567400 reconcile_ms=2.628500 scan_ms=36.700100 upload_calls=904.000 dirty_images=1130.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=90112 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=4
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32808 owned=1090 runs=893 created=30 reused=863 destroyed=41 reconcile_ms=3.013900
-[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=15 excluded=12 nested_admitted=3 visibility_admitted=3 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1090 runs=893 vertex_ms=1.237100 upload_ms=0.460000 reconcile_ms=3.013900 scan_ms=37.110900 upload_calls=893.000 dirty_images=1090.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=249856 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=12
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000244140625 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32809 owned=1098 runs=896 created=5 reused=891 destroyed=2 reconcile_ms=2.534600
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=17 excluded=8 nested_admitted=9 visibility_admitted=9 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1098 runs=896 vertex_ms=1.247400 upload_ms=0.460300 reconcile_ms=2.534600 scan_ms=36.936900 upload_calls=896.000 dirty_images=1098.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=237568 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=8
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32810 owned=1031 runs=825 created=3 reused=822 destroyed=74 reconcile_ms=2.617500
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=13 excluded=5 nested_admitted=8 visibility_admitted=8 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1031 runs=825 vertex_ms=1.224400 upload_ms=0.465900 reconcile_ms=2.617500 scan_ms=38.603800 upload_calls=825.000 dirty_images=1031.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=180224 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=5
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000172633489 quad_bounds_err=0.100000151 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32811 owned=999 runs=792 created=11 reused=781 destroyed=44 reconcile_ms=2.442200
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=21 excluded=11 nested_admitted=10 visibility_admitted=10 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.1000003 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=999 runs=792 vertex_ms=1.145800 upload_ms=0.416400 reconcile_ms=2.442200 scan_ms=37.510600 upload_calls=792.000 dirty_images=999.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=303104 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=11
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32812 owned=996 runs=790 created=3 reused=787 destroyed=5 reconcile_ms=2.229000
-[StutterFix] [livedeco] vertexcheck max_err=0.000244140625 count=15 excluded=11 nested_admitted=4 visibility_admitted=4 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.000244140625 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=996 runs=790 vertex_ms=1.125800 upload_ms=0.406900 reconcile_ms=2.229000 scan_ms=36.210700 upload_calls=790.000 dirty_images=996.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=233472 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=11
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32813 owned=919 runs=708 created=4 reused=704 destroyed=86 reconcile_ms=2.200000
-[StutterFix] [livedeco] vertexcheck max_err=0.00013647876 count=18 excluded=10 nested_admitted=8 visibility_admitted=8 threshold=0.0001 vertex_max_err=0 bounds_max_err=0.00013647876 quad_bounds_max_err=0.100000091 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=919 runs=708 vertex_ms=1.067300 upload_ms=0.417900 reconcile_ms=2.200000 scan_ms=36.729300 upload_calls=708.000 dirty_images=919.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=262144 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] excluded reason=bounds-error count=10
-[StutterFix] [livedeco] excluded reason=keywords count=1
-[StutterFix] [livedeco] excluded reason=repeat-tile count=1
-[StutterFix] [livedeco] transition frame=32814 owned=671 runs=580 created=33 reused=547 destroyed=161 reconcile_ms=2.400300
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32815 owned=633 runs=542 created=1 reused=541 destroyed=39 reconcile_ms=1.499300
-[StutterFix] [livedeco] vertexcheck max_err=0 count=1 excluded=0 nested_admitted=1 visibility_admitted=1 threshold=0.0001 vertex_max_err=0 bounds_max_err=0 quad_bounds_max_err=0.1 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=2 owned=633 runs=542 vertex_ms=0.757650 upload_ms=0.288300 reconcile_ms=1.949800 scan_ms=33.378100 upload_calls=561.000 dirty_images=652.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=16384 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] transition frame=32816 owned=555 runs=464 created=0 reused=464 destroyed=78 reconcile_ms=1.297100
-[StutterFix] [livedeco] transition frame=32817 owned=555 runs=464 created=0 reused=464 destroyed=0 reconcile_ms=1.152100
-[StutterFix] [livedeco] transition frame=32818 owned=486 runs=418 created=23 reused=395 destroyed=69 reconcile_ms=1.626000
-[StutterFix] [livedeco] transition frame=32819 owned=486 runs=418 created=0 reused=418 destroyed=0 reconcile_ms=1.085900
-[StutterFix] [livedeco] transition frame=32820 owned=407 runs=405 created=35 reused=370 destroyed=48 reconcile_ms=1.737500
-[StutterFix] [livedeco] transition frame=32821 owned=326 runs=324 created=0 reused=324 destroyed=81 reconcile_ms=0.860700
-[StutterFix] [livedeco] transition frame=32822 owned=326 runs=324 created=0 reused=324 destroyed=0 reconcile_ms=0.727800
-[StutterFix] [livedeco] transition frame=32823 owned=246 runs=244 created=0 reused=244 destroyed=80 reconcile_ms=0.661900
-[StutterFix] [livedeco] transition frame=32824 owned=210 runs=208 created=0 reused=208 destroyed=36 reconcile_ms=0.505400
-[StutterFix] [livedeco] transition frame=32825 owned=210 runs=208 created=0 reused=208 destroyed=0 reconcile_ms=0.482100
-[StutterFix] [livedeco] transition frame=32826 owned=133 runs=131 created=0 reused=131 destroyed=77 reconcile_ms=0.402600
-[StutterFix] [livedeco] transition frame=32827 owned=56 runs=54 created=0 reused=54 destroyed=77 reconcile_ms=0.235600
-[StutterFix] [livedeco] transition frame=32828 owned=56 runs=54 created=0 reused=54 destroyed=0 reconcile_ms=0.097600
-[StutterFix] [livedeco] transition frame=32829 owned=17 runs=15 created=0 reused=15 destroyed=39 reconcile_ms=0.121000
-[StutterFix] [livedeco] transition frame=32830 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.047200
-[StutterFix] [livedeco] transition frame=32831 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.047200
-[StutterFix] [livedeco] transition frame=32832 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.046700
-[StutterFix] [livedeco] transition frame=32833 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.047200
-[StutterFix] [livedeco] transition frame=32834 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.047300
-[StutterFix] [livedeco] transition frame=32835 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.045600
-[StutterFix] [livedeco] transition frame=32836 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.046200
-[StutterFix] [livedeco] transition frame=32837 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.045700
-[StutterFix] [livedeco] transition frame=32838 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.046400
-[StutterFix] [livedeco] transition frame=32839 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.047100
-[StutterFix] [livedeco] transition frame=32840 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.048000
-[StutterFix] [livedeco] transition frame=32841 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.045500
-[StutterFix] [livedeco] transition frame=32842 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.046800
-[StutterFix] [livedeco] transition frame=32843 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.049700
-[StutterFix] [livedeco] transition frame=32844 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.047400
-[StutterFix] [livedeco] transition frame=32845 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.047500
-[StutterFix] [livedeco] transition frame=32846 owned=17 runs=15 created=0 reused=15 destroyed=0 reconcile_ms=0.046300
-[StutterFix] [livedeco2] FPS mode=on index=2 fps=15.062440 ms=66.390304 frames=209 elapsed_s=13.875574 song_begin=262.156512 song_end=276.044512 valid=True
-[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0 quad_bounds_err=0.1 local_bounds_z=0.2
-[StutterFix] [livedeco] transition frame=32847 owned=18 runs=16 created=1 reused=15 destroyed=0 reconcile_ms=0.131100
-[StutterFix] [livedeco] vertexcheck max_err=0 count=1 excluded=0 nested_admitted=1 visibility_admitted=1 threshold=0.0001 vertex_max_err=0 bounds_max_err=0 quad_bounds_max_err=0.1 bounds_source=renderer-local-aabb
-[StutterFix] [livedeco] cost per_frame=1 samples=32 owned=18 runs=16 vertex_ms=0.160891 upload_ms=0.069225 reconcile_ms=0.372569 scan_ms=29.601081 upload_calls=125.063 dirty_images=136.750 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=True allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=98304 heap_scope=frame-work-excludes-cost-and-vertex-logs
-[StutterFix] [livedeco] transition frame=32848 owned=18 runs=16 created=0 reused=16 destroyed=0 reconcile_ms=0.050100
-[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=18 runs=16 vertex_ms=0.025900 upload_ms=0.016400 reconcile_ms=0.050100 scan_ms=28.482300 upload_calls=16.000 dirty_images=18.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=True allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=0 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] cost per_frame=1 samples=1 phase=activation owned=1295 runs=856 vertex_ms=0.532800 upload_ms=0.966200 reconcile_ms=216.394500 delta_ms=198.279600 scan_ms=0.000200 audit_ms=2.450000 awake=1350 dormancy_awake=1357 dirty=157254 cache_hits=0 admissions=1350 write_callbacks=3734 watcher_visits=15506 observer_reads=5466 unchanged_writes=2506 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=856.000 dirty_images=1295.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=21549056 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=258.017840 awake=1350 owned=1295 runs=856 dirty=157254 phase=activation scan_ms=0.000200 vertex_ms=0.532800 upload_ms=0.966200 transition_ms=10616.497300 audits=1 missed=0
+[StutterFix] [livedeco2] prepared mode=on song=258.017840 paused=True ready=True transition_ms=10616.497300 resume_then_play_to=262 minimum_on_warmup_s=3
+[StutterFix] [tightlate] original loop retained: scrDecoration.UpdatePosition owner=StutterFix.livedeco
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=935 excluded=73 nested_admitted=862 visibility_admitted=862 threshold_px=0.01 pixel_max_err=0.0247273222 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=510,139,213,73,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=30
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=73
+[StutterFix] [livedeco] released reason=alpha-zero count=248
+[StutterFix] [livedeco] cost per_frame=1 samples=32 phase=steady owned=1909 runs=1392 vertex_ms=1.578097 upload_ms=0.674956 reconcile_ms=6.765775 delta_ms=5.227484 scan_ms=0.000075 audit_ms=0.064703 awake=2029 dormancy_awake=2090 dirty=30282 cache_hits=0 admissions=965 write_callbacks=31012 watcher_visits=106284 observer_reads=30079 unchanged_writes=8827 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1080.281 dirty_images=1506.281 skipped_uploads=72.969 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=2 heap_delta=16920576 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=258.860491 awake=2029 owned=1909 runs=1392 dirty=30282 phase=steady scan_ms=0.000075 vertex_ms=1.578097 upload_ms=0.674956 transition_ms=10665.722600 audits=2 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1111 excluded=53 nested_admitted=1058 visibility_admitted=1058 threshold_px=0.01 pixel_max_err=0.0201323517 vertex_max_err=6.10351563E-05 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=608,201,249,53,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=33
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=53
+[StutterFix] [livedeco] released reason=alpha-zero count=1039
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=35 phase=steady owned=1927 runs=1287 vertex_ms=2.177143 upload_ms=0.835480 reconcile_ms=10.557491 delta_ms=5.944637 scan_ms=0.000083 audit_ms=0.061109 awake=2088 dormancy_awake=2095 dirty=46377 cache_hits=0 admissions=1144 write_callbacks=38674 watcher_visits=154738 observer_reads=45901 unchanged_writes=13374 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1252.229 dirty_images=1893.143 skipped_uploads=2.171 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=20545536 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=259.873828 awake=2088 owned=1927 runs=1287 dirty=46377 phase=steady scan_ms=0.000083 vertex_ms=2.177143 upload_ms=0.835480 transition_ms=10827.172500 audits=3 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1126 excluded=78 nested_admitted=1048 visibility_admitted=1048 threshold_px=0.01 pixel_max_err=0.0234375 vertex_max_err=6.10351563E-05 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=578,178,292,78,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=40
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=78
+[StutterFix] [livedeco] released reason=alpha-zero count=1074
+[StutterFix] [livedeco] cost per_frame=1 samples=40 phase=steady owned=1901 runs=1354 vertex_ms=2.426358 upload_ms=0.922153 reconcile_ms=7.509933 delta_ms=5.477160 scan_ms=0.000088 audit_ms=0.055663 awake=2072 dormancy_awake=2082 dirty=61247 cache_hits=0 admissions=1166 write_callbacks=47503 watcher_visits=198669 observer_reads=54933 unchanged_writes=13826 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1336.300 dirty_images=1989.075 skipped_uploads=0.725 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=20123648 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=260.876513 awake=2072 owned=1901 runs=1354 dirty=61247 phase=steady scan_ms=0.000088 vertex_ms=2.426358 upload_ms=0.922153 transition_ms=10908.483400 audits=4 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1075 excluded=117 nested_admitted=958 visibility_admitted=958 threshold_px=0.01 pixel_max_err=0.0302352961 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=567,159,232,117,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=43
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=116
+[StutterFix] [livedeco] excluded reason=vertex-error-px count=1
+[StutterFix] [livedeco] released reason=alpha-zero count=931
+[StutterFix] [livedeco] cost per_frame=1 samples=45 phase=steady owned=1928 runs=1252 vertex_ms=2.315800 upload_ms=0.870569 reconcile_ms=6.384344 delta_ms=4.904931 scan_ms=0.000051 audit_ms=0.048604 awake=2135 dormancy_awake=2143 dirty=73519 cache_hits=0 admissions=1118 write_callbacks=55951 watcher_visits=232487 observer_reads=63105 unchanged_writes=13967 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1295.000 dirty_images=1899.222 skipped_uploads=7.889 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=19288064 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=261.900500 awake=2135 owned=1928 runs=1252 dirty=73519 phase=steady scan_ms=0.000051 vertex_ms=2.315800 upload_ms=0.870569 transition_ms=10975.057000 audits=5 missed=0
+[StutterFix] [livedeco2] window begin index=2 mode=on song=262.060504 warmup_excluded_s=4.185 minimum_on_warmup_s=3 transition_ms=10989.666900
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1121 excluded=136 nested_admitted=985 visibility_admitted=985 threshold_px=0.01 pixel_max_err=0.02381499 vertex_max_err=0.000122070313 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=576,137,272,136,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=136
+[StutterFix] [livedeco] excluded reason=keywords count=43
+[StutterFix] [livedeco] released reason=alpha-zero count=1059
+[StutterFix] [livedeco] cost per_frame=1 samples=44 phase=steady owned=1854 runs=1195 vertex_ms=2.355405 upload_ms=0.845127 reconcile_ms=7.053268 delta_ms=5.180020 scan_ms=0.000061 audit_ms=0.052025 awake=2110 dormancy_awake=2121 dirty=74212 cache_hits=0 admissions=1164 write_callbacks=58403 watcher_visits=237430 observer_reads=65154 unchanged_writes=14468 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1235.659 dirty_images=1909.045 skipped_uploads=8.045 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=20377600 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=262.913836 awake=2110 owned=1854 runs=1195 dirty=74212 phase=steady scan_ms=0.000061 vertex_ms=2.355405 upload_ms=0.845127 transition_ms=11057.479900 audits=6 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1228 excluded=93 nested_admitted=1135 visibility_admitted=1135 threshold_px=0.01 pixel_max_err=0.0201323517 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=662,199,274,93,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=92
+[StutterFix] [livedeco] excluded reason=keywords count=42
+[StutterFix] [livedeco] excluded reason=vertex-error-px count=1
+[StutterFix] [livedeco] released reason=alpha-zero count=1027
+[StutterFix] [livedeco] cost per_frame=1 samples=42 phase=steady owned=1963 runs=1322 vertex_ms=2.296500 upload_ms=0.868031 reconcile_ms=7.804581 delta_ms=5.848838 scan_ms=0.000071 audit_ms=0.052931 awake=2223 dormancy_awake=2236 dirty=81578 cache_hits=1 admissions=1270 write_callbacks=63186 watcher_visits=266869 observer_reads=70055 unchanged_writes=13765 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1315.810 dirty_images=1855.048 skipped_uploads=9.952 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=21983232 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=263.916491 awake=2223 owned=1963 runs=1322 dirty=81578 phase=steady scan_ms=0.000071 vertex_ms=2.296500 upload_ms=0.868031 transition_ms=11139.621100 audits=7 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1013 excluded=90 nested_admitted=923 visibility_admitted=923 threshold_px=0.01 pixel_max_err=0.0214014482 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=527,149,247,90,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=90
+[StutterFix] [livedeco] excluded reason=keywords count=44
+[StutterFix] [livedeco] released reason=alpha-zero count=948
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=46 phase=steady owned=1937 runs=1279 vertex_ms=2.337639 upload_ms=0.820850 reconcile_ms=6.624417 delta_ms=4.892928 scan_ms=0.000054 audit_ms=0.049687 awake=2162 dormancy_awake=2278 dirty=81682 cache_hits=0 admissions=1057 write_callbacks=63370 watcher_visits=263558 observer_reads=69643 unchanged_writes=13730 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1224.087 dirty_images=1877.283 skipped_uploads=10.022 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=18575360 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=264.929827 awake=2162 owned=1937 runs=1279 dirty=81682 phase=steady scan_ms=0.000054 vertex_ms=2.337639 upload_ms=0.820850 transition_ms=11219.269600 audits=8 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1262 excluded=49 nested_admitted=1213 visibility_admitted=1213 threshold_px=0.01 pixel_max_err=0.0201323517 vertex_max_err=0.000122070313 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=659,247,307,49,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=49
+[StutterFix] [livedeco] excluded reason=keywords count=42
+[StutterFix] [livedeco] released reason=alpha-zero count=1071
+[StutterFix] [livedeco] cost per_frame=1 samples=42 phase=steady owned=2079 runs=1444 vertex_ms=2.558945 upload_ms=0.915352 reconcile_ms=7.707926 delta_ms=5.766031 scan_ms=0.000067 audit_ms=0.054057 awake=2254 dormancy_awake=2268 dirty=68791 cache_hits=0 admissions=1304 write_callbacks=54012 watcher_visits=219601 observer_reads=59433 unchanged_writes=13185 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1390.786 dirty_images=2087.571 skipped_uploads=1.929 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=22597632 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=265.943164 awake=2254 owned=2079 runs=1444 dirty=68791 phase=steady scan_ms=0.000067 vertex_ms=2.558945 upload_ms=0.915352 transition_ms=11300.829200 audits=9 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=984 excluded=49 nested_admitted=935 visibility_admitted=935 threshold_px=0.01 pixel_max_err=0.0251116063 vertex_max_err=6.10351563E-05 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=522,174,239,49,0,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=49
+[StutterFix] [livedeco] excluded reason=keywords count=46
+[StutterFix] [livedeco] released reason=alpha-zero count=1169
+[StutterFix] [livedeco] cost per_frame=1 samples=46 phase=steady owned=1845 runs=1173 vertex_ms=2.523252 upload_ms=0.863930 reconcile_ms=6.207026 delta_ms=4.439678 scan_ms=0.000074 audit_ms=0.047907 awake=1977 dormancy_awake=2091 dirty=60755 cache_hits=0 admissions=1030 write_callbacks=49345 watcher_visits=189261 observer_reads=53449 unchanged_writes=12939 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1311.065 dirty_images=2030.348 skipped_uploads=4.870 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=18149376 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=266.945849 awake=1977 owned=1845 runs=1173 dirty=60755 phase=steady scan_ms=0.000074 vertex_ms=2.523252 upload_ms=0.863930 transition_ms=11382.127200 audits=10 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1026 excluded=147 nested_admitted=879 visibility_admitted=879 threshold_px=0.01 pixel_max_err=0.1965296 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=558,109,212,125,22,0
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=147
+[StutterFix] [livedeco] excluded reason=keywords count=50
+[StutterFix] [livedeco] excluded reason=repeat-tile count=19
+[StutterFix] [livedeco] released reason=alpha-zero count=992
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=50 phase=steady owned=1749 runs=1179 vertex_ms=2.189920 upload_ms=0.744316 reconcile_ms=5.891364 delta_ms=4.426440 scan_ms=0.000082 audit_ms=0.044200 awake=1990 dormancy_awake=1998 dirty=81235 cache_hits=18 admissions=1095 write_callbacks=64843 watcher_visits=255141 observer_reads=68303 unchanged_writes=13548 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1147.380 dirty_images=1763.260 skipped_uploads=12.380 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=18780160 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=267.959155 awake=1990 owned=1749 runs=1179 dirty=81235 phase=steady scan_ms=0.000082 vertex_ms=2.189920 upload_ms=0.744316 transition_ms=11455.373400 audits=11 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=1106 excluded=12 nested_admitted=1094 visibility_admitted=1094 threshold_px=0.01 pixel_max_err=0.0172563 vertex_max_err=6.10351563E-05 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=584,223,287,12,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=43
+[StutterFix] [livedeco] excluded reason=repeat-tile count=7
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=12
+[StutterFix] [livedeco] released reason=alpha-zero count=1106
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=44 phase=steady owned=1817 runs=1177 vertex_ms=2.235164 upload_ms=0.840805 reconcile_ms=7.153527 delta_ms=5.193527 scan_ms=0.000075 audit_ms=0.053736 awake=2039 dormancy_awake=2101 dirty=92267 cache_hits=81 admissions=1156 write_callbacks=67648 watcher_visits=280586 observer_reads=70796 unchanged_writes=13220 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1274.045 dirty_images=1798.682 skipped_uploads=4.705 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=20045824 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=268.961840 awake=2039 owned=1817 runs=1177 dirty=92267 phase=steady scan_ms=0.000075 vertex_ms=2.235164 upload_ms=0.840805 transition_ms=11541.613400 audits=12 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1065 excluded=10 nested_admitted=1055 visibility_admitted=1055 threshold_px=0.01 pixel_max_err=0.015038115 vertex_max_err=6.10351563E-05 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=562,215,278,10,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=47
+[StutterFix] [livedeco] excluded reason=repeat-tile count=6
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=10
+[StutterFix] [livedeco] released reason=alpha-zero count=829
+[StutterFix] [livedeco] cost per_frame=1 samples=47 phase=steady owned=2139 runs=1434 vertex_ms=2.449672 upload_ms=0.844306 reconcile_ms=6.235557 delta_ms=4.489894 scan_ms=0.000083 audit_ms=0.049264 awake=2263 dormancy_awake=2323 dirty=73877 cache_hits=96 admissions=1118 write_callbacks=54970 watcher_visits=212497 observer_reads=56613 unchanged_writes=12518 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1307.213 dirty_images=1980.362 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=19312640 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=269.996508 awake=2263 owned=2139 runs=1434 dirty=73877 phase=steady scan_ms=0.000083 vertex_ms=2.449672 upload_ms=0.844306 transition_ms=11623.659600 audits=13 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1205 excluded=9 nested_admitted=1196 visibility_admitted=1196 threshold_px=0.01 pixel_max_err=0.0162858684 vertex_max_err=0.000122070313 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=693,206,297,9,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=42
+[StutterFix] [livedeco] excluded reason=repeat-tile count=7
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=9
+[StutterFix] [livedeco] released reason=alpha-zero count=1130
+[StutterFix] [livedeco] cost per_frame=1 samples=42 phase=steady owned=2290 runs=1880 vertex_ms=2.600864 upload_ms=0.986748 reconcile_ms=7.341040 delta_ms=5.267488 scan_ms=0.000076 audit_ms=0.054900 awake=2413 dormancy_awake=2477 dirty=64516 cache_hits=85 admissions=1254 write_callbacks=47443 watcher_visits=179743 observer_reads=49973 unchanged_writes=12581 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1536.381 dirty_images=2089.000 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=21778432 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=270.999163 awake=2413 owned=2290 runs=1880 dirty=64516 phase=steady scan_ms=0.000076 vertex_ms=2.600864 upload_ms=0.986748 transition_ms=11710.748800 audits=14 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.0002516544 count=1070 excluded=10 nested_admitted=1060 visibility_admitted=1060 threshold_px=0.01 pixel_max_err=0.0160665344 vertex_max_err=0.000122070313 bounds_max_err=0.0002516544 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=596,178,286,10,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=38
+[StutterFix] [livedeco] excluded reason=repeat-tile count=7
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=10
+[StutterFix] [livedeco] released reason=alpha-zero count=1078
+[StutterFix] [livedeco] cost per_frame=1 samples=38 phase=steady owned=2374 runs=1935 vertex_ms=2.833279 upload_ms=1.213055 reconcile_ms=7.902784 delta_ms=5.478092 scan_ms=0.000061 audit_ms=0.059911 awake=2505 dormancy_awake=2518 dirty=60762 cache_hits=102 admissions=1115 write_callbacks=45436 watcher_visits=170023 observer_reads=47815 unchanged_writes=12042 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1872.895 dirty_images=2275.763 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=21499904 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=272.012499 awake=2505 owned=2374 runs=1935 dirty=60762 phase=steady scan_ms=0.000061 vertex_ms=2.833279 upload_ms=1.213055 transition_ms=11802.887100 audits=15 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=913 excluded=19 nested_admitted=894 visibility_admitted=894 threshold_px=0.01 pixel_max_err=0.0281703025 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000314 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=500,161,233,19,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=40
+[StutterFix] [livedeco] excluded reason=repeat-tile count=9
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=19
+[StutterFix] [livedeco] released reason=alpha-zero count=1337
+[StutterFix] [livedeco] cost per_frame=1 samples=40 phase=steady owned=2013 runs=1437 vertex_ms=2.683148 upload_ms=1.058613 reconcile_ms=7.054110 delta_ms=4.701885 scan_ms=0.000068 audit_ms=0.066093 awake=2163 dormancy_awake=2231 dirty=65894 cache_hits=82 admissions=962 write_callbacks=48181 watcher_visits=182937 observer_reads=51476 unchanged_writes=12742 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1617.200 dirty_images=2150.675 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=16703488 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=273.015154 awake=2163 owned=2013 runs=1437 dirty=65894 phase=steady scan_ms=0.000068 vertex_ms=2.683148 upload_ms=1.058613 transition_ms=11896.976100 audits=16 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=854 excluded=13 nested_admitted=841 visibility_admitted=841 threshold_px=0.01 pixel_max_err=0.0165725648 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=481,145,215,13,0,0
+[StutterFix] [livedeco] excluded reason=repeat-tile count=10
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=13
+[StutterFix] [livedeco] excluded reason=keywords count=40
+[StutterFix] [livedeco] released reason=alpha-zero count=1203
+[StutterFix] [livedeco] released reason=boundary:SetSprite count=1
+[StutterFix] [livedeco] cost per_frame=1 samples=43 phase=steady owned=1741 runs=1232 vertex_ms=2.530658 upload_ms=0.922863 reconcile_ms=6.635533 delta_ms=4.215244 scan_ms=0.000058 audit_ms=0.053535 awake=1887 dormancy_awake=1946 dirty=67846 cache_hits=91 admissions=904 write_callbacks=48840 watcher_visits=188444 observer_reads=52410 unchanged_writes=12960 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=1415.256 dirty_images=2019.953 skipped_uploads=0.884 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=15839232 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=274.044360 awake=1887 owned=1741 runs=1232 dirty=67846 phase=steady scan_ms=0.000058 vertex_ms=2.530658 upload_ms=0.922863 transition_ms=12001.048500 audits=17 missed=0
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=61 excluded=7 nested_admitted=54 visibility_admitted=54 threshold_px=0.01 pixel_max_err=0.0185220335 vertex_max_err=0 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=22,7,25,7,0,0
+[StutterFix] [livedeco] excluded reason=keywords count=44
+[StutterFix] [livedeco] excluded reason=repeat-tile count=7
+[StutterFix] [livedeco] excluded reason=bounds-error-px count=7
+[StutterFix] [livedeco] released reason=alpha-zero count=1325
+[StutterFix] [livedeco] cost per_frame=1 samples=70 phase=steady owned=567 runs=515 vertex_ms=1.598873 upload_ms=0.572564 reconcile_ms=2.491746 delta_ms=1.762960 scan_ms=0.000069 audit_ms=0.030213 awake=568 dormancy_awake=670 dirty=109278 cache_hits=97 admissions=112 write_callbacks=72911 watcher_visits=230280 observer_reads=63837 unchanged_writes=18579 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=917.400 dirty_images=1277.014 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=False allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=3813376 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=275.041827 awake=568 owned=567 runs=515 dirty=109278 phase=steady scan_ms=0.000069 vertex_ms=1.598873 upload_ms=0.572564 transition_ms=12052.063500 audits=18 missed=0
+[StutterFix] [livedeco2] FPS mode=on index=2 fps=55.639983 ms=17.972687 frames=776 elapsed_s=13.946805 song_begin=262.060504 song_end=276.005694 valid=True
+[StutterFix] [livedeco] vertexcheck max_err=0 count=1 excluded=0 nested_admitted=1 visibility_admitted=1 threshold_px=0.01 pixel_max_err=0 vertex_max_err=0 bounds_max_err=0 quad_bounds_max_err=0.1 bounds_source=renderer-local-aabb histogram_px_lt_001_005_01_05_ge05_nonfinite=1,0,0,0,0,0
+[StutterFix] [livedeco] released reason=alpha-zero count=550
+[StutterFix] [livedeco] cost per_frame=1 samples=190 phase=steady owned=18 runs=16 vertex_ms=0.090782 upload_ms=0.044562 reconcile_ms=1.191791 delta_ms=1.096984 scan_ms=0.000062 audit_ms=0.010286 awake=18 dormancy_awake=87 dirty=266975 cache_hits=0 admissions=1 write_callbacks=95206 watcher_visits=306123 observer_reads=63448 unchanged_writes=9479 shadowed_pose_writes=0 observer_timing=unmeasured upload_calls=67.642 dirty_images=70.168 skipped_uploads=0.000 vertex_target_ms=0.5 upload_target_ms=0.4 mesh_targets_met=True allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=4595712 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] owned_ts t=276.016833 awake=18 owned=18 runs=16 dirty=266975 phase=steady scan_ms=0.000062 vertex_ms=0.090782 upload_ms=0.044562 transition_ms=12070.076800 audits=19 missed=0
 [StutterFix] [livedeco] on=False gate=2 variant=A restored=1
 [StutterFix] [livedeco] on=False gate=2 variant=A restored=1
 [StutterFix] [livedeco] on=False gate=2 variant=A restored=1
-[StutterFix] [livedeco2] window begin index=3 mode=off song=262.028491
-[StutterFix] [livedeco2] FPS mode=off index=3 fps=123.147474 ms=8.120345 frames=1720 elapsed_s=13.966994 song_begin=262.028491 song_end=276.004473 valid=True
+[StutterFix] [livedeco2] prepared mode=off song=258.017840 paused=True ready=True transition_ms=0.000000 resume_then_play_to=262 minimum_on_warmup_s=3
+[StutterFix] [livedeco2] window begin index=3 mode=off song=262.028491 warmup_excluded_s=0 minimum_on_warmup_s=3 transition_ms=0.000000
+[StutterFix] [livedeco2] FPS mode=off index=3 fps=124.920027 ms=8.005122 frames=1746 elapsed_s=13.976942 song_begin=262.028491 song_end=276.004321 valid=True
 [StutterFix] [livedeco] on=False gate=2 variant=A restored=1
 [StutterFix] [livedeco] on=False gate=2 variant=A restored=1
-[StutterFix] [livedeco2] GATE2=PIXEL_FAIL reason=outside_pixels_changed gain_pct=-87.686140 variant=A on=False
+[StutterFix] [livedeco2] GATE2=PIXEL_FAIL reason=outside_pixels_changed gain_pct=-57.050870 variant=A on=False

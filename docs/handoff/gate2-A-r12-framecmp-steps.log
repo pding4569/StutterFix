@@ -1,0 +1,3 @@
+command=['py', '-3', 'tools/optimization/check-framecmp-steps.py']
+exit=0
+framecmp steps: 24 checks passed; JSON only, no game launch

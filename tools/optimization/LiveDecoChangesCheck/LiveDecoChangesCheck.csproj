@@ -1,4 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><DefineConstants>DEV</DefineConstants></PropertyGroup>
-  <ItemGroup><Compile Include="../../../LiveDecoChanges.cs" Link="LiveDecoChanges.cs" /></ItemGroup>
+  <PropertyGroup><ChangesSource Condition="'$(ChangesSource)' == ''">../../../LiveDecoChanges.cs</ChangesSource></PropertyGroup>
+  <ItemGroup><Compile Include="$(ChangesSource)" Link="LiveDecoChanges.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="obj/ProductionNotices.cs" /></ItemGroup>
 </Project>

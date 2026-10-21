@@ -1,0 +1,11 @@
+command=['dotnet', 'build', 'E:\\StutterFixWork\\wt-ld2a\\tools\\optimization\\LiveDecoChangesCheck', '-c', 'Release', '-v', 'q', '--nologo', '-p:ChangesSource=E:\\StutterFixWork\\wt-ld2a\\tools\\optimization\\LiveDecoChangesCheck\\obj\\negative-noop.cs']
+exit=0
+E:\StutterFixWork\wt-ld2a\tools\optimization\LiveDecoChangesCheck\obj\negative-noop.cs(49,13): warning CS0162: 접근할 수 없는 코드가 있습니다. [E:\StutterFixWork\wt-ld2a\tools\optimization\LiveDecoChangesCheck\LiveDecoChangesCheck.csproj]
+
+빌드했습니다.
+
+E:\StutterFixWork\wt-ld2a\tools\optimization\LiveDecoChangesCheck\obj\negative-noop.cs(49,13): warning CS0162: 접근할 수 없는 코드가 있습니다. [E:\StutterFixWork\wt-ld2a\tools\optimization\LiveDecoChangesCheck\LiveDecoChangesCheck.csproj]
+    경고 1개
+    오류 0개
+
+경과 시간: 00:00:22.73

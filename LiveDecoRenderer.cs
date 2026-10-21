@@ -248,7 +248,7 @@ namespace StutterFix
                 transitionMs = ((setupEnd - enableBegin) + (ready - firstCull)) * 1000.0 / Stopwatch.Frequency;
                 // Warmup and OWNED_LOW count actual owned rendering, excluding setup/admission.
                 starting = false; enabledAt = Time.realtimeSinceStartup; nextReport = enabledAt + 1;
-                Log("begin variant=A renderer_version=10 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events"
+                Log("begin variant=A renderer_version=11 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events"
                     + " change_methods=" + LiveDecoChanges.Methods + " change_sites=" + LiveDecoChanges.Sites
                     + " enable_transition_ms=" + transitionMs.ToString("F6", Inv)
                     + " prepare_ms=" + prepareMs.ToString("F6", Inv) + " register_ms=" + registerMs.ToString("F6", Inv)
@@ -316,6 +316,13 @@ namespace StutterFix
             if (s.Queued) return;
             s.Queued = true; pending.Add(s);
         }
+        internal static bool ObservingWrites => Active && !restoring;
+        internal static bool HasOwnedWatcher(UnityEngine.Object target)
+        {
+            if (!watchers.TryGetValue(target, out var set)) return false;
+            foreach (var s in set) if (s.Image != null && s.Image.Owned) return true;
+            return false;
+        }
         internal static void BeforeWrite(UnityEngine.Object target, int kind)
         {
             if (!Active || restoring || !target) return;
@@ -347,7 +354,13 @@ namespace StutterFix
             try
             {
             bool indexed = watchers.TryGetValue(target, out var set);
-            if (indexed) foreach (var s in set) Queue(s);
+            if (indexed) foreach (var s in set)
+            {
+                // Match BeforeWrite: bound-self ToggleVisible changes Behaviour
+                // enablement, not logical visibility, geometry, or sorting.
+                if (kind == LiveDecoChanges.Script && s.Image != null && target == s.Image.D) continue;
+                Queue(s);
+            }
             else if (target is Renderer renderer) RegisterRenderer(renderer);
             // New/reparented subtrees are discovered at their change event only.
             if (kind == LiveDecoChanges.Hierarchy || (!indexed && target is GameObject))
@@ -1036,6 +1049,8 @@ namespace StutterFix
                 + " awake=" + awakeImages + " dormancy_awake=" + Dormancy.AwakeList.Count + " dirty=" + dirtySources
                 + " cache_hits=" + cacheHits + " admissions=" + admissions
                 + " write_callbacks=" + writeCallbacks + " watcher_visits=" + watcherVisits
+                + " observer_reads=" + LiveDecoChanges.EqualityReads + " unchanged_writes=" + LiveDecoChanges.UnchangedWrites
+                + " shadowed_pose_writes=" + LiveDecoChanges.ShadowedPoseWrites + " observer_timing=unmeasured"
                 + " upload_calls=" + (uploadCalls / (double)frameSamples).ToString("F3", Inv)
                 + " dirty_images=" + (dirtyImages / (double)frameSamples).ToString("F3", Inv)
                 + " skipped_uploads=" + (skippedUploads / (double)frameSamples).ToString("F3", Inv)
@@ -1054,6 +1069,7 @@ namespace StutterFix
             dirtyImages = skippedUploads = 0;
             deltaTicks = auditTicks = dirtySources = cacheHits = admissions = 0;
             writeCallbacks = watcherVisits = 0;
+            LiveDecoChanges.ResetCounts();
             checkMax = checkVertexMax = checkBoundsMax = checkQuadBoundsMax = checkPixelMax = 0;
             checkCount = checkRejected = checkNested = checkVisibility = 0;
             Array.Clear(errorHistogram, 0, errorHistogram.Length);

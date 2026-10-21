@@ -1,0 +1,48 @@
+r12 오프라인 검증 기록 — 게임 실행·설치·커밋·푸시·config 변경 없음.
+시작 HEAD=71fa9b4, 시작 작업 트리 깨끗함. 최신 run5/al-ga-5.log만 기존 실측으로 사용.
+원본 SHA256·행 번호·보고 구간 가중 집계: gate2-A-r12-prior-evidence.txt.
+기존 ABBA 평균 off125.2710785/on45.8265745FPS, gain−63.418073%, PIXEL_FAIL.
+기존 PIXEL446707/152440/0, maxdiff7/7/0, aa2_out0, stableTrue. 새 실측으로 전용하지 않음.
+제한된 setter의 같은 값 통지만 생략하며 원래 setter 호출은 유지. 같은 값 비율과 실게임 절감량은 미측정.
+소유 중 native Transform 값은 논리 필드보다 오래될 수 있으므로 owned watcher가 있으면 비교 생략 금지.
+forceRenderingOff·실제 변경·MPB/shape/계층/생성/삭제 통지 유지. 자기 enabled의 Before/After 제외를 일치시킴.
+renderer_version11, observer_reads/unchanged_writes/shadowed_pose_writes/observer_timing=unmeasured 추가.
+신규 getter는 writer wrapper에서만 호출. 프레임 정점 루프에는 Unity 프로퍼티 읽기 추가 없음. native getter의 순비용은 미측정.
+생산 LiveDecoChanges 직접 연결157건·렌더러 Queue/Before/After/HasOwnedWatcher 실제 추출14건 통과.
+같은 값 setter10000회 실행 유지·통지0회, 반복 wrapper 관리 할당0바이트. 관리 adapter만의 증거.
+음성 대조 3종 모두 컴파일 exit0 후 실행 exit1: 비교 생략 제거, owned pose 보호 제거, After 자기 제외 제거.
+각 로그의 의도한 assertion 문구를 확인. 최종 생산본을 다시 추출하고 통과. 컴파일 실패를 음성 대조 성공으로 세지 않음.
+초기 fixture 작성 중 using 뒤가 아닌 위치에 실행문을 넣어 CS1529 발생. using 아래로 옮기고 재검증 완료.
+초기 일괄 회귀 호출에서 WindowCheck의 필수 JSON 인자를 빠뜨려 exit1. window-initial-invocation.log에 보존.
+생산 144단계 JSON을 생성하고 인자를 전달한 뒤 WindowCheck58건 통과. 게임에서는 JSON을 실행하지 않음.
+Release DEV/Player/PlayerAuto 빌드 오류0/0/0, 출력 경고38/4/38(증분 빌드). 로그 build-dev/player/auto.
+LoadCheck276/229/276곳, 틀림0/0/0. 동적 필드 이름5곳씩은 실게임 확인 대상이라는 기존 한계 유지.
+정책106479·Gate2판정18·edition metadata42·설치 게임 hook metadata22 통과. 일반 Player에서 실험 타입/참조 제외.
+Dormancy 수명41·시작/정렬29·시작 소스계약5·실제 생성기 창58 통과.
+계층2729·바운드482·스크립트15·캐시40·업로드32·델타5918737/6000변경·MatShare25401 통과.
+FrameCompare11/15/15/17/21/2·생성기25/144·framecmp24·matshare69단계 검사 통과.
+게임 디컴파일 scrDecoration/scrVisualDecoration/ToggleVisible, 설치 DLL IL/API를 읽기 전용 대조.
+설치 Transform5종 getter/setter·GameObject.activeSelf/SetActive·Renderer/Behaviour.enabled 서명 확인. 게임 메서드 실행 없음.
+0.01px·히스토그램·제외 사유·정렬·3초warmup·OWNED_LOW·수명/복원·전체 예외 스택·기본 꺼짐 유지.
+색/정점/UV 수식·비교 제외 영역·144단계·Gate3는 변경하지 않음. 같은 코드 게임 시험 실행/반복 요청 없음.
+새 소유율·비용·전환 시간·픽셀·ABBA FPS·Unity/Mono/Harmony 수명·실게임 할당은 미측정, GATE2=PASS 미달성.
+Task Observer v3.5.0: 사용자 범위 관찰/원칙 읽기만. 결과 문서에 관찰 반환, 메모리·스킬 파일 변경 없음.
+Final UTF-8 check=14 files passed; summary=10 lines; git diff --check=pass; config diff=none; HEAD unchanged71fa9b4.
+LiveDecoChanges.cs sha256=b2638e14b1af2ca09bdfb3fdca10a48cce8c5bdca2175afc13a361349bf2aa9f
+LiveDecoRenderer.cs sha256=3f5b0d0c08fe18c771b14185b68d47c6a73416b1f9f4c5864e05a5d10d737da7
+docs/handoff/codex-gate2-A-result.md sha256=1960e2afbdecd288684b6696c63647a72eb93cd5d84f2f8d007c5175de5ecd99
+docs/handoff/codex-gate2-A-o.txt sha256=778efdb6869caa98db81560c4833ac1ef53b4a63e48ec39af72ef4ea39bbda6f
+docs/handoff/ga-autoloop-ledger.md sha256=9da3226f2d6e45875d521f8d2cf8342499fb60c01f94b930cc356c5629e5a1af
+tools/optimization/LiveDecoChangesCheck/Adapters.cs sha256=7f6f2d73708df462e2d1d013571e0466999aac4e14926e6ece681a39cf7b5919
+tools/optimization/LiveDecoChangesCheck/Notices.cs sha256=fcaa572c92f74ccfea8bf09631739370bf37f45e1eaa0385487f2c09b80f51ca
+tools/optimization/LiveDecoChangesCheck/Program.cs sha256=2c214587ec653b8ce47bc326e502a3270ac22bbf6f88174a46f940d5e7393580
+tools/optimization/LiveDecoChangesCheck/LiveDecoChangesCheck.csproj sha256=a0f58fccc9e33f36c6d063cc220bbf4f93a3e12096e1ee389f35f4969ad74798
+tools/optimization/LiveDecoChangesCheck/extract.py sha256=d5d076fd8259c107df4cb2f55c849cc2fd55959f208cd76e3ecea4957a0a55e2
+tools/optimization/LiveDecoChangesCheck/README.md sha256=210abe1177f09ff65b1b874fef7da42f7d05f9cc746903965660a2c384abeeab
+tools/optimization/audit-livedeco-r12.py sha256=620d996761143b6fa50009b52c05f7a61100a56d34bb392e3281deb01c5787d6
+docs/handoff/gate2-A-r12-prior-evidence.txt sha256=f49980ea08523e04351d30ca6b9ab39bc32fb256e6753c4f96a87bbcb6635be2
+bin/Release/StutterFix.dll sha256=7f0ad2e83882f8e093e31a9293d1999a048f7b6bb5e7092f4edeb161f53cc92d
+bin/Player/StutterFix.dll sha256=ec5e84e099d707764dec5c827c0d2cc187e04e63f58bab94e93f8bd0837a5be3
+bin/PlayerAuto/StutterFix.dll sha256=fb2213bd9b9474dadd4990d860496858e8c7657e61e21b3e87219ab8f853ec2d
+read-only installed Assembly-CSharp.dll sha256=f692210f9a342f7eed4be40aad463286ab40bf046599959823942ea02f4ca3ff
+read-only installed UnityEngine.CoreModule.dll sha256=9f5141e8dd6c34b82bb03f151e6f0773129f55a7a2e816fe1e31e549737f4a71

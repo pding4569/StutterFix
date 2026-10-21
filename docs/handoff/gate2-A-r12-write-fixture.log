@@ -1,0 +1,4 @@
+command=['dotnet', 'run', '--project', 'E:\\StutterFixWork\\wt-ld2a\\tools\\optimization\\LiveDecoChangesCheck', '-c', 'Release']
+exit=0
+Production observation/queue guards: 14 checks; managed adapter, no engine execution
+Production write-site instrumentation: 157 checks; typed arities 0..4, spawn/destroy, labels, EH, exceptions, 10000 zero-allocation calls; no Unity/Harmony installation proof

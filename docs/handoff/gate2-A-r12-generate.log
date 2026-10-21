@@ -1,0 +1,2 @@
+command=['py', '-3', 'tools/optimization/livedeco2-steps.py', '--chart', 'Arche FULL.adofai', '--output', 'tools/optimization/out/gate2-A-r12-steps.json']
+exit=0

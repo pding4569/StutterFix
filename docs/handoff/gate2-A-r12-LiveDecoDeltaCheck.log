@@ -1,0 +1,3 @@
+command=['dotnet', 'run', '--project', 'tools/optimization/LiveDecoDeltaCheck', '-c', 'Release']
+exit=0
+Production delta/index/arena: 5918737 checks; 6000 mutations vs full partition oracle; no Unity/FPS proof

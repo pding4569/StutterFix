@@ -1,10 +1,10 @@
-1. 자동 반복 5회차(r11): 최신 run4의 resume 직후 Dormancy-reset으로 소유가 해제되는 코드 경로 수정.
-2. GcControl/Hitch가 AutoTest.Resume보다 먼저 표본을 갱신해 같은 프레임 manager/camera에서 오래된 정지 상태를 읽음.
-3. 성공한 재개의 해당 프레임·같은 컨트롤러·실제 pause 해제에만 PlaybackContinuity 적용, 정상 재생은 단락 평가.
-4. 다음 프레임 만료·실제 정지·맵 교체/언로드·복원 예외의 해제 유지, renderer_version10·재개 프레임 로그 추가.
-5. 생산 Dormancy/FrameCompare.Pause/Resume/렌더 수명 조건 연결41건 통과; 세 기존 조건 대조는 실행 검사에서 exit1.
-6. 빌드 오류0/0/0·경고38/36/38, LoadCheck 틀림0/0/0, 일반 Player 제외·기존 정책/델타/FrameCompare 검사 통과.
-7. 144단계·258초 pause/ready 준비·262→276초 무정지 측정·3초 워밍업·OWNED_LOW·픽셀0·FPS+15% 기준 유지.
-8. 기존 소유율262/270초95.063470%/95.137047%, scan0.000100~0.000900ms, 픽셀427364/133259/0.
-9. 기존 off0만123.331064FPS/8.108257ms 완료; 수정 후 소유/비용/픽셀/켬FPS/실게임 수명 미측정, GATE2 미통과.
-10. 결과·장부·r11 증거/검증 갱신; 게임 실행·설치·커밋·푸시·config 변경 및 동일 코드 게임 재시험 없음.
+1. 자동 반복 6회차(r12): 최신 run5 분석 후 같은 값 setter의 재심사 통지와 자기 enabled의 AfterWrite 큐 삽입 수정.
+2. 원래 setter 호출·인자·예외는 유지; 소유 Transform/공통조상·forceRenderingOff·실제 변경·shape/계층 보호 유지.
+3. renderer_version11, observer_reads/unchanged_writes/shadowed_pose_writes 추가; native getter 비용과 순이득은 미측정.
+4. 생산 writer157건·실제 통지/큐14건 통과, setter10000회 실행 유지·같은 값 통지0회·wrapper 관리 할당0바이트 검사.
+5. 세 음성 대조는 컴파일 후 의도한 실행 검사에서 exit1; 생산본 재추출 후 통과, Unity/Mono/실게임 성능 증명 아님.
+6. 3종 빌드 오류0/0/0·LoadCheck 틀림0/0/0, 일반 Player 제외·기존 정책/델타/수명/FrameCompare/144단계 검사 통과.
+7. 기존 ABBA 평균 off125.2710785/on45.8265745FPS, gain−63.418073%; scan0.000080~0.000183ms로 전체 스캔 제거 관측.
+8. 기존 on1/2 reconcile9.284805/9.079740·vertex2.523129/2.458501·upload0.932425/0.918885ms, 재생 소유율 최저86.83/87.47%.
+9. 기존 픽셀446707/152440/0·maxdiff7/7/0; 수정 후 소유/비용/픽셀/FPS/실게임 복원 미측정, GATE2=PASS 미달성.
+10. 결과·장부·r12 증거/검증 갱신; 게임 실행·설치·커밋·푸시·config 변경 및 같은 코드 게임 재시험/요청 없음.

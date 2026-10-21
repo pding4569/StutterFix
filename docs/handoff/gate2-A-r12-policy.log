@@ -1,0 +1,6 @@
+command=['dotnet', 'run', '--project', 'tools/optimization/LiveDecoCheck', '-c', 'Release', '--', 'bin/Player/StutterFix.dll', 'bin/Release/StutterFix.dll', 'bin/PlayerAuto/StutterFix.dll', 'D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Assembly-CSharp.dll']
+exit=0
+LiveDeco policy/anchor model: 106479 checks passed; synthetic, no Unity sorting or pixels proven
+LiveDeco gate2 policy: 18 checks passed; no runtime pixels/FPS proven
+LiveDeco edition metadata: 42 checks passed; Player absent, DEV/PlayerAuto present
+LiveDeco installed-game hook metadata: 22 unique targets passed; no game methods invoked
