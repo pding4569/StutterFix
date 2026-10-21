@@ -10,6 +10,12 @@
 
 
 ---
+# 자동 반복 2회차
+
+직전 게임 시험 결과(자동 수집): `docs/handoff/gb-autoloop-run1-evidence.txt`. 먼저 `docs/handoff/gb-autoloop-ledger.md` 장부를 읽고, 이미 실패한 접근은 되풀이하지 말고 결과에서 배운 점으로 다른/더 나은 접근을 택해라(같은 코드를 다시 돌리는 것은 금지). 게임 코드는 `E:/StutterFixWork/decompiled/Assembly-CSharp/<타입>.cs` 디컴파일본으로 읽어라(근사, ilscan 으로 교차확인). 성공 조건(정규식) `GATE2=PASS` 이 아직 안 나왔다. 결과를 분석해 원인을 코드로 찾아 고치고, 안 되는 이유가 설계 한계면 결과 문서에 구체적으로 적고 멈춰라. 아래는 원래 임무다.
+
+
+---
 # Gate 2 변형 B — 아틀라스 (구간 수 ≤ ~80)
 
 `E:/StutterFixWork/specs/gate2-common.md` 를 먼저 읽고 그대로 수행해라(워크트리 안 `docs/handoff/gate2-common.md` 에도 사본이 있다).

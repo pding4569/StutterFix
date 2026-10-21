@@ -78,6 +78,11 @@ foreach (string field in new[] { "size", "RT", "projection", "forceRenderingOff"
 Check(Snapshot(false, "enabled", "False").Compare(baseline).Changed > 0, "hidden to visible rejected");
 Console.WriteLine($"FrameCompareState: {n - stateStart} checks passed (synthetic snapshots; no Unity lifecycle evidence)");
 int controlStart = n;
+// A pre-existing editor pause, replaced controller, ended freeze or non-playback
+// pause cannot grant the LiveDeco diagnostic playback exemption.
+for (int bits = 0; bits < 32; bits++)
+    Check(FrameCompareControlPolicy.FrozenPlayback((bits & 1) != 0, (bits & 2) != 0, (bits & 4) != 0,
+        (bits & 8) != 0, (bits & 16) != 0) == (bits == 29), "frozen playback provenance " + bits);
 Check(FrameCompareControlPolicy.FirstBehind(-100, -2), "signed negative IDs ascending");
 Check(!FrameCompareControlPolicy.FirstBehind(-2, -100), "reverse allocation order");
 Check(FrameCompareControlPolicy.FirstBehind(int.MinValue, int.MaxValue), "signed IDs across zero; no subtraction overflow");

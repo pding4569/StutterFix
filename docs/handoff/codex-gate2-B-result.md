@@ -1,6 +1,51 @@
 # Gate 2 변형 B 결과 — 2026-10-21
 
-**2회차: 직전 자동 시험의 `Method has no body`를 일으키는 추상 메서드 패치 경로를 수정했다. 수정 후 3종 빌드·LoadCheck·회귀 검사는 통과했다. 실제 Harmony 설치·픽셀·FPS는 재시험하지 않았으므로 GATE2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+**최신 3회차: `zero-owned-see-exclusions`를 분석하고, 픽셀 비교용 정지가 편집 상태로 오인되어 전체 소유 후보를 제외하는 코드 경로를 수정했다. 3종 빌드·LoadCheck·회귀 검사는 통과했다. 실제 소유 수·픽셀·FPS 및 GATE2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+
+## 3회차 — 진단 정지 소유 판정 (중단 작업 이어하기)
+
+장부와 최신 [전달 증거](gb-autoloop-run1-evidence.txt)를 먼저 읽고 시작 시 변경된 `FrameCompare.cs`, `FrameCompareControlPolicy.cs`, `LiveDecoPolicy.cs`, `LiveDecoRuntime.cs`를 보존해 이어서 수정했다. 이번 로그는 `patch_plan version=2 targets=18 abstract_declarations_skipped=2` 및 RGBA32 경로를 지나 최초 on에서 `zero-owned-see-exclusions final_on=False`로 끝난다. 이전 추상 패치 실패 수정을 반복하지 않았다.
+
+### 원인과 증거 범위
+
+전달 steps는 편집기 재생 중 pause 후 on을 호출한다. `FrameCompare.Pause()`는 `controller.paused=true`를 설정한다. `E:/StutterFixWork/decompiled/Assembly-CSharp/ADOBase.cs:79`의 `isEditingLevel`은 편집기에서 바로 `controller.paused`를 반환한다. 기존 InputReason은 이 값이 true이면 모든 장식에 `transform-reader-editor`를 반환했다. 즉 이 정지 경로에서는 개별 장식의 실제 편집기 독자 여부와 무관하게 전원 거절되는 결함이 있다.
+
+설치 DLL의 [ilscan 결과](gate2-B-run3-admission-il.log)에서도 `get_isEditingLevel`의 `get_isLevelEditor`, `get_controller`, `scrController.get_paused` 호출을 확인했다. 게임 DLL SHA256은 기존과 같은 `F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF`다. 게임 메서드는 실행하지 않았다.
+
+기존 Tick은 구간 생성/정점 검사 변화 또는 120프레임마다만 제외 분포를 출력했다. 첫 Tick에서 전원 거절되면 조건이 모두 false이고 Begin이 곧바로 예외를 던져 `remaining_reason`이 유실된다. 전달 로그에는 원인별 수가 없으므로 **전체 소유 0의 유일한 원인이 이 조건이었다거나 수정 후 소유 수가 몇 개인지는 확정하지 않는다.** 정지 판정 결함 자체는 코드로 확인했다.
+
+### 수정
+
+- `FrameCompare.FrozenPlayback`은 실제 재생에서 진입했고 원래 paused=false였으며, 같은 controller가 살아 있고 controller.paused·Time.timeScale=0·DOTween.timeScale=0·AudioListener.pause가 유지될 때만 true다. Resume 시 진입 정보를 초기화한다. 일반 편집 정지·재생 외 정지·교체된 controller·손상된 정지에는 예외를 부여하지 않는다. 시작/매 프레임 수명 검사도 이 조건을 사용한다.
+- `LiveDecoPolicy.EditorTransformReader`는 이 진단 정지에 한해 전역 편집 상태만으로 전체를 거절하지 않는다. 선택 테두리·히트박스 테두리·현재 선택 장식 및 실제 활성 기즈모의 읽기 대상은 계속 제외한다. 다른 소유 조건·vertexcheck·픽셀/FPS PASS 조건은 유지했다.
+- `DecoTransformGizmoHolder.cs:41`의 LateUpdate는 기즈모 표시 검사 전에 캐시된 `currentDec.GetDecorationWorldSize()`와 Transform을 읽는다. [실제 IL](gate2-B-run3-gizmo-il.log)도 이 읽기를 확인했다. Begin에서 기즈모 목록을 보관하고 활성 기즈모의 private currentDec를 검사한다. 선택 해제 뒤 캐시만 남은 대상도 제외한다. 새 FieldRefAccess는 LoadCheck로 확인했다. 기존 고정 scene snapshot의 동적 생성 제한은 그대로다.
+- 첫 Tick에도 cost·vertexcheck·모든 nonzero `remaining_reason`을 출력한다. 새 식별 줄은 `[livedeco] admission version=3 editing=... diagnostic_playback_pause=...`이다. 기존 patch_plan version=2도 유지한다. 다음 외부 시험은 소유 0 실패에서도 구체 분포를 남긴다.
+
+### 오프라인 검증
+
+| 검사 | 결과 | 근거 |
+|---|---|---|
+| Release Dev / Player / PlayerAuto | 오류 0/0/0, 경고 38/4/38 | gate2-B-run3-build-dev/player/auto.log |
+| LoadCheck Dev / Player / Auto | 275/229/275곳, 틀림 0/0/0 | gate2-B-run3-loadcheck-dev/player/auto.log |
+| 실제 DLL 패치 계획 | 38 checks, 본문 18개/추상 제외 2개 | gate2-B-run3-patch-check.log |
+| LiveDeco 정책/정렬 | 22,984 checks (편집 독자 조건 32조합 추가) | gate2-B-run3-fixture.log |
+| 아틀라스/판정 및 LiveDeco edition | 1,052,924 / 19 checks | 같은 로그 |
+| FrameCompare | RGBA 11, mask 15, state 14, control 49, edition 13 checks | gate2-B-run3-framecmp-fixture.log |
+| MatShare | 25,401 checks, 오류 0 | gate2-B-run3-matshare-fixture.log |
+| 진단 edition | 32/32 분리, 런타임 6/6 유지, 폐기 타입 5/5 양쪽 부재 | gate2-B-run3-edition-check.log |
+| Gate1/Gate2 steps | 25/144단계·UTF-8 CLI 통과, 기존 입력 해시 유지 | gate2-B-run3-gate1-steps-check.log / gate2-B-run3-steps-check.log |
+
+FrameCompare control에는 정지 출처 32조합을 추가했다. 위 검사는 순수 정책·관리 메타데이터 증거이며 Unity의 실제 소유·정점·수명·복원·픽셀·성능을 증명하지 않는다. LoadCheck의 기존 동적 이름 5곳과 기존 빌드 경고는 남는다. 산출물/소스 SHA256과 입력 해시는 [run3 목록](gate2-B-run3-artifacts.txt)에 남겼다. 일반 Player DLL은 run2와 동일한 SHA256이다.
+
+이번 전달 프로파일은 **962,183표본, set_pct=70.352910%**다. 아래 역사 절의 960,572/70.130186%와 구분한다. 이는 sampled Step/Apply/OnUpdate의 ProfSet 비율이며 DecoAnim 전체나 순수 native 쓰기 비중은 아니다. 특히 크기 setter 일부는 ProfApply에 포함된다.
+
+### 다음 관측과 중단 판단
+
+현재는 재현 가능한 정지/분류 코드 결함을 수정한 상태이며 설계 한계로 확정하지 않았다. 변경된 DLL과 기존 144 steps를 인계한다. 최초 pause/on에서 admission version=3 및 `editing=True diagnostic_playback_pause=True` 여부, 첫 cost의 owned/live/runs 및 vertexcheck·remaining_reason부터 확인해야 한다. 여전히 소유 0이면 새 분포로 원인을 판단한다. 같은 DLL의 실패 시험 반복을 해결책으로 요청하지 않는다.
+
+이후 관측은 실제 아틀라스/메모리·GC·세 시점 ab_out/maxdiff/aa2_out·복원·ABBA FPS다. **GATE2=PASS는 미확인**이며 1/255 차이도 PASS로 낮추지 않았다. 게임 실행 금지를 지키면서 새 게임 수치를 만들지는 않았다. Texture2DArray 비교와 기타 구현 제한은 아래 절에 보존했다. 게이트 3·워커 분할은 구현하지 않았다.
+
+작업 관찰은 task-observer v3.5.0의 report-back 방식으로 이 문서에 반환한다. 문제: 진단 도구가 설정한 paused 값이 게임의 편집 상태와 같아 보수적 분류가 모든 대상을 거절하고 최초 실패에는 주기 로그도 남지 않았다. 개선: 진단 상태의 진입 출처·생존 조건을 추적하고 실제 독자는 개별 제외하며 최초 실패 분포는 항상 기록한다. 원칙: 상태를 일시 변경하는 검증 도구와 그 상태를 읽는 최적화의 상호작용도 검증 대상이다. 유형은 프로젝트 내부 구현/검증 관찰이다. 사용자 범위 관찰 저장소는 현재 쓰기 허용 범위 밖이므로 별도 관찰 파일·스킬·메모리는 수정하지 않았다.
 
 ## 2회차 오류 분석과 수정
 

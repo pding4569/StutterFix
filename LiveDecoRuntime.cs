@@ -23,6 +23,7 @@ namespace StutterFix
         static readonly AccessTools.FieldRef<scrParallax, Vector2> ParStart = AccessTools.FieldRefAccess<scrParallax, Vector2>("startPosition");
         static readonly AccessTools.FieldRef<scrParallax, Vector2> ParEnd = AccessTools.FieldRefAccess<scrParallax, Vector2>("endPosition");
         static readonly AccessTools.FieldRef<scrDecoration, Color> RenderedColor = AccessTools.FieldRefAccess<scrDecoration, Color>("rendererColor");
+        static readonly AccessTools.FieldRef<DecoTransformGizmoHolder, scrDecoration> GizmoDecoration = AccessTools.FieldRefAccess<DecoTransformGizmoHolder, scrDecoration>("currentDec");
         [StructLayout(LayoutKind.Sequential)]
         struct Vertex { internal Vector3 Position; internal Color32 Color; internal Vector2 UV; }
         sealed class Member
@@ -69,6 +70,7 @@ namespace StutterFix
             internal Camera Camera;
             internal scrDecorationManager Manager;
             internal Renderer[] Renderers;
+            internal DecoTransformGizmoHolder[] EditorGizmos;
             internal int DecoCount, Frame = -1, Stamp;
             internal readonly Dictionary<scrDecoration, Member> Members = new Dictionary<scrDecoration, Member>();
             internal readonly Dictionary<int, Member> Images = new Dictionary<int, Member>();
@@ -107,6 +109,8 @@ namespace StutterFix
                 }
                 Log("patch_plan version=2 targets=" + patches.Entries.Count + " abstract_declarations_skipped=" + patches.AbstractDeclarations.Count);
                 Log("pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED");
+                Log("admission version=3 editing=" + ADOBase.isEditingLevel + " diagnostic_playback_pause=" + FrameCompare.FrozenPlayback);
+                EditorGizmos = Resources.FindObjectsOfTypeAll<DecoTransformGizmoHolder>();
                 DecoCount = Manager.allDecorations.Count;
                 foreach (var d in Manager.allDecorations)
                     if (d is scrVisualDecoration v && v && v.spriteRenderer)
@@ -147,7 +151,9 @@ namespace StutterFix
                 var parent = d.pivotTrans.parent;
                 if (!parent || parent.localToWorldMatrix != Matrix4x4.identity) return "nonidentity-parent";
                 if (d.hitbox != 0 || d.canHitPlanets || (d.activeCollider && d.activeCollider.enabled && d.activeCollider.gameObject.activeInHierarchy)) return "transform-reader-hitbox";
-                if (ADOBase.isEditingLevel || (d.selectionBordersObject && d.selectionBordersObject.activeInHierarchy) || (d.hitboxBordersObject && d.hitboxBordersObject.activeInHierarchy)) return "transform-reader-editor";
+                if (LiveDecoPolicy.EditorTransformReader(ADOBase.isEditingLevel, FrameCompare.FrozenPlayback,
+                    d.selectionBordersObject && d.selectionBordersObject.activeInHierarchy,
+                    d.hitboxBordersObject && d.hitboxBordersObject.activeInHierarchy, EditorReads(d))) return "transform-reader-editor";
                 if (d.stickToFloor) return "transform-reader-floor-parent";
                 if (d.cfpCache != null) foreach (var effect in d.cfpCache) if (effect && effect.enabled) return "transform-reader-filter";
                 var p = d.parallax;
@@ -160,6 +166,16 @@ namespace StutterFix
                 if (m.Owned && (r.sprite != m.Sprite || r.sharedMaterial != m.Material || !m.Atlas.Valid)) return "input-changed";
                 if ((Camera.cullingMask & (1 << r.gameObject.layer)) == 0) return "camera-layer";
                 return LiveDecoAtlas.Reason(r.sprite.texture);
+            }
+            bool EditorReads(scrDecoration d)
+            {
+                if (!ADOBase.isEditingLevel) return false;
+                if (ADOBase.editor && ADOBase.editor.selectedDecorations.Contains(d.sourceLevelEvent)) return true;
+                // LateUpdate reads currentDec before checking gizmo visibility;
+                // a cached target still matters even after deselection.
+                foreach (var gizmo in EditorGizmos)
+                    if (gizmo && gizmo.isActiveAndEnabled && GizmoDecoration(gizmo) == d) return true;
+                return false;
             }
             Matrix4x4 Calculate(Member m, bool publish)
             {
@@ -231,7 +247,7 @@ namespace StutterFix
             {
                 long allocated = GC.GetAllocatedBytesForCurrentThread(), begin = Stopwatch.GetTimestamp();
                 if (!Manager || Manager != scrDecorationManager.instance || SceneReset.Resetting || Manager.allDecorations.Count != DecoCount
-                    || (!Hitch.Playing && !FrameCompare.Paused)) throw new InvalidOperationException("runtime-lifetime");
+                    || (FrameCompare.Paused ? !FrameCompare.FrozenPlayback : !Hitch.Playing)) throw new InvalidOperationException("runtime-lifetime");
                 var forward = Camera.transform.forward;
                 var mode = Camera.transparencySortMode == TransparencySortMode.Default ? GraphicsSettings.transparencySortMode : Camera.transparencySortMode;
                 if (!Camera.orthographic || Math.Abs(forward.x) > 1e-6 || Math.Abs(forward.y) > 1e-6 || mode == TransparencySortMode.CustomAxis || mode == TransparencySortMode.Perspective)
@@ -327,7 +343,7 @@ namespace StutterFix
                 long delta = GC.GetAllocatedBytesForCurrentThread() - allocated;
                 bool transition = NewRuns != 0 || VertexCount != previousVertices;
                 if (transition) TransitionAllocated += delta; else StableAllocated += delta;
-                if (transition || Samples % 120 == 0)
+                if (Samples == 1 || transition || Samples % 120 == 0)
                 {
                     Log("cost frame=" + Frame + " vertex_ms=" + Ms(computed - begin + verticesEnd - rebuilt) + " upload_ms=" + Ms(endTime - verticesEnd)
                         + " runs_ms=" + Ms(rebuilt - computed) + " runs=" + Runs.Count + " owned=" + Owned + " live=" + LiveImages
@@ -454,7 +470,7 @@ namespace StutterFix
         static void StartRuntime()
         {
             if (runtime != null) return;
-            if ((!Hitch.Playing && !FrameCompare.Paused) || SceneReset.Resetting || MatShare.Active || GpuSplit.Busy || GpuHide.Busy || DecoEngine.Enabled)
+            if ((FrameCompare.Paused ? !FrameCompare.FrozenPlayback : !Hitch.Playing) || SceneReset.Resetting || MatShare.Active || GpuSplit.Busy || GpuHide.Busy || DecoEngine.Enabled)
                 throw new InvalidOperationException("livedeco runtime requires playback/pause with other render experiments off");
             runtimeFailure = "none"; runtime = new Runtime();
             try { runtime.Begin(); } catch (Exception e) { runtimeFailure = e.GetType().Name + ":" + e.Message; StopRuntime(); Gate2Error(runtimeFailure); throw; }

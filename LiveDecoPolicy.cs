@@ -8,6 +8,9 @@ namespace StutterFix
         internal static bool RendererLive(bool exists, bool sceneValid, bool enabled, bool activeInHierarchy, bool forcedOff)
             => exists && sceneValid && enabled && activeInHierarchy && !forcedOff;
 
+        internal static bool EditorTransformReader(bool editing, bool frozenPlayback, bool selectionBorders, bool hitboxBorders, bool selectedOrGizmo)
+            => (editing && !frozenPlayback) || selectionBorders || hitboxBorders || selectedOrGizmo;
+
         internal readonly struct Item
         {
             internal readonly SceneRenderOrder.Key Key;

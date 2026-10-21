@@ -4,6 +4,17 @@ using System.Reflection.PortableExecutable;
 
 int checks = 0;
 void Check(bool value, string label) { checks++; if (!value) throw new Exception(label); }
+// Playback frozen by framecmp makes the game's editor flag true. Only that
+// provenance can bypass the global editor exclusion; actual readers still win.
+for (int bits = 0; bits < 32; bits++)
+{
+    bool editing = (bits & 1) != 0, frozen = (bits & 2) != 0, selection = (bits & 4) != 0,
+        hitbox = (bits & 8) != 0, selectedOrGizmo = (bits & 16) != 0;
+    // The only allowed states are ordinary playback (0), non-editor frozen
+    // playback (2), and editor frozen playback (3), all without actual readers.
+    bool allowed = bits == 0 || bits == 2 || bits == 3;
+    Check(LiveDecoPolicy.EditorTransformReader(editing, frozen, selection, hitbox, selectedOrGizmo) != allowed, "editor reader admission " + bits);
+}
 SceneRenderOrder.Key Key(int material, int renderer, int layer = 0, int order = 0, int queue = 3000, float distance = 1)
     => new(layer, order, queue, distance, material, renderer);
 LiveDecoPolicy.Item Row(int material, bool own, int renderer = 0, int order = 0, string signature = "base", int unityLayer = 0)

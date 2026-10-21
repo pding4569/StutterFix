@@ -1,10 +1,10 @@
-1. 회차 1의 Method has no body 오류는 추상 scrDecoration.SetVisible/SetDepth를 패치 대상으로 모은 결함과 맞는다.
-2. 디컴파일·ilscan·실제 DLL PE/reflection에서 두 메서드의 Abstract=true, RVA=0을 확인했다.
-3. 생산 패치 계획을 분리해 본문 있는 18개만 설치하고 추상 2개를 제외하며 실제 visual 재정의는 유지했다.
-4. 전체 대상·관리 본문·정확한 서명·외부 패치를 적용 전에 확인하고 설치 오류에는 대상 이름을 남긴다.
-5. 실제 DLL 회귀 검사 38 checks 통과; 새 식별 로그는 patch_plan version=2 targets=18 abstract_declarations_skipped=2다.
-6. Dev/Player/Auto 빌드 오류 0/0/0, LoadCheck 274/229/274곳 틀림 0이다.
-7. LiveDeco 22952·아틀라스 1052924·edition 19·MatShare 25401·FrameCompare·steps 검증을 통과했다.
-8. 전달 프로파일 960572표본의 ProfSet 비율은 70.130186%; DecoAnim 전체/native 쓰기 비중은 미입증이다.
-9. 일반 Player 제외·기본 꺼짐·기존 144 steps를 유지했고 게임 Harmony 설치·픽셀·FPS·GATE2 통과는 미확인이다.
-10. 게임 실행·설치·커밋·푸시·config 변경 없이 수정 DLL·해시·로그·결과 문서를 인계했다.
+1. 최신 전달 시험은 patch_plan version=2를 지나 최초 on에서 zero-owned-see-exclusions로 중단됐다.
+2. 중단 수정 4파일을 보존해 이어갔고, 진단 pause가 게임의 isEditingLevel을 true로 만드는 경로를 디컴파일·IL로 확인했다.
+3. 실제 재생에서 진입한 유효한 FrameCompare 정지만 전역 편집 제외에서 구분하며 시작·프레임 수명 조건도 강화했다.
+4. 선택·테두리·히트박스와 활성 기즈모의 캐시 currentDec 독자는 계속 제외한다; 새 식별 줄은 admission version=3이다.
+5. 첫 Tick에도 cost/vertexcheck/remaining_reason을 출력해 소유 0 예외 직전 제외 분포 유실을 고쳤다.
+6. Dev/Player/Auto 빌드 오류 0/0/0, LoadCheck 275/229/275곳 틀림 0, 실제 DLL 패치 계획 38 checks 통과다.
+7. LiveDeco 22984·아틀라스 1052924·edition 19·MatShare 25401·FrameCompare control 49·steps 검사를 통과했다.
+8. 최신 전달 프로파일 962183표본의 ProfSet 비율은 70.352910%; DecoAnim 전체/native 쓰기 비중은 미입증이다.
+9. 기존 로그에 제외 분포가 없어 단일 원인 확정·수정 후 소유 수·픽셀·FPS·GATE2=PASS는 미확인이며 설계 한계도 미확정이다.
+10. 일반 Player 제외·기본 꺼짐·144 steps를 유지했고 게임 실행·설치·커밋·푸시·config 변경 없이 결과·로그·해시를 인계했다.

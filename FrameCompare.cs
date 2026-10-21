@@ -28,8 +28,11 @@ namespace StutterFix
         static FrameCompare instance;
         internal static bool Paused { get; private set; }
         static scrController controller;
-        static bool oldPaused, oldAudio;
+        static bool oldPaused, oldAudio, playingBeforePause;
         static float oldTime, oldTween;
+        internal static bool FrozenPlayback => FrameCompareControlPolicy.FrozenPlayback(Paused, oldPaused, playingBeforePause,
+            controller && controller == scrController.instance,
+            controller && controller.paused && Time.timeScale == 0 && DOTween.timeScale == 0 && AudioListener.pause);
         static readonly Harmony pausePatch = new Harmony("StutterFix.framecmp.pause");
         static readonly HashSet<ParticleSystem> pausedParticles = new HashSet<ParticleSystem>();
         static bool PlanetUpdate() => !Paused;
@@ -107,6 +110,7 @@ namespace StutterFix
             if (!controller) throw new InvalidOperationException("pause requires a loaded controller");
             oldPaused = controller.paused; oldAudio = AudioListener.pause;
             oldTime = Time.timeScale; oldTween = DOTween.timeScale;
+            playingBeforePause = Hitch.Playing;
             Paused = true;
             try { controller.paused = true; Time.timeScale = 0; DOTween.timeScale = 0; AudioListener.pause = true; FreezePlanets(); }
             catch { Resume(); throw; }
@@ -119,7 +123,7 @@ namespace StutterFix
             finally
             {
                 try { try { RestorePlanets(); } finally { if (controller) controller.paused = oldPaused; } }
-                finally { Time.timeScale = oldTime; DOTween.timeScale = oldTween; AudioListener.pause = oldAudio; Paused = false; controller = null; }
+                finally { Time.timeScale = oldTime; DOTween.timeScale = oldTween; AudioListener.pause = oldAudio; Paused = false; playingBeforePause = false; controller = null; }
             }
             Log("resume restored");
         }
