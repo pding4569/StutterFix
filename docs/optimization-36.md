@@ -1089,3 +1089,9 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 
 ## 2026-10-21: framecmp(같은 프레임 픽셀 비교 도구) 완성 — VERDICT 전부 PASS
 - 브랜치 `codex/night-framecmp`(개발·AutoTest 전용). Arche 264초 정지 상태(`pause`: controller.paused, Time.timeScale 0, DOTween 0, AudioListener.pause; 행성 고정), 필터 끔·UI 제외, 게임의 실제 카메라 체인 최종 이미지를 `AsyncGPUReadback` 로 비교(2560×1440). 결과: `framecmp RESULT noise_out=0 aa2_out=0 ab_out=192905 ctl_order=53284 ctl_hide=53284` / `VERDICT noise=PASS aa2=PASS order_ctl=PASS hide_ctl=PASS`. 중앙 20%(공·행성·꼬리 주변)는 정지 중에도 미세하게(최대 4/255, 2,373픽셀) 변해 제외 영역으로 두고, 그 밖은 잡음 0. 합성 스프라이트 대조군(재질 ID 순서 뒤집기·숨기기)이 겹침 순서 변화를 검출한다 → 이제 대체 렌더러·재질 공유·아틀라스의 "화면 동일" 주장을 자동으로 증명(또는 반증)할 수 있다. 실행: `python run_json.py night-results/fc-steps.json wt-framecmp <이름>`.
+
+## 키씹(입력 누락) 시험 — 타이머 0.5ms (2026-10-21)
+보고: "타이머 0.5ms 고정이면 판정은 덜 튀는데 키씹이 좀 있다". 시험 도구: `InputProbe.cs`(AutoTest 전용 `inputprobe begin|end`, `nofail`, `asyncinput`: SkyHook 훅이 받은 누름 수와 `scrController.ProcessKeyInputs` 가 처리한 수를 틱 단위로 대조), `tools/keydrop/keyinject.py`(SendInput 스캔코드로 J/K 를 단독·동시(1~3ms)·같은 키 연타(4~8ms) 합계 2,000번, 바쁜 대기만 써서 타이머 해상도를 건드리지 않음), `run_keydrop*.py`.
+게임 입력 경로: SkyHook 네이티브 훅 스레드 → `KeyUpdated` → `AsyncInputManager.keyQueue`(ConcurrentQueue) → 메인 스레드 `scrController.UpdateInput`(틱 순 정렬 → `ProcessKeyInputs`). 모드의 `FrameQueueDelay` 는 기본 꺼짐이고 비동기 경로엔 쓰이지 않는다.
+결과(비동기 입력 켬, nofail, 타이머 0.4959ms): Cry(500 FPS) 2,000/2,000 처리, **Arche 243→295초(약 290 FPS, 무거운 구간 포함) 2,000/2,000 처리, 틱 공유 0, 훅→게임 누락 0**. 곡 끝(OnLandOnPortal)이 시험 창 안에 들어가면 끝난 뒤 연타 구간 194개가 처리되지 않는다(비동기 입력이 비활성) — 시험 설계 실수였고 창을 앞으로 당겨 해소.
+한계: ① 이 PC 는 관리자 권한 ISLC 가 시스템 타이머를 0.5ms 로 쥐고 있어(`NtQueryTimerResolution` 0.4959ms) 모드 끔/켬이 같아졌다 → 0.5ms 와 다른 값의 A/B 는 못 했다(ISLC 를 끈 상태에서 필요). ② SendInput 은 하드웨어 키와 다를 수 있음(훅은 받음). ③ 비동기 입력 끈 경로(유니티 Input)는 이번에 안 쟀다.

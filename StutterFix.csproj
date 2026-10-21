@@ -128,6 +128,7 @@
     <Compile Include="ParticleDump.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileSig.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FuseProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="InputProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DecoGpu.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <EmbeddedResource Include="effects/stutterfix_decogpu" LogicalName="StutterFix.decogpu" Condition="('$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1') And Exists('effects/stutterfix_decogpu')" />
     <Compile Include="DecoBatchShadow.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
