@@ -8,6 +8,10 @@ struct Segment { float hi, lo, duration, start, end, target, over, period; uint 
 struct Track { uint first, count; float initial; uint pad; };
 StructuredBuffer<Segment> _Segments;
 StructuredBuffer<Track> _Tracks;
+struct Anchor { Segment segment; uint clock, valid; };
+StructuredBuffer<Anchor> _Anchors;
+StructuredBuffer<float> _Progress;
+uint _UseAnchors;
 // 10 float4 records per decoration: shape[4], offset origin/X/Y, constants, crop/Z/flags, startRot.
 StructuredBuffer<float4> _Static;
 StructuredBuffer<float2> _UV;
@@ -96,6 +100,17 @@ precise float Ease(uint id, float t, float d, float amplitude, float period)
 float Delta(Segment s) { return (_TimeHi-s.hi)+(_TimeLo-s.lo); }
 float Value(uint slot)
 {
+    Anchor a=_Anchors[slot];
+    if(_UseAnchors!=0 && a.valid!=0)
+    {
+        Segment s=a.segment; if(s.duration==0) return s.end;
+        float t=_Progress[a.clock];
+        if(t>=s.duration) return s.end;
+        if(t<=0) return s.start;
+        precise float change=s.target-s.start;
+        precise float product=change*Ease(s.ease,t,s.duration,s.over,s.period);
+        return s.start+product;
+    }
     Track h=_Tracks[slot]; uint lo=0, hi=h.count;
     while(lo<hi) { uint mid=lo+(hi-lo)/2; if(Delta(_Segments[h.first+mid])>=0) lo=mid+1; else hi=mid; }
     if(lo==0) return h.initial;

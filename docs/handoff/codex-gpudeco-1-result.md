@@ -1,4 +1,63 @@
-# gpudeco-1 최신 결과 — codex-al-gg-4 (2026-10-22)
+# gpudeco-1 최신 결과 — codex-al-gg-5 (2026-10-22)
+
+**Unity 6000.3.10f1 직접 실행·D3D11·기존 AssetBundle 방식을 유지했다. 이번 변경은 소스별 실제 `Rec.Pos`를 받는 export v2와 독립 랩 평가다. 합성 검증은 통과했지만 실제 v2 export가 없어 새 방식의 게임 G0/G1은 미측정이다. 게임 연결·새 번들 제작은 진행하지 않았다.**
+
+## 원인과 이번 선택
+
+먼저 장부와 `gg-autoloop-run4-evidence.txt`를 읽었다. 직전 시험의 첫 export는 184257.5118ms, bake worker는 511.2941ms였고 3파일을 생성했다. 따라서 대기 순서를 되돌리거나 준비 제한을 늘리지 않았다. 최신 실제 입력은 `exports/run-bd81aca8d8c149fa963add1c4d6ba68d/`의 v1 파일이다. 262초 소유1730/awake2134, 270초1875/2268, 276초17/24를 현재 데이터 리더로 확인했다. **아래 과거 절의 81.50/65.62px는 이전 입력의 측정이며 이 최신 입력을 새로 계산한 값이 아니다.**
+
+`scrVfxPlus.Update`는 실제 Update에서 효과를 시작하고, `ffxMoveDecorationsPlus.StartEffect`는 상대 목표의 기준을 읽고 이전 트윈을 `Kill(true)`한 뒤 새 시작값을 정한다. 현재 `DecoAnim.Step`은 `float Pos + dt`를 저장한다. 곡 시각 하나로는 효과별 진행과 교체 시작값을 함께 복원할 수 없다. 디컴파일본을 읽고 설치 DLL의 `StartEffect` 호출을 [IL 로그](../../tools/gpudeco-lab/evidence/round6-move-il.txt)로 교차확인했다. 전역 시계 201후보 탐색은 다시 하지 않았다.
+
+이번에는 **현재 채널의 실제 Rec가 구간을 고르고 그 소스의 진행값이 이징 입력이 된다.** 곡 시각으로 먼저 구간을 고르면 경계에서 아직 시작하지 않은 다음 효과를 선택할 수 있고, 교체 후 Start/Target도 다를 수 있기 때문이다. 실제 Rec가 없는 채널은 기존 이진 탐색 표를 사용하고 폴백 수를 남긴다. 이는 인계의 소스 앵커링을 현재 효과 식별까지 확장한 선택이다.
+
+## 구현 범위
+
+- 기존 `FastMove.Run` 호출 범위에서만 소스 ID·실제 트리거 프레임·곡 시각을 Rec에 기록한다. 새 Harmony 패치·Transform/색 쓰기 훅·프레임당 장식 순회는 없다. 관찰은 `gpudeco prepare`에서 켜고 `off`에서 끈다. 세대와 capture epoch가 다른 기록은 거부한다.
+- export 때만 각 장식의 현재 `eventTweens`를 읽는다. 실행 중인 Rec의 실제 float Pos·Start/Target·duration·ease를 내보낸다. 같은 `(source ID, start frame)`의 진행값이 다르면 평균내지 않고 파일 생성 전에 오류로 중단한다. 완료 Rec는 원본 OnComplete/scale 플러그인 산술의 끝값을 보존한다. 새 기록이 없는 native·direct·미시작 채널은 표 폴백이며 실제 값을 복사해 정답을 만드는 보정은 없다.
+- v2에는 소스 진행값 배열, 채널별 현재 구간, 표의 Source/Replacement, 최근 최대256개의 실제 프레임 간격과 동일 프레임의 원본 tween dt 평균이 들어간다. 프레임당 새 관찰은 두 float와 합계의 고정 크기 링 갱신뿐이다. export 전체 순회는 진단 스냅샷에서만 실행한다.
+- GPU는 `progress[clock]`로 구간을 평가하고 Raw 정점을 쓴다. 소스 진행값은 사전 할당 배열에서 한 번 `SetData`한다. `Actual`·`World`·렌더러 정답 색은 GPU 입력 버퍼에 넣지 않는다. 게임의 소유·원본 평가 생략·렌더러 연결은 실제 G0 전이라 계속 차단한다.
+- G0 로그는 채널별 최대/평균·px·국소 `값 오차/속도` ms를 전후로 기록한다. 빠른 채널의 소스별 최악 위상은 관찰 평균 1프레임 이내가 99% 이상이어야 한다. 1프레임의 예상 이동이 0.01px/색1/255 이내인 채널과 종료/폴백 채널은 절대 오차 기준을 유지한다. 실제 필드→Sprite 및 GPU 필드→GPU 정점 식도 별도로 0.01px를 검사한다. 국소 시간 환산은 실제 시작 이력이나 비단조 이징의 전역 역함수 증명이 아니다.
+- v1은 읽되 v2로 다시 쓰지 못한다. 실제 v1을 새 G0 시험에 주면 수치 계산 전에 `v2_real_anchor_export_required`로 거부한다. `OWNED_LOW`는 awake≥800이고 소유율<70%일 때만이며 276초는 계속 보조다.
+
+## 이번 독립 랩의 수치
+
+최종 [GPU/게이트 로그](../../tools/gpudeco-lab/evidence/round6-source-gate.txt), [Editor 로그](../../tools/gpudeco-lab/evidence/round6-source-gate-editor.txt), [채널별 표](codex-gpudeco-lab-result.md)를 본다. Unity6000.3.10f1 / RTX4060Ti / D3D11, 최종 exit0이다.
+
+|합성 시험|결과|
+|---|---|
+|v2 파일 왕복|2,923,234B, 소스257, 장식2,000, 채널32,000|
+|8,000정점 최대/평균|0.0000309467 / 0.0000032826px, 0.01px 초과0|
+|최종 RGBA 32,000개 최대/평균|0.0000002384 / 0.000000006754, 1/255 초과0|
+|GPU 필드→정점 식 최대|0.0000191923px, 초과0|
+|일시정지/소스 분리|곡 시각+30초에도 앵커 출력 동일, 소스37만 +7ms 후112채널 변화·다른 소스 변화0|
+|정답 입력 독립성|Actual 변경 후 GPU 출력 변화0|
+|곡 시각 경로 음성 대조|동일 합성 정답에서 정점 최대524.2243px·평균116.2252px·초과7936/8000으로 의도대로 실패|
+|257소스 업로드+1 dispatch CPU 제출|1,028B, 500회 평균0.0075288ms|
+|2,000소스 업로드+1 dispatch CPU 제출|8,000B, 500회 평균0.0132740ms|
+
+**이 표는 합성 입력이다. Arche의 실제 앵커링 전후 개선량·실제 프레임 비용·G1 픽셀 통과가 아니다.** 비용에는 소스 관찰·게임 평가·80메시 복사·그리기가 없고 GPU timestamp도 없다. 이전 80메시 합성 비용을 더해 게임 비용을 추정하지 않았다. 2,000소스 비용 시험은 257개의 진행값을 반복한 업로드 규모 검사다.
+
+## 검증과 환경
+
+3종 최종 Release 오류0/0/0, 경고38/4/38. LoadCheck277/229/277곳 불일치0. 일반 Player에서 GpuDecoData/GpuStep/BakeWrite와 새 Rec의 GPU 메타데이터가 없다. 데이터 계약41건, bake/live 계약, DecoSim12, framecmp, ld2a 정책·geometry·delta, steps/출력 충돌, SM5 3커널이 통과했다. 최종 랩 C#도 오류·경고0이다. 근거는 `tools/gpudeco-lab/evidence/round6-*`와 manifest에 있다.
+
+첫 독립 Editor는 UPM IPC 연결 30초 실패(exit1), 다음 직접 호출은 `com.unity.editor.headless was not found`·entitlement404(exit198)로 시험 진입 전에 종료됐다. 로그를 보존했고 클라이언트 자연 종료 확인 뒤 새 직접 호출이 성공했다. 로그인·라이선스 변경·설치·강제 종료는 하지 않았다. 성공한 변경별 랩 실행만 각기 보존했으며 초기 실패 뒤 남은 파일을 현재 결과로 복사하지 않았다.
+
+워크트리에 지시된 ROADMAP 파일이 없어 현재 기본 체크아웃의 동명 파일과 최신 optimization-36 bake/livedeco 절을 읽었다. 수정은 이 워크트리 안에서만 했다. 게임 실행·설치·커밋·푸시·`.codex/config.toml` 수정0회이고 기존 export 6개는 보존했다.
+
+## 남은 경계
+
+이번 실제 v2 export는 **0개**다. 현재 실제 v1에는 소스 Pos/Start가 없고 이를 정답에서 역산해 채우지 않았다. 실제 세 시점의 채널별 px/ms·위상99%·정점·소유율 유지·준비 시간 변화는 미측정이다. 실제 G0가 없으므로 새 번들 제작·게임 소유권 이전·G1/G2를 진행하지 않았다. 이것을 새 설계의 불가능 판정으로 바꾸지 않는다.
+
+현재 구현은 관찰/export/독립 랩 단계다. 게임에서 소유 Rec 생성을 생략한 뒤에도 BakeLive식 소스 시계를 계속 갱신하는 구동기, 실제 GPU 렌더러 연결 및 수명/복구 경로는 아직 구현하지 않았다. 랩의 SetData 비용만으로 이 부분의 예산이나 정확성을 보장할 수 없다.
+
+다음 외부 자동 루프가 사용할 준비물은 [v2 export steps](../../tools/gpudeco-lab/evidence/round6-export-steps.json)이다. export 코드와 데이터 계약이 달라진 시험이며 기존 게임 시험을 그대로 반복하도록 요청하지 않는다. 게임 실행 금지를 유지한 채 준비 파일만 생성했다. 실제 v2 세 파일이 생기면 README의 `GpuDecoLab.Verify -gpudecoInput <새 폴더>`로 먼저 전후 비교한다. 소스 진행값 충돌·폴백 오차·GPU 정점 오차가 남으면 해당 숫자와 소유율을 근거로 다음 판단을 해야 한다.
+
+`GPUDECO_G1=ERROR G0=UNMEASURED stage=source-clock reason=v2_real_anchor_export_required integration=BLOCKED`
+
+---
+
+# 이전 gpudeco-1 결과 — codex-al-gg-4 (2026-10-22)
 
 **Unity 6000.3.10f1 직접 실행·D3D11·기존 AssetBundle 방식을 유지한다. 파일 충돌과 OWNED_LOW 판정을 수정했고 실제 export 3개를 모두 측정했다. 276초는 보조 측정으로 통과했지만 262·270초 G0는 실패하므로, 곡 시각 표 설계의 한계를 기록하고 게임 연결을 중단한다.** `GPUDECO_G1=PASS`는 달성하지 못했다. 게임 실행·설치·커밋·푸시·config 수정·로그인은 0회다.
 

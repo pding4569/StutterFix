@@ -59,6 +59,8 @@ namespace StutterFix
             internal long BatchOrder;
 #if DEV || AUTOTEST
             internal int BatchShadowSlot = -1;
+            internal int GpuSource, GpuStartFrame = -1, GpuGeneration = -1, GpuCaptureEpoch = -1;
+            internal double GpuStartSong;
 #endif
             public scrDecoration D; public int Key; public Tween Proxy;
             internal int PosSlot = -1, PosGeneration;
@@ -224,6 +226,9 @@ namespace StutterFix
             if (FuseProbe.On) FuseProbe.NewRec(dec, key, dur, (object)old != null, oldR != null && oldR.Running);
 #endif
             r.NativeEpoch = 0;
+#if DEV || AUTOTEST
+            DecoBake.StampGpuRec(r);
+#endif
             r.EngineOrder = DecoEngine.NextOrder();
             DecoEngine.Dirty = true;
             if (batchOn) r.BatchOrder = ++batchOrder;
@@ -644,6 +649,7 @@ namespace StutterFix
 #endif
 #if DEV || AUTOTEST
             DecoBake.AdvanceClock();
+            DecoBake.ObserveGpuFrame();
             DecoBake.AdoptFrame();
             if (DecoSim.Capturing) DecoSim.BeginFrame(recs, batchOn || DecoEngine.Enabled || GroupEnabled || NativeMotion.Enabled);
 #endif

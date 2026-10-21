@@ -1,10 +1,10 @@
-﻿1. Unity6000.3.10f1 직접/D3D11/기존번들 유지, 실제G0 실패의 설계 한계로 게임 연결 중단.
-2. 게임실행·설치·커밋·푸시·config수정·로그인·강제종료0회, 기존export3개 SHA256일치.
-3. run3 파일충돌 수정: 기본고유run폴더·명시적기존export폴더 사전거부·CreateNew보호 유지.
-4. OWNED_LOW 정정: awake≥800이고 owned/awake<70%만 실패, 276초는 보조측정.
-5. 주262초1730/2134·81.0684%, 주270초1875/2270·82.5991%, 보조276초17/24.
-6. 실제정점 최대/평균: 262초81.501349/1.920398px·초과5936/6920, 270초65.618709/2.890432px·초과6796/7500.
-7. 최종RGBA 최대0.001122171/0.006678127·초과0/72, 276초68정점·272RGBA 최대/평균0·초과0.
-8. 원본Update트리거/float진행과 예약T0/tb표의 차이·v1상태누락 재확인, 시간역산보정/새번들/게임연결0.
-9. 3종빌드오류0·LoadCheck불일치0·일반Player제외·랩컴파일/SM5·데이터21·관련fixture통과, 게임G1/G2미측정.
-10. GPUDECO_G1=G0_FAIL G0=FAIL game_pixels=UNMEASURED reason=real_export_gate_failed integration=BLOCKED
+1. Unity6000.3.10f1 직접/D3D11 유지, 소스별 실제 Rec.Pos·현재 구간을 받는 export v2/GPU 앵커 경로 구현.
+2. 게임실행·설치·커밋·푸시·config수정·로그인·강제종료0회, 기존export6개 보존.
+3. 기존 FastMove/Rec 생성에서 실제 source/frame/Start/Target 관찰, 동일소스 진행불일치 거부·완료끝값·표폴백 집계.
+4. 최신run4 실제파일3개는v1·sources0: 소유1730/2134·1875/2268·17/24, OWNED_LOW70%·276보조 유지.
+5. 합성v2왕복2,923,234B·32,000채널·8,000정점, 정점최대/평균0.0000309467/0.0000032826px·초과0.
+6. 합성RGBA최대/평균0.0000002384/0.000000006754·초과0, source37만+7ms→112채널변화/다른소스0.
+7. 곡시각+30초 출력동일·Actual변경 GPU변화0·기존곡시계 음성대조 실패 확인, 실제Arche 개선량 아님.
+8. 업로드+1dispatch CPU제출257/2000소스=0.0075288/0.0132740ms, 합성·게임/80메시복사/GPUtimestamp 제외.
+9. 최종3종빌드오류0·LoadCheck불일치0·일반Player제외·데이터41·관련fixture/SM5/독립Editor exit0, 실제v2/G0/G1미측정.
+10. GPUDECO_G1=ERROR G0=UNMEASURED stage=source-clock reason=v2_real_anchor_export_required integration=BLOCKED

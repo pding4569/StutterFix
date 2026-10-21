@@ -18,6 +18,7 @@ assert all(float(s.split()[1]) <= 60 for s in steps if s.startswith('wait '))
 assert steps.index('decobake on') < next(i for i, s in enumerate(steps) if s.startswith('open '))
 assert len([s for s in steps if s.startswith('open ')]) == 1
 assert run['stage'] == 'export-first' and run['expected_verdict'] != 'PASS'
+assert run['export_schema'] == 2 and run['evaluation_clock'] == 'actual-source-progress'
 assert 'gpudeco on' not in steps
 assert all('GPUDECO_G1=PASS' not in s for s in steps)
 exports = [s for s in steps if s.startswith('gpudeco export ')]

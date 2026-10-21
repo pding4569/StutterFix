@@ -15,7 +15,35 @@ namespace StutterFix
     // Versioned diagnostic interchange, never a product asset or a live frame buffer.
     internal sealed class GpuDecoData
     {
-        internal const int Version = 1;
+        internal const int Version = 2;
+        internal int Schema = Version;
+        internal float MeanFrameSeconds, MeanProgressStep;
+        internal int FrameSamples;
+        internal SourceClock[] Sources = new SourceClock[0];
+        internal float Eval(Item d, int ch, DecoBakeCore.EaseFn ease, bool anchored = true)
+        {
+            var a = d.Anchors[ch];
+            if (anchored && a.Valid)
+            {
+                var s = a.Segment; if (s.Duration == 0) return s.End;
+                float t = Sources[a.Clock].Progress;
+                return t >= s.Duration ? s.End : t <= 0 ? s.Start : s.Start + (s.Target - s.Start) * ease(s.Ease, t, s.Duration, s.Over, s.Period);
+            }
+            int n = DecoBakeCore.Find(d.Tracks[ch], BakeTime);
+            return n < 0 ? d.Initial[ch] : DecoBakeCore.Value(d.Tracks[ch][n], BakeTime, Pitch, TweenScale, ease);
+        }
+        internal sealed class SourceClock
+        {
+            internal int Id, StartFrame;
+            internal double StartSong;
+            internal float Progress;
+        }
+        internal struct Anchor
+        {
+            internal bool Valid;
+            internal int Clock;
+            internal DecoBakeCore.Segment Segment;
+        }
         internal double RawTime, BakeTime;
         internal float Pitch, TweenScale, PixelsPerWorld;
         internal int Frame, Awake, Supported;
@@ -29,6 +57,7 @@ namespace StutterFix
             internal string Placement;
             internal float[] Initial = new float[16], Actual = new float[16];
             internal DecoBakeCore.Segment[][] Tracks = new DecoBakeCore.Segment[16][];
+            internal Anchor[] Anchors = new Anchor[16];
             // trueScale XY, textureScale XY, startRot, croppedPivot XY, worldZ
             internal float[] Constants = new float[8];
             internal float[] Shape = new float[12], OffsetBasis = new float[9];
@@ -41,6 +70,7 @@ namespace StutterFix
         static int Count(BinaryReader r, int max) { int n = r.ReadInt32(); if (n < 0 || n > max) throw new InvalidDataException("GPU decoration count"); return n; }
         internal void Write(Stream stream)
         {
+            if (Schema != Version) throw new InvalidDataException("legacy export cannot be relabeled as source-clock evidence");
             using (var w = new BinaryWriter(stream, System.Text.Encoding.UTF8, true))
             {
                 w.Write(0x31445047); w.Write(Version); w.Write(Fingerprint); Check(RawTime); Check(BakeTime);
@@ -59,17 +89,29 @@ namespace StutterFix
                         {
                             Check(s.T0); w.Write(s.T0); w.Write(s.Duration); w.Write(s.Start); w.Write(s.End); w.Write(s.Target);
                             w.Write(s.Over); w.Write(s.Period); w.Write(s.Ease); w.Write(s.IsScale);
+                            w.Write(s.Source); w.Write(s.Replacement);
                         }
                     }
+                    foreach (var a in d.Anchors)
+                    {
+                        w.Write(a.Valid); if (!a.Valid) continue;
+                        w.Write(a.Clock); var s = a.Segment;
+                        w.Write(s.Duration); w.Write(s.Start); w.Write(s.End); w.Write(s.Target);
+                        w.Write(s.Over); w.Write(s.Period); w.Write(s.Ease); w.Write(s.IsScale);
+                    }
                 }
+                w.Write(Sources.Length);
+                foreach (var s in Sources) { w.Write(s.Id); w.Write(s.StartFrame); Check(s.StartSong); w.Write(s.StartSong); Check(s.Progress); w.Write(s.Progress); }
+                w.Write(MeanFrameSeconds); w.Write(FrameSamples); w.Write(MeanProgressStep);
             }
         }
         internal static GpuDecoData Read(Stream stream)
         {
             using (var r = new BinaryReader(stream, System.Text.Encoding.UTF8, true))
             {
-                if (r.ReadInt32() != 0x31445047 || r.ReadInt32() != Version) throw new InvalidDataException("GPU decoration schema");
-                var data = new GpuDecoData { Fingerprint = r.ReadString(), RawTime = r.ReadDouble(), BakeTime = r.ReadDouble(),
+                if (r.ReadInt32() != 0x31445047) throw new InvalidDataException("GPU decoration magic");
+                int version = r.ReadInt32(); if (version != 1 && version != Version) throw new InvalidDataException("GPU decoration schema");
+                var data = new GpuDecoData { Schema = version, Fingerprint = r.ReadString(), RawTime = r.ReadDouble(), BakeTime = r.ReadDouble(),
                     Pitch = r.ReadSingle(), TweenScale = r.ReadSingle(), PixelsPerWorld = r.ReadSingle(), Frame = r.ReadInt32(), Awake = r.ReadInt32(), Supported = r.ReadInt32() };
                 Check(data.RawTime); Check(data.BakeTime); Check(data.Pitch); Check(data.TweenScale); Check(data.PixelsPerWorld);
                 if (data.Pitch <= 0 || data.TweenScale <= 0 || data.PixelsPerWorld <= 0) throw new InvalidDataException("GPU decoration clock/projection");
@@ -90,11 +132,39 @@ namespace StutterFix
                         {
                             var s = new DecoBakeCore.Segment { T0 = r.ReadDouble(), Duration = r.ReadSingle(), Start = r.ReadSingle(), End = r.ReadSingle(),
                                 Target = r.ReadSingle(), Over = r.ReadSingle(), Period = r.ReadSingle(), Ease = r.ReadInt32(), IsScale = r.ReadBoolean() };
+                            if (version >= 2) { s.Source = r.ReadInt32(); s.Replacement = r.ReadBoolean(); }
                             Check(s.T0); Check(s.Duration); Check(s.Start); Check(s.End); Check(s.Target); Check(s.Over); Check(s.Period);
                             if (s.T0 < previous || s.Duration < 0) throw new InvalidDataException("GPU decoration track order");
                             previous = s.T0; track[j] = s;
                         }
                     }
+                    if (version >= 2) for (int ch = 0; ch < 16; ch++)
+                    {
+                        if (!r.ReadBoolean()) continue;
+                        var a = new Anchor { Valid = true, Clock = r.ReadInt32(), Segment = new DecoBakeCore.Segment {
+                            Duration = r.ReadSingle(), Start = r.ReadSingle(), End = r.ReadSingle(), Target = r.ReadSingle(),
+                            Over = r.ReadSingle(), Period = r.ReadSingle(), Ease = r.ReadInt32(), IsScale = r.ReadBoolean() } };
+                        var s = a.Segment; Check(s.Duration); Check(s.Start); Check(s.End); Check(s.Target); Check(s.Over); Check(s.Period);
+                        if (s.Duration < 0 || (s.Duration > 0 ? a.Clock < 0 : a.Clock != -1)) throw new InvalidDataException("GPU decoration anchor");
+                        d.Anchors[ch] = a;
+                    }
+                }
+                if (version >= 2)
+                {
+                    data.Sources = new SourceClock[Count(r, 1000000)];
+                    for (int i = 0; i < data.Sources.Length; i++)
+                    {
+                        var s = data.Sources[i] = new SourceClock { Id = r.ReadInt32(), StartFrame = r.ReadInt32(), StartSong = r.ReadDouble(), Progress = r.ReadSingle() };
+                        Check(s.StartSong); Check(s.Progress);
+                        if (s.StartFrame < 0 || s.StartFrame > data.Frame || s.Progress < 0) throw new InvalidDataException("GPU decoration source clock");
+                    }
+                    foreach (var d in data.Items) foreach (var a in d.Anchors)
+                        if (a.Valid && a.Segment.Duration > 0 && a.Clock >= data.Sources.Length) throw new InvalidDataException("GPU decoration anchor clock index");
+                    data.MeanFrameSeconds = r.ReadSingle(); data.FrameSamples = r.ReadInt32(); Check(data.MeanFrameSeconds);
+                    data.MeanProgressStep = r.ReadSingle(); Check(data.MeanProgressStep);
+                    if (data.MeanFrameSeconds < 0 || data.FrameSamples < 0 || data.FrameSamples > 256 || (data.FrameSamples == 0) != (data.MeanFrameSeconds == 0))
+                        throw new InvalidDataException("GPU decoration frame interval");
+                    if (data.MeanProgressStep < 0 || (data.FrameSamples == 0) != (data.MeanProgressStep == 0)) throw new InvalidDataException("GPU decoration progress interval");
                 }
                 if (stream.Position != stream.Length) throw new InvalidDataException("GPU decoration trailing bytes");
                 return data;

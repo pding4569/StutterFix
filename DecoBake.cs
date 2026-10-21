@@ -152,6 +152,7 @@ namespace StutterFix
             StopSignature();
             DecoSim.InvalidateBake("스냅샷 세대 변경: 재준비");
             generation++; ready = false; collector = null; clock.Reset(); clockFrame = -1;
+            ResetGpuFrames();
             cancellation?.Cancel(); cancellation?.Dispose(); cancellation = null;
             // Observe late faults even when an old generation is discarded. Worker snapshots contain no Unity references.
             if (job != null) job.ContinueWith(t => { var ignored = t.Exception; }, TaskContinuationOptions.OnlyOnFaulted);

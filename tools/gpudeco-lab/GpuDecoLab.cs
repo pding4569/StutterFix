@@ -22,6 +22,8 @@ public static partial class GpuDecoLab
     [StructLayout(LayoutKind.Sequential)]
     struct Track { public uint first, count; public float initial; public uint pad; }
     [StructLayout(LayoutKind.Sequential)]
+    struct Anchor { public Segment segment; public uint clock, valid; }
+    [StructLayout(LayoutKind.Sequential)]
     struct Vertex { public Vector3 position; public Color color; public Vector2 uv; }
     static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
     static readonly List<string> report = new List<string>();
@@ -50,6 +52,7 @@ public static partial class GpuDecoLab
     }
     public static void Smoke() => Run(SmokeBody, "smoke");
     public static void Verify() => Run(VerifyBody, "verify");
+    public static void Anchors() => Run(AnchorsBody, "anchors");
     public static void Bundle() => Run(BundleBody, "bundle");
     public static void Runs() => Run(RunsBody, "runs");
     static ComputeShader Shader() => AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/Shaders/GpuDeco.compute");
@@ -109,7 +112,8 @@ public static partial class GpuDecoLab
     {
         readonly ComputeShader shader; readonly GpuDecoData data; readonly int kernel;
         readonly List<IDisposable> resources = new List<IDisposable>();
-        ComputeBuffer values; GraphicsBuffer vertices;
+        ComputeBuffer values, progress; readonly float[] sourceProgress; GraphicsBuffer vertices;
+        internal bool UseAnchors = true;
         internal Mesh Mesh; internal int SegmentCount;
         internal GraphicsBuffer VertexBuffer => vertices;
         ComputeBuffer Buffer<T>(IList<T> source, int stride) where T:struct
@@ -120,14 +124,19 @@ public static partial class GpuDecoLab
         internal Evaluation(ComputeShader shader,GpuDecoData data)
         {
             this.shader=shader; this.data=data; kernel=shader.FindKernel("Evaluate");
+            sourceProgress=new float[data.Sources.Length];
             try
             {
-                var segments=new List<Segment>(); var tracks=new List<Track>(); var shape=new List<Vector4>(); var uv=new List<Vector2>(); var triangles=new List<int>();
+                var segments=new List<Segment>(); var tracks=new List<Track>(); var anchors=new List<Anchor>(); var shape=new List<Vector4>(); var uv=new List<Vector2>(); var triangles=new List<int>();
                 for(int i=0;i<data.Items.Length;i++)
                 {
                     var d=data.Items[i];
                     for(int ch=0;ch<16;ch++)
                     {
+                        var a=d.Anchors[ch]; var s0=a.Segment;
+                        if(a.Valid) Require(Supported(s0.Ease),"unsupported anchor ease " + s0.Ease);
+                        anchors.Add(new Anchor { valid=a.Valid?1u:0u, clock=(uint)a.Clock, segment=new Segment {
+                            duration=s0.Duration,start=s0.Start,end=s0.End,target=s0.Target,over=s0.Over,period=s0.Period,ease=(uint)s0.Ease,scale=s0.IsScale?1u:0u } });
                         tracks.Add(new Track { first=(uint)segments.Count,count=(uint)d.Tracks[ch].Length,initial=d.Initial[ch] });
                         foreach(var s in d.Tracks[ch])
                         {
@@ -143,6 +152,9 @@ public static partial class GpuDecoLab
                 }
                 SegmentCount=segments.Count;
                 shader.SetBuffer(kernel,"_Segments",Buffer(segments,40)); shader.SetBuffer(kernel,"_Tracks",Buffer(tracks,16));
+                Require(Marshal.SizeOf<Anchor>()==48,"anchor GPU stride");
+                shader.SetBuffer(kernel,"_Anchors",Buffer(anchors,48));
+                progress=Buffer(data.Sources.Select(s=>s.Progress).ToArray(),4); shader.SetBuffer(kernel,"_Progress",progress);
                 shader.SetBuffer(kernel,"_Static",Buffer(shape,16)); shader.SetBuffer(kernel,"_UV",Buffer(uv,8));
                 values=new ComputeBuffer(data.Items.Length*16,4); resources.Add(values); shader.SetBuffer(kernel,"_Values",values);
                 Mesh=new Mesh { name="GpuDecoLab raw",indexFormat=IndexFormat.UInt32,vertexBufferTarget=GraphicsBuffer.Target.Raw };
@@ -163,6 +175,13 @@ public static partial class GpuDecoLab
         }
         internal (float[] values,Vertex[] vertices) Dispatch(double time,bool read)
         {
+            shader.SetInt("_UseAnchors",UseAnchors?1:0);
+            // One upload for source progress. Static geometry/segments are never uploaded here.
+            if(UseAnchors && sourceProgress.Length>0)
+            {
+                for(int i=0;i<sourceProgress.Length;i++) sourceProgress[i]=data.Sources[i].Progress;
+                progress.SetData(sourceProgress);
+            }
             float hi=(float)time; shader.SetFloat("_TimeHi",hi); shader.SetFloat("_TimeLo",(float)(time-hi));
             shader.Dispatch(kernel,(data.Items.Length+63)/64,1,1);
             if(!read) return (null,null);
@@ -183,48 +202,161 @@ public static partial class GpuDecoLab
         var rotation=Quaternion.Normalize(Quaternion.Euler(0,0,c[4]+v[4]+((d.Flags&2)!=0 ? data.Camera[2] : 0)));
         return Enumerable.Range(0,4).Select(n=> { var local=V(d.Shape,n*3)+translated; return new Vector3(world.x,world.y,c[7])+rotation*new Vector3(local.x*scale.x,local.y*scale.y,local.z); }).ToArray();
     }
-    static bool Compare(GpuDecoData data,float[] values,Vertex[] vertices,bool real)
+    static bool Compare(GpuDecoData data,float[] values,Vertex[] vertices,bool real,bool anchored=true,bool requireSynthetic=true)
     {
         var sums=new double[16]; var max=new double[16]; var pixelMax=new double[16]; var pixelSum=new double[16]; var over=new int[16]; double vertexMax=0,vertexSum=0,tableMax=0,tableSum=0,colorMax=0,colorSum=0; int vertexOver=0,colorOver=0;
+        var sourcePhase=new double[data.Sources.Length]; var sourceSeen=new bool[data.Sources.Length];
+        var phaseMax=new double[16]; var phaseSum=new double[16]; var phaseCount=new int[16]; var phaseOver=new int[16];
+        double logicalGeometryMax=0,gpuGeometryMax=0; int logicalGeometryOver=0,gpuGeometryOver=0,gpuColorOver=0;
         for(int i=0;i<data.Items.Length;i++)
         {
             var d=data.Items[i]; var eval=new float[16];
-            var table=new DecoBakeCore.Table { Decorations=new[]{new DecoBakeCore.Decoration{Initial=d.Initial}},Tracks=d.Tracks,Pitch=data.Pitch,TweenScale=data.TweenScale,Ease=Ease };
             var logicalWorld=CpuVertices(data,d,d.Actual);
             for(int ch=0;ch<16;ch++)
             {
                 eval[ch]=values[i*16+ch]; double error=Math.Abs((double)eval[ch]-d.Actual[ch]); Require(DecoBakeCore.Finite(error),"nonfinite channel");
                 max[ch]=Math.Max(max[ch],error); sums[ch]+=error;
-                double tableError=Math.Abs((double)eval[ch]-table.Eval(0,ch,data.BakeTime)); tableMax=Math.Max(tableMax,tableError); tableSum+=tableError;
+                double tableError=Math.Abs((double)eval[ch]-data.Eval(d,ch,Ease,anchored)); tableMax=Math.Max(tableMax,tableError); tableSum+=tableError;
+                bool phaseAccepted=false; var anchor=d.Anchors[ch];
+                var phaseSegment=anchor.Segment; float phasePosition=0; int phaseClock=-1;
+                bool phaseCandidate=anchored && anchor.Valid && anchor.Segment.Duration>0;
+                if(phaseCandidate) { phasePosition=data.Sources[anchor.Clock].Progress; phaseClock=anchor.Clock; }
+                else if(!anchored)
+                {
+                    int n=DecoBakeCore.Find(d.Tracks[ch],data.BakeTime);
+                    if(n>=0) { phaseSegment=d.Tracks[ch][n]; phasePosition=(float)((data.BakeTime-phaseSegment.T0)/data.Pitch*data.TweenScale); phaseCandidate=phaseSegment.Duration>0; }
+                }
+                if(phaseCandidate)
+                {
+                    var s=phaseSegment; float t=phasePosition;
+                    // Local value/speed conversion is diagnostic, not a clock fit.
+                    float h=Math.Min(.0001f,s.Duration*.001f), a=Math.Max(0,t-h), b=Math.Min(s.Duration,t+h);
+                    double speed=b>a ? Math.Abs((double)(s.Target-s.Start)*(Ease(s.Ease,b,s.Duration,s.Over,s.Period)-Ease(s.Ease,a,s.Duration,s.Over,s.Period))/(b-a)) : 0;
+                    if(t>0 && t<s.Duration && speed>1e-6)
+                    {
+                        double seconds=data.MeanProgressStep>0 ? error/speed*data.MeanFrameSeconds/data.MeanProgressStep : double.PositiveInfinity;
+                        phaseMax[ch]=Math.Max(phaseMax[ch],seconds*1000); phaseSum[ch]+=seconds*1000; phaseCount[ch]++;
+                        // A motion smaller than the value tolerance per frame is
+                        // stationary for this gate, even if its derivative is nonzero.
+                        bool fast=false; float frameChange=(float)(speed*data.MeanProgressStep);
+                        if(ch>=7 && ch<=11) fast=frameChange>1f/255;
+                        else if(frameChange>0)
+                        {
+                            var shifted=(float[])d.Actual.Clone(); shifted[ch]+=frameChange;
+                            var shiftedWorld=CpuVertices(data,d,shifted);
+                            fast=Enumerable.Range(0,4).Max(k=>Vector3.Distance(logicalWorld[k],shiftedWorld[k]))*data.PixelsPerWorld>.01;
+                        }
+                        if(phaseClock>=0 && fast) { sourceSeen[phaseClock]=true; sourcePhase[phaseClock]=Math.Max(sourcePhase[phaseClock],seconds); }
+                        phaseAccepted=data.FrameSamples>0 && fast;
+                        if(seconds>data.MeanFrameSeconds) phaseOver[ch]++;
+                    }
+                }
                 // Convert each geometric channel's error to the maximum sprite-corner
                 // displacement, retaining the actual values in all other channels.
-                if(ch>=7 && ch<=11) { if(error>1.0/255) over[ch]++; }
+                if(ch>=7 && ch<=11) { if(error>1.0/255 && !phaseAccepted) over[ch]++; }
                 else
                 {
                     var perturbed=(float[])d.Actual.Clone(); perturbed[ch]=eval[ch]; var world=CpuVertices(data,d,perturbed);
                     double px=Enumerable.Range(0,4).Max(k=>Vector3.Distance(logicalWorld[k],world[k]))*data.PixelsPerWorld;
-                    Require(DecoBakeCore.Finite(px),"nonfinite projected channel"); pixelMax[ch]=Math.Max(pixelMax[ch],px); pixelSum[ch]+=px; if(px>.01) over[ch]++;
+                    Require(DecoBakeCore.Finite(px),"nonfinite projected channel"); pixelMax[ch]=Math.Max(pixelMax[ch],px); pixelSum[ch]+=px; if(px>.01 && !phaseAccepted) over[ch]++;
                 }
             }
+            var evaluatedWorld=CpuVertices(data,d,eval);
             for(int k=0;k<4;k++)
             {
+                double geometry=Vector3.Distance(logicalWorld[k],V(d.World,k*3))*data.PixelsPerWorld;
+                logicalGeometryMax=Math.Max(logicalGeometryMax,geometry); if(geometry>.01) logicalGeometryOver++;
+                geometry=Vector3.Distance(evaluatedWorld[k],vertices[i*4+k].position)*data.PixelsPerWorld;
+                gpuGeometryMax=Math.Max(gpuGeometryMax,geometry); if(geometry>.01) gpuGeometryOver++;
                 double error=Vector3.Distance(vertices[i*4+k].position,V(d.World,k*3))*data.PixelsPerWorld;
                 Require(DecoBakeCore.Finite(error),"nonfinite vertex"); vertexMax=Math.Max(vertexMax,error); vertexSum+=error; if(error>.01) vertexOver++;
                 var actual=vertices[i*4+k].color;
-                for(int ch=0;ch<4;ch++) { error=Math.Abs((double)actual[ch]-d.Color[ch]); Require(DecoBakeCore.Finite(error),"nonfinite color"); colorMax=Math.Max(colorMax,error); colorSum+=error; if(error>1.0/255) colorOver++; }
+                for(int ch=0;ch<4;ch++) { error=Math.Abs((double)actual[ch]-d.Color[ch]); Require(DecoBakeCore.Finite(error),"nonfinite color"); colorMax=Math.Max(colorMax,error); colorSum+=error; if(error>1.0/255) colorOver++; if(Math.Abs((double)actual[ch]-(ch==3?eval[10]*eval[11]:eval[7+ch]))>1.0/255) gpuColorOver++; }
             }
         }
         for(int ch=0;ch<16;ch++) Log("[gpudeco] G0 t="+N(data.RawTime)+" ch="+(ch==4?"rot":ch==5||ch==6?"scale":ch>=7&&ch<=11?"color":"pos")+" slot="+ch+" max="+N(max[ch])+" mean="+N(sums[ch]/data.Items.Length)+" max_px="+N(pixelMax[ch])+" mean_px="+N(pixelSum[ch]/data.Items.Length)+" over_tol="+over[ch]+" raw_units=True source="+(real?"game-export":"synthetic"));
         Log("[gpudeco-lab] table samples="+(data.Items.Length*16)+" max="+N(tableMax)+" mean="+N(tableSum/(data.Items.Length*16)));
         Log("[gpudeco-lab] vertices samples="+(data.Items.Length*4)+" max_px="+N(vertexMax)+" mean_px="+N(vertexSum/(data.Items.Length*4))+" over_tol="+vertexOver);
         Log("[gpudeco-lab] renderer_color samples="+(data.Items.Length*16)+" max="+N(colorMax)+" mean="+N(colorSum/(data.Items.Length*16))+" over_tol="+colorOver);
-        bool pass=vertexOver==0 && colorOver==0 && over.Sum()==0;
-        if(!real) Require(pass,"synthetic vertex/value mismatch");
+        Log("[gpudeco-lab] geometry actual_fields_vs_sprite_max_px="+N(logicalGeometryMax)+" over_tol="+logicalGeometryOver+" gpu_vs_evaluated_fields_max_px="+N(gpuGeometryMax)+" over_tol="+gpuGeometryOver+" gpu_color_formula_over_tol="+gpuColorOver);
+        for(int ch=0;ch<16;ch++) Log("[gpudeco] phase slot="+ch+" samples="+phaseCount[ch]+" max_ms="+N(phaseMax[ch])+" mean_ms="+(phaseCount[ch]>0?N(phaseSum[ch]/phaseCount[ch]):"NA")+" over_frame="+phaseOver[ch]+" mode="+(anchored?"anchored":"table"));
+        int activeSources=sourceSeen.Count(s=>s), phaseSources=Enumerable.Range(0,sourceSeen.Length).Count(i=>sourceSeen[i] && data.FrameSamples>0 && sourcePhase[i]<=data.MeanFrameSeconds);
+        Log("[gpudeco] phase_sources active="+activeSources+" within_frame="+phaseSources+" frame_mean_ms="+N(data.MeanFrameSeconds*1000)+" frame_samples="+data.FrameSamples+" fallback_slots="+data.Items.Sum(d=>d.Anchors.Count(a=>!a.Valid)));
+        bool phasePass=activeSources==0 || (data.FrameSamples>0 && phaseSources*100L>=activeSources*99L);
+        // Each stationary/unanchored channel retains its value tolerance. Moving
+        // channels use the source phase gate; total vertex/pixel errors stay visible.
+        bool pass=over.Sum()==0 && phasePass && logicalGeometryOver==0 && gpuGeometryOver==0 && gpuColorOver==0
+            && (real && anchored && data.Schema>=2 || vertexOver==0 && colorOver==0);
+        if(!real && requireSynthetic) Require(pass,"synthetic vertex/value mismatch");
         return pass;
     }
     static void VerifyBody()
     {
         AuditBody();
+    }
+    static void AnchorsBody()
+    {
+        var data=Synthetic(2000); data.Frame=1000; data.MeanProgressStep=data.MeanFrameSeconds=1f/120; data.FrameSamples=256;
+        data.Sources=Enumerable.Range(0,257).Select(i=> {
+            float progress=0; for(int f=0;f<i%100;f++) progress+=(f%3==0?.0081f:.0084f);
+            return new GpuDecoData.SourceClock { Id=100+i,StartFrame=900-i,StartSong=268+i*.001,Progress=progress };
+        }).ToArray();
+        for(int i=0;i<data.Items.Length;i++)
+        {
+            var d=data.Items[i];
+            for(int ch=0;ch<16;ch++)
+            {
+                int clock=i%data.Sources.Length; float start=d.Initial[ch], target=start+(ch==4?12:.2f);
+                var s=new DecoBakeCore.Segment { Duration=1,Start=start,Target=target,End=target,Ease=1+i%31,Over=1.70158f,IsScale=ch==5||ch==6||ch==12||ch==13 };
+                if(s.IsScale) s.End=start+(target-start)*Ease(s.Ease,1,1,s.Over,s.Period);
+                if(i%17==0) s.Duration=0;
+                d.Anchors[ch]=new GpuDecoData.Anchor { Valid=true,Clock=s.Duration==0?-1:clock,Segment=s };
+                float t=data.Sources[clock].Progress;
+                d.Actual[ch]=s.Duration==0?s.End:t<=0?start:start+(target-start)*Ease(s.Ease,t,1,s.Over,s.Period);
+            }
+            var world=CpuVertices(data,d,d.Actual); for(int k=0;k<4;k++) { d.World[k*3]=world[k].x; d.World[k*3+1]=world[k].y; d.World[k*3+2]=world[k].z; }
+            d.Color=new[]{d.Actual[7],d.Actual[8],d.Actual[9],d.Actual[10]*d.Actual[11]};
+        }
+        using(var stream=new MemoryStream())
+        {
+            data.Write(stream); stream.Position=0; data=GpuDecoData.Read(stream);
+            Log("[gpudeco-lab] anchor_schema_roundtrip version="+data.Schema+" bytes="+stream.Length+" sources="+data.Sources.Length);
+        }
+        using(var gpu=new Evaluation(Shader(),data))
+        {
+            var result=gpu.Dispatch(data.BakeTime,true); Compare(data,result.values,result.vertices,false);
+            gpu.UseAnchors=false; var baseline=gpu.Dispatch(data.BakeTime,true);
+            Log("[gpudeco-lab] comparison_mode=synthetic_before_anchor_negative_control");
+            Require(!Compare(data,baseline.values,baseline.vertices,false,false,false),"song-clock negative control unexpectedly passed");
+            gpu.UseAnchors=true;
+            var same=gpu.Dispatch(data.BakeTime+30,true);
+            Require(result.values.SequenceEqual(same.values),"paused source values changed with song clock");
+            int clock=37; float old=data.Sources[clock].Progress; data.Sources[clock].Progress+=.007f;
+            var next=gpu.Dispatch(data.BakeTime,true); int changed=0,foreign=0;
+            for(int i=0;i<data.Items.Length;i++) for(int ch=0;ch<16;ch++) if(result.values[i*16+ch]!=next.values[i*16+ch]) { changed++; if(data.Items[i].Anchors[ch].Clock!=clock) foreign++; }
+            Require(changed>0 && foreign==0,"source progress upload did not isolate source");
+            data.Sources[clock].Progress=old;
+            // Truth fields are comparison outputs, never GPU evaluation inputs.
+            data.Items[0].Actual[0]+=100; var independent=gpu.Dispatch(data.BakeTime,true);
+            Require(result.values.SequenceEqual(independent.values),"Actual truth leaked into GPU input");
+            Log("[gpudeco-lab] anchors sources=257 channels=32000 vertices=8000 paused_clock_invariance=True changed_source_channels="+changed+" foreign_changes="+foreign+" truth_input_independent=True");
+            MeasureAnchorSubmit(data,gpu);
+        }
+        data.Sources=Enumerable.Range(0,2000).Select(i=>data.Sources[i%257]).ToArray();
+        using(var gpu=new Evaluation(Shader(),data)) MeasureAnchorSubmit(data,gpu);
+        if(Environment.GetCommandLineArgs().Contains("-gpudecoInput"))
+        {
+            try { AuditBody(); throw new InvalidOperationException("legacy gate negative control unexpectedly accepted"); }
+            catch(GateFailure ex) when(ex.Message.Contains("v2_real_anchor_export_required"))
+            { Log("[gpudeco-lab] legacy_source_gate=PASS expected_refusal="+ex.Message+" real_G0_evaluated=False"); }
+        }
+        Log("GPUDECO_ANCHORS=PASS synthetic=True real_anchor_export=False game_G0=UNMEASURED game_G1=UNMEASURED");
+    }
+    static void MeasureAnchorSubmit(GpuDecoData data,Evaluation gpu)
+    {
+        for(int i=0;i<20;i++) gpu.Dispatch(data.BakeTime,false);
+        var timer=Stopwatch.StartNew(); for(int i=0;i<500;i++) gpu.Dispatch(data.BakeTime,false); timer.Stop();
+        Log("[gpudeco-lab] anchor_cost source_upload_count="+data.Sources.Length+" upload_bytes="+(data.Sources.Length*4)+" frames=500 dispatches=1 cpu_submit_ms="+N(timer.Elapsed.TotalMilliseconds/500)+" gpu_timestamp_ms=UNAVAILABLE synthetic=True copy_runs=0");
     }
     static void BundleBody()
     {

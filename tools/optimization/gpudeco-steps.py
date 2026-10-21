@@ -26,6 +26,7 @@ def build(chart, export_dir=None):
     steps += ['gpudeco off', 'gpudeco result', 'stop', 'decobake off', 'quit']
     return dict(steps=steps, timeout_min=20, tag='gpudeco-export-262-270-276',
                 stage='export-first', expected_verdict='ERROR',
+                export_schema=2, evaluation_clock='actual-source-progress',
                 reason='독립 랩의 실제 G0와 번들 검증 전 G1 게임 연결을 하지 않음')
 
 

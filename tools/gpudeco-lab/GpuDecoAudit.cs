@@ -21,12 +21,14 @@ public static partial class GpuDecoLab
         {
             GpuDecoData data; using (var stream = File.OpenRead(file)) data = GpuDecoData.Read(stream);
             fingerprint = fingerprint ?? data.Fingerprint; Require(data.Fingerprint == fingerprint, "export table changed");
-            Log("[gpudeco-lab] export=" + Path.GetFileName(file) + " owned=" + data.Items.Length + " awake=" + data.Awake
+            Log("[gpudeco-lab] export=" + Path.GetFileName(file) + " schema="+data.Schema+" sources="+data.Sources.Length+" owned=" + data.Items.Length + " awake=" + data.Awake
                 + " coverage=" + N((double)data.Items.Length / Math.Max(1, data.Awake)) + " raw=" + N(data.RawTime) + " tb=" + N(data.BakeTime));
             bool auxiliary = GpuDecoCoverage.Auxiliary(data.Awake);
             Log("[gpudeco-lab] auxiliary=" + auxiliary + " reason=" + (auxiliary ? "awake_below_800" : "primary_coverage_gate"));
             if (GpuDecoCoverage.OwnedLow(data.Awake, data.Items.Length)) { low = true; Log("[gpudeco-lab] stop=OWNED_LOW required_coverage=0.7"); break; }
-            var unsupported = data.Items.Where(d => d.Tracks.Any(t => t.Any(s => !Supported(s.Ease)))).ToArray();
+            if(data.Schema<2) throw new GateFailure("GPUDECO_G1=ERROR G0=UNMEASURED stage=source-clock reason=v2_real_anchor_export_required legacy_schema="+data.Schema+" integration=BLOCKED");
+            if(!auxiliary && (data.Sources.Length==0 || data.FrameSamples==0)) throw new GateFailure("GPUDECO_G1=G0_FAIL stage=source-clock reason=actual_source_progress_or_frame_samples_missing integration=BLOCKED");
+            var unsupported = data.Items.Where(d => d.Tracks.Any(t => t.Any(s => !Supported(s.Ease))) || d.Anchors.Any(a=>a.Valid && !Supported(a.Segment.Ease))).ToArray();
             Log("[gpudeco-lab] unsupported_ease_decorations=" + unsupported.Length + " fallback=original-path");
             data.Items = data.Items.Except(unsupported).ToArray();
             if (GpuDecoCoverage.OwnedLow(data.Awake, data.Items.Length)) { low = true; Log("[gpudeco-lab] stop=OWNED_LOW after_ease_filter=" + data.Items.Length + " required_coverage=0.7"); break; }
@@ -35,8 +37,13 @@ public static partial class GpuDecoLab
             else using (var gpu = new Evaluation(Shader(), data))
             {
                 var result = gpu.Dispatch(data.BakeTime, true);
+                Log("[gpudeco-lab] comparison_mode=anchored");
                 samplePass = Compare(data, result.values, result.vertices, true);
-                Attribute(data, result.values, result.vertices);
+                gpu.UseAnchors=false; var baseline=gpu.Dispatch(data.BakeTime,true);
+                Log("[gpudeco-lab] comparison_mode=before_anchor_table");
+                Compare(data,baseline.values,baseline.vertices,true,false);
+                // Attribute() includes a disproven global-clock fit; do not repeat it.
+                Log("[gpudeco-lab] uniform_clock_scan=SKIPPED reason=previously_disproven");
             }
             if (auxiliary) auxiliaryPass &= samplePass;
             else { primary++; pass &= samplePass; }

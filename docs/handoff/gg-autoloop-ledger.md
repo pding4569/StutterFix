@@ -1,5 +1,21 @@
 
-## codex-al-gg-4 — 2026-10-22 (최신, G0 설계 한계로 중단)
+## codex-al-gg-5 — 2026-10-22 (최신, 소스별 실제 진행값·v2 export)
+
+- run4는 첫 export184257.5118ms·bake511.2941ms에 3파일을 만들었다. 준비 순서·300초 예산을 유지했다. 최신 파일3개는 v1이며 owned/awake=1730/2134,1875/2268,17/24를 현재 리더로 확인했다. 이전81.50/65.62px는 이 새 입력의 재측정값이 아니다.
+- 원본 디컴파일/설치DLL IL로 StartEffect의 상대 기준→Kill(true)→실제 시작값, 현재 Rec.Pos float 진행을 확인했다. 전역 시계 이동201후보·1,000메시 성능·옛 번들 시험을 반복하지 않았다.
+- export v2: 실제 FastMove.Run에서 Rec 생성의 소스/프레임/시각/세대/캡처epoch를 기록한다. export에서만 현재 eventTweens의 Pos·실제 구간을 읽는다. 같은 소스의 진행값 충돌은 파일 생성 전 중단, 완료 끝값은 별도 보존, 미관찰/native/direct/미시작은 표 폴백 수를 남긴다. 새 Harmony/쓰기 훅·프레임당 장식 스캔0.
+- GPU는 실제 현재 구간+progress[source]로 평가한다. 예약tb로 현재 구간을 먼저 고르면 경계/교체 시작값이 틀릴 수 있어 실제 Rec를 우선한다. 소스 배열1회 SetData, 실제 필드/정점 정답을 GPU 입력으로 사용하지 않는다. v1 읽기만 허용·v2 위장 재저장/새 실제G0 판정은 거부한다.
+- G0: 전후 채널 최대/평균px와 국소위상ms, 실제 프레임/tween dt 평균256표본을 기록한다. 빠른 채널의 소스99%가1프레임 이내, 정지근처/종료/폴백은0.01px·색1/255 유지. 필드→실제 Sprite 및 GPU 필드→정점 수치 검사도 별개다. OWNED_LOW 최신70%/awake800 규칙·276보조 유지.
+- Unity6000.3.10f1/RTX4060Ti/D3D11 최종 합성v2왕복2,923,234B·소스257·채널32,000·정점8,000. 정점최대/평균0.0000309467/0.0000032826px·초과0, RGBA최대/평균0.0000002384/0.000000006754·초과0. 곡시각+30초 출력동일, source37+7ms→112채널 변화/다른소스0, Actual 변경→GPU 변화0.
+- 합성 곡시계 음성 대조는 정점최대524.2243px·평균116.2252px·7936/8000초과로 의도대로 실패. 이 수치를 실제 Arche 개선량으로 쓰지 않는다. 실제 v1 입력 거부도 같은 실행에서 확인했다.
+- 소스 업로드+1dispatch CPU 제출500회 평균:257개/1028B=0.0075288ms,2000개/8000B=0.0132740ms. 합성·복사run0·GPUtimestamp없음, 게임 비용/성능 아님. 옛80메시 비용과 합산하지 않았다.
+- 3종최종Release오류0/0/0·경고38/4/38, LoadCheck277/229/277·불일치0·일반Player새필드제외, 데이터41·bake/live·DecoSim12·framecmp·ld2a/geometry/delta·steps·SM5통과. 초기IPCexit1/entitlementexit198 보존, 클라이언트 자연종료 뒤 직접Editor 성공exit0. 게임/설치/로그인/라이선스변경/강제종료/커밋/푸시/config수정0.
+- 실제v2 export0개이므로 새 G0 전후/시작위상/소유율/실제 준비비용·게임G1/G2미측정. 새번들/게임연결0. 결과·랩결과·README·10줄·새steps·round6근거/manifest 정리. 이는 새 설계 불가능의 증명이 아니며, 게임 금지 범위 안 작업을 마친 상태다.
+- GPUDECO_G1=ERROR G0=UNMEASURED stage=source-clock reason=v2_real_anchor_export_required integration=BLOCKED
+
+---
+
+## codex-al-gg-4 — 2026-10-22 (이전, 당시 G0 설계 한계)
 
 - 직전 run3은 기존262.gpudeco 재생성 시 CreateNew 충돌로 중단됐다. 원본 보존·새 고유run 폴더 기본값·명시적 기존 export 폴더 생성 전 거부·런타임 조기 오류를 반영했다. 고정 경로의 옛 JSON은 자동 수정되지 않는다. 같은 게임 시험 재실행을 요청하지 않는다.
 - 최신 사용자 정정 적용: **awake≥800 && owned/awake<70%만 OWNED_LOW**, exporter/lab 공통 정책이며 GPU 미지원 이징 제외 후에도 검사한다. 이전 절대800개 기준과 276초 실패 판정은 폐기한다. 276초 소유17/awake24는 보조로 측정했다.
@@ -139,3 +155,20 @@
   - [StutterFix] [gpudeco] prepare_ms=4675.029100 phase=export owned=1730 awake=2134 raw=262.01784002082422 tb=262.00576381071068 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149
   - [StutterFix] [gpudeco] prepare_ms=4645.123000 phase=export owned=1875 awake=2268 raw=270.01600896613672 tb=270.00624654298775 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149
   - [StutterFix] [gpudeco] prepare_ms=4439.191700 phase=export owned=17 awake=24 raw=276.005327813793 tb=275.99734248026226 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-bd81aca8d8c149fa963a
+
+## 회차 5
+- Codex 요약: 소스별 실제 진행값을 쓰는 **export v2·GPU 랩 경로**를 구현했습니다.
+
+- 3종 빌드·LoadCheck·관련 회귀 검사 통과
+- 합성 정점 최대 오차 **0.000031px**
+- 실제 v2 데이터가 없어 **게임 G0/G1은 미검증**
+
+게임 실행·설치·커밋은 하지 않았습니다. [결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result.md)와 장부·10줄 요약을 갱신했습니다.
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export source_clock_capture=True
+  - [StutterFix] [gpudeco] prepare_ms=182794.627200 phase=first_export includes=open,bake,seek,export bake_wall_ms=508.502900
+  - [StutterFix] [gpudeco] prepare_ms=4608.814900 phase=export owned=1730 awake=2134 raw=262.0162225891836 tb=262.00338249949118 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c8cc4448c4f34c2
+  - [StutterFix] [gpudeco] prepare_ms=4582.164200 phase=export owned=1875 awake=2269 raw=270.01600896613672 tb=270.00644121286507 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c8cc4448c4f34c
+  - [StutterFix] [gpudeco] prepare_ms=4331.409900 phase=export owned=17 awake=24 raw=276.005327813793 tb=276.00549467433461 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c8cc4448c4f34c249594

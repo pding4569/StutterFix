@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using DG.Tweening;
 
 namespace StutterFix
 {
@@ -14,6 +15,37 @@ namespace StutterFix
         static bool gpuExportOwnedLow;
         static int gpuExports;
         static Stopwatch gpuPrepareWatch;
+        static bool gpuCapture;
+        static int gpuCaptureEpoch;
+        static ffxMoveDecorationsPlus gpuSource;
+        static readonly float[] gpuFrameIntervals = new float[256];
+        static readonly float[] gpuProgressSteps = new float[256];
+        static int gpuFrameCount, gpuFrameCursor;
+        static double gpuFrameSum, gpuProgressSum;
+        internal static void ResetGpuFrames() { gpuFrameCount = gpuFrameCursor = 0; gpuFrameSum = gpuProgressSum = 0; }
+        internal static void ObserveGpuFrame()
+        {
+            if (!gpuCapture || !ADOBase.controller || ADOBase.controller.paused || Time.timeScale == 0) return;
+            float dt = Time.unscaledDeltaTime; if (dt <= 0 || !DecoBakeCore.Finite(dt)) return;
+            float step = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
+            if (step < 1e-6f || !DecoBakeCore.Finite(step)) return;
+            if (gpuFrameCount == gpuFrameIntervals.Length) { gpuFrameSum -= gpuFrameIntervals[gpuFrameCursor]; gpuProgressSum -= gpuProgressSteps[gpuFrameCursor]; } else gpuFrameCount++;
+            gpuProgressSteps[gpuFrameCursor] = step; gpuProgressSum += step;
+            gpuFrameIntervals[gpuFrameCursor] = dt; gpuFrameSum += dt; gpuFrameCursor = (gpuFrameCursor + 1) % gpuFrameIntervals.Length;
+        }
+        internal static void BeginGpuSource(ffxMoveDecorationsPlus fx) { gpuSource = gpuCapture ? fx : null; }
+        internal static void EndGpuSource() { gpuSource = null; }
+        internal static void StampGpuRec(DecoAnim.Rec r)
+        {
+            r.GpuStartFrame = -1; r.GpuSource = 0; r.GpuStartSong = 0;
+            r.GpuGeneration = -1;
+            r.GpuCaptureEpoch = -1;
+            if (!gpuSource) return;
+            r.GpuSource = gpuSource.GetInstanceID(); r.GpuStartFrame = Time.frameCount;
+            r.GpuGeneration = Generation;
+            r.GpuCaptureEpoch = gpuCaptureEpoch;
+            r.GpuStartSong = scrConductor.instance.songposition_minusi;
+        }
         static void CheckGpuPrepareBudget()
         {
             if (gpuPrepareWatch == null || !gpuPrepareWatch.IsRunning || gpuPrepareWatch.Elapsed.TotalSeconds < 300) return;
@@ -36,9 +68,9 @@ namespace StutterFix
                 if (scheduled) GpuLog("prepare_stage=PrepVfx-observed generation=" + generation + " status=" + status);
                 return scheduled;
             }
-            if (command == "reset") { gpuPrepareWatch = null; gpuExportOwnedLow = false; gpuExports = 0; GpuLog("export_result_reset=True"); return true; }
-            if (command == "prepare") { gpuPrepareWatch = Stopwatch.StartNew(); GpuLog("prepare_begin budget_ms=300000 includes=open,bake,seek,export"); return true; }
-            if (command == "off") { gpuPrepareWatch = null; GpuLog("on=False owned=0"); return true; }
+            if (command == "reset") { gpuCapture = false; gpuSource = null; gpuPrepareWatch = null; gpuExportOwnedLow = false; gpuExports = 0; GpuLog("export_result_reset=True"); return true; }
+            if (command == "prepare") { gpuCaptureEpoch++; gpuCapture = true; ResetGpuFrames(); gpuPrepareWatch = Stopwatch.StartNew(); GpuLog("prepare_begin budget_ms=300000 includes=open,bake,seek,export source_clock_capture=True"); return true; }
+            if (command == "off") { gpuCapture = false; gpuSource = null; gpuPrepareWatch = null; GpuLog("on=False owned=0"); return true; }
             if (command == "state") { GpuLog("on=False stage=export-lab ready=" + ready + " generation=" + Generation); return true; }
             if (command == "result") { GpuLog("GPUDECO_G1=" + (gpuExportOwnedLow ? "OWNED_LOW" : "ERROR") + " stage=export-lab exports=" + gpuExports + " reason=real_export_G0_and_game_pixels_required"); return true; }
             if (command == "on") throw new InvalidOperationException("gpudeco: 실제 export G0 및 번들 검증 전 게임 연결 금지");
@@ -50,10 +82,59 @@ namespace StutterFix
         static void GpuLog(string s) => Main.Entry.Logger.Log("[gpudeco] " + s);
 #if AUTOTEST
         static void Put(float[] output, int index, Vector3 v) { output[index] = v.x; output[index+1] = v.y; output[index+2] = v.z; }
+        // Export-only enumeration. No frame scan, setter hook, ownership or Transform write.
+        // Read the current eventTweens dictionary so recycled/removed records cannot linger.
+        static void ExportGpuAnchors(scrDecoration d, GpuDecoData.Item item, List<GpuDecoData.SourceClock> clocks,
+            Dictionary<long, int> indices, Dictionary<string, int> counters)
+        {
+            foreach (var pair in d.eventTweens)
+            {
+                var r = pair.Value?.id as DecoAnim.Rec;
+                if (r == null || !r.Started || r.GpuStartFrame < 0 || r.GpuGeneration != Generation || r.GpuCaptureEpoch != gpuCaptureEpoch || !ReferenceEquals(r.D, d)) continue;
+                if (r.Pos < 0 || r.Dur <= 0 || (!r.Running && r.Pos < r.Dur)) continue;
+                bool completed = !r.Running && r.Pos >= r.Dur;
+                int clock = -1;
+                long token = ((long)r.GpuSource << 32) | (uint)r.GpuStartFrame;
+                if (!completed && !indices.TryGetValue(token, out clock))
+                {
+                    indices.Add(token, clock = clocks.Count);
+                    clocks.Add(new GpuDecoData.SourceClock { Id = r.GpuSource, StartFrame = r.GpuStartFrame, StartSong = r.GpuStartSong, Progress = r.Pos });
+                }
+                // The shared source clock must really agree across its targets/channels.
+                // Never average distinct phases or silently split one source into fake IDs.
+                if (!completed && clocks[clock].Progress != r.Pos) throw new InvalidOperationException("export: 같은 소스의 실제 진행값 불일치 source=" + r.GpuSource);
+                Action<int, float, float, bool> add = (ch, start, target, scale) => {
+                    var s = new DecoBakeCore.Segment { Duration = r.Dur, Start = start, Target = target, End = target,
+                        Ease = (int)r.E, Over = r.Over, Period = r.Period, IsScale = scale };
+                    if (scale) s.End = start + (target - start) * ZeroTween.Eval(r.E, r.Dur, r.Dur, r.Over, r.Period);
+                    // A completed record is an exact endpoint, not a running clock.
+                    if (completed) s.Duration = 0;
+                    item.Anchors[ch] = new GpuDecoData.Anchor { Valid = true, Clock = clock, Segment = s };
+                };
+                switch (r.Key)
+                {
+                    case 1: case 2: case 3: case 4: case 5: case 10: case 12: case 13:
+                        int ch = r.Key <= 5 ? r.Key - 1 : r.Key == 10 ? 11 : r.Key + 2;
+                        add(ch, r.FStart, r.FEnd, false); break;
+                    case 7: add(5, r.VStart.x, r.VEnd.x, true); break;
+                    case 8: add(6, r.VStart.y, r.VEnd.y, true); break;
+                    case 9:
+                        for (int c = 0; c < 4; c++) add(7 + c, r.CStart[c], r.CEnd[c], false); break;
+                    case 11:
+                        add(12, r.VStart.x, r.VEnd.x, true); add(13, r.VStart.y, r.VEnd.y, true); break;
+                }
+            }
+            for (int ch = 0; ch < 16; ch++)
+            {
+                string key = !item.Anchors[ch].Valid ? "table_fallback" : item.Anchors[ch].Segment.Duration == 0 ? "completed_endpoint" : "anchored";
+                counters.TryGetValue(key, out int n); counters[key] = n + 1;
+            }
+        }
         static void ExportGpu(string path)
         {
             CheckGpuPrepareBudget();
             string output = Path.GetFullPath(path);
+            if (!gpuCapture) throw new InvalidOperationException("export: gpudeco prepare 후 실제 효과 시작 관찰 필요");
             if (File.Exists(output))
             {
                 GpuLog("GPUDECO_G1=ERROR stage=export reason=output_exists path=" + output);
@@ -74,6 +155,8 @@ namespace StutterFix
                 camy.camobj.orthographicSize * .2f / (ADOBase.customLevel.levelData.camZoom / 100f) };
             var awakeSet = new HashSet<scrDecoration>(Dormancy.AwakeList); var items = new List<GpuDecoData.Item>();
             var reasons = new SortedDictionary<string, int>();
+            var sources = new List<GpuDecoData.SourceClock>(); var sourceIndices = new Dictionary<long, int>();
+            var anchorCounts = new Dictionary<string, int>();
             for (int index = 0; index < baselineObjects.Length; index++)
             {
                 var d = baselineObjects[index] as scrVisualDecoration;
@@ -112,8 +195,12 @@ namespace StutterFix
                 var origin = geometry.Offset(Vector2.zero); Put(item.OffsetBasis, 0, origin);
                 Put(item.OffsetBasis, 3, geometry.Offset(Vector2.right) - origin); Put(item.OffsetBasis, 6, geometry.Offset(Vector2.up) - origin);
                 item.Triangles = r.sprite.triangles.Select(x => (int)x).ToArray(); items.Add(item);
+                ExportGpuAnchors(d, item, sources, sourceIndices, anchorCounts);
             }
             data.Items = items.ToArray();
+            data.Sources = sources.ToArray();
+            data.FrameSamples = gpuFrameCount; data.MeanFrameSeconds = gpuFrameCount == 0 ? 0 : (float)(gpuFrameSum / gpuFrameCount);
+            data.MeanProgressStep = gpuFrameCount == 0 ? 0 : (float)(gpuProgressSum / gpuFrameCount);
             Directory.CreateDirectory(Path.GetDirectoryName(output));
             using (var stream = new FileStream(output, FileMode.CreateNew, FileAccess.Write, FileShare.None)) data.Write(stream);
             CheckGpuPrepareBudget();
@@ -126,6 +213,8 @@ namespace StutterFix
             GpuLog("prepare_ms=" + watch.Elapsed.TotalMilliseconds.ToString("F6", CultureInfo.InvariantCulture) + " phase=export owned=" + items.Count + " awake=" + data.Awake
                 + " raw=" + data.RawTime.ToString("R", CultureInfo.InvariantCulture) + " tb=" + data.BakeTime.ToString("R", CultureInfo.InvariantCulture) + " path=" + output);
             GpuLog("export_reject " + string.Join(" ", reasons.Select(x => x.Key + "=" + x.Value)));
+            GpuLog("export_schema=2 sources=" + sources.Count + " " + string.Join(" ", anchorCounts.Select(x => x.Key + "=" + x.Value))
+                + " anchor_input=actual_Rec_Pos_and_start_parameters fallback=unobserved,unstarted,native_or_direct start_phase=recorded_not_inferred");
             GpuLog("coverage=" + ((double)items.Count / Math.Max(1, data.Awake)).ToString("F6", CultureInfo.InvariantCulture)
                 + " auxiliary=" + GpuDecoCoverage.Auxiliary(data.Awake));
             gpuExports++;

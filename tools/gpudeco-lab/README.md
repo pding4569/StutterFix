@@ -2,9 +2,13 @@
 
 게임을 열지 않는 **Unity 6000.3.10f1 / D3D11** 프로젝트다. prepare.ps1은 무시되는 project/에 소스와 내장 모듈 참조를 구성한다. 로컬 DOTween.dll은 CPU 정답 참조이며 번들에 넣지 않는다. 제품 Compile 목록에는 랩이 들어가지 않는다.
 
-최신 실제 export 3개는 **262·270초 주 판정 G0 실패 / 276초 보조 측정 통과**다. `OWNED_LOW`는 awake≥800이고 소유율<70%일 때만이다. 276초 소유17/awake24의 정점 최대·평균은0px이며 주 판정에 포함하지 않는다. 현재 곡 시각 표의 한계를 기록하고 게임 연결을 중단했다. 주 판정 정점 최대 오차81.501349/65.618709px, 평균1.920398/2.890432px다. 전역 시계201후보에서도 통과하지 못했다. [랩 결과](../../docs/handoff/codex-gpudeco-lab-result.md)를 본다.
+최신 경로는 **소스별 실제 float Rec.Pos + 실제 현재 구간을 받는 export v2**다. 독립 합성32,000채널·8,000정점 시험이 통과했고 정점 최대0.0000309467px, RGBA 최대0.0000002384였다. 최신 실제 run4 파일3개는 v1·sources0이므로 새 방식의 실제 G0/G1은 미측정이다. 이전81.50/65.62px는 과거 입력의 곡 시계 경로 수치이며 최신 run4를 새로 평가한 값이 아니다. [랩 결과](../../docs/handoff/codex-gpudeco-lab-result.md)를 본다.
 
-기존 이징·합성 정점·Raw 메시·번들 재로드 및 **80메시×15서브메시**의 통과는 합성 범위다(81 dispatch 평균0.1522106ms, 합성 픽셀차이0; 이전 측정). 실제 G0/G1 성공을 뜻하지 않는다. 이번 HLSL 수정 뒤 합성 수치 회귀는 통과했고, 새 번들/게임 적재는 실제 G0 실패로 진행하지 않았다. 이전 비용/서브메시 시험을 그대로 되풀이하지 않는다.
+v2 export는 gpudeco prepare 뒤 실제 FastMove.Run에서 생성한 Rec만 관찰한다. export 때 현재 eventTweens의 실제 구간/진행값을 읽고, 같은 소스의 진행값이 다르면 중단한다. 완료 끝값은 보존하고 미관찰/native/direct/미시작은 표 폴백으로 센다. v1은 읽되 v2로 재저장하거나 새 실제 G0의 근거로 쓸 수 없다. OWNED_LOW는 awake≥800이고 소유율<70%일 때만이며276초는 보조다. 실제 v2 G0 전에는 새 번들/게임 연결을 하지 않는다.
+
+기존 이징·합성 정점·Raw 메시·번들 재로드 및 **80메시×15서브메시**의 통과는 합성 범위다(81 dispatch 평균0.1522106ms, 합성 픽셀차이0; 이전 측정). 실제 G0/G1 성공을 뜻하지 않는다. 새 번들/게임 적재는 실제 v2 G0 전이라 진행하지 않았다. 이전 비용/서브메시 시험을 그대로 되풀이하지 않는다.
+
+새 `GpuDecoLab.Anchors`는 합성 v2 파일 왕복, CPU↔GPU 채널/Raw 정점, 완료 끝값, 곡 시각 변화에 대한 정지 불변성, 한 소스만 진행시키기, Actual 정답 입력 독립성, 기존 곡 시계 음성 대조를 검사한다. 257/2,000개 업로드+1dispatch 비용은0.0075288/0.0132740ms였으며 복사run0·GPUtimestamp없음·게임 비용 제외다. Anchors에 `-gpudecoInput <v1 폴더>`를 주면 실제 v1 입력 거부 음성 대조도 한다. Verify에는 실제 v2 폴더를 준다.
 
 성공한 에디터 직접 호출 형태다. unity run·로그인 대신 이 경로를 쓴다. GPU 시험에 -nographics를 넣으면 Null Device로 실패한다. 각 실행은 5분 안쪽으로 제한하고, 종료를 확인한 후 다음 명령을 실행한다.
 
@@ -12,7 +16,7 @@
 & tools/gpudeco-lab/prepare.ps1
 $lab = 'E:\StutterFixWork\wt-gpu\tools\gpudeco-lab'
 $editor = 'E:\Unity\Editor\6000.3.10f1\Editor\Unity.exe'
-& $editor -batchmode -quit -force-d3d11 -projectPath "$lab\project" -executeMethod GpuDecoLab.Smoke -logFile "$lab\evidence\smoke-editor-next.txt" | Out-Null
+& $editor -batchmode -quit -force-d3d11 -projectPath "$lab\project" -executeMethod GpuDecoLab.Anchors -logFile "$lab\evidence\anchors-editor-next.txt" | Out-Null
 $LASTEXITCODE
 ~~~
 
@@ -45,9 +49,9 @@ steps는 timeout 420을 쓴다. 편집 open은 PrepVfx를 호출하지 않으므
 & $editor -batchmode -quit -force-d3d11 -projectPath "$lab\project" -executeMethod GpuDecoLab.Verify -gpudecoInput '<export 폴더>' -logFile "$lab\evidence\verify-editor-next.txt" | Out-Null
 ~~~
 
-Verify와 Audit는 `GpuDecoAudit.cs`의 같은 본문을 사용한다. 실제 논리값·월드 정점·최종 색과 GPU 값을 채널별 대조하고, CPU 표·실제 필드·GPU 포즈의 오차 및 전역 시계 진단을 분리한다. Flash/custom은 원본 후보로 제외하고 awake≥800에서 잔여 소유율70% 미만이면 중단한다. 실제 G0/소유 실패를 exit1로 반환한다. 역산 시각·201개 시계 후보는 읽기 전용 진단이며 통과 판정/제품 보정에는 사용하지 않는다. 실행 실패 시 이전 `verify.txt`가 남을 수 있으므로 새 에디터 로그의 `primary=2/2`와 함께 결과의 갱신을 확인한다.
+Verify와 Audit는 GpuDecoAudit.cs의 같은 본문을 사용한다. 실제 논리값·월드 정점·최종 색과 GPU 값을 채널별로 앵커 전후 대조하고 국소 위상ms와 프레임 평균을 남긴다. 기존 전역 시계201후보는 다시 실행하지 않는다. Flash/custom은 원본 후보로 제외하고 awake≥800에서 잔여 소유율70% 미만이면 중단한다. v1/실제 소스·프레임 표본 누락/G0/소유 실패는 exit1이다. 모든 실제 G0가 통과해도 게임 픽셀 없이는 G1 PASS를 출력하지 않는다. 실행 실패 시 이전 verify.txt가 남을 수 있으므로 새 Editor 로그와 결과 갱신을 함께 확인한다.
 
-파일에는 16채널 표·실제 논리값/색·월드 정점·코너/UV/삼각형·변환 기저·잠금/시차·카메라·시각·정렬/재질 식별자가 들어간다. 현재 v1에는 Source/Replacement·실제 트윈 시작/진행 상태·과거 dt가 없다. export는 원본 소유권이나 Transform을 변경하지 않는다. 시작 위상은 스냅샷 도달 지연으로 판정하지 않고 UNMEASURED로 기록한다. 게임 픽셀·소유/복구도 별도 검증 사항이다.
+파일에는 16채널 표·실제 논리값/색·월드 정점·코너/UV/삼각형·변환 기저·잠금/시차·카메라·시각·정렬/재질 식별자가 들어간다. v2는 Source/Replacement·실제 Rec 시작 구간/진행값/트리거 프레임·최근 프레임/tween dt 평균을 추가한다. 과거 dt 전체 이력은 없다. v1에는 이 정보가 없어 앵커 시험을 거부한다. export는 원본 소유권이나 Transform을 변경하지 않는다. 실제 게임의 시작 위상·픽셀·소유/복구는 별도 검증 사항이다.
 
 게임/에디터를 실행하지 않는 검사:
 

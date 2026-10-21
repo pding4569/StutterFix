@@ -132,7 +132,13 @@ namespace StutterFix
 #endif
                     durRef(__instance) <= 0f && ((Effects + 1) % 16) == 1;   // 길이 있는 효과는 원래 코드로 다시 돌리면 애니메이션을 끊어 버려 검증하지 않는다
                 if (sample) { hidBefore.Clear(); foreach (var dec in src) hidBefore.Add(InvisibleSkip.IsHidden(dec)); }
+#if DEV || AUTOTEST
+                DecoBake.BeginGpuSource(__instance);
+                try { Run(__instance); }
+                finally { DecoBake.EndGpuSource(); }
+#else
                 Run(__instance);
+#endif
                 if (Edition.Dev) Heavy(__instance, hv0, "대상 찾기 " + ((hv1 - hv0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency).ToString("F1") + "ms", sample);
                 if (sample) Verify(__instance, __args);
                 return false;
