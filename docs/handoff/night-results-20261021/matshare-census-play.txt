@@ -1,0 +1,21 @@
+[StutterFix] [matshare] census images_all=28828 live=2126 material_ids=28828 signatures=18 runs_all=17042 runs_live=1227 estimate_only=1 excludes_nonimage_interleaving=1
+[StutterFix] [matshare] split_property=RepeatX distinct_values=14
+[StutterFix] [matshare] split_property=RepeatY distinct_values=10
+[StutterFix] [matshare] split_property=keywords distinct_values=2
+[StutterFix] [matshare] split_property=GI distinct_values=1
+[StutterFix] [matshare] split_property=PixelSnap distinct_values=1
+[StutterFix] [matshare] eligibility=tagged-potential-event count=28828
+[StutterFix] [matshare] census images_all=28828 live=2261 material_ids=28828 signatures=18 runs_all=17036 runs_live=1411 estimate_only=1 excludes_nonimage_interleaving=1
+[StutterFix] [matshare] split_property=RepeatX distinct_values=14
+[StutterFix] [matshare] split_property=RepeatY distinct_values=10
+[StutterFix] [matshare] split_property=keywords distinct_values=2
+[StutterFix] [matshare] split_property=GI distinct_values=1
+[StutterFix] [matshare] split_property=PixelSnap distinct_values=1
+[StutterFix] [matshare] eligibility=tagged-potential-event count=28828
+[StutterFix] [matshare] census images_all=28828 live=17 material_ids=28828 signatures=18 runs_all=17037 runs_live=15 estimate_only=1 excludes_nonimage_interleaving=1
+[StutterFix] [matshare] split_property=RepeatX distinct_values=14
+[StutterFix] [matshare] split_property=RepeatY distinct_values=10
+[StutterFix] [matshare] split_property=keywords distinct_values=2
+[StutterFix] [matshare] split_property=GI distinct_values=1
+[StutterFix] [matshare] split_property=PixelSnap distinct_values=1
+[StutterFix] [matshare] eligibility=tagged-potential-event count=28828
