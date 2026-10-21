@@ -67,10 +67,12 @@ namespace StutterFix
         bool centerMask = true;
         bool resultLogged, lastNoiseStable;
         long lastNoiseOutside;
+        bool noiseValid, aa2Valid, orderValid, hideValid;
         void ReportResult()
         {
             if (resultLogged) return;
             Log($"framecmp RESULT noise_out={noiseOut} aa2_out={aa2Out} ab_out={abOut} ctl_order={ctlOrder} ctl_hide={ctlHide}");
+            Log($"framecmp VERDICT noise={FrameCompareControlPolicy.Verdict(noiseOut, false, noiseValid)} aa2={FrameCompareControlPolicy.Verdict(aa2Out, false, aa2Valid)} order_ctl={FrameCompareControlPolicy.Verdict(ctlOrder, true, orderValid)} hide_ctl={FrameCompareControlPolicy.Verdict(ctlHide, true, hideValid)}");
             resultLogged = true;
         }
         string noiseOut = "NA", aa2Out = "NA", abOut = "NA", ctlOrder = "NA", ctlHide = "NA";
@@ -150,6 +152,7 @@ namespace StutterFix
                 var r = p.Diff(a[1], a[2], 0);
                 p.aa2Out = r.Changed.ToString(Inv);
                 var delta = p.shots[a[1]].State.Compare(p.shots[a[2]].State);
+                p.aa2Valid = delta.Changed == 0;
                 p.LogDelta("negative-control", p.shots[a[1]].State, p.shots[a[2]].State, delta);
                 if (a.Length == 4) { p.Save(a[1]); p.Save(a[2]); }
                 if (r.Changed != 0 || delta.Changed != 0) throw new InvalidOperationException("negative control requires zero pixels and stable capture state");
@@ -174,6 +177,7 @@ namespace StutterFix
                 var selected = p.Masks(a, 3);
                 p.noiseOut = p.aa2Out = p.abOut = p.ctlOrder = p.ctlHide = "NA";
                 p.resultLogged = false;
+                p.noiseValid = p.aa2Valid = p.orderValid = p.hideValid = false;
                 work = p.Noise(a[1], a[2], selected, true);
             }
             else if (a.Length == 2 && a[0] == "control" && (a[1] == "hide" || a[1] == "order")) work = p.Control(a[1]);
@@ -271,7 +275,7 @@ namespace StutterFix
             LogDelta("noise", shots[a].State, shots[b].State, delta);
             bool stable = delta.Changed == 0;
             lastNoiseOutside = r.Changed; lastNoiseStable = stable;
-            if (record) noiseOut = r.Changed.ToString(Inv);
+            if (record) { noiseOut = r.Changed.ToString(Inv); noiseValid = stable; }
             Log($"noise outside={r.Changed} inside={r.InsideChanged} rendererStateEqual={stable} warning={(!stable || r.Changed != 0)}; noise floor advisory, continuing");
         }
         FrameCompareMetrics.Result Diff(string a, string b, int threshold, FrameCompareMetrics.Mask[] selected = null)
@@ -406,82 +410,133 @@ namespace StutterFix
             state.Summary = $"screen={Screen.width}x{Screen.height} renderers={renderers.Length} listHash={list:X16} rawHash={raw:X16} cameras={cameras.Length} frame={Time.frameCount}";
             return state;
         }
+        // Only our own objects are changed. No auxiliary camera or Camera.Render.
+        sealed class SyntheticControl
+        {
+            readonly List<UnityEngine.Object> owned = new List<UnityEngine.Object>();
+            internal SpriteRenderer First, Second;
+            internal Material Back, Front;
+            T Own<T>(T value) where T : UnityEngine.Object { owned.Add(value); return value; }
+            internal void Dispose()
+            {
+                // Destroy is deferred; disable immediately so stop/error cannot leave a draw.
+                if (First) First.enabled = false;
+                if (Second) Second.enabled = false;
+                for (int i = owned.Count - 1; i >= 0; i--)
+                    if (owned[i]) { if (owned[i] is GameObject go) go.SetActive(false); Destroy(owned[i]); }
+                owned.Clear();
+            }
+            internal void Create()
+            {
+                var camera = GpuSplit.FindMain();
+                if (!camera.isActiveAndEnabled || camera.targetDisplay != 0)
+                    throw new InvalidOperationException("synthetic control requires active main camera on display 0");
+                var shader = Shader.Find("Sprites/Tile");
+                if (!shader || !shader.isSupported) throw new InvalidOperationException("Sprites/Tile unavailable; no fallback");
+                int layer = -1, ui = LayerMask.NameToLayer("UI");
+                for (int i = 0; i < 32; i++)
+                    if (i != ui && (camera.cullingMask & (1 << i)) != 0) { layer = i; break; }
+                if (layer < 0) throw new InvalidOperationException("main camera has no non-UI visible layer");
+                var texture = Own(new Texture2D(2, 2, TextureFormat.RGBA32, false));
+                texture.name = "SF.framecmp.white";
+                texture.filterMode = FilterMode.Point;
+                texture.SetPixels(new[] { UnityEngine.Color.white, UnityEngine.Color.white, UnityEngine.Color.white, UnityEngine.Color.white });
+                texture.Apply(false, false);
+                var sprite = Own(Sprite.Create(texture, new Rect(0, 0, 2, 2), new Vector2(.5f, .5f), 2, 0, SpriteMeshType.FullRect));
+                var m1 = Own(new Material(shader) { name = "SF.framecmp.material1", mainTexture = texture });
+                var m2 = Own(new Material(shader) { name = "SF.framecmp.material2", mainTexture = texture });
+                foreach (var material in new[] { m1, m2 })
+                {
+                    material.renderQueue = 3000;
+                    foreach (string property in new[] { "_Color", "_RendererColor" })
+                        if (material.HasProperty(property)) material.SetColor(property, UnityEngine.Color.white);
+                }
+                if (m1.GetInstanceID() == m2.GetInstanceID()) throw new InvalidOperationException("distinct material IDs required");
+                // Assignment guarantees signed ascending IDs even when allocation runs backwards.
+                bool firstBehind = FrameCompareControlPolicy.FirstBehind(m1.GetInstanceID(), m2.GetInstanceID());
+                Back = firstBehind ? m1 : m2; Front = firstBehind ? m2 : m1;
+                int sortingLayer = SortingLayer.layers.OrderByDescending(x => x.value).First().id;
+                float range = camera.farClipPlane - camera.nearClipPlane;
+                if (range <= 0) throw new InvalidOperationException("invalid camera clip range");
+                float depth = camera.nearClipPlane + Mathf.Min(1f, range * .1f);
+                Vector3 center = camera.ViewportToWorldPoint(new Vector3(.18f, .18f, depth));
+                Vector3 right = camera.ViewportToWorldPoint(new Vector3(.24f, .18f, depth));
+                Vector3 up = camera.ViewportToWorldPoint(new Vector3(.18f, .24f, depth));
+                float width = (right - center).magnitude * 2, height = (up - center).magnitude * 2;
+                if (!(width > 0 && height > 0)) throw new InvalidOperationException("invalid synthetic projection");
+                First = Make("red", UnityEngine.Color.red, Back);
+                Second = Make("blue", UnityEngine.Color.blue, Front);
+                SpriteRenderer Make(string name, UnityEngine.Color color, Material material)
+                {
+                    var go = Own(new GameObject("SF.framecmp." + name));
+                    go.layer = layer;
+                    go.transform.SetPositionAndRotation(center, camera.transform.rotation);
+                    go.transform.localScale = new Vector3(width, height, 1);
+                    var renderer = go.AddComponent<SpriteRenderer>();
+                    renderer.sprite = sprite; renderer.color = color; renderer.sharedMaterial = material;
+                    renderer.sortingLayerID = sortingLayer; renderer.sortingOrder = 32767;
+                    return renderer;
+                }
+                Log($"synthetic camera={camera.GetInstanceID()} target={(camera.targetTexture ? camera.targetTexture.name : "backbuffer")} viewport=(0.12,0.12,0.12,0.12) layer={layer} sortingLayer={sortingLayer} order=32767 depth={depth:R} signedMaterialIDs(back,front)={Back.GetInstanceID()},{Front.GetInstanceID()} renderers={First.GetInstanceID()},{Second.GetInstanceID()} opaque=red,blue sameTransform=1");
+            }
+            internal void Restore()
+            {
+                if (First) { First.sharedMaterial = Back; First.forceRenderingOff = false; }
+                if (Second) { Second.sharedMaterial = Front; Second.forceRenderingOff = false; }
+            }
+        }
         IEnumerator Control(string kind)
         {
             RequirePaused(); shots.Clear();
-            yield return Noise("_controlA", "_controlN");
-            if (lastNoiseOutside != 0 || !lastNoiseStable)
+            if (kind == "order") { orderValid = false; ctlOrder = "NA"; }
+            else { hideValid = false; ctlHide = "NA"; }
+            double started = Time.realtimeSinceStartupAsDouble;
+            Log("control " + kind + " synthetic begin maxAttempts=1 maxCaptures=4 readbackTimeoutSeconds=15");
+            var synthetic = new SyntheticControl();
+            // Register before allocation so partial setup, stop, unload and errors all clean up.
+            restoreControl = synthetic.Dispose;
+            try
             {
-                if (kind == "order") ctlOrder = "INCONCLUSIVE"; else ctlHide = "INCONCLUSIVE";
-                Log("control " + kind + " inconclusive: nonzero outside noise/unstable state; continuing without positive claim");
-                yield break;
-            }
-            var camera = GpuSplit.FindMain(); var planes = GeometryUtility.CalculateFrustumPlanes(camera.cullingMatrix);
-            var candidates = Resources.FindObjectsOfTypeAll<SpriteRenderer>().Where(r => GpuSplit.IsLiveImage(r, camera) && r.enabled &&
-                r.gameObject.activeInHierarchy && !r.forceRenderingOff && r.color.a > 0 && r.sprite &&
-                GeometryUtility.TestPlanesAABB(planes, GpuSplit.ConservativeBounds(r))).OrderBy(r => r.GetInstanceID()).Take(2048).ToArray();
-            int attempts = 0;
-            var tested = new HashSet<int>();
-            var testedPairs = new HashSet<string>();
-            while (attempts++ < 16)
-            {
-            if (kind == "hide")
-            {
-                var r = candidates.FirstOrDefault(c => !tested.Contains(c.GetInstanceID()));
-                if (!r) throw new InvalidOperationException("no remaining visible decoration candidate");
-                tested.Add(r.GetInstanceID()); bool old = r.forceRenderingOff;
-                restoreControl = () => { if (r) r.forceRenderingOff = old; }; r.forceRenderingOff = true;
-                Log($"control hide renderer={r.GetInstanceID()}");
-            }
-            else
-            {
-                SpriteRenderer first = null, second = null;
-                for (int i = 0; i < candidates.Length && !first; i++) for (int j = i + 1; j < candidates.Length; j++)
+                synthetic.Create();
+                // Baseline includes the synthetic pair. Both quads lie outside center exclusion.
+                yield return Noise("_controlA", "_controlN");
+                if (lastNoiseOutside != 0 || !lastNoiseStable)
                 {
-                    var x = candidates[i]; var y = candidates[j];
-                    if (testedPairs.Contains(x.GetInstanceID() + ":" + y.GetInstanceID())) continue;
-                    if (x.sortingLayerID != y.sortingLayerID || x.sortingOrder != y.sortingOrder || x.sharedMaterial == y.sharedMaterial ||
-                        !x.sharedMaterial || !y.sharedMaterial || x.sharedMaterial.renderQueue != y.sharedMaterial.renderQueue ||
-                        x.GetComponentInParent<UnityEngine.Rendering.SortingGroup>() || y.GetComponentInParent<UnityEngine.Rendering.SortingGroup>()) continue;
-                    if (!camera.orthographic || camera.transparencySortMode == TransparencySortMode.CustomAxis ||
-                        Math.Abs(Vector3.Dot(x.bounds.center - y.bounds.center, camera.transform.forward)) > 0.00001f) continue;
-                    if (!Projected(camera, x.bounds).Overlaps(Projected(camera, y.bounds))) continue;
-                    first = x; second = y; break;
+                    if (kind == "order") ctlOrder = "INCONCLUSIVE"; else ctlHide = "INCONCLUSIVE";
+                    Log("control " + kind + " inconclusive: nonzero outside noise/unstable state; continuing without positive claim");
+                    yield break;
                 }
-                if (!first) throw new InvalidOperationException("no overlapping same-key distinct-material decoration pair in first 2048 candidates");
-                testedPairs.Add(first.GetInstanceID() + ":" + second.GetInstanceID());
-                int order = first.sortingOrder;
-                if (order <= -32768 || order >= 32767) throw new InvalidOperationException("sortingOrder at boundary");
-                var x1 = first; var x2 = second;
-                restoreControl = () => { if (x1) x1.sortingOrder = order; if (x2) x2.sortingOrder = order; };
-                // Known tie rule: ascending material instance ID is back-to-front. Force the reverse.
-                bool firstBack = first.sharedMaterial.GetInstanceID() < second.sharedMaterial.GetInstanceID();
-                first.sortingOrder = order + (firstBack ? 1 : -1); second.sortingOrder = order + (firstBack ? -1 : 1);
-                Log($"control order renderers={first.GetInstanceID()},{second.GetInstanceID()} materialIDs={first.sharedMaterial.GetInstanceID()},{second.sharedMaterial.GetInstanceID()} originalOrder={order} forcedOrders={first.sortingOrder},{second.sortingOrder}");
+                if (kind == "order")
+                {
+                    synthetic.First.sharedMaterial = synthetic.Front;
+                    synthetic.Second.sharedMaterial = synthetic.Back;
+                    Log($"control order synthetic swapped signedMaterialIDs={synthetic.First.sharedMaterial.GetInstanceID()},{synthetic.Second.sharedMaterial.GetInstanceID()} sorting/z unchanged");
+                }
+                else
+                {
+                    synthetic.Second.forceRenderingOff = true;
+                    Log("control hide synthetic front renderer=" + synthetic.Second.GetInstanceID());
+                }
+                yield return Grab("_controlB");
+                synthetic.Restore();
+                yield return Grab("_controlA2");
+                var restored = Diff("_controlA", "_controlA2", 0);
+                var changed = Diff("_controlA", "_controlB", 0);
+                var delta = shots["_controlA"].State.Compare(shots["_controlA2"].State);
+                LogDelta("control-restore", shots["_controlA"].State, shots["_controlA2"].State, delta);
+                bool valid = restored.Changed == 0 && delta.Changed == 0;
+                if (kind == "order") { ctlOrder = changed.Changed.ToString(Inv); orderValid = valid; }
+                else { ctlHide = changed.Changed.ToString(Inv); hideValid = valid; }
+                // Report zero/failed restoration as FAIL, but let the independent hide control run.
+                Log($"control {kind} synthetic valid={(valid && changed.Changed > 0 ? 1 : 0)} restored={restored.Changed} positive={changed.Changed} stateStable={delta.Changed == 0} attempts=1 captures=4; continuing");
             }
-            yield return Grab("_controlB"); RestoreControl(); yield return Grab("_controlA2");
-            var restored = Diff("_controlA", "_controlA2", 0); var changed = Diff("_controlA", "_controlB", 0);
-            var restoreDelta = shots["_controlA"].State.Compare(shots["_controlA2"].State);
-            LogDelta("control-restore", shots["_controlA"].State, shots["_controlA2"].State, restoreDelta);
-            if (restored.Changed != 0 || restoreDelta.Changed != 0)
-                throw new InvalidOperationException("control failed: restoration must be zero/stable");
-            if (changed.Changed > 0) {
-                if (kind == "order") ctlOrder = changed.Changed.ToString(Inv); else ctlHide = changed.Changed.ToString(Inv);
-                Log("control " + kind + " valid=1 restored=0 positive=" + changed.Changed + " attempt=" + attempts); yield break; }
-            Log("control " + kind + " candidate produced zero; retry (occluded/commutative)");
-            }
-            throw new InvalidOperationException("control inconclusive: 16 candidates produced zero; no positive evidence");
-        }
-        static Rect Projected(Camera c, Bounds b)
-        {
-            Vector2 min = new Vector2(float.PositiveInfinity, float.PositiveInfinity), max = -min;
-            for (int i = 0; i < 8; i++)
+            finally
             {
-                var p = c.WorldToScreenPoint(b.center + Vector3.Scale(b.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1)));
-                if (p.z <= 0) return new Rect();
-                min = Vector2.Min(min, p); max = Vector2.Max(max, p);
+                RestoreControl();
+                Log(FormattableString.Invariant($"control {kind} synthetic cleanup elapsedSeconds={Time.realtimeSinceStartupAsDouble - started:F3}"));
             }
-            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+            // Let Unity complete deferred destruction before the next command.
+            yield return null;
         }
         void RestoreControl() { var restore = restoreControl; restoreControl = null; restore?.Invoke(); }
         static void ValidateName(string name)

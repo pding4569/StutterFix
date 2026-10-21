@@ -77,15 +77,45 @@ foreach (string field in new[] { "size", "RT", "projection", "forceRenderingOff"
     Check(Snapshot(true, field, "old").Compare(Snapshot(true, field, "new")).Details.Contains(field + "=old->new"), "diagnostic field " + field);
 Check(Snapshot(false, "enabled", "False").Compare(baseline).Changed > 0, "hidden to visible rejected");
 Console.WriteLine($"FrameCompareState: {n - stateStart} checks passed (synthetic snapshots; no Unity lifecycle evidence)");
+int controlStart = n;
+Check(FrameCompareControlPolicy.FirstBehind(-100, -2), "signed negative IDs ascending");
+Check(!FrameCompareControlPolicy.FirstBehind(-2, -100), "reverse allocation order");
+Check(FrameCompareControlPolicy.FirstBehind(int.MinValue, int.MaxValue), "signed IDs across zero; no subtraction overflow");
+foreach (string count in new[] { "NA", "INCONCLUSIVE", "-1", "", "9223372036854775808" })
+    Check(FrameCompareControlPolicy.Verdict(count, true, true) == "FAIL", "missing/invalid counts fail: " + count);
+Check(FrameCompareControlPolicy.Verdict("0", false, true) == "PASS", "negative zero passes");
+Check(FrameCompareControlPolicy.Verdict("1", false, true) == "FAIL", "negative nonzero fails");
+Check(FrameCompareControlPolicy.Verdict("0", false, false) == "FAIL", "negative unstable state fails despite zero pixels");
+Check(FrameCompareControlPolicy.Verdict("0", true, true) == "FAIL", "positive zero fails");
+Check(FrameCompareControlPolicy.Verdict("1", true, true) == "PASS", "positive nonzero passes");
+Check(FrameCompareControlPolicy.Verdict("1", true, false) == "FAIL", "positive failed restoration fails");
+// Analytic opaque overlap exercises the real signed-ID policy and masked pixel comparator.
+// It models the rule; it cannot establish that Unity follows the rule in the main chain.
+byte[] Overlap(bool swap, bool hide)
+{
+    var image = new byte[100 * 100 * 4];
+    bool redFront = FrameCompareControlPolicy.FirstBehind(swap ? -2 : -100, swap ? -100 : -2) == false;
+    for (int y = 12; y < 24; y++) for (int x = 12; x < 24; x++)
+    {
+        int offset = (y * 100 + x) * 4;
+        image[offset + (redFront || hide ? 0 : 2)] = 255; image[offset + 3] = 255;
+    }
+    return image;
+}
+var overlap = Overlap(false, false);
+Check(FrameCompareMetrics.Compare(overlap, Overlap(true, false), 100, 100, 0, new[] { center }).Changed == 144, "material swap changes opaque overlap outside exclusion");
+Check(FrameCompareMetrics.Compare(overlap, Overlap(false, true), 100, 100, 0, new[] { center }).Changed == 144, "hide front reveals red outside exclusion");
+Check(FrameCompareMetrics.Compare(overlap, Overlap(false, false), 100, 100, 0, new[] { center }).Changed == 0, "restored overlap negative zero");
+Console.WriteLine($"FrameCompare controls: {n - controlStart} checks passed (analytic rule model and verdict; no live rendering evidence)");
 if (args.Length == 3)
 {
     for (int i = 0; i < args.Length; i++)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
-        foreach (var name in new[] { "FrameCompare", "FrameCompareMetrics", "FrameCompareState" })
+        foreach (var name in new[] { "FrameCompare", "FrameCompareMetrics", "FrameCompareState", "FrameCompareControlPolicy" })
             Check(names.Contains(name) == (i != 0), "edition isolation: " + args[i] + " " + name);
         if (i == 0) Check(!md.TypeReferences.Any(h => md.GetString(md.GetTypeReference(h).Name).StartsWith("FrameCompare")), "Player has no framecmp type references");
     }
-    Console.WriteLine("FrameCompare edition metadata: 10 checks passed; Player absent (including references), Developer/PlayerAuto present");
+    Console.WriteLine("FrameCompare edition metadata: 13 checks passed; Player absent (including references), Developer/PlayerAuto present");
 }

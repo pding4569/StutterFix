@@ -1,0 +1,10 @@
+1. framecmp-4 인계에 따라 구현·오프라인 검증을 마쳤고 게임 실행·설치·커밋은 하지 않았다.
+2. 기존 Player.log에서 control order의 180초 시간 초과를 확인했으며 hide는 미도달이었다.
+3. 본 카메라 왼쪽 아래에 겹친 불투명 빨강·파랑 합성 SpriteRenderer를 임시 생성한다.
+4. 같은 sortingLayer·sortingOrder·z와 Sprites/Tile 재질의 부호 있는 ID 정렬을 보장한다.
+5. order는 재질 교환, hide는 앞쪽 forceRenderingOff로 검출하고 복원·소유 객체 파괴를 수행한다.
+6. 각 대조는 최대 1시도·4캡처이며 검출 0·복원 실패도 보고 후 다음 hide 대조를 진행한다.
+7. RESULT 숫자와 VERDICT PASS/FAIL을 출력하며 미실행·판정 불가는 PASS로 처리하지 않는다.
+8. 빌드 3종 오류 0, 경고 Developer 38·Player 36·PlayerAuto 38, LoadCheck 틀림 0이다.
+9. fixture 11/15/14/17개·edition 13개·생성기 24개 통과, Player 제외와 diff 검사를 확인했다.
+10. 실제 검출 픽셀 수·카메라 체인 가시성·제한 시간 내 완주는 게임 미실행으로 미검증이다.

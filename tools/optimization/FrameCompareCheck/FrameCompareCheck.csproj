@@ -2,4 +2,5 @@
   <PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><DefineConstants>DEV</DefineConstants></PropertyGroup>
   <ItemGroup><Compile Include="../../../FrameCompareMetrics.cs" Link="FrameCompareMetrics.cs" /></ItemGroup>
   <ItemGroup><Compile Include="../../../FrameCompareState.cs" Link="FrameCompareState.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../../FrameCompareControlPolicy.cs" Link="FrameCompareControlPolicy.cs" /></ItemGroup>
 </Project>
