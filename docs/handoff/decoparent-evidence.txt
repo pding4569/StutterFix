@@ -1,0 +1,27 @@
+[StutterFix] [자동 시험] 시작: 51단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco off / decoparent off / stop / seek 258 8 / waitsongpos 258 40 / decoparent off / waitsongpos 262 40 / decoparent begin / waitsongpos 276 40 / decoparent end / decoparent state / decoparent off / stop / seek 258 8 / waitsongpos 258 40 / decoparent root / waitsongpos 262 40 / decoparent begin / waitsongpos 276 40 / decoparent end / decoparent state / decoparent off / stop / seek 258 8 / waitsongpos 258 40 / decoparent root / waitsongpos 262 40 / decoparent begin / waitsongpos 276 40 / decoparent end / decoparent state / decoparent off / stop / seek 258 8 / waitsongpos 258 40 / decoparent off / waitsongpos 262 40 / decoparent begin / waitsongpos 276 40 / decoparent end / decoparent state / decoparent off / stop / decoparent restore / quit
+[StutterFix] [decoparent] restore moved=0
+[StutterFix] [decoparent] mode=off tightlate=off
+[StutterFix] [decoparent] restore moved=0
+[StutterFix] [decoparent] mode=off tightlate=off
+[StutterFix] [decoparent] RESULT mode=off fps=118.056 ms=8.470579 frames=1650 seconds=13.976 song_begin=262.018 song_end=276.004 valid=True tightlate=False
+[StutterFix] [decoparent] mode=off moved=0 tightlate=False
+[StutterFix] [decoparent] restore moved=0
+[StutterFix] [decoparent] mode=off tightlate=off
+[StutterFix] [decoparent] mode=root moved=28835 ms=265.6 manager_identity=True
+[StutterFix] [decoparent] RESULT mode=root fps=121.878 ms=8.204900 frames=1704 seconds=13.981 song_begin=262.018 song_end=276.004 valid=True tightlate=False
+[StutterFix] [decoparent] mode=root moved=28835 tightlate=False
+[StutterFix] [decoparent] restore moved=28835
+[StutterFix] [decoparent] mode=off tightlate=off
+[StutterFix] [decoparent] mode=root moved=28835 ms=263.7 manager_identity=True
+[StutterFix] [decoparent] RESULT mode=root fps=122.739 ms=8.147376 frames=1716 seconds=13.981 song_begin=262.018 song_end=276.005 valid=True tightlate=False
+[StutterFix] [decoparent] mode=root moved=28835 tightlate=False
+[StutterFix] [decoparent] restore moved=28835
+[StutterFix] [decoparent] mode=off tightlate=off
+[StutterFix] [decoparent] restore moved=0
+[StutterFix] [decoparent] mode=off tightlate=off
+[StutterFix] [decoparent] RESULT mode=off fps=116.413 ms=8.590126 frames=1628 seconds=13.985 song_begin=262.017 song_end=276.005 valid=True tightlate=False
+[StutterFix] [decoparent] mode=off moved=0 tightlate=False
+[StutterFix] [decoparent] restore moved=0
+[StutterFix] [decoparent] mode=off tightlate=off
+[StutterFix] [decoparent] restore moved=0
+[StutterFix] [decoparent] restore moved=0

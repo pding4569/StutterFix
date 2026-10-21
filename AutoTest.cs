@@ -896,6 +896,7 @@ namespace StutterFix
                 case "matshare": MatShare.Command(arg); return true;
                 case "livedeco": return LiveDeco.Step(arg);
                 case "decofreeze": DecoFreeze.Command(arg); return true;
+                case "decoparent": DecoParent.Command(arg); return true;
 #endif
                 case "filteridentity":
                     FilterIdentityProbe.Command(arg); return true;
@@ -1707,6 +1708,7 @@ namespace StutterFix
         {
 #if DEV || AUTOTEST
             DecoFreeze.Shutdown();
+            DecoParent.Shutdown();
             FrameCompare.Stop();
             MatShare.Stop();
             LiveDeco.Stop();
