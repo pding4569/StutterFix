@@ -1,6 +1,97 @@
-[StutterFix] [자동 시험] 시작: 44단계 - timeout 420 / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco prepare / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / wait 60 / decobake state / wait 60 / decobake ready / gpuprobe off / gpusplit off / matshare off / livedeco off / stop / seek 262 12 / decobake ready / waitsongpos 262 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\262.gpudeco / resume / stop / seek 270 12 / decobake ready / waitsongpos 270 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\270.gpudeco / resume / stop / seek 276 12 / decobake ready / waitsongpos 276 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\276.gpudeco / resume / gpudeco off / gpudeco result / stop / decobake off / quit
+[StutterFix] [자동 시험] 시작: 93단계 - timeout 420 / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco prepare / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / gpudeco scheduled / pause / wait 60 / decobake state / wait 60 / decobake ready / resume / stop / gpuprobe off / gpusplit off / matshare off / livedeco off / gpudeco bundle E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\bundle\stutterfix_gpudeco / stop / seek 262 12 / decobake ready / waitsongpos 262 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-d9cfd5fbfec64e409c7ac0fa8442ba23\262.gpudeco / framecmp mask none / framecmp ui exclude / framecmp filters on / framecmp noise N1 N2 / framecmp grab A / gpudeco on / wait 0.2 / framecmp grab B / gpudeco draw off / wait 0.2 / framecmp grab A2 / framecmp assertzero A A2 png / framecmp diff A B 0 png / gpudeco pixel 0 / resume / stop / seek 270 12 / decobake ready / waitsongpos 270 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-d9cfd5fbfec64e409c7ac0fa8442ba23\270.gpudeco / framecmp mask none / framecmp ui exclude / framecmp filters on / framecmp noise N1 N2 / framecmp grab A / gpudeco on / wait 0.2 / framecmp grab B / gpudeco draw off / wait 0.2 / framecmp grab A2 / framecmp assertzero A A2 png / framecmp diff A B 0 png / gpudeco pixel 1 / resume / stop / seek 276 12 / decobake ready / waitsongpos 276 40 / pause / wait 0.2 / gpudeco export E:
 [StutterFix] [gpudeco] on=False owned=0
 [StutterFix] [gpudeco] export_result_reset=True
-[StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export
-[StutterFix] [gpudeco] GPUDECO_G1=ERROR stage=prepare prepare_ms=300001.072000 reason=first_export_budget_300s status=새 맵 스냅샷 대기
-[StutterFix] [자동 시험] 단계 실패 'decobake ready': gpudeco: open부터 첫 export까지 300초 예산 초과
+[StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export source_clock_capture=True
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=2 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] prepare_ms=183571.301700 phase=first_export includes=open,bake,seek,export bake_wall_ms=514.623800
+[StutterFix] [gpudeco] prepare_ms=4529.894500 phase=export owned=1680 awake=2081 raw=262.01784002082422 tb=262.0138397693666 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-d9cfd5fbfec64e409c7ac0fa8442ba23\262.gpudeco
+[StutterFix] [gpudeco] export_reject bake-unsupported=372 repeat-tile=22
+[StutterFix] [gpudeco] export_schema=2 sources=1669 table_fallback=12026 anchored=14604 completed_endpoint=250 anchor_input=actual_Rec_Pos_and_start_parameters fallback=unobserved,unstarted,native_or_direct start_phase=recorded_not_inferred
+[StutterFix] [gpudeco] coverage=0.807304 auxiliary=False
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=0 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=1 max=0.015625 mean=9.3005952381E-06 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=2 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=3 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=4 max=3.81469726563E-06 mean=2.69559508784E-07 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=5 max=2.38418579102E-07 mean=1.03997687499E-08 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=6 max=2.38418579102E-07 mean=1.03997687499E-08 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=7 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=8 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=9 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=10 max=5.96046447754E-08 mean=4.43486940293E-09 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=11 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=12 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=13 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=14 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=15 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0_snapshot vertices=6720 max_px=0.00401119561866 mean_px=5.9690410992E-06 over_tol=0 rgba_max=7.45058059692E-09 rgba_mean=5.4587005815E-11 rgba_over_tol=0
+[StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1680 awake=2081 runs=66 submeshes=1680 dispatches=67 prepare_ms=300.313200 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS
+[StutterFix] [gpudeco] draw_off=True originals_restored=True
+[StutterFix] [framecmp] saved=D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\framecmp\gpudeco-262-20261021192009248-A.png
+[StutterFix] [framecmp] saved=D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\framecmp\gpudeco-262-20261021192009248-B.png
+[StutterFix] [framecmp] saved=D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\Mods\StutterFix\framecmp\gpudeco-262-20261021192009248-A2.png
+[StutterFix] [gpudeco] G1 sample=0 raw=262.01784002082422 different=3768 pixels=3686400 maxdiff=9 aa2=0 stable=True regions=(1216,544,32,32):1039;(1376,352,32,32):235;(1248,480,32,32):231;(1248,544,32,32):200;(1440,352,32,32):193 mask=none auxiliary=False
+[StutterFix] [gpudeco] G1_region_candidate region=(1216,544,32,32):1039 index=394 id=-664510 texture=-833120 material=-833124 layer=1320933907 order=-1050 z=0 alpha=0.5 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1216,544,32,32):1039 index=324 id=-664370 texture=-832736 material=-832776 layer=1320933907 order=-808 z=0 alpha=1 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1216,544,32,32):1039 index=322 id=-664366 texture=-832736 material=-832768 layer=1320933907 order=-806 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1216,544,32,32):1039 index=320 id=-664362 texture=-832736 material=-832760 layer=1320933907 order=-804 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1216,544,32,32):1039 index=318 id=-664358 texture=-832736 material=-832752 layer=1320933907 order=-802 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1216,544,32,32):1039 index=316 id=-664354 texture=-832736 material=-832740 layer=1320933907 order=-800 z=0 alpha=0.75 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1216,544,32,32):1039 index=14151 id=-1506716 texture=-833364 material=-2716128 layer=1320933907 order=-24 z=0 alpha=0.0005919054 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1216,544,32,32):1039 index=14152 id=-1506718 texture=-833364 material=-2716132 layer=1320933907 order=-23 z=0 alpha=0.000710286433 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1376,352,32,32):235 index=394 id=-664510 texture=-833120 material=-833124 layer=1320933907 order=-1050 z=0 alpha=0.5 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1376,352,32,32):235 index=324 id=-664370 texture=-832736 material=-832776 layer=1320933907 order=-808 z=0 alpha=1 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1376,352,32,32):235 index=322 id=-664366 texture=-832736 material=-832768 layer=1320933907 order=-806 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1376,352,32,32):235 index=320 id=-664362 texture=-832736 material=-832760 layer=1320933907 order=-804 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1376,352,32,32):235 index=318 id=-664358 texture=-832736 material=-832752 layer=1320933907 order=-802 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1376,352,32,32):235 index=316 id=-664354 texture=-832736 material=-832740 layer=1320933907 order=-800 z=0 alpha=0.75 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1376,352,32,32):235 index=409 id=-664540 texture=-833192 material=-833196 layer=0 order=550 z=0 alpha=0.25 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1376,352,32,32):235 index=410 id=-664542 texture=-833192 material=-833200 layer=0 order=551 z=0 alpha=0.25 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,480,32,32):231 index=394 id=-664510 texture=-833120 material=-833124 layer=1320933907 order=-1050 z=0 alpha=0.5 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,480,32,32):231 index=324 id=-664370 texture=-832736 material=-832776 layer=1320933907 order=-808 z=0 alpha=1 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,480,32,32):231 index=322 id=-664366 texture=-832736 material=-832768 layer=1320933907 order=-806 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,480,32,32):231 index=320 id=-664362 texture=-832736 material=-832760 layer=1320933907 order=-804 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,480,32,32):231 index=318 id=-664358 texture=-832736 material=-832752 layer=1320933907 order=-802 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,480,32,32):231 index=316 id=-664354 texture=-832736 material=-832740 layer=1320933907 order=-800 z=0 alpha=0.75 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,480,32,32):231 index=14516 id=-1507446 texture=-833736 material=-2717588 layer=0 order=5 z=0 alpha=0.0171968751 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,480,32,32):231 index=14517 id=-1507448 texture=-833736 material=-2717592 layer=0 order=6 z=0 alpha=0.0161852967 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,544,32,32):200 index=394 id=-664510 texture=-833120 material=-833124 layer=1320933907 order=-1050 z=0 alpha=0.5 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,544,32,32):200 index=324 id=-664370 texture=-832736 material=-832776 layer=1320933907 order=-808 z=0 alpha=1 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,544,32,32):200 index=322 id=-664366 texture=-832736 material=-832768 layer=1320933907 order=-806 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,544,32,32):200 index=320 id=-664362 texture=-832736 material=-832760 layer=1320933907 order=-804 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,544,32,32):200 index=318 id=-664358 texture=-832736 material=-832752 layer=1320933907 order=-802 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,544,32,32):200 index=316 id=-664354 texture=-832736 material=-832740 layer=1320933907 order=-800 z=0 alpha=0.75 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,544,32,32):200 index=14393 id=-1507200 texture=-992028 material=-2717096 layer=1320933907 order=-6 z=0 alpha=0.0271714646 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1248,544,32,32):200 index=14394 id=-1507202 texture=-992028 material=-2717100 layer=1320933907 order=-5 z=0 alpha=0.0283528417 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1440,352,32,32):193 index=394 id=-664510 texture=-833120 material=-833124 layer=1320933907 order=-1050 z=0 alpha=0.5 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1440,352,32,32):193 index=324 id=-664370 texture=-832736 material=-832776 layer=1320933907 order=-808 z=0 alpha=1 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1440,352,32,32):193 index=322 id=-664366 texture=-832736 material=-832768 layer=1320933907 order=-806 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1440,352,32,32):193 index=320 id=-664362 texture=-832736 material=-832760 layer=1320933907 order=-804 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1440,352,32,32):193 index=318 id=-664358 texture=-832736 material=-832752 layer=1320933907 order=-802 z=0 alpha=0.15 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1440,352,32,32):193 index=316 id=-664354 texture=-832736 material=-832740 layer=1320933907 order=-800 z=0 alpha=0.75 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1440,352,32,32):193 index=409 id=-664540 texture=-833192 material=-833196 layer=0 order=550 z=0 alpha=0.25 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] G1_region_candidate region=(1440,352,32,32):193 index=410 id=-664542 texture=-833192 material=-833200 layer=0 order=551 z=0 alpha=0.25 blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent attribution=screen_bounds_overlap_only
+[StutterFix] [gpudeco] prepare_ms=4574.180400 phase=export owned=1873 awake=2270 raw=270.01600896613672 tb=269.99983559093585 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-d9cfd5fbfec64e409c7ac0fa8442ba23\270.gpudeco
+[StutterFix] [gpudeco] export_reject bake-unsupported=374 repeat-tile=14 source-clock-missing-slot-4=2
+[StutterFix] [gpudeco] export_schema=2 sources=1875 table_fallback=13444 anchored=16302 completed_endpoint=254 pending_start=550 anchor_input=actual_Rec_Pos_and_start_parameters fallback=unobserved,unstarted,native_or_direct start_phase=recorded_not_inferred
+[StutterFix] [gpudeco] coverage=0.825110 auxiliary=False
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=0 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=1 max=0.0078125 mean=4.17111585691E-06 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=2 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=3 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=4 max=1.19209289551E-06 mean=2.09355191781E-07 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=5 max=4.76837158203E-07 mean=1.38907781337E-08 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=6 max=4.76837158203E-07 mean=1.38907781337E-08 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=7 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=8 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=9 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=10 max=5.96046447754E-08 mean=1.30275768579E-08 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=11 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=12 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=13 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=14 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.01600896613672 slot=15 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0_snapshot vertices=7492 max_px=0.498907268047 mean_px=0.00027365150222 over_tol=4 rgba_max=7.45058059692E-09 rgba_mean=2.0153344023E-10 rgba_over_tol=0
+[StutterFix] [gpudeco] draw_off=True originals_restored=True
+[StutterFix] [gpudeco] GPUDECO_G1=G0_FAIL stage=paused-render reason=InvalidOperationException:gpudeco G1: G0_FAIL before renderer ownership
+[StutterFix] [자동 시험] 단계 실패 'gpudeco on': gpudeco G1: G0_FAIL before renderer ownership

@@ -104,6 +104,7 @@ namespace StutterFix
             Require(g0 || GpuDecoCoverage.Auxiliary(data.Awake),"G0_FAIL before renderer ownership");
             commands=new CommandBuffer {name="GpuDeco.G1 copy runs"}; int copy=shader.FindKernel("CopyRun");
             commands.SetComputeBufferParam(shader,copy,"_CopySource",gpu.VertexBuffer);
+            commands.SetComputeIntParam(shader,"_CopyQuantizeColor",1);
             int runCount=0,submeshCount=0;
             for(int a=0;a<rows.Count;) {
                 if(rows[a].Item<0){a++;continue;}
@@ -116,7 +117,7 @@ namespace StutterFix
             int first=0; for(int n=0;n<buffers.Count;n++) {
                 var actual=new Vertex[meshes[n].vertexCount]; buffers[n].GetData(actual);
                 for(int i=0;i<actual.Length;i++) Require(actual[i].position.Equals(evaluated.vertices[first+i].position)
-                    && actual[i].color.Equals(evaluated.vertices[first+i].color) && actual[i].uv.Equals(evaluated.vertices[first+i].uv),"GPU run copy mismatch");
+                    && DrawColorMatches(actual[i].color,evaluated.vertices[first+i].color) && actual[i].uv.Equals(evaluated.vertices[first+i].uv),"GPU run copy mismatch");
                 first+=actual.Length;
             }
             foreach(var r in rows) if(r.Item>=0) originals.Add((SpriteRenderer)r.R);
@@ -124,7 +125,15 @@ namespace StutterFix
             foreach(var r in renderers) r.enabled=true;
             Log("on=True scope=paused_G1_only owned="+originals.Count+" awake="+data.Awake+" runs="+runCount+" submeshes="+submeshCount
                 +" dispatches="+(runCount+1)+" prepare_ms="+timer.Elapsed.TotalMilliseconds.ToString("F6",CultureInfo.InvariantCulture)
-                +" prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0="+(g0?"PASS":"FAIL_AUXILIARY"));
+                +" draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0="+(g0?"PASS":"FAIL_AUXILIARY"));
+        }
+        static bool DrawColorMatches(Color actual,Color logical)
+        {
+            Color expected=GpuDecoGpu.DrawColor(logical);
+            // A normalized GPU load/divide may differ from Mono's float divide
+            // by one ULP. Reject any different byte, tolerate only that rounding.
+            for(int c=0;c<4;c++) if(!DecoBakeCore.Finite(actual[c]) || Mathf.Abs(actual[c]-expected[c])>1e-7f)return false;
+            return true;
         }
         void BuildRun(GpuDecoData data,List<Row> rows,int a,int b,ComputeShader shader,int copy,float z)
         {

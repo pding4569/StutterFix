@@ -2,13 +2,15 @@
 
 게임을 열지 않는 **Unity 6000.3.10f1 / D3D11** 프로젝트다. prepare.ps1은 무시되는 project/에 소스와 내장 모듈 참조를 구성한다. 로컬 DOTween.dll은 CPU 정답 참조이며 번들에 넣지 않는다. 제품 Compile 목록에는 랩이 들어가지 않는다.
 
-최신 실제 **v2 3파일의 오프라인 G0는 통과**했다. 최종 소유율은262초81.0684%·270초78.1401%, 정점 최대0.00408345/0.00779684px, 초과0이다. 276초는 보조이며0px다. 실제 시계 없는 동적 표 장식102개는 정답과 무관한 메타데이터 규칙으로 원본에 남긴다. [랩 결과](../../docs/handoff/codex-gpudeco-lab-result.md)를 본다.
+최신 run6의 **v2 3파일 오프라인 G0는 통과**했다. 소유율262초81.0684%·270초79.9729%, 정점 최대0.00817266/0.00779688px·초과0, 276초 보조0px다. 원본 파일은 보존했다. 시계 없는 동적 표는 기존 메타데이터 소유 규칙으로 원본에 남긴다. [최신 결과](../../docs/handoff/codex-gpudeco-lab-result.md)를 본다.
 
-`GpuDecoGpu.cs`는 게임과 랩이 공유한다. 회전은 SM5 double 범위 축소/다항식 후 float quaternion을 써서 대형180도 장식의 native sincos 오차를 제거했다. RTX4060Ti/D3D11에서 확인했으며 다른 GPU의 double 지원/비용은 별도다. 번들55,640B 생성·재로드 및8,200각도/대형 경계 검증을 통과했다.
+run6 게임 G1은418684/136779픽셀·최대7/5로 실패했다. 이번에는 SpriteRenderer의 draw 색이 half-up UNorm8인 것을 랩에서 확인하고 **GPU CopyRun의 draw 색만 `floor(float(saturate(c)*255)+.5)/255`로 변환**했다. Evaluate의 논리색/G0와36B Float32레이아웃은 유지한다. Color32/HLSL round는 중간값에서 틀리므로 사용하지 않는다. Colors의36조건·256중간값/인접값6격자는 모두0픽셀, 실제3파일 GPU그리기색 바이트불일치0이다. Sprites/Default 랩이며 수정 후 게임 Sprites/Tile G1은 미측정이다. 새번들55748B 생성·재로드에서도 검사했다.
+
+`GpuDecoGpu.cs`는 게임과 랩이 공유한다. 회전은 SM5 double 범위 축소/다항식 후 float quaternion을 쓴다. RTX4060Ti/D3D11에서 확인했으며 다른 GPU의 double 지원/비용은 별도다. 이전 회차8,200각도/대형 경계 검증을 통과했고 이번 새 번들에서도 회전 검사를 통과했다.
 
 v2 export는 gpudeco prepare 뒤 실제 FastMove.Run에서 생성한 Rec만 관찰한다. export 때 현재 eventTweens의 실제 구간/진행값을 읽고, 같은 소스의 진행값이 다르면 중단한다. 완료 끝값은 보존한다. 새 pending scalar/color는 생성 시 시작값+실제 진행0을 내보내며 pending scale의 오래된 VStart는 거부한다. 이 pending 보완의 새 실제 export는 미측정이다. 시계 없는 현재 비상수 구간은 공통 소유 정책에서 제외한다. v1은 새 앵커 시험의 근거로 쓸 수 없다. OWNED_LOW는 awake≥800이고 소유율<70%일 때만이다.
 
-새 AUTOTEST `gpudeco bundle <파일>` → 같은 일시정지의 export → `on`은 G0를 확인한 뒤 원본을 숨기고 Raw 구간/서브메시를 그리는 **정지 G1 진단**이다. `draw off`가 원본을 복구하며 재개/맵 변경/해제에도 복구한다. 기본 steps 생성기는 이제 전체 화면의 잡음·A/B/A2·3시점 픽셀 판정을 포함한다. 게임 G1은 아직 실행하지 않았다. 재생 중 소유/원본 평가 생략·재생 전1회 준비·실시간 성능은 미구현/미측정이며 정지 진단 준비 비용과 구분한다.
+AUTOTEST `gpudeco bundle <파일>` → 같은 일시정지의 export → `on`은 G0를 확인한 뒤 원본을 숨기고 Raw 구간/서브메시를 그리는 **정지 G1 진단**이다. `draw off`가 원본을 복구하며 재개/맵 변경/해제에도 복구한다. steps는 전체 화면의 잡음·A/B/A2·3시점 판정을 포함한다. 수정 후 게임 G1은 실행하지 않았다. 재생 중 소유/원본 평가 생략·재생 전1회 준비·실시간 성능은 미구현/미측정이며 정지 진단 준비 비용과 구분한다.
 
 공용 실행기 추출 뒤 **80메시×15서브메시**를 재검증했다. 81dispatch CPU 평균0.1473152ms·묶음0.137851~0.167101ms, 복사 불일치0·합성 픽셀차이0이다. 게임 G1/엔진 비용의 증거가 아니며 GPU timestamp도 없다. 실패한1,000메시 경로는 반복하지 않는다.
 
@@ -25,6 +27,12 @@ $LASTEXITCODE
 ~~~
 
 Smoke는 이징 101,475개, 합성 장식 2,000개·표 구간 20,000개, 36바이트 Raw 정점·CPU 정답·그리기를 검사한다. Runs는 같은 입력을 **독립 Mesh 1,000개**로 나눠 GPU 복사·그리기·제출을 검사한다. UInt32 인덱스를 쓰고 GPU 버퍼를 얻기 전에 CPU 사본을 폐기한다. CommandBuffer를 재사용해도 1,000개 GPU copy dispatch가 필요하며 제출 예산 미달이다. 그대로 성능 성공을 기대해 반복하지 않는다.
+
+`GpuDecoLab.Colors`는 실제 SpriteRenderer와 CPU half-up/GPU CopyRun 색을 비교한다. 36조건·6중간값 격자를 검사하고 기존Float32 및 managedColor32의 차이도 로그한다. 선택적 `-gpudecoInput <v2 폴더>`는 실제 export의 그리기 색 바이트와 GPU 버퍼를 대조한다. Bundle은 재로드한 ComputeShader에도 같은 색 검사를 실행하므로 소스 셰이더만 맞고 번들은 오래된 경우를 놓치지 않는다. 게임 G1 통과를 출력하지 않는다.
+
+~~~powershell
+& $editor -batchmode -quit -force-d3d11 -projectPath "$lab\project" -executeMethod GpuDecoLab.Colors -gpudecoInput '<실제 v2 폴더>' -logFile "$lab\evidence\colors-editor-next.txt" | Out-Null
+~~~
 
 ~~~powershell
 & $editor -batchmode -quit -force-d3d11 -projectPath "$lab\project" -executeMethod GpuDecoLab.Runs -logFile "$lab\evidence\runs-editor-next.txt" | Out-Null
@@ -46,7 +54,7 @@ py -3 tools/optimization/gpudeco-steps.py --chart '<Arche *FULL.adofai>' --outpu
 # 자료 수집만 하려면 --export-only를 덧붙인다. 생성 자체는 게임을 실행하지 않는다.
 ~~~
 
-steps는 timeout420·실제play 준비 관찰·wait60 두 번·첫 export300초 예산을 유지한다. 최신 외부 시험의 첫 export182794.6272ms다. 기본 출력은 매번 고유한 `exports/run-<UUID>/`이며 기존 파일은 거부한다. 기본 G1 모드는 새 번들을 지정하고262·270·276초 각각에서 export→잡음→A→on→B→draw off→A2→판정한다. 중앙 마스크는 쓰지 않는다. awake≥800 소유율70% 미만만 OWNED_LOW이며276초는 보조다. 현재 준비물은 `evidence/round7-g1-steps.json`이다. 이전 export 전용 시험의 그대로 반복이 아니다.
+steps는 timeout420·실제play 준비 관찰·wait60 두 번·첫 export300초 예산을 유지한다. 최신 외부 run6의 첫 export183007.7304ms다. 기본 출력은 매번 고유한 `exports/run-<UUID>/`이며 기존 파일은 거부한다. 기본 G1 모드는 새 번들을 지정하고262·270·276초 각각에서 export→잡음→A→on→B→draw off→A2→판정한다. 중앙 마스크는 쓰지 않는다. awake≥800 소유율70% 미만만 OWNED_LOW이며276초는 보조다. 현재 준비물은 `evidence/round8-g1-steps.json`이며 생성만 했다. draw 색과 번들이 달라진 시험이다.
 
 확보된 최신 v2 세 파일 대조 재현(현재 **G0 PASS/exit0**, 게임 실행 없음):
 

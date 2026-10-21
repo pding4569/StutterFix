@@ -1,0 +1,235 @@
+﻿== scrVisualDecoration
+  get_spriteUnscaledSize
+  set_spriteUnscaledSize
+  isMask
+  get_gameObjectName
+    호출 ADOFAI.LevelEvent::GetString
+    호출 RDExtensions::RemoveRichTags
+  get_decorationName
+    호출 scrDecoration::get_gameObjectName
+    호출 RDUtils::NullIfEmpty
+    정적필드 읽기 ADOFAI.LevelEditor.Controls.PropertyControl_DecorationsList::stringItemNoImage
+  Awake
+    호출 scrDecoration::Awake
+    호출 ADOBase::get_customLevel
+    호출 UnityEngine.Object::op_Inequality
+    호출 제네릭 UnityEngine.GameObject::GetComponent
+  EnableMeshRenderer
+    호출 UnityEngine.GameObject::SetActive
+  UpdateShader
+    호출 scrVisualDecoration::isMask
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 scrVisualDecoration::EnableMeshRenderer
+    호출 UnityEngine.Sprite::get_texture
+    호출 UnityEngine.Renderer::get_material
+    호출 UnityEngine.Material::get_mainTexture
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.RenderTexture::Release
+    호출 RDExtensions::Clear
+    호출 scrDecoration::GetVisible
+    호출 UnityEngine.Renderer::get_enabled
+    호출 UnityEngine.Renderer::set_enabled
+    호출 UnityEngine.Renderer::get_isVisible
+    호출 UnityEngine.Object::op_Implicit
+    호출 System.Object::GetType
+    호출 System.Reflection.MemberInfo::get_Name
+    호출 UnityEngine.Behaviour::get_enabled
+    호출 RDExtensions::GetTempRT
+    호출 UnityEngine.Graphics::Blit
+    호출 scrVisualDecoration::<UpdateShader>g__EnableShader|31_0
+    호출 제네릭 System.Collections.Generic.Dictionary`2::TryGetValue
+    호출 System.Type::GetMethod
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    호출 System.Reflection.MethodBase::Invoke
+    호출 UnityEngine.RenderTexture::ReleaseTemporary
+    호출 UnityEngine.RenderTexture::get_active
+    호출 UnityEngine.RenderTexture::set_active
+    호출 RDC::get_data
+    정적필드 읽기 SpriteAlphaMask::ShaderProperty_RGB
+    호출 UnityEngine.Material::SetTexture
+    정적필드 읽기 SpriteAlphaMask::ShaderProperty_A
+    정적필드 읽기 SpriteAlphaMask::ShaderProperty_VisibleOutsideMask
+    호출 UnityEngine.Material::SetFloat
+    호출 UnityEngine.Sprite::get_bounds
+    호출 UnityEngine.Bounds::get_size
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 SpriteAlphaMaskUtils::ApplyAlphaMaskToRT
+    정적필드 읽기 scrDecorationManager::ShaderProperty_Color
+    호출 UnityEngine.Material::SetColor
+    정적필드 읽기 scrDecorationManager::ShaderProperty_Opacity
+    정적필드 읽기 scrDecorationManager::ShaderProperty_Tile
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Material::SetVector
+    호출 UnityEngine.Component::get_transform
+    호출 UnityEngine.Vector3::.ctor
+    호출 UnityEngine.Transform::set_localScale
+    호출 UnityEngine.Material::set_mainTexture
+  SetSprite
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.SpriteMask::set_sprite
+    호출 UnityEngine.SpriteRenderer::set_sprite
+    호출 scrVisualDecoration::ResizeCollider
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Renderer::get_material
+    호출 RDUtils::SetPointSamplingVariant
+    호출 ADOBase::get_controller
+    호출 UnityEngine.Sprite::get_texture
+    호출 UnityEngine.Texture::set_wrapMode
+  SetSprite
+    호출 UnityEngine.SpriteMask::set_sprite
+    호출 UnityEngine.SpriteRenderer::set_sprite
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 scrVisualDecoration::ResizeCollider
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Renderer::get_material
+    호출 RDUtils::SetPointSamplingVariant
+    호출 ADOBase::get_controller
+    호출 UnityEngine.Sprite::get_texture
+    호출 UnityEngine.Texture::set_wrapMode
+  ResizeCollider
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Sprite::get_bounds
+    호출 UnityEngine.Bounds::get_size
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.BoxCollider2D::set_size
+    호출 scrVisualDecoration::get_spriteUnscaledSize
+    호출 UnityEngine.Vector2::get_zero
+    호출 UnityEngine.Vector2::op_Equality
+    호출 scrVisualDecoration::set_spriteUnscaledSize
+  GetDecorationWorldSize
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Vector3::get_zero
+    호출 UnityEngine.Sprite::get_bounds
+    호출 UnityEngine.Bounds::get_size
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Transform::get_localScale
+    호출 ExtensionMethods::xy
+    호출 UnityEngine.Vector2::op_Multiply
+  GetDecorationPixelsSizeInUnits
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Sprite::get_texture
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Sprite::get_pixelsPerUnit
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector2::.ctor
+  UpdateHitbox
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.Behaviour::set_enabled
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_transform
+    호출 UnityEngine.Vector3::get_forward
+    호출 UnityEngine.Vector3::op_Multiply
+    호출 UnityEngine.Transform::set_localEulerAngles
+    호출 scrDecoration::get_useHitbox
+    호출 ADOBase::get_editor
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.GameObject::SetActive
+    호출 UnityEngine.Sprite::get_bounds
+    호출 UnityEngine.Bounds::get_size
+    호출 UnityEngine.Vector2::op_Implicit
+    호출 UnityEngine.Vector2::op_Multiply
+    호출 UnityEngine.BoxCollider2D::set_size
+    호출 UnityEngine.Collider2D::set_offset
+    호출 UnityEngine.CapsuleCollider2D::set_direction
+    호출 UnityEngine.CapsuleCollider2D::set_size
+    호출 UnityEngine.Vector2::get_magnitude
+    호출 UnityEngine.CircleCollider2D::set_radius
+    호출 제네릭 System.Collections.Generic.Dictionary`2::set_Item
+  SetDepth
+    호출 UnityEngine.Renderer::get_sortingLayerName
+    호출 UnityEngine.Renderer::set_sortingLayerName
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.GameObject::get_layer
+    호출 UnityEngine.GameObject::set_layer
+    호출 FloorRenderer::get_sortingOrder
+    호출 UnityEngine.Renderer::set_sortingOrder
+  SetMaskingDepth
+    호출 UnityEngine.SpriteMask::set_isCustomRangeActive
+    호출 scrVisualDecoration::SetMaskingDepth
+  SetMaskingDepth
+    호출 제네릭 System.Nullable`1::get_HasValue
+    호출 UnityEngine.SpriteMask::get_frontSortingOrder
+    호출 UnityEngine.SpriteMask::get_backSortingOrder
+    호출 제네릭 System.Nullable`1::GetValueOrDefault
+    호출 제네릭 System.Nullable`1::.ctor
+    호출 UnityEngine.SortingLayer::NameToID
+    호출 UnityEngine.SpriteMask::set_frontSortingLayerID
+    호출 제네릭 System.Nullable`1::get_Value
+    호출 UnityEngine.SpriteMask::set_frontSortingOrder
+    호출 UnityEngine.SpriteMask::set_backSortingLayerID
+    호출 UnityEngine.SpriteMask::set_backSortingOrder
+  ApplyColor
+    호출 ExtensionMethods::WithAlpha
+    호출 UnityEngine.SpriteRenderer::set_color
+  GetAlpha
+  SetTile
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Object::op_Inequality
+    호출 ADOBase::get_controller
+    호출 UnityEngine.Renderer::get_material
+    정적필드 읽기 scrDecorationManager::ShaderProperty_RepeatX
+    호출 UnityEngine.Material::SetFloat
+    정적필드 읽기 scrDecorationManager::ShaderProperty_RepeatY
+    호출 ADOFAI.LevelEvent::get_Item
+    호출 scrDecorationManager::get_instance
+    호출 scrDecorationManager::UpdateDecorationTiling
+  GetVisible
+    호출 scrDecoration::GetAlpha
+    호출 scrVisualDecoration::isMask
+    호출 scrDecoration::get_useHitbox
+  SetVisible
+    호출 scrVisualDecoration::isMask
+    호출 UnityEngine.Renderer::set_enabled
+  SetTextureScaleMultiplier
+    호출 UnityEngine.SpriteRenderer::get_sprite
+    호출 UnityEngine.Object::op_Equality
+    호출 UnityEngine.Sprite::get_texture
+    호출 UnityEngine.Texture::get_width
+    호출 UnityEngine.Texture::get_height
+    호출 UnityEngine.Vector2::.ctor
+  SetBlendMode
+    호출 UnityEngine.Behaviour::set_enabled
+    호출 System.Object::ToString
+    호출 제네릭 System.Enum::Parse
+    호출 BlendModes.BlendModeEffect::set_BlendMode
+    호출 BlendModes.BlendModeEffect::set_UsePointSampling
+    호출 UnityEngine.Renderer::get_material
+    정적필드 읽기 scrDecorationManager::tileShader
+    호출 UnityEngine.Material::set_shader
+    호출 UnityEngine.Object::op_Equality
+    정적필드 읽기 scrDecorationManager::visualDecoShader
+    호출 UnityEngine.Material::.ctor
+    호출 UnityEngine.Object::set_hideFlags
+    호출 UnityEngine.Renderer::set_material
+  SetMaskingType
+    호출 scrVisualDecoration::isMask
+    호출 UnityEngine.SpriteRenderer::set_maskInteraction
+    호출 ADOBase::get_controller
+    호출 UnityEngine.Renderer::set_enabled
+    호출 scrDecorationManager::GetTaggedDecorations
+    호출 제네릭 System.Collections.Generic.IEnumerable`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    호출 scrDecorationManager::ForceUpdateAlphaMaskCache
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  SetMaskingTarget
+    호출 제네릭 scrDecorationManager::GetTaggedDecorations
+    호출 제네릭 System.Collections.Generic.IEnumerable`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    호출 scrDecorationManager::ForceUpdateAlphaMaskCache
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  OnDestroy
+    호출 UnityEngine.Object::op_Inequality
+    호출 UnityEngine.RenderTexture::Release
+  .ctor
+    호출 scrDecoration::.ctor
+  <UpdateShader>g__EnableShader|31_0
+    호출 UnityEngine.Object::op_Equality
+    호출 RDExtensions::GetEmptyRT

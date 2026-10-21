@@ -19,6 +19,14 @@ namespace StutterFix
         internal struct Vertex { public Vector3 position; public Color color; public Vector2 uv; }
         static void Require(bool ok,string reason) { if(!ok) throw new InvalidOperationException(reason); }
         internal static bool Supported(int id) => id >= 0 && id <= 31 || id == 36;
+        // Native SpriteRenderer uses half-up UNorm8 conversion, unlike the
+        // managed Color32 cast's ties-to-even. Only draw buffers use this rule.
+        internal static Color DrawColor(Color logical)
+        {
+            var result=new Color();
+            for(int c=0;c<4;c++)result[c]=Mathf.Floor(Mathf.Clamp01(logical[c])*255f+.5f)/255f;
+            return result;
+        }
 
         readonly ComputeShader shader; readonly GpuDecoData data; readonly int kernel;
         readonly List<IDisposable> resources = new List<IDisposable>();

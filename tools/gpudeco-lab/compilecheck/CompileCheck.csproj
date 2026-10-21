@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="../GpuDecoLab.cs" />
     <Compile Include="../GpuDecoSubmeshes.cs" />
+    <Compile Include="../GpuDecoColorProbe.cs" />
     <Compile Include="../GpuDecoAudit.cs" />
     <Compile Include="../../../DecoBake.Core.cs" />
     <Compile Include="../../../GpuDecoData.cs" />

@@ -315,7 +315,7 @@ public static partial class GpuDecoLab
         var manifest=BuildPipeline.BuildAssetBundles(output,new[]{new AssetBundleBuild{assetBundleName="stutterfix_gpudeco",assetNames=new[]{"Assets/Shaders/GpuDeco.compute"}}},BuildAssetBundleOptions.ChunkBasedCompression|BuildAssetBundleOptions.ForceRebuildAssetBundle,BuildTarget.StandaloneWindows64);
         Require(manifest,"bundle build failed");
         var bundle=AssetBundle.LoadFromFile(Path.Combine(output,"stutterfix_gpudeco")); Require(bundle,"bundle load failed");
-        try { var shader=bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute"); Probe(shader); ProbeRotation(shader); } finally { bundle.Unload(true); }
+        try { var shader=bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute"); Probe(shader); ProbeRotation(shader); ColorBody(shader); } finally { bundle.Unload(true); }
         Log("GPUDECO_BUNDLE=PASS editor="+Application.unityVersion+" path="+output);
     }
     static void RunsBody()

@@ -1,5 +1,22 @@
+## codex-al-gg-7 — 2026-10-22 (최신, 정지 그리기 색의 네이티브 UNorm8 변환)
 
-## codex-al-gg-6 — 2026-10-22 (최신, 실제 v2 G0 통과·정지 G1 연결)
+- run6은 G0 PASS이나262초418684픽셀/최대7·270초136779/최대5·276보조0/0, A/A2모두0으로 PIXEL_FAIL. 원본PNG 히스토그램·ApplyColor 디컴파일/실제DLL IL 교차확인을 round8에 보존했다.
+- 기존 SpriteRenderer 합성 대조는 정점색white라 비흰색 경로를 못 잡았다. 새 랩에서 Float32색18조건 중14조건 차이를 재현했다. 단순 Color32/HLSL round는 중간값에서 짝수 반올림으로 실패(로그 보존). 네이티브는 float 곱 후 half-up floor(c*255+.5)다.
+- GPU Evaluate/논리색/G0는 그대로 두고 CopyRun 그리기색만 포화·half-up UNorm8로 변환.36B Float32레이아웃·원본재질/셰이더/정렬/소유/판정기준 유지. readback만 CPU기준과 비교하고 정점CPU업로드/정답보정0.
+- Unity6000.3.10f1/RTX4060Ti/D3D11:6색×겹침1/32/128×CPU/GPU36조건 및256중간값/±1e-7 RGB·알파6격자 모두0픽셀/최대0. Sprites/Default 검증이며 게임Sprites/Tile 최종픽셀의 대체증거가 아니다.
+- run6 실제v2 GPU그리기색27680/28368/272성분 바이트불일치0, 정규화float최대차5.96046448e-8. 새55748B번들 생성/재로드·이징101475초과0·회전·색검사통과.
+- 최신실제G0:소유1730/2134(81.0684%)·1773/2217(79.9729%)·17/24보조, 정점최대/평균0.00817265734/0.00000472407939px·0.00779688125/0.00000439756416px·0/0, 초과모두0. RGBA최대7.45058060e-9/7.45058060e-9/0·초과0.
+- 같은소유집합 곡시계정점최대46.2278860/63.6225510px·평균1.90658232/2.25441362px. 빠른앵커소스1628/1628·1719/1719가 평균프레임9.252877/9.399858ms안. 국소위상이며 시작전체이력 미측정. 전역시계탐색/1000메시반복0.
+- 3종Release오류0/0/0·기존경고38/4/38, LoadCheck277/229/277불일치0·일반Player제외, 랩C#0/SM5·데이터51·bake/live·DecoSim12·framecmp·ld2a정책/geometry/delta·생성기통과. 초기IPC1/entitlement198·중간반올림실패·fixture경로오기보존.
+- 새round8-g1-steps.json93단계·고유export폴더·새번들 준비만 했다. 첫export300초/timeout420/wait60/준비순서·판정기준유지. 게임실행·설치·로그인·강제종료·커밋·푸시·config변경0.
+- 수정후게임G1/복원/실시간비용 미측정. 재생중소유·원본평가/Transform쓰기생략·재생전1회준비 미구현·G2/GPUtimestamp미측정. 전체실시간목표완료가 아니며 색이 이전게임차이 전부의 원인이라고 단정하지 않는다.
+- GPUDECO_G0_OFFLINE=PASS measured=3/3 primary=2/2 auxiliary=PASS
+- GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=post_fix_runtime_pixels_required prior_run6=PIXEL_FAIL
+
+---
+
+
+## codex-al-gg-6 — 2026-10-22 (이전, 실제 v2 G0 통과·정지 G1 연결)
 
 - run5 실제 v2 세 파일을 읽었다. 첫 export182794.6272ms·bake508.5029ms, 원본은 `run-c8cc4448c4f34c249594694aeab12a85`에 보존. 준비 순서/300초 예산 유지, 전역시계201후보·1,000메시 제출 경로 반복0.
 - 첫 앵커 대조는262초0.0326676px·4정점,270초22.1796161px·8정점 실패. 270초 실제시계 없는 동적 표102개를 정답과 무관한 공통 메타데이터 규칙으로 원본에 남긴다(첫 슬롯:회전2·위치50·알파50). 새 pending scalar/color는 생성시 시작값+진행0, pending scale은 오래된VStart 거부. pending 변경의 새 실제export 효과는 미측정.
@@ -211,3 +228,25 @@
   - [StutterFix] [gpudeco] prepare_ms=4369.730700 phase=export owned=17 awake=24 raw=276.005327813793 tb=275.99820220604687 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-276faa32e3974320be72
   - [StutterFix] [gpudeco] on=True scope=paused_G1_only owned=17 awake=24 runs=4 submeshes=17 dispatches=5 prepare_ms=138.324600 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS
   - [StutterFix] [gpudeco] GPUDECO_G1=PIXEL_FAIL scope=paused_G1 exports=3 reason=PIXEL_FAIL live_animation=UNMEASURED G2=UNMEASURED
+
+## 회차 1
+- Codex 요약: 그리기 색 변환 차이를 찾아 GPU 복사 경로를 수정했습니다.
+
+- 랩 색 검사 42조건: 픽셀 차이 0
+- 실제 export 3개: G0 통과
+- 3종 빌드·LoadCheck·관련 fixture 통과
+- 수정 후 게임 G1은 미측정입니다.
+
+게임 실행·설치·커밋은 하지 않았습니다.
+
+[결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result.md) · [10줄 요약](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result-o.txt)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export source_clock_capture=True
+  - [StutterFix] [gpudeco] prepare_ms=183571.301700 phase=first_export includes=open,bake,seek,export bake_wall_ms=514.623800
+  - [StutterFix] [gpudeco] prepare_ms=4529.894500 phase=export owned=1680 awake=2081 raw=262.01784002082422 tb=262.0138397693666 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-d9cfd5fbfec64e4
+  - [StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1680 awake=2081 runs=66 submeshes=1680 dispatches=67 prepare_ms=300.313200 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=pa
+  - [StutterFix] [gpudeco] prepare_ms=4574.180400 phase=export owned=1873 awake=2270 raw=270.01600896613672 tb=269.99983559093585 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-d9cfd5fbfec64e
+  - [StutterFix] [gpudeco] GPUDECO_G1=G0_FAIL stage=paused-render reason=InvalidOperationException:gpudeco G1: G0_FAIL before renderer ownership
+  - [StutterFix] [자동 시험] 단계 실패 'gpudeco on': gpudeco G1: G0_FAIL before renderer ownership

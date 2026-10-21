@@ -1,10 +1,10 @@
-1. Unity6000.3.10f1 직접/D3D11/번들 유지, 게임실행·설치·커밋·푸시·config수정·로그인·강제종료0회.
-2. run5 실제v2 3파일 원본보존, 첫export182794.6272ms·bake508.5029ms; 실패한전역시계/1000메시 경로 반복0.
-3. 실제시계 없는 동적표102개를 메타데이터로 제외, pending scalar/color 진행0 지원·pending scale 오래된시작값 거부; 새export효과는 미측정.
-4. CPU/GPU 반각cos 차이를 SM5 double 다항식→float quaternion으로 수정,8200각도·대형5경계 회귀 및55640B번들 재로드 통과.
-5. 실제G0 262초:소유1730/2134(81.0684%),정점최대/평균0.00408344949/0.00000118019px,초과0/6920.
-6. 실제G0 270초:소유1773/2269(78.1401%),0.00779684167/0.00000439754px,초과0/7092;276보조17/24·0px,RGBA초과모두0.
-7. 빠른앵커소스1641/1641·1771/1771이한프레임안;트리거시작위상전체이력/GPUtimestamp/게임성능 미측정.
-8. AUTOTEST 정지G1 Raw구간/서브메시·원본재질·복구·실패판정/구역로그 구현,새93단계G1 JSON 생성만 함;게임G1 미측정.
-9. 3종빌드/LoadCheck/일반Player제외·관련fixture 통과;합성80Raw/1200서브메시 CPU0.1473152ms,재생소유/쓰기생략/1회준비 실시간경로 미구현.
-10. GPUDECO_G0_OFFLINE=PASS; GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=paused_runtime_pixels_required
+1. Unity6000.3.10f1직접/D3D11/번들 유지, 게임실행·설치·커밋·푸시·config변경·로그인·강제종료0회.
+2. 직전run6 G1은262초418684픽셀/최대7·270초136779/최대5·276보조0/0, A/A2모두0으로 실패했다.
+3. 네이티브SpriteRenderer의half-up UNorm8색을 랩에서 확인, Color32/HLSL round 중간값실패 보존 후 floor(c*255+.5)로 수정했다.
+4. GPU CopyRun draw색만 변환, Evaluate논리색/G0·36B Float32정점·재질/정렬/소유/허용기준 유지, CPU정점업로드/정답보정0.
+5. 색36조건·256중간값/인접값6격자 모두0픽셀, Float32음성대조14조건차이;실제3파일 draw색56320성분 바이트불일치0.
+6. 최신실제G0 소유1730/2134·1773/2217·17/24보조, 정점최대0.00817265734/0.00779688125/0px·허용초과0, RGBA초과0.
+7. 새55748B번들생성/재로드·이징101475초과0·회전·색검사통과, GPU시간/새성능측정 없음.
+8. 3종Release오류0/0/0·경고38/4/38, LoadCheck277/229/277불일치0·일반Player제외, 데이터51·기존관련fixture통과.
+9. 새round8-g1-steps.json93단계 생성만 함, 수정후게임G1/복원/G2미측정·재생중소유/쓰기생략/재생전1회준비 미구현.
+10. GPUDECO_G0_OFFLINE=PASS; GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=post_fix_runtime_pixels_required prior_run6=PIXEL_FAIL

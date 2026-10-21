@@ -1,0 +1,109 @@
+﻿{
+    "task":  "codex-al-gg-7",
+    "timestamp_utc":  "2026-10-21T19:15:08.6010159Z",
+    "scope":  "Paused draw color fix; offline G0 PASS; post-fix game G1/G2 UNMEASURED",
+    "game_executions":  0,
+    "installations":  0,
+    "commits":  0,
+    "pushes":  0,
+    "config_changes":  0,
+    "final_editor_exit":  {
+                              "bundle":  0,
+                              "verify":  0,
+                              "colors":  0
+                          },
+    "build_errors":  [
+                         0,
+                         0,
+                         0
+                     ],
+    "build_warnings":  [
+                           38,
+                           4,
+                           38
+                       ],
+    "loadcheck_mismatches":  [
+                                 0,
+                                 0,
+                                 0
+                             ],
+    "fixtures":  {
+                     "ld2a_policy":  "PASS",
+                     "sm5":  "PASS",
+                     "data":  51,
+                     "decosim":  12,
+                     "framecmp_steps":  24,
+                     "ld2a_geometry":  "PASS",
+                     "lab_compile":  "PASS",
+                     "gpudeco_steps":  "PASS",
+                     "ld2a_delta":  "PASS",
+                     "framecmp":  "PASS",
+                     "bake_live":  "PASS"
+                 },
+    "preserved_failures":  [
+                               "UPM IPC exit1",
+                               "existing licensing client entitlement exit198",
+                               "ties-even midpoint fixture exit1",
+                               "framecmp fixture command typo exit2",
+                               "DecoSim fixture initial path missing, then correct project passed"
+                           ],
+    "bundle":  {
+                   "bytes":  55748,
+                   "sha256":  "0A7780A882436AA3207959AF78DD67A7E3451BE5912EF575168AAE63F28F5B15"
+               },
+    "input_exports_sha256":  {
+                                 "262.gpudeco":  "72007F03C780E2B52AE10EE6852A83FF6D2ECD65FE5B1E8AD5E564B01500BC5B",
+                                 "270.gpudeco":  "BDD8A38F4B68A19AD8ABF88A154D55CC46A884BB7FED324651559B40A4CAF6D6",
+                                 "276.gpudeco":  "C863DBBCB2029603BC3A44C4E79F868062AA44A4AEB0C27E34C6A87336921263"
+                             },
+    "source_sha256":  {
+                          "GpuDecoGpu.cs":  "89C4F52617FF54D8517343F33C644DE0BC40E6677C257E1A7AF7AF259B4D6178",
+                          "GpuDecoSnapshot.cs":  "66DB9270362D93A83270AE0A988728A41D67DD1CC2BBD1137704DA0D3C8F5EB5",
+                          "tools/gpudeco-lab/GpuDeco.compute":  "EFD800BF7DFF24A83A71A6E2F0B80234B6BF9A0618EA6A811C695F4FE9A21231",
+                          "tools/gpudeco-lab/GpuDecoLab.cs":  "3F9F8C74D5A1BAD1C785B924B7A6F048583FE5E23FF31509CDDE105AA79FC7FD",
+                          "tools/gpudeco-lab/GpuDecoSubmeshes.cs":  "502C2A500F8F9B1C6087A0882DD436EBE0B7EE2EF3D638C68748F90E1DE2857A",
+                          "tools/gpudeco-lab/GpuDecoColorProbe.cs":  "7ADF0035677EFF03AA72FED65A37B4FDE2D8783D0BD4028389112F9B7AA0C0CF",
+                          "tools/gpudeco-lab/prepare.ps1":  "1A3173FF8DF1D9524F267BDA0BE10DFB077165E34E69A25259100D9A30F58F95",
+                          "tools/gpudeco-lab/compilecheck/CompileCheck.csproj":  "B954659C0FBD05407E0C56B8BCA1DA672936C96DCC51007753F2C273745DA99E",
+                          "StutterFix.csproj":  "D6526C8851EA66731C1A6DA3495B807125503DC05F0EE6D0EE2086E952C40804"
+                      },
+    "evidence_sha256":  {
+                            "round8-build-auto.txt":  "DE4BB0678F52217A180E106C34F43B09038E7F670966EFC1C2E4144553EE2C28",
+                            "round8-build-dev.txt":  "7B5276026B810D4B13385F6FC16F242E7E0ABCA3335D4A609DCA58C97FCD9E1E",
+                            "round8-build-player.txt":  "E27CAAB5551E8CA4B16F24A75D8E64D529E1855C6D2D8A4CD98B9B7869DE96EB",
+                            "round8-bundle.txt":  "4C2302F1F1346EBCD3B9875D68FD60756F56AF125366774BCB378A789E7332BD",
+                            "round8-bundle-editor.txt":  "E8FA3494F6E7302D62EC0A28B90A186AAD26A493A540CE587BB7B95F78801A66",
+                            "round8-color-compile.txt":  "7B591FC4E3A2E2B1CC72DA5CBFE629F87547E84D06D9FA4240426CE6E1DE0EC1",
+                            "round8-color-final-compile.txt":  "A7150FB5419896D527751594DCD8385470CAA3FE2DF2A423DA137FE15C7D556A",
+                            "round8-color-il.txt":  "33EE32BDC8446D82641E498835CCF82C2B3F812CA2C21E10D167E6FC57DAB3BE",
+                            "round8-colors-direct-editor.txt":  "09B7DEA86AB37C6E09D0B68CD73D4F48BC43CC90A79D6FD88BE961DB6D65511A",
+                            "round8-colors-editor.txt":  "58DDB397D43AABE3DB616B4CB42A56315ABD5EE6C24B7C964E404ACA7DFCE958",
+                            "round8-colors-final.txt":  "F9EB97B55C5EF7BE6E31AE277CB9E03EE5955BAFB69B10B108B96D21E4968392",
+                            "round8-colors-final-editor.txt":  "2603BD866CF331B8383C82CAF99606129E2A1BFD05C07FA086B6FF1E1616BCB5",
+                            "round8-colors-final-guard.txt":  "F9EB97B55C5EF7BE6E31AE277CB9E03EE5955BAFB69B10B108B96D21E4968392",
+                            "round8-colors-final-guard-editor.txt":  "A90D37D8E2CD735061A68BD0FD7DF6F312E41B18476E91B626AE5B3503AA0676",
+                            "round8-colors-fresh-editor.txt":  "E231FCC0F5843F00819013A9FB8B8000F4FCFC01F47788CA58DB44E597B5C6FF",
+                            "round8-colors-halfup.txt":  "14680298177EBB56F811C799D3D9DC441689675A2EFE55E454DC7A8E7642F605",
+                            "round8-colors-halfup-editor.txt":  "0BF9FB6B63D9FB92AC36E7AAFD8EFC9BE4AD759B02C6A9A4F7893C53EAE1A4A0",
+                            "round8-colors-midpoint-fail.txt":  "8700E1AB5C115FD14595B9D3C45B85D352FEFAA03BB5B50E92D8C878B66B45F6",
+                            "round8-colors-quantized-editor.txt":  "4B3885E67754D607D8CA5B0B4C9E009CEDA003401D2415656EA2EEB8F50E827E",
+                            "round8-DataCheck.txt":  "11C958F53486530A4728637CD7609484BCBABEC60208EA3F29CE080B663963F8",
+                            "round8-DecoBakeContractCheck.txt":  "4AFA7D909257B128B08B570179E3E0750A8DCEE8459AF72CEE81B028C9700331",
+                            "round8-DecoSimFixture.txt":  "DC8E2D9B58644C8C5C1858A2763E613F7D0DC2A58923458189E664889E30C060",
+                            "round8-framecmp-steps.txt":  "A7543154584ADEE5780A7CF3F4D16A437DF7019BB03AB86524F60F1E35A43EC8",
+                            "round8-framecmp-steps-command-error.txt":  "0EFDA72C409C2611F0AB8AD222FC20B113E0DDDABF833970D063CF004899D1E1",
+                            "round8-FrameCompareCheck.txt":  "6D966E95252F65A9AB3FFAA991C442FD6998628C7E110A1973514C09E7398ABC",
+                            "round8-g1-steps.json":  "2F97E7C79D02E3E17C2EF8D83A01FF9E2A47DADD89766C92CC7DA75D515F60D4",
+                            "round8-LiveDecoCheck.txt":  "7DEFF16C7EF282A02E40AD0C7E668CA8403D9AE18154961EC0966983546EE464",
+                            "round8-LiveDecoDeltaCheck.txt":  "D5D063C24B4A9A59F4C7001434C67F5C602579E8B301C482B60626F4EE28B225",
+                            "round8-LiveDecoGeometryCheck.txt":  "1ABC8EAF97D2B452C6DDFB472789D9AAC477914DAA93C193E4C444882F74124D",
+                            "round8-loadcheck-auto.txt":  "F7732DA23A38FA86170B12403E7BFF119C3D43346FBA2D9BB9CE99A726065045",
+                            "round8-loadcheck-dev.txt":  "35F4A664C5A84585C5AE793FC81BA65EC0C562BBEE2C81407C97F77C6622D34F",
+                            "round8-loadcheck-player.txt":  "E08A8B41898CC0E9B748FB9FDD72F3AB1B65616034BB00949B333B4E731BE789",
+                            "round8-prior-pixels.txt":  "59E32EA1FE6727B15BCE76BF784991422812D908F1F952C4F04FC3DBACC97089",
+                            "round8-shader.txt":  "31908C998E9A2542EC3556C2FE5F2D7741D7005E56B125CEB43F85B4B5E695E5",
+                            "round8-steps.txt":  "A7855102C473C363CD16B8673390E6E2AF929B0360E618A59730BA0E7FD917CA",
+                            "round8-verify.txt":  "5B8F029E21D00683C324D0201B271FA2AD558218CF6A660548568CFB9565159E",
+                            "round8-verify-editor.txt":  "9ED2D812A3CF91E9FC07C86D7EB1A53892EEFC7FF606059344D2CB8C0275DA3E"
+                        }
+}

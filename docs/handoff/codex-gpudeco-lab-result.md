@@ -1,4 +1,28 @@
-# gpudeco 독립 랩 최신 결과 — codex-al-gg-5 (2026-10-22)
+# gpudeco 독립 랩 최신 결과 — codex-al-gg-7 (2026-10-22)
+
+**그리기 색의 네이티브 UNorm8 변환을 확인하고 GPU 복사에 적용했다.** Unity6000.3.10f1 / RTX4060Ti / D3D11, 최종 색·번들·실제 G0 모두 exit0. [구현·전후 수치·한계](codex-gpudeco-1-result.md), [색 검사](../../tools/gpudeco-lab/evidence/round8-colors-final-guard.txt), [번들 재로드](../../tools/gpudeco-lab/evidence/round8-bundle.txt), [G0 채널/위상 로그](../../tools/gpudeco-lab/evidence/round8-verify.txt)를 본다.
+
+|검사|수치|
+|---|---|
+|저알파·비흰색 등6색×겹침1/32/128×CPU/GPU|36조건·픽셀차이0·최대0|
+|256중간값/인접값·RGB/알파|6격자·픽셀차이0·최대0|
+|기존Float32 음성 대조|18조건 중14조건 차이 검출|
+|실제262/270/276초 GPU 그리기 성분|27680/28368/272, 바이트 불일치0, 정규화float 최대차이5.96046448e-8|
+|실제 앵커 정점 최대px|0.00817265734 /0.00779688125 /0, 0.01px초과0|
+|실제 앵커 RGBA 최대|7.45058060e-9 /7.45058060e-9 /0, 1/255초과0|
+|번들|55748B, 재로드 이징101475개 초과0·회전·색 통과|
+
+핵심은 `floor(float(saturate(c)*255)+0.5)/255`이며 `Color32`/HLSL round의 짝수 반올림은 중간값에서 실패했다. Evaluate의 논리값과 G0를 양자화하지 않고 CopyRun의 draw 색만 변환한다. SpriteRenderer 픽셀 대조는 `Sprites/Default`이며 게임 최종 `Sprites/Tile` G1은 미측정이다. 현재 입력은 `run-276faa32e3974320be72c0d90c29343c`의 외부 수집 v2다. 이전 절의 다른 export/회차 수치를 현재 결과로 사용하지 않는다.
+
+이번에는 새 비용 측정을 하지 않았다. 이전80메시 비용을 새 색 경로의 비용으로 옮겨 쓰거나 게임 비용에 합산하지 않는다. 재생 구동/G2/GPU timestamp는 미측정이다. 게임 실행·설치·커밋·푸시·config 변경0회. 새93단계 준비물은 `evidence/round8-g1-steps.json`이며 실행하지 않았다.
+
+`GPUDECO_G0_OFFLINE=PASS measured=3/3 primary=2/2 auxiliary=PASS`
+
+`GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=post_fix_runtime_pixels_required prior_run6=PIXEL_FAIL`
+
+---
+
+# 이전 gpudeco 독립 랩 결과 — codex-al-gg-5 (2026-10-22)
 
 **소스별 실제 진행값을 받는 v2 경로의 합성 시험은 통과했다. 실제 v2 export는 0개이므로 새 방식의 실제 G0/G1은 미측정이다.** Unity6000.3.10f1 직접 실행 / RTX4060Ti / D3D11 / 최종 exit0. [최종 수치](../../tools/gpudeco-lab/evidence/round6-source-gate.txt)·[Editor](../../tools/gpudeco-lab/evidence/round6-source-gate-editor.txt)·[구현과 한계](codex-gpudeco-1-result.md)를 본다.
 

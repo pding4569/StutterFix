@@ -1,4 +1,59 @@
-# gpudeco-1 최신 결과 — codex-al-gg-6 (2026-10-22)
+# gpudeco 최신 결과 — codex-al-gg-7 (2026-10-22)
+
+**기존 Unity 6000.3.10f1/D3D11 AssetBundle 경로를 유지했다. 정지 G1의 그리기 색을 네이티브 SpriteRenderer와 같은 8비트 변환으로 수정했다. 독립 랩은 통과했으며 수정 후 게임 G1은 미측정이다.** 새 번들은 55,748B이며 생성·재로드·실제 GPU 실행을 확인했다. 게임 실행·설치·커밋·푸시·config 수정은 0회다.
+
+## 직전 실패와 원인 확인
+
+장부와 run6 증거·PNG를 읽었다. 262초 **418,684픽셀/최대7**, 270초 **136,779/최대5**, 276초 보조 **0/0**이었다. A/A2는 모두0·안정 기준이었다. 차이의 대부분은1~2/255이며 히스토그램은 [원본 PNG 감사](../../tools/gpudeco-lab/evidence/round8-prior-pixels.txt)에 보존했다. 원본 `scrVisualDecoration.ApplyColor` 디컴파일과 설치DLL IL의 `SpriteRenderer.set_color` 호출을 [교차확인](../../tools/gpudeco-lab/evidence/round8-color-il.txt)했다.
+
+이전 합성 SpriteRenderer 대조는 정점 색이 모두 흰색이라 이 차이를 검출하지 못했다. 독립 랩에서 실제 로그의 저알파값을 포함한 비흰색·겹침을 주면 기존 Float32 그리기 색이 다른 픽셀을 만들었다. 네이티브 색은 포화 후 **`floor(float(color*255)+0.5)/255`**와 일치했다. C# `Color32`와 HLSL `round`의 짝수 반올림은 중간값에서 틀렸다(예:0.5/255→네이티브1, managed0). 중간 실패도 `round8-colors-midpoint-fail.txt`와 Editor 로그에 보존했다.
+
+따라서 **GPU Evaluate의 속성·논리 색·G0는 Float32 그대로**, GPU `CopyRun`의 그리기용 색만 명시적 `_CopyQuantizeColor=1`로 변환한다. 곱셈을 `precise`로 분리해 FMA에 따른 중간값 변경을 막는다. 36B Float32 정점 레이아웃, 원본 재질·텍스처·셰이더·정렬·소유 정책은 유지했다. CPU helper는 readback 검사 전용이며 정점 업로드나 정답 보정에 쓰지 않는다. 원본 Float32 복사 fixture는 flag0을 명시한다.
+
+## 검증 수치
+
+Unity6000.3.10f1 / RTX4060Ti / D3D11의 [최종 색 랩](../../tools/gpudeco-lab/evidence/round8-colors-final-guard.txt)과 [새 번들 재로드](../../tools/gpudeco-lab/evidence/round8-bundle.txt)가 exit0이다.
+
+|검사|결과|
+|---|---|
+|비흰색·저알파·범위 밖·중간값 6색 × 겹침1/32/128 × CPU/GPU|36조건 모두 다른픽셀0·최대0|
+|모든256개 중간값과 ±1e-7, RGB/알파|6격자 모두 다른픽셀0·최대0|
+|기존 Float32 음성 대조|18조건 중14조건에서 차이 검출|
+|실제262/270/276초 export의 GPU 그리기 색|27,680/28,368/272성분, 바이트 불일치0/0/0, float 정규화 최대오차5.96046448e-8|
+|새 번들 생성·재로드|55,748B, 이징101,475개 초과0·회전 PASS·위 색 검사 재통과|
+|Release Dev / Player / PlayerAuto|오류0/0/0, 기존경고38/4/38|
+|LoadCheck / 일반Player제외|277/229/277곳 불일치0, 일반Player GPU 타입 없음|
+|기존 fixture|데이터51·bake/live·DecoSim12·framecmp·ld2a 정책/geometry/delta·steps·SM5 통과|
+
+색 랩의 픽셀 셰이더는 `Sprites/Default`다. 실제 export 대조는 게임에서 수집한 정답 색의 네이티브 변환과 GPU 버퍼를 비교한 것으로 **게임 `Sprites/Tile`의 최종 화면 대조를 대신하지 않는다.** 기존 게임 실패 전체의 원인을 색 하나로 확정하지 않으며 수정 후 G1 개선량도 추정하지 않는다.
+
+## 최신 export의 G0
+
+직전 run6의 원본 v2 세 파일을 읽기만 했다. [오프라인 GPU 대조](../../tools/gpudeco-lab/evidence/round8-verify.txt)는 실제 입력이 바뀐 이번 결과이며 이전 회차 수치를 재사용하지 않았다. 전후 채널별 최대·평균·px/ms·초과는 로그에 모두 있다.
+
+|시점|소유/awake|곡시계 정점 최대/평균px·초과|앵커 정점 최대/평균px·초과|앵커 RGBA 최대/평균·초과|
+|---|---|---|---|---|
+|262|1730/2134 (81.0684%)|46.2278860 /1.90658232·5978|0.00817265734 /0.00000472407939·0|7.45058060e-9 /1.18695630e-10·0|
+|270|1773/2217 (79.9729%)|63.6225510 /2.25441362·6569|0.00779688125 /0.00000439756416·0|7.45058060e-9 /1.80873002e-10·0|
+|276 보조|17/24|0/0·0|0/0·0|0/0·0|
+
+빠른 앵커 소스1628/1628·1719/1719가 실제 평균프레임9.252877/9.399858ms 안이었다. 이는 현재 값의 국소위상 검사이며 실제 시작위상 전체이력 증명은 아니다. 소유70%·276보조·0.01px·색1/255·픽셀0.3%/최대3 기준은 바꾸지 않았다. 전역 시계201후보나 실패한1,000메시 성능 경로는 반복하지 않았다.
+
+## 준비물과 한계
+
+[새93단계 JSON](../../tools/gpudeco-lab/evidence/round8-g1-steps.json)은 새 고유 export 폴더와 새 번들을 지정한다. 생성만 했으며 실행하지 않았다. open/play/bake 순서·timeout420·wait60 두 번·첫 export300초 예산·전체화면 A/B/A2를 유지했다. 직전 첫 export183007.7304ms는 외부 run6의 수치다.
+
+최초 UPM IPC exit1, 기존 클라이언트 entitlement exit198을 보존했다. 클라이언트 자연 종료 후 에디터 직접 실행으로 통과했다. 로그인·라이선스 변경·강제종료는 없었다. fixture 경로 오기의 미실행/exit2도 보존하고 실제 경로로 검사했다. 근거·SHA256은 `round8-manifest.json`에 있다.
+
+**수정 후 게임 G1·수명·복원은 미측정, 실시간 소유/원본평가·Transform쓰기 생략/재생전1회준비는 여전히 미구현이며 G2·GPU timestamp도 미측정이다.** 이번 수정은 정지 진단의 색 전달 차이를 다룬다. 실시간 비용 성공이나 전체 목표 완료를 주장하지 않는다.
+
+`GPUDECO_G0_OFFLINE=PASS measured=3/3 primary=2/2 auxiliary=PASS`
+
+`GPUDECO_G1=ERROR G0=PASS game_pixels=UNMEASURED reason=post_fix_runtime_pixels_required prior_run6=PIXEL_FAIL`
+
+---
+
+# 이전 gpudeco-1 결과 — codex-al-gg-6 (2026-10-22)
 
 **Unity 6000.3.10f1 직접 실행·D3D11·AssetBundle 경로를 유지했다. 실제 v2 세 파일의 오프라인 G0는 통과했다. 게임을 실행하지 않고 정지 화면 G1 연결과 새 시험 JSON까지 구현했으며, 게임 픽셀 G1은 미측정이다.** 게임 실행·설치·커밋·푸시·config 수정·로그인·강제 종료는 하지 않았다.
 

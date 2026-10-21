@@ -27,6 +27,7 @@ RWStructuredBuffer<float> _ProbeOut;
 RWStructuredBuffer<float4> _RotationOut;
 ByteAddressBuffer _CopySource;
 uint _CopyFirstVertex, _CopyVertexCount;
+uint _CopyQuantizeColor;
 
 float Bounce(float x)
 {
@@ -208,4 +209,13 @@ void CopyRun(uint3 thread:SV_DispatchThreadID)
     _Vertices.Store4(dst,_CopySource.Load4(src));
     _Vertices.Store4(dst+16,_CopySource.Load4(src+16));
     _Vertices.Store(dst+32,_CopySource.Load(src+32));
+    // SpriteRenderer's draw color is UNorm8 even when its logical color is a
+    // float. Keep evaluation/G0 unrounded; match that conversion only in the
+    // draw copy, retaining the 36-byte Float32 layout used by the game shader.
+    if (_CopyQuantizeColor != 0)
+    {
+        float4 color=asfloat(_CopySource.Load4(src+12));
+        precise float4 scaled=saturate(color)*255.0;
+        _Vertices.Store4(dst+12,asuint(floor(scaled+0.5)/255.0));
+    }
 }

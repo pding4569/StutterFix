@@ -45,6 +45,7 @@ public static partial class GpuDecoLab
             Compare(data,evaluated.values,evaluated.vertices,false);
             int copy=shader.FindKernel("CopyRun");
             commands.SetComputeBufferParam(shader,copy,"_CopySource",gpu.VertexBuffer);
+            commands.SetComputeIntParam(shader,"_CopyQuantizeColor",0);
             for(int run=0;run<80;run++)
             {
                 var mesh=RawRun(run*25,25,null,15); meshes.Add(mesh);
