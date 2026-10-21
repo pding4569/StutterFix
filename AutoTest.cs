@@ -895,6 +895,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
                 case "matshare": MatShare.Command(arg); return true;
                 case "livedeco": return LiveDeco.Step(arg);
+                case "decofreeze": DecoFreeze.Command(arg); return true;
 #endif
                 case "filteridentity":
                     FilterIdentityProbe.Command(arg); return true;
@@ -1094,7 +1095,10 @@ namespace StutterFix
                     return true;
                 }
                 case "decosig": Log("[장식 상태 기록] "+DecoSig.Run(modDir,arg)+" | "+LazySprite.State); return true;
-                case "fuse": Log("[합치기 연구] " + (arg == "begin" ? FuseProbe.Begin() : FuseProbe.End())); return true;
+                case "fuse":
+                    if (arg == "begin") { var note = FuseProbe.Begin(); DecoFreeze.Begin(); Log("[합치기 연구] " + note); }
+                    else { var note = FuseProbe.End(); DecoFreeze.End(note); Log("[합치기 연구] " + note); }
+                    return true;
                 case "decobatch": Log("[장식 일괄] " + (arg.StartsWith("shadow") ? DecoBatchShadow.Command(arg) : DecoAnim.BatchCommand(arg))); return true;
                 case "phasereport": PhaseWatch.ReportSong(); return true;
 #if AUTOTEST
@@ -1702,6 +1706,7 @@ namespace StutterFix
         private static void Finish(string why)
         {
 #if DEV || AUTOTEST
+            DecoFreeze.Shutdown();
             FrameCompare.Stop();
             MatShare.Stop();
             LiveDeco.Stop();

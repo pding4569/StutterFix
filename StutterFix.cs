@@ -472,6 +472,7 @@ ParticleTextWatch.Install(harmony);
             EndDisplayTransition();
 #if DEV || AUTOTEST
             Try(FreeFpsProbe.Restore);
+            Try(DecoFreeze.Shutdown);
             Try(TileSim.Shutdown);
             Try(TileCost.Shutdown);
             Try(DecoGpu.Stop);

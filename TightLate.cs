@@ -199,6 +199,9 @@ namespace StutterFix
             int fc = Time.frameCount;
             if (e.LastFrame != fc - 1 && e.LastFrame != fc) e.Has = false;   // 지난 프레임을 건너뛰었다(숨김·잠듦·원래 경로 등): 처음부터 다시 쓴다
             e.LastFrame = fc;
+#if DEV || AUTOTEST
+            if (DecoFreeze.SkipTight(d)) { e.Has = false; return true; }
+#endif
             bool engine = e.Engine != null;
             if (e.Engine != null) DecoEngine.Late(e.Engine, cam);
             else Apply(e, e.D, e.D.parallax, e.Pivot, cam);

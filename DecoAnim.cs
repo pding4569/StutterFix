@@ -636,6 +636,9 @@ namespace StutterFix
         public static void UpdatePrefix()
         {
 #if DEV || AUTOTEST
+            if (DecoFreeze.SkipAnimation()) { LastFrameMs = 0; return; }
+#endif
+#if DEV || AUTOTEST
             if (FrameCompare.Paused) return;
 #endif
 #if DEV || AUTOTEST
