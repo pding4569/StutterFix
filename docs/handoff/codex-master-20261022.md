@@ -1,0 +1,47 @@
+# StutterFix 마스터 인계문서 (Claude 주간 사용량 소진 → Codex 가 이어서 진행) — 2026-10-22
+
+이 문서를 **가장 먼저** 읽어라. 한국어로 답하고 기록한다. 사용자는 PC 밖에 있을 수 있고(StarDesk 로 원격 확인), 자동 장치(autoloop·supervisor)가 빌드·게임 시험·커밋을 한다. **너(Codex)는 코드·문서만 수정**한다(게임 실행·설치·커밋·푸시 금지, `.codex/config.toml` 수정 금지).
+
+## 0. 프로젝트와 사용자 선호
+- StutterFix: 얼불춤(A Dance of Fire and Ice, Unity 6000.3 Mono, UMM, HarmonyLib) 모드. 목표 1순위 = **플레이 중 순간 끊김 제거**, 2순위 평균 FPS. 지금 집중 과제 = Arche 맵 곡 258~278초(활성 이미지 장식 약 2,000개)에서 프레임 8.0~8.4ms(124 FPS)를 줄이는 것(장식 몫 약 5.7ms).
+- 규칙: 화면에 영향 주는 변경은 원본과 동일하거나(픽셀 차이 0) 사용자가 승인한 허용 오차 안이어야 한다. 정식 릴리스·main/태그는 사용자가 "올려"라고 하기 전엔 금지. 맵 이름은 "Arche", "HELLO" 등 일반 시험 맵만 쓰고 **헤르츠 시험 맵 이름은 어디에도 쓰지 말고(문서·로그·커밋 모두) 약 100만 타일 맵은 절대 열지 마라.** 사용자의 개인 1000FPS 프로젝트는 언급 금지. 다른 모드 코드를 복사하지 말 것.
+- 사용자가 자는 동안 모니터가 꺼져 게임이 2560×1440 120Hz 가 된다(같은 게임 안 끔/켬 비교만 판정에 쓴다, 3440×1440 165Hz 수치와 섞지 말 것).
+
+## 1. 환경 지도
+- 실제 개발 트리: `E:\StutterFixWork\StutterFix`(브랜치 `codex/optimization-36`, 작업 브랜치에만 커밋, 명시한 파일만 add). 게임: `D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice`(모드 설치 `Mods\StutterFix\`). 로그 `%USERPROFILE%\AppData\LocalLow\7th Beat Games\A Dance of Fire and Ice\Player.log`.
+- 워크트리/브랜치(모두 푸시됨): `wt-gpu`(codex/night-gpu: **지금의 주 작업장**, livedeco(ld2a)+bake 병합 위에 gpudeco), `wt-ld2a`·`wt-ld2b`(livedeco gate 2 A/B 보존), `wt-freeze`(codex/night-freeze: decofreeze·decoparent·decovis 진단), `wt-bake`(DecoBake), `wt-framecmp`(framecmp 도구), `wt-archegpu`, `wt-tilerange`, `wt-tilebake`.
+- 자동 장치(`E:\StutterFixWork`): `autoloop.py <워크트리> <이름> <첫 지시서> <steps 생성기> <성공정규식> [최대회전] --keys X --effort high`(Codex 수정→빌드 3종→게임 시험→증거·장부 커밋·푸시→다음 지시서), `supervisor_gg.py`(루프 재시작·단계 전환 gg→gh·사용량 대기), `gamelock.py`(게임 시험 하나만 동시에), `run_json.py`(steps JSON 실행 후 일반 Player DLL 복원), `nogame.flag`(있으면 게임 시험 대기), `autoloop.stop`(모두 중단). 증거는 `night-results/`, 장부는 각 워크트리 `docs/handoff/<이름>-autoloop-ledger.md`.
+- Unity 에디터(독립 랩·번들): **`unity run` 은 exit 198 로 실패한다. 직접 실행**: `E:\Unity\Editor\6000.3.10f1\Editor\Unity.exe -batchmode -projectPath <절대경로> -executeMethod <클래스.메서드> -logFile <로그>`(GPU 컴퓨트 시험은 `-nographics` 를 빼고 `-force-d3d11`). 게임은 6000.3.21f1, **더 낮은 .10f1 로 만든 번들만 읽힌다.** 로그인 불필요(`unity auth login` 은 키링 오류로 실패, 하지 말 것).
+- 게임 디컴파일(읽기 전용, 근사): `E:\StutterFixWork\decompiled\Assembly-CSharp\<타입>.cs`, `SkyHook.Unity`. 호출 관계 확정은 `tools/ilscan`. 엔진 내부는 PerfView+유니티 심볼(`C:\Users\Public\StutterFixTrace`, 관리자 에이전트 `agent.ps1` 는 사용자가 켜야 함).
+- 시험 명령(AutoTest, 개발/PlayerAuto 빌드 전용): `open`/`game`/`press`/`seek`/`waitsongpos`/`fuse begin|end`/`framecmp`/`gpudeco …`/`decofreeze …`/`decoparent …`/`decobake …`. 명령별 기본 제한 180초(`timeout N` 으로 올림, 긴 대기는 `wait 60` 여러 번).
+
+## 2. 측정으로 확정된 사실 (다시 추측하지 말 것)
+- Arche 262→276초: 원본 8.0~8.4ms. 장식 정지 사본 2.27ms, 장식 0개 1.82ms. 활성 장식 몫 ≈5.7ms = 모드 DecoAnim 1.9ms(그중 설정 함수 ≈70%) + 관리자 LateUpdate 1.2ms + **엔진이 움직이는 Transform 을 처리하는 비용 ≈2.5~3.3ms**(`decofreeze`: 설정·UpdatePosition 전부 건너뛰면 −3.3ms; 단 freeze 후크는 TightLate 를 꺼서 기준선이 실제보다 ≈0.6ms 느림).
+- SetPosition 호출 프레임당 ≈1,755, 회전 68, 크기 22(회전·크기는 `MoveApply.DeferTransform` 으로 이미 미룸). 호출 자체는 0.09µs 로 쌈 → 쓰기 압축은 이득 없음(PosFast +0.2%, SkipSame 작음).
+- 깨어 있는 장식 1,840~2,520개 중 85~95%가 화면에 보임 → 화면 밖 쓰기 미루기 ≤0.4ms.
+- 장식 28,835개를 한 부모에서 떼기(`decoparent root`): 끔 8.53→8.18ms (**+4%**, 픽셀 동일) — 작은 확실한 이득, 미적용(TightLate 부모 가정·에디터 계층·ClearDecorations 호환 필요).
+- 정렬 규칙: 같은 (sortingLayer, sortingOrder, 큐, 카메라 거리) 안에서 재질 인스턴스 ID 부호 있는 오름차순이 뒤→앞. `rendererPriority` 무효. 한 MeshRenderer 의 sortingOrder/z 는 렌더러 하나에 하나뿐(서브메시 간 재정렬 위험: 서브메시 재질 인스턴스 ID 가 엄격한 오름차순이어야 하고, `bounds.center.z` 는 구간 첫 멤버 월드 z 와 같아야 하며, 서로 다른 sortingOrder/z 는 렌더러를 나눠야 함 — 실제 맵에서 확인 필요).
+- 키씹(입력 누락): 0.5ms 타이머에서 훅→게임 누락 0(`InputProbe`, `tools/keydrop`). 이 PC 는 관리자 ISLC 가 시스템 타이머를 0.4959ms 로 쥐고 있어 모드 타이머 켬/끔 비교는 못 했다.
+
+## 3. 이미 실패한 접근 (재시도 금지)
+1. livedeco gate 2: CPU 가 정점을 만드는 구간 메시(A: 아틀라스 없음, B: 아틀라스) → 켬 52~56 FPS(끔 124), 정점 2.5ms+업로드 0.9ms+변경 감지 4~6ms, 픽셀 43만 개 다름. B 는 아틀라스 512MiB 에 25종만 들어감. (`wt-ld2a`, `wt-ld2b`)
+2. 장식 이동을 CPU 구운 표로 구동(adopt): 이득 0. 타일 굽기/T3: 0. TightLate 쓰기 압축·SetPosition 미루기·같은 값 건너뛰기: ≤+3%.
+3. 곡 시각 전역 표 평가로 GPU 정점: G0 위치 오차 최대 81.5px(전역 시계 보정으로도 14.5px) → 시간 의미 문제(효과마다 시작 프레임·`Pos += dt` 누적이 달라 위상이 어긋남).
+
+## 4. 지금 진행 중인 설계 (gpudeco, `wt-gpu`) — 이어서 할 것
+- 구조: 맵 열 때 bake 표(`DecoBake`)를 GPU 버퍼로, 컴퓨트 셰이더가 소유 장식의 위치·회전·크기·색을 평가해 **메시 Raw 정점 버퍼에 직접 쓰고 게임의 `Sprites/Tile` 셰이더로 그린다**(색 Float32×4, `_RendererColor`=white, `_Flip`=(1,1,1,1) 이미 반영). 소유 SpriteRenderer 는 `forceRenderingOff`, Transform 은 안 건드림. 구간 = 정렬 경계(비소유 렌더러가 끼는 곳) 기준 렌더러 약 71~110개 + 텍스처별 서브메시(약 1,200~1,800). 소유 판정은 `Dormancy` 이벤트(스캔·쓰기 훅 금지). 랩(독립 Unity 프로젝트 `tools/gpudeco-lab`)에서 번들(컴퓨트 포함) 생성·재로드, 80렌더러×15서브메시 제출 0.152ms, 합성 픽셀 차이 0 확인.
+- **시간 의미 해결 방향:** 곡 시각 이진 탐색 대신 **효과(소스)별 실제 진행값**을 쓴다(bake-9 "트리거 앵커 시계"). 권장(Gemini 검토): CPU 가 활성 소스(수십~수백 개)별로 원본과 똑같이 `e = ease(progress/duration)` 를 double 로 계산해 `float sourceE[]` 를 프레임당 한 번 `SetData`, GPU 는 `start + change*e` 만 계산(이징 HLSL 불필요). 채널의 활성 구간·`sourceId` 는 효과 시작·종료 때만 갱신(변경분 업로드). Linear 나눗셈·`mad` 문제는 이미 해결(double 잔차 보정; CPU/GPU 65,537 표본 불일치 0).
+- 현황(2026-10-22 새벽): **G0 통과**(262·270초 실제 값 대비 GPU 차이 0, `source=paused_gpu_snapshot`), **G1 아슬아슬 실패**(270초 다른 픽셀 893개=0.024%·최대 5/255; 262초 3,768개 0.10%·최대 9/255; 임시 기준: 최대 ≤3/255 이고 ≤0.3%), **G2(재생 중 FPS)·소스별 진행값 연결·안정성 전부 미측정**(지금까지는 `scope=paused_G1_only` 진단). 소유율 262초 81%·270초 83%(거절: bake 미지원 17%, repeat-tile). 276초는 장식이 거의 없어(awake=24) 보조 지표.
+- 증거·문서: `docs/handoff/codex-gpudeco-1.md`·`codex-gpudeco-2.md`(G2 지시서), `codex-gpudeco-1-result.md`, `codex-gpudeco-lab-result.md`, `gg-autoloop-ledger.md`, `tools/gpudeco-lab/evidence`, 최신 `night-results/al-gg-*.txt`.
+
+## 5. 작업 순서 (Codex)
+1. **G1 마무리**: 남은 픽셀 차이(최대 5~9/255, 32×32 구역 몇 군데)를 구역별로(장식 ID·텍스처·알파·z·블렌드·정렬) 추적. 후보: 서브메시 정렬/`bounds.center.z`, 정점 색 UNorm8 대 Float32, 비소유와의 경계. 통과 기준은 사용자가 정한다(임시 기준 유지, 결과 수치 보고).
+2. **G2**: 소스별 진행값 앵커링을 재생 중 프레임 루프에 연결(위 4번), 켜기 준비는 재생 시작 전에, 프레임당 CPU ≤0.5ms, 끔·켬·켬·끔 FPS ≥ +25%(155 이상)·곡 중 새 끊김 0·안정성(곡 끝·다시 하기·맵 다시 열기·Unload·모드 다시 불러오기, 누수 0). 지시서 `docs/handoff/codex-gpudeco-2.md`.
+3. (선택) 엔진 프로파일: 사용자가 `agent.ps1` 을 관리자로 켜 두면 PerfView 로 262→276초를 함수 단위 샘플링해 장식 판 vs 정지 판 차이를 엔진 함수로 귀속(`tools/etwstall`). 엔진 비용이 Transform 처리가 아니면 설계가 바뀐다.
+4. (선택, 작은 이득) 장식 부모 분리 +4% 안전 적용 설계(TightLate 부모 가정, 에디터 계층, ClearDecorations).
+5. 2.8.2 준비는 사용자가 "올려" 할 때만: 타이머 0.5ms 기본 켬(7a257a5), 히트음 수정 등. 문구·ZIP 은 `docs/ROADMAP-EXTREME-20261021.md`, `tools/ReleaseCheck` 참고. 지금은 릴리스 금지.
+
+## 6. 운영
+- 사용량: Codex 주간 한도는 10/27 15:43 초기화. 크레딧이 들어오면 `credit-reserve.txt`(기본 100) 아래로 잔액이 내려가기 전까지만 진행하고 멈춘다(`autoloop.py`·`supervisor_gg.py` 가 잔액을 읽음). 회차마다 크레딧 소모량을 로그한다.
+- 증거 없이 "통과"라고 쓰지 마라. 모든 판단은 로그 수치로, 같은 시험을 코드 변경 없이 되풀이 요청하지 마라, 설계 한계가 수치로 확인되면 문서에 쓰고 멈춰라. 결과 문서·`-o` 10줄 요약·장부 갱신은 각 지시서의 규칙대로.
+- 사용자에게 물어볼 것(결정 대기): G1 최종 허용 기준, 부모 분리 +4% 적용 여부, 2.8.2 릴리스 시점.
