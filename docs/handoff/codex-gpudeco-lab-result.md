@@ -1,4 +1,29 @@
-# gpudeco 독립 랩 최신 결과 — codex-al-gg-7 (2026-10-22)
+# gpudeco 독립 랩 최신 결과 — round9 (2026-10-22)
+
+**Unity6000.3.10f1 직접/D3D11/RTX4060Ti·AssetBundle 경로 유지. 최신 run1의 보간 오차를 수정했고 게임 실행 없이 두 파일의 G0를 검증했다.** 세부 원인·전후 수치·한계는 [주 결과](codex-gpudeco-1-result.md)에 있다.
+
+|검사|결과|
+|---|---|
+|최신262초 소유/awake|1680/2081·80.7304%, 정점최대0.00401119562px·평균0.00000596904px·초과0|
+|최신270초 소유/awake|1873/2270·82.5110%, 정점최대0.49890726805→0.00779542606px·평균0.00027365150→0.00000728350px·초과4→0|
+|최신RGBA 최대/초과|1.86264515e-9/0·3.72529030e-9/0|
+|선형65,537표본|기존GPU 나눗셈19,567불일치·수정0, 큰 끝값 보간CPU/GPU92842.6171875 일치|
+|이전run6 완전한3시점 회귀|정점최대0.00817265734/0.00779688125/0px·초과0/0/0, G0_OFFLINE PASS|
+|56,364B 새번들 재로드|이징101,475초과0·회전8,200각도·색36조건/6격자 통과, 실제두파일 색바이트 불일치0|
+|3종Release/LoadCheck|오류0/0/0·277/229/277불일치0·일반Player제외|
+|랩C#/SM5/기존fixture|C#오류/경고0·5커널·데이터51/bake/live/DecoSim12/framecmp/ld2a/steps 통과|
+
+[초기 실제 입력 진단](../../tools/gpudeco-lab/evidence/round9-residual.txt) → [나눗셈만 바꾼 실패](../../tools/gpudeco-lab/evidence/round9-division-only-fail.txt) → [보간까지 수정](../../tools/gpudeco-lab/evidence/round9-mad.txt) → [새번들 자체의 실제G0](../../tools/gpudeco-lab/evidence/round9-bundle-snapshots.txt)와 [이전3시점 회귀](../../tools/gpudeco-lab/evidence/round9-verify.txt)를 구분했다. 최신276초는 파일이 없어 측정하지 않았고, 이전 입력을 그 자리에 넣지 않았다. `Residual`의 일부 파일 대조는 전체 게이트를 판정하지 않는다.
+
+새 랩 명령은 `GpuDecoLab.Precision`(선형·보간·실제 일부 파일·이징·회전)과 `GpuDecoLab.BundleSnapshots`(만들어진 번들을 재로드해 실제 일부 파일 대조)다. 기존 직접 에디터 명령의 `-executeMethod`에 넣고 `-gpudecoInput <폴더>`를 전달한다. 초기IPC1/entitlement198·오래된 초기verify복사 제외·fixture경로오기 모두 기록했고 로그인/강제종료는 없다. 새 [93단계JSON](../../tools/gpudeco-lab/evidence/round9-g1-steps.json)은 생성만 했다.
+
+게임 G1은 **미측정**이다. 기존262초 3768픽셀/최대9/255는 여전히 수정 전 실패 증거다. 실시간 소유/Transform쓰기제거/1회준비·G2/GPUtimestamp는 미구현 또는 미측정이다. 게임·설치·커밋·푸시·config변경0회.
+
+`GPUDECO_G1=ERROR G0_LATEST_PARTIAL=PASS snapshots=2/3 game_pixels=UNMEASURED reason=post_fix_runtime_pixels_required`
+
+---
+
+# 이전 gpudeco 독립 랩 결과 — codex-al-gg-7 (2026-10-22)
 
 **그리기 색의 네이티브 UNorm8 변환을 확인하고 GPU 복사에 적용했다.** Unity6000.3.10f1 / RTX4060Ti / D3D11, 최종 색·번들·실제 G0 모두 exit0. [구현·전후 수치·한계](codex-gpudeco-1-result.md), [색 검사](../../tools/gpudeco-lab/evidence/round8-colors-final-guard.txt), [번들 재로드](../../tools/gpudeco-lab/evidence/round8-bundle.txt), [G0 채널/위상 로그](../../tools/gpudeco-lab/evidence/round8-verify.txt)를 본다.
 

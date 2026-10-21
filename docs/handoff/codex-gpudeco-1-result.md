@@ -1,4 +1,49 @@
-# gpudeco 최신 결과 — codex-al-gg-7 (2026-10-22)
+# gpudeco 최신 결과 — codex-al-gg-2 후속, round9 (2026-10-22)
+
+**Unity 6000.3.10f1 직접 실행·D3D11 AssetBundle 경로를 유지했다. 최신 run1의 270초 G0 실패를 보간 산술에서 재현하고 수정했다. 새 번들 재로드로 최신 두 export의 G0를 확인했으며, 수정 후 게임 G1은 미측정이다.** 게임 실행·설치·커밋·푸시·config 변경은 하지 않았다.
+
+## 최신 증거와 원인
+
+장부 최신 항목은 gg-7이지만 전달된 `gg-autoloop-run1-evidence.txt`가 run6보다 나중에 갱신됐다. run1 첫 export는 **183571.3017ms**, bake는 **514.6238ms**다. 262초 G1은 **3768/3686400픽셀(약 0.1022%)·최대9/255**, A/A2=0이었다. 픽셀 개수 조건은 충족하지만 최대 채널 차이 조건은 실패다. 이어 270초 G0가 최대 **0.498907268047px·4정점 초과**로 중단돼 276초 export는 없다. 두 파일을 세 시점 전체 통과로 대체하지 않았다.
+
+[원인 진단](../../tools/gpudeco-lab/evidence/round9-residual.txt)은 장식 index=391의 위치 Y 하나를 지목했다. 시작240693.0625, 목표−239306.9375, duration0.225000008941, 실제 progress0.0693048983812에서 CPU/실제 값은 **92842.6171875**, 기존 GPU는 **92842.625**다. 회전·정점 식 자체는 같은 GPU 필드를 주면 최대0.007795426px로 허용 안이다. 따라서 회전 근사나 전역 시계 보정을 반복하지 않았다. 원본 `scrDecoration.SetRotation/SetScale/UpdatePosition` 디컴파일과 [설치 DLL IL](../../tools/gpudeco-lab/evidence/round9-decoration-il.txt), DOTween 호출은 [IL](../../tools/gpudeco-lab/evidence/round9-ease-il.txt)로 확인했다.
+
+첫 가설인 선형 나눗셈 보정만으로는 큰 끝값 보간이 **그대로 실패**했다([중간 실패](../../tools/gpudeco-lab/evidence/round9-division-only-fail.txt)). 최종 변경은 다음 두 가지다.
+
+- Linear의 SM5 근사 나눗셈을 double 잔차 보정 뒤 float로 반올림한다. 65,537개 표본에서 원래 GPU 나눗셈은 CPU와 **19,567개 불일치**, 수정 경로는 **0개**다. 이 표본은 duration 1e-4~100과 실제 실패 입력을 포함하며 모든 실수 입력의 증명은 아니다.
+- `start + change × ease`에서 강제 분리했던 float 중간 곱을 `mad`로 바꿨다. 이 PC의 CPU 런타임 표현식과 같은 한 번 반올림 결과를 얻는다. 같은 실패 입력의 CPU/GPU가 모두 **92842.6171875**다. 다른 GPU/런타임의 산술과 비용은 미검증이다.
+
+정답 Actual/World를 GPU 입력에 넣거나 원본 값을 수정하지 않았다. 소유 집합·시간·판정 기준·정렬·색 UNorm8 변환은 유지했다. `Residual`은 게임 중단으로 남은 일부 파일을 진단하는 새 랩 명령이며 `snapshots=2 full_gate=NOT_EVALUATED`를 출력한다. 한 스냅샷이라도 G0 실패하면 exit1이다.
+
+## 수정 후 실제 export 대조
+
+새 **56,364B** 번들을 생성·재로드했고, **그 번들의 ComputeShader**로 최신 두 원본 export를 평가했다([번들 수치](../../tools/gpudeco-lab/evidence/round9-bundle-snapshots.txt)).
+
+|시점|소유/awake|수정 전 정점 최대/평균px·초과|수정 후 정점 최대/평균px·초과|수정 후 RGBA 최대/평균·초과|
+|---|---|---|---|---|
+|262|1680/2081 (80.7304%)|0.00401119562 /0.00000596904·0|0.00401119562 /0.00000596904·0|1.86264515e-9 /8.15080490e-12·0|
+|270|1873/2270 (82.5110%)|0.49890726805 /0.00027365150·4|0.00779542606 /0.00000728350·0|3.72529030e-9 /3.91238108e-11·0|
+
+전체 16채널의 최대·평균·화면 환산·국소위상은 같은 로그에 있다. 빠른 소스1568/1568·1771/1771이 실제 평균프레임9.216351/11.049486ms 안이다. 실제 시작위상 전체 이력은 미측정이다. 276초는 이번 시험에서 수집되지 않았으며 이전 파일로 채우지 않았다.
+
+별도로 **이전 run6의 완전한 세 파일**을 새 셰이더로 회귀 대조했다([로그](../../tools/gpudeco-lab/evidence/round9-verify.txt)). 262/270/276초 정점 최대 **0.00817265734/0.00779688125/0px**, 초과0/0/0, `GPUDECO_G0_OFFLINE=PASS measured=3/3 primary=2/2 auxiliary=PASS`다. 이는 이전 입력의 회귀 결과이며 최신 run1의 누락 시점을 측정했다는 뜻이 아니다. 전역 시계201후보·1,000메시 성능 시험은 반복하지 않았다.
+
+## 검증과 준비물
+
+- [번들 재로드](../../tools/gpudeco-lab/evidence/round9-bundle.txt): 이징101,475개 초과0, 선형65,537개 불일치0, 회전8,200각도 및 대형 경계 사례 통과. 색36조건·중간값6격자 모두0픽셀. 실제 두 파일의 그리기 색26,880/29,968성분 바이트 불일치0이다. 합성 셰이더는 Sprites/Default다.
+- Release Dev/Player/PlayerAuto 오류 **0/0/0**(이번 증분 로그 경고4/4/4). LoadCheck **277/229/277곳 불일치0**, 일반Player 제외 확인. 랩 C# 오류/경고0, SM5 5커널 통과.
+- 데이터51·bake/live·DecoSim12·framecmp·ld2a 정책/geometry/delta·steps 검사 통과. framecmp 경로 오기의 exit2는 보존하고 실제 `check-framecmp-steps.py`의 24검사 통과로 정정했다.
+- [새93단계 JSON](../../tools/gpudeco-lab/evidence/round9-g1-steps.json)을 생성만 했다. 새 고유 export 폴더·새 번들, timeout420·wait60·첫 export300초 예산·전체화면 A/B/A2·262/270 주/276 보조·원래 픽셀 임계값을 유지한다.
+
+최초 샌드박스 실행은 UPM IPC exit1, 직후 실행은 기존 라이선스 클라이언트 entitlement exit198이었다. 클라이언트 자연 종료 후 직접 실행은 성공했다. 로그인·라이선스 변경·강제 종료는 없다. 초기 wrapper가 IPC 실패 뒤 예전 verify.txt를 복사한 파일은 **STALE EXCLUDED**로 명시하고 근거에서 제외했다. [근거·해시 장부](../../tools/gpudeco-lab/evidence/round9-manifest.json)에 구분했다.
+
+**최신 두 시점 G0 실패는 해결됐지만, 기존 262초의 최대9/255 픽셀 차이가 이번 변경으로 해결됐는지는 미측정이다.** 게임 G1 PASS·G2·GPU timestamp·실시간 소유/원본 평가 및 Transform 쓰기 생략·재생전1회 준비는 완료로 선언하지 않는다. 이번 변경은 정지 G1 진단의 보간 정확성을 고친 범위다.
+
+`GPUDECO_G1=ERROR G0_LATEST_PARTIAL=PASS snapshots=2/3 game_pixels=UNMEASURED reason=post_fix_runtime_pixels_required prior_run1=G0_FAIL`
+
+---
+
+# 이전 gpudeco 결과 — codex-al-gg-7 (2026-10-22)
 
 **기존 Unity 6000.3.10f1/D3D11 AssetBundle 경로를 유지했다. 정지 G1의 그리기 색을 네이티브 SpriteRenderer와 같은 8비트 변환으로 수정했다. 독립 랩은 통과했으며 수정 후 게임 G1은 미측정이다.** 새 번들은 55,748B이며 생성·재로드·실제 GPU 실행을 확인했다. 게임 실행·설치·커밋·푸시·config 수정은 0회다.
 

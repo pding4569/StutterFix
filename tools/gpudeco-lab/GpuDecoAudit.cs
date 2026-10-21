@@ -11,6 +11,29 @@ public static partial class GpuDecoLab
     // Read-only attribution on the exported game truth. Diagnostic clock fits
     // below are oracles, never corrections to the export or acceptance gates.
     public static void Audit() => Run(AuditBody, "real-audit");
+    // A game gate can stop before exporting snapshot three. Diagnose those
+    // files without relabeling a partial run as the complete three-point gate.
+    public static void Residual() => Run(() => ResidualBody(Shader()), "residual");
+    static void ResidualBody(ComputeShader shader) {
+        var args=Environment.GetCommandLineArgs(); int at=Array.IndexOf(args,"-gpudecoInput");
+        Require(at>=0 && at+1<args.Length,"-gpudecoInput required");
+        var files=Directory.GetFiles(args[at+1],"*.gpudeco").OrderBy(x=>x).ToArray();
+        Require(files.Length>0,"no residual snapshots");
+        bool pass=true;
+        foreach(var file in files) {
+            GpuDecoData data; using(var stream=File.OpenRead(file)) data=GpuDecoData.Read(stream);
+            Require(data.Schema==2,"residual requires actual source clocks");
+            Log("[gpudeco-residual] file="+Path.GetFileName(file)+" owned="+data.Items.Length+" awake="+data.Awake);
+            using(var gpu=new Evaluation(shader,data)) {
+                var result=gpu.Dispatch(data.BakeTime,true);
+                bool sample=Compare(data,result.values,result.vertices,true); pass &= sample;
+                Log("[gpudeco-residual] snapshot_G0="+(sample?"PASS":"FAIL"));
+                DiagnoseResidual(data,result.values,result.vertices);
+            }
+        }
+        Log("GPUDECO_RESIDUAL=MEASURED snapshots="+files.Length+" full_gate=NOT_EVALUATED game_pixels=UNMEASURED");
+        Require(pass,"residual snapshot G0 failed");
+    }
     static void AuditBody()
     {
         string[] args = Environment.GetCommandLineArgs(); int at = Array.IndexOf(args, "-gpudecoInput");

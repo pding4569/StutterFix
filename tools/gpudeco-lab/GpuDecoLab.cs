@@ -47,6 +47,49 @@ public static partial class GpuDecoLab
     public static void Verify() => Run(VerifyBody, "verify");
     public static void Anchors() => Run(AnchorsBody, "anchors");
     public static void Rotations() => Run(() => ProbeRotation(Shader()), "rotations");
+    public static void Precision() => Run(() => { ProbeLinear(Shader()); ResidualBody(Shader()); Probe(Shader()); ProbeRotation(Shader()); }, "precision");
+    public static void BundleSnapshots() => Run(() => {
+        var bundle=AssetBundle.LoadFromFile(Path.Combine(Evidence,"bundle/stutterfix_gpudeco"));
+        Require(bundle,"bundle reload failed");
+        try { ResidualBody(bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute")); }
+        finally { bundle.Unload(true); }
+    }, "bundle-snapshots");
+    static void ProbeLinear(ComputeShader shader)
+    {
+        const int count=65537; var random=new System.Random(391);
+        var inputs=new Vector4[count]; var expected=new float[count];
+        for(int i=0;i<count-1;i++) {
+            float duration=(float)Math.Pow(10,random.NextDouble()*6-4);
+            float time=(float)(duration*random.NextDouble());
+            inputs[i]=new Vector4(time,duration,1.70158f,0); expected[i]=time/duration;
+        }
+        inputs[count-1]=new Vector4(.0693048983812f,.225000008941f,1.70158f,0);
+        expected[count-1]=inputs[count-1].x/inputs[count-1].y;
+        int kernel=shader.FindKernel("EaseProbe");
+        using(var input=new ComputeBuffer(count,16)) using(var ids=new ComputeBuffer(count,4)) using(var output=new ComputeBuffer(count,4)) {
+            input.SetData(inputs); ids.SetData(Enumerable.Repeat(1u,count).ToArray());
+            shader.SetBuffer(kernel,"_Probe",input); shader.SetBuffer(kernel,"_ProbeIds",ids); shader.SetBuffer(kernel,"_ProbeOut",output); shader.SetInt("_Count",count);
+            shader.Dispatch(kernel,(count+63)/64,1,1); var actual=new float[count]; output.GetData(actual);
+            int mismatches=Enumerable.Range(0,count).Count(i=>actual[i]!=expected[i]);
+            Log("[gpudeco-lab] linear_division samples="+count+" mismatches="+mismatches+" duration_range=1e-4..100 cpu=float_division");
+            Require(mismatches==0,"linear division rounding");
+            int native=shader.FindKernel("LinearProbe");
+            shader.SetBuffer(native,"_Probe",input); shader.SetBuffer(native,"_ProbeOut",output);
+            shader.Dispatch(native,(count+63)/64,1,1); output.GetData(actual);
+            Log("[gpudeco-lab] native_linear_division mismatches="+Enumerable.Range(0,count).Count(i=>actual[i]!=expected[i])+" samples="+count+" negative_control=True");
+        }
+        // The failing input must also preserve cancellation of large endpoints.
+        var data=Synthetic(1); var d=data.Items[0]; d.Flags=0;
+        for(int ch=0;ch<16;ch++) {d.Tracks[ch]=Array.Empty<DecoBakeCore.Segment>(); d.Anchors[ch]=default;}
+        d.Initial[1]=240693.0625f; d.Actual=(float[])d.Initial.Clone();
+        data.Sources=new[]{new GpuDecoData.SourceClock{Progress=inputs[count-1].x}};
+        d.Anchors[1]=new GpuDecoData.Anchor{Valid=true,Clock=0,Segment=new DecoBakeCore.Segment{Duration=inputs[count-1].y,Start=240693.0625f,Target=-239306.9375f,End=-239306.9375f,Ease=1}};
+        using(var gpu=new Evaluation(shader,data)) {
+            var result=gpu.Dispatch(data.BakeTime,true); float reference=240693.0625f+(-480000f)*expected[count-1];
+            Log("[gpudeco-lab] linear_cancellation cpu="+N(reference)+" gpu="+N(result.values[1]));
+            Require(result.values[1]==reference,"linear cancellation regression");
+        }
+    }
     public static void Bundle() => Run(BundleBody, "bundle");
     public static void Runs() => Run(RunsBody, "runs");
     static ComputeShader Shader() => AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/Shaders/GpuDeco.compute");
@@ -315,7 +358,7 @@ public static partial class GpuDecoLab
         var manifest=BuildPipeline.BuildAssetBundles(output,new[]{new AssetBundleBuild{assetBundleName="stutterfix_gpudeco",assetNames=new[]{"Assets/Shaders/GpuDeco.compute"}}},BuildAssetBundleOptions.ChunkBasedCompression|BuildAssetBundleOptions.ForceRebuildAssetBundle,BuildTarget.StandaloneWindows64);
         Require(manifest,"bundle build failed");
         var bundle=AssetBundle.LoadFromFile(Path.Combine(output,"stutterfix_gpudeco")); Require(bundle,"bundle load failed");
-        try { var shader=bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute"); Probe(shader); ProbeRotation(shader); ColorBody(shader); } finally { bundle.Unload(true); }
+        try { var shader=bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute"); Probe(shader); ProbeLinear(shader); ProbeRotation(shader); ColorBody(shader); } finally { bundle.Unload(true); }
         Log("GPUDECO_BUNDLE=PASS editor="+Application.unityVersion+" path="+output);
     }
     static void RunsBody()

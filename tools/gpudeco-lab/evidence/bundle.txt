@@ -1,7 +1,7 @@
 [gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
-[gpudeco-lab] ease samples=101475 max=1.97160989046E-06 mean=2.09635552387E-08 over_2e-5=0 supported=0..31,36 fallback=Flash,custom
+[gpudeco-lab] ease samples=101475 max=1.97160989046E-06 mean=2.08021770442E-08 over_2e-5=0 supported=0..31,36 fallback=Flash,custom
 [gpudeco-lab] ease_id=0 max=5.96046447754E-08 mean=6.56949643924E-09 over_2e-5=0 worst_input=(0.971972644, 3.70000005, 1.70158005, 0) cpu=0.456381797791 gpu=0.456381738186
-[gpudeco-lab] ease_id=1 max=5.96046447754E-08 mean=5.32548041727E-09 over_2e-5=0 worst_input=(1.94394529, 3.70000005, 1.70158005, 0) cpu=0.525390625 gpu=0.525390565395
+[gpudeco-lab] ease_id=1 max=0 mean=0 over_2e-5=0 worst_input=(0, 0.125, 0.300000012, 0) cpu=0 gpu=0
 [gpudeco-lab] ease_id=2 max=2.98023223877E-07 mean=6.03412224994E-08 over_2e-5=0 worst_input=(0.0729980469, 0.125, 0.300000012, 0) cpu=0.392050206661 gpu=0.392050504684
 [gpudeco-lab] ease_id=3 max=3.27825546265E-07 mean=1.0074551664E-07 over_2e-5=0 worst_input=(0.00524902344, 0.125, 0.300000012, 0) cpu=0.0659133568406 gpu=0.0659130290151
 [gpudeco-lab] ease_id=4 max=2.38418579102E-07 mean=4.76740240082E-08 over_2e-5=0 worst_input=(0.0759277344, 0.125, 0.300000012, 0) cpu=0.665553212166 gpu=0.665552973747
@@ -33,6 +33,9 @@
 [gpudeco-lab] ease_id=30 max=1.78813934326E-07 mean=9.27166316925E-09 over_2e-5=0 worst_input=(1.20322263, 3.70000005, 1.70158005, 0) cpu=0.799749433994 gpu=0.79974925518
 [gpudeco-lab] ease_id=31 max=1.19209289551E-07 mean=3.39213425551E-09 over_2e-5=0 worst_input=(3.10742188, 3.70000005, 1.70158005, 0) cpu=0.943132400513 gpu=0.943132281303
 [gpudeco-lab] ease_id=36 max=0 mean=0 over_2e-5=0 worst_input=(0, 0.125, 0.300000012, 0) cpu=1 gpu=1
+[gpudeco-lab] linear_division samples=65537 mismatches=0 duration_range=1e-4..100 cpu=float_division
+[gpudeco-lab] native_linear_division mismatches=19567 samples=65537 negative_control=True
+[gpudeco-lab] linear_cancellation cpu=92842.6171875 gpu=92842.6171875
 [gpudeco-lab] rotation_endpoint angle=90 cpu_q=(0, 0, 0.707106829, 0.707106829) gpu_qz_qw_sn_cs=(0.707106829, 0.707106829, 1.00000012, -1.1920929E-07)
 [gpudeco-lab] rotation_endpoint angle=180 cpu_q=(0, 0, 1, -4.37113883E-08) gpu_qz_qw_sn_cs=(1, -4.37113883E-08, -8.74227766E-08, -1)
 [gpudeco-lab] rotation_endpoint angle=270 cpu_q=(0, 0, 0.707106829, -0.707106829) gpu_qz_qw_sn_cs=(0.707106829, -0.707106829, -1.00000012, -1.1920929E-07)
@@ -325,8 +328,7 @@ GPUDECO_ROTATION=PASS synthetic=True
 [gpudeco-lab] pixels fixture=native_color_midpoints_alpha_True_offset_-1.00000001169E-07 changed=0 max_channel=0 covered=3560 expected_equal=True shader=Sprites/Default game_shader=False
 [gpudeco-lab] pixels fixture=native_color_midpoints_alpha_True_offset_0 changed=0 max_channel=0 covered=3574 expected_equal=True shader=Sprites/Default game_shader=False
 [gpudeco-lab] pixels fixture=native_color_midpoints_alpha_True_offset_1.00000001169E-07 changed=0 max_channel=0 covered=3574 expected_equal=True shader=Sprites/Default game_shader=False
-[gpudeco-lab] real_draw_color export=262.gpudeco owned=1730 components=27680 max_normalized_error=5.96046447754E-08 byte_mismatches=0
-[gpudeco-lab] real_draw_color export=270.gpudeco owned=1773 components=28368 max_normalized_error=5.96046447754E-08 byte_mismatches=0
-[gpudeco-lab] real_draw_color export=276.gpudeco owned=17 components=272 max_normalized_error=5.96046447754E-08 byte_mismatches=0
+[gpudeco-lab] real_draw_color export=262.gpudeco owned=1680 components=26880 max_normalized_error=5.96046447754E-08 byte_mismatches=0
+[gpudeco-lab] real_draw_color export=270.gpudeco owned=1873 components=29968 max_normalized_error=5.96046447754E-08 byte_mismatches=0
 GPUDECO_LAB_COLOR=PASS equal_checks=36 midpoint_grids=6 float_negative_cases=14 shader=Sprites/Default game_G1=UNMEASURED
 GPUDECO_BUNDLE=PASS editor=6000.3.10f1 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\bundle

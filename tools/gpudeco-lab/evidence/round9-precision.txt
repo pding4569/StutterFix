@@ -1,0 +1,7 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco-lab] linear_division samples=65537 mismatches=0 duration_range=1e-4..100 cpu=float_division
+[gpudeco-lab] linear_cancellation cpu=92842.6171875 gpu=92842.625
+GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: linear cancellation regression
+  at GpuDecoLab.ProbeLinear (UnityEngine.ComputeShader shader) [0x003bb] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:80 
+  at GpuDecoLab+<>c.<Precision>b__28_0 () [0x00000] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:50 
+  at GpuDecoLab.Run (System.Action action, System.String name) [0x000a2] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:39 

@@ -1,4 +1,19 @@
-## codex-al-gg-7 — 2026-10-22 (최신, 정지 그리기 색의 네이티브 UNorm8 변환)
+## codex-al-gg-2 후속 — 2026-10-22 (최신, round9 보간 산술)
+
+- run1이run6보다최신이다. 첫export183571.3017ms·bake514.6238ms,262초3768픽셀/최대9·A/A2=0으로픽셀최대조건실패.270초G0최대0.498907268px·초과4에서중단,276export없음.
+- 독립랩에서장식index391위치Y의실제/CPU92842.6171875·GPU92842.625를재현.나눗셈보정만으로큰끝값보간은실패한근거를보존.최종Linear double잔차보정+보간mad로같은입력이일치.정답보정·소유/임계값변경0.
+- 선형65537표본:기존근사나눗셈19567불일치·수정0.새56364B번들생성/재로드·이징101475초과0·회전8200각도·색36조건/6격자통과.실제두파일draw색26880/29968성분바이트불일치0.
+- 새번들자체로최신262소유1680/2081·270소유1873/2270,정점최대/평균0.00401119562/0.00000596904px·0.00779542606/0.00000728350px·초과모두0.RGBA최대1.86264515e-9/3.72529030e-9·초과0.
+- 빠른소스1568/1568·1771/1771이평균프레임9.216351/11.049486ms안.시작전체이력미측정.최신2파일은전체게이트미판정,이전run6완전한3파일회귀는G0_OFFLINE PASS·정점최대0.00817265734/0.00779688125/0px·초과0.
+- 3종Release오류0/0/0(이번증분경고4/4/4)·LoadCheck277/229/277불일치0·일반Player제외.랩C#오류/경고0·SM5 5커널·데이터51/bake/live/DecoSim12/framecmp/ld2a/steps통과.
+- 초기UPM IPC1/entitlement198·framecmp경로오기exit2보존.초기wrapper의옛verify복사본은STALE EXCLUDED로정정.클라이언트자연종료뒤직접Editor성공·로그인/강제종료0.
+- 결과/랩결과/README/10줄/round9증거·manifest·새93단계JSON정리.게임실행·설치·커밋·푸시·config변경0.실시간소유/Transform쓰기생략/재생전1회준비·G2/GPUtimestamp미완료.
+- 수정후게임G1미측정.이전262초최대9/255의원인이모두해결됐다고단정하지않는다.전역시계201후보·1000메시성능반복0.
+- GPUDECO_G1=ERROR G0_LATEST_PARTIAL=PASS snapshots=2/3 game_pixels=UNMEASURED reason=post_fix_runtime_pixels_required prior_run1=G0_FAIL
+
+---
+
+## codex-al-gg-7 — 2026-10-22 (이전, 정지 그리기 색의 네이티브 UNorm8 변환)
 
 - run6은 G0 PASS이나262초418684픽셀/최대7·270초136779/최대5·276보조0/0, A/A2모두0으로 PIXEL_FAIL. 원본PNG 히스토그램·ApplyColor 디컴파일/실제DLL IL 교차확인을 round8에 보존했다.
 - 기존 SpriteRenderer 합성 대조는 정점색white라 비흰색 경로를 못 잡았다. 새 랩에서 Float32색18조건 중14조건 차이를 재현했다. 단순 Color32/HLSL round는 중간값에서 짝수 반올림으로 실패(로그 보존). 네이티브는 float 곱 후 half-up floor(c*255+.5)다.
@@ -250,3 +265,24 @@
   - [StutterFix] [gpudeco] prepare_ms=4574.180400 phase=export owned=1873 awake=2270 raw=270.01600896613672 tb=269.99983559093585 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-d9cfd5fbfec64e
   - [StutterFix] [gpudeco] GPUDECO_G1=G0_FAIL stage=paused-render reason=InvalidOperationException:gpudeco G1: G0_FAIL before renderer ownership
   - [StutterFix] [자동 시험] 단계 실패 'gpudeco on': gpudeco G1: G0_FAIL before renderer ownership
+
+## 회차 2
+- Codex 요약: 270초 보간 오류를 수정해 정점 최대 오차를 **0.4989→0.00780px**, 허용 초과를 **4→0개**로 줄였습니다.
+
+- 최신 두 시점 G0·새 번들 재로드·3종 빌드·LoadCheck·회귀 검사 통과.
+- 게임 실행·설치·커밋 없음.
+- 수정 후 게임 G1은 미측정이므로 전체 통과는 미선언입니다.
+
+[결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result.md) · [10줄 요약](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-gpudeco-1-result-o.txt)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export source_clock_capture=True
+  - [StutterFix] [gpudeco] prepare_ms=183902.212900 phase=first_export includes=open,bake,seek,export bake_wall_ms=507.663900
+  - [StutterFix] [gpudeco] prepare_ms=4691.539500 phase=export owned=1730 awake=2134 raw=262.01784002082422 tb=262.00886023814132 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-b87ceb35d55243
+  - [StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1730 awake=2134 runs=66 submeshes=1730 dispatches=67 prepare_ms=1432.001600 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=p
+  - [StutterFix] [gpudeco] prepare_ms=4672.821100 phase=export owned=1823 awake=2269 raw=270.01600896613672 tb=270.00543767655296 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-b87ceb35d55243
+  - [StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1823 awake=2269 runs=109 submeshes=1823 dispatches=110 prepare_ms=218.229600 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=
+  - [StutterFix] [gpudeco] prepare_ms=4443.114800 phase=export owned=17 awake=24 raw=276.005327813793 tb=276.00573587255229 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-b87ceb35d55243dc8981
+  - [StutterFix] [gpudeco] on=True scope=paused_G1_only owned=17 awake=24 runs=4 submeshes=17 dispatches=5 prepare_ms=136.137200 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_dia
+  - [StutterFix] [gpudeco] GPUDECO_G1=PIXEL_FAIL scope=paused_G1 exports=3 reason=PIXEL_FAIL live_animation=UNMEASURED G2=UNMEASURED

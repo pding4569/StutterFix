@@ -3,6 +3,7 @@
 #pragma kernel EaseProbe
 #pragma kernel CopyRun
 #pragma kernel RotationProbe
+#pragma kernel LinearProbe
 #pragma target 5.0
 
 struct Segment { float hi, lo, duration, start, end, target, over, period; uint ease, scale; };
@@ -51,7 +52,16 @@ precise float Ease(uint id, float t, float d, float amplitude, float period)
 {
     const float pi = 3.1415927410125732421875;
     precise float x=t/d, y;
-    if (id==1) return x;
+    if (id==1)
+    {
+        // SM5 float division is an approximate reciprocal multiply. One ULP
+        // in a linear phase is visible when subtracting large endpoints.
+        // Correct the quotient's residual with double arithmetic, then round
+        // once to float, as DOTween's CPU time/duration does. No truth input.
+        precise double residual=(double)t-(double)x*(double)d;
+        precise double corrected=(double)x+residual*(double)(1.0/d);
+        return (float)corrected;
+    }
     if (id==2) return 1-cos(x*(pi*.5));
     if (id==3) return sin(x*(pi*.5));
     if (id==4) return -.5*(cos(pi*t/d)-1);
@@ -144,8 +154,9 @@ float Value(uint slot)
         if(t>=s.duration) return s.end;
         if(t<=0) return s.start;
         precise float change=s.target-s.start;
-        precise float product=change*Ease(s.ease,t,s.duration,s.over,s.period);
-        return s.start+product;
+        // Match the CPU runtime's single-rounding start+change*ease expression.
+        // Forcing a separate float product changes large cancelling endpoints.
+        return mad(change,Ease(s.ease,t,s.duration,s.over,s.period),s.start);
     }
     Track h=_Tracks[slot]; uint lo=0, hi=h.count;
     while(lo<hi) { uint mid=lo+(hi-lo)/2; if(Delta(_Segments[h.first+mid])>=0) lo=mid+1; else hi=mid; }
@@ -156,8 +167,13 @@ float Value(uint slot)
     if(t>=s.duration) return s.end;
     if(t<=0) return s.start;
     precise float change=(s.scale!=0 ? s.target : s.end)-s.start;
-    precise float product=change*Ease(s.ease,t,s.duration,s.over,s.period);
-    return s.start+product;
+    return mad(change,Ease(s.ease,t,s.duration,s.over,s.period),s.start);
+}
+[numthreads(64,1,1)]
+void LinearProbe(uint3 thread:SV_DispatchThreadID)
+{
+    uint i=thread.x; if(i>=_Count) return;
+    _ProbeOut[i]=_Probe[i].x/_Probe[i].y;
 }
 [numthreads(64,1,1)]
 void EaseProbe(uint3 thread:SV_DispatchThreadID)
