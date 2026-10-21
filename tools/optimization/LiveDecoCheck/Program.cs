@@ -132,8 +132,12 @@ if (args.Length >= 3)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
-        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoRenderer", "LiveDecoLifetime", "LiveDecoGate2", "LiveDecoGate2Policy" })
+        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoRenderer", "LiveDecoGeometry", "LiveDecoLifetime", "LiveDecoGate2", "LiveDecoGate2Policy" })
             Check(names.Contains(name) == (i != 0), "edition types " + name + " " + args[i]);
+        var decoAnim = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name) == "DecoAnim");
+        var prof = decoAnim.GetFields().Select(md.GetFieldDefinition).Single(f => md.GetString(f.Name) == "Prof");
+        Check((prof.Attributes & System.Reflection.FieldAttributes.InitOnly) != 0 == (i == 0),
+            "profiling writable only in DEV/PlayerAuto " + args[i]);
         if (i == 0) Check(!md.TypeReferences.Any(h => md.GetString(md.GetTypeReference(h).Name).StartsWith("LiveDeco")
             || md.GetString(md.GetTypeReference(h).Name) == "SceneRenderOrder"), "Player no experiment type references");
     }

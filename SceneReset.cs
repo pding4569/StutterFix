@@ -35,6 +35,7 @@ namespace StutterFix
             Count++;
 #if DEV || AUTOTEST
             MatShare.Stop();
+            LiveDecoGate2.RestoreProfile();
             LiveDeco.Stop();
 #endif
 #if DEV || AUTOTEST

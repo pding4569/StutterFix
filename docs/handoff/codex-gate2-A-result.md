@@ -1,3 +1,63 @@
+# Gate 2 A 자동 반복 2회차 결과 — 2026-10-21
+
+**소유 0개로 중단한 계층 판정과 프로파일 표본 0개의 원인을 수정하고 오프라인 검증을 완료했다. 수정 후 게임 측정은 없으며 Gate 2 PASS를 선언하지 않는다.** 중단된 2회차의 미커밋 수정본을 이어서 검토·보완했다. 현재 HEAD는 `7758ce9`이며 커밋하지 않았다. 게임 실행·설치·푸시와 `.codex/config.toml` 수정도 하지 않았다. 아래 1회차 결과는 이력으로 보존한다.
+
+## 전달된 실패와 원인
+
+장부 [ga-autoloop-ledger.md](ga-autoloop-ledger.md)와 [run1 증거](ga-autoloop-run1-evidence.txt)를 먼저 읽었다. 직전 게임 측정은 다음 단계에서 끝났으며 픽셀/FPS 판정까지 도달하지 않았다.
+
+| 전달 항목 | run1 실측 |
+|---|---|
+| 소유 / 구간 | 0 / 0 |
+| 제외 이유 | child-parent 2,089개, repeat-tile 38개 |
+| 설정 비용 프로파일 | enabled=False, samples=0, valid=False |
+| 자동 시험 실패 | livedeco on: no eligible images |
+| 마지막 판정 | GATE2=ERROR, autotest_aborted |
+
+기존 `GeometryReason`의 `child-parent`는 피벗 부모, child의 직계 부모, renderer와 child의 동일성 조건을 하나로 합쳤다. SpriteRenderer가 논리 오프셋의 대상인 `childTransform`과 같아야 한다는 가정 때문에, 그 사이에 고정 변환이 있는 계층을 처리할 수 없었다. **기존 집계만으로 세 하위 조건별 실패 개수나 실제 계층 깊이를 역산할 수는 없다.** 새 구현은 피벗 부모 제약을 유지하면서 나머지를 실제 계층 합성으로 대체하고 실패 이유를 분리한다. 따라서 수정 후 2,089개가 전부 소유된다고 예측하지 않는다.
+
+디컴파일 `scrDecoration.SetPosition`은 `(pivotOffset + croppedPivotOffset) / trueScaleMultiplier`를 **childTransform.localPosition**에 쓰고, `UpdatePosition`은 pivotTrans 및 parallax·회전·스케일을 갱신한다. `scrDecorationManager.CreateDecoration`은 이미지 프리팹을 관리자 아래 생성하고 scrVisualDecoration을 얻는다. 이 관리 코드는 프리팹 내부 renderer와 child가 같은 객체라고 보장하지 않는다. 설치 게임 IL과 교차확인했다: [장식 IL](gate2-A-run2-decoration-il.log), [시차 IL](gate2-A-run2-parallax-il.log), [관리자 IL](gate2-A-run2-manager-il.log). [DLL 해시](gate2-A-run2-game-hash.txt)는 기존 `F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF`와 같다. IL 도구는 메타데이터만 읽었고 게임 메서드는 실행하지 않았다.
+
+프로파일은 `DecoAnim.Prof`가 PlayerAuto 기본 상태에서 false인 채 읽히는 것이 직접 원인이었다. 기존 `profilebegin`은 카운터만 저장하고 활성화하지 않아 표본이 생기지 않았다.
+
+## 이어서 완성한 수정
+
+- 새 `LiveDecoGeometry.cs`는 renderer→child 아래 구간, child의 회전·스케일, child→pivot 위 구간을 고정 로컬 변환으로 합성한다. 매 프레임 논리 child XY 오프셋만 올바른 위치에 넣는다. flip은 renderer 로컬 정점에 먼저 적용하며 월드 행렬 역변환은 사용하지 않아 크기 0도 처리한다.
+- 평면이며 pivot까지 연결되는 최대 16개 로컬 구간만 지원한다. 끊긴 계층·순환·과도한 깊이·비평면·고정 구간의 런타임 변경은 거부하거나 원본으로 돌린다. 피벗 부모 항등성, 마스크·히트박스·반복·특수 블렌드·외부 스크립트 제외는 유지한다. 소유 진입 전 원본 정점/바운드와 **1e-4** 검사를 그대로 수행한다. `renderer_version=2`, `nested_admitted`로 새 경로 사용 여부를 확인할 수 있다.
+- 소유 중 정점은 계속 논리 필드에서 계산하고, 기존 TightLate·setter·ColorFast의 Transform/색 쓰기 차단과 off 복원을 유지한다. 아틀라스·새 셰이더·게이트 3·워커 분할은 추가하지 않았다. 구간별 업로드 비용과 호출 수를 분리하는 기존 `cost`도 유지했다.
+- `profilebegin`은 DEV/AutoTest에서만 Prof를 켜고 원래 값을 보관한다. profileend/reset/abort/result/SceneReset/Main.Unload에서 복원한다. samples=0이면 `profile_no_samples`로 최종 ERROR를 남겨 무효한 프로파일을 숨기지 않는다. 일반 Player에서는 Prof의 readonly 속성까지 그대로 유지한다.
+- **프로파일 해석 제한:** 기존 Prof 경로는 PairXY/GroupStep을 억제하고 Step 표본을 사용한다. `pairxy_suppressed=1 groupstep_suppressed=1 baseline_path_unchanged=0`을 명시해 이 비율을 최적화된 평상시 경로 전체의 설정 비율로 오해하지 않게 했다. StepPair·OnComplete·setter 이후 엔진 작업도 측정 범위 밖이다. 실제 set_pct는 아직 없으므로 “설정 60% 이상”은 확인되지 않은 가설이다. 프로파일 재생은 픽셀/FPS 창과 분리하며 원래 Prof 값을 복원한다.
+
+## 이번 오프라인 검증
+
+최종 소스에 대해 아래를 실행했다. 빌드 경고는 기존 어셈블리 충돌·deprecated·미사용 필드 등이며 오류는 없다.
+
+| 검사 | 결과 | 로그 |
+|---|---|---|
+| Release DEV / Player / PlayerAuto | 오류 0/0/0, 경고 38/4/38 | gate2-A-run2-build-dev.log / -player.log / -auto.log |
+| LoadCheck DEV / Player / PlayerAuto | 276/229/276곳, 틀림 0/0/0 | gate2-A-run2-loadcheck-dev.log / -player.log / -auto.log |
+| 실제 LiveDecoGeometry 소스 연결 fixture | 2,729 checks 통과 | [geometry](gate2-A-run2-geometry-fixture.log) |
+| 구간·첫 멤버 앵커 모델 / Gate 2 판정 | 106,460 / 18 checks 통과 | [fixture](gate2-A-run2-fixture.log) |
+| edition 메타데이터 | 28 checks 통과: 일반 Player 실험 타입/참조 없음, Prof는 DEV/AutoTest에서만 변경 가능 | 같은 fixture 로그 |
+| 설치 게임 Harmony 대상 유일성 | 17개 통과 | 같은 fixture 로그 |
+| MatShare / FrameCompare 기존 fixture | 25,401 / 11+15+14+17 checks 통과 | gate2-A-run2-matshare-fixture.log / -framecmp-fixture.log |
+| 기존 Gate 1 / Gate 2 생성기 | 25 / 129단계, UTF-8 CLI 통과 | gate2-A-run2-gate1-steps-fixture.log / -steps-fixture.log |
+| git diff --check | 통과 | 최종 로컬 검사 |
+
+계층 fixture는 0~여러 개 중간 구간, child 위/아래 변환, 음수·0 스케일, flip, 논리 오프셋 변화, 고정 구간의 위치·회전·크기 변경, 재부모화·파괴·순환, 깊이 16/17 경계를 검사한다. 생산 알고리즘을 연결했지만 수학 어댑터는 System.Numerics이며 실제 Unity 부동소수점·SpriteRenderer·픽셀 검증은 아니다. LoadCheck 동적 이름 5곳과 Mono Harmony 실행도 런타임 확인 대상이다.
+
+## 자동 루프 인계와 현재 한계
+
+생성기 `tools/optimization/livedeco2-steps.py`의 129단계는 유지했다. 수정된 코드로 프로파일 → 262/270/276초 픽셀·복원 → off/on/on/off 262→276초 FPS를 수집하도록 되어 있다. 이번에 같은 게임 시험을 다시 실행하지 않았다. 설계 한계로 확정할 새 수치는 없고, 직전 오류에는 코드상 수정 가능한 원인이 있었다.
+
+다음 자동 시험에서는 `PROFILE enabled=True`, samples>0, `renderer_version=2`, vertexcheck 및 `nested_admitted`, 제외 이유별 개수, owned/runs와 cost를 확인해야 한다. 약 1,200구간은 예상이며 실측으로 쓰지 않는다. 세 시점 `ab_out=0`과 복원 성공, ABBA 평균 FPS +15%를 모두 만족해야 PASS다. **수정 후 소유 수·정점 오차·픽셀·FPS·GC·실제 수명 복원은 모두 미측정**이다. 이 조건들을 완화하거나 성공 로그를 미리 만들지 않았다.
+
+task-observer 관찰은 결과 문서로 반환하며 사용자 범위 스킬·메모리는 수정하지 않았다. 문제: 여러 계층 제약을 하나의 제외 이유로 합치면 집계만으로 실제 실패 조건을 구별할 수 없다. 개선: 실패 조건을 분리하고 새 허용 경로의 진입 수를 함께 남긴다. 원칙: 전달된 실패 수치와 코드상 추론, 수정 후 미측정을 구분한다.
+
+---
+
+아래는 보존한 1회차 결과다.
+
 # Gate 2 A 결과 — 2026-10-21
 
 변형 A의 개발 전용·기본 꺼짐 프로토타입과 자동 검증 생성기를 구현했다. **실게임 Gate 2는 미측정이며 PASS를 선언하지 않는다.** 게임 실행·설치·커밋·푸시는 하지 않았다. 기준 HEAD는 `5bf7413`이다. 작업 중 공통 인계에 추가된 논리 필드 전용 갱신 지시도 반영했다. 게이트 3나 워커 분할은 만들지 않았다.

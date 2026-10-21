@@ -35,7 +35,11 @@ namespace StutterFix
         internal static bool Installed;
         internal static long Created, Completed, Killed, Dropped, Frames, VerifyN, VerifySteps, VerifyMismatch, Errors;
         // (측정용) 매 프레임 DOTween 갱신 앞에서 가장 먼저 돌아서 다른 측정(함수별, 애니메이션 갱신)에 안 잡혔다. 따로 잰다.
+#if DEV || AUTOTEST
+        internal static bool Prof = Edition.Dev || Main.MeasureBuild;
+#else
         internal static readonly bool Prof = Edition.Dev || Main.MeasureBuild;
+#endif
         private static long profN;
         internal static readonly long[] ProfN = new long[16], ProfApply = new long[16], ProfSet = new long[16];
         internal static long Steps;

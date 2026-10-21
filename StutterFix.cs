@@ -482,6 +482,7 @@ ParticleTextWatch.Install(harmony);
 #if DEV || AUTOTEST
             Try(FrameCompare.Unload);
             Try(MatShare.Stop);
+            Try(LiveDecoGate2.RestoreProfile);
             Try(LiveDeco.Stop);
 #endif
             Try(GpuCensus.Stop);

@@ -44,9 +44,8 @@ namespace StutterFix
             internal Vector2[] Corners, UV;
             internal ushort[] Indices;
             internal readonly Vector3[] World = new Vector3[4];
-            internal Vector3 ChildScale;
-            internal Quaternion ChildRotation;
-            internal float ChildZ;
+            internal LiveDecoGeometry Geometry;
+            internal bool FlipX, FlipY;
             internal bool Owned, Rejected, OriginalOff, Hidden;
             internal bool WasLive;
             internal int Version;
@@ -94,7 +93,7 @@ namespace StutterFix
         static long allocatedBytes, steadyAllocatedBytes;
         static int steadySamples;
         static float checkMax;
-        static int checkCount, checkRejected;
+        static int checkCount, checkRejected, checkNested;
         static string error = "none";
         static readonly List<Source> sources = new List<Source>();
         static readonly List<Row> ordered = new List<Row>();
@@ -182,7 +181,7 @@ namespace StutterFix
                 RenderFrame();
                 if (ownedCount == 0) throw new InvalidOperationException("no eligible images; see rejection counts");
                 lastFrame = -1; // Re-evaluate after this frame's camera LateUpdate.
-                Log("begin variant=A currentRenderPipeline=null atlas=0 material_clone=0 " + State());
+                Log("begin variant=A renderer_version=2 currentRenderPipeline=null atlas=0 material_clone=0 " + State());
                 LiveDecoGate2.RendererStarted();
             }
             catch { Stop(); throw; }
@@ -234,8 +233,10 @@ namespace StutterFix
             if ((int)Blend(d) != 0 || (d.blendModeEffect && d.blendModeEffect.enabled)) return "blend";
             if (!p || !Inited(p) || !IsDecoration(p) || !ReferenceEquals(p.decoration, d)
                 || !ReferenceEquals(Cached(p), d.pivotTrans) || p.enabled) return "parallax-binding";
-            if (!d.pivotTrans || d.pivotTrans.parent != manager.transform || !d.childTransform
-                || d.childTransform.parent != d.pivotTrans || r.transform != d.childTransform) return "child-parent";
+            if (!d.pivotTrans || d.pivotTrans.parent != manager.transform) return "pivot-parent";
+            if (!d.childTransform) return "child-missing";
+            if (i.Owned && (!i.Geometry.Matches(d.pivotTrans, d.childTransform, r.transform)
+                || r.flipX != i.FlipX || r.flipY != i.FlipY)) return "child-state-changed";
             var cr = d.childTransform.localRotation;
             if (cr.x != 0 || cr.y != 0) return "nonplanar-child";
             if (!ADOBase.controller || p.cameraTransform != ADOBase.controller.camy.transform) return "camera-binding";
@@ -279,10 +280,10 @@ namespace StutterFix
             i.Signature = string.Join(";", MatShare.Properties(i.Material).Select(x => x.Key + "=" + x.Value));
             i.Corners = i.Sprite.vertices; i.UV = i.Sprite.uv; i.Indices = i.Sprite.triangles;
             if (i.Corners.Length != 4 || i.UV.Length != 4 || i.Indices.Length != 6) { Reject(i, "nonquad"); return; }
-            i.ChildScale = i.D.childTransform.localScale;
-            i.ChildRotation = i.D.childTransform.localRotation;
-            i.ChildZ = i.D.childTransform.localPosition.z;
-            if (i.ChildZ != 0) { Reject(i, "child-z"); return; }
+            i.FlipX = i.R.flipX; i.FlipY = i.R.flipY;
+            i.Geometry = LiveDecoGeometry.Capture(i.D.pivotTrans, i.D.childTransform,
+                i.R.transform, i.Corners, i.FlipX, i.FlipY);
+            if (i.Geometry == null) { Reject(i, "child-chain-unsupported"); return; }
             // Do not depend on stale engine state on re-entry.
             restoring = true;
             try { i.D.UpdatePosition(); } finally { restoring = false; }
@@ -300,6 +301,7 @@ namespace StutterFix
             max = Mathf.Max(max, Vector3.Distance(bounds.min, i.R.bounds.min), Vector3.Distance(bounds.max, i.R.bounds.max));
             checkCount++; checkMax = Mathf.Max(checkMax, max);
             if (!Finite(max) || max > Limit) { checkRejected++; Reject(i, "vertex-error"); return; }
+            if (i.Geometry.Depth > 1) checkNested++;
             i.OriginalOff = i.R.forceRenderingOff; i.Owned = true; i.Version++; ownedCount++; topology = true;
         }
         static bool Finite(float f) => !float.IsNaN(f) && !float.IsInfinity(f);
@@ -332,13 +334,10 @@ namespace StutterFix
             rotation = Quaternion.Normalize(rotation);
             Vector2 scale = d.scaleVec * camScale * (Vector2)Vector3.one;
             Vector2 offset = (d.pivotOffsetVec + d.croppedPivotOffset) / d.trueScaleMultiplier;
+            Vector3 pivotOffset = i.Geometry.Offset(offset);
             for (int n = 0; n < 4; n++)
             {
-                Vector3 local = i.Corners[n];
-                if (i.R.flipX) local.x = -local.x;
-                if (i.R.flipY) local.y = -local.y;
-                local = i.ChildRotation * Vector3.Scale(local, i.ChildScale);
-                local += new Vector3(offset.x, offset.y, i.ChildZ);
+                Vector3 local = i.Geometry.Shape[n] + pivotOffset;
                 local = rotation * new Vector3(local.x * scale.x, local.y * scale.y, local.z);
                 Vector3 v = new Vector3(world.x + local.x, world.y + local.y, local.z);
                 if (!Finite(v.x) || !Finite(v.y) || !Finite(v.z) || Mathf.Abs(v.x) > Extent || Mathf.Abs(v.y) > Extent)
@@ -577,7 +576,7 @@ namespace StutterFix
             lastFrame = Time.frameCount;
             long heap = GC.GetTotalMemory(false), alloc = GC.GetAllocatedBytesForCurrentThread(), transitions = transitionCount;
             long scan = Stopwatch.GetTimestamp();
-            checkMax = 0; checkCount = checkRejected = 0;
+            checkMax = 0; checkCount = checkRejected = checkNested = 0;
             if (refreshRegistry) Register();
             Scan(); scanTicks += Stopwatch.GetTimestamp() - scan;
             long compute = Stopwatch.GetTimestamp();
@@ -613,7 +612,7 @@ namespace StutterFix
             long bytes = GC.GetAllocatedBytesForCurrentThread() - alloc; allocatedBytes += bytes;
             if (transitionCount == transitions && checkCount == 0) { steadyAllocatedBytes += bytes; steadySamples++; }
             if (checkCount != 0) Log("vertexcheck max_err=" + checkMax.ToString("R", Inv) + " count=" + checkCount
-                + " excluded=" + checkRejected + " threshold=0.0001");
+                + " excluded=" + checkRejected + " nested_admitted=" + checkNested + " threshold=0.0001");
             if (frameSamples >= 120 || checkCount != 0) ReportCost();
             if (rejected.Count != 0 && frameSamples == 0)
             { foreach (var p in rejected) Log("excluded reason=" + p.Key + " count=" + p.Value); rejected.Clear(); }

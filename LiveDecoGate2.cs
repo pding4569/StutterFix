@@ -16,7 +16,13 @@ namespace StutterFix
         static double songStart;
         static bool running;
         static readonly long[] profileN = new long[16], profileApply = new long[16], profileSet = new long[16];
-        static bool profiling;
+        static bool profiling, previousProf;
+        internal static void RestoreProfile()
+        {
+            if (!profiling) return;
+            DecoAnim.Prof = previousProf;
+            profiling = false;
+        }
         static double Song => scrConductor.instance ? scrConductor.instance.songposition_minusi : double.NaN;
         static void Log(string s) => Main.Entry.Logger.Log("[livedeco2] " + s);
         internal static void Fail(string reason) { if (evidence.Error == null) evidence.Error = reason; }
@@ -24,6 +30,7 @@ namespace StutterFix
         internal static void RendererStarted() { if (running && window >= 0 && !mode) Fail("renderer_started_in_off_window"); }
         internal static void Abort(string reason)
         {
+            RestoreProfile();
             if (!running) return;
             running = false; Fail("autotest_aborted:" + reason);
             LiveDeco.Stop(); Log("GATE2=ERROR reason=" + evidence.Error + " variant=A on=False");
@@ -33,14 +40,18 @@ namespace StutterFix
             var a = arg.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (a.Length == 1 && a[0] == "profilebegin")
             {
+                if (profiling) throw new InvalidOperationException("profile already started");
                 if (LiveDecoRenderer.Active || FrameCompare.Paused) throw new InvalidOperationException("profile baseline must be off and playing");
                 for (int k = 0; k < 16; k++)
                 { profileN[k] = DecoAnim.ProfN[k]; profileApply[k] = DecoAnim.ProfApply[k]; profileSet[k] = DecoAnim.ProfSet[k]; }
-                profiling = true; Log("PROFILE begin enabled=" + DecoAnim.Prof + " mode=off"); return true;
+                previousProf = DecoAnim.Prof; profiling = true; DecoAnim.Prof = true;
+                Log("PROFILE begin enabled=" + DecoAnim.Prof + " mode=off previous=" + previousProf
+                    + " pairxy_suppressed=1 groupstep_suppressed=1"); return true;
             }
             if (a.Length == 1 && a[0] == "profileend")
             {
                 if (!profiling) throw new InvalidOperationException("profile not started");
+                RestoreProfile(); // Keep profiling out of all pixel/FPS windows, even if logging fails.
                 long totalApply = 0, totalSet = 0, samples = 0;
                 for (int k = 1; k <= 13; k++)
                 {
@@ -51,11 +62,13 @@ namespace StutterFix
                         + " set_us=" + (set * 1e6 / Stopwatch.Frequency / n).ToString("F6", Inv));
                 }
                 Log("PROFILE samples=" + samples + " set_pct=" + (100.0 * totalSet / Math.Max(1, totalApply + totalSet)).ToString("F6", Inv)
-                    + " scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter valid=" + (samples > 0));
-                profiling = false; return true;
+                    + " scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter"
+                    + " baseline_path_unchanged=0 prof_restored=" + DecoAnim.Prof + " valid=" + (samples > 0));
+                if (samples == 0) Fail("profile_no_samples");
+                return true;
             }
             if (a.Length == 1 && a[0] == "reset")
-            { LiveDeco.Stop(); evidence = new LiveDecoGate2Policy(); window = -1; running = true; Log("reset variant=A"); return true; }
+            { RestoreProfile(); LiveDeco.Stop(); evidence = new LiveDecoGate2Policy(); window = -1; running = true; Log("reset variant=A"); return true; }
             if (a.Length == 2 && a[0] == "pixel")
             {
                 int t = int.Parse(a[1], Inv), index = t == 262 ? 0 : t == 270 ? 1 : t == 276 ? 2 : -1;
@@ -98,6 +111,7 @@ namespace StutterFix
             }
             if (a.Length == 1 && a[0] == "result")
             {
+                RestoreProfile();
                 try
                 {
                     if (window != -1) Fail("unfinished_window");
