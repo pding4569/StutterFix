@@ -16,5 +16,5 @@ Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDeco.compute') -Destination (Join
 # Local read-only CPU oracle. Generated directory is ignored and never packaged.
 Copy-Item -LiteralPath (Join-Path $GameManaged 'DOTween.dll') -Destination (Join-Path $projectRoot 'Assets/LocalReferences/DOTween.dll')
 Set-Content -LiteralPath (Join-Path $projectRoot 'ProjectSettings/ProjectVersion.txt') -Value "m_EditorVersion: 6000.3.10f1`nm_EditorVersionWithRevision: 6000.3.10f1 (e35f0c77bd8e)" -Encoding ascii
-Set-Content -LiteralPath (Join-Path $projectRoot 'Packages/manifest.json') -Value '{"dependencies":{"com.unity.modules.imageconversion":"1.0.0"}}' -Encoding ascii
+Set-Content -LiteralPath (Join-Path $projectRoot 'Packages/manifest.json') -Value '{"dependencies":{"com.unity.modules.imageconversion":"1.0.0","com.unity.modules.assetbundle":"1.0.0"}}' -Encoding ascii
 Write-Output "Prepared independent lab: $projectRoot"

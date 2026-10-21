@@ -129,6 +129,7 @@ namespace StutterFix
                         catch { patches.UnpatchAll(Owner); patches = null; throw; }
                         enabled = true; status = "켜짐: 새 맵 open 대기"; Log(status); return;
                     case "off": Shutdown(); Log(status); return;
+                    case "state": Log("ready=" + ready + " generation=" + generation + " collector=" + (collector != null) + " worker=" + (job != null) + " status=" + status); return;
                     case "verify": Verify(); return;
                     case "bench": Bench(); return;
                     default: Log("사용: decobake on (맵 open 전) | off | verify | bench | adopt on|off|state | adoptsig 이름 [초] [표시Hz]; " + status); return;
@@ -139,6 +140,7 @@ namespace StutterFix
         internal static bool Step(string arg)
         {
             if ((arg ?? "").Trim().ToLowerInvariant() != "ready") { Command(arg); return true; }
+            CheckGpuPrepareBudget();
             if (!enabled || status.StartsWith("중단:")) throw new InvalidOperationException("decobake ready: " + status);
             return ready;
         }
@@ -157,6 +159,7 @@ namespace StutterFix
         }
         internal static void Shutdown()
         {
+            gpuPrepareWatch = null;
             enabled = false; CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepFloors = null;
             DecoSim.ForgetBake();
             table = null;
@@ -395,10 +398,12 @@ namespace StutterFix
             if (!enabled) return;
             try
             {
+                CheckGpuPrepareBudget();
                 if (ready && manager != scrDecorationManager.instance) { Fail("기준 스냅샷 재사용 거부: 장식 manager 변경; 맵 다시 open 필요"); return; }
                 if (ready && effectList != scrVfxPlus.instance?.effects) { Reprepare(); return; }
                 if ((ready || collector != null || job != null) && (scrConductor.instance?.song == null
-                    || scrConductor.instance.song.pitch != frozenPitch || DOTween.timeScale != frozenScale
+                    || scrConductor.instance.song.pitch != frozenPitch
+                    || (DOTween.timeScale != frozenScale && !FrameCompare.PreservesBakeTweenScale(frozenScale))
                     || DOTween.defaultEaseOvershootOrAmplitude != frozenOver || DOTween.defaultEasePeriod != frozenPeriod))
                 { Fail("수집 후 pitch/DOTween 배율/이징 기본값 변경: 고정 계약에서 제외"); return; }
                 if (collector != null)

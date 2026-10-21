@@ -1,10 +1,10 @@
-1. 선택: Unity 6000.3.10f1 AssetBundle 파이프라인(기존 fsr 빌드 경로).
-2. 중단: Editor 라이선스 오류 exit 198, com.unity.editor.headless 없음.
-3. 게임 실행·설치·커밋·푸시 0회, .codex/config.toml 변경 0회.
-4. AUTOTEST 전용 읽기 전용 gpudeco export와 3정지 시점 steps를 추가했다.
-5. 독립 랩: 표/이징/정점 compute·Raw 메시·실제 export 대조·번들 진입점을 작성했다.
-6. 3종 빌드 오류 0, 일반 Player GPU 타입·명령·export 제외 확인.
-7. 랩 C# 오류/경고 0/0, HLSL SM5 두 커널 컴파일 통과.
-8. 새 진단 계약 14건 및 기존 bake·ld2a·DecoSim·서명·steps fixture 통과.
-9. 실제 export 0파일·GPU 표본 0개·완성 번들 0개, G0/G1/비용/FPS 미측정.
-10. GPUDECO_G1=ERROR stage=G0-lab reason=editor_license_exit_198_and_real_export_missing
+1. 선택: Unity 6000.3.10f1 직접 실행·D3D11·기존 AssetBundle 경로.
+2. 게임 실행·설치·커밋·푸시·.codex/config.toml 변경 0회.
+3. timeout 420·60초 분할 대기·첫 export 300초 예산·prepare_ms를 추가했다.
+4. framecmp 소유 일시정지의 DOTween=0을 배율 변경으로 오인하던 bake 폐기를 수정했다.
+5. GPU 이징 101,475개: 최대 1.97160989046e-6, 평균 2.09635552387e-8, 초과 0.
+6. 합성 정점 8,000개: 최대 0.000477268022223px, 평균 0.0000223719397063px, 초과 0.
+7. UInt32 독립 메시 1,000개: GPU 복사 차이 0, 단일/분할 이미지 차이 0픽셀·최대 0.
+8. 35,399바이트 번들 생성·재로드·수치 대조, 3종 빌드 오류 0·LoadCheck·기존 fixture 통과.
+9. 실제 export 0·게임 G0/G1 미검증, 1,001 dispatch의 제출 2.723905ms로 0.3ms 초과.
+10. GPUDECO_G1=ERROR stage=G0-real-export reason=real_export_missing_and_1000_run_submit_over_budget

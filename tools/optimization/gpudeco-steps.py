@@ -8,9 +8,10 @@ def build(chart, export_dir):
     chart, export_dir = Path(chart), Path(export_dir).resolve()
     if 'Arche' not in str(chart) or not chart.name.endswith('FULL.adofai'):
         raise ValueError('Arche *FULL.adofai 경로만 허용합니다')
-    steps = ['timeout 180', 'auto on', 'decobake on', 'open ' + str(chart),
-             'decobake ready', 'gpuprobe off', 'gpusplit off', 'matshare off',
-             'livedeco off', 'gpudeco off', 'gpudeco reset']
+    steps = ['timeout 420', 'auto on', 'decobake on', 'gpudeco off',
+             'gpudeco reset', 'gpudeco prepare', 'open ' + str(chart),
+             'wait 60', 'decobake state', 'wait 60', 'decobake ready',
+             'gpuprobe off', 'gpusplit off', 'matshare off', 'livedeco off']
     for sample in (262, 270, 276):
         steps += ['stop', f'seek {sample} 12', 'decobake ready',
                   f'waitsongpos {sample} 40', 'pause', 'wait 0.2',

@@ -1,48 +1,70 @@
-# gpudeco-1 결과 — 2026-10-21
+# gpudeco-1 결과 — 자동 반복 2회차
 
-**선택: 기존 Unity 6000.3.10f1 AssetBundle 파이프라인을 재사용한다. Editor 라이선스 오류(exit 198)와 실제 export 부재로 랩 G0 검증 단계에서 중단했다. 게임 GPU 렌더러 연결·G1 통과는 미달성이다.**
+**기존 Unity 6000.3.10f1 번들 경로로 GPU 수치 대조·Raw 메시 그리기·번들 생성/재로드를 완료했다. export 대기의 시간 초과와 일시정지 시 bake 폐기 경로를 수정했다. 실제 Arche export는 아직 0개이며, 합성 1,000구간 제출 2.723905ms는 목표 0.3ms를 초과한다. 게임 G0/G1은 미검증이므로 GPU 소유/게임 렌더러 연결로 진행하지 않았다.**
 
-근거: `fsr/BuildFsr.cs.txt`의 번들 빌드 코드, `docs/shader-research.md`의 기존 번들 사용 구조, 이번 [Editor 로그](../../tools/gpudeco-lab/evidence/smoke-editor.txt)의 **6000.3.10f1** 버전과 라이선스 종료. 네이티브 컴파일 대안으로 방향을 바꿔 승인되지 않은 계측을 진행하지 않았다.
+게임 실행·설치·커밋·푸시 **0회**, .codex/config.toml 수정 **0회**다. 독립 에디터와 읽기 전용 참조/오프라인 도구만 실행했다. 일반 Player에서는 GPU/bake 진단 코드가 제외된다.
 
-게임 실행·설치·커밋·푸시 **0회**. `.codex/config.toml` 수정 **0회**. 설치된 게임 DLL·설정·맵을 변경하지 않았다. 독립 Editor만 실행했으며 fixture 진입 전 종료됐다.
+## 방식 선택과 실제 에디터 실행
 
-## 반영
+기존 fsr/BuildFsr.cs.txt와 docs/shader-research.md의 AssetBundle 방식을 재사용했다. [랩 결과](codex-gpudeco-lab-result.md)에 실패/수정/채널별 수치/한계를 모았다.
 
-1. **AUTOTEST 전용 `gpudeco export <새 파일 경로>`**: bake ready/기준 세대·인스턴스/일시정지/직교 카메라/Dormancy 조건을 검사한다. bake 지원 ∩ ld2a 입장 규칙 ∩ 현재 awake를 읽어, 16채널 구간·실제 논리값·실제 SpriteRenderer 정점/색·정적 데이터/카메라/정렬 식별자를 저장한다. export 한 번의 후보 순회이며 매 프레임 전체 스캔·쓰기 훅·Transform 쓰기·소유권 전환은 추가하지 않았다. 원본 트윈을 끝내거나 숨기지 않는다.
-2. **ld2a 판정 재사용**: `LiveDecoRenderer.ExportReason`은 기존 GeometryReason/재질/스크립트 검사를 쓰되 manager를 명시적으로 받는다. 실제 재질·정렬 복원, Dormancy 이벤트 소유를 검증한 GPU 렌더러는 아직 없다. export 수는 **소유 후보 수**다. 800개 미만이면 `OWNED_LOW` 로그 후 AutoTest 오류로 즉시 중단한다.
-3. **독립 랩**: compute 이징·표 이진 탐색·정점 식·Raw 메시 쓰기·CPU/실제 export 대조·번들 제작 진입점을 작성했다. [랩 결과](codex-gpudeco-lab-result.md)에 입력 규모와 미측정 항목을 분리했다. Sprite 피벗/PPU/flip은 실제 로컬 코너와 캡처된 기저에 반영하며, 반복 타일·마스크·부모 추종 등은 원본 후보로 남긴다.
-4. **steps 생성기**: [gpudeco-steps.py](../../tools/optimization/gpudeco-steps.py)는 Arche 파일을 한 번 열고 262·270·276초 정지 export를 얻는 JSON을 만든다. 실게임 실행은 하지 않았다. 추가 지시의 단계 순서를 따라 현재 생성기는 **export 단계 전용**이다. 미구현인 GPU on/framecmp G1 단계를 실행하거나 PASS로 요약하지 않는다. `gpudeco state/off/reset/result`는 개발용, `on`은 실제 랩 G0/번들 검증 전 거부한다.
-5. **제품 제외 검사**: 일반 Player에 `GpuDecoData`, `GpuStep`, `ExportGpu`가 없음을 LoadCheck로 확인한다. Dev에는 export가 없고 AUTOTEST에만 export가 있다. 기본 GPU 소유 수 **0**, 새 Harmony 패치 **0개**다.
+지시서의 정정대로 Unity.exe를 직접 호출했다. 첫 호출은 IPC 또는 라이선스 exit 198이었지만, **-batchmode -quit -force-d3d11 직접 호출**에서 6000.3.10f1·RTX 4060 Ti·Direct3D11 fixture가 실제 실행됐다. 로그인/활성화는 하지 않았다. -nographics 경로는 Null Device라 GPU 검사에 쓰지 않았다. 성공한 전체 명령은 [README](../../tools/gpudeco-lab/README.md)에 있다.
 
-`scrDecoration.UpdatePosition`/`scrParallax.SetTrans` 디컴파일과 현재 DLL의 `tools/ilscan` 출력을 교차 확인했다. 실제 식은 `trueScale = scaleMultiplier × textureScaleMultiplier(XY)`, `camScale = lockScale배율 × trueScale`, `world = (cam - pos) × parallax + pos + parallaxOffset × camScale / textureScaleMultiplier`, 자식 오프셋은 `(pivotOffset + croppedPivot) / trueScale`다. z는 실제 pivot z를 별도 저장한다. IL 근거: [decoration-il.txt](../../tools/gpudeco-lab/evidence/decoration-il.txt), [parallax-il.txt](../../tools/gpudeco-lab/evidence/parallax-il.txt). GPU가 이 식을 허용 오차 안에서 실행하는지는 **미측정**이다.
+최초 번들은 생성됐어도 재로드가 실패했다. 버전 오류만 보고 에디터 호환성 문제로 결론내리지 않고, 로그의 **AssetBundle 내장 모듈 비활성화**를 확인했다. 독립 프로젝트 manifest 참조를 수정하고 강제 재생성해 **35,399바이트 번들 재로드 및 101,475개 이징 대조**를 통과했다. 게임에서의 적재는 미검증이다. sfnative.dll은 변경하지 않았다.
 
-## 검증
+## export를 막는 코드 경로 수정
 
-근거: [evidence](../../tools/gpudeco-lab/evidence/). 아래는 오프라인 결과다.
+1. **실패 이력**: gg 장부/회차 1 증거에는 timeout 180 뒤 decobake ready 대기에서 export가 만들어지지 않았다. 같은 steps를 반복하지 않았다. 새 생성기는 첫 줄 **timeout 420**, open 뒤 **wait 60 → decobake state → wait 60 → decobake ready**로 나눈다. state는 실제 ready/세대/collector/worker를 로그한다.
+2. **5분 예산**: gpudeco prepare를 open 전에 시작한다. bake Tick/ready/export에서 **300초**를 확인하고 넘으면 prepare_ms·상태·ERROR를 기록한다. 첫 export 로그는 open+bake+seek+파일 쓰기 전체와 bake wall을 분리하고, export 자체 비용도 남긴다. gpudeco off/reset 및 bake 종료에서 추적을 해제한다. 이는 시간 제한 구현이며 **실제 준비가 5분 안에 끝났다는 실측은 없다**.
+3. **일시정지 결함**: AutoTest pause는 FrameCompare.Pause를 호출해 DOTween.timeScale을 0으로 만든다. 같은 Update의 뒤쪽 DecoBake.Tick은 frozenScale 변경으로 이를 실패 처리하여 표를 버릴 수 있었다. FrameCompare가 소유한 동일 controller·paused·Time=0·Tween=0·audio pause가 온전하고 **정지 전 oldTween이 frozenScale과 같을 때만** 일시정지로 인정한다. 외부 배율 변경·다른 controller·손상된 정지는 기존 거부를 유지한다. 게임에서의 실제 일시정지/export 성공은 미검증이다.
+4. **소유권 유지**: export는 실제 논리값·정점·구운 표를 읽는 AUTOTEST 전용이다. 소유권 변경·원본 트윈 종료·Renderer 숨김·매 프레임 전체 스캔/쓰기 훅을 추가하지 않았다. gpudeco on은 실제 데이터 검증 전 계속 거부한다. steps는 export 전용이며 G1 PASS를 출력하지 않는다.
+
+게임 수식은 scrDecoration.UpdatePosition·scrParallax.SetTrans 디컴파일과 기존 tools/ilscan 증거를 읽어 확인했다. game callback의 실제 서명은 이번 FrameCompare fixture도 설치 DLL에서 읽기 전용으로 교차 확인했다. 수식 자체의 실제 게임 충실도는 export가 필요하다.
+
+## GPU에서 확인한 수치
+
+근거: [smoke-r2.txt](../../tools/gpudeco-lab/evidence/smoke-r2.txt), [최종 합성 대조](../../tools/gpudeco-lab/evidence/runs.txt), [번들 대조](../../tools/gpudeco-lab/evidence/bundle.txt).
+
+|항목|실측|
+|---|---|
+|수정 전 GPU 이징 101,475개|최대 0.00165259838104 / 평균 4.02213904572e-7 / 2e-5 초과 526|
+|수정 후 같은 규모|최대 **1.97160989046e-6** / 평균 **2.09635552387e-8** / 초과 **0**|
+|합성 정점 8,000개|최대 **0.000477268022223px** / 평균 **0.0000223719397063px** / 0.01px 초과 **0**|
+|합성 최종 색 32,000개|최대 **6.55651092529e-7** / 평균 **1.30608677864e-8** / 1/255 초과 **0**|
+|1,000개 독립 Raw 메시|복사 8,000정점 불일치 **0**, 단일/분할 RGBA 이미지 차이 **0픽셀 / 최대 0**|
+|단일 메시 제출|**0.005729ms**, dispatch 1회|
+|1,000메시 제출|**2.723905ms**, dispatch **1,001회**|
+
+이징 오류는 Circ 경계와 Elastic asin 위상 근사였다. 끝점 분기·유리식·precise로 고쳤다. 독립 메시의 초기 빈 화면은 같은 대조군의 UInt32 인덱스를 적용한 뒤 해결됐다. 전체 이력과 16채널별 최대/평균/초과는 랩 결과에 있다. **합성 대조를 실제 Arche G0나 게임 G1로 바꾸어 표시하지 않는다.**
+
+## 설계상 현재 중단 지점
+
+2,000장식·20,000표 구간·1,000개 독립 메시에서는, 한 통합 버퍼의 평가 뒤 미리 기록한 CommandBuffer로 각 메시 Raw 버퍼에 복사한다. CPU 정점 업로드/Transform 쓰기/프레임당 명령 재작성은 없지만, copy dispatch **1,000회**가 추가된다. **제출 2.723905ms는 0.3ms 목표의 약 9.08배**이며 단일 dispatch 조건도 충족하지 않는다. 이 경로를 게임에 그대로 연결하지 않는다.
+
+이는 한 합성 실행의 에디터 제출 수치이며 GPU 실행 시간·실게임 FPS가 아니다. 드라이버 대기/밀어내기가 섞일 수 있고 렌더러 1,000개의 매 프레임 엔진 비용은 포함하지 않는다. 모든 GPU 방식이 불가능하다는 결론도 아니다. 네이티브 D3DCompile 경로는 출력 분배·동기화·수명을 별도 해결해야 하므로 비교만 남기고 구현하지 않았다. 공유 버퍼/커스텀 그리기 전환은 게임 셰이더·재질·정렬 검증을 새로 해야 한다.
+
+**실제 export 0 / 실제 소유 수·비율·prepare_ms·시작 위상·실제 채널 오차·게임 픽셀·FPS 모두 미측정**이다. 실제 export와 비용을 통과하기 전에 게임 연결/소유 복구/G1 steps를 구현한 것으로 표시하지 않는다. 같은 코드를 다시 게임 시험하도록 요청하지 않았다.
+
+## 오프라인 검증
+
+근거는 tools/gpudeco-lab/evidence/round2-*.txt다.
 
 |검사|결과|
 |---|---|
-|Release Dev / Player / PlayerAuto|각 **오류 0**|
-|LoadCheck Dev / PlayerAuto|FieldRef **277**, 불일치 **0**; Setup/PrepVfx 정적 계약 각각 **1개**|
-|LoadCheck Player|FieldRef **229**, 불일치 **0**; bake/GPU 타입·명령·export 제외|
-|랩 C# / HLSL|C# 오류/경고 **0/0**, HLSL 커널 **2/2** 컴파일 통과|
-|새 파일 계약 / export steps|**14건 통과** / 3정지 시점·1회 open·G1 미통과 계약 통과|
-|기존 bake/live 구동|계약·복구 fixture 통과|
-|기존 DecoSim / 서명|**12 / 10건 통과**|
-|ld2a 기하/컬링/스크립트/pose/upload|**2,729 / 482 / 15 / 40 / 32건 통과**|
-|ld2a policy / G2 policy|**106,479 / 18건 통과**|
-|ld2a delta|**5,918,737검사**, 독립 전체 분할 정답 대비 **6,000변경** 통과|
-|ld2a activation / changes / Dormancy / window|**34 / 171 / 41 / 58건 통과**|
-|기존 steps|livedeco **144단계**, framecmp **24검사** 통과|
+|Release Dev / Player / PlayerAuto|각 **오류 0**, 경고 38 / 4 / 38|
+|LoadCheck Dev / PlayerAuto|FieldRef 277곳, 불일치 **0**; export는 AUTOTEST만|
+|LoadCheck Player|FieldRef 229곳, 불일치 **0**; bake/GPU 타입·명령·export 제외|
+|랩 C# / HLSL|오류·경고 **0/0**, 3커널 SM5 컴파일 통과|
+|데이터 계약 / DecoSim / 서명|**14 / 12 / 10 통과**|
+|bake/live 계약·복구|통과|
+|framecmp 수치·마스크·상태·대조 / 빌드·pause 메타데이터 / 설치 게임 서명|**58 / 21 / 2 통과**|
+|ld2a 기하·컬링·스크립트·pose·upload|**2729 / 482 / 15 / 40 / 32 통과**|
+|ld2a policy·G2 policy / activation / write·queue|**106479·18 / 29 / 157·14 통과**|
+|ld2a delta / window|**5,918,737검사·6,000변경 / 58 통과**|
+|gpudeco steps / framecmp steps|시점 3곳·open 1회·최대 wait 60·G1 미통과 계약 / **24검사 통과**|
 
-빌드의 기존 어셈블리 충돌·구식 API·미사용 필드 경고는 남는다. LoadCheck의 실행 중 결정되는 5곳은 정적 검사 한계다. `window` 첫 실행은 필수 JSON 인자를 빠뜨려 실패했으며, 생성한 실제 livedeco steps를 전달한 최종 실행이 58건 통과했다. 새 진단 fixture의 초기 예외 필터와 HLSL 예약어 충돌도 수정한 뒤 최종 검사를 통과했다. 동일 코드로 실게임 시험을 되풀이하지 않았다.
+기존 어셈블리 충돌·구식 API·미사용 필드 경고는 남는다. LoadCheck의 동적 참조 5곳은 정적 검사의 한계다. FrameCompareCheck의 첫 --no-restore 호출은 assets 파일 부재로 실패했고, 로컬 SDK 복원 후 최종 검사에서 통과했다. 랩 비용 검사는 대규모 회귀 빌드와 겹치지 않게 수행했다.
 
-## 미달성과 재개 지점
+task-observer **3.5.0**을 적용했다. 제한된 worktree에서 사용자 범위 관찰·스킬·메모리 파일은 수정하지 않고 이 결과로 전달한다. 관찰: 버퍼 readback 일치만으로 렌더러 출력 성공을 대신하지 않으며, 번들 생성만으로 재로드 성공을 대신하지 않는다.
 
-현재 **실제 export 0파일**, **GPU 수치 표본 0개**, **생성 완료 번들 0개**, **실제 소유율·prepare_ms·CPU/GPU 비용·시작 위상·G1 픽셀·FPS 전부 미측정**이다. 오차 최대·평균을 0으로 채우지 않았다. G0 충실도나 CPU ≤0.3ms 목표 달성을 판단할 근거가 없다.
-
-유효한 Editor 라이선스가 준비되고 별도 권한을 가진 실행자가 실제 export를 제공하면, README의 랩 Verify로 채널/정점 오차·최소 800개·70% 이상 커버리지를 확인하고 번들 제작/로드를 검증한다. 실제 약 1,000구간 부하도 추가 검증해야 한다. 이 선행 조건을 통과한 뒤에만 GPU 소유/원본 트윈 인계/복구·카메라 시계·실제 게임 재질/구간 그리기를 연결하고 G1 OFF→ON→OFF를 구현·측정한다. 이 작업은 이번 결과에서 완료한 것으로 표시하지 않는다.
-
-task-observer **3.5.0**을 적용했다. 이 worktree에는 영구 관찰 저장소를 새로 만들지 않고 이 결과로 전달한다. 신규 영구 스킬/메모리 변경은 없다. 라이선스/실제 데이터 부재를 GPU 충실도 통과로 대신하지 않는다는 판단과 미측정 구분을 남겼다.
-
-`GPUDECO_G1=ERROR stage=G0-lab reason=editor_license_exit_198_and_real_export_missing`
+GPUDECO_G1=ERROR stage=G0-real-export reason=real_export_missing_and_1000_run_submit_over_budget

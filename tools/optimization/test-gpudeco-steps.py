@@ -8,6 +8,11 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 run = module.build(Path('Arche 한글/Arche FULL.adofai'), Path('exports with spaces'))
 steps = run['steps']
+assert steps[0] == 'timeout 420'
+assert steps.index('gpudeco reset') < steps.index('gpudeco prepare') < next(i for i, s in enumerate(steps) if s.startswith('open '))
+opened = next(i for i, s in enumerate(steps) if s.startswith('open '))
+assert steps[opened+1:opened+5] == ['wait 60', 'decobake state', 'wait 60', 'decobake ready']
+assert all(float(s.split()[1]) <= 60 for s in steps if s.startswith('wait '))
 assert steps.index('decobake on') < next(i for i, s in enumerate(steps) if s.startswith('open '))
 assert len([s for s in steps if s.startswith('open ')]) == 1
 assert run['stage'] == 'export-first' and run['expected_verdict'] != 'PASS'

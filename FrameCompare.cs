@@ -27,6 +27,12 @@ namespace StutterFix
         static scrController controller;
         static bool oldPaused, oldAudio;
         static float oldTime, oldTween;
+        // Only our intact diagnostic pause may temporarily replace the bake's
+        // frozen tween scale. An external pause/scale edit still invalidates it.
+        internal static bool PreservesBakeTweenScale(float expected) => Paused
+            && controller && controller == scrController.instance && controller.paused
+            && Time.timeScale == 0 && DOTween.timeScale == 0 && AudioListener.pause
+            && oldTween == expected;
         static int resumedFrame = -1;
         static scrController resumedController;
         // GcControl/Hitch is sampled before AutoTest.Resume in Update. The

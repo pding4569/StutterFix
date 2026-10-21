@@ -49,6 +49,7 @@ public static class GpuDecoLab
     public static void Smoke() => Run(SmokeBody, "smoke");
     public static void Verify() => Run(VerifyBody, "verify");
     public static void Bundle() => Run(BundleBody, "bundle");
+    public static void Runs() => Run(RunsBody, "runs");
     static ComputeShader Shader() => AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/Shaders/GpuDeco.compute");
     static void SmokeBody()
     {
@@ -90,6 +91,15 @@ public static class GpuDecoLab
             var actual = new float[input.Count]; o.GetData(actual); double maximum=0, sum=0; int over=0;
             for(int i=0;i<actual.Length;i++) { double error=Math.Abs((double)actual[i]-expected[i]); Require(DecoBakeCore.Finite(error),"nonfinite ease id="+ids[i]); maximum=Math.Max(maximum,error); sum+=error; if(error>2e-5) over++; }
             Log("[gpudeco-lab] ease samples="+actual.Length+" max="+N(maximum)+" mean="+N(sum/actual.Length)+" over_2e-5="+over+" supported=0..31,36 fallback=Flash,custom");
+            foreach(uint id in ids.Distinct())
+            {
+                var indices=Enumerable.Range(0,actual.Length).Where(i=>ids[i]==id).ToArray();
+                int worst=indices.OrderByDescending(i=>Math.Abs((double)actual[i]-expected[i])).First();
+                Log("[gpudeco-lab] ease_id="+id+" max="+N(Math.Abs((double)actual[worst]-expected[worst]))
+                    +" mean="+N(indices.Average(i=>Math.Abs((double)actual[i]-expected[i])))
+                    +" over_2e-5="+indices.Count(i=>Math.Abs((double)actual[i]-expected[i])>2e-5)
+                    +" worst_input="+input[worst].ToString("G9")+" cpu="+N(expected[worst])+" gpu="+N(actual[worst]));
+            }
             Require(over==0,"ease probe tolerance exceeded");
         }
     }
@@ -99,6 +109,7 @@ public static class GpuDecoLab
         readonly List<IDisposable> resources = new List<IDisposable>();
         ComputeBuffer values; GraphicsBuffer vertices;
         internal Mesh Mesh; internal int SegmentCount;
+        internal GraphicsBuffer VertexBuffer => vertices;
         ComputeBuffer Buffer<T>(IList<T> source, int stride) where T:struct
         {
             var b = new ComputeBuffer(Math.Max(1,source.Count),stride); resources.Add(b);
@@ -137,6 +148,9 @@ public static class GpuDecoLab
                     new VertexAttributeDescriptor(VertexAttribute.Color,VertexAttributeFormat.Float32,4),new VertexAttributeDescriptor(VertexAttribute.TexCoord0,VertexAttributeFormat.Float32,2));
                 Mesh.SetVertexBufferData(new Vertex[data.Items.Length*4],0,0,data.Items.Length*4);
                 Mesh.SetIndices(triangles.ToArray(),MeshTopology.Triangles,0,false); Mesh.bounds=new Bounds(Vector3.zero,Vector3.one*1000000);
+                // The CPU shadow contains only initialization zeros. Discard it
+                // before acquiring the GPU buffer so CPU batching cannot consume it.
+                Mesh.UploadMeshData(true);
                 vertices=Mesh.GetVertexBuffer(0); resources.Add(vertices); shader.SetBuffer(kernel,"_Vertices",vertices);
                 Require(Marshal.SizeOf<Vertex>()==36 && Mesh.GetVertexBufferStride(0)==36,"raw vertex stride");
                 shader.SetFloat("_Pitch",data.Pitch); shader.SetFloat("_TweenScale",data.TweenScale);
@@ -234,26 +248,91 @@ public static class GpuDecoLab
         string output=Path.Combine(Evidence,"bundle"); Directory.CreateDirectory(output);
         PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64,false);
         PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64,new[]{GraphicsDeviceType.Direct3D11});
-        var manifest=BuildPipeline.BuildAssetBundles(output,new[]{new AssetBundleBuild{assetBundleName="stutterfix_gpudeco",assetNames=new[]{"Assets/Shaders/GpuDeco.compute"}}},BuildAssetBundleOptions.ChunkBasedCompression,BuildTarget.StandaloneWindows64);
+        var manifest=BuildPipeline.BuildAssetBundles(output,new[]{new AssetBundleBuild{assetBundleName="stutterfix_gpudeco",assetNames=new[]{"Assets/Shaders/GpuDeco.compute"}}},BuildAssetBundleOptions.ChunkBasedCompression|BuildAssetBundleOptions.ForceRebuildAssetBundle,BuildTarget.StandaloneWindows64);
         Require(manifest,"bundle build failed");
         var bundle=AssetBundle.LoadFromFile(Path.Combine(output,"stutterfix_gpudeco")); Require(bundle,"bundle load failed");
         try { Probe(bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute")); } finally { bundle.Unload(true); }
         Log("GPUDECO_BUNDLE=PASS editor="+Application.unityVersion+" path="+output);
     }
-    static void Draw(Mesh mesh)
+    static void RunsBody()
     {
-        var go=new GameObject("lab mesh"); var cameraObject=new GameObject("lab camera"); var material=new Material(UnityEngine.Shader.Find("Sprites/Default"));
+        var shader=Shader(); var data=Synthetic(2000); var meshes=new List<Mesh>(); var buffers=new List<GraphicsBuffer>();
+        using(var gpu=new Evaluation(shader,data)) using(var commands=new CommandBuffer { name="GpuDeco 1000 raw runs" })
+        try
+        {
+            int copy=shader.FindKernel("CopyRun");
+            commands.SetComputeBufferParam(shader,copy,"_CopySource",gpu.VertexBuffer);
+            commands.SetComputeIntParam(shader,"_CopyVertexCount",8);
+            for(int run=0;run<1000;run++)
+            {
+                var mesh=new Mesh { name="GpuDeco run "+run,indexFormat=IndexFormat.UInt32,vertexBufferTarget=GraphicsBuffer.Target.Raw };
+                meshes.Add(mesh);
+                mesh.SetVertexBufferParams(8,new VertexAttributeDescriptor(VertexAttribute.Position,VertexAttributeFormat.Float32,3),
+                    new VertexAttributeDescriptor(VertexAttribute.Color,VertexAttributeFormat.Float32,4),new VertexAttributeDescriptor(VertexAttribute.TexCoord0,VertexAttributeFormat.Float32,2));
+                mesh.SetVertexBufferData(new Vertex[8],0,0,8);
+                mesh.SetIndices(new[]{0,2,1,2,3,1,4,6,5,6,7,5},MeshTopology.Triangles,0,false);
+                mesh.bounds=gpu.Mesh.bounds;
+                mesh.SetSubMesh(0,new SubMeshDescriptor(0,12,MeshTopology.Triangles) { bounds=mesh.bounds,firstVertex=0,vertexCount=8 },MeshUpdateFlags.DontRecalculateBounds);
+                mesh.UploadMeshData(true);
+                var buffer=mesh.GetVertexBuffer(0); buffers.Add(buffer);
+                commands.SetComputeIntParam(shader,"_CopyFirstVertex",run*8);
+                commands.SetComputeBufferParam(shader,copy,"_Vertices",buffer);
+                commands.DispatchCompute(shader,copy,1,1,1);
+            }
+            // Validate actual independent Mesh buffers against the combined writer.
+            var evaluated=gpu.Dispatch(data.BakeTime,true);
+            Compare(data,evaluated.values,evaluated.vertices,false);
+            var reference=evaluated.vertices;
+            Log("[gpudeco-lab] run_reference position="+reference[4].position.ToString("G9")+" color="+reference[4].color.ToString("G9"));
+            Graphics.ExecuteCommandBuffer(commands);
+            double maximum=0; int mismatches=0;
+            for(int run=0;run<1000;run++)
+            {
+                var result=new Vertex[8]; buffers[run].GetData(result);
+                for(int k=0;k<8;k++)
+                {
+                    var expected=reference[run*8+k]; double error=Vector3.Distance(result[k].position,expected.position);
+                    maximum=Math.Max(maximum,error);
+                    if(error!=0 || !result[k].color.Equals(expected.color) || !result[k].uv.Equals(expected.uv)) mismatches++;
+                }
+            }
+            Require(mismatches==0,"run copy differs from evaluated raw buffer");
+            Log("[gpudeco-lab] runs raw_buffers=1000 decorations=2000 vertices=8000 max_world="+N(maximum)+" mismatches="+mismatches+" readable="+meshes[0].isReadable);
+            Draw(gpu.Mesh);
+            Draw(meshes.ToArray(),"raw-runs.png");
+            for(int n=0;n<20;n++) { gpu.Dispatch(data.BakeTime,false); Graphics.ExecuteCommandBuffer(commands); }
+            var timer=Stopwatch.StartNew();
+            for(int n=0;n<100;n++) { gpu.Dispatch(data.BakeTime+n*.0001,false); Graphics.ExecuteCommandBuffer(commands); }
+            timer.Stop(); double submit=timer.Elapsed.TotalMilliseconds/100;
+            timer.Restart(); gpu.Dispatch(data.BakeTime,true); timer.Stop();
+            Log("[gpudeco-lab] cost runs=1000 decorations=2000 segments="+gpu.SegmentCount+" dispatches_per_frame=1001 cpu_submit_ms="+N(submit)
+                +" sync_readback_ms="+N(timer.Elapsed.TotalMilliseconds)+" gpu_timestamp_ms=UNAVAILABLE command_buffer_prepared=True synthetic=True");
+            Log("GPUDECO_LAB_RUNS=PASS real_export=False G0=UNMEASURED G1=UNMEASURED");
+        }
+        finally { foreach(var buffer in buffers) buffer.Dispose(); foreach(var mesh in meshes) UnityEngine.Object.DestroyImmediate(mesh); }
+    }
+    static void Draw(Mesh mesh)
+        => Draw(new[]{mesh},"raw-mesh.png");
+    static void Draw(Mesh[] meshes,string filename)
+    {
+        bool oldAsync=ShaderUtil.allowAsyncCompilation; ShaderUtil.allowAsyncCompilation=false;
+        var objects=new List<GameObject>(); var cameraObject=new GameObject("lab camera"); var material=new Material(UnityEngine.Shader.Find("Sprites/Default"));
         var rt=new RenderTexture(128,128,0,RenderTextureFormat.ARGB32); var image=new Texture2D(128,128,TextureFormat.RGBA32,false); var old=RenderTexture.active;
         try
         {
-            go.layer=30; go.AddComponent<MeshFilter>().sharedMesh=mesh; go.AddComponent<MeshRenderer>().sharedMaterial=material;
+            foreach(var mesh in meshes)
+            {
+                var go=new GameObject("lab mesh"); objects.Add(go); go.layer=30;
+                go.AddComponent<MeshFilter>().sharedMesh=mesh; var renderer=go.AddComponent<MeshRenderer>(); renderer.sharedMaterial=material; renderer.sortingOrder=objects.Count;
+            }
             var camera=cameraObject.AddComponent<Camera>(); camera.enabled=false; camera.orthographic=true; camera.orthographicSize=8;
             camera.transform.position=new Vector3(0,0,-10); camera.clearFlags=CameraClearFlags.SolidColor; camera.backgroundColor=Color.black; camera.cullingMask=1<<30; camera.targetTexture=rt;
             camera.Render(); RenderTexture.active=rt; image.ReadPixels(new Rect(0,0,128,128),0,0); image.Apply();
-            int covered=image.GetPixels32().Count(p=>p.r!=0||p.g!=0||p.b!=0); Require(covered>0,"raw mesh draw empty");
-            File.WriteAllBytes(Path.Combine(Evidence,"raw-mesh.png"),image.EncodeToPNG()); Log("[gpudeco-lab] raw_mesh_draw covered_pixels="+covered+" vertex_stride=36 shader=Sprites/Default game_shader=False");
+            int covered=image.GetPixels32().Count(p=>p.r!=0||p.g!=0||p.b!=0);
+            File.WriteAllBytes(Path.Combine(Evidence,filename),image.EncodeToPNG()); Log("[gpudeco-lab] raw_mesh_draw runs="+meshes.Length+" covered_pixels="+covered+" vertex_stride=36 shader=Sprites/Default game_shader=False");
+            Require(covered>0,"raw mesh draw empty");
         }
-        finally { RenderTexture.active=old; UnityEngine.Object.DestroyImmediate(go); UnityEngine.Object.DestroyImmediate(cameraObject); UnityEngine.Object.DestroyImmediate(material); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(image); }
+        finally { ShaderUtil.allowAsyncCompilation=oldAsync; RenderTexture.active=old; foreach(var go in objects) UnityEngine.Object.DestroyImmediate(go); UnityEngine.Object.DestroyImmediate(cameraObject); UnityEngine.Object.DestroyImmediate(material); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(image); }
     }
     static GpuDecoData Synthetic(int count)
     {

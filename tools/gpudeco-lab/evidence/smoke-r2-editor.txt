@@ -1,0 +1,827 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 24505 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+[Licensing::IpcConnector] Channel LicenseClient-나로컴 doesn't exist
+System  architecture: x64
+Process architecture: x64
+Date: 2026-10-21T14:00:50Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 18128)
+
+COMMAND LINE ARGUMENTS:
+E:\Unity\Editor\6000.3.10f1\Editor\Unity.exe
+-batchmode
+-quit
+-force-d3d11
+-projectPath
+E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+-executeMethod
+GpuDecoLab.Smoke
+-logFile
+E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\smoke-r2-editor.txt
+Successfully changed project path to: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [10156]  Target information:
+
+Player connection [10156]  * "[IP] 192.168.0.9 [Port] 55504 [Flags] 2 [Guid] 2539643088 [EditorId] 2539643088 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-UJA68AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [10156] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [10156] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-19304" after 0.5 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴" at "2026-10-21T14:00:52.265969Z"
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              a914a4ec9d8a4207a66d658a9245b022
+  Correlation Id:          8f81a7cd05d05a29313314452e1a1758
+  External correlation Id: 7881706072705935380
+  Machine Id:              ooNE0R16id3ypk/QQXRV4Tmz/MA=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-나로컴" (connect: 1.33s, validation: 0.06s, handshake: 1.69s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴-notifications" at "2026-10-21T14:00:54.0124004Z"
+[Licensing::Module] Connected to LicensingClient (PId: 18128, launch time: 0.00, total connection time: 3.08s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14569629307665-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.02
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 3.12s
+[Licensing::Module] Licensing is initialized (took 2.30s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.10f1 (e35f0c77bd8e)
+[Subsystems] Discovering subsystems at path E:/Unity/Editor/6000.3.10f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project/Assets
+Forcing GfxDevice: Direct3D 11
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4060 Ti (ID=0x2803)
+    Vendor:   NVIDIA
+    VRAM:     7949 MB
+    Driver:   32.0.16.1088
+Initialize mono
+Mono path[0] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/Managed'
+Mono path[1] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56304
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: E:/Unity/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.001058 seconds.
+- Loaded All Assemblies, in  0.534 seconds
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:False
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.589 seconds
+Domain Reload Profiling: 1122ms
+	BeginReloadAssembly (139ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (7ms)
+	RebuildCommonClasses (54ms)
+	RebuildNativeTypeToScriptingClass (27ms)
+	initialDomainReloadingComplete (61ms)
+	LoadAllAssembliesAndSetupDomain (251ms)
+		LoadAssemblies (131ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (248ms)
+			TypeCache.Refresh (245ms)
+				TypeCache.ScanAssembly (222ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (590ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (527ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (62ms)
+			SetLoadedEditorAssemblies (7ms)
+			BeforeProcessingInitializeOnLoad (134ms)
+			ProcessInitializeOnLoadAttributes (215ms)
+			ProcessInitializeOnLoadMethodAttributes (108ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 1 packages:
+  Built-in packages:
+    com.unity.modules.imageconversion@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.imageconversion)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.00 seconds
+[Package Manager] Done resolving packages in 0.55 seconds
+[Package Manager] Registered 1 packages:
+  Built-in packages:
+    com.unity.modules.imageconversion@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.imageconversion)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.00 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 2s9ms
+[145/148    1s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[146/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[147/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (1.97 seconds), 3 items updated, 148 evaluated
+AssetDatabase: script compilation time: 2.423564s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.569 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.591 seconds
+Domain Reload Profiling: 1160ms
+	BeginReloadAssembly (332ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (17ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (160ms)
+	RebuildCommonClasses (61ms)
+	RebuildNativeTypeToScriptingClass (18ms)
+	initialDomainReloadingComplete (30ms)
+	LoadAllAssembliesAndSetupDomain (128ms)
+		LoadAssemblies (210ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (12ms)
+			TypeCache.Refresh (9ms)
+				TypeCache.ScanAssembly (2ms)
+			BuildScriptInfoCaches (1ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (592ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (419ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (28ms)
+			SetLoadedEditorAssemblies (3ms)
+			BeforeProcessingInitializeOnLoad (161ms)
+			ProcessInitializeOnLoadAttributes (175ms)
+			ProcessInitializeOnLoadMethodAttributes (49ms)
+			AfterProcessingInitializeOnLoad (2ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (16ms)
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=3200f765ae570a440bf6cdc91536c653): Total: 4.296 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=671 ms
+		Asset DB Callback time: managed=70 ms, native=555 ms
+		Scripting: domain reloads=1, domain reload time=569 ms, compile time=2426 ms, other=3 ms
+		Project Asset Count: scripts=26, non-scripts=3
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 553.696ms
+	ApplyChangesToAssetFolders: 0.144ms
+	Scan: 18.898ms
+	OnSourceAssetsModified: 1.121ms
+	CategorizeAssetsWithTransientArtifact: 0.258ms
+	ProcessAssetsWithTransientArtifactChanges: 0.895ms
+	CategorizeAssets: 0.163ms
+	ImportOutOfDateAssets: 592.748ms (-1833.245ms without children)
+		CompileScripts: 2425.727ms
+		ReloadNativeAssets: 0.000ms
+		UnloadImportedAssets: 0.119ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.009ms
+		InitializingProgressBar: 0.000ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 0.138ms
+	PostProcessAllAssets: 71.374ms
+	Hotreload: 0.552ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 2.127ms
+	PersistCurrentRevisions: 0.001ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 0.001ms
+	Untracked: 3053.773ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Scanning for USB devices : 2.219ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-project
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 21 unused Assets / (1.1 MB). Loaded Objects now: 620.
+Memory consumption went from 88.4 MB to 87.3 MB.
+Total: 6.943900 ms (FindLiveObjects: 0.056600 ms CreateObjectMapping: 0.005100 ms MarkObjects: 6.298300 ms  DeleteObjects: 0.582000 ms)
+
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:42)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease samples=101475 max=0.00165259838104 mean=4.02213904572E-07 over_2e-5=526 supported=0..31,36 fallback=Flash,custom
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:92)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=0 max=5.96046447754E-08 mean=6.56949643924E-09 over_2e-5=0 worst_input=(0.971972644, 3.70000005, 1.70158005, 0) cpu=0.456381797791 gpu=0.456381738186
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=1 max=5.96046447754E-08 mean=5.32548041727E-09 over_2e-5=0 worst_input=(1.94394529, 3.70000005, 1.70158005, 0) cpu=0.525390625 gpu=0.525390565395
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=2 max=2.98023223877E-07 mean=6.03412224994E-08 over_2e-5=0 worst_input=(0.0729980469, 0.125, 0.300000012, 0) cpu=0.392050206661 gpu=0.392050504684
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=3 max=3.27825546265E-07 mean=1.0074551664E-07 over_2e-5=0 worst_input=(0.00524902344, 0.125, 0.300000012, 0) cpu=0.0659133568406 gpu=0.0659130290151
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=4 max=2.38418579102E-07 mean=4.76740240082E-08 over_2e-5=0 worst_input=(0.0759277344, 0.125, 0.300000012, 0) cpu=0.665553212166 gpu=0.665552973747
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=5 max=1.19209289551E-07 mean=7.32218379154E-09 over_2e-5=0 worst_input=(2.78222656, 3.70000005, 1.70158005, 0) cpu=0.565433502197 gpu=0.565433382988
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=6 max=5.96046447754E-08 mean=1.97712968035E-09 over_2e-5=0 worst_input=(1.94394529, 3.70000005, 1.70158005, 0) cpu=0.774745941162 gpu=0.774745881557
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=7 max=1.19209289551E-07 mean=5.49418007545E-09 over_2e-5=0 worst_input=(1.94394529, 3.70000005, 1.70158005, 0) cpu=0.549491882324 gpu=0.549491763115
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=8 max=1.78813934326E-07 mean=8.30826418083E-09 over_2e-5=0 worst_input=(2.98095703, 3.70000005, 1.70158005, 0) cpu=0.522952198982 gpu=0.522952020168
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=9 max=5.96046447754E-08 mean=6.17701590546E-09 over_2e-5=0 worst_input=(0.0266113281, 0.125, 0.300000012, 0) cpu=0.512353360653 gpu=0.512353301048
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=10 max=1.78813934326E-07 mean=6.61423553463E-09 over_2e-5=0 worst_input=(1.96201169, 3.70000005, 1.70158005, 0) cpu=0.58543241024 gpu=0.585432231426
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=11 max=2.98023223877E-07 mean=1.10865217878E-08 over_2e-5=0 worst_input=(3.66386724, 3.70000005, 1.70158005, 0) cpu=0.961506009102 gpu=0.961505711079
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=12 max=5.96046447754E-08 mean=5.87202669159E-09 over_2e-5=0 worst_input=(0.0104980469, 0.125, 0.300000012, 0) cpu=0.295937001705 gpu=0.295936942101
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=13 max=2.38418579102E-07 mean=7.74079677193E-09 over_2e-5=0 worst_input=(1.94394529, 3.70000005, 1.70158005, 0) cpu=0.594084858894 gpu=0.594084620476
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=14 max=3.57627868652E-07 mean=1.18444363357E-08 over_2e-5=0 worst_input=(3.66386724, 3.70000005, 1.70158005, 0) cpu=0.952116310596 gpu=0.952115952969
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=15 max=5.96046447754E-08 mean=6.84181364571E-09 over_2e-5=0 worst_input=(0.00500488281, 0.125, 0.300000012, 0) cpu=0.184793174267 gpu=0.184793233871
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=16 max=2.98023223877E-07 mean=7.4633830825E-09 over_2e-5=0 worst_input=(1.94394529, 3.70000005, 1.70158005, 0) cpu=0.614697754383 gpu=0.61469745636
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=17 max=4.76837158203E-07 mean=1.78522801375E-08 over_2e-5=0 worst_input=(3.70000005, 3.70000005, 1.70158005, 0) cpu=1 gpu=0.999999523163
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=18 max=1.19209289551E-07 mean=9.14907067772E-09 over_2e-5=0 worst_input=(0.00048828125, 0.125, 0.300000012, 0) cpu=0.0267127752304 gpu=0.0267128944397
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=19 max=2.38418579102E-07 mean=8.85807023179E-09 over_2e-5=0 worst_input=(1.83554685, 3.70000005, 1.70158005, 0) cpu=0.473643988371 gpu=0.473643749952
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=20 max=0.000345289707184 mean=1.26730135786E-07 over_2e-5=1 worst_input=(3.70000005, 3.70000005, 1.70158005, 0) cpu=1 gpu=0.999654710293
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=21 max=5.96046447754E-08 mean=1.00504092085E-08 over_2e-5=0 worst_input=(0.0168457031, 0.125, 0.300000012, 0) cpu=0.501367628574 gpu=0.50136756897
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=22 max=0.000172644853592 mean=6.55844928772E-08 over_2e-5=1 worst_input=(1.85000002, 3.70000005, 1.70158005, 0) cpu=0.5 gpu=0.499827355146
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=23 max=9.71555709839E-05 mean=4.54865017273E-06 over_2e-5=197 worst_input=(7.9921875, 8, 2.29999995, 0.699999988) cpu=1.1349593401 gpu=1.13505649567
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=24 max=0.00165259838104 mean=5.53170506789E-06 over_2e-5=239 worst_input=(3.70000005, 3.70000005, 1.70158005, 0) cpu=1 gpu=1.00165259838
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=25 max=0.000577211380005 mean=2.58479507795E-06 over_2e-5=88 worst_input=(3.70000005, 3.70000005, 1.70158005, 0) cpu=1 gpu=1.00057721138
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=26 max=2.98023223877E-07 mean=1.65358580592E-08 over_2e-5=0 worst_input=(3.53740239, 3.70000005, 1.70158005, 0) cpu=0.805524051189 gpu=0.805523753166
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=27 max=1.19209289551E-07 mean=7.85112502129E-09 over_2e-5=0 worst_input=(0.0968017578, 0.125, 0.300000012, 0) cpu=1.00034284592 gpu=1.00034296513
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=28 max=2.38418579102E-07 mean=1.91903732562E-08 over_2e-5=0 worst_input=(1.80664063, 3.70000005, 1.70158005, 0) cpu=0.436660975218 gpu=0.436660736799
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=29 max=1.78813934326E-07 mean=7.52084623507E-09 over_2e-5=0 worst_input=(1.02255857, 3.70000005, 1.70158005, 0) cpu=0.00990945100784 gpu=0.00990962982178
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=30 max=1.78813934326E-07 mean=8.06737979126E-09 over_2e-5=0 worst_input=(1.16708982, 3.70000005, 1.70158005, 0) cpu=0.752437651157 gpu=0.752437472343
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=31 max=1.19209289551E-07 mean=3.12076351507E-09 over_2e-5=0 worst_input=(2.62324214, 3.70000005, 1.70158005, 0) cpu=0.936455249786 gpu=0.936455368996
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+[gpudeco-lab] ease_id=36 max=0 mean=0 over_2e-5=0 worst_input=(0, 0.125, 0.300000012, 0) cpu=1 gpu=1
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Probe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoLab.cs:97)
+GpuDecoLab:SmokeBody () (at Assets/Editor/GpuDecoLab.cs:55)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:43)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: ease probe tolerance exceeded
+  at GpuDecoLab.Probe (UnityEngine.ComputeShader shader) [0x00565] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:102 
+  at GpuDecoLab.SmokeBody () [0x00000] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:55 
+  at GpuDecoLab.Run (System.Action action, System.String name) [0x000a2] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:43 
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:30)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:45)
+GpuDecoLab:Smoke () (at Assets/Editor/GpuDecoLab.cs:49)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 30)
+
+Curl error 42: Callback aborted
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-나로컴-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-나로컴 channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1792591260564,"processId":19304,"allocatedMemory":9970191,"memoryLabels":[{"Default":29313},{"Permanent":15236},{"NewDelete":67449},{"Thread":4230384},{"Manager":30237},{"VertexData":8},{"Geometry":816},{"Texture":160},{"Shader":79345},{"Material":24},{"GfxDevice":55257},{"Animation":392},{"Audio":2664},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":720},{"Input":14984},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"ScriptingNativeRuntime":155060},{"BaseObject":1620208},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":1016},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":13910},{"DynamicArray":75863},{"HashMap":55444},{"Utility":2659462},{"Curl":2559},{"PoolAlloc":2056},{"AI":80},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":7488},{"WebRequest":845},{"VR":47994},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":384},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":96},{"EditorUtility":87382},{"VersionControl":4},{"Undo":947},{"AssetDatabase":209536},{"EditorGi":328},{"UnityConnect":29208},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":215},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2859},{"Licensing":1232},{"AssetReference":32},{"IPCStream":32}]}

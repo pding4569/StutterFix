@@ -1,6 +1,7 @@
 // Diagnostic only. Sprites/Tile remains the intended game draw shader.
 #pragma kernel Evaluate
 #pragma kernel EaseProbe
+#pragma kernel CopyRun
 #pragma target 5.0
 
 struct Segment { float hi, lo, duration, start, end, target, over, period; uint ease, scale; };
@@ -18,6 +19,8 @@ float4 _Camera; // XY, rotation degrees, lock-scale multiplier
 StructuredBuffer<float4> _Probe;
 StructuredBuffer<uint> _ProbeIds;
 RWStructuredBuffer<float> _ProbeOut;
+ByteAddressBuffer _CopySource;
+uint _CopyFirstVertex, _CopyVertexCount;
 
 float Bounce(float x)
 {
@@ -26,10 +29,21 @@ float Bounce(float x)
     if (x < 2.5/2.75) { x -= 2.25/2.75; return 7.5625*x*x+.9375; }
     x -= 2.625/2.75; return 7.5625*x*x+.984375;
 }
-float Ease(uint id, float t, float d, float amplitude, float period)
+// HLSL asin's D3D11 approximation is too loose for DOTween elastic phases.
+// Evaluate the reduced asinf rational polynomial and reconstruct above 1/2.
+float AsinPhase(float x)
+{
+    precise float z = x <= .5 ? x*x : (1-x)*.5;
+    precise float p = z*(.16666586697+z*(-.042743422091+z*(-.008656363003)));
+    precise float r = p/(1+z*(-.70662963390));
+    if(x<=.5) return x+x*r;
+    precise float s=sqrt(z);
+    return 1.5707963705062866-2*(s+s*r);
+}
+precise float Ease(uint id, float t, float d, float amplitude, float period)
 {
     const float pi = 3.1415927410125732421875;
-    float x=t/d, y;
+    precise float x=t/d, y;
     if (id==1) return x;
     if (id==2) return 1-cos(x*(pi*.5));
     if (id==3) return sin(x*(pi*.5));
@@ -50,18 +64,19 @@ float Ease(uint id, float t, float d, float amplitude, float period)
     if(id==17) return t==0 ? 0 : exp2(10*(x-1));
     if(id==18) return t==d ? 1 : 1-exp2(-10*t/d);
     if(id==19) { if(t==0) return 0; if(t==d) return 1; y=t/(d*.5); return y<1 ? .5*exp2(10*(y-1)) : .5*(2-exp2(-10*(y-1))); }
-    if(id==20) return 1-sqrt(1-x*x);
+    if(id==20) return t==d ? 1 : 1-sqrt(1-x*x);
     if(id==21) { y=x-1; return sqrt(1-y*y); }
-    if(id==22) { y=t/(d*.5); if(y<1) return -.5*(sqrt(1-y*y)-1); y-=2; return .5*(sqrt(1-y*y)+1); }
+    if(id==22) { if(t==d*.5) return .5; y=t/(d*.5); if(y<1) return -.5*(sqrt(1-y*y)-1); y-=2; return .5*(sqrt(1-y*y)+1); }
     if(id>=23 && id<=25)
     {
         if(t==0) return 0;
+        if(t==d) return 1;
         y=id==25 ? t/(d*.5) : x;
         if(y==(id==25 ? 2 : 1)) return 1;
         if(period==0) period=d*(id==25 ? .45000002 : .3);
-        float phase;
+        precise float phase;
         if(amplitude<1) { amplitude=1; phase=period/4; }
-        else phase=period/(pi*2)*asin(1/amplitude);
+        else phase=period/(pi*2)*AsinPhase(1/amplitude);
         if(id==23) { y-=1; return -amplitude*exp2(10*y)*sin((y*d-phase)*(pi*2)/period); }
         if(id==24) return amplitude*exp2(-10*y)*sin((y*d-phase)*(pi*2)/period)+1;
         bool first=y<1; y-=1;
@@ -127,4 +142,15 @@ void Evaluate(uint3 thread:SV_DispatchThreadID)
         _Vertices.Store4(address+12,asuint(color));
         _Vertices.Store2(address+28,asuint(_UV[i*4+k]));
     }
+}
+// A Unity Mesh owns its vertex buffer. D3D11 cannot bind 1,000 UAVs to one
+// dispatch; this diagnostic measures a pre-recorded GPU copy per run instead.
+[numthreads(64,1,1)]
+void CopyRun(uint3 thread:SV_DispatchThreadID)
+{
+    uint i=thread.x; if(i>=_CopyVertexCount) return;
+    uint src=(_CopyFirstVertex+i)*36, dst=i*36;
+    _Vertices.Store4(dst,_CopySource.Load4(src));
+    _Vertices.Store4(dst+16,_CopySource.Load4(src+16));
+    _Vertices.Store(dst+32,_CopySource.Load(src+32));
 }

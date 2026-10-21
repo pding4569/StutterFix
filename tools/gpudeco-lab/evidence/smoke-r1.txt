@@ -1,0 +1,6 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco-lab] ease samples=101475 max=0.00165259838104 mean=4.02213904572E-07 over_2e-5=526 supported=0..31,36 fallback=Flash,custom
+GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: ease probe tolerance exceeded
+  at GpuDecoLab.Probe (UnityEngine.ComputeShader shader) [0x00304] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:93 
+  at GpuDecoLab.SmokeBody () [0x00000] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:55 
+  at GpuDecoLab.Run (System.Action action, System.String name) [0x000a2] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:43 

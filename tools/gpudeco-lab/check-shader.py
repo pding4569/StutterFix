@@ -16,7 +16,7 @@ def method(blob, index, restype):
     return C.WINFUNCTYPE(restype, C.c_void_p)(table[index])(blob)
 
 
-for entry in ('EaseProbe', 'Evaluate'):
+for entry in ('EaseProbe', 'Evaluate', 'CopyRun'):
     code, errors = C.c_void_p(), C.c_void_p()
     try:
         hr = compile_shader(source, len(source), b'GpuDeco.compute', None, None,

@@ -13,12 +13,22 @@ namespace StutterFix
     {
         static bool gpuExportOwnedLow;
         static int gpuExports;
+        static Stopwatch gpuPrepareWatch;
+        static void CheckGpuPrepareBudget()
+        {
+            if (gpuPrepareWatch == null || !gpuPrepareWatch.IsRunning || gpuPrepareWatch.Elapsed.TotalSeconds < 300) return;
+            GpuLog("GPUDECO_G1=ERROR stage=prepare prepare_ms=" + gpuPrepareWatch.Elapsed.TotalMilliseconds.ToString("F6", CultureInfo.InvariantCulture)
+                + " reason=first_export_budget_300s status=" + status);
+            gpuPrepareWatch.Stop();
+            throw new InvalidOperationException("gpudeco: open부터 첫 export까지 300초 예산 초과");
+        }
         internal static bool GpuStep(string arg)
         {
             string command = (arg ?? "").Trim();
             if (command == "ready") return Step("ready");
-            if (command == "reset") { gpuExportOwnedLow = false; gpuExports = 0; GpuLog("export_result_reset=True"); return true; }
-            if (command == "off") { GpuLog("on=False owned=0"); return true; }
+            if (command == "reset") { gpuPrepareWatch = null; gpuExportOwnedLow = false; gpuExports = 0; GpuLog("export_result_reset=True"); return true; }
+            if (command == "prepare") { gpuPrepareWatch = Stopwatch.StartNew(); GpuLog("prepare_begin budget_ms=300000 includes=open,bake,seek,export"); return true; }
+            if (command == "off") { gpuPrepareWatch = null; GpuLog("on=False owned=0"); return true; }
             if (command == "state") { GpuLog("on=False stage=export-lab ready=" + ready + " generation=" + Generation); return true; }
             if (command == "result") { GpuLog("GPUDECO_G1=" + (gpuExportOwnedLow ? "OWNED_LOW" : "ERROR") + " stage=export-lab exports=" + gpuExports + " reason=real_export_G0_and_game_pixels_required"); return true; }
             if (command == "on") throw new InvalidOperationException("gpudeco: 실제 export G0 및 번들 검증 전 게임 연결 금지");
@@ -32,6 +42,7 @@ namespace StutterFix
         static void Put(float[] output, int index, Vector3 v) { output[index] = v.x; output[index+1] = v.y; output[index+2] = v.z; }
         static void ExportGpu(string path)
         {
+            CheckGpuPrepareBudget();
             var watch = Stopwatch.StartNew();
             if (!ready || table == null || Adopting || LiveDecoRenderer.Active) throw new InvalidOperationException("export: bake ready, adopt/livedeco off 필요");
             if (!ADOBase.controller || !ADOBase.controller.paused || Time.timeScale != 0) throw new InvalidOperationException("export: framecmp pause 필요");
@@ -89,6 +100,13 @@ namespace StutterFix
             data.Items = items.ToArray();
             string output = Path.GetFullPath(path); Directory.CreateDirectory(Path.GetDirectoryName(output));
             using (var stream = new FileStream(output, FileMode.CreateNew, FileAccess.Write, FileShare.None)) data.Write(stream);
+            CheckGpuPrepareBudget();
+            if (gpuExports == 0 && gpuPrepareWatch != null)
+            {
+                gpuPrepareWatch.Stop();
+                GpuLog("prepare_ms=" + gpuPrepareWatch.Elapsed.TotalMilliseconds.ToString("F6", CultureInfo.InvariantCulture)
+                    + " phase=first_export includes=open,bake,seek,export bake_wall_ms=" + workerWallMs.ToString("F6", CultureInfo.InvariantCulture));
+            }
             GpuLog("prepare_ms=" + watch.Elapsed.TotalMilliseconds.ToString("F6", CultureInfo.InvariantCulture) + " phase=export owned=" + items.Count + " awake=" + data.Awake
                 + " raw=" + data.RawTime.ToString("R", CultureInfo.InvariantCulture) + " tb=" + data.BakeTime.ToString("R", CultureInfo.InvariantCulture) + " path=" + output);
             GpuLog("export_reject " + string.Join(" ", reasons.Select(x => x.Key + "=" + x.Value)));

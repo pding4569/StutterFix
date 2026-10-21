@@ -1,0 +1,21 @@
+{
+  "source_sha256": {
+    "DecoBake.cs": "f39934e8e2bf57d3b07a0a5b38e1e3e0ab9c6956f2950d4603fc72424ff3a7b0",
+    "FrameCompare.cs": "093e5a937644eeaf7931f08cbfe84623954e7a9d9cb5e39f0e5b60df5a8aabbf",
+    "GpuDecoExport.cs": "04b1ebb0ec0ae889bc0a765a863de6f4378c25c8df946e8ac9ab5cbd4ff508db",
+    "tools/gpudeco-lab/GpuDecoLab.cs": "3f2496a94426ae6d616073c0a800038a7bd3285017d23b3d1fa8d95c1fbb87b5",
+    "tools/gpudeco-lab/GpuDeco.compute": "2602a55d3a65a26fa194dcf62ea228257415826a87bb15522efde2bca209b38d",
+    "tools/gpudeco-lab/prepare.ps1": "0921a9438c70c22993c9a0a541b8e500413a37d1d0fbc546a1c697800dd8cdf5",
+    "tools/optimization/gpudeco-steps.py": "033101c46e5cf084f80043856c9859623152d3e5d9aa5b374fe190bd9f1c776b"
+  },
+  "lab_image": {
+    "size": [
+      128,
+      128
+    ],
+    "changed": 0,
+    "max_channel": 0,
+    "scope": "synthetic lab, not game G1"
+  },
+  "real_exports": 0
+}

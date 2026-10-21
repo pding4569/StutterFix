@@ -1,0 +1,6 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco-lab] runs raw_buffers=1000 decorations=2000 vertices=8000 max_world=0 mismatches=0 readable=False
+GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: raw mesh draw empty
+  at GpuDecoLab.Draw (UnityEngine.Mesh[] meshes, System.String filename) [0x00171] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:324 
+  at GpuDecoLab.RunsBody () [0x002d0] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:296 
+  at GpuDecoLab.Run (System.Action action, System.String name) [0x000a2] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:43 
