@@ -25,6 +25,8 @@ for t in (262, 270, 276):
     sample = a[start:]
     assert sample[:4] == ['stop', f'seek {t} 12', f'waitsongpos {t} 40', 'pause']
     assert sample.index('framecmp noise N1 N2') < sample.index('framecmp grab A')
+    assert sample[sample.index('framecmp noise N1 N2')+1] == 'framecmp assertzero N1 N2'
+    assert sample.index('framecmp assertzero N1 N2') < sample.index('livedeco on')
     assert sample.index('framecmp grab A') < sample.index('livedeco on') < sample.index('framecmp grab B')
     assert sample.index('framecmp grab B') < sample.index('livedeco off') < sample.index('framecmp grab A2')
 assert [s for s in steps if s.startswith('livedeco2 begin ')] == [

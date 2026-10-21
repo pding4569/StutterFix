@@ -1,4 +1,15 @@
 
+## codex-al-ga-4 수정 — 2026-10-21 (검증 로그 run5)
+- 시작 HEAD 3b8bdd6, 작업 트리 깨끗함. 기존 계층·ToggleVisible·바운드 검사 유지.
+- run3 전달 실측: 소유/구간 1,472/1,100, ab_out=2,278 / maxdiff=5 / aa2_out=769 / stable=False, GATE2=ERROR unstable_baseline. Prof samples=972,702 / set_pct=69.249446% / valid=True(기존 Step 표본 한계 유지). FPS 미도달.
+- 기존 night-results/al-ga-3.log에서 소유 전 잡음 818(262초)/1,194(270초) 추가 확인. 818개 잡음과 A/A2 차이의 상위 영역이 중첩된다. Renderer 상태는 같았으므로 A/B 차이 전부를 메시 오류로 단정하지 않는다. 출처 해시·발췌 보존.
+- 디컴파일 PlanetSprite.LateUpdate는 Time.unscaledTime * 12 % 11을 재질 _Frame에 쓴다. 기존 정지는 PlanetRenderer.LateUpdate만 막고 상태 검사도 이 uniform을 읽지 않았다. 설치 게임 IL·동일 DLL 해시로 교차확인. 게임 메서드 실행 없음.
+- 두 타입의 instance void LateUpdate/0을 유일 선택해 같은 !Paused Prefix 적용. Resume/오류/종료의 기존 Harmony 해제 경로 유지. 마지막 값을 보존하고 재질을 강제로 변경하지 않는다.
+- FrameCompare 상태에 sharedMaterial의 planetFrame, GatePixel에 잡음/복원 필드 차이 로그 추가. 생성기는 132단계로 각 noise 뒤 assertzero N1 N2를 수행해 불안정 기준을 ERROR로 중단. 필터 켬·픽셀 0·중앙 20%·FPS +15% 유지.
+- 3종 빌드 오류 0/0/0, LoadCheck 틀림 0/0/0. FrameCompare 11/15/15/17/19/2, 계층 2,729·바운드 482·스크립트 15·구간 106,460·판정 18·edition 31·패치 17·MatShare 25,401 및 24/25/132 생성기 검사 통과.
+- 게임 실행·설치·커밋·푸시·config 수정 없음. 동일 코드 게임 시험 반복 없음. 잡음 전체 기여량·수정 후 소유/픽셀/FPS/GC/수명은 미측정. 재생 중 scan 비용을 고쳤다는 주장은 하지 않는다. GATE2=PASS 미달성.
+- 결과 문서 최신 run5 절·10줄 요약·gate2-A-run5-* 검증 로그 갱신. 자동 루프는 변경된 132단계로 잡음 0/상태 안정성부터 확인한다.
+
 ## codex-al-ga-3 수정 — 2026-10-21 (검증 로그 run4)
 - 시작 HEAD 4e59c35, 작업 트리 깨끗함. 계층·프로파일·ToggleVisible 수정 유지.
 - run2 전달 실측: 소유/구간 0/0, 정점 검사 2,087개 전부 제외, max_err=0.100000374. Prof samples=987,093 / set_pct=69.311975% / valid=True. 픽셀/FPS 미도달.
@@ -96,3 +107,24 @@
   - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1472 runs=1100 vertex_ms=2.619300 upload_ms=2.535200 reconcile_ms=36.642200 scan_ms=841.307000 upload_calls=1100.000 allocated_bytes=0 steady_a
   - [StutterFix] [livedeco] cost per_frame=1 samples=9 owned=1472 runs=1100 vertex_ms=2.567067 upload_ms=1.363356 reconcile_ms=0.000000 scan_ms=34.416711 upload_calls=1100.000 allocated_bytes=0 steady_all
   - [StutterFix] [livedeco2] GATE2=ERROR reason=unstable_baseline variant=A on=False
+
+## 회차 4
+- Codex 요약: `PlanetSprite` 재질 애니메이션의 일시정지 누락을 수정했습니다.
+
+- 3종 빌드·LoadCheck 오류 0, 회귀 검사 통과.
+- 결과 문서·장부·10줄 요약 갱신.
+- 게임 실행·설치·커밋 없음.
+
+수정 후 실픽셀·FPS는 미측정이므로 **Gate 2 PASS는 아직 아닙니다.**
+
+[결과 문서](E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] transition frame=23165 owned=1478 runs=1114 created=1114 reused=0 destroyed=0 reconcile_ms=21.626100
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1478 runs=1114 vertex_ms=2.775600 upload_ms=2.702700 reconcile_ms=21.626100 scan_ms=290.741500 upload_calls=1114.000 allocated_bytes=0 steady_a
+  - [StutterFix] [livedeco] cost per_frame=1 samples=8 owned=1478 runs=1114 vertex_ms=2.753813 upload_ms=1.437425 reconcile_ms=0.000000 scan_ms=35.655163 upload_calls=1114.000 allocated_bytes=0 steady_all
+  - [StutterFix] [livedeco] transition frame=24488 owned=1577 runs=1230 created=1230 reused=0 destroyed=0 reconcile_ms=88.958400
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1577 runs=1230 vertex_ms=2.679800 upload_ms=2.200600 reconcile_ms=88.958400 scan_ms=351.548500 upload_calls=1230.000 allocated_bytes=0 steady_a
+  - [StutterFix] [livedeco] cost per_frame=1 samples=5 owned=1577 runs=1230 vertex_ms=2.727280 upload_ms=1.510000 reconcile_ms=0.000000 scan_ms=34.950140 upload_calls=1230.000 allocated_bytes=0 steady_all
+  - [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False

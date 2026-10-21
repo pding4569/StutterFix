@@ -1,3 +1,68 @@
+# Gate 2 A 최신 수정 — 행성 재질 애니메이션 정지 누락 (2026-10-21, 로그 run5)
+
+**일시정지 중에도 진행하던 PlanetSprite의 재질 애니메이션을 막고 오프라인 검증을 완료했다. 수정 후 실픽셀·FPS는 미측정이며 Gate 2 PASS를 선언하지 않는다.** codex-al-ga-4.md → 장부 → run3 전달 증거 순서로 확인했고, 시작 HEAD는 `3b8bdd6`, 작업 트리는 깨끗했다. 기존 계층·ToggleVisible·바운드 검사는 유지했다. 게임 실행·설치·커밋·푸시·`.codex/config.toml` 수정은 하지 않았다.
+
+## 전달 시험과 추가로 찾은 원본 로그
+
+[run3 전달 증거](ga-autoloop-run3-evidence.txt)의 262초 결과는 소유 1,472개 / 구간 1,100개, 정점 검사 2,087개 중 615개 제외(bounds-error 611 / vertex-error 4)다. vertex_max_err=0.00013647876, bounds_max_err=0.000272957521, local_bounds_z=0.2가 실제로 기록됐다. 소유된 장식의 오차는 기존 1e-4 이하다. Prof는 samples=972,702 / set_pct=69.249446% / valid=True이며, 앞서 기록한 Step 표본·PairXY/GroupStep 억제·후속 엔진 비용 제외 한계는 유지한다.
+
+| 전달 실측 | 값 |
+|---|---:|
+| 262초 A↔B 변경 / 최대 채널 차이 | 2,278 / 5 |
+| 262초 A↔A2 변경 | 769 |
+| 안정성 / 최종 판정 | False / GATE2=ERROR, unstable_baseline |
+| 정상 상태 표본 9프레임의 vertex / upload / scan ms | 2.567067 / 1.363356 / 34.416711 |
+| 같은 9프레임의 upload_calls / steady_allocated_bytes | 1,100 / 0 |
+| 입장 프레임 reconcile / scan ms | 36.642200 / 841.307000 |
+| ABBA FPS | 미도달 |
+
+워크트리 밖 **기존** `E:/StutterFixWork/night-results/al-ga-3.log`를 읽기만 해, 요약에서 빠졌던 잡음 대조를 찾았다. [출처 해시와 발췌](gate2-A-run5-prior-capture-evidence.txt)에 보존했다. 이번에 게임을 실행해 수집한 자료가 아니다.
+
+- 렌더러를 켜기 전 262초 N1↔N2부터 **818픽셀**, 최대 RGBA 4/3/4/0이었다. 당시 rendererStateEqual=True였으므로 기존 상태 검사가 보지 못하는 출력 변화가 있었다.
+- 잡음의 상위 영역은 (1376,864), (1344,864), (1312,864) 등이다. A↔A2의 상위 영역도 같은 위치에 집중된다. 이후 270초 잡음도 1,194픽셀이다. 위치 중첩은 원인 추적의 단서이며 기여량의 증명은 아니다.
+- 따라서 A↔B 2,278개를 모두 메시 오류로 단정할 수 없다. 잡음을 빼서 차이를 0으로 만들거나 마스크·임계를 늘리지 않았다. 9프레임의 할당 0 역시 전체 곡·성능·수명 검증으로 확대하지 않는다.
+
+## 코드 원인과 수정
+
+지정 디컴파일 `E:/StutterFixWork/decompiled/Assembly-CSharp/PlanetSprite.cs:82–84`의 `LateUpdate`는 매 프레임 `meshRenderer.material.SetFloat("_Frame", Time.unscaledTime * 12f % 11f)`를 실행한다. 기존 진단 정지는 **PlanetRenderer.LateUpdate만** 차단했다. Time.timeScale=0 / DOTween.timeScale=0 / controller.paused로는 PlanetSprite의 unscaledTime 재질 갱신을 막지 못한다. 기존 상태 서명은 행렬·Sprite ID·color·재질 ID를 비교하지만 이 재질 값은 포함하지 않았다.
+
+[설치 게임 PlanetSprite IL](gate2-A-run5-planetsprite-il.log)에서 get_material → get_unscaledTime → Material.SetFloat 호출을, [PlanetRenderer IL](gate2-A-run5-planetrenderer-il.log)에서 별도 LateUpdate 경로를 교차확인했다. [게임 DLL 해시](gate2-A-run5-game-hash.txt)는 기존 F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF와 같다. ilscan은 메타데이터만 읽고 게임 메서드를 실행하지 않았다.
+
+1. `FrameCompare.FreezePlanets`가 두 타입의 선언된 instance void LateUpdate/0을 정확히 하나씩 선택해 **같은 !Paused Prefix**를 건다. 마지막 표시 값을 유지하며 재질 값을 강제로 쓰지 않는다. 부분 패치 실패도 기존 Pause→Resume 정리에서 같은 Harmony ID로 해제된다. 정상 resume/stop/error/unload의 복원 경로도 그대로 사용한다.
+2. 캡처 상태에 PlanetSprite의 `planetFrame`을 추가한다. 기존 meshRenderer 참조를 이용하고 **sharedMaterial**로 읽어 감사 과정에서 재질을 복제하지 않는다. 숨김 상태 구분과 모든 기존 안정성 조건은 유지한다. 이 값은 모든 셰이더 속성의 완전한 감사가 아니다.
+3. `GatePixel`에 `gate2-restore`의 실제 필드 차이와 `gate2-baseline noise_valid/noise_out/noise_state_stable/restored_fields/aa2_out`을 추가했다. 다음 오류에서 잡음과 복원 상태 변경을 구분할 수 있다. 최종 판정식은 바꾸지 않았다.
+4. Gate 2 생성기는 세 시점 각각 `noise N1 N2` 바로 뒤에 **assertzero N1 N2**를 수행한다(129→132단계). 잡음 픽셀 0과 상태 동일을 확인한 뒤 A→on→B→off→A2로 진행한다. 불안정하면 ERROR로 끝내며 재시도·유리한 표본 선택·잡음 상쇄는 하지 않는다. filters on·중앙 20% 제외·픽셀 임계 0·프로파일→3시점→ABBA 순서는 유지한다.
+
+이 정지 누락은 코드·IL로 확인했지만, **818/769개 전체가 이 경로 때문인지, A↔B에 독립적인 메시 차이가 얼마나 남는지는 미확정**이다. 필터 비활성화나 렌더러 방식 변경으로 우회하지 않았다. renderer_version=4와 소유/바운드 정책도 그대로다.
+
+## 오프라인 검증
+
+| 검사 | 결과 | 근거 |
+|---|---|---|
+| Release DEV / Player / PlayerAuto | 오류 0/0/0, 경고 38/4/38 | gate2-A-run5-build-dev.log / -player.log / -auto.log |
+| LoadCheck DEV / Player / PlayerAuto | 276/229/276곳, 틀림 0/0/0 | gate2-A-run5-loadcheck-dev.log / -player.log / -auto.log |
+| FrameCompare RGBA / 마스크 / 상태 / 대조 | 11 / 15 / 15 / 17 checks 통과 | [framecmp](gate2-A-run5-framecmp-fixture.log) |
+| FrameCompare edition·생산 정지 IL / 설치 게임 두 콜백 서명 | 19 / 2 checks 통과 | 같은 로그 |
+| 생산 계층 / 컬링 바운드 / 스크립트 판정 | 2,729 / 482 / 15 checks 통과 | [geometry](gate2-A-run5-geometry-fixture.log) |
+| 구간·앵커 / Gate 2 판정 / edition / 패치 대상 | 106,460 / 18 / 31 / 17 checks 통과 | [fixture](gate2-A-run5-fixture.log) |
+| MatShare / FrameCompare 기존 steps | 25,401 / 24 checks 통과 | gate2-A-run5-matshare-fixture.log / -framecmp-steps-fixture.log |
+| Gate 1 / Gate 2 생성기 | 25 / 132단계, UTF-8 CLI 통과 | gate2-A-run5-gate1-steps-fixture.log / -steps-fixture.log |
+| git diff --check | 통과 | 최종 로컬 검사 |
+
+새 fixture는 같은 행렬/재질 ID여도 planetFrame 변경이 상태 차이로 검출되는지와, 실제 DEV/PlayerAuto IL에 두 타입을 대상으로 한 정지 설치 호출이 있는지 검사한다. 설치 게임의 두 메서드도 instance void LateUpdate/0 서명으로 각각 유일함을 확인했다. 일반 Player의 FrameCompare·LiveDeco 타입/참조 부재를 확인했다. **실제 Mono Harmony 실행·Unity 네이티브 렌더링·픽셀·FPS·수명 복원을 검증한 것은 아니다.** LoadCheck 동적 이름 5곳과 기존 빌드 경고는 남는다.
+
+## 인계와 한계
+
+자동 루프는 변경된 **132단계 생성기**를 사용한다. 새 pause 로그의 PlanetSprite._Frame, N1↔N2 `planetFrame` 안정성과 변경 픽셀 0을 먼저 확인한다. 그 뒤 262/270/276초 A↔B=0, A↔A2=0·상태 동일, off/on/on/off 262→276초 평균 FPS +15%를 모두 만족해야 PASS다. 잡음이 남으면 기존 ERROR를 유지하며 새 로그로 다른 갱신원을 판별한다.
+
+수정 후 소유/구간·실픽셀·FPS·GC·재시작/사망/맵 재열기/언로드 복원은 미측정이다. 이번 변경은 진단 일시정지와 검사에 한정되므로 재생 중 scan_ms 등 성능 문제를 해결했다고 주장하지 않는다. 새로운 설계 한계로 확정할 증거는 아직 없고, 코드에서 확인한 정지 누락을 수정했다. 동일 코드 게임 시험 반복은 하지 않았다.
+
+task-observer v3.5.0 관찰 반환(사용자 범위 스킬·메모리 쓰기 없음): 문제 — 행성 표시를 멈출 때 부모의 콜백만 막으면 자식이 쓰는 재질 애니메이션은 진행하고 Renderer 서명은 같게 남는다. 개선 — 별도 콜백의 시간원·재질 쓰기를 추적하고 해당 값을 상태 검사에 포함한다. 원칙 — 기준 화면의 잡음과 복원 차이를 먼저 분리한 뒤 구현 차이를 해석한다.
+
+---
+
+아래는 보존한 이전 수정 결과다.
+
 # Gate 2 A 최신 수정 — 정점과 컬링 바운드 비교 오류 (2026-10-21, 로그 run4)
 
 **검증 코드의 서로 다른 도형 비교를 수정하고 오프라인 검증을 완료했다. 실게임 원인 확정·소유·픽셀·FPS는 미측정이며 Gate 2 PASS를 선언하지 않는다.** codex-al-ga-3.md·장부·run2 증거를 먼저 읽었다. 시작 HEAD는 `4e59c35`, 작업 트리는 깨끗했다. 기존 계층·프로파일·ToggleVisible 수정은 유지했다. 게임 실행·설치·커밋·푸시·config 수정은 하지 않았다.

@@ -3,6 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+using System.Reflection.Emit;
+using System.Reflection.Metadata.Ecma335;
+using System.Collections.Generic;
 using StutterFix;
 
 int n = 0;
@@ -73,7 +76,7 @@ Check(Snapshot(false, "matrix", "1").Compare(Snapshot(false, "matrix", "2")).Ign
 Check(new FrameCompareState().Compare(baseline).Changed == 1, "visible renderer added");
 Check(baseline.Compare(new FrameCompareState()).Changed == 1, "visible renderer removed");
 Check(new FrameCompareState().Compare(Snapshot(false, "enabled", "False")).Ignored == 1, "hidden membership counted");
-foreach (string field in new[] { "size", "RT", "projection", "forceRenderingOff", "sortingOrder", "materials" })
+foreach (string field in new[] { "size", "RT", "projection", "forceRenderingOff", "sortingOrder", "materials", "planetFrame" })
     Check(Snapshot(true, field, "old").Compare(Snapshot(true, field, "new")).Details.Contains(field + "=old->new"), "diagnostic field " + field);
 Check(Snapshot(false, "enabled", "False").Compare(baseline).Changed > 0, "hidden to visible rejected");
 Console.WriteLine($"FrameCompareState: {n - stateStart} checks passed (synthetic snapshots; no Unity lifecycle evidence)");
@@ -107,15 +110,62 @@ Check(FrameCompareMetrics.Compare(overlap, Overlap(true, false), 100, 100, 0, ne
 Check(FrameCompareMetrics.Compare(overlap, Overlap(false, true), 100, 100, 0, new[] { center }).Changed == 144, "hide front reveals red outside exclusion");
 Check(FrameCompareMetrics.Compare(overlap, Overlap(false, false), 100, 100, 0, new[] { center }).Changed == 0, "restored overlap negative zero");
 Console.WriteLine($"FrameCompare controls: {n - controlStart} checks passed (analytic rule model and verdict; no live rendering evidence)");
-if (args.Length == 3)
+// Decode instruction boundaries: never search raw byte substrings for tokens.
+IEnumerable<(OpCode Op, int Token)> Tokens(byte[] il)
 {
-    for (int i = 0; i < args.Length; i++)
+    var codes = typeof(OpCodes).GetFields().Where(f => f.FieldType == typeof(OpCode))
+        .Select(f => (OpCode)f.GetValue(null)).ToDictionary(c => c.Value);
+    for (int p = 0; p < il.Length;)
+    {
+        short code = il[p++]; if (code == 0xfe) code = (short)(0xfe00 | il[p++]);
+        var op = codes[code]; int size = op.OperandType switch {
+            OperandType.InlineNone => 0,
+            OperandType.ShortInlineBrTarget or OperandType.ShortInlineI or OperandType.ShortInlineVar => 1,
+            OperandType.InlineVar => 2,
+            OperandType.InlineI8 or OperandType.InlineR => 8,
+            OperandType.InlineSwitch => 4 + 4 * BitConverter.ToInt32(il, p),
+            _ => 4 };
+        if (op.OperandType is OperandType.InlineMethod or OperandType.InlineType or OperandType.InlineTok)
+            yield return (op, BitConverter.ToInt32(il, p));
+        p += size;
+    }
+}
+if (args.Length >= 3)
+{
+    int editionStart = n;
+    for (int i = 0; i < 3; i++)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
         foreach (var name in new[] { "FrameCompare", "FrameCompareMetrics", "FrameCompareState", "FrameCompareControlPolicy" })
             Check(names.Contains(name) == (i != 0), "edition isolation: " + args[i] + " " + name);
         if (i == 0) Check(!md.TypeReferences.Any(h => md.GetString(md.GetTypeReference(h).Name).StartsWith("FrameCompare")), "Player has no framecmp type references");
+        else
+        {
+            var type = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name) == "FrameCompare");
+            var freeze = type.GetMethods().Select(md.GetMethodDefinition).Single(m => md.GetString(m.Name) == "FreezePlanets");
+            var tokens = Tokens(pe.GetMethodBody(freeze.RelativeVirtualAddress).GetILBytes()).ToArray();
+            foreach (string target in new[] { "PlanetRenderer", "PlanetSprite" })
+                Check(tokens.Any(t => t.Op == OpCodes.Ldtoken && MetadataTokens.Handle(t.Token).Kind == HandleKind.TypeReference
+                    && md.GetString(md.GetTypeReference((TypeReferenceHandle)MetadataTokens.Handle(t.Token)).Name) == target),
+                    "production diagnostic pause includes " + target);
+            Check(tokens.Count(t => t.Op == OpCodes.Call && MetadataTokens.Handle(t.Token).Kind == HandleKind.MethodDefinition
+                && md.GetString(md.GetMethodDefinition((MethodDefinitionHandle)MetadataTokens.Handle(t.Token)).Name) == "FreezePlanetUpdate") == 2,
+                "both game callbacks use the production strict hook selector");
+        }
     }
-    Console.WriteLine("FrameCompare edition metadata: 13 checks passed; Player absent (including references), Developer/PlayerAuto present");
+    Console.WriteLine($"FrameCompare edition/pause metadata: {n - editionStart} checks passed; Player absent, both unscaled callbacks included");
+}
+if (args.Length == 4)
+{
+    using var stream = File.OpenRead(args[3]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
+    foreach (string name in new[] { "PlanetRenderer", "PlanetSprite" })
+    {
+        var type = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name) == name);
+        Check(type.GetMethods().Select(md.GetMethodDefinition).Count(m => md.GetString(m.Name) == "LateUpdate"
+            && !m.Attributes.HasFlag(System.Reflection.MethodAttributes.Static) && m.GetGenericParameters().Count == 0
+            && md.GetBlobBytes(m.Signature).SequenceEqual(new byte[] { 0x20, 0, 1 })) == 1,
+            "installed-game unique instance void LateUpdate/0: " + name);
+    }
+    Console.WriteLine("FrameCompare installed-game pause hooks: 2 unique exact-signature targets passed; no game methods invoked");
 }

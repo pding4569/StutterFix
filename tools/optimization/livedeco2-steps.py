@@ -14,7 +14,8 @@ def build(chart):
         steps += ['livedeco off', 'stop', f'seek {sample} 12',
                   f'waitsongpos {sample} 40', 'pause', 'framecmp clear',
                   'framecmp filters on', 'framecmp ui exclude', 'framecmp mask center',
-                  'framecmp noise N1 N2', 'framecmp grab A', 'livedeco on',
+                  'framecmp noise N1 N2', 'framecmp assertzero N1 N2',
+                  'framecmp grab A', 'livedeco on',
                   'wait 0.2', 'framecmp grab B', 'livedeco off', 'wait 0.2',
                   'framecmp grab A2', 'framecmp diff A B 0', 'framecmp diff A A2 0',
                   f'livedeco2 pixel {sample}', 'resume']

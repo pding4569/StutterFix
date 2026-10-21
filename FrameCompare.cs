@@ -30,12 +30,21 @@ namespace StutterFix
         static readonly Harmony pausePatch = new Harmony("StutterFix.framecmp.pause");
         static readonly HashSet<ParticleSystem> pausedParticles = new HashSet<ParticleSystem>();
         static bool PlanetUpdate() => !Paused;
+        static void FreezePlanetUpdate(Type type)
+        {
+            var methods = type.GetMethods(AccessTools.all).Where(m => m.DeclaringType == type
+                && m.Name == "LateUpdate" && !m.IsStatic && !m.IsGenericMethod
+                && m.ReturnType == typeof(void) && m.GetParameters().Length == 0).ToArray();
+            if (methods.Length != 1) throw new MissingMethodException(type.Name + ".LateUpdate/0: " + methods.Length);
+            pausePatch.Patch(methods[0], prefix: new HarmonyMethod(typeof(FrameCompare), nameof(PlanetUpdate)));
+        }
         static void FreezePlanets()
         {
-            // Diagnostic pause only: LateUpdate reads unscaledTime even at timeScale=0.
-            var late = AccessTools.Method(typeof(PlanetRenderer), "LateUpdate");
-            if (late == null) throw new MissingMethodException("PlanetRenderer.LateUpdate");
-            pausePatch.Patch(late, prefix: new HarmonyMethod(typeof(FrameCompare), nameof(PlanetUpdate)));
+            // Both callbacks read unscaledTime at timeScale=0. PlanetSprite writes
+            // material._Frame without changing the renderer matrix/sprite/color.
+            // Keep the last displayed frame; Resume unpatches both, without a setter.
+            FreezePlanetUpdate(typeof(PlanetRenderer));
+            FreezePlanetUpdate(typeof(PlanetSprite));
             foreach (var planet in Resources.FindObjectsOfTypeAll<PlanetRenderer>())
             {
                 if (!planet || !planet.gameObject.scene.IsValid()) continue;
@@ -45,7 +54,7 @@ namespace StutterFix
                 foreach (var ps in particles)
                     if (ps && ps.isPlaying) { pausedParticles.Add(ps); ps.Pause(false); }
             }
-            Log("pause planet LateUpdate frozen; owned playing particle systems=" + pausedParticles.Count);
+            Log("pause planet LateUpdate and PlanetSprite._Frame frozen; owned playing particle systems=" + pausedParticles.Count);
         }
         static void RestorePlanets()
         {
@@ -96,8 +105,11 @@ namespace StutterFix
             var mask = new[] { FrameCompareMetrics.Mask.Parse("maskpct=0.5,0.5,0.2,0.2") };
             var result = p.Diff("A", "B", 0, mask);
             restored = p.Diff("A", "A2", 0, mask).Changed;
-            stable = p.noiseValid && p.lastNoiseStable && p.lastNoiseOutside == 0
-                && p.shots["A"].State.Compare(p.shots["A2"].State).Changed == 0;
+            var delta = p.shots["A"].State.Compare(p.shots["A2"].State);
+            p.LogDelta("gate2-restore", p.shots["A"].State, p.shots["A2"].State, delta);
+            stable = p.noiseValid && p.lastNoiseStable && p.lastNoiseOutside == 0 && delta.Changed == 0;
+            Log("gate2-baseline noise_valid=" + p.noiseValid + " noise_out=" + p.lastNoiseOutside
+                + " noise_state_stable=" + p.lastNoiseStable + " restored_fields=" + delta.Changed + " aa2_out=" + restored);
             return result;
         }
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
@@ -383,6 +395,11 @@ namespace StutterFix
             screen.Fields["colorSpace"] = QualitySettings.activeColorSpace.ToString();
             screen.Fields["MSAA"] = QualitySettings.antiAliasing.ToString(Inv);
             state.Entries.Add("screen", screen);
+            // Only these game sprites animate via a material uniform. Read sharedMaterial
+            // to avoid cloning it; ordinary renderer fields cannot detect this drift.
+            var planetSprites = new HashSet<int>(Resources.FindObjectsOfTypeAll<PlanetSprite>()
+                .Where(p => p && p.gameObject.scene.IsValid() && p.meshRenderer)
+                .Select(p => p.meshRenderer.GetInstanceID()));
             var renderers = Resources.FindObjectsOfTypeAll<Renderer>().Where(r => r && r.gameObject.scene.IsValid()).OrderBy(r => r.GetInstanceID()).ToArray();
             foreach (var r in renderers)
             {
@@ -398,6 +415,11 @@ namespace StutterFix
                 {
                     f["sprite"] = (s.sprite ? s.sprite.GetInstanceID() : 0).ToString(Inv);
                     f["color"] = Color(s.color); f["flip"] = s.flipX + "," + s.flipY;
+                    if (planetSprites.Contains(r.GetInstanceID()))
+                    {
+                        var material = r.sharedMaterial;
+                        f["planetFrame"] = material ? material.GetFloat("_Frame").ToString("R", Inv) : "no-material";
+                    }
                 }
                 state.Entries.Add("renderer:" + r.GetInstanceID().ToString(Inv), entry);
             }

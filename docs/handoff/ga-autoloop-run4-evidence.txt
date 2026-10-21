@@ -1,0 +1,40 @@
+[StutterFix] [자동 시험] 시작: 132단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco2 reset / stop / seek 262 12 / waitsongpos 262 40 / livedeco2 profilebegin / waitsongpos 276 40 / livedeco2 profileend / stop / livedeco off / stop / seek 262 12 / waitsongpos 262 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp assertzero N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 262 / resume / livedeco off / stop / seek 270 12 / waitsongpos 270 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp assertzero N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 270 / resume / livedeco off / stop / seek 276 12 / waitsongpos 276 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp assertzero N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 / framecmp diff A A2 0 / livedeco2 pixel 276 / resume / livedeco off / stop / seek 262 12 / waitsongpos 252 
+[StutterFix] [livedeco2] reset variant=A
+[StutterFix] [livedeco2] PROFILE begin enabled=True mode=off previous=False pairxy_suppressed=1 groupstep_suppressed=1
+[StutterFix] [livedeco2] PROFILE key=1 samples=172498 apply_us=0.072791 set_us=0.523852
+[StutterFix] [livedeco2] PROFILE key=2 samples=172759 apply_us=0.074264 set_us=0.203182
+[StutterFix] [livedeco2] PROFILE key=5 samples=173818 apply_us=0.072587 set_us=0.129648
+[StutterFix] [livedeco2] PROFILE key=7 samples=138915 apply_us=0.133623 set_us=0.028203
+[StutterFix] [livedeco2] PROFILE key=8 samples=138701 apply_us=0.134263 set_us=0.027889
+[StutterFix] [livedeco2] PROFILE key=9 samples=156204 apply_us=0.073700 set_us=0.273475
+[StutterFix] [livedeco2] PROFILE key=10 samples=535 apply_us=0.071589 set_us=0.745607
+[StutterFix] [livedeco2] PROFILE samples=953430 set_pct=69.633873 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
+[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000172633489 quad_bounds_err=0.100000076 local_bounds_z=0.2
+[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
+[StutterFix] [livedeco] transition frame=23165 owned=1478 runs=1114 created=1114 reused=0 destroyed=0 reconcile_ms=21.626100
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=2087 excluded=609 nested_admitted=1478 visibility_admitted=1478 threshold=0.0001 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb
+[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1478 runs=1114 vertex_ms=2.775600 upload_ms=2.702700 reconcile_ms=21.626100 scan_ms=290.741500 upload_calls=1114.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=11124736 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] excluded reason=bounds-error count=606
+[StutterFix] [livedeco] excluded reason=vertex-error count=3
+[StutterFix] [livedeco] excluded reason=repeat-tile count=38
+[StutterFix] [livedeco] excluded reason=keywords count=1
+[StutterFix] [livedeco] begin variant=A renderer_version=4 bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=1478 runs=1114 registry=157254 transitions=1 restored=0 error=none atlas=0
+[StutterFix] [livedeco] cost per_frame=1 samples=8 owned=1478 runs=1114 vertex_ms=2.753813 upload_ms=1.437425 reconcile_ms=0.000000 scan_ms=35.655163 upload_calls=1114.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=8 heap_delta=36864 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco2] PIXEL t=262 song=262.019824 ab_out=674 maxdiff=2 aa2_out=0 stable=True regions=(800,704,32,32):126;(896,800,32,32):87;(992,960,32,32):73;(864,704,32,32):45;(1600,864,32,32):39
+[StutterFix] [livedeco] on=False gate=2 variant=A restored=1
+[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.000122070313 quad_bounds_err=0.100000076 local_bounds_z=0.2
+[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=0.00013647876 quad_bounds_err=0.100000091 local_bounds_z=0.2
+[StutterFix] [livedeco] vertexdetail vertex_err=0 bounds_err=6.10351563E-05 quad_bounds_err=0.100000016 local_bounds_z=0.2
+[StutterFix] [livedeco] transition frame=24488 owned=1577 runs=1230 created=1230 reused=0 destroyed=0 reconcile_ms=88.958400
+[StutterFix] [livedeco] vertexcheck max_err=0.000272957521 count=2219 excluded=642 nested_admitted=1577 visibility_admitted=1577 threshold=0.0001 vertex_max_err=0.000122070313 bounds_max_err=0.000272957521 quad_bounds_max_err=0.100000374 bounds_source=renderer-local-aabb
+[StutterFix] [livedeco] cost per_frame=1 samples=1 owned=1577 runs=1230 vertex_ms=2.679800 upload_ms=2.200600 reconcile_ms=88.958400 scan_ms=351.548500 upload_calls=1230.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=0 heap_delta=38727680 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco] excluded reason=bounds-error count=639
+[StutterFix] [livedeco] excluded reason=vertex-error count=3
+[StutterFix] [livedeco] excluded reason=repeat-tile count=41
+[StutterFix] [livedeco] excluded reason=keywords count=1
+[StutterFix] [livedeco] begin variant=A renderer_version=4 bounds_policy=renderer-local-aabb visibility_policy=bound-self currentRenderPipeline=null atlas=0 material_clone=0 on=True gate=2 variant=A owned=1577 runs=1230 registry=157254 transitions=2 restored=1478 error=none atlas=0
+[StutterFix] [livedeco] cost per_frame=1 samples=5 owned=1577 runs=1230 vertex_ms=2.727280 upload_ms=1.510000 reconcile_ms=0.000000 scan_ms=34.950140 upload_calls=1230.000 allocated_bytes=0 steady_allocated_bytes=0 steady_samples=5 heap_delta=0 heap_scope=frame-work-excludes-cost-and-vertex-logs
+[StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False

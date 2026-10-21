@@ -1,0 +1,11 @@
+﻿Source: E:/StutterFixWork/night-results/al-ga-3.log SHA256: C20F99884F1299144816B37E36D5BACE00A17C529A95E7E46BBAB89EFACA9085
+[StutterFix] [framecmp] diff N1 N2 threshold=0 maxRGBA=4,3,4,0 changed=818/3538944 ratio=0.0002311423972800926 PSNR=83.579552932322258 top32(bottom-left,x,y,w,h,L1)=(1376,864,32,32):1302;(1344,864,32,32):788;(1312,864,32,32):52;(1408,864,32,32):30;(1376,896,32,32):1
+[StutterFix] [framecmp] noise outside=818 inside=2800 rendererStateEqual=True warning=True; noise floor advisory, continuing
+[StutterFix] [framecmp] diff A B threshold=0 maxRGBA=5,3,5,0 changed=2278/3538944 ratio=0.00064369484230324071 PSNR=79.930631082971161 top32(bottom-left,x,y,w,h,L1)=(1376,864,32,32):1904;(1344,864,32,32):968;(896,992,32,32):189;(832,992,32,32):177;(864,992,32,32):142
+[StutterFix] [framecmp] diff A A2 threshold=0 maxRGBA=3,3,4,0 changed=769/3538944 ratio=0.00021729645905671296 PSNR=83.75294263042484 top32(bottom-left,x,y,w,h,L1)=(1376,864,32,32):1349;(1344,864,32,32):676;(1312,864,32,32):63;(1408,864,32,32):12;(1376,896,32,32):5
+[StutterFix] [framecmp] diff A B threshold=0 maxRGBA=5,3,5,0 changed=2278/3538944 ratio=0.00064369484230324071 PSNR=79.930631082971161 top32(bottom-left,x,y,w,h,L1)=(1376,864,32,32):1904;(1344,864,32,32):968;(896,992,32,32):189;(832,992,32,32):177;(864,992,32,32):142
+[StutterFix] [framecmp] diff A A2 threshold=0 maxRGBA=3,3,4,0 changed=769/3538944 ratio=0.00021729645905671296 PSNR=83.75294263042484 top32(bottom-left,x,y,w,h,L1)=(1376,864,32,32):1349;(1344,864,32,32):676;(1312,864,32,32):63;(1408,864,32,32):12;(1376,896,32,32):5
+[StutterFix] [livedeco2] PIXEL t=262 song=262.017840 ab_out=2278 maxdiff=5 aa2_out=769 stable=False regions=(1376,864,32,32):1904;(1344,864,32,32):968;(896,992,32,32):189;(832,992,32,32):177;(864,992,32,32):142
+[StutterFix] [framecmp] diff N1 N2 threshold=0 maxRGBA=7,7,7,0 changed=1194/3538944 ratio=0.00033738878038194444 PSNR=75.6370059750221 top32(bottom-left,x,y,w,h,L1)=(1568,736,32,32):4611;(1568,768,32,32):2052;(1600,736,32,32):630;(1600,768,32,32):522;(1536,768,32,32):378
+[StutterFix] [framecmp] noise outside=1194 inside=447 rendererStateEqual=True warning=True; noise floor advisory, continuing
+[StutterFix] [livedeco2] GATE2=ERROR reason=unstable_baseline variant=A on=False
