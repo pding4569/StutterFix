@@ -1,0 +1,24 @@
+[StutterFix] [framecmp] diff N1 N2 threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] noise outside=0 inside=1700 rendererStateEqual=True warning=False; noise floor advisory, continuing
+[StutterFix] [framecmp] diff A A2 threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] diff A B threshold=0 maxRGBA=12,12,11,0 changed=194184/3538944 ratio=0.05487060546875 PSNR=54.434410400440612 top32(bottom-left,x,y,w,h,L1)=(992,704,32,32):22904;(960,704,32,32):19488;(992,672,32,32):19094;(1024,544,32,32):18504;(1056,544,32,32):17100
+[StutterFix] [framecmp] diff _controlA _controlN threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] noise outside=0 inside=2373 rendererStateEqual=True warning=False; noise floor advisory, continuing
+[StutterFix] [framecmp] control order renderers=-1715402,-1715400 materialIDs=-2766492,-2766488 originalOrder=65 forcedOrders=66,64
+[StutterFix] [framecmp] diff _controlA _controlA2 threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] diff _controlA _controlB threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] control order candidate produced zero; retry (occluded/commutative)
+[StutterFix] [framecmp] control order renderers=-1715402,-1715398 materialIDs=-2766492,-2766484 originalOrder=65 forcedOrders=66,64
+[StutterFix] [framecmp] diff _controlA _controlA2 threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] diff _controlA _controlB threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] control order candidate produced zero; retry (occluded/commutative)
+[StutterFix] [framecmp] control order renderers=-1715402,-1695472 materialIDs=-2766492,-2726632 originalOrder=65 forcedOrders=66,64
+[StutterFix] [framecmp] diff _controlA _controlA2 threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] diff _controlA _controlB threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] control order candidate produced zero; retry (occluded/commutative)
+[StutterFix] [framecmp] control order renderers=-1715402,-1695470 materialIDs=-2766492,-2726628 originalOrder=65 forcedOrders=66,64
+[StutterFix] [framecmp] diff _controlA _controlA2 threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] diff _controlA _controlB threshold=0 maxRGBA=0,0,0,0 changed=0/3538944 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] control order candidate produced zero; retry (occluded/commutative)
+[StutterFix] [framecmp] control order renderers=-1715402,-1693458 materialIDs=-2766492,-2722604 originalOrder=65 forcedOrders=66,64
+[StutterFix] [framecmp] framecmp RESULT noise_out=0 aa2_out=0 ab_out=194184 ctl_order=NA ctl_hide=NA
