@@ -1,10 +1,10 @@
-1. 최신 전달 시험은 patch_plan version=2를 지나 최초 on에서 zero-owned-see-exclusions로 중단됐다.
-2. 중단 수정 4파일을 보존해 이어갔고, 진단 pause가 게임의 isEditingLevel을 true로 만드는 경로를 디컴파일·IL로 확인했다.
-3. 실제 재생에서 진입한 유효한 FrameCompare 정지만 전역 편집 제외에서 구분하며 시작·프레임 수명 조건도 강화했다.
-4. 선택·테두리·히트박스와 활성 기즈모의 캐시 currentDec 독자는 계속 제외한다; 새 식별 줄은 admission version=3이다.
-5. 첫 Tick에도 cost/vertexcheck/remaining_reason을 출력해 소유 0 예외 직전 제외 분포 유실을 고쳤다.
-6. Dev/Player/Auto 빌드 오류 0/0/0, LoadCheck 275/229/275곳 틀림 0, 실제 DLL 패치 계획 38 checks 통과다.
-7. LiveDeco 22984·아틀라스 1052924·edition 19·MatShare 25401·FrameCompare control 49·steps 검사를 통과했다.
-8. 최신 전달 프로파일 962183표본의 ProfSet 비율은 70.352910%; DecoAnim 전체/native 쓰기 비중은 미입증이다.
-9. 기존 로그에 제외 분포가 없어 단일 원인 확정·수정 후 소유 수·픽셀·FPS·GATE2=PASS는 미확인이며 설계 한계도 미확정이다.
-10. 일반 Player 제외·기본 꺼짐·144 steps를 유지했고 게임 실행·설치·커밋·푸시·config 변경 없이 결과·로그·해시를 인계했다.
+1. 최신 전달 시험은 live 2074개 전부 child-hierarchy로 거절되어 owned=0/runs=0, vertexcheck count=0에서 중단됐다.
+2. 기존 사유는 세 조건을 합쳐 기록하므로 실패한 세부 조건·실제 계층은 전달 로그만으로 확정할 수 없다.
+3. 게임 디컴파일·ilscan에서 Image 프리팹 생성과 child offset/pivot 갱신을 대조했다; 직렬화 계층은 미확인이다.
+4. 공유 계층 계산으로 renderer→pivot의 실제 local TRS를 합성하고 child 노드 위치만 논리 값으로 대체했다.
+5. 최대 16노드·child 포함을 요구하며 누락/형제/범위 밖 경로는 세부 사유로 제외한다; hierarchy 분포와 admission version=4를 추가했다.
+6. 초기 정점 오차 1e-4·기존 독자 제외·원본 복원·patch_plan version=2·엄격 픽셀/FPS 판정은 유지했다.
+7. Dev/Player/Auto 빌드 오류 0/0/0, LoadCheck 275/229/275곳 틀림 0, 실제 DLL 패치 계획 38 checks 통과다.
+8. 계층 25개 포함 LiveDeco 23009·아틀라스 1052924·edition 22·MatShare 25401·FrameCompare·25/144 steps 검사를 통과했다.
+9. 전달 ProfSet 비율은 967476표본/69.881109%; 실제 소유/정점·픽셀/복원·GC/VRAM·FPS·GATE2=PASS는 미확인이다.
+10. Player 제외·기본 꺼짐·기존 JSON/Player DLL 해시 유지; 게임 실행·설치·커밋·푸시·config 변경 없이 결과와 run4 근거를 인계했다.

@@ -4,6 +4,7 @@ using System.Reflection.PortableExecutable;
 
 int checks = 0;
 void Check(bool value, string label) { checks++; if (!value) throw new Exception(label); }
+checks += HierarchyFixture.Run();
 // Playback frozen by framecmp makes the game's editor flag true. Only that
 // provenance can bypass the global editor exclusion; actual readers still win.
 for (int bits = 0; bits < 32; bits++)
@@ -128,7 +129,7 @@ if (args.Length == 3)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
-        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoAtlas", "LiveDecoAtlasPolicy", "LiveDecoPatchPlan" })
+        foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "LiveDecoHierarchy", "SceneRenderOrder", "LiveDecoAtlas", "LiveDecoAtlasPolicy", "LiveDecoPatchPlan" })
             Check(names.Contains(name) == (i != 0), "edition types " + name + " " + args[i]);
         if (i == 0) Check(!md.TypeReferences.Any(h => md.GetString(md.GetTypeReference(h).Name).StartsWith("LiveDeco")
             || md.GetString(md.GetTypeReference(h).Name) == "SceneRenderOrder"), "Player no experiment type references");

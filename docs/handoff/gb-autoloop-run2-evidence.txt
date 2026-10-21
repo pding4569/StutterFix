@@ -1,0 +1,19 @@
+[StutterFix] [자동 시험] 시작: 144단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco reset / stop / seek 262 12 / waitsongpos 262 40 / livedeco profile begin / waitsongpos 276 40 / livedeco profile end / stop / livedeco off / stop / seek 262 12 / waitsongpos 262 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 262 A B A2 / framecmp clear / framecmp ui include / resume / stop / livedeco off / stop / seek 262 12 / waitsongpos 270 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 270 A B A2 / framecmp clear / framecmp ui include / resume / stop / livedeco off / stop / seek 262 12 / waitsongpos 276 40 / pause / framecmp clear / framecmp filters on / framecmp ui exclude / framecmp mask center / framecmp noise N1 N2 / framecmp grab A / livedeco on / wait 0.2 / framecmp grab B / livedeco off / wait 0.2 / framecmp grab A2 / framecmp diff A B 0 png / framecmp diff A A2 0 png / livedeco pixel 276 A B A2 / framecmp cle
+[StutterFix] [livedeco2] reset variant=B
+[StutterFix] [livedeco2] PROFILE_BEGIN mode=off fps_evidence=0
+[StutterFix] [livedeco2] PROFILE key=1 samples=175724 apply_us=0.073020 set_us=0.548407
+[StutterFix] [livedeco2] PROFILE key=2 samples=176068 apply_us=0.073879 set_us=0.206486
+[StutterFix] [livedeco2] PROFILE key=5 samples=176785 apply_us=0.072937 set_us=0.127860
+[StutterFix] [livedeco2] PROFILE key=7 samples=141609 apply_us=0.138768 set_us=0.027545
+[StutterFix] [livedeco2] PROFILE key=8 samples=141618 apply_us=0.133035 set_us=0.028696
+[StutterFix] [livedeco2] PROFILE key=9 samples=159404 apply_us=0.073241 set_us=0.264925
+[StutterFix] [livedeco2] PROFILE key=10 samples=554 apply_us=0.070036 set_us=0.598736
+[StutterFix] [livedeco2] PROFILE_SET_SHARE samples=971762 set_pct=69.830267 scope=sampled-Step-Apply-OnUpdate includes_scale_setters_in_apply=1 full_DecoAnim_share_proven=0
+[StutterFix] [livedeco] on=False gate=2 restored=1
+[StutterFix] [livedeco] patch_plan version=2 targets=18 abstract_declarations_skipped=2
+[StutterFix] [livedeco] pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED
+[StutterFix] [livedeco] admission version=4 hierarchy=renderer-to-pivot logical_child=1 max_depth=16 editing=True diagnostic_playback_pause=True
+[StutterFix] [livedeco] hierarchy renderer_is_child=False child_parent_is_pivot=True depth=2 path=None count=2127
+[StutterFix] [livedeco] on=False released=1 reason=InvalidOperationException:atlas-vram-budget-512MiB
+[StutterFix] [livedeco2] GATE2=ERROR reason=InvalidOperationException:atlas-vram-budget-512MiB final_on=False
+[StutterFix] [자동 시험] 단계 실패 'livedeco on': atlas-vram-budget-512MiB

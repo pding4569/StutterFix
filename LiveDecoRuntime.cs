@@ -26,6 +26,19 @@ namespace StutterFix
         static readonly AccessTools.FieldRef<DecoTransformGizmoHolder, scrDecoration> GizmoDecoration = AccessTools.FieldRefAccess<DecoTransformGizmoHolder, scrDecoration>("currentDec");
         [StructLayout(LayoutKind.Sequential)]
         struct Vertex { internal Vector3 Position; internal Color32 Color; internal Vector2 UV; }
+        readonly struct HierarchyPath : LiveDecoHierarchy.IPath<Transform, Matrix4x4>
+        {
+            readonly bool owned;
+            readonly Vector3 childPosition;
+            internal HierarchyPath(Member m) { owned = m.Owned; childPosition = m.ChildPosition; }
+            public bool Alive(Transform node) => node;
+            public bool Same(Transform a, Transform b) => a == b;
+            public Transform Parent(Transform node) => node.parent;
+            public Matrix4x4 Identity => Matrix4x4.identity;
+            public Matrix4x4 Local(Transform node, bool child) => Matrix4x4.TRS(
+                child && owned ? childPosition : node.localPosition, node.localRotation, node.localScale);
+            public Matrix4x4 Multiply(Matrix4x4 a, Matrix4x4 b) => a * b;
+        }
         sealed class Member
         {
             internal scrVisualDecoration D;
@@ -109,7 +122,8 @@ namespace StutterFix
                 }
                 Log("patch_plan version=2 targets=" + patches.Entries.Count + " abstract_declarations_skipped=" + patches.AbstractDeclarations.Count);
                 Log("pipeline_builtin=True atlas_path=RGBA32 compressed_copy=0 reason=DXT-exact-edge-extrusion-unavailable pixel_equivalence=UNVERIFIED");
-                Log("admission version=3 editing=" + ADOBase.isEditingLevel + " diagnostic_playback_pause=" + FrameCompare.FrozenPlayback);
+                Log("admission version=4 hierarchy=renderer-to-pivot logical_child=1 max_depth=" + LiveDecoHierarchy.MaxDepth
+                    + " editing=" + ADOBase.isEditingLevel + " diagnostic_playback_pause=" + FrameCompare.FrozenPlayback);
                 EditorGizmos = Resources.FindObjectsOfTypeAll<DecoTransformGizmoHolder>();
                 DecoCount = Manager.allDecorations.Count;
                 foreach (var d in Manager.allDecorations)
@@ -122,6 +136,19 @@ namespace StutterFix
                         AdmissionOrder.Add(m);
                     }
                 AdmissionOrder.Sort((a, b) => { int c = b.InitialHeight.CompareTo(a.InitialHeight); return c != 0 ? c : b.InitialWidth.CompareTo(a.InitialWidth); });
+                var hierarchyCounts = new SortedDictionary<string, int>(StringComparer.Ordinal);
+                foreach (var m in AdmissionOrder)
+                    if (Live(m.R))
+                    {
+                        var d = m.D;
+                        var status = LiveDecoHierarchy.Compose<Transform, Matrix4x4, HierarchyPath>(m.R.transform, d.childTransform,
+                            d.pivotTrans, new HierarchyPath(m), false, out _, out int depth);
+                        string key = "renderer_is_child=" + (m.R.transform == d.childTransform)
+                            + " child_parent_is_pivot=" + (d.childTransform && d.childTransform.parent == d.pivotTrans)
+                            + " depth=" + depth + " path=" + status;
+                        hierarchyCounts.TryGetValue(key, out int count); hierarchyCounts[key] = count + 1;
+                    }
+                foreach (var pair in hierarchyCounts) Log("hierarchy " + pair.Key + " count=" + pair.Value);
                 Atlas.Plan(AdmissionOrder.Where(m => Live(m.R) && m.R.sprite).Select(m => m.R.sprite.texture));
                 Renderers = Resources.FindObjectsOfTypeAll<Renderer>().Where(r => r && r.gameObject.scene.IsValid()).ToArray();
                 foreach (var r in Renderers)
@@ -147,7 +174,9 @@ namespace StutterFix
                 if (!d || !r || d.manager != Manager) return "owner-lifetime";
                 if (!r.enabled || !r.gameObject.activeInHierarchy) return "inactive";
                 if (!m.Owned && r.forceRenderingOff) return "external-forced-off";
-                if (!d.pivotTrans || !d.childTransform || r.transform != d.childTransform || d.childTransform.parent != d.pivotTrans) return "child-hierarchy";
+                var hierarchy = LiveDecoHierarchy.Compose<Transform, Matrix4x4, HierarchyPath>(r.transform, d.childTransform,
+                    d.pivotTrans, new HierarchyPath(m), false, out _, out _);
+                if (hierarchy != LiveDecoHierarchy.Failure.None) return HierarchyReason(hierarchy);
                 var parent = d.pivotTrans.parent;
                 if (!parent || parent.localToWorldMatrix != Matrix4x4.identity) return "nonidentity-parent";
                 if (d.hitbox != 0 || d.canHitPlanets || (d.activeCollider && d.activeCollider.enabled && d.activeCollider.gameObject.activeInHierarchy)) return "transform-reader-hitbox";
@@ -195,9 +224,11 @@ namespace StutterFix
                 float angle = d.startRot + d.rotAngle;
                 if (d.lockRotation) angle += ADOBase.controller.camy.transform.rotation.eulerAngles.z;
                 Vector2 scale = d.scaleVec * camScale * (Vector2)Vector3.one;
-                var child = d.childTransform;
+                var hierarchy = LiveDecoHierarchy.Compose<Transform, Matrix4x4, HierarchyPath>(m.R.transform, d.childTransform,
+                    d.pivotTrans, new HierarchyPath(m), true, out var childMatrix, out _);
+                if (hierarchy != LiveDecoHierarchy.Failure.None) throw new InvalidOperationException(HierarchyReason(hierarchy));
                 var matrix = Matrix4x4.TRS(new Vector3(end.x, end.y, 0), Quaternion.Euler(0, 0, angle), new Vector3(scale.x, scale.y, 1))
-                    * Matrix4x4.TRS(m.Owned ? m.ChildPosition : child.localPosition, child.localRotation, child.localScale);
+                    * childMatrix;
                 return matrix * Matrix4x4.Scale(new Vector3(m.R.flipX ? -1 : 1, m.R.flipY ? -1 : 1, 1));
             }
             bool Admit(Member m)
@@ -411,6 +442,17 @@ namespace StutterFix
         static void DestroyRun(Run r)
         { if (r.Renderer) r.Renderer.enabled = false; if (r.Object) UnityEngine.Object.Destroy(r.Object); if (r.Mesh) UnityEngine.Object.Destroy(r.Mesh); }
         static string Ms(long ticks) => (1000.0 * ticks / Stopwatch.Frequency).ToString("F4", CultureInfo.InvariantCulture);
+        static string HierarchyReason(LiveDecoHierarchy.Failure failure)
+        {
+            switch (failure)
+            {
+                case LiveDecoHierarchy.Failure.MissingNode: return "child-hierarchy-missing";
+                case LiveDecoHierarchy.Failure.ChildIsPivot: return "child-hierarchy-child-is-pivot";
+                case LiveDecoHierarchy.Failure.RendererOutsideChild: return "child-hierarchy-renderer-outside-child";
+                case LiveDecoHierarchy.Failure.DepthLimit: return "child-hierarchy-depth-limit";
+                default: return "child-hierarchy-pivot-not-ancestor";
+            }
+        }
         internal static bool SkipTransform(scrDecoration d)
         {
             var s = runtime;

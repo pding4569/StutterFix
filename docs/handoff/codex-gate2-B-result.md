@@ -1,6 +1,52 @@
 # Gate 2 변형 B 결과 — 2026-10-21
 
-**최신 3회차: `zero-owned-see-exclusions`를 분석하고, 픽셀 비교용 정지가 편집 상태로 오인되어 전체 소유 후보를 제외하는 코드 경로를 수정했다. 3종 빌드·LoadCheck·회귀 검사는 통과했다. 실제 소유 수·픽셀·FPS 및 GATE2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+**최신 4회차: live 2,074개 모두 `child-hierarchy`로 거절된 증거를 분석하고 단일 child 변환 계산을 실제 renderer→pivot 계층 합성으로 수정했다. 3종 빌드·LoadCheck·회귀 검사는 통과했다. 실제 소유 수·픽셀·FPS 및 GATE2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시 및 `.codex/config.toml` 변경은 하지 않았다.
+
+## 4회차 — 실제 renderer 계층 합성
+
+시작 시 git status/diff는 깨끗했다. 장부와 [최신 전달 증거](gb-autoloop-run1-evidence.txt)를 읽고 이전 추상 패치·정지 수정은 보존했다. 전달 증거는 admission version=3, editing=True, diagnostic_playback_pause=True를 지나 **live=2074, owned=0, runs=0, remaining_reason=child-hierarchy count=2074**, vertexcheck count=0으로 끝난다. cost는 vertex_ms=8.7111, upload_ms=0.8408, runs_ms=28.8660이다. 최초 실패 프레임 비용이며 정상 재생 성능·픽셀 실패의 근거는 아니다.
+
+### 코드 대조와 확인 범위
+
+기존 InputReason은 pivot/child 누락, renderer.transform!=childTransform, childTransform.parent!=pivotTrans를 같은 사유로 기록했다. **전달 로그만으로는 실패한 세부 조건이나 실제 계층 형태를 확정할 수 없다.** 특정 형태가 2,074개라고 추정하지 않는다.
+
+디컴파일 `E:/StutterFixWork/decompiled/Assembly-CSharp/scrDecorationManager.cs:258–273`의 Image 갈래는 이미지 프리팹을 Instantiate하고 scrVisualDecoration을 얻는다. pivot/child를 대입하는 285–286행은 별도 Prefab 갈래다. 이미지의 pivotTrans·childTransform·spriteRenderer는 별도 직렬화 참조이며, 이 관리 소스는 같은 Transform 또는 직접 부모임을 보장하지 않는다. `scrDecoration.SetPosition`(229–249행)은 child localPosition에 offset을 쓰며 SetRotation·SetScale·UpdatePosition은 pivot을 갱신한다. [실제 DLL ilscan 호출/필드 목록](gate2-B-run4-hierarchy-il.log)과 대조했다. 이는 관리 코드 대조이며 **프리팹 자산의 직렬화 계층을 읽은 증거는 아니다.**
+
+기존 Calculate는 pivotWorld * childLocal만 계산해 렌더러가 더 아래에 있으면 로컬 변환을 누락한다. 제외 조건만 제거하면 잘못된 정점이 생기므로 판정과 계산을 함께 변경했다.
+
+### 수정
+
+- 생산/fixture 공유 `LiveDecoHierarchy.Compose`가 renderer부터 pivot 직전까지 각 local TRS를 왼쪽에 곱한다. 그 경로에 child가 반드시 있어야 한다. child 위·아래의 중간 노드도 계산한다. owned일 때 **child 노드 위치만** 논리 ChildPosition으로 치환한다. 나머지 위치와 각 노드의 rotation/scale은 매번 읽고, pivot 월드 계산·sprite flip은 기존 순서로 결합한다.
+- 최대 16노드로 제한한다. 누락, child=pivot, child를 지나지 않는 renderer, pivot 미도달, 깊이 초과는 각각 child-hierarchy-missing/child-is-pivot/renderer-outside-child/pivot-not-ancestor/depth-limit로 제외한다. 매 Tick 재검사하므로 범위 밖 재부모화는 소유를 해제한다. 형제 renderer 지원을 가정하지 않는다.
+- 초기 실제 SpriteRenderer 월드 정점과의 **1e-4** 대조, 편집 독자·히트박스·마스크·floor·filter·pivot 부모 identity 제한은 유지한다. 논리 setter·색·원본 복원·기존 patch_plan version=2도 유지했다.
+- 새 식별 줄은 `admission version=4 hierarchy=renderer-to-pivot logical_child=1 max_depth=16`이다. 초기 live 집합을 `hierarchy renderer_is_child=... child_parent_is_pivot=... depth=... path=... count=...`로 집계한다. 다음 시험에서 기존 가정 중 어느 조건이 실패했는지 확인할 수 있다. 이름은 기록하지 않는다.
+- 생산 순회는 구조체 어댑터를 사용하며 경로별 배열·delegate를 만들지 않는다. 초기 분포 dictionary/string은 전환 시에만 만든다. 더 긴 경로의 native getter·행렬 비용은 증가할 수 있어 실제 cost/GC/FPS 검증이 남는다.
+
+### 오프라인 검증
+
+| 검사 | 결과 | 근거 |
+|---|---|---|
+| Release Dev / Player / PlayerAuto | 오류 0/0/0, 경고 38/36/38 | gate2-B-run4-build-dev/player/auto.log |
+| LoadCheck Dev / Player / Auto | 275/229/275곳, 틀림 0/0/0 | gate2-B-run4-loadcheck-dev/player/auto.log |
+| 공유 계층 fixture | 25 checks | gate2-B-run4-fixture.log |
+| LiveDeco 정책/정렬 (위 25개 포함) | 23,009 checks | 같은 로그 |
+| 아틀라스/판정 / LiveDeco edition | 1,052,924 / 22 checks | 같은 로그 |
+| 실제 DLL 패치 계획 | 38 checks, 18개 대상/추상 2개 제외 | gate2-B-run4-patch-check.log |
+| FrameCompare | RGBA 11, mask 15, state 14, control 49, edition 13 | gate2-B-run4-framecmp-fixture.log |
+| MatShare / 진단 edition | 25,401 checks / 기존 분리 검사 통과 | gate2-B-run4-matshare-fixture.log / gate2-B-run4-edition-check.log |
+| Gate1/Gate2 steps | 25/144단계·UTF-8 CLI 통과, 기존 JSON 해시 유지 | gate2-B-run4-gate1-steps-check.log / gate2-B-run4-steps-check.log |
+
+계층 fixture는 직접 child, child 위·아래 중간 노드, 비균일 스케일·회전·음수 스케일의 네 코너, 논리 위치 치환·무쓰기, 누락·형제·재부모화·깊이 제한을 검사한다. 공유 루프 10,000회 반복의 .NET 관리 할당은 0B다. System.Numerics 행벡터 규약은 어댑터에서 곱셈 순서를 뒤집는다. **Unity native 정점·게임 Mono 할당·실제 픽셀의 증거는 아니다.** LoadCheck 기존 동적 이름 5곳과 기존 경고는 남는다. 일반 Player DLL SHA256은 run3와 같다. [산출물/소스 해시](gate2-B-run4-artifacts.txt)를 남겼다.
+
+이번 전달 ProfSet 비율은 **967,476표본 / 69.881109%**다. 아래 과거 수치와 구분한다. sampled Step/Apply/OnUpdate 설정 시간 비율이며 전체 DecoAnim 또는 native 쓰기만의 비율은 미입증이다.
+
+### 판정과 다음 관측
+
+**GATE2=PASS 미확인.** 실제 계층·소유/런·정점·픽셀/복원·GC/VRAM·FPS를 새로 측정하지 않았다. 계층 제한이 설계상 전원 소유를 불가능하게 만든다고 확정할 근거도 아직 없다. 이전 실패 코드를 반복하지 않고 변경된 Dev/Auto DLL과 기존 144 steps를 인계한다. 다음 외부 시험에서는 admission version=4, 초기 hierarchy 분포, vertexcheck count/max_err 및 최초 owned/runs/remaining_reason부터 확인한다. 범위 밖 경로라면 세부 수치로 한계를 판단한다.
+
+소유가 생겨도 262/270/276초 ab_out=0·복원과 ABBA 평균 FPS +15%를 모두 만족해야 PASS다. 1/255 허용이나 gate 3·워커 분할은 추가하지 않았다. Texture2DArray 비교는 아래 절에 보존했다. 게임 실행·설치·커밋·푸시·config 변경은 하지 않았다.
+
+task-observer v3.5.0 관찰을 report-back으로 반환한다. 문제: 여러 계층 가정을 단일 제외 사유로 묶어 전원 거절에서도 실패 조건을 구분하지 못했다. 개선: 실제 참조 관계를 초기 분포로 남기고, 계층 지원 확장에는 대응하는 행렬 계산과 정점 대조를 함께 둔다. 원칙: 소유 판정의 범위를 넓힐 때 출력 계산도 같은 범위를 지원해야 한다. 유형은 프로젝트 내부 구현/검증 관찰이다. 사용자 범위 관찰 저장소는 쓰기 범위 밖이므로 스킬·메모리는 수정하지 않았다.
 
 ## 3회차 — 진단 정지 소유 판정 (중단 작업 이어하기)
 
@@ -100,7 +146,7 @@ FrameCompare control에는 정지 출처 32조합을 추가했다. 위 검사는
 - scrParallax.SetTrans의 화면 고정/카메라 시차·parallaxOffset, private startPosition/endPosition을 확인했다. start/end 상태도 렌더 직전에 논리적으로 갱신한다. dontAlterX/Y의 이전 Transform 위치 의존은 제외한다.
 - `GetDecorationWorldSize`는 pivot.localScale을 읽는다. `DecoTransformGizmoHolder`의 gizmo 경로와 drag는 편집기 경로다. 편집 상태·활성 선택/히트박스 테두리를 소유에서 제외한다.
 - `SpriteAlphaMaskUtils`는 obj.transform과 SpriteAlphaMask.pivotTrans/childTrans를 읽는다. mask·다른 메시 출력·mask interaction·사용 중인 per-decoration filter는 제외한다.
-- 히트박스/활성 collider 및 floor 부착·부모 계층은 제외한다. 소유하려는 child는 SpriteRenderer 자신의 Transform이며 pivot 바로 아래여야 한다. pivot 부모의 world matrix가 identity여야 한다.
+- 히트박스/활성 collider 및 floor 부착은 제외한다. 최신 4회차는 renderer→pivot 경로에 child가 포함되는 최대 16노드 계층을 합성한다. pivot 부모의 world matrix는 여전히 identity여야 한다. 초기 renderer=child·직접 부모 제한은 위 4회차 절처럼 변경했다.
 - 이동 효과 StartEffect/클로저는 pivotPosVec/offset/rotAngle/scaleVec의 논리 필드를 읽는다. 이 값들은 계속 갱신한다. manager tiling/wrap 갱신은 소스를 변경하므로 sampler 변경을 재검사하고 소유를 해제한다.
 
 이 감사는 해당 게임 코드의 지정 참조 목록과 디컴파일 검토다. 다른 모드의 reflection·Transform alias 사용 전체를 증명하지 않는다. 외부 Harmony hook은 편입 시 거절한다. 고정 scene snapshot 이후의 임의 외부 renderer 생성은 지원하지 않으며, manager 목록 크기 변경과 scene/reset은 정리 후 종료한다. 실제 live 집합의 켜짐·꺼짐·깊이·이미지 변경은 원래 목록 안에서 재분할한다. 원근/비스듬한 카메라/custom sort axis, 외부 SortingGroup, 불확실한 재질 동률도 ERROR로 복원한다.

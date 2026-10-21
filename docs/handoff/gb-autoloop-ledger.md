@@ -59,3 +59,27 @@
 - 시험 핵심 줄:
   - [StutterFix] [livedeco] cost frame=22930 vertex_ms=8.7111 upload_ms=0.8408 runs_ms=28.8660 runs=0 owned=0 live=2074 new_runs=0 reused_runs=0 heap_delta=0 stable_alloc_bytes=0 transition_alloc_bytes=0 
   - [StutterFix] [livedeco2] GATE2=ERROR reason=InvalidOperationException:zero-owned-see-exclusions final_on=False
+
+## 회차 4 — 실제 renderer 계층 합성 (2026-10-21)
+- 시작 git status/diff는 깨끗했다. 최신 전달 live=2074 전부 child-hierarchy, owned/runs=0, vertexcheck count=0을 분석했다. 기존 추상 대상/진단 정지 수정은 보존했다.
+- 기존 이유는 누락/renderer!=child/child.parent!=pivot을 합쳐 기록하므로 실제 실패 조건은 미확인이다. 디컴파일·ilscan에서 Image 프리팹 생성, child localPosition offset과 pivot 변환 쓰기를 대조했다. 프리팹 직렬화 계층을 확인했다는 주장은 하지 않는다.
+- renderer→pivot 실제 local TRS 경로(최대 16노드, child 포함)를 생산/fixture 공유 코드로 합성하고 child 위치만 논리 ChildPosition으로 치환한다. 초기 1e-4 실제 정점 대조와 기존 독자 제외/복원은 유지했다.
+- admission version=4, 초기 hierarchy 관계/깊이/분포와 세부 제외 사유를 추가했다. 형제 renderer·누락·pivot 밖·과도한 깊이는 계속 제외한다.
+- 빌드 Dev/Player/Auto 오류 0/0/0(경고 38/36/38); LoadCheck 275/229/275곳 틀림 0; 패치 계획 38, 계층 25개 포함 LiveDeco 23009, 아틀라스 1052924, edition 22, MatShare 25401, FrameCompare 및 25/144 steps 통과. Player DLL/전달 JSON 해시 유지.
+- 최신 전달 ProfSet 967476표본/69.881109%; 전체 DecoAnim/native 쓰기 몫은 미입증이다.
+- 실제 계층·소유/런·정점·픽셀/복원·GC/VRAM·FPS·GATE2=PASS는 미확인이다. 설계 한계도 미확정이다. 변경된 DLL의 다음 관측은 admission version=4와 hierarchy/vertexcheck/remaining_reason이다.
+- 게임 실행·설치·커밋·푸시·config 변경 없음. 결과 codex-gate2-B-result.md / codex-gate2-B-o.txt; 근거 gate2-B-run4-* 로그와 artifacts.txt.
+
+## 회차 2
+- Codex 요약: `child-hierarchy` 전원 제외를 분석하고, 실제 렌더러 계층을 합성하도록 수정했습니다.
+
+- 3종 빌드 오류 0, LoadCheck·회귀 검사 통과.
+- 결과 문서·장부·10줄 요약 갱신.
+- 게임 실행·설치·커밋 없음.
+- 실제 픽셀·FPS와 `GATE2=PASS`는 미확인입니다.
+
+[결과 문서](/E:/StutterFixWork/wt-ld2b/docs/handoff/codex-gate2-B-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco2] GATE2=ERROR reason=InvalidOperationException:atlas-vram-budget-512MiB final_on=False
