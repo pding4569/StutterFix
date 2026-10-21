@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <DefineConstants>UNITY_EDITOR;DECOBAKE_FIXTURE</DefineConstants>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>CS0649</NoWarn>
+    <EditorManaged Condition="'$(EditorManaged)' == ''">E:/Unity/Editor/6000.3.10f1/Editor/Data/Managed/UnityEngine</EditorManaged>
+    <GameManaged Condition="'$(GameManaged)' == ''">D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed</GameManaged>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../GpuDecoLab.cs" />
+    <Compile Include="../../../DecoBake.Core.cs" />
+    <Compile Include="../../../GpuDecoData.cs" />
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(EditorManaged)/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.AssetBundleModule"><HintPath>$(EditorManaged)/UnityEngine.AssetBundleModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(EditorManaged)/UnityEngine.ImageConversionModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEditor.CoreModule"><HintPath>$(EditorManaged)/UnityEditor.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="DOTween"><HintPath>$(GameManaged)/DOTween.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

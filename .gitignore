@@ -9,3 +9,7 @@ __pycache__/
 
 # Local optimization runs contain machine paths and game logs.
 tools/optimization/out/
+
+# Independent GPU decoration lab: generated project/cache and local game references.
+tools/gpudeco-lab/project/
+tools/gpudeco-lab/evidence/*.local.*

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings><DefineConstants>GPUDECO_FIXTURE;DECOBAKE_FIXTURE</DefineConstants>
+    <NoWarn>CS0649</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../GpuDecoData.cs" />
+    <Compile Include="../../../DecoBake.Core.cs" />
+  </ItemGroup>
+</Project>

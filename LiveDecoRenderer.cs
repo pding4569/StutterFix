@@ -469,7 +469,7 @@ namespace StutterFix
             if ((camera.cullingMask & (1 << i.R.gameObject.layer)) == 0) return "camera-layer";
             return "scene-or-foreign-force-off";
         }
-        static string GeometryReason(Image i)
+        static string GeometryReason(Image i, scrDecorationManager expectedManager = null)
         {
             var d = i.D; var r = i.R; var p = d.parallax;
             if (!d || !r || d.GetType() != typeof(scrVisualDecoration)) return "subclass";
@@ -480,7 +480,7 @@ namespace StutterFix
             if ((int)Blend(d) != 0 || (d.blendModeEffect && d.blendModeEffect.enabled)) return "blend";
             if (!p || !Inited(p) || !IsDecoration(p) || !ReferenceEquals(p.decoration, d)
                 || !ReferenceEquals(Cached(p), d.pivotTrans) || p.enabled) return "parallax-binding";
-            if (!d.pivotTrans || d.pivotTrans.parent != manager.transform) return "pivot-parent";
+            if (!d.pivotTrans || d.pivotTrans.parent != (expectedManager ? expectedManager : manager).transform) return "pivot-parent";
             if (!d.childTransform) return "child-missing";
             if (i.Owned && (!i.Geometry.Matches(d.pivotTrans, d.childTransform, r.transform)
                 || r.flipX != i.FlipX || r.flipY != i.FlipY)) return "child-state-changed";
@@ -497,6 +497,20 @@ namespace StutterFix
             if (i.Owned) return LiveDecoScripts.Reason(i.Scripts, d, r);
             return null;
         }
+#if AUTOTEST
+        // Explicit paused export only. Reuse admission rules without installing
+        // write hooks, changing a Transform, or taking renderer ownership.
+        internal static string ExportReason(scrVisualDecoration d, Camera cam, scrDecorationManager mgr)
+        {
+            var r = d.spriteRenderer;
+            if (!r || !d.pivotTrans || !r.enabled || !r.gameObject.activeInHierarchy || r.forceRenderingOff) return "inactive";
+            var image = new Image { D = d, R = r, Dependents = d.pivotTrans.GetComponentsInChildren<Renderer>(true) };
+            string why = GeometryReason(image, mgr) ?? LiveDeco.Reason(d, r, r.sharedMaterials, cam);
+            if (why != null) return why;
+            why = new LiveDeco.BlockCensus().Read(r, r.sharedMaterials);
+            return why ?? LiveDecoScripts.Reason(d.pivotTrans.GetComponentsInChildren<MonoBehaviour>(true), d, r);
+        }
+#endif
         static void Reject(Image i, string why)
         {
             i.Rejected = true; i.Reason = why;

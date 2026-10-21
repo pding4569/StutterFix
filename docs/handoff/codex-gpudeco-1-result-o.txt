@@ -1,0 +1,10 @@
+1. 선택: Unity 6000.3.10f1 AssetBundle 파이프라인(기존 fsr 빌드 경로).
+2. 중단: Editor 라이선스 오류 exit 198, com.unity.editor.headless 없음.
+3. 게임 실행·설치·커밋·푸시 0회, .codex/config.toml 변경 0회.
+4. AUTOTEST 전용 읽기 전용 gpudeco export와 3정지 시점 steps를 추가했다.
+5. 독립 랩: 표/이징/정점 compute·Raw 메시·실제 export 대조·번들 진입점을 작성했다.
+6. 3종 빌드 오류 0, 일반 Player GPU 타입·명령·export 제외 확인.
+7. 랩 C# 오류/경고 0/0, HLSL SM5 두 커널 컴파일 통과.
+8. 새 진단 계약 14건 및 기존 bake·ld2a·DecoSim·서명·steps fixture 통과.
+9. 실제 export 0파일·GPU 표본 0개·완성 번들 0개, G0/G1/비용/FPS 미측정.
+10. GPUDECO_G1=ERROR stage=G0-lab reason=editor_license_exit_198_and_real_export_missing

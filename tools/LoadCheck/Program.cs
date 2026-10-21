@@ -35,6 +35,13 @@ class P
             Console.WriteLine("DecoBake 개발 타입: " + have + ", 기대: " + want);
             if (have != want) return 3;
             if (!want && bakeTypes.Any(t => asm.GetType(t, false) != null)) return 3;
+            bool haveGpuData = asm.GetType("StutterFix.GpuDecoData", false) != null;
+            bool haveGpuStep = asm.GetType("StutterFix.DecoBake", false)?.GetMethod("GpuStep", BindingFlags.Static | BindingFlags.NonPublic) != null;
+            Console.WriteLine("GpuDecoData/GpuStep: " + haveGpuData + "/" + haveGpuStep + ", 기대: " + want);
+            if (haveGpuData != want || haveGpuStep != want) return 3;
+            bool haveExport = asm.GetType("StutterFix.DecoBake", false)?.GetMethod("ExportGpu", BindingFlags.Static | BindingFlags.NonPublic) != null;
+            Console.WriteLine("GpuDeco export (AUTOTEST only): " + haveExport);
+            if (!want && haveExport) return 3;
             bool haveSetter = asm.GetType("StutterFix.DecoAnim", true).GetMethod("BakeWrite", BindingFlags.Static | BindingFlags.NonPublic) != null;
             Console.WriteLine("DecoAnim.BakeWrite: " + haveSetter + ", 기대: " + want);
             if (haveSetter != want) return 3;

@@ -1,0 +1,130 @@
+// Diagnostic only. Sprites/Tile remains the intended game draw shader.
+#pragma kernel Evaluate
+#pragma kernel EaseProbe
+#pragma target 5.0
+
+struct Segment { float hi, lo, duration, start, end, target, over, period; uint ease, scale; };
+struct Track { uint first, count; float initial; uint pad; };
+StructuredBuffer<Segment> _Segments;
+StructuredBuffer<Track> _Tracks;
+// 10 float4 records per decoration: shape[4], offset origin/X/Y, constants, crop/Z/flags, startRot.
+StructuredBuffer<float4> _Static;
+StructuredBuffer<float2> _UV;
+RWStructuredBuffer<float> _Values;
+RWByteAddressBuffer _Vertices;
+uint _Count;
+float _TimeHi, _TimeLo, _Pitch, _TweenScale;
+float4 _Camera; // XY, rotation degrees, lock-scale multiplier
+StructuredBuffer<float4> _Probe;
+StructuredBuffer<uint> _ProbeIds;
+RWStructuredBuffer<float> _ProbeOut;
+
+float Bounce(float x)
+{
+    if (x < 1.0/2.75) return 7.5625*x*x;
+    if (x < 2.0/2.75) { x -= 1.5/2.75; return 7.5625*x*x+.75; }
+    if (x < 2.5/2.75) { x -= 2.25/2.75; return 7.5625*x*x+.9375; }
+    x -= 2.625/2.75; return 7.5625*x*x+.984375;
+}
+float Ease(uint id, float t, float d, float amplitude, float period)
+{
+    const float pi = 3.1415927410125732421875;
+    float x=t/d, y;
+    if (id==1) return x;
+    if (id==2) return 1-cos(x*(pi*.5));
+    if (id==3) return sin(x*(pi*.5));
+    if (id==4) return -.5*(cos(pi*t/d)-1);
+    if (id>=5 && id<=16)
+    {
+        uint power=2+(id-5)/3, mode=(id-5)%3;
+        y=mode==0 ? x : mode==1 ? x-1 : x*2;
+        if (mode==2 && y>=1) y-=2;
+        float p=y*y;
+        if(power>=3) p*=y;
+        if(power>=4) p*=y;
+        if(power>=5) p*=y;
+        if(mode==0) return p;
+        if(mode==1) return (power%2==0 ? -p : p)+1;
+        return x<.5 ? .5*p : .5*((power%2==0 ? -p : p)+2);
+    }
+    if(id==17) return t==0 ? 0 : exp2(10*(x-1));
+    if(id==18) return t==d ? 1 : 1-exp2(-10*t/d);
+    if(id==19) { if(t==0) return 0; if(t==d) return 1; y=t/(d*.5); return y<1 ? .5*exp2(10*(y-1)) : .5*(2-exp2(-10*(y-1))); }
+    if(id==20) return 1-sqrt(1-x*x);
+    if(id==21) { y=x-1; return sqrt(1-y*y); }
+    if(id==22) { y=t/(d*.5); if(y<1) return -.5*(sqrt(1-y*y)-1); y-=2; return .5*(sqrt(1-y*y)+1); }
+    if(id>=23 && id<=25)
+    {
+        if(t==0) return 0;
+        y=id==25 ? t/(d*.5) : x;
+        if(y==(id==25 ? 2 : 1)) return 1;
+        if(period==0) period=d*(id==25 ? .45000002 : .3);
+        float phase;
+        if(amplitude<1) { amplitude=1; phase=period/4; }
+        else phase=period/(pi*2)*asin(1/amplitude);
+        if(id==23) { y-=1; return -amplitude*exp2(10*y)*sin((y*d-phase)*(pi*2)/period); }
+        if(id==24) return amplitude*exp2(-10*y)*sin((y*d-phase)*(pi*2)/period)+1;
+        bool first=y<1; y-=1;
+        return first ? -.5*amplitude*exp2(10*y)*sin((y*d-phase)*(pi*2)/period)
+            : .5*amplitude*exp2(-10*y)*sin((y*d-phase)*(pi*2)/period)+1;
+    }
+    if(id==26) return x*x*((amplitude+1)*x-amplitude);
+    if(id==27) { y=x-1; return y*y*((amplitude+1)*y+amplitude)+1; }
+    if(id==28) { y=t/(d*.5); amplitude*=1.525; if(y<1) return .5*y*y*((amplitude+1)*y-amplitude); y-=2; return .5*(y*y*((amplitude+1)*y+amplitude)+2); }
+    if(id==29) return 1-Bounce((d-t)/d);
+    if(id==30) return Bounce(x);
+    if(id==31) return t<d*.5 ? (1-Bounce((d-t*2)/d))*.5 : Bounce((t*2-d)/d)*.5+.5;
+    if(id==36) return 1;
+    // Unset is DOTween's OutQuad default. Flash/custom are rejected before upload.
+    return -x*(x-2);
+}
+float Delta(Segment s) { return (_TimeHi-s.hi)+(_TimeLo-s.lo); }
+float Value(uint slot)
+{
+    Track h=_Tracks[slot]; uint lo=0, hi=h.count;
+    while(lo<hi) { uint mid=lo+(hi-lo)/2; if(Delta(_Segments[h.first+mid])>=0) lo=mid+1; else hi=mid; }
+    if(lo==0) return h.initial;
+    Segment s=_Segments[h.first+lo-1];
+    if(s.duration==0) return s.end;
+    float t=Delta(s)/_Pitch*_TweenScale;
+    if(t>=s.duration) return s.end;
+    if(t<=0) return s.start;
+    precise float change=(s.scale!=0 ? s.target : s.end)-s.start;
+    precise float product=change*Ease(s.ease,t,s.duration,s.over,s.period);
+    return s.start+product;
+}
+[numthreads(64,1,1)]
+void EaseProbe(uint3 thread:SV_DispatchThreadID)
+{
+    uint i=thread.x; if(i>=_Count) return;
+    float4 p=_Probe[i]; _ProbeOut[i]=Ease(_ProbeIds[i],p.x,p.y,p.z,p.w);
+}
+[numthreads(64,1,1)]
+void Evaluate(uint3 thread:SV_DispatchThreadID)
+{
+    uint i=thread.x; if(i>=_Count) return;
+    float v[16];
+    [unroll] for(uint ch=0;ch<16;ch++) { v[ch]=Value(i*16+ch); _Values[i*16+ch]=v[ch]; }
+    uint b=i*10; float4 c=_Static[b+7], crop=_Static[b+8]; uint flags=(uint)crop.w;
+    float2 trueScale=c.xy, camScale=((flags&1)!=0 ? _Camera.w : 1)*trueScale;
+    float2 position=float2(v[0],v[1]);
+    float2 world=(_Camera.xy-position)*float2(v[12],v[13])+position;
+    if((flags&4)!=0) world.x=position.x;
+    if((flags&8)!=0) world.y=position.y;
+    world+=float2(v[14],v[15])*camScale/c.zw;
+    float2 offset=(float2(v[2],v[3])+crop.xy)/trueScale;
+    float3 translated=_Static[b+4].xyz+_Static[b+5].xyz*offset.x+_Static[b+6].xyz*offset.y;
+    float angle=_Static[b+9].x+v[4]+((flags&2)!=0 ? _Camera.z : 0);
+    float sn,cs; sincos(angle*(3.1415927410125732421875/180),sn,cs);
+    float2 scale=float2(v[5],v[6])*camScale;
+    float4 color=float4(v[7],v[8],v[9],v[10]*v[11]);
+    [unroll] for(uint k=0;k<4;k++)
+    {
+        float3 local=_Static[b+k].xyz+translated; local.xy*=scale;
+        float3 worldPoint=float3(world+float2(cs*local.x-sn*local.y,sn*local.x+cs*local.y),crop.z+local.z);
+        uint address=(i*4+k)*36;
+        _Vertices.Store3(address,asuint(worldPoint));
+        _Vertices.Store4(address+12,asuint(color));
+        _Vertices.Store2(address+28,asuint(_UV[i*4+k]));
+    }
+}
