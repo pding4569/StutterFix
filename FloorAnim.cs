@@ -748,6 +748,9 @@ namespace StutterFix
         public static void UpdatePrefix()
         {
 #if DEV || AUTOTEST
+            if (FrameCompare.Paused) return;
+#endif
+#if DEV || AUTOTEST
             if (TileSim.Capturing) TileSim.BeginFrame(recs, false);
 #endif
             if (jobs.Count > 0) SplitTick();
@@ -799,6 +802,9 @@ namespace StutterFix
 
         public static void UpdatePostfix()
         {
+#if DEV || AUTOTEST
+            if (FrameCompare.Paused) return;
+#endif
             if (!Edition.Dev || recs.Count == 0) return;
             for (int i = 0; i < recs.Count; i++)
             {

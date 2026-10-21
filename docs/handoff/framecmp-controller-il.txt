@@ -1,0 +1,16 @@
+﻿Assembly-CSharp.dll: scrController pause IL summary (local ILScan)
+  get_audioPaused
+    호출 UnityEngine.AudioListener::get_pause
+  set_audioPaused
+    호출 UnityEngine.AudioListener::set_pause
+  get_paused
+    필드 읽기 scrController::_paused
+  set_paused
+    호출 UnityEngine.Time::get_frameCount
+    필드 쓰기 scrController::lastTogglePauseFrame
+    필드 쓰기 scrController::_paused
+    호출 scrController::UpdateErrorMeterVisibility
+    호출 scrController::get_paused
+    호출 ADOBase::get_isLevelSelect
+    호출 ADOBase::get_isCLS
+    호출 RDInput::SetMapping

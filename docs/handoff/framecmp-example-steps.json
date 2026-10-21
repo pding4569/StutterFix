@@ -1,0 +1,33 @@
+{
+  "steps": [
+    "timeout 180",
+    "auto on",
+    "open Arche.adofai",
+    "gpuprobe off",
+    "gpusplit off",
+    "matshare off",
+    "seek 262 8",
+    "waitsongpos 264 40",
+    "pause",
+    "framecmp filters off",
+    "framecmp ui exclude",
+    "framecmp noise N1 N2",
+    "framecmp grab A",
+    "gpusplit hide deco-image:small=1",
+    "wait 0.2",
+    "framecmp grab B",
+    "gpusplit off",
+    "wait 0.2",
+    "framecmp grab A2",
+    "framecmp diff A A2 0 png",
+    "framecmp diff A B 0 png",
+    "framecmp control order",
+    "framecmp control hide",
+    "framecmp filters on",
+    "resume",
+    "stop",
+    "quit"
+  ],
+  "timeout_min": 15,
+  "tag": "framecmp-paused-264"
+}

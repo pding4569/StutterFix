@@ -636,6 +636,9 @@ namespace StutterFix
         public static void UpdatePrefix()
         {
 #if DEV || AUTOTEST
+            if (FrameCompare.Paused) return;
+#endif
+#if DEV || AUTOTEST
             if (DecoSim.Capturing) DecoSim.BeginFrame(recs, batchOn || DecoEngine.Enabled || GroupEnabled || NativeMotion.Enabled);
 #endif
             UpdateEvalMemo.NewFrame();
@@ -755,6 +758,9 @@ namespace StutterFix
         // 개발자용: DOTween 이 짝을 갱신한 뒤 비교
         public static void UpdatePostfix()
         {
+#if DEV || AUTOTEST
+            if (FrameCompare.Paused) return;
+#endif
             if (!Edition.Dev || recs.Count == 0) return;
             for (int i = 0; i < recs.Count; i++)
             {

@@ -1,0 +1,10 @@
+1. 게임 실행·설치·커밋 없이 framecmp 구현과 오프라인 검증을 수행했다.
+2. pause/resume은 controller·Unity 시간·DOTween·AudioListener를 저장·복원하고 DecoAnim/FloorAnim 갱신을 막는다.
+3. 실제 카메라 체인의 프레임 끝 ScreenCapture→RT→AsyncGPUReadback을 사용하며 추가 Camera.Render 호출은 없다.
+4. filters off/on, ui exclude/include, grab, diff, noise, PNG 저장·메모리 해제를 추가했다.
+5. diff는 RGBA 최대 차이·다른 픽셀 수/비율·PSNR·32px 상위 영역 5곳을 보고한다.
+6. 실제 장식 hide/order 양성 대조는 잡음 0·변경 >0·복원 0을 강제하며 후보 실패를 통과시키지 않는다.
+7. 일반 Player 제외·기본 꺼짐이며 AutoTest 종료/오류와 Main.Unload에서 상태를 복원한다.
+8. 27단계 생성기는 JSON만 만들며 A/B/A2·잡음·두 양성 대조·resume 순서를 제공한다.
+9. 빌드 3종 오류 0·LoadCheck 틀림 0·계산 11개·edition 메타데이터 7개·생성기 구조 검사를 통과했다.
+10. 실제 화면/잡음/양성 대조는 미검증이며 기존 전체 DiagnosticCheck의 MaterialPoolFixture 실패와 한계를 결과 문서에 적었다.

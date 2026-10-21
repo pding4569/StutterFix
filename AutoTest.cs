@@ -240,6 +240,11 @@ namespace StutterFix
             var ed = ADOBase.isLevelEditor ? scnEditor.instance : null;
             switch (cmd)
             {
+#if DEV || AUTOTEST
+                case "pause": FrameCompare.Pause(); return true;
+                case "resume": FrameCompare.Resume(); return true;
+                case "framecmp": return FrameCompare.Step(arg);
+#endif
                 case "pick":
                     {
                         // (개발자용) 편집 화면 클릭 판정(scnEditor.ObjectsAtMouse)을 프레임마다 한 번씩 N번: 카메라를 타일 길을 따라 옮기고
@@ -1673,6 +1678,9 @@ namespace StutterFix
         // keep 묶음의 끝: 게임은 켜 둔 채 결과 표시만 남기고 다음 autotest.txt 를 기다린다
         private static void EndBatch(string why)
         {
+#if DEV || AUTOTEST
+            FrameCompare.Stop();
+#endif
             if (finished) return;
             finished = true;
             EndRun();
@@ -1693,6 +1701,7 @@ namespace StutterFix
         private static void Finish(string why)
         {
 #if DEV || AUTOTEST
+            FrameCompare.Stop();
             MatShare.Stop();
 #endif
 #if DEV || AUTOTEST
