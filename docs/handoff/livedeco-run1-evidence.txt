@@ -1,0 +1,25 @@
+[StutterFix] [자동 시험] 시작: 25단계 - timeout 180 / auto on / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco off / archegpu on / stop / seek 262 12 / waitsongpos 262 40 / archegpu stamp / livedeco census / livedeco state / stop / stop / seek 262 12 / waitsongpos 270 40 / archegpu stamp / livedeco census / livedeco state / stop / livedeco off / archegpu off / quit
+[StutterFix] [livedeco] on=False gate=1 restored=1 mutations=0
+[StutterFix] [livedeco] census frame=19617 song=262.017840 camera_id=102298 camera_mask=652183 phase=main-preCull live_definition=enabled-active-unforced frustum_filter=0 alpha_filter=0
+[StutterFix] [livedeco] images_all=28828 live=2078 basic_candidates=0 owned_candidates=0 coverage_pct=0.000 remaining_live=2078 renderer_material_slots=2462
+[StutterFix] [livedeco] barrier_runs=0 mesh_runs=0 key_splits=0 signature_splits=0 unity_layer_splits=0 ambiguous_material_ties=0 sorting_groups=0 opaque_slots=0 missing_materials=0
+[StutterFix] [livedeco] remaining_reason=mesh-enabled count=2078
+[StutterFix] [livedeco] barrier_type=LineRenderer slots=2
+[StutterFix] [livedeco] barrier_type=MeshRenderer slots=233
+[StutterFix] [livedeco] barrier_type=ParticleSystemRenderer slots=25
+[StutterFix] [livedeco] barrier_type=SpriteRenderer slots=124
+[StutterFix] [livedeco] barrier_type=image:mesh-enabled slots=2078
+[StutterFix] [livedeco] GATE1=FAIL required_mesh_runs_le=200 required_coverage_ge=80 runtime_snapshot_only=1 atlas_assumed=1 draw_estimate_only=1 census_cpu_ms=256.383
+[StutterFix] [livedeco] on=False gate=1 pending=False prototype_available=0
+[StutterFix] [livedeco] census frame=22980 song=270.028491 camera_id=102298 camera_mask=652183 phase=main-preCull live_definition=enabled-active-unforced frustum_filter=0 alpha_filter=0
+[StutterFix] [livedeco] images_all=28828 live=2266 basic_candidates=0 owned_candidates=0 coverage_pct=0.000 remaining_live=2266 renderer_material_slots=2660
+[StutterFix] [livedeco] barrier_runs=0 mesh_runs=0 key_splits=0 signature_splits=0 unity_layer_splits=0 ambiguous_material_ties=0 sorting_groups=0 opaque_slots=0 missing_materials=0
+[StutterFix] [livedeco] remaining_reason=mesh-enabled count=2266
+[StutterFix] [livedeco] barrier_type=LineRenderer slots=2
+[StutterFix] [livedeco] barrier_type=MeshRenderer slots=241
+[StutterFix] [livedeco] barrier_type=ParticleSystemRenderer slots=25
+[StutterFix] [livedeco] barrier_type=SpriteRenderer slots=126
+[StutterFix] [livedeco] barrier_type=image:mesh-enabled slots=2266
+[StutterFix] [livedeco] GATE1=FAIL required_mesh_runs_le=200 required_coverage_ge=80 runtime_snapshot_only=1 atlas_assumed=1 draw_estimate_only=1 census_cpu_ms=245.322
+[StutterFix] [livedeco] on=False gate=1 pending=False prototype_available=0
+[StutterFix] [livedeco] on=False gate=1 restored=1 mutations=0
