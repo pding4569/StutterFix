@@ -482,6 +482,7 @@ ParticleTextWatch.Install(harmony);
 #if DEV || AUTOTEST
             Try(FrameCompare.Unload);
             Try(MatShare.Stop);
+            Try(LiveDeco.Stop);
 #endif
             Try(GpuCensus.Stop);
             Try(OffscreenProbe.Stop);

@@ -1,0 +1,10 @@
+LiveDeco 게이트 1 센서스와 steps 생성기를 구현했다. 게이트 2는 미구현이다.
+게임 실행·제어·설치·커밋은 하지 않았다. 기본 꺼짐, 일반 Player 제외다.
+livedeco census는 자연 재생 중 본 카메라 preCull에서 전체 live Renderer 슬롯을 조사한다.
+소유 후보·live 비율·비소유 끼어들기·정렬/서명 경계·제외 사유를 기록한다.
+barrier_runs는 이상적 하한, mesh_runs는 정렬 키와 재질 상태를 나눈 보수적인 수다.
+MPB는 미검증 제외, 같은 재질 동률·SortingGroup·불명확 순서는 INCONCLUSIVE다.
+livedeco-steps.py --chart <Arche FULL> --output x.json: 별도 262·270초 센서스 25단계다.
+3종 Release 오류 0, LoadCheck 266/229/266곳 틀림 0, 동적 이름 5곳은 런타임 확인이다.
+정렬/런 fixture 22,917건·edition 10건·MatShare 25,401건·steps 검사를 통과했다.
+실제 후보 비율·런 수가 미측정이라 여기서 중단한다. 다음 관측은 두 시점 GATE1 로그다.

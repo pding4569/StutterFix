@@ -894,6 +894,7 @@ namespace StutterFix
                 case "gpusplit": GpuSplit.Command(arg); return true;
 #if DEV || AUTOTEST
                 case "matshare": MatShare.Command(arg); return true;
+                case "livedeco": return LiveDeco.Step(arg);
 #endif
                 case "filteridentity":
                     FilterIdentityProbe.Command(arg); return true;
@@ -1703,6 +1704,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             FrameCompare.Stop();
             MatShare.Stop();
+            LiveDeco.Stop();
 #endif
 #if DEV || AUTOTEST
             MicroBench.Cancel();

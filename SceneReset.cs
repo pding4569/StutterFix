@@ -35,6 +35,7 @@ namespace StutterFix
             Count++;
 #if DEV || AUTOTEST
             MatShare.Stop();
+            LiveDeco.Stop();
 #endif
 #if DEV || AUTOTEST
             DecoRender.Stop();

@@ -14,6 +14,7 @@ namespace StutterFix
     internal sealed class MatShare : MonoBehaviour
     {
         static MatShare instance;
+        internal static bool Active => instance != null;
         readonly List<Row> rows = new List<Row>();
         readonly List<Material> owned = new List<Material>();
         long reset;
@@ -84,6 +85,9 @@ namespace StutterFix
         {
             return SortingLayer.GetLayerValueFromID(r.sortingLayerID) + "/" + r.sortingLayerID + "/" + r.sortingOrder + "/" + (r.sharedMaterial ? r.sharedMaterial.renderQueue : -1) + "/" + F(Distance(r,cam));
         }
+        internal static SceneRenderOrder.Key SortKey(Renderer r, Material m, Camera cam, int slot = 0)
+            => new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(r.sortingLayerID), r.sortingOrder,
+                m ? m.renderQueue : -1, Distance(r, cam), m ? m.GetInstanceID() : 0, r.GetInstanceID(), slot);
         static float Distance(Renderer r, Camera cam)
         {
             Vector3 pos = r.bounds.center;
@@ -125,9 +129,7 @@ namespace StutterFix
                     Key = sig + "/spriteTexture=" + (r.sprite && r.sprite.texture ? r.sprite.texture.GetInstanceID() : 0),
                     Reason = reason, Sprite = r.sprite, Layer = r.sortingLayerID, Order = r.sortingOrder, Distance = Distance(r,cam) });
             }
-            return result.OrderBy(x => SortingLayer.GetLayerValueFromID(x.Layer)).ThenBy(x => x.Order)
-                .ThenBy(x => x.Original ? x.Original.renderQueue : -1).ThenByDescending(x => x.Distance)
-                .ThenBy(x => x.Original ? x.Original.GetInstanceID() : 0).ThenBy(x => x.R.GetInstanceID()).ToList();
+            return result.OrderBy(x => SortKey(x.R, x.Original, cam)).ToList();
         }
         static bool Live(Row x) => x.R && x.R.enabled && x.R.gameObject.activeInHierarchy && !x.R.forceRenderingOff;
         static int RunCount(IEnumerable<Row> source)
