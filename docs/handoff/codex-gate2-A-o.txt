@@ -1,10 +1,10 @@
-1. r7 지시대로 Dormancy 이벤트 기반 델타 큐·정적 판정 캐시를 구현하고 기존 Dormancy 변경을 보존했다.
-2. RenderFrame의 전체 렌더러 Scan/재등록을 제거하고 변경 행 주변 구간만 재구성하며 공유 정점 영역을 재사용한다.
-3. 게임·모드 관리 쓰기 지점의 정렬/재질/계층/스크립트/생성·파괴 통지와 초기 등록·1초 감사 비용을 기록한다.
-4. 논리 가시성과 소유 숨김 비트를 분리하고 InvisibleSkip 충돌을 막았지만 기존 18개 원인·새 소유율은 미측정이다.
-5. 정점·바운드는 0.01px 미만으로 검사하고 제외 사유·오차 히스토그램·1초 owned_ts·비용·callback 횟수를 남긴다.
-6. 켬 집계 전 최소3초 여유를 강제하고 자연재생의 3~5초 owned<800 조기 중단 및 수명 진입 복원을 추가했다.
-7. 3종 빌드 오류0/0/0·LoadCheck 틀림0/0/0·Player 제외39건·게임 hook22개·기존 fixture/132단계 검사를 통과했다.
-8. 생산 델타5918737건·쓰기 통지133건 통과. 실제 scan≤0.05ms·정점≤0.5ms·업로드≤0.4ms·FPS+15%는 미측정이다.
-9. 최신 기존 run6은 ab_out376530/124332/0·최대6/5/0·FPS이득−87.686140%로 PIXEL_FAIL이며 픽셀 수정은 보류했다.
-10. 결과·장부·증거 갱신. 게임 실행·설치·커밋·푸시·config·메모리·스킬 변경 없음. GATE2 PASS 미달성이다.
+1. 최신 전달은 수정 시각이 가장 늦은 run1이며 첫 livedeco on에서 Dormancy live tracking is not ready로 중단했다.
+2. Prof979110표본/set_pct69.121312%/valid=True, 소유·픽셀·FPS는 미도달, 기존 판정 GATE2=ERROR다.
+3. 비교용 pause로 Hitch.Playing이 꺼지면 Dormancy가 source/awake를 지워 Begin의 readiness와 충돌하는 경로를 찾았다.
+4. DEV/AutoTest의 FrameCompare.Paused 동안 목록·깨움/잠듦을 유지하며 일반 정지·해제의 초기화는 유지한다.
+5. 명시적 Begin에서 원본 소유 전에 관리자 목록을 한 번 준비하고 초기화 비용은 enable_transition에 포함한다.
+6. 실패 시 enabled/broken/logicSkip/playing/capturePaused/source를 전체 스택과 함께 남기고 복원한다.
+7. 실제 Dormancy.cs 수명20건 통과, playing-only 대조본은 pause-owner 검사에서 실패하고 수정본은 통과했다.
+8. 3종 빌드 오류0/0/0·LoadCheck 틀림0/0/0·Player 제외·기존 정책/델타/쓰기/FrameCompare/132단계 검사를 통과했다.
+9. 소유90%·scan≤0.05ms·정점≤0.5ms·업로드≤0.4ms·FPS+15%·픽셀0·실게임 수명은 수정 후 미측정이다.
+10. 결과·장부·r8 증거 갱신. 게임 실행·설치·커밋·푸시·config·메모리·스킬 변경 없음. Gate2 통과 미확인이다.

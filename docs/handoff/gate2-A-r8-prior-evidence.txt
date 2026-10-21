@@ -1,0 +1,13 @@
+﻿기존 시험 읽기 전용 감사. 신규 게임 측정 없음.
+E:/StutterFixWork/night-results/al-ga-1.log SHA256=DD06C7E93561232BF0281639943E23159E16A3DB4A09D440AFB772FD42EECA36
+docs/handoff/ga-autoloop-run1-evidence.txt SHA256=E07C46BC5EC097C7EA947B0C20287FF5B88257EE1288332CE779132DD79ACC8D
+D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed/Assembly-CSharp.dll SHA256=F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF
+330: [StutterFix] [livedeco2] PROFILE samples=979110 set_pct=69.121312 scope=DecoAnim.Step-sampled-Apply-and-OnUpdate excludes=StepPair-OnComplete-engine-work-after-setter baseline_path_unchanged=0 prof_restored=False valid=True
+364: [StutterFix] [framecmp] pause controller.paused=1 Time.timeScale=0 DOTween.timeScale=0 AudioListener.pause=1; UI pause menu not invoked
+366: [StutterFix] [상태] None 편집중 일시정지  -> 정지
+435: [StutterFix] [livedeco] ERROR System.InvalidOperationException: Dormancy live tracking is not ready
+436:   at StutterFix.LiveDecoRenderer.Begin () [0x000f0] in <25c680a35ba7448f9e97da7e6fa21ebe>:0 
+437: [StutterFix] [자동 시험] 단계 실패 'livedeco on': Dormancy live tracking is not ready
+438: [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False
+FrameCompare.Pause -> controller.paused=true; GcControl.IsPlayingFast/Slow -> !paused; GcControl.Tick -> Hitch.Tick -> wasPlaying; Dormancy.List -> !Hitch.Playing -> ResetState -> source=null; LiveDecoRenderer.Begin -> LiveTrackingReady false.
+게임 디컴파일: scrDecorationManager.LateUpdate는 allDecorations를 순회해 LogicUpdate를 호출. scrController.paused setter는 _paused=value를 저장. 설치 관리자 IL은 r8-manager-il.log로 교차확인.

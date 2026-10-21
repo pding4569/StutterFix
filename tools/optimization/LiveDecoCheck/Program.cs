@@ -148,6 +148,9 @@ if (args.Length >= 3)
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
         foreach (string name in new[] { "LiveDeco", "LiveDecoPolicy", "SceneRenderOrder", "LiveDecoRenderer", "LiveDecoChanges", "LiveDecoGeometry", "LiveDecoUploadState", "LiveDecoScripts", "LiveDecoLifetime", "LiveDecoGate2", "LiveDecoGate2Policy" })
             Check(names.Contains(name) == (i != 0), "edition types " + name + " " + args[i]);
+        var dormancy = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name) == "Dormancy");
+        Check(dormancy.GetMethods().Select(md.GetMethodDefinition).Any(m => md.GetString(m.Name) == "PrepareLiveTracking") == (i != 0),
+            "capture-pause preparation absent from ordinary Player " + args[i]);
         if (i != 0)
         {
             var vertex = md.TypeDefinitions.Select(md.GetTypeDefinition).Single(t => md.GetString(t.Name) == "Vertex"

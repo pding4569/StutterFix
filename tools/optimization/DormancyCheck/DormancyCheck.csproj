@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings><DefineConstants>DEV</DefineConstants>
+    <DormancySource Condition="'$(DormancySource)' == ''">../../../Dormancy.cs</DormancySource>
+  </PropertyGroup>
+  <ItemGroup><Compile Include="$(DormancySource)" Link="Dormancy.cs" /></ItemGroup>
+</Project>

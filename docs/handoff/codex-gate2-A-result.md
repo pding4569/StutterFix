@@ -1,3 +1,39 @@
+# Gate 2 A 자동 반복 2회차 — 비교용 일시정지의 Dormancy 초기화 실패 수정 (2026-10-21, r8)
+
+**최신 시험의 시작 차단 원인을 수정하고 오프라인 검증을 완료했다. 수정 후 게임 측정은 없으며 Gate2 통과는 미확인이다.** 게임 실행·설치·커밋·푸시·`.codex/config.toml` 수정은 하지 않았다. 시작 HEAD는 `31e44fe`, 작업 트리는 깨끗했다. 기존 r7의 이벤트 기반 델타·캐시·부분 구간 갱신을 유지했다.
+
+## 최신 증거와 원인
+
+인계 `codex-al-ga-2.md`, 공통 지시의 끝 절들, 장부, 기존 결과와 전달 증거를 읽었다. 파일 번호 대신 수정 시각을 확인했다. 최신은 **ga-autoloop-run1-evidence.txt**(18:44)이며 run6(13:57)은 과거다. 기존 전체 로그 `E:/StutterFixWork/night-results/al-ga-1.log`도 읽기만 했다.
+
+- 기존 실측: Prof **979,110표본 / set_pct=69.121312% / valid=True**. 기존 Step 표본·PairXY/GroupStep 억제·OnComplete/후속 엔진 비용 제외 한계는 그대로다.
+- 로그 364행에서 비교용 pause, 366행에서 상태가 일시정지→정지로 바뀌고, 435~438행에서 **Dormancy live tracking is not ready → GATE2=ERROR / autotest_aborted**가 기록된다.
+- 소유 시작 전에 중단되었다. **새 소유 수·scan/reconcile/vertex/upload 비용·픽셀·FPS 수치는 없다.** 과거의 18개나 FPS −87%를 이 코드의 측정값으로 쓰지 않는다.
+
+`FrameCompare.Pause()`는 Paused를 먼저 켠 뒤 controller.paused를 켠다. `GcControl.IsPlayingFast/Slow`는 paused를 재생 제외 조건으로 쓰고 그 결과를 `Hitch.Tick`에 전달한다. 그런데 기존 `Dormancy.List()`는 **!Hitch.Playing이면 ResetState()**를 호출해 source와 awake 목록을 지웠다. `Begin()`은 비교용 일시정지를 허용하면서도 source가 있어야 하는 LiveTrackingReady를 요구하므로 두 조건이 충돌했다. 로그의 Enabled/broken/LogicSkip 개별 값은 없으므로 다른 차단 조건까지 전부 실측했다고 주장하지 않는다.
+
+게임 디컴파일 `scrDecorationManager.LateUpdate`의 장식 목록 순회·LogicUpdate 호출을 확인하고, 설치 DLL의 IL로 교차확인했다. scrController.paused setter의 _paused 저장도 디컴파일에서 확인했다. 게임 메서드는 실행하지 않았다. [원본 해시·행 번호·호출 경로](gate2-A-r8-prior-evidence.txt), [관리자 IL](gate2-A-r8-manager-il.log).
+
+## 수정 범위
+
+1. DEV/AutoTest의 비교용 **FrameCompare.Paused** 동안 Dormancy 목록과 깨움/잠듦 추적을 유지한다. 일반 정지·메뉴·설정 꺼짐·오류·맵 해제의 초기화 경로는 유지한다. 일반 Player에는 비교용 분기가 컴파일되지 않는다.
+2. 명시적 `livedeco on`에서 원본을 숨기기 전에 `PrepareLiveTracking(manager)`로 현재 관리자 목록을 한 번 준비한다. seek 직후 첫 관리자 LateUpdate 전이나 차가운 일시정지 상태에서도 초기화할 수 있다. 초기화 비용은 enable_transition_ms/enable_allocated_bytes 안에 포함한다. **RenderFrame의 전체 스캔을 다시 넣지 않았다.**
+3. 성공 시 `live_tracking ready=1 playing=... capture_paused=... awake=...`를 남기고 실패 시 Enabled/broken/LogicSkip/playing/capturePaused/source를 예외에 포함한다. 기존 Begin의 `[livedeco] ERROR` 전체 스택·복원 경로를 사용한다.
+
+## 오프라인 검증
+
+새 DormancyCheck는 **실제 Dormancy.cs**를 연결한다. managed adapter로 10프레임 일시정지 중 소유·목록 유지, 잠듦/깨움, 재개, 일반 정지, 첫 LateUpdate 전 초기화, 관리자 목록 교체, unload, 설정 꺼짐과 null source를 **20건** 검사했다. 이전 playing-only 조건만 복원한 대조본은 `capture pause preserves live owner and readiness`에서 실패(exit 1)하고 수정본은 20건 통과했다. Unity의 실제 Harmony 설치·프레임 비용·게임 수명 시험의 대체 증거는 아니다. [대조본](gate2-A-r8-dormancy-negative.log), [수정본](gate2-A-r8-dormancy-fixture.log), [검사 설명](../../tools/optimization/DormancyCheck/README.md).
+
+- Release DEV/Player/PlayerAuto 빌드 오류 **0/0/0**, 경고 **38/36/38**. LoadCheck **276/229/276곳**, 틀림 **0/0/0**.
+- 소유·정렬 정책 **106,479건**, gate 정책 **18건**, edition metadata **42건**(새 준비 메서드의 일반 Player 제외 포함), 게임 hook metadata **22개** 통과.
+- 계층 **2,729**, 바운드 **482**, 스크립트 **15**, 정점 캐시 **40**, 업로드 **32**, 생산 델타 **5,918,737**, 쓰기 통지 **133건** 통과.
+- FrameCompare **11/15/15/17/21/2**, 기존 **132단계** 생성기 검사 통과. steps·픽셀 수식·비교 제외 영역·성공 기준은 변경하지 않았다.
+- 빌드/LoadCheck/fixture 로그는 `gate2-A-r8-*`, 최종 해시·차이 검사는 [검증 기록](gate2-A-r8-validation.txt)에 보존했다.
+
+지시의 1→2→3→4 순서를 유지한다. 이번 증거는 단계 1의 소유 시작 전 차단 오류여서 이를 수정했다. 기존 구현의 **소유 90%·scan≤0.05ms·정점≤0.5ms·업로드≤0.4ms·FPS+15%·3시점 픽셀0·실게임 복원**은 신규 측정 없이 통과로 적지 않는다. 픽셀 단계는 1~3의 새 수치가 없어 보류했다. 동일 코드 게임 재시험을 실행하거나 요청하지 않았다.
+
+---
+
 # Gate 2 A 7회차 — Dormancy 이벤트·정적 캐시·부분 구간 갱신 (2026-10-21)
 
 **소스 수정과 오프라인 검증 완료. 신규 게임 측정이 없으므로 Gate 2 통과·소유 90%·scan ≤0.05ms·정점 ≤0.5ms·업로드 ≤0.4ms·FPS +15%는 미확인이다.** 게임 실행·설치·커밋·푸시·`.codex/config.toml` 변경을 하지 않았다. 시작 시 이미 수정된 `Dormancy.cs`의 `LiveTrackingReady`, Changed/Rebuilt/Audit/Reset 통지를 보존하고 연결했다. 아래 과거 결과도 보존했다.

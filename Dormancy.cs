@@ -44,6 +44,20 @@ namespace StutterFix
         internal static List<scrDecoration> AwakeList { get { return awake; } }
 #if DEV || AUTOTEST
         internal static bool LiveTrackingReady => Enabled && !broken && MoveApply.LogicSkip && source != null;
+
+        // Pixel capture pauses playback without ending the loaded scene. Refresh
+        // once at explicit enable, before LiveDeco owns any renderer, even when
+        // the manager has not yet run in this frame (or after a seek).
+        internal static void PrepareLiveTracking(scrDecorationManager mgr)
+        {
+            prepared = false;
+            List(mgr);
+            if (!LiveTrackingReady)
+                throw new InvalidOperationException("Dormancy live tracking is not ready: enabled=" + Enabled
+                    + " broken=" + broken + " logicSkip=" + MoveApply.LogicSkip
+                    + " playing=" + Hitch.Playing + " capturePaused=" + FrameCompare.Paused
+                    + " source=" + (source != null));
+        }
 #endif
         private static readonly HashSet<scrDecoration> dormant = new HashSet<scrDecoration>(RefEq.Instance);
         private static readonly List<scrDecoration> woken = new List<scrDecoration>();
@@ -103,7 +117,11 @@ namespace StutterFix
         public static List<scrDecoration> List(scrDecorationManager mgr)
         {
             var all = allRef(mgr);
-            if (!Enabled || broken || !MoveApply.LogicSkip || all == null || !Hitch.Playing) { ResetState(); return all; }
+            bool tracking = Hitch.Playing;
+#if DEV || AUTOTEST
+            tracking |= FrameCompare.Paused;
+#endif
+            if (!Enabled || broken || !MoveApply.LogicSkip || all == null || !tracking) { ResetState(); return all; }
             if (prepared) return awake;
             prepared = true;
             try { Prepare(all); }

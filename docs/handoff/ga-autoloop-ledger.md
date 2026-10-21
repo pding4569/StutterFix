@@ -1,3 +1,13 @@
+## codex-al-ga-2 자동 반복 2회차 — 2026-10-21 (r8, 비교용 pause 초기화 수정)
+- 시작 HEAD 31e44fe, 작업 트리 깨끗함. 게임 실행·설치·커밋·푸시·config 변경 없음.
+- 파일 수정 시각으로 최신 run1(18:44)을 선택했다. Prof979110표본/set_pct69.121312%/valid=True 뒤 첫 livedeco on이 Dormancy live tracking is not ready로 중단, GATE2=ERROR. 소유/픽셀/FPS는 미도달이다.
+- 기존 전체 al-ga-1.log 364행 pause, 366행 정지 전환, 435~438행 오류·판정을 확인하고 원본 해시/발췌를 보존했다.
+- FrameCompare는 pause를 허용하지만 Dormancy.List의 !Hitch.Playing이 source/awake를 지워 Begin의 readiness와 충돌한다. 관리 코드·게임 디컴파일·설치 관리자 IL을 대조했다.
+- DEV/AutoTest의 비교용 pause 동안 목록/델타를 유지하고, 명시적 Begin에서 소유 전에 현재 목록을 한 번 준비한다. 설정/오류 차단과 일반 정지/맵해제 복원은 유지, 실패 플래그 진단 추가. 프레임당 전체 스캔 재도입 없음.
+- 실제 Dormancy.cs 수명 fixture20건 통과. playing-only 조건의 대조본은 pause-owner 검사에서 exit1, 수정본은 통과. 실제 Unity 수명/성능 증명은 아니다.
+- 빌드 오류0/0/0·LoadCheck 틀림0/0/0, 정책106479/gate18/edition42/hook22, 계층2729/바운드482/스크립트15/캐시40/업로드32, 델타5918737/쓰기133, FrameCompare 및132단계 통과.
+- 결과/10줄요약/r8 증거 갱신. 새 소유율·비용·픽셀·FPS는 미측정. 과거18개·FPS를 새 코드 결과로 전용하지 않음. Gate2 통과 미확인. 동일 코드 게임 시험 반복 없음.
+
 ## codex-al-ga-6 분석 — 2026-10-21 (감사 run7, 현재 설계 한계로 중단)
 - 시작 HEAD ad65eab, 처음 작업 트리 깨끗함. 작업 중 외부 추가된 gate2-common.md 긴급 지시를 읽고 diff 보존. 게임 실행·설치·커밋·푸시·config·소스·steps·바이너리 변경 없음.
 - run5 전달은 전체 로그 후반 발췌. 기존 al-ga-5.log를 보완 감사하고 원본 SHA256·행 번호·집계·소스 해시를 gate2-A-run7-analysis.txt에 보존. 신규 게임 측정 없음.
@@ -226,3 +236,29 @@
 
 - 시험 핵심 줄:
   - [StutterFix] [livedeco2] GATE2=ERROR reason=autotest_aborted:오류로 그만둠 variant=A on=False
+
+## 회차 2
+- Codex 요약: 일시정지 때 Dormancy 목록이 지워져 소유 시작이 실패하던 오류를 수정했습니다.
+
+- 3종 빌드·LoadCheck 오류 0, 회귀 검사 통과.
+- 결과 문서·장부·10줄 요약 갱신.
+- 게임 실행·설치·커밋·푸시 없음.
+
+실게임 픽셀·FPS는 미측정이므로 **Gate 2 통과는 미확인**입니다.
+
+[상세 결과](E:/StutterFixWork/wt-ld2a/docs/handoff/codex-gate2-A-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=2026 runs=1234 vertex_ms=5.638800 upload_ms=4.825300 reconcile_ms=1682.110000 delta_ms=1500.903300 scan_ms=0.000900 audit_ms=0.000000 awake=212
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2026 runs=1234 dirty=157254 scan_ms=0.000900 vertex_ms=5.638800 upload_ms=4.825300 transition_ms=181.206700 audits=0 missed=0
+  - [StutterFix] [livedeco] begin variant=A renderer_version=7 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events change_methods=1723 change_sites=4039 enable_transition_ms=39243.351600 e
+  - [StutterFix] [livedeco] cost per_frame=1 samples=4 owned=2026 runs=1234 vertex_ms=0.589925 upload_ms=0.071225 reconcile_ms=4.895575 delta_ms=4.895575 scan_ms=0.000250 audit_ms=1.193950 awake=2127 dorm
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2026 runs=1234 dirty=5609 scan_ms=0.000250 vertex_ms=0.589925 upload_ms=0.071225 transition_ms=39243.351600 audits=2 missed=0
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=2026 runs=1234 vertex_ms=0.596000 upload_ms=0.072100 reconcile_ms=2.795300 delta_ms=2.795300 scan_ms=0.000100 audit_ms=2.361100 awake=2127 dorm
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2026 runs=1234 dirty=984 scan_ms=0.000100 vertex_ms=0.596000 upload_ms=0.072100 transition_ms=39243.351600 audits=3 missed=0
+  - [StutterFix] [livedeco] cost per_frame=1 samples=3 owned=2026 runs=1234 vertex_ms=0.599567 upload_ms=0.069867 reconcile_ms=2.690533 delta_ms=2.690533 scan_ms=0.000467 audit_ms=0.766233 awake=2127 dorm
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2026 runs=1234 dirty=2952 scan_ms=0.000467 vertex_ms=0.599567 upload_ms=0.069867 transition_ms=39243.351600 audits=4 missed=0
+  - [StutterFix] [livedeco] cost per_frame=1 samples=1 owned=2026 runs=1234 vertex_ms=0.586400 upload_ms=0.068400 reconcile_ms=2.732000 delta_ms=2.732000 scan_ms=0.000300 audit_ms=0.000000 awake=2127 dorm
+  - [StutterFix] [livedeco] owned_ts t=262.017840 awake=2127 owned=2026 runs=1234 dirty=984 scan_ms=0.000300 vertex_ms=0.586400 upload_ms=0.068400 transition_ms=39243.351600 audits=4 missed=0
+  - [StutterFix] [livedeco] begin variant=A renderer_version=7 color_format=Float32x4 vertex_stride=36 live_source=Dormancy-events change_methods=1723 change_sites=4039 enable_transition_ms=14632.802600 e

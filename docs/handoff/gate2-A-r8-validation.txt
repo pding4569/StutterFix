@@ -1,0 +1,18 @@
+﻿r8 offline validation; no game execution, installation, commit, push, or config changes.
+HEAD=31e44fe
+Build Dev/Player/PlayerAuto errors=0/0/0 warnings=38/36/38. LoadCheck checked=276/229/276 bad=0/0/0.
+Dormancy production lifecycle=20 pass. Previous playing-only guard negative control=expected exit1 at pause owner/readiness check.
+Policy=106479 gate=18 edition=42 hooks=22. Geometry=2729 bounds=482 scripts=15 cache=40 uploads=32.
+Delta=5918737 mutations=6000. Writes=133. FrameCompare=11/15/15/17/21/2. Generator=132 steps.
+No new ownership, screen error histogram, scan/reconcile/vertex/upload/FPS/pixel or Unity lifetime measurements. Gate2 remains unverified.
+Dormancy.cs sha256=7AF94D24D9D8ACC2DE28078F0F1D7B5DA546A904A24285803C3D0FE605F02862
+LiveDecoRenderer.cs sha256=A02BAA75911FE5AE0A85194D6F401A2832E54E61794CDCB8711EB4F6274124E7
+tools/optimization/DormancyCheck/DormancyCheck.csproj sha256=0583CB00458EB1561E5AA6F42504F08608A9FCDB0BDDDDA2D51B72BCA4638DB2
+tools/optimization/DormancyCheck/Program.cs sha256=3BBE54B2D382C8A124DF4D8C8D90D6CB86516C06ABFD1720F426589F774CC383
+tools/optimization/DormancyCheck/Adapters.cs sha256=F7E6C6085094B69EAC79D4DAAF991411825741CF9B53B4E287043353FE3D1F79
+tools/optimization/DormancyCheck/README.md sha256=D5C0DFBC24494F89681DDFD8BF7A2852A7902180CF9C2AF8BE580DB49EA4C26A
+tools/optimization/LiveDecoCheck/Program.cs sha256=D27CFE82D4683BE222CE9894396DFA442EC4CC3AF682E8508303955C095BBEB7
+docs/handoff/codex-gate2-A-result.md sha256=674BACC653F0A07A50FC9F0EFA18A62DC5A6A076B2BF61E1C8BA6BE0E367BB5D
+docs/handoff/codex-gate2-A-o.txt sha256=6600BF53A3ACCB653931031E31B941C1845ABA5E428DE48FA3C4AD2E3CAB81D8
+docs/handoff/ga-autoloop-ledger.md sha256=590C5BEFC97E8EB1FA3057284FB1DB22E3142B6031B661932713222418E0F11D
+UTF-8 and replacement-character check=10 files pass; summary=10 lines; git diff --check=pass.

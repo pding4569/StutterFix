@@ -173,10 +173,12 @@ namespace StutterFix
             if (!camera || !manager || !SortSupported() || !Identity(manager.transform))
                 throw new InvalidOperationException("requires orthographic Z sorting and identity manager parent");
             if (DecoGpu.Active) throw new InvalidOperationException("competing owner");
-            if (!Dormancy.LiveTrackingReady) throw new InvalidOperationException("Dormancy live tracking is not ready");
             error = "none"; reset = SceneReset.Count; lastFrame = -1;
             long enableBegin = Stopwatch.GetTimestamp();
             long enableAlloc = GC.GetAllocatedBytesForCurrentThread();
+                Dormancy.PrepareLiveTracking(manager);
+                Log("live_tracking ready=1 playing=" + Hitch.Playing + " capture_paused=" + FrameCompare.Paused
+                    + " awake=" + Dormancy.AwakeList.Count);
                 // Refuse foreign hooks before any rendering mutation.
                 foreach (var type in new[] { typeof(scrDecoration), typeof(scrVisualDecoration), typeof(scrParallax), typeof(ToggleVisible) })
                     foreach (var method in type.GetMethods(AccessTools.all))
