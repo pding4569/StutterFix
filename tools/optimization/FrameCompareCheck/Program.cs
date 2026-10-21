@@ -31,15 +31,35 @@ foreach (int bad in new[] { -1, 256 })
 bool mismatch = false; try { FrameCompareMetrics.Compare(a, new byte[4], 65, 35, 0); } catch (ArgumentException) { mismatch = true; }
 Check(mismatch, "dimensions guard");
 Console.WriteLine($"FrameCompareMetrics: {n} checks passed (offline RGBA8 only; no live GPU evidence)");
+int stateStart = n;
+FrameCompareState Snapshot(bool visible, string field, string value)
+{
+    var state = new FrameCompareState();
+    var entry = new FrameCompareState.Entry { Label = "fixture", Relevant = visible };
+    entry.Fields[field] = value; state.Entries.Add("renderer:1", entry); return state;
+}
+var baseline = Snapshot(true, "enabled", "True");
+Check(baseline.Compare(Snapshot(true, "enabled", "True")).Changed == 0, "identical state");
+var delta = baseline.Compare(Snapshot(false, "enabled", "False"));
+Check(delta.Changed > 0 && delta.Details.Contains("enabled=True->False"), "visible to hidden identifies field");
+Check(Snapshot(false, "matrix", "1").Compare(Snapshot(false, "matrix", "2")).Changed == 0, "hidden transform drift ignored");
+Check(Snapshot(false, "matrix", "1").Compare(Snapshot(false, "matrix", "2")).Ignored == 1, "hidden drift counted");
+Check(new FrameCompareState().Compare(baseline).Changed == 1, "visible renderer added");
+Check(baseline.Compare(new FrameCompareState()).Changed == 1, "visible renderer removed");
+Check(new FrameCompareState().Compare(Snapshot(false, "enabled", "False")).Ignored == 1, "hidden membership counted");
+foreach (string field in new[] { "size", "RT", "projection", "forceRenderingOff", "sortingOrder", "materials" })
+    Check(Snapshot(true, field, "old").Compare(Snapshot(true, field, "new")).Details.Contains(field + "=old->new"), "diagnostic field " + field);
+Check(Snapshot(false, "enabled", "False").Compare(baseline).Changed > 0, "hidden to visible rejected");
+Console.WriteLine($"FrameCompareState: {n - stateStart} checks passed (synthetic snapshots; no Unity lifecycle evidence)");
 if (args.Length == 3)
 {
     for (int i = 0; i < args.Length; i++)
     {
         using var stream = File.OpenRead(args[i]); using var pe = new PEReader(stream); var md = pe.GetMetadataReader();
         var names = md.TypeDefinitions.Select(h => md.GetString(md.GetTypeDefinition(h).Name)).ToHashSet();
-        foreach (var name in new[] { "FrameCompare", "FrameCompareMetrics" })
+        foreach (var name in new[] { "FrameCompare", "FrameCompareMetrics", "FrameCompareState" })
             Check(names.Contains(name) == (i != 0), "edition isolation: " + args[i] + " " + name);
         if (i == 0) Check(!md.TypeReferences.Any(h => md.GetString(md.GetTypeReference(h).Name).StartsWith("FrameCompare")), "Player has no framecmp type references");
     }
-    Console.WriteLine("FrameCompare edition metadata: 7 checks passed; Player absent (including references), Developer/PlayerAuto present");
+    Console.WriteLine("FrameCompare edition metadata: 10 checks passed; Player absent (including references), Developer/PlayerAuto present");
 }

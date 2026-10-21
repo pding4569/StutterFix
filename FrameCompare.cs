@@ -18,7 +18,7 @@ namespace StutterFix
         {
             internal byte[] Pixels;
             internal int Width, Height, Frame;
-            internal ulong State;
+            internal FrameCompareState State;
             internal string Mode;
         }
         static FrameCompare instance;
@@ -60,8 +60,12 @@ namespace StutterFix
         internal static void Resume()
         {
             if (!Paused) return;
-            try { if (controller) controller.paused = oldPaused; }
-            finally { Time.timeScale = oldTime; DOTween.timeScale = oldTween; AudioListener.pause = oldAudio; Paused = false; controller = null; }
+            try { if (instance) instance.RestoreCapture(); }
+            finally
+            {
+                try { if (controller) controller.paused = oldPaused; }
+                finally { Time.timeScale = oldTime; DOTween.timeScale = oldTween; AudioListener.pause = oldAudio; Paused = false; controller = null; }
+            }
             Log("resume restored");
         }
         internal static bool Step(string arg)
@@ -77,12 +81,22 @@ namespace StutterFix
             var a = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (a.Length == 2 && a[0] == "filters" && (a[1] == "off" || a[1] == "on"))
             {
+                p.RestoreCapture();
                 p.filtersOff = a[1] == "off";
-                if (!p.filtersOff) p.RestoreFilters();
-                Log("filters=" + a[1] + " (off applies only during each capture)"); return true;
+                Log("filters=" + a[1] + " (capture scope retained until options change/resume/stop/error)"); return true;
             }
             if (a.Length == 2 && a[0] == "ui" && (a[1] == "include" || a[1] == "exclude"))
-            { p.includeUi = a[1] == "include"; Log("ui=" + a[1]); return true; }
+            { p.RestoreCapture(); p.includeUi = a[1] == "include"; Log("ui=" + a[1]); return true; }
+            if (a.Length >= 3 && a[0] == "assertzero")
+            {
+                if (a.Length > 4 || (a.Length == 4 && a[3] != "png")) throw new ArgumentException("framecmp assertzero A B [png]");
+                var r = p.Diff(a[1], a[2], 0);
+                var delta = p.shots[a[1]].State.Compare(p.shots[a[2]].State);
+                p.LogDelta("negative-control", p.shots[a[1]].State, p.shots[a[2]].State, delta);
+                if (a.Length == 4) { p.Save(a[1]); p.Save(a[2]); }
+                if (r.Changed != 0 || delta.Changed != 0) throw new InvalidOperationException("negative control requires zero pixels and stable capture state");
+                return true;
+            }
             if (a.Length >= 3 && a[0] == "diff")
             {
                 if (a.Length > 5) throw new ArgumentException("framecmp diff A B [0..255] [png]");
@@ -97,7 +111,7 @@ namespace StutterFix
             if (a.Length == 2 && a[0] == "grab") work = p.Grab(a[1]);
             else if (a.Length == 3 && a[0] == "noise") work = p.Noise(a[1], a[2]);
             else if (a.Length == 2 && a[0] == "control" && (a[1] == "hide" || a[1] == "order")) work = p.Control(a[1]);
-            else throw new ArgumentException("framecmp filters off|on; ui exclude|include; grab NAME; diff A B [threshold] [png]; noise A B; control hide|order; save NAME; clear");
+            else throw new ArgumentException("framecmp filters off|on; ui exclude|include; grab NAME; diff A B [threshold] [png]; assertzero A B [png]; noise A B; control hide|order; save NAME; clear");
             p.error = null; p.ready = false; p.busy = true;
             p.StartCoroutine(p.Guarded(work)); return false;
         }
@@ -119,7 +133,9 @@ namespace StutterFix
             finally
             {
                 while (stack.Count > 0) (stack.Pop() as IDisposable)?.Dispose();
-                RestoreControl(); RestoreCapture(); ready = true;
+                RestoreControl();
+                if (error != null) RestoreCapture(); else ReleasePending(false);
+                ready = true;
             }
         }
         void RequirePaused()
@@ -136,6 +152,7 @@ namespace StutterFix
             if (!SystemInfo.supportsAsyncGPUReadback) throw new InvalidOperationException("AsyncGPUReadback unsupported on " + SystemInfo.graphicsDeviceType);
             // Permit capture-scope changes to settle for one natural frame.
             ApplyCapture();
+            Camera.onPreCull -= EnforceCapture;
             Camera.onPreCull += EnforceCapture;
             yield return null;
             yield return new WaitForEndOfFrame();
@@ -144,7 +161,10 @@ namespace StutterFix
                 masks.Keys.Any(c => c && c.cullingMask != (masks[c] & ~(1 << LayerMask.NameToLayer("UI")))))
                 throw new InvalidOperationException("capture options overwritten during rendering");
             int w = Screen.width, h = Screen.height;
-            ulong state = State();
+            var state = State();
+            Log($"capture-context frame={Time.frameCount} time={Time.time:R} unscaledTime={Time.unscaledTime:R} realtime={Time.realtimeSinceStartupAsDouble:R} shader_Time={Shader.GetGlobalVector("_Time").ToString("R")} shader_DeltaTime={Shader.GetGlobalVector("unity_DeltaTime").ToString("R")} screenMSAA={QualitySettings.antiAliasing} captureMSAA=1");
+            foreach (var e in state.Entries.Where(e => e.Key.StartsWith("camera:", StringComparison.Ordinal)))
+                Log("camera " + e.Key + " " + e.Value.Label + " " + string.Join(" ", e.Value.Fields.Select(f => f.Key + "=" + f.Value)));
             pendingTexture = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear) { name = "SF.framecmp.RGBA8", antiAliasing = 1 };
             if (!pendingTexture.Create()) throw new InvalidOperationException($"RT create failed {w}x{h} ARGB32 non-MSAA");
             var active = RenderTexture.active;
@@ -153,6 +173,11 @@ namespace StutterFix
             int frame = Time.frameCount;
             pending = AsyncGPUReadback.Request(pendingTexture, 0, TextureFormat.RGBA32); hasPending = true;
             double start = Time.realtimeSinceStartupAsDouble;
+            // Validate submission in the SAME end-of-frame phase. The dedicated RT is
+            // immutable while readback is pending; subsequent scene updates cannot alter it.
+            var submitted = State(); var submissionDelta = state.Compare(submitted);
+            LogDelta("submission", state, submitted, submissionDelta);
+            if (submissionDelta.Changed != 0) throw new InvalidOperationException("capture state changed during submission: " + submissionDelta.Details);
             while (!pending.done)
             {
                 if (Time.realtimeSinceStartupAsDouble - start > 15) throw new TimeoutException("GPU readback exceeded 15s; pending RT retained until completion");
@@ -160,20 +185,27 @@ namespace StutterFix
             }
             if (pending.hasError) throw new InvalidOperationException($"readback failed {w}x{h} ARGB32->RGBA32 device={SystemInfo.graphicsDeviceType}");
             RequirePaused();
-            if (w != Screen.width || h != Screen.height || state != State()) throw new InvalidOperationException("resolution or renderer state changed during readback");
+            var completed = State(); var waitDelta = submitted.Compare(completed);
+            LogDelta("readback-wait-advisory", submitted, completed, waitDelta);
+            Log($"readback sourceFrame={frame} completionFrame={Time.frameCount} elapsedFrames={Time.frameCount - frame} elapsedMs={(Time.realtimeSinceStartupAsDouble - start) * 1000:F3} rt={pendingTexture.width}x{pendingTexture.height} screenNow={Screen.width}x{Screen.height}");
+            if (!pendingTexture.IsCreated() || pendingTexture.width != w || pendingTexture.height != h ||
+                pending.width != w || pending.height != h || pending.GetData<byte>().Length != checked(w * h * 4))
+                throw new InvalidOperationException("readback RT/data dimensions changed");
             shots[name] = new Shot { Pixels = pending.GetData<byte>().ToArray(), Width = w, Height = h, Frame = frame, State = state,
                 Mode = $"filtersOff={filtersOff},includeUi={includeUi},device={SystemInfo.graphicsDeviceType},color={QualitySettings.activeColorSpace}" };
-            Log($"grab {name} valid=1 {w}x{h} frame={frame} state={state:X16} {shots[name].Mode} disabledFilters={filters.Count} disabledCanvases={canvases.Count} maskedCameras={masks.Count}");
-            RestoreCapture();
+            Log($"grab {name} valid=1 {w}x{h} frame={frame} {state.Summary} {shots[name].Mode} disabledFilters={filters.Count} disabledCanvases={canvases.Count} maskedCameras={masks.Count}");
+            ReleasePending(false);
         }
         IEnumerator Noise(string a, string b)
         {
             if (a == b) throw new ArgumentException("noise needs distinct names");
             yield return Grab(a); yield return Grab(b);
             var r = Diff(a, b, 0);
-            bool stable = shots[a].State == shots[b].State;
+            var delta = shots[a].State.Compare(shots[b].State);
+            LogDelta("noise", shots[a].State, shots[b].State, delta);
+            bool stable = delta.Changed == 0;
             Log($"noise rendererStateEqual={stable} zero={r.Changed == 0}");
-            if (!stable || r.Changed != 0) throw new InvalidOperationException("nonzero/unstable noise floor: inspect time shaders, filters, MSAA, uploads; equivalence invalid");
+            if (!stable || r.Changed != 0) throw new InvalidOperationException("nonzero/unstable noise floor: inspect state phase=noise, capture-context shader clocks, camera RT/MSAA, filters and uploads; equivalence invalid");
         }
         FrameCompareMetrics.Result Diff(string a, string b, int threshold)
         {
@@ -246,19 +278,64 @@ namespace StutterFix
             if (!busy && hasPending && pending.done) ReleasePending(false);
             if (retiring && !hasPending) { if (instance == this) instance = null; Destroy(gameObject); }
         }
-        static ulong State()
+        void LogDelta(string phase, FrameCompareState before, FrameCompareState after, FrameCompareState.Delta delta)
         {
-            // Detect transform/visibility/sprite/material/order/color drift (not arbitrary shader globals).
-            ulong hash = 14695981039346656037UL;
-            Action<int> add = v => { unchecked { hash = (hash ^ (uint)v) * 1099511628211UL; } };
-            foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>().Where(r => r && r.gameObject.scene.IsValid()).OrderBy(r => r.GetInstanceID()))
+            Log($"state phase={phase} changedFields={delta.Changed} ignoredHiddenFields={delta.Ignored} before=[{before.Summary}] after=[{after.Summary}] details={delta.Details}");
+        }
+        static string Matrix(Matrix4x4 m) => string.Join(",", Enumerable.Range(0, 16).Select(i => m[i].ToString("R", Inv)));
+        static string Color(Color c) => c.r.ToString("R", Inv) + "," + c.g.ToString("R", Inv) + "," + c.b.ToString("R", Inv) + "," + c.a.ToString("R", Inv);
+        static ulong Hash(IEnumerable<string> values)
+        {
+            ulong h = 14695981039346656037UL;
+            unchecked { foreach (string v in values) { foreach (char c in v) h = (h ^ c) * 1099511628211UL; h = (h ^ 0xFFFF) * 1099511628211UL; } }
+            return h;
+        }
+        FrameCompareState State()
+        {
+            var state = new FrameCompareState();
+            var screen = new FrameCompareState.Entry { Label = "screen", Relevant = true };
+            screen.Fields["size"] = Screen.width + "x" + Screen.height;
+            screen.Fields["fullscreen"] = Screen.fullScreenMode.ToString();
+            screen.Fields["colorSpace"] = QualitySettings.activeColorSpace.ToString();
+            screen.Fields["MSAA"] = QualitySettings.antiAliasing.ToString(Inv);
+            state.Entries.Add("screen", screen);
+            var renderers = Resources.FindObjectsOfTypeAll<Renderer>().Where(r => r && r.gameObject.scene.IsValid()).OrderBy(r => r.GetInstanceID()).ToArray();
+            foreach (var r in renderers)
             {
-                add(r.GetInstanceID()); add(r.enabled ? 1 : 0); add(r.forceRenderingOff ? 1 : 0); add(r.gameObject.activeInHierarchy ? 1 : 0);
-                var matrix = r.localToWorldMatrix; for (int i = 0; i < 16; i++) add(matrix[i].GetHashCode());
-                add(r.sortingLayerID); add(r.sortingOrder); foreach (var m in r.sharedMaterials) add(m ? m.GetInstanceID() : 0);
-                if (r is SpriteRenderer s) { add(s.sprite ? s.sprite.GetInstanceID() : 0); add(s.color.GetHashCode()); add(s.flipX ? 1 : 0); add(s.flipY ? 1 : 0); }
+                var entry = new FrameCompareState.Entry { Label = r.name.Replace('\n', ' ').Replace('\r', ' '),
+                    Relevant = r.enabled && !r.forceRenderingOff && r.gameObject.activeInHierarchy };
+                var f = entry.Fields;
+                f["enabled"] = r.enabled.ToString(); f["forceRenderingOff"] = r.forceRenderingOff.ToString();
+                f["activeInHierarchy"] = r.gameObject.activeInHierarchy.ToString();
+                f["matrix"] = Matrix(r.localToWorldMatrix); f["layer"] = r.gameObject.layer.ToString(Inv);
+                f["sortingLayer"] = r.sortingLayerID.ToString(Inv); f["sortingOrder"] = r.sortingOrder.ToString(Inv);
+                f["materials"] = string.Join(",", r.sharedMaterials.Select(m => m ? m.GetInstanceID() : 0));
+                if (r is SpriteRenderer s)
+                {
+                    f["sprite"] = (s.sprite ? s.sprite.GetInstanceID() : 0).ToString(Inv);
+                    f["color"] = Color(s.color); f["flip"] = s.flipX + "," + s.flipY;
+                }
+                state.Entries.Add("renderer:" + r.GetInstanceID().ToString(Inv), entry);
             }
-            return hash;
+            var cameras = Resources.FindObjectsOfTypeAll<Camera>().Where(c => c && c.gameObject.scene.IsValid()).OrderBy(c => c.GetInstanceID()).ToArray();
+            foreach (var c in cameras)
+            {
+                var entry = new FrameCompareState.Entry { Label = c.name.Replace('\n', ' ').Replace('\r', ' '), Relevant = c.enabled && c.gameObject.activeInHierarchy };
+                var f = entry.Fields; var rt = c.targetTexture;
+                f["enabled"] = c.enabled.ToString(); f["activeInHierarchy"] = c.gameObject.activeInHierarchy.ToString();
+                f["view"] = Matrix(c.worldToCameraMatrix); f["projection"] = Matrix(c.projectionMatrix); f["culling"] = Matrix(c.cullingMatrix);
+                f["mask"] = c.cullingMask.ToString(Inv); f["depth"] = c.depth.ToString("R", Inv);
+                f["rect"] = c.rect.ToString("R"); f["pixelRect"] = c.pixelRect.ToString("R");
+                f["clear"] = c.clearFlags.ToString(); f["background"] = Color(c.backgroundColor);
+                f["HDR_MSAA"] = c.allowHDR + "," + c.allowMSAA; f["targetDisplay"] = c.targetDisplay.ToString(Inv);
+                f["sort"] = c.transparencySortMode + "," + c.transparencySortAxis.ToString("R");
+                f["RT"] = rt ? $"id={rt.GetInstanceID()},size={rt.width}x{rt.height},format={rt.format},MSAA={rt.antiAliasing},created={rt.IsCreated()}" : "backbuffer";
+                state.Entries.Add("camera:" + c.GetInstanceID().ToString(Inv), entry);
+            }
+            ulong list = Hash(renderers.Select(r => r.GetInstanceID().ToString(Inv)));
+            ulong raw = Hash(state.Entries.SelectMany(e => new[] { e.Key }.Concat(e.Value.Fields.Select(f => f.Key + "=" + f.Value))));
+            state.Summary = $"screen={Screen.width}x{Screen.height} renderers={renderers.Length} listHash={list:X16} rawHash={raw:X16} cameras={cameras.Length} frame={Time.frameCount}";
+            return state;
         }
         IEnumerator Control(string kind)
         {
@@ -309,7 +386,9 @@ namespace StutterFix
             }
             yield return Grab("_controlB"); RestoreControl(); yield return Grab("_controlA2");
             var restored = Diff("_controlA", "_controlA2", 0); var changed = Diff("_controlA", "_controlB", 0);
-            if (restored.Changed != 0 || shots["_controlA"].State != shots["_controlA2"].State)
+            var restoreDelta = shots["_controlA"].State.Compare(shots["_controlA2"].State);
+            LogDelta("control-restore", shots["_controlA"].State, shots["_controlA2"].State, restoreDelta);
+            if (restored.Changed != 0 || restoreDelta.Changed != 0)
                 throw new InvalidOperationException("control failed: restoration must be zero/stable");
             if (changed.Changed > 0) { Log("control " + kind + " valid=1 restored=0 positive=" + changed.Changed + " attempt=" + attempts); yield break; }
             Log("control " + kind + " candidate produced zero; retry (occluded/commutative)");
