@@ -1,0 +1,408 @@
+﻿run2 offline metadata audit; no game execution
+
+
+Algorithm : SHA256
+Hash      : F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF
+Path      : D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSha
+            rp.dll
+
+Algorithm : SHA256
+Hash      : 9F5141E8DD6C34B82BB03F151E6F0773129F55A7A2E816FE1E31E549737F4A71
+Path      : D:\SteamLibrary\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\UnityEngine.C
+            oreModule.dll
+
+
+
+
+== BlendModes.ComponentExtension
+  get_SupportedShaderFamilies
+    호출 BlendModes.ComponentExtension::GetSupportedShaderFamilies
+  get_DefaultShaderFamily
+    호출 BlendModes.ComponentExtension::GetDefaultShaderFamily
+  get_DefaultShaderProperties
+    호출 BlendModes.ComponentExtension::GetDefaultShaderProperties
+  get_IsExtendedComponentValid
+    호출 BlendModes.ComponentExtensionState::get_ExtendedComponent
+    호출 UnityEngine.Object::op_Implicit
+  get_BlendModeEffect
+    호출 BlendModes.ComponentExtension::get_IsExtendedComponentValid
+    호출 BlendModes.ComponentExtensionState::get_ExtendedComponent
+    호출 제네릭 UnityEngine.Component::GetComponent
+  get_ShaderProperties
+    호출 BlendModes.ComponentExtensionState::get_ShaderProperties
+  CreateForObject
+    호출 BlendModes.ComponentExtension+<>c__DisplayClass15_0::.ctor
+    호출 BlendModes.ComponentExtension::GetExtensionMap
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Keys
+    호출 제네릭 UnityEngine.GameObject::GetComponents
+    호출 BlendModes.ComponentExtension+<>c__DisplayClass15_0::<CreateForObject>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::FirstOrDefault
+    호출 UnityEngine.Object::op_Equality
+    호출 BlendModes.ComponentExtension::ResolveComponentExtensionType
+    호출 System.Type::op_Equality
+    호출 System.Object::GetType
+    호출 System.Type::get_FullName
+    호출 System.String::Format
+    호출 UnityEngine.Debug::LogError
+    호출 System.Activator::CreateInstance
+    호출 BlendModes.ComponentExtensionState::set_ExtendedComponent
+    호출 BlendModes.ComponentExtension::GetOverridedShaderProperties
+    호출 BlendModes.ComponentExtensionState::set_ShaderProperties
+    호출 BlendModes.ComponentExtension::OnEffectEnabled
+  IsValidFor
+    호출 BlendModes.ComponentExtension::get_IsExtendedComponentValid
+    호출 BlendModes.ComponentExtensionState::get_ExtendedComponent
+    호출 UnityEngine.Component::get_gameObject
+    호출 UnityEngine.Object::op_Equality
+  GetDefaultShaderFamily
+    호출 BlendModes.ComponentExtension::get_SupportedShaderFamilies
+  GetDefaultShaderProperties
+  MaterialHasProperty
+    호출 BlendModes.ComponentExtension::GetRenderMaterial
+    호출 UnityEngine.Object::op_Implicit
+    호출 UnityEngine.Material::HasProperty
+  GetShaderProperty
+    호출 BlendModes.ComponentExtension+<>c__DisplayClass20_0::.ctor
+    호출 BlendModes.ComponentExtension::get_ShaderProperties
+    호출 BlendModes.ComponentExtension+<>c__DisplayClass20_0::<GetShaderProperty>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::FirstOrDefault
+  ApplyShaderProperties
+    호출 UnityEngine.Object::op_Equality
+    호출 BlendModes.ComponentExtension::get_ShaderProperties
+    호출 BlendModes.ShaderProperty::ApplyToMaterial
+  AllowMaterialSharing
+  GetPropertyBlock
+  SetPropertyBlock
+  GetSupportedShaderFamilies
+  GetRenderMaterial
+  SetRenderMaterial
+  OnEffectMaterialCreated
+  OnEffectEnabled
+  OnEffectDisabled
+  OnEffectRenderImage
+  GetExtendedComponent
+    호출 BlendModes.ComponentExtensionState::get_ExtendedComponent
+  SetBlendMaterialDirty
+    호출 BlendModes.ComponentExtension::get_BlendModeEffect
+    호출 UnityEngine.Object::op_Implicit
+    호출 BlendModes.BlendModeEffect::SetMaterialDirty
+  GetOverridedShaderProperties
+    호출 BlendModes.ComponentExtension::GetRenderMaterial
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 BlendModes.ComponentExtension::get_DefaultShaderProperties
+    호출 BlendModes.ComponentExtension+<>c__DisplayClass34_0::.ctor
+    호출 BlendModes.ComponentExtensionState::get_ShaderProperties
+    호출 BlendModes.ComponentExtension+<>c__DisplayClass34_0::<GetOverridedShaderProperties>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Any
+    호출 BlendModes.ComponentExtension+<>c__DisplayClass34_0::<GetOverridedShaderProperties>b__1
+    호출 제네릭 System.Linq.Enumerable::First
+    호출 BlendModes.ShaderProperty::.ctor
+    호출 UnityEngine.Object::op_Implicit
+    호출 BlendModes.ShaderProperty::get_Name
+    호출 UnityEngine.Material::HasProperty
+    호출 BlendModes.ShaderProperty::get_Type
+    호출 BlendModes.ShaderUtilities::GetProperty
+    호출 BlendModes.ShaderProperty::SetValue
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 제네릭 System.Collections.Generic.List`1::ToArray
+  ResolveComponentExtensionType
+    호출 BlendModes.ComponentExtension+<>c__DisplayClass35_0::.ctor
+    호출 BlendModes.ComponentExtension::GetExtensionMap
+    호출 System.Object::GetType
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 BlendModes.ComponentExtension+<>c__DisplayClass35_0::<ResolveComponentExtensionType>b__0
+    호출 제네릭 System.Func`2::.ctor
+    호출 제네릭 System.Linq.Enumerable::Where
+    호출 제네릭 System.Linq.Enumerable::FirstOrDefault
+  GetExtensionMap
+    정적필드 읽기 BlendModes.ComponentExtension::extensionsMap
+    호출 제네릭 System.Collections.Generic.Dictionary`2::.ctor
+    정적필드 쓰기 BlendModes.ComponentExtension::extensionsMap
+    호출 System.AppDomain::get_CurrentDomain
+    호출 System.AppDomain::GetAssemblies
+    정적필드 읽기 BlendModes.ComponentExtension+<>c::<>9__36_0
+    정적필드 읽기 BlendModes.ComponentExtension+<>c::<>9
+    호출 BlendModes.ComponentExtension+<>c::<GetExtensionMap>b__36_0
+    호출 제네릭 System.Func`2::.ctor
+    정적필드 쓰기 BlendModes.ComponentExtension+<>c::<>9__36_0
+    호출 제네릭 System.Linq.Enumerable::Where
+    정적필드 읽기 BlendModes.ComponentExtension+<>c::<>9__36_1
+    호출 BlendModes.ComponentExtension+<>c::<GetExtensionMap>b__36_1
+    정적필드 쓰기 BlendModes.ComponentExtension+<>c::<>9__36_1
+    호출 제네릭 System.Linq.Enumerable::SelectMany
+    호출 제네릭 System.Collections.Generic.IEnumerable`1::GetEnumerator
+    호출 제네릭 System.Collections.Generic.IEnumerator`1::get_Current
+    호출 System.Type::GetTypeFromHandle
+    호출 System.Reflection.MemberInfo::GetCustomAttributes
+    호출 BlendModes.ComponentExtension+ExtendedComponentAttribute::get_ExtendedComponentType
+    호출 제네릭 System.Collections.Generic.Dictionary`2::ContainsKey
+    호출 제네릭 System.Collections.Generic.List`1::.ctor
+    호출 제네릭 System.Collections.Generic.Dictionary`2::Add
+    호출 제네릭 System.Collections.Generic.Dictionary`2::get_Item
+    호출 제네릭 System.Collections.Generic.List`1::Add
+    호출 System.Collections.IEnumerator::MoveNext
+    호출 System.IDisposable::Dispose
+  IsDynamicAssembly
+    호출 System.Reflection.Assembly::get_IsDynamic
+  PreloadExtensionMap
+    호출 BlendModes.ComponentExtension::GetExtensionMap
+  .ctor
+    호출 System.Object::.ctor
+== BlendModes.RendererExtension`1
+  get_DefaultShaderName
+    호출 제네릭 BlendModes.RendererExtension`1::GetDefaultShaderName
+  OnEffectEnabled
+    정적필드 읽기 제네릭 BlendModes.RendererExtension`1::defaultMaterial
+    호출 UnityEngine.Object::op_Implicit
+    호출 제네릭 BlendModes.RendererExtension`1::get_DefaultShaderName
+    호출 UnityEngine.Shader::Find
+    호출 System.String::Format
+    호출 UnityEngine.Debug::LogWarning
+    호출 UnityEngine.Material::.ctor
+    정적필드 쓰기 제네릭 BlendModes.RendererExtension`1::defaultMaterial
+  OnEffectDisabled
+    정적필드 읽기 제네릭 BlendModes.RendererExtension`1::defaultMaterial
+    호출 제네릭 BlendModes.RendererExtension`1::SetRendererMaterials
+  GetRenderMaterial
+    호출 BlendModes.ComponentExtension::get_IsExtendedComponentValid
+    호출 제네릭 BlendModes.ComponentExtension::GetExtendedComponent
+    호출 UnityEngine.Renderer::get_sharedMaterials
+  SetRenderMaterial
+    호출 제네릭 BlendModes.RendererExtension`1::SetRendererMaterials
+  GetDefaultShaderName
+  SetRendererMaterials
+    호출 BlendModes.ComponentExtension::get_IsExtendedComponentValid
+    호출 제네릭 BlendModes.ComponentExtension::GetExtendedComponent
+    호출 UnityEngine.Renderer::get_sharedMaterials
+    호출 UnityEngine.Renderer::set_sharedMaterials
+  .ctor
+    호출 BlendModes.ComponentExtension::.ctor
+== BlendModes.SpriteRendererExtension
+  GetSupportedShaderFamilies
+  GetDefaultShaderProperties
+    정적필드 읽기 BlendModes.SpriteRendererExtension::cachedDefaultProperties
+    호출 UnityEngine.Color::get_white
+    호출 BlendModes.ShaderProperty::.ctor
+    정적필드 쓰기 BlendModes.SpriteRendererExtension::cachedDefaultProperties
+  GetDefaultShaderName
+  .ctor
+    호출 제네릭 BlendModes.RendererExtension`1::.ctor
+== BlendModes.MeshRendererExtension
+  GetSupportedShaderFamilies
+  GetDefaultShaderProperties
+    정적필드 읽기 BlendModes.MeshRendererExtension::cachedDefaultProperties
+    호출 UnityEngine.Texture2D::get_whiteTexture
+    호출 BlendModes.ShaderProperty::.ctor
+    호출 UnityEngine.Vector4::.ctor
+    호출 UnityEngine.Color::get_white
+    정적필드 쓰기 BlendModes.MeshRendererExtension::cachedDefaultProperties
+  GetDefaultShaderName
+  .ctor
+    호출 제네릭 BlendModes.RendererExtension`1::.ctor
+== BlendModes.MeshRendererVisualDecoExtension
+  GetSupportedShaderFamilies
+    호출 BlendModes.MeshRendererExtension::GetSupportedShaderFamilies
+    호출 제네릭 System.Linq.Enumerable::Concat
+    호출 제네릭 System.Linq.Enumerable::ToArray
+  .ctor
+    호출 BlendModes.MeshRendererExtension::.ctor
+== UnityEngine.MaterialPropertyBlock : System.Object
+  필드 m_Ptr
+  메서드 void AddFloat(string, single)
+  메서드 void AddFloat(int32, single)
+  메서드 void AddVector(string, UnityEngine.Vector4)
+  메서드 void AddVector(int32, UnityEngine.Vector4)
+  메서드 void AddColor(string, UnityEngine.Color)
+  메서드 void AddColor(int32, UnityEngine.Color)
+  메서드 void AddMatrix(string, UnityEngine.Matrix4x4)
+  메서드 void AddMatrix(int32, UnityEngine.Matrix4x4)
+  메서드 void AddTexture(string, UnityEngine.Texture)
+  메서드 void AddTexture(int32, UnityEngine.Texture)
+  메서드 int32 GetIntImpl(int32)
+  메서드 single GetFloatImpl(int32)
+  메서드 UnityEngine.Vector4 GetVectorImpl(int32)
+  메서드 UnityEngine.Color GetColorImpl(int32)
+  메서드 UnityEngine.Matrix4x4 GetMatrixImpl(int32)
+  메서드 UnityEngine.Texture GetTextureImpl(int32)
+  메서드 boolean HasPropertyImpl(int32)
+  메서드 boolean HasFloatImpl(int32)
+  메서드 boolean HasIntImpl(int32)
+  메서드 boolean HasTextureImpl(int32)
+  메서드 boolean HasMatrixImpl(int32)
+  메서드 boolean HasVectorImpl(int32)
+  메서드 boolean HasBufferImpl(int32)
+  메서드 boolean HasConstantBufferImpl(int32)
+  메서드 void SetIntImpl(int32, int32)
+  메서드 void SetFloatImpl(int32, single)
+  메서드 void SetVectorImpl(int32, UnityEngine.Vector4)
+  메서드 void SetColorImpl(int32, UnityEngine.Color)
+  메서드 void SetMatrixImpl(int32, UnityEngine.Matrix4x4)
+  메서드 void SetTextureImpl(int32, UnityEngine.Texture)
+  메서드 void SetRenderTextureImpl(int32, UnityEngine.RenderTexture, UnityEngine.Rendering.RenderTextureSubElement)
+  메서드 void SetBufferImpl(int32, UnityEngine.ComputeBuffer)
+  메서드 void SetGraphicsBufferImpl(int32, UnityEngine.GraphicsBuffer)
+  메서드 void SetConstantBufferImpl(int32, UnityEngine.ComputeBuffer, int32, int32)
+  메서드 void SetConstantGraphicsBufferImpl(int32, UnityEngine.GraphicsBuffer, int32, int32)
+  메서드 void SetFloatArrayImpl(int32, single[], int32)
+  메서드 void SetVectorArrayImpl(int32, UnityEngine.Vector4[], int32)
+  메서드 void SetMatrixArrayImpl(int32, UnityEngine.Matrix4x4[], int32)
+  메서드 single[] GetFloatArrayImpl(int32)
+  메서드 UnityEngine.Vector4[] GetVectorArrayImpl(int32)
+  메서드 UnityEngine.Matrix4x4[] GetMatrixArrayImpl(int32)
+  메서드 int32 GetFloatArrayCountImpl(int32)
+  메서드 int32 GetVectorArrayCountImpl(int32)
+  메서드 int32 GetMatrixArrayCountImpl(int32)
+  메서드 void ExtractFloatArrayImpl(int32, single[])
+  메서드 void ExtractVectorArrayImpl(int32, UnityEngine.Vector4[])
+  메서드 void ExtractMatrixArrayImpl(int32, UnityEngine.Matrix4x4[])
+  메서드 static void Internal_CopySHCoefficientArraysFrom(UnityEngine.MaterialPropertyBlock, UnityEngine.Rendering.SphericalHarmonicsL2[], int32, int32, int32)
+  메서드 static void Internal_CopyProbeOcclusionArrayFrom(UnityEngine.MaterialPropertyBlock, UnityEngine.Vector4[], int32, int32, int32)
+  메서드 static intptr CreateImpl()
+  메서드 static void DestroyImpl(intptr)
+  메서드 boolean get_isEmpty()
+  메서드 void Clear(boolean)
+  메서드 void Clear()
+  메서드 void SetFloatArray(int32, single[], int32)
+  메서드 void SetVectorArray(int32, UnityEngine.Vector4[], int32)
+  메서드 void SetMatrixArray(int32, UnityEngine.Matrix4x4[], int32)
+  메서드 void ExtractFloatArray(int32, System.Collections.Generic.List`1<single>)
+  메서드 void ExtractVectorArray(int32, System.Collections.Generic.List`1<UnityEngine.Vector4>)
+  메서드 void ExtractMatrixArray(int32, System.Collections.Generic.List`1<UnityEngine.Matrix4x4>)
+  메서드 void .ctor()
+  메서드 void Finalize()
+  메서드 void Dispose()
+  메서드 void SetInt(string, int32)
+  메서드 void SetInt(int32, int32)
+  메서드 void SetFloat(string, single)
+  메서드 void SetFloat(int32, single)
+  메서드 void SetInteger(string, int32)
+  메서드 void SetInteger(int32, int32)
+  메서드 void SetVector(string, UnityEngine.Vector4)
+  메서드 void SetVector(int32, UnityEngine.Vector4)
+  메서드 void SetColor(string, UnityEngine.Color)
+  메서드 void SetColor(int32, UnityEngine.Color)
+  메서드 void SetMatrix(string, UnityEngine.Matrix4x4)
+  메서드 void SetMatrix(int32, UnityEngine.Matrix4x4)
+  메서드 void SetBuffer(string, UnityEngine.ComputeBuffer)
+  메서드 void SetBuffer(int32, UnityEngine.ComputeBuffer)
+  메서드 void SetBuffer(string, UnityEngine.GraphicsBuffer)
+  메서드 void SetBuffer(int32, UnityEngine.GraphicsBuffer)
+  메서드 void SetTexture(string, UnityEngine.Texture)
+  메서드 void SetTexture(int32, UnityEngine.Texture)
+  메서드 void SetTexture(string, UnityEngine.RenderTexture, UnityEngine.Rendering.RenderTextureSubElement)
+  메서드 void SetTexture(int32, UnityEngine.RenderTexture, UnityEngine.Rendering.RenderTextureSubElement)
+  메서드 void SetConstantBuffer(string, UnityEngine.ComputeBuffer, int32, int32)
+  메서드 void SetConstantBuffer(int32, UnityEngine.ComputeBuffer, int32, int32)
+  메서드 void SetConstantBuffer(string, UnityEngine.GraphicsBuffer, int32, int32)
+  메서드 void SetConstantBuffer(int32, UnityEngine.GraphicsBuffer, int32, int32)
+  메서드 void SetFloatArray(string, System.Collections.Generic.List`1<single>)
+  메서드 void SetFloatArray(int32, System.Collections.Generic.List`1<single>)
+  메서드 void SetFloatArray(string, single[])
+  메서드 void SetFloatArray(int32, single[])
+  메서드 void SetVectorArray(string, System.Collections.Generic.List`1<UnityEngine.Vector4>)
+  메서드 void SetVectorArray(int32, System.Collections.Generic.List`1<UnityEngine.Vector4>)
+  메서드 void SetVectorArray(string, UnityEngine.Vector4[])
+  메서드 void SetVectorArray(int32, UnityEngine.Vector4[])
+  메서드 void SetMatrixArray(string, System.Collections.Generic.List`1<UnityEngine.Matrix4x4>)
+  메서드 void SetMatrixArray(int32, System.Collections.Generic.List`1<UnityEngine.Matrix4x4>)
+  메서드 void SetMatrixArray(string, UnityEngine.Matrix4x4[])
+  메서드 void SetMatrixArray(int32, UnityEngine.Matrix4x4[])
+  메서드 boolean HasProperty(string)
+  메서드 boolean HasProperty(int32)
+  메서드 boolean HasInt(string)
+  메서드 boolean HasInt(int32)
+  메서드 boolean HasFloat(string)
+  메서드 boolean HasFloat(int32)
+  메서드 boolean HasInteger(string)
+  메서드 boolean HasInteger(int32)
+  메서드 boolean HasTexture(string)
+  메서드 boolean HasTexture(int32)
+  메서드 boolean HasMatrix(string)
+  메서드 boolean HasMatrix(int32)
+  메서드 boolean HasVector(string)
+  메서드 boolean HasVector(int32)
+  메서드 boolean HasColor(string)
+  메서드 boolean HasColor(int32)
+  메서드 boolean HasBuffer(string)
+  메서드 boolean HasBuffer(int32)
+  메서드 boolean HasConstantBuffer(string)
+  메서드 boolean HasConstantBuffer(int32)
+  메서드 single GetFloat(string)
+  메서드 single GetFloat(int32)
+  메서드 int32 GetInt(string)
+  메서드 int32 GetInt(int32)
+  메서드 int32 GetInteger(string)
+  메서드 int32 GetInteger(int32)
+  메서드 UnityEngine.Vector4 GetVector(string)
+  메서드 UnityEngine.Vector4 GetVector(int32)
+  메서드 UnityEngine.Color GetColor(string)
+  메서드 UnityEngine.Color GetColor(int32)
+  메서드 UnityEngine.Matrix4x4 GetMatrix(string)
+  메서드 UnityEngine.Matrix4x4 GetMatrix(int32)
+  메서드 UnityEngine.Texture GetTexture(string)
+  메서드 UnityEngine.Texture GetTexture(int32)
+  메서드 single[] GetFloatArray(string)
+  메서드 single[] GetFloatArray(int32)
+  메서드 UnityEngine.Vector4[] GetVectorArray(string)
+  메서드 UnityEngine.Vector4[] GetVectorArray(int32)
+  메서드 UnityEngine.Matrix4x4[] GetMatrixArray(string)
+  메서드 UnityEngine.Matrix4x4[] GetMatrixArray(int32)
+  메서드 void GetFloatArray(string, System.Collections.Generic.List`1<single>)
+  메서드 void GetFloatArray(int32, System.Collections.Generic.List`1<single>)
+  메서드 void GetVectorArray(string, System.Collections.Generic.List`1<UnityEngine.Vector4>)
+  메서드 void GetVectorArray(int32, System.Collections.Generic.List`1<UnityEngine.Vector4>)
+  메서드 void GetMatrixArray(string, System.Collections.Generic.List`1<UnityEngine.Matrix4x4>)
+  메서드 void GetMatrixArray(int32, System.Collections.Generic.List`1<UnityEngine.Matrix4x4>)
+  메서드 void CopySHCoefficientArraysFrom(System.Collections.Generic.List`1<UnityEngine.Rendering.SphericalHarmonicsL2>)
+  메서드 void CopySHCoefficientArraysFrom(UnityEngine.Rendering.SphericalHarmonicsL2[])
+  메서드 void CopySHCoefficientArraysFrom(System.Collections.Generic.List`1<UnityEngine.Rendering.SphericalHarmonicsL2>, int32, int32, int32)
+  메서드 void CopySHCoefficientArraysFrom(UnityEngine.Rendering.SphericalHarmonicsL2[], int32, int32, int32)
+  메서드 void CopyProbeOcclusionArrayFrom(System.Collections.Generic.List`1<UnityEngine.Vector4>)
+  메서드 void CopyProbeOcclusionArrayFrom(UnityEngine.Vector4[])
+  메서드 void CopyProbeOcclusionArrayFrom(System.Collections.Generic.List`1<UnityEngine.Vector4>, int32, int32, int32)
+  메서드 void CopyProbeOcclusionArrayFrom(UnityEngine.Vector4[], int32, int32, int32)
+  메서드 static int32 GetIntImpl_Injected(intptr, int32)
+  메서드 static single GetFloatImpl_Injected(intptr, int32)
+  메서드 static void GetVectorImpl_Injected(intptr, int32, ref UnityEngine.Vector4)
+  메서드 static void GetColorImpl_Injected(intptr, int32, ref UnityEngine.Color)
+  메서드 static void GetMatrixImpl_Injected(intptr, int32, ref UnityEngine.Matrix4x4)
+  메서드 static intptr GetTextureImpl_Injected(intptr, int32)
+  메서드 static boolean HasPropertyImpl_Injected(intptr, int32)
+  메서드 static boolean HasFloatImpl_Injected(intptr, int32)
+  메서드 static boolean HasIntImpl_Injected(intptr, int32)
+  메서드 static boolean HasTextureImpl_Injected(intptr, int32)
+  메서드 static boolean HasMatrixImpl_Injected(intptr, int32)
+  메서드 static boolean HasVectorImpl_Injected(intptr, int32)
+  메서드 static boolean HasBufferImpl_Injected(intptr, int32)
+  메서드 static boolean HasConstantBufferImpl_Injected(intptr, int32)
+  메서드 static void SetIntImpl_Injected(intptr, int32, int32)
+  메서드 static void SetFloatImpl_Injected(intptr, int32, single)
+  메서드 static void SetVectorImpl_Injected(intptr, int32, ref UnityEngine.Vector4)
+  메서드 static void SetColorImpl_Injected(intptr, int32, ref UnityEngine.Color)
+  메서드 static void SetMatrixImpl_Injected(intptr, int32, ref UnityEngine.Matrix4x4)
+  메서드 static void SetTextureImpl_Injected(intptr, int32, intptr)
+  메서드 static void SetRenderTextureImpl_Injected(intptr, int32, intptr, UnityEngine.Rendering.RenderTextureSubElement)
+  메서드 static void SetBufferImpl_Injected(intptr, int32, intptr)
+  메서드 static void SetGraphicsBufferImpl_Injected(intptr, int32, intptr)
+  메서드 static void SetConstantBufferImpl_Injected(intptr, int32, intptr, int32, int32)
+  메서드 static void SetConstantGraphicsBufferImpl_Injected(intptr, int32, intptr, int32, int32)
+  메서드 static void SetFloatArrayImpl_Injected(intptr, int32, ref UnityEngine.Bindings.ManagedSpanWrapper, int32)
+  메서드 static void SetVectorArrayImpl_Injected(intptr, int32, ref UnityEngine.Bindings.ManagedSpanWrapper, int32)
+  메서드 static void SetMatrixArrayImpl_Injected(intptr, int32, ref UnityEngine.Bindings.ManagedSpanWrapper, int32)
+  메서드 static void GetFloatArrayImpl_Injected(intptr, int32, ref UnityEngine.Bindings.BlittableArrayWrapper)
+  메서드 static void GetVectorArrayImpl_Injected(intptr, int32, ref UnityEngine.Bindings.BlittableArrayWrapper)
+  메서드 static void GetMatrixArrayImpl_Injected(intptr, int32, ref UnityEngine.Bindings.BlittableArrayWrapper)
+  메서드 static int32 GetFloatArrayCountImpl_Injected(intptr, int32)
+  메서드 static int32 GetVectorArrayCountImpl_Injected(intptr, int32)
+  메서드 static int32 GetMatrixArrayCountImpl_Injected(intptr, int32)
+  메서드 static void ExtractFloatArrayImpl_Injected(intptr, int32, ref UnityEngine.Bindings.BlittableArrayWrapper)
+  메서드 static void ExtractVectorArrayImpl_Injected(intptr, int32, ref UnityEngine.Bindings.BlittableArrayWrapper)
+  메서드 static void ExtractMatrixArrayImpl_Injected(intptr, int32, ref UnityEngine.Bindings.BlittableArrayWrapper)
+  메서드 static void Internal_CopySHCoefficientArraysFrom_Injected(intptr, ref UnityEngine.Bindings.ManagedSpanWrapper, int32, int32, int32)
+  메서드 static void Internal_CopyProbeOcclusionArrayFrom_Injected(intptr, ref UnityEngine.Bindings.ManagedSpanWrapper, int32, int32, int32)
+  메서드 static boolean get_isEmpty_Injected(intptr)
+  메서드 static void Clear_Injected(intptr, boolean)
+(1개 형식)

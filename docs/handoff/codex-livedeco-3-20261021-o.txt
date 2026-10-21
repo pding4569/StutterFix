@@ -1,10 +1,10 @@
-MPB 일괄 제외를 제거하고 renderer·slot0 블록의 실제 속성 존재·타입을 읽도록 수정했다.
-classifier_version=3이며 매 센서스에 property_block_names= 범위별 이름·타입·개수 분포를 남긴다.
-게임 속성 이름은 로컬 소스에서 회수하고 BlendModeEffect의 관련 호출·필드를 IL로 확인했다.
-기본 속성의 타입·값이 호환되면 잠정 후보를 유지하고 커스텀 속성은 이름별로 제외·집계한다.
-비어 있지 않지만 질의 이름이 전혀 관측되지 않는 블록은 property-block-unresolved로 제외한다.
-MPB 전체 열거 API가 없어 미지 속성 부재는 증명할 수 없으며 name_enumeration_complete=0을 기록한다.
-잠정 MPB 후보가 있으면 최종 GATE1은 INCONCLUSIVE이고 기존 수치 모델 판정은 numeric_gate로 분리한다.
-DEV·Player·PlayerAuto 빌드 오류 0, LoadCheck 모두 틀림 0, 일반 Player 실험 코드 제외를 확인했다.
-LiveDeco 22952·edition 10·MatShare 25401 checks와 steps 검증을 통과했고 기존 측정 JSON은 보존했다.
-게임 실행·설치·커밋·푸시는 하지 않았으며 속성별 실측 개수와 수정 후 GATE1은 미측정이다.
+﻿1. 자동 반복 2회차: 설계 한계로 중단, GATE1=INCONCLUSIVE 유지.
+2. 전달된 두 시점 live=2079/2266, 잠정 후보=2040/2223.
+3. coverage=98.124%/98.102%, mesh_runs=78/71로 numeric_gate는 모두 PASS.
+4. 관측 속성은 _MainTex:texture 한 종류, renderer/effective 각각 2079/2266개.
+5. 알려진 커스텀 이름 검출은 없지만 전체 속성 부재 증명은 불가능.
+6. 직접 원인은 provisionalBlocks가 0이 아니면 최종 게이트를 미확정으로 두는 조건.
+7. 게임 MPB 작성 경로와 Unity API를 C#·IL로 추가 확인, 완전 검증 근거 없음.
+8. 코드 변경·동일 빌드·동일 fixture·게임 재시험 없이 직전 통과 로그를 확인함.
+9. 게임 실행·설치·커밋·푸시·설정 변경 없음, 동일 자동 반복 재시험 권고 안 함.
+10. 상세 결과: docs/handoff/codex-livedeco-3-20261021-result.md
