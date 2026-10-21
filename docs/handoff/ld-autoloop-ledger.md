@@ -1,4 +1,4 @@
-
+﻿
 ## 회차 1
 - Codex 요약: 수정과 오프라인 검증을 완료했습니다.
 
@@ -39,3 +39,26 @@
   - [StutterFix] [livedeco] GATE1=INCONCLUSIVE required_mesh_runs_le=200 required_coverage_ge=80 runtime_snapshot_only=1 atlas_assumed=1 draw_estimate_only=1 census_cpu_ms=560.361
   - [StutterFix] [livedeco] property_block_provisional_candidates=2222 numeric_gate=PASS final_gate_requires=complete-property-block-verification
   - [StutterFix] [livedeco] GATE1=INCONCLUSIVE required_mesh_runs_le=200 required_coverage_ge=80 runtime_snapshot_only=1 atlas_assumed=1 draw_estimate_only=1 census_cpu_ms=536.525
+
+## 회차 3 — 설계 한계 재확인 후 중단 (2026-10-21)
+- codex-al-ld-3.md와 run2 전달 증거 확인. GATE1=INCONCLUSIVE, 성공 미달성.
+- 전달 실측 live=2128/2265, 잠정 후보=2089/2222, coverage=98.167%/98.102%, mesh_runs=78/71. numeric_gate 모두 PASS.
+- property_block_names는 renderer/effective 각각 _MainTex:texture=2128/2265. 알려진 커스텀 이름 검출 없음. 미지의 키 부재는 증명되지 않음.
+- 현재 게임/CoreModule 해시가 직전 감사와 같고 MPB 전체 키 열거·단일 키 제거 API도 없음. 디컴파일·IL·직접 판정 인자를 대조했다.
+- 이미 실패한 이름 질의 확대·작성 경로 감사·동일 코드 재시험을 해결책으로 반복하지 않음. 판정 강제 완화 없음. 동일 steps 자동 재시험 권고 안 함.
+- 소스·산출물 변경 없음. 빌드·fixture 재실행 없이 기존 통과 로그 확인. 게임 실행·설치·커밋·푸시·config·steps 변경 없음.
+- 결과 문서 최신 3회차 절 / codex-livedeco-3-20261021-o.txt(10줄) / livedeco-3-run3-property-audit.log.
+
+## 회차 3
+- Codex 요약: 인계 지시대로 분석했고, **설계 한계 중단 조건**을 적용했습니다.
+
+수치 기준은 통과했지만, MPB에 기본 속성만 존재함을 완전히 검증할 수 없어 `GATE1=INCONCLUSIVE`입니다. 코드 변경·동일 시험 반복 없이 근거와 장부를 갱신했습니다.
+
+[결과 문서](E:/StutterFixWork/wt-livedeco/docs/handoff/codex-livedeco-3-20261021-result.md) · [10줄 요약](E:/StutterFixWork/wt-livedeco/docs/handoff/codex-livedeco-3-20261021-o.txt)
+
+`git diff --check` 통과. 게임 실행·설치·커밋·푸시는 하지 않았습니다.
+- 시험 핵심 줄:
+  - [StutterFix] [livedeco] property_block_provisional_candidates=2040 numeric_gate=PASS final_gate_requires=complete-property-block-verification
+  - [StutterFix] [livedeco] GATE1=INCONCLUSIVE required_mesh_runs_le=200 required_coverage_ge=80 runtime_snapshot_only=1 atlas_assumed=1 draw_estimate_only=1 census_cpu_ms=572.550
+  - [StutterFix] [livedeco] property_block_provisional_candidates=2222 numeric_gate=PASS final_gate_requires=complete-property-block-verification
+  - [StutterFix] [livedeco] GATE1=INCONCLUSIVE required_mesh_runs_le=200 required_coverage_ge=80 runtime_snapshot_only=1 atlas_assumed=1 draw_estimate_only=1 census_cpu_ms=599.435

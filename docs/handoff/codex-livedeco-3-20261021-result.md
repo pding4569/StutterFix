@@ -1,4 +1,53 @@
-﻿# livedeco-3 자동 반복 2회차 결과 (2026-10-21)
+﻿# livedeco-3 자동 반복 3회차 결과 (2026-10-21)
+
+**판정: 설계 한계로 중단. GATE1=INCONCLUSIVE, 성공 미달성.**
+인계 문서의 “안 되는 이유가 설계 한계면 결과 문서에 구체적으로 적고 멈춰라”를 적용했다. 장부와 run2 전달 증거를 먼저 읽었다. 게임 실행·설치·커밋·푸시를 하지 않았다. 소스·산출물·설정·외부 steps·게임 파일도 변경하지 않았다. 동일 코드의 빌드·fixture·게임 시험은 반복하지 않았다.
+
+## 최신 전달 증거
+
+출처: [자동 수집 run2](ld-autoloop-run2-evidence.txt). 이번 세션의 신규 게임 측정이 아니다. 아래 보존한 2회차 결과의 run1 수치와 구분한다.
+
+| 항목 | 262.017840초 | 270.007159초 |
+|---|---:|---:|
+| live | 2,128 | 2,265 |
+| basic / owned 잠정 후보 | 2,089 / 2,089 | 2,222 / 2,222 |
+| coverage_pct (기준 ≥80) | 98.167 | 98.102 |
+| mesh_runs (기준 ≤200) | 78 | 71 |
+| ambiguous_material_ties | 0 | 0 |
+| renderer:_MainTex:texture | 2,128 | 2,265 |
+| effective:_MainTex:texture | 2,128 | 2,265 |
+| renderer 비어 있지 않음 / slot0 비어 있음 | 2,128 | 2,265 |
+| property_block_provisional_candidates | 2,089 | 2,222 |
+| numeric_gate | PASS | PASS |
+| GATE1 | INCONCLUSIVE | INCONCLUSIVE |
+| census_cpu_ms | 560.361 | 536.525 |
+
+`property_block_names=`는 두 시점 모두 출력되며 관측 이름·타입은 `_MainTex:texture` 한 종류다. renderer와 effective는 같은 렌더러의 두 집계이므로 합산하지 않는다. `property_block_custom=` 출력은 없다. 이는 질의한 이름에서 커스텀 속성이 검출되지 않았다는 뜻이며, 미지의 이름까지 포함한 총수가 0임을 뜻하지 않는다. 제외 사유는 keywords 1개와 repeat 38/42개다.
+
+## 코드 대조와 중단 근거
+
+- `LiveDeco.cs:146–170`은 renderer/slot0 블록을 읽고 기본 이름·게임에서 찾은 이름·셰이더 선언 이름을 질의한다. 기존 HasPropertyBlock 일괄 제외는 이미 제거되어 있다.
+- `LiveDeco.cs:262`는 후보의 유효 블록이 비어 있지 않으면 잠정 후보 수를 증가시킨다. 293행은 `provisionalBlocks == 0`을 최종 검증 인자로 전달한다. `LiveDecoPolicy.cs:65`는 이 인자가 false이면 INCONCLUSIVE를 반환한다. 이번 2,089/2,222개가 직접 중단 원인이다.
+- 장부의 이름별 센서스와 작성 경로 감사는 이미 끝난 접근이다. 이번에는 새 증거와 현재 DLL의 동일성 및 API 목록을 대조했다. tools/ilscan은 PE 메타데이터만 읽었으며 게임 코드를 실행하지 않았다. [이번 감사 로그](livedeco-3-run3-property-audit.log)에 해시·API 목록·호출 목록·비공개 이름을 제외한 센서스 발췌를 저장했다.
+- 디컴파일 `BlendModes/ComponentExtension.cs:142–149`의 GetPropertyBlock은 null 반환, SetPropertyBlock은 빈 구현이다. IL 호출 목록과 대조했다. scrVisualDecoration의 Material setter도 MPB 전체 키 목록을 제공하지 않는다. 이 관리 코드만으로 네이티브 SpriteRenderer 내부 또는 다른 작성 경로의 부재를 증명할 수 없다. 이전 상속 계층 감사는 아래 2회차 결과에 보존했다.
+- 현재 UnityEngine.CoreModule의 MPB API에는 이름/ID별 Has·Get, isEmpty, Clear가 있지만 전체 키 열거·단일 키 제거 API는 없다. GetFloatArrayCountImpl(int32) 등은 지정한 속성의 배열 길이이며 전체 키 수가 아니다. m_Ptr은 네이티브 포인터다.
+- 유한한 질의 집합을 Q라 하면 `{_MainTex}`와 `{_MainTex, Q에 없는 이름의 값}`은 현재 검사에서 같은 결과를 낼 수 있다. 셰이더 선언 열거는 MPB 저장 키 전체 열거가 아니다. 기본 이름 확인·질의 추가·동일 steps 반복으로 이 공백을 해결할 수 없다.
+
+게임 DLL SHA256은 `F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF`, Unity CoreModule은 `9F5141E8DD6C34B82BB03F151E6F0773129F55A7A2E816FE1E31E549737F4A71`로 직전 감사와 같다. 디컴파일 README의 원본 해시 접두도 일치한다.
+
+**커스텀 속성이 다수 검출되어 중단하는 것이 아니다. 요구한 “기본 속성만 있음”을 완전히 검증할 수 없어 중단한다.** 새 전달 증거는 이미 통과한 수치 기준만 재확인한다. 검증 인자를 강제로 true로 바꾸거나 성공 정의를 셰이더 소비 속성 검증으로 변경하지 않았다. 동일 빌드/steps 자동 재시험을 권고하지 않는다.
+
+## 검증과 변경 범위
+
+변경은 결과 문서·장부·10줄 요약·감사 로그뿐이다. 신규 IL 감사는 종료 코드 0이다. 빌드·fixture는 재실행하지 않았다. 기존 저장 로그를 다시 읽어 DEV/Player/PlayerAuto 오류 0/0/0, LoadCheck 틀림 0/0/0, LiveDeco 22,952 checks, edition 10 checks, MatShare 25,401 checks, steps fixture 통과를 확인했다. 구체적인 로그 파일과 제한은 아래 기존 검증 표에 보존했다. 일반 Player 제외 조건도 StutterFix.csproj에서 확인했고 유지했다. 최종 문서 변경은 git diff --check로 검사한다.
+
+task-observer v3.5.0 적용: 기존 사용자 범위 관찰 저장소는 읽기만 했고, 쓰기 범위 밖이므로 스킬·메모리를 수정하지 않았다. 관찰은 이 문서로 반환한다. 문제: 이미 확인된 설계 한계를 둔 자동 재시험은 같은 판정을 반복한다. 개선: 최종 판정 인자와 새 증거가 해결하는 조건을 대조한다. 원칙: 새 가설이 해결할 불확실성이 있을 때 재시험한다.
+
+---
+
+보존된 이전 회차 결과:
+
+# livedeco-3 자동 반복 2회차 결과 (2026-10-21)
 
 **판정: 설계 한계로 중단. GATE1=INCONCLUSIVE 유지, 성공 미달성.**
 `codex-al-ld-2.md`의 '안 되는 이유가 설계 한계면 결과 문서에 구체적으로 적고 멈춰라'를 적용했다. 이번에는 게임 실행·설치·커밋·푸시·재측정을 하지 않았다. 소스와 빌드 산출물, `.codex/config.toml`, 외부 steps JSON, 게임 파일은 변경하지 않았다. 같은 코드의 빌드·fixture·게임 시험을 반복하지 않았다.

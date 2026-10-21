@@ -1,10 +1,10 @@
-﻿1. 자동 반복 2회차: 설계 한계로 중단, GATE1=INCONCLUSIVE 유지.
-2. 전달된 두 시점 live=2079/2266, 잠정 후보=2040/2223.
-3. coverage=98.124%/98.102%, mesh_runs=78/71로 numeric_gate는 모두 PASS.
-4. 관측 속성은 _MainTex:texture 한 종류, renderer/effective 각각 2079/2266개.
-5. 알려진 커스텀 이름 검출은 없지만 전체 속성 부재 증명은 불가능.
-6. 직접 원인은 provisionalBlocks가 0이 아니면 최종 게이트를 미확정으로 두는 조건.
-7. 게임 MPB 작성 경로와 Unity API를 C#·IL로 추가 확인, 완전 검증 근거 없음.
-8. 코드 변경·동일 빌드·동일 fixture·게임 재시험 없이 직전 통과 로그를 확인함.
-9. 게임 실행·설치·커밋·푸시·설정 변경 없음, 동일 자동 반복 재시험 권고 안 함.
-10. 상세 결과: docs/handoff/codex-livedeco-3-20261021-result.md
+﻿1. 자동 반복 3회차: 장부와 run2 전달 증거를 읽고 설계 한계 중단 조건을 적용했다.
+2. 최종 GATE1=INCONCLUSIVE이며 성공 미달성이다.
+3. 전달 실측 live=2128/2265, 잠정 후보=2089/2222다.
+4. coverage=98.167%/98.102%, mesh_runs=78/71로 numeric_gate는 모두 PASS다.
+5. property_block_names는 renderer/effective 각각 _MainTex:texture=2128/2265다.
+6. 알려진 커스텀 이름 검출은 없지만 미지의 키 부재는 증명하지 못한다.
+7. 현재 DLL 해시·IL API 목록을 확인했고 MPB 전체 키 열거·단일 키 제거 API는 없다.
+8. 소스·산출물 변경과 동일 빌드·fixture·게임 재시험 없이 기존 통과 로그를 확인했다.
+9. 게임 실행·설치·커밋·푸시·config·steps 변경은 하지 않았다.
+10. 결과는 codex-livedeco-3-20261021-result.md, 새 근거는 livedeco-3-run3-property-audit.log다.
