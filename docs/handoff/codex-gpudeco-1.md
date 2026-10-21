@@ -29,3 +29,10 @@ Arche 262→276초 프레임 8.0~8.4ms(124 FPS). 장식 정지 맵 2.27ms. 활�
 - 빌드 3종 오류 0(`-c Release` Dev / `-p:Edition=Player` / `-p:Edition=Player -p:AutoTestBuild=1`), LoadCheck·기존 fixture 통과, 일반 Player 에는 이 코드가 없어야 함(기본 꺼짐, `gpudeco on|off|state` 개발 전용).
 - 모든 판단은 로그 수치로. 같은 시험을 코드 변경 없이 되풀이 요청하지 마라. 설계 한계(번들/컴퓨트 불가, 소유 70% 미만 고정, G0 오차가 구조적으로 큼)가 수치로 확인되면 결과 문서에 적고 멈춰라.
 - 결과 `docs/handoff/codex-gpudeco-1-result.md` + `-o`(10줄).
+
+## 추가 지시: 독립 Unity 프로젝트(랩)를 먼저 쓴다 (사용자 제안 반영, 2회차부터 적용)
+이 PC 에 **Unity 에디터 6000.3.10f1** 이 있다(`unity run <프로젝트> --editor-version 6000.3.10f1 -- -executeMethod …`, 사용 예: `fsr/BuildFsr.cs.txt`, 독립 Editor D3D11 fixture: `tools/gpuprobe/Gpu3Fixture.cs`, `docs/handoff/codex-gpu3-20261018-result.md`). **더 새 에디터로 만든 번들은 게임이 거부**하므로 반드시 .10f1 로 굽는다(게임은 .21f1 이라 더 낮은 에디터 번들은 읽는다). 게임 실행은 맵 열기에 1.5분+시험 5분이라 느리고 도구가 제한되므로 다음 순서로 간다:
+1. **게임에서 한 번 내보내기** `gpudeco export <경로>`(AutoTest 전용): 소유 장식의 구운 표 구간 배열, 장식 정적 데이터(스프라이트 코너·UV·피벗·PPU·flip·타일링·시차·배치 종류·잠금), 카메라 값, 그리고 일시정지한 262·270·276초 시점의 **실제 장식 논리 필드와 실제 SpriteRenderer 월드 정점**을 파일로. 이후 대조의 기준(정답)이 된다.
+2. **`tools/gpudeco-lab/`(독립 Unity 프로젝트, 게임과 분리, 제품 빌드에 안 들어감):** 위 파일을 읽어 컴퓨트 셰이더(이징 전부·이진 탐색 평가·정점 식)로 같은 시점의 속성/정점을 계산해 정답과 대조(G0 오프라인 전체: 채널별 최대·평균 오차, 정점 오차), 메시 정점 버퍼(`GraphicsBuffer.Target.Raw`)에 쓰고 그리는 경로와 장식 2,000개·구간 1,000여 개 규모의 디스패치·GPU 시간 비용 측정, 번들 빌드(컴퓨트 셰이더 포함)까지. 랩 결과(오차·비용)가 허용 안이고 번들이 만들어지면 3 으로.
+3. **게임 연결:** 랩의 번들·로직을 모드에 넣고 G1(픽셀)·G2(FPS)를 게임에서 확인(위 단계 정의 그대로).
+랩 시험은 steps 생성기와 별개로 Codex 가 직접 `unity run`(배치 모드)으로 돌려도 된다(게임 실행이 아니므로 허용, 단 오래 걸리면 타임아웃 주의, 한 번에 5분 안쪽으로 쪼갤 것). 랩 결과는 `docs/handoff/codex-gpudeco-lab-result.md` 에 수치로.
