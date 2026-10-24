@@ -1,0 +1,51 @@
+#if DEV || AUTOTEST
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+
+namespace StutterFix
+{
+    // (자동 시험 monodump <파일>) 진단 전용: PerfView 기록의 이름 없는 managed 주소(!0x1a…)를 메서드 이름으로 바꾸기 위한 표.
+    // 게임 어셈블리·모드·DOTween·UnityEngine 의 메서드마다 MethodHandle.GetFunctionPointer() 로 JIT 코드 시작 주소를 모은다
+    // (이미 JIT 된 것은 주소만, 아직 안 된 것은 이때 JIT 된다 -> 기록이 끝난 뒤 같은 게임 프로세스에서만 부를 것).
+    // 파일 한 줄: <16진 주소> <어셈블리>:<타입>.<메서드>. 주소는 이 게임 프로세스에서만 유효하다.
+    internal static class MonoDump
+    {
+        internal static string Run(string path)
+        {
+            var rows = new List<KeyValuePair<long, string>>(); int skipped = 0, errors = 0;
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                string an = asm.GetName().Name;
+                if (asm.IsDynamic || an.StartsWith("System") || an == "mscorlib" || an.StartsWith("Mono.") || an.Contains("Harmony") || an.StartsWith("Microsoft")) continue;
+                Type[] types; try { types = asm.GetTypes(); } catch (ReflectionTypeLoadException e) { types = e.Types.Where(t => t != null).ToArray(); } catch { continue; }
+                foreach (var t in types)
+                {
+                    if (t.ContainsGenericParameters) { skipped++; continue; }
+                    MethodBase[] ms;
+                    try { ms = t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Cast<MethodBase>().Concat(t.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)).ToArray(); } catch { errors++; continue; }
+                    foreach (var m in ms)
+                    {
+                        if (m.IsAbstract || m.ContainsGenericParameters || m.IsGenericMethod) { skipped++; continue; }
+                        try
+                        {
+                            var body = m.GetMethodBody(); if (body == null) { skipped++; continue; }
+                            long p = m.MethodHandle.GetFunctionPointer().ToInt64();
+                            if (p != 0) rows.Add(new KeyValuePair<long, string>(p, an + ":" + (t.DeclaringType != null ? t.DeclaringType.Name + "/" : "") + t.Name + "." + m.Name));
+                        }
+                        catch { errors++; }
+                    }
+                }
+            }
+            rows.Sort((a, b) => a.Key.CompareTo(b.Key));
+            var sb = new StringBuilder(rows.Count * 60);
+            foreach (var r in rows) sb.Append(r.Key.ToString("x")).Append(' ').Append(r.Value).Append('\n');
+            File.WriteAllText(path, sb.ToString(), new UTF8Encoding(false));
+            return "monodump rows=" + rows.Count + " skipped=" + skipped + " errors=" + errors + " path=" + path;
+        }
+    }
+}
+#endif

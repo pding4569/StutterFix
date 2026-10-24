@@ -1118,6 +1118,7 @@ namespace StutterFix
                         for (int k = 0; k < Main.TickCost.Length; k++) { double v = (Main.TickCost[k] - onUpd0[k]) * tms / pf; if (v >= 0.005) sbo.Append(' ').Append(k < Main.TickName.Length ? Main.TickName[k] : k.ToString()).Append(' ').Append(v.ToString("F3")); }
                         Log(sbo.ToString()); return true;
                     }
+                case "monodump": Log("[monodump] " + MonoDump.Run(arg.Length > 0 ? arg : Path.Combine(modDir, "monodump.txt"))); return true;
                 case "modwatch":
                     if (arg == "on") { ModWatch.Install(); modWatchFrame = Time.frameCount; Log("[modwatch] on"); }
                     else { Log("[modwatch] " + ModWatch.Snapshot(Time.frameCount - modWatchFrame)); modWatchFrame = Time.frameCount; }
