@@ -751,6 +751,9 @@ namespace StutterFix
                         if (ed != null && !ed.playMode) throw new Exception("재생 중이 아님");
                         if (autoChanged) RDC.auto = desiredAuto;
                         ctrl.StartCoroutine(ctrl.ResetCustomLevel());
+#if AUTOTEST
+                        DecoBake.ObserveGpuMergeRetry();
+#endif
                         Log("다시 하기");
                         BeginRun("다시 하기");
                         return true;
@@ -1120,8 +1123,9 @@ namespace StutterFix
                     }
                 case "monosyms":
                     {
-                        var ap = arg.Split(' ');
-                        if (ap.Length < 2) throw new Exception("monosyms <주소파일> <출력파일>");
+                        var paths=System.Text.RegularExpressions.Regex.Matches(arg,@"(?:""(?<path>[^""]+)""|(?<path>\S+))");
+                        if(paths.Count!=2)throw new Exception("monosyms <주소파일> <출력파일> (공백 경로는 큰따옴표)");
+                        var ap=new[]{paths[0].Groups["path"].Value,paths[1].Groups["path"].Value};
                         if (gamePhase == 0) { gamePhase = 1; openStartedAt = now; }
                         string msg;
                         if (!MonoDump.Syms(ap[0], ap[1], now - openStartedAt, out msg)) return false;
@@ -1726,6 +1730,9 @@ namespace StutterFix
 #endif
         private static void EndBatch(string why)
         {
+#if AUTOTEST
+            DecoBake.FinishGpuMergeTest(why);
+#endif
 #if DEV || AUTOTEST
             HiddenDecoSynergy.Reset();
             LiveDecoGate2.Abort(why);
@@ -1751,6 +1758,9 @@ namespace StutterFix
 
         private static void Finish(string why)
         {
+#if AUTOTEST
+            DecoBake.FinishGpuMergeTest(why);
+#endif
 #if DEV || AUTOTEST
             HiddenDecoSynergy.Reset();
             LiveDecoGate2.Abort(why);

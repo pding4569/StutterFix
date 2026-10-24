@@ -76,7 +76,7 @@ namespace StutterFix
             void ApplyAlpha(int item)
             {
                 var r=Renderers[item];if(!r)return;
-                bool wanted=active && (!Independent || !GpuCpuFallback(MasterItems[item])) && (!gpuZeroAlpha || !Independent || !HiddenAlpha(item));
+                bool wanted=active && !gpuRenderMergeOn && (!Independent || !GpuCpuFallback(MasterItems[item])) && (!gpuZeroAlpha || !Independent || !HiddenAlpha(item));
                 CopyMask?.Set(item,wanted);
                 if(r.enabled!=wanted){if(GpuDecoCostProbe.Enabled)GpuDecoCostProbe.AlphaToggle();r.enabled=wanted;}
             }
@@ -114,7 +114,7 @@ namespace StutterFix
             }
             internal void MarkDirty(int slot)
             {
-                if(gpuZeroAlpha && ((slot&15)==10 || (slot&15)==11))
+                if((gpuZeroAlpha || gpuRenderMergePrepared) && ((slot&15)==10 || (slot&15)==11))
                 {
                     int item=slot/16;
                     if((uint)item<(uint)alphaDirty.Length && !alphaDirty[item]) {alphaDirty[item]=true;pendingAlpha.Add(item);}
@@ -130,6 +130,8 @@ namespace StutterFix
                 if(pendingAlpha.Count!=0)
                 {
                     if(active && Independent)foreach(int item in pendingAlpha)ApplyAlpha(item);
+                    if(active && gpuRenderMergeOn)foreach(int item in pendingAlpha)RefreshGpuMergeItem(item);
+                    if(active && gpuRenderMergeOn)FlushGpuMergeGroups();
                     foreach(int item in pendingAlpha)alphaDirty[item]=false;
                     pendingAlpha.Clear();
                 }
@@ -157,6 +159,7 @@ namespace StutterFix
             internal void SetEnabled(bool on)
             {
                 active=on;RefreshAlpha();
+                if(!on)HideGpuMerge();
             }
             internal void Dispose()
             {
@@ -315,6 +318,9 @@ namespace StutterFix
         internal static void ResetGpuFrames() { gpuFrameCount = gpuFrameCursor = 0; gpuFrameSum = gpuProgressSum = 0; }
         internal static void ObserveGpuFrame()
         {
+#if AUTOTEST
+            ObserveGpuMergeFrame();
+#endif
             float rawDt = Time.unscaledDeltaTime;
             if (g2Window >= 0 && !FrameCompare.Paused && Hitch.Playing && Time.frameCount > g2WindowFrame && rawDt > 0 && DecoBakeCore.Finite(rawDt))
             {
@@ -772,7 +778,7 @@ namespace StutterFix
             RequireLive(!GpuDecoNativeBatch.StaticCombine,"static_batch_live_not_validated; use paused storage comparison");
             RequireLive(ready && table != null && baselineObjects != null && manager != null, "decobake ready 필요");
             RequireLive(!string.IsNullOrEmpty(gpuBundlePath) && File.Exists(gpuBundlePath), "gpudeco bundle <path> 필요");
-            if (!gpuRecoveryBlocked && gpuLivePrepared && ReferenceEquals(gpuPreparedScope,gpuScope) && gpuLivePreparedStatic==GpuDecoNativeBatch.StaticCombine && gpuLivePreparedBounds==GpuDecoNativeBatch.RestoreSortBounds && gpuLivePreparedMasked==GpuDecoCopy.MaskedEnabled && gpuLivePreparedEight==GpuDecoCopy.EightUavEnabled && gpuLivePreparedCopy==GpuDecoCopy.Enabled && gpuLivePreparedNative==GpuDecoNativeBatch.Enabled && gpuLiveManager == manager && ReferenceEquals(gpuLiveBaseline, baselineObjects) && gpuLiveBundleKey == gpuBundlePath)
+            if (!gpuRecoveryBlocked && gpuLivePrepared && gpuRenderMergePrepared==gpuRenderMergePrepare && ReferenceEquals(gpuPreparedScope,gpuScope) && gpuLivePreparedStatic==GpuDecoNativeBatch.StaticCombine && gpuLivePreparedBounds==GpuDecoNativeBatch.RestoreSortBounds && gpuLivePreparedMasked==GpuDecoCopy.MaskedEnabled && gpuLivePreparedEight==GpuDecoCopy.EightUavEnabled && gpuLivePreparedCopy==GpuDecoCopy.Enabled && gpuLivePreparedNative==GpuDecoNativeBatch.Enabled && gpuLiveManager == manager && ReferenceEquals(gpuLiveBaseline, baselineObjects) && gpuLiveBundleKey == gpuBundlePath)
             {
                 CompleteGpuLivePreparationBudget();
                 GpuLog("prepare_ms=" + gpuLivePrepareMs.ToString("F6", Inv) + " phase=live_prepare_cached slices=" + gpuLiveSlices.Count
@@ -883,11 +889,13 @@ namespace StutterFix
                 var masterRows = new List<GpuLiveRow>();
                 foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
                 {
-                    if (!r || !r.gameObject.scene.IsValid() || !r.enabled || !r.gameObject.activeInHierarchy
+                    // Merged runs must also respect currently hidden barriers:
+                    // a CPU decoration can wake later inside this time window.
+                    if (!r || !r.gameObject.scene.IsValid() || (!gpuRenderMergePrepare && (!r.enabled || !r.gameObject.activeInHierarchy))
                         || (cam.cullingMask & (1 << r.gameObject.layer)) == 0) continue;
                     int candIdx;
-                    bool isOwned = candidateByRenderer.TryGetValue(r.GetInstanceID(), out candIdx);
-                    if (!isOwned && r.forceRenderingOff) continue;
+                    bool isOwned = candidateByRenderer.TryGetValue(r.GetInstanceID(), out candIdx) && r.enabled && r.gameObject.activeInHierarchy;
+                    if (!isOwned && r.forceRenderingOff && !gpuRenderMergePrepare) continue;
                     if (r.GetComponentInParent<SortingGroup>()) continue;
                     var materials = r.sharedMaterials;
                     if (materials == null || materials.Length == 0) continue;
@@ -909,6 +917,9 @@ namespace StutterFix
                     }
                 }
                 masterRows.Sort((a, b) => a.Key.CompareTo(b.Key));
+                if(gpuRenderMergePrepare)for(int i=1;i<masterRows.Count;i++)
+                    RequireLive(!masterRows[i-1].Key.SameMaterialTie(masterRows[i].Key)
+                        || masterRows[i-1].Item<0 && masterRows[i].Item<0,"rendermerge ambiguous material tie before barrier compaction");
                 // Compact consecutive non-owned barrier rows so slice construction does not copy 30,000 barriers 9 times
                 var compactedRows = new List<GpuLiveRow>(protoItems.Count * 2 + 16);
                 for (int i = 0; i < masterRows.Count; i++)
@@ -1044,6 +1055,7 @@ namespace StutterFix
                         }
                     }
                 }
+                PrepareGpuMerge(masterRows);
                 CompleteGpuLivePreparationBudget();
                 gpuLiveManager = manager;
                 gpuLiveBaseline = baselineObjects;
@@ -1071,7 +1083,7 @@ namespace StutterFix
             }
         }
 
-        static int BuildLiveRun(GpuLiveSlice slice, List<GpuLiveRow> rows, int a, int b, int copyKernel, float z)
+        static int BuildLiveRun(GpuLiveSlice slice, List<GpuLiveRow> rows, int a, int b, int copyKernel, float z, bool mapped=false)
         {
             var first = rows[a]; int count = b - a;
             var groups = new List<KeyValuePair<int, int>>();
@@ -1110,7 +1122,7 @@ namespace StutterFix
             var sr = first.R as SpriteRenderer;
             if (sr && sr.spriteSortPoint == SpriteSortPoint.Pivot) sortCenter = first.R.transform.position;
             mesh.bounds = new Bounds(sortCenter, new Vector3(2000000, 2000000, 0));
-            mesh.UploadMeshData(true);
+            mesh.UploadMeshData(!mapped);
             var buffer = mesh.GetVertexBuffer(0);
             slice.Buffers.Add(buffer);
             var go = new GameObject("GpuDeco.Live run") { hideFlags = HideFlags.HideAndDontSave, layer = first.R.gameObject.layer };
@@ -1120,6 +1132,11 @@ namespace StutterFix
             renderer.enabled = false;
             slice.Renderers.Add(renderer);
             renderer.sharedMaterials = groups.Select(g => rows[a + g.Key].M).ToArray();
+            if(mapped)
+            {
+                var mats=renderer.sharedMaterials;
+                for(int i=1;i<mats.Length;i++)RequireLive(mats[i-1].GetInstanceID()<mats[i].GetInstanceID(),"merge submesh material IDs must increase strictly");
+            }
             renderer.sortingLayerID = first.R.sortingLayerID;
             renderer.sortingOrder = first.R.sortingOrder;
             renderer.shadowCastingMode = ShadowCastingMode.Off;
@@ -1134,6 +1151,13 @@ namespace StutterFix
                 props.SetColor("_RendererColor", Color.white);
                 props.SetVector("_Flip", Vector4.one);
                 renderer.SetPropertyBlock(props, g);
+            }
+            if(mapped)
+            {
+                var map=new uint[count*4];
+                for(int n=0;n<count;n++)for(int k=0;k<4;k++)map[n*4+k]=(uint)(rows[a+n].Item*4+k);
+                var mapBuffer=new GraphicsBuffer(GraphicsBuffer.Target.Structured,map.Length,4);slice.Buffers.Add(mapBuffer);mapBuffer.SetData(map);
+                slice.Commands.SetComputeBufferParam(gpuLiveShader,copyKernel,"_CopyMap",mapBuffer);
             }
             slice.Commands.SetComputeIntParam(gpuLiveShader, "_CopyFirstVertex", first.Item * 4);
             slice.Commands.SetComputeIntParam(gpuLiveShader, "_CopyVertexCount", count * 4);
@@ -1196,7 +1220,8 @@ namespace StutterFix
             active.Gpu.DispatchEvaluate();
             // If the optional backend rejects a callback, write the same current
             // vertices through the original path and invalidate the research gate.
-            if(active.SharedBatch!=null)active.SharedBatch.Dispatch();
+            if(gpuRenderMergeOn)DispatchGpuMerge(time);
+            else if(active.SharedBatch!=null)active.SharedBatch.Dispatch();
             else if(active.NativeCopy==null || !active.NativeCopy.Execute(gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.Low??ulong.MaxValue,
                 gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.High??ulong.MaxValue))Graphics.ExecuteCommandBuffer(active.Commands);
             GpuRecoveryFault("render_after");
@@ -1429,6 +1454,7 @@ namespace StutterFix
         // Request B.3: Full restoration of owned decorations on off, song end, retry, restart, editor return, map reopen, and unload.
         internal static void StopGpuLive(string reason, bool syncState = true)
         {
+            HideGpuMerge();
 #if AUTOTEST
             ResetGpuAblation();
             ResetGpuMicroWindow();
@@ -1528,6 +1554,9 @@ namespace StutterFix
                 +" high_water="+gpuSourceHighWater+" scope=allocated_clocks_not_per_decoration_cost reason="+reason);
             ResetGpuLiveSourcePool();
             gpuLastRestoreComplete=restored;
+#if AUTOTEST
+            ObserveGpuMergeRestore(restored);
+#endif
             LogGpuLiveCost(reason);
             GpuLog("on=False owned=0 originals_restored=" + restored + " reason=" + reason
                 +" song="+time.ToString("F6",Inv)
@@ -1567,6 +1596,9 @@ namespace StutterFix
                 GpuLog("resume_dispose_rejected="+e.GetType().Name+" forced_quiescence=True");
                 StopGpuLive("dispose_forced",false);
             }
+            DisposeGpuMerge();
+            gpuRenderMergeOn=false;
+            gpuMergeRows=null;
             for (int i = gpuLiveSlices.Count - 1; i >= 0; i--)
                 gpuLiveSlices[i].Dispose();
             gpuLiveSlices.Clear();
@@ -1904,6 +1936,7 @@ namespace StutterFix
             }
             if(command=="nombp on"||command=="nombp off"){RequireLive(!gpuLiveActive,"nombp must be set before live prepare/on");GpuDecoNativeBatch.NoMpb=command.EndsWith("on");GpuLog("nombp="+GpuDecoNativeBatch.NoMpb);return true;}
             if(command=="live census") {LogGpuRenderCensus(-1,"explicit");return true;}
+            if(GpuRenderMergeCommand(command))return true;
 #if AUTOTEST
             if(GpuAblationCommand(command))return true;
             if(GpuStorageCommand(command))return true;

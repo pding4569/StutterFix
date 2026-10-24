@@ -23,11 +23,18 @@ namespace StutterFix
         {
             result = null;
             if (!File.Exists(input)) { if (waited > 600) throw new Exception("monosyms: 주소 파일이 안 생김 " + input); return false; }
+            using(var process=System.Diagnostics.Process.GetCurrentProcess())
+                if(File.GetLastWriteTimeUtc(input)<process.StartTime.ToUniversalTime())
+                    throw new InvalidDataException("monosyms: 이전 프로세스의 주소 파일은 사용할 수 없음");
             var sb = new StringBuilder(); int ok = 0, fail = 0;
             foreach (var line in File.ReadAllLines(input))
             {
                 string t = line.Trim(); if (t.Length == 0) continue;
-                long a; if (!long.TryParse(t, System.Globalization.NumberStyles.HexNumber, null, out a)) continue;
+                if(t.StartsWith("!",StringComparison.Ordinal))t=t.Substring(1);
+                if(t.StartsWith("0x",StringComparison.OrdinalIgnoreCase))t=t.Substring(2);
+                if(!ulong.TryParse(t,System.Globalization.NumberStyles.HexNumber,System.Globalization.CultureInfo.InvariantCulture,out ulong address) || address==0)
+                    throw new InvalidDataException("monosyms: 잘못된 주소: "+line);
+                long a=unchecked((long)address);
                 string name = null;
                 try { var p = mono_pmip(new IntPtr(a)); if (p != IntPtr.Zero) { name = Marshal.PtrToStringAnsi(p); mono_free(p); } } catch { }
                 if (string.IsNullOrEmpty(name)) { fail++; continue; }

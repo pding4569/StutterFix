@@ -326,7 +326,7 @@ namespace StutterFix
                 if(anim)foreach(uint m in run.Masters)foreach(int c in gpuRecFirstChannels)
                     if((p.Mask&(1u<<c))!=0)StampGpuMasterRecOrder((int)m,c);
                 slice.DirtyBlockMin=Math.Min(slice.DirtyBlockMin,run.MinBlock);slice.DirtyBlockMax=Math.Max(slice.DirtyBlockMax,run.MaxBlock);
-                if(gpuZeroAlpha && (p.Mask&0xC00u)!=0)
+                if((gpuZeroAlpha || gpuRenderMergePrepared) && (p.Mask&0xC00u)!=0)
                     foreach(uint item in run.SliceItems)slice.MarkDirty((int)item*16+10);
                 if(gpuPacketMode==2 || gpuPacketMode==4 ||gpuPacketMode==7)for(int i=0;i<run.Masters.Length;i++)for(int c=0;c<16;c++)if((p.Mask&(1u<<c))!=0)
                 {

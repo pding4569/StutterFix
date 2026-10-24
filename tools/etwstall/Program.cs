@@ -14,9 +14,11 @@ using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 
 static class Program
 {
+    static MonoSymbols monoSymbols;
     static int Main(string[] a)
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
+        monoSymbols=MonoSymbols.Read(Environment.GetEnvironmentVariable("ETW_MONO_SYMS"));
         if (a.Length < 3) { Console.WriteLine("EtwStall <etl|etlx> <PID> <HH:mm:ss.fff> [앞ms=80] [뒤ms=10]"); return 1; }
         string path = a[0]; int pid = int.Parse(a[1]);
         double before = a.Length > 3 ? double.Parse(a[3]) : 80, after = a.Length > 4 ? double.Parse(a[4]) : 10;
@@ -94,6 +96,18 @@ static class Program
             }
         }
 
+        string monoAddresses=Environment.GetEnvironmentVariable("ETW_MONO_ADDRS");
+        if(!string.IsNullOrEmpty(monoAddresses))
+        {
+            var addresses=new SortedSet<ulong>();
+            foreach(var sample in samplesByThread.Values.SelectMany(x=>x))
+                for(var c=sample.st;c!=null;c=c.Caller)
+                    if(string.IsNullOrEmpty(c.CodeAddress.FullMethodName) || c.CodeAddress.FullMethodName.Contains("0x"))
+                        addresses.Add(c.CodeAddress.Address);
+            File.WriteAllLines(monoAddresses,addresses.Select(x=>x.ToString("x")));
+            Console.WriteLine("MONO_ADDRS count="+addresses.Count+" path="+monoAddresses);
+        }
+        Console.WriteLine("MONO_SYMS exact_addresses="+monoSymbols.Count+" process_lifetime_must_match=True");
         foreach (var kv in kinds.OrderByDescending(x => x.Value).Take(40)) Console.WriteLine("  이벤트 " + kv.Value + " " + kv.Key);
         string Who(int tid, double time)
         {
@@ -118,6 +132,22 @@ static class Program
             int tid = kv.Key;
             Console.WriteLine();
             Console.WriteLine($"=== 스레드 {tid}: 샘플 {kv.Value.Count}개 (1ms 간격이면 그만큼 돌았다)");
+            var inclusive=new Dictionary<string,int>();var leaves=new Dictionary<string,int>();
+            foreach(var sample in kv.Value)
+            {
+                var seen=new HashSet<string>();bool leaf=true;
+                for(var c=sample.st;c!=null;c=c.Caller)
+                {
+                    string name=Frame(c);
+                    if(seen.Add(name))inclusive[name]=inclusive.TryGetValue(name,out int incCount)?incCount+1:1;
+                    if(leaf){leaves[name]=leaves.TryGetValue(name,out int leafCount)?leafCount+1:1;leaf=false;}
+                }
+            }
+            Console.WriteLine($"INCLUSIVE thread {tid} total={kv.Value.Count}");
+            foreach(var entry in inclusive.OrderByDescending(x=>x.Value).ThenBy(x=>x.Key).Take(80))
+                Console.WriteLine($"  INC {entry.Value,6} {100.0*entry.Value/Math.Max(1,kv.Value.Count),6:F1}%  {entry.Key}");
+            foreach(var entry in leaves.OrderByDescending(x=>x.Value).ThenBy(x=>x.Key).Take(60))
+                Console.WriteLine($"  LEAF {entry.Value,6} {100.0*entry.Value/Math.Max(1,kv.Value.Count),6:F1}%  {entry.Key}");
             // 잠든 구간 (나갔다가 들어온 사이)
             double outAt = -1; string why = ""; TraceCallStack outStack = null;
             foreach (var c in cs.Where(x => x.t <= t1))
@@ -155,12 +185,14 @@ static class Program
         var parts = new List<string>();
         for (var c = st; c != null && parts.Count < max; c = c.Caller)
         {
-            string m = c.CodeAddress.ModuleName ?? "?";
-            string f = c.CodeAddress.FullMethodName;
-            if (string.IsNullOrEmpty(f)) f = "0x" + c.CodeAddress.Address.ToString("x");
-            if (f.Length > 70) f = f.Substring(0, 70);
-            parts.Add(m + "!" + f);
+            parts.Add(Frame(c));
         }
         return string.Join(" < ", parts);
+    }
+    static string Frame(TraceCallStack c)
+    {
+        string f=c.CodeAddress.FullMethodName;
+        if(string.IsNullOrEmpty(f))f="0x"+c.CodeAddress.Address.ToString("x");
+        return monoSymbols.Resolve(c.CodeAddress.Address,(c.CodeAddress.ModuleName??"?")+"!"+f);
     }
 }

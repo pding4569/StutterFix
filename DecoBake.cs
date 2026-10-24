@@ -177,6 +177,7 @@ namespace StutterFix
 #if AUTOTEST
             gpuImageCandidate=false;gpuImageUploadFault=false;gpuImageMatrix=false;
 #endif
+            gpuRenderMergePrepare=false;
             enabled = false; CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepFloors = null;
             DecoSim.ForgetBake();
             table = null;

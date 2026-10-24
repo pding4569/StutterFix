@@ -1,0 +1,248 @@
+#if DEV || AUTOTEST
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+namespace StutterFix
+{
+    internal static partial class DecoBake
+    {
+        // Research switch. Keep the whole-song master/clock/packet arrays and
+        // independent backend intact. Only prebuilt draw/copy destinations change.
+        static bool gpuRenderMergePrepare,gpuRenderMergePrepared,gpuRenderMergeOn;
+        sealed class MergeGroup
+        {
+            internal Mesh Mesh;
+            internal MeshRenderer Renderer;
+            internal int Submesh;
+            internal int[] Items,Indices,Scratch;
+            internal int Count=-1;
+            internal bool[] Drawn;
+            internal bool Initialized,Dirty;
+        }
+        sealed class MergeWindow
+        {
+            internal double Start,End;
+            internal GpuLiveSlice Draw;
+            internal bool[] Included;
+            internal List<MergeGroup>[] GroupsByItem;
+            internal bool[] Fallback;
+            internal readonly List<MergeGroup> Groups=new List<MergeGroup>();
+            internal int LiveDraws;
+        }
+        static readonly List<MergeWindow> gpuMergeWindows=new List<MergeWindow>();
+        static MergeWindow gpuMergeCurrent;
+        static MergeWindow gpuMergeBuilding;
+        static List<GpuLiveRow> gpuMergeRows;
+        static string gpuMergeError;
+        static readonly List<MergeGroup> gpuMergeDirtyGroups=new List<MergeGroup>();
+
+        static void HideGpuMerge()
+        {
+            if(gpuMergeCurrent!=null)foreach(var r in gpuMergeCurrent.Draw.Renderers)if(r)r.enabled=false;
+            gpuMergeCurrent=null;
+        }
+        static void DisposeGpuMerge()
+        {
+            HideGpuMerge();
+            gpuMergeDirtyGroups.Clear();
+            foreach(var w in gpuMergeWindows)
+            {
+                foreach(var r in w.Draw.Renderers)if(r){r.enabled=false;UnityEngine.Object.Destroy(r.gameObject);}
+                w.Draw.Dispose();
+            }
+            gpuMergeWindows.Clear();gpuRenderMergePrepared=false;
+        }
+        static void MergeReject(string why)
+        {
+            gpuMergeError=why;
+            throw new InvalidOperationException("rendermerge: "+why);
+        }
+        static void PrepareGpuMerge(List<GpuLiveRow> masterRows)
+        {
+            if(!gpuRenderMergePrepare)return;
+            RequireLive(FrameCompare.Paused,"rendermerge allocations require paused pre-playback preparation");
+            RequireLive(gpuScope.WholeSong && gpuLiveSlices.Count==1 && GpuDecoNativeBatch.Enabled && !GpuDecoNativeBatch.NoMpb,
+                "rendermerge requires song scope, independent baseline and nombp off");
+            var source=gpuLiveSlices[0];
+            gpuMergeRows=masterRows;
+            // Same-material owned ties have no established Unity ordering rule.
+            for(int i=1;i<masterRows.Count;i++)
+                RequireLive(!masterRows[i-1].Key.SameMaterialTie(masterRows[i].Key)
+                    || masterRows[i-1].Item<0 && masterRows[i].Item<0,"rendermerge ambiguous material tie");
+            var itemByIndex=new Dictionary<int,int>();
+            for(int i=0;i<source.Data.Items.Length;i++)itemByIndex.Add(source.Data.Items[i].Index,i);
+            int kernel=gpuLiveShader.FindKernel("CopyMappedRun");
+            // All allocations and command recording happen before playback.
+            // The time table is only a layout hint. Authoritative live channels
+            // validate every omission at entry and every subsequent alpha change.
+            foreach(double start in Enumerable.Range(0,12).Select(i=>250+i*2.5).Concat(Enumerable.Range(0,10).Select(i=>290+i*2.5)))
+            {
+                var w=new MergeWindow{Start=start,End=start+2.5,Included=new bool[source.MasterItems.Length],
+                    GroupsByItem=new List<MergeGroup>[source.MasterItems.Length],Fallback=new bool[source.MasterItems.Length],
+                    Draw=new GpuLiveSlice{Data=source.Data,Commands=new CommandBuffer{name="GpuDeco merged window"}}};
+                gpuMergeWindows.Add(w); // Own partial allocations before building.
+                w.Draw.Commands.SetComputeBufferParam(gpuLiveShader,kernel,"_CopySource",source.Gpu.VertexBuffer);
+                w.Draw.Commands.SetComputeIntParam(gpuLiveShader,"_CopyQuantizeColor",1);
+                var rows=new List<GpuLiveRow>();
+                foreach(var row in masterRows)
+                {
+                    if(row.Item<0){rows.Add(row);continue;}
+                    int item=itemByIndex[row.Item];
+                    if(gpuLiveActive && GpuCpuFallback(source.MasterItems[item]))
+                    {
+                        w.Fallback[item]=true;
+                        rows.Add(new GpuLiveRow{R=row.R,M=row.M,Key=row.Key,Signature=row.Signature,Item=-1});continue;
+                    }
+                    if(!VisibleInWindow(table,row.Item,start-.25,start+2.75))continue;
+                    w.Included[item]=true;
+                    rows.Add(new GpuLiveRow{R=row.R,M=row.M,Key=row.Key,Signature=row.Signature,Item=item});
+                }
+                for(int a=0;a<rows.Count;)
+                {
+                    if(rows[a].Item<0){a++;continue;}
+                    int b=a+1;
+                    while(b<rows.Count && rows[b].Item>=0 && rows[a].Key.SameBucket(rows[b].Key)
+                        && rows[a].R.gameObject.layer==rows[b].R.gameObject.layer
+                        && rows[b-1].M.GetInstanceID()<rows[b].M.GetInstanceID())b++;
+                    int meshAt=w.Draw.Meshes.Count,rendererAt=w.Draw.Renderers.Count;
+                    int groups=BuildLiveRun(w.Draw,rows,a,b,kernel,source.Data.Items[rows[a].Item].Constants[7],true);
+                    w.Draw.RunCount++;w.Draw.SubmeshCount+=groups;
+                    var mesh=w.Draw.Meshes[meshAt];var renderer=w.Draw.Renderers[rendererAt];
+                    RequireLive(MatShare.SortKey(rows[a].R,rows[a].M,gpuLiveCamera).SameBucket(
+                        MatShare.SortKey(renderer,renderer.sharedMaterial,gpuLiveCamera)),"rendermerge sort bucket changed");
+                    int sub=0;
+                    for(int n=a;n<b;)
+                    {
+                        int end=n+1;
+                        while(end<b && source.Data.Items[rows[n].Item].TextureId==source.Data.Items[rows[end].Item].TextureId
+                            && rows[n].Signature==rows[end].Signature)end++;
+                        var g=new MergeGroup{Mesh=mesh,Renderer=renderer,Submesh=sub,Items=rows.Skip(n).Take(end-n).Select(x=>x.Item).ToArray(),
+                            Indices=mesh.GetIndices(sub)};sub++;
+                        g.Scratch=new int[g.Indices.Length];g.Drawn=new bool[g.Items.Length];w.Groups.Add(g);
+                        foreach(int item in g.Items)
+                        {
+                            if(w.GroupsByItem[item]==null)w.GroupsByItem[item]=new List<MergeGroup>();
+                            w.GroupsByItem[item].Add(g);
+                        }
+                        n=end;
+                    }
+                    a=b;
+                }
+                GpuLog("rendermerge_prepared start="+start.ToString("F1",Inv)+" end="+w.End.ToString("F1",Inv)
+                    +" items="+w.Included.Count(x=>x)+" renderers="+w.Draw.RunCount+" submeshes="+w.Draw.SubmeshCount);
+            }
+            gpuRenderMergePrepared=true;
+        }
+        static bool MergeHidden(int item)
+        {
+            var s=gpuLiveSlices[0];
+            if(GpuCpuFallback(s.MasterItems[item]))return true;
+            var a=s.Channels[item*16+10];var b=s.Channels[item*16+11];
+            return GpuDecoAlphaPolicy.Hidden(a.end,a.sourceIndex,b.end,b.sourceIndex);
+        }
+        static void RefreshGpuMergeGroup(MergeGroup g)
+        {
+            int count=0;bool same=g.Initialized;
+            for(int i=0;i<g.Items.Length;i++)
+            {
+                bool drawn=!MergeHidden(g.Items[i]);same&=drawn==g.Drawn[i];g.Drawn[i]=drawn;
+                if(drawn){Array.Copy(g.Indices,i*6,g.Scratch,count,6);count+=6;}
+            }
+            if(same)return;
+            // Equal counts need not mean equal members. Always upload the small
+            // affected group after an alpha event; never rebuild a mesh/frame.
+            g.Mesh.SetIndices(g.Scratch,0,count,MeshTopology.Triangles,g.Submesh,false);
+            if(gpuMergeBuilding!=null)gpuMergeBuilding.LiveDraws+=(count>0?1:0)-(g.Count>0?1:0);
+            g.Count=count;
+            g.Initialized=true;
+        }
+        static void RefreshGpuMergeItem(int item)
+        {
+            var w=gpuMergeCurrent;if(w==null)return;
+            if(!w.Included[item])
+            {
+                if(!MergeHidden(item))MergeReject("visible_item_outside_prepared_window item="+item+" start="+w.Start);
+                return;
+            }
+            var groups=w.GroupsByItem[item];
+            if(groups!=null)foreach(var g in groups)if(!g.Dirty){g.Dirty=true;gpuMergeDirtyGroups.Add(g);}
+        }
+        static void FlushGpuMergeGroups()
+        {
+            gpuMergeBuilding=gpuMergeCurrent;
+            try {foreach(var g in gpuMergeDirtyGroups){g.Dirty=false;RefreshGpuMergeGroup(g);}}
+            finally {gpuMergeDirtyGroups.Clear();gpuMergeBuilding=null;}
+        }
+        static void DispatchGpuMerge(double time)
+        {
+            var w=gpuMergeCurrent;
+            if(w==null || time<w.Start || time>=w.End)
+            {
+                HideGpuMerge();
+                w=gpuMergeWindows.FirstOrDefault(x=>time>=x.Start && time<x.End);
+                if(w==null)MergeReject("outside_prepared_merge_scope song="+time.ToString("F6",Inv));
+                // Fail closed if actual source clocks contradict the layout hint.
+                for(int i=0;i<w.Included.Length;i++)if(!w.Included[i] && !MergeHidden(i))
+                    MergeReject("visible_item_outside_prepared_window item="+i+" start="+w.Start);
+                for(int i=0;i<w.Fallback.Length;i++)if(w.Fallback[i]!=GpuCpuFallback(gpuLiveSlices[0].MasterItems[i]))
+                    MergeReject("cpu_fallback_changed; paused rendermerge ready required");
+                gpuMergeBuilding=w;
+                try {foreach(var g in w.Groups)RefreshGpuMergeGroup(g);}
+                finally {gpuMergeBuilding=null;}
+                gpuMergeCurrent=w;
+                foreach(var r in w.Draw.Renderers)r.enabled=true;
+            }
+            Graphics.ExecuteCommandBuffer(w.Draw.Commands);
+            ObserveGpuMergeCounts(w);
+        }
+        static void ObserveGpuMergeCounts(MergeWindow w)
+        {
+#if AUTOTEST
+            if(mergeWindow>=0)
+            {
+                mergeMaxRenderers=Math.Max(mergeMaxRenderers,w.Draw.RunCount);
+                mergeMaxDraws=Math.Max(mergeMaxDraws,w.LiveDraws);
+            }
+#endif
+        }
+        static bool GpuRenderMergeCommand(string command)
+        {
+            if(!command.StartsWith("rendermerge ",StringComparison.Ordinal))return false;
+            string sub=command.Substring(12);
+            if(sub=="prepare")
+            {
+                RequireLive(!gpuLiveActive,"rendermerge prepare requires inactive ownership");
+                gpuRenderMergePrepare=true;GpuLog("rendermerge_prepare=True default_off=True");return true;
+            }
+            if(sub=="ready")
+            {
+                RequireLive(gpuLiveActive && FrameCompare.Paused && !gpuRenderMergeOn && gpuMergeRows!=null,
+                    "rendermerge ready requires paused independent GPU ownership");
+                var rows=gpuMergeRows;DisposeGpuMerge();PrepareGpuMerge(rows);
+                GpuLog("rendermerge_ready=True CPU_fallback_barriers="+gpuLiveCpuFallbackCount);return true;
+            }
+            if(sub=="on" || sub=="off")
+            {
+#if AUTOTEST
+                RequireLive(mergeWindow<0,"close rendermerge measurement before changing mode");
+#endif
+                RequireLive(!gpuLiveActive || FrameCompare.Paused,"rendermerge toggle requires stopped/paused playback");
+                bool on=sub=="on";RequireLive(!on || gpuRenderMergePrepared,"rendermerge prepare/live prepare required");
+                HideGpuMerge();gpuRenderMergeOn=on;
+                foreach(var s in gpuLiveSlices)s.RefreshAlpha();
+                gpuLiveLastDispatchFrame=-1;
+                if(gpuLiveActive)DispatchGpuLiveSlice(BakeTime);
+                GpuLog("rendermerge_on="+on);return true;
+            }
+#if AUTOTEST
+            return GpuRenderMergeGateCommand(sub);
+#else
+            throw new ArgumentException("rendermerge prepare|on|off");
+#endif
+        }
+    }
+}
+#endif

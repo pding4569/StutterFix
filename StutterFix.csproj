@@ -105,6 +105,9 @@
     <Compile Include="GpuDecoSnapshot.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoOrderProbe.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoExport.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoRenderMerge.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoRenderMergeGate.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="RenderMergeGatePolicy.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoChanges.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoGeometry.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

@@ -104,6 +104,11 @@ namespace StutterFix
             void Add(UnityEngine.Object o){if(o)ids.Add(o.GetInstanceID());}
             Add(gpuLiveRoot);Add(gpuLiveBundle);Add(gpuLiveShader);
             MarkGpuStorageBackup(Add);
+            foreach(var window in gpuMergeWindows)
+            {
+                foreach(var mesh in window.Draw.Meshes)Add(mesh);
+                foreach(var renderer in window.Draw.Renderers)if(renderer)Add(renderer.gameObject);
+            }
             foreach(var slice in gpuLiveSlices)
             {
                 Add(slice.Gpu?.Mesh);foreach(var mesh in slice.Meshes)Add(mesh);

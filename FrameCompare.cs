@@ -134,6 +134,16 @@ namespace StutterFix
                 + " noise_state_stable=" + p.lastNoiseStable + " restored_fields=" + delta.Changed + " aa2_out=" + restored);
             return result;
         }
+        // Named, unmasked diagnostics for render-merge. Callers cannot replace
+        // runtime evidence with numeric command arguments.
+        internal static FrameCompareMetrics.Result CompareShots(string a,string b,out bool stateEqual)
+        {
+            var p=Get();p.RequirePaused();
+            if(p.busy)throw new InvalidOperationException("capture busy");
+            var result=p.Diff(a,b,0,Array.Empty<FrameCompareMetrics.Mask>());
+            stateEqual=p.shots[a].State.Compare(p.shots[b].State).Changed==0;
+            return result;
+        }
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
         static void Log(string s) => Main.Entry.Logger.Log("[framecmp] " + s);
         static FrameCompare Get()
