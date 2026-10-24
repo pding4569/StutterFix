@@ -1636,8 +1636,8 @@ namespace StutterFix
                 if(GpuDecoAlphaPolicy.Hidden(a.end,a.sourceIndex,b.end,b.sourceIndex))zero++;
                 else if(a.sourceIndex>=0 || b.sourceIndex>=0)unknown++;
             }
-            foreach(var renderer in slice.Renderers)if(renderer && renderer.enabled)enabledCount++;
-            GpuLog("render_census window="+window+" edge="+edge+" slice="+gpuLiveCurrentSlice+" allocated_renderers="+slice.Renderers.Count+" enabled_renderers="+enabledCount
+            int visibleCount=0;foreach(var renderer in slice.Renderers)if(renderer && renderer.enabled){enabledCount++;if(renderer.isVisible)visibleCount++;}
+            GpuLog("render_census window="+window+" edge="+edge+" slice="+gpuLiveCurrentSlice+" allocated_renderers="+slice.Renderers.Count+" enabled_renderers="+enabledCount+" visible_renderers="+visibleCount
                 +" items="+slice.MasterItems.Length+" proven_constant_zero_alpha="+zero+" animated_alpha="+unknown+" zeroalpha="+gpuZeroAlpha+" skipped_by_this_probe=0");
         }
         static bool HandleG2Command(string sub)
@@ -1902,6 +1902,7 @@ namespace StutterFix
                     + " native_cpu_lifetime_max_ms="+(native.MaxTicks*1000.0/Stopwatch.Frequency).ToString("F6",Inv));
                 return true;
             }
+            if(command=="nombp on"||command=="nombp off"){RequireLive(!gpuLiveActive,"nombp must be set before live prepare/on");GpuDecoNativeBatch.NoMpb=command.EndsWith("on");GpuLog("nombp="+GpuDecoNativeBatch.NoMpb);return true;}
             if(command=="live census") {LogGpuRenderCensus(-1,"explicit");return true;}
 #if AUTOTEST
             if(GpuAblationCommand(command))return true;

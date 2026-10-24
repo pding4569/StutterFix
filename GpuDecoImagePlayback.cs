@@ -263,7 +263,7 @@ namespace StutterFix
             if(command=="images playback state"){LogGpuImagePlayback();return true;}
             if(command=="images audit"){AuditGpuImagePixels();return true;}
             if(command=="images locate"){LocateGpuImageDifference();return true;}
-            if(command=="images isolated"){RunGpuImageIsolatedFixture();return true;}
+            if(command=="images isolated"){throw new NotSupportedException("images isolated: unfinished draft (excluded from build)");}
             if(command=="images requireactive")
             {LogGpuImagePlayback();RequireLive(gpuLiveActive&&gpuImageSetters>0&&gpuImageRestores==0&&GpuDecoCopy.ReadTotals().Errors==0,"GPU image window not retained");return true;}
             if(command=="images requirefallback")

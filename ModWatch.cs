@@ -100,6 +100,19 @@ namespace StutterFix
             s.Ticks += ticks;
         }
 
+        // (자동 시험 modwatch show) 지난 호출 이후 모드별 프레임당 ms (구간 측정용, Tick 의 2초 창과 별개)
+        internal static string Snapshot(int frames)
+        {
+            var parts = new List<string>();
+            foreach (var kv in stats)
+            {
+                double ms = kv.Value.Ticks * 1000.0 / Stopwatch.Frequency / System.Math.Max(1, frames);
+                if (ms >= 0.005) parts.Add(string.Format("{0} {1:F3}ms", kv.Key, ms));
+                kv.Value.Ticks = 0; kv.Value.Bytes = 0;
+            }
+            return "frames=" + frames + " per_frame: " + (parts.Count > 0 ? string.Join(", ", parts.ToArray()) : "none>=0.005ms");
+        }
+
         internal static void Tick(float dt)
         {
             window += dt;

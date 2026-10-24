@@ -26,10 +26,24 @@ namespace StutterFix
             if (installed) return "이미 켜짐 (메서드 " + names.Length + "개)";
             installed = true;
             var list = new List<MethodBase>();
-            var asm = typeof(scrController).Assembly;
-            Type[] types; try { types = asm.GetTypes(); } catch (ReflectionTypeLoadException e) { types = e.Types; }
+            // 모든 게임/플러그인 어셈블리의 MonoBehaviour Update 류 + 코루틴(컴파일러가 만든 IEnumerator.MoveNext)까지 (진단 전용)
+            var types = new List<Type>();
+            foreach (var asmX in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                string an = asmX.GetName().Name;
+                if (an.StartsWith("System") || an == "mscorlib" || an.StartsWith("UnityEngine") || an.StartsWith("Unity.") || an.StartsWith("Mono.")
+                    || an == "netstandard" || an.Contains("Harmony") || an == "StutterFix" || asmX.IsDynamic) continue;
+                Type[] ts; try { ts = asmX.GetTypes(); } catch (ReflectionTypeLoadException e) { ts = e.Types; } catch { continue; }
+                foreach (var tt in ts) if (tt != null) types.Add(tt);
+            }
             foreach (var t in types)
             {
+                if (t != null && !t.ContainsGenericParameters && t.Name.IndexOf('<') >= 0 && typeof(System.Collections.IEnumerator).IsAssignableFrom(t))
+                {
+                    var mn = t.GetMethod("MoveNext", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, Type.EmptyTypes, null);
+                    if (mn != null && mn.GetMethodBody() != null) list.Add(mn);
+                    continue;
+                }
                 if (t == null || t.IsAbstract || t.ContainsGenericParameters || !typeof(MonoBehaviour).IsAssignableFrom(t)) continue;
                 foreach (var n in new[] { "Update", "LateUpdate", "FixedUpdate" })
                 {
@@ -37,8 +51,6 @@ namespace StutterFix
                     if (m != null && m.GetMethodBody() != null && m.GetMethodBody().GetILAsByteArray().Length > 8) list.Add(m);
                 }
             }
-            var dt = AccessTools.TypeByName("DG.Tweening.Core.DOTweenComponent");
-            if (dt != null) foreach (var n in new[] { "Update", "LateUpdate", "FixedUpdate" }) { var m = AccessTools.DeclaredMethod(dt, n); if (m != null) list.Add(m); }
             names = new string[list.Count]; ticks = new long[list.Count]; calls = new long[list.Count];
             var h = new Harmony("StutterFix.cpubreak");
             var pre = new HarmonyMethod(typeof(CpuBreak), nameof(Pre)) { priority = Priority.First };
@@ -46,7 +58,7 @@ namespace StutterFix
             int ok = 0;
             for (int i = 0; i < list.Count; i++)
             {
-                names[i] = list[i].DeclaringType.Name + "." + list[i].Name;
+                names[i] = (list[i].DeclaringType.DeclaringType != null ? list[i].DeclaringType.DeclaringType.Name + "/" : "") + list[i].DeclaringType.Name + "." + list[i].Name + "[" + list[i].Module.Name.Replace(".dll", "") + "]";
                 try { idx[list[i]] = i; h.Patch(list[i], prefix: pre, postfix: post); ok++; } catch { idx.Remove(list[i]); }
             }
             return "감쌈 " + ok + "/" + list.Count;
@@ -79,7 +91,7 @@ namespace StutterFix
             ix.Sort((a, b) => ticks[b].CompareTo(ticks[a]));
             var sb = new System.Text.StringBuilder();
             sb.Append(f).Append("프레임 ").Append((Time.realtimeSinceStartup - t0).ToString("F1")).Append("초 | 합계 프레임당 ").Append(tot.ToString("F2")).Append("ms, 호출 ").Append((totCalls / (double)f).ToString("F0")).Append("번/프레임(감싸기 비용 추정 ").Append((totCalls / (double)f * 0.05 / 1000).ToString("F2")).Append("ms) | ");
-            for (int n = 0; n < ix.Count && n < 22; n++)
+            for (int n = 0; n < ix.Count && n < 40; n++)
             {
                 int i = ix[n]; if (n > 0) sb.Append(", ");
                 sb.Append(names[i]).Append(' ').Append((ticks[i] / tk / f).ToString("F2")).Append("ms(").Append((calls[i] / (double)f).ToString("F1")).Append("x)");

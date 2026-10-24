@@ -246,6 +246,7 @@ namespace StutterFix
         private static System.Reflection.MethodInfo pickMethod; private static int pickDone, pickHits; private static readonly List<float> pickMs = new List<float>();
 
         // 끝났으면 true
+        private static int modWatchFrame, onUpdFrame; private static long onUpdTotal0; private static readonly long[] onUpd0 = new long[64];
         private static bool Step(string cmd, string arg, float now)
         {
             var ed = ADOBase.isLevelEditor ? scnEditor.instance : null;
@@ -1109,6 +1110,18 @@ namespace StutterFix
                 }
                 case "decosig": Log("[장식 상태 기록] "+DecoSig.Run(modDir,arg)+" | "+LazySprite.State); return true;
                 case "hiddensynergy": Log("[hiddensynergy] " + HiddenDecoSynergy.Command(arg)); return true;
+                case "onupdate":
+                    if (arg == "begin") { Array.Copy(Main.TickCost, onUpd0, Main.TickCost.Length); onUpdTotal0 = Main.UpdateTicks; onUpdFrame = Time.frameCount; return true; }
+                    {
+                        double tms = 1000.0 / System.Diagnostics.Stopwatch.Frequency; int pf = Math.Max(1, Time.frameCount - onUpdFrame);
+                        var sbo = new System.Text.StringBuilder("[onupdate] frames=" + pf + " total_ms=" + ((Main.UpdateTicks - onUpdTotal0) * tms / pf).ToString("F3") + " |");
+                        for (int k = 0; k < Main.TickCost.Length; k++) { double v = (Main.TickCost[k] - onUpd0[k]) * tms / pf; if (v >= 0.005) sbo.Append(' ').Append(k < Main.TickName.Length ? Main.TickName[k] : k.ToString()).Append(' ').Append(v.ToString("F3")); }
+                        Log(sbo.ToString()); return true;
+                    }
+                case "modwatch":
+                    if (arg == "on") { ModWatch.Install(); modWatchFrame = Time.frameCount; Log("[modwatch] on"); }
+                    else { Log("[modwatch] " + ModWatch.Snapshot(Time.frameCount - modWatchFrame)); modWatchFrame = Time.frameCount; }
+                    return true;
                 case "fuse": Log("[합치기 연구] " + (arg == "begin" ? FuseProbe.Begin() : FuseProbe.End())); return true;
                 case "decobatch": Log("[장식 일괄] " + (arg.StartsWith("shadow") ? DecoBatchShadow.Command(arg) : DecoAnim.BatchCommand(arg))); return true;
                 case "phasereport": PhaseWatch.ReportSong(); return true;

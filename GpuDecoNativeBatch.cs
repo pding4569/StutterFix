@@ -13,6 +13,7 @@ namespace StutterFix
     internal sealed class GpuDecoNativeBatch : IDisposable
     {
         internal static bool Enabled;
+        internal static bool NoMpb;   // 진단 후보(기본 꺼짐): 렌더러별 MaterialPropertyBlock 대신 재질에 직접
         internal static bool StaticCombine;
         internal static bool RestoreSortBounds;
         readonly List<Mesh> meshes=new List<Mesh>();
@@ -64,6 +65,16 @@ namespace StutterFix
                     renderer.SetPropertyBlock(props,0);
                 }
                 else renderer.SetPropertyBlock(props);
+                if(NoMpb)
+                {
+                    // 진단 후보: 렌더러마다 MaterialPropertyBlock(custom props)를 두면 엔진이 PrepareMeshRenderNodes 에서 공유 재질 데이터로 못 묶는다.
+                    // 장식마다 재질 인스턴스가 따로이므로 같은 값을 재질에 직접 넣고 블록은 지운다(알려진 세 속성만; 다른 속성이 있으면 픽셀 비교로 드러난다).
+                    var mat=renderer.sharedMaterial;
+                    if(props.HasTexture("_MainTex")&&props.GetTexture("_MainTex")!=null)mat.SetTexture("_MainTex",props.GetTexture("_MainTex"));
+                    if(props.HasVector("_RendererColor")||props.HasColor("_RendererColor"))mat.SetColor("_RendererColor",props.GetVector("_RendererColor"));
+                    if(props.HasVector("_Flip"))mat.SetVector("_Flip",props.GetVector("_Flip"));
+                    renderer.SetPropertyBlock(null);
+                }
             }
             var camera=GpuSplit.FindMain();Require(camera,"missing sort camera");int bucketCount=1;
             if(splitSortBuckets)
