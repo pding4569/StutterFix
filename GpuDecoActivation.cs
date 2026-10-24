@@ -117,7 +117,9 @@ namespace StutterFix
             using var process=System.Diagnostics.Process.GetCurrentProcess();
             var data=new GpuResourceLease{version=1,process=process.Id,tokens=GpuDecoCopy.ProbeTokens(),objects=ids.ToArray(),
                 mvid=GpuProbeMvid,originalAuto=AutoTest.GpuReloadOriginalAuto};
-            RequireLive(data.tokens.Length>0 && data.objects.Length>0,"resource mark must be nonempty");
+            RequireLive(data.tokens.Length>0 && data.tokens.Length<=64 && data.objects.Length>0,"resource mark must be nonempty/bounded");
+            RequireLive(33L+4L*(data.tokens.Length+data.objects.Length)<=RenderMergeLayoutPolicy.ResourceFileLimit,
+                "resource mark exceeds bounded probe file");
             using(var file=System.IO.File.Create(ResourceProbePath))
             using(var writer=new System.IO.BinaryWriter(file))
             {
@@ -131,7 +133,7 @@ namespace StutterFix
         static GpuResourceLease ReadGpuResourceLease()
         {
             var file=new System.IO.FileInfo(ResourceProbePath);
-            RequireLive(file.Exists && file.Length>0 && file.Length<=1048576,"resource probe file missing/oversized");
+            RequireLive(file.Exists && file.Length>0 && file.Length<=RenderMergeLayoutPolicy.ResourceFileLimit,"resource probe file missing/oversized");
             using var process=System.Diagnostics.Process.GetCurrentProcess();
             var data=new GpuResourceLease();
             using(var stream=System.IO.File.OpenRead(file.FullName))
@@ -140,7 +142,8 @@ namespace StutterFix
                 data.version=reader.ReadInt32();data.process=reader.ReadInt32();int n=reader.ReadInt32();
                 RequireLive(data.version==1 && data.process==process.Id && n>0 && n<=64,"resource probe wrong process/schema/token count");
                 data.tokens=new int[n];for(int i=0;i<n;i++)data.tokens[i]=reader.ReadInt32();
-                n=reader.ReadInt32();RequireLive(n>0 && n<=100000,"resource probe empty/oversized object mark");
+                n=reader.ReadInt32();RequireLive(RenderMergeLayoutPolicy.ValidResourceObjects(n,stream.Length-stream.Position),
+                    "resource probe empty/truncated/oversized object mark");
                 data.objects=new int[n];for(int i=0;i<n;i++)data.objects[i]=reader.ReadInt32();
                 data.mvid=new Guid(reader.ReadBytes(16)).ToString();data.originalAuto=reader.ReadBoolean();
                 RequireLive(stream.Position==stream.Length,"resource probe trailing data");

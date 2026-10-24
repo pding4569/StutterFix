@@ -119,13 +119,15 @@ def build(chart, bundle=None, mono_dir=None):
                   f'monosyms "{mono_dir / "rendermerge-addr.txt"}" "{mono_dir / "rendermerge-syms.txt"}"']
     steps += ['gpudeco rendermerge result', 'quit']
     return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False},
-                timeout_min=25, checks={}, tag='rendermerge-260-270-abba-schedule4',
+                timeout_min=25, checks={}, tag='rendermerge-260-270-abba-map5',
                 notes={'A': 'independent GPU', 'B': 'merged GPU',
                        'environment': 'existing 2560x1440@120 or 3440x1440@165; same-process ABBA only, never changes display settings',
                        'start_sync': 'wait for hasSongStarted after every seek; PrepVfx is not music-start completion',
                        'activation': 'no pause/resume in ABBA arms; playing ready validates cached fallback barriers without allocations',
                        'admission': 'song-start preparation only, then stop/seek; full PrepVfx schedule captured before scrub; owned >=20000, nonempty independent baseline and matching ABBA ownership',
                        'layout': 'paused ready after a separate 256s live activation; restore CPU ownership before resume, then start ABBA without pauses',
+                       'merge_map': 'fixed mesh topology; hidden quads degenerate through CopyMappedRun map updates, no CPU mesh edits during playback',
+                       'barriers': 'omit only dormant auxiliaries of admitted GPU sprites; preserve CPU fallback and unknown hidden renderers; log split reasons',
                        'song_end': 'paused fallback layout rebuild at 296s before resume; no allocations in ABBA',
                        'lifetime': 'actual retry/reopen/portal; DecoBake.Shutdown and marked Unity/native resources',
                        'full_umm_unload': 'UNMEASURED',

@@ -22,6 +22,34 @@ RenderMergeGatePolicy Complete()
 }
 Check(new RenderMergeGatePolicy().Verdict()=="ERROR","no evidence");
 Check(Complete().Verdict()=="PASS","all thresholds inclusive");
+{
+    Check(RenderMergeLayoutPolicy.OmitAuxiliary(true,false,false),"dormant admitted auxiliary is not a draw barrier");
+    Check(!RenderMergeLayoutPolicy.OmitAuxiliary(false,false,false),"unknown hidden renderer stays a barrier");
+    Check(!RenderMergeLayoutPolicy.OmitAuxiliary(true,true,false),"CPU fallback auxiliary stays a barrier");
+    bool rejected=false;
+    try {RenderMergeLayoutPolicy.OmitAuxiliary(true,false,true);} catch(InvalidOperationException){rejected=true;}
+    Check(rejected,"live auxiliary cannot silently disappear from ordering");
+    var map=Enumerable.Repeat(uint.MaxValue,16).ToArray();
+    // Noncontiguous source items and a change with the same visible count.
+    // Resolve a real quad's two triangles through the production mapping.
+    int[] triangles={0,2,1,2,3,1};
+    foreach(bool swapped in new[]{false,true,false})
+    {
+        RenderMergeLayoutPolicy.MapQuad(map,4,7,!swapped);
+        RenderMergeLayoutPolicy.MapQuad(map,8,2,swapped);
+        var first=triangles.Select(i=>map[4+i]).ToArray();
+        var second=triangles.Select(i=>map[8+i]).ToArray();
+        Check(first.SequenceEqual(triangles.Select(i=>28u+(!swapped?(uint)i:0u))),"visible corners/winding and hidden degeneracy");
+        Check(second.SequenceEqual(triangles.Select(i=>8u+(swapped?(uint)i:0u))),"equal-count membership swap reaches the right source");
+        Check(map.Take(4).Concat(map.Skip(12)).All(x=>x==uint.MaxValue),"partial map preserves neighbor groups");
+    }
+    foreach(int count in new[]{1,100000,111382,235470})
+        Check(RenderMergeLayoutPolicy.ValidResourceObjects(count,4L*count+17),"bounded full-population mark readable");
+    Check(!RenderMergeLayoutPolicy.ValidResourceObjects(111382,4L*111382+16),"truncated object payload rejected before allocation");
+    Check(!RenderMergeLayoutPolicy.ValidResourceObjects(111382,4L*111382+18),"trailing payload rejected");
+    Check(!RenderMergeLayoutPolicy.ValidResourceObjects(0,17)
+        && !RenderMergeLayoutPolicy.ValidResourceObjects(int.MaxValue,4L*int.MaxValue+17),"empty/oversized marks rejected");
+}
 foreach(var population in new[]{(26,26,0,0),(23547,19999,3548,1900),(23547,23547,0,0),
     (23547,23546,0,1900),(23547,23547,-1,1900)})
 {

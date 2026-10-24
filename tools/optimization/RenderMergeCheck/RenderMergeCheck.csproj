@@ -3,6 +3,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="../../../RenderMergeGatePolicy.cs" Link="RenderMergeGatePolicy.cs" />
+    <Compile Include="../../../RenderMergeLayoutPolicy.cs" Link="RenderMergeLayoutPolicy.cs" />
     <Compile Include="../../etwstall/MonoSymbols.cs" Link="MonoSymbols.cs" />
   </ItemGroup>
 </Project>

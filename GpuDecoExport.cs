@@ -40,6 +40,7 @@ namespace StutterFix
             internal Renderer R;
             internal Material M;
             internal int Item = -1;
+            internal int AuxiliaryOwner = -1;
             internal SceneRenderOrder.Key Key;
             internal string Signature;
         }
@@ -886,6 +887,16 @@ namespace StutterFix
                 }
 
                 var sigCache = new Dictionary<int, string>();
+                var auxiliaryOwners = new Dictionary<int, int>();
+                if (gpuRenderMergePrepare) foreach (int index in protoItems.Keys)
+                {
+                    var d = (scrVisualDecoration)baselineObjects[index];
+                    // Admission excludes mesh mode, filters, masks and editor
+                    // borders. Keep all other hidden renderer types as barriers.
+                    foreach (var auxiliary in new Renderer[] { d.meshRenderer, d.bordersRenderer, d.hitboxRenderer })
+                        if (auxiliary && auxiliary != d.spriteRenderer)
+                            auxiliaryOwners.Add(auxiliary.GetInstanceID(), index);
+                }
                 var masterRows = new List<GpuLiveRow>();
                 foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
                 {
@@ -913,7 +924,10 @@ namespace StutterFix
                         var key = isOwned
                             ? CandidateSortKey((scrVisualDecoration)baselineObjects[candIdx], (SpriteRenderer)r, m, cam)
                             : MatShare.SortKey(r, m, cam, slot);
-                        masterRows.Add(new GpuLiveRow { R = r, M = m, Item = isOwned ? candIdx : -1, Key = key, Signature = sig });
+                        int auxiliaryOwner;
+                        if (!auxiliaryOwners.TryGetValue(r.GetInstanceID(), out auxiliaryOwner)) auxiliaryOwner = -1;
+                        masterRows.Add(new GpuLiveRow { R = r, M = m, Item = isOwned ? candIdx : -1,
+                            AuxiliaryOwner = auxiliaryOwner, Key = key, Signature = sig });
                     }
                 }
                 masterRows.Sort((a, b) => a.Key.CompareTo(b.Key));
@@ -924,7 +938,8 @@ namespace StutterFix
                 var compactedRows = new List<GpuLiveRow>(protoItems.Count * 2 + 16);
                 for (int i = 0; i < masterRows.Count; i++)
                 {
-                    if (masterRows[i].Item < 0 && compactedRows.Count > 0 && compactedRows[compactedRows.Count - 1].Item < 0)
+                    if (masterRows[i].Item < 0 && masterRows[i].AuxiliaryOwner < 0 && compactedRows.Count > 0
+                        && compactedRows[compactedRows.Count - 1].Item < 0 && compactedRows[compactedRows.Count - 1].AuxiliaryOwner < 0)
                         continue;
                     compactedRows.Add(masterRows[i]);
                 }
@@ -1083,8 +1098,9 @@ namespace StutterFix
             }
         }
 
-        static int BuildLiveRun(GpuLiveSlice slice, List<GpuLiveRow> rows, int a, int b, int copyKernel, float z, bool mapped=false)
+        static int BuildLiveRun(GpuLiveSlice slice, List<GpuLiveRow> rows, int a, int b, int copyKernel, float z, MergeWindow merge=null)
         {
+            bool mapped = merge != null;
             var first = rows[a]; int count = b - a;
             var groups = new List<KeyValuePair<int, int>>();
             for (int n = 0; n < count;)
@@ -1157,6 +1173,7 @@ namespace StutterFix
                 var map=new uint[count*4];
                 for(int n=0;n<count;n++)for(int k=0;k<4;k++)map[n*4+k]=(uint)(rows[a+n].Item*4+k);
                 var mapBuffer=new GraphicsBuffer(GraphicsBuffer.Target.Structured,map.Length,4);slice.Buffers.Add(mapBuffer);mapBuffer.SetData(map);
+                merge.Maps.Add(mesh, new MergeMap { Buffer=mapBuffer, Values=map, Renderer=renderer });
                 slice.Commands.SetComputeBufferParam(gpuLiveShader,copyKernel,"_CopyMap",mapBuffer);
             }
             slice.Commands.SetComputeIntParam(gpuLiveShader, "_CopyFirstVertex", first.Item * 4);

@@ -1,6 +1,44 @@
 # render-merge 구현 결과
 
-## 현재 회차: run1 소유 범위 오류 수정, 수정판 실측 없음 (2026-10-25)
+## 현재 회차 3: run2 실제 ABBA 실패 분석과 map5 수정 (2026-10-25)
+
+**외부 run2 판정은 `RENDERMERGE=ERROR`, 이번 map5는 `RENDERMERGE=ERROR reason=GAME_NOT_RUN`이다.** 게임 실행·설치·커밋·푸시·자동 장치 호출·설정 변경은 하지 않았다. 지정 문서의 05:45 보충과 최신 `gm-autoloop-run2-evidence.txt`를 우선했다. 아래 과거 환경 오류·소유 26개 설명을 이번 중단 이유로 사용하지 않는다.
+
+### run2 실측: 소유 범위는 회복했지만 병합은 실패
+
+3440×1440@164.999, GPU 소유/할당 23,547개·CPU fallback 0개로 ABBA 네 창이 모두 진행됐다. A 직전 독립 enabled/visible은 1,880개다. 요약의 실제 결과 11줄(창 4·픽셀 2·안정성 3·자원 mark·최종 판정)을 현재 원시 `E:/StutterFixWork/night-results/al-gm-2.log`와 대조해 전부 일치함을 확인했다.
+
+| 창 | FPS | 할당 병합 렌더러 최대 | 엔진 Draw Calls 최대 | 30ms 초과 | 최악 ms |
+|---|---:|---:|---:|---:|---:|
+| A0 | 166.844797 | 해당 없음 | 2479 | 0 | 15.757298 |
+| B1 | 77.992570 | 4875 | 2489 | 3 | 75.452797 |
+| B2 | 77.943161 | 4875 | 2527 | 4 | 112.754099 |
+| A3 | 161.787018 | 해당 없음 | 2524 | 0 | 27.100297 |
+
+이전 코드의 `renderers` 계측은 활성/화면 가시 수가 아니라 구간에 할당한 `RunCount` 최대였다. B의 비어 있지 않은 교체 서브메시 최대는 1,980개다. 준비 로그는 모든 구간에서 `items=renderers=submeshes`로, 병합이 실제로 한 항목당 한 렌더러로 쪼개졌다. 예: 260초 구간 4,580개, 262.5초 4,632개, 270초 4,875개. 소유 26개였던 run1과 달리 이번은 유효한 목표 모집단의 **실패**다.
+
+262초 원본↔독립 차이는 0, 원본↔병합/독립↔병합은 **439,069픽셀·최대 33/255**다. 270초는 원본↔독립 0, 병합 차이 **3,207픽셀·최대 2/255**다. 두 시각 복원/노이즈는 0이다. 따라서 픽셀 증가 금지 게이트도 실패한다. retry/song_end/reopen은 각각 pass, 마지막 Shutdown 자원 검사 읽기에서 ERROR로 끝나 **stability=3/4**, 전체 unload/reload는 미측정이다. ERROR가 성능·픽셀·끊김 실패를 없애 주지는 않는다.
+
+### 코드에서 찾은 문제와 수정
+
+1. **휴면 보조 렌더러도 비소유 경계로 취급.** `GpuDecoExport`의 merge용 스캔은 나중에 깨어날 CPU 객체를 보존하려고 비활성 렌더러까지 수집했다. 이때 지원 판정을 받은 장식의 `meshRenderer`·`bordersRenderer`·`hitboxRenderer`도 일반 경계가 됐다. 게임 근사 디컴파일 `scrVisualDecoration.UpdateShader/EnableMeshRenderer/SetDepth`와 설치 DLL ILScan을 읽어, mesh 전환이 Renderer.enabled가 아닌 GameObject.SetActive로 동작하고 sprite/mesh가 같은 sortingOrder를 받는 호출 관계를 확인했다. 기존 LiveGpuReason은 mesh-mode·filter·mask·editor-borders를 거절하므로, **이미 소유가 허용된 단순 스프라이트의 휴면 보조 객체만** 경계에서 제외한다. CPU fallback/알 수 없는 비활성 객체는 그대로 보존한다. 사전 압축 때 이 보조 행과 실제 경계를 합쳐 버리지 않도록 구분하며, ready/on에서 보조 객체가 실제로 켜졌다면 거부한다. 제외 개수와 실제 경계·bucket/layer/material별 분할 개수를 준비 로그에 추가했다. **run2에 분할 사유별 로그는 없어, 모든 singleton의 원인이 이 하나라고 확정하지 않는다.**
+2. **기록된 정점 버퍼를 얻은 뒤 CPU 메시 수정.** 기존 `RefreshGpuMergeGroup`은 알파 이벤트·구간 진입마다 Mesh.SetIndices를 호출했다. Unity는 CPU 메시 데이터를 수정하면 GPU 정점 버퍼가 재생성될 수 있고 GetVertexBuffer를 다시 받아야 한다고 명시한다([Unity Mesh.GetVertexBuffer](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Mesh.GetVertexBuffer.html)). 이 경로는 미리 기록한 CopyMappedRun의 목적지 참조를 보장하지 못한다. 정점·인덱스 topology와 command buffer를 준비 때 고정하고, 별도 StructuredBuffer 복사표만 변경하도록 수정했다. 숨은 장식은 네 정점을 같은 소스 첫 정점으로 복사해 삼각형을 퇴화시킨다. 보이는 장식은 기존 네 모서리·UV·색·순서를 유지한다. 보이는 개수가 같고 멤버만 바뀌어도 복사표를 갱신한다. 전부 숨은 run의 Renderer는 끄고 활성 run 수를 이벤트마다 집계한다. **run2에서 버퍼 재생성 자체를 계측한 것은 아니므로, 픽셀 실패의 전체 원인 귀속은 아직 가설이다.** 셰이더·번들 변경은 없다.
+3. **자원 mark의 쓰기/읽기 상한 불일치.** run2는 Unity 객체 **111,382개**를 정상 기록했지만 reader는 100,000개를 넘으면 거부했다. 이는 이 로그의 마지막 ERROR를 설명하는 확정 코드 경로이며 누수 검출 결과가 아니다. 기존 1MiB 파일 상한은 유지하고 객체 수×4+GUID/플래그 17바이트가 실제 남은 파일 길이와 정확히 같은지 검사한다. writer도 같은 파일 상한·token 상한을 검사한다. 111,382개, 잘린 파일, 뒤에 붙은 데이터, 비어 있거나 과대한 수를 오프라인 검사했다. 실제 `unity_alive=0/native_alive=0`은 아직 확인되지 않았다.
+
+새 코드는 연구용 기본 꺼짐이다. 재생 중 메시 할당 금지·정렬 bucket/엄격 재질 ID 순서·실제 알파에 의한 누락 검사·GPU 복구/소유 기준은 유지한다. 알 수 없는 렌더러를 일괄 제외하거나 FPS/픽셀 게이트를 낮추지 않았다. 보조 렌더러가 지원 계약 밖의 외부 변경으로 재생 중 켜지는 경우까지 이번 오프라인 검사로 증명한 것은 아니다.
+
+### 생성물과 검증 범위
+
+- 생성기 tag `rendermerge-260-270-abba-map5`, 새 계획 **`tools/optimization/out/render-merge-map5-steps.json`(333단계)**. run2가 사용한 실제 Arche 파일 존재를 확인해 생성했다. 최초 곡 시작 준비 후 정지, 측정은 seek 260 기반·ABBA 진입 pause 없음, 262/270초 픽셀·retry/song_end/reopen/Shutdown 절차를 유지했다. 생성만 했고 기존 JSON을 덮어쓰거나 자동 장치를 호출하지 않았다.
+- Dev / Player / PlayerAuto 빌드 **오류 0**, 경고 **46/36/39**. 생성기 계약 **11개**, RenderMergeCheck **74개** 통과(게이트·심볼·보조 경계·복사표·파일 길이 68 + 실제 3종 DLL 격리 6). hidden/visible 왕복·동일 개수 멤버 교체·비연속 source·이웃 그룹 보존·퇴화 삼각형·CPU fallback/미확인 경계 보존을 검사했다. 빌드·검사 로그와 ILScan은 `tools/optimization/out/render-merge-map5-*`, `render-merge-run3-ilscan.txt`에 있다.
+- 변경 파일 13개 UTF-8 읽기·리터럴 내 대체문자 부재, 변경 C# 5개의 기존 인코딩 검사기 `SFENC001: clean`, 요약 정확히 10줄, 문서의 새 계획 경로 일치, `git diff --check`를 확인했다. 과거 UTF-16 산출물을 포함한 전체 인코딩 검사는 반복하지 않았다. 기존 빌드 경고는 남아 있다.
+- 이번 수정은 실제 정렬·픽셀·GPU 버퍼 수명·실시간 FPS·끊김·수명 복원을 증명하지 않는다. map5의 해당 수치는 전부 **NA**이며 PASS가 아니다. run2로 설계 전체의 불가능을 확정하지 않으며 같은 코드의 반복 시험도 요청하지 않는다. 후속 외부 결과는 `omitted_admitted_auxiliaries/split_*`와 **할당 renderer 및 활성 renderer를 구별해** 읽어야 한다. 새 `rendermerge_window renderers`는 알파상 하나 이상 살아 있는 run의 최대이며, 준비 로그 `rendermerge_prepared renderers`는 할당 run 수다. 실제 Draw Calls 게이트는 계속 엔진 계측값을 쓴다. 퇴화 서브메시도 제출될 수 있으므로 `replacement_submeshes`는 살아 있는 그룹 수이지 실제 Draw Calls가 아니다.
+
+T2 기존 `monosyms`·`ETW_MONO_SYMS`와 이름 붙인 기록을 보존했다. 기존 메인 포함 3,846표본: PlayerRender 36.9%, CallUpdateMethod 48.3%, GpuLiveFrame 7.7%, TightLate.List 4.4%, TightLate.Process 4.3%, FastMove.Prefix 3.7%(포함 비율 중첩, 합산 금지). 과거 **2560 환경**의 6.1→4.545ms(220 FPS)는 −1.555ms, →2.5ms(400 FPS)는 −3.6ms; 교체 그리기 제거 3.83ms에서도 −1.33ms다. 이번 3440 run2와 섞지 않으며 map5 개선량은 NA다.
+
+task-observer 3.5.0과 기존 사용자 범위 관찰 헤더를 확인했다. 이번 작업은 허용된 worktree 안에서만 기록하며 사용자 범위 스킬/메모리 파일은 수정하지 않았다. 아래는 이전 회차다.
+
+## 이전 회차 2: run1 소유 범위 오류 수정, 당시 수정판 실측 없음 (2026-10-25)
 
 **기존 외부 run1은 `RENDERMERGE=ERROR`, 새 schedule4 수정판은 `RENDERMERGE=ERROR reason=GAME_NOT_RUN`이다.** 게임 실행·설치·커밋·푸시·자동 장치 호출은 하지 않았다. 05:45 추가 인계의 곡 처음 준비 절차를 반영했다. 아래 이전 회차의 환경 불일치·실측 없음 설명은 과거 상태다.
 

@@ -1,10 +1,10 @@
-RENDERMERGE=ERROR reason=GAME_NOT_RUN fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA
-기존 외부 run1 FPS 104.609/104.534/104.176/104.260, 소유 26개 전부 투명·A enabled=0으로 목표 모집단 아님.
-기존 픽셀 262/270초 차이 0은 투명 집합에서만 관측; retry 통과 후 song_end fallback 2개로 ERROR(stability=1/4).
-05:45 보충대로 곡 처음에서 준비만→정지→seek 260 측정; 0초부터 260초까지 자연 재생 없음.
-PrepVfx 전체 예약 순서를 먼저 복사·재수집 시 보존, scrub의 목록 제거로 과거 효과가 조건 효과가 되는 경로 수정.
-별도 256초 activation→paused ready→CPU 복원→정지; ABBA pause 없음, song_end는 296초 paused ready 사용.
-≥20,000 소유·A enabled>0·ABBA 동일 소유 개수 요구; 새 계획 tools/optimization/out/render-merge-schedule4-steps.json(333단계).
-빌드 3종 오류 0, 생성기 11개·RenderMergeCheck 54개·굽기 코어 검사 통과; 전체 인코딩 검사는 기존 UTF-16 산출물로 실패.
-T2 기존 3,846표본 유지; 기존 2560 환경의 220/400 FPS까지 차이 1.555/3.6ms, 수정판 개선량 NA.
-게임 실행·설치·커밋·푸시·자동 장치 호출·설정 변경 0회; 수정판 소유/FPS/픽셀/복원 미검증, PASS 아님.
+RENDERMERGE=ERROR reason=GAME_NOT_RUN fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA candidate=map5
+외부 run2는 3440x1440@164.999, 소유 23547·A visible 1880으로 ABBA 166.844797/77.992570/77.943161/161.787018 FPS.
+외부 B 할당 renderer 최대 4875·엔진 draw 2489/2527·30ms 초과 3/4회(최악 75.45/112.75ms); 성능·끊김 실패.
+외부 픽셀 증가 262초 439069(max33)/270초 3207(max2), 원본↔독립/복원/노이즈 0; 픽셀 실패.
+외부 retry/song_end/reopen 통과 후 자원 mark 111382개를 100000개 reader 상한이 거부해 ERROR, stability=3/4.
+지원 GPU sprite의 휴면 mesh/border 보조 객체만 경계 제외; CPU fallback/미확인 경계 보존·분할 원인 로그 추가.
+알파 변경의 CPU Mesh.SetIndices 제거, 고정 topology·GPU 복사표로 hidden quad 퇴화; 자원 파일은 1MiB·정확 길이 검사.
+빌드 Dev/Player/PlayerAuto 오류 0(경고 46/36/39), 생성기 11개·RenderMergeCheck 74개 통과; 수정판 실제 효과 미검증.
+새 tools/optimization/out/render-merge-map5-steps.json 333단계 생성만; seek 260 ABBA·픽셀2점·복원4종 유지, 기존 T2 유지.
+게임 실행·설치·커밋·푸시·자동 장치 호출·설정 변경 0회; 동일 코드 반복 시험 요청 없음, map5 성능/픽셀/복원 NA·PASS 아님.
