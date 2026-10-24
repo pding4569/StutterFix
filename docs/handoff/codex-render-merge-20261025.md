@@ -22,3 +22,11 @@
 - `mono-2.0-bdwgc.dll` 에 `mono_pmip`, `mono_jit_info_table_find`, `mono_jit_info_get_method`, `mono_method_full_name`, `mono_get_root_domain` export 가 모두 **있다**(게임 폴더 `MonoBleedingEdge\EmbedRuntime`). T2 는 `mono_pmip(IntPtr)` 한 번 호출로 시작하면 된다.
 - steps 뼈대는 `tools/optimization/out/round119-diag4-steps.json`(seek 260 기준 두 창: 기존 경로 / 교체 렌더러·복사 끔)과 `round121-pv-steps.json`(PerfView 기록 `trace <이름> <초>` 두 번)을 복사해서 수정하라. 실행·상태 조회는 사용자 쪽 자동 장치가 `tools/sfmeasure/trace_runs.py` 의 `start`/`status` 로 한다(`plan` 은 워크트리 안 상대 경로, 실행 이름은 새 이름).
 - 시험 한 판은 3~4분. 게임을 여러 번 켜지 않도록 한 판 안에 측정을 이어서 넣어라.
+
+## 2026-10-25 05:40 Claude 보충: 밤새 25회전이 헛돈 이유와 지금 상태 (먼저 읽을 것)
+1. 헛돈 이유: `RequireGpuMergeEnvironment` 가 2560x1440@120 만 허용했는데 사용자 모니터는 3440x1440@165 였다. **고침**(둘 다 허용, 같은 실행 안의 ABBA 끼리만 비교하므로 문제 없음). 이 환경 검사 때문에 "측정 불가"로 멈추는 일은 이제 없다. 환경 불일치를 이유로 시험을 건너뛰지 말 것.
+2. 고침: `gpudeco rendermerge playbackready` 가 false(아직)를 돌려주면 GpuStep 가 사용법 예외로 떨어졌다 → `rendermerge ` 접두어는 GpuRenderMergeCommand 의 bool 을 그대로 돌려주게 `GpuDecoExport.cs` 수정.
+3. 실제 게임 시험(`rm-abba2`, 3440x1440@165)에서 확인된 것: 환경 통과, 맵 열림, `playbackready` 통과, `rendermerge prepare` 가 구간별 `items/renderers/submeshes`(2~9개)를 보고. **A 팔의 `gpudeco micro begin` 에서 실패**: "micro window requires playing GPU ownership".
+4. 원인(로그): `pause`→`packets compiled`→`live on`→`resume` 직후 곡 256.06초에 `FastMove.Orig` 가 불려 `RecoverGpuLive("FastMoveOriginal")` 로 GPU 소유가 꺼짐(`original_guard bypass=False running=True ... hitch_playing=True resume_continuity=False`). `running=True` = FastMove 실행 중에 중첩 호출이 들어옴. 증명된 다른 계획들(round122 등)은 **pause/resume 없이** `seek 260 12`→`decobake ready`→`waitsongpos 256 40`→`gpudeco packets compiled`→`gpudeco live on`→`waitsongpos 260 40`→`gpudeco micro begin` 순서로 소유가 유지된다.
+5. 할 일(우선순위): (a) A 팔(합치기 끔)은 증명된 위 순서(pause 없음)로 바꿔 바로 돌려 기준선을 얻는다. (b) B 팔은 `rendermerge ready/on` 이 Paused 를 요구하므로, 가능하면 요구를 풀어 재생 중 토글하게 하거나(렌더 합치기는 sort/draw만 바꾸고 소유 상태는 안 건드림), pause 위치를 256.0 이 아니라 이동 효과가 없는 조용한 곡 위치(`gpudeco live state`/로그로 찾기)로 옮긴다. 둘 다 안 되면 원인(중첩 호출을 일으키는 효과)을 `original_guard_stack` (`GpuOriginalTrace`) 로 잡아라. (c) 이번 라운드의 목표는 **ABBA 결과 숫자 한 번 얻기**다(FPS 4창, 렌더러 수, 엔진 draw 수, 픽셀 2점). 코드 설계를 더 갈아엎기 전에 숫자부터.
+6. 시험 실행: `cd E:\StutterFixWork && python run_json.py wt-gpu/tools/optimization/out/<plan>.json wt-gpu <이름> --keys RENDERMERGE,rendermerge --tail 60` (자동 루프가 하는 것과 같음). 모니터는 지금 3440x1440@165.

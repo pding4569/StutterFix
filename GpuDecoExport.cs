@@ -1936,7 +1936,8 @@ namespace StutterFix
             }
             if(command=="nombp on"||command=="nombp off"){RequireLive(!gpuLiveActive,"nombp must be set before live prepare/on");GpuDecoNativeBatch.NoMpb=command.EndsWith("on");GpuLog("nombp="+GpuDecoNativeBatch.NoMpb);return true;}
             if(command=="live census") {LogGpuRenderCensus(-1,"explicit");return true;}
-            if(GpuRenderMergeCommand(command))return true;
+            // rendermerge playbackready 같은 대기형은 false 가 "아직" 이다(다른 명령처럼 사용법 예외로 떨어지지 않게).
+            if(command.StartsWith("rendermerge ",StringComparison.Ordinal))return GpuRenderMergeCommand(command);
 #if AUTOTEST
             if(GpuAblationCommand(command))return true;
             if(GpuStorageCommand(command))return true;

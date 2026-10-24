@@ -48,8 +48,9 @@ namespace StutterFix
         static void RequireGpuMergeEnvironment()
         {
             double hz=Screen.currentResolution.refreshRateRatio.value;
-            RequireLive(Screen.width==2560 && Screen.height==1440 && Math.Abs(hz-120)<.5,
-                "rendermerge acceptance scope requires 2560x1440@120; actual="+Screen.width+"x"+Screen.height+"@"+hz.ToString("F3",Inv));
+            // 같은 실행 안의 A/B(ABBA)끼리만 비교하므로 모니터 상태 둘 다 허용한다(섞어 합치지 말 것).
+            RequireLive((Screen.width==2560 && Screen.height==1440 && Math.Abs(hz-120)<.5) || (Screen.width==3440 && Screen.height==1440 && Math.Abs(hz-165)<1.5),
+                "rendermerge acceptance scope requires 2560x1440@120 or 3440x1440@165; actual="+Screen.width+"x"+Screen.height+"@"+hz.ToString("F3",Inv));
         }
         static bool GpuRenderMergeGateCommand(string sub)
         {
@@ -57,7 +58,7 @@ namespace StutterFix
             if(sub=="environment")
             {
                 RequireGpuMergeEnvironment();
-                GpuLog("rendermerge_environment=True scope=2560x1440@120");return true;
+                GpuLog("rendermerge_environment=True actual="+Screen.width+"x"+Screen.height+"@"+Screen.currentResolution.refreshRateRatio.value.ToString("F3",Inv));return true;
             }
             if(sub=="playbackready")
             {
