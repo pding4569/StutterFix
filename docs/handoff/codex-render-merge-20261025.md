@@ -17,3 +17,8 @@
 
 ## steps 생성기와 성공 표시
 `tools/optimization/render-merge-steps.py --chart <Arche *FULL.adofai> --output x.json` 을 만들어라: `seek 260` 기반, 한 게임에서 기존 경로·구간 경로를 번갈아(ABBA) 측정하고 마지막 요약 한 줄 `RENDERMERGE=PASS|FPS_FAIL|PIXEL_FAIL|STABILITY_FAIL|ERROR` + FPS·픽셀·렌더러 수. PASS = 위 게이트 ①②③ 모두. 같은 시험을 코드 변경 없이 되풀이 요청하지 마라, 설계 한계가 수치로 확인되면 문서에 쓰고 멈춰라. 결과 `docs/handoff/codex-render-merge-result.md` + `-o`(10줄).
+
+## 시작을 빠르게 해 주는 사실 확인 (Claude, 2026-10-24 23:15)
+- `mono-2.0-bdwgc.dll` 에 `mono_pmip`, `mono_jit_info_table_find`, `mono_jit_info_get_method`, `mono_method_full_name`, `mono_get_root_domain` export 가 모두 **있다**(게임 폴더 `MonoBleedingEdge\EmbedRuntime`). T2 는 `mono_pmip(IntPtr)` 한 번 호출로 시작하면 된다.
+- steps 뼈대는 `tools/optimization/out/round119-diag4-steps.json`(seek 260 기준 두 창: 기존 경로 / 교체 렌더러·복사 끔)과 `round121-pv-steps.json`(PerfView 기록 `trace <이름> <초>` 두 번)을 복사해서 수정하라. 실행·상태 조회는 사용자 쪽 자동 장치가 `tools/sfmeasure/trace_runs.py` 의 `start`/`status` 로 한다(`plan` 은 워크트리 안 상대 경로, 실행 이름은 새 이름).
+- 시험 한 판은 3~4분. 게임을 여러 번 켜지 않도록 한 판 안에 측정을 이어서 넣어라.
