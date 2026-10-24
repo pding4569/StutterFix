@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace StutterFix
@@ -14,6 +15,29 @@ namespace StutterFix
     // 파일 한 줄: <16진 주소> <어셈블리>:<타입>.<메서드>. 주소는 이 게임 프로세스에서만 유효하다.
     internal static class MonoDump
     {
+        [DllImport("mono-2.0-bdwgc", CallingConvention = CallingConvention.Cdecl)] private static extern IntPtr mono_pmip(IntPtr ip);
+        [DllImport("mono-2.0-bdwgc", CallingConvention = CallingConvention.Cdecl)] private static extern void mono_free(IntPtr p);
+        // monosyms <주소파일> <출력파일> : 주소파일(한 줄에 16진 주소 하나)이 생길 때까지 최대 600초 기다린 뒤 mono_pmip 로 이름을 구해 "주소 이름" 으로 쓴다.
+        // 같은 게임 프로세스에서 JIT 된 주소만 풀린다(기록 직후 이 게임이 살아 있는 동안).
+        internal static bool Syms(string input, string output, float waited, out string result)
+        {
+            result = null;
+            if (!File.Exists(input)) { if (waited > 600) throw new Exception("monosyms: 주소 파일이 안 생김 " + input); return false; }
+            var sb = new StringBuilder(); int ok = 0, fail = 0;
+            foreach (var line in File.ReadAllLines(input))
+            {
+                string t = line.Trim(); if (t.Length == 0) continue;
+                long a; if (!long.TryParse(t, System.Globalization.NumberStyles.HexNumber, null, out a)) continue;
+                string name = null;
+                try { var p = mono_pmip(new IntPtr(a)); if (p != IntPtr.Zero) { name = Marshal.PtrToStringAnsi(p); mono_free(p); } } catch { }
+                if (string.IsNullOrEmpty(name)) { fail++; continue; }
+                ok++; sb.Append(t).Append(' ').Append(name.Replace((char)10, ' ')).Append((char)10);
+            }
+            File.WriteAllText(output, sb.ToString(), new UTF8Encoding(false));
+            result = "monosyms resolved=" + ok + " unresolved=" + fail + " out=" + output;
+            return true;
+        }
+
         internal static string Run(string path)
         {
             var rows = new List<KeyValuePair<long, string>>(); int skipped = 0, errors = 0;

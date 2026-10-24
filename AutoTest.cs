@@ -1118,6 +1118,15 @@ namespace StutterFix
                         for (int k = 0; k < Main.TickCost.Length; k++) { double v = (Main.TickCost[k] - onUpd0[k]) * tms / pf; if (v >= 0.005) sbo.Append(' ').Append(k < Main.TickName.Length ? Main.TickName[k] : k.ToString()).Append(' ').Append(v.ToString("F3")); }
                         Log(sbo.ToString()); return true;
                     }
+                case "monosyms":
+                    {
+                        var ap = arg.Split(' ');
+                        if (ap.Length < 2) throw new Exception("monosyms <주소파일> <출력파일>");
+                        if (gamePhase == 0) { gamePhase = 1; openStartedAt = now; }
+                        string msg;
+                        if (!MonoDump.Syms(ap[0], ap[1], now - openStartedAt, out msg)) return false;
+                        gamePhase = 0; Log("[monosyms] " + msg); return true;
+                    }
                 case "monodump": Log("[monodump] " + MonoDump.Run(arg.Length > 0 ? arg : Path.Combine(modDir, "monodump.txt"))); return true;
                 case "modwatch":
                     if (arg == "on") { ModWatch.Install(); modWatchFrame = Time.frameCount; Log("[modwatch] on"); }

@@ -1,0 +1,358 @@
+기록 시작 23:23:32.945, 끊김 2999.6ms, 구간 2999.6 ~ 6999.6
+Game CPU samples 15563 / window 4000.0ms
+Top stack 565 samples nvwgf2umx!0x7ff814348298 < nvwgf2umx!0x7ff81433cb4d < nvwgf2umx!0x7ff8148524da < nvwgf2umx!0x7ff814c6a2aa < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 357 samples unityplayer!PrepareMeshRenderNodes<1> < unityplayer!ExecuteRenderQueue < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 288 samples unityplayer!TransformChangeDispatch::ScanAndHandleChangesJob < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 264 samples unityplayer!Material::CanAcquireSharedMaterialDataFromJob < unityplayer!BaseRenderer::CanFlattenSharedMaterialData<1> < unityplayer!PrepareMeshRenderNodes<1> < unityplayer!ExecuteRenderQueue < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 245 samples unityplayer!PrepareValueParameters<FullParameterPreparer> < unityplayer!GpuProgramParameters::PrepareValues < unityplayer!GfxDeviceClient::SetShadersMainThread < unityplayer!ShaderLab::ShaderState::ApplyShaderState < unityplayer!ShaderLab::Pass::ApplyPass < unityplayer!ApplyMaterialPass < unityplayer!BatchRenderer::ApplyShaderPass < unityplayer!ForwardRenderLoopJob < unityplayer!ExecuteAsyncSetup < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374
+Top stack 239 samples unityplayer!ForwardRenderLoopJob < unityplayer!ExecuteAsyncSetup < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 223 samples unityplayer!TransformChangeDispatch::ClearJob < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 208 samples unityplayer!MeshRenderingData::PrepareDraw < unityplayer!DrawUtil::DrawMeshRawFromNodeQueue < unityplayer!BatchRenderer::RenderBatch < unityplayer!ForwardRenderLoopJob < unityplayer!ExecuteAsyncSetup < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 206 samples unityplayer!DoForwardShaderRenderLoop < unityplayer!DoRenderLoop < unityplayer!Camera::CustomRender < unityplayer!RenderManager::RenderOffscreenCameras < unityplayer!PlayerRender < unityplayer!ExecutePlayerLoop < unityplayer!ExecutePlayerLoop < unityplayer!PlayerLoop < unityplayer!PerformMainLoop < unityplayer!MainMessageLoop < unityplayer!UnityMainImpl < unityplayer!UnityMain < a dance of fire and ice!0x7ff7c8dc11f6 < kernel32!0x7ff82d177374
+Top stack 203 samples unityplayer!BuildRenderObjectData < unityplayer!DoRenderLoop < unityplayer!Camera::CustomRender < unityplayer!RenderManager::RenderOffscreenCameras < unityplayer!PlayerRender < unityplayer!ExecutePlayerLoop < unityplayer!ExecutePlayerLoop < unityplayer!PlayerLoop < unityplayer!PerformMainLoop < unityplayer!MainMessageLoop < unityplayer!UnityMainImpl < unityplayer!UnityMain < a dance of fire and ice!0x7ff7c8dc11f6 < kernel32!0x7ff82d177374
+Top stack 186 samples unityplayer!CullDynamicObjectsJob < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 176 samples unityplayer!core::base_hash_set<core::pair<EntityId const ,Object * __ptr64,0>,cor < unityplayer!BaseRenderer::CanFlattenSharedMaterialData<1> < unityplayer!PrepareMeshRenderNodes<1> < unityplayer!ExecuteRenderQueue < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 151 samples unityplayer!GfxDeviceWorker::RunCommand < unityplayer!GfxDeviceWorker::RunCommand < unityplayer!GfxDeviceWorker::RunExt < unityplayer!GfxDeviceWorker::RunGfxDeviceWorker < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 142 samples ntdll!RtlpWaitOnAddressWithTimeout < ntdll!RtlpWaitOnAddress < ntdll!RtlWaitOnAddress < kernelbase!WaitOnAddress < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 140 samples unityplayer!BaseRenderer::FlattenSharedMaterialData<1> < unityplayer!PrepareMeshRenderNodes<1> < unityplayer!ExecuteRenderQueue < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 135 samples unityplayer!ShaderPropertySheet::FindPropertyIndex < unityplayer!GpuProgramParameters::PrepareValues < unityplayer!GfxDeviceClient::SetShadersMainThread < unityplayer!ShaderLab::ShaderState::ApplyShaderState < unityplayer!ShaderLab::Pass::ApplyPass < unityplayer!ApplyMaterialPass < unityplayer!BatchRenderer::ApplyShaderPass < unityplayer!ForwardRenderLoopJob < unityplayer!ExecuteAsyncSetup < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374
+Top stack 130 samples unityplayer!BatchRenderer::ApplyShaderPass < unityplayer!ForwardRenderLoopJob < unityplayer!ExecuteAsyncSetup < unityplayer!ujob_execute_job < unityplayer!lane_guts < unityplayer!worker_thread_routine < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 125 samples unityplayer!ThreadedStreamBuffer::HandleOutOfBufferToReadFrom < unityplayer!ThreadedBlockAllocatingBuffer::HandleOutOfBufferToReadFrom < unityplayer!GfxDeviceWorker::RunCommand < unityplayer!GfxDeviceWorker::RunCommand < unityplayer!GfxDeviceWorker::RunExt < unityplayer!GfxDeviceWorker::RunGfxDeviceWorker < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 119 samples nvwgf2umx!0x7ff813f796ff < nvwgf2umx!0x7ff8140b5cf1 < nvwgf2umx!0x7ff8143d1b4d < nvwgf2umx!0x7ff8143bd28c < nvwgf2umx!0x7ff8143483ef < nvwgf2umx!0x7ff814348350 < nvwgf2umx!0x7ff81433cb4d < nvwgf2umx!0x7ff8148524da < nvwgf2umx!0x7ff814c6a2aa < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+Top stack 117 samples d3d11!CContext::TID3D11DeviceContext_IASetVertexBuffers_<1> < unityplayer!GfxDeviceD3D11Base::DrawBuffers < unityplayer!GfxDeviceWorker::RunCommand < unityplayer!GfxDeviceWorker::RunCommand < unityplayer!GfxDeviceWorker::RunExt < unityplayer!GfxDeviceWorker::RunGfxDeviceWorker < unityplayer!Thread::RunThreadWrapper < kernel32!0x7ff82d177374 < ntdll!RtlUserThreadStart
+INCLUSIVE thread 26436 total=3846
+  INC   3845 100.0%  unityplayer!MainMessageLoop
+  INC   3845 100.0%  unityplayer!UnityMainImpl
+  INC   3845 100.0%  unityplayer!UnityMain
+  INC   3845 100.0%  a dance of fire and ice!0x7ff7c8dc11f6
+  INC   3845 100.0%  kernel32!0x7ff82d177374
+  INC   3845 100.0%  ntdll!RtlUserThreadStart
+  INC   3844  99.9%  unityplayer!PerformMainLoop
+  INC   3834  99.7%  unityplayer!ExecutePlayerLoop
+  INC   3826  99.5%  unityplayer!PlayerLoop
+  INC   2036  52.9%  mono-2.0-bdwgc!0x7fffa2368984
+  INC   2036  52.9%  mono-2.0-bdwgc!0x7fffa2368a70
+  INC   2000  52.0%  mono-2.0-bdwgc!0x7fffa2426c0e
+  INC   1858  48.3%  !JIT: (wrapper runtime-invoke) object:runtime_invoke_void__this__ (object,intptr,intptr,int
+  INC   1858  48.3%  unityplayer!MonoBehaviour::CallUpdateMethod
+  INC   1837  47.8%  unityplayer!MonoBehaviour::CallMethodIfAvailable
+  INC   1828  47.5%  unityplayer!ScriptingInvocation::Invoke
+  INC   1419  36.9%  unityplayer!PlayerRender
+  INC   1284  33.4%  unityplayer!RenderManager::RenderOffscreenCameras
+  INC   1109  28.8%  unityplayer!BaseBehaviourManager::CommonUpdate<BehaviourManager>
+  INC   1069  27.8%  unityplayer!Camera::CustomRender
+  INC    757  19.7%  unityplayer!BaseBehaviourManager::CommonUpdate<LateBehaviourManager>
+  INC    745  19.4%  unityplayer!ujob_wait_for
+  INC    567  14.7%  !JIT: (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrDecorationManager.L
+  INC    541  14.1%  unityplayer!DoRenderLoop
+  INC    524  13.6%  unityplayer!ujob_execute_job
+  INC    454  11.8%  unityplayer!CullResults::GetOrCreateSharedRendererScene
+  INC    448  11.6%  unityplayer!ExtractSceneRenderNodeQueue
+  INC    383  10.0%  !JIT: (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:DG.Tweening.Core.DOTwe
+  INC    378   9.8%  unityplayer!ExecuteRenderQueue
+  INC    322   8.4%  ntdll!RtlpWakeByAddress
+  INC    317   8.2%  ntdll!NtAlertThreadByThreadId
+  INC    296   7.7%  !JIT: StutterFix.DecoBake:GpuLiveFrame () [{000001D4699606E8} + 0xb3]  (000001D46A96AAC0 00
+  INC    296   7.7%  !JIT: StutterFix.TightLate:ManagerEnd (long) [{000001D467480BF8} + 0xcb]  (000001D46BFE86E0
+  INC    291   7.6%  unityplayer!DoForwardShaderRenderLoop
+  INC    264   6.9%  unityplayer!Camera::CustomCull
+  INC    249   6.5%  unityplayer!lane_wake_buddies
+  INC    235   6.1%  unityplayer!PrepareMeshRenderNodes<1>
+  INC    234   6.1%  unityplayer!CullScene
+  INC    227   5.9%  unityplayer!wake_or_exhaust_lane
+  INC    216   5.6%  unityplayer!BuildRenderObjectData
+  INC    208   5.4%  ntoskrnl!KiSystemServiceCopyEnd
+  INC    191   5.0%  unityplayer!BaseRenderer::CanFlattenSharedMaterialData<1>
+  INC    182   4.7%  !JIT: (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:scrVfxPlus.Update_Patc
+  INC    178   4.6%  !JIT: (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:ffxPlusBase.StartEffec
+  INC    178   4.6%  unityplayer!RendererUpdateManager::UpdateAll
+  INC    171   4.4%  !JIT: StutterFix.TightLate:List (scrDecorationManager) [{000001D467480C70} + 0x64b]  (00000
+  INC    167   4.3%  !JIT: StutterFix.TightLate:Process (StutterFix.TightLate/Entry,scrDecoration,UnityEngine.Tr
+  INC    165   4.3%  ntoskrnl!NtAlertThreadByThreadId
+  INC    155   4.0%  ntoskrnl!EtwpTraceStackWalk
+  INC    155   4.0%  ntoskrnl!KeAlertThreadByThreadId
+  INC    155   4.0%  unityplayer!ExecuteCommandBufferFromScriptImpl
+  INC    155   4.0%  !JIT: (wrapper managed-to-native) UnityEngine.Graphics:ExecuteCommandBuffer_Injected (intpt
+  INC    155   4.0%  !JIT: UnityEngine.Graphics:ExecuteCommandBuffer (UnityEngine.Rendering.CommandBuffer) [{000
+  INC    155   4.0%  !JIT: StutterFix.GpuDecoCopy:Execute (ulong,ulong) [{000001D469933BC8} + 0x163]  (000001D46
+  INC    155   4.0%  !JIT: StutterFix.DecoBake:DispatchGpuLiveSlice (double) [{000001D4699606C0} + 0x78b]  (0000
+  INC    149   3.9%  !JIT: (wrapper dynamic-method) MonoMod.Utils.DynamicMethodDefinition:ffxMoveDecorationsPlus
+  INC    143   3.7%  !JIT: StutterFix.FastMove:Prefix (ffxMoveDecorationsPlus,object[],bool) [{000001D46515CB18}
+  INC    140   3.6%  unityplayer!PrepareSpriteRenderNodes<1>
+  INC    139   3.6%  ntoskrnl!RtlWalkFrameChain
+  INC    139   3.6%  unityplayer!UI::CanvasManager::WillRenderCanvases
+  INC    137   3.6%  ntoskrnl!RtlpWalkFrameChain
+  INC    131   3.4%  unityplayer!ujob_schedule_parallel_for_internal
+  INC    129   3.4%  ntoskrnl!KiExitDispatcher
+  INC    124   3.2%  unityplayer!Material::CanAcquireSharedMaterialDataFromJob
+  INC    122   3.2%  unityplayer!lane_guts
+  INC    120   3.1%  !JIT: StutterFix.DecoAnim:UpdatePrefix () [{000001D466C06820} + 0x9b3]  (000001D46A9D0000 0
+  INC    116   3.0%  ntoskrnl!EtwpStackWalkApc
+  INC    116   3.0%  ntoskrnl!KiDeliverApc
+  INC    115   3.0%  !JIT: (wrapper runtime-invoke) object:runtime_invoke_void (object,intptr,intptr,intptr) [{0
+  INC    112   2.9%  !JIT: StutterFix.DecoAnim:StepPair (StutterFix.DecoAnim/Rec,StutterFix.DecoAnim/Rec,single)
+LEAF thread 26436
+  LEAF    206   5.4%  unityplayer!DoForwardShaderRenderLoop
+  LEAF    204   5.3%  unityplayer!BuildRenderObjectData
+  LEAF    116   3.0%  unityplayer!Material::CanAcquireSharedMaterialDataFromJob
+  LEAF     93   2.4%  unityplayer!handle_ring_t::try_dequeue
+  LEAF     72   1.9%  ntoskrnl!RtlpLookupFunctionEntryForStackWalks
+  LEAF     66   1.7%  unityplayer!core::base_hash_set<core::pair<EntityId const ,Object * __ptr64,0>,core::hash_pair<Int32Ha
+  LEAF     61   1.6%  unityplayer!CullDynamicObjectsJob
+  LEAF     47   1.2%  !JIT: System.Collections.Generic.HashSet`1<T_REF>:Contains (T_REF) [{000001D3D4195090} + 0x
+  LEAF     45   1.2%  unityplayer!PrepareMeshRenderNodes<1>
+  LEAF     44   1.1%  !JIT: UnityEngine.Object:IsNativeObjectAlive (UnityEngine.Object) [{000001D317B19BD8} + 0x1
+  LEAF     40   1.0%  unityplayer!TransformChangeDispatch::ScanAndHandleChangesJob
+  LEAF     39   1.0%  unityplayer!BaseRenderer::FlattenSharedMaterialData<1>
+  LEAF     38   1.0%  unityplayer!FMOD::DSPFFT::process
+  LEAF     36   0.9%  unityplayer!memcpy
+  LEAF     34   0.9%  unityplayer!SetGlobalT
+  LEAF     34   0.9%  unityplayer!RendererScene::SceneAfterCullingOutputReady
+  LEAF     34   0.9%  mono-2.0-bdwgc!0x7fffa2676426
+  LEAF     33   0.9%  ntoskrnl!RtlpUnwindPrologue
+  LEAF     28   0.7%  unityplayer!Transform::GetLocalPosition
+  LEAF     22   0.6%  unityplayer!SpriteRenderer::PrepareRenderingDataIfNeeded
+  LEAF     21   0.5%  unityplayer!MonoBehaviour::IsStateMachineBehaviour
+  LEAF     21   0.5%  unityplayer!Material::SetColor
+  LEAF     18   0.5%  unityplayer!memcpy_repmovs
+  LEAF     18   0.5%  unityplayer!UI::RectTransform::UpdateAnchorPositionIfTransformChanged
+  LEAF     18   0.5%  !JIT: StutterFix.TightLate:List (scrDecorationManager) [{000001D467480C70} + 0x508]  (00000
+  LEAF     18   0.5%  !JIT: StutterFix.DecoAnim:CompactRecords (System.Collections.Generic.List`1<StutterFix.Deco
+  LEAF     17   0.4%  unityplayer!BaseRenderer::FlattenCustomProps
+  LEAF     15   0.4%  unityplayer!`InitPlayerLoopCallbacks'::`2'::EarlyUpdateRendererNotifyInvisibleRegistrator::Forward
+  LEAF     15   0.4%  unityplayer!Transform::SetPosition
+  LEAF     15   0.4%  unityplayer!BaseRenderer::FlattenBasicData
+  LEAF     14   0.4%  !JIT: StutterFix.DecoAnim:StepPair (StutterFix.DecoAnim/Rec,StutterFix.DecoAnim/Rec,single)
+  LEAF     14   0.4%  unityplayer!AllocateAndPrepareSpriteRenderingData
+  LEAF     13   0.3%  unityplayer!Renderer::GetLayer
+  LEAF     13   0.3%  unityplayer!lane_guts
+  LEAF     12   0.3%  unityplayer!remove_free_block
+  LEAF     12   0.3%  unityplayer!InputManager::GetAxis
+  LEAF     12   0.3%  unityplayer!Material::SetFloat
+  LEAF     11   0.3%  !JIT: StutterFix.DecoBake:AdvanceGpuLiveSources () [{000001D469960490} + 0x241]  (000001D46
+  LEAF     11   0.3%  unityplayer!CalculateGlobalMatrix
+  LEAF     11   0.3%  ntoskrnl!KiExitDispatcher
+INCLUSIVE thread 76 total=3086
+  INC   3085 100.0%  nvwgf2umx!0x7ff81433cb4d
+  INC   3085 100.0%  nvwgf2umx!0x7ff8148524da
+  INC   3085 100.0%  nvwgf2umx!0x7ff814c6a2aa
+  INC   3085 100.0%  kernel32!0x7ff82d177374
+  INC   3085 100.0%  ntdll!RtlUserThreadStart
+  INC   2450  79.4%  nvwgf2umx!0x7ff814348350
+  INC   2439  79.0%  nvwgf2umx!0x7ff8143483ef
+  INC   1193  38.7%  nvwgf2umx!0x7ff8143bd28c
+  INC   1182  38.3%  nvwgf2umx!0x7ff8143d1b4d
+  INC    566  18.3%  nvwgf2umx!0x7ff814348298
+  INC    426  13.8%  nvwgf2umx!0x7ff8140b5cf1
+  INC    239   7.7%  nvwgf2umx!0x7ff8140a0e69
+  INC    200   6.5%  nvwgf2umx!0x7ff81433cca0
+  INC    184   6.0%  nvwgf2umx!0x7ff813f796a2
+  INC    182   5.9%  nvwgf2umx!0x7ff8140a0cd6
+  INC    168   5.4%  nvwgf2umx!0x7ff813f796ff
+  INC    161   5.2%  nvwgf2umx!0x7ff81434deb2
+  INC    157   5.1%  nvwgf2umx!0x7ff813fda5dc
+  INC    142   4.6%  nvwgf2umx!0x7ff813f79b74
+  INC    129   4.2%  nvwgf2umx!0x7ff813ff1f60
+  INC    129   4.2%  nvwgf2umx!0x7ff8140b4eb2
+  INC    126   4.1%  nvwgf2umx!0x7ff813f79ebd
+  INC    119   3.9%  ntoskrnl!KiSystemServiceCopyEnd
+  INC    118   3.8%  nvwgf2umx!0x7ff813ec7a1e
+  INC    111   3.6%  nvwgf2umx!0x7ff8140bdc2d
+  INC     94   3.0%  nvwgf2umx!0x7ff813ecac70
+  INC     92   3.0%  nvwgf2umx!0x7ff813ec9188
+  INC     84   2.7%  nvwgf2umx!0x7ff8140a0741
+  INC     81   2.6%  nvwgf2umx!0x7ff814030c8e
+  INC     79   2.6%  ntdll!NtSetEvent
+  INC     79   2.6%  kernelbase!SetEvent
+  INC     79   2.6%  nvwgf2umx!0x7ff8146f3490
+  INC     79   2.6%  nvwgf2umx!0x7ff8142511d8
+  INC     79   2.6%  nvwgf2umx!0x7ff81415ef46
+  INC     75   2.4%  nvwgf2umx!0x7ff813fda5a9
+  INC     74   2.4%  nvwgf2umx!0x7ff81428c655
+  INC     71   2.3%  ntoskrnl!EtwpTraceStackWalk
+  INC     69   2.2%  ntoskrnl!RtlWalkFrameChain
+  INC     68   2.2%  nvwgf2umx!0x7ff8140b5ba4
+  INC     66   2.1%  nvwgf2umx!0x7ff8140a09f0
+  INC     66   2.1%  ntoskrnl!RtlpWalkFrameChain
+  INC     63   2.0%  nvwgf2umx!0x7ff814161eb7
+  INC     63   2.0%  nvwgf2umx!0x7ff81415e406
+  INC     61   2.0%  nvwgf2umx!0x7ff81428d022
+  INC     57   1.8%  nvwgf2umx!0x7ff81409f8f4
+  INC     57   1.8%  nvwgf2umx!0x7ff813f79b64
+  INC     51   1.7%  nvwgf2umx!0x7ff8140b5a97
+  INC     51   1.7%  ntoskrnl!EtwpStackWalkApc
+  INC     51   1.7%  ntoskrnl!KiDeliverApc
+  INC     49   1.6%  nvwgf2umx!0x7ff814276aea
+  INC     48   1.6%  nvwgf2umx!0x7ff813f796e5
+  INC     47   1.5%  nvwgf2umx!0x7ff8141633e1
+  INC     47   1.5%  ntoskrnl!KeSetEvent
+  INC     45   1.5%  nvwgf2umx!0x7ff814348305
+  INC     44   1.4%  ntoskrnl!NtSetEvent
+  INC     43   1.4%  ntdll!NtWaitForSingleObject
+  INC     43   1.4%  kernelbase!WaitForSingleObjectEx
+  INC     42   1.4%  nvwgf2umx!0x7ff81434898e
+  INC     41   1.3%  ntoskrnl!KiInterruptDispatch
+  INC     38   1.2%  ntoskrnl!KiApcInterrupt
+  INC     38   1.2%  ntoskrnl!KiExitDispatcher
+  INC     37   1.2%  nvwgf2umx!0x7ff8140c75c6
+  INC     37   1.2%  nvwgf2umx!0x7ff813f79eba
+  INC     35   1.1%  ntoskrnl!ObWaitForSingleObject
+  INC     35   1.1%  ntoskrnl!NtWaitForSingleObject
+  INC     35   1.1%  ntoskrnl!RtlpLookupFunctionEntryForStackWalks
+  INC     34   1.1%  ntoskrnl!KiCommitThreadWait
+  INC     34   1.1%  ntoskrnl!KeWaitForSingleObject
+  INC     33   1.1%  ntoskrnl!KiDispatchInterruptContinue
+  INC     33   1.1%  nvwgf2umx!0x7ff8140b4f3f
+LEAF thread 76
+  LEAF    565  18.3%  nvwgf2umx!0x7ff814348298
+  LEAF    184   6.0%  nvwgf2umx!0x7ff813f796a2
+  LEAF    166   5.4%  nvwgf2umx!0x7ff813f796ff
+  LEAF    140   4.5%  nvwgf2umx!0x7ff813f79b74
+  LEAF    125   4.1%  nvwgf2umx!0x7ff813f79ebd
+  LEAF     84   2.7%  nvwgf2umx!0x7ff8140a0741
+  LEAF     81   2.6%  nvwgf2umx!0x7ff814030c8e
+  LEAF     68   2.2%  nvwgf2umx!0x7ff8140b5ba4
+  LEAF     56   1.8%  nvwgf2umx!0x7ff81409f8f4
+  LEAF     49   1.6%  nvwgf2umx!0x7ff814276aea
+  LEAF     48   1.6%  nvwgf2umx!0x7ff813f796e5
+  LEAF     37   1.2%  nvwgf2umx!0x7ff813f79eba
+  LEAF     35   1.1%  nvwgf2umx!0x7ff8140c75c6
+  LEAF     34   1.1%  ntoskrnl!RtlpLookupFunctionEntryForStackWalks
+  LEAF     28   0.9%  nvwgf2umx!0x7ff814030c81
+  LEAF     25   0.8%  nvwgf2umx!0x7ff8140898ba
+  LEAF     25   0.8%  nvwgf2umx!0x7ff8140b49e2
+  LEAF     24   0.8%  nvwgf2umx!0x7ff813fd3f87
+  LEAF     18   0.6%  nvwgf2umx!0x7ff8140b49e6
+  LEAF     16   0.5%  nvwgf2umx!0x7ff8140693eb
+  LEAF     16   0.5%  nvwgf2umx!0x7ff8140b5b97
+  LEAF     15   0.5%  nvwgf2umx!0x7ff8140c75db
+  LEAF     14   0.5%  ntoskrnl!RtlpUnwindPrologue
+  LEAF     12   0.4%  nvwgf2umx!0x7ff8140b49ed
+  LEAF     11   0.4%  nvwgf2umx!0x7ff813f79bf2
+  LEAF     11   0.4%  nvwgf2umx!0x7ff8140b0d7e
+  LEAF     11   0.4%  nvwgf2umx!0x7ff814030c8a
+  LEAF     11   0.4%  nvwgf2umx!0x7ff81409f922
+  LEAF     10   0.3%  nvwgf2umx!0x7ff814276e69
+  LEAF     10   0.3%  nvwgf2umx!0x7ff8140bff78
+  LEAF     10   0.3%  ntoskrnl!RtlpxVirtualUnwind
+  LEAF      9   0.3%  nvwgf2umx!0x7ff81406b569
+  LEAF      9   0.3%  nvwgf2umx!0x7ff813f79ed3
+  LEAF      8   0.3%  nvwgf2umx!0x7ff8140b0d85
+  LEAF      8   0.3%  nvwgf2umx!0x7ff8140c75d7
+  LEAF      8   0.3%  nvwgf2umx!0x7ff81434827d
+  LEAF      8   0.3%  nvwgf2umx!0x7ff81406b73e
+  LEAF      7   0.2%  nvwgf2umx!0x7ff81409f91b
+  LEAF      7   0.2%  nvwgf2umx!0x7ff8140a0eb4
+  LEAF      6   0.2%  ntdll!RtlpLowFragHeapAllocFromContext
+INCLUSIVE thread 18856 total=2267
+  INC   2266 100.0%  unityplayer!GfxDeviceWorker::RunCommand
+  INC   2266 100.0%  unityplayer!GfxDeviceWorker::RunExt
+  INC   2266 100.0%  unityplayer!GfxDeviceWorker::RunGfxDeviceWorker
+  INC   2266 100.0%  unityplayer!Thread::RunThreadWrapper
+  INC   2266 100.0%  kernel32!0x7ff82d177374
+  INC   2266 100.0%  ntdll!RtlUserThreadStart
+  INC    568  25.1%  unityplayer!GfxDeviceD3D11Base::SetShaderPropertiesCopied
+  INC    563  24.8%  unityplayer!GfxDeviceD3D11Base::DrawBuffers
+  INC    316  13.9%  unityplayer!GpuProgramParameters::PrepareOverridingValues
+  INC    280  12.4%  unityplayer!D3D11CommonShader::ApplyGpuProgram
+  INC    278  12.3%  unityplayer!ThreadedStreamBuffer::HandleOutOfBufferToReadFrom
+  INC    237  10.5%  unityplayer!GfxDeviceD3D11Base::SetShadersThreadable
+  INC    155   6.8%  d3d11!CContext::TID3D11DeviceContext_IASetVertexBuffers_<1>
+  INC    153   6.7%  unityplayer!ThreadedBlockAllocatingBuffer::HandleOutOfBufferToReadFrom
+  INC    138   6.1%  unityplayer!GfxDeviceD3D11Base::SetTextures
+  INC    133   5.9%  unityplayer!ShaderPropertySheet::FindPropertyIndex
+  INC    132   5.8%  unityplayer!TexturesD3D11Base::SetTexture
+  INC    128   5.6%  ntoskrnl!KiSystemServiceCopyEnd
+  INC    119   5.2%  unityplayer!GfxDeviceD3D11::PresentFrame
+  INC    117   5.2%  d3d11!CContext::TID3D11DeviceContext_IASetIndexBuffer_<1>
+  INC    114   5.0%  unityplayer!PrepareValueParameters<OverridingParameterPreparer>
+  INC    108   4.8%  unityplayer!GfxDeviceD3D11Base::BeforeDrawCall
+  INC     90   4.0%  unityplayer!PrepareTextureParameters<OverridingParameterPreparer>
+  INC     86   3.8%  unityplayer!baselib::UnityClassic::CappedSemaphore::Acquire
+  INC     83   3.7%  ntdll!RtlpWaitOnAddressWithTimeout
+  INC     83   3.7%  ntdll!RtlpWaitOnAddress
+  INC     82   3.6%  ntdll!RtlWaitOnAddress
+  INC     82   3.6%  kernelbase!WaitOnAddress
+  INC     77   3.4%  ntoskrnl!EtwpTraceStackWalk
+  INC     72   3.2%  unityplayer!GpuProgram::ApplyValueParameters<D3D11GpuProgramApplier>
+  INC     65   2.9%  ntoskrnl!RtlpWalkFrameChain
+  INC     65   2.9%  ntoskrnl!RtlWalkFrameChain
+  INC     63   2.8%  unityplayer!DynamicVBO::DrawChunk
+  INC     55   2.4%  ntoskrnl!KiCommitThreadWait
+  INC     54   2.4%  ntoskrnl!EtwpStackWalkApc
+  INC     54   2.4%  ntoskrnl!KiDeliverApc
+  INC     53   2.3%  ntdll!NtWaitForAlertByThreadId
+  INC     53   2.3%  d3d11!CAsynchronous<ID3D11Asynchronous>::GetData<0,0>
+  INC     53   2.3%  d3d11!CContext::TID3D11DeviceContext_GetData_<1>
+  INC     52   2.3%  d3d11!CContext::TID3D11DeviceContext_SetShaderResources_<1,4>
+  INC     51   2.2%  ntoskrnl!KeWaitForAlertByThreadId
+  INC     51   2.2%  ntoskrnl!NtWaitForAlertByThreadId
+  INC     50   2.2%  nvwgf2umx!0x7ff8143d870a
+  INC     49   2.2%  ntoskrnl!KiSwapThread
+  INC     48   2.1%  dxgi!CDXGISwapChain::PresentImplCore
+  INC     48   2.1%  dxgi!CDXGISwapChain::PresentImpl
+  INC     48   2.1%  dxgi!CDXGISwapChain::Present
+  INC     48   2.1%  gameoverlayrenderer64!0x7fffcb41b81f
+  INC     48   2.1%  unityplayer!GfxDeviceD3D11Base::RefreshSafeFrame
+  INC     47   2.1%  d3d11!CContext::TID3D11DeviceContext_Map_<1>
+  INC     47   2.1%  unityplayer!SinglePassStereoSupportExt::DrawBuffersStereo
+  INC     46   2.0%  unityplayer!ConstantBuffersD3D11::UpdateAndSubmitBuffers
+  INC     45   2.0%  nvwgf2umx!0x7ff8143409f7
+  INC     45   2.0%  d3d11!CContext::TID3D11DeviceContext_UpdateSubresource_<1>
+  INC     45   2.0%  unityplayer!GfxDeviceD3D11Base::SetComputeBufferData
+  INC     45   2.0%  nvwgf2umx!0x7ff814349300
+  INC     45   2.0%  nvwgf2umx!0x7ff81434992e
+  INC     45   2.0%  nvwgf2umx!0x7ff81434cd96
+  INC     43   1.9%  unityplayer!GfxDeviceD3D11Base::DrawBufferRangesPlatform
+  INC     43   1.9%  unityplayer!ConstantBuffersD3D11Base::ResetBinds
+  INC     42   1.9%  unityplayer!BuiltinMatrixParamCache<6>::Build
+  INC     42   1.9%  nvwgf2umx!0x7ff814350fa8
+  INC     42   1.9%  unityplayer!DynamicVBO::GetChunk
+  INC     41   1.8%  unityplayer!GfxDeviceD3D11Base::DrawBufferRanges
+  INC     40   1.8%  nvwgf2umx!0x7ff814348a3e
+  INC     38   1.7%  nvwgf2umx!0x7ff814349621
+  INC     37   1.6%  dxgi!CDXGISwapChain::FlipPresentToDWM
+  INC     37   1.6%  ntdll!NtReleaseSemaphore
+  INC     37   1.6%  kernelbase!ReleaseSemaphore
+  INC     37   1.6%  nvwgf2umx!0x7ff814349442
+LEAF thread 18856
+  LEAF    193   8.5%  unityplayer!ThreadedStreamBuffer::HandleOutOfBufferToReadFrom
+  LEAF    168   7.4%  unityplayer!GfxDeviceWorker::RunCommand
+  LEAF    133   5.9%  unityplayer!ShaderPropertySheet::FindPropertyIndex
+  LEAF    120   5.3%  d3d11!CContext::TID3D11DeviceContext_IASetVertexBuffers_<1>
+  LEAF    119   5.2%  unityplayer!GfxDeviceD3D11Base::DrawBuffers
+  LEAF    114   5.0%  unityplayer!GfxDeviceD3D11Base::SetShaderPropertiesCopied
+  LEAF    109   4.8%  d3d11!CContext::TID3D11DeviceContext_IASetIndexBuffer_<1>
+  LEAF     78   3.4%  unityplayer!PrepareTextureParameters<OverridingParameterPreparer>
+  LEAF     64   2.8%  unityplayer!GpuProgram::ApplyValueParameters<D3D11GpuProgramApplier>
+  LEAF     55   2.4%  unityplayer!D3D11CommonShader::ApplyGpuProgram
+  LEAF     43   1.9%  unityplayer!ConstantBuffersD3D11Base::ResetBinds
+  LEAF     41   1.8%  d3d11!CContext::TID3D11DeviceContext_SetShaderResources_<1,4>
+  LEAF     40   1.8%  nvwgf2umx!0x7ff814348a3e
+  LEAF     38   1.7%  unityplayer!PrepareValueParameters<OverridingParameterPreparer>
+  LEAF     37   1.6%  unityplayer!GpuProgramParameters::PrepareOverridingValues
+  LEAF     30   1.3%  ntdll!RtlpWaitOnAddressWithTimeout
+  LEAF     30   1.3%  unityplayer!BuiltinMatrixParamCacheD3D11::CacheCBIndices
+  LEAF     26   1.1%  ntoskrnl!RtlpLookupFunctionEntryForStackWalks
+  LEAF     24   1.1%  unityplayer!SharedObject<GfxDeviceAsyncCommand::Arg,1,SharedObjectFactory<GfxDeviceAsyncCommand::Arg> 
+  LEAF     24   1.1%  unityplayer!TexturesD3D11Base::SetTexture
+  LEAF     23   1.0%  unityplayer!ArrayLessThan<unsigned int>
+  LEAF     21   0.9%  unityplayer!memset
+  LEAF     21   0.9%  unityplayer!BuiltinMatrixParamCache<6>::Build
+  LEAF     20   0.9%  ntoskrnl!RtlpUnwindPrologue
+  LEAF     17   0.7%  unityplayer!GfxDeviceD3D11Base::BeforeDrawCall
+  LEAF     17   0.7%  unityplayer!GfxDeviceD3D11Base::DrawBufferRanges
+  LEAF     15   0.7%  unityplayer!ConstantBuffersD3D11Base::BindCB
+  LEAF     15   0.7%  d3d11!CContext::TID3D11DeviceContext_SetSamplers_<1,4>
+  LEAF     13   0.6%  unityplayer!memcpy
+  LEAF     13   0.6%  unityplayer!VertexDeclarationD3D11::GetInputLayout
+  LEAF     12   0.5%  unityplayer!__chkstk
+  LEAF     12   0.5%  unityplayer!ConstantBuffersD3D11::UpdateAndSubmitBuffers
+  LEAF     12   0.5%  unityplayer!TransformState::UpdateWorldViewMatrix
+  LEAF     10   0.4%  unityplayer!TexturesD3D11Base::GetSampler
+  LEAF     10   0.4%  unityplayer!PushEndParamsMark
+  LEAF     10   0.4%  unityplayer!ShaderLab::TexEnv::PrepareData
+  LEAF      9   0.4%  nvwgf2umx!0x7ff8140191d7
+  LEAF      9   0.4%  unityplayer!memcmp
+  LEAF      9   0.4%  unityplayer!DynamicVBO::GetChunk
+  LEAF      9   0.4%  ntoskrnl!RtlpxVirtualUnwind
