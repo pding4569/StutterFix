@@ -144,7 +144,9 @@ namespace StutterFix
                 }
                 gpuMicroFrame=Time.frameCount;gpuMicroSong=scrConductor.instance.songposition_minusi;
                 gpuMicroTick=System.Diagnostics.Stopwatch.GetTimestamp();
-                GpuLog("micro_begin song="+gpuMicroSong.ToString("F6",Inv)+" cache="+gpuEffectCache+" "+TightLate.GpuListStats+" per_frame_probe=False");return;
+                GpuLog("micro_begin song="+gpuMicroSong.ToString("F6",Inv)+" cache="+gpuEffectCache+" "+TightLate.GpuListStats
+                    +" single_submit="+GpuDecoCopy.SingleSubmission+" single_executions="+GpuDecoCopy.SingleExecutions
+                    +" single_fallbacks="+GpuDecoCopy.SingleFallbacks+" per_frame_probe=False");return;
             }
             RequireLive(edge=="end"&&gpuMicroTick!=0,"micro window is not open");
             long tick=System.Diagnostics.Stopwatch.GetTimestamp();int frames=Time.frameCount-gpuMicroFrame;
@@ -152,7 +154,9 @@ namespace StutterFix
             var native=GpuDecoCopy.ReadTotals();
             GpuLog("micro_end song_begin="+gpuMicroSong.ToString("F6",Inv)+" song_end="+scrConductor.instance.songposition_minusi.ToString("F6",Inv)
                 +" elapsed_s="+elapsed.ToString("F6",Inv)+" frames="+frames+" real_fps="+(frames/elapsed).ToString("F3",Inv)
-                +" cache="+gpuEffectCache+" active="+gpuLiveActive+" owned="+GpuLiveOwned+" native_executed="+native.Executed+" native_errors="+native.Errors+" "+TightLate.GpuListStats+" physical_display=UNMEASURED");
+                +" cache="+gpuEffectCache+" active="+gpuLiveActive+" owned="+GpuLiveOwned+" native_executed="+native.Executed+" native_errors="+native.Errors+" "+TightLate.GpuListStats
+                +" single_submit="+GpuDecoCopy.SingleSubmission+" single_executions="+GpuDecoCopy.SingleExecutions
+                +" single_fallbacks="+GpuDecoCopy.SingleFallbacks+" physical_display=UNMEASURED");
             var threads=gpuMicroThreads;gpuMicroThreads=null;
             var metrics=gpuMicroMetrics;gpuMicroMetrics=null;
             try {threads?.Complete(-1,frames,elapsed,GpuDecoCopy.RenderThreadId(),GpuLog);metrics?.Report(-1,GpuLog);}

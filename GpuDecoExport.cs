@@ -1233,15 +1233,25 @@ namespace StutterFix
             var camy = ADOBase.controller.camy;
             var ct = camy.transform;
             float camScale = camy.camobj.orthographicSize * .2f / gpuLiveZoomFactor;
-            active.Gpu.SetLiveUniforms(new Vector4(ct.position.x, ct.position.y, ct.eulerAngles.z, camScale), time);
+            var camera=new Vector4(ct.position.x, ct.position.y, ct.eulerAngles.z, camScale);
+            bool single=GpuDecoCopy.SingleSubmission && !gpuRenderMergeOn && active.SharedBatch==null
+                && active.NativeCopy!=null && active.Gpu.UseLiveMode && active.Gpu.HasNativeLiveKernel;
+            if(!single)active.Gpu.SetLiveUniforms(camera,time);
             long t3 = Stopwatch.GetTimestamp();
-            active.Gpu.DispatchEvaluate();
-            // If the optional backend rejects a callback, write the same current
-            // vertices through the original path and invalidate the research gate.
-            if(gpuRenderMergeOn)DispatchGpuMerge(time);
-            else if(active.SharedBatch!=null)active.SharedBatch.Dispatch();
-            else if(active.NativeCopy==null || !active.NativeCopy.Execute(gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.Low??ulong.MaxValue,
-                gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.High??ulong.MaxValue))Graphics.ExecuteCommandBuffer(active.Commands);
+            ulong maskLow=gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.Low??ulong.MaxValue;
+            ulong maskHigh=gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.High??ulong.MaxValue;
+            bool submitted=single && active.NativeCopy.Execute(maskLow,maskHigh,active.Gpu,camera,time);
+            if(GpuDecoCopy.SingleSubmission && !submitted)GpuDecoCopy.SingleFallbacks++;
+            if(!submitted)
+            {
+                if(single)active.Gpu.SetLiveUniforms(camera,time);
+                active.Gpu.DispatchEvaluate();
+                // If the optional backend rejects a callback, write the same current
+                // vertices through the original path and invalidate the research gate.
+                if(gpuRenderMergeOn)DispatchGpuMerge(time);
+                else if(active.SharedBatch!=null)active.SharedBatch.Dispatch();
+                else if(active.NativeCopy==null || !active.NativeCopy.Execute(maskLow,maskHigh))Graphics.ExecuteCommandBuffer(active.Commands);
+            }
             GpuRecoveryFault("render_after");
             long t4 = Stopwatch.GetTimestamp();
             gpuCostMiscTicks += t1 - t0;
@@ -1956,6 +1966,28 @@ namespace StutterFix
             }
             if(command=="nombp on"||command=="nombp off"){RequireLive(!gpuLiveActive,"nombp must be set before live prepare/on");GpuDecoNativeBatch.NoMpb=command.EndsWith("on");GpuLog("nombp="+GpuDecoNativeBatch.NoMpb);return true;}
             if(command=="live census") {LogGpuRenderCensus(-1,"explicit");return true;}
+            if(command=="submitsingle on" || command=="submitsingle off")
+            {
+                RequireLive(!gpuLiveActive && g2Window==-1,"single submission toggle requires inactive GPU ownership");
+                GpuDecoCopy.SingleSubmission=command.EndsWith(" on",StringComparison.Ordinal);
+                GpuDecoCopy.SingleExecutions=GpuDecoCopy.SingleFallbacks=0;
+                GpuLog("single_submit="+GpuDecoCopy.SingleSubmission+" research_only=True default=False");return true;
+            }
+            if(command=="submitsingle state" || command=="submitsingle validate")
+            {
+                if(command.EndsWith("validate",StringComparison.Ordinal))
+                {
+                    double hz=Screen.currentResolution.refreshRateRatio.value;
+                    RequireLive(gpuLiveActive && GpuLiveOwned==23547 && Screen.width==3440 && Screen.height==1440
+                        && Math.Abs(hz-165)<.1,"modcpu single submission requires owned=23547 and 3440x1440@165");
+                    RequireLive(!TightLate.GpuListCaching && !gpuRenderMergeOn,"modcpu must isolate single submission");
+                    RequireLive(GpuDecoCopy.ReadTotals().Errors==0,"modcpu native/managed copy errors");
+                    RequireLive(!GpuDecoCopy.SingleSubmission || GpuDecoCopy.SingleExecutions>0 && GpuDecoCopy.SingleFallbacks==0,
+                        "single submission unavailable or fell back; not candidate evidence");
+                }
+                GpuLog("single_submit="+GpuDecoCopy.SingleSubmission+" executions="+GpuDecoCopy.SingleExecutions
+                    +" fallbacks="+GpuDecoCopy.SingleFallbacks+" owned="+GpuLiveOwned);return true;
+            }
             if (command == "latecache on" || command == "latecache off")
             {
                 RequireLive(!gpuLiveActive, "late cache toggle requires inactive GPU ownership");

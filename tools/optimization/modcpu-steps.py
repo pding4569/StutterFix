@@ -4,22 +4,24 @@ import json
 from pathlib import Path
 
 
-def window(cached=None):
-    steps = [] if cached is None else ['gpudeco latecache ' + ('on' if cached else 'off')]
+def window(cached=None, single=None):
+    option = 'submitsingle' if single is not None else 'latecache'
+    selected = single if single is not None else cached
+    steps = [] if selected is None else ['gpudeco ' + option + ' ' + ('on' if selected else 'off')]
     steps += ['seek 260 12', 'decobake ready', 'waitsongpos 256 40',
               'gpudeco packets compiled', 'gpudeco live on', 'waitsongpos 260 40',
               'gpudeco live census']
-    if cached is not None:
-        steps += ['gpudeco latecache validate']
+    if selected is not None:
+        steps += ['gpudeco ' + option + ' validate']
     steps += ['fuse begin', 'onupdate begin', 'phasewindow begin', 'gpudeco micro begin',
               'waitsongpos 270 25', 'gpudeco micro end', 'phasewindow end', 'onupdate end', 'fuse end']
-    if cached is not None:
-        steps += ['gpudeco latecache validate', 'gpudeco latecache state']
+    if selected is not None:
+        steps += ['gpudeco ' + option + ' validate', 'gpudeco ' + option + ' state']
     return steps + ['gpudeco live off', 'stop']
 
 
-def build(chart, mode='abba'):
-    if mode not in ('baseline', 'abba'):
+def build(chart, mode='single'):
+    if mode not in ('baseline', 'abba', 'single'):
         raise ValueError('unknown mode: ' + mode)
     steps = ['gpudeco costprobe off', 'gpudeco effectcache off', 'timeout 600',
              'auto on', 'decobake on', 'gpudeco off', 'gpudeco reset', 'gpudeco nombp off',
@@ -29,18 +31,24 @@ def build(chart, mode='abba'):
              'open ' + str(chart), 'select 0', 'play', 'gpudeco scheduled', 'pause',
              'decobake state', 'decobake ready', 'gpudeco live scope song', 'gpudeco live prepare',
              'resume', 'stop', 'gpuprobe off', 'gpusplit off', 'matshare off', 'livedeco off', 'phasewindow on']
-    for cached in ((None, None) if mode == 'baseline' else (False, True, True, False)):
-        steps += window(cached)
+    if mode == 'single':
+        steps += ['gpudeco latecache off']
+        for single in (False, True, True, False):
+            steps += window(single=single)
+    else:
+        for cached in ((None, None) if mode == 'baseline' else (False, True, True, False)):
+            steps += window(cached)
     steps += ['quit']
     return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False},
-                timeout_min=25, tag='modcpu-260-270' if mode == 'baseline' else 'modcpu-260-270-abba-latecache1')
+                timeout_min=25, tag={'baseline': 'modcpu-260-270', 'abba': 'modcpu-260-270-abba-latecache1',
+                                     'single': 'modcpu-260-270-abba-submitsingle2'}[mode])
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--chart', required=True)
     parser.add_argument('--output', required=True)
-    parser.add_argument('--mode', choices=('baseline', 'abba'), default='abba')
+    parser.add_argument('--mode', choices=('baseline', 'abba', 'single'), default='single')
     args = parser.parse_args()
     Path(args.output).write_text(json.dumps(build(args.chart, args.mode), ensure_ascii=False, indent=1), encoding='utf-8')
 

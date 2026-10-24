@@ -18,7 +18,7 @@ class ModCpuStepsTests(unittest.TestCase):
         self.assertEqual(plan['tag'], 'modcpu-260-270')
 
     def test_abba_order_and_window(self):
-        steps = mod.build('Arche.adofai')['steps']
+        steps = mod.build('Arche.adofai', 'abba')['steps']
         toggles = [s for s in steps if s in ('gpudeco latecache off', 'gpudeco latecache on')]
         self.assertEqual(toggles, ['gpudeco latecache off', 'gpudeco latecache on', 'gpudeco latecache on', 'gpudeco latecache off'])
         self.assertEqual(steps.count('gpudeco latecache validate'), 8)
@@ -45,6 +45,23 @@ class ModCpuStepsTests(unittest.TestCase):
     def test_unknown_mode(self):
         with self.assertRaises(ValueError):
             mod.build('Arche.adofai', 'unknown')
+
+    def test_single_candidate_isolated_and_guarded(self):
+        plan = mod.build('Arche.adofai')
+        steps = plan['steps']
+        self.assertEqual(plan['tag'], 'modcpu-260-270-abba-submitsingle2')
+        self.assertEqual(len(steps), 119)
+        self.assertEqual([s for s in steps if s in ('gpudeco submitsingle off', 'gpudeco submitsingle on')],
+                         ['gpudeco submitsingle off', 'gpudeco submitsingle on', 'gpudeco submitsingle on', 'gpudeco submitsingle off'])
+        self.assertEqual(steps.count('gpudeco latecache off'), 1)
+        self.assertNotIn('gpudeco latecache on', steps)
+        self.assertEqual(steps.count('gpudeco submitsingle validate'), 8)
+        for start in [i for i, s in enumerate(steps) if s in ('gpudeco submitsingle off', 'gpudeco submitsingle on')]:
+            window = steps[start:start + 22]
+            self.assertEqual(window[1], 'seek 260 12')
+            self.assertLess(window.index('gpudeco submitsingle validate'), window.index('gpudeco micro begin'))
+            self.assertLess(window.index('gpudeco micro end'), len(window)-4)
+            self.assertEqual(window[-4:], ['gpudeco submitsingle validate', 'gpudeco submitsingle state', 'gpudeco live off', 'stop'])
 
 
 if __name__ == '__main__':

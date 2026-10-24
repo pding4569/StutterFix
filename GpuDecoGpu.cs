@@ -247,6 +247,29 @@ namespace StutterFix
             int activeKernel = (UseLiveMode && hasLiveKernel) ? liveKernel : kernel;
             shader.Dispatch(activeKernel, (data.Items.Length + 63) / 64, 1, 1);
         }
+        // 연구 후보: 현재 프레임의 모든 입력을 명시적으로 기록한다.
+        // 공유 ComputeShader의 즉시 설정 상태나 이전 CommandBuffer 실행에 의존하지 않는다.
+        internal void RecordLiveEvaluation(CommandBuffer commands, Vector4 camera, double time)
+        {
+            Require(UseLiveMode && hasLiveKernel, "single submission requires native live kernel");
+            commands.SetComputeBufferParam(shader,liveKernel,"_LiveChannels",liveChannelsBuffer);
+            commands.SetComputeBufferParam(shader,liveKernel,"_SourceE",sourceEBuffer);
+            commands.SetComputeBufferParam(shader,liveKernel,"_Static",staticBuffer);
+            commands.SetComputeBufferParam(shader,liveKernel,"_UV",uvBuffer);
+            commands.SetComputeBufferParam(shader,liveKernel,"_Values",values);
+            commands.SetComputeBufferParam(shader,liveKernel,"_Vertices",vertices);
+            if(hasImageGeometry)commands.SetComputeBufferParam(shader,liveKernel,"_ImageShape",imageShapeBuffer);
+            commands.SetComputeFloatParam(shader,"_Pitch",data.Pitch);
+            commands.SetComputeFloatParam(shader,"_TweenScale",data.TweenScale);
+            commands.SetComputeIntParam(shader,"_Count",data.Items.Length);
+            commands.SetComputeIntParam(shader,"_UseAnchors",1);
+            commands.SetComputeIntParam(shader,"_UseLiveChannels",1);
+            commands.SetComputeVectorParam(shader,"_Camera",camera);
+            float hi=(float)time;
+            commands.SetComputeFloatParam(shader,"_TimeHi",hi);
+            commands.SetComputeFloatParam(shader,"_TimeLo",(float)(time-hi));
+            commands.DispatchCompute(shader,liveKernel,(data.Items.Length+63)/64,1,1);
+        }
         internal (float[] values,Vertex[] vertices) Dispatch(double time,bool read)
         {
             Bind();

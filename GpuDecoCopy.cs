@@ -14,6 +14,8 @@ namespace StutterFix
         internal static bool Enabled;
         internal static bool EightUavEnabled;
         internal static bool MaskedEnabled; // explicit research candidate, default off
+        internal static bool SingleSubmission; // 연구 전용, 기본 꺼짐
+        internal static long SingleExecutions, SingleFallbacks;
         internal static string Status="off";
 #if AUTOTEST
         internal static bool AblateDestinations;
@@ -35,6 +37,11 @@ namespace StutterFix
         static ulong managedFaults;
         GraphicsBuffer normalized;
         CommandBuffer commands;
+        CommandBuffer singleCommands;
+        ComputeShader copyShader;
+        GraphicsBuffer copySource;
+        IntPtr copyCallback;
+        int copyKernel,copyVertexCount;
         int token;
         bool masked,failed;
         internal bool Ready=>token!=0;
@@ -65,6 +72,8 @@ namespace StutterFix
                     : sf_deco_copy_create(result.normalized.GetNativeBufferPtr(),pointers,offsets,pointers.Length,144);
                 IntPtr callback=sf_deco_copy_event();
                 if(result.token==0 || callback==IntPtr.Zero)throw new InvalidOperationException("native context rejected buffer descriptors");
+                result.copyShader=shader;result.copySource=source;result.copyCallback=callback;
+                result.copyKernel=shader.FindKernel("CopyRun");result.copyVertexCount=vertexCount;
                 int kernel=shader.FindKernel("CopyRun");result.commands=new CommandBuffer {name="GpuDeco deferred native copies"};
                 result.commands.SetComputeBufferParam(shader,kernel,"_CopySource",source);result.commands.SetComputeBufferParam(shader,kernel,"_Vertices",result.normalized);
                 result.commands.SetComputeIntParam(shader,"_CopyFirstVertex",0);result.commands.SetComputeIntParam(shader,"_CopyVertexCount",vertexCount);
@@ -74,18 +83,38 @@ namespace StutterFix
             }
             catch(Exception e) {Status=e.GetType().Name+": "+e.Message;result.Dispose();return null;}
         }
-        internal bool Execute(ulong low=ulong.MaxValue,ulong high=ulong.MaxValue)
+        internal bool Execute(ulong low=ulong.MaxValue,ulong high=ulong.MaxValue,
+            GpuDecoGpu evaluator=null,Vector4 camera=default,double time=0)
         {
             try
             {
                 if(failed)return false;
+                var submitted=commands;
+                if(evaluator!=null)
+                {
+                    // 객체는 재사용한다. 시각/카메라가 매 프레임 달라 명령은 다시 기록한다.
+                    // 기록 실패 때 native mask 큐를 소비하지 않도록 submit보다 먼저 한다.
+                    if(singleCommands==null)singleCommands=new CommandBuffer {name="GpuDeco evaluate and native copy"};
+                    singleCommands.Clear();
+                    evaluator.RecordLiveEvaluation(singleCommands,camera,time);
+                    singleCommands.SetComputeBufferParam(copyShader,copyKernel,"_CopySource",copySource);
+                    singleCommands.SetComputeBufferParam(copyShader,copyKernel,"_Vertices",normalized);
+                    singleCommands.SetComputeIntParam(copyShader,"_CopyFirstVertex",0);
+                    singleCommands.SetComputeIntParam(copyShader,"_CopyVertexCount",copyVertexCount);
+                    singleCommands.SetComputeIntParam(copyShader,"_CopyQuantizeColor",1);
+                    singleCommands.DispatchCompute(copyShader,copyKernel,(copyVertexCount+63)/64,1,1);
+                    singleCommands.IssuePluginEvent(copyCallback,token);
+                    submitted=singleCommands;
+                }
 #if AUTOTEST
                 // Consume the ordinary event/mask queue and retain normalization;
                 // an empty mask omits only destination-copy command chunks.
                 if(AblateDestinations) {if(!masked)throw new InvalidOperationException("unmasked copy ablation");low=high=0;}
 #endif
                 if(token==0 || (masked?sf_deco_copy_submit_mask(token,low,high):sf_deco_copy_submit(token))==0){managedFaults++;failed=true;return false;}
-                Graphics.ExecuteCommandBuffer(commands);return true;
+                Graphics.ExecuteCommandBuffer(submitted);
+                if(evaluator!=null)SingleExecutions++;
+                return true;
             }
             catch(Exception e) {managedFaults++;failed=true;Status=e.GetType().Name+": "+e.Message;return false;}
         }
@@ -142,7 +171,13 @@ namespace StutterFix
         {
             int old=token;token=0;instances.Remove(this);
             if(old!=0)try {sf_deco_copy_destroy(old);}catch(Exception e){Status=e.GetType().Name+": "+e.Message;}
-            try {commands?.Dispose();}finally {commands=null;normalized?.Dispose();normalized=null;}
+            try {commands?.Dispose();}
+            finally
+            {
+                commands=null;
+                try {singleCommands?.Dispose();}
+                finally {singleCommands=null;copyShader=null;copySource=null;normalized?.Dispose();normalized=null;}
+            }
         }
     }
 }
