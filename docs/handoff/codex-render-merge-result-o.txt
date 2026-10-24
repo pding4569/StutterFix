@@ -1,10 +1,10 @@
 RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA
-3회차 분석: 외부 2회차는 맵 open 전 gpudeco rendermerge environment에서 중단.
-원시 증거: E:/StutterFixWork/night-results/al-gm-2.log 231~233행, 요약 증거와 일치.
+4회차 분석: 외부 3회차도 맵 open 전 gpudeco rendermerge environment에서 중단.
+원시 증거: E:/StutterFixWork/night-results/al-gm-3.log 230~232행, 요약 증거와 일치.
 요구 2560×1440@120, 실제 3440×1440@164.999; 검사는 코드대로 정상 거부.
 ABBA 4창·픽셀 2점·복원 4종 전부 미측정; 오류 요약의 0은 초기값.
-게임 ADOStartup 디컴파일·설치 DLL ilscan 확인; 시작 해상도 처리는 목표 환경을 보장하지 않음.
-설계 한계는 미판정; 코드·검사·설정·기존 JSON 유지, 새 JSON/tag·반복 시험 요청 없음.
-같은 환경·같은 코드 재시험 금지; 외부 운영 단계에서 목표 화면 확보 근거 필요.
-문서 정합성·diff check 확인, 코드 변경이 없어 빌드 재실행 없음; T2·220/400 FPS 차이 보존.
+외부 2·3회차 289단계 명령 목록 동일; 같은 환경 거부 2회 연속, 자동 장치 재시도 중단 필요.
+게임 ADOStartup 디컴파일·설치 DLL ilscan 재확인; 검사 정상, 렌더 병합 설계 한계 미판정.
+코드·검사·설정·기존 JSON·제어 파일 유지, 새 계획 없음; 목표 환경 확보 근거 없이 재시험 금지.
+원시 대조·문서 정합성·diff check 확인; 빌드 반복 없음, T2·220/400 FPS 차이 보존.
 게임 실행·설치·커밋·푸시·설정 변경 0회; 후보 개선량 미측정, PASS 아님.
