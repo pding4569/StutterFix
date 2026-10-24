@@ -70,6 +70,12 @@ namespace StutterFix
     public static class DecoEngine { public static void DropLevel() { } }
     public static class DecoAnim { public static void BatchForget() { } }
     public static class PosFast { public static void Forget() { } }
-    public static class TightLate { public static void Forget() { } }
+    public static class TightLate
+    {
+        public static bool GpuListCaching;
+        public static void ClearGpuList() { }
+        public static void Forget() { }
+    }
+    public static class DecoBake { public static bool GpuLiveActive; }
     public static class InvisibleSkip { public static bool IsHidden(scrDecoration d) => !d.Visible; }
 }

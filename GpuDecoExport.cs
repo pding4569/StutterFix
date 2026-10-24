@@ -271,6 +271,7 @@ namespace StutterFix
         static string g2Error;
 
         internal static bool GpuLiveActive => gpuLiveActive;
+        internal static int GpuLateOwnershipEpoch { get; private set; }
         internal static int GpuLiveOwned => gpuLiveActive ? gpuLiveOwnedSet.Count : 0;
         internal static bool SkipGpuLate(scrDecoration d) => gpuLiveActive && gpuLiveOwnedSet.Contains(d);
         internal static bool GpuLiveOwns(scrVisualDecoration d) => gpuLiveActive && gpuLiveOwnedVisuals.Contains(d);
@@ -1498,6 +1499,7 @@ namespace StutterFix
             gpuLiveCurrentSlice = -1;
             if (!gpuLiveActive) return;
             gpuLiveActive = false;
+            TightLate.ClearGpuList();
 #if AUTOTEST
             gpuImagePending.Clear();
 #endif
@@ -1588,6 +1590,7 @@ namespace StutterFix
         }
         internal static void DisposeGpuLive()
         {
+            TightLate.ClearGpuList();
 #if AUTOTEST
             ResetGpuAblation();
 #endif
@@ -1953,6 +1956,24 @@ namespace StutterFix
             }
             if(command=="nombp on"||command=="nombp off"){RequireLive(!gpuLiveActive,"nombp must be set before live prepare/on");GpuDecoNativeBatch.NoMpb=command.EndsWith("on");GpuLog("nombp="+GpuDecoNativeBatch.NoMpb);return true;}
             if(command=="live census") {LogGpuRenderCensus(-1,"explicit");return true;}
+            if (command == "latecache on" || command == "latecache off")
+            {
+                RequireLive(!gpuLiveActive, "late cache toggle requires inactive GPU ownership");
+                TightLate.GpuListCaching = command.EndsWith(" on", StringComparison.Ordinal);
+                TightLate.ClearGpuList();
+                GpuLog(TightLate.GpuListStats + " research_only=True default=False"); return true;
+            }
+            if (command == "latecache state") { GpuLog(TightLate.GpuListStats); return true; }
+            if (command == "latecache validate")
+            {
+                double hz = Screen.currentResolution.refreshRateRatio.value;
+                RequireLive(gpuLiveActive && GpuLiveOwned == 23547 && Screen.width == 3440 && Screen.height == 1440
+                    && Math.Abs(hz - 165) < .1, "modcpu requires owned=23547 and 3440x1440@165; actual="
+                    + GpuLiveOwned + "/" + Screen.width + "x" + Screen.height + "@" + hz.ToString("F3", Inv));
+                RequireLive(!TightLate.GpuListCaching || TightLate.GpuListReady, "modcpu late cache unavailable; fallback is not candidate evidence");
+                GpuLog("late_cache_environment=True owned=" + GpuLiveOwned + " display=" + Screen.width + "x" + Screen.height
+                    + "@" + hz.ToString("F3", Inv) + " " + TightLate.GpuListStats); return true;
+            }
             // rendermerge playbackready 같은 대기형은 false 가 "아직" 이다(다른 명령처럼 사용법 예외로 떨어지지 않게).
             if(command.StartsWith("rendermerge ",StringComparison.Ordinal))return GpuRenderMergeCommand(command);
 #if AUTOTEST

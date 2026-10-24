@@ -1,4 +1,12 @@
 
+## Codex 2회차 분석 및 수정 (게임 시험 미실행)
+
+- 지정된 외부 run1 원문 38줄과 원시 `night-results/al-mc-1.log` 대조 완료. 3440×1440@165Hz, 소유 두 창 23547, FPS 167.918/168.088, 평균 168.003. 이는 실패 후보가 아니라 최초 기준선이다.
+- 후보 (1)만 추가: TightLate에서 GPU 소유 항목을 제외한 CPU 배열 캐시, B에서 새 Sleep 때만 Dormancy 압축. CPU fallback·순서·소유 전환·복원 및 매 프레임 GpuLiveFrame 유지, 기본 false·일반 Player 제외.
+- 새 생성기는 118단계 off/on/on/off를 출력한다. 양끝 환경·소유 검사와 캐시 통계를 추가했다. 기존 66단계 기준선은 `--mode baseline`으로 동일하게 재현된다.
+- DEV/Player/PlayerAuto 빌드 오류 0/0/0(경고 46/36/39), 실제 Dormancy+캐시 검사 87개, 생성기 검사 4개 통과.
+- `MODCPU=FAIL fps_before=168.003 fps_after=NA gain_pct=NA reason=CANDIDATE_NOT_RUN`. 후보 성능·픽셀·안정성 미검증, 게임 실행·설치·커밋·푸시·자동 장치 호출 0회. 상세는 `codex-modcpu-result.md`, 수치는 `modcpu-autoloop-ledger.md`.
+
 ## 회차 1
 - Codex 요약: 인계의 **첫 회전은 코드 수정 없이 기준선 측정** 지시에 따라 준비했습니다.
 
@@ -19,3 +27,26 @@
   - [StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=1880 visible_renderers=1880 items=23547 proven_constant_zero_alpha=21667 animated_alpha
   - [StutterFix] [gpudeco] cost scope=live_off frames=4855 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.419483 progress_ms=0.137825 uniform_ms=0.005745 dispatch_ms=0.273191 mis
   - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.027720 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=24.654200
+
+## 회차 2
+- Codex 요약: 인계대로 `TightLate` 목록 캐시 후보와 A/B/B/A 시험 계획을 준비했습니다.
+
+- 기준선: **168.003 FPS**, 목표 하한 **184.8033 FPS**
+- 빌드 3종 오류 0개, 오프라인 검사 91개 통과
+- 후보 성능·픽셀은 미측정이므로 아직 PASS가 아닙니다.
+- 게임 실행·설치·커밋은 하지 않았습니다.
+
+[결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-modcpu-result.md)에 변경 내용과 남은 검증을 기록했습니다.
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] prepare_ms=7352.321500 phase=live_prepare slices=1 owned_union=23547 total_runs=23547 total_submeshes=23547 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=102.565300 prepare_ms=7352.321500
+  - [StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=1880 visible_renderers=1880 items=23547 proven_constant_zero_alpha=21667 animated_alpha
+  - [StutterFix] [gpudeco] cost scope=live_off frames=2431 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.418981 progress_ms=0.137396 uniform_ms=0.005989 dispatch_ms=0.272922 mis
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.048546 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=27.724200
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=103.173200 prepare_ms=7352.321500
+  - [StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=1880 visible_renderers=1880 items=23547 proven_constant_zero_alpha=21667 animated_alpha
+  - [StutterFix] [gpudeco] cost scope=live_off frames=4877 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.419849 progress_ms=0.138250 uniform_ms=0.005955 dispatch_ms=0.272935 mis
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.040242 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=25.013800
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=103.428200 prepare_ms=7352.321500
+  - [StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=1880 visible_renderers=1880 items=23547 proven_constant_zero_alpha=21667 animated_alpha

@@ -100,6 +100,7 @@ Time.frameCount++; FrameCompare.Pause(); FrameCompare.FailRestore = true;
 try { FrameCompare.Resume(); throw new Exception("restore unexpectedly succeeded"); }
 catch (InvalidOperationException) { Check(!FrameCompare.Paused && !FrameCompare.PlaybackContinuity, "failed restore never arms bridge"); }
 FrameCompare.FailRestore = false;
+GpuLateCacheChecks.Run(Check);
 Console.WriteLine($"Dormancy production lifecycle: {checks} checks passed; managed adapters, no live pixels/FPS/lifetime proof");
 return 0;
 }

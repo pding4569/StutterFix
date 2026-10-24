@@ -26,3 +26,8 @@ controls must fail the runtime assertion, not merely fail compilation. Re-extrac
 the real sources and rerun after each control sequence.
 This is a lifecycle regression test, not evidence of actual Unity patch behavior,
 pixel identity, ownership coverage, or frame cost.
+
+추가 GPU 목록 캐시 검사는 실제 `Dormancy.cs`와 `GpuLateListCache.cs`를 사용한다.
+변경 없는 프레임의 무순회, Sleep/Wake, 같은 개수 교체/순서 변경,
+소유권 세대 교체, CPU fallback/null/중복 순서, 예외 후 재구축과 참조 해제를 확인한다.
+TightLate/DecoBake 연결은 managed adapter이므로 실제 Harmony 연결·픽셀·FPS는 별도 시험이 필요하다.

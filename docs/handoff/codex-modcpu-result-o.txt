@@ -1,10 +1,10 @@
-MODCPU=FAIL fps_before=NA fps_after=NA gain_pct=NA reason=BASELINE_NOT_RUN
-첫 회전: 인계의 코드 변경 없는 기준선 측정을 위해 런타임과 생성기를 유지했다.
-소스: codex/night-gpu HEAD 4fd3a01, 기존 수정 문서 5개 보존.
-계획: tools/optimization/out/modcpu-baseline-steps.json, 66단계, tag=modcpu-260-270.
-원본 생성기 그대로 곡 처음 준비 후 seek 260, live on, 260~270초 창 두 번.
-환경 수용: 3440x1440@165, 각 창 owned=23547; 다르면 기준선 무효.
-증거: micro_end real_fps 두 줄과 onupdate/fuse/phasewindow 원문을 외부 시험 후 기록.
-후속: 기준선 확인 후 후보 (1)부터 하나씩 ABBA, 목표 max(183,before*1.10) FPS 및 새 픽셀 불일치 0.
-오프라인 계획 계약 확인; 코드 변경 0, 빌드 반복 0, 새 게임 측정 없음.
-게임 실행·설치·커밋·푸시·자동 장치 호출·제어 파일 변경 0회; 실제 FPS와 픽셀은 미측정.
+1. MODCPU=FAIL fps_before=168.003 fps_after=NA gain_pct=NA reason=CANDIDATE_NOT_RUN
+2. 지정 run1 원문 38줄을 원시 al-mc-1.log와 대조했으며 첫 회전은 코드 변경 없는 기준선이다.
+3. 3440×1440@165Hz·소유 23547, FPS 167.918/168.088, 평균 168.003, native 오류 0/0이다.
+4. onupdate 0.055/0.056ms, fuse 관리자 0.51/0.51ms, 애니메이션 0.52/0.53ms다.
+5. 후보 (1)만 구현: GPU 소유 제외 배열 재사용과 변경 때 Dormancy 압축, 기본 false·일반 Player 제외다.
+6. CPU fallback 순서·null·소유 전환·복원·ManagerEnd/GpuLiveFrame을 유지하고 게임 디컴파일/ILScan으로 순서를 확인했다.
+7. 118단계 A/B/B/A 계획 생성만 완료, tag=modcpu-260-270-abba-latecache1, 각 창 양끝 환경/소유/캐시 검사가 있다.
+8. DEV/Player/PlayerAuto 빌드 오류 0/0/0(경고 46/36/39), Dormancy+캐시 87개·생성기 4개 검사가 통과했다.
+9. +10% 및 183 FPS 수용 하한은 184.8033 FPS이며 후보 FPS·픽셀·끊김·안정성은 미측정이다.
+10. 게임 실행·설치·커밋·푸시·자동 장치 호출·설정/제어 파일 변경 0회, 렌더 병합 재시도 0회다.

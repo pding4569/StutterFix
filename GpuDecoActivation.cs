@@ -19,6 +19,8 @@ namespace StutterFix
         static void ClearGpuActivationUndo(){gpuActivationRecords.Clear();}
         static void ClassifyGpuActivationOwnership()
         {
+            unchecked { GpuLateOwnershipEpoch++; }
+            TightLate.ClearGpuList();
             gpuLiveCpuFallback=new bool[gpuLiveOwnedIndices.Length];gpuLiveCpuFallbackCount=0;
             gpuLiveOwnedSet.Clear();gpuLiveOwnedVisuals.Clear();
             for(int m=0;m<gpuLiveOwnedIndices.Length;m++)
@@ -58,6 +60,7 @@ namespace StutterFix
         static void CommitGpuActivationUndo()=>ClearGpuActivationUndo();
         static bool RollbackGpuActivation(string reason)
         {
+            TightLate.ClearGpuList();
             Camera.onPreCull-=OnGpuLivePreCull;
             gpuLiveActive=false;gpuLiveCurrentSlice=-1;
             bool ok=true;int restored=0;

@@ -65,6 +65,15 @@ namespace StutterFix
         private static List<scrDecoration> source;
         private static int sourceVersion = -1, sourceCount = -1;
         private static bool prepared, lastDisable, broken;
+#if DEV || AUTOTEST
+        private static bool sleepPending;
+        internal static bool TryGpuListVersion(List<scrDecoration> list, out int version)
+        {
+            version = 0;
+            if (!LiveTrackingReady || !ReferenceEquals(list, awake) || versionRef == null) return false;
+            version = versionRef(list); return true;
+        }
+#endif
         private static float nextAudit;
 
         internal static long Rebuilds, Slept, Wakes, Missed, Audits, AwakeFrames, AwakeTotal;
@@ -143,6 +152,9 @@ namespace StutterFix
                 awake.Clear(); awake.AddRange(all);
                 inAwake.Clear(); foreach (var d in all) if ((object)d != null) inAwake.Add(d);
                 dormant.Clear(); woken.Clear();
+#if DEV || AUTOTEST
+                sleepPending = false;
+#endif
                 Rebuilds++;
 #if DEV || AUTOTEST
                 LiveDecoRenderer.DormancyRebuilt();
@@ -151,7 +163,11 @@ namespace StutterFix
             }
 
             // 지난 프레임에 잠든 것으로 표시된 것을 빼고, 그 사이 깨운 것을 넣는다
-            if (dormant.Count > 0)
+            if (dormant.Count > 0
+#if DEV || AUTOTEST
+                && (!TightLate.GpuListCaching || !DecoBake.GpuLiveActive || sleepPending)
+#endif
+                )
             {
                 int w = 0;
                 for (int i = 0; i < awake.Count; i++)
@@ -162,6 +178,9 @@ namespace StutterFix
                 }
                 if (w < awake.Count) awake.RemoveRange(w, awake.Count - w);
             }
+#if DEV || AUTOTEST
+            sleepPending = false;
+#endif
             if (woken.Count > 0) { foreach (var d in woken) if (inAwake.Add(d)) awake.Add(d); woken.Clear(); }
 
             // 안전망: 잠든 장식을 다시 검사한다
@@ -245,6 +264,7 @@ namespace StutterFix
             {
                 Slept++;
 #if DEV || AUTOTEST
+                sleepPending = true;
                 LiveDecoRenderer.DormancyChanged(d);
 #endif
             }
@@ -288,6 +308,8 @@ namespace StutterFix
         private static void ResetState()
         {
 #if DEV || AUTOTEST
+            sleepPending = false;
+            TightLate.ClearGpuList();
             LiveDecoRenderer.DormancyReset();
 #endif
             if (source == null && dormant.Count == 0) return;
