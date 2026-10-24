@@ -1,4 +1,11 @@
 
+## 재시작 6회차 분석 (Codex, 2026-10-25)
+
+- `codex-al-gm-6.md` 최상단의 최신 외부 5회차를 분석했다. `gm-autoloop-run5-evidence.txt`의 실패·요약 3줄은 원시 `al-gm-5.log` 230~232행과 일치한다. 요구 2560×1440@120, 실제 3440×1440@164.999로 맵 open 전 중단됐다. 중첩된 과거 run8보다 최신 run5를 우선했다.
+- 보존 로그 1~8번 모두 각 요약 증거와 일치하고 같은 289단계 계획·환경 거부다. 실제 ABBA·픽셀·복원 결과 줄은 각 0개이며 오류 요약의 0은 초기값이다. FPS·픽셀·렌더러·Draw Calls·끊김·복원은 NA, 후보 개선량·설계 한계는 미판정이다.
+- 검사·출력 정책·생성기·게임 ADOStartup 근사 디컴파일/설치 DLL ilscan 확인 결과 검사는 정상이다. 코드·설정·기존 JSON/tag·제어 파일 유지, 새 계획·시험 요청 없이 중단했다. **자동 장치의 동일 조건 재시도 중단 필요.** 자동 장치를 직접 중지하지 않았다.
+- 문서 5개 갱신, 원시 대조·계획 동일성·문서 정합성·10줄 요약·diff check로 검증한다. 빌드·기존 검사 반복 및 게임 실행·설치·커밋·푸시·설정 변경 0회, 크레딧 사용량 NA. 판정 `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`, PASS 아님. T2와 220/400 FPS 목표 차이를 보존했다. 상세 `codex-render-merge-result.md` 재시작 6회차 참조.
+
 ## 재시작 5회차 분석 (Codex, 2026-10-25)
 
 - `codex-al-gm-5.md` 최상단의 최신 외부 4회차를 분석했다. `gm-autoloop-run4-evidence.txt`의 실패·요약 3줄은 원시 `al-gm-4.log` 230~232행과 일치한다. 요구 2560×1440@120, 실제 3440×1440@164.999로 맵 open 전 중단됐다. 중첩된 과거 run8보다 최신 run4를 우선했다.
@@ -281,6 +288,21 @@
 - 문서 정합성·10줄 요약·diff 검사 통과. 게임 실행·설치·커밋·푸시 0회입니다.
 
 [결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md) · [10줄 요약](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result-o.txt)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+
+## 회차 6
+- Codex 요약: 인계대로 분석하고 문서 5개를 갱신했습니다.
+
+- 판정: `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`
+- 요구 2560×1440@120, 로그 실제값 3440×1440@164.999로 측정 전 중단됐습니다.
+- FPS·픽셀·안정성은 미측정이며 설계 한계도 미판정입니다.
+- 코드 수정·재시험 없이 중단했습니다. 게임 실행·설치·커밋·푸시 0회입니다.
+- 문서 정합성·10줄 요약·diff 검사 통과.
+
+[결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md) · [10줄 요약](E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result-o.txt)
 
 
 - 시험 핵심 줄:
