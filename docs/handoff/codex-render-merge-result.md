@@ -1,5 +1,15 @@
 # render-merge 구현 결과
 
+## `codex-al-gm-3.md` 재지정 확인 (2026-10-25)
+
+최상단이 지정한 run2를 우선하고 중첩된 과거 run8과 구분했다. `gm-autoloop-run2-evidence.txt`의 오류 3줄은 현재 보존 원시 `E:/StutterFixWork/night-results/al-gm-2.log` **230~232행**과 일치한다. 새 게임 시험은 없으며, 기존 재시작 3회차와 같은 증거다. 판정은 `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH expected=2560x1440@120 actual=3440x1440@164.999`다.
+
+보존 1~8번 모두 각 요약의 오류 3줄과 일치한다. 157행 첫 ` - ` 뒤 명령 문자열을 줄바꿈 없이 UTF-8로 해시한 SHA-256은 모두 `37a0478012c29f92e00ac8f694b62f3f73849ba974ef7527f77f6749c20fe3a4`이며 실제 `rendermerge_window_begin/window`·`rendermerge_pixel`·`rendermerge_stability` 결과 줄은 각각 0개다. ABBA 4창·픽셀 2점·렌더러·Draw Calls·끊김·복원 4종은 **NA**다. 오류 요약의 0은 초기값이다.
+
+`GpuDecoRenderMergeGate.cs`의 화면 조건, `RenderMergeGatePolicy.cs`의 초기값·누락 증거 거부, 생성기의 open 전 검사 순서를 확인했다. 게임 `ADOStartup.cs` 근사 디컴파일과 설치 DLL을 기존 ILScan으로 메타데이터만 읽어 Startup→FixResolution/ForceResolutionOnLofi→Screen 호출 관계를 교차 확인했다. 최소 크기·Steam Deck·lofi 처리는 목표 화면을 보장하지 않는다. 검사는 정상이며 화면 불일치의 운영상 원인·후보 개선량·렌더 병합 설계 한계는 미판정이다.
+
+**동일 조건 재시도 중단 필요.** 코드·설정·기존 JSON/tag·제어 파일은 유지하고 새 계획·시험 요청 없이 여기서 중단한다. 자동 장치를 직접 중지하지 않았다. 기존 T2와 220/400 FPS 목표 차이는 보존했다. 문서 5개만 갱신하고 원시 대조·계획 동일성·문서 정합성·10줄 요약·`git diff --check`로 검증한다. 빌드·기존 성능 검사 반복 및 게임 실행·설치·커밋·푸시·설정 변경 0회, 크레딧 사용량 NA다. 아래는 기존 기록이다.
+
 ## `codex-al-gm-2.md` 재지정 확인 (2026-10-25)
 
 이번 요청은 최상단의 `gm-autoloop-run1-evidence.txt`를 우선하고, 중첩된 과거 run8 지시와 구분했다. 현재 run1의 실패·요약 3줄은 원시 `E:/StutterFixWork/night-results/al-gm-1.log` **230~232행**과 일치한다. 과거 최초 run1의 준비 계약 오류(339~352행)와는 다른 보존 파일이다. 새 게임 시험은 수행하지 않았다.
