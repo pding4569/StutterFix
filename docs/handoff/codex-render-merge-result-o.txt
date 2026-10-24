@@ -1,6 +1,6 @@
 RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA
-codex-al-gm-7.md 재지정 확인: 최상단 run6 우선, 중첩 run8과 구분; 새 게임 측정 없음.
-원시 증거: E:/StutterFixWork/night-results/al-gm-6.log 230~232행, 지정 요약 오류 3줄과 일치.
+codex-al-gm-8.md 재지정 확인: 외부 7·8회차 기존 증거 대조; 새 게임 측정 없음.
+원시 증거: E:/StutterFixWork/night-results/al-gm-{7,8}.log 각 230~232행, 지정 요약 오류 3줄과 일치.
 요구 2560×1440@120, 실제 3440×1440@164.999; 검사는 코드대로 정상 거부.
 ABBA 4창·픽셀 2점·복원 4종 전부 미측정; 오류 요약의 0은 초기값.
 현재 보존 로그 1~8번 모두 동일한 289단계·같은 환경 거부; 자동 장치 재시도 중단 필요.

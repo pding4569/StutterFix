@@ -1,3 +1,9 @@
+## `codex-al-gm-8.md` 재지정 확인 (2026-10-25)
+
+외부 7·8회차 요약의 오류 3줄은 각각 현재 원시 `al-gm-7.log`·`al-gm-8.log` 230~232행과 일치한다. 기존 분석 증거의 재지정이며 새 측정은 없다. 요구 2560×1440@120 / 실제 3440×1440@164.999로 맵 open 전 중단됐다. 보존 1~8번 모두 같은 289단계 계획·환경 거부이며 실제 ABBA·픽셀·복원 결과 줄은 0개다. 판정 `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`; 측정 지표는 NA, 요약의 0은 초기값이다.
+
+검사·초기값·생성기·게임 ADOStartup 근사 디컴파일/설치 DLL ILScan을 확인했다. 코드 수정 근거가 없고 후보 개선량·설계 한계는 미판정이다. **동일 조건 재시도 중단 필요.** 코드·설정·기존 JSON/tag·제어 파일 유지, 새 계획·시험 요청 없음. 자동 장치를 직접 중지하지 않았다. 문서 5개만 갱신하며 원시 대조·계획 동일성·문서 정합성·10줄 요약·diff check로 검증한다. 게임 실행·설치·커밋·푸시·설정 변경·빌드 반복 0회, 크레딧 NA. T2와 220/400 FPS 목표 차이는 보존했다. 상세 결과와 10줄 요약 참조. 아래는 기존 기록이다.
+
 ## `codex-al-gm-7.md` 재지정 확인 (2026-10-25)
 
 최상단 run6의 오류 3줄이 현재 원시 `al-gm-6.log` 230~232행과 일치한다. 기존 재시작 7회차와 같은 증거이며 새 측정은 없다. 요구 2560×1440@120 / 실제 3440×1440@164.999로 open 전 중단됐다. 보존 1~8번도 같은 289단계 계획·환경 거부이며 실제 ABBA·픽셀·복원 결과는 0개다. `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`; 측정 지표는 NA, 오류 요약의 0은 초기값이다. 검사·초기값·생성기·ADOStartup 디컴파일/설치 DLL ILScan 확인 결과 코드 수정 근거가 없고 설계 한계는 미판정이다. 동일 조건 재시도 중단 필요. 코드·설정·JSON/tag·제어 파일 유지, 새 계획·시험 요청 없이 문서 5개만 갱신한다. 자동 장치를 직접 중지하지 않았다. 게임 실행·설치·커밋·푸시·설정 변경·빌드 반복 0회, 크레딧 NA. 상세 결과와 10줄 요약 참조. 아래는 기존 기록이다.
@@ -469,6 +475,21 @@
 - 10줄 요약·문서 정합성·diff 검사 통과. 게임 실행·설치·커밋·푸시 0회입니다.
 
 [결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md) · [10줄 요약](E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result-o.txt)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+
+## 회차 8
+- Codex 요약: 지시대로 분석하고 문서 5개를 갱신했습니다.
+
+- 판정: `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`
+- 요구 2560×1440@120, 로그값 3440×1440@164.999로 측정 전 중단됐습니다.
+- 성능·픽셀·안정성·설계 한계는 미판정입니다. 코드 수정 근거가 없어 유지했습니다.
+- 동일 조건 재시도 중단 필요성을 기록했습니다. 문서 정합성·10줄 요약·diff 검사 통과.
+- 게임 실행·설치·커밋은 하지 않았습니다.
+
+[상세 결과](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md) · [10줄 요약](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result-o.txt)
 
 
 - 시험 핵심 줄:

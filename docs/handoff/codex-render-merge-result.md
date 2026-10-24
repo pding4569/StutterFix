@@ -1,5 +1,19 @@
 # render-merge 구현 결과
 
+## `codex-al-gm-8.md` 재지정 확인 (2026-10-25)
+
+지정된 외부 7·8회차 증거를 다시 확인했다. `gm-autoloop-run7-evidence.txt`·`gm-autoloop-run8-evidence.txt`의 실패·요약 3줄은 각각 현재 원시 `E:/StutterFixWork/night-results/al-gm-7.log`·`al-gm-8.log` **230~232행**과 일치한다. 기존 재시작 8·9회차에서 분석한 증거이며 새 게임 측정이 아니다. 지시서에 중첩된 9회차 문구도 별도 실행으로 세지 않는다.
+
+판정은 `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH expected=2560x1440@120 actual=3440x1440@164.999`다. 생성기는 맵 open 전에 환경을 검사하며, `GpuDecoRenderMergeGate.cs`의 `RequireGpuMergeEnvironment`가 화면 크기와 주사율을 조건대로 거부했다. `RenderMergeGatePolicy.cs`의 배열·집계 초기값과 오류 출력 경로를 확인했다. 로그의 FPS·픽셀·렌더러 0과 stability=0/4는 측정 결과가 아니다. ABBA 4창·픽셀 2점·렌더러·Draw Calls·30ms 초과·복원 4종은 모두 **NA**다.
+
+보존 로그 1~8번도 각 요약의 오류 3줄과 일치한다. 각 시작 줄의 첫 ` - ` 뒤 명령 문자열을 줄바꿈 없이 UTF-8로 해시한 SHA-256은 모두 `37a0478012c29f92e00ac8f694b62f3f73849ba974ef7527f77f6749c20fe3a4`다. 실제 `rendermerge_window_begin/window`·`rendermerge_pixel`·`rendermerge_stability` 결과 줄은 각각 0개다. 시작 줄에 나열된 예정 명령은 실행 증거가 아니다.
+
+게임 `ADOStartup.cs` 근사 디컴파일의 `FixResolution`·`ForceResolutionOnLofi`를 읽고 기존 ILScan으로 설치 DLL의 Startup→해상도 처리→Screen 호출 관계를 교차 확인했다(메타데이터 읽기만 수행). 최소 크기·Steam Deck·lofi 처리는 목표 환경을 보장하지 않는다. 화면 불일치의 운영상 원인은 이 증거로 특정할 수 없다. 후보 개선량·렌더 병합 설계 한계도 미판정이므로 환경 오류를 근거로 렌더러를 수정하지 않는다.
+
+**동일 환경·동일 코드·동일 계획 재시도 중단 필요.** 코드·검사·설정·기존 JSON/tag·제어 파일을 유지하고 새 계획·시험 요청 없이 이번 분석을 마친다. 자동 장치를 직접 중지한 것은 아니다. 후속 시험에는 목표 환경 확보의 새 근거가 필요하며 동일 코드 반복 금지 규칙도 유지한다. 기존 T2 결과와 220 FPS까지 −1.555ms, 400 FPS까지 −3.6ms, 교체 그리기 제거 상태에서도 −1.33ms라는 목표 차이를 보존했다.
+
+문서 5개만 갱신했다. 원시/요약 대조·8개 계획 동일성·실제 결과 부재를 확인했고 문서 정합성·10줄 요약·`git diff --check`로 마무리 검증한다. 코드 변경이 없어 빌드·기존 성능 검사는 반복하지 않는다. 게임 실행·설치·커밋·푸시·설정 변경 0회, 크레딧 사용량은 제공되지 않아 NA다. **PASS 아님, T1 실게임 판정 미완료.** 아래는 기존 기록이다.
+
 ## `codex-al-gm-7.md` 재지정 확인 (2026-10-25)
 
 최상단이 지정한 run6을 우선하고 중첩된 과거 run8과 구분했다. `gm-autoloop-run6-evidence.txt`의 오류 3줄은 현재 원시 `E:/StutterFixWork/night-results/al-gm-6.log` **230~232행**과 일치한다. 기존 재시작 7회차와 같은 증거이며 새 게임 측정은 없다. 판정은 `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH expected=2560x1440@120 actual=3440x1440@164.999`다.
