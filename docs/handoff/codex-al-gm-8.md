@@ -14,6 +14,14 @@
 
 
 ---
+# 자동 반복 9회차
+
+먼저 `docs/handoff/codex-master-20261022.md`(마스터 인계문서)를 읽어라.
+
+직전 게임 시험 결과(자동 수집): `docs/handoff/gm-autoloop-run8-evidence.txt`. 먼저 `docs/handoff/gm-autoloop-ledger.md` 장부를 읽고, 이미 실패한 접근은 되풀이하지 말고 결과에서 배운 점으로 다른/더 나은 접근을 택해라(같은 코드를 다시 돌리는 것은 금지). 게임 코드는 `E:/StutterFixWork/decompiled/Assembly-CSharp/<타입>.cs` 디컴파일본으로 읽어라(근사, ilscan 으로 교차확인). 성공 조건(정규식) `RENDERMERGE=PASS` 이 아직 안 나왔다. 결과를 분석해 원인을 코드로 찾아 고치고, 안 되는 이유가 설계 한계면 결과 문서에 구체적으로 적고 멈춰라. 아래는 원래 임무다.
+
+
+---
 # 장식 렌더링 비용 줄이기 (render-merge) — Claude 인계, 2026-10-24 밤
 
 먼저 `docs/handoff/codex-master-20261022.md`(전체 상황·규칙·도구)와 `docs/handoff/claude-perf-260-270-20261024.md`(이번 측정)를 읽어라. 게임 실행·설치·커밋·푸시 금지(자동 루프가 한다). 시험은 **`seek 260`으로 무거운 구간(260~270초)만** 돌려라(0초부터 자연 재생은 이미지 재생 계획 외엔 금지). 한 판에서 여러 측정을 이어서 하도록 steps 를 짜라.
