@@ -113,6 +113,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             DecoBake.SignatureFrame();
             DecoBake.CanaryFrame();
+            DecoBake.GpuLiveFrame();
 #endif
         }
 #if DEV || AUTOTEST
@@ -186,6 +187,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             if (LiveDecoRenderer.SkipLate(d)) { if (e != null) e.Has = false; return true; }
             if (DecoGpu.SkipLate(d)) { if (e != null) e.Has = false; return true; }
+            if (DecoBake.SkipGpuLate(d)) { if (e != null) e.Has = false; return true; }
 #endif
             int reason = Eligible(e, parent, parentOK, camera);
             if (reason == 3 && e.Engine != null && Eligible(e, parent, parentOK, camera, true) == 0)

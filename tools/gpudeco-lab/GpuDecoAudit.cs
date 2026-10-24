@@ -26,7 +26,19 @@ public static partial class GpuDecoLab
             Log("[gpudeco-residual] file="+Path.GetFileName(file)+" owned="+data.Items.Length+" awake="+data.Awake);
             using(var gpu=new Evaluation(shader,data)) {
                 var result=gpu.Dispatch(data.BakeTime,true);
-                bool sample=Compare(data,result.values,result.vertices,true); pass &= sample;
+                bool sample=Compare(data,result.values,result.vertices,true);
+                int vertexOver=0,colorOver=0;double maximum=0;
+                for(int i=0;i<data.Items.Length;i++)for(int k=0;k<4;k++) {
+                    var item=data.Items[i];var point=result.vertices[i*4+k];
+                    double error=Vector3.Distance(point.position,new Vector3(item.World[k*3],item.World[k*3+1],item.World[k*3+2]))*data.PixelsPerWorld;
+                    maximum=Math.Max(maximum,error);if(!DecoBakeCore.Finite(error) || error>.01)vertexOver++;
+                    for(int c=0;c<4;c++){
+                        double colorError=Math.Abs((double)point.color[c]-item.Color[c]);
+                        if(!DecoBakeCore.Finite(colorError) || colorError>1.0/255)colorOver++;
+                    }
+                }
+                Log("[gpudeco-residual] strict_game_snapshot_G0="+(vertexOver==0 && colorOver==0?"PASS":"FAIL")+" max_px="+N(maximum)+" vertex_over="+vertexOver+" color_over="+colorOver+" threshold_px=0.01");
+                sample &= vertexOver==0 && colorOver==0;pass &= sample;
                 Log("[gpudeco-residual] snapshot_G0="+(sample?"PASS":"FAIL"));
                 DiagnoseResidual(data,result.values,result.vertices);
             }

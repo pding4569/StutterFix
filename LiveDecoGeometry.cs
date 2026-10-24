@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -61,6 +61,9 @@ namespace StutterFix
             return true;
         }
         internal int Depth => nodes.Count;
+        internal bool SupportsImageMatrix=>child.parent==pivot&&renderer.parent==child&&renderer.localPosition==Vector3.zero
+            &&renderer.localRotation==Quaternion.identity&&renderer.localScale==Vector3.one&&above==Matrix4x4.identity;
+        internal Matrix4x4 ImageMatrix=>shape;
         LiveDecoGeometry(Transform pivot, Transform child, Transform renderer, Matrix4x4 above, Matrix4x4 shape)
         { this.pivot = pivot; this.child = child; this.renderer = renderer; this.above = above; this.shape = shape; }
 

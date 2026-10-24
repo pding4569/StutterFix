@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -77,7 +77,33 @@
     <Compile Include="LiveDeco.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoData.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoGpu.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoNativeBatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoCopy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoThreadCpu.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoRenderMetrics.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoAlphaPolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoScopePlan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoCopyMask.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoCostProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoResume.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoRecovery.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoPacketFixture.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoPackets.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoPacketTargets.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoAblation.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoStorage.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoImageTimeline.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoImagePlan.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoImageVariants.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoImagePlayback.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoImageGeometryFixture.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoImageTextureFixture.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoActivation.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="HiddenDecoSynergy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DecoAnim.Hidden.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DecoAnim.GpuResume.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoSnapshot.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoOrderProbe.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoExport.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoChanges.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

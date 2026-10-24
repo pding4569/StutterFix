@@ -516,6 +516,7 @@ def sf_status():
         out.append("boot.config: " + (", ".join(keep) or "관련 줄 없음 (Flip 방식, 그래픽 작업 기본값)"))
     out.append("Player.log: " + (time.strftime("%Y-%m-%d %H:%M", time.localtime(os.path.getmtime(PLAYER_LOG))) if os.path.exists(PLAYER_LOG) else "없음"))
     out.append("PresentMon: " + (PRESENTMON if PRESENTMON and os.path.exists(PRESENTMON) else "설정 안 됨 (SF_PRESENTMON)"))
+    out.append("trace API 1: sf_run(steps=[], trace={op:catalog|start|status|note,...}); owned normal exit + 9 byte restores")
     return "\n".join(out)
 
 
@@ -553,7 +554,23 @@ TOOLS = [
 ]
 
 
+TRACE_SCHEMA = {"type": "object", "description": "Owned saved-plan jobs. steps=[] plus trace.op catalog/start/status/note. Compact JSON only; no raw map paths. New run name and repeat_reason required for repeating the same plan/artifacts.",
+                "properties": {"op": {"type": "string", "enum": ["catalog", "start", "status", "note"]},
+                               "workspace": {"type": "string"}, "plan": {"type": "string"}, "run": {"type": "string"},
+                               "repeat_reason": {"type": "string"}, "song_s": {"type": "number"}, "note": {"type": "string"}}}
+for _tool in TOOLS:
+    if _tool["name"] == "sf_run":
+        _tool["inputSchema"]["properties"]["trace"] = TRACE_SCHEMA
+
+
 def call(name, a):
+    if name == "sf_run" and "trace" in a:
+        import trace_runs
+        return trace_runs.dispatch(a["trace"])
+    if name in ("sf_run", "sf_ab", "sf_live", "sf_ab_live", "sf_quit", "sf_presentmon"):
+        import trace_runs
+        if trace_runs.active_job():
+            raise RuntimeError("An owned trace job holds the game lease; use sf_run steps=[] trace.op=status")
     if name == "sf_status":
         return sf_status()
     if name == "sf_run":

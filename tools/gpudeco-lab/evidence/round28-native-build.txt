@@ -1,0 +1,146 @@
+﻿E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:168:43: Warning: Function parameter "max" shadows a function declared in global scope.
+static int alpha_try(const int A[16], int max, int min, unsigned int64 &bitsOut)
+                                          ^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:168:52: Warning: Function parameter "min" shadows a function declared in global scope.
+static int alpha_try(const int A[16], int max, int min, unsigned int64 &bitsOut)
+                                                   ^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:107:20: Performance Warning: Gather required to load value.
+        c0 = ((int)O5a[minR] << 11) | ((int)O6a[minG] << 5) | (int)O5a[minB];
+                   ^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:107:45: Performance Warning: Gather required to load value.
+        c0 = ((int)O5a[minR] << 11) | ((int)O6a[minG] << 5) | (int)O5a[minB];
+                                            ^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:107:68: Performance Warning: Gather required to load value.
+        c0 = ((int)O5a[minR] << 11) | ((int)O6a[minG] << 5) | (int)O5a[minB];
+                                                                   ^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:108:20: Performance Warning: Gather required to load value.
+        c1 = ((int)O5b[minR] << 11) | ((int)O6b[minG] << 5) | (int)O5b[minB];
+                   ^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:108:45: Performance Warning: Gather required to load value.
+        c1 = ((int)O5b[minR] << 11) | ((int)O6b[minG] << 5) | (int)O5b[minB];
+                                            ^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:108:68: Performance Warning: Gather required to load value.
+        c1 = ((int)O5b[minR] << 11) | ((int)O6b[minG] << 5) | (int)O5b[minB];
+                                                                   ^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:117:24: Performance Warning: Gather required to load value.
+            c0 = ((int)O5a[ar0] << 11) | ((int)O6a[ag0] << 5) | (int)O5a[ab0];
+                       ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:117:48: Performance Warning: Gather required to load value.
+            c0 = ((int)O5a[ar0] << 11) | ((int)O6a[ag0] << 5) | (int)O5a[ab0];
+                                               ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:117:70: Performance Warning: Gather required to load value.
+            c0 = ((int)O5a[ar0] << 11) | ((int)O6a[ag0] << 5) | (int)O5a[ab0];
+                                                                     ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:118:24: Performance Warning: Gather required to load value.
+            c1 = ((int)O5b[ar0] << 11) | ((int)O6b[ag0] << 5) | (int)O5b[ab0];
+                       ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:118:48: Performance Warning: Gather required to load value.
+            c1 = ((int)O5b[ar0] << 11) | ((int)O6b[ag0] << 5) | (int)O5b[ab0];
+                                               ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:118:70: Performance Warning: Gather required to load value.
+            c1 = ((int)O5b[ar0] << 11) | ((int)O6b[ag0] << 5) | (int)O5b[ab0];
+                                                                     ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:142:24: Performance Warning: Gather required to load value.
+            c0 = to565(R[hiI], G[hiI], B[hiI]);
+                       ^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:142:32: Performance Warning: Gather required to load value.
+            c0 = to565(R[hiI], G[hiI], B[hiI]);
+                               ^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:142:40: Performance Warning: Gather required to load value.
+            c0 = to565(R[hiI], G[hiI], B[hiI]);
+                                       ^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:143:24: Performance Warning: Gather required to load value.
+            c1 = to565(R[li], G[li], B[li]);
+                       ^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:143:31: Performance Warning: Gather required to load value.
+            c1 = to565(R[li], G[li], B[li]);
+                              ^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:143:38: Performance Warning: Gather required to load value.
+            c1 = to565(R[li], G[li], B[li]);
+                                     ^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:148:32: Performance Warning: Gather required to load value.
+                int s0 = ((int)O5a[ar2] << 11) | ((int)O6a[ag2] << 5) | (int)O5a[ab2];
+                               ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:148:56: Performance Warning: Gather required to load value.
+                int s0 = ((int)O5a[ar2] << 11) | ((int)O6a[ag2] << 5) | (int)O5a[ab2];
+                                                       ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:148:78: Performance Warning: Gather required to load value.
+                int s0 = ((int)O5a[ar2] << 11) | ((int)O6a[ag2] << 5) | (int)O5a[ab2];
+                                                                             ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:149:32: Performance Warning: Gather required to load value.
+                int s1 = ((int)O5b[ar2] << 11) | ((int)O6b[ag2] << 5) | (int)O5b[ab2];
+                               ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:149:56: Performance Warning: Gather required to load value.
+                int s1 = ((int)O5b[ar2] << 11) | ((int)O6b[ag2] << 5) | (int)O5b[ab2];
+                                                       ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:149:78: Performance Warning: Gather required to load value.
+                int s1 = ((int)O5b[ar2] << 11) | ((int)O6b[ag2] << 5) | (int)O5b[ab2];
+                                                                             ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:237:44: Performance Warning: Gather required to load value.
+                        unsigned int32 v = *((uniform const unsigned int32 * varying)pp);
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:250:40: Performance Warning: Gather required to load value.
+                        R[y * 4 + x] = rowp[o + ro]; G[y * 4 + x] = rowp[o + go]; B[y * 4 + x] = rowp[o + bo];
+                                       ^^^^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:250:69: Performance Warning: Gather required to load value.
+                        R[y * 4 + x] = rowp[o + ro]; G[y * 4 + x] = rowp[o + go]; B[y * 4 + x] = rowp[o + bo];
+                                                                    ^^^^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:250:98: Performance Warning: Gather required to load value.
+                        R[y * 4 + x] = rowp[o + ro]; G[y * 4 + x] = rowp[o + go]; B[y * 4 + x] = rowp[o + bo];
+                                                                                                 ^^^^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:260:17: Performance Warning: Scatter required to store value.
+                drow[wi] = (unsigned int32)amax | ((unsigned int32)amin << 8) | ((unsigned int32)(abits & 0xFFFF) << 16);
+                ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:261:17: Performance Warning: Scatter required to store value.
+                drow[wi + 1] = (unsigned int32)(abits >> 16);
+                ^^^^^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:266:13: Performance Warning: Scatter required to store value.
+            drow[wi] = ((unsigned int32)c0 & 0xFFFF) | ((unsigned int32)c1 << 16);
+            ^^^^^^^^
+System.Management.Automation.RemoteException
+E:\\StutterFixWork\\wt-gpu\\native\\sfnative\\sfdxt.ispc:267:13: Performance Warning: Scatter required to store value.
+            drow[wi + 1] = idx;
+            ^^^^^^^^^^^^
+System.Management.Automation.RemoteException
+sfnative.c
+sfinflate.c
+cpu_features.c
+utils.c
+framegen.cpp
+decobatch.cpp
+   sfnative.lib 라이브러리 및 sfnative.exp 개체를 생성하고 있습니다.
+코드를 생성하고 있습니다.
+코드를 생성했습니다.
+OK E:\StutterFixWork\wt-gpu\native\sfnative.dll

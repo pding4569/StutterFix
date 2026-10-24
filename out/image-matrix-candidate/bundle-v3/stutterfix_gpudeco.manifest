@@ -1,0 +1,21 @@
+ManifestFileVersion: 0
+UnityVersion: 6000.3.10f1
+CRC: 3762050005
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 74134c9de41770dc16a1a746d7980585
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 6dd610b4ed98050feee7c8a2a60ea089
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 3c8b002bd706e69531762886641a295a
+HashAppended: 0
+ClassTypes:
+- Class: 72
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Shaders/GpuDeco.compute
+Dependencies: []

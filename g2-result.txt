@@ -1,0 +1,103 @@
+﻿[StutterFix] [자동 시험] 시작: 132단계 - timeout 420 / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco g2 reset / gpudeco bundle E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\bundle\stutterfix_gpudeco / open D:\얼불춤 맵 파일\ALPHA\S25_ArcheCDF\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / gpudeco scheduled / pause / wait 60 / decobake state / wait 60 / decobake ready / gpudeco live prepare / resume / stop / gpuprobe off / gpusplit off / matshare off / livedeco off / stop / seek 262 12 / decobake ready / waitsongpos 258 40 / pause / gpudeco live off / gpudeco g2 ready off / resume / waitsongpos 262 40 / fuse begin / gpudeco g2 begin off 0 / waitsongpos 276 40 / gpudeco g2 end / fuse end / gpudeco live off / stop / seek 262 12 / decobake ready / waitsongpos 258 40 / pause / gpudeco live on / gpudeco g2 ready on / resume / waitsongpos 262 40 / fuse begin / gpudeco g2 begin on 1 / waitsongpos 276 40 / gpudeco g2 end / fuse end / gpudeco live off / stop / seek 262 12 / decobake ready / waitsongpos 258 40 / pause / gpudeco live on / gpudeco g2 ready on / resume / waitsongpos 262 40 / fuse begin / gpudeco g2 begin on 2 / waitsongpos 276 40 / gpudeco g2 end / fuse end / gpudeco live off / stop / seek 262 12 / decobake ready / waitsongpos 258 40 / pause / gpudeco live off / gpudeco g2 ready off / resume / waitsongpos 262 40 / fuse begin / gpudeco g2 begin off 3 / waitsongpos 276 40 / gpudeco g2 end / fuse end / gpudeco live off / stop / seek 272 8 / decobake ready / waitsongpos 270 40 / pause / gpudeco live on / resume / waitsongpos 272 40 / pause / wait 0.2 / resume / gpudeco g2 stability pause_resume / waitsong / gpudeco g2 stability song_end / stop / seek 262 12 / decobake ready / waitsongpos 258 40 / pause / gpudeco live on / resume / waitsongpos 260 40 / stop / gpudeco g2 stability retry_restart / open D:\얼불춤 맵 파일\ALPHA\S25_ArcheCDF\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / gpudeco scheduled / pause / wait 60 / decobake state / wait 60 / decobake ready / gpudeco live prepare / resume / stop / seek 262 12 / decobake ready / waitsongpos 258 40 / pause / gpudeco live on / resume / waitsongpos 260 40 / gpudeco live off / stop / gpudeco g2 stability reopen_toggle / gpudeco g2 result / decobake off / quit
+Initializing Discord: InternalError
+Discord was not initialized: Discord.ResultException: InternalError
+Mods detected! Disabling exception capturing
+[StutterFix] [자동 시험] UMM 창 닫음
+[StutterFix] [자동 시험] 단계 최대 시간 420초
+[StutterFix] [자동 시험] [임무단계] timeout 2.544ms
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[StutterFix] [자동 시험] [임무단계] auto 1774.065ms
+[StutterFix] [장식굽기/그림자] 켜짐: 새 맵 open 대기
+[StutterFix] [자동 시험] [임무단계] decobake 75.238ms
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [자동 시험] [임무단계] gpudeco 10.815ms
+[StutterFix] [gpudeco] export_result_reset=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 4.375ms
+[StutterFix] [gpudeco] g2_reset=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 1.049ms
+[StutterFix] [자동 시험] [임무단계] gpudeco 0.918ms
+[StutterFix] [자동 시험] 맵 열기: D:\얼불춤 맵 파일\ALPHA\S25_ArcheCDF\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai
+[StutterFix] [자동 시험] 메모리 3초: 힙 62MB, 프로세스 872MB(실제 램 705MB), 프레임 6473 
+[StutterFix] [자동 시험] 메모리 6초: 힙 67MB, 프로세스 872MB(실제 램 705MB), 프레임 13180 
+[StutterFix] [자동 시험] 메모리 9초: 힙 123MB, 프로세스 1356MB(실제 램 1063MB), 프레임 13183 
+[StutterFix] [자동 시험] 메모리 12초: 힙 203MB, 프로세스 1536MB(실제 램 1239MB), 프레임 13183 
+[StutterFix] [자동 시험] 메모리 15초: 힙 536MB, 프로세스 1899MB(실제 램 1599MB), 프레임 13184 
+[StutterFix] [자동 시험] 메모리 18초: 힙 1237MB, 프로세스 2624MB(실제 램 2320MB), 프레임 13184 
+[StutterFix] [자동 시험] 메모리 21초: 힙 2339MB, 프로세스 3831MB(실제 램 3522MB), 프레임 13184 
+[StutterFix] [자동 시험] 메모리 24초: 힙 3477MB, 프로세스 6766MB(실제 램 5328MB), 프레임 13184 
+[StutterFix] [자동 시험] 메모리 27초: 힙 4284MB, 프로세스 9859MB(실제 램 7670MB), 프레임 13184 
+[StutterFix] [자동 시험] 메모리 30초: 힙 4499MB, 프로세스 9822MB(실제 램 7516MB), 프레임 13184 
+[StutterFix] [자동 시험] 메모리 33초: 힙 1261MB, 프로세스 9934MB(실제 램 7166MB), 프레임 13185 
+[StutterFix] [자동 시험] 맵 열림 (34.6초, 열기 요청부터 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] open 34621.171ms
+[StutterFix] [자동 시험] 타일 0 선택
+[StutterFix] [자동 시험] [임무단계] select 566.953ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [자동 시험] 메모리 36초: 힙 1566MB, 프로세스 9871MB(실제 램 7098MB), 프레임 13188 
+[StutterFix] [자동 시험] [임무단계] play 3653.910ms
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=2 status=메인 스냅샷 수집 중
+[StutterFix] [자동 시험] [임무단계] gpudeco 216.255ms
+[StutterFix] [자동 시험] [임무단계] pause 190.389ms
+[StutterFix] [장식굽기/그림자] 준비됨 (그림자 기본; adopt 별도) 장식=28835 지원=23631 이벤트=97694 구간=858286
+[StutterFix] [자동 시험] [임무단계] wait 59881.172ms
+[StutterFix] [장식굽기/그림자] ready=True generation=2 collector=False worker=False status=준비됨 (그림자 기본; adopt 별도)
+[StutterFix] [자동 시험] [임무단계] decobake 2.603ms
+[StutterFix] [자동 시험] [임무단계] wait 60000.018ms
+[StutterFix] [자동 시험] [임무단계] decobake 2.479ms
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=16350 admitted=16308 rejects=repeat-tile:42
+[StutterFix] [gpudeco] prepare_ms=6023.014100 phase=live_prepare slices=9 owned_union=16308 total_runs=539 total_submeshes=22986 live_kernel=Evaluate_anchored_no_bsearch
+[StutterFix] [자동 시험] [임무단계] gpudeco 6026.092ms
+[StutterFix] [자동 시험] [임무단계] resume 37.541ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (2384ms)
+[StutterFix] [자동 시험] [임무단계] stop 2479.243ms
+[StutterFix] [자동 시험] [임무단계] gpuprobe 208.539ms
+[StutterFix] [자동 시험] [임무단계] gpusplit 8.112ms
+[StutterFix] [자동 시험] [임무단계] matshare 6.626ms
+[StutterFix] [자동 시험] [임무단계] livedeco 6.631ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (0ms)
+[StutterFix] [자동 시험] [임무단계] stop 6.642ms
+[StutterFix] [자동 시험] 262.0초 12초 앞: 타일 3161 (그 타일 250.0초) 선택
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식굽기/그림자] 기준 스냅샷 재사용 장식=28835 전체예약효과=111216 현재예약효과=111217 최초지원=23631
+[StutterFix] [자동 시험] [임무단계] seek 3043.158ms
+[StutterFix] [장식굽기/그림자] 준비됨 (그림자 기본; adopt 별도) 장식=28835 지원=23631 이벤트=97694 구간=858286
+[StutterFix] [자동 시험] [임무단계] decobake 3405.622ms
+[StutterFix] [자동 시험] [임무단계] waitsongpos 8129.337ms
+[StutterFix] [자동 시험] [임무단계] pause 134.356ms
+[StutterFix] [자동 시험] [임무단계] gpudeco 64.113ms
+[StutterFix] [gpudeco] g2_prepared mode=off song=258.017840 paused=True owned=0 transition_ms=0.000000 prepare_ms=6023.014100 resume_then_play_to=262 minimum_on_warmup_s=3
+[StutterFix] [자동 시험] [임무단계] gpudeco 9.143ms
+[StutterFix] [자동 시험] [임무단계] resume 35.506ms
+[StutterFix] [자동 시험] [임무단계] waitsongpos 3997.329ms
+[StutterFix] [자동 시험] [합치기 연구] 세기 시작 (곡 262.0초)
+[StutterFix] [자동 시험] [임무단계] fuse 46.486ms
+[StutterFix] [gpudeco] g2_window_begin index=0 mode=off song=262.060504 warmup_excluded_s=0.000 minimum_on_warmup_s=3 transition_ms=0.000000
+[StutterFix] [자동 시험] [임무단계] gpudeco 9.755ms
+[StutterFix] [자동 시험] [임무단계] waitsongpos 13935.178ms
+[StutterFix] [gpudeco] FPS mode=off index=0 fps=114.791586 ms=8.711440 frames=1600 elapsed_s=13.938304 song_begin=262.060504 song_end=276.004992 spikes_30ms=0 worst_frame_ms=21.523101 valid=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 3.197ms
+[StutterFix] [자동 시험] [합치기 연구] 곡 276.0초까지 1602프레임 | 프레임당: 장식 관리자 LateUpdate 1.62ms, 장식 이동 효과 시작 28.10개 0.20ms, 모드 애니메이션 갱신 2.84ms | 애니메이션 기록 168316개 (프레임당 105.1) 중 같은 장식·속성 다시 시작 166993, 끝나기 전에 끊고 다시 74487 | 장식 14469개가 받음(7개 넘게 받은 장식 12929, 가장 많이 114) | 길이 <0.05 0 <0.1 13100 <0.2 0 <0.5 1808 <1 78294 <2 70819 <5 4184 그 이상 111 | DecoGpu 계산·제출 0.000ms (LateUpdate 밖, GPU 시간 아님, compare 제외) | [decogpu] active=False managed=0 batches=0 draws-last=0 renders=0 restore=0 restore-mismatch=0 evicted=0() status=not run first-stop=none
+[StutterFix] [자동 시험] [임무단계] fuse 3.589ms
+[StutterFix] [자동 시험] [임무단계] gpudeco 2.953ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (3400ms)
+[StutterFix] [자동 시험] [임무단계] stop 3403.553ms
+[StutterFix] [자동 시험] 262.0초 12초 앞: 타일 3161 (그 타일 250.0초) 선택
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식굽기/그림자] 기준 스냅샷 재사용 장식=28835 전체예약효과=111216 현재예약효과=111217 최초지원=23631
+[StutterFix] [자동 시험] [임무단계] seek 3329.159ms
+[StutterFix] [장식굽기/그림자] 준비됨 (그림자 기본; adopt 별도) 장식=28835 지원=23631 이벤트=97694 구간=858286
+[StutterFix] [자동 시험] [임무단계] decobake 3452.488ms
+[StutterFix] [자동 시험] [임무단계] waitsongpos 8144.361ms
+[StutterFix] [자동 시험] [임무단계] pause 136.411ms
+[StutterFix] [gpudeco] on=True scope=live_G2 owned=16308 active_sources=1199 slice=0 slice_owned=3282 runs=69 submeshes=2379 transition_ms=72.595100 prepare_ms=6023.014100
+[StutterFix] [자동 시험] [임무단계] gpudeco 134.835ms
+[StutterFix] [gpudeco] g2_prepared mode=on song=258.017840 paused=True owned=16308 transition_ms=72.595100 prepare_ms=6023.014100 resume_then_play_to=262 minimum_on_warmup_s=3
+[StutterFix] [자동 시험] [임무단계] gpudeco 9.085ms
+[StutterFix] [자동 시험] [임무단계] resume 81.610ms
+[StutterFix] [gpudeco] cost scope=SongEnd frames=2 total_ms=1.514450 progress_ms=0.014950 uniform_ms=0.020400 dispatch_ms=1.426850 misc_ms=0.052250 max_ms=2.573700 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=SongEnd
+[StutterFix] [자동 시험] [임무단계] waitsongpos 3979.311ms
+[StutterFix] [자동 시험] [합치기 연구] 세기 시작 (곡 262.0초)
+[StutterFix] [자동 시험] [임무단계] fuse 13.830ms
+[StutterFix] [자동 시험] 단계 실패 'gpudeco g2 begin on 1': gpudeco G2: invalid ABBA window begin idx=1 mode=on song=262.034747 warmup=4.104
+[StutterFix] [자동 시험] 오류로 그만둠 - 게임을 끕니다

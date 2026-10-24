@@ -1,0 +1,21 @@
+최신 2026-10-24 (아래 옛10줄보다 우선)
+追加64/65:同DLL/native/번들·실제3440/144/FG끔·새프로세스 CPU준비0 vsGPU전곡. 전곡441→431FPS(約−2.3%)·260~270초106→166(約+56.6%)·400미달. GPU308.397624초/23547소유/native133316오류0/조기복귀0·양쪽exit0/9복원. CPU114.6초159ms게임바깥분류 vsGPU220.4초35ms는다른시각/원인미확인·직접개선값아님. GPUportal뒤309.2초78ms보존. 한쌍·물리표시/전수품질미확인. 현재게임없음·collector추가·상세round64-65-summary.json. 다음길이0효과GPU표갱신/CPU잔류계수·배속/중간재개/남은시각근거.
+1. E:/StutterFixWork/wt-gpu codex/night-gpu. 기본끔/관리Player연구제외/커밋·푸시·main·릴리스·ZIP0. 현재 owned 게임 없음, 63 종료·원본9/9복원.
+2. 기존 sfmeasure sf_run trace API1 추가. 저장계획 start/status/catalog/note·짧은JSON·중복방지·정상종료·원본9복원. 단위10/10·stdio4/4·실제HELLO전곡·중복시새게임0. C:설정서버에추가분설치/config변경0/원본E:wt. API1마커없는연결은재연결필요.
+3. 63 최신HELLO 자연전곡185.033060초/GPU21/native47328실행·오류0/조기복귀0/자기TileCull패치0·외부189/종료코드0. 진짜255FPS/最悪40ms1회@116.5초. 전체픽셀/물리표시/끊김0승인아님.
+4. 61 실제다른MVID reload/새맵/GPU再활성화·47098ID잔존0/token1/1해제·9원본복원. TileCull StutterFix1 자기패치 재귀 수정. 옛58/59 StackOverflow실패보존.
+5. 56 Arche FG2/4 전곡308.398초/native118611/114409오류0/조기복귀0/384·370FPS/220.4초36·35ms각1회.260~270초158·130FPS이며400미달. 성공제출배율1.999807/3.761431은물리표시가아님.
+6. 62 계수219→221초삭제3684/탐색상한3684/이동59693int/최대목록40. List.Remove가26ms를지배한다는근거없음·인덱스초안미채택.200.4초168ms사용자StarDesk개입주석/raw보존,220.4초35ms별도.
+7. 다음미완료:배속/중간pause·seek뒤GPU유지정책과현재core끔전곡대조·220.4효과비용·무거운구간400FPS/남은시각근거. CPU0.5ms참고·전체장식CPU0미측정. 완료판반복0·시험중빌드0·owned만정상quit/복원. 실제다른DLL/관리자PM는전용runner유지.
+
+이전 기록 (56 진행 중 당시)
+1. 현재 E:/StutterFixWork/wt-gpu codex/night-gpu. 연구기본false·관리Player연구제외·커밋/푸시/main/태그/릴리스/ZIP0. 최신followup/ledger와owned manifest부터읽는다.
+2. 예전한정G2통과와후속raw실패보존. round35 cleanABBA+27.418713%/CPU0.506031ms는옛DLL. 사용자0.5ms참고·미세G2반복0·장식전체CPU0미측정.
+3. 시계상한8192/전곡실제peak2246~2249. 실제Rec없는채널의table시각추정제거·native/미지원장식CPU잔류·활성화/효과실패undo·CPU진행기록복구. GPU기본정렬/충돌체/원래swapchain유지.
+4. 43core46 실제3440x1440/144Hz Arche0→308.398216초GPU유지/native137572/137572오류0.445FPS·최악34ms·220.4초효과26ms·끊김1.안정성2/2·설치8복원. 전곡끔대조미완료.
+5. 45 통제88/262/270/276초 원본GPU170/max2·10/max2·0·0픽셀(각4953600). 통제반복0.45a88초GPU반복240/max1실패원인미확인보존·전곡픽셀증명아님.
+6. 43 활성화실패3/off/reset/세대변경3조건12프레임비교0.44native2객체/Elapsed/재생상태불일치0.52같은resume프레임9954/9954CPU복귀·722비교0.자연장치오류/전대상증명아님.
+7. 47/53~55중간seek-FG조합은GPU조기CPU복귀로제외.55정확한거절reason0/catchupTrue:재개뒤60프레임되감기보호.강제해제0/D3D11충돌단정0.52canSync경계수정검증·GPU지속유지는미완료.
+8. 현재55DLL은52기능+명시AUTOTEST경계진단.3빌드/LoadCheck277/229/277불일치0/Player연구제외/gate16통과.본래FX필터/native/shader변경0·originaltrace기본false.
+9. 56자연FG2는0→308.397684초GPU유지/native118611/118611오류0·384FPS·최악36ms·220.4초1회/복원8. 같은DLL의새프로세스FG4진행결과부터확인. 성공Present제출수를물리표시FPS라고하지않는다.
+10. 미완료:FG4실제유지/Unload·새DLL/배속/현재core전곡끔대조·220.4효과비용근거. 순서보존SourceSlots초안은ignored out만·main포함/빌드/게임시험0.48/49/50옛chain종료·아직실행0.시험중빌드0·정상quit/설치8원본복원.

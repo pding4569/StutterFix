@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+﻿#if DEV || AUTOTEST
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,10 +43,19 @@ namespace StutterFix
         private static int[] baselineIds;
         private static DecoBakeCore.Decoration[] baselineDecorations;
         private static DecoBakeCore.Event[] baselineEvents;
+#if AUTOTEST
+        // Snapshot metadata for explicit boundary census only; never admission.
+        private static int[] baselineVisualFlags;
+        private static string[] baselineImageSelectors;
+#endif
         private static int baselineSortedCount, baselineSupported = -1;
         private static void ClearBaseline()
         {
             baselineObjects = null; baselineIds = null; baselineDecorations = null; baselineEvents = null;
+#if AUTOTEST
+            baselineVisualFlags = null;
+            baselineImageSelectors = null; ClearGpuImagePlan();
+#endif
             baselineSupported = -1; baselineSortedCount = 0;
         }
         private static void ValidateBaseline()
@@ -147,6 +156,7 @@ namespace StutterFix
         private static void CancelBuild(bool preserveAdopt = false)
         {
             InvalidateGpuSnapshot();
+            if(GpuLiveActive)RecoverGpuLive("snapshot_generation_change",false);
             bool resume = preserveAdopt && (Adopting || resumeAdopt);
             StopAdopt("스냅샷 세대 변경");
             resumeAdopt = resume;
@@ -161,7 +171,12 @@ namespace StutterFix
         }
         internal static void Shutdown()
         {
+            gpuPacketMode=0;
             gpuPrepareWatch = null;
+            DisposeGpuLive();
+#if AUTOTEST
+            gpuImageCandidate=false;gpuImageUploadFault=false;gpuImageMatrix=false;
+#endif
             enabled = false; CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepFloors = null;
             DecoSim.ForgetBake();
             table = null;
@@ -170,6 +185,7 @@ namespace StutterFix
         internal static void ForgetLevel()
         {
             if (!enabled) return;
+            DisposeGpuLive();
             CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepFloors = null; status = "새 맵 스냅샷 대기";
             setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1;
         }
@@ -264,7 +280,11 @@ namespace StutterFix
             var r = new List<string>();
             if (Conditional(f)) r.Add("조건/수동/타격");
             if (f.disableIfMinFx || f.disableIfMaxFx) r.Add("시각 효과 설정 조건");
-            if (f.imageFilenameUsed || f.originalSizeUsed || f.smoothingUsed || f.cropPivotOffsetUsed) r.Add("이미지/원래크기/크롭/wrap");
+            if (f.imageFilenameUsed || f.originalSizeUsed || f.smoothingUsed || f.cropPivotOffsetUsed)
+#if AUTOTEST
+                if(!ImageOnlyEvent(f))
+#endif
+                r.Add("이미지/원래크기/크롭/wrap");
             if (f.maskingTypeUsed || f.maskingTargetUsed || f.useMaskingDepthUsed || f.maskingFrontDepthUsed || f.maskingBackDepthUsed) r.Add("마스크 변경");
             if (f.visibleUsed || f.depthUsed) r.Add("가시성/깊이 변경");
             var movementReason = DecoBakeCore.MovementReason(f.movementType.ToString(), f.movementTypeUsed);
@@ -322,6 +342,10 @@ namespace StutterFix
             var ids = new Dictionary<scrDecoration, int>();
             var ordered = new HashSet<ffxPlusBase>();
             var events = new List<DecoBakeCore.Event>();
+#if AUTOTEST
+            var visualFlags = new List<int>();
+            var imageSelectors = new List<string>();
+#endif
             float pitch = frozenPitch, tweenScale = frozenScale;
             bool foreignWriter = typeof(scrDecoration).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                 .Where(m => m.Name.StartsWith("Set", StringComparison.Ordinal) || m.Name == "Setup")
@@ -352,6 +376,10 @@ namespace StutterFix
                 if (fx is ffxMoveDecorationsPlus f)
                 {
                     var e = CopyEvent(f); var targets = new List<int>();
+#if AUTOTEST
+                    int visualSnapshot=(f.imageFilenameUsed?1:0)|(f.originalSizeUsed?2:0)|(f.smoothingUsed?4:0)|(f.cropPivotOffsetUsed?8:0);
+                    string imageSnapshot=FastMove.GpuImageSelector(f);
+#endif
                     Stage(2);
                     foreach (var d in TimedTargets(f))
                     {
@@ -360,6 +388,10 @@ namespace StutterFix
                         if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); }
                     }
                     e.Targets = targets.ToArray(); events.Add(e);
+#if AUTOTEST
+                    visualFlags.Add(visualSnapshot);
+                    imageSelectors.Add(imageSnapshot);
+#endif
                     Stage(1);
                 }
                 else if (UnknownWriter(fx))
@@ -391,6 +423,10 @@ namespace StutterFix
             // Freeze the COMPLETE first timeline, before Compile can add computed reasons.
             baselineObjects = all.ToArray(); baselineIds = decs.Select(d => d.Id).ToArray();
             baselineDecorations = decs; baselineEvents = copied; baselineSortedCount = effects;
+#if AUTOTEST
+            baselineVisualFlags = visualFlags.ToArray();
+            baselineImageSelectors = imageSelectors.ToArray();
+#endif
             job = Task.Run(() => DecoBakeCore.Compile(DecoBakeCore.CloneDecorations(decs), copied, pitch, tweenScale, EvaluateEase, token));
             status = "작업 스레드 굽기 중";
         }

@@ -1,4 +1,64 @@
-# gpudeco 독립 랩 최신 결과 — round9 (2026-10-22)
+# gpudeco 독립 랩 최신 결과 — round18b (2026-10-23)
+
+round16~17의 경계 CPU/엔진 카운터로 렌더 비용 증가와 불필요한 투명 렌더러 제출을 확인했다.
+메인 CPU 평균7.648721→7.701257ms, 렌더3.503198→5.943750ms; 콜백 약0.018935ms만으로 증가 전체를 설명하지 못한다.
+진단 드로우는끔 약1734/켬약4248회였다. 이 값은 물리 GPU 추적이 아니라 Unity 완료 프레임 집계다.
+상수0 알파 후보는 두 요인 모두 상수일 때만 쉰다. 정책900조건, 기존 native byte/state fixture1/128/1715×2조건 오류0.
+Thread CPU OS fixture: 종료 스레드 식별 유지·바쁜 스레드203.125ms·32회 중단 정리 후 핸들 증가0.
+같은 소스 실제 게임 G1차이0 세 시점·라이브 상수0 알파 끔/켬/끔 차이0 세 시점, G2+34.333970%/CPU0.477584ms/안정성4/4.
+일반 Player 제외·기본false. Application.quitting의 준비된 자원 정리도 context0·finalizer경고0으로 확인했다.
+공식 자료/범위는 [새 조사 기록](codex-gpudeco-round16-research.md), 원시는 `evidence/round16-summary.json`~`round18b-summary.json`.
+
+## 이전 round14/15
+
+## round14 추가: 실패 표본 재현과 몫 보정
+
+- 실제3440/144 첫 판: native복사 전 G0에서 최대0.0122862746939px·초과8·색초과0으로 중단. 설치8파일 복원8/8. 이 판은 G1 성공에 포함0.
+- 같은 export의 이전 랩은 위상 허용으로 PASS를 냈지만 게임의 실제 정점 기준을 통과하지 않았다. `Residual`에 실제정점0.01px/색1/255 검사를 추가한 뒤 old번들로 동일FAIL을 재현했다.
+- InCubic 입력 진행률0.558046638966/길이0.600000023842, 시작673.545043945/목표672.028076172. CPU672.324584961, 이전GPU672.324523926, 공통몫보정GPU672.324584961.
+- 보정 뒤 동일 실패 export 최대0.00409542489797px·정점초과0·색초과0. 선형65537불일치0, 직접나눗셈 부정대조19567불일치, 기존3export live G0 PASS.
+- 이전 번들은 `evidence/round13-bundle`에 보존했다. 새 번들/독립 G0 통과를 실제 게임 픽셀 또는 성능 통과로 확대0.
+- 근거 `round14-strict-before-result.txt`, `round14-strict-after-result.txt`, `round14-quotient-bundle-result.txt`. 보정 뒤 실제3시점 픽셀차이0으로 G1 PASS, 같은 경로G2는−17.067443%로 실패했다.
+- Native8 API는 source가직전UAV에묶인 경우도1/128/1715버퍼×2패턴 바이트·상태오류0이었다. Debug layer 미설치 상태는 유지하며 오류0으로 세지 않는다.
+- round15 정적 bounds 진단은 키불일치0/1715·복원뒤3249픽셀/max9로 실패했다. 일반채택0, 다음은 CPU스레드별원인조사다.
+
+round12 번들 재로드: MappedCopy 6조건 388정점·guard 오류0, SM5 커널7,
+이징101475·선형65537·회전8200·색36조건, 실제 export3장 G0 PASS.
+Float32 색0.400000036 대 CPU0.400000006은 차이2.98e−8·같은 UNorm8 바이트102였다.
+MappedCopy 검사만 기존1e−7허용+동일 half-up UNorm8 바이트 조건으로 검사한다. 실제 G1 픽셀 기준 변경0.
+
+독립 D3D11 fixture의 1,715개 144B버퍼×64회×3표본:
+shader dispatch GPU1.389136~1.405664ms, CopySubresourceRegion GPU1.199280~1.280914ms.
+미리 기록한 목록의 CPU Execute는 복사0.001092~0.001272ms였다. 이는 게임FPS/Unity순서 증명이 아니다.
+round13 제품 DLL API:1/128/1715대상×2패턴 바이트·상태오류0, 삭제토큰 무시·토큰재사용0·다른 스레드 거부.
+새 네이티브 후보의 생성/통계/삭제는 예외 폴백이며 처음 활성화할 때만 장치를 얻는다.
+Debug layer는 미설치 HRESULT0x887a002d로 **확인 안 됨**이며 오류0으로 세지 않는다.
+근거 `round12-native-bundle3-result.txt`, `round12-copy-timing.txt`, `round13-copy-api.txt`.
+
+## 이전 round11
+
+직접 Unity6000.3.10f1·D3D11로 기준 `GpuDeco.compute`를 새로 굽고 번들을 재로드했다.
+`EvaluateLive_sourceE`는 16B 채널과 공유 소스 진행률을 읽으며 기존 정점·색 산술을 공통 함수로 유지한다.
+Actual/World 정답을 계산 입력에 넣지 않았다.
+
+|검사|결과|
+|---|---|
+|262 export|소유1715·소스1718·정점최대0.00813370105px·G0 PASS|
+|270 export|소유1765·소스1822·정점최대0.00779684167px·G0 PASS|
+|276 export|소유17·소스0·정점최대0px·G0 PASS|
+|3장 RGBA 허용 초과|0/0/0|
+|번들 자체 검사|이징101475·선형65537·회전8200·색36조건/중간값 회귀 통과|
+|C# 데이터 계약|52 PASS|
+|SM5 커널|6 PASS|
+|랩 C# 빌드|오류0·경고0|
+
+근거 `tools/gpudeco-lab/evidence/round11-bundle-result.txt`, `round11-data-check.txt`, `round11-shader.txt`.
+실제 게임 G1은270초 최대4로 실패하며 G0 통과와 구분한다.
+실시간 G2 비용·성능은 별도 게임 측정 결과를 따른다.
+
+---
+
+# 이전 기록 — round9 (2026-10-22)
 
 **Unity6000.3.10f1 직접/D3D11/RTX4060Ti·AssetBundle 경로 유지. 최신 run1의 보간 오차를 수정했고 게임 실행 없이 두 파일의 G0를 검증했다.** 세부 원인·전후 수치·한계는 [주 결과](codex-gpudeco-1-result.md)에 있다.
 

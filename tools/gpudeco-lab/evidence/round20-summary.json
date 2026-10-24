@@ -1,0 +1,209 @@
+{
+  "round": "20c",
+  "candidate": "hidden_transform_and_color_default_off",
+  "fixture_objects": 32,
+  "transform_pairs": 224,
+  "color_pairs": 160,
+  "mismatch": 0,
+  "fixture_scope": "same_frame_original_setter_vs_logical_defer_then_flush; includes original color unhide upload",
+  "diagnostic_precheck_reset": true,
+  "production_precheck_active_fallback": true,
+  "prior_trials": {
+    "round20-hidden-fixture": {
+      "dll": "80b4df3a3d16524ca6f1554ef4b3f912ed6118d2662b1ebb3a56f868b2477bf7",
+      "native": "a0f777c5ecac54afabd2e2f3b3de145661939e9ac16a6914efe56c4708ca62b7",
+      "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running_after": false,
+      "selected_lines": [
+        "[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 144Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=0 colors=0 compatibility=off scope=research_only",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=0 colors=0 compatibility=UpdatePosition transpiler/finalizer scope=research_only",
+        "[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 144Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+        "[StutterFix] [자동 시험] [hiddensynergy] fixture requires hiddensynergy on during playback",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=0 colors=0 compatibility=UpdatePosition transpiler/finalizer scope=research_only",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=0 colors=0 compatibility=UpdatePosition transpiler/finalizer scope=research_only",
+        "[StutterFix] [자동 시험] [색 바꾸기 미루기] enabled=True installed=True pending=0 deferred=27110 skippedCalls=54220 flushedFloors=9913 flushMs=57.8 flushWorstMs=0.18 fallbacks=55707 drained=5809 | 이미지 미룸 6649번, 적용 2096번, 남음 3531 (못 미룬 이유 재생아님 0 보임 1025 이미지아님 0 히트박스 0 목록에없음 0 마스크 0 다른 이미지 설정 0 V15꺼짐·설치 0 처음크기 0) | 화면 밖 타일: 끔 15176 켬 11313 관리에서 뺌 4403 미룬 메시 갱신에 그대로 둠 4299 | 타일 이동 효과 시작 합계 14.7ms",
+        "[StutterFix] [곡] 평균 225 FPS (4.4ms), 가장 긴 프레임 54ms, 곡 시작 연출 뒤 가장 긴 프레임 54ms, 끊김 0번, 프레임 7710개",
+        "[임무30] 시작 연출 뒤 30ms 초과 프레임 6개 (위치 저장 6개)",
+        "[임무30] 2.313초 50.582ms cpu 2163.142 gpu 50.677 효과 0.000",
+        "[임무30] 2.348초 34.952ms cpu 9.332 gpu 50.459 효과 0.000",
+        "[임무30] 2.382초 34.395ms cpu 5.038 gpu 34.768 효과 0.470",
+        "[임무30] 2.415초 53.970ms cpu 4.803 gpu 34.200 효과 0.696",
+        "[임무30] 2.480초 31.563ms cpu 5.148 gpu 33.785 효과 0.635",
+        "[임무30] 2.513초 32.337ms cpu 5.870 gpu 31.553 효과 0.635 | GPU 평균 3.7ms, CPU 평균 4.0ms (7708개 잼) | 그 프레임: 게임 효과 76개 0.7ms (그중 장식 이동 0.6ms), 나머지 53.3ms | 효과가 가장 무거운 프레임 16ms: 게임 효과 6.9ms (그중 장식 이동 6.2ms) | 모드가 쓴 시간 평균 0.05ms/프레임 | 1% low 98 FPS, 0.1% low 31 FPS | 12ms 초과 14개, 16ms 초과 9개, 20ms 초과 9개 | 가장 무거운 프레임 8개: [54ms @2.4초: 효과 76개 0.7(장식 이동 0.6, 그중 길이 있는 것 0.5), 애니메이션 갱신 0.6, 장식 갱신 0.0+0.4, 나머지 52.2] [51ms @2.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.8, 장식 갱신 0.0+0.5, 나머지 49.4] [35ms @2.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.7, 장식 갱신 0.0+0.4, 나머지 33.9] [34ms @2.4초: 효과 48개 0.5(장식 이동 0.4, 그중 길이 있는 것 0.3), 애니메이션 갱신 0.6, 장식 갱신 0.0+0.4, 나머지 32.9] [32ms @2.5초: 효과 75개 0.6(장식 이동 0.6, 그중 길이 있는 것 0.4), 애니메이션 갱신 0.7, 장식 갱신 0.0+0.4, 나머지 30.5] [32ms @2.5초: 효과 75개 0.6(장식 이동 0.6, 그중 길이 있는 것 0.4), 애니메이션 갱신 0.7, 장식 갱신 0.0+0.4, 나머지 29.8] [16ms @28.3초: 효과 166개 6.9(장식 이동 6.2, 그중 길이 있는 것 0.5), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.1, 나머지 7.7] [14ms @29.8초: 효과 174개 1.0(장식 이동 1.0, 그중 길이 있는 것 0.7), 애니메이션 갱신 0.1, 장식 갱신 0.0+2.0, 나머지 10.9] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 144Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=0 colors=0 compatibility=off scope=research_only",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=0 colors=0 compatibility=off scope=research_only",
+        "[StutterFix] [자동 시험] [색 바꾸기 미루기] enabled=True installed=True pending=0 deferred=27110 skippedCalls=54220 flushedFloors=9913 flushMs=57.8 flushWorstMs=0.18 fallbacks=55707 drained=5809 | 이미지 미룸 6649번, 적용 5627번, 남음 0 (못 미룬 이유 재생아님 0 보임 1026 이미지아님 0 히트박스 0 목록에없음 0 마스크 0 다른 이미지 설정 0 V15꺼짐·설치 0 처음크기 0) | 화면 밖 타일: 끔 0 켬 0 관리에서 뺌 0 미룬 메시 갱신에 그대로 둠 4299 | 타일 이동 효과 시작 합계 0.0ms"
+      ]
+    },
+    "round20b-hidden-fixture": {
+      "dll": "3ecb598a8579ffe7701ab14004065cb1dc8506c97b45a60a66d283668176aff7",
+      "native": "a0f777c5ecac54afabd2e2f3b3de145661939e9ac16a6914efe56c4708ca62b7",
+      "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running_after": false,
+      "selected_lines": [
+        "[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 144Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=0 colors=0 compatibility=off scope=research_only",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=True color=True transforms=0 colors=0 compatibility=ok (explicit switch-time snapshot) scope=research_only",
+        "[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 144Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+        "[StutterFix] [자동 시험] [hiddensynergy] fixture objects=0 transform_pairs=0 color_pairs=0 mismatch=0 fallback=0 error=none scope=same_frame_logical_and_flushed_transform_not_gameplay_performance",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=True color=True transforms=21280 colors=1133 compatibility=ok (explicit switch-time snapshot) scope=research_only",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=True color=True transforms=89266 colors=10569 compatibility=ok (explicit switch-time snapshot) scope=research_only",
+        "[StutterFix] [자동 시험] [색 바꾸기 미루기] enabled=True installed=True pending=0 deferred=27093 skippedCalls=54186 flushedFloors=9896 flushMs=58.5 flushWorstMs=0.20 fallbacks=55724 drained=5792 | 이미지 미룸 6650번, 적용 2096번, 남음 3532 (못 미룬 이유 재생아님 0 보임 1024 이미지아님 0 히트박스 0 목록에없음 0 마스크 0 다른 이미지 설정 0 V15꺼짐·설치 0 처음크기 0) | 화면 밖 타일: 끔 15277 켬 11414 관리에서 뺌 4422 미룬 메시 갱신에 그대로 둠 4280 | 타일 이동 효과 시작 합계 15.3ms",
+        "[StutterFix] [곡] 평균 225 FPS (4.4ms), 가장 긴 프레임 71ms, 곡 시작 연출 뒤 가장 긴 프레임 71ms, 끊김 0번, 프레임 7706개",
+        "[임무30] 시작 연출 뒤 30ms 초과 프레임 3개 (위치 저장 3개)",
+        "[임무30] 2.333초 50.665ms cpu 2182.631 gpu 50.653 효과 0.000",
+        "[임무30] 2.384초 50.695ms cpu 8.647 gpu 50.580 효과 0.425",
+        "[임무30] 2.432초 70.994ms cpu 4.995 gpu 50.408 효과 0.714 | GPU 평균 3.7ms, CPU 평균 4.0ms (7704개 잼) | 그 프레임: 게임 효과 78개 0.7ms (그중 장식 이동 0.7ms), 나머지 70.3ms | 효과가 가장 무거운 프레임 15ms: 게임 효과 6.9ms (그중 장식 이동 6.2ms) | 모드가 쓴 시간 평균 0.05ms/프레임 | 1% low 97 FPS, 0.1% low 67 FPS | 12ms 초과 11개, 16ms 초과 7개, 20ms 초과 7개 | 가장 무거운 프레임 8개: [71ms @2.4초: 효과 78개 0.7(장식 이동 0.7, 그중 길이 있는 것 0.5), 애니메이션 갱신 0.6, 장식 갱신 0.0+0.4, 나머지 69.2] [51ms @2.4초: 효과 41개 0.4(장식 이동 0.4, 그중 길이 있는 것 0.3), 애니메이션 갱신 0.7, 장식 갱신 0.0+0.4, 나머지 49.2] [51ms @2.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.7, 장식 갱신 0.0+0.4, 나머지 49.5] [27ms @8.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 26.2] [15ms @28.3초: 효과 166개 6.9(장식 이동 6.2, 그중 길이 있는 것 0.4), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.0, 나머지 6.9] [12ms @35.3초: 효과 180개 1.1(장식 이동 1.0, 그중 길이 있는 것 0.7), 애니메이션 갱신 0.1, 장식 갱신 0.0+3.8, 나머지 7.5] [12ms @28.8초: 효과 1개 0.4(장식 이동 0.4, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.3, 나머지 10.5] [12ms @29.2초: 효과 177개 1.0(장식 이동 1.0, 그중 길이 있는 것 0.7), 애니메이션 갱신 0.1, 장식 갱신 0.0+3.5, 나머지 7.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 144Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=89268 colors=10570 compatibility=off scope=research_only",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=89268 colors=10570 compatibility=off scope=research_only",
+        "[StutterFix] [자동 시험] [색 바꾸기 미루기] enabled=True installed=True pending=0 deferred=27093 skippedCalls=54186 flushedFloors=9896 flushMs=58.5 flushWorstMs=0.20 fallbacks=55724 drained=5792 | 이미지 미룸 6650번, 적용 5628번, 남음 0 (못 미룬 이유 재생아님 0 보임 1025 이미지아님 0 히트박스 0 목록에없음 0 마스크 0 다른 이미지 설정 0 V15꺼짐·설치 0 처음크기 0) | 화면 밖 타일: 끔 0 켬 0 관리에서 뺌 0 미룬 메시 갱신에 그대로 둠 4280 | 타일 이동 효과 시작 합계 0.0ms"
+      ]
+    },
+    "round20c-hidden-fixture": {
+      "dll": "227ec16cd2f640f154bf3ccbdaee6732a60d2085dd644e526dd922ffd65121c6",
+      "native": "a0f777c5ecac54afabd2e2f3b3de145661939e9ac16a6914efe56c4708ca62b7",
+      "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running_after": false,
+      "selected_lines": [
+        "[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 144Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=0 colors=0 compatibility=off scope=research_only",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=True color=True transforms=0 colors=0 compatibility=ok (explicit switch-time snapshot) scope=research_only",
+        "[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 144Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+        "[StutterFix] [자동 시험] [hiddensynergy] fixture objects=32 transform_pairs=224 color_pairs=160 mismatch=0 fallback=0 error=none precheck_before=1 scope=same_frame_logical_and_flushed_transform_not_gameplay_performance",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=True color=True transforms=21550 colors=1412 compatibility=ok (explicit switch-time snapshot) scope=research_only",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=True color=True transforms=89348 colors=10905 compatibility=ok (explicit switch-time snapshot) scope=research_only",
+        "[StutterFix] [자동 시험] [색 바꾸기 미루기] enabled=True installed=True pending=0 deferred=27100 skippedCalls=54200 flushedFloors=9903 flushMs=57.2 flushWorstMs=0.21 fallbacks=55717 drained=5799 | 이미지 미룸 6651번, 적용 2096번, 남음 3533 (못 미룬 이유 재생아님 0 보임 1023 이미지아님 0 히트박스 0 목록에없음 0 마스크 0 다른 이미지 설정 0 V15꺼짐·설치 0 처음크기 0) | 화면 밖 타일: 끔 15258 켬 11395 관리에서 뺌 4440 미룬 메시 갱신에 그대로 둠 4259 | 타일 이동 효과 시작 합계 15.0ms",
+        "[StutterFix] [곡] 평균 224 FPS (4.5ms), 가장 긴 프레임 150ms, 곡 시작 연출 뒤 가장 긴 프레임 150ms, 끊김 1번, 프레임 7699개",
+        "[임무30] 시작 연출 뒤 30ms 초과 프레임 4개 (위치 저장 4개)",
+        "[임무30] 2.305초 50.983ms cpu 2151.273 gpu 50.986 효과 0.000",
+        "[임무30] 2.353초 48.881ms cpu 9.110 gpu 50.849 효과 0.418",
+        "[임무30] 2.379초 48.477ms cpu 4.920 gpu 48.575 효과 0.671",
+        "[임무30] 36.453초 150.134ms cpu 9.420 gpu 6.351 효과 0.035 | GPU 평균 3.7ms, CPU 평균 4.0ms (7697개 잼) | 그 프레임: 게임 효과 1개 0.0ms (그중 장식 이동 0.0ms), 나머지 150.1ms | 효과가 가장 무거운 프레임 15ms: 게임 효과 6.7ms (그중 장식 이동 6.0ms) | 모드가 쓴 시간 평균 0.05ms/프레임 | 1% low 97 FPS, 0.1% low 37 FPS | 12ms 초과 12개, 16ms 초과 8개, 20ms 초과 8개 | 가장 무거운 프레임 8개: [150ms @36.5초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.0, 장식 갱신 0.0+9.3, 나머지 140.8] [51ms @2.3초: 효과 0개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.7, 장식 갱신 0.0+0.4, 나머지 49.8] [49ms @2.4초: 효과 44개 0.4(장식 이동 0.3, 그중 길이 있는 것 0.3), 애니메이션 갱신 0.7, 장식 갱신 0.0+0.4, 나머지 47.4] [48ms @2.4초: 효과 75개 0.7(장식 이동 0.6, 그중 길이 있는 것 0.4), 애니메이션 갱신 0.6, 장식 갱신 0.0+0.4, 나머지 46.7] [27ms @8.3초: 효과 1개 0.0(장식 이동 0.0, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+0.4, 나머지 26.2] [15ms @28.3초: 효과 166개 6.7(장식 이동 6.0, 그중 길이 있는 것 0.4), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.2, 나머지 6.7] [13ms @35.2초: 효과 180개 1.0(장식 이동 1.0, 그중 길이 있는 것 0.7), 애니메이션 갱신 0.1, 장식 갱신 0.0+3.8, 나머지 7.7] [12ms @29.7초: 효과 7개 0.1(장식 이동 0.1, 그중 길이 있는 것 0.0), 애니메이션 갱신 0.1, 장식 갱신 0.0+1.8, 나머지 10.5] | 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 3440x1440 144Hz, 창 3440x1440, 앞서 준비하는 프레임 2",
+        "[StutterFix] [framecmp] diff N1 N2 threshold=0 maxRGBA=0,0,0,0 changed=0/4755456 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=",
+        "[StutterFix] [framecmp] noise outside=0 inside=0 rendererStateEqual=True warning=False; noise floor advisory, continuing",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=89350 colors=10906 compatibility=off scope=research_only",
+        "[StutterFix] [framecmp] diff B B2 threshold=0 maxRGBA=0,0,0,0 changed=0/4755456 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=",
+        "[StutterFix] [framecmp] diff A B threshold=0 maxRGBA=0,0,0,0 changed=0/4755456 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=",
+        "[StutterFix] [자동 시험] [임무완주] OnLandOnPortal 5.751ms",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=89350 colors=10906 compatibility=off scope=research_only",
+        "[StutterFix] [자동 시험] [hiddensynergy] transform=False color=False transforms=89350 colors=10906 compatibility=off scope=research_only",
+        "[StutterFix] [자동 시험] [색 바꾸기 미루기] enabled=True installed=True pending=0 deferred=27100 skippedCalls=54200 flushedFloors=9903 flushMs=57.2 flushWorstMs=0.21 fallbacks=55717 drained=5799 | 이미지 미룸 6651번, 적용 5629번, 남음 0 (못 미룬 이유 재생아님 0 보임 1024 이미지아님 0 히트박스 0 목록에없음 0 마스크 0 다른 이미지 설정 0 V15꺼짐·설치 0 처음크기 0) | 화면 밖 타일: 끔 0 켬 0 관리에서 뺌 0 미룬 메시 갱신에 그대로 둠 4259 | 타일 이동 효과 시작 합계 0.0ms"
+      ]
+    }
+  },
+  "full_pixels": {
+    "A_B": {
+      "pixels": 4953600,
+      "changed": 0,
+      "maxRGBA": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mask": "none_offline_decoded_full_PNG"
+    },
+    "B_B2": {
+      "pixels": 4953600,
+      "changed": 0,
+      "maxRGBA": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mask": "none_offline_decoded_full_PNG"
+    }
+  },
+  "G2_round18b_unchanged_accepted": true,
+  "candidate_performance": {
+    "rows": [
+      {
+        "transform": "False",
+        "color": "False",
+        "frames": "6381",
+        "seconds": "27.9998647",
+        "fps": "227.89395835902022",
+        "song_start": "238.01249944465235",
+        "song_end": "266.01249944465235",
+        "transforms": "0",
+        "colors": "0",
+        "scope": "CPU_frame_rate_no_per_frame_probe",
+        "worst_ms": "UNMEASURED"
+      },
+      {
+        "transform": "True",
+        "color": "True",
+        "frames": "6325",
+        "seconds": "28.0076756",
+        "fps": "225.83095042703223",
+        "song_start": "238.00927984016016",
+        "song_end": "266.01249944465235",
+        "transforms": "67846",
+        "colors": "9450",
+        "scope": "CPU_frame_rate_no_per_frame_probe",
+        "worst_ms": "UNMEASURED"
+      },
+      {
+        "transform": "True",
+        "color": "True",
+        "frames": "6273",
+        "seconds": "28.008885",
+        "fps": "223.96464550445333",
+        "song_start": "238.00918828742579",
+        "song_end": "266.01249944465235",
+        "transforms": "67918",
+        "colors": "9425",
+        "scope": "CPU_frame_rate_no_per_frame_probe",
+        "worst_ms": "UNMEASURED",
+        "clean_acceptance_sample": false,
+        "exclusion_reason": "user_reported_StarDesk_connection"
+      },
+      {
+        "transform": "False",
+        "color": "False",
+        "frames": "6078",
+        "seconds": "28.0102256",
+        "fps": "216.99218302618743",
+        "song_start": "238.00970708625391",
+        "song_end": "266.01249944465235",
+        "transforms": "0",
+        "colors": "0",
+        "scope": "CPU_frame_rate_no_per_frame_probe",
+        "worst_ms": "UNMEASURED"
+      }
+    ],
+    "mean_off": 222.44307069260384,
+    "mean_on": 224.89779796574277,
+    "gain_percent": 1.103530564245414,
+    "off_drift_percent": -4.783705286148177,
+    "adopt": false,
+    "restored": 8,
+    "source_dll": "227ec16cd2f640f154bf3ccbdaee6732a60d2085dd644e526dd922ffd65121c6",
+    "same_DLL_as_fixture": true,
+    "worst_ms": "UNMEASURED_exact_window",
+    "known_on2_stall": {
+      "ms": 164.36,
+      "playback_relative_seconds": 29.368,
+      "chart_clock_seconds": "UNMEASURED",
+      "cause": "UNMEASURED",
+      "FX_ms": 1.179,
+      "CPU_sample_ms": 12.026,
+      "GPU_sample_ms": 7.91,
+      "samples_same_frame": "UNMEASURED",
+      "user_report": "StarDesk connection during this event",
+      "classification": "user_reported_external_intervention_not_independently_ETW_verified"
+    },
+    "gain_scope": "raw_ABBA_including_external_intervention; not clean acceptance"
+  },
+  "normal_Player_research_types": 0,
+  "new_FieldRef": 0,
+  "current_build_evidence": "round20c"
+}

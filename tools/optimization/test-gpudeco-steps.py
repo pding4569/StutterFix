@@ -70,3 +70,12 @@ for i in range(3):
 assert p.index(next(s for s in p if s.startswith('gpudeco bundle '))) < p.index('gpudeco on')
 assert not any('GPUDECO_G1=PASS' in s for s in p)
 print('gpudeco paused G1 steps: PASS (fresh export; unmasked noise/ABA; all three samples; no fabricated PASS)')
+attribute=module.build(Path('Arche FULL.adofai'), attribution=True)
+q=attribute['steps']
+assert attribute['expected_verdict']=='ERROR' and attribute['stage']=='paused-attribution'
+assert q.count('gpudeco diagnostic world')==2 and q.count('gpudeco diagnostic single')==2
+assert q.count('gpudeco diagnostic pixel')==4 and q.count('gpudeco diagnostic off')==4
+assert q.count('framecmp assertzero A A2 png')==7
+assert q.count('gpudeco reset')==1 and q.count('gpudeco export '+str(Path('unused')))==0
+assert all(float(s.split()[1])<=60 for s in q if s.startswith('wait '))
+print('gpudeco attribution steps: PASS (same frozen exports; 4 isolated probes; no acceptance reset)')

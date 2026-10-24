@@ -1,0 +1,34 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco-geometry] origin=0 angle=0 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=0 angle=0 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=0 angle=13.0625 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=0 angle=13.0625 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=0 angle=89.8125 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=0 angle=89.8125 camera_angle=17.125 local_changed=0 local_max=0 world_changed=2290 world_max=99 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=0 angle=179.9375 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=0 angle=179.9375 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=128 angle=0 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=128 angle=0 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=128 angle=13.0625 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=128 angle=13.0625 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=128 angle=89.8125 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=128 angle=89.8125 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=128 angle=179.9375 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=128 angle=179.9375 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=8192 angle=0 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=8192 angle=0 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=8192 angle=13.0625 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=8192 angle=13.0625 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=8192 angle=89.8125 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=8192 angle=89.8125 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=8192 angle=179.9375 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=8192 angle=179.9375 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=92842.6171875 angle=0 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=92842.6171875 angle=0 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=92842.6171875 angle=13.0625 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=92842.6171875 angle=13.0625 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=92842.6171875 angle=89.8125 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=92842.6171875 angle=89.8125 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=92842.6171875 angle=179.9375 camera_angle=0 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+[gpudeco-geometry] origin=92842.6171875 angle=179.9375 camera_angle=17.125 local_changed=0 local_max=0 world_changed=0 world_max=0 aa2=0 world_repeat=0 geometry_truth=CPU_TransformPoint shader=Sprites/Default
+GPUDECO_GEOMETRY=MEASURED cases=32 local_different_cases=0 local_max=0 world_different_cases=1 world_max=99 game_cause=UNCONFIRMED game_G1=UNMEASURED

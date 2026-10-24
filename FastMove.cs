@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using DG.Tweening;
@@ -81,6 +81,18 @@ namespace StutterFix
 #endif
         }
         private static bool running, bypass;
+#if AUTOTEST
+        internal static bool GpuOriginalTrace;
+        private static bool gpuOriginalTraceLogged;
+        private static long gpuTraceEntries,gpuTraceExits,gpuTraceStackEntry;
+        private static int gpuTraceEnterThread,gpuTraceExitThread,gpuTraceEnterFrame,gpuTraceExitFrame,gpuTraceEnterFx;
+        private static string gpuTraceEnterStack;
+        internal static void SetGpuOriginalTrace(bool enabled)
+        {
+            GpuOriginalTrace=enabled;gpuOriginalTraceLogged=false;gpuTraceEntries=gpuTraceExits=gpuTraceStackEntry=0;
+            gpuTraceEnterStack=null;gpuTraceEnterThread=gpuTraceExitThread=gpuTraceEnterFrame=gpuTraceExitFrame=gpuTraceEnterFx=0;
+        }
+#endif
 
         internal static void Install(Harmony h)
         {
@@ -107,15 +119,33 @@ namespace StutterFix
             if (__runOriginal && !bypass && !running && DecoBake.Enabled) DecoBake.ObserveStart(__instance);
 #endif
             if (!__runOriginal) return false;
-            if (bypass || running || !Enabled || !Installed || !Hitch.Playing) return Orig(__instance);
+            bool playback=Hitch.Playing;
+#if DEV || AUTOTEST
+            // AutoTest.Resume runs after the cached playing sample. Retain
+            // existing GPU ownership through that single restored frame too.
+            playback|=DecoBake.GpuLiveActive && FrameCompare.PlaybackContinuity;
+#endif
+            if (bypass || running || !Enabled || !Installed || !playback) return Orig(__instance);
             if (!InstantMove.Enabled || !InstantMove.Patched || !ZeroTween.Enabled || !ZeroTween.Patched || !ZeroTween.CanEase) return Orig(__instance);
             running = true;
+#if AUTOTEST
+            bool gpuTraceThisCall=false;
+#endif
             try
             {
+#if AUTOTEST
+                if(GpuOriginalTrace && DecoBake.GpuLiveActive)
+                {
+                    gpuTraceThisCall=true;
+                    gpuTraceEntries++;gpuTraceEnterThread=System.Threading.Thread.CurrentThread.ManagedThreadId;
+                    gpuTraceEnterFrame=AutoTest.MainFrame;gpuTraceEnterFx=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(__instance);
+                    if(gpuTraceEntries<=2){gpuTraceStackEntry=gpuTraceEntries;gpuTraceEnterStack=new System.Diagnostics.StackTrace(false).ToString().Replace("\r","").Replace("\n"," | ");}
+                }
+#endif
                 // 미리 확인이 "아무것도 안 바꾼다" 고 확인해 둔 효과: 효과 앞부분의 필드 쓰기만 하고 건너뛴다
                 if (Precheck.Active != 0 &&
 #if DEV || AUTOTEST
-                    !DecoBake.Adopting &&
+                    !DecoBake.Adopting && !DecoBake.GpuLiveActive &&
 #endif
                     Precheck.TrySkip(__instance))
                 {
@@ -128,7 +158,7 @@ namespace StutterFix
                 long hv1 = Edition.Dev ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
                 bool sample = Edition.Dev &&
 #if DEV || AUTOTEST
-                    !DecoBake.Adopting &&
+                    !DecoBake.Adopting && !DecoBake.GpuLiveActive &&
 #endif
                     durRef(__instance) <= 0f && ((Effects + 1) % 16) == 1;   // 길이 있는 효과는 원래 코드로 다시 돌리면 애니메이션을 끊어 버려 검증하지 않는다
                 if (sample) { hidBefore.Clear(); foreach (var dec in src) hidBefore.Add(InvisibleSkip.IsHidden(dec)); }
@@ -147,12 +177,20 @@ namespace StutterFix
             {
 #if DEV || AUTOTEST
                 if (DecoBake.Adopting) DecoBake.AdoptFailure(ex);
+                if (DecoBake.GpuLiveActive) DecoBake.RecoverGpuLive("FastMoveException:"+ex.GetType().Name);
 #endif
                 // 루프 도중 예외: 게임의 설정 함수가 던진 것이다. 원래 코드도 같은 장식에서 던졌을 것이므로 다시 돌리지 않는다.
                 if (First.Length < 300) First += " [예외: " + ex.GetType().Name + " " + ex.Message + "]";
                 return false;
             }
-            finally { running = false; }
+            finally
+            {
+#if AUTOTEST
+                if(GpuOriginalTrace && gpuTraceThisCall)
+                {gpuTraceExits++;gpuTraceExitThread=System.Threading.Thread.CurrentThread.ManagedThreadId;gpuTraceExitFrame=AutoTest.MainFrame;}
+#endif
+                running = false;
+            }
         }
 
         // (개발자용) 무거운 장식 이동 효과 하나: 장식 수, 길이, 쓰는 속성
@@ -172,6 +210,25 @@ namespace StutterFix
         {
 #if DEV || AUTOTEST
             if (DecoBake.Adopting) DecoBake.StopAdopt("FastMove 원본 우회");
+            if (DecoBake.GpuLiveActive)
+            {
+                Main.Entry.Logger.Log("[gpudeco] original_guard bypass="+bypass+" running="+running+" enabled="+Enabled+" installed="+Installed
+                    +" hitch_playing="+Hitch.Playing+" resume_continuity="+FrameCompare.PlaybackContinuity
+                    +" instant="+InstantMove.Enabled+" instant_patched="+InstantMove.Patched+" zero="+ZeroTween.Enabled
+                    +" zero_patched="+ZeroTween.Patched+" ease="+ZeroTween.CanEase);
+#if AUTOTEST
+                if(GpuOriginalTrace && !gpuOriginalTraceLogged)
+                {
+                    gpuOriginalTraceLogged=true;
+                    Main.Entry.Logger.Log("[gpudeco] original_guard_stack "+new System.Diagnostics.StackTrace(false).ToString().Replace("\r","").Replace("\n"," | "));
+                    Main.Entry.Logger.Log("[gpudeco] original_guard_owner entries="+gpuTraceEntries+" exits="+gpuTraceExits
+                        +" current_thread="+System.Threading.Thread.CurrentThread.ManagedThreadId+" enter_thread="+gpuTraceEnterThread+" exit_thread="+gpuTraceExitThread
+                        +" current_frame="+AutoTest.MainFrame+" enter_frame="+gpuTraceEnterFrame+" exit_frame="+gpuTraceExitFrame+" enter_fx="+gpuTraceEnterFx+" stack_entry="+gpuTraceStackEntry);
+                    if(gpuTraceEnterStack!=null)Main.Entry.Logger.Log("[gpudeco] original_guard_enter_stack "+gpuTraceEnterStack);
+                }
+#endif
+                DecoBake.RecoverGpuLive("FastMoveOriginal",false);
+            }
 #endif
             if (Precheck.Active != 0)
             {
@@ -324,6 +381,10 @@ namespace StutterFix
             var tags = tagsRef(fx); var mgr = mgrRef(fx);
             if (tags == null || (object)mgr == null) return No(4);
             var dict = taggedRef(mgr);
+#if DEV || AUTOTEST
+            if(DecoBake.TryPacketTargets(fx,dict,tags,out var packetTargets))
+            {src=packetTargets;return ParallaxOk(fx)||No(0);}
+#endif
             TagIndex.Plan tagPlan;bool indexed=TagIndex.TryPlan(fx,dict,tags,out tagPlan);
             if (dict == null) return No(4);
             // 대상 목록. 태그가 하나이고 그 목록에 중복·null 이 없으면(목록이 바뀔 때만 다시 확인) 게임 목록을 그대로 쓴다.
@@ -444,6 +505,16 @@ namespace StutterFix
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, string> tImg = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, string>("targetImageFilename");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, Vector2> tSize = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, Vector2>("targetOriginalSize");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, bool> tSmooth = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, bool>("targetSmoothing");
+#if AUTOTEST
+        // Same selector read as ApplyImage; no sprite creation or resolution.
+        internal static string GpuImageSelector(ffxMoveDecorationsPlus fx)=>imgUsed(fx)?tImg(fx)??string.Empty:null;
+        internal static bool TryGpuImageSprite(string selector,out TextureManager.CustomSprite sprite)
+        {
+            sprite=null;var mgr=scrDecorationManager.instance;if(!mgr)return false;
+            var holder=imageHolderRef(mgr);if(holder==null)return false;
+            var sprites=spritesRef(holder);return sprites!=null&&sprites.TryGetValue(selector??string.Empty,out sprite);
+        }
+#endif
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, MaskingType> tMaskType = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, MaskingType>("targetMaskingType");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, string> tMaskTarget = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, string>("targetmaskingTarget");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, bool> tUseMaskDepth = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, bool>("targetUseMaskingDepth");
@@ -483,6 +554,9 @@ namespace StutterFix
             catch (Exception ex) { if (First.Length < 300) First += " [이미지 블록 준비 실패: " + ex.Message + "]"; imgReady = false; }
             return imgReady;
         }
+#if AUTOTEST
+        internal static void RunGpuImageBlock(ffxMoveDecorationsPlus fx,scrDecoration d)=>ImageBlock(fx,d);
+#endif
         private static void ImageBlock(ffxMoveDecorationsPlus fx, scrDecoration dec)
         {
             bool isVisual = dec is scrVisualDecoration, isParticle = dec is scrParticleDecoration;
@@ -504,8 +578,20 @@ namespace StutterFix
                 // 투명한 장식은 이미지 바꾸기를 보일 때까지 미룬다(LazySprite). 이 효과가 크기·부드럽게·마스크까지 바꾸면 원래대로.
                 bool others = sizeUsed(fx) || smoothUsed(fx) || maskTypeUsed(fx) || maskTargetUsed(fx) || maskDepthUsed(fx) || maskFrontUsed(fx) || maskBackUsed(fx);
                 if (others) LazySprite.No[0]++;
-                if (!others && LazySprite.CanDefer(vis)) LazySprite.Defer(vis, cs);
+#if AUTOTEST
+                bool imageDeferred=false;
+#endif
+                if (!others && LazySprite.CanDefer(vis))
+                {
+                    LazySprite.Defer(vis, cs);
+#if AUTOTEST
+                    imageDeferred=true;
+#endif
+                }
                 else setSprite(vis, cs, false);
+#if AUTOTEST
+                if(DecoBake.GpuImageShadowActive)DecoBake.ObserveGpuImageResult(fx,vis,cs,imageDeferred);
+#endif
             }
             if (sizeUsed(fx)) setTexScale(vis, tSize(fx));
             if (smoothUsed(fx)) { smoothingRef(vis) = tSmooth(fx); setSprite(vis, null, true); }
@@ -558,7 +644,14 @@ namespace StutterFix
         }
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, float> tRot = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, float>("targetRot");
         internal static long AnimEffects, ImgEffects;
-        private static bool No(int w) { why[w]++; Fallbacks++; if (Edition.Dev) MoveProf.Fallback(w); return false; }
+        private static bool No(int w)
+        {
+#if AUTOTEST
+            if(GpuOriginalTrace && DecoBake.GpuLiveActive)
+                Main.Entry.Logger.Log("[gpudeco] take_refusal reason="+w+" catchup="+EffectBudget.InCatchUp+" deco_active="+DecoAnim.Active+" pivot_parallax="+DecoAnim.CanPivotParallax+" performance=False");
+#endif
+            why[w]++;Fallbacks++;if(Edition.Dev)MoveProf.Fallback(w);return false;
+        }
 
 #if DEV || AUTOTEST
         internal static void CompleteBakeTweens(scrDecoration dec)
@@ -606,14 +699,28 @@ namespace StutterFix
             try
             {
                 var targets = src;
+#if AUTOTEST
+                if(DecoBake.GpuImageShadowActive)DecoBake.ObserveGpuImagePlan(fx,targets);
+#endif
+#if DEV || AUTOTEST
+                bool packetMode=DecoBake.BeginGpuPacket(fx,targets);
+#endif
                 for (int i = 0; i < targets.Count; i++)
                 {
                     var dec = targets[i];
 #if DEV || AUTOTEST
+                    if(packetMode)
+                    {
+                        int packetTaken=DecoBake.TryGpuPacketRun(fx,targets,i,anim?usedCount:0);
+                        if(packetTaken>0){i+=packetTaken-1;continue;}
+                    }
                     if (DecoBake.SkipAdopt(fx, dec, anim ? usedCount : 0))
                     {
                         // Placement has no tween; preserve this event's metadata side effect.
-                        if (placement) setPlacement(dec, mt);
+                        if (placement && !DecoBake.GpuLiveActive) setPlacement(dec, mt);
+#if AUTOTEST
+                        if(img)DecoBake.RunGpuImageEffect(fx,dec);
+#endif
                         continue;
                     }
 #endif

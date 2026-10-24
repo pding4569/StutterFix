@@ -1,0 +1,74 @@
+{
+  "round": 14,
+  "initial_trial": "G0_FAIL_before_native_copy",
+  "trial_sha": {
+    "source_dll": "0d8279e4883e11d65a3db10b7651a405113fe5605fda122c83f9c5810bb1226f",
+    "source_native": "ee921970f07dee9a3eb895ed9c8574bbca9dc705a0b43f213de1a819ce98a890",
+    "bundle": "37f842932c7151002ac217480da705ce1c7455feaf460b6bebe0332359bfc2b6"
+  },
+  "restored": 8,
+  "game_running_after": false,
+  "metrics": [
+    "G0_snapshot vertices=6860 max_px=0.0122862746939 mean_px=0.00012417614851 over_tol=8 rgba_max=3.72529029846E-09 rgba_mean=2.39342943909E-11 rgba_over_tol=0",
+    "GPUDECO_G1=G0_FAIL stage=paused-render reason=InvalidOperationException:gpudeco G1: G0_FAIL before renderer ownership"
+  ],
+  "offline_strict_before": {
+    "max_px": 0.0122862746939,
+    "over": 8
+  },
+  "offline_strict_after": {
+    "max_px": 0.00409542489797,
+    "over": 0
+  },
+  "G1_after_fix": "PASS",
+  "G2_eight_uav": "FPS_FAIL",
+  "previous_bundle_sha": "37f842932c7151002ac217480da705ce1c7455feaf460b6bebe0332359bfc2b6",
+  "new_bundle_sha": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1",
+  "trials": {
+    "round14b-eight-g1": {
+      "source_dll": "0562a8d023999ab2f4d36c2dbb63738adc3cd2c20ca2b86ac3768a282a0ec340",
+      "source_native": "ee921970f07dee9a3eb895ed9c8574bbca9dc705a0b43f213de1a819ce98a890",
+      "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running_after": false,
+      "metrics": [
+        "native_copy=True eight_uav=True active_contexts=0",
+        "native_sort=True static_batch=False renderers=1715 legacy_copy_commands=1715 native_copy=True eight_uav=True copy_dispatches=215 copy_regions=0 normalize_dispatches=1",
+        "G1 sample=0 raw=262.01784002082422 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=False",
+        "native_sort=True static_batch=False renderers=1765 legacy_copy_commands=1765 native_copy=True eight_uav=True copy_dispatches=221 copy_regions=0 normalize_dispatches=1",
+        "G1 sample=1 raw=270.02665960090235 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=False",
+        "native_sort=True static_batch=False renderers=17 legacy_copy_commands=17 native_copy=True eight_uav=True copy_dispatches=3 copy_regions=0 normalize_dispatches=1",
+        "G1 sample=2 raw=276.005327813793 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=True",
+        "GPUDECO_G1=PASS scope=paused_G1 exports=3 reason=paused_G0_primary_pixels_and_restoration_passed live_animation=UNMEASURED G2=UNMEASURED",
+        "native_copy=False eight_uav=False active_contexts=0"
+      ]
+    },
+    "round14-eight-g2": {
+      "source_dll": "0562a8d023999ab2f4d36c2dbb63738adc3cd2c20ca2b86ac3768a282a0ec340",
+      "source_native": "ee921970f07dee9a3eb895ed9c8574bbca9dc705a0b43f213de1a819ce98a890",
+      "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running_after": false,
+      "metrics": [
+        "native_copy=True eight_uav=True active_contexts=0",
+        "prepare_ms=6870.125200 phase=live_prepare slices=9 owned_union=16308 total_runs=30938 total_submeshes=30938 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False",
+        "FPS mode=off index=0 fps=127.686847 ms=7.831660 frames=1780 elapsed_s=13.940355 song_begin=262.060504 song_end=276.004931 spikes_30ms=0 worst_frame_ms=19.691596 valid=True",
+        "cost window=1 frames=1480 total_ms=0.507954 progress_ms=0.176851 uniform_ms=0.006184 dispatch_ms=0.289294 misc_ms=0.016542 managed_ms=0.488870 native_upper_ms=0.019084 native_callbacks=1480 native_submitted=1480 native_errors=0 native_max_lifetime_ms=0.054300 max_ms=6.487200 budget_le_0.5ms=False",
+        "FPS mode=on index=1 fps=105.786681 ms=9.452986 frames=1480 elapsed_s=13.990419 song_begin=262.028491 song_end=276.005847 spikes_30ms=0 worst_frame_ms=21.075398 valid=True",
+        "cost window=2 frames=1467 total_ms=0.511340 progress_ms=0.179687 uniform_ms=0.006324 dispatch_ms=0.289338 misc_ms=0.016763 managed_ms=0.492112 native_upper_ms=0.019228 native_callbacks=1467 native_submitted=1467 native_errors=0 native_max_lifetime_ms=0.054300 max_ms=6.773500 budget_le_0.5ms=False",
+        "FPS mode=on index=2 fps=105.051340 ms=9.519155 frames=1467 elapsed_s=13.964601 song_begin=262.028491 song_end=276.005694 spikes_30ms=0 worst_frame_ms=21.431994 valid=True",
+        "FPS mode=off index=3 fps=126.541441 ms=7.902549 frames=1769 elapsed_s=13.979610 song_begin=262.028491 song_end=276.004656 spikes_30ms=0 worst_frame_ms=19.025702 valid=True",
+        "stability checkpoint=pause_resume pass=True active=True owned=16308 sf_errors=0",
+        "stability checkpoint=song_end pass=True portal_observed=True active=False unrestored=0 sf_errors=0",
+        "stability checkpoint=retry_restart pass=True active=False unrestored=0 sf_errors=0",
+        "prepare_ms=6727.573000 phase=live_prepare slices=9 owned_union=16308 total_runs=30938 total_submeshes=30938 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False",
+        "stability checkpoint=reopen_toggle pass=True active=False unrestored=0 leaked_buffers=0 leaked_meshes=0 heap_mb=1530 sf_errors=0",
+        "GPUDECO_G2=FPS_FAIL reason=fps_gain_lt_25pct on_fps=105.419011 off_fps=127.114144 gain_pct=-17.067443 cost_ms=0.509647 progress_ms=0.178269 uniform_ms=0.006254 dispatch_ms=0.289316 misc_ms=0.016652 prepare_ms=6727.573000 transition_ms=60.703200 spikes30ms_on=0 spikes30ms_off=0 sf_errors=0 stability=True",
+        "native_copy=False eight_uav=False active_contexts=0"
+      ]
+    }
+  },
+  "screen": "3440x1440 144Hz D3D11 VSync0"
+}

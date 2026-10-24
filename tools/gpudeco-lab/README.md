@@ -1,6 +1,29 @@
 # gpudeco 독립 랩
 
-**최신 결과는 round9다.** 외부 run1의 두 v2 파일(262/270초)을 새56,364B번들로 대조했다. 큰 끝값 선형 보간에서 SM5 나눗셈과 중간 곱의 반올림을 고쳐270초 정점최대0.498907→0.00779543px·초과4→0,262초0.00401120px·초과0을 확인했다. 이전run6 완전한3파일 회귀도G0 PASS다. 최신276초는 수집되지 않았으며 최신두파일을 전체3시점판정으로 바꾸지 않는다. 수정후 게임G1은 미측정이다. [round9 결과](../../docs/handoff/codex-gpudeco-lab-result.md)를 본다.
+## 최신 이어받기: round14/15 (2026-10-23)
+
+아래 round9는 이전 기록이다. 최신 수치와 게임 검증 상태는
+[G1 결과](../../docs/handoff/codex-gpudeco-1-result.md)와
+[G2 결과](../../docs/handoff/codex-gpudeco-2-result.md)의 맨 위를 확인한다.
+공통 몫 보정+동적 개별 렌더러+Native8 경로의 실제3440/144 G1은3시점 차이0으로 PASS,
+같은 경로 G2는−17.067443%/CPU0.509647ms로 실패다. 일반 채택0이다.
+정적 bounds 가설도 단독 진단에서 실패했으며, FPS가30분 넘게 개선되지 않아 추가 변경을 멈췄다.
+이어받을 때 [3줄 기록](../../docs/handoff/codex-gpudeco-blocked-20261023.txt)을 먼저 읽고 완료한 판을 반복하지 않는다.
+
+셰이더의 기준 소스는 이 폴더의 **`GpuDeco.compute`**다.
+`prepare.ps1`이 이를 무시되는 `project/Assets`에 복사한다.
+별도로 남아 있는 `Assets/Shaders/GpuDeco.compute`를 최신 번들의 기준으로 간주하지 않는다.
+round11 번들은 기존 정밀 산술과 `EvaluateLive_sourceE`를 함께 포함하며,
+직접 에디터 실행·번들 재로드 후 실제 export 세 장의 G0를 검사했다.
+오프라인 G0 통과는 게임 픽셀 G1이나 실시간 성능 G2 통과를 뜻하지 않는다.
+
+`GpuDecoLiveProbe`는 논리 채널과 소스 진행률을 입력으로 사용하고 Actual/World 정답은 비교에만 쓴다.
+`GpuDecoOrderProbe`는 명시적 자동 시험 명령에만 실행되는 원인 진단이다.
+자체 카메라/RT/오브젝트를 즉시 정리하며 일반 Player에는 포함하지 않는다.
+실제 SpriteRenderer와 한 MeshRenderer의 여러 submesh 간 차이를 검증하는 범위이고,
+정렬 후보 하나의 일치만으로 게임 전체의 정렬 규칙을 확정하지 않는다.
+
+**이하 round9 당시 기록이다.** 외부 run1의 두 v2 파일(262/270초)을 새56,364B번들로 대조했다. 큰 끝값 선형 보간에서 SM5 나눗셈과 중간 곱의 반올림을 고쳐270초 정점최대0.498907→0.00779543px·초과4→0,262초0.00401120px·초과0을 확인했다. 이전run6 완전한3파일 회귀도G0 PASS다. 당시276초는 수집되지 않았으며 두파일을 전체3시점판정으로 바꾸지 않았다. 당시 수정후 게임G1은 미측정이었다.
 
 `GpuDecoLab.Precision`은 선형 65,537표본·큰 끝값 보간·`-gpudecoInput` 폴더의 일부 실제 파일·이징·회전을 검사한다. `GpuDecoLab.BundleSnapshots`는 생성된 번들을 재로드해 같은 실제 파일의 G0를 검사한다. 둘 다 기존 직접 Unity.exe 호출 형태를 쓰며 게임을 실행하지 않는다. `Residual`은 일부 파일 진단으로 전체 게이트 판정을 출력하지 않고, 파일 중 G0 실패가 있으면 exit1이다. 다음 시험 준비물은 `evidence/round9-g1-steps.json`이며 생성만 했다. 아래 run6/round8 설명은 이전 근거다.
 

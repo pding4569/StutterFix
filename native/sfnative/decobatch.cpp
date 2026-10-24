@@ -1,4 +1,6 @@
 // Shadow-only arithmetic. Compile separately with /fp:strict; no FMA or fast-math.
+#include "deco_packet.h"
+#include "deco_packet_anim.h"
 static float ease_value(int e, float t, float d)
 {
     switch(e) {

@@ -1,8 +1,13 @@
 // Diagnostic only. Sprites/Tile remains the intended game draw shader.
 #pragma kernel Evaluate
+#pragma kernel EvaluateLive
+#pragma kernel EvaluateImageLive
 #pragma kernel EaseProbe
 #pragma kernel CopyRun
+#pragma kernel CopyMappedRun
 #pragma kernel RotationProbe
+#pragma kernel ImageRotationProbe
+#pragma kernel ImagePixelProbe
 #pragma kernel LinearProbe
 #pragma target 5.0
 
@@ -13,9 +18,14 @@ StructuredBuffer<Track> _Tracks;
 struct Anchor { Segment segment; uint clock, valid; };
 StructuredBuffer<Anchor> _Anchors;
 StructuredBuffer<float> _Progress;
+struct LiveChannel { float start, change, end; int sourceIndex; };
+StructuredBuffer<LiveChannel> _LiveChannels;
+StructuredBuffer<float> _SourceE;
 uint _UseAnchors;
 // 10 float4 records per decoration: shape[4], offset origin/X/Y, constants, crop/Z/flags, startRot.
 StructuredBuffer<float4> _Static;
+// Optional fixed local matrix + original local sprite corners, eight records/item.
+StructuredBuffer<float4> _ImageShape;
 StructuredBuffer<float2> _UV;
 RWStructuredBuffer<float> _Values;
 RWByteAddressBuffer _Vertices;
@@ -26,6 +36,21 @@ StructuredBuffer<float4> _Probe;
 StructuredBuffer<uint> _ProbeIds;
 RWStructuredBuffer<float> _ProbeOut;
 RWStructuredBuffer<float4> _RotationOut;
+Texture2D<float4> _ImageDiffA,_ImageDiffB;
+RWStructuredBuffer<uint> _ImageDiff;
+int4 _ImageDiffRect;
+[numthreads(64,1,1)]
+void ImagePixelProbe(uint3 thread:SV_DispatchThreadID)
+{
+    uint i=thread.x,total=(uint)(_ImageDiffRect.z*_ImageDiffRect.w);if(i>=total)return;
+    int2 p=_ImageDiffRect.xy+int2(i%(uint)_ImageDiffRect.z,i/(uint)_ImageDiffRect.z);
+    uint4 a=(uint4)(saturate(_ImageDiffA.Load(int3(p,0)))*255+.5),b=(uint4)(saturate(_ImageDiffB.Load(int3(p,0)))*255+.5);
+    if(any(a!=b))InterlockedAdd(_ImageDiff[0],1);
+    uint4 d=max(a,b)-min(a,b);
+    InterlockedMax(_ImageDiff[1],max(max(d.x,d.y),max(d.z,d.w)));
+    if(any(a!=0))InterlockedAdd(_ImageDiff[2],1);
+    if(any(b!=0))InterlockedAdd(_ImageDiff[3],1);
+}
 ByteAddressBuffer _CopySource;
 uint _CopyFirstVertex, _CopyVertexCount;
 uint _CopyQuantizeColor;
@@ -48,20 +73,20 @@ float AsinPhase(float x)
     precise float s=sqrt(z);
     return 1.5707963705062866-2*(s+s*r);
 }
+float CpuQuotient(float numerator,float denominator)
+{
+    // SM5 division uses an approximate reciprocal. Correct the residual and
+    // round once, matching the CPU float quotient for polynomial easings too.
+    precise float estimate=numerator/denominator;
+    precise double residual=(double)numerator-(double)estimate*(double)denominator;
+    precise double corrected=(double)estimate+residual*(double)(1.0/denominator);
+    return (float)corrected;
+}
 precise float Ease(uint id, float t, float d, float amplitude, float period)
 {
     const float pi = 3.1415927410125732421875;
-    precise float x=t/d, y;
-    if (id==1)
-    {
-        // SM5 float division is an approximate reciprocal multiply. One ULP
-        // in a linear phase is visible when subtracting large endpoints.
-        // Correct the quotient's residual with double arithmetic, then round
-        // once to float, as DOTween's CPU time/duration does. No truth input.
-        precise double residual=(double)t-(double)x*(double)d;
-        precise double corrected=(double)x+residual*(double)(1.0/d);
-        return (float)corrected;
-    }
+    precise float x=CpuQuotient(t,d), y;
+    if (id==1) return x;
     if (id==2) return 1-cos(x*(pi*.5));
     if (id==3) return sin(x*(pi*.5));
     if (id==4) return -.5*(cos(pi*t/d)-1);
@@ -138,6 +163,26 @@ float4 Rotation(float angle)
     precise float twiceZ=qz*2;
     return float4(qz,qw,qw*twiceZ,1-qz*twiceZ);
 }
+float4 ImageRotation(float angle)
+{
+    precise float halfAngle=angle*0.01745329238474369*.5;
+    precise float2 sc=RotationSinCos(halfAngle);
+    // Transform's native normalization rounds both products before the dot
+    // sum. Managed Quaternion.Normalize keeps a wider intermediate instead.
+    precise float norm2=sc.x*sc.x+sc.y*sc.y;
+    precise float norm=sqrt(norm2);
+    if(asuint(norm2)==0x3f7fffff)norm=norm2;
+    if(asuint(norm2)==0x3f800001)norm=1;
+    precise float qz=CpuQuotient(sc.x,norm),qw=CpuQuotient(sc.y,norm);
+    precise float twiceZ=qz*2;
+    return float4(qz,qw,qw*twiceZ,1-qz*twiceZ);
+}
+[numthreads(64,1,1)]
+void ImageRotationProbe(uint3 thread:SV_DispatchThreadID)
+{
+    uint i=thread.x;if(i>=_Count)return;
+    _RotationOut[i]=ImageRotation(_Probe[i].x);
+}
 [numthreads(64,1,1)]
 void RotationProbe(uint3 thread:SV_DispatchThreadID)
 {
@@ -181,12 +226,8 @@ void EaseProbe(uint3 thread:SV_DispatchThreadID)
     uint i=thread.x; if(i>=_Count) return;
     float4 p=_Probe[i]; _ProbeOut[i]=Ease(_ProbeIds[i],p.x,p.y,p.z,p.w);
 }
-[numthreads(64,1,1)]
-void Evaluate(uint3 thread:SV_DispatchThreadID)
+void WriteVerticesFromChannels(uint i, float v[16])
 {
-    uint i=thread.x; if(i>=_Count) return;
-    float v[16];
-    [unroll] for(uint ch=0;ch<16;ch++) { v[ch]=Value(i*16+ch); _Values[i*16+ch]=v[ch]; }
     uint b=i*10; float4 c=_Static[b+7], crop=_Static[b+8]; uint flags=(uint)crop.w;
     precise float2 trueScale=c.xy, camScale=((flags&1)!=0 ? _Camera.w : 1)*trueScale;
     precise float2 position=float2(v[0],v[1]);
@@ -202,6 +243,7 @@ void Evaluate(uint3 thread:SV_DispatchThreadID)
     // Unity rotates points through Quaternion.Euler's half-angle quaternion.
     // Full-angle sincos rounds differently at 180 degrees; wide sprites amplify it.
     precise float4 rotation=Rotation(angle);
+    if((flags&64u)!=0)rotation=ImageRotation(angle);
     precise float sn=rotation.z, cs=rotation.w;
     precise float2 scale=float2(v[5],v[6])*camScale;
     float4 color=float4(v[7],v[8],v[9],v[10]*v[11]);
@@ -209,19 +251,74 @@ void Evaluate(uint3 thread:SV_DispatchThreadID)
     {
         precise float3 local=_Static[b+k].xyz+translated; local.xy*=scale;
         precise float3 worldPoint=float3(world+float2(cs*local.x-sn*local.y,sn*local.x+cs*local.y),crop.z+local.z);
+        if((flags&64u)!=0)
+        {
+            // Compose TRS columns before multiplying the original sprite point.
+            // The legacy path instead scales an already transformed point.
+            uint ib=i*8u;
+            precise float3 p0=float3(cs*scale.x,sn*scale.x,0);
+            precise float3 p1=float3(-sn*scale.y,cs*scale.y,0);
+            precise float3 p2=float3(0,0,1);
+            precise float3 f0=_ImageShape[ib].xyz,f1=_ImageShape[ib+1].xyz,f2=_ImageShape[ib+2].xyz;
+            precise float3 q0=(p0*f0.x+p1*f0.y)+p2*f0.z;
+            precise float3 q1=(p0*f1.x+p1*f1.y)+p2*f1.z;
+            precise float3 q2=(p0*f2.x+p1*f2.y)+p2*f2.z;
+            precise float2 exactOffset=float2(CpuQuotient(v[2]+crop.x,trueScale.x),CpuQuotient(v[3]+crop.y,trueScale.y));
+            precise float3 origin=_ImageShape[ib+3].xyz+_Static[b+4].xyz+_Static[b+5].xyz*exactOffset.x+_Static[b+6].xyz*exactOffset.y;
+            precise float3 exactWorld=float3((_Camera.xy-position)*float2(v[12],v[13])+position,crop.z);
+            if((flags&4u)!=0)exactWorld.x=position.x;
+            if((flags&8u)!=0)exactWorld.y=position.y;
+            exactWorld.x+=CpuQuotient(v[14]*camScale.x,c.z);
+            exactWorld.y+=CpuQuotient(v[15]*camScale.y,c.w);
+            precise float3 q3=((p0*origin.x+p1*origin.y)+p2*origin.z)+exactWorld;
+            precise float3 corner=_ImageShape[ib+4u+k].xyz;
+            worldPoint=((q0*corner.x+q1*corner.y)+q2*corner.z)+q3;
+        }
         uint address=(i*4+k)*36;
         _Vertices.Store3(address,asuint(worldPoint));
         _Vertices.Store4(address+12,asuint(color));
         _Vertices.Store2(address+28,asuint(_UV[i*4+k]));
     }
 }
+[numthreads(64,1,1)]
+void Evaluate(uint3 thread:SV_DispatchThreadID)
+{
+    uint i=thread.x; if(i>=_Count) return;
+    float v[16];
+    [unroll] for(uint ch=0;ch<16;ch++) { v[ch]=Value(i*16+ch); _Values[i*16+ch]=v[ch]; }
+    WriteVerticesFromChannels(i,v);
+}
+[numthreads(64,1,1)]
+void EvaluateLive(uint3 thread:SV_DispatchThreadID)
+{
+    uint i=thread.x; if(i>=_Count) return;
+    float v[16];
+    [unroll] for(uint ch=0;ch<16;ch++) {
+        LiveChannel lc=_LiveChannels[i*16+ch];
+        precise double value=lc.sourceIndex<0 ? (double)lc.end
+            : (double)lc.start+(double)lc.change*(double)_SourceE[lc.sourceIndex];
+        v[ch]=(float)value; _Values[i*16+ch]=v[ch];
+    }
+    WriteVerticesFromChannels(i,v);
+}
+[numthreads(64,1,1)]
+void EvaluateImageLive(uint3 thread:SV_DispatchThreadID)
+{
+    uint i=thread.x; if(i>=_Count) return;
+    float v[16];
+    [unroll] for(uint ch=0;ch<16;ch++) {
+        LiveChannel lc=_LiveChannels[i*16+ch];
+        precise double value=lc.sourceIndex<0 ? (double)lc.end
+            : (double)lc.start+(double)lc.change*(double)_SourceE[lc.sourceIndex];
+        v[ch]=(float)value; _Values[i*16+ch]=v[ch];
+    }
+    WriteVerticesFromChannels(i,v);
+}
 // A Unity Mesh owns its vertex buffer. D3D11 cannot bind 1,000 UAVs to one
 // dispatch; this diagnostic measures a pre-recorded GPU copy per run instead.
-[numthreads(64,1,1)]
-void CopyRun(uint3 thread:SV_DispatchThreadID)
+void CopyVertex(uint i,uint source)
 {
-    uint i=thread.x; if(i>=_CopyVertexCount) return;
-    uint src=(_CopyFirstVertex+i)*36, dst=i*36;
+    uint src=source*36, dst=i*36;
     _Vertices.Store4(dst,_CopySource.Load4(src));
     _Vertices.Store4(dst+16,_CopySource.Load4(src+16));
     _Vertices.Store(dst+32,_CopySource.Load(src+32));
@@ -234,4 +331,15 @@ void CopyRun(uint3 thread:SV_DispatchThreadID)
         precise float4 scaled=saturate(color)*255.0;
         _Vertices.Store4(dst+12,asuint(floor(scaled+0.5)/255.0));
     }
+}
+[numthreads(64,1,1)]
+void CopyRun(uint3 thread:SV_DispatchThreadID)
+{
+    if(thread.x<_CopyVertexCount)CopyVertex(thread.x,_CopyFirstVertex+thread.x);
+}
+StructuredBuffer<uint> _CopyMap;
+[numthreads(64,1,1)]
+void CopyMappedRun(uint3 thread:SV_DispatchThreadID)
+{
+    if(thread.x<_CopyVertexCount)CopyVertex(thread.x,_CopyMap[thread.x]);
 }

@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || UNITY_EDITOR
+﻿#if DEV || AUTOTEST || UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +10,15 @@ namespace StutterFix
     internal class GpuDecoGpu : IDisposable
     {
         [StructLayout(LayoutKind.Sequential)]
-        struct Segment { public float hi, lo, duration, start, end, target, over, period; public uint ease, scale; }
+        internal struct Segment { public float hi, lo, duration, start, end, target, over, period; public uint ease, scale; }
         [StructLayout(LayoutKind.Sequential)]
         struct Track { public uint first, count; public float initial; public uint pad; }
         [StructLayout(LayoutKind.Sequential)]
-        struct Anchor { public Segment segment; public uint clock, valid; }
+        internal struct Anchor { public Segment segment; public uint clock, valid; }
+        // Request B (G2): per-channel active descriptor updated only on effect start/end.
+        // sourceIndex < 0 => static/completed value = end; sourceIndex >= 0 => start + change * _SourceE[sourceIndex].
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct LiveChannel { public float start, change, end; public int sourceIndex; }
         [StructLayout(LayoutKind.Sequential)]
         internal struct Vertex { public Vector3 position; public Color color; public Vector2 uv; }
         static void Require(bool ok,string reason) { if(!ok) throw new InvalidOperationException(reason); }
@@ -27,25 +31,54 @@ namespace StutterFix
             for(int c=0;c<4;c++)result[c]=Mathf.Floor(Mathf.Clamp01(logical[c])*255f+.5f)/255f;
             return result;
         }
+        internal static bool EquivalentDrawColor(Color actual,Color logical)
+        {
+            Color expected=DrawColor(logical);
+            for(int c=0;c<4;c++)
+            {
+                // HLSL division by 255 may differ from CPU division by one
+                // float ULP. Keep the existing 1e-7 draw tolerance and also
+                // require exactly the same half-up UNorm8 component.
+                if(!DecoBakeCore.Finite(actual[c]) || Mathf.Abs(actual[c]-expected[c])>1e-7f
+                    || Mathf.Floor(Mathf.Clamp01(actual[c])*255f+.5f)!=Mathf.Floor(Mathf.Clamp01(expected[c])*255f+.5f))return false;
+            }
+            return true;
+        }
 
-        readonly ComputeShader shader; readonly GpuDecoData data; readonly int kernel;
+        readonly ComputeShader shader; readonly GpuDecoData data;
+        readonly int kernel, liveKernel;
+        readonly bool hasLiveKernel,hasImageGeometry;
         readonly List<IDisposable> resources = new List<IDisposable>();
-        ComputeBuffer values, progress; readonly float[] sourceProgress; GraphicsBuffer vertices;
+        ComputeBuffer imageShapeBuffer;
+        ComputeBuffer segmentsBuffer, tracksBuffer, anchorsBuffer, liveChannelsBuffer, sourceEBuffer, values, progress, staticBuffer, uvBuffer;
+        float[] sourceProgress;
+        GraphicsBuffer vertices;
         internal bool UseAnchors = true;
+        internal bool UseLiveMode = false;
         internal Mesh Mesh; internal int SegmentCount;
         internal GraphicsBuffer VertexBuffer => vertices;
+        internal void ReadValues(float[] destination) => values.GetData(destination);
+        internal GpuDecoData Data => data;
+        internal bool HasNativeLiveKernel => hasLiveKernel;
+
         ComputeBuffer Buffer<T>(IList<T> source, int stride) where T:struct
         {
             var b = new ComputeBuffer(Math.Max(1,source.Count),stride); resources.Add(b);
             if(source.Count>0) b.SetData(source.ToArray()); return b;
         }
-        internal GpuDecoGpu(ComputeShader shader,GpuDecoData data)
+        internal GpuDecoGpu(ComputeShader shader, GpuDecoData data, int maxLiveSources = 2048)
         {
-            this.shader=shader; this.data=data; kernel=shader.FindKernel("Evaluate");
-            sourceProgress=new float[data.Sources.Length];
+            this.shader=shader; this.data=data;
+            kernel=shader.FindKernel("Evaluate");
+            hasLiveKernel=shader.HasKernel("EvaluateLive");
+            hasImageGeometry=shader.HasKernel("EvaluateImageLive");
+            liveKernel=hasLiveKernel?shader.FindKernel("EvaluateLive"):kernel;
+            sourceProgress=new float[Math.Max(Math.Max(1,data.Sources.Length), maxLiveSources)];
             try
             {
-                var segments=new List<Segment>(); var tracks=new List<Track>(); var anchors=new List<Anchor>(); var shape=new List<Vector4>(); var uv=new List<Vector2>(); var triangles=new List<int>();
+                var segments=new List<Segment>(); var tracks=new List<Track>(); var anchors=new List<Anchor>();
+                var liveChannels=new LiveChannel[Math.Max(1, data.Items.Length*16)];
+                var shape=new List<Vector4>(); var uv=new List<Vector2>(); var triangles=new List<int>();
                 for(int i=0;i<data.Items.Length;i++)
                 {
                     var d=data.Items[i];
@@ -56,6 +89,8 @@ namespace StutterFix
                         anchors.Add(new Anchor { valid=a.Valid?1u:0u, clock=(uint)a.Clock, segment=new Segment {
                             duration=s0.Duration,start=s0.Start,end=s0.End,target=s0.Target,over=s0.Over,period=s0.Period,ease=(uint)s0.Ease,scale=s0.IsScale?1u:0u } });
                         tracks.Add(new Track { first=(uint)segments.Count,count=(uint)d.Tracks[ch].Length,initial=d.Initial[ch] });
+                        float initVal = d.Initial[ch];
+                        liveChannels[i*16+ch] = new LiveChannel { start=initVal, change=0f, end=initVal, sourceIndex=-1 };
                         foreach(var s in d.Tracks[ch])
                         {
                             Require(Supported(s.Ease),"unsupported ease " + s.Ease + " decoration="+d.Id);
@@ -69,12 +104,23 @@ namespace StutterFix
                     triangles.AddRange(d.Triangles.Select(x=>i*4+x));
                 }
                 SegmentCount=segments.Count;
-                shader.SetBuffer(kernel,"_Segments",Buffer(segments,40)); shader.SetBuffer(kernel,"_Tracks",Buffer(tracks,16));
+                segmentsBuffer=Buffer(segments,40);
+                tracksBuffer=Buffer(tracks,16);
                 Require(Marshal.SizeOf<Anchor>()==48,"anchor GPU stride");
-                shader.SetBuffer(kernel,"_Anchors",Buffer(anchors,48));
-                progress=Buffer(data.Sources.Select(s=>s.Progress).ToArray(),4); shader.SetBuffer(kernel,"_Progress",progress);
-                shader.SetBuffer(kernel,"_Static",Buffer(shape,16)); shader.SetBuffer(kernel,"_UV",Buffer(uv,8));
-                values=new ComputeBuffer(data.Items.Length*16,4); resources.Add(values); shader.SetBuffer(kernel,"_Values",values);
+                anchorsBuffer=Buffer(anchors,48);
+                Require(Marshal.SizeOf<LiveChannel>()==16,"live channel GPU stride");
+                liveChannelsBuffer=Buffer(liveChannels,16);
+                sourceEBuffer=new ComputeBuffer(sourceProgress.Length,4); resources.Add(sourceEBuffer);
+                progress=new ComputeBuffer(sourceProgress.Length,4); resources.Add(progress);
+                if(data.Sources.Length>0)
+                {
+                    for(int i=0;i<data.Sources.Length;i++) sourceProgress[i]=data.Sources[i].Progress;
+                    progress.SetData(sourceProgress,0,0,data.Sources.Length);
+                }
+                staticBuffer=Buffer(shape,16);
+                uvBuffer=Buffer(uv,8);
+                if(hasImageGeometry)imageShapeBuffer=Buffer(new Vector4[Math.Max(1,data.Items.Length*8)],16);
+                values=new ComputeBuffer(Math.Max(1,data.Items.Length*16),4); resources.Add(values);
                 Mesh=new Mesh { name="GpuDeco raw",indexFormat=IndexFormat.UInt32,vertexBufferTarget=GraphicsBuffer.Target.Raw };
                 Mesh.SetVertexBufferParams(data.Items.Length*4,new VertexAttributeDescriptor(VertexAttribute.Position,VertexAttributeFormat.Float32,3),
                     new VertexAttributeDescriptor(VertexAttribute.Color,VertexAttributeFormat.Float32,4),new VertexAttributeDescriptor(VertexAttribute.TexCoord0,VertexAttributeFormat.Float32,2));
@@ -83,22 +129,134 @@ namespace StutterFix
                 // The CPU shadow contains only initialization zeros. Discard it
                 // before acquiring the GPU buffer so CPU batching cannot consume it.
                 Mesh.UploadMeshData(true);
-                vertices=Mesh.GetVertexBuffer(0); resources.Add(vertices); shader.SetBuffer(kernel,"_Vertices",vertices);
+                vertices=Mesh.GetVertexBuffer(0); resources.Add(vertices);
                 Require(Marshal.SizeOf<Vertex>()==36 && Mesh.GetVertexBufferStride(0)==36,"raw vertex stride");
-                shader.SetFloat("_Pitch",data.Pitch); shader.SetFloat("_TweenScale",data.TweenScale);
-                shader.SetVector("_Camera",new Vector4(data.Camera[0],data.Camera[1],data.Camera[2],data.Camera[3]));
-                shader.SetInt("_Count",data.Items.Length);
+                Bind();
             }
             catch { Dispose(); throw; }
         }
+#if AUTOTEST || UNITY_EDITOR
+        // Event-bound image update. Never resize or replace a mesh/VB while a
+        // native copy context may retain its pointer. Caller must recover CPU
+        // ownership if a GPU upload throws; validation completes before writes.
+        internal Vertex[] ReadImageVertices()
+        {var result=new Vertex[data.Items.Length*4];vertices.GetData(result);return result;}
+        readonly Vector4[] imageStaticUpload=new Vector4[10];
+        readonly Vector2[] imageUvUpload=new Vector2[4];
+        internal void UpdateImageGeometry(int index,GpuDecoData.Item next)
+        {
+            Require((uint)index<(uint)data.Items.Length && next!=null,"image item index");
+            var prior=data.Items[index];
+            Require(next.Shape?.Length==12 && next.OffsetBasis?.Length==9 && next.Constants?.Length==8
+                && next.UV?.Length==8 && next.Triangles?.Length==6,"image geometry layout");
+            Require(next.Id==prior.Id && next.Index==prior.Index && ReferenceEquals(next.Initial,prior.Initial)
+                && ReferenceEquals(next.Tracks,prior.Tracks) && ReferenceEquals(next.Anchors,prior.Anchors),"image update changed logical channels");
+            // Triangles remain in the existing index buffer; changed topology
+            // must use CPU fallback, not SetIndices on an active native target.
+            for(int i=0;i<6;i++)Require(next.Triangles[i]==prior.Triangles[i],"image topology changed");
+            foreach(float v in next.Shape)Require(DecoBakeCore.Finite(v),"nonfinite image shape");
+            foreach(float v in next.OffsetBasis)Require(DecoBakeCore.Finite(v),"nonfinite image basis");
+            foreach(float v in next.Constants)Require(DecoBakeCore.Finite(v),"nonfinite image constants");
+            foreach(float v in next.UV)Require(DecoBakeCore.Finite(v),"nonfinite image UV");
+            Require(next.Constants[0]!=0 && next.Constants[1]!=0 && next.Constants[2]!=0 && next.Constants[3]!=0
+                && (next.Flags&~(hasImageGeometry?127:63))==0,"image geometry constants");
+            for(int i=0;i<4;i++)
+            {
+                imageStaticUpload[i]=new Vector4(next.Shape[i*3],next.Shape[i*3+1],next.Shape[i*3+2],0);
+                imageUvUpload[i]=new Vector2(next.UV[i*2],next.UV[i*2+1]);
+            }
+            for(int i=0;i<3;i++)imageStaticUpload[i+4]=new Vector4(next.OffsetBasis[i*3],next.OffsetBasis[i*3+1],next.OffsetBasis[i*3+2],0);
+            var c=next.Constants;
+            imageStaticUpload[7]=new Vector4(c[0],c[1],c[2],c[3]);
+            imageStaticUpload[8]=new Vector4(c[5],c[6],c[7],next.Flags);
+            imageStaticUpload[9]=new Vector4(c[4],0,0,0);
+            staticBuffer.SetData(imageStaticUpload,0,index*10,10);
+            uvBuffer.SetData(imageUvUpload,0,index*4,4);
+            // Logical channels/source clocks are owned by the existing effect
+            // path. This operation deliberately does not replace them.
+            data.Items[index]=next;
+        }
+#endif
+        internal bool HasImageGeometry=>hasImageGeometry;
+#if AUTOTEST || UNITY_EDITOR
+        readonly Vector4[] imageMatrixUpload=new Vector4[8];
+        internal void UpdateImageMatrix(int index,Matrix4x4 local,Vector2[] corners,bool flipX,bool flipY)
+        {
+            Require(hasImageGeometry&&imageShapeBuffer!=null&&(uint)index<(uint)data.Items.Length&&corners!=null&&corners.Length==4,"image matrix unsupported");
+            for(int i=0;i<16;i++)Require(DecoBakeCore.Finite(local[i]),"nonfinite image matrix");
+            for(int i=0;i<4;i++)Require(DecoBakeCore.Finite(corners[i].x)&&DecoBakeCore.Finite(corners[i].y),"nonfinite image corner");
+            for(int i=0;i<4;i++)imageMatrixUpload[i]=local.GetColumn(i);
+            for(int i=0;i<4;i++)imageMatrixUpload[i+4]=new Vector4(flipX?-corners[i].x:corners[i].x,flipY?-corners[i].y:corners[i].y,0,0);
+            imageShapeBuffer.SetData(imageMatrixUpload,0,index*8,8);
+        }
+#endif
+        internal void Bind()
+        {
+            shader.SetBuffer(kernel,"_Segments",segmentsBuffer); shader.SetBuffer(kernel,"_Tracks",tracksBuffer);
+            shader.SetBuffer(kernel,"_Anchors",anchorsBuffer); shader.SetBuffer(kernel,"_Progress",progress);
+            shader.SetBuffer(kernel,"_Static",staticBuffer); shader.SetBuffer(kernel,"_UV",uvBuffer);
+            shader.SetBuffer(kernel,"_Values",values); shader.SetBuffer(kernel,"_Vertices",vertices);
+            if(hasLiveKernel)
+            {
+                shader.SetBuffer(liveKernel,"_LiveChannels",liveChannelsBuffer);
+                shader.SetBuffer(liveKernel,"_SourceE",sourceEBuffer);
+                shader.SetBuffer(liveKernel,"_Static",staticBuffer);
+                shader.SetBuffer(liveKernel,"_UV",uvBuffer);
+                shader.SetBuffer(liveKernel,"_Values",values);
+                shader.SetBuffer(liveKernel,"_Vertices",vertices);
+            }
+            if(hasImageGeometry)
+            {
+                shader.SetBuffer(kernel,"_ImageShape",imageShapeBuffer);
+                if(hasLiveKernel)shader.SetBuffer(liveKernel,"_ImageShape",imageShapeBuffer);
+            }
+            shader.SetFloat("_Pitch",data.Pitch); shader.SetFloat("_TweenScale",data.TweenScale);
+            shader.SetVector("_Camera",new Vector4(data.Camera[0],data.Camera[1],data.Camera[2],data.Camera[3]));
+            shader.SetInt("_Count",data.Items.Length);
+        }
+        // Uploads dirty channel range [dirtyMin..dirtyMax] only when an effect starts or finishes.
+        internal void UploadDirtyLiveChannels(LiveChannel[] liveChannels, Anchor[] fallbackAnchors, int dirtyMin, int dirtyMax)
+        {
+            if(dirtyMin > dirtyMax || dirtyMin < 0) return;
+            int count = dirtyMax - dirtyMin + 1;
+            if(hasLiveKernel)
+                liveChannelsBuffer.SetData(liveChannels, dirtyMin, dirtyMin, count);
+            else if(fallbackAnchors != null)
+                anchorsBuffer.SetData(fallbackAnchors, dirtyMin, dirtyMin, count);
+        }
+        // Uploads CPU-evaluated sourceE[] (and sourceProgress[] for fallback bundle) once per frame.
+        internal void UploadSourceE(float[] sourceE, float[] rawProgress, int count)
+        {
+            if(count <= 0) return;
+            if(hasLiveKernel)
+                sourceEBuffer.SetData(sourceE, 0, 0, count);
+            else
+                progress.SetData(rawProgress, 0, 0, count);
+        }
+        internal void SetLiveUniforms(Vector4 camera, double time)
+        {
+            shader.SetInt("_UseAnchors", 1);
+            shader.SetInt("_UseLiveChannels", (UseLiveMode && hasLiveKernel) ? 1 : 0);
+            shader.SetVector("_Camera", camera);
+            float hi = (float)time;
+            shader.SetFloat("_TimeHi", hi);
+            shader.SetFloat("_TimeLo", (float)(time - hi));
+        }
+        internal void DispatchEvaluate()
+        {
+            int activeKernel = (UseLiveMode && hasLiveKernel) ? liveKernel : kernel;
+            shader.Dispatch(activeKernel, (data.Items.Length + 63) / 64, 1, 1);
+        }
         internal (float[] values,Vertex[] vertices) Dispatch(double time,bool read)
         {
+            Bind();
             shader.SetInt("_UseAnchors",UseAnchors?1:0);
+            shader.SetInt("_UseLiveChannels", 0);
             // One upload for source progress. Static geometry/segments are never uploaded here.
-            if(UseAnchors && sourceProgress.Length>0)
+            if(UseAnchors && data.Sources.Length>0)
             {
-                for(int i=0;i<sourceProgress.Length;i++) sourceProgress[i]=data.Sources[i].Progress;
-                progress.SetData(sourceProgress);
+                for(int i=0;i<data.Sources.Length;i++) sourceProgress[i]=data.Sources[i].Progress;
+                progress.SetData(sourceProgress, 0, 0, data.Sources.Length);
             }
             float hi=(float)time; shader.SetFloat("_TimeHi",hi); shader.SetFloat("_TimeLo",(float)(time-hi));
             shader.Dispatch(kernel,(data.Items.Length+63)/64,1,1);

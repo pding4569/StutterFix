@@ -77,6 +77,17 @@ namespace StutterFix
         private static float pollAt;
         private static bool keep, reloadPending;
         private static readonly Dictionary<System.Reflection.FieldInfo, object> setOrig = new Dictionary<System.Reflection.FieldInfo, object>();
+#if AUTOTEST
+        internal static bool GpuReloadOriginalAuto=>autoChanged?prevAuto:RDC.auto;
+        internal static void InheritGpuReloadAuto(bool original)
+        {prevAuto=original;autoChanged=true;desiredAuto=RDC.auto;}
+        internal static bool ReloadGpuTrace()
+        {
+            if(setOrig.Count!=0 || !FrameCompare.Paused || !DecoBake.GpuLiveActive || !RDC.auto || DllHash()==loadedHash)
+                throw new InvalidOperationException("GPU reload fixture requires paused owned GPU, autoplay, no temporary settings, and a different DLL");
+            autoChanged=false;reloadPending=true;EndBatch("GPU trace active reload");return false;
+        }
+#endif
 
         internal static void Init(string modPath)
         {
@@ -1097,10 +1108,12 @@ namespace StutterFix
                     return true;
                 }
                 case "decosig": Log("[장식 상태 기록] "+DecoSig.Run(modDir,arg)+" | "+LazySprite.State); return true;
+                case "hiddensynergy": Log("[hiddensynergy] " + HiddenDecoSynergy.Command(arg)); return true;
                 case "fuse": Log("[합치기 연구] " + (arg == "begin" ? FuseProbe.Begin() : FuseProbe.End())); return true;
                 case "decobatch": Log("[장식 일괄] " + (arg.StartsWith("shadow") ? DecoBatchShadow.Command(arg) : DecoAnim.BatchCommand(arg))); return true;
                 case "phasereport": PhaseWatch.ReportSong(); return true;
 #if AUTOTEST
+                case "phasewindow": Log(PhaseWatch.ResearchWindow(arg)); return true;
                 case "decosamp": if (arg == "begin") { DecoAnim.SampReset(); DecoAnim.SampOn = true; Log("[decosamp] 시작"); } else { DecoAnim.SampOn = false; Log("[decosamp] " + DecoAnim.SampReport()); } return true;
                 case "profsamp": Log("[profsamp] " + (arg.StartsWith("begin") ? ProfSamp.Begin(arg.Substring(5)) : ProfSamp.End(arg.Contains("frames") ? modDir : null))); return true;
                 case "floatsem": Log("[floatsem] " + FloatSem.Run()); return true;
@@ -1618,6 +1631,11 @@ namespace StutterFix
                     reloadPending = true;
                     EndBatch("다시 불러오기");
                     return false;   // 묶음이 이미 끝났다 (idx 를 건드리지 않음)
+#if AUTOTEST
+                case "tilecullreloadcheck":
+                    Log(TileCull.ReloadPatchAudit());
+                    return true;
+#endif
                 case "reloadactivefixture":
                     if(setOrig.Count!=0||!Hitch.Playing||!RDC.auto||!RenderThreadScheduling.FixtureState.Contains("owned=True pending=0"))throw new InvalidOperationException("Active reload fixture requires an owned render lease, autoplay and no temporary settings");
                     if(DllHash()==loadedHash)throw new InvalidOperationException("Active reload fixture requires a new DLL");
@@ -1686,6 +1704,7 @@ namespace StutterFix
         private static void EndBatch(string why)
         {
 #if DEV || AUTOTEST
+            HiddenDecoSynergy.Reset();
             LiveDecoGate2.Abort(why);
             LiveDeco.Stop();
             FrameCompare.Stop();
@@ -1710,6 +1729,7 @@ namespace StutterFix
         private static void Finish(string why)
         {
 #if DEV || AUTOTEST
+            HiddenDecoSynergy.Reset();
             LiveDecoGate2.Abort(why);
             FrameCompare.Stop();
             MatShare.Stop();

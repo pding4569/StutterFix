@@ -13,6 +13,8 @@
     <Compile Include="../GpuDecoSubmeshes.cs" />
     <Compile Include="../GpuDecoColorProbe.cs" />
     <Compile Include="../GpuDecoAudit.cs" />
+    <Compile Include="../GpuDecoGeometryProbe.cs" />
+    <Compile Include="../GpuDecoLiveProbe.cs" />
     <Compile Include="../../../DecoBake.Core.cs" />
     <Compile Include="../../../GpuDecoData.cs" />
     <Compile Include="../../../GpuDecoGpu.cs" />

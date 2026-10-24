@@ -1,5 +1,72 @@
 using StutterFix;
 
+// Compare overlap-added clips against an independently mixed full timeline.
+// This does not model Unity/FMOD resampling or prove that a recorded click is gone.
+{
+    long overlapSamples = 0;
+    double maxOverlapError = 0, maxDspErrorSamples = 0;
+    foreach (int rate in new[] { 8000, 44100, 48000, 96000 })
+    foreach (int channels in new[] { 1, 2 })
+    {
+        int step = rate / 2, segments = 4, lead = HitSoundMix.LeadFrames;
+        var voices = new List<HitSoundMix.Voice>();
+        foreach (int at in new[] { 0, step - lead - 1, step - 1, step, step + 1, 2 * step + 95 })
+        {
+            var pcm = new float[(step + 173) * channels];
+            for (int j = 0; j < pcm.Length; j++) pcm[j] = (float)(Math.Sin(j * .11) * .3 + .1);
+            voices.Add(new HitSoundMix.Voice { Pcm = pcm, Start = at + lead, Gain = .7f });
+        }
+        // An impulse precisely on a handoff, with loud overlap and a nonzero final sample.
+        voices.Add(new HitSoundMix.Voice { Pcm = Enumerable.Repeat(1f, channels).ToArray(), Start = step, Gain = 2 });
+        voices.Add(new HitSoundMix.Voice { Pcm = Enumerable.Repeat(.25f, channels).ToArray(), Start = segments * step - 1, Gain = 1 });
+        int length = (segments * step + HitSoundMix.PadFrames) * channels;
+        var expected = new float[length];
+        var combined = new float[length];
+        foreach (var v in voices)
+            for (int j = 0; j < v.Pcm.Length; j++)
+            {
+                long p = v.Start * channels + j;
+                if (p < length) expected[p] += v.Pcm[j] * v.Gain;
+            }
+        var clip = new float[(step + HitSoundMix.PadFrames) * channels];
+        for (int i = 0; i < segments; i++)
+        {
+            Array.Fill(clip, 99f); // Reused buffers must clear all padding.
+            HitSoundMix.RenderSegment(voices.ToArray(), channels, i, segments, step, clip, () => false);
+            if (clip.Take(lead * channels).Any(x => x != 0) ||
+                clip.Skip(clip.Length - HitSoundMix.TailFrames * channels).Any(x => x != 0))
+                throw new Exception("nonzero clip guard");
+            for (int j = 0; j < clip.Length; j++) combined[i * step * channels + j] += clip[j];
+        }
+        for (int j = 0; j < length; j++)
+        {
+            double error = Math.Abs((double)combined[j] - expected[j]);
+            maxOverlapError = Math.Max(maxOverlapError, error);
+            overlapSamples++;
+            if (error > 5e-7 * Math.Max(1, Math.Abs(expected[j]))) throw new Exception("overlap timeline changed");
+        }
+        const double oldOrigin = 100.123;
+        double shiftedOrigin = oldOrigin - (double)lead / rate;
+        for (int at = 0; at < segments * step; at += 137)
+        {
+            double delta = Math.Abs(shiftedOrigin + (double)(at + lead) / rate - (oldOrigin + (double)at / rate)) * rate;
+            maxDspErrorSamples = Math.Max(maxDspErrorSamples, delta);
+            if (delta > 1e-6) throw new Exception("absolute DSP time shifted");
+        }
+        HitSoundMix.RenderSegment(voices.ToArray(), channels, 1, segments, step, clip, () => true);
+        if (clip.Any(x => x != 0)) throw new Exception("cancelled segment retains samples");
+    }
+    var array = new[] { new HitSoundMix.Voice { Pcm = new float[10000], Start = 32, Gain = 1 } };
+    var buffer = new float[4000 + HitSoundMix.PadFrames];
+    Func<bool> never = () => false;
+    for (int i = 0; i < 1000; i++) HitSoundMix.RenderSegment(array, 1, i % 3, 3, 4000, buffer, never);
+    long beforeSegment = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 1000; i++) HitSoundMix.RenderSegment(array, 1, i % 3, 3, 4000, buffer, never);
+    long segmentAllocated = GC.GetAllocatedBytesForCurrentThread() - beforeSegment;
+    if (segmentAllocated != 0) throw new Exception("segment render allocation bytes=" + segmentAllocated);
+    Console.WriteLine($"PASS segment_cases=8 overlap_samples={overlapSamples} max_overlap_error={maxOverlapError:R} max_DSP_error_samples={maxDspErrorSamples:R} guard_nonzero=0 render_allocated_bytes={segmentAllocated}");
+}
+
 int cases = 0;
 long compared = 0;
 Func<bool> running = () => false;

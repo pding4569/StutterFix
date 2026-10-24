@@ -46,6 +46,7 @@ namespace StutterFix
             "SkipInvisible", "MoveFinish", "FastBlend", "SkipIdleParticles", "LowPauseParticles", "LeakFix", "LowFsr", "LowHalfRender", "LowEnd" };
 
 #if DEV || AUTOTEST
+        internal static int TotalErrors { get { lock (sync) { int sum = 0; foreach (var v in errors.Values) sum += v; return sum; } } }
         internal static void RecordFeatureFailure(string feature, string reason)
         {
             int n; lock (sync) { errors.TryGetValue(feature, out n); errors[feature] = ++n; }

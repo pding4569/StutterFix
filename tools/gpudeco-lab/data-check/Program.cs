@@ -2,6 +2,19 @@ using StutterFix;
 
 int checks=0;
 void Check(bool ok,string why) { checks++; if(!ok) throw new Exception(why); }
+var referenceScope=GpuDecoScopePlan.Reference();
+var songScope=GpuDecoScopePlan.Song();
+foreach(double invalid in new[]{double.NaN,double.NegativeInfinity,double.PositiveInfinity})
+    Check(referenceScope.Find(invalid)==-1 && songScope.Find(invalid)==-1,"nonfinite scope accepted");
+Check(referenceScope.Find(256.999)==-1 && referenceScope.Find(300)==-1,"reference scope clamped outside prepared interval");
+for(int i=0;i<referenceScope.Starts.Length;i++)
+    Check(referenceScope.Find(referenceScope.Starts[i])==i && referenceScope.Find(referenceScope.Ends[i]-.000001)==i,"reference boundary ownership changed");
+foreach(double t in new[]{-30.0,0.0,20.0,262.0,300.0,600.0,10000.0})
+    Check(songScope.Find(t)==0,"full song has a coverage gap");
+Check(songScope.WholeSong && songScope.Starts.Length==1,"song duplicates per-window resources");
+songScope.CheckItemBudget(32768);
+try {songScope.CheckItemBudget(32769);throw new Exception("item budget ignored");}
+catch(InvalidOperationException) {checks++;}
 byte[] Save(GpuDecoData data) { using var stream=new MemoryStream(); data.Write(stream); return stream.ToArray(); }
 GpuDecoData Load(byte[] bytes) { using var stream=new MemoryStream(bytes); return GpuDecoData.Read(stream); }
 void Reject(byte[] bytes,string why) { try { Load(bytes); } catch (Exception ex) when (ex is IOException || ex is InvalidDataException) { checks++; return; } throw new Exception(why); }
@@ -13,6 +26,9 @@ Check(GpuDecoCoverage.OwnedLow(801,560), "fractional coverage truncated");
 Check(!GpuDecoCoverage.OwnedLow(1000,700), "owned below 800 at 70 percent rejected");
 Check(!GpuDecoCoverage.OwnedLow(2134,1730) && !GpuDecoCoverage.OwnedLow(2270,1875), "real primary coverage rejected");
 var pixelGate=new GpuDecoPixelGate();
+var diagnosticGate=new GpuDecoPixelGate();diagnosticGate.Diagnostic();
+for(int i=0;i<3;i++)diagnosticGate.Pixel(i,1000,900,true,0,3686400,0,0,true);
+Check(diagnosticGate.Verdict(out var diagnosticReason)=="ERROR" && diagnosticReason=="diagnostic_run_not_acceptance","oracle diagnostic promoted to G1 PASS");
 Check(pixelGate.Verdict(out _) == "ERROR","missing G1 evidence accepted");
 pixelGate.Pixel(0,2134,1730,true,11059,3686400,3,0,true);
 pixelGate.Pixel(1,2269,1773,true,0,3686400,0,0,true);

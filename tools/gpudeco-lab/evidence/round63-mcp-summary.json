@@ -1,0 +1,49 @@
+{
+  "unit_tests_passed": 10,
+  "stdio_checks_passed": 4,
+  "actual_stdio_job": {
+    "run": "round63-hello-full",
+    "state": "PASSED",
+    "native_errors": 0,
+    "native_executed": 47328,
+    "gpu_owned_peak": 21,
+    "portal_song_s": 185.03306,
+    "command_errors": 0,
+    "early_recoveries": 0,
+    "resume_compared": 0,
+    "resume_mismatch": 0,
+    "resource_checks": 0,
+    "resource_alive_max": 0,
+    "own_transpilers_max": 0,
+    "autotest_started": true,
+    "quit_observed": true,
+    "real_fps": 255.0,
+    "worst_frame_ms": 40,
+    "hitches": 1,
+    "physical_display_fps": "UNMEASURED",
+    "restored": 9,
+    "restore_total": 9,
+    "game_running": false,
+    "errors": [],
+    "checks": {
+      "portal_min_s": 180,
+      "gpu_until_portal": true
+    },
+    "contract": "declared_checks_and_owned_exit_restoration_only"
+  },
+  "exit_code": 0,
+  "batch_elapsed_s": 238.227,
+  "screen": {
+    "width": 3440,
+    "height": 1440,
+    "hz": 144,
+    "vsync": 0,
+    "api": "D3D11"
+  },
+  "raw_utf8_bytes": 39395,
+  "returned_utf8_bytes": 589,
+  "duplicate_start": "DUPLICATE_NO_NEW_GAME",
+  "token_savings": "UNMEASURED",
+  "gameplay_quality": "UNMEASURED",
+  "reload_workflow": "separate_existing_runner"
+}

@@ -1,0 +1,15 @@
+{
+  "source_dll": "680b883195c1f287652d3b9d9277e9f167a516303f2cda665e1d2da6a5ca4578",
+  "source_native": "ee921970f07dee9a3eb895ed9c8574bbca9dc705a0b43f213de1a819ce98a890",
+  "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1",
+  "scope": "one_point_diagnostic_not_full_G1",
+  "adopted": false,
+  "restored": 8,
+  "restore_total": 8,
+  "game_running_after": false,
+  "metrics": [
+    "static_sort_audit owned=1715 bucket_mismatch_before=0 restored_world_bounds=True",
+    "on=True scope=paused_G1_only owned=1715 awake=2134 native_sort=True renderers=1715 buffers=1 G0=PASS",
+    "G1 sample=0 raw=262.01784002082422 different=3249 pixels=4953600 maxdiff=9 aa2=0 stable=True regions=(1632,544,32,32):901;(1632,512,32,32):382;(1696,352,32,32):261;(1632,480,32,32):190;(1728,352,32,32):157 mask=none auxiliary=False"
+  ]
+}

@@ -491,6 +491,10 @@ namespace StutterFix
         internal static bool CRot(ffxMoveDecorationsPlus fx, scrDecoration dec, Dictionary<global::TweenType, Tween> d)
         {
             Kill(d, 5); float v = tRot(fx);
+#if DEV || AUTOTEST
+            if (HiddenDecoSynergy.Finite(v) && HiddenDecoSynergy.DeferTransform(dec))
+            { rotRef(dec) = v; return Done(d, 5); }
+#endif
             if (P) { bool same = Eq(rotRef(dec), v); M0(dec); setRot(dec, v); M1(5, dec, same); } else setRot(dec, v);
             return Done(d, 5);
         }
@@ -554,7 +558,12 @@ namespace StutterFix
         {
             Kill(d, key);
             var o = default(VectorOptions); o.axisConstraint = key == 7 ? AxisConstraint.X : AxisConstraint.Y;
-            setScale(dec, ZeroTween.Calc(scaleRef(dec), target, k, o));
+            var result = ZeroTween.Calc(scaleRef(dec), target, k, o);
+#if DEV || AUTOTEST
+            if (HiddenDecoSynergy.Finite(result) && HiddenDecoSynergy.DeferTransform(dec))
+            { scaleRef(dec) = result; return Done(d, key); }
+#endif
+            setScale(dec, result);
             return Done(d, key);
         }
         internal static bool CParMul(scrDecoration dec, Dictionary<global::TweenType, Tween> d, Vector2 target, float k)

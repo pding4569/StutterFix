@@ -497,6 +497,32 @@ namespace StutterFix
             if (i.Owned) return LiveDecoScripts.Reason(i.Scripts, d, r);
             return null;
         }
+        internal static string LiveGpuReason(scrVisualDecoration d, Camera cam, scrDecorationManager mgr, LiveDeco.BlockCensus blocks)
+        {
+            var r = d.spriteRenderer;
+            // At t=0 (gpudeco live prepare), decorations that fade in during 258..276s have alpha==0 (d.GetVisible()==false).
+            // Do not reject by current alpha here; VisibleInWindow already verified window visibility.
+            if (!r || !d.pivotTrans || !r.enabled || !r.gameObject.activeInHierarchy
+                || (r.forceRenderingOff && !InvisibleSkip.IsHidden(d))) return "inactive";
+            var p = d.parallax;
+            if (p && (!Inited(p) || p.cameraTransform == null))
+            {
+                bool prev = restoring; restoring = true;
+                try { d.UpdatePosition(); } catch { } finally { restoring = prev; }
+            }
+            bool simpleHierarchy = d.pivotTrans.childCount == 1 && d.childTransform && d.childTransform.childCount == 1
+                && r.transform.parent == d.childTransform && r.transform.childCount == 0;
+            var deps = simpleHierarchy ? null : d.pivotTrans.GetComponentsInChildren<Renderer>(true);
+            var image = new Image { D = d, R = r, Dependents = deps };
+            string why = GeometryReason(image, mgr) ?? LiveDeco.Reason(d, r, r.sharedMaterials, cam);
+            if (why != null) return why;
+            if (r.HasPropertyBlock())
+            {
+                why = blocks.Read(r, r.sharedMaterials);
+                if (why != null) return why;
+            }
+            return simpleHierarchy ? null : LiveDecoScripts.Reason(d.pivotTrans.GetComponentsInChildren<MonoBehaviour>(true), d, r);
+        }
 #if AUTOTEST
         // Explicit paused export only. Reuse admission rules without installing
         // write hooks, changing a Transform, or taking renderer ownership.

@@ -15,9 +15,12 @@ Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLab.cs') -Destination (Join-P
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoSubmeshes.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoSubmeshes.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoColorProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoColorProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoAudit.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoAudit.cs')
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoGeometryProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoGeometryProbe.cs')
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLiveProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoLiveProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDeco.compute') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDeco.compute')
 # Local read-only CPU oracle. Generated directory is ignored and never packaged.
 Copy-Item -LiteralPath (Join-Path $GameManaged 'DOTween.dll') -Destination (Join-Path $projectRoot 'Assets/LocalReferences/DOTween.dll')
 Set-Content -LiteralPath (Join-Path $projectRoot 'ProjectSettings/ProjectVersion.txt') -Value "m_EditorVersion: 6000.3.10f1`nm_EditorVersionWithRevision: 6000.3.10f1 (e35f0c77bd8e)" -Encoding ascii
 Set-Content -LiteralPath (Join-Path $projectRoot 'Packages/manifest.json') -Value '{"dependencies":{"com.unity.modules.imageconversion":"1.0.0","com.unity.modules.assetbundle":"1.0.0"}}' -Encoding ascii
 Write-Output "Prepared independent lab: $projectRoot"
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoImageMatrixProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoImageMatrixProbe.cs')

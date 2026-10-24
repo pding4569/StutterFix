@@ -17,6 +17,13 @@ namespace StutterFix
             for (int i = 0; i < 5; i++) parts[i] = names[i]+"ms="+(bakeTicks[i]*1000.0/Stopwatch.Frequency/frames).ToString("F6",System.Globalization.CultureInfo.InvariantCulture);
             Main.Entry.Logger.Log("[굽기채택 쓰기] "+string.Join(" ",parts)+" 호출="+bakeCalls+" 숨김="+bakeHidden+" Transform미룸="+bakeDeferred+"; 64호출당1 표본추정, 목록/평가 별도");
         }
+#if AUTOTEST
+        internal static void CopyGpuImageFields(scrDecoration d,float[] v)
+        {
+            pivotPosRef(d)=new Vector2(v[0],v[1]);pivotOffRef(d)=new Vector2(v[2],v[3]);rotRef(d)=v[4];scaleRef(d)=new Vector2(v[5],v[6]);
+            colRef(d)=new Color(v[7],v[8],v[9],v[10]);opaRef(d)=v[11];parallaxRef(d).multiplier=new Vector2(v[12],v[13]);parOffRef(d)=new Vector2(v[14],v[15]);
+        }
+#endif
         // Apply final alpha before choosing the hidden Transform path. Reuse InvisibleSkip's
         // shader/mask/hitbox rules and lazy flush; never write forceRenderingOff independently.
         internal static void BakeWrite(scrDecoration d, float[] v, int o, int mask)

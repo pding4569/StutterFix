@@ -1,0 +1,52 @@
+{
+  "round": 13,
+  "date": "2026-10-23",
+  "screen": "3440x1440 144Hz D3D11 VSync0",
+  "G1": "PASS",
+  "G2": "FPS_FAIL",
+  "adopted": false,
+  "synergy_started": false,
+  "trials": {
+    "round13-copy-g1": {
+      "source_dll": "5558e6ab62509fce3a1892b874e02087000b5bc0df5455cb705e1eac493cbac5",
+      "source_native": "18a9eb8b0c9b3b69c7f005b6b870323c7d46289f63999c1c25977a0652f69780",
+      "bundle": "37f842932c7151002ac217480da705ce1c7455feaf460b6bebe0332359bfc2b6",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running_after": false,
+      "metrics": [
+        "native_copy=True active_contexts=0",
+        "G1 sample=0 raw=262.01784002082422 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=False",
+        "G1 sample=1 raw=270.01600896613672 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=False",
+        "G1 sample=2 raw=276.005327813793 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=True",
+        "GPUDECO_G1=PASS scope=paused_G1 exports=3 reason=paused_G0_primary_pixels_and_restoration_passed live_animation=UNMEASURED G2=UNMEASURED",
+        "native_copy=False active_contexts=0"
+      ]
+    },
+    "round13-copy-g2": {
+      "source_dll": "5558e6ab62509fce3a1892b874e02087000b5bc0df5455cb705e1eac493cbac5",
+      "source_native": "18a9eb8b0c9b3b69c7f005b6b870323c7d46289f63999c1c25977a0652f69780",
+      "bundle": "37f842932c7151002ac217480da705ce1c7455feaf460b6bebe0332359bfc2b6",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running_after": false,
+      "metrics": [
+        "native_copy=True active_contexts=0",
+        "prepare_ms=6753.306000 phase=live_prepare slices=9 owned_union=16308 total_runs=30938 total_submeshes=30938 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True static_batch=False",
+        "FPS mode=off index=0 fps=128.643560 ms=7.773417 frames=1794 elapsed_s=13.945510 song_begin=262.049822 song_end=276.004443 spikes_30ms=0 worst_frame_ms=20.291999 valid=True",
+        "cost window=1 frames=1497 total_ms=0.507787 progress_ms=0.176599 uniform_ms=0.006437 dispatch_ms=0.288377 misc_ms=0.017184 managed_ms=0.488597 native_upper_ms=0.019190 native_callbacks=1497 native_submitted=1497 native_errors=0 native_max_lifetime_ms=0.054900 max_ms=7.183100 budget_le_0.5ms=False",
+        "FPS mode=on index=1 fps=107.208632 ms=9.327607 frames=1497 elapsed_s=13.963428 song_begin=262.028491 song_end=276.005572 spikes_30ms=0 worst_frame_ms=20.922299 valid=True",
+        "cost window=2 frames=1489 total_ms=0.512383 progress_ms=0.180003 uniform_ms=0.006582 dispatch_ms=0.289574 misc_ms=0.016953 managed_ms=0.493112 native_upper_ms=0.019271 native_callbacks=1489 native_submitted=1489 native_errors=0 native_max_lifetime_ms=0.054900 max_ms=7.016600 budget_le_0.5ms=False",
+        "FPS mode=on index=2 fps=106.564502 ms=9.383988 frames=1489 elapsed_s=13.972758 song_begin=262.039172 song_end=276.005541 spikes_30ms=0 worst_frame_ms=21.571195 valid=True",
+        "FPS mode=off index=3 fps=127.739226 ms=7.828449 frames=1787 elapsed_s=13.989438 song_begin=262.026782 song_end=276.004229 spikes_30ms=0 worst_frame_ms=19.334000 valid=True",
+        "stability checkpoint=pause_resume pass=True active=True owned=16308 sf_errors=0",
+        "stability checkpoint=song_end pass=True portal_observed=True active=False unrestored=0 sf_errors=0",
+        "stability checkpoint=retry_restart pass=True active=False unrestored=0 sf_errors=0",
+        "prepare_ms=6606.885000 phase=live_prepare slices=9 owned_union=16308 total_runs=30938 total_submeshes=30938 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True static_batch=False",
+        "stability checkpoint=reopen_toggle pass=True active=False unrestored=0 leaked_buffers=0 leaked_meshes=0 heap_mb=1527 sf_errors=0",
+        "GPUDECO_G2=FPS_FAIL reason=fps_gain_lt_25pct on_fps=106.886567 off_fps=128.191393 gain_pct=-16.619545 cost_ms=0.510085 progress_ms=0.178301 uniform_ms=0.006509 dispatch_ms=0.288975 misc_ms=0.017069 prepare_ms=6606.885000 transition_ms=60.114500 spikes30ms_on=0 spikes30ms_off=0 sf_errors=0 stability=True",
+        "native_copy=False active_contexts=0"
+      ]
+    }
+  }
+}

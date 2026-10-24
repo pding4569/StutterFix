@@ -1,0 +1,6 @@
+DecoBake 개발 타입: False, 기대: False
+GpuDecoData/GpuStep: False/False, 기대: False
+GpuDeco export (AUTOTEST only): False
+GpuDeco shared GPU / paused snapshot: False/False
+DecoAnim.BakeWrite: False, 기대: False
+Player/StutterFix.dll: FieldRefAccess(이름) 229곳 확인, 틀림 0, 이름을 실행 중에 정하는 곳 5(실행 중 확인)

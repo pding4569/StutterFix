@@ -132,6 +132,7 @@ namespace StutterFix
         }
         internal static bool SkipAdopt(ffxMoveDecorationsPlus fx, scrDecoration d, int keys)
         {
+            if (GpuLiveSkip(fx, d, keys)) return true;
             if (!Adopting || !owned.ContainsKey(d)) return false;
             if (adoptGeneration != generation || !ready || !adoptSources.Contains(fx.GetInstanceID()))
             { StopAdopt("미확인 효과/세대 변경"); return false; }

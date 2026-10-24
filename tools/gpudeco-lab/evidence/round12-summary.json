@@ -1,0 +1,111 @@
+{
+  "round": 12,
+  "date": "2026-10-23",
+  "screen": "2560x1440 120Hz D3D11 VSync0",
+  "adopted": false,
+  "trials": {
+    "round12-scene-order": {
+      "source_dll": "1dfcc9a4da4fefb8aac07b4c83cc8359701f680b9498fb7f103c4817ed29fd74",
+      "bundle": "8869b138a45cdeb8d2e7f9c83de7020e3902fe0ff74d35129b5fdfe63795f815",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running": false,
+      "metrics": []
+    },
+    "round12-static-order": {
+      "source_dll": "47a3b719d5d29c3f29653f3e6a2eb8aa6e408238801b1494ffd17e9706d6c97a",
+      "bundle": "8869b138a45cdeb8d2e7f9c83de7020e3902fe0ff74d35129b5fdfe63795f815",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running": false,
+      "metrics": []
+    },
+    "round12-static-preserved": {
+      "source_dll": "e5784476371a838e52a75e5c6bad066547988f67d15427425daa3b01f113dc4e",
+      "bundle": "8869b138a45cdeb8d2e7f9c83de7020e3902fe0ff74d35129b5fdfe63795f815",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running": false,
+      "metrics": []
+    },
+    "round12b-g1": {
+      "source_dll": "3dfaea3a937a815997f77e5f7b08ee69c56d7526a4134343a800ae99720c8089",
+      "bundle": "8869b138a45cdeb8d2e7f9c83de7020e3902fe0ff74d35129b5fdfe63795f815",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running": false,
+      "metrics": [
+        "prepare_ms=64315.209600 phase=first_export includes=open,bake,seek,export bake_wall_ms=507.746100",
+        "sort_audit owned=1715 barrier_tied_owned=149 barrier_tied_buckets=4",
+        "on=True scope=paused_G1_only owned=1715 awake=2134 runs=52 submeshes=1715 dispatches=53 prepare_ms=289.217600 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS",
+        "sort_audit owned=1815 barrier_tied_owned=1813 barrier_tied_buckets=50",
+        "on=True scope=paused_G1_only owned=1815 awake=2270 runs=102 submeshes=1815 dispatches=103 prepare_ms=301.633600 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS",
+        "sort_audit owned=17 barrier_tied_owned=0 barrier_tied_buckets=0",
+        "on=True scope=paused_G1_only owned=17 awake=24 runs=4 submeshes=17 dispatches=5 prepare_ms=137.196000 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS",
+        "GPUDECO_G1=PIXEL_FAIL scope=paused_G1 exports=3 reason=PIXEL_FAIL live_animation=UNMEASURED G2=UNMEASURED"
+      ]
+    },
+    "round12-native-g1": {
+      "source_dll": "bb4bd601c7f03f1cd608bb8ee4f73477001a35b7699315d0cd2aae12733d596a",
+      "bundle": "37f842932c7151002ac217480da705ce1c7455feaf460b6bebe0332359bfc2b6",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running": false,
+      "metrics": [
+        "prepare_ms=64344.058600 phase=first_export includes=open,bake,seek,export bake_wall_ms=509.823000",
+        "sort_audit owned=1715 barrier_tied_owned=149 barrier_tied_buckets=4",
+        "sort_audit owned=1815 barrier_tied_owned=1813 barrier_tied_buckets=50",
+        "sort_audit owned=17 barrier_tied_owned=0 barrier_tied_buckets=0",
+        "GPUDECO_G1=PIXEL_FAIL scope=paused_G1 exports=3 reason=PIXEL_FAIL live_animation=UNMEASURED G2=UNMEASURED"
+      ]
+    },
+    "round12-dynamic-g1": {
+      "source_dll": "11806874500c13b42cfd591ce2c47ce7d1511545e1c034081c01e98737db0395",
+      "bundle": "37f842932c7151002ac217480da705ce1c7455feaf460b6bebe0332359bfc2b6",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running": false,
+      "metrics": [
+        "prepare_ms=64315.764700 phase=first_export includes=open,bake,seek,export bake_wall_ms=507.455000",
+        "sort_audit owned=1715 barrier_tied_owned=149 barrier_tied_buckets=4",
+        "on=True scope=paused_G1_only owned=1715 awake=2134 runs=1715 submeshes=1715 dispatches=1716 prepare_ms=497.226700 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS",
+        "sort_audit owned=1765 barrier_tied_owned=1763 barrier_tied_buckets=50",
+        "on=True scope=paused_G1_only owned=1765 awake=2214 runs=1765 submeshes=1765 dispatches=1766 prepare_ms=346.864200 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS",
+        "sort_audit owned=17 barrier_tied_owned=0 barrier_tied_buckets=0",
+        "on=True scope=paused_G1_only owned=17 awake=24 runs=17 submeshes=17 dispatches=18 prepare_ms=138.250200 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS",
+        "GPUDECO_G1=PASS scope=paused_G1 exports=3 reason=paused_G0_primary_pixels_and_restoration_passed live_animation=UNMEASURED G2=UNMEASURED"
+      ]
+    },
+    "round12-dynamic-g2": {
+      "source_dll": "11806874500c13b42cfd591ce2c47ce7d1511545e1c034081c01e98737db0395",
+      "bundle": "37f842932c7151002ac217480da705ce1c7455feaf460b6bebe0332359bfc2b6",
+      "restored": 8,
+      "restore_total": 8,
+      "game_running": false,
+      "metrics": [
+        "prepare_ms=6904.610600 phase=live_prepare slices=9 owned_union=16308 total_runs=30938 total_submeshes=30938 live_kernel=EvaluateLive_sourceE native_sort=True static_batch=False",
+        "g2_prepared mode=off song=258.017840 paused=True owned=0 transition_ms=0.000000 prepare_ms=6904.610600 resume_then_play_to=262 minimum_on_warmup_s=3",
+        "FPS mode=off index=0 fps=123.725433 ms=8.082413 frames=1725 elapsed_s=13.942162 song_begin=262.060504 song_end=276.004260 spikes_30ms=0 worst_frame_ms=20.086700 valid=True",
+        "on=True scope=live_G2 owned=16308 active_sources=1199 slice=0 slice_owned=3282 runs=3282 submeshes=3282 transition_ms=70.753900 prepare_ms=6904.610600",
+        "g2_prepared mode=on song=258.017840 paused=True owned=16308 transition_ms=70.753900 prepare_ms=6904.610600 resume_then_play_to=262 minimum_on_warmup_s=3",
+        "cost window=1 frames=1178 total_ms=1.527554 progress_ms=0.196380 uniform_ms=0.007096 dispatch_ms=1.301897 misc_ms=0.022181 max_ms=8.665800 budget_le_0.5ms=False",
+        "FPS mode=on index=1 fps=84.421374 ms=11.845341 frames=1178 elapsed_s=13.953812 song_begin=262.049822 song_end=276.007464 spikes_30ms=2 worst_frame_ms=36.005795 valid=True",
+        "on=True scope=live_G2 owned=16308 active_sources=1199 slice=0 slice_owned=3282 runs=3282 submeshes=3282 transition_ms=69.339500 prepare_ms=6904.610600",
+        "g2_prepared mode=on song=258.017840 paused=True owned=16308 transition_ms=69.339500 prepare_ms=6904.610600 resume_then_play_to=262 minimum_on_warmup_s=3",
+        "cost window=2 frames=1181 total_ms=1.518669 progress_ms=0.194000 uniform_ms=0.007011 dispatch_ms=1.295469 misc_ms=0.022188 max_ms=8.331400 budget_le_0.5ms=False",
+        "FPS mode=on index=2 fps=84.583302 ms=11.822665 frames=1181 elapsed_s=13.962567 song_begin=262.039172 song_end=276.006610 spikes_30ms=0 worst_frame_ms=22.814995 valid=True",
+        "g2_prepared mode=off song=258.017840 paused=True owned=0 transition_ms=0.000000 prepare_ms=6904.610600 resume_then_play_to=262 minimum_on_warmup_s=3",
+        "FPS mode=off index=3 fps=123.821173 ms=8.076163 frames=1732 elapsed_s=13.987915 song_begin=262.028491 song_end=276.004717 spikes_30ms=0 worst_frame_ms=19.596705 valid=True",
+        "on=True scope=live_G2 owned=16308 active_sources=1979 slice=5 slice_owned=4875 runs=4875 submeshes=4875 transition_ms=75.908400 prepare_ms=6904.610600",
+        "stability checkpoint=pause_resume pass=True active=True owned=16308 sf_errors=0",
+        "stability checkpoint=song_end pass=True portal_observed=True active=False unrestored=0 sf_errors=0",
+        "on=True scope=live_G2 owned=16308 active_sources=1199 slice=0 slice_owned=3282 runs=3282 submeshes=3282 transition_ms=67.417000 prepare_ms=6904.610600",
+        "stability checkpoint=retry_restart pass=True active=False unrestored=0 sf_errors=0",
+        "prepare_ms=6777.416300 phase=live_prepare slices=9 owned_union=16308 total_runs=30938 total_submeshes=30938 live_kernel=EvaluateLive_sourceE native_sort=True static_batch=False",
+        "on=True scope=live_G2 owned=16308 active_sources=1199 slice=0 slice_owned=3282 runs=3282 submeshes=3282 transition_ms=68.581000 prepare_ms=6777.416300",
+        "stability checkpoint=reopen_toggle pass=True active=False unrestored=0 leaked_buffers=0 leaked_meshes=0 heap_mb=1606 sf_errors=0",
+        "GPUDECO_G2=STABILITY_FAIL reason=new_frame_spikes_gt_30ms on_fps=84.502338 off_fps=123.773303 gain_pct=-31.728138 cost_ms=1.523111 progress_ms=0.195190 uniform_ms=0.007053 dispatch_ms=1.298683 misc_ms=0.022185 prepare_ms=6777.416300 transition_ms=68.581000 spikes30ms_on=2 spikes30ms_off=0 sf_errors=0 stability=True"
+      ]
+    }
+  }
+}

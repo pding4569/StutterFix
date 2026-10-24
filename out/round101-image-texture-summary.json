@@ -1,0 +1,12 @@
+{
+  "run": "round101-image-texture",
+  "state": "PASSED",
+  "exit_code": 0,
+  "game_running": false,
+  "restored": 9,
+  "original_states": 9,
+  "lines": [
+    "[StutterFix] [gpudeco] image_texture_fixture samples=103 different_images=0 different_pixels=0 max_RGBA=0 nonuniform_images=102 different_from_first=102 topology_rejected=0 CPU_decoration_setters_changed=0 live_ownership_changed=0 borrowed_assets_destroyed=0 performance=False scope=isolated_256x256_white_quad_pass0"
+  ],
+  "scope": "isolated 256x256 white quad pass0; not scene/continuous-event/latency/FPS approval"
+}

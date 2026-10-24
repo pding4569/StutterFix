@@ -5,7 +5,9 @@ from pathlib import Path
 from uuid import uuid4
 
 
-def build(chart, export_dir=None, pixels=True, bundle=None):
+def build(chart, export_dir=None, pixels=True, bundle=None, attribution=False):
+    if attribution and not pixels:
+        raise ValueError('attribution requires paused pixel capture')
     if export_dir is None:
         export_dir = Path(__file__).resolve().parents[1] / 'gpudeco-lab' / 'exports' / ('run-' + uuid4().hex)
     chart, export_dir = Path(chart), Path(export_dir).resolve()
@@ -36,10 +38,17 @@ def build(chart, export_dir=None, pixels=True, bundle=None):
                       'wait 0.2', 'framecmp grab B', 'gpudeco draw off',
                       'wait 0.2', 'framecmp grab A2', 'framecmp assertzero A A2 png',
                       'framecmp diff A B 0 png', f'gpudeco pixel {index}']
+            if attribution and index < 2:
+                for mode in ('world', 'single'):
+                    steps += [f'gpudeco diagnostic {mode}', 'framecmp grab A', 'gpudeco on',
+                              'wait 0.2', 'framecmp grab B', 'gpudeco draw off', 'wait 0.2',
+                              'framecmp grab A2', 'framecmp assertzero A A2 png',
+                              'framecmp diff A B 0 png', 'gpudeco diagnostic pixel',
+                              'gpudeco diagnostic off']
         steps += ['resume']
     steps += ['gpudeco off', 'gpudeco result', 'stop', 'decobake off', 'quit']
     return dict(steps=steps, timeout_min=20, tag='gpudeco-paused-g1-262-270-276' if pixels else 'gpudeco-export-262-270-276',
-                stage='paused-g1' if pixels else 'export-first', expected_verdict='MEASURE' if pixels else 'ERROR',
+                stage='paused-attribution' if attribution else 'paused-g1' if pixels else 'export-first', expected_verdict='ERROR' if attribution else 'MEASURE' if pixels else 'ERROR',
                 export_schema=2, evaluation_clock='actual-source-progress',
                 reason='실제 GPU G0 후 정지 화면 끔/켬/끔 G1; 재생 구동과 G2는 별도' if pixels else 'export와 독립 랩만 측정')
 
@@ -51,9 +60,10 @@ if __name__ == '__main__':
     parser.add_argument('--export-dir', type=Path, help='새 출력 폴더 (기본: 고유 run 하위 폴더)')
     parser.add_argument('--export-only', action='store_true')
     parser.add_argument('--bundle', type=Path)
+    parser.add_argument('--attribution', action='store_true', help='정점 정답/단일 구간 대조; G1 PASS 금지')
     args = parser.parse_args()
     try:
-        value = build(args.chart, args.export_dir, pixels=not args.export_only, bundle=args.bundle)
+        value = build(args.chart, args.export_dir, pixels=not args.export_only, bundle=args.bundle, attribution=args.attribution)
     except ValueError as error:
         parser.error(str(error))
     output = json.dumps(value, ensure_ascii=False, indent=2) + '\n'

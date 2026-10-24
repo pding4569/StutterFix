@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -242,6 +242,20 @@ namespace StutterFix
         // Update 에서 엔진에 넣은 값을 같은 프레임 LateUpdate 가 다시 계산해 덮어썼다. 보이는 이미지 장식(SetScale 을 덮어쓰지 않는 형식)은 값만 저장한다.
         internal static bool DeferRotScale = true;
         internal static long RotScaleDeferred;
+        internal static bool DeferTransform(scrDecoration d, float value)
+        {
+#if DEV || AUTOTEST
+            if (HiddenDecoSynergy.Finite(value) && HiddenDecoSynergy.DeferTransform(d)) return true;
+#endif
+            return DeferTransform(d);
+        }
+        internal static bool DeferTransform(scrDecoration d, Vector2 value)
+        {
+#if DEV || AUTOTEST
+            if (HiddenDecoSynergy.Finite(value) && HiddenDecoSynergy.DeferTransform(d)) return true;
+#endif
+            return DeferTransform(d);
+        }
         internal static bool DeferTransform(scrDecoration d)
         {
             if (!DeferRotScale || (object)d == null || d.GetType() != typeof(scrVisualDecoration)) return false;

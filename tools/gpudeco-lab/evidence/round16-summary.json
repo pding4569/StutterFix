@@ -1,0 +1,36 @@
+{
+  "round": 16,
+  "scope": "boundary_cpu_diagnostic_not_new_G1",
+  "sha": {
+    "source_dll": "9fd117c2e53cde4a1b1d5b0a86238d0829ff0b01b64fa20df4fd449ae2194186",
+    "source_native": "a0f777c5ecac54afabd2e2f3b3de145661939e9ac16a6914efe56c4708ca62b7",
+    "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1"
+  },
+  "restored": 8,
+  "restore_total": 8,
+  "game_running_after": false,
+  "metrics": [
+    "[StutterFix] [gpudeco] threadcpu window=0 status=SAMPLED threads=97 skipped_begin=0 failed_end=0 frames=1780 fps_window_s=13.917084 begin_probe_ms=16.362300 end_probe_ms=0.302800 main_tid=10372 render_tid=0 scope=boundary_cpu_upper_bound new_threads=UNMEASURED waits=UNMEASURED",
+    "[StutterFix] [gpudeco] threadcpu_row window=0 tid=10372 role=main name=Main_Thread cpu_ms=13625.000000 cpu_per_frame_ms=7.654494 span_s=13.918434",
+    "[StutterFix] [gpudeco] FPS mode=off index=0 fps=127.900354 ms=7.818587 frames=1780 elapsed_s=13.917084 song_begin=262.060504 song_end=276.004229 spikes_30ms=0 worst_frame_ms=27.893800 valid=True",
+    "[StutterFix] [gpudeco] threadcpu window=1 status=SAMPLED threads=97 skipped_begin=0 failed_end=0 frames=1484 fps_window_s=13.951692 begin_probe_ms=16.395100 end_probe_ms=0.044800 main_tid=10372 render_tid=21972 scope=boundary_cpu_upper_bound new_threads=UNMEASURED waits=UNMEASURED",
+    "[StutterFix] [gpudeco] threadcpu_row window=1 tid=10372 role=main name=Main_Thread cpu_ms=11453.125000 cpu_per_frame_ms=7.717739 span_s=13.952647",
+    "[StutterFix] [gpudeco] threadcpu_row window=1 tid=21972 role=render name=UnityGfxDeviceWorker cpu_ms=8906.250000 cpu_per_frame_ms=6.001516 span_s=13.952284",
+    "[StutterFix] [gpudeco] FPS mode=on index=1 fps=106.367025 ms=9.401410 frames=1484 elapsed_s=13.951692 song_begin=262.028491 song_end=276.005664 spikes_30ms=0 worst_frame_ms=24.213698 valid=True",
+    "[StutterFix] [gpudeco] threadcpu window=2 status=SAMPLED threads=95 skipped_begin=0 failed_end=0 frames=1468 fps_window_s=13.949025 begin_probe_ms=16.475700 end_probe_ms=0.043600 main_tid=10372 render_tid=21972 scope=boundary_cpu_upper_bound new_threads=UNMEASURED waits=UNMEASURED",
+    "[StutterFix] [gpudeco] threadcpu_row window=2 tid=10372 role=main name=Main_Thread cpu_ms=11281.250000 cpu_per_frame_ms=7.684775 span_s=13.949937",
+    "[StutterFix] [gpudeco] threadcpu_row window=2 tid=21972 role=render name=UnityGfxDeviceWorker cpu_ms=8640.625000 cpu_per_frame_ms=5.885984 span_s=13.949580",
+    "[StutterFix] [gpudeco] FPS mode=on index=2 fps=105.240332 ms=9.502060 frames=1468 elapsed_s=13.949025 song_begin=262.028491 song_end=276.005450 spikes_30ms=0 worst_frame_ms=24.220996 valid=True",
+    "[StutterFix] [gpudeco] threadcpu window=3 status=SAMPLED threads=96 skipped_begin=0 failed_end=0 frames=1797 fps_window_s=13.964277 begin_probe_ms=15.054500 end_probe_ms=0.044300 main_tid=10372 render_tid=21972 scope=boundary_cpu_upper_bound new_threads=UNMEASURED waits=UNMEASURED",
+    "[StutterFix] [gpudeco] threadcpu_row window=3 tid=10372 role=main name=Main_Thread cpu_ms=13734.375000 cpu_per_frame_ms=7.642947 span_s=13.965175",
+    "[StutterFix] [gpudeco] threadcpu_row window=3 tid=21972 role=render name=UnityGfxDeviceWorker cpu_ms=6328.125000 cpu_per_frame_ms=3.521494 span_s=13.964826",
+    "[StutterFix] [gpudeco] FPS mode=off index=3 fps=128.685500 ms=7.770883 frames=1797 elapsed_s=13.964277 song_begin=262.028491 song_end=276.004565 spikes_30ms=0 worst_frame_ms=23.618205 valid=True",
+    "[StutterFix] [gpudeco] stability checkpoint=pause_resume pass=True active=True owned=16308 sf_errors=0",
+    "[StutterFix] [gpudeco] stability checkpoint=song_end pass=True portal_observed=True active=False unrestored=0 sf_errors=0",
+    "[StutterFix] [gpudeco] stability checkpoint=retry_restart pass=True active=False unrestored=0 sf_errors=0",
+    "[StutterFix] [gpudeco] stability checkpoint=reopen_toggle pass=True active=False unrestored=0 leaked_buffers=0 leaked_meshes=0 heap_mb=1536 sf_errors=0",
+    "[StutterFix] [gpudeco] GPUDECO_G2=FPS_FAIL reason=fps_gain_lt_25pct on_fps=105.803679 off_fps=128.292927 gain_pct=-17.529609 cost_ms=0.506853 progress_ms=0.176484 uniform_ms=0.006050 dispatch_ms=0.288349 misc_ms=0.017034 prepare_ms=6880.605400 transition_ms=60.943400 spikes30ms_on=0 spikes30ms_off=0 sf_errors=0 stability=True"
+  ],
+  "physical_latency": "UNMEASURED",
+  "function_attribution": "UNMEASURED"
+}

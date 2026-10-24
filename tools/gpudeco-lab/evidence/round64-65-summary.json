@@ -1,0 +1,128 @@
+{
+  "off": {
+    "run": "round64-cpu-full",
+    "state": "PASSED",
+    "native_errors": 0,
+    "native_executed": 0,
+    "gpu_owned_peak": 0,
+    "portal_song_s": null,
+    "command_errors": 0,
+    "early_recoveries": 0,
+    "resume_compared": 0,
+    "resume_mismatch": 0,
+    "resource_checks": 0,
+    "resource_alive_max": 0,
+    "own_transpilers_max": 0,
+    "waitend_timeouts": 0,
+    "observed_song_s": 308.0034967591055,
+    "autotest_started": true,
+    "quit_observed": true,
+    "real_fps": 441.0,
+    "worst_frame_ms": 159,
+    "hitches": 1,
+    "real_fps_260_270s": 106,
+    "physical_display_fps": "UNMEASURED",
+    "restored": 9,
+    "restore_total": 9,
+    "game_running": false,
+    "errors": [],
+    "checks": {
+      "song_min_s": 308
+    },
+    "contract": "declared_checks_and_owned_exit_restoration_only",
+    "screen": {
+      "mode": "FullScreenWindow",
+      "width": 3440,
+      "height": 1440,
+      "hz": 144.0
+    },
+    "monitor_hitches": [
+      {
+        "frame_ms": 159,
+        "song_s": 114.6
+      }
+    ],
+    "top_frames_219_221": [],
+    "exit_code": 0
+  },
+  "on": {
+    "run": "round65-gpu-full",
+    "state": "PASSED",
+    "native_errors": 0,
+    "native_executed": 133316,
+    "gpu_owned_peak": 23547,
+    "portal_song_s": 308.397624,
+    "command_errors": 0,
+    "early_recoveries": 0,
+    "resume_compared": 0,
+    "resume_mismatch": 0,
+    "resource_checks": 0,
+    "resource_alive_max": 0,
+    "own_transpilers_max": 0,
+    "waitend_timeouts": 0,
+    "observed_song_s": null,
+    "autotest_started": true,
+    "quit_observed": true,
+    "real_fps": 431.0,
+    "worst_frame_ms": 35,
+    "hitches": 1,
+    "real_fps_260_270s": 166,
+    "cost_reports": [
+      {
+        "frames": "0",
+        "advance_ms": "0.000000",
+        "dirty_alpha_ms": "0.000000",
+        "source_upload_ms": "0.000000",
+        "source_removals": "0",
+        "source_shifted_ints": "0",
+        "source_max_list": "0"
+      }
+    ],
+    "physical_display_fps": "UNMEASURED",
+    "restored": 9,
+    "restore_total": 9,
+    "game_running": false,
+    "errors": [],
+    "checks": {
+      "portal_min_s": 308,
+      "gpu_until_portal": true
+    },
+    "contract": "declared_checks_and_owned_exit_restoration_only",
+    "screen": {
+      "mode": "FullScreenWindow",
+      "width": 3440,
+      "height": 1440,
+      "hz": 144.0
+    },
+    "monitor_hitches": [
+      {
+        "frame_ms": 35,
+        "song_s": 220.4
+      },
+      {
+        "frame_ms": 78,
+        "song_s": 309.2
+      }
+    ],
+    "top_frames_219_221": [
+      {
+        "song_s": 220.4,
+        "frame_ms": 23
+      },
+      {
+        "song_s": 220.4,
+        "frame_ms": 35
+      }
+    ],
+    "exit_code": 0
+  },
+  "identical_artifact_hashes": true,
+  "whole_song_real_fps_change_percent": -2.26757369614512,
+  "scope": "single fresh-process pair; no captures/costprobe/FG; OFF has no GPU preparation, ON includes preparation before play",
+  "physical_display_fps": "UNMEASURED",
+  "perceptual_quality": "UNMEASURED",
+  "screen_identical": true,
+  "heavy_260_270_real_fps_change_percent": 56.60377358490567,
+  "percentage_precision": "FPS input rounded to integer; percentages approximate",
+  "conclusion": "400FPS_NOT_REACHED; one current-artifact pair; whole-song average regression retained; hitches occur at different song times and are not a causal improvement comparison"
+}

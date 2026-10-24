@@ -1,0 +1,4 @@
+﻿masked_copy backend=eight-uav count=1 patterns=281 bytes=0 state=0 queued_visibility=PASS ring_wrap=PASS overflow=rejected producer=rejected removed=skip
+masked_copy backend=eight-uav count=513 patterns=281 bytes=0 state=0 queued_visibility=PASS ring_wrap=PASS overflow=rejected producer=rejected removed=skip
+masked_copy backend=eight-uav count=1715 patterns=281 bytes=0 state=0 queued_visibility=PASS ring_wrap=PASS overflow=rejected producer=rejected removed=skip
+GPUDECO_MASKED_COPY=PASS game_ordering=UNMEASURED game_fps=UNMEASURED

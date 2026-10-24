@@ -1,0 +1,123 @@
+{
+  "round": "18b",
+  "candidate": "independent_native8_exact_constant_zero_alpha_v1",
+  "G1": "PASS",
+  "G2": "PASS",
+  "general_adoption": false,
+  "synergy_started": false,
+  "trials": {
+    "round18b-alpha-g1": {
+      "sha": {
+        "source_dll": "ffff370dc17d8b0b0ed5906e8f47f0426286cf60b07a27318cbf573566c70d4f",
+        "source_native": "a0f777c5ecac54afabd2e2f3b3de145661939e9ac16a6914efe56c4708ca62b7",
+        "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1"
+      },
+      "restored": 8,
+      "restore_total": 8,
+      "game_running_after": false,
+      "buffer_finalizer_warnings": 0,
+      "metrics": [
+        "[StutterFix] [gpudeco] prepare_ms=64773.256000 phase=first_export includes=open,bake,seek,export bake_wall_ms=507.959400",
+        "[StutterFix] [gpudeco] G0_snapshot vertices=6860 max_px=0.00800652522594 mean_px=3.5013958714E-06 over_tol=0 rgba_max=3.72529029846E-09 rgba_mean=1.79072347491E-11 rgba_over_tol=0",
+        "[StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1715 awake=2134 runs=1715 submeshes=1715 dispatches=217 legacy_copy_commands=1715 prepare_ms=474.142100 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS",
+        "[StutterFix] [gpudeco] G1 sample=0 raw=262.01784002082422 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=False",
+        "[StutterFix] [gpudeco] G0_snapshot vertices=7060 max_px=0.00779687333852 mean_px=4.4174919765E-06 over_tol=0 rgba_max=3.72529029846E-09 rgba_mean=4.24891190535E-11 rgba_over_tol=0",
+        "[StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1765 awake=2217 runs=1765 submeshes=1765 dispatches=223 legacy_copy_commands=1765 prepare_ms=441.356000 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS",
+        "[StutterFix] [gpudeco] G1 sample=1 raw=270.01600896613672 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=False",
+        "[StutterFix] [gpudeco] G0_snapshot vertices=68 max_px=0 mean_px=0 over_tol=0 rgba_max=0 rgba_mean=0 rgba_over_tol=0",
+        "[StutterFix] [gpudeco] on=True scope=paused_G1_only owned=17 awake=24 runs=17 submeshes=17 dispatches=5 legacy_copy_commands=17 prepare_ms=161.102100 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS",
+        "[StutterFix] [gpudeco] G1 sample=2 raw=276.005327813793 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=True",
+        "[StutterFix] [gpudeco] GPUDECO_G1=PASS scope=paused_G1 exports=3 reason=paused_G0_primary_pixels_and_restoration_passed live_animation=UNMEASURED G2=UNMEASURED",
+        "[StutterFix] [gpudeco] prepare_ms=6841.747600 phase=live_prepare slices=9 owned_union=16308 total_runs=30938 total_submeshes=30938 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False",
+        "[StutterFix] [gpudeco] on=True scope=live_G2 owned=16308 active_sources=1721 slice=1 slice_owned=4580 runs=4580 submeshes=4580 transition_ms=73.959900 prepare_ms=6841.747600",
+        "[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=1 allocated_renderers=4580 enabled_renderers=4580 items=4580 proven_constant_zero_alpha=2850 animated_alpha=1700 zeroalpha=False skipped_by_this_probe=0",
+        "[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=1 allocated_renderers=4580 enabled_renderers=1730 items=4580 proven_constant_zero_alpha=2850 animated_alpha=1700 zeroalpha=True skipped_by_this_probe=0",
+        "[StutterFix] [gpudeco] zeroalpha_pixel sample=0 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True scope=live_cull_off_on_off_same_frozen_frame window=3440x1440 display=3440x1440 hz=144 mode=FullScreenWindow sync=0 graphics=Direct3D11 target=10000",
+        "[StutterFix] [gpudeco] on=True scope=live_G2 owned=16308 active_sources=1979 slice=5 slice_owned=4875 runs=4875 submeshes=4875 transition_ms=76.783400 prepare_ms=6841.747600",
+        "[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=5 allocated_renderers=4875 enabled_renderers=4875 items=4875 proven_constant_zero_alpha=2950 animated_alpha=1900 zeroalpha=False skipped_by_this_probe=0",
+        "[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=5 allocated_renderers=4875 enabled_renderers=1925 items=4875 proven_constant_zero_alpha=2950 animated_alpha=1900 zeroalpha=True skipped_by_this_probe=0",
+        "[StutterFix] [gpudeco] zeroalpha_pixel sample=1 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True scope=live_cull_off_on_off_same_frozen_frame window=3440x1440 display=3440x1440 hz=144 mode=FullScreenWindow sync=0 graphics=Direct3D11 target=10000",
+        "[StutterFix] [gpudeco] on=True scope=live_G2 owned=16308 active_sources=3 slice=7 slice_owned=931 runs=931 submeshes=931 transition_ms=71.510000 prepare_ms=6841.747600",
+        "[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=7 allocated_renderers=931 enabled_renderers=931 items=931 proven_constant_zero_alpha=913 animated_alpha=1 zeroalpha=False skipped_by_this_probe=0",
+        "[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=7 allocated_renderers=931 enabled_renderers=18 items=931 proven_constant_zero_alpha=913 animated_alpha=1 zeroalpha=True skipped_by_this_probe=0",
+        "[StutterFix] [gpudeco] zeroalpha_pixel sample=2 different=0 pixels=4953600 maxdiff=0 aa2=0 stable=True scope=live_cull_off_on_off_same_frozen_frame window=3440x1440 display=3440x1440 hz=144 mode=FullScreenWindow sync=0 graphics=Direct3D11 target=10000",
+        "[StutterFix] [gpudeco] shutdown_disposed=True native_contexts=0"
+      ]
+    },
+    "round18b-alpha-g2": {
+      "sha": {
+        "source_dll": "ffff370dc17d8b0b0ed5906e8f47f0426286cf60b07a27318cbf573566c70d4f",
+        "source_native": "a0f777c5ecac54afabd2e2f3b3de145661939e9ac16a6914efe56c4708ca62b7",
+        "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1"
+      },
+      "restored": 8,
+      "restore_total": 8,
+      "game_running_after": false,
+      "buffer_finalizer_warnings": 0,
+      "metrics": [
+        "[StutterFix] [gpudeco] prepare_ms=6989.386400 phase=live_prepare slices=9 owned_union=16308 total_runs=30938 total_submeshes=30938 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False",
+        "[StutterFix] [gpudeco] g2_prepared mode=off song=258.017840 paused=True owned=0 transition_ms=0.000000 prepare_ms=6989.386400 resume_then_play_to=262 minimum_on_warmup_s=3",
+        "[StutterFix] [gpudeco] FPS mode=off index=0 fps=127.560613 ms=7.839410 frames=1778 elapsed_s=13.938472 song_begin=262.060504 song_end=276.004290 spikes_30ms=0 worst_frame_ms=20.252600 valid=True",
+        "[StutterFix] [gpudeco] on=True scope=live_G2 owned=16308 active_sources=1199 slice=0 slice_owned=3282 runs=3282 submeshes=3282 transition_ms=72.678600 prepare_ms=6989.386400",
+        "[StutterFix] [gpudeco] g2_prepared mode=on song=258.007159 paused=True owned=16308 transition_ms=72.678600 prepare_ms=6989.386400 resume_then_play_to=262 minimum_on_warmup_s=3",
+        "[StutterFix] [gpudeco] cost window=1 frames=2414 total_ms=0.474725 progress_ms=0.173112 uniform_ms=0.005559 dispatch_ms=0.266320 misc_ms=0.006117 managed_ms=0.451109 native_upper_ms=0.023616 native_callbacks=2414 native_submitted=2414 native_errors=0 native_max_lifetime_ms=0.048000 max_ms=3.579400 budget_le_0.5ms=True",
+        "[StutterFix] [gpudeco] FPS mode=on index=1 fps=172.427090 ms=5.799553 frames=2414 elapsed_s=14.000120 song_begin=262.017840 song_end=276.004931 spikes_30ms=0 worst_frame_ms=18.521195 valid=True",
+        "[StutterFix] [gpudeco] on=True scope=live_G2 owned=16308 active_sources=1199 slice=0 slice_owned=3282 runs=3282 submeshes=3282 transition_ms=68.191100 prepare_ms=6989.386400",
+        "[StutterFix] [gpudeco] g2_prepared mode=on song=258.017840 paused=True owned=16308 transition_ms=68.191100 prepare_ms=6989.386400 resume_then_play_to=262 minimum_on_warmup_s=3",
+        "[StutterFix] [gpudeco] cost window=2 frames=2367 total_ms=0.480442 progress_ms=0.177391 uniform_ms=0.005846 dispatch_ms=0.266153 misc_ms=0.006525 managed_ms=0.455915 native_upper_ms=0.024527 native_callbacks=2367 native_submitted=2367 native_errors=0 native_max_lifetime_ms=0.128500 max_ms=4.389200 budget_le_0.5ms=True",
+        "[StutterFix] [gpudeco] FPS mode=on index=2 fps=169.293337 ms=5.906907 frames=2367 elapsed_s=13.981649 song_begin=262.013598 song_end=276.004809 spikes_30ms=0 worst_frame_ms=19.045599 valid=True",
+        "[StutterFix] [gpudeco] g2_prepared mode=off song=258.017840 paused=True owned=0 transition_ms=0.000000 prepare_ms=6989.386400 resume_then_play_to=262 minimum_on_warmup_s=3",
+        "[StutterFix] [gpudeco] FPS mode=off index=3 fps=126.820632 ms=7.885152 frames=1773 elapsed_s=13.980375 song_begin=262.026782 song_end=276.004260 spikes_30ms=0 worst_frame_ms=18.876098 valid=True",
+        "[StutterFix] [gpudeco] on=True scope=live_G2 owned=16308 active_sources=1929 slice=5 slice_owned=4875 runs=4875 submeshes=4875 transition_ms=72.551000 prepare_ms=6989.386400",
+        "[StutterFix] [gpudeco] stability checkpoint=pause_resume pass=True active=True owned=16308 sf_errors=0",
+        "[StutterFix] [gpudeco] stability checkpoint=song_end pass=True portal_observed=True active=False unrestored=0 sf_errors=0",
+        "[StutterFix] [gpudeco] on=True scope=live_G2 owned=16308 active_sources=1199 slice=0 slice_owned=3282 runs=3282 submeshes=3282 transition_ms=66.092800 prepare_ms=6989.386400",
+        "[StutterFix] [gpudeco] stability checkpoint=retry_restart pass=True active=False unrestored=0 sf_errors=0",
+        "[StutterFix] [gpudeco] prepare_ms=6776.489600 phase=live_prepare slices=9 owned_union=16308 total_runs=30938 total_submeshes=30938 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False",
+        "[StutterFix] [gpudeco] on=True scope=live_G2 owned=16308 active_sources=1199 slice=0 slice_owned=3282 runs=3282 submeshes=3282 transition_ms=61.054400 prepare_ms=6776.489600",
+        "[StutterFix] [gpudeco] stability checkpoint=reopen_toggle pass=True active=False unrestored=0 leaked_buffers=0 leaked_meshes=0 heap_mb=1526 sf_errors=0",
+        "[StutterFix] [gpudeco] GPUDECO_G2=PASS reason=abba_fps_cpu_cost_and_stability_passed on_fps=170.860213 off_fps=127.190623 gain_pct=34.333970 cost_ms=0.477584 progress_ms=0.175252 uniform_ms=0.005702 dispatch_ms=0.266237 misc_ms=0.006321 prepare_ms=6776.489600 transition_ms=61.054400 spikes30ms_on=0 spikes30ms_off=0 sf_errors=0 stability=True"
+      ]
+    }
+  },
+  "shots": [
+    {
+      "file": "gpudeco-alpha-live-0-20261023045153103-A.png",
+      "sha256": "81cacc177401e8468f6d8f3b1db91568b7ed9f36ade1ab3c088f022af620a03d"
+    },
+    {
+      "file": "gpudeco-alpha-live-0-20261023045153103-B.png",
+      "sha256": "81cacc177401e8468f6d8f3b1db91568b7ed9f36ade1ab3c088f022af620a03d"
+    },
+    {
+      "file": "gpudeco-alpha-live-0-20261023045153103-A2.png",
+      "sha256": "81cacc177401e8468f6d8f3b1db91568b7ed9f36ade1ab3c088f022af620a03d"
+    },
+    {
+      "file": "gpudeco-alpha-live-1-20261023045400477-A.png",
+      "sha256": "ed98faaad7a3cd37a562cd1c752107006b62415cef78fda6552a066abc163b75"
+    },
+    {
+      "file": "gpudeco-alpha-live-1-20261023045400477-B.png",
+      "sha256": "ed98faaad7a3cd37a562cd1c752107006b62415cef78fda6552a066abc163b75"
+    },
+    {
+      "file": "gpudeco-alpha-live-1-20261023045400477-A2.png",
+      "sha256": "ed98faaad7a3cd37a562cd1c752107006b62415cef78fda6552a066abc163b75"
+    },
+    {
+      "file": "gpudeco-alpha-live-2-20261023045609646-A.png",
+      "sha256": "b58a7b0898b405706fd6d7fd6996b1c4c4264598a71ac3db573969500e7f9af3"
+    },
+    {
+      "file": "gpudeco-alpha-live-2-20261023045609646-B.png",
+      "sha256": "b58a7b0898b405706fd6d7fd6996b1c4c4264598a71ac3db573969500e7f9af3"
+    },
+    {
+      "file": "gpudeco-alpha-live-2-20261023045609646-A2.png",
+      "sha256": "b58a7b0898b405706fd6d7fd6996b1c4c4264598a71ac3db573969500e7f9af3"
+    }
+  ],
+  "same_source": true,
+  "scope": "Arche 262/270/276 paused pixels plus 262->276 ABBA; other_GPU_full_song_physical_latency_UNMEASURED"
+}

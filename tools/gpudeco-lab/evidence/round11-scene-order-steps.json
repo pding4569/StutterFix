@@ -1,0 +1,16 @@
+{
+  "steps": [
+    "timeout 180",
+    "auto on",
+    "open D:\\얼불춤 맵 파일\\ALPHA\\S25_ArcheCDF\\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai",
+    "seek 262 12",
+    "waitsongpos 262 40",
+    "pause",
+    "gpudeco orderprobe scene",
+    "resume",
+    "stop",
+    "quit"
+  ],
+  "timeout_min": 7,
+  "tag": "round11-scene-order"
+}

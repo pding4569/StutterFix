@@ -37,6 +37,7 @@ namespace StutterFix
             MatShare.Stop();
             LiveDecoGate2.RestoreProfile();
             LiveDeco.Stop();
+            DecoBake.StopGpuLive("SceneReset", false);
 #endif
 #if DEV || AUTOTEST
             DecoRender.Stop();

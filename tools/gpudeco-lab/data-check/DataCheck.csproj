@@ -7,5 +7,6 @@
   <ItemGroup>
     <Compile Include="../../../GpuDecoData.cs" />
     <Compile Include="../../../DecoBake.Core.cs" />
+    <Compile Include="../../../GpuDecoScopePlan.cs" />
   </ItemGroup>
 </Project>

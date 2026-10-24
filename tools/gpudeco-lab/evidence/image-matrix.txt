@@ -1,0 +1,238 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+[gpudeco-lab] linear_division samples=65537 mismatches=0 duration_range=1e-4..100 cpu=float_division
+[gpudeco-lab] native_linear_division mismatches=19567 samples=65537 negative_control=True
+[gpudeco-lab] linear_cancellation cpu=92842.6171875 gpu=92842.6171875
+[gpudeco-lab] cubic_quotient_regression cpu=672.324584961 gpu=672.324584961
+[gpudeco-lab] rotation_endpoint angle=90 cpu_q=(0, 0, 0.707106829, 0.707106829) gpu_qz_qw_sn_cs=(0.707106829, 0.707106829, 1.00000012, -1.1920929E-07)
+[gpudeco-lab] rotation_endpoint angle=180 cpu_q=(0, 0, 1, -4.37113883E-08) gpu_qz_qw_sn_cs=(1, -4.37113883E-08, -8.74227766E-08, -1)
+[gpudeco-lab] rotation_endpoint angle=270 cpu_q=(0, 0, 0.707106829, -0.707106829) gpu_qz_qw_sn_cs=(0.707106829, -0.707106829, -1.00000012, -1.1920929E-07)
+[gpudeco-lab] rotation_endpoint angle=180 cpu_q=(0, 0, 1, -4.37113883E-08) gpu_qz_qw_sn_cs=(1, -4.37113883E-08, -8.74227766E-08, -1)
+[gpudeco-lab] rotation_matrix samples=8200 range_degrees=-720..720 max=4.62989078187E-07 mean=6.2677614568E-08
+[gpudeco] G0 t=270 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco-lab] table samples=16 max=0 mean=0
+[gpudeco-lab] vertices samples=4 max_px=0 mean_px=0 over_tol=0
+[gpudeco-lab] renderer_color samples=16 max=0 mean=0 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=0 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=0 frame_samples=0 fallback_slots=16
+[gpudeco-lab] wide_sprite_rotation angle=0 scale_x=1000 half_width=5 PASS
+[gpudeco] G0 t=270 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco-lab] table samples=16 max=0 mean=0
+[gpudeco-lab] vertices samples=4 max_px=0 mean_px=0 over_tol=0
+[gpudeco-lab] renderer_color samples=16 max=0 mean=0 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=0 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=0 frame_samples=0 fallback_slots=16
+[gpudeco-lab] wide_sprite_rotation angle=90 scale_x=1000 half_width=5 PASS
+[gpudeco] G0 t=270 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco-lab] table samples=16 max=0 mean=0
+[gpudeco-lab] vertices samples=4 max_px=0 mean_px=0 over_tol=0
+[gpudeco-lab] renderer_color samples=16 max=0 mean=0 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=0 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=0 frame_samples=0 fallback_slots=16
+[gpudeco-lab] wide_sprite_rotation angle=180 scale_x=1000 half_width=5 PASS
+[gpudeco] G0 t=270 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco-lab] table samples=16 max=0 mean=0
+[gpudeco-lab] vertices samples=4 max_px=0 mean_px=0 over_tol=0
+[gpudeco-lab] renderer_color samples=16 max=0 mean=0 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=0 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=0 frame_samples=0 fallback_slots=16
+[gpudeco-lab] wide_sprite_rotation angle=270 scale_x=1000 half_width=5 PASS
+[gpudeco] G0 t=270 ch=pos slot=0 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=1 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=2 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=3 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=rot slot=4 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=5 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=scale slot=6 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=7 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=8 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=9 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=10 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=color slot=11 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=12 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=13 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=14 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco] G0 t=270 ch=pos slot=15 max=0 mean=0 max_px=0 mean_px=0 over_tol=0 raw_units=True source=synthetic
+[gpudeco-lab] table samples=16 max=0 mean=0
+[gpudeco-lab] vertices samples=4 max_px=0 mean_px=0 over_tol=0
+[gpudeco-lab] renderer_color samples=16 max=0 mean=0 over_tol=0
+[gpudeco-lab] geometry actual_fields_vs_sprite_max_px=0 over_tol=0 gpu_vs_evaluated_fields_max_px=0 over_tol=0 gpu_color_formula_over_tol=0
+[gpudeco] phase slot=0 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=1 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=2 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=3 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=4 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=5 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=6 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=7 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=8 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=9 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=10 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=11 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=12 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=13 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=14 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase slot=15 samples=0 max_ms=0 mean_ms=NA over_frame=0 mode=anchored
+[gpudeco] phase_sources active=0 within_frame=0 frame_mean_ms=0 frame_samples=0 fallback_slots=16
+[gpudeco-lab] wide_sprite_rotation angle=-180 scale_x=1000 half_width=5 PASS
+GPUDECO_ROTATION=PASS synthetic=True
+[image-matrix] origin=0 angle=-90.1751480103 camera=0 different=0 max_RGBA=0 world_error=9.42432194506E-08 repeat=0
+[image-matrix] origin=0 angle=-90.1751480103 camera=17.125 different=0 max_RGBA=0 world_error=9.42432194506E-08 repeat=0
+[image-matrix] origin=0 angle=18.893945694 camera=0 different=0 max_RGBA=0 world_error=6.14390600617E-08 repeat=0
+[image-matrix] origin=0 angle=18.893945694 camera=17.125 different=0 max_RGBA=0 world_error=6.14390600617E-08 repeat=0
+[image-matrix] origin=0 angle=34.0777397156 camera=0 different=0 max_RGBA=0 world_error=5.96046447754E-08 repeat=0
+[image-matrix] origin=0 angle=34.0777397156 camera=17.125 different=0 max_RGBA=0 world_error=5.96046447754E-08 repeat=0
+[image-matrix] origin=0 angle=2880 camera=0 different=0 max_RGBA=0 world_error=6.66400197247E-08 repeat=0
+[image-matrix] origin=0 angle=2880 camera=17.125 different=0 max_RGBA=0 world_error=6.66400197247E-08 repeat=0
+[image-matrix] origin=624 angle=-90.1751480103 camera=0 different=22220 max_RGBA=120 world_error=8.63167442731E-05 repeat=0
+[image-matrix] origin=624 angle=-90.1751480103 camera=17.125 different=24595 max_RGBA=115 world_error=8.63167442731E-05 repeat=0
+[image-matrix] origin=624 angle=18.893945694 camera=0 different=28431 max_RGBA=116 world_error=6.103515625E-05 repeat=0
+[image-matrix] origin=624 angle=18.893945694 camera=17.125 different=31242 max_RGBA=118 world_error=6.103515625E-05 repeat=0
+[image-matrix] origin=624 angle=34.0777397156 camera=0 different=0 max_RGBA=0 world_error=6.103515625E-05 repeat=0
+[image-matrix] origin=624 angle=34.0777397156 camera=17.125 different=0 max_RGBA=0 world_error=6.103515625E-05 repeat=0
+[image-matrix] origin=624 angle=2880 camera=0 different=28611 max_RGBA=124 world_error=8.63167442731E-05 repeat=0
+[image-matrix] origin=624 angle=2880 camera=17.125 different=29318 max_RGBA=114 world_error=8.63167442731E-05 repeat=0
+[image-matrix] origin=8192 angle=-90.1751480103 camera=0 different=39270 max_RGBA=125 world_error=0.0009765625 repeat=0
+[image-matrix] origin=8192 angle=-90.1751480103 camera=17.125 different=20206 max_RGBA=126 world_error=0.0009765625 repeat=0
+[image-matrix] origin=8192 angle=18.893945694 camera=0 different=41794 max_RGBA=132 world_error=0.0009765625 repeat=0
+[image-matrix] origin=8192 angle=18.893945694 camera=17.125 different=41804 max_RGBA=125 world_error=0.0009765625 repeat=0
+[image-matrix] origin=8192 angle=34.0777397156 camera=0 different=41517 max_RGBA=188 world_error=0.00138106790837 repeat=0
+[image-matrix] origin=8192 angle=34.0777397156 camera=17.125 different=41610 max_RGBA=124 world_error=0.00138106790837 repeat=0
+[image-matrix] origin=8192 angle=2880 camera=0 different=17927 max_RGBA=117 world_error=0.00048828125 repeat=0
+[image-matrix] origin=8192 angle=2880 camera=17.125 different=0 max_RGBA=0 world_error=0.00048828125 repeat=0
+[image-matrix] origin=92842.6171875 angle=-90.1751480103 camera=0 different=41458 max_RGBA=248 world_error=0.0078125 repeat=0
+[image-matrix] origin=92842.6171875 angle=-90.1751480103 camera=17.125 different=41678 max_RGBA=251 world_error=0.0078125 repeat=0
+[image-matrix] origin=92842.6171875 angle=18.893945694 camera=0 different=0 max_RGBA=0 world_error=0.0078125 repeat=0
+[image-matrix] origin=92842.6171875 angle=18.893945694 camera=17.125 different=0 max_RGBA=0 world_error=0.0078125 repeat=0
+[image-matrix] origin=92842.6171875 angle=34.0777397156 camera=0 different=41714 max_RGBA=251 world_error=0.011048543267 repeat=0
+[image-matrix] origin=92842.6171875 angle=34.0777397156 camera=17.125 different=41711 max_RGBA=252 world_error=0.011048543267 repeat=0
+[image-matrix] origin=92842.6171875 angle=2880 camera=0 different=41464 max_RGBA=248 world_error=0.011048543267 repeat=0
+[image-matrix] origin=92842.6171875 angle=2880 camera=17.125 different=41496 max_RGBA=251 world_error=0.011048543267 repeat=0
+GPUDECO_IMAGE_MATRIX cases=32 different_cases=19 different_pixels=658066 max_RGBA=252 max_world_error=0.011048543267 game_pixels=UNMEASURED
+GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: image matrix pixel fixture failed
+  at GpuDecoLab.ImageMatrixBody (UnityEngine.ComputeShader shader) [0x009e6] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoImageMatrixProbe.cs:86 
+  at GpuDecoLab+<>c.<ImageMatrixBundle>b__13_0 () [0x00108] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoImageMatrixProbe.cs:25 
+  at GpuDecoLab.Run (System.Action action, System.String name) [0x000a2] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:39 

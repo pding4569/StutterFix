@@ -16,6 +16,7 @@ namespace StutterFix
     {
         readonly bool[] seen=new bool[3];
         internal string Error;
+        internal void Diagnostic() { Error="diagnostic_run_not_acceptance"; }
         internal void Pixel(int index,int awake,int owned,bool g0,long changed,long total,int max,long restored,bool stable)
         {
             if(index<0 || index>=3 || seen[index] || awake<0 || owned<0 || owned>awake || changed<0 || total<=0 || changed>total || max<0 || max>255){Error="invalid_pixel_sample";return;}

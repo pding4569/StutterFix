@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -31,6 +31,10 @@ namespace StutterFix
         private static readonly Dictionary<scrVisualDecoration, TextureManager.CustomSprite> pending = new Dictionary<scrVisualDecoration, TextureManager.CustomSprite>(new RefEq());
         private static bool flushing, installed;
         internal static int Count { get { return pending.Count; } }
+#if AUTOTEST
+        // Inspection must not call Flush or getters patched by OnePrefix.
+        internal static bool GpuPeekPending(scrVisualDecoration d,out TextureManager.CustomSprite value)=>pending.TryGetValue(d,out value);
+#endif
 
         internal static void Install(Harmony h)
         {
@@ -104,7 +108,11 @@ namespace StutterFix
             pending.Remove(v);
             if (v == null) return;
             flushing = true;
-            try { v.SetSprite(cs, false); Flushed++; }
+            try { v.SetSprite(cs, false);
+#if AUTOTEST
+                DecoBake.GpuImageSpriteFlushed(v);
+#endif
+                Flushed++; }
             catch (Exception ex) { Main.Entry.Logger.Log("[투명 장식] 미룬 이미지 적용 오류: " + ex.Message); }
             finally { flushing = false; }
         }
@@ -120,7 +128,11 @@ namespace StutterFix
                 foreach (var kv in list)
                 {
                     if (kv.Key == null) continue;
-                    try { kv.Key.SetSprite(kv.Value, false); Flushed++; }
+                    try { kv.Key.SetSprite(kv.Value, false);
+#if AUTOTEST
+                            DecoBake.GpuImageSpriteFlushed(kv.Key);
+#endif
+                            Flushed++; }
                     catch (Exception ex) { Main.Entry.Logger.Log("[투명 장식] 미룬 이미지 적용 오류: " + ex.Message); }
                 }
             }

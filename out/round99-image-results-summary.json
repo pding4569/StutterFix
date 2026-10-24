@@ -1,0 +1,20 @@
+{
+  "run": "round99-image-results",
+  "exit_code": 0,
+  "game_running": false,
+  "restored": 9,
+  "original_states": 9,
+  "scope": "CPU image assignment observer, no image playback or screen pixels",
+  "lines": [
+    "[StutterFix] [gpudeco] image_tape events=1833 selectors=104 target_references=8751 decorations=5087 empty_selector_events=1 source_id_reuses=0 payload_lower_bound_bytes=247540 metadata_only=True GPU_image_playback=False admission_changed=False",
+    "[StutterFix] [gpudeco] image_variants ready_quad=103 null_argument=1 missing=0 non_quad=0 split_alpha=0 invalid=0 borrowed_assets_destroyed=0 asset_getters_only=True",
+    "[StutterFix] [gpudeco] image_tape events=1833 selectors=104 target_references=8751 decorations=5087 empty_selector_events=1 source_id_reuses=0 payload_lower_bound_bytes=247540 metadata_only=True GPU_image_playback=False admission_changed=False",
+    "[StutterFix] [gpudeco] image_variants ready_quad=103 null_argument=1 missing=0 non_quad=0 split_alpha=0 invalid=0 borrowed_assets_destroyed=0 asset_getters_only=True",
+    "[StutterFix] [gpudeco] image_shadow observed=0 matched=0 unknown_source=0 mismatch=0 errors=0 first_bad_song=NaN observed_nonempty=False scope=FastMove_Run_image_events_only CPU_image_setters_unchanged=True GPU_image_playback=False",
+    "[StutterFix] [gpudeco] image_results asset_checks=0 asset_mismatch=0 post_assignments=0 immediate=0 deferred=0 post_mismatch=0 null_arguments=0 unplanned_post=0 clamp_samples=0 other_wrap_samples=0 first_asset_bad_song=NaN first_post_bad_song=NaN physical_pixels=UNMEASURED scope=image_assignment_before_later_size_smoothing_mask_blocks",
+    "[StutterFix] [gpudeco] image_shadow observed=973 matched=973 unknown_source=0 mismatch=0 errors=0 first_bad_song=NaN observed_nonempty=True scope=FastMove_Run_image_events_only CPU_image_setters_unchanged=True GPU_image_playback=False",
+    "[StutterFix] [gpudeco] image_results asset_checks=973 asset_mismatch=0 post_assignments=6052 immediate=1137 deferred=4915 post_mismatch=0 null_arguments=59 unplanned_post=0 clamp_samples=1813 other_wrap_samples=4180 first_asset_bad_song=NaN first_post_bad_song=NaN physical_pixels=UNMEASURED scope=image_assignment_before_later_size_smoothing_mask_blocks",
+    "[StutterFix] [gpudeco] image_shadow observed=973 matched=973 unknown_source=0 mismatch=0 errors=0 first_bad_song=NaN observed_nonempty=True scope=FastMove_Run_image_events_only CPU_image_setters_unchanged=True GPU_image_playback=False",
+    "[StutterFix] [gpudeco] image_results asset_checks=973 asset_mismatch=0 post_assignments=6052 immediate=1137 deferred=4915 post_mismatch=0 null_arguments=59 unplanned_post=0 clamp_samples=1813 other_wrap_samples=4180 first_asset_bad_song=NaN first_post_bad_song=NaN physical_pixels=UNMEASURED scope=image_assignment_before_later_size_smoothing_mask_blocks"
+  ]
+}

@@ -543,6 +543,9 @@ ParticleTextWatch.Install(harmony);
             Try(ImagePrefetch.Stop);       // 이미지 작업 스레드와 풀어 둔 메모리
             Try(() => SystemMonitor.Keep = false);
             Try(FastBlend.Uninstall);      // 바꿔 끼운 블렌드 장식 재질을 원래대로
+#if DEV || AUTOTEST
+            Try(HiddenDecoSynergy.Reset);
+#endif
             Try(InvisibleSkip.Uninstall);   // 그리기에서 뺀 투명 장식을 되돌린다
             Try(SettingsWindow.Destroy);
             Try(global::StutterFix.MeshWarm.Release);   // 미리 만들기용 숨긴 물체

@@ -1,0 +1,2 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+GPUDECO_SOURCE_CAPACITY=PASS capacity=8192 indices=0,2047,2048,4095,4096,8191 passes=2 bit_exact_channels=192 game_full_song=UNMEASURED

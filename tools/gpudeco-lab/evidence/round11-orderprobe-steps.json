@@ -1,0 +1,9 @@
+{
+  "steps": [
+    "timeout 120",
+    "gpudeco orderprobe",
+    "quit"
+  ],
+  "timeout_min": 4,
+  "tag": "round11-orderprobe"
+}

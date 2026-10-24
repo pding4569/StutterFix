@@ -1,0 +1,281 @@
+// HLSL Compute Shader: Assets/Shaders/GpuDeco.compute
+// Unity 6000.3 Direct3D11 Built-in Pipeline — G1 Snapshot & G2 Live Source-Anchored Renderer
+#pragma kernel Evaluate
+#pragma kernel EvaluateLive
+#pragma kernel CopyRun
+
+struct Segment
+{
+    float hi, lo, duration, start, end, target, over, period;
+    uint ease, scale;
+};
+
+struct Track
+{
+    uint first, count;
+    float initial, pad;
+};
+
+struct Anchor
+{
+    Segment segment;
+    uint clock, valid;
+};
+
+// Request B (G2): Updated only on effect start/end.
+// sourceIndex < 0 => static/completed value = end
+// sourceIndex >= 0 => value = (float)((double)start + (double)change * (double)_SourceE[sourceIndex])
+struct LiveChannel
+{
+    float start;
+    float change;
+    float end;
+    int sourceIndex;
+};
+
+StructuredBuffer<Segment> _Segments;
+StructuredBuffer<Track> _Tracks;
+StructuredBuffer<Anchor> _Anchors;
+StructuredBuffer<float> _Progress;
+StructuredBuffer<LiveChannel> _LiveChannels;
+StructuredBuffer<float> _SourceE;
+StructuredBuffer<float4> _Static;
+StructuredBuffer<float2> _UV;
+
+RWStructuredBuffer<float> _Values;
+RWByteAddressBuffer _Vertices;
+ByteAddressBuffer _CopySource;
+
+float _Pitch;
+float _TweenScale;
+float _TimeHi;
+float _TimeLo;
+float4 _Camera;
+int _Count;
+int _UseAnchors;
+int _UseLiveChannels;
+
+int _CopyFirstVertex;
+int _CopyVertexCount;
+int _CopyQuantizeColor;
+
+static const double PI_D = 3.14159265358979323846;
+static const double HALF_PI_D = 1.57079632679489661923;
+static const double TWO_PI_D = 6.28318530717958647692;
+
+// Bit-exact DOTween EaseManager.Evaluate port (double residual / promotion where needed)
+float EvalEase(uint ease, float time, float duration, float over, float period)
+{
+    if (duration <= 0.0f) return 1.0f;
+    double t = (double)time;
+    double d = (double)duration;
+    double u = t / d;
+    if (ease == 1u) return (float)u; // Linear
+    if (ease == 2u) return (float)(-cos(u * HALF_PI_D) + 1.0); // InSine
+    if (ease == 3u) return (float)(sin(u * HALF_PI_D)); // OutSine
+    if (ease == 4u) return (float)(-0.5 * (cos(PI_D * u) - 1.0)); // InOutSine
+    if (ease == 5u) return (float)(u * u); // InQuad
+    if (ease == 6u) return (float)(-u * (u - 2.0)); // OutQuad
+    if (ease == 7u) { double t2 = u * 2.0; return (t2 < 1.0) ? (float)(0.5 * t2 * t2) : (float)(-0.5 * ((t2 - 1.0) * (t2 - 3.0) - 1.0)); } // InOutQuad
+    if (ease == 8u) return (float)(u * u * u); // InCubic
+    if (ease == 9u) { double m = u - 1.0; return (float)(m * m * m + 1.0); } // OutCubic
+    if (ease == 10u) { double t2 = u * 2.0; if (t2 < 1.0) return (float)(0.5 * t2 * t2 * t2); t2 -= 2.0; return (float)(0.5 * (t2 * t2 * t2 + 2.0)); } // InOutCubic
+    if (ease == 11u) { double u2 = u * u; return (float)(u2 * u2); } // InQuart
+    if (ease == 12u) { double m = u - 1.0; double m2 = m * m; return (float)-(m2 * m2 - 1.0); } // OutQuart
+    if (ease == 13u) { double t2 = u * 2.0; if (t2 < 1.0) { double q = t2 * t2; return (float)(0.5 * q * q); } t2 -= 2.0; double q2 = t2 * t2; return (float)(-0.5 * (q2 * q2 - 2.0)); } // InOutQuart
+    if (ease == 14u) { double u2 = u * u; return (float)(u2 * u2 * u); } // InQuint
+    if (ease == 15u) { double m = u - 1.0; double m2 = m * m; return (float)(m2 * m2 * m + 1.0); } // OutQuint
+    if (ease == 16u) { double t2 = u * 2.0; if (t2 < 1.0) { double q = t2 * t2; return (float)(0.5 * q * q * t2); } t2 -= 2.0; double q2 = t2 * t2; return (float)(0.5 * (q2 * q2 * t2 + 2.0)); } // InOutQuint
+    if (ease == 17u) return (t == 0.0) ? 0.0f : (float)pow(2.0, (float)(10.0 * (u - 1.0))); // InExpo
+    if (ease == 18u) return (t == d) ? 1.0f : (float)(-pow(2.0, (float)(-10.0 * u)) + 1.0); // OutExpo
+    if (ease == 19u) { if (t == 0.0) return 0.0f; if (t == d) return 1.0f; double t2 = u * 2.0; if (t2 < 1.0) return (float)(0.5 * pow(2.0, (float)(10.0 * (t2 - 1.0)))); return (float)(0.5 * (-pow(2.0, (float)(-10.0 * (t2 - 1.0))) + 2.0)); } // InOutExpo
+    if (ease == 20u) return (float)-(sqrt(max(0.0, 1.0 - u * u)) - 1.0); // InCirc
+    if (ease == 21u) { double m = u - 1.0; return (float)sqrt(max(0.0, 1.0 - m * m)); } // OutCirc
+    if (ease == 22u) { double t2 = u * 2.0; if (t2 < 1.0) return (float)(-0.5 * (sqrt(max(0.0, 1.0 - t2 * t2)) - 1.0)); t2 -= 2.0; return (float)(0.5 * (sqrt(max(0.0, 1.0 - t2 * t2)) + 1.0)); } // InOutCirc
+    if (ease == 26u) { double s = (double)over; return (float)(u * u * ((s + 1.0) * u - s)); } // InBack
+    if (ease == 27u) { double s = (double)over; double m = u - 1.0; return (float)(m * m * ((s + 1.0) * m + s) + 1.0); } // OutBack
+    if (ease == 28u) { double s = (double)over * 1.525; double t2 = u * 2.0; if (t2 < 1.0) return (float)(0.5 * (t2 * t2 * ((s + 1.0) * t2 - s))); t2 -= 2.0; return (float)(0.5 * (t2 * t2 * ((s + 1.0) * t2 + s) + 2.0)); } // InOutBack
+    if (ease == 36u) return 1.0f; // Zero/Instant
+    return (float)u;
+}
+
+float EvalSegment(Segment s, float t)
+{
+    if (s.duration == 0.0f) return s.end;
+    if (t >= s.duration) return s.end;
+    if (t <= 0.0f) return s.start;
+    float target = (s.scale != 0u) ? s.target : s.end;
+    float change = target - s.start;
+    float e = EvalEase(s.ease, t, s.duration, s.over, s.period);
+    return (float)((double)s.start + (double)change * (double)e);
+}
+
+void WriteVerticesFromChannels(uint i, float ch[16])
+{
+    uint baseStatic = i * 10u;
+    float4 s7 = _Static[baseStatic + 7u]; // trueScale.xy, texScale.zw
+    float4 s8 = _Static[baseStatic + 8u]; // croppedPivot.xy, worldZ, flags
+    float4 s9 = _Static[baseStatic + 9u]; // startRot, 0, 0, 0
+
+    int flags = (int)round(s8.w);
+    precise float2 position = float2(ch[0], ch[1]);
+    precise float2 trueScale = s7.xy;
+    precise float2 texScale = s7.zw;
+    precise float2 camScale = (((flags & 1) != 0) ? _Camera.w : 1.0f) * trueScale;
+
+    precise float2 world = (_Camera.xy - position) * float2(ch[12], ch[13]) + position;
+    if ((flags & 4) != 0) world.x = position.x;
+    if ((flags & 8) != 0) world.y = position.y;
+    // Match TightLate.Apply float rounding order: (parallaxOffset * camScale) / texScale
+    precise float2 parOff = (float2(ch[14], ch[15]) * camScale) / texScale;
+    world += parOff;
+
+    precise float angle = s9.x + ch[4];
+    if ((flags & 2) != 0) angle += _Camera.z;
+
+    // Match Unity Quaternion.Normalize(Quaternion.Euler(0, 0, angle)) * v
+    precise float halfRad = angle * 0.0087266462599716479f;
+    precise float qz, qw;
+    sincos(halfRad, qz, qw);
+    precise float invNorm = rsqrt(qz * qz + qw * qw);
+    qz *= invNorm;
+    qw *= invNorm;
+    precise float z2 = qz + qz;
+    precise float cs = 1.0f - qz * z2;
+    precise float sn = qw * z2;
+
+    precise float2 scale = float2(ch[5], ch[6]) * camScale;
+    precise float2 offset = (float2(ch[2], ch[3]) + s8.xy) / trueScale;
+    precise float3 translated = _Static[baseStatic + 4u].xyz
+        + _Static[baseStatic + 5u].xyz * offset.x
+        + _Static[baseStatic + 6u].xyz * offset.y;
+
+    float4 col = float4(ch[7], ch[8], ch[9], ch[10] * ch[11]);
+
+    for (uint k = 0u; k < 4u; k++)
+    {
+        precise float3 local = _Static[baseStatic + k].xyz + translated;
+        precise float sx = local.x * scale.x;
+        precise float sy = local.y * scale.y;
+        precise float rx = cs * sx - sn * sy;
+        precise float ry = sn * sx + cs * sy;
+        precise float3 worldPos = float3(world.x + rx, world.y + ry, s8.z + local.z);
+
+        uint vIdx = i * 4u + k;
+        uint byteAddr = vIdx * 36u;
+        float2 uv = _UV[vIdx];
+        _Vertices.Store3(byteAddr + 0u, asuint(worldPos));
+        _Vertices.Store4(byteAddr + 12u, asuint(col));
+        _Vertices.Store2(byteAddr + 28u, asuint(uv));
+    }
+}
+
+[numthreads(64, 1, 1)]
+void Evaluate(uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= (uint)_Count) return;
+
+    double now = (double)_TimeHi + (double)_TimeLo;
+    float ch[16];
+    uint slotBase = i * 16u;
+    [unroll]
+    for (uint c = 0u; c < 16u; c++)
+    {
+        uint slot = slotBase + c;
+        float v = 0.0f;
+        Anchor a = _Anchors[slot];
+        if (_UseAnchors != 0 && a.valid != 0u)
+        {
+            Segment s = a.segment;
+            float prog = (s.duration > 0.0f) ? _Progress[a.clock] : 0.0f;
+            v = EvalSegment(s, prog);
+        }
+        else
+        {
+            Track tr = _Tracks[slot];
+            if (tr.count == 0u) v = tr.initial;
+            else
+            {
+                int lo = 0, hi = (int)tr.count;
+                while (lo < hi)
+                {
+                    int mid = lo + (hi - lo) / 2;
+                    Segment sm = _Segments[tr.first + (uint)mid];
+                    double st0 = (double)sm.hi + (double)sm.lo;
+                    if (st0 <= now) lo = mid + 1;
+                    else hi = mid;
+                }
+                int idx = lo - 1;
+                if (idx < 0) v = tr.initial;
+                else
+                {
+                    Segment seg = _Segments[tr.first + (uint)idx];
+                    double st0 = (double)seg.hi + (double)seg.lo;
+                    float t = (float)((now - st0) / (double)_Pitch * (double)_TweenScale);
+                    v = EvalSegment(seg, t);
+                }
+            }
+        }
+        ch[c] = v;
+        _Values[slot] = v;
+    }
+    WriteVerticesFromChannels(i, ch);
+}
+
+// Request B (G2): Direct live evaluation kernel — zero binary search, zero GPU easing.
+// CPU computes double easing e = ZeroTween.Eval(ease, pos, dur, over, period) once per active source
+// into _SourceE[], and GPU computes only start + change * e (promoted to double to match Mono x64 JIT).
+[numthreads(64, 1, 1)]
+void EvaluateLive(uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= (uint)_Count) return;
+
+    float ch[16];
+    uint slotBase = i * 16u;
+    [unroll]
+    for (uint c = 0u; c < 16u; c++)
+    {
+        uint slot = slotBase + c;
+        LiveChannel lc = _LiveChannels[slot];
+        float v;
+        if (lc.sourceIndex < 0)
+        {
+            v = lc.end;
+        }
+        else
+        {
+            float e = _SourceE[lc.sourceIndex];
+            v = (float)((double)lc.start + (double)lc.change * (double)e);
+        }
+        ch[c] = v;
+        _Values[slot] = v;
+    }
+    WriteVerticesFromChannels(i, ch);
+}
+
+[numthreads(64, 1, 1)]
+void CopyRun(uint3 id : SV_DispatchThreadID)
+{
+    uint k = id.x;
+    if (k >= (uint)_CopyVertexCount) return;
+
+    uint srcAddr = ((uint)_CopyFirstVertex + k) * 36u;
+    uint dstAddr = k * 36u;
+
+    uint3 posBits = _CopySource.Load3(srcAddr + 0u);
+    uint4 colBits = _CopySource.Load4(srcAddr + 12u);
+    uint2 uvBits  = _CopySource.Load2(srcAddr + 28u);
+
+    if (_CopyQuantizeColor != 0)
+    {
+        float4 col = asfloat(colBits);
+        col = floor(saturate(col) * 255.0f + 0.5f) / 255.0f;
+        colBits = asuint(col);
+    }
+
+    _Vertices.Store3(dstAddr + 0u, posBits);
+    _Vertices.Store4(dstAddr + 12u, colBits);
+    _Vertices.Store2(dstAddr + 28u, uvBits);
+}

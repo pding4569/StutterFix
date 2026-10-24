@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-23",
+  "branch": "codex/night-gpu",
+  "head": "1649c87",
+  "screen": "2560x1440 120Hz D3D11 VSync0",
+  "G1": "PIXEL_FAIL",
+  "G2": "PASS",
+  "synergy_started": false,
+  "limits": [
+    "3440 확인 안 됨",
+    "G2 CPU게이트는 구간평균이며 모든프레임최악값이 아님",
+    "마지막G1은 폐기한Signature제한 후보로 측정; G2전 제거, 최종G1재시험0",
+    "World정답/개별렌더러는 원인진단이며 합격판정 제외",
+    "곡전체픽셀동일성·물리표시지연 확인 안 됨"
+  ],
+  "trials": {
+    "round11-attribution": {
+      "source_dll_sha256": "047e70b1d9343780312f80861ca5277d755fbb2cc023dbca911543c18df036fe",
+      "bundle_sha256": "8869b138a45cdeb8d2e7f9c83de7020e3902fe0ff74d35129b5fdfe63795f815",
+      "log_sha256": "e0e75275a08f8b606a7686f7b6ac23a3d6defef4ce59be6ebfebfd52f78b0be5",
+      "game_running_after": false,
+      "restored": 8,
+      "restore_total": 8,
+      "metrics": [
+        "G0_snapshot vertices=6860 max_px=0.00401094462723 mean_px=3.50811483431E-06 over_tol=0 rgba_max=1.86264514923E-09 rgba_mean=1.60908969336E-11 rgba_over_tol=0",
+        "draw_diagnostic=off truth_vertex_upload=False acceptance_eligible=True",
+        "G1 sample=0 raw=262.01784002082422 different=2505 pixels=3686400 maxdiff=4 aa2=0 stable=True regions=(1280,480,32,32):247;(1280,544,32,32):173;(1312,480,32,32):169;(1312,352,32,32):155;(1216,480,32,32):147 mask=none auxiliary=False",
+        "G0_snapshot vertices=6860 max_px=0.00401094462723 mean_px=3.50811483431E-06 over_tol=0 rgba_max=1.86264514923E-09 rgba_mean=1.60908969336E-11 rgba_over_tol=0",
+        "draw_diagnostic=world truth_vertex_upload=True acceptance_eligible=False",
+        "G0_snapshot vertices=6860 max_px=0.00401094462723 mean_px=3.50811483431E-06 over_tol=0 rgba_max=1.86264514923E-09 rgba_mean=1.60908969336E-11 rgba_over_tol=0",
+        "draw_diagnostic=unorm8 truth_vertex_upload=False acceptance_eligible=False",
+        "G0_snapshot vertices=6860 max_px=0.00401094462723 mean_px=3.50811483431E-06 over_tol=0 rgba_max=1.86264514923E-09 rgba_mean=1.60908969336E-11 rgba_over_tol=0",
+        "draw_diagnostic=floatcolor truth_vertex_upload=False acceptance_eligible=False",
+        "G0_snapshot vertices=6860 max_px=0.00401094462723 mean_px=3.50811483431E-06 over_tol=0 rgba_max=1.86264514923E-09 rgba_mean=1.60908969336E-11 rgba_over_tol=0",
+        "draw_diagnostic=single truth_vertex_upload=False acceptance_eligible=False",
+        "G0_snapshot vertices=6860 max_px=0.00401094462723 mean_px=3.50811483431E-06 over_tol=0 rgba_max=1.86264514923E-09 rgba_mean=1.60908969336E-11 rgba_over_tol=0",
+        "draw_diagnostic=world truth_vertex_upload=True acceptance_eligible=False",
+        "G0_snapshot vertices=6860 max_px=0.00401094462723 mean_px=3.50811483431E-06 over_tol=0 rgba_max=1.86264514923E-09 rgba_mean=1.60908969336E-11 rgba_over_tol=0",
+        "draw_diagnostic=localz truth_vertex_upload=False acceptance_eligible=False",
+        "G0_snapshot vertices=6860 max_px=0.00401094462723 mean_px=3.50811483431E-06 over_tol=0 rgba_max=1.86264514923E-09 rgba_mean=1.60908969336E-11 rgba_over_tol=0",
+        "draw_diagnostic=float_single_localz truth_vertex_upload=False acceptance_eligible=False"
+      ]
+    },
+    "round11-orderprobe": {
+      "source_dll_sha256": "748a9964fe705ad8d7b74b1508b416de4753a86fa8912064278ee55a2064bff5",
+      "bundle_sha256": "8869b138a45cdeb8d2e7f9c83de7020e3902fe0ff74d35129b5fdfe63795f815",
+      "log_sha256": "26047dae3987466fd0c510cd33694d92d44dd86018aff5a5c6a5432a1a237d77",
+      "game_running_after": false,
+      "restored": 8,
+      "restore_total": 8,
+      "metrics": [
+        "result=MEASURED cases=24 forward_matches=24 reverse_matches=12 texel_matches=24 order_sensitive_cases=12 G1=NOT_EVALUATED"
+      ]
+    },
+    "round11-scene-order": {
+      "source_dll_sha256": "c5a4b378db9afab9add4e31cac2b2e9ff5501c1491451df183f1cdfb1240f449",
+      "bundle_sha256": "8869b138a45cdeb8d2e7f9c83de7020e3902fe0ff74d35129b5fdfe63795f815",
+      "log_sha256": "bc8e7fd83943fe1b4fec8267dd022ee1921ef6d6ab8df3b516847732bf0d09a3",
+      "game_running_after": false,
+      "restored": 8,
+      "restore_total": 8,
+      "metrics": [
+        "result=MEASURED scene=True signatures=19 cases=12 forward_matches=6 reverse_matches=6 texel_matches=6 order_sensitive_cases=6 G1=NOT_EVALUATED"
+      ]
+    },
+    "round11d-g1": {
+      "source_dll_sha256": "2459d3fb95a514aa568f7e78f3a0e5fe92c2ba9900540915159a5eac0b77101f",
+      "bundle_sha256": "8869b138a45cdeb8d2e7f9c83de7020e3902fe0ff74d35129b5fdfe63795f815",
+      "log_sha256": "b2a5352a5ffa34f350a0d0c66657cd56ccdb3e01b20d9fe0928f69a6289d1fbb",
+      "game_running_after": false,
+      "restored": 8,
+      "restore_total": 8,
+      "metrics": [
+        "G0_snapshot vertices=6860 max_px=0.00401575816795 mean_px=4.68309990432E-06 over_tol=0 rgba_max=3.72529029846E-09 rgba_mean=1.91927246367E-11 rgba_over_tol=0",
+        "draw_diagnostic=off truth_vertex_upload=False acceptance_eligible=True",
+        "G1 sample=0 raw=262.01784002082422 different=3120 pixels=3686400 maxdiff=3 aa2=0 stable=True regions=(1312,480,32,32):267;(1216,416,32,32):257;(1280,512,32,32):245;(1216,448,32,32):225;(1216,480,32,32):198 mask=none auxiliary=False",
+        "G0_snapshot vertices=7060 max_px=0.00779693201184 mean_px=8.83505043835E-06 over_tol=0 rgba_max=3.72529029846E-09 rgba_mean=3.90098509366E-11 rgba_over_tol=0",
+        "draw_diagnostic=off truth_vertex_upload=False acceptance_eligible=True",
+        "G1 sample=1 raw=270.01600896613672 different=1233 pixels=3686400 maxdiff=4 aa2=0 stable=True regions=(1568,704,32,32):1341;(1504,704,32,32):750;(1376,640,32,32):420;(1408,640,32,32):393;(1536,704,32,32):384 mask=none auxiliary=False",
+        "G0_snapshot vertices=68 max_px=0 mean_px=0 over_tol=0 rgba_max=0 rgba_mean=0 rgba_over_tol=0",
+        "draw_diagnostic=off truth_vertex_upload=False acceptance_eligible=True",
+        "G1 sample=2 raw=276.00374089973047 different=0 pixels=3686400 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=True",
+        "GPUDECO_G1=PIXEL_FAIL scope=paused_G1 exports=3 reason=PIXEL_FAIL live_animation=UNMEASURED G2=UNMEASURED"
+      ]
+    },
+    "round11-g2": {
+      "source_dll_sha256": "3ea0caeb77f59229b4f7965b01197d91065611d0a0968e20aa8ffa652c2b1b94",
+      "bundle_sha256": "8869b138a45cdeb8d2e7f9c83de7020e3902fe0ff74d35129b5fdfe63795f815",
+      "log_sha256": "eb536194501640d858ab16330cc45ce603712ec6208b4c42261852c7d37dc4b0",
+      "game_running_after": false,
+      "restored": 8,
+      "restore_total": 8,
+      "metrics": [
+        "g2_window_begin index=0 mode=off song=262.060504 warmup_excluded_s=0.000 minimum_on_warmup_s=3 transition_ms=0.000000",
+        "FPS mode=off index=0 fps=125.566781 ms=7.963890 frames=1750 elapsed_s=13.936807 song_begin=262.060504 song_end=276.004290 spikes_30ms=0 worst_frame_ms=20.946201 valid=True",
+        "g2_window_begin index=1 mode=on song=262.013232 warmup_excluded_s=4.073 minimum_on_warmup_s=3 transition_ms=67.921300",
+        "cost window=1 frames=2295 total_ms=0.453308 progress_ms=0.162897 uniform_ms=0.005642 dispatch_ms=0.283759 misc_ms=0.001010 max_ms=0.836800 budget_le_0.5ms=True",
+        "FPS mode=on index=1 fps=163.938702 ms=6.099841 frames=2295 elapsed_s=13.999135 song_begin=262.013232 song_end=276.001849 spikes_30ms=0 worst_frame_ms=19.238500 valid=True",
+        "g2_window_begin index=2 mode=on song=262.017840 warmup_excluded_s=4.050 minimum_on_warmup_s=3 transition_ms=65.673000",
+        "cost window=2 frames=2272 total_ms=0.453874 progress_ms=0.162129 uniform_ms=0.005663 dispatch_ms=0.285032 misc_ms=0.001050 max_ms=0.887400 budget_le_0.5ms=True",
+        "FPS mode=on index=2 fps=162.529784 ms=6.152718 frames=2272 elapsed_s=13.978976 song_begin=262.017840 song_end=276.005450 spikes_30ms=0 worst_frame_ms=23.711296 valid=True",
+        "g2_window_begin index=3 mode=off song=262.017840 warmup_excluded_s=0.000 minimum_on_warmup_s=3 transition_ms=0.000000",
+        "FPS mode=off index=3 fps=125.966697 ms=7.938606 frames=1761 elapsed_s=13.979886 song_begin=262.017840 song_end=276.002612 spikes_30ms=0 worst_frame_ms=19.224299 valid=True",
+        "result=MEASURED scene=True signatures=19 cases=12 forward_matches=6 reverse_matches=6 texel_matches=6 crc_matches=6 crc_reverse_matches=8 order_sensitive_cases=6 G1=NOT_EVALUATED",
+        "stability checkpoint=pause_resume pass=True active=True owned=16308 sf_errors=0",
+        "lifecycle_end source=existing_game_callback method=OnLandOnPortal song=308.391833",
+        "stability checkpoint=song_end pass=True portal_observed=True active=False unrestored=0 sf_errors=0",
+        "lifecycle_end source=existing_game_callback method=SwitchToEditMode song=260.012499",
+        "stability checkpoint=retry_restart pass=True active=False unrestored=0 sf_errors=0",
+        "stability checkpoint=reopen_toggle pass=True active=False unrestored=0 leaked_buffers=0 leaked_meshes=0 heap_mb=1520 sf_errors=0",
+        "GPUDECO_G2=PASS reason=abba_fps_cpu_cost_and_stability_passed on_fps=163.234243 off_fps=125.766739 gain_pct=29.791266 cost_ms=0.453591 progress_ms=0.162513 uniform_ms=0.005653 dispatch_ms=0.284395 misc_ms=0.001030 prepare_ms=5958.965900 transition_ms=56.808500 spikes30ms_on=0 spikes30ms_off=0 sf_errors=0 stability=True"
+      ]
+    }
+  }
+}

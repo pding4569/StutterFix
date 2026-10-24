@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
@@ -84,12 +84,25 @@ namespace StutterFix
             if (frameMs > WorstFrameMs) WorstFrameMs = frameMs;
         }
 
+#if AUTOTEST
+        static scrVisualDecoration gpuImageColorSync;
+        internal static void SyncGpuImageColor(scrVisualDecoration d,Color rendered)
+        {
+            var prior=gpuImageColorSync;var renderer=rendererRef(d);
+            colorRef(d)=rendered;renderer.color=rendered;gpuImageColorSync=d;
+            try {Work(d);}finally{gpuImageColorSync=prior;if(renderer)renderer.forceRenderingOff=true;}
+        }
+#endif
         private static void Work(scrVisualDecoration inst)
         {
 #if DEV || AUTOTEST
             // The live mesh owner controls the original renderer's forced-off bit.
             // Logical alpha continues to change; release returns bookkeeping here.
-            if (LiveDecoRenderer.Owns(inst)) return;
+            if (LiveDecoRenderer.Owns(inst) || DecoBake.GpuLiveOwns(inst)
+#if AUTOTEST
+                && !ReferenceEquals(inst,gpuImageColorSync)
+#endif
+                ) return;
 #endif
             var r = rendererRef(inst);
             if ((object)r == null) return;

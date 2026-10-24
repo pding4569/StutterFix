@@ -256,6 +256,10 @@ namespace StutterFix
 
         public static void OnSongEnd(MethodBase __originalMethod)
         {
+#if DEV || AUTOTEST
+            try { DecoBake.NotifyGpuPlaybackEnded(__originalMethod.Name); }
+            catch (Exception ex) { Main.Entry.Logger.Error("[gpudeco] 종료 복원 실패: " + ex.Message); }
+#endif
             endedByHook = true;
             long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
             InvisibleSkip.LastAllN = 0; InvisibleSkip.LastAllMs = 0;

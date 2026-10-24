@@ -152,8 +152,33 @@ namespace StutterFix
         private static bool Skip(string an)
         {
             return an.StartsWith("Unity") || an.StartsWith("System") || an == "mscorlib" || an == "netstandard" || an.StartsWith("Mono.") || an.Contains("Harmony")
-                || an == "UnityModManager" || an == "StutterFix" || an.StartsWith("Microsoft.") || an.StartsWith("DOTween") || an.StartsWith("Newtonsoft");
+                // UMM reload renames the next assembly StutterFix1, StutterFix2,
+                // ... . Rewriting our own SetEnabled would call itself forever.
+                || an == "UnityModManager" || OwnAssembly(an) || an.StartsWith("Microsoft.") || an.StartsWith("DOTween") || an.StartsWith("Newtonsoft");
         }
+        private static bool OwnAssembly(string name) => name != null && name.StartsWith("StutterFix", StringComparison.Ordinal);
+
+#if AUTOTEST
+        // Explicit reload check only; never scans Harmony patches per frame.
+        internal static string ReloadPatchAudit()
+        {
+            int external=0,own=0;
+            foreach(var original in Harmony.GetAllPatchedMethods())
+            {
+                var info=Harmony.GetPatchInfo(original);
+                if(info==null)continue;
+                foreach(var patch in info.Transpilers)
+                    if(patch.PatchMethod?.DeclaringType?.FullName==typeof(TileCull).FullName)
+                    {
+                        if(OwnAssembly(original.DeclaringType?.Assembly.GetName().Name))own++;
+                        else external++;
+                    }
+            }
+            if(own!=0 || external==0)throw new InvalidOperationException("TileCull self-patch/nonempty external patch contract: "+own+"/"+external);
+            return "[TileCull reload] own_transpilers="+own+" external_transpilers="+external
+                +" current_module="+typeof(TileCull).Assembly.GetName().Name+" mvid="+typeof(TileCull).Assembly.ManifestModule.ModuleVersionId;
+        }
+#endif
 
         private static int gen;   // 설치 세대: 해제 뒤 끝난 옛 훑기 결과를 쓰지 않게
         private static void Scan()
@@ -255,6 +280,8 @@ namespace StutterFix
             {
                 var m = list[patchAt];
                 if (m == null || m.ContainsGenericParameters || (m.DeclaringType != null && m.DeclaringType.ContainsGenericParameters)) continue;
+                // Also reject stale/cached own entries at the final patch boundary.
+                if (OwnAssembly(m.DeclaringType?.Assembly.GetName().Name)) continue;
                 try { harmony.Patch(m, transpiler: new HarmonyMethod(typeof(TileCull), nameof(Transpiler))); }
                 catch (Exception ex) { patchFail++; if (Edition.Dev) Main.Entry.Logger.Log("[화면 밖 타일] 바꿔 끼우기 실패 " + m.DeclaringType + "." + m.Name + ": " + ex.Message); }
             }

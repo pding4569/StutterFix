@@ -168,7 +168,8 @@ namespace StutterFix
             float now = Time.realtimeSinceStartup;
             bool auditDue = Edition.Dev ? Time.frameCount % 30 == 0 : now >= nextAudit;
 #if DEV || AUTOTEST
-            if (LiveDecoRenderer.Active) auditDue = now >= nextAudit;
+            if (DecoBake.GpuLiveActive) auditDue = false;
+            else if (LiveDecoRenderer.Active) auditDue = now >= nextAudit;
 #endif
             if (dormant.Count > 0 && auditDue)
             {

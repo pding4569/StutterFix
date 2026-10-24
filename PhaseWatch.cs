@@ -90,10 +90,50 @@ namespace StutterFix
 
         internal static void Uninstall()
         {
+#if AUTOTEST
+            researchStart=null;researchOwnLoop=false;
+#endif
             if (!installed) return;
             try { PlayerLoop.SetPlayerLoop(original); } catch { }
             installed = false;
         }
+
+#if AUTOTEST
+        // Reuse the existing stage markers, not per-decoration patches. This is
+        // a diagnostic window; elapsed stages include waits and are not CPU/GPU
+        // execution times. No extra work is added to Record().
+        static long[] researchStart;
+        static int researchFrame;
+        static bool researchOwnLoop;
+        internal static string ResearchWindow(string action)
+        {
+            if(action=="on")
+            {
+                if(!installed){Install();researchOwnLoop=installed;}
+                if(!installed)throw new InvalidOperationException("phase markers unavailable");
+                return "phase_window ready markers="+names.Length+" allocation_sampling="+AllocPhases+" diagnostic_only=True";
+            }
+            if(action=="off")
+            {
+                bool own=researchOwnLoop;researchStart=null;researchOwnLoop=false;
+                if(own)Uninstall();
+                return "phase_window off owned_loop_removed="+own;
+            }
+            if(!installed)throw new InvalidOperationException("phasewindow on first");
+            if(action=="begin")
+            {
+                if(researchStart!=null)throw new InvalidOperationException("phase window already open");
+                researchStart=(long[])songTicks.Clone();researchFrame=Time.frameCount;
+                return "phase_window begin covered_playerloop_markers_only=True";
+            }
+            if(action!="end"||researchStart==null)throw new InvalidOperationException("phasewindow on|begin|end|off");
+            var start=researchStart;researchStart=null;
+            int frames=Time.frameCount-researchFrame;
+            if(frames<30||start.Length!=songTicks.Length)throw new InvalidOperationException("phase window insufficient or changed");
+            for(int i=0;i<start.Length;i++)if(songTicks[i]<start[i])throw new InvalidOperationException("phase counters reset inside window");
+            return "phase_window end frames="+frames+" CPU_time=False GPU_time=False includes_waits=True "+Rank(i=>songTicks[i]-start[i],frames);
+        }
+#endif
 
         private static PlayerLoopSystem MakeMarker(int index)
         {

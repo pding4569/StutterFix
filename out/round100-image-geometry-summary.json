@@ -1,0 +1,12 @@
+{
+  "run": "round100-image-geometry",
+  "state": "PASSED",
+  "exit_code": 0,
+  "game_running": false,
+  "restored": 9,
+  "original_states": 9,
+  "lines": [
+    "[StutterFix] [gpudeco] image_geometry_fixture variants=103 lane_updates=206 topology_rejected=0 vertex_mismatch=0 invalid_rejected=12 vertex_buffer_replaced=0 CPU_setters_changed=0 GPU_texture_binding=False physical_pixels=UNMEASURED performance=False"
+  ],
+  "scope": "GPU static/UV updates only; actual scene pixels, texture binding and FPS not measured"
+}

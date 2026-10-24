@@ -1,0 +1,6 @@
+﻿device=D3D11 hardware=True debug=False game=False swapchain=False Present=False
+native_api count=1 patterns=2 byte_errors=0 state_errors=0 source_prebound_uav=True removed_callback=skip token_reuse=0 wrong_thread=rejected
+native_api count=128 patterns=2 byte_errors=0 state_errors=0 source_prebound_uav=True removed_callback=skip token_reuse=0 wrong_thread=rejected
+native_api count=1715 patterns=2 byte_errors=0 state_errors=0 source_prebound_uav=True removed_callback=skip token_reuse=0 wrong_thread=rejected
+debug_errors=UNMEASURED
+GPUDECO_COPY_LAB=PASS Unity_ordering=UNMEASURED game_fps=UNMEASURED plugin_lifetime=UNMEASURED

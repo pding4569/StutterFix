@@ -1,0 +1,461 @@
+﻿[StutterFix] [자동 시험] 시작: 93단계 - timeout 420 / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco prepare / open D:\얼불춤 맵 파일\ALPHA\S25_ArcheCDF\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / gpudeco scheduled / pause / wait 60 / decobake state / wait 60 / decobake ready / resume / stop / gpuprobe off / gpusplit off / matshare off / livedeco off / gpudeco bundle E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\bundle\stutterfix_gpudeco / stop / seek 262 12 / decobake ready / waitsongpos 262 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c5e2fdf03fe842699114a18effc23ec2\262.gpudeco / framecmp mask none / framecmp ui exclude / framecmp filters on / framecmp noise N1 N2 / framecmp grab A / gpudeco on / wait 0.2 / framecmp grab B / gpudeco draw off / wait 0.2 / framecmp grab A2 / framecmp assertzero A A2 png / framecmp diff A B 0 png / gpudeco pixel 0 / resume / stop / seek 270 12 / decobake ready / waitsongpos 270 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c5e2fdf03fe842699114a18effc23ec2\270.gpudeco / framecmp mask none / framecmp ui exclude / framecmp filters on / framecmp noise N1 N2 / framecmp grab A / gpudeco on / wait 0.2 / framecmp grab B / gpudeco draw off / wait 0.2 / framecmp grab A2 / framecmp assertzero A A2 png / framecmp diff A B 0 png / gpudeco pixel 1 / resume / stop / seek 276 12 / decobake ready / waitsongpos 276 40 / pause / wait 0.2 / gpudeco export E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c5e2fdf03fe842699114a18effc23ec2\276.gpudeco / framecmp mask none / framecmp ui exclude / framecmp filters on / framecmp noise N1 N2 / framecmp grab A / gpudeco on / wait 0.2 / framecmp grab B / gpudeco draw off / wait 0.2 / framecmp grab A2 / framecmp assertzero A A2 png / framecmp diff A B 0 png / gpudeco pixel 2 / resume / gpudeco off / gpudeco result / stop / decobake off / quit
+Initializing Discord: InternalError
+Discord was not initialized: Discord.ResultException: InternalError
+Mods detected! Disabling exception capturing
+[StutterFix] [자동 시험] UMM 창 닫음
+[StutterFix] [자동 시험] 단계 최대 시간 420초
+[StutterFix] [자동 시험] [임무단계] timeout 3.153ms
+[StutterFix] [자동 시험] 자동 플레이 켬 (재생 때마다 다시 맞춤)
+[StutterFix] [자동 시험] [임무단계] auto 1812.844ms
+[StutterFix] [장식굽기/그림자] 켜짐: 새 맵 open 대기
+[StutterFix] [자동 시험] [임무단계] decobake 57.087ms
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [자동 시험] [임무단계] gpudeco 10.710ms
+[StutterFix] [gpudeco] export_result_reset=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 4.471ms
+[StutterFix] [gpudeco] prepare_begin budget_ms=300000 includes=open,bake,seek,export source_clock_capture=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 1.293ms
+[StutterFix] [자동 시험] 맵 열기: D:\얼불춤 맵 파일\ALPHA\S25_ArcheCDF\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai
+[StutterFix] [자동 시험] 메모리 3초: 힙 63MB, 프로세스 883MB(실제 램 705MB), 프레임 6047 
+[StutterFix] [자동 시험] 메모리 6초: 힙 67MB, 프로세스 881MB(실제 램 705MB), 프레임 12271 
+[StutterFix] [자동 시험] 메모리 9초: 힙 121MB, 프로세스 1427MB(실제 램 1133MB), 프레임 12274 
+[StutterFix] [자동 시험] 메모리 12초: 힙 204MB, 프로세스 1622MB(실제 램 1311MB), 프레임 12274 
+[StutterFix] [자동 시험] 메모리 15초: 힙 469MB, 프로세스 1935MB(실제 램 1602MB), 프레임 12275 
+[StutterFix] [자동 시험] 메모리 18초: 힙 1219MB, 프로세스 2678MB(실제 램 2374MB), 프레임 12275 
+[StutterFix] [자동 시험] 메모리 21초: 힙 2293MB, 프로세스 3850MB(실제 램 3545MB), 프레임 12275 
+[StutterFix] [자동 시험] 메모리 24초: 힙 3306MB, 프로세스 5917MB(실제 램 4776MB), 프레임 12275 
+[StutterFix] [자동 시험] 메모리 27초: 힙 4271MB, 프로세스 9868MB(실제 램 7679MB), 프레임 12275 
+[StutterFix] [자동 시험] 메모리 30초: 힙 4472MB, 프로세스 9834MB(실제 램 7730MB), 프레임 12275 
+[StutterFix] [자동 시험] 메모리 33초: 힙 1262MB, 프로세스 9736MB(실제 램 6933MB), 프레임 12276 
+[StutterFix] [자동 시험] 맵 열림 (35.1초, 열기 요청부터 2초 기다림 포함)
+[StutterFix] [자동 시험] [임무단계] open 35127.583ms
+[StutterFix] [자동 시험] 타일 0 선택
+[StutterFix] [자동 시험] [임무단계] select 579.636ms
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [자동 시험] 메모리 36초: 힙 1560MB, 프로세스 9642MB(실제 램 6859MB), 프레임 12279 
+[StutterFix] [자동 시험] [임무단계] play 3650.179ms
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=2 status=메인 스냅샷 수집 중
+[StutterFix] [자동 시험] [임무단계] gpudeco 218.245ms
+[StutterFix] [자동 시험] [임무단계] pause 194.236ms
+[StutterFix] [장식굽기/그림자] 준비됨 (그림자 기본; adopt 별도) 장식=28835 지원=23631 이벤트=97694 구간=858286
+[StutterFix] [자동 시험] [임무단계] wait 59880.518ms
+[StutterFix] [장식굽기/그림자] ready=True generation=2 collector=False worker=False status=준비됨 (그림자 기본; adopt 별도)
+[StutterFix] [자동 시험] [임무단계] decobake 2.403ms
+[StutterFix] [자동 시험] [임무단계] wait 60000.642ms
+[StutterFix] [자동 시험] [임무단계] decobake 2.592ms
+[StutterFix] [자동 시험] [임무단계] resume 34.964ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (2466ms)
+[StutterFix] [자동 시험] [임무단계] stop 2567.124ms
+[StutterFix] [자동 시험] [임무단계] gpuprobe 203.519ms
+[StutterFix] [자동 시험] [임무단계] gpusplit 7.748ms
+[StutterFix] [자동 시험] [임무단계] matshare 7.164ms
+[StutterFix] [자동 시험] [임무단계] livedeco 6.496ms
+[StutterFix] [자동 시험] [임무단계] gpudeco 6.872ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (0ms)
+[StutterFix] [자동 시험] [임무단계] stop 7.186ms
+[StutterFix] [자동 시험] 262.0초 12초 앞: 타일 3161 (그 타일 250.0초) 선택
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식굽기/그림자] 기준 스냅샷 재사용 장식=28835 전체예약효과=111216 현재예약효과=111217 최초지원=23631
+[StutterFix] [자동 시험] [임무단계] seek 3046.484ms
+[StutterFix] [장식굽기/그림자] 준비됨 (그림자 기본; adopt 별도) 장식=28835 지원=23631 이벤트=97694 구간=858286
+[StutterFix] [자동 시험] [임무단계] decobake 3429.341ms
+[StutterFix] [자동 시험] [임무단계] waitsongpos 12131.976ms
+[StutterFix] [자동 시험] [임무단계] pause 126.453ms
+[StutterFix] [자동 시험] [임무단계] wait 87.585ms
+[StutterFix] [gpudeco] prepare_ms=186198.425000 phase=first_export includes=open,bake,seek,export bake_wall_ms=532.184200
+[StutterFix] [gpudeco] prepare_ms=4872.197700 phase=export owned=1715 awake=2133 raw=262.01784002082422 tb=262.00414388339453 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c5e2fdf03fe842699114a18effc23ec2\262.gpudeco
+[StutterFix] [gpudeco] export_reject bake-unsupported=374 oversized-world-quad=15 repeat-tile=22
+[StutterFix] [gpudeco] export_schema=2 sources=1718 table_fallback=12140 anchored=15050 completed_endpoint=250 anchor_input=actual_Rec_Pos_and_start_parameters fallback=unobserved,unstarted,native_or_direct start_phase=recorded_not_inferred
+[StutterFix] [gpudeco] coverage=0.804032 auxiliary=False
+[StutterFix] [자동 시험] [임무단계] gpudeco 4881.415ms
+[StutterFix] [자동 시험] [임무단계] framecmp 12.035ms
+[StutterFix] [자동 시험] [임무단계] framecmp 8.659ms
+[StutterFix] [framecmp] filters=on (capture scope retained until options change/resume/stop/error)
+[StutterFix] [자동 시험] [임무단계] framecmp 7.111ms
+[StutterFix] [자동 시험] [임무단계] framecmp 32881.560ms
+[StutterFix] [자동 시험] [임무단계] framecmp 15536.731ms
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=0 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=1 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=2 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=3 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=4 max=2.86102294922E-06 mean=2.17659529584E-07 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=5 max=2.38418579102E-07 mean=8.96676288749E-09 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=6 max=2.38418579102E-07 mean=8.96676288749E-09 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=7 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=8 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=9 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=10 max=2.98023223877E-08 mean=2.93244425826E-09 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=11 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=12 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=13 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=14 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=262.01784002082422 slot=15 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0_snapshot vertices=6860 max_px=0.00813370104879 mean_px=2.37134141364E-06 over_tol=0 rgba_max=3.72529029846E-09 rgba_mean=3.69164694926E-11 rgba_over_tol=0
+[StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1715 awake=2133 runs=52 submeshes=1715 dispatches=53 prepare_ms=328.421700 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS
+[StutterFix] [gpudeco] draw_diagnostic=off truth_vertex_upload=False acceptance_eligible=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 384.730ms
+[StutterFix] [자동 시험] [임무단계] wait 53.450ms
+[StutterFix] [자동 시험] [임무단계] framecmp 16779.013ms
+[StutterFix] [gpudeco] draw_off=True originals_restored=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 54.545ms
+[StutterFix] [자동 시험] [임무단계] wait 1734.875ms
+[StutterFix] [자동 시험] [임무단계] framecmp 15905.889ms
+[StutterFix] [자동 시험] [임무단계] framecmp 3222.540ms
+[StutterFix] [자동 시험] [임무단계] framecmp 808.506ms
+[StutterFix] [gpudeco] G1 sample=0 raw=262.01784002082422 different=5526 pixels=3686400 maxdiff=4 aa2=0 stable=True regions=(1280,800,32,32):488;(1248,800,32,32):355;(1088,832,32,32):352;(1440,800,32,32):276;(1216,800,32,32):274 mask=none auxiliary=False
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15323 id=-1509060 tex=-833420 mat=-2720816 layer=1320933907 order=-28 z=0 boundsZ=0 alpha=0.00217136135 spriteVerts=4 screenRect=(1303.1,805.8,25.3,13.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15267 id=-1508948 tex=-833420 mat=-2720592 layer=1320933907 order=-28 z=0 boundsZ=0 alpha=0.002414021 spriteVerts=4 screenRect=(1277.0,798.3,24.8,13.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15324 id=-1509062 tex=-833420 mat=-2720820 layer=1320933907 order=-27 z=0 boundsZ=0 alpha=0.00434272271 spriteVerts=4 screenRect=(1304.2,810.1,26.6,14.2) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15268 id=-1508950 tex=-833420 mat=-2720596 layer=1320933907 order=-27 z=0 boundsZ=0 alpha=0.004828042 spriteVerts=4 screenRect=(1276.8,802.3,26.0,14.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15325 id=-1509064 tex=-833420 mat=-2720824 layer=1320933907 order=-26 z=0 boundsZ=0 alpha=0.006514084 spriteVerts=4 screenRect=(1305.4,814.6,27.9,14.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15269 id=-1508952 tex=-833420 mat=-2720600 layer=1320933907 order=-26 z=0 boundsZ=0 alpha=0.00724206259 spriteVerts=4 screenRect=(1276.7,806.4,27.3,15.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15326 id=-1509066 tex=-833420 mat=-2720828 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.008685445 spriteVerts=4 screenRect=(1306.7,819.4,29.3,15.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15270 id=-1508954 tex=-833420 mat=-2720604 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.009656084 spriteVerts=4 screenRect=(1276.5,810.7,28.7,15.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15327 id=-1509068 tex=-833420 mat=-2720832 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.0108568082 spriteVerts=4 screenRect=(1308.0,824.3,30.7,16.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15271 id=-1508956 tex=-833420 mat=-2720608 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.0120701054 spriteVerts=4 screenRect=(1276.3,815.2,30.1,16.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15103 id=-1508620 tex=-833364 mat=-2719936 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.0139794527 spriteVerts=4 screenRect=(1276.6,774.8,28.5,28.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15328 id=-1509070 tex=-833420 mat=-2720836 layer=1320933907 order=-23 z=0 boundsZ=0 alpha=0.0130281681 spriteVerts=4 screenRect=(1309.4,829.5,32.3,17.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15272 id=-1508958 tex=-833420 mat=-2720612 layer=1320933907 order=-23 z=0 boundsZ=0 alpha=0.0144841252 spriteVerts=4 screenRect=(1276.1,820.0,31.7,17.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15104 id=-1508622 tex=-833364 mat=-2719940 layer=1320933907 order=-23 z=0 boundsZ=0 alpha=0.0167753417 spriteVerts=4 screenRect=(1276.4,777.5,29.9,29.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15273 id=-1508960 tex=-833420 mat=-2720616 layer=1320933907 order=-22 z=0 boundsZ=0 alpha=0.0168981478 spriteVerts=4 screenRect=(1275.9,825.0,33.2,18.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1280,800,32,32):488 index=15105 id=-1508624 tex=-833364 mat=-2719944 layer=1320933907 order=-22 z=0 boundsZ=0 alpha=0.0195712335 spriteVerts=4 screenRect=(1276.3,780.4,31.4,31.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1280,800,32,32):488 rendererId=-1690092 type=SpriteRenderer name=sprite mat=-2715872 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1280,800,32,32):488 rendererId=-1690090 type=SpriteRenderer name=sprite mat=-2715868 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1280,800,32,32):488 rendererId=-1690088 type=SpriteRenderer name=sprite mat=-2715864 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1280,800,32,32):488 rendererId=-1689980 type=SpriteRenderer name=sprite mat=-2715648 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1280,800,32,32):488 rendererId=-1689978 type=SpriteRenderer name=sprite mat=-2715644 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1280,800,32,32):488 rendererId=-1689976 type=SpriteRenderer name=sprite mat=-2715640 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1280,800,32,32):488 rendererId=-1689868 type=SpriteRenderer name=sprite mat=-2715424 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1280,800,32,32):488 rendererId=-1689866 type=SpriteRenderer name=sprite mat=-2715420 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15267 id=-1508948 tex=-833420 mat=-2720592 layer=1320933907 order=-28 z=0 boundsZ=0 alpha=0.002414021 spriteVerts=4 screenRect=(1277.0,798.3,24.8,13.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15211 id=-1508836 tex=-833364 mat=-2720368 layer=1320933907 order=-28 z=0 boundsZ=0 alpha=0.002552284 spriteVerts=4 screenRect=(1251.7,792.2,23.4,23.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15268 id=-1508950 tex=-833420 mat=-2720596 layer=1320933907 order=-27 z=0 boundsZ=0 alpha=0.004828042 spriteVerts=4 screenRect=(1276.8,802.3,26.0,14.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15212 id=-1508838 tex=-833364 mat=-2720372 layer=1320933907 order=-27 z=0 boundsZ=0 alpha=0.005104568 spriteVerts=4 screenRect=(1250.3,795.8,24.6,24.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15269 id=-1508952 tex=-833420 mat=-2720600 layer=1320933907 order=-26 z=0 boundsZ=0 alpha=0.00724206259 spriteVerts=4 screenRect=(1276.7,806.4,27.3,15.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15213 id=-1508840 tex=-833364 mat=-2720376 layer=1320933907 order=-26 z=0 boundsZ=0 alpha=0.00765685132 spriteVerts=4 screenRect=(1248.8,799.6,25.8,25.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15270 id=-1508954 tex=-833420 mat=-2720604 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.009656084 spriteVerts=4 screenRect=(1276.5,810.7,28.7,15.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15214 id=-1508842 tex=-833364 mat=-2720380 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.0102091357 spriteVerts=4 screenRect=(1247.3,803.6,27.1,27.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15158 id=-1508730 tex=-833364 mat=-2720156 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.01077393 spriteVerts=4 screenRect=(1247.3,773.0,27.5,27.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15271 id=-1508956 tex=-833420 mat=-2720608 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.0120701054 spriteVerts=4 screenRect=(1276.3,815.2,30.1,16.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15215 id=-1508844 tex=-833364 mat=-2720384 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.0127614206 spriteVerts=4 screenRect=(1245.6,807.8,28.4,28.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15159 id=-1508732 tex=-833364 mat=-2720160 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.0134674134 spriteVerts=4 screenRect=(1245.7,775.7,28.9,28.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15103 id=-1508620 tex=-833364 mat=-2719936 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.0139794527 spriteVerts=4 screenRect=(1276.6,774.8,28.5,28.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15272 id=-1508958 tex=-833420 mat=-2720612 layer=1320933907 order=-23 z=0 boundsZ=0 alpha=0.0144841252 spriteVerts=4 screenRect=(1276.1,820.0,31.7,17.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15216 id=-1508846 tex=-833364 mat=-2720388 layer=1320933907 order=-23 z=0 boundsZ=0 alpha=0.0153137026 spriteVerts=4 screenRect=(1243.9,812.2,29.9,29.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1248,800,32,32):355 index=15160 id=-1508734 tex=-833364 mat=-2720164 layer=1320933907 order=-23 z=0 boundsZ=0 alpha=0.0161608942 spriteVerts=4 screenRect=(1244.0,778.4,30.3,30.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1248,800,32,32):355 rendererId=-1690092 type=SpriteRenderer name=sprite mat=-2715872 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1248,800,32,32):355 rendererId=-1690090 type=SpriteRenderer name=sprite mat=-2715868 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1248,800,32,32):355 rendererId=-1690088 type=SpriteRenderer name=sprite mat=-2715864 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1248,800,32,32):355 rendererId=-1689980 type=SpriteRenderer name=sprite mat=-2715648 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1248,800,32,32):355 rendererId=-1689978 type=SpriteRenderer name=sprite mat=-2715644 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1248,800,32,32):355 rendererId=-1689976 type=SpriteRenderer name=sprite mat=-2715640 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1248,800,32,32):355 rendererId=-1689868 type=SpriteRenderer name=sprite mat=-2715424 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1248,800,32,32):355 rendererId=-1689866 type=SpriteRenderer name=sprite mat=-2715420 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=15019 id=-1508452 tex=-833252 mat=-2719600 layer=0 order=4 z=0 boundsZ=0 alpha=0.0435484461 spriteVerts=4 screenRect=(1117.7,775.9,167.4,167.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=15020 id=-1508454 tex=-833252 mat=-2719604 layer=0 order=5 z=0 boundsZ=0 alpha=0.0411290862 spriteVerts=4 screenRect=(1109.6,778.7,175.8,175.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=15021 id=-1508456 tex=-833252 mat=-2719608 layer=0 order=6 z=0 boundsZ=0 alpha=0.0387097336 spriteVerts=4 screenRect=(1101.1,781.7,184.6,184.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=14909 id=-1508232 tex=-833364 mat=-2719160 layer=0 order=6 z=0 boundsZ=0 alpha=0.0406553857 spriteVerts=4 screenRect=(1115.5,747.3,120.1,120.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=15022 id=-1508458 tex=-833252 mat=-2719612 layer=0 order=7 z=0 boundsZ=0 alpha=0.03629037 spriteVerts=4 screenRect=(1092.1,784.7,193.8,193.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=14910 id=-1508234 tex=-833364 mat=-2719164 layer=0 order=7 z=0 boundsZ=0 alpha=0.0381144173 spriteVerts=4 screenRect=(1107.3,748.6,126.1,126.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=15023 id=-1508460 tex=-833252 mat=-2719616 layer=0 order=8 z=0 boundsZ=0 alpha=0.0338710174 spriteVerts=4 screenRect=(1082.7,788.0,203.5,203.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=14911 id=-1508236 tex=-833364 mat=-2719168 layer=0 order=8 z=0 boundsZ=0 alpha=0.0355734639 spriteVerts=4 screenRect=(1098.6,750.1,132.4,132.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=15024 id=-1508462 tex=-833252 mat=-2719620 layer=0 order=9 z=0 boundsZ=0 alpha=0.03145165 spriteVerts=4 screenRect=(1072.9,791.4,213.7,213.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=14912 id=-1508238 tex=-833364 mat=-2719172 layer=0 order=9 z=0 boundsZ=0 alpha=0.0330324955 spriteVerts=4 screenRect=(1089.6,751.5,139.0,139.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=15025 id=-1508464 tex=-833252 mat=-2719624 layer=0 order=10 z=0 boundsZ=0 alpha=0.02903229 spriteVerts=4 screenRect=(1062.5,794.9,224.4,224.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=14913 id=-1508240 tex=-833364 mat=-2719176 layer=0 order=10 z=0 boundsZ=0 alpha=0.030491529 spriteVerts=4 screenRect=(1080.1,753.1,146.0,145.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=15026 id=-1508466 tex=-833252 mat=-2719628 layer=0 order=11 z=0 boundsZ=0 alpha=0.0266129375 spriteVerts=4 screenRect=(1051.6,798.7,235.6,235.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=14914 id=-1508242 tex=-833364 mat=-2719180 layer=0 order=11 z=0 boundsZ=0 alpha=0.0279505737 spriteVerts=4 screenRect=(1070.1,754.8,153.3,153.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=15027 id=-1508468 tex=-833252 mat=-2719632 layer=0 order=12 z=0 boundsZ=0 alpha=0.0241935831 spriteVerts=4 screenRect=(1040.2,802.6,247.4,247.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1088,832,32,32):352 index=14915 id=-1508244 tex=-833364 mat=-2719184 layer=0 order=12 z=0 boundsZ=0 alpha=0.0254096147 spriteVerts=4 screenRect=(1059.6,756.5,160.9,160.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1088,832,32,32):352 rendererId=-1690092 type=SpriteRenderer name=sprite mat=-2715872 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1088,832,32,32):352 rendererId=-1690090 type=SpriteRenderer name=sprite mat=-2715868 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1088,832,32,32):352 rendererId=-1690088 type=SpriteRenderer name=sprite mat=-2715864 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1088,832,32,32):352 rendererId=-1689980 type=SpriteRenderer name=sprite mat=-2715648 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1088,832,32,32):352 rendererId=-1689978 type=SpriteRenderer name=sprite mat=-2715644 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1088,832,32,32):352 rendererId=-1689976 type=SpriteRenderer name=sprite mat=-2715640 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1088,832,32,32):352 rendererId=-1689756 type=SpriteRenderer name=sprite mat=-2715200 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1088,832,32,32):352 rendererId=-1689754 type=SpriteRenderer name=sprite mat=-2715196 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=15497 id=-1509408 tex=-833252 mat=-2721512 layer=1320933907 order=-22 z=0 boundsZ=0 alpha=0.009916 spriteVerts=4 screenRect=(1390.3,819.8,49.7,49.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=15498 id=-1509410 tex=-833252 mat=-2721516 layer=1320933907 order=-21 z=0 boundsZ=0 alpha=0.0113325706 spriteVerts=4 screenRect=(1395.8,824.8,52.2,52.2) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=15499 id=-1509412 tex=-833252 mat=-2721520 layer=1320933907 order=-20 z=0 boundsZ=0 alpha=0.0127491429 spriteVerts=4 screenRect=(1401.6,830.1,54.8,54.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=14976 id=-1508366 tex=-833252 mat=-2719428 layer=0 order=17 z=0 boundsZ=0 alpha=0.0122274989 spriteVerts=4 screenRect=(1207.0,750.0,234.8,234.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=14977 id=-1508368 tex=-833252 mat=-2719432 layer=0 order=18 z=0 boundsZ=0 alpha=0.009782002 spriteVerts=4 screenRect=(1203.4,751.5,246.6,246.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=14978 id=-1508370 tex=-833252 mat=-2719436 layer=0 order=19 z=0 boundsZ=0 alpha=0.007336501 spriteVerts=4 screenRect=(1199.5,753.1,258.9,258.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=14754 id=-1507922 tex=-833736 mat=-2718540 layer=0 order=19 z=0 boundsZ=0 alpha=0.00819611549 spriteVerts=4 screenRect=(1400.1,455.0,348.1,348.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=14979 id=-1508372 tex=-833252 mat=-2719440 layer=0 order=20 z=0 boundsZ=0 alpha=0.004891001 spriteVerts=4 screenRect=(1195.5,754.8,271.9,271.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=14755 id=-1507924 tex=-833736 mat=-2718544 layer=0 order=20 z=0 boundsZ=0 alpha=0.005464078 spriteVerts=4 screenRect=(1406.1,441.8,365.5,365.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=14980 id=-1508374 tex=-833252 mat=-2719444 layer=0 order=21 z=0 boundsZ=0 alpha=0.00244550058 spriteVerts=4 screenRect=(1191.3,756.5,285.5,285.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,800,32,32):276 index=14756 id=-1507926 tex=-833736 mat=-2718548 layer=0 order=21 z=0 boundsZ=0 alpha=0.002732039 spriteVerts=4 screenRect=(1412.4,427.9,383.8,383.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,800,32,32):276 rendererId=-1690204 type=SpriteRenderer name=sprite mat=-2716096 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,800,32,32):276 rendererId=-1690202 type=SpriteRenderer name=sprite mat=-2716092 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,800,32,32):276 rendererId=-1690200 type=SpriteRenderer name=sprite mat=-2716088 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,800,32,32):276 rendererId=-1690092 type=SpriteRenderer name=sprite mat=-2715872 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,800,32,32):276 rendererId=-1690090 type=SpriteRenderer name=sprite mat=-2715868 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,800,32,32):276 rendererId=-1690088 type=SpriteRenderer name=sprite mat=-2715864 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,800,32,32):276 rendererId=-1689980 type=SpriteRenderer name=sprite mat=-2715648 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,800,32,32):276 rendererId=-1689978 type=SpriteRenderer name=sprite mat=-2715644 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15214 id=-1508842 tex=-833364 mat=-2720380 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.0102091357 spriteVerts=4 screenRect=(1247.3,803.6,27.1,27.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15158 id=-1508730 tex=-833364 mat=-2720156 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.01077393 spriteVerts=4 screenRect=(1247.3,773.0,27.5,27.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15215 id=-1508844 tex=-833364 mat=-2720384 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.0127614206 spriteVerts=4 screenRect=(1245.6,807.8,28.4,28.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15159 id=-1508732 tex=-833364 mat=-2720160 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.0134674134 spriteVerts=4 screenRect=(1245.7,775.7,28.9,28.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15216 id=-1508846 tex=-833364 mat=-2720388 layer=1320933907 order=-23 z=0 boundsZ=0 alpha=0.0153137026 spriteVerts=4 screenRect=(1243.9,812.2,29.9,29.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15160 id=-1508734 tex=-833364 mat=-2720164 layer=1320933907 order=-23 z=0 boundsZ=0 alpha=0.0161608942 spriteVerts=4 screenRect=(1244.0,778.4,30.3,30.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15217 id=-1508848 tex=-833364 mat=-2720392 layer=1320933907 order=-22 z=0 boundsZ=0 alpha=0.0178659875 spriteVerts=4 screenRect=(1242.1,816.8,31.4,31.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15161 id=-1508736 tex=-833364 mat=-2720168 layer=1320933907 order=-22 z=0 boundsZ=0 alpha=0.0188543778 spriteVerts=4 screenRect=(1242.2,781.4,31.8,31.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15218 id=-1508850 tex=-833364 mat=-2720396 layer=1320933907 order=-21 z=0 boundsZ=0 alpha=0.0204182714 spriteVerts=4 screenRect=(1240.2,821.6,32.9,32.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15162 id=-1508738 tex=-833364 mat=-2720172 layer=1320933907 order=-21 z=0 boundsZ=0 alpha=0.02154786 spriteVerts=4 screenRect=(1240.3,784.4,33.4,33.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15219 id=-1508852 tex=-833364 mat=-2720400 layer=1320933907 order=-20 z=0 boundsZ=0 alpha=0.0229705554 spriteVerts=4 screenRect=(1238.2,826.7,34.6,34.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15163 id=-1508740 tex=-833364 mat=-2720176 layer=1320933907 order=-20 z=0 boundsZ=0 alpha=0.0242413431 spriteVerts=4 screenRect=(1238.3,787.7,35.1,35.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15164 id=-1508742 tex=-833364 mat=-2720180 layer=1320933907 order=-19 z=0 boundsZ=0 alpha=0.0269348267 spriteVerts=4 screenRect=(1236.2,791.0,36.8,36.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15165 id=-1508744 tex=-833364 mat=-2720184 layer=1320933907 order=-18 z=0 boundsZ=0 alpha=0.0296283085 spriteVerts=4 screenRect=(1234.0,794.6,38.7,38.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=15166 id=-1508746 tex=-833364 mat=-2720188 layer=1320933907 order=-17 z=0 boundsZ=0 alpha=0.0323217846 spriteVerts=4 screenRect=(1231.7,798.3,40.6,40.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1216,800,32,32):274 index=14998 id=-1508410 tex=-833252 mat=-2719516 layer=1320933907 order=-17 z=0 boundsZ=0 alpha=0.04130367 spriteVerts=4 screenRect=(1221.8,740.1,60.1,60.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1216,800,32,32):274 rendererId=-1690092 type=SpriteRenderer name=sprite mat=-2715872 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1216,800,32,32):274 rendererId=-1690090 type=SpriteRenderer name=sprite mat=-2715868 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1216,800,32,32):274 rendererId=-1690088 type=SpriteRenderer name=sprite mat=-2715864 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1216,800,32,32):274 rendererId=-1689980 type=SpriteRenderer name=sprite mat=-2715648 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1216,800,32,32):274 rendererId=-1689978 type=SpriteRenderer name=sprite mat=-2715644 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1216,800,32,32):274 rendererId=-1689976 type=SpriteRenderer name=sprite mat=-2715640 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1216,800,32,32):274 rendererId=-1689868 type=SpriteRenderer name=sprite mat=-2715424 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1216,800,32,32):274 rendererId=-1689866 type=SpriteRenderer name=sprite mat=-2715420 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [자동 시험] [임무단계] gpudeco 3778.380ms
+[StutterFix] [자동 시험] [임무단계] resume 114.308ms
+[StutterFix] [자동 시험] [임무완주] OnLandOnPortal 6.553ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (2507ms)
+[StutterFix] [자동 시험] [임무단계] stop 2622.919ms
+[StutterFix] [자동 시험] 270.0초 12초 앞: 타일 3377 (그 타일 258.0초) 선택
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식굽기/그림자] 기준 스냅샷 재사용 장식=28835 전체예약효과=111216 현재예약효과=111217 최초지원=23631
+[StutterFix] [자동 시험] [임무단계] seek 3282.036ms
+[StutterFix] [장식굽기/그림자] 준비됨 (그림자 기본; adopt 별도) 장식=28835 지원=23631 이벤트=97694 구간=858286
+[StutterFix] [자동 시험] [임무단계] decobake 267.986ms
+[StutterFix] [자동 시험] [임무단계] waitsongpos 15815.824ms
+[StutterFix] [자동 시험] [임무단계] pause 135.220ms
+[StutterFix] [자동 시험] [임무단계] wait 82.808ms
+[StutterFix] [gpudeco] prepare_ms=4816.495200 phase=export owned=1765 awake=2217 raw=270.02665960090235 tb=270.01072256108347 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c5e2fdf03fe842699114a18effc23ec2\270.gpudeco
+[StutterFix] [gpudeco] export_reject bake-unsupported=371 oversized-world-quad=10 repeat-tile=14 source-clock-missing-slot-5=50
+[StutterFix] [gpudeco] export_schema=2 sources=1822 table_fallback=12940 anchored=15850 pending_start=550 completed_endpoint=250 anchor_input=actual_Rec_Pos_and_start_parameters fallback=unobserved,unstarted,native_or_direct start_phase=recorded_not_inferred
+[StutterFix] [gpudeco] coverage=0.796121 auxiliary=False
+[StutterFix] [자동 시험] [임무단계] gpudeco 4824.297ms
+[StutterFix] [자동 시험] [임무단계] framecmp 9.222ms
+[StutterFix] [자동 시험] [임무단계] framecmp 7.880ms
+[StutterFix] [framecmp] filters=on (capture scope retained until options change/resume/stop/error)
+[StutterFix] [자동 시험] [임무단계] framecmp 7.624ms
+[StutterFix] [자동 시험] [임무단계] framecmp 32527.951ms
+[StutterFix] [자동 시험] [임무단계] framecmp 15624.191ms
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=0 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=1 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=2 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=3 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=4 max=9.53674316406E-07 mean=1.38880510844E-07 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=5 max=2.38418579102E-07 mean=7.47168705754E-09 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=6 max=2.38418579102E-07 mean=7.47168705754E-09 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=7 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=8 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=9 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=10 max=2.98023223877E-08 mean=3.0604367891E-09 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=11 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=12 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=13 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=14 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=270.02665960090235 slot=15 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0_snapshot vertices=7060 max_px=0.00779684167355 mean_px=9.93931658102E-06 over_tol=0 rgba_max=3.72529029846E-09 rgba_mean=4.9291005775E-11 rgba_over_tol=0
+[StutterFix] [gpudeco] on=True scope=paused_G1_only owned=1765 awake=2217 runs=102 submeshes=1765 dispatches=103 prepare_ms=280.936800 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS
+[StutterFix] [gpudeco] draw_diagnostic=off truth_vertex_upload=False acceptance_eligible=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 2442.353ms
+[StutterFix] [자동 시험] [임무단계] wait 58.726ms
+[StutterFix] [자동 시험] [임무단계] framecmp 15261.711ms
+[StutterFix] [gpudeco] draw_off=True originals_restored=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 1936.550ms
+[StutterFix] [자동 시험] [임무단계] wait 219.650ms
+[StutterFix] [자동 시험] [임무단계] framecmp 16293.037ms
+[StutterFix] [자동 시험] [임무단계] framecmp 2762.631ms
+[StutterFix] [자동 시험] [임무단계] framecmp 611.631ms
+[StutterFix] [gpudeco] G1 sample=1 raw=270.02665960090235 different=1225 pixels=3686400 maxdiff=4 aa2=0 stable=True regions=(1568,704,32,32):1371;(1600,704,32,32):843;(1536,704,32,32):396;(1440,672,32,32):378;(1376,640,32,32):354 mask=none auxiliary=False
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23353 id=-1525120 tex=-833252 mat=-2752936 layer=1320933907 order=-5 z=0 boundsZ=0 alpha=0.107177906 spriteVerts=4 screenRect=(1463.2,624.6,113.4,113.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23690 id=-1525794 tex=-833252 mat=-2754284 layer=1320933907 order=-4 z=0 boundsZ=0 alpha=0.0707509145 spriteVerts=4 screenRect=(1478.9,679.7,92.2,92.2) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23354 id=-1525122 tex=-833252 mat=-2752940 layer=1320933907 order=-4 z=0 boundsZ=0 alpha=0.111643694 spriteVerts=4 screenRect=(1472.4,619.9,119.1,119.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23691 id=-1525796 tex=-833252 mat=-2754288 layer=1320933907 order=-3 z=0 boundsZ=0 alpha=0.07358098 spriteVerts=4 screenRect=(1488.9,677.6,96.8,96.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23355 id=-1525124 tex=-833252 mat=-2752944 layer=1320933907 order=-3 z=0 boundsZ=0 alpha=0.116109483 spriteVerts=4 screenRect=(1482.0,614.8,125.0,125.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23692 id=-1525798 tex=-833252 mat=-2754292 layer=1320933907 order=-2 z=0 boundsZ=0 alpha=0.07641098 spriteVerts=4 screenRect=(1499.3,675.5,101.6,101.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23356 id=-1525126 tex=-833252 mat=-2752948 layer=1320933907 order=-2 z=0 boundsZ=0 alpha=0.120575175 spriteVerts=4 screenRect=(1492.1,609.6,131.3,131.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23693 id=-1525800 tex=-833252 mat=-2754296 layer=1320933907 order=-1 z=0 boundsZ=0 alpha=0.07924104 spriteVerts=4 screenRect=(1510.3,673.3,106.7,106.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23357 id=-1525128 tex=-833252 mat=-2752952 layer=1320933907 order=-1 z=0 boundsZ=0 alpha=0.125040948 spriteVerts=4 screenRect=(1502.7,604.1,137.9,137.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23694 id=-1525802 tex=-833252 mat=-2754300 layer=1320933907 order=0 z=0 boundsZ=0 alpha=0.08207104 spriteVerts=4 screenRect=(1521.8,671.0,112.0,112.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23358 id=-1525130 tex=-833252 mat=-2752956 layer=1320933907 order=0 z=0 boundsZ=0 alpha=0.129506648 spriteVerts=4 screenRect=(1513.9,598.3,144.8,144.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23751 id=-1525916 tex=-833736 mat=-2754528 layer=0 order=1 z=0 boundsZ=0 alpha=0.0656453744 spriteVerts=4 screenRect=(1416.8,705.5,161.0,161.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23695 id=-1525804 tex=-833252 mat=-2754304 layer=0 order=1 z=0 boundsZ=0 alpha=0.06662474 spriteVerts=4 screenRect=(1533.9,668.5,117.7,117.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23359 id=-1525132 tex=-833252 mat=-2752960 layer=0 order=1 z=0 boundsZ=0 alpha=0.105132662 spriteVerts=4 screenRect=(1525.6,592.2,152.0,152.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23752 id=-1525918 tex=-833736 mat=-2754532 layer=0 order=2 z=0 boundsZ=0 alpha=0.06251941 spriteVerts=4 screenRect=(1423.7,704.8,169.1,169.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1568,704,32,32):1371 index=23696 id=-1525806 tex=-833252 mat=-2754308 layer=0 order=2 z=0 boundsZ=0 alpha=0.06345214 spriteVerts=4 screenRect=(1546.6,665.9,123.5,123.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1568,704,32,32):1371 rendererId=-3189922 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3180 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1568,704,32,32):1371 rendererId=-3189914 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3185 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1568,704,32,32):1371 rendererId=-3189906 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3190 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1568,704,32,32):1371 rendererId=-3189898 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3195 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1568,704,32,32):1371 rendererId=-1708240 type=SpriteRenderer name=sprite mat=-2752168 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1568,704,32,32):1371 rendererId=-1708238 type=SpriteRenderer name=sprite mat=-2752164 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1568,704,32,32):1371 rendererId=-1708236 type=SpriteRenderer name=sprite mat=-2752160 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1568,704,32,32):1371 rendererId=-1708128 type=SpriteRenderer name=sprite mat=-2751944 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23355 id=-1525124 tex=-833252 mat=-2752944 layer=1320933907 order=-3 z=0 boundsZ=0 alpha=0.116109483 spriteVerts=4 screenRect=(1482.0,614.8,125.0,125.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23692 id=-1525798 tex=-833252 mat=-2754292 layer=1320933907 order=-2 z=0 boundsZ=0 alpha=0.07641098 spriteVerts=4 screenRect=(1499.3,675.5,101.6,101.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23356 id=-1525126 tex=-833252 mat=-2752948 layer=1320933907 order=-2 z=0 boundsZ=0 alpha=0.120575175 spriteVerts=4 screenRect=(1492.1,609.6,131.3,131.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23693 id=-1525800 tex=-833252 mat=-2754296 layer=1320933907 order=-1 z=0 boundsZ=0 alpha=0.07924104 spriteVerts=4 screenRect=(1510.3,673.3,106.7,106.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23357 id=-1525128 tex=-833252 mat=-2752952 layer=1320933907 order=-1 z=0 boundsZ=0 alpha=0.125040948 spriteVerts=4 screenRect=(1502.7,604.1,137.9,137.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23694 id=-1525802 tex=-833252 mat=-2754300 layer=1320933907 order=0 z=0 boundsZ=0 alpha=0.08207104 spriteVerts=4 screenRect=(1521.8,671.0,112.0,112.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23358 id=-1525130 tex=-833252 mat=-2752956 layer=1320933907 order=0 z=0 boundsZ=0 alpha=0.129506648 spriteVerts=4 screenRect=(1513.9,598.3,144.8,144.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23695 id=-1525804 tex=-833252 mat=-2754304 layer=0 order=1 z=0 boundsZ=0 alpha=0.06662474 spriteVerts=4 screenRect=(1533.9,668.5,117.7,117.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23359 id=-1525132 tex=-833252 mat=-2752960 layer=0 order=1 z=0 boundsZ=0 alpha=0.105132662 spriteVerts=4 screenRect=(1525.6,592.2,152.0,152.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23696 id=-1525806 tex=-833252 mat=-2754308 layer=0 order=2 z=0 boundsZ=0 alpha=0.06345214 spriteVerts=4 screenRect=(1546.6,665.9,123.5,123.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23360 id=-1525134 tex=-833252 mat=-2752964 layer=0 order=2 z=0 boundsZ=0 alpha=0.100126356 spriteVerts=4 screenRect=(1537.8,585.8,159.6,159.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23753 id=-1525920 tex=-833736 mat=-2754536 layer=0 order=3 z=0 boundsZ=0 alpha=0.05939344 spriteVerts=4 screenRect=(1430.9,704.0,177.5,177.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23697 id=-1525808 tex=-833252 mat=-2754312 layer=0 order=3 z=0 boundsZ=0 alpha=0.06027953 spriteVerts=4 screenRect=(1559.9,663.2,129.7,129.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23361 id=-1525136 tex=-833252 mat=-2752968 layer=0 order=3 z=0 boundsZ=0 alpha=0.09512003 spriteVerts=4 screenRect=(1550.7,579.1,167.6,167.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23754 id=-1525922 tex=-833736 mat=-2754540 layer=0 order=4 z=0 boundsZ=0 alpha=0.0562674664 spriteVerts=4 screenRect=(1438.4,703.2,186.4,186.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1600,704,32,32):843 index=23698 id=-1525810 tex=-833252 mat=-2754316 layer=0 order=4 z=0 boundsZ=0 alpha=0.05710692 spriteVerts=4 screenRect=(1573.9,660.4,136.2,136.2) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1600,704,32,32):843 rendererId=-3189922 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3180 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1600,704,32,32):843 rendererId=-3189914 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3185 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1600,704,32,32):843 rendererId=-3189906 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3190 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1600,704,32,32):843 rendererId=-3189898 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3195 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1600,704,32,32):843 rendererId=-1708240 type=SpriteRenderer name=sprite mat=-2752168 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1600,704,32,32):843 rendererId=-1708238 type=SpriteRenderer name=sprite mat=-2752164 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1600,704,32,32):843 rendererId=-1708236 type=SpriteRenderer name=sprite mat=-2752160 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1600,704,32,32):843 rendererId=-1708128 type=SpriteRenderer name=sprite mat=-2751944 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23350 id=-1525114 tex=-833252 mat=-2752924 layer=1320933907 order=-8 z=0 boundsZ=0 alpha=0.0937807038 spriteVerts=4 screenRect=(1438.3,637.6,98.0,98.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23351 id=-1525116 tex=-833252 mat=-2752928 layer=1320933907 order=-7 z=0 boundsZ=0 alpha=0.09824644 spriteVerts=4 screenRect=(1446.2,633.5,102.9,102.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23688 id=-1525790 tex=-833252 mat=-2754276 layer=1320933907 order=-6 z=0 boundsZ=0 alpha=0.06509086 spriteVerts=4 screenRect=(1460.4,683.4,83.6,83.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23352 id=-1525118 tex=-833252 mat=-2752932 layer=1320933907 order=-6 z=0 boundsZ=0 alpha=0.102712221 spriteVerts=4 screenRect=(1454.5,629.2,108.0,108.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23689 id=-1525792 tex=-833252 mat=-2754280 layer=1320933907 order=-5 z=0 boundsZ=0 alpha=0.0679208562 spriteVerts=4 screenRect=(1469.4,681.6,87.8,87.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23353 id=-1525120 tex=-833252 mat=-2752936 layer=1320933907 order=-5 z=0 boundsZ=0 alpha=0.107177906 spriteVerts=4 screenRect=(1463.2,624.6,113.4,113.4) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23690 id=-1525794 tex=-833252 mat=-2754284 layer=1320933907 order=-4 z=0 boundsZ=0 alpha=0.0707509145 spriteVerts=4 screenRect=(1478.9,679.7,92.2,92.2) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23354 id=-1525122 tex=-833252 mat=-2752940 layer=1320933907 order=-4 z=0 boundsZ=0 alpha=0.111643694 spriteVerts=4 screenRect=(1472.4,619.9,119.1,119.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23691 id=-1525796 tex=-833252 mat=-2754288 layer=1320933907 order=-3 z=0 boundsZ=0 alpha=0.07358098 spriteVerts=4 screenRect=(1488.9,677.6,96.8,96.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23355 id=-1525124 tex=-833252 mat=-2752944 layer=1320933907 order=-3 z=0 boundsZ=0 alpha=0.116109483 spriteVerts=4 screenRect=(1482.0,614.8,125.0,125.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23748 id=-1525910 tex=-833736 mat=-2754516 layer=1320933907 order=-2 z=0 boundsZ=0 alpha=0.07528777 spriteVerts=4 screenRect=(1398.2,707.5,139.1,139.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23692 id=-1525798 tex=-833252 mat=-2754292 layer=1320933907 order=-2 z=0 boundsZ=0 alpha=0.07641098 spriteVerts=4 screenRect=(1499.3,675.5,101.6,101.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23356 id=-1525126 tex=-833252 mat=-2752948 layer=1320933907 order=-2 z=0 boundsZ=0 alpha=0.120575175 spriteVerts=4 screenRect=(1492.1,609.6,131.3,131.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23749 id=-1525912 tex=-833736 mat=-2754520 layer=1320933907 order=-1 z=0 boundsZ=0 alpha=0.07807622 spriteVerts=4 screenRect=(1404.1,706.9,146.0,146.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23693 id=-1525800 tex=-833252 mat=-2754296 layer=1320933907 order=-1 z=0 boundsZ=0 alpha=0.07924104 spriteVerts=4 screenRect=(1510.3,673.3,106.7,106.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1536,704,32,32):396 index=23357 id=-1525128 tex=-833252 mat=-2752952 layer=1320933907 order=-1 z=0 boundsZ=0 alpha=0.125040948 spriteVerts=4 screenRect=(1502.7,604.1,137.9,137.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1536,704,32,32):396 rendererId=-3189922 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3180 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1536,704,32,32):396 rendererId=-3189914 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3185 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1536,704,32,32):396 rendererId=-3189906 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3190 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1536,704,32,32):396 rendererId=-1708240 type=SpriteRenderer name=sprite mat=-2752168 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1536,704,32,32):396 rendererId=-1708238 type=SpriteRenderer name=sprite mat=-2752164 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1536,704,32,32):396 rendererId=-1708236 type=SpriteRenderer name=sprite mat=-2752160 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1536,704,32,32):396 rendererId=-1708128 type=SpriteRenderer name=sprite mat=-2751944 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1536,704,32,32):396 rendererId=-1708126 type=SpriteRenderer name=sprite mat=-2751940 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=23050 id=-1524514 tex=-833364 mat=-2751724 layer=1320933907 order=-28 z=0 boundsZ=0 alpha=0.00137853762 spriteVerts=4 screenRect=(1419.2,676.1,24.3,24.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22994 id=-1524402 tex=-833308 mat=-2751500 layer=1320933907 order=-28 z=0 boundsZ=0 alpha=0.00122474239 spriteVerts=4 screenRect=(1414.2,644.0,35.3,35.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22882 id=-1524178 tex=-833364 mat=-2751052 layer=1320933907 order=-28 z=0 boundsZ=0 alpha=0.00109785527 spriteVerts=4 screenRect=(1429.2,657.7,23.1,23.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=23051 id=-1524516 tex=-833364 mat=-2751728 layer=1320933907 order=-27 z=0 boundsZ=0 alpha=0.00275707524 spriteVerts=4 screenRect=(1426.2,673.9,25.5,25.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22995 id=-1524404 tex=-833308 mat=-2751504 layer=1320933907 order=-27 z=0 boundsZ=0 alpha=0.00244948477 spriteVerts=4 screenRect=(1420.9,640.2,37.0,37.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22883 id=-1524180 tex=-833364 mat=-2751056 layer=1320933907 order=-27 z=0 boundsZ=0 alpha=0.00219571055 spriteVerts=4 screenRect=(1436.7,654.5,24.3,24.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=23052 id=-1524518 tex=-833364 mat=-2751732 layer=1320933907 order=-26 z=0 boundsZ=0 alpha=0.004135613 spriteVerts=4 screenRect=(1433.5,671.6,26.8,26.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22996 id=-1524406 tex=-833308 mat=-2751508 layer=1320933907 order=-26 z=0 boundsZ=0 alpha=0.003674227 spriteVerts=4 screenRect=(1427.9,636.3,38.9,38.9) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22940 id=-1524294 tex=-833252 mat=-2751284 layer=1320933907 order=-26 z=0 boundsZ=0 alpha=0.0034213136 spriteVerts=4 screenRect=(1413.0,654.5,27.6,27.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22884 id=-1524182 tex=-833364 mat=-2751060 layer=1320933907 order=-26 z=0 boundsZ=0 alpha=0.00329356571 spriteVerts=4 screenRect=(1444.5,651.3,25.5,25.5) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=23109 id=-1524632 tex=-833420 mat=-2751960 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.00659850659 spriteVerts=4 screenRect=(1414.9,680.3,27.9,15.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=23053 id=-1524520 tex=-833364 mat=-2751736 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.00551415049 spriteVerts=4 screenRect=(1441.2,669.2,28.1,28.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22997 id=-1524408 tex=-833308 mat=-2751512 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.00489896955 spriteVerts=4 screenRect=(1435.3,632.1,40.8,40.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22941 id=-1524296 tex=-833252 mat=-2751288 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.00456175162 spriteVerts=4 screenRect=(1419.6,651.2,29.0,29.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=22885 id=-1524184 tex=-833364 mat=-2751064 layer=1320933907 order=-25 z=0 boundsZ=0 alpha=0.004391421 spriteVerts=4 screenRect=(1452.7,647.8,26.8,26.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1440,672,32,32):378 index=23110 id=-1524634 tex=-833420 mat=-2751964 layer=1320933907 order=-24 z=0 boundsZ=0 alpha=0.008248133 spriteVerts=4 screenRect=(1421.6,678.3,29.3,16.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,672,32,32):378 rendererId=-3189914 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3185 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,672,32,32):378 rendererId=-1708392 type=SpriteRenderer name=sprite mat=-2752472 shader=Sprites/Tile layer=1320933907 order=-9 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,672,32,32):378 rendererId=-1708390 type=SpriteRenderer name=sprite mat=-2752468 shader=Sprites/Tile layer=1320933907 order=-10 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,672,32,32):378 rendererId=-1708388 type=SpriteRenderer name=sprite mat=-2752464 shader=Sprites/Tile layer=1320933907 order=-11 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,672,32,32):378 rendererId=-1708386 type=SpriteRenderer name=sprite mat=-2752460 shader=Sprites/Tile layer=1320933907 order=-12 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,672,32,32):378 rendererId=-1708384 type=SpriteRenderer name=sprite mat=-2752456 shader=Sprites/Tile layer=1320933907 order=-13 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,672,32,32):378 rendererId=-1708382 type=SpriteRenderer name=sprite mat=-2752452 shader=Sprites/Tile layer=1320933907 order=-14 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1440,672,32,32):378 rendererId=-1708380 type=SpriteRenderer name=sprite mat=-2752448 shader=Sprites/Tile layer=1320933907 order=-15 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=22938 id=-1524290 tex=-833252 mat=-2751276 layer=1320933907 order=-28 z=0 boundsZ=0 alpha=0.0011404379 spriteVerts=4 screenRect=(1400.6,660.5,25.0,25.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=22770 id=-1523954 tex=-833364 mat=-2750604 layer=1320933907 order=-28 z=0 boundsZ=0 alpha=0.000830992649 spriteVerts=4 screenRect=(1402.0,628.8,21.2,21.2) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=22939 id=-1524292 tex=-833252 mat=-2751280 layer=1320933907 order=-27 z=0 boundsZ=0 alpha=0.00228087581 spriteVerts=4 screenRect=(1406.6,657.6,26.3,26.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23281 id=-1524976 tex=-833252 mat=-2752648 layer=1320933907 order=-21 z=0 boundsZ=0 alpha=0.03583008 spriteVerts=4 screenRect=(1340.3,666.6,39.7,39.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23282 id=-1524978 tex=-833252 mat=-2752652 layer=1320933907 order=-20 z=0 boundsZ=0 alpha=0.0403088368 spriteVerts=4 screenRect=(1343.3,663.9,41.7,41.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23339 id=-1525092 tex=-833252 mat=-2752880 layer=1320933907 order=-19 z=0 boundsZ=0 alpha=0.0446574762 spriteVerts=4 screenRect=(1372.5,671.8,57.3,57.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23283 id=-1524980 tex=-833252 mat=-2752656 layer=1320933907 order=-19 z=0 boundsZ=0 alpha=0.0447875969 spriteVerts=4 screenRect=(1346.5,661.1,43.8,43.8) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23340 id=-1525094 tex=-833252 mat=-2752884 layer=1320933907 order=-18 z=0 boundsZ=0 alpha=0.0491232276 spriteVerts=4 screenRect=(1377.2,669.4,60.2,60.2) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23284 id=-1524982 tex=-833252 mat=-2752660 layer=1320933907 order=-18 z=0 boundsZ=0 alpha=0.04926636 spriteVerts=4 screenRect=(1349.8,658.2,46.0,46.0) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23341 id=-1525096 tex=-833252 mat=-2752888 layer=1320933907 order=-17 z=0 boundsZ=0 alpha=0.0535889752 spriteVerts=4 screenRect=(1382.0,666.9,63.2,63.2) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23285 id=-1524984 tex=-833252 mat=-2752664 layer=1320933907 order=-17 z=0 boundsZ=0 alpha=0.05374512 spriteVerts=4 screenRect=(1353.3,655.1,48.3,48.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23342 id=-1525098 tex=-833252 mat=-2752892 layer=1320933907 order=-16 z=0 boundsZ=0 alpha=0.0580547228 spriteVerts=4 screenRect=(1387.1,664.2,66.3,66.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23286 id=-1524986 tex=-833252 mat=-2752668 layer=1320933907 order=-16 z=0 boundsZ=0 alpha=0.05822388 spriteVerts=4 screenRect=(1357.0,651.8,50.7,50.7) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23343 id=-1525100 tex=-833252 mat=-2752896 layer=1320933907 order=-15 z=0 boundsZ=0 alpha=0.06252047 spriteVerts=4 screenRect=(1392.5,661.4,69.6,69.6) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23287 id=-1524988 tex=-833252 mat=-2752672 layer=1320933907 order=-15 z=0 boundsZ=0 alpha=0.06270264 spriteVerts=4 screenRect=(1360.8,648.4,53.3,53.3) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=OWNED region=(1376,640,32,32):354 index=23344 id=-1525102 tex=-833252 mat=-2752900 layer=1320933907 order=-14 z=0 boundsZ=0 alpha=0.06698622 spriteVerts=4 screenRect=(1398.1,658.5,73.1,73.1) blend=_SrcBlend=absent,_DstBlend=absent,_BlendOp=absent
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1376,640,32,32):354 rendererId=-3189914 type=SpriteRenderer name=topGlow mat=96 shader=Sprites/Default layer=-1321855367 order=3185 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1376,640,32,32):354 rendererId=-1708378 type=SpriteRenderer name=sprite mat=-2752444 shader=Sprites/Tile layer=1320933907 order=-16 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1376,640,32,32):354 rendererId=-1708376 type=SpriteRenderer name=sprite mat=-2752440 shader=Sprites/Tile layer=1320933907 order=-17 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1376,640,32,32):354 rendererId=-1708374 type=SpriteRenderer name=sprite mat=-2752436 shader=Sprites/Tile layer=1320933907 order=-18 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1376,640,32,32):354 rendererId=-1708240 type=SpriteRenderer name=sprite mat=-2752168 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1376,640,32,32):354 rendererId=-1708238 type=SpriteRenderer name=sprite mat=-2752164 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1376,640,32,32):354 rendererId=-1708236 type=SpriteRenderer name=sprite mat=-2752160 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [gpudeco] G1_region_candidate role=BARRIER region=(1376,640,32,32):354 rendererId=-1708128 type=SpriteRenderer name=sprite mat=-2751944 shader=Sprites/Tile layer=0 order=777 boundsZ=0
+[StutterFix] [자동 시험] [임무단계] gpudeco 3751.634ms
+[StutterFix] [자동 시험] [임무단계] resume 113.924ms
+[StutterFix] [자동 시험] [임무완주] OnLandOnPortal 0.418ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (2439ms)
+[StutterFix] [자동 시험] [임무단계] stop 2526.627ms
+[StutterFix] [자동 시험] 276.0초 12초 앞: 타일 3489 (그 타일 264.0초) 선택
+[StutterFix] [자동 시험] 재생 (자동 플레이 켬)
+[StutterFix] [장식굽기/그림자] 기준 스냅샷 재사용 장식=28835 전체예약효과=111216 현재예약효과=111217 최초지원=23631
+[StutterFix] [자동 시험] [임무단계] seek 3480.072ms
+[StutterFix] [장식굽기/그림자] 준비됨 (그림자 기본; adopt 별도) 장식=28835 지원=23631 이벤트=97694 구간=858286
+[StutterFix] [자동 시험] [임무단계] decobake 278.115ms
+[StutterFix] [자동 시험] [임무단계] waitsongpos 16837.247ms
+[StutterFix] [자동 시험] [임무단계] pause 126.222ms
+[StutterFix] [자동 시험] [임무단계] wait 77.646ms
+[StutterFix] [gpudeco] prepare_ms=4610.356300 phase=export owned=17 awake=24 raw=276.00505315558985 tb=275.9990079461931 path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\exports\run-c5e2fdf03fe842699114a18effc23ec2\276.gpudeco
+[StutterFix] [gpudeco] export_reject 
+[StutterFix] [gpudeco] export_schema=2 sources=0 table_fallback=272 anchor_input=actual_Rec_Pos_and_start_parameters fallback=unobserved,unstarted,native_or_direct start_phase=recorded_not_inferred
+[StutterFix] [gpudeco] coverage=0.708333 auxiliary=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 4613.587ms
+[StutterFix] [자동 시험] [임무단계] framecmp 5.427ms
+[StutterFix] [자동 시험] [임무단계] framecmp 3.641ms
+[StutterFix] [framecmp] filters=on (capture scope retained until options change/resume/stop/error)
+[StutterFix] [자동 시험] [임무단계] framecmp 2.894ms
+[StutterFix] [자동 시험] [임무단계] framecmp 32498.705ms
+[StutterFix] [자동 시험] [임무단계] framecmp 17098.728ms
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=0 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=1 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=2 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=3 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=4 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=5 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=6 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=7 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=8 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=9 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=10 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=11 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=12 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=13 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=14 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0 t=276.00505315558985 slot=15 max=0 mean=0 source=paused_gpu_snapshot
+[StutterFix] [gpudeco] G0_snapshot vertices=68 max_px=0 mean_px=0 over_tol=0 rgba_max=0 rgba_mean=0 rgba_over_tol=0
+[StutterFix] [gpudeco] on=True scope=paused_G1_only owned=17 awake=24 runs=4 submeshes=17 dispatches=5 prepare_ms=147.182000 draw_color=UNorm8_equivalent logical_color=Float32 prepare_scope=paused_diagnostic steady_cost=UNMEASURED G0=PASS
+[StutterFix] [gpudeco] draw_diagnostic=off truth_vertex_upload=False acceptance_eligible=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 196.282ms
+[StutterFix] [자동 시험] [임무단계] wait 98.410ms
+[StutterFix] [자동 시험] [임무단계] framecmp 18352.557ms
+[StutterFix] [gpudeco] draw_off=True originals_restored=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 49.784ms
+[StutterFix] [자동 시험] [임무단계] wait 245.898ms
+[StutterFix] [자동 시험] [임무단계] framecmp 16657.922ms
+[StutterFix] [자동 시험] [임무단계] framecmp 3619.083ms
+[StutterFix] [자동 시험] [임무단계] framecmp 877.192ms
+[StutterFix] [gpudeco] G1 sample=2 raw=276.00505315558985 different=0 pixels=3686400 maxdiff=0 aa2=0 stable=True regions= mask=none auxiliary=True
+[StutterFix] [자동 시험] [임무단계] gpudeco 4016.710ms
+[StutterFix] [자동 시험] [임무단계] resume 104.133ms
+[StutterFix] [자동 시험] [임무완주] OnLandOnPortal 0.409ms
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [자동 시험] [임무단계] gpudeco 60.709ms
+[StutterFix] [gpudeco] GPUDECO_G1=PIXEL_FAIL scope=paused_G1 exports=3 reason=PIXEL_FAIL live_animation=UNMEASURED G2=UNMEASURED
+[StutterFix] [자동 시험] [임무단계] gpudeco 13.493ms
+[StutterFix] [자동 시험] 편집으로 돌아감 (2533ms)
+[StutterFix] [자동 시험] [임무단계] stop 2541.712ms
+[StutterFix] [장식굽기/그림자] 꺼짐
+[StutterFix] [자동 시험] [임무단계] decobake 293.433ms
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다
+[StutterFix] [자동 시험] [임무단계] quit 9.264ms

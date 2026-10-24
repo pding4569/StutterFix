@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -80,6 +80,9 @@ namespace StutterFix
 #endif
             if (!Enabled) return false; // default off: no counters, hash lookup, clock or native calls
             if (!compatible || failed) return No(0);
+#if DEV || AUTOTEST
+            if (HiddenDecoSynergy.ColorOn && TryHidden(d, c, o, onlyOpacity)) return true;
+#endif
             if ((object)d == null || d.GetType() != typeof(scrVisualDecoration)) return No(1);
             if (d.stickToFloor) return No(2);
             // Positive alpha alone is insufficient when SetVisible(false) has put it to sleep.
@@ -107,7 +110,66 @@ namespace StutterFix
             return true;
         }
 #if DEV || AUTOTEST
+        private static bool TryHidden(scrDecoration d, Color c, float o, bool onlyOpacity)
+        {
+            if (ReferenceEquals(d, null) || d.GetType() != typeof(scrVisualDecoration) || d.stickToFloor
+                || Precheck.Active != 0 || !InvisibleSkip.Enabled || !Dormancy.Enabled
+                || !InvisibleSkip.LazyCan(d)) return false;
+            if (LiveDecoRenderer.Owns(d) || DecoBake.GpuLiveOwns((scrVisualDecoration)d) || DecoGpu.Owns(d)) return false;
+            if (onlyOpacity) c = color(d); else o = opacity(d);
+            float a = c.a * o * 1f; // Original multiplication order, including the second product.
+            if (!(a <= 0f) || !HiddenDecoSynergy.Finite(a) || !HiddenDecoSynergy.Finite(c.r)
+                || !HiddenDecoSynergy.Finite(c.g) || !HiddenDecoSynergy.Finite(c.b)) return false;
+            // Reuse the existing queue also for a color-only target. This ensures
+            // turning the experiment off / resetting / unloading uploads the
+            // current native color, even if that target never became visible.
+            // LazyCan above guarantees a valid UpdatePosition/ApplyColor path.
+            InvisibleSkip.LazyAdd(d);
+            // Logical color changes immediately. The existing ApplyColor unhide path
+            // writes the current native color before a positive-alpha frame is drawn.
+            if (onlyOpacity) opacity(d) = o; else color(d) = c;
+            rendered(d) = new Color(c.r, c.g, c.b, a);
+            HiddenDecoSynergy.Colors++;
+            return true;
+        }
         private static bool Bits(float x, float y) => BitConverter.SingleToInt32Bits(x) == BitConverter.SingleToInt32Bits(y);
+        internal static int HiddenFixture(scrDecoration d, out int tested)
+        {
+            tested = 0; int diff = 0;
+            var sr = ((scrVisualDecoration)d).spriteRenderer;
+            Color oldC = color(d), oldR = rendered(d), oldNative = sr.color;
+            float oldO = opacity(d);
+            var originalColor = AccessTools.MethodDelegate<Action<scrDecoration, Color>>(AccessTools.Method(typeof(scrDecoration), "SetColor", new[] { typeof(Color) }));
+            var originalOpacity = AccessTools.MethodDelegate<Action<scrDecoration, float>>(AccessTools.Method(typeof(scrDecoration), "SetOpacity", new[] { typeof(float) }));
+            try
+            {
+                foreach (float o in new[] { 0f, .5f, 1f, -1f })
+                {
+                    var c = new Color(.125f, .75f, 1.5f, 0f);
+                    originalColor(d, c); originalOpacity(d, o);
+                    Color expected = rendered(d);
+                    color(d) = oldC; opacity(d) = oldO; rendered(d) = oldR;
+                    // A known zero-alpha input first; no hidden->visible shortcut.
+                    if (!TryHidden(d, c, 0f, false) || !TryHidden(d, default(Color), o, true)) { diff++; continue; }
+                    if (!Bits(color(d), c) || !Bits(opacity(d), o) || !Bits(rendered(d), expected) || !InvisibleSkip.IsHidden(d)) diff++;
+                    InvisibleSkip.ApplyAllLazy();
+                    if (!Bits(sr.color, rendered(d))) diff++;
+                    tested++;
+                }
+                // Real unhide, then restore in the same synchronous diagnostic:
+                // the original setter must upload the deferred color before drawing.
+                originalOpacity(d, 1f); originalColor(d, new Color(.25f, .5f, .75f, 1f));
+                if (!Bits(sr.color, rendered(d)) || InvisibleSkip.IsHidden(d)) diff++;
+                tested++;
+            }
+            finally
+            {
+                originalColor(d, oldC); originalOpacity(d, oldO);
+                color(d) = oldC; opacity(d) = oldO; rendered(d) = oldR; sr.color = oldNative;
+                InvisibleSkip.After((scrVisualDecoration)d);
+            }
+            return diff;
+        }
         private static bool Bits(Color x, Color y) => Bits(x.r,y.r) && Bits(x.g,y.g) && Bits(x.b,y.b) && Bits(x.a,y.a);
         private static void Check(scrDecoration d, SpriteRenderer sr, Color c, float o, bool wasEnabled)
         {

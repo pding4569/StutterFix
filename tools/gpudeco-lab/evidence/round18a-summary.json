@@ -1,0 +1,15 @@
+{
+  "round": "18a",
+  "status": "G1_PASS_live_pair_1_of_3_trial_incomplete",
+  "restored": 8,
+  "sha": {
+    "source_dll": "3c0266ca52c448934fdd70eded8d9383ead49e4f9f7b836c538217397bddd19a",
+    "source_native": "a0f777c5ecac54afabd2e2f3b3de145661939e9ac16a6914efe56c4708ca62b7",
+    "bundle": "f5cb2539fd1674ea5d8ff1f7b87bffd48b484f67a0aa8448d59f2ed49cb76fb1"
+  },
+  "paired_samples": 1,
+  "buffer_finalizer_warnings": 31037,
+  "failure": "waitsongpos270_after_OnLandOnPortal_at262_on_long_capture_resume",
+  "render_changes_for_retry": 0,
+  "quit_cleanup_change": "owned_Application.quitting_dispose"
+}

@@ -89,6 +89,18 @@ public static partial class GpuDecoLab
             Log("[gpudeco-lab] linear_cancellation cpu="+N(reference)+" gpu="+N(result.values[1]));
             Require(result.values[1]==reference,"linear cancellation regression");
         }
+        // Saved source parameters from the strict game failure; no truth is
+        // uploaded. The CPU oracle supplies expected values only for comparison.
+        data=Synthetic(1);d=data.Items[0];d.Flags=0;
+        for(int ch=0;ch<16;ch++){d.Tracks[ch]=Array.Empty<DecoBakeCore.Segment>();d.Anchors[ch]=default;}
+        data.Sources=new[]{new GpuDecoData.SourceClock{Progress=.558046638966f}};
+        var cubic=new DecoBakeCore.Segment{Duration=.600000023842f,Start=673.545043945f,Target=672.028076172f,End=672.028076172f,Ease=8};
+        d.Anchors[0]=new GpuDecoData.Anchor{Valid=true,Clock=0,Segment=cubic};
+        using(var gpu=new Evaluation(shader,data)) {
+            var result=gpu.Dispatch(data.BakeTime,true);float reference=data.Eval(d,0,Ease);
+            Log("[gpudeco-lab] cubic_quotient_regression cpu="+N(reference)+" gpu="+N(result.values[0]));
+            Require(result.values[0]==reference,"cubic quotient rounding regression");
+        }
     }
     public static void Bundle() => Run(BundleBody, "bundle");
     public static void Runs() => Run(RunsBody, "runs");
@@ -358,8 +370,47 @@ public static partial class GpuDecoLab
         var manifest=BuildPipeline.BuildAssetBundles(output,new[]{new AssetBundleBuild{assetBundleName="stutterfix_gpudeco",assetNames=new[]{"Assets/Shaders/GpuDeco.compute"}}},BuildAssetBundleOptions.ChunkBasedCompression|BuildAssetBundleOptions.ForceRebuildAssetBundle,BuildTarget.StandaloneWindows64);
         Require(manifest,"bundle build failed");
         var bundle=AssetBundle.LoadFromFile(Path.Combine(output,"stutterfix_gpudeco")); Require(bundle,"bundle load failed");
-        try { var shader=bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute"); Probe(shader); ProbeLinear(shader); ProbeRotation(shader); ColorBody(shader); } finally { bundle.Unload(true); }
+        try {
+            var shader=bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute");
+            Probe(shader); ProbeLinear(shader); ProbeRotation(shader); ColorBody(shader); MappedCopyBody(shader);
+            if(Environment.GetCommandLineArgs().Contains("-gpudecoInput"))LiveBody(shader);
+        } finally { bundle.Unload(true); }
         Log("GPUDECO_BUNDLE=PASS editor="+Application.unityVersion+" path="+output);
+    }
+    static void MappedCopyBody(ComputeShader shader)
+    {
+        var data=Synthetic(3);int cases=0,vertices=0;
+        using(var gpu=new Evaluation(shader,data))
+        {
+            var expected=gpu.Dispatch(data.BakeTime,true).vertices;
+            int kernel=shader.FindKernel("CopyMappedRun");
+            foreach(int count in new[]{1,64,129})foreach(int quantize in new[]{0,1})
+            {
+                var map=Enumerable.Range(0,count).Select(i=>(uint)((expected.Length-1-i*5%expected.Length))).ToArray();
+                using(var indices=new GraphicsBuffer(GraphicsBuffer.Target.Structured,count,4))
+                using(var destination=new GraphicsBuffer(GraphicsBuffer.Target.Raw,(count+1)*9,4))
+                {
+                    indices.SetData(map);var sentinel=Enumerable.Repeat(0x3f3f3f3fu,(count+1)*9).ToArray();destination.SetData(sentinel);
+                    shader.SetBuffer(kernel,"_CopySource",gpu.VertexBuffer);shader.SetBuffer(kernel,"_CopyMap",indices);shader.SetBuffer(kernel,"_Vertices",destination);
+                    shader.SetInt("_CopyVertexCount",count);shader.SetInt("_CopyQuantizeColor",quantize);shader.Dispatch(kernel,(count+63)/64,1,1);
+                    var actual=new Vertex[count+1];destination.GetData(actual);
+                    for(int i=0;i<count;i++)
+                    {
+                        var value=expected[map[i]];if(quantize!=0)value.color=GpuDecoGpu.DrawColor(value.color);
+                        bool colorEqual=quantize==0?actual[i].color.Equals(value.color):GpuDecoGpu.EquivalentDrawColor(actual[i].color,expected[map[i]].color);
+                        Require(actual[i].position.Equals(value.position) && colorEqual && actual[i].uv.Equals(value.uv),
+                            "mapped copy mismatch count="+count+" quantize="+quantize+" vertex="+i+" src="+map[i]
+                            +" pos="+actual[i].position.ToString("G9")+" expected_pos="+value.position.ToString("G9")
+                            +" color="+actual[i].color.ToString("G9")+" expected_color="+value.color.ToString("G9")
+                            +" uv="+actual[i].uv.ToString("G9")+" expected_uv="+value.uv.ToString("G9"));
+                    }
+                    var raw=new uint[sentinel.Length];destination.GetData(raw);
+                    Require(raw.Skip(count*9).All(x=>x==0x3f3f3f3fu),"mapped copy wrote past count");
+                    cases++;vertices+=count;
+                }
+            }
+        }
+        Log("GPUDECO_MAPPED_COPY=PASS cases="+cases+" vertices="+vertices+" guard_errors=0");
     }
     static void RunsBody()
     {
