@@ -1,6 +1,45 @@
 # render-merge 구현 결과
 
-## 현재 회차: 재생 중 전환 준비 완료, 실측 없음 (2026-10-25)
+## 현재 회차: run1 소유 범위 오류 수정, 수정판 실측 없음 (2026-10-25)
+
+**기존 외부 run1은 `RENDERMERGE=ERROR`, 새 schedule4 수정판은 `RENDERMERGE=ERROR reason=GAME_NOT_RUN`이다.** 게임 실행·설치·커밋·푸시·자동 장치 호출은 하지 않았다. 05:45 추가 인계의 곡 처음 준비 절차를 반영했다. 아래 이전 회차의 환경 불일치·실측 없음 설명은 과거 상태다.
+
+### 지정된 run1에서 실제로 수집된 수치
+
+증거: `gm-autoloop-run1-evidence.txt`(3440×1440@164.999). ABBA 4창·픽셀 2점은 실제로 수집됐다. 이 결과를 예전 2560 환경이나 소유 23,547개 기준과 섞지 않는다.
+
+| 창 | FPS | 소유 / 독립 enabled | 합친 렌더러 | 엔진 Draw Calls 최대 | 30ms 초과 |
+|---|---:|---:|---:|---:|---:|
+| A0 | 104.609374 | 26 / 0 | 해당 없음 | 2336 | 0 |
+| B1 | 104.533949 | 26 / 0 | 6 | 2307 | 0 |
+| B2 | 104.176331 | 26 / 0 | 6 | 2318 | 0 |
+| A3 | 104.259526 | 26 / 0 | 해당 없음 | 2305 | 0 |
+
+모든 census에서 소유 26개 전부 `proven_constant_zero_alpha=26`이었다. 262/270초의 원본↔독립↔병합·복원·노이즈 픽셀 차이는 모두 0이지만, 보이는 GPU 교체 대상이 0이므로 목표 장면의 픽셀 동등성 증거로 수용하지 않는다. retry만 통과(stability=1/4); song_end용 `seek 300 12` 후 activation에서 GPU 24/CPU fallback 2가 되어 cached ready가 거부됐다. **B1/B2의 측정 전환은 통과했으며 실패는 곡 끝 안정성 준비 단계다.** reopen/Unload 결과는 수집되지 않았다. 이는 렌더 병합 설계 한계나 220 FPS 불가능의 증거가 아니다.
+
+### 원인과 수정
+
+- `GpuDecoExport.cs`에서 `gpuScope.WholeSong`은 가시성 시간표 필터를 건너뛴다. 따라서 `window_visible=34`를 단순히 화면 안 장식 34개라고 해석하면 안 된다. 코드상 먼저 굽기 거절 사유가 없는 항목만 남긴 뒤 세는 후보 수다.
+- `scnGame.PrepVfx`는 정렬된 예약 목록을 만든다. 이후 `scrVfxPlus.ScrubToTime`은 시작된 효과를 같은 목록에서 제거한다. 기존 `DecoBake.Collect`는 그 목록을 yield하며 읽고, 개수 변경 시 재시작해 줄어든 목록으로 기준을 만들 수 있었다. 과거 효과가 `ordered`에서 빠지면 조건/수동 제외 대상이 되어 소유 후보가 줄어드는 코드 경로다. 디컴파일본을 읽고 설치 게임 DLL의 ILScan으로 PrepVfx→Reset/OrderBy/ThenBy/ToList 및 ScrubToTime→효과 ScrubToTime/List.Remove 호출을 교차 확인했다. 개별 장식별 거절 집계까지 이 로그에 없으므로 26개의 모든 원인을 확정한 것은 아니다.
+- `DecoBake.cs`/`DecoBake.Core.cs`: PrepVfx postfix에서 예약 순서·참조를 즉시 복사해 수집기가 읽는다. 재수집은 이 스냅샷을 유지하며 잘린 live 목록을 새 기준으로 삼지 않는다. 새 PrepVfx는 새 스냅샷으로 교체하고 ForgetLevel/Shutdown에서 해제한다. 실제 live 예약 목록은 adopt/packet 검증용으로 그대로 둔다. 조건/태그/정렬·소유 거절 정책을 완화하지 않았다.
+- 생성기: 05:45 지시대로 `select 0 → play → scheduled → playbackready → pause → decobake ready → scope song → rendermerge prepare/live prepare → resume → stop`으로 최초 준비한다. 이후 측정은 전부 `seek 260 12` 기반이며 ABBA 진입 pause/resume은 없다. 곡 0초에서 260초까지 자연 재생하지 않는다.
+- ABBA 전에 별도 seek로 256초 activation을 만들고 pause→ready로 fallback 경계를 준비한다. live off로 CPU 소유를 복원한 뒤 resume/stop한다. 이 준비 절차는 측정 창 밖이다. 픽셀/곡 끝 검사 후 256초 retry/reopen으로 돌아갈 때와 reopen/선택 T2 준비에도 같은 순서를 적용한다. 픽셀은 독립 경로로 진입하고 해당 시각에 멈춘 뒤에만 ready를 검사한다. 재생 중 메시 할당 제한과 복구 가드는 유지한다.
+- song_end의 activation은 실제 296초 fallback을 반영하도록 live on 직후 pause→ready→on→resume한다. 이 경계의 pause/resume 연속성은 실게임 미검증이며, FastMove 복구나 새 fallback 불일치가 생기면 그대로 실패한다.
+- 생산 수용 게이트: 각 ABBA 창은 GPU 소유 **20,000개 이상**, A의 독립 enabled **1개 이상**, 네 창의 allocated/owned/CPU fallback 개수 일치를 요구한다. 모집단 증거가 없으면 PASS 불가다. 이는 26개·전부 투명인 무효 실험을 조기에 거부하기 위한 추가 조건이며, 기존 FPS ≥220·렌더러 ≤150·Draw Calls ≤600·픽셀·끊김·복원 기준도 모두 유지한다. enabled 검사는 화면 안 가시성 보장과 같지 않으므로 census/visible 수 역시 함께 검토해야 한다.
+
+새 계획: **`tools/optimization/out/render-merge-schedule4-steps.json`**, tag `rendermerge-260-270-abba-schedule4`, 333단계. 생성만 했으며 기존 계획·제어 파일·`.codex/config.toml`은 변경하지 않았다. 다른 작업에서 추가된 인계문서 05:45 보충 2개도 보존했다.
+
+### 오프라인 검증과 남은 항목
+
+Dev/Player/PlayerAuto 빌드 오류 0(최종 로그 경고 4/36/39; 증분 빌드 수치). 생성기 계약 **11개**, RenderMergeCheck **54개**(정책/정확 주소 심볼 48 + DLL 격리 6), 실제 굽기 코어 계약 검사 전체 통과(예약 목록 제거·순서 교체·재수집·상한 관련 5개 추가). 로그는 `tools/optimization/out/render-merge-schedule4-{dev,player,playerauto,contract}.log`다. `git diff --check` 확인. 별도 전체 UI 인코딩 검사는 기존 `out/image-matrix-candidate/scrDecoration.cs`의 UTF-16 파일 때문에 예외 종료했다. 변경한 C# 소스 6개로 범위를 제한해 동일 검사기를 실행한 결과 UTF-8 읽기·리터럴 검사 `SFENC001: clean`을 확인했다. 해당 외부 산출물은 수정하지 않았다.
+
+**수정판 소유 수·FPS·픽셀·실제 정렬·새 끊김·retry/song_end/reopen/Shutdown 복원은 모두 NA다.** 특히 full population에서 cached fallback이 재현 가능하게 일치하는지와 296초 resume을 확인해야 한다. UMM 전체 unload/reload도 미측정이다. 같은 코드의 반복 실행을 요청하지 않는다.
+
+T2 기존 `monosyms`/`ETW_MONO_SYMS`/정확 주소 매칭과 이름 붙은 기록은 보존했다. 메인 포함 3,846표본: PlayerRender 36.9%, CallUpdateMethod 48.3%, GpuLiveFrame 7.7%, TightLate.List 4.4%, TightLate.Process 4.3%, FastMove.Prefix 3.7%(포함 비율은 겹치므로 합산 금지). 기존 2560 환경의 6.1ms에서 220 FPS까지 −1.555ms, 400 FPS까지 −3.6ms; 교체 그리기 제거 3.83ms에서도 400 FPS까지 −1.33ms가 남는다. 이는 새 후보의 개선량이 아니다.
+
+스킬 관찰: task-observer 3.5.0을 읽고 기존 사용자 범위 관찰 로그를 확인했다. 작업 가능한 위치가 이 worktree로 한정되어 사용자 범위 로그를 새로 쓰지 않았다. 별도 스킬 수정/메모리 갱신은 하지 않았고, 이번 작업의 수집 경쟁·무효 모집단 방지 절차는 위 결과에 보존했다.
+
+## 이전 회차: 재생 중 전환 준비 완료, 실측 없음 (2026-10-25)
 
 **`RENDERMERGE=ERROR reason=GAME_NOT_RUN` — 이번 수정판의 FPS 4창·픽셀 2점·렌더러/Draw Calls·끊김·복원은 모두 NA다.** 사용자 지시대로 게임 실행·설치·커밋·푸시·자동 장치 호출은 하지 않았다. 아래 환경 불일치 반복 기록은 과거이며, 05:40 추가 인계와 현재 코드가 우선한다. 2560×1440@120과 3440×1440@165가 이미 허용되어 있으므로 과거 환경 오류를 이번 중단 이유로 사용하지 않는다.
 

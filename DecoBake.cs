@@ -71,6 +71,7 @@ namespace StutterFix
         private static bool ready;
         private static scrDecorationManager manager;
         private static List<ffxPlusBase> effectList;
+        private static ffxPlusBase[] prepEffectSnapshot;
         private static string status = "꺼짐";
         private static double snapshotMs, snapshotMaxMs, workerWallMs;
         private static long heapBefore, heapDelta;
@@ -178,7 +179,7 @@ namespace StutterFix
             gpuImageCandidate=false;gpuImageUploadFault=false;gpuImageMatrix=false;
 #endif
             gpuRenderMergePrepare=false;
-            enabled = false; CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepFloors = null;
+            enabled = false; CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
             DecoSim.ForgetBake();
             table = null;
             patches?.UnpatchAll(Owner); patches = null; status = "꺼짐";
@@ -187,7 +188,7 @@ namespace StutterFix
         {
             if (!enabled) return;
             DisposeGpuLive();
-            CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepFloors = null; status = "새 맵 스냅샷 대기";
+            CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null; status = "새 맵 스냅샷 대기";
             setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1;
         }
         private static void SetupPostfix(scrDecoration __instance)
@@ -252,6 +253,8 @@ namespace StutterFix
             catch (Exception e) { Fail("시작 관찰 " + e.Message); }
         }
         private static void PrepPostfix(List<scrFloor> __0)
+            => BeginPrepCollection(__0, true);
+        private static void BeginPrepCollection(List<scrFloor> floors, bool newSchedule)
         {
             if (!enabled) return;
             try
@@ -260,16 +263,22 @@ namespace StutterFix
                 if (manager == null || manager != scrDecorationManager.instance || initial.Count == 0) throw new InvalidOperationException("open 전 on 필요: Setup 초기값 없음");
                 if (ADOBase.isOfficialLevel || ADOBase.levelIsMikoSkip) throw new InvalidOperationException("커스텀 일반 맵만 지원");
                 if (ADOBase.controller.visualQuality != VisualQuality.High) throw new InvalidOperationException("High 시각 설정만 지원");
-                effectList = scrVfxPlus.instance.effects;
-                if (effectList == null || effectList.Count > MaxEvents) throw new InvalidOperationException("효과 목록/상한");
+                if (newSchedule)
+                {
+                    effectList = scrVfxPlus.instance.effects;
+                    prepEffectSnapshot = DecoBakeCore.CaptureSchedule(effectList, MaxEvents);
+                    Log("PrepVfx 예약 순서 보존=" + prepEffectSnapshot.Length + " generation=" + generation);
+                }
+                else if (prepEffectSnapshot == null || effectList != scrVfxPlus.instance.effects)
+                    throw new InvalidOperationException("전체 PrepVfx 예약 스냅샷 없음/목록 교체; 맵 다시 open 필요");
                 wall = Stopwatch.StartNew(); snapshotMs = setupMs; snapshotMaxMs = setupFrameMaxMs; heapBefore = GC.GetTotalMemory(false);
                 Array.Clear(stageMs, 0, stageMs.Length); stage = 0; stageBegin = 0;
                 Array.Clear(stageMaxMs, 0, stageMaxMs.Length); tagMoveNextMaxMs = 0;
                 frozenPitch = scrConductor.instance.song.pitch; frozenScale = DOTween.timeScale;
                 frozenOver = DOTween.defaultEaseOvershootOrAmplitude; frozenPeriod = DOTween.defaultEasePeriod;
                 status = "메인 스냅샷 수집 중";
-                prepFloors = __0;
-                collector = Collect(__0, generation);
+                prepFloors = floors;
+                collector = Collect(floors, generation, prepEffectSnapshot);
                 if (baselineObjects != null) { ValidateBaseline(); Log("기준 스냅샷 재사용 장식=" + baselineObjects.Length
                     + " 전체예약효과=" + baselineSortedCount + " 현재예약효과=" + effectList.Count + " 최초지원=" + baselineSupported); }
             }
@@ -324,7 +333,7 @@ namespace StutterFix
             string name = fx.GetType().Name;
             return name.IndexOf("Decora", StringComparison.OrdinalIgnoreCase) >= 0 || name == "ffxCallMethod" || name == "ffxAddComponent";
         }
-        private static IEnumerator Collect(List<scrFloor> floors, int epoch)
+        private static IEnumerator Collect(List<scrFloor> floors, int epoch, ffxPlusBase[] schedule)
         {
             if (baselineObjects != null)
             {
@@ -337,7 +346,7 @@ namespace StutterFix
                 yield break;
             }
             var all = manager.allDecorations;
-            int count = all.Count, effects = effectList.Count, refs = 0;
+            int count = all.Count, effects = schedule.Length, refs = 0;
             if (count > MaxDecorations) throw new InvalidOperationException("장식 상한");
             var decs = new DecoBakeCore.Decoration[count];
             var ids = new Dictionary<scrDecoration, int>();
@@ -373,7 +382,7 @@ namespace StutterFix
             Stage(1);
             for (int i = 0; i < effects; i++)
             {
-                var fx = DecoBakeCore.SnapshotItem(effectList, i, effects, epoch, generation); ordered.Add(fx);
+                var fx = DecoBakeCore.SnapshotItem(schedule, i, effects, epoch, generation); ordered.Add(fx);
                 if (fx is ffxMoveDecorationsPlus f)
                 {
                     var e = CopyEvent(f); var targets = new List<int>();
@@ -417,7 +426,7 @@ namespace StutterFix
                     foreach (var d in decs) { d.Reasons.Add("다른 장식 효과/태그 변경 가능"); if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); } }
                 if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); }
             }
-            if (epoch != generation || manager.allDecorations.Count != count || effectList.Count != effects) throw new DecoBakeCore.SnapshotChangedException();
+            if (epoch != generation || manager.allDecorations.Count != count || effectList != scrVfxPlus.instance.effects) throw new DecoBakeCore.SnapshotChangedException();
             Stage(4);
             cancellation = new CancellationTokenSource(); var token = cancellation.Token;
             var copied = events.ToArray();
@@ -495,7 +504,7 @@ namespace StutterFix
         {
             DecoSim.InvalidateBake("seek 중 스냅샷 변경: 재준비");
             CancelBuild(true); status = "재준비: 목록/세대 변경"; Log(status);
-            if (prepFloors != null) PrepPostfix(prepFloors);
+            if (prepFloors != null) BeginPrepCollection(prepFloors, false);
         }
         private static void Fail(string why) { DecoSim.InvalidateBake(why); CancelBuild(); status = "중단: " + why; Log(status); }
         private static void Bench()

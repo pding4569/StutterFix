@@ -10,13 +10,35 @@ void Check(bool ok,string why){checks++;if(!ok)throw new Exception(why);}
 RenderMergeGatePolicy Complete()
 {
     var gate=new RenderMergeGatePolicy();
-    for(int i=0;i<4;i++)gate.Window(i,i==1||i==2,i==1||i==2?220:165,true,0,109,600);
+    for(int i=0;i<4;i++)
+    {
+        bool merged=i==1||i==2;
+        gate.Population(i,merged,23547,23547,0,merged?0:1900);
+        gate.Window(i,merged,merged?220:165,true,0,109,600);
+    }
     for(int i=0;i<2;i++)gate.Pixel(i,0,0,10,2,10,2,true);
     for(int i=0;i<4;i++)gate.Stability(i,true);
     return gate;
 }
 Check(new RenderMergeGatePolicy().Verdict()=="ERROR","no evidence");
 Check(Complete().Verdict()=="PASS","all thresholds inclusive");
+foreach(var population in new[]{(26,26,0,0),(23547,19999,3548,1900),(23547,23547,0,0),
+    (23547,23546,0,1900),(23547,23547,-1,1900)})
+{
+    var gate=new RenderMergeGatePolicy();
+    Check(!gate.Population(0,false,population.Item1,population.Item2,population.Item3,population.Item4)
+        && gate.Error,"small/empty/inconsistent baseline rejected");
+}
+{
+    var gate=new RenderMergeGatePolicy();
+    Check(gate.Population(0,false,20000,20000,0,1),"population lower bound inclusive");
+    Check(gate.Population(1,true,20000,20000,0,0),"merged mode can hide independent renderers");
+    Check(!gate.Population(2,true,20001,20000,1,0),"fallback population changes invalidate ABBA");
+    gate=Complete();gate.PopulationSeen[2]=false;
+    Check(gate.Verdict()=="ERROR","missing population evidence cannot pass");
+    gate=new RenderMergeGatePolicy();
+    Check(!gate.Population(1,true,23547,23547,0,0),"B cannot establish the A population");
+}
 for(int i=0;i<4;i++)
 {
     var gate=Complete();gate.Seen[i]=false;Check(gate.Verdict()=="ERROR","each ABBA window required");

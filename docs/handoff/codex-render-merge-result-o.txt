@@ -1,10 +1,10 @@
 RENDERMERGE=ERROR reason=GAME_NOT_RUN fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA
-05:40 보충 인계 적용: 과거 환경 거부 반복을 현재 중단 이유로 사용하지 않음.
-ABBA는 seek 260→ready→256초→packets compiled→live on, 측정 진입 pause/resume 제거.
-B의 live ready는 사전 생성 fallback 경계 검증만; 불일치 시 거부, 메시 재생성은 일시정지 전용.
-동일 ABBA의 화면 환경 고정 검증과 창 시작 owned/allocated/census 기록 추가.
-새 계획 tools/optimization/out/render-merge-live-toggle3-steps.json 생성만; 코드 변경 없는 재시험 요청 없음.
-기존 rm-abba2는 소유 26개·구간 renderer 0~9; 기준 23,547개와 달라 원인 확인 필요.
-Dev/Player/PlayerAuto 오류 0, 생성기 8개·RenderMergeCheck 44개 통과, diff check 확인.
-T2 기존 기록 유지(원시 메인 포함 3,846표본); 220/400 FPS까지 기존 차이 1.555/3.6ms, 후보 개선량 NA.
-게임 실행·설치·커밋·푸시·자동 장치 호출·설정 변경 0회; FPS·픽셀·복원 미검증, PASS 아님.
+기존 외부 run1 FPS 104.609/104.534/104.176/104.260, 소유 26개 전부 투명·A enabled=0으로 목표 모집단 아님.
+기존 픽셀 262/270초 차이 0은 투명 집합에서만 관측; retry 통과 후 song_end fallback 2개로 ERROR(stability=1/4).
+05:45 보충대로 곡 처음에서 준비만→정지→seek 260 측정; 0초부터 260초까지 자연 재생 없음.
+PrepVfx 전체 예약 순서를 먼저 복사·재수집 시 보존, scrub의 목록 제거로 과거 효과가 조건 효과가 되는 경로 수정.
+별도 256초 activation→paused ready→CPU 복원→정지; ABBA pause 없음, song_end는 296초 paused ready 사용.
+≥20,000 소유·A enabled>0·ABBA 동일 소유 개수 요구; 새 계획 tools/optimization/out/render-merge-schedule4-steps.json(333단계).
+빌드 3종 오류 0, 생성기 11개·RenderMergeCheck 54개·굽기 코어 검사 통과; 전체 인코딩 검사는 기존 UTF-16 산출물로 실패.
+T2 기존 3,846표본 유지; 기존 2560 환경의 220/400 FPS까지 차이 1.555/3.6ms, 수정판 개선량 NA.
+게임 실행·설치·커밋·푸시·자동 장치 호출·설정 변경 0회; 수정판 소유/FPS/픽셀/복원 미검증, PASS 아님.

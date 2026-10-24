@@ -1,6 +1,6 @@
 # StutterFix 마스터 인계문서 (Claude 주간 사용량 소진 → Codex 가 이어서 진행) — 2026-10-22
 
-**2026-10-25 현재 render-merge:** 05:40 보충 인계가 아래 환경 차단 반복 기록보다 우선한다. 2560×1440@120 및 3440×1440@165 허용은 이미 반영됨. ABBA 측정 진입의 pause/resume을 제거하고 재생 중 cached ready/on/off를 허용했다(메시 재생성은 일시정지 전용). 빌드 3종 오류 0, 생성기 8개·RenderMergeCheck 44개 통과. 게임 실행·설치·커밋·푸시·자동 장치 호출 없음; 수정판 실측 NA. 기존 rm-abba2의 소유 26개는 기준 23,547개와 달라 원인 확인이 남았다. 최신 결과/남은 항목은 `codex-render-merge-result.md` 최상단, 생성 계획은 `tools/optimization/out/render-merge-live-toggle3-steps.json`을 따른다. 이하 반복 환경 거부 보고는 과거 이력이다.
+**2026-10-25 현재 render-merge:** 05:45 보충이 우선한다. 외부 run1 ABBA는 104.609/104.534/104.176/104.260 FPS였으나 소유 26개 전부 투명·독립 enabled=0으로 목표 모집단이 아니다. retry만 통과 후 song_end 준비의 fallback 2개로 실패했다. 최초 준비를 곡 처음에서 수행 후 곧 정지하고 측정은 seek 260으로 바꿨다. PrepVfx 예약 목록을 수집 전에 보관해 scrub으로 잘린 목록을 기준으로 삼는 경로를 수정했다. 별도 256초 activation/paused ready로 경계를 준비한 후 CPU 복원·정지한다. ABBA는 pause/resume 없이 유지하며 ≥20,000 소유·비어 있지 않은 A·동일 소유 개수 검사를 추가했다. song_end는 296초의 paused ready를 사용한다. 빌드 3종 오류 0, 생성기 11개·RenderMergeCheck 54개·굽기 코어 검사 통과. 기존 UTF-16 산출물로 전체 UI 인코딩 검사 별도 실패. 게임 실행·설치·커밋·푸시·자동 장치 호출 없음; 수정판 실측 NA. 결과는 `codex-render-merge-result.md` 최상단, 새 계획은 `tools/optimization/out/render-merge-schedule4-steps.json`(333단계)을 따른다. 이하 환경 거부·이전 회차 설명은 과거 이력이다.
 
 이 문서를 **가장 먼저** 읽어라. 한국어로 답하고 기록한다. 사용자는 PC 밖에 있을 수 있고(StarDesk 로 원격 확인), 자동 장치(autoloop·supervisor)가 빌드·게임 시험·커밋을 한다. **너(Codex)는 코드·문서만 수정**한다(게임 실행·설치·커밋·푸시 금지, `.codex/config.toml` 수정 금지).
 

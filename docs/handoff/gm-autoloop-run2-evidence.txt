@@ -1,0 +1,276 @@
+[StutterFix] [자동 시험] 시작: 333단계 - timeout 600 / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco costprobe off / gpudeco effectcache off / gpudeco nombp off / gpudeco rendermerge reset / gpudeco rendermerge environment / gpudeco nativebatch on / gpudeco nativecopy on8masked / gpudeco zeroalpha on / gpudeco bundle E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\bundle\stutterfix_gpudeco / open D:\얼불춤 맵 파일\Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco off / select 0 / play / gpudeco scheduled / gpudeco rendermerge playbackready / pause / decobake ready / gpudeco live scope song / gpudeco rendermerge prepare / gpudeco live prepare / resume / stop / gpudeco live off / gpudeco rendermerge off / stop / seek 260 12 / gpudeco rendermerge playbackready / decobake ready / waitsongpos 256 40 / gpudeco packets compiled / gpudeco live on / gpudeco rendermerge off / pause / gpudeco rendermerge ready / gpudeco live off / resume / stop / gpudeco live off / gpudeco rendermerge off / stop / seek 260 12 / gpudeco rendermerge playbackready / decobake ready / waitsongpos 256 40 / gpudeco packets compiled / gpudeco live on / gpudeco rendermerge off / waitsongpos 260 40 / gpudeco live census / fuse begin / gpudeco micro begin / gpudeco rendermerge begin 0 / waitsongpos 270 30 / gpudeco rendermerge end / gpudeco micro end / fuse end / gpudeco live off / gpudeco rendermerge off / stop / seek 260 12 / gpudeco rendermerge playbackre
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] export_result_reset=True
+[StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots_avg=0.000 renderer_toggles_avg=0.000000 active_chunks_avg=0.000000 active_chunks_max=0 source_removals=0 missing_removals=0 source_search_element_upper_bound=0 source_shifted_ints=0 source_max_list=0 removal_work_is_CPU_timing=False additional_clock_reads_per_frame=2 gpu_time=UNMEASURED
+[StutterFix] [gpudeco] cost_probe_enabled=False acceptance=False
+[StutterFix] [gpudeco] effect_cache=False research_only=True default=False
+[StutterFix] [gpudeco] nombp=False
+[StutterFix] [gpudeco] rendermerge_reset=True
+[StutterFix] [gpudeco] rendermerge_environment=True actual=3440x1440@164.999
+[StutterFix] [gpudeco] native_batch=True static_batch=False restore_sort_bounds=False live_validated=False
+[StutterFix] [gpudeco] native_copy=True eight_uav=True masked=True active_contexts=0
+[StutterFix] [gpudeco] zeroalpha=True rule=both_factors_constant_one_exactly_zero count=0 collisions_changed=0
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=2 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=-0.745333
+[StutterFix] [gpudeco] scope=song_union default_off=True Player_included=False
+[StutterFix] [gpudeco] rendermerge_prepare=True default_off=True
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=23631 admitted=23547 rejects=repeat-tile:84
+[StutterFix] [gpudeco] rendermerge_prepared start=250.0 end=252.5 items=38 renderers=38 submeshes=38
+[StutterFix] [gpudeco] rendermerge_prepared start=252.5 end=255.0 items=40 renderers=40 submeshes=40
+[StutterFix] [gpudeco] rendermerge_prepared start=255.0 end=257.5 items=940 renderers=940 submeshes=940
+[StutterFix] [gpudeco] rendermerge_prepared start=257.5 end=260.0 items=3282 renderers=3282 submeshes=3282
+[StutterFix] [gpudeco] rendermerge_prepared start=260.0 end=262.5 items=4580 renderers=4580 submeshes=4580
+[StutterFix] [gpudeco] rendermerge_prepared start=262.5 end=265.0 items=4632 renderers=4632 submeshes=4632
+[StutterFix] [gpudeco] rendermerge_prepared start=265.0 end=267.5 items=4642 renderers=4642 submeshes=4642
+[StutterFix] [gpudeco] rendermerge_prepared start=267.5 end=270.0 items=4493 renderers=4493 submeshes=4493
+[StutterFix] [gpudeco] rendermerge_prepared start=270.0 end=272.5 items=4875 renderers=4875 submeshes=4875
+[StutterFix] [gpudeco] rendermerge_prepared start=272.5 end=275.0 items=3477 renderers=3477 submeshes=3477
+[StutterFix] [gpudeco] rendermerge_prepared start=275.0 end=277.5 items=931 renderers=931 submeshes=931
+[StutterFix] [gpudeco] rendermerge_prepared start=277.5 end=280.0 items=26 renderers=26 submeshes=26
+[StutterFix] [gpudeco] rendermerge_prepared start=290.0 end=292.5 items=21 renderers=21 submeshes=21
+[StutterFix] [gpudeco] rendermerge_prepared start=292.5 end=295.0 items=21 renderers=21 submeshes=21
+[StutterFix] [gpudeco] rendermerge_prepared start=295.0 end=297.5 items=21 renderers=21 submeshes=21
+[StutterFix] [gpudeco] rendermerge_prepared start=297.5 end=300.0 items=21 renderers=21 submeshes=21
+[StutterFix] [gpudeco] rendermerge_prepared start=300.0 end=302.5 items=16 renderers=16 submeshes=16
+[StutterFix] [gpudeco] rendermerge_prepared start=302.5 end=305.0 items=16 renderers=16 submeshes=16
+[StutterFix] [gpudeco] rendermerge_prepared start=305.0 end=307.5 items=16 renderers=16 submeshes=16
+[StutterFix] [gpudeco] rendermerge_prepared start=307.5 end=310.0 items=18 renderers=18 submeshes=18
+[StutterFix] [gpudeco] rendermerge_prepared start=310.0 end=312.5 items=18 renderers=18 submeshes=18
+[StutterFix] [gpudeco] rendermerge_prepared start=312.5 end=315.0 items=18 renderers=18 submeshes=18
+[StutterFix] [gpudeco] prepare_ms=8909.033200 phase=live_prepare slices=1 owned_union=23547 total_runs=23547 total_submeshes=23547 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False scope=song_union item_limit=32768 masked_copy=True
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.870333
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=4 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=102.770100 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_ready=True cached=True paused=True CPU_fallback_barriers=0
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=3 high_water=3 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=5 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=1.397640 progress_ms=0.020800 uniform_ms=0.012580 dispatch_ms=0.673240 misc_ms=0.691020 max_ms=6.115600 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=256.435656 resumed_recs=16 resume_expected=16 unobserved_order=0 restore_ms=12.927100
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.880999
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=6 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=97.267300 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=1880 visible_renderers=1880 items=23547 proven_constant_zero_alpha=21667 animated_alpha=1850 zeroalpha=True skipped_by_this_probe=0
+[StutterFix] [gpudeco] micro_begin song=260.062335 cache=False per_frame_probe=False
+[StutterFix] [gpudeco] rendermerge_window_begin index=0 merged=False song=260.071520 allocated=23547 owned=23547 independent_enabled=1880 CPU_fallback=0
+[StutterFix] [gpudeco] rendermerge_window index=0 merged=False fps=166.844797 frames=1657 observed_frames=1656 elapsed_s=9.931386 song_end=269.992999 spikes_30ms=0 worst_ms=15.757298 renderers=0 replacement_submeshes=0 engine_draws_max=2479 valid=True
+[StutterFix] [gpudeco] micro_end song_begin=260.062335 song_end=270.003680 elapsed_s=9.954599 frames=1659 real_fps=166.657 cache=False active=True owned=23547 native_executed=2407 native_errors=0 physical_display=UNMEASURED
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2036 high_water=2036 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=2409 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.426954 progress_ms=0.138403 uniform_ms=0.006007 dispatch_ms=0.278671 misc_ms=0.003872 max_ms=6.115600 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.021687 resumed_recs=11104 resume_expected=11104 unobserved_order=0 restore_ms=26.733000
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.880999
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=8 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=100.773500 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_ready=True cached=True paused=False CPU_fallback_barriers=0
+[StutterFix] [gpudeco] rendermerge_on=True
+[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=0 visible_renderers=0 items=23547 proven_constant_zero_alpha=21717 animated_alpha=1800 zeroalpha=True skipped_by_this_probe=0
+[StutterFix] [gpudeco] micro_begin song=260.126330 cache=False per_frame_probe=False
+[StutterFix] [gpudeco] rendermerge_window_begin index=1 merged=True song=260.137011 allocated=23547 owned=23547 independent_enabled=0 CPU_fallback=0
+[StutterFix] [gpudeco] rendermerge_window index=1 merged=True fps=77.992570 frames=771 observed_frames=770 elapsed_s=9.885557 song_end=270.025012 spikes_30ms=3 worst_ms=75.452797 renderers=4875 replacement_submeshes=1980 engine_draws_max=2489 valid=True
+[StutterFix] [gpudeco] micro_end song_begin=260.126330 song_end=270.099658 elapsed_s=9.983920 frames=773 real_fps=77.424 cache=False active=True owned=23547 native_executed=2411 native_errors=0 physical_display=UNMEASURED
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2087 high_water=2087 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=3675 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.826478 progress_ms=0.159980 uniform_ms=0.006165 dispatch_ms=0.656492 misc_ms=0.003840 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.135995 resumed_recs=10204 resume_expected=10204 unobserved_order=0 restore_ms=24.598200
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.880999
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=10 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=102.760200 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_ready=True cached=True paused=False CPU_fallback_barriers=0
+[StutterFix] [gpudeco] rendermerge_on=True
+[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=0 visible_renderers=0 items=23547 proven_constant_zero_alpha=21667 animated_alpha=1850 zeroalpha=True skipped_by_this_probe=0
+[StutterFix] [gpudeco] micro_begin song=260.179675 cache=False per_frame_probe=False
+[StutterFix] [gpudeco] rendermerge_window_begin index=2 merged=True song=260.201007 allocated=23547 owned=23547 independent_enabled=0 CPU_fallback=0
+[StutterFix] [gpudeco] rendermerge_window index=2 merged=True fps=77.943161 frames=767 observed_frames=766 elapsed_s=9.840504 song_end=270.035662 spikes_30ms=4 worst_ms=112.754099 renderers=4875 replacement_submeshes=1980 engine_draws_max=2527 valid=True
+[StutterFix] [gpudeco] micro_end song_begin=260.179675 song_end=270.046343 elapsed_s=9.873530 frames=769 real_fps=77.885 cache=False active=True owned=23547 native_executed=2413 native_errors=0 physical_display=UNMEASURED
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2245 high_water=2245 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=4938 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=1.017840 progress_ms=0.169170 uniform_ms=0.006223 dispatch_ms=0.838629 misc_ms=0.003817 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.061388 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=25.371000
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.870333
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=12 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=99.756500 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=1880 visible_renderers=1880 items=23547 proven_constant_zero_alpha=21667 animated_alpha=1850 zeroalpha=True skipped_by_this_probe=0
+[StutterFix] [gpudeco] micro_begin song=260.015582 cache=False per_frame_probe=False
+[StutterFix] [gpudeco] rendermerge_window_begin index=3 merged=False song=260.019671 allocated=23547 owned=23547 independent_enabled=1880 CPU_fallback=0
+[StutterFix] [gpudeco] rendermerge_window index=3 merged=False fps=161.787018 frames=1615 observed_frames=1614 elapsed_s=9.982260 song_end=270.014330 spikes_30ms=0 worst_ms=27.100297 renderers=0 replacement_submeshes=0 engine_draws_max=2524 valid=True
+[StutterFix] [gpudeco] micro_end song_begin=260.015582 song_end=270.025012 elapsed_s=10.001983 frames=1617 real_fps=161.668 cache=False active=True owned=23547 native_executed=4767 native_errors=0 physical_display=UNMEASURED
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2087 high_water=2087 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=7294 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.828720 progress_ms=0.160355 uniform_ms=0.006238 dispatch_ms=0.658745 misc_ms=0.003382 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.027937 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=27.408300
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.880999
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=14 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=99.486700 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=1983 high_water=1983 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=8363 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.770885 progress_ms=0.153664 uniform_ms=0.006195 dispatch_ms=0.607545 misc_ms=0.003481 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=261.992999 resumed_recs=9954 resume_expected=9954 unobserved_order=0 restore_ms=33.916600
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=1721 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=91.752800 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_ready=True cached=True paused=True CPU_fallback_barriers=0
+[StutterFix] [gpudeco] rendermerge_on=True
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_pixel index=0 original_independent=0 original_merged=439069 independent_merged=439069 max=33 restore=0 noise=0
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=1721 high_water=1721 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=8397 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.772580 progress_ms=0.153089 uniform_ms=0.006199 dispatch_ms=0.609353 misc_ms=0.003938 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=261.992999 resumed_recs=9954 resume_expected=9954 unobserved_order=0 restore_ms=11.784600
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.870333
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=16 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=102.249400 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2087 high_water=2087 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=10815 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.694586 progress_ms=0.149774 uniform_ms=0.006105 dispatch_ms=0.535115 misc_ms=0.003592 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.003680 resumed_recs=11404 resume_expected=11404 unobserved_order=0 restore_ms=53.258300
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=1979 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=92.233800 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_ready=True cached=True paused=True CPU_fallback_barriers=0
+[StutterFix] [gpudeco] rendermerge_on=True
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_pixel index=1 original_independent=0 original_merged=3207 independent_merged=3207 max=2 restore=0 noise=0
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=1979 high_water=1979 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=10849 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.696142 progress_ms=0.149343 uniform_ms=0.006108 dispatch_ms=0.536729 misc_ms=0.003963 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.003680 resumed_recs=11404 resume_expected=11404 unobserved_order=0 restore_ms=13.318300
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.870333
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=18 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=100.940900 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_ready=True cached=True paused=True CPU_fallback_barriers=0
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=3 high_water=3 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=10854 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.696363 progress_ms=0.149279 uniform_ms=0.006108 dispatch_ms=0.536709 misc_ms=0.004266 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=256.414324 resumed_recs=16 resume_expected=16 unobserved_order=0 restore_ms=12.100100
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=248.030337
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=20 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=102.316300 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_ready=True cached=True paused=False CPU_fallback_barriers=0
+[StutterFix] [gpudeco] rendermerge_on=True
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=1984 high_water=1984 scope=allocated_clocks_not_per_decoration_cost reason=SceneReset
+[StutterFix] [gpudeco] cost scope=SceneReset frames=11332 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.710481 progress_ms=0.147392 uniform_ms=0.006096 dispatch_ms=0.552569 misc_ms=0.004424 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=SceneReset song=260.029307 resumed_recs=0 resume_expected=0 unobserved_order=0 restore_ms=5.444700
+[StutterFix] [gpudeco] rendermerge_stability kind=retry pass=True unrestored=0 merged_windows=22 native_contexts=1
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=287.877337
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=24 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23545 CPU_fallback=2 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=6 all_gpu=4 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23545 active_sources=0 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=98.488000 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_prepared start=250.0 end=252.5 items=38 renderers=38 submeshes=38
+[StutterFix] [gpudeco] rendermerge_prepared start=252.5 end=255.0 items=40 renderers=40 submeshes=40
+[StutterFix] [gpudeco] rendermerge_prepared start=255.0 end=257.5 items=940 renderers=940 submeshes=940
+[StutterFix] [gpudeco] rendermerge_prepared start=257.5 end=260.0 items=3282 renderers=3282 submeshes=3282
+[StutterFix] [gpudeco] rendermerge_prepared start=260.0 end=262.5 items=4580 renderers=4580 submeshes=4580
+[StutterFix] [gpudeco] rendermerge_prepared start=262.5 end=265.0 items=4632 renderers=4632 submeshes=4632
+[StutterFix] [gpudeco] rendermerge_prepared start=265.0 end=267.5 items=4642 renderers=4642 submeshes=4642
+[StutterFix] [gpudeco] rendermerge_prepared start=267.5 end=270.0 items=4493 renderers=4493 submeshes=4493
+[StutterFix] [gpudeco] rendermerge_prepared start=270.0 end=272.5 items=4875 renderers=4875 submeshes=4875
+[StutterFix] [gpudeco] rendermerge_prepared start=272.5 end=275.0 items=3477 renderers=3477 submeshes=3477
+[StutterFix] [gpudeco] rendermerge_prepared start=275.0 end=277.5 items=931 renderers=931 submeshes=931
+[StutterFix] [gpudeco] rendermerge_prepared start=277.5 end=280.0 items=24 renderers=24 submeshes=24
+[StutterFix] [gpudeco] rendermerge_prepared start=290.0 end=292.5 items=19 renderers=19 submeshes=19
+[StutterFix] [gpudeco] rendermerge_prepared start=292.5 end=295.0 items=19 renderers=19 submeshes=19
+[StutterFix] [gpudeco] rendermerge_prepared start=295.0 end=297.5 items=19 renderers=19 submeshes=19
+[StutterFix] [gpudeco] rendermerge_prepared start=297.5 end=300.0 items=19 renderers=19 submeshes=19
+[StutterFix] [gpudeco] rendermerge_prepared start=300.0 end=302.5 items=16 renderers=16 submeshes=16
+[StutterFix] [gpudeco] rendermerge_prepared start=302.5 end=305.0 items=16 renderers=16 submeshes=16
+[StutterFix] [gpudeco] rendermerge_prepared start=305.0 end=307.5 items=16 renderers=16 submeshes=16
+[StutterFix] [gpudeco] rendermerge_prepared start=307.5 end=310.0 items=18 renderers=18 submeshes=18
+[StutterFix] [gpudeco] rendermerge_prepared start=310.0 end=312.5 items=18 renderers=18 submeshes=18
+[StutterFix] [gpudeco] rendermerge_prepared start=312.5 end=315.0 items=18 renderers=18 submeshes=18
+[StutterFix] [gpudeco] rendermerge_ready=True cached=False paused=True CPU_fallback_barriers=2
+[StutterFix] [gpudeco] rendermerge_on=True
+[StutterFix] [gpudeco] lifecycle_end source=existing_game_callback method=OnLandOnPortal song=308.404406
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=0 high_water=1 scope=allocated_clocks_not_per_decoration_cost reason=GameCallback:OnLandOnPortal
+[StutterFix] [gpudeco] cost scope=GameCallback:OnLandOnPortal frames=17233 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.546360 progress_ms=0.099558 uniform_ms=0.005848 dispatch_ms=0.437544 misc_ms=0.003410 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=GameCallback:OnLandOnPortal song=308.399364 resumed_recs=0 resume_expected=0 unobserved_order=0 restore_ms=12.119800
+[StutterFix] [gpudeco] rendermerge_stability kind=song_end pass=True unrestored=0 merged_windows=22 native_contexts=1
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.859667
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=26 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=108.583900 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_prepared start=250.0 end=252.5 items=38 renderers=38 submeshes=38
+[StutterFix] [gpudeco] rendermerge_prepared start=252.5 end=255.0 items=40 renderers=40 submeshes=40
+[StutterFix] [gpudeco] rendermerge_prepared start=255.0 end=257.5 items=940 renderers=940 submeshes=940
+[StutterFix] [gpudeco] rendermerge_prepared start=257.5 end=260.0 items=3282 renderers=3282 submeshes=3282
+[StutterFix] [gpudeco] rendermerge_prepared start=260.0 end=262.5 items=4580 renderers=4580 submeshes=4580
+[StutterFix] [gpudeco] rendermerge_prepared start=262.5 end=265.0 items=4632 renderers=4632 submeshes=4632
+[StutterFix] [gpudeco] rendermerge_prepared start=265.0 end=267.5 items=4642 renderers=4642 submeshes=4642
+[StutterFix] [gpudeco] rendermerge_prepared start=267.5 end=270.0 items=4493 renderers=4493 submeshes=4493
+[StutterFix] [gpudeco] rendermerge_prepared start=270.0 end=272.5 items=4875 renderers=4875 submeshes=4875
+[StutterFix] [gpudeco] rendermerge_prepared start=272.5 end=275.0 items=3477 renderers=3477 submeshes=3477
+[StutterFix] [gpudeco] rendermerge_prepared start=275.0 end=277.5 items=931 renderers=931 submeshes=931
+[StutterFix] [gpudeco] rendermerge_prepared start=277.5 end=280.0 items=26 renderers=26 submeshes=26
+[StutterFix] [gpudeco] rendermerge_prepared start=290.0 end=292.5 items=21 renderers=21 submeshes=21
+[StutterFix] [gpudeco] rendermerge_prepared start=292.5 end=295.0 items=21 renderers=21 submeshes=21
+[StutterFix] [gpudeco] rendermerge_prepared start=295.0 end=297.5 items=21 renderers=21 submeshes=21
+[StutterFix] [gpudeco] rendermerge_prepared start=297.5 end=300.0 items=21 renderers=21 submeshes=21
+[StutterFix] [gpudeco] rendermerge_prepared start=300.0 end=302.5 items=16 renderers=16 submeshes=16
+[StutterFix] [gpudeco] rendermerge_prepared start=302.5 end=305.0 items=16 renderers=16 submeshes=16
+[StutterFix] [gpudeco] rendermerge_prepared start=305.0 end=307.5 items=16 renderers=16 submeshes=16
+[StutterFix] [gpudeco] rendermerge_prepared start=307.5 end=310.0 items=18 renderers=18 submeshes=18
+[StutterFix] [gpudeco] rendermerge_prepared start=310.0 end=312.5 items=18 renderers=18 submeshes=18
+[StutterFix] [gpudeco] rendermerge_prepared start=312.5 end=315.0 items=18 renderers=18 submeshes=18
+[StutterFix] [gpudeco] rendermerge_ready=True cached=False paused=True CPU_fallback_barriers=0
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=3 high_water=3 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=17238 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.546559 progress_ms=0.099532 uniform_ms=0.005849 dispatch_ms=0.437578 misc_ms=0.003600 max_ms=12.716200 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=256.456988 resumed_recs=16 resume_expected=16 unobserved_order=0 restore_ms=12.756300
+[StutterFix] [gpudeco] rendermerge_on=False
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=247.870333
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=28 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=108.349800 prepare_ms=8909.033200
+[StutterFix] [gpudeco] rendermerge_ready=True cached=True paused=False CPU_fallback_barriers=0
+[StutterFix] [gpudeco] rendermerge_on=True
+[StutterFix] [gpudeco] resource_probe marked=111382 tokens=1 mvid=22ad4752-b47d-4b79-bf00-aedb1f213338 marker=probe-a performance=False
+[StutterFix] [gpudeco] lifecycle_end source=existing_game_callback method=SwitchToEditMode song=260.104998
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=1984 high_water=1984 scope=allocated_clocks_not_per_decoration_cost reason=GameCallback:SwitchToEditMode
+[StutterFix] [gpudeco] cost scope=GameCallback:SwitchToEditMode frames=17703 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.559307 progress_ms=0.099757 uniform_ms=0.005845 dispatch_ms=0.449983 misc_ms=0.003722 max_ms=13.425900 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=GameCallback:SwitchToEditMode song=260.083666 resumed_recs=0 resume_expected=0 unobserved_order=0 restore_ms=5.413500
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=31 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] rendermerge_playback_ready=True song=-0.734667
+[StutterFix] [gpudeco] rendermerge_stability kind=reopen pass=True unrestored=0 merged_windows=0 native_contexts=0
+[StutterFix] [자동 시험] 단계 실패 'gpudeco resources clean': gpudeco G2: resource probe empty/oversized object mark
+[StutterFix] [gpudeco] RENDERMERGE=ERROR fps=166.845,77.993,77.943,161.787 pixels=439069 renderers=4875 engine_draws_max=2527 stability=3/4 error=단계 실패 'gpudeco resources clean': gpudeco G2: resource probe empty/oversized object mark
+[StutterFix] [자동 시험] 단계 실패 'gpudeco resources clean': gpudeco G2: resource probe empty/oversized object mark - 게임을 끕니다

@@ -37,8 +37,15 @@ class StepsContract(unittest.TestCase):
             self.assertIn('gpudeco live census', activation)
             previous = end
 
-    def test_no_zero_play_or_external_execution(self):
-        self.assertFalse(any(s == 'play' or s.startswith('seek 0') for s in self.steps))
+    def test_song_start_only_prepares_then_seeks_for_measurements(self):
+        self.assertFalse(any(s.startswith('seek 0') for s in self.steps))
+        for i, step in enumerate(self.steps):
+            if step == 'play':
+                self.assertEqual(self.steps[i - 1], 'select 0')
+                stop = self.steps.index('stop', i)
+                self.assertIn('decobake ready', self.steps[i:stop])
+                self.assertFalse(any(s.startswith(('waitsongpos ', 'gpudeco rendermerge begin '))
+                                     for s in self.steps[i:stop]))
         self.assertEqual(self.steps.count('gpudeco rendermerge result'), 1)
         self.assertEqual(self.steps[-2:], ['gpudeco rendermerge result', 'quit'])
 
@@ -64,6 +71,15 @@ class StepsContract(unittest.TestCase):
         self.assertEqual(steps[-1], 'quit')
         self.assertNotIn('quit', steps[k:syms])
 
+    def test_song_end_rebuilds_fallback_layout_outside_measurement(self):
+        seek = self.steps.index('seek 300 12')
+        watch = self.steps.index('gpudeco rendermerge watch song_end')
+        activation = self.steps[seek:watch]
+        self.assertEqual(activation[-5:], ['pause', 'gpudeco rendermerge ready',
+                         'gpudeco rendermerge on', 'resume', 'waitsongpos 300 40'])
+        self.assertLess(self.steps.index('gpudeco rendermerge end',
+                        self.steps.index('gpudeco rendermerge begin 3')), seek)
+
     def test_environment_checked_before_loading_chart(self):
         self.assertLess(self.steps.index('gpudeco rendermerge reset'),
                         self.steps.index('gpudeco rendermerge environment'))
@@ -77,15 +93,31 @@ class StepsContract(unittest.TestCase):
             steps = module.build(Path('Arche FULL.adofai'), mono_dir=mono)['steps']
             for i, step in enumerate(steps):
                 if step == 'gpudeco scheduled':
-                    self.assertEqual(steps[i + 1:i + 4],
-                                     ['gpudeco rendermerge playbackready',
-                                      'waitsongpos 250 40', 'pause'])
+                    self.assertEqual(steps[i + 1:i + 3],
+                                     ['gpudeco rendermerge playbackready', 'pause'])
+
+    def test_layout_priming_restores_before_resuming(self):
+        for mono in (None, Path('trace folder with spaces')):
+            steps = module.build(Path('Arche FULL.adofai'), mono_dir=mono)['steps']
+            for i, step in enumerate(steps):
+                if step == 'gpudeco rendermerge ready' and steps[i - 1] == 'pause':
+                    if steps[i + 1] != 'gpudeco rendermerge on':
+                        self.assertEqual(steps[i + 1:i + 4], ['gpudeco live off', 'resume', 'stop'])
+
+    def test_reprime_after_pixel_and_late_song_layout_changes(self):
+        pixel = self.steps.index('gpudeco rendermerge pixel 1')
+        retry = self.steps.index('gpudeco rendermerge watch retry')
+        song_end = self.steps.index('gpudeco rendermerge stability song_end')
+        reopen = self.steps.index('gpudeco rendermerge watch reopen')
+        prime = ['pause', 'gpudeco rendermerge ready', 'gpudeco live off', 'resume', 'stop']
+        for start, end in ((pixel, retry), (song_end, reopen)):
+            self.assertTrue(any(self.steps[i:i + len(prime)] == prime for i in range(start, end)))
 
     def test_preparation_and_mode_transition_contract(self):
         for mono in (None, Path('trace folder with spaces')):
             playing = paused = owned = merged = window = playback_ready = False
             for step in module.build(Path('Arche FULL.adofai'), mono_dir=mono)['steps']:
-                if step.startswith('seek '):
+                if step.startswith('seek ') or step == 'play':
                     self.assertFalse(playing, step)
                     playing = True
                     playback_ready = False

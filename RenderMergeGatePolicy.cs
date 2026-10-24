@@ -8,9 +8,21 @@ namespace StutterFix
     {
         internal readonly bool[] Seen=new bool[4],Pixels=new bool[2],Stable=new bool[4],StabilitySeen=new bool[4];
         internal readonly double[] Fps=new double[4];
+        internal readonly bool[] PopulationSeen=new bool[4];
+        int allocatedBaseline=-1,ownedBaseline=-1,fallbackBaseline=-1;
         internal bool Error,PixelFailure,StabilityFailure,FpsFailure;
         internal long Changed;
         internal int Renderers,Draws;
+        internal bool Population(int i,bool merged,int allocated,int owned,int fallback,int enabled)
+        {
+            if(i<0 || i>=4 || PopulationSeen[i] || merged!=(i==1||i==2) || owned<20000
+                || fallback<0 || allocated<owned || allocated-owned!=fallback || enabled<0 || (!merged && enabled==0))
+            {Error=true;return false;}
+            if(i==0){allocatedBaseline=allocated;ownedBaseline=owned;fallbackBaseline=fallback;}
+            if(allocated!=allocatedBaseline || owned!=ownedBaseline || fallback!=fallbackBaseline)
+            {Error=true;return false;}
+            PopulationSeen[i]=true;return true;
+        }
         internal void Window(int i,bool merged,double fps,bool valid,int spikes,int renderers,int draws)
         {
             if(i<0 || i>=4 || Seen[i] || merged!=(i==1||i==2) || double.IsNaN(fps) || double.IsInfinity(fps) || fps<=0
@@ -41,7 +53,7 @@ namespace StutterFix
         }
         internal string Verdict()
         {
-            if(Error || !Seen.All(x=>x) || !Pixels.All(x=>x) || !StabilitySeen.All(x=>x))return "ERROR";
+            if(Error || !Seen.All(x=>x) || !PopulationSeen.All(x=>x) || !Pixels.All(x=>x) || !StabilitySeen.All(x=>x))return "ERROR";
             if(PixelFailure)return "PIXEL_FAIL";
             if(StabilityFailure)return "STABILITY_FAIL";
             if(FpsFailure)return "FPS_FAIL";

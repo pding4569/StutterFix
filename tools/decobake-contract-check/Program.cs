@@ -55,6 +55,29 @@ static DecoBakeCore.Event Event(double t, float duration, float target, bool rel
 }
 static DecoBakeCore.Table Compile(DecoBakeCore.Decoration d, DecoBakeCore.Event[] events, float pitch = 1, float scale = 1)
     => DecoBakeCore.Compile(new[] { d }, events, pitch, scale, ActualEase, CancellationToken.None);
+// Seek scrubs past effects out of the live list while the collector yields.
+// The compiled timeline must still contain their alpha/movement history, and
+// conditional exclusions must see them as scheduled, not as manual effects.
+var early = Event(0, 1, 10);
+var late = Event(260, 1, 20, source: 2);
+var liveSchedule = new List<DecoBakeCore.Event> { early, late };
+var prepSchedule = DecoBakeCore.CaptureSchedule(liveSchedule, 2);
+liveSchedule.Remove(early);
+var seekTable = Compile(Decoration(), prepSchedule);
+Require(seekTable.Supported == 1 && seekTable.Eval(0, 0, 250) == 10,
+    "seek 예약 목록 제거 후에도 PrepVfx 전체 이력으로 굽는다");
+Require(prepSchedule.Contains(early) && prepSchedule[1] == liveSchedule[0],
+    "과거 예약 효과를 조건 효과로 오분류하지 않고 원본 순서를 보존한다");
+var replaySchedule = DecoBakeCore.CaptureSchedule(new[] { late, early }, 2);
+Require(replaySchedule[0] == late && prepSchedule[0] == early,
+    "새 PrepVfx 순서는 교체하되 이전 수집 세대는 바꾸지 않는다");
+liveSchedule.Clear();
+Require(Compile(Decoration(), prepSchedule).Eval(0, 0, 250) == 10,
+    "수집 재시작에서도 잘린 live 목록을 다시 기준으로 쓰지 않는다");
+bool scheduleLimit = false;
+try { DecoBakeCore.CaptureSchedule(prepSchedule, 1); }
+catch (InvalidOperationException) { scheduleLimit = true; }
+Require(scheduleLimit, "예약 순서 보존도 기존 효과 개수 상한을 지킨다");
 var replacement = Compile(Decoration(), new[] { Event(0, 10, 10), Event(4, 2, 2, true, 2) });
 Require(replacement.Tracks[0][1].Start == 10 && replacement.Tracks[0][1].End == 6,
     "실제 컴파일러: 현재4/끝10/상대+2 -> 시작10/목표6");

@@ -108,6 +108,10 @@ namespace StutterFix
                     "rendermerge begin requires ABBA GPU ownership at 260s");
                 RequireGpuMergeEnvironment();
                 int independentVisible=gpuLiveSlices.Sum(s=>s.Renderers.Count(r=>r && r.enabled));
+                int allocated=gpuLiveOwnedIndices.Length,owned=GpuLiveOwned,fallback=gpuLiveCpuFallbackCount;
+                RequireLive(mergeGate.Population(i,on,allocated,owned,fallback,independentVisible),
+                    "rendermerge population requires >=20000 GPU owners, nonempty A and identical ABBA ownership; allocated="
+                    +allocated+" owned="+owned+" CPU_fallback="+fallback+" independent_enabled="+independentVisible);
                 mergeDrawRecorder=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",16384);
                 mergeWindow=i;mergeWindowMode=on;mergeWindowFrame=Time.frameCount;mergeObservedFrame=-1;
                 mergeObservedCount=mergeSpikes=mergeMaxRenderers=mergeMaxDraws=0;mergeWorst=0;

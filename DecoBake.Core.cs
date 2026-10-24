@@ -34,6 +34,15 @@ namespace StutterFix
             }
         }
         internal sealed class SnapshotChangedException : InvalidOperationException { }
+        // PrepVfx owns the final ordering; ScrubToTime subsequently removes
+        // started effects in place. Preserve membership before yielding.
+        internal static T[] CaptureSchedule<T>(IList<T> source, int maximum)
+        {
+            if (source == null || source.Count > maximum) throw new InvalidOperationException("효과 목록/상한");
+            var snapshot = new T[source.Count];
+            source.CopyTo(snapshot, 0);
+            return snapshot;
+        }
         internal static bool SameInstances<T>(IList<T> current, T[] saved, int[] ids, Func<T, int> id) where T : class
         {
             if (saved == null || ids == null || current.Count != saved.Length || ids.Length != saved.Length) return false;
