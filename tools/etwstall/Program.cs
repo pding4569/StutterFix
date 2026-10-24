@@ -104,6 +104,32 @@ static class Program
         Console.WriteLine($"Game CPU samples {samplesByThread.Sum(x => x.Value.Count)} / window {t1 - t0:F1}ms");
         foreach (var group in samplesByThread.SelectMany(x => x.Value).GroupBy(x => Stack(x.st, 14)).OrderByDescending(x => x.Count()).Take(20))
             Console.WriteLine($"Top stack {group.Count()} samples {group.Key}");
+        if (Environment.GetEnvironmentVariable("ETW_INCLUSIVE") == "1")
+        {
+            // 샘플이 가장 많은 스레드(메인)와 그 다음 스레드들의 함수별 포함(inclusive)/단독(leaf) 표본 수. 같은 함수는 한 스택에서 한 번만 센다.
+            foreach (var kv in samplesByThread.OrderByDescending(x => x.Value.Count).Take(3))
+            {
+                int total = kv.Value.Count; var inc = new Dictionary<string, int>(); var leaf = new Dictionary<string, int>();
+                foreach (var smp in kv.Value)
+                {
+                    var seen = new HashSet<string>(); bool first = true;
+                    for (var c = smp.st; c != null; c = c.Caller)
+                    {
+                        string m = c.CodeAddress.ModuleName ?? "?"; string f = c.CodeAddress.FullMethodName;
+                        if (string.IsNullOrEmpty(f)) f = MonoName(c.CodeAddress.Address) ?? "0x" + c.CodeAddress.Address.ToString("x");
+                        if (f.Length > 90) f = f.Substring(0, 90);
+                        string key = m + "!" + f;
+                        if (first) { leaf[key] = leaf.TryGetValue(key, out var lv) ? lv + 1 : 1; first = false; }
+                        if (seen.Add(key)) inc[key] = inc.TryGetValue(key, out var iv) ? iv + 1 : 1;
+                    }
+                }
+                Console.WriteLine($"INCLUSIVE thread {kv.Key} total={total}");
+                foreach (var e in inc.OrderByDescending(x => x.Value).Take(70)) Console.WriteLine($"  INC {e.Value,6} {100.0 * e.Value / total,5:F1}%  {e.Key}");
+                Console.WriteLine($"LEAF thread {kv.Key}");
+                foreach (var e in leaf.OrderByDescending(x => x.Value).Take(40)) Console.WriteLine($"  LEAF {e.Value,6} {100.0 * e.Value / total,5:F1}%  {e.Key}");
+            }
+            return 0;
+        }
         foreach (var kv in samplesByThread.OrderByDescending(x => x.Value.Count))
         {
             int native = kv.Value.Count(x => Stack(x.st, 60).Contains("sfnative!"));
@@ -150,6 +176,23 @@ static class Program
         return 0;
     }
 
+    // ETW_MONO_SYMS=<monodump 파일>: 이름 없는 managed 주소를 가장 가까운 앞쪽 시작 주소의 메서드 이름으로(64KB 안일 때만)
+    static long[] monoAddr; static string[] monoName;
+    static string MonoName(ulong addr)
+    {
+        if (monoAddr == null)
+        {
+            var path = Environment.GetEnvironmentVariable("ETW_MONO_SYMS");
+            var al = new List<long>(); var nl = new List<string>();
+            if (!string.IsNullOrEmpty(path) && File.Exists(path))
+                foreach (var l in File.ReadLines(path)) { int sp = l.IndexOf(' '); if (sp > 0 && long.TryParse(l.Substring(0, sp), System.Globalization.NumberStyles.HexNumber, null, out var a)) { al.Add(a); nl.Add(l.Substring(sp + 1)); } }
+            monoAddr = al.ToArray(); monoName = nl.ToArray();
+        }
+        if (monoAddr.Length == 0) return null;
+        int i = Array.BinarySearch(monoAddr, (long)addr); if (i < 0) i = ~i - 1;
+        if (i < 0 || (long)addr - monoAddr[i] > 65536) return null;
+        return "JIT:" + monoName[i];
+    }
     static string Stack(TraceCallStack st, int max)
     {
         var parts = new List<string>();
