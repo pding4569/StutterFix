@@ -1,4 +1,11 @@
 
+## 재시작 2회차 분석 (Codex, 2026-10-25)
+
+- 최신 `gm-autoloop-run1-evidence.txt`의 실패·요약 3줄은 원시 `E:/StutterFixWork/night-results/al-gm-1.log` 230~232행과 일치한다. 요구 2560×1440@120, 실제 3440×1440@164.999로 맵 open 전 중단됐다. 번호 재시작으로 현재 1번 파일은 과거 최초 준비 실패 당시 내용과 다르다.
+- 현재 보존 로그 1~8번 모두 같은 289단계 명령 목록과 동일 환경 거부이며 실제 ABBA·픽셀·복원 결과 줄은 각각 0개다. FPS·픽셀·렌더러·Draw Calls·끊김·복원은 NA, 요약의 0은 초기값이다. 렌더 병합 개선량·음악 시작 대기 수정·설계 한계는 미판정이다.
+- 검사·생성기·게임 ADOStartup 디컴파일/설치 DLL ilscan 확인 결과 검사는 정상이다. 코드·설정·기존 JSON/tag·제어 파일을 유지하고 새 시험 요청 없이 중단했다. **자동 장치의 동일 조건 재시도 중단 필요.** 자동 장치를 직접 중지하지는 않았다.
+- 문서 5개만 갱신. 원시/요약 대조·계획 동일성·문서 정합성·10줄 요약·diff check 확인. 빌드·기존 검사 반복 없음. 게임 실행·설치·커밋·푸시·설정 변경 0회. 크레딧 사용량 NA. 판정 `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`, PASS 아님. 상세 `codex-render-merge-result.md` 재시작 2회차 참조.
+
 ## 회차 9 분석 (Codex, 2026-10-25, 동일 환경 차단 7회 연속)
 
 - `gm-autoloop-run8-evidence.txt`의 실패·요약 3줄은 원시 `E:/StutterFixWork/night-results/al-gm-8.log` 230~232행과 일치한다. 요구 2560×1440@120, 실제 3440×1440@164.999로 맵 open 전 차단됐다.
@@ -200,5 +207,18 @@
 [결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md)
 
 
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+
+## 회차 2
+- Codex 요약: 인계대로 분석하고 문서 5개를 갱신했습니다.
+
+- 보존 로그 8개 모두 환경 불일치로 중단: 요구 2560×1440@120, 실제 3440×1440@164.999.
+- FPS·픽셀·복원은 미측정이며 `RENDERMERGE=ERROR`입니다.
+- 검사는 정상이라 코드·설정을 유지하고 동일 조건 재시험 중단 필요성을 기록했습니다.
+- 10줄 요약·문서 정합성·diff 검사 통과.
+- 게임 실행·설치·커밋·푸시 0회입니다.
+
+[결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md)
 - 시험 핵심 줄:
   - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
