@@ -193,7 +193,11 @@ namespace StutterFix
                     idx++; stepStart = now; waitSec = 0f;
                 }
             }
-            catch (Exception ex) { Log("단계 실패 '" + line + "': " + (ex.InnerException ?? ex).Message); Finish("오류로 그만둠"); }
+            catch (Exception ex)
+            {
+                string failure="단계 실패 '" + line + "': " + (ex.InnerException ?? ex).Message;
+                Log(failure); Finish(failure);
+            }
         }
 
         // UMM 창이 열려 있으면 그리는 비용 때문에 FPS 가 조금 낮게 나온다(사용자 관찰, 2026-09-27). 시작할 때와 재생마다 닫는다.

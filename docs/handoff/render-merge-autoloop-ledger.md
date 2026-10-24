@@ -1,5 +1,13 @@
 # render-merge 장부
 
+## 자동 반복 2회차 코드 수정 (2026-10-25)
+
+- 외부 gm 1회차는 `decobake ready` 고정 계약 변경으로 측정 전 중단. 원시 로그에서 예정된 음악 시작 완료 전에 pause한 순서와 실제 3440×1440@165 환경을 확인했다. 개별 계약 값은 과거 로그에 없어 정확한 변화 순간 직접 계측은 남았다.
+- `OnMusicScheduled → Scrub → AudioListener.set_pause` 호출을 설치 DLL ilscan으로 확인. 모든 seek 뒤 실제 음악 시작 대기(40초 상한), 최초 준비 250초 후 pause, 맵 로드 전 2560×1440@120 사전 검사, 계약 필드·단계 실패 보존을 추가했다. 렌더 병합 본체나 수용 기준을 완화하지 않았다.
+- 새 생성기 tag=`rendermerge-260-270-abba-startsync2`, JSON `tools/optimization/out/render-merge-round2-steps.json` 생성. 기존 계획의 반복 시험은 요청하지 않는다. 자동 장치 환경이 목표와 다르면 설정 변경 없이 ERROR로 종료한다.
+- 빌드 3종 오류 0, RenderMergeCheck 44개·FrameCompareCheck 81개·생성기 7개 통과. 수정판 실측 NA, PASS 아님. 게임 실행·설치·커밋·푸시·설정 변경 없음.
+- 상세 `codex-render-merge-result.md`, 10줄 `codex-render-merge-result-o.txt`, 외부 시험 장부 `gm-autoloop-ledger.md`.
+
 ## 코드 준비 회차 (게임 실행 없음)
 
 - 입력: `codex-render-merge-20261025.md`, `codex-master-20261022.md`, `claude-perf-260-270-20261024.md`.

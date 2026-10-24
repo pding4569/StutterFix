@@ -1,6 +1,34 @@
 # render-merge 구현 결과
 
-`codex-render-merge-20261025.md`와 마스터 인계에 따른 코드·시험 계획 준비 결과다. **실제 게임 시험은 실행하지 않았다.** 게임 실행·설치·커밋·푸시·설정 파일 수정 0회. FPS·픽셀·라이브 자원 복원 게이트는 미측정이며 채택/PASS를 주장하지 않는다.
+`codex-al-gm-2.md`에 따른 2회차 결과다. **이번 Codex 세션은 게임을 실행하지 않았다.** 외부 자동 장치의 1회차 실패 로그를 분석해 시작 동기화와 오류 기록을 수정했다. 게임 실행·설치·커밋·푸시·설정 파일 수정 0회. FPS·픽셀·라이브 자원 복원 게이트는 여전히 미측정이며 PASS를 주장하지 않는다.
+
+## 2회차: 측정 전 준비 중단 분석과 수정 (2026-10-25)
+
+### 확인한 증거
+
+- `gm-autoloop-run1-evidence.txt`, `gm-autoloop-ledger.md`와 원시 `E:/StutterFixWork/night-results/al-gm-1.log`를 읽었다. 요약 증거에 생략된 구체적인 실패는 원시 로그 339~352행에 있다.
+- `seek 260 12` → `gpudeco scheduled`(스냅샷 수집 중) → `pause` → 곡 시작 연출 종료 → `decobake ready` 실패 순서였다. 사유는 `수집 후 pitch/DOTween 배율/이징 기본값 변경: 고정 계약에서 제외`. ABBA 첫 창도 열리지 않았다. FPS 0·pixels 0·renderers 0·stability 0/4는 **측정 누락**이며 성능 0이나 픽셀 동일성을 뜻하지 않는다.
+- 실제 화면은 원시 로그 340행에서 3440×1440@165로 확인됐다. 목표인 2560×1440@120과 달라 준비 오류를 해결해도 기존 `begin`에서 거부된다. 이 환경의 성능 결론을 내리지 않았고 화면 설정도 변경하지 않았다.
+
+### 코드 원인과 수정 범위
+
+`gpudeco scheduled`는 `collector != null || job != null || ready`만 검사한다. 이는 **PrepVfx 관찰**이지 음악 시작 완료가 아니다. 게임 근사 디컴파일 `scrController.Start_Rewind`는 `StartMusic(..., OnMusicScheduled)`를 예약하고 `hasSongStarted=false`로 둔다. 이후 `scrConductor.StartMusicCo`가 콜백을 호출한다. 체크포인트 시작의 `OnMusicScheduled`는 `hasSongStarted=true`와 `Scrub`을 수행하고, `Scrub`은 `AudioListener.pause=false`를 쓴다. 그 전에 진단 pause를 걸면 오디오 일시정지 상태가 뒤에서 깨질 수 있다. 그러면 DOTween 0을 한정 허용하는 `FrameCompare.PreservesBakeTweenScale`도 false가 되어 고정 계약 검사가 실패한다.
+
+설치된 게임 DLL의 메타데이터를 `tools/ilscan`으로 읽어 `OnMusicScheduled → Scrub`, `Start_Rewind → StartMusic`, `Scrub → AudioListener.set_pause` 호출을 교차 확인했다. 게임 함수는 호출하지 않았다. **기존 로그는 필드별 값을 남기지 않아 오디오가 변한 순간 자체는 직접 계측되지 않았다.** 로그 순서와 실제 호출 코드가 뒷받침하는 경쟁을 제거했으며 실게임 해결 확인은 남았다.
+
+- AutoTest 전용 `gpudeco rendermerge playbackready`: 실제 `hasSongStarted`, 편집기·컨트롤러·Hitch 재생, 오디오·시간 진행을 기다린다. 40초 상한이며 성공과 reset에서 대기 시계를 초기화한다.
+- 생성기의 **모든 seek 뒤** 이 확인을 추가했다. 최초 준비·맵 재열기·선택 Mono 준비는 250초 도달 뒤 pause한다. 0초 재생 없이 ABBA 창은 계속 260~270초다. 렌더 병합 본체·정렬·픽셀·220 FPS·150렌더러·600 Draw Calls 기준은 유지한다.
+- `gpudeco rendermerge environment`를 open 전에 추가했다. 2560×1440@120을 읽기 전용으로 검사하며 불일치 시 actual 값과 함께 ERROR를 낸다. begin에서도 같은 검사를 유지한다. 자동 장치 실행 환경이 목표와 맞아야 측정으로 진행한다.
+- `DecoBake.Tick`의 거부 조건을 완화하지 않고 실제/고정 pitch·DOTween 배율·overshoot·period, pause 온전성·오디오·timeScale·음악 시작 상태를 실패 사유에 추가했다. `AutoTest`도 구체적인 단계 실패를 Finish에 넘겨 마지막 RENDERMERGE 오류에 보존한다.
+- 생성만 한 새 JSON: `tools/optimization/out/render-merge-round2-steps.json`. tag=`rendermerge-260-270-abba-startsync2`. 자동 장치는 수정 생성기와 새 실행 이름을 사용해야 한다. 기존 코드·기존 계획의 반복 시험은 요청하지 않는다.
+
+### 오프라인 검증과 남은 판정
+
+Dev / Player / PlayerAuto 빌드 오류 각 0개(경고 46/4/39개, 기존 경고 포함), RenderMergeCheck 44개·FrameCompareCheck 81개·생성기 7개 통과. 생성기 검사는 맵 로드 전 환경 확인과 seek 후 실제 음악 시작 대기를 추가로 검증한다. 이전 `scheduled → pause` 순서는 거부한다. 새 JSON 생성과 `git diff --check`도 통과했다. T2 기존 이름 붙은 기록은 보존했으며 반복 측정하지 않았다.
+
+현재 판정: `RENDERMERGE=ERROR reason=ROUND1_PREP_CONTRACT; ROUND2_GAME_NOT_RUN fps=NA pixels=NA renderers=NA`. 수정 후 FPS·픽셀·끊김·복원은 미측정이다. 이 증거로 렌더 병합의 설계 한계나 목표 달성 여부를 판정할 수 없다.
+
+아래는 기존 구현 범위와 기존 측정에 근거한 남은 목표다.
 
 ## T1: 구간 렌더러 후보
 
@@ -59,4 +87,4 @@ PASS에는 2560×1440@120, 유효 ABBA 4창, 두 B창 각각 ≥220 FPS, 구간 
 
 교체 그리기를 제거한 3.83ms도 2.5ms보다 **1.33ms, 34.7%** 더 줄어야 한다. 이는 그림을 정상적으로 표시하는 구현의 성능 예상값이 아니다. 기존 named trace의 포함 표본은 PlayerRender 36.9%, CallUpdateMethod 48.3%, DOTween 10.0%, GpuLiveFrame 경로 7.7%, TightLate.List 4.4%, TightLate.Process 4.3%다. 포함 스택 비율은 겹치므로 합산하지 않는다. 구간 렌더러의 실제 결과 전에는 이 비율을 새 FPS 개선량으로 바꾸지 않는다.
 
-현재 판정: `RENDERMERGE=ERROR reason=GAME_NOT_RUN fps=NA pixels=NA renderers=NA` — 코드 준비 상태이며 실험 실패 수치가 아니다.
+최신 판정은 위 2회차 항목을 따른다. 1회차 외부 시험은 준비 오류로 중단됐으며 이번 시작 동기화 수정의 개선량은 미측정이다.

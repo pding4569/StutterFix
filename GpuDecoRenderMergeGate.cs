@@ -19,6 +19,7 @@ namespace StutterFix
         static scrDecorationManager mergeManagerBeforeReopen;
         static bool mergeEndWatched,mergeRetryWatched;
         static bool mergeTestActive;
+        static float mergePlaybackWaitAt=-1;
         internal static void FinishGpuMergeTest(string why)
         {
             if(!mergeTestActive)return;
@@ -44,15 +45,49 @@ namespace StutterFix
             if(ms>30)mergeSpikes++;mergeWorst=Math.Max(mergeWorst,ms);
         }
         static double MergeSong=>scrConductor.instance?scrConductor.instance.songposition_minusi:double.NaN;
+        static void RequireGpuMergeEnvironment()
+        {
+            double hz=Screen.currentResolution.refreshRateRatio.value;
+            RequireLive(Screen.width==2560 && Screen.height==1440 && Math.Abs(hz-120)<.5,
+                "rendermerge acceptance scope requires 2560x1440@120; actual="+Screen.width+"x"+Screen.height+"@"+hz.ToString("F3",Inv));
+        }
         static bool GpuRenderMergeGateCommand(string sub)
         {
             var a=sub.Split(new[]{' '},StringSplitOptions.RemoveEmptyEntries);
+            if(sub=="environment")
+            {
+                RequireGpuMergeEnvironment();
+                GpuLog("rendermerge_environment=True scope=2560x1440@120");return true;
+            }
+            if(sub=="playbackready")
+            {
+                RequireLive(!FrameCompare.Paused && !gpuLiveActive,"playbackready requires unpaused CPU playback");
+                var c=scrConductor.instance;var ctrl=ADOBase.controller;var ed=scnEditor.instance;
+                // PrepVfx (gpudeco scheduled) precedes StartMusic's coroutine.
+                // OnMusicScheduled -> Scrub writes AudioListener.pause=false;
+                // do not freeze a diagnostic snapshot before that callback.
+                bool started=c && c.hasSongStarted && ctrl && ctrl.gameworld && !ctrl.paused
+                    && ed && ed.playMode && Hitch.Playing && !AudioListener.pause && Time.timeScale>0;
+                if(started)
+                {
+                    mergePlaybackWaitAt=-1;
+                    GpuLog("rendermerge_playback_ready=True song="+MergeSong.ToString("F6",Inv));
+                }
+                else
+                {
+                    if(mergePlaybackWaitAt<0)mergePlaybackWaitAt=Time.realtimeSinceStartup;
+                    if(Time.realtimeSinceStartup-mergePlaybackWaitAt>40)
+                        MergeReject("playback_start_timeout song="+MergeSong.ToString("F6",Inv));
+                }
+                return started;
+            }
             if(sub=="reset")
             {
                 RequireLive(mergeWindow<0 && !gpuLiveActive,"rendermerge reset requires no live measurement/ownership");
                 mergeDrawRecorder.Dispose();mergeDrawRecorder=default;
                 mergeGate=new RenderMergeGatePolicy();gpuMergeError=null;
                 mergeTestActive=true;
+                mergePlaybackWaitAt=-1;
                 mergeRetryAtReset=mergeRetryCount;mergeEndWatched=mergeRetryWatched=false;
                 mergeGenerationBeforeReopen=-1;mergeManagerBeforeReopen=null;
                 GpuLog("rendermerge_reset=True");return true;
@@ -63,8 +98,7 @@ namespace StutterFix
                 RequireLive(i>=0 && i<4 && i==mergeGate.Seen.Count(x=>x) && mergeWindow<0 && !mergeGate.Seen[i] && gpuLiveActive && gpuRenderMergeOn==on
                     && Hitch.Playing && !FrameCompare.Paused && Math.Abs(MergeSong-260)<.6 && !GpuDecoCostProbe.Enabled,
                     "rendermerge begin requires ABBA GPU ownership at 260s");
-                RequireLive(Screen.width==2560 && Screen.height==1440 && Math.Abs(Screen.currentResolution.refreshRateRatio.value-120)<.5,
-                    "rendermerge acceptance scope requires 2560x1440@120");
+                RequireGpuMergeEnvironment();
                 mergeDrawRecorder=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",16384);
                 mergeWindow=i;mergeWindowMode=on;mergeWindowFrame=Time.frameCount;mergeObservedFrame=-1;
                 mergeObservedCount=mergeSpikes=mergeMaxRenderers=mergeMaxDraws=0;mergeWorst=0;

@@ -48,15 +48,36 @@ class StepsContract(unittest.TestCase):
         self.assertEqual(steps[-1], 'quit')
         self.assertNotIn('quit', steps[k:syms])
 
+    def test_environment_checked_before_loading_chart(self):
+        self.assertLess(self.steps.index('gpudeco rendermerge reset'),
+                        self.steps.index('gpudeco rendermerge environment'))
+        self.assertLess(self.steps.index('gpudeco rendermerge environment'),
+                        next(i for i, s in enumerate(self.steps) if s.startswith('open ')))
+
+    def test_checkpoint_callback_finishes_before_freezing(self):
+        # Round 1: scheduled only observed PrepVfx. OnMusicScheduled could
+        # subsequently Scrub and clear AudioListener.pause after our pause.
+        for mono in (None, Path('trace folder with spaces')):
+            steps = module.build(Path('Arche FULL.adofai'), mono_dir=mono)['steps']
+            for i, step in enumerate(steps):
+                if step == 'gpudeco scheduled':
+                    self.assertEqual(steps[i + 1:i + 4],
+                                     ['gpudeco rendermerge playbackready',
+                                      'waitsongpos 250 40', 'pause'])
+
     def test_preparation_and_mode_transition_contract(self):
         for mono in (None, Path('trace folder with spaces')):
-            playing = paused = owned = merged = window = False
+            playing = paused = owned = merged = window = playback_ready = False
             for step in module.build(Path('Arche FULL.adofai'), mono_dir=mono)['steps']:
                 if step.startswith('seek '):
                     self.assertFalse(playing, step)
                     playing = True
+                    playback_ready = False
+                elif step == 'gpudeco rendermerge playbackready':
+                    self.assertTrue(playing and not paused and not owned, step)
+                    playback_ready = True
                 elif step == 'pause':
-                    self.assertTrue(playing, step)
+                    self.assertTrue(playing and playback_ready, step)
                     paused = True
                 elif step == 'resume':
                     paused = False
@@ -68,7 +89,7 @@ class StepsContract(unittest.TestCase):
                     owned = False
                 elif step == 'stop':
                     self.assertFalse(paused or window, step)
-                    playing = owned = False
+                    playing = owned = playback_ready = False
                 elif step in ('gpudeco rendermerge on', 'gpudeco rendermerge off'):
                     self.assertFalse(window, step)
                     self.assertTrue(not owned or paused, step)

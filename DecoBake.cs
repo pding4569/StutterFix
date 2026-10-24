@@ -444,7 +444,16 @@ namespace StutterFix
                     || scrConductor.instance.song.pitch != frozenPitch
                     || (DOTween.timeScale != frozenScale && !FrameCompare.PreservesBakeTweenScale(frozenScale))
                     || DOTween.defaultEaseOvershootOrAmplitude != frozenOver || DOTween.defaultEasePeriod != frozenPeriod))
-                { Fail("수집 후 pitch/DOTween 배율/이징 기본값 변경: 고정 계약에서 제외"); return; }
+                {
+                    Fail("수집 후 pitch/DOTween 배율/이징 기본값 변경: 고정 계약에서 제외"
+                        + " pitch=" + (scrConductor.instance?.song == null ? "missing" : scrConductor.instance.song.pitch.ToString("R",CultureInfo.InvariantCulture)) + "/" + frozenPitch.ToString("R",CultureInfo.InvariantCulture)
+                        + " tween=" + DOTween.timeScale.ToString("R",CultureInfo.InvariantCulture) + "/" + frozenScale.ToString("R",CultureInfo.InvariantCulture)
+                        + " overshoot=" + DOTween.defaultEaseOvershootOrAmplitude.ToString("R",CultureInfo.InvariantCulture) + "/" + frozenOver.ToString("R",CultureInfo.InvariantCulture)
+                        + " period=" + DOTween.defaultEasePeriod.ToString("R",CultureInfo.InvariantCulture) + "/" + frozenPeriod.ToString("R",CultureInfo.InvariantCulture)
+                        + " pause_intact=" + FrameCompare.PreservesBakeTweenScale(frozenScale)
+                        + " audio_paused=" + AudioListener.pause + " time_scale=" + Time.timeScale.ToString("R",CultureInfo.InvariantCulture)
+                        + " song_started=" + (scrConductor.instance && scrConductor.instance.hasSongStarted)); return;
+                }
                 if (collector != null)
                 {
                     Array.Clear(stageSlice, 0, stageSlice.Length);

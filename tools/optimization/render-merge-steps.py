@@ -10,12 +10,15 @@ def build(chart, bundle=None, mono_dir=None):
     steps = ['timeout 600', 'auto on', 'decobake on', 'gpudeco off',
              'gpudeco reset', 'gpudeco costprobe off', 'gpudeco effectcache off',
              'gpudeco nombp off', 'gpudeco rendermerge reset',
+             'gpudeco rendermerge environment',
              'gpudeco nativebatch on', 'gpudeco nativecopy on8masked',
              'gpudeco zeroalpha on', 'gpudeco bundle ' + str(bundle),
              'open ' + str(chart), 'gpuprobe off', 'gpusplit off',
              'matshare off', 'livedeco off',
              # Never naturally play from zero, including initial preparation.
-             'seek 260 12', 'gpudeco scheduled', 'pause', 'decobake ready',
+             'seek 260 12', 'gpudeco scheduled',
+             'gpudeco rendermerge playbackready', 'waitsongpos 250 40',
+             'pause', 'decobake ready',
              'gpudeco live scope song', 'gpudeco rendermerge prepare',
              'gpudeco live prepare', 'resume', 'stop']
 
@@ -23,7 +26,7 @@ def build(chart, bundle=None, mono_dir=None):
         # Both modes freeze setup at the same boundary. The measured window
         # starts only after resuming and warming for at least four song seconds.
         out = ['gpudeco live off', 'gpudeco rendermerge off', 'stop',
-               f'seek {target} 12', 'decobake ready',
+               f'seek {target} 12', 'gpudeco rendermerge playbackready', 'decobake ready',
                f'waitsongpos {target - 4} 40', 'pause',
                'gpudeco packets compiled', 'gpudeco live on']
         if ready or merged:
@@ -66,10 +69,12 @@ def build(chart, bundle=None, mono_dir=None):
     steps += ['waitsongpos 260 40', 'gpudeco rendermerge watch reopen',
               'pause', 'gpudeco resources mark', 'resume', 'stop',
               'open ' + str(chart), 'seek 260 12', 'gpudeco scheduled',
+              'gpudeco rendermerge playbackready', 'waitsongpos 250 40',
               'pause', 'decobake ready', 'gpudeco rendermerge stability reopen',
               'resume', 'stop', 'wait 2', 'gpudeco resources clean',
               'gpudeco live scope song', 'gpudeco rendermerge prepare',
-              'seek 260 12', 'gpudeco scheduled', 'pause', 'decobake ready',
+              'seek 260 12', 'gpudeco scheduled',
+              'gpudeco rendermerge playbackready', 'waitsongpos 250 40', 'pause', 'decobake ready',
               'gpudeco live prepare', 'resume', 'stop']
     steps += enter(merged=True)
     steps += ['pause', 'gpudeco resources mark', 'decobake off', 'wait 2',
@@ -78,7 +83,8 @@ def build(chart, bundle=None, mono_dir=None):
     # Optional T2: external controller extracts addr.txt from this trace while
     # the process waits in monosyms, then does the named ETW pass offline.
     if mono_dir:
-        steps += ['decobake on', 'seek 260 12', 'gpudeco scheduled', 'pause',
+        steps += ['decobake on', 'seek 260 12', 'gpudeco scheduled',
+                  'gpudeco rendermerge playbackready', 'waitsongpos 250 40', 'pause',
                   'decobake ready', 'gpudeco live scope song',
                   'gpudeco rendermerge prepare', 'gpudeco live prepare',
                   'resume', 'stop']
@@ -89,8 +95,10 @@ def build(chart, bundle=None, mono_dir=None):
                   f'monosyms "{mono_dir / "rendermerge-addr.txt"}" "{mono_dir / "rendermerge-syms.txt"}"']
     steps += ['gpudeco rendermerge result', 'quit']
     return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False},
-                timeout_min=25, checks={}, tag='rendermerge-260-270-abba',
+                timeout_min=25, checks={}, tag='rendermerge-260-270-abba-startsync2',
                 notes={'A': 'independent GPU', 'B': 'merged GPU',
+                       'environment': 'requires existing 2560x1440@120; checks only, never changes display settings',
+                       'start_sync': 'wait for hasSongStarted after every seek; PrepVfx is not music-start completion',
                        'lifetime': 'actual retry/reopen/portal; DecoBake.Shutdown and marked Unity/native resources',
                        'full_umm_unload': 'UNMEASURED',
                        'mono': 'same-process external address extraction required' if mono_dir else 'prior named trace preserved; no repeat'})

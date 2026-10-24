@@ -1,10 +1,10 @@
-RENDERMERGE=ERROR reason=GAME_NOT_RUN fps=NA pixels=NA renderers=NA
-T1: 2.5초 구간 메시·텍스처별 서브메시·희소 GPU 복사 구현, 기본 꺼짐.
-정렬: 비소유/CPU fallback 경계·재질 ID 증가·첫 멤버 bounds 검사.
-알파: 실제 채널 검증·인덱스 제외, 시간표 밖 표시 가능성은 복구 후 실패.
-시험: seek 260 ABBA·262/270 픽셀·retry/reopen/포탈/Shutdown·자원 검사 생성.
-T2: 기존 named trace 보존, ETW_MONO_SYMS/ADDRS·INC/LEAF 도구 보완.
-검증: 빌드 3종+ETW 오류 0, 오프라인 44검사·생성기 5검사 통과.
-실측 FPS·픽셀·렌더러 수·끊김·안정성은 미측정, PASS/채택 아님.
-400 FPS: 기존 6.1→2.5ms에 3.6ms 감소 필요, 후보 개선량 미측정.
-게임 실행·설치·커밋·푸시·.codex/config.toml 수정 0회.
+RENDERMERGE=ERROR reason=ROUND1_PREP_CONTRACT,ROUND2_GAME_NOT_RUN fps=NA pixels=NA renderers=NA
+1회차: decobake ready 고정 계약 오류로 ABBA 측정 전 중단, 0은 측정 누락.
+시작 경쟁: PrepVfx 확인 뒤 늦은 OnMusicScheduled→Scrub이 pause를 깨뜨릴 수 있음.
+수정: 모든 seek 뒤 실제 음악 시작 대기(40초 상한), 최초 준비는 250초 후 pause.
+환경: 원시 로그 3440×1440@165; 목표 2560×1440@120 사전 검사, 설정 변경 없음.
+진단: 계약 필드별 실제/고정 값 및 구체적 실패 단계가 마지막 ERROR에 남음.
+시험 JSON 생성: tools/optimization/out/render-merge-round2-steps.json, 새 tag startsync2.
+검증: 빌드 3종 오류 0, RenderMerge 44·FrameCompare 81·생성기 7검사 통과.
+T2 기존 기록 보존; 400 FPS까지 기존 6.1→2.5ms, 후보 개선량·픽셀·안정성 미측정.
+게임 실행·설치·커밋·푸시·.codex/config.toml 수정 0회, PASS 아님.
