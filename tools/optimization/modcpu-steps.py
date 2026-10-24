@@ -8,7 +8,7 @@ def window(tag):
             "gpudeco micro end", "phasewindow end", "onupdate end", "fuse end", "gpudeco live off", "stop"]
 steps = ["gpudeco costprobe off", "gpudeco effectcache off", "timeout 600", "auto on", "decobake on", "gpudeco off", "gpudeco reset", "gpudeco nombp off",
          "gpudeco g2 reset", "gpudeco nativebatch on", "gpudeco nativecopy on8masked", "gpudeco zeroalpha on",
-         "gpudeco bundle E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\bundle\stutterfix_gpudeco",
+         "gpudeco bundle E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/evidence/bundle/stutterfix_gpudeco",
          "open " + a.chart, "select 0", "play", "gpudeco scheduled", "pause", "decobake state", "decobake ready", "gpudeco live scope song",
          "gpudeco live prepare", "resume", "stop", "gpuprobe off", "gpusplit off", "matshare off", "livedeco off", "phasewindow on"]
 steps += window("a") + window("b") + ["quit"]
