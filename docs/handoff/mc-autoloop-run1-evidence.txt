@@ -1,0 +1,38 @@
+[StutterFix] [자동 시험] 시작: 66단계 - gpudeco costprobe off / gpudeco effectcache off / timeout 600 / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco nombp off / gpudeco g2 reset / gpudeco nativebatch on / gpudeco nativecopy on8masked / gpudeco zeroalpha on / gpudeco bundle E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/evidence/bundle/stutterfix_gpudeco / open D:/얼불춤 맵 파일/Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / gpudeco scheduled / pause / decobake state / decobake ready / gpudeco live scope song / gpudeco live prepare / resume / stop / gpuprobe off / gpusplit off / matshare off / livedeco off / phasewindow on / seek 260 12 / decobake ready / waitsongpos 256 40 / gpudeco packets compiled / gpudeco live on / waitsongpos 260 40 / gpudeco live census / fuse begin / onupdate begin / phasewindow begin / gpudeco micro begin / waitsongpos 270 25 / gpudeco micro end / phasewindow end / onupdate end / fuse end / gpudeco live off / stop / seek 260 12 / decobake ready / waitsongpos 256 40 / gpudeco packets compiled / gpudeco live on / waitsongpos 260 40 / gpudeco live census / fuse begin / onupdate begin / phasewindow begin / gpudeco micro begin / waitsongpos 270 25 / gpudeco micro end / phasewindow end / onupdate end / fuse end / gpudeco live off / stop / quit
+[StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots_avg=0.000 renderer_toggles_avg=0.000000 active_chunks_avg=0.000000 active_chunks_max=0 source_removals=0 missing_removals=0 source_search_element_upper_bound=0 source_shifted_ints=0 source_max_list=0 removal_work_is_CPU_timing=False additional_clock_reads_per_frame=2 gpu_time=UNMEASURED
+[StutterFix] [gpudeco] cost_probe_enabled=False acceptance=False
+[StutterFix] [gpudeco] effect_cache=False research_only=True default=False
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] export_result_reset=True
+[StutterFix] [gpudeco] nombp=False
+[StutterFix] [gpudeco] g2_reset=True
+[StutterFix] [gpudeco] native_batch=True static_batch=False restore_sort_bounds=False live_validated=False
+[StutterFix] [gpudeco] native_copy=True eight_uav=True masked=True active_contexts=0
+[StutterFix] [gpudeco] zeroalpha=True rule=both_factors_constant_one_exactly_zero count=0 collisions_changed=0
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=2 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] scope=song_union default_off=True Player_included=False
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=23631 admitted=23547 rejects=repeat-tile:84
+[StutterFix] [gpudeco] prepare_ms=7435.426500 phase=live_prepare slices=1 owned_union=23547 total_runs=23547 total_submeshes=23547 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False scope=song_union item_limit=32768 masked_copy=True
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=4 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=98.373400 prepare_ms=7435.426500
+[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=1880 visible_renderers=1880 items=23547 proven_constant_zero_alpha=21667 animated_alpha=1850 zeroalpha=True skipped_by_this_probe=0
+[StutterFix] [gpudeco] micro_begin song=260.062335 cache=False per_frame_probe=False
+[StutterFix] [gpudeco] micro_end song_begin=260.062335 song_end=270.014330 elapsed_s=9.945318 frames=1670 real_fps=167.918 cache=False active=True owned=23547 native_executed=2422 native_errors=0 physical_display=UNMEASURED
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2036 high_water=2036 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=2426 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.418991 progress_ms=0.137325 uniform_ms=0.005714 dispatch_ms=0.273212 misc_ms=0.002739 max_ms=5.705300 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.034921 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=26.273700
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=6 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=96.942700 prepare_ms=7435.426500
+[StutterFix] [gpudeco] render_census window=-1 edge=explicit slice=0 allocated_renderers=23547 enabled_renderers=1880 visible_renderers=1880 items=23547 proven_constant_zero_alpha=21667 animated_alpha=1850 zeroalpha=True skipped_by_this_probe=0
+[StutterFix] [gpudeco] micro_begin song=260.048297 cache=False per_frame_probe=False
+[StutterFix] [gpudeco] micro_end song_begin=260.048297 song_end=270.010516 elapsed_s=9.959054 frames=1674 real_fps=168.088 cache=False active=True owned=23547 native_executed=4851 native_errors=0 physical_display=UNMEASURED
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2087 high_water=2087 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=4855 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.419483 progress_ms=0.137825 uniform_ms=0.005745 dispatch_ms=0.273191 misc_ms=0.002721 max_ms=5.705300 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.027720 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=24.654200
+[StutterFix] [gpudeco] shutdown_disposed=True native_contexts=0

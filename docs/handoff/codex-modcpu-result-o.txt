@@ -1,0 +1,10 @@
+MODCPU=FAIL fps_before=NA fps_after=NA gain_pct=NA reason=BASELINE_NOT_RUN
+첫 회전: 인계의 코드 변경 없는 기준선 측정을 위해 런타임과 생성기를 유지했다.
+소스: codex/night-gpu HEAD 4fd3a01, 기존 수정 문서 5개 보존.
+계획: tools/optimization/out/modcpu-baseline-steps.json, 66단계, tag=modcpu-260-270.
+원본 생성기 그대로 곡 처음 준비 후 seek 260, live on, 260~270초 창 두 번.
+환경 수용: 3440x1440@165, 각 창 owned=23547; 다르면 기준선 무효.
+증거: micro_end real_fps 두 줄과 onupdate/fuse/phasewindow 원문을 외부 시험 후 기록.
+후속: 기준선 확인 후 후보 (1)부터 하나씩 ABBA, 목표 max(183,before*1.10) FPS 및 새 픽셀 불일치 0.
+오프라인 계획 계약 확인; 코드 변경 0, 빌드 반복 0, 새 게임 측정 없음.
+게임 실행·설치·커밋·푸시·자동 장치 호출·제어 파일 변경 0회; 실제 FPS와 픽셀은 미측정.

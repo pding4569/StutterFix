@@ -1,10 +1,10 @@
-RENDERMERGE=ERROR reason=GAME_NOT_RUN fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA candidate=map5
-외부 run2는 3440x1440@164.999, 소유 23547·A visible 1880으로 ABBA 166.844797/77.992570/77.943161/161.787018 FPS.
-외부 B 할당 renderer 최대 4875·엔진 draw 2489/2527·30ms 초과 3/4회(최악 75.45/112.75ms); 성능·끊김 실패.
-외부 픽셀 증가 262초 439069(max33)/270초 3207(max2), 원본↔독립/복원/노이즈 0; 픽셀 실패.
-외부 retry/song_end/reopen 통과 후 자원 mark 111382개를 100000개 reader 상한이 거부해 ERROR, stability=3/4.
-지원 GPU sprite의 휴면 mesh/border 보조 객체만 경계 제외; CPU fallback/미확인 경계 보존·분할 원인 로그 추가.
-알파 변경의 CPU Mesh.SetIndices 제거, 고정 topology·GPU 복사표로 hidden quad 퇴화; 자원 파일은 1MiB·정확 길이 검사.
-빌드 Dev/Player/PlayerAuto 오류 0(경고 46/36/39), 생성기 11개·RenderMergeCheck 74개 통과; 수정판 실제 효과 미검증.
-새 tools/optimization/out/render-merge-map5-steps.json 333단계 생성만; seek 260 ABBA·픽셀2점·복원4종 유지, 기존 T2 유지.
-게임 실행·설치·커밋·푸시·자동 장치 호출·설정 변경 0회; 동일 코드 반복 시험 요청 없음, map5 성능/픽셀/복원 NA·PASS 아님.
+RENDERMERGE=PIXEL_FAIL fps=165.930,152.382,152.765,167.763 pixels=11477 renderers=69 engine_draws_max=3815 stability=4/4 error=none
+외부 map5/run3: 3440x1440@164.999, 소유 23547·CPU fallback 0·A enabled/visible 1880; 원시 결과 15줄 순서·중복 일치.
+A/B FPS 평균 166.846331/152.573786(-8.5543%), 창별 환산 시간 5.993720/6.554216ms(+0.560496ms); FPS 목표 실패.
+B 활성 renderer 69개만 목표 통과, 활성 submesh 최대 1478·엔진 draw 3815(목표600의 6.3583배) 실패; 네 측정창 30ms 초과 0.
+262초 원본↔독립/원본↔병합/독립↔병합 2/1434/1432(max4), 270초 0/11477/11477(max2); 복원/노이즈 0, 픽셀 실패.
+retry/song_end/reopen/Shutdown 4/4, 자원 검사 각각 48512개·unity_alive=0·retired_tokens=1/1; 전체 UMM reload/물리 GPU 메모리 미측정.
+고정 submesh·재질 슬롯 3230~3279개(260~270초)가 남고 hidden quad 퇴화는 슬롯을 없애지 않음; 현재 구조 한계로 반복 중단.
+런타임·게이트·생성기·기존 JSON/tag·제어 파일 유지, 새 계획/시험 요청 없음; 다른 모든 설계의 불가능·픽셀 원인 확정은 아님.
+T2 보존; 이번 3440 B에서 220/400 FPS까지 2.008762/4.054216ms 감소 필요; 과거 2560 수치와 분리, 오프라인 감사/ILScan/문서만 확인.
+이번 게임 실행·설치·커밋·푸시·자동 장치 호출·빌드 반복 0회; 자동 장치 직접 중지 없음, 상세 결과/마스터/성능 문서/장부 갱신.

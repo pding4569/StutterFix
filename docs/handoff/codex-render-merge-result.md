@@ -1,6 +1,49 @@
 # render-merge 구현 결과
 
-## 현재 회차 3: run2 실제 ABBA 실패 분석과 map5 수정 (2026-10-25)
+## 현재 회차 4: run3 PIXEL_FAIL, 현재 고정 서브메시 방식 중단 (2026-10-25)
+
+**최신 외부 map5/run3 실측은 `RENDERMERGE=PIXEL_FAIL fps=165.930,152.382,152.765,167.763 pixels=11477 renderers=69 engine_draws_max=3815 stability=4/4 error=none`이다.** map5 미실행이라는 이전 회차 설명은 과거 이력이다. 인계의 “설계 한계가 수치로 확인되면 문서에 쓰고 멈춰라”에 따라 **현재 고정 서브메시 방식의 반복을 중단**한다. 런타임·게이트·생성기·기존 JSON/tag·설정·제어 파일은 유지하고 새 계획/시험 요청은 만들지 않았다. 자동 장치를 직접 끈 것은 아니다.
+
+### 실측과 원시 대조
+
+`gm-autoloop-run3-evidence.txt`의 결과 **15줄**(ABBA 4, 픽셀 2, 안정성 4, 자원 mark/clean 4, 최종 판정 1)을 현재 원시 `E:/StutterFixWork/night-results/al-gm-3.log`와 **순서·중복 횟수까지 일치**함을 확인했다. 원시 행은 522/596/672/743, 922/1101, 1268/1374/1653/1893, 1538/1671/1876/1891, 1917이다. 환경 **3440×1440@164.999**, allocated/GPU owned **23,547**, CPU fallback **0**, A 직전 enabled/visible **1,880**이다. 과거 환경 거부나 소유 26개 문제를 이번 중단 사유로 사용하지 않는다.
+
+| 창 | FPS | 활성 병합 renderer 최대 | 활성 교체 submesh 최대 | 엔진 Draw Calls 최대 | 30ms 초과 | 최악 ms |
+|---|---:|---:|---:|---:|---:|---:|
+| A0 독립 | 165.929966 | 해당 없음 | 해당 없음 | 2529 | 0 | 11.473597 |
+| B1 병합 | 152.382090 | 69 | 1478 | 3815 | 0 | 10.169105 |
+| B2 병합 | 152.765481 | 69 | 1478 | 3815 | 0 | 10.539101 |
+| A3 독립 | 167.762695 | 해당 없음 | 해당 없음 | 2527 | 0 | 9.334701 |
+
+A 두 창 FPS 산술평균 **166.846331**, B **152.573786**로 **−8.5543%**다. 창별 1000/FPS를 평균한 프레임 시간은 A **5.993720ms**, B **6.554216ms**, 차이 **+0.560496ms**다. renderer ≤150만 통과, B ≥220 FPS 및 엔진 draw ≤600은 실패했다(3815/600=**6.3583배**). 네 측정 창의 30ms 초과는 0이며 전곡 무끊김·물리 지연 증거는 아니다.
+
+| 픽셀 시각 | 원본↔독립 | 원본↔병합 | 독립↔병합 | 독립↔병합 최대 채널 차이 | 복원/노이즈 |
+|---|---:|---:|---:|---:|---:|
+| 262초 | 2 | 1434 | 1432 | 4/255 | 0/0 |
+| 270초 | 0 | 11477 | 11477 | 2/255 | 0/0 |
+
+두 시각 모두 픽셀 증가 금지에 실패한다. `RenderMergeGatePolicy.Verdict`가 픽셀 실패를 성능 실패보다 먼저 반환하므로 최종 PIXEL_FAIL은 **성능 통과를 뜻하지 않는다**. 남은 픽셀을 정렬·색·래스터화 중 하나로 확정할 장식별 증거는 없어 추정 수정·허용 오차 완화는 하지 않았다.
+
+retry/song_end/reopen/Shutdown은 **4/4** 통과, unrestored=0이다. reopen과 Shutdown 자원 검사 각각 **48,512개**, `unity_alive=0`, `retired_tokens=1/1`이다. `different_DLL=False`이므로 동일 DLL의 Shutdown 경로 검증이며 **UMM 전체 unload/reload·DLL 교체·물리 GPU 메모리 해제 증거는 아니다**. run2의 reader 오류는 이번에 재현되지 않았다.
+
+### 코드에서 확인한 한계
+
+1. `PrepareGpuMerge`의 보조 객체 제외 **70,641개**, 260~270초 layout renderer **67/69/68/69**, `split_material=0`, `split_layer=0`이다. 이전 singleton 문제는 이 구간에서 해소됐으며 barrier/bucket 경계는 보존됐다.
+2. `GpuDecoExport.cs:1101`의 `BuildLiveRun`은 **연속된 TextureId와 재질 Signature가 같은 경우만** 그룹으로 묶는다. `mesh.subMeshCount=groups.Count`, 그룹별 고정 인덱스와 `sharedMaterials`의 첫 재질을 유지한다. 준비 submesh는 260/262.5/265/267.5초 **3277/3279/3279/3230**, 270초 layout **3922**다. renderer 69개가 제출 69개로 바뀐 구조가 아니다. Unity도 submesh마다 Renderer의 재질이 대응한다고 명시한다([Mesh.subMeshCount](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Mesh-subMeshCount.html)).
+3. `GpuDecoRenderMerge.cs:169`의 `RefreshGpuMergeGroup`은 복사표만 갱신하고 `LiveGroups>0`인 **전체 renderer**를 켠다. `RenderMergeLayoutPolicy.MapQuad`의 hidden quad 퇴화는 subMeshCount·인덱스 수·재질 슬롯을 제거하지 않는다. 일부 그룹만 보이는 run에도 숨은 슬롯이 남는다. `replacement_submeshes=1478`은 살아 있는 그룹의 최대이며 실제 제출 수가 아니다. 실측 엔진 draw **3815**는 이 구조의 문제와 일치하지만, 모든 draw를 슬롯·카메라별로 귀속한 GPU 캡처는 없다.
+4. 즉 **잠재 가시 항목을 시간 slice별 고정 submesh로 만들고 숨은 정점만 퇴화시키는 현재 구조는 renderer 감소와 제출 감소를 함께 달성하지 못했다.** 숨은 슬롯 제거만으로 살아 있는 1478개 그룹까지 600 이내로 줄어드는 것도 증명되지 않았다. 1478은 모든 동적 재배치·텍스처 통합 방식의 수학적 하한이 아니다. 현재 표현의 실패이며 GPU 병합 일반의 불가능 판정은 아니다.
+
+게임 근사 디컴파일 `scrVisualDecoration.SetDepth/ApplyColor`를 읽고 설치 DLL ILScan으로 sortingLayer/gameObject layer/sortingOrder 및 WithAlpha→SpriteRenderer.color 호출을 교차 확인했다. 순서 보존 텍스처 통합이나 별도 제출 방식은 새로운 설계와 픽셀 검증이 필요한 후속 과제다. 기존 CPU 정점/아틀라스 실패를 되풀이하거나 정렬 경계를 지우지 않는다. 이번에는 새 방식 구현/시험으로 진행하지 않고 중단한다.
+
+### 이번 검증과 남은 수치
+
+- 이번 게임 실행·설치·커밋·푸시·자동 장치 호출 **0회**. 코드 변경이 없어 빌드·기존 정책 검사도 반복하지 않았다. 이전 회차의 빌드 3종·생성기 11개·RenderMergeCheck 74개는 과거 검증이다.
+- `tools/optimization/out/render-merge-run4-audit.py`/`-audit.json`: 원시 결과 15줄의 순서·중복, ABBA valid 4창, 기존 map5 계획 333단계, 소스 SHA-256과 수치 계산을 보존한다. 설치 DLL 읽기 전용 ILScan은 `render-merge-run4-ilscan.txt`다. out은 무시되는 로컬 산출물이며 새 게임 결과가 아니다. 이번 변경 문서의 UTF-8·10줄 요약·정합성·`git diff --check`를 확인한다.
+- T2 `monosyms`/`ETW_MONO_SYMS`와 이름 붙은 기존 기록 보존. 메인 inclusive 3846표본의 PlayerRender 36.9%, CallUpdateMethod 48.3%, GpuLiveFrame 7.7%, TightLate.List/Process 4.4/4.3%, FastMove.Prefix 3.7%는 겹치므로 합산하지 않는다. 새 Mono/ETW 측정 없음.
+- 이번 **3440 B**의 6.554216ms에서 220/400 FPS까지 **2.008762/4.054216ms**, A에서도 **1.448265/3.493720ms** 감소가 필요하다. 과거 **2560**의 6.1→4.545ms 차이 1.555ms, →2.5ms 차이 3.6ms, 교체 그리기 제거 3.83→2.5ms 차이 1.33ms와 섞지 않는다.
+- task-observer 3.5.0과 사용자 범위 로그/활성 원칙을 읽었다. 쓰기 허용이 worktree에 한정돼 report-back 규칙을 적용했고 새 관찰 파일은 0개다. 내부 관찰 후보: **문제**=활성 그룹 수가 숨은 슬롯 비용을 가린다; **개선**=할당 슬롯·활성 그룹·실제 엔진 draw를 함께 보고한다; **원칙**=표현 단위 감소와 실제 제출 감소를 별개로 검증한다. 스킬·메모리 수정 없음.
+
+## 이전 회차 3: run2 실제 ABBA 실패 분석과 map5 수정 (2026-10-25)
 
 **외부 run2 판정은 `RENDERMERGE=ERROR`, 이번 map5는 `RENDERMERGE=ERROR reason=GAME_NOT_RUN`이다.** 게임 실행·설치·커밋·푸시·자동 장치 호출·설정 변경은 하지 않았다. 지정 문서의 05:45 보충과 최신 `gm-autoloop-run2-evidence.txt`를 우선했다. 아래 과거 환경 오류·소유 26개 설명을 이번 중단 이유로 사용하지 않는다.
 
