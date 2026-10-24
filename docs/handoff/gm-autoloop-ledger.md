@@ -1,4 +1,15 @@
 
+## 회차 3 분석 (Codex, 2026-10-25, 환경 불일치로 중단)
+
+- 외부 2회차 원시 `E:/StutterFixWork/night-results/al-gm-2.log` 231~233행과 요약 증거 확인. 맵 open 전 환경 검사에서 요구 2560×1440@120, 실제 3440×1440@164.999로 거부됐다.
+- FPS 4창·픽셀 2점·렌더러/Draw Calls·30ms 초과·복원 4종 모두 NA. 요약의 0은 초기값이다. 2회차 음악 시작 대기 수정도 실제 실행 전이다.
+- `RequireGpuMergeEnvironment`와 생성기 검사 순서는 정상. 게임 ADOStartup 디컴파일과 설치 DLL의 ilscan으로 시작 시 해상도 처리 호출 관계 확인. 게임 시작 코드가 목표 환경을 보장하지 않는다.
+- 렌더 병합 설계 한계의 증거가 아니다. 검사 완화·다른 해상도 승인·화면 설정 변경·근거 없는 렌더러 코드 수정 없음.
+- **같은 환경·같은 코드·같은 계획의 반복 시험 금지. 새 JSON/tag와 재시험 요청 없음.** 외부 운영 단계에서 목표 화면 확보 근거가 있어야 후속 시험 검토 가능. 자동 장치 제어 파일은 수정하지 않았다.
+- 문서·10줄 요약 갱신, 원시 증거/코드/IL·문서 정합성·diff check 확인. 코드 변경이 없어 빌드/기존 검사 재실행 없음.
+- 판정 `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`, FPS·픽셀·렌더러·안정성 NA. T2 기존 결과와 220/400 FPS 차이 보존, PASS 아님.
+- 게임 실행·설치·커밋·푸시·설정 변경 0회. 상세 `codex-render-merge-result.md` 3회차 참조.
+
 ## 회차 2 코드 수정 (Codex, 2026-10-25, 게임 실행 없음)
 
 - 회차 1 원시 `E:/StutterFixWork/night-results/al-gm-1.log`에서 `decobake ready` 고정 계약 변경 실패를 확인. ABBA·픽셀·복원 수집 전이며 FPS 0은 성능값이 아니다.
@@ -31,6 +42,22 @@
 - 실제 FPS·픽셀·안정성은 미검증으로, PASS 판정은 보류했습니다.
 
 [결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md) · [10줄 요약](E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result-o.txt)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+
+## 회차 3
+- Codex 요약: 분석 후 환경 불일치로 중단했습니다.
+
+- 요구: `2560×1440@120`
+- 실제: `3440×1440@164.999`
+- 맵 실행 전 차단되어 FPS·픽셀·안정성은 미측정입니다.
+- 검사는 정상 작동해 코드·설정은 유지했습니다.
+
+[결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md)와 10줄 요약·장부 등 문서 5개를 갱신했고 정합성 검사를 통과했습니다. 같은 조건의 재시험은 요청하지 않았습니다.
+
+게임 실행·설치·커밋·푸시 0회입니다.
 
 
 - 시험 핵심 줄:

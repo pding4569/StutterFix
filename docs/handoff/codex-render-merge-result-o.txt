@@ -1,10 +1,10 @@
-RENDERMERGE=ERROR reason=ROUND1_PREP_CONTRACT,ROUND2_GAME_NOT_RUN fps=NA pixels=NA renderers=NA
-1회차: decobake ready 고정 계약 오류로 ABBA 측정 전 중단, 0은 측정 누락.
-시작 경쟁: PrepVfx 확인 뒤 늦은 OnMusicScheduled→Scrub이 pause를 깨뜨릴 수 있음.
-수정: 모든 seek 뒤 실제 음악 시작 대기(40초 상한), 최초 준비는 250초 후 pause.
-환경: 원시 로그 3440×1440@165; 목표 2560×1440@120 사전 검사, 설정 변경 없음.
-진단: 계약 필드별 실제/고정 값 및 구체적 실패 단계가 마지막 ERROR에 남음.
-시험 JSON 생성: tools/optimization/out/render-merge-round2-steps.json, 새 tag startsync2.
-검증: 빌드 3종 오류 0, RenderMerge 44·FrameCompare 81·생성기 7검사 통과.
-T2 기존 기록 보존; 400 FPS까지 기존 6.1→2.5ms, 후보 개선량·픽셀·안정성 미측정.
-게임 실행·설치·커밋·푸시·.codex/config.toml 수정 0회, PASS 아님.
+RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA
+3회차 분석: 외부 2회차는 맵 open 전 gpudeco rendermerge environment에서 중단.
+원시 증거: E:/StutterFixWork/night-results/al-gm-2.log 231~233행, 요약 증거와 일치.
+요구 2560×1440@120, 실제 3440×1440@164.999; 검사는 코드대로 정상 거부.
+ABBA 4창·픽셀 2점·복원 4종 전부 미측정; 오류 요약의 0은 초기값.
+게임 ADOStartup 디컴파일·설치 DLL ilscan 확인; 시작 해상도 처리는 목표 환경을 보장하지 않음.
+설계 한계는 미판정; 코드·검사·설정·기존 JSON 유지, 새 JSON/tag·반복 시험 요청 없음.
+같은 환경·같은 코드 재시험 금지; 외부 운영 단계에서 목표 화면 확보 근거 필요.
+문서 정합성·diff check 확인, 코드 변경이 없어 빌드 재실행 없음; T2·220/400 FPS 차이 보존.
+게임 실행·설치·커밋·푸시·설정 변경 0회; 후보 개선량 미측정, PASS 아님.

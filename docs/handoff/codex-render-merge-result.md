@@ -1,6 +1,29 @@
 # render-merge 구현 결과
 
-`codex-al-gm-2.md`에 따른 2회차 결과다. **이번 Codex 세션은 게임을 실행하지 않았다.** 외부 자동 장치의 1회차 실패 로그를 분석해 시작 동기화와 오류 기록을 수정했다. 게임 실행·설치·커밋·푸시·설정 파일 수정 0회. FPS·픽셀·라이브 자원 복원 게이트는 여전히 미측정이며 PASS를 주장하지 않는다.
+최신 결과는 `codex-al-gm-3.md`에 따른 **3회차: 환경 불일치로 시험 차단**이다. 이번 Codex 세션은 게임 실행·설치·커밋·푸시·설정 변경을 하지 않았다. 외부 2회차 원시 로그와 검사 코드를 확인했으며 렌더 병합의 FPS·픽셀·라이브 자원 복원 게이트는 여전히 미측정이다. 아래 1·2회차 구현 및 검증 기록은 과거 결과다.
+
+## 3회차: 환경 불일치 확인 후 중단 (2026-10-25)
+
+### 외부 2회차에서 실제로 실행된 범위
+
+- `gm-autoloop-ledger.md`, `gm-autoloop-run2-evidence.txt`, 원시 `E:/StutterFixWork/night-results/al-gm-2.log`를 확인했다. 원시 231~233행의 최초 실패는 `gpudeco rendermerge environment`: 요구 `2560x1440@120`, 실제 `3440x1440@164.999`다.
+- 실패는 계획의 `open`·`seek`·준비·ABBA보다 앞이다. 원시 157행의 긴 시작 줄은 **실행 예정 명령 목록**이며 뒤쪽 명령의 실행 증거가 아니다. `rendermerge_window_begin/window`, `rendermerge_pixel`, `rendermerge_stability`의 실제 결과 줄은 없다.
+- 따라서 FPS 4창, 픽셀 2점, 렌더러/엔진 Draw Calls, 30ms 초과 프레임, 복원 4종은 모두 **NA**다. 오류 요약의 `0.000`·`pixels=0`·`renderers=0`·`stability=0/4`는 초기값이며 관측값이 아니다. 2회차 시작 동기화 수정도 아직 게임에서 검증되지 않았다.
+
+### 코드에서 확인한 원인과 변경하지 않은 이유
+
+`GpuDecoRenderMergeGate.cs`의 `RequireGpuMergeEnvironment`는 `Screen.width==2560 && Screen.height==1440 && Math.Abs(hz-120)<.5`를 요구한다. 생성기는 reset 뒤, 맵을 열기 전에 이 검사를 호출하며 각 ABBA 창 시작에서도 재검사한다. 실제 화면은 너비가 880px 크고 주사율은 약 44.999Hz 높다. 이는 조건을 정확히 거부한 결과이며 렌더 병합 알고리즘 오류의 증거가 아니다.
+
+게임 근사 디컴파일 `E:/StutterFixWork/decompiled/Assembly-CSharp/ADOStartup.cs`의 `Startup`·`FixResolution`·`ForceResolutionOnLofi`도 읽었다. `FixResolution`은 최소 크기 및 Steam Deck 처리, `ForceResolutionOnLofi`는 별도 lofi 조건 처리이며 목표 시험 환경을 설정하지 않는다. 설치된 `Assembly-CSharp.dll`을 `tools/ilscan`으로 **메타데이터만 읽어** Startup→해당 로컬 함수 및 `Screen.SetResolution` 호출 관계를 교차 확인했다. 외부 로그의 `FixResolution` 실행만으로 목표 화면에 맞춰졌다고 볼 수 없다. 화면 불일치가 생긴 운영상의 원인(모니터/원격 세션/저장 설정)은 이 증거로 특정하지 않는다.
+
+**이번 차단은 외부 시험 환경 제약이다. 렌더 병합의 설계 한계가 수치로 확인된 것은 아니다.** 검사 제거·완화, 3440×1440 수용 범위 확대, FPS 환산, 임의 화면 설정 변경은 하지 않았다. 원인과 관계없는 렌더러 코드 수정도 하지 않았다. T2의 기존 이름 붙은 결과와 아래 220/400 FPS 차이는 보존한다.
+
+### 반복 시험 중단 및 인계
+
+- 문서용 판정 요약: `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH expected=2560x1440@120 actual=3440x1440@164.999 fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA`. `reason`과 NA는 외부 원시 오류를 해석한 표기이며 새 게임 로그가 아니다.
+- **자동 장치는 같은 환경에서 같은 코드·같은 계획을 다시 실행하지 말 것.** 이번에는 새 steps JSON/tag를 만들지 않았고 재시험을 요청하지 않는다. 기존 2회차 JSON은 보존 자료이며 새 시험 승인이나 실행 요청이 아니다.
+- 후속 시험에는 외부 운영 단계에서 목표 화면 환경이 실제로 확보됐다는 새 근거가 필요하다. Codex는 게임·화면 설정·자동 장치 제어 파일을 변경하지 않았다. 환경 확보 뒤에도 동일 코드 반복 금지 규칙은 유지하며, 운영자가 다음 시험 여부를 결정한다.
+- 오프라인 확인은 원시 로그/생성기/환경 검사 및 게임 IL 호출 관계 확인, 문서 정합성, `git diff --check`다. 코드 변경이 없으므로 이전 빌드·정책 검사를 재실행하지 않았다. **PASS 아님, T1 실게임 판정 미완료.**
 
 ## 2회차: 측정 전 준비 중단 분석과 수정 (2026-10-25)
 
@@ -87,4 +110,4 @@ PASS에는 2560×1440@120, 유효 ABBA 4창, 두 B창 각각 ≥220 FPS, 구간 
 
 교체 그리기를 제거한 3.83ms도 2.5ms보다 **1.33ms, 34.7%** 더 줄어야 한다. 이는 그림을 정상적으로 표시하는 구현의 성능 예상값이 아니다. 기존 named trace의 포함 표본은 PlayerRender 36.9%, CallUpdateMethod 48.3%, DOTween 10.0%, GpuLiveFrame 경로 7.7%, TightLate.List 4.4%, TightLate.Process 4.3%다. 포함 스택 비율은 겹치므로 합산하지 않는다. 구간 렌더러의 실제 결과 전에는 이 비율을 새 FPS 개선량으로 바꾸지 않는다.
 
-최신 판정은 위 2회차 항목을 따른다. 1회차 외부 시험은 준비 오류로 중단됐으며 이번 시작 동기화 수정의 개선량은 미측정이다.
+최신 판정은 위 3회차 항목을 따른다. 1회차 외부 시험은 준비 오류, 2회차 외부 시험은 환경 불일치로 중단됐다. 시작 동기화 수정과 렌더 병합의 개선량은 미측정이다.
