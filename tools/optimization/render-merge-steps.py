@@ -23,21 +23,22 @@ def build(chart, bundle=None, mono_dir=None):
              'gpudeco live prepare', 'resume', 'stop']
 
     def enter(target=260, merged=False, ready=False):
-        # Both modes freeze setup at the same boundary. The measured window
-        # starts only after resuming and warming for at least four song seconds.
+        # The proven playing activation path avoids the nested FastMove call
+        # seen immediately after resume at 256s. Readiness only validates the
+        # prebuilt layout while playing; rebuilding remains paused-only.
         out = ['gpudeco live off', 'gpudeco rendermerge off', 'stop',
                f'seek {target} 12', 'gpudeco rendermerge playbackready', 'decobake ready',
-               f'waitsongpos {target - 4} 40', 'pause',
+               f'waitsongpos {target - 4} 40',
                'gpudeco packets compiled', 'gpudeco live on']
         if ready or merged:
             out += ['gpudeco rendermerge ready']
-        out += ['gpudeco rendermerge ' + ('on' if merged else 'off'), 'resume']
+        out += ['gpudeco rendermerge ' + ('on' if merged else 'off')]
         return out
 
     # A=independent GPU, B=merged GPU. Always the same seek/window/settings.
     for i, merged in enumerate((False, True, True, False)):
         steps += enter(merged=merged)
-        steps += ['waitsongpos 260 40', 'fuse begin', 'gpudeco micro begin',
+        steps += ['waitsongpos 260 40', 'gpudeco live census', 'fuse begin', 'gpudeco micro begin',
                   f'gpudeco rendermerge begin {i}', 'waitsongpos 270 30',
                   'gpudeco rendermerge end', 'gpudeco micro end', 'fuse end']
 
@@ -95,10 +96,12 @@ def build(chart, bundle=None, mono_dir=None):
                   f'monosyms "{mono_dir / "rendermerge-addr.txt"}" "{mono_dir / "rendermerge-syms.txt"}"']
     steps += ['gpudeco rendermerge result', 'quit']
     return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False},
-                timeout_min=25, checks={}, tag='rendermerge-260-270-abba-startsync2',
+                timeout_min=25, checks={}, tag='rendermerge-260-270-abba-live-toggle3',
                 notes={'A': 'independent GPU', 'B': 'merged GPU',
-                       'environment': 'requires existing 2560x1440@120; checks only, never changes display settings',
+                       'environment': 'existing 2560x1440@120 or 3440x1440@165; same-process ABBA only, never changes display settings',
                        'start_sync': 'wait for hasSongStarted after every seek; PrepVfx is not music-start completion',
+                       'activation': 'no pause/resume in ABBA arms; playing ready validates cached fallback barriers without allocations',
+                       'admission': 'inspect live census/owned counts; rm-abba2 admitted only 26, so its setup is not the 23547-item reference',
                        'lifetime': 'actual retry/reopen/portal; DecoBake.Shutdown and marked Unity/native resources',
                        'full_umm_unload': 'UNMEASURED',
                        'mono': 'same-process external address extraction required' if mono_dir else 'prior named trace preserved; no repeat'})

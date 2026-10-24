@@ -1,5 +1,7 @@
 # StutterFix 마스터 인계문서 (Claude 주간 사용량 소진 → Codex 가 이어서 진행) — 2026-10-22
 
+**2026-10-25 현재 render-merge:** 05:40 보충 인계가 아래 환경 차단 반복 기록보다 우선한다. 2560×1440@120 및 3440×1440@165 허용은 이미 반영됨. ABBA 측정 진입의 pause/resume을 제거하고 재생 중 cached ready/on/off를 허용했다(메시 재생성은 일시정지 전용). 빌드 3종 오류 0, 생성기 8개·RenderMergeCheck 44개 통과. 게임 실행·설치·커밋·푸시·자동 장치 호출 없음; 수정판 실측 NA. 기존 rm-abba2의 소유 26개는 기준 23,547개와 달라 원인 확인이 남았다. 최신 결과/남은 항목은 `codex-render-merge-result.md` 최상단, 생성 계획은 `tools/optimization/out/render-merge-live-toggle3-steps.json`을 따른다. 이하 반복 환경 거부 보고는 과거 이력이다.
+
 이 문서를 **가장 먼저** 읽어라. 한국어로 답하고 기록한다. 사용자는 PC 밖에 있을 수 있고(StarDesk 로 원격 확인), 자동 장치(autoloop·supervisor)가 빌드·게임 시험·커밋을 한다. **너(Codex)는 코드·문서만 수정**한다(게임 실행·설치·커밋·푸시 금지, `.codex/config.toml` 수정 금지).
 
 ## 0. 프로젝트와 사용자 선호

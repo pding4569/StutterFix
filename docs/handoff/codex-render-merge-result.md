@@ -1,5 +1,30 @@
 # render-merge 구현 결과
 
+## 현재 회차: 재생 중 전환 준비 완료, 실측 없음 (2026-10-25)
+
+**`RENDERMERGE=ERROR reason=GAME_NOT_RUN` — 이번 수정판의 FPS 4창·픽셀 2점·렌더러/Draw Calls·끊김·복원은 모두 NA다.** 사용자 지시대로 게임 실행·설치·커밋·푸시·자동 장치 호출은 하지 않았다. 아래 환경 불일치 반복 기록은 과거이며, 05:40 추가 인계와 현재 코드가 우선한다. 2560×1440@120과 3440×1440@165가 이미 허용되어 있으므로 과거 환경 오류를 이번 중단 이유로 사용하지 않는다.
+
+### 수정과 판정 범위
+
+- `render-merge-steps.py`: A/B/B/A 모두 `seek 260 12` → 음악 시작 확인 → `decobake ready` → `waitsongpos 256 40` → packets compiled → live on 순서다. 측정 진입에 pause/resume이 없고, B만 cached ready/on을 추가한다. 준비·픽셀 진단의 pause는 유지한다. 4개 창은 모두 260~270초이며, 픽셀 262/270초와 retry/song_end/reopen/Shutdown 복원 절차도 보존했다.
+- `GpuDecoRenderMerge.cs`: 재생 중 ready는 22개 사전 생성 layout의 CPU fallback 경계가 현재 소유와 같은지만 검사한다. 같으면 재생 중 on/off 가능; 다르면 재생 중 재생성 없이 거부한다. 일시정지 상태에서는 기존 재생성 경로를 유지한다. 정렬·재질·알파·누락 항목 검사와 GPU 소유/CPU 복원 구현은 그대로다. 측정 창 안의 ready/모드 변경은 거부한다.
+- `GpuDecoRenderMergeGate.cs`: 한 ABBA 안의 해상도/주사율 변경을 거부한다. 각 창 시작에 allocated/owned/independent_enabled/CPU_fallback을 기록하고, 측정 직전 live census로 독립 렌더러의 enabled/visible 수를 남긴다. B의 구간 렌더러/서브메시 수와 실제 엔진 Draw Calls는 기존 창 종료 계측이 기록한다. 렌더러/호출 수·FPS·픽셀·안정성 수용 기준을 낮추지 않았다.
+- 생성기 tag는 `rendermerge-260-270-abba-live-toggle3`. 새 JSON은 `tools/optimization/out/render-merge-live-toggle3-steps.json`이며 실행하지 않았다. 과거 계획과 자동 장치 제어 파일은 수정하지 않았다. 동일 코드 반복 시험도 요청하지 않는다.
+
+### 기존 실제 로그에서 추가 확인한 한계
+
+원시 `E:/StutterFixWork/night-results/rm-abba2.log`를 읽었다. 3440×1440@165 환경·음악 시작 대기를 통과한 뒤, **458~469행**에서 `running=True` 중첩 FastMove → `FastMoveOriginal` 복구(곡 256.062623초) → micro begin 실패가 확인된다. 이번 수정은 이 pause/resume 진입 경로를 제거한다. 복구 가드를 해제하거나 예외를 숨기지 않았다. 수정판에서 실제 소유가 유지되는지는 미검증이다.
+
+또한 **344~389행**에서 준비 지원 수 34, GPU admitted/owned union **26**, 시간 layout의 renderer **0~9**가 확인된다. 이는 23,547개 소유·보이는 약 1,900개였던 기존 GPU 경로와 다른 모집단이다. 목록/세대 변경 후 재수집 로그와, `DecoBake.Collect`의 예약 목록 밖 효과 제외 코드는 확인했다. seek 시 예약 목록 차이가 원인일 가능성은 있으나 정확한 원인은 이 기록만으로 확정하지 않는다. 굽기 정책을 임의로 완화하지 않았다. **다음 외부 결과는 census/owned부터 확인해야 하며, 26개 소유 결과를 목표 장면의 성능 개선·설계 한계로 판정하면 안 된다.** 이 준비 문제와 재생 중 cached ready의 fallback 불일치는 남은 검증/수정 항목이다.
+
+### 이번 오프라인 검증
+
+Dev / Player / PlayerAuto 빌드 모두 오류 0(경고 각각 46/4/39). 생성기 계약 8개 통과, RenderMergeCheck 44개 통과(정책·정확 주소 심볼 38개 + 실제 3종 DLL 격리 6개). `git diff --check` 확인. 빌드 후 UI 인코딩 검사 실패 문자열은 이번 빌드 로그에서 발견되지 않았다. 게임 픽셀·FPS·실제 정렬·재생 끊김·수명 복원 검증을 대신하지 않는다. 기존 문서 이동/삭제 상태는 사용자 작업으로 보존했다. 별도 스킬 관찰 항목은 추가하지 않았다.
+
+T2는 기존 `MonoDump.Syms`, `ETW_MONO_SYMS`/INC·LEAF 구현과 `pv-260-268-on-named.txt`를 확인했으며 새 게임/기록으로 반복하지 않았다. 원시 메인 포함 표본은 **3,846개**다(과거 성능 문서의 3,844는 2개 차이). PlayerRender 36.9%, CallUpdateMethod 48.3%, GpuLiveFrame 7.7%, TightLate.List 4.4%, TightLate.Process 4.3%, FastMove.Prefix 3.7%다. 포함 표본 비율은 서로 겹쳐 합산하지 않는다. 남은 목표 차이는 기존 2560 환경의 6.1ms → 220 FPS에 −1.555ms, →400 FPS에 −3.6ms, 교체 그리기 제거 3.83ms에서도 →400 FPS에 −1.33ms이며 이번 후보 개선량은 NA다.
+
+이하 기록은 과거 이력이다.
+
 ## `codex-al-gm-9.md` 재지정 확인 (2026-10-25)
 
 지정된 `gm-autoloop-run8-evidence.txt`의 실패·요약 3줄은 현재 원시 `E:/StutterFixWork/night-results/al-gm-8.log` **230~232행**과 일치한다. 이미 분석한 외부 run8의 재지정이며 새 게임 측정이 아니다. 요구 `2560x1440@120`, 실제 `3440x1440@164.999`로 맵 open 전 환경 검사에서 중단됐다. 판정은 **`RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`**다.

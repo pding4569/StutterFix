@@ -1,10 +1,10 @@
-RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA
-codex-al-gm-9.md 재지정 확인: 외부 run8 기존 증거 대조; 새 게임 측정 없음.
-원시 증거: E:/StutterFixWork/night-results/al-gm-8.log 230~232행, 지정 요약 오류 3줄과 일치.
-요구 2560×1440@120, 실제 3440×1440@164.999; 검사는 코드대로 정상 거부.
-ABBA 4창·픽셀 2점·복원 4종 전부 미측정; 오류 요약의 0은 초기값.
-현재 보존 로그 1~8번 모두 동일한 289단계·같은 환경 거부; 자동 장치 재시도 중단 필요.
-검사·초기값·게임 ADOStartup 디컴파일·설치 DLL ilscan 확인; 렌더 병합 설계 한계 미판정.
-코드·검사·설정·기존 JSON·제어 파일 유지, 새 계획 없음; 목표 환경 확보 근거 없이 재시험 금지.
-원시 대조·문서 정합성·diff check 확인; 빌드 반복 없음, T2·220/400 FPS 차이 보존.
-게임 실행·설치·커밋·푸시·설정 변경 0회; 후보 개선량 미측정, PASS 아님.
+RENDERMERGE=ERROR reason=GAME_NOT_RUN fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA
+05:40 보충 인계 적용: 과거 환경 거부 반복을 현재 중단 이유로 사용하지 않음.
+ABBA는 seek 260→ready→256초→packets compiled→live on, 측정 진입 pause/resume 제거.
+B의 live ready는 사전 생성 fallback 경계 검증만; 불일치 시 거부, 메시 재생성은 일시정지 전용.
+동일 ABBA의 화면 환경 고정 검증과 창 시작 owned/allocated/census 기록 추가.
+새 계획 tools/optimization/out/render-merge-live-toggle3-steps.json 생성만; 코드 변경 없는 재시험 요청 없음.
+기존 rm-abba2는 소유 26개·구간 renderer 0~9; 기준 23,547개와 달라 원인 확인 필요.
+Dev/Player/PlayerAuto 오류 0, 생성기 8개·RenderMergeCheck 44개 통과, diff check 확인.
+T2 기존 기록 유지(원시 메인 포함 3,846표본); 220/400 FPS까지 기존 차이 1.555/3.6ms, 후보 개선량 NA.
+게임 실행·설치·커밋·푸시·자동 장치 호출·설정 변경 0회; FPS·픽셀·복원 미검증, PASS 아님.

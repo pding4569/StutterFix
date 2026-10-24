@@ -21,6 +21,22 @@ class StepsContract(unittest.TestCase):
             self.assertEqual(self.steps[k + 1:k + 3], ['waitsongpos 270 30', 'gpudeco rendermerge end'])
             self.assertIn('waitsongpos 260 40', self.steps[k - 4:k])
 
+    def test_abba_activation_never_pauses(self):
+        previous = 0
+        for arm, merged in enumerate((False, True, True, False)):
+            end = self.steps.index(f'gpudeco rendermerge begin {arm}')
+            seek = max(i for i in range(previous, end) if self.steps[i] == 'seek 260 12')
+            activation = self.steps[seek:end]
+            self.assertNotIn('pause', activation)
+            self.assertNotIn('resume', activation)
+            self.assertEqual(activation[:6], ['seek 260 12', 'gpudeco rendermerge playbackready',
+                             'decobake ready', 'waitsongpos 256 40',
+                             'gpudeco packets compiled', 'gpudeco live on'])
+            self.assertEqual('gpudeco rendermerge ready' in activation, merged)
+            self.assertIn('gpudeco rendermerge ' + ('on' if merged else 'off'), activation)
+            self.assertIn('gpudeco live census', activation)
+            previous = end
+
     def test_no_zero_play_or_external_execution(self):
         self.assertFalse(any(s == 'play' or s.startswith('seek 0') for s in self.steps))
         self.assertEqual(self.steps.count('gpudeco rendermerge result'), 1)
@@ -82,7 +98,7 @@ class StepsContract(unittest.TestCase):
                 elif step == 'resume':
                     paused = False
                 elif step == 'gpudeco live on':
-                    self.assertTrue(paused and playing, step)
+                    self.assertTrue(playing and playback_ready, step)
                     owned = True
                 elif step in ('gpudeco live off', 'decobake off'):
                     self.assertFalse(window, step)
@@ -92,10 +108,9 @@ class StepsContract(unittest.TestCase):
                     playing = owned = playback_ready = False
                 elif step in ('gpudeco rendermerge on', 'gpudeco rendermerge off'):
                     self.assertFalse(window, step)
-                    self.assertTrue(not owned or paused, step)
                     merged = step.endswith(' on')
                 elif step == 'gpudeco rendermerge ready':
-                    self.assertTrue(owned and paused and not merged, step)
+                    self.assertTrue(owned and playing and not merged and not window, step)
                 elif step == 'gpudeco live prepare':
                     self.assertTrue(paused and not owned, step)
                 elif step.startswith('gpudeco rendermerge begin '):

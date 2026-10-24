@@ -20,6 +20,8 @@ namespace StutterFix
         static bool mergeEndWatched,mergeRetryWatched;
         static bool mergeTestActive;
         static float mergePlaybackWaitAt=-1;
+        static int mergeScreenWidth,mergeScreenHeight;
+        static double mergeScreenHz;
         internal static void FinishGpuMergeTest(string why)
         {
             if(!mergeTestActive)return;
@@ -51,6 +53,10 @@ namespace StutterFix
             // 같은 실행 안의 A/B(ABBA)끼리만 비교하므로 모니터 상태 둘 다 허용한다(섞어 합치지 말 것).
             RequireLive((Screen.width==2560 && Screen.height==1440 && Math.Abs(hz-120)<.5) || (Screen.width==3440 && Screen.height==1440 && Math.Abs(hz-165)<1.5),
                 "rendermerge acceptance scope requires 2560x1440@120 or 3440x1440@165; actual="+Screen.width+"x"+Screen.height+"@"+hz.ToString("F3",Inv));
+            if(mergeScreenWidth==0)
+            {mergeScreenWidth=Screen.width;mergeScreenHeight=Screen.height;mergeScreenHz=hz;}
+            RequireLive(Screen.width==mergeScreenWidth && Screen.height==mergeScreenHeight && Math.Abs(hz-mergeScreenHz)<.01,
+                "rendermerge display changed within ABBA; do not mix display environments");
         }
         static bool GpuRenderMergeGateCommand(string sub)
         {
@@ -89,6 +95,7 @@ namespace StutterFix
                 mergeGate=new RenderMergeGatePolicy();gpuMergeError=null;
                 mergeTestActive=true;
                 mergePlaybackWaitAt=-1;
+                mergeScreenWidth=mergeScreenHeight=0;mergeScreenHz=0;
                 mergeRetryAtReset=mergeRetryCount;mergeEndWatched=mergeRetryWatched=false;
                 mergeGenerationBeforeReopen=-1;mergeManagerBeforeReopen=null;
                 GpuLog("rendermerge_reset=True");return true;
@@ -100,11 +107,14 @@ namespace StutterFix
                     && Hitch.Playing && !FrameCompare.Paused && Math.Abs(MergeSong-260)<.6 && !GpuDecoCostProbe.Enabled,
                     "rendermerge begin requires ABBA GPU ownership at 260s");
                 RequireGpuMergeEnvironment();
+                int independentVisible=gpuLiveSlices.Sum(s=>s.Renderers.Count(r=>r && r.enabled));
                 mergeDrawRecorder=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",16384);
                 mergeWindow=i;mergeWindowMode=on;mergeWindowFrame=Time.frameCount;mergeObservedFrame=-1;
                 mergeObservedCount=mergeSpikes=mergeMaxRenderers=mergeMaxDraws=0;mergeWorst=0;
                 mergeTick=Stopwatch.GetTimestamp();
-                GpuLog("rendermerge_window_begin index="+i+" merged="+on+" song="+MergeSong.ToString("F6",Inv));return true;
+                GpuLog("rendermerge_window_begin index="+i+" merged="+on+" song="+MergeSong.ToString("F6",Inv)
+                    +" allocated="+gpuLiveOwnedIndices.Length+" owned="+GpuLiveOwned+" independent_enabled="+independentVisible
+                    +" CPU_fallback="+gpuLiveCpuFallbackCount);return true;
             }
             if(sub=="end")
             {
@@ -112,6 +122,7 @@ namespace StutterFix
                 int i=mergeWindow;mergeWindow=-1;
                 double seconds=(Stopwatch.GetTimestamp()-mergeTick)/(double)Stopwatch.Frequency;
                 int frames=Time.frameCount-mergeWindowFrame;
+                RequireGpuMergeEnvironment();
                 bool valid=seconds>0 && frames>0 && mergeObservedCount>=Math.Max(1,frames-1) && gpuLiveActive && Hitch.Playing && !FrameCompare.Paused
                     && gpuRenderMergeOn==mergeWindowMode && Math.Abs(MergeSong-270)<.6 && gpuMergeError==null;
                 long engineDraws=0;

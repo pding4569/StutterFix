@@ -176,6 +176,18 @@ namespace StutterFix
             try {foreach(var g in gpuMergeDirtyGroups){g.Dirty=false;RefreshGpuMergeGroup(g);}}
             finally {gpuMergeDirtyGroups.Clear();gpuMergeBuilding=null;}
         }
+        static bool GpuMergeFallbackMatches()
+        {
+            if(!gpuRenderMergePrepared || gpuMergeWindows.Count==0 || gpuLiveSlices.Count!=1)return false;
+            var source=gpuLiveSlices[0];
+            foreach(var w in gpuMergeWindows)
+            {
+                if(w.Fallback.Length!=source.MasterItems.Length)return false;
+                for(int i=0;i<w.Fallback.Length;i++)
+                    if(w.Fallback[i]!=GpuCpuFallback(source.MasterItems[i]))return false;
+            }
+            return true;
+        }
         static void DispatchGpuMerge(double time)
         {
             var w=gpuMergeCurrent;
@@ -188,7 +200,7 @@ namespace StutterFix
                 for(int i=0;i<w.Included.Length;i++)if(!w.Included[i] && !MergeHidden(i))
                     MergeReject("visible_item_outside_prepared_window item="+i+" start="+w.Start);
                 for(int i=0;i<w.Fallback.Length;i++)if(w.Fallback[i]!=GpuCpuFallback(gpuLiveSlices[0].MasterItems[i]))
-                    MergeReject("cpu_fallback_changed; paused rendermerge ready required");
+                    MergeReject("cpu_fallback_changed; paused rendermerge ready required before next playback");
                 gpuMergeBuilding=w;
                 try {foreach(var g in w.Groups)RefreshGpuMergeGroup(g);}
                 finally {gpuMergeBuilding=null;}
@@ -219,18 +231,30 @@ namespace StutterFix
             }
             if(sub=="ready")
             {
-                RequireLive(gpuLiveActive && FrameCompare.Paused && !gpuRenderMergeOn && gpuMergeRows!=null,
-                    "rendermerge ready requires paused independent GPU ownership");
-                var rows=gpuMergeRows;DisposeGpuMerge();PrepareGpuMerge(rows);
-                GpuLog("rendermerge_ready=True CPU_fallback_barriers="+gpuLiveCpuFallbackCount);return true;
+#if AUTOTEST
+                RequireLive(mergeWindow<0,"close rendermerge measurement before checking layouts");
+#endif
+                RequireLive(gpuLiveActive && !gpuRenderMergeOn && gpuMergeRows!=null,
+                    "rendermerge ready requires independent GPU ownership");
+                // Live readiness only validates prebuilt barriers. Never allocate
+                // meshes/command buffers or detach ownership in a playing arm.
+                bool cached=GpuMergeFallbackMatches();
+                if(!cached)
+                {
+                    RequireLive(FrameCompare.Paused,"rendermerge fallback layout changed; prepare while paused before next playback");
+                    var rows=gpuMergeRows;DisposeGpuMerge();PrepareGpuMerge(rows);
+                }
+                GpuLog("rendermerge_ready=True cached="+cached+" paused="+FrameCompare.Paused
+                    +" CPU_fallback_barriers="+gpuLiveCpuFallbackCount);return true;
             }
             if(sub=="on" || sub=="off")
             {
 #if AUTOTEST
                 RequireLive(mergeWindow<0,"close rendermerge measurement before changing mode");
 #endif
-                RequireLive(!gpuLiveActive || FrameCompare.Paused,"rendermerge toggle requires stopped/paused playback");
                 bool on=sub=="on";RequireLive(!on || gpuRenderMergePrepared,"rendermerge prepare/live prepare required");
+                RequireLive(!on || !gpuLiveActive || GpuMergeFallbackMatches(),
+                    "rendermerge fallback layout changed; ready required before enabling");
                 HideGpuMerge();gpuRenderMergeOn=on;
                 foreach(var s in gpuLiveSlices)s.RefreshAlpha();
                 gpuLiveLastDispatchFrame=-1;
