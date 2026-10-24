@@ -116,7 +116,11 @@ static class Program
                     for (var c = smp.st; c != null; c = c.Caller)
                     {
                         string m = c.CodeAddress.ModuleName ?? "?"; string f = c.CodeAddress.FullMethodName;
-                        if (string.IsNullOrEmpty(f)) f = MonoName(c.CodeAddress.Address) ?? "0x" + c.CodeAddress.Address.ToString("x");
+                        if (string.IsNullOrEmpty(f))
+                        {
+                            f = MonoName(c.CodeAddress.Address) ?? "0x" + c.CodeAddress.Address.ToString("x");
+                            if (f.StartsWith("0x") && string.IsNullOrEmpty(c.CodeAddress.ModuleName)) dumpAddrs[c.CodeAddress.Address] = dumpAddrs.TryGetValue(c.CodeAddress.Address, out var dv) ? dv + 1 : 1;
+                        }
                         if (f.Length > 90) f = f.Substring(0, 90);
                         string key = m + "!" + f;
                         if (first) { leaf[key] = leaf.TryGetValue(key, out var lv) ? lv + 1 : 1; first = false; }
@@ -128,6 +132,8 @@ static class Program
                 Console.WriteLine($"LEAF thread {kv.Key}");
                 foreach (var e in leaf.OrderByDescending(x => x.Value).Take(40)) Console.WriteLine($"  LEAF {e.Value,6} {100.0 * e.Value / total,5:F1}%  {e.Key}");
             }
+            var dumpPath = Environment.GetEnvironmentVariable("ETW_DUMP_ADDRS");
+            if (!string.IsNullOrEmpty(dumpPath)) File.WriteAllLines(dumpPath, dumpAddrs.OrderByDescending(x => x.Value).Take(600).Select(x => x.Key.ToString("x")));
             return 0;
         }
         foreach (var kv in samplesByThread.OrderByDescending(x => x.Value.Count))
@@ -176,22 +182,19 @@ static class Program
         return 0;
     }
 
-    // ETW_MONO_SYMS=<monodump 파일>: 이름 없는 managed 주소를 가장 가까운 앞쪽 시작 주소의 메서드 이름으로(64KB 안일 때만)
-    static long[] monoAddr; static string[] monoName;
+    // ETW_MONO_SYMS=<monosyms 파일>: 이름 없는 managed 주소를 mono_pmip 가 풀어 준 이름으로(주소가 정확히 같을 때만)
+    static readonly Dictionary<ulong, int> dumpAddrs = new Dictionary<ulong, int>();
+    static Dictionary<long, string> monoMap;
     static string MonoName(ulong addr)
     {
-        if (monoAddr == null)
+        if (monoMap == null)
         {
+            monoMap = new Dictionary<long, string>();
             var path = Environment.GetEnvironmentVariable("ETW_MONO_SYMS");
-            var al = new List<long>(); var nl = new List<string>();
             if (!string.IsNullOrEmpty(path) && File.Exists(path))
-                foreach (var l in File.ReadLines(path)) { int sp = l.IndexOf(' '); if (sp > 0 && long.TryParse(l.Substring(0, sp), System.Globalization.NumberStyles.HexNumber, null, out var a)) { al.Add(a); nl.Add(l.Substring(sp + 1)); } }
-            monoAddr = al.ToArray(); monoName = nl.ToArray();
+                foreach (var l in File.ReadLines(path)) { int sp = l.IndexOf(' '); if (sp > 0 && long.TryParse(l.Substring(0, sp), System.Globalization.NumberStyles.HexNumber, null, out var a)) monoMap[a] = l.Substring(sp + 1); }
         }
-        if (monoAddr.Length == 0) return null;
-        int i = Array.BinarySearch(monoAddr, (long)addr); if (i < 0) i = ~i - 1;
-        if (i < 0 || (long)addr - monoAddr[i] > 65536) return null;
-        return "JIT:" + monoName[i];
+        return monoMap.TryGetValue((long)addr, out var n) ? "JIT:" + n : null;
     }
     static string Stack(TraceCallStack st, int max)
     {
