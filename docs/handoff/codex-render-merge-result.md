@@ -1,5 +1,17 @@
 # render-merge 구현 결과
 
+## `codex-al-gm-9.md` 재지정 확인 (2026-10-25)
+
+지정된 `gm-autoloop-run8-evidence.txt`의 실패·요약 3줄은 현재 원시 `E:/StutterFixWork/night-results/al-gm-8.log` **230~232행**과 일치한다. 이미 분석한 외부 run8의 재지정이며 새 게임 측정이 아니다. 요구 `2560x1440@120`, 실제 `3440x1440@164.999`로 맵 open 전 환경 검사에서 중단됐다. 판정은 **`RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`**다.
+
+현재 보존 로그 1~8번도 각 요약의 오류 3줄과 일치하며 같은 289단계 계획이다. 시작 줄 첫 ` - ` 뒤 명령 문자열을 줄바꿈 없이 UTF-8로 해시한 SHA-256은 모두 `37a0478012c29f92e00ac8f694b62f3f73849ba974ef7527f77f6749c20fe3a4`다. 아래 과거 기록의 다른 해시는 추출 규약이 명시되지 않았으므로 이번 대조에 사용하지 않는다. 각 로그의 실제 `rendermerge_window_begin`·`rendermerge_window`·`rendermerge_pixel`·`rendermerge_stability` 결과 줄은 모두 0개다. FPS 4창·픽셀 2점·렌더러·Draw Calls·30ms 초과·복원 4종은 **NA**이며 오류 요약의 0은 초기값이다.
+
+`GpuDecoRenderMergeGate.cs`의 `RequireGpuMergeEnvironment` 조건·오류 출력, `RenderMergeGatePolicy.cs`의 초기값·누락 증거 거부, 생성기의 open 전 검사 순서를 확인했다. 게임 `ADOStartup.cs` 근사 디컴파일을 읽고 기존 ILScan으로 설치 DLL 메타데이터의 Startup→FixResolution/ForceResolutionOnLofi→Screen 호출 관계를 교차 확인했다. 게임의 최소 크기·Steam Deck·lofi 처리는 목표 시험 환경을 보장하지 않는다. 검사는 정상이며 화면 불일치의 운영상 원인·후보 개선량·렌더 병합 설계 한계는 미판정이다. 렌더러를 수정할 새 근거가 없다.
+
+**동일 환경·동일 코드·동일 계획 재시도 중단 필요.** 코드·검사·설정·기존 JSON/tag·제어 파일을 유지하고 새 계획·시험 요청 없이 분석을 마친다. 자동 장치를 직접 중지하지 않았다. 후속 시험 검토에는 목표 환경 확보의 새 근거가 필요하며 동일 코드 반복 금지 규칙도 유지한다. T2 기존 결과와 목표 차이(220 FPS까지 −1.555ms, 400 FPS까지 −3.6ms, 교체 그리기 제거 상태에서도 −1.33ms)는 보존했다.
+
+문서 5개만 갱신한다. 검증 범위는 원시/요약 대조·8개 계획 동일성·실제 결과 부재·문서 정합성·10줄 요약·`git diff --check`다. 코드 변경이 없어 빌드·기존 성능 검사를 반복하지 않는다. 게임 실행·설치·커밋·푸시·설정 변경 0회, 크레딧 사용량은 제공되지 않아 NA다. **PASS 아님, T1 실게임 판정 미완료.** 아래는 기존 기록이다.
+
 ## `codex-al-gm-8.md` 재지정 확인 (2026-10-25)
 
 지정된 외부 7·8회차 증거를 다시 확인했다. `gm-autoloop-run7-evidence.txt`·`gm-autoloop-run8-evidence.txt`의 실패·요약 3줄은 각각 현재 원시 `E:/StutterFixWork/night-results/al-gm-7.log`·`al-gm-8.log` **230~232행**과 일치한다. 기존 재시작 8·9회차에서 분석한 증거이며 새 게임 측정이 아니다. 지시서에 중첩된 9회차 문구도 별도 실행으로 세지 않는다.
