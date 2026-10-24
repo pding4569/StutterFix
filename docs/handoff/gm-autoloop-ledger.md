@@ -1,4 +1,14 @@
 
+## 회차 5 분석 (Codex, 2026-10-25, 동일 환경 차단 3회 연속)
+
+- `gm-autoloop-run4-evidence.txt` 실패 줄과 원시 `E:/StutterFixWork/night-results/al-gm-4.log` 230~232행이 일치한다. 요구 2560×1440@120, 실제 3440×1440@164.999로 맵 open 전 차단됐다.
+- 외부 2·3·4회차 289단계 명령 목록이 완전히 같고 동일 환경 거부가 3회 연속 발생했다. 세 로그의 실제 ABBA·픽셀·복원 결과 줄은 0개다.
+- FPS·픽셀·렌더러·Draw Calls·끊김·복원은 모두 NA다. 오류 요약의 0은 초기값이며 음악 시작 대기 수정도 여전히 미검증이다.
+- 검사 코드·생성기 순서와 게임 ADOStartup 디컴파일·설치 DLL ilscan 호출 관계를 확인했다. 검사는 정상이며 렌더 병합 설계 한계는 입증되지 않았다.
+- **자동 장치의 동일 조건 재시도 중단 필요.** 새 JSON/tag·시험 요청 없이 코드·검사·설정·기존 JSON·제어 파일을 유지했다. 목표 환경 확보 및 반복 금지 규칙에 맞는 후속 근거 없이 재시험하지 않는다. 자동 장치를 직접 중지한 것은 아니다.
+- 결과 문서·10줄 요약·측정 문서·마스터 인계·장부를 갱신했다. 원시 대조·문서 정합성·diff check 확인, 코드 변경이 없어 빌드/기존 검사 반복 없음. 게임 실행·설치·커밋·푸시·설정 변경 0회다.
+- 판정: `RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH`, 후보 측정 모두 NA, PASS 아님. 기존 T2·220/400 FPS 목표 차이를 보존했다.
+
 ## 회차 4 분석 (Codex, 2026-10-25, 동일 환경 차단 재발)
 
 - 원시 `E:/StutterFixWork/night-results/al-gm-3.log` 230~232행과 `gm-autoloop-run3-evidence.txt`를 대조했다. 요구 2560×1440@120, 실제 3440×1440@164.999로 맵 open 전에 차단됐다.
@@ -84,6 +94,20 @@
 [결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md)
 
 게임 실행·설치·커밋·푸시는 하지 않았습니다.
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+
+## 회차 5
+- Codex 요약: 인계 지시대로 분석하고 문서 5개를 갱신했습니다.
+
+- 요구 `2560×1440@120`, 실제 `3440×1440@164.999`로 동일 환경 차단이 3회 연속 발생했습니다.
+- FPS·픽셀·안정성은 미측정이며 PASS가 아닙니다.
+- 검사 정상 작동을 확인해 코드와 시험 계획을 유지하고, 반복 중단을 명시했습니다. 자동 장치를 직접 중지하지는 않았습니다.
+- 문서 정합성·10줄 요약·diff 검사 통과. 게임 실행·설치·커밋·푸시 0회입니다.
+
+[결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-render-merge-result.md)
 
 
 - 시험 핵심 줄:
