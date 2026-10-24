@@ -1,6 +1,6 @@
 RENDERMERGE=ERROR reason=ENVIRONMENT_MISMATCH fps=NA,NA,NA,NA pixels=NA renderers=NA engine_draws_max=NA stability=NA
-재시작 3회차 분석: 최신 외부 2회차도 맵 open 전 환경 검사에서 중단.
-원시 증거: E:/StutterFixWork/night-results/al-gm-2.log 230~232행, 최신 요약 증거 3줄과 일치.
+재시작 4회차 분석: 최신 외부 3회차도 맵 open 전 환경 검사에서 중단.
+원시 증거: E:/StutterFixWork/night-results/al-gm-3.log 230~232행, 최신 요약 증거 3줄과 일치.
 요구 2560×1440@120, 실제 3440×1440@164.999; 검사는 코드대로 정상 거부.
 ABBA 4창·픽셀 2점·복원 4종 전부 미측정; 오류 요약의 0은 초기값.
 현재 보존 로그 1~8번 모두 동일한 289단계·같은 환경 거부; 자동 장치 재시도 중단 필요.
