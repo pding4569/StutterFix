@@ -1,5 +1,17 @@
 # DrawCollapse 준비 장부
 
+## 5회차 (2026-10-25): Unity64개 상한 수정·최종36슬롯·초과 개별 렌더러
+
+NEED_EDITOR_BUILD
+
+- 외부 run1은 현재182단계의 번들 명령 실패15줄(14 메시지 일치+시작1500자 접두부1), run3은294줄(293+접두부1)이다. 순서 대조 완료, 새 게임 시험은 없다.
+- 외부 Editor의 실제 실패는 `Shader 'StutterFix/GpuDecoBatch' uses 70 texture parameters, more than the 64 supported by the current graphics device.`다. 라이선스/컴파일은 통과했고 -nographics는 별도 D3D11 unavailable 오류다.
+- 10:50 추가 지시대로 최종4배열+32직접=36선언·C#/생성기 상한 통일·초과 장식만 기존 개별 GPU 렌더러와 장벽으로 보존했다. 현재81종은29슬롯·추가163.75MiB로 들어간다. 초과 실측·게임 할당·여유VRAM은NA다.
+- 최종 DEV/Player/PlayerAuto 오류0/0/0·경고46/4/39(Player증분), LoadCheck279/229/280곳 오류0·일반 Player 연구 제외, 정책52·계획9·SM5컴파일4 통과, 랩C# 오류0·경고12다.
+- 추가 지시 확인 전64슬롯 중간본은 독립 Editor return0·260정점·합성40사례 maxdiff0이다. 최종36슬롯/fallback/게임 증명이 아니며 지시 확인 후 Editor0회다. 이번 Editor 호출 총3회, 첫2회 프로젝트 점유return1이다.
+- 최종drawcollapse5 번들은 아직 없다. 별도 ABBA5 182단계는 생성만, 기존diag1/diag2/ABBA4 JSON 해시·명시모드 보존이다. Claude 번들 빌드/재로드 뒤 외부 시험이 필요하다.
+- `DRAWCOLLAPSE=FAIL reason=NEED_EDITOR_BUILD`; FPS·draw·원본픽셀·끊김·구간수·전체수명·설치복원NA. 게임·설치·커밋·푸시·장치·설정/제어변경0회다. 상세 결과 최신 절과10줄 요약을 따른다.
+
 ## 4회차 (2026-10-25): 단일 draw 구현·오프라인 검증, 새 번들 미완성
 
 - 최신 지시대로 1관문을 통과로 수용하고 단일 submesh/재질 대표·직접 EvaluateCollapse Raw VB·압축 배열+원본2D·on/off 복구를 구현했다.

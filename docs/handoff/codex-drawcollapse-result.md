@@ -1,4 +1,45 @@
-DRAWCOLLAPSE=FAIL reason=UNITY_BUNDLE_NOT_BUILT fps=NA engine_draw=NA maxdiff=NA spikes_30ms=NA gate1=ACCEPTED_BY_DIRECTIVE
+DRAWCOLLAPSE=FAIL reason=NEED_EDITOR_BUILD fps=NA engine_draw=NA maxdiff=NA spikes_30ms=NA gate1=ACCEPTED_BY_DIRECTIVE
+
+NEED_EDITOR_BUILD
+
+# DrawCollapse 5회차 — Unity 텍스처 상한 수정·초과 장식 개별 경로, 최종 36슬롯 번들 인계 (2026-10-25)
+
+사용자가 지정한 `codex-al-dc-2.md`·마스터·두 장부·run1/run3 증거·설계안을 읽었다. 작업 도중 추가된 **10:50 Claude 지시**도 반영했다. 1관문 통과 결정을 유지하고 진단을 반복하지 않았다. **게임 실행·설치·커밋·푸시·자동 장치 호출·설정/제어 파일 변경은 이번 모두0회**다. 아래 4회차의 번들 미생성·라이선스 설명은 이전 상태다.
+
+## 확인한 원인과 외부 증거
+
+- 현재 지정 run1은 예전 68단계 진단 로그가 아니라 **182단계 계획의 번들 명령 실패**다. 비어 있지 않은15줄 중14줄은 원시 `night-results/al-dc-1.log`의 메시지와 일치하고 시작1줄은1500자 접두부 일치다. 번들 실패2줄은 같은 실패의 단계/종료 기록이며 실제 ABBA·픽셀 결과가 아니다.
+- 지정 run3은294줄 중293줄 원시 메시지 일치·시작1줄1500자 접두부 일치다. 6개 진단 후보 구간17/17/18/17/10/10을 재확인했다. 이 진단을 새로 실행하지 않았고 기존615MiB를 실제 추가 배열 할당량으로 쓰지 않았다.
+- 외부 `tools/gpudeco-lab/evidence/claude-lic/editor.txt`는 라이선스·C# 컴파일을 통과했으나 `-nographics` 때문에 `D3D11 compute unavailable`에서 중단했다. 외부 `editor2.txt`는 D3D11 번들 생성 후 **`Shader 'StutterFix/GpuDecoBatch' uses 70 texture parameters, more than the 64 supported by the current graphics device.`**로 shader 재로드가 거절됐다. D3DCompile의 SM5 문법 통과만으로 Unity 재로드 가능성을 보장하지 못한 것이 직접 원인이다.
+
+## 최종 변경
+
+1. **배열4개 + 원본 Texture2D32개 = 선언36개**로 줄였다. `DrawCollapsePolicy` 상수를 셰이더 생성기가 읽고 C# 슬롯 배정·바인딩도 같은 상수를 쓴다. 직접 텍스처 tier id는4부터35다. SM5 검사도 생성물과 정책의 선언 수 일치 및64 상한을 검사한다. 랩 프로브는0/3/4/19/35 바인딩의 point/linear·압축/비압축·패딩 경계를 검사하도록 맞췄다.
+2. 배열의 포맷/치수 그룹과 slice 한도가 상한을 넘으면 해당 텍스처를 제외한다. 직접 텍스처33번째 이후도 같은 정책이다. **그 텍스처를 쓰는 장식만 기존 개별 GPU 렌더러에 남긴다.** 이 렌더러의 실제 재질 ID·정렬 키를 장벽으로 유지해 병합 구간이 건너지 않게 했다. 포함 장식은 대표 Raw VB에 직접 EvaluateCollapse, 초과가 있을 때만 기존 Evaluate/복사 경로를 추가 실행한다. 복사 마스크는512개 단위라 비활성 이웃 버퍼도 복사될 수 있지만 그 렌더러는 숨긴다. off/복구/폐기의 기존 복원 경로를 유지했다. 초과 경로의 실제 GPU·픽셀·성능은 미검증이다.
+3. 현재 외부81종은 배열3개55종 **163.75MiB** + 원본2D26종으로 **29개 사용**, 선언36개 안에 들어간다. 실제 게임 준비에서의 배열 할당·복사·여유 VRAM·fallback 개수는 미측정이다.
+4. 최종 랩 출력은 **`tools/gpudeco-lab/evidence/drawcollapse5/bundle/stutterfix_gpudeco`**로 분리했다. 새 기본 계획은 **`drawcollapse-gate2-260-270-abba5`·182단계**, `tools/optimization/out/drawcollapse-gate2-abba5-steps.json`에 생성만 했다. 이전 diag1/diag2/ABBA4 JSON SHA256과 baseline/abba/single 명시 모드 호환을 보존했다. 64슬롯 중간 번들과 최종36슬롯 코드의 혼용을 막기 위한 분리다.
+
+## 이번 검증과 범위
+
+| 최종 소스 검사 | 결과 |
+|---|---|
+| DEV / Player / PlayerAuto Release | 오류0/0/0, 경고46/4/39(Player 증분) |
+| LoadCheck FieldRefAccess | 279/229/280곳, 오류0·동적 이름 각5 |
+| 연구 타입 격리 | 일반 Player 정책/명령/대표/게임 게이트 제외 |
+| DrawCollapseCheck | **52개 통과**, 포맷 그룹·slice 초과·정수 오버플로·기존 순서/수용 게이트 |
+| 계획 unittest | **9개 통과**, ABBA/픽셀 분리·소유 중seek/resume 금지·기존 명시 모드 호환 |
+| Microsoft SM5 검사 | **4개 통과**, 선언4+32=36 확인·최적화 생략·Unity include 대체물 |
+| 최종 Unity 랩 C# 오프라인 빌드 | 오류0·경고12, Editor import/실행 아님 |
+
+10:50 추가 지시를 읽기 전에는 독립 Editor를 이번3회 호출했다. 첫2회는 동시 프로젝트 점유로 return1(첫 호출 셸은0이나 Editor 로그는1), **64슬롯 중간 수정본**은 return0이었다. 중간본에서 번들 생성/재로드·역순 슬롯260정점·끝 thread·알파0 퇴화·복사dispatch0, 합성 픽셀40사례 **changed=0/max_channel=0**을 확인했다. 이는 `Sprites/Default` 상대의 합성 증거로, **최종36슬롯·초과 fallback·게임 Sprites/Tile·Arche 픽셀 증명이 아니다.** 로그는 `out/drawcollapse5-editor-fixed.log`, 중간 보고서는 `evidence/drawcollapse4-bundle.txt`다. baseline 번들은 덮어쓰지 않았다.
+
+**10:50 지시 확인 후 Editor 재실행0회**다. 최종36슬롯 소스는 `prepare.ps1`로 독립 랩에 복사했으며, **drawcollapse5 번들은 아직 없다.** Claude가 독립 랩의 `GpuDecoLab.CollapseBundle`을 `6000.3.10f1 -batchmode -force-d3d11`로 빌드·재로드한 뒤에만 ABBA5를 실행할 수 있다. `-nographics`는 쓰지 않는다. 이 문서는 실행/예약 기록이 아니다.
+
+실제 **FPS·엔진draw·원본픽셀·30ms 이상 끊김·준비구간수·전곡/retry/reopen/Unload·설치복원은 모두NA**다. 최종 수용 기준(maxdiff≤3·draw≤300·FPS≥220·30ms 이상 끊김0)을 유지하며 `DRAWCOLLAPSE=PASS`로 표시하지 않는다. 감사 자료는 `tools/optimization/out/drawcollapse-run5-audit.py`·JSON, 최종 빌드/검사 로그는 `out/drawcollapse5-*-final.txt`·`drawcollapse5-loadcheck-*.txt`다. task-observer3.5.0은 기존 사용자 범위 원칙/관찰을 읽고 report-back으로 적용했으며 외부 관찰·메모리를 수정하지 않았다.
+
+---
+
+이하 4회차 당시 판정: `DRAWCOLLAPSE=FAIL reason=UNITY_BUNDLE_NOT_BUILT fps=NA engine_draw=NA maxdiff=NA spikes_30ms=NA gate1=ACCEPTED_BY_DIRECTIVE`
 
 # DrawCollapse 4회차 — 단일 draw 구현·오프라인 검증, 새 Unity 번들 미완성 (2026-10-25)
 

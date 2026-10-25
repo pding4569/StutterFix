@@ -1,10 +1,10 @@
-DRAWCOLLAPSE=FAIL reason=UNITY_BUNDLE_NOT_BUILT fps=NA engine_draw=NA maxdiff=NA spikes_30ms=NA gate1=ACCEPTED_BY_DIRECTIVE
-al-dc-4 최신 결정대로 1관문 통과를 수용하고 단일 submesh·재질 대표와 EvaluateCollapse Raw VB 직접 기록을 구현했다.
-DXT5 배열3개55종163.75MiB + 원본Texture2D26종으로 필요슬롯29개다. 실제 할당·여유VRAM은 미검증이다.
-기본끔·연구빌드 전용 on/off 복구, 페인터 순서·장벽·누락 알파·fallback 검사와 기존 평가/복사의 배타 분기를 구현했다.
-DEV/Player/PlayerAuto 오류0/0/0·경고46/36/39, LoadCheck279/229/280곳 오류0·일반 Player 연구타입 제외다.
-정책46·생성기9·SM5컴파일4개 통과, Unity 랩 C# 오류0·경고12이며 Shader.Find 이름 충돌 CS0119를 수정했다.
-기존 Editor 로그는 패키지 서버 연결실패(return1)·No valid Unity Editor license found(return198)로 새 번들 빌드/재로드 미완성이다.
-새 기본 ABBA4·260/262/270 원본픽셀182단계는 생성만, 새 번들 성공 전 실행불가다. 명시모드·diag1/diag2 JSON 해시 보존이다.
-이번 게임 실행·설치·커밋·푸시·장치 호출·설정/제어 변경·동일 Editor 재실행은 모두0회다.
-실제 FPS·엔진draw·원본픽셀·끊김·준비구간수·전체수명·설치복원NA이며 결과·두 장부에 인계하고 같은 진단/Editor 실패 반복을 중단한다.
+DRAWCOLLAPSE=FAIL reason=NEED_EDITOR_BUILD fps=NA engine_draw=NA maxdiff=NA spikes_30ms=NA gate1=ACCEPTED_BY_DIRECTIVE
+NEED_EDITOR_BUILD
+실제 원인은 Unity 텍스처 파라미터64개 상한에70개를 선언한 것으로 확인했고 최종4배열+32직접=36개로 수정했다.
+초과 텍스처 장식만 기존 개별 GPU 렌더러/정렬 장벽으로 남기며 초과 때만 별도 기존 평가·복사를 쓴다. 기본끔·복원 유지다.
+외부81종은 배열3개55종163.75MiB+원본2D26종, 필요29슬롯이다. 게임 할당·여유VRAM·초과 경로 실측은NA다.
+최종3빌드 오류0/0/0·경고46/4/39(Player증분), LoadCheck279/229/280곳 오류0·일반 Player 연구타입 제외다.
+정책52·생성기9·SM5컴파일4개 통과, 최종 Unity 랩 C# 오류0·경고12다.
+추가지시 전 중간64슬롯 Editor return0·직접260정점·합성40사례 maxdiff0이나 최종36슬롯/게임 증명은 아니다. 지시 확인 후 Editor0회다.
+최종drawcollapse5 번들은 미생성, ABBA5·원본픽셀182단계는 생성만이다. 기존diag1/diag2/ABBA4 JSON·명시 모드 보존이다.
+게임·설치·커밋·푸시·장치·설정/제어변경0회, 실제FPS·draw·픽셀·끊김·구간수·전체수명·설치복원NA다. Claude Editor 빌드로 인계한다.

@@ -28,3 +28,20 @@ Step A(같은 텍스처 단일 subMesh) 는 건너뛰고 바로 Step B(Texture2D
 2. **큰 텍스처(≥2500², 또는 DXT5 가 아닌 RGBA32/RGB24/ARGB32)는 배열에 넣지 않는다**. 이것들은 개수가 적고(여러 해 모양 큰 배경류) 이미 단독 `Texture2D` 로 있다. 셰이더에 `_Big0.._Big7` 같은 `Texture2D` 슬롯 8개를 두고 정점의 tier id 로 분기한다. 이때 분기 안에서 `SampleLevel` 이 아니라 **`SampleGrad` + 분기 밖에서 구한 ddx/ddy** 를 써서 그래디언트 불연속(경계 줄무늬)을 피한다. 포맷이 비압축인 것은 `CopyTexture` 로 합칠 수 없고(DXT5 배열과 포맷 불일치), 합치려면 `Blit` + 메모리 큰 비압축 배열이 필요해 5GB 문제가 되니 합치지 마라.
 3. 등급이 `3 + 8 = 11` 텍스처 슬롯 정도면 D3D11 슬롯(128)에 여유가 있다. 한 구간(span)의 모든 장식이 한 draw 로 그려지고 셰이더가 tier id 로 고른다.
 4. 합산 메모리와 슬롯 수를 `DRAWCOLLAPSE_ARRAY_TOTAL` 줄에 다시 적어라(지금 615MB 는 35개 개별 티어 합산이라 등급화하면 달라진다).
+
+## 2026-10-25 10:50 Claude: 번들 빌드 막힘의 진짜 원인과 해법 (Codex 의 '라이선스 198' 은 Codex 샌드박스 탓)
+1. 라이선스: 샌드박스 밖(사용자 계정)에서 같은 에디터 명령을 돌리면 라이선스는 정상(`Unity Personal, Unlimited`)이다. Codex 가 못 돌린 에디터 빌드는 **Claude 가 대신 돌린다**. 번들 빌드가 필요하면 결과 문서에 `NEED_EDITOR_BUILD` 한 줄을 적고 다음 회전까지 코드를 마무리하라(시도 반복 금지).
+2. `-nographics` 로는 D3D11 compute 가 없어 랩 검증이 실패한다. 번들 빌드/검증 명령은 `Unity.exe -batchmode -force-d3d11 -quit -projectPath ...\gpudeco-lab\project -executeMethod GpuDecoLab.CollapseBundle -logFile ...` (`-nographics` 없이). Claude 가 이 명령으로 돌렸더니 번들 파일(`evidence/drawcollapse4/bundle/stutterfix_gpudeco`)은 만들어졌다.
+3. **진짜 실패**: 로그 `Shader 'StutterFix/GpuDecoBatch' uses 70 texture parameters, more than the 64 supported by the current graphics device.` → 이어서 랩이 `drawcollapse bundle assets/kernel unsupported` 로 중단. 셰이더(`GpuDecoBatch.shader`, `generate-drawcollapse-shader.py` 생성)가 `_Tex0.._Tex5` (Texture2DArray 6개) + `_Big0.._Big63` (Texture2D 64개) = 70 개를 선언했다. 실제 필요 슬롯은 배열 3 + 단독 26 = 29개뿐이므로 **`_Big` 를 32개 이하로(여유 포함 `_Tex` 4 + `_Big` 32 = 36) 줄여라**. 정점 tier id → 분기 코드와 C# 쪽 슬롯 배정(`GpuDecoDrawCollapse.cs`)도 같은 상한으로 맞춰라(상한 초과 텍스처는 그 장식만 개별 렌더러로 남기는 fallback).
+4. 이 수정을 하고 `NEED_EDITOR_BUILD` 를 적어라. Claude 가 에디터 빌드 + 게임 ABBA 시험을 대신 돌려 증거를 장부에 넣겠다.
+
+## 2026-10-25 11:10 Claude → Codex(astra): 남은 핵심 구현 = 구간 계획을 `ready` 시점에 다시 계산 (이 회전의 단일 목표)
+지금까지 Claude 가 에디터 번들 빌드와 게임 시험을 직접 돌려 얻은 사실(증거: `night-results/dc-abba5..10.log`):
+- 번들·셰이더(36슬롯)·준비(`DRAWCOLLAPSE_PREPARED spans=26 included=11645 arrays=3 163.75MB texture_fallback=0`)는 성공. 랩 `DRAWCOLLAPSE_LAB=PASS`.
+- `drawcollapse ready` 의 안전 검사가 연달아 막았고, Claude 가 아래를 이미 고쳤다(`GpuDecoDrawCollapseRenderer.cs ValidateDrawCollapse`): (1) 직교 카메라는 위치 z 이동(-10→0)이 정렬 순서를 안 바꾸므로 방향만 검사, (2) 장벽 거리는 상수 이동만 허용, (3) 지금 안 그려지는 후보 장벽은 키 비교 생략.
+- **남은 진짜 막힘**: 준비는 곡 처음(`select 0`→`play`→`live prepare`)에서 한 번 하는데, 활성인 비소유 `SpriteRenderer`("sprite") 의 정렬값이 곡 도중 `layer -6→0, order -850→1` 로 바뀐다. 따라서 곡 처음에 짠 구간 분할은 260초에 틀리다(검사가 옳게 막는 중).
+해야 할 일:
+1. **`drawcollapse ready` 에서 현재 정렬 키로 구간 계획을 다시 계산**한다. 장벽(`gpuCollapseBarriers`)과 소유 장식 둘 다 현재 `MatShare.SortKey` 로 다시 읽고 `DrawCollapsePolicy` 로 구간을 새로 나눈 뒤 대표 렌더러·정점 슬롯 배치를 재구성한다. 텍스처 배열(163.75MB)과 셰이더는 재사용(다시 만들지 마라).
+2. 재생 중(10초 창) 정렬 키가 또 바뀌는 경우: 프레임마다 전수 검사하지 말고 변경 이벤트/가벼운 점검으로 감지해, 바뀌면 `drawcollapse` 를 끄고 원래 개별 렌더러로 안전하게 복귀(오류로 시험을 중단하지 말고 `DRAWCOLLAPSE_FALLBACK reason=...` 로그).
+3. AUTOTEST 에서는 `ValidateDrawCollapse` 가 첫 실패에서 멈추지 말고 **모든 실패 조건을 모아 한 줄**(`DRAWCOLLAPSE_GUARD_FAILS=...`)로 출력하게 하라(시도 한 번에 한 개씩 막히는 낭비를 없앤다).
+4. 통과하면 `tools/optimization/out/drawcollapse-gate2-abba5-steps.json`(= `python E:\StutterFixWork\run_json.py <계획> wt-gpu <이름> --keys DRAWCOLLAPSE,drawcollapse_window`)의 ABBA 로 FPS·엔진 draw·픽셀을 얻는다. 자동 장치가 게임 시험을 돌리니 코드만 마무리하라. 회전을 낭비하지 말고 큰 문서를 다시 읽지 마라(이 절과 `ValidateDrawCollapse`, `PrepareDrawCollapse`, `DrawCollapsePolicy.cs` 만으로 충분).
