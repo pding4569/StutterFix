@@ -152,11 +152,10 @@ namespace StutterFix
 #if AUTOTEST || GPUDECO
             RegisterGpuImageCollapseVariants(textures);
 #endif
-            if (GpuDecoPlayer.Product && !PlayerCollapseTextureBudget(textures.Values))
+            if (GpuDecoPlayer.Product)
             {
-                DisposeDrawCollapse(); gpuCollapsePrepare=false;
-                Main.Entry.Logger.Log("[GPU 장식] 그리기 통합 생략: 곡 전체 텍스처 한도 초과, GPU 소유만 사용");
-                return;
+                var all=textures.Values.ToArray();
+                Main.Entry.Logger.Log("[GPU 장식] 곡 전체 텍스처 "+all.Length+"개 (배열 후보 "+all.Count(t=>CollapseSize(t)>0)+", 직접 "+all.Count(t=>CollapseSize(t)==0)+", 배열 종류 "+all.Where(t=>CollapseSize(t)>0).Select(CollapseTier).Distinct().Count()+")");
             }
             var addresses=new Dictionary<int,Vector4>();long total=0;int copies=0;
             RequireLive(SystemInfo.maxTextureArraySlices>0,"drawcollapse texture array slices unavailable");
