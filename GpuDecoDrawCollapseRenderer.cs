@@ -40,7 +40,7 @@ namespace StutterFix
             internal Mesh Mesh;
             internal MeshRenderer Renderer;
             internal Material Material;
-            internal bool SharedMat;
+            internal bool SharedMat,Nudged;
             internal GraphicsBuffer Vertices;
             internal ComputeBuffer Map;
             internal SceneRenderOrder.Key First,Last;
@@ -229,7 +229,7 @@ namespace StutterFix
         static double DcMs(long from)=>(Stopwatch.GetTimestamp()-from)*1000.0/Stopwatch.Frequency;
         static void BuildDrawCollapseSpans()
         {
-            long dcT0=Stopwatch.GetTimestamp();
+            long dcT0=Stopwatch.GetTimestamp();int nudgedSpans=0;
             var source=gpuLiveSlices[0];
             var rows=new List<DrawCollapsePolicy.Row>();
             // 곡 시작 뒤 파괴된 후보 장벽은 더 이상 그려지지 않으므로 빼고, 새로 생긴 비소유 렌더러는 장벽으로 더한다.
@@ -344,6 +344,10 @@ namespace StutterFix
                 // Refresh the sort center too: a start-of-song mesh bound is stale at ready.
                 Vector3 center=first.R.bounds.center;
                 if(first.R is SpriteRenderer sprite && sprite.spriteSortPoint==SpriteSortPoint.Pivot)center=first.R.transform.position;
+                // 활성 장벽이 있는 정렬 묶음에서 시작하는 구간: 구간에 남은 장식은 모두 장벽보다 앞에 그려져야 하므로, 대표 렌더러의 정렬 거리를
+                // 아주 조금 더 멀게(먼저 그려지게) 해서 재질 ID 동점 해소를 엔진의 동점 규칙에 맡기지 않는다. 정점 위치는 GPU 가 쓰므로 화면은 같다.
+                if(DrawCollapsePolicy.NudgeTieSpans && activeBucketMinMat.ContainsKey((first.Key.Layer,first.Key.Order,first.Key.Queue,first.Key.Distance)))
+                {center+=gpuCollapseCameraForward*DrawCollapsePolicy.TieNudge;s.Nudged=true;nudgedSpans++;}
                 s.Mesh.bounds=new Bounds(center,new Vector3(2000000,2000000,0));s.Mesh.UploadMeshData(true);
                 s.Vertices=s.Mesh.GetVertexBuffer(0);
                 RequireLive(s.Mesh.GetVertexBufferStride(0)==60 && s.Mesh.subMeshCount==1,"drawcollapse raw mesh layout");
@@ -357,7 +361,27 @@ namespace StutterFix
                 s.Renderer.lightProbeUsage=LightProbeUsage.Off;s.Renderer.reflectionProbeUsage=ReflectionProbeUsage.Off;
                 RequireLive(s.Renderer.sharedMaterials.Length==1,"drawcollapse requires one material");
             }
+            // 같은 (층,순서,큐,거리) 묶음에서 이어지는 구간들이 재질을 공유하면 완전 동점이 되어 순서가 렌더러 ID(생성 순서의 역순)로 뒤집힌다.
+            // 그런 구간들은 재질을 따로 만들되 뒤 구간부터 만들어 앞 구간의 인스턴스 ID 가 더 작게(= 먼저 그려지게) 한다.
+            int multiSpans=0;
+            for(int ri=0;ri<gpuCollapseSpans.Count;)
+            {
+                int rj=ri+1;
+                while(rj<gpuCollapseSpans.Count && DcSameBucket(gpuCollapseSpans[ri].First,gpuCollapseSpans[rj].First))rj++;
+                if(rj-ri>=2)
+                {
+                    multiSpans+=rj-ri;
+                    for(int k=rj-1;k>=ri;k--)
+                    {
+                        var sp=gpuCollapseSpans[k];var m=new Material(sp.Material){name="GpuDeco collapse ordered"};
+                        sp.Material=m;sp.SharedMat=false;sp.Renderer.sharedMaterial=m;
+                    }
+                }
+                ri=rj;
+            }
+            GpuLog("DRAWCOLLAPSE_SAME_BUCKET_SPANS spans_in_multi_runs="+multiSpans+" nudged_spans="+nudgedSpans);
         }
+        static bool DcSameBucket(SceneRenderOrder.Key a,SceneRenderOrder.Key b)=>a.Layer==b.Layer && a.Order==b.Order && a.Queue==b.Queue && a.Distance==b.Distance;
         static void RebuildDrawCollapse()
         {
             RequireDrawCollapse();

@@ -71,7 +71,10 @@ namespace StutterFix
         // A/B/A textures or move a quad across even a currently hidden barrier.
         internal static bool SplitByOrder=true;
         // 같은 정렬 묶음에서 장벽보다 앞에 그려지던 장식을 구간에 남기는 규칙. 켜면 260초 픽셀 42만 개가 달라져 기본 끔.
-        internal static bool KeepBeforeBarrier=false;
+        internal static bool KeepBeforeBarrier=true;
+        // 장벽과 같은 정렬 묶음에서 시작하는 구간의 대표 렌더러 거리를 TieNudge 만큼 더 멀게 해 동점을 없앤다.
+        internal static bool NudgeTieSpans=true;
+        internal const float TieNudge=2e-4f;
         internal static int MaxSpans=700;
         internal static List<int[]> Plan(List<Row> rows)
         {

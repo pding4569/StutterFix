@@ -288,7 +288,9 @@ namespace StutterFix
 #if AUTOTEST
                 PreflightGpuImageTarget(fx,d,masterIdx);
 #endif
-                PrepareGpuEffect(fx);SaveGpuTarget(masterIdx,d);captured=true;
+                PrepareGpuEffect(fx);
+                // 되돌리기용 장식별 16채널 복사는 오류 주입 시험일 때만 필요하다(사전 검증은 위에서 끝났고 Apply 는 배열 대입뿐).
+                if(GpuRecoveryTesting){SaveGpuTarget(masterIdx,d);captured=true;}
                 ApplyGpuLiveEffectToTarget(fx, masterIdx, d);
                 gpuLiveSkippedRecs+=keys;return true;
             }
