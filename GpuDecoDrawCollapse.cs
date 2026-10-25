@@ -16,6 +16,11 @@ namespace StutterFix
             if(gpuCollapseTexture==null)return;
             RequireLive(ReferenceEquals(gpuImageCollapseAddressOwner,gpuCollapseTexture)&&gpuImageCollapseAddresses!=null,
                 "image collapse address hooks not connected in PrepareDrawCollapse");
+            if(texture&&!gpuImageCollapseAddresses.ContainsKey(texture.GetInstanceID()))
+                GpuLog("GPUIMG_DIAG mode=collapse_runtime_missing item="+item+" texture_id="+texture.GetInstanceID()
+                    +" registered="+(gpuImageCollapseRegisteredTextures!=null&&gpuImageCollapseRegisteredTextures.ContainsKey(texture.GetInstanceID()))
+                    +" width="+texture.width+" height="+texture.height+" format="+texture.graphicsFormat+" tier="+CollapseSize(texture)
+                    +" stage=slot_update performance=False");
             RequireLive(texture&&material&&(uint)item<(uint)gpuCollapseIncluded.Length
                 &&gpuImageCollapseAddresses.TryGetValue(texture.GetInstanceID(),out _),"image_texture_not_registered_in_collapse");
             RequireLive(texture.mipmapCount==1&&texture.wrapModeU==TextureWrapMode.Clamp&&texture.wrapModeV==TextureWrapMode.Clamp,

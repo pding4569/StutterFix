@@ -23,12 +23,14 @@ namespace StutterFix
         static readonly Dictionary<int,HashSet<int>> gpuImagePlannedTargets=new Dictionary<int,HashSet<int>>();
         static readonly MaterialPropertyBlock gpuImageBlock=new MaterialPropertyBlock();
         static Dictionary<int,Vector4> gpuImageCollapseAddresses;
+        static Dictionary<int,Texture2D> gpuImageCollapseRegisteredTextures;
         static ComputeBuffer gpuImageCollapseAddressOwner;
         static readonly Vector4[] gpuImageCollapseTextureUpload=new Vector4[2];
         // Hooks for PrepareDrawCollapse's owner. Register before allocating
         // arrays, then retain the addresses AFTER allocating the texture buffer.
         static void RegisterGpuImageCollapseVariants(Dictionary<int,Texture2D> textures)
         {
+            gpuImageCollapseRegisteredTextures=null;
             if(!gpuImageCandidate||!gpuImageOwn||gpuImageVariants==null)return;
             foreach(var v in gpuImageVariants)
             {
@@ -39,9 +41,40 @@ namespace StutterFix
                 // must not change a shared texture's wrapping ahead of its event.
                 textures[t.GetInstanceID()]=t;
             }
+            // Keep the complete union, not just the addresses admitted by the
+            // renderer's bounded texture banks. Future image textures may be
+            // absent from every current item at preparation time.
+            gpuImageCollapseRegisteredTextures=textures;
         }
         static void RememberGpuImageCollapseAddresses(Dictionary<int,Vector4> addresses)
         {
+            gpuImageCollapseAddresses=null;gpuImageCollapseAddressOwner=null;
+            if(gpuImageCandidate&&gpuImageOwn)
+            {
+                RequireLive(gpuImageCollapseRegisteredTextures!=null,"image collapse texture registry missing");
+                int missing=0,missingDirect=0,missingArray=0,directRequired=0,variantMissing=0;
+                foreach(var pair in gpuImageCollapseRegisteredTextures)
+                {
+                    var t=pair.Value;bool direct=CollapseSize(t)==0;
+                    if(direct)directRequired++;
+                    if(addresses.ContainsKey(pair.Key))continue;
+                    missing++;if(direct)missingDirect++;else missingArray++;
+                    if(missing<=8)GpuLog("GPUIMG_DIAG mode=collapsecoverage_missing texture_id="+pair.Key
+                        +" width="+t.width+" height="+t.height+" format="+t.graphicsFormat+" tier="+CollapseSize(t));
+                }
+                foreach(var v in gpuImageVariants)
+                    if(v.Status==GpuDecoImageVariant.Kind.ReadyQuad&&!addresses.ContainsKey(v.TextureId))variantMissing++;
+                bool valid=missing==0&&variantMissing==0;
+                GpuLog("GPUIMG_DIAG mode=collapsecoverage registered="+gpuImageCollapseRegisteredTextures.Count
+                    +" addressed="+addresses.Count+" missing="+missing+" missing_direct="+missingDirect+" missing_array="+missingArray
+                    +" direct_required="+directRequired+" direct_limit="+DrawCollapsePolicy.DirectBindings
+                    +" arrays_used="+gpuCollapseArrays.Count+" array_limit="+DrawCollapsePolicy.ArrayBindings
+                    +" variant_entries_missing="+variantMissing+" valid="+valid+" stage=prepare performance=False");
+                if(!valid)GpuLog("IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_TEXTURE_COVERAGE");
+                // Fail before StartGpuLive detaches any CPU records. Do not hide
+                // overflow by skipping updates or relaxing the fallback gate.
+                RequireLive(valid,"image collapse texture coverage incomplete; inspect GPUIMG_DIAG and change texture-bank preparation before retry");
+            }
             gpuImageCollapseAddresses=addresses;gpuImageCollapseAddressOwner=gpuCollapseTexture;
         }
         static readonly float[] gpuImageFields=new float[16];
@@ -53,7 +86,7 @@ namespace StutterFix
         {
             StopGpuImageVertexDiagnostic(false);
             gpuImageRefreshPose=false;
-            gpuImageCollapseAddresses=null;gpuImageCollapseAddressOwner=null;
+            gpuImageCollapseAddresses=null;gpuImageCollapseAddressOwner=null;gpuImageCollapseRegisteredTextures=null;
             gpuImageEligible=Array.Empty<bool>();gpuImageAffected=Array.Empty<bool>();gpuImageWake.Clear();gpuImagePendingScratch.Clear();gpuImagePlannedTargets.Clear();
         }
         static void PrepareGpuImageAdmission()

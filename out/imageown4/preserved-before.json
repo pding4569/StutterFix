@@ -1,0 +1,58 @@
+﻿[
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\GpuDecoDrawCollapseRenderer.cs",
+        "Hash":  "D65CA14890FE0F54E449A84EC6D71B17C94BEC2092710D12C4F512FD47C82809"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\DrawCollapsePolicy.cs",
+        "Hash":  "825BB61E7DDAC928F043B4B1C717920172382DD3792BC2701832013CF04A34BD"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\Dormancy.cs",
+        "Hash":  "94D7FAFBAEA9645996F501C33B7F8F75E240560F8EB66D869568879867C84F96"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\TightLate.cs",
+        "Hash":  "C4640A25C0B1316D13745D7333C2A177F274D73664FFA0E6FBEACCAD65A3D3A9"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\FastMove.cs",
+        "Hash":  "1F19E33376EA400992E3ED369DF31CC1537A2A8C31AD5DEC09133887B162D87A"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\GpuDecoExport.cs",
+        "Hash":  "A5A35E003A07FABB1D420DB55E09EC9ADE7D3CAA844814E84F24B548F130C2CB"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\gpudeco-lab\\GpuDeco.compute",
+        "Hash":  "74DB4041C4704128D8E6B8A2D79723AE80648AEEB04F5CED7380C33656109E58"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\gpudeco-lab\\evidence\\drawcollapse5\\bundle\\stutterfix_gpudeco",
+        "Hash":  "4ECDBE6C69A33DEFA422DBCD944AC18F96E45D0786E705F1001B7D5A07440AD4"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\optimization\\imageown-steps.py",
+        "Hash":  "26CE9385502DE97951C23BC7E4AD5479B549E20E1C914923AF126A43B668B001"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\.codex\\config.toml",
+        "Hash":  "763AF92A6D70BBF2685DB5B02AB358A79A275026F837B349D1B258CA8AA31EB2"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\optimization\\out\\imageown-abba1-steps.json",
+        "Hash":  "53638954FCE0FDCEE8814C2C5223314D56BC076FE3AC21F4258E01B4DCEA2C69"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\optimization\\out\\imageown-abba2-steps.json",
+        "Hash":  "D95A82CA60B5360597794C1257E0C584EC6D54EBF1DC3FA0FE6BFA39F55F589E"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\optimization\\out\\imageown-diag1-steps.json",
+        "Hash":  "4B052DBBE5502D8078C2B5F01A282B0B103D931A66E222AB6C86F19BC26297C8"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\optimization\\out\\imageown-diag2-steps.json",
+        "Hash":  "6AED5565A7D6101A260385289A0AF40CE35F466F1859DB7A7900F6AE3ACDC6E4"
+    }
+]

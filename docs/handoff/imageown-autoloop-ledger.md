@@ -1,5 +1,15 @@
 # 이미지 소유 작업 장부
 
+## 2026-10-25 — 코드·오프라인 검증 4회차
+
+`IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=TEXTURE_ADDRESS_MISSING`
+
+외부 run3 직접35줄을 원시와 순서·중복 대조했다. 3440×1440@164.999, 준비82구간·포함14595·3배열117복사·318.75MiB·직접32/32·폴백0 뒤 live on의 image_texture_not_registered_in_collapse로 중단됐다. GPU28523 분류 뒤 Rec11821/11821 복원·종료native_contexts0. 통합픽셀/FPS는 NA다.
+
+현재항목만 검사하는 준비 계약이 미래 이미지 주소 누락을 놓칠 수 있다. 이미지 훅에서 전체 등록 합집합 대 실제 주소를 준비 중 대조하고 직접/배열·요청/상한·누락변형 수를 기록, 누락이면 CPU기록을 떼기 전에 중단하게 수정했다. 허용 helper의 실패로그만 추가해 등록 누락과 자산ID변화를 구분한다. 누락ID가 옛 로그에 없어 실제 직접슬롯초과로 단정하지 않는다. 실제 수용량 증가·통합불가능 확정은 아니다.
+
+3빌드 오류0/0/0·경고48/36/40, LoadCheck279/229/281곳 틀림0·일반Player 연구 제외, 실제메서드3개 추출20검사·기존 생성기8검사 통과. 보호14개SHA동일·renderer/policy/export 등 소유자 파일·생성기·기존JSON·bundle·설정/제어 유지. 새계획 없음·같은333단계 재시도 중단 필요, 주소배정/자산수명은 소유자에게 인계한다. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 상세 결과·10줄 요약·out/imageown4 참조.
+
 ## 2026-10-25 — 코드·오프라인 검증 3회차
 
 `IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=INTEGRATED_ABBA_NOT_RUN`

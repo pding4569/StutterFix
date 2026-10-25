@@ -1,4 +1,56 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=INTEGRATED_ABBA_NOT_RUN
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=TEXTURE_ADDRESS_MISSING
+
+## 자동 반복 4회차 — 외부 run3 분석, 준비 단계의 이미지 주소 검증 보강
+
+이번 게임 실행·설치·커밋·푸시·자동 장치 호출·Unity Editor 실행·설정/제어 파일 변경은 **모두 0회**다. 새 게임 실측과 새 시험 계획 생성은 없다. **이미지 통합은 아직 성공하지 않았다.** 동일한 abba2 계획을 다시 요청하지 않으며, 정점 수식·pose 진단도 반복하지 않는다.
+
+### 실제 중단 원인과 확인 범위
+
+`docs/handoff/im-autoloop-run3-evidence.txt`의 직접 증거 **35줄**을 `E:/StutterFixWork/night-results/al-im-3.log`에 순서·중복을 보존해 대조했다. 시작 줄은 원시 선언의 1,500자 접두부다. 확인 스크립트와 출력은 `out/imageown4/check-evidence.py`, `evidence-and-preservation.txt`에 있다.
+
+| 원시 행 | 확인된 값 |
+|---|---|
+| 378 | 배열3개·복사117회에 해당하는 준비, 직접 텍스처32개, 활성 슬롯35/선언36, 추가 배열318.75MiB(334,233,600B) |
+| 382 | 준비 구간82·포함14,595·texture_fallback_items=0 |
+| 474~475 | 소유 분류GPU28,523·CPU fallback0 뒤 활성화 실패, CPU Rec11,821/11,821 복원·continuity=RESTORED |
+| 477,481 | `gpudeco live on`: `image_texture_not_registered_in_collapse` |
+| 482 | 종료 native_contexts=0 |
+
+260초 원본 O/O2 반복은 차이0이지만 GPU G와 통합 B 캡처 전에 중단됐다. 통합 픽셀·FPS·30ms 이상 끊김·설치 복원·전곡 수명은 **NA**다. 3회차 문서에 있는 독립 이미지 최대차이1은 **이전 run2의 한정된 정지 경계 결과**이며 이번 통합 성공으로 해석하지 않는다.
+
+실패 경로는 `StartGpuLive → CaptureGpuImageActivation → RefreshGpuImageGeometry → UpdateDrawCollapseTextureSlot`이다. Refresh는 실제 sprite/texture·재질·renderer 대응을 검사한 뒤 현재 이미지를 넘긴다. helper에서 현재 texture ID의 주소를 얻지 못해 활성화가 롤백됐다. 이는 정점 산술이나 FastMove 보호 복귀를 원인으로 고칠 근거가 아니다.
+
+준비 코드에는 **현재 항목만 검사하는 구멍**이 있다. `RegisterGpuImageCollapseVariants(textures)`는 전체 변형을 요청 사전에 추가하지만, renderer는 작은 DXT5 그룹을 최대4배열에 배정하고 나머지는 `Take(32)`로 직접 텍스처를 선택한다. 이후 `gpuCollapseTextureFallback`은 **준비 당시 Data.Items의 TextureId만** 검사한다. 아직 어떤 현재 항목에도 쓰이지 않는 미래 이미지 변형이 주소에서 빠져도 폴백0·준비 성공이 가능하다. seek 뒤 그 이미지를 적용하면 비로소 helper가 실패한다.
+
+다만 기존 로그에는 실패한 item/texture ID·총 요청 텍스처 수·누락 종류가 없다. 직접 슬롯32개가 꽉 찼다는 사실만으로 **그 실패 텍스처가 33번째 직접 텍스처였다고 확정하지 않는다**. 배열 그룹 초과 또는 등록 후 자산 ID 변화와도 구분할 수 없다. 이 메커니즘의 재현 검사는 아래와 같고, 실제 누락 원인의 세부 귀속은 미확정이다.
+
+### 수정한 코드와 오프라인 검증
+
+- `GpuDecoImagePlayback.cs`: 등록된 **현재+미래 변형 전체 합집합**을 보존한다. `RememberGpuImageCollapseAddresses`에서 실제 주소 배정 결과와 대조해 고유 누락 수·직접/배열 분류·직접 요청/상한·배열 사용/상한·누락 변형 엔트리 수를 `GPUIMG_DIAG mode=collapsecoverage`로 기록한다. 누락 상세는 최대8개다. 누락 시 `IMAGEOWN=FAIL reason=COLLAPSE_TEXTURE_COVERAGE`를 남기고 **live prepare 안에서 CPU 기록을 떼기 전에 중단**한다. 실패한 주소는 게시하지 않는다. 매 프레임 검사는 추가하지 않았다.
+- 허용된 `GpuDecoDrawCollapse.cs`의 texture helper에만 실패 로그5줄을 추가했다. 런타임 누락이면 item/texture ID·치수·format·tier와 `registered=True/False`를 남겨 등록됐지만 주소 없는 경우와 등록 목록에도 없는 자산을 구분한다. 기존 주소·mip/wrap·재질·범위 검사는 유지한다.
+- 준비 시 texture wrap 변경, 이미지 setter/Flush 순서 변경, 슬롯 상한 완화, 임의 재압축/리샘플링, 누락 업로드 생략, 정렬·폴백 보호 해제는 하지 않았다.
+
+| 검사 | 이번 결과 | 근거 |
+|---|---|---|
+| DEV/Player/PlayerAuto 격리 빌드 | 오류0/0/0·경고48/36/40 | out/imageown4/build-*.txt |
+| LoadCheck | FieldRef279/229/281곳·틀림0, 일반 Player 연구 제외 | out/imageown4/loadcheck-*.txt |
+| 실제 수정 메서드3개 추출 검사 | **20검사 통과**, Unity 실행 없음 | out/imageown4/check-coverage.py, coverage-check.txt |
+| 기존 생성기 | 8검사 통과, 생성기 자체·기존JSON 유지 | out/imageown4/generator-tests.txt |
+| 증거/소유권 | 외부35줄 일치·보호14개SHA256 유지, 공용 파일은 허용 helper만 변경 | out/imageown4/evidence-and-preservation.txt |
+
+추출 검사는 실제 Register/Remember/Update 메서드를 가짜 Unity 자원과 실행한다. 현재32개가 모두 주소를 받았어도 미래33번째가 빠지면 준비 실패하는 회귀 사례, 직접/배열 누락 분류, 중복 변형과 고유 텍스처 계수 구분, 주소 게시/업로드 금지, 32B 부분 갱신·point bit·wrap 보호, 런타임 자산 ID 변화 구분을 검증했다. **실제 게임의 누락 수를33 또는1로 측정한 시험은 아니다.**
+
+생성기 검사 첫 PowerShell 래퍼는 unittest의 정상 stderr를 오류로 처리했다. 빌드/LoadCheck는 세 종류 모두 먼저 통과했고, 래퍼를 Python 캡처로 수정한 뒤 생성기8검사의 exit0을 확인했다. 불필요한 빌드 반복은 하지 않았다.
+
+게임 `scrVisualDecoration.SetSprite`와 `TextureManager` 근사 디컴파일을 읽고 **설치 DLL의 ILScan을 새로 대조**했다(`out/imageown4/game-{visual,texture}-il.txt`). SetSprite의 sprite/마스크·재질 샘플링·V15 Clamp와 TextureManager의 이미지 로드 호출은 확인되지만, 정적 호출 관계만으로 이번 누락 texture ID를 복원할 수 없다.
+
+### 남은 설계 제약과 담당자 인계 — 같은 시험 중단
+
+**이번 수정은 누락을 조기에 검출하는 준비 계약 수정이며, 텍스처를 실제로 더 수용하는 수정은 아니다.** 현재 방식은4배열+32직접 슬롯이다. 전체 필수 합집합이 실제 주소를 받지 못하면 폴백0 조건으로 진행할 수 없다. 정확한 누락 텍스처와 세부 원인은 기존 증거로 미확정이므로 통합 방식 전체가 불가능하다는 판정도 하지 않는다.
+
+등록/배정은 Claude 소유 `GpuDecoDrawCollapseRenderer.cs`와 `DrawCollapsePolicy.cs`, 번들 셰이더가 담당한다. 해당 파일은 변경하지 않았다. **소유자 요청:** 새 coverage가 보고하는 전체 필수 합집합을 현재와 미래 이미지까지 수용하도록 배정/형식별 은행 설계를 검토하고, `registered=False` 런타임 실패면 자산 재사용/수명도 확인하라. 32상한 증가나 누락 업데이트 생략으로 폴백0을 꾸미지 말고, 텍스처 정확도·정렬·부분 갱신·끄기 복원을 유지해야 한다. 이미지 재질 변경에 대한 기존 Replan 검사도 담당자 범위다.
+
+새 ABBA/진단 계획을 만들지 않았고 기본 생성기·기존 abba2/diag JSON·tag는 그대로다. **renderer의 주소 배정 또는 자산 수명 원인 수정 전 기존333단계의 자동 재시도는 중단해야 한다.** 자동 장치를 직접 조작하거나 정지한 것은 아니다. 준비 단계 수정만으로 `IMAGEOWN=PASS`를 만들지 않는다. 마스터의 번들 관련 과거 보류를 이 작업에서 해제하지 않는다. 아래는 이전 회차의 이력이다.
 
 ## 자동 반복 3회차 — 외부 run2 분석과 통합 선행 검사
 

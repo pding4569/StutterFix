@@ -1,4 +1,13 @@
 
+## 회차 4 — Codex 분석·미래 이미지 주소 검증, 외부 새 시험 없음
+
+- IMAGEOWN=FAIL reason=TEXTURE_ADDRESS_MISSING; 통합 픽셀/FPS/끊김 NA.
+- 외부run3 직접35줄 원시대조. 준비82구간·14595포함·배열3/117복사·318.75MiB·직접32/32·폴백0 뒤 live on의 주소누락으로 실패. Rec11821/11821복원·종료native_contexts0.
+- 준비당시 현재항목만 검사해 미래변형 주소누락을 놓치는 계약 수정. 전체등록합집합 대 실제주소를 준비중검사, CPU기록분리 전에 실패·직접/배열분류 로그. helper실패시 등록됐는지 구분, 기존가드 유지.
+- 누락ID/총요청수는 옛로그에 없어 실제슬롯초과/자산ID변화 세부귀속 미확정. 실제수용량증가·통합불가능 판정 아님. renderer/policy/셰이더 배정은 소유자 인계.
+- 격리3빌드 오류0·LoadCheck279/229/281곳 틀림0·실제메서드추출20검사·기존생성기8검사 통과. 보호14개SHA/기존JSON/tag/생성기/번들 유지.
+- 새계획/새시험요청 없음·소유자원인수정 전 같은333단계 재시도 중단 필요. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 상세결과·10줄·imageown장부 참조.
+
 ## 회차 3 — Codex 분석·통합 선행 검사, 외부 새 시험 없음
 
 - IMAGEOWN=FAIL reason=INTEGRATED_ABBA_NOT_RUN; 독립 소유 pixel_max1, 통합 픽셀·FPS·끊김 NA.
@@ -69,3 +78,13 @@
   - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
   - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=3 bytes=334233600 copy_calls=117 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_ev
   - [StutterFix] [gpudeco] prepare_ms=9769.198100 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei
+
+## 회차 4
+- Codex 요약: 이미지 텍스처 주소 누락을 준비 단계에서 검출하도록 보강했습니다. 빌드 3종·LoadCheck·검사 28개가 통과했습니다.
+
+실제 통합은 미해결로 `IMAGEOWN=FAIL`입니다. Claude 소유 코드에 남은 확인 사항과 동일 시험 반복 중단 조건을 [결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)에 기록했습니다.
+
+게임 실행·설치·커밋은 하지 않았습니다.
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_TEXTURE_COVERAGE

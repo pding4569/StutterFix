@@ -1,0 +1,37 @@
+[StutterFix] [자동 시험] 시작: 333단계 - timeout 600 / auto on / gpudeco off / gpudeco images gate reset / gpudeco images gate refreshpose off / gpudeco images gate preflight on / gpudeco off / decobake off / gpudeco drawcollapse reset / gpudeco drawcollapse unsafe off / decobake on / gpudeco costprobe off / gpudeco effectcache off / gpudeco submitsingle off / gpudeco latecache off / gpudeco nombp off / gpudeco nativebatch on / gpudeco nativecopy on8masked / gpudeco zeroalpha on / gpudeco bundle E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/evidence/drawcollapse5/bundle/stutterfix_gpudeco / gpudeco images playback on / open D:/얼불춤 맵 파일/Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco off / select 0 / play / gpudeco scheduled / pause / decobake ready / gpudeco images compile / gpudeco images own on / gpudeco images matrix on / gpudeco images refreshpose off / gpudeco live scope song / gpudeco drawcollapse prepare / gpudeco live prepare / resume / stop / seek 260 12 / decobake ready / waitsongpos 260 40 / pause / framecmp clear / framecmp mask none / framecmp filters on / framecmp ui exclude / framecmp noise O O2 / framecmp assertzero O O2 / gpudeco live on / framecmp noise G N / framecmp assertzero G N / framecmp save O / framecmp save O2 / framecmp save G / framecmp save N / gpudeco drawcollapse ready / gpudeco images collapsecheck / gpudeco drawcollapse on / framecmp noise B BN / framecmp assertzero B BN / gpudeco drawcollapse off / f
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] drawcollapse_gate_reset=True
+[StutterFix] [gpudeco] DRAWCOLLAPSE_UNSAFE_ORDER ignore=False ignored=0
+[StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots_avg=0.000 renderer_toggles_avg=0.000000 active_chunks_avg=0.000000 active_chunks_max=0 source_removals=0 missing_removals=0 source_search_element_upper_bound=0 source_shifted_ints=0 source_max_list=0 removal_work_is_CPU_timing=False additional_clock_reads_per_frame=2 gpu_time=UNMEASURED
+[StutterFix] [gpudeco] cost_probe_enabled=False acceptance=False
+[StutterFix] [gpudeco] effect_cache=False research_only=True default=False
+[StutterFix] [gpudeco] single_submit=False research_only=True default=False
+[StutterFix] [gpudeco] late_cache=False rebuilds=0 cache_ready=False cpu_targets=0 skipped=0 research_only=True default=False
+[StutterFix] [gpudeco] nombp=False
+[StutterFix] [gpudeco] native_batch=True static_batch=False restore_sort_bounds=False live_validated=False
+[StutterFix] [gpudeco] native_copy=True eight_uav=True masked=True active_contexts=0
+[StutterFix] [gpudeco] zeroalpha=True rule=both_factors_constant_one_exactly_zero count=0 collisions_changed=0
+[StutterFix] [gpudeco] image_playback candidate=True own=True setters=0 uploads=0 flushes=0 pending=0 recoveries=0 GPU_active=False alpha_watch=0 alpha_checks=0 alpha_dirty=0 refreshpose=False pose_updates=0
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=3 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] image_tape events=1833 selectors=104 target_references=8751 decorations=5087 empty_selector_events=1 source_id_reuses=0 payload_lower_bound_bytes=247540 metadata_only=False GPU_image_playback_candidate=True admission_changed=True
+[StutterFix] [gpudeco] image_variants ready_quad=103 null_argument=1 missing=0 non_quad=0 split_alpha=0 invalid=0 borrowed_assets_destroyed=0 asset_getters_only=True
+[StutterFix] [gpudeco] image_playback candidate=True own=True setters=0 uploads=0 flushes=0 pending=0 recoveries=0 GPU_active=False alpha_watch=0 alpha_checks=0 alpha_dirty=0 refreshpose=False pose_updates=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=refreshpose enabled=False default_off=True performance=False
+[StutterFix] [gpudeco] scope=song_union default_off=True Player_included=False
+[StutterFix] [gpudeco] drawcollapse_prepare=True default_off=True
+[StutterFix] [gpudeco] image_admission affected=5087 eligible=5028 excluded=59 null_argument_policy=CPU
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=28633 admitted=28523 rejects=repeat-tile:110
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL layout=small_dxt5_tiers_plus_borrowed_2d bytes_known=334233600 total_mb=318.750000 planned_arrays_known=3 direct_textures=32 active_texture_slots=35 shader_declared_slots=36 samplers=2 arrays_allocated=0 copy_calls=0 free_vram=UNVERIFIED
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775012 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775016 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775020 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775024 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775028 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-598960 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775032 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775036 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage registered=185 addressed=149 missing=36 missing_direct=36 missing_array=0 direct_required=68 direct_limit=32 arrays_used=3 array_limit=4 variant_entries_missing=36 valid=False stage=prepare performance=False
+[StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_TEXTURE_COVERAGE
+[StutterFix] [자동 시험] 단계 실패 'gpudeco live prepare': gpudeco G2: image collapse texture coverage incomplete; inspect GPUIMG_DIAG and change texture-bank preparation before retry
+[StutterFix] [자동 시험] 단계 실패 'gpudeco live prepare': gpudeco G2: image collapse texture coverage incomplete; inspect GPUIMG_DIAG and change texture-bank preparation before retry - 게임을 끕니다

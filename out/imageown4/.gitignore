@@ -1,0 +1,4 @@
+build/
+obj/
+coverage-check/
+*-before.cs

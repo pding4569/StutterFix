@@ -1,0 +1,1 @@
+2026-10-25: task-observer checkpoint; no new reusable observations retained; existing stderr/PowerShell quoting issues corrected in task-local runners.

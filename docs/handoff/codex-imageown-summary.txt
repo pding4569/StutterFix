@@ -1,10 +1,10 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=INTEGRATED_ABBA_NOT_RUN
-이번 게임·설치·커밋·푸시·자동 장치·Editor·설정/제어 변경0회; 새 게임 실측 없음.
-외부 run2 직접78줄 원시 순서 일치;3440×1440@164.999·GPU28523·활성화6회 CPU fallback0·해제6회Rec복원 일치.
-260/262/270초 GPU changed384/172/61·max1, pose동일, CPU정점489/280/258·max1; 반복/복원0·종료native_contexts0.
-허용3 이내·두 진단의 개선 근거 없음; pose기본끔·정점수식 유지·잔여1 원인미확정, 같은diag1/diag2 반복 금지.
-기존 이미지 통합 연결 존재;새collapsecheck는 현재/변형 주소누락·등록됐지만 제외된 항목/이미지·폴백 출력, 보호가드 유지.
-새 기본accept/abba2-preflight333단계 생성만;통합픽셀3개·7장 반복/복원·폴백0 선행, 실패 시ABBA 진입 거부.
-격리3빌드 오류0/0/0·경고48/36/40, LoadCheck279/229/281곳 틀림0·일반Player 연구 제외, 생성기8검사 통과.
-기존 명시diag/diag1/abba 전체출력12사례 동일·소유자/기존JSON/native/bundle SHA보존;새managed·번들지원 확인 전 실행 불가.
-통합픽셀/FPS/+20%/끊김/전곡/설치복원NA;마스터NEED_EDITOR_BUILD 유지,실패시원인·계수로 담당자 인계하고 동일재시도 중단.
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=TEXTURE_ADDRESS_MISSING
+이번 게임·설치·커밋·푸시·자동 장치·Editor·설정/제어변경0회; 새게임실측·새계획생성 없음.
+외부run3 직접35줄 원시순서대조;3440×1440@164.999·준비82구간/14595포함·3배열117복사/318.75MiB·직접32/32·준비폴백0.
+live on의 image_texture_not_registered_in_collapse로 활성화실패;GPU28523분류 뒤 Rec11821/11821복원·종료native_contexts0.
+현재항목만검사해 미래이미지누락을 놓치는 준비계약수정:전체등록합집합 대 실제주소검사·누락직접/배열분류·CPU기록분리 전 중단.
+허용helper실패로그5줄로 등록됐지만주소없음/새자산ID 구분;기존주소·범위·mip/wrap·정렬·폴백가드 유지·매프레임스캔 추가없음.
+기존로그에 누락ID/총요청수없어 실제슬롯초과 세부귀속미확정;이번수정은 실제수용량증가·게임통과·통합불가능 증명아님.
+격리3빌드 오류0/0/0·경고48/36/40·LoadCheck279/229/281곳 틀림0·일반Player 연구제외·실제메서드추출20/생성기8검사통과.
+보호14개SHA유지·renderer/policy/export/셰이더/번들/생성기/기존JSON/tag/설정유지;주소배정·자산수명은 소유자인계.
+통합픽셀/FPS/+20%/끊김/전곡/설치복원NA;원인수정 전 같은333단계 자동재시도 중단필요·장치직접정지안함·상세결과/장부/out/imageown4 참조.
