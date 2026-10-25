@@ -108,7 +108,11 @@ namespace StutterFix
             pending.Remove(v);
             if (v == null) return;
             flushing = true;
-            try { v.SetSprite(cs, false);
+            try {
+#if AUTOTEST
+                DecoBake.GpuImageSpriteWillFlush(v);
+#endif
+                v.SetSprite(cs, false);
 #if AUTOTEST
                 DecoBake.GpuImageSpriteFlushed(v);
 #endif
@@ -128,7 +132,11 @@ namespace StutterFix
                 foreach (var kv in list)
                 {
                     if (kv.Key == null) continue;
-                    try { kv.Key.SetSprite(kv.Value, false);
+                    try {
+#if AUTOTEST
+                            DecoBake.GpuImageSpriteWillFlush(kv.Key);
+#endif
+                            kv.Key.SetSprite(kv.Value, false);
 #if AUTOTEST
                             DecoBake.GpuImageSpriteFlushed(kv.Key);
 #endif

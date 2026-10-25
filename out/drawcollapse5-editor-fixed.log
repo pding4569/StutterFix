@@ -1,0 +1,1147 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+[Licensing::IpcConnector] Channel LicenseClient-나로컴 doesn't exist
+Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 24505 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-10-25T01:43:24Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 25532)
+
+COMMAND LINE ARGUMENTS:
+E:\Unity\Editor\6000.3.10f1\Editor\Unity.exe
+-batchmode
+-force-d3d11
+-projectPath
+E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+-executeMethod
+GpuDecoLab.CollapseBundle
+-logFile
+E:\StutterFixWork\wt-gpu\out\drawcollapse5-editor-fixed.log
+Successfully changed project path to: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [28388]  Target information:
+
+Player connection [28388]  * "[IP] 192.168.0.9 [Port] 55504 [Flags] 2 [Guid] 823309109 [EditorId] 823309109 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-UJA68AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [28388] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [28388] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-29088" after 0.4 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴" at "2026-10-25T01:43:25.7979282Z"
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              bd6ddfc1d83344f4bdbcd33836f50eb7
+  Correlation Id:          7ed3c9db1e66b686cc2bee4fe8333ce8
+  External correlation Id: 8781842994930202396
+  Machine Id:              ooNE0R16id3ypk/QQXRV4Tmz/MA=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-나로컴" (connect: 0.85s, validation: 0.05s, handshake: 1.42s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴-notifications" at "2026-10-25T01:43:27.2723967Z"
+[Licensing::Module] Connected to LicensingClient (PId: 25532, launch time: 0.00, total connection time: 2.33s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14569629307665-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 2.36s
+[Licensing::Module] Licensing is initialized (took 1.79s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.10f1 (e35f0c77bd8e)
+[Subsystems] Discovering subsystems at path E:/Unity/Editor/6000.3.10f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project/Assets
+Forcing GfxDevice: Direct3D 11
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4060 Ti (ID=0x2803)
+    Vendor:   NVIDIA
+    VRAM:     7949 MB
+    Driver:   32.0.16.1088
+Initialize mono
+Mono path[0] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/Managed'
+Mono path[1] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56088
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: E:/Unity/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.001261 seconds.
+- Loaded All Assemblies, in  0.485 seconds
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:False
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.547 seconds
+Domain Reload Profiling: 1031ms
+	BeginReloadAssembly (122ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (3ms)
+	RebuildCommonClasses (51ms)
+	RebuildNativeTypeToScriptingClass (19ms)
+	initialDomainReloadingComplete (58ms)
+	LoadAllAssembliesAndSetupDomain (234ms)
+		LoadAssemblies (119ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (230ms)
+			TypeCache.Refresh (228ms)
+				TypeCache.ScanAssembly (211ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (547ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (491ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (61ms)
+			SetLoadedEditorAssemblies (6ms)
+			BeforeProcessingInitializeOnLoad (119ms)
+			ProcessInitializeOnLoadAttributes (207ms)
+			ProcessInitializeOnLoadMethodAttributes (99ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 2 packages:
+  Built-in packages:
+    com.unity.modules.imageconversion@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.assetbundle@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.assetbundle)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.00 seconds
+[Package Manager] Done resolving packages in 0.53 seconds
+[Package Manager] Registered 2 packages:
+  Built-in packages:
+    com.unity.modules.imageconversion@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.assetbundle@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.assetbundle)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.00 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 1s920ms
+[145/148    1s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[146/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+[147/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+*** Tundra build success (1.88 seconds), 3 items updated, 148 evaluated
+AssetDatabase: script compilation time: 2.308706s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.521 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.598 seconds
+Domain Reload Profiling: 1119ms
+	BeginReloadAssembly (316ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (17ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (153ms)
+	RebuildCommonClasses (48ms)
+	RebuildNativeTypeToScriptingClass (18ms)
+	initialDomainReloadingComplete (27ms)
+	LoadAllAssembliesAndSetupDomain (110ms)
+		LoadAssemblies (192ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (11ms)
+			TypeCache.Refresh (8ms)
+				TypeCache.ScanAssembly (2ms)
+			BuildScriptInfoCaches (1ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (599ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (410ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (28ms)
+			SetLoadedEditorAssemblies (3ms)
+			BeforeProcessingInitializeOnLoad (162ms)
+			ProcessInitializeOnLoadAttributes (165ms)
+			ProcessInitializeOnLoadMethodAttributes (49ms)
+			AfterProcessingInitializeOnLoad (3ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (13ms)
+Start importing Assets/Shaders/GpuDecoBatch.shader using Guid(387f82654deca354089c729241d2a81e) (ShaderImporter)Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+ -> (artifact id: '14f13892b23a04460d45b599634e5ac9') in 0.0385191 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=6e3a7b8898dd49f4a9535dceccaa4351): Total: 4.184 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=1 (actual=1, local cache=0, cache server=0)
+		Asset DB Process Time: managed=2 ms, native=709 ms
+		Asset DB Callback time: managed=75 ms, native=559 ms
+		Scripting: domain reloads=1, domain reload time=521 ms, compile time=2311 ms, other=3 ms
+		Project Asset Count: scripts=28, non-scripts=5
+		Asset File Changes: new=0, changed=2, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.002ms
+	InvokePackagesCallback: 540.838ms
+	ApplyChangesToAssetFolders: 0.160ms
+	Scan: 15.603ms
+	OnSourceAssetsModified: 1.622ms
+	CategorizeAssetsWithTransientArtifact: 0.189ms
+	ProcessAssetsWithTransientArtifactChanges: 1.076ms
+	CategorizeAssets: 0.189ms
+	ImportOutOfDateAssets: 639.020ms (-1711.831ms without children)
+		ImportManagerImport: 39.674ms (0.890ms without children)
+			ImportInProcess: 38.762ms
+			UpdateCategorizedAssets: 0.022ms
+		CompileScripts: 2310.913ms
+		ReloadNativeAssets: 0.000ms
+		UnloadImportedAssets: 0.113ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.009ms
+		InitializingProgressBar: 0.005ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 0.136ms
+	PostProcessAllAssets: 92.794ms
+	Hotreload: 0.832ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 1.600ms
+	PersistCurrentRevisions: 0.022ms
+	UnloadStreamsEnd: 0.000ms
+	GenerateScriptTypeHashes: 0.001ms
+	Untracked: 2889.607ms
+
+Application.AssetDatabase Initial Refresh End
+Scanning for USB devices : 1.917ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-project
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 28 unused Assets / (0.8 MB). Loaded Objects now: 634.
+Memory consumption went from 89.9 MB to 89.1 MB.
+Total: 5.760100 ms (FindLiveObjects: 0.047600 ms CreateObjectMapping: 0.004600 ms MarkObjects: 5.434500 ms  DeleteObjects: 0.272700 ms)
+
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:38)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+Asset Pipeline Refresh (id=b85f9a371c82162418cbbba3f7ea1f7f): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=edc42c3e7c296254cb8e72eaeff1b4e1): Total: 0.027 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/ProjectSettings.asset using Guid(00000000000000004000000000000000) (LibraryAssetImporter) -> (artifact id: '84c78a5dc056e87e108f8d9edfe77198') in 0.001978 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=b73dfdabe6b039c43983c31ef148ef4d): Total: 0.043 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aESkipCompile.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
+WorkingDir: E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+ExitCode: 0 Duration: 0s90ms
+*** Tundra build success (0.06 seconds), 0 items updated, 3 evaluated
+Asset Pipeline Refresh (id=4ee7a85211a310c47aed33c9577164b9): Total: 0.002 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+[ScriptCompilation] Requested script compilation because: Recompiling scripts for player build.
+BuildPlayer: start building target 19
+Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aP.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
+WorkingDir: E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+ExitCode: 0 Duration: 0s27ms
+*** Tundra build success (0.00 seconds), 0 items updated, 3 evaluated
+Compiling compute shader "GpuDeco"
+    starting stripping...
+    finished in 0.00 seconds. 11 of 11 variants left
+    11 variants, starting compilation...
+Total cache size 68378808
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(209) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(209) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(209) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(209) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(209) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel ImageRotationProbe at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(153) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(209) (on d3d11)
+    finished in 0.00 seconds. Local cache hits 11, remote cache hits 0, compiled 0 variants
+Compiling shader "StutterFix/GpuDecoBatch"
+  Pass "" (vp)
+Total cache size after purge 68378808, took 00:00:00.1071198
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.01 seconds
+  Pass "" (fp)
+    Target graphics API: d3d11
+    Full variant space:         1
+    After settings filtering:   1
+    After built-in stripping:   1
+    After scriptable stripping: 1
+    Processed in 0.00 seconds
+  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 1 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.00s
+Serialized binary data for shader StutterFix/GpuDecoBatch in 0.00s
+    d3d11 (total internal programs: 2, unique: 2)
+Shader warning in 'StutterFix/GpuDecoBatch': integer modulus may be much slower, try using uints if possible. at Assets/Shaders/GpuDecoBatch.shader(165) (on d3d11)
+
+Compiling Subshader: 0, Pass: <Unnamed Pass 0>, Fragment program with <no keywords>
+Platform defines: SHADER_API_DESKTOP UNITY_COLORSPACE_GAMMA UNITY_ENABLE_DETAIL_NORMALMAP UNITY_ENABLE_REFLECTION_BUFFERS UNITY_LIGHTMAP_FULL_HDR UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_PBS_USE_BRDF1 UNITY_PLATFORM_SUPPORTS_DEPTH_FETCH UNITY_SPECCUBE_BLENDING UNITY_SPECCUBE_BOX_PROJECTION UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS
+Disabled keywords: SHADER_API_GLES30 SHADER_API_GLES31 SHADER_API_GLES32 UNITY_ASTC_NORMALMAP_ENCODING UNITY_FRAMEBUFFER_FETCH_AVAILABLE UNITY_HARDWARE_TIER1 UNITY_HARDWARE_TIER2 UNITY_HARDWARE_TIER3 UNITY_LIGHTMAP_DLDR_ENCODING UNITY_LIGHTMAP_RGBM_ENCODING UNITY_METAL_SHADOWS_USE_POINT_FILTERING UNITY_NO_DXT5nm UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 UNITY_PBS_USE_BRDF3 UNITY_PRETRANSFORM_TO_DISPLAY_ORIENTATION UNITY_UNIFIED_SHADER_PRECISION_MODEL UNITY_VIRTUAL_TEXTURING
+Total cache size 68378808
+
+***Player size statistics***
+Total compressed size 88.7 KB. Total uncompressed size 0.5 MB.
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 24 unused Assets / (1.1 MB). Loaded Objects now: 670.
+Memory consumption went from 89.9 MB to 88.8 MB.
+Total: 6.304700 ms (FindLiveObjects: 0.049800 ms CreateObjectMapping: 0.007500 ms MarkObjects: 5.711800 ms  DeleteObjects: 0.534400 ms)
+
+
+***Player size statistics***
+Total compressed size 1.5 KB. Total uncompressed size 4.1 KB.
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 0 unused Assets / (0 B). Loaded Objects now: 672.
+Memory consumption went from 87.9 MB to 87.9 MB.
+Total: 5.555200 ms (FindLiveObjects: 0.043700 ms CreateObjectMapping: 0.004100 ms MarkObjects: 5.502100 ms  DeleteObjects: 0.004100 ms)
+
+
+-------------------------------------------------------------------------------
+Bundle Name: stutterfix_gpudeco
+Compressed Size:88.7 kb
+Uncompressed usage by category (Percentages based on user generated assets only):
+Textures               0.0 kb	 0.0% 
+Meshes                 0.0 kb	 0.0% 
+Animations             0.0 kb	 0.0% 
+Sounds                 0.0 kb	 0.0% 
+Shaders                12.3 kb	 2.3% 
+Other Assets           445.9 kb	 82.5% 
+Levels                 0.0 kb	 0.0% 
+File headers           82.2 kb	 15.2% 
+Total User Assets      540.5 kb	 100.0% 
+Complete build size    540.5 kb
+Used Assets and files from the Resources folder, sorted by uncompressed size:
+ 445.7 kb	 82.5% Assets/Shaders/GpuDeco.compute
+ 12.3 kb	 2.3% Assets/Shaders/GpuDecoBatch.shader
+ 0.2 kb	 0.0% AssetBundle Object
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+Bundle Name: bundle
+Compressed Size:1.5 kb
+Uncompressed usage by category (Percentages based on user generated assets only):
+Textures               0.0 kb	 0.0% 
+Meshes                 0.0 kb	 0.0% 
+Animations             0.0 kb	 0.0% 
+Sounds                 0.0 kb	 0.0% 
+Shaders                0.0 kb	 0.0% 
+Other Assets           0.2 kb	 4.5% 
+Levels                 0.0 kb	 0.0% 
+File headers           3.9 kb	 95.5% 
+Total User Assets      4.1 kb	 100.0% 
+Complete build size    4.1 kb
+Used Assets and files from the Resources folder, sorted by uncompressed size:
+ 0.1 kb	 2.5% AssetBundle Object
+ 0.1 kb	 2.1% Built-in AssetBundleManifest: AssetBundleManifest
+-------------------------------------------------------------------------------
+DRAWCOLLAPSE_DIRECT vertices=260 reversed_map=True tail_threads=True alpha_zero_degenerate=True errors=0 copy_dispatches=0
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:CollapseDirectProbe (UnityEngine.ComputeShader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:70)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+Graphics.CopyTexture with a region will not copy readable texture data for compressed formats (source texture format 101)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.Graphics:CopyTexture_Region (UnityEngine.Texture,int,int,int,int,int,int,UnityEngine.Texture,int,int,int,int)
+UnityEngine.Graphics:CopyTexture (UnityEngine.Texture,int,int,int,int,int,int,UnityEngine.Texture,int,int,int,int)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:98)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+[Assets/Editor/GpuDecoDrawCollapseProbe.cs line 29]
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+Graphics.CopyTexture with a region will not copy readable texture data for compressed formats (source texture format 101)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.Graphics:CopyTexture_Region (UnityEngine.Texture,int,int,int,int,int,int,UnityEngine.Texture,int,int,int,int)
+UnityEngine.Graphics:CopyTexture (UnityEngine.Texture,int,int,int,int,int,int,UnityEngine.Texture,int,int,int,int)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:98)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+[Assets/Editor/GpuDecoDrawCollapseProbe.cs line 29]
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:PixelDiff (UnityEngine.Color32[],UnityEngine.Color32[],string,bool) (at Assets/Editor/GpuDecoSubmeshes.cs:180)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:109)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+DRAWCOLLAPSE_TEXTURE cases=40 compressed_and_rgba=True bindings=0,5,6,31,63 padded_rect=True point_and_bilinear=True errors=0 shader_oracle=Sprites/Default game_Sprites/Tile=UNVERIFIED
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:CollapseTextureProbe (UnityEngine.Shader) (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:112)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:29)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+DRAWCOLLAPSE_LAB=PASS scope=synthetic_direct_vertices_and_array_pixels game_FPS=NA game_pixels=NA path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\drawcollapse4/bundle
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab/<>c:<CollapseBundle>b__11_0 () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:32)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:39)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-나로컴-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-나로컴 channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1792892614601,"processId":29088,"allocatedMemory":9991126,"memoryLabels":[{"Default":29313},{"Permanent":15236},{"NewDelete":67907},{"Thread":4230344},{"Manager":30237},{"VertexData":248},{"Geometry":816},{"Texture":160},{"Shader":79809},{"Material":24},{"GfxDevice":55401},{"Animation":392},{"Audio":2664},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":720},{"Input":14984},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"ScriptingNativeRuntime":155060},{"BaseObject":1619888},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":1016},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":20259},{"DynamicArray":76759},{"HashMap":63193},{"Utility":2659462},{"Curl":2559},{"PoolAlloc":2056},{"AI":80},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":8640},{"WebRequest":808},{"VR":47994},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":384},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":96},{"EditorUtility":91182},{"VersionControl":4},{"Undo":947},{"AssetDatabase":209616},{"EditorGi":328},{"UnityConnect":29208},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":215},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2859},{"Licensing":1232},{"AssetReference":32},{"IPCStream":32}]}

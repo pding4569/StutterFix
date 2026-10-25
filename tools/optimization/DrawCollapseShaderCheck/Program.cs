@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 // Real Microsoft SM5 compilation, without Editor licensing or a game process.
 // Raster entry checks substitute only UnityObjectToClipPos; this is NOT a Unity
@@ -23,6 +24,13 @@ unsafe class Program
         string root=Path.GetFullPath(args.Length==0?".":args[0]);int count=0;
         string compute=File.ReadAllText(Path.Combine(root,"tools/gpudeco-lab/GpuDeco.compute"));
         string raster=File.ReadAllText(Path.Combine(root,"tools/gpudeco-lab/GpuDecoBatch.shader"));
+        string policy=File.ReadAllText(Path.Combine(root,"DrawCollapsePolicy.cs"));
+        int arrays=int.Parse(Regex.Match(policy,@"const int ArrayBindings=(\d+);").Groups[1].Value);
+        int direct=int.Parse(Regex.Match(policy,@"const int DirectBindings=(\d+);").Groups[1].Value);
+        if(arrays+direct>64 || Regex.Matches(raster,@"Texture2DArray _Tex\d+;").Count!=arrays
+            || Regex.Matches(raster,@"Texture2D _Big\d+;").Count!=direct)
+        {Console.Error.WriteLine("Generated shader texture declarations exceed Unity cap or differ from runtime policy");return 1;}
+        Console.WriteLine("SHADER_TEXTURE_BINDINGS arrays="+arrays+" direct="+direct+" declared="+(arrays+direct)+" unity_limit=64");
         raster=raster.Split("HLSLPROGRAM")[1].Split("ENDHLSL")[0]
             .Replace("#include \"UnityCG.cginc\"","float4 UnityObjectToClipPos(float4 p) { return p; }");
         foreach(var entry in new[]{("EvaluateLive","cs_5_0",compute),("EvaluateCollapse","cs_5_0",compute),("vert","vs_5_0",raster),("frag","ps_5_0",raster)})
@@ -31,7 +39,7 @@ unsafe class Program
             try
             {
                 // This check validates SM5 syntax/resource limits. Avoid the
-                // optimizer's excessive branch folding on 70 resource choices.
+                // optimizer's excessive branch folding on resource choices.
                 int hr=D3DCompile(source,(nuint)source.Length,"drawcollapse",0,0,entry.Item1,entry.Item2,(1u<<11)|4u,0,out code,out error);
                 string messages=Encoding.UTF8.GetString(Blob(error));
                 if(hr<0){Console.Error.WriteLine(messages);return 1;}

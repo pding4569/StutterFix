@@ -1,0 +1,22 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 24505 MB
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴" at "2026-10-25T01:42:25.707448Z"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-10-25T01:42:25Z
+
+COMMAND LINE ARGUMENTS:
+E:\Unity\Editor\6000.3.10f1\Editor\Unity.exe
+-batchmode
+-force-d3d11
+-projectPath
+E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+-executeMethod
+GpuDecoLab.CollapseBundle
+-logFile
+E:\StutterFixWork\wt-gpu\out\drawcollapse5-editor-unrestricted.log
+Successfully changed project path to: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+Exiting without the bug reporter. Application will terminate with return code 1

@@ -10,24 +10,55 @@ namespace StutterFix
 {
     internal static partial class DecoBake
     {
-        static bool gpuImageCandidate,gpuImageOwn=true,gpuImageUploadFault,gpuImageMatrix;
+        static bool gpuImageCandidate,gpuImageOwn=true,gpuImageUploadFault,gpuImageMatrix,gpuImageRefreshPose;
         static bool[] gpuImageEligible=Array.Empty<bool>(),gpuImageAffected=Array.Empty<bool>();
-        static readonly HashSet<int> gpuImagePending=new HashSet<int>();
+        static readonly GpuDecoImageWakeQueue gpuImageWake=new GpuDecoImageWakeQueue();
+        static HashSet<int> gpuImagePending=>gpuImageWake.Pending;
+        static HashSet<int> gpuImageAlphaWatch=>gpuImageWake.Watching;
+        // Read the existing event queue before FlushDirty consumes it. No patch
+        // or mutation of the concurrently owned GpuDecoExport.cs is needed.
+        static readonly AccessTools.FieldRef<GpuLiveSlice,List<int>> gpuImageAlphaEvents=
+            AccessTools.FieldRefAccess<GpuLiveSlice,List<int>>("pendingAlpha");
         static readonly List<int> gpuImagePendingScratch=new List<int>();
         static readonly Dictionary<int,HashSet<int>> gpuImagePlannedTargets=new Dictionary<int,HashSet<int>>();
         static readonly MaterialPropertyBlock gpuImageBlock=new MaterialPropertyBlock();
+        static Dictionary<int,Vector4> gpuImageCollapseAddresses;
+        static ComputeBuffer gpuImageCollapseAddressOwner;
+        static readonly Vector4[] gpuImageCollapseTextureUpload=new Vector4[2];
+        // Hooks for PrepareDrawCollapse's owner. Register before allocating
+        // arrays, then retain the addresses AFTER allocating the texture buffer.
+        static void RegisterGpuImageCollapseVariants(Dictionary<int,Texture2D> textures)
+        {
+            if(!gpuImageCandidate||!gpuImageOwn||gpuImageVariants==null)return;
+            foreach(var v in gpuImageVariants)
+            {
+                if(v.Status!=GpuDecoImageVariant.Kind.ReadyQuad)continue;
+                var sprite=v.Source?.sprite;var t=sprite?sprite.texture:null;
+                RequireLive(t&&t.mipmapCount==1,"image collapse variant texture/mips unsupported");
+                // The original V15 event setter/Defer applies Clamp. Preparation
+                // must not change a shared texture's wrapping ahead of its event.
+                textures[t.GetInstanceID()]=t;
+            }
+        }
+        static void RememberGpuImageCollapseAddresses(Dictionary<int,Vector4> addresses)
+        {
+            gpuImageCollapseAddresses=addresses;gpuImageCollapseAddressOwner=gpuCollapseTexture;
+        }
         static readonly float[] gpuImageFields=new float[16];
         static readonly AccessTools.FieldRef<scrVisualDecoration,Vector2> gpuImageOriginalSize=
             AccessTools.FieldRefAccess<scrVisualDecoration,Vector2>("<spriteUnscaledSize>k__BackingField");
-        static long gpuImageSetters,gpuImageUploads,gpuImageFlushes,gpuImageRestores;
+        static long gpuImageSetters,gpuImageUploads,gpuImageFlushes,gpuImageRestores,gpuImagePoseUpdates,gpuImageAlphaChecks,gpuImageAlphaDirty;
         static bool ImageOnlyEvent(ffxMoveDecorationsPlus f)=>gpuImageCandidate&&f.imageFilenameUsed&&!f.originalSizeUsed&&!f.smoothingUsed&&!f.cropPivotOffsetUsed;
         static void ClearGpuImagePlaybackMap()
         {
-            gpuImageEligible=Array.Empty<bool>();gpuImageAffected=Array.Empty<bool>();gpuImagePending.Clear();gpuImagePendingScratch.Clear();gpuImagePlannedTargets.Clear();
+            StopGpuImageVertexDiagnostic(false);
+            gpuImageRefreshPose=false;
+            gpuImageCollapseAddresses=null;gpuImageCollapseAddressOwner=null;
+            gpuImageEligible=Array.Empty<bool>();gpuImageAffected=Array.Empty<bool>();gpuImageWake.Clear();gpuImagePendingScratch.Clear();gpuImagePlannedTargets.Clear();
         }
         static void PrepareGpuImageAdmission()
         {
-            gpuImagePending.Clear();gpuImageEligible=Array.Empty<bool>();
+            gpuImageWake.Clear();gpuImageEligible=Array.Empty<bool>();
             if(!gpuImageCandidate)return;
             RequireLive(gpuScope.WholeSong&&GpuDecoNativeBatch.Enabled&&!GpuDecoNativeBatch.StaticCombine&&GpuDecoCopy.Enabled,
                 "image playback requires song scope and independent native copy");
@@ -50,6 +81,7 @@ namespace StutterFix
                 }
             }
             for(int i=0;i<affected.Length;i++)gpuImageEligible[i]=affected[i]&&!bad[i];
+            gpuImageWake.Reserve(gpuImageEligible.Count(x=>x));
             gpuImagePendingScratch.Capacity=Math.Max(gpuImagePendingScratch.Capacity,baselineObjects.Length);
             GpuLog("image_admission affected="+affected.Count(x=>x)+" eligible="+gpuImageEligible.Count(x=>x)+" excluded="+bad.Count(x=>x)+" null_argument_policy=CPU");
         }
@@ -79,6 +111,9 @@ namespace StutterFix
         }
         static void RefreshGpuImageGeometry(int master,scrVisualDecoration d)
         {
+            // Explicit diagnostic A only; no per-frame Transform writes.
+            // The logical fields must already be current before this call.
+            if(gpuImageRefreshPose){d.UpdatePosition();gpuImagePoseUpdates++;}
             var source=d.spriteRenderer;
             RequireLive(source&&source.sprite&&source.sprite.texture&&!source.sprite.associatedAlphaSplitTexture,"GPU image missing physical sprite");
             var variant=GpuDecoImageVariant.CaptureSprite(source.sprite);
@@ -103,6 +138,7 @@ namespace StutterFix
                     next.Flags|=64;
                 }
                 slice.Gpu.UpdateImageGeometry(item,next);
+                UpdateDrawCollapseTextureSlot(item,source.sprite.texture,source.sharedMaterial);
                 if(gpuImageUploadFault){gpuImageUploadFault=false;throw new InvalidOperationException("injected_image_upload");}
                 renderer.sharedMaterial=source.sharedMaterial;
                 gpuImageBlock.Clear();renderer.GetPropertyBlock(gpuImageBlock,0);
@@ -115,15 +151,17 @@ namespace StutterFix
         }
         static void CaptureGpuImageActivation()
         {
-            gpuImagePending.Clear();gpuImageSetters=gpuImageUploads=gpuImageFlushes=gpuImageRestores=0;
+            StopGpuImageVertexDiagnostic(false);
+            gpuImageWake.Clear();gpuImageSetters=gpuImageUploads=gpuImageFlushes=gpuImageRestores=gpuImagePoseUpdates=gpuImageAlphaChecks=gpuImageAlphaDirty=0;
             if(!gpuImageCandidate||!gpuImageOwn)return;
             for(int m=0;m<gpuLiveOwnedIndices.Length;m++)
             {
                 if(GpuCpuFallback(m)||!GpuImageActor(gpuLiveOwnedIndices[m]))continue;
                 var d=baselineObjects[gpuLiveOwnedIndices[m]] as scrVisualDecoration;
                 RefreshGpuImageGeometry(m,d);
-                if(LazySprite.GpuPeekPending(d,out _))gpuImagePending.Add(m);
+                if(LazySprite.GpuPeekPending(d,out _))gpuImageWake.Defer(m);
             }
+            GpuLog("GPUIMG_DIAG stage=activation refreshpose="+gpuImageRefreshPose+" pose_updates="+gpuImagePoseUpdates+" pixel_max=NA performance=False");
         }
         // Called only AFTER the scalar target was committed. Never rerun that
         // target's scalar effect if the separate image upload fails.
@@ -136,8 +174,8 @@ namespace StutterFix
                 SyncGpuImageFields(master,d);
                 stage=1;FastMove.RunGpuImageBlock(fx,d);gpuImageSetters++;stage=2;
                 if(!gpuLiveActive)return;
-                if(LazySprite.GpuPeekPending(d,out _))gpuImagePending.Add(master);
-                else {gpuImagePending.Remove(master);RefreshGpuImageGeometry(master,d);}
+                if(LazySprite.GpuPeekPending(d,out _))gpuImageWake.Defer(master);
+                else {gpuImageWake.Remove(master);RefreshGpuImageGeometry(master,d);}
             }
             catch(Exception ex)
             {
@@ -150,20 +188,44 @@ namespace StutterFix
         internal static void GpuImageSpriteFlushed(scrVisualDecoration d)
         {
             if(!gpuImageCandidate||!gpuLiveActive||!gpuLiveMasterByDeco.TryGetValue(d,out int master)||GpuCpuFallback(master)||!GpuImageActor(gpuLiveOwnedIndices[master]))return;
-            try {gpuImagePending.Remove(master);RefreshGpuImageGeometry(master,d);gpuImageFlushes++;}
+            try {gpuImageWake.Remove(master);RefreshGpuImageGeometry(master,d);gpuImageFlushes++;}
             catch(Exception ex){gpuImageRestores++;RecoverGpuLive("image_flush:"+ex.GetType().Name,false);throw;}
+        }
+        internal static void GpuImageSpriteWillFlush(scrVisualDecoration d)
+        {
+            if(!gpuImageCandidate||!gpuLiveActive||!gpuLiveMasterByDeco.TryGetValue(d,out int master)
+                ||GpuCpuFallback(master)||!GpuImageActor(gpuLiveOwnedIndices[master]))return;
+            try {SyncGpuImageFields(master,d);}
+            catch(Exception ex)
+            {
+                gpuImageRestores++;RecoverGpuLive("image_preflush:"+ex.GetType().Name,false);
+                // LazySprite removed this pending entry already. Continue with
+                // its original setter exactly once, now under CPU ownership.
+            }
         }
         static void FlushGpuImagesBeforeVisible()
         {
             if(!gpuImageCandidate||gpuImagePending.Count==0)return;
-            gpuImagePendingScratch.Clear();gpuImagePendingScratch.AddRange(gpuImagePending);
+            foreach(var slice in gpuLiveSlices)
+                foreach(int item in gpuImageAlphaEvents(slice))
+                {
+                    int master=slice.MasterItems[item];
+                    if(gpuImageWake.AlphaDirty(master))gpuImageAlphaDirty++;
+                }
+            // A dirty start may still have alpha=0. Keep ONLY pending images
+            // with animated alpha until they become visible or static. Looking
+            // only at MarkDirty would miss the following frame's 0 -> positive.
+            gpuImageWake.Snapshot(gpuImagePendingScratch);
             foreach(int master in gpuImagePendingScratch)
             {
                 if(!gpuLiveActive)break;
+                if(GpuCpuFallback(master)||!gpuImagePending.Contains(master)){gpuImageAlphaWatch.Remove(master);continue;}
                 var d=baselineObjects[gpuLiveOwnedIndices[master]] as scrVisualDecoration;
-                if(!LazySprite.GpuPeekPending(d,out _)){gpuImagePending.Remove(master);continue;}
+                if(!LazySprite.GpuPeekPending(d,out _)){gpuImageWake.Remove(master);continue;}
+                gpuImageAlphaChecks++;
                 float alpha=EvalMasterSlotCurrent(master*16+10)*EvalMasterSlotCurrent(master*16+11);
-                if(alpha>0)
+                bool animated=gpuMasterChannels[master*16+10].sourceIndex>=0||gpuMasterChannels[master*16+11].sourceIndex>=0;
+                if(gpuImageWake.ShouldFlush(master,alpha,animated))
                 {
                     SyncGpuImageFields(master,d);
                     if(LazySprite.GpuPeekPending(d,out _))LazySprite.Flush(d);
@@ -204,12 +266,14 @@ namespace StutterFix
                 +" color8_mismatch="+colorBad+" UV_mismatch="+uvBad+" material_texture_mismatch="+materialBad+" max_abs_degrees="+maxDegrees.ToString("R",Inv)
                 +" examples_index_error_degrees="+string.Join(",",examples)+" scope=boundary_CPU_transform_not_live_reference performance=False");
         }
-        static void LogGpuImagePlayback()=>GpuLog("image_playback candidate="+gpuImageCandidate+" own="+gpuImageOwn+" setters="+gpuImageSetters+" uploads="+gpuImageUploads+" flushes="+gpuImageFlushes+" pending="+gpuImagePending.Count+" recoveries="+gpuImageRestores+" GPU_active="+gpuLiveActive);
+        static void LogGpuImagePlayback()=>GpuLog("image_playback candidate="+gpuImageCandidate+" own="+gpuImageOwn+" setters="+gpuImageSetters+" uploads="+gpuImageUploads+" flushes="+gpuImageFlushes+" pending="+gpuImagePending.Count+" recoveries="+gpuImageRestores+" GPU_active="+gpuLiveActive
+            +" alpha_watch="+gpuImageAlphaWatch.Count+" alpha_checks="+gpuImageAlphaChecks+" alpha_dirty="+gpuImageAlphaDirty+" refreshpose="+gpuImageRefreshPose+" pose_updates="+gpuImagePoseUpdates);
         // Explicit paused-boundary diagnostic only. CPU transforms are a valid
         // reference immediately after activation, before any live GPU motion.
-        static void LocateGpuImageDifference()
+        static void LocateGpuImageDifference(bool cpuVertices=false)
         {
             RequireLive(gpuLiveActive&&FrameCompare.Paused&&gpuImageCandidate,"image locate requires paused activation");
+            if(cpuVertices){StartGpuImageVertexDiagnostic();return;}
             var regions=new[]{new Rect(1566,798,68,36),new Rect(254,638,68,36)};
             var cameras=Camera.allCameras;int matches=0;
             foreach(var slice in gpuLiveSlices)
@@ -248,6 +312,7 @@ namespace StutterFix
         }
         static bool GpuImagePlaybackCommand(string command)
         {
+            if(GpuImageDiagnosticCommand(command))return true;
             if(command=="images matrix on"||command=="images matrix off")
             {RequireLive(FrameCompare.Paused&&!gpuLiveActive,"image matrix toggle requires paused CPU");gpuImageMatrix=command.EndsWith(" on",StringComparison.Ordinal);return true;}
             if(command=="images playback on"||command=="images playback off")

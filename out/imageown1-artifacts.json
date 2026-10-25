@@ -1,0 +1,22 @@
+{
+  "sha256": {
+    "GpuDecoImagePlayback.cs": "8d80b3a30988897830a80c3a2e78d0e8c1afbbb933115158f787d6cb8d0a3f8a",
+    "GpuDecoImageGeometryFixture.cs": "2bef463e706cbb6e0646152af43095ed264b6116d87051647f56970852200132",
+    "GpuDecoImageTimeline.cs": "cbf41fdd5465d8fa962c62ef4d8056cf915df164fa4d989ad8cd00d2ee98b506",
+    "GpuDecoDrawCollapse.cs": "bea6b177b92dad917f180b221a8940ab21e4aed94444f6a4113c011c85b40db8",
+    "LazySprite.cs": "cdcfa1314dfb699ab0eca76841e3b131b4d34693859cca288941b804b25008cf",
+    "tools/optimization/imageown-steps.py": "4e2be520b2c4bfaf465443e3e7e7b0065a3c7036e02bd73d6d81bd96a04bab94",
+    "out/imageown1/build/dev/StutterFix.dll": "136fdf1894f89ab1371b7d6945a091e407265a1bc4e7c7ff62e93b30f836cf4f",
+    "out/imageown1/build/player/StutterFix.dll": "d62a5aae069d15fac8f2404391d362018fcf3342b1cbc9fe8c98576b6c1f594e",
+    "out/imageown1/build/playerauto/StutterFix.dll": "6cc680a024ee1e29492629d9170bffab41e9111c27747c41e357b34ac2b8dd6a",
+    "tools/optimization/out/imageown-diag1-steps.json": "4b052dbbe5502d8078c2b5f01a282b0b103d931a66e222ab6c86f19bc26297c8",
+    "tools/optimization/out/imageown-abba1-steps.json": "53638954fce0fdcee8814c2c5223314d56bc076fe3ac21f4258e01b4dcea2c69",
+    "tools/optimization/out/drawcollapse-safe-readyon-steps.json": "61c8e2604532ade462c20165365231b8f4667696c6516bec015052cc794d5add",
+    "tools/gpudeco-lab/evidence/drawcollapse5/bundle/stutterfix_gpudeco": "4ecdbe6c69a33defa422dbcd944ac18f96e45d0786e705f1001b7d5a07440ad4"
+  },
+  "game_run": false,
+  "installed": false,
+  "committed": false,
+  "physical_pixels": "UNMEASURED",
+  "fps": "UNMEASURED"
+}

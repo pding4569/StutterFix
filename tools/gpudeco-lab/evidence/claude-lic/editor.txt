@@ -1,0 +1,498 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Channel LicenseClient-나로컴 doesn't exist
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 24505 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-10-25T01:41:14Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 29236)
+
+COMMAND LINE ARGUMENTS:
+E:\Unity\Editor\6000.3.10f1\Editor\Unity.exe
+-batchmode
+-nographics
+-quit
+-projectPath
+E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+-executeMethod
+GpuDecoLab.CollapseBundle
+-logFile
+E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\claude-lic\editor.txt
+Successfully changed project path to: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project
+E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [26096]  Target information:
+
+Player connection [26096]  * "[IP] 192.168.0.9 [Port] 55504 [Flags] 2 [Guid] 2210441575 [EditorId] 2210441575 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-UJA68AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [26096] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [26096] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Starting IPC server.
+Waiting for clients to connect on \\.\pipe\Unity-LicenseClient-나로컴, press Ctrl-C to exit.
+[Package Manager] Connected to IPC stream "Upm-22960" after 0.5 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴" at "2026-10-25T01:41:15.5746813Z"
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              77a7e3670e7b492cb1379c19068ecf8a
+  Correlation Id:          073c19c0df5890f72fe2072d4acc6682
+  External correlation Id: 585486706755115153
+  Machine Id:              ooNE0R16id3ypk/QQXRV4Tmz/MA=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-나로컴" (connect: 0.86s, validation: 0.05s, handshake: 1.57s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴-notifications" at "2026-10-25T01:41:17.1998442Z"
+[Licensing::Module] Connected to LicensingClient (PId: 29236, launch time: 0.00, total connection time: 2.48s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14569629307665-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 2.57s
+[Licensing::Module] Licensing is initialized (took 1.73s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Artifact Garbage Collection - Removed 1 unused hashed content files
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.10f1 (e35f0c77bd8e)
+[Subsystems] Discovering subsystems at path E:/Unity/Editor/6000.3.10f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project/Assets
+Forcing GfxDevice: Null
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Initialize mono
+Mono path[0] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/Managed'
+Mono path[1] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56960
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: E:/Unity/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.016572 seconds.
+- Loaded All Assemblies, in  1.573 seconds
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:False
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.324 seconds
+Domain Reload Profiling: 2896ms
+	BeginReloadAssembly (446ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (44ms)
+	RebuildCommonClasses (236ms)
+	RebuildNativeTypeToScriptingClass (31ms)
+	initialDomainReloadingComplete (258ms)
+	LoadAllAssembliesAndSetupDomain (601ms)
+		LoadAssemblies (381ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (575ms)
+			TypeCache.Refresh (548ms)
+				TypeCache.ScanAssembly (483ms)
+			BuildScriptInfoCaches (8ms)
+			ResolveRequiredComponents (18ms)
+	FinalizeReload (1324ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1233ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (149ms)
+			SetLoadedEditorAssemblies (9ms)
+			BeforeProcessingInitializeOnLoad (162ms)
+			ProcessInitializeOnLoadAttributes (318ms)
+			ProcessInitializeOnLoadMethodAttributes (581ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (15ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 2 packages:
+  Built-in packages:
+    com.unity.modules.imageconversion@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.assetbundle@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.assetbundle)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.03 seconds
+[Package Manager] Done resolving packages in 1.17 seconds
+[Package Manager] Registered 2 packages:
+  Built-in packages:
+    com.unity.modules.imageconversion@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.assetbundle@1.0.0 (location: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.assetbundle)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.00 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:80
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 339.8520ms
+Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+DisplayProgressbar: Compiling Scripts
+ExitCode: 4 Duration: 2s805ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aE-inputdata.json
+[145/148    2s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+*** Tundra requires additional run (2.76 seconds), 1 items updated, 144 evaluated
+Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\netcorerun\netcorerun.exe "E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aE.dag.json" "Library/Bee/1900b0aE-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+ExitCode: 0 Duration: 1s825ms
+Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aE.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/project
+ExitCode: 0 Duration: 10s
+Finished compiling graph: 151 nodes, 443 flattened edges (439 ToBuild, 2 ToUse), maximum node priority 13
+[           0s] Delete 140 artifact files that are no longer in use. (like Library\Bee\artifacts\mvdfrm)
+[  1/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.AssetComplianceModule.dll_36A8C09B7296D312.mvfrm
+[  2/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.AccessibilityModule.dll_691DE5D82B6B00C5.mvfrm
+[  3/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.AdaptivePerformanceModule.dll_3FDC761805214B71.mvfrm
+[  4/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.XRModule.dll_74B1B508C55C20F2.mvfrm
+[  5/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityWebRequestAssetBundleModule.dll_7B96598B92FF65DA.mvfrm
+[  6/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.WindowsStandalone.Extensions.dll_3DF66CDE6AF071C4.mvfrm
+[  7/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.WindModule.dll_CEC4F0FBD2C6FF30.mvfrm
+[  8/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.VideoModule.dll_C7D1B5F96D6D50A7.mvfrm
+[  9/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.VRModule.dll_41F2F2043C21D394.mvfrm
+[ 10/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.VFXModule.dll_6F0F626698DA7194.mvfrm
+[ 11/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.VirtualTexturingModule.dll_EF98A12124DC08A5.mvfrm
+[ 12/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.VehiclesModule.dll_7F640359D41D183F.mvfrm
+[ 13/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityWebRequestWWWModule.dll_65B78B11BCEB1BEF.mvfrm
+[ 14/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.VectorGraphicsModule.dll_4C8C86AF7049D896.mvfrm
+[ 15/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityWebRequestTextureModule.dll_71B3FA9BA2092CB3.mvfrm
+[ 16/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.SubstanceModule.dll_9CDDE439C8690D5C.mvfrm
+[ 17/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityWebRequestModule.dll_810B7878F4AF4EDC.mvfrm
+[ 18/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityWebRequestAudioModule.dll_90E2EB6C92A7671E.mvfrm
+[ 19/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityCurlModule.dll_3EBA83D19DA249FD.mvfrm
+[ 20/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityAnalyticsCommonModule.dll_B42554D226253AE4.mvfrm
+[ 21/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityAnalyticsModule.dll_D4E4C1448A6AB449.mvfrm
+[ 22/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityConsentModule.dll_35AD2D12BFB1294D.mvfrm
+[ 23/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UnityConnectModule.dll_640795E6B2A692FD.mvfrm
+[ 24/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UmbraModule.dll_1D9CDDA73801E075.mvfrm
+[ 25/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.TilemapModule.dll_D873B5521FF99E0A.mvfrm
+[ 26/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UIModule.dll_EF20CB7E9A674E1C.mvfrm
+[ 27/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.TLSModule.dll_EE30C9F7C26D0827.mvfrm
+[ 28/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.TextRenderingModule.dll_989D80CB6F4290CB.mvfrm
+[ 29/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.TextCoreTextEngineModule.dll_9AF545B5CD2B5F83.mvfrm
+[ 30/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.UIElementsModule.dll_3B2696B38957F0A3.mvfrm
+[ 31/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.TerrainPhysicsModule.dll_B5BFF94DF7865CDA.mvfrm
+[ 32/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.TerrainModule.dll_39774DD1083CBD01.mvfrm
+[ 33/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.TextCoreFontEngineModule.dll_530D0F443DA7A665.mvfrm
+[ 34/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.SubsystemsModule.dll_36E8354B862BB4AC.mvfrm
+[ 35/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.Graphs.dll_160A9CFAD05D03CE.mvfrm
+[ 36/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.StreamingModule.dll_C032CFF07D160F4E.mvfrm
+[ 37/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.SharedInternalsModule.dll_F37DAFA460E8AFAD.mvfrm
+[ 38/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.SpriteMaskModule.dll_CC3ACEE9B7E3CC99.mvfrm
+[ 39/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.SpriteShapeModule.dll_B6E06046BC914948.mvfrm
+[ 40/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ShaderVariantAnalyticsModule.dll_326E184C4DD5682E.mvfrm
+[ 41/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ShaderRuntimeModule.dll_8536812DF466EE5F.mvfrm
+[ 42/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ScreenCaptureModule.dll_6F5E0EC0B80B10D6.mvfrm
+[ 43/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll_1CC4E39AB0038A6E.mvfrm
+[ 44/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.PropertiesModule.dll_10499B98095F9B5B.mvfrm
+[ 45/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.RenderAs2DModule.dll_51815E1DE8B9E592.mvfrm
+[ 46/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.PhysicsModule.dll_1F30D262327E7413.mvfrm
+[ 47/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.PhysicsBackendPhysXModule.dll_DA7FF25B2322E135.mvfrm
+[ 48/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.Physics2DModule.dll_5843D290CE8B4FA5.mvfrm
+[ 49/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.PerformanceReportingModule.dll_18E6978E0C3C9C86.mvfrm
+[ 50/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ParticleSystemModule.dll_B545507ADE43624D.mvfrm
+[ 51/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.NVIDIAModule.dll_5487D653705DA413.mvfrm
+[ 52/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.MultiplayerModule.dll_1D274F78BFB69EB6.mvfrm
+[ 53/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.MarshallingModule.dll_45E7D180EB173E90.mvfrm
+[ 54/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.LocalizationModule.dll_3491514001225811.mvfrm
+[ 55/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.JSONSerializeModule.dll_5576613BA39EE474.mvfrm
+[ 56/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.InsightsModule.dll_A167D26AE4709823.mvfrm
+[ 57/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.InputModule.dll_093DF93F211359A6.mvfrm
+[ 58/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.InputLegacyModule.dll_2EC44E0A9EE0C72F.mvfrm
+[ 59/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.InputForUIModule.dll_E5C0B672F694D3DB.mvfrm
+[ 60/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.IMGUIModule.dll_DB27D0F5710CC8E3.mvfrm
+[ 61/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ImageConversionModule.dll_6F6C70CEE9BAB45D.mvfrm
+[ 62/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.IdentifiersModule.dll_7608BAE1C967DF56.mvfrm
+[ 63/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.HotReloadModule.dll_8CE6A0A608C17392.mvfrm
+[ 64/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.HierarchyModule.dll_E0725E3BF6907411.mvfrm
+[ 65/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.HierarchyCoreModule.dll_6C7974DA1310DCE0.mvfrm
+[ 66/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.GridModule.dll_35E731C159E516BE.mvfrm
+[ 67/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.GIModule.dll_8BE9765ED9CF308A.mvfrm
+[ 68/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.GameCenterModule.dll_E30E5C599674371F.mvfrm
+[ 69/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.GraphicsStateCollectionSerializerModule.dll_2FABD183B0355A92.mvfrm
+[ 70/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.DSPGraphModule.dll_0CF26B43CC5419C5.mvfrm
+[ 71/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.dll_30C3557D7F3AAE1E.mvfrm
+[ 72/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.CrashReportingModule.dll_6233072E7031D6BF.mvfrm
+[ 73/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.DirectorModule.dll_07A109DA59F348A4.mvfrm
+[ 74/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ContentLoadModule.dll_36958C2CD571B92B.mvfrm
+[ 75/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.CoreModule.dll_587615D3419080C7.mvfrm
+[ 76/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ClusterRendererModule.dll_037A731E6795FC69.mvfrm
+[ 77/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ClusterInputModule.dll_F64486ED69A66518.mvfrm
+[ 78/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.AudioModule.dll_A2C8318EAADB3502.mvfrm
+[ 79/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ClothModule.dll_09B08E8984F813E6.mvfrm
+[ 80/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.AssetBundleModule.dll_9D7F32EC06EF113E.mvfrm
+[ 81/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.ARModule.dll_AD1FF2549B3DA739.mvfrm
+[ 82/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.AnimationModule.dll_0B9DE2A02D8E5810.mvfrm
+[ 83/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.AMDModule.dll_EFA106929B3C8CD4.mvfrm
+[ 84/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.AndroidJNIModule.dll_B8C1123ED033462E.mvfrm
+[ 85/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.AIModule.dll_F3AD2D513E204870.mvfrm
+[ 86/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.AdaptivePerformanceModule.dll_006C0ACE40669E76.mvfrm
+[ 87/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEngine.AccessibilityModule.dll_F55ED7FFA46383EA.mvfrm
+[ 88/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.XRModule.dll_3643237959DEED27.mvfrm
+[ 89/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.VideoModule.dll_01A4F9953BF02002.mvfrm
+[ 90/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.VFXModule.dll_62EDC013292A638F.mvfrm
+[ 91/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.VectorGraphicsModule.dll_91682514545D448B.mvfrm
+[ 92/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.UnityConnectModule.dll_76A811D7B81E9252.mvfrm
+[ 93/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.UmbraModule.dll_577021430684AFD0.mvfrm
+[ 94/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.UIToolkitAuthoringModule.dll_0804287E49306B5A.mvfrm
+[ 95/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.UIElementsSamplesModule.dll_9B9EB272703B0795.mvfrm
+[ 96/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.UIElementsModule.dll_3A78296B8713D758.mvfrm
+[ 97/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.UIAutomationModule.dll_2C0EF3522FAE75F8.mvfrm
+[ 98/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.UIBuilderModule.dll_91A11393C5E9FC9E.mvfrm
+[ 99/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.TreeModule.dll_9301378F2150AADB.mvfrm
+[100/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.TilemapModule.dll_E5F8FCA7BAEAB6C5.mvfrm
+[101/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.TextCoreTextEngineModule.dll_1C95CA62BA2DA0B8.mvfrm
+[102/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.TextRenderingModule.dll_0C5C8EA3F64A0DA6.mvfrm
+[103/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.TextCoreFontEngineModule.dll_D4AD93F12AA9E79A.mvfrm
+[104/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.TerrainModule.dll_46FC9526A32DD5BC.mvfrm
+[105/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.SubstanceModule.dll_E6F7F350E2E95B77.mvfrm
+[106/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.SpriteShapeModule.dll_B11A90B7AA5738C3.mvfrm
+[107/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.SpriteMaskModule.dll_CB8C61A1B59FB34E.mvfrm
+[108/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.SketchUpModule.dll_F49F2CAA215A0D34.mvfrm
+[109/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.ShaderFoundryModule.dll_01993CABC69CD8DB.mvfrm
+[110/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.ShaderCompilationModule.dll_A76D14EA533EFC65.mvfrm
+[111/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.ShaderBuildSettingsModule.dll_4802BCC0D8207CB3.mvfrm
+[112/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.SceneViewModule.dll_7BC8497F48545078.mvfrm
+[113/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.SceneTemplateModule.dll_C2B96C68A3ED5C4D.mvfrm
+[114/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.SafeModeModule.dll_0C8A4759D628711D.mvfrm
+[115/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.QuickSearchModule.dll_5995FFFAA4885C4C.mvfrm
+[116/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.PropertiesModule.dll_0F9B2E50071B8210.mvfrm
+[117/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.PresetsUIModule.dll_F87E9F595589DB6F.mvfrm
+[118/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.PlayModeModule.dll_527E391374F18084.mvfrm
+[119/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.PhysicsModule.dll_2CB619B7CD6F8CCE.mvfrm
+[120/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.Physics2DModule.dll_A25DE1A7E90B9DC0.mvfrm
+[121/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.MultiplayerModule.dll_17617FE9AD7C8E31.mvfrm
+[122/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.MediaModule.dll_A85B8EBBF7AA8CEB.mvfrm
+[123/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.LevelPlayModule.dll_DC6DEE6779A38AAF.mvfrm
+[124/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.HierarchyModule.dll_2A8C6D531110C22C.mvfrm
+[125/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.InAppPurchasingModule.dll_3402BBC2A0035411.mvfrm
+[126/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.GridModule.dll_12C65E6EB1DFAB93.mvfrm
+[127/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.GridAndSnapModule.dll_D83F656ECF161CE2.mvfrm
+[128/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.GraphViewModule.dll_3D1866775331836A.mvfrm
+[129/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.GraphicsStateCollectionSerializerModule.dll_26B80493E336112D.mvfrm
+[130/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.GIModule.dll_4D7AE4CF6E51FCBF.mvfrm
+[131/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.dll_FE1F0EA520C72139.mvfrm
+[132/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.EditorToolbarModule.dll_9F19FBAAA500B215.mvfrm
+[133/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.DiagnosticsModule.dll_CE867EED4BB15FF3.mvfrm
+[134/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.EmbreeModule.dll_FC76BE6C12C08965.mvfrm
+[137/148    0s] WriteText Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll.mvfrm.rsp
+[138/148    0s] WriteText Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.rsp
+[139/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.DeviceSimulatorModule.dll_FDCDB0ACF7DAEEE5.mvfrm
+[140/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.CoreModule.dll_35554280998B159C.mvfrm
+[141/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.CoreBusinessMetricsModule.dll_BFC76F922B687A6B.mvfrm
+[142/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.BuildProfileModule.dll_7B6E0461933AAD38.mvfrm
+[143/148    0s] MovedFromExtractor Library/Bee/artifacts/mvdfrm/UnityEditor.ClothModule.dll_4383D225537AE341.mvfrm
+[144/148    0s] MovedFromExtractor-Combine Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll.mvfrm
+[BUSY       6s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[145/148    6s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[146/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[147/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (10.72 seconds), 145 items updated, 148 evaluated
+AssetDatabase: script compilation time: 19.326382s
+Begin MonoManager ReloadAssembly
+Total cache size 68378808
+Total cache size after purge 68378808, took 00:00:00.1673615
+- Loaded All Assemblies, in  0.721 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.557 seconds
+Domain Reload Profiling: 1278ms
+	BeginReloadAssembly (299ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (36ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (74ms)
+	RebuildCommonClasses (50ms)
+	RebuildNativeTypeToScriptingClass (20ms)
+	initialDomainReloadingComplete (29ms)
+	LoadAllAssembliesAndSetupDomain (323ms)
+		LoadAssemblies (407ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (11ms)
+			TypeCache.Refresh (7ms)
+				TypeCache.ScanAssembly (2ms)
+			BuildScriptInfoCaches (1ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (558ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (404ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (27ms)
+			SetLoadedEditorAssemblies (3ms)
+			BeforeProcessingInitializeOnLoad (158ms)
+			ProcessInitializeOnLoadAttributes (162ms)
+			ProcessInitializeOnLoadMethodAttributes (49ms)
+			AfterProcessingInitializeOnLoad (4ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (13ms)
+Start importing Assets/Shaders/GpuDeco.compute using Guid(a69a2b6e367c6dd44923bacc7fc6345c) (ComputeShaderImporter)Launched and connected shader compiler UnityShaderCompiler.exe after 0.16 seconds
+ -> (artifact id: '7ce68d4940568961dbc9d8a0f9245254') in 0.3890492 seconds
+Start importing Assets/Shaders/GpuDecoBatch.shader using Guid(387f82654deca354089c729241d2a81e) (ShaderImporter) -> (artifact id: '91c28d921b271d3d0c542aa98b9ee8e4') in 0.1382824 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.03 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=8e02f2713c9018c43949f923991a5412): Total: 23.064 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=2 (actual=2, local cache=0, cache server=0)
+		Asset DB Process Time: managed=18 ms, native=1359 ms
+		Asset DB Callback time: managed=163 ms, native=1469 ms
+		Scripting: domain reloads=1, domain reload time=721 ms, compile time=19329 ms, other=3 ms
+		Project Asset Count: scripts=28, non-scripts=5
+		Asset File Changes: new=2, changed=6, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 1296.228ms
+	ApplyChangesToAssetFolders: 0.166ms
+	Scan: 124.085ms
+	OnSourceAssetsModified: 2.565ms
+	CategorizeAssetsWithTransientArtifact: 0.249ms
+	ProcessAssetsWithTransientArtifactChanges: 16.756ms
+	CategorizeAssets: 43.663ms
+	ImportOutOfDateAssets: 1101.283ms (-18766.079ms without children)
+		ImportManagerImport: 538.291ms (1.118ms without children)
+			ImportInProcess: 527.880ms
+			UpdateCategorizedAssets: 9.293ms
+		CompileScripts: 19328.778ms
+		ReloadNativeAssets: 0.000ms
+		UnloadImportedAssets: 0.112ms
+		ReloadImportedAssets: 0.000ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.010ms
+		InitializingProgressBar: 0.007ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 0.162ms
+	PostProcessAllAssets: 334.180ms
+	Hotreload: 0.715ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 1.722ms
+	PersistCurrentRevisions: 0.035ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 0.001ms
+	Untracked: 20142.706ms
+
+Application.AssetDatabase Initial Refresh End
+Scanning for USB devices : 1.749ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-project
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+Shader 'StutterFix/GpuDecoBatch' uses 70 texture parameters, more than the 16 supported by the current graphics device.
+Unloading 29 unused Assets / (1.2 MB). Loaded Objects now: 633.
+Memory consumption went from 89.2 MB to 88.0 MB.
+Total: 40.384000 ms (FindLiveObjects: 0.054000 ms CreateObjectMapping: 0.004500 ms MarkObjects: 30.904500 ms  DeleteObjects: 9.419200 ms)
+
+GPUDECO_G1=ERROR stage=lab reason=System.InvalidOperationException: D3D11 compute unavailable
+  at GpuDecoLab.Run (System.Action action, System.String name) [0x0003a] in E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\project\Assets\Editor\GpuDecoLab.cs:37 
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GpuDecoLab:Log (string) (at Assets/Editor/GpuDecoLab.cs:25)
+GpuDecoLab:Run (System.Action,string) (at Assets/Editor/GpuDecoLab.cs:42)
+GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
+
+(Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
+
+Curl error 42: Callback aborted
+Request timed out while processing request "https://public-cdn.cloud.unity3d.com/config/production", HTTP error code 0
+.[UnityConnect] Request timed out.
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-나로컴-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-나로컴 channel disconnected successfully.
+Shut down.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+abort_threads: Failed aborting id: 000000000000653C, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000002180, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 000000000000653C, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000002180, mono_thread_manage will ignore it
+
+debugger-agent: Unable to listen on 3136
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1792892507298,"processId":22960,"allocatedMemory":9975508,"memoryLabels":[{"Default":29313},{"Permanent":15236},{"NewDelete":67585},{"Thread":4230384},{"Manager":30237},{"VertexData":8},{"Geometry":816},{"Texture":160},{"Shader":80321},{"Material":24},{"GfxDevice":55257},{"Animation":392},{"Audio":2664},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":720},{"Input":14984},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"ScriptingNativeRuntime":155060},{"BaseObject":1619888},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":1016},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":12363},{"DynamicArray":75863},{"HashMap":62169},{"Utility":2659462},{"Curl":1712},{"PoolAlloc":2056},{"AI":80},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":7632},{"WebRequest":845},{"VR":47994},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":384},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":96},{"EditorUtility":87382},{"VersionControl":4},{"Undo":947},{"AssetDatabase":209576},{"EditorGi":328},{"UnityConnect":29208},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":215},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2869},{"Licensing":1232},{"AssetReference":32},{"IPCStream":32}]}

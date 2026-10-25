@@ -96,8 +96,8 @@ class DrawCollapseStepsTests(unittest.TestCase):
     def test_collapse_default_has_distinct_bundle_and_preparation(self):
         plan = mod.build('Arche.adofai')
         steps = plan['steps']
-        self.assertEqual(plan['tag'], 'drawcollapse-gate2-260-270-abba4')
-        self.assertIn('/drawcollapse4/bundle/', plan['notes']['bundle'])
+        self.assertEqual(plan['tag'], 'drawcollapse-gate2-260-270-abba5')
+        self.assertIn('/drawcollapse5/bundle/', plan['notes']['bundle'])
         self.assertLess(steps.index('gpudeco drawcollapse prepare'), steps.index('gpudeco live prepare'))
         self.assertLess(steps.index('gpudeco live prepare'), steps.index('seek 260 12'))
         self.assertNotIn('gpudeco drawcollapse diag', steps)

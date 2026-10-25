@@ -1,0 +1,10 @@
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA fallback=NA spikes_30ms=NA
+게임·설치·커밋·푸시·자동 장치 호출·설정/제어 변경 0회.
+UpdatePosition 선택과 CPU TransformPoint VB 지속 주입, GPUIMG_DIAG 로그 구현; 실제 원인 미확정.
+알파 더티와 애니메이션 감시 구현; 합성 정적 대기4476개는 최초 확인 뒤 감시0, 실성능 NA.
+32바이트 텍스처 갱신과 소유 수 입구 준비; renderer 파일의 두 연결은 Claude 소유자 요청.
+기본 diag1 156단계·조건부 abba1 320단계 생성만; 기존 템플릿/계획 보존.
+격리 DEV/Player/PlayerAuto 빌드 오류0/0/0, 경고48/36/40.
+LoadCheck279/229/281곳 틀림0; 일반 Player 연구 제외 확인.
+실제 큐4495개·계획 생성기5개 통과; 게임 픽셀/FPS/폴백/끊김/전곡 수명 미검증.
+상세 codex-imageown-result.md·imageown-autoloop-ledger.md; 픽셀 진단과 PrepareDrawCollapse 연결 뒤 진행.

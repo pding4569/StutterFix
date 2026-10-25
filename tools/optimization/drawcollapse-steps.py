@@ -25,7 +25,7 @@ def window(cached=None, single=None):
 
 def collapse(chart):
     root = Path(__file__).resolve().parents[2]
-    bundle = root / 'tools/gpudeco-lab/evidence/drawcollapse4/bundle/stutterfix_gpudeco'
+    bundle = root / 'tools/gpudeco-lab/evidence/drawcollapse5/bundle/stutterfix_gpudeco'
     steps = ['timeout 600', 'auto on', 'decobake on', 'gpudeco off',
              'gpudeco reset', 'gpudeco drawcollapse reset', 'gpudeco costprobe off',
              'gpudeco effectcache off', 'gpudeco submitsingle off', 'gpudeco latecache off',
@@ -58,7 +58,7 @@ def collapse(chart):
         steps += ['framecmp clear', 'gpudeco live off', 'resume', 'stop']
     steps += ['gpudeco drawcollapse result', 'quit']
     return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False},
-                timeout_min=25, tag='drawcollapse-gate2-260-270-abba4',
+                timeout_min=25, tag='drawcollapse-gate2-260-270-abba5',
                 notes={'status': '생성만; 새 번들의 Unity 빌드·재로드 성공 뒤 외부에서만 실행',
                        'bundle': bundle.as_posix(),
                        'A': '독립 GPU', 'B': '구간당 단일 서브메시, EvaluateCollapse 직접 기록',

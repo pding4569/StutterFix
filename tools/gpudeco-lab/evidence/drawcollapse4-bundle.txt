@@ -1,0 +1,44 @@
+[gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
+DRAWCOLLAPSE_DIRECT vertices=260 reversed_map=True tail_threads=True alpha_zero_degenerate=True errors=0 copy_dispatches=0
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_8_False_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_8_True_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_False_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_False_16_True_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_False_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_8_True_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_False_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_0 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_5 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_6 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_31 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+[gpudeco-lab] pixels fixture=collapse_array_True_16_True_63 changed=0 max_channel=0 covered=4096 expected_equal=True shader=Sprites/Default game_shader=False
+DRAWCOLLAPSE_TEXTURE cases=40 compressed_and_rgba=True bindings=0,5,6,31,63 padded_rect=True point_and_bilinear=True errors=0 shader_oracle=Sprites/Default game_Sprites/Tile=UNVERIFIED
+DRAWCOLLAPSE_LAB=PASS scope=synthetic_direct_vertices_and_array_pixels game_FPS=NA game_pixels=NA path=E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\drawcollapse4/bundle

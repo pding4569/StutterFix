@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><DefineConstants>GPU_IMAGE_PLAN_FIXTURE</DefineConstants></PropertyGroup>
+  <ItemGroup><Compile Include="../../../GpuDecoImageTimeline.cs" Link="GpuDecoImageTimeline.cs" /></ItemGroup>
+</Project>

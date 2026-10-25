@@ -10,14 +10,32 @@ namespace StutterFix
 {
     internal static partial class DecoBake
     {
+#if AUTOTEST
+        static void UpdateDrawCollapseTextureSlot(int item,Texture2D texture,Material material)
+        {
+            if(gpuCollapseTexture==null)return;
+            RequireLive(ReferenceEquals(gpuImageCollapseAddressOwner,gpuCollapseTexture)&&gpuImageCollapseAddresses!=null,
+                "image collapse address hooks not connected in PrepareDrawCollapse");
+            RequireLive(texture&&material&&(uint)item<(uint)gpuCollapseIncluded.Length
+                &&gpuImageCollapseAddresses.TryGetValue(texture.GetInstanceID(),out _),"image_texture_not_registered_in_collapse");
+            RequireLive(texture.mipmapCount==1&&texture.wrapModeU==TextureWrapMode.Clamp&&texture.wrapModeV==TextureWrapMode.Clamp,
+                "image collapse changed mip/wrap");
+            var address=gpuImageCollapseAddresses[texture.GetInstanceID()];
+            gpuImageCollapseTextureUpload[0]=new Vector4(address.x+(material.IsKeywordEnabled("USE_POINT_SAMPLING")?128:0),address.y,0,0);
+            gpuImageCollapseTextureUpload[1]=new Vector4(address.z,address.w,address.z/texture.width*.5f,address.w/texture.height*.5f);
+            gpuCollapseTexture.SetData(gpuImageCollapseTextureUpload,0,item*2,2);
+            // The independent MPB is still maintained by the caller, so turning
+            // collapse off restores the latest image without another setter.
+        }
+#endif
         static void RequireDrawCollapse(DrawCollapseGuard guard=null)
         {
             var checks=guard??new DrawCollapseGuard(false);
             checks.Check(gpuLiveActive && gpuLivePrepared && gpuLiveCurrentSlice>=0 && gpuScope.WholeSong
                 && gpuLiveSlices.Count==1 && gpuLiveSlices[0].Independent && !gpuRenderMergeOn,
                 "drawcollapse requires independent whole-song GPU ownership");
-            checks.Check(GpuLiveOwned==23547 && GpuLiveOwned-gpuLiveCpuFallbackCount>=20000,
-                "drawcollapse requires allocated owned=23547, GPU owned>=20000");
+            checks.Check((GpuLiveOwned==23547 || GpuLiveOwned==28523) && gpuLiveCpuFallbackCount==0,
+                "drawcollapse requires GPU owned=23547 or 28523, CPU fallback=0");
             checks.Check(!GpuDecoCostProbe.Enabled, // SingleSubmission/GpuListCaching 은 draw 통합과 독립이므로 함께 켜도 된다(스크립트 비용 시험)
                 
                 "drawcollapse must isolate the original independent baseline");

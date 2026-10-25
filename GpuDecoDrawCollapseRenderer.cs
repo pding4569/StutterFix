@@ -141,6 +141,9 @@ namespace StutterFix
             }
             RequireLive(SystemInfo.supports2DArrayTextures && (SystemInfo.copyTextureSupport&CopyTextureSupport.DifferentTypes)!=0,
                 "drawcollapse Texture2D-to-array copy unsupported");
+#if AUTOTEST
+            RegisterGpuImageCollapseVariants(textures);
+#endif
             var addresses=new Dictionary<int,Vector4>();long total=0;int copies=0;
             RequireLive(SystemInfo.maxTextureArraySlices>0,"drawcollapse texture array slices unavailable");
             // Keep only the admitted texture groups. Overflow stays on the
@@ -201,6 +204,9 @@ namespace StutterFix
                 info[i*2+1]=new Vector4(address.z,address.w,address.z/t.width*.5f,address.w/t.height*.5f);
             }
             gpuCollapseTexture=new ComputeBuffer(info.Length,16);gpuCollapseTexture.SetData(info);
+#if AUTOTEST
+            RememberGpuImageCollapseAddresses(addresses);
+#endif
             // Replace admitted overflow rows with the ACTUAL independent draw
             // key (including its material ID and sorting bounds), not the hidden
             // SpriteRenderer's key. Retain even currently invisible overflow.

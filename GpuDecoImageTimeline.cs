@@ -4,6 +4,26 @@ using System.Collections.Generic;
 
 namespace StutterFix
 {
+    // Pending images with static nonpositive alpha sleep until an alpha event.
+    // Animated alpha stays watched across frames, including easing overshoot.
+    internal sealed class GpuDecoImageWakeQueue
+    {
+        internal readonly HashSet<int> Pending=new HashSet<int>(),Watching=new HashSet<int>();
+        internal void Reserve(int count){Pending.EnsureCapacity(count);Watching.EnsureCapacity(count);}
+        internal void Clear(){Pending.Clear();Watching.Clear();}
+        internal void Defer(int master){Pending.Add(master);Watching.Add(master);}
+        internal void Remove(int master){Pending.Remove(master);Watching.Remove(master);}
+        internal bool AlphaDirty(int master)
+        {if(!Pending.Contains(master))return false;Watching.Add(master);return true;}
+        internal bool ShouldFlush(int master,float alpha,bool animated)
+        {
+            if(!Pending.Contains(master)){Watching.Remove(master);return false;}
+            if(alpha>0)return true;
+            if(!animated)Watching.Remove(master);
+            return false;
+        }
+        internal void Snapshot(List<int> work){work.Clear();work.AddRange(Watching);}
+    }
     // Immutable discrete image tape, not a time-based playback predictor. The
     // eventual consumer must bind actual effect occurrences in original order.
     // Names are kept private in memory; this type performs no file or Unity IO.
