@@ -10,16 +10,17 @@ namespace StutterFix
 {
     internal static partial class DecoBake
     {
-        static void RequireDrawCollapse()
+        static void RequireDrawCollapse(DrawCollapseGuard guard=null)
         {
-            RequireLive(gpuLiveActive && gpuLivePrepared && gpuLiveCurrentSlice>=0 && gpuScope.WholeSong
+            var checks=guard??new DrawCollapseGuard(false);
+            checks.Check(gpuLiveActive && gpuLivePrepared && gpuLiveCurrentSlice>=0 && gpuScope.WholeSong
                 && gpuLiveSlices.Count==1 && gpuLiveSlices[0].Independent && !gpuRenderMergeOn,
                 "drawcollapse requires independent whole-song GPU ownership");
-            RequireLive(GpuLiveOwned==23547 && GpuLiveOwned-gpuLiveCpuFallbackCount>=20000,
+            checks.Check(GpuLiveOwned==23547 && GpuLiveOwned-gpuLiveCpuFallbackCount>=20000,
                 "drawcollapse requires allocated owned=23547, GPU owned>=20000");
-            RequireLive(!GpuDecoCopy.SingleSubmission && !TightLate.GpuListCaching && !GpuDecoCostProbe.Enabled,
+            checks.Check(!GpuDecoCopy.SingleSubmission && !TightLate.GpuListCaching && !GpuDecoCostProbe.Enabled,
                 "drawcollapse must isolate the original independent baseline");
-            RequireLive(GpuDecoCopy.ReadTotals().Errors==0,"drawcollapse native copy errors");
+            checks.Check(GpuDecoCopy.ReadTotals().Errors==0,"drawcollapse native copy errors");
         }
         static bool GpuDrawCollapseCommand(string command)
         {
@@ -40,6 +41,7 @@ namespace StutterFix
             }
             if(command=="drawcollapse on" || command=="drawcollapse ready")
             {
+                if(command=="drawcollapse ready")RebuildDrawCollapse();
                 ValidateDrawCollapse();
                 if(command.EndsWith(" on",StringComparison.Ordinal))
                 {

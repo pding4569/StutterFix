@@ -11,7 +11,10 @@ namespace StutterFix
     internal static partial class DecoBake
     {
         static bool gpuCollapsePrepare,gpuCollapseOn;
-        static string gpuCollapseFault;
+        static string gpuCollapseFault,gpuCollapsePendingFallback;
+        static Shader gpuCollapseShader;
+        static int gpuCollapseOwnedCursor;
+        static readonly List<Material> gpuCollapseMaterials=new List<Material>();
         static readonly List<CollapseSpan> gpuCollapseSpans=new List<CollapseSpan>();
         static readonly List<Texture2DArray> gpuCollapseArrays=new List<Texture2DArray>();
         static readonly List<Texture2D> gpuCollapseDirect=new List<Texture2D>(); // Borrowed, never destroyed.
@@ -42,14 +45,14 @@ namespace StutterFix
         }
         static void HideDrawCollapse()
         {
-            gpuCollapseOn=false;
+            gpuCollapseOn=false;gpuCollapsePendingFallback=null;
             foreach(var s in gpuCollapseSpans)if(s.Renderer)s.Renderer.enabled=false;
         }
         static void DisposeDrawCollapse()
         {
             HideDrawCollapse();
             foreach(var s in gpuCollapseSpans)s.Dispose();gpuCollapseSpans.Clear();
-            gpuCollapseTexture?.Dispose();gpuCollapseTexture=null;
+            gpuCollapseTexture?.Dispose();gpuCollapseTexture=null;gpuCollapseShader=null;gpuCollapseOwnedCursor=0;
             foreach(var a in gpuCollapseArrays)if(a)UnityEngine.Object.Destroy(a);
             gpuCollapseArrays.Clear();gpuCollapseBarriers.Clear();gpuCollapseAuxiliaries.Clear();
             gpuCollapseDirect.Clear();
@@ -61,7 +64,7 @@ namespace StutterFix
         static void ValidateDrawCollapseItem(int item)
         {
             if(gpuCollapseIncluded!=null && !gpuCollapseIncluded[item] && !DrawCollapseTextureFallback(item))
-                RequireLive(MergeHidden(item),"drawcollapse visible item outside prepared window item="+item);
+                if(!MergeHidden(item))gpuCollapsePendingFallback="visible_item_outside_prepared_window item="+item;
         }
         static bool DrawCollapseTextureFallback(int item)=>gpuCollapseTextureFallback!=null && gpuCollapseTextureFallback[item];
         static void PrepareDrawCollapse(List<GpuLiveRow> masterRows)
@@ -78,15 +81,14 @@ namespace StutterFix
                 .All(g=>!g.enabled || !g.gameObject.activeInHierarchy),"drawcollapse unsupported active SortingGroup");
             RequireLive(UnityEngine.Object.FindObjectsByType<SpriteMask>(FindObjectsInactive.Include,FindObjectsSortMode.None)
                 .All(m=>!m.enabled || !m.gameObject.activeInHierarchy),"drawcollapse unsupported active SpriteMask");
-            var shader=gpuLiveBundle.LoadAsset<Shader>("Assets/Shaders/GpuDecoBatch.shader");
-            RequireLive(shader && shader.isSupported,"drawcollapse bundle missing/unsupported GpuDecoBatch.shader");
+            gpuCollapseShader=gpuLiveBundle.LoadAsset<Shader>("Assets/Shaders/GpuDecoBatch.shader");
+            RequireLive(gpuCollapseShader && gpuCollapseShader.isSupported,"drawcollapse bundle missing/unsupported GpuDecoBatch.shader");
             var source=gpuLiveSlices[0];
             gpuCollapseCameraPosition=gpuLiveCamera.transform.position;gpuCollapseCameraForward=gpuLiveCamera.transform.forward;
             var local=source.Data.Items.Select((x,i)=>new{ x.Index, Item=i }).ToDictionary(x=>x.Index,x=>x.Item);
             gpuCollapseIncluded=new bool[source.Data.Items.Length];
             gpuCollapseTextureFallback=new bool[source.Data.Items.Length];
             gpuCollapseOwnedRows=new GpuLiveRow[source.Data.Items.Length];
-            var rows=new List<DrawCollapsePolicy.Row>();
             foreach(var row in masterRows)
             {
                 if(row.AuxiliaryOwner>=0)
@@ -100,12 +102,11 @@ namespace StutterFix
                     // Keep potential CPU barriers even when currently invisible.
                     // They may wake during the ten-second measurement window.
                     gpuCollapseBarriers.Add(row);
-                    rows.Add(new DrawCollapsePolicy.Row(row.Key,false,row.R.GetInstanceID()));continue;
+                    continue;
                 }
                 int i=local[row.Item];gpuCollapseOwnedRows[i]=row;
                 if(!VisibleInWindow(table,row.Item,259.75,270.25))continue;
                 gpuCollapseIncluded[i]=true;
-                rows.Add(new DrawCollapsePolicy.Row(row.Key,true,i));
             }
             var textures=new Dictionary<int,Texture2D>();
             var info=new Vector4[source.Data.Items.Length*2];
@@ -189,14 +190,51 @@ namespace StutterFix
             // Replace admitted overflow rows with the ACTUAL independent draw
             // key (including its material ID and sorting bounds), not the hidden
             // SpriteRenderer's key. Retain even currently invisible overflow.
-            rows.RemoveAll(r=>r.Owned && DrawCollapseTextureFallback(r.Renderer));
             for(int i=0;i<gpuCollapseTextureFallback.Length;i++)if(DrawCollapseTextureFallback(i))
             {
                 var renderer=source.Renderers[i];var material=renderer.sharedMaterial;
                 var key=MatShare.SortKey(renderer,material,gpuLiveCamera);
                 gpuCollapseBarriers.Add(new GpuLiveRow{R=renderer,M=material,Key=key,Item=-1});
-                rows.Add(new DrawCollapsePolicy.Row(key,false,renderer.GetInstanceID()));
             }
+            BuildDrawCollapseSpans();
+            GpuLog("DRAWCOLLAPSE_PREPARED spans="+gpuCollapseSpans.Count+" included="+gpuCollapseIncluded.Count(x=>x)
+                +" arrays="+gpuCollapseArrays.Count+" bytes="+total+" copy_calls="+copies
+                +" texture_fallback_items="+gpuCollapseTextureFallbackCount+" texture_fallback_dispatch="+(gpuCollapseTextureFallbackCount>0)
+                +" submeshes_per_renderer=1 direct_evaluate=True window=260..270 conservative_hidden_barriers=True free_vram=UNVERIFIED");
+        }
+        static Material DrawCollapseMaterial(GpuLiveRow row)
+        {
+            if(!row.R)return null;
+            row.R.GetSharedMaterials(gpuCollapseMaterials);
+            return row.Key.Slot<gpuCollapseMaterials.Count?gpuCollapseMaterials[row.Key.Slot]:null;
+        }
+        static bool DrawCollapseBarrierActive(GpuLiveRow row)
+            =>row.R && row.R.enabled && row.R.gameObject.activeInHierarchy && !row.R.forceRenderingOff
+                && (!(row.R is SpriteRenderer sprite) || sprite.sprite && sprite.color.a>0);
+        static void BuildDrawCollapseSpans()
+        {
+            var source=gpuLiveSlices[0];
+            var rows=new List<DrawCollapsePolicy.Row>();
+            // Re-read both populations, including dormant barriers, so a seek
+            // cannot leave the old layer/order/material key in the new plan.
+            foreach(var row in gpuCollapseBarriers)
+            {
+                var material=DrawCollapseMaterial(row);
+                RequireLive(row.R && material,"drawcollapse replan barrier lost");
+                row.M=material;row.Key=MatShare.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);
+                rows.Add(new DrawCollapsePolicy.Row(row.Key,false,row.R.GetInstanceID()));
+            }
+            for(int i=0;i<gpuCollapseOwnedRows.Length;i++)
+            {
+                var row=gpuCollapseOwnedRows[i];var material=DrawCollapseMaterial(row);
+                RequireLive(row.R && material,"drawcollapse replan owned renderer lost item="+i);
+                // Texture addresses/sampler flags are immutable until live prepare.
+                RequireLive(material==row.M,"drawcollapse replan owned material changed item="+i);
+                row.Key=MatShare.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);
+                if(gpuCollapseIncluded[i])rows.Add(new DrawCollapsePolicy.Row(row.Key,true,i));
+            }
+            gpuCollapseCameraPosition=gpuLiveCamera.transform.position;
+            gpuCollapseCameraForward=gpuLiveCamera.transform.forward;gpuCollapseOwnedCursor=0;
             var plan=DrawCollapsePolicy.Plan(rows);
             RequireLive(plan.Count>0 && plan.Count<=150,"drawcollapse conservative prepared spans="+plan.Count+" exceeds renderer budget");
             foreach(var items in plan)
@@ -205,7 +243,7 @@ namespace StutterFix
                 var s=new CollapseSpan{Items=items,First=first.Key,Last=last.Key};gpuCollapseSpans.Add(s);
                 RequireLive(items.All(i=>gpuCollapseOwnedRows[i].R.gameObject.layer==first.R.gameObject.layer),
                     "drawcollapse span crosses camera culling layers");
-                s.Material=new Material(shader){name="GpuDeco collapse span",renderQueue=first.M.renderQueue};
+                s.Material=new Material(gpuCollapseShader){name="GpuDeco collapse span",renderQueue=first.M.renderQueue};
                 foreach(string p in new[]{"_SrcBlend","_DstBlend","_BlendOp"})
                 {
                     float expected=first.M.HasProperty(p)?first.M.GetFloat(p):(p=="_SrcBlend"?1:p=="_DstBlend"?10:0);
@@ -225,7 +263,10 @@ namespace StutterFix
                 var indices=new int[items.Length*6];
                 for(int n=0;n<items.Length;n++)for(int t=0;t<6;t++)indices[n*6+t]=n*4+source.Data.Items[items[n]].Triangles[t];
                 s.Mesh.subMeshCount=1;s.Mesh.SetIndices(indices,MeshTopology.Triangles,0,false);
-                s.Mesh.bounds=source.Meshes[items[0]].bounds;s.Mesh.UploadMeshData(true);
+                // Refresh the sort center too: a start-of-song mesh bound is stale at ready.
+                Vector3 center=first.R.bounds.center;
+                if(first.R is SpriteRenderer sprite && sprite.spriteSortPoint==SpriteSortPoint.Pivot)center=first.R.transform.position;
+                s.Mesh.bounds=new Bounds(center,new Vector3(2000000,2000000,0));s.Mesh.UploadMeshData(true);
                 s.Vertices=s.Mesh.GetVertexBuffer(0);
                 RequireLive(s.Mesh.GetVertexBufferStride(0)==60 && s.Mesh.subMeshCount==1,"drawcollapse raw mesh layout");
                 s.Map=new ComputeBuffer(items.Length,4);s.Map.SetData(items.Select(i=>(uint)i).ToArray());
@@ -237,67 +278,141 @@ namespace StutterFix
                 s.Renderer.lightProbeUsage=LightProbeUsage.Off;s.Renderer.reflectionProbeUsage=ReflectionProbeUsage.Off;
                 RequireLive(s.Renderer.sharedMaterials.Length==1,"drawcollapse requires one material");
             }
-            GpuLog("DRAWCOLLAPSE_PREPARED spans="+plan.Count+" included="+gpuCollapseIncluded.Count(x=>x)
-                +" arrays="+gpuCollapseArrays.Count+" bytes="+total+" copy_calls="+copies
-                +" texture_fallback_items="+gpuCollapseTextureFallbackCount+" texture_fallback_dispatch="+(gpuCollapseTextureFallbackCount>0)
-                +" submeshes_per_renderer=1 direct_evaluate=True window=260..270 conservative_hidden_barriers=True free_vram=UNVERIFIED");
+        }
+        static void RebuildDrawCollapse()
+        {
+            RequireDrawCollapse();
+            RequireLive(!gpuCollapseOn && gpuCollapseTexture!=null && gpuCollapseShader,
+                "drawcollapse ready requires prepared textures and collapse off");
+            // Only span resources are replaced. Texture arrays, borrowed textures,
+            // texture address buffer, and the loaded shader survive every ready.
+            foreach(var span in gpuCollapseSpans)span.Dispose();gpuCollapseSpans.Clear();
+            try {BuildDrawCollapseSpans();}
+            catch
+            {
+                foreach(var span in gpuCollapseSpans)span.Dispose();gpuCollapseSpans.Clear();
+                throw;
+            }
+            GpuLog("DRAWCOLLAPSE_REPLANNED spans="+gpuCollapseSpans.Count+" included="+gpuCollapseIncluded.Count(x=>x)
+                +" barriers="+gpuCollapseBarriers.Count+" arrays_reused="+gpuCollapseArrays.Count
+                +" texture_buffer_reused=True shader_reused=True copy_calls=0 owned_checks_per_frame="+DrawCollapsePolicy.OwnedChecksPerFrame);
         }
         static void ValidateDrawCollapse(bool full=true)
         {
-            RequireDrawCollapse();
-            RequireLive(gpuCollapseSpans.Count>0 && gpuCollapseTexture!=null,"drawcollapse prepare before live prepare required");
-            RequireLive(gpuLiveCpuFallbackCount==0,"drawcollapse requires zero CPU fallback; disable before fallback");
-            // 정렬 거리는 카메라 앞축(forward)으로 잰다. 부동소수 오차(1e-4 이하)는 같은 축으로 본다.
-            float camDz=Mathf.Abs(gpuLiveCamera.transform.position.z-gpuCollapseCameraPosition.z);
-            float camDot=Vector3.Dot(gpuLiveCamera.transform.forward,gpuCollapseCameraForward);
-            // 직교 카메라는 정렬 거리가 앞축 방향 투영이라 위치 이동은 모든 장식 거리를 같은 값만큼 옮길 뿐 순서를 안 바꾼다(실측: 시작 z=-10, 260초 z=0). 투시 카메라만 위치까지 본다.
-            RequireLive(camDot>=0.999999f && (gpuLiveCamera.orthographic || camDz<=1e-4f),"drawcollapse camera sort axis changed dz="+camDz.ToString("R",Inv)
-                +" dot="+camDot.ToString("R",Inv)+" pos="+gpuLiveCamera.transform.position.ToString("R")+" fwd="+gpuLiveCamera.transform.forward.ToString("R")
-                +" ref_pos="+gpuCollapseCameraPosition.ToString("R")+" ref_fwd="+gpuCollapseCameraForward.ToString("R"));
-            // Check all omissions at entry, then alpha dirty events check only
-            // changed items. Never scan 23,547 channels each playback frame.
-            if(full)for(int i=0;i<gpuCollapseIncluded.Length;i++)ValidateDrawCollapseItem(i);
-            foreach(var r in gpuCollapseAuxiliaries)
-                RequireLive(!r.R || !r.R.enabled || !r.R.gameObject.activeInHierarchy || r.R.forceRenderingOff,
-                    "drawcollapse omitted auxiliary became visible");
-            // 직교 카메라가 앞축으로 움직이면 모든 거리가 같은 값만큼 옮겨진다. 순서가 변하지 않으므로
-            // 층/순서/큐는 같고 거리 변화량이 모든 장벽에서 같은 상수면 같은 정렬로 본다.
-            bool haveShift=false;float shift=0;
-            foreach(var b in gpuCollapseBarriers)
+#if AUTOTEST
+            var guard=new DrawCollapseGuard(full);
+#else
+            var guard=new DrawCollapseGuard(false);
+#endif
+            RequireDrawCollapse(guard);
+            bool prepared=gpuCollapseSpans.Count>0 && gpuCollapseTexture!=null && gpuCollapseIncluded!=null;
+            guard.Check(prepared,"drawcollapse prepare before live prepare required");
+            guard.Check(gpuLiveCpuFallbackCount==0,"drawcollapse requires zero CPU fallback; disable before fallback");
+            guard.Check(gpuLiveCamera,"drawcollapse camera lost");
+            float shift=0;
+            if(gpuLiveCamera)
             {
-                RequireLive(b.R && b.M,"drawcollapse potential barrier sort key changed (lost)");
-                // 지금 그려지지 않는 후보 장벽(꺼짐/비활성)의 키는 이 프레임 순서에 영향이 없다. 켜지면 다음 프레임 검사가
-                // 준비 때 키와 비교해 다르면 실패시키므로 원래 렌더러로 안전하게 돌아간다.
-                if(!b.R.enabled || !b.R.gameObject.activeInHierarchy || b.R.forceRenderingOff)continue;
-                var now=MatShare.SortKey(b.R,b.M,gpuLiveCamera);
-                RequireLive(b.Key.Layer==now.Layer && b.Key.Order==now.Order && b.Key.Queue==now.Queue,
-                    "drawcollapse potential barrier sort key changed (layer/order/queue) name="+b.R.name+" type="+b.R.GetType().Name
-                    +" layer "+b.Key.Layer+"->"+now.Layer+" order "+b.Key.Order+"->"+now.Order+" queue "+b.Key.Queue+"->"+now.Queue
-                    +" enabled="+b.R.enabled+" active="+b.R.gameObject.activeInHierarchy+" count="+gpuCollapseBarriers.Count);
-                float delta=b.Key.Distance-now.Distance;
-                if(!haveShift){shift=delta;haveShift=true;}
-                RequireLive(Mathf.Abs(delta-shift)<=1e-3f,"drawcollapse potential barrier sort key changed (distance delta="+delta.ToString("R",Inv)+" vs "+shift.ToString("R",Inv)+")");
+                float dot=Vector3.Dot(gpuLiveCamera.transform.forward,gpuCollapseCameraForward);
+                var mode=gpuLiveCamera.transparencySortMode;
+                if(mode==TransparencySortMode.Default)mode=GraphicsSettings.transparencySortMode;
+                guard.Check(gpuLiveCamera.orthographic && (mode==TransparencySortMode.Default || mode==TransparencySortMode.Orthographic)
+                    && dot>=0.999999f,"drawcollapse camera sort axis/mode changed dot="+dot.ToString("R",Inv));
+                shift=Vector3.Dot(gpuLiveCamera.transform.position-gpuCollapseCameraPosition,gpuCollapseCameraForward);
             }
-            if(!full)return;
-            // Representative material IDs differ from original IDs. Check the
-            // actual proxy against EVERY potential barrier, including equal-key ties.
-            foreach(var s in gpuCollapseSpans)
+            if(prepared && gpuLiveSlices.Count==1 && full)
+                for(int i=0;i<gpuCollapseIncluded.Length;i++)
+                    guard.Check(gpuCollapseIncluded[i] || DrawCollapseTextureFallback(i) || MergeHidden(i),
+                        "drawcollapse visible item outside prepared window item="+i);
+            foreach(var r in gpuCollapseAuxiliaries)
+                guard.Check(!r.R || !r.R.enabled || !r.R.gameObject.activeInHierarchy || r.R.forceRenderingOff,
+                    "drawcollapse omitted auxiliary became visible");
+            if(gpuLiveCamera)
             {
-                var proxy=MatShare.SortKey(s.Renderer,s.Material,gpuLiveCamera);
+                // These are the small nonowned population, not all owned items.
                 foreach(var b in gpuCollapseBarriers)
                 {
-                    RequireLive(b.R && b.M,"drawcollapse barrier destroyed");
-                    var key=MatShare.SortKey(b.R,b.M,gpuLiveCamera);
-                    bool before=key.CompareTo(s.First)<0,after=key.CompareTo(s.Last)>0;
-                    RequireLive((before && key.CompareTo(proxy)<0) || (after && key.CompareTo(proxy)>0),
-                        "drawcollapse proxy/barrier order changed renderer="+b.R.GetInstanceID());
+                    guard.Check(b.R && b.M,"drawcollapse barrier lost");
+                    if(!DrawCollapseBarrierActive(b))continue;
+                    CheckDrawCollapseKey(b,shift,guard,"barrier");
+                }
+                // Owned transforms are frozen by GPU ownership. A bounded sweep
+                // also catches foreign sort/material writes without a 23,547-row
+                // scan in every playback frame. Full entry checks visit them all.
+                if(gpuCollapseOwnedRows!=null)
+                {
+                    int count=gpuCollapseOwnedRows.Length;
+                    int checks=full?count:Math.Min(count,DrawCollapsePolicy.OwnedChecksPerFrame);
+                    for(int n=0;n<checks;n++)
+                    {
+                        int i=full?n:gpuCollapseOwnedCursor++%count;
+                        CheckDrawCollapseKey(gpuCollapseOwnedRows[i],shift,guard,"owned item="+i);
+                    }
+                    if(!full && count>0)gpuCollapseOwnedCursor%=count;
                 }
             }
+            if(full && gpuLiveCamera)
+            {
+                // Refresh endpoint keys in the same camera coordinate system as
+                // the proxy/barrier keys; camera translation is not a reorder.
+                foreach(var span in gpuCollapseSpans)
+                {
+                    guard.Check(span.Renderer && span.Material,"drawcollapse representative lost");
+                    if(!span.Renderer || !span.Material)continue;
+                    var proxy=MatShare.SortKey(span.Renderer,span.Material,gpuLiveCamera);
+                    var first=gpuCollapseOwnedRows[span.Items[0]];
+                    var last=gpuCollapseOwnedRows[span.Items[span.Items.Length-1]];
+                    if(!first.R || !last.R)continue; // Already recorded by the owned checks.
+                    var firstKey=MatShare.SortKey(first.R,first.M,gpuLiveCamera,first.Key.Slot);
+                    var lastKey=MatShare.SortKey(last.R,last.M,gpuLiveCamera,last.Key.Slot);
+                    foreach(var barrier in gpuCollapseBarriers)
+                    {
+                        if(!DrawCollapseBarrierActive(barrier))continue;
+                        var key=MatShare.SortKey(barrier.R,DrawCollapseMaterial(barrier),gpuLiveCamera,barrier.Key.Slot);
+                        bool before=key.CompareTo(firstKey)<0,after=key.CompareTo(lastKey)>0;
+                        guard.Check((before && key.CompareTo(proxy)<0) || (after && key.CompareTo(proxy)>0),
+                            "drawcollapse proxy/barrier order changed renderer="+barrier.R.GetInstanceID());
+                    }
+                }
+            }
+            guard.Finish(GpuLog);
+        }
+        static void CheckDrawCollapseKey(GpuLiveRow row,float shift,DrawCollapseGuard guard,string label)
+        {
+            if(row==null || !row.R || !row.M){guard.Check(false,"drawcollapse "+label+" lost");return;}
+            var material=DrawCollapseMaterial(row);
+            var now=MatShare.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);
+            // Avoid formatting thousands of success-path diagnostics at entry.
+            if(!DrawCollapsePolicy.SameSortKey(row.Key,now,shift))
+                guard.Check(false,"drawcollapse "+label+" sort key changed name="+row.R.name
+                    +" layer="+row.Key.Layer+"->"+now.Layer+" order="+row.Key.Order+"->"+now.Order
+                    +" queue="+row.Key.Queue+"->"+now.Queue+" material="+row.Key.Material+"->"+now.Material
+                    +" distance_delta="+(row.Key.Distance-now.Distance).ToString("R",Inv)+" camera_shift="+shift.ToString("R",Inv));
+        }
+        static void CheckDrawCollapseBeforeDispatch(double time)
+        {
+            if(!gpuCollapseOn)return;
+            string reason=gpuCollapsePendingFallback;
+            if(reason==null)
+            {
+                try
+                {
+                    RequireLive(time>=259.75 && time<=270.25,"outside_prepared_260..270_window");
+                    ValidateDrawCollapse(false);
+                }
+                catch(Exception e){reason=e.GetType().Name+":"+e.Message;}
+            }
+            if(reason==null)return;
+            // RefreshAlpha must run outside its own pendingAlpha enumeration.
+            // The caller now executes normal Evaluate/copy in THIS dispatch with
+            // freshly restored masks. No recursive dispatch or whole-GPU recovery.
+            gpuCollapseFault=reason;HideDrawCollapse();
+            foreach(var slice in gpuLiveSlices)slice.RefreshAlpha();
+            GpuLog("DRAWCOLLAPSE_FALLBACK reason="+reason.Replace('\r',' ').Replace('\n',' ')
+                +" independent_restored=True");
         }
         static void DispatchDrawCollapse(double time)
         {
-            RequireLive(time>=259.75 && time<=270.25,"drawcollapse outside prepared 260..270 window");
-            ValidateDrawCollapse(false);var source=gpuLiveSlices[0];
+            var source=gpuLiveSlices[0];
             foreach(var s in gpuCollapseSpans)
             {source.Gpu.DispatchCollapse(s.Vertices,s.Map,gpuCollapseTexture,s.Items.Length);s.Renderer.enabled=true;}
             if(gpuCollapseTextureFallbackCount>0)

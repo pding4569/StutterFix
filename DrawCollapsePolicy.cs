@@ -7,6 +7,31 @@ namespace StutterFix
     // Pure painter-order and memory arithmetic shared by preparation and checks.
     internal static class DrawCollapsePolicy
     {
+        // Unity's loaded shader caps texture parameters at 64 on this D3D11
+        // device, even though the native API accepts 128 SRVs.
+        internal const int ArrayBindings=4;
+        internal const int DirectBindings=32;
+        internal const int TextureBindings=ArrayBindings+DirectBindings;
+        internal const int OwnedChecksPerFrame=128;
+        // Orthographic camera translation changes every distance by this same
+        // amount. Compare against the camera, not against the first barrier:
+        // otherwise a lone moving barrier could cross a whole span undetected.
+        internal static bool SameSortKey(SceneRenderOrder.Key prepared,SceneRenderOrder.Key current,float cameraShift)
+            =>prepared.Layer==current.Layer && prepared.Order==current.Order && prepared.Queue==current.Queue
+                && prepared.Material==current.Material && prepared.Slot==current.Slot
+                && Math.Abs(prepared.Distance-current.Distance-cameraShift)<=1e-3f;
+        internal static int[] AdmitArrayGroups(int[] counts,int maxSlices)
+        {
+            if(maxSlices<=0)throw new ArgumentOutOfRangeException(nameof(maxSlices));
+            var admitted=new int[counts.Length];int slots=ArrayBindings;
+            for(int i=0;i<counts.Length;i++)
+            {
+                if(counts[i]<0)throw new ArgumentOutOfRangeException(nameof(counts));
+                admitted[i]=(int)Math.Min(counts[i],(long)slots*maxSlices);
+                slots-=(int)((admitted[i]+(long)maxSlices-1)/maxSlices);
+            }
+            return admitted;
+        }
         internal readonly struct Row
         {
             internal readonly SceneRenderOrder.Key Key;
@@ -88,6 +113,28 @@ namespace StutterFix
         {
             if(spans<0)throw new ArgumentOutOfRangeException(nameof(spans));
             return spans<=150?"eligible":spans>400?"too_many_barriers":"hold_151_to_400";
+        }
+    }
+    // Lazily allocate only on failure. AUTOTEST entry checks collect every
+    // independent failure; playback checks fail fast into independent rendering.
+    internal sealed class DrawCollapseGuard
+    {
+        readonly bool collect;
+        List<string> failures;
+        internal DrawCollapseGuard(bool collect){this.collect=collect;}
+        internal void Check(bool valid,string reason)
+        {
+            if(valid)return;
+            if(!collect)throw new InvalidOperationException(reason);
+            if(failures==null)failures=new List<string>();
+            failures.Add(reason.Replace('\r',' ').Replace('\n',' '));
+        }
+        internal void Finish(Action<string> log)
+        {
+            if(failures==null)return;
+            string all=string.Join(" | ",failures);
+            log("DRAWCOLLAPSE_GUARD_FAILS="+all);
+            throw new InvalidOperationException(all);
         }
     }
     internal sealed class DrawCollapseGatePolicy

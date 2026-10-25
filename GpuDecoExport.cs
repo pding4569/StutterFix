@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST
+#if DEV || AUTOTEST
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -78,7 +78,7 @@ namespace StutterFix
             {
                 var r=Renderers[item];if(!r)return;
                 if(active && gpuCollapseOn)ValidateDrawCollapseItem(item);
-                bool wanted=active && !gpuRenderMergeOn && !gpuCollapseOn && (!Independent || !GpuCpuFallback(MasterItems[item])) && (!gpuZeroAlpha || !Independent || !HiddenAlpha(item));
+                bool wanted=active && !gpuRenderMergeOn && (!gpuCollapseOn || DrawCollapseTextureFallback(item)) && (!Independent || !GpuCpuFallback(MasterItems[item])) && (!gpuZeroAlpha || !Independent || !HiddenAlpha(item));
                 CopyMask?.Set(item,wanted);
                 if(r.enabled!=wanted){if(GpuDecoCostProbe.Enabled)GpuDecoCostProbe.AlphaToggle();r.enabled=wanted;}
             }
@@ -1238,6 +1238,7 @@ namespace StutterFix
             var ct = camy.transform;
             float camScale = camy.camobj.orthographicSize * .2f / gpuLiveZoomFactor;
             var camera=new Vector4(ct.position.x, ct.position.y, ct.eulerAngles.z, camScale);
+            CheckDrawCollapseBeforeDispatch(time);
             bool single=GpuDecoCopy.SingleSubmission && !gpuRenderMergeOn && !gpuCollapseOn && active.SharedBatch==null
                 && active.NativeCopy!=null && active.Gpu.UseLiveMode && active.Gpu.HasNativeLiveKernel;
             if(!single)active.Gpu.SetLiveUniforms(camera,time);
@@ -1247,7 +1248,7 @@ namespace StutterFix
             bool submitted=false;
             if(gpuCollapseOn)
             {
-                DispatchDrawCollapse(time); // Evaluate -> representative raw VB. No baseline evaluation or copy submission.
+                DispatchDrawCollapse(time); // Direct representative VBs; independent copies only for texture overflow.
                 submitted=true;
             }
             else
