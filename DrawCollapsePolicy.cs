@@ -75,7 +75,10 @@ namespace StutterFix
         // 제품 경로: 버퍼는 한 번만 묶고 프레임마다 값 몇 개+디스패치만(명령 버퍼 실행 대체). 끄면 기록된 명령 버퍼.
         internal static bool MinimalDispatch=true;
         // 제품(곡 시작 때 한 번 계획): 지금 숨겨진 장벽도 곡 중에 깨어나 같은 정렬 묶음에서 동점이 될 수 있으므로 모든 장벽을 동점 처리 대상으로 본다.
-        internal static bool TieAllBarriers=true;
+        // 기본 꺼짐: 켜면 Arche 에서 장식 2,854개가 독립 렌더러로 남아 262초 구간 FPS 295 -> 128(GPU는 마스크 복사로 3.9ms 지만 CPU +4.4ms).
+        // 끈 상태의 한계: 숨겨져 있던 비소유 장식이 곡 중에 깨어나 같은 정렬 묶음(같은 z)에 있으면 그리는 순서가 달라질 수 있다
+        // (Arche 180초: 옅은 띠 하나가 빠짐, 최대 17/255, 픽셀 9%). 정확히 막으려면 깨어나는 순간의 재계획(100ms+ 끊김)이나 동적 전환이 필요하다.
+        internal static bool TieAllBarriers=false;
         // 진단 전용: 대표 렌더러를 숨겨 그리기의 GPU 몫을 잰다(화면이 틀려진다).
         internal static bool HideProxies=false;
         // 화면 밖에 있는 쿼드는 컴퓨트에서 면적 0 으로 만든다(픽셀 변화 없음).
