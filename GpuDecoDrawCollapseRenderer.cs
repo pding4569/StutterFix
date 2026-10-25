@@ -153,7 +153,16 @@ namespace StutterFix
             var groupCounts=DrawCollapsePolicy.AdmitArrayGroups(smallGroups.Select(g=>g.Count()).ToArray(),SystemInfo.maxTextureArraySlices);
             for(int group=0;group<smallGroups.Length;group++)admittedSmall.AddRange(smallGroups[group].Take(groupCounts[group]));
             var small=admittedSmall.ToArray();
-            var direct=textures.Values.Where(t=>CollapseSize(t)==0).Take(DrawCollapsePolicy.DirectBindings).ToArray();
+            // 2048 을 넘는 같은 크기·같은 포맷 DXT5 텍스처(예: 4K 프레임 계열)는 정확한 크기의 배열 하나로 묶는다(직접 슬롯 낭비 방지).
+            Texture2D[] exactGroup=new Texture2D[0];
+            if(DrawCollapsePolicy.ExactBigArray)
+            {
+                var bigDxt=textures.Values.Where(t=>CollapseSize(t)==0 && t.graphicsFormat==GraphicsFormat.RGBA_DXT5_UNorm && t.mipmapCount==1 && t.width%4==0 && t.height%4==0)
+                    .GroupBy(t=>t.width+"x"+t.height).OrderByDescending(g=>g.Count()).FirstOrDefault();
+                if(bigDxt!=null && bigDxt.Count()>=DrawCollapsePolicy.ExactBigMin)exactGroup=bigDxt.Take(SystemInfo.maxTextureArraySlices).ToArray();
+            }
+            var exactIds=new HashSet<int>(exactGroup.Select(t=>t.GetInstanceID()));
+            var direct=textures.Values.Where(t=>CollapseSize(t)==0 && !exactIds.Contains(t.GetInstanceID())).Take(DrawCollapsePolicy.DirectBindings).ToArray();
             int arrays=0;
             foreach(var tier in small.GroupBy(CollapseTier))
             {
@@ -161,6 +170,11 @@ namespace StutterFix
                 total=checked(total+(long)size*size*group.Length);
                 RequireLive(SystemInfo.maxTextureArraySlices>0,"drawcollapse texture array slices unavailable");
                 arrays+=(group.Length+SystemInfo.maxTextureArraySlices-1)/SystemInfo.maxTextureArraySlices;
+            }
+            if(exactGroup.Length>0)
+            {
+                arrays+=1;total=checked(total+(long)exactGroup[0].width*exactGroup[0].height*exactGroup.Length);
+                GpuLog("DRAWCOLLAPSE_EXACT_ARRAY size="+exactGroup[0].width+"x"+exactGroup[0].height+" slices="+exactGroup.Length);
             }
             GpuLog("DRAWCOLLAPSE_ARRAY_TOTAL layout=small_dxt5_tiers_plus_borrowed_2d bytes_known="+total+" total_mb="+(total/1048576.0).ToString("F6",Inv)
                 +" planned_arrays_known="+arrays+" direct_textures="+direct.Length+" active_texture_slots="+(arrays+direct.Length)
@@ -187,6 +201,20 @@ namespace StutterFix
                         var tex=group[start+slice];addresses.Add(tex.GetInstanceID(),new Vector4(array,slice,tex.width/(float)size,tex.height/(float)size));
                         Graphics.CopyTexture(tex,0,0,0,0,tex.width,tex.height,a,slice,0,0,0);copies++;
                     }
+                }
+            }
+            if(exactGroup.Length>0)
+            {
+                RequireLive(gpuCollapseArrays.Count<DrawCollapsePolicy.ArrayBindings,"drawcollapse exact array exceeds array bindings");
+                var t0=exactGroup[0];int exArray=gpuCollapseArrays.Count;
+                var ea=new Texture2DArray(t0.width,t0.height,exactGroup.Length,t0.graphicsFormat,TextureCreationFlags.None,1)
+                    {name="GpuDeco collapse exact "+t0.width+"x"+t0.height,wrapMode=TextureWrapMode.Clamp,filterMode=FilterMode.Bilinear};
+                gpuCollapseArrays.Add(ea);
+                RequireLive(ea.graphicsFormat==t0.graphicsFormat,"drawcollapse exact array format conversion rejected");
+                for(int slice=0;slice<exactGroup.Length;slice++)
+                {
+                    var tex=exactGroup[slice];addresses.Add(tex.GetInstanceID(),new Vector4(exArray,slice,1f,1f));
+                    Graphics.CopyTexture(tex,0,0,0,0,tex.width,tex.height,ea,slice,0,0,0);copies++;
                 }
             }
             foreach(var t in direct)

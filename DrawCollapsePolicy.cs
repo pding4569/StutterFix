@@ -70,6 +70,9 @@ namespace StutterFix
         // Renderer stores the source item index for owned rows. Never regroup
         // A/B/A textures or move a quad across even a currently hidden barrier.
         internal static bool SplitByOrder=true;
+        // 2048 을 넘는 같은 크기 DXT5(4K 프레임 계열 등)를 정확한 크기의 배열 하나로 묶는다. 3개 미만이면 직접 슬롯을 쓴다.
+        internal static bool ExactBigArray=true;
+        internal const int ExactBigMin=3;
         // 프로토타입: 정렬 키 캐시(카메라 이동분 일괄 보정)와 전수 스캔 생략. 끄면 이전 방식으로 전부 다시 읽는다.
         internal static bool KeyCache=true;
         internal static bool FullScanOnReplan=false;
