@@ -1,10 +1,10 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 required_slots=38 GPU_owned=28523 CPU_fallback=0 fallback=14 image_excluded=0 spikes_30ms=NA reason=ORDERING_FALLBACK_DESIGN_LIMIT
-8회차: 외부 run7 직접53줄 원시158~543행 순서 대조, 지난 UV 수정 뒤 GPU28523 활성화 성공.
-등록93/주소93/누락0·직접34/48·배열4/4·필요38/선언52슬롯·290.312500MiB·준비82구간14595개/59복사.
-재계획 정렬 제외14·포함14581개/80구간·등록됐지만 제외14·이미지 제외0·전체폴백14로 선행 검사 실패.
-비이미지14개의 독립 GPU 경로 보존과 전체폴백0 조건 충돌; 원시 reason=COLLAPSE_PREFLIGHT_FAILED.
-renderer/policy는 Claude 소유 금지 영역으로 설계 한계 중단·게이트/카운터/정렬 보호 유지·소유자 수정 인계.
-O/O2·G/N 반복0은 통합픽셀 통과가 아님; 종료FastMoveOriginal 복구Rec0/0·native_contexts0.
-통합픽셀/FPS/+20%/30ms 이상 끊김/전곡/설치복원NA·같은333단계 반복 요청 없음·새계획 없음.
-게임/설치/커밋/푸시/장치/Editor/설정/제어변경0회·코드 변경 없어3빌드/LoadCheck/기존검사 반복0회.
-문서5개·자체분석만 작성·게임IL 대조/보호283개SHA/10줄/diff 검증·기존코드/생성기/JSON/tag 보존·상세결과/out/imageown8 참조.
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 GPU_owned=28523 CPU_fallback=0 previous_fallback=14 previous_image_excluded=0 spikes_30ms=NA reason=ACCEPTANCE_FIX_NOT_RUN
+9회차: 외부run8 직접53줄 원시158~544행 순서대조; GPU28523/CPU fallback0·등록93/누락0·정렬제외14/이미지제외0.
+17:15추가지시우선: 비이미지정렬보호<=1% 허용, 이미지제외/텍스처누락0; 앞선전체폴백0중단판단을대체.
+기존선행검사완화보존·픽셀/ABBA판정동기화·실제마스크/카운터/독립GPU경로유지; renderer/policy금지영역보존.
+측정전승인집합·매프레임개수/멤버/소유자검사; 같은개수이미지교체거부·프레임당전수스캔추가없음.
+DEV/Player/PlayerAuto 격리빌드오류0/0/0·경고4/4/40·LoadCheck279/229/281곳틀림0·일반Player연구제외.
+실제5메서드CPU어댑터28검사·생성기8검사·기존명시12출력동일; 실제Unity픽셀/FPS증명아님.
+새abba4-orderguard333단계생성만·기존JSON/tag보존·48슬롯/4배열번들보존·managed DLL은out/imageown9에격리.
+통합픽셀/FPS/+20%/끊김/전곡/설치복원NA; 게임/설치/커밋/푸시/장치/Editor/설정/제어변경0회.
+보호283개중의도한코드2개외281개SHA유지·원시/게임IL/문서5개/10줄/diff검증; 상세결과/out/imageown9참조.

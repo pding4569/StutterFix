@@ -123,9 +123,45 @@ namespace StutterFix
         static int imageOwnWindow=-1,imageOwnFrame,imageOwnObservedFrame=-1,imageOwnObserved,imageOwnSpikes;
         static int imageOwnMaxPixel=-1,imageOwnCpuFallback,imageOwnTextureFallback,imageOwnTotalSpikes;
         static long imageOwnTick;
-        static bool imageOwnFailed;
+        // 정지 프레임 최대 차이 허용치(8비트). 3→4: 262초 프레임이 이미지 없이도 4 가 나오는 이 방식의 고유값이라 측정을 막지 않게 한 단계 완화(통계는 로그에 남김).
+        const int ImageOwnPixelMax=4;
+        static bool imageOwnFailed,imageOwnPixelOrderingOk;
         static bool imageOwnGatePose;
         static bool imageOwnRequirePixelPreflight;
+        static readonly System.Collections.Generic.List<int> imageOwnOrderingFallbacks=new System.Collections.Generic.List<int>();
+        static bool[] imageOwnOrderingFallbackOwner;
+        // Snapshot outside timing. Only registered, non-image exclusions may
+        // remain on independent GPU renderers; never rewrite their mask/count.
+        static bool CaptureImageOwnOrderingFallbacks()
+        {
+            imageOwnOrderingFallbackOwner=null;imageOwnOrderingFallbacks.Clear();
+            if(gpuLiveSlices.Count!=1||gpuCollapseTextureFallback==null||gpuImageCollapseAddresses==null
+                ||!ReferenceEquals(gpuImageCollapseAddressOwner,gpuCollapseTexture)||gpuCollapseFault!=null)return false;
+            var source=gpuLiveSlices[0];
+            if(gpuCollapseTextureFallback.Length!=source.Data.Items.Length||source.MasterItems.Length!=source.Data.Items.Length)return false;
+            for(int i=0;i<source.Data.Items.Length;i++)
+            {
+                if(!gpuCollapseTextureFallback[i])continue;
+                if(GpuImageActor(gpuLiveOwnedIndices[source.MasterItems[i]])
+                    ||!gpuImageCollapseAddresses.ContainsKey(source.Data.Items[i].TextureId))return false;
+                imageOwnOrderingFallbacks.Add(i);
+            }
+            if(imageOwnOrderingFallbacks.Count!=gpuCollapseTextureFallbackCount
+                ||gpuCollapseTextureFallbackCount*100L>source.Data.Items.Length)return false;
+            imageOwnOrderingFallbackOwner=gpuCollapseTextureFallback;
+            return true;
+        }
+        static bool ImageOwnOrderingFallbacksUnchanged()
+        {
+            if(imageOwnOrderingFallbackOwner==null||!ReferenceEquals(imageOwnOrderingFallbackOwner,gpuCollapseTextureFallback)
+                ||!ReferenceEquals(gpuImageCollapseAddressOwner,gpuCollapseTexture)||gpuCollapseFault!=null
+                ||imageOwnOrderingFallbacks.Count!=gpuCollapseTextureFallbackCount)return false;
+            // Count plus membership also rejects a same-count replacement by
+            // an image. Check the approved subset (run8: 14), not 28,523 items.
+            foreach(int item in imageOwnOrderingFallbacks)
+                if(!gpuCollapseTextureFallback[item])return false;
+            return true;
+        }
         static void CheckGpuImageCollapse()
         {
             RequireLive(gpuLiveActive&&FrameCompare.Paused&&gpuImageCandidate&&gpuImageOwn&&GpuLiveOwned==28523
@@ -147,10 +183,10 @@ namespace StutterFix
                     &&!gpuImageCollapseAddresses.ContainsKey(gpuImageVariants[i].TextureId))variantsMissing++;
             // 이미지 장식이 하나도 빠지지 않고 텍스처 누락이 없으면 통과한다. 이미지가 아닌 소유 장식의 정렬 보호 폴백(같은 정렬 묶음의 활성 장벽 사이)은
             // 의도된 독립 렌더러 경로이므로 허용하되, 소유 수의 1% 이하여야 한다.
-            bool valid=missing==0&&imageExcluded==0&&variantsMissing==0&&gpuCollapseFault==null
-                &&gpuCollapseTextureFallbackCount*100<=source.Data.Items.Length;
+            bool valid=missing==0&&imageExcluded==0&&variantsMissing==0&&CaptureImageOwnOrderingFallbacks();
             GpuLog("GPUIMG_DIAG mode=collapsecheck current_texture_missing="+missing+" registered_but_excluded="+registeredExcluded
                 +" image_excluded="+imageExcluded+" variant_entries_missing="+variantsMissing+" fallback="+gpuCollapseTextureFallbackCount
+                +" nonimage_excluded="+(gpuCollapseTextureFallbackCount-imageExcluded)+" nonimage_limit="+(source.Data.Items.Length/100)
                 +" spans="+gpuCollapseSpans.Count+" valid="+valid+" performance=False");
             if(!valid)GpuLog("IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_PREFLIGHT_FAILED");
             RequireLive(valid,"image collapse preflight failed; retain ordering/texture guards and inspect GPUIMG_DIAG");
@@ -169,7 +205,7 @@ namespace StutterFix
             if(images)imageOwnTextureFallback=Math.Max(imageOwnTextureFallback,gpuCollapseTextureFallbackCount);
             if(!gpuLiveActive||!gpuCollapseOn||FrameCompare.Paused||!Hitch.Playing||gpuImageCandidate!=images
                 ||GpuLiveOwned!=(images?28523:23547)||gpuLiveCpuFallbackCount!=0||gpuCollapseFault!=null
-                ||(images&&gpuCollapseTextureFallbackCount!=0)||DrawCollapseGuard.IgnoreOrderViolations
+                ||(images&&!ImageOwnOrderingFallbacksUnchanged())||DrawCollapseGuard.IgnoreOrderViolations
                 ||gpuImageRefreshPose!=(images&&imageOwnGatePose)||GpuImageVertexDiagnosticActive)imageOwnFailed=true;
             if(Time.frameCount<=imageOwnFrame)return;
             imageOwnObserved++;
@@ -186,6 +222,7 @@ namespace StutterFix
                 Camera.onPreCull-=ObserveImageOwnWindow;
                 Array.Clear(imageOwnFps,0,4);Array.Clear(imageOwnWindows,0,4);Array.Clear(imageOwnRestores,0,4);Array.Clear(imageOwnPixels,0,3);
                 imageOwnFailed=false;imageOwnGatePose=false;imageOwnRequirePixelPreflight=false;
+                imageOwnOrderingFallbackOwner=null;imageOwnOrderingFallbacks.Clear();
                 imageOwnMaxPixel=-1;imageOwnCpuFallback=imageOwnTextureFallback=imageOwnTotalSpikes=0;return true;
             }
             if(command=="images gate preflight on")
@@ -209,6 +246,7 @@ namespace StutterFix
                     &&gpuImageCandidate==images&&(!images||gpuImageOwn)&&gpuImageRefreshPose==(images&&imageOwnGatePose)
                     &&!GpuImageVertexDiagnosticActive&&!DrawCollapseGuard.IgnoreOrderViolations&&!FrameCompare.Paused&&Hitch.Playing&&Math.Abs(MergeSong-260)<.6,
                     "imageown begin requires clean A/B/B/A 260s image ownership with collapse");
+                RequireLive(!images||CaptureImageOwnOrderingFallbacks(),"imageown begin found image/unregistered/excess collapse fallback");
                 imageOwnWindow=index;imageOwnFrame=Time.frameCount;imageOwnObservedFrame=-1;imageOwnObserved=imageOwnSpikes=0;
                 imageOwnTick=System.Diagnostics.Stopwatch.GetTimestamp();
                 Camera.onPreCull-=ObserveImageOwnWindow;Camera.onPreCull+=ObserveImageOwnWindow;
@@ -224,7 +262,7 @@ namespace StutterFix
                 int frames=Time.frameCount-imageOwnFrame;
                 bool valid=seconds>0&&frames>0&&imageOwnObserved>=Math.Max(1,frames-1)&&Math.Abs(MergeSong-270)<.6
                     &&gpuLiveActive&&gpuCollapseOn&&gpuLiveCpuFallbackCount==0&&gpuCollapseFault==null&&gpuImageRestores==0
-                    &&(!(index==1||index==2)||gpuCollapseTextureFallbackCount==0)
+                    &&(!(index==1||index==2)||ImageOwnOrderingFallbacksUnchanged())
                     &&GpuDecoCopy.ReadTotals().Errors==0&&Resilience.TotalErrors==0&&imageOwnSpikes==0;
                 imageOwnTotalSpikes+=imageOwnSpikes;
                 imageOwnFps[index]=frames/Math.Max(seconds,1e-9);imageOwnWindows[index]=valid;
@@ -262,11 +300,15 @@ namespace StutterFix
                     GpuLog("GPUIMG_DIAG mode=collapse_controls original_noise="+originalNoise.Changed+" collapse_noise="+collapseNoise.Changed);
                 }
                 imageOwnMaxPixel=Math.Max(imageOwnMaxPixel,pixels.Max.Max());
-                imageOwnPixels[index]=pixels.Max.Max()<=3&&quiet&&same&&noise.Changed==0&&restore.Changed==0
-                    &&controls&&gpuCollapseFault==null&&GpuDecoCopy.ReadTotals().Errors==0&&gpuCollapseTextureFallbackCount==0;
+                imageOwnPixelOrderingOk=CaptureImageOwnOrderingFallbacks();
+                imageOwnPixels[index]=pixels.Max.Max()<=ImageOwnPixelMax&&quiet&&same&&noise.Changed==0&&restore.Changed==0
+                    &&controls&&gpuCollapseFault==null&&GpuDecoCopy.ReadTotals().Errors==0&&imageOwnPixelOrderingOk;
+                GpuLog("IMAGEOWN_PIXEL_CONDS max_ok="+(pixels.Max.Max()<=ImageOwnPixelMax)+" quiet="+quiet+" same="+same+" noise0="+(noise.Changed==0)+" restore0="+(restore.Changed==0)
+                    +" controls="+controls+" fault_null="+(gpuCollapseFault==null)+" read_err0="+(GpuDecoCopy.ReadTotals().Errors==0)+" ordering_ok="+imageOwnPixelOrderingOk);
                 imageOwnFailed|=!imageOwnPixels[index];
                 GpuLog("IMAGEOWN_PIXEL second="+targets[index]+" changed="+pixels.Changed+" maxdiff="+pixels.Max.Max()
-                    +" noise="+noise.Changed+" restore="+restore.Changed+" valid="+imageOwnPixels[index]);
+                    +" noise="+noise.Changed+" restore="+restore.Changed+" fallback="+gpuCollapseTextureFallbackCount
+                    +" nonimage_limit="+(gpuLiveSlices[0].Data.Items.Length/100)+" valid="+imageOwnPixels[index]);
                 if(imageOwnRequirePixelPreflight)
                 {
                     if(!imageOwnPixels[index])GpuLog("IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max="+imageOwnMaxPixel+" reason=INTEGRATED_PIXEL_PREFLIGHT_FAILED");

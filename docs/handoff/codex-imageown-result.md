@@ -1,4 +1,50 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 required_slots=38 GPU_owned=28523 CPU_fallback=0 fallback=14 image_excluded=0 spikes_30ms=NA reason=ORDERING_FALLBACK_DESIGN_LIMIT
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 GPU_owned=28523 CPU_fallback=0 previous_fallback=14 previous_image_excluded=0 spikes_30ms=NA reason=ACCEPTANCE_FIX_NOT_RUN
+
+## 자동 반복 9회차 — 17:15 지시 적용, 이미지 무폴백 판정 일관성 수정
+
+`codex-al-im-9.md` 끝의 **2026-10-25 17:15 추가 지시**가 이전8회차의 전체폴백0 중단 판단을 대체한다. 비이미지 정렬 보호14개는 독립 GPU renderer로 유지하고, 이미지 장식은 하나라도 제외되면 실패한다. 기존 준비/정렬/샘플링/소유권 가드를 끄거나 실제 폴백 카운터를0으로 덮지 않았다. 게임 실행·설치·커밋·푸시·자동 장치 호출·Unity Editor 실행·설정/제어 파일 변경은 **모두0회**다.
+
+### 지정된 외부 run8 분석
+
+`im-autoloop-run8-evidence.txt`의 직접53줄을 `E:/StutterFixWork/night-results/al-im-8.log`의158~544행과 순서·중복까지 대조했다. 시작 선언만1500자 접두부이며 나머지는 전체 줄 일치다. 지난 run7 수치를 새 측정으로 옮기지 않았다.
+
+| 원시 행 | 외부 run8 관측값 |
+|---|---|
+| 383 | 등록93/주소93/누락0·직접34/48·배열4/4·변형누락0 |
+| 387 | 준비82구간/포함14595개·304414720B=290.312500MiB·복사59·텍스처폴백0 |
+| 478 | GPU 소유28523·CPU fallback0 |
+| 524, 528 | 정렬 제외14·재계획80구간/포함14581개·장벽38992·배열4재사용/추가복사0 |
+| 532~533 | 현재/변형 텍스처누락0·등록됐지만제외14·이미지제외0·전체폴백14·valid=False·COLLAPSE_PREFLIGHT_FAILED |
+| 542, 544 | 종료FastMoveOriginal복구·Rec0/기대0·미관측순서0·originals_restored=True·native_contexts0 |
+
+14595−14581=14이며이미지제외0이므로14개 모두 비이미지다. CPU fallback0은 독립GPU renderer 제외0과 다르다. 원시에 통합B 픽셀/IMAGEOWN_PIXEL/IMAGEOWN_WINDOW/PASS가 없으므로 통합픽셀·ABBA FPS·+20%·30ms이상 끊김·전곡수명·설치복원은NA다. 반복캡처0/종료복구를 해당 통과로 쓰지 않는다. 여유VRAM은UNVERIFIED다.
+
+게임 `scrVisualDecoration.cs` 근사 디컴파일의 SetDepth에서 sortingOrder=-depth/정렬레이어 대입을 읽고 설치 Assembly-CSharp.dll의 읽기 전용ILScan으로 setter호출을 교차확인했다. 엔진 native 동점순서 전체의 증명은 아니다. 원시대조/게임IL/해시는 `out/imageown9/analyze.py`, `analysis.txt`, `game-scrVisualDecoration-il.txt`에 남겼다.
+
+### 수정과 판정 범위
+
+- 진입 시점 소스에는 collapsecheck의 이미지제외0·누락0·비이미지1%이하 허용이 이미 있었다. 하지만 ObserveImageOwnWindow/이미지end/픽셀 판정이 여전히 전체폴백0을 요구했다. 선행검사만 통과해도 뒤에서 같은14개로 실패하므로 이미지용fixture의 해당 판정을 함께 수정했다.
+- `CaptureImageOwnOrderingFallbacks`는 측정 전, 텍스처 주소가 등록된 비이미지 폴백만 저장한다. 실제 마스크 개수와 카운터가 일치해야 하며 최대 소유수1%(28523개일 때285개)다. 한 이미지 제외·주소누락·카운터불일치·초과·stale버퍼·collapse오류는 거부한다.
+- 측정 중에는 승인된 인덱스와 실제 개수/마스크참조/버퍼소유자를 확인한다. 개수가 같은 채 비이미지 하나가 빠지고 이미지 하나가 들어와도 거부한다. 전수28523개 스캔은 픽셀/선행/창시작 시점에만 하며 매 프레임은 승인집합(직전14개)만 확인한다. 실제 비용/FPS 개선은 아직 미측정이다. 승인집합 변화는 보수적으로 실패 처리한다.
+- 기존CPU fallback0·순서무시끔·픽셀max<=3·반복/복원0·오류0·30ms이상0·ABBA+20%·세픽셀/네창/네복원 필수 조건을 유지한다. 전체폴백수는 기존texture_fallback 필드에 그대로 기록하며 이미지제외와 구별한다. 픽셀조건별 진단로그도 보존하고 ordering_ok를 단락평가 이전에 갱신해 과거값을 표시하지 않게 했다.
+- renderer/policy/Dormancy/TightLate/FastMove/Export/셰이더/native/번들/공유wrap은 수정하지 않았다. 새로운 기본옵션이나 일반Player 연구 포함도 없다.
+
+### 오프라인 검증과 외부 시험 인계
+
+| 검사 | 결과 | 근거 (`out/imageown9/`) |
+|---|---|---|
+| DEV/Player/PlayerAuto 격리 Release 빌드 | 오류0/0/0·경고4/4/40 | verify.ps1, build-*.txt |
+| LoadCheck | FieldRef279/229/281곳·틀림0/0/0·일반Player 연구제외 | loadcheck-*.txt |
+| 실제 판정메서드5개 추출+CPU어댑터 | 28검사 통과 | check-gate.py, gate-check.txt |
+| 계획생성기 | 8검사 통과·기존명시모드12출력동일 | generator-tests.txt, plan-check.txt |
+
+28검사는14개허용·마스크/카운터불변·이미지1개거부·누락현재/미래텍스처거부·1%경계285/286개·개수불일치·오류/stale주소·같은개수의이미지교체·런타임추가폴백/마스크교체·픽셀4/노이즈/30ms/CPU복귀 거부·reset을 검사한다. CPU어댑터이며 실제Unity렌더링/샘플링/픽셀/FPS/복원의 증명은 아니다. 검증도구의독립케이스 초기화와Windows경로정규화 오류는 도구에서 바로잡았으며 게임오류가 아니다. 최종소스 변경을 반영해3빌드/LoadCheck를 재검증했다.
+
+기존333단계abba3 JSON과명시diag/diag1/abba출력을 보존했다. 새 `tools/optimization/out/imageown-abba4-orderguard-steps.json`은333단계이고 명령순서는기존과같으나 **새managed판정/새tag/새수용설명**을 사용한다. 준비창257.5~270.25·48직접/4배열 소유자번들을전제로 하며 실제상한증가는없다. 수정된 PlayerAuto DLL은 `out/imageown9/build/playerauto/StutterFix.dll`에만 있다. 기존bin·설치DLL·번들은교체하지않았다.
+
+게임시험은사용자금지로실행하지않았다. 외부실행자는수정된managed DLL로새계획을실행해260/262/270초통합max<=3·ABBA>=+20%·이미지제외0/주소누락0·승인비이미지<=1%·30ms이상0을측정해야한다. 같은실패코드의무변경재시험과구분하며 자동장치를직접호출/중지/예약하지않았다. **IMAGEOWN=FAIL reason=ACCEPTANCE_FIX_NOT_RUN**을유지한다. 이전8회차의ORDERING_FALLBACK_DESIGN_LIMIT는17:15지시적용전이력이다.
+
+보호283개중의도한fixture/생성기2개만변경하고나머지281개SHA256유지를검증한다. 문서5개·10줄요약·diff검증은verification.txt를따른다. 공유스킬/메모리는수정하지않았다.
 
 ## 자동 반복 8회차 — 외부 run7 분석, 비이미지 정렬 제외14개로 중단
 

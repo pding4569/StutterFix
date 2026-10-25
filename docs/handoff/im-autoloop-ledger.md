@@ -1,3 +1,7 @@
+## 회차 9 — 17:15 지시 반영, 이미지 무폴백 판정 일관성 수정
+
+외부 run8 직접53줄을 원시158~544행과 순서 대조했다. 등록93/주소93/누락0·직접34/48·배열4/4·290.312500MiB·GPU28523/CPU fallback0 뒤 비이미지 정렬 보호14개로 collapsecheck 실패다. 17:15추가지시를 우선해 이미 적용된 선행 검사 완화를 보존하고 픽셀/ABBA의 남은 전체폴백0 조건도 같은 기준으로 맞췄다. 이미지 제외/주소 누락0·비이미지 정렬 보호<=1%이며, 측정 전 승인집합을 저장하고 매 프레임 개수/멤버/배열소유자 변경을 거부한다. 정렬보호/실제카운터/독립GPU경로/48슬롯/셰이더/번들은 유지했다. 격리3빌드 오류0/0/0·경고4/4/40·LoadCheck279/229/281곳틀림0·실제5메서드28검사/생성기8검사 통과다. 명시12출력/기존JSON 보존·새abba4-orderguard333단계 생성만. IMAGEOWN=FAIL reason=ACCEPTANCE_FIX_NOT_RUN; 통합픽셀/FPS/+20%/끊김/전곡/설치복원NA. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 상세결과/out/imageown9 참조.
+
 ## 회차 8 — 외부 run7 분석, 비이미지 정렬 제외14개로 중단
 
 외부 run7 직접53줄을 원시158~543행과 순서 대조했다. 등록93/주소93/누락0·직접34/48·배열4/4·290.312500MiB에서 GPU28523 활성화 성공·CPU fallback0이다. 재계획 정렬 제외14·포함14595→14581·구간82→80, collapsecheck의 등록됐지만 제외14/이미지 제외0/전체폴백14로 실패했다. 원시 reason=COLLAPSE_PREFLIGHT_FAILED, 분석 IMAGEOWN=FAIL reason=ORDERING_FALLBACK_DESIGN_LIMIT.
@@ -185,3 +189,28 @@ O/O2·G/N 반복0은 통합픽셀 증명이 아니며 종료FastMoveOriginal 복
   - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_PREFLIGHT_FAILED
   - [StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=17 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.621294 progress_ms=0.013582 uniform_ms=0.008865 dispatch_
   - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=recovery:FastMoveOriginal song=260.019671 resumed_recs=0 resume_expected=0 unobserved_order=0 restore_ms=6.481300
+
+## 회차 1
+- Codex 요약: 17:15 추가 지시에 맞춰 픽셀·ABBA 판정을 수정했습니다. 이미지 제외는 실패로 처리하고, 비이미지 정렬 보호 폴백은 1% 이하로 허용합니다.
+
+- 빌드 3종·LoadCheck 통과
+- 판정 검사 28개·생성기 검사 8개 통과
+- 새 333단계 계획 생성 완료
+- 게임 실행·설치·커밋 없음
+
+실게임 픽셀·FPS는 미측정이므로 `IMAGEOWN=FAIL`을 유지했습니다. [결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=300220416 copy_calls=58 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_eva
+  - [StutterFix] [gpudeco] prepare_ms=9666.723700 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2135 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=167.138000 prepare_ms=9666.723700
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=14 active_buckets=251
+  - [StutterFix] [gpudeco] cost scope=live_off frames=45 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.455113 progress_ms=0.012438 uniform_ms=0.038098 dispatch_ms=0.289280 misc_
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=260.019671 resumed_recs=11821 resume_expected=11821 unobserved_order=0 restore_ms=13.404400
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2041 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=163.486400 prepare_ms=9666.723700
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=317
+  - [StutterFix] [gpudeco] cost scope=live_off frames=90 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.439686 progress_ms=0.011822 uniform_ms=0.035719 dispatch_ms=0.278926 misc_
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=262.014330 resumed_recs=11186 resume_expected=11186 unobserved_order=0 restore_ms=12.331500

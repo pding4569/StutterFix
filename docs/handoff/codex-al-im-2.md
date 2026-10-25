@@ -6,6 +6,14 @@
 
 
 ---
+# 자동 반복 9회차
+
+먼저 `docs/handoff/codex-master-20261022.md`(마스터 인계문서)를 읽어라.
+
+직전 게임 시험 결과(자동 수집): `docs/handoff/im-autoloop-run8-evidence.txt`. 먼저 `docs/handoff/im-autoloop-ledger.md` 장부를 읽고, 이미 실패한 접근은 되풀이하지 말고 결과에서 배운 점으로 다른/더 나은 접근을 택해라(같은 코드를 다시 돌리는 것은 금지). 게임 코드는 `E:/StutterFixWork/decompiled/Assembly-CSharp/<타입>.cs` 디컴파일본으로 읽어라(근사, ilscan 으로 교차확인). 성공 조건(정규식) `IMAGEOWN=PASS` 이 아직 안 나왔다. 결과를 분석해 원인을 코드로 찾아 고치고, 안 되는 이유가 설계 한계면 결과 문서에 구체적으로 적고 멈춰라. 아래는 원래 임무다.
+
+
+---
 # Codex 지시서: 이미지 장식 약 4,976개를 GPU 소유 + draw 통합에 편입 (픽셀 정확하게)
 먼저 `docs/handoff/codex-master-20261022.md`, `docs/handoff/claude-gpudeco-image-playback-20261024.md`(이전 중단 시점 인계), `docs/handoff/gemini-tie-image-400fps-plan.md`(제미나이의 코드 대조 분석 — 3장이 이 작업의 핵심)를 읽어라.
 
@@ -24,3 +32,19 @@
 - **Codex 가 고쳐도 되는 파일**: `GpuDecoImage*.cs`, `LazySprite.cs`, `GpuDecoImagePlayback.cs`, 이미지용 시험 계획 `tools/optimization/imageown-steps.py`, 이미지 관련 문서.
 - **Claude 가 고치는 중(건드리지 마라, 필요하면 결과 문서에 요청으로 남겨라)**: `GpuDecoDrawCollapseRenderer.cs`, `DrawCollapsePolicy.cs`, `Dormancy.cs`, `TightLate.cs`, `FastMove.cs`, `GpuDecoExport.cs`. 단 위 3번의 `GpuDecoDrawCollapse.cs` 입구 검사 한 줄과 `UpdateDrawCollapseTextureSlot` 헬퍼 추가는 허용(작게, 다른 줄 건드리지 말 것).
 - 시험은 `tools/optimization/imageown-steps.py` 가 만드는 계획(ABBA+픽셀, 약 10분)을 자동 장치가 돌린다. 게임 시험은 `GameLock` 으로 직렬화되어 Claude 의 시험과 번갈아 돈다.
+
+## 2026-10-25 16:50 Claude 지시 (4회전 결과 반영): 텍스처 등록은 "창 범위"로 줄여라 — 이게 `image_texture_not_registered_in_collapse` 의 해법이다
+증거: `GpuDecoImagePlayback.cs` 의 `RegisterGpuImageCollapseVariants` 는 `gpuImageVariants` 의 **곡 전체** `ReadyQuad` 변형을 전부 `textures` 에 넣는다. 그래서 `DRAWCOLLAPSE_ARRAY_TOTAL` 이 `planned_arrays_known=3 direct_textures=32 active_texture_slots=35`(상한 36) 로 가득 차고 `live on` 이 `image_texture_not_registered_in_collapse` 로 막힌다. 하지만 draw 통합은 한 창(준비 창 약 257.5~270.25초)만 그린다.
+해야 할 일 (이미지 파일 영역이니 네가 한다):
+1. 이미지 타임라인(`GpuDecoImageTimeline.cs`, `GpuDecoImagePlan.cs`)에서 **각 이미지 변형이 적용되는 곡 시각**을 얻어, 창 `[257.5, 270.25]` 안에서 적용되는 변형 + 창 시작 시점에 이미 적용돼 있는 상태(초기 스프라이트)만 `textures` 에 등록하라. 창 밖(곡 다른 곳)에서만 쓰이는 변형은 등록하지 않는다. 창 범위 정보가 이미 있는 함수가 있으면 재사용(예: `VisibleInWindow`, `table`).
+2. 등록 후 `GPUIMG_DIAG mode=collapsecoverage` 로그의 `registered`, `missing`, `direct_required`, `arrays_used` 를 확인한다. `missing=0` 이고 `direct_required <= 32`, 배열 ≤ 4 이면 통합으로 진행. **그래도 넘치면** 숫자(포맷별·크기별 개수, 필요 슬롯 수)를 결과 문서에 적고 멈춰라 — 그때는 Claude 가 형식별 은행/아틀라스 설계를 제미나이와 한다. 32 상한을 늘리거나 누락 검사를 끄지 마라.
+3. 이어서 `imageown` 계획(333단계)을 다시 돌려 통합 픽셀·FPS 를 얻는다.
+(참고: Claude 가 `GpuDecoDrawCollapseRenderer.cs` 에 재계획 키 캐시 최적화를 합쳤다. `RegisterGpuImageCollapseVariants`/`RememberGpuImageCollapseAddresses` 호출 2곳은 이미 연결돼 있다.)
+
+## 2026-10-25 17:05 Claude 지시 (6회전 시험 결과 반영): `live on` 의 `image collapse changed mip/wrap` — wrap 모드 검사를 UV 범위 검사로 바꿔라
+증거: 슬롯 48개로 늘린 뒤(Claude 가 `DirectBindings=32→48` + 번들 재빌드, 필요 36개 ≤ 48) 텍스처 커버리지 `missing=0` 통과, 다음 관문 `GpuDecoDrawCollapse.cs:27` 의 `RequireLive(texture.mipmapCount==1 && texture.wrapModeU==Clamp && texture.wrapModeV==Clamp, "image collapse changed mip/wrap")` 에서 막혔다. 원본 이미지 텍스처의 초기 wrap 은 Repeat 이고 게임 V15 setter/Defer 가 이벤트 시점에 Clamp 로 바꾼다. 우리 draw 통합 셰이더는 **자체 clamp 샘플러**를 쓰므로, 스프라이트 정점 UV 가 모두 [0,1](+작은 오차) 안이면 원본 Repeat 샘플링과 결과가 같다.
+해야 할 일: 위 검사에서 wrap 모드 조건을 빼고, 대신 **해당 변형의 모든 UV 성분이 [-1e-4, 1+1e-4] 안**이고 `mipmapCount==1` 인지를 검사하라(변형 정보 `GpuDecoImageVariant.UV` 는 이미 있다). UV 가 범위를 벗어나는 변형(타일링 이미지)만 CPU 복귀/폴백으로 처리한다. 텍스처 wrap 을 미리 바꾸지 마라(다른 장식과 공유). `RequireLive` 메시지는 `image_uv_outside_unit_range` 로 구분해 원인 추적이 되게 하라. 이 수정은 이미지 영역 코드이며 `GpuDecoDrawCollapse.cs:27` 한 줄 수정만 허용한다.
+
+## 2026-10-25 17:15 Claude 지시 (7회전 시험 결과 반영): `images collapsecheck` 선행 검사의 통과 조건을 고쳐라
+증거(al-im-7): 이미지 포함 준비는 성공했다(`DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4`, 재계획 73ms). 선행 검사가 `GPUIMG_DIAG mode=collapsecheck current_texture_missing=0 registered_but_excluded=14 image_excluded=0 variant_entries_missing=0 fallback=14 spans=80 valid=False` 로 실패했다. 실패 사유는 `registered_but_excluded=14`/`fallback=14` 뿐이다. 이 14개는 **이미지가 아닌 소유 장식으로, 같은 정렬 묶음에서 활성 장벽 "사이"에 있어 정렬 보호(`DRAWCOLLAPSE_TIE_EXCLUDED owned_items=14`)로 구간에서 뺀 것**이다. 이 보호를 없애면 화면이 틀어지므로(262초 픽셀 최대 차이 4 초과) 없애지 않는다. 폴백 14개는 독립 렌더러로 정상 그려진다.
+해야 할 일: 통과 조건을 `current_texture_missing==0 && image_excluded==0 && variant_entries_missing==0` 으로 바꾸고, `registered_but_excluded`/`fallback` 은 로그만 남겨라(이미지 장식이 하나라도 빠지면 즉시 실패, 이미지가 아닌 정렬 보호 폴백은 허용). 필요하면 `registered_but_excluded` 안의 이미지/비이미지 개수를 따로 로그. 폴백 수에 상한(예: 소유 수의 1% 이하)을 두는 건 좋다. 그 뒤 통합 시험(333단계)을 계속해 통합 픽셀·FPS 를 얻어라.

@@ -1,6 +1,6 @@
 """이미지 소유 진단/ABBA 계획 생성 전용. 게임 실행·설치 기능 없음.
 
-기본 accept는 통합 픽셀/무폴백 선행 검사 뒤 ABBA를 생성한다.
+기본 accept는 통합 픽셀/이미지 무폴백 선행 검사 뒤 ABBA를 생성한다.
 diag/diag1/abba는 과거 계획 보존용 명시 모드다. 실행 기능은 없다.
 """
 import argparse
@@ -68,18 +68,18 @@ def acceptance_plan(chart, bundle, refreshpose):
     steps += performance_windows(chart, bundle, refreshpose, activation=257.5)
     steps += ['gpudeco images result', 'quit']
     return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False}, timeout_min=30,
-        tag='imageown-260-270-abba3-window', notes={
+        tag='imageown-260-270-abba4-orderguard', notes={
             'status': '생성만; 이번 게임·설치·자동 장치 호출 없음', 'mode': 'accept',
             'bundle': str(bundle).replace('\\', '/'), 'refreshpose': refreshpose,
             'prerequisites': '새 managed DLL과 EvaluateImageLive/EvaluateCollapse/GpuDecoBatch 지원 번들 필요',
             'evidence': '외부 run2: 3440x1440@164.999 정지 이미지 소유 maxdiff=1/1/1; 통합·연속 재생·FPS 미검증',
-            'preflight': '260/262/270 통합 원본 maxdiff<=3·O/G/B 반복 및 G 복원0·현재/변형 텍스처 누락0·제외 폴백0; 실패 시 ABBA 중단',
+            'preflight': '260/262/270 통합 원본 maxdiff<=3·O/G/B 반복 및 G 복원0·현재/변형 텍스처 누락0·이미지 제외0; 비이미지 정렬 보호 폴백은 소유 수의 1% 이하 허용; 실패 시 ABBA 중단',
             'A': '이미지 candidate off + GPU23547 + draw 통합',
             'B': '이미지 candidate/own on + GPU28523 + draw 통합',
-            'acceptance': '3440x1440@165; B/A>=1.20 (A=202라면 B>=242.4FPS); 260/262/270 maxdiff<=3; CPU/후보텍스처/정렬제외/런타임 fallback=0; >=30ms=0',
+            'acceptance': '3440x1440@165; B/A>=1.20 (A=202라면 B>=242.4FPS); 260/262/270 maxdiff<=3; CPU/이미지 제외/텍스처 누락/런타임 오류=0; 승인된 비이미지 정렬 보호 폴백<=1%, 측정 중 집합 변경 금지; >=30ms=0',
             'timing': 'ABBA 창에 pause/캡처/readback 없음; 준비·재열기 제외 260..270초',
             'texture_window': '[257.5,270.25]의 소유 대상 변형·각 대상의 직전 상태·초기 물리 텍스처; 소유권 활성화는 257.5초부터',
-            'coverage_gate': 'collapsecoverage missing=0, direct_required<=32, arrays_used<=4 뒤에만 live on; 초과 시 그룹별 수치 기록 후 중단',
+            'coverage_gate': 'collapsecoverage missing=0, direct_required<=48, arrays_used<=4 뒤에만 live on; 17:05 소유자 48슬롯 번들 전제, 상한 추가 증가 없음',
             'lifetime': 'live off 뒤 resume/stop; 설치 복원은 외부 실행기 책임; 전곡 수명 미검증'})
 
 
@@ -266,7 +266,7 @@ def self_test():
 
         def test_preflight_precedes_all_timing(self):
             plan = build('Arche.adofai')
-            self.assertEqual(plan['tag'], 'imageown-260-270-abba3-window')
+            self.assertEqual(plan['tag'], 'imageown-260-270-abba4-orderguard')
             steps = plan['steps']
             self.assertIn('gpudeco images gate preflight on', steps)
             self.assertEqual(steps.count('waitsongpos 257.5 40'), 4)
