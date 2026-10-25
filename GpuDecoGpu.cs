@@ -251,7 +251,7 @@ namespace StutterFix
         // 구간 디스패치를 한 번만 기록해 두고(구간 버퍼는 재계획 때만 바뀐다) 프레임마다는 유니폼 작은 버퍼 + 이 버퍼 실행만 한다.
         CommandBuffer collapseRecorded,collapseUniforms;
         internal bool HasRecordedCollapse=>collapseRecorded!=null;
-        internal void ReleaseRecordedCollapse(){collapseRecorded?.Release();collapseRecorded=null;collapseUniforms?.Release();collapseUniforms=null;}
+        internal void ReleaseRecordedCollapse(){collapseRecorded?.Release();collapseRecorded=null;collapseUniforms?.Release();collapseUniforms=null;minimalBound=false;}
         internal void RecordCollapse(ComputeBuffer texture,IList<GraphicsBuffer> targets,IList<ComputeBuffer> maps,IList<int> counts)
         {
             Require(UseLiveMode && shader.HasKernel("EvaluateCollapse"),"drawcollapse bundle lacks EvaluateCollapse");
@@ -302,6 +302,26 @@ namespace StutterFix
             float hi=(float)time;shader.SetFloat("_TimeHi",hi);shader.SetFloat("_TimeLo",(float)(time-hi));
             shader.SetBuffer(k,"_Vertices",verts);shader.SetBuffer(k,"_CollapseMap",map);
             shader.SetInt("_CollapseCount",count);shader.Dispatch(k,(count+63)/64,1,1);
+        }
+        // 제품 경로: 커널의 버퍼 바인딩은 유지되므로 처음 한 번만 묶고, 프레임마다는 값 몇 개와 디스패치만 한다
+        // (명령 버퍼 2개 실행 약 0.15ms/프레임을 대체; 기존 Direct 는 매 프레임 버퍼 8~10개를 다시 묶어서 이득이 없었다).
+        bool minimalBound;
+        static readonly int pPitch=UnityEngine.Shader.PropertyToID("_Pitch"),pTweenScale=UnityEngine.Shader.PropertyToID("_TweenScale"),pCount=UnityEngine.Shader.PropertyToID("_Count"),
+            pUseAnchors=UnityEngine.Shader.PropertyToID("_UseAnchors"),pUseLive=UnityEngine.Shader.PropertyToID("_UseLiveChannels"),pCamera=UnityEngine.Shader.PropertyToID("_Camera"),
+            pClip=UnityEngine.Shader.PropertyToID("_CameraClip"),pTimeHi=UnityEngine.Shader.PropertyToID("_TimeHi"),pTimeLo=UnityEngine.Shader.PropertyToID("_TimeLo"),pCollapseCount=UnityEngine.Shader.PropertyToID("_CollapseCount");
+        internal void DispatchCollapseMinimal(ComputeBuffer texture,ComputeBuffer verts,ComputeBuffer map,int count,Vector4 camera,double time,Vector4 clip)
+        {
+            if(!minimalBound)
+            {
+                BeginCollapse(texture);
+                shader.SetBuffer(collapseKernel,"_Vertices",verts);shader.SetBuffer(collapseKernel,"_CollapseMap",map);
+                minimalBound=true;
+            }
+            shader.SetFloat(pPitch,data.Pitch);shader.SetFloat(pTweenScale,data.TweenScale);shader.SetInt(pCount,data.Items.Length);
+            shader.SetInt(pUseAnchors,1);shader.SetInt(pUseLive,(UseLiveMode&&hasLiveKernel)?1:0);
+            shader.SetVector(pCamera,camera);shader.SetVector(pClip,clip);
+            float hi=(float)time;shader.SetFloat(pTimeHi,hi);shader.SetFloat(pTimeLo,(float)(time-hi));
+            shader.SetInt(pCollapseCount,count);shader.Dispatch(collapseKernel,(count+63)/64,1,1);
         }
         internal void DispatchCollapseAll(ComputeBuffer texture,ComputeBuffer verts,ComputeBuffer map,int count)
         {

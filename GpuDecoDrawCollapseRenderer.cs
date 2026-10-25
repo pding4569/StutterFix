@@ -723,6 +723,24 @@ namespace StutterFix
                     new Vector4(ctd.position.x,ctd.position.y,ctd.eulerAngles.z,camScaleD),time,clipD);
                 foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
             }
+            else if(GpuDecoPlayer.Product && DrawCollapsePolicy.GlobalVerts && DrawCollapsePolicy.MinimalDispatch)
+            {
+                var camm=ADOBase.controller.camy;var ctm=camm.transform;
+                float camScaleM=camm.camobj.orthographicSize*.2f/gpuLiveZoomFactor;
+                Vector4 clipM=Vector4.zero;
+                if(DrawCollapsePolicy.ClipOffscreen)
+                {
+                    var co=camm.camobj;float halfH=co.orthographicSize*1.05f+.5f,halfW=halfH*co.aspect;float rad=ctm.eulerAngles.z*Mathf.Deg2Rad;
+                    clipM=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
+                }
+                long ex0=Stopwatch.GetTimestamp();
+                source.Gpu.DispatchCollapseMinimal(gpuCollapseTexture,gpuCollapseAllVerts,gpuCollapseAllMap,gpuCollapseAllCount,
+                    new Vector4(ctm.position.x,ctm.position.y,ctm.eulerAngles.z,camScaleM),time,clipM);
+                long ex1=Stopwatch.GetTimestamp();
+                if((Time.frameCount&7)==0)
+                foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
+                gpuCostExecTicks+=ex1-ex0;gpuCostProxyTicks+=Stopwatch.GetTimestamp()-ex1;
+            }
             else if(DrawCollapsePolicy.RecordedDispatch)
             {
                 if(!source.Gpu.HasRecordedCollapse)
