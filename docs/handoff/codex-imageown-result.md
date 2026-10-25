@@ -1,4 +1,47 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 required_slots=38 fallback=NA spikes_30ms=NA reason=SAMPLING_FIX_NOT_RUN
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 required_slots=38 GPU_owned=28523 CPU_fallback=0 fallback=14 image_excluded=0 spikes_30ms=NA reason=ORDERING_FALLBACK_DESIGN_LIMIT
+
+## 자동 반복 8회차 — 외부 run7 분석, 비이미지 정렬 제외14개로 중단
+
+지정된 지시서·마스터·두 장부·이전 이미지 인계·제미나이 분석을 읽었다. 외부 run7은 지난 UV 검사 수정 뒤 **GPU 소유28523개 활성화 성공**, 등록93/주소93/누락0이다. 새 실패는 `images collapsecheck`의 **전체 통합 폴백14개**이며 이미지 제외는0개다. 원시 판정 `COLLAPSE_PREFLIGHT_FAILED`와 이 문서의 원인 분류 `ORDERING_FALLBACK_DESIGN_LIMIT`를 구분한다.
+
+현재 정렬 보호 설계는14개를 통합 구간에서 빼고 독립 GPU renderer에 남긴다. 수용 기준은 전체폴백0개이며, 필요한 renderer·정렬 정책은 **Claude 소유의 수정 금지 파일**이다. 이미지 등록/UV/알파 큐 수정으로 해소할 근거가 없으므로 지시된 설계 한계 중단 조건을 적용한다. **현재 설계와 허용 수정 범위의 한계이며, 다른 모든 통합 설계가 불가능하다는 판정은 아니다.**
+
+### 외부 run7 원시 증거
+
+`im-autoloop-run7-evidence.txt`의 직접 증거53줄을 `E:/StutterFixWork/night-results/al-im-7.log`의158~543행과 순서·중복까지 대조했다. 시작 선언은1500자 접두부, 나머지는 전체 줄이 일치한다. 들여쓴 과거 요약은 이번 측정에 섞지 않았다. 재현 근거는 `out/imageown8/analyze.py`, `analysis.txt`다.
+
+| 원시 행 | 외부 run7 관측값 |
+|---|---|
+| 377~380 | 창257.5~270.25초·선택변형10/제외93·등록93/주소93/누락0·직접34/48·배열4/4·필요38/선언52슬롯 |
+| 379, 384 | 배열304414720B=290.312500MiB·준비82구간/포함14595개·복사59·텍스처폴백0 |
+| 468, 473 | CPU 원본 O/O2 반복 changed0/4953600·maxRGBA0,0,0,0 |
+| 476~478 | GPU 소유28523·CPU fallback0·on=True·활성 소스2135·활성화163.4953ms |
+| 506, 511 | 독립 GPU G/N 반복 changed0/4953600·maxRGBA0,0,0,0 |
+| 523~527 | 정렬 제외14·활성묶음251·재계획80구간/포함14581개·배열4 재사용/추가복사0·장벽38992 |
+| 531~532 | 현재/변형 텍스처 누락0·등록됐지만 제외14·이미지 제외0·전체폴백14·valid=False·선행 검사 실패 |
+| 539~543 | 시험 중단 후 FastMoveOriginal 복구·Rec0/기대0·미관측순서0·originals_restored=True·종료native_contexts0 |
+
+준비 포함14595−재계획 포함14581=14로 정렬 제외와 일치한다. `image_excluded=0`과 전체폴백14에 따라 **14개 모두 비이미지 장식**이다. `CPU_fallback=0`은 CPU 소유권 복귀가 없다는 뜻이며 독립 GPU renderer 제외0과 다르다. 이번48직접 슬롯 전제에서 용량은 충분하다. 지난32상한 초과 문제나 이전 run6의 Rec11821/11821 rollback을 이번 결과에 옮기지 않는다. 여유VRAM은 UNVERIFIED다.
+
+O/O2·G/N 각각의 반복0은 **CPU 원본↔독립GPU 동일성 또는 통합 픽셀 통과가 아니다**. 원시에 drawcollapse_on=True·통합 B 캡처·IMAGEOWN_PIXEL·IMAGEOWN_WINDOW·IMAGEOWN=PASS가 없다. 통합 최대픽셀차이·ABBA FPS/+20%·30ms 이상 끊김·전곡 수명·설치복원은 모두NA다. 복구 Rec0/0은 시험 종료 시점의 로그 범위다.
+
+### 코드로 확인한 실패 경로
+
+1. `GpuDecoDrawCollapseRenderer.cs:363`의 BuildDrawCollapseSpans는 활성 장벽과 `(Layer,Order,Queue,Distance)`가 같은 소유 장식을 검사한다. 허용한 앞쪽/조건부 뒤쪽 구간에 남기지 못하면 included=false, TextureFallback=true, 카운터 증가, 독립 renderer의 새 장벽 등록 후 TIE_EXCLUDED를 기록한다. **텍스처 주소 누락용 카운터를 정렬 제외에도 공유**한다. 준비폴백0→정렬제외14→카운터14의 원시 순서와 일치한다.
+2. `DrawCollapsePolicy.cs:84`의 KeepAfterBarrier=false를 유지한다. 기존 주석은 켰을 때262초 최대차이4로 허용3을 초과하고 FPS 이득이 없었다고 기록한다. 이는 이번 run7의 새 측정이 아니다. 원시에는14개의 item/재질키·장벽 min/max가 없어 전부 뒤쪽인지/동점인지/장벽 사이인지까지 확정하지 않는다. 실패 스위치를 다시 켜는 접근은 반복하지 않는다.
+3. `GpuDecoImageGeometryFixture.cs:148`의 선행 검사는 registeredExcluded==0과 전체폴백0을 요구한다. image_excluded만0이라고 통과시키면 수용 기준을 완화한다. 같은 파일의 ObserveImageOwnWindow와 images end도 B의 전체폴백0을 요구하므로 **선행 검사만 제거해도 ABBA 성공이 되지 않는다**. 모든 가드를 유지한다.
+4. `GpuDecoDrawCollapseRenderer.cs:663`은 전체폴백이 있으면 CopyMask 조건에 따라 독립 DispatchEvaluate/native copy/CommandBuffer 경로를 유지한다. 카운터만0으로 덮으면 독립 정점 갱신을 생략할 수 있다. 허용된 이미지 슬롯 helper에서 inclusion/카운터를 지우는 우회도 하지 않는다.
+5. 게임 근사 디컴파일 `E:/StutterFixWork/decompiled/Assembly-CSharp/scrVisualDecoration.cs:327`의 SetDepth에서 sortingLayerName과 sortingOrder=-depth 적용을 읽었다. 설치 Assembly-CSharp.dll의 읽기 전용 ILScan으로 해당 setter 호출을 교차확인했다(`out/imageown8/game-scrVisualDecoration-il.txt`). 게임의 정렬 설정 경로 확인이며 Unity native 동점 순서 전체의 증명은 아니다.
+
+### 소유자에게 필요한 작업과 중단 범위
+
+Claude의 renderer/policy 영역에서14개의 item·소유종류·정렬키·장벽 최소/최대 재질키·제외 분기를 확인하고, 원래 순서를 보존하면서 통합할 설계를 수정해야 한다. 장벽 무시·게이트 완화·카운터 조작은 해법으로 채택하지 않는다. **소유자 수정으로 전체폴백0을 만들기 전 같은333단계 계획 재실행 요청 없음·새계획 없음**이다. 변경 후 외부 실행자가260/262/270초 통합 maxdiff≤3·ABBA≥+20%·전체폴백0·30ms 이상 끊김0을 확인해야 한다. 외부 메시지를 보내거나 자동 장치를 직접 중지하지 않았다.
+
+### 이번 검증과 보존
+
+런타임 코드·생성기·기존 JSON/태그·셰이더·번들·설정/제어 파일을 수정하지 않았다. 따라서3빌드·LoadCheck·지난330/8검사는 반복하지 않았다. 문서5개와 자체 `out/imageown8/` 분석/검증 산출물만 작성했다. 외부53줄 순서·계수·미측정 항목 부재·게임 IL 대조, 보호283개 SHA256, 문서 정합성·10줄 요약·diff 검사를 검증했다(`verification.txt`). 처음 분석 스크립트의 IL 제목/CRLF 파싱과 D:/E:간 상대경로 처리를 실제 형식에 맞게 고친 뒤 전체 검사를 통과시켰다. 프로젝트/게임 코드 오류로 오인하지 않는다.
+
+게임 실행·설치·커밋·푸시·자동 장치 호출·Unity Editor 실행·설정/제어 파일 변경은 모두0회다. 아래7회차의 SAMPLING_FIX_NOT_RUN은 외부 run7 수신 전 이력이며 이번 활성화 성공으로 갱신한다.
 
 ## 자동 반복 7회차 — 17:05 추가 지시에 따른 wrap 검사 대체, 게임 미실행
 

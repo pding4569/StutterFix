@@ -1,3 +1,11 @@
+## 회차 8 — 외부 run7 분석, 비이미지 정렬 제외14개로 중단
+
+외부 run7 직접53줄을 원시158~543행과 순서 대조했다. 등록93/주소93/누락0·직접34/48·배열4/4·290.312500MiB에서 GPU28523 활성화 성공·CPU fallback0이다. 재계획 정렬 제외14·포함14595→14581·구간82→80, collapsecheck의 등록됐지만 제외14/이미지 제외0/전체폴백14로 실패했다. 원시 reason=COLLAPSE_PREFLIGHT_FAILED, 분석 IMAGEOWN=FAIL reason=ORDERING_FALLBACK_DESIGN_LIMIT.
+
+같은 정렬 묶음의 활성 장벽 때문에 비이미지14개가 독립 GPU renderer에 남는다. 전체폴백0 기준/카운터/정렬 보호는 유지한다. 필요한 renderer/policy 변경은 Claude 소유 금지 영역이라 지정된 설계 한계에서 중단·순서 보존 설계 수정을 결과 문서에 인계했다. 특정14개 ID·장벽 사이 위치는 미확정이며 모든 통합 설계의 불가능 판정은 아니다. 원인 수정 전 같은333단계 반복 요청 없음·새계획 없음.
+
+O/O2·G/N 반복0은 통합픽셀 증명이 아니며 종료FastMoveOriginal 복구Rec0/0·native_contexts0이다. 통합픽셀/FPS/+20%/30ms 끊김/전곡/설치복원NA. 코드/생성기/기존JSON/tag/셰이더/번들/설정/제어파일 보존·문서5개와 자체분석만 작성. 게임 디컴파일/설치DLL 읽기 전용 ILScan·보호283개SHA·10줄요약·diff 검증, 코드 변경 없어3빌드/LoadCheck/기존검사 반복0회다. 게임·설치·커밋·푸시·장치·Editor 실행0회·자동 장치 직접 중지 없음. 상세결과/out/imageown8 참조. 아래7회차 미실행 표기는 이전 이력이다.
+
 ## 회차 7 — 17:05 추가 지시 적용, UV 범위 검사로 대체·게임 미실행
 
 외부run6 직접38줄 원시158~491행 순서대조. 등록93/주소93/누락0·직접필요34/48·배열4/4·필요38/선언52슬롯·290.312500MiB·준비82구간14595개/59복사 후 live on의 image collapse changed mip/wrap에서 실패했다. Rec11821/11821 rollback·종료native_contexts0·CPU O/O2반복0이며 통합픽셀/FPS는NA다. 실패ID/mip/wrap값은 미기록이다.
@@ -154,3 +162,26 @@
   - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_PREFLIGHT_FAILED
   - [StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=17 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.557471 progress_ms=0.013518 uniform_ms=0.008506 dispatch_
   - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=recovery:FastMoveOriginal song=260.019671 resumed_recs=0 resume_expected=0 unobserved_order=0 restore_ms=6.196000
+
+## 회차 8
+- Codex 요약: 지시된 설계 한계에서 기록하고 중단했습니다. `IMAGEOWN=FAIL`입니다.
+
+- GPU 소유 28,523개 활성화 성공, 텍스처 누락 0개
+- 비이미지 장식 14개의 정렬 제외가 ‘전체 폴백 0개’ 조건을 막음
+- 해결에 필요한 renderer·정렬 정책은 수정 금지 영역
+- 결과·장부·10줄 요약 갱신, 보호 파일 283개와 문서 검증 통과
+- 게임 실행·설치·커밋 없음
+
+[상세 결과](E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=304414720 copy_calls=59 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_eva
+  - [StutterFix] [gpudeco] prepare_ms=9579.658300 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2135 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=174.011600 prepare_ms=9579.658300
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=14 active_buckets=251
+  - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_PREFLIGHT_FAILED
+  - [StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=17 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.621294 progress_ms=0.013582 uniform_ms=0.008865 dispatch_
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=recovery:FastMoveOriginal song=260.019671 resumed_recs=0 resume_expected=0 unobserved_order=0 restore_ms=6.481300

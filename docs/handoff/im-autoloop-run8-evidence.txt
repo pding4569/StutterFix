@@ -1,0 +1,53 @@
+[StutterFix] [자동 시험] 시작: 333단계 - timeout 600 / auto on / gpudeco off / gpudeco images gate reset / gpudeco images gate refreshpose off / gpudeco images gate preflight on / gpudeco off / decobake off / gpudeco drawcollapse reset / gpudeco drawcollapse unsafe off / decobake on / gpudeco costprobe off / gpudeco effectcache off / gpudeco submitsingle off / gpudeco latecache off / gpudeco nombp off / gpudeco nativebatch on / gpudeco nativecopy on8masked / gpudeco zeroalpha on / gpudeco bundle E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/evidence/drawcollapse5/bundle/stutterfix_gpudeco / gpudeco images playback on / open D:/얼불춤 맵 파일/Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco off / select 0 / play / gpudeco scheduled / pause / decobake ready / gpudeco images compile / gpudeco images own on / gpudeco images matrix on / gpudeco images refreshpose off / gpudeco live scope song / gpudeco drawcollapse prepare / gpudeco live prepare / resume / stop / seek 260 12 / decobake ready / waitsongpos 260 40 / pause / framecmp clear / framecmp mask none / framecmp filters on / framecmp ui exclude / framecmp noise O O2 / framecmp assertzero O O2 / gpudeco live on / framecmp noise G N / framecmp assertzero G N / framecmp save O / framecmp save O2 / framecmp save G / framecmp save N / gpudeco drawcollapse ready / gpudeco images collapsecheck / gpudeco drawcollapse on / framecmp noise B BN / framecmp assertzero B BN / gpudeco drawcollapse off / f
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] drawcollapse_gate_reset=True
+[StutterFix] [gpudeco] DRAWCOLLAPSE_UNSAFE_ORDER ignore=False ignored=0
+[StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots_avg=0.000 renderer_toggles_avg=0.000000 active_chunks_avg=0.000000 active_chunks_max=0 source_removals=0 missing_removals=0 source_search_element_upper_bound=0 source_shifted_ints=0 source_max_list=0 removal_work_is_CPU_timing=False additional_clock_reads_per_frame=2 gpu_time=UNMEASURED
+[StutterFix] [gpudeco] cost_probe_enabled=False acceptance=False
+[StutterFix] [gpudeco] effect_cache=False research_only=True default=False
+[StutterFix] [gpudeco] single_submit=False research_only=True default=False
+[StutterFix] [gpudeco] late_cache=False rebuilds=0 cache_ready=False cpu_targets=0 skipped=0 research_only=True default=False
+[StutterFix] [gpudeco] nombp=False
+[StutterFix] [gpudeco] native_batch=True static_batch=False restore_sort_bounds=False live_validated=False
+[StutterFix] [gpudeco] native_copy=True eight_uav=True masked=True active_contexts=0
+[StutterFix] [gpudeco] zeroalpha=True rule=both_factors_constant_one_exactly_zero count=0 collisions_changed=0
+[StutterFix] [gpudeco] image_playback candidate=True own=True setters=0 uploads=0 flushes=0 pending=0 recoveries=0 GPU_active=False alpha_watch=0 alpha_checks=0 alpha_dirty=0 refreshpose=False pose_updates=0
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=3 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] image_tape events=1833 selectors=104 target_references=8751 decorations=5087 empty_selector_events=1 source_id_reuses=0 payload_lower_bound_bytes=247540 metadata_only=False GPU_image_playback_candidate=True admission_changed=True
+[StutterFix] [gpudeco] image_variants ready_quad=103 null_argument=1 missing=0 non_quad=0 split_alpha=0 invalid=0 borrowed_assets_destroyed=0 asset_getters_only=True
+[StutterFix] [gpudeco] image_playback candidate=True own=True setters=0 uploads=0 flushes=0 pending=0 recoveries=0 GPU_active=False alpha_watch=0 alpha_checks=0 alpha_dirty=0 refreshpose=False pose_updates=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=refreshpose enabled=False default_off=True performance=False
+[StutterFix] [gpudeco] scope=song_union default_off=True Player_included=False
+[StutterFix] [gpudeco] drawcollapse_prepare=True default_off=True
+[StutterFix] [gpudeco] image_admission affected=5087 eligible=5028 excluded=59 null_argument_policy=CPU
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=28633 admitted=28523 rejects=repeat-tile:110
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsewindow start=257.5 end=270.25 owned=28523 selected_quad_variants=10 skipped_quad_variants=93 registered=93 initial_physical_textures_retained=True performance=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_EXACT_ARRAY size=7680x4320 slices=4
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL layout=small_dxt5_tiers_plus_borrowed_2d bytes_known=304414720 total_mb=290.312500 planned_arrays_known=4 direct_textures=34 active_texture_slots=38 shader_declared_slots=52 samplers=2 arrays_allocated=0 copy_calls=0 free_vram=UNVERIFIED
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage registered=93 addressed=93 missing=0 missing_direct=0 missing_array=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 variant_entries_missing=0 valid=True start=257.5 end=270.25 stage=prepare performance=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+[StutterFix] [gpudeco] DRAWCOLLAPSE_REPLAN barriers_removed=0 barriers_added=0 barriers_now=43122 reread=43122 keys_cached=False shift=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_SAME_BUCKET_SPANS spans_in_multi_runs=4 nudged_spans=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=304414720 copy_calls=59 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_evaluate=True window=260..270 conservative_hidden_barriers=True free_vram=UNVERIFIED
+[StutterFix] [gpudeco] prepare_ms=9579.658300 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False scope=song_union item_limit=32768 masked_copy=True
+[StutterFix] [gpudeco] activation_ownership allocated=28523 GPU_owned=28523 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] GPUIMG_DIAG stage=activation refreshpose=False pose_updates=0 pixel_max=NA performance=False
+[StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2135 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=174.011600 prepare_ms=9579.658300
+[StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=14 active_buckets=251
+[StutterFix] [gpudeco] DRAWCOLLAPSE_REPLAN barriers_removed=4144 barriers_added=0 barriers_now=38992 reread=849 keys_cached=True shift=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_SAME_BUCKET_SPANS spans_in_multi_runs=2 nudged_spans=4
+[StutterFix] [gpudeco] DRAWCOLLAPSE_REPLAN_MS scan=3.4 tie=10.0 plan=29.8 mat=17.0 mesh=4.2 buf=0.3 go=1.1 dispose=1.1 total=74.8
+[StutterFix] [gpudeco] DRAWCOLLAPSE_REPLANNED spans=80 included=14581 barriers=38992 arrays_reused=4 texture_buffer_reused=True shader_reused=True copy_calls=0 owned_checks_per_frame=16
+[StutterFix] [gpudeco] DRAWCOLLAPSE_VALIDATE_MS full=33.8 barriers=38992 auxiliaries=85569
+[StutterFix] [gpudeco] drawcollapse_on=False spans=80 submeshes_per_renderer=1
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecheck current_texture_missing=0 registered_but_excluded=14 image_excluded=0 variant_entries_missing=0 fallback=14 spans=80 valid=False performance=False
+[StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_PREFLIGHT_FAILED
+[StutterFix] [자동 시험] 단계 실패 'gpudeco images collapsecheck': gpudeco G2: image collapse preflight failed; retain ordering/texture guards and inspect GPUIMG_DIAG
+[StutterFix] [자동 시험] 단계 실패 'gpudeco images collapsecheck': gpudeco G2: image collapse preflight failed; retain ordering/texture guards and inspect GPUIMG_DIAG - 게임을 끕니다
+[StutterFix] [gpudeco] original_guard bypass=False running=False enabled=True installed=True hitch_playing=False resume_continuity=False instant=True instant_patched=True zero=True zero_patched=True ease=True
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2135 high_water=2135 scope=allocated_clocks_not_per_decoration_cost reason=recovery:FastMoveOriginal
+[StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=17 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.621294 progress_ms=0.013582 uniform_ms=0.008865 dispatch_ms=0.249265 misc_ms=0.349582 max_ms=6.916700 budget_le_0.5ms=False
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=recovery:FastMoveOriginal song=260.019671 resumed_recs=0 resume_expected=0 unobserved_order=0 restore_ms=6.481300
+[StutterFix] [gpudeco] recovery active=False continued=True reason=FastMoveOriginal injected=False
+[StutterFix] [gpudeco] shutdown_disposed=True native_contexts=0

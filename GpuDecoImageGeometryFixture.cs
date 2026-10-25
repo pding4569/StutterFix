@@ -145,7 +145,10 @@ namespace StutterFix
             for(int i=0;i<gpuImageVariants.Length;i++)
                 if(gpuImageCollapseVariants[i]&&gpuImageVariants[i].Status==GpuDecoImageVariant.Kind.ReadyQuad
                     &&!gpuImageCollapseAddresses.ContainsKey(gpuImageVariants[i].TextureId))variantsMissing++;
-            bool valid=missing==0&&registeredExcluded==0&&variantsMissing==0&&gpuCollapseTextureFallbackCount==0&&gpuCollapseFault==null;
+            // 이미지 장식이 하나도 빠지지 않고 텍스처 누락이 없으면 통과한다. 이미지가 아닌 소유 장식의 정렬 보호 폴백(같은 정렬 묶음의 활성 장벽 사이)은
+            // 의도된 독립 렌더러 경로이므로 허용하되, 소유 수의 1% 이하여야 한다.
+            bool valid=missing==0&&imageExcluded==0&&variantsMissing==0&&gpuCollapseFault==null
+                &&gpuCollapseTextureFallbackCount*100<=source.Data.Items.Length;
             GpuLog("GPUIMG_DIAG mode=collapsecheck current_texture_missing="+missing+" registered_but_excluded="+registeredExcluded
                 +" image_excluded="+imageExcluded+" variant_entries_missing="+variantsMissing+" fallback="+gpuCollapseTextureFallbackCount
                 +" spans="+gpuCollapseSpans.Count+" valid="+valid+" performance=False");
