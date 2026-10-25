@@ -1,4 +1,7 @@
-"""모드 managed CPU 시험 계획 생성만 수행한다. 게임 실행·설치 기능 없음."""
+"""DrawCollapse 1관문 진단 계획을 생성한다. 게임 실행·설치 기능 없음.
+
+기존 baseline/abba/single 모드의 명시적 출력은 보존한다.
+"""
 import argparse
 import json
 from pathlib import Path
@@ -20,7 +23,20 @@ def window(cached=None, single=None):
     return steps + ['gpudeco live off', 'stop']
 
 
-def build(chart, mode='single'):
+def build(chart, mode='diag'):
+    if mode == 'diag':
+        base = build(chart, 'baseline')
+        # 검증된 곡 처음 준비 -> seek -> live on 순서는 그대로 쓴다.
+        steps = base['steps'][:base['steps'].index('phasewindow on')]
+        steps[3:3] = ['gpudeco submitsingle off', 'gpudeco latecache off']
+        steps += ['seek 260 12', 'decobake ready', 'waitsongpos 256 40',
+                  'gpudeco packets compiled', 'gpudeco live on']
+        for second in (260, 262, 264, 266, 268, 270):
+            steps += [f'waitsongpos {second} 40', 'pause',
+                      'gpudeco drawcollapse validate', 'gpudeco drawcollapse diag', 'resume']
+        steps += ['gpudeco live off', 'stop', 'quit']
+        return dict(steps=steps, settings=base['settings'], timeout_min=25,
+                    tag='drawcollapse-gate1-260-270-diag1')
     if mode not in ('baseline', 'abba', 'single'):
         raise ValueError('unknown mode: ' + mode)
     steps = ['gpudeco costprobe off', 'gpudeco effectcache off', 'timeout 600',
@@ -48,7 +64,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--chart', required=True)
     parser.add_argument('--output', required=True)
-    parser.add_argument('--mode', choices=('baseline', 'abba', 'single'), default='single')
+    parser.add_argument('--mode', choices=('diag', 'baseline', 'abba', 'single'), default='diag')
     args = parser.parse_args()
     Path(args.output).write_text(json.dumps(build(args.chart, args.mode), ensure_ascii=False, indent=1), encoding='utf-8')
 

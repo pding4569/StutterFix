@@ -1,0 +1,10 @@
+DRAWCOLLAPSE=FAIL reason=GATE1_NOT_MEASURED active_barrier_spans=NA array_mem_mb_dxt=NA
+1관문만 준비했으며 게임 실행·설치·커밋·푸시·자동 장치 호출은 0회다.
+병합 렌더러·배열 셰이더·Texture2DArray 할당·CopyTexture 호출은 추가하지 않았다.
+drawcollapse validate는 할당 소유 23547·GPU 담당 20000 이상·독립 전곡 상태·native 오류 0을 확인한다.
+drawcollapse diag는 일시정지 GPU quad readback과 기존 페인터 정렬을 사용한다.
+픽셀 기여·마스크/그룹 순서는 미증명이며 후보 통계를 gate=HOLD로 남긴다.
+포맷·정확 치수·밉별 압축 보존 배열 메모리를 계산하되 실제 합계·실현 가능성은 미측정이다.
+기본 diag 계획 68단계·260~270초 6표본은 생성만 했고 기존 명시 모드 출력은 보존했다.
+DEV/Player/PlayerAuto 오류 0/0/0·경고 46/36/39·LoadCheck 279/229/280곳 오류 0·일반 Player 유출 0이다.
+정책 검사 27개·생성기 4개 통과이며 FPS·픽셀·엔진 draw·끊김·수명 안정성은 NA다.

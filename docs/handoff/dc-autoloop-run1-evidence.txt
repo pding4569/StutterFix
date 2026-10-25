@@ -1,0 +1,68 @@
+[StutterFix] [자동 시험] 시작: 68단계 - gpudeco costprobe off / gpudeco effectcache off / timeout 600 / gpudeco submitsingle off / gpudeco latecache off / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco nombp off / gpudeco g2 reset / gpudeco nativebatch on / gpudeco nativecopy on8masked / gpudeco zeroalpha on / gpudeco bundle E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/evidence/bundle/stutterfix_gpudeco / open D:/얼불춤 맵 파일/Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / gpudeco scheduled / pause / decobake state / decobake ready / gpudeco live scope song / gpudeco live prepare / resume / stop / gpuprobe off / gpusplit off / matshare off / livedeco off / seek 260 12 / decobake ready / waitsongpos 256 40 / gpudeco packets compiled / gpudeco live on / waitsongpos 260 40 / pause / gpudeco drawcollapse validate / gpudeco drawcollapse diag / resume / waitsongpos 262 40 / pause / gpudeco drawcollapse validate / gpudeco drawcollapse diag / resume / waitsongpos 264 40 / pause / gpudeco drawcollapse validate / gpudeco drawcollapse diag / resume / waitsongpos 266 40 / pause / gpudeco drawcollapse validate / gpudeco drawcollapse diag / resume / waitsongpos 268 40 / pause / gpudeco drawcollapse validate / gpudeco drawcollapse diag / resume / waitsongpos 270 40 / pause / gpudeco drawcollapse validate / gpudeco drawcollapse diag / resume / gpudeco live off / stop / quit
+[StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots_avg=0.000 renderer_toggles_avg=0.000000 active_chunks_avg=0.000000 active_chunks_max=0 source_removals=0 missing_removals=0 source_search_element_upper_bound=0 source_shifted_ints=0 source_max_list=0 removal_work_is_CPU_timing=False additional_clock_reads_per_frame=2 gpu_time=UNMEASURED
+[StutterFix] [gpudeco] cost_probe_enabled=False acceptance=False
+[StutterFix] [gpudeco] effect_cache=False research_only=True default=False
+[StutterFix] [gpudeco] single_submit=False research_only=True default=False
+[StutterFix] [gpudeco] late_cache=False rebuilds=0 cache_ready=False cpu_targets=0 skipped=0 research_only=True default=False
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] export_result_reset=True
+[StutterFix] [gpudeco] nombp=False
+[StutterFix] [gpudeco] g2_reset=True
+[StutterFix] [gpudeco] native_batch=True static_batch=False restore_sort_bounds=False live_validated=False
+[StutterFix] [gpudeco] native_copy=True eight_uav=True masked=True active_contexts=0
+[StutterFix] [gpudeco] zeroalpha=True rule=both_factors_constant_one_exactly_zero count=0 collisions_changed=0
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=2 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] scope=song_union default_off=True Player_included=False
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=23631 admitted=23547 rejects=repeat-tile:84
+[StutterFix] [gpudeco] prepare_ms=7309.856900 phase=live_prepare slices=1 owned_union=23547 total_runs=23547 total_submeshes=23547 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False scope=song_union item_limit=32768 masked_copy=True
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=4 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=99.004600 prepare_ms=7309.856900
+[StutterFix] [gpudeco] DRAWCOLLAPSE_CONTEXT owned=23547 GPU_owned=23547 fallback=0 display=2560x1440@164.999
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=872x872/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=760384 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x1500/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=675000 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=100x100/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=10000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1024x1024/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1048576 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1500x1500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2250000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3840x3840/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=14745600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=960x720/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=691200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=6 bytes=12441600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2048x2048/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=10 bytes=41943040 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2880x1620/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=9331200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=8000x4500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=36000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=171x171/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=4 bytes=467856 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x150/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=3 bytes=270000 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x79/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=47400 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2500x2500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=12500000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1920/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=3686400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3113x2428/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30233456 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=8000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2692x2833/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30505744 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1080x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=16 bytes=18662400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=800x800/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=640000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5001x3334/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66693336 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=682x682/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1860496 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=14024x3506/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=147504432 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=512x512/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=9 bytes=2359296 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=300x300/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=90000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3543x1772/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=18834588 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3332x2665/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=35519120 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1200x1200/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1440000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x5000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=50000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x3333/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66660000 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3222x1891/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=24371208 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1280x1280/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1638400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x1000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL bytes_known=644880732 total_mb=615.006191 tiers=35 planned_arrays_known=35 unsupported_textures=0 copy_support=True vram_mb=7949 driver_allocated_mb=0.000 feasibility=UNVERIFIED arrays_allocated=0 copy_calls=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_DIAG owned_visible=1628 barrier_visible=316 active_barrier_spans=17 same_tex_runs=1177 textures_in_owned=81 array_mem_mb_dxt=210.989090 song=260.008990 frame=17860 owned=23547 GPU_owned=23547 unknown_barriers=318 sorting_groups=0 ambiguous_ties=0 sprite_masks=0 span_threshold=eligible visibility=conservative_bounds_alpha_candidates pixels_proven=False ordering_proven=False gate=HOLD timing_contaminated=True
+[StutterFix] [gpudeco] original_guard bypass=False running=True enabled=True installed=True hitch_playing=True resume_continuity=False instant=True instant_patched=True zero=True zero_patched=True ease=True
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=1984 high_water=1984 scope=allocated_clocks_not_per_decoration_cost reason=recovery:FastMoveOriginal
+[StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=767 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.347974 progress_ms=0.083775 uniform_ms=0.005777 dispatch_ms=0.252598 misc_ms=0.005824 max_ms=5.967800 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=recovery:FastMoveOriginal song=260.066747 resumed_recs=10252 resume_expected=10252 unobserved_order=0 restore_ms=23.988800
+[StutterFix] [gpudeco] recovery active=False continued=True reason=FastMoveOriginal injected=False
+[StutterFix] [자동 시험] 단계 실패 'gpudeco drawcollapse validate': gpudeco G2: drawcollapse requires independent whole-song GPU ownership
+[StutterFix] [자동 시험] 단계 실패 'gpudeco drawcollapse validate': gpudeco G2: drawcollapse requires independent whole-song GPU ownership - 게임을 끕니다
+[StutterFix] [gpudeco] shutdown_disposed=True native_contexts=0

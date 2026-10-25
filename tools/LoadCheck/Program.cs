@@ -36,6 +36,10 @@ class P
             if (have != want) return 3;
             if (!want && bakeTypes.Any(t => asm.GetType(t, false) != null)) return 3;
             bool haveGpuData = asm.GetType("StutterFix.GpuDecoData", false) != null;
+            bool haveDrawCollapse = asm.GetType("StutterFix.DrawCollapsePolicy", false) != null;
+            bool haveDrawCollapseCommand = asm.GetType("StutterFix.DecoBake", false)?.GetMethod("GpuDrawCollapseCommand", BindingFlags.Static | BindingFlags.NonPublic) != null;
+            Console.WriteLine("DrawCollapse 진단 정책/명령: " + haveDrawCollapse + "/" + haveDrawCollapseCommand + ", 기대: " + want);
+            if (haveDrawCollapse != want || haveDrawCollapseCommand != want) return 3;
             bool haveGpuStep = asm.GetType("StutterFix.DecoBake", false)?.GetMethod("GpuStep", BindingFlags.Static | BindingFlags.NonPublic) != null;
             Console.WriteLine("GpuDecoData/GpuStep: " + haveGpuData + "/" + haveGpuStep + ", 기대: " + want);
             if (haveGpuData != want || haveGpuStep != want) return 3;

@@ -1966,6 +1966,7 @@ namespace StutterFix
             }
             if(command=="nombp on"||command=="nombp off"){RequireLive(!gpuLiveActive,"nombp must be set before live prepare/on");GpuDecoNativeBatch.NoMpb=command.EndsWith("on");GpuLog("nombp="+GpuDecoNativeBatch.NoMpb);return true;}
             if(command=="live census") {LogGpuRenderCensus(-1,"explicit");return true;}
+            if(GpuDrawCollapseCommand(command))return true;
             if(command=="submitsingle on" || command=="submitsingle off")
             {
                 RequireLive(!gpuLiveActive && g2Window==-1,"single submission toggle requires inactive GPU ownership");

@@ -1,0 +1,153 @@
+#if DEV || AUTOTEST
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering;
+
+namespace StutterFix
+{
+    internal static partial class DecoBake
+    {
+        static void RequireDrawCollapse()
+        {
+            RequireLive(gpuLiveActive && gpuLivePrepared && gpuLiveCurrentSlice>=0 && gpuScope.WholeSong
+                && gpuLiveSlices.Count==1 && gpuLiveSlices[0].Independent && !gpuRenderMergeOn,
+                "drawcollapse requires independent whole-song GPU ownership");
+            RequireLive(GpuLiveOwned==23547 && GpuLiveOwned-gpuLiveCpuFallbackCount>=20000,
+                "drawcollapse requires allocated owned=23547, GPU owned>=20000");
+            RequireLive(!GpuDecoCopy.SingleSubmission && !TightLate.GpuListCaching && !GpuDecoCostProbe.Enabled,
+                "drawcollapse must isolate the original independent baseline");
+            RequireLive(GpuDecoCopy.ReadTotals().Errors==0,"drawcollapse native copy errors");
+        }
+        static bool GpuDrawCollapseCommand(string command)
+        {
+            if(command!="drawcollapse validate" && command!="drawcollapse diag")return false;
+            RequireDrawCollapse();
+            if(command.EndsWith(" validate",StringComparison.Ordinal))
+            {
+                GpuLog("DRAWCOLLAPSE_CONTEXT owned="+GpuLiveOwned+" GPU_owned="+(GpuLiveOwned-gpuLiveCpuFallbackCount)
+                    +" fallback="+gpuLiveCpuFallbackCount+" display="+Screen.width+"x"+Screen.height
+                    +"@"+Screen.currentResolution.refreshRateRatio.value.ToString("F3",Inv));return true;
+            }
+            RequireLive(FrameCompare.Paused && g2Window==-1,"drawcollapse readback is paused diagnostic only");
+            double song=scrConductor.instance.songposition_minusi;
+            RequireLive(song>=259.75 && song<=270.25,"drawcollapse diagnostic requires song 260..270");
+            var slice=gpuLiveSlices[0];var cam=gpuLiveCamera;
+            RequireLive(cam && cam.orthographic,"drawcollapse requires the prepared orthographic camera");
+            var planes=GeometryUtility.CalculateFrustumPlanes(cam);
+            // Renderer bounds deliberately span 2,000,000 units. Read the actual
+            // evaluated GPU quad instead; never trust original frozen Transforms.
+            var vertices=new GpuDecoGpu.Vertex[slice.Data.Items.Length*4];
+            slice.Gpu.VertexBuffer.GetData(vertices);
+            var rows=new List<DrawCollapsePolicy.Row>();var proxies=new HashSet<int>();
+            var textures=new Dictionary<int,Texture2D>();int unknown=0,sortingGroups=0,masks=0;
+            for(int i=0;i<slice.MasterItems.Length;i++)
+            {
+                var proxy=slice.Renderers[i];if(proxy)proxies.Add(proxy.GetInstanceID());
+                int master=slice.MasterItems[i];if(GpuCpuFallback(master))continue;
+                var original=gpuLiveOwnedRenderers[master];
+                RequireLive(original && original.sprite && proxy,"drawcollapse missing owned renderer/texture");
+                var texture=original.sprite.texture;
+                RequireLive(texture && texture.GetInstanceID()==slice.Data.Items[i].TextureId,
+                    "drawcollapse texture changed since preparation");
+                textures[texture.GetInstanceID()]=texture; // All owned textures, including currently invisible ones.
+                if(!proxy.enabled || proxy.forceRenderingOff || !proxy.gameObject.activeInHierarchy)continue;
+                var bounds=new Bounds(vertices[i*4].position,Vector3.zero);float alpha=0;bool area=false;
+                for(int v=0;v<4;v++)
+                {
+                    var p=vertices[i*4+v];
+                    RequireLive(DecoBakeCore.Finite(p.position.x) && DecoBakeCore.Finite(p.position.y)
+                        && DecoBakeCore.Finite(p.position.z) && DecoBakeCore.Finite(p.color.a),"nonfinite drawcollapse vertex");
+                    bounds.Encapsulate(p.position);alpha=Math.Max(alpha,p.color.a);
+                }
+                var triangles=slice.Data.Items[i].Triangles;
+                for(int t=0;t<triangles.Length;t+=3)
+                    if(Vector3.Cross(vertices[i*4+triangles[t+1]].position-vertices[i*4+triangles[t]].position,
+                        vertices[i*4+triangles[t+2]].position-vertices[i*4+triangles[t]].position).sqrMagnitude>0)area=true;
+                if(alpha<=0 || !area || !GeometryUtility.TestPlanesAABB(planes,bounds)
+                    || (cam.cullingMask & (1<<proxy.gameObject.layer))==0)continue;
+                var m=proxy.sharedMaterial;
+                rows.Add(new DrawCollapsePolicy.Row(MatShare.SortKey(proxy,m,cam),true,proxy.GetInstanceID(),
+                    texture.GetInstanceID(),MaterialSignature(m),proxy.gameObject.layer));
+            }
+            foreach(var r in Resources.FindObjectsOfTypeAll<Renderer>())
+            {
+                if(!r || proxies.Contains(r.GetInstanceID()) || !r.gameObject.scene.IsValid() || !r.enabled
+                    || !r.gameObject.activeInHierarchy || r.forceRenderingOff
+                    || (cam.cullingMask & (1<<r.gameObject.layer))==0 || !GeometryUtility.TestPlanesAABB(planes,r.bounds))continue;
+                // Unknown shaders/MPBs/particles/masks cannot be discarded on a
+                // guessed alpha property. Keep them and label this an upper bound.
+                bool known=false;
+                if(r is SpriteRenderer sprite)
+                {
+                    if(!sprite.sprite)continue;
+                    var m=sprite.sharedMaterial;
+                    known=m && m.shader && m.shader.name=="Sprites/Tile" && !sprite.HasPropertyBlock();
+                    if(known && sprite.color.a<=0)continue;
+                }
+                if(!known)unknown++;
+                if(r is SpriteMask)masks++;
+                if(r.GetComponentInParent<SortingGroup>())sortingGroups++;
+                var materials=r.sharedMaterials;
+                if(materials.Length==0)
+                {
+                    rows.Add(new DrawCollapsePolicy.Row(MatShare.SortKey(r,null,cam),false,r.GetInstanceID()));continue;
+                }
+                for(int slot=0;slot<materials.Length;slot++)
+                {
+                    var m=materials[slot];if(m && m.renderQueue<=2500)continue;
+                    rows.Add(new DrawCollapsePolicy.Row(MatShare.SortKey(r,m,cam,slot),false,r.GetInstanceID()));
+                }
+            }
+            var counts=DrawCollapsePolicy.Count(rows);
+            var memory=DrawCollapseMemory(textures.Values);
+            // Bounds/alpha cannot prove texture coverage, occlusion or a custom
+            // shader's pixel contribution. Do not turn conservative counts into
+            // a spurious FAIL (>400) or authorize gate 2 from this diagnostic.
+            GpuLog("DRAWCOLLAPSE_DIAG owned_visible="+counts.OwnedVisible+" barrier_visible="+counts.BarrierVisible
+                +" active_barrier_spans="+counts.Spans+" same_tex_runs="+counts.SameTextureRuns
+                +" textures_in_owned="+textures.Count+" array_mem_mb_dxt="+memory
+                +" song="+song.ToString("F6",Inv)+" frame="+Time.frameCount+" owned="+GpuLiveOwned
+                +" GPU_owned="+(GpuLiveOwned-gpuLiveCpuFallbackCount)+" unknown_barriers="+unknown
+                +" sorting_groups="+sortingGroups+" ambiguous_ties="+counts.AmbiguousTies
+                +" sprite_masks="+masks
+                +" span_threshold="+DrawCollapsePolicy.SpanDecision(counts.Spans)
+                +" visibility=conservative_bounds_alpha_candidates pixels_proven=False ordering_proven=False gate=HOLD timing_contaminated=True");
+            return true;
+        }
+        static string DrawCollapseMemory(IEnumerable<Texture2D> textures)
+        {
+            long compressed=0,total=0;int unsupported=0,tiers=0,arrays=0;
+            foreach(var tier in textures.GroupBy(t=>t.width+"x"+t.height+"/"+t.graphicsFormat+"/mips="+t.mipmapCount
+                +"/filter="+t.filterMode+"/wrap="+t.wrapModeU+","+t.wrapModeV+"/aniso="+t.anisoLevel))
+            {
+                tiers++;
+                var texture=tier.First();var format=texture.graphicsFormat;
+                // Use the resident graphics format, not the logical TextureFormat
+                // (e.g. RGB24 may be stored as four bytes per texel on the GPU).
+                int bytes=format==GraphicsFormat.None?0:(int)GraphicsFormatUtility.GetBlockSize(format);
+                int width=format==GraphicsFormat.None?0:(int)GraphicsFormatUtility.GetBlockWidth(format);
+                int height=format==GraphicsFormat.None?0:(int)GraphicsFormatUtility.GetBlockHeight(format);
+                bool bc=GraphicsFormatUtility.IsBCFormat(format);
+                if(bytes<=0 || width<=0 || height<=0 || GraphicsFormatUtility.IsCompressedFormat(format) && !bc)
+                {unsupported+=tier.Count();GpuLog("DRAWCOLLAPSE_ARRAY tier="+tier.Key+" slices="+tier.Count()+" bytes=NA unsupported=True");continue;}
+                long size=checked(DrawCollapsePolicy.TextureBytes(texture.width,texture.height,texture.mipmapCount,width,height,bytes)*tier.Count());
+                total=checked(total+size);if(bc)compressed=checked(compressed+size);
+                arrays+=(tier.Count()+Math.Max(1,SystemInfo.maxTextureArraySlices)-1)/Math.Max(1,SystemInfo.maxTextureArraySlices);
+                GpuLog("DRAWCOLLAPSE_ARRAY tier="+tier.Key+" slices="+tier.Count()+" bytes="+size
+                    +" format="+texture.format+" max_slices="+SystemInfo.maxTextureArraySlices+" allocated=False");
+            }
+            bool copy=SystemInfo.supports2DArrayTextures && (SystemInfo.copyTextureSupport & CopyTextureSupport.DifferentTypes)!=0;
+            string feasibility=!copy?"IMPOSSIBLE_COPY_SUPPORT":SystemInfo.graphicsMemorySize>0
+                && total>(long)SystemInfo.graphicsMemorySize*1048576?"IMPOSSIBLE_VRAM_LOWER_BOUND":"UNVERIFIED";
+            GpuLog("DRAWCOLLAPSE_ARRAY_TOTAL bytes_known="+total+" total_mb="+(unsupported==0?(total/1048576.0).ToString("F6",Inv):"NA")
+                +" tiers="+tiers+" planned_arrays_known="+arrays+" unsupported_textures="+unsupported+" copy_support="+copy+" vram_mb="+SystemInfo.graphicsMemorySize
+                +" driver_allocated_mb="+(UnityEngine.Profiling.Profiler.GetAllocatedMemoryForGraphicsDriver()/1048576.0).ToString("F3",Inv)
+                +" feasibility="+feasibility+" arrays_allocated=0 copy_calls=0");
+            return unsupported==0?(compressed/1048576.0).ToString("F6",Inv):"NA";
+        }
+    }
+}
+#endif
