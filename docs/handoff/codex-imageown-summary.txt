@@ -1,10 +1,10 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=TEXTURE_ADDRESS_MISSING
-이번 게임·설치·커밋·푸시·자동 장치·Editor·설정/제어변경0회; 새게임실측·새계획생성 없음.
-외부run3 직접35줄 원시순서대조;3440×1440@164.999·준비82구간/14595포함·3배열117복사/318.75MiB·직접32/32·준비폴백0.
-live on의 image_texture_not_registered_in_collapse로 활성화실패;GPU28523분류 뒤 Rec11821/11821복원·종료native_contexts0.
-현재항목만검사해 미래이미지누락을 놓치는 준비계약수정:전체등록합집합 대 실제주소검사·누락직접/배열분류·CPU기록분리 전 중단.
-허용helper실패로그5줄로 등록됐지만주소없음/새자산ID 구분;기존주소·범위·mip/wrap·정렬·폴백가드 유지·매프레임스캔 추가없음.
-기존로그에 누락ID/총요청수없어 실제슬롯초과 세부귀속미확정;이번수정은 실제수용량증가·게임통과·통합불가능 증명아님.
-격리3빌드 오류0/0/0·경고48/36/40·LoadCheck279/229/281곳 틀림0·일반Player 연구제외·실제메서드추출20/생성기8검사통과.
-보호14개SHA유지·renderer/policy/export/셰이더/번들/생성기/기존JSON/tag/설정유지;주소배정·자산수명은 소유자인계.
-통합픽셀/FPS/+20%/끊김/전곡/설치복원NA;원인수정 전 같은333단계 자동재시도 중단필요·장치직접정지안함·상세결과/장부/out/imageown4 참조.
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 registered=NA missing=NA direct_required=NA arrays_used=NA fallback=NA spikes_30ms=NA reason=WINDOW_COVERAGE_NOT_RUN
+이번 게임·설치·커밋·푸시·자동 장치·Editor·설정/제어변경0회; 실제새게임측정 없음.
+외부run4 직접37줄 원시순서일치;등록185/주소149/누락36(직접36)·직접필요68/32·배열3/4·318.75MiB·live prepare실패.
+원인:곡전체ReadyQuad등록;실제소유 대상별[257.5,270.25]이벤트+직전상태+기존물리텍스처로 축소;숨은소유 업로드대상도 유지.
+coverage/collapsecheck선택범위 동기화·실제배열배정은 직접수에서제외·32/4상한유지·실패시크기/포맷/tier그룹로그.
+새accept333단계abba3-window 생성만·A/B활성화257.5초·픽셀선행후ABBA260..270;기존명시12출력/기존JSON보존.
+Release3빌드 오류0/0/0·경고48/36/40·LoadCheck279/229/281곳 틀림0·일반Player 연구제외.
+실제timeline+실제메서드3개추출227검사·생성기8검사 통과·보호14개SHA동일·소유자/공용helper/셰이더/번들/설정유지.
+창축소후registered/missing/direct_required/arrays_used·통합픽셀/FPS/+20%/끊김/전곡/설치복원NA·번들보류 해제안함.
+외부coverage missing0·direct<=32·arrays<=4 뒤통합진행;넘치면수치기록후중단·Claude설계인계·상세결과/out/imageown5 참조.

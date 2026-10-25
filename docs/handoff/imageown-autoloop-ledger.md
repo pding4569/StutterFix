@@ -1,5 +1,9 @@
 # 이미지 소유 작업 장부
 
+## 2026-10-25 — 코드·오프라인 검증 5회차
+
+외부run4 직접37줄 원시순서대조. 등록185/주소149/누락36(직접36)·직접필요68/32·배열3/4·318.75MiB에서 live prepare 실패, 통합픽셀/FPS NA. 곡전체 ReadyQuad 등록을 소유 대상별 창[257.5,270.25] 이벤트+직전상태+기존물리스프라이트 집합으로 좁히고 coverage/collapsecheck도 동기화했다. 숨은소유 업로드대상은 유지·32/4상한/가드 유지·초과그룹로그 추가. 새accept는 활성화257.5초·333단계abba3-window 생성만, 기존명시12출력/기존JSON 보존. 격리3빌드 오류0/0/0·경고48/36/40·LoadCheck279/229/281곳 틀림0·실제timeline+추출3메서드227/생성기8검사 통과·보호14SHA유지. IMAGEOWN=FAIL reason=WINDOW_COVERAGE_NOT_RUN, 창축소후 registered/missing/direct_required/arrays_used·통합픽셀/FPS/끊김/전곡/설치복원NA. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 새coverage가 넘치면 수치기록후 중단·소유자설계 인계, 상세결과/10줄/out/imageown5 참조.
+
 ## 2026-10-25 — 코드·오프라인 검증 4회차
 
 `IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=TEXTURE_ADDRESS_MISSING`

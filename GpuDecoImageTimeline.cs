@@ -72,6 +72,41 @@ namespace StutterFix
             if((uint)index>=(uint)DecorationCount)throw new ArgumentOutOfRangeException(nameof(index));
             return new ReadOnlySpan<int>(references,offsets[index],offsets[index+1]-offsets[index]);
         }
+        // Preparation-only texture coverage. Keep original equal-time occurrence
+        // order; never predict playback by sorting the discrete tape ourselves.
+        // The caller separately retains the physical sprites in its initial mesh.
+        internal bool[] SelectWindowVariants(double start,double end,IReadOnlyList<int> owned)
+        {
+            if(double.IsNaN(start)||double.IsInfinity(start)||double.IsNaN(end)||double.IsInfinity(end)
+                ||end<start||owned==null)throw new ArgumentException("invalid image texture window");
+            var included=new bool[DecorationCount];
+            foreach(int d in owned)
+            {
+                if((uint)d>=(uint)DecorationCount)throw new ArgumentException("invalid image window target");
+                included[d]=true;
+            }
+            var selected=new bool[SelectorCount];var prior=new int[DecorationCount];
+            Array.Fill(prior,-1);double previous=double.NegativeInfinity;
+            for(int e=0;e<entries.Length;e++)
+            {
+                var row=entries[e];
+                // A nonmonotone tape needs the complete scheduler's blocking
+                // semantics; fail closed rather than discard a required texture.
+                if(row.Scheduled<previous)throw new ArgumentException("nonmonotone image texture window schedule");
+                previous=row.Scheduled;
+                if(row.Scheduled>end)continue;
+                foreach(int d in Targets(e))
+                {
+                    if(!included[d])continue;
+                    if(row.Scheduled<start)prior[d]=row.Selector;
+                    else selected[row.Selector]=true; // Both window boundaries included.
+                }
+            }
+            // Each decoration can have a different image at window entry.
+            // Include the predecessor even if an event occurs exactly at start.
+            foreach(int selector in prior)if(selector>=0)selected[selector]=true;
+            return selected;
+        }
         internal static GpuDecoImageTimeline Compile(int decorations,IReadOnlyList<Input> input)
         {
             if(decorations<0||decorations>100000||input==null||input.Count>300000)throw new ArgumentException("image tape budget");

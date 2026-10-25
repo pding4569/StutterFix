@@ -141,8 +141,10 @@ namespace StutterFix
                 else if(gpuCollapseTextureFallback[i])registeredExcluded++;
                 if(gpuCollapseTextureFallback[i]&&GpuImageActor(gpuLiveOwnedIndices[source.MasterItems[i]]))imageExcluded++;
             }
-            foreach(var v in gpuImageVariants)
-                if(v.Status==GpuDecoImageVariant.Kind.ReadyQuad&&!gpuImageCollapseAddresses.ContainsKey(v.TextureId))variantsMissing++;
+            RequireLive(gpuImageCollapseVariants!=null,"image collapse window selection missing");
+            for(int i=0;i<gpuImageVariants.Length;i++)
+                if(gpuImageCollapseVariants[i]&&gpuImageVariants[i].Status==GpuDecoImageVariant.Kind.ReadyQuad
+                    &&!gpuImageCollapseAddresses.ContainsKey(gpuImageVariants[i].TextureId))variantsMissing++;
             bool valid=missing==0&&registeredExcluded==0&&variantsMissing==0&&gpuCollapseTextureFallbackCount==0&&gpuCollapseFault==null;
             GpuLog("GPUIMG_DIAG mode=collapsecheck current_texture_missing="+missing+" registered_but_excluded="+registeredExcluded
                 +" image_excluded="+imageExcluded+" variant_entries_missing="+variantsMissing+" fallback="+gpuCollapseTextureFallbackCount

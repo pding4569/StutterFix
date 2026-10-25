@@ -35,12 +35,12 @@ def boundary(second):
             'framecmp noise O O2', 'framecmp assertzero O O2']
 
 
-def performance_windows(chart, bundle, refreshpose):
+def performance_windows(chart, bundle, refreshpose, activation=256):
     steps = []
     for index, images in enumerate((False, True, True, False)):
         # A/B 소유 집합을 재준비한다. 28523 준비의 own off는 CPU fallback 4976개다.
         steps += prepare(chart, bundle, images, True, images and refreshpose)
-        steps += ['seek 260 12', 'decobake ready', 'waitsongpos 256 40',
+        steps += ['seek 260 12', 'decobake ready', f'waitsongpos {activation} 40',
             'gpudeco packets compiled', 'gpudeco live on', 'waitsongpos 258.5 40',
             'gpudeco drawcollapse ready', 'gpudeco drawcollapse on', 'waitsongpos 260 40',
             f'gpudeco images begin {index}', 'waitsongpos 270 30', 'gpudeco images end',
@@ -63,10 +63,12 @@ def acceptance_plan(chart, bundle, refreshpose):
         steps += [f'framecmp save {n}' for n in ('B', 'BN', 'G2')]
         steps += [f'gpudeco images pixelchecked {index}', 'framecmp clear',
                   'gpudeco live off', 'resume', 'stop']
-    steps += performance_windows(chart, bundle, refreshpose)
+    # Image texture banks cover [257.5,270.25]. CPU owns the earlier lead-in;
+    # activating at 256 would upload intermediate variants outside that bank.
+    steps += performance_windows(chart, bundle, refreshpose, activation=257.5)
     steps += ['gpudeco images result', 'quit']
     return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False}, timeout_min=30,
-        tag='imageown-260-270-abba2-preflight', notes={
+        tag='imageown-260-270-abba3-window', notes={
             'status': '생성만; 이번 게임·설치·자동 장치 호출 없음', 'mode': 'accept',
             'bundle': str(bundle).replace('\\', '/'), 'refreshpose': refreshpose,
             'prerequisites': '새 managed DLL과 EvaluateImageLive/EvaluateCollapse/GpuDecoBatch 지원 번들 필요',
@@ -76,6 +78,8 @@ def acceptance_plan(chart, bundle, refreshpose):
             'B': '이미지 candidate/own on + GPU28523 + draw 통합',
             'acceptance': '3440x1440@165; B/A>=1.20 (A=202라면 B>=242.4FPS); 260/262/270 maxdiff<=3; CPU/후보텍스처/정렬제외/런타임 fallback=0; >=30ms=0',
             'timing': 'ABBA 창에 pause/캡처/readback 없음; 준비·재열기 제외 260..270초',
+            'texture_window': '[257.5,270.25]의 소유 대상 변형·각 대상의 직전 상태·초기 물리 텍스처; 소유권 활성화는 257.5초부터',
+            'coverage_gate': 'collapsecoverage missing=0, direct_required<=32, arrays_used<=4 뒤에만 live on; 초과 시 그룹별 수치 기록 후 중단',
             'lifetime': 'live off 뒤 resume/stop; 설치 복원은 외부 실행기 책임; 전곡 수명 미검증'})
 
 
@@ -262,9 +266,12 @@ def self_test():
 
         def test_preflight_precedes_all_timing(self):
             plan = build('Arche.adofai')
-            self.assertEqual(plan['tag'], 'imageown-260-270-abba2-preflight')
+            self.assertEqual(plan['tag'], 'imageown-260-270-abba3-window')
             steps = plan['steps']
             self.assertIn('gpudeco images gate preflight on', steps)
+            self.assertEqual(steps.count('waitsongpos 257.5 40'), 4)
+            self.assertNotIn('waitsongpos 256 40', steps)
+            self.assertEqual(build('Arche.adofai', 'abba')['steps'].count('waitsongpos 256 40'), 4)
             first_begin = steps.index('gpudeco images begin 0')
             self.assertEqual(steps.count('gpudeco images collapsecheck'), 3)
             for i in range(3):

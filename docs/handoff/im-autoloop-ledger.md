@@ -1,3 +1,7 @@
+## 회차 5 — Codex 창 범위 등록·새 계획 생성, 게임 미실행
+
+외부run4 직접37줄 원시순서대조. 등록185/주소149/누락36(직접36)·직접필요68/32·배열3/4·318.75MiB에서 live prepare 실패, 통합픽셀/FPS NA. 곡전체 ReadyQuad 등록을 소유 대상별 창[257.5,270.25] 이벤트+직전상태+기존물리스프라이트 집합으로 좁히고 coverage/collapsecheck도 동기화했다. 숨은소유 업로드대상은 유지·32/4상한/가드 유지·초과그룹로그 추가. 새accept는 활성화257.5초·333단계abba3-window 생성만, 기존명시12출력/기존JSON 보존. 격리3빌드 오류0/0/0·경고48/36/40·LoadCheck279/229/281곳 틀림0·실제timeline+추출3메서드227/생성기8검사 통과·보호14SHA유지. IMAGEOWN=FAIL reason=WINDOW_COVERAGE_NOT_RUN, 창축소후 registered/missing/direct_required/arrays_used·통합픽셀/FPS/끊김/전곡/설치복원NA. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 새coverage가 넘치면 수치기록후 중단·소유자설계 인계, 상세결과/10줄/out/imageown5 참조.
+
 
 ## 회차 4 — Codex 분석·미래 이미지 주소 검증, 외부 새 시험 없음
 
@@ -85,6 +89,20 @@
 실제 통합은 미해결로 `IMAGEOWN=FAIL`입니다. Claude 소유 코드에 남은 확인 사항과 동일 시험 반복 중단 조건을 [결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)에 기록했습니다.
 
 게임 실행·설치·커밋은 하지 않았습니다.
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_TEXTURE_COVERAGE
+
+## 회차 5
+- Codex 요약: 이미지 변형 등록을 준비 창 `[257.5, 270.25]` 기준으로 수정하고, 새 333단계 계획을 생성했습니다.
+
+빌드 3종 오류 0, LoadCheck 불일치 0, 코드 검사 227개·생성기 검사 8개가 통과했습니다.
+
+게임 실행·설치·커밋은 하지 않았습니다. 실제 슬롯 수·통합 픽셀·FPS는 미검증이므로 `IMAGEOWN=FAIL`을 유지했습니다.
+
+[결과와 남은 조건](E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)
+
+
 - 시험 핵심 줄:
   - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
   - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_TEXTURE_COVERAGE

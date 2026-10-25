@@ -1,4 +1,46 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=TEXTURE_ADDRESS_MISSING
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 registered=NA missing=NA direct_required=NA arrays_used=NA fallback=NA spikes_30ms=NA reason=WINDOW_COVERAGE_NOT_RUN
+
+## 자동 반복 5회차 — 외부 run4 분석, 창 범위 이미지 등록
+
+이번 게임 실행·설치·커밋·푸시·자동 장치 호출·Unity Editor 실행·설정/제어 파일 변경은 **모두 0회**다. 아래의 새 계획은 생성만 했으며 실제 슬롯 수·통합 픽셀·FPS·끊김은 NA다. 게임 실행 금지는 인계의 재시험 지시보다 우선한다.
+
+### 외부 증거로 확정된 원인
+
+`im-autoloop-run4-evidence.txt`의 직접 **37줄**을 `E:/StutterFixWork/night-results/al-im-4.log`에 순서·중복을 보존해 대조했다(시작 선언은 1,500자 접두부). 원시379행은 배열3·318.75MiB·직접32·활성35/선언36, 380~387행의 첫8개 누락은 모두3840×2160 RGBA_DXT5_UNorm이다. 388행은 **등록185·주소149·누락36(직접36/배열0)·직접필요68/상한32·배열3/4·누락변형36**이다. 390/392행에서 live prepare가 실패했으며 live on·통합 픽셀·ABBA에는 도달하지 않았다. 새 게임 성공이나 복원 결과를 이 로그에서 추론하지 않는다.
+
+`RegisterGpuImageCollapseVariants`가 곡 전체의 ReadyQuad를 등록하고 Remember와 collapsecheck도 전체 변형을 검사한 것이 창 밖 텍스처를 요구하는 코드 원인이다. **곡 전체 등록 집합의 직접 슬롯 부족은 이번 로그로 확인되지만, 창으로 좁힌 집합도 초과한다는 증거는 아직 없다.** 상한32를 늘리거나 누락 검사를 끄지 않았다. 과거 run2의 독립 소유 max1/1/1은 재측정하지 않았고 정점/pose 코드는 유지했다.
+
+### 수정한 범위와 시간 계약
+
+- `GpuDecoImageTimeline.SelectWindowVariants(start,end,owned)`가 실제 GPU 소유 대상별로 **창 시작 전 마지막 이미지 이벤트**와 **[257.5,270.25] 양 끝을 포함한 이벤트**의 선택자를 모은다. 같은 시각의 원래 이벤트 순서·중복 대상은 보존하고, 창 밖에서만 쓰이는 이전/미래 변형·소유 대상 없는 변형은 제외한다. 초기 물리 스프라이트 텍스처는 renderer가 이미 등록한 집합을 그대로 보존한다.
+- `GpuDecoImagePlayback.cs`는 그 선택으로만 변형을 추가하며 `GPUIMG_DIAG mode=collapsewindow`에 선택/제외 수와 창을 기록한다. 준비 coverage와 정지 collapsecheck도 같은 선택을 검사한다. 초기 물리 텍스처 합집합·현재 항목 주소 검사·미래 필수 주소 검사는 유지한다.
+- 숨은 소유 대상도 activation/Flush의 슬롯 갱신 대상이므로 `VisibleInWindow`로 추가 제거하지 않는다. 그 함수는 renderer의 **그리기 포함** 판정에 이미 쓰이며 슬롯 업로드 대상과 같지 않다. 이 작업에서 renderer의 포함/장벽·정렬·폴백 정책은 바꾸지 않았다.
+- coverage는 누락0·실제 직접주소 수≤32·배열≤4여야 통과한다. 이미 정확한 크기 배열에 배정된 큰 텍스처는 직접 슬롯으로 잘못 세지 않는다. 누락 때 크기/포맷/tier별 고유 텍스처 수와 주소 수를 `collapsecoverage_group`에 기록한다. 매 프레임 새 전수 순회는 없다.
+- 기존 ABBA는 256초에 GPU 소유권을 켰다. 창 밖 중간 변형 업로드를 피하려고 **새 accept의 A/B 모두257.5초부터 활성화**한다. draw 통합 준비258.5초·측정260~270초와 픽셀 선행 관문은 유지한다. 기존 명시 diag/diag1/abba는 이력 보존용이며 새 창 범위 시험에는 사용하지 않는다.
+
+이미지 tape는 게임의 최종 정렬 목록을 복사하며 Scheduled는 `startTime-startEffectOffset`이다. `scnGame.PrepVfx` 근사 디컴파일의 동일 기준 정렬과 `scrVfxPlus.Update`의 시각 검사/StartEffect, `scrVisualDecoration.SetSprite`의 sprite·ResizeCollider·wrap 갱신을 확인했다. 설치 DLL도 ILScan으로 호출 관계를 대조했다(`out/imageown5/game-{scheduler,visual}-il.txt`). 임의 재정렬 없이 동시각 순서를 보존하며, 비단조 tape면 준비 실패한다. ILScan 호출 목록은 정지 픽셀 동등성 증명이 아니다.
+
+### 오프라인 검증
+
+| 검사 | 결과 | 근거 |
+|---|---|---|
+| Release DEV/Player/PlayerAuto 격리 빌드 | 오류0/0/0·경고48/36/40 | out/imageown5/build-*.txt |
+| LoadCheck | FieldRef279/229/281곳·틀림0/0/0·일반 Player 연구 제외 | loadcheck-*.txt |
+| 실제 timeline + 등록/주소/부분업로드3메서드 추출 | **227검사 통과** | check-window.py, window-check.txt |
+| 생성기 | 8검사 통과·과거 명시 출력12사례 전체 dict 일치 | generator-tests.txt, check-evidence.py |
+| 보호 파일 | 소유자/공용helper/셰이더/번들/기존JSON/설정14개 SHA256 유지 | preserved-before.json, preserved-after.json |
+
+227검사는 대상별 진입 상태·동시각 마지막 이벤트·양끝 경계·타깃 없는 이벤트·중복·비단조 거부·200개 재생 참조 사례, 창 밖 변형 제외 후 정상 coverage, 필수 미래 누락의 준비 실패, 32직접/4배열 상한, 기존32B 부분 업로드와 point/wrap 가드를 확인한다. 가짜 Unity 자원을 쓰므로 **실제 맵의 registered/missing/direct_required/arrays_used나 픽셀·FPS 결과가 아니다.** 기존 알파 큐는 변경하지 않아 4,495검사를 반복하지 않았다.
+
+### 생성만 한 새 계획과 다음 중단 조건
+
+`tools/optimization/out/imageown-abba3-window-steps.json`: **333단계**, tag=`imageown-260-270-abba3-window`, SHA256=`41b790f93035f51623bdd6aaee43d4643d5468235ca27065a98291a9f592e2bd`. 기존 abba2/abba1/diag JSON은 덮어쓰지 않았다. 새 기본 생성기는 이 계획을 선택한다. 새 managed DLL과 이미지·collapse 지원이 확인된 번들이 필요하다. 이번에 번들을 빌드·설치·재로드하지 않았으며 과거 번들 보류를 이 작업에서 해제하지 않는다.
+
+외부 실행자는 먼저 새 `collapsewindow` 및 `collapsecoverage` 수치를 확인한다. **missing=0, direct_required≤32, arrays_used≤4** 뒤에만 통합 픽셀260/262/270·폴백0을 검사하고, 세 픽셀 관문을 통과한 뒤 ABBA(+20%·30ms 이상0)로 진행한다. 여전히 넘치면 그룹별 수치·필요 슬롯 수를 결과에 옮기고 **같은 코드/계획 재시도를 중단**, renderer/policy/은행·아틀라스 설계는 Claude에게 인계한다. 상한 증가·재압축·누락 업로드 생략·가드 해제는 하지 않는다.
+
+선택은 논리 이벤트의 상태 범위다. LazySprite 때문에 활성화 시 물리 스프라이트가 오래된 변형을 유지하는지, 수명 중 자산ID가 달라지는지, 재질/정렬이 바뀌는지는 이번 오프라인 검사로 증명하지 못했다. 필수 등록에 없는 실제 업로드는 기존 `collapse_runtime_missing`/복구로 실패하며 누락을 무시하지 않는다. **창 축소 후 실제 수용량·물리 상태·통합 픽셀/성능이 아직 미측정이므로 IMAGEOWN=FAIL**이다. 통합 설계 전체의 불가능 판정은 하지 않는다.
+
+아래는 이전 회차의 이력이다.
 
 ## 자동 반복 4회차 — 외부 run3 분석, 준비 단계의 이미지 주소 검증 보강
 
