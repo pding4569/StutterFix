@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using ADOFAI;
 using DG.Tweening;
@@ -242,7 +243,9 @@ namespace StutterFix
         internal static void StartPlayer()
         {
             RequireLive(gpuLivePrepared && !gpuRecoveryBlocked, "곡 준비가 취소됨");
+            long t0 = Stopwatch.GetTimestamp();
             StartGpuLive();
+            long t1 = Stopwatch.GetTimestamp();
             if (gpuCollapseTexture != null && gpuLiveCpuFallbackCount == 0)
             {
                 ValidateDrawCollapse();
@@ -250,10 +253,15 @@ namespace StutterFix
                 foreach (var slice in gpuLiveSlices) slice.RefreshAlpha();
                 DispatchGpuLiveSlice(BakeTime);
             }
-            Main.Entry.Logger.Log("[GPU 장식] 켜짐: 소유 " + GpuLiveOwned + "개, 그리기 통합 " + (gpuCollapseOn ? "켬" : "끔") + ", 이미지 " + (gpuImageCandidate ? "켬" : "끔"));
+            long t2 = Stopwatch.GetTimestamp();
+            Main.Entry.Logger.Log("[GPU 장식] 켜짐: 소유 " + GpuLiveOwned + "개, 그리기 통합 " + (gpuCollapseOn ? "켬" : "끔") + ", 이미지 " + (gpuImageCandidate ? "켬" : "끔")
+                + " | 시작 " + ((t1 - t0) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms, 통합 켜기 " + ((t2 - t1) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms");
         }
         internal static void ReleasePlayerLevel()
         {
+#if AUTOTEST
+            if (gpuLiveActive && gpuCostFrames > 0) LogGpuLiveCost("product_release");
+#endif
             DisposeGpuLive();
             CancelBuild(); initial.Clear(); ClearBaseline(); table = null;
             manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
@@ -266,7 +274,7 @@ namespace StutterFix
         static int playerOwnedCursor;
         static void CheckPlayerFrame()
         {
-            if (!GpuDecoPlayer.Product) return;
+            if (!GpuDecoPlayer.Product || (Time.frameCount & 3) != 0) return;
             RequireLive(manager && manager==scrDecorationManager.instance && gpuLiveCamera && gpuLiveCamera.orthographic
                 && gpuLiveCamera.rect==new Rect(0,0,1,1)
                 && Mathf.Abs(gpuLiveCamera.transform.forward.z)>.999999f

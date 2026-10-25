@@ -271,6 +271,7 @@ namespace StutterFix
         static double gpuLivePrepareMs, gpuLiveTransitionMs, gpuLiveTurnOnBakeTime;
         static float gpuLiveEnabledAt, gpuLiveZoomFactor = 1f;
         static long gpuLiveSkippedRecs;
+        static long gpuCostCheckTicks, gpuCostClockTicks, gpuCostWholeTicks, gpuCostValidateTicks, gpuCostExecTicks, gpuCostProxyTicks, gpuCostCamTicks;
         static long gpuCostFrames, gpuCostProgressTicks, gpuCostUniformTicks, gpuCostDispatchTicks, gpuCostMiscTicks;
         static double gpuCostMaxMs;
         static readonly float[] gpuRestoreValues = new float[16];
@@ -1287,11 +1288,14 @@ namespace StutterFix
             if(GpuDecoCostProbe.Enabled)GpuDecoCostProbe.Frame(probeAdvance-t1,probeDirty-probeAdvance,t2-probeDirty,
                 gpuSourceHighWater,active.CopyMask?.Low??0,active.CopyMask?.High??0);
 #endif
+            long cm0=Stopwatch.GetTimestamp();
             var camy = ADOBase.controller.camy;
             var ct = camy.transform;
             float camScale = camy.camobj.orthographicSize * .2f / gpuLiveZoomFactor;
             var camera=new Vector4(ct.position.x, ct.position.y, ct.eulerAngles.z, camScale);
+            long cm1=Stopwatch.GetTimestamp();
             CheckDrawCollapseBeforeDispatch(time);
+            gpuCostCamTicks+=cm1-cm0;gpuCostValidateTicks+=Stopwatch.GetTimestamp()-cm1;
             bool single=GpuDecoCopy.SingleSubmission && !gpuRenderMergeOn && !gpuCollapseOn && active.SharedBatch==null
                 && active.NativeCopy!=null && active.Gpu.UseLiveMode && active.Gpu.HasNativeLiveKernel;
             if(!single)active.Gpu.SetLiveUniforms(camera,time);
@@ -1338,9 +1342,13 @@ namespace StutterFix
             gpuLiveLastDispatchFrame = Time.frameCount;
             try
             {
+                long pf0=Stopwatch.GetTimestamp();
                 CheckPlayerFrame();
+                long pf1=Stopwatch.GetTimestamp();
                 AdvanceClock();
+                long pf2=Stopwatch.GetTimestamp();
                 DispatchGpuLiveSlice(BakeTime);
+                gpuCostCheckTicks+=pf1-pf0;gpuCostClockTicks+=pf2-pf1;gpuCostWholeTicks+=Stopwatch.GetTimestamp()-pf0;
             }
             catch (Exception e)
             {
@@ -1544,7 +1552,7 @@ namespace StutterFix
             double dMs = gpuCostDispatchTicks / tf / f;
             double mMs = gpuCostMiscTicks / tf / f;
             double totMs = pMs + uMs + dMs + mMs;
-            GpuLog("cost scope=" + scope + " frames=" + gpuCostFrames
+            Main.Entry.Logger.Log("[gpudeco] cost scope=" + scope + " frames=" + gpuCostFrames
                 + " cpu_scope=managed_only native_copy_accounting=G2_window_stats"
                 + " total_ms=" + totMs.ToString("F6", Inv)
                 + " progress_ms=" + pMs.ToString("F6", Inv)
@@ -1552,7 +1560,14 @@ namespace StutterFix
                 + " dispatch_ms=" + dMs.ToString("F6", Inv)
                 + " misc_ms=" + mMs.ToString("F6", Inv)
                 + " max_ms=" + gpuCostMaxMs.ToString("F6", Inv)
-                + " budget_le_0.5ms=" + (totMs <= 0.5));
+                + " budget_le_0.5ms=" + (totMs <= 0.5)
+                + " validate_ms=" + (gpuCostValidateTicks / tf / f).ToString("F6", Inv)
+                + " cam_ms=" + (gpuCostCamTicks / tf / f).ToString("F6", Inv)
+                + " exec_ms=" + (gpuCostExecTicks / tf / f).ToString("F6", Inv)
+                + " proxy_ms=" + (gpuCostProxyTicks / tf / f).ToString("F6", Inv)
+                + " check_ms=" + (gpuCostCheckTicks / tf / f).ToString("F6", Inv)
+                + " clock_ms=" + (gpuCostClockTicks / tf / f).ToString("F6", Inv)
+                + " whole_frame_ms=" + (gpuCostWholeTicks / tf / f).ToString("F6", Inv));
         }
 
         // Request B.3: Full restoration of owned decorations on off, song end, retry, restart, editor return, map reopen, and unload.
@@ -2032,6 +2047,8 @@ namespace StutterFix
                 if (!File.Exists(gpuBundlePath)) throw new FileNotFoundException("gpudeco bundle", gpuBundlePath);
                 return true;
             }
+            if (command == "cost") { LogGpuLiveCost("manual"); return true; }
+            if (command == "cost reset") { gpuCostFrames = gpuCostProgressTicks = gpuCostUniformTicks = gpuCostDispatchTicks = gpuCostMiscTicks = gpuCostCheckTicks = gpuCostClockTicks = gpuCostWholeTicks = gpuCostValidateTicks = gpuCostExecTicks = gpuCostProxyTicks = gpuCostCamTicks = 0; gpuCostMaxMs = 0; return true; }
             if (command == "live prepare") { PrepareGpuLive(); return true; }
             if (command == "live scope song" || command == "live scope reference")
             {

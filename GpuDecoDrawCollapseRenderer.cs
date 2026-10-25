@@ -690,7 +690,8 @@ namespace StutterFix
                 try
                 {
                     RequireLive(GpuDecoPlayer.Product || time>=257.5 && time<=270.25,"outside_prepared_260..270_window");
-                    ValidateDrawCollapse(false);
+                    // 제품: 순서 점검은 로그만 남기므로 몇 프레임에 한 번이면 된다 (매 프레임 속성 읽기 약 0.09ms).
+                    if(!GpuDecoPlayer.Product || (Time.frameCount&7)==0)ValidateDrawCollapse(false);
                 }
                 catch(Exception e){reason=e.GetType().Name+":"+e.Message;}
             }
@@ -742,8 +743,12 @@ namespace StutterFix
                     var co=camy.camobj;float halfH=co.orthographicSize*1.05f+.5f,halfW=halfH*co.aspect;float rad=ctf.eulerAngles.z*Mathf.Deg2Rad;
                     clip=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
                 }
+                long ex0=Stopwatch.GetTimestamp();
                 source.Gpu.ExecuteRecordedCollapse(new Vector4(ctf.position.x,ctf.position.y,ctf.eulerAngles.z,camScale),time,clip);
+                long ex1=Stopwatch.GetTimestamp();
+                if(!GpuDecoPlayer.Product || (Time.frameCount&7)==0)
                 foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
+                gpuCostExecTicks+=ex1-ex0;gpuCostProxyTicks+=Stopwatch.GetTimestamp()-ex1;
             }
             else
             {
