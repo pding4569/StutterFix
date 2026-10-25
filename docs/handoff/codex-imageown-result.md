@@ -1,3 +1,60 @@
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=4 CPU_fallback=0 nonimage_fallback=14 image_excluded=0 reason=COLLAPSE_PIXEL_SCOPE_LIMIT game_reason=INTEGRATED_PIXEL_PREFLIGHT_FAILED
+
+## 자동 반복 재시작 3회차(누적11회차) — 통합 전환 픽셀 오차 국소화·수정 소유 경계에서 중단
+
+`codex-al-im-3.md` 최상단의 **최신 run2**를 우선했다. 중첩 run8 및 직전 run1의 FPS/끊김은 과거 이력이다. 게임 실행·설치·커밋·푸시·자동 장치 호출/중지/예약·Unity Editor 실행·설정/제어 파일 변경은 모두 **0회**다.
+
+### 최신 외부 시험
+
+`im-autoloop-run2-evidence.txt` 직접79줄은 `E:/StutterFixWork/night-results/al-im-2.log` 원시158~838행과 순서·중복까지 일치했다. 시작 선언만1500자 접두부다. 환경은3440×1440@164.999다.
+
+| 원시 행 | 관측 |
+|---|---|
+| 380 | 등록93/주소93/누락0·직접34/48·배열4/4·변형누락0 |
+| 383 | 준비82구간·포함14595개·304414720B(290.312500MiB)·복사59 |
+| 475 | GPU28523·CPU fallback0 |
+| 530 | collapsecheck: 이미지제외0·비이미지정렬제외14·누락0·valid=True |
+| 606 | 260초 changed28818·maxdiff3·반복/복원0·valid=True |
+| 611 | live off·Rec11821/기대11821·미관측순서0 |
+| 815, 826~828 | 262초 changed22961·maxRGBA4,4,4,0·반복/복원0·valid=False·픽셀선행중단 |
+| 836, 838 | 종료복구Rec0/기대0·미관측순서0·native_contexts0 |
+
+270초·ABBA4창·FPS/+20%·30ms이상끊김·새코드성능·전곡수명·설치복원은 **NA**다. 지난run1의 B2 끊김4회나 FPS를 이번수치로 옮기지않았다. 원시 `game_reason=INTEGRATED_PIXEL_PREFLIGHT_FAILED`와 이번 분석분류 `reason=COLLAPSE_PIXEL_SCOPE_LIMIT`를 구분한다.
+
+### 새로 확정한 오차 단계 — 기존 PNG 오프라인 대조
+
+첫 분석시 설치폴더의 기존 `framecmp/O,O2,G,N,B,BN,G2.png` 7장을 **읽기전용**으로 분석했다. 모든크기3440×1440·O/B수치가원시815행과정확히일치하고 반복/복원4쌍도0임을검증한뒤 `out/imageown11/pixel-analysis.json`에수치를저장하고 `preserved.json`에당시7파일SHA256을기록했다. 이미지를새로생성/수정하거나게임을호출하지않았다.
+
+| 비교 | 다른 픽셀 | maxRGBA |
+|---|---:|---|
+| CPU 원본 O → 독립 이미지 GPU G | 3 | 1,1,1,0 |
+| 독립 이미지 GPU G → 통합 B | 22958 | 4,4,4,0 |
+| CPU 원본 O → 통합 B | 22961 | 4,4,4,0 |
+| O/O2·G/N·B/BN·G/G2 | 각각0 | 각각0,0,0,0 |
+
+**O/B가허용3을넘는픽셀은3개이며, 그 3개는모두O=G(max0)·G/B=max4다.** 따라서 해당실패3픽셀의오차는 독립이미지GPU까지존재하던오차가누적된것이아니라 **통합전환에서발생**했다. 정렬·샘플링·색/블렌드정밀도중어느것이정확한원인인지는이자료만으로분리할수없다. 장식ID/텍스처ID귀속도없다.
+
+그뒤재분석시공유PNG가외부에서덮어써진것을감지했다(O/B수치불일치·G/G2복원불일치). 검사는즉시거부했고 최초저장JSON을덮어쓰지않았다. 후속PNG/후속외부시험을run2와섞지않았으며, 원래7장사본은보관되기전에덮어써져 **원본PNG를다시계산하는재현은현재불가**하다. 최초계산수치/원시일치/당시SHA는보존되어있다. `analysis.txt`는최초JSON과원시에서재구성한검증보고이며, `stale-capture-rejected.txt`는후속거부기록이다. 공유PNG의변경은이작업의쓰기행위가아니다.
+
+### 코드 대조와 현재 허용 범위의 설계 경계
+
+1. `GpuDecoImagePlayback.cs:188`의RefreshGpuImageGeometry는동일이미지정점/UV/재질을독립GPU에반영하고허용helper로통합텍스처주소를부분갱신한다. 이번coverage와collapsecheck는이미지/주소누락0이다. 독립GPU원본대비max1도새로확인됐으므로·이전UpdatePosition/CPU정점주입/공유wrap변경을되풀이할근거가없다.
+2. `GpuDecoDrawCollapseRenderer.cs:94,418,429,657`은별도의GpuDecoBatch셰이더/공유재질·Float32색/60바이트정점·DispatchCollapseSpan경로로바꾼다. `GpuDeco.compute:233,282~291,303`은공통월드정점수식뒤통합전용UNorm8색반올림/텍스처주소/정점배치를기록한다. `GpuDecoBatch.shader:135~146,200`은별도정점변환·배열UV/샘플러·색곱/프리멀티플라이를수행한다. **통합전용의변경지점**은확정하되·그중특정연산이틀렸다고단정하지않는다.
+3. 기존 `GpuDecoDrawCollapseProbe.cs:85,88,107,112`의40텍스처합성검사는 **Sprites/Default**를기준으로 **정점색white·단일quad**를비교하며·`game_Sprites/Tile=UNVERIFIED`를명시한다. 그40통과가실제안개중첩/게임셰이더와최대차이3이하의증명이아님을코드로확인했다. 정렬보호14개가원인이라는증거도없어보호/카운터를유지한다.
+4. 게임 `scrVisualDecoration.cs` 근사디컴파일과설치Assembly-CSharp.dll읽기전용ILScan으로 SetSprite→SetPointSamplingVariant/Clamp호출을교차확인했다. 게임셰이더native산술/정렬전체는이IL로확정되지않는다.
+
+**중단이유:** 이실패를고칠대상은독립이미지소유의앞단이아니라통합렌더링경로다. 해당renderer/정책/셰이더/번들은소유규칙밖이며, 허용된GpuDecoDrawCollapse.cs입구1줄/텍스처helper는정렬·블렌딩·프래그먼트연산을교체할권한이아니다. 이미지정점을일부러보정해통합오차를상쇄하면이미검증한독립경로/복원을바꾸게되며·그근거도없다. **현재허용범위에서의설계경계에서중단한다. 전체통합설계가불가능하다는판정은아니다.**
+
+소유자에게구체적으로인계한다: 통합renderer/셰이더영역에서동일정점/UV/색/텍스처/카메라/정렬을고정하고 **실제Sprites/Tile와GpuDecoBatch를반투명색·여러겹안개조건으로대조**해샘플링/색반올림/블렌드와정렬을분리해야한다. 위3개초과픽셀은O=G라는대조기준을유지한다. 정책상한확장·KeepAfterBarrier재활성화·이미지제외·픽셀4허용·실제카운터덮어쓰기는해법으로취급하지않는다. 정확한원인수정전같은333단계/옛diag1/diag2반복요청은없다.
+
+### 검증과 보존
+
+런타임코드/생성기/기존JSON/tag/native/셰이더/번들/설정/제어파일변경0회다. 새계획/DLL/번들은만들지않았다. 코드변경이없으므로3빌드/LoadCheck/기존검사를반복하지않았다. 보호292개중읽기전용공유PNG7개를분리한285개의SHA256은유지한다. 외부PNG변화는검증보고에별도기록하며보존성공으로세지않는다. 원시/증거/픽셀통계·게임IL·문서5개정합성·10줄요약·기존이력보존·git diff --check를검증한다. 수치와자체분석은 `out/imageown11/`에있다. task-observer3.5.0의프로젝트별체크포인트만남겼으며공유스킬/메모리는수정하지않았다.
+
+최신 run2 직접79줄을 원시158~838행과 순서 대조했다. 통합260/262초 changed28818/22961·max3/4·반복/복원0이며 262초에서 중단, 270초/ABBA/FPS/끊김은NA다. 로그와 일치한 첫 PNG 오프라인 분석: O/G 3픽셀·max1, G/B 22958픽셀·max4, O/B 22961픽셀·max4; 초과3픽셀 모두 O=G이며 G/B=4다. 실패를 독립 이미지 소유가 아닌 통합 전환 단계로 국소화했다. 정확한 정렬/샘플링/셰이더 산술 원인은미확정이다. renderer가 별도 GpuDecoBatch 재질/셰이더로 교체하고 기존40합성검사는 Sprites/Default·흰 정점색만대조해 게임 Sprites/Tile·중첩안개의동일성을증명하지못한다. 필요한통합renderer/셰이더수정은소유규칙밖이므로 현재허용범위의설계경계에서중단·소유자에게인계한다. 전체설계불가능판정아님. 기준3/정렬보호/48슬롯/이미지소유/실제카운터유지·코드/생성기/기존JSON변경0·새계획/반복시험요청0·빌드/LoadCheck반복0이다. 보호292개중코드/게임DLL/번들/설정등285개SHA유지, 공유PNG는외부덮어쓰기감지로보호수에서분리·후속분석거부했다. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. IMAGEOWN=FAIL reason=COLLAPSE_PIXEL_SCOPE_LIMIT·상세결과/out/imageown11참조.
+
+---
+
 IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=3 A0_fps=211.823440 B1_fps=208.592248 B2_fps=197.047153 A3_fps=NA spikes_30ms=4 CPU_fallback=0 nonimage_fallback=14 image_excluded=0 reason=ABBA_INCOMPLETE_AFTER_B2_SPIKES new_code=NOT_RUN
 
 ## 자동 반복 재시작 2회차(누적 10회차) — 실패 창 완료순번 수정·끊김 진단 추가

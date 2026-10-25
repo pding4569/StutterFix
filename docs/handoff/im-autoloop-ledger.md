@@ -1,3 +1,7 @@
+## 재시작 3회차(누적11회차) — run2 통합 픽셀 국소화·소유 경계 중단
+
+최신 run2 직접79줄을 원시158~838행과 순서 대조했다. 통합260/262초 changed28818/22961·max3/4·반복/복원0이며 262초에서 중단, 270초/ABBA/FPS/끊김은NA다. 로그와 일치한 첫 PNG 오프라인 분석: O/G 3픽셀·max1, G/B 22958픽셀·max4, O/B 22961픽셀·max4; 초과3픽셀 모두 O=G이며 G/B=4다. 실패를 독립 이미지 소유가 아닌 통합 전환 단계로 국소화했다. 정확한 정렬/샘플링/셰이더 산술 원인은미확정이다. renderer가 별도 GpuDecoBatch 재질/셰이더로 교체하고 기존40합성검사는 Sprites/Default·흰 정점색만대조해 게임 Sprites/Tile·중첩안개의동일성을증명하지못한다. 필요한통합renderer/셰이더수정은소유규칙밖이므로 현재허용범위의설계경계에서중단·소유자에게인계한다. 전체설계불가능판정아님. 기준3/정렬보호/48슬롯/이미지소유/실제카운터유지·코드/생성기/기존JSON변경0·새계획/반복시험요청0·빌드/LoadCheck반복0이다. 보호292개중코드/게임DLL/번들/설정등285개SHA유지, 공유PNG는외부덮어쓰기감지로보호수에서분리·후속분석거부했다. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. IMAGEOWN=FAIL reason=COLLAPSE_PIXEL_SCOPE_LIMIT·상세결과/out/imageown11참조.
+
 ## 재시작 2회차(누적10회차) — 외부run1 분석·완료순번 수정
 
 최신 외부 run1 직접289줄을 원시158~1971행과 순서 대조했다. 통합260/262/270초 changed28603/22550/9186·max3/3/2·반복/복원0·이미지제외0·비이미지정렬보호14개로 픽셀선행을 통과했다. A0/B1/B2=211.823440/208.592248/197.047153FPS·끊김0/0/4회·창복원3/3 뒤 A3 begin에서 중단됐다. 완료순번을 성공창수로 세는 오류를 이미지fixture에서 수정하고, 실패는 최종FAIL에 유지하면서 복원 뒤 다음창으로 진행하게 했다. 끊김16개 고정버퍼에 관측시각/길이/GC누계 저장·창종료후로그·초과수명시, 일시적런타임실패도 현재창에반영한다. 정확히+20%경계판정오류 수정·진입소스의픽셀4허용을지시된3으로복원했다. 정렬보호/실제카운터/renderer/policy/셰이더/48슬롯/번들 유지다. 최종격리3빌드 오류0/0/0·경고48/4/40·LoadCheck279/229/281곳틀림0·실제5메서드56검사/생성기8검사통과·명시12출력/기존JSON보존·새abba5-completion333단계생성만. IMAGEOWN=FAIL reason=ABBA_INCOMPLETE_AFTER_B2_SPIKES; 수정후게임/FPS/+20%/끊김해결/전곡/설치복원NA. 기존4끊김의원인·시각은미확정이며설계전체불가능판정아님. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 보호284개중의도한코드2개외282개SHA유지·상세결과/out/imageown10참조.
@@ -240,3 +244,24 @@ O/O2·G/N 반복0은 통합픽셀 증명이 아니며 종료FastMoveOriginal 복
   - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=317
   - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=4 reason=INTEGRATED_PIXEL_PREFLIGHT_FAILED
   - [StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=87 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.446245 progress_ms=0.011741 uniform_ms=0.037036 dispatch_
+
+## 회차 3
+- Codex 요약: `IMAGEOWN=FAIL`입니다. 262초의 최대 픽셀 차이 4가 **통합 렌더링 단계에서 발생**함을 확인했습니다. 독립 이미지 GPU는 최대 차이 1이었습니다.
+
+정확한 내부 원인은 미확정이며, 통합 렌더러·셰이더는 수정 허용 범위 밖이라 근거와 후속 작업을 [결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)에 기록하고 중단했습니다.
+
+문서 5개와 10줄 요약을 갱신했습니다. 보호 파일 285개는 동일하며, 게임 실행·설치·커밋은 모두 0회입니다.
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=304414720 copy_calls=59 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_eva
+  - [StutterFix] [gpudeco] prepare_ms=9768.597100 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2135 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=167.552400 prepare_ms=9768.597100
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=14 active_buckets=251
+  - [StutterFix] [gpudeco] cost scope=live_off frames=45 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.432471 progress_ms=0.013749 uniform_ms=0.037313 dispatch_ms=0.270531 misc_
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=260.019671 resumed_recs=11821 resume_expected=11821 unobserved_order=0 restore_ms=12.151700
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2040 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=158.378900 prepare_ms=9768.597100
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=317
+  - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=5 reason=INTEGRATED_PIXEL_PREFLIGHT_FAILED
+  - [StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=88 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.426973 progress_ms=0.012334 uniform_ms=0.036264 dispatch_

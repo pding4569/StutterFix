@@ -1,10 +1,10 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=3 A0_fps=211.823440 B1_fps=208.592248 B2_fps=197.047153 A3_fps=NA spikes_30ms=4 CPU_fallback=0 nonimage_fallback=14 image_excluded=0 reason=ABBA_INCOMPLETE_AFTER_B2_SPIKES new_code=NOT_RUN
-최신run1 직접289줄 원시158~1971행대조; 통합260/262/270초changed28603/22550/9186·max3/3/2·반복/복원0.
-A0/B1/B2=211.823440/208.592248/197.047153FPS·30ms이상0/0/4회·복원3/3·A3미측정; ABBA평균/증가율NA.
-중단원인: 성공창수를완료순번으로사용해실패B2뒤begin3거부; 완료순번분리·직전복원필수·재시도/건너뛰기차단.
-네창완료시실패표본도FPS통계보존·실패는최종FAIL유지; 일시적런타임실패도현재창무효화.
-고정16개끊김표본시각/길이/GC누계·창종료후로그·초과수명시; 기존4회끊김원인은미확정·성능개선증명아님.
-정확히+20%포함경계오류수정·진입소스픽셀4허용을요구3으로복원; 정렬보호/실제카운터/소유자영역보존.
-최종3빌드오류0/0/0·경고48/4/40·LoadCheck279/229/281곳틀림0·실제5메서드56검사/생성기8검사통과.
-명시12출력/기존JSON보존·새abba5-completion333단계생성만·DLL은out/imageown10격리·보호282개SHA유지.
-게임/설치/커밋/푸시/장치/Editor/설정/제어변경0회; 수정후FPS/+20%/끊김해결/전곡/설치복원NA; 상세결과참조.
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=4 CPU_fallback=0 nonimage_fallback=14 image_excluded=0 reason=COLLAPSE_PIXEL_SCOPE_LIMIT game_reason=INTEGRATED_PIXEL_PREFLIGHT_FAILED
+최신run2 직접79줄 원시158~838행대조; 260/262초통합changed28818/22961·max3/4·반복/복원0; 262초선행중단.
+첫PNG오프라인 O/G=3픽셀·max1, G/B=22958픽셀·max4, O/B=22961픽셀·max4; O/O2·G/N·B/BN·G/G2=0.
+허용3초과3픽셀 모두O=G·G/B=4: 실패단계는통합전환; 정확한정렬/샘플링/색산술원인은미확정.
+등록93/주소93/누락0·직접34/48·배열4/4·290.312500MiB·GPU28523/CPU복귀0·이미지제외0·정렬보호14.
+별도GpuDecoBatch재질/셰이더경로확인; 기존40합성은Sprites/Default·white색만검사, 게임셰이더/중첩안개미검증.
+통합renderer/셰이더는수정소유밖: 현재허용범위설계경계중단·소유자인계; 전체설계불가능판정아님.
+후속공유PNG덮어쓰기감지·재분석거부·첫수치/당시SHA보존; 원본PNG사본없음·다시계산불가한계명시.
+코드/생성기/기존JSON/tag보존·새계획0·빌드/LoadCheck반복0·보호285SHA유지; 공유PNG7개는분리기록.
+게임/설치/커밋/푸시/장치/Editor/설정/제어변경0회; 270초/ABBA/FPS/+20%/끊김/전곡/설치복원NA.
