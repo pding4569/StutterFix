@@ -89,12 +89,23 @@ namespace StutterFix
                     throw new InvalidOperationException("정렬 그룹 또는 스프라이트 마스크 사용 중");
                 DecoBake.PreparePlayer(__0);
                 lifetime.Ready();
+#if AUTOTEST
+                Main.Entry.Logger.Log("[GPU 장식] 준비 완료 (막힘 " + lifetime.Blocked + ", 준비됨 " + lifetime.Prepared + ")");
+#endif
             }
-            catch (Exception e) { Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false; }
+            catch (Exception e)
+            {
+#if AUTOTEST
+                Main.Entry.Logger.Log("[GPU 장식] 준비 예외: " + e);
+#endif
+                Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false;
+            }
             finally { Preparing = false; }
         }
 
-        static void BeforeControllerUpdate()
+        static void BeforeControllerUpdate() => TryStart();
+        // 에디터 재생에서는 scrController.Update 앞 후크가 불리지 않아 Tick 에서도 같은 시도를 한다(한 번만 켜진다).
+        static void TryStart()
         {
             if (!Product || lifetime.Blocked || !lifetime.Prepared) return;
             var c = ADOBase.controller; var song = scrConductor.instance;
@@ -109,6 +120,8 @@ namespace StutterFix
         {
             if (!Product || !RuntimeInitialized) return;
             if (cleanupPending) { cleanupPending=false; DecoBake.ReleasePlayerLevel(); }
+            if (lifetime.Blocked) return;
+            TryStart();
             if (lifetime.Blocked) return;
             if (lifetime.Attempted && !DecoBake.GpuLiveActive) { Skip("원본 장식 처리로 복귀함"); DecoBake.ReleasePlayerLevel(); return; }
             if (lifetime.Prepared) DecoBake.Tick();
@@ -130,6 +143,9 @@ namespace StutterFix
         internal static void End(string reason)
         {
             if (!Product || !RuntimeInitialized) return;
+#if AUTOTEST
+            Main.Entry.Logger.Log("[GPU 장식] 종료 후크: " + reason + " | 준비됨 " + lifetime.Prepared + " 시도함 " + lifetime.Attempted + " 막힘 " + lifetime.Blocked + " 준비중 " + Preparing);
+#endif
             lifetime.NewRound();
             cleanupPending=false;
             try { DecoBake.ReleasePlayerLevel(); }
@@ -207,6 +223,7 @@ namespace StutterFix
         }
         internal static void PreparePlayer(List<scrFloor> floors)
         {
+            long p0 = Stopwatch.GetTimestamp();
             gpuScope = GpuDecoScopePlan.Song();
             gpuImageCandidate = Main.Config.GpuDecoImages == 1;
             gpuImageOwn = true;
@@ -218,13 +235,20 @@ namespace StutterFix
             {
                 if (!collector.MoveNext()) collector = null;
             }
+            long p1 = Stopwatch.GetTimestamp();
             if (job != null) job.GetAwaiter().GetResult();
             Tick();
+            long p2 = Stopwatch.GetTimestamp();
             RequireLive(ready && table != null, status);
             RequireLive(table.Supported >= GpuDecoPlayerPolicy.MinimumOwned, "지원되는 장식이 적음 (64개 미만)");
             if (gpuImageCandidate) CompilePlayerImages();
+            long p3 = Stopwatch.GetTimestamp();
             PrepareGpuLive();
+            long p4 = Stopwatch.GetTimestamp();
             RequireLive(gpuLiveOwnedIndices.Length >= GpuDecoPlayerPolicy.MinimumOwned, "GPU 소유가 가능한 장식이 적음 (64개 미만)");
+            double f = 1000.0 / Stopwatch.Frequency;
+            Main.Entry.Logger.Log("[GPU 장식] 준비 " + ((p4 - p0) * f).ToString("F0") + "ms: 수집 " + ((p1 - p0) * f).ToString("F0") + ", 표 만들기 대기 " + ((p2 - p1) * f).ToString("F0")
+                + ", 이미지 계획 " + ((p3 - p2) * f).ToString("F0") + ", GPU 준비 " + ((p4 - p3) * f).ToString("F0"));
         }
         static void CompilePlayerImages()
         {

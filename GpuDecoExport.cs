@@ -811,6 +811,12 @@ namespace StutterFix
             GpuLog("prepare_complete stage=live_prepare budget_ms=300000 elapsed_ms="
                 +gpuPrepareWatch.Elapsed.TotalMilliseconds.ToString("F6",Inv));
         }
+        static long gpuPrepMarkT, gpuPcA, gpuPcB, gpuPcC, gpuPcD, gpuPcE;
+        static long PcT(){return Stopwatch.GetTimestamp();}
+        static void PcAdd(ref long acc,long t0){acc+=Stopwatch.GetTimestamp()-t0;}
+        static string PcStr(){double f=1000.0/Stopwatch.Frequency;return "[입장 "+(gpuPcA*f).ToString("F0")+" 사유 "+(gpuPcB*f).ToString("F0")+" 스프라이트 "+(gpuPcC*f).ToString("F0")+" 기하 "+(gpuPcD*f).ToString("F0")+" 항목 "+(gpuPcE*f).ToString("F0")+"]";}
+        static long gpuPrepMarkT0; static readonly System.Text.StringBuilder gpuPrepMarks=new System.Text.StringBuilder();
+        static void PrepMark(string name){long n=Stopwatch.GetTimestamp();if(gpuPrepMarkT!=0)gpuPrepMarks.Append(name).Append(' ').Append(((n-gpuPrepMarkT)*1000.0/Stopwatch.Frequency).ToString("F0")).Append(", ");gpuPrepMarkT=n;}
         static void PrepareGpuLive()
         {
             CheckGpuPrepareBudget();
@@ -825,10 +831,10 @@ namespace StutterFix
                 return;
             }
             DisposeGpuLive();
-            var timer = Stopwatch.StartNew();
-            LazySprite.FlushAll();
-            InvisibleSkip.ApplyAllLazy();
-            ValidateBaseline();
+            var timer = Stopwatch.StartNew();gpuPrepMarks.Clear();gpuPrepMarkT=0;gpuPcA=gpuPcB=gpuPcC=gpuPcD=gpuPcE=0;PrepMark("");
+            LazySprite.FlushAll();PrepMark("스프라이트 지연분");
+            InvisibleSkip.ApplyAllLazy();PrepMark("안 보이는 지연분");
+            ValidateBaseline();PrepMark("기준 검사");
             RequireLive(SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11 && SystemInfo.supportsComputeShaders, "D3D11 compute required");
             var cam = GpuDecoScene.FindMain(); var camy = ADOBase.controller ? ADOBase.controller.camy : null;
             RequireLive(cam && cam.orthographic && camy, "orthographic camera required");
@@ -842,7 +848,7 @@ namespace StutterFix
             try
             {
                 gpuLiveBundle = GpuDecoPlayer.Product ? LoadPlayerGpuBundle() : AssetBundle.LoadFromFile(Path.GetFullPath(gpuBundlePath));
-                RequireLive(gpuLiveBundle, "bundle load failed");
+                RequireLive(gpuLiveBundle, "bundle load failed");PrepMark("번들");
                 gpuLiveShader = gpuLiveBundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute");
                 RequireLive(gpuLiveShader, "compute asset missing");
                 gpuLiveRoot = new GameObject("GpuDeco.Live") { hideFlags = HideFlags.HideAndDontSave };
@@ -856,7 +862,7 @@ namespace StutterFix
                 float camScale = camy.camobj.orthographicSize * .2f / gpuLiveZoomFactor;
                 float[] camInit = { ct.position.x, ct.position.y, ct.eulerAngles.z, camScale };
                 float ppw = Mathf.Max(cam.pixelHeight / (2 * cam.orthographicSize), cam.pixelWidth / (2 * cam.orthographicSize * cam.aspect));
-                string fp = TableFingerprint();
+                string fp = GpuDecoPlayer.Product ? "player" : TableFingerprint();PrepMark("표 지문"); // 지문은 내보내기·스냅샷 검증용이라 제품에서는 건너뜀(SHA256 스트림 약 5초)
 
 #if DEV || AUTOTEST
                 var blockCensus = new LiveDeco.BlockCensus();
@@ -874,9 +880,11 @@ namespace StutterFix
                 for (int index = 0; index < baselineObjects.Length; index++)
                 {
                     if (table.Decorations[index].Reasons.Count != 0) continue;
+                    long pcT=PcT();
 #if AUTOTEST || GPUDECO
                     if(!GpuImageAdmit(index))continue;
 #endif
+                    PcAdd(ref gpuPcA,pcT);pcT=PcT();
                     int mask = 0;
                     for (int s = 0; s < sliceCount; s++)
                         if (gpuScope.WholeSong || VisibleInWindow(table, index, gpuScope.Starts[s] - 0.25, gpuScope.Ends[s] + 0.25))
@@ -894,6 +902,7 @@ namespace StutterFix
                         !GpuDecoPlayer.Product ? LiveDecoRenderer.LiveGpuReason(d, cam, manager, blockCensus) :
 #endif
                         GpuDecoScene.LiveGpuReason(d, cam, manager, blockCensus);
+                    PcAdd(ref gpuPcB,pcT);pcT=PcT();
                     if (liveWhy != null)
                     {
                         rejectCounts.TryGetValue(liveWhy, out int rc1); rejectCounts[liveWhy] = rc1 + 1;
@@ -905,7 +914,9 @@ namespace StutterFix
 #if AUTOTEST || GPUDECO
                     if (!GpuImageActor(index) && TrimStaticSprite(sp, out var trimV, out var trimUv)) { cornerSrc = trimV; uvSrc = trimUv; }
 #endif
+                    PcAdd(ref gpuPcC,pcT);pcT=PcT();
                     var geometry = LiveDecoGeometry.Capture(d.pivotTrans, d.childTransform, r.transform, cornerSrc, r.flipX, r.flipY);
+                    PcAdd(ref gpuPcD,pcT);pcT=PcT();
                     if (geometry == null) continue;
                     var ts = d.scaleMultiplier * d.textureScaleMultiplier;
                     if (ts.x == 0 || ts.y == 0 || d.textureScaleMultiplier.x == 0 || d.textureScaleMultiplier.y == 0) continue;
@@ -934,8 +945,10 @@ namespace StutterFix
                     gpuScope.CheckItemBudget(protoItems.Count);
                     sliceMasks.Add(index, mask);
                     candidateByRenderer.Add(r.GetInstanceID(), index);
+                    PcAdd(ref gpuPcE,pcT);
                 }
 
+                PrepMark("후보"+PcStr());
                 var sigCache = new Dictionary<int, string>();
                 var auxiliaryOwners = new Dictionary<int, int>();
                 if (gpuRenderMergePrepare || gpuCollapsePrepare) foreach (int index in protoItems.Keys)
@@ -980,7 +993,9 @@ namespace StutterFix
                             AuxiliaryOwner = auxiliaryOwner, Key = key, Signature = sig });
                     }
                 }
+                PrepMark("렌더러 훑기");
                 masterRows.Sort((a, b) => a.Key.CompareTo(b.Key));
+                PrepMark("정렬");
                 var collapseRows=gpuCollapsePrepare?new List<GpuLiveRow>(masterRows):null;
                 if(gpuRenderMergePrepare)for(int i=1;i<masterRows.Count;i++)
                     RequireLive(!masterRows[i-1].Key.SameMaterialTie(masterRows[i].Key)
@@ -1036,6 +1051,7 @@ namespace StutterFix
                 }
                 ResetGpuLiveSourcePool();
 
+                PrepMark("소유 배열");
                 int copyKernel = gpuLiveShader.FindKernel("CopyRun");
                 int totalRuns = 0, totalSubmeshes = 0;
                 for (int s = 0; s < sliceCount; s++)
@@ -1122,8 +1138,11 @@ namespace StutterFix
                         }
                     }
                 }
+                PrepMark("조각(독립 렌더러)");
                 PrepareGpuMerge(masterRows);
                 if(collapseRows!=null)PrepareDrawCollapse(collapseRows);
+                PrepMark("그리기 통합");
+                if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] GPU 준비 세부(ms): "+gpuPrepMarks);
                 CompleteGpuLivePreparationBudget();
                 gpuLiveManager = manager;
                 gpuLiveBaseline = baselineObjects;
@@ -1332,6 +1351,14 @@ namespace StutterFix
             gpuCostFrames++;
             double totalMs = (t4 - t0) * 1000.0 / Stopwatch.Frequency;
             if (totalMs > gpuCostMaxMs) gpuCostMaxMs = totalMs;
+#if AUTOTEST
+            if (totalMs > 4.0 && GpuDecoPlayer.Product)
+            {
+                double f = 1000.0 / Stopwatch.Frequency;
+                Main.Entry.Logger.Log("[GPU 장식] 느린 프레임 " + totalMs.ToString("F1") + "ms: 슬라이스 " + ((t1 - t0) * f).ToString("F1") + " 진행·이미지 " + ((t2 - t1) * f).ToString("F1")
+                    + " 유니폼·검증 " + ((t3 - t2) * f).ToString("F1") + " 디스패치 " + ((t4 - t3) * f).ToString("F1") + " | 곡 " + time.ToString("F2") + "초");
+            }
+#endif
         }
 
         // Primary hook: called at the end of scrDecorationManager.LateUpdate (TightLate.ManagerEnd)
