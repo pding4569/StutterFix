@@ -1,10 +1,10 @@
-DRAWCOLLAPSE=FAIL reason=GATE1_INCOMPLETE_AFTER_RECOVERY candidate_spans=17 confirmed_spans=NA samples=1/6 gate=HOLD
-외부 run1 증거 68줄을 원시와 순서 대조했으며 이번 게임 실행·설치·커밋·푸시·자동 장치 호출은 0회다.
-2560×1440@164.999·260.008990초·GPU23547에서 후보 소유1628/장벽316/구간17/동일텍스처run1177을 얻었다.
-실제 GPU 담당 텍스처81종·35티어·압축210.989090MiB/총615.006191MiB이며 할당·복사·여유VRAM은 미검증이다.
-첫 진단 재개 뒤 260.066747초 FastMoveOriginal로 CPU10252/10252 복귀해 다음 validate가 실패했고 나머지5표본은 없다.
-코드상 Hitch 재개→Suspend→60프레임 catch-up→FastMove 원본/보호복귀 경로를 확인했고 세부 Take 분기 실측은 없다.
-보호 코드는 유지하고 표본마다 새 seek→GPU on→정지 진단→GPU off→resume/stop으로 계획 생성 코드를 수정했다.
-새 기본 diag2-isolated 103단계는 생성만 했고 기존 diag1 68단계 파일·baseline/abba/single 명시 모드 출력을 보존했다.
-3빌드 오류0/0/0·경고46/36/4(PlayerAuto 증분)·LoadCheck279/229/280곳 오류0·정책27개/생성기6개 통과다.
-픽셀 기여·정렬은 미증명으로 1관문 HOLD·병합 미구현이며 새 계획 성공·FPS·엔진draw·픽셀·끊김·수명 안정성은 NA다.
+DRAWCOLLAPSE=FAIL reason=DIAGNOSTIC_PROOF_LIMIT candidate_spans_max=18 confirmed_spans=NA samples=6/6 gate=HOLD
+외부 run2 증거294줄은 원시293줄 완전일치+시작1줄 1500자 접두부 일치이며 이번 게임 실행·설치·커밋·푸시·자동 장치 호출0회다.
+기존 diag2 103단계 선언과 완료 동사 순서가 일치하고 2560×1440@164.999·GPU23547·fallback0에서 6개 진단이 완료됐다.
+260/262/264/266/268/270초 후보 구간17/17/18/17/10/10·후보 장벽316/326/334/354/391/327이며 확정S는 NA다.
+GPU 담당 텍스처81종·35티어·압축210.989090MiB/총615.006191MiB가 6회 일치하고 할당·복사·여유VRAM은 미검증이다.
+해제 복원 Rec10854/9954/10507/10854/9383/11104가 각 기대값과 일치하고 recovery없음·종료native_contexts0이며 전체 수명 검증은 아니다.
+현재 진단은 픽셀 기여·실제 엔진 정렬 검사 없이 pixels_proven=False ordering_proven=False gate=HOLD를 고정 출력한다.
+게임 scrVisualDecoration 근사 디컴파일과 설치 DLL ILScan으로 알파·셰이더·마스크 호출을 대조했으며 미확인 장벽 원인 귀속은 하지 않았다.
+현 진단 설계의 증명 한계로 같은 코드·계획 반복 중단, 문서5개만 수정·새 계획/병합 구현없음·기존 코드/JSON/tag/제어 파일 유지다.
+원시·메모리·복원·SHA256·문서 검증만 수행하고 3빌드/LoadCheck는 반복하지 않았으며 FPS·엔진draw·픽셀·끊김·전체 수명 안정성은 NA다.

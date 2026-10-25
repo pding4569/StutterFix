@@ -1,4 +1,71 @@
-DRAWCOLLAPSE=FAIL reason=GATE1_INCOMPLETE_AFTER_RECOVERY candidate_spans=17 confirmed_spans=NA samples=1/6 gate=HOLD
+DRAWCOLLAPSE=FAIL reason=DIAGNOSTIC_PROOF_LIMIT candidate_spans_max=18 confirmed_spans=NA samples=6/6 gate=HOLD
+
+# DrawCollapse 3회차 — 외부 run2 완료 확인·현재 진단 설계의 증명 한계로 중단 (2026-10-25)
+
+`codex-al-dc-3.md`·마스터·두 장부·지정 run2 증거·Gemini 설계안을 읽었다. **이번 게임 실행·설치·커밋·푸시·자동 장치 호출·설정/제어 파일 변경은 모두 0회**다. 아래는 외부 장치가 이미 수행한 run2의 분석이며 이번 게임 시험 결과가 아니다.
+
+**직전 재개 오류는 run2에서 재현되지 않았다.** 103단계 계획은 끝까지 진행했고 각 진단 뒤 GPU를 해제해 원본 Rec 수를 복원했다. 남은 실패는 현재 1관문 진단의 설계 한계다. 이 코드는 실제 픽셀 기여와 엔진 정렬을 측정하지 않으며 `pixels_proven=False ordering_proven=False gate=HOLD`를 고정 출력한다. 따라서 **동일 진단 코드·diag2 계획 반복은 중단**한다. 인계의 설계 한계 시 중단 지시를 적용해 병합 코드·새 시험 계획을 추가하지 않았다. 이는 Texture2DArray 통합 전체의 불가능이나 `too_many_barriers` 판정이 아니다.
+
+## 외부 증거 대조와 6개 표본
+
+`dc-autoloop-run2-evidence.txt`의 비어 있지 않은 **294줄**을 원시 `E:/StutterFixWork/night-results/al-dc-2.log` **1,097행**과 순서·중복까지 대조했다. **293줄은 완전 일치**, 첫 시작 줄은 수집본이 **1,500자에서 잘린 접두부**로 원시 157행 **2,014자**와 일치한다. 이 줄을 완전 일치라고 세지 않았다. 원시의 전체 시작 명령 목록은 기존 diag2 JSON 103단계와 일치한다(맵 경로 구분자만 정규화). 완료 시간 로그는 인수를 생략한 명령 동사만 기록하므로 103개 동사 순서를 별도로 대조했다.
+
+모든 표본은 **2560×1440@164.999**, 할당 소유/실제 GPU 담당 **23547/23547**, fallback **0**이다. 아래 N/M/S/R은 **후보 통계**다.
+
+| 실제 곡 시각(초) | 원시 행 | 소유 후보 N | 사이 장벽 후보 M | 구간 후보 S | 같은 텍스처 run R | 전체 미확인 비소유 |
+|---|---|---|---|---|---|---|
+| 260.008990 | 456 | 1626 | 316 | 17 | 1176 | 318 |
+| 262.009448 | 571 | 1525 | 326 | 17 | 1025 | 328 |
+| 264.008990 | 691 | 1556 | 334 | 18 | 1133 | 336 |
+| 265.992999 | 812 | 1665 | 354 | 17 | 1281 | 356 |
+| 268.008990 | 932 | 1557 | 391 | 10 | 1123 | 392 |
+| 270.014330 | 1053 | 1674 | 327 | 10 | 1205 | 328 |
+
+6개 표본의 후보 S 최대는 **18**이다. **확정 S와 연속 260~270초 최대 S는 NA**다. 각 표본은 별도 seek로 수집했으며 프레임 스케줄도 같다고 보장하지 않는다. SortingGroup·동일 재질 tie·SpriteMask 카운터는 모두 0이지만 이것은 실제 엔진 정렬 또는 모든 마스크 경로의 부재를 증명하지 않는다. M은 소유 후보 사이만, 미확인 비소유 수는 전체 후보 모집단이라 서로 다를 수 있다.
+
+| 진단 뒤 live off 원시 행 | 복원 Rec / 기대 Rec | 복원 시간(ms) |
+|---|---|---|
+| 460 | 10854 / 10854 | 30.435200 |
+| 575 | 9954 / 9954 | 34.508100 |
+| 695 | 10507 / 10507 | 39.006200 |
+| 816 | 10854 / 10854 | 45.014300 |
+| 936 | 9383 / 9383 | 48.398200 |
+| 1057 | 11104 / 11104 | 54.959300 |
+
+6회 모두 `reason=live_off originals_restored=True unobserved_order=0`이며 원시에 `reason=recovery:`·자동 시험 실패 줄은 없다. 종료에 `shutdown_disposed=True native_contexts=0`을 확인했다. 이는 전환 수와 종료 자원 기록이며 **원본 픽셀·재개 연속성·retry/reopen/Unload를 포함한 전체 수명 안정성 통과가 아니다**. 복원 시간은 정지 진단 작업의 시간이고 재생 중 30ms 이상 끊김 개수로 세지 않는다.
+
+## 코드로 확인한 현재 진단의 한계
+
+1. `GpuDecoDrawCollapse.cs`는 소유 GPU 정점을 읽어 알파·삼각형 면적·frustum을 검사한다. 비소유는 enabled·active·forceRenderingOff·bounds를 검사하며, 확인된 Sprites/Tile SpriteRenderer의 알파 0만 제외한다. **텍스처의 실제 투명 영역·가림·셰이더 discard·마스크 결과의 픽셀 기여를 읽는 경로가 없다.** 미확인 318~392개를 실제 가시 장벽으로 확정하거나 임의로 버릴 근거도 없다.
+2. `DrawCollapsePolicy.Count`는 위 후보 행을 `SceneRenderOrder.Key.CompareTo`로 정렬해 연속 구간을 센다. `MatShare.SortKey`는 정렬 키를 계산하며 같은 재질 tie의 renderer ID는 진단용 결정 규칙이다. **이번 표본에서 실제 엔진 제출 순서와 비교하는 검증은 없다.** tie/group/mask 카운터가 0이어도 `ordering_proven=True`로 바꾸지 않는다.
+3. 진단의 마지막 로그는 **항상** `pixels_proven=False ordering_proven=False gate=HOLD`다. `SpanDecision(18)`의 `eligible`은 후보 수치에 대한 임계값 분류일 뿐 2관문 허가가 아니다. `GpuDecoExport.cs`는 이 명령을 호출할 뿐 별도의 픽셀/정렬 관문을 추가하지 않는다. 같은 코드의 재시험은 누락된 증거를 만들 수 없다.
+4. 읽기 전용 근사 디컴파일 `scrVisualDecoration.cs`의 `ApplyColor`는 `color.a * opacity * parentFloor.opacity`를 SpriteRenderer.color에 반영한다. 반면 `UpdateShader`는 재질 속성·Blit·알파 마스크 RT 경로를, `SetMaskingType/SetMaskingDepth`는 마스크 상호작용·앞뒤 정렬 범위를 다룬다. 설치된 **Assembly-CSharp.dll을 ILScan으로 읽어** SpriteRenderer.set_color·Material.SetFloat/SetColor·Graphics.Blit·ApplyAlphaMaskToRT·set_maskInteraction·마스크 정렬 setter 호출을 교차확인했다. 따라서 알려진 sprite 알파 검사만으로 모든 renderer의 픽셀 기여를 설명할 수 없다. **이 호출들이 이번 미확인 renderer 318~392개의 정체나 실제 픽셀 오류 원인이라고 귀속한 것은 아니다.**
+
+현재 코드를 고쳐 통과라고 표시하는 것은 누락된 증명을 대신하지 못한다. 다시 진행하려면 후보 계수와 별개로 **실제 픽셀 기여를 확인하는 진단 및 비소유와의 엔진 순서 증거**가 필요하다. 이번에는 그 증거가 없고 게임 실행도 금지되어 있으므로, 현 후보 진단의 반복을 여기서 중단한다. 다른 측정 설계나 병합 방식은 구현·예약하지 않았다.
+
+## 배열 메모리와 수용 상태
+
+각 표본의 35개 tier를 다시 합산해 **81 slices·35개 계획 배열**, 압축 **221,238,096바이트(210.989090MiB)**·비압축 포함 **644,880,732바이트(615.006191MiB)**가 모두 일치함을 확인했다. `unsupported_textures=0 copy_support=True vram_mb=7949 feasibility=UNVERIFIED arrays_allocated=0 copy_calls=0`도 같다. 이는 실제 GPU 담당 텍스처 81종의 계산이며 맵 전체 301종과 범위가 다르다.
+
+35티어의 서로 다른 치수·포맷을 어떻게 한 span의 **단일 subMesh·단일 재질·단일 draw**에서 샘플링할지는 아직 구현·증명되지 않았다. 이 숫자만으로 불가능하다고 판정하지 않는다. 추가 615MiB가 장치 VRAM보다 작다는 사실도 여유 VRAM·실제 할당/복사·sRGB/샘플링 동일성의 증명이 아니다. 강제 RGBA32/2048² 변환은 없다.
+
+인계 기준 **168 FPS**, 이동 이벤트를 뺀 정지 장식 **492~500 FPS**는 이전 근거로 보존한다. 이번 **FPS·엔진 draw·원본 대비 픽셀·30ms 이상 끊김·전체 수명 안정성·설치 원본 복원 시험은 모두 NA**다. readback·pause·seek가 섞인 곡 전체 평균이나 `cost scope=live_off`의 managed 평균을 260~270초 성능으로 쓰지 않는다. 확정 S≤150 진입·151~400 보류·S>400 중단 조건과 maxdiff≤3·draw≤300·FPS≥220 수용 기준을 유지한다.
+
+## 이번 변경과 검증
+
+변경은 **결과 문서·10줄 요약·마스터·두 장부의 5개 문서**다. 런타임·정책·셰이더·생성기·기존 diag1/diag2 JSON/tag·설정·제어 파일은 유지했다. **새 계획·병합 구현·시험 요청은 없으며 자동 장치를 직접 중지하지도 않았다.** 외부 시험을 같은 조건으로 반복하지 말아야 한다는 결론만 기록했다.
+
+오프라인 검증은 294줄 원시 대조·103단계 선언/명령 동사 대조·6개 메모리 합산·6회 복원 수·진단 한계의 코드 확인·게임 디컴파일/ILScan·보존 파일 SHA256·문서 정합성·10줄·UTF-8·`git diff --check`다. 감사 자료는 `tools/optimization/out/drawcollapse-run3-evidence-audit.json`·`drawcollapse-run3-audit.py`·`drawcollapse-run3-game-visual-il.txt`에 보존했다. 이 파일들은 기존 out 제외 규칙 아래의 로컬 감사 자료다.
+
+실행 코드 변경이 없어 **3빌드·LoadCheck·기존 정책/생성기 검사는 이번 반복하지 않았다**. 이전 2회차의 3빌드 오류0/0/0·LoadCheck279/229/280곳 오류0·정책27/생성기6 통과는 과거 기록이며 이번 신규 검증으로 재표기하지 않는다.
+
+task-observer **3.5.0**은 기존 사용자 범위 로그/원칙을 읽고 report-back으로 적용했다. 외부 관찰/스킬/메모리는 수정하지 않았으며 새 일반화 관찰은 없다.
+
+---
+
+## 이전 2회차 기록 (외부 run2 수신 전)
+
+당시 판정: `DRAWCOLLAPSE=FAIL reason=GATE1_INCOMPLETE_AFTER_RECOVERY candidate_spans=17 confirmed_spans=NA samples=1/6 gate=HOLD`.
 
 # DrawCollapse 2회차 — 외부 run1 분석과 독립 표본 계획 수정 (2026-10-25)
 

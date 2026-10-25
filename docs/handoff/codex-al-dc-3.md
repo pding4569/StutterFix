@@ -24,3 +24,8 @@
 
 ## 2관문 (S≤150 일 때만): 구현과 ABBA
 Step A(같은 텍스처 단일 subMesh) 는 건너뛰고 바로 Step B(Texture2DArray + 구간당 draw 1)를 시도해도 된다. 합격: 원본 대비 픽셀 `maxdiff ≤ 3`, 엔진 draw ≤ 300, 260~270초 FPS ≥ 220(기준 168), 30ms 이상 끊김 0, 3빌드+LoadCheck 통과, 설치 원본 복원. 결과 문서 첫 줄에 `DRAWCOLLAPSE=PASS` 또는 `FAIL` 과 숫자.
+
+## 2026-10-25 10:00 Claude 결정: 1관문은 통과로 확정한다. 이제 구현하라 (HOLD 로 더 머물지 말 것)
+실측(al-dc-2): `owned_visible=1674 barrier_visible=327 active_barrier_spans=10`(후보 최대 18), `textures_in_owned=81`, 텍스처 배열 메모리 약 615MB(VRAM 7.9GB). 판정 기준(S≤150)을 넘었다. 픽셀·정렬 증명은 **진단이 아니라 구현을 해서 원본과 비교해야** 나오는 것이므로 더 이상 진단 회전을 돌리지 마라. 이번 회전부터 2관문을 구현한다.
+구현 범위(최소부터): (1) 구간 대표 `MeshRenderer`(subMeshCount==1, 재질 1개, `Texture2DArray` 셰이더)를 맵 열 때 한 번 만들어 둔다(구간 수 ≈ 10~20). (2) 정점 슬롯은 원래 정렬 키 오름차순으로 배치해 구간 안 페인터 순서를 삼각형 나열 순서로 보존. (3) Evaluate 커널이 대표 메시 Raw 정점 버퍼에 직접 쓴다(복사 dispatch 제거). (4) 기존 개별 렌더러는 숨김(`forceRenderingOff` 또는 enabled=false, 알파0 소유 장식은 퇴화 삼각형). (5) 켜기/끄기는 `gpudeco drawcollapse on|off`(기본 끔, 연구 빌드만), 끄면 즉시 원래 개별 렌더러로 복구.
+시험: 260/262/270초 정지 프레임 픽셀 비교(원본 대비 maxdiff ≤ 3), 260~270초 ABBA FPS·엔진 draw 수. 구현이 안 되는 구체적 이유(셰이더 컴파일, 번들 문제 등)가 있으면 그 에러를 장부에 그대로 적고 가장 가까운 단계까지 진행하라. 추측으로 HOLD 를 되풀이하는 것이 가장 나쁜 결과다.

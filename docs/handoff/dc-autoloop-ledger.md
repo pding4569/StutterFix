@@ -1,4 +1,16 @@
 
+## Codex 회차 3 분석 (2026-10-25, 새 게임 시험 없음·현 진단 반복 중단)
+
+- 외부 run2 증거294줄을 원시 `E:/StutterFixWork/night-results/al-dc-2.log`와 대조했다. 293줄 완전 일치·시작1줄은 1500자 수집 접두부 일치다. 원시 선언103단계와 기존 diag2 JSON(맵 경로 구분자 정규화)·완료 동사103개도 일치한다.
+- 2560×1440@164.999·GPU23547·fallback0에서 6개 표본 완료. 후보 구간17/17/18/17/10/10·장벽316/326/334/354/391/327이며 확정 S와 연속 최대 S는 NA다.
+- 6회 모두 실제 GPU 담당 텍스처81종·35티어, 압축210.989090MiB/총615.006191MiB다. 할당·복사0·feasibility=UNVERIFIED이며 여유 VRAM/단일 draw 바인딩 증명은 없다.
+- 해제 복원 Rec10854/9954/10507/10854/9383/11104는 각 기대값과 일치하고 unobserved_order0이다. recovery 없이 시험 종료·native_contexts0을 확인했으며 픽셀/전체 수명 통과로 쓰지 않는다.
+- 현재 진단은 GPU quad/알파/bounds 후보만 세고 실제 픽셀 기여·엔진 순서를 확인하지 않는다. 코드의 `pixels_proven=False ordering_proven=False gate=HOLD` 고정 출력이 남은 한계다. scrVisualDecoration 근사 디컴파일과 설치 DLL ILScan도 대조했다.
+- `DRAWCOLLAPSE=FAIL reason=DIAGNOSTIC_PROOF_LIMIT`·1관문 HOLD. **현 진단 설계의 증명 한계로 같은 코드·diag2 계획 반복은 중단한다.** 통합 방식 전체의 불가능이나 too_many_barriers 판정은 아니다.
+- 문서5개만 갱신, 새 계획/병합 구현/시험 요청 없음. 기존 코드·생성기·JSON/tag·설정/제어 파일 유지, 자동 장치를 직접 중지하지 않았다. 게임 실행·설치·커밋·푸시·자동 장치 호출·설정/제어 파일 변경은 이번 모두0회다.
+- 원시·메모리·복원·보존 SHA256·문서/10줄/UTF-8/diff 검사만 수행했다. 코드 변경이 없어 빌드·LoadCheck·기존 정책/생성기 검사는 반복하지 않았다. FPS·엔진draw·원본 픽셀·끊김·전체 수명 안정성·설치 복원 시험은 NA다.
+- 상세 `codex-drawcollapse-result.md`·10줄 `codex-drawcollapse-result-o.txt`·준비 장부 최신 절을 따른다. 아래 2회차의 새 계획 미실행 표기는 외부 run2 수신 전 기록이다.
+
 ## Codex 회차 2 준비 (2026-10-25, 새 게임 시험 없음)
 
 - 외부 run1 증거 68줄을 원시 `E:/StutterFixWork/night-results/al-dc-1.log`와 순서·중복까지 대조했다.
@@ -51,3 +63,25 @@
   - [StutterFix] [gpudeco] cost scope=live_off frames=3277 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.383498 progress_ms=0.107488 uniform_ms=0.006123 dispatch_ms=0.265463 mis
   - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=264.008990 resumed_recs=10507 resume_expected=10507 unobserved_order=0 restore_ms=39.006200
   - [StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=102.781800 prepare_ms=7325.625200
+
+## 회차 3
+- Codex 요약: 외부 6개 표본을 분석했습니다. 후보 구간 최대는 **18개**지만 픽셀 기여·정렬이 미증명이라 **1관문 HOLD**입니다.
+
+현재 진단 설계의 한계와 동일 시험 반복 중단 사유를 [결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-drawcollapse-result.md)에 기록했습니다. 문서 5개 갱신과 검증을 마쳤습니다.
+
+게임 실행·설치·커밋은 **0회**입니다.
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] prepare_ms=7424.707300 phase=live_prepare slices=1 owned_union=23547 total_runs=23547 total_submeshes=23547 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=101.326100 prepare_ms=7424.707300
+  - [StutterFix] [gpudeco] cost scope=live_off frames=763 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.350971 progress_ms=0.084278 uniform_ms=0.005702 dispatch_ms=0.255229 misc
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=260.015216 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=30.353100
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=104.364600 prepare_ms=7424.707300
+  - [StutterFix] [gpudeco] cost scope=live_off frames=1847 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.374756 progress_ms=0.099352 uniform_ms=0.005922 dispatch_ms=0.264561 mis
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=262.003680 resumed_recs=9954 resume_expected=9954 unobserved_order=0 restore_ms=34.588000
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=101.593700 prepare_ms=7424.707300
+  - [StutterFix] [gpudeco] cost scope=live_off frames=3265 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.387001 progress_ms=0.109017 uniform_ms=0.005927 dispatch_ms=0.267685 mis
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=264.016406 resumed_recs=10257 resume_expected=10257 unobserved_order=0 restore_ms=42.595900
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=104.614000 prepare_ms=7424.707300
