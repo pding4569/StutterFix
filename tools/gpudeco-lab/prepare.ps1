@@ -11,6 +11,9 @@ foreach ($file in @('DecoBake.Core.cs','GpuDecoData.cs','GpuDecoGpu.cs')) {
 }
 $coreSource = Get-Content -LiteralPath (Join-Path $repoRoot 'DecoBake.Core.cs') -Raw
 Set-Content -LiteralPath (Join-Path $projectRoot 'Assets/Editor/DecoBake.Core.cs') -Value ("#define DECOBAKE_FIXTURE`n" + $coreSource) -Encoding utf8
+# 플레이어 이식 뒤 GpuDecoData.cs 의 검증용 클래스가 조건부 컴파일이라 랩 프로젝트에는 정의를 앞에 붙인다.
+$dataSource = Get-Content -LiteralPath (Join-Path $repoRoot 'GpuDecoData.cs') -Raw
+Set-Content -LiteralPath (Join-Path $projectRoot 'Assets/Editor/GpuDecoData.cs') -Value ("#define GPUDECO_FIXTURE`n" + $dataSource) -Encoding utf8
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLab.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoLab.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoDrawCollapseProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoDrawCollapseProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoSubmeshes.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoSubmeshes.cs')

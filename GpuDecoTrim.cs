@@ -81,6 +81,17 @@ namespace StutterFix
             float vA=Mathf.Min(Mathf.Min(uv[0].y,uv[1].y),Mathf.Min(uv[2].y,uv[3].y)),vB=Mathf.Max(Mathf.Max(uv[0].y,uv[1].y),Mathf.Max(uv[2].y,uv[3].y));
             float du=uB-uA,dv=vB-vA;
             if(du<=1e-5f||dv<=1e-5f||uA<0||vA<0||uB>1||vB>1){gpuTrimKept++;return v;}
+            // 네 모서리가 UV 범위의 네 꼭짓점에 정확히 놓인 사각형일 때만 줄인다(모서리가 깎이거나 비스듬한 스프라이트 메시는 아래 쌍선형 가정이 틀려 옅은 부분이 잘린다: Arche 180초).
+            {
+                int corners=0;
+                for(int k=0;k<4;k++)
+                {
+                    float sk0=(uv[k].x-uA)/du,tk0=(uv[k].y-vA)/dv;
+                    if((sk0>1e-4f&&sk0<1f-1e-4f)||(tk0>1e-4f&&tk0<1f-1e-4f)){gpuTrimKept++;return v;}
+                    corners|=1<<((sk0>.5f?1:0)|(tk0>.5f?2:0));
+                }
+                if(corners!=15){gpuTrimKept++;return v;}
+            }
             float u0=Mathf.Max(uA,b.x),u1=Mathf.Min(uB,b.z),v0=Mathf.Max(vA,b.y),v1=Mathf.Min(vB,b.w);
             if(u0>=u1||v0>=v1||(u1-u0)*(v1-v0)>=DrawCollapsePolicy.TightMaxAreaRatio*du*dv){gpuTrimKept++;return v;}
             // 각 모서리가 (uA..uB, vA..vB) 의 어느 쪽 끝인지(0/1)를 알아내 새 범위의 같은 쪽 끝으로 옮기고, 정점은 쌍선형으로 내분한다.
@@ -100,6 +111,12 @@ namespace StutterFix
                 pv[k]=acc;puv[k]=new Vector2(nu,nv);
             }
             gpuTrimTrimmed++;
+#if AUTOTEST
+            if(GpuDecoPlayer.Product && gpuTrimTrimmed<=60)
+                Main.Entry.Logger.Log("[GPU 트림] "+texture.name+" "+texture.width+"x"+texture.height+" fmt="+texture.format+" uv["+uA.ToString("F3")+","+uB.ToString("F3")+"]x["+vA.ToString("F3")+","+vB.ToString("F3")
+                    +"] 경계 u["+b.x.ToString("F3")+","+b.z.ToString("F3")+"] v["+b.y.ToString("F3")+","+b.w.ToString("F3")+"] 면적 "+(((u1-u0)*(v1-v0))/(du*dv)).ToString("F3")
+                    +" 정점0 ("+v.Vertices[0].x.ToString("F2")+","+v.Vertices[0].y.ToString("F2")+") 정점2 ("+v.Vertices[2].x.ToString("F2")+","+v.Vertices[2].y.ToString("F2")+")");
+#endif
             return v.WithGeometry(pv,puv);
         }
     }

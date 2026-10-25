@@ -14,6 +14,9 @@ namespace StutterFix
         static bool gpuCollapsePrepare,gpuCollapseOn;
         static string gpuCollapseFault,gpuCollapsePendingFallback;
         static Shader gpuCollapseShader;
+        const string CollapseNoDirectKeyword="NO_DIRECT_TEXTURES";
+        // True only for a prepared array address that cannot change to a direct slot.
+        static bool[] gpuCollapseArrayOnly;
         static int gpuCollapseOwnedCursor;
         static readonly List<Material> gpuCollapseMaterials=new List<Material>();
         static readonly List<CollapseSpan> gpuCollapseSpans=new List<CollapseSpan>();
@@ -74,6 +77,7 @@ namespace StutterFix
             foreach(var a in gpuCollapseArrays)if(a)UnityEngine.Object.Destroy(a);
             gpuCollapseArrays.Clear();gpuCollapseBarriers.Clear();gpuCollapseAuxiliaries.Clear();
             gpuCollapseDirect.Clear();
+            gpuCollapseArrayOnly=null;
             gpuCollapseIncluded=null;gpuCollapseSeen=null;gpuCollapseKeysValid=false;gpuCollapseScanned=false;gpuCollapseDirtyIds.Clear();gpuCollapseNewDecos.Clear();gpuCollapseOwnedRows=null;gpuCollapseTextureFallback=null;gpuCollapseTextureFallbackCount=0;
         }
         static int CollapseSize(Texture2D t)=>DrawCollapsePolicy.SmallDxtTier(t.width,t.height,
@@ -105,6 +109,7 @@ namespace StutterFix
             gpuCollapseCameraPosition=gpuLiveCamera.transform.position;gpuCollapseCameraForward=gpuLiveCamera.transform.forward;
             var local=source.Data.Items.Select((x,i)=>new{ x.Index, Item=i }).ToDictionary(x=>x.Index,x=>x.Item);
             gpuCollapseIncluded=new bool[source.Data.Items.Length];
+            gpuCollapseArrayOnly=new bool[source.Data.Items.Length];
             gpuCollapseTextureFallback=new bool[source.Data.Items.Length];
             gpuCollapseOwnedRows=new GpuLiveRow[source.Data.Items.Length];
             gpuCollapseSeen=new HashSet<int>();
@@ -241,6 +246,15 @@ namespace StutterFix
                     gpuCollapseTextureFallback[i]=true;gpuCollapseTextureFallbackCount++;gpuCollapseIncluded[i]=false;continue;
                 }
                 var t=textures[source.Data.Items[i].TextureId];
+                // Use the final address, not CollapseSize: exactGroup's large
+                // textures also live in _Tex arrays. Missing addresses stay false.
+                gpuCollapseArrayOnly[i]=address.x>=0 && address.x<gpuCollapseArrays.Count
+                    && address.x<DrawCollapsePolicy.ArrayBindings;
+#if AUTOTEST || GPUDECO
+                // Image actors can change the uploaded address during playback.
+                // Until every future variant is proven array-only, keep the full shader.
+                if(GpuImageActor(gpuLiveOwnedIndices[source.MasterItems[i]]))gpuCollapseArrayOnly[i]=false;
+#endif
                 info[i*2]=new Vector4(address.x+(gpuCollapseOwnedRows[i].M.IsKeywordEnabled("USE_POINT_SAMPLING")?128:0),address.y,0,0);
                 info[i*2+1]=new Vector4(address.z,address.w,address.z/t.width*.5f,address.w/t.height*.5f);
             }
@@ -367,6 +381,7 @@ namespace StutterFix
             foreach(var row in gpuCollapseBarriers)
             {
                 bool active=DrawCollapseBarrierActive(row);
+                bool tieBarrier=active || GpuDecoPlayer.Product && DrawCollapsePolicy.TieAllBarriers;
                 bool refresh=!keysValid || active || gpuCollapseDirtyIds.Contains(row.R.GetInstanceID());
                 if(refresh)
                 {
@@ -375,7 +390,7 @@ namespace StutterFix
                     row.M=material;row.Key=GpuDecoScene.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);rereadBarriers++;
                 }
                 else row.Key=DcShiftKey(row.Key,keyShift);
-                if(active)
+                if(tieBarrier)
                 {
                     var bk=row.Key;var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);
                     if(!activeBucketMinMat.TryGetValue(bkey,out int curMin) || bk.Material<curMin)activeBucketMinMat[bkey]=bk.Material;
@@ -404,6 +419,7 @@ namespace StutterFix
             gpuCollapseBarriers.AddRange(newBarriers);
             dcTieMs=DcMs(dcT1);
             GpuLog("DRAWCOLLAPSE_TIE_EXCLUDED owned_items="+tieExcluded+" active_buckets="+activeBucketMinMat.Count);
+            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 때문에 독립 렌더러로 남긴 장식 "+tieExcluded+"개 (동점 묶음 "+activeBucketMinMat.Count+"개)");
             GpuLog("DRAWCOLLAPSE_REPLAN barriers_removed="+lostBarriers+" barriers_added="+addedBarriers+" barriers_now="+gpuCollapseBarriers.Count+" reread="+rereadBarriers+" keys_cached="+keysValid+" shift="+keyShift.ToString("R",Inv));
             foreach(var row in gpuCollapseBarriers)
                 rows.Add(new DrawCollapsePolicy.Row(row.Key,false,row.R.GetInstanceID()));
@@ -418,7 +434,10 @@ namespace StutterFix
             dcPlanMs=DcMs(dcT2);dcMeshMs=0;long dcT3=Stopwatch.GetTimestamp();
             RequireLive(plan.Count>0 && plan.Count<=DrawCollapsePolicy.MaxSpans,"drawcollapse conservative prepared spans="+plan.Count+" exceeds renderer budget");
             dcMatMs=dcMeshBuildMs=dcBufMs=dcGoMs=0;
-            int baseRun=0;
+            // Old embedded bundles have no local keyword: retain all direct
+            // bindings and the original variant even for array-only spans.
+            bool supportsNoDirect=gpuCollapseShader.keywordSpace.FindKeyword(CollapseNoDirectKeyword).isValid;
+            int baseRun=0,noDirectSpans=0;
             foreach(var items in plan)
             {
                 long dcL0=Stopwatch.GetTimestamp();
@@ -436,16 +455,20 @@ namespace StutterFix
                         "drawcollapse incompatible blend states "+p);
                     blend[bi++]=expected;
                 }
-                string matKey=first.M.renderQueue+"/"+blend[0]+"/"+blend[1]+"/"+blend[2];
+                bool noDirect=supportsNoDirect && gpuCollapseArrayOnly!=null
+                    && items.All(i=>(uint)i<(uint)gpuCollapseArrayOnly.Length && gpuCollapseArrayOnly[i]);
+                string matKey=first.M.renderQueue+"/"+blend[0]+"/"+blend[1]+"/"+blend[2]+"/"+noDirect;
                 if(!gpuCollapseSharedMats.TryGetValue(matKey,out var shared) || !shared)
                 {
                     shared=new Material(gpuCollapseShader){name="GpuDeco collapse shared",renderQueue=first.M.renderQueue};
                     shared.SetFloat("_SrcBlend",blend[0]);shared.SetFloat("_DstBlend",blend[1]);shared.SetFloat("_BlendOp",blend[2]);
+                    if(noDirect)shared.EnableKeyword(CollapseNoDirectKeyword);
                     for(int a=0;a<DrawCollapsePolicy.ArrayBindings && gpuCollapseArrays.Count>0;a++)shared.SetTexture("_Tex"+a,gpuCollapseArrays[Math.Min(a,gpuCollapseArrays.Count-1)]);
-                    for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)shared.SetTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
+                    if(!noDirect)for(int a=0;a<DrawCollapsePolicy.DirectBindings && gpuCollapseDirect.Count>0;a++)shared.SetTexture("_Big"+a,gpuCollapseDirect[Math.Min(a,gpuCollapseDirect.Count-1)]);
                     gpuCollapseSharedMats[matKey]=shared;
                 }
                 s.Material=shared;s.SharedMat=true;
+                if(noDirect)noDirectSpans++;
                 dcMatMs+=DcMs(dcL0);long dcL1=Stopwatch.GetTimestamp();
                 if(DrawCollapsePolicy.GlobalVerts)
                 {
@@ -518,12 +541,18 @@ namespace StutterFix
                     for(int k=rj-1;k>=ri;k--)
                     {
                         var sp=gpuCollapseSpans[k];var m=new Material(sp.Material){name="GpuDeco collapse ordered"};
+                        // The copy constructor retains shader keywords and texture bindings.
+                        RequireLive(m.IsKeywordEnabled(CollapseNoDirectKeyword)==sp.Material.IsKeywordEnabled(CollapseNoDirectKeyword),
+                            "drawcollapse ordered material lost texture variant");
                         sp.Material=m;sp.SharedMat=false;sp.Renderer.sharedMaterial=m;
                     }
                 }
                 ri=rj;
             }
             GpuLog("DRAWCOLLAPSE_SAME_BUCKET_SPANS spans_in_multi_runs="+multiSpans+" nudged_spans="+nudgedSpans);
+            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 구간 "+multiSpans+"개(재질 따로), 거리 보정 "+nudgedSpans+"개, 공유 재질 종류 "+gpuCollapseSharedMats.Count);
+            GpuLog("DRAWCOLLAPSE_NODIRECT spans="+noDirectSpans+" of "+gpuCollapseSpans.Count);
+            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 그리기 구간 "+gpuCollapseSpans.Count+"개 중 배열 텍스처만 쓰는 구간 "+noDirectSpans+"개");
         }
         static bool DcSameBucket(SceneRenderOrder.Key a,SceneRenderOrder.Key b)=>a.Layer==b.Layer && a.Order==b.Order && a.Queue==b.Queue && a.Distance==b.Distance;
         static void RebuildDrawCollapse()
@@ -566,10 +595,21 @@ namespace StutterFix
             for(int n=0;n<CollapseBarrierSweepPerFrame;n++){gpuCollapseBarrierSweep.Add(gpuCollapseBarriers[gpuCollapseBarrierCursor]);if(++gpuCollapseBarrierCursor>=count)gpuCollapseBarrierCursor=0;}
             return gpuCollapseBarrierSweep;
         }
+#if AUTOTEST
+        internal static bool DiagFull; static int diagOrderLogged;
+        static void DiagOrder(string reason){if(diagOrderLogged++<25)Main.Entry.Logger.Log("[gpudeco] fullcheck 위반: "+reason);}
+        internal static void RunFullCheck()
+        {
+            DiagFull=true;diagOrderLogged=0;
+            try{ValidateDrawCollapse(true);Main.Entry.Logger.Log("[gpudeco] fullcheck 끝: 위반 "+diagOrderLogged+"개(치명 없음) 구간 "+gpuCollapseSpans.Count+" 장벽 "+gpuCollapseBarriers.Count);}
+            catch(Exception e){Main.Entry.Logger.Log("[gpudeco] fullcheck 치명: "+e.Message.Substring(0,Math.Min(400,e.Message.Length))+" | 위반 "+diagOrderLogged);}
+            finally{DiagFull=false;}
+        }
+#endif
         static void ValidateDrawCollapse(bool full=true)
         {
 #if AUTOTEST
-            var guard=new DrawCollapseGuard(full && !GpuDecoPlayer.Product, GpuDecoPlayer.Product && !full ? GpuDecoPlayer.OrderViolation : (Action<string>)null);
+            var guard=new DrawCollapseGuard(full && !GpuDecoPlayer.Product, DiagFull ? DiagOrder : (GpuDecoPlayer.Product && !full ? GpuDecoPlayer.OrderViolation : (Action<string>)null));
 #else
             var guard=new DrawCollapseGuard(false, GpuDecoPlayer.Product && !full ? GpuDecoPlayer.OrderViolation : (Action<string>)null);
 #endif

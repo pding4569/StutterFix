@@ -63,7 +63,8 @@ namespace StutterFix
                 }
                 GpuLog("DRAWCOLLAPSE_POLICY tight="+DrawCollapsePolicy.TightLargeQuads+" keepafter="+DrawCollapsePolicy.KeepAfterBarrier);return true;
             }
-            if(args.Length==1 && args[0]=="trimstats"){GpuLog("GPUTRIM_STATS bounds="+gpuTrimBounds.Count+" trimmed="+gpuTrimTrimmed+" kept="+gpuTrimKept+" "+TrimStaticStats());return true;}
+            if(args.Length==1 && args[0]=="fullcheck"){RunFullCheck();return true;}
+            if(args.Length==1 && args[0]=="trimstats"){Main.Entry.Logger.Log("[gpudeco] GPUTRIM_STATS bounds="+gpuTrimBounds.Count+" trimmed="+gpuTrimTrimmed+" kept="+gpuTrimKept+" "+TrimStaticStats());return true;}
             if(args.Length==1 && args[0]=="dumpverts")
             {
                 if(gpuCollapseAllVerts==null){GpuLog("DRAWCOLLAPSE_DUMP none");return true;}

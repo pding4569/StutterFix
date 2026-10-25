@@ -74,6 +74,8 @@ namespace StutterFix
         internal static bool RecordedDispatch=true;
         // 제품 경로: 버퍼는 한 번만 묶고 프레임마다 값 몇 개+디스패치만(명령 버퍼 실행 대체). 끄면 기록된 명령 버퍼.
         internal static bool MinimalDispatch=true;
+        // 제품(곡 시작 때 한 번 계획): 지금 숨겨진 장벽도 곡 중에 깨어나 같은 정렬 묶음에서 동점이 될 수 있으므로 모든 장벽을 동점 처리 대상으로 본다.
+        internal static bool TieAllBarriers=true;
         // 진단 전용: 대표 렌더러를 숨겨 그리기의 GPU 몫을 잰다(화면이 틀려진다).
         internal static bool HideProxies=false;
         // 화면 밖에 있는 쿼드는 컴퓨트에서 면적 0 으로 만든다(픽셀 변화 없음).

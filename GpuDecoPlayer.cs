@@ -111,6 +111,8 @@ namespace StutterFix
             var c = ADOBase.controller; var song = scrConductor.instance;
             if (!c || !song || !song.hasSongStarted || !c.gameworld || c.paused || AudioListener.pause || Time.timeScale <= 0) return;
             if (scnEditor.instance && !scnEditor.instance.playMode) return;
+            // 시작 직후 60프레임(따라잡기)에는 효과가 원본 경로로 도는 순간이 있어, 그때 켜면 곧바로 원본으로 복귀한다(편집기 중간 시작).
+            if (EffectBudget.InCatchUp) return;
             if (!lifetime.TryActivate()) return;
             try { DecoBake.StartPlayer(); }
             catch (Exception e) { Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false; }

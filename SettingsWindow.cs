@@ -1299,12 +1299,14 @@ namespace StutterFix
                 SubHeading(T("장식 이동 실험", "Decoration movement experiments"), "");
                 BeginGroup();
                 bool gpuDeco = c.GpuDeco == 1;
-                if (Option("gpudeco", ref gpuDeco, "GPU 장식 처리 (실험)",
-                    "장식 이동을 GPU가 계산해 CPU 비용을 줄입니다. 켜면 첫 곡 시작이 약간 느려질 수 있습니다. 다음 재생 준비부터 적용되며, 지원하지 않는 맵은 원본 처리를 사용합니다.", null))
+                if (Option("gpudeco", ref gpuDeco, T("GPU 장식 처리 (실험)", "GPU decoration processing (experimental)"),
+                    T("장식 이동을 GPU가 계산해 장식이 아주 많은 맵의 CPU 비용을 줄입니다. 켜면 재생을 시작할 때마다 준비에 몇 초 더 걸립니다(장식 2만 8천 개 기준 약 5초). 다음 재생부터 적용되며, 지원하지 않는 맵이나 환경에서는 알아서 원본 처리를 씁니다.",
+                      "Computes decoration movement on the GPU to cut CPU cost on maps with huge decoration counts. Adds a few seconds of preparation each time playback starts (about 5 s for 28,000 decorations). Applies from the next playback; unsupported maps or setups fall back to the original path."), null))
                 { c.GpuDeco = gpuDeco ? 1 : 0; ch = true; }
                 bool gpuImages = c.GpuDecoImages == 1;
-                if (Option("gpudecoimages", ref gpuImages, "이미지 장식도 GPU로 처리",
-                    "재생 중 이미지가 바뀌는 장식도 함께 처리합니다. 다음 재생 준비부터 적용됩니다.", null, 1, gpuDeco ? null : "GPU 장식 처리"))
+                if (Option("gpudecoimages", ref gpuImages, T("이미지 장식도 GPU로 처리", "Process image decorations on the GPU too"),
+                    T("재생 중 이미지가 바뀌는 장식도 함께 처리합니다. 다음 재생 준비부터 적용됩니다.",
+                      "Also handles decorations whose image changes during play. Applies from the next playback."), null, 1, gpuDeco ? null : T("GPU 장식 처리", "GPU decoration processing")))
                 { c.GpuDecoImages = gpuImages ? 1 : 0; ch = true; }
                 ch |= Option("moveepsilon", ref c.MoveEpsilon, T("미세 위치 쓰기 생략 (실험)", "Skip tiny position writes (experimental)"),
                     T("곡 중 실제 위치와의 차이가 각 축 0.000001 미만이면 위치 쓰기를 생략합니다. 위치·시차·회전 처리 순서는 유지합니다.",
