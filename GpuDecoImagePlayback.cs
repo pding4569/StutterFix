@@ -75,6 +75,7 @@ namespace StutterFix
             // activation/Flush updates their texture slots as well.
             gpuImageCollapseVariants=selected;
             gpuImageCollapseRegisteredTextures=textures;
+            PrepareGpuTrimBounds(textures);
             GpuLog("GPUIMG_DIAG mode=collapsewindow start="+GpuImageCollapseStart.ToString("R",Inv)
                 +" end="+GpuImageCollapseEnd.ToString("R",Inv)+" owned="+gpuLiveOwnedIndices.Length
                 +" selected_quad_variants="+retained+" skipped_quad_variants="+skipped
@@ -194,6 +195,7 @@ namespace StutterFix
             RequireLive(source&&source.sprite&&source.sprite.texture&&!source.sprite.associatedAlphaSplitTexture,"GPU image missing physical sprite");
             var variant=GpuDecoImageVariant.CaptureSprite(source.sprite);
             RequireLive(variant.Status==GpuDecoImageVariant.Kind.ReadyQuad,"GPU image no longer a quad");
+            variant=TightVariant(variant,source.sprite.texture);
             var next=ImageFixtureItem(d,variant,out var geometry);
             for(int s=0;s<gpuLiveSlices.Count;s++)
             {

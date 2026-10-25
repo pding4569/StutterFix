@@ -1,4 +1,4 @@
-#if AUTOTEST
+﻿#if AUTOTEST
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -41,6 +41,17 @@ namespace StutterFix
                 collapseDraws.Dispose();collapseDraws=default;collapseGate=new DrawCollapseGatePolicy();
                 collapseWidth=collapseHeight=0;collapseHz=0;gpuCollapseFault=null;gpuCollapsePrepare=false;
                 GpuLog("drawcollapse_gate_reset=True");return true;
+            }
+            if(args.Length==3 && args[0]=="policy")
+            {
+                bool on=args[2]=="on";
+                switch(args[1])
+                {
+                    case "tight":DrawCollapsePolicy.TightLargeQuads=on;break;
+                    case "keepafter":DrawCollapsePolicy.KeepAfterBarrier=on;break;
+                    default:throw new ArgumentException("policy tight|keepafter on|off");
+                }
+                GpuLog("DRAWCOLLAPSE_POLICY tight="+DrawCollapsePolicy.TightLargeQuads+" keepafter="+DrawCollapsePolicy.KeepAfterBarrier);return true;
             }
             if(args.Length==2 && args[0]=="hideproxy")
             {

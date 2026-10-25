@@ -139,64 +139,215 @@ Shader "StutterFix/GpuDecoBatch"
             float4 frag(v2f v):SV_Target
             {
                 bool usePoint=v.info.x>=128;int binding=(int)v.info.x%128;
-                // Derivatives MUST precede the resource branch. Clamp to the
-                // copied rectangle's texel centres so padded BC blocks never bleed.
-                float2 dx=ddx(v.uv),dy=ddy(v.uv);
-                float2 arrayDx=dx*v.region.xy,arrayDy=dy*v.region.xy;
+                // 모든 텍스처가 밉 1단이라 SampleLevel(0) 은 SampleGrad 와 같다(미분·그래디언트 필요 없음).
+                // Clamp to the copied rectangle's texel centres so padded BC blocks never bleed.
                 float2 uv=clamp(v.uv*v.region.xy,v.region.zw,v.region.xy-v.region.zw);
                 float4 c=0;
-                if(binding==0) { if(usePoint) c=_Tex0.SampleGrad(sampler_point_clamp,float3(uv,v.info.y),arrayDx,arrayDy); else c=_Tex0.SampleGrad(sampler_linear_clamp,float3(uv,v.info.y),arrayDx,arrayDy); }
-                else if(binding==1) { if(usePoint) c=_Tex1.SampleGrad(sampler_point_clamp,float3(uv,v.info.y),arrayDx,arrayDy); else c=_Tex1.SampleGrad(sampler_linear_clamp,float3(uv,v.info.y),arrayDx,arrayDy); }
-                else if(binding==2) { if(usePoint) c=_Tex2.SampleGrad(sampler_point_clamp,float3(uv,v.info.y),arrayDx,arrayDy); else c=_Tex2.SampleGrad(sampler_linear_clamp,float3(uv,v.info.y),arrayDx,arrayDy); }
-                else if(binding==3) { if(usePoint) c=_Tex3.SampleGrad(sampler_point_clamp,float3(uv,v.info.y),arrayDx,arrayDy); else c=_Tex3.SampleGrad(sampler_linear_clamp,float3(uv,v.info.y),arrayDx,arrayDy); }
-                else if(binding==4) { if(usePoint) c=_Big0.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big0.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==5) { if(usePoint) c=_Big1.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big1.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==6) { if(usePoint) c=_Big2.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big2.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==7) { if(usePoint) c=_Big3.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big3.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==8) { if(usePoint) c=_Big4.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big4.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==9) { if(usePoint) c=_Big5.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big5.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==10) { if(usePoint) c=_Big6.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big6.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==11) { if(usePoint) c=_Big7.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big7.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==12) { if(usePoint) c=_Big8.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big8.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==13) { if(usePoint) c=_Big9.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big9.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==14) { if(usePoint) c=_Big10.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big10.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==15) { if(usePoint) c=_Big11.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big11.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==16) { if(usePoint) c=_Big12.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big12.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==17) { if(usePoint) c=_Big13.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big13.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==18) { if(usePoint) c=_Big14.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big14.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==19) { if(usePoint) c=_Big15.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big15.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==20) { if(usePoint) c=_Big16.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big16.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==21) { if(usePoint) c=_Big17.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big17.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==22) { if(usePoint) c=_Big18.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big18.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==23) { if(usePoint) c=_Big19.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big19.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==24) { if(usePoint) c=_Big20.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big20.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==25) { if(usePoint) c=_Big21.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big21.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==26) { if(usePoint) c=_Big22.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big22.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==27) { if(usePoint) c=_Big23.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big23.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==28) { if(usePoint) c=_Big24.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big24.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==29) { if(usePoint) c=_Big25.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big25.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==30) { if(usePoint) c=_Big26.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big26.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==31) { if(usePoint) c=_Big27.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big27.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==32) { if(usePoint) c=_Big28.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big28.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==33) { if(usePoint) c=_Big29.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big29.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==34) { if(usePoint) c=_Big30.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big30.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==35) { if(usePoint) c=_Big31.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big31.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==36) { if(usePoint) c=_Big32.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big32.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==37) { if(usePoint) c=_Big33.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big33.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==38) { if(usePoint) c=_Big34.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big34.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==39) { if(usePoint) c=_Big35.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big35.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==40) { if(usePoint) c=_Big36.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big36.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==41) { if(usePoint) c=_Big37.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big37.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==42) { if(usePoint) c=_Big38.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big38.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==43) { if(usePoint) c=_Big39.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big39.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==44) { if(usePoint) c=_Big40.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big40.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==45) { if(usePoint) c=_Big41.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big41.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==46) { if(usePoint) c=_Big42.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big42.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==47) { if(usePoint) c=_Big43.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big43.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==48) { if(usePoint) c=_Big44.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big44.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==49) { if(usePoint) c=_Big45.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big45.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==50) { if(usePoint) c=_Big46.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big46.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
-                else if(binding==51) { if(usePoint) c=_Big47.SampleGrad(sampler_point_clamp,v.uv,dx,dy); else c=_Big47.SampleGrad(sampler_linear_clamp,v.uv,dx,dy); }
+                [branch] if(binding<=25) {
+                    [branch] if(binding<=12) {
+                        [branch] if(binding<=6) {
+                            [branch] if(binding<=3) {
+                                [branch] if(binding<=1) {
+                                    [branch] if(binding<=0) {
+                                        { if(usePoint) c=_Tex0.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex0.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                    } else {
+                                        { if(usePoint) c=_Tex1.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex1.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                    }
+                                } else {
+                                    [branch] if(binding<=2) {
+                                        { if(usePoint) c=_Tex2.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex2.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                    } else {
+                                        { if(usePoint) c=_Tex3.SampleLevel(sampler_point_clamp,float3(uv,v.info.y),0); else c=_Tex3.SampleLevel(sampler_linear_clamp,float3(uv,v.info.y),0); }
+                                    }
+                                }
+                            } else {
+                                [branch] if(binding<=5) {
+                                    [branch] if(binding<=4) {
+                                        { if(usePoint) c=_Big0.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big0.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big1.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big1.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big2.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big2.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            }
+                        } else {
+                            [branch] if(binding<=9) {
+                                [branch] if(binding<=8) {
+                                    [branch] if(binding<=7) {
+                                        { if(usePoint) c=_Big3.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big3.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big4.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big4.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big5.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big5.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            } else {
+                                [branch] if(binding<=11) {
+                                    [branch] if(binding<=10) {
+                                        { if(usePoint) c=_Big6.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big6.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big7.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big7.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big8.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big8.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            }
+                        }
+                    } else {
+                        [branch] if(binding<=19) {
+                            [branch] if(binding<=16) {
+                                [branch] if(binding<=14) {
+                                    [branch] if(binding<=13) {
+                                        { if(usePoint) c=_Big9.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big9.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big10.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big10.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    [branch] if(binding<=15) {
+                                        { if(usePoint) c=_Big11.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big11.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big12.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big12.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                }
+                            } else {
+                                [branch] if(binding<=18) {
+                                    [branch] if(binding<=17) {
+                                        { if(usePoint) c=_Big13.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big13.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big14.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big14.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big15.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big15.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            }
+                        } else {
+                            [branch] if(binding<=22) {
+                                [branch] if(binding<=21) {
+                                    [branch] if(binding<=20) {
+                                        { if(usePoint) c=_Big16.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big16.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big17.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big17.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big18.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big18.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            } else {
+                                [branch] if(binding<=24) {
+                                    [branch] if(binding<=23) {
+                                        { if(usePoint) c=_Big19.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big19.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big20.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big20.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big21.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big21.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    [branch] if(binding<=38) {
+                        [branch] if(binding<=32) {
+                            [branch] if(binding<=29) {
+                                [branch] if(binding<=27) {
+                                    [branch] if(binding<=26) {
+                                        { if(usePoint) c=_Big22.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big22.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big23.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big23.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    [branch] if(binding<=28) {
+                                        { if(usePoint) c=_Big24.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big24.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big25.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big25.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                }
+                            } else {
+                                [branch] if(binding<=31) {
+                                    [branch] if(binding<=30) {
+                                        { if(usePoint) c=_Big26.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big26.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big27.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big27.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big28.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big28.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            }
+                        } else {
+                            [branch] if(binding<=35) {
+                                [branch] if(binding<=34) {
+                                    [branch] if(binding<=33) {
+                                        { if(usePoint) c=_Big29.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big29.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big30.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big30.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big31.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big31.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            } else {
+                                [branch] if(binding<=37) {
+                                    [branch] if(binding<=36) {
+                                        { if(usePoint) c=_Big32.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big32.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big33.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big33.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big34.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big34.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            }
+                        }
+                    } else {
+                        [branch] if(binding<=45) {
+                            [branch] if(binding<=42) {
+                                [branch] if(binding<=40) {
+                                    [branch] if(binding<=39) {
+                                        { if(usePoint) c=_Big35.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big35.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big36.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big36.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    [branch] if(binding<=41) {
+                                        { if(usePoint) c=_Big37.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big37.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big38.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big38.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                }
+                            } else {
+                                [branch] if(binding<=44) {
+                                    [branch] if(binding<=43) {
+                                        { if(usePoint) c=_Big39.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big39.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big40.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big40.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big41.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big41.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            }
+                        } else {
+                            [branch] if(binding<=48) {
+                                [branch] if(binding<=47) {
+                                    [branch] if(binding<=46) {
+                                        { if(usePoint) c=_Big42.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big42.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big43.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big43.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big44.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big44.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            } else {
+                                [branch] if(binding<=50) {
+                                    [branch] if(binding<=49) {
+                                        { if(usePoint) c=_Big45.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big45.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    } else {
+                                        { if(usePoint) c=_Big46.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big46.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                    }
+                                } else {
+                                    { if(usePoint) c=_Big47.SampleLevel(sampler_point_clamp,v.uv,0); else c=_Big47.SampleLevel(sampler_linear_clamp,v.uv,0); }
+                                }
+                            }
+                        }
+                    }
+                }
                 c*=v.color;c.rgb*=c.a;return c;
             }
             ENDHLSL

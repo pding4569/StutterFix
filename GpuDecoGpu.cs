@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST || UNITY_EDITOR
+#if DEV || AUTOTEST || UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -177,6 +177,7 @@ namespace StutterFix
             data.Items[index]=next;
         }
 #endif
+        internal ComputeShader Shader=>shader;
         internal bool HasImageGeometry=>hasImageGeometry;
 #if AUTOTEST || UNITY_EDITOR
         readonly Vector4[] imageMatrixUpload=new Vector4[8];

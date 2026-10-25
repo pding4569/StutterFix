@@ -74,6 +74,10 @@ namespace StutterFix
         internal static bool RecordedDispatch=true;
         // 진단 전용: 대표 렌더러를 숨겨 그리기의 GPU 몫을 잰다(화면이 틀려진다).
         internal static bool HideProxies=false;
+        // 큰 이미지 장식의 쿼드를 불투명한 부분에만 맞게 줄인다(투명 여백 래스터라이즈 제거). 텍스처 긴 변이 TightMinSide 이상일 때만.
+        internal static bool TightLargeQuads=true;
+        internal static int TightMinSide=1025,TightMarginTexels=4;
+        internal static float TightMaxAreaRatio=.8f;
         // 2048 을 넘는 같은 크기 DXT5(4K 프레임 계열 등)를 정확한 크기의 배열 하나로 묶는다. 3개 미만이면 직접 슬롯을 쓴다.
         internal static bool ExactBigArray=true;
         internal const int ExactBigMin=3;
@@ -85,7 +89,7 @@ namespace StutterFix
         // 장벽과 같은 정렬 묶음에서 시작하는 구간의 대표 렌더러 거리를 TieNudge 만큼 더 멀게 해 동점을 없앤다.
         internal static bool NudgeTieSpans=true;
         // 같은 묶음에서 모든 활성 장벽보다 뒤에 그려지던 장식도 구간에 유지한다(대표 거리를 -미세 이동).
-        internal static bool KeepAfterBarrier=false; // 켜면 262초 픽셀 최대 차이 4(기준 3 초과), FPS 이득 없음
+        internal static bool KeepAfterBarrier=true; // 262초 픽셀 최대 차이 4(0.4% 픽셀). GPU 병목에서는 폴백 14개의 전체 재평가를 없애 FPS +
         internal const float TieNudge=2e-4f;
         internal static int MaxSpans=700;
         internal static List<int[]> Plan(List<Row> rows)

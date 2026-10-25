@@ -43,6 +43,7 @@ namespace StutterFix
             }
             p.Status=Kind.ReadyQuad;return p;
         }
+        internal GpuDecoImageVariant WithGeometry(Vector2[] vertices,Vector2[] uv){var c=(GpuDecoImageVariant)MemberwiseClone();c.Vertices=vertices;c.UV=uv;return c;}
         internal bool SameAsset(GpuDecoImageVariant other)
         {
             if(other==null||!ReferenceEquals(Source,other.Source)||Status!=other.Status||SpriteId!=other.SpriteId||TextureId!=other.TextureId||PixelsPerUnit!=other.PixelsPerUnit)return false;

@@ -10,6 +10,7 @@
 #pragma kernel ImageRotationProbe
 #pragma kernel ImagePixelProbe
 #pragma kernel LinearProbe
+#pragma kernel AlphaBounds
 #pragma target 5.0
 
 struct Segment { float hi, lo, duration, start, end, target, over, period; uint ease, scale; };
@@ -232,6 +233,13 @@ void EaseProbe(uint3 thread:SV_DispatchThreadID)
 }
 void WriteVerticesAt(uint i, float v[16], uint outputItem, bool collapse)
 {
+    float4 color=float4(v[7],v[8],v[9],v[10]*v[11]);
+    if(collapse && color.a<=0)
+    {
+        // 안 보이는 장식: 면적 0 삼각형만 쓰고 FP64 계산과 버퍼 읽기를 건너뛴다(화면 결과 같음).
+        [unroll] for(uint z=0;z<4;z++)_Vertices.Store3((outputItem*4+z)*60u,uint3(0,0,0));
+        return;
+    }
     uint b=i*10; float4 c=_Static[b+7], crop=_Static[b+8]; uint flags=(uint)crop.w;
     precise float2 trueScale=c.xy, camScale=((flags&1)!=0 ? _Camera.w : 1)*trueScale;
     precise float2 position=float2(v[0],v[1]);
@@ -250,51 +258,63 @@ void WriteVerticesAt(uint i, float v[16], uint outputItem, bool collapse)
     if((flags&64u)!=0)rotation=ImageRotation(angle);
     precise float sn=rotation.z, cs=rotation.w;
     precise float2 scale=float2(v[5],v[6])*camScale;
-    float4 color=float4(v[7],v[8],v[9],v[10]*v[11]);
+    uint ib=i*8u;
+    precise float3 q0=0,q1=0,q2=0,q3=0;
+    if((flags&64u)!=0)
+    {
+        // 모서리 k 와 무관한 값은 한 번만 계산한다(식은 그대로).
+        // Compose TRS columns before multiplying the original sprite point.
+        // The legacy path instead scales an already transformed point.
+        precise float3 p0=float3(cs*scale.x,sn*scale.x,0);
+        precise float3 p1=float3(-sn*scale.y,cs*scale.y,0);
+        precise float3 p2=float3(0,0,1);
+        precise float3 f0=_ImageShape[ib].xyz,f1=_ImageShape[ib+1].xyz,f2=_ImageShape[ib+2].xyz;
+        q0=(p0*f0.x+p1*f0.y)+p2*f0.z;
+        q1=(p0*f1.x+p1*f1.y)+p2*f1.z;
+        q2=(p0*f2.x+p1*f2.y)+p2*f2.z;
+        precise float2 exactOffset=float2(CpuQuotient(v[2]+crop.x,trueScale.x),CpuQuotient(v[3]+crop.y,trueScale.y));
+        precise float3 origin=_ImageShape[ib+3].xyz+_Static[b+4].xyz+_Static[b+5].xyz*exactOffset.x+_Static[b+6].xyz*exactOffset.y;
+        precise float3 exactWorld=float3((_Camera.xy-position)*float2(v[12],v[13])+position,crop.z);
+        if((flags&4u)!=0)exactWorld.x=position.x;
+        if((flags&8u)!=0)exactWorld.y=position.y;
+        exactWorld.x+=CpuQuotient(v[14]*camScale.x,c.z);
+        exactWorld.y+=CpuQuotient(v[15]*camScale.y,c.w);
+        q3=((p0*origin.x+p1*origin.y)+p2*origin.z)+exactWorld;
+    }
+    float4 drawColor=color,info0=0,info1=0;
+    if(collapse)
+    {
+        precise float4 scaled=saturate(color)*255.0;
+        drawColor=floor(scaled+0.5)/255.0;
+        info0=_CollapseTexture[i*2]; // binding+point flag, slice, UV scale
+        info1=_CollapseTexture[i*2+1]; // scale XY, half texel XY
+    }
     [unroll] for(uint k=0;k<4;k++)
     {
-        precise float3 local=_Static[b+k].xyz+translated; local.xy*=scale;
-        precise float3 worldPoint=float3(world+float2(cs*local.x-sn*local.y,sn*local.x+cs*local.y),crop.z+local.z);
+        precise float3 worldPoint;
         if((flags&64u)!=0)
         {
-            // Compose TRS columns before multiplying the original sprite point.
-            // The legacy path instead scales an already transformed point.
-            uint ib=i*8u;
-            precise float3 p0=float3(cs*scale.x,sn*scale.x,0);
-            precise float3 p1=float3(-sn*scale.y,cs*scale.y,0);
-            precise float3 p2=float3(0,0,1);
-            precise float3 f0=_ImageShape[ib].xyz,f1=_ImageShape[ib+1].xyz,f2=_ImageShape[ib+2].xyz;
-            precise float3 q0=(p0*f0.x+p1*f0.y)+p2*f0.z;
-            precise float3 q1=(p0*f1.x+p1*f1.y)+p2*f1.z;
-            precise float3 q2=(p0*f2.x+p1*f2.y)+p2*f2.z;
-            precise float2 exactOffset=float2(CpuQuotient(v[2]+crop.x,trueScale.x),CpuQuotient(v[3]+crop.y,trueScale.y));
-            precise float3 origin=_ImageShape[ib+3].xyz+_Static[b+4].xyz+_Static[b+5].xyz*exactOffset.x+_Static[b+6].xyz*exactOffset.y;
-            precise float3 exactWorld=float3((_Camera.xy-position)*float2(v[12],v[13])+position,crop.z);
-            if((flags&4u)!=0)exactWorld.x=position.x;
-            if((flags&8u)!=0)exactWorld.y=position.y;
-            exactWorld.x+=CpuQuotient(v[14]*camScale.x,c.z);
-            exactWorld.y+=CpuQuotient(v[15]*camScale.y,c.w);
-            precise float3 q3=((p0*origin.x+p1*origin.y)+p2*origin.z)+exactWorld;
             precise float3 corner=_ImageShape[ib+4u+k].xyz;
             worldPoint=((q0*corner.x+q1*corner.y)+q2*corner.z)+q3;
+        }
+        else
+        {
+            precise float3 local=_Static[b+k].xyz+translated; local.xy*=scale;
+            worldPoint=float3(world+float2(cs*local.x-sn*local.y,sn*local.x+cs*local.y),crop.z+local.z);
         }
         uint address=(outputItem*4+k)*(collapse?60u:36u);
         if(collapse)
         {
-            if(color.a<=0)worldPoint=0; // zero-area triangles, no pixel work
-            precise float4 scaled=saturate(color)*255.0;
-            float4 drawColor=floor(scaled+0.5)/255.0;
             _Vertices.Store3(address,asuint(worldPoint));
             _Vertices.Store4(address+12,asuint(drawColor));
-            float4 info=_CollapseTexture[i*2]; // binding+point flag, slice, UV scale
-            _Vertices.Store4(address+28,asuint(float4(_UV[i*4+k],info.xy)));
-            _Vertices.Store4(address+44,asuint(_CollapseTexture[i*2+1])); // scale XY, half texel XY
+            _Vertices.Store4(address+28,asuint(float4(_UV[i*4+k],info0.xy)));
+            _Vertices.Store4(address+44,asuint(info1));
         }
         else
         {
-        _Vertices.Store3(address,asuint(worldPoint));
-        _Vertices.Store4(address+12,asuint(color));
-        _Vertices.Store2(address+28,asuint(_UV[i*4+k]));
+            _Vertices.Store3(address,asuint(worldPoint));
+            _Vertices.Store4(address+12,asuint(color));
+            _Vertices.Store2(address+28,asuint(_UV[i*4+k]));
         }
     }
 }
@@ -375,4 +395,27 @@ StructuredBuffer<uint> _CopyMap;
 void CopyMappedRun(uint3 thread:SV_DispatchThreadID)
 {
     if(thread.x<_CopyVertexCount)CopyVertex(thread.x,_CopyMap[thread.x]);
+}
+
+// 텍스처의 불투명(알파>0) 칸의 최소·최대 좌표. 그룹마다 모아 전역 원자 연산은 그룹당 한 번만 쓴다.
+Texture2D<float4> _TrimTex;
+RWStructuredBuffer<uint> _TrimOut; // minX, minY, maxX, maxY
+uint2 _TrimSize;
+groupshared uint gTrim[4];
+[numthreads(16,16,1)]
+void AlphaBounds(uint3 id:SV_DispatchThreadID, uint gi:SV_GroupIndex)
+{
+    if(gi==0){gTrim[0]=0xFFFFFFFF;gTrim[1]=0xFFFFFFFF;gTrim[2]=0;gTrim[3]=0;}
+    GroupMemoryBarrierWithGroupSync();
+    if(id.x<_TrimSize.x && id.y<_TrimSize.y && _TrimTex.Load(int3(id.xy,0)).a>0)
+    {
+        InterlockedMin(gTrim[0],id.x);InterlockedMin(gTrim[1],id.y);
+        InterlockedMax(gTrim[2],id.x);InterlockedMax(gTrim[3],id.y);
+    }
+    GroupMemoryBarrierWithGroupSync();
+    if(gi==0 && gTrim[2]>=gTrim[0] && gTrim[0]!=0xFFFFFFFF)
+    {
+        InterlockedMin(_TrimOut[0],gTrim[0]);InterlockedMin(_TrimOut[1],gTrim[1]);
+        InterlockedMax(_TrimOut[2],gTrim[2]);InterlockedMax(_TrimOut[3],gTrim[3]);
+    }
 }
