@@ -1,5 +1,9 @@
 ## 재시작 3회차(누적11회차) — run2 통합 픽셀 국소화·소유 경계 중단
 
+## 재시작 4회차(누적12회차) — 최신 run3 분석·통합 수정 소유 경계
+
+최신 run3 직접79줄은 원시158~844행과 순서 일치다. 260/262초 통합 changed27870/23002·max2/5·반복/복원0이며 262초에서 중단했다. 등록93/주소93/누락0·직접34/48·배열4/4·GPU28523/CPU fallback0·이미지제외0·비이미지 정렬보호14개다. 최신 run3의 O/G·G/B 분해는 없으며 이전 run2의 통합전환 국소화와 구분한다. 정확한 픽셀 내부 원인은 미확정이다. 이미지 등록/부분갱신 및 픽셀기준3을 확인했고, 통합renderer/셰이더는 수정 소유 밖이므로 현재 허용범위의 설계경계에서 중단한다. 전체설계 불가능 판정은 아니다. 새계획/같은333단계 반복요청/코드변경/빌드반복0·보호285파일 SHA256 유지다. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 270초/ABBA/FPS/+20%/끊김/전곡/설치복원NA. IMAGEOWN=FAIL reason=COLLAPSE_PIXEL_SCOPE_LIMIT·상세결과/out/imageown12 참조.
+
 최신 run2 직접79줄을 원시158~838행과 순서 대조했다. 통합260/262초 changed28818/22961·max3/4·반복/복원0이며 262초에서 중단, 270초/ABBA/FPS/끊김은NA다. 로그와 일치한 첫 PNG 오프라인 분석: O/G 3픽셀·max1, G/B 22958픽셀·max4, O/B 22961픽셀·max4; 초과3픽셀 모두 O=G이며 G/B=4다. 실패를 독립 이미지 소유가 아닌 통합 전환 단계로 국소화했다. 정확한 정렬/샘플링/셰이더 산술 원인은미확정이다. renderer가 별도 GpuDecoBatch 재질/셰이더로 교체하고 기존40합성검사는 Sprites/Default·흰 정점색만대조해 게임 Sprites/Tile·중첩안개의동일성을증명하지못한다. 필요한통합renderer/셰이더수정은소유규칙밖이므로 현재허용범위의설계경계에서중단·소유자에게인계한다. 전체설계불가능판정아님. 기준3/정렬보호/48슬롯/이미지소유/실제카운터유지·코드/생성기/기존JSON변경0·새계획/반복시험요청0·빌드/LoadCheck반복0이다. 보호292개중코드/게임DLL/번들/설정등285개SHA유지, 공유PNG는외부덮어쓰기감지로보호수에서분리·후속분석거부했다. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. IMAGEOWN=FAIL reason=COLLAPSE_PIXEL_SCOPE_LIMIT·상세결과/out/imageown11참조.
 
 ## 재시작 2회차(누적10회차) — 외부run1 분석·완료순번 수정
@@ -265,3 +269,17 @@ O/O2·G/N 반복0은 통합픽셀 증명이 아니며 종료FastMoveOriginal 복
   - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=317
   - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=5 reason=INTEGRATED_PIXEL_PREFLIGHT_FAILED
   - [StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=88 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.426973 progress_ms=0.012334 uniform_ms=0.036264 dispatch_
+
+## 회차 4
+- Codex 요약: `IMAGEOWN=FAIL`입니다. 최신 run3은 262초에서 픽셀 최대 차이 5로 기준 3을 초과했습니다. FPS는 미측정입니다.
+
+통합 렌더러·셰이더가 수정 허용 범위 밖이라 지시대로 근거를 [결과 문서](E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)에 기록하고 중단했습니다.
+
+문서 5개·10줄 요약을 갱신했고, 보호 파일 285개의 해시가 유지됐습니다. 게임 실행·설치·커밋은 모두 0회입니다.
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=304414720 copy_calls=59 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_eva
+  - [StutterFix] [gpudeco] prepare_ms=9669.604200 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei

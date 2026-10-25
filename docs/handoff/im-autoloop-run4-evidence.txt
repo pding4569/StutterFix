@@ -22,16 +22,12 @@
 [StutterFix] [gpudeco] drawcollapse_prepare=True default_off=True
 [StutterFix] [gpudeco] image_admission affected=5087 eligible=5028 excluded=59 null_argument_policy=CPU
 [StutterFix] [gpudeco] live_prepare_candidates window_visible=28633 admitted=28523 rejects=repeat-tile:110
-[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL layout=small_dxt5_tiers_plus_borrowed_2d bytes_known=334233600 total_mb=318.750000 planned_arrays_known=3 direct_textures=32 active_texture_slots=35 shader_declared_slots=36 samplers=2 arrays_allocated=0 copy_calls=0 free_vram=UNVERIFIED
-[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775012 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
-[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775016 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
-[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775020 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
-[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775024 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
-[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775028 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
-[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-598960 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
-[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775032 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
-[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775036 width=3840 height=2160 format=RGBA_DXT5_UNorm tier=0
-[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage registered=185 addressed=149 missing=36 missing_direct=36 missing_array=0 direct_required=68 direct_limit=32 arrays_used=3 array_limit=4 variant_entries_missing=36 valid=False stage=prepare performance=False
-[StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_TEXTURE_COVERAGE
-[StutterFix] [자동 시험] 단계 실패 'gpudeco live prepare': gpudeco G2: image collapse texture coverage incomplete; inspect GPUIMG_DIAG and change texture-bank preparation before retry
-[StutterFix] [자동 시험] 단계 실패 'gpudeco live prepare': gpudeco G2: image collapse texture coverage incomplete; inspect GPUIMG_DIAG and change texture-bank preparation before retry - 게임을 끕니다
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsewindow start=257.5 end=270.25 owned=28523 selected_quad_variants=10 skipped_quad_variants=93 registered=93 initial_physical_textures_retained=True performance=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_EXACT_ARRAY size=7680x4320 slices=4
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL layout=small_dxt5_tiers_plus_borrowed_2d bytes_known=304414720 total_mb=290.312500 planned_arrays_known=4 direct_textures=34 active_texture_slots=38 shader_declared_slots=52 samplers=2 arrays_allocated=0 copy_calls=0 free_vram=UNVERIFIED
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage registered=93 addressed=93 missing=0 missing_direct=0 missing_array=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 variant_entries_missing=0 valid=True start=257.5 end=270.25 stage=prepare performance=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+[StutterFix] [gpudeco] DRAWCOLLAPSE_REPLAN barriers_removed=0 barriers_added=0 barriers_now=43122 reread=43122 keys_cached=False shift=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_SAME_BUCKET_SPANS spans_in_multi_runs=4 nudged_spans=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=304414720 copy_calls=59 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_evaluate=True window=260..270 conservative_hidden_barriers=True free_vram=UNVERIFIED
+[StutterFix] [gpudeco] prepare_ms=9669.604200 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False scope=song_union item_limit=32768 masked_copy=True
