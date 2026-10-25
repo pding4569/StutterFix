@@ -196,6 +196,14 @@ namespace StutterFix
             table = null;
             patches?.UnpatchAll(Owner); patches = null; status = "꺼짐";
         }
+        // 제품 경로: 다시 하기는 장식을 새로 Setup 하지 않을 수 있으므로(가벼운 초기화) 처음 Setup 기록(initial)과 관리자는 남긴다.
+        // 맵을 새로 불러오면 새 관리자의 Setup 이 기록을 비우고 다시 채운다(SetupPostfix).
+        internal static void ForgetLevelKeepInitial()
+        {
+            if (!enabled) return;
+            DisposeGpuLive();
+            CancelBuild(); ClearBaseline(); effectList = null; prepEffectSnapshot = null; prepFloors = null; status = "새 라운드 대기";
+        }
         internal static void ForgetLevel()
         {
             if (!enabled) return;

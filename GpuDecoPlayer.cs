@@ -224,6 +224,12 @@ namespace StutterFix
         internal static void PreparePlayer(List<scrFloor> floors)
         {
             long p0 = Stopwatch.GetTimestamp();
+            // 파괴된 장식(맵을 다시 불러온 경우) 항목은 정리한다. 살아 있는 것은 처음 Setup 기록을 그대로 쓴다.
+            int deadCount = 0;
+            if (initial.Count > 0) { var dead = initial.Keys.Where(k => !k).ToArray(); deadCount = dead.Length; foreach (var k in dead) initial.Remove(k); }
+#if AUTOTEST
+            Main.Entry.Logger.Log("[GPU 장식] 준비 시작: 처음 Setup 기록 " + initial.Count + "개 (파괴된 것 " + deadCount + "개 정리), 장식 " + (scrDecorationManager.instance ? scrDecorationManager.instance.allDecorations.Count : -1) + "개, enabled " + enabled + ", 관리자 같음 " + (manager == scrDecorationManager.instance));
+#endif
             gpuScope = GpuDecoScopePlan.Song();
             gpuImageCandidate = Main.Config.GpuDecoImages == 1;
             gpuImageOwn = true;
@@ -287,8 +293,8 @@ namespace StutterFix
             if (gpuLiveActive && gpuCostFrames > 0) LogGpuLiveCost("product_release");
 #endif
             DisposeGpuLive();
-            CancelBuild(); initial.Clear(); ClearBaseline(); table = null;
-            manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
+            CancelBuild(); ClearBaseline(); table = null; // initial(처음 Setup 기록)은 남긴다: 다시 하기는 장식을 새로 Setup 하지 않을 수 있다
+            effectList = null; prepEffectSnapshot = null; prepFloors = null;
             gpuTrimBounds.Clear(); gpuImageBlock.Clear();
 #if !DEV && !AUTOTEST
             DecoAnim.ClearGpuRecordMetadata();

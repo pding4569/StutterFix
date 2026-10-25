@@ -77,8 +77,8 @@ namespace StutterFix
         private static readonly List<scrDecoration> list = new List<scrDecoration>();
         internal static void ForgetLevel() { list.Clear(); src = null; if (shape.Targets != null) shape.Targets = null; shape.Sources.Clear(); stamp.Clear(); TagIndex.Forget();
 #if DEV || AUTOTEST || GPUDECO
-            if (GpuDecoPlayer.Product) GpuDecoPlayer.End("? ??? ??");
-            if (GpuDecoPlayer.Available) DecoBake.ForgetLevel();
+            if (GpuDecoPlayer.Product) { GpuDecoPlayer.End("ForgetLevel"); DecoBake.ForgetLevelKeepInitial(); }
+            else if (GpuDecoPlayer.Available) DecoBake.ForgetLevel();
 #endif
         }
         private static bool running, bypass;
