@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +12,9 @@ namespace StutterFix
         static long gpuCreationSerial;
         internal static int GpuCpuUpdateFrame=-1;
         internal static long NextGpuCreationOrder()=>++gpuCreationSerial;
+#if !DEV && !AUTOTEST
+        internal static void ClearGpuRecordMetadata() => GpuDecoRecordStore.Clear();
+#endif
 
         internal sealed class GpuResumeSpec
         {

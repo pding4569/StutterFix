@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || UNITY_EDITOR || GPUDECO_FIXTURE
+#if DEV || AUTOTEST || GPUDECO || UNITY_EDITOR || GPUDECO_FIXTURE
 using System;
 using System.IO;
 
@@ -6,6 +6,7 @@ namespace StutterFix
 {
     // Shared by the exporter and offline lab. Sparse scenes remain auxiliary
     // measurements; coverage is a gate only when enough decorations are awake.
+#if DEV || AUTOTEST || GPUDECO_FIXTURE || DRAWCOLLAPSE_CHECK
     internal static class GpuDecoCoverage
     {
         internal static bool Auxiliary(int awake) => awake < 800;
@@ -37,6 +38,7 @@ namespace StutterFix
     }
 
     // Versioned diagnostic interchange, never a product asset or a live frame buffer.
+#endif
     internal sealed class GpuDecoData
     {
         internal const int Version = 2;

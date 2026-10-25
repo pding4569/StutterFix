@@ -42,7 +42,7 @@ namespace StutterFix
 
         private static readonly List<scrDecoration> awake = new List<scrDecoration>();
         internal static List<scrDecoration> AwakeList { get { return awake; } }
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
         internal static bool LiveTrackingReady => Enabled && !broken && MoveApply.LogicSkip && source != null;
 
         // Pixel capture pauses playback without ending the loaded scene. Refresh
@@ -55,7 +55,7 @@ namespace StutterFix
             if (!LiveTrackingReady)
                 throw new InvalidOperationException("Dormancy live tracking is not ready: enabled=" + Enabled
                     + " broken=" + broken + " logicSkip=" + MoveApply.LogicSkip
-                    + " playing=" + Hitch.Playing + " capturePaused=" + FrameCompare.Paused
+                    + " playing=" + Hitch.Playing + " capturePaused=" + GpuPlaybackState.Paused
                     + " source=" + (source != null));
         }
 #endif
@@ -65,7 +65,7 @@ namespace StutterFix
         private static List<scrDecoration> source;
         private static int sourceVersion = -1, sourceCount = -1;
         private static bool prepared, lastDisable, broken;
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
         private static bool sleepPending;
         internal static bool TryGpuListVersion(List<scrDecoration> list, out int version)
         {
@@ -75,7 +75,7 @@ namespace StutterFix
         }
 #endif
         private static float nextAudit;
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
         private static bool evictedActive;
         private static int lastEvictEpoch = -1;
         // GPU 가 소유한 장식은 TightLate.List/Process 가 매 프레임 훑고 SkipGpuLate 로 버리던 것이다. 소유 시작/세대 변경 때 한 번에 뺀다.
@@ -90,7 +90,7 @@ namespace StutterFix
             }
             if (w < awake.Count) awake.RemoveRange(w, awake.Count - w);
             for (int i = woken.Count - 1; i >= 0; i--)
-                if (DecoBake.SkipGpuLate(woken[i])) { dormant.Add(woken[i]); woken.RemoveAt(i); }
+                if (GpuDecoPlayer.Available && DecoBake.SkipGpuLate(woken[i])) { dormant.Add(woken[i]); woken.RemoveAt(i); }
             sleepPending = true;
         }
 #endif
@@ -135,24 +135,26 @@ namespace StutterFix
 
         public static void WakePost(scrVisualDecoration __instance) { Wake(__instance);
 #if DEV || AUTOTEST
-            DecoBake.CollapseMarkDirty(__instance);
+            if (GpuDecoPlayer.Available) DecoBake.CollapseMarkDirty(__instance);
 #endif
         }
         public static void WakeBase(scrDecoration __instance) { hbDirty = true; Wake(__instance);
-#if DEV || AUTOTEST
-            DecoBake.CollapseMarkNew(__instance);
+#if DEV || AUTOTEST || GPUDECO
+            if (GpuDecoPlayer.Available) DecoBake.CollapseMarkNew(__instance);
 #endif
         }
-#if DEV || AUTOTEST
-        public static void DepthPost(scrVisualDecoration __instance) { DecoBake.CollapseMarkDirty(__instance); }
+#if DEV || AUTOTEST || GPUDECO
+        public static void DepthPost(scrVisualDecoration __instance) { if (GpuDecoPlayer.Available) DecoBake.CollapseMarkDirty(__instance); }
 #endif
         internal static void MarkHitboxDirty() { hbDirty = true; }   // ExitFix: Setup 을 건너뛴 장식이 있을 때 (Setup 뒤에 하던 것과 같게)
 
         private static void Wake(scrDecoration d)
         {
             if ((object)d == null) return;
+#if DEV || AUTOTEST || GPUDECO
 #if DEV || AUTOTEST
             LiveDecoRenderer.DormancyChanged(d);
+#endif
             if (evictedActive && DecoBake.SkipGpuLate(d)) return; // GPU 가 정점을 직접 쓰는 장식은 CPU awake 목록에 넣지 않는다
 #endif
             if (dormant.Remove(d)) { woken.Add(d); Wakes++; }
@@ -165,23 +167,23 @@ namespace StutterFix
         public static List<scrDecoration> List(scrDecorationManager mgr)
         {
             var all = allRef(mgr);
-#if DEV || AUTOTEST
-            if (evictedActive && !DecoBake.GpuLiveActive)
+#if DEV || AUTOTEST || GPUDECO
+            if (evictedActive && !GpuDecoPlayer.Active)
             {   // GPU 소유가 끝났다: 빠졌던 장식이 모두 돌아오게 다음 Prepare 가 전부 깨운 채로 다시 시작한다
                 evictedActive = false; lastEvictEpoch = -1; source = null; prepared = false;
             }
 #endif
             bool tracking = Hitch.Playing;
 #if DEV || AUTOTEST
-            tracking = tracking || FrameCompare.PlaybackContinuity;
+            tracking = tracking || GpuPlaybackState.PlaybackContinuity;
 #endif
             if (!Enabled || broken || !MoveApply.LogicSkip || all == null || !tracking) { ResetState(); return all; }
             if (prepared) return awake;
             prepared = true;
             try { Prepare(all); }
             catch (Exception ex) { broken = true; Main.Entry.Logger.Log("[잠든 장식] 오류로 끔: " + ex.Message); ResetState(); return all; }
-#if DEV || AUTOTEST
-            if (DecoBake.GpuLiveActive)
+#if DEV || AUTOTEST || GPUDECO
+            if (GpuDecoPlayer.Active)
             {
                 int epoch = DecoBake.GpuLateOwnershipEpoch;
                 if (!evictedActive || epoch != lastEvictEpoch) { EvictGpuOwnedFromAwake(); lastEvictEpoch = epoch; evictedActive = true; }
@@ -189,8 +191,8 @@ namespace StutterFix
 #endif
             AwakeFrames++; AwakeTotal += awake.Count; AllCount = all.Count; LastAwake = awake.Count;
             if ((Edition.Dev || Main.MeasureBuild)
-#if DEV || AUTOTEST
-                && !DecoBake.GpuLiveActive
+#if DEV || AUTOTEST || GPUDECO
+                && !GpuDecoPlayer.Active
 #endif
                 ) CountOffscreen();
             return awake;
@@ -220,8 +222,8 @@ namespace StutterFix
 
             // 지난 프레임에 잠든 것으로 표시된 것을 빼고, 그 사이 깨운 것을 넣는다
             if (dormant.Count > 0
-#if DEV || AUTOTEST
-                && (!TightLate.GpuListCaching || !DecoBake.GpuLiveActive || sleepPending)
+#if DEV || AUTOTEST || GPUDECO
+                && (!TightLate.GpuListCaching || !GpuDecoPlayer.Active || sleepPending)
 #endif
                 )
             {
@@ -242,9 +244,11 @@ namespace StutterFix
             // 안전망: 잠든 장식을 다시 검사한다
             float now = Time.realtimeSinceStartup;
             bool auditDue = Edition.Dev ? Time.frameCount % 30 == 0 : now >= nextAudit;
+#if DEV || AUTOTEST || GPUDECO
+            if (GpuDecoPlayer.Active) auditDue = false;
 #if DEV || AUTOTEST
-            if (DecoBake.GpuLiveActive) auditDue = false;
             else if (LiveDecoRenderer.Active) auditDue = now >= nextAudit;
+#endif
 #endif
             if (dormant.Count > 0 && auditDue)
             {
@@ -321,7 +325,9 @@ namespace StutterFix
                 Slept++;
 #if DEV || AUTOTEST
                 sleepPending = true;
+#if DEV || AUTOTEST
                 LiveDecoRenderer.DormancyChanged(d);
+#endif
 #endif
             }
         }
@@ -363,10 +369,12 @@ namespace StutterFix
 
         private static void ResetState()
         {
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
             sleepPending = false;
             TightLate.ClearGpuList();
+#if DEV || AUTOTEST
             LiveDecoRenderer.DormancyReset();
+#endif
 #endif
             if (source == null && dormant.Count == 0) return;
             source = null; sourceCount = -1; sourceVersion = -1;

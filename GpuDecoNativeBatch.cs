@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +13,9 @@ namespace StutterFix
     internal sealed class GpuDecoNativeBatch : IDisposable
     {
         internal static bool Enabled;
-        internal static bool NoMpb;   // 진단 후보(기본 꺼짐): 렌더러별 MaterialPropertyBlock 대신 재질에 직접
-        internal static bool StaticCombine;
-        internal static bool RestoreSortBounds;
+        internal static bool NoMpb=false;   // 진단 후보(기본 꺼짐): 렌더러별 MaterialPropertyBlock 대신 재질에 직접
+        internal static bool StaticCombine=false;
+        internal static bool RestoreSortBounds=false;
         readonly List<Mesh> meshes=new List<Mesh>();
         readonly List<GameObject> objects=new List<GameObject>();
         readonly List<MeshRenderer> renderers=new List<MeshRenderer>();
@@ -76,7 +76,7 @@ namespace StutterFix
                     renderer.SetPropertyBlock(null);
                 }
             }
-            var camera=GpuSplit.FindMain();Require(camera,"missing sort camera");int bucketCount=1;
+            var camera=GpuDecoScene.FindMain();Require(camera,"missing sort camera");int bucketCount=1;
             if(splitSortBuckets)
             {
                 // Do not let Unity create one static draw range across explicit
@@ -86,7 +86,7 @@ namespace StutterFix
                 for(int i=0;i<objects.Count;i++)
                 {
                     Renderer state=exactState==null?(Renderer)originals[i]:exactState[i];
-                    var k=MatShare.SortKey(state,state.sharedMaterial,camera);
+                    var k=GpuDecoScene.SortKey(state,state.sharedMaterial,camera);
                     var id=(k.Layer,k.Order,k.Queue,BitConverter.SingleToInt32Bits(k.Distance));
                     if(!buckets.TryGetValue(id,out var list))buckets.Add(id,list=new List<GameObject>());
                     list.Add(objects[i]);
@@ -99,14 +99,14 @@ namespace StutterFix
             for(int i=0;i<renderers.Count;i++)
             {
                 var original=originals[i];var renderer=renderers[i];Renderer state=exactState==null?(Renderer)original:exactState[i];
-                if(!MatShare.SortKey(state,state.sharedMaterial,camera).SameBucket(MatShare.SortKey(renderer,renderer.sharedMaterial,camera)))mismatches++;
+                if(!GpuDecoScene.SortKey(state,state.sharedMaterial,camera).SameBucket(GpuDecoScene.SortKey(renderer,renderer.sharedMaterial,camera)))mismatches++;
                 if(RestoreSortBounds||exactState!=null)
                 {
                     var center=exactState!=null?state.bounds.center:original.spriteSortPoint==SpriteSortPoint.Pivot?original.transform.position:original.bounds.center;
                     // Static batching creates a shared mesh. Override each
                     // renderer's world bounds, rather than that shared mesh.
                     renderer.bounds=new Bounds(center,new Vector3(2000000,2000000,0));
-                    Require(MatShare.SortKey(state,state.sharedMaterial,camera).SameBucket(MatShare.SortKey(renderer,renderer.sharedMaterial,camera)),"restored static sort bucket changed");
+                    Require(GpuDecoScene.SortKey(state,state.sharedMaterial,camera).SameBucket(GpuDecoScene.SortKey(renderer,renderer.sharedMaterial,camera)),"restored static sort bucket changed");
                 }
             }
             Main.Entry.Logger.Log("[gpudeco] static_sort_audit owned="+renderers.Count+" bucket_mismatch_before="+mismatches+" restored_world_bounds="+RestoreSortBounds+" split_sort_buckets="+splitSortBuckets+" combine_groups="+bucketCount);

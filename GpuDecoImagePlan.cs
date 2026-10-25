@@ -1,4 +1,4 @@
-﻿#if AUTOTEST
+#if AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,17 +12,20 @@ namespace StutterFix
         static bool gpuImageShadow;
         static readonly Dictionary<int,int> gpuImageSourceMap=new Dictionary<int,int>();
         static readonly Dictionary<scrDecoration,int> gpuImageTargetMap=new Dictionary<scrDecoration,int>();
+#if DEV || AUTOTEST
         static long gpuImageObserved,gpuImageMatched,gpuImageUnknown,gpuImageMismatch,gpuImageErrors;
         static long gpuImageAssetChecks,gpuImageAssetMismatch,gpuImagePost,gpuImageImmediate,gpuImageDeferred,gpuImagePostMismatch,gpuImageNullArgs,gpuImagePostUnknown;
         static long gpuImageClamp,gpuImageOtherWrap;
         static double gpuImageFirstBad=double.NaN;
         static double gpuImageFirstAssetBad=double.NaN,gpuImageFirstPostBad=double.NaN;
+#endif
         internal static bool GpuImageShadowActive=>gpuImageShadow;
         static void ClearGpuImagePlan()
         {
             ClearGpuImagePlaybackMap();
             gpuImageShadow=false;gpuImageTimeline=null;gpuImageVariants=null;gpuImageSourceMap.Clear();gpuImageTargetMap.Clear();
         }
+#if AUTOTEST
         // Read-only, explicit shadow. Exceptions must never change the original
         // effect's control flow. Only calls routed through FastMove.Run observed.
         internal static void ObserveGpuImagePlan(ffxMoveDecorationsPlus fx,IReadOnlyList<scrDecoration> targets)
@@ -149,6 +152,7 @@ namespace StutterFix
                 +" split_alpha="+counts[4]+" invalid="+counts[5]+" borrowed_assets_destroyed=0 asset_getters_only=True");
             return true;
         }
+#endif
     }
 }
 #endif

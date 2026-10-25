@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || DRAWCOLLAPSE_CHECK
+#if DEV || AUTOTEST || GPUDECO || DRAWCOLLAPSE_CHECK
 using System;
 using System.Collections.Generic;
 
@@ -171,14 +171,17 @@ namespace StutterFix
     internal sealed class DrawCollapseGuard
     {
         readonly bool collect;
+        readonly Action<string> orderLog;
         List<string> failures;
-        internal DrawCollapseGuard(bool collect){this.collect=collect;}
+        internal DrawCollapseGuard(bool collect,Action<string> orderLog=null){this.collect=collect;this.orderLog=orderLog;}
         // 측정 전용(연구 빌드): 대표/장벽 순서 위반을 기록만 하고 끄지 않는다. 화면이 원본과 다를 수 있다.
-        internal static bool IgnoreOrderViolations;
+        internal static bool IgnoreOrderViolations=false;
         internal static long IgnoredOrderViolations;
         internal void Check(bool valid,string reason)
         {
             if(valid)return;
+            if(orderLog!=null && (reason.StartsWith("drawcollapse proxy/barrier order changed",StringComparison.Ordinal)
+                || reason.Contains(" sort key changed"))) {orderLog(reason);return;}
             if(IgnoreOrderViolations && reason.StartsWith("drawcollapse proxy/barrier order changed")){IgnoredOrderViolations++;return;}
             if(!collect)throw new InvalidOperationException(reason);
             if(failures==null)failures=new List<string>();
@@ -192,6 +195,7 @@ namespace StutterFix
             throw new InvalidOperationException(all);
         }
     }
+#if DEV || AUTOTEST || GPUDECO_FIXTURE || DRAWCOLLAPSE_CHECK
     internal sealed class DrawCollapseGatePolicy
     {
         internal readonly bool[] Windows=new bool[4],Pixels=new bool[3],Restores=new bool[4];
@@ -217,5 +221,6 @@ namespace StutterFix
         internal bool Complete=>Array.TrueForAll(Windows,x=>x) && Array.TrueForAll(Pixels,x=>x) && Array.TrueForAll(Restores,x=>x);
         internal bool Passed=>Complete && !Failed;
     }
+#endif
 }
 #endif

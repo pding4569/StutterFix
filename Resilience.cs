@@ -45,7 +45,7 @@ namespace StutterFix
         private static readonly string[] safeOff = { "LoadCache", "DecoAnim", "FloorAnim", "FastLoop", "InstantDirect", "ZeroTween", "Precheck", "DormantSkip",
             "SkipInvisible", "MoveFinish", "FastBlend", "SkipIdleParticles", "LowPauseParticles", "LeakFix", "LowFsr", "LowHalfRender", "LowEnd" };
 
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
         internal static int TotalErrors { get { lock (sync) { int sum = 0; foreach (var v in errors.Values) sum += v; return sum; } } }
         internal static void RecordFeatureFailure(string feature, string reason)
         {

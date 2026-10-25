@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || GPUDECO_FIXTURE
+#if DEV || AUTOTEST || GPUDECO || GPUDECO_FIXTURE
 using System;
 namespace StutterFix
 {

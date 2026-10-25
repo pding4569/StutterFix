@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,7 +43,7 @@ namespace StutterFix
         private static int[] baselineIds;
         private static DecoBakeCore.Decoration[] baselineDecorations;
         private static DecoBakeCore.Event[] baselineEvents;
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
         // Snapshot metadata for explicit boundary census only; never admission.
         private static int[] baselineVisualFlags;
         private static string[] baselineImageSelectors;
@@ -52,7 +52,7 @@ namespace StutterFix
         private static void ClearBaseline()
         {
             baselineObjects = null; baselineIds = null; baselineDecorations = null; baselineEvents = null;
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
             baselineVisualFlags = null;
             baselineImageSelectors = null; ClearGpuImagePlan();
 #endif
@@ -63,7 +63,9 @@ namespace StutterFix
             if (!DecoBakeCore.SameInstances(manager.allDecorations, baselineObjects, baselineIds, d => d.GetInstanceID()))
                 throw new InvalidOperationException("기준 스냅샷 재사용 거부: 장식 개수/순서/인스턴스 ID/객체 변경; 맵 다시 open 필요");
         }
+#if DEV || AUTOTEST
         internal struct StartStamp { internal int Source, Frame; internal double Song; }
+#endif
         private static IEnumerator collector;
         private static Task<DecoBakeCore.Table> job;
         private static CancellationTokenSource cancellation;
@@ -103,7 +105,7 @@ namespace StutterFix
         internal static int Generation => ready ? generation : -1;
         internal static DecoBakeCore.Table CaptureTable => ready ? table : null;
         internal static bool Enabled => enabled;
-        private static void Log(string s) { Main.Entry.Logger.Log("[장식굽기/그림자] " + s); }
+        private static void Log(string s) { if (GpuDecoPlayer.Product) return; Main.Entry.Logger.Log("[장식굽기/그림자] " + s); }
         private static string N(double x) => x.ToString("G9", CultureInfo.InvariantCulture);
         private static MethodInfo Exact(Type type, string name, bool isStatic, params Type[] parameters)
         {
@@ -114,6 +116,7 @@ namespace StutterFix
             if (found.Length != 1) throw new InvalidOperationException(type.Name + "." + name + " 후보=" + found.Length);
             return found[0];
         }
+#if DEV || AUTOTEST
         internal static void Command(string arg)
         {
             try
@@ -125,7 +128,9 @@ namespace StutterFix
                 {
                     case "on":
                         if (enabled) { Log(status); return; }
+#if DEV || AUTOTEST
                         if (Hitch.Playing || DecoSim.Capturing) { Log("거부: 곡/캡처 종료 후 on, 그 다음 맵 다시 open"); return; }
+#endif
                         if (!ZeroTween.CanEase || !FastMove.Installed) { Log("거부: 기존 이징/FastMove 시작 관찰 후크 필요"); return; }
                         // Resolve ALL hooks before installing any. No metadata-token resolution on Mono.
                         var setup = Exact(typeof(scrDecoration), "Setup", false, typeof(LevelEvent), typeof(bool).MakeByRefType(), typeof(bool));
@@ -154,15 +159,20 @@ namespace StutterFix
             if (!enabled || status.StartsWith("중단:")) throw new InvalidOperationException("decobake ready: " + status);
             return ready;
         }
+#endif
         private static void CancelBuild(bool preserveAdopt = false)
         {
             InvalidateGpuSnapshot();
             if(GpuLiveActive)RecoverGpuLive("snapshot_generation_change",false);
+#if DEV || AUTOTEST
             bool resume = preserveAdopt && (Adopting || resumeAdopt);
             StopAdopt("스냅샷 세대 변경");
             resumeAdopt = resume;
             StopSignature();
+#if DEV || AUTOTEST
             DecoSim.InvalidateBake("스냅샷 세대 변경: 재준비");
+#endif
+#endif
             generation++; ready = false; collector = null; clock.Reset(); clockFrame = -1;
             ResetGpuFrames();
             cancellation?.Cancel(); cancellation?.Dispose(); cancellation = null;
@@ -175,12 +185,14 @@ namespace StutterFix
             gpuPacketMode=0;
             gpuPrepareWatch = null;
             DisposeGpuLive();
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
             gpuImageCandidate=false;gpuImageUploadFault=false;gpuImageMatrix=false;
 #endif
             gpuRenderMergePrepare=false;
             enabled = false; CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
+#if DEV || AUTOTEST
             DecoSim.ForgetBake();
+#endif
             table = null;
             patches?.UnpatchAll(Owner); patches = null; status = "꺼짐";
         }
@@ -247,8 +259,12 @@ namespace StutterFix
             if (!enabled) return;
             try
             {
+#if DEV || AUTOTEST
                 AdoptStart(fx);
+#if DEV || AUTOTEST
                 if (DecoSim.Capturing) DecoSim.RecordBakeStart(new StartStamp { Source = fx.GetInstanceID(), Frame = Time.frameCount, Song = scrConductor.instance.songposition_minusi });
+#endif
+#endif
             }
             catch (Exception e) { Fail("시작 관찰 " + e.Message); }
         }
@@ -291,7 +307,7 @@ namespace StutterFix
             if (Conditional(f)) r.Add("조건/수동/타격");
             if (f.disableIfMinFx || f.disableIfMaxFx) r.Add("시각 효과 설정 조건");
             if (f.imageFilenameUsed || f.originalSizeUsed || f.smoothingUsed || f.cropPivotOffsetUsed)
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
                 if(!ImageOnlyEvent(f))
 #endif
                 r.Add("이미지/원래크기/크롭/wrap");
@@ -352,7 +368,7 @@ namespace StutterFix
             var ids = new Dictionary<scrDecoration, int>();
             var ordered = new HashSet<ffxPlusBase>();
             var events = new List<DecoBakeCore.Event>();
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
             var visualFlags = new List<int>();
             var imageSelectors = new List<string>();
 #endif
@@ -386,7 +402,7 @@ namespace StutterFix
                 if (fx is ffxMoveDecorationsPlus f)
                 {
                     var e = CopyEvent(f); var targets = new List<int>();
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
                     int visualSnapshot=(f.imageFilenameUsed?1:0)|(f.originalSizeUsed?2:0)|(f.smoothingUsed?4:0)|(f.cropPivotOffsetUsed?8:0);
                     string imageSnapshot=FastMove.GpuImageSelector(f);
 #endif
@@ -398,7 +414,7 @@ namespace StutterFix
                         if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); }
                     }
                     e.Targets = targets.ToArray(); events.Add(e);
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
                     visualFlags.Add(visualSnapshot);
                     imageSelectors.Add(imageSnapshot);
 #endif
@@ -433,7 +449,7 @@ namespace StutterFix
             // Freeze the COMPLETE first timeline, before Compile can add computed reasons.
             baselineObjects = all.ToArray(); baselineIds = decs.Select(d => d.Id).ToArray();
             baselineDecorations = decs; baselineEvents = copied; baselineSortedCount = effects;
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
             baselineVisualFlags = visualFlags.ToArray();
             baselineImageSelectors = imageSelectors.ToArray();
 #endif
@@ -451,7 +467,7 @@ namespace StutterFix
                 if (ready && effectList != scrVfxPlus.instance?.effects) { Reprepare(); return; }
                 if ((ready || collector != null || job != null) && (scrConductor.instance?.song == null
                     || scrConductor.instance.song.pitch != frozenPitch
-                    || (DOTween.timeScale != frozenScale && !FrameCompare.PreservesBakeTweenScale(frozenScale))
+                    || (DOTween.timeScale != frozenScale && !GpuPlaybackState.PreservesBakeTweenScale(frozenScale))
                     || DOTween.defaultEaseOvershootOrAmplitude != frozenOver || DOTween.defaultEasePeriod != frozenPeriod))
                 {
                     Fail("수집 후 pitch/DOTween 배율/이징 기본값 변경: 고정 계약에서 제외"
@@ -459,7 +475,7 @@ namespace StutterFix
                         + " tween=" + DOTween.timeScale.ToString("R",CultureInfo.InvariantCulture) + "/" + frozenScale.ToString("R",CultureInfo.InvariantCulture)
                         + " overshoot=" + DOTween.defaultEaseOvershootOrAmplitude.ToString("R",CultureInfo.InvariantCulture) + "/" + frozenOver.ToString("R",CultureInfo.InvariantCulture)
                         + " period=" + DOTween.defaultEasePeriod.ToString("R",CultureInfo.InvariantCulture) + "/" + frozenPeriod.ToString("R",CultureInfo.InvariantCulture)
-                        + " pause_intact=" + FrameCompare.PreservesBakeTweenScale(frozenScale)
+                        + " pause_intact=" + GpuPlaybackState.PreservesBakeTweenScale(frozenScale)
                         + " audio_paused=" + AudioListener.pause + " time_scale=" + Time.timeScale.ToString("R",CultureInfo.InvariantCulture)
                         + " song_started=" + (scrConductor.instance && scrConductor.instance.hasSongStarted)); return;
                 }
@@ -489,12 +505,14 @@ namespace StutterFix
                     status = "준비됨 (그림자 기본; adopt 별도)";
                     Log(status + " 장식=" + table.Decorations.Length + " 지원=" + table.Supported + " 이벤트=" + table.Events + " 구간=" + table.Segments);
                 }
+#if DEV || AUTOTEST
                 if (ready && resumeAdopt && Hitch.Playing && !EffectBudget.InCatchUp)
                 {
                     resumeAdopt = false;
                     try { AdoptCommand("on"); }
                     catch (Exception e) { Log("adopt 재채택 거부(그림자 유지): " + e.Message); }
                 }
+#endif
             }
             catch (DecoBakeCore.SnapshotChangedException) { Reprepare(); }
             catch (ArgumentOutOfRangeException) { Reprepare(); }
@@ -502,14 +520,24 @@ namespace StutterFix
         }
         private static void Reprepare()
         {
+            if (GpuDecoPlayer.Product) { GpuDecoPlayer.Skip("재생 준비 뒤 효과 목록이 바뀜"); ReleasePlayerLevel(); return; }
+#if DEV || AUTOTEST
             DecoSim.InvalidateBake("seek 중 스냅샷 변경: 재준비");
+#endif
             CancelBuild(true); status = "재준비: 목록/세대 변경"; Log(status);
             if (prepFloors != null) BeginPrepCollection(prepFloors, false);
         }
-        private static void Fail(string why) { DecoSim.InvalidateBake(why); CancelBuild(); status = "중단: " + why; Log(status); }
+        private static void Fail(string why) {
+#if DEV || AUTOTEST
+            DecoSim.InvalidateBake(why);
+#endif
+            CancelBuild(); status = "중단: " + why; Log(status); if (GpuDecoPlayer.Product) GpuDecoPlayer.Skip(why); }
+#if DEV || AUTOTEST
         private static void Bench()
         {
+#if DEV || AUTOTEST
             if (Hitch.Playing || DecoSim.Capturing) { Log("거부: 곡/캡처 종료 후 bench"); return; }
+#endif
             if (table == null) { Log(status); return; }
             double checksum = 0; var timings = new List<double>();
             // All supported decorations and all 16 channels, at varying song times; no Unity writes.
@@ -541,7 +569,9 @@ namespace StutterFix
                 + " 참조배열payloadB=" + table.InputEvents.Length * (long)IntPtr.Size
                 + " 트랙비어있지않음=" + table.Tracks.Count(x => x.Length != 0)
                 + "; 진단 snapshot 객체/배열header/Reasons 및 scheduler 구축 메모리는 표payload 밖. evalActive scheduler는 bench 지역 객체");
+#if DEV || AUTOTEST
             var tape = DecoSim.BakeTape;
+#endif
             if (tape?.BakeTable != table || !tape.Valid || tape.Frames.Count < 2 || tape.BakeInvalidReason.Length != 0) { Log("evalActive 관측 불가: 같은 표의 유효한 완료 테이프 필요"); return; }
             var active = new DecoBakeCore.ActiveEvaluator(table);
             active.Step(tape.Frames[0].BakeTime); // Warm seek excluded.
@@ -583,8 +613,12 @@ namespace StutterFix
         private static int Channel(int key) { switch (key) { case 1: return 0; case 2: return 1; case 3: return 2; case 4: return 3; case 5: return 4; case 7: return 5; case 8: return 6; case 9: return 7; case 10: return 11; case 11: return 12; case 12: return 14; case 13: return 15; default: return -1; } }
         private static void Verify()
         {
+#if DEV || AUTOTEST
             if (DecoSim.Capturing) { Log("거부: 테이프 캡처 완료 후 verify"); return; }
+#endif
+#if DEV || AUTOTEST
             var tape = DecoSim.BakeTape;
+#endif
             var table = tape?.BakeTable;
             if (table == null || tape == null || !tape.Valid || tape.Frames.Count == 0 || tape.BakeGeneration < 0)
             { Log("거부: 같은 굽기 세대의 유효한 완료 테이프 필요; " + status); return; }
@@ -675,23 +709,33 @@ namespace StutterFix
         }
         private sealed class DiagnosticRow
         {
+#if DEV || AUTOTEST
             internal DecoSim.Frame Frame;
+#endif
             internal int Channel, Token;
             internal float Actual, Position;
             internal double Error;
         }
+#if DEV || AUTOTEST
         private static float StateValue(DecoSim.State s, int channel, bool end)
+#endif
         {
             if (s.Key == 7 || s.Key == 8 || s.Key == 11) { var v = end ? s.VE : s.VS;
                 return channel == 6 || channel == 13 ? v.y : v.x; }
             if (s.Key == 9) { var c = end ? s.CE : s.CS; return channel == 7 ? c.r : channel == 8 ? c.g : channel == 9 ? c.b : c.a; }
             return end ? s.FE : s.FS;
         }
+#if DEV || AUTOTEST
         private static void Diagnose(DecoSim.Tape tape, DecoBakeCore.Table table, IEnumerable<int> targets, bool scaleOnly = false)
+#endif
         {
+#if DEV || AUTOTEST
             var states = new Dictionary<int, DecoSim.State>();
+#endif
             foreach (var state in tape.Initial) states[state.Token] = state;
+#if DEV || AUTOTEST
             foreach (var ev in tape.Events) if (ev.Kind == DecoSim.Kind.Startup) states[ev.State.Token] = ev.State;
+#endif
             Log("진단시계 calibration_i=" + N(tape.Calibration) + " addoffset=" + N(tape.AddOffset)
                 + " pitch=" + N(table.Pitch) + " dspTimeSongPosZero=" + N(tape.DspZero)
                 + " separateCountdownTime=" + tape.SeparateCountdown + " countdown곡초=" + N(tape.CountdownSeconds)
@@ -793,7 +837,9 @@ namespace StutterFix
                     + "; 시작/목표/길이/ease 일치하는 진행중 Rec만, (song+fitOffset)-(T0+RecPos*pitch/tweenScale); 반복 Source 모호성은 남음");
             }
         }
+#if DEV || AUTOTEST
         private static void Phase(DecoSim.Tape tape, DecoBakeCore.Table table)
+#endif
         {
             var scheduled = new Dictionary<int, double>();
             foreach (var track in table.Tracks) foreach (var s in track) scheduled[s.Source] = s.T0;
@@ -816,6 +862,7 @@ namespace StutterFix
                 + " 경계/되감기등미대응=" + missing + " 프레임차별빈도=" + string.Join(",", gaps.GroupBy(x => x).Select(g => g.Key + ":" + g.Count()))
                 + "; 단조 재생 구간만 해석, FastMove 기존 후크 관찰; 제안 절대차<=1프레임, 반복 교차는 stamp에 가장 가까운 프레임");
         }
+#endif
     }
 }
 #endif

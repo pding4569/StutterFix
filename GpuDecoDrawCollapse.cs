@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace StutterFix
 {
     internal static partial class DecoBake
     {
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
         static void UpdateDrawCollapseTextureSlot(int item,Texture2D texture,Material material)
         {
             if(gpuCollapseTexture==null)return;
@@ -38,16 +38,19 @@ namespace StutterFix
             checks.Check(gpuLiveActive && gpuLivePrepared && gpuLiveCurrentSlice>=0 && gpuScope.WholeSong
                 && gpuLiveSlices.Count==1 && gpuLiveSlices[0].Independent && !gpuRenderMergeOn,
                 "drawcollapse requires independent whole-song GPU ownership");
-            checks.Check((GpuLiveOwned==23547 || GpuLiveOwned==28523) && gpuLiveCpuFallbackCount==0,
+            checks.Check((GpuDecoPlayer.Product ? GpuLiveOwned>0 : GpuLiveOwned==23547 || GpuLiveOwned==28523) && gpuLiveCpuFallbackCount==0,
                 "drawcollapse requires GPU owned=23547 or 28523, CPU fallback=0");
+#if DEV || AUTOTEST
             checks.Check(!GpuDecoCostProbe.Enabled, // SingleSubmission/GpuListCaching 은 draw 통합과 독립이므로 함께 켜도 된다(스크립트 비용 시험)
                 
                 "drawcollapse must isolate the original independent baseline");
+#endif
             checks.Check(GpuDecoCopy.ReadTotals().Errors==0,"drawcollapse native copy errors");
         }
+#if DEV || AUTOTEST
         static bool GpuDrawCollapseCommand(string command)
         {
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
             if(command.StartsWith("drawcollapse ",StringComparison.Ordinal) && DrawCollapseGateCommand(command.Substring(13)))return true;
 #endif
             if(command=="drawcollapse prepare")
@@ -87,7 +90,7 @@ namespace StutterFix
                     +" fallback="+gpuLiveCpuFallbackCount+" display="+Screen.width+"x"+Screen.height
                     +"@"+Screen.currentResolution.refreshRateRatio.value.ToString("F3",Inv));return true;
             }
-            RequireLive(FrameCompare.Paused && g2Window==-1,"drawcollapse readback is paused diagnostic only");
+            RequireLive(GpuPlaybackState.Paused && g2Window==-1,"drawcollapse readback is paused diagnostic only");
             double song=scrConductor.instance.songposition_minusi;
             RequireLive(song>=259.75 && song<=270.25,"drawcollapse diagnostic requires song 260..270");
             var slice=gpuLiveSlices[0];var cam=gpuLiveCamera;
@@ -125,7 +128,7 @@ namespace StutterFix
                 if(alpha<=0 || !area || !GeometryUtility.TestPlanesAABB(planes,bounds)
                     || (cam.cullingMask & (1<<proxy.gameObject.layer))==0)continue;
                 var m=proxy.sharedMaterial;
-                rows.Add(new DrawCollapsePolicy.Row(MatShare.SortKey(proxy,m,cam),true,proxy.GetInstanceID(),
+                rows.Add(new DrawCollapsePolicy.Row(GpuDecoScene.SortKey(proxy,m,cam),true,proxy.GetInstanceID(),
                     texture.GetInstanceID(),MaterialSignature(m),proxy.gameObject.layer));
             }
             foreach(var r in Resources.FindObjectsOfTypeAll<Renderer>())
@@ -149,12 +152,12 @@ namespace StutterFix
                 var materials=r.sharedMaterials;
                 if(materials.Length==0)
                 {
-                    rows.Add(new DrawCollapsePolicy.Row(MatShare.SortKey(r,null,cam),false,r.GetInstanceID()));continue;
+                    rows.Add(new DrawCollapsePolicy.Row(GpuDecoScene.SortKey(r,null,cam),false,r.GetInstanceID()));continue;
                 }
                 for(int slot=0;slot<materials.Length;slot++)
                 {
                     var m=materials[slot];if(m && m.renderQueue<=2500)continue;
-                    rows.Add(new DrawCollapsePolicy.Row(MatShare.SortKey(r,m,cam,slot),false,r.GetInstanceID()));
+                    rows.Add(new DrawCollapsePolicy.Row(GpuDecoScene.SortKey(r,m,cam,slot),false,r.GetInstanceID()));
                 }
             }
             var counts=DrawCollapsePolicy.Count(rows);
@@ -204,6 +207,7 @@ namespace StutterFix
                 +" feasibility="+feasibility+" arrays_allocated=0 copy_calls=0");
             return unsupported==0?(compressed/1048576.0).ToString("F6",Inv):"NA";
         }
+#endif
     }
 }
 #endif

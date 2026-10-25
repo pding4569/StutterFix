@@ -1,4 +1,4 @@
-﻿#if AUTOTEST
+#if AUTOTEST
 using System;
 using System.Linq;
 using UnityEngine;
@@ -365,30 +365,6 @@ namespace StutterFix
             }
             return false;
         }
-        static GpuDecoData.Item ImageFixtureItem(scrVisualDecoration d,GpuDecoImageVariant v)=>ImageFixtureItem(d,v,out _);
-        static GpuDecoData.Item ImageFixtureItem(scrVisualDecoration d,GpuDecoImageVariant v,out LiveDecoGeometry g)
-        {
-            var r=d.spriteRenderer;
-            g=LiveDecoGeometry.Capture(d.pivotTrans,d.childTransform,r.transform,v.Vertices,r.flipX,r.flipY);
-            RequireLive(g!=null,"image fixture unsupported child chain");
-            var ts=d.scaleMultiplier*d.textureScaleMultiplier;var c=d.color;var px=d.parallax.multiplier;
-            var item=new GpuDecoData.Item
-            {
-                Id=d.GetInstanceID(),TextureId=v.TextureId,
-                Flags=(d.lockScale?1:0)|(d.lockRotation?2:0)|(d.parallax.dontAlterX?4:0)|(d.parallax.dontAlterY?8:0)|(r.flipX?16:0)|(r.flipY?32:0),
-                Constants=new[]{ts.x,ts.y,d.textureScaleMultiplier.x,d.textureScaleMultiplier.y,d.startRot,d.croppedPivotOffset.x,d.croppedPivotOffset.y,d.pivotTrans.position.z},
-                Initial=new[]{d.pivotPosVec.x,d.pivotPosVec.y,d.pivotOffsetVec.x,d.pivotOffsetVec.y,d.rotAngle,d.scaleVec.x,d.scaleVec.y,c.r,c.g,c.b,c.a,d.opacity,px.x,px.y,d.parallaxOffset.x,d.parallaxOffset.y},
-                Triangles=v.Triangles.Select(x=>(int)x).ToArray()
-            };
-            for(int ch=0;ch<16;ch++)item.Tracks[ch]=Array.Empty<DecoBakeCore.Segment>();
-            for(int n=0;n<4;n++)
-            {
-                PutVec(item.Shape,n*3,g.Shape[n]);item.UV[n*2]=v.UV[n].x;item.UV[n*2+1]=v.UV[n].y;
-            }
-            var origin=g.Offset(Vector2.zero);PutVec(item.OffsetBasis,0,origin);
-            PutVec(item.OffsetBasis,3,g.Offset(Vector2.right)-origin);PutVec(item.OffsetBasis,6,g.Offset(Vector2.up)-origin);
-            return item;
-        }
         static GpuDecoData ImageFixtureData(GpuDecoData.Item a,GpuDecoData.Item b)=>new GpuDecoData
         {Items=new[]{a,b},Pitch=1,TweenScale=1,Camera=new[]{0f,0f,0f,1f}};
         static int ImageVertexDifferences(GpuDecoGpu.Vertex[] a,GpuDecoGpu.Vertex[] b)
@@ -427,7 +403,7 @@ namespace StutterFix
             {
                 bundle=AssetBundle.LoadFromFile(System.IO.Path.GetFullPath(gpuBundlePath));RequireLive(bundle,"image fixture bundle load");
                 var shader=bundle.LoadAsset<ComputeShader>("Assets/Shaders/GpuDeco.compute");RequireLive(shader,"image fixture compute asset");
-                var original=ImageFixtureItem(d,variants[0]);var neighbor=ImageFixtureItem(d,variants[0]);
+                var original=CaptureGpuImageItem(d,variants[0]);var neighbor=CaptureGpuImageItem(d,variants[0]);
                 neighbor.Initial=(float[])neighbor.Initial.Clone();neighbor.Initial[0]+=17f;neighbor.Initial[7]=.3125f;
                 var data=ImageFixtureData(original,neighbor);
                 using(var gpu=new GpuDecoGpu(shader,data){UseAnchors=false})
@@ -437,7 +413,7 @@ namespace StutterFix
                     {
                         for(int lane=0;lane<2;lane++)
                         {
-                            var next=ImageFixtureItem(d,variant);
+                            var next=CaptureGpuImageItem(d,variant);
                             if(!next.Triangles.SequenceEqual(original.Triangles)){topologyRejected++;continue;}
                             next.Initial=data.Items[lane].Initial;next.Tracks=data.Items[lane].Tracks;next.Anchors=data.Items[lane].Anchors;
                             var before=gpu.Dispatch(0,true).vertices;
@@ -457,7 +433,7 @@ namespace StutterFix
                     // Invalid input must not alter either lane or publish next.
                     for(int test=0;test<12;test++)
                     {
-                        var next=ImageFixtureItem(d,variants[0]);int lane=0;
+                        var next=CaptureGpuImageItem(d,variants[0]);int lane=0;
                         next.Initial=data.Items[0].Initial;next.Tracks=data.Items[0].Tracks;next.Anchors=data.Items[0].Anchors;
                         switch(test)
                         {

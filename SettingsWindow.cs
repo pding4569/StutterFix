@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -1298,6 +1298,14 @@ namespace StutterFix
                 EndGroup();
                 SubHeading(T("장식 이동 실험", "Decoration movement experiments"), "");
                 BeginGroup();
+                bool gpuDeco = c.GpuDeco == 1;
+                if (Option("gpudeco", ref gpuDeco, "GPU 장식 처리 (실험)",
+                    "장식 이동을 GPU가 계산해 CPU 비용을 줄입니다. 켜면 첫 곡 시작이 약간 느려질 수 있습니다. 다음 재생 준비부터 적용되며, 지원하지 않는 맵은 원본 처리를 사용합니다.", null))
+                { c.GpuDeco = gpuDeco ? 1 : 0; ch = true; }
+                bool gpuImages = c.GpuDecoImages == 1;
+                if (Option("gpudecoimages", ref gpuImages, "이미지 장식도 GPU로 처리",
+                    "재생 중 이미지가 바뀌는 장식도 함께 처리합니다. 다음 재생 준비부터 적용됩니다.", null, 1, gpuDeco ? null : "GPU 장식 처리"))
+                { c.GpuDecoImages = gpuImages ? 1 : 0; ch = true; }
                 ch |= Option("moveepsilon", ref c.MoveEpsilon, T("미세 위치 쓰기 생략 (실험)", "Skip tiny position writes (experimental)"),
                     T("곡 중 실제 위치와의 차이가 각 축 0.000001 미만이면 위치 쓰기를 생략합니다. 위치·시차·회전 처리 순서는 유지합니다.",
                       "Skips position writes during play when each axis changes by less than 0.000001. Preserves position, parallax and rotation order."), null);

@@ -183,18 +183,7 @@ namespace StutterFix
             Log(FormattableString.Invariant($"image_live_onscreen_unforced count={unforcedOnscreen} projected_aabb_screen_percent_sum={areaSum:F3} max={maxArea:F3} sprite_vertices={vertices} sprite_triangles={triangles} bounds_recovered={boundsRecovered} culling_vs_projection_disagree={projectionDisagree} legacy_vs_culling_disagree={legacyDisagree}; geometry not actual draw counters; bounds area unclipped"));
             foreach (var b in blends) Log("blend_evidence count=" + b.Value + " " + b.Key);
         }
-        internal static Camera FindMain()
-        {
-            Camera main = null;
-            foreach (var c in Resources.FindObjectsOfTypeAll<Camera>())
-                if (c.gameObject.scene.IsValid() && c.name == "Camera" && c.gameObject.activeInHierarchy)
-                {
-                    if (main) throw new InvalidOperationException("gpusplit: ambiguous main Camera");
-                    main = c;
-                }
-            if (!main) throw new InvalidOperationException("gpusplit: main Camera missing");
-            return main;
-        }
+        internal static Camera FindMain()=>GpuDecoScene.FindMain();
         void CensusOnce(Camera camera)
         {
             if (!camera || camera.name != "Camera") return;

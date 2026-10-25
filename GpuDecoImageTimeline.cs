@@ -1,4 +1,4 @@
-#if AUTOTEST || GPU_IMAGE_PLAN_FIXTURE
+#if AUTOTEST || GPUDECO || GPU_IMAGE_PLAN_FIXTURE
 using System;
 using System.Collections.Generic;
 

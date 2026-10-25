@@ -50,11 +50,12 @@ namespace StutterFix
             e.EngineDeferredFrame = Time.frameCount; engineDeferred.Add(e);
         }
         private static Entry[] slots = Array.Empty<Entry>();
-#if DEV || AUTOTEST
-        internal static bool GpuListCaching; // 연구 전용, 기본 꺼짐. gpudeco latecache on/off
-        private static readonly GpuLateListCache<scrDecoration> gpuList = new GpuLateListCache<scrDecoration>();
-        internal static void ClearGpuList() => gpuList.Clear();
-        internal static bool GpuListReady => gpuList.Ready;
+#if DEV || AUTOTEST || GPUDECO
+        internal static bool GpuListCaching=false; // 연구 전용, 기본 꺼짐. gpudeco latecache on/off
+        private static GpuLateListCache<scrDecoration> gpuListStorage;
+        private static GpuLateListCache<scrDecoration> gpuList => gpuListStorage ?? (gpuListStorage = new GpuLateListCache<scrDecoration>());
+        internal static void ClearGpuList() { gpuListStorage?.Clear(); }
+        internal static bool GpuListReady => gpuListStorage != null && gpuListStorage.Ready;
         private static void GpuListSkipped(scrDecoration d)
         {
             if ((object)d != null && records.TryGetValue(d, out var e)) e.Has = false;
@@ -108,7 +109,7 @@ namespace StutterFix
         {
             DecoEngine.RestoreAll();
             records.Clear(); Array.Clear(slots, 0, slots.Length); owner = completedOwner = null;
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
             ClearGpuList();
 #endif
             engineDeferred.Clear();
@@ -125,13 +126,17 @@ namespace StutterFix
         {
             if (engineDeferred.Count != 0) EngineLatePostfix(); // exception recovery; normal postfix already drained it
             if (__state != 0) { managerTicks += Stopwatch.GetTimestamp() - __state; managerFrames++; }
+#if DEV || AUTOTEST || GPUDECO
 #if DEV || AUTOTEST
-            DecoBake.SignatureFrame();
-            DecoBake.CanaryFrame();
-            DecoBake.GpuLiveFrame();
+            if (GpuDecoPlayer.Available) DecoBake.SignatureFrame();
+#endif
+#if DEV || AUTOTEST
+            if (GpuDecoPlayer.Available) DecoBake.CanaryFrame();
+#endif
+            if (GpuDecoPlayer.Available) DecoBake.GpuLiveFrame();
 #endif
         }
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
         internal static bool CaptureReady => installed;
 #endif
         public static void EngineLatePostfix()
@@ -157,8 +162,8 @@ namespace StutterFix
         {
             if (completedFrame == Time.frameCount && ReferenceEquals(completedOwner, mgr)) return empty;
             var list = Dormancy.List(mgr);
-#if DEV || AUTOTEST
-            if (!GpuListCaching || !DecoBake.GpuLiveActive) ClearGpuList();
+#if DEV || AUTOTEST || GPUDECO
+            if (!GpuListCaching || !GpuDecoPlayer.Active) ClearGpuList();
 #endif
             if (!installed || !Enabled || !Hitch.Playing || SceneReset.Resetting
                 || !MoveApply.Enabled || !Dormancy.Enabled || ADOBase.controller == null
@@ -176,9 +181,9 @@ namespace StutterFix
             var parent = parentTransform;
             bool parentOK = parentIdentity;
             int count = list.Count;
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
             int listVersion = 0;
-            bool useGpuList = GpuListCaching && DecoBake.GpuLiveActive
+            bool useGpuList = GpuListCaching && GpuDecoPlayer.Active
                 && Dormancy.TryGpuListVersion(list, out listVersion);
             if (useGpuList)
             {
@@ -189,14 +194,14 @@ namespace StutterFix
             if (slots.Length < count) Array.Resize(ref slots, Math.Max(count, slots.Length * 2 + 64));
             long t = Stopwatch.GetTimestamp();
             lastProcessed = 0;
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
             if (useGpuList) { lastProcessed = gpuList.Skipped; processed += gpuList.Skipped; }
 #endif
             try
             {
                 for (int i = 0; i < count; i++)
                 {
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
                     var d = useGpuList ? gpuList.Items[i] : list[i];
 #else
                     var d = list[i];
@@ -220,10 +225,14 @@ namespace StutterFix
         }
         private static bool Process(Entry e, scrDecoration d, Transform parent, bool parentOK, Transform camera, Vector3 cam)
         {
+#if DEV || AUTOTEST || GPUDECO
 #if DEV || AUTOTEST
             if (LiveDecoRenderer.SkipLate(d)) { if (e != null) e.Has = false; return true; }
+#endif
+#if DEV || AUTOTEST
             if (DecoGpu.SkipLate(d)) { if (e != null) e.Has = false; return true; }
-            if (DecoBake.SkipGpuLate(d)) { if (e != null) e.Has = false; return true; }
+#endif
+            if (GpuDecoPlayer.Available && DecoBake.SkipGpuLate(d)) { if (e != null) e.Has = false; return true; }
 #endif
             int reason = Eligible(e, parent, parentOK, camera);
             if (reason == 3 && e.Engine != null && Eligible(e, parent, parentOK, camera, true) == 0)

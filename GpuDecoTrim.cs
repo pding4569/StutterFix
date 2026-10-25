@@ -1,4 +1,4 @@
-﻿#if AUTOTEST
+#if AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using UnityEngine;

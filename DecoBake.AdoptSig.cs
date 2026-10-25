@@ -23,29 +23,6 @@ namespace StutterFix
         private static bool signatureAdopt;
         private static string signaturePath;
         private static readonly AccessTools.FieldRef<scrDecoration, Transform> signaturePivot = AccessTools.FieldRefAccess<scrDecoration, Transform>("pivotTrans");
-        private static string TableFingerprint()
-        {
-            using (var hash = SHA256.Create())
-            using (var sink = new CryptoStream(Stream.Null, hash, CryptoStreamMode.Write))
-            using (var writer = new BinaryWriter(sink, Encoding.UTF8, true))
-            {
-                writer.Write(table.Pitch); writer.Write(table.TweenScale);
-                for (int d = 0; d < table.Decorations.Length; d++)
-                {
-                    writer.Write(table.Decorations[d].Reasons.Count == 0);
-                    foreach (float v in table.Decorations[d].Initial) writer.Write(v);
-                    for (int c = 0; c < 16; c++)
-                    {
-                        var track = table.Tracks[d*16+c]; writer.Write(track.Length);
-                        foreach (var s in track)
-                        { writer.Write(s.T0); writer.Write(s.Duration); writer.Write(s.Start); writer.Write(s.End);
-                          writer.Write(s.Target); writer.Write(s.Ease); writer.Write(s.Over); writer.Write(s.Period); }
-                    }
-                }
-                writer.Flush(); sink.FlushFinalBlock();
-                return BitConverter.ToString(hash.Hash).Replace("-", "");
-            }
-        }
         // Explicit correctness capture: large and intrusive; never use it for performance runs.
         private static void AdoptSignature(string arg)
         {

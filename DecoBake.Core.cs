@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || DECOBAKE_FIXTURE
+#if DEV || AUTOTEST || GPUDECO || DECOBAKE_FIXTURE
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

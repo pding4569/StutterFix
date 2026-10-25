@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using DG.Tweening;
@@ -76,8 +76,9 @@ namespace StutterFix
         }
         private static readonly List<scrDecoration> list = new List<scrDecoration>();
         internal static void ForgetLevel() { list.Clear(); src = null; if (shape.Targets != null) shape.Targets = null; shape.Sources.Clear(); stamp.Clear(); TagIndex.Forget();
-#if DEV || AUTOTEST
-            DecoBake.ForgetLevel();
+#if DEV || AUTOTEST || GPUDECO
+            if (GpuDecoPlayer.Product) GpuDecoPlayer.End("? ??? ??");
+            if (GpuDecoPlayer.Available) DecoBake.ForgetLevel();
 #endif
         }
         private static bool running, bypass;
@@ -115,15 +116,15 @@ namespace StutterFix
         // 다른 모드 코드(효과 나누기 등)가 원래 실행을 막았으면 아무것도 안 한다. 맡으면 false(원래 코드 건너뜀).
         public static bool Prefix(ffxMoveDecorationsPlus __instance, object[] __args, bool __runOriginal)
         {
-#if DEV || AUTOTEST
-            if (__runOriginal && !bypass && !running && DecoBake.Enabled) DecoBake.ObserveStart(__instance);
+#if DEV || AUTOTEST || GPUDECO
+            if (__runOriginal && !bypass && !running && (GpuDecoPlayer.Available && DecoBake.Enabled)) DecoBake.ObserveStart(__instance);
 #endif
             if (!__runOriginal) return false;
             bool playback=Hitch.Playing;
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
             // AutoTest.Resume runs after the cached playing sample. Retain
             // existing GPU ownership through that single restored frame too.
-            playback|=DecoBake.GpuLiveActive && FrameCompare.PlaybackContinuity;
+            playback|=GpuDecoPlayer.Active && GpuPlaybackState.PlaybackContinuity;
 #endif
             if (bypass || running || !Enabled || !Installed || !playback) return Orig(__instance);
             if (!InstantMove.Enabled || !InstantMove.Patched || !ZeroTween.Enabled || !ZeroTween.Patched || !ZeroTween.CanEase) return Orig(__instance);
@@ -134,7 +135,7 @@ namespace StutterFix
             try
             {
 #if AUTOTEST
-                if(GpuOriginalTrace && DecoBake.GpuLiveActive)
+                if(GpuOriginalTrace && GpuDecoPlayer.Active)
                 {
                     gpuTraceThisCall=true;
                     gpuTraceEntries++;gpuTraceEnterThread=System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -144,8 +145,8 @@ namespace StutterFix
 #endif
                 // 미리 확인이 "아무것도 안 바꾼다" 고 확인해 둔 효과: 효과 앞부분의 필드 쓰기만 하고 건너뛴다
                 if (Precheck.Active != 0 &&
-#if DEV || AUTOTEST
-                    !DecoBake.Adopting && !DecoBake.GpuLiveActive &&
+#if DEV || AUTOTEST || GPUDECO
+                    !(GpuDecoPlayer.Available && DecoBake.CpuAdopting) && !GpuDecoPlayer.Active &&
 #endif
                     Precheck.TrySkip(__instance))
                 {
@@ -157,15 +158,15 @@ namespace StutterFix
                 if (!Take(__instance)) { if (Edition.Dev) Heavy(__instance, hv0, "원래 코드로", false); return Orig(__instance); }   // 원래 코드가 돈다 (아직 아무것도 안 바꿨다)
                 long hv1 = Edition.Dev ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
                 bool sample = Edition.Dev &&
-#if DEV || AUTOTEST
-                    !DecoBake.Adopting && !DecoBake.GpuLiveActive &&
+#if DEV || AUTOTEST || GPUDECO
+                    !(GpuDecoPlayer.Available && DecoBake.CpuAdopting) && !GpuDecoPlayer.Active &&
 #endif
                     durRef(__instance) <= 0f && ((Effects + 1) % 16) == 1;   // 길이 있는 효과는 원래 코드로 다시 돌리면 애니메이션을 끊어 버려 검증하지 않는다
                 if (sample) { hidBefore.Clear(); foreach (var dec in src) hidBefore.Add(InvisibleSkip.IsHidden(dec)); }
-#if DEV || AUTOTEST
-                DecoBake.BeginGpuSource(__instance);
+#if DEV || AUTOTEST || GPUDECO
+                if (GpuDecoPlayer.Available) DecoBake.BeginGpuSource(__instance);
                 try { Run(__instance); }
-                finally { DecoBake.EndGpuSource(); }
+                finally { if (GpuDecoPlayer.Available) DecoBake.EndGpuSource(); }
 #else
                 Run(__instance);
 #endif
@@ -175,9 +176,11 @@ namespace StutterFix
             }
             catch (Exception ex)
             {
+#if DEV || AUTOTEST || GPUDECO
 #if DEV || AUTOTEST
-                if (DecoBake.Adopting) DecoBake.AdoptFailure(ex);
-                if (DecoBake.GpuLiveActive) DecoBake.RecoverGpuLive("FastMoveException:"+ex.GetType().Name);
+                if ((GpuDecoPlayer.Available && DecoBake.CpuAdopting)) DecoBake.AdoptFailure(ex);
+#endif
+                if (GpuDecoPlayer.Active) DecoBake.RecoverGpuLive("FastMoveException:"+ex.GetType().Name);
 #endif
                 // 루프 도중 예외: 게임의 설정 함수가 던진 것이다. 원래 코드도 같은 장식에서 던졌을 것이므로 다시 돌리지 않는다.
                 if (First.Length < 300) First += " [예외: " + ex.GetType().Name + " " + ex.Message + "]";
@@ -208,12 +211,14 @@ namespace StutterFix
         // 원래 코드로 돈다. 원래 코드는 대상 장식의 애니메이션 사전을 바꿀 수 있으므로, 미리 확인 중인 계획이 그 장식을 보고 있으면 취소한다.
         private static bool Orig(ffxMoveDecorationsPlus fx)
         {
+#if DEV || AUTOTEST || GPUDECO
 #if DEV || AUTOTEST
-            if (DecoBake.Adopting) DecoBake.StopAdopt("FastMove 원본 우회");
-            if (DecoBake.GpuLiveActive)
+            if ((GpuDecoPlayer.Available && DecoBake.CpuAdopting)) DecoBake.StopAdopt("FastMove 원본 우회");
+#endif
+            if (GpuDecoPlayer.Active)
             {
                 Main.Entry.Logger.Log("[gpudeco] original_guard bypass="+bypass+" running="+running+" enabled="+Enabled+" installed="+Installed
-                    +" hitch_playing="+Hitch.Playing+" resume_continuity="+FrameCompare.PlaybackContinuity
+                    +" hitch_playing="+Hitch.Playing+" resume_continuity="+GpuPlaybackState.PlaybackContinuity
                     +" instant="+InstantMove.Enabled+" instant_patched="+InstantMove.Patched+" zero="+ZeroTween.Enabled
                     +" zero_patched="+ZeroTween.Patched+" ease="+ZeroTween.CanEase);
 #if AUTOTEST
@@ -381,8 +386,8 @@ namespace StutterFix
             var tags = tagsRef(fx); var mgr = mgrRef(fx);
             if (tags == null || (object)mgr == null) return No(4);
             var dict = taggedRef(mgr);
-#if DEV || AUTOTEST
-            if(DecoBake.TryPacketTargets(fx,dict,tags,out var packetTargets))
+#if DEV || AUTOTEST || GPUDECO
+            if(GpuDecoPlayer.Available && DecoBake.TryPacketTargets(fx,dict,tags,out var packetTargets))
             {src=packetTargets;return ParallaxOk(fx)||No(0);}
 #endif
             TagIndex.Plan tagPlan;bool indexed=TagIndex.TryPlan(fx,dict,tags,out tagPlan);
@@ -505,7 +510,7 @@ namespace StutterFix
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, string> tImg = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, string>("targetImageFilename");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, Vector2> tSize = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, Vector2>("targetOriginalSize");
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, bool> tSmooth = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, bool>("targetSmoothing");
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
         // Same selector read as ApplyImage; no sprite creation or resolution.
         internal static string GpuImageSelector(ffxMoveDecorationsPlus fx)=>imgUsed(fx)?tImg(fx)??string.Empty:null;
         internal static bool TryGpuImageSprite(string selector,out TextureManager.CustomSprite sprite)
@@ -554,7 +559,7 @@ namespace StutterFix
             catch (Exception ex) { if (First.Length < 300) First += " [이미지 블록 준비 실패: " + ex.Message + "]"; imgReady = false; }
             return imgReady;
         }
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
         internal static void RunGpuImageBlock(ffxMoveDecorationsPlus fx,scrDecoration d)=>ImageBlock(fx,d);
 #endif
         private static void ImageBlock(ffxMoveDecorationsPlus fx, scrDecoration dec)
@@ -647,13 +652,13 @@ namespace StutterFix
         private static bool No(int w)
         {
 #if AUTOTEST
-            if(GpuOriginalTrace && DecoBake.GpuLiveActive)
+            if(GpuOriginalTrace && GpuDecoPlayer.Active)
                 Main.Entry.Logger.Log("[gpudeco] take_refusal reason="+w+" catchup="+EffectBudget.InCatchUp+" deco_active="+DecoAnim.Active+" pivot_parallax="+DecoAnim.CanPivotParallax+" performance=False");
 #endif
             why[w]++;Fallbacks++;if(Edition.Dev)MoveProf.Fallback(w);return false;
         }
 
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
         internal static void CompleteBakeTweens(scrDecoration dec)
         {
             DecoEngine.ReleaseDecoration(dec);
@@ -702,23 +707,23 @@ namespace StutterFix
 #if AUTOTEST
                 if(DecoBake.GpuImageShadowActive)DecoBake.ObserveGpuImagePlan(fx,targets);
 #endif
-#if DEV || AUTOTEST
-                bool packetMode=DecoBake.BeginGpuPacket(fx,targets);
+#if DEV || AUTOTEST || GPUDECO
+                bool packetMode=GpuDecoPlayer.Available && DecoBake.BeginGpuPacket(fx,targets);
 #endif
                 for (int i = 0; i < targets.Count; i++)
                 {
                     var dec = targets[i];
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
                     if(packetMode)
                     {
                         int packetTaken=DecoBake.TryGpuPacketRun(fx,targets,i,anim?usedCount:0);
                         if(packetTaken>0){i+=packetTaken-1;continue;}
                     }
-                    if (DecoBake.SkipAdopt(fx, dec, anim ? usedCount : 0))
+                    if (GpuDecoPlayer.Available && DecoBake.SkipGpuOrAdopt(fx, dec, anim ? usedCount : 0))
                     {
                         // Placement has no tween; preserve this event's metadata side effect.
-                        if (placement && !DecoBake.GpuLiveActive) setPlacement(dec, mt);
-#if AUTOTEST
+                        if (placement && !GpuDecoPlayer.Active) setPlacement(dec, mt);
+#if AUTOTEST || GPUDECO
                         if(img)DecoBake.RunGpuImageEffect(fx,dec);
 #endif
                         continue;

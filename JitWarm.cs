@@ -26,6 +26,10 @@ namespace StutterFix
                 // Mono GetFunctionPointer also initializes this experimental type.
                 // Keep its FieldRefs/buffers lazy while the feature is OFF.
                 if (t == typeof(FrameGenRuntime) || t.DeclaringType == typeof(FrameGenRuntime)) continue;
+                var owner = t;
+                while (owner.DeclaringType != null) owner = owner.DeclaringType;
+                if (owner == typeof(DecoBake) || owner.Name.StartsWith("GpuDeco", StringComparison.Ordinal)
+                    || owner.Name.StartsWith("DrawCollapse", StringComparison.Ordinal) || owner.Name.StartsWith("LiveDeco", StringComparison.Ordinal)) continue;
                 MethodInfo[] ms;
                 try { ms = t.GetMethods(All); } catch { continue; }
                 foreach (var m in ms)

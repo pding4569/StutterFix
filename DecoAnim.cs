@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using DG.Tweening.Core;
@@ -35,7 +35,7 @@ namespace StutterFix
         internal static bool Installed;
         internal static long Created, Completed, Killed, Dropped, Frames, VerifyN, VerifySteps, VerifyMismatch, Errors;
         // (측정용) 매 프레임 DOTween 갱신 앞에서 가장 먼저 돌아서 다른 측정(함수별, 애니메이션 갱신)에 안 잡혔다. 따로 잰다.
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
         internal static bool Prof = Edition.Dev || Main.MeasureBuild;
 #else
         internal static readonly bool Prof = Edition.Dev || Main.MeasureBuild;
@@ -63,6 +63,14 @@ namespace StutterFix
             internal bool GpuOrderObserved = true;
             internal long GpuOrder;
             internal double GpuStartSong;
+#elif GPUDECO
+            internal int GpuSource { get=>GpuDecoRecordStore.For(this).Source; set=>GpuDecoRecordStore.For(this).Source=value; }
+            internal int GpuStartFrame { get=>GpuDecoRecordStore.For(this).StartFrame; set=>GpuDecoRecordStore.For(this).StartFrame=value; }
+            internal int GpuGeneration { get=>GpuDecoRecordStore.For(this).Generation; set=>GpuDecoRecordStore.For(this).Generation=value; }
+            internal int GpuCaptureEpoch { get=>GpuDecoRecordStore.For(this).CaptureEpoch; set=>GpuDecoRecordStore.For(this).CaptureEpoch=value; }
+            internal bool GpuOrderObserved { get=>GpuDecoRecordStore.For(this).OrderObserved; set=>GpuDecoRecordStore.For(this).OrderObserved=value; }
+            internal long GpuOrder { get=>GpuDecoRecordStore.For(this).Order; set=>GpuDecoRecordStore.For(this).Order=value; }
+            internal double GpuStartSong { get=>GpuDecoRecordStore.For(this).StartSong; set=>GpuDecoRecordStore.For(this).StartSong=value; }
 #endif
             public scrDecoration D; public int Key; public Tween Proxy;
             internal int PosSlot = -1, PosGeneration;
@@ -228,8 +236,8 @@ namespace StutterFix
             if (FuseProbe.On) FuseProbe.NewRec(dec, key, dur, (object)old != null, oldR != null && oldR.Running);
 #endif
             r.NativeEpoch = 0;
-#if DEV || AUTOTEST
-            DecoBake.StampGpuRec(r);
+#if DEV || AUTOTEST || GPUDECO
+            if (GpuDecoPlayer.Available) DecoBake.StampGpuRec(r);
 #endif
             r.EngineOrder = DecoEngine.NextOrder();
             DecoEngine.Dirty = true;
@@ -406,8 +414,12 @@ namespace StutterFix
         private static void OnUpdate(Rec r)
         {
 #if DEV || AUTOTEST
+#if DEV || AUTOTEST
             if (UpdateCostProbe.InWindow && (r.Key == 9 || r.Key == 10))
+#endif
+#if DEV || AUTOTEST
                 UpdateCostProbe.ColorStep(r, colRef(r.D), opaRef(r.D));
+#endif
 #endif
             switch (r.Key)
             {
@@ -650,12 +662,18 @@ namespace StutterFix
 #if DEV || AUTOTEST
             if (FrameCompare.Paused) return;
 #endif
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
             GpuCpuUpdateFrame=Time.frameCount;
-            DecoBake.AdvanceClock();
-            DecoBake.ObserveGpuFrame();
-            DecoBake.AdoptFrame();
+            if (GpuDecoPlayer.Available) DecoBake.AdvanceClock();
+            #if DEV || AUTOTEST
+            if (!GpuDecoPlayer.Product) DecoBake.ObserveGpuFrame();
+#endif
+#if DEV || AUTOTEST
+            if (GpuDecoPlayer.Available) DecoBake.AdoptFrame();
+#endif
+#if DEV || AUTOTEST
             if (DecoSim.Capturing) DecoSim.BeginFrame(recs, batchOn || DecoEngine.Enabled || GroupEnabled || NativeMotion.Enabled);
+#endif
 #endif
             UpdateEvalMemo.NewFrame();
             if (batchCount != 0 && !BatchAllowed()) BatchRestoreAll();

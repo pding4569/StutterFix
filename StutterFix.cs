@@ -315,6 +315,7 @@ ParticleTextWatch.Install(harmony);
 #endif
 
                 }
+                GpuDecoPlayer.Configure();
                 if (Config.JitWarm && !Resilience.Off("JitWarm")) Try(JitWarm.Run);   // 모드 함수 미리 컴파일 (곡 초반 처음 쓰는 효과의 JIT, JitWarm.cs)
                 Entry.Logger.Log("켜짐: 패치 설치 완료 (" + Edition.Name + ")");
             }
@@ -470,6 +471,7 @@ ParticleTextWatch.Install(harmony);
             if (!installed) return;
             installed = false;
             EndDisplayTransition();
+            Try(GpuDecoPlayer.Shutdown);
 #if DEV || AUTOTEST
             Try(FreeFpsProbe.Restore);
             Try(TileSim.Shutdown);
@@ -643,8 +645,9 @@ AutoTest.Tick();
 #endif
 } FrameGen.Tick(); PcTune.Tick(); ThreadScheduling.Tick(); RenderThreadScheduling.Tick(); if(FrameQueueDelay.Enabled)FrameQueueDelay.Tick(); LowEnd.AutoTick(); LowEnd.MenuCapTick(); Updater.Tick(); TileCull.Tick(); LeakGuard.Tick(); Resilience.Tick(); if (!Hitch.Playing && Time.realtimeSinceStartup > 30f) Compat.LogSharedPatches(); Tk(1, ref q);
 #if DEV || AUTOTEST
-            if (DecoBake.Enabled) DecoBake.Tick();
+            if (!GpuDecoPlayer.Product && DecoBake.Enabled) DecoBake.Tick();
 #endif
+            GpuDecoPlayer.Tick();
             EffectBudget.Tick(); Tk(2, ref q);
             RecolorSplit.Tick(); Tk(3, ref q);
             FastBlend.Tick(); Tk(4, ref q);
@@ -821,6 +824,7 @@ BlendProbe.Tick();
         private static void ApplyExperimentalOptions()
         {
             if(Config==null)return;
+            if(installed)GpuDecoPlayer.Configure();
             Func<string,bool,bool> effective=Resilience.Eff;
             MemoryBudget.Enabled=Config.GcDynamicBudget;
             UploadBudget.Configure(Config.AsyncUploadBudget);
@@ -1249,6 +1253,8 @@ BlendProbe.Tick();
         public int LowAutoFps = 60;         // 자동 해상도 목표 FPS
         public int LowAutoMin = 50;         // 자동 해상도 최소 배율 %
         public bool ExpFsChanged = false;   // 모드가 독점 전체 화면으로 바꿔 둠 (옵션을 끄면 되돌린다)
+        public int GpuDeco = 0;             // GPU 장식 처리: 기본 꺼짐
+        public int GpuDecoImages = 1;       // GPU 장식 처리 사용 시 이미지 소유: 기본 켬
         public int ExpFullscreen = 0;       // (실험, 설정 창 그래픽) 1 = 전체 화면일 때 독점 전체 화면 (화면 지연 절반, FPS 약 -10%, 찢어짐)
         public int MaxQueuedFrames = 0;     // (실험) 앞서 준비하는 프레임 수, 0 = 게임 값 그대로
         public int LowSplit = 0;            // 효과 몰림 나누기 세기: 0 기본(10ms, 400칸), 1 잘게(5ms, 200칸), 2 아주 잘게(3ms, 120칸)

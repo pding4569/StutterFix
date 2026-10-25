@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
@@ -84,7 +84,7 @@ namespace StutterFix
             if (frameMs > WorstFrameMs) WorstFrameMs = frameMs;
         }
 
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
         static scrVisualDecoration gpuImageColorSync;
         internal static void SyncGpuImageColor(scrVisualDecoration d,Color rendered)
         {
@@ -95,10 +95,11 @@ namespace StutterFix
 #endif
         private static void Work(scrVisualDecoration inst)
         {
+            if (GpuDecoPlayer.Active && DecoBake.GpuLiveOwns(inst) && !ReferenceEquals(inst,gpuImageColorSync)) return;
 #if DEV || AUTOTEST
             // The live mesh owner controls the original renderer's forced-off bit.
             // Logical alpha continues to change; release returns bookkeeping here.
-            if (LiveDecoRenderer.Owns(inst) || DecoBake.GpuLiveOwns(inst)
+            if (LiveDecoRenderer.Owns(inst)
 #if AUTOTEST
                 && !ReferenceEquals(inst,gpuImageColorSync)
 #endif
@@ -415,7 +416,7 @@ namespace StutterFix
             var r = rendererRef(v);
             return (object)r != null && hidden.ContainsKey(r);
         }
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
         internal static bool BakeHideMismatch(scrVisualDecoration d, float alpha)
         {
             var r = rendererRef(d);

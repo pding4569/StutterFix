@@ -78,14 +78,6 @@ namespace StutterFix
             canaryPositionMax = canaryScaleMax = canaryAlphaMax = 0;
             DecoAnim.BeginBakeMeasure();
         }
-        internal static bool ForeignSetter()
-        {
-            return new[] { typeof(scrDecoration), typeof(scrVisualDecoration), typeof(scrParallax), typeof(ffxMoveDecorationsPlus) }
-                .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
-                .Where(m => m.Name.StartsWith("Set", StringComparison.Ordinal) || m.Name == "Setup" || m.Name == "UpdatePosition" || m.Name == "StartEffect")
-                .Select(Harmony.GetPatchInfo).Where(p => p != null)
-                .Any(p => p.Owners.Any(o => !o.StartsWith("StutterFix", StringComparison.Ordinal)));
-        }
         private static void AdoptCommand(string arg)
         {
             if (arg == "off") { StopAdopt("명령"); return; }

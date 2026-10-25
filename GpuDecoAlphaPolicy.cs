@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 namespace StutterFix
 {
     internal static class GpuDecoAlphaPolicy

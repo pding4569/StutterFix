@@ -50,59 +50,15 @@ namespace StutterFix
                 default: throw new ArgumentException("matshare census|on|off|state|compare");
             }
         }
-        static string F(float f) => BitConverter.SingleToInt32Bits(f).ToString("X8", CultureInfo.InvariantCulture);
-        static string V(Vector4 v) => F(v.x) + "," + F(v.y) + "," + F(v.z) + "," + F(v.w);
-        internal static SortedDictionary<string, string> Properties(Material m)
-        {
-            var p = new SortedDictionary<string, string>(StringComparer.Ordinal);
-            if (!m || !m.shader) { p["missing"] = "1"; return p; }
-            p["shader"] = m.shader.GetInstanceID().ToString(); p["queue"] = m.renderQueue.ToString();
-            p["keywords"] = string.Join(",", m.shaderKeywords.OrderBy(k => k, StringComparer.Ordinal));
-            p["instancing"] = m.enableInstancing.ToString(); p["doubleSidedGI"] = m.doubleSidedGI.ToString();
-            p["GI"] = m.globalIlluminationFlags.ToString();
-            foreach (string n in new[] { "_SrcBlend", "_DstBlend", "_BlendOp", "_ZTest", "_ZWrite", "_Cull" })
-                p[n] = m.HasProperty(n) ? F(m.GetFloat(n)) : "<absent>";
-            for (int i = 0; i < m.passCount; i++) p["pass:" + m.GetPassName(i)] = m.GetShaderPassEnabled(m.GetPassName(i)).ToString();
-            for (int i = 0; i < m.shader.GetPropertyCount(); i++)
-            {
-                string n = m.shader.GetPropertyName(i); string value;
-                switch (m.shader.GetPropertyType(i))
-                {
-                    case ShaderPropertyType.Color: value = V(m.GetColor(n)); break;
-                    case ShaderPropertyType.Vector: value = V(m.GetVector(n)); break;
-                    case ShaderPropertyType.Texture:
-                        var t = m.GetTexture(n); var s = m.GetTextureScale(n); var o = m.GetTextureOffset(n);
-                        value = (t ? t.GetInstanceID() : 0) + ":" + V(new Vector4(s.x,s.y,o.x,o.y)); break;
-                    case ShaderPropertyType.Int: value = m.GetInteger(n).ToString(); break;
-                    default: value = F(m.GetFloat(n)); break;
-                }
-                p[n] = value;
-            }
-            return p;
-        }
+        static string F(float f)=>BitConverter.SingleToInt32Bits(f).ToString("X8",CultureInfo.InvariantCulture);
+        internal static SortedDictionary<string,string> Properties(Material m)=>GpuDecoScene.Properties(m);
         static string Signature(Material m) => string.Join(";", Properties(m).Select(k => k.Key.Length + ":" + k.Key + "=" + k.Value.Length + ":" + k.Value));
         static string Bucket(Renderer r, Camera cam)
         {
             return SortingLayer.GetLayerValueFromID(r.sortingLayerID) + "/" + r.sortingLayerID + "/" + r.sortingOrder + "/" + (r.sharedMaterial ? r.sharedMaterial.renderQueue : -1) + "/" + F(Distance(r,cam));
         }
-        internal static SceneRenderOrder.Key SortKey(Renderer r, Material m, Camera cam, int slot = 0)
-            => new SceneRenderOrder.Key(SortingLayer.GetLayerValueFromID(r.sortingLayerID), r.sortingOrder,
-                m ? m.renderQueue : -1, Distance(r, cam), m ? m.GetInstanceID() : 0, r.GetInstanceID(), slot);
-        static float Distance(Renderer r, Camera cam)
-        {
-            Vector3 pos = r.bounds.center;
-            var sr = r as SpriteRenderer;
-            if (sr && sr.spriteSortPoint == SpriteSortPoint.Pivot) pos = r.transform.position;
-            float distance;
-            var mode = cam.transparencySortMode;
-            if (mode == TransparencySortMode.Default) mode = GraphicsSettings.transparencySortMode;
-            if (mode == TransparencySortMode.Default) mode = cam.orthographic ? TransparencySortMode.Orthographic : TransparencySortMode.Perspective;
-            if (mode == TransparencySortMode.CustomAxis)
-                distance = Vector3.Dot(pos, cam.transparencySortMode == TransparencySortMode.CustomAxis ? cam.transparencySortAxis : GraphicsSettings.transparencySortAxis);
-            else distance = mode == TransparencySortMode.Orthographic ? Vector3.Dot(pos - cam.transform.position, cam.transform.forward) : (pos - cam.transform.position).sqrMagnitude;
-            if (float.IsNaN(distance) || float.IsInfinity(distance)) throw new InvalidOperationException("nonfinite sort distance");
-            return distance;
-        }
+        internal static SceneRenderOrder.Key SortKey(Renderer r,Material m,Camera cam,int slot=0)=>GpuDecoScene.SortKey(r,m,cam,slot);
+        static float Distance(Renderer r,Camera cam)=>GpuDecoScene.Distance(r,cam);
         static List<Row> Scan()
         {
             var cam = MainCamera; var mgr = scrDecorationManager.instance;

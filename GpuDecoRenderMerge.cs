@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,7 +70,7 @@ namespace StutterFix
         static void PrepareGpuMerge(List<GpuLiveRow> masterRows)
         {
             if(!gpuRenderMergePrepare)return;
-            RequireLive(FrameCompare.Paused,"rendermerge allocations require paused pre-playback preparation");
+            RequireLive(GpuPlaybackState.Paused,"rendermerge allocations require paused pre-playback preparation");
             RequireLive(gpuScope.WholeSong && gpuLiveSlices.Count==1 && GpuDecoNativeBatch.Enabled && !GpuDecoNativeBatch.NoMpb,
                 "rendermerge requires song scope, independent baseline and nombp off");
             var source=gpuLiveSlices[0];
@@ -131,8 +131,8 @@ namespace StutterFix
                     int groups=BuildLiveRun(w.Draw,rows,a,b,kernel,source.Data.Items[rows[a].Item].Constants[7],w);
                     w.Draw.RunCount++;w.Draw.SubmeshCount+=groups;
                     var mesh=w.Draw.Meshes[meshAt];var renderer=w.Draw.Renderers[rendererAt];
-                    RequireLive(MatShare.SortKey(rows[a].R,rows[a].M,gpuLiveCamera).SameBucket(
-                        MatShare.SortKey(renderer,renderer.sharedMaterial,gpuLiveCamera)),"rendermerge sort bucket changed");
+                    RequireLive(GpuDecoScene.SortKey(rows[a].R,rows[a].M,gpuLiveCamera).SameBucket(
+                        GpuDecoScene.SortKey(renderer,renderer.sharedMaterial,gpuLiveCamera)),"rendermerge sort bucket changed");
                     for(int n=a;n<b;)
                     {
                         int end=n+1;
@@ -287,10 +287,10 @@ namespace StutterFix
                 bool cached=GpuMergeFallbackMatches();
                 if(!cached)
                 {
-                    RequireLive(FrameCompare.Paused,"rendermerge fallback layout changed; prepare while paused before next playback");
+                    RequireLive(GpuPlaybackState.Paused,"rendermerge fallback layout changed; prepare while paused before next playback");
                     var rows=gpuMergeRows;DisposeGpuMerge();PrepareGpuMerge(rows);
                 }
-                GpuLog("rendermerge_ready=True cached="+cached+" paused="+FrameCompare.Paused
+                GpuLog("rendermerge_ready=True cached="+cached+" paused="+GpuPlaybackState.Paused
                     +" CPU_fallback_barriers="+gpuLiveCpuFallbackCount);return true;
             }
             if(sub=="on" || sub=="off")

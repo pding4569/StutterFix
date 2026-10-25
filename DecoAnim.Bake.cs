@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Diagnostics;
 using UnityEngine;
@@ -7,7 +7,8 @@ namespace StutterFix
 {
     internal static partial class DecoAnim
     {
-        private static readonly long[] bakeTicks = new long[5];
+        private static long[] bakeTickStorage;
+        private static long[] bakeTicks => bakeTickStorage ?? (bakeTickStorage = new long[5]);
         private static long bakeCalls, bakeHidden, bakeDeferred;
         internal static void BeginBakeMeasure() { Array.Clear(bakeTicks,0,5); bakeCalls = bakeHidden = bakeDeferred = 0; }
         internal static void BakeReport(double frames)
@@ -17,7 +18,7 @@ namespace StutterFix
             for (int i = 0; i < 5; i++) parts[i] = names[i]+"ms="+(bakeTicks[i]*1000.0/Stopwatch.Frequency/frames).ToString("F6",System.Globalization.CultureInfo.InvariantCulture);
             Main.Entry.Logger.Log("[굽기채택 쓰기] "+string.Join(" ",parts)+" 호출="+bakeCalls+" 숨김="+bakeHidden+" Transform미룸="+bakeDeferred+"; 64호출당1 표본추정, 목록/평가 별도");
         }
-#if AUTOTEST
+#if AUTOTEST || GPUDECO
         internal static void CopyGpuImageFields(scrDecoration d,float[] v)
         {
             pivotPosRef(d)=new Vector2(v[0],v[1]);pivotOffRef(d)=new Vector2(v[2],v[3]);rotRef(d)=v[4];scaleRef(d)=new Vector2(v[5],v[6]);

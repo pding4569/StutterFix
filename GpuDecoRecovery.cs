@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using DG.Tweening;
 using UnityEngine;
@@ -25,7 +25,7 @@ namespace StutterFix
         static Vector2 gpuTargetUndoStart;
         // Research candidate: immutable CopyEvent values, in original channel order.
         // No per-target allocations; disabled until the short comparison passes.
-        static bool gpuEffectCache;
+        static bool gpuEffectCache=false;
         static readonly int[] gpuEffectChannels=new int[16];
         static int gpuEffectChannelCount;
         static float gpuEffectEaseEnd=1f,gpuEffectEaseDurEnd=1f;
@@ -93,6 +93,7 @@ namespace StutterFix
         {
             if(!gpuLiveActive)return true;
             if(gpuRecoveryRunning)return false;
+            if (GpuDecoPlayer.Product) GpuDecoPlayer.Skip("원본 처리로 복귀: " + reason);
             gpuRecoveryRunning=true;bool continued=false;
             try
             {

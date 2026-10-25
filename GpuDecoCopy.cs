@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -12,9 +12,9 @@ namespace StutterFix
     internal sealed class GpuDecoCopy : IDisposable
     {
         internal static bool Enabled;
-        internal static bool EightUavEnabled;
-        internal static bool MaskedEnabled; // explicit research candidate, default off
-        internal static bool SingleSubmission; // 연구 전용, 기본 꺼짐
+        internal static bool EightUavEnabled=false;
+        internal static bool MaskedEnabled=false; // explicit research candidate, default off
+        internal static bool SingleSubmission=false; // 연구 전용, 기본 꺼짐
         internal static long SingleExecutions, SingleFallbacks;
         internal static string Status="off";
 #if AUTOTEST

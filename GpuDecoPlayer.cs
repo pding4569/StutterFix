@@ -1,0 +1,326 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.IO;
+using System.Text;
+using System.Security.Cryptography;
+using ADOFAI;
+using DG.Tweening;
+using HarmonyLib;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+namespace StutterFix
+{
+    // The small entry point must stay independent of DecoBake's static storage.
+    internal static class GpuDecoPlayer
+    {
+        internal static bool RuntimeInitialized { get; private set; }
+        internal static bool Product { get; private set; }
+        internal static bool Available => Product && RuntimeInitialized || Edition.Dev || Edition.AutoTest;
+        internal static bool Active => Available && DecoBake.GpuLiveActive;
+        internal static bool Preparing { get; private set; }
+        static GpuDecoPlayerLifetime lifetime;
+        static bool reported, orderReported, cleanupPending;
+        static Harmony hooks;
+        const string Owner = "StutterFix.GpuDeco.Player";
+
+        internal static void Configure()
+        {
+            if (Main.Config.GpuDeco != 1) { if (Product) Shutdown(); return; }
+            if (Product) return;
+            Product = true; lifetime.NewRound(); reported=false;
+            try
+            {
+                if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Direct3D11 || !SystemInfo.supportsComputeShaders)
+                    throw new NotSupportedException("D3D11 컴퓨트 셰이더를 사용할 수 없음");
+                // Resolve before applying patches. With the option off no method lookup,
+                // event subscription, DecoBake initializer or GPU allocation occurs.
+                var setup = AccessTools.Method(typeof(scrDecoration), "Setup", new[] { typeof(LevelEvent), typeof(bool).MakeByRefType(), typeof(bool) });
+                var prep = AccessTools.Method(typeof(scnGame), "PrepVfx", new[] { typeof(List<scrFloor>), typeof(int), typeof(List<LevelEvent>), typeof(bool) });
+                var update = AccessTools.Method(typeof(scrController), "Update");
+                if (setup == null || prep == null || update == null) throw new MissingMethodException("재생 준비 후크 없음");
+                RuntimeInitialized = true;
+                DecoBake.EnablePlayer();
+                hooks = new Harmony(Owner);
+                hooks.Patch(setup, postfix: new HarmonyMethod(typeof(DecoBake), "SetupPostfix"));
+                hooks.Patch(prep, postfix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(Prepared)) { priority = Priority.Last });
+                hooks.Patch(update, prefix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(BeforeControllerUpdate)) { priority = Priority.First });
+                // These hooks own the product lifetime independently of other modules.
+                foreach (var pair in new[] {
+                    (typeof(scrController), "FailAction"), (typeof(scrController), "Fail2Action"),
+                    (typeof(scrController), "OnLandOnPortal"), (typeof(scrController), "Restart"),
+                    (typeof(scrController), "ResetCustomLevel"), (typeof(scrController), "QuitToMainMenu"),
+                    (typeof(scnEditor), "SwitchToEditMode"), (typeof(scnEditor), "QuitToMenu"),
+                    (typeof(scnEditor), "Play"), (typeof(scnGame), "ResetScene") })
+                {
+                    var method = AccessTools.Method(pair.Item1, pair.Item2);
+                    if (method == null) throw new MissingMethodException(pair.Item1.Name + "." + pair.Item2);
+                    hooks.Patch(method, prefix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(Ending)) { priority = Priority.First });
+                }
+                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneChanged;
+            }
+            catch (Exception e) { Skip(e.Message); Shutdown(); }
+        }
+
+        static void SceneChanged(UnityEngine.SceneManagement.Scene oldScene, UnityEngine.SceneManagement.Scene newScene) => End("화면 전환");
+        static void Ending(MethodBase __originalMethod) => End(__originalMethod.Name);
+
+        static void Prepared(List<scrFloor> __0)
+        {
+            if (!Product || Main.Config.GpuDeco != 1) return;
+            // A new PrepVfx is the sole retry boundary. Nothing may prepare during play.
+            if (!lifetime.TryPrepare()) return;
+            reported = orderReported = cleanupPending = false;
+            Preparing = true;
+            try
+            {
+                if (!FastMove.Installed || !FastMove.Enabled || !DecoAnim.Active || !ZeroTween.CanEase)
+                    throw new InvalidOperationException("장식 이동 최적화가 꺼져 있음");
+                if (Compat.QuartzOptimizer || DecoBake.ForeignSetter()) throw new InvalidOperationException("다른 모드의 장식 처리와 겹침");
+                if (Screen.width <= 0 || Screen.height <= 0) throw new InvalidOperationException("화면 크기를 확인할 수 없음");
+                var camera = GpuDecoScene.FindMain();
+                if (!camera.orthographic || camera.stereoEnabled || camera.rect != new Rect(0, 0, 1, 1))
+                    throw new InvalidOperationException("지원하지 않는 카메라 설정 (직교 "+camera.orthographic+", 렌더 텍스처 "+(camera.targetTexture?camera.targetTexture.name:"없음")+", VR "+camera.stereoEnabled+", 영역 "+camera.rect+")");
+                if (UnityEngine.Object.FindObjectsByType<SortingGroup>(FindObjectsInactive.Include, FindObjectsSortMode.None).Any(g => g.isActiveAndEnabled)
+                    || UnityEngine.Object.FindObjectsByType<SpriteMask>(FindObjectsInactive.Include, FindObjectsSortMode.None).Any(m => m.enabled && m.gameObject.activeInHierarchy))
+                    throw new InvalidOperationException("정렬 그룹 또는 스프라이트 마스크 사용 중");
+                DecoBake.PreparePlayer(__0);
+                lifetime.Ready();
+            }
+            catch (Exception e) { Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false; }
+            finally { Preparing = false; }
+        }
+
+        static void BeforeControllerUpdate()
+        {
+            if (!Product || lifetime.Blocked || !lifetime.Prepared) return;
+            var c = ADOBase.controller; var song = scrConductor.instance;
+            if (!c || !song || !song.hasSongStarted || !c.gameworld || c.paused || AudioListener.pause || Time.timeScale <= 0) return;
+            if (scnEditor.instance && !scnEditor.instance.playMode) return;
+            if (!lifetime.TryActivate()) return;
+            try { DecoBake.StartPlayer(); }
+            catch (Exception e) { Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false; }
+        }
+
+        internal static void Tick()
+        {
+            if (!Product || !RuntimeInitialized) return;
+            if (cleanupPending) { cleanupPending=false; DecoBake.ReleasePlayerLevel(); }
+            if (lifetime.Blocked) return;
+            if (lifetime.Attempted && !DecoBake.GpuLiveActive) { Skip("원본 장식 처리로 복귀함"); DecoBake.ReleasePlayerLevel(); return; }
+            if (lifetime.Prepared) DecoBake.Tick();
+        }
+        internal static void Skip(string reason)
+        {
+            lifetime.Fail();
+            cleanupPending = RuntimeInitialized;
+            if (reported) return;
+            reported = true;
+            Main.Entry.Logger.Log("[GPU 장식] 건너뜀: " + reason.Replace('\r', ' ').Replace('\n', ' '));
+        }
+        internal static void OrderViolation(string reason)
+        {
+            if (orderReported) return;
+            orderReported = true;
+            Main.Entry.Logger.Log("[GPU 장식] 순서 점검: " + reason);
+        }
+        internal static void End(string reason)
+        {
+            if (!Product || !RuntimeInitialized) return;
+            lifetime.NewRound();
+            cleanupPending=false;
+            try { DecoBake.ReleasePlayerLevel(); }
+            catch (Exception e) { Skip("종료 복원: " + e.Message); }
+        }
+        internal static void Shutdown()
+        {
+            if (!Product) return;
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneChanged;
+            hooks?.UnpatchAll(Owner); hooks = null;
+            try { if (RuntimeInitialized) { DecoBake.ReleasePlayerLevel(); DecoBake.Shutdown(); } }
+            finally { Product = false; lifetime.Fail(); cleanupPending = false; }
+        }
+    }
+
+    internal static partial class DecoBake
+    {
+        // Prevent beforefieldinit from allocating tables at a guarded call site.
+        static DecoBake() { }
+        private static string TableFingerprint()
+        {
+            using (var hash = SHA256.Create())
+            using (var sink = new CryptoStream(Stream.Null, hash, CryptoStreamMode.Write))
+            using (var writer = new BinaryWriter(sink, Encoding.UTF8, true))
+            {
+                writer.Write(table.Pitch); writer.Write(table.TweenScale);
+                for (int d = 0; d < table.Decorations.Length; d++)
+                {
+                    writer.Write(table.Decorations[d].Reasons.Count == 0);
+                    foreach (float v in table.Decorations[d].Initial) writer.Write(v);
+                    for (int c = 0; c < 16; c++)
+                    {
+                        var track = table.Tracks[d*16+c]; writer.Write(track.Length);
+                        foreach (var s in track)
+                        { writer.Write(s.T0); writer.Write(s.Duration); writer.Write(s.Start); writer.Write(s.End);
+                          writer.Write(s.Target); writer.Write(s.Ease); writer.Write(s.Over); writer.Write(s.Period); }
+                    }
+                }
+                writer.Flush(); sink.FlushFinalBlock();
+                return BitConverter.ToString(hash.Hash).Replace("-", "");
+            }
+        }
+        internal static bool ForeignSetter()
+        {
+            return new[] { typeof(scrDecoration), typeof(scrVisualDecoration), typeof(scrParallax), typeof(ffxMoveDecorationsPlus) }
+                .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                .Where(m => m.Name.StartsWith("Set", StringComparison.Ordinal) || m.Name == "Setup" || m.Name == "UpdatePosition" || m.Name == "StartEffect")
+                .Select(Harmony.GetPatchInfo).Where(p => p != null)
+                .Any(p => p.Owners.Any(o => !o.StartsWith("StutterFix", StringComparison.Ordinal)));
+        }
+        internal static bool CpuAdopting
+        {
+            get
+            {
+#if DEV || AUTOTEST
+                return Adopting;
+#else
+                return false;
+#endif
+            }
+        }
+        internal static bool SkipGpuOrAdopt(ffxMoveDecorationsPlus fx,scrDecoration d,int keys)
+        {
+#if DEV || AUTOTEST
+            return SkipAdopt(fx,d,keys);
+#else
+            return GpuLiveSkip(fx,d,keys);
+#endif
+        }
+        internal static void EnablePlayer()
+        {
+            enabled = true;
+            gpuImageCandidate = Main.Config.GpuDecoImages == 1;
+            gpuImageOwn = true;
+        }
+        internal static void PreparePlayer(List<scrFloor> floors)
+        {
+            gpuScope = GpuDecoScopePlan.Song();
+            gpuImageCandidate = Main.Config.GpuDecoImages == 1;
+            gpuImageOwn = true;
+            GpuDecoNativeBatch.Enabled = true;
+            GpuDecoCopy.Enabled = true;
+            gpuCollapsePrepare = true;
+            BeginPrepCollection(floors, true);
+            while (collector != null)
+            {
+                if (!collector.MoveNext()) collector = null;
+            }
+            if (job != null) job.GetAwaiter().GetResult();
+            Tick();
+            RequireLive(ready && table != null, status);
+            RequireLive(table.Supported >= GpuDecoPlayerPolicy.MinimumOwned, "지원되는 장식이 적음 (64개 미만)");
+            if (gpuImageCandidate) CompilePlayerImages();
+            PrepareGpuLive();
+            RequireLive(gpuLiveOwnedIndices.Length >= GpuDecoPlayerPolicy.MinimumOwned, "GPU 소유가 가능한 장식이 적음 (64개 미만)");
+        }
+        static void CompilePlayerImages()
+        {
+            ClearGpuImagePlan();
+            RequireLive(baselineEvents != null && baselineVisualFlags != null && baselineImageSelectors != null, "이미지 예약 정보 없음");
+            var input = new GpuDecoImageTimeline.Input[baselineEvents.Length];
+            for (int i = 0; i < input.Length; i++)
+            {
+                var e = baselineEvents[i];
+                input[i] = new GpuDecoImageTimeline.Input(i, e.Source, e.T0, baselineVisualFlags[i], baselineImageSelectors[i], e.Targets);
+            }
+            gpuImageTimeline = GpuDecoImageTimeline.Compile(baselineObjects.Length, input);
+            gpuImageVariants = new GpuDecoImageVariant[gpuImageTimeline.SelectorCount];
+            for (int i = 0; i < gpuImageVariants.Length; i++) gpuImageVariants[i] = GpuDecoImageVariant.Capture(gpuImageTimeline.Selector(i));
+        }
+        internal static void StartPlayer()
+        {
+            RequireLive(gpuLivePrepared && !gpuRecoveryBlocked, "곡 준비가 취소됨");
+            StartGpuLive();
+            if (gpuCollapseTexture != null && gpuLiveCpuFallbackCount == 0)
+            {
+                ValidateDrawCollapse();
+                gpuCollapseOn = true;
+                foreach (var slice in gpuLiveSlices) slice.RefreshAlpha();
+                DispatchGpuLiveSlice(BakeTime);
+            }
+            Main.Entry.Logger.Log("[GPU 장식] 켜짐: 소유 " + GpuLiveOwned + "개, 그리기 통합 " + (gpuCollapseOn ? "켬" : "끔") + ", 이미지 " + (gpuImageCandidate ? "켬" : "끔"));
+        }
+        internal static void ReleasePlayerLevel()
+        {
+            DisposeGpuLive();
+            CancelBuild(); initial.Clear(); ClearBaseline(); table = null;
+            manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
+            gpuTrimBounds.Clear(); gpuImageBlock.Clear();
+#if !DEV && !AUTOTEST
+            DecoAnim.ClearGpuRecordMetadata();
+#endif
+        }
+
+        static int playerOwnedCursor;
+        static void CheckPlayerFrame()
+        {
+            if (!GpuDecoPlayer.Product) return;
+            RequireLive(manager && manager==scrDecorationManager.instance && gpuLiveCamera && gpuLiveCamera.orthographic
+                && gpuLiveCamera.rect==new Rect(0,0,1,1)
+                && Mathf.Abs(gpuLiveCamera.transform.forward.z)>.999999f
+                && ADOBase.controller && ADOBase.controller.camy, "카메라 또는 장식 관리자 변경");
+            RequireLive(FastMove.Enabled && DecoAnim.Active, "장식 이동 처리 중단");
+            RequireLive(GpuDecoCopy.ReadTotals().Errors==0, "GPU 버퍼 복사 오류");
+            var slice=gpuLiveSlices[0];
+            for(int n=0;n<Math.Min(4,gpuLiveOwnedIndices.Length);n++)
+            {
+                int master=playerOwnedCursor++%gpuLiveOwnedIndices.Length;
+                if(GpuCpuFallback(master))continue;
+                var original=gpuLiveOwnedRenderers[master];
+                int item=gpuLiveMasterToSliceItem[master][0];
+                RequireLive(original && original.sprite && original.sprite.texture && item>=0 && slice.Renderers[item], "소유 장식 또는 GPU 렌더러 소실");
+                RequireLive(original.enabled && original.gameObject.activeInHierarchy && original.forceRenderingOff, "다른 처리에서 소유 렌더러 상태 변경");
+                RequireLive(original.maskInteraction==SpriteMaskInteraction.None && !original.GetComponentInParent<SortingGroup>(), "소유 장식 마스크 또는 정렬 그룹 변경");
+                var material=original.sharedMaterial;
+                RequireLive(material && material.shader && material.shader.name=="Sprites/Tile" && material.passCount==1
+                    && material.GetInstanceID()==slice.Data.Items[item].MaterialId, "소유 장식 재질 변경");
+                if(!GpuImageActor(gpuLiveOwnedIndices[master]))
+                    RequireLive(original.sprite.texture.GetInstanceID()==slice.Data.Items[item].TextureId, "준비하지 않은 텍스처 변경");
+            }
+            if(gpuLiveOwnedIndices.Length>0)playerOwnedCursor%=gpuLiveOwnedIndices.Length;
+        }
+    }
+
+    internal static class GpuPlaybackState
+    {
+        internal static bool Paused
+        {
+            get
+            {
+#if DEV || AUTOTEST
+                if (!GpuDecoPlayer.Product) return FrameCompare.Paused;
+#endif
+                return ADOBase.controller && ADOBase.controller.paused;
+            }
+        }
+        internal static bool PlaybackContinuity
+        {
+            get
+            {
+#if DEV || AUTOTEST
+                if (!GpuDecoPlayer.Product) return FrameCompare.PlaybackContinuity;
+#endif
+                return scrConductor.instance && scrConductor.instance.hasSongStarted;
+            }
+        }
+        internal static bool PreservesBakeTweenScale(float scale)
+        {
+#if DEV || AUTOTEST
+            if (!GpuDecoPlayer.Product) return FrameCompare.PreservesBakeTweenScale(scale);
+#endif
+            return Paused && DOTween.timeScale == 0;
+        }
+    }
+}

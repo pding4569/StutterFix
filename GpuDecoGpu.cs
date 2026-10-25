@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || UNITY_EDITOR
+#if DEV || AUTOTEST || GPUDECO || UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -135,7 +135,7 @@ namespace StutterFix
             }
             catch { Dispose(); throw; }
         }
-#if AUTOTEST || UNITY_EDITOR
+#if AUTOTEST || GPUDECO || UNITY_EDITOR
         // Event-bound image update. Never resize or replace a mesh/VB while a
         // native copy context may retain its pointer. Caller must recover CPU
         // ownership if a GPU upload throws; validation completes before writes.
@@ -179,7 +179,7 @@ namespace StutterFix
 #endif
         internal ComputeShader Shader=>shader;
         internal bool HasImageGeometry=>hasImageGeometry;
-#if AUTOTEST || UNITY_EDITOR
+#if AUTOTEST || GPUDECO || UNITY_EDITOR
         readonly Vector4[] imageMatrixUpload=new Vector4[8];
         internal void UpdateImageMatrix(int index,Matrix4x4 local,Vector2[] corners,bool flipX,bool flipY)
         {

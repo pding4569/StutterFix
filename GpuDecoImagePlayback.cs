@@ -1,4 +1,4 @@
-﻿#if AUTOTEST
+#if AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +56,7 @@ namespace StutterFix
             if(!gpuImageCandidate||!gpuImageOwn||gpuImageVariants==null)return;
             RequireLive(gpuImageTimeline!=null&&gpuImageTimeline.SelectorCount==gpuImageVariants.Length,
                 "image collapse timeline missing");
-            var selected=gpuImageTimeline.SelectWindowVariants(GpuImageCollapseStart,GpuImageCollapseEnd,gpuLiveOwnedIndices);
+            var selected=gpuImageTimeline.SelectWindowVariants(GpuDecoPlayer.Product ? double.MinValue : GpuImageCollapseStart,GpuDecoPlayer.Product ? double.MaxValue : GpuImageCollapseEnd,gpuLiveOwnedIndices);
             int retained=0,skipped=0;
             for(int i=0;i<gpuImageVariants.Length;i++)
             {
@@ -128,7 +128,9 @@ namespace StutterFix
         static bool ImageOnlyEvent(ffxMoveDecorationsPlus f)=>gpuImageCandidate&&f.imageFilenameUsed&&!f.originalSizeUsed&&!f.smoothingUsed&&!f.cropPivotOffsetUsed;
         static void ClearGpuImagePlaybackMap()
         {
+#if AUTOTEST
             StopGpuImageVertexDiagnostic(false);
+#endif
             gpuImageRefreshPose=false;
             gpuImageCollapseAddresses=null;gpuImageCollapseAddressOwner=null;gpuImageCollapseRegisteredTextures=null;gpuImageCollapseVariants=null;
             gpuImageEligible=Array.Empty<bool>();gpuImageAffected=Array.Empty<bool>();gpuImageWake.Clear();gpuImagePendingScratch.Clear();gpuImagePlannedTargets.Clear();
@@ -186,6 +188,30 @@ namespace StutterFix
             DecoAnim.CopyGpuImageFields(d,gpuImageFields);
             InvisibleSkip.SyncGpuImageColor(d,new Color(gpuImageFields[7],gpuImageFields[8],gpuImageFields[9],gpuImageFields[10]*gpuImageFields[11]));
         }
+        static GpuDecoData.Item CaptureGpuImageItem(scrVisualDecoration d,GpuDecoImageVariant v)=>CaptureGpuImageItem(d,v,out _);
+        static GpuDecoData.Item CaptureGpuImageItem(scrVisualDecoration d,GpuDecoImageVariant v,out LiveDecoGeometry g)
+        {
+            var r=d.spriteRenderer;
+            g=LiveDecoGeometry.Capture(d.pivotTrans,d.childTransform,r.transform,v.Vertices,r.flipX,r.flipY);
+            RequireLive(g!=null,"image fixture unsupported child chain");
+            var ts=d.scaleMultiplier*d.textureScaleMultiplier;var c=d.color;var px=d.parallax.multiplier;
+            var item=new GpuDecoData.Item
+            {
+                Id=d.GetInstanceID(),TextureId=v.TextureId,
+                Flags=(d.lockScale?1:0)|(d.lockRotation?2:0)|(d.parallax.dontAlterX?4:0)|(d.parallax.dontAlterY?8:0)|(r.flipX?16:0)|(r.flipY?32:0),
+                Constants=new[]{ts.x,ts.y,d.textureScaleMultiplier.x,d.textureScaleMultiplier.y,d.startRot,d.croppedPivotOffset.x,d.croppedPivotOffset.y,d.pivotTrans.position.z},
+                Initial=new[]{d.pivotPosVec.x,d.pivotPosVec.y,d.pivotOffsetVec.x,d.pivotOffsetVec.y,d.rotAngle,d.scaleVec.x,d.scaleVec.y,c.r,c.g,c.b,c.a,d.opacity,px.x,px.y,d.parallaxOffset.x,d.parallaxOffset.y},
+                Triangles=v.Triangles.Select(x=>(int)x).ToArray()
+            };
+            for(int ch=0;ch<16;ch++)item.Tracks[ch]=Array.Empty<DecoBakeCore.Segment>();
+            for(int n=0;n<4;n++)
+            {
+                PutVec(item.Shape,n*3,g.Shape[n]);item.UV[n*2]=v.UV[n].x;item.UV[n*2+1]=v.UV[n].y;
+            }
+            var origin=g.Offset(Vector2.zero);PutVec(item.OffsetBasis,0,origin);
+            PutVec(item.OffsetBasis,3,g.Offset(Vector2.right)-origin);PutVec(item.OffsetBasis,6,g.Offset(Vector2.up)-origin);
+            return item;
+        }
         static void RefreshGpuImageGeometry(int master,scrVisualDecoration d)
         {
             // Explicit diagnostic A only; no per-frame Transform writes.
@@ -196,7 +222,7 @@ namespace StutterFix
             var variant=GpuDecoImageVariant.CaptureSprite(source.sprite);
             RequireLive(variant.Status==GpuDecoImageVariant.Kind.ReadyQuad,"GPU image no longer a quad");
             variant=TightVariant(variant,source.sprite.texture);
-            var next=ImageFixtureItem(d,variant,out var geometry);
+            var next=CaptureGpuImageItem(d,variant,out var geometry);
             for(int s=0;s<gpuLiveSlices.Count;s++)
             {
                 var slice=gpuLiveSlices[s];int item=gpuLiveMasterToSliceItem[master][s];
@@ -229,7 +255,9 @@ namespace StutterFix
         }
         static void CaptureGpuImageActivation()
         {
+#if AUTOTEST
             StopGpuImageVertexDiagnostic(false);
+#endif
             gpuImageWake.Clear();gpuImageSetters=gpuImageUploads=gpuImageFlushes=gpuImageRestores=gpuImagePoseUpdates=gpuImageAlphaChecks=gpuImageAlphaDirty=0;
             if(!gpuImageCandidate||!gpuImageOwn)return;
             for(int m=0;m<gpuLiveOwnedIndices.Length;m++)
@@ -310,6 +338,7 @@ namespace StutterFix
                 }
             }
         }
+#if AUTOTEST
         static void AuditGpuImagePixels()
         {
             RequireLive(gpuLiveActive&&FrameCompare.Paused&&gpuImageCandidate,"image audit requires paused active GPU");
@@ -415,6 +444,7 @@ namespace StutterFix
             {RequireLive(gpuLiveActive&&gpuImageCandidate,"active image candidate required");gpuImageUploadFault=true;return true;}
             return false;
         }
+#endif
     }
 }
 #endif

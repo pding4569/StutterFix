@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>StutterFix</AssemblyName>
     <RootNamespace>StutterFix</RootNamespace>
+    <DefineConstants>$(DefineConstants);GPUDECO</DefineConstants>
     <LangVersion>latest</LangVersion>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -30,6 +31,11 @@
 
   <ItemGroup>
     <Compile Include="StutterFix.cs" />
+    <Compile Include="GpuDecoPlayer.cs" />
+    <Compile Include="GpuDecoPlayerPolicy.cs" />
+    <Compile Include="GpuDecoRecordStore.cs" />
+    <EmbeddedResource Include="tools/gpudeco-lab/evidence/drawcollapse5/bundle/stutterfix_gpudeco" LogicalName="StutterFix.gpudeco" />
+    <Compile Include="GpuDecoScene.cs" />
     <Compile Include="HitchHistogram.cs" />
     <Compile Include="HitchHeatmap.cs" />
     <Compile Include="CpuSetPolicy.cs" />
@@ -73,53 +79,53 @@
     <Compile Include="MatShare.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="MatShareCompare.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="MatSharePolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="SceneRenderOrder.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="DrawCollapsePolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoDrawCollapse.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoDrawCollapseRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="SceneRenderOrder.cs" />
+    <Compile Include="DrawCollapsePolicy.cs" />
+    <Compile Include="GpuDecoDrawCollapse.cs" />
+    <Compile Include="GpuDecoDrawCollapseRenderer.cs" />
     <Compile Include="GpuDecoDrawCollapseGate.cs" Condition="'$(AutoTestBuild)' == '1'" />
-    <Compile Include="RenderMergeLayoutPolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="RenderMergeLayoutPolicy.cs" />
     <Compile Include="LiveDeco.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoData.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoGpu.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoNativeBatch.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoCopy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoData.cs" />
+    <Compile Include="GpuDecoGpu.cs" />
+    <Compile Include="GpuDecoNativeBatch.cs" />
+    <Compile Include="GpuDecoCopy.cs" />
     <Compile Include="GpuDecoThreadCpu.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoRenderMetrics.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoAlphaPolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoScopePlan.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoCopyMask.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoAlphaPolicy.cs" />
+    <Compile Include="GpuDecoScopePlan.cs" />
+    <Compile Include="GpuDecoCopyMask.cs" />
     <Compile Include="GpuDecoCostProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoResume.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoRecovery.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoResume.cs" />
+    <Compile Include="GpuDecoRecovery.cs" />
     <Compile Include="GpuDecoPacketFixture.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoPackets.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoPacketTargets.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoPackets.cs" />
+    <Compile Include="GpuDecoPacketTargets.cs" />
     <Compile Include="GpuDecoAblation.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoStorage.cs" Condition="'$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoImageTimeline.cs" Condition="'$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoImagePlan.cs" Condition="'$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoImageVariants.cs" Condition="'$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoImagePlayback.cs" Condition="'$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoTrim.cs" Condition="'$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoImageTimeline.cs" />
+    <Compile Include="GpuDecoImagePlan.cs" />
+    <Compile Include="GpuDecoImageVariants.cs" />
+    <Compile Include="GpuDecoImagePlayback.cs" />
+    <Compile Include="GpuDecoTrim.cs" />
     <Compile Include="GpuTileComposite.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoImageGeometryFixture.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoImageTextureFixture.cs" Condition="'$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoActivation.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuLateListCache.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoActivation.cs" />
+    <Compile Include="GpuLateListCache.cs" />
     <Compile Include="HiddenDecoSynergy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DecoAnim.Hidden.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="DecoAnim.GpuResume.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DecoAnim.GpuResume.cs" />
     <Compile Include="GpuDecoSnapshot.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoOrderProbe.cs" Condition="'$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoExport.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoRenderMerge.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoExport.cs" />
+    <Compile Include="GpuDecoRenderMerge.cs" />
     <Compile Include="GpuDecoRenderMergeGate.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="RenderMergeGatePolicy.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoChanges.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="LiveDecoGeometry.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="LiveDecoScripts.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="LiveDecoGeometry.cs" />
+    <Compile Include="LiveDecoScripts.cs" />
     <Compile Include="LiveDecoGate2.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoGate2Policy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoPolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
@@ -159,12 +165,12 @@
     <Compile Include="DecoRender.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="SortProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DecoSim.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="DecoBake.Core.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DecoBake.Core.cs" />
     <Compile Include="DecoBake.Adopt.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DecoBake.Live.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DecoBake.AdoptSig.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="DecoAnim.Bake.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="DecoBake.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="DecoAnim.Bake.cs" />
+    <Compile Include="DecoBake.cs" />
     <Compile Include="FreeFpsProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="BigLevel.cs" />
     <Compile Include="PcTune.cs" />
