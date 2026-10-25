@@ -76,6 +76,8 @@
     <Compile Include="SceneRenderOrder.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DrawCollapsePolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoDrawCollapse.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoDrawCollapseRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoDrawCollapseGate.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="RenderMergeLayoutPolicy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDeco.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoData.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

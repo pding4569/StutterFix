@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>UNITY_EDITOR;DECOBAKE_FIXTURE</DefineConstants>
+    <EditorManaged Condition="'$(EditorManaged)' == ''">E:/Unity/Editor/6000.3.10f1/Editor/Data/Managed</EditorManaged>
+    <GameManaged Condition="'$(GameManaged)' == ''">D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed</GameManaged>
+  </PropertyGroup>
+  <!-- Compile the lab sources without launching Editor, loading a chart, or
+       writing a bundle. Unity import/device execution remain separate checks. -->
+  <ItemGroup>
+    <Compile Include="../../../DecoBake.Core.cs" />
+    <Compile Include="../../../GpuDecoData.cs" />
+    <Compile Include="../../../GpuDecoGpu.cs" />
+    <Compile Include="../../gpudeco-lab/*.cs" />
+    <Reference Include="$(EditorManaged)/UnityEditor.dll"><Private>false</Private></Reference>
+    <Reference Include="$(EditorManaged)/UnityEngine/*.dll"><Private>false</Private></Reference>
+    <Reference Include="$(GameManaged)/DOTween.dll"><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

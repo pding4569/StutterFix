@@ -1,4 +1,14 @@
 
+## Codex 회차 4 구현 (2026-10-25, 게임·설치·커밋 없음)
+
+- 1관문 통과 추가 결정을 반영해 단일 submesh/재질 대표·직접 EvaluateCollapse·압축 배열/원본2D·on/off 복구를 구현했다.
+- 외부81종 새 계산: 배열3개55종163.75MiB + 원본2D26종(새 이미지 할당0), 필요29슬롯. 실제 할당·여유VRAM 미검증이다.
+- DEV/Player/PlayerAuto 오류0/0/0·경고46/36/39, LoadCheck279/229/280곳 오류0, 정책46·생성기9·SM5컴파일4 통과. Unity 랩 C# 오류0·경고12다.
+- 기존 Editor 로그의 패키지 서버 오류(return1)·라이선스 미발견(return198)을 보존했다. 이번 동일 Editor 반복0·새 번들 미완성이며 실패 문구는 상세 결과에 기록했다.
+- 새 기본 ABBA4·원본픽셀182단계는 생성만, 명시 모드·diag1/diag2 JSON 해시 보존이다. 새 번들 생성/재로드 전 실행 불가·장치 호출/예약 없음이다.
+- `DRAWCOLLAPSE=FAIL reason=UNITY_BUNDLE_NOT_BUILT`; 실제 FPS·draw·픽셀·끊김·준비구간수·전체수명·설치복원NA. 게임·설치·커밋·푸시·설정/제어 변경0회다.
+- 상세 결과·10줄 요약 최상단을 따른다. 아래 HOLD·미구현은 이전 이력이다.
+
 ## Codex 회차 3 분석 (2026-10-25, 새 게임 시험 없음·현 진단 반복 중단)
 
 - 외부 run2 증거294줄을 원시 `E:/StutterFixWork/night-results/al-dc-2.log`와 대조했다. 293줄 완전 일치·시작1줄은 1500자 수집 접두부 일치다. 원시 선언103단계와 기존 diag2 JSON(맵 경로 구분자 정규화)·완료 동사103개도 일치한다.
@@ -85,3 +95,16 @@
   - [StutterFix] [gpudeco] cost scope=live_off frames=3265 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.387001 progress_ms=0.109017 uniform_ms=0.005927 dispatch_ms=0.267685 mis
   - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=264.016406 resumed_recs=10257 resume_expected=10257 unobserved_order=0 restore_ms=42.595900
   - [StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=104.614000 prepare_ms=7424.707300
+
+## 회차 1
+- Codex 요약: 1관문 통과 결정을 반영해 단일 draw 렌더러·직접 GPU 정점 기록·on/off 복구를 구현했습니다.
+
+- 3종 빌드·LoadCheck 오류 0
+- 정책 46개·계획 검사 9개·셰이더 컴파일 4개 통과
+- 게임 실행·설치·커밋 0회
+
+**새 Unity 번들은 미완성**입니다. 기존 Editor 로그에 라이선스 오류 198 등이 있어 기록했으며, 실제 FPS·픽셀·draw 수는 미검증입니다.
+
+[결과·차단 사유·후속 단계](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-drawcollapse-result.md)를 갱신했습니다.
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots

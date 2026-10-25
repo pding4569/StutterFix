@@ -23,6 +23,36 @@ namespace StutterFix
         }
         static bool GpuDrawCollapseCommand(string command)
         {
+#if AUTOTEST
+            if(command.StartsWith("drawcollapse ",StringComparison.Ordinal) && DrawCollapseGateCommand(command.Substring(13)))return true;
+#endif
+            if(command=="drawcollapse prepare")
+            {
+                RequireLive(!gpuLiveActive && !gpuLivePrepared,"drawcollapse prepare must precede live prepare");
+                RequireLive(!gpuRenderMergePrepare,"drawcollapse and rendermerge preparations are exclusive");
+                gpuCollapsePrepare=true;GpuLog("drawcollapse_prepare=True default_off=True");return true;
+            }
+            if(command=="drawcollapse off")
+            {
+                HideDrawCollapse();foreach(var s in gpuLiveSlices)s.RefreshAlpha();
+                if(gpuLiveActive)DispatchGpuLiveSlice(BakeTime);
+                GpuLog("drawcollapse_on=False independent_restored=True");return true;
+            }
+            if(command=="drawcollapse on" || command=="drawcollapse ready")
+            {
+                ValidateDrawCollapse();
+                if(command.EndsWith(" on",StringComparison.Ordinal))
+                {
+                    gpuCollapseOn=true;
+                    try
+                    {
+                        foreach(var s in gpuLiveSlices)s.RefreshAlpha();
+                        DispatchGpuLiveSlice(BakeTime);
+                    }
+                    catch {HideDrawCollapse();foreach(var s in gpuLiveSlices)s.RefreshAlpha();DispatchGpuLiveSlice(BakeTime);throw;}
+                }
+                GpuLog("drawcollapse_on="+gpuCollapseOn+" spans="+gpuCollapseSpans.Count+" submeshes_per_renderer=1");return true;
+            }
             if(command!="drawcollapse validate" && command!="drawcollapse diag")return false;
             RequireDrawCollapse();
             if(command.EndsWith(" validate",StringComparison.Ordinal))

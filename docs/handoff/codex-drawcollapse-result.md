@@ -1,4 +1,55 @@
-DRAWCOLLAPSE=FAIL reason=DIAGNOSTIC_PROOF_LIMIT candidate_spans_max=18 confirmed_spans=NA samples=6/6 gate=HOLD
+DRAWCOLLAPSE=FAIL reason=UNITY_BUNDLE_NOT_BUILT fps=NA engine_draw=NA maxdiff=NA spikes_30ms=NA gate1=ACCEPTED_BY_DIRECTIVE
+
+# DrawCollapse 4회차 — 단일 draw 구현·오프라인 검증, 새 Unity 번들 미완성 (2026-10-25)
+
+`codex-al-dc-4.md`의 10:00·10:10 추가 결정을 우선했다. **1관문은 지시대로 통과로 수용하고 2관문을 구현했다.** 작업 시작 시 이미 있던 미완료 코드·Editor 로그를 보존하고 이어서 수정했다. 아래 3회차 이하의 HOLD·미구현은 과거 이력이다.
+
+## 구현
+
+- `GpuDecoDrawCollapseRenderer.cs`: 곡 처음 정지 준비 때 장벽 구간 메시·재질·Raw VB·슬롯 맵을 한 번 만든다. 대표마다 **subMeshCount=1·재질 1개**, 원래 정렬 키 순서로 인덱스를 배치하고 첫 장식의 layer/order/정렬 중심을 사용한다. GPU 소유 장식의 휴면 보조 렌더러만 생략하며 모르는 CPU 장벽은 숨겨져 있어도 유지한다. 실제 준비 구간 수는 이번 미측정이고 150개를 초과하면 명시 오류로 거절한다.
+- `EvaluateCollapse`: 소스별 진행값으로 대표 Raw VB에 **직접 기록**한다. 중간 복사 dispatch 없음, 알파0 퇴화 삼각형·기존 UNorm8 반올림 규칙이다. `GpuDecoExport.cs`에서 이 경로와 기존 평가/native copy를 배타 분기해 SingleSubmission 선행 복사 가능성도 제거했다.
+- `GpuDecoBatch.shader`: 프리멀티플라이드 알파·ZWrite Off·원본 blend state·point/linear 분기·분기 밖 ddx/ddy와 SampleGrad·복사 영역 texel centre clamp를 쓴다. DXT5는 원래 graphicsFormat의 GPU 영역 복사이며 압축 해제·Blit·CPU 이미지 복사는 없다.
+- `gpudeco drawcollapse prepare` 후 `live prepare`, GPU 소유 중 `ready`·`on|off`로 쓴다. 기본 꺼짐·DEV/PlayerAuto 전용이다. 끄면 독립 GPU 렌더러·현재 정점을 복구하고 live off/복구/폐기 때 대표를 숨긴다. 적용은 **259.75~270.25초**이며 범위를 벗어나면 원본 복구 경로다. 전곡 지원으로 주장하지 않는다.
+- 누락 장식은 켜기 전 전수 확인, 이후 알파 dirty 이벤트로 확인한다. 매 프레임23,547개 누락 채널 전수 검사를 제거했다. 잠재 CPU 장벽 키·보조 렌더러·카메라 축은 계속 확인하며 이 CPU 비용도 미측정이다. fallback·마스크·SortingGroup·미지원 키워드/텍스처/정렬 조건은 거절한다. 새 대표 material ID와 비소유의 순서도 실제 대표 키로 켜기 전에 검사한다.
+
+## 새 텍스처 계산
+
+외부 run3 증거 **81종·35티어**를 새 규칙으로 재계산했다. 512² 11슬라이스 + 1024² 5슬라이스 + 2048² 39슬라이스 = **DXT5 배열3개·55종, 171,704,320 bytes = 163.75 MiB**다. 블록 미정렬·큰 DXT5·비압축 등 **26종은 기존 Texture2D를 직접 바인딩**, 이쪽 추가 이미지 할당은0이다. 제안의 직접 슬롯8개로는 부족하므로 구현 상한은 6배열+64직접=70 SRV·2 sampler이고 이번 목록의 필요 바인딩은 **29개**다. 상한 초과는 할당 전에 거절한다.
+
+재현 스크립트 `tools/optimization/drawcollapse-array-layout.py`와 `tools/optimization/out/drawcollapse4-array-layout.json`을 남겼다. 런타임도 배열 생성 전에 `DRAWCOLLAPSE_ARRAY_TOTAL`로 메모리·슬롯 수를 기록한다. **이번 실제 배열 할당·복사0, 여유 VRAM은 UNVERIFIED**다. 이전615.006191MiB는 원치수35티어 전체의 계산으로 새 추가 배열량이나 확보된 VRAM이 아니다.
+
+## 이번 검사
+
+| 검사 | 결과 |
+|---|---|
+| DEV / Player / PlayerAuto | 오류 **0/0/0**, 경고 **46/36/39** |
+| 최신 LoadCheck FieldRefAccess | **279/229/280**, 오류0·동적 이름 각5 |
+| 연구 타입 격리 | 대표 True/False/True, 게임 게이트 False/False/True |
+| DrawCollapseCheck | **46개 통과**, 순서·배열 경계·수용 게이트 누락/중복/실패 차단 |
+| 생성기 unittest | **9개 통과**, ABBA/픽셀 분리·GPU 소유 중 seek/resume 금지·명시 이전 모드 호환 |
+| Microsoft D3DCompile SM5 | **EvaluateLive/EvaluateCollapse/vert/frag 4개 성공**, 최적화 생략·Unity include 함수는 검사 대체물 |
+| Unity 랩 C# 오프라인 빌드 | **오류0·경고12**, 6000.3.10f1 Editor 어셈블리 참조, Editor import/실행 아님 |
+| 게임 코드 교차확인 | scrVisualDecoration 근사 소스·현재 설치 DLL ILScan 호출 비교 |
+| 이전 JSON 보존 | diag1·diag2 SHA256 변경 없음 |
+
+랩 C# 별도 빌드에서 `GpuDecoLab.Shader()`가 `Shader.Find` 타입 이름을 가리는 **CS0119**를 찾아 `UnityEngine.Shader.Find`로 수정했다. 최종 로그는 `out/drawcollapse4-*-final.txt`·`out/drawcollapse4-loadcheck-*.txt`다. 저장소 전역 기존 인코딩 경고와 이번 변경 파일 검사는 구분한다.
+
+## 번들 차단 사유와 다음 단계
+
+작업 시작 때 남아 있던 **실제 Editor 실패 로그**를 확인했다. 이번 동일 Editor 재실행은0회다.
+
+- `out/drawcollapse4-editor.log`: `Could not establish a connection with the Unity Package Manager local server process.` → return code **1**.
+- `out/drawcollapse4-editor-full.log`: `'com.unity.editor.headless' was not found.` / `No valid Unity Editor license found. Please activate your license.` → return code **198**.
+
+새 랩 진입점 `GpuDecoLab.CollapseBundle`은 `evidence/drawcollapse4/bundle/stutterfix_gpudeco`에 별도 번들을 생성하고 재로드·직접 정점·패딩 배열 픽셀 합성 시험을 하도록 준비했다. 그러나 **새 번들 파일과 이 단계 성공 증거는 없다**. 기존 정상 baseline 번들을 덮어쓰지 않았다. `prepare.ps1`로 랩 소스는 갱신했지만 Unity import·드라이버 실행·게임 Sprites/Tile 픽셀 일치는 미검증이다.
+
+새 기본 **182단계** `drawcollapse-gate2-260-270-abba4`는 `tools/optimization/out/drawcollapse-gate2-abba4-steps.json`에 생성만 했다. 새 번들 경로를 명시하며 A/B/B/A 260~270초 FPS·엔진draw 최대·30ms 이상 spike와 260/262/270초 O(원본)/A/N/B/A2 픽셀을 분리한다. 게임 게이트는 4창·3픽셀·4복구가 모두 필요하고 설치 복원은 외부 실행기 책임이다. **새 번들 생성·재로드 성공 전 실행 불가**다. 장치 호출/예약은 없고 명시 `diag/baseline/abba/single` 모드·기존 JSON을 보존했다.
+
+**게임 실행·설치·커밋·푸시·설정/제어 변경·자동 장치 호출은 이번 모두0회**다. 실제 FPS·엔진draw·원본픽셀·끊김·준비구간수·전곡/재시도/맵재열기/UMM unload·설치복원은 **NA**다. 전체 설계 불가능이나 성능 실패로 단정하지 않는다. 여기서 같은 진단/Editor 실패를 반복하지 않고 새 번들 생성·재로드 단계로 인계한다.
+
+---
+
+이하 과거 3회차 기록: `DRAWCOLLAPSE=FAIL reason=DIAGNOSTIC_PROOF_LIMIT candidate_spans_max=18 confirmed_spans=NA samples=6/6 gate=HOLD`
 
 # DrawCollapse 3회차 — 외부 run2 완료 확인·현재 진단 설계의 증명 한계로 중단 (2026-10-25)
 

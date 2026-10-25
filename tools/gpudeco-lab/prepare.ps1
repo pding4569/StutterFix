@@ -12,12 +12,14 @@ foreach ($file in @('DecoBake.Core.cs','GpuDecoData.cs','GpuDecoGpu.cs')) {
 $coreSource = Get-Content -LiteralPath (Join-Path $repoRoot 'DecoBake.Core.cs') -Raw
 Set-Content -LiteralPath (Join-Path $projectRoot 'Assets/Editor/DecoBake.Core.cs') -Value ("#define DECOBAKE_FIXTURE`n" + $coreSource) -Encoding utf8
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLab.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoLab.cs')
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoDrawCollapseProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoDrawCollapseProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoSubmeshes.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoSubmeshes.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoColorProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoColorProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoAudit.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoAudit.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoGeometryProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoGeometryProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLiveProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoLiveProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDeco.compute') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDeco.compute')
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoBatch.shader') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDecoBatch.shader')
 # Local read-only CPU oracle. Generated directory is ignored and never packaged.
 Copy-Item -LiteralPath (Join-Path $GameManaged 'DOTween.dll') -Destination (Join-Path $projectRoot 'Assets/LocalReferences/DOTween.dll')
 Set-Content -LiteralPath (Join-Path $projectRoot 'ProjectSettings/ProjectVersion.txt') -Value "m_EditorVersion: 6000.3.10f1`nm_EditorVersionWithRevision: 6000.3.10f1 (e35f0c77bd8e)" -Encoding ascii

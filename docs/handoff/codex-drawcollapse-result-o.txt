@@ -1,10 +1,10 @@
-DRAWCOLLAPSE=FAIL reason=DIAGNOSTIC_PROOF_LIMIT candidate_spans_max=18 confirmed_spans=NA samples=6/6 gate=HOLD
-외부 run2 증거294줄은 원시293줄 완전일치+시작1줄 1500자 접두부 일치이며 이번 게임 실행·설치·커밋·푸시·자동 장치 호출0회다.
-기존 diag2 103단계 선언과 완료 동사 순서가 일치하고 2560×1440@164.999·GPU23547·fallback0에서 6개 진단이 완료됐다.
-260/262/264/266/268/270초 후보 구간17/17/18/17/10/10·후보 장벽316/326/334/354/391/327이며 확정S는 NA다.
-GPU 담당 텍스처81종·35티어·압축210.989090MiB/총615.006191MiB가 6회 일치하고 할당·복사·여유VRAM은 미검증이다.
-해제 복원 Rec10854/9954/10507/10854/9383/11104가 각 기대값과 일치하고 recovery없음·종료native_contexts0이며 전체 수명 검증은 아니다.
-현재 진단은 픽셀 기여·실제 엔진 정렬 검사 없이 pixels_proven=False ordering_proven=False gate=HOLD를 고정 출력한다.
-게임 scrVisualDecoration 근사 디컴파일과 설치 DLL ILScan으로 알파·셰이더·마스크 호출을 대조했으며 미확인 장벽 원인 귀속은 하지 않았다.
-현 진단 설계의 증명 한계로 같은 코드·계획 반복 중단, 문서5개만 수정·새 계획/병합 구현없음·기존 코드/JSON/tag/제어 파일 유지다.
-원시·메모리·복원·SHA256·문서 검증만 수행하고 3빌드/LoadCheck는 반복하지 않았으며 FPS·엔진draw·픽셀·끊김·전체 수명 안정성은 NA다.
+DRAWCOLLAPSE=FAIL reason=UNITY_BUNDLE_NOT_BUILT fps=NA engine_draw=NA maxdiff=NA spikes_30ms=NA gate1=ACCEPTED_BY_DIRECTIVE
+al-dc-4 최신 결정대로 1관문 통과를 수용하고 단일 submesh·재질 대표와 EvaluateCollapse Raw VB 직접 기록을 구현했다.
+DXT5 배열3개55종163.75MiB + 원본Texture2D26종으로 필요슬롯29개다. 실제 할당·여유VRAM은 미검증이다.
+기본끔·연구빌드 전용 on/off 복구, 페인터 순서·장벽·누락 알파·fallback 검사와 기존 평가/복사의 배타 분기를 구현했다.
+DEV/Player/PlayerAuto 오류0/0/0·경고46/36/39, LoadCheck279/229/280곳 오류0·일반 Player 연구타입 제외다.
+정책46·생성기9·SM5컴파일4개 통과, Unity 랩 C# 오류0·경고12이며 Shader.Find 이름 충돌 CS0119를 수정했다.
+기존 Editor 로그는 패키지 서버 연결실패(return1)·No valid Unity Editor license found(return198)로 새 번들 빌드/재로드 미완성이다.
+새 기본 ABBA4·260/262/270 원본픽셀182단계는 생성만, 새 번들 성공 전 실행불가다. 명시모드·diag1/diag2 JSON 해시 보존이다.
+이번 게임 실행·설치·커밋·푸시·장치 호출·설정/제어 변경·동일 Editor 재실행은 모두0회다.
+실제 FPS·엔진draw·원본픽셀·끊김·준비구간수·전체수명·설치복원NA이며 결과·두 장부에 인계하고 같은 진단/Editor 실패 반복을 중단한다.

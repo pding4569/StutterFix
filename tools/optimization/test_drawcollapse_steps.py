@@ -17,7 +17,7 @@ prior = load('modcpu-steps')
 
 class DrawCollapseStepsTests(unittest.TestCase):
     def test_diagnostic_prepares_at_start_before_seek_and_ownership(self):
-        plan = mod.build('Arche.adofai')
+        plan = mod.build('Arche.adofai', 'diag')
         steps = plan['steps']
         self.assertEqual(plan['tag'], 'drawcollapse-gate1-260-270-diag2-isolated')
         self.assertEqual(steps.count('gpudeco live prepare'), 1)
@@ -28,7 +28,7 @@ class DrawCollapseStepsTests(unittest.TestCase):
         self.assertEqual(plan['settings'], {'FrameGenOutside': 0, 'FrameGenRefresh': False})
 
     def test_readbacks_are_paused_separate_from_performance(self):
-        steps = mod.build('Arche.adofai')['steps']
+        steps = mod.build('Arche.adofai', 'diag')['steps']
         self.assertEqual(steps.count('gpudeco drawcollapse diag'), 6)
         for second in (260, 262, 264, 266, 268, 270):
             start = steps.index(f'waitsongpos {second} 40')
@@ -43,7 +43,7 @@ class DrawCollapseStepsTests(unittest.TestCase):
     def test_no_seek_resume_or_stop_while_gpu_owned(self):
         # run1은 첫 진단 뒤 GPU 소유 중 resume하여 다음 validate 전에
         # FastMoveOriginal 복귀가 발생했다. 출력 전체의 소유 수명을 검사한다.
-        steps = mod.build('Arche.adofai')['steps']
+        steps = mod.build('Arche.adofai', 'diag')['steps']
         owned = False
         acquired = released = 0
         for step in steps:
@@ -62,7 +62,7 @@ class DrawCollapseStepsTests(unittest.TestCase):
         self.assertEqual((acquired, released), (6, 6))
 
     def test_each_sample_replays_the_verified_lead_in(self):
-        steps = mod.build('Arche.adofai')['steps']
+        steps = mod.build('Arche.adofai', 'diag')['steps']
         starts = [i for i, step in enumerate(steps) if step.startswith('seek ')]
         self.assertEqual(len(starts), 6)
         for start, end in zip(starts, starts[1:] + [len(steps)]):
@@ -92,6 +92,41 @@ class DrawCollapseStepsTests(unittest.TestCase):
     def test_unknown_mode(self):
         with self.assertRaises(ValueError):
             mod.build('Arche.adofai', 'unknown')
+
+    def test_collapse_default_has_distinct_bundle_and_preparation(self):
+        plan = mod.build('Arche.adofai')
+        steps = plan['steps']
+        self.assertEqual(plan['tag'], 'drawcollapse-gate2-260-270-abba4')
+        self.assertIn('/drawcollapse4/bundle/', plan['notes']['bundle'])
+        self.assertLess(steps.index('gpudeco drawcollapse prepare'), steps.index('gpudeco live prepare'))
+        self.assertLess(steps.index('gpudeco live prepare'), steps.index('seek 260 12'))
+        self.assertNotIn('gpudeco drawcollapse diag', steps)
+        self.assertEqual(steps[-2:], ['gpudeco drawcollapse result', 'quit'])
+
+    def test_collapse_abba_and_pixel_windows_are_isolated(self):
+        steps = mod.build('Arche.adofai')['steps']
+        for i, merged in enumerate((False, True, True, False)):
+            begin = steps.index(f'gpudeco drawcollapse begin {i}')
+            self.assertEqual(steps[begin-1], 'gpudeco drawcollapse ' + ('on' if merged else 'off'))
+            self.assertEqual(steps[begin+1:begin+3], ['waitsongpos 270 30', 'gpudeco drawcollapse end'])
+            self.assertEqual(steps[begin+3:begin+7], ['gpudeco drawcollapse off', 'gpudeco live off',
+                                                    f'gpudeco drawcollapse restore {i}', 'stop'])
+        for i in range(3):
+            pixel = steps.index(f'gpudeco drawcollapse pixel {i}')
+            self.assertEqual(steps[pixel-5:pixel], ['framecmp noise A N', 'gpudeco drawcollapse on',
+                                                  'framecmp grab B', 'gpudeco drawcollapse off', 'framecmp grab A2',
+                                                  ])
+
+    def test_collapse_never_resumes_or_seeks_while_owned(self):
+        owned = False
+        for step in mod.build('Arche.adofai')['steps']:
+            if step == 'gpudeco live on':
+                self.assertFalse(owned)
+                owned = True
+            elif step == 'gpudeco live off':
+                owned = False
+            elif step in ('resume', 'stop', 'quit') or step.startswith('seek '):
+                self.assertFalse(owned, step)
 
 
 if __name__ == '__main__':

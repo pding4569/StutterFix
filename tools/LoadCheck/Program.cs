@@ -40,6 +40,10 @@ class P
             bool haveDrawCollapseCommand = asm.GetType("StutterFix.DecoBake", false)?.GetMethod("GpuDrawCollapseCommand", BindingFlags.Static | BindingFlags.NonPublic) != null;
             Console.WriteLine("DrawCollapse 진단 정책/명령: " + haveDrawCollapse + "/" + haveDrawCollapseCommand + ", 기대: " + want);
             if (haveDrawCollapse != want || haveDrawCollapseCommand != want) return 3;
+            bool haveCollapseRenderer=asm.GetType("StutterFix.DecoBake+CollapseSpan",false)!=null;
+            bool haveCollapseGate=asm.GetType("StutterFix.DecoBake",false)?.GetMethod("DrawCollapseGateCommand",BindingFlags.Static|BindingFlags.NonPublic)!=null;
+            Console.WriteLine("DrawCollapse 단일 draw 렌더러/게임 게이트: "+haveCollapseRenderer+"/"+haveCollapseGate);
+            if(haveCollapseRenderer!=want || haveCollapseGate!=(asm.GetType("StutterFix.GpuDecoSnapshot",false)!=null))return 3;
             bool haveGpuStep = asm.GetType("StutterFix.DecoBake", false)?.GetMethod("GpuStep", BindingFlags.Static | BindingFlags.NonPublic) != null;
             Console.WriteLine("GpuDecoData/GpuStep: " + haveGpuData + "/" + haveGpuStep + ", 기대: " + want);
             if (haveGpuData != want || haveGpuStep != want) return 3;

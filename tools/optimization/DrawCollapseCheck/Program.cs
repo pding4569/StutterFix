@@ -51,4 +51,31 @@ foreach(var values in new[]{(0,4,1),(4,4,0),(1,1,2)})
     bool rejected=false;try{DrawCollapsePolicy.TextureBytes(values.Item1,values.Item2,values.Item3,4,4,16);}
     catch(ArgumentException){rejected=true;}Check(rejected,"invalid dimensions/mips rejected");
 }
+var plan=DrawCollapsePolicy.Plan(new List<DrawCollapsePolicy.Row>{Row(5,true,renderer:5),Row(1,true,renderer:1),
+    Row(3,false,renderer:20),Row(2,true,renderer:2),Row(4,true,renderer:4)});
+Check(plan.Count==2 && string.Join(",",plan[0])=="1,2" && string.Join(",",plan[1])=="4,5","mapped slots retain painter order around barrier");
+bool tie=false;try{DrawCollapsePolicy.Plan(new List<DrawCollapsePolicy.Row>{Row(1,false,renderer:1),Row(1,true,renderer:2)});}
+catch(InvalidOperationException){tie=true;}Check(tie,"implementation planner refuses ambiguous ties");
+Check(DrawCollapsePolicy.SmallDxtTier(100,100,true,1)==512,"small block-aligned DXT5 tier");
+Check(DrawCollapsePolicy.SmallDxtTier(1000,2000,true,1)==2048,"non-square DXT5 tier");
+Check(DrawCollapsePolicy.SmallDxtTier(1080,1080,true,1)==2048,"1080 DXT5 padding tier");
+foreach(var item in new[]{(101,100,true,1),(512,512,false,1),(512,512,true,2),(5000,5000,true,1)})
+    Check(DrawCollapsePolicy.SmallDxtTier(item.Item1,item.Item2,item.Item3,item.Item4)==0,"unsupported array copy borrows source 2D");
+DrawCollapseGatePolicy Gate(int maxdiff=3,double fps=220,int draws=300,int spikes=0,bool valid=true)
+{
+    var g=new DrawCollapseGatePolicy();
+    for(int i=0;i<4;i++){g.Window(i,i==1||i==2?fps:168,draws,spikes,valid);g.Restore(i,true);}
+    for(int i=0;i<3;i++)g.Pixel(i,maxdiff,true);
+    return g;
+}
+Check(Gate().Passed,"inclusive FPS/draw/pixel boundary succeeds with complete evidence");
+Check(!new DrawCollapseGatePolicy().Passed,"empty evidence never passes");
+Check(!Gate(maxdiff:4).Passed,"pixel max4 fails even with sufficient FPS");
+Check(!Gate(fps:219.999).Passed,"FPS below220 fails");
+Check(!Gate(draws:301).Passed,"draw301 fails");
+Check(!Gate(spikes:1).Passed,"30ms spike fails");
+Check(!Gate(valid:false).Passed,"ownership/environment failure cannot pass");
+Check(!Gate(fps:double.NaN).Passed && !Gate(fps:double.PositiveInfinity).Passed,"nonfinite measurement fails");
+var duplicate=Gate();duplicate.Pixel(0,0,true);Check(!duplicate.Passed,"duplicate evidence fails");
+var unrestored=Gate();unrestored.Restores[3]=false;Check(!unrestored.Passed,"missing restore evidence fails");
 Console.WriteLine("DrawCollapseCheck checks="+checks+" errors=0 scope=offline_policy_only");

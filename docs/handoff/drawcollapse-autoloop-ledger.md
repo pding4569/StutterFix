@@ -1,5 +1,14 @@
 # DrawCollapse 준비 장부
 
+## 4회차 (2026-10-25): 단일 draw 구현·오프라인 검증, 새 번들 미완성
+
+- 최신 지시대로 1관문을 통과로 수용하고 단일 submesh/재질 대표·직접 EvaluateCollapse Raw VB·압축 배열+원본2D·on/off 복구를 구현했다.
+- 외부81종은 DXT5 배열3개55종 **163.75MiB** + 원본2D26종, 필요29슬롯이다. 구현 상한6배열+64직접, 실제 할당·여유VRAM 미검증이다.
+- 3빌드 오류0/0/0·경고46/36/39, LoadCheck279/229/280곳 오류0·일반 Player 연구 제외, 정책46·생성기9·SM5컴파일4 통과다. Unity 랩 C# 오류0·경고12; CS0119 수정 완료다.
+- 기존 Editor 로그에 패키지 서버 실패(return1)·`No valid Unity Editor license found. Please activate your license.`(return198)가 있다. 이번 Editor 반복0·새 번들 미완성이다.
+- 새 기본182단계 ABBA4·260/262/270 원본픽셀은 생성만, 기존 명시 모드·diag1/diag2 JSON 해시 보존이다. 새 번들 성공 전 실행 불가다.
+- `DRAWCOLLAPSE=FAIL reason=UNITY_BUNDLE_NOT_BUILT`, 실제 FPS·draw·픽셀·끊김·준비구간수·전체수명·설치복원NA다. 게임·설치·커밋·푸시·장치 호출·설정/제어 변경0회다. 상세 결과 최상단을 따른다.
+
 ## 3회차 (2026-10-25): 외부 run2 6표본 완료·현 진단 설계 한계로 반복 중단
 
 | 항목 | 이번 상태 |

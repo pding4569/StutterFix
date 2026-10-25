@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StutterFix
 {
-    // Gate 1 arithmetic only. No mesh/texture allocation and no renderer changes.
+    // Pure painter-order and memory arithmetic shared by preparation and checks.
     internal static class DrawCollapsePolicy
     {
         internal readonly struct Row
@@ -42,6 +42,23 @@ namespace StutterFix
             result.BarrierVisible=barriers.Count;
             return result;
         }
+        // Renderer stores the source item index for owned rows. Never regroup
+        // A/B/A textures or move a quad across even a currently hidden barrier.
+        internal static List<int[]> Plan(List<Row> rows)
+        {
+            rows.Sort((a,b)=>a.Key.CompareTo(b.Key));
+            for(int i=1;i<rows.Count;i++)
+                if(rows[i].Key.SameMaterialTie(rows[i-1].Key) && (rows[i].Owned || rows[i-1].Owned))
+                    throw new InvalidOperationException("drawcollapse ambiguous material tie");
+            var spans=new List<int[]>();var items=new List<int>();
+            foreach(var row in rows)
+            {
+                if(row.Owned){items.Add(row.Renderer);continue;}
+                if(items.Count>0){spans.Add(items.ToArray());items.Clear();}
+            }
+            if(items.Count>0)spans.Add(items.ToArray());
+            return spans;
+        }
         // Tight dimensions are the resolution tiers: no 2048-square padding,
         // decompression, resampling, CPU readability or guessed compression ratio.
         internal static long TextureBytes(int width,int height,int mips,int blockWidth,int blockHeight,int blockBytes)
@@ -60,11 +77,43 @@ namespace StutterFix
             }
             return total;
         }
+        internal static int SmallDxtTier(int width,int height,bool dxt5,int mips)
+        {
+            if(width<=0 || height<=0)throw new ArgumentOutOfRangeException();
+            if(!dxt5 || mips!=1 || width%4!=0 || height%4!=0)return 0;
+            foreach(int size in new[]{512,1024,2048})if(width<=size && height<=size)return size;
+            return 0; // Borrow the original 2D texture; never decompress or resample it.
+        }
         internal static string SpanDecision(int spans)
         {
             if(spans<0)throw new ArgumentOutOfRangeException(nameof(spans));
             return spans<=150?"eligible":spans>400?"too_many_barriers":"hold_151_to_400";
         }
+    }
+    internal sealed class DrawCollapseGatePolicy
+    {
+        internal readonly bool[] Windows=new bool[4],Pixels=new bool[3],Restores=new bool[4];
+        internal readonly double[] Fps=new double[4];
+        internal bool Failed;
+        internal void Window(int i,double fps,int draws,int spikes,bool valid)
+        {
+            if(i<0 || i>3 || Windows[i] || double.IsNaN(fps) || double.IsInfinity(fps) || fps<=0
+                || draws<=0 || spikes<0 || !valid){Failed=true;return;}
+            Windows[i]=true;Fps[i]=fps;
+            if((i==1 || i==2) && (fps<220 || draws>300 || spikes>0))Failed=true;
+        }
+        internal void Pixel(int i,int maximum,bool stable)
+        {
+            if(i<0 || i>2 || Pixels[i] || maximum<0 || maximum>255){Failed=true;return;}
+            Pixels[i]=true;if(maximum>3 || !stable)Failed=true;
+        }
+        internal void Restore(int i,bool valid)
+        {
+            if(i<0 || i>3 || Restores[i]){Failed=true;return;}
+            Restores[i]=true;if(!valid)Failed=true;
+        }
+        internal bool Complete=>Array.TrueForAll(Windows,x=>x) && Array.TrueForAll(Pixels,x=>x) && Array.TrueForAll(Restores,x=>x);
+        internal bool Passed=>Complete && !Failed;
     }
 }
 #endif

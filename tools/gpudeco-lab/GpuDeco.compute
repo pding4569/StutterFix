@@ -1,6 +1,7 @@
 // Diagnostic only. Sprites/Tile remains the intended game draw shader.
 #pragma kernel Evaluate
 #pragma kernel EvaluateLive
+#pragma kernel EvaluateCollapse
 #pragma kernel EvaluateImageLive
 #pragma kernel EaseProbe
 #pragma kernel CopyRun
@@ -29,6 +30,9 @@ StructuredBuffer<float4> _ImageShape;
 StructuredBuffer<float2> _UV;
 RWStructuredBuffer<float> _Values;
 RWByteAddressBuffer _Vertices;
+StructuredBuffer<uint> _CollapseMap;
+StructuredBuffer<float4> _CollapseTexture;
+uint _CollapseCount;
 uint _Count;
 float _TimeHi, _TimeLo, _Pitch, _TweenScale;
 float4 _Camera; // XY, rotation degrees, lock-scale multiplier
@@ -226,7 +230,7 @@ void EaseProbe(uint3 thread:SV_DispatchThreadID)
     uint i=thread.x; if(i>=_Count) return;
     float4 p=_Probe[i]; _ProbeOut[i]=Ease(_ProbeIds[i],p.x,p.y,p.z,p.w);
 }
-void WriteVerticesFromChannels(uint i, float v[16])
+void WriteVerticesAt(uint i, float v[16], uint outputItem, bool collapse)
 {
     uint b=i*10; float4 c=_Static[b+7], crop=_Static[b+8]; uint flags=(uint)crop.w;
     precise float2 trueScale=c.xy, camScale=((flags&1)!=0 ? _Camera.w : 1)*trueScale;
@@ -274,11 +278,40 @@ void WriteVerticesFromChannels(uint i, float v[16])
             precise float3 corner=_ImageShape[ib+4u+k].xyz;
             worldPoint=((q0*corner.x+q1*corner.y)+q2*corner.z)+q3;
         }
-        uint address=(i*4+k)*36;
+        uint address=(outputItem*4+k)*(collapse?60u:36u);
+        if(collapse)
+        {
+            if(color.a<=0)worldPoint=0; // zero-area triangles, no pixel work
+            precise float4 scaled=saturate(color)*255.0;
+            float4 drawColor=floor(scaled+0.5)/255.0;
+            _Vertices.Store3(address,asuint(worldPoint));
+            _Vertices.Store4(address+12,asuint(drawColor));
+            float4 info=_CollapseTexture[i*2]; // binding+point flag, slice, UV scale
+            _Vertices.Store4(address+28,asuint(float4(_UV[i*4+k],info.xy)));
+            _Vertices.Store4(address+44,asuint(_CollapseTexture[i*2+1])); // scale XY, half texel XY
+        }
+        else
+        {
         _Vertices.Store3(address,asuint(worldPoint));
         _Vertices.Store4(address+12,asuint(color));
         _Vertices.Store2(address+28,asuint(_UV[i*4+k]));
+        }
     }
+}
+void WriteVerticesFromChannels(uint i, float v[16]) { WriteVerticesAt(i,v,i,false); }
+[numthreads(64,1,1)]
+void EvaluateCollapse(uint3 thread:SV_DispatchThreadID)
+{
+    uint slot=thread.x;if(slot>=_CollapseCount)return;
+    uint i=_CollapseMap[slot];float v[16];
+    [unroll] for(uint ch=0;ch<16;ch++)
+    {
+        LiveChannel lc=_LiveChannels[i*16+ch];
+        precise double value=lc.sourceIndex<0 ? (double)lc.end
+            : (double)lc.start+(double)lc.change*(double)_SourceE[lc.sourceIndex];
+        v[ch]=(float)value;_Values[i*16+ch]=v[ch];
+    }
+    WriteVerticesAt(i,v,slot,true);
 }
 [numthreads(64,1,1)]
 void Evaluate(uint3 thread:SV_DispatchThreadID)

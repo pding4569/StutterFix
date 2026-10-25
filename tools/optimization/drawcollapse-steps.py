@@ -1,4 +1,4 @@
-"""DrawCollapse 1관문 진단 계획을 생성한다. 게임 실행·설치 기능 없음.
+"""DrawCollapse 2관문 ABBA·원본 픽셀 계획을 생성한다. 게임 실행·설치 기능 없음.
 
 기존 baseline/abba/single 모드의 명시적 출력은 보존한다.
 """
@@ -23,7 +23,56 @@ def window(cached=None, single=None):
     return steps + ['gpudeco live off', 'stop']
 
 
-def build(chart, mode='diag'):
+def collapse(chart):
+    root = Path(__file__).resolve().parents[2]
+    bundle = root / 'tools/gpudeco-lab/evidence/drawcollapse4/bundle/stutterfix_gpudeco'
+    steps = ['timeout 600', 'auto on', 'decobake on', 'gpudeco off',
+             'gpudeco reset', 'gpudeco drawcollapse reset', 'gpudeco costprobe off',
+             'gpudeco effectcache off', 'gpudeco submitsingle off', 'gpudeco latecache off',
+             'gpudeco nombp off', 'gpudeco nativebatch on', 'gpudeco nativecopy on8masked',
+             'gpudeco zeroalpha on', 'gpudeco bundle ' + bundle.as_posix(),
+             'open ' + str(chart), 'gpuprobe off', 'gpusplit off', 'matshare off', 'livedeco off',
+             'select 0', 'play', 'gpudeco scheduled', 'pause', 'decobake ready',
+             'gpudeco live scope song', 'gpudeco drawcollapse prepare', 'gpudeco live prepare',
+             'resume', 'stop']
+
+    def enter():
+        return ['seek 260 12', 'decobake ready', 'waitsongpos 256 40',
+                'gpudeco packets compiled', 'gpudeco live on']
+
+    for index, merged in enumerate((False, True, True, False)):
+        steps += enter() + ['waitsongpos 260 40', 'gpudeco drawcollapse ready',
+                            'gpudeco drawcollapse ' + ('on' if merged else 'off'),
+                            f'gpudeco drawcollapse begin {index}', 'waitsongpos 270 30',
+                            'gpudeco drawcollapse end', 'gpudeco drawcollapse off',
+                            'gpudeco live off', f'gpudeco drawcollapse restore {index}', 'stop']
+    for index, second in enumerate((260, 262, 270)):
+        steps += enter() + [f'waitsongpos {second} 40', 'pause', 'gpudeco live off',
+                            'framecmp clear', 'framecmp mask none', 'framecmp filters on',
+                            'framecmp ui exclude', 'framecmp grab O', 'gpudeco live on',
+                            'gpudeco drawcollapse ready', 'framecmp noise A N',
+                            'gpudeco drawcollapse on', 'framecmp grab B',
+                            'gpudeco drawcollapse off', 'framecmp grab A2',
+                            f'gpudeco drawcollapse pixel {index}']
+        steps += [f'framecmp save {name}' for name in ('O', 'A', 'N', 'B', 'A2')]
+        steps += ['framecmp clear', 'gpudeco live off', 'resume', 'stop']
+    steps += ['gpudeco drawcollapse result', 'quit']
+    return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False},
+                timeout_min=25, tag='drawcollapse-gate2-260-270-abba4',
+                notes={'status': '생성만; 새 번들의 Unity 빌드·재로드 성공 뒤 외부에서만 실행',
+                       'bundle': bundle.as_posix(),
+                       'A': '독립 GPU', 'B': '구간당 단일 서브메시, EvaluateCollapse 직접 기록',
+                       'pixels': '260/262/270초 CPU 원본 O 대 병합 B; 복구 A/A2 및 잡음 A/N',
+                       'ownership': '재개 전 live off; ABBA 중 pause/resume 및 캡처 없음',
+                       'acceptance': 'maxdiff<=3; B FPS>=220; engine draw<=300; spikes>=30ms=0',
+                       'environment': '같은 프로세스 내 해상도·주사율 유지; 디스플레이 변경 없음',
+                       'installation_restore': '외부 실행기 책임; 이번에는 설치·게임 실행 없음',
+                       'full_lifetime': '전곡·retry·reopen·UMM unload 별도 미검증'})
+
+
+def build(chart, mode='collapse'):
+    if mode == 'collapse':
+        return collapse(chart)
     if mode == 'diag':
         base = build(chart, 'baseline')
         # 검증된 곡 처음 준비 -> seek -> live on 순서는 그대로 쓴다.
@@ -68,9 +117,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--chart', required=True)
     parser.add_argument('--output', required=True)
-    parser.add_argument('--mode', choices=('diag', 'baseline', 'abba', 'single'), default='diag')
+    parser.add_argument('--mode', choices=('collapse', 'diag', 'baseline', 'abba', 'single'), default='collapse')
     args = parser.parse_args()
-    Path(args.output).write_text(json.dumps(build(args.chart, args.mode), ensure_ascii=False, indent=1), encoding='utf-8')
+    path = Path(args.output)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(build(args.chart, args.mode), ensure_ascii=False, indent=1), encoding='utf-8')
 
 
 if __name__ == '__main__':

@@ -77,7 +77,8 @@ namespace StutterFix
             void ApplyAlpha(int item)
             {
                 var r=Renderers[item];if(!r)return;
-                bool wanted=active && !gpuRenderMergeOn && (!Independent || !GpuCpuFallback(MasterItems[item])) && (!gpuZeroAlpha || !Independent || !HiddenAlpha(item));
+                if(active && gpuCollapseOn)ValidateDrawCollapseItem(item);
+                bool wanted=active && !gpuRenderMergeOn && !gpuCollapseOn && (!Independent || !GpuCpuFallback(MasterItems[item])) && (!gpuZeroAlpha || !Independent || !HiddenAlpha(item));
                 CopyMask?.Set(item,wanted);
                 if(r.enabled!=wanted){if(GpuDecoCostProbe.Enabled)GpuDecoCostProbe.AlphaToggle();r.enabled=wanted;}
             }
@@ -115,7 +116,7 @@ namespace StutterFix
             }
             internal void MarkDirty(int slot)
             {
-                if((gpuZeroAlpha || gpuRenderMergePrepared) && ((slot&15)==10 || (slot&15)==11))
+                if((gpuZeroAlpha || gpuRenderMergePrepared || gpuCollapsePrepare) && ((slot&15)==10 || (slot&15)==11))
                 {
                     int item=slot/16;
                     if((uint)item<(uint)alphaDirty.Length && !alphaDirty[item]) {alphaDirty[item]=true;pendingAlpha.Add(item);}
@@ -322,6 +323,7 @@ namespace StutterFix
         {
 #if AUTOTEST
             ObserveGpuMergeFrame();
+            ObserveDrawCollapseFrame();
 #endif
             float rawDt = Time.unscaledDeltaTime;
             if (g2Window >= 0 && !FrameCompare.Paused && Hitch.Playing && Time.frameCount > g2WindowFrame && rawDt > 0 && DecoBakeCore.Finite(rawDt))
@@ -889,7 +891,7 @@ namespace StutterFix
 
                 var sigCache = new Dictionary<int, string>();
                 var auxiliaryOwners = new Dictionary<int, int>();
-                if (gpuRenderMergePrepare) foreach (int index in protoItems.Keys)
+                if (gpuRenderMergePrepare || gpuCollapsePrepare) foreach (int index in protoItems.Keys)
                 {
                     var d = (scrVisualDecoration)baselineObjects[index];
                     // Admission excludes mesh mode, filters, masks and editor
@@ -903,11 +905,11 @@ namespace StutterFix
                 {
                     // Merged runs must also respect currently hidden barriers:
                     // a CPU decoration can wake later inside this time window.
-                    if (!r || !r.gameObject.scene.IsValid() || (!gpuRenderMergePrepare && (!r.enabled || !r.gameObject.activeInHierarchy))
+                    if (!r || !r.gameObject.scene.IsValid() || (!(gpuRenderMergePrepare || gpuCollapsePrepare) && (!r.enabled || !r.gameObject.activeInHierarchy))
                         || (cam.cullingMask & (1 << r.gameObject.layer)) == 0) continue;
                     int candIdx;
                     bool isOwned = candidateByRenderer.TryGetValue(r.GetInstanceID(), out candIdx) && r.enabled && r.gameObject.activeInHierarchy;
-                    if (!isOwned && r.forceRenderingOff && !gpuRenderMergePrepare) continue;
+                    if (!isOwned && r.forceRenderingOff && !(gpuRenderMergePrepare || gpuCollapsePrepare)) continue;
                     if (r.GetComponentInParent<SortingGroup>()) continue;
                     var materials = r.sharedMaterials;
                     if (materials == null || materials.Length == 0) continue;
@@ -932,6 +934,7 @@ namespace StutterFix
                     }
                 }
                 masterRows.Sort((a, b) => a.Key.CompareTo(b.Key));
+                var collapseRows=gpuCollapsePrepare?new List<GpuLiveRow>(masterRows):null;
                 if(gpuRenderMergePrepare)for(int i=1;i<masterRows.Count;i++)
                     RequireLive(!masterRows[i-1].Key.SameMaterialTie(masterRows[i].Key)
                         || masterRows[i-1].Item<0 && masterRows[i].Item<0,"rendermerge ambiguous material tie before barrier compaction");
@@ -1072,6 +1075,7 @@ namespace StutterFix
                     }
                 }
                 PrepareGpuMerge(masterRows);
+                if(collapseRows!=null)PrepareDrawCollapse(collapseRows);
                 CompleteGpuLivePreparationBudget();
                 gpuLiveManager = manager;
                 gpuLiveBaseline = baselineObjects;
@@ -1234,14 +1238,23 @@ namespace StutterFix
             var ct = camy.transform;
             float camScale = camy.camobj.orthographicSize * .2f / gpuLiveZoomFactor;
             var camera=new Vector4(ct.position.x, ct.position.y, ct.eulerAngles.z, camScale);
-            bool single=GpuDecoCopy.SingleSubmission && !gpuRenderMergeOn && active.SharedBatch==null
+            bool single=GpuDecoCopy.SingleSubmission && !gpuRenderMergeOn && !gpuCollapseOn && active.SharedBatch==null
                 && active.NativeCopy!=null && active.Gpu.UseLiveMode && active.Gpu.HasNativeLiveKernel;
             if(!single)active.Gpu.SetLiveUniforms(camera,time);
             long t3 = Stopwatch.GetTimestamp();
             ulong maskLow=gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.Low??ulong.MaxValue;
             ulong maskHigh=gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.High??ulong.MaxValue;
-            bool submitted=single && active.NativeCopy.Execute(maskLow,maskHigh,active.Gpu,camera,time);
-            if(GpuDecoCopy.SingleSubmission && !submitted)GpuDecoCopy.SingleFallbacks++;
+            bool submitted=false;
+            if(gpuCollapseOn)
+            {
+                DispatchDrawCollapse(time); // Evaluate -> representative raw VB. No baseline evaluation or copy submission.
+                submitted=true;
+            }
+            else
+            {
+                submitted=single && active.NativeCopy.Execute(maskLow,maskHigh,active.Gpu,camera,time);
+                if(GpuDecoCopy.SingleSubmission && !submitted)GpuDecoCopy.SingleFallbacks++;
+            }
             if(!submitted)
             {
                 if(single)active.Gpu.SetLiveUniforms(camera,time);
@@ -1276,6 +1289,7 @@ namespace StutterFix
             }
             catch (Exception e)
             {
+                if(gpuCollapseOn){gpuCollapseFault=e.GetType().Name+":"+e.Message;GpuLog("DRAWCOLLAPSE_RUNTIME_ERROR "+gpuCollapseFault);}
                 RecoverGpuLive("LateUpdateException:"+e.GetType().Name);
             }
         }
@@ -1482,6 +1496,7 @@ namespace StutterFix
         // Request B.3: Full restoration of owned decorations on off, song end, retry, restart, editor return, map reopen, and unload.
         internal static void StopGpuLive(string reason, bool syncState = true)
         {
+            HideDrawCollapse();
             HideGpuMerge();
 #if AUTOTEST
             ResetGpuAblation();
@@ -1627,6 +1642,7 @@ namespace StutterFix
                 StopGpuLive("dispose_forced",false);
             }
             DisposeGpuMerge();
+            DisposeDrawCollapse();
             gpuRenderMergeOn=false;
             gpuMergeRows=null;
             for (int i = gpuLiveSlices.Count - 1; i >= 0; i--)

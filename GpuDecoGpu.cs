@@ -247,6 +247,18 @@ namespace StutterFix
             int activeKernel = (UseLiveMode && hasLiveKernel) ? liveKernel : kernel;
             shader.Dispatch(activeKernel, (data.Items.Length + 63) / 64, 1, 1);
         }
+        internal void DispatchCollapse(GraphicsBuffer target, ComputeBuffer map, ComputeBuffer texture, int count)
+        {
+            Require(UseLiveMode && shader.HasKernel("EvaluateCollapse"),"drawcollapse bundle lacks EvaluateCollapse");
+            int k=shader.FindKernel("EvaluateCollapse");
+            shader.SetBuffer(k,"_LiveChannels",liveChannelsBuffer);shader.SetBuffer(k,"_SourceE",sourceEBuffer);
+            shader.SetBuffer(k,"_Static",staticBuffer);shader.SetBuffer(k,"_UV",uvBuffer);
+            shader.SetBuffer(k,"_Values",values);shader.SetBuffer(k,"_Vertices",target);
+            if(hasImageGeometry)shader.SetBuffer(k,"_ImageShape",imageShapeBuffer);
+            shader.SetBuffer(k,"_CollapseMap",map);shader.SetBuffer(k,"_CollapseTexture",texture);
+            shader.SetInt("_CollapseCount",count);
+            shader.Dispatch(k,(count+63)/64,1,1);
+        }
         // 연구 후보: 현재 프레임의 모든 입력을 명시적으로 기록한다.
         // 공유 ComputeShader의 즉시 설정 상태나 이전 CommandBuffer 실행에 의존하지 않는다.
         internal void RecordLiveEvaluation(CommandBuffer commands, Vector4 camera, double time)
