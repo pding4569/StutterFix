@@ -270,7 +270,7 @@ namespace StutterFix
                 var orow=gpuCollapseOwnedRows[i];var om=orow!=null && orow.R?DrawCollapseMaterial(orow):null;if(!om)continue;
                 var ok=MatShare.SortKey(orow.R,om,gpuLiveCamera,orow.Key.Slot);
                 if(!activeBucketMinMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out int minBarrierMat))continue;
-                if(ok.Material<minBarrierMat)continue; // 장벽 앞(재질 ID 작음): 구간에 유지
+                if(DrawCollapsePolicy.KeepBeforeBarrier && ok.Material<minBarrierMat)continue; // 장벽 앞(재질 ID 작음): 구간에 유지(픽셀 검증 실패로 기본 끔)
                 gpuCollapseIncluded[i]=false;
                 if(!gpuCollapseTextureFallback[i]){gpuCollapseTextureFallback[i]=true;gpuCollapseTextureFallbackCount++;}
                 var ir=source.Renderers[i];

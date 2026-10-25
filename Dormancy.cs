@@ -75,6 +75,25 @@ namespace StutterFix
         }
 #endif
         private static float nextAudit;
+#if DEV || AUTOTEST
+        private static bool evictedActive;
+        private static int lastEvictEpoch = -1;
+        // GPU 가 소유한 장식은 TightLate.List/Process 가 매 프레임 훑고 SkipGpuLate 로 버리던 것이다. 소유 시작/세대 변경 때 한 번에 뺀다.
+        internal static void EvictGpuOwnedFromAwake()
+        {
+            int w = 0;
+            for (int i = 0; i < awake.Count; i++)
+            {
+                var d = awake[i];
+                if ((object)d != null && DecoBake.SkipGpuLate(d)) { inAwake.Remove(d); dormant.Add(d); continue; }
+                awake[w++] = d;
+            }
+            if (w < awake.Count) awake.RemoveRange(w, awake.Count - w);
+            for (int i = woken.Count - 1; i >= 0; i--)
+                if (DecoBake.SkipGpuLate(woken[i])) { dormant.Add(woken[i]); woken.RemoveAt(i); }
+            sleepPending = true;
+        }
+#endif
 
         internal static long Rebuilds, Slept, Wakes, Missed, Audits, AwakeFrames, AwakeTotal;
         internal static int AllCount, LastAwake;   // LastAwake: 이번 프레임 깨어 있어 훑은 장식 수
@@ -115,6 +134,7 @@ namespace StutterFix
             if ((object)d == null) return;
 #if DEV || AUTOTEST
             LiveDecoRenderer.DormancyChanged(d);
+            if (evictedActive && DecoBake.SkipGpuLate(d)) return; // GPU 가 정점을 직접 쓰는 장식은 CPU awake 목록에 넣지 않는다
 #endif
             if (dormant.Remove(d)) { woken.Add(d); Wakes++; }
         }
@@ -126,6 +146,12 @@ namespace StutterFix
         public static List<scrDecoration> List(scrDecorationManager mgr)
         {
             var all = allRef(mgr);
+#if DEV || AUTOTEST
+            if (evictedActive && !DecoBake.GpuLiveActive)
+            {   // GPU 소유가 끝났다: 빠졌던 장식이 모두 돌아오게 다음 Prepare 가 전부 깨운 채로 다시 시작한다
+                evictedActive = false; lastEvictEpoch = -1; source = null; prepared = false;
+            }
+#endif
             bool tracking = Hitch.Playing;
 #if DEV || AUTOTEST
             tracking = tracking || FrameCompare.PlaybackContinuity;
@@ -135,8 +161,19 @@ namespace StutterFix
             prepared = true;
             try { Prepare(all); }
             catch (Exception ex) { broken = true; Main.Entry.Logger.Log("[잠든 장식] 오류로 끔: " + ex.Message); ResetState(); return all; }
+#if DEV || AUTOTEST
+            if (DecoBake.GpuLiveActive)
+            {
+                int epoch = DecoBake.GpuLateOwnershipEpoch;
+                if (!evictedActive || epoch != lastEvictEpoch) { EvictGpuOwnedFromAwake(); lastEvictEpoch = epoch; evictedActive = true; }
+            }
+#endif
             AwakeFrames++; AwakeTotal += awake.Count; AllCount = all.Count; LastAwake = awake.Count;
-            if (Edition.Dev || Main.MeasureBuild) CountOffscreen();
+            if ((Edition.Dev || Main.MeasureBuild)
+#if DEV || AUTOTEST
+                && !DecoBake.GpuLiveActive
+#endif
+                ) CountOffscreen();
             return awake;
         }
 

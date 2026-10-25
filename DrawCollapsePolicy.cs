@@ -70,6 +70,8 @@ namespace StutterFix
         // Renderer stores the source item index for owned rows. Never regroup
         // A/B/A textures or move a quad across even a currently hidden barrier.
         internal static bool SplitByOrder=true;
+        // 같은 정렬 묶음에서 장벽보다 앞에 그려지던 장식을 구간에 남기는 규칙. 켜면 260초 픽셀 42만 개가 달라져 기본 끔.
+        internal static bool KeepBeforeBarrier=false;
         internal static int MaxSpans=700;
         internal static List<int[]> Plan(List<Row> rows)
         {
