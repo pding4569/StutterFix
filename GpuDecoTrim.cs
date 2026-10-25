@@ -15,9 +15,13 @@ namespace StutterFix
 
         static void PrepareGpuTrimBounds(Dictionary<int,Texture2D> textures)
         {
-            gpuTrimBounds.Clear();gpuTrimTrimmed=gpuTrimKept=0;gpuTrimPixelsSaved=0;
+            gpuTrimTrimmed=gpuTrimKept=0;gpuTrimPixelsSaved=0;
             if(!DrawCollapsePolicy.TightLargeQuads||gpuLiveSlices==null||gpuLiveSlices.Count==0)return;
             var cs=gpuLiveSlices[0].Gpu?.Shader;if(!cs||!cs.HasKernel("AlphaBounds"))return;
+            ComputeTrimBounds(cs,textures);
+        }
+        static void ComputeTrimBounds(ComputeShader cs,Dictionary<int,Texture2D> textures)
+        {
             int kernel=cs.FindKernel("AlphaBounds");
             long t0=System.Diagnostics.Stopwatch.GetTimestamp();int n=0;
             var buffer=new ComputeBuffer(5,4);var result=new uint[5];
@@ -26,7 +30,7 @@ namespace StutterFix
                 foreach(var pair in textures)
                 {
                     var t=pair.Value;
-                    if(!t||Math.Max(t.width,t.height)<DrawCollapsePolicy.TightMinSide||t.mipmapCount!=1)continue;
+                    if(!t||gpuTrimBounds.ContainsKey(pair.Key)||Math.Max(t.width,t.height)<DrawCollapsePolicy.TightMinSide||t.mipmapCount!=1)continue;
                     buffer.SetData(new uint[]{uint.MaxValue,uint.MaxValue,0,0,0});
                     cs.SetTexture(kernel,"_TrimTex",t);cs.SetBuffer(kernel,"_TrimOut",buffer);
                     cs.SetInts("_TrimSize",t.width,t.height);
@@ -37,15 +41,37 @@ namespace StutterFix
                     float u0=Mathf.Max(0,(result[0]-m))/(float)t.width,u1=Mathf.Min(t.width,result[2]+1+m)/(float)t.width;
                     float v0=Mathf.Max(0,(result[1]-m))/(float)t.height,v1=Mathf.Min(t.height,result[3]+1+m)/(float)t.height;
                     gpuTrimBounds[pair.Key]=new Vector4(u0,v0,u1,v1);n++;
-                    double total=(double)((t.width+15)/16)*((t.height+15)/16),bbox=(double)((result[2]-result[0]+16)/16)*((result[3]-result[1]+16)/16);
-                    GpuLog("GPUTRIM_TEX id="+pair.Key+" "+t.width+"x"+t.height+" bbox_ratio="+(bbox/total).ToString("F3")+" opaque_chunk_ratio="+(result[4]/total).ToString("F3")+" hollow="+(1-result[4]/Math.Max(1,bbox)).ToString("F3"));
                 }
             }
             finally{buffer.Release();}
-            GpuLog("GPUTRIM_BOUNDS textures="+n+" min_side="+DrawCollapsePolicy.TightMinSide+" margin="+DrawCollapsePolicy.TightMarginTexels
+            if(n>0)GpuLog("GPUTRIM_BOUNDS textures="+n+" min_side="+DrawCollapsePolicy.TightMinSide+" margin="+DrawCollapsePolicy.TightMarginTexels
                 +" ms="+(System.Diagnostics.Stopwatch.GetTimestamp()-t0)*1000.0/System.Diagnostics.Stopwatch.Frequency);
         }
 
+        internal static void TrimBoundsFor(Dictionary<int,Texture2D> textures){if(gpuLiveShader&&gpuLiveShader.HasKernel("AlphaBounds"))ComputeTrimBounds(gpuLiveShader,textures);}
+        internal static bool TryGetTrimBounds(Texture2D t,out Vector4 b)=>gpuTrimBounds.TryGetValue(t.GetInstanceID(),out b);
+        // 라이브 내보내기 때 일반 소유 장식(스프라이트가 바뀌지 않는 것)의 정점·UV 를 미리 좁힌다. 텍스처 알파 범위는 필요할 때 한 번 구해 둔다.
+        static int gpuTrimStaticMips,gpuTrimStaticCalls,gpuTrimStaticSmall,gpuTrimStaticNoBounds,gpuTrimStaticNotQuad,gpuTrimStaticSame,gpuTrimStaticDone;
+        static bool TrimStaticSprite(Sprite sp,out Vector2[] vertices,out Vector2[] uvs)
+        {
+            vertices=sp?sp.vertices:null;uvs=sp?sp.uv:null;gpuTrimStaticCalls++;
+            if(!DrawCollapsePolicy.TightAllOwned||!sp||!sp.texture||gpuLiveShader==null||!gpuLiveShader.HasKernel("AlphaBounds"))return false;
+            var t=sp.texture;
+            if(t.mipmapCount!=1){gpuTrimStaticMips++;return false;}
+            if(Math.Max(t.width,t.height)<DrawCollapsePolicy.TightMinSide){gpuTrimStaticSmall++;return false;}
+            if(!gpuTrimBounds.ContainsKey(t.GetInstanceID()))
+            {
+                var one=new Dictionary<int,Texture2D>{{t.GetInstanceID(),t}};
+                ComputeTrimBounds(gpuLiveShader,one);
+            }
+            if(!gpuTrimBounds.ContainsKey(t.GetInstanceID())){gpuTrimStaticNoBounds++;return false;}
+            var v=GpuDecoImageVariant.CaptureSprite(sp);
+            if(v.Status!=GpuDecoImageVariant.Kind.ReadyQuad){gpuTrimStaticNotQuad++;return false;}
+            var tv=TightVariant(v,t);
+            if(ReferenceEquals(tv,v)){gpuTrimStaticSame++;return false;}
+            vertices=tv.Vertices;uvs=tv.UV;gpuTrimStaticDone++;return true;
+        }
+        internal static string TrimStaticStats()=>"static_calls="+gpuTrimStaticCalls+" small="+gpuTrimStaticSmall+" mips="+gpuTrimStaticMips+" no_bounds="+gpuTrimStaticNoBounds+" not_quad="+gpuTrimStaticNotQuad+" same="+gpuTrimStaticSame+" trimmed="+gpuTrimStaticDone;
         // 원본 변형의 정점·UV 를 불투명 범위로 좁힌 복사본을 돌려준다(줄일 수 없으면 원본 그대로).
         static GpuDecoImageVariant TightVariant(GpuDecoImageVariant v,Texture2D texture)
         {

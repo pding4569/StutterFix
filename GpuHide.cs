@@ -43,21 +43,80 @@ namespace StutterFix
         static readonly List<Saved> toggled = new List<Saved>();
         static readonly List<KeyValuePair<Camera, bool>> toggledCams = new List<KeyValuePair<Camera, bool>>();
         static readonly List<KeyValuePair<Canvas, bool>> toggledCanvases = new List<KeyValuePair<Canvas, bool>>();
+        static readonly List<KeyValuePair<SpriteRenderer, Texture>> toggledTex = new List<KeyValuePair<SpriteRenderer, Texture>>();
+        static readonly List<KeyValuePair<SpriteRenderer, Sprite>> toggledSprites = new List<KeyValuePair<SpriteRenderer, Sprite>>();
+        static Camera directMain; static RenderTexture directMainRt;
         internal static string Toggle(string group, bool on)
         {
             // 렌더러가 아닌 것(카메라·캔버스)은 따로 되돌린다.
-            if (!on && (toggledCams.Count > 0 || toggledCanvases.Count > 0))
+            if (!on && group != "cam:direct" && group != "tiletex1x1" && group != "tile1d:trimy" && (toggledCams.Count > 0 || toggledCanvases.Count > 0))
             {
                 foreach (var c in toggledCams) if (c.Key) c.Key.enabled = c.Value;
                 foreach (var c in toggledCanvases) if (c.Key) c.Key.enabled = c.Value;
                 int m = toggledCams.Count + toggledCanvases.Count; toggledCams.Clear(); toggledCanvases.Clear(); return "restored=" + m;
             }
-            if (on && group.StartsWith("cam:", StringComparison.Ordinal))
+            if (on && group.StartsWith("cam:", StringComparison.Ordinal) && group != "cam:direct")
             {
                 string want = group.Substring(4);
                 foreach (var c in Resources.FindObjectsOfTypeAll<Camera>())
                     if (c.gameObject.scene.IsValid() && (want == "*" ? c.name != "Camera" && c.name != "OverlayCam" : c.name == want) && c.enabled) { toggledCams.Add(new KeyValuePair<Camera, bool>(c, c.enabled)); c.enabled = false; }
                 return "cams_off=" + toggledCams.Count;
+            }
+            // 진단(GPU 병목 가르기): 타일 장식의 텍스처만 4x4 흰 텍스처로 바꿔 캐시 미스 비용을 분리한다.
+            if (group == "tiletex1x1")
+            {
+                if (!on) { foreach (var kv in toggledTex) if (kv.Key) { var mpb0 = new MaterialPropertyBlock(); kv.Key.GetPropertyBlock(mpb0); if (kv.Value) mpb0.SetTexture("_MainTex", kv.Value); kv.Key.SetPropertyBlock(mpb0); } int m0 = toggledTex.Count; toggledTex.Clear(); return "tex_restored=" + m0; }
+                var mpb = new MaterialPropertyBlock();
+                foreach (var sr in Resources.FindObjectsOfTypeAll<SpriteRenderer>())
+                {
+                    if (!sr || !sr.gameObject.scene.IsValid() || !sr.enabled || !sr.gameObject.activeInHierarchy || sr.forceRenderingOff || !sr.sprite) continue;
+                    var vd = sr.GetComponentInParent<scrVisualDecoration>(); if (!vd || (vd.repeatX == 1 && vd.repeatY == 1)) continue;
+                    toggledTex.Add(new KeyValuePair<SpriteRenderer, Texture>(sr, sr.sprite.texture));
+                    sr.GetPropertyBlock(mpb); mpb.SetTexture("_MainTex", Texture2D.whiteTexture); sr.SetPropertyBlock(mpb);
+                }
+                return "tex_white=" + toggledTex.Count;
+            }
+            // 진단: repeatY==1 인 1D 타일 장식의 스프라이트를 불투명 Y 범위로 잘라낸 서브 스프라이트로 바꿔 래스터 면적을 줄인다.
+            if (group == "tile1d:trimy")
+            {
+                if (!on) { foreach (var kv in toggledSprites) if (kv.Key) kv.Key.sprite = kv.Value; int m1 = toggledSprites.Count; toggledSprites.Clear(); return "sprites_restored=" + m1; }
+                int skipped = 0;
+                foreach (var sr in Resources.FindObjectsOfTypeAll<SpriteRenderer>())
+                {
+                    if (!sr || !sr.gameObject.scene.IsValid() || !sr.enabled || !sr.gameObject.activeInHierarchy || sr.forceRenderingOff || !sr.sprite) continue;
+                    var vd = sr.GetComponentInParent<scrVisualDecoration>(); if (!vd || vd.repeatX == 1 || vd.repeatY != 1) continue;
+                    var sp = sr.sprite; var tex = sp.texture;
+                    if (!tex) { skipped++; continue; }
+                    var one = new Dictionary<int, Texture2D> { { tex.GetInstanceID(), tex } };
+                    DecoBake.TrimBoundsFor(one);
+                    if (!DecoBake.TryGetTrimBounds(tex, out var tb)) { skipped++; continue; }
+                    Rect rc = sp.rect;
+                    float yMin = Mathf.Floor(tb.y * rc.height), yMax = Mathf.Ceil(tb.w * rc.height), newH = Mathf.Max(2f, yMax - yMin);
+                    if (rc.x != 0f || rc.y != 0f || newH >= rc.height - 2f) { skipped++; continue; }
+                    var pivotNorm = new Vector2(sp.pivot.x / rc.width, (sp.pivot.y - yMin) / newH);
+                    var ns = Sprite.Create(tex, new Rect(0f, yMin, rc.width, newH), pivotNorm, sp.pixelsPerUnit, 0, SpriteMeshType.FullRect);
+                    toggledSprites.Add(new KeyValuePair<SpriteRenderer, Sprite>(sr, sp)); sr.sprite = ns;
+                }
+                return "sprites_trimmed=" + toggledSprites.Count + " skipped=" + skipped;
+            }
+            // 진단: 카메라 중간 렌더 타깃(camRT)을 거치지 않고 백버퍼에 직접 그린다(필터가 없는 구간 전용, 화면 확인용).
+            if (group == "cam:direct")
+            {
+                if (!on)
+                {
+                    foreach (var kv in toggledCams) if (kv.Key) kv.Key.enabled = kv.Value;
+                    toggledCams.Clear();
+                    if (directMain) { directMain.targetTexture = directMainRt; } directMain = null; directMainRt = null;
+                    return "direct_restored";
+                }
+                foreach (var c in Resources.FindObjectsOfTypeAll<Camera>())
+                {
+                    if (!c || !c.gameObject.scene.IsValid()) continue;
+                    if (c.name == "Camera") { directMain = c; directMainRt = c.targetTexture; }
+                    else if (c.name == "OverlayCam" || c.name == "BGStaticCam" || c.name == "BGMovingCam") { if (c.enabled) { toggledCams.Add(new KeyValuePair<Camera, bool>(c, c.enabled)); c.enabled = false; } }
+                }
+                if (directMain) directMain.targetTexture = null;
+                return "direct main=" + (directMain ? "yes" : "no") + " others_off=" + toggledCams.Count;
             }
             if (on && group == "canvas")
             {

@@ -860,7 +860,11 @@ namespace StutterFix
                     }
                     var r = d.spriteRenderer; var sp = r.sprite;
                     if (sp.vertices.Length != 4 || sp.uv.Length != 4 || sp.triangles.Length != 6) continue;
-                    var geometry = LiveDecoGeometry.Capture(d.pivotTrans, d.childTransform, r.transform, sp.vertices, r.flipX, r.flipY);
+                    Vector2[] cornerSrc = sp.vertices, uvSrc = sp.uv;
+#if AUTOTEST
+                    if (!GpuImageActor(index) && TrimStaticSprite(sp, out var trimV, out var trimUv)) { cornerSrc = trimV; uvSrc = trimUv; }
+#endif
+                    var geometry = LiveDecoGeometry.Capture(d.pivotTrans, d.childTransform, r.transform, cornerSrc, r.flipX, r.flipY);
                     if (geometry == null) continue;
                     var ts = d.scaleMultiplier * d.textureScaleMultiplier;
                     if (ts.x == 0 || ts.y == 0 || d.textureScaleMultiplier.x == 0 || d.textureScaleMultiplier.y == 0) continue;
@@ -875,7 +879,7 @@ namespace StutterFix
                     };
                     // Live G2 never binary-searches Tracks on GPU; pass empty Tracks to save VRAM and guarantee 0 fallback searches.
                     for (int ch = 0; ch < 16; ch++) item.Tracks[ch] = Array.Empty<DecoBakeCore.Segment>();
-                    var corners = sp.vertices; var uv = sp.uv;
+                    var corners = cornerSrc; var uv = uvSrc;
                     for (int v = 0; v < 4; v++)
                     {
                         PutVec(item.Shape, v * 3, geometry.Shape[v]);

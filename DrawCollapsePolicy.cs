@@ -84,6 +84,8 @@ namespace StutterFix
         internal static bool SkipPausedCompute=false;
         // 큰 이미지 장식의 쿼드를 불투명한 부분에만 맞게 줄인다(투명 여백 래스터라이즈 제거). 텍스처 긴 변이 TightMinSide 이상일 때만.
         internal static bool TightLargeQuads=true;
+        // 스프라이트가 바뀌지 않는 일반 소유 장식도 내보낼 때 쿼드를 불투명 범위로 좁힌다.
+        internal static bool TightAllOwned=false; // 측정: 1.7만 개를 줄여도 GPU -0.04ms 뿐이라 기본 끔
         internal static int TightMinSide=1025,TightMarginTexels=4;
         internal static float TightMaxAreaRatio=.8f;
         // 2048 을 넘는 같은 크기 DXT5(4K 프레임 계열 등)를 정확한 크기의 배열 하나로 묶는다. 3개 미만이면 직접 슬롯을 쓴다.

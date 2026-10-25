@@ -44,19 +44,22 @@ namespace StutterFix
             }
             if(args.Length==3 && args[0]=="policy")
             {
+                if(args[1]=="tightmin"){DrawCollapsePolicy.TightMinSide=int.Parse(args[2],Inv);GpuLog("DRAWCOLLAPSE_POLICY tightmin="+DrawCollapsePolicy.TightMinSide);return true;}
                 bool on=args[2]=="on";
                 switch(args[1])
                 {
                     case "tight":DrawCollapsePolicy.TightLargeQuads=on;break;
                     case "keepafter":DrawCollapsePolicy.KeepAfterBarrier=on;break;
                     case "clip":DrawCollapsePolicy.ClipOffscreen=on;break;
+                    case "tightall":DrawCollapsePolicy.TightAllOwned=on;break;
                     case "globalverts":DrawCollapsePolicy.GlobalVerts=on;break;
                     case "skiporder":DrawCollapsePolicy.SkipOrderSweep=on;break;
                     case "skipcompute":DrawCollapsePolicy.SkipPausedCompute=on;break;
-                    default:throw new ArgumentException("policy tight|keepafter|clip|skiporder|skipcompute|globalverts on|off");
+                    default:throw new ArgumentException("policy tight|tightall|keepafter|clip|skiporder|skipcompute|globalverts on|off");
                 }
                 GpuLog("DRAWCOLLAPSE_POLICY tight="+DrawCollapsePolicy.TightLargeQuads+" keepafter="+DrawCollapsePolicy.KeepAfterBarrier);return true;
             }
+            if(args.Length==1 && args[0]=="trimstats"){GpuLog("GPUTRIM_STATS bounds="+gpuTrimBounds.Count+" trimmed="+gpuTrimTrimmed+" kept="+gpuTrimKept+" "+TrimStaticStats());return true;}
             if(args.Length==1 && args[0]=="dumpverts")
             {
                 if(gpuCollapseAllVerts==null){GpuLog("DRAWCOLLAPSE_DUMP none");return true;}
