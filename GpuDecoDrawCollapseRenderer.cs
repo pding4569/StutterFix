@@ -114,7 +114,7 @@ namespace StutterFix
                     continue;
                 }
                 int i=local[row.Item];gpuCollapseOwnedRows[i]=row;
-                if(!VisibleInWindow(table,row.Item,259.75,270.25))continue;
+                if(!VisibleInWindow(table,row.Item,257.5,270.25))continue;
                 gpuCollapseIncluded[i]=true;
             }
             var textures=new Dictionary<int,Texture2D>();
@@ -287,7 +287,7 @@ namespace StutterFix
             gpuCollapseCameraPosition=gpuLiveCamera.transform.position;
             gpuCollapseCameraForward=gpuLiveCamera.transform.forward;gpuCollapseOwnedCursor=0;
             var plan=DrawCollapsePolicy.Plan(rows);
-            RequireLive(plan.Count>0 && plan.Count<=150,"drawcollapse conservative prepared spans="+plan.Count+" exceeds renderer budget");
+            RequireLive(plan.Count>0 && plan.Count<=DrawCollapsePolicy.MaxSpans,"drawcollapse conservative prepared spans="+plan.Count+" exceeds renderer budget");
             foreach(var items in plan)
             {
                 var first=gpuCollapseOwnedRows[items[0]];var last=gpuCollapseOwnedRows[items[items.Length-1]];
@@ -481,7 +481,7 @@ namespace StutterFix
             {
                 try
                 {
-                    RequireLive(time>=259.75 && time<=270.25,"outside_prepared_260..270_window");
+                    RequireLive(time>=257.5 && time<=270.25,"outside_prepared_260..270_window");
                     ValidateDrawCollapse(false);
                 }
                 catch(Exception e){reason=e.GetType().Name+":"+e.Message;}

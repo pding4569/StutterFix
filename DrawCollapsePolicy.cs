@@ -69,6 +69,8 @@ namespace StutterFix
         }
         // Renderer stores the source item index for owned rows. Never regroup
         // A/B/A textures or move a quad across even a currently hidden barrier.
+        internal static bool SplitByOrder=true;
+        internal static int MaxSpans=700;
         internal static List<int[]> Plan(List<Row> rows)
         {
             rows.Sort((a,b)=>a.Key.CompareTo(b.Key));
@@ -76,10 +78,18 @@ namespace StutterFix
                 if(rows[i].Key.SameMaterialTie(rows[i-1].Key) && (rows[i].Owned || rows[i-1].Owned))
                     throw new InvalidOperationException("drawcollapse ambiguous material tie");
             var spans=new List<int[]>();var items=new List<int>();
+            bool haveBucket=false;int bl=0,bo=0,bq=0;
             foreach(var row in rows)
             {
-                if(row.Owned){items.Add(row.Renderer);continue;}
+                if(row.Owned)
+                {
+                    // 정렬 순서(층,순서,큐)가 바뀔 때마다 구간을 끊는다: 다른 순서의 장벽이 곡 도중 활성화돼도 구간 한가운데로 들어올 수 없다.
+                    if(SplitByOrder && haveBucket && items.Count>0 && (row.Key.Layer!=bl || row.Key.Order!=bo || row.Key.Queue!=bq)){spans.Add(items.ToArray());items.Clear();}
+                    bl=row.Key.Layer;bo=row.Key.Order;bq=row.Key.Queue;haveBucket=true;
+                    items.Add(row.Renderer);continue;
+                }
                 if(items.Count>0){spans.Add(items.ToArray());items.Clear();}
+                haveBucket=false;
             }
             if(items.Count>0)spans.Add(items.ToArray());
             return spans;

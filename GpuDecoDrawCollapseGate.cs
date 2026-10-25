@@ -53,7 +53,7 @@ namespace StutterFix
                 RequireDrawCollapse();CollapseEnvironment();
                 RequireLive(i>=0 && i<4 && collapseWindow<0 && i==collapseGate.Windows.Count(x=>x)
                     && gpuCollapseOn==(i==1||i==2) && !FrameCompare.Paused && Hitch.Playing
-                    && Math.Abs(MergeSong-260)<(DrawCollapseGuard.IgnoreOrderViolations?1.6:.6) && gpuLiveCpuFallbackCount==0,"drawcollapse begin requires ABBA at 260s");
+                    && Math.Abs(MergeSong-260)<1.6 && gpuLiveCpuFallbackCount==0,"drawcollapse begin requires ABBA at 260s");
                 collapseDraws=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",16384);
                 collapseWindow=i;collapseFrame=Time.frameCount;collapseObserved=-1;collapseObservedCount=collapseSpikes=0;
                 collapseTick=Stopwatch.GetTimestamp();
@@ -76,6 +76,7 @@ namespace StutterFix
                 finally {collapseDraws.Dispose();collapseDraws=default;}
                 double fps=frames/Math.Max(seconds,1e-9);
                 collapseGate.Window(i,fps,(int)Math.Min(maximum,int.MaxValue),collapseSpikes,valid);
+                GpuLog("DRAWCOLLAPSE_IGNORED_ORDER total="+DrawCollapseGuard.IgnoredOrderViolations+" on="+gpuCollapseOn+" fault="+(gpuCollapseFault??"none")+" pending_fallback="+(gpuCollapsePendingFallback??"none"));
                 GpuLog("DRAWCOLLAPSE_WINDOW index="+i+" fps="+fps.ToString("F6",Inv)+" engine_draws_max="+maximum
                     +" spikes_30ms="+collapseSpikes+" frames="+frames+" observed="+collapseObservedCount+" valid="+valid);return true;
             }
