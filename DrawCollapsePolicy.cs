@@ -12,7 +12,7 @@ namespace StutterFix
         internal const int ArrayBindings=4;
         internal const int DirectBindings=32;
         internal const int TextureBindings=ArrayBindings+DirectBindings;
-        internal const int OwnedChecksPerFrame=128;
+        internal const int OwnedChecksPerFrame=16;
         // Orthographic camera translation changes every distance by this same
         // amount. Compare against the camera, not against the first barrier:
         // otherwise a lone moving barrier could cross a whole span undetected.

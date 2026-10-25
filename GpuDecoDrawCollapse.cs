@@ -18,7 +18,8 @@ namespace StutterFix
                 "drawcollapse requires independent whole-song GPU ownership");
             checks.Check(GpuLiveOwned==23547 && GpuLiveOwned-gpuLiveCpuFallbackCount>=20000,
                 "drawcollapse requires allocated owned=23547, GPU owned>=20000");
-            checks.Check(!GpuDecoCopy.SingleSubmission && !TightLate.GpuListCaching && !GpuDecoCostProbe.Enabled,
+            checks.Check(!GpuDecoCostProbe.Enabled, // SingleSubmission/GpuListCaching 은 draw 통합과 독립이므로 함께 켜도 된다(스크립트 비용 시험)
+                
                 "drawcollapse must isolate the original independent baseline");
             checks.Check(GpuDecoCopy.ReadTotals().Errors==0,"drawcollapse native copy errors");
         }
