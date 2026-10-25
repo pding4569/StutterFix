@@ -1,0 +1,15 @@
+
+Algorithm Hash                                                             Path                                                                                       
+--------- ----                                                             ----                                                                                       
+SHA256    4B052DBBE5502D8078C2B5F01A282B0B103D931A66E222AB6C86F19BC26297C8 E:\StutterFixWork\wt-gpu\tools\optimization\out\imageown-diag1-steps.json                  
+SHA256    53638954FCE0FDCEE8814C2C5223314D56BC076FE3AC21F4258E01B4DCEA2C69 E:\StutterFixWork\wt-gpu\tools\optimization\out\imageown-abba1-steps.json                  
+SHA256    D65CA14890FE0F54E449A84EC6D71B17C94BEC2092710D12C4F512FD47C82809 E:\StutterFixWork\wt-gpu\GpuDecoDrawCollapseRenderer.cs                                    
+SHA256    A5A35E003A07FABB1D420DB55E09EC9ADE7D3CAA844814E84F24B548F130C2CB E:\StutterFixWork\wt-gpu\GpuDecoExport.cs                                                  
+SHA256    1F19E33376EA400992E3ED369DF31CC1537A2A8C31AD5DEC09133887B162D87A E:\StutterFixWork\wt-gpu\FastMove.cs                                                       
+SHA256    94D7FAFBAEA9645996F501C33B7F8F75E240560F8EB66D869568879867C84F96 E:\StutterFixWork\wt-gpu\Dormancy.cs                                                       
+SHA256    C4640A25C0B1316D13745D7333C2A177F274D73664FFA0E6FBEACCAD65A3D3A9 E:\StutterFixWork\wt-gpu\TightLate.cs                                                      
+SHA256    825BB61E7DDAC928F043B4B1C717920172382DD3792BC2701832013CF04A34BD E:\StutterFixWork\wt-gpu\DrawCollapsePolicy.cs                                             
+SHA256    4ECDBE6C69A33DEFA422DBCD944AC18F96E45D0786E705F1001B7D5A07440AD4 E:\StutterFixWork\wt-gpu\tools\gpudeco-lab\evidence\drawcollapse5\bundle\stutterfix_gpudeco
+
+
+

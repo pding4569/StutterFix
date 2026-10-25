@@ -1,4 +1,53 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA fallback=NA spikes_30ms=NA reason=GAME_NOT_RUN_AND_COLLAPSE_OWNER_HOOKS_PENDING
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA fallback=NA spikes_30ms=NA reason=DIAG2_NOT_RUN
+
+## 자동 반복 2회차 — 외부 run1 분석과 캡처 상한 수정
+
+이번 호출의 게임 실행·설치·커밋·푸시·자동 장치 호출·Unity Editor 실행·설정/제어 변경은 모두 **0회**다. 외부 run1을 읽었으며 새 실측은 없다. 픽셀 오차의 원인은 아직 미확정이고 +20% 수용 기준도 미증명이다.
+
+### 확인된 실패 원인
+
+- `im-autoloop-run1-evidence.txt`의 직접 증거42줄을 `E:/StutterFixWork/night-results/al-im-1.log`에 대조했다. 시작 줄은1,500자 접두부이며 나머지는 원문 일치다. `out/imageown2/check-evidence.py`, `evidence-and-compatibility.txt`에 보존했다.
+- 원시578행까지 O,O2,G,N,D,DN,G2,U **8장**을 채웠고579~580행에서 아홉 번째 UN을 거부했다. `FrameCompare.cs`는 MaxShots=8이며 새 이름만 상한 검사하고 기존 이름 대입은 허용한다. 기존156단계 계획은 첫 시점부터 끝낼 수 없었다.
+- 453/458행 O/O2,493/498행 G/N,529/534행 D/DN,554행 G/G2는 모두 changed=0·maxRGBA=0,0,0,0이다. 이는 반복/복원 대조이며 **O/G·O/D·O/U의 원본 대비 차이0을 뜻하지 않는다**. 그 세 비교 및 최종 GPUIMG_DIAG second=는 실행되지 않았다.262/270초도 도달하지 못했다.
+- 실제 환경3440×1440@164.999, 활성화 두 번 모두 GPU28,523·CPU fallback0, refreshpose off/on 호출0/4,976이다. CPU 정점 주입은 이미지/활성 renderer286/286·최대 world delta0.00013647876이다. 월드 오차를 픽셀 오차로 환산하지 않는다.
+- 580행 캡처 실패→583행 pause 복원→584행 종료 선언→585행 FastMove 원본 보호→588행 CPU 복귀→590행 native_contexts=0 순서다. 첫 live off 복원 Rec11,821/11,821, 종료 복귀0/0이다. **보호 복귀가 먼저 진단을 망친 것이 아니다.** 종료 중 해당 원본 효과가 호출된 스택은 없으며 가드를 수정하지 않았다.
+
+### 수정한 새 접근
+
+기본 diag는 `imageown-260-270-diag2-bounded` **165단계**다. CPU O/O2를 assertzero·PNG 저장한 뒤 마지막 pose 반복 캡처가 기존 이름 **O2를 덮어쓴다**. 최대8장으로 두 가설을 모두 비교하며 원본 O는 유지한다. 마지막 O2 PNG는 U의 반복이므로 CPU 반복으로 해석하지 않는다. 최초 CPU 반복 수치는 덮어쓰기 전 로그에 남는다.
+
+O/G·O/D·O/U는 각 후보의 반복 대조 직후 framecmp diff로 기록하고 PNG도 다음 단계 전에 저장한다. 다음 단계 실패에도 완료한 비교 근거가 남는다. `GpuDecoImageGeometryFixture.cs`의 새 `images diag pixel bounded`는 O2를 pose 반복으로 읽고 GPU/CPU정점/pose 반복 및 G 복원을 함께 GPUIMG_DIAG로 출력한다. cause=UNCONFIRMED를 유지한다.
+
+예전 `--mode diag1`과 명시적 `--mode abba`는 이전 생성기와 **전체 dict8사례 동일**하다. 기존 diag1/abba1 JSON을 덮어쓰지 않았다. diag1은 실패 이력 보존용이며 반복 실행 대상이 아니다. 기존 shader·정점 수식·원본 보호 경로를 추측으로 수정하지 않았다.
+
+### 게임 코드 대조와 통합 현황
+
+근사 디컴파일 scrVisualDecoration.SetSprite와 scrDecoration.UpdatePosition을 읽고 설치 DLL을 tools/ilscan으로 대조했다. SetSprite는 SpriteRenderer/마스크·ResizeCollider·샘플링 재질·V15 wrapMode를 바꾸고 UpdatePosition 호출은 없다. UpdatePosition은 pivot 위치·parallax·회전·크기 경로를 실행한다. `out/imageown2/game-visual-il.txt`, `game-decoration-il.txt`에 보존했다. 호출 관계만으로 stale Transform이나 정점 산술을 실제 픽셀 원인으로 확정할 수 없다.
+
+현재 `GpuDecoDrawCollapseRenderer.cs`에는 RegisterGpuImageCollapseVariants(textures)와 RememberGpuImageCollapseAddresses(addresses)가 **이미 연결돼 있다**.1회차의 연결 대기는 과거 상태다. renderer/policy/export/Dormancy/TightLate/FastMove 및 기존 텍스처 헬퍼·알파 큐는 이번에 수정하지 않았다. 소유자 파일 SHA256 전후 일치다. 연결 존재는 실제 이미지 무폴백·정렬·픽셀 통과 증명이 아니다.
+
+### 오프라인 검증과 외부 인계
+
+| 검사 | 결과 | out/imageown2 근거 |
+|---|---|---|
+| DEV/Player/PlayerAuto 빌드 | 오류0/0/0·경고48/36/40 | build-dev.txt,build-player.txt,build-playerauto.txt |
+| LoadCheck | FieldRef279/229/281곳·틀림0/0/0·일반 Player 연구 제외 | loadcheck-*.txt |
+| 생성기 | 실제 캡처 상한·이름 존재·덮어쓰기 전 대조/저장·소유권·측정 창7검사 통과 | generator-tests.txt |
+| 과거 출력/증거 | 전체 출력8사례 호환·직접 증거42줄 일치 | evidence-and-compatibility.txt |
+
+기존 큐4,495검사는 해당 코드 변경이 없어 반복하지 않았다. 빌드는 out/imageown2/build와 obj에 격리했다. 이 검증은 Mono 게임 픽셀·FPS 증명이 아니다.
+
+새 `tools/optimization/out/imageown-diag2-steps.json`은 **생성만** 했다. 외부 실행자는 새 managed DLL과 EvaluateImageLive 지원 번들을 확인해야 한다. 이번 번들 SHA256은 `4ecdb...40ad4`(전체 값은 out/imageown2/source-after-build.txt)이며 새 번들의 실제 실행 성공은 별도 미검증이다. 번들/manifest/Editor 근거에는 쓰지 않았다. 작업 중 타 작업자가 바꾼 bundle 로그·manifest·editor-image3.txt를 유지했다.
+
+diag2로 세 시점 원본 대비 수치를 얻어 원인별 수정 후 maxdiff<=3을 확인해야 한다. 그 전에는 abba1을 실행 대상으로 승격하지 않는다. FPS·폴백·30ms 이상 끊김·전곡 수명·설치 복원은 NA다. **확정 한계는 기존9장 진단의 상한 위반이며 이미지 GPU 소유 방식 자체의 불가능이 아니다.** 같은 diag1 반복은 중단한다.
+
+JSON SHA256은 다음과 같다.
+
+- 기존 diag1: `4b052dbbe5502d8078c2b5f01a282b0b103d931a66e222ab6c86f19bc26297c8`
+- 기존 abba1: `53638954fce0fdcee8814c2c5223314d56bc076fe3ac21f4258e01b4dcea2c69`
+- 새 diag2: `6aed5565a7d6101a260385289a0af40ce35f466f1859db7a7900f6ae3acdc6e4`
+
+아래는1회차 과거 기록이다.
 
 # 이미지 소유 작업 결과 — 2026-10-25
 

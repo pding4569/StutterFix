@@ -95,17 +95,25 @@ namespace StutterFix
                 RequireLive(FrameCompare.Paused,"restore CPU vertex diagnostic while paused");
                 StopGpuImageVertexDiagnostic(true);GpuLog("GPUIMG_DIAG mode=cpu_vertices enabled=False restored=True performance=False");return true;
             }
-            if(command=="images diag pixel")
+            if(command=="images diag pixel"||command=="images diag pixel bounded")
             {
                 RequireLive(FrameCompare.Paused&&gpuLiveActive&&!GpuImageVertexDiagnosticActive,"finish vertex injection before diagnostic comparisons");
+                // diag1 kept nine names and hit FrameCompare's eight-shot cap.
+                // The bounded plan asserts/saves CPU O/O2 before reusing O2
+                // for the second pose capture. Keep the legacy command intact.
+                bool bounded=command=="images diag pixel bounded";
                 var gpu=FrameCompare.CompareShots("O","G",out _);
                 var pose=FrameCompare.CompareShots("O","U",out _);
                 var cpu=FrameCompare.CompareShots("O","D",out _);
                 var noise=FrameCompare.CompareShots("G","N",out bool quiet);
                 var restored=FrameCompare.CompareShots("G","G2",out bool same);
+                var cpuNoise=FrameCompare.CompareShots("D","DN",out bool cpuQuiet);
+                var poseNoise=FrameCompare.CompareShots("U",bounded?"O2":"UN",out bool poseQuiet);
                 GpuLog("GPUIMG_DIAG second="+MergeSong.ToString("F6",Inv)+" gpu_changed="+gpu.Changed+" gpu_max="+gpu.Max.Max()
                     +" refreshpose_changed="+pose.Changed+" refreshpose_max="+pose.Max.Max()+" cpu_vertices_changed="+cpu.Changed+" cpu_vertices_max="+cpu.Max.Max()
-                    +" noise="+noise.Changed+" restore="+restored.Changed+" controls="+(quiet&&same&&noise.Changed==0&&restored.Changed==0)
+                    +" noise="+noise.Changed+" restore="+restored.Changed+" cpu_noise="+cpuNoise.Changed+" pose_noise="+poseNoise.Changed
+                    +" controls="+(quiet&&same&&cpuQuiet&&poseQuiet&&noise.Changed==0&&restored.Changed==0&&cpuNoise.Changed==0&&poseNoise.Changed==0)
+                    +" capture_layout="+(bounded?"eight_reuse_O2_after_CPU_assert":"legacy_nine")
                     +" cause=UNCONFIRMED performance=False");return true;
             }
             return false;

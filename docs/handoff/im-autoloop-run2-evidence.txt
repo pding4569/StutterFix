@@ -1,0 +1,78 @@
+[StutterFix] [자동 시험] 시작: 165단계 - timeout 600 / auto on / gpudeco off / decobake off / gpudeco drawcollapse reset / gpudeco drawcollapse unsafe off / decobake on / gpudeco costprobe off / gpudeco effectcache off / gpudeco submitsingle off / gpudeco latecache off / gpudeco nombp off / gpudeco nativebatch on / gpudeco nativecopy on8masked / gpudeco zeroalpha on / gpudeco bundle E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/evidence/drawcollapse5/bundle/stutterfix_gpudeco / gpudeco images playback on / open D:/얼불춤 맵 파일/Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / gpuprobe off / gpusplit off / matshare off / livedeco off / select 0 / play / gpudeco scheduled / pause / decobake ready / gpudeco images compile / gpudeco images own on / gpudeco images matrix on / gpudeco images refreshpose off / gpudeco live scope song / gpudeco live prepare / resume / stop / seek 260 12 / decobake ready / waitsongpos 260 40 / pause / framecmp clear / framecmp mask none / framecmp filters on / framecmp ui exclude / framecmp noise O O2 / framecmp assertzero O O2 / framecmp save O / framecmp save O2 / gpudeco images refreshpose off / gpudeco live on / framecmp noise G N / framecmp assertzero G N / framecmp diff O G / framecmp save G / framecmp save N / gpudeco images locate cpuvertices on / framecmp noise D DN / framecmp assertzero D DN / framecmp diff O D / framecmp save D / framecmp save DN / gpudeco images locate cpuvertices off / framecmp grab G2 / framecmp assertzero G G2 / framecmp save G2 / gpudec
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] drawcollapse_gate_reset=True
+[StutterFix] [gpudeco] DRAWCOLLAPSE_UNSAFE_ORDER ignore=False ignored=0
+[StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots_avg=0.000 renderer_toggles_avg=0.000000 active_chunks_avg=0.000000 active_chunks_max=0 source_removals=0 missing_removals=0 source_search_element_upper_bound=0 source_shifted_ints=0 source_max_list=0 removal_work_is_CPU_timing=False additional_clock_reads_per_frame=2 gpu_time=UNMEASURED
+[StutterFix] [gpudeco] cost_probe_enabled=False acceptance=False
+[StutterFix] [gpudeco] effect_cache=False research_only=True default=False
+[StutterFix] [gpudeco] single_submit=False research_only=True default=False
+[StutterFix] [gpudeco] late_cache=False rebuilds=0 cache_ready=False cpu_targets=0 skipped=0 research_only=True default=False
+[StutterFix] [gpudeco] nombp=False
+[StutterFix] [gpudeco] native_batch=True static_batch=False restore_sort_bounds=False live_validated=False
+[StutterFix] [gpudeco] native_copy=True eight_uav=True masked=True active_contexts=0
+[StutterFix] [gpudeco] zeroalpha=True rule=both_factors_constant_one_exactly_zero count=0 collisions_changed=0
+[StutterFix] [gpudeco] image_playback candidate=True own=True setters=0 uploads=0 flushes=0 pending=0 recoveries=0 GPU_active=False alpha_watch=0 alpha_checks=0 alpha_dirty=0 refreshpose=False pose_updates=0
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=3 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] image_tape events=1833 selectors=104 target_references=8751 decorations=5087 empty_selector_events=1 source_id_reuses=0 payload_lower_bound_bytes=247540 metadata_only=False GPU_image_playback_candidate=True admission_changed=True
+[StutterFix] [gpudeco] image_variants ready_quad=103 null_argument=1 missing=0 non_quad=0 split_alpha=0 invalid=0 borrowed_assets_destroyed=0 asset_getters_only=True
+[StutterFix] [gpudeco] image_playback candidate=True own=True setters=0 uploads=0 flushes=0 pending=0 recoveries=0 GPU_active=False alpha_watch=0 alpha_checks=0 alpha_dirty=0 refreshpose=False pose_updates=0
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=refreshpose enabled=False default_off=True performance=False
+[StutterFix] [gpudeco] scope=song_union default_off=True Player_included=False
+[StutterFix] [gpudeco] image_admission affected=5087 eligible=5028 excluded=59 null_argument_policy=CPU
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=28633 admitted=28523 rejects=repeat-tile:110
+[StutterFix] [gpudeco] prepare_ms=8549.611400 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False scope=song_union item_limit=32768 masked_copy=True
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=refreshpose enabled=False default_off=True performance=False
+[StutterFix] [gpudeco] activation_ownership allocated=28523 GPU_owned=28523 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] GPUIMG_DIAG stage=activation refreshpose=False pose_updates=0 pixel_max=NA performance=False
+[StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2135 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=158.285900 prepare_ms=8549.611400
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=cpu_vertices images=286 visible=286 max_world_delta=0.00013647876 fresh_activation=True persistent_until_off=True color_uv_unchanged=True performance=False pixel_max=NA window=3440x1440 display=3440x1440 hz=164.999 mode=FullScreenWindow sync=0 graphics=Direct3D11 target=10000
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=cpu_vertices enabled=False restored=True performance=False
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2135 high_water=2135 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=40 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.367660 progress_ms=0.011843 uniform_ms=0.007233 dispatch_ms=0.224128 misc_ms=0.124458 max_ms=5.926700 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=260.019671 resumed_recs=11821 resume_expected=11821 unobserved_order=0 restore_ms=12.192900
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=refreshpose enabled=True default_off=True performance=False
+[StutterFix] [gpudeco] activation_ownership allocated=28523 GPU_owned=28523 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] GPUIMG_DIAG stage=activation refreshpose=True pose_updates=4976 pixel_max=NA performance=False
+[StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2135 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=159.747200 prepare_ms=8549.611400
+[StutterFix] [gpudeco] GPUIMG_DIAG second=260.019671 gpu_changed=384 gpu_max=1 refreshpose_changed=384 refreshpose_max=1 cpu_vertices_changed=489 cpu_vertices_max=1 noise=0 restore=0 cpu_noise=0 pose_noise=0 controls=True capture_layout=eight_reuse_O2_after_CPU_assert cause=UNCONFIRMED performance=False
+[StutterFix] [gpudeco] image_playback candidate=True own=True setters=0 uploads=4976 flushes=0 pending=0 recoveries=0 GPU_active=True alpha_watch=0 alpha_checks=0 alpha_dirty=0 refreshpose=True pose_updates=4976
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2135 high_water=2135 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=58 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.421598 progress_ms=0.011693 uniform_ms=0.006997 dispatch_ms=0.232302 misc_ms=0.170607 max_ms=6.107500 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=260.019671 resumed_recs=11821 resume_expected=11821 unobserved_order=0 restore_ms=11.611800
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=refreshpose enabled=False default_off=True performance=False
+[StutterFix] [gpudeco] activation_ownership allocated=28523 GPU_owned=28523 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] GPUIMG_DIAG stage=activation refreshpose=False pose_updates=0 pixel_max=NA performance=False
+[StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2041 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=158.295900 prepare_ms=8549.611400
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=cpu_vertices images=354 visible=354 max_world_delta=0.00013647876 fresh_activation=True persistent_until_off=True color_uv_unchanged=True performance=False pixel_max=NA window=3440x1440 display=3440x1440 hz=164.999 mode=FullScreenWindow sync=0 graphics=Direct3D11 target=10000
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=cpu_vertices enabled=False restored=True performance=False
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2041 high_water=2041 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=98 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.391962 progress_ms=0.012028 uniform_ms=0.006937 dispatch_ms=0.222619 misc_ms=0.150379 max_ms=6.107500 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=262.014330 resumed_recs=11186 resume_expected=11186 unobserved_order=0 restore_ms=13.595600
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=refreshpose enabled=True default_off=True performance=False
+[StutterFix] [gpudeco] activation_ownership allocated=28523 GPU_owned=28523 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] GPUIMG_DIAG stage=activation refreshpose=True pose_updates=4976 pixel_max=NA performance=False
+[StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2041 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=259.291900 prepare_ms=8549.611400
+[StutterFix] [gpudeco] GPUIMG_DIAG second=262.014330 gpu_changed=172 gpu_max=1 refreshpose_changed=172 refreshpose_max=1 cpu_vertices_changed=280 cpu_vertices_max=1 noise=0 restore=0 cpu_noise=0 pose_noise=0 controls=True capture_layout=eight_reuse_O2_after_CPU_assert cause=UNCONFIRMED performance=False
+[StutterFix] [gpudeco] image_playback candidate=True own=True setters=0 uploads=4976 flushes=0 pending=0 recoveries=0 GPU_active=True alpha_watch=0 alpha_checks=0 alpha_dirty=0 refreshpose=True pose_updates=4976
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2041 high_water=2041 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=116 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.421716 progress_ms=0.011947 uniform_ms=0.006876 dispatch_ms=0.231173 misc_ms=0.171719 max_ms=6.369200 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=262.014330 resumed_recs=11186 resume_expected=11186 unobserved_order=0 restore_ms=11.730900
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=refreshpose enabled=False default_off=True performance=False
+[StutterFix] [gpudeco] activation_ownership allocated=28523 GPU_owned=28523 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] GPUIMG_DIAG stage=activation refreshpose=False pose_updates=0 pixel_max=NA performance=False
+[StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2235 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=180.296900 prepare_ms=8549.611400
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=cpu_vertices images=340 visible=340 max_world_delta=0.00013647876 fresh_activation=True persistent_until_off=True color_uv_unchanged=True performance=False pixel_max=NA window=3440x1440 display=3440x1440 hz=164.999 mode=FullScreenWindow sync=0 graphics=Direct3D11 target=10000
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=cpu_vertices enabled=False restored=True performance=False
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2235 high_water=2235 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=156 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.404909 progress_ms=0.011711 uniform_ms=0.006851 dispatch_ms=0.226912 misc_ms=0.159435 max_ms=6.369200 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.025012 resumed_recs=12301 resume_expected=12301 unobserved_order=0 restore_ms=13.422800
+[StutterFix] [gpudeco] GPUIMG_DIAG mode=refreshpose enabled=True default_off=True performance=False
+[StutterFix] [gpudeco] activation_ownership allocated=28523 GPU_owned=28523 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] GPUIMG_DIAG stage=activation refreshpose=True pose_updates=4976 pixel_max=NA performance=False
+[StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2235 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=185.591600 prepare_ms=8549.611400
+[StutterFix] [gpudeco] GPUIMG_DIAG second=270.025012 gpu_changed=61 gpu_max=1 refreshpose_changed=61 refreshpose_max=1 cpu_vertices_changed=258 cpu_vertices_max=1 noise=0 restore=0 cpu_noise=0 pose_noise=0 controls=True capture_layout=eight_reuse_O2_after_CPU_assert cause=UNCONFIRMED performance=False
+[StutterFix] [gpudeco] image_playback candidate=True own=True setters=0 uploads=4976 flushes=0 pending=0 recoveries=0 GPU_active=True alpha_watch=0 alpha_checks=0 alpha_dirty=0 refreshpose=True pose_updates=4976
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2235 high_water=2235 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=174 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.423217 progress_ms=0.011779 uniform_ms=0.006997 dispatch_ms=0.232578 misc_ms=0.171863 max_ms=6.369200 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.025012 resumed_recs=12301 resume_expected=12301 unobserved_order=0 restore_ms=13.212100
+[StutterFix] [gpudeco] shutdown_disposed=True native_contexts=0
