@@ -41,8 +41,30 @@ namespace StutterFix
         }
         // 진단: probe 없이 한 묶음의 forceRenderingOff 를 직접 켜고 끈다(PresentMon 으로 GPU 시간 비교용). 화면이 틀려진다.
         static readonly List<Saved> toggled = new List<Saved>();
+        static readonly List<KeyValuePair<Camera, bool>> toggledCams = new List<KeyValuePair<Camera, bool>>();
+        static readonly List<KeyValuePair<Canvas, bool>> toggledCanvases = new List<KeyValuePair<Canvas, bool>>();
         internal static string Toggle(string group, bool on)
         {
+            // 렌더러가 아닌 것(카메라·캔버스)은 따로 되돌린다.
+            if (!on && (toggledCams.Count > 0 || toggledCanvases.Count > 0))
+            {
+                foreach (var c in toggledCams) if (c.Key) c.Key.enabled = c.Value;
+                foreach (var c in toggledCanvases) if (c.Key) c.Key.enabled = c.Value;
+                int m = toggledCams.Count + toggledCanvases.Count; toggledCams.Clear(); toggledCanvases.Clear(); return "restored=" + m;
+            }
+            if (on && group.StartsWith("cam:", StringComparison.Ordinal))
+            {
+                string want = group.Substring(4);
+                foreach (var c in Resources.FindObjectsOfTypeAll<Camera>())
+                    if (c.gameObject.scene.IsValid() && (want == "*" ? c.name != "Camera" && c.name != "OverlayCam" : c.name == want) && c.enabled) { toggledCams.Add(new KeyValuePair<Camera, bool>(c, c.enabled)); c.enabled = false; }
+                return "cams_off=" + toggledCams.Count;
+            }
+            if (on && group == "canvas")
+            {
+                foreach (var c in Resources.FindObjectsOfTypeAll<Canvas>())
+                    if (c.gameObject.scene.IsValid() && c.enabled) { toggledCanvases.Add(new KeyValuePair<Canvas, bool>(c, c.enabled)); c.enabled = false; }
+                return "canvases_off=" + toggledCanvases.Count;
+            }
             if (!on) { foreach (var t in toggled) if (t.Renderer) t.Renderer.forceRenderingOff = t.Off; int n = toggled.Count; toggled.Clear(); return "restored=" + n; }
             if (toggled.Count > 0) throw new InvalidOperationException("already hidden");
             var rs = Resources.FindObjectsOfTypeAll<Renderer>().Where(r => r.gameObject.scene.IsValid());
@@ -59,6 +81,21 @@ namespace StutterFix
                     var q = group.Substring(14).Split(',');
                     int lo = int.Parse(q[0]), hi = int.Parse(q[1]);
                     pick = r && GpuCensus.IsDecoration(r) && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && r.sortingOrder >= lo && r.sortingOrder <= hi;
+                }
+                else if (group == "tile2d")
+                {
+                    var vd = r ? r.GetComponentInParent<scrVisualDecoration>() : null;
+                    pick = vd && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && vd.repeatX >= 50 && vd.repeatY >= 50;
+                }
+                else if (group == "tile1d")
+                {
+                    var vd = r ? r.GetComponentInParent<scrVisualDecoration>() : null;
+                    pick = vd && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && (vd.repeatX != 1 || vd.repeatY != 1) && !(vd.repeatX >= 50 && vd.repeatY >= 50);
+                }
+                else if (group.StartsWith("name:", StringComparison.Ordinal))
+                {
+                    var sr = r as SpriteRenderer; string want = group.Substring(5);
+                    pick = sr && sr.sprite && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && sr.sprite.name.IndexOf(want, StringComparison.OrdinalIgnoreCase) >= 0;
                 }
                 else if (group == "unowned-big") pick = r && GpuCensus.IsDecoration(r) && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && (r.bounds.size.x > 25f || r.bounds.size.y > 25f);
                 else pick = Select(group, r, 0);
