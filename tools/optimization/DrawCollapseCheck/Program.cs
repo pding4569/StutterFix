@@ -4,6 +4,13 @@ using StutterFix;
 
 int checks=0;
 void Check(bool ok,string why){checks++;if(!ok)throw new Exception(why);}
+Check(DrawCollapsePolicy.TextureBindings<=64 && DrawCollapsePolicy.ArrayBindings==4
+    && DrawCollapsePolicy.DirectBindings>=26,"Unity shader cap includes arrays and borrowed textures; measured 26 direct sources fit");
+Check(string.Join(",",DrawCollapsePolicy.AdmitArrayGroups(new[]{11,5,39},2048))=="11,5,39","measured three tiers fit without fallback");
+Check(string.Join(",",DrawCollapsePolicy.AdmitArrayGroups(new[]{1,1,1,1,1},2048))=="1,1,1,1,0","fifth format/tier uses independent fallback");
+Check(string.Join(",",DrawCollapsePolicy.AdmitArrayGroups(new[]{9,1},2))=="8,0","array depth splits consume bindings and overflow falls back");
+Check(string.Join(",",DrawCollapsePolicy.AdmitArrayGroups(new[]{3,4,1},2))=="3,4,0","partial array capacity is not reused across incompatible tiers");
+Check(DrawCollapsePolicy.AdmitArrayGroups(new[]{int.MaxValue},int.MaxValue)[0]==int.MaxValue,"capacity arithmetic does not overflow");
 DrawCollapsePolicy.Row Row(int rank,bool owned,int texture=1,int renderer=0,int slot=0,string signature="s",int order=0)
     =>new DrawCollapsePolicy.Row(new SceneRenderOrder.Key(0,order,3000,0,rank,renderer,slot),owned,renderer,texture,signature);
 DrawCollapsePolicy.Counts Count(params DrawCollapsePolicy.Row[] rows)=>DrawCollapsePolicy.Count(new List<DrawCollapsePolicy.Row>(rows));

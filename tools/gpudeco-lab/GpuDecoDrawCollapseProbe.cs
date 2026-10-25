@@ -13,7 +13,7 @@ public static partial class GpuDecoLab
     // Dedicated build/output: never overwrites the previous baseline bundle.
     public static void CollapseBundle()=>Run(()=>
     {
-        string output=Path.Combine(Evidence,"drawcollapse4/bundle");Directory.CreateDirectory(output);
+        string output=Path.Combine(Evidence,"drawcollapse5/bundle");Directory.CreateDirectory(output);
         PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64,false);
         PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64,new[]{GraphicsDeviceType.Direct3D11});
         var manifest=BuildPipeline.BuildAssetBundles(output,new[]{new AssetBundleBuild{
@@ -30,7 +30,7 @@ public static partial class GpuDecoLab
         }
         finally {bundle.Unload(true);}
         Log("DRAWCOLLAPSE_LAB=PASS scope=synthetic_direct_vertices_and_array_pixels game_FPS=NA game_pixels=NA path="+output);
-    },"drawcollapse4-bundle");
+    },"drawcollapse5-bundle");
     static void CollapseDirectProbe(ComputeShader shader)
     {
         var data=Synthetic(65);data.Items[3].Initial[10]=0;
@@ -41,7 +41,7 @@ public static partial class GpuDecoLab
             gpu.UseLiveMode=true;gpu.SetLiveUniforms(new Vector4(data.Camera[0],data.Camera[1],data.Camera[2],data.Camera[3]),data.BakeTime);
             gpu.DispatchEvaluate();var reference=new GpuDecoGpu.Vertex[65*4];gpu.VertexBuffer.GetData(reference);
             var order=Enumerable.Range(0,65).Reverse().Select(i=>(uint)i).ToArray();map.SetData(order);
-            var meta=Enumerable.Range(0,130).Select(i=>i%2==0?new Vector4(i%70+(i%3==0?128:0),i%3,0,0):new Vector4(.5f,.25f,.01f,.02f)).ToArray();texture.SetData(meta);
+            var meta=Enumerable.Range(0,130).Select(i=>i%2==0?new Vector4(i%36+(i%3==0?128:0),i%3,0,0):new Vector4(.5f,.25f,.01f,.02f)).ToArray();texture.SetData(meta);
             var mesh=new Mesh{vertexBufferTarget=GraphicsBuffer.Target.Raw};
             try
             {
@@ -96,10 +96,10 @@ public static partial class GpuDecoLab
                 tex.Apply();if(compressed)tex.Compress(false);tex.wrapMode=TextureWrapMode.Clamp;
                 var array=new Texture2DArray(size*2,size*2,2,tex.graphicsFormat,UnityEngine.Experimental.Rendering.TextureCreationFlags.None,1);assets.Add(array);
                 Graphics.CopyTexture(tex,0,0,0,0,size,size,array,1,0,0,0);
-                for(int a=0;a<6;a++)material.SetTexture("_Tex"+a,array);
-                for(int a=0;a<64;a++)material.SetTexture("_Big"+a,tex);
+                for(int a=0;a<4;a++)material.SetTexture("_Tex"+a,array);
+                for(int a=0;a<32;a++)material.SetTexture("_Big"+a,tex);
                 quad.SetUVs(1,Enumerable.Repeat(new Vector4(.5f,.5f,.25f/size,.25f/size),4).ToList());
-                foreach(bool point in new[]{false,true})foreach(int tier in new[]{0,5,6,31,69})
+                foreach(bool point in new[]{false,true})foreach(int tier in new[]{0,3,4,19,35})
                 {
                     tex.filterMode=point?FilterMode.Point:FilterMode.Bilinear;
                     quad.SetUVs(0,new List<Vector4>{new Vector4(0,0,tier+(point?128:0),1),new Vector4(1,0,tier+(point?128:0),1),
@@ -109,7 +109,7 @@ public static partial class GpuDecoLab
                     PixelDiff(original,actual,"collapse_array_"+compressed+"_"+size+"_"+point+"_"+tier,true);cases++;
                 }
             }
-            Log("DRAWCOLLAPSE_TEXTURE cases="+cases+" compressed_and_rgba=True bindings=0,5,6,31,69 padded_rect=True point_and_bilinear=True errors=0 shader_oracle=Sprites/Default game_Sprites/Tile=UNVERIFIED");
+            Log("DRAWCOLLAPSE_TEXTURE cases="+cases+" compressed_and_rgba=True bindings=0,3,4,19,35 padded_rect=True point_and_bilinear=True errors=0 shader_oracle=Sprites/Default game_Sprites/Tile=UNVERIFIED");
         }
         finally
         {
