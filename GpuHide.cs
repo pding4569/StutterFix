@@ -53,9 +53,28 @@ namespace StutterFix
                 else if (group == "tiles") pick = r && r.GetComponentInParent<scrFloor>() != null && !GpuCensus.IsDecoration(r);
                 else if (group == "planets-particles") pick = r && (r is ParticleSystemRenderer || r.GetComponentInParent<scrPlanet>() != null) && !GpuCensus.IsDecoration(r);
                 else if (group == "deco") pick = r && GpuCensus.IsDecoration(r);
+                else if (group == "unowned") pick = r && GpuCensus.IsDecoration(r) && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy;
+                else if (group.StartsWith("unowned-order:", StringComparison.Ordinal))
+                {
+                    var q = group.Substring(14).Split(',');
+                    int lo = int.Parse(q[0]), hi = int.Parse(q[1]);
+                    pick = r && GpuCensus.IsDecoration(r) && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && r.sortingOrder >= lo && r.sortingOrder <= hi;
+                }
+                else if (group == "unowned-big") pick = r && GpuCensus.IsDecoration(r) && !r.forceRenderingOff && r.enabled && r.gameObject.activeInHierarchy && (r.bounds.size.x > 25f || r.bounds.size.y > 25f);
                 else pick = Select(group, r, 0);
                 if (!pick) continue;
                 toggled.Add(new Saved { Renderer = r, Off = r.forceRenderingOff }); r.forceRenderingOff = true;
+            }
+            if (group.StartsWith("unowned", StringComparison.Ordinal))
+            {
+                foreach (var t in toggled.Take(60))
+                {
+                    var r = t.Renderer; if (!r) continue;
+                    var d = r.GetComponentInParent<scrDecoration>();
+                    Main.Entry.Logger.Log("[hidegroup] item name=" + r.name + " type=" + r.GetType().Name + " deco=" + (d ? d.GetType().Name + "#" + d.GetInstanceID() : "-")
+                        + " bounds=" + r.bounds.size.x.ToString("F1") + "x" + r.bounds.size.y.ToString("F1") + " shader=" + (r.sharedMaterial && r.sharedMaterial.shader ? r.sharedMaterial.shader.name : "-")
+                        + " layer=" + r.sortingLayerName + " order=" + r.sortingOrder + " queue=" + (r.sharedMaterial ? r.sharedMaterial.renderQueue : 0));
+                }
             }
             return "hidden=" + toggled.Count;
         }

@@ -123,7 +123,7 @@ namespace StutterFix
         static int imageOwnWindow=-1,imageOwnNextWindow,imageOwnFrame,imageOwnObservedFrame=-1,imageOwnObserved,imageOwnSpikes;
         static int imageOwnMaxPixel=-1,imageOwnCpuFallback,imageOwnTextureFallback,imageOwnTotalSpikes;
         static long imageOwnTick;
-        const int ImageOwnPixelMax=3;
+        const int ImageOwnPixelMax=5; // 사용자 방침: 최대 4 안팎의 차이(0.5% 픽셀)는 허용
         static bool imageOwnFailed,imageOwnWindowFailed,imageOwnPixelOrderingOk;
         struct ImageOwnSpike
         {

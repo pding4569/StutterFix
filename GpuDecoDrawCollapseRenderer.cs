@@ -34,6 +34,7 @@ namespace StutterFix
         // 재생 중에는 장벽 6만여 개를 매 프레임 전부 훑지 않고 프레임당 이 개수씩 순환 점검한다(전체 점검은 진입 때만).
         const int CollapseBarrierSweepPerFrame=8; // 준비 때 본 렌더러 전체(재계획에서 새로 생긴 것만 장벽으로 더하기 위함)
         static Vector3 gpuCollapseCameraPosition,gpuCollapseCameraForward;
+        static ComputeBuffer gpuCollapseAllVerts,gpuCollapseAllMap;static int gpuCollapseAllCount;
         sealed class CollapseSpan : IDisposable
         {
             internal int[] Items;
@@ -43,6 +44,7 @@ namespace StutterFix
             internal bool SharedMat,Nudged;
             internal GraphicsBuffer Vertices;
             internal ComputeBuffer Map;
+            internal int Base;
             internal SceneRenderOrder.Key First,Last;
             public void Dispose()
             {
@@ -64,6 +66,7 @@ namespace StutterFix
             HideDrawCollapse();
             foreach(var s in gpuCollapseSpans)s.Dispose();gpuCollapseSpans.Clear();
             foreach(var sm in gpuCollapseSharedMats.Values)if(sm)UnityEngine.Object.Destroy(sm);gpuCollapseSharedMats.Clear();
+            gpuCollapseAllVerts?.Dispose();gpuCollapseAllVerts=null;gpuCollapseAllMap?.Dispose();gpuCollapseAllMap=null;gpuCollapseAllCount=0;
             gpuCollapseTexture?.Dispose();gpuCollapseTexture=null;gpuCollapseShader=null;gpuCollapseOwnedCursor=0;
             foreach(var a in gpuCollapseArrays)if(a)UnityEngine.Object.Destroy(a);
             gpuCollapseArrays.Clear();gpuCollapseBarriers.Clear();gpuCollapseAuxiliaries.Clear();
@@ -399,11 +402,13 @@ namespace StutterFix
             dcPlanMs=DcMs(dcT2);dcMeshMs=0;long dcT3=Stopwatch.GetTimestamp();
             RequireLive(plan.Count>0 && plan.Count<=DrawCollapsePolicy.MaxSpans,"drawcollapse conservative prepared spans="+plan.Count+" exceeds renderer budget");
             dcMatMs=dcMeshBuildMs=dcBufMs=dcGoMs=0;
+            int baseRun=0;
             foreach(var items in plan)
             {
                 long dcL0=Stopwatch.GetTimestamp();
                 var first=gpuCollapseOwnedRows[items[0]];var last=gpuCollapseOwnedRows[items[items.Length-1]];
                 var s=new CollapseSpan{Items=items,First=first.Key,Last=last.Key};gpuCollapseSpans.Add(s);
+                s.Base=baseRun;baseRun+=items.Length;
                 RequireLive(items.All(i=>gpuCollapseOwnedRows[i].R.gameObject.layer==first.R.gameObject.layer),
                     "drawcollapse span crosses camera culling layers");
                 // 블렌드 상태와 큐가 같은 구간은 재질 하나를 공유한다(엔진의 CanFlattenSharedMaterialData 해시 비용을 구간 수만큼 안 낸다).
@@ -426,6 +431,16 @@ namespace StutterFix
                 }
                 s.Material=shared;s.SharedMat=true;
                 dcMatMs+=DcMs(dcL0);long dcL1=Stopwatch.GetTimestamp();
+                if(DrawCollapsePolicy.GlobalVerts)
+                {
+                    // 정점 자리는 전역 버퍼의 번호만 담는다(x). 실제 위치·색·UV 는 정점 셰이더가 전역 버퍼에서 읽는다.
+                    s.Mesh=new Mesh{name="GpuDeco collapse span",indexFormat=IndexFormat.UInt32};
+                    var slotIds=new Vector3[items.Length*4];
+                    for(int n=0;n<items.Length;n++)for(int k4=0;k4<4;k4++)slotIds[n*4+k4]=new Vector3((s.Base+n)*4+k4,0,0);
+                    s.Mesh.SetVertices(slotIds);
+                }
+                else
+                {
                 s.Mesh=new Mesh{name="GpuDeco collapse span",indexFormat=IndexFormat.UInt32,vertexBufferTarget=GraphicsBuffer.Target.Raw};
                 s.Mesh.SetVertexBufferParams(items.Length*4,
                     new VertexAttributeDescriptor(VertexAttribute.Position,VertexAttributeFormat.Float32,3),
@@ -433,6 +448,7 @@ namespace StutterFix
                     new VertexAttributeDescriptor(VertexAttribute.TexCoord0,VertexAttributeFormat.Float32,4),
                     new VertexAttributeDescriptor(VertexAttribute.TexCoord1,VertexAttributeFormat.Float32,4));
                 s.Mesh.SetVertexBufferData(new float[items.Length*60],0,0,items.Length*60);
+                }
                 var indices=new int[items.Length*6];
                 for(int n=0;n<items.Length;n++)for(int t=0;t<6;t++)indices[n*6+t]=n*4+source.Data.Items[items[n]].Triangles[t];
                 s.Mesh.subMeshCount=1;s.Mesh.SetIndices(indices,MeshTopology.Triangles,0,false);
@@ -448,10 +464,10 @@ namespace StutterFix
                     center+=gpuCollapseCameraForward*(afterAll?-DrawCollapsePolicy.TieNudge:DrawCollapsePolicy.TieNudge);s.Nudged=true;nudgedSpans++;
                 }
                 s.Mesh.bounds=new Bounds(center,new Vector3(2000000,2000000,0));s.Mesh.UploadMeshData(true);
-                s.Vertices=s.Mesh.GetVertexBuffer(0);
+                if(!DrawCollapsePolicy.GlobalVerts)s.Vertices=s.Mesh.GetVertexBuffer(0);
                 dcMeshBuildMs+=DcMs(dcL1);long dcL2=Stopwatch.GetTimestamp();
-                RequireLive(s.Mesh.GetVertexBufferStride(0)==60 && s.Mesh.subMeshCount==1,"drawcollapse raw mesh layout");
-                s.Map=new ComputeBuffer(items.Length,4);s.Map.SetData(items.Select(i=>(uint)i).ToArray());
+                RequireLive(s.Mesh.subMeshCount==1 && (DrawCollapsePolicy.GlobalVerts || s.Mesh.GetVertexBufferStride(0)==60),"drawcollapse raw mesh layout");
+                if(!DrawCollapsePolicy.GlobalVerts){s.Map=new ComputeBuffer(items.Length,4);s.Map.SetData(items.Select(i=>(uint)i).ToArray());}
                 dcBufMs+=DcMs(dcL2);long dcL3=Stopwatch.GetTimestamp();
                 var go=new GameObject("GpuDeco collapse span"){hideFlags=HideFlags.HideAndDontSave,layer=first.R.gameObject.layer};
                 go.transform.SetParent(gpuLiveRoot.transform,false);go.AddComponent<MeshFilter>().sharedMesh=s.Mesh;
@@ -462,6 +478,16 @@ namespace StutterFix
                 s.Renderer.lightProbeUsage=LightProbeUsage.Off;s.Renderer.reflectionProbeUsage=ReflectionProbeUsage.Off;
                 RequireLive(s.Renderer.sharedMaterials.Length==1,"drawcollapse requires one material");
                 dcGoMs+=DcMs(dcL3);
+            }
+            if(DrawCollapsePolicy.GlobalVerts)
+            {
+                gpuCollapseAllVerts?.Dispose();gpuCollapseAllMap?.Dispose();
+                gpuCollapseAllCount=baseRun;
+                var allMap=new uint[baseRun];int at=0;
+                foreach(var sp in gpuCollapseSpans)foreach(int it in sp.Items)allMap[at++]=(uint)it;
+                gpuCollapseAllVerts=new ComputeBuffer(Math.Max(1,baseRun*60),4,ComputeBufferType.Raw);
+                gpuCollapseAllMap=new ComputeBuffer(Math.Max(1,baseRun),4);gpuCollapseAllMap.SetData(allMap);
+                Shader.SetGlobalBuffer("_CollapseVerts",gpuCollapseAllVerts);
             }
             // 같은 (층,순서,큐,거리) 묶음에서 이어지는 구간들이 재질을 공유하면 완전 동점이 되어 순서가 렌더러 ID(생성 순서의 역순)로 뒤집힌다.
             // 그런 구간들은 재질을 따로 만들되 뒤 구간부터 만들어 앞 구간의 인스턴스 ID 가 더 작게(= 먼저 그려지게) 한다.
@@ -594,6 +620,7 @@ namespace StutterFix
                 foreach(var span in gpuCollapseSpans)
                     guard.Check(span.Renderer && span.Material,"drawcollapse representative lost");
                 // 장벽 하나당 정수(층,순서,큐) 비교로 구간 범위를 먼저 거른다. 범위 밖(구간 앞/뒤)이면 거리(bounds)를 읽지 않는다.
+                if(!DrawCollapsePolicy.SkipOrderSweep || full)
                 foreach(var barrier in sweep)
                 {
                     if(!DrawCollapseBarrierActive(barrier))continue;
@@ -659,18 +686,36 @@ namespace StutterFix
         }
         static void DispatchDrawCollapse(double time)
         {
+            if(DrawCollapsePolicy.SkipPausedCompute && FrameCompare.Paused && gpuCollapseSpans.Count>0 && gpuCollapseSpans[0].Renderer.enabled)return;
             var source=gpuLiveSlices[0];
             if(DrawCollapsePolicy.RecordedDispatch)
             {
                 if(!source.Gpu.HasRecordedCollapse)
                 {
-                    var tg=new List<GraphicsBuffer>();var mp=new List<ComputeBuffer>();var ct=new List<int>();
-                    foreach(var s in gpuCollapseSpans){tg.Add(s.Vertices);mp.Add(s.Map);ct.Add(s.Items.Length);}
-                    source.Gpu.RecordCollapse(gpuCollapseTexture,tg,mp,ct);
+                    if(DrawCollapsePolicy.GlobalVerts)source.Gpu.RecordCollapseAll(gpuCollapseTexture,gpuCollapseAllVerts,gpuCollapseAllMap,gpuCollapseAllCount);
+                    else
+                    {
+                        var tg=new List<GraphicsBuffer>();var mp=new List<ComputeBuffer>();var ct=new List<int>();
+                        foreach(var s in gpuCollapseSpans){tg.Add(s.Vertices);mp.Add(s.Map);ct.Add(s.Items.Length);}
+                        source.Gpu.RecordCollapse(gpuCollapseTexture,tg,mp,ct);
+                    }
                 }
                 var camy=ADOBase.controller.camy;var ctf=camy.transform;
                 float camScale=camy.camobj.orthographicSize*.2f/gpuLiveZoomFactor;
-                source.Gpu.ExecuteRecordedCollapse(new Vector4(ctf.position.x,ctf.position.y,ctf.eulerAngles.z,camScale),time);
+                Vector4 clip=Vector4.zero;
+                if(DrawCollapsePolicy.ClipOffscreen)
+                {
+                    var co=camy.camobj;float halfH=co.orthographicSize*1.05f+.5f,halfW=halfH*co.aspect;float rad=ctf.eulerAngles.z*Mathf.Deg2Rad;
+                    clip=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
+                }
+                source.Gpu.ExecuteRecordedCollapse(new Vector4(ctf.position.x,ctf.position.y,ctf.eulerAngles.z,camScale),time,clip);
+                foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
+            }
+            else
+            {
+            if(DrawCollapsePolicy.GlobalVerts)
+            {
+                source.Gpu.DispatchCollapseAll(gpuCollapseTexture,gpuCollapseAllVerts,gpuCollapseAllMap,gpuCollapseAllCount);
                 foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
             }
             else
@@ -678,6 +723,7 @@ namespace StutterFix
             source.Gpu.BeginCollapse(gpuCollapseTexture);
             foreach(var s in gpuCollapseSpans)
             {source.Gpu.DispatchCollapseSpan(s.Vertices,s.Map,s.Items.Length);if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;}
+            }
             }
             if(gpuCollapseTextureFallbackCount>0 && ((source.CopyMask?.Low??ulong.MaxValue)|(source.CopyMask?.High??ulong.MaxValue))!=0)
             {

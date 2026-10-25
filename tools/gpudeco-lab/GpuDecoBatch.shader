@@ -130,11 +130,16 @@ Shader "StutterFix/GpuDecoBatch"
             Texture2D _Big47;
             SamplerState sampler_point_clamp;
             SamplerState sampler_linear_clamp;
-            struct appdata { float4 vertex:POSITION; float4 color:COLOR; float4 uv:TEXCOORD0; float4 region:TEXCOORD1; };
+            ByteAddressBuffer _CollapseVerts;
+            struct appdata { float3 vertex:POSITION; };
             struct v2f { float4 vertex:SV_POSITION; float4 color:COLOR; float2 uv:TEXCOORD0; nointerpolation float2 info:TEXCOORD1; nointerpolation float4 region:TEXCOORD2; };
             v2f vert(appdata v)
             {
-                v2f o;o.vertex=UnityObjectToClipPos(v.vertex);o.color=v.color;o.uv=v.uv.xy;o.info=v.uv.zw;o.region=v.region;return o;
+                // 정점 번호(x)로 전역 버퍼에서 위치·색·UV·텍스처 정보를 읽는다(60바이트: 위치 12, 색 16, uv+info 16, region 16).
+                uint a=(uint)(v.vertex.x+0.5)*60u;
+                float3 p=asfloat(_CollapseVerts.Load3(a));
+                float4 uvi=asfloat(_CollapseVerts.Load4(a+28));
+                v2f o;o.vertex=UnityObjectToClipPos(float4(p,1));o.color=asfloat(_CollapseVerts.Load4(a+12));o.uv=uvi.xy;o.info=uvi.zw;o.region=asfloat(_CollapseVerts.Load4(a+44));return o;
             }
             float4 frag(v2f v):SV_Target
             {

@@ -74,6 +74,14 @@ namespace StutterFix
         internal static bool RecordedDispatch=true;
         // 진단 전용: 대표 렌더러를 숨겨 그리기의 GPU 몫을 잰다(화면이 틀려진다).
         internal static bool HideProxies=false;
+        // 화면 밖에 있는 쿼드는 컴퓨트에서 면적 0 으로 만든다(픽셀 변화 없음).
+        // 모든 구간의 정점을 큰 버퍼 하나에 컴퓨트 한 번으로 쓰고, 대표 렌더러는 정점 셰이더에서 그 버퍼를 읽는다(구간마다 디스패치 80번 제거).
+        internal static bool GlobalVerts=true;
+        internal static bool ClipOffscreen=true;
+        // 재생 중 프레임마다 하던 '장벽 ↔ 대표 렌더러' 순서 점검을 건너뛴다(진입 전수 점검은 유지, 안전장치는 로그 전용 방침).
+        internal static bool SkipOrderSweep=true;
+        // 진단 전용: 일시정지 프레임에서 컴퓨트 디스패치를 건너뛰어 컴퓨트의 GPU 몫을 잰다(첫 프레임 정점이 남아 화면은 같다).
+        internal static bool SkipPausedCompute=false;
         // 큰 이미지 장식의 쿼드를 불투명한 부분에만 맞게 줄인다(투명 여백 래스터라이즈 제거). 텍스처 긴 변이 TightMinSide 이상일 때만.
         internal static bool TightLargeQuads=true;
         internal static int TightMinSide=1025,TightMarginTexels=4;

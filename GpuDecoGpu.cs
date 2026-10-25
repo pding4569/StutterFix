@@ -273,11 +273,36 @@ namespace StutterFix
             }
             collapseRecorded=c;collapseUniforms=new CommandBuffer{name="GpuDeco collapse uniforms"};
         }
-        internal void ExecuteRecordedCollapse(Vector4 camera,double time)
+        // 전역 정점 버퍼 하나에 모든 구간을 한 번의 디스패치로 쓴다.
+        internal void RecordCollapseAll(ComputeBuffer texture,ComputeBuffer verts,ComputeBuffer map,int count)
+        {
+            Require(UseLiveMode && shader.HasKernel("EvaluateCollapse"),"drawcollapse bundle lacks EvaluateCollapse");
+            ReleaseRecordedCollapse();
+            int k=shader.FindKernel("EvaluateCollapse");collapseKernel=k;
+            var c=new CommandBuffer{name="GpuDeco collapse all"};
+            c.SetComputeBufferParam(shader,k,"_LiveChannels",liveChannelsBuffer);c.SetComputeBufferParam(shader,k,"_SourceE",sourceEBuffer);
+            c.SetComputeBufferParam(shader,k,"_Static",staticBuffer);c.SetComputeBufferParam(shader,k,"_UV",uvBuffer);
+            c.SetComputeBufferParam(shader,k,"_Values",values);
+            if(hasImageGeometry)c.SetComputeBufferParam(shader,k,"_ImageShape",imageShapeBuffer);
+            c.SetComputeBufferParam(shader,k,"_CollapseTexture",texture);
+            c.SetComputeFloatParam(shader,"_Pitch",data.Pitch);c.SetComputeFloatParam(shader,"_TweenScale",data.TweenScale);
+            c.SetComputeIntParam(shader,"_Count",data.Items.Length);
+            c.SetComputeBufferParam(shader,k,"_Vertices",verts);c.SetComputeBufferParam(shader,k,"_CollapseMap",map);
+            c.SetComputeIntParam(shader,"_CollapseCount",count);
+            c.DispatchCompute(shader,k,(count+63)/64,1,1);
+            collapseRecorded=c;collapseUniforms=new CommandBuffer{name="GpuDeco collapse uniforms"};
+        }
+        internal void DispatchCollapseAll(ComputeBuffer texture,ComputeBuffer verts,ComputeBuffer map,int count)
+        {
+            BeginCollapse(texture);int k=collapseKernel;
+            shader.SetBuffer(k,"_Vertices",verts);shader.SetBuffer(k,"_CollapseMap",map);
+            shader.SetInt("_CollapseCount",count);shader.Dispatch(k,(count+63)/64,1,1);
+        }
+        internal void ExecuteRecordedCollapse(Vector4 camera,double time,Vector4 clip)
         {
             var u=collapseUniforms;u.Clear();
             u.SetComputeIntParam(shader,"_UseAnchors",1);u.SetComputeIntParam(shader,"_UseLiveChannels",(UseLiveMode&&hasLiveKernel)?1:0);
-            u.SetComputeVectorParam(shader,"_Camera",camera);
+            u.SetComputeVectorParam(shader,"_Camera",camera);u.SetComputeVectorParam(shader,"_CameraClip",clip);
             float hi=(float)time;u.SetComputeFloatParam(shader,"_TimeHi",hi);u.SetComputeFloatParam(shader,"_TimeLo",(float)(time-hi));
             Graphics.ExecuteCommandBuffer(u);Graphics.ExecuteCommandBuffer(collapseRecorded);
         }
@@ -287,6 +312,7 @@ namespace StutterFix
         {
             Require(UseLiveMode && shader.HasKernel("EvaluateCollapse"),"drawcollapse bundle lacks EvaluateCollapse");
             collapseKernel=shader.FindKernel("EvaluateCollapse");int k=collapseKernel;
+            shader.SetVector("_CameraClip",Vector4.zero);
             shader.SetBuffer(k,"_LiveChannels",liveChannelsBuffer);shader.SetBuffer(k,"_SourceE",sourceEBuffer);
             shader.SetBuffer(k,"_Static",staticBuffer);shader.SetBuffer(k,"_UV",uvBuffer);
             shader.SetBuffer(k,"_Values",values);

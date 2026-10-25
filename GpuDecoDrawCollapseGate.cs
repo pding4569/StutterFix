@@ -49,9 +49,23 @@ namespace StutterFix
                 {
                     case "tight":DrawCollapsePolicy.TightLargeQuads=on;break;
                     case "keepafter":DrawCollapsePolicy.KeepAfterBarrier=on;break;
-                    default:throw new ArgumentException("policy tight|keepafter on|off");
+                    case "clip":DrawCollapsePolicy.ClipOffscreen=on;break;
+                    case "globalverts":DrawCollapsePolicy.GlobalVerts=on;break;
+                    case "skiporder":DrawCollapsePolicy.SkipOrderSweep=on;break;
+                    case "skipcompute":DrawCollapsePolicy.SkipPausedCompute=on;break;
+                    default:throw new ArgumentException("policy tight|keepafter|clip|skiporder|skipcompute|globalverts on|off");
                 }
                 GpuLog("DRAWCOLLAPSE_POLICY tight="+DrawCollapsePolicy.TightLargeQuads+" keepafter="+DrawCollapsePolicy.KeepAfterBarrier);return true;
+            }
+            if(args.Length==1 && args[0]=="dumpverts")
+            {
+                if(gpuCollapseAllVerts==null){GpuLog("DRAWCOLLAPSE_DUMP none");return true;}
+                var all=new float[gpuCollapseAllCount*60];gpuCollapseAllVerts.GetData(all);
+                int nonzero=0;for(int q=0;q<gpuCollapseAllCount;q++){bool nz=false;for(int c=0;c<12;c++)if(all[q*15*4/4*1+c]!=0f){nz=true;break;}}
+                int visible=0;for(int q=0;q<gpuCollapseAllCount*4;q++)if(all[q*15]!=0f||all[q*15+1]!=0f)visible++;
+                var sb=new System.Text.StringBuilder();
+                for(int q=0;q<gpuCollapseAllCount*4 && sb.Length<900;q+=Math.Max(1,gpuCollapseAllCount*4/12)){sb.Append(" v").Append(q).Append("=(");for(int c=0;c<8;c++)sb.Append(all[q*15+c].ToString("G4",Inv)).Append(c<7?",":"");sb.Append(')');}
+                GpuLog("DRAWCOLLAPSE_DUMP slots="+gpuCollapseAllCount+" nonzero_vertices="+visible+" spans="+gpuCollapseSpans.Count+" sample:"+sb);return true;
             }
             if(args.Length==2 && args[0]=="hideproxy")
             {
