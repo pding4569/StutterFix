@@ -77,6 +77,12 @@ namespace StutterFix
         // 화면 밖에 있는 쿼드는 컴퓨트에서 면적 0 으로 만든다(픽셀 변화 없음).
         // 모든 구간의 정점을 큰 버퍼 하나에 컴퓨트 한 번으로 쓰고, 대표 렌더러는 정점 셰이더에서 그 버퍼를 읽는다(구간마다 디스패치 80번 제거).
         internal static bool GlobalVerts=true;
+        // 배리어 없이 이어지는 비소유 타일 장식 레이어를 한 패스 합성 렌더러로 바꾼다(풀스크린 블렌드 횟수 감소).
+        internal static bool TileComposite=false; // 실험: GPU -0.15~0.2ms, 화면 차이 최대 6(픽셀 2.6~3.2%)라 기본 끔
+        // 단독 레이어는 불투명 범위 면적이 이 비율보다 작을 때만 합성 렌더러로 바꾼다(스프라이트 교체 없는 Y 트림 효과).
+        internal static float TileSingleMaxArea=.98f;
+        // 끄면 레이어를 한 렌더러에 합치지 않고 하나씩만 합성 렌더러로 바꾼다(8비트 중간 반올림 차이 없음, 불투명 범위 트림만).
+        internal static bool TileMerge=true;
         internal static bool ClipOffscreen=true;
         // 재생 중 프레임마다 하던 '장벽 ↔ 대표 렌더러' 순서 점검을 건너뛴다(진입 전수 점검은 유지, 안전장치는 로그 전용 방침).
         internal static bool SkipOrderSweep=true;

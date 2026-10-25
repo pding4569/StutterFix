@@ -57,6 +57,7 @@ namespace StutterFix
         static void InvalidateRecordedCollapse(){if(gpuLiveSlices.Count>0 && gpuLiveSlices[0].Gpu!=null)gpuLiveSlices[0].Gpu.ReleaseRecordedCollapse();}
         static void HideDrawCollapse()
         {
+            TileCompositeRemove();
             gpuCollapseOn=false;gpuCollapsePendingFallback=null;
             foreach(var s in gpuCollapseSpans)if(s.Renderer)s.Renderer.enabled=false;
         }
@@ -518,6 +519,7 @@ namespace StutterFix
             // Only span resources are replaced. Texture arrays, borrowed textures,
             // texture address buffer, and the loaded shader survive every ready.
             long dcReadyT0=Stopwatch.GetTimestamp();
+            TileCompositeRemove();
             foreach(var span in gpuCollapseSpans)span.Dispose();gpuCollapseSpans.Clear();
             dcDisposeMs=DcMs(dcReadyT0);
             try {BuildDrawCollapseSpans();}

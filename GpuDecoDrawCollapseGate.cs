@@ -52,10 +52,12 @@ namespace StutterFix
                     case "keepafter":DrawCollapsePolicy.KeepAfterBarrier=on;break;
                     case "clip":DrawCollapsePolicy.ClipOffscreen=on;break;
                     case "tightall":DrawCollapsePolicy.TightAllOwned=on;break;
+                    case "tilecomp":DrawCollapsePolicy.TileComposite=on;break;
+                    case "tilemerge":DrawCollapsePolicy.TileMerge=on;break;
                     case "globalverts":DrawCollapsePolicy.GlobalVerts=on;break;
                     case "skiporder":DrawCollapsePolicy.SkipOrderSweep=on;break;
                     case "skipcompute":DrawCollapsePolicy.SkipPausedCompute=on;break;
-                    default:throw new ArgumentException("policy tight|tightall|keepafter|clip|skiporder|skipcompute|globalverts on|off");
+                    default:throw new ArgumentException("policy tight|tightall|tilecomp|keepafter|clip|skiporder|skipcompute|globalverts on|off");
                 }
                 GpuLog("DRAWCOLLAPSE_POLICY tight="+DrawCollapsePolicy.TightLargeQuads+" keepafter="+DrawCollapsePolicy.KeepAfterBarrier);return true;
             }

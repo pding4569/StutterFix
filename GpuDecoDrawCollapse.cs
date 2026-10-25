@@ -71,6 +71,7 @@ namespace StutterFix
                     gpuCollapseOn=true;
                     try
                     {
+                        TileCompositeApply();
                         foreach(var s in gpuLiveSlices)s.RefreshAlpha();
                         DispatchGpuLiveSlice(BakeTime);
                     }

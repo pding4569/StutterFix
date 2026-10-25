@@ -118,6 +118,28 @@ namespace StutterFix
                 if (directMain) directMain.targetTexture = null;
                 return "direct main=" + (directMain ? "yes" : "no") + " others_off=" + toggledCams.Count;
             }
+            // 진단(최종 검증): 배리어 없는 연속 타일 그룹(A~F, 28개)에서 그룹당 1개만 남기고 숨겨, 28->6 합성 패스의 GPU 절감 상한을 잰다.
+            if (on && group == "tile:merge22")
+            {
+                if (toggled.Count > 0) throw new InvalidOperationException("already hidden");
+                var kept = new HashSet<int>();
+                foreach (var sr in Resources.FindObjectsOfTypeAll<SpriteRenderer>())
+                {
+                    if (!sr || !sr.gameObject.scene.IsValid() || !sr.enabled || !sr.gameObject.activeInHierarchy || sr.forceRenderingOff) continue;
+                    var vd = sr.GetComponentInParent<scrVisualDecoration>();
+                    if (!vd || (vd.repeatX == 1 && vd.repeatY == 1)) continue;
+                    string ln = sr.sortingLayerName; int ord = sr.sortingOrder;
+                    int gid = (ln == "Bg" || ln == "Background")
+                        ? (ord == -950 ? 1 : (ord == -6 || ord == -5) ? 2 : ord == 0 ? 3 : 0)
+                        : (ln == "Default")
+                        ? ((ord >= 45 && ord <= 48) ? 4 : (ord >= 97 && ord <= 100) ? 5 : (ord == 601 || ord == 602) ? 6 : 0)
+                        : 0;
+                    if (gid == 0) continue;
+                    if (kept.Add(gid)) continue;
+                    toggled.Add(new Saved { Renderer = sr, Off = sr.forceRenderingOff }); sr.forceRenderingOff = true;
+                }
+                return "merged_hidden=" + toggled.Count + " groups_kept=" + kept.Count;
+            }
             if (on && group == "canvas")
             {
                 foreach (var c in Resources.FindObjectsOfTypeAll<Canvas>())

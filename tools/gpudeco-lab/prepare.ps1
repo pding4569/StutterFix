@@ -20,6 +20,7 @@ Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoGeometryProbe.cs') -Destinati
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoLiveProbe.cs') -Destination (Join-Path $projectRoot 'Assets/Editor/GpuDecoLiveProbe.cs')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDeco.compute') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDeco.compute')
 Copy-Item -LiteralPath (Join-Path $labRoot 'GpuDecoBatch.shader') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuDecoBatch.shader')
+Copy-Item -LiteralPath (Join-Path $labRoot 'GpuTileComposite.shader') -Destination (Join-Path $projectRoot 'Assets/Shaders/GpuTileComposite.shader')
 # Local read-only CPU oracle. Generated directory is ignored and never packaged.
 Copy-Item -LiteralPath (Join-Path $GameManaged 'DOTween.dll') -Destination (Join-Path $projectRoot 'Assets/LocalReferences/DOTween.dll')
 Set-Content -LiteralPath (Join-Path $projectRoot 'ProjectSettings/ProjectVersion.txt') -Value "m_EditorVersion: 6000.3.10f1`nm_EditorVersionWithRevision: 6000.3.10f1 (e35f0c77bd8e)" -Encoding ascii
