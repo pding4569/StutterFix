@@ -16,3 +16,11 @@
 - **Codex 가 고쳐도 되는 파일**: `GpuDecoImage*.cs`, `LazySprite.cs`, `GpuDecoImagePlayback.cs`, 이미지용 시험 계획 `tools/optimization/imageown-steps.py`, 이미지 관련 문서.
 - **Claude 가 고치는 중(건드리지 마라, 필요하면 결과 문서에 요청으로 남겨라)**: `GpuDecoDrawCollapseRenderer.cs`, `DrawCollapsePolicy.cs`, `Dormancy.cs`, `TightLate.cs`, `FastMove.cs`, `GpuDecoExport.cs`. 단 위 3번의 `GpuDecoDrawCollapse.cs` 입구 검사 한 줄과 `UpdateDrawCollapseTextureSlot` 헬퍼 추가는 허용(작게, 다른 줄 건드리지 말 것).
 - 시험은 `tools/optimization/imageown-steps.py` 가 만드는 계획(ABBA+픽셀, 약 10분)을 자동 장치가 돌린다. 게임 시험은 `GameLock` 으로 직렬화되어 Claude 의 시험과 번갈아 돈다.
+
+## 2026-10-25 16:50 Claude 지시 (4회전 결과 반영): 텍스처 등록은 "창 범위"로 줄여라 — 이게 `image_texture_not_registered_in_collapse` 의 해법이다
+증거: `GpuDecoImagePlayback.cs` 의 `RegisterGpuImageCollapseVariants` 는 `gpuImageVariants` 의 **곡 전체** `ReadyQuad` 변형을 전부 `textures` 에 넣는다. 그래서 `DRAWCOLLAPSE_ARRAY_TOTAL` 이 `planned_arrays_known=3 direct_textures=32 active_texture_slots=35`(상한 36) 로 가득 차고 `live on` 이 `image_texture_not_registered_in_collapse` 로 막힌다. 하지만 draw 통합은 한 창(준비 창 약 257.5~270.25초)만 그린다.
+해야 할 일 (이미지 파일 영역이니 네가 한다):
+1. 이미지 타임라인(`GpuDecoImageTimeline.cs`, `GpuDecoImagePlan.cs`)에서 **각 이미지 변형이 적용되는 곡 시각**을 얻어, 창 `[257.5, 270.25]` 안에서 적용되는 변형 + 창 시작 시점에 이미 적용돼 있는 상태(초기 스프라이트)만 `textures` 에 등록하라. 창 밖(곡 다른 곳)에서만 쓰이는 변형은 등록하지 않는다. 창 범위 정보가 이미 있는 함수가 있으면 재사용(예: `VisibleInWindow`, `table`).
+2. 등록 후 `GPUIMG_DIAG mode=collapsecoverage` 로그의 `registered`, `missing`, `direct_required`, `arrays_used` 를 확인한다. `missing=0` 이고 `direct_required <= 32`, 배열 ≤ 4 이면 통합으로 진행. **그래도 넘치면** 숫자(포맷별·크기별 개수, 필요 슬롯 수)를 결과 문서에 적고 멈춰라 — 그때는 Claude 가 형식별 은행/아틀라스 설계를 제미나이와 한다. 32 상한을 늘리거나 누락 검사를 끄지 마라.
+3. 이어서 `imageown` 계획(333단계)을 다시 돌려 통합 픽셀·FPS 를 얻는다.
+(참고: Claude 가 `GpuDecoDrawCollapseRenderer.cs` 에 재계획 키 캐시 최적화를 합쳤다. `RegisterGpuImageCollapseVariants`/`RememberGpuImageCollapseAddresses` 호출 2곳은 이미 연결돼 있다.)
