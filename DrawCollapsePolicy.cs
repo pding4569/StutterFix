@@ -74,6 +74,8 @@ namespace StutterFix
         internal static bool KeepBeforeBarrier=true;
         // 장벽과 같은 정렬 묶음에서 시작하는 구간의 대표 렌더러 거리를 TieNudge 만큼 더 멀게 해 동점을 없앤다.
         internal static bool NudgeTieSpans=true;
+        // 같은 묶음에서 모든 활성 장벽보다 뒤에 그려지던 장식도 구간에 유지한다(대표 거리를 -미세 이동).
+        internal static bool KeepAfterBarrier=false; // 켜면 262초 픽셀 최대 차이 4(기준 3 초과), FPS 이득 없음
         internal const float TieNudge=2e-4f;
         internal static int MaxSpans=700;
         internal static List<int[]> Plan(List<Row> rows)

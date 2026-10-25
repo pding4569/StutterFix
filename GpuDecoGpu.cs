@@ -247,6 +247,25 @@ namespace StutterFix
             int activeKernel = (UseLiveMode && hasLiveKernel) ? liveKernel : kernel;
             shader.Dispatch(activeKernel, (data.Items.Length + 63) / 64, 1, 1);
         }
+        int collapseKernel=-1;
+        // 프레임당 한 번: 구간마다 같은 공통 버퍼를 다시 설정하지 않도록 먼저 묶어 둔다(구간당 SetBuffer 6번+Require 절약).
+        internal void BeginCollapse(ComputeBuffer texture)
+        {
+            Require(UseLiveMode && shader.HasKernel("EvaluateCollapse"),"drawcollapse bundle lacks EvaluateCollapse");
+            collapseKernel=shader.FindKernel("EvaluateCollapse");int k=collapseKernel;
+            shader.SetBuffer(k,"_LiveChannels",liveChannelsBuffer);shader.SetBuffer(k,"_SourceE",sourceEBuffer);
+            shader.SetBuffer(k,"_Static",staticBuffer);shader.SetBuffer(k,"_UV",uvBuffer);
+            shader.SetBuffer(k,"_Values",values);
+            if(hasImageGeometry)shader.SetBuffer(k,"_ImageShape",imageShapeBuffer);
+            shader.SetBuffer(k,"_CollapseTexture",texture);
+        }
+        internal void DispatchCollapseSpan(GraphicsBuffer target, ComputeBuffer map, int count)
+        {
+            int k=collapseKernel;
+            shader.SetBuffer(k,"_Vertices",target);shader.SetBuffer(k,"_CollapseMap",map);
+            shader.SetInt("_CollapseCount",count);
+            shader.Dispatch(k,(count+63)/64,1,1);
+        }
         internal void DispatchCollapse(GraphicsBuffer target, ComputeBuffer map, ComputeBuffer texture, int count)
         {
             Require(UseLiveMode && shader.HasKernel("EvaluateCollapse"),"drawcollapse bundle lacks EvaluateCollapse");

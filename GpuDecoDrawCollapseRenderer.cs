@@ -255,6 +255,7 @@ namespace StutterFix
             // 그려지던 장식(재질 ID 가 장벽의 최소 ID 보다 작음)은 대표 렌더러에 넣어도 장벽 앞에 정렬되므로 구간에 남긴다.
             // 장벽보다 뒤에 그려지던 장식만 개별 렌더러로 뺀다(텍스처 대체와 같은 경로).
             var activeBucketMinMat=new Dictionary<(int,int,int,float),int>();
+            var activeBucketMaxMat=new Dictionary<(int,int,int,float),int>();
             foreach(var b in gpuCollapseBarriers)
             {
                 if(!DrawCollapseBarrierActive(b))continue;
@@ -262,6 +263,7 @@ namespace StutterFix
                 var bk=MatShare.SortKey(b.R,bm,gpuLiveCamera,b.Key.Slot);
                 var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);
                 if(!activeBucketMinMat.TryGetValue(bkey,out int curMin) || bk.Material<curMin)activeBucketMinMat[bkey]=bk.Material;
+                if(!activeBucketMaxMat.TryGetValue(bkey,out int curMax) || bk.Material>curMax)activeBucketMaxMat[bkey]=bk.Material;
             }
             int tieExcluded=0;var newBarriers=new List<GpuLiveRow>();
             for(int i=0;i<gpuCollapseOwnedRows.Length;i++)
@@ -270,7 +272,11 @@ namespace StutterFix
                 var orow=gpuCollapseOwnedRows[i];var om=orow!=null && orow.R?DrawCollapseMaterial(orow):null;if(!om)continue;
                 var ok=MatShare.SortKey(orow.R,om,gpuLiveCamera,orow.Key.Slot);
                 if(!activeBucketMinMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out int minBarrierMat))continue;
-                if(DrawCollapsePolicy.KeepBeforeBarrier && ok.Material<minBarrierMat)continue; // 장벽 앞(재질 ID 작음): 구간에 유지(픽셀 검증 실패로 기본 끔)
+                if(DrawCollapsePolicy.KeepBeforeBarrier)
+                {
+                    if(ok.Material<minBarrierMat)continue; // 모든 활성 장벽보다 앞: 구간에 유지(대표 거리를 +미세 이동)
+                    if(DrawCollapsePolicy.KeepAfterBarrier && activeBucketMaxMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out int maxBarrierMat) && ok.Material>maxBarrierMat)continue; // 모든 활성 장벽보다 뒤: 구간에 유지(-미세 이동)
+                }
                 gpuCollapseIncluded[i]=false;
                 if(!gpuCollapseTextureFallback[i]){gpuCollapseTextureFallback[i]=true;gpuCollapseTextureFallbackCount++;}
                 var ir=source.Renderers[i];
@@ -347,7 +353,11 @@ namespace StutterFix
                 // 활성 장벽이 있는 정렬 묶음에서 시작하는 구간: 구간에 남은 장식은 모두 장벽보다 앞에 그려져야 하므로, 대표 렌더러의 정렬 거리를
                 // 아주 조금 더 멀게(먼저 그려지게) 해서 재질 ID 동점 해소를 엔진의 동점 규칙에 맡기지 않는다. 정점 위치는 GPU 가 쓰므로 화면은 같다.
                 if(DrawCollapsePolicy.NudgeTieSpans && activeBucketMinMat.ContainsKey((first.Key.Layer,first.Key.Order,first.Key.Queue,first.Key.Distance)))
-                {center+=gpuCollapseCameraForward*DrawCollapsePolicy.TieNudge;s.Nudged=true;nudgedSpans++;}
+                {
+                    var fk=(first.Key.Layer,first.Key.Order,first.Key.Queue,first.Key.Distance);
+                    bool afterAll=activeBucketMaxMat.TryGetValue(fk,out int mx) && first.Key.Material>mx;
+                    center+=gpuCollapseCameraForward*(afterAll?-DrawCollapsePolicy.TieNudge:DrawCollapsePolicy.TieNudge);s.Nudged=true;nudgedSpans++;
+                }
                 s.Mesh.bounds=new Bounds(center,new Vector3(2000000,2000000,0));s.Mesh.UploadMeshData(true);
                 s.Vertices=s.Mesh.GetVertexBuffer(0);
                 RequireLive(s.Mesh.GetVertexBufferStride(0)==60 && s.Mesh.subMeshCount==1,"drawcollapse raw mesh layout");
@@ -557,8 +567,9 @@ namespace StutterFix
         static void DispatchDrawCollapse(double time)
         {
             var source=gpuLiveSlices[0];
+            source.Gpu.BeginCollapse(gpuCollapseTexture);
             foreach(var s in gpuCollapseSpans)
-            {source.Gpu.DispatchCollapse(s.Vertices,s.Map,gpuCollapseTexture,s.Items.Length);if(!s.Renderer.enabled)s.Renderer.enabled=true;}
+            {source.Gpu.DispatchCollapseSpan(s.Vertices,s.Map,s.Items.Length);if(!s.Renderer.enabled)s.Renderer.enabled=true;}
             if(gpuCollapseTextureFallbackCount>0 && ((source.CopyMask?.Low??ulong.MaxValue)|(source.CopyMask?.High??ulong.MaxValue))!=0)
             {
                 // Overflow alone retains the original evaluated/copy path. Its
