@@ -1,4 +1,53 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=89 missing=4 direct_required=36 direct_limit=32 arrays_used=4 array_limit=4 required_slots=40 fallback=NA spikes_30ms=NA reason=WINDOW_TEXTURE_CAPACITY_EXCEEDED
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 required_slots=38 fallback=NA spikes_30ms=NA reason=SAMPLING_FIX_NOT_RUN
+
+## 자동 반복 7회차 — 17:05 추가 지시에 따른 wrap 검사 대체, 게임 미실행
+
+`codex-al-im-7.md` 끝의 **2026-10-25 17:05 추가 지시**를 적용했다. 이전 16:50의 직접32 상한/초과 시 중단을 이번 회차에 그대로 적용하지 않는다. Claude가 담당한 정책48/번들 변경을 전제로 이미지의 wrap 검사를 UV 범위 검사로 바꾸라는 최신 구체 지시가 우선한다. 이번에 정책·셰이더·번들을 수정하거나 상한을 추가로 늘리지는 않았다. 지시서의 설명상 필요36과 달리 지정된 외부run6 실제 로그의 직접필요는 **34**다.
+
+이번 게임 실행·설치·커밋·푸시·자동 장치 호출·Unity Editor 실행·설정/제어 파일 변경은 **모두 0회**다. 동일 코드로 게임 시험을 반복하지 않았고, 기존333단계 계획/생성기/태그를 보존했다. 새 managed 코드만 별도 디렉터리에서 빌드·오프라인 검사했다. 최종 픽셀/FPS 성공을 선언하지 않는다.
+
+### 외부 run6 증거와 실패 위치
+
+`im-autoloop-run6-evidence.txt`의 직접 증거 **38줄**을 `E:/StutterFixWork/night-results/al-im-6.log` **158~491행**과 순서·중복까지 대조했다. 시작 선언만 1,500자 접두부이며 나머지는 전체 줄이 일치한다. 들여쓴 뒤쪽 요약은 과거 시험의 발췌이므로 이번38줄에 섞지 않았다. 재현 코드/출력은 `out/imageown7/analyze.py`, `analysis.txt`에 있다.
+
+| 원시 행 | 외부 run6의 관측값 |
+|---|---|
+| 377 | 창257.5~270.25초·소유28523·선택변형10/제외93·등록93 |
+| 378~380 | 정확크기배열7680×4320×4·등록93/주소93/누락0·직접필요34/상한48·배열4/4·필요38/선언52슬롯 |
+| 379, 384 | 배열계획304,414,720B=290.312500MiB·준비82구간/14595개·복사59·텍스처폴백0 |
+| 475, 480 | CPU 원본 O/O2 반복: changed0/4,953,600·최대RGBA0,0,0,0 (같은 대조의 두 로그) |
+| 483~484 | GPU 소유분류28523·CPU fallback0 뒤 활성화 rollback·Rec11821/11821·continuity=RESTORED |
+| 486, 490~491 | `gpudeco live on`의 `image collapse changed mip/wrap` 실패·종료native_contexts0 |
+
+`valid=True`는 **48직접 슬롯을 쓰는 외부 준비 단계**의 커버리지 결과다. GPU 활성화 성공, 통합 픽셀, FPS 승인으로 확대하지 않는다. 379행은 할당 전 계획이고384행에는 배열4/복사59가 보고된다. 여유VRAM은 UNVERIFIED다. 이번 로그에는 크기·포맷별 전체 목록이 없으므로 이전run5의44그룹/누락4개를 이번run6의 실제 목록으로 재사용하지 않는다.
+
+실제 오류 검사는 `RefreshGpuImageGeometry → UpdateImageGeometry → UpdateDrawCollapseTextureSlot`에 있다. 기존 슬롯 갱신이 `mipmapCount==1 && wrapU==Clamp && wrapV==Clamp`를 요구해 준비된 주소가 있어도 거부할 수 있었다. 게임 `TextureManager`는 초기 Repeat, `scrVisualDecoration.SetSprite`는 V15 조건에서 Clamp, `LazySprite.Defer`도 같은 조건에서 Clamp를 대입한다. 구형 타일링 관리자는 disableV15Features 조건에서 wrapU/V를 갱신한다. 근사 디컴파일과 설치 DLL의 읽기 전용 ILScan3종을 대조했다(`out/imageown7/game-*-il.txt`). **실패 텍스처 ID·실제 mip/wrap 값은 기존 로그에 없으므로 특정 자산/쓰기 주체를 원인으로 확정하지 않는다.**
+
+### 구현 범위
+
+- `GpuDecoDrawCollapse.cs`는 허용된 기존 RequireLive 문 하나를 `RequireGpuImageCollapseSampling(item,texture);` 한 줄로 대체했다. 주소누락·버퍼소유자·슬롯검사와 32바이트 부분 업로드는 유지한다.
+- `GpuDecoImagePlayback.cs`에 mip1 검사와 네 UV쌍의 전체8성분 검사를 추가했다. 유한한 각 성분이 **[-1e-4, 1+1e-4] 양끝 포함** 범위여야 한다. null·길이오류·NaN·Infinity·범위초과는 거부한다.
+- `ImageFixtureItem`은 `GpuDecoImageVariant.UV`를 `next.UV`에 복사하고 `UpdateImageGeometry`는 실제 업로드 직후 같은 `slice.Data.Items[item]`을 next로 바꾼다. 새 검사는 그 **현재 업로드 UV**를 읽으므로 이전 스프라이트의 UV를 검사하지 않으며 추가 sprite getter/배열 할당도 없다.
+- UV 오류는 `image_uv_outside_unit_range`, mip 오류는 `image collapse changed mips`로 구분한다. UV 거부 시 `GPUIMG_DIAG mode=collapse_uv_rejected`에 item/texture_id를 남긴다. 실패는 기존 활성화 rollback 또는 이미지효과/Flush의 RecoverGpuLive 경로로 전달한다. 새 개별항목 복구 설계를 추가하지 않았다.
+- 공유 텍스처의 wrap을 미리 바꾸지 않는다. 셰이더·샘플러·정점 수식·알파 큐·renderer/policy/export/Dormancy/TightLate/FastMove는 수정하지 않았다. 범위 내 UV 허용은 최신 지시의 구현이며 Repeat와 Clamp의 실제 픽셀 동일성은 외부 시험으로 확인해야 한다.
+
+### 검증과 남은 조건
+
+| 검사 | 이번 결과 | 근거 (`out/imageown7/`) |
+|---|---|---|
+| DEV/Player/PlayerAuto 격리 Release 빌드 | 오류0/0/0·경고48/36/40 | build-*.txt, verify.ps1 |
+| LoadCheck | FieldRef279/229/281곳·틀림0/0/0·일반 Player 연구 제외 | loadcheck-*.txt |
+| 실제 수정 메서드3개 추출 검사 | **330검사 통과**·Unity 실행 없음 | check-sampling.py, sampling-check.txt |
+| 기존 계획 생성기 | **8검사 통과**·기존333단계 JSON 유지 | generator-tests.txt |
+| 원시/게임 코드 대조 | 직접38줄 순서일치·설치 DLL ILScan3종 exit0 | analysis.txt, game-*-il.txt |
+
+330검사는 wrapU/V의 Clamp/Repeat/Mirror 조합 허용·공유값 보존, 모든8성분의 양끝/범위 밖 바로 다음 float/NaN/Infinity, UV 길이오류, mip 거부, 올바른 item/교체된 데이터 참조, 오류 전 슬롯쓰기0, 주소누락/잘못된 버퍼소유자 거부, point bit/배열주소/UV scale/half-texel/부분업로드를 검사한다. CPU 어댑터 검사이며 실제 Unity 샘플링/CPU 복귀/픽셀 성능을 증명하지 않는다.
+
+새 관리 DLL은 `out/imageown7/build/{dev,player,playerauto}/`에 격리했다. 기존 bundle/native/설치 DLL과 기존 bin은 교체하지 않았다. `out/imageown7/preserved.json`의282개 중 의도한 이미지 코드/허용helper2개만 변경하고 나머지280개 SHA256을 유지했음을 최종 검증했다. 문서5개·10줄요약·diff 검사도 통과했다(`verification.txt`). 공유 스킬/메모리는 수정하지 않았다.
+
+외부 실행 시에는 수정된 PlayerAuto managed DLL과 소유자가 준비한48슬롯 지원 번들로 기존 `imageown-abba3-window-steps.json`(333단계, SHA256=`41b790f93035f51623bdd6aaee43d4643d5468235ca27065a98291a9f592e2bd`)을 사용한다. 이번에 새 계획을 생성하거나 실행하지 않았다. 코드가 바뀌었으므로 이전 실패 코드의 무변경 재실행과 구분된다. **260/262/270초 통합 최대차이≤3·ABBA≥+20%·폴백0·30ms 이상 끊김0·전곡 수명/설치복원은 여전히 NA**다. CPU 원본 반복0/활성화rollback 성공을 이 수용조건의 통과로 쓰지 않는다.
+
+아래는 이전6회차 이력이다. 당시32상한 중단은 이전 지시/외부run5에 대한 판단이며 이번17:05 지시와 외부run6 결과로 대체한다.
 
 ## 자동 반복 6회차 — 창 축소 후에도 슬롯 초과, 지정된 설계 한계에서 중단
 

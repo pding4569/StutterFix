@@ -1,3 +1,11 @@
+## 회차 7 — 17:05 추가 지시 적용, UV 범위 검사로 대체·게임 미실행
+
+외부run6 직접38줄 원시158~491행 순서대조. 등록93/주소93/누락0·직접필요34/48·배열4/4·필요38/선언52슬롯·290.312500MiB·준비82구간14595개/59복사 후 live on의 image collapse changed mip/wrap에서 실패했다. Rec11821/11821 rollback·종료native_contexts0·CPU O/O2반복0이며 통합픽셀/FPS는NA다. 실패ID/mip/wrap값은 미기록이다.
+
+지시서 끝17:05추가 지시가 이전32상한중단보다 우선한다. Claude의 정책48/번들은 보존하고 허용helper의 기존RequireLive문 하나를 이미지검사 호출한줄로 바꿨다. 이미지코드는 실제업로드된 변형UV8성분의[-1e-4,1+1e-4]범위/유한성/길이와mip1을 검사한다. UV오류image_uv_outside_unit_range/item/texture진단·공유wrap불변·기존주소/슬롯/복구/32바이트부분업로드 유지다.
+
+격리3빌드 오류0/0/0·경고48/36/40·LoadCheck279/229/281곳틀림0·실제3메서드330검사/생성기8검사통과. 의도한코드2개이외 보호280개SHA유지·기존333단계JSON/생성기/tag보존·문서5개/10줄/diff검증. IMAGEOWN=FAIL reason=SAMPLING_FIX_NOT_RUN; 통합픽셀/FPS/+20%/폴백/끊김/전곡/설치복원NA. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 기존333단계는 새managed코드로 외부확인대상이며 이번실행/새계획없음. 상세결과/out/imageown7참조.
+
 ## 회차 6 — Codex 외부 run5 분석, 지정된 설계 한계로 중단
 
 외부run5 직접79줄 원시158~432행 순서대조. 창[257.5,270.25]에서 변형10개 선택·93개 제외 후 등록93/주소89/누락4(직접4)·직접필요36/32·배열4/4·필요40슬롯/선언36·282.3125MiB다. live prepare에서 중단, 통합픽셀/FPS/끊김/복원은NA. 크기·포맷44그룹/93개와 누락4개를 결과에 기록하고 지정된 설계한계 중단조건을 적용한다. 런타임/생성기/기존JSON 변경·새계획/반복시험 요청 없음. 형식별 은행/아틀라스 설계는Claude 담당. 동시작업의 정책48/셰이더 변경을 관측했으나 손대거나 되돌리지 않았고 32상한 외부run5와 혼합하지 않는다. IMAGEOWN=FAIL reason=WINDOW_TEXTURE_CAPACITY_EXCEEDED. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경·빌드 반복0회. 상세결과/10줄/out/imageown6 참조.
@@ -125,3 +133,24 @@
   - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
   - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=304414720 copy_calls=59 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_eva
   - [StutterFix] [gpudeco] prepare_ms=9791.141900 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei
+
+## 회차 7
+- Codex 요약: 17:05 추가 지시까지 반영해 wrap 검사를 UV 범위·mip 검사로 교체했습니다.
+
+- 빌드 3종 오류 0, LoadCheck 불일치 0
+- 오프라인 검사 330개·생성기 검사 8개 통과
+- 게임 실행·설치·커밋 없음
+
+실게임 픽셀·FPS는 미검증이므로 `IMAGEOWN=FAIL`을 유지했습니다. [결과 문서](/E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=304414720 copy_calls=59 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_eva
+  - [StutterFix] [gpudeco] prepare_ms=9557.028600 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2135 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=163.495300 prepare_ms=9557.028600
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=14 active_buckets=251
+  - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_PREFLIGHT_FAILED
+  - [StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=17 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.557471 progress_ms=0.013518 uniform_ms=0.008506 dispatch_
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=recovery:FastMoveOriginal song=260.019671 resumed_recs=0 resume_expected=0 unobserved_order=0 restore_ms=6.196000

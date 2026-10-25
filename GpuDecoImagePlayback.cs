@@ -28,6 +28,25 @@ namespace StutterFix
         static bool[] gpuImageCollapseVariants;
         static ComputeBuffer gpuImageCollapseAddressOwner;
         static readonly Vector4[] gpuImageCollapseTextureUpload=new Vector4[2];
+        static bool GpuImageCollapseUvInUnitRange(float[] uv)
+        {
+            if(uv==null||uv.Length!=8)return false;
+            foreach(float value in uv)
+                if(!(value>=-1e-4f&&value<=1f+1e-4f))return false;
+            return true;
+        }
+        static void RequireGpuImageCollapseSampling(int item,Texture2D texture)
+        {
+            RequireLive(texture.mipmapCount==1,"image collapse changed mips");
+            // UpdateImageGeometry has just stored this variant's four UV pairs
+            // in Data.Items. Inspect those exact uploaded values without another
+            // sprite getter/allocation or mutating the shared texture's wrap.
+            var uv=gpuLiveSlices[0].Data.Items[item].UV;
+            bool valid=GpuImageCollapseUvInUnitRange(uv);
+            if(!valid)GpuLog("GPUIMG_DIAG mode=collapse_uv_rejected item="+item
+                +" texture_id="+texture.GetInstanceID()+" reason=image_uv_outside_unit_range performance=False");
+            RequireLive(valid,"image_uv_outside_unit_range");
+        }
         // Hooks for PrepareDrawCollapse's owner. Register before allocating
         // arrays, then retain the addresses AFTER allocating the texture buffer.
         static void RegisterGpuImageCollapseVariants(Dictionary<int,Texture2D> textures)

@@ -32,3 +32,7 @@
 2. 등록 후 `GPUIMG_DIAG mode=collapsecoverage` 로그의 `registered`, `missing`, `direct_required`, `arrays_used` 를 확인한다. `missing=0` 이고 `direct_required <= 32`, 배열 ≤ 4 이면 통합으로 진행. **그래도 넘치면** 숫자(포맷별·크기별 개수, 필요 슬롯 수)를 결과 문서에 적고 멈춰라 — 그때는 Claude 가 형식별 은행/아틀라스 설계를 제미나이와 한다. 32 상한을 늘리거나 누락 검사를 끄지 마라.
 3. 이어서 `imageown` 계획(333단계)을 다시 돌려 통합 픽셀·FPS 를 얻는다.
 (참고: Claude 가 `GpuDecoDrawCollapseRenderer.cs` 에 재계획 키 캐시 최적화를 합쳤다. `RegisterGpuImageCollapseVariants`/`RememberGpuImageCollapseAddresses` 호출 2곳은 이미 연결돼 있다.)
+
+## 2026-10-25 17:05 Claude 지시 (6회전 시험 결과 반영): `live on` 의 `image collapse changed mip/wrap` — wrap 모드 검사를 UV 범위 검사로 바꿔라
+증거: 슬롯 48개로 늘린 뒤(Claude 가 `DirectBindings=32→48` + 번들 재빌드, 필요 36개 ≤ 48) 텍스처 커버리지 `missing=0` 통과, 다음 관문 `GpuDecoDrawCollapse.cs:27` 의 `RequireLive(texture.mipmapCount==1 && texture.wrapModeU==Clamp && texture.wrapModeV==Clamp, "image collapse changed mip/wrap")` 에서 막혔다. 원본 이미지 텍스처의 초기 wrap 은 Repeat 이고 게임 V15 setter/Defer 가 이벤트 시점에 Clamp 로 바꾼다. 우리 draw 통합 셰이더는 **자체 clamp 샘플러**를 쓰므로, 스프라이트 정점 UV 가 모두 [0,1](+작은 오차) 안이면 원본 Repeat 샘플링과 결과가 같다.
+해야 할 일: 위 검사에서 wrap 모드 조건을 빼고, 대신 **해당 변형의 모든 UV 성분이 [-1e-4, 1+1e-4] 안**이고 `mipmapCount==1` 인지를 검사하라(변형 정보 `GpuDecoImageVariant.UV` 는 이미 있다). UV 가 범위를 벗어나는 변형(타일링 이미지)만 CPU 복귀/폴백으로 처리한다. 텍스처 wrap 을 미리 바꾸지 마라(다른 장식과 공유). `RequireLive` 메시지는 `image_uv_outside_unit_range` 로 구분해 원인 추적이 되게 하라. 이 수정은 이미지 영역 코드이며 `GpuDecoDrawCollapse.cs:27` 한 줄 수정만 허용한다.

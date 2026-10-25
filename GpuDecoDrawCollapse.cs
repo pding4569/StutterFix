@@ -23,8 +23,7 @@ namespace StutterFix
                     +" stage=slot_update performance=False");
             RequireLive(texture&&material&&(uint)item<(uint)gpuCollapseIncluded.Length
                 &&gpuImageCollapseAddresses.TryGetValue(texture.GetInstanceID(),out _),"image_texture_not_registered_in_collapse");
-            RequireLive(texture.mipmapCount==1&&texture.wrapModeU==TextureWrapMode.Clamp&&texture.wrapModeV==TextureWrapMode.Clamp,
-                "image collapse changed mip/wrap");
+            RequireGpuImageCollapseSampling(item,texture);
             var address=gpuImageCollapseAddresses[texture.GetInstanceID()];
             gpuImageCollapseTextureUpload[0]=new Vector4(address.x+(material.IsKeywordEnabled("USE_POINT_SAMPLING")?128:0),address.y,0,0);
             gpuImageCollapseTextureUpload[1]=new Vector4(address.z,address.w,address.z/texture.width*.5f,address.w/texture.height*.5f);

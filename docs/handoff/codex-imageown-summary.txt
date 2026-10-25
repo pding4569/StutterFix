@@ -1,10 +1,10 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=89 missing=4 direct_required=36 direct_limit=32 arrays_used=4 array_limit=4 required_slots=40 fallback=NA spikes_30ms=NA reason=WINDOW_TEXTURE_CAPACITY_EXCEEDED
-이번 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회·새게임측정/빌드반복0회.
-외부run5 직접79줄 원시158~432행 순서일치·선택10/제외93·창257.5~270.25·등록93/주소89/누락4.
-직접필요36/32·배열4/4·필요40/선언36슬롯·배열계획282.312500MiB·준비실패.
-누락:2500x2500 DXT5·1489x1489/682x682/7677x4320 RGBA8;모두직접·누락변형4.
-44크기/포맷그룹93개=작은배열53+정확크기배열4+직접36;전체표/포맷합산은결과문서.
-지정된창축소후초과중단조건충족·Claude은행/아틀라스설계인계·동일333단계재시도요청없음.
-런타임/생성기/기존JSON수정0·새계획0·이미지관련15개SHA유지·원시/집계/ILScan/문서검증.
-동시작업정책48/셰이더변경은손대거나되돌리지않음·외부32상한시험과혼합금지.
-통합픽셀/FPS/+20%/폴백/끊김/전곡/Rec/설치복원/native_contexts NA·상세결과/out/imageown6 참조.
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 required_slots=38 fallback=NA spikes_30ms=NA reason=SAMPLING_FIX_NOT_RUN
+7회차:17:05추가지시우선·Claude의48슬롯전제수용·정책/셰이더/번들자체변경없음.
+외부run6직접38줄원시158~491행순서일치·선택10/제외93·등록93/주소93/누락0·직접34/48·배열4/4.
+필요38/선언52슬롯·배열290.312500MiB·준비82구간14595개/59복사·live on에서mip/wrap검사실패.
+활성화rollback Rec11821/11821·종료native_contexts0·CPU O/O2반복0·실패텍스처ID/mip/wrap값미기록.
+허용helper기존검사문하나를호출한줄로대체·이미지UV전체8성분[-1e-4,1+1e-4]/mip1검사·공유wrap불변.
+UV거부image_uv_outside_unit_range/item/texture진단·기존rollback/RecoverGpuLive유지·주소/슬롯/부분업로드가드유지.
+격리3빌드오류0/0/0·경고48/36/40·LoadCheck279/229/281곳틀림0·실제3메서드330검사/생성기8검사통과.
+게임/설치/커밋/푸시/장치/Editor/설정/제어변경0회·기존333단계JSON유지·통합픽셀/FPS/+20%/끊김/전곡/설치복원NA.
+의도한코드2개만수정·보호나머지280개SHA유지검증·문서5개/10줄/diff검증·상세결과/out/imageown7참조.
