@@ -247,6 +247,39 @@ namespace StutterFix
             int activeKernel = (UseLiveMode && hasLiveKernel) ? liveKernel : kernel;
             shader.Dispatch(activeKernel, (data.Items.Length + 63) / 64, 1, 1);
         }
+        // 구간 디스패치를 한 번만 기록해 두고(구간 버퍼는 재계획 때만 바뀐다) 프레임마다는 유니폼 작은 버퍼 + 이 버퍼 실행만 한다.
+        CommandBuffer collapseRecorded,collapseUniforms;
+        internal bool HasRecordedCollapse=>collapseRecorded!=null;
+        internal void ReleaseRecordedCollapse(){collapseRecorded?.Release();collapseRecorded=null;collapseUniforms?.Release();collapseUniforms=null;}
+        internal void RecordCollapse(ComputeBuffer texture,IList<GraphicsBuffer> targets,IList<ComputeBuffer> maps,IList<int> counts)
+        {
+            Require(UseLiveMode && shader.HasKernel("EvaluateCollapse"),"drawcollapse bundle lacks EvaluateCollapse");
+            ReleaseRecordedCollapse();
+            int k=shader.FindKernel("EvaluateCollapse");collapseKernel=k;
+            var c=new CommandBuffer{name="GpuDeco collapse spans"};
+            c.SetComputeBufferParam(shader,k,"_LiveChannels",liveChannelsBuffer);c.SetComputeBufferParam(shader,k,"_SourceE",sourceEBuffer);
+            c.SetComputeBufferParam(shader,k,"_Static",staticBuffer);c.SetComputeBufferParam(shader,k,"_UV",uvBuffer);
+            c.SetComputeBufferParam(shader,k,"_Values",values);
+            if(hasImageGeometry)c.SetComputeBufferParam(shader,k,"_ImageShape",imageShapeBuffer);
+            c.SetComputeBufferParam(shader,k,"_CollapseTexture",texture);
+            c.SetComputeFloatParam(shader,"_Pitch",data.Pitch);c.SetComputeFloatParam(shader,"_TweenScale",data.TweenScale);
+            c.SetComputeIntParam(shader,"_Count",data.Items.Length);
+            for(int i=0;i<targets.Count;i++)
+            {
+                c.SetComputeBufferParam(shader,k,"_Vertices",targets[i]);c.SetComputeBufferParam(shader,k,"_CollapseMap",maps[i]);
+                c.SetComputeIntParam(shader,"_CollapseCount",counts[i]);
+                c.DispatchCompute(shader,k,(counts[i]+63)/64,1,1);
+            }
+            collapseRecorded=c;collapseUniforms=new CommandBuffer{name="GpuDeco collapse uniforms"};
+        }
+        internal void ExecuteRecordedCollapse(Vector4 camera,double time)
+        {
+            var u=collapseUniforms;u.Clear();
+            u.SetComputeIntParam(shader,"_UseAnchors",1);u.SetComputeIntParam(shader,"_UseLiveChannels",(UseLiveMode&&hasLiveKernel)?1:0);
+            u.SetComputeVectorParam(shader,"_Camera",camera);
+            float hi=(float)time;u.SetComputeFloatParam(shader,"_TimeHi",hi);u.SetComputeFloatParam(shader,"_TimeLo",(float)(time-hi));
+            Graphics.ExecuteCommandBuffer(u);Graphics.ExecuteCommandBuffer(collapseRecorded);
+        }
         int collapseKernel=-1;
         // 프레임당 한 번: 구간마다 같은 공통 버퍼를 다시 설정하지 않도록 먼저 묶어 둔다(구간당 SetBuffer 6번+Require 절약).
         internal void BeginCollapse(ComputeBuffer texture)

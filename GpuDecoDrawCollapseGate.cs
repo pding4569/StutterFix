@@ -42,6 +42,11 @@ namespace StutterFix
                 collapseWidth=collapseHeight=0;collapseHz=0;gpuCollapseFault=null;gpuCollapsePrepare=false;
                 GpuLog("drawcollapse_gate_reset=True");return true;
             }
+            if(args.Length==2 && args[0]=="hideproxy")
+            {
+                DrawCollapsePolicy.HideProxies=args[1]=="on";
+                GpuLog("DRAWCOLLAPSE_HIDEPROXY hide="+DrawCollapsePolicy.HideProxies);return true;
+            }
             if(args.Length==2 && args[0]=="unsafe")
             {
                 DrawCollapseGuard.IgnoreOrderViolations=args[1]=="on";

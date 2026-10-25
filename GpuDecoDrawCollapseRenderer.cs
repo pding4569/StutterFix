@@ -32,7 +32,7 @@ namespace StutterFix
         static double gpuCollapseReplanTime=-100;
         static readonly List<GpuLiveRow> gpuCollapseBarrierSweep=new List<GpuLiveRow>(1100);
         // 재생 중에는 장벽 6만여 개를 매 프레임 전부 훑지 않고 프레임당 이 개수씩 순환 점검한다(전체 점검은 진입 때만).
-        const int CollapseBarrierSweepPerFrame=32; // 준비 때 본 렌더러 전체(재계획에서 새로 생긴 것만 장벽으로 더하기 위함)
+        const int CollapseBarrierSweepPerFrame=8; // 준비 때 본 렌더러 전체(재계획에서 새로 생긴 것만 장벽으로 더하기 위함)
         static Vector3 gpuCollapseCameraPosition,gpuCollapseCameraForward;
         sealed class CollapseSpan : IDisposable
         {
@@ -52,6 +52,7 @@ namespace StutterFix
                 if(Material && !SharedMat)UnityEngine.Object.Destroy(Material);
             }
         }
+        static void InvalidateRecordedCollapse(){if(gpuLiveSlices.Count>0 && gpuLiveSlices[0].Gpu!=null)gpuLiveSlices[0].Gpu.ReleaseRecordedCollapse();}
         static void HideDrawCollapse()
         {
             gpuCollapseOn=false;gpuCollapsePendingFallback=null;
@@ -59,6 +60,7 @@ namespace StutterFix
         }
         static void DisposeDrawCollapse()
         {
+            InvalidateRecordedCollapse();
             HideDrawCollapse();
             foreach(var s in gpuCollapseSpans)s.Dispose();gpuCollapseSpans.Clear();
             foreach(var sm in gpuCollapseSharedMats.Values)if(sm)UnityEngine.Object.Destroy(sm);gpuCollapseSharedMats.Clear();
@@ -291,6 +293,7 @@ namespace StutterFix
         static void BuildDrawCollapseSpans()
         {
             long dcT0=Stopwatch.GetTimestamp();int nudgedSpans=0;
+            InvalidateRecordedCollapse();
             var source=gpuLiveSlices[0];
             var rows=new List<DrawCollapsePolicy.Row>();
             // ---- 프로토타입: 키 캐시 + 변경 추적 재계획 ----
@@ -657,9 +660,25 @@ namespace StutterFix
         static void DispatchDrawCollapse(double time)
         {
             var source=gpuLiveSlices[0];
+            if(DrawCollapsePolicy.RecordedDispatch)
+            {
+                if(!source.Gpu.HasRecordedCollapse)
+                {
+                    var tg=new List<GraphicsBuffer>();var mp=new List<ComputeBuffer>();var ct=new List<int>();
+                    foreach(var s in gpuCollapseSpans){tg.Add(s.Vertices);mp.Add(s.Map);ct.Add(s.Items.Length);}
+                    source.Gpu.RecordCollapse(gpuCollapseTexture,tg,mp,ct);
+                }
+                var camy=ADOBase.controller.camy;var ctf=camy.transform;
+                float camScale=camy.camobj.orthographicSize*.2f/gpuLiveZoomFactor;
+                source.Gpu.ExecuteRecordedCollapse(new Vector4(ctf.position.x,ctf.position.y,ctf.eulerAngles.z,camScale),time);
+                foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
+            }
+            else
+            {
             source.Gpu.BeginCollapse(gpuCollapseTexture);
             foreach(var s in gpuCollapseSpans)
-            {source.Gpu.DispatchCollapseSpan(s.Vertices,s.Map,s.Items.Length);if(!s.Renderer.enabled)s.Renderer.enabled=true;}
+            {source.Gpu.DispatchCollapseSpan(s.Vertices,s.Map,s.Items.Length);if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;}
+            }
             if(gpuCollapseTextureFallbackCount>0 && ((source.CopyMask?.Low??ulong.MaxValue)|(source.CopyMask?.High??ulong.MaxValue))!=0)
             {
                 // Overflow alone retains the original evaluated/copy path. Its

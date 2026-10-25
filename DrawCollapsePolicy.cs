@@ -12,7 +12,7 @@ namespace StutterFix
         internal const int ArrayBindings=4;
         internal const int DirectBindings=48;
         internal const int TextureBindings=ArrayBindings+DirectBindings;
-        internal const int OwnedChecksPerFrame=16;
+        internal const int OwnedChecksPerFrame=4;
         // Orthographic camera translation changes every distance by this same
         // amount. Compare against the camera, not against the first barrier:
         // otherwise a lone moving barrier could cross a whole span undetected.
@@ -70,6 +70,10 @@ namespace StutterFix
         // Renderer stores the source item index for owned rows. Never regroup
         // A/B/A textures or move a quad across even a currently hidden barrier.
         internal static bool SplitByOrder=true;
+        // 구간 디스패치를 미리 기록한 명령 버퍼 한 번 실행으로 한다(끄면 구간마다 즉시 디스패치).
+        internal static bool RecordedDispatch=true;
+        // 진단 전용: 대표 렌더러를 숨겨 그리기의 GPU 몫을 잰다(화면이 틀려진다).
+        internal static bool HideProxies=false;
         // 2048 을 넘는 같은 크기 DXT5(4K 프레임 계열 등)를 정확한 크기의 배열 하나로 묶는다. 3개 미만이면 직접 슬롯을 쓴다.
         internal static bool ExactBigArray=true;
         internal const int ExactBigMin=3;
