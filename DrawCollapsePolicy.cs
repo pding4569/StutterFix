@@ -10,7 +10,7 @@ namespace StutterFix
         // Unity's loaded shader caps texture parameters at 64 on this D3D11
         // device, even though the native API accepts 128 SRVs.
         internal const int ArrayBindings=4;
-        internal const int DirectBindings=32;
+        internal const int DirectBindings=48;
         internal const int TextureBindings=ArrayBindings+DirectBindings;
         internal const int OwnedChecksPerFrame=16;
         // Orthographic camera translation changes every distance by this same
