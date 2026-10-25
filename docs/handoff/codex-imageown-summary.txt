@@ -1,10 +1,10 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 GPU_owned=28523 CPU_fallback=0 previous_fallback=14 previous_image_excluded=0 spikes_30ms=NA reason=ACCEPTANCE_FIX_NOT_RUN
-9회차: 외부run8 직접53줄 원시158~544행 순서대조; GPU28523/CPU fallback0·등록93/누락0·정렬제외14/이미지제외0.
-17:15추가지시우선: 비이미지정렬보호<=1% 허용, 이미지제외/텍스처누락0; 앞선전체폴백0중단판단을대체.
-기존선행검사완화보존·픽셀/ABBA판정동기화·실제마스크/카운터/독립GPU경로유지; renderer/policy금지영역보존.
-측정전승인집합·매프레임개수/멤버/소유자검사; 같은개수이미지교체거부·프레임당전수스캔추가없음.
-DEV/Player/PlayerAuto 격리빌드오류0/0/0·경고4/4/40·LoadCheck279/229/281곳틀림0·일반Player연구제외.
-실제5메서드CPU어댑터28검사·생성기8검사·기존명시12출력동일; 실제Unity픽셀/FPS증명아님.
-새abba4-orderguard333단계생성만·기존JSON/tag보존·48슬롯/4배열번들보존·managed DLL은out/imageown9에격리.
-통합픽셀/FPS/+20%/끊김/전곡/설치복원NA; 게임/설치/커밋/푸시/장치/Editor/설정/제어변경0회.
-보호283개중의도한코드2개외281개SHA유지·원시/게임IL/문서5개/10줄/diff검증; 상세결과/out/imageown9참조.
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=3 A0_fps=211.823440 B1_fps=208.592248 B2_fps=197.047153 A3_fps=NA spikes_30ms=4 CPU_fallback=0 nonimage_fallback=14 image_excluded=0 reason=ABBA_INCOMPLETE_AFTER_B2_SPIKES new_code=NOT_RUN
+최신run1 직접289줄 원시158~1971행대조; 통합260/262/270초changed28603/22550/9186·max3/3/2·반복/복원0.
+A0/B1/B2=211.823440/208.592248/197.047153FPS·30ms이상0/0/4회·복원3/3·A3미측정; ABBA평균/증가율NA.
+중단원인: 성공창수를완료순번으로사용해실패B2뒤begin3거부; 완료순번분리·직전복원필수·재시도/건너뛰기차단.
+네창완료시실패표본도FPS통계보존·실패는최종FAIL유지; 일시적런타임실패도현재창무효화.
+고정16개끊김표본시각/길이/GC누계·창종료후로그·초과수명시; 기존4회끊김원인은미확정·성능개선증명아님.
+정확히+20%포함경계오류수정·진입소스픽셀4허용을요구3으로복원; 정렬보호/실제카운터/소유자영역보존.
+최종3빌드오류0/0/0·경고48/4/40·LoadCheck279/229/281곳틀림0·실제5메서드56검사/생성기8검사통과.
+명시12출력/기존JSON보존·새abba5-completion333단계생성만·DLL은out/imageown10격리·보호282개SHA유지.
+게임/설치/커밋/푸시/장치/Editor/설정/제어변경0회; 수정후FPS/+20%/끊김해결/전곡/설치복원NA; 상세결과참조.

@@ -68,11 +68,12 @@ def acceptance_plan(chart, bundle, refreshpose):
     steps += performance_windows(chart, bundle, refreshpose, activation=257.5)
     steps += ['gpudeco images result', 'quit']
     return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False}, timeout_min=30,
-        tag='imageown-260-270-abba4-orderguard', notes={
+        tag='imageown-260-270-abba5-completion', notes={
             'status': '생성만; 이번 게임·설치·자동 장치 호출 없음', 'mode': 'accept',
             'bundle': str(bundle).replace('\\', '/'), 'refreshpose': refreshpose,
             'prerequisites': '새 managed DLL과 EvaluateImageLive/EvaluateCollapse/GpuDecoBatch 지원 번들 필요',
-            'evidence': '외부 run2: 3440x1440@164.999 정지 이미지 소유 maxdiff=1/1/1; 통합·연속 재생·FPS 미검증',
+            'evidence': '최신 외부 run1: 통합 maxdiff=3/3/2; A0/B1/B2=211.823440/208.592248/197.047153FPS, B2 끊김4회; A3 순번 오류로 ABBA 미완료',
+            'completion': '실패 창도 완료 순번을 소비하고 복원 뒤 다음 창을 측정; 합격 여부와 분리·재시도 금지·실패는 최종 FAIL에 유지; 끊김 최대16개 시각/길이/GC 누계는 창 종료 뒤 기록',
             'preflight': '260/262/270 통합 원본 maxdiff<=3·O/G/B 반복 및 G 복원0·현재/변형 텍스처 누락0·이미지 제외0; 비이미지 정렬 보호 폴백은 소유 수의 1% 이하 허용; 실패 시 ABBA 중단',
             'A': '이미지 candidate off + GPU23547 + draw 통합',
             'B': '이미지 candidate/own on + GPU28523 + draw 통합',
@@ -266,7 +267,7 @@ def self_test():
 
         def test_preflight_precedes_all_timing(self):
             plan = build('Arche.adofai')
-            self.assertEqual(plan['tag'], 'imageown-260-270-abba4-orderguard')
+            self.assertEqual(plan['tag'], 'imageown-260-270-abba5-completion')
             steps = plan['steps']
             self.assertIn('gpudeco images gate preflight on', steps)
             self.assertEqual(steps.count('waitsongpos 257.5 40'), 4)

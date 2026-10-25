@@ -1,3 +1,61 @@
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=3 A0_fps=211.823440 B1_fps=208.592248 B2_fps=197.047153 A3_fps=NA spikes_30ms=4 CPU_fallback=0 nonimage_fallback=14 image_excluded=0 reason=ABBA_INCOMPLETE_AFTER_B2_SPIKES new_code=NOT_RUN
+
+## 자동 반복 재시작 2회차(누적 10회차) — 실패 창 완료순번 수정·끊김 진단 추가
+
+최상단 `codex-al-im-2.md`가 지정한 **최신 run1**을 우선했다. 중첩된 run8과 이전9회차 결과는 이력이며 이번 측정으로 섞지 않았다. 사용자 지시에 따라 게임 실행·설치·커밋·푸시·자동 장치 호출·Unity Editor 실행·설정/제어 파일 변경은 모두0회다.
+
+### 외부 측정과 원시 대조
+
+`im-autoloop-run1-evidence.txt` 직접289줄을 `E:/StutterFixWork/night-results/al-im-1.log` 158~1971행과 순서·중복까지 대조했다. 시작 선언만1500자 접두부이며 나머지는 전체 줄 일치다. 실제 환경은3440×1440@164.999다.
+
+| 원시 행 | 관측값 |
+|---|---|
+| 382 | 등록93/주소93/누락0·직접35/48·배열4/4·변형누락0 |
+| 617 | 260초 통합 원본 대비 changed28603·maxdiff3·반복/복원0·valid=True |
+| 844 | 262초 changed22550·maxdiff3·반복/복원0·valid=True |
+| 1064 | 270초 changed9186·maxdiff2·반복/복원0·valid=True |
+| 1271 | A0:211.823440FPS·2118프레임/관측2118·30ms이상0·CPU fallback0·정렬보호14·valid=True |
+| 1506 | B1:208.592248FPS·2085프레임/관측2085·30ms이상0·CPU fallback0·정렬보호14·valid=True |
+| 1745 | B2:197.047153FPS·1970프레임/관측1970·30ms이상4·CPU fallback0·정렬보호14·valid=False |
+| 1280/1515/1754 | 완료한 세 창의 복원 valid=True |
+| 1964/1967 | `images begin 3`의 clean A/B/B/A 순번 검사 실패, A3 미측정 |
+| 1970~1971 | 종료 복원Rec0/기대0·미관측순서0·native_contexts0 |
+
+픽셀 선행3개와 이미지 무폴백은 해당 표본에서 통과했다. 정지 픽셀은 전체 연속재생 화질의 증명이 아니다. B1 대 A0는−1.525418%이며 **완성된 ABBA 증가율이 아니다**. A3가 없어 before/after 평균과+20%는NA다. A0만 사용한 가상의 수용하한은254.188128FPS이고 B1은미달이지만 최종ABBA 하한을 대신하지 않는다. 기존 약202FPS와 최신창의 평균을 섞지 않았다.
+
+원시에는4회 끊김의 곡시각·길이·GC/엔진원인 자료가 없다. `cost scope=live_off`는 누적 managed CPU 범위이고 실제 프레임 지연의 원인 귀속이 아니다. 알파더티큐는이미구현되어있고 B2 종료의alpha_watch0/alpha_checks8106/alpha_dirty6450은 누적수치다. 4476개전수순회가현재원인이라고되풀이하거나, GC/텍스처업로드가원인이라고단정하지않았다.
+
+### 코드로 확정한 중단 원인과 수정
+
+`GpuDecoImageGeometryFixture.cs`의 begin은 `index==imageOwnWindows.Count(x=>x)`를 요구했다. end는 B2의4회끊김 때문에 `imageOwnWindows[2]=false`를 저장한다. 따라서 성공수는2로남아정상다음순번3이거부된다. GPU28523·텍스처커버리지·픽셀은 이미 통과했으며 이 순번오류가 최신 자동시험의 마지막 중단원인이다. 이 수정이 끊김이나성능저하를해결한것은아니다.
+
+- `imageOwnNextWindow`로 완료순번과합격여부를분리했다. 실패창도 end후순번을소비하며, 직전창복원이확인된경우에만다음창을시작한다. 같은실패창재시도·순번건너뛰기·미완료창복원·측정뒤모드변경은거부한다.
+- 네창이끝났으면실패창을포함한측정FPS/증가율/끊김합계와 `completed=4/4 windows=3/4`를기록한다. `imageOwnFailed`와개별유효성은유지하므로끊김이있으면최종FAIL이다. 자료가다모였는데실패한경우 `ACCEPTANCE_FAILED`, 미완료면 `EVIDENCE_INCOMPLETE`다.
+- 프레임중일시적GPU/정렬/일시정지/소유권오류도현재창의valid=False에반영한다. 전역실패판정도유지한다.
+- 끊김최대16개를사전할당struct배열에저장한다. 곡시각은지연을관측한시점이고원인발생시점의증명은아니다. 길이·프레임·창시작이후GC0/1/2누계를보존한다. 로그문자열/출력은창종료후이며초과표본수도기록한다. GC횟수동시관측만으로원인확정하지않도록 `attribution=UNPROVEN`을명시한다. 매프레임추가전수스캔/캡처/읽기되돌림은없고최대프레임길이만추가갱신한다. 실제진단오버헤드는미측정이다.
+- 회귀검사에서정확히+20%인120/100이 `(1.2-1)*100` 반올림으로19.999999…가되어실패하는오류를발견했다. `after>=before*1.20`로동일한포함하한을직접비교한다. +20%미만은계속거부한다.
+- 진입소스의 `ImageOwnPixelMax=4`/완화주석을지시서의최대3으로되돌렸다. 최신실측3/3/2는이기준안이다. 픽셀기준·30ms이상0·CPU/이미지/텍스처누락0·비이미지정렬보호<=1%·순서보호는완화하지않았다.
+
+게임 `scrVisualDecoration.cs`의원래SetSprite/포인트샘플링/공유wrap설정을읽고설치Assembly-CSharp.dll의읽기전용ILScan으로호출을교차확인했다. 이경로를우회하거나다른장식과공유하는텍스처wrap을바꾸지않았다. 실제끊김원인과이미지방식의설계한계는현재자료로미확정이다. renderer/policy/Dormancy/TightLate/FastMove/Export/셰이더/native/번들영역은수정하지않았다.
+
+### 오프라인 검증과 남은 조건
+
+| 검사 | 최종 결과 | 근거(`out/imageown10/`) |
+|---|---|---|
+| DEV/Player/PlayerAuto 격리Release 빌드 | 오류0/0/0·경고48/4/40 | verify.ps1, build-*.txt |
+| LoadCheck | FieldRef279/229/281곳·틀림0/0/0·일반Player 연구제외 | loadcheck-*.txt |
+| 실제 판정메서드5개+CPU어댑터 | 56검사통과 | check-gate.py, gate-check.txt |
+| 계획생성기 | 8검사통과·과거명시12출력동일 | generator-tests.txt, plan-check.txt |
+| 보호파일 | 의도한코드2개외282개SHA256유지 | preserved.json, preserved-after.json |
+
+56검사는기존이미지/누락/폴백/픽셀가드와실패B2뒤A3완료·미복원차단·실패재시도차단·최종FAIL유지·정상PASS양성대조·+20%포함경계·미달거부·완료/합격표시·미완료평균NA·중복카메라표본제거·16개상한/초과수·일시적런타임실패를포함한다. 실제Unity렌더링/픽셀/GC 동작/FPS의증명은아니다. 첫어댑터검사에서+20%경계오류를발견해고친뒤최종소스로3빌드/LoadCheck를재검증했다.
+
+새 `tools/optimization/out/imageown-abba5-completion-steps.json`은333단계**생성만**했다. 명령순서는기존abba4와같지만새managed완료/실패상태·끊김진단코드와새tag를요구한다. 기존JSON과명시diag/diag1/abba출력은보존했다. 수정DLL은 `out/imageown10/build/playerauto/StutterFix.dll`에격리되어있다. 설치DLL/기존bin/번들은교체하지않았다.
+
+새진단은빠진A3와4회끊김의최소상세정보를얻기위한변경이며성능개선완료가아니다. 동일실패코드무변경반복이나옛diag1/diag2재실행요청은없다. 외부실행자가새managed코드로네창/복원과새 `GPUIMG_DIAG mode=windowspike`를얻어야끊김귀속과다음성능수정근거가생긴다. 이작업에서게임을실행하거나장치를호출/중지/예약하지않았다. 실제+20%·끊김해결·수정후픽셀·전곡수명·설치복원은NA이며**IMAGEOWN=FAIL**이다. 공유스킬/메모리는수정하지않았다.
+
+---
+
 IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=93 missing=0 direct_required=34 direct_limit=48 arrays_used=4 array_limit=4 GPU_owned=28523 CPU_fallback=0 previous_fallback=14 previous_image_excluded=0 spikes_30ms=NA reason=ACCEPTANCE_FIX_NOT_RUN
 
 ## 자동 반복 9회차 — 17:15 지시 적용, 이미지 무폴백 판정 일관성 수정

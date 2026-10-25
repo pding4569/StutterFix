@@ -1,3 +1,7 @@
+## 재시작 2회차(누적10회차) — 외부run1 분석·완료순번 수정
+
+최신 외부 run1 직접289줄을 원시158~1971행과 순서 대조했다. 통합260/262/270초 changed28603/22550/9186·max3/3/2·반복/복원0·이미지제외0·비이미지정렬보호14개로 픽셀선행을 통과했다. A0/B1/B2=211.823440/208.592248/197.047153FPS·끊김0/0/4회·창복원3/3 뒤 A3 begin에서 중단됐다. 완료순번을 성공창수로 세는 오류를 이미지fixture에서 수정하고, 실패는 최종FAIL에 유지하면서 복원 뒤 다음창으로 진행하게 했다. 끊김16개 고정버퍼에 관측시각/길이/GC누계 저장·창종료후로그·초과수명시, 일시적런타임실패도 현재창에반영한다. 정확히+20%경계판정오류 수정·진입소스의픽셀4허용을지시된3으로복원했다. 정렬보호/실제카운터/renderer/policy/셰이더/48슬롯/번들 유지다. 최종격리3빌드 오류0/0/0·경고48/4/40·LoadCheck279/229/281곳틀림0·실제5메서드56검사/생성기8검사통과·명시12출력/기존JSON보존·새abba5-completion333단계생성만. IMAGEOWN=FAIL reason=ABBA_INCOMPLETE_AFTER_B2_SPIKES; 수정후게임/FPS/+20%/끊김해결/전곡/설치복원NA. 기존4끊김의원인·시각은미확정이며설계전체불가능판정아님. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 보호284개중의도한코드2개외282개SHA유지·상세결과/out/imageown10참조.
+
 ## 회차 9 — 17:15 지시 반영, 이미지 무폴백 판정 일관성 수정
 
 외부 run8 직접53줄을 원시158~544행과 순서 대조했다. 등록93/주소93/누락0·직접34/48·배열4/4·290.312500MiB·GPU28523/CPU fallback0 뒤 비이미지 정렬 보호14개로 collapsecheck 실패다. 17:15추가지시를 우선해 이미 적용된 선행 검사 완화를 보존하고 픽셀/ABBA의 남은 전체폴백0 조건도 같은 기준으로 맞췄다. 이미지 제외/주소 누락0·비이미지 정렬 보호<=1%이며, 측정 전 승인집합을 저장하고 매 프레임 개수/멤버/배열소유자 변경을 거부한다. 정렬보호/실제카운터/독립GPU경로/48슬롯/셰이더/번들은 유지했다. 격리3빌드 오류0/0/0·경고4/4/40·LoadCheck279/229/281곳틀림0·실제5메서드28검사/생성기8검사 통과다. 명시12출력/기존JSON 보존·새abba4-orderguard333단계 생성만. IMAGEOWN=FAIL reason=ACCEPTANCE_FIX_NOT_RUN; 통합픽셀/FPS/+20%/끊김/전곡/설치복원NA. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 상세결과/out/imageown9 참조.
@@ -214,3 +218,25 @@ O/O2·G/N 반복0은 통합픽셀 증명이 아니며 종료FastMoveOriginal 복
   - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=317
   - [StutterFix] [gpudeco] cost scope=live_off frames=90 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.439686 progress_ms=0.011822 uniform_ms=0.035719 dispatch_ms=0.278926 misc_
   - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=262.014330 resumed_recs=11186 resume_expected=11186 unobserved_order=0 restore_ms=12.331500
+
+## 회차 2
+- Codex 요약: ABBA 순번 오류를 수정하고 끊김 진단을 추가했습니다. 빌드 3종·LoadCheck·판정 검사 56개·생성기 검사 8개가 통과했습니다.
+
+최신 실측은 픽셀 최대 차이 3/3/2, B2 창 끊김 4회로 `IMAGEOWN=FAIL`입니다. 성능 개선은 미입증입니다. 새 333단계 계획은 생성만 했으며, 게임 실행·설치·커밋은 하지 않았습니다.
+
+[상세 결과](E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=304414720 copy_calls=59 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_eva
+  - [StutterFix] [gpudeco] prepare_ms=9696.609200 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2135 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=168.499500 prepare_ms=9696.609200
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=14 active_buckets=251
+  - [StutterFix] [gpudeco] cost scope=live_off frames=45 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.444211 progress_ms=0.012393 uniform_ms=0.037931 dispatch_ms=0.277120 misc_
+  - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=260.019671 resumed_recs=11821 resume_expected=11821 unobserved_order=0 restore_ms=13.673400
+  - [StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=1984 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=161.360800 prepare_ms=9696.609200
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=317
+  - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=4 reason=INTEGRATED_PIXEL_PREFLIGHT_FAILED
+  - [StutterFix] [gpudeco] cost scope=recovery:FastMoveOriginal frames=87 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.446245 progress_ms=0.011741 uniform_ms=0.037036 dispatch_

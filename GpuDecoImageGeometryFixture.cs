@@ -120,12 +120,20 @@ namespace StutterFix
         }
         static readonly double[] imageOwnFps=new double[4];
         static readonly bool[] imageOwnWindows=new bool[4],imageOwnRestores=new bool[4],imageOwnPixels=new bool[3];
-        static int imageOwnWindow=-1,imageOwnFrame,imageOwnObservedFrame=-1,imageOwnObserved,imageOwnSpikes;
+        static int imageOwnWindow=-1,imageOwnNextWindow,imageOwnFrame,imageOwnObservedFrame=-1,imageOwnObserved,imageOwnSpikes;
         static int imageOwnMaxPixel=-1,imageOwnCpuFallback,imageOwnTextureFallback,imageOwnTotalSpikes;
         static long imageOwnTick;
-        // 정지 프레임 최대 차이 허용치(8비트). 3→4: 262초 프레임이 이미지 없이도 4 가 나오는 이 방식의 고유값이라 측정을 막지 않게 한 단계 완화(통계는 로그에 남김).
-        const int ImageOwnPixelMax=4;
-        static bool imageOwnFailed,imageOwnPixelOrderingOk;
+        const int ImageOwnPixelMax=3;
+        static bool imageOwnFailed,imageOwnWindowFailed,imageOwnPixelOrderingOk;
+        struct ImageOwnSpike
+        {
+            internal int Frame,Gc0,Gc1,Gc2;
+            internal double Song,Milliseconds;
+        }
+        // Bounded, allocation-free capture. Format/log only after the window.
+        static readonly ImageOwnSpike[] imageOwnSpikeSamples=new ImageOwnSpike[16];
+        static int imageOwnGc0,imageOwnGc1,imageOwnGc2;
+        static double imageOwnMaxFrameMs;
         static bool imageOwnGatePose;
         static bool imageOwnRequirePixelPreflight;
         static readonly System.Collections.Generic.List<int> imageOwnOrderingFallbacks=new System.Collections.Generic.List<int>();
@@ -206,12 +214,19 @@ namespace StutterFix
             if(!gpuLiveActive||!gpuCollapseOn||FrameCompare.Paused||!Hitch.Playing||gpuImageCandidate!=images
                 ||GpuLiveOwned!=(images?28523:23547)||gpuLiveCpuFallbackCount!=0||gpuCollapseFault!=null
                 ||(images&&!ImageOwnOrderingFallbacksUnchanged())||DrawCollapseGuard.IgnoreOrderViolations
-                ||gpuImageRefreshPose!=(images&&imageOwnGatePose)||GpuImageVertexDiagnosticActive)imageOwnFailed=true;
+                ||gpuImageRefreshPose!=(images&&imageOwnGatePose)||GpuImageVertexDiagnosticActive)imageOwnFailed=imageOwnWindowFailed=true;
             if(Time.frameCount<=imageOwnFrame)return;
             imageOwnObserved++;
             double ms=Time.unscaledDeltaTime*1000.0;
-            if(ms<=0||double.IsNaN(ms)||double.IsInfinity(ms))imageOwnFailed=true;
-            if(ms>=30)imageOwnSpikes++;
+            if(ms<=0||double.IsNaN(ms)||double.IsInfinity(ms))imageOwnFailed=imageOwnWindowFailed=true;
+            else imageOwnMaxFrameMs=Math.Max(imageOwnMaxFrameMs,ms);
+            if(ms>=30)
+            {
+                if(imageOwnSpikes<imageOwnSpikeSamples.Length)
+                    imageOwnSpikeSamples[imageOwnSpikes]=new ImageOwnSpike{Frame=Time.frameCount,Song=MergeSong,Milliseconds=ms,
+                        Gc0=GC.CollectionCount(0)-imageOwnGc0,Gc1=GC.CollectionCount(1)-imageOwnGc1,Gc2=GC.CollectionCount(2)-imageOwnGc2};
+                imageOwnSpikes++;
+            }
         }
         static bool GpuImageAcceptanceCommand(string command)
         {
@@ -221,19 +236,19 @@ namespace StutterFix
                 RequireLive(!gpuLiveActive&&imageOwnWindow<0,"imageown gate reset requires inactive GPU");
                 Camera.onPreCull-=ObserveImageOwnWindow;
                 Array.Clear(imageOwnFps,0,4);Array.Clear(imageOwnWindows,0,4);Array.Clear(imageOwnRestores,0,4);Array.Clear(imageOwnPixels,0,3);
-                imageOwnFailed=false;imageOwnGatePose=false;imageOwnRequirePixelPreflight=false;
+                imageOwnFailed=imageOwnWindowFailed=false;imageOwnNextWindow=0;imageOwnGatePose=false;imageOwnRequirePixelPreflight=false;
                 imageOwnOrderingFallbackOwner=null;imageOwnOrderingFallbacks.Clear();
                 imageOwnMaxPixel=-1;imageOwnCpuFallback=imageOwnTextureFallback=imageOwnTotalSpikes=0;return true;
             }
             if(command=="images gate preflight on")
             {
-                RequireLive(!gpuLiveActive&&imageOwnWindow<0&&!imageOwnWindows.Any(x=>x),"select image preflight before ABBA");
+                RequireLive(!gpuLiveActive&&imageOwnWindow<0&&imageOwnNextWindow==0,"select image preflight before ABBA");
                 imageOwnRequirePixelPreflight=true;return true;
             }
             if(command=="images collapsecheck"){CheckGpuImageCollapse();return true;}
             if(command=="images gate refreshpose on"||command=="images gate refreshpose off")
             {
-                RequireLive(!gpuLiveActive&&imageOwnWindow<0&&!imageOwnWindows.Any(x=>x),"select measured pose mode before ABBA");
+                RequireLive(!gpuLiveActive&&imageOwnWindow<0&&imageOwnNextWindow==0,"select measured pose mode before ABBA");
                 imageOwnGatePose=command.EndsWith(" on",StringComparison.Ordinal);return true;
             }
             if(args.Length==3&&args[0]=="images"&&args[1]=="begin")
@@ -241,13 +256,19 @@ namespace StutterFix
                 int index=int.Parse(args[2],Inv);bool images=index==1||index==2;
                 RequireImageOwnEnvironment();
                 RequireLive(!imageOwnRequirePixelPreflight||imageOwnPixels.All(x=>x),"complete all three integrated pixel checks before ABBA");
-                RequireLive(index>=0&&index<4&&imageOwnWindow<0&&index==imageOwnWindows.Count(x=>x)&&gpuLiveActive
+                // A failed measurement still completes its place in A/B/B/A.
+                // Keep validity latched for the final gate; require safe restore
+                // before advancing, and never replay a failed index as a retry.
+                RequireLive(index>=0&&index<4&&imageOwnWindow<0&&index==imageOwnNextWindow
+                    &&(index==0||imageOwnRestores[index-1])&&gpuLiveActive
                     &&gpuCollapseOn&&GpuLiveOwned==(images?28523:23547)&&gpuLiveCpuFallbackCount==0
                     &&gpuImageCandidate==images&&(!images||gpuImageOwn)&&gpuImageRefreshPose==(images&&imageOwnGatePose)
                     &&!GpuImageVertexDiagnosticActive&&!DrawCollapseGuard.IgnoreOrderViolations&&!FrameCompare.Paused&&Hitch.Playing&&Math.Abs(MergeSong-260)<.6,
                     "imageown begin requires clean A/B/B/A 260s image ownership with collapse");
                 RequireLive(!images||CaptureImageOwnOrderingFallbacks(),"imageown begin found image/unregistered/excess collapse fallback");
                 imageOwnWindow=index;imageOwnFrame=Time.frameCount;imageOwnObservedFrame=-1;imageOwnObserved=imageOwnSpikes=0;
+                imageOwnWindowFailed=false;imageOwnMaxFrameMs=0;
+                imageOwnGc0=GC.CollectionCount(0);imageOwnGc1=GC.CollectionCount(1);imageOwnGc2=GC.CollectionCount(2);
                 imageOwnTick=System.Diagnostics.Stopwatch.GetTimestamp();
                 Camera.onPreCull-=ObserveImageOwnWindow;Camera.onPreCull+=ObserveImageOwnWindow;
                 GpuLog("IMAGEOWN_BEGIN index="+index+" images="+images+" owned="+GpuLiveOwned+" collapse=True");return true;
@@ -260,22 +281,32 @@ namespace StutterFix
                 RequireImageOwnEnvironment();
                 double seconds=(System.Diagnostics.Stopwatch.GetTimestamp()-imageOwnTick)/(double)System.Diagnostics.Stopwatch.Frequency;
                 int frames=Time.frameCount-imageOwnFrame;
-                bool valid=seconds>0&&frames>0&&imageOwnObserved>=Math.Max(1,frames-1)&&Math.Abs(MergeSong-270)<.6
+                bool valid=!imageOwnWindowFailed&&seconds>0&&frames>0&&imageOwnObserved>=Math.Max(1,frames-1)&&Math.Abs(MergeSong-270)<.6
                     &&gpuLiveActive&&gpuCollapseOn&&gpuLiveCpuFallbackCount==0&&gpuCollapseFault==null&&gpuImageRestores==0
                     &&(!(index==1||index==2)||ImageOwnOrderingFallbacksUnchanged())
                     &&GpuDecoCopy.ReadTotals().Errors==0&&Resilience.TotalErrors==0&&imageOwnSpikes==0;
                 imageOwnTotalSpikes+=imageOwnSpikes;
-                imageOwnFps[index]=frames/Math.Max(seconds,1e-9);imageOwnWindows[index]=valid;
+                imageOwnFps[index]=frames/Math.Max(seconds,1e-9);imageOwnWindows[index]=valid;imageOwnNextWindow=index+1;
                 imageOwnFailed|=!valid;
                 GpuLog("IMAGEOWN_WINDOW index="+index+" fps="+imageOwnFps[index].ToString("F6",Inv)+" frames="+frames
                     +" observed="+imageOwnObserved+" spikes_30ms="+imageOwnSpikes+" fallback="+gpuLiveCpuFallbackCount
-                    +" texture_fallback="+gpuCollapseTextureFallbackCount+" valid="+valid);
+                    +" texture_fallback="+gpuCollapseTextureFallbackCount+" valid="+valid
+                    +" max_frame_ms="+imageOwnMaxFrameMs.ToString("F6",Inv)+" runtime_ok="+!imageOwnWindowFailed
+                    +" gc0="+(GC.CollectionCount(0)-imageOwnGc0)+" gc1="+(GC.CollectionCount(1)-imageOwnGc1)+" gc2="+(GC.CollectionCount(2)-imageOwnGc2)
+                    +" spike_samples="+Math.Min(imageOwnSpikes,imageOwnSpikeSamples.Length)+" spike_samples_dropped="+Math.Max(0,imageOwnSpikes-imageOwnSpikeSamples.Length));
+                for(int n=0;n<Math.Min(imageOwnSpikes,imageOwnSpikeSamples.Length);n++)
+                {
+                    var spike=imageOwnSpikeSamples[n];
+                    GpuLog("GPUIMG_DIAG mode=windowspike index="+index+" frame="+spike.Frame+" song="+spike.Song.ToString("F6",Inv)
+                        +" ms="+spike.Milliseconds.ToString("F6",Inv)+" gc0_since_begin="+spike.Gc0+" gc1_since_begin="+spike.Gc1+" gc2_since_begin="+spike.Gc2
+                        +" attribution=UNPROVEN logged_after_window=True");
+                }
                 LogGpuImagePlayback();return true;
             }
             if(args.Length==3&&args[0]=="images"&&args[1]=="restore")
             {
                 int index=int.Parse(args[2],Inv);
-                RequireLive(index>=0&&index<4,"imageown restore index");
+                RequireLive(index>=0&&index<4&&imageOwnWindow<0&&index==imageOwnNextWindow-1,"imageown restore requires the last completed window");
                 imageOwnRestores[index]=!gpuLiveActive&&!gpuCollapseOn&&gpuLastRestoreComplete&&CountUnrestoredOwned()==0
                     &&gpuCollapseFault==null&&Resilience.TotalErrors==0;
                 imageOwnFailed|=!imageOwnRestores[index];
@@ -318,15 +349,17 @@ namespace StutterFix
             }
             if(command=="images result")
             {
-                bool complete=imageOwnWindows.All(x=>x)&&imageOwnRestores.All(x=>x)&&imageOwnPixels.All(x=>x)&&imageOwnWindow<0;
+                bool measured=imageOwnNextWindow==4&&imageOwnWindow<0;
+                bool complete=measured&&imageOwnRestores.All(x=>x)&&imageOwnPixels.All(x=>x);
                 double before=(imageOwnFps[0]+imageOwnFps[3])*.5,after=(imageOwnFps[1]+imageOwnFps[2])*.5;
                 double gain=before>0?(after/before-1)*100:double.NaN;
-                bool pass=complete&&!imageOwnFailed&&gain>=20;
-                bool windows=imageOwnWindows.All(x=>x);
-                GpuLog("IMAGEOWN="+(pass?"PASS":"FAIL")+" fps_before="+(windows?before.ToString("F6",Inv):"NA")+" fps_after="+(windows?after.ToString("F6",Inv):"NA")
-                    +" gain_pct="+(windows?gain.ToString("F6",Inv):"NA")+" pixel_max="+(imageOwnMaxPixel>=0?imageOwnMaxPixel.ToString(Inv):"NA")
-                    +" fallback_max="+(windows?imageOwnCpuFallback.ToString(Inv):"NA")+" texture_fallback_B_max="+(windows?imageOwnTextureFallback.ToString(Inv):"NA")
-                    +" spikes_30ms="+(windows?imageOwnTotalSpikes.ToString(Inv):"NA")+" windows="+imageOwnWindows.Count(x=>x)+"/4 pixels="+imageOwnPixels.Count(x=>x)
+                // Compare FPS directly so an exact +20% does not fail when
+                // converting (1.2 - 1) to percent rounds below 20.
+                bool pass=complete&&imageOwnWindows.All(x=>x)&&!imageOwnFailed&&before>0&&after>=before*1.20;
+                GpuLog("IMAGEOWN="+(pass?"PASS":"FAIL")+" fps_before="+(measured?before.ToString("F6",Inv):"NA")+" fps_after="+(measured?after.ToString("F6",Inv):"NA")
+                    +" gain_pct="+(measured?gain.ToString("F6",Inv):"NA")+" pixel_max="+(imageOwnMaxPixel>=0?imageOwnMaxPixel.ToString(Inv):"NA")
+                    +" fallback_max="+(measured?imageOwnCpuFallback.ToString(Inv):"NA")+" texture_fallback_B_max="+(measured?imageOwnTextureFallback.ToString(Inv):"NA")
+                    +" spikes_30ms="+(measured?imageOwnTotalSpikes.ToString(Inv):"NA")+" completed="+imageOwnNextWindow+"/4 windows="+imageOwnWindows.Count(x=>x)+"/4 pixels="+imageOwnPixels.Count(x=>x)
                     +"/3 restores="+imageOwnRestores.Count(x=>x)+"/4 reason="+(pass?"GAME_GATE_COMPLETE":complete?"ACCEPTANCE_FAILED":"EVIDENCE_INCOMPLETE")
                     +" installation_restore=EXTERNAL full_lifetime=UNMEASURED");return true;
             }
