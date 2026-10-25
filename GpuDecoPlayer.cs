@@ -150,7 +150,9 @@ namespace StutterFix
 #endif
             lifetime.NewRound();
             cleanupPending=false;
-            try { DecoBake.ReleasePlayerLevel(); }
+            // 맵을 벗어나거나 새로 불러올 때만 준비 결과를 버린다. 다시 하기·죽음·편집기 정지 등은 원본으로 되돌리기만 하고 GPU 준비를 남긴다.
+            bool full = reason == "화면 전환" || reason == "ForgetLevel" || reason == "QuitToMainMenu" || reason == "QuitToMenu";
+            try { if (full) DecoBake.ReleasePlayerLevel(); else DecoBake.EndRoundPlayerKeep(); }
             catch (Exception e) { Skip("종료 복원: " + e.Message); }
         }
         internal static void Shutdown()
@@ -223,18 +225,79 @@ namespace StutterFix
             gpuImageCandidate = Main.Config.GpuDecoImages == 1;
             gpuImageOwn = true;
         }
+        // 라운드 사이에 남겨 두는 GPU 준비 결과의 식별값과, 통합 구간 계획의 준비 시점 상태.
+        static ulong gpuPreparedHash;
+        static bool[] gpuCollapseIncludedPrepared;
+        static bool gpuReusedRound;
+        static readonly List<int> gpuFallbackExcludedItems=new List<int>();
+        static readonly List<GpuLiveRow> gpuFallbackBarrierRows=new List<GpuLiveRow>();
+
+        // 표·이벤트·이미지 예약의 내용 해시(검증용 SHA256 은 5초라 가벼운 FNV-1a). 같으면 GPU 준비 결과를 재사용할 수 있다.
+        static ulong PlayerSetupHash()
+        {
+            unchecked
+            {
+                ulong h = 14695981039346656037UL;
+                void M(ulong v) { h ^= v; h *= 1099511628211UL; }
+                void F(float v) => M((uint)BitConverter.SingleToInt32Bits(v));
+                M((ulong)table.Decorations.Length); M((ulong)table.Supported); M((ulong)table.Events); M((ulong)table.Segments); F(table.Pitch); F(table.TweenScale);
+                for (int d = 0; d < table.Decorations.Length; d++)
+                {
+                    var dec = table.Decorations[d];
+                    M((ulong)dec.Id); M((ulong)dec.Reasons.Count);
+                    foreach (float v in dec.Initial) F(v);
+                    F(dec.OriginalX); F(dec.OriginalY); F(dec.GlobalX); F(dec.GlobalY); F(dec.ScaleUnitsX); F(dec.ScaleUnitsY);
+                    for (int c = 0; c < 16; c++)
+                    {
+                        var track = table.Tracks[d * 16 + c]; M((ulong)track.Length);
+                        for (int k = 0; k < track.Length; k++)
+                        {
+                            var sg = track[k];
+                            M((ulong)BitConverter.DoubleToInt64Bits(sg.T0)); F(sg.Duration); F(sg.Start); F(sg.End); F(sg.Target); F(sg.Over); F(sg.Period);
+                            M((ulong)sg.Ease); M((ulong)sg.Source); M(sg.Replacement ? 1UL : 0UL);
+                        }
+                    }
+                }
+                if (baselineEvents != null)
+                    for (int i = 0; i < baselineEvents.Length; i++)
+                    {
+                        var e = baselineEvents[i];
+                        M((ulong)BitConverter.DoubleToInt64Bits(e.T0)); F(e.Duration); M((ulong)e.Ease); M((ulong)e.Source);
+                        M(e.RelativePosition ? 1UL : 0UL); M(e.ResetGlobalOrigin ? 1UL : 0UL);
+                        if (e.Targets != null) { M((ulong)e.Targets.Length); foreach (int t in e.Targets) M((ulong)t); }
+                        if (e.Values != null) foreach (float v in e.Values) F(v);
+                    }
+                if (baselineVisualFlags != null) for (int i = 0; i < baselineVisualFlags.Length; i++) M((ulong)baselineVisualFlags[i]);
+                if (baselineImageSelectors != null)
+                    for (int i = 0; i < baselineImageSelectors.Length; i++)
+                    {
+                        var sel = baselineImageSelectors[i];
+                        if (sel == null) { M(0); continue; }
+                        M((ulong)sel.Length); for (int k = 0; k < sel.Length; k++) M(sel[k]);
+                    }
+                return h == 0 ? 1UL : h;
+            }
+        }
+        static bool SameBaselineObjects(scrDecoration[] a, scrDecoration[] b)
+        {
+            if (a == null || b == null || a.Length != b.Length) return false;
+            for (int i = 0; i < a.Length; i++) if (!ReferenceEquals(a[i], b[i])) return false;
+            return true;
+        }
         internal static void PreparePlayer(List<scrFloor> floors)
         {
             long p0 = Stopwatch.GetTimestamp();
             // 파괴된 장식(맵을 다시 불러온 경우) 항목은 정리한다. 살아 있는 것은 처음 Setup 기록을 그대로 쓴다.
             int deadCount = 0;
             if (initial.Count > 0) { var dead = initial.Keys.Where(k => !k).ToArray(); deadCount = dead.Length; foreach (var k in dead) initial.Remove(k); }
+            bool cacheCandidate = gpuLivePrepared && !gpuRecoveryBlocked && gpuLiveSlices.Count > 0 && gpuScope != null && gpuScope.WholeSong
+                && gpuPreparedHash != 0 && gpuLiveManager == manager && manager == scrDecorationManager.instance;
+            if (!cacheCandidate) { if (gpuLivePrepared || gpuLiveSlices.Count > 0) DisposeGpuLive(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
 #if AUTOTEST
             Main.Entry.Logger.Log("[GPU 장식] 메모리: 관리 힙 " + (GC.GetTotalMemory(false) >> 20) + "MB, 프로세스 개인 " + (System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64 >> 20)
                 + "MB, 유니티 할당 " + (UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() >> 20) + "MB, 그래픽 드라이버 " + (UnityEngine.Profiling.Profiler.GetAllocatedMemoryForGraphicsDriver() >> 20) + "MB");
-            Main.Entry.Logger.Log("[GPU 장식] 준비 시작: 처음 Setup 기록 " + initial.Count + "개 (파괴된 것 " + deadCount + "개 정리), 장식 " + (scrDecorationManager.instance ? scrDecorationManager.instance.allDecorations.Count : -1) + "개, enabled " + enabled + ", 관리자 같음 " + (manager == scrDecorationManager.instance));
+            Main.Entry.Logger.Log("[GPU 장식] 준비 시작: 처음 Setup 기록 " + initial.Count + "개 (파괴된 것 " + deadCount + "개 정리), 장식 " + (scrDecorationManager.instance ? scrDecorationManager.instance.allDecorations.Count : -1) + "개, enabled " + enabled + ", 관리자 같음 " + (manager == scrDecorationManager.instance) + ", 준비 결과 재사용 후보 " + cacheCandidate);
 #endif
-            gpuScope = GpuDecoScopePlan.Song();
             gpuImageCandidate = Main.Config.GpuDecoImages == 1;
             gpuImageOwn = true;
             GpuDecoNativeBatch.Enabled = true;
@@ -251,14 +314,52 @@ namespace StutterFix
             long p2 = Stopwatch.GetTimestamp();
             RequireLive(ready && table != null, status);
             RequireLive(table.Supported >= GpuDecoPlayerPolicy.MinimumOwned, "지원되는 장식이 적음 (64개 미만)");
-            if (gpuImageCandidate) CompilePlayerImages();
+            bool reuse = false;
+            if (cacheCandidate)
+            {
+                reuse = SameBaselineObjects(gpuLiveBaseline, baselineObjects) && PlayerSetupHash() == gpuPreparedHash;
+                if (reuse) gpuLiveBaseline = baselineObjects; // 같은 객체·같은 순서라 새 배열로 바꿔 끼운다
+                else { DisposeGpuLive(); ClearGpuImagePlan(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
+            }
+            if (!reuse && gpuImageCandidate) CompilePlayerImages(); // 재사용이면 남겨 둔 이미지 계획(같은 내용)을 그대로 쓴다
             long p3 = Stopwatch.GetTimestamp();
-            PrepareGpuLive();
+            PrepareGpuLive();   // 재사용이면 준비 결과가 그대로라 바로 돌아온다
+            if (!reuse)
+            {
+                gpuPreparedHash = PlayerSetupHash();
+                gpuCollapseIncludedPrepared = gpuCollapseIncluded != null ? (bool[])gpuCollapseIncluded.Clone() : null;
+                gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
+            }
+            gpuReusedRound = reuse;
             long p4 = Stopwatch.GetTimestamp();
             RequireLive(gpuLiveOwnedIndices.Length >= GpuDecoPlayerPolicy.MinimumOwned, "GPU 소유가 가능한 장식이 적음 (64개 미만)");
             double f = 1000.0 / Stopwatch.Frequency;
-            Main.Entry.Logger.Log("[GPU 장식] 준비 " + ((p4 - p0) * f).ToString("F0") + "ms: 수집 " + ((p1 - p0) * f).ToString("F0") + ", 표 만들기 대기 " + ((p2 - p1) * f).ToString("F0")
+            Main.Entry.Logger.Log("[GPU 장식] 준비 " + ((p4 - p0) * f).ToString("F0") + "ms" + (reuse ? " (이전 준비 결과 재사용)" : "") + ": 수집 " + ((p1 - p0) * f).ToString("F0") + ", 표 만들기 대기 " + ((p2 - p1) * f).ToString("F0")
                 + ", 이미지 계획 " + ((p3 - p2) * f).ToString("F0") + ", GPU 준비 " + ((p4 - p3) * f).ToString("F0"));
+        }
+        // 라운드 종료(다시 하기·죽음·편집기 정지): 원본으로 되돌리고 GPU 준비 결과는 남긴다. 기준 스냅샷은 다음 라운드에서 새로 수집한다.
+        internal static void EndRoundPlayerKeep()
+        {
+            if (!gpuLivePrepared || gpuRecoveryBlocked || gpuPreparedHash == 0) { ReleasePlayerLevel(); return; }
+            try { StopGpuLive("round_end"); }
+            catch { ReleasePlayerLevel(); return; }
+            CancelBuild();
+            baselineObjects = null; baselineIds = null; baselineDecorations = null; baselineEvents = null;
+#if AUTOTEST || GPUDECO
+            baselineVisualFlags = null; baselineImageSelectors = null; // 이미지 계획(타임라인·변형)은 남긴다
+#endif
+            baselineSupported = -1; baselineSortedCount = 0;
+            table = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
+#if !DEV && !AUTOTEST
+            DecoAnim.ClearGpuRecordMetadata();
+#endif
+        }
+        // 통합 구간 계획을 준비 시점 상태로 되돌린다(이전 라운드의 CPU 처리 장식 제외를 취소).
+        static void UndoCpuFallbackExclusion()
+        {
+            if (gpuCollapseIncluded != null) foreach (int i in gpuFallbackExcludedItems) if ((uint)i < (uint)gpuCollapseIncluded.Length) gpuCollapseIncluded[i] = true;
+            if (gpuFallbackBarrierRows.Count > 0) gpuCollapseBarriers.RemoveAll(b => gpuFallbackBarrierRows.Contains(b));
+            gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
         }
         static void CompilePlayerImages()
         {
@@ -283,8 +384,10 @@ namespace StutterFix
             // 그리기 통합 없이 소유만 쓰면 독립 렌더러 수만 개를 그려 오히려 훨씬 느리다(Arche 에디터 중간 시작: 101 -> 17 FPS). 통합을 못 켜면 원본을 유지한다.
             if (gpuCollapseTexture == null)
                 throw new InvalidOperationException("그리기 통합을 쓸 수 없어 원본 유지");
+            UndoCpuFallbackExclusion();
             gpuCollapsePlannedFallback = 0;
-            if (gpuLiveCpuFallbackCount != 0) ReplanCollapseForFallback();
+            if (gpuLiveCpuFallbackCount != 0) ExcludeCpuFallbackFromCollapse();
+            if (gpuReusedRound || gpuLiveCpuFallbackCount != 0) RebuildDrawCollapse(); // 재사용 라운드는 곡 중 상태가 달라졌을 수 있어 다시 계획한다
             {
                 ValidateDrawCollapse();
                 gpuCollapseOn = true;
@@ -300,7 +403,7 @@ namespace StutterFix
 #if AUTOTEST
             if (gpuLiveActive && gpuCostFrames > 0) LogGpuLiveCost("product_release");
 #endif
-            DisposeGpuLive();
+            DisposeGpuLive(); gpuPreparedHash = 0; gpuCollapseIncludedPrepared = null; gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
             CancelBuild(); ClearBaseline(); table = null; // initial(처음 Setup 기록)은 남긴다: 다시 하기는 장식을 새로 Setup 하지 않을 수 있다
             effectList = null; prepEffectSnapshot = null; prepFloors = null;
             gpuTrimBounds.Clear(); gpuImageBlock.Clear();

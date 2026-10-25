@@ -359,9 +359,9 @@ namespace StutterFix
                 if(!GpuCpuFallback(source.MasterItems[i]))continue;
                 gpuCollapsePlannedFallback++;
                 if(!gpuCollapseIncluded[i])continue;
-                gpuCollapseIncluded[i]=false;
+                gpuCollapseIncluded[i]=false;gpuFallbackExcludedItems.Add(i);
                 var orow=gpuCollapseOwnedRows[i];
-                if(orow!=null && orow.R)gpuCollapseBarriers.Add(new GpuLiveRow{R=orow.R,M=orow.M,Item=-1,AuxiliaryOwner=-1,Key=orow.Key,Signature=orow.Signature});
+                if(orow!=null && orow.R){var brow=new GpuLiveRow{R=orow.R,M=orow.M,Item=-1,AuxiliaryOwner=-1,Key=orow.Key,Signature=orow.Signature};gpuCollapseBarriers.Add(brow);gpuFallbackBarrierRows.Add(brow);}
             }
             if(gpuCollapsePlannedFallback!=gpuLiveCpuFallbackCount)throw new InvalidOperationException("CPU 처리 장식 개수 불일치");
         }
