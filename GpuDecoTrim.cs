@@ -1,4 +1,4 @@
-#if AUTOTEST
+﻿#if AUTOTEST
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,14 +20,14 @@ namespace StutterFix
             var cs=gpuLiveSlices[0].Gpu?.Shader;if(!cs||!cs.HasKernel("AlphaBounds"))return;
             int kernel=cs.FindKernel("AlphaBounds");
             long t0=System.Diagnostics.Stopwatch.GetTimestamp();int n=0;
-            var buffer=new ComputeBuffer(4,4);var result=new uint[4];
+            var buffer=new ComputeBuffer(5,4);var result=new uint[5];
             try
             {
                 foreach(var pair in textures)
                 {
                     var t=pair.Value;
                     if(!t||Math.Max(t.width,t.height)<DrawCollapsePolicy.TightMinSide||t.mipmapCount!=1)continue;
-                    buffer.SetData(new uint[]{uint.MaxValue,uint.MaxValue,0,0});
+                    buffer.SetData(new uint[]{uint.MaxValue,uint.MaxValue,0,0,0});
                     cs.SetTexture(kernel,"_TrimTex",t);cs.SetBuffer(kernel,"_TrimOut",buffer);
                     cs.SetInts("_TrimSize",t.width,t.height);
                     cs.Dispatch(kernel,(t.width+15)/16,(t.height+15)/16,1);
@@ -37,6 +37,8 @@ namespace StutterFix
                     float u0=Mathf.Max(0,(result[0]-m))/(float)t.width,u1=Mathf.Min(t.width,result[2]+1+m)/(float)t.width;
                     float v0=Mathf.Max(0,(result[1]-m))/(float)t.height,v1=Mathf.Min(t.height,result[3]+1+m)/(float)t.height;
                     gpuTrimBounds[pair.Key]=new Vector4(u0,v0,u1,v1);n++;
+                    double total=(double)((t.width+15)/16)*((t.height+15)/16),bbox=(double)((result[2]-result[0]+16)/16)*((result[3]-result[1]+16)/16);
+                    GpuLog("GPUTRIM_TEX id="+pair.Key+" "+t.width+"x"+t.height+" bbox_ratio="+(bbox/total).ToString("F3")+" opaque_chunk_ratio="+(result[4]/total).ToString("F3")+" hollow="+(1-result[4]/Math.Max(1,bbox)).ToString("F3"));
                 }
             }
             finally{buffer.Release();}

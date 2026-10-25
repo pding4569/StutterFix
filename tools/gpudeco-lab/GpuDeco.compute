@@ -452,6 +452,7 @@ void AlphaBounds(uint3 id:SV_DispatchThreadID, uint gi:SV_GroupIndex)
     GroupMemoryBarrierWithGroupSync();
     if(gi==0 && gTrim[2]>=gTrim[0] && gTrim[0]!=0xFFFFFFFF)
     {
+        InterlockedAdd(_TrimOut[4],1); // 불투명 칸이 하나라도 있는 16x16 덩어리 수
         InterlockedMin(_TrimOut[0],gTrim[0]);InterlockedMin(_TrimOut[1],gTrim[1]);
         InterlockedMax(_TrimOut[2],gTrim[2]);InterlockedMax(_TrimOut[3],gTrim[3]);
     }
