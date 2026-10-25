@@ -1,10 +1,10 @@
-DRAWCOLLAPSE=FAIL reason=GATE1_NOT_MEASURED active_barrier_spans=NA array_mem_mb_dxt=NA
-1관문만 준비했으며 게임 실행·설치·커밋·푸시·자동 장치 호출은 0회다.
-병합 렌더러·배열 셰이더·Texture2DArray 할당·CopyTexture 호출은 추가하지 않았다.
-drawcollapse validate는 할당 소유 23547·GPU 담당 20000 이상·독립 전곡 상태·native 오류 0을 확인한다.
-drawcollapse diag는 일시정지 GPU quad readback과 기존 페인터 정렬을 사용한다.
-픽셀 기여·마스크/그룹 순서는 미증명이며 후보 통계를 gate=HOLD로 남긴다.
-포맷·정확 치수·밉별 압축 보존 배열 메모리를 계산하되 실제 합계·실현 가능성은 미측정이다.
-기본 diag 계획 68단계·260~270초 6표본은 생성만 했고 기존 명시 모드 출력은 보존했다.
-DEV/Player/PlayerAuto 오류 0/0/0·경고 46/36/39·LoadCheck 279/229/280곳 오류 0·일반 Player 유출 0이다.
-정책 검사 27개·생성기 4개 통과이며 FPS·픽셀·엔진 draw·끊김·수명 안정성은 NA다.
+DRAWCOLLAPSE=FAIL reason=GATE1_INCOMPLETE_AFTER_RECOVERY candidate_spans=17 confirmed_spans=NA samples=1/6 gate=HOLD
+외부 run1 증거 68줄을 원시와 순서 대조했으며 이번 게임 실행·설치·커밋·푸시·자동 장치 호출은 0회다.
+2560×1440@164.999·260.008990초·GPU23547에서 후보 소유1628/장벽316/구간17/동일텍스처run1177을 얻었다.
+실제 GPU 담당 텍스처81종·35티어·압축210.989090MiB/총615.006191MiB이며 할당·복사·여유VRAM은 미검증이다.
+첫 진단 재개 뒤 260.066747초 FastMoveOriginal로 CPU10252/10252 복귀해 다음 validate가 실패했고 나머지5표본은 없다.
+코드상 Hitch 재개→Suspend→60프레임 catch-up→FastMove 원본/보호복귀 경로를 확인했고 세부 Take 분기 실측은 없다.
+보호 코드는 유지하고 표본마다 새 seek→GPU on→정지 진단→GPU off→resume/stop으로 계획 생성 코드를 수정했다.
+새 기본 diag2-isolated 103단계는 생성만 했고 기존 diag1 68단계 파일·baseline/abba/single 명시 모드 출력을 보존했다.
+3빌드 오류0/0/0·경고46/36/4(PlayerAuto 증분)·LoadCheck279/229/280곳 오류0·정책27개/생성기6개 통과다.
+픽셀 기여·정렬은 미증명으로 1관문 HOLD·병합 미구현이며 새 계획 성공·FPS·엔진draw·픽셀·끊김·수명 안정성은 NA다.

@@ -1,4 +1,68 @@
-DRAWCOLLAPSE=FAIL reason=GATE1_NOT_MEASURED owned_visible=NA barrier_visible=NA active_barrier_spans=NA same_tex_runs=NA textures_in_owned=NA array_mem_mb_dxt=NA
+DRAWCOLLAPSE=FAIL reason=GATE1_INCOMPLETE_AFTER_RECOVERY candidate_spans=17 confirmed_spans=NA samples=1/6 gate=HOLD
+
+# DrawCollapse 2회차 — 외부 run1 분석과 독립 표본 계획 수정 (2026-10-25)
+
+`codex-al-dc-2.md`·마스터·장부·지정 run1 증거·Gemini 설계안을 확인했다. **이번 Codex의 게임 실행·설치·커밋·푸시·자동 장치 호출·설정/제어 파일 변경은 모두 0회**다. 아래 실측은 외부 장치가 이미 수행한 run1이며 이번에 게임을 실행한 결과가 아니다.
+
+## 외부 증거와 판정
+
+`dc-autoloop-run1-evidence.txt`의 비어 있지 않은 **68줄 전부**를 `E:/StutterFixWork/night-results/al-dc-1.log`와 순서·중복까지 대조했다. 원시 458행의 첫 진단만 완료됐고, 460행 재개 후 463~467행에서 `FastMoveOriginal` 복귀, 484행의 다음 validate에서 독립 GPU 소유 조건 실패가 발생했다. 262/264/266/268/270초 진단은 없다.
+
+| 항목 | 외부 run1 결과와 범위 |
+|---|---|
+| 화면 환경 | **2560×1440@164.999**, 기존 3440×1440 또는 120Hz 성능 근거와 혼합 금지 |
+| 첫 진단 | song=**260.008990**, frame=17860 |
+| 할당 소유 / 실제 GPU 담당 / fallback | **23547 / 23547 / 0** |
+| 가시 후보 소유 / 사이 장벽 / 구간 / 같은 텍스처 run | **1628 / 316 / 17 / 1177** |
+| 미확인 비소유 / SortingGroup / tie / SpriteMask | **318 / 0 / 0 / 0** |
+| 실제 GPU 담당 원본의 고유 텍스처 | **81종**, 맵 전체 301종과 범위가 다름 |
+| 압축 배열 예상 추가량 / 비압축 포함 총량 | **221,238,096바이트(210.989090MiB) / 644,880,732바이트(615.006191MiB)** |
+| 배열 구성 / 기능 / 장치 VRAM | **35티어·계획 배열 35개 / copy_support=True / 7949MiB** |
+| 실제 배열 할당·복사 / 여유 VRAM 증명 | **0 / 0 / 없음**, feasibility=UNVERIFIED |
+| 보호 복귀 | song=**260.066747**, CPU Rec **10252/10252**, unobserved_order=0, restore_ms=**23.988800** |
+| FPS / 엔진 draw / 원본 대비 픽셀 / 30ms 이상 끊김 / 전체 수명 안정성 | 모두 **NA** |
+
+35개 tier의 bytes·slices를 원시에서 합산해 총량과 81종을 검산했고, DXT tier만 별도 합산해 압축 합계와 대조했다. 615MiB가 7949MiB보다 작다는 사실은 실제 여유 메모리나 할당·복사 성공을 뜻하지 않는다. `driver_allocated_mb=0.000`도 여유 VRAM 실측으로 쓰지 않는다. **장벽 수 316은 소유 후보 사이만, unknown 318은 필터를 통과한 전체 미확인 비소유 renderer라 모집단이 다르다.**
+
+로그는 `visibility=conservative_bounds_alpha_candidates pixels_proven=False ordering_proven=False gate=HOLD timing_contaminated=True`다. **17은 실제 픽셀 기반 확정 S가 아니다.** 알파·bounds·GPU quad로 텍스처 투명 영역·마스크·실제 픽셀 기여나 엔진 순서를 증명하지 못한다. S≤150 진입, S>400 실패, 전 구간 최대치 모두 미판정이다. 복귀 Rec 수의 일치는 이번 픽셀/재개 연속성 시험 통과가 아니다. raw의 전체 곡 평균 254/89 FPS·진단 비용 189.728ms·CPU 범위 평균 0.347974ms도 260~270초 성능 결과로 전용하지 않는다.
+
+## 코드로 확인한 실패 경로와 수정
+
+`AutoTest.cs`의 pause/resume는 `FrameCompare.Pause/Resume`를 호출한다. `GcControl.IsPlayingFast`는 controller.paused를 반영하고, `Hitch.Tick`은 정지→플레이 전이에 `Begin` → `SongStarted`를 호출한다. `Hitch.SongStarted`의 `EffectBudget.Suspend(3f)`는 **현재+60프레임**까지 `InCatchUp`을 다시 켠다. `FastMove.Take`는 길이 있는 효과에서 `CanAnim`이 거짓이면 원본으로 넘기고, `CanAnim`은 catch-up 중 거짓이다. `Orig`는 GPU 소유 중 원본 실행 전에 `RecoverGpuLive("FastMoveOriginal",false)`로 복귀시킨다. 같은 프레임용 `FrameCompare.PlaybackContinuity`는 이 60프레임 보호를 해제하지 않는다.
+
+run1은 재개 한 프레임 tracking=True 다음 hitch_playing=True, resume_continuity=False 상태에서 복귀했다. **이번 판에는 `take_refusal reason=...` 추적이 없으므로 정확한 Take 분기 실행을 직접 실측했다고 단정하지 않는다.** `running=True`도 Prefix가 Take 전에 세우는 값이므로 그 값만으로 재진입/메모리 손상을 주장하지 않는다. `gg-autoloop-ledger.md`의 기존 53~55회차에도 동일 재개 보호 문제가 기록돼 있다.
+
+읽기 전용 근사 디컴파일 `ffxMoveDecorationsPlus.cs`의 `StartEffect`가 원본 tween 사전·DOTween 콜백·SetPosition 등을 변경하는 것을 확인했다. **설치된 게임 Assembly-CSharp.dll을 ILScan으로 읽어** duration·GetTaggedDecorations·DOTween.To 및 setter 호출을 교차확인했다. 따라서 원본을 GPU 소유 중 강제로 허용하거나 catch-up 보호를 없애지 않는다. IL은 호출 계약 근거이며 이번 런타임 분기 추적의 대용은 아니다.
+
+수정한 것은 `tools/optimization/drawcollapse-steps.py`의 **진단 계획 생성 코드**다. 각 260/262/264/266/268/270초 표본을 **새 seek 260(12초 lead-in) → 256초 대기 → packets compiled → live on → 해당 시점 대기 → pause → validate → diag → live off → resume → stop**으로 분리한다. 원본 재개 전에 소유를 내려놓아 run1의 실패 전제를 제거한다. 런타임·셰이더·native·정렬·보호 조건은 수정하지 않았다. 표본 간 seek로 프레임 스케줄이 달라질 수 있어 연속 10초 최대 장벽 수 증명도 아니다.
+
+새 기본 tag는 `drawcollapse-gate1-260-270-diag2-isolated`, **103단계**, `tools/optimization/out/drawcollapse-gate1-diag2-isolated-steps.json`에 **생성만** 했다. 기존 68단계 diag1 파일은 SHA256까지 보존했고 baseline/abba/single 명시 모드의 전체 JSON 호환도 검사했다. 자동 장치에 전달·예약·실행하지 않았다. 새 계획의 게임 성공은 **미검증**이다.
+
+## 오프라인 검증과 남은 관문
+
+| 검사 | 이번 결과 |
+|---|---|
+| DEV / Player / PlayerAuto 빌드 오류 | **0 / 0 / 0** |
+| 빌드 경고 | **46 / 36 / 4**, PlayerAuto 증분 빌드 |
+| LoadCheck FieldRefAccess(이름) | **279 / 229 / 280**, 각각 오류 0·동적 이름 5 |
+| 일반 Player DrawCollapse 정책/명령 | **False / False** |
+| DrawCollapseCheck | **27개 통과**, 기존 정책 소스 링크 |
+| 생성기 회귀검사 | **6개 통과**, 소유 중 resume/seek/stop/quit 금지·6회 독립 진입/해제·기존 명시 모드 보존 포함 |
+| 원시 대조 / 메모리 산술 | **68줄 순서 일치 / 35티어·81 slices 합계 일치** |
+
+최초 LoadCheck 실행파일에는 새 DrawCollapse 정책/명령 검사 출력이 없어 최종 감사가 거부했다. 도구를 현재 소스로 다시 빌드(오류/경고 0/0)한 뒤 3종을 재검사했고, 위 수치는 이 최종 출력이다. DEV/PlayerAuto의 True/True·일반 Player의 False/False를 실제 로그에서 확인했다.
+
+검사·IL·구조화 원시 대조 로그는 `tools/optimization/out/drawcollapse-run2-*`에 보존했다. 빌드는 기존 저장소 인코딩 경고를 포함할 수 있으며 빌드 exit 0을 저장소 전역 인코딩 통과로 바꾸지 않는다. 이번 변경 텍스트와 10줄 요약은 별도 확인한다. 설치하지 않았으므로 설치 원본 복원 시험은 NA다.
+
+**1관문 HOLD·2관문 미구현**이다. 확정 S≤150 전까지 병합 렌더러·배열 셰이더를 추가하지 않는다. 151~400 보류, 확정 S>400 중단 기준과 maxdiff≤3·draw≤300·FPS≥220·30ms 이상 0·3빌드/LoadCheck 기준을 유지한다. 이번 결과는 이 설계 전체의 불가능을 확정한 것이 아니다. 남은 것은 새 계획 외부 결과와 실제 픽셀 기여/정렬 증명이며 같은 diag1 계획 재시도는 하지 않는다.
+
+task-observer **3.5.0**은 기존 사용자 범위 로그·원칙을 읽고 report-back으로 적용했다. 외부 관찰/스킬/메모리 수정은 없으며 새 일반화 관찰도 없다.
+
+---
+
+## 이전 1회차 기록 (외부 run1 수신 전)
+
+당시 판정: `DRAWCOLLAPSE=FAIL reason=GATE1_NOT_MEASURED owned_visible=NA barrier_visible=NA active_barrier_spans=NA same_tex_runs=NA textures_in_owned=NA array_mem_mb_dxt=NA`.
 
 # DrawCollapse 1관문 준비 결과 (2026-10-25)
 

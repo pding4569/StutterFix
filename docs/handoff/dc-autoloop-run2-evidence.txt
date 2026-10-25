@@ -1,0 +1,294 @@
+[StutterFix] [자동 시험] 시작: 103단계 - gpudeco costprobe off / gpudeco effectcache off / timeout 600 / gpudeco submitsingle off / gpudeco latecache off / auto on / decobake on / gpudeco off / gpudeco reset / gpudeco nombp off / gpudeco g2 reset / gpudeco nativebatch on / gpudeco nativecopy on8masked / gpudeco zeroalpha on / gpudeco bundle E:/StutterFixWork/wt-gpu/tools/gpudeco-lab/evidence/bundle/stutterfix_gpudeco / open D:/얼불춤 맵 파일/Arche\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai / select 0 / play / gpudeco scheduled / pause / decobake state / decobake ready / gpudeco live scope song / gpudeco live prepare / resume / stop / gpuprobe off / gpusplit off / matshare off / livedeco off / seek 260 12 / decobake ready / waitsongpos 256 40 / gpudeco packets compiled / gpudeco live on / waitsongpos 260 40 / pause / gpudeco drawcollapse validate / gpudeco drawcollapse diag / gpudeco live off / resume / stop / seek 260 12 / decobake ready / waitsongpos 256 40 / gpudeco packets compiled / gpudeco live on / waitsongpos 262 40 / pause / gpudeco drawcollapse validate / gpudeco drawcollapse diag / gpudeco live off / resume / stop / seek 260 12 / decobake ready / waitsongpos 256 40 / gpudeco packets compiled / gpudeco live on / waitsongpos 264 40 / pause / gpudeco drawcollapse validate / gpudeco drawcollapse diag / gpudeco live off / resume / stop / seek 260 12 / decobake ready / waitsongpos 256 40 / gpudeco packets compiled / gpudeco live on / waitsongpos 266 40 / pause / gpudeco drawcollapse valida
+[StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots_avg=0.000 renderer_toggles_avg=0.000000 active_chunks_avg=0.000000 active_chunks_max=0 source_removals=0 missing_removals=0 source_search_element_upper_bound=0 source_shifted_ints=0 source_max_list=0 removal_work_is_CPU_timing=False additional_clock_reads_per_frame=2 gpu_time=UNMEASURED
+[StutterFix] [gpudeco] cost_probe_enabled=False acceptance=False
+[StutterFix] [gpudeco] effect_cache=False research_only=True default=False
+[StutterFix] [gpudeco] single_submit=False research_only=True default=False
+[StutterFix] [gpudeco] late_cache=False rebuilds=0 cache_ready=False cpu_targets=0 skipped=0 research_only=True default=False
+[StutterFix] [gpudeco] on=False owned=0
+[StutterFix] [gpudeco] export_result_reset=True
+[StutterFix] [gpudeco] nombp=False
+[StutterFix] [gpudeco] g2_reset=True
+[StutterFix] [gpudeco] native_batch=True static_batch=False restore_sort_bounds=False live_validated=False
+[StutterFix] [gpudeco] native_copy=True eight_uav=True masked=True active_contexts=0
+[StutterFix] [gpudeco] zeroalpha=True rule=both_factors_constant_one_exactly_zero count=0 collisions_changed=0
+[StutterFix] [gpudeco] prepare_stage=PrepVfx-observed generation=2 status=메인 스냅샷 수집 중
+[StutterFix] [gpudeco] scope=song_union default_off=True Player_included=False
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=23631 admitted=23547 rejects=repeat-tile:84
+[StutterFix] [gpudeco] prepare_ms=7325.625200 phase=live_prepare slices=1 owned_union=23547 total_runs=23547 total_submeshes=23547 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True eight_uav=True static_batch=False scope=song_union item_limit=32768 masked_copy=True
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=4 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=99.592700 prepare_ms=7325.625200
+[StutterFix] [gpudeco] DRAWCOLLAPSE_CONTEXT owned=23547 GPU_owned=23547 fallback=0 display=2560x1440@164.999
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=872x872/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=760384 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x1500/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=675000 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=100x100/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=10000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1024x1024/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1048576 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1500x1500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2250000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3840x3840/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=14745600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=960x720/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=691200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=6 bytes=12441600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2048x2048/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=10 bytes=41943040 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2880x1620/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=9331200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=8000x4500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=36000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=171x171/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=4 bytes=467856 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x150/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=3 bytes=270000 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x79/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=47400 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2500x2500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=12500000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1920/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=3686400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3113x2428/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30233456 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=8000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2692x2833/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30505744 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1080x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=16 bytes=18662400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=800x800/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=640000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5001x3334/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66693336 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=682x682/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1860496 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=14024x3506/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=147504432 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=512x512/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=9 bytes=2359296 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=300x300/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=90000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3543x1772/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=18834588 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3332x2665/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=35519120 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1200x1200/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1440000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x5000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=50000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x3333/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66660000 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3222x1891/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=24371208 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1280x1280/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1638400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x1000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL bytes_known=644880732 total_mb=615.006191 tiers=35 planned_arrays_known=35 unsupported_textures=0 copy_support=True vram_mb=7949 driver_allocated_mb=0.000 feasibility=UNVERIFIED arrays_allocated=0 copy_calls=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_DIAG owned_visible=1626 barrier_visible=316 active_barrier_spans=17 same_tex_runs=1176 textures_in_owned=81 array_mem_mb_dxt=210.989090 song=260.008990 frame=17797 owned=23547 GPU_owned=23547 unknown_barriers=318 sorting_groups=0 ambiguous_ties=0 sprite_masks=0 span_threshold=eligible visibility=conservative_bounds_alpha_candidates pixels_proven=False ordering_proven=False gate=HOLD timing_contaminated=True
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=1984 high_water=1984 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=758 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.348960 progress_ms=0.085589 uniform_ms=0.006084 dispatch_ms=0.251406 misc_ms=0.005880 max_ms=5.752100 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=260.008990 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=30.435200
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=6 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=97.820600 prepare_ms=7325.625200
+[StutterFix] [gpudeco] DRAWCOLLAPSE_CONTEXT owned=23547 GPU_owned=23547 fallback=0 display=2560x1440@164.999
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=872x872/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=760384 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x1500/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=675000 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=100x100/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=10000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1024x1024/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1048576 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1500x1500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2250000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3840x3840/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=14745600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=960x720/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=691200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=6 bytes=12441600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2048x2048/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=10 bytes=41943040 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2880x1620/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=9331200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=8000x4500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=36000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=171x171/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=4 bytes=467856 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x150/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=3 bytes=270000 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x79/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=47400 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2500x2500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=12500000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1920/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=3686400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3113x2428/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30233456 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=8000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2692x2833/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30505744 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1080x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=16 bytes=18662400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=800x800/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=640000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5001x3334/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66693336 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=682x682/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1860496 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=14024x3506/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=147504432 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=512x512/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=9 bytes=2359296 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=300x300/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=90000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3543x1772/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=18834588 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3332x2665/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=35519120 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1200x1200/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1440000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x5000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=50000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x3333/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66660000 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3222x1891/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=24371208 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1280x1280/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1638400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x1000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL bytes_known=644880732 total_mb=615.006191 tiers=35 planned_arrays_known=35 unsupported_textures=0 copy_support=True vram_mb=7949 driver_allocated_mb=0.000 feasibility=UNVERIFIED arrays_allocated=0 copy_calls=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_DIAG owned_visible=1525 barrier_visible=326 active_barrier_spans=17 same_tex_runs=1025 textures_in_owned=81 array_mem_mb_dxt=210.989090 song=262.009448 frame=21263 owned=23547 GPU_owned=23547 unknown_barriers=328 sorting_groups=0 ambiguous_ties=0 sprite_masks=0 span_threshold=eligible visibility=conservative_bounds_alpha_candidates pixels_proven=False ordering_proven=False gate=HOLD timing_contaminated=True
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2033 high_water=2033 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=1849 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.369585 progress_ms=0.098500 uniform_ms=0.006134 dispatch_ms=0.259922 misc_ms=0.005029 max_ms=5.752100 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=262.009448 resumed_recs=9954 resume_expected=9954 unobserved_order=0 restore_ms=34.508100
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=8 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=100.068900 prepare_ms=7325.625200
+[StutterFix] [gpudeco] DRAWCOLLAPSE_CONTEXT owned=23547 GPU_owned=23547 fallback=0 display=2560x1440@164.999
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=872x872/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=760384 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x1500/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=675000 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=100x100/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=10000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1024x1024/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1048576 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1500x1500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2250000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3840x3840/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=14745600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=960x720/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=691200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=6 bytes=12441600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2048x2048/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=10 bytes=41943040 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2880x1620/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=9331200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=8000x4500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=36000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=171x171/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=4 bytes=467856 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x150/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=3 bytes=270000 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x79/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=47400 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2500x2500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=12500000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1920/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=3686400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3113x2428/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30233456 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=8000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2692x2833/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30505744 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1080x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=16 bytes=18662400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=800x800/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=640000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5001x3334/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66693336 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=682x682/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1860496 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=14024x3506/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=147504432 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=512x512/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=9 bytes=2359296 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=300x300/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=90000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3543x1772/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=18834588 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3332x2665/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=35519120 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1200x1200/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1440000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x5000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=50000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x3333/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66660000 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3222x1891/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=24371208 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1280x1280/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1638400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x1000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL bytes_known=644880732 total_mb=615.006191 tiers=35 planned_arrays_known=35 unsupported_textures=0 copy_support=True vram_mb=7949 driver_allocated_mb=0.000 feasibility=UNVERIFIED arrays_allocated=0 copy_calls=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_DIAG owned_visible=1556 barrier_visible=334 active_barrier_spans=18 same_tex_runs=1133 textures_in_owned=81 array_mem_mb_dxt=210.989090 song=264.008990 frame=25008 owned=23547 GPU_owned=23547 unknown_barriers=336 sorting_groups=0 ambiguous_ties=0 sprite_masks=0 span_threshold=eligible visibility=conservative_bounds_alpha_candidates pixels_proven=False ordering_proven=False gate=HOLD timing_contaminated=True
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2033 high_water=2033 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=3277 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.383498 progress_ms=0.107488 uniform_ms=0.006123 dispatch_ms=0.265463 misc_ms=0.004424 max_ms=5.752100 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=264.008990 resumed_recs=10507 resume_expected=10507 unobserved_order=0 restore_ms=39.006200
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=10 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=102.781800 prepare_ms=7325.625200
+[StutterFix] [gpudeco] DRAWCOLLAPSE_CONTEXT owned=23547 GPU_owned=23547 fallback=0 display=2560x1440@164.999
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=872x872/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=760384 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x1500/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=675000 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=100x100/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=10000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1024x1024/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1048576 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1500x1500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2250000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3840x3840/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=14745600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=960x720/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=691200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=6 bytes=12441600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2048x2048/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=10 bytes=41943040 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2880x1620/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=9331200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=8000x4500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=36000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=171x171/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=4 bytes=467856 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x150/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=3 bytes=270000 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x79/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=47400 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2500x2500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=12500000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1920/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=3686400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3113x2428/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30233456 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=8000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2692x2833/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30505744 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1080x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=16 bytes=18662400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=800x800/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=640000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5001x3334/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66693336 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=682x682/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1860496 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=14024x3506/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=147504432 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=512x512/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=9 bytes=2359296 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=300x300/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=90000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3543x1772/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=18834588 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3332x2665/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=35519120 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1200x1200/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1440000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x5000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=50000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x3333/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66660000 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3222x1891/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=24371208 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1280x1280/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1638400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x1000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL bytes_known=644880732 total_mb=615.006191 tiers=35 planned_arrays_known=35 unsupported_textures=0 copy_support=True vram_mb=7949 driver_allocated_mb=0.000 feasibility=UNVERIFIED arrays_allocated=0 copy_calls=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_DIAG owned_visible=1665 barrier_visible=354 active_barrier_spans=17 same_tex_runs=1281 textures_in_owned=81 array_mem_mb_dxt=210.989090 song=265.992999 frame=29063 owned=23547 GPU_owned=23547 unknown_barriers=356 sorting_groups=0 ambiguous_ties=0 sprite_masks=0 span_threshold=eligible visibility=conservative_bounds_alpha_candidates pixels_proven=False ordering_proven=False gate=HOLD timing_contaminated=True
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2036 high_water=2036 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=5021 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.394878 progress_ms=0.115490 uniform_ms=0.006136 dispatch_ms=0.269228 misc_ms=0.004024 max_ms=5.752100 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=265.992999 resumed_recs=10854 resume_expected=10854 unobserved_order=0 restore_ms=45.014300
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=12 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=104.066900 prepare_ms=7325.625200
+[StutterFix] [gpudeco] DRAWCOLLAPSE_CONTEXT owned=23547 GPU_owned=23547 fallback=0 display=2560x1440@164.999
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=872x872/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=760384 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x1500/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=675000 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=100x100/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=10000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1024x1024/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1048576 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1500x1500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2250000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3840x3840/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=14745600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=960x720/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=691200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=6 bytes=12441600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2048x2048/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=10 bytes=41943040 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2880x1620/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=9331200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=8000x4500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=36000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=171x171/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=4 bytes=467856 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x150/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=3 bytes=270000 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x79/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=47400 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2500x2500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=12500000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1920/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=3686400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3113x2428/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30233456 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=8000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2692x2833/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30505744 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1080x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=16 bytes=18662400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=800x800/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=640000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5001x3334/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66693336 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=682x682/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1860496 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=14024x3506/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=147504432 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=512x512/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=9 bytes=2359296 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=300x300/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=90000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3543x1772/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=18834588 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3332x2665/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=35519120 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1200x1200/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1440000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x5000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=50000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x3333/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66660000 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3222x1891/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=24371208 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1280x1280/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1638400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x1000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL bytes_known=644880732 total_mb=615.006191 tiers=35 planned_arrays_known=35 unsupported_textures=0 copy_support=True vram_mb=7949 driver_allocated_mb=0.000 feasibility=UNVERIFIED arrays_allocated=0 copy_calls=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_DIAG owned_visible=1557 barrier_visible=391 active_barrier_spans=10 same_tex_runs=1123 textures_in_owned=81 array_mem_mb_dxt=210.989090 song=268.008990 frame=33480 owned=23547 GPU_owned=23547 unknown_barriers=392 sorting_groups=0 ambiguous_ties=0 sprite_masks=0 span_threshold=eligible visibility=conservative_bounds_alpha_candidates pixels_proven=False ordering_proven=False gate=HOLD timing_contaminated=True
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2087 high_water=2087 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=7092 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.403480 progress_ms=0.121460 uniform_ms=0.006162 dispatch_ms=0.272148 misc_ms=0.003709 max_ms=5.752100 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=268.008990 resumed_recs=9383 resume_expected=9383 unobserved_order=0 restore_ms=48.398200
+[StutterFix] [gpudeco] packets_compiled events=74636 owned_references=187289 max_run=14269 ambiguous_sources=0 generation=14 mode=6
+[StutterFix] [gpudeco] packet_mode=6 live_native_static=True
+[StutterFix] [gpudeco] activation_ownership allocated=23547 GPU_owned=23547 CPU_fallback=0 inferred_source_clocks=False
+[StutterFix] [gpudeco] packet_target_guards prepared=51685 all_gpu=51661 available=True
+[StutterFix] [gpudeco] on=True scope=song_union owned=23547 active_sources=2 slice=0 slice_owned=23547 runs=23547 submeshes=23547 transition_ms=105.637500 prepare_ms=7325.625200
+[StutterFix] [gpudeco] DRAWCOLLAPSE_CONTEXT owned=23547 GPU_owned=23547 fallback=0 display=2560x1440@164.999
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=872x872/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=760384 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x1500/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=675000 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=100x100/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=10000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1024x1024/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1048576 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1500x1500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2250000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3840x3840/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=14745600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=960x720/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=691200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=6 bytes=12441600 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2048x2048/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=10 bytes=41943040 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2880x1620/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=9331200 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=8000x4500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=36000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=171x171/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=4 bytes=467856 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x150/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=3 bytes=270000 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=150x79/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=47400 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2500x2500/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=12500000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1920x1920/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=3686400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3113x2428/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30233456 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=8000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=2692x2833/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=30505744 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1080x1080/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=16 bytes=18662400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=800x800/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=640000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5001x3334/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66693336 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=682x682/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1860496 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=14024x3506/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=147504432 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=512x512/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=9 bytes=2359296 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=300x300/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=90000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3543x1772/R8G8B8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=18834588 format=RGB24 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3332x2665/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=35519120 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1200x1200/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1440000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x5000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=2 bytes=50000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=5000x3333/88/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=66660000 format=ARGB32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x2000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=2000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=3222x1891/R8G8B8A8_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=24371208 format=RGBA32 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1280x1280/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1638400 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY tier=1000x1000/RGBA_DXT5_UNorm/mips=1/filter=Bilinear/wrap=Clamp,Clamp/aniso=1 slices=1 bytes=1000000 format=DXT5 max_slices=2048 allocated=False
+[StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL bytes_known=644880732 total_mb=615.006191 tiers=35 planned_arrays_known=35 unsupported_textures=0 copy_support=True vram_mb=7949 driver_allocated_mb=0.000 feasibility=UNVERIFIED arrays_allocated=0 copy_calls=0
+[StutterFix] [gpudeco] DRAWCOLLAPSE_DIAG owned_visible=1674 barrier_visible=327 active_barrier_spans=10 same_tex_runs=1205 textures_in_owned=81 array_mem_mb_dxt=210.989090 song=270.014330 frame=38208 owned=23547 GPU_owned=23547 unknown_barriers=328 sorting_groups=0 ambiguous_ties=0 sprite_masks=0 span_threshold=eligible visibility=conservative_bounds_alpha_candidates pixels_proven=False ordering_proven=False gate=HOLD timing_contaminated=True
+[StutterFix] [gpudeco] source_capacity capacity=8192 peak_allocated=2087 high_water=2087 scope=allocated_clocks_not_per_decoration_cost reason=live_off
+[StutterFix] [gpudeco] cost scope=live_off frames=9490 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.410346 progress_ms=0.126178 uniform_ms=0.006173 dispatch_ms=0.274527 misc_ms=0.003467 max_ms=5.752100 budget_le_0.5ms=True
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=270.014330 resumed_recs=11104 resume_expected=11104 unobserved_order=0 restore_ms=54.959300
+[StutterFix] [gpudeco] shutdown_disposed=True native_contexts=0

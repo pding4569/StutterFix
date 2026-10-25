@@ -29,14 +29,18 @@ def build(chart, mode='diag'):
         # 검증된 곡 처음 준비 -> seek -> live on 순서는 그대로 쓴다.
         steps = base['steps'][:base['steps'].index('phasewindow on')]
         steps[3:3] = ['gpudeco submitsingle off', 'gpudeco latecache off']
-        steps += ['seek 260 12', 'decobake ready', 'waitsongpos 256 40',
-                  'gpudeco packets compiled', 'gpudeco live on']
         for second in (260, 262, 264, 266, 268, 270):
-            steps += [f'waitsongpos {second} 40', 'pause',
-                      'gpudeco drawcollapse validate', 'gpudeco drawcollapse diag', 'resume']
-        steps += ['gpudeco live off', 'stop', 'quit']
+            # 정지 후 재개는 Hitch.SongStarted -> EffectBudget.Suspend의
+            # 60프레임 원본 실행 보호를 다시 건다. 소유 중 resume하지 않고
+            # 각 표본을 독립 seek로 채취한다. 기존 보호 경로는 바꾸지 않는다.
+            steps += ['seek 260 12', 'decobake ready', 'waitsongpos 256 40',
+                      'gpudeco packets compiled', 'gpudeco live on',
+                      f'waitsongpos {second} 40', 'pause',
+                      'gpudeco drawcollapse validate', 'gpudeco drawcollapse diag',
+                      'gpudeco live off', 'resume', 'stop']
+        steps += ['quit']
         return dict(steps=steps, settings=base['settings'], timeout_min=25,
-                    tag='drawcollapse-gate1-260-270-diag1')
+                    tag='drawcollapse-gate1-260-270-diag2-isolated')
     if mode not in ('baseline', 'abba', 'single'):
         raise ValueError('unknown mode: ' + mode)
     steps = ['gpudeco costprobe off', 'gpudeco effectcache off', 'timeout 600',
