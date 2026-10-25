@@ -39,6 +39,26 @@ namespace StutterFix
             try { p.StartCoroutine(p.Run()); }
             catch { Stop(); throw; }
         }
+        // 진단: probe 없이 한 묶음의 forceRenderingOff 를 직접 켜고 끈다(PresentMon 으로 GPU 시간 비교용). 화면이 틀려진다.
+        static readonly List<Saved> toggled = new List<Saved>();
+        internal static string Toggle(string group, bool on)
+        {
+            if (!on) { foreach (var t in toggled) if (t.Renderer) t.Renderer.forceRenderingOff = t.Off; int n = toggled.Count; toggled.Clear(); return "restored=" + n; }
+            if (toggled.Count > 0) throw new InvalidOperationException("already hidden");
+            var rs = Resources.FindObjectsOfTypeAll<Renderer>().Where(r => r.gameObject.scene.IsValid());
+            foreach (var r in rs)
+            {
+                bool pick;
+                if (group == "all") pick = r && r.enabled && r.gameObject.activeInHierarchy;
+                else if (group == "tiles") pick = r && r.GetComponentInParent<scrFloor>() != null && !GpuCensus.IsDecoration(r);
+                else if (group == "planets-particles") pick = r && (r is ParticleSystemRenderer || r.GetComponentInParent<scrPlanet>() != null) && !GpuCensus.IsDecoration(r);
+                else if (group == "deco") pick = r && GpuCensus.IsDecoration(r);
+                else pick = Select(group, r, 0);
+                if (!pick) continue;
+                toggled.Add(new Saved { Renderer = r, Off = r.forceRenderingOff }); r.forceRenderingOff = true;
+            }
+            return "hidden=" + toggled.Count;
+        }
         static bool Select(string group, Renderer r, int decorationIndex)
         {
             if (group == "deco") return r && GpuCensus.IsDecoration(r);
