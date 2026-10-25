@@ -1,0 +1,50 @@
+﻿[
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\GpuDecoDrawCollapseRenderer.cs",
+        "Hash":  "D65CA14890FE0F54E449A84EC6D71B17C94BEC2092710D12C4F512FD47C82809"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\DrawCollapsePolicy.cs",
+        "Hash":  "825BB61E7DDAC928F043B4B1C717920172382DD3792BC2701832013CF04A34BD"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\Dormancy.cs",
+        "Hash":  "94D7FAFBAEA9645996F501C33B7F8F75E240560F8EB66D869568879867C84F96"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\TightLate.cs",
+        "Hash":  "C4640A25C0B1316D13745D7333C2A177F274D73664FFA0E6FBEACCAD65A3D3A9"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\FastMove.cs",
+        "Hash":  "1F19E33376EA400992E3ED369DF31CC1537A2A8C31AD5DEC09133887B162D87A"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\GpuDecoExport.cs",
+        "Hash":  "A5A35E003A07FABB1D420DB55E09EC9ADE7D3CAA844814E84F24B548F130C2CB"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\GpuDecoDrawCollapse.cs",
+        "Hash":  "BEA6B177B92DAD917F180B221A8940AB21E4AED94444F6A4113C011C85B40DB8"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\optimization\\out\\imageown-diag1-steps.json",
+        "Hash":  "4B052DBBE5502D8078C2B5F01A282B0B103D931A66E222AB6C86F19BC26297C8"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\optimization\\out\\imageown-diag2-steps.json",
+        "Hash":  "6AED5565A7D6101A260385289A0AF40CE35F466F1859DB7A7900F6AE3ACDC6E4"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\optimization\\out\\imageown-abba1-steps.json",
+        "Hash":  "53638954FCE0FDCEE8814C2C5223314D56BC076FE3AC21F4258E01B4DCEA2C69"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\native\\sfnative.dll",
+        "Hash":  "39BC2ACA032214CE48F2A869B9F9C3B1E3ADA1EFF4BFFA3A85D9A9D48E94D45A"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\gpudeco-lab\\evidence\\drawcollapse5\\bundle\\stutterfix_gpudeco",
+        "Hash":  "4ECDBE6C69A33DEFA422DBCD944AC18F96E45D0786E705F1001B7D5A07440AD4"
+    }
+]

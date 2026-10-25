@@ -1,0 +1,1 @@
+﻿task-observer v3.5.0: source/evidence, offline verification, handoff checkpoints completed; no new skill observation. Shared log is outside this task write scope; no global skill or memory changed.

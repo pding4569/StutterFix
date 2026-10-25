@@ -1,4 +1,14 @@
 
+## 회차 3 — Codex 분석·통합 선행 검사, 외부 새 시험 없음
+
+- IMAGEOWN=FAIL reason=INTEGRATED_ABBA_NOT_RUN; 독립 소유 pixel_max1, 통합 픽셀·FPS·끊김 NA.
+- 외부 run2 직접78줄 원시 순서 일치. 260/262/270초 GPU384/172/61(max1), pose동일, CPU정점489/280/258(max1), 반복/복원0.
+- 두 진단의 개선 근거 없음·잔여 원인 미확정·허용3 이내. 기본 pose off·수식 유지, 같은 diag1/diag2 반복 금지.
+- 기존 통합 연결 존재. 새 collapsecheck는 현재/변형 주소 누락·등록됐지만 제외된 항목/이미지·폴백을 기록, 정렬 보호 유지.
+- 기본 accept333단계 생성만: 통합 픽셀3개·최대7장 반복/복원·무폴백 선행 후 ABBA. 실패 시 ABBA 거부. 번들 지원 확인 전 실행 불가.
+- 빌드3종 오류0·LoadCheck279/229/281곳 틀림0·생성기8검사·과거 명시 출력12사례 동일. 소유자/기존JSON/native/bundle 해시 유지.
+- 게임·설치·커밋·푸시·장치·Editor·설정/제어 변경0회. 상세 codex-imageown-result.md·imageown-autoloop-ledger.md 참조.
+
 ## 회차 2 — Codex 분석·수정, 외부 새 시험 없음
 
 - IMAGEOWN=FAIL reason=DIAG2_NOT_RUN; 실제 FPS·원본 대비 픽셀·끊김 NA.
@@ -45,3 +55,17 @@
   - [StutterFix] [gpudeco] cost scope=live_off frames=98 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.391962 progress_ms=0.012028 uniform_ms=0.006937 dispatch_ms=0.222619 misc_
   - [StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=262.014330 resumed_recs=11186 resume_expected=11186 unobserved_order=0 restore_ms=13.595600
   - [StutterFix] [gpudeco] on=True scope=song_union owned=28523 active_sources=2041 slice=0 slice_owned=28523 runs=28523 submeshes=28523 transition_ms=259.291900 prepare_ms=8549.611400
+
+## 회차 3
+- Codex 요약: 외부 결과를 분석하고 통합 선행 검사와 새 333단계 계획을 준비했습니다. 독립 이미지 소유의 최대 픽셀 차이는 세 시점 모두 1로 허용치 이내입니다.
+
+빌드 3종·LoadCheck·생성기 검사 8개가 통과했습니다. 게임 실행·설치·커밋은 하지 않았습니다. 통합 픽셀과 FPS는 미측정이라 `IMAGEOWN=FAIL`을 유지했습니다.
+
+[결과와 남은 조건](E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)
+
+
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=3 bytes=334233600 copy_calls=117 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_ev
+  - [StutterFix] [gpudeco] prepare_ms=9769.198100 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei

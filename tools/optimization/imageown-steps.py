@@ -1,7 +1,7 @@
 """이미지 소유 진단/ABBA 계획 생성 전용. 게임 실행·설치 기능 없음.
 
-기본 diag2는 8장 상한 안에서 진단한다. diag1은 과거 실패 계획 보존용이다.
-abba는 실제 픽셀 원인 수정 및 maxdiff<=3 확인 후 외부에서만 실행한다.
+기본 accept는 통합 픽셀/무폴백 선행 검사 뒤 ABBA를 생성한다.
+diag/diag1/abba는 과거 계획 보존용 명시 모드다. 실행 기능은 없다.
 """
 import argparse
 import json
@@ -35,7 +35,53 @@ def boundary(second):
             'framecmp noise O O2', 'framecmp assertzero O O2']
 
 
-def build(chart, mode='diag', bundle=DEFAULT_BUNDLE, refreshpose=False):
+def performance_windows(chart, bundle, refreshpose):
+    steps = []
+    for index, images in enumerate((False, True, True, False)):
+        # A/B 소유 집합을 재준비한다. 28523 준비의 own off는 CPU fallback 4976개다.
+        steps += prepare(chart, bundle, images, True, images and refreshpose)
+        steps += ['seek 260 12', 'decobake ready', 'waitsongpos 256 40',
+            'gpudeco packets compiled', 'gpudeco live on', 'waitsongpos 258.5 40',
+            'gpudeco drawcollapse ready', 'gpudeco drawcollapse on', 'waitsongpos 260 40',
+            f'gpudeco images begin {index}', 'waitsongpos 270 30', 'gpudeco images end',
+            'gpudeco drawcollapse off', 'gpudeco live off', f'gpudeco images restore {index}', 'stop']
+    return steps
+
+
+def acceptance_plan(chart, bundle, refreshpose):
+    steps = ['timeout 600', 'auto on', 'gpudeco off', 'gpudeco images gate reset',
+             'gpudeco images gate refreshpose ' + ('on' if refreshpose else 'off'),
+             'gpudeco images gate preflight on']
+    steps += prepare(chart, bundle, True, True, refreshpose)
+    for index, second in enumerate((260, 262, 270)):
+        steps += boundary(second) + ['gpudeco live on', 'framecmp noise G N',
+            'framecmp assertzero G N',
+            *[f'framecmp save {n}' for n in ('O', 'O2', 'G', 'N')],
+            'gpudeco drawcollapse ready', 'gpudeco images collapsecheck',
+            'gpudeco drawcollapse on', 'framecmp noise B BN', 'framecmp assertzero B BN',
+            'gpudeco drawcollapse off', 'framecmp grab G2', 'framecmp assertzero G G2']
+        steps += [f'framecmp save {n}' for n in ('B', 'BN', 'G2')]
+        steps += [f'gpudeco images pixelchecked {index}', 'framecmp clear',
+                  'gpudeco live off', 'resume', 'stop']
+    steps += performance_windows(chart, bundle, refreshpose)
+    steps += ['gpudeco images result', 'quit']
+    return dict(steps=steps, settings={'FrameGenOutside': 0, 'FrameGenRefresh': False}, timeout_min=30,
+        tag='imageown-260-270-abba2-preflight', notes={
+            'status': '생성만; 이번 게임·설치·자동 장치 호출 없음', 'mode': 'accept',
+            'bundle': str(bundle).replace('\\', '/'), 'refreshpose': refreshpose,
+            'prerequisites': '새 managed DLL과 EvaluateImageLive/EvaluateCollapse/GpuDecoBatch 지원 번들 필요',
+            'evidence': '외부 run2: 3440x1440@164.999 정지 이미지 소유 maxdiff=1/1/1; 통합·연속 재생·FPS 미검증',
+            'preflight': '260/262/270 통합 원본 maxdiff<=3·O/G/B 반복 및 G 복원0·현재/변형 텍스처 누락0·제외 폴백0; 실패 시 ABBA 중단',
+            'A': '이미지 candidate off + GPU23547 + draw 통합',
+            'B': '이미지 candidate/own on + GPU28523 + draw 통합',
+            'acceptance': '3440x1440@165; B/A>=1.20 (A=202라면 B>=242.4FPS); 260/262/270 maxdiff<=3; CPU/후보텍스처/정렬제외/런타임 fallback=0; >=30ms=0',
+            'timing': 'ABBA 창에 pause/캡처/readback 없음; 준비·재열기 제외 260..270초',
+            'lifetime': 'live off 뒤 resume/stop; 설치 복원은 외부 실행기 책임; 전곡 수명 미검증'})
+
+
+def build(chart, mode='accept', bundle=DEFAULT_BUNDLE, refreshpose=False):
+    if mode == 'accept':
+        return acceptance_plan(chart, bundle, refreshpose)
     if mode not in ('diag', 'diag1', 'abba'):
         raise ValueError('unknown mode: ' + mode)
     steps = ['timeout 600', 'auto on']
@@ -67,14 +113,7 @@ def build(chart, mode='diag', bundle=DEFAULT_BUNDLE, refreshpose=False):
     else:
         steps += ['gpudeco off', 'gpudeco images gate reset',
                   'gpudeco images gate refreshpose ' + ('on' if refreshpose else 'off')]
-        for index, images in enumerate((False, True, True, False)):
-            # A/B 소유 집합을 재준비한다. 28523 준비의 own off는 CPU fallback 4976개다.
-            steps += prepare(chart, bundle, images, True, images and refreshpose)
-            steps += ['seek 260 12', 'decobake ready', 'waitsongpos 256 40',
-                'gpudeco packets compiled', 'gpudeco live on', 'waitsongpos 258.5 40',
-                'gpudeco drawcollapse ready', 'gpudeco drawcollapse on', 'waitsongpos 260 40',
-                f'gpudeco images begin {index}', 'waitsongpos 270 30', 'gpudeco images end',
-                'gpudeco drawcollapse off', 'gpudeco live off', f'gpudeco images restore {index}', 'stop']
+        steps += performance_windows(chart, bundle, refreshpose)
         steps += prepare(chart, bundle, True, True, refreshpose)
         for index, second in enumerate((260, 262, 270)):
             steps += boundary(second) + ['gpudeco live on', 'framecmp noise G N', 'framecmp assertzero G N',
@@ -104,7 +143,7 @@ def self_test():
 
     class Plans(unittest.TestCase):
         def test_lifetime_and_preconditions(self):
-            for mode in ('diag', 'abba'):
+            for mode in ('diag', 'abba', 'accept'):
                 owned = paused = compiled = prepared = False
                 for step in build('Arche.adofai', mode)['steps']:
                     if step == 'decobake off':
@@ -132,7 +171,7 @@ def self_test():
                 self.assertFalse(owned)
 
         def test_diagnostic_controls(self):
-            plan = build('Arche.adofai')
+            plan = build('Arche.adofai', 'diag')
             steps = plan['steps']
             self.assertEqual(plan['tag'], 'imageown-260-270-diag2-bounded')
             self.assertEqual(steps.count('gpudeco images diag pixel bounded'), 3)
@@ -147,7 +186,7 @@ def self_test():
             # Model the real FrameCompare allocation/replacement semantics.
             maximum = int(re.search(r'const int MaxShots\s*=\s*(\d+)',
                 (ROOT / 'FrameCompare.cs').read_text(encoding='utf-8')).group(1))
-            for mode in ('diag', 'abba'):
+            for mode in ('diag', 'abba', 'accept'):
                 shots, asserted, saved = set(), set(), set()
                 peak = 0
                 for step in build('Arche.adofai', mode)['steps']:
@@ -171,10 +210,14 @@ def self_test():
                     elif step == 'gpudeco images diag pixel bounded':
                         self.assertTrue({'O', 'G', 'D', 'U', 'G2', 'N', 'DN', 'O2'} <= shots)
                         self.assertTrue({('O', 'O2'), ('G', 'N'), ('D', 'DN'), ('G', 'G2'), ('U', 'O2')} <= asserted)
+                    elif step.startswith('gpudeco images pixelchecked '):
+                        self.assertTrue({'O', 'O2', 'G', 'N', 'B', 'BN', 'G2'} <= shots)
+                        self.assertTrue({('O', 'O2'), ('G', 'N'), ('B', 'BN'), ('G', 'G2')} <= asserted)
+                        self.assertTrue(shots <= saved)
                 self.assertGreater(peak, 0)
 
         def test_partial_results_precede_pose(self):
-            steps = build('Arche.adofai')['steps']
+            steps = build('Arche.adofai', 'diag')['steps']
             for part in ('G', 'D', 'U'):
                 self.assertEqual(steps.count('framecmp diff O ' + part), 3)
             first_pose = steps.index('framecmp noise U O2')
@@ -200,7 +243,7 @@ def self_test():
             self.assertNotIn('gpudeco drawcollapse begin 0', steps)
 
         def test_targets_and_no_install(self):
-            for mode in ('diag', 'abba'):
+            for mode in ('diag', 'abba', 'accept'):
                 steps = build('Arche.adofai', mode)['steps']
                 for second in (260, 262, 270):
                     self.assertIn(f'waitsongpos {second} 40', steps)
@@ -217,6 +260,27 @@ def self_test():
             with self.assertRaises(ValueError):
                 build('Arche.adofai', 'unknown')
 
+        def test_preflight_precedes_all_timing(self):
+            plan = build('Arche.adofai')
+            self.assertEqual(plan['tag'], 'imageown-260-270-abba2-preflight')
+            steps = plan['steps']
+            self.assertIn('gpudeco images gate preflight on', steps)
+            first_begin = steps.index('gpudeco images begin 0')
+            self.assertEqual(steps.count('gpudeco images collapsecheck'), 3)
+            for i in range(3):
+                self.assertLess(steps.index(f'gpudeco images pixelchecked {i}'), first_begin)
+            self.assertEqual(steps.count('framecmp noise B BN'), 3)
+            self.assertEqual(steps.count('framecmp assertzero G G2'), 3)
+            self.assertNotIn('gpudeco images locate cpuvertices on', steps)
+            self.assertNotIn('gpudeco images diag pixel bounded', steps)
+            for index in range(4):
+                start = steps.index(f'gpudeco images begin {index}')
+                self.assertEqual(steps[start+1:start+3], ['waitsongpos 270 30', 'gpudeco images end'])
+            for pose in (False, True):
+                other = build('Arche.adofai', bundle='X:/verified/bundle', refreshpose=pose)
+                self.assertEqual(other['steps'].count('gpudeco bundle X:/verified/bundle'), 5)
+                self.assertEqual(other['notes']['refreshpose'], pose)
+
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(Plans))
     return 0 if result.wasSuccessful() else 1
 
@@ -226,7 +290,7 @@ def main():
     parser.add_argument('--chart')
     parser.add_argument('--output')
     parser.add_argument('--bundle', default=str(DEFAULT_BUNDLE))
-    parser.add_argument('--mode', choices=('diag', 'diag1', 'abba'), default='diag')
+    parser.add_argument('--mode', choices=('accept', 'diag', 'diag1', 'abba'), default='accept')
     parser.add_argument('--refreshpose', action='store_true')
     parser.add_argument('--self-test', action='store_true')
     args = parser.parse_args()

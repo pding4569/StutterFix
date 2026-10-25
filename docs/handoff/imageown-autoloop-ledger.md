@@ -1,5 +1,19 @@
 # 이미지 소유 작업 장부
 
+## 2026-10-25 — 코드·오프라인 검증 3회차
+
+`IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=INTEGRATED_ABBA_NOT_RUN`
+
+외부 run2 직접 증거78줄을 원시와 순서 대조했다. 3440×1440@164.999·260/262/270초 독립 이미지 소유 GPU/pose/CPU정점의 최대픽셀은 모두1이다. GPU changed384/172/61, pose도 동일, CPU정점489/280/258이며 반복/복원0이다. UpdatePosition·CPU정점 주입의 개선 근거가 없어 기본끔·기존 정점 수식을 유지했다. 잔여1 원인은 미확정이고 현재 허용3 이내다. 같은 diag1/diag2 반복 금지.
+
+활성화6회 GPU28523·CPU fallback0, live off6회 Rec 각 기대값과 일치, 종료 native_contexts0이다. 통합/FPS/전곡 측정은 없다. 디컴파일 SetSprite/UpdatePosition 및 설치 DLL ILScan을 대조했다.
+
+기존 이미지 등록2곳·32B 부분 갱신·알파 더티 큐를 재구현하지 않았다. 새 정지 collapsecheck는 현재/변형 텍스처 누락과 등록됐지만 제외된 항목/이미지를 구분하고 폴백이면 중단한다. 기존 renderer가 정렬 제외도 같은 폴백에 세므로 텍스처 부족으로 오인하지 않는다. renderer/policy 등 보호 파일은 변경하지 않았다.
+
+새 기본 accept: abba2-preflight333단계 생성만. 최대7장으로 세 통합 픽셀·원본/G/B 반복·G복원·폴백0을 먼저 확인한 뒤 ABBA, 실패 시 진입 거부. 기존 명시3모드 출력12사례 및 기존JSON/번들/native/소유자 SHA 보존. 번들 지원 확인 전 실행 불가, 마스터 NEED_EDITOR_BUILD는 해제하지 않는다.
+
+3빌드 오류0/0/0·경고48/36/40, LoadCheck279/229/281곳 틀림0·일반 Player 연구 제외, 생성기8검사 통과. 게임·설치·커밋·푸시·자동 장치·Editor·설정/제어 변경0회. 상세 결과·10줄 요약·out/imageown3 근거를 따른다.
+
 ## 2026-10-25 — 코드·오프라인 검증 2회차
 
 `IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA fallback=NA spikes_30ms=NA reason=DIAG2_NOT_RUN`

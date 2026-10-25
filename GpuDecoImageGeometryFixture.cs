@@ -125,6 +125,31 @@ namespace StutterFix
         static long imageOwnTick;
         static bool imageOwnFailed;
         static bool imageOwnGatePose;
+        static bool imageOwnRequirePixelPreflight;
+        static void CheckGpuImageCollapse()
+        {
+            RequireLive(gpuLiveActive&&FrameCompare.Paused&&gpuImageCandidate&&gpuImageOwn&&GpuLiveOwned==28523
+                &&gpuLiveCpuFallbackCount==0&&!gpuCollapseOn&&gpuCollapseTexture!=null&&gpuLiveSlices.Count==1,
+                "image collapsecheck requires paused prepared image ownership before collapse on");
+            RequireLive(ReferenceEquals(gpuImageCollapseAddressOwner,gpuCollapseTexture)&&gpuImageCollapseAddresses!=null,
+                "image collapse address hooks missing");
+            int missing=0,registeredExcluded=0,imageExcluded=0,variantsMissing=0;
+            var source=gpuLiveSlices[0];
+            for(int i=0;i<source.Data.Items.Length;i++)
+            {
+                if(!gpuImageCollapseAddresses.ContainsKey(source.Data.Items[i].TextureId))missing++;
+                else if(gpuCollapseTextureFallback[i])registeredExcluded++;
+                if(gpuCollapseTextureFallback[i]&&GpuImageActor(gpuLiveOwnedIndices[source.MasterItems[i]]))imageExcluded++;
+            }
+            foreach(var v in gpuImageVariants)
+                if(v.Status==GpuDecoImageVariant.Kind.ReadyQuad&&!gpuImageCollapseAddresses.ContainsKey(v.TextureId))variantsMissing++;
+            bool valid=missing==0&&registeredExcluded==0&&variantsMissing==0&&gpuCollapseTextureFallbackCount==0&&gpuCollapseFault==null;
+            GpuLog("GPUIMG_DIAG mode=collapsecheck current_texture_missing="+missing+" registered_but_excluded="+registeredExcluded
+                +" image_excluded="+imageExcluded+" variant_entries_missing="+variantsMissing+" fallback="+gpuCollapseTextureFallbackCount
+                +" spans="+gpuCollapseSpans.Count+" valid="+valid+" performance=False");
+            if(!valid)GpuLog("IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_PREFLIGHT_FAILED");
+            RequireLive(valid,"image collapse preflight failed; retain ordering/texture guards and inspect GPUIMG_DIAG");
+        }
         static void RequireImageOwnEnvironment()
         {
             RequireLive(Screen.width==3440&&Screen.height==1440&&Math.Abs(Screen.currentResolution.refreshRateRatio.value-165)<.02,
@@ -155,9 +180,15 @@ namespace StutterFix
                 RequireLive(!gpuLiveActive&&imageOwnWindow<0,"imageown gate reset requires inactive GPU");
                 Camera.onPreCull-=ObserveImageOwnWindow;
                 Array.Clear(imageOwnFps,0,4);Array.Clear(imageOwnWindows,0,4);Array.Clear(imageOwnRestores,0,4);Array.Clear(imageOwnPixels,0,3);
-                imageOwnFailed=false;imageOwnGatePose=false;
+                imageOwnFailed=false;imageOwnGatePose=false;imageOwnRequirePixelPreflight=false;
                 imageOwnMaxPixel=-1;imageOwnCpuFallback=imageOwnTextureFallback=imageOwnTotalSpikes=0;return true;
             }
+            if(command=="images gate preflight on")
+            {
+                RequireLive(!gpuLiveActive&&imageOwnWindow<0&&!imageOwnWindows.Any(x=>x),"select image preflight before ABBA");
+                imageOwnRequirePixelPreflight=true;return true;
+            }
+            if(command=="images collapsecheck"){CheckGpuImageCollapse();return true;}
             if(command=="images gate refreshpose on"||command=="images gate refreshpose off")
             {
                 RequireLive(!gpuLiveActive&&imageOwnWindow<0&&!imageOwnWindows.Any(x=>x),"select measured pose mode before ABBA");
@@ -167,6 +198,7 @@ namespace StutterFix
             {
                 int index=int.Parse(args[2],Inv);bool images=index==1||index==2;
                 RequireImageOwnEnvironment();
+                RequireLive(!imageOwnRequirePixelPreflight||imageOwnPixels.All(x=>x),"complete all three integrated pixel checks before ABBA");
                 RequireLive(index>=0&&index<4&&imageOwnWindow<0&&index==imageOwnWindows.Count(x=>x)&&gpuLiveActive
                     &&gpuCollapseOn&&GpuLiveOwned==(images?28523:23547)&&gpuLiveCpuFallbackCount==0
                     &&gpuImageCandidate==images&&(!images||gpuImageOwn)&&gpuImageRefreshPose==(images&&imageOwnGatePose)
@@ -206,7 +238,7 @@ namespace StutterFix
                 imageOwnFailed|=!imageOwnRestores[index];
                 GpuLog("IMAGEOWN_RESTORE index="+index+" valid="+imageOwnRestores[index]);return true;
             }
-            if(args.Length==3&&args[0]=="images"&&args[1]=="pixel")
+            if(args.Length==3&&args[0]=="images"&&(args[1]=="pixel"||args[1]=="pixelchecked"))
             {
                 int index=int.Parse(args[2],Inv);double[] targets={260,262,270};
                 RequireImageOwnEnvironment();
@@ -216,12 +248,26 @@ namespace StutterFix
                 var pixels=FrameCompare.CompareShots("O","B",out _);
                 var noise=FrameCompare.CompareShots("G","N",out bool quiet);
                 var restore=FrameCompare.CompareShots("G","G2",out bool same);
+                bool controls=true;
+                if(args[1]=="pixelchecked")
+                {
+                    var originalNoise=FrameCompare.CompareShots("O","O2",out bool originalQuiet);
+                    var collapseNoise=FrameCompare.CompareShots("B","BN",out bool collapseQuiet);
+                    controls=originalQuiet&&collapseQuiet&&originalNoise.Changed==0&&collapseNoise.Changed==0;
+                    GpuLog("GPUIMG_DIAG mode=collapse_controls original_noise="+originalNoise.Changed+" collapse_noise="+collapseNoise.Changed);
+                }
                 imageOwnMaxPixel=Math.Max(imageOwnMaxPixel,pixels.Max.Max());
                 imageOwnPixels[index]=pixels.Max.Max()<=3&&quiet&&same&&noise.Changed==0&&restore.Changed==0
-                    &&gpuCollapseFault==null&&GpuDecoCopy.ReadTotals().Errors==0;
+                    &&controls&&gpuCollapseFault==null&&GpuDecoCopy.ReadTotals().Errors==0&&gpuCollapseTextureFallbackCount==0;
                 imageOwnFailed|=!imageOwnPixels[index];
                 GpuLog("IMAGEOWN_PIXEL second="+targets[index]+" changed="+pixels.Changed+" maxdiff="+pixels.Max.Max()
-                    +" noise="+noise.Changed+" restore="+restore.Changed+" valid="+imageOwnPixels[index]);return true;
+                    +" noise="+noise.Changed+" restore="+restore.Changed+" valid="+imageOwnPixels[index]);
+                if(imageOwnRequirePixelPreflight)
+                {
+                    if(!imageOwnPixels[index])GpuLog("IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max="+imageOwnMaxPixel+" reason=INTEGRATED_PIXEL_PREFLIGHT_FAILED");
+                    RequireLive(imageOwnPixels[index],"integrated image pixels failed; do not start ABBA");
+                }
+                return true;
             }
             if(command=="images result")
             {

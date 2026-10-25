@@ -1,4 +1,57 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA fallback=NA spikes_30ms=NA reason=DIAG2_NOT_RUN
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=INTEGRATED_ABBA_NOT_RUN
+
+## 자동 반복 3회차 — 외부 run2 분석과 통합 선행 검사
+
+이번 게임 실행·설치·커밋·푸시·자동 장치 호출·Unity Editor 실행·설정/제어 파일 변경은 **0회**다. 외부 측정은 기존 run2이며, 이번 호출의 새 게임 실측은 없다. **독립 이미지 GPU 소유의 정지 픽셀은 허용치 이내지만 draw 통합과 +20% 성능 조건은 미증명**이다.
+
+### 외부 증거와 두 가설의 결론
+
+`im-autoloop-run2-evidence.txt` 직접 증거 **78줄**을 원시 `E:/StutterFixWork/night-results/al-im-2.log`와 순서·중복까지 대조했다. 시작 선언만 1,500자 접두부이고 나머지는 전체 줄이 일치한다. 근거는 `out/imageown3/check-evidence.py`, `evidence-and-compatibility.txt`다.
+
+| 곡 시각 / 원시 행 | GPU 수식 changed/max | UpdatePosition changed/max | CPU 정점 주입 changed/max |
+|---|---:|---:|---:|
+| 260.019671 / 642 | 384 / 1 | 384 / 1 | 489 / 1 |
+| 262.014330 / 925 | 172 / 1 | 172 / 1 | 280 / 1 |
+| 270.025012 / 1204 | 61 / 1 | 61 / 1 | 258 / 1 |
+
+세 시점 모두 GPU·정점 주입·pose 반복과 G 복원이 changed=0이고 controls=True다. 별도 CPU O/O2 대조도 계획의 assertzero를 통과했다. 실제 환경은 **3440×1440@164.999**이고 활성화 6회 모두 GPU28,523·CPU fallback0이다. 두 pose 모드별 UpdatePosition 호출은 0/4,976, CPU 정점 주입은 가시 이미지286/354/340개·최대 world delta0.00013647876이다. 여섯 live off 모두 Rec 복원이 각 기대값과 일치(11,821/11,186/12,301, 각 두 번), 종료 native_contexts=0이다.
+
+- `UpdatePosition()` 호출은 이 표본의 픽셀 수/최대 차이를 개선하지 않았다. 매 이미지 갱신의 실제 Transform 쓰기를 정상 경로에 추가할 근거가 없어 기본 off를 유지했다.
+- CPU 정점 주입도 차이를 0으로 만들지 않았고 오히려 changed가 많다. **정점 수식이 유일한 원인이라는 가설은 지지되지 않는다.** 주입은 이미지 정점만 교체하며 비이미지·합성 화면 차이가 남을 수 있어, 정점 문제가 전혀 없거나 정렬/텍스처 중 하나가 확정 원인이라는 역추론도 하지 않는다.
+- 최대 차이 **1≤허용3**이므로 독립 소유의 이 세 정지 경계에는 산술 수식 변경이 필요하지 않다. 이전 2560×1440@120 표본의 최대10~25와 개선률로 비교하지 않는다. 잔여1의 원인은 UNCONFIRMED이고 연속 재생·전곡·draw 통합 픽셀은 아직 미검증이다. 같은 diag1/diag2 반복은 요청하지 않는다.
+
+게임 `scrVisualDecoration.SetSprite` / `scrDecoration.UpdatePosition` 근사 디컴파일을 읽고 설치 DLL을 ILScan으로 재확인했다. SetSprite는 스프라이트/마스크·ResizeCollider·샘플링 재질·V15 Clamp를 바꾸며 UpdatePosition을 호출하지 않는다. UpdatePosition은 위치/시차·회전·크기를 갱신한다. `out/imageown3/game-{visual,decoration}-il.txt`는 호출 관계 근거이며 잔여 픽셀 원인 증명이 아니다.
+
+### 코드와 새 계획
+
+현재 이미지 통합 연결은 이미 존재한다: 준비 단계 변형 등록·주소 보존, 23,547/28,523 소유 입구, 이미지 갱신 때 `_CollapseTexture` 32바이트 부분 업로드, 기존 알파 더티 큐 기반 대기 감시다. 이 코드를 다시 구현하지 않았다. 기존 큐4,495검사는 큐 변경이 없어 반복하지 않았다.
+
+`GpuDecoImageGeometryFixture.cs`에 정지 전용 `images collapsecheck`를 추가했다. 현재 텍스처 누락, 주소가 있는데 제외된 항목, 그중 이미지 항목, 변형 엔트리 주소 누락, 전체 폴백·구간 수를 `GPUIMG_DIAG`로 기록한다. 제외 계수는 `GpuDecoDrawCollapseRenderer.cs`의 정렬 보호에서도 증가하므로 **주소 등록된 제외를 텍스처 용량 부족으로 단정하지 않는다**. 폴백/누락이 있으면 `IMAGEOWN=FAIL reason=COLLAPSE_PREFLIGHT_FAILED`를 기록하고 ABBA 전에 중단한다. 이 검사는 정지 단계에서만 전수 순회하며 측정 창에 새 스캔을 넣지 않는다.
+
+새 `images gate preflight on`은 세 통합 픽셀 관문 완료 전 ABBA begin을 거부한다. `images pixelchecked`는 기존 원본 O/B 최대3·G 반복/복원 검사에 **O/O2 및 B/BN 반복0·통합 폴백0**을 더한다. 실패는 `INTEGRATED_PIXEL_PREFLIGHT_FAILED`로 기록하고 성능 측정 진입을 막는다. 기존 pixel 명령에도 폴백0 판정을 추가했다. 원본·정렬·오류 복구 가드는 완화하지 않았다.
+
+새 기본 `--mode accept`: **`imageown-260-270-abba2-preflight`, 333단계**다. 260/262/270초 통합 픽셀·누락/폴백을 먼저 검사한 뒤 이미지 off/on/on/off ABBA를 측정한다. 캡처는 최대7장(O/O2/G/N/B/BN/G2)이며 PNG를 판정 전에 저장한다. 성능 창에는 정지·캡처·readback이 없다. 정상 경로는 refreshpose off, CPU 정점 주입도 없다. A는 GPU23,547+통합, B는 GPU28,523+통합이며 수용은 B/A≥1.20·최대픽셀3·폴백0·30ms 이상0이다. 202FPS는 새 A 실측이 아니며 새 수치로 대체해야 한다.
+
+`tools/optimization/out/imageown-abba2-steps.json`은 **생성만** 했다. 기존 명시 `diag`/`diag1`/`abba` 전체 출력12사례와 기존 diag1/diag2/abba1 JSON 해시를 보존했다. 기본 생성기가 새 계획을 선택하므로 완료 진단 반복을 피한다.
+
+### 오프라인 검증과 인계 조건
+
+| 검사 | 결과 | out/imageown3 근거 |
+|---|---|---|
+| DEV/Player/PlayerAuto 빌드 | 오류0/0/0·경고48/36/40 | build-dev.txt, build-player.txt, build-playerauto.txt |
+| LoadCheck | FieldRef279/229/281곳·틀림0/0/0·일반 Player 연구 제외 | loadcheck-*.txt |
+| 생성기 | 소유권·수명·실제8장 상한·7장 의존/저장·선행 관문·연속 측정 창8검사 통과 | generator-tests.txt |
+| 증거/호환 | 외부78줄 순서 일치·과거 명시 출력12사례 동일 | evidence-and-compatibility.txt |
+| 소유자/기존 자산 | renderer/policy/Dormancy/TightLate/FastMove/export/헬퍼·기존JSON·native·bundle SHA256 전후 동일 | preserved-before.json, preserved-after.json |
+
+빌드는 `out/imageown3/build/{dev,player,playerauto}`와 별도 obj에 격리했다. 이 검사들은 새 런타임 명령의 실제 Unity 동작·통합 픽셀·FPS·전곡 수명 증명이 아니다. 새 계획 실행에는 이번 managed 수정과 **EvaluateImageLive/EvaluateCollapse/GpuDecoBatch를 모두 지원하는 번들**이 필요하다. 이번 bundle/manifest/Editor 근거는 변경하지 않았고 새 Editor 빌드도 하지 않았다. 현재 파일 SHA256은 아래와 같으며, 외부 run2의 독립 이미지 시험 성공이 새 draw 통합 지원까지 증명하지 않는다. 마스터의 NEED_EDITOR_BUILD를 이 작업에서 해제하지 않는다.
+
+- 현재 bundle: `4ecdbe6c69a33defa422dbcd944ac18f96e45d0786e705f1001b7d5a07440ad4`.
+- 새 abba2 JSON: `d95a82ca60b5360597794c1257e0c584ec6d54ebf1dc3fa0fe6bfa39f55f589e`.
+
+**Claude 소유자 요청:** 선행 검사에서 registered_but_excluded/image_excluded가 나오면 renderer의 정렬 보호·구간 준비를 확인해야 한다. 현 renderer는 정렬 제외를 gpuCollapseTextureFallback에 함께 넣고 Replan에서 재질 불변을 검사한다. 이미지 교체 후 재질/정렬·숨은 장벽의 기상도 외부 통합 시험으로 확인해야 하며 보호 제거로 폴백0을 만들면 안 된다. 본 작업은 renderer/policy/export 등을 수정하지 않았다. 현재 결과만으로 병합 방식 자체의 불가능을 확정하지 않는다. 선행 관문 실패 시 같은 계획 재시도 대신 이 수치와 원인을 담당자에게 넘긴다.
+
+FPS·통합 픽셀 최대·통합 폴백·30ms 이상·설치 복원·전곡 수명은 NA다. 새 계획/명령을 실행하거나 자동 장치/설정·제어 파일을 조작하지 않았다. 아래 2회차의 DIAG2_NOT_RUN과 ABBA 선행 조건 설명은 외부 run2 수신 전 이력이다.
 
 ## 자동 반복 2회차 — 외부 run1 분석과 캡처 상한 수정
 

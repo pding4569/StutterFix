@@ -1,0 +1,13 @@
+test_abba_ownership_and_uninterrupted_windows (__main__.self_test.<locals>.Plans.test_abba_ownership_and_uninterrupted_windows) ... ok
+test_capture_capacity_and_dependencies (__main__.self_test.<locals>.Plans.test_capture_capacity_and_dependencies) ... ok
+test_diagnostic_controls (__main__.self_test.<locals>.Plans.test_diagnostic_controls) ... ok
+test_lifetime_and_preconditions (__main__.self_test.<locals>.Plans.test_lifetime_and_preconditions) ... ok
+test_partial_results_precede_pose (__main__.self_test.<locals>.Plans.test_partial_results_precede_pose) ... ok
+test_pose_and_explicit_bundle (__main__.self_test.<locals>.Plans.test_pose_and_explicit_bundle) ... ok
+test_preflight_precedes_all_timing (__main__.self_test.<locals>.Plans.test_preflight_precedes_all_timing) ... ok
+test_targets_and_no_install (__main__.self_test.<locals>.Plans.test_targets_and_no_install) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.002s
+
+OK

@@ -1,0 +1,22 @@
+﻿[
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\out\\imageown3\\build\\dev\\StutterFix.dll",
+        "Hash":  "136FDF1894F89AB1371B7D6945A091E407265A1BC4E7C7FF62E93B30F836CF4F"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\out\\imageown3\\build\\player\\StutterFix.dll",
+        "Hash":  "D62A5AAE069D15FAC8F2404391D362018FCF3342B1CBC9FE8C98576B6C1F594E"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\out\\imageown3\\build\\playerauto\\StutterFix.dll",
+        "Hash":  "5D2088CA9439EACA55ED0FCD613D7602DB49C837EAD90ACB4D412033AA958986"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\GpuDecoImageGeometryFixture.cs",
+        "Hash":  "BC47BCA45603B73171231587683706A77C21B6F8E1B7D5639C6CD1E21895D8AA"
+    },
+    {
+        "Path":  "E:\\StutterFixWork\\wt-gpu\\tools\\optimization\\imageown-steps.py",
+        "Hash":  "26CE9385502DE97951C23BC7E4AD5479B549E20E1C914923AF126A43B668B001"
+    }
+]

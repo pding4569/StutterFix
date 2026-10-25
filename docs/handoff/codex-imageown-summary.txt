@@ -1,10 +1,10 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA fallback=NA spikes_30ms=NA reason=DIAG2_NOT_RUN
-이번 게임·설치·커밋·푸시·장치 호출·Editor 실행·설정/제어 변경 0회.
-외부 직접 증거42줄 대조;3440×1440@164.999·GPU28523·활성화 CPU fallback0.
-O/O2·G/N·D/DN·G/G2 차이0; 원본 O/G·O/D·O/U 비교는 실행되지 않아 픽셀 원인 미확정.
-진단 실패 원인은9개 이름의8장 상한 위반; FastMoveOriginal은 실패 후 종료 처리, 가드 유지.
-새 기본 diag2 165단계 생성만; CPU 반복 대조/저장 후 O2 재사용·최대8장·후보 diff/PNG 즉시 기록.
-현재 renderer 연결2곳 존재; 소유자 파일/기존 JSON 보존·명시 diag1/abba 전체 출력8사례 동일.
-격리 DEV/Player/PlayerAuto 빌드 오류0/0/0·경고48/36/40, LoadCheck279/229/281곳 틀림0.
-생성기7검사 통과·일반 Player 연구 제외; 큐 변경 없어4495검사 반복0회.
-같은 diag1 반복 금지; diag2 실제 픽셀 근거 후 수정·ABBA 승격 필요, FPS/끊김/전곡/설치 복원 NA.
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 fallback=NA spikes_30ms=NA reason=INTEGRATED_ABBA_NOT_RUN
+이번 게임·설치·커밋·푸시·자동 장치·Editor·설정/제어 변경0회; 새 게임 실측 없음.
+외부 run2 직접78줄 원시 순서 일치;3440×1440@164.999·GPU28523·활성화6회 CPU fallback0·해제6회Rec복원 일치.
+260/262/270초 GPU changed384/172/61·max1, pose동일, CPU정점489/280/258·max1; 반복/복원0·종료native_contexts0.
+허용3 이내·두 진단의 개선 근거 없음; pose기본끔·정점수식 유지·잔여1 원인미확정, 같은diag1/diag2 반복 금지.
+기존 이미지 통합 연결 존재;새collapsecheck는 현재/변형 주소누락·등록됐지만 제외된 항목/이미지·폴백 출력, 보호가드 유지.
+새 기본accept/abba2-preflight333단계 생성만;통합픽셀3개·7장 반복/복원·폴백0 선행, 실패 시ABBA 진입 거부.
+격리3빌드 오류0/0/0·경고48/36/40, LoadCheck279/229/281곳 틀림0·일반Player 연구 제외, 생성기8검사 통과.
+기존 명시diag/diag1/abba 전체출력12사례 동일·소유자/기존JSON/native/bundle SHA보존;새managed·번들지원 확인 전 실행 불가.
+통합픽셀/FPS/+20%/끊김/전곡/설치복원NA;마스터NEED_EDITOR_BUILD 유지,실패시원인·계수로 담당자 인계하고 동일재시도 중단.
