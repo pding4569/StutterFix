@@ -202,6 +202,17 @@ namespace StutterFix
         static SpriteRenderer[] gpuLiveOwnedRenderers = Array.Empty<SpriteRenderer>();
         static bool[] gpuLiveOriginalOff = Array.Empty<bool>();
         static bool[] gpuLiveExternalOff = Array.Empty<bool>();
+        // 소유 시작 때 원본 렌더러를 씬 렌더러 목록에서도 빼려고 enabled=false 로 바꾼 것(해제 때 되돌린다).
+        static bool[] gpuLiveEnabledOff = Array.Empty<bool>();
+        static void ReleaseOwnedEnabled(int i)
+        {
+            if (i < gpuLiveEnabledOff.Length && gpuLiveEnabledOff[i])
+            {
+                gpuLiveEnabledOff[i] = false;
+                var r = gpuLiveOwnedRenderers[i];
+                try { if (r && !r.enabled) r.enabled = true; } catch { }
+            }
+        }
         static int[][] gpuLiveMasterToSliceItem = Array.Empty<int[]>();
 
         // Unified master channel & source state (no binary search; updated only on effect start/end)
@@ -979,6 +990,7 @@ namespace StutterFix
                 gpuLiveOwnedRenderers = ownedRenderers.ToArray();
                 gpuLiveOriginalOff = new bool[gpuLiveOwnedRenderers.Length];
                 gpuLiveExternalOff = new bool[gpuLiveOwnedRenderers.Length];
+                gpuLiveEnabledOff = new bool[gpuLiveOwnedRenderers.Length];
                 int masterCount = gpuLiveOwnedIndices.Length;
                 gpuMasterChannels = new LiveChannel[masterCount * 16];
                 gpuMasterAnchors = new Anchor[masterCount * 16];
@@ -1449,7 +1461,11 @@ namespace StutterFix
             for (int i = 0; i < gpuLiveOwnedRenderers.Length; i++)
             {
                 var r = gpuLiveOwnedRenderers[i];
-                if (r && !GpuCpuFallback(i)) r.forceRenderingOff = true;
+                if (r && !GpuCpuFallback(i))
+                {
+                    r.forceRenderingOff = true;
+                    if (DrawCollapsePolicy.DisableOwnedRenderers && r.enabled) { gpuLiveEnabledOff[i] = true; r.enabled = false; }
+                }
             }
             Camera.onPreCull -= OnGpuLivePreCull;
             Camera.onPreCull += OnGpuLivePreCull;
@@ -1541,6 +1557,7 @@ namespace StutterFix
             for (int i = 0; i < gpuLiveOwnedRenderers.Length; i++)
             {
                 if(GpuCpuFallback(i))continue;
+                ReleaseOwnedEnabled(i);
                 try
                 {
                     var r = gpuLiveOwnedRenderers[i];

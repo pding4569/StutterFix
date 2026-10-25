@@ -292,6 +292,17 @@ namespace StutterFix
             c.DispatchCompute(shader,k,(count+63)/64,1,1);
             collapseRecorded=c;collapseUniforms=new CommandBuffer{name="GpuDeco collapse uniforms"};
         }
+        // 프레임마다 명령 버퍼 두 개를 실행하던 것을 즉시 디스패치 한 번으로(관리→네이티브 호출 수와 명령 버퍼 제출 비용을 줄인다).
+        internal void DispatchCollapseAllDirect(ComputeBuffer texture,ComputeBuffer verts,ComputeBuffer map,int count,Vector4 camera,double time,Vector4 clip)
+        {
+            BeginCollapse(texture);int k=collapseKernel;
+            shader.SetFloat("_Pitch",data.Pitch);shader.SetFloat("_TweenScale",data.TweenScale);shader.SetInt("_Count",data.Items.Length);
+            shader.SetInt("_UseAnchors",1);shader.SetInt("_UseLiveChannels",(UseLiveMode&&hasLiveKernel)?1:0);
+            shader.SetVector("_Camera",camera);shader.SetVector("_CameraClip",clip);
+            float hi=(float)time;shader.SetFloat("_TimeHi",hi);shader.SetFloat("_TimeLo",(float)(time-hi));
+            shader.SetBuffer(k,"_Vertices",verts);shader.SetBuffer(k,"_CollapseMap",map);
+            shader.SetInt("_CollapseCount",count);shader.Dispatch(k,(count+63)/64,1,1);
+        }
         internal void DispatchCollapseAll(ComputeBuffer texture,ComputeBuffer verts,ComputeBuffer map,int count)
         {
             BeginCollapse(texture);int k=collapseKernel;

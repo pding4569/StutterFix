@@ -43,6 +43,8 @@ namespace StutterFix
         static readonly List<Saved> toggled = new List<Saved>();
         static readonly List<KeyValuePair<Camera, bool>> toggledCams = new List<KeyValuePair<Camera, bool>>();
         static readonly List<KeyValuePair<Canvas, bool>> toggledCanvases = new List<KeyValuePair<Canvas, bool>>();
+        static readonly List<GameObject> toggledGos = new List<GameObject>();
+        static readonly List<KeyValuePair<Renderer, bool>> toggledEnabled = new List<KeyValuePair<Renderer, bool>>();
         static readonly List<KeyValuePair<SpriteRenderer, Texture>> toggledTex = new List<KeyValuePair<SpriteRenderer, Texture>>();
         static readonly List<KeyValuePair<SpriteRenderer, Sprite>> toggledSprites = new List<KeyValuePair<SpriteRenderer, Sprite>>();
         static Camera directMain; static RenderTexture directMainRt;
@@ -139,6 +141,32 @@ namespace StutterFix
                     toggled.Add(new Saved { Renderer = sr, Off = sr.forceRenderingOff }); sr.forceRenderingOff = true;
                 }
                 return "merged_hidden=" + toggled.Count + " groups_kept=" + kept.Count;
+            }
+            // 진단: 장식 렌더러를 forceRenderingOff 가 아니라 enabled=false 로 씬 렌더러 목록에서 빼 본다(컬링·변환 처리 비용 측정).
+            if (group == "deco:disable")
+            {
+                if (!on) { foreach (var kv in toggledEnabled) if (kv.Key) kv.Key.enabled = kv.Value; int m2 = toggledEnabled.Count; toggledEnabled.Clear(); return "enabled_restored=" + m2; }
+                foreach (var r in Resources.FindObjectsOfTypeAll<Renderer>())
+                    if (r && r.gameObject.scene.IsValid() && r.enabled && r.forceRenderingOff && GpuCensus.IsDecoration(r)) { toggledEnabled.Add(new KeyValuePair<Renderer, bool>(r, r.enabled)); r.enabled = false; }
+                return "disabled=" + toggledEnabled.Count;
+            }
+            // 진단: 타일 번호 캔버스(editorNum, 월드 스페이스 4천여 개)의 오브젝트를 꺼서 UI 갱신 비용을 잰다.
+            if (group == "editornum")
+            {
+                if (!on) { foreach (var go in toggledGos) if (go) go.SetActive(true); int m3 = toggledGos.Count; toggledGos.Clear(); return "editornum_restored=" + m3; }
+                foreach (var c in Resources.FindObjectsOfTypeAll<Canvas>())
+                    if (c && c.gameObject.scene.IsValid() && c.gameObject.name == "editorNum" && c.gameObject.activeSelf) { toggledGos.Add(c.gameObject); c.gameObject.SetActive(false); }
+                return "editornum_off=" + toggledGos.Count;
+            }
+            if (group == "canvascensus")
+            {
+                var all = Resources.FindObjectsOfTypeAll<Canvas>().Where(c => c && c.gameObject.scene.IsValid()).ToArray();
+                var byRoot = all.GroupBy(c => c.transform.root ? c.transform.root.name : "-").OrderByDescending(g => g.Count()).Take(12).Select(g => g.Key + ":" + g.Count());
+                var byMode = all.GroupBy(c => c.renderMode + (c.isRootCanvas ? "/root" : "/nested") + (c.enabled ? "/on" : "/off")).Select(g => g.Key + ":" + g.Count());
+                Main.Entry.Logger.Log("[canvascensus] total=" + all.Length + " by_root=[" + string.Join(", ", byRoot) + "] by_mode=[" + string.Join(", ", byMode) + "]");
+                var names = all.GroupBy(c => c.gameObject.name).OrderByDescending(g => g.Count()).Take(12).Select(g => g.Key + ":" + g.Count());
+                Main.Entry.Logger.Log("[canvascensus] by_name=[" + string.Join(", ", names) + "]");
+                return "ok";
             }
             if (on && group == "canvas")
             {

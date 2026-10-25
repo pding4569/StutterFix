@@ -77,6 +77,10 @@ namespace StutterFix
         // 화면 밖에 있는 쿼드는 컴퓨트에서 면적 0 으로 만든다(픽셀 변화 없음).
         // 모든 구간의 정점을 큰 버퍼 하나에 컴퓨트 한 번으로 쓰고, 대표 렌더러는 정점 셰이더에서 그 버퍼를 읽는다(구간마다 디스패치 80번 제거).
         internal static bool GlobalVerts=true;
+        // 컴퓨트를 명령 버퍼 대신 즉시 디스패치로 실행한다(프레임당 ExecuteCommandBuffer 두 번 제거).
+        internal static bool DirectDispatch=false; // 측정: 기록 버퍼와 차이 없음
+        // GPU 소유 장식의 원본 렌더러를 forceRenderingOff 뿐 아니라 enabled=false 로 씬 렌더러 목록에서도 뺀다(컬링·변환 처리 CPU -0.45ms).
+        internal static bool DisableOwnedRenderers=false; // 정지 프레임 CPU -0.45ms 였지만 실제 재생에서는 오히려 -2~10%라 끔
         // 배리어 없이 이어지는 비소유 타일 장식 레이어를 한 패스 합성 렌더러로 바꾼다(풀스크린 블렌드 횟수 감소).
         internal static bool TileComposite=false; // 실험: GPU -0.15~0.2ms, 화면 차이 최대 6(픽셀 2.6~3.2%)라 기본 끔
         // 단독 레이어는 불투명 범위 면적이 이 비율보다 작을 때만 합성 렌더러로 바꾼다(스프라이트 교체 없는 Y 트림 효과).

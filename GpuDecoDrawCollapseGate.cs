@@ -53,6 +53,8 @@ namespace StutterFix
                     case "clip":DrawCollapsePolicy.ClipOffscreen=on;break;
                     case "tightall":DrawCollapsePolicy.TightAllOwned=on;break;
                     case "tilecomp":DrawCollapsePolicy.TileComposite=on;break;
+                    case "direct":DrawCollapsePolicy.DirectDispatch=on;break;
+                    case "disableowned":DrawCollapsePolicy.DisableOwnedRenderers=on;break;
                     case "tilemerge":DrawCollapsePolicy.TileMerge=on;break;
                     case "globalverts":DrawCollapsePolicy.GlobalVerts=on;break;
                     case "skiporder":DrawCollapsePolicy.SkipOrderSweep=on;break;

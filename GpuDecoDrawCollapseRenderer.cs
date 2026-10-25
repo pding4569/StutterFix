@@ -690,7 +690,21 @@ namespace StutterFix
         {
             if(DrawCollapsePolicy.SkipPausedCompute && FrameCompare.Paused && gpuCollapseSpans.Count>0 && gpuCollapseSpans[0].Renderer.enabled)return;
             var source=gpuLiveSlices[0];
-            if(DrawCollapsePolicy.RecordedDispatch)
+            if(DrawCollapsePolicy.GlobalVerts && DrawCollapsePolicy.DirectDispatch)
+            {
+                var camd=ADOBase.controller.camy;var ctd=camd.transform;
+                float camScaleD=camd.camobj.orthographicSize*.2f/gpuLiveZoomFactor;
+                Vector4 clipD=Vector4.zero;
+                if(DrawCollapsePolicy.ClipOffscreen)
+                {
+                    var co=camd.camobj;float halfH=co.orthographicSize*1.05f+.5f,halfW=halfH*co.aspect;float rad=ctd.eulerAngles.z*Mathf.Deg2Rad;
+                    clipD=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
+                }
+                source.Gpu.DispatchCollapseAllDirect(gpuCollapseTexture,gpuCollapseAllVerts,gpuCollapseAllMap,gpuCollapseAllCount,
+                    new Vector4(ctd.position.x,ctd.position.y,ctd.eulerAngles.z,camScaleD),time,clipD);
+                foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
+            }
+            else if(DrawCollapsePolicy.RecordedDispatch)
             {
                 if(!source.Gpu.HasRecordedCollapse)
                 {

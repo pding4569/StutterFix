@@ -81,7 +81,7 @@ namespace StutterFix
             }
             try {DecoAnim.EndGpuResume();}catch{ok=false;}
             for(int i=0;i<gpuLiveOwnedRenderers.Length;i++)
-                try{if(!GpuCpuFallback(i) && gpuLiveOwnedRenderers[i])gpuLiveOwnedRenderers[i].forceRenderingOff=RestoredGpuRendererOff(i);}catch{ok=false;}
+                try{ReleaseOwnedEnabled(i);if(!GpuCpuFallback(i) && gpuLiveOwnedRenderers[i])gpuLiveOwnedRenderers[i].forceRenderingOff=RestoredGpuRendererOff(i);}catch{ok=false;}
             ResetGpuLiveSourcePool();gpuRecoveryBlocked=true;
             GpuLog("activation_rollback reason="+reason+" continued="+ok+" restored_recs="+restored
                 +" saved_recs="+gpuActivationRecords.Count+" CPU_fallback="+gpuLiveCpuFallbackCount

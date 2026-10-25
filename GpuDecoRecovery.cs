@@ -108,7 +108,7 @@ namespace StutterFix
                     foreach(var slice in gpuLiveSlices)
                         foreach(var r in slice.Renderers)try{if(r)r.enabled=false;}catch{}
                     for(int i=0;i<gpuLiveOwnedRenderers.Length;i++)
-                        try{if(!GpuCpuFallback(i) && gpuLiveOwnedRenderers[i])gpuLiveOwnedRenderers[i].forceRenderingOff=RestoredGpuRendererOff(i);}catch{}
+                        try{ReleaseOwnedEnabled(i);if(!GpuCpuFallback(i) && gpuLiveOwnedRenderers[i])gpuLiveOwnedRenderers[i].forceRenderingOff=RestoredGpuRendererOff(i);}catch{}
                     ResetGpuLiveSourcePool();
                 }
                 GpuLog("recovery active="+gpuLiveActive+" continued="+continued+" reason="+reason+" injected="+GpuRecoveryTesting);
