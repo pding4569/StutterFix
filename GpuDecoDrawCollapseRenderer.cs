@@ -66,7 +66,7 @@ namespace StutterFix
             foreach(var a in gpuCollapseArrays)if(a)UnityEngine.Object.Destroy(a);
             gpuCollapseArrays.Clear();gpuCollapseBarriers.Clear();gpuCollapseAuxiliaries.Clear();
             gpuCollapseDirect.Clear();
-            gpuCollapseIncluded=null;gpuCollapseSeen=null;gpuCollapseOwnedRows=null;gpuCollapseTextureFallback=null;gpuCollapseTextureFallbackCount=0;
+            gpuCollapseIncluded=null;gpuCollapseSeen=null;gpuCollapseKeysValid=false;gpuCollapseScanned=false;gpuCollapseDirtyIds.Clear();gpuCollapseNewDecos.Clear();gpuCollapseOwnedRows=null;gpuCollapseTextureFallback=null;gpuCollapseTextureFallbackCount=0;
         }
         static int CollapseSize(Texture2D t)=>DrawCollapsePolicy.SmallDxtTier(t.width,t.height,
             t.graphicsFormat==GraphicsFormat.RGBA_DXT5_UNorm || t.graphicsFormat==GraphicsFormat.RGBA_DXT5_SRGB,t.mipmapCount);
@@ -231,57 +231,118 @@ namespace StutterFix
         static bool DrawCollapseBarrierActive(GpuLiveRow row)
             =>row.R && row.R.enabled && row.R.gameObject.activeInHierarchy && !row.R.forceRenderingOff
                 && (!(row.R is SpriteRenderer sprite) || sprite.sprite && sprite.color.a>0);
-        static double dcScanMs,dcTieMs,dcPlanMs,dcMeshMs;
+        static bool gpuCollapseKeysValid,gpuCollapseScanned;
+        static Vector3 gpuCollapseKeyCamPos,gpuCollapseKeyFwd;
+        static readonly HashSet<int> gpuCollapseDirtyIds=new HashSet<int>();
+        static readonly List<scrDecoration> gpuCollapseNewDecos=new List<scrDecoration>();
+        static SceneRenderOrder.Key DcShiftKey(SceneRenderOrder.Key k,float shift)
+            =>shift==0f?k:new SceneRenderOrder.Key(k.Layer,k.Order,k.Queue,k.Distance-shift,k.Material,k.Renderer,k.Slot);
+        // Dormancy 가 이미 거는 장식 후크(ApplyColor/SetVisible/SetMaskingType/EnableMeshRenderer/Setup/Awake)와 SetDepth 후크에서 부른다.
+        internal static void CollapseMarkDirty(scrDecoration d)
+        {
+            var vd=d as scrVisualDecoration;if(vd==null)return;
+            if(vd.spriteRenderer)gpuCollapseDirtyIds.Add(vd.spriteRenderer.GetInstanceID());
+            if(vd.meshRenderer)gpuCollapseDirtyIds.Add(vd.meshRenderer.GetInstanceID());
+        }
+        internal static void CollapseMarkNew(scrDecoration d){if(gpuCollapseSeen!=null)gpuCollapseNewDecos.Add(d);CollapseMarkDirty(d);}
+        static int TryAddCollapseBarrier(Renderer r)
+        {
+            if(!r || !r.gameObject.scene.IsValid() || !gpuCollapseSeen.Add(r.GetInstanceID()))return 0;
+            if(gpuLiveRoot && r.transform.IsChildOf(gpuLiveRoot.transform))return 0;
+            if((gpuLiveCamera.cullingMask&(1<<r.gameObject.layer))==0 || r.GetComponentInParent<SortingGroup>())return 0;
+            var mats=r.sharedMaterials;if(mats==null)return 0;int added=0;
+            for(int slot=0;slot<mats.Length;slot++)
+            {
+                var m=mats[slot];if(!m || m.renderQueue<=2500)continue;
+                gpuCollapseBarriers.Add(new GpuLiveRow{R=r,M=m,Item=-1,AuxiliaryOwner=-1,Key=MatShare.SortKey(r,m,gpuLiveCamera,slot)});added++;
+            }
+            return added;
+        }
+        static double dcScanMs,dcTieMs,dcPlanMs,dcMeshMs,dcMatMs,dcMeshBuildMs,dcBufMs,dcGoMs,dcDisposeMs;
         static double DcMs(long from)=>(Stopwatch.GetTimestamp()-from)*1000.0/Stopwatch.Frequency;
         static void BuildDrawCollapseSpans()
         {
             long dcT0=Stopwatch.GetTimestamp();int nudgedSpans=0;
             var source=gpuLiveSlices[0];
             var rows=new List<DrawCollapsePolicy.Row>();
-            // 곡 시작 뒤 파괴된 후보 장벽은 더 이상 그려지지 않으므로 빼고, 새로 생긴 비소유 렌더러는 장벽으로 더한다.
-            int lostBarriers=gpuCollapseBarriers.RemoveAll(b=>!b.R || !DrawCollapseMaterial(b));
+            // ---- 프로토타입: 키 캐시 + 변경 추적 재계획 ----
+            // 직교 카메라가 앞축으로 움직이면 모든 정렬 거리가 같은 값만큼 변한다. 캐시한 키는 그 값으로 일괄 보정한다(앞축이 바뀌면 전부 다시 읽는다).
+            var camNow=gpuLiveCamera.transform;
+            bool keysValid=DrawCollapsePolicy.KeyCache && gpuCollapseKeysValid
+                && Vector3.Dot(camNow.forward,gpuCollapseKeyFwd)>=0.999999f;
+            float keyShift=keysValid?Vector3.Dot(camNow.position-gpuCollapseKeyCamPos,gpuCollapseKeyFwd):0f;
+            // 곡 시작 뒤 파괴된 후보 장벽은 더 이상 그려지지 않으므로 뺀다.
+            int lostBarriers=gpuCollapseBarriers.RemoveAll(b=>!b.R || !b.M);
             int addedBarriers=0;
             if(gpuCollapseSeen!=null)
-            foreach(var r in Resources.FindObjectsOfTypeAll<Renderer>())
             {
-                if(!r || !r.gameObject.scene.IsValid() || !gpuCollapseSeen.Add(r.GetInstanceID()))continue;
-                if(gpuLiveRoot && r.transform.IsChildOf(gpuLiveRoot.transform))continue;
-                if((gpuLiveCamera.cullingMask&(1<<r.gameObject.layer))==0 || r.GetComponentInParent<SortingGroup>())continue;
-                var mats=r.sharedMaterials;if(mats==null)continue;
-                for(int slot=0;slot<mats.Length;slot++)
+                if(DrawCollapsePolicy.FullScanOnReplan || !gpuCollapseScanned)
                 {
-                    var m=mats[slot];if(!m || m.renderQueue<=2500)continue;
-                    gpuCollapseBarriers.Add(new GpuLiveRow{R=r,M=m,Item=-1,AuxiliaryOwner=-1,Key=MatShare.SortKey(r,m,gpuLiveCamera,slot)});addedBarriers++;
+                    foreach(var r in Resources.FindObjectsOfTypeAll<Renderer>())addedBarriers+=TryAddCollapseBarrier(r);
+                    gpuCollapseScanned=true;
                 }
+                else
+                {
+                    // 새로 만들어진 장식의 렌더러만 후크로 추적한 목록에서 가져온다.
+                    foreach(var d in gpuCollapseNewDecos)
+                    {
+                        if((object)d==null)continue;
+                        var vd=d as scrVisualDecoration;if(vd==null)continue;
+                        addedBarriers+=TryAddCollapseBarrier(vd.spriteRenderer);
+                        addedBarriers+=TryAddCollapseBarrier(vd.meshRenderer);
+                    }
+                }
+                gpuCollapseNewDecos.Clear();
             }
             dcScanMs=DcMs(dcT0);long dcT1=Stopwatch.GetTimestamp();
-            // 정렬 키(층,순서,큐,거리)가 활성 장벽과 완전히 같으면 순서는 재질 인스턴스 ID가 정한다. 새로 만든 대표 재질의 ID는
-            // 항상 더 작아서 장벽 뒤로 보낼 수 없으므로, 그 묶음의 소유 장식은 구간에서 빼고 개별 렌더러로 둔다(텍스처 대체와 같은 경로).
-            // 대표 재질의 인스턴스 ID 는 새로 만들어져 모든 기존 재질보다 작다(음수로 더 큼). 같은 정렬 묶음에서 활성 장벽보다 앞에
-            // 그려지던 장식(재질 ID 가 장벽의 최소 ID 보다 작음)은 대표 렌더러에 넣어도 장벽 앞에 정렬되므로 구간에 남긴다.
-            // 장벽보다 뒤에 그려지던 장식만 개별 렌더러로 뺀다(텍스처 대체와 같은 경로).
+            // 소유 장식은 변환이 얼어 있어 키가 변하지 않는다: 보정만 하고 다시 읽지 않는다.
+            if(keysValid)
+            {
+                for(int i=0;i<gpuCollapseOwnedRows.Length;i++){var orow=gpuCollapseOwnedRows[i];if(orow!=null)orow.Key=DcShiftKey(orow.Key,keyShift);}
+            }
+            else
+            {
+                for(int i=0;i<gpuCollapseOwnedRows.Length;i++)
+                {
+                    var row=gpuCollapseOwnedRows[i];var material=DrawCollapseMaterial(row);
+                    RequireLive(row.R && material,"drawcollapse replan owned renderer lost item="+i);
+                    RequireLive(material==row.M,"drawcollapse replan owned material changed item="+i);
+                    row.Key=MatShare.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);
+                }
+            }
+            // 장벽: 지금 활성이거나 변경 이벤트가 온 것만 다시 읽고, 나머지는 보정한 캐시 키를 쓴다.
             var activeBucketMinMat=new Dictionary<(int,int,int,float),int>();
             var activeBucketMaxMat=new Dictionary<(int,int,int,float),int>();
-            foreach(var b in gpuCollapseBarriers)
+            int rereadBarriers=0;
+            foreach(var row in gpuCollapseBarriers)
             {
-                if(!DrawCollapseBarrierActive(b))continue;
-                var bm=DrawCollapseMaterial(b);if(!bm)continue;
-                var bk=MatShare.SortKey(b.R,bm,gpuLiveCamera,b.Key.Slot);
-                var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);
-                if(!activeBucketMinMat.TryGetValue(bkey,out int curMin) || bk.Material<curMin)activeBucketMinMat[bkey]=bk.Material;
-                if(!activeBucketMaxMat.TryGetValue(bkey,out int curMax) || bk.Material>curMax)activeBucketMaxMat[bkey]=bk.Material;
+                bool active=DrawCollapseBarrierActive(row);
+                bool refresh=!keysValid || active || gpuCollapseDirtyIds.Contains(row.R.GetInstanceID());
+                if(refresh)
+                {
+                    var material=DrawCollapseMaterial(row);
+                    RequireLive(row.R && material,"drawcollapse replan barrier lost");
+                    row.M=material;row.Key=MatShare.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);rereadBarriers++;
+                }
+                else row.Key=DcShiftKey(row.Key,keyShift);
+                if(active)
+                {
+                    var bk=row.Key;var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);
+                    if(!activeBucketMinMat.TryGetValue(bkey,out int curMin) || bk.Material<curMin)activeBucketMinMat[bkey]=bk.Material;
+                    if(!activeBucketMaxMat.TryGetValue(bkey,out int curMax) || bk.Material>curMax)activeBucketMaxMat[bkey]=bk.Material;
+                }
             }
             int tieExcluded=0;var newBarriers=new List<GpuLiveRow>();
             for(int i=0;i<gpuCollapseOwnedRows.Length;i++)
             {
                 if(!gpuCollapseIncluded[i])continue;
-                var orow=gpuCollapseOwnedRows[i];var om=orow!=null && orow.R?DrawCollapseMaterial(orow):null;if(!om)continue;
-                var ok=MatShare.SortKey(orow.R,om,gpuLiveCamera,orow.Key.Slot);
+                var orow=gpuCollapseOwnedRows[i];if(orow==null || !orow.R)continue;
+                var ok=orow.Key;
                 if(!activeBucketMinMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out int minBarrierMat))continue;
                 if(DrawCollapsePolicy.KeepBeforeBarrier)
                 {
                     if(ok.Material<minBarrierMat)continue; // 모든 활성 장벽보다 앞: 구간에 유지(대표 거리를 +미세 이동)
-                    if(DrawCollapsePolicy.KeepAfterBarrier && activeBucketMaxMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out int maxBarrierMat) && ok.Material>maxBarrierMat)continue; // 모든 활성 장벽보다 뒤: 구간에 유지(-미세 이동)
+                    if(DrawCollapsePolicy.KeepAfterBarrier && activeBucketMaxMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out int maxBarrierMat) && ok.Material>maxBarrierMat)continue;
                 }
                 gpuCollapseIncluded[i]=false;
                 if(!gpuCollapseTextureFallback[i]){gpuCollapseTextureFallback[i]=true;gpuCollapseTextureFallbackCount++;}
@@ -289,37 +350,27 @@ namespace StutterFix
                 if(ir)newBarriers.Add(new GpuLiveRow{R=ir,M=ir.sharedMaterial,Item=-1,AuxiliaryOwner=-1,Key=MatShare.SortKey(ir,ir.sharedMaterial,gpuLiveCamera)});
                 tieExcluded++;
             }
-            dcTieMs=DcMs(dcT1);
+            var newBarrierSet=new HashSet<GpuLiveRow>(newBarriers);
             gpuCollapseBarriers.AddRange(newBarriers);
             dcTieMs=DcMs(dcT1);
             GpuLog("DRAWCOLLAPSE_TIE_EXCLUDED owned_items="+tieExcluded+" active_buckets="+activeBucketMinMat.Count);
-            GpuLog("DRAWCOLLAPSE_REPLAN barriers_removed="+lostBarriers+" barriers_added="+addedBarriers+" barriers_now="+gpuCollapseBarriers.Count);
-            // Re-read both populations, including dormant barriers, so a seek
-            // cannot leave the old layer/order/material key in the new plan.
+            GpuLog("DRAWCOLLAPSE_REPLAN barriers_removed="+lostBarriers+" barriers_added="+addedBarriers+" barriers_now="+gpuCollapseBarriers.Count+" reread="+rereadBarriers+" keys_cached="+keysValid+" shift="+keyShift.ToString("R",Inv));
             foreach(var row in gpuCollapseBarriers)
-            {
-                var material=DrawCollapseMaterial(row);
-                RequireLive(row.R && material,"drawcollapse replan barrier lost");
-                row.M=material;row.Key=MatShare.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);
                 rows.Add(new DrawCollapsePolicy.Row(row.Key,false,row.R.GetInstanceID()));
-            }
             for(int i=0;i<gpuCollapseOwnedRows.Length;i++)
-            {
-                var row=gpuCollapseOwnedRows[i];var material=DrawCollapseMaterial(row);
-                RequireLive(row.R && material,"drawcollapse replan owned renderer lost item="+i);
-                // Texture addresses/sampler flags are immutable until live prepare.
-                RequireLive(material==row.M,"drawcollapse replan owned material changed item="+i);
-                row.Key=MatShare.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);
-                if(gpuCollapseIncluded[i])rows.Add(new DrawCollapsePolicy.Row(row.Key,true,i));
-            }
+                if(gpuCollapseIncluded[i])rows.Add(new DrawCollapsePolicy.Row(gpuCollapseOwnedRows[i].Key,true,i));
             gpuCollapseCameraPosition=gpuLiveCamera.transform.position;
             gpuCollapseCameraForward=gpuLiveCamera.transform.forward;gpuCollapseOwnedCursor=0;
+            gpuCollapseKeyCamPos=gpuCollapseCameraPosition;gpuCollapseKeyFwd=gpuCollapseCameraForward;gpuCollapseKeysValid=DrawCollapsePolicy.KeyCache;
+            gpuCollapseDirtyIds.Clear();
             long dcT2=Stopwatch.GetTimestamp();
             var plan=DrawCollapsePolicy.Plan(rows);
             dcPlanMs=DcMs(dcT2);dcMeshMs=0;long dcT3=Stopwatch.GetTimestamp();
             RequireLive(plan.Count>0 && plan.Count<=DrawCollapsePolicy.MaxSpans,"drawcollapse conservative prepared spans="+plan.Count+" exceeds renderer budget");
+            dcMatMs=dcMeshBuildMs=dcBufMs=dcGoMs=0;
             foreach(var items in plan)
             {
+                long dcL0=Stopwatch.GetTimestamp();
                 var first=gpuCollapseOwnedRows[items[0]];var last=gpuCollapseOwnedRows[items[items.Length-1]];
                 var s=new CollapseSpan{Items=items,First=first.Key,Last=last.Key};gpuCollapseSpans.Add(s);
                 RequireLive(items.All(i=>gpuCollapseOwnedRows[i].R.gameObject.layer==first.R.gameObject.layer),
@@ -343,6 +394,7 @@ namespace StutterFix
                     gpuCollapseSharedMats[matKey]=shared;
                 }
                 s.Material=shared;s.SharedMat=true;
+                dcMatMs+=DcMs(dcL0);long dcL1=Stopwatch.GetTimestamp();
                 s.Mesh=new Mesh{name="GpuDeco collapse span",indexFormat=IndexFormat.UInt32,vertexBufferTarget=GraphicsBuffer.Target.Raw};
                 s.Mesh.SetVertexBufferParams(items.Length*4,
                     new VertexAttributeDescriptor(VertexAttribute.Position,VertexAttributeFormat.Float32,3),
@@ -366,8 +418,10 @@ namespace StutterFix
                 }
                 s.Mesh.bounds=new Bounds(center,new Vector3(2000000,2000000,0));s.Mesh.UploadMeshData(true);
                 s.Vertices=s.Mesh.GetVertexBuffer(0);
+                dcMeshBuildMs+=DcMs(dcL1);long dcL2=Stopwatch.GetTimestamp();
                 RequireLive(s.Mesh.GetVertexBufferStride(0)==60 && s.Mesh.subMeshCount==1,"drawcollapse raw mesh layout");
                 s.Map=new ComputeBuffer(items.Length,4);s.Map.SetData(items.Select(i=>(uint)i).ToArray());
+                dcBufMs+=DcMs(dcL2);long dcL3=Stopwatch.GetTimestamp();
                 var go=new GameObject("GpuDeco collapse span"){hideFlags=HideFlags.HideAndDontSave,layer=first.R.gameObject.layer};
                 go.transform.SetParent(gpuLiveRoot.transform,false);go.AddComponent<MeshFilter>().sharedMesh=s.Mesh;
                 s.Renderer=go.AddComponent<MeshRenderer>();s.Renderer.enabled=false;s.Renderer.sharedMaterial=s.Material;
@@ -376,6 +430,7 @@ namespace StutterFix
                 s.Renderer.shadowCastingMode=ShadowCastingMode.Off;s.Renderer.receiveShadows=false;
                 s.Renderer.lightProbeUsage=LightProbeUsage.Off;s.Renderer.reflectionProbeUsage=ReflectionProbeUsage.Off;
                 RequireLive(s.Renderer.sharedMaterials.Length==1,"drawcollapse requires one material");
+                dcGoMs+=DcMs(dcL3);
             }
             // 같은 (층,순서,큐,거리) 묶음에서 이어지는 구간들이 재질을 공유하면 완전 동점이 되어 순서가 렌더러 ID(생성 순서의 역순)로 뒤집힌다.
             // 그런 구간들은 재질을 따로 만들되 뒤 구간부터 만들어 앞 구간의 인스턴스 ID 가 더 작게(= 먼저 그려지게) 한다.
@@ -407,13 +462,14 @@ namespace StutterFix
             // texture address buffer, and the loaded shader survive every ready.
             long dcReadyT0=Stopwatch.GetTimestamp();
             foreach(var span in gpuCollapseSpans)span.Dispose();gpuCollapseSpans.Clear();
+            dcDisposeMs=DcMs(dcReadyT0);
             try {BuildDrawCollapseSpans();}
             catch
             {
                 foreach(var span in gpuCollapseSpans)span.Dispose();gpuCollapseSpans.Clear();
                 throw;
             }
-            GpuLog("DRAWCOLLAPSE_REPLAN_MS scan="+dcScanMs.ToString("F1",Inv)+" tie="+dcTieMs.ToString("F1",Inv)+" plan="+dcPlanMs.ToString("F1",Inv)+" total="+DcMs(dcReadyT0).ToString("F1",Inv));
+            GpuLog("DRAWCOLLAPSE_REPLAN_MS scan="+dcScanMs.ToString("F1",Inv)+" tie="+dcTieMs.ToString("F1",Inv)+" plan="+dcPlanMs.ToString("F1",Inv)+" mat="+dcMatMs.ToString("F1",Inv)+" mesh="+dcMeshBuildMs.ToString("F1",Inv)+" buf="+dcBufMs.ToString("F1",Inv)+" go="+dcGoMs.ToString("F1",Inv)+" dispose="+dcDisposeMs.ToString("F1",Inv)+" total="+DcMs(dcReadyT0).ToString("F1",Inv));
             gpuCollapseReplanTime=Time.realtimeSinceStartupAsDouble;
             GpuLog("DRAWCOLLAPSE_REPLANNED spans="+gpuCollapseSpans.Count+" included="+gpuCollapseIncluded.Count(x=>x)
                 +" barriers="+gpuCollapseBarriers.Count+" arrays_reused="+gpuCollapseArrays.Count

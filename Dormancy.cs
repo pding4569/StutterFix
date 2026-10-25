@@ -111,6 +111,14 @@ namespace StutterFix
                     if (m == null) { broken = true; Main.Entry.Logger.Log("[잠든 장식] " + name + " 없음 - 끔"); return; }
                     h.Patch(m, postfix: post);
                 }
+#if DEV || AUTOTEST
+                try
+                {
+                    var sd = AccessTools.Method(typeof(scrVisualDecoration), "SetDepth");
+                    if (sd != null) h.Patch(sd, postfix: new HarmonyMethod(typeof(Dormancy), nameof(DepthPost)));
+                }
+                catch (Exception ex) { Main.Entry.Logger.Log("[잠든 장식] SetDepth 후크 실패: " + ex.Message); }
+#endif
                 foreach (var name in new[] { "Setup", "Awake" })
                 {
                     var m = AccessTools.Method(typeof(scrDecoration), name);
@@ -125,8 +133,19 @@ namespace StutterFix
         internal static bool ProbeDormant(scrDecoration d) { return dormant.Contains(d); }
         #endif
 
-        public static void WakePost(scrVisualDecoration __instance) { Wake(__instance); }
-        public static void WakeBase(scrDecoration __instance) { hbDirty = true; Wake(__instance); }
+        public static void WakePost(scrVisualDecoration __instance) { Wake(__instance);
+#if DEV || AUTOTEST
+            DecoBake.CollapseMarkDirty(__instance);
+#endif
+        }
+        public static void WakeBase(scrDecoration __instance) { hbDirty = true; Wake(__instance);
+#if DEV || AUTOTEST
+            DecoBake.CollapseMarkNew(__instance);
+#endif
+        }
+#if DEV || AUTOTEST
+        public static void DepthPost(scrVisualDecoration __instance) { DecoBake.CollapseMarkDirty(__instance); }
+#endif
         internal static void MarkHitboxDirty() { hbDirty = true; }   // ExitFix: Setup 을 건너뛴 장식이 있을 때 (Setup 뒤에 하던 것과 같게)
 
         private static void Wake(scrDecoration d)
