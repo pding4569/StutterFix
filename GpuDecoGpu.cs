@@ -178,6 +178,8 @@ namespace StutterFix
         }
 #endif
         internal ComputeShader Shader=>shader;
+        // 진단: 항목×16 채널의 현재 값(알파 채널 10·11 은 컴퓨트가 매번 쓴다).
+        internal float[] ReadValuesForDiag(){var a=new float[values.count];values.GetData(a);return a;}
         internal bool HasImageGeometry=>hasImageGeometry;
 #if AUTOTEST || GPUDECO || UNITY_EDITOR
         readonly Vector4[] imageMatrixUpload=new Vector4[8];
@@ -234,10 +236,13 @@ namespace StutterFix
             else
                 progress.SetData(rawProgress, 0, 0, count);
         }
+        // 제품이 켜는 값: 독립 평가에서도 알파 0 항목을 건너뛴다(랩·시험 경로는 0 그대로).
+        internal static int AlphaEarlyOut;
         internal void SetLiveUniforms(Vector4 camera, double time)
         {
             shader.SetInt("_UseAnchors", 1);
             shader.SetInt("_UseLiveChannels", (UseLiveMode && hasLiveKernel) ? 1 : 0);
+            shader.SetInt("_AlphaEarlyOut", AlphaEarlyOut);
             shader.SetVector("_Camera", camera);
             float hi = (float)time;
             shader.SetFloat("_TimeHi", hi);

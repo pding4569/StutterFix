@@ -1,21 +1,21 @@
 [Licensing::Module] Trying to connect to existing licensing client channel...
 Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
-[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴" at "2026-10-25T18:35:42.2298488Z"
 OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 24505 MB
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴" at "2026-10-25T20:54:45.0205623Z"
 BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
 System  architecture: x64
 Process architecture: x64
-Date: 2026-10-25T18:35:42Z
+Date: 2026-10-25T20:54:45Z
 [Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 31708, path: "C:/Program Files/WindowsApps/UnityTechnologies.UnityHub_3.21.3.65535_x64__2vrhnee42bhxm/app/UnityLicensingClient_V1/Unity.Licensing.Client.exe")
 [Licensing::Module] LicensingClient has failed validation; ignoring
 [Licensing::Client] Handshaking with LicensingClient:
   Version:                 1.18.3+d7ffd15
-  Session Id:              09378dbfaeb2459e9356c45588045c6f
+  Session Id:              1f10a23fb9cc4c679f5b6452704f191a
   Correlation Id:          c80f5be233fbd45f5ce82780e78b2485
-  External correlation Id: 2401990912809963369
+  External correlation Id: 9125981993919571977
   Machine Id:              ooNE0R16id3ypk/QQXRV4Tmz/MA=
-[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-나로컴" (connect: 0.00s, validation: 0.00s, handshake: 0.03s)
-[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴-notifications" at "2026-10-25T18:35:42.2636552Z"
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-나로컴" (connect: 0.00s, validation: 0.00s, handshake: 0.07s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴-notifications" at "2026-10-25T20:54:45.0927493Z"
 [Licensing::Module] Error: Access token is unavailable; failed to update
 [Licensing::Client] Successfully resolved entitlement details
 [Licensing::Module] License group:
@@ -25,7 +25,7 @@ Date: 2026-10-25T18:35:42Z
   Expiration: Unlimited
 [Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
 [Licensing::Client] Successfully resolved entitlement details
-[Licensing::Module] Licensing Background thread has ended after 0.04s
+[Licensing::Module] Licensing Background thread has ended after 0.08s
 
 COMMAND LINE ARGUMENTS:
 E:\Unity\Editor\6000.3.10f1\Editor\Unity.exe
@@ -75,16 +75,16 @@ E:/StutterFixWork/wt-port/tools/gpudeco-lab/project
     "memorysetup-job-temp-allocator-block-size-background=1048576"
     "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
     "memorysetup-temp-allocator-size-cloud-worker=32768"
-Player connection [24712]  Target information:
+Player connection [988]  Target information:
 
-Player connection [24712]  * "[IP] 192.168.0.9 [Port] 55504 [Flags] 2 [Guid] 4143759653 [EditorId] 4143759653 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-UJA68AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+Player connection [988]  * "[IP] 192.168.0.9 [Port] 55504 [Flags] 2 [Guid] 916453337 [EditorId] 916453337 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-UJA68AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
 
-Player connection [24712] Host joined multi-casting on [225.0.0.222:54997]...
-Player connection [24712] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Player connection [988] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [988] Host joined alternative multi-casting on [225.0.0.222:34997]...
 Input System module state changed to: Initialized.
 [Physics::Module] Initialized fallback backend.
 [Physics::Module] Id: 0xdecafbad
-[Package Manager] Connected to IPC stream "Upm-25660" after 0.4 seconds.
+[Package Manager] Connected to IPC stream "Upm-34764" after 0.4 seconds.
 [Licensing::Client] Successfully resolved entitlement details
 Library Redirect Path: Library/
 [Physics::Module] Selected backend.
@@ -111,7 +111,7 @@ Initialize mono
 Mono path[0] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/Managed'
 Mono path[1] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
 Mono config path = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56660
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56764
 Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
 Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
 ImportWorker Server TCP listen port: 0
@@ -119,40 +119,40 @@ AcceleratorClientConnectionCallback - disconnected - :0
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: E:/Unity/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.001050 seconds.
-- Loaded All Assemblies, in  0.426 seconds
+Registered in 0.001055 seconds.
+- Loaded All Assemblies, in  0.444 seconds
 Native extension for WindowsStandalone target not found
 ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:False
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.502 seconds
-Domain Reload Profiling: 928ms
-	BeginReloadAssembly (104ms)
+- Finished resetting the current domain, in  0.498 seconds
+Domain Reload Profiling: 941ms
+	BeginReloadAssembly (117ms)
 		ExecutionOrderSort (0ms)
 		DisableScriptedObjects (0ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (3ms)
+		CreateAndSetChildDomain (16ms)
 	RebuildCommonClasses (45ms)
 	RebuildNativeTypeToScriptingClass (17ms)
-	initialDomainReloadingComplete (50ms)
-	LoadAllAssembliesAndSetupDomain (210ms)
-		LoadAssemblies (100ms)
+	initialDomainReloadingComplete (51ms)
+	LoadAllAssembliesAndSetupDomain (213ms)
+		LoadAssemblies (101ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (207ms)
-			TypeCache.Refresh (205ms)
-				TypeCache.ScanAssembly (189ms)
+		AnalyzeDomain (209ms)
+			TypeCache.Refresh (207ms)
+				TypeCache.ScanAssembly (192ms)
 			BuildScriptInfoCaches (0ms)
 			ResolveRequiredComponents (1ms)
-	FinalizeReload (502ms)
+	FinalizeReload (498ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (454ms)
+		SetupLoadedEditorAssemblies (450ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (56ms)
+			InitializePlatformSupportModulesInManaged (55ms)
 			SetLoadedEditorAssemblies (5ms)
-			BeforeProcessingInitializeOnLoad (115ms)
+			BeforeProcessingInitializeOnLoad (110ms)
 			ProcessInitializeOnLoadAttributes (188ms)
-			ProcessInitializeOnLoadMethodAttributes (90ms)
+			ProcessInitializeOnLoadMethodAttributes (91ms)
 			AfterProcessingInitializeOnLoad (0ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
@@ -168,6 +168,14 @@ Package Manager log level set to [2]
     com.unity.modules.assetbundle@1.0.0 (location: E:\StutterFixWork\wt-port\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.assetbundle)
 [Subsystems] No new subsystems found in resolved package list.
 [Package Manager] Done registering packages in 0.00 seconds
+[Package Manager] Done resolving packages in 1.06 seconds
+[Package Manager] Registered 2 packages:
+  Built-in packages:
+    com.unity.modules.imageconversion@1.0.0 (location: E:\StutterFixWork\wt-port\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.assetbundle@1.0.0 (location: E:\StutterFixWork\wt-port\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.assetbundle)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.00 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
 info: Microsoft.Hosting.Lifetime[14]
       Now listening on: http://localhost:80
 info: Microsoft.Hosting.Lifetime[0]
@@ -183,104 +191,107 @@ info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
 info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
       Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
 info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 42.1601ms
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 42.7004ms
 Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
 WorkingDir: E:/StutterFixWork/wt-port/tools/gpudeco-lab/project
 DisplayProgressbar: Compiling Scripts
-ExitCode: 0 Duration: 0s77ms
-*** Tundra build success (0.04 seconds), 0 items updated, 148 evaluated
-AssetDatabase: script compilation time: 0.422961s
+ExitCode: 0 Duration: 1s816ms
+[145/148    1s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[146/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[147/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (1.78 seconds), 3 items updated, 148 evaluated
+AssetDatabase: script compilation time: 2.178349s
 Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.502 seconds
+- Loaded All Assemblies, in  0.504 seconds
 Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
 Native extension for WindowsStandalone target not found
 ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.492 seconds
-Domain Reload Profiling: 995ms
-	BeginReloadAssembly (299ms)
+- Finished resetting the current domain, in  0.503 seconds
+Domain Reload Profiling: 1007ms
+	BeginReloadAssembly (307ms)
 		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (14ms)
+		DisableScriptedObjects (17ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (167ms)
-	RebuildCommonClasses (45ms)
-	RebuildNativeTypeToScriptingClass (18ms)
-	initialDomainReloadingComplete (25ms)
-	LoadAllAssembliesAndSetupDomain (116ms)
-		LoadAssemblies (185ms)
+		CreateAndSetChildDomain (162ms)
+	RebuildCommonClasses (44ms)
+	RebuildNativeTypeToScriptingClass (17ms)
+	initialDomainReloadingComplete (24ms)
+	LoadAllAssembliesAndSetupDomain (111ms)
+		LoadAssemblies (178ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
 		AnalyzeDomain (10ms)
 			TypeCache.Refresh (7ms)
 				TypeCache.ScanAssembly (2ms)
 			BuildScriptInfoCaches (1ms)
-			ResolveRequiredComponents (1ms)
-	FinalizeReload (493ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (503ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (361ms)
+		SetupLoadedEditorAssemblies (367ms)
 			LogAssemblyErrors (0ms)
 			InitializePlatformSupportModulesInManaged (25ms)
 			SetLoadedEditorAssemblies (3ms)
-			BeforeProcessingInitializeOnLoad (142ms)
-			ProcessInitializeOnLoadAttributes (144ms)
-			ProcessInitializeOnLoadMethodAttributes (44ms)
-			AfterProcessingInitializeOnLoad (3ms)
+			BeforeProcessingInitializeOnLoad (144ms)
+			ProcessInitializeOnLoadAttributes (147ms)
+			ProcessInitializeOnLoadMethodAttributes (45ms)
+			AfterProcessingInitializeOnLoad (2ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
 		AwakeInstancesAfterBackupRestoration (12ms)
-Start importing Assets/Shaders/GpuDecoBatch.shader using Guid(69b5bba42d5205b41b6184815f54e15b) (ShaderImporter)Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
- -> (artifact id: '9a06146f611bc69d78d364c409905f3d') in 0.040327 seconds
+Start importing Assets/Shaders/GpuDeco.compute using Guid(9e1d6beb23bd87a4d8734c511ea0954b) (ComputeShaderImporter)Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+ -> (artifact id: 'cdd2ec71be4c7feed6fb1e7c79c7be0f') in 0.0342481 seconds
 Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Asset Pipeline Refresh (id=c3bbb706d18a31343be089dbca9b0d81): Total: 1.617 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+Asset Pipeline Refresh (id=84bfe7881a3c86d458cdb2af4451ec96): Total: 4.424 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
 	Summary:
 		Imports: total=1 (actual=1, local cache=0, cache server=0)
 		Asset DB Process Time: managed=2 ms, native=603 ms
-		Asset DB Callback time: managed=58 ms, native=21 ms
-		Scripting: domain reloads=1, domain reload time=502 ms, compile time=425 ms, other=2 ms
+		Asset DB Callback time: managed=58 ms, native=1071 ms
+		Scripting: domain reloads=1, domain reload time=504 ms, compile time=2180 ms, other=3 ms
 		Project Asset Count: scripts=28, non-scripts=6
-		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Asset File Changes: new=0, changed=2, moved=0, deleted=0
 		Scan Filter Count: 0
 	InvokeCustomDependenciesCallbacks: 0.001ms
-	InvokePackagesCallback: 4.239ms
-	ApplyChangesToAssetFolders: 0.142ms
-	Scan: 15.098ms
-	OnSourceAssetsModified: 1.832ms
-	CategorizeAssetsWithTransientArtifact: 0.208ms
-	ProcessAssetsWithTransientArtifactChanges: 0.815ms
-	CategorizeAssets: 0.187ms
-	ImportOutOfDateAssets: 537.674ms (66.280ms without children)
-		ImportManagerImport: 43.749ms (3.191ms without children)
-			ImportInProcess: 40.527ms
-			UpdateCategorizedAssets: 0.031ms
-		CompileScripts: 424.917ms
-		ReloadNativeAssets: 0.000ms
-		UnloadImportedAssets: 0.180ms
-		ReloadImportedAssets: 2.348ms
-		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.009ms
+	InvokePackagesCallback: 1068.787ms
+	ApplyChangesToAssetFolders: 0.239ms
+	Scan: 14.941ms
+	OnSourceAssetsModified: 0.848ms
+	CategorizeAssetsWithTransientArtifact: 0.184ms
+	ProcessAssetsWithTransientArtifactChanges: 1.147ms
+	CategorizeAssets: 0.192ms
+	ImportOutOfDateAssets: 539.730ms (-1676.334ms without children)
+		ImportManagerImport: 35.273ms (0.807ms without children)
+			ImportInProcess: 34.446ms
+			UpdateCategorizedAssets: 0.020ms
+		CompileScripts: 2180.391ms
+		ReloadNativeAssets: 0.001ms
+		UnloadImportedAssets: 0.114ms
+		ReloadImportedAssets: 0.000ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.008ms
 		InitializingProgressBar: 0.005ms
 		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
-		OnDemandSchedulerStart: 0.185ms
-	PostProcessAllAssets: 73.184ms
-	Hotreload: 0.893ms
-	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
-	UnloadStreamsBegin: 1.889ms
-	PersistCurrentRevisions: 0.041ms
+		OnDemandSchedulerStart: 0.273ms
+	PostProcessAllAssets: 60.942ms
+	Hotreload: 0.573ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.003ms
+	UnloadStreamsBegin: 1.590ms
+	PersistCurrentRevisions: 0.026ms
 	UnloadStreamsEnd: 0.001ms
 	GenerateScriptTypeHashes: 0.001ms
-	Untracked: 980.317ms
+	Untracked: 2735.159ms
 
 Application.AssetDatabase Initial Refresh End
-Scanning for USB devices : 1.371ms
+Scanning for USB devices : 1.445ms
 Initializing Unity extensions:
 [MODES] ModeService[none].Initialize
 [MODES] ModeService[none].LoadModes
 [MODES] Loading mode Default (0) for mode-current-id-project
 Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 27 unused Assets / (0.8 MB). Loaded Objects now: 634.
-Memory consumption went from 89.8 MB to 89.0 MB.
-Total: 5.670700 ms (FindLiveObjects: 0.053000 ms CreateObjectMapping: 0.004500 ms MarkObjects: 5.319500 ms  DeleteObjects: 0.292300 ms)
+Unloading 29 unused Assets / (1.4 MB). Loaded Objects now: 632.
+Memory consumption went from 89.4 MB to 88.0 MB.
+Total: 5.686900 ms (FindLiveObjects: 0.044200 ms CreateObjectMapping: 0.004400 ms MarkObjects: 5.023000 ms  DeleteObjects: 0.614400 ms)
 
 [gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
 UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
@@ -295,12 +306,12 @@ GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
 
 (Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
 
-Asset Pipeline Refresh (id=7cd1416d0ea542644a6f1287749d7160): Total: 0.013 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
-Asset Pipeline Refresh (id=3997ea0574c8c0644a82a4ffb2ebab7b): Total: 0.028 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
-Start importing ProjectSettings/ProjectSettings.asset using Guid(00000000000000004000000000000000) (LibraryAssetImporter) -> (artifact id: 'b3e255e95208982f85b57995b6fd4125') in 0.0018866 seconds
+Asset Pipeline Refresh (id=a626d53bbf440ba498af8e98d7c5791b): Total: 0.021 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=bf07ce34904e5de468f4330c58e1cd07): Total: 0.027 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/ProjectSettings.asset using Guid(00000000000000004000000000000000) (LibraryAssetImporter) -> (artifact id: 'b3e255e95208982f85b57995b6fd4125') in 0.0018412 seconds
 Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Asset Pipeline Refresh (id=98af7318e3becfc42bfe1d932c476b4b): Total: 0.043 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=6d50e15cae7c05a469d5d39c03c872b8): Total: 0.043 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
 info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
       Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc -
 info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
@@ -308,12 +319,12 @@ info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
 info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
       Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
 info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 1.4836ms
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 1.4736ms
 Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aESkipCompile.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
 WorkingDir: E:/StutterFixWork/wt-port/tools/gpudeco-lab/project
 ExitCode: 0 Duration: 0s84ms
 *** Tundra build success (0.05 seconds), 0 items updated, 3 evaluated
-Asset Pipeline Refresh (id=b984e521db3f0a94f84227c811686500): Total: 0.001 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=65c3416756cd7dc42a4186ce8bad85ab): Total: 0.001 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
 [ScriptCompilation] Requested script compilation because: Recompiling scripts for player build.
 BuildPlayer: start building target 19
 info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
@@ -323,13 +334,13 @@ info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
 info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
       Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
 info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 0.4076ms
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 0.7621ms
 Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aP.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
 WorkingDir: E:/StutterFixWork/wt-port/tools/gpudeco-lab/project
-ExitCode: 0 Duration: 0s32ms
-*** Tundra build success (0.00 seconds), 0 items updated, 3 evaluated
 Total cache size 68378808
-Total cache size after purge 68378808, took 00:00:00.1126242
+ExitCode: 0 Duration: 0s31ms
+*** Tundra build success (0.00 seconds), 0 items updated, 3 evaluated
+Total cache size after purge 68378808, took 00:00:00.1010385
 Compiling shader "StutterFix/GpuDecoBatch"
   Pass "" (vp)
     Target graphics API: d3d11
@@ -360,148 +371,155 @@ Compiling compute shader "GpuDeco"
     starting stripping...
     finished in 0.00 seconds. 12 of 12 variants left
     12 variants, starting compilation...
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel ImageRotationProbe at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImageRotationProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel ImageRotationProbe at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImagePixelProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImageRotationProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel ImageRotationProbe at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImagePixelProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImageRotationProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel LinearProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel ImageRotationProbe at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(155) (on d3d11)
-Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(211) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel AlphaBounds at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImagePixelProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImageRotationProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel LinearProbe at GpuDeco.compute(325) (on d3d11)
-Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(325) (on d3d11)
-    finished in 0.00 seconds. Local cache hits 12, remote cache hits 0, compiled 0 variants
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Total cache size 68378808
+Total cache size after purge 68378808, took 00:00:00.1114833
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel ImageRotationProbe at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImageRotationProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel ImageRotationProbe at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImagePixelProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImageRotationProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel ImageRotationProbe at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImagePixelProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImageRotationProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel LinearProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateCollapse at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateImageLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel EvaluateLive at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel ImageRotationProbe at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel RotationProbe at GpuDeco.compute(156) (on d3d11)
+Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel AlphaBounds at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyMappedRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel CopyRun at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EaseProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel Evaluate at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateCollapse at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateImageLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel EvaluateLive at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImagePixelProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImageRotationProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel LinearProbe at GpuDeco.compute(326) (on d3d11)
+Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(326) (on d3d11)
+    finished in 19.04 seconds. Local cache hits 0, remote cache hits 0, compiled 12 variants
 Compiling shader "StutterFix/GpuTileComposite"
   Pass "" (vp)
     Target graphics API: d3d11
@@ -528,40 +546,39 @@ Shader warning in 'StutterFix/GpuTileComposite': use of potentially uninitialize
 Compiling Subshader: 0, Pass: <Unnamed Pass 0>, Fragment program with <no keywords>
 Platform defines: SHADER_API_DESKTOP UNITY_COLORSPACE_GAMMA UNITY_ENABLE_DETAIL_NORMALMAP UNITY_ENABLE_REFLECTION_BUFFERS UNITY_LIGHTMAP_FULL_HDR UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_PBS_USE_BRDF1 UNITY_PLATFORM_SUPPORTS_DEPTH_FETCH UNITY_SPECCUBE_BLENDING UNITY_SPECCUBE_BOX_PROJECTION UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS
 Disabled keywords: SHADER_API_GLES30 SHADER_API_GLES31 SHADER_API_GLES32 UNITY_ASTC_NORMALMAP_ENCODING UNITY_FRAMEBUFFER_FETCH_AVAILABLE UNITY_HARDWARE_TIER1 UNITY_HARDWARE_TIER2 UNITY_HARDWARE_TIER3 UNITY_LIGHTMAP_DLDR_ENCODING UNITY_LIGHTMAP_RGBM_ENCODING UNITY_METAL_SHADOWS_USE_POINT_FILTERING UNITY_NO_DXT5nm UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 UNITY_PBS_USE_BRDF3 UNITY_PRETRANSFORM_TO_DISPLAY_ORIENTATION UNITY_UNIFIED_SHADER_PRECISION_MODEL UNITY_VIRTUAL_TEXTURING
-Total cache size 68378808
 
 ***Player size statistics***
-Total compressed size 88.3 KB. Total uncompressed size 0.5 MB.
+Total compressed size 88.6 KB. Total uncompressed size 0.5 MB.
 Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
 Unloading 24 unused Assets / (1.1 MB). Loaded Objects now: 670.
-Memory consumption went from 90.3 MB to 89.1 MB.
-Total: 5.354700 ms (FindLiveObjects: 0.047200 ms CreateObjectMapping: 0.006200 ms MarkObjects: 4.857500 ms  DeleteObjects: 0.442700 ms)
+Memory consumption went from 89.9 MB to 88.8 MB.
+Total: 6.414200 ms (FindLiveObjects: 0.042600 ms CreateObjectMapping: 0.006400 ms MarkObjects: 5.894300 ms  DeleteObjects: 0.469800 ms)
 
 
 ***Player size statistics***
 Total compressed size 1.5 KB. Total uncompressed size 4.1 KB.
 Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
 Unloading 0 unused Assets / (0 B). Loaded Objects now: 672.
-Memory consumption went from 88.0 MB to 88.0 MB.
-Total: 5.148100 ms (FindLiveObjects: 0.042700 ms CreateObjectMapping: 0.003800 ms MarkObjects: 5.095800 ms  DeleteObjects: 0.004800 ms)
+Memory consumption went from 87.7 MB to 87.7 MB.
+Total: 5.416100 ms (FindLiveObjects: 0.042400 ms CreateObjectMapping: 0.004200 ms MarkObjects: 5.363700 ms  DeleteObjects: 0.004300 ms)
 
 
 -------------------------------------------------------------------------------
 Bundle Name: stutterfix_gpudeco
-Compressed Size:88.3 kb
+Compressed Size:88.6 kb
 Uncompressed usage by category (Percentages based on user generated assets only):
 Textures               0.0 kb	 0.0% 
 Meshes                 0.0 kb	 0.0% 
 Animations             0.0 kb	 0.0% 
 Sounds                 0.0 kb	 0.0% 
 Shaders                16.0 kb	 3.0% 
-Other Assets           428.2 kb	 81.3% 
+Other Assets           431.7 kb	 81.5% 
 Levels                 0.0 kb	 0.0% 
-File headers           82.2 kb	 15.6% 
-Total User Assets      526.5 kb	 100.0% 
-Complete build size    526.5 kb
+File headers           82.2 kb	 15.5% 
+Total User Assets      530.0 kb	 100.0% 
+Complete build size    530.0 kb
 Used Assets and files from the Resources folder, sorted by uncompressed size:
- 427.9 kb	 81.3% Assets/Shaders/GpuDeco.compute
+ 431.4 kb	 81.4% Assets/Shaders/GpuDeco.compute
  10.0 kb	 1.9% Assets/Shaders/GpuDecoBatch.shader
  6.1 kb	 1.1% Assets/Shaders/GpuTileComposite.shader
  0.3 kb	 0.1% AssetBundle Object
@@ -609,16 +626,16 @@ Input System module state changed to: Shutdown.
 [Licensing::IpcConnector] LicenseClient-나로컴 channel disconnected successfully.
 AcceleratorClientConnectionCallback - disconnected - :0
 Cleanup mono
-abort_threads: Failed aborting id: 0000000000007180, mono_thread_manage will ignore it
+abort_threads: Failed aborting id: 0000000000007F18, mono_thread_manage will ignore it
 
-abort_threads: Failed aborting id: 0000000000001300, mono_thread_manage will ignore it
+abort_threads: Failed aborting id: 0000000000007804, mono_thread_manage will ignore it
 
-abort_threads: Failed aborting id: 0000000000007180, mono_thread_manage will ignore it
+abort_threads: Failed aborting id: 0000000000007F18, mono_thread_manage will ignore it
 
-abort_threads: Failed aborting id: 0000000000001300, mono_thread_manage will ignore it
+abort_threads: Failed aborting id: 0000000000007804, mono_thread_manage will ignore it
 
-debugger-agent: Unable to listen on 3672
+debugger-agent: Unable to listen on 3824
 Checking for leaked weakptr:
   Found no leaked weakptrs.
 [Package Manager] Server process was shutdown
-##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1792953346677,"processId":25660,"allocatedMemory":9998004,"memoryLabels":[{"Default":29313},{"Permanent":15236},{"NewDelete":67907},{"Thread":4230344},{"Manager":30013},{"VertexData":8},{"Geometry":816},{"Texture":160},{"Shader":79953},{"Material":24},{"GfxDevice":55257},{"Animation":392},{"Audio":2664},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":720},{"Input":14984},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"ScriptingNativeRuntime":155060},{"BaseObject":1619888},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":1016},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":19824},{"DynamicArray":76023},{"HashMap":75044},{"Utility":2659462},{"Curl":2559},{"PoolAlloc":2056},{"AI":80},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":8496},{"WebRequest":808},{"VR":47994},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":560},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":96},{"EditorUtility":87598},{"VersionControl":4},{"Undo":947},{"AssetDatabase":210192},{"EditorGi":328},{"UnityConnect":29208},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":268},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2900},{"Licensing":776},{"AssetReference":32},{"IPCStream":32}]}
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1792961711544,"processId":34764,"allocatedMemory":9992557,"memoryLabels":[{"Default":29313},{"Permanent":15236},{"NewDelete":67907},{"Thread":4230344},{"Manager":30013},{"VertexData":8},{"Geometry":816},{"Texture":160},{"Shader":80145},{"Material":24},{"GfxDevice":55257},{"Animation":392},{"Audio":2664},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":720},{"Input":14984},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"ScriptingNativeRuntime":155060},{"BaseObject":1620208},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":1016},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":20273},{"DynamicArray":76023},{"HashMap":68636},{"Utility":2659462},{"Curl":2559},{"PoolAlloc":2056},{"AI":80},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":8496},{"WebRequest":808},{"VR":47994},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":560},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":96},{"EditorUtility":87598},{"VersionControl":4},{"Undo":947},{"AssetDatabase":210192},{"EditorGi":328},{"UnityConnect":29208},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":268},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2900},{"Licensing":776},{"AssetReference":32},{"IPCStream":32}]}

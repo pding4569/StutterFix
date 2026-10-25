@@ -49,6 +49,8 @@ namespace StutterFix
                 switch(args[1])
                 {
                     case "tight":DrawCollapsePolicy.TightLargeQuads=on;break;
+                    case "tieall":DrawCollapsePolicy.TieAllBarriers=on;break;
+                    case "minimal":DrawCollapsePolicy.MinimalDispatch=on;break;
                     case "keepafter":DrawCollapsePolicy.KeepAfterBarrier=on;break;
                     case "clip":DrawCollapsePolicy.ClipOffscreen=on;break;
                     case "tightall":DrawCollapsePolicy.TightAllOwned=on;break;
@@ -62,6 +64,17 @@ namespace StutterFix
                     default:throw new ArgumentException("policy tight|tightall|tilecomp|keepafter|clip|skiporder|skipcompute|globalverts on|off");
                 }
                 GpuLog("DRAWCOLLAPSE_POLICY tight="+DrawCollapsePolicy.TightLargeQuads+" keepafter="+DrawCollapsePolicy.KeepAfterBarrier);return true;
+            }
+            if(args.Length==1 && args[0]=="alphacount")
+            {
+                var src=gpuLiveSlices[0];var vals=src.Gpu.ReadValuesForDiag();int n=src.Data.Items.Length,pos=0,inc=0,posInc=0,fb=0;
+                for(int i=0;i<n;i++)
+                {
+                    bool p=vals[i*16+10]*vals[i*16+11]>0;if(p)pos++;
+                    if(gpuCollapseIncluded!=null&&gpuCollapseIncluded[i]){inc++;if(p)posInc++;}
+                    if(GpuCpuFallback(src.MasterItems[i]))fb++;
+                }
+                Main.Entry.Logger.Log("[gpudeco] alphacount 항목 "+n+" 알파>0 "+pos+" | 통합 포함 "+inc+" 중 알파>0 "+posInc+" | CPU처리 "+fb);return true;
             }
             if(args.Length==1 && args[0]=="fullcheck"){RunFullCheck();return true;}
             if(args.Length==1 && args[0]=="trimstats"){Main.Entry.Logger.Log("[gpudeco] GPUTRIM_STATS bounds="+gpuTrimBounds.Count+" trimmed="+gpuTrimTrimmed+" kept="+gpuTrimKept+" "+TrimStaticStats());return true;}

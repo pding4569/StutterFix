@@ -2440,7 +2440,11 @@ namespace StutterFix
             throw new ArgumentException("gpudeco off|state|scheduled|ready|live prepare|live on|live off|live state|g2 ...|diag5|bisect|oracle|export <새 파일 경로>(AUTOTEST 전용)");
         }
 #endif
+#if AUTOTEST
+        static void GpuLog(string s) { Main.Entry.Logger.Log("[gpudeco] " + s); }
+#else
         static void GpuLog(string s) { if (!GpuDecoPlayer.Product) Main.Entry.Logger.Log("[gpudeco] " + s); }
+#endif
         static AssetBundle LoadPlayerGpuBundle()
         {
             using (var stream = typeof(DecoBake).Assembly.GetManifestResourceStream("StutterFix.gpudeco"))

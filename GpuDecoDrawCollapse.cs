@@ -38,7 +38,7 @@ namespace StutterFix
             checks.Check(gpuLiveActive && gpuLivePrepared && gpuLiveCurrentSlice>=0 && gpuScope.WholeSong
                 && gpuLiveSlices.Count==1 && gpuLiveSlices[0].Independent && !gpuRenderMergeOn,
                 "drawcollapse requires independent whole-song GPU ownership");
-            checks.Check((GpuDecoPlayer.Product ? GpuLiveOwned>0 : GpuLiveOwned==23547 || GpuLiveOwned==28523) && gpuLiveCpuFallbackCount==0,
+            checks.Check((GpuDecoPlayer.Product ? GpuLiveOwned>0 : GpuLiveOwned==23547 || GpuLiveOwned==28523) && (gpuLiveCpuFallbackCount==0 || GpuDecoPlayer.Product && gpuLiveCpuFallbackCount==gpuCollapsePlannedFallback),
                 "drawcollapse requires GPU owned=23547 or 28523, CPU fallback=0");
 #if DEV || AUTOTEST
             checks.Check(!GpuDecoCostProbe.Enabled, // SingleSubmission/GpuListCaching 은 draw 통합과 독립이므로 함께 켜도 된다(스크립트 비용 시험)

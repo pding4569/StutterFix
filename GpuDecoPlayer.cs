@@ -31,7 +31,7 @@ namespace StutterFix
         {
             if (Main.Config.GpuDeco != 1) { if (Product) Shutdown(); return; }
             if (Product) return;
-            Product = true; lifetime.NewRound(); reported=false;
+            Product = true; lifetime.NewRound(); reported=false; GpuDecoGpu.AlphaEarlyOut = 1;
             try
             {
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Direct3D11 || !SystemInfo.supportsComputeShaders)
@@ -112,7 +112,7 @@ namespace StutterFix
             if (!c || !song || !song.hasSongStarted || !c.gameworld || c.paused || AudioListener.pause || Time.timeScale <= 0) return;
             if (scnEditor.instance && !scnEditor.instance.playMode) return;
             // 시작 직후 60프레임(따라잡기)에는 효과가 원본 경로로 도는 순간이 있어, 그때 켜면 곧바로 원본으로 복귀한다(편집기 중간 시작).
-            if (EffectBudget.InCatchUp) return;
+            if (EffectBudget.InCatchUp && song.songposition_minusi > 0.5) return;
             if (!lifetime.TryActivate()) return;
             try { DecoBake.StartPlayer(); }
             catch (Exception e) { Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false; }
@@ -159,7 +159,7 @@ namespace StutterFix
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneChanged;
             hooks?.UnpatchAll(Owner); hooks = null;
             try { if (RuntimeInitialized) { DecoBake.ReleasePlayerLevel(); DecoBake.Shutdown(); } }
-            finally { Product = false; lifetime.Fail(); cleanupPending = false; }
+            finally { Product = false; GpuDecoGpu.AlphaEarlyOut = 0; lifetime.Fail(); cleanupPending = false; }
         }
     }
 
@@ -230,13 +230,15 @@ namespace StutterFix
             int deadCount = 0;
             if (initial.Count > 0) { var dead = initial.Keys.Where(k => !k).ToArray(); deadCount = dead.Length; foreach (var k in dead) initial.Remove(k); }
 #if AUTOTEST
+            Main.Entry.Logger.Log("[GPU 장식] 메모리: 관리 힙 " + (GC.GetTotalMemory(false) >> 20) + "MB, 프로세스 개인 " + (System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64 >> 20)
+                + "MB, 유니티 할당 " + (UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() >> 20) + "MB, 그래픽 드라이버 " + (UnityEngine.Profiling.Profiler.GetAllocatedMemoryForGraphicsDriver() >> 20) + "MB");
             Main.Entry.Logger.Log("[GPU 장식] 준비 시작: 처음 Setup 기록 " + initial.Count + "개 (파괴된 것 " + deadCount + "개 정리), 장식 " + (scrDecorationManager.instance ? scrDecorationManager.instance.allDecorations.Count : -1) + "개, enabled " + enabled + ", 관리자 같음 " + (manager == scrDecorationManager.instance));
 #endif
             gpuScope = GpuDecoScopePlan.Song();
             gpuImageCandidate = Main.Config.GpuDecoImages == 1;
             gpuImageOwn = true;
             GpuDecoNativeBatch.Enabled = true;
-            GpuDecoCopy.Enabled = true;
+            GpuDecoCopy.Enabled = true; GpuDecoCopy.EightUavEnabled = true; GpuDecoCopy.MaskedEnabled = true; // 연구 계획의 nativecopy on8masked 와 같다
             gpuCollapsePrepare = true;
             BeginPrepCollection(floors, true);
             while (collector != null)
@@ -278,7 +280,11 @@ namespace StutterFix
             long t0 = Stopwatch.GetTimestamp();
             StartGpuLive();
             long t1 = Stopwatch.GetTimestamp();
-            if (gpuCollapseTexture != null && gpuLiveCpuFallbackCount == 0)
+            // 그리기 통합 없이 소유만 쓰면 독립 렌더러 수만 개를 그려 오히려 훨씬 느리다(Arche 에디터 중간 시작: 101 -> 17 FPS). 통합을 못 켜면 원본을 유지한다.
+            if (gpuCollapseTexture == null)
+                throw new InvalidOperationException("그리기 통합을 쓸 수 없어 원본 유지");
+            gpuCollapsePlannedFallback = 0;
+            if (gpuLiveCpuFallbackCount != 0) ReplanCollapseForFallback();
             {
                 ValidateDrawCollapse();
                 gpuCollapseOn = true;
@@ -286,7 +292,7 @@ namespace StutterFix
                 DispatchGpuLiveSlice(BakeTime);
             }
             long t2 = Stopwatch.GetTimestamp();
-            Main.Entry.Logger.Log("[GPU 장식] 켜짐: 소유 " + GpuLiveOwned + "개, 그리기 통합 " + (gpuCollapseOn ? "켬" : "끔") + ", 이미지 " + (gpuImageCandidate ? "켬" : "끔")
+            Main.Entry.Logger.Log("[GPU 장식] 켜짐: 소유 " + GpuLiveOwned + "개, 그리기 통합 " + (gpuCollapseOn ? "켬" : "끔") + ", 이미지 " + (gpuImageCandidate ? "켬" : "끔") + ", CPU 처리 장식 " + gpuLiveCpuFallbackCount + "개"
                 + " | 시작 " + ((t1 - t0) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms, 통합 켜기 " + ((t2 - t1) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms");
         }
         internal static void ReleasePlayerLevel()

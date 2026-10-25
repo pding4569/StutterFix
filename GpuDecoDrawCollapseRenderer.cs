@@ -278,6 +278,24 @@ namespace StutterFix
                 +" arrays="+gpuCollapseArrays.Count+" bytes="+total+" copy_calls="+copies
                 +" texture_fallback_items="+gpuCollapseTextureFallbackCount+" texture_fallback_dispatch="+(gpuCollapseTextureFallbackCount>0)
                 +" submeshes_per_renderer=1 direct_evaluate=True window=260..270 conservative_hidden_barriers=True free_vram=UNVERIFIED");
+            if(GpuDecoPlayer.Product)ReorderCopyForFallback();
+        }
+        // 동점/텍스처 초과로 독립 렌더러에 남긴 장식이 번호상 흩어져 있으면 "보이는 장식이 든 복사 덩어리(512개)"가 거의 전부 켜져
+        // 곡 후반(알파>0 항목이 많을 때) 28,000개를 매 프레임 복사한다(GPU 18ms). 그런 장식을 복사 순서 맨 앞으로 모아 덩어리 몇 개만 복사한다.
+        static void ReorderCopyForFallback()
+        {
+            var slice=gpuLiveSlices[0];
+            if(gpuCollapseTextureFallbackCount==0 || slice.NativeCopy==null || slice.CopyMask==null)return;
+            long t0=Stopwatch.GetTimestamp();
+            int n=slice.Data.Items.Length;
+            var baseOrder=Enumerable.Range(0,n).OrderBy(i=>CopyLocalityHint(slice.Data.Items[i].Index)).ThenBy(i=>i).ToArray();
+            var order=baseOrder.Where(i=>gpuCollapseTextureFallback[i]).Concat(baseOrder.Where(i=>!gpuCollapseTextureFallback[i])).ToArray();
+            try{slice.NativeCopy.Dispose();}catch{}
+            slice.NativeCopy=null;
+            slice.CopyMask=new GpuDecoCopyMask(n,order);
+            slice.NativeCopy=GpuDecoCopy.TryCreate(gpuLiveShader,slice.Gpu.VertexBuffer,slice.Buffers,n*4,order);
+            RequireLive(slice.NativeCopy!=null,"native copy unavailable after reorder: "+GpuDecoCopy.Status);
+            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 독립 렌더러 장식 "+gpuCollapseTextureFallbackCount+"개를 복사 순서 앞으로 모음 "+DcMs(t0).ToString("F0")+"ms");
         }
         static bool PlayerCollapseTextureBudget(IEnumerable<Texture2D> textures)
         {
@@ -323,6 +341,35 @@ namespace StutterFix
         }
         static double dcScanMs,dcTieMs,dcPlanMs,dcMeshMs,dcMatMs,dcMeshBuildMs,dcBufMs,dcGoMs,dcDisposeMs;
         static double DcMs(long from)=>(Stopwatch.GetTimestamp()-from)*1000.0/Stopwatch.Frequency;
+#if AUTOTEST
+        static readonly Dictionary<(int,int,int,float),HashSet<string>> diagBucketKinds=new Dictionary<(int,int,int,float),HashSet<string>>();
+#endif
+#if AUTOTEST
+        static readonly Dictionary<string,int> diagExcludeKinds=new Dictionary<string,int>();
+#endif
+        static int gpuCollapsePlannedFallback;
+        // 제품: 활성화 때 CPU 처리로 남은 장식(진행 중인 네이티브 트윈 등)은 통합에서 빼고 원본 렌더러를 정렬 장벽으로 둔다.
+        // 곡 중에 더 늘어나면 가드(개수 불일치)가 걸려 원본으로 복귀한다.
+        static void ExcludeCpuFallbackFromCollapse()
+        {
+            gpuCollapsePlannedFallback=0;
+            var source=gpuLiveSlices[0];
+            for(int i=0;i<source.MasterItems.Length;i++)
+            {
+                if(!GpuCpuFallback(source.MasterItems[i]))continue;
+                gpuCollapsePlannedFallback++;
+                if(!gpuCollapseIncluded[i])continue;
+                gpuCollapseIncluded[i]=false;
+                var orow=gpuCollapseOwnedRows[i];
+                if(orow!=null && orow.R)gpuCollapseBarriers.Add(new GpuLiveRow{R=orow.R,M=orow.M,Item=-1,AuxiliaryOwner=-1,Key=orow.Key,Signature=orow.Signature});
+            }
+            if(gpuCollapsePlannedFallback!=gpuLiveCpuFallbackCount)throw new InvalidOperationException("CPU 처리 장식 개수 불일치");
+        }
+        internal static void ReplanCollapseForFallback()
+        {
+            ExcludeCpuFallbackFromCollapse();
+            RebuildDrawCollapse();
+        }
         static void BuildDrawCollapseSpans()
         {
             long dcT0=Stopwatch.GetTimestamp();int nudgedSpans=0;
@@ -375,13 +422,16 @@ namespace StutterFix
                 }
             }
             // 장벽: 지금 활성이거나 변경 이벤트가 온 것만 다시 읽고, 나머지는 보정한 캐시 키를 쓴다.
+#if AUTOTEST
+            diagBucketKinds.Clear();
+#endif
             var activeBucketMinMat=new Dictionary<(int,int,int,float),int>();
             var activeBucketMaxMat=new Dictionary<(int,int,int,float),int>();
             int rereadBarriers=0;
             foreach(var row in gpuCollapseBarriers)
             {
                 bool active=DrawCollapseBarrierActive(row);
-                bool tieBarrier=active || GpuDecoPlayer.Product && DrawCollapsePolicy.TieAllBarriers;
+                bool tieBarrier=(active || GpuDecoPlayer.Product && DrawCollapsePolicy.TieAllBarriers) && !(row.R is SpriteMask); // 스프라이트 마스크는 색을 그리지 않는다(활성 마스크가 있으면 기능을 쓰지 않음)
                 bool refresh=!keysValid || active || gpuCollapseDirtyIds.Contains(row.R.GetInstanceID());
                 if(refresh)
                 {
@@ -393,10 +443,26 @@ namespace StutterFix
                 if(tieBarrier)
                 {
                     var bk=row.Key;var bkey=(bk.Layer,bk.Order,bk.Queue,bk.Distance);
+#if AUTOTEST
+                    if(GpuDecoPlayer.Product){if(!diagBucketKinds.TryGetValue(bkey,out var ks)){ks=new HashSet<string>();diagBucketKinds[bkey]=ks;}ks.Add(row.R.GetType().Name+":"+row.R.name+(active?"[활성]":"[숨김]"));}
+#endif
                     if(!activeBucketMinMat.TryGetValue(bkey,out int curMin) || bk.Material<curMin)activeBucketMinMat[bkey]=bk.Material;
                     if(!activeBucketMaxMat.TryGetValue(bkey,out int curMax) || bk.Material>curMax)activeBucketMaxMat[bkey]=bk.Material;
                 }
             }
+#if AUTOTEST
+            if(GpuDecoPlayer.Product)
+            {
+                var kinds=new Dictionary<string,int>();
+                foreach(var row in gpuCollapseBarriers)
+                {
+                    bool act=DrawCollapseBarrierActive(row);
+                    string k=(row.R?row.R.GetType().Name:"null")+":"+(row.R?row.R.name:"")+(act?" [활성]":" [숨김]");
+                    kinds.TryGetValue(k,out int c);kinds[k]=c+1;
+                }
+                Main.Entry.Logger.Log("[GPU 장식] 장벽 종류: "+string.Join(" | ",kinds.OrderByDescending(x=>x.Value).Take(14).Select(x=>x.Key+"="+x.Value)));
+            }
+#endif
             int tieExcluded=0;var newBarriers=new List<GpuLiveRow>();
             for(int i=0;i<gpuCollapseOwnedRows.Length;i++)
             {
@@ -410,6 +476,9 @@ namespace StutterFix
                     if(DrawCollapsePolicy.KeepAfterBarrier && activeBucketMaxMat.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out int maxBarrierMat) && ok.Material>maxBarrierMat)continue;
                 }
                 gpuCollapseIncluded[i]=false;
+#if AUTOTEST
+                if(GpuDecoPlayer.Product && diagBucketKinds.TryGetValue((ok.Layer,ok.Order,ok.Queue,ok.Distance),out var dk))foreach(var kk in dk){diagExcludeKinds.TryGetValue(kk,out int dc);diagExcludeKinds[kk]=dc+1;}
+#endif
                 if(!gpuCollapseTextureFallback[i]){gpuCollapseTextureFallback[i]=true;gpuCollapseTextureFallbackCount++;}
                 var ir=source.Renderers[i];
                 if(ir)newBarriers.Add(new GpuLiveRow{R=ir,M=ir.sharedMaterial,Item=-1,AuxiliaryOwner=-1,Key=GpuDecoScene.SortKey(ir,ir.sharedMaterial,gpuLiveCamera)});
@@ -419,6 +488,10 @@ namespace StutterFix
             gpuCollapseBarriers.AddRange(newBarriers);
             dcTieMs=DcMs(dcT1);
             GpuLog("DRAWCOLLAPSE_TIE_EXCLUDED owned_items="+tieExcluded+" active_buckets="+activeBucketMinMat.Count);
+#if AUTOTEST
+            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 제외 장식과 같은 묶음의 장벽(제외 항목 수 기준): "+string.Join(" | ",diagExcludeKinds.OrderByDescending(x=>x.Value).Take(16).Select(x=>x.Key+"="+x.Value)));
+            diagExcludeKinds.Clear();
+#endif
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 때문에 독립 렌더러로 남긴 장식 "+tieExcluded+"개 (동점 묶음 "+activeBucketMinMat.Count+"개)");
             GpuLog("DRAWCOLLAPSE_REPLAN barriers_removed="+lostBarriers+" barriers_added="+addedBarriers+" barriers_now="+gpuCollapseBarriers.Count+" reread="+rereadBarriers+" keys_cached="+keysValid+" shift="+keyShift.ToString("R",Inv));
             foreach(var row in gpuCollapseBarriers)
@@ -618,7 +691,7 @@ namespace StutterFix
             var sweep=CollapseBarriersToCheck(full); // 순환 커서는 프레임당 한 번만 전진
             bool prepared=gpuCollapseSpans.Count>0 && gpuCollapseTexture!=null && gpuCollapseIncluded!=null;
             guard.Check(prepared,"drawcollapse prepare before live prepare required");
-            guard.Check(gpuLiveCpuFallbackCount==0,"drawcollapse requires zero CPU fallback; disable before fallback");
+            guard.Check(gpuLiveCpuFallbackCount==0 || GpuDecoPlayer.Product && gpuLiveCpuFallbackCount==gpuCollapsePlannedFallback,"drawcollapse requires zero CPU fallback; disable before fallback");
             guard.Check(gpuLiveCamera,"drawcollapse camera lost");
             float shift=0;
             if(gpuLiveCamera)

@@ -35,6 +35,7 @@ RWByteAddressBuffer _Vertices;
 StructuredBuffer<uint> _CollapseMap;
 StructuredBuffer<float4> _CollapseTexture;
 uint _CollapseCount;
+uint _AlphaEarlyOut; // 제품: 1 이면 독립 평가에서도 알파 곱이 0 이하인 항목은 나머지 채널·FP64 계산을 건너뛰고 영 면적으로 둔다
 uint _Count;
 float _TimeHi, _TimeLo, _Pitch, _TweenScale;
 float4 _Camera; // XY, rotation degrees, lock-scale multiplier
@@ -383,7 +384,23 @@ void EvaluateLive(uint3 thread:SV_DispatchThreadID)
 {
     uint i=thread.x; if(i>=_Count) return;
     float v[16];
+    if(_AlphaEarlyOut!=0)
+    {
+        [unroll] for(uint ac=10;ac<12;ac++)
+        {
+            LiveChannel lc=_LiveChannels[i*16+ac];
+            precise double value=lc.sourceIndex<0 ? (double)lc.end
+                : (double)lc.start+(double)lc.change*(double)_SourceE[lc.sourceIndex];
+            v[ac]=(float)value;_Values[i*16+ac]=v[ac];
+        }
+        if(!(v[10]*v[11]>0))
+        {
+            [unroll] for(uint z=0;z<4;z++)_Vertices.Store3((i*4+z)*36u,uint3(0,0,0));
+            return;
+        }
+    }
     [unroll] for(uint ch=0;ch<16;ch++) {
+        if(_AlphaEarlyOut!=0 && (ch==10||ch==11))continue;
         LiveChannel lc=_LiveChannels[i*16+ch];
         precise double value=lc.sourceIndex<0 ? (double)lc.end
             : (double)lc.start+(double)lc.change*(double)_SourceE[lc.sourceIndex];
@@ -396,7 +413,23 @@ void EvaluateImageLive(uint3 thread:SV_DispatchThreadID)
 {
     uint i=thread.x; if(i>=_Count) return;
     float v[16];
+    if(_AlphaEarlyOut!=0)
+    {
+        [unroll] for(uint ac=10;ac<12;ac++)
+        {
+            LiveChannel lc=_LiveChannels[i*16+ac];
+            precise double value=lc.sourceIndex<0 ? (double)lc.end
+                : (double)lc.start+(double)lc.change*(double)_SourceE[lc.sourceIndex];
+            v[ac]=(float)value;_Values[i*16+ac]=v[ac];
+        }
+        if(!(v[10]*v[11]>0))
+        {
+            [unroll] for(uint z=0;z<4;z++)_Vertices.Store3((i*4+z)*36u,uint3(0,0,0));
+            return;
+        }
+    }
     [unroll] for(uint ch=0;ch<16;ch++) {
+        if(_AlphaEarlyOut!=0 && (ch==10||ch==11))continue;
         LiveChannel lc=_LiveChannels[i*16+ch];
         precise double value=lc.sourceIndex<0 ? (double)lc.end
             : (double)lc.start+(double)lc.change*(double)_SourceE[lc.sourceIndex];
