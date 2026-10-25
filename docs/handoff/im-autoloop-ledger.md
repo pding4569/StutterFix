@@ -1,3 +1,7 @@
+## 회차 6 — Codex 외부 run5 분석, 지정된 설계 한계로 중단
+
+외부run5 직접79줄 원시158~432행 순서대조. 창[257.5,270.25]에서 변형10개 선택·93개 제외 후 등록93/주소89/누락4(직접4)·직접필요36/32·배열4/4·필요40슬롯/선언36·282.3125MiB다. live prepare에서 중단, 통합픽셀/FPS/끊김/복원은NA. 크기·포맷44그룹/93개와 누락4개를 결과에 기록하고 지정된 설계한계 중단조건을 적용한다. 런타임/생성기/기존JSON 변경·새계획/반복시험 요청 없음. 형식별 은행/아틀라스 설계는Claude 담당. 동시작업의 정책48/셰이더 변경을 관측했으나 손대거나 되돌리지 않았고 32상한 외부run5와 혼합하지 않는다. IMAGEOWN=FAIL reason=WINDOW_TEXTURE_CAPACITY_EXCEEDED. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경·빌드 반복0회. 상세결과/10줄/out/imageown6 참조.
+
 ## 회차 5 — Codex 창 범위 등록·새 계획 생성, 게임 미실행
 
 외부run4 직접37줄 원시순서대조. 등록185/주소149/누락36(직접36)·직접필요68/32·배열3/4·318.75MiB에서 live prepare 실패, 통합픽셀/FPS NA. 곡전체 ReadyQuad 등록을 소유 대상별 창[257.5,270.25] 이벤트+직전상태+기존물리스프라이트 집합으로 좁히고 coverage/collapsecheck도 동기화했다. 숨은소유 업로드대상은 유지·32/4상한/가드 유지·초과그룹로그 추가. 새accept는 활성화257.5초·333단계abba3-window 생성만, 기존명시12출력/기존JSON 보존. 격리3빌드 오류0/0/0·경고48/36/40·LoadCheck279/229/281곳 틀림0·실제timeline+추출3메서드227/생성기8검사 통과·보호14SHA유지. IMAGEOWN=FAIL reason=WINDOW_COVERAGE_NOT_RUN, 창축소후 registered/missing/direct_required/arrays_used·통합픽셀/FPS/끊김/전곡/설치복원NA. 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회. 새coverage가 넘치면 수치기록후 중단·소유자설계 인계, 상세결과/10줄/out/imageown5 참조.
@@ -106,3 +110,18 @@
 - 시험 핵심 줄:
   - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
   - [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_TEXTURE_COVERAGE
+
+## 회차 6
+- Codex 요약: 지시대로 분석하고, 설계 한계 중단 조건을 적용했습니다. `IMAGEOWN=FAIL`입니다.
+
+- 창 축소 후에도 직접 텍스처 **36개/상한 32개**, **4개 누락**
+- 통합 픽셀·FPS는 미측정
+- 결과·장부·10줄 요약 갱신 및 검증 완료
+- 게임 실행·설치·커밋 없음
+
+[상세 결과](E:/StutterFixWork/wt-gpu/docs/handoff/codex-imageown-result.md)
+- 시험 핵심 줄:
+  - [StutterFix] [gpudeco] cost_probe enabled=False frames=0 cpu_only=True advance_ms=0.000000 dirty_alpha_ms=0.000000 source_upload_ms=0.000000 dirty_calls_avg=0.000000 dirty_bytes_avg=0.000 source_slots
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_TIE_EXCLUDED owned_items=0 active_buckets=73
+  - [StutterFix] [gpudeco] DRAWCOLLAPSE_PREPARED spans=82 included=14595 arrays=4 bytes=304414720 copy_calls=59 texture_fallback_items=0 texture_fallback_dispatch=False submeshes_per_renderer=1 direct_eva
+  - [StutterFix] [gpudeco] prepare_ms=9791.141900 phase=live_prepare slices=1 owned_union=28523 total_runs=28523 total_submeshes=28523 live_kernel=EvaluateLive_sourceE native_sort=True native_copy=True ei

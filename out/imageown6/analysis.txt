@@ -1,0 +1,21 @@
+﻿run5 ordered direct evidence: 79 matched; raw lines 158..432
+groups=44 textures=93 addressed=89 missing=4; small_array_textures=53 exact_array_textures=4 direct_required=36
+formats={"88": [2, 2], "R8G8B8A8_UNorm": [20, 17], "R8G8B8_UNorm": [5, 5], "RGBA_DXT1_UNorm": [1, 1], "RGBA_DXT5_UNorm": [65, 64]}
+raw line 377: [StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsewindow start=257.5 end=270.25 owned=28523 selected_quad_variants=10 skipped_quad_variants=93 registered=93 initial_physical_textures_retained=True performance=False
+raw line 379: [StutterFix] [gpudeco] DRAWCOLLAPSE_ARRAY_TOTAL layout=small_dxt5_tiers_plus_borrowed_2d bytes_known=296026112 total_mb=282.312500 planned_arrays_known=4 direct_textures=32 active_texture_slots=36 shader_declared_slots=36 samplers=2 arrays_allocated=0 copy_calls=0 free_vram=UNVERIFIED
+raw line 380: [StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775148 width=2500 height=2500 format=RGBA_DXT5_UNorm tier=0
+raw line 381: [StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775156 width=1489 height=1489 format=R8G8B8A8_UNorm tier=0
+raw line 382: [StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775164 width=682 height=682 format=R8G8B8A8_UNorm tier=0
+raw line 383: [StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage_missing texture_id=-2775224 width=7677 height=4320 format=R8G8B8A8_UNorm tier=0
+raw line 384: [StutterFix] [gpudeco] GPUIMG_DIAG mode=collapsecoverage registered=93 addressed=89 missing=4 missing_direct=4 missing_array=0 direct_required=36 direct_limit=32 arrays_used=4 array_limit=4 variant_entries_missing=4 valid=False start=257.5 end=270.25 stage=prepare performance=False
+raw line 429: [StutterFix] [gpudeco] IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA reason=COLLAPSE_TEXTURE_COVERAGE
+raw line 430: [StutterFix] [자동 시험] 단계 실패 'gpudeco live prepare': gpudeco G2: image collapse texture coverage incomplete; inspect GPUIMG_DIAG and change texture-bank preparation before retry
+raw line 432: [StutterFix] [자동 시험] 단계 실패 'gpudeco live prepare': gpudeco G2: image collapse texture coverage incomplete; inspect GPUIMG_DIAG and change texture-bank preparation before retry - 게임을 끕니다
+live activation / integrated pixel / ABBA / restore / native-context results absent; NA
+read-only game ILScan: exit0; game_dll_sha256=f692210f9a342f7eed4be40aad463286ab40bf046599959823942ea02f4ca3ff
+image source/helper/generator/existing plans baseline: 15 SHA256 captured
+current_read_sha256 al-im-5.log=489ba54f2d44cbf506f1926d52dc3adc5c2b6e1ccea9515894ab9db4b3ac8fab
+current_read_sha256 im-autoloop-run5-evidence.txt=580aca565b8a67afc698e9a5cc0e9c0a29aa9076e8038431e5955400b413479a
+current_read_sha256 DrawCollapsePolicy.cs=83440af2545115780970002a6a65890d42e5a6ecf5268a3d34cef336198c2e03
+current_read_sha256 GpuDecoBatch.shader=f1671015b636a69e25d43d13d5196abfda1eab90eece55acc5d05542430fde44
+current owner policy: internal const int DirectBindings=48;

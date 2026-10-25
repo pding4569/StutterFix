@@ -1,10 +1,10 @@
-IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA independent_pixel_max=1 registered=NA missing=NA direct_required=NA arrays_used=NA fallback=NA spikes_30ms=NA reason=WINDOW_COVERAGE_NOT_RUN
-이번 게임·설치·커밋·푸시·자동 장치·Editor·설정/제어변경0회; 실제새게임측정 없음.
-외부run4 직접37줄 원시순서일치;등록185/주소149/누락36(직접36)·직접필요68/32·배열3/4·318.75MiB·live prepare실패.
-원인:곡전체ReadyQuad등록;실제소유 대상별[257.5,270.25]이벤트+직전상태+기존물리텍스처로 축소;숨은소유 업로드대상도 유지.
-coverage/collapsecheck선택범위 동기화·실제배열배정은 직접수에서제외·32/4상한유지·실패시크기/포맷/tier그룹로그.
-새accept333단계abba3-window 생성만·A/B활성화257.5초·픽셀선행후ABBA260..270;기존명시12출력/기존JSON보존.
-Release3빌드 오류0/0/0·경고48/36/40·LoadCheck279/229/281곳 틀림0·일반Player 연구제외.
-실제timeline+실제메서드3개추출227검사·생성기8검사 통과·보호14개SHA동일·소유자/공용helper/셰이더/번들/설정유지.
-창축소후registered/missing/direct_required/arrays_used·통합픽셀/FPS/+20%/끊김/전곡/설치복원NA·번들보류 해제안함.
-외부coverage missing0·direct<=32·arrays<=4 뒤통합진행;넘치면수치기록후중단·Claude설계인계·상세결과/out/imageown5 참조.
+IMAGEOWN=FAIL fps_before=NA fps_after=NA gain_pct=NA pixel_max=NA registered=93 addressed=89 missing=4 direct_required=36 direct_limit=32 arrays_used=4 array_limit=4 required_slots=40 fallback=NA spikes_30ms=NA reason=WINDOW_TEXTURE_CAPACITY_EXCEEDED
+이번 게임·설치·커밋·푸시·장치·Editor·설정/제어변경0회·새게임측정/빌드반복0회.
+외부run5 직접79줄 원시158~432행 순서일치·선택10/제외93·창257.5~270.25·등록93/주소89/누락4.
+직접필요36/32·배열4/4·필요40/선언36슬롯·배열계획282.312500MiB·준비실패.
+누락:2500x2500 DXT5·1489x1489/682x682/7677x4320 RGBA8;모두직접·누락변형4.
+44크기/포맷그룹93개=작은배열53+정확크기배열4+직접36;전체표/포맷합산은결과문서.
+지정된창축소후초과중단조건충족·Claude은행/아틀라스설계인계·동일333단계재시도요청없음.
+런타임/생성기/기존JSON수정0·새계획0·이미지관련15개SHA유지·원시/집계/ILScan/문서검증.
+동시작업정책48/셰이더변경은손대거나되돌리지않음·외부32상한시험과혼합금지.
+통합픽셀/FPS/+20%/폴백/끊김/전곡/Rec/설치복원/native_contexts NA·상세결과/out/imageown6 참조.

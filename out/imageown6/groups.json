@@ -1,0 +1,354 @@
+[
+  {
+    "size": "872x872",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 1024,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 385
+  },
+  {
+    "size": "150x1500",
+    "format": "R8G8B8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 386
+  },
+  {
+    "size": "100x100",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 512,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 387
+  },
+  {
+    "size": "1024x1024",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 1024,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 388
+  },
+  {
+    "size": "1500x1500",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 2048,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 389
+  },
+  {
+    "size": "3840x3840",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 390
+  },
+  {
+    "size": "960x720",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 1024,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 391
+  },
+  {
+    "size": "1920x1080",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 2048,
+    "textures": 5,
+    "addressed": 5,
+    "raw_line": 392
+  },
+  {
+    "size": "6016x4000",
+    "format": "R8G8B8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 393
+  },
+  {
+    "size": "2048x2048",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 2048,
+    "textures": 9,
+    "addressed": 9,
+    "raw_line": 394
+  },
+  {
+    "size": "2048x2048",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 395
+  },
+  {
+    "size": "2880x1620",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 396
+  },
+  {
+    "size": "2880x1620",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 397
+  },
+  {
+    "size": "1920x1080",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 398
+  },
+  {
+    "size": "8000x4500",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 399
+  },
+  {
+    "size": "7680x4320",
+    "format": "RGBA_DXT1_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 400
+  },
+  {
+    "size": "7677x4320",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 2,
+    "addressed": 1,
+    "raw_line": 401
+  },
+  {
+    "size": "7680x4320",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 0,
+    "textures": 4,
+    "addressed": 4,
+    "raw_line": 402
+  },
+  {
+    "size": "171x171",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 4,
+    "addressed": 4,
+    "raw_line": 403
+  },
+  {
+    "size": "150x150",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 3,
+    "addressed": 3,
+    "raw_line": 404
+  },
+  {
+    "size": "150x79",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 405
+  },
+  {
+    "size": "2500x2500",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 0,
+    "textures": 3,
+    "addressed": 2,
+    "raw_line": 406
+  },
+  {
+    "size": "1920x1920",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 2048,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 407
+  },
+  {
+    "size": "3113x2428",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 408
+  },
+  {
+    "size": "2000x2000",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 2048,
+    "textures": 2,
+    "addressed": 2,
+    "raw_line": 409
+  },
+  {
+    "size": "2692x2833",
+    "format": "88",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 410
+  },
+  {
+    "size": "1080x1080",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 2048,
+    "textures": 16,
+    "addressed": 16,
+    "raw_line": 411
+  },
+  {
+    "size": "800x800",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 1024,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 412
+  },
+  {
+    "size": "5001x3334",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 413
+  },
+  {
+    "size": "682x682",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 2,
+    "addressed": 1,
+    "raw_line": 414
+  },
+  {
+    "size": "14024x3506",
+    "format": "R8G8B8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 415
+  },
+  {
+    "size": "512x512",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 512,
+    "textures": 9,
+    "addressed": 9,
+    "raw_line": 416
+  },
+  {
+    "size": "300x300",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 512,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 417
+  },
+  {
+    "size": "3543x1772",
+    "format": "R8G8B8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 418
+  },
+  {
+    "size": "3332x2665",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 419
+  },
+  {
+    "size": "1200x1200",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 2048,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 420
+  },
+  {
+    "size": "5000x5000",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 0,
+    "textures": 2,
+    "addressed": 2,
+    "raw_line": 421
+  },
+  {
+    "size": "5000x3333",
+    "format": "88",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 422
+  },
+  {
+    "size": "1000x2000",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 2048,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 423
+  },
+  {
+    "size": "3222x1891",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 424
+  },
+  {
+    "size": "1280x1280",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 2048,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 425
+  },
+  {
+    "size": "1000x1000",
+    "format": "RGBA_DXT5_UNorm",
+    "tier": 1024,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 426
+  },
+  {
+    "size": "2000x1055",
+    "format": "R8G8B8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 1,
+    "raw_line": 427
+  },
+  {
+    "size": "1489x1489",
+    "format": "R8G8B8A8_UNorm",
+    "tier": 0,
+    "textures": 1,
+    "addressed": 0,
+    "raw_line": 428
+  }
+]

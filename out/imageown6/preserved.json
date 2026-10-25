@@ -1,0 +1,17 @@
+{
+  "GpuDecoImageGeometryFixture.cs": "60171441023c5b068fc3696994d766be325607784c9cd5999b1c261b47f14dd9",
+  "GpuDecoImageIsolatedFixture.cs": "09ee352965e350d3cc4d349e6f2b5e4886aa60c65af93baabd939e52795787c7",
+  "GpuDecoImagePlan.cs": "34c612311af8a3c7b26d7247f67d658c6a5e82fc2172f0088e35f9300f1f7f1e",
+  "GpuDecoImagePlayback.cs": "0dbb43b1d084a0e697df1b2b3080cc59d1ad13559799d0cb49ad1d74932bd8d9",
+  "GpuDecoImageTextureFixture.cs": "4073c2953919806942facc5e7105a3e61c819c6bcc09c474d0763c8350197593",
+  "GpuDecoImageTimeline.cs": "99ef1efc730fc93433b9f312d2adffa994aa19a2b3ace246a2e3f116527bad13",
+  "GpuDecoImageVariants.cs": "12db746dfe54464c0a0490dc737867862ca5fc7b44bd24644ddd407ab02297b4",
+  "LazySprite.cs": "cdcfa1314dfb699ab0eca76841e3b131b4d34693859cca288941b804b25008cf",
+  "GpuDecoDrawCollapse.cs": "b1842d60cfb7b6214ce0068cfdc96c70b8390f682ad01fb8e80566c32ed90e93",
+  "tools\\optimization\\imageown-steps.py": "b2fdfcab65bf1826bc7ae2b5891311c3108b67c355012fbf0aa4e1b59568ee76",
+  "tools\\optimization\\out\\imageown-abba1-steps.json": "53638954fce0fdcee8814c2c5223314d56bc076fe3ac21f4258e01b4dcea2c69",
+  "tools\\optimization\\out\\imageown-abba2-steps.json": "d95a82ca60b5360597794c1257e0c584ec6d54ebf1dc3fa0fe6bfa39f55f589e",
+  "tools\\optimization\\out\\imageown-abba3-window-steps.json": "41b790f93035f51623bdd6aaee43d4643d5468235ca27065a98291a9f592e2bd",
+  "tools\\optimization\\out\\imageown-diag1-steps.json": "4b052dbbe5502d8078c2b5f01a282b0b103d931a66e222ab6c86f19bc26297c8",
+  "tools\\optimization\\out\\imageown-diag2-steps.json": "6aed5565a7d6101a260385289a0af40ce35f466f1859db7a7900f6ae3acdc6e4"
+}
