@@ -122,9 +122,13 @@ namespace StutterFix
         readonly bool collect;
         List<string> failures;
         internal DrawCollapseGuard(bool collect){this.collect=collect;}
+        // 측정 전용(연구 빌드): 대표/장벽 순서 위반을 기록만 하고 끄지 않는다. 화면이 원본과 다를 수 있다.
+        internal static bool IgnoreOrderViolations;
+        internal static long IgnoredOrderViolations;
         internal void Check(bool valid,string reason)
         {
             if(valid)return;
+            if(IgnoreOrderViolations && reason.StartsWith("drawcollapse proxy/barrier order changed")){IgnoredOrderViolations++;return;}
             if(!collect)throw new InvalidOperationException(reason);
             if(failures==null)failures=new List<string>();
             failures.Add(reason.Replace('\r',' ').Replace('\n',' '));

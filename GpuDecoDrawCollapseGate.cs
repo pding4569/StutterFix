@@ -42,13 +42,18 @@ namespace StutterFix
                 collapseWidth=collapseHeight=0;collapseHz=0;gpuCollapseFault=null;gpuCollapsePrepare=false;
                 GpuLog("drawcollapse_gate_reset=True");return true;
             }
+            if(args.Length==2 && args[0]=="unsafe")
+            {
+                DrawCollapseGuard.IgnoreOrderViolations=args[1]=="on";
+                GpuLog("DRAWCOLLAPSE_UNSAFE_ORDER ignore="+DrawCollapseGuard.IgnoreOrderViolations+" ignored="+DrawCollapseGuard.IgnoredOrderViolations);return true;
+            }
             if(args.Length==2 && args[0]=="begin")
             {
                 int i=int.Parse(args[1],Inv);
                 RequireDrawCollapse();CollapseEnvironment();
                 RequireLive(i>=0 && i<4 && collapseWindow<0 && i==collapseGate.Windows.Count(x=>x)
                     && gpuCollapseOn==(i==1||i==2) && !FrameCompare.Paused && Hitch.Playing
-                    && Math.Abs(MergeSong-260)<.6 && gpuLiveCpuFallbackCount==0,"drawcollapse begin requires ABBA at 260s");
+                    && Math.Abs(MergeSong-260)<(DrawCollapseGuard.IgnoreOrderViolations?1.6:.6) && gpuLiveCpuFallbackCount==0,"drawcollapse begin requires ABBA at 260s");
                 collapseDraws=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",16384);
                 collapseWindow=i;collapseFrame=Time.frameCount;collapseObserved=-1;collapseObservedCount=collapseSpikes=0;
                 collapseTick=Stopwatch.GetTimestamp();
