@@ -439,6 +439,33 @@ namespace StutterFix
         // 멈추는 순간이라 그 안에서 한 번에 치우는 편이 낫다(이 맵들에서 약 0.3초).
         internal static bool ExitSlices = false;
         internal static float ExitSliceMs = 3f;
+        // ── 편집 화면에서 자동 GC 막기 ──
+        // 편집으로 나가며 한 번 치운 뒤에도 GC 가 켜져 있으면, 타일을 누르는 등 편집 동작이 만드는 작은 쓰레기만으로 유니티 자동 GC 가 돌아 한 번에 0.6~0.8초 멈췄다
+        // (사용자 로그 2026-10-26: 편집으로 나간 14초 뒤 타일을 눌러 "메모리 정리 652ms"). 나간 직후 한 번 치운 뒤 다음 재생·전환까지 자동 GC 만 막는다
+        // (GC.Collect 는 된다). 쓰레기가 EditHoldMB 넘게 쌓이면 안전하게 풀어 준다.
+        internal static bool EditHold = true;
+        internal static long EditHoldMB = 400;
+        private static bool editHoldOn; private static long editHoldBase;
+        private static void BeginEditHold(long baseMB)
+        {
+            if (!EditHold) return;
+            try { GarbageCollector.GCMode = GarbageCollector.Mode.Manual; editHoldOn = true; editHoldBase = baseMB;
+                Main.Entry.Logger.Log("[GC] 편집 화면에서 자동 GC 막음 (기준 " + baseMB + "MB, " + EditHoldMB + "MB 넘게 쌓이면 풀어 줌)"); }
+            catch { }
+        }
+        private static void EndEditHold(string why)
+        {
+            if (!editHoldOn) return;
+            editHoldOn = false;
+            try { if (!Paused) GarbageCollector.GCMode = GarbageCollector.Mode.Enabled; } catch { }
+            if (why != null) Main.Entry.Logger.Log("[GC] 편집 화면 자동 GC 막기 끝: " + why);
+        }
+        private static void EditHoldStep(bool playing)
+        {
+            if (playing || Paused) { editHoldOn = false; return; }
+            long heap = GC.GetTotalMemory(false) / 1048576;
+            if (heap - editHoldBase > EditHoldMB) EndEditHold("쓰레기 " + (heap - editHoldBase) + "MB 쌓임");
+        }
         private static bool bgActive;
         private static int bgFrames, bgCycles;
         private static long bgBefore, bgCycleStart;
@@ -508,6 +535,7 @@ namespace StutterFix
         internal static void Resume(string reason)
         {
             EndStartHold(null);
+            if (editHoldOn) { editHoldOn = false; }   // 이어서 아래에서 GC 를 원래대로 켠다
             if (!Paused) return;
             try
             {
@@ -529,6 +557,7 @@ namespace StutterFix
                         Paused = false;
                         resumeCountdown = -1f;
                         SkippedCollects++;
+                        if (reason == "SwitchToEditMode") BeginEditHold(heap);
                         Main.Entry.Logger.Log(string.Format("GC 재개 ({0}) 정리 생략: 지난 정리 뒤 쌓인 것 {1}MB < {2}MB (힙 {3}MB)", reason, debt, need, heap));
                         return;
                     }
@@ -578,6 +607,7 @@ namespace StutterFix
                 if (RestartAt != 0) RestartGcMs += sw.ElapsedMilliseconds;
                 Main.Entry.Logger.Log(string.Format("GC 재개 및 정리 ({0}) {1}MB -> {2}MB, {3}ms",
                     reason, before, GC.GetTotalMemory(false) / 1048576, sw.ElapsedMilliseconds));
+                if (reason == "SwitchToEditMode") BeginEditHold(lastCleanMB);
             }
             catch (Exception ex) { Main.Entry.Logger.Error("GC 재개 실패: " + ex.Message); }
         }
@@ -609,6 +639,7 @@ namespace StutterFix
             Hitch.Tick(dt, playing);
             Main.TickCost[16] += System.Diagnostics.Stopwatch.GetTimestamp() - hq;
 
+            if (editHoldOn) EditHoldStep(playing);
             if (bgActive) BgStep(playing);   // 편집으로 나간 뒤 조금씩 치우기 (재생이 시작되면 거기서 멈춘다)
             if (wantGap && playing && Paused && !limitPhase) GapCheck();   // 한계 가까이: 입력이 없는 틈을 매 프레임 본다
             if (playing && !Paused) { if (Pause()) { pausedFor = 0f; PeakHeapMB = 0; quietTimer = 0f; quietHeapMark = GC.GetTotalMemory(false) / 1048576; } }
