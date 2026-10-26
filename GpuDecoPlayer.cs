@@ -106,13 +106,24 @@ namespace StutterFix
             finally { Preparing = false; }
         }
 
+        static AccessTools.FieldRef<scrController, States> stateRef;
+        static States CurrentState(scrController c)
+        {
+            if (stateRef == null) stateRef = AccessTools.FieldRefAccess<scrController, States>("currentState");
+            return stateRef(c);
+        }
         static void BeforeControllerUpdate() => TryStart();
         // 에디터 재생에서는 scrController.Update 앞 후크가 불리지 않아 Tick 에서도 같은 시도를 한다(한 번만 켜진다).
         static void TryStart()
         {
             if (!Product || lifetime.Blocked || !lifetime.Prepared) return;
             var c = ADOBase.controller; var song = scrConductor.instance;
-            if (!c || !song || !song.hasSongStarted || !c.gameworld || c.paused || AudioListener.pause || Time.timeScale <= 0) return;
+            bool preStart = DrawCollapsePolicy.PreStartActivate && c && c.gameworld && !c.paused && !(scnEditor.instance) && CurrentState(c) == States.Start && !EffectBudget.InCatchUp;
+#if AUTOTEST
+            if (c && song && !song.hasSongStarted && lifetime.Prepared && !lifetime.Attempted && (Time.frameCount % 240) == 0)
+                Main.Entry.Logger.Log("[GPU 장식] 시작 전 대기 점검: preStart " + preStart + " gameworld " + c.gameworld + " paused " + c.paused + " 상태 " + CurrentState(c) + " 따라잡기 " + EffectBudget.InCatchUp + " 에디터 " + (bool)scnEditor.instance + " 오디오정지 " + AudioListener.pause + " timeScale " + Time.timeScale);
+#endif
+            if (!c || !song || (!song.hasSongStarted && !preStart) || !c.gameworld || c.paused || AudioListener.pause || Time.timeScale <= 0) return;
             if (scnEditor.instance && !scnEditor.instance.playMode) return;
             // 시작 직후 60프레임(따라잡기)에는 효과가 원본 경로로 도는 순간이 있어, 그때 켜면 곧바로 원본으로 복귀한다(편집기 중간 시작).
             if (EffectBudget.InCatchUp && song.songposition_minusi > 0.5) return;
@@ -432,7 +443,7 @@ namespace StutterFix
             gpuCollapsePlannedFallback = 0;
             if (gpuLiveCpuFallbackCount != 0) ExcludeCpuFallbackFromCollapse();
             var songNow = scrConductor.instance;
-            bool midSong = songNow != null && songNow.songposition_minusi > 0.5;
+            bool midSong = songNow != null && songNow.hasSongStarted && songNow.songposition_minusi > 0.5; // 시작 키 전(Start 상태)의 곡 위치는 지난 판의 값이라 믿지 않는다
             // 재사용 라운드·CPU 처리 장식·동적 제외 흔적·곡 중간 시작(장벽 상태가 달라짐)이면 통합을 다시 계획한다
             bool needRebuild = (gpuReusedRound && !prebuilt) || gpuLiveCpuFallbackCount != 0 || hadDynamic || midSong;
             if (needRebuild)
