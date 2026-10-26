@@ -1,0 +1,116 @@
+﻿using System;
+using UnityEngine;
+
+public class scrParallax : ADOBase
+{
+	public Vector3 posCamAtStart;
+
+	public float multiplier_x;
+
+	public float multiplier_y;
+
+	[NonSerialized]
+	public Transform cameraTransform;
+
+	[NonSerialized]
+	public bool dontAlterX;
+
+	[NonSerialized]
+	public bool dontAlterY;
+
+	public bool clampToScreen;
+
+	public Vector2 screenRelativePos;
+
+	private Vector2 startPosition;
+
+	private Vector2 endPosition;
+
+	private Transform cachedTransform;
+
+	private bool isDecoration;
+
+	[NonSerialized]
+	public scrDecoration decoration;
+
+	private bool inited;
+
+	public Vector2 multiplier
+	{
+		get
+		{
+			return new Vector2(multiplier_x, multiplier_y);
+		}
+		set
+		{
+			float x = value.x;
+			float y = value.y;
+			multiplier_x = x;
+			multiplier_y = y;
+		}
+	}
+
+	private void Init()
+	{
+		if (!inited)
+		{
+			cachedTransform = base.transform;
+			startPosition = cachedTransform.position;
+			cameraTransform = ADOBase.controller.camy.transform;
+			if (TryGetComponent<scrDecoration>(out var component))
+			{
+				decoration = component;
+				isDecoration = true;
+			}
+			inited = true;
+		}
+	}
+
+	private void Awake()
+	{
+		Init();
+	}
+
+	public void SetNewStartPosition(Vector3 startPosition)
+	{
+		this.startPosition = startPosition;
+	}
+
+	public void SetTrans()
+	{
+		Init();
+		Vector3 position = cachedTransform.position;
+		Vector2 vector2;
+		if (clampToScreen)
+		{
+			Rect pixelRect = ADOBase.controller.camy.camobj.pixelRect;
+			Vector2 vector = new Vector2(pixelRect.width * screenRelativePos.x, pixelRect.height * screenRelativePos.y);
+			vector2 = ADOBase.controller.camy.camobj.ScreenToWorldPoint(new Vector2(pixelRect.x, pixelRect.y) + vector);
+		}
+		else
+		{
+			vector2 = (cameraTransform.position - posCamAtStart) * multiplier + startPosition;
+			if (dontAlterX)
+			{
+				vector2.x = position.x;
+			}
+			if (dontAlterY)
+			{
+				vector2.y = position.y;
+			}
+		}
+		Vector2 vector3 = (isDecoration ? (decoration.parallaxOffset * decoration.camScaleMultiplier / decoration.textureScaleMultiplier) : Vector2.zero);
+		endPosition = vector2 + vector3;
+		cachedTransform.position = new Vector3(endPosition.x, endPosition.y, position.z);
+	}
+
+	public Vector2 GetPositionWithParallax()
+	{
+		return endPosition;
+	}
+
+	private void LateUpdate()
+	{
+		SetTrans();
+	}
+}

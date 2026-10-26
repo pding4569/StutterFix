@@ -1,0 +1,168 @@
+﻿{
+  "Schema": 1,
+  "N": 2476,
+  "K": 400,
+  "Frames": 600,
+  "Rounds": 9,
+  "Seed": 726,
+  "Runtime": ".NET 8.0.6",
+  "OS": "Microsoft Windows 10.0.19045",
+  "Architecture": "X64",
+  "StopwatchFrequency": 10000000,
+  "Processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+  "LogicalProcessors": 6,
+  "TieredCompilation": "0",
+  "HardwareIntrinsics": "0",
+  "Samples": {
+    "copy_floor": {
+      "MsPerFrame": [
+        0.0090205,
+        0.006095166666666666,
+        0.00438,
+        0.005041166666666667,
+        0.004136,
+        0.004363666666666667,
+        0.004174166666666667,
+        0.0041498333333333335,
+        0.004841833333333333
+      ],
+      "MedianMsPerFrame": 0.00438,
+      "MinMsPerFrame": 0.004136,
+      "MaxMsPerFrame": 0.0090205
+    },
+    "per_decoration_repeated": {
+      "MsPerFrame": [
+        0.03394216666666667,
+        0.029082,
+        0.023737,
+        0.023563333333333332,
+        0.023167499999999997,
+        0.022447333333333333,
+        0.023630333333333333,
+        0.021935666666666666,
+        0.023878666666666666
+      ],
+      "MedianMsPerFrame": 0.023630333333333333,
+      "MinMsPerFrame": 0.021935666666666666,
+      "MaxMsPerFrame": 0.03394216666666667
+    },
+    "exact_full_operand_groups": {
+      "MsPerFrame": [
+        0.013143666666666666,
+        0.01705833333333333,
+        0.016330833333333336,
+        0.012135,
+        0.012219666666666667,
+        0.011441499999999999,
+        0.011622,
+        0.010969000000000001,
+        0.011436833333333334
+      ],
+      "MedianMsPerFrame": 0.012135,
+      "MinMsPerFrame": 0.010969000000000001,
+      "MaxMsPerFrame": 0.01705833333333333
+    },
+    "per_decoration_varied": {
+      "MsPerFrame": [
+        0.024812166666666666,
+        0.031179666666666665,
+        0.024472666666666667,
+        0.02345533333333333,
+        0.023424999999999998,
+        0.022087166666666668,
+        0.022939833333333333,
+        0.0239125,
+        0.022096
+      ],
+      "MedianMsPerFrame": 0.02345533333333333,
+      "MinMsPerFrame": 0.022087166666666668,
+      "MaxMsPerFrame": 0.031179666666666665
+    },
+    "unsafe_multiplier_groups": {
+      "MsPerFrame": [
+        0.03484316666666667,
+        0.037915833333333336,
+        0.033625666666666665,
+        0.028012166666666668,
+        0.029656000000000002,
+        0.030499500000000002,
+        0.030434666666666665,
+        0.028299500000000002,
+        0.029339666666666667
+      ],
+      "MedianMsPerFrame": 0.030434666666666665,
+      "MinMsPerFrame": 0.028012166666666668,
+      "MaxMsPerFrame": 0.037915833333333336
+    },
+    "trig_per_decoration_hypothetical": {
+      "MsPerFrame": [
+        0.06327583333333334,
+        0.05343516666666667,
+        0.048593166666666666,
+        0.044187,
+        0.0453335,
+        0.045441833333333334,
+        0.04718733333333333,
+        0.044013833333333335,
+        0.044333500000000005
+      ],
+      "MedianMsPerFrame": 0.045441833333333334,
+      "MinMsPerFrame": 0.044013833333333335,
+      "MaxMsPerFrame": 0.06327583333333334
+    },
+    "trig_groups_hypothetical": {
+      "MsPerFrame": [
+        0.017738833333333332,
+        0.021359666666666666,
+        0.014490000000000001,
+        0.015784833333333335,
+        0.014108333333333334,
+        0.014209833333333333,
+        0.015105,
+        0.014950999999999999,
+        0.014966166666666666
+      ],
+      "MedianMsPerFrame": 0.014966166666666666,
+      "MinMsPerFrame": 0.014108333333333334,
+      "MaxMsPerFrame": 0.021359666666666666
+    }
+  },
+  "Parity": {
+    "Comparisons": 42092,
+    "RegroupMismatch": 31555,
+    "ExactFullOperandMismatch": 0,
+    "InlinedVsScalarMismatch": 0,
+    "First": {
+      "Position": [
+        1241.1737,
+        -3179.1484
+      ],
+      "Multiplier": [
+        0.0025062656,
+        0.99749374
+      ],
+      "Camera": [
+        0,
+        -0
+      ],
+      "Original": [
+        1146.6199,
+        58.053955
+      ],
+      "Regrouped": [
+        1146.6199,
+        58.05397
+      ],
+      "OriginalBits": [
+        "448f53d6",
+        "42683740"
+      ],
+      "RegroupedBits": [
+        "448f53d6",
+        "42683744"
+      ]
+    }
+  },
+  "Sink": -7904.951,
+  "Limit": "Synthetic .NET 8 CPU benchmark; repeated = all operands shared; varied = only multipliers shared. Group IDs prebuilt (modulo cost included), rebuild/hash/tween/Unity Transform/native/GPU/visibility costs excluded. Trig modes are deliberately hypothetical: the game\u0027s ordinary parallax position path has NO trig. No FPS/Mono/GPU conclusion. NoInlining scalar parity probe is distinct from timed inlined arithmetic."
+}

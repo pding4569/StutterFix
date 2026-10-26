@@ -1,0 +1,485 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ADOFAI;
+using DG.Tweening;
+using UnityEngine;
+
+public class ffxMoveDecorationsPlus : ffxPlusBase
+{
+	public scrDecorationManager decManager;
+
+	public DecPlacementType movementType;
+
+	public bool movementTypeUsed = true;
+
+	public Vector2 targetPos;
+
+	public bool positionUsed = true;
+
+	public float targetRot;
+
+	public bool pivotUsed = true;
+
+	public Vector2 targetPivot;
+
+	public bool rotationUsed = true;
+
+	public float targetScale = float.NaN;
+
+	public Vector2 targetScaleV2;
+
+	public bool scaleUsed = true;
+
+	public Color targetColor;
+
+	public bool colorUsed = true;
+
+	public float targetOpacity = 1f;
+
+	public bool opacityUsed = true;
+
+	public Vector2 targetParallax;
+
+	public Vector2 targetParallaxOffset;
+
+	public bool parallaxOffsetUsed = true;
+
+	public bool parallaxUsed;
+
+	public bool visible = true;
+
+	public bool visibleUsed;
+
+	public string targetImageFilename;
+
+	public bool imageFilenameUsed;
+
+	public Vector2 targetOriginalSize;
+
+	public bool originalSizeUsed;
+
+	public Vector2 targetCropPivotOffset;
+
+	public bool cropPivotOffsetUsed;
+
+	public int targetDepth;
+
+	public bool depthUsed;
+
+	public bool targetSmoothing;
+
+	public bool smoothingUsed;
+
+	public MaskingType targetMaskingType;
+
+	public bool maskingTypeUsed;
+
+	public string targetmaskingTarget;
+
+	public bool maskingTargetUsed;
+
+	public bool targetUseMaskingDepth;
+
+	public bool useMaskingDepthUsed;
+
+	public int targetMaskingFrontDepth;
+
+	public bool maskingFrontDepthUsed;
+
+	public int targetMaskingBackDepth;
+
+	public bool maskingBackDepthUsed;
+
+	public List<string> targetTags = new List<string>();
+
+	public bool forceDontTweenMovement;
+
+	protected override IEnumerable<Tween> eventTweens
+	{
+		get
+		{
+			List<Tween> list = new List<Tween>();
+			list.AddRange(decManager.GetTaggedDecorations(targetTags).SelectMany((scrDecoration d) => d.eventTweens.Values));
+			return list;
+		}
+	}
+
+	public override void Awake()
+	{
+		base.Awake();
+		hifiEffect = true;
+		if (ADOBase.levelIsMikoSkip)
+		{
+			hifiEffect = false;
+		}
+	}
+
+	public override void StartEffect(scrPlanet planet)
+	{
+		if (ADOBase.controller.visualQuality == VisualQuality.Low && (ADOBase.isOfficialLevel || Persistence.forceVisualSettings) && !ADOBase.levelIsMikoSkip)
+		{
+			return;
+		}
+		if (!float.IsNaN(targetScale))
+		{
+			targetScaleV2 = new Vector2(targetScale, targetScale);
+		}
+		AdjustDurationForHardbake();
+		foreach (scrDecoration dec in decManager.GetTaggedDecorations(targetTags))
+		{
+			Dictionary<TweenType, Tween> dictionary = dec.eventTweens;
+			bool num = dec is scrVisualDecoration;
+			bool flag = dec is scrParticleDecoration;
+			scrVisualDecoration scrVisualDecoration2 = null;
+			if (num)
+			{
+				scrVisualDecoration2 = (scrVisualDecoration)dec;
+			}
+			if ((bool)ADOBase.customLevel && movementTypeUsed && movementType != DecPlacementType.LastPosition)
+			{
+				dec.SetPlacementType(movementType);
+			}
+			Vector2 endValue = new Vector3(targetScaleV2.x, targetScaleV2.y);
+			if (!forceDontTweenMovement)
+			{
+				if (positionUsed)
+				{
+					Vector2 startPos = ((movementType == DecPlacementType.LastPosition) ? dec.pivotPosVec : dec.startPos);
+					if (!float.IsNaN(targetPos.x))
+					{
+						if (dictionary.TryGetValue(TweenType.PositionX, out var value))
+						{
+							value.Kill(complete: true);
+						}
+						Vector2 newPos = dec.pivotPosVec;
+						dictionary[TweenType.PositionX] = DOTween.To(() => newPos.x, delegate(float v)
+						{
+							newPos.x = v;
+						}, startPos.x + targetPos.x, duration).SetEase(ease).OnUpdate(delegate
+						{
+							dec.SetPositionX(newPos.x, dec.pivotOffsetVec);
+						})
+							.OnComplete(delegate
+							{
+								dec.SetPositionX(startPos.x + targetPos.x, dec.pivotOffsetVec);
+							})
+							.Done();
+					}
+					if (!float.IsNaN(targetPos.y))
+					{
+						if (dictionary.TryGetValue(TweenType.PositionY, out var value2))
+						{
+							value2.Kill(complete: true);
+						}
+						Vector2 newPos2 = dec.pivotPosVec;
+						dictionary[TweenType.PositionY] = DOTween.To(() => newPos2.y, delegate(float v)
+						{
+							newPos2.y = v;
+						}, startPos.y + targetPos.y, duration).SetEase(ease).OnUpdate(delegate
+						{
+							dec.SetPositionY(newPos2.y, dec.pivotOffsetVec);
+						})
+							.OnComplete(delegate
+							{
+								dec.SetPositionY(startPos.y + targetPos.y, dec.pivotOffsetVec);
+							})
+							.Done();
+					}
+				}
+				if (parallaxOffsetUsed)
+				{
+					if (!float.IsNaN(targetParallaxOffset.x))
+					{
+						if (dictionary.TryGetValue(TweenType.ParallaxOffsetX, out var value3))
+						{
+							value3.Kill(complete: true);
+						}
+						Vector2 newPos3 = dec.parallaxOffset;
+						dictionary[TweenType.ParallaxOffsetX] = DOTween.To(() => newPos3.x, delegate(float v)
+						{
+							newPos3.x = v;
+						}, targetParallaxOffset.x, duration).SetEase(ease).OnUpdate(delegate
+						{
+							dec.SetParallaxOffsetX(newPos3.x);
+						})
+							.OnComplete(delegate
+							{
+								dec.SetParallaxOffsetX(targetParallaxOffset.x);
+							})
+							.Done();
+					}
+					if (!float.IsNaN(targetParallaxOffset.y))
+					{
+						if (dictionary.TryGetValue(TweenType.ParallaxOffsetY, out var value4))
+						{
+							value4.Kill(complete: true);
+						}
+						Vector2 newPos4 = dec.parallaxOffset;
+						dictionary[TweenType.ParallaxOffsetY] = DOTween.To(() => newPos4.y, delegate(float v)
+						{
+							newPos4.y = v;
+						}, targetParallaxOffset.y, duration).SetEase(ease).OnUpdate(delegate
+						{
+							dec.SetParallaxOffsetY(newPos4.y);
+						})
+							.OnComplete(delegate
+							{
+								dec.SetParallaxOffsetY(targetParallaxOffset.y);
+							})
+							.Done();
+					}
+				}
+				if (pivotUsed)
+				{
+					if (!float.IsNaN(targetPivot.x))
+					{
+						if (dictionary.TryGetValue(TweenType.PivotX, out var value5))
+						{
+							value5.Kill(complete: true);
+						}
+						Vector2 newPivot = dec.pivotOffsetVec;
+						dictionary[TweenType.PivotX] = DOTween.To(() => newPivot.x, delegate(float v)
+						{
+							newPivot.x = v;
+						}, targetPivot.x, duration).SetEase(ease).OnUpdate(delegate
+						{
+							dec.SetPivotX(newPivot.x);
+						})
+							.OnComplete(delegate
+							{
+								dec.SetPivotX(targetPivot.x);
+							})
+							.Done();
+					}
+					if (!float.IsNaN(targetPivot.y))
+					{
+						if (dictionary.TryGetValue(TweenType.PivotY, out var value6))
+						{
+							value6.Kill(complete: true);
+						}
+						Vector2 newPivot2 = dec.pivotOffsetVec;
+						dictionary[TweenType.PivotY] = DOTween.To(() => newPivot2.y, delegate(float v)
+						{
+							newPivot2.y = v;
+						}, targetPivot.y, duration).SetEase(ease).OnUpdate(delegate
+						{
+							dec.SetPivotY(newPivot2.y);
+						})
+							.OnComplete(delegate
+							{
+								dec.SetPivotY(targetPivot.y);
+							})
+							.Done();
+					}
+				}
+				if (rotationUsed)
+				{
+					if (dictionary.TryGetValue(TweenType.Rotation, out var value7))
+					{
+						value7.Kill(complete: true);
+					}
+					float newRot = dec.rotAngle;
+					dictionary[TweenType.Rotation] = DOTween.To(() => newRot, delegate(float r)
+					{
+						newRot = r;
+					}, targetRot, duration).SetEase(ease).OnUpdate(delegate
+					{
+						dec.SetRotation(newRot);
+					})
+						.OnComplete(delegate
+						{
+							dec.SetRotation(targetRot);
+						})
+						.Done();
+				}
+				if (scaleUsed)
+				{
+					if (!float.IsNaN(endValue.x))
+					{
+						if (dictionary.TryGetValue(TweenType.ScaleX, out var value8))
+						{
+							value8.Kill(complete: true);
+						}
+						dictionary[TweenType.ScaleX] = DOTween.To(() => dec.scaleVec, delegate(Vector2 v)
+						{
+							dec.SetScale(v);
+						}, endValue, duration).SetEase(ease).SetOptions(AxisConstraint.X)
+							.Done();
+					}
+					if (!float.IsNaN(endValue.y))
+					{
+						if (dictionary.TryGetValue(TweenType.ScaleY, out var value9))
+						{
+							value9.Kill(complete: true);
+						}
+						dictionary[TweenType.ScaleY] = DOTween.To(() => dec.scaleVec, delegate(Vector2 v)
+						{
+							dec.SetScale(v);
+						}, endValue, duration).SetEase(ease).SetOptions(AxisConstraint.Y)
+							.Done();
+					}
+				}
+			}
+			if (colorUsed)
+			{
+				if (dictionary.TryGetValue(TweenType.Color, out var value10))
+				{
+					value10.Kill(complete: true);
+				}
+				Color newColor = dec.color;
+				dictionary[TweenType.Color] = DOTween.To(() => newColor, delegate(Color c)
+				{
+					newColor = c;
+				}, targetColor, duration).SetEase(ease).OnUpdate(delegate
+				{
+					dec.SetColor(newColor);
+				})
+					.OnComplete(delegate
+					{
+						dec.SetColor(targetColor);
+					})
+					.Done();
+			}
+			if (opacityUsed)
+			{
+				if (dictionary.TryGetValue(TweenType.Opacity, out var value11))
+				{
+					value11.Kill(complete: true);
+				}
+				float newOpacity = dec.opacity;
+				dictionary[TweenType.Opacity] = DOTween.To(() => newOpacity, delegate(float a)
+				{
+					newOpacity = a;
+				}, targetOpacity, duration).SetEase(ease).OnUpdate(delegate
+				{
+					dec.SetOpacity(newOpacity);
+				})
+					.OnComplete(delegate
+					{
+						dec.SetOpacity(targetOpacity);
+					})
+					.Done();
+			}
+			if (parallaxUsed)
+			{
+				if (dictionary.TryGetValue(TweenType.Parallax, out var value12))
+				{
+					value12.Kill(complete: true);
+				}
+				Vector2 newParallax = dec.parallax.multiplier;
+				dictionary[TweenType.Parallax] = DOTween.To(() => newParallax, delegate(Vector2 p)
+				{
+					dec.parallax.multiplier = p;
+				}, targetParallax / 100f, duration).SetEase(ease).Done();
+			}
+			if (visibleUsed)
+			{
+				dec.SetVisible(visible && !dec.forceHide);
+			}
+			if (depthUsed)
+			{
+				dec.SetDepth(targetDepth);
+			}
+			if (flag && imageFilenameUsed)
+			{
+				bool flag2 = !string.IsNullOrEmpty(targetImageFilename);
+				Dictionary<string, TextureManager.CustomSprite> customSprites = scrDecorationManager.instance.imageHolder.customSprites;
+				((scrParticleDecoration)dec).SetSprite(flag2 ? customSprites[targetImageFilename] : null);
+			}
+			if (num)
+			{
+				if (imageFilenameUsed)
+				{
+					Dictionary<string, TextureManager.CustomSprite> customSprites2 = scrDecorationManager.instance.imageHolder.customSprites;
+					scrVisualDecoration2.SetSprite(customSprites2.GetValueOrDefault(targetImageFilename ?? string.Empty, null));
+				}
+				if (originalSizeUsed)
+				{
+					scrVisualDecoration2.SetTextureScaleMultiplier(targetOriginalSize);
+				}
+				if (cropPivotOffsetUsed)
+				{
+					scrVisualDecoration2.croppedPivotOffset = targetCropPivotOffset / 100f;
+					scrVisualDecoration2.SetPosition(scrVisualDecoration2.pivotPosVec, scrVisualDecoration2.pivotOffsetVec);
+				}
+				if (smoothingUsed)
+				{
+					scrVisualDecoration2.smoothing = targetSmoothing;
+					scrVisualDecoration2.SetSprite(null, sameSprite: true);
+				}
+				if (maskingTypeUsed)
+				{
+					scrVisualDecoration2.SetMaskingType(targetMaskingType);
+				}
+				if (maskingTargetUsed)
+				{
+					scrVisualDecoration2.SetMaskingTarget(targetmaskingTarget);
+				}
+				if (useMaskingDepthUsed)
+				{
+					scrVisualDecoration2.SetMaskingDepth(targetUseMaskingDepth);
+				}
+				if (maskingFrontDepthUsed || maskingBackDepthUsed)
+				{
+					scrVisualDecoration2.SetMaskingDepth(maskingFrontDepthUsed ? new int?(targetMaskingFrontDepth) : ((int?)null), maskingBackDepthUsed ? new int?(targetMaskingBackDepth) : ((int?)null));
+				}
+			}
+		}
+	}
+
+	public override void Decode(LevelEvent evnt)
+	{
+		float tileSize = ADOBase.controller.tileSize;
+		decManager = scnGame.suitableDecManager;
+		duration = evnt.GetFloat("duration") * crotchet;
+		movementType = (DecPlacementType)evnt["relativeTo"];
+		movementTypeUsed = !evnt.disabled["relativeTo"];
+		visible = evnt.GetBool("visible");
+		visibleUsed = !evnt.disabled["visible"];
+		targetImageFilename = evnt.GetString("decorationImage");
+		imageFilenameUsed = !evnt.disabled["decorationImage"];
+		targetOriginalSize = (Vector2)evnt["originalSize"];
+		originalSizeUsed = !evnt.disabled["originalSize"];
+		targetCropPivotOffset = (Vector2)evnt["cropPivotOffset"];
+		cropPivotOffsetUsed = !evnt.disabled["cropPivotOffset"];
+		targetDepth = evnt.GetInt("depth");
+		depthUsed = !evnt.disabled["depth"];
+		targetParallax = (Vector2)evnt["parallax"];
+		parallaxUsed = !evnt.disabled["parallax"];
+		Vector2 vector = (Vector2)evnt["parallaxOffset"];
+		parallaxOffsetUsed = !evnt.disabled["parallaxOffset"];
+		targetParallaxOffset = tileSize * vector;
+		Vector2 vector2 = (Vector2)evnt["positionOffset"];
+		positionUsed = !evnt.disabled["positionOffset"];
+		targetPos = tileSize * vector2;
+		Vector2 vector3 = (Vector2)evnt["pivotOffset"];
+		pivotUsed = !evnt.disabled["pivotOffset"];
+		targetPivot = tileSize * vector3;
+		targetRot = evnt.GetFloat("rotationOffset");
+		rotationUsed = !evnt.disabled["rotationOffset"];
+		targetScaleV2 = (Vector2)evnt["scale"] / 100f;
+		scaleUsed = !evnt.disabled["scale"];
+		targetColor = evnt.GetColor("color");
+		colorUsed = !evnt.disabled["color"];
+		targetOpacity = evnt.GetFloat("opacity") / 100f;
+		opacityUsed = !evnt.disabled["opacity"];
+		targetSmoothing = evnt.GetBool("imageSmoothing");
+		smoothingUsed = !evnt.disabled["imageSmoothing"];
+		targetMaskingType = (MaskingType)evnt["maskingType"];
+		maskingTypeUsed = !evnt.disabled["maskingType"];
+		targetUseMaskingDepth = evnt.GetBool("useMaskingDepth");
+		useMaskingDepthUsed = !evnt.disabled["useMaskingDepth"];
+		targetMaskingFrontDepth = evnt.GetInt("maskingFrontDepth");
+		maskingFrontDepthUsed = !evnt.disabled["maskingFrontDepth"];
+		targetMaskingBackDepth = evnt.GetInt("maskingBackDepth");
+		maskingBackDepthUsed = !evnt.disabled["maskingBackDepth"];
+		string[] array = evnt["tag"].ToString().Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+		if (array.Length == 0)
+		{
+			array = new string[1] { "NO TAG" };
+		}
+		targetTags.AddRange(array);
+		ease = (Ease)evnt["ease"];
+	}
+}

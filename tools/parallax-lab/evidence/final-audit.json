@@ -1,0 +1,23 @@
+﻿{
+    "PowerShellSyntax":  [
+                             {
+                                 "File":  "tools/parallax-lab/run-offline.ps1",
+                                 "Errors":  0
+                             },
+                             {
+                                 "File":  "tools/parallax-lab/capture-evidence.ps1",
+                                 "Errors":  0
+                             }
+                         ],
+    "DocumentLinksChecked":  33,
+    "SourceHashesChecked":  55,
+    "SourceHashMismatches":  0,
+    "TrackedWorktreeDiffExit":  0,
+    "TrackedIndexDiffExit":  0,
+    "Status":  [
+                   "?? docs/handoff/parallax-research.md",
+                   "?? docs/research/",
+                   "?? tools/parallax-lab/"
+               ],
+    "Scope":  "New docs/research/parallax-grouping.md and tools/parallax-lab only; pre-existing handoff left intact"
+}

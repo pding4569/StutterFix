@@ -1,0 +1,533 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using ADOFAI.LevelEditor.Controls;
+using BlendModes;
+using UnityEngine;
+
+public class scrVisualDecoration : scrDecoration
+{
+	public SpriteRenderer spriteRenderer;
+
+	public MeshRenderer meshRenderer;
+
+	public GameObject meshRendererObj;
+
+	private Material meshRendererMat;
+
+	public BlendModeEffect blendModeEffect;
+
+	public BlendModeEffect meshBlendModeEffect;
+
+	public SpriteMask spriteMask;
+
+	public SpriteAlphaMask spriteAlphaMask;
+
+	[NonSerialized]
+	public List<SpriteAlphaMask> alphaMaskCache;
+
+	[NonSerialized]
+	public RenderTexture spareRT1;
+
+	[NonSerialized]
+	public RenderTexture spareRT2;
+
+	[NonSerialized]
+	public SpriteRenderer bordersRenderer;
+
+	[NonSerialized]
+	[Header("Hitbox")]
+	public SpriteRenderer hitboxRenderer;
+
+	[NonSerialized]
+	public float repeatX = 1f;
+
+	[NonSerialized]
+	public float repeatY = 1f;
+
+	private DecorationBlendMode blendMode;
+
+	private MaskingType maskingType;
+
+	private TextureManager.CustomSprite _sprite;
+
+	public bool smoothing;
+
+	private bool meshRendererEnabled;
+
+	public Vector2 spriteUnscaledSize { get; private set; }
+
+	public override string gameObjectName => sourceLevelEvent.GetString("decorationImage")?.RemoveRichTags();
+
+	public override string decorationName => gameObjectName.NullIfEmpty() ?? PropertyControl_DecorationsList.stringItemNoImage;
+
+	public bool isMask()
+	{
+		return maskingType == MaskingType.Mask;
+	}
+
+	private new void Awake()
+	{
+		base.Awake();
+		if (ADOBase.customLevel != null)
+		{
+			bordersRenderer = selectionBordersObject.GetComponent<SpriteRenderer>();
+			hitboxRenderer = hitboxBordersObject.GetComponent<SpriteRenderer>();
+		}
+	}
+
+	private void EnableMeshRenderer(bool enabled)
+	{
+		if (enabled != meshRendererEnabled)
+		{
+			meshRendererObj.SetActive(enabled);
+		}
+		meshRendererEnabled = enabled;
+	}
+
+	public override void UpdateShader(bool disable = false)
+	{
+		Texture2D texture;
+		RenderTexture rt;
+		bool hasShader;
+		if (!disable && !isMask())
+		{
+			Sprite sprite = spriteRenderer.sprite;
+			if ((object)sprite != null)
+			{
+				texture = sprite.texture;
+				rt = meshRenderer.material.mainTexture as RenderTexture;
+				if ((object)rt == null || rt.width != texture.width || rt.height != texture.height)
+				{
+					rt?.Release();
+				}
+				else
+				{
+					rt.Clear();
+				}
+				if (!GetVisible())
+				{
+					if (spriteRenderer.enabled)
+					{
+						spriteRenderer.enabled = false;
+					}
+					EnableMeshRenderer(enabled: false);
+				}
+				else
+				{
+					if (meshRendererEnabled && !meshRenderer.isVisible)
+					{
+						return;
+					}
+					hasShader = false;
+					MonoBehaviour[] array = cfpCache;
+					foreach (MonoBehaviour monoBehaviour in array)
+					{
+						if (!monoBehaviour)
+						{
+							continue;
+						}
+						Type type = monoBehaviour.GetType();
+						string key = type.Name;
+						if (monoBehaviour.enabled)
+						{
+							RenderTexture tempRT = texture.GetTempRT();
+							Graphics.Blit(hasShader ? ((Texture)rt) : ((Texture)texture), tempRT);
+							EnableShader();
+							if (!manager.filterOnRenderImageCache.TryGetValue(key, out var value))
+							{
+								value = type.GetMethod("OnRenderImage", BindingFlags.Instance | BindingFlags.NonPublic);
+								manager.filterOnRenderImageCache.Add(key, value);
+							}
+							value?.Invoke(monoBehaviour, new object[2] { tempRT, rt });
+							RenderTexture.ReleaseTemporary(tempRT);
+						}
+					}
+					if (hasShader)
+					{
+						RenderTexture tempRT2 = texture.GetTempRT();
+						RenderTexture active = RenderTexture.active;
+						Graphics.Blit(rt, tempRT2);
+						RenderTexture.active = active;
+						Material material = RDC.data.spriteAlphaMask;
+						material.SetTexture(SpriteAlphaMask.ShaderProperty_RGB, tempRT2);
+						material.SetTexture(SpriteAlphaMask.ShaderProperty_A, texture);
+						material.SetFloat(SpriteAlphaMask.ShaderProperty_VisibleOutsideMask, 0f);
+						Graphics.Blit(tempRT2, rt, material, 0);
+						RenderTexture.ReleaseTemporary(tempRT2);
+					}
+					float x = 1f;
+					float y = 1f;
+					MaskingType maskingType = this.maskingType;
+					if (maskingType == MaskingType.VisibleInsideMask || maskingType == MaskingType.VisibleOutsideMask)
+					{
+						RenderTexture tempRT3 = texture.GetTempRT();
+						RenderTexture active2 = RenderTexture.active;
+						Graphics.Blit(hasShader ? ((Texture)rt) : ((Texture)texture), tempRT3);
+						RenderTexture.active = active2;
+						EnableShader();
+						this.ApplyAlphaMaskToRT(sprite.bounds.size * scaleVec, tempRT3, rt, this.maskingType == MaskingType.VisibleOutsideMask);
+						RenderTexture.ReleaseTemporary(tempRT3);
+					}
+					else
+					{
+						x = repeatX;
+						y = repeatY;
+					}
+					Material material2 = meshRenderer.material;
+					material2.SetColor(scrDecorationManager.ShaderProperty_Color, color);
+					material2.SetFloat(scrDecorationManager.ShaderProperty_Opacity, opacity);
+					material2.SetVector(scrDecorationManager.ShaderProperty_Tile, new Vector4(x, y, 0f, 0f));
+					if (spriteRenderer.enabled)
+					{
+						spriteRenderer.enabled = false;
+					}
+					meshRenderer.transform.localScale = new Vector3((float)texture.width / 100f, (float)texture.height / 100f, 1f);
+					EnableMeshRenderer(enabled: true);
+					meshRenderer.material.mainTexture = (hasShader ? ((Texture)rt) : ((Texture)texture));
+				}
+				return;
+			}
+		}
+		EnableMeshRenderer(enabled: false);
+		void EnableShader()
+		{
+			if (!hasShader)
+			{
+				hasShader = true;
+				if (rt == null)
+				{
+					rt = texture.GetEmptyRT();
+				}
+			}
+		}
+	}
+
+	public void SetSprite(Sprite sprite)
+	{
+		_sprite = null;
+		bool num = _sprite != null || spriteRenderer.sprite != sprite;
+		SpriteRenderer obj = spriteRenderer;
+		Sprite sprite2 = (spriteMask.sprite = (spriteAlphaMask.sprite = sprite));
+		obj.sprite = sprite2;
+		if (num)
+		{
+			ResizeCollider(spriteRenderer.sprite);
+		}
+		if ((bool)spriteRenderer.sprite)
+		{
+			spriteRenderer.material.SetPointSamplingVariant(!smoothing);
+			if (!ADOBase.controller.disableV15Features)
+			{
+				spriteRenderer.sprite.texture.wrapMode = TextureWrapMode.Clamp;
+			}
+		}
+	}
+
+	public void SetSprite(TextureManager.CustomSprite customSprite, bool sameSprite = false)
+	{
+		if (!sameSprite && _sprite != customSprite)
+		{
+			_sprite = customSprite;
+			SpriteRenderer obj = spriteRenderer;
+			Sprite sprite = (spriteMask.sprite = (spriteAlphaMask.sprite = customSprite?.sprite));
+			obj.sprite = sprite;
+			ResizeCollider(spriteRenderer.sprite);
+		}
+		if ((bool)spriteRenderer.sprite)
+		{
+			spriteRenderer.material.SetPointSamplingVariant(!smoothing);
+			if (!ADOBase.controller.disableV15Features)
+			{
+				spriteRenderer.sprite.texture.wrapMode = TextureWrapMode.Clamp;
+			}
+		}
+	}
+
+	private void ResizeCollider(Sprite sprite)
+	{
+		if ((bool)editorCollider && sprite != null)
+		{
+			Vector3 size = spriteRenderer.sprite.bounds.size;
+			editorCollider.size = size;
+			if (spriteUnscaledSize == Vector2.zero)
+			{
+				spriteUnscaledSize = size;
+			}
+		}
+	}
+
+	public override Vector2 GetDecorationWorldSize()
+	{
+		return (spriteRenderer.sprite?.bounds.size ?? Vector3.zero) * pivotTrans.localScale.xy();
+	}
+
+	public Vector2 GetDecorationPixelsSizeInUnits()
+	{
+		Sprite sprite = spriteRenderer.sprite;
+		Texture2D texture = sprite.texture;
+		return new Vector2((float)texture.width / sprite.pixelsPerUnit, (float)texture.height / sprite.pixelsPerUnit);
+	}
+
+	public override void UpdateHitbox()
+	{
+		Sprite sprite = spriteRenderer.sprite;
+		if (!(sprite != null))
+		{
+			return;
+		}
+		activeCollider = null;
+		damageBox.enabled = false;
+		damageCircle.enabled = false;
+		damageCapsule.enabled = false;
+		damageBox.gameObject.transform.localEulerAngles = Vector3.forward * hitboxRotation;
+		if (!base.useHitbox)
+		{
+			if (!ADOBase.editor)
+			{
+				damageBox.gameObject.SetActive(value: false);
+			}
+			return;
+		}
+		if (hitboxType == Hitbox.Box)
+		{
+			activeCollider = damageBox;
+			damageBox.size = sprite.bounds.size * hitboxScale;
+			damageBox.offset = hitboxOffset;
+			damageBox.enabled = true;
+		}
+		else if (hitboxType == Hitbox.Capsule)
+		{
+			activeCollider = damageCapsule;
+			if (hitboxScale.x > hitboxScale.y)
+			{
+				damageCapsule.direction = CapsuleDirection2D.Horizontal;
+			}
+			else
+			{
+				damageCapsule.direction = CapsuleDirection2D.Vertical;
+			}
+			damageCapsule.size = sprite.bounds.size * hitboxScale;
+			damageCapsule.offset = hitboxOffset;
+			damageCapsule.enabled = true;
+		}
+		else
+		{
+			activeCollider = damageCircle;
+			damageCircle.radius = hitboxScale.magnitude * spriteRenderer.sprite.bounds.size.x / 2f;
+			damageCircle.offset = hitboxOffset;
+			damageCircle.enabled = true;
+		}
+		if (activeCollider != null)
+		{
+			manager.hitboxCollidersToDecorations[activeCollider] = this;
+		}
+	}
+
+	public override void SetDepth(int depth)
+	{
+		if (syncFloorDepth)
+		{
+			spriteRenderer.sortingLayerName = parentFloor.floorRenderer.renderer.sortingLayerName;
+			spriteRenderer.gameObject.layer = parentFloor.gameObject.layer;
+			spriteRenderer.sortingOrder = parentFloor.floorRenderer.sortingOrder;
+			return;
+		}
+		string sortingLayerName = ((depth >= 0) ? "Bg" : "Default");
+		int layer = ((depth >= 0) ? 9 : 7);
+		spriteRenderer.sortingLayerName = sortingLayerName;
+		spriteRenderer.gameObject.layer = layer;
+		meshRenderer.sortingLayerName = sortingLayerName;
+		meshRendererObj.layer = layer;
+		int sortingOrder = -depth;
+		spriteRenderer.sortingOrder = sortingOrder;
+		meshRenderer.sortingOrder = sortingOrder;
+	}
+
+	public void SetMaskingDepth(bool customRange, int? frontDepth = null, int? backDepth = null)
+	{
+		spriteMask.isCustomRangeActive = customRange;
+		SetMaskingDepth(frontDepth, backDepth);
+	}
+
+	public void SetMaskingDepth(int? frontDepth = null, int? backDepth = null)
+	{
+		if (frontDepth.HasValue || backDepth.HasValue)
+		{
+			int num = -spriteMask.frontSortingOrder - 1;
+			int num2 = -spriteMask.backSortingOrder;
+			int valueOrDefault = frontDepth.GetValueOrDefault();
+			if (!frontDepth.HasValue)
+			{
+				valueOrDefault = num;
+				frontDepth = valueOrDefault;
+			}
+			valueOrDefault = backDepth.GetValueOrDefault();
+			if (!backDepth.HasValue)
+			{
+				valueOrDefault = num2;
+				backDepth = valueOrDefault;
+			}
+			if (backDepth < frontDepth)
+			{
+				int? num3 = backDepth;
+				int? num4 = frontDepth;
+				frontDepth = num3;
+				backDepth = num4;
+			}
+			spriteMask.frontSortingLayerID = SortingLayer.NameToID((frontDepth >= 0) ? "Bg" : "Default");
+			spriteMask.frontSortingOrder = (-frontDepth + 1).Value;
+			spriteMask.backSortingLayerID = SortingLayer.NameToID((backDepth >= 0) ? "Bg" : "Default");
+			spriteMask.backSortingOrder = (-backDepth).Value;
+		}
+	}
+
+	protected override void ApplyColor()
+	{
+		float num = (stickToFloor ? parentFloor.opacity : 1f);
+		rendererColor = color.WithAlpha(color.a * opacity * num);
+		spriteRenderer.color = rendererColor;
+	}
+
+	public override float GetAlpha()
+	{
+		return rendererColor.a;
+	}
+
+	public void SetTile(Vector2 newTile)
+	{
+		if (spriteRenderer.sprite != null)
+		{
+			repeatX = newTile.x;
+			repeatY = newTile.y;
+			if (ADOBase.controller.disableV15Features)
+			{
+				Material material = spriteRenderer.material;
+				material.SetFloat(scrDecorationManager.ShaderProperty_RepeatX, newTile.x);
+				material.SetFloat(scrDecorationManager.ShaderProperty_RepeatY, newTile.y);
+			}
+			string key = sourceLevelEvent["decorationImage"] as string;
+			scrDecorationManager.instance.UpdateDecorationTiling(key);
+		}
+	}
+
+	public override bool GetVisible()
+	{
+		if (rendererEnabled)
+		{
+			if (GetAlpha() == 0f && !isMask())
+			{
+				if (base.useHitbox)
+				{
+					return !hitOnce;
+				}
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public override void SetVisible(bool visible)
+	{
+		rendererEnabled = visible;
+		spriteRenderer.enabled = !isMask() && visible;
+		spriteMask.enabled = isMask() && visible;
+	}
+
+	public void SetTextureScaleMultiplier(Vector2 originalSize)
+	{
+		if (!(spriteRenderer.sprite == null))
+		{
+			Vector2 vector = new Vector2(spriteRenderer.sprite.texture.width, spriteRenderer.sprite.texture.height);
+			if (vector.x != 0f && vector.y != 0f && originalSize.x != 0f && originalSize.y != 0f)
+			{
+				textureScaleMultiplier = new Vector2(originalSize.x / vector.x, originalSize.y / vector.y);
+			}
+		}
+	}
+
+	public void SetBlendMode(DecorationBlendMode blendMode)
+	{
+		bool flag = blendMode != DecorationBlendMode.None;
+		this.blendMode = blendMode;
+		blendModeEffect.enabled = flag;
+		meshBlendModeEffect.enabled = flag;
+		if (flag)
+		{
+			BlendMode blendMode2 = Enum.Parse<BlendMode>(blendMode.ToString());
+			blendModeEffect.BlendMode = blendMode2;
+			blendModeEffect.UsePointSampling = !smoothing;
+			meshBlendModeEffect.BlendMode = blendMode2;
+			return;
+		}
+		spriteRenderer.material.shader = scrDecorationManager.tileShader;
+		if (meshRendererMat == null)
+		{
+			meshRendererMat = new Material(scrDecorationManager.visualDecoShader)
+			{
+				hideFlags = HideFlags.HideAndDontSave
+			};
+		}
+		meshRenderer.material = meshRendererMat;
+	}
+
+	public void SetMaskingType(MaskingType type)
+	{
+		bool flag = isMask();
+		switch (type)
+		{
+		case MaskingType.None:
+		case MaskingType.Mask:
+			spriteRenderer.maskInteraction = SpriteMaskInteraction.None;
+			break;
+		case MaskingType.VisibleInsideMask:
+			spriteRenderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+			break;
+		case MaskingType.VisibleOutsideMask:
+			spriteRenderer.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
+			break;
+		}
+		maskingType = type;
+		if (ADOBase.controller.disableV15Features)
+		{
+			spriteRenderer.enabled = !isMask();
+			spriteMask.enabled = isMask();
+		}
+		else
+		{
+			if (flag == isMask())
+			{
+				return;
+			}
+			foreach (scrDecoration taggedDecoration in manager.GetTaggedDecorations(spriteAlphaMask.targetTag))
+			{
+				if (taggedDecoration is scrVisualDecoration deco)
+				{
+					manager.ForceUpdateAlphaMaskCache(deco);
+				}
+			}
+		}
+	}
+
+	public void SetMaskingTarget(string targetTag)
+	{
+		foreach (scrVisualDecoration taggedDecoration in manager.GetTaggedDecorations<scrVisualDecoration>(new string[2] { spriteAlphaMask.targetTag, targetTag }))
+		{
+			manager.ForceUpdateAlphaMaskCache(taggedDecoration);
+		}
+		spriteAlphaMask.targetTag = targetTag;
+	}
+
+	private void OnDestroy()
+	{
+		if (spareRT1 != null)
+		{
+			spareRT1.Release();
+		}
+		if (spareRT2 != null)
+		{
+			spareRT2.Release();
+		}
+	}
+}

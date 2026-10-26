@@ -1,0 +1,676 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using ADOFAI;
+using UnityEngine;
+
+public class scrDecorationManager : ADOBase
+{
+	public static int ShaderProperty_RepeatX;
+
+	public static int ShaderProperty_RepeatY;
+
+	public static int ShaderProperty_MainTex;
+
+	public static int ShaderProperty_Color;
+
+	public static int ShaderProperty_Opacity;
+
+	public static int ShaderProperty_Tile;
+
+	private static scrDecorationManager _instance;
+
+	public static Shader tileShader;
+
+	public static Shader visualDecoShader;
+
+	public Dictionary<string, List<scrDecoration>> taggedDecorations;
+
+	public List<scrDecoration> allDecorations;
+
+	public HashSet<string> hitboxEventTags = new HashSet<string>();
+
+	public Dictionary<string, List<scrDecoration>> hitboxEventTagDecorations;
+
+	public Dictionary<Collider2D, scrDecoration> hitboxCollidersToDecorations = new Dictionary<Collider2D, scrDecoration>();
+
+	[NonSerialized]
+	public TextureManager imageHolder;
+
+	[Header("References")]
+	public Sprite defaultSprite;
+
+	public Sprite notFoundSprite;
+
+	[Header("Prefabs")]
+	public GameObject prefab_visualDecoration;
+
+	public GameObject prefab_textDecoration;
+
+	public GameObject prefab_prefabDecoration;
+
+	public GameObject prefab_objectDecoration;
+
+	public GameObject prefab_particleDecoration;
+
+	[NonSerialized]
+	public LevelEvent hoveredDecoration;
+
+	private Dictionary<string, List<scrVisualDecoration>> decorationsWithSameTexture;
+
+	private HashSet<string> textureKeysToUpdate = new HashSet<string>();
+
+	private HashSet<scrVisualDecoration> decorationsToUpdateAlphaMaskCache = new HashSet<scrVisualDecoration>();
+
+	public Dictionary<string, MethodInfo> filterOnRenderImageCache = new Dictionary<string, MethodInfo>();
+
+	public static scrDecorationManager instance
+	{
+		get
+		{
+			if (_instance == null)
+			{
+				_instance = UnityEngine.Object.FindAnyObjectByType<scrDecorationManager>();
+			}
+			return _instance;
+		}
+	}
+
+	public static scrDecoration GetDecoration(LevelEvent source)
+	{
+		return instance.allDecorations.Find((scrDecoration d) => d.sourceLevelEvent == source);
+	}
+
+	public static scrDecoration GetDecoration(int index)
+	{
+		List<scrDecoration> list = instance.allDecorations;
+		if (index < 0 || index >= list.Count)
+		{
+			return null;
+		}
+		return list[index];
+	}
+
+	public static int GetDecorationIndex(LevelEvent dec)
+	{
+		int num = 0;
+		foreach (scrDecoration allDecoration in instance.allDecorations)
+		{
+			if (dec == allDecoration.sourceLevelEvent)
+			{
+				return num;
+			}
+			num++;
+		}
+		return -1;
+	}
+
+	public IEnumerable<scrDecoration> GetTaggedDecorations(IEnumerable<string> tags)
+	{
+		return tags.Where((string t) => taggedDecorations.ContainsKey(t)).SelectMany((string t) => taggedDecorations[t]).Distinct();
+	}
+
+	public IEnumerable<T> GetTaggedDecorations<T>(IEnumerable<string> tags) where T : scrDecoration
+	{
+		return (from dec in GetTaggedDecorations(tags)
+			where dec is T
+			select dec).Cast<T>();
+	}
+
+	public IEnumerable<scrDecoration> GetTaggedDecorations(params string[] tags)
+	{
+		return GetTaggedDecorations((IEnumerable<string>)tags);
+	}
+
+	public IEnumerable<T> GetTaggedDecorations<T>(params string[] tags) where T : scrDecoration
+	{
+		return this.GetTaggedDecorations<T>((IEnumerable<string>)tags);
+	}
+
+	private void Awake()
+	{
+		taggedDecorations = new Dictionary<string, List<scrDecoration>>();
+		decorationsWithSameTexture = new Dictionary<string, List<scrVisualDecoration>>();
+		hitboxEventTagDecorations = new Dictionary<string, List<scrDecoration>>();
+		if (scnGame.instance != null)
+		{
+			imageHolder = ADOBase.customLevel.imgHolder;
+			return;
+		}
+		foreach (Transform item in base.transform)
+		{
+			string text = item.name;
+			if (text == "NO TAG")
+			{
+				continue;
+			}
+			string[] array = text.Split(' ');
+			foreach (string key in array)
+			{
+				if (!taggedDecorations.ContainsKey(key))
+				{
+					taggedDecorations[key] = new List<scrDecoration>();
+				}
+				taggedDecorations[key].Add(item.GetComponentInChildren<scrDecoration>());
+			}
+		}
+	}
+
+	private void Update()
+	{
+		if (!ADOBase.isEditingLevel)
+		{
+			int count = allDecorations.Count;
+			for (int i = 0; i < count; i++)
+			{
+				allDecorations[i].CheckHitboxHit();
+			}
+		}
+		scrCamera.instance.lockCustomFrameUpdate = true;
+	}
+
+	private void LateUpdate()
+	{
+		if (ADOBase.isEditingLevel)
+		{
+			UpdateBordersSizes();
+			UpdateHitboxSizes();
+		}
+		UpdateDecorationTilingLateUpdate();
+		if (SpriteAlphaMaskUtils.doRefreshMaskCache)
+		{
+			SpriteAlphaMaskUtils.RefreshMaskCache();
+		}
+		UpdateAlphaMaskCacheLateUpdate();
+		bool disableV15Features = ADOBase.controller.disableV15Features;
+		int count = allDecorations.Count;
+		for (int i = 0; i < count; i++)
+		{
+			scrDecoration scrDecoration2 = allDecorations[i];
+			if (scrDecoration2 != null)
+			{
+				scrDecoration2.LogicUpdate(disableV15Features);
+			}
+		}
+		scrCamera.instance.CheckUpdateFrameRateScreen();
+	}
+
+	public void ScaleSprite(SpriteRenderer target, float x, float y)
+	{
+		if (!(target.sprite == null))
+		{
+			target.transform.localScale = new Vector2(x, y);
+		}
+	}
+
+	public void ShowEmptyDecorations(bool show)
+	{
+		foreach (scrDecoration allDecoration in instance.allDecorations)
+		{
+			if (allDecoration.sourceLevelEvent.eventType == LevelEventType.AddDecoration && allDecoration.decType == DecorationType.Image && ((scrVisualDecoration)allDecoration).spriteRenderer.sprite == defaultSprite)
+			{
+				((scrVisualDecoration)allDecoration).spriteRenderer.sprite = (show ? defaultSprite : null);
+			}
+		}
+	}
+
+	public void CreateDecoration(LevelEvent levelEvent, out bool spritesLoaded, int index = -1)
+	{
+		spritesLoaded = false;
+		scrDecoration scrDecoration2 = null;
+		GameObject gameObject = null;
+		string text = null;
+		DecorationType decorationType = DecorationType.Image;
+		if (levelEvent.eventType == LevelEventType.AddDecoration)
+		{
+			text = (string)levelEvent["decorationImage"];
+			if (ADOBase.IsNotAMikoSkipMandatorySprite(text))
+			{
+				return;
+			}
+			if (text != null && text.StartsWith("prefab:", StringComparison.CurrentCultureIgnoreCase) && (ADOBase.isUnityEditor || ADOBase.isOfficialLevel))
+			{
+				string text2 = text.Substring(7);
+				decorationType = DecorationType.Prefab;
+				text = text2;
+				gameObject = prefab_prefabDecoration;
+			}
+			else
+			{
+				decorationType = DecorationType.Image;
+				gameObject = prefab_visualDecoration;
+			}
+		}
+		else if (levelEvent.eventType == LevelEventType.AddText)
+		{
+			decorationType = DecorationType.Text;
+			gameObject = prefab_textDecoration;
+			text = levelEvent.GetStringLocalized("decText");
+		}
+		else if (levelEvent.eventType == LevelEventType.AddParticle)
+		{
+			decorationType = DecorationType.Particle;
+			text = (string)levelEvent["decorationImage"];
+			gameObject = prefab_particleDecoration;
+		}
+		else if (levelEvent.eventType == LevelEventType.AddObject)
+		{
+			decorationType = DecorationType.Object;
+			gameObject = prefab_objectDecoration;
+			text = levelEvent["objectType"].ToString();
+		}
+		if (gameObject == null)
+		{
+			return;
+		}
+		GameObject gameObject2 = UnityEngine.Object.Instantiate(gameObject, base.transform);
+		gameObject2.name = text;
+		switch (decorationType)
+		{
+		case DecorationType.Text:
+			scrDecoration2 = gameObject2.GetComponent<scrTextDecoration>();
+			break;
+		case DecorationType.Image:
+			scrDecoration2 = gameObject2.GetComponent<scrVisualDecoration>();
+			break;
+		case DecorationType.Prefab:
+		{
+			string text3 = text;
+			GameObject gameObject3 = Resources.Load<GameObject>("PublicPrefabs/" + text3);
+			GameObject gameObject4 = ((gameObject3 != null) ? UnityEngine.Object.Instantiate(gameObject3, gameObject2.transform.position, Quaternion.identity, gameObject2.transform.transform) : new GameObject(text3));
+			scrDecoration2 = gameObject4.GetOrAddComponent<scrPrefabDecoration>();
+			(scrDecoration2 as scrPrefabDecoration).prefabType = text3.ToEnum(PublicPrefabType.None, showWarning: false);
+			scrParallax orAddComponent = gameObject4.GetOrAddComponent<scrParallax>();
+			scrDecoration2.pivotTrans = gameObject2.transform;
+			scrDecoration2.childTransform = gameObject4.transform;
+			scrDecoration2.parallax = orAddComponent;
+			orAddComponent.enabled = false;
+			break;
+		}
+		case DecorationType.Object:
+			scrDecoration2 = gameObject2.GetComponent<scrObjectDecoration>();
+			break;
+		case DecorationType.Particle:
+			scrDecoration2 = gameObject2.GetComponent<scrParticleDecoration>();
+			break;
+		}
+		if (scrDecoration2 != null)
+		{
+			scrDecoration2.manager = this;
+			scrDecoration2.decType = decorationType;
+			scrDecoration2.Setup(levelEvent, out spritesLoaded);
+			scrDecoration2.UpdateHitbox();
+			int index2 = ((index == -1) ? allDecorations.Count : (index + 1));
+			allDecorations.Insert(index2, scrDecoration2);
+			if (decorationType == DecorationType.Image)
+			{
+				TryAddDecorationToDictionary(scrDecoration2 as scrVisualDecoration);
+			}
+		}
+	}
+
+	public void ClearDecorations()
+	{
+		taggedDecorations.Clear();
+		allDecorations.Clear();
+		decorationsWithSameTexture.Clear();
+		hitboxEventTags.Clear();
+		hitboxEventTagDecorations.Clear();
+		Transform[] componentsInChildren = base.gameObject.GetComponentsInChildren<Transform>();
+		foreach (Transform transform in componentsInChildren)
+		{
+			if (transform != null && transform.gameObject != base.gameObject)
+			{
+				UnityEngine.Object.DestroyImmediate(transform.gameObject);
+			}
+		}
+	}
+
+	public void TryAddDecorationToDictionary(scrVisualDecoration decoration)
+	{
+		string text = decoration.sourceLevelEvent["decorationImage"] as string;
+		if (!string.IsNullOrEmpty(text) && decorationsWithSameTexture != null)
+		{
+			if (!decorationsWithSameTexture.ContainsKey(text))
+			{
+				decorationsWithSameTexture[text] = new List<scrVisualDecoration>();
+			}
+			List<scrVisualDecoration> list = decorationsWithSameTexture[text];
+			if (!list.Contains(decoration))
+			{
+				list.Add(decoration);
+			}
+		}
+	}
+
+	public void UpdateDecorationTiling(string key)
+	{
+		if (!textureKeysToUpdate.Contains(key))
+		{
+			textureKeysToUpdate.Add(key);
+		}
+	}
+
+	public void ForceUpdateAlphaMaskCache(scrVisualDecoration deco)
+	{
+		decorationsToUpdateAlphaMaskCache.Add(deco);
+	}
+
+	public void ShowSelectionBorders(LevelEvent source, bool show = true)
+	{
+		scrDecoration decoration = GetDecoration(source);
+		decoration.ShowSelectionBorders(show);
+		decoration.ShowHitboxBorders(show);
+	}
+
+	public void ShowHoverBorders(LevelEvent source, bool show = true)
+	{
+		scrDecoration decoration = GetDecoration(source);
+		if (decoration == null)
+		{
+			return;
+		}
+		if (show)
+		{
+			decoration.ShowSelectionBorders(show: true, whiteColor: false);
+			hoveredDecoration = source;
+			return;
+		}
+		if (ADOBase.editor.selectedDecorations.Contains(source))
+		{
+			decoration.ShowSelectionBorders(show: true);
+		}
+		else
+		{
+			decoration.ShowSelectionBorders(show: false);
+		}
+		hoveredDecoration = null;
+	}
+
+	public void ClearDecorationBorders()
+	{
+		foreach (scrDecoration allDecoration in instance.allDecorations)
+		{
+			allDecoration.ShowSelectionBorders(show: false);
+			allDecoration.ShowHitboxBorders(show: false);
+		}
+	}
+
+	public void ToggleClickableBoxColliderForLevelEditor(bool value)
+	{
+		foreach (scrDecoration allDecoration in instance.allDecorations)
+		{
+			allDecoration.SetCollider(value);
+		}
+	}
+
+	private void UpdateDecorationTilingLateUpdate()
+	{
+		if (!ADOBase.controller.disableV15Features)
+		{
+			return;
+		}
+		foreach (string item in textureKeysToUpdate)
+		{
+			if (item.IsNullOrEmpty() || !decorationsWithSameTexture.ContainsKey(item))
+			{
+				continue;
+			}
+			List<scrVisualDecoration> list = decorationsWithSameTexture[item];
+			if (list == null)
+			{
+				continue;
+			}
+			bool flag = false;
+			bool flag2 = false;
+			foreach (scrVisualDecoration item2 in list)
+			{
+				SpriteRenderer spriteRenderer = item2.spriteRenderer;
+				if (!(spriteRenderer != null))
+				{
+					continue;
+				}
+				if (spriteRenderer.material != null)
+				{
+					if (item2.repeatX != 1f)
+					{
+						flag = true;
+					}
+					if (item2.repeatY != 1f)
+					{
+						flag2 = true;
+					}
+				}
+				Sprite sprite = spriteRenderer.sprite;
+				if (sprite != null)
+				{
+					Texture2D texture = sprite.texture;
+					texture.wrapModeU = ((!flag) ? TextureWrapMode.Clamp : TextureWrapMode.Repeat);
+					texture.wrapModeV = ((!flag2) ? TextureWrapMode.Clamp : TextureWrapMode.Repeat);
+				}
+			}
+		}
+		textureKeysToUpdate.Clear();
+	}
+
+	private void UpdateAlphaMaskCacheLateUpdate()
+	{
+		foreach (scrVisualDecoration item in decorationsToUpdateAlphaMaskCache)
+		{
+			item.UpdateAlphaMaskCache(force: true);
+		}
+		decorationsToUpdateAlphaMaskCache.Clear();
+	}
+
+	private void UpdateBordersSizes()
+	{
+		float orthographicSize = scrCamera.instance.camobj.orthographicSize;
+		List<LevelEvent> list = new List<LevelEvent>();
+		list.AddRange(ADOBase.editor.selectedDecorations);
+		if (hoveredDecoration != null)
+		{
+			if (ADOBase.editor.decorations.Contains(hoveredDecoration))
+			{
+				list.Add(hoveredDecoration);
+			}
+			else
+			{
+				list.Remove(hoveredDecoration);
+			}
+		}
+		foreach (LevelEvent item in list)
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			scrDecoration decoration = GetDecoration(item);
+			if (decoration is scrVisualDecoration { bordersRenderer: var bordersRenderer } scrVisualDecoration2)
+			{
+				if (bordersRenderer == null || !bordersRenderer.gameObject.activeSelf)
+				{
+					continue;
+				}
+				Vector3 localScale = scrVisualDecoration2.transform.localScale;
+				if (!bordersRenderer.gameObject.activeSelf)
+				{
+					continue;
+				}
+				float num = 1f;
+				if (!(scrVisualDecoration2 == null) && !(scrVisualDecoration2.spriteRenderer == null) && !(scrVisualDecoration2.spriteRenderer.sprite == null))
+				{
+					float pixelsPerUnit = scrVisualDecoration2.spriteRenderer.sprite.pixelsPerUnit;
+					float num2 = num / pixelsPerUnit / 2f;
+					Vector2 vector = scrVisualDecoration2.spriteRenderer.sprite.bounds.size * localScale.xy() / orthographicSize;
+					vector += new Vector2(num2 * Mathf.Sign(localScale.x), num2 * Mathf.Sign(localScale.y));
+					if (!Mathf.Approximately(scrVisualDecoration2.cachedBorderSize.x, vector.x) || !Mathf.Approximately(scrVisualDecoration2.cachedBorderSize.y, vector.y))
+					{
+						bordersRenderer.size = vector;
+						scrVisualDecoration2.cachedBorderSize = vector;
+					}
+					Vector2 vector2 = new Vector2(Mathf.Abs(localScale.x), Mathf.Abs(localScale.y));
+					Vector3 localScale2 = new Vector3(orthographicSize / Mathf.Max(vector2.x, 0.01f), orthographicSize / Mathf.Max(vector2.y, 0.01f), 1f);
+					bordersRenderer.transform.localScale = localScale2;
+				}
+			}
+			else if (decoration is scrTextDecoration { bordersRenderer: var bordersRenderer2 } scrTextDecoration2)
+			{
+				Vector2 vector3 = (Vector2)item["scale"];
+				float num3 = 1f / orthographicSize;
+				if (bordersRenderer2.transform.gameObject.activeSelf)
+				{
+					Vector2 vector4 = vector3 / 100f * num3;
+					if (vector4.x * vector4.y == 0f)
+					{
+						bordersRenderer2.rectTransform.sizeDelta = Vector2.zero;
+						bordersRenderer2.transform.localScale = Vector3.zero;
+					}
+					else
+					{
+						Vector2 sizeDelta = scrTextDecoration2.bordersSetSize * vector4;
+						bordersRenderer2.rectTransform.sizeDelta = sizeDelta;
+						bordersRenderer2.transform.localScale = Vector2.one / vector4;
+					}
+				}
+			}
+			else if (decoration is scrObjectDecoration { bordersRenderer: var bordersRenderer3 } scrObjectDecoration2)
+			{
+				if (bordersRenderer3 == null || !bordersRenderer3.gameObject.activeSelf)
+				{
+					continue;
+				}
+				Vector3 localScale3 = scrObjectDecoration2.transform.localScale;
+				if (!bordersRenderer3.gameObject.activeSelf)
+				{
+					continue;
+				}
+				float num4 = 1f;
+				if (!(scrObjectDecoration2 == null) && !(bordersRenderer3 == null) && !(bordersRenderer3.sprite == null))
+				{
+					float pixelsPerUnit2 = bordersRenderer3.sprite.pixelsPerUnit;
+					float num5 = num4 / pixelsPerUnit2 / 2f;
+					Vector2 vector5 = scrObjectDecoration2.scaleVec * localScale3.xy() / orthographicSize;
+					vector5 += new Vector2(num5 * Mathf.Sign(localScale3.x), num5 * Mathf.Sign(localScale3.y));
+					if (!Mathf.Approximately(scrObjectDecoration2.cachedBorderSize.x, vector5.x) || !Mathf.Approximately(scrObjectDecoration2.cachedBorderSize.y, vector5.y))
+					{
+						bordersRenderer3.size = vector5;
+						scrObjectDecoration2.cachedBorderSize = vector5;
+					}
+					Vector2 vector6 = new Vector2(Mathf.Abs(localScale3.x), Mathf.Abs(localScale3.y));
+					Vector3 vector7 = new Vector3(orthographicSize / Mathf.Max(vector6.x, 0.01f), orthographicSize / Mathf.Max(vector6.y, 0.01f), 1f);
+					bordersRenderer3.transform.localScale = vector7 * scrObjectDecoration2.bordersScaleMultiplier;
+				}
+			}
+			else
+			{
+				if (item.eventType != LevelEventType.AddParticle)
+				{
+					continue;
+				}
+				scrParticleDecoration scrParticleDecoration2 = (scrParticleDecoration)GetDecoration(item);
+				SpriteRenderer selectionBorders = scrParticleDecoration2.selectionBorders;
+				if (selectionBorders == null || !selectionBorders.gameObject.activeSelf)
+				{
+					continue;
+				}
+				Vector3 localScale4 = scrParticleDecoration2.transform.localScale;
+				if (!selectionBorders.gameObject.activeSelf)
+				{
+					continue;
+				}
+				float num6 = 1f;
+				if (!(scrParticleDecoration2 == null) && !(scrParticleDecoration2.selectionBorders == null) && !(scrParticleDecoration2.selectionBorders.sprite == null))
+				{
+					float pixelsPerUnit3 = scrParticleDecoration2.selectionBorders.sprite.pixelsPerUnit;
+					float num7 = num6 / pixelsPerUnit3 / 2f;
+					Vector2 vector8 = scrParticleDecoration2.scale * localScale4.xy() / orthographicSize;
+					vector8 += new Vector2(num7 * Mathf.Sign(localScale4.x), num7 * Mathf.Sign(localScale4.y));
+					if (!Mathf.Approximately(scrParticleDecoration2.cachedBorderSize.x, vector8.x) || !Mathf.Approximately(scrParticleDecoration2.cachedBorderSize.y, vector8.y))
+					{
+						selectionBorders.size = vector8;
+						scrParticleDecoration2.cachedBorderSize = vector8;
+					}
+					Vector2 vector9 = new Vector2(Mathf.Abs(localScale4.x), Mathf.Abs(localScale4.y));
+					Vector3 localScale5 = new Vector3(orthographicSize / Mathf.Max(vector9.x, 0.01f), orthographicSize / Mathf.Max(vector9.y, 0.01f), 1f);
+					selectionBorders.transform.localScale = localScale5;
+				}
+			}
+		}
+	}
+
+	private void UpdateHitboxSizes()
+	{
+		foreach (LevelEvent selectedDecoration in ADOBase.editor.selectedDecorations)
+		{
+			if (!(GetDecoration(selectedDecoration) is scrVisualDecoration scrVisualDecoration2))
+			{
+				continue;
+			}
+			Vector3 localScale = scrVisualDecoration2.transform.localScale;
+			SpriteRenderer hitboxRenderer = scrVisualDecoration2.hitboxRenderer;
+			SpriteRenderer spriteRenderer = scrVisualDecoration2.spriteRenderer;
+			if (hitboxRenderer == null || spriteRenderer.sprite == null)
+			{
+				break;
+			}
+			Hitbox hitboxType = scrVisualDecoration2.hitboxType;
+			Vector2 hitboxScale = scrVisualDecoration2.hitboxScale;
+			Vector2 hitboxOffset = scrVisualDecoration2.hitboxOffset;
+			float hitboxRotation = scrVisualDecoration2.hitboxRotation;
+			if (hitboxRenderer.transform.gameObject.activeSelf)
+			{
+				float orthographicSize = Camera.main.orthographicSize;
+				if (hitboxType != Hitbox.Circle)
+				{
+					hitboxRenderer.size = spriteRenderer.sprite.bounds.size * hitboxScale * localScale.xy() / orthographicSize;
+				}
+				else
+				{
+					hitboxRenderer.size = Vector2.one * hitboxScale.magnitude * localScale.x * spriteRenderer.sprite.bounds.size.x / orthographicSize;
+				}
+				Vector2 vector = new Vector2(Mathf.Abs(localScale.x), Mathf.Abs(localScale.y));
+				Vector3 localScale2 = new Vector3(orthographicSize / Mathf.Max(vector.x, 0.01f), orthographicSize / Mathf.Max(vector.y, 0.01f), 1f);
+				hitboxRenderer.transform.localScale = localScale2;
+				hitboxRenderer.transform.localPosition = hitboxOffset;
+				if (hitboxType != Hitbox.Circle)
+				{
+					hitboxRenderer.transform.localEulerAngles = Vector3.zero;
+				}
+				else
+				{
+					hitboxRenderer.transform.localEulerAngles = -Vector3.forward * hitboxRotation;
+				}
+			}
+		}
+	}
+
+	public void ResetDecorations()
+	{
+		taggedDecorations.Clear();
+		hitboxEventTags.Clear();
+		hitboxEventTagDecorations.Clear();
+		foreach (scrDecoration allDecoration in allDecorations)
+		{
+			allDecoration.Setup(allDecoration.sourceLevelEvent, out var _);
+			allDecoration.hitOnce = false;
+		}
+	}
+
+	public void FinishUpdateDecorations()
+	{
+		foreach (scrDecoration allDecoration in allDecorations)
+		{
+			allDecoration.SetPlacementType(allDecoration.placementType);
+			allDecoration.SetPosition(allDecoration.startPos, allDecoration.pivotOffsetVec);
+		}
+	}
+
+	public void ResetDecorationHitboxEvents()
+	{
+		foreach (scrDecoration allDecoration in allDecorations)
+		{
+			allDecoration.hitboxEvents.Clear();
+		}
+	}
+}

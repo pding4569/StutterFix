@@ -1,0 +1,974 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using ADOFAI;
+using ADOFAI.LevelEditor.Controls;
+using DG.Tweening;
+using GDMiniJSON;
+using UnityEngine;
+using UnityEngine.Pool;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+
+public abstract class scrDecoration : ADOBase
+{
+	public const int HitboxLayer = 21;
+
+	private static readonly ContactFilter2D hitboxContactFilter = new ContactFilter2D
+	{
+		layerMask = 2097152,
+		useLayerMask = true
+	};
+
+	private static readonly Color hoverColor = Color.cyan;
+
+	[Header("Decoration")]
+	public Vector2 startPos;
+
+	public scrPlanet followPlanet;
+
+	public Transform pivotTrans;
+
+	public Vector2 pivotPosVec;
+
+	public Vector2 pivotOffsetVec;
+
+	public float startRot;
+
+	public float rotAngle;
+
+	public bool lockRotation;
+
+	public Vector2 scaleVec;
+
+	public float scaleMultiplier = 1f;
+
+	public Vector2 textureScaleMultiplier = Vector2.one;
+
+	public Vector2 croppedPivotOffset;
+
+	public bool lockScale;
+
+	[FormerlySerializedAs("decTrans")]
+	public Transform childTransform;
+
+	public Color color;
+
+	public float opacity = 1f;
+
+	public bool syncFloorDepth;
+
+	public scrParallax parallax;
+
+	public Vector2 parallaxOffset;
+
+	public Dictionary<TweenType, Tween> eventTweens = new Dictionary<TweenType, Tween>();
+
+	[Header("Borders")]
+	public GameObject selectionBordersObject;
+
+	public GameObject hitboxBordersObject;
+
+	[NonSerialized]
+	public Vector2 cachedBorderSize;
+
+	[NonSerialized]
+	public LevelEvent sourceLevelEvent;
+
+	public DecPlacementType placementType;
+
+	public bool stickToFloor;
+
+	[NonSerialized]
+	public string decorationTag;
+
+	[NonSerialized]
+	public bool forceHide;
+
+	[NonSerialized]
+	public bool forceLock;
+
+	[NonSerialized]
+	public bool hasConditionalChange;
+
+	[NonSerialized]
+	public List<ffxPlusBase> hitEffects = new List<ffxPlusBase>();
+
+	[NonSerialized]
+	public Vector2 scaleAtDragStart;
+
+	[NonSerialized]
+	public Vector2 sizeAtDragStart;
+
+	[Header("Hitbox Properties")]
+	public HitboxType hitbox;
+
+	public HitboxDetectTarget hitboxDetectTarget;
+
+	public HitboxTargetPlanet hitboxTargetPlanet;
+
+	public HashSet<string> hitboxDecoTags;
+
+	public HitboxTriggerType hitboxTriggerType;
+
+	public float hitboxRepeatInterval;
+
+	public bool hitOnce;
+
+	public int lastHitFrame;
+
+	public float lastTriggerTime;
+
+	public List<string> hitboxEventTags = new List<string>();
+
+	[NonSerialized]
+	public List<ffxPlusBase> hitboxEvents = new List<ffxPlusBase>();
+
+	[FormerlySerializedAs("boxCollider")]
+	public BoxCollider2D editorCollider;
+
+	public BoxCollider2D damageBox;
+
+	public CircleCollider2D damageCircle;
+
+	public CapsuleCollider2D damageCapsule;
+
+	public Collider2D activeCollider;
+
+	public Hitbox hitboxType;
+
+	public float hitboxRotation;
+
+	public Vector2 hitboxScale = Vector2.one;
+
+	public Vector2 hitboxOffset = Vector2.zero;
+
+	public bool canHitPlanets;
+
+	[Header("Parent to tile variables")]
+	public int parentFloorNum = -1;
+
+	public scrFloor parentFloor;
+
+	[NonSerialized]
+	public HashSet<string> tags;
+
+	[NonSerialized]
+	public DecorationType decType;
+
+	[NonSerialized]
+	public scrDecorationManager manager;
+
+	protected Color rendererColor = Color.white;
+
+	protected bool rendererEnabled = true;
+
+	public MonoBehaviour[] cfpCache;
+
+	public virtual string gameObjectName => "";
+
+	public virtual string decorationName => "<i>none</i>";
+
+	public bool useHitbox => hitbox != HitboxType.None;
+
+	public Vector2 trueScaleMultiplier => scaleMultiplier * textureScaleMultiplier;
+
+	public Vector2 camScaleMultiplier => (lockScale ? (ADOBase.controller.camy.camobj.orthographicSize * 0.2f / (ADOBase.customLevel.levelData.camZoom / 100f)) : 1f) * trueScaleMultiplier;
+
+	public virtual bool GetVisible()
+	{
+		if (rendererEnabled)
+		{
+			return GetAlpha() != 0f;
+		}
+		return false;
+	}
+
+	public abstract void SetVisible(bool visible);
+
+	public abstract float GetAlpha();
+
+	public abstract void SetDepth(int depth);
+
+	public virtual void HitFloor()
+	{
+	}
+
+	protected abstract void ApplyColor();
+
+	public virtual void Awake()
+	{
+		if ((bool)ADOBase.customLevel)
+		{
+			if ((bool)parallax)
+			{
+				parallax.enabled = false;
+			}
+		}
+		else
+		{
+			scaleVec = pivotTrans.localScale;
+		}
+		if (canHitPlanets)
+		{
+			hitbox = HitboxType.Kill;
+		}
+	}
+
+	public void Start()
+	{
+		hitOnce = false;
+		if (parentFloorNum >= 0 && parentFloorNum < ADOBase.lm.listFloors.Count)
+		{
+			ADOBase.lm.listFloors[parentFloorNum].targetDecorations.Add(this);
+		}
+	}
+
+	public void SetPosition(Vector2 pivotPos, Vector2 pivotOffset)
+	{
+		if (parallax == null)
+		{
+			return;
+		}
+		Vector2 vector = (pivotOffset + croppedPivotOffset) / trueScaleMultiplier;
+		pivotPosVec = pivotPos;
+		childTransform.localPosition = vector;
+		if ((bool)ADOBase.editor)
+		{
+			if (selectionBordersObject != null)
+			{
+				selectionBordersObject.transform.localPosition = vector;
+			}
+			ADOBase.editor.decPivot.UpdatePivotCrossImage(enable: true);
+		}
+		pivotOffsetVec = pivotOffset;
+		UpdateScreenClamp();
+		UpdatePosition();
+	}
+
+	public void SetPositionX(float pivotPosX, Vector2 pivotOffset)
+	{
+		SetPosition(pivotPosVec.WithX(pivotPosX), pivotOffset);
+	}
+
+	public void SetPositionY(float pivotPosY, Vector2 pivotOffset)
+	{
+		SetPosition(pivotPosVec.WithY(pivotPosY), pivotOffset);
+	}
+
+	public void SetPivotX(float pivotPosX)
+	{
+		SetPosition(pivotPosVec, pivotOffsetVec.WithX(pivotPosX));
+	}
+
+	public void SetPivotY(float pivotPosY)
+	{
+		SetPosition(pivotPosVec, pivotOffsetVec.WithY(pivotPosY));
+	}
+
+	public void SetParallaxOffsetX(float posX)
+	{
+		parallaxOffset = parallaxOffset.WithX(posX);
+		parallax.SetTrans();
+	}
+
+	public void SetParallaxOffsetY(float posY)
+	{
+		parallaxOffset = parallaxOffset.WithY(posY);
+		parallax.SetTrans();
+	}
+
+	public void SetRotation(float angle)
+	{
+		rotAngle = angle;
+		float num = startRot + angle;
+		if (stickToFloor)
+		{
+			num += parentFloor.transform.eulerAngles.z;
+		}
+		else if (lockRotation)
+		{
+			num += ADOBase.controller.camy.transform.rotation.eulerAngles.z;
+		}
+		pivotTrans.rotation = Quaternion.Euler(0f, 0f, num);
+	}
+
+	public virtual void SetScale(Vector2 scale)
+	{
+		scaleVec = scale;
+		Vector3 vector = (stickToFloor ? parentFloor.transform.localScale : Vector3.one);
+		pivotTrans.localScale = (scale * camScaleMultiplier * vector).WithZ(1f);
+	}
+
+	public void SetParallax(Vector2 value, DecPlacementType placementType)
+	{
+		if (!(parallax == null))
+		{
+			parallax.multiplier_x = 0.01f * value.x;
+			parallax.multiplier_y = 0.01f * value.y;
+			this.placementType = placementType;
+			UpdateScreenClamp();
+		}
+	}
+
+	public void SetColor(Color color)
+	{
+		this.color = color;
+		ApplyColor();
+	}
+
+	public void SetOpacity(float opacity)
+	{
+		this.opacity = opacity;
+		ApplyColor();
+	}
+
+	public virtual Vector2 GetDecorationWorldSize()
+	{
+		return Vector2.zero;
+	}
+
+	public void ShowSelectionBorders(bool show, bool whiteColor = true)
+	{
+		if (selectionBordersObject == null)
+		{
+			return;
+		}
+		selectionBordersObject.SetActive(show);
+		Color color = (whiteColor ? Color.white : hoverColor);
+		switch (decType)
+		{
+		case DecorationType.Image:
+		{
+			SpriteRenderer bordersRenderer3 = ((scrVisualDecoration)this).bordersRenderer;
+			if (bordersRenderer3 != null)
+			{
+				bordersRenderer3.color = color;
+			}
+			break;
+		}
+		case DecorationType.Text:
+		{
+			Image bordersRenderer = ((scrTextDecoration)this).bordersRenderer;
+			if (bordersRenderer != null)
+			{
+				bordersRenderer.color = color;
+			}
+			break;
+		}
+		case DecorationType.Object:
+		{
+			SpriteRenderer bordersRenderer2 = ((scrObjectDecoration)this).bordersRenderer;
+			if (bordersRenderer2 != null)
+			{
+				bordersRenderer2.color = color;
+			}
+			break;
+		}
+		case DecorationType.Particle:
+		{
+			SpriteRenderer selectionBorders = ((scrParticleDecoration)this).selectionBorders;
+			if ((bool)selectionBorders)
+			{
+				selectionBorders.color = color;
+			}
+			break;
+		}
+		case DecorationType.Prefab:
+			break;
+		}
+	}
+
+	public void ShowHitboxBorders(bool show)
+	{
+		if (hitboxBordersObject != null && (useHitbox || !show))
+		{
+			hitboxBordersObject.SetActive(show);
+		}
+	}
+
+	private void UpdateScreenClamp()
+	{
+		parallax.clampToScreen = placementType == DecPlacementType.Camera || placementType == DecPlacementType.CameraAspect;
+		Vector2 vector = pivotPosVec + pivotOffsetVec;
+		if (placementType == DecPlacementType.CameraAspect)
+		{
+			vector.x *= (float)Screen.height / (float)Screen.width;
+		}
+		parallax.screenRelativePos = vector / 20f + new Vector2(0.5f, 0.5f);
+	}
+
+	public void UpdatePosition()
+	{
+		Vector2 vector = ((!ADOBase.controller.paused && followPlanet != null) ? ((Vector2)followPlanet.transform.position) : Vector2.zero);
+		Vector2 vector2 = pivotPosVec + vector;
+		if (stickToFloor)
+		{
+			vector2 += (Vector2)parentFloor.transform.position - startPos;
+		}
+		pivotTrans.localPosition = vector2;
+		parallax.SetNewStartPosition(vector2);
+		parallax.posCamAtStart = vector2;
+		if (ADOBase.customLevel != null || parallax.enabled)
+		{
+			parallax.SetTrans();
+		}
+		SetRotation(rotAngle);
+		SetScale(scaleVec);
+		if (stickToFloor)
+		{
+			ApplyColor();
+		}
+	}
+
+	public virtual void UpdateShader(bool disable = false)
+	{
+	}
+
+	public void HitboxTriggerAction(scrPlanet planet = null)
+	{
+		if (planet != null && planet.iFrames > 0f)
+		{
+			return;
+		}
+		lastHitFrame = Time.frameCount;
+		if (hitOnce)
+		{
+			return;
+		}
+		hitOnce = true;
+		lastTriggerTime = Time.unscaledTime;
+		switch (hitbox)
+		{
+		case HitboxType.Kill:
+			if (!RDC.auto)
+			{
+				if (planet == null)
+				{
+					planet = ADOBase.controller.chosenPlanet;
+				}
+				planet.Die();
+				planet.player.DieByHitbox();
+			}
+			break;
+		case HitboxType.Event:
+		{
+			foreach (ffxPlusBase hitboxEvent in hitboxEvents)
+			{
+				hitboxEvent.StartEffectWithOffset(planet);
+			}
+			break;
+		}
+		}
+	}
+
+	public void CheckHitboxHit()
+	{
+		if (!useHitbox || hitboxDetectTarget != HitboxDetectTarget.Decoration)
+		{
+			return;
+		}
+		List<Collider2D> list = CollectionPool<List<Collider2D>, Collider2D>.Get();
+		activeCollider.Overlap(hitboxContactFilter, list);
+		Dictionary<Collider2D, scrDecoration> hitboxCollidersToDecorations = manager.hitboxCollidersToDecorations;
+		foreach (Collider2D item in list)
+		{
+			scrDecoration deco = hitboxCollidersToDecorations[item];
+			if (hitboxDecoTags.Any((string t) => deco.tags.Contains(t)))
+			{
+				HitboxTriggerAction();
+			}
+		}
+		CollectionPool<List<Collider2D>, Collider2D>.Release(list);
+	}
+
+	public void UpdateHitboxState()
+	{
+		if (!hitOnce)
+		{
+			return;
+		}
+		switch (hitboxTriggerType)
+		{
+		case HitboxTriggerType.Once:
+			break;
+		case HitboxTriggerType.PerTouch:
+			if (Time.frameCount != lastHitFrame)
+			{
+				hitOnce = false;
+			}
+			break;
+		case HitboxTriggerType.Repeat:
+			if (Time.unscaledTime - lastTriggerTime >= hitboxRepeatInterval)
+			{
+				hitOnce = false;
+			}
+			break;
+		}
+	}
+
+	private void OnDestroy()
+	{
+		foreach (Tween value in eventTweens.Values)
+		{
+			value.Kill();
+		}
+		ffxSetFilterAdvancedPlus.CleanVariables(base.gameObject);
+	}
+
+	public void SetPlacementType(DecPlacementType placementType)
+	{
+		this.placementType = placementType;
+		Vector2 vector = (Vector2)sourceLevelEvent["position"] * ADOBase.controller.tileSize;
+		List<scrFloor> listFloors = scrLevelMaker.instance.listFloors;
+		Vector3 zero = Vector3.zero;
+		int floor = sourceLevelEvent.floor;
+		followPlanet = null;
+		switch (placementType)
+		{
+		case DecPlacementType.Tile:
+			floor = Mathf.Clamp(floor, 0, listFloors.Count - 1);
+			zero = listFloors[floor].transform.position;
+			vector += new Vector2(zero.x, zero.y);
+			break;
+		case DecPlacementType.RedPlanet:
+			followPlanet = ADOBase.controller.planetRed;
+			break;
+		case DecPlacementType.BluePlanet:
+			followPlanet = ADOBase.controller.planetBlue;
+			break;
+		case DecPlacementType.GreenPlanet:
+			followPlanet = ADOBase.controller.planetGreen;
+			break;
+		case DecPlacementType.Camera:
+		case DecPlacementType.CameraAspect:
+			vector /= ADOBase.controller.tileSize;
+			break;
+		}
+		startPos = vector;
+	}
+
+	public void Setup(LevelEvent ev, out bool spritesLoaded, bool refreshCache = true)
+	{
+		sourceLevelEvent = ev;
+		spritesLoaded = false;
+		if (!GCS.speedTrialMode)
+		{
+			spritesLoaded = false;
+		}
+		bool smoothing = false;
+		Vector2 tile = Vector2.one;
+		Vector2 vector = Vector2.zero;
+		Vector2 vector2 = Vector2.zero;
+		DecorationBlendMode blendMode = DecorationBlendMode.None;
+		MaskingType maskingType = MaskingType.None;
+		string maskingTarget = "NO TAG";
+		bool customRange = false;
+		int value = 0;
+		int value2 = 0;
+		ObjectDecorationType objectDecorationType = ObjectDecorationType.Planet;
+		PlanetDecorationColorType planetColorType = PlanetDecorationColorType.DefaultRed;
+		Color clear = Color.clear;
+		Color clear2 = Color.clear;
+		bool flag = false;
+		float floorAngle = 180f;
+		Color clear3 = Color.clear;
+		Color clear4 = Color.clear;
+		FloorDecorationColorType value3 = FloorDecorationColorType.Single;
+		float value4 = 0f;
+		float num = 1f;
+		TrackStyle floorStyle = TrackStyle.Standard;
+		bool floorGlowEnabled = false;
+		Color clear5 = Color.clear;
+		CustomFloorIcon icon = CustomFloorIcon.None;
+		float floorIconAngle = 0f;
+		bool floorIconFlipped = false;
+		bool floorRedSwirl = false;
+		bool graySetSpeedIcon = false;
+		float setSpeedIconBpm = 100f;
+		bool floorIconOutlines = false;
+		int appearStartOffset = 8;
+		int appearEndOffset = 2;
+		int disappearOffset = 4;
+		int spawnOffset = 3;
+		LoadResult status;
+		switch (ev.eventType)
+		{
+		case LevelEventType.AddDecoration:
+		{
+			string text = (string)ev["decorationImage"];
+			if ((bool)ADOBase.customLevel && !string.IsNullOrEmpty(text) && !text.StartsWith("prefab:", StringComparison.CurrentCultureIgnoreCase))
+			{
+				string filePath2 = Path.Combine(Path.GetDirectoryName(ADOBase.levelPath), text);
+				ADOBase.customLevel.imgHolder.GetOrAddSprite(text, filePath2, out status);
+			}
+			tile = ev.Get<Vector2>("tile");
+			smoothing = ev.GetBool("imageSmoothing");
+			vector = ev.Get<Vector2>("originalSize");
+			vector2 = ev.Get<Vector2>("cropPivotOffset");
+			blendMode = (DecorationBlendMode)ev["blendMode"];
+			maskingType = (MaskingType)ev["maskingType"];
+			maskingTarget = ev["maskingTarget"].ToString().NullIfEmpty() ?? "NO TAG";
+			customRange = ev.GetBool("useMaskingDepth");
+			value = ev.Get("maskingFrontDepth", 0);
+			value2 = ev.Get("maskingBackDepth", 0);
+			break;
+		}
+		case LevelEventType.AddObject:
+			objectDecorationType = (ObjectDecorationType)ev["objectType"];
+			planetColorType = (PlanetDecorationColorType)ev["planetColorType"];
+			clear = ev.GetColor("planetColor");
+			clear2 = ev.GetColor("planetTailColor");
+			flag = (FloorDecorationType)ev["trackType"] == FloorDecorationType.Midspin;
+			floorAngle = (float)ev["trackAngle"];
+			clear3 = ev.GetColor("trackColor");
+			clear4 = ev.GetColor("secondaryTrackColor");
+			value3 = (FloorDecorationColorType)ev["trackColorType"];
+			value4 = (float)ev["trackColorAnimDuration"];
+			num = (float)ev["trackOpacity"] / 100f;
+			floorStyle = (TrackStyle)ev["trackStyle"];
+			floorGlowEnabled = ev.GetBool("trackGlowEnabled");
+			clear5 = ev.GetColor("trackGlowColor");
+			icon = (CustomFloorIcon)ev["trackIcon"];
+			floorIconAngle = (float)ev["trackIconAngle"];
+			floorIconFlipped = ev.GetBool("trackIconFlipped");
+			floorRedSwirl = ev.GetBool("trackRedSwirl");
+			graySetSpeedIcon = ev.GetBool("trackGraySetSpeedIcon");
+			setSpeedIconBpm = (float)ev["trackSetSpeedIconBpm"];
+			floorIconOutlines = ev.GetBool("trackIconOutlines");
+			appearStartOffset = ev.GetInt("bubbleAppearStartOffset");
+			appearEndOffset = ev.GetInt("bubbleAppearEndOffset");
+			disappearOffset = ev.GetInt("bubbleDisappearOffset");
+			spawnOffset = ev.GetInt("bubbleSpawnOffset");
+			break;
+		case LevelEventType.AddParticle:
+		{
+			string text = (string)ev["decorationImage"];
+			if ((bool)ADOBase.customLevel && !string.IsNullOrEmpty(text) && !text.StartsWith("prefab:", StringComparison.CurrentCultureIgnoreCase))
+			{
+				string filePath = Path.Combine(Path.GetDirectoryName(ADOBase.levelPath), text);
+				ADOBase.customLevel.imgHolder.GetOrAddSprite(text, filePath, out status);
+			}
+			maskingType = (MaskingType)ev["maskingType"];
+			break;
+		}
+		}
+		string text2 = gameObjectName;
+		base.gameObject.name = text2;
+		string stringItemNoTag = PropertyControl_DecorationsList.stringItemNoTag;
+		string key = "tag";
+		bool flag2 = !string.IsNullOrEmpty(ev[key] as string);
+		decorationTag = (flag2 ? ("<noparse>" + (ev[key] as string) + "</noparse>") : stringItemNoTag);
+		string output = "";
+		ev.TryGetAndSet("components", ref output);
+		string text3 = ev["tag"].ToString();
+		float num2 = (float)ev["rotation"];
+		Vector2 vector3 = (Vector2)ev["scale"] / 100f;
+		int depth = (int)ev["depth"];
+		Vector2 vector4 = (Vector2)ev["parallax"];
+		Vector2 output2;
+		Vector2 vector5 = ((vector4 != Vector2.zero && ev.TryGet<Vector2>("parallaxOffset", out output2)) ? (output2 * ADOBase.controller.tileSize) : Vector2.zero);
+		bool flag3 = ev.GetBool("lockRotation");
+		bool flag4 = ev.GetBool("lockScale");
+		ev.TryGetAndSet("stickToFloor", ref stickToFloor);
+		ev.TryGetAndSet("syncFloorDepth", ref syncFloorDepth);
+		float output3 = 1f;
+		ev.TryGetAndSet("scaleMultiplier", ref output3);
+		Color clear6 = Color.clear;
+		float num3 = 1f;
+		switch (decType)
+		{
+		case DecorationType.Object:
+			num3 = num;
+			break;
+		default:
+			clear6 = ev.GetColor("color");
+			num3 = (float)ev["opacity"] / 100f;
+			break;
+		case DecorationType.Particle:
+			break;
+		}
+		Dictionary<string, object> dictionary = null;
+		if (!string.IsNullOrEmpty(output))
+		{
+			output = output.Trim();
+			dictionary = Json.Deserialize("{" + output + "}") as Dictionary<string, object>;
+		}
+		DecPlacementType decPlacementType = (DecPlacementType)ev["relativeTo"];
+		SetPlacementType(decPlacementType);
+		bool flag5 = decPlacementType == DecPlacementType.Camera || decPlacementType == DecPlacementType.CameraAspect;
+		Vector2 pivotOffset = (Vector2)ev["pivotOffset"] * (flag5 ? 1f : ADOBase.controller.tileSize);
+		if (dictionary != null)
+		{
+			foreach (KeyValuePair<string, object> item in dictionary)
+			{
+				string key2 = item.Key;
+				Component obj = null;
+				Type type = Type.GetType(key2.Trim());
+				if (type != null && type.IsSubclassOf(typeof(MonoBehaviour)))
+				{
+					obj = childTransform.gameObject.AddComponent(type);
+				}
+				foreach (KeyValuePair<string, object> item2 in item.Value as Dictionary<string, object>)
+				{
+					FieldInfo fieldInfo = type?.GetField(item2.Key);
+					if (fieldInfo != null)
+					{
+						fieldInfo.SetValue(obj, item2.Value);
+					}
+				}
+			}
+		}
+		parentFloorNum = Math.Clamp(ev.floor, 0, ADOBase.lm.listFloors.Count - 1);
+		if (parentFloorNum >= 0 && parentFloorNum < ADOBase.lm.listFloors.Count)
+		{
+			parentFloor = ADOBase.lm.listFloors[parentFloorNum];
+		}
+		string[] array = text3.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+		string[] array2 = ((tags != null) ? tags.Except(array).ToArray() : Array.Empty<string>());
+		tags = new HashSet<string>(array);
+		if (tags.Count == 0)
+		{
+			tags = new HashSet<string> { "NO TAG" };
+		}
+		if ((bool)ADOBase.customLevel)
+		{
+			Dictionary<string, List<scrDecoration>> taggedDecorations = manager.taggedDecorations;
+			foreach (string tag in tags)
+			{
+				if (!taggedDecorations.ContainsKey(tag))
+				{
+					taggedDecorations[tag] = new List<scrDecoration>();
+				}
+				taggedDecorations[tag].Add(this);
+			}
+			string[] array3 = array2;
+			foreach (string key3 in array3)
+			{
+				taggedDecorations[key3].RemoveAll(Equals);
+			}
+		}
+		else
+		{
+			text2 = ((tags.Count == 0) ? "NO TAG" : text3);
+			((this is scrPrefabDecoration) ? base.transform.parent.gameObject : base.gameObject).name = text2;
+		}
+		switch (decType)
+		{
+		case DecorationType.Text:
+		{
+			scrTextDecoration scrTextDecoration2 = (scrTextDecoration)this;
+			if (!Application.isPlaying)
+			{
+				scrTextDecoration2.InitText();
+			}
+			scrTextDecoration2.SetText(sourceLevelEvent.GetStringLocalized("decText"));
+			scrTextDecoration2.SetFont(ev.Get("font", FontName.Default));
+			break;
+		}
+		case DecorationType.Image:
+		{
+			bool flag6 = !text2.IsNullOrEmpty();
+			TextureManager.CustomSprite customSprite = null;
+			Sprite sprite = null;
+			if (!ADOBase.customLevel)
+			{
+				sprite = Resources.Load<Sprite>(Path.GetFileNameWithoutExtension(text2));
+			}
+			else
+			{
+				Dictionary<string, TextureManager.CustomSprite> customSprites = manager.imageHolder.customSprites;
+				if (flag6 && customSprites.TryGetValue(text2, out var value5))
+				{
+					customSprite = value5;
+					if (customSprite == null)
+					{
+						sprite = manager.notFoundSprite;
+					}
+				}
+				else if (dictionary == null)
+				{
+					sprite = manager.defaultSprite;
+				}
+			}
+			scrVisualDecoration scrVisualDecoration2 = this as scrVisualDecoration;
+			scrVisualDecoration2.smoothing = smoothing;
+			scrVisualDecoration2.SetBlendMode(blendMode);
+			if ((bool)sprite)
+			{
+				scrVisualDecoration2.SetSprite(sprite);
+			}
+			else
+			{
+				scrVisualDecoration2.SetSprite(customSprite);
+			}
+			scrVisualDecoration2.SetTile(tile);
+			scrVisualDecoration2.SetTextureScaleMultiplier(vector);
+			scrVisualDecoration2.SetMaskingType(maskingType);
+			scrVisualDecoration2.SetMaskingTarget(maskingTarget);
+			scrVisualDecoration2.SetMaskingDepth(customRange, value, value2);
+			if (ev.TryGet<HitboxType>("hitbox", out var output4))
+			{
+				hitbox = output4;
+				if (useHitbox)
+				{
+					string[] array4 = ev["hitboxEventTag"].ToString().Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+					if (array4.Length == 0)
+					{
+						array4 = new string[1] { "NO TAG" };
+					}
+					hitboxEventTags = array4.ToList();
+					manager.hitboxEventTags.UnionWith(hitboxEventTags);
+					Dictionary<string, List<scrDecoration>> hitboxEventTagDecorations = manager.hitboxEventTagDecorations;
+					foreach (string hitboxEventTag in hitboxEventTags)
+					{
+						hitboxEventTagDecorations.TryAdd(hitboxEventTag, new List<scrDecoration>());
+						hitboxEventTagDecorations[hitboxEventTag].Add(this);
+					}
+				}
+				ev.TryGetAndSet("failHitboxType", ref output4);
+				if (ev.TryGet<Vector2>("failHitboxScale", out var output5))
+				{
+					hitboxScale = output5 / 100f;
+				}
+				ev.TryGetAndSet("failHitboxOffset", ref hitboxOffset);
+				ev.TryGetAndSet("failHitboxRotation", ref hitboxRotation);
+				ev.TryGetAndSet("hitboxDetectTarget", ref hitboxDetectTarget);
+				ev.TryGetAndSet("hitboxTargetPlanet", ref hitboxTargetPlanet);
+				ev.TryGetAndSet("hitboxTriggerType", ref hitboxTriggerType);
+				if (ev.TryGet<float>("hitboxRepeatInterval", out var output6))
+				{
+					hitboxRepeatInterval = output6 / 1000f;
+				}
+				if (ev.TryGet<string>("hitboxDecoTag", out var output7))
+				{
+					hitboxDecoTags = new HashSet<string>(output7.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+					if (tags.Count == 0)
+					{
+						tags = new HashSet<string> { "NO TAG" };
+					}
+				}
+			}
+			scrVisualDecoration2.UpdateHitbox();
+			break;
+		}
+		case DecorationType.Object:
+		{
+			scrObjectDecoration scrObjectDecoration2 = this as scrObjectDecoration;
+			scrObjectDecoration2.SetType(objectDecorationType);
+			switch (objectDecorationType)
+			{
+			case ObjectDecorationType.Planet:
+				scrObjectDecoration2.SetPlanetColorType(planetColorType);
+				scrObjectDecoration2.SetPlanetColor(clear);
+				scrObjectDecoration2.SetPlanetTailColor(clear2);
+				break;
+			case ObjectDecorationType.Floor:
+				scrObjectDecoration2.SetFloorMidspin(flag);
+				if (!flag)
+				{
+					scrObjectDecoration2.SetFloorAngle(floorAngle);
+				}
+				scrObjectDecoration2.SetFloorColor(clear3, clear4, value3, value4);
+				scrObjectDecoration2.SetFloorStyle(floorStyle);
+				scrObjectDecoration2.SetFloorGlowEnabled(floorGlowEnabled);
+				scrObjectDecoration2.SetFloorGlowColor(clear5);
+				scrObjectDecoration2.SetFloorRedSwirl(floorRedSwirl);
+				scrObjectDecoration2.SetFloorIcon(icon, graySetSpeedIcon, setSpeedIconBpm);
+				scrObjectDecoration2.SetFloorIconAngle(floorIconAngle);
+				scrObjectDecoration2.SetFloorIconFlipped(floorIconFlipped);
+				scrObjectDecoration2.SetFloorIconOutlines(floorIconOutlines);
+				break;
+			case ObjectDecorationType.PlayerBubble:
+			{
+				PlayerBubble bubble = scrObjectDecoration2.bubble;
+				bubble.floor = sourceLevelEvent.floor;
+				bubble.appearStartOffset = appearStartOffset;
+				bubble.appearEndOffset = appearEndOffset;
+				bubble.disappearOffset = disappearOffset;
+				bubble.spawnOffset = spawnOffset;
+				if (ADOBase.editor != null)
+				{
+					bubble.Validate(ADOBase.editor.floors.Count);
+					bubble.ResetBubble(!ADOBase.isEditingLevel);
+				}
+				break;
+			}
+			}
+			break;
+		}
+		case DecorationType.Particle:
+		{
+			text2.IsNullOrEmpty();
+			TextureManager.CustomSprite valueOrDefault = manager.imageHolder.customSprites.GetValueOrDefault(text2, null);
+			scrParticleDecoration obj2 = (scrParticleDecoration)this;
+			obj2.atStart = true;
+			obj2.SetSprite(valueOrDefault);
+			ParticleSystem particleSystem = obj2.particleSystem;
+			particleSystem.Stop();
+			particleSystem.Clear();
+			obj2.autoPlay = ev.GetBool("autoPlay");
+			obj2.ResetParticle(ev, restart: true);
+			obj2.SetMaskingType(maskingType);
+			break;
+		}
+		}
+		startRot = num2;
+		scaleVec = vector3;
+		scaleMultiplier = output3;
+		parallaxOffset = vector5;
+		lockRotation = flag3;
+		lockScale = flag4;
+		croppedPivotOffset = vector2 / 100f;
+		SetPosition(startPos, pivotOffset);
+		SetScale(vector3 * Vector2.one);
+		SetDepth(depth);
+		SetParallax(vector4, decPlacementType);
+		SetColor(clear6);
+		SetOpacity(num3);
+		SetVisible(ev.visible && !forceHide);
+		SetRotation(0f);
+		if (refreshCache)
+		{
+			SpriteAlphaMaskUtils.doRefreshMaskCache = true;
+		}
+		cfpCache = (from c in GetComponents<MonoBehaviour>()
+			where c.GetType().Name.StartsWith("CameraFilterPack_")
+			select c).ToArray();
+		if (ADOBase.isLevelEditor)
+		{
+			SetCollider(enable: true);
+		}
+	}
+
+	public virtual void UpdateHitbox()
+	{
+	}
+
+	public virtual void SetCollider(bool enable)
+	{
+		if (editorCollider != null)
+		{
+			editorCollider.gameObject.SetActive(enable);
+			editorCollider.enabled = enable;
+		}
+	}
+
+	public void LogicUpdate(bool disableUpdateShader)
+	{
+		if (GetVisible())
+		{
+			UpdatePosition();
+		}
+		if ((bool)ADOBase.customLevel)
+		{
+			UpdateShader(disableUpdateShader);
+		}
+		if (useHitbox)
+		{
+			UpdateHitboxState();
+		}
+	}
+}

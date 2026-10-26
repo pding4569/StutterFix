@@ -1,0 +1,273 @@
+﻿{
+    "CapturedUtc":  "2026-10-26T04:33:38.7417915Z",
+    "Head":  "e2a7756432a86ff1635faf12be07439f6a66666d",
+    "Branch":  "claude/parallax-research",
+    "Ilspy":  [
+                  "ilspycmd: 9.1.0.7988",
+                  "ICSharpCode.Decompiler: 9.1.0.7988"
+              ],
+    "Dlls":  [
+                 {
+                     "File":  "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\Assembly-CSharp.dll",
+                     "Sha256":  "F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF",
+                     "Bytes":  2706432
+                 },
+                 {
+                     "File":  "D:\\SteamLibrary\\steamapps\\common\\A Dance of Fire and Ice\\A Dance of Fire and Ice_Data\\Managed\\UnityEngine.CoreModule.dll",
+                     "Sha256":  "9F5141E8DD6C34B82BB03F151E6F0773129F55A7A2E816FE1E31E549737F4A71",
+                     "Bytes":  1985960
+                 }
+             ],
+    "Sources":  [
+                    {
+                        "File":  "DecoAnim.Bake.cs",
+                        "Sha256":  "9713A7DDC5B8CD894575CCD7CFB43ED0C96708C7D88B1A898B51A38E285728AE"
+                    },
+                    {
+                        "File":  "DecoAnim.Batch.cs",
+                        "Sha256":  "DFCC02387FA16F5B5A5B623F2CC3494EE928CF609DFC6F8781EF7291116FC7E2"
+                    },
+                    {
+                        "File":  "DecoAnim.cs",
+                        "Sha256":  "FC25A0A84554C37BED18DA762FE97BC34E893A6326477A8E50D4B82B35CC2925"
+                    },
+                    {
+                        "File":  "DecoAnim.FastLane.cs",
+                        "Sha256":  "AEBA20FA927082468C2DF93A2F04D142B0A7CD3CEA1A0DB278690DF134A8B5ED"
+                    },
+                    {
+                        "File":  "DecoAnim.GpuResume.cs",
+                        "Sha256":  "46CD4E472C50776664883599E847B8B8B9A797240CD54926A0ED62D689961AF1"
+                    },
+                    {
+                        "File":  "DecoAnim.GroupStep.cs",
+                        "Sha256":  "70FD996502058302680F679079D4768403AA9295FD4291BF460C68A726CD7BC1"
+                    },
+                    {
+                        "File":  "DecoAnim.Hidden.cs",
+                        "Sha256":  "EE39DFD6CBACCA787D99975C086BCE0C322484E416F2D93852DCE08CB0CE0E12"
+                    },
+                    {
+                        "File":  "DecoBake.Adopt.cs",
+                        "Sha256":  "53C08916BFF54A2FEE3048A6C6BB59B50486732291FC66BC1EC6E4737497339E"
+                    },
+                    {
+                        "File":  "DecoBake.AdoptSig.cs",
+                        "Sha256":  "5496F3FDBA69E2143555DC2CF312BDB53B7F335A6C60831D1B151067C250B4FB"
+                    },
+                    {
+                        "File":  "DecoBake.Core.cs",
+                        "Sha256":  "B8D54EB6560B14A2D69D2CEDBC07A9D50D4E12F574FBBE6ED9612BA22A8FBEC9"
+                    },
+                    {
+                        "File":  "DecoBake.cs",
+                        "Sha256":  "1D7F0D452CC382CD8959A175B7C2B3157864D975CA0C80E44FD78B4EED5538B4"
+                    },
+                    {
+                        "File":  "DecoBake.Live.cs",
+                        "Sha256":  "308F8F43C2ADD12948E7F1E01F61CB2A5BC43C85F7146BE75A851EFCDE9F5D56"
+                    },
+                    {
+                        "File":  "DecoEngine.cs",
+                        "Sha256":  "B8C49301ECE47F2B9EBAA3E26F4C8711081134553A8F09BC5655645FB2782793"
+                    },
+                    {
+                        "File":  "FastMove.cs",
+                        "Sha256":  "E7501CCF8DF6176E76B48B10B58A67E326F0D3421F99B977185750B390FB51AB"
+                    },
+                    {
+                        "File":  "GpuDecoAblation.cs",
+                        "Sha256":  "8EBB4FF126F51A818CAB345493811EB267B43620C1772220CD357FE23CD35FFC"
+                    },
+                    {
+                        "File":  "GpuDecoActivation.cs",
+                        "Sha256":  "BB6B54912BDB82EFB4E4A619C008BDD2D3ACF6AE9BB0EF70E7FDD62144C99013"
+                    },
+                    {
+                        "File":  "GpuDecoAlphaPolicy.cs",
+                        "Sha256":  "89755CE30658F7F1CD5CB24C6C087A49E13F29A2CC92CC668E924A23EAD3BB69"
+                    },
+                    {
+                        "File":  "GpuDecoCopy.cs",
+                        "Sha256":  "31A7B9EDA63C675F627588D7229B66064163C7CC0FB48D0BB0799206C26D93C3"
+                    },
+                    {
+                        "File":  "GpuDecoCopyMask.cs",
+                        "Sha256":  "28931BEE714C557186AD0C47ADAEE73DE0BE759A3110BE1A83C36398CCB75FAF"
+                    },
+                    {
+                        "File":  "GpuDecoCostProbe.cs",
+                        "Sha256":  "73739DBADF739D44AD01C679E9472281A7F6CD1ACBA4A9672F53C47592708DE7"
+                    },
+                    {
+                        "File":  "GpuDecoData.cs",
+                        "Sha256":  "3D8556D6D73765E52E474B0E807F7C56B361CB940A47A2EE12E642499FB3838B"
+                    },
+                    {
+                        "File":  "GpuDecoDrawCollapse.cs",
+                        "Sha256":  "C176C30F5736D9CA0E66914011607330A526F106A089EDDD89FBEE2726B6996B"
+                    },
+                    {
+                        "File":  "GpuDecoDrawCollapseGate.cs",
+                        "Sha256":  "2172CD3896C8DB187AC552DD97A9705A41D1368150AF3784266A1FC208D0A8D1"
+                    },
+                    {
+                        "File":  "GpuDecoDrawCollapseRenderer.cs",
+                        "Sha256":  "1DCCFE75EF11021AF6A9E23215543ADA89BDA179ED1B68544525607E50F8F1B0"
+                    },
+                    {
+                        "File":  "GpuDecoExport.cs",
+                        "Sha256":  "4FF8BE8847FC229B8718D36868AD076AA9765AB023584E6BB3B82C8B6848094B"
+                    },
+                    {
+                        "File":  "GpuDecoGpu.cs",
+                        "Sha256":  "40E88D9A8F178BC923D0C1489571EFA4CE867CCAEBCB50799FFA4F0C98CC8ABE"
+                    },
+                    {
+                        "File":  "GpuDecoImageGeometryFixture.cs",
+                        "Sha256":  "7B3F4DC4A55E4372F5CFA00300DA886EE89E9B4A6AE18B69A971265A0985D0FD"
+                    },
+                    {
+                        "File":  "GpuDecoImageIsolatedFixture.cs",
+                        "Sha256":  "0CF8DCA409A36EA0FC3FA840893074DB4A2A9A5B99567EA06AD9A27FF5A17F73"
+                    },
+                    {
+                        "File":  "GpuDecoImagePlan.cs",
+                        "Sha256":  "0A79880D57CDF24A6C1FF14E916D8403AA739B82836C38AC93A29188DB5D1FF9"
+                    },
+                    {
+                        "File":  "GpuDecoImagePlayback.cs",
+                        "Sha256":  "E82F431FAF2CAAFE428469A63F169CE1C63BD4728D0E0FFFECF3A9D5579D71E3"
+                    },
+                    {
+                        "File":  "GpuDecoImageTextureFixture.cs",
+                        "Sha256":  "D1749F3D23394E1CDE4E9A44C14ADF1CA19CF7D2BEA3957FCEBE466E9F117E60"
+                    },
+                    {
+                        "File":  "GpuDecoImageTimeline.cs",
+                        "Sha256":  "835EEFC50DCB3708C478491A8D374959073020814BAC7E1C0E559AF6735C02D3"
+                    },
+                    {
+                        "File":  "GpuDecoImageVariants.cs",
+                        "Sha256":  "E5CFF7703E43C674AFC69EA1F7C858B9FBD4114BC698EB85D4BF72F4F481FA4E"
+                    },
+                    {
+                        "File":  "GpuDecoNativeBatch.cs",
+                        "Sha256":  "212FD203413144AF7CB7ACEA651949B5DD15E12EA7F5A6ADECF1C47E718334A1"
+                    },
+                    {
+                        "File":  "GpuDecoOrderProbe.cs",
+                        "Sha256":  "FBACC6B1E71D0A5FF3FEC619B32EEC54DA1EBA49A7F87A04004A309F76922B16"
+                    },
+                    {
+                        "File":  "GpuDecoPacketFixture.cs",
+                        "Sha256":  "E155E524142A9039D3FF31495232BB4B8415B18E170BA43F69181E89D71B91CA"
+                    },
+                    {
+                        "File":  "GpuDecoPackets.cs",
+                        "Sha256":  "8D034A20AD601A51C7C763CEB7725BC04FF50EF818E636F4A2AE0BBC123DCEFB"
+                    },
+                    {
+                        "File":  "GpuDecoPacketTargets.cs",
+                        "Sha256":  "48BC07A26EF641C8B6E409E29489393206836133CC87CD5E0AB8EE144E331F79"
+                    },
+                    {
+                        "File":  "GpuDecoPlayer.cs",
+                        "Sha256":  "B80C1634DC175DA42ABFCAF26BC5A2431B368EFD6B1D91CF56E258F36E6BF352"
+                    },
+                    {
+                        "File":  "GpuDecoPlayerPolicy.cs",
+                        "Sha256":  "6103B26A71BDB6640D5C6DF4CD3A4FC5B9032606A9B2BEE470F94DB28B9ADC03"
+                    },
+                    {
+                        "File":  "GpuDecoRecordStore.cs",
+                        "Sha256":  "CBB283EA04BA3476218A489ADB967E49E709933057E9C7593EC288DEF4A7DAE5"
+                    },
+                    {
+                        "File":  "GpuDecoRecovery.cs",
+                        "Sha256":  "C2970685921D3CD4C103F365BC50CB2E1D19A5E295F6C7D625EA97DD9EADA581"
+                    },
+                    {
+                        "File":  "GpuDecoRenderMerge.cs",
+                        "Sha256":  "AD5FF0F2C9CDCBB39B74A6ACF9BD79812ECAC766FA3D4108D2DB219C938CF0C9"
+                    },
+                    {
+                        "File":  "GpuDecoRenderMergeGate.cs",
+                        "Sha256":  "A740E8B7387F101ADCCBFDD44D24ED815EB9F9B4344FBDDDF41483420CE7340E"
+                    },
+                    {
+                        "File":  "GpuDecoRenderMetrics.cs",
+                        "Sha256":  "99599D76365ED8C0856E58CA8063128F275C40267C4A6C5A53632F663F79E2D4"
+                    },
+                    {
+                        "File":  "GpuDecoResume.cs",
+                        "Sha256":  "F1450DD7BDDF1BB372156262DBBE46AE492BD5B0707170AD92BE28DB235372CD"
+                    },
+                    {
+                        "File":  "GpuDecoScene.cs",
+                        "Sha256":  "E89E83574F99B0D2EA4D42F15E0E1A698782D2271D6612B7C2B355B586E76BB0"
+                    },
+                    {
+                        "File":  "GpuDecoScopePlan.cs",
+                        "Sha256":  "3B458A645DB74F6337AA3A5D3F1BD0FB12039C0ACFECB74E3ACC3E68F9C092BF"
+                    },
+                    {
+                        "File":  "GpuDecoSnapshot.cs",
+                        "Sha256":  "415CC9BE7D9AAD0CCA1188FE770A9460AB4FDF2C45CF5694FA311FA9801FDD2B"
+                    },
+                    {
+                        "File":  "GpuDecoStorage.cs",
+                        "Sha256":  "13B5E5D48AA03BA35AE6B4D2E3A075D0919A4BAC4161F618541DCD232BCC1954"
+                    },
+                    {
+                        "File":  "GpuDecoThreadCpu.cs",
+                        "Sha256":  "928F5CADA81EF1EC835621D7F712B56AEBC2E7D609FFC9A13A6A64BB7AA98A22"
+                    },
+                    {
+                        "File":  "GpuDecoTrim.cs",
+                        "Sha256":  "C99772B82802C3F586637DDBDB1B99B08A60EFE5C89FE9575DAA6D6F4B463661"
+                    },
+                    {
+                        "File":  "MoveApply.cs",
+                        "Sha256":  "8CC9FE9DE0060C7B8B0D9884992FA0E7BE35465E5F4E8F51358BC5094E8E0036"
+                    },
+                    {
+                        "File":  "TightLate.cs",
+                        "Sha256":  "767101B82CB848FE5F406A7CEABC79E02A8FFEAE2DA8405BD63755AA150520FB"
+                    },
+                    {
+                        "File":  "tools/gpudeco-lab/GpuDeco.compute",
+                        "Sha256":  "EE74FE6314D8C952491F514095B56AA8C48E3C9F7B46304D766071E9706B038B"
+                    }
+                ],
+    "ToolSources":  [
+                        {
+                            "File":  "capture-evidence.ps1",
+                            "Sha256":  "9B0313367180FF3A6D1ED20A20A33926C02EB2E5A9831A051DAB315841066047"
+                        },
+                        {
+                            "File":  "NuGet.Config",
+                            "Sha256":  "964302159308872B9729E1828A1BA897F30634F7BD751CDE11EA8E6FED8CFB97"
+                        },
+                        {
+                            "File":  "ParallaxLab.csproj",
+                            "Sha256":  "72ACA632A6BF41EC5A3671F7E8A67FED1AE30938098288441B4051CE94FE2218"
+                        },
+                        {
+                            "File":  "Program.cs",
+                            "Sha256":  "D491F599FB17372B614F9956408B5E3B2F1BDEA74BD17D134A0BCB9A59479A83"
+                        },
+                        {
+                            "File":  "run-offline.ps1",
+                            "Sha256":  "C91A15C204B5F5AD7502AEEAACC96FA2429E8C3E0B4463EDE2F3E2FB5E03A702"
+                        },
+                        {
+                            "File":  "summarize.py",
+                            "Sha256":  "E81F978056219825DBDE2F5DF41298AAAD5C44388FEB4CF6F67EE909A55A6494"
+                        },
+                        {
+                            "File":  "validate_stats.py",
+                            "Sha256":  "D77CE4CE1C9699D96724D6A25370DCC3E876BC45AA4B3161FDB33817AEC4E8BE"
+                        }
+                    ]
+}

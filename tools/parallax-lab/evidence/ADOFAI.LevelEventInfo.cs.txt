@@ -1,0 +1,69 @@
+﻿using System.Collections.Generic;
+
+namespace ADOFAI;
+
+public class LevelEventInfo
+{
+	public struct Group
+	{
+		public string name;
+
+		public string icon;
+
+		public bool isDefault;
+	}
+
+	public string name;
+
+	public LevelEventType type;
+
+	public bool pro;
+
+	public bool taroDLC;
+
+	public Dictionary<string, PropertyInfo> propertiesInfo;
+
+	public List<LevelEventCategory> categories;
+
+	public LevelEventExecutionTime executionTime;
+
+	public bool? allowFirstFloor;
+
+	public bool isDecoration;
+
+	public bool useGroups;
+
+	public List<Group> groups = new List<Group>();
+
+	public bool stretchViewport;
+
+	public bool allowFirstFloorCheck => allowFirstFloor ?? propertiesInfo.ContainsKey("angleOffset");
+
+	public bool taroDLCCheck
+	{
+		get
+		{
+			if (!ADOBase.isOfficialLevel)
+			{
+				if (!NeoCosmosManager.instance.installed)
+				{
+					return !taroDLC;
+				}
+				return true;
+			}
+			return true;
+		}
+	}
+
+	public bool isActive
+	{
+		get
+		{
+			if (!pro || LevelEvent.enableProEvents)
+			{
+				return taroDLCCheck;
+			}
+			return false;
+		}
+	}
+}
