@@ -35,6 +35,9 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] static extern uint sf_deco_copy_thread(int id);
         static readonly List<GpuDecoCopy> instances=new List<GpuDecoCopy>();
         static ulong managedFaults;
+        internal static long DbgSubmitTicks,DbgExecTicks;
+        internal static bool DirectSubmit=true;
+        bool directBound;
         GraphicsBuffer normalized;
         CommandBuffer commands;
         CommandBuffer singleCommands;
@@ -111,8 +114,24 @@ namespace StutterFix
                 // an empty mask omits only destination-copy command chunks.
                 if(AblateDestinations) {if(!masked)throw new InvalidOperationException("unmasked copy ablation");low=high=0;}
 #endif
+                long sb0=System.Diagnostics.Stopwatch.GetTimestamp();
                 if(token==0 || (masked?sf_deco_copy_submit_mask(token,low,high):sf_deco_copy_submit(token))==0){managedFaults++;failed=true;return false;}
-                Graphics.ExecuteCommandBuffer(submitted);
+                long sb1=System.Diagnostics.Stopwatch.GetTimestamp();
+                if(evaluator==null && DirectSubmit)
+                {
+                    // Graphics.ExecuteCommandBuffer 는 이 짧은 버퍼에도 프레임당 약 0.165ms 가 들었다(직접 Dispatch 는 약 0.005ms).
+                    // 직접 디스패치 + 플러그인 이벤트는 같은 렌더 큐에 같은 순서로 들어간다.
+                    if(!directBound)
+                    {
+                        copyShader.SetBuffer(copyKernel,"_CopySource",copySource);copyShader.SetBuffer(copyKernel,"_Vertices",normalized);
+                        copyShader.SetInt("_CopyFirstVertex",0);copyShader.SetInt("_CopyVertexCount",copyVertexCount);copyShader.SetInt("_CopyQuantizeColor",1);
+                        directBound=true;
+                    }
+                    copyShader.Dispatch(copyKernel,(copyVertexCount+63)/64,1,1);
+                    GL.IssuePluginEvent(copyCallback,token);
+                }
+                else Graphics.ExecuteCommandBuffer(submitted);
+                DbgSubmitTicks+=sb1-sb0;DbgExecTicks+=System.Diagnostics.Stopwatch.GetTimestamp()-sb1;
                 if(evaluator!=null)SingleExecutions++;
                 return true;
             }

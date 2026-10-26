@@ -273,7 +273,7 @@ namespace StutterFix
         static double gpuLivePrepareMs, gpuLiveTransitionMs, gpuLiveTurnOnBakeTime;
         static float gpuLiveEnabledAt, gpuLiveZoomFactor = 1f;
         static long gpuLiveSkippedRecs;
-        static long gpuCostCheckTicks, gpuCostClockTicks, gpuCostWholeTicks, gpuCostValidateTicks, gpuCostExecTicks, gpuCostProxyTicks, gpuCostCamTicks;
+        static long gpuCostCheckTicks, gpuCostClockTicks, gpuCostWholeTicks, gpuCostValidateTicks, gpuCostExecTicks, gpuCostProxyTicks, gpuCostCamTicks, gpuCostDdTicks, gpuCostAfterTicks, gpuCostFbEvalTicks, gpuCostFbCopyTicks;
         static long gpuCostFrames, gpuCostProgressTicks, gpuCostUniformTicks, gpuCostDispatchTicks, gpuCostMiscTicks;
         static double gpuCostMaxMs;
         static readonly float[] gpuRestoreValues = new float[16];
@@ -1326,7 +1326,9 @@ namespace StutterFix
             bool submitted=false;
             if(gpuCollapseOn)
             {
+                long dd0=Stopwatch.GetTimestamp();
                 DispatchDrawCollapse(time); // Direct representative VBs; independent copies only for texture overflow.
+                gpuCostDdTicks+=Stopwatch.GetTimestamp()-dd0;
                 submitted=true;
             }
             else
@@ -1344,8 +1346,10 @@ namespace StutterFix
                 else if(active.SharedBatch!=null)active.SharedBatch.Dispatch();
                 else if(active.NativeCopy==null || !active.NativeCopy.Execute(maskLow,maskHigh))Graphics.ExecuteCommandBuffer(active.Commands);
             }
+            long af0=Stopwatch.GetTimestamp();
             GpuRecoveryFault("render_after");
             long t4 = Stopwatch.GetTimestamp();
+            gpuCostAfterTicks+=t4-af0;
             gpuCostMiscTicks += t1 - t0;
             gpuCostProgressTicks += t2 - t1;
             gpuCostUniformTicks += t3 - t2;
@@ -1599,7 +1603,7 @@ namespace StutterFix
                 + " proxy_ms=" + (gpuCostProxyTicks / tf / f).ToString("F6", Inv)
                 + " check_ms=" + (gpuCostCheckTicks / tf / f).ToString("F6", Inv)
                 + " clock_ms=" + (gpuCostClockTicks / tf / f).ToString("F6", Inv)
-                + " whole_frame_ms=" + (gpuCostWholeTicks / tf / f).ToString("F6", Inv));
+                + " dd_ms=" + (gpuCostDdTicks / tf / f).ToString("F6", Inv) + " after_ms=" + (gpuCostAfterTicks / tf / f).ToString("F6", Inv) + " fb_eval_ms=" + (gpuCostFbEvalTicks / tf / f).ToString("F6", Inv) + " fb_copy_ms=" + (gpuCostFbCopyTicks / tf / f).ToString("F6", Inv) + " fb_submit_ms=" + (GpuDecoCopy.DbgSubmitTicks / tf / f).ToString("F6", Inv) + " fb_exec_ms=" + (GpuDecoCopy.DbgExecTicks / tf / f).ToString("F6", Inv) + " whole_frame_ms=" + (gpuCostWholeTicks / tf / f).ToString("F6", Inv));
         }
 
         // Request B.3: Full restoration of owned decorations on off, song end, retry, restart, editor return, map reopen, and unload.
@@ -2080,7 +2084,7 @@ namespace StutterFix
                 return true;
             }
             if (command == "cost") { LogGpuLiveCost("manual"); return true; }
-            if (command == "cost reset") { gpuCostFrames = gpuCostProgressTicks = gpuCostUniformTicks = gpuCostDispatchTicks = gpuCostMiscTicks = gpuCostCheckTicks = gpuCostClockTicks = gpuCostWholeTicks = gpuCostValidateTicks = gpuCostExecTicks = gpuCostProxyTicks = gpuCostCamTicks = 0; gpuCostMaxMs = 0; return true; }
+            if (command == "cost reset") { gpuCostFrames = gpuCostProgressTicks = gpuCostUniformTicks = gpuCostDispatchTicks = gpuCostMiscTicks = gpuCostCheckTicks = gpuCostClockTicks = gpuCostWholeTicks = gpuCostValidateTicks = gpuCostExecTicks = gpuCostProxyTicks = gpuCostCamTicks = gpuCostDdTicks = gpuCostAfterTicks = gpuCostFbEvalTicks = gpuCostFbCopyTicks = 0; GpuDecoCopy.DbgSubmitTicks = GpuDecoCopy.DbgExecTicks = 0; gpuCostMaxMs = 0; return true; }
             if (command == "live prepare") { PrepareGpuLive(); return true; }
             if (command == "live scope song" || command == "live scope reference")
             {

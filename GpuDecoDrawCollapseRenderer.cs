@@ -486,6 +486,7 @@ namespace StutterFix
             if((before>0)!=(gpuSpanVisible[k]>0))MarkSpanDirty(k);
         }
         // 통합 디스패치 직전에 한 번: 바뀐 구간만 켜고 끈다.
+        internal static void MarkAllSpansDirty(){if(gpuSpanOfItem==null)return;for(int k=0;k<gpuCollapseSpans.Count;k++)MarkSpanDirty(k);}
         static void ApplySpanCulling()
         {
             if(gpuSpanOfItem==null)return;
@@ -1338,9 +1339,12 @@ namespace StutterFix
                 // CopyMask retains chunks containing visible fallback items;
                 // neighboring admitted buffers may be copied but stay hidden.
                 // Spans still evaluate directly into their representative VBs.
+                long fe0=Stopwatch.GetTimestamp();
                 source.Gpu.DispatchEvaluate();
+                long fe1=Stopwatch.GetTimestamp();
                 ulong low=source.CopyMask?.Low??ulong.MaxValue,high=source.CopyMask?.High??ulong.MaxValue;
                 if(source.NativeCopy==null || !source.NativeCopy.Execute(low,high))Graphics.ExecuteCommandBuffer(source.Commands);
+                gpuCostFbEvalTicks+=fe1-fe0;gpuCostFbCopyTicks+=Stopwatch.GetTimestamp()-fe1;
             }
         }
     }

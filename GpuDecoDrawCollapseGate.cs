@@ -95,6 +95,7 @@ namespace StutterFix
             if(args.Length==2 && args[0]=="hideproxy")
             {
                 DrawCollapsePolicy.HideProxies=args[1]=="on";
+                MarkAllSpansDirty();
                 GpuLog("DRAWCOLLAPSE_HIDEPROXY hide="+DrawCollapsePolicy.HideProxies);return true;
             }
             if(args.Length==2 && args[0]=="unsafe")
