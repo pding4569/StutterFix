@@ -45,6 +45,8 @@ namespace StutterFix
                 modEntry.OnGUI = e => GUILayout.Label("StutterFix 는 Windows 전용이라 이 운영체제(" + Application.platform + ")에서는 꺼져 있습니다. / StutterFix is Windows-only and is disabled on this OS.");
                 return true;
             }
+            // 7th Beat Games 모딩 가이드라인: 로그에 개조된 게임임을 남긴다.
+            modEntry.Logger.Log("This game is modded (StutterFix " + modEntry.Info.Version + ")");
             Config = UnityModManager.ModSettings.Load<Settings>(modEntry);
             if (Config.DefaultsGen < 1)
             {
