@@ -133,6 +133,7 @@ namespace StutterFix
             catch (Exception ex) { steps = null; Main.Entry.Logger.Log("[자동 시험] 읽기 실패: " + ex.Message); }
         }
 
+        static int fpsMarkFrames;static long fpsMarkTicks;
         private static void Log(string s) { Main.Entry.Logger.Log("[자동 시험] " + s); }
 
         private static float watchStart = -1, watchNext; private static int watchBad, watchChecks; private static readonly HashSet<int> watchSeen = new HashSet<int>();
@@ -1310,6 +1311,14 @@ namespace StutterFix
                     }
                     if(badValues>0)NativeMotion.Failed=true;
                     Log("[네이티브 계산 시험] checks="+checkedValues+" mismatch="+badValues+" native_vs_r64="+doubleBad+" native_vs_forced_r32="+strictBad);
+                    return true;
+                }
+                case "fpsmark":
+                {
+                    // fpsmark start | fpsmark end <이름>: 두 호출 사이의 실제 시간 FPS(프레임 수 / Stopwatch). 일시정지한 같은 장면에서 ABAB 로 쓴다.
+                    if(arg=="start"){fpsMarkFrames=Time.frameCount;fpsMarkTicks=System.Diagnostics.Stopwatch.GetTimestamp();return true;}
+                    double sec=(System.Diagnostics.Stopwatch.GetTimestamp()-fpsMarkTicks)/(double)System.Diagnostics.Stopwatch.Frequency;int fr=Time.frameCount-fpsMarkFrames;
+                    Log("[FPS 구간] "+arg.Substring(4).Trim()+" : "+(fr/Math.Max(sec,1e-6)).ToString("F1",System.Globalization.CultureInfo.InvariantCulture)+" FPS ("+fr+"프레임 "+sec.ToString("F2",System.Globalization.CultureInfo.InvariantCulture)+"초)");
                     return true;
                 }
                 case "fpscap":
