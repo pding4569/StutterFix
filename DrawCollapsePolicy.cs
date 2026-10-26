@@ -7,7 +7,7 @@ namespace StutterFix
     // Pure painter-order and memory arithmetic shared by preparation and checks.
     internal static class DrawCollapsePolicy
     {
-        internal static bool AdoptNativeTweens=false;
+        internal static bool AdoptNativeTweens=true;
         // Unity's loaded shader caps texture parameters at 64 on this D3D11
         // device, even though the native API accepts 128 SRVs.
         internal const int ArrayBindings=4;
@@ -114,6 +114,8 @@ namespace StutterFix
         internal static bool SkipPausedCompute=false;
         // 곡 시작 키를 누르기 전(Start 상태, 정지된 화면)에 GPU 장식을 켠다: 켜는 약 150ms 가 카운트다운이 아니라 멈춰 있는 화면에서 일어난다.
         internal static bool PreStartActivate=true;
+        // 곡 중간 시작이어도 CPU 처리 장식·동적 제외가 없으면 준비 때 만든 구간 계획을 먼저 검증해 보고, 맞으면 다시 계획하지 않는다(계획 재구성 약 220ms 절약). 어긋나면 예전처럼 다시 계획한다.
+        internal static bool MidReusePlan=true;
         // 큰 이미지 장식의 쿼드를 불투명한 부분에만 맞게 줄인다(투명 여백 래스터라이즈 제거). 텍스처 긴 변이 TightMinSide 이상일 때만.
         internal static bool TightLargeQuads=true;
         // 스프라이트가 바뀌지 않는 일반 소유 장식도 내보낼 때 쿼드를 불투명 범위로 좁힌다.
@@ -139,7 +141,7 @@ namespace StutterFix
             rows.Sort((a,b)=>a.Key.CompareTo(b.Key));
             for(int i=1;i<rows.Count;i++)
                 if(rows[i].Key.SameMaterialTie(rows[i-1].Key) && (rows[i].Owned || rows[i-1].Owned))
-                    throw new InvalidOperationException("drawcollapse ambiguous material tie");
+                    throw new InvalidOperationException("drawcollapse ambiguous material tie layer="+rows[i].Key.Layer+" order="+rows[i].Key.Order+" queue="+rows[i].Key.Queue+" dist="+rows[i].Key.Distance.ToString("R")+" mat="+rows[i].Key.Material+" owned="+rows[i].Owned+"/"+rows[i-1].Owned+" dist0="+rows[i-1].Key.Distance.ToString("R"));
             var spans=new List<int[]>();var items=new List<int>();
             bool haveBucket=false;int bl=0,bo=0,bq=0;
             foreach(var row in rows)

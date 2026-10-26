@@ -125,3 +125,91 @@ GpuDecoNativeAdopt.cs의 새 빌드 경고는 없다. 참조 버전 충돌·사�
 | git diff --check | 통과 | 공백 오류 없음 |
 
 GpuDecoNativeAdopt.cs의 빌드 경고는 없다. 게임 실행·DLL 설치·커밋 및 실행 시험은 하지 않았다. **247장식/707채널 합계 20ms 이하 달성 여부와 게임 내 정확성은 이번 빌드만으로 판정하지 않는다.** 다음 허용된 게임 측정에서 세 시간의 합과 기존 채택 수·값 불일치·복구 동작을 함께 확인해야 한다.
+
+## 남는 거절
+
+2026-10-26. `docs/handoff/native-tween-adopt-leftover.md`에 따라 기존 `NR(3)`의 일반 상태·Float/Vector/Color 옵션을 분리했다. 다른 복합 거절도 상태·콜백·플러그인·시간·값별 `NativeReject` 코드로 나눴다. 과거 번호 2~15는 아래 새 번호로 대체되므로 이전 로그의 3·14·15와 직접 비교하지 않는다. 읽기 예외 16과 갱신 중 1은 유지한다.
+
+AUTOTEST 로그는 `거절 35=2(Uninitialized) ... [PositionX(nat)+Color(nat)+ code=35/Uninitialized channel=Color]=2`처럼 코드별 장식 수와 전체 실행 채널 조합, 실제 실패 채널을 함께 표시한다. 이 예시는 형식 설명이며 게임 측정값이 아니다. 장식마다 사전 검사 순서상 **처음 실패한 조건 하나**만 집계한다. 캡처·commit 재검사는 이 수를 늘리지 않는다. 활성화 시작 시 집계를 초기화하고, 요약 조회는 집계를 지우지 않아 분류 로그와 commit 로그가 같은 내용을 볼 수 있다. 분류 직후에도 `이어받기 분류: 후보 ... 거절 ...`를 출력하므로, 이후 정렬 장벽이나 렌더러 검증에서 실패해도 원인을 읽을 수 있다. 분류 후보 수는 실제 commit 성공 수가 아니다.
+
+### 코드별 의미와 유지 사유
+
+아래 조건은 모두 계속 거절한다. 유일한 허용 확대는 표 다음의 **이미 완료된 지연**이다. 비트 비교를 허용 오차 비교로 바꾸거나, 미지원 장식을 부분적으로 이어받지 않는다.
+
+| 코드 / 로그 이름 | 정확한 조건 | 계속 거절하는 이유 |
+|---|---|---|
+| 1 UpdateRunning / 20 HookFrame | native Update 실행 중 / 재생 중 후크 설치 프레임 | 이중·누락 갱신 방지 |
+| 16 ReadException | 필드·메타데이터·상태 읽기 예외 | 확인 못 한 구조를 추정하지 않음. `ex=`에 예외 표시 |
+| 21 RunningRec / 22 UnsupportedKey | 실행 Rec 혼합 / 지원하지 않는 Key | 장식 전체 소유권·채널 계약 유지 |
+| 30 Inactive | `!active` | 살아 있는 원본만 채택 |
+| 31 Id / 32 Target / 33 StringId / 34 IntId | id·target·stringId가 null 아님 / intId가 -999 아님 | 외부 식별·제어 동작을 제거할 수 있음 |
+| 35 Uninitialized | `!IsInitialized()` | 아직 getter로 확정하지 않은 start/change를 사용하면 안 됨 |
+| 36 NotPlaying / 37 Complete | `!IsPlaying()` / `IsComplete()` | GPU 시계는 개별 정지·완료 객체를 표현하지 않음 |
+| 38 Relative / 39 Backwards / 40 TimeScale | isRelative / isBackwards / timeScale 비트가 1f와 다름 | 절대값·단일 전진 시계 계약 |
+| 41 DelayNonfinite / 42 DelayNegative | Delay가 NaN·무한 / 음수 | 잘못된 지연 상태 |
+| 43 ElapsedDelayNonfinite / 44 ElapsedDelayNegative | ElapsedDelay가 NaN·무한 / 음수 | 잘못된 경과 상태 |
+| 45 DelayRemaining | ElapsedDelay < Delay | GPU와 CPU 복원에 남은 지연 표현이 없음 |
+| 46 DelayElapsedMismatch | ElapsedDelay와 Delay 비트 불일치 | 경과가 지연을 초과하거나 부호 비트까지 다른 비정상 상태 제외 |
+| 47 Loops / 48 CompletedLoops | Loops != 1 / CompletedLoops != 0 | 단일 루프만 지원 |
+| 50 Inverted / 51 IndependentUpdate / 52 From | isInverted / isIndependentUpdate / isFrom | 시간·곡선 계약 다름 |
+| 53 Blendable / 54 SpeedBased / 55 Sequenced | isBlendable / isSpeedBased / isSequenced | 합성·속도·시퀀스 의미 미지원 |
+| 60 UpdateType / 61 LoopType | Normal 아님 / Restart 아님 | 갱신·루프 계약 다름 |
+| 62 DelayIncomplete | `!delayComplete` | 정확히 지연 끝에 도달해도 DOTween이 아직 시작하지 않았을 수 있음 |
+| 63 AutoKill / 64 SequenceParent / 65 SpecialStartup | autoKill=false / 부모 sequence 존재 / specialStartupMode != 0 | 수명·시작 동작 보존 불가 |
+| 66 CustomEase | customEase 존재 | GPU·복원 evaluator에서 같은 함수를 보장 못 함 |
+| 67 OnStart / 68 OnKill / 69 OnPlay / 70 OnPause | 해당 추가 callback 존재 | Kill/교체가 callback 의미를 삭제함 |
+| 71 OnRewind / 72 OnStepComplete / 73 OnWaypointChange | 해당 추가 callback 존재 | 지원하지 않는 callback 의미 |
+| 80 LinksUnavailable / 81 Linked / 82 ManagerUpdating | link 사전 없음 / 해당 tween link 존재 / manager 갱신 중 | 외부 수명·갱신 경계 확인 불가 |
+| 83 PluginType / 84 PluginPatched | 플러그인 실제 형식 다름 / EvaluateAndApply 패치 존재 | 원래 산술·setter 계약 불명 |
+| 85 DespawnPatched / 86 KillPatched | Despawn / 외부 소유자 Kill 패치 존재 | 제거 동작 보장 불가 |
+| 90 ScaleType / 91 ScaleSnapping / 92 ScaleAxis | 정확한 Vector2 TweenerCore 형식 아님 / snapping / 예상 X·Y 축 아님 | 지원한 scale 플러그인 옵션과 다름 |
+| 93 ColorType / 94 ColorAlphaOnly | 정확한 Color TweenerCore 형식 아님 / alphaOnly | RGBA 네 슬롯과 alpha 전용 getter/setter 동작을 혼동하지 않음 |
+| 95 FloatType / 96 FloatSnapping | 정확한 float TweenerCore 형식 아님 / snapping | 지원한 float 산술과 다름 |
+| 100 Getter / 101 Setter | 고정 MVID·토큰·단일 delegate·대상 참조·패치 검사 실패 | 알려진 클로저만 읽음 |
+| 102 ScaleOnUpdate / 103 ScaleOnComplete | scale에 예상하지 않은 해당 callback 존재 | 원래 지원 경로는 둘 다 null |
+| 104 OnUpdate / 105 OnComplete / 106 CompleteClosure | 해당 delegate 검증 실패 / 완료 클로저 참조 다름 | callback·대상 계약 불일치 |
+| 110 Decoration / 111 Fx | 루트 dec가 대상과 다름 / Fx가 살아 있지 않음 | 다른 장식이나 죽은 효과의 값을 사용하지 않음 |
+| 120 PositionNonfinite / 121 DurationNonfinite | Pos / Dur 비유한 | 잘못된 시계 |
+| 122 OvershootNonfinite / 123 PeriodNonfinite | Over / Period 비유한 | 잘못된 이징 인수 |
+| 124 StartNonfinite / 125 EndNonfinite / 126 ChangeNonfinite | 해당 성분 비유한 | 잘못된 곡선 |
+| 127 CurrentNonfinite / 128 ExpectedNonfinite / 129 LogicalNonfinite | 클로저 현재값 / Fx 목표값 / 장식 현재값 비유한 | 비교·캡처 불가 |
+| 130 Duration / 131 PositionNegative / 132 PositionAtEnd | Dur <= 0 / Pos < 0 / Pos >= Dur | 유효한 진행 구간 밖 |
+| 133 EaseUnset / 134 EaseUnsupported | Unset / GPU Supported 밖 | 기존 evaluator의 의미 유지 |
+| 135 ScaleUnusedChange | scale 미사용 축 change가 +0f 비트 아님 | 반대 축까지 변하는 곡선은 지원하지 않음 |
+| 140 EndMismatch / 141 ChangeMismatch | Fx 목표와 tween 끝값 비트 불일치 / End-Start와 Change 비트 불일치 | 원래 곡선을 추정·보정하지 않음 |
+| 150 ClosureValueMismatch / 151 LogicalValueMismatch | 클로저 / 장식 현재값이 원래 곡선 예상값과 비트 불일치 | 기존 현재값 일치 검사 그대로 유지 |
+| 160 QuartzOptimizer / 161 ForeignSetter / 162 Version / 163 UpdatePatched | 해당 호환 모드 / 외부 setter / DOTween 버전 다름 / 외부 Update 패치 | 확인한 원본 동작만 채택 |
+
+### 안전하게 푼 조건: 완료된 지연만 허용
+
+기존 `Delay()!=0 || ElapsedDelay()!=0`는 **지연이 과거에 끝난 진행 tween**까지 거절했다. 이제 둘 다 유한·0 이상이고 두 값의 비트가 같으며 `delayComplete=true`인 경우만 허용한다. 초기화·재생·정방향·1회 루프 및 모든 기존 값·콜백 검사는 그대로 통과해야 한다. 분류 시 Delay/ElapsedDelay도 저장하고 캡처·commit 직전에 비트로 재확인한다. 남은 시간으로 duration을 바꾸거나 elapsed에 지연을 더하지 않는다.
+
+현재 게임 DLL 해시는 기존 메모와 같은 `F692210F9A342F7EED4BE40AAD463286AB40BF046599959823942EA02F4CA3FF`로 다시 확인했다. 설치된 DOTween DLL을 읽어 다음을 확인했다(게임 실행 없음).
+
+- `TweenManager.Update`: `!delayComplete`일 때만 UpdateDelay를 실행하며, 이후 position에 dt를 더한다.
+- `Tweener.DoUpdateDelay`: elapsed > delay일 때 elapsedDelay=delay, delayComplete=true로 만들고 초과 시간만 반환한다. **elapsed == delay는 아직 완료가 아니다.** 따라서 두 float가 같다는 이유만으로 62번을 풀지 않았다.
+- `TweenManager.Goto`: delayComplete=true, elapsedDelay=delay를 설정한다. 완료된 지연은 이 경로에서도 생길 수 있다.
+- `GpuLiveSource`와 `DecoAnim.GpuResumeSpec`은 Dur/Pos/Ease/Over/Period를 보존하지만 지연·지연 경과 필드가 없다. GPU 갱신은 `Pos + dt`이며 Over/Period는 이징 인수다. 남은 지연을 Over/Period나 음수 Pos로 대신 표현하지 않는다.
+
+읽은 코드: `out/adopt-leftover/TweenManager.cs`, `Tweener.cs`, `TweenExtensions.cs`, `ffxMoveDecorationsPlus.cs`. 저장소 측 근거는 `GpuDecoExport.cs`의 GpuLiveSource/AllocateGpuLiveSource/시계 갱신, `GpuDecoGpu.cs`의 Supported, `GpuDecoResume.cs`, `DecoAnim.GpuResume.cs`다.
+
+### 남은 1~5개에 대한 추정과 한계
+
+현재 `ffxMoveDecorationsPlus.StartEffect`의 Color는 일반 `DOTween.To(Color)`이고 alphaOnly 옵션을 설정하지 않는다. Opacity는 별도 float 채널이다. 이 경로 자체에는 SetDelay/SetLoops/SetRelative도 없으며 `Done()`은 양수 duration을 그대로 반환한다. 따라서 **완료된 지연 허용이 기존 1~5개를 해결했다고 주장할 근거는 없다.** 외부 설정·패치 여부는 실제 객체 검사가 결정한다.
+
+코드에서 가능한 후보는 새 tween이 첫 native Update 전이라 startupDone=false인 경우(35), 개별 pause 또는 기본 autoPlay 변경으로 IsPlaying=false인 경우(36), 실제 형식·옵션 차이(93/94/95/96), 식별자(31~34)다. 특히 중간 시작 직후 일부 이벤트만 생성된 경계라면 35가 가능하다. 새 로그로 확인해야 하며 실제 원인은 미확정이다. 미초기화 tween은 DOTween Startup이 getter에서 시작값을 정하는 시점이 아직 오지 않았으므로 임의 초기화하거나 0으로 추정하지 않았다. 정지 tween은 GPU의 공통 전진 시계에 그대로 실을 수 없다. alphaOnly와 미지원 easing도 같은 이유로 유지한다. easing은 기존 NR(14)이므로 **기존 NR(3)으로 보고된 건의 직접 원인은 아니다.**
+
+장식 전체 채택, 기본 꺼짐, InCatchUp 제한, commit 전 현재값 비트 비교, 원래 start/change/Pos/Dur 보존과 Kill(false) 순서는 유지한다. 정렬 tie 예외를 무시하거나 강제로 장식을 소유하지 않는다. **거절 0개·픽셀·복원·FPS는 이번 작업에서 확인하지 않았다.** 다음 허용된 게임 측정에서 분류 로그의 코드/채널로 판단해야 한다.
+
+### 검증
+
+| 검사 | 결과 | 로그 |
+|---|---|---|
+| `dotnet build -c Release -p:Edition=Player -p:AutoTestBuild=1` | 성공, 오류 0, 경고 46 | `out/adopt-leftover/build-playerauto.txt` |
+| `dotnet build -c Release -p:Edition=Player` | 성공, 오류 0, 경고 46 | `out/adopt-leftover/build-player.txt` |
+| `py -3 out/adopt-leftover/check-contract.py` | 127개 오프라인 검사 통과 | `out/adopt-leftover/contract-check.txt` |
+| `git diff --check` | 통과 | 공백 오류 없음 |
+
+오프라인 검사는 실제 소스에서 enum·NativeTweenContract·필드 reader·거절 집계 메서드를 추출해 현재 DOTween DLL과 함께 실행한다. Unity 객체 생성·DOTween 초기화·게임 업데이트 없이 DOTween manager에 등록하지 않은 메모리 객체에 상태를 설정한다. 완료된 양수 지연, 남은 지연, 지연 끝이지만 미완료인 경계, NaN/음수·경과 불일치, 미초기화·개별 정지·루프·갱신 옵션·callback 거절, Color 완료 지연, 코드/조합/실패 채널 집계와 초기화, 번호 중복·범위를 검사한다. Harmony 패치 검사는 fixture에서 대역을 사용하므로 호환성·실게임·GPU·미래 프레임 일치 시험은 아니다. Delay/ElapsedDelay 스냅샷 및 기존 비트 검사 유지도 정적으로 확인한다.
+
+게임 실행·DLL 설치·커밋은 하지 않았다. 기존 작업 트리 변경은 유지했다.

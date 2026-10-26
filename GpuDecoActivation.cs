@@ -17,12 +17,15 @@ namespace StutterFix
         static int gpuLiveCpuFallbackCount;
         static bool GpuCpuFallback(int master)=>(uint)master<(uint)gpuLiveCpuFallback.Length && gpuLiveCpuFallback[master];
         static void ClearGpuActivationUndo(){gpuActivationRecords.Clear();gpuNativeAdoptions.Clear();gpuNativeSourceIds.Clear();ClearNativeAdoptionActivation();}
+        internal sealed class GpuActivationDeferredException : Exception {}
+        internal static int gpuActivationDeferred;
         static void ClassifyGpuActivationOwnership()
         {
             ClearGpuActivationUndo();
             BeginNativeAdoptionActivation();
             unchecked { GpuLateOwnershipEpoch++; }
             TightLate.ClearGpuList();
+            nativeUninitSeen=0;
             gpuLiveCpuFallback=new bool[gpuLiveOwnedIndices.Length];gpuLiveCpuFallbackCount=0;
             gpuLiveOwnedSet.Clear();gpuLiveOwnedVisuals.Clear();
 #if AUTOTEST
@@ -62,8 +65,17 @@ namespace StutterFix
                 else if(d){gpuLiveOwnedSet.Add(d);gpuLiveOwnedVisuals.Add(d);}
             }
 #if AUTOTEST
+            // Publish rejection details before renderer/sort validation can roll
+            // activation back (including an ambiguous material tie).
+            if(DrawCollapsePolicy.AdoptNativeTweens)Main.Entry.Logger.Log("[GPU 장식] 이어받기 분류: 후보 "+gpuNativeAdoptions.Count
+                +"개(장식), 채널 "+NativeAdoptionChannelCount()+"개, 거절 "+NativeRejectSummary());
             if(gpuLiveCpuFallbackCount>0 || gpuNativeAdoptions.Count>0)Main.Entry.Logger.Log("[GPU 장식] CPU 처리 이유: 죽은 객체 "+whyDead+" | 네이티브 트윈 진행 중 "+whyNative+" (종류 "+string.Join(", ",whyKeys.OrderByDescending(x=>x.Value).Take(8).Select(x=>x.Key+"="+x.Value))+") | 이어받기 "+gpuNativeAdoptions.Count+" | 기록 키 어긋남 "+whyMismatch+" | 길이 0 "+whyDur0+" | 지원 안 하는 이징 "+whyEase+" ("+string.Join(", ",whyEases.OrderByDescending(x=>x.Value).Take(6).Select(x=>"ease"+x.Key+"="+x.Value))+") | 따라잡기 중 "+EffectBudget.InCatchUp+" 곡 위치 "+(scrConductor.instance?scrConductor.instance.songposition_minusi.ToString("F1"):"-")+" | FastMove 원래 코드로 보낸 이유별 "+FastMove.WhySummary());
 #endif
+            if(DrawCollapsePolicy.AdoptNativeTweens && nativeUninitSeen>0)
+            {
+                // 같은 프레임에 막 만들어진 트윈이 있다: 다음 프레임에 다시 시도한다(최대 30프레임).
+                if(gpuActivationDeferred++<30){Array.Clear(gpuLiveCpuFallback,0,gpuLiveCpuFallback.Length);gpuLiveCpuFallbackCount=0;throw new GpuActivationDeferredException();}
+            }
             if(gpuLiveCpuFallbackCount>0)foreach(var slice in gpuLiveSlices)
                 RequireLive(slice.Independent,"native tween CPU fallback requires independent renderers");
             RequireLive(gpuLiveOwnedSet.Count>0,"no safe GPU targets at this activation boundary");

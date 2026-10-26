@@ -2327,6 +2327,11 @@ namespace StutterFix
                 GpuLog("copy_mask bypass="+gpuCopyMaskBypass+" active_chunks="+chunks+" total_chunks="
                     +((gpuLiveOwnedRenderers.Length+511)/512)+" renderer_order_changed=False");return true;
             }
+            if(command=="light midreuse on" || command=="light midreuse off")
+            {
+                DrawCollapsePolicy.MidReusePlan=command.EndsWith(" on",StringComparison.Ordinal);
+                GpuLog("light midreuse="+DrawCollapsePolicy.MidReusePlan);return true;
+            }
             if(command=="light prestart on" || command=="light prestart off")
             {
                 DrawCollapsePolicy.PreStartActivate=command.EndsWith(" on",StringComparison.Ordinal);
