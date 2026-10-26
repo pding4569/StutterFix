@@ -111,7 +111,7 @@ namespace StutterFix
                     prefix: new HarmonyMethod(typeof(HitSoundBatch), nameof(BeforeUpdate)) { priority = Priority.First });
                 PatchStop(typeof(AudioManager), "StopAllSounds", nameof(StopPrefix));
                 PatchStop(typeof(scrConductor), "Rewind", nameof(StopPrefix));
-                foreach (var name in new[] { "Restart", "FailAction", "QuitToMainMenu" })
+                foreach (var name in new[] { "Restart", "OnPlayerDied", "FailAction", "Fail2Action", "QuitToMainMenu" })
                     PatchStop(typeof(scrController), name, nameof(StopPrefix));
                 // 끝까지 깬 곡은 마지막 소리가 이어서 나야 하므로 남은 예약을 게임에 돌려준다.
                 PatchStop(typeof(scrController), "OnLandOnPortal", nameof(PortalPrefix));
@@ -355,6 +355,10 @@ namespace StutterFix
             if (s == null || s.Conductor != __instance || !s.Taken) return;
             try
             {
+                // 죽음·실패·완주 상태이거나 게임 월드가 아니면 남은 예약을 놓고 게임에 돌려주지 않는다(FailAction 이 Update 안 UpdateInput 에서 불리는 틈 보호).
+                var runCtrl = ADOBase.controller;
+                if (!__instance.isGameWorld || (runCtrl != null && (runCtrl.state == States.Fail || runCtrl.state == States.Fail2)))
+                { Release("run ended", true, false, false); return; }
                 if (!enabled || Data(__instance) != s.Original || s.Original.Count != s.Times.Length || __instance.song == null || __instance.song.pitch != s.Pitch ||
                     __instance.dspTimeSong != s.SongClock || __instance.hitSoundVolume != s.HitVolume || !GCS.d_hitsounds ||
                     (__instance.hitSoundGroup != null ? __instance.hitSoundGroup : ADOBase.audioManager.fallbackMixerGroup) != s.Group ||
@@ -415,7 +419,8 @@ namespace StutterFix
             try
             {
                 foreach (var g in s.Formats)
-                    if (g.Sources != null) foreach (var source in g.Sources) if (source != null) source.Stop();
+                    if (g.Sources != null) foreach (var source in g.Sources) if (source != null) { source.Stop(); source.clip = null; source.enabled = false; } // Destroy 는 프레임 끝이라 예약 채널을 바로 끊는다
+                if (s.Root != null) s.Root.SetActive(false);
                 if (restore && s.Taken && s.Conductor != null && Data(s.Conductor) == s.Original)
                 {
                 double now = AudioSettings.dspTime;

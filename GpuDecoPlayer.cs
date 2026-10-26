@@ -90,7 +90,16 @@ namespace StutterFix
                 if (UnityEngine.Object.FindObjectsByType<SortingGroup>(FindObjectsInactive.Include, FindObjectsSortMode.None).Any(g => g.isActiveAndEnabled)
                     || UnityEngine.Object.FindObjectsByType<SpriteMask>(FindObjectsInactive.Include, FindObjectsSortMode.None).Any(m => m.enabled && m.gameObject.activeInHierarchy))
                     throw new InvalidOperationException("정렬 그룹 또는 스프라이트 마스크 사용 중");
+#if AUTOTEST
+                long heap0 = GC.GetTotalMemory(false) / 1048576;
+#endif
                 DecoBake.PreparePlayer(__0);
+#if AUTOTEST
+                {
+                    long heap1 = GC.GetTotalMemory(false) / 1048576;
+                    Main.Entry.Logger.Log("[GPU 장식] 준비로 늘어난 관리 힙: " + heap0 + "MB -> " + heap1 + "MB (+" + (heap1 - heap0) + "MB)");
+                }
+#endif
                 lifetime.Ready();
 #if AUTOTEST
                 Main.Entry.Logger.Log("[GPU 장식] 준비 완료 (막힘 " + lifetime.Blocked + ", 준비됨 " + lifetime.Prepared + ")");
