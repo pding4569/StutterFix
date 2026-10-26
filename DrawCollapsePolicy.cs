@@ -7,6 +7,7 @@ namespace StutterFix
     // Pure painter-order and memory arithmetic shared by preparation and checks.
     internal static class DrawCollapsePolicy
     {
+        internal static bool AdoptNativeTweens=false;
         // Unity's loaded shader caps texture parameters at 64 on this D3D11
         // device, even though the native API accepts 128 SRVs.
         internal const int ArrayBindings=4;

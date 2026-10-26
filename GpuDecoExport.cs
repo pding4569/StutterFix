@@ -1408,6 +1408,8 @@ namespace StutterFix
             Array.Clear(gpuMasterRecOrder,0,gpuMasterRecOrder.Length);Array.Clear(gpuMasterEngineOrder,0,gpuMasterEngineOrder.Length);
             Array.Clear(gpuMasterOrderObserved,0,gpuMasterOrderObserved.Length);
             var recSourceMap = new Dictionary<long, GpuLiveSource>();
+            bool captureNatives=gpuNativeAdoptions.Count>0;
+            if(captureNatives)PrepareNativeAdoptionSources();
             int masterCount = gpuLiveOwnedIndices.Length;
             for (int m = 0; m < masterCount; m++)
             {
@@ -1437,6 +1439,12 @@ namespace StutterFix
 
                 if(GpuCpuFallback(m))continue;
 
+                NativeAdoptSpec nativeBundle=null;
+                if(captureNatives && gpuNativeAdoptions.TryGetValue(m,out nativeBundle))
+                {
+                    CaptureNativeAdoption(nativeBundle); // Validate/capture the complete decoration atomically.
+                    GpuRecoveryFault("activation_after_record");
+                }
                 if (d.eventTweens != null && d.eventTweens.Count > 0)
                 {
                     foreach (var pair in d.eventTweens)
@@ -1445,7 +1453,11 @@ namespace StutterFix
                         var r = tween?.id as DecoAnim.Rec;
                         if (r == null)
                         {
-                            if (tween != null && tween.active)throw new NotSupportedException("native tween appeared during GPU activation");
+                            if (tween != null && tween.active)
+                            {
+                                if(nativeBundle==null || !NativeBundleContains(nativeBundle,pair.Key,tween))
+                                    throw new NotSupportedException("native tween appeared during GPU activation");
+                            }
                             continue;
                         }
                         if (!r.Running || !ReferenceEquals(r.D, d) || r.Dur <= 0f || !GpuDecoGpu.Supported((int)r.E))
@@ -1524,6 +1536,8 @@ namespace StutterFix
             InvisibleSkip.ApplyAllLazy();
             AdvanceClock();ActMark("지연적용·시계");
             RequireLive(FindGpuLiveSlice(BakeTime)>=0,"time outside prepared scope; originals retained");
+            try
+            {
             ClassifyGpuActivationOwnership();ActMark("소유분류");
             ClassifyPacketTargetGuards();ActMark("패킷분류");
             for (int i = 0; i < gpuLiveOwnedRenderers.Length; i++)
@@ -1533,6 +1547,8 @@ namespace StutterFix
                 var d=baselineObjects[gpuLiveOwnedIndices[i]];
                 gpuLiveExternalOff[i]=gpuLiveOriginalOff[i] && !(InvisibleSkip.Enabled && d && InvisibleSkip.IsHidden(d));
             }
+            }
+            catch {ClearGpuActivationUndo();LogNativeAdoptionTiming();throw;}
             bool activationCommitted=false;
             try
             {
@@ -1567,7 +1583,13 @@ namespace StutterFix
             gpuLiveLastDispatchFrame = Time.frameCount;
             gpuLiveTransitionMs = sw.Elapsed.TotalMilliseconds;
             var slice = gpuLiveCurrentSlice >= 0 ? gpuLiveSlices[gpuLiveCurrentSlice] : null;
-            CommitGpuActivationUndo();activationCommitted=true;
+            long nativeCommitStart=Stopwatch.GetTimestamp();
+            try
+            {
+                CommitGpuActivationUndo();activationCommitted=true;
+                CommitNativeAdoptions();
+            }
+            finally {nativeCommitTicks+=Stopwatch.GetTimestamp()-nativeCommitStart;}
             GpuLog("on=True scope="+(gpuScope.WholeSong?"song_union":"live_G2")+" owned=" + GpuLiveOwned
                 + " active_sources=" + gpuActiveSourceSlots.Count
                 + " slice=" + gpuLiveCurrentSlice
@@ -1587,6 +1609,7 @@ namespace StutterFix
                 }
                 if(!GpuRecoveryTesting)throw new InvalidOperationException("GPU activation refused; CPU rollback attempted",ex);
             }
+            finally {ClearGpuActivationUndo();LogNativeAdoptionTiming();}
         }
 
         static void LogGpuLiveCost(string scope)
@@ -2143,6 +2166,14 @@ namespace StutterFix
                 GpuLog("single_submit="+GpuDecoCopy.SingleSubmission+" executions="+GpuDecoCopy.SingleExecutions
                     +" fallbacks="+GpuDecoCopy.SingleFallbacks+" owned="+GpuLiveOwned);return true;
             }
+#if AUTOTEST
+            if(command=="light adoptnative on" || command=="light adoptnative off")
+            {
+                SetNativeAdoption(command.EndsWith(" on",StringComparison.Ordinal));
+                GpuLog("light adoptnative="+DrawCollapsePolicy.AdoptNativeTweens
+                    +" default=False channels=PositionX,PositionY,Rotation,ScaleX,ScaleY,Color atomic_decoration=True");return true;
+            }
+#endif
             if (command.StartsWith("light skip ",StringComparison.Ordinal))
             {
                 // 진단 전용: 메인 스레드 큰 단계를 통째로 건너뛰어 상한을 잰다. light skip <이름> on|off
