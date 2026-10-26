@@ -486,6 +486,23 @@ namespace StutterFix
             if((before>0)!=(gpuSpanVisible[k]>0))MarkSpanDirty(k);
         }
         // 통합 디스패치 직전에 한 번: 바뀐 구간만 켜고 끈다.
+        static Material[] diagShareOrig;
+        // 진단 전용: 모든 구간 렌더러가 머티리얼 하나를 공유하게 해 머티리얼 교체 비용의 상한을 잰다(화면은 틀려진다).
+        internal static void DiagShareMaterial(bool on)
+        {
+            if(on)
+            {
+                if(diagShareOrig!=null || gpuCollapseSpans.Count==0)return;
+                diagShareOrig=new Material[gpuCollapseSpans.Count];var shared=gpuCollapseSpans[0].Renderer.sharedMaterial;
+                for(int k=0;k<gpuCollapseSpans.Count;k++){var r=gpuCollapseSpans[k].Renderer;diagShareOrig[k]=r.sharedMaterial;r.sharedMaterial=shared;}
+            }
+            else if(diagShareOrig!=null)
+            {
+                for(int k=0;k<gpuCollapseSpans.Count && k<diagShareOrig.Length;k++){var r=gpuCollapseSpans[k].Renderer;if(r)r.sharedMaterial=diagShareOrig[k];}
+                diagShareOrig=null;
+            }
+            Main.Entry.Logger.Log("[gpudeco] 구간 머티리얼 공유 "+(on?"켬":"끔"));
+        }
         internal static void MarkAllSpansDirty(){if(gpuSpanOfItem==null)return;for(int k=0;k<gpuCollapseSpans.Count;k++)MarkSpanDirty(k);}
         static void ApplySpanCulling()
         {
@@ -1279,7 +1296,7 @@ namespace StutterFix
                 Vector4 clipM=Vector4.zero;
                 if(DrawCollapsePolicy.ClipOffscreen)
                 {
-                    var co=camm.camobj;float halfH=co.orthographicSize*1.05f+.5f,halfW=halfH*co.aspect;float rad=ctm.eulerAngles.z*Mathf.Deg2Rad;
+                    var co=camm.camobj;float halfH=(co.orthographicSize*1.05f+.5f)*DrawCollapsePolicy.ClipScale,halfW=halfH*co.aspect;float rad=ctm.eulerAngles.z*Mathf.Deg2Rad;
                     clipM=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
                 }
                 long ex0=Stopwatch.GetTimestamp();

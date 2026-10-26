@@ -92,6 +92,8 @@ namespace StutterFix
                 for(int q=0;q<gpuCollapseAllCount*4 && sb.Length<900;q+=Math.Max(1,gpuCollapseAllCount*4/12)){sb.Append(" v").Append(q).Append("=(");for(int c=0;c<8;c++)sb.Append(all[q*15+c].ToString("G4",Inv)).Append(c<7?",":"");sb.Append(')');}
                 GpuLog("DRAWCOLLAPSE_DUMP slots="+gpuCollapseAllCount+" nonzero_vertices="+visible+" spans="+gpuCollapseSpans.Count+" sample:"+sb);return true;
             }
+            if(args.Length==2 && args[0]=="clipscale"){DrawCollapsePolicy.ClipScale=float.Parse(args[1],System.Globalization.CultureInfo.InvariantCulture);GpuLog("DRAWCOLLAPSE_CLIPSCALE "+DrawCollapsePolicy.ClipScale);return true;}
+            if(args.Length==2 && args[0]=="sharemat"){DiagShareMaterial(args[1]=="on");return true;}
             if(args.Length==2 && args[0]=="hideproxy")
             {
                 DrawCollapsePolicy.HideProxies=args[1]=="on";

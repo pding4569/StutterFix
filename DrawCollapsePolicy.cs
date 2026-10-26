@@ -88,6 +88,8 @@ namespace StutterFix
         internal static bool CullIdleSpans=true;
         // 진단 전용: 대표 렌더러를 숨겨 그리기의 GPU 몫을 잰다(화면이 틀려진다).
         internal static bool HideProxies=false;
+        // 진단 전용: 화면 밖 걸러내기 범위를 이 배율로 줄인다(0.0001 이면 쿼드를 전부 접어 채우기 비용만 뺀다).
+        internal static float ClipScale=1f;
         // 화면 밖에 있는 쿼드는 컴퓨트에서 면적 0 으로 만든다(픽셀 변화 없음).
         // 모든 구간의 정점을 큰 버퍼 하나에 컴퓨트 한 번으로 쓰고, 대표 렌더러는 정점 셰이더에서 그 버퍼를 읽는다(구간마다 디스패치 80번 제거).
         internal static bool GlobalVerts=true;
