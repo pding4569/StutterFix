@@ -12,7 +12,8 @@ namespace StutterFix
     {
         internal static bool UseLauncher { get { return Main.Config != null && Main.Config.UiLauncher; } }
 
-        private static Texture2D tWordmark, tEmblem;
+        private static Texture2D tWordmark, tEmblem, tFeather;
+        private float launchPageT = 1f; private int launchPageLast = -1;
         private static bool launchTexTried;
         private static GUIStyle sLaunchBox;
 
@@ -53,7 +54,11 @@ namespace StutterFix
                 pPhase[i] = (float)r.NextDouble() * 6.283f;
                 pAlpha[i] = 0.10f + (float)r.NextDouble() * 0.30f;
             }
-            sLaunchBox = new GUIStyle(GUIStyle.none);   // 박스 배경 없음: 테두리는 직접 그린다
+            sLaunchBox = new GUIStyle(GUIStyle.none);
+            // 가로로 가운데 1, 양 끝 0 으로 부드럽게 줄어드는 띠
+            tFeather = new Texture2D(64, 1, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp, hideFlags = HideFlags.HideAndDontSave };
+            for (int i = 0; i < 64; i++) { float x = i / 63f; float a = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(Mathf.Min(x, 1f - x) / 0.26f)); tFeather.SetPixel(i, 0, new Color(1f, 1f, 1f, a)); }
+            tFeather.Apply(false);   // 박스 배경 없음: 테두리는 직접 그린다
         }
 
         private static float Lerp(float a, float b, float t) { return a + (b - a) * t; }
@@ -91,8 +96,15 @@ namespace StutterFix
             // ── 배경: 거의 검게, 입자
             if (repaint)
             {
-                GUI.color = new Color(0.02f, 0.021f, 0.026f, 0.965f * e);
+                GUI.color = new Color(0.02f, 0.021f, 0.026f, 0.78f * e);
                 GUI.DrawTexture(full, tWhite);
+                // 내용이 놓이는 가운데 열 뒤에만 더 어둡고 가장자리가 부드러운 띠(글자가 게임 화면과 섞여 안 읽히는 것을 막는다)
+                if (tFeather != null && pe > 0.001f)
+                {
+                    float cw = Mathf.Min(1180f, sw - 40f);
+                    GUI.color = new Color(0.02f, 0.021f, 0.026f, 0.975f * e * pe);
+                    GUI.DrawTexture(new Rect((sw - cw) / 2f, 0, cw, sh), tFeather);
+                }
                 int n = Hitch.Playing ? 24 : ParticleMax;   // 곡 중에는 줄인다
                 float spd = Hitch.Playing ? 0.5f : 1f;
                 for (int i = 0; i < n; i++)
@@ -169,14 +181,18 @@ namespace StutterFix
             Rect box = Rect.zero;
             if (panelT > 0f)
             {
-                float topPad = Mathf.Max(96f, sh * 0.12f);
-                float bw = Mathf.Min(860f, sw - 120f);
-                float bh = Mathf.Min(620f, dockY - 48f - topPad);
-                box = new Rect((sw - bw) / 2f, topPad + (1f - pe) * 18f, bw, Mathf.Max(260f, bh));
+                // 페이지가 바뀌면(아이콘을 다른 것으로 눌렀을 때) 내용이 아래에서 떠오르는 애니메이션을 다시 시작한다
+                if (page != launchPageLast) { launchPageLast = page; launchPageT = pe >= 0.999f ? 0f : 1f; }
+                if (repaint) launchPageT = Mathf.MoveTowards(launchPageT, 1f, Time.unscaledDeltaTime / 0.34f);
+                float pg = EaseOut(launchPageT);
+                float topPad = Mathf.Max(84f, sh * 0.10f);
+                float bw = Mathf.Min(900f, sw - 120f);
+                float bh = Mathf.Min(680f, dockY - 56f - topPad);
+                float rise = (1f - pe * pg) * 26f;   // 열릴 때와 바뀔 때 아래에서 올라온다
+                box = new Rect((sw - bw) / 2f, topPad + rise, bw, Mathf.Max(260f, bh));
                 rect = box;
-                float a = e * pe;
+                float a = e * pe * pg;
                 windowAlpha = a;
-                DrawBoxFrame(box, a);
                 GUI.color = new Color(1f, 1f, 1f, a);
                 GUI.Window(0x5F1A, box, DrawWindow, GUIContent.none, sLaunchBox);
             }
