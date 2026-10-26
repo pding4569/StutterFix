@@ -402,6 +402,30 @@ namespace StutterFix
         // 순간이라 전처럼 치운다. 다른 모드(Quartz 의 부드러운 GC 등)가 이미 치웠으면 쌓인 양이 적어 자연히 건너뛴다.
         internal static int DebtMinMB = 192;
         private static long lastCleanMB = -1;
+        // GPU 장식 준비가 관리 힙에 쓰레기를 1GB 넘게 남기면(맵 연 뒤 첫 준비), 첫 죽음·다시 하기의 정리가 0.8초 멈춘다(힙 2.5GB -> 1.3GB, 766~778ms).
+        // 그 정리를 이미 멈춰 있는 준비(로딩) 끝에서 한 번에 해 둔다: 곡 중·죽은 뒤 끊김 대신 첫 로딩이 그만큼 길어진다.
+        internal static void CleanAfterPrepare(long grownMB)
+        {
+            if (!Enabled || grownMB < 600) return;
+            try
+            {
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                long before = GC.GetTotalMemory(false) / 1048576, prev = before;
+                for (int i = 0; i < 5; i++)
+                {
+                    GC.Collect(); GC.WaitForPendingFinalizers();
+                    long now = GC.GetTotalMemory(false) / 1048576;
+                    if (now > prev - 50) break;
+                    prev = now;
+                }
+                sw.Stop();
+                lastCleanMB = GC.GetTotalMemory(false) / 1048576;
+                ForcedCollects++;
+                ModCost.Add(SettingsWindow.T("메모리 정리 (준비 직후)", "Memory cleanup (after prepare)"), sw.Elapsed.TotalMilliseconds);
+                Main.Entry.Logger.Log(string.Format("[GC] 장식 준비 직후 정리 {0}MB -> {1}MB, {2}ms", before, lastCleanMB, sw.ElapsedMilliseconds));
+            }
+            catch (Exception ex) { Main.Entry.Logger.Error("준비 직후 정리 실패: " + ex.Message); }
+        }
         internal static void NoteClean() { try { lastCleanMB = GC.GetTotalMemory(false) / 1048576; } catch { } }   // 다른 곳에서 한 정리 뒤 기준
         internal static long SkippedCollects;
 

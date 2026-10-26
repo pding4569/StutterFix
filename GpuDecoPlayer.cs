@@ -93,14 +93,19 @@ namespace StutterFix
 #if AUTOTEST
                 long heap0 = GC.GetTotalMemory(false) / 1048576;
 #endif
+                long heapBeforePrep = GC.GetTotalMemory(false) >> 20;
                 DecoBake.PreparePlayer(__0);
 #if AUTOTEST
                 {
                     long heap1 = GC.GetTotalMemory(false) / 1048576;
-                    Main.Entry.Logger.Log("[GPU 장식] 준비로 늘어난 관리 힙: " + heap0 + "MB -> " + heap1 + "MB (+" + (heap1 - heap0) + "MB)");
+                    Main.Entry.Logger.Log("[GPU 장식] 준비로 늘어난 관리 힙: " + heap0 + "MB -> " + heap1 + "MB (+" + (heap1 - heap0) + "MB) | 단계별: " + DecoBake.hpSb);
                 }
 #endif
-                lifetime.Ready();
+                {
+                    long grown = (GC.GetTotalMemory(false) >> 20) - heapBeforePrep;
+                    lifetime.Ready();
+                    GcControl.CleanAfterPrepare(grown);
+                }
 #if AUTOTEST
                 Main.Entry.Logger.Log("[GPU 장식] 준비 완료 (막힘 " + lifetime.Blocked + ", 준비됨 " + lifetime.Prepared + ")");
 #endif
@@ -316,9 +321,18 @@ namespace StutterFix
             for (int i = 0; i < a.Length; i++) if (!ReferenceEquals(a[i], b[i])) return false;
             return true;
         }
+#if AUTOTEST
+        static long hpMark; internal static readonly System.Text.StringBuilder hpSb = new System.Text.StringBuilder();
+        static void HpMark(string n){ long h = GC.GetTotalMemory(false) >> 20; hpSb.Append(n).Append(' ').Append(h - hpMark).Append("MB | "); hpMark = h; }
+#else
+        static void HpMark(string n){}
+#endif
         internal static void PreparePlayer(List<scrFloor> floors)
         {
             long p0 = Stopwatch.GetTimestamp();
+#if AUTOTEST
+            hpSb.Clear(); hpMark = GC.GetTotalMemory(false) >> 20;
+#endif
             // 파괴된 장식(맵을 다시 불러온 경우) 항목은 정리한다. 살아 있는 것은 처음 Setup 기록을 그대로 쓴다.
             int deadCount = 0;
             if (initial.Count > 0) { var dead = initial.Keys.Where(k => !k).ToArray(); deadCount = dead.Length; foreach (var k in dead) initial.Remove(k); }
@@ -340,9 +354,9 @@ namespace StutterFix
             {
                 if (!collector.MoveNext()) collector = null;
             }
-            long p1 = Stopwatch.GetTimestamp();
+            long p1 = Stopwatch.GetTimestamp();HpMark("수집");
             if (job != null) job.GetAwaiter().GetResult();
-            Tick();
+            Tick();HpMark("표 만들기");
             long p2 = Stopwatch.GetTimestamp();
             RequireLive(ready && table != null, status);
             RequireLive(table.Supported >= GpuDecoPlayerPolicy.MinimumOwned, "지원되는 장식이 적음 (64개 미만)");
@@ -354,8 +368,8 @@ namespace StutterFix
                 else { DisposeGpuLive(); ClearGpuImagePlan(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
             }
             if (!reuse && gpuImageCandidate) CompilePlayerImages(); // 재사용이면 남겨 둔 이미지 계획(같은 내용)을 그대로 쓴다
-            long p3 = Stopwatch.GetTimestamp();
-            PrepareGpuLive();   // 재사용이면 준비 결과가 그대로라 바로 돌아온다
+            long p3 = Stopwatch.GetTimestamp();HpMark("이미지계획");
+            PrepareGpuLive();HpMark("GPU준비");   // 재사용이면 준비 결과가 그대로라 바로 돌아온다
             if (!reuse)
             {
                 gpuPreparedHash = PlayerSetupHash();
@@ -378,7 +392,7 @@ namespace StutterFix
                         foreach (var sl in gpuLiveSlices) foreach (var rr in sl.Renderers) if (rr && rr.enabled) rr.enabled = false;
                         RebuildDrawCollapse();
                     }
-                    ValidateDrawCollapse();
+                    HpMark("재구성");ValidateDrawCollapse();HpMark("검증");
                     gpuPlanPreBuilt = true;
                 }
                 catch (Exception e)

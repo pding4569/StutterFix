@@ -819,7 +819,8 @@ namespace StutterFix
         static void PcAdd(ref long acc,long t0){acc+=Stopwatch.GetTimestamp()-t0;}
         static string PcStr(){double f=1000.0/Stopwatch.Frequency;return "[입장 "+(gpuPcA*f).ToString("F0")+" 사유 "+(gpuPcB*f).ToString("F0")+" 스프라이트 "+(gpuPcC*f).ToString("F0")+" 기하 "+(gpuPcD*f).ToString("F0")+" 항목 "+(gpuPcE*f).ToString("F0")+"]";}
         static long gpuPrepMarkT0; static readonly System.Text.StringBuilder gpuPrepMarks=new System.Text.StringBuilder();
-        static void PrepMark(string name){long n=Stopwatch.GetTimestamp();if(gpuPrepMarkT!=0)gpuPrepMarks.Append(name).Append(' ').Append(((n-gpuPrepMarkT)*1000.0/Stopwatch.Frequency).ToString("F0")).Append(", ");gpuPrepMarkT=n;}
+        static long gpuPrepHeap;
+        static void PrepMark(string name){long n=Stopwatch.GetTimestamp();long hp=GC.GetTotalMemory(false)>>20;if(gpuPrepMarkT!=0)gpuPrepMarks.Append(name).Append(' ').Append(((n-gpuPrepMarkT)*1000.0/Stopwatch.Frequency).ToString("F0")).Append("ms/").Append(hp-gpuPrepHeap).Append("MB, ");gpuPrepMarkT=Stopwatch.GetTimestamp();gpuPrepHeap=hp;}
         static void PrepareGpuLive()
         {
             CheckGpuPrepareBudget();
