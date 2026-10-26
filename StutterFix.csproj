@@ -113,6 +113,7 @@
     <Compile Include="GpuDecoImageGeometryFixture.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoImageTextureFixture.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoActivation.cs" />
+    <Compile Include="GpuDecoNativeAdopt.cs" />
     <Compile Include="GpuLateListCache.cs" />
     <Compile Include="HiddenDecoSynergy.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DecoAnim.Hidden.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

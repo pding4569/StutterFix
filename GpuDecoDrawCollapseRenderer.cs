@@ -75,7 +75,7 @@ namespace StutterFix
             HideDrawCollapse();
             DestroyBarrierClones();
             gpuSpanOfItem=null;gpuSpanVisible=null;gpuItemHiddenState=null;gpuSpanDirty.Clear();gpuSpanDirtyMark=null;
-            gpuBarrierRowById=null;gpuBarrierWatch.Clear();gpuBarrierChecked.Clear();gpuWatchRows.Clear();gpuWatchSig=null;gpuSpansByBucket=null;gpuWatchActive=null;gpuWatchBucket=null;gpuWatchMat=null;gpuBucketMembers.Clear();gpuBucketDirty.Clear();gpuSpanCausers.Clear();gpuBarrierCauses.Clear();gpuDynExcludedItems.Clear();gpuSpanExcluded=null;gpuCollapseMapCpu=null;gpuCollapseSlotOfItem=null;gpuCollapseIncludedSaved=null;gpuCollapseFallbackSaved=null;
+            gpuBarrierRowById=null;gpuBarrierWatch.Clear();gpuBarrierChecked.Clear();gpuWatchRows.Clear();gpuWatchSig=null;gpuSpansByBucket=null;gpuWatchActive=null;gpuWatchBucket=null;gpuWatchMat=null;gpuBucketMembers.Clear();gpuBucketDirty.Clear();gpuSpanCausers.Clear();gpuBarrierCauses.Clear();gpuDynExcludedItems.Clear();gpuDynZero=null;gpuSpanExcluded=null;gpuCollapseMapCpu=null;gpuCollapseSlotOfItem=null;gpuCollapseIncludedSaved=null;gpuCollapseFallbackSaved=null;
             foreach(var s in gpuCollapseSpans)s.Dispose();gpuCollapseSpans.Clear();
             foreach(var sm in gpuCollapseSharedMats.Values)if(sm)UnityEngine.Object.Destroy(sm);gpuCollapseSharedMats.Clear();
             gpuCollapseAllVerts?.Dispose();gpuCollapseAllVerts=null;gpuCollapseAllMap?.Dispose();gpuCollapseAllMap=null;gpuCollapseAllCount=0;
@@ -538,7 +538,7 @@ namespace StutterFix
             if(gpuCollapseIncludedSaved!=null && gpuCollapseIncluded!=null && gpuCollapseIncluded.Length==gpuCollapseIncludedSaved.Length)Array.Copy(gpuCollapseIncludedSaved,gpuCollapseIncluded,gpuCollapseIncluded.Length);
             if(gpuCollapseFallbackSaved!=null && gpuCollapseTextureFallback!=null && gpuCollapseTextureFallback.Length==gpuCollapseFallbackSaved.Length)
             {Array.Copy(gpuCollapseFallbackSaved,gpuCollapseTextureFallback,gpuCollapseTextureFallback.Length);gpuCollapseTextureFallbackCount=gpuCollapseFallbackCountSaved;}
-            gpuDynExcludedItems.Clear();gpuBarrierWatch.Clear();gpuBarrierChecked.Clear();gpuDynExcludedSpans=0;gpuSpanCausers.Clear();gpuBarrierCauses.Clear();gpuBucketMembers.Clear();gpuBucketDirty.Clear();
+            gpuDynExcludedItems.Clear();gpuDynZero=null;gpuBarrierWatch.Clear();gpuBarrierChecked.Clear();gpuDynExcludedSpans=0;gpuSpanCausers.Clear();gpuBarrierCauses.Clear();gpuBucketMembers.Clear();gpuBucketDirty.Clear();
         }
         static readonly List<GpuLiveRow> gpuWatchRows=new List<GpuLiveRow>();
         static (int,float,int,int)[] gpuWatchSig;
@@ -667,6 +667,25 @@ namespace StutterFix
                 sp.DynState=state;
             }
         }
+        // 독립 렌더러로 돌려진 항목(깊이가 바뀐 장벽과 순서가 어긋난 구간)은 알파가 0 이면 그리지 않는다.
+        // 원래 게임은 안 보이는 장식을 forceRenderingOff 로 건너뛰는데, 이 항목들은 렌더러가 켜진 채 알파 0 으로 화면 크기 그림을 계속 그려 한 구간(약 1초)에 60 FPS 로 떨어졌다.
+        static bool[] gpuDynZero;
+        internal static bool DynExcludedZero(int item)=>gpuDynZero!=null && (uint)item<(uint)gpuDynZero.Length && gpuDynZero[item];
+        static bool DynAlphaZero(int master)
+        {
+            float a=EvalMasterSlotCurrent(master*16+10),b=EvalMasterSlotCurrent(master*16+11);
+            return !(a>0f) || !(b>0f);
+        }
+        static void ExcludedVisibilityTick()
+        {
+            var list=gpuDynExcludedItems;if(list.Count==0 || gpuDynZero==null)return;
+            var slice=gpuLiveSlices[0];
+            for(int i=0;i<list.Count;i++)
+            {
+                int item=list[i];bool z=DynAlphaZero(slice.MasterItems[item]);
+                if(z!=gpuDynZero[item]){gpuDynZero[item]=z;slice.RefreshItem(item);}
+            }
+        }
         static bool[] gpuSpanExcluded;
         static bool gpuSpanExcludedFlag(int k)=>gpuSpanExcluded!=null && (uint)k<(uint)gpuSpanExcluded.Length && gpuSpanExcluded[k];
         static void ExcludeSpanDynamic(int k)
@@ -679,6 +698,8 @@ namespace StutterFix
             {
                 if(!gpuCollapseIncluded[item])continue;
                 gpuCollapseIncluded[item]=false;gpuDynExcludedItems.Add(item);
+                if(gpuDynZero==null || gpuDynZero.Length!=gpuCollapseIncluded.Length)gpuDynZero=new bool[gpuCollapseIncluded.Length];
+                gpuDynZero[item]=DynAlphaZero(slice.MasterItems[item]);
                 if(!gpuCollapseTextureFallback[item]){gpuCollapseTextureFallback[item]=true;gpuCollapseTextureFallbackCount++;}
                 int slot=gpuCollapseSlotOfItem!=null?gpuCollapseSlotOfItem[item]:-1;
                 if(slot>=0){gpuCollapseMapCpu[slot]=uint.MaxValue;mapDirty=true;}
@@ -698,6 +719,7 @@ namespace StutterFix
             {
                 if(gpuCollapseIncludedSaved!=null && !gpuCollapseIncludedSaved[item])continue; // 준비 때부터 통합에서 빠진 항목은 그대로
                 gpuCollapseIncluded[item]=true;gpuDynExcludedItems.Remove(item);
+                if(gpuDynZero!=null && (uint)item<(uint)gpuDynZero.Length)gpuDynZero[item]=false;
                 bool saved=gpuCollapseFallbackSaved!=null && gpuCollapseFallbackSaved[item];
                 if(gpuCollapseTextureFallback[item] && !saved){gpuCollapseTextureFallback[item]=false;gpuCollapseTextureFallbackCount--;}
                 int slot=gpuCollapseSlotOfItem!=null?gpuCollapseSlotOfItem[item]:-1;
@@ -1250,7 +1272,7 @@ namespace StutterFix
         static void CheckDrawCollapseBeforeDispatch(double time)
         {
             if(!gpuCollapseOn)return;
-            if(GpuDecoPlayer.Product)DynamicOrderTick();
+            if(GpuDecoPlayer.Product){DynamicOrderTick();ExcludedVisibilityTick();}
             string reason=gpuCollapsePendingFallback;
             if(reason==null)
             {

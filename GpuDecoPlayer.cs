@@ -106,13 +106,24 @@ namespace StutterFix
             finally { Preparing = false; }
         }
 
+        static AccessTools.FieldRef<scrController, States> stateRef;
+        static States CurrentState(scrController c)
+        {
+            if (stateRef == null) stateRef = AccessTools.FieldRefAccess<scrController, States>("currentState");
+            return stateRef(c);
+        }
         static void BeforeControllerUpdate() => TryStart();
         // 에디터 재생에서는 scrController.Update 앞 후크가 불리지 않아 Tick 에서도 같은 시도를 한다(한 번만 켜진다).
         static void TryStart()
         {
             if (!Product || lifetime.Blocked || !lifetime.Prepared) return;
             var c = ADOBase.controller; var song = scrConductor.instance;
-            if (!c || !song || !song.hasSongStarted || !c.gameworld || c.paused || AudioListener.pause || Time.timeScale <= 0) return;
+            bool preStart = DrawCollapsePolicy.PreStartActivate && c && c.gameworld && !c.paused && !(scnEditor.instance) && CurrentState(c) == States.Start && !EffectBudget.InCatchUp;
+#if AUTOTEST
+            if (c && song && !song.hasSongStarted && lifetime.Prepared && !lifetime.Attempted && (Time.frameCount % 240) == 0)
+                Main.Entry.Logger.Log("[GPU 장식] 시작 전 대기 점검: preStart " + preStart + " gameworld " + c.gameworld + " paused " + c.paused + " 상태 " + CurrentState(c) + " 따라잡기 " + EffectBudget.InCatchUp + " 에디터 " + (bool)scnEditor.instance + " 오디오정지 " + AudioListener.pause + " timeScale " + Time.timeScale);
+#endif
+            if (!c || !song || (!song.hasSongStarted && !preStart) || !c.gameworld || c.paused || AudioListener.pause || Time.timeScale <= 0) return;
             if (scnEditor.instance && !scnEditor.instance.playMode) return;
             // 시작 직후 60프레임(따라잡기)에는 효과가 원본 경로로 도는 순간이 있어, 그때 켜면 곧바로 원본으로 복귀한다(편집기 중간 시작).
             if (EffectBudget.InCatchUp && song.songposition_minusi > 0.5) return;
@@ -120,6 +131,7 @@ namespace StutterFix
             // 첫 타일을 치기 전이면(현재 타일 0) 이 프레임의 켜기 비용은 곡 시작 처리로 본다.
             try { var fl = c.currFloor; if (fl != null && fl.seqID == 0) PerfOverlay.GraceForGpuDecoStart(); } catch { }
             try { DecoBake.StartPlayer(); }
+            catch (DecoBake.GpuActivationDeferredException) { lifetime.Retry(); }
             catch (Exception e)
             {
 #if AUTOTEST
@@ -432,9 +444,11 @@ namespace StutterFix
             gpuCollapsePlannedFallback = 0;
             if (gpuLiveCpuFallbackCount != 0) ExcludeCpuFallbackFromCollapse();
             var songNow = scrConductor.instance;
-            bool midSong = songNow != null && songNow.songposition_minusi > 0.5;
+            bool midSong = songNow != null && songNow.hasSongStarted && songNow.songposition_minusi > 0.5; // 시작 키 전(Start 상태)의 곡 위치는 지난 판의 값이라 믿지 않는다
             // 재사용 라운드·CPU 처리 장식·동적 제외 흔적·곡 중간 시작(장벽 상태가 달라짐)이면 통합을 다시 계획한다
-            bool needRebuild = (gpuReusedRound && !prebuilt) || gpuLiveCpuFallbackCount != 0 || hadDynamic || midSong;
+            bool otherRebuild = (gpuReusedRound && !prebuilt) || gpuLiveCpuFallbackCount != 0 || hadDynamic;
+            bool reuseTry = DrawCollapsePolicy.MidReusePlan && midSong && prebuilt && !otherRebuild;
+            bool needRebuild = otherRebuild || (midSong && !reuseTry);
             if (needRebuild)
             {
                 // StartGpuLive 가 독립 렌더러(GpuDeco.Live run)를 켜 둔 채로 계획하면 그것들이 "켜진 장벽"으로 잡혀 동점 장식이 수천 개로 불어난다
@@ -445,13 +459,31 @@ namespace StutterFix
             ActMark("계획(재구성)");
             {
                 ApplyBarrierClones();ActMark("장벽복제");
-                if (needRebuild || !prebuilt) ValidateDrawCollapse();
-                ActMark(needRebuild || !prebuilt ? "전수검증" : "전수검증(사전 완료)");
+                if (reuseTry)
+                {
+                    try { ValidateDrawCollapse(); ActMark("전수검증(계획 재사용)"); }
+                    catch (Exception e)
+                    {
+                        // 중간 시작 상태가 준비 때 계획과 어긋남: 예전처럼 다시 계획한다.
+                        Main.Entry.Logger.Log("[GPU 장식] 중간 시작: 준비 때 계획이 맞지 않아 다시 계획함 (" + e.GetType().Name + ")");
+                        RestoreBarrierClones();
+                        foreach (var sl in gpuLiveSlices) foreach (var rr in sl.Renderers) if (rr && rr.enabled) rr.enabled = false;
+                        RebuildDrawCollapse();ActMark("계획(재구성)");
+                        ApplyBarrierClones();
+                        ValidateDrawCollapse();ActMark("전수검증");
+                    }
+                }
+                else
+                {
+                    if (needRebuild || !prebuilt) ValidateDrawCollapse();
+                    ActMark(needRebuild || !prebuilt ? "전수검증" : "전수검증(사전 완료)");
+                }
                 gpuCollapseOn = true;
                 foreach (var slice in gpuLiveSlices) slice.RefreshAlpha();ActMark("알파갱신");
                 DispatchGpuLiveSlice(BakeTime);ActMark("통합디스패치");
             }
             ActEnd();
+            gpuActivationDeferred = 0;
             long t2 = Stopwatch.GetTimestamp();
             Main.Entry.Logger.Log("[GPU 장식] 켜짐: 소유 " + GpuLiveOwned + "개, 그리기 통합 " + (gpuCollapseOn ? "켬" : "끔") + ", 이미지 " + (gpuImageCandidate ? "켬" : "끔") + ", CPU 처리 장식 " + gpuLiveCpuFallbackCount + "개"
                 + " | 시작 " + ((t1 - t0) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms, 통합 켜기 " + ((t2 - t1) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms");

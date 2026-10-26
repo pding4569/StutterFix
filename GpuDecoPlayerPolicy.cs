@@ -18,6 +18,7 @@ namespace StutterFix
             if(Blocked || !Prepared || Attempted)return false;
             Attempted=true; return true;
         }
+        internal void Retry() { if(!Blocked)Attempted=false; }
         internal void Fail() { Blocked=true; PreparationAllowed=false; }
     }
     internal static class GpuDecoPlayerPolicy

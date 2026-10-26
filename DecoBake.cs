@@ -185,6 +185,7 @@ namespace StutterFix
             gpuPacketMode=0;
             gpuPrepareWatch = null;
             DisposeGpuLive();
+            if(nativeUpdateHooked)SetNativeAdoption(false);
 #if AUTOTEST || GPUDECO
             gpuImageCandidate=false;gpuImageUploadFault=false;gpuImageMatrix=false;
 #endif
