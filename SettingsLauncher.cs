@@ -63,6 +63,36 @@ namespace StutterFix
 
         private static float Lerp(float a, float b, float t) { return a + (b - a) * t; }
 
+        // ── 어제 시안(v11)의 움직임: 아이콘은 70ms 간격으로 18px 아래에서 0.6초(cubic-bezier .2,.9,.25,1.1: 살짝 넘쳤다 돌아옴), 기능 줄은 40ms 간격으로 6px 아래에서 0.32초
+        private float launchOpenAt, launchPageAt; private int launchLastFrame = -10, launchRow;
+        private static float Bezier(float x1, float y1, float x2, float y2, float x)
+        {
+            if (x <= 0f) return 0f; if (x >= 1f) return 1f;
+            float lo = 0f, hi = 1f, t = x;
+            for (int i = 0; i < 24; i++)
+            {
+                float u = 1f - t;
+                float bx = 3f * u * u * t * x1 + 3f * u * t * t * x2 + t * t * t;
+                if (bx < x) lo = t; else hi = t;
+                t = (lo + hi) * 0.5f;
+            }
+            float v = 1f - t;
+            return 3f * v * v * t * y1 + 3f * v * t * t * y2 + t * t * t;
+        }
+        private float RowIn(int r) { return EaseOut(Mathf.Clamp01((Time.unscaledTime - launchPageAt - (r * 0.04f + 0.08f)) / 0.32f)); }
+
+        // 기능 한 줄: 런처에서는 줄마다 차례로 떠오른다
+        private bool Option(string key, ref bool value, string title, string desc, string tag, bool clickable = true)
+        {
+            if (!UseLauncher) return OptionCore(key, ref value, title, desc, tag, clickable);
+            float ra = RowIn(launchRow++);
+            var om = GUI.matrix; var oc = GUI.color;
+            GUI.matrix = om * Matrix4x4.Translate(new Vector3(0f, (1f - ra) * 6f, 0f));
+            GUI.color = new Color(oc.r, oc.g, oc.b, oc.a * ra);
+            try { return OptionCore(key, ref value, title, desc, tag, clickable); }
+            finally { GUI.matrix = om; GUI.color = oc; }
+        }
+
         // 가는 테두리 전체 + 모서리 괄호
         private void DrawBoxFrame(Rect r, float a)
         {
@@ -85,6 +115,9 @@ namespace StutterFix
         {
             EnsureLauncherAssets();
             float t = Time.unscaledTime;
+            if (Time.frameCount - launchLastFrame > 2) { launchOpenAt = t; launchPageAt = t; launchPageLast = -1; }
+            launchLastFrame = Time.frameCount;
+            float since = t - launchOpenAt;
             var ev = Event.current;
             bool repaint = ev.type == EventType.Repaint;
             var full = new Rect(0, 0, sw, sh);
@@ -101,9 +134,10 @@ namespace StutterFix
                 // 내용이 놓이는 가운데 열 뒤에만 더 어둡고 가장자리가 부드러운 띠(글자가 게임 화면과 섞여 안 읽히는 것을 막는다)
                 if (tFeather != null && pe > 0.001f)
                 {
-                    float cw = Mathf.Min(1180f, sw - 40f);
-                    GUI.color = new Color(0.02f, 0.021f, 0.026f, 0.975f * e * pe);
-                    GUI.DrawTexture(new Rect((sw - cw) / 2f, 0, cw, sh), tFeather);
+                    float lx = Mathf.Max(64f, sw * 0.07f), lw = Mathf.Min(820f, sw * 0.58f);
+                    float cw = lw + 360f, ccx = lx + lw / 2f;
+                    GUI.color = new Color(0.02f, 0.021f, 0.026f, 0.95f * e * pe);
+                    GUI.DrawTexture(new Rect(ccx - cw / 2f, 0, cw, sh), tFeather);
                 }
                 int n = Hitch.Playing ? 24 : ParticleMax;   // 곡 중에는 줄인다
                 float spd = Hitch.Playing ? 0.5f : 1f;
@@ -139,42 +173,41 @@ namespace StutterFix
                 }
             }
 
-            // ── 아래 아이콘 줄: 차례로 올라온다
-            const float IS = 48f, GAP = 12f;
+            // ── 아래 아이콘 줄(v11 시안): 칸 배경 없이 어두운 글리프, 올리면 밝아지고 선택은 밑줄. 70ms 간격으로 0.6초 올라온다
+            const float GL = 26f, HIT = 46f, GAP = 6f;
             int slots = DockOrder.Length;
-            float dockW = slots * IS + (slots - 1) * GAP;
-            float dockX = (sw - dockW) / 2f, dockY = sh - 92f;
-            var dockRect = new Rect(dockX - 16, dockY - 16, dockW + 32, IS + 32);
+            float dockW = slots * HIT + (slots - 1) * GAP;
+            float dockX = (sw - dockW) / 2f, dockY = sh - 88f;
+            var dockRect = new Rect(dockX - 20, dockY - 22, dockW + 40, HIT + 40);
             var names = PageNames();
             var m = ev.mousePosition;
             int hover = -1;
             for (int slot = 0; slot < slots; slot++)
             {
                 int i = DockOrder[slot];
-                float ap = Mathf.Clamp01(e * 1.7f - slot * 0.075f);
-                float ease = EaseOut(ap);
-                var r = new Rect(dockX + slot * (IS + GAP), dockY + (1f - ease) * 30f, IS, IS);
+                float tt = (since - (0.65f + slot * 0.07f)) / 0.6f;
+                float rise = Bezier(0.2f, 0.9f, 0.25f, 1.1f, Mathf.Clamp01(tt));
+                float vis = Mathf.Clamp01(tt * 2.2f) * e;
+                var hit = new Rect(dockX + slot * (HIT + GAP), dockY + (1f - rise) * 18f, HIT, HIT);
                 bool on = panelOpen && page == i;
-                bool hov = r.Contains(m) && ap > 0.6f;
+                bool hov = hit.Contains(m) && tt > 0.5f;
                 if (hov) hover = i;
-                if (repaint)
+                if (repaint && icons != null)
                 {
-                    if (on) Fill(r, new Color(1f, 1f, 1f, 0.16f * ease), 12);
-                    else if (hov) Fill(r, new Color(1f, 1f, 1f, 0.08f * ease), 12);
-                    if (icons != null)
-                    {
-                        GUI.color = new Color(1f, 1f, 1f, ease * (on || hov ? 1f : 0.62f));
-                        GUI.DrawTexture(new Rect(r.x + 11, r.y + 11, IS - 22, IS - 22), icons[i >= 8 ? i + 1 : i]);
-                    }
-                    if (on) Fill(new Rect(r.center.x - 8, r.yMax + 6, 16, 2), new Color(1f, 1f, 1f, 0.8f * ease), 1);
-                    if (i == 0 && Updater.Available) Fill(new Rect(r.xMax - 12, r.y + 4, 7, 7), new Color(1f, 1f, 1f, ease), 4);
+                    float br = on || hov ? 1f : 0.40f;
+                    GUI.color = new Color(0.93f, 0.94f, 0.96f, vis * br);
+                    float sc = hov && Event.current.type == EventType.Repaint && Input.GetMouseButton(0) ? 0.92f : 1f;
+                    float g = GL * sc;
+                    GUI.DrawTexture(new Rect(hit.center.x - g / 2f, hit.center.y - g / 2f, g, g), icons[i >= 8 ? i + 1 : i]);
+                    if (on) Fill(new Rect(hit.center.x - 6, hit.yMax - 4, 12, 2), new Color(0.93f, 0.94f, 0.96f, vis), 1);
+                    if (i == 0 && Updater.Available) Fill(new Rect(hit.center.x + 9, hit.y + 9, 6, 6), new Color(0.93f, 0.94f, 0.96f, vis), 3);
                 }
-                if (ap > 0.6f && GUI.Button(r, GUIContent.none, GUIStyle.none)) TogglePanel(i);
+                if (tt > 0.5f && GUI.Button(hit, GUIContent.none, GUIStyle.none)) { TogglePanel(i); launchPageAt = t; }
             }
             if (repaint && hover >= 0 && panelT <= 0.01f)
             {
-                GUI.color = new Color(1f, 1f, 1f, 0.7f * e);
-                GUI.Label(new Rect(0, dockY - 34, sw, 22), names[hover], sTip);
+                GUI.color = new Color(0.55f, 0.56f, 0.6f, e);
+                GUI.Label(new Rect(0, dockY - 30, sw, 22), names[hover], sTip);
             }
 
             // ── 박스
@@ -182,14 +215,12 @@ namespace StutterFix
             if (panelT > 0f)
             {
                 // 페이지가 바뀌면(아이콘을 다른 것으로 눌렀을 때) 내용이 아래에서 떠오르는 애니메이션을 다시 시작한다
-                if (page != launchPageLast) { launchPageLast = page; launchPageT = pe >= 0.999f ? 0f : 1f; }
-                if (repaint) launchPageT = Mathf.MoveTowards(launchPageT, 1f, Time.unscaledDeltaTime / 0.34f);
-                float pg = EaseOut(launchPageT);
+                if (page != launchPageLast) { if (launchPageLast >= 0) launchPageAt = t; launchPageLast = page; }
+                float pg = EaseOut(Mathf.Clamp01((t - launchPageAt) / 0.22f));   // 틀(제목줄)은 빨리, 항목 줄은 하나씩 따로 떠오른다
                 float topPad = Mathf.Max(84f, sh * 0.10f);
-                float bw = Mathf.Min(900f, sw - 120f);
-                float bh = Mathf.Min(680f, dockY - 56f - topPad);
-                float rise = (1f - pe * pg) * 26f;   // 열릴 때와 바뀔 때 아래에서 올라온다
-                box = new Rect((sw - bw) / 2f, topPad + rise, bw, Mathf.Max(260f, bh));
+                float bw = Mathf.Min(820f, sw * 0.58f);
+                float bh = Mathf.Min(700f, dockY - 56f - topPad);
+                box = new Rect(Mathf.Max(64f, sw * 0.07f), topPad, bw, Mathf.Max(260f, bh));   // 왼쪽에 기능 목록(박스 없음)
                 rect = box;
                 float a = e * pe * pg;
                 windowAlpha = a;

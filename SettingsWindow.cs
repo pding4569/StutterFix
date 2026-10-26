@@ -592,6 +592,7 @@ namespace StutterFix
         // 창 내용은 OnGUI 가 끝난 뒤 따로 그려지므로, 스킨 바꿔 끼우기를 여기서 한다.
         private void DrawWindow(int id)
         {
+            launchRow = 0;
             var oldBar = GUI.skin.verticalScrollbar;
             var oldThumb = GUI.skin.verticalScrollbarThumb;
             var oldColor = GUI.color;
@@ -2622,7 +2623,7 @@ namespace StutterFix
             return r;
         }
 
-        private bool Option(string key, ref bool value, string title, string desc, string tag, bool clickable = true)
+        private bool OptionCore(string key, ref bool value, string title, string desc, string tag, bool clickable = true)
         {
             if (fxOnlyOn && !value) return false;
             var parts = SplitDesc(desc ?? "");
