@@ -1377,6 +1377,7 @@ namespace StutterFix
                 }
 #endif
                 case "ui":
+                    if (arg.StartsWith("launcher")) { Main.Config.UiLauncher = arg.EndsWith(" on"); Log("런처 UI " + Main.Config.UiLauncher); return true; }
                     // ui <페이지 0~9 | gpudeco | GPU 장식 | GPU decorations | dock | close>: 설정 창 열기 (모양 확인용)
                     // ui 1.2 = 플레이 페이지의 셋째 갈래, ui gpudeco.0 = GPU 장식
                     {

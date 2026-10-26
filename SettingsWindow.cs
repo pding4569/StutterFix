@@ -11,7 +11,7 @@ namespace StutterFix
     // (어두운 그라데이션은 "AI 티"가 난다, 반투명 유리는 뒤 게임 화면이 비쳐 읽기 어렵다는 의견으로 바꿨다.)
     // IMGUI 로 그리되 기본 회색 상자는 쓰지 않는다. 그림자는 카드 텍스처에 구워 넣고 overflow 로 바깥에 그린다.
     // 글꼴은 윈도우의 Segoe UI + 맑은 고딕.
-    public class SettingsWindow : MonoBehaviour
+    public partial class SettingsWindow : MonoBehaviour
     {
         internal static SettingsWindow Instance;
         internal static bool Open;
@@ -431,6 +431,7 @@ namespace StutterFix
                 GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
                 GUI.color = new Color(1, 1, 1, e);
                 windowAlpha = e;
+                if (UseLauncher) { DrawLauncher(sw, sh, e, pe); return; }   // 전체 화면 런처 (finally 가 행렬·색을 되돌린다)
 
                 var dock = DockRect(sw, sh, e);
                 rect = PanelRect(sw, sh, dock, pe);

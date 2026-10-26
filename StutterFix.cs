@@ -1173,6 +1173,7 @@ BlendProbe.Tick();
         public bool InstantDirect = true;  // 길이 0 장식 이동을 게임 코드의 애니메이션 만들기 없이 처리
         public bool SkipSame = true;       // 즉시 이동 값이 이미 그대로면(투명 장식) 설정 함수를 부르지 않음
         public bool FastLoop = true;       // 길이 0 장식 이동 효과를 게임 코드 대신 모드 루프로
+        public bool UiLauncher = false;    // 전체 화면 런처 설정창(개발 중, 기본 꺼짐)
         public bool Precheck = true;       // 곧 발동할 무거운 장식 이동이 아무것도 안 바꾸는지 미리 확인해 두고 건너뛰기
         public bool FloorAnim = true;      // 길이 있는 타일 이동(MoveTrack)의 애니메이션을 DOTween 대신 모드가 돌림
         public bool HitTextFade = true;    // 판정 글자가 투명해질 때 메시 전체 대신 정점 색만 바꾸기
