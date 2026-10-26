@@ -504,6 +504,7 @@ namespace StutterFix
             Main.Entry.Logger.Log("[gpudeco] 구간 머티리얼 공유 "+(on?"켬":"끔"));
         }
         internal static void MarkAllSpansDirty(){if(gpuSpanOfItem==null)return;for(int k=0;k<gpuCollapseSpans.Count;k++)MarkSpanDirty(k);}
+        internal static long gpuSpanToggles;
         static void ApplySpanCulling()
         {
             if(gpuSpanOfItem==null)return;
@@ -511,7 +512,7 @@ namespace StutterFix
             {
                 int k=gpuSpanDirty[n];gpuSpanDirtyMark[k]=false;
                 var r=gpuCollapseSpans[k].Renderer;bool want=gpuSpanVisible[k]>0 && !DrawCollapsePolicy.HideProxies;
-                if(r && r.enabled!=want)r.enabled=want;
+                if(r && r.enabled!=want){r.enabled=want;gpuSpanToggles++;}
             }
             gpuSpanDirty.Clear();
         }

@@ -341,6 +341,33 @@ namespace StutterFix
                 gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
             }
             gpuReusedRound = reuse;
+            // 구간 계획 재구성(약 200ms)과 전수 검증(약 35~150ms)은 곡 시작 순간의 장식 상태와 상관없는 장면 구조 계산이라 로딩 때 미리 해 둔다.
+            // 곡 중간 시작·CPU 처리 장식·동적 제외 흔적이 있으면 StartPlayer 가 다시 한다. 미리 하다 실패해도 시작 때 하는 길로 간다.
+            gpuPlanPreBuilt = false;
+            if (gpuCollapseTexture != null && !gpuRecoveryBlocked)
+            {
+                gpuPrePlan = true;
+                try
+                {
+                    if (reuse)
+                    {
+                        UndoCpuFallbackExclusion(); RestoreCollapseBaseState(); gpuCollapsePlannedFallback = 0;
+                        foreach (var sl in gpuLiveSlices) foreach (var rr in sl.Renderers) if (rr && rr.enabled) rr.enabled = false;
+                        RebuildDrawCollapse();
+                    }
+                    ValidateDrawCollapse();
+                    gpuPlanPreBuilt = true;
+                }
+                catch (Exception e)
+                {
+                    gpuPlanPreBuilt = false;
+#if AUTOTEST
+                    string st = e.StackTrace ?? "";
+                    Main.Entry.Logger.Log("[GPU 장식] 계획 사전 구성 실패(시작 때 한다): " + e.GetType().Name + " " + e.Message + " @ " + st.Substring(0, Math.Min(200, st.Length)).Replace((char)10, ' ').Replace((char)13, ' '));
+#endif
+                }
+                finally { gpuPrePlan = false; }
+            }
             long p4 = Stopwatch.GetTimestamp();
             RequireLive(gpuLiveOwnedIndices.Length >= GpuDecoPlayerPolicy.MinimumOwned, "GPU 소유가 가능한 장식이 적음 (64개 미만)");
             double f = 1000.0 / Stopwatch.Frequency;
@@ -350,6 +377,7 @@ namespace StutterFix
         // 라운드 종료(다시 하기·죽음·편집기 정지): 원본으로 되돌리고 GPU 준비 결과는 남긴다. 기준 스냅샷은 다음 라운드에서 새로 수집한다.
         internal static void EndRoundPlayerKeep()
         {
+            gpuPlanPreBuilt = false;
             if (!gpuLivePrepared || gpuRecoveryBlocked || gpuPreparedHash == 0) { ReleasePlayerLevel(); return; }
             try { StopGpuLive("round_end"); }
             catch { ReleasePlayerLevel(); return; }
@@ -365,6 +393,7 @@ namespace StutterFix
 #endif
         }
         // 통합 구간 계획을 준비 시점 상태로 되돌린다(이전 라운드의 CPU 처리 장식 제외를 취소).
+        static bool gpuPlanPreBuilt;
         static void UndoCpuFallbackExclusion()
         {
             if (gpuCollapseIncluded != null) foreach (int i in gpuFallbackExcludedItems) if ((uint)i < (uint)gpuCollapseIncluded.Length) gpuCollapseIncluded[i] = true;
@@ -390,11 +419,12 @@ namespace StutterFix
             RequireLive(gpuLivePrepared && !gpuRecoveryBlocked, "곡 준비가 취소됨");
             long t0 = Stopwatch.GetTimestamp();
             StartGpuLive();
-            long t1 = Stopwatch.GetTimestamp();
+            long t1 = Stopwatch.GetTimestamp();ActMark("(StartGpuLive 끝)");
             // 그리기 통합 없이 소유만 쓰면 독립 렌더러 수만 개를 그려 오히려 훨씬 느리다(Arche 에디터 중간 시작: 101 -> 17 FPS). 통합을 못 켜면 원본을 유지한다.
             if (gpuCollapseTexture == null)
                 throw new InvalidOperationException("그리기 통합을 쓸 수 없어 원본 유지");
-            UndoCpuFallbackExclusion();
+            bool prebuilt = gpuPlanPreBuilt; gpuPlanPreBuilt = false;
+            UndoCpuFallbackExclusion();ActMark("폴백해제");
             bool hadDynamic = gpuDynExcludedItems.Count > 0;
             RestoreCollapseBaseState();
             gpuCollapsePlannedFallback = 0;
@@ -402,20 +432,24 @@ namespace StutterFix
             var songNow = scrConductor.instance;
             bool midSong = songNow != null && songNow.songposition_minusi > 0.5;
             // 재사용 라운드·CPU 처리 장식·동적 제외 흔적·곡 중간 시작(장벽 상태가 달라짐)이면 통합을 다시 계획한다
-            if (gpuReusedRound || gpuLiveCpuFallbackCount != 0 || hadDynamic || midSong)
+            bool needRebuild = (gpuReusedRound && !prebuilt) || gpuLiveCpuFallbackCount != 0 || hadDynamic || midSong;
+            if (needRebuild)
             {
                 // StartGpuLive 가 독립 렌더러(GpuDeco.Live run)를 켜 둔 채로 계획하면 그것들이 "켜진 장벽"으로 잡혀 동점 장식이 수천 개로 불어난다
                 // (에디터에서 같은 맵을 여러 번 재생하면 독립 렌더러 1,500개, FPS 143). 첫 라운드는 계획이 준비 때 렌더러가 꺼진 채 이뤄진다.
                 foreach (var sl in gpuLiveSlices) foreach (var rr in sl.Renderers) if (rr && rr.enabled) rr.enabled = false;
                 RebuildDrawCollapse();
             }
+            ActMark("계획(재구성)");
             {
-                ApplyBarrierClones();
-                ValidateDrawCollapse();
+                ApplyBarrierClones();ActMark("장벽복제");
+                if (needRebuild || !prebuilt) ValidateDrawCollapse();
+                ActMark(needRebuild || !prebuilt ? "전수검증" : "전수검증(사전 완료)");
                 gpuCollapseOn = true;
-                foreach (var slice in gpuLiveSlices) slice.RefreshAlpha();
-                DispatchGpuLiveSlice(BakeTime);
+                foreach (var slice in gpuLiveSlices) slice.RefreshAlpha();ActMark("알파갱신");
+                DispatchGpuLiveSlice(BakeTime);ActMark("통합디스패치");
             }
+            ActEnd();
             long t2 = Stopwatch.GetTimestamp();
             Main.Entry.Logger.Log("[GPU 장식] 켜짐: 소유 " + GpuLiveOwned + "개, 그리기 통합 " + (gpuCollapseOn ? "켬" : "끔") + ", 이미지 " + (gpuImageCandidate ? "켬" : "끔") + ", CPU 처리 장식 " + gpuLiveCpuFallbackCount + "개"
                 + " | 시작 " + ((t1 - t0) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms, 통합 켜기 " + ((t2 - t1) * 1000.0 / Stopwatch.Frequency).ToString("F1") + "ms");
@@ -425,7 +459,7 @@ namespace StutterFix
 #if AUTOTEST
             if (gpuLiveActive && gpuCostFrames > 0) LogGpuLiveCost("product_release");
 #endif
-            DisposeGpuLive(); gpuPreparedHash = 0; gpuCollapseIncludedPrepared = null; gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
+            gpuPlanPreBuilt = false; DisposeGpuLive(); gpuPreparedHash = 0; gpuCollapseIncludedPrepared = null; gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
             CancelBuild(); ClearBaseline(); table = null; // initial(처음 Setup 기록)은 남긴다: 다시 하기는 장식을 새로 Setup 하지 않을 수 있다
             effectList = null; prepEffectSnapshot = null; prepFloors = null;
             gpuTrimBounds.Clear(); gpuImageBlock.Clear();

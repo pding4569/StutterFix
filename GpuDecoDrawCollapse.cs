@@ -32,13 +32,14 @@ namespace StutterFix
             // collapse off restores the latest image without another setter.
         }
 #endif
+        internal static bool gpuPrePlan; // 재생 준비(로딩) 때 구간 계획을 미리 만드는 중: 소유가 아직 켜지기 전이라 활성 상태 검사를 완화한다
         static void RequireDrawCollapse(DrawCollapseGuard guard=null)
         {
             var checks=guard??new DrawCollapseGuard(false);
-            checks.Check(gpuLiveActive && gpuLivePrepared && gpuLiveCurrentSlice>=0 && gpuScope.WholeSong
+            checks.Check((gpuLiveActive || gpuPrePlan) && gpuLivePrepared && (gpuLiveCurrentSlice>=0 || gpuPrePlan) && gpuScope.WholeSong
                 && gpuLiveSlices.Count==1 && gpuLiveSlices[0].Independent && !gpuRenderMergeOn,
                 "drawcollapse requires independent whole-song GPU ownership");
-            checks.Check((GpuDecoPlayer.Product ? GpuLiveOwned>0 : GpuLiveOwned==23547 || GpuLiveOwned==28523) && (gpuLiveCpuFallbackCount==0 || GpuDecoPlayer.Product && gpuLiveCpuFallbackCount==gpuCollapsePlannedFallback),
+            checks.Check((GpuDecoPlayer.Product ? (GpuLiveOwned>0 || gpuPrePlan && gpuLiveOwnedIndices.Length>0) : GpuLiveOwned==23547 || GpuLiveOwned==28523) && (gpuLiveCpuFallbackCount==0 || GpuDecoPlayer.Product && gpuLiveCpuFallbackCount==gpuCollapsePlannedFallback),
                 "drawcollapse requires GPU owned=23547 or 28523, CPU fallback=0");
 #if DEV || AUTOTEST
             checks.Check(!GpuDecoCostProbe.Enabled, // SingleSubmission/GpuListCaching 은 draw 통합과 독립이므로 함께 켜도 된다(스크립트 비용 시험)

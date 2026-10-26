@@ -86,7 +86,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
                     if(GpuDecoCostProbe.Enabled)GpuDecoCostProbe.AlphaToggle();
 #endif
-                    r.enabled=wanted;}
+                    r.enabled=wanted;gpuAlphaToggles++;}
             }
             internal void RefreshItem(int item)=>ApplyAlpha(item);
             internal bool IsHiddenAlpha(int item)=>HiddenAlpha(item);
@@ -274,6 +274,7 @@ namespace StutterFix
         static float gpuLiveEnabledAt, gpuLiveZoomFactor = 1f;
         static long gpuLiveSkippedRecs;
         static long gpuCostCheckTicks, gpuCostClockTicks, gpuCostWholeTicks, gpuCostValidateTicks, gpuCostExecTicks, gpuCostProxyTicks, gpuCostCamTicks, gpuCostDdTicks, gpuCostAfterTicks, gpuCostFbEvalTicks, gpuCostFbCopyTicks;
+        internal static long gpuAlphaToggles;
         static long gpuCostFrames, gpuCostProgressTicks, gpuCostUniformTicks, gpuCostDispatchTicks, gpuCostMiscTicks;
         static double gpuCostMaxMs;
         static readonly float[] gpuRestoreValues = new float[16];
@@ -1501,6 +1502,14 @@ namespace StutterFix
             }
         }
 
+#if AUTOTEST
+        static long actT0;static System.Text.StringBuilder actSb;
+        internal static void ActStart(){actSb=new System.Text.StringBuilder();actT0=Stopwatch.GetTimestamp();}
+        internal static void ActMark(string n){if(actSb==null)return;long t=Stopwatch.GetTimestamp();actSb.Append(n).Append(' ').Append(((t-actT0)*1000.0/Stopwatch.Frequency).ToString("F1")).Append("ms | ");actT0=t;}
+        internal static void ActEnd(){if(actSb!=null){Main.Entry.Logger.Log("[GPU 장식] 켜기 단계: "+actSb);actSb=null;}}
+#else
+        internal static void ActStart(){}internal static void ActMark(string n){}internal static void ActEnd(){}
+#endif
         static void StartGpuLive()
         {
             if (gpuLiveActive) return;
@@ -1510,12 +1519,13 @@ namespace StutterFix
                 RequireLive(!GpuDecoPlayer.Product, "?? ? GPU ??? ??");
                 PrepareGpuLive();
             }
+            ActStart();
             var sw = Stopwatch.StartNew();
             InvisibleSkip.ApplyAllLazy();
-            AdvanceClock();
+            AdvanceClock();ActMark("지연적용·시계");
             RequireLive(FindGpuLiveSlice(BakeTime)>=0,"time outside prepared scope; originals retained");
-            ClassifyGpuActivationOwnership();
-            ClassifyPacketTargetGuards();
+            ClassifyGpuActivationOwnership();ActMark("소유분류");
+            ClassifyPacketTargetGuards();ActMark("패킷분류");
             for (int i = 0; i < gpuLiveOwnedRenderers.Length; i++)
             {
                 var r = gpuLiveOwnedRenderers[i];
@@ -1526,14 +1536,14 @@ namespace StutterFix
             bool activationCommitted=false;
             try
             {
-            BeginGpuActivationUndo();
-            CaptureInitialGpuLiveState();
+            ActMark("외부꺼짐읽기");BeginGpuActivationUndo();
+            CaptureInitialGpuLiveState();ActMark("초기상태캡처");
 #if AUTOTEST || GPUDECO
             CaptureGpuImageActivation();
 #endif
             GpuRecoveryFault("activation_after_capture");
             for (int s = 0; s < gpuLiveSlices.Count; s++)
-                gpuLiveSlices[s].FlushDirty();
+                gpuLiveSlices[s].FlushDirty();ActMark("더티올리기");
             gpuLiveTurnOnBakeTime = BakeTime;
             gpuLiveEnabledAt = Time.realtimeSinceStartup;
             gpuLivePortalObserved = false;
@@ -1550,9 +1560,9 @@ namespace StutterFix
                     if (DrawCollapsePolicy.DisableOwnedRenderers && r.enabled) { gpuLiveEnabledOff[i] = true; r.enabled = false; }
                 }
             }
-            Camera.onPreCull -= OnGpuLivePreCull;
+            ActMark("원본렌더러끄기");Camera.onPreCull -= OnGpuLivePreCull;
             Camera.onPreCull += OnGpuLivePreCull;
-            DispatchGpuLiveSlice(BakeTime);
+            DispatchGpuLiveSlice(BakeTime);ActMark("첫디스패치");
             GpuRecoveryFault("activation_after_dispatch");
             gpuLiveLastDispatchFrame = Time.frameCount;
             gpuLiveTransitionMs = sw.Elapsed.TotalMilliseconds;
@@ -1603,7 +1613,7 @@ namespace StutterFix
                 + " proxy_ms=" + (gpuCostProxyTicks / tf / f).ToString("F6", Inv)
                 + " check_ms=" + (gpuCostCheckTicks / tf / f).ToString("F6", Inv)
                 + " clock_ms=" + (gpuCostClockTicks / tf / f).ToString("F6", Inv)
-                + " dd_ms=" + (gpuCostDdTicks / tf / f).ToString("F6", Inv) + " after_ms=" + (gpuCostAfterTicks / tf / f).ToString("F6", Inv) + " fb_eval_ms=" + (gpuCostFbEvalTicks / tf / f).ToString("F6", Inv) + " fb_copy_ms=" + (gpuCostFbCopyTicks / tf / f).ToString("F6", Inv) + " fb_submit_ms=" + (GpuDecoCopy.DbgSubmitTicks / tf / f).ToString("F6", Inv) + " fb_exec_ms=" + (GpuDecoCopy.DbgExecTicks / tf / f).ToString("F6", Inv) + " whole_frame_ms=" + (gpuCostWholeTicks / tf / f).ToString("F6", Inv));
+                + " dd_ms=" + (gpuCostDdTicks / tf / f).ToString("F6", Inv) + " after_ms=" + (gpuCostAfterTicks / tf / f).ToString("F6", Inv) + " fb_eval_ms=" + (gpuCostFbEvalTicks / tf / f).ToString("F6", Inv) + " fb_copy_ms=" + (gpuCostFbCopyTicks / tf / f).ToString("F6", Inv) + " fb_submit_ms=" + (GpuDecoCopy.DbgSubmitTicks / tf / f).ToString("F6", Inv) + " fb_exec_ms=" + (GpuDecoCopy.DbgExecTicks / tf / f).ToString("F6", Inv) + " span_tog=" + (gpuSpanToggles / (double)f).ToString("F2", Inv) + " alpha_tog=" + (gpuAlphaToggles / (double)f).ToString("F2", Inv) + " whole_frame_ms=" + (gpuCostWholeTicks / tf / f).ToString("F6", Inv));
         }
 
         // Request B.3: Full restoration of owned decorations on off, song end, retry, restart, editor return, map reopen, and unload.
