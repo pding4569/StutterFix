@@ -47,7 +47,7 @@ namespace StutterFix
         internal static void ScrollForTest(float y) { if (Instance != null) Instance.scroll.y = y; }
         internal static void ShowForTest(int p, int sub = 0)
         {
-            if (Instance != null && p >= 0 && p < 9) { var tabs = Instance.SubDefs(p, out _); Instance.subSel[p] = tabs == null ? 0 : Mathf.Clamp(sub, 0, tabs.Length - 1); EditingText = false; GUIUtility.keyboardControl = 0; }
+            if (Instance != null && p >= 0 && p < 10) { var tabs = Instance.SubDefs(p, out _); Instance.subSel[p] = tabs == null ? 0 : Mathf.Clamp(sub, 0, tabs.Length - 1); EditingText = false; GUIUtility.keyboardControl = 0; }
             if (Instance == null) return;
             if (p == -2) { Instance.SetOpen(false); return; }
             Instance.SetOpen(true);
@@ -293,17 +293,17 @@ namespace StutterFix
         private float homeArmUntil; private int homeArmChoice;   // 홈 화면 재시작 버튼 확인
         private Rect restartMenuRect;   // 재시작 고르기 상자 (지난 프레임 자리, 바깥 클릭·입력 막기용)
 
-        // 아이콘 줄 순서(페이지 번호): 쉐이더(8)는 그래픽(3) 바로 아래
-        private static readonly int[] DockOrder = { 0, 1, 2, 3, 8, 4, 5, 6, 7 };
+        // 아이콘 줄 순서(페이지 번호): 그래픽(3) → 쉐이더(8) → GPU 장식(9)
+        private static readonly int[] DockOrder = { 0, 1, 2, 3, 8, 9, 4, 5, 6, 7 };
 
         private string[] PageNames()
         {
-            return new[] { T("홈", "Home"), T("플레이", "Gameplay"), T("맵 불러오기", "Level loading"), T("그래픽", "Graphics"), T("모니터", "Monitor"), T("저사양", "Low-end PC"), T("연출 끄기", "Effects off"), T("정보", "About"), T("쉐이더", "Shaders") };
+            return new[] { T("홈", "Home"), T("플레이", "Gameplay"), T("맵 불러오기", "Level loading"), T("그래픽", "Graphics"), T("모니터", "Monitor"), T("저사양", "Low-end PC"), T("연출 끄기", "Effects off"), T("정보", "About"), T("쉐이더", "Shaders"), T("GPU 장식", "GPU decorations") };
         }
 
         private Rect DockRect(float sw, float sh, float e)
         {
-            float h = 10 * IconS + 9 * IconGap + 34;   // 아이콘 9개 + 구분선 + 재시작
+            float h = (DockOrder.Length + 1) * IconS + DockOrder.Length * IconGap + 34;   // 페이지 아이콘 10개 + 구분선 + 재시작
             return new Rect(sw - DockW - 12 + (1 - e) * (DockW + 24), (sh - h) / 2f, DockW, h);   // 오른쪽 밖에서 미끄러져 들어온다
         }
 
@@ -494,7 +494,7 @@ namespace StutterFix
                 {
                     var c = GUI.color;
                     GUI.color = new Color(1, 1, 1, c.a * (on || hov ? 1f : 0.72f));
-                    GUI.DrawTexture(new Rect(r.x + 10, r.y + 10, IconS - 20, IconS - 20), icons[i == 8 ? 9 : i]);
+                    GUI.DrawTexture(new Rect(r.x + 10, r.y + 10, IconS - 20, IconS - 20), icons[i >= 8 ? i + 1 : i]);
                     GUI.color = c;
                     if (i == 0 && Updater.Available) Fill(new Rect(r.xMax - 13, r.y + 5, 8, 8), new Color(Accent.r, Accent.g, Accent.b, c.a), 4);   // 새 버전 있음
                 }
@@ -618,7 +618,7 @@ namespace StutterFix
             float bw = sCrumb.CalcSize(brand).x;
             GUI.Label(new Rect(52, 19, bw + 4, 24), brand, sCrumb);
             GUI.Label(new Rect(52 + bw + 8, 19, 14, 24), "/", sCrumb);
-            GUI.Label(new Rect(52 + bw + 24, 18, 400, 26), PageNames()[Mathf.Clamp(page, 0, 8)], sPageTitle);
+            GUI.Label(new Rect(52 + bw + 24, 18, 400, 26), PageNames()[Mathf.Clamp(page, 0, 9)], sPageTitle);
 
             // 언어 + 닫기 (작게)
             var ko = new Rect(pw - 176, 18, 58, 26);
@@ -685,6 +685,7 @@ namespace StutterFix
                 case 5: PageLowEnd(); break;
                 case 6: PageEffects(); break;
                 case 8: PageScreenEffects(); break;
+                case 9: PageGpuDecorations(); break;
                 default: PageAbout(); break;
             }
             GUILayout.Space(Gutter);
@@ -791,6 +792,11 @@ namespace StutterFix
                     bool small = ex / 0.14f + ey / 0.16f <= 1f && (ex <= 0.04f || ey <= 0.04f);
                     return big || small;
                 }),
+                // GPU 장식(10번): 칩 테두리 + 가운데 격자 (선 굵기 0.09)
+                MakeIcon((x, y) => (InBox(x, y, 0.20f, 0.20f, 0.80f, 0.80f) && !InBox(x, y, 0.29f, 0.29f, 0.71f, 0.71f))
+                    || InBox(x, y, 0.455f, 0.29f, 0.545f, 0.71f) || InBox(x, y, 0.29f, 0.455f, 0.71f, 0.545f)
+                    || ((InBox(x, y, 0.32f, 0.08f, 0.41f, 0.92f) || InBox(x, y, 0.59f, 0.08f, 0.68f, 0.92f)) && (y < 0.20f || y > 0.80f))
+                    || ((InBox(x, y, 0.08f, 0.32f, 0.92f, 0.41f) || InBox(x, y, 0.08f, 0.59f, 0.92f, 0.68f)) && (x < 0.20f || x > 0.80f))),
             };
         }
 
@@ -1298,16 +1304,6 @@ namespace StutterFix
                 EndGroup();
                 SubHeading(T("장식 이동 실험", "Decoration movement experiments"), "");
                 BeginGroup();
-                bool gpuDeco = c.GpuDeco == 1;
-                if (Option("gpudeco", ref gpuDeco, T("GPU 장식 처리 (실험)", "GPU decoration processing (experimental)"),
-                    T("장식 이동을 GPU가 계산해 장식이 아주 많은 맵의 CPU 비용을 줄입니다. 켜면 재생을 시작할 때마다 준비에 몇 초 더 걸립니다(장식 2만 8천 개 기준 약 5초). 다음 재생부터 적용되며, 지원하지 않는 맵이나 환경에서는 알아서 원본 처리를 씁니다.",
-                      "Computes decoration movement on the GPU to cut CPU cost on maps with huge decoration counts. Adds a few seconds of preparation each time playback starts (about 5 s for 28,000 decorations). Applies from the next playback; unsupported maps or setups fall back to the original path."), null))
-                { c.GpuDeco = gpuDeco ? 1 : 0; ch = true; }
-                bool gpuImages = c.GpuDecoImages == 1;
-                if (Option("gpudecoimages", ref gpuImages, T("이미지 장식도 GPU로 처리", "Process image decorations on the GPU too"),
-                    T("재생 중 이미지가 바뀌는 장식도 함께 처리합니다. 다음 재생 준비부터 적용됩니다.",
-                      "Also handles decorations whose image changes during play. Applies from the next playback."), null, 1, gpuDeco ? null : T("GPU 장식 처리", "GPU decoration processing")))
-                { c.GpuDecoImages = gpuImages ? 1 : 0; ch = true; }
                 ch |= Option("moveepsilon", ref c.MoveEpsilon, T("미세 위치 쓰기 생략 (실험)", "Skip tiny position writes (experimental)"),
                     T("곡 중 실제 위치와의 차이가 각 축 0.000001 미만이면 위치 쓰기를 생략합니다. 위치·시차·회전 처리 순서는 유지합니다.",
                       "Skips position writes during play when each axis changes by less than 0.000001. Preserves position, parallax and rotation order."), null);
@@ -1365,9 +1361,46 @@ namespace StutterFix
             if (ch) Save();
         }
 
+        // ── GPU 장식 ───────────────────────────────────────────────────
+        private void PageGpuDecorations()
+        {
+            var c = Main.Config;
+            bool ch = false;
+            SubHeading(null, T("장식이 아주 많은 맵에서 장식 이동을 GPU가 계산합니다.",
+                "The GPU computes decoration movement on maps with huge decoration counts."));
+            BeginGroup();
+            bool gpuDeco = c.GpuDeco == 1;
+            if (Option("gpudeco", ref gpuDeco, T("GPU 장식 처리 (실험)", "GPU decoration processing (experimental)"),
+                T("장식 이동을 GPU가 계산해 장식이 아주 많은 맵의 CPU 비용을 줄입니다. 켜면 재생 준비에 처음 한 번 약 5초, 같은 맵을 다시 하면 1초 안팎이 더 걸립니다. 다음 재생부터 적용되며, 지원하지 않는 맵이나 환경에서는 알아서 원본 처리를 씁니다.",
+                  "Computes decoration movement on the GPU to cut CPU cost on maps with huge decoration counts. Adds about 5 s of preparation the first time and around 1 s when replaying the same map. Applies from the next playback; unsupported maps or setups fall back to the original path."), null))
+            { c.GpuDeco = gpuDeco ? 1 : 0; ch = true; }
+            bool gpuImages = c.GpuDecoImages == 1;
+            if (Option("gpudecoimages", ref gpuImages, T("이미지 장식도 GPU로 처리", "Process image decorations on the GPU too"),
+                T("재생 중 이미지가 바뀌는 장식도 함께 처리합니다. 다음 재생 준비부터 적용됩니다.",
+                  "Also handles decorations whose image changes during play. Applies from the next playback."), null, 1, gpuDeco ? null : T("GPU 장식 처리", "GPU decoration processing")))
+            { c.GpuDecoImages = gpuImages ? 1 : 0; ch = true; }
+            EndGroup();
+
+            P(T("알아 둘 점", "Things to know"), sBody);
+            GUILayout.Space(4);
+            BeginGroup();
+            P(T("켜면 재생을 시작할 때 준비 시간이 늘어납니다. 장식이 많을수록 더 걸립니다.",
+                "Enabling this adds preparation time when playback starts. More decorations take longer."), sDim);
+            P(T("다음 재생부터 적용됩니다. 재생 중에는 켜고 끄지 마세요.",
+                "Applies from the next playback. Do not toggle it during playback."), sDim);
+            P(T("지원하지 않는 맵·환경에서는 알아서 원래 처리로 돌아갑니다.",
+                "Unsupported maps or setups automatically fall back to the original processing."), sDim);
+            P(T("같은 정렬 순서로 그려야 하는 극히 일부 장식은 원래 렌더러로 남습니다. 아주 드물게 화면이 한두 픽셀 다를 수 있습니다.",
+                "A very small number of decorations that must keep the same draw order stay on the original renderer. Very rarely, the picture may differ by a pixel or two."), sDim);
+            EndGroup();
+            P(GpuDecoPlayer.Active ? T("이번 맵: GPU 처리 중", "Current map: GPU processing active")
+                : T("이번 맵: GPU 처리 중 아님", "Current map: GPU processing inactive"), sDim);
+            if (ch) Save();
+        }
+
         // ── 페이지 안 갈래 (왼쪽 세로 메뉴) ──────────────────────────────
         // 플레이(23개)·저사양처럼 긴 페이지는 스위치가 한 줄로 길게 이어져 찾기 어려웠다. 갈래를 왼쪽에 아이콘과 함께 두고 고른 것만 보인다.
-        private readonly int[] subSel = new int[9];
+        private readonly int[] subSel = new int[10];
         private float railY = -1f, tabW = -1f;
         // 아래 줄 키 안내: [키] 설명 을 오른쪽부터 왼쪽으로 놓는다. 다음 자리(x) 를 돌려준다.
         private float KeyHint(float right, float y, float h, string key, string label)
@@ -1407,7 +1440,7 @@ namespace StutterFix
             }
             return null;
         }
-        private int Sub() { return subSel[Mathf.Clamp(page, 0, 8)]; }
+        private int Sub() { return subSel[Mathf.Clamp(page, 0, 9)]; }
 
         private void DrawRail(Rect area, string[] names, int[] icons)
         {
@@ -1511,7 +1544,7 @@ namespace StutterFix
             if (Event.current.type != EventType.Repaint || string.IsNullOrEmpty(text)) return;
             float need = st.CalcSize(new GUIContent(text)).x;
             if (need > width + 0.5f && clipSeen.Add(kind + "|" + text))
-                Main.Entry.Logger.Log("[UI 잘림] " + kind + " '" + text + "' 필요 " + need.ToString("F0") + " > 칸 " + width.ToString("F0") + " (페이지 " + page + "." + subSel[Mathf.Clamp(page, 0, 8)] + ", " + (English ? "EN" : "KO") + ")");
+                Main.Entry.Logger.Log("[UI 잘림] " + kind + " '" + text + "' 필요 " + need.ToString("F0") + " > 칸 " + width.ToString("F0") + " (페이지 " + page + "." + subSel[Mathf.Clamp(page, 0, 9)] + ", " + (English ? "EN" : "KO") + ")");
         }
 #endif
         private void Section(string title)
