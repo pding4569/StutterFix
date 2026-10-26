@@ -991,7 +991,9 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - 구현(브랜치 `codex/night-tilerange`): 읽기 훅을 모두 없애고 쓰기 훅 53개(이름·서명으로 정확히 하나만 선택)로 64타일 청크의 dirty 비트를 관리, clean 청크는 효과 시작에서 타일에 접근하지 않고 통째로 건너뜀. 오프라인 70검사·빌드 3종 오류 0·LoadCheck 0.
 - **게임 첫 시험은 훅 53개 전부 실패했다**: Codex 가 서명 blob 을 `Module.ResolveSignature(MetadataToken)` 로 비교했는데 Mono 에서는 메서드 토큰을 풀지 못한다(`Token ... is not valid in the scope of module`). 이름+인자 수+호출 규약으로 바꿔 53개 설치 성공(eb8e0c3). 오프라인(메타데이터 리더)에서만 검증한 것의 한계.
 - **Lost Requiem 531.8초 `tilerange shadow`**: `patch-fail=0 patched=53`, shadow 불일치 0·늦게 발견된 변경 0. 하지만 **건너뛴 청크 0개**(타일 8,171개 전부 원래 경로), 효과 시작 25.7ms(끔 기준 22~25ms과 같음). 8초 동안 훅이 **198만 번** 불림(=타일 8,171개 × 약 242프레임, 매 프레임 모든 타일) → 모든 청크가 항상 dirty. 안전망 `safety-ms` 147(8초), 훅 `hook-ms` 174 — 이득 없이 비용만.
-- 의심: `scrFloor.LateUpdate` 가 `lastPos`·`lastScale`·`opacityLastFrame`·`glowMultiplierLastFrame` 에 매 프레임 쓰는 "지난 프레임 값 장부"를 상태 변경으로 표시. 확인하려면 사이트별 호출 수 계수 필요 → 후속 임무 `docs/handoff/codex-tilerange-3-20261020.md`(Codex 사용량 초기화 20:43 뒤 맡길 예정).
+- 의심(**틀렸음, 아래 정정**): `scrFloor.LateUpdate` 의 "지난 프레임 값 장부" 쓰기를 상태 변경으로 표시.
+- **T3b 결과(Codex, 오프라인)**: 현재 `Rewrite` 는 이미 `opacity/startPos/startRot/tweenRot` 만 추적했고 장부 4개 필드(`lastPos`·`lastScale`·`opacityLastFrame`·`glowMultiplierLastFrame`)는 처음부터 추적 밖이었다. `LateUpdate` 의 유일한 Transform setter(`set_position`, IL_034E)는 `isTweening`·`multiplanetLine` 조건 안쪽이라 타일 매 프레임 쓰기가 아니다. 사이트별 호출 계수 `tilerange sites on|off` 를 추가했다(브랜치 `codex/night-tilerange`).
+- **정정(내 계산 오류)**: "198만 번 = 타일 8,171개 × 프레임마다"는 틀린 나눗셈이었다. 8초 창의 프레임은 약 1,900개(240 FPS)라 프레임당 약 **1,000번**이고, 같은 구간 `tilesim` 이 센 프레임당 활성 타일 애니메이션 2,228개와 같은 자릿수다. 즉 **Lost Requiem 524~535초에는 타일이 실제로 계속 움직이고 있어 청크가 정당하게 dirty 일 수 있다**(그러면 531.8초 "기준값으로 되돌리기" 효과는 움직이는 타일을 실제로 처리해야 하므로 건너뛸 수 없다). 결정은 게임에서 `tilerange sites on` 으로 상위 사이트(FloorAnim 갱신 vs 다른 곳)를 보고 한다. 건너뛸 수 있는 건 타일이 가만히 있을 때의 효과(HELLO 125.6초 3.9ms 등)뿐이라 이득이 작을 가능성이 크다.
 - 릴리스 영향 없음: 기본 꺼짐·개발/자동 시험 빌드 전용, 2.8.0 에 포함 안 됨.
 
 ## 2026-10-20 밤: Arche 258~278초 GPU 연구(Codex 계측 + 게임 측정) — 지금은 병목 아니지만 CPU 를 없애면 GPU 가 바닥
@@ -1003,3 +1005,27 @@ Arche 곡 252.0~273.0초(`waitsongpos 252` 로 곡 시각 정렬), 새 프로세
 - 앞서 쓴 "장식 렌더러를 숨겨도 +6%뿐"은 CPU 병목 상태의 FPS 측정이라 장식의 GPU 몫을 과소평가했을 수 있다. GPU 시간 자체(`gpuprobe`, CPU 병목과 무관)로 장면 그리기 ~3.4ms 를 장식/타일/행성/기타로 나눠 다시 재야 한다(렌더러 그룹별 숨김 + 본 카메라 GPU 시간). 그 몫이 작으면 GPU 바닥이 ~3ms 에 고정되어 목표를 "150~200 FPS + 끊김 0" 으로 잡아야 한다. 필터 A/B(`fxoff`)는 필터 합이 0.65ms 라 우선순위가 낮다.
 - 한계: GPU 경과 시간(timestamp)이지 PresentMon `MsGPUBusy` 와 같지 않음; 258~278초 한 구간만; 장면 그리기 3.4ms 를 줄이는 방법(해상도·겹쳐 그리기)은 화면이 달라진다.
 - 근거: `docs/handoff/archegpu-evidence/arche-258-278-gpuprobe.txt`, Codex 결과 `docs/handoff/codex-archegpu-20261020-result.md`.
+
+## 2026-10-20 밤: 굽기(bake) + 렌더 경로 설계 조사(Codex, 브랜치 `codex/night-bake`) — A 는 시간 의미 결정 대기, B 는 설계 완료
+- **A(굽기 컴파일러) 보류, 구현 없음**: 기존 `DecoAnim` 은 **프레임마다 float 델타를 누적**(`Pos += dt*timeScale`)하므로 값이 프레임 길이 이력에 의존한다. 같은 곡 시각이어도 60프레임 vs 120프레임 이력에서 선형 0→100(길이 2) 결과가 `49.999985` vs `49.99997`(비트 다름). 효과 시작도 "예약 시각 뒤 첫 Update" 라 프레임에 양자화된다. 그래서 곡 시각만의 무상태 함수(맵 열 때 한 번 굽기)는 **원본과 비트 동일일 수 없다**. 지난 94만 비교 불일치 0 은 "같은 델타 테이프를 넣어 누적을 재현"한 것이다.
+- 교체 규칙도 단순 자르기가 아니다: `ffxMoveDecorationsPlus.StartEffect` 는 상대 목표 기준을 Kill 앞에서 잡고 `Kill(true)` 로 이전 값을 끝값까지 완료한 뒤 새 시작값을 잡는다(예: 현재 4, 이전 끝 10, 상대 +2 → 새 시작 10, 끝 6).
+- **결정 필요(사용자)**: (가) 곡 시각 기반 새 의미를 허용(값 차이 ~1e-5 상대, 효과 시작 최대 1프레임 이내 위상 차이, 화면은 눈에 안 띄는 오차로 자동 대조 승인) 또는 (나) 기존 프레임 의미 유지(실제 델타·시작 순서를 입력으로 → 무상태·한 번 굽기 불가).
+- 읽을 지점 목록(타일 `entryTime`, `ApplyEvent` 반환 시 `ffxPlusBase.startTime/startEffectOffset`, `PrepVfx` 정렬, 초기 장식 상태는 PrepVfx 의 ScrubToTime(0) 전 스냅샷)과 반례는 `docs/handoff/codex-bake-20261020-result.md`, `bake-evidence/`.
+- **B 결론**: 모든 이미지 장식(약 2.9만)을 가져가면 이미지끼리의 미관리 장벽은 없앨 수 있으나 순서를 마음대로 정의할 수는 없다(관측된 원본 순서 그대로 배치해야 하고 텍스트·마스크·타일·행성이 교차하면 한 draw 로 못 묶음). CPU 평가+정점 업로드는 ≤0.5ms 에 닿는다고 할 수 없고(남는 몫 0.02~0.11ms), GPU 평가가 목표를 노릴 수 있는 구조.
+- **이득 추정(가정, 실측 아님)**: A 만 하면 순절감 0.5/1.0/1.5ms → 약 95~105 / 100~111 / 105~118 FPS (5~8일). A+B 전체 경로는 CPU 5~6.5ms vs GPU 4.2~6.6ms 의 max → 약 150~200 FPS (총 13~22일). **400 FPS 근거 없음.**
+
+## 2026-10-20 밤: 굽기 시간 의미 결정 — 곡 시각 기반 허용(프로토타입), 제품화는 실측 뒤 재확인
+- 사용자 승인: 곡 시각 기반 굽기의 시작 시점 위상 차이(0~1프레임, 240 FPS 4ms / 96 FPS 약 10ms)와 숫자 누적 오차(상대 ~1e-6)를 눈에 안 띄면 허용. 프레임 늘리는 다른 길이 없다면 이 방향으로 간다.
+- 검증 기준(`decobake verify`, 그림자 모드): 시작 시점 차이 ≤ 1프레임, 시간차 제외 값 오차 ≤ 0.01px, 기준을 넘는 장식은 굽지 않고 기존 경로. 제품에 넣기 전 실측 분포를 보여 주고 다시 확인받는다. 픽셀 동일 주장 금지.
+
+## 2026-10-20 밤: 굽기(bake) 프로토타입 오프라인 지원률 — 초기 Tile 배치가 관건이었다
+- bake-2(위치/피벗/회전/색/불투명도/시차) → bake-3(크기 X/Y 추가; Arche MoveDecorations 95,211개 중 74,259개(78%)가 scale 포함) → bake-4(정적 Tile 초기 배치 지원). 브랜치 `codex/night-bake`.
+- Arche 소스 장식 28,835개 기준 **파일상 조건부 후보: bake-2 4개 → bake-3 5개(0.0173%) → bake-4 23,527개(81.59%)**. bake-3 에서 막힌 건 초기 Global 이외 배치 28,830개(99.98%)였다(Tile 28,716, Camera 114). Tile 은 `SetPlacementType` 이 Setup 때 한 번 정하는 정적 원점이라(`stickToFloor` 일 때만 타일 추종) 지원, Camera/CameraAspect 는 화면 투영이 카메라·줌에 종속이라 제외, 효과 시점 `relativeTo=Tile` 은 그 시점 타일 위치를 다시 읽어 제외.
+- 남은 제외: 이미지/원래크기/크롭/wrap 5,087개(17.6%, decorationImage 이벤트), Camera 114, 깊이 22, 텍스트 7; components 미정 228(런타임 확인). **조건부 실제 지원률 범위 0~81.59%**(실게임 확정 아님). 시차 100 이면 정적 Tile 도 카메라를 따라갈 수 있어 굽기의 위치 채널은 pivotPosVec 이고 최종 월드 위치가 아니다(시차 채널은 기존 유지).
+- 다음 확장 1순위: 이미지 이벤트 장식(5,053개 순증). 모든 수치는 이벤트 파일 기반 추정이며 `decobake verify`/`bench` 실측 전이다.
+
+## 2026-10-20 밤: 타일 굽기(tilebake) 프로토타입과 오프라인 지원률 — 나타나기/사라지기 writer 가 지배
+- 브랜치 `codex/night-tilebake`: `FloorBake`(곡 시각 기반 무상태 표, 위치 X/Y·회전·크기 X/Y·불투명도, 그림자 모드), `tilebake on/off/ready/verify/bench`. 크기 지원 후 DOTween 이징 위치 3,465 + 크기 6,930개 비트 대조 차이 0.
+- **오프라인 후보 상한(이벤트 파일 기반)**: Lost Requiem 3,164/15,001(**21.1%**), HELLO 2026 1,238/14,721(**8.4%**). 제외의 대부분은 타일 나타나기/사라지기 효과(`animationType` → `ffxChangeTrack.PrepFloor` 가 FloorAppear/Disappear 컴포넌트를 붙임): LR 78.9%, HELLO 91.6% 가 이 writer 로 제외 추정. 크기·회전 wrap·hitbox 연결은 미정 노출로 별도.
+- **Lost Requiem 531.8초 형태**: floor 14926, 타일 8,171개(6830..15000), 위치(0,0)·회전0·크기100%·OutElastic·**duration 32박**(파일)·불투명도 245%. 크기는 이제 지원하지만 이 효과가 닿는 타일 중 파일 기준 후보는 **2,202/8,171(27%)**, 나머지 5,969개는 다른 writer 때문에 제외 추정 → "531.8초 효과 전체가 굽기 대상"은 성립 안 함.
+- 결론: 타일 굽기는 장식 굽기(후보 81.6%)보다 훨씬 약하다. 다음 확장은 나타나기(LR 단독 +437/HELLO +7,570)·사라지기(LR +1,052) writer 모델링이며, 그 전에는 22~25ms 시작 스파이크를 없애지 못한다(그림자 모드라 어차피 기존 경로가 돈다). 실측(`tilebake verify`) 전.
