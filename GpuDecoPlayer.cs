@@ -402,7 +402,13 @@ namespace StutterFix
             var songNow = scrConductor.instance;
             bool midSong = songNow != null && songNow.songposition_minusi > 0.5;
             // 재사용 라운드·CPU 처리 장식·동적 제외 흔적·곡 중간 시작(장벽 상태가 달라짐)이면 통합을 다시 계획한다
-            if (gpuReusedRound || gpuLiveCpuFallbackCount != 0 || hadDynamic || midSong) RebuildDrawCollapse();
+            if (gpuReusedRound || gpuLiveCpuFallbackCount != 0 || hadDynamic || midSong)
+            {
+                // StartGpuLive 가 독립 렌더러(GpuDeco.Live run)를 켜 둔 채로 계획하면 그것들이 "켜진 장벽"으로 잡혀 동점 장식이 수천 개로 불어난다
+                // (에디터에서 같은 맵을 여러 번 재생하면 독립 렌더러 1,500개, FPS 143). 첫 라운드는 계획이 준비 때 렌더러가 꺼진 채 이뤄진다.
+                foreach (var sl in gpuLiveSlices) foreach (var rr in sl.Renderers) if (rr && rr.enabled) rr.enabled = false;
+                RebuildDrawCollapse();
+            }
             {
                 ApplyBarrierClones();
                 ValidateDrawCollapse();
