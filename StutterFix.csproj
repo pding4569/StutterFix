@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <Compile Include="StutterFix.cs" />
+    <Compile Include="LightProbe.cs" />
     <Compile Include="GpuDecoPlayer.cs" />
     <Compile Include="GpuDecoPlayerPolicy.cs" />
     <Compile Include="GpuDecoRecordStore.cs" />

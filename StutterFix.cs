@@ -472,6 +472,9 @@ ParticleTextWatch.Install(harmony);
             installed = false;
             EndDisplayTransition();
             Try(GpuDecoPlayer.Shutdown);
+#if AUTOTEST
+            Try(LightProbe.Uninstall);
+#endif
 #if DEV || AUTOTEST
             Try(FreeFpsProbe.Restore);
             Try(TileSim.Shutdown);

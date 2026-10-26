@@ -117,6 +117,8 @@ namespace StutterFix
             // 시작 직후 60프레임(따라잡기)에는 효과가 원본 경로로 도는 순간이 있어, 그때 켜면 곧바로 원본으로 복귀한다(편집기 중간 시작).
             if (EffectBudget.InCatchUp && song.songposition_minusi > 0.5) return;
             if (!lifetime.TryActivate()) return;
+            // 첫 타일을 치기 전이면(현재 타일 0) 이 프레임의 켜기 비용은 곡 시작 처리로 본다.
+            try { var fl = c.currFloor; if (fl != null && fl.seqID == 0) PerfOverlay.GraceForGpuDecoStart(); } catch { }
             try { DecoBake.StartPlayer(); }
             catch (Exception e)
             {

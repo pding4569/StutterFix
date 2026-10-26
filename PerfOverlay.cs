@@ -279,6 +279,7 @@ namespace StutterFix
                         cpuRing[timingHead] = lastCpu = c;
                         lastRender = recRender.Valid ? recRender.LastValue / 1e6f : 0f;
                         lastWait = recWait.Valid ? recWait.LastValue / 1e6f : 0f;
+                        FpsWinAdd(lastGpu, lastCpu, lastRender, lastWait);
                         timingSamples++;
                         timingHead = (timingHead + 1) % gpuRing.Length;
                     }
@@ -291,6 +292,7 @@ namespace StutterFix
                     cpuRing[timingHead] = lastCpu = (float)(cm > 0 ? cm : timing[0].cpuFrameTime);
                     lastRender = (float)timing[0].cpuRenderThreadFrameTime;
                     lastWait = (float)timing[0].cpuMainThreadPresentWaitTime;
+                    FpsWinAdd(lastGpu, lastCpu, lastRender, lastWait);
                     timingSamples++;
                     timingHead = (timingHead + 1) % gpuRing.Length;
                 }
@@ -298,6 +300,11 @@ namespace StutterFix
             catch { }
         }
 
+        // 자동 시험 fpsmark 창 안의 GPU/CPU/렌더/대기 시간 평균(게임 안 프레임 타이밍, PresentMon 아님)
+        internal static bool FpsWinOn; static double fwGpu, fwCpu, fwRender, fwWait; static int fwN;
+        static void FpsWinAdd(float g, float c, float r, float w) { if (!FpsWinOn) return; fwGpu += g; fwCpu += c; fwRender += r; fwWait += w; fwN++; }
+        internal static void FpsWinStart() { fwGpu = fwCpu = fwRender = fwWait = 0; fwN = 0; FpsWinOn = true; }
+        internal static string FpsWinEnd() { FpsWinOn = false; if (fwN == 0) return "표본 없음"; return string.Format("GPU {0:F2} CPU메인 {1:F2} 렌더스레드 {2:F2} 현재대기 {3:F2} ms (표본 {4})", fwGpu / fwN, fwCpu / fwN, fwRender / fwN, fwWait / fwN, fwN); }
         private static float Max(float[] a) { float m = 0; for (int i = 0; i < a.Length; i++) if (a[i] > m) m = a[i]; return m; }
         private static float VramFrac() { float t = SystemInfo.graphicsMemorySize; return t > 0 && SystemMonitor.VramUsedMB > 0 ? Mathf.Clamp01(SystemMonitor.VramUsedMB / t) : 0f; }
         private static float Pct(float v) { return v < 0 ? 0f : Mathf.Clamp01(v / 100f); }
@@ -719,6 +726,8 @@ namespace StutterFix
         private static int startGraceFrame = -1;
         private static bool InStartPhase { get { return startPhase || Time.frameCount <= startGraceFrame; } }
         internal static bool InStartWindow { get { return InStartPhase; } }
+        // GPU 장식을 켜는 프레임(첫 타일을 치기 전)은 곡 시작 연출로 본다: 켜는 순간 약 150ms 는 시작 처리의 일부라 끊김으로 세지 않는다.
+        internal static void GraceForGpuDecoStart() { startGraceFrame = Math.Max(startGraceFrame, Time.frameCount + 2); }
 
         // 끊김이 아닌 안내 (예: VRAM 부족으로 다음부터 이미지를 줄임). 모니터가 켜져 있으면 알림으로 뜬다.
         internal static void Notice(string cause, string detail)

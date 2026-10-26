@@ -1316,9 +1316,9 @@ namespace StutterFix
                 case "fpsmark":
                 {
                     // fpsmark start | fpsmark end <이름>: 두 호출 사이의 실제 시간 FPS(프레임 수 / Stopwatch). 일시정지한 같은 장면에서 ABAB 로 쓴다.
-                    if(arg=="start"){fpsMarkFrames=Time.frameCount;fpsMarkTicks=System.Diagnostics.Stopwatch.GetTimestamp();return true;}
+                    if(arg=="start"){fpsMarkFrames=Time.frameCount;fpsMarkTicks=System.Diagnostics.Stopwatch.GetTimestamp();PerfOverlay.FpsWinStart();return true;}
                     double sec=(System.Diagnostics.Stopwatch.GetTimestamp()-fpsMarkTicks)/(double)System.Diagnostics.Stopwatch.Frequency;int fr=Time.frameCount-fpsMarkFrames;
-                    Log("[FPS 구간] "+arg.Substring(4).Trim()+" : "+(fr/Math.Max(sec,1e-6)).ToString("F1",System.Globalization.CultureInfo.InvariantCulture)+" FPS ("+fr+"프레임 "+sec.ToString("F2",System.Globalization.CultureInfo.InvariantCulture)+"초)");
+                    Log("[FPS 구간] "+arg.Substring(4).Trim()+" : "+(fr/Math.Max(sec,1e-6)).ToString("F1",System.Globalization.CultureInfo.InvariantCulture)+" FPS ("+fr+"프레임 "+sec.ToString("F2",System.Globalization.CultureInfo.InvariantCulture)+"초) | "+PerfOverlay.FpsWinEnd());
                     return true;
                 }
                 case "fpscap":

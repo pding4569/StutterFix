@@ -2143,6 +2143,12 @@ namespace StutterFix
                 GpuLog("single_submit="+GpuDecoCopy.SingleSubmission+" executions="+GpuDecoCopy.SingleExecutions
                     +" fallbacks="+GpuDecoCopy.SingleFallbacks+" owned="+GpuLiveOwned);return true;
             }
+            if (command.StartsWith("light skip ",StringComparison.Ordinal))
+            {
+                // 진단 전용: 메인 스레드 큰 단계를 통째로 건너뛰어 상한을 잰다. light skip <이름> on|off
+                var lp=command.Split(' ');LightProbe.Set(lp[2],lp.Length>3 && lp[3]=="on");
+                GpuLog("light skip "+lp[2]+" "+(lp.Length>3?lp[3]:"off"));return true;
+            }
             if (command == "latecache on" || command == "latecache off")
             {
                 RequireLive(!gpuLiveActive, "late cache toggle requires inactive GPU ownership");
