@@ -23,15 +23,30 @@ namespace StutterFix
             TightLate.ClearGpuList();
             gpuLiveCpuFallback=new bool[gpuLiveOwnedIndices.Length];gpuLiveCpuFallbackCount=0;
             gpuLiveOwnedSet.Clear();gpuLiveOwnedVisuals.Clear();
+#if AUTOTEST
+            int whyDead=0,whyNative=0,whyMismatch=0,whyDur0=0,whyEase=0;var whyKeys=new Dictionary<string,int>();var whyEases=new Dictionary<int,int>();
+#endif
             for(int m=0;m<gpuLiveOwnedIndices.Length;m++)
             {
                 var d=baselineObjects[gpuLiveOwnedIndices[m]] as scrVisualDecoration;bool fallback=!d;
+#if AUTOTEST
+                if(!d)whyDead++;
+#endif
                 if(d && d.eventTweens!=null)foreach(var pair in d.eventTweens)
                 {
                     var t=pair.Value;var r=t?.id as DecoAnim.Rec;
                     if(t!=null && t.active && (r==null || !r.Running)
                         || r!=null && r.Running && (!ReferenceEquals(r.D,d) || r.Key!=(int)pair.Key || r.Dur<=0 || !GpuDecoGpu.Supported((int)r.E)))
-                    {fallback=true;break;}
+                    {
+                        fallback=true;
+#if AUTOTEST
+                        if(t!=null && t.active && (r==null || !r.Running)){whyNative++;string k=pair.Key.ToString();whyKeys.TryGetValue(k,out int kc);whyKeys[k]=kc+1;}
+                        else if(!ReferenceEquals(r.D,d) || r.Key!=(int)pair.Key)whyMismatch++;
+                        else if(r.Dur<=0)whyDur0++;
+                        else {whyEase++;int ev=(int)r.E;whyEases.TryGetValue(ev,out int ec);whyEases[ev]=ec+1;}
+#endif
+                        break;
+                    }
                 }
 #if AUTOTEST
                 if(gpuImageCandidate&&!gpuImageOwn&&GpuImageActor(gpuLiveOwnedIndices[m]))fallback=true;
@@ -40,6 +55,9 @@ namespace StutterFix
                 if(fallback)gpuLiveCpuFallbackCount++;
                 else if(d){gpuLiveOwnedSet.Add(d);gpuLiveOwnedVisuals.Add(d);}
             }
+#if AUTOTEST
+            if(gpuLiveCpuFallbackCount>0)Main.Entry.Logger.Log("[GPU 장식] CPU 처리 이유: 죽은 객체 "+whyDead+" | 네이티브 트윈 진행 중 "+whyNative+" (종류 "+string.Join(", ",whyKeys.OrderByDescending(x=>x.Value).Take(8).Select(x=>x.Key+"="+x.Value))+") | 기록 키 어긋남 "+whyMismatch+" | 길이 0 "+whyDur0+" | 지원 안 하는 이징 "+whyEase+" ("+string.Join(", ",whyEases.OrderByDescending(x=>x.Value).Take(6).Select(x=>"ease"+x.Key+"="+x.Value))+") | 따라잡기 중 "+EffectBudget.InCatchUp+" 곡 위치 "+(scrConductor.instance?scrConductor.instance.songposition_minusi.ToString("F1"):"-")+" | FastMove 원래 코드로 보낸 이유별 "+FastMove.WhySummary());
+#endif
             if(gpuLiveCpuFallbackCount>0)foreach(var slice in gpuLiveSlices)
                 RequireLive(slice.Independent,"native tween CPU fallback requires independent renderers");
             RequireLive(gpuLiveOwnedSet.Count>0,"no safe GPU targets at this activation boundary");

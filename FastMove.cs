@@ -649,6 +649,7 @@ namespace StutterFix
         }
         private static readonly AccessTools.FieldRef<ffxMoveDecorationsPlus, float> tRot = AccessTools.FieldRefAccess<ffxMoveDecorationsPlus, float>("targetRot");
         internal static long AnimEffects, ImgEffects;
+        internal static string WhySummary(){var sb=new System.Text.StringBuilder();for(int i=0;i<why.Length;i++)if(why[i]>0)sb.Append("No(").Append(i).Append(")=").Append(why[i]).Append(' ');sb.Append("Fallbacks=").Append(Fallbacks);return sb.ToString();}
         private static bool No(int w)
         {
 #if AUTOTEST
