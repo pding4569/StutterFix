@@ -37,6 +37,14 @@ namespace StutterFix
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             Entry = modEntry;
+            // 이 모드는 윈도우 전용이다(user32/kernel32/D3D11 직접 호출 수백 곳). 리눅스·맥의 원래(네이티브) 유니티에서는 EntryPointNotFoundException 으로 불러오기가 죽으므로
+            // 아무것도 설치하지 않고 이유만 알려 준다. (Wine/Proton 에서는 Application.platform 이 WindowsPlayer 라 그대로 동작)
+            if (Application.platform != RuntimePlatform.WindowsPlayer && Application.platform != RuntimePlatform.WindowsEditor)
+            {
+                modEntry.Logger.Warning("StutterFix 는 Windows 전용입니다. 이 운영체제(" + Application.platform + ")에서는 아무것도 설치하지 않고 꺼 둡니다. / StutterFix is Windows-only; disabled on this OS (" + Application.platform + ").");
+                modEntry.OnGUI = e => GUILayout.Label("StutterFix 는 Windows 전용이라 이 운영체제(" + Application.platform + ")에서는 꺼져 있습니다. / StutterFix is Windows-only and is disabled on this OS.");
+                return true;
+            }
             Config = UnityModManager.ModSettings.Load<Settings>(modEntry);
             if (Config.DefaultsGen < 1)
             {

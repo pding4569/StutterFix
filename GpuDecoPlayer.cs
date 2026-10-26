@@ -140,7 +140,8 @@ namespace StutterFix
             if (!c || !song || (!song.hasSongStarted && !preStart) || !c.gameworld || c.paused || AudioListener.pause || Time.timeScale <= 0) return;
             if (scnEditor.instance && !scnEditor.instance.playMode) return;
             // 시작 직후 60프레임(따라잡기)에는 효과가 원본 경로로 도는 순간이 있어, 그때 켜면 곧바로 원본으로 복귀한다(편집기 중간 시작).
-            if (EffectBudget.InCatchUp && song.songposition_minusi > 0.5) return;
+            // 이어받기가 켜져 있으면 따라잡는 중에 만들어진 네이티브 트윈도 GPU 가 받으므로 기다리지 않는다(로딩으로 멈춘 첫 프레임 바로 뒤에 켜서, 곡 0.6초의 190ms 끊김을 로딩에 붙인다).
+            if (EffectBudget.InCatchUp && song.songposition_minusi > 0.5 && !(DrawCollapsePolicy.AdoptNativeTweens && DrawCollapsePolicy.ActivateInCatchUp)) return;
             if (!lifetime.TryActivate()) return;
             // 첫 타일을 치기 전이면(현재 타일 0) 이 프레임의 켜기 비용은 곡 시작 처리로 본다.
             try { var fl = c.currFloor; if (fl != null && fl.seqID == 0) PerfOverlay.GraceForGpuDecoStart(); } catch { }

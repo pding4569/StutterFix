@@ -2343,6 +2343,11 @@ namespace StutterFix
                 DrawCollapsePolicy.MidReusePlan=command.EndsWith(" on",StringComparison.Ordinal);
                 GpuLog("light midreuse="+DrawCollapsePolicy.MidReusePlan);return true;
             }
+            if(command=="light catchup on" || command=="light catchup off")
+            {
+                DrawCollapsePolicy.ActivateInCatchUp=command.EndsWith(" on",StringComparison.Ordinal);
+                GpuLog("light catchup="+DrawCollapsePolicy.ActivateInCatchUp);return true;
+            }
             if(command=="light deferend on" || command=="light deferend off")
             {
                 DrawCollapsePolicy.DeferEndOnResult=command.EndsWith(" on",StringComparison.Ordinal);
