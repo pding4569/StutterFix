@@ -81,6 +81,34 @@ namespace StutterFix
         }
         private float RowIn(int r) { return EaseOut(Mathf.Clamp01((Time.unscaledTime - launchPageAt - (r * 0.04f + 0.08f)) / 0.32f)); }
 
+        // 런처 왼쪽 위의 큰 페이지 제목과 번호(틀 없이 글자만)
+        private GUIStyle sLaunchTitle, sLaunchIdx;
+        private void LauncherTitle(string title)
+        {
+            if (sLaunchTitle == null)
+            {
+                sLaunchTitle = new GUIStyle(sPageTitle) { fontSize = Mathf.RoundToInt(sPageTitle.fontSize * 1.9f), alignment = TextAnchor.UpperLeft, normal = { textColor = new Color(0.93f, 0.94f, 0.96f, 1f) } };
+                sLaunchIdx = new GUIStyle(sCrumb) { alignment = TextAnchor.LowerLeft };
+            }
+            int slot = Array.IndexOf(DockOrder, page);
+            GUI.Label(new Rect(0, 4, 640, 46), title, sLaunchTitle);
+            GUI.Label(new Rect(Mathf.Min(560f, sLaunchTitle.CalcSize(new GUIContent(title)).x + 16f), 26, 120, 24), (slot + 1).ToString("00") + " / " + DockOrder.Length.ToString("00"), sLaunchIdx);
+        }
+
+        // 화면 오른쪽 위: 언어 / 화면 왼쪽 아래: 버전과 키 안내 (틀 없이 작은 글자)
+        private void DrawLauncherCorners(float sw, float sh, float e)
+        {
+            if (Event.current.type == EventType.Repaint) { }
+            var ko = new Rect(sw - 40f - 150f, 86f, 70f, 26f);
+            var en = new Rect(sw - 40f - 76f, 86f, 76f, 26f);
+            var old = GUI.color; GUI.color = new Color(1f, 1f, 1f, e);
+            if (GUI.Button(ko, "한국어", English ? sTab : sTabOn)) SetLanguage("ko");
+            if (GUI.Button(en, "English", English ? sTabOn : sTab)) SetLanguage("en");
+            GUI.color = new Color(0.55f, 0.56f, 0.6f, 0.9f * e);
+            GUI.Label(new Rect(40f, sh - 40f, 760f, 22f), "StutterFix " + Main.Entry.Info.Version + "     " + Hotkey.Name(Main.Config.WindowKey, Main.Config.WindowMods) + "  " + T("열기·닫기", "toggle") + "     Esc  " + T("닫기", "close"), sCrumb);
+            GUI.color = old;
+        }
+
         // 기능 한 줄: 런처에서는 줄마다 차례로 떠오른다
         private bool Option(string key, ref bool value, string title, string desc, string tag, bool clickable = true)
         {
@@ -209,6 +237,8 @@ namespace StutterFix
                 GUI.color = new Color(0.55f, 0.56f, 0.6f, e);
                 GUI.Label(new Rect(0, dockY - 30, sw, 22), names[hover], sTip);
             }
+
+            DrawLauncherCorners(sw, sh, e);
 
             // ── 박스
             Rect box = Rect.zero;

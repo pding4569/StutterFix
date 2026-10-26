@@ -613,7 +613,14 @@ namespace StutterFix
             float pw = rect.width, ph = rect.height;
             int[] subIcon;
             string[] subs = SubDefs(page, out subIcon);
-            float headH = subs != null ? 98f : HeaderH;
+            bool launch = UseLauncher;   // 런처: 틀(제목줄 선·하단 띠·상단 빛)을 모두 걷어내고 기능만 놓는다
+            float headH = launch ? (subs != null ? 98f : 66f) : (subs != null ? 98f : HeaderH);
+            if (launch)
+            {
+                LauncherTitle(PageNames()[Mathf.Clamp(page, 0, 9)]);
+            }
+            else
+            {
             // ── 제목줄: 로고 · StutterFix / 지금 페이지
             GUI.DrawTexture(new Rect(22, 21, 20, 20), tMark);
             var brand = new GUIContent("StutterFix");
@@ -628,12 +635,13 @@ namespace StutterFix
             if (GUI.Button(ko, "한국어", English ? sTab : sTabOn)) SetLanguage("ko");
             if (GUI.Button(en, "English", English ? sTabOn : sTab)) SetLanguage("en");
             if (GUI.Button(new Rect(pw - 48, 16, 30, 30), "×", sClose)) panelOpen = false;   // 패널만 접는다 (아이콘 줄은 남는다)
+            }
 
             // ── 갈래 탭 (긴 페이지만): 글자 탭 + 고른 것 밑의 가는 선
             if (subs != null)
             {
                 int sel = Mathf.Clamp(subSel[page], 0, subs.Length - 1);
-                float x = 22f, ty = 58f;
+                float x = launch ? 0f : 22f, ty = launch ? 52f : 58f;
                 var ev = Event.current;
                 float selX = 0, selW = 0;
                 for (int i = 0; i < subs.Length; i++)
@@ -652,11 +660,13 @@ namespace StutterFix
                 tabW = tabW <= 0 ? selW : (ev.type == EventType.Repaint ? Approach(tabW, selW, 20f) : tabW);
                 Fill(new Rect(railY, ty + 30, tabW, 2), Ink, 1);
             }
+            float FootH = launch ? 0f : 42f;
+            if (!launch)
+            {
             Fill(new Rect(0, headH - 1, pw, 1), Rule, 0);
             Fill(new Rect(14, 0, pw - 28, 1), Hex(0xFFFFFF, 0.12f), 0);   // 윗변 안쪽의 가는 빛 (유리 가장자리)
 
             // ── 아래 줄 (Raycast): 왼쪽 이름·버전, 오른쪽 키 안내
-            const float FootH = 42f;
             Fill(new Rect(0, ph - FootH, pw, 1), Rule, 0);
             Fill(new Rect(0, ph - FootH + 1, pw, FootH - 1), Hex(0xFFFFFF, 0.025f), 0);
             GUI.DrawTexture(new Rect(18, ph - FootH + 12, 18, 18), tMark);
@@ -664,6 +674,7 @@ namespace StutterFix
             float kx2 = pw - 18;
             kx2 = KeyHint(kx2, ph - FootH, FootH, "Esc", T("닫기", "Close"));
             kx2 = KeyHint(kx2 - 14, ph - FootH, FootH, Hotkey.Name(Main.Config.WindowKey, Main.Config.WindowMods), T("열기·닫기", "Toggle"));
+            }
 
             // ── 본문 (페이지를 바꾸면 옆에서 살짝 밀려 들어온다)
             const float Gutter = 12f;
