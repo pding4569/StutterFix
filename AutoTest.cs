@@ -1377,9 +1377,15 @@ namespace StutterFix
                 }
 #endif
                 case "ui":
-                    // ui <페이지 0~6 | dock | close>: 설정 창 열기 (모양 확인용)
-                    // ui 1.2 = 플레이 페이지의 셋째 갈래
-                    { var pp = arg.Split('.'); SettingsWindow.ShowForTest(arg == "close" ? -2 : arg == "dock" ? -1 : int.Parse(pp[0]), pp.Length > 1 ? int.Parse(pp[1]) : 0); }
+                    // ui <페이지 0~9 | gpudeco | GPU 장식 | GPU decorations | dock | close>: 설정 창 열기 (모양 확인용)
+                    // ui 1.2 = 플레이 페이지의 셋째 갈래, ui gpudeco.0 = GPU 장식
+                    {
+                        var pp = arg.Split('.');
+                        string name = pp[0].Trim().ToLowerInvariant();
+                        int p = name == "close" ? -2 : name == "dock" ? -1
+                            : name == "gpudeco" || name == "gpu 장식" || name == "gpu decorations" ? 9 : int.Parse(pp[0]);
+                        SettingsWindow.ShowForTest(p, pp.Length > 1 ? int.Parse(pp[1]) : 0);
+                    }
                     Log("설정 창: " + arg);
                     return true;
                 case "uiscroll":
