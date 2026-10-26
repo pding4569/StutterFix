@@ -51,6 +51,7 @@ namespace StutterFix
         private static int baselineSortedCount, baselineSupported = -1;
         private static void ClearBaseline()
         {
+            ForgetPlayerPrepIdentity();
             baselineObjects = null; baselineIds = null; baselineDecorations = null; baselineEvents = null;
 #if AUTOTEST || GPUDECO
             baselineVisualFlags = null;
@@ -223,6 +224,7 @@ namespace StutterFix
                 if (manager != d.manager) { initial.Clear(); ClearBaseline(); manager = d.manager; setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1; }
                 // Setup can run again during seek. Never replace pre-scrub values with animated values.
                 if (initial.ContainsKey(d)) return;
+                if (playerPrepKept) ClearPlayerPrepSnapshot(); // New objects must be captured normally before the next PreparePlayer.
                 if (baselineObjects != null) throw new InvalidOperationException("기준 스냅샷 재사용 거부: 새 장식 객체 Setup; 맵 다시 open 필요");
                 if (initial.Count >= MaxDecorations && !initial.ContainsKey(d)) throw new InvalidOperationException("장식 상한");
                 var row = new DecoBakeCore.Decoration { Id = d.GetInstanceID(), OriginalX = d.startPos.x, OriginalY = d.startPos.y };
@@ -282,6 +284,7 @@ namespace StutterFix
         private static void BeginPrepCollection(List<scrFloor> floors, bool newSchedule)
         {
             if (!enabled) return;
+            ForgetPlayerPrepIdentity();
             try
             {
                 CancelBuild(true);

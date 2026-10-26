@@ -114,6 +114,8 @@ namespace StutterFix
         internal static bool SkipPausedCompute=false;
         // 곡 시작 키를 누르기 전(Start 상태, 정지된 화면)에 GPU 장식을 켠다: 켜는 약 150ms 가 카운트다운이 아니라 멈춰 있는 화면에서 일어난다.
         internal static bool PreStartActivate=true;
+        // 죽음·완주 순간(FailAction/Fail2Action/OnLandOnPortal)에는 GPU 장식을 되돌리지 않고 다음 전환 때 되돌린다.
+        internal static bool DeferEndOnResult=true;
         // 곡 중간 시작이어도 CPU 처리 장식·동적 제외가 없으면 준비 때 만든 구간 계획을 먼저 검증해 보고, 맞으면 다시 계획하지 않는다(계획 재구성 약 220ms 절약). 어긋나면 예전처럼 다시 계획한다.
         internal static bool MidReusePlan=true;
         // 큰 이미지 장식의 쿼드를 불투명한 부분에만 맞게 줄인다(투명 여백 래스터라이즈 제거). 텍스처 긴 변이 TightMinSide 이상일 때만.

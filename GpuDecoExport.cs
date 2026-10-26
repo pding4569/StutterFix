@@ -384,6 +384,7 @@ namespace StutterFix
         internal static void NotifyGpuPlaybackEnded(string method)
         {
             if(!gpuLiveActive)return;
+            if(GpuDecoPlayer.Product && DrawCollapsePolicy.DeferEndOnResult && (method=="FailAction" || method=="Fail2Action" || method=="OnLandOnPortal"))return; // 제품 경로(GpuDecoPlayer.End)와 같은 뜻: 전환 때 되돌린다
             gpuLivePortalObserved=method=="OnLandOnPortal";
             GpuLog("lifecycle_end source=existing_game_callback method="+method+" song="
                 +(scrConductor.instance?scrConductor.instance.songposition_minusi:double.NaN).ToString("F6",Inv));
@@ -2328,10 +2329,24 @@ namespace StutterFix
                 GpuLog("copy_mask bypass="+gpuCopyMaskBypass+" active_chunks="+chunks+" total_chunks="
                     +((gpuLiveOwnedRenderers.Length+511)/512)+" renderer_order_changed=False");return true;
             }
+#if AUTOTEST
+            if (command == "light prepreuse on" || command == "light prepreuse off" || command == "light prepreuse verify")
+            {
+                playerPrepReuseEnabled = command != "light prepreuse off";
+                playerPrepVerify = command == "light prepreuse verify";
+                GpuLog("light prepreuse=" + playerPrepReuseEnabled + " verify=" + playerPrepVerify);
+                return true;
+            }
+#endif
             if(command=="light midreuse on" || command=="light midreuse off")
             {
                 DrawCollapsePolicy.MidReusePlan=command.EndsWith(" on",StringComparison.Ordinal);
                 GpuLog("light midreuse="+DrawCollapsePolicy.MidReusePlan);return true;
+            }
+            if(command=="light deferend on" || command=="light deferend off")
+            {
+                DrawCollapsePolicy.DeferEndOnResult=command.EndsWith(" on",StringComparison.Ordinal);
+                GpuLog("light deferend="+DrawCollapsePolicy.DeferEndOnResult);return true;
             }
             if(command=="light prestart on" || command=="light prestart off")
             {

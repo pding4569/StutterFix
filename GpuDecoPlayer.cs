@@ -132,7 +132,7 @@ namespace StutterFix
         {
             if (!Product || lifetime.Blocked || !lifetime.Prepared) return;
             var c = ADOBase.controller; var song = scrConductor.instance;
-            bool preStart = DrawCollapsePolicy.PreStartActivate && c && c.gameworld && !c.paused && !(scnEditor.instance) && CurrentState(c) == States.Start && !EffectBudget.InCatchUp;
+            bool preStart = DrawCollapsePolicy.PreStartActivate && c && c.gameworld && !c.paused && !(scnEditor.instance) && CurrentState(c) == States.Start; // 시작 키 전에는 따라잡을 효과가 없다(InCatchUp 은 다시 하기 뒤 몇 초 켜져 있어 활성화가 키를 누른 뒤로 밀렸다)
 #if AUTOTEST
             if (c && song && !song.hasSongStarted && lifetime.Prepared && !lifetime.Attempted && (Time.frameCount % 240) == 0)
                 Main.Entry.Logger.Log("[GPU 장식] 시작 전 대기 점검: preStart " + preStart + " gameworld " + c.gameworld + " paused " + c.paused + " 상태 " + CurrentState(c) + " 따라잡기 " + EffectBudget.InCatchUp + " 에디터 " + (bool)scnEditor.instance + " 오디오정지 " + AudioListener.pause + " timeScale " + Time.timeScale);
@@ -185,6 +185,16 @@ namespace StutterFix
 #if AUTOTEST
             Main.Entry.Logger.Log("[GPU 장식] 종료 후크: " + reason + " | 준비됨 " + lifetime.Prepared + " 시도함 " + lifetime.Attempted + " 막힘 " + lifetime.Blocked + " 준비중 " + Preparing);
 #endif
+            // 죽음·완주 순간에는 되돌리지 않는다: 켜 둔 채 결과 화면을 그리고, 다시 하기·나가기·편집기 복귀 같은 전환(어차피 멈추는 순간)에서 되돌린다.
+            // 마지막 타일·죽는 프레임의 약 40~55ms 복원 멈춤이 없어진다.
+            if (DrawCollapsePolicy.DeferEndOnResult && DecoBake.GpuLiveActive && lifetime.Attempted
+                && (reason == "FailAction" || reason == "Fail2Action" || reason == "OnLandOnPortal"))
+            {
+#if AUTOTEST
+                Main.Entry.Logger.Log("[GPU 장식] 종료를 전환 때로 미룸: " + reason);
+#endif
+                return;
+            }
             lifetime.NewRound();
             cleanupPending=false;
             // 맵을 벗어나거나 새로 불러올 때만 준비 결과를 버린다. 다시 하기·죽음·편집기 정지 등은 원본으로 되돌리기만 하고 GPU 준비를 남긴다.
@@ -315,12 +325,159 @@ namespace StutterFix
                 return h == 0 ? 1UL : h;
             }
         }
-        static bool SameBaselineObjects(scrDecoration[] a, scrDecoration[] b)
+        static bool SameBaselineObjects(IList<scrDecoration> a, IList<scrDecoration> b)
         {
-            if (a == null || b == null || a.Length != b.Length) return false;
-            for (int i = 0; i < a.Length; i++) if (!ReferenceEquals(a[i], b[i])) return false;
+            if (a == null || b == null || a.Count != b.Count) return false;
+            for (int i = 0; i < a.Count; i++) if (!a[i] || !b[i] || !ReferenceEquals(a[i], b[i])) return false;
             return true;
         }
+        static bool playerPrepReuseEnabled = true, playerPrepKept;
+        static scnGame playerPrepGame;
+        static LevelData playerPrepLevel;
+        static ulong playerPrepFingerprint;
+#if AUTOTEST
+        static bool playerPrepVerify;
+#endif
+        // Only a game-screen retry may retain a CPU snapshot. This is a cheap
+        // change detector, not a deep hash of every mutable LevelEvent field.
+        static ulong PlayerPrepFingerprint(List<scrFloor> floors)
+        {
+            var game = ADOBase.customLevel;
+            var data = game ? game.levelData : null;
+            if (scnEditor.instance || !game || data == null || floors == null
+                || data.levelEvents == null || data.decorations == null || !ADOBase.controller
+                || scrConductor.instance?.song == null || !scrVfxPlus.instance) return 0;
+            unchecked
+            {
+                ulong h = 14695981039346656037UL;
+                void M(ulong v) { h ^= v; h *= 1099511628211UL; }
+                void F(float v) => M((uint)BitConverter.SingleToInt32Bits(v));
+                void R(object v) => M(v == null ? 0UL : (uint)System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(v));
+                void Events(List<LevelEvent> events)
+                {
+                    R(events); M((ulong)events.Count);
+                    // At most 16 evenly spaced events, including both ends.
+                    int n = Math.Min(16, events.Count);
+                    for (int s = 0; s < n; s++)
+                    {
+                        var e = events[n == 1 ? 0 : (int)((long)s * (events.Count - 1) / (n - 1))];
+                        R(e); if (e == null) continue;
+                        M((uint)e.floor); M((uint)e.eventType); R(e.disabled);
+                        M(e.disabled == null ? 0UL : (ulong)e.disabled.Count);
+                        F(e.Get<float>("angleOffset")); F(e.Get<float>("duration"));
+                    }
+                }
+                R(game); R(data); Events(data.levelEvents); Events(data.decorations);
+                F(data.camZoom); F(ADOBase.controller.tileSize);
+                M((uint)ADOBase.controller.visualQuality); M(ADOBase.isOfficialLevel ? 1UL : 0UL); M(ADOBase.levelIsMikoSkip ? 1UL : 0UL);
+                F(scrConductor.instance.song.pitch); F(DOTween.timeScale);
+                F(DOTween.defaultEaseOvershootOrAmplitude); F(DOTween.defaultEasePeriod);
+                M((uint)Main.Config.GpuDecoImages); M((ulong)floors.Count);
+                for (int i = 0; i < floors.Count; i++)
+                {
+                    var floor = floors[i];
+                    if (!floor || floor.plusEffects == null) return 0;
+                    R(floor); M((uint)floor.seqID); M((ulong)BitConverter.DoubleToInt64Bits(floor.entryTime));
+                    M((ulong)floor.plusEffects.Count);
+                }
+                M((ulong)scrVfxPlus.instance.effects.Count);
+                return h == 0 ? 1UL : h;
+            }
+        }
+        static void ForgetPlayerPrepIdentity()
+        {
+            playerPrepKept = false; playerPrepFingerprint = 0;
+            playerPrepGame = null; playerPrepLevel = null;
+        }
+        // Do not clear the retained GPU image plan here: the existing setup hash
+        // still decides whether the freshly collected data can use GPU resources.
+        static void ClearPlayerPrepSnapshot()
+        {
+            ForgetPlayerPrepIdentity();
+            baselineObjects = null; baselineIds = null; baselineDecorations = null; baselineEvents = null;
+            baselineVisualFlags = null; baselineImageSelectors = null;
+            baselineSupported = -1; baselineSortedCount = 0;
+            table = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
+        }
+        static bool TryReusePlayerPreparation(List<scrFloor> floors)
+        {
+            if (!playerPrepReuseEnabled || !playerPrepKept || scnEditor.instance || gpuRecoveryBlocked || !gpuLastRestoreComplete
+                || status.StartsWith("중단:", StringComparison.Ordinal) || collector != null || job != null
+                || !ReferenceEquals(playerPrepGame, ADOBase.customLevel) || !playerPrepGame
+                || !ReferenceEquals(playerPrepLevel, playerPrepGame.levelData) || playerPrepFingerprint == 0
+                || table == null || baselineIds == null || baselineDecorations == null || baselineEvents == null
+                || baselineVisualFlags == null || baselineImageSelectors == null || prepEffectSnapshot == null
+                || !manager || !ReferenceEquals(manager, scrDecorationManager.instance) || initial.Count == 0
+                || !SameBaselineObjects(baselineObjects, manager.allDecorations)
+                || !SameBaselineObjects(gpuLiveBaseline, baselineObjects)) return false;
+            try
+            {
+                if (PlayerPrepFingerprint(floors) != playerPrepFingerprint) return false;
+                ValidateBaseline();
+                var effects = scrVfxPlus.instance.effects;
+                if (effects.Count != prepEffectSnapshot.Length) return false;
+                for (int i = 0; i < effects.Count; i++)
+                    if (!effects[i] || !ReferenceEquals(effects[i], prepEffectSnapshot[i])) return false;
+                // New generation/clock, same immutable table. Bind the current
+                // live list; PrepVfx may have replaced its List wrapper.
+                CancelBuild(true);
+                effectList = effects; prepFloors = floors; ready = true;
+                status = "준비됨 (수집·표 재사용)";
+                playerPrepKept = false;
+                return true;
+            }
+            catch { return false; } // An uncertain identity always takes full collection.
+        }
+#if AUTOTEST
+        static ulong PlayerPrepInitialHash()
+        {
+            unchecked
+            {
+                ulong h = 14695981039346656037UL;
+                foreach (var d in table.Decorations) foreach (float v in d.Initial)
+                    h = (h ^ (uint)BitConverter.SingleToInt32Bits(v)) * 1099511628211UL;
+                return h;
+            }
+        }
+        static bool VerifyPlayerPreparation(List<scrFloor> floors)
+        {
+            // Clear baseline too: Collect's baseline branch only recompiles the
+            // old snapshot and would not independently verify collection.
+            ulong expected = PlayerSetupHash(), expectedInitial = PlayerPrepInitialHash();
+            var expectedObjects = baselineObjects;
+            var saved = (Ids: baselineIds, Decorations: baselineDecorations, Events: baselineEvents,
+                Flags: baselineVisualFlags, Selectors: baselineImageSelectors, Table: table,
+                Schedule: prepEffectSnapshot, Sorted: baselineSortedCount, Supported: baselineSupported);
+            int expectedCount = table.Decorations.Length;
+            ClearPlayerPrepSnapshot();
+            BeginPrepCollection(floors, true);
+            while (collector != null) { if (!collector.MoveNext()) collector = null; }
+            if (job != null) job.GetAwaiter().GetResult();
+            Tick();
+            RequireLive(ready && table != null, status);
+            int differences = 0;
+            if (PlayerSetupHash() != expected) differences++;
+            if (!SameBaselineObjects(expectedObjects, baselineObjects)) differences++;
+            if (table.Decorations.Length != expectedCount) differences++;
+            if (PlayerPrepInitialHash() != expectedInitial) differences++;
+            Main.Entry.Logger.Log("[GPU 장식] 준비 재사용 검증: " + (differences == 0 ? "같음" : "다름") + " " + differences);
+            if (differences != 0)
+            {
+                playerPrepReuseEnabled = playerPrepVerify = false;
+                // The current table is already the independently collected
+                // fallback. Force rebuilding GPU resources from it as well.
+                return false;
+            }
+            // Agreement verifies the retained path itself: continue with the
+            // original table/arrays, not the throwaway verification result.
+            baselineObjects = expectedObjects; baselineIds = saved.Ids;
+            baselineDecorations = saved.Decorations; baselineEvents = saved.Events;
+            baselineVisualFlags = saved.Flags; baselineImageSelectors = saved.Selectors;
+            table = saved.Table; prepEffectSnapshot = saved.Schedule;
+            baselineSortedCount = saved.Sorted; baselineSupported = saved.Supported;
+            return true;
+        }
+#endif
 #if AUTOTEST
         static long hpMark; internal static readonly System.Text.StringBuilder hpSb = new System.Text.StringBuilder();
         static void HpMark(string n){ long h = GC.GetTotalMemory(false) >> 20; hpSb.Append(n).Append(' ').Append(h - hpMark).Append("MB | "); hpMark = h; }
@@ -336,7 +493,7 @@ namespace StutterFix
             // 파괴된 장식(맵을 다시 불러온 경우) 항목은 정리한다. 살아 있는 것은 처음 Setup 기록을 그대로 쓴다.
             int deadCount = 0;
             if (initial.Count > 0) { var dead = initial.Keys.Where(k => !k).ToArray(); deadCount = dead.Length; foreach (var k in dead) initial.Remove(k); }
-            bool cacheCandidate = gpuLivePrepared && !gpuRecoveryBlocked && gpuLiveSlices.Count > 0 && gpuScope != null && gpuScope.WholeSong
+            bool cacheCandidate = gpuLivePrepared && !gpuRecoveryBlocked && gpuLastRestoreComplete && gpuLiveSlices.Count > 0 && gpuScope != null && gpuScope.WholeSong
                 && gpuPreparedHash != 0 && gpuLiveManager == manager && manager == scrDecorationManager.instance;
             if (!cacheCandidate) { if (gpuLivePrepared || gpuLiveSlices.Count > 0) DisposeGpuLive(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
 #if AUTOTEST
@@ -349,21 +506,34 @@ namespace StutterFix
             GpuDecoNativeBatch.Enabled = true;
             GpuDecoCopy.Enabled = true; GpuDecoCopy.EightUavEnabled = true; GpuDecoCopy.MaskedEnabled = true; // 연구 계획의 nativecopy on8masked 와 같다
             gpuCollapsePrepare = true;
-            BeginPrepCollection(floors, true);
-            while (collector != null)
+            bool prepReuse = cacheCandidate && TryReusePlayerPreparation(floors);
+            if (!prepReuse)
             {
-                if (!collector.MoveNext()) collector = null;
+                ClearPlayerPrepSnapshot();
+                BeginPrepCollection(floors, true);
+                while (collector != null) { if (!collector.MoveNext()) collector = null; }
             }
             long p1 = Stopwatch.GetTimestamp();HpMark("수집");
-            if (job != null) job.GetAwaiter().GetResult();
-            Tick();HpMark("표 만들기");
+            if (!prepReuse)
+            {
+                if (job != null) job.GetAwaiter().GetResult();
+                Tick();
+            }
+#if AUTOTEST
+            if (prepReuse && playerPrepVerify && !VerifyPlayerPreparation(floors))
+            {
+                prepReuse = cacheCandidate = false;
+                DisposeGpuLive(); ClearGpuImagePlan(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0;
+            }
+#endif
+            HpMark("표 만들기");
             long p2 = Stopwatch.GetTimestamp();
             RequireLive(ready && table != null, status);
             RequireLive(table.Supported >= GpuDecoPlayerPolicy.MinimumOwned, "지원되는 장식이 적음 (64개 미만)");
             bool reuse = false;
             if (cacheCandidate)
             {
-                reuse = SameBaselineObjects(gpuLiveBaseline, baselineObjects) && PlayerSetupHash() == gpuPreparedHash;
+                reuse = prepReuse || (SameBaselineObjects(gpuLiveBaseline, baselineObjects) && PlayerSetupHash() == gpuPreparedHash);
                 if (reuse) gpuLiveBaseline = baselineObjects; // 같은 객체·같은 순서라 새 배열로 바꿔 끼운다
                 else { DisposeGpuLive(); ClearGpuImagePlan(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
             }
@@ -405,26 +575,30 @@ namespace StutterFix
                 }
                 finally { gpuPrePlan = false; }
             }
-            long p4 = Stopwatch.GetTimestamp();
             RequireLive(gpuLiveOwnedIndices.Length >= GpuDecoPlayerPolicy.MinimumOwned, "GPU 소유가 가능한 장식이 적음 (64개 미만)");
+            // Remember only a successfully completed preparation. Release and
+            // every full collection invalidate this identity before doing work.
+            playerPrepGame = ADOBase.customLevel;
+            playerPrepLevel = playerPrepGame ? playerPrepGame.levelData : null;
+            try { playerPrepFingerprint = PlayerPrepFingerprint(floors); }
+            catch { ForgetPlayerPrepIdentity(); }
+            long p4 = Stopwatch.GetTimestamp();
             double f = 1000.0 / Stopwatch.Frequency;
-            Main.Entry.Logger.Log("[GPU 장식] 준비 " + ((p4 - p0) * f).ToString("F0") + "ms" + (reuse ? " (이전 준비 결과 재사용)" : "") + ": 수집 " + ((p1 - p0) * f).ToString("F0") + ", 표 만들기 대기 " + ((p2 - p1) * f).ToString("F0")
+            Main.Entry.Logger.Log("[GPU 장식] 준비 " + ((p4 - p0) * f).ToString("F0") + "ms" + (prepReuse ? " (수집·표 재사용)" : reuse ? " (이전 준비 결과 재사용)" : "") + ": 수집 " + ((p1 - p0) * f).ToString("F0") + ", 표 만들기 대기 " + ((p2 - p1) * f).ToString("F0")
                 + ", 이미지 계획 " + ((p3 - p2) * f).ToString("F0") + ", GPU 준비 " + ((p4 - p3) * f).ToString("F0"));
         }
-        // 라운드 종료(다시 하기·죽음·편집기 정지): 원본으로 되돌리고 GPU 준비 결과는 남긴다. 기준 스냅샷은 다음 라운드에서 새로 수집한다.
+        // 정상 종료한 게임 화면만 CPU 준비 결과도 보존한다. 편집기는 매번 전체 수집한다.
         internal static void EndRoundPlayerKeep()
         {
             gpuPlanPreBuilt = false;
-            if (!gpuLivePrepared || gpuRecoveryBlocked || gpuPreparedHash == 0) { ReleasePlayerLevel(); return; }
+            if (!gpuLivePrepared || gpuRecoveryBlocked || !gpuLastRestoreComplete || gpuPreparedHash == 0
+                || status.StartsWith("중단:", StringComparison.Ordinal)) { ReleasePlayerLevel(); return; }
             try { StopGpuLive("round_end"); }
             catch { ReleasePlayerLevel(); return; }
+            if (!gpuLastRestoreComplete || gpuRecoveryBlocked) { ReleasePlayerLevel(); return; }
             CancelBuild();
-            baselineObjects = null; baselineIds = null; baselineDecorations = null; baselineEvents = null;
-#if AUTOTEST || GPUDECO
-            baselineVisualFlags = null; baselineImageSelectors = null; // 이미지 계획(타임라인·변형)은 남긴다
-#endif
-            baselineSupported = -1; baselineSortedCount = 0;
-            table = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
+            playerPrepKept = playerPrepReuseEnabled && !scnEditor.instance && playerPrepFingerprint != 0 && table != null;
+            if (!playerPrepKept) ClearPlayerPrepSnapshot();
 #if !DEV && !AUTOTEST
             DecoAnim.ClearGpuRecordMetadata();
 #endif
@@ -516,6 +690,7 @@ namespace StutterFix
 #if AUTOTEST
             if (gpuLiveActive && gpuCostFrames > 0) LogGpuLiveCost("product_release");
 #endif
+            ForgetPlayerPrepIdentity();
             gpuPlanPreBuilt = false; DisposeGpuLive(); gpuPreparedHash = 0; gpuCollapseIncludedPrepared = null; gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
             CancelBuild(); ClearBaseline(); table = null; // initial(처음 Setup 기록)은 남긴다: 다시 하기는 장식을 새로 Setup 하지 않을 수 있다
             effectList = null; prepEffectSnapshot = null; prepFloors = null;
