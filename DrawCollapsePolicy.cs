@@ -117,7 +117,7 @@ namespace StutterFix
         // 죽음·완주 순간(FailAction/Fail2Action/OnLandOnPortal)에는 GPU 장식을 되돌리지 않고 다음 전환 때 되돌린다.
         internal static bool DeferEndOnResult=true;
         // 에디터 중간 시작: 따라잡는 60프레임을 기다리지 않고 바로 켠다(이어받기 필요).
-        internal static bool ActivateInCatchUp=false; // 시험: 켜면 따라잡는 중 활성화가 HookFrame 로 이어받기 거절 205개 + FastMoveOriginal 복귀로 GPU 장식이 꺼져 FPS 198 (끄면 321)
+        internal static bool ActivateInCatchUp=true; // 에디터 중간 시작: 되감기 몇 프레임 직후 바로 켜서 켜는 시간(약 330ms)을 로딩 멈춤 안에 둔다. 2026-10-26: 이어받기 194~236개 성공, FPS 325 대 323(켜기 대기와 같음), 같은 판 A/C 8초과 0.592%. 되감기 구분 없이 켜면(InCatchUp 전체) HookFrame 거절+복귀로 FPS 198
         // 곡 중간 시작이어도 CPU 처리 장식·동적 제외가 없으면 준비 때 만든 구간 계획을 먼저 검증해 보고, 맞으면 다시 계획하지 않는다(계획 재구성 약 220ms 절약). 어긋나면 예전처럼 다시 계획한다.
         internal static bool MidReusePlan=true;
         // 큰 이미지 장식의 쿼드를 불투명한 부분에만 맞게 줄인다(투명 여백 래스터라이즈 제거). 텍스처 긴 변이 TightMinSide 이상일 때만.

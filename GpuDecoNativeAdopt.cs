@@ -172,6 +172,8 @@ namespace StutterFix
             nativePatches.Add(key,patched);return patched;
         }
         // Installed only on opt-in; the default-off path has no new frame hook.
+        // 활성화가 따라잡기 직후 첫 프레임에 올 수 있어, 업데이트 후크는 준비 때 미리 건다(후크를 건 같은 프레임의 트윈은 거절되기 때문).
+        internal static void EnsureNativeAdoptionHook(){ try { if (DrawCollapsePolicy.AdoptNativeTweens && !nativeUpdateHooked && !gpuLiveActive) SetNativeAdoption(true); } catch { } }
         static void SetNativeAdoption(bool enabled)
         {
             RequireLive(!gpuLiveActive,"native adoption toggle requires inactive GPU ownership");

@@ -52,7 +52,10 @@ namespace StutterFix
         // 그래서 곡 시작 뒤 60프레임, 그리고 첫 타일을 칠 때까지(실시간 모니터의 곡 시작 연출 구간)도 유예로 본다.
         private static float graceUntil;
         private static int graceFrame = -1;
-        internal static void Suspend(float seconds) { graceUntil = Time.realtimeSinceStartup + seconds; graceFrame = Time.frameCount + 60; }
+        internal static void Suspend(float seconds) { graceUntil = Time.realtimeSinceStartup + seconds; graceFrame = Time.frameCount + 60; replayFrame = Time.frameCount + 4; }
+        // 시작 지점까지의 효과를 게임이 한 프레임에 몰아서 되감아 적용하는 몇 프레임(그 뒤 효과는 평소처럼 모드 애니메이터가 맡을 수 있다)
+        private static int replayFrame = -1;
+        internal static bool InReplay { get { return Time.frameCount <= replayFrame; } }
         internal static bool InGrace { get { return Time.realtimeSinceStartup < graceUntil || Time.frameCount <= graceFrame || PerfOverlay.InStartWindow; } }
         // 곡 시작·다시 하기 직후 게임이 시작 지점까지의 효과를 몰아서 적용하는 구간만 (첫 타일까지의 연출 구간은 뺀다).
         // 타일·장식 애니메이션 직접 처리와 색 바꾸기 나누기는 순서를 바꾸지 않으므로 이 구간만 피하면 된다.
