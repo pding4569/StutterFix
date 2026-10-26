@@ -1,21 +1,21 @@
 [Licensing::Module] Trying to connect to existing licensing client channel...
 Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴" at "2026-10-26T00:20:45.0939401Z"
 OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 24505 MB
-[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴" at "2026-10-25T20:54:45.0205623Z"
 BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
 System  architecture: x64
 Process architecture: x64
-Date: 2026-10-25T20:54:45Z
+Date: 2026-10-26T00:20:45Z
 [Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 31708, path: "C:/Program Files/WindowsApps/UnityTechnologies.UnityHub_3.21.3.65535_x64__2vrhnee42bhxm/app/UnityLicensingClient_V1/Unity.Licensing.Client.exe")
 [Licensing::Module] LicensingClient has failed validation; ignoring
 [Licensing::Client] Handshaking with LicensingClient:
   Version:                 1.18.3+d7ffd15
-  Session Id:              1f10a23fb9cc4c679f5b6452704f191a
+  Session Id:              5e6a0d71e63246a3be540fc1fa73d557
   Correlation Id:          c80f5be233fbd45f5ce82780e78b2485
-  External correlation Id: 9125981993919571977
+  External correlation Id: 3473136200833658239
   Machine Id:              ooNE0R16id3ypk/QQXRV4Tmz/MA=
-[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-나로컴" (connect: 0.00s, validation: 0.00s, handshake: 0.07s)
-[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴-notifications" at "2026-10-25T20:54:45.0927493Z"
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-나로컴" (connect: 0.00s, validation: 0.04s, handshake: 0.10s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-나로컴-notifications" at "2026-10-26T00:20:45.260483Z"
 [Licensing::Module] Error: Access token is unavailable; failed to update
 [Licensing::Client] Successfully resolved entitlement details
 [Licensing::Module] License group:
@@ -25,7 +25,7 @@ Date: 2026-10-25T20:54:45Z
   Expiration: Unlimited
 [Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
 [Licensing::Client] Successfully resolved entitlement details
-[Licensing::Module] Licensing Background thread has ended after 0.08s
+[Licensing::Module] Licensing Background thread has ended after 0.22s
 
 COMMAND LINE ARGUMENTS:
 E:\Unity\Editor\6000.3.10f1\Editor\Unity.exe
@@ -75,16 +75,16 @@ E:/StutterFixWork/wt-port/tools/gpudeco-lab/project
     "memorysetup-job-temp-allocator-block-size-background=1048576"
     "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
     "memorysetup-temp-allocator-size-cloud-worker=32768"
-Player connection [988]  Target information:
+Player connection [33852]  Target information:
 
-Player connection [988]  * "[IP] 192.168.0.9 [Port] 55504 [Flags] 2 [Guid] 916453337 [EditorId] 916453337 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-UJA68AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+Player connection [33852]  * "[IP] 192.168.0.9 [Port] 55504 [Flags] 2 [Guid] 2444044455 [EditorId] 2444044455 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-UJA68AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
 
-Player connection [988] Host joined multi-casting on [225.0.0.222:54997]...
-Player connection [988] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Player connection [33852] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [33852] Host joined alternative multi-casting on [225.0.0.222:34997]...
 Input System module state changed to: Initialized.
 [Physics::Module] Initialized fallback backend.
 [Physics::Module] Id: 0xdecafbad
-[Package Manager] Connected to IPC stream "Upm-34764" after 0.4 seconds.
+[Package Manager] Connected to IPC stream "Upm-34748" after 2.9 seconds.
 [Licensing::Client] Successfully resolved entitlement details
 Library Redirect Path: Library/
 [Physics::Module] Selected backend.
@@ -93,7 +93,7 @@ Library Redirect Path: Library/
 [Physics::Module] SDK Version: 4.1.2
 [Physics::Module] Integration Version: 1.0.0
 [Physics::Module] Threading Mode: Multi-Threaded
-Artifact Garbage Collection - Removed 1 unused hashed content files
+Artifact Garbage Collection - Removed 2 unused hashed content files
 Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 6000.3.10f1 (e35f0c77bd8e)
@@ -111,7 +111,7 @@ Initialize mono
 Mono path[0] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/Managed'
 Mono path[1] = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
 Mono config path = 'E:/Unity/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56764
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56748
 Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
 Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
 ImportWorker Server TCP listen port: 0
@@ -119,42 +119,42 @@ AcceleratorClientConnectionCallback - disconnected - :0
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: E:/Unity/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.001055 seconds.
-- Loaded All Assemblies, in  0.444 seconds
+Registered in 0.015877 seconds.
+- Loaded All Assemblies, in  1.672 seconds
 Native extension for WindowsStandalone target not found
 ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:False
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.498 seconds
-Domain Reload Profiling: 941ms
-	BeginReloadAssembly (117ms)
+- Finished resetting the current domain, in  1.216 seconds
+Domain Reload Profiling: 2887ms
+	BeginReloadAssembly (765ms)
 		ExecutionOrderSort (0ms)
 		DisableScriptedObjects (0ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (16ms)
-	RebuildCommonClasses (45ms)
-	RebuildNativeTypeToScriptingClass (17ms)
-	initialDomainReloadingComplete (51ms)
-	LoadAllAssembliesAndSetupDomain (213ms)
-		LoadAssemblies (101ms)
+		CreateAndSetChildDomain (44ms)
+	RebuildCommonClasses (202ms)
+	RebuildNativeTypeToScriptingClass (16ms)
+	initialDomainReloadingComplete (210ms)
+	LoadAllAssembliesAndSetupDomain (479ms)
+		LoadAssemblies (700ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (209ms)
-			TypeCache.Refresh (207ms)
-				TypeCache.ScanAssembly (192ms)
-			BuildScriptInfoCaches (0ms)
-			ResolveRequiredComponents (1ms)
-	FinalizeReload (498ms)
+		AnalyzeDomain (467ms)
+			TypeCache.Refresh (442ms)
+				TypeCache.ScanAssembly (397ms)
+			BuildScriptInfoCaches (5ms)
+			ResolveRequiredComponents (18ms)
+	FinalizeReload (1216ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (450ms)
+		SetupLoadedEditorAssemblies (1136ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (55ms)
-			SetLoadedEditorAssemblies (5ms)
-			BeforeProcessingInitializeOnLoad (110ms)
-			ProcessInitializeOnLoadAttributes (188ms)
-			ProcessInitializeOnLoadMethodAttributes (91ms)
+			InitializePlatformSupportModulesInManaged (125ms)
+			SetLoadedEditorAssemblies (11ms)
+			BeforeProcessingInitializeOnLoad (137ms)
+			ProcessInitializeOnLoadAttributes (292ms)
+			ProcessInitializeOnLoadMethodAttributes (548ms)
 			AfterProcessingInitializeOnLoad (0ms)
-			EditorAssembliesLoaded (0ms)
+			EditorAssembliesLoaded (22ms)
 		ExecutionOrderSort2 (0ms)
 		AwakeInstancesAfterBackupRestoration (0ms)
 [Licensing::Client] Successfully resolved entitlement details
@@ -167,15 +167,14 @@ Package Manager log level set to [2]
     com.unity.modules.imageconversion@1.0.0 (location: E:\StutterFixWork\wt-port\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.imageconversion)
     com.unity.modules.assetbundle@1.0.0 (location: E:\StutterFixWork\wt-port\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.assetbundle)
 [Subsystems] No new subsystems found in resolved package list.
-[Package Manager] Done registering packages in 0.00 seconds
-[Package Manager] Done resolving packages in 1.06 seconds
+[Package Manager] Done registering packages in 0.02 seconds
+[Package Manager] Done resolving packages in 1.19 seconds
 [Package Manager] Registered 2 packages:
   Built-in packages:
     com.unity.modules.imageconversion@1.0.0 (location: E:\StutterFixWork\wt-port\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.imageconversion)
     com.unity.modules.assetbundle@1.0.0 (location: E:\StutterFixWork\wt-port\tools\gpudeco-lab\project\Library\PackageCache\com.unity.modules.assetbundle)
 [Subsystems] No new subsystems found in resolved package list.
 [Package Manager] Done registering packages in 0.00 seconds
-[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
 info: Microsoft.Hosting.Lifetime[14]
       Now listening on: http://localhost:80
 info: Microsoft.Hosting.Lifetime[0]
@@ -191,99 +190,99 @@ info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
 info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
       Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
 info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 42.7004ms
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 322.7380ms
 Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
 WorkingDir: E:/StutterFixWork/wt-port/tools/gpudeco-lab/project
 DisplayProgressbar: Compiling Scripts
-ExitCode: 0 Duration: 1s816ms
-[145/148    1s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
-[146/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
-[147/148    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
-*** Tundra build success (1.78 seconds), 3 items updated, 148 evaluated
-AssetDatabase: script compilation time: 2.178349s
+ExitCode: 0 Duration: 6s173ms
+[145/148    6s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+*** Tundra build success (6.14 seconds), 1 items updated, 148 evaluated
+AssetDatabase: script compilation time: 9.768457s
 Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.504 seconds
+Total cache size 68378808
+Total cache size after purge 68378808, took 00:00:00.0996305
+- Loaded All Assemblies, in  0.692 seconds
 Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
 Native extension for WindowsStandalone target not found
 ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.503 seconds
-Domain Reload Profiling: 1007ms
-	BeginReloadAssembly (307ms)
+- Finished resetting the current domain, in  0.478 seconds
+Domain Reload Profiling: 1169ms
+	BeginReloadAssembly (204ms)
 		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (17ms)
+		DisableScriptedObjects (19ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (162ms)
+		CreateAndSetChildDomain (63ms)
 	RebuildCommonClasses (44ms)
 	RebuildNativeTypeToScriptingClass (17ms)
 	initialDomainReloadingComplete (24ms)
-	LoadAllAssembliesAndSetupDomain (111ms)
-		LoadAssemblies (178ms)
+	LoadAllAssembliesAndSetupDomain (402ms)
+		LoadAssemblies (467ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
 		AnalyzeDomain (10ms)
 			TypeCache.Refresh (7ms)
 				TypeCache.ScanAssembly (2ms)
-			BuildScriptInfoCaches (1ms)
+			BuildScriptInfoCaches (0ms)
 			ResolveRequiredComponents (0ms)
-	FinalizeReload (503ms)
+	FinalizeReload (478ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (367ms)
+		SetupLoadedEditorAssemblies (348ms)
 			LogAssemblyErrors (0ms)
 			InitializePlatformSupportModulesInManaged (25ms)
 			SetLoadedEditorAssemblies (3ms)
-			BeforeProcessingInitializeOnLoad (144ms)
-			ProcessInitializeOnLoadAttributes (147ms)
-			ProcessInitializeOnLoadMethodAttributes (45ms)
-			AfterProcessingInitializeOnLoad (2ms)
+			BeforeProcessingInitializeOnLoad (138ms)
+			ProcessInitializeOnLoadAttributes (137ms)
+			ProcessInitializeOnLoadMethodAttributes (43ms)
+			AfterProcessingInitializeOnLoad (3ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (12ms)
-Start importing Assets/Shaders/GpuDeco.compute using Guid(9e1d6beb23bd87a4d8734c511ea0954b) (ComputeShaderImporter)Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
- -> (artifact id: 'cdd2ec71be4c7feed6fb1e7c79c7be0f') in 0.0342481 seconds
+		AwakeInstancesAfterBackupRestoration (11ms)
+Start importing Assets/Shaders/GpuDeco.compute using Guid(9e1d6beb23bd87a4d8734c511ea0954b) (ComputeShaderImporter)Launched and connected shader compiler UnityShaderCompiler.exe after 0.14 seconds
+ -> (artifact id: '403b25a87012e7634f9d4e38b7d99cc3') in 0.3818376 seconds
 Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Asset Pipeline Refresh (id=84bfe7881a3c86d458cdb2af4451ec96): Total: 4.424 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+Asset Pipeline Refresh (id=b862461c43823414da016fa82e755c22): Total: 13.017 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
 	Summary:
 		Imports: total=1 (actual=1, local cache=0, cache server=0)
-		Asset DB Process Time: managed=2 ms, native=603 ms
-		Asset DB Callback time: managed=58 ms, native=1071 ms
-		Scripting: domain reloads=1, domain reload time=504 ms, compile time=2180 ms, other=3 ms
+		Asset DB Process Time: managed=18 ms, native=1108 ms
+		Asset DB Callback time: managed=110 ms, native=1314 ms
+		Scripting: domain reloads=1, domain reload time=691 ms, compile time=9770 ms, other=2 ms
 		Project Asset Count: scripts=28, non-scripts=6
-		Asset File Changes: new=0, changed=2, moved=0, deleted=0
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
 		Scan Filter Count: 0
 	InvokeCustomDependenciesCallbacks: 0.001ms
-	InvokePackagesCallback: 1068.787ms
-	ApplyChangesToAssetFolders: 0.239ms
-	Scan: 14.941ms
-	OnSourceAssetsModified: 0.848ms
-	CategorizeAssetsWithTransientArtifact: 0.184ms
-	ProcessAssetsWithTransientArtifactChanges: 1.147ms
-	CategorizeAssets: 0.192ms
-	ImportOutOfDateAssets: 539.730ms (-1676.334ms without children)
-		ImportManagerImport: 35.273ms (0.807ms without children)
-			ImportInProcess: 34.446ms
-			UpdateCategorizedAssets: 0.020ms
-		CompileScripts: 2180.391ms
-		ReloadNativeAssets: 0.001ms
-		UnloadImportedAssets: 0.114ms
+	InvokePackagesCallback: 1274.857ms
+	ApplyChangesToAssetFolders: 0.128ms
+	Scan: 100.612ms
+	OnSourceAssetsModified: 1.502ms
+	CategorizeAssetsWithTransientArtifact: 0.194ms
+	ProcessAssetsWithTransientArtifactChanges: 23.951ms
+	CategorizeAssets: 40.472ms
+	ImportOutOfDateAssets: 862.776ms (-9291.556ms without children)
+		ImportManagerImport: 383.409ms (0.930ms without children)
+			ImportInProcess: 382.147ms
+			UpdateCategorizedAssets: 0.332ms
+		CompileScripts: 9770.477ms
+		ReloadNativeAssets: 0.000ms
+		UnloadImportedAssets: 0.112ms
 		ReloadImportedAssets: 0.000ms
-		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.008ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.009ms
 		InitializingProgressBar: 0.005ms
 		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
-		OnDemandSchedulerStart: 0.273ms
-	PostProcessAllAssets: 60.942ms
-	Hotreload: 0.573ms
-	GatherAllCurrentPrimaryArtifactRevisions: 0.003ms
-	UnloadStreamsBegin: 1.590ms
-	PersistCurrentRevisions: 0.026ms
+		OnDemandSchedulerStart: 0.319ms
+	PostProcessAllAssets: 146.286ms
+	Hotreload: 2.573ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 1.598ms
+	PersistCurrentRevisions: 0.028ms
 	UnloadStreamsEnd: 0.001ms
-	GenerateScriptTypeHashes: 0.001ms
-	Untracked: 2735.159ms
+	GenerateScriptTypeHashes: 0.000ms
+	Untracked: 10561.804ms
 
 Application.AssetDatabase Initial Refresh End
-Scanning for USB devices : 1.445ms
+Scanning for USB devices : 1.588ms
 Initializing Unity extensions:
 [MODES] ModeService[none].Initialize
 [MODES] ModeService[none].LoadModes
@@ -291,7 +290,7 @@ Initializing Unity extensions:
 Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
 Unloading 29 unused Assets / (1.4 MB). Loaded Objects now: 632.
 Memory consumption went from 89.4 MB to 88.0 MB.
-Total: 5.686900 ms (FindLiveObjects: 0.044200 ms CreateObjectMapping: 0.004400 ms MarkObjects: 5.023000 ms  DeleteObjects: 0.614400 ms)
+Total: 49.557600 ms (FindLiveObjects: 0.044300 ms CreateObjectMapping: 0.004900 ms MarkObjects: 48.887600 ms  DeleteObjects: 0.619500 ms)
 
 [gpudeco-lab] editor=6000.3.10f1 device=NVIDIA GeForce RTX 4060 Ti api=Direct3D11
 UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
@@ -306,12 +305,12 @@ GpuDecoLab:CollapseBundle () (at Assets/Editor/GpuDecoDrawCollapseProbe.cs:14)
 
 (Filename: Assets/Editor/GpuDecoLab.cs Line: 25)
 
-Asset Pipeline Refresh (id=a626d53bbf440ba498af8e98d7c5791b): Total: 0.021 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
-Asset Pipeline Refresh (id=bf07ce34904e5de468f4330c58e1cd07): Total: 0.027 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
-Start importing ProjectSettings/ProjectSettings.asset using Guid(00000000000000004000000000000000) (LibraryAssetImporter) -> (artifact id: 'b3e255e95208982f85b57995b6fd4125') in 0.0018412 seconds
+Asset Pipeline Refresh (id=468c72c76665c2441873721a3c842f24): Total: 0.007 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=db81b23bd1b46b049b6c5afc567281da): Total: 0.027 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/ProjectSettings.asset using Guid(00000000000000004000000000000000) (LibraryAssetImporter) -> (artifact id: 'b3e255e95208982f85b57995b6fd4125') in 0.0120136 seconds
 Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Asset Pipeline Refresh (id=6d50e15cae7c05a469d5d39c03c872b8): Total: 0.043 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=8e6f33f8bddf71946845f5a529b7a5f3): Total: 0.052 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
 info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
       Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc -
 info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
@@ -319,12 +318,12 @@ info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
 info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
       Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
 info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 1.4736ms
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 1.5107ms
 Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aESkipCompile.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
 WorkingDir: E:/StutterFixWork/wt-port/tools/gpudeco-lab/project
-ExitCode: 0 Duration: 0s84ms
-*** Tundra build success (0.05 seconds), 0 items updated, 3 evaluated
-Asset Pipeline Refresh (id=65c3416756cd7dc42a4186ce8bad85ab): Total: 0.001 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+ExitCode: 0 Duration: 0s94ms
+*** Tundra build success (0.06 seconds), 0 items updated, 3 evaluated
+Asset Pipeline Refresh (id=53965e2bf5d349448a112e5244dd9648): Total: 0.001 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
 [ScriptCompilation] Requested script compilation because: Recompiling scripts for player build.
 BuildPlayer: start building target 19
 info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
@@ -334,13 +333,15 @@ info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
 info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
       Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
 info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 0.7621ms
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 0.5336ms
 Starting: E:\Unity\Editor\6000.3.10f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aP.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
 WorkingDir: E:/StutterFixWork/wt-port/tools/gpudeco-lab/project
 Total cache size 68378808
-ExitCode: 0 Duration: 0s31ms
+Total cache size after purge 68378808, took 00:00:00.0934043
+ExitCode: 0 Duration: 0s30ms
 *** Tundra build success (0.00 seconds), 0 items updated, 3 evaluated
-Total cache size after purge 68378808, took 00:00:00.1010385
+Total cache size 68378808
+Total cache size after purge 68378808, took 00:00:00.0748610
 Compiling shader "StutterFix/GpuDecoBatch"
   Pass "" (vp)
     Target graphics API: d3d11
@@ -356,9 +357,9 @@ Compiling shader "StutterFix/GpuDecoBatch"
     After built-in stripping:   2
     After scriptable stripping: 2
     Processed in 0.00 seconds
-  Pass  (vp, d3d11) finished in 0.00 seconds. Local cache hits 2 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
-    Prepared data for serialisation in 0.00s
-  Pass  (fp, d3d11) finished in 0.00 seconds. Local cache hits 2 (0.00s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+  Pass  (vp, d3d11) finished in 0.03 seconds. Local cache hits 2 (0.03s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
+    Prepared data for serialisation in 0.02s
+  Pass  (fp, d3d11) finished in 0.05 seconds. Local cache hits 2 (0.03s CPU time), remote cache hits 0 (0.00s CPU time), compiled 0 variants (0.00s CPU time), skipped 0 variants.
     Prepared data for serialisation in 0.00s
 Serialized binary data for shader StutterFix/GpuDecoBatch in 0.00s
     d3d11 (total internal programs: 4, unique: 4)
@@ -374,9 +375,7 @@ Compiling compute shader "GpuDeco"
 Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
 Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
 Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
-Total cache size 68378808
-Total cache size after purge 68378808, took 00:00:00.1114833
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
 Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
 Shader warning in 'GpuDeco': integer modulus may be much slower, try using uints if possible. at kernel Evaluate at GpuDeco.compute(156) (on d3d11)
 Shader warning in 'GpuDeco': use of potentially uninitialized variable (Value) at kernel Evaluate at GpuDeco.compute(212) (on d3d11)
@@ -519,7 +518,7 @@ Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previou
 Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel ImageRotationProbe at GpuDeco.compute(326) (on d3d11)
 Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel LinearProbe at GpuDeco.compute(326) (on d3d11)
 Shader warning in 'GpuDeco': 'k': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used at kernel RotationProbe at GpuDeco.compute(326) (on d3d11)
-    finished in 19.04 seconds. Local cache hits 0, remote cache hits 0, compiled 12 variants
+    finished in 15.57 seconds. Local cache hits 0, remote cache hits 0, compiled 12 variants
 Compiling shader "StutterFix/GpuTileComposite"
   Pass "" (vp)
     Target graphics API: d3d11
@@ -548,37 +547,37 @@ Platform defines: SHADER_API_DESKTOP UNITY_COLORSPACE_GAMMA UNITY_ENABLE_DETAIL_
 Disabled keywords: SHADER_API_GLES30 SHADER_API_GLES31 SHADER_API_GLES32 UNITY_ASTC_NORMALMAP_ENCODING UNITY_FRAMEBUFFER_FETCH_AVAILABLE UNITY_HARDWARE_TIER1 UNITY_HARDWARE_TIER2 UNITY_HARDWARE_TIER3 UNITY_LIGHTMAP_DLDR_ENCODING UNITY_LIGHTMAP_RGBM_ENCODING UNITY_METAL_SHADOWS_USE_POINT_FILTERING UNITY_NO_DXT5nm UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 UNITY_PBS_USE_BRDF3 UNITY_PRETRANSFORM_TO_DISPLAY_ORIENTATION UNITY_UNIFIED_SHADER_PRECISION_MODEL UNITY_VIRTUAL_TEXTURING
 
 ***Player size statistics***
-Total compressed size 88.6 KB. Total uncompressed size 0.5 MB.
+Total compressed size 88.7 KB. Total uncompressed size 0.5 MB.
 Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
 Unloading 24 unused Assets / (1.1 MB). Loaded Objects now: 670.
-Memory consumption went from 89.9 MB to 88.8 MB.
-Total: 6.414200 ms (FindLiveObjects: 0.042600 ms CreateObjectMapping: 0.006400 ms MarkObjects: 5.894300 ms  DeleteObjects: 0.469800 ms)
+Memory consumption went from 89.9 MB to 88.7 MB.
+Total: 5.902100 ms (FindLiveObjects: 0.044300 ms CreateObjectMapping: 0.006100 ms MarkObjects: 5.428600 ms  DeleteObjects: 0.422300 ms)
 
 
 ***Player size statistics***
 Total compressed size 1.5 KB. Total uncompressed size 4.1 KB.
 Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
 Unloading 0 unused Assets / (0 B). Loaded Objects now: 672.
-Memory consumption went from 87.7 MB to 87.7 MB.
-Total: 5.416100 ms (FindLiveObjects: 0.042400 ms CreateObjectMapping: 0.004200 ms MarkObjects: 5.363700 ms  DeleteObjects: 0.004300 ms)
+Memory consumption went from 87.6 MB to 87.6 MB.
+Total: 5.367000 ms (FindLiveObjects: 0.041300 ms CreateObjectMapping: 0.004100 ms MarkObjects: 5.317200 ms  DeleteObjects: 0.003600 ms)
 
 
 -------------------------------------------------------------------------------
 Bundle Name: stutterfix_gpudeco
-Compressed Size:88.6 kb
+Compressed Size:88.7 kb
 Uncompressed usage by category (Percentages based on user generated assets only):
 Textures               0.0 kb	 0.0% 
 Meshes                 0.0 kb	 0.0% 
 Animations             0.0 kb	 0.0% 
 Sounds                 0.0 kb	 0.0% 
 Shaders                16.0 kb	 3.0% 
-Other Assets           431.7 kb	 81.5% 
+Other Assets           432.1 kb	 81.5% 
 Levels                 0.0 kb	 0.0% 
 File headers           82.2 kb	 15.5% 
-Total User Assets      530.0 kb	 100.0% 
-Complete build size    530.0 kb
+Total User Assets      530.3 kb	 100.0% 
+Complete build size    530.3 kb
 Used Assets and files from the Resources folder, sorted by uncompressed size:
- 431.4 kb	 81.4% Assets/Shaders/GpuDeco.compute
+ 431.8 kb	 81.4% Assets/Shaders/GpuDeco.compute
  10.0 kb	 1.9% Assets/Shaders/GpuDecoBatch.shader
  6.1 kb	 1.1% Assets/Shaders/GpuTileComposite.shader
  0.3 kb	 0.1% AssetBundle Object
@@ -626,16 +625,16 @@ Input System module state changed to: Shutdown.
 [Licensing::IpcConnector] LicenseClient-나로컴 channel disconnected successfully.
 AcceleratorClientConnectionCallback - disconnected - :0
 Cleanup mono
-abort_threads: Failed aborting id: 0000000000007F18, mono_thread_manage will ignore it
+abort_threads: Failed aborting id: 000000000000806C, mono_thread_manage will ignore it
 
-abort_threads: Failed aborting id: 0000000000007804, mono_thread_manage will ignore it
+abort_threads: Failed aborting id: 0000000000006D38, mono_thread_manage will ignore it
 
-abort_threads: Failed aborting id: 0000000000007F18, mono_thread_manage will ignore it
+abort_threads: Failed aborting id: 000000000000806C, mono_thread_manage will ignore it
 
-abort_threads: Failed aborting id: 0000000000007804, mono_thread_manage will ignore it
+abort_threads: Failed aborting id: 0000000000006D38, mono_thread_manage will ignore it
 
-debugger-agent: Unable to listen on 3824
+debugger-agent: Unable to listen on 3664
 Checking for leaked weakptr:
   Found no leaked weakptrs.
 [Package Manager] Server process was shutdown
-##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1792961711544,"processId":34764,"allocatedMemory":9992557,"memoryLabels":[{"Default":29313},{"Permanent":15236},{"NewDelete":67907},{"Thread":4230344},{"Manager":30013},{"VertexData":8},{"Geometry":816},{"Texture":160},{"Shader":80145},{"Material":24},{"GfxDevice":55257},{"Animation":392},{"Audio":2664},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":720},{"Input":14984},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"ScriptingNativeRuntime":155060},{"BaseObject":1620208},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":1016},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":20273},{"DynamicArray":76023},{"HashMap":68636},{"Utility":2659462},{"Curl":2559},{"PoolAlloc":2056},{"AI":80},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":8496},{"WebRequest":808},{"VR":47994},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":560},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":96},{"EditorUtility":87598},{"VersionControl":4},{"Undo":947},{"AssetDatabase":210192},{"EditorGi":328},{"UnityConnect":29208},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":268},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2900},{"Licensing":776},{"AssetReference":32},{"IPCStream":32}]}
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1792974087239,"processId":34748,"allocatedMemory":9992564,"memoryLabels":[{"Default":29313},{"Permanent":15236},{"NewDelete":67907},{"Thread":4230344},{"Manager":30013},{"VertexData":8},{"Geometry":816},{"Texture":160},{"Shader":80145},{"Material":24},{"GfxDevice":55257},{"Animation":392},{"Audio":2664},{"FreeType":8},{"FontEngine":736},{"Physics":2090},{"Physics2D":16},{"Serialization":720},{"Input":14984},{"JobScheduler":33024},{"TextLib":216},{"Mono":32},{"ScriptingNativeRuntime":155060},{"BaseObject":1620208},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":1016},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":20280},{"DynamicArray":76023},{"HashMap":68636},{"Utility":2659462},{"Curl":2559},{"PoolAlloc":2056},{"AI":80},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":8496},{"WebRequest":808},{"VR":47994},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":560},{"Hierarchy":608},{"CoreStats":13032},{"Identifiers":12960},{"Gui":96},{"EditorUtility":87598},{"VersionControl":4},{"Undo":947},{"AssetDatabase":210192},{"EditorGi":328},{"UnityConnect":29208},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":268},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2900},{"Licensing":776},{"AssetReference":32},{"IPCStream":32}]}

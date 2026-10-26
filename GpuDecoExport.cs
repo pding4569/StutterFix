@@ -88,6 +88,8 @@ namespace StutterFix
 #endif
                     r.enabled=wanted;}
             }
+            internal void RefreshItem(int item)=>ApplyAlpha(item);
+            internal bool IsHiddenAlpha(int item)=>HiddenAlpha(item);
             internal void RefreshAlpha()
             {
                 for(int i=0;i<Renderers.Count;i++)ApplyAlpha(i);
@@ -1380,6 +1382,9 @@ namespace StutterFix
             catch (Exception e)
             {
                 if(gpuCollapseOn){gpuCollapseFault=e.GetType().Name+":"+e.Message;GpuLog("DRAWCOLLAPSE_RUNTIME_ERROR "+gpuCollapseFault);}
+#if AUTOTEST
+                Main.Entry.Logger.Log("[GPU 장식] 프레임 예외: "+e);
+#endif
                 RecoverGpuLive("LateUpdateException:"+e.GetType().Name);
             }
         }

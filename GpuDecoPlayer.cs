@@ -48,6 +48,8 @@ namespace StutterFix
                 hooks.Patch(setup, postfix: new HarmonyMethod(typeof(DecoBake), "SetupPostfix"));
                 hooks.Patch(prep, postfix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(Prepared)) { priority = Priority.Last });
                 hooks.Patch(update, prefix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(BeforeControllerUpdate)) { priority = Priority.First });
+                var depth = AccessTools.Method(typeof(scrVisualDecoration), "SetDepth");
+                if (depth != null) hooks.Patch(depth, postfix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(DepthChanged)));
                 // These hooks own the product lifetime independently of other modules.
                 foreach (var pair in new[] {
                     (typeof(scrController), "FailAction"), (typeof(scrController), "Fail2Action"),
@@ -65,6 +67,7 @@ namespace StutterFix
             catch (Exception e) { Skip(e.Message); Shutdown(); }
         }
 
+        static void DepthChanged(scrVisualDecoration __instance) { if (Product) DecoBake.GpuDepthChanged(__instance); }
         static void SceneChanged(UnityEngine.SceneManagement.Scene oldScene, UnityEngine.SceneManagement.Scene newScene) => End("화면 전환");
         static void Ending(MethodBase __originalMethod) => End(__originalMethod.Name);
 
@@ -115,7 +118,13 @@ namespace StutterFix
             if (EffectBudget.InCatchUp && song.songposition_minusi > 0.5) return;
             if (!lifetime.TryActivate()) return;
             try { DecoBake.StartPlayer(); }
-            catch (Exception e) { Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false; }
+            catch (Exception e)
+            {
+#if AUTOTEST
+                Main.Entry.Logger.Log("[GPU 장식] 켜기 예외: " + e);
+#endif
+                Skip(e.Message); DecoBake.ReleasePlayerLevel(); cleanupPending=false;
+            }
         }
 
         internal static void Tick()
@@ -328,6 +337,7 @@ namespace StutterFix
             {
                 gpuPreparedHash = PlayerSetupHash();
                 gpuCollapseIncludedPrepared = gpuCollapseIncluded != null ? (bool[])gpuCollapseIncluded.Clone() : null;
+                SaveCollapseBaseState();
                 gpuFallbackExcludedItems.Clear(); gpuFallbackBarrierRows.Clear();
             }
             gpuReusedRound = reuse;
@@ -385,9 +395,14 @@ namespace StutterFix
             if (gpuCollapseTexture == null)
                 throw new InvalidOperationException("그리기 통합을 쓸 수 없어 원본 유지");
             UndoCpuFallbackExclusion();
+            bool hadDynamic = gpuDynExcludedItems.Count > 0;
+            RestoreCollapseBaseState();
             gpuCollapsePlannedFallback = 0;
             if (gpuLiveCpuFallbackCount != 0) ExcludeCpuFallbackFromCollapse();
-            if (gpuReusedRound || gpuLiveCpuFallbackCount != 0) RebuildDrawCollapse(); // 재사용 라운드는 곡 중 상태가 달라졌을 수 있어 다시 계획한다
+            var songNow = scrConductor.instance;
+            bool midSong = songNow != null && songNow.songposition_minusi > 0.5;
+            // 재사용 라운드·CPU 처리 장식·동적 제외 흔적·곡 중간 시작(장벽 상태가 달라짐)이면 통합을 다시 계획한다
+            if (gpuReusedRound || gpuLiveCpuFallbackCount != 0 || hadDynamic || midSong) RebuildDrawCollapse();
             {
                 ApplyBarrierClones();
                 ValidateDrawCollapse();

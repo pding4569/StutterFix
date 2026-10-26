@@ -348,6 +348,8 @@ void EvaluateCollapse(uint3 thread:SV_DispatchThreadID)
 {
     uint slot=thread.x;if(slot>=_CollapseCount)return;
     uint i=_CollapseMap[slot];float v[16];
+    // 센티널(0xFFFFFFFF 등 항목 수 이상): 동적으로 독립 렌더러로 넘긴 슬롯. 정점을 비운다.
+    if(i>=_Count){[unroll] for(uint z=0;z<4;z++)_Vertices.Store3((slot*4+z)*60u,uint3(0,0,0));return;}
     // 알파 두 채널을 먼저 읽어 안 보이면 나머지 채널·FP64 계산을 건너뛴다.
     [unroll] for(uint ac=10;ac<12;ac++)
     {

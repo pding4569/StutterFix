@@ -81,7 +81,9 @@ namespace StutterFix
         internal static bool TieAllBarriers=false;
         // 같은 정렬 묶음(층·순서·큐·거리) 안의 순서는 머티리얼 인스턴스 ID 로 갈린다. 구간이 있는 묶음의 장벽(스프라이트·메시 렌더러, 머티리얼 1개)에는
         // 같은 속성의 복제 머티리얼을 켜 있는 동안만 씌우고, 구간·장벽의 머티리얼을 원래 ID 순서의 거꾸로 만들어 정확한 순서를 재현한다(런타임 비용 0).
-        internal static bool CloneBarrierMaterials=true;
+        // 기본 꺼짐: 게임이 장벽 장식의 투명도 등을 원본 머티리얼에 계속 써서, 갈아 끼운 복제본은 갱신을 못 받아 장식이 안 보인다(Arche 180초 옅은 띠).
+        // 순서는 복제 대신 곡 중 동적 제외(활성 장벽과 어긋나는 구간만 독립 렌더러로)로 맞춘다.
+        internal static bool CloneBarrierMaterials=false;
         // 알파가 상수 0 으로 고정된 항목만 든 구간은 대표 렌더러를 꺼서 그리기·컬링 비용을 없앤다(알파 0 은 어차피 안 그려지므로 화면 동일).
         internal static bool CullIdleSpans=true;
         // 진단 전용: 대표 렌더러를 숨겨 그리기의 GPU 몫을 잰다(화면이 틀려진다).

@@ -51,6 +51,8 @@ namespace StutterFix
                     case "tight":DrawCollapsePolicy.TightLargeQuads=on;break;
                     case "tieall":DrawCollapsePolicy.TieAllBarriers=on;break;
                     case "minimal":DrawCollapsePolicy.MinimalDispatch=on;break;
+                    case "clone":DrawCollapsePolicy.CloneBarrierMaterials=on;break;
+                    case "cull":DrawCollapsePolicy.CullIdleSpans=on;break;
                     case "keepafter":DrawCollapsePolicy.KeepAfterBarrier=on;break;
                     case "clip":DrawCollapsePolicy.ClipOffscreen=on;break;
                     case "tightall":DrawCollapsePolicy.TightAllOwned=on;break;
@@ -76,6 +78,8 @@ namespace StutterFix
                 }
                 Main.Entry.Logger.Log("[gpudeco] alphacount 항목 "+n+" 알파>0 "+pos+" | 통합 포함 "+inc+" 중 알파>0 "+posInc+" | CPU처리 "+fb);return true;
             }
+            if(args.Length==2 && args[0]=="spans"){DiagSpans(args[1]);return true;}
+            if(args.Length==2 && args[0]=="excl"){DiagExcl(args[1]);return true;}
             if(args.Length==1 && args[0]=="fullcheck"){RunFullCheck();return true;}
             if(args.Length==1 && args[0]=="trimstats"){Main.Entry.Logger.Log("[gpudeco] GPUTRIM_STATS bounds="+gpuTrimBounds.Count+" trimmed="+gpuTrimTrimmed+" kept="+gpuTrimKept+" "+TrimStaticStats());return true;}
             if(args.Length==1 && args[0]=="dumpverts")
