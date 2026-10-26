@@ -389,6 +389,7 @@ namespace StutterFix
             if (gpuLiveCpuFallbackCount != 0) ExcludeCpuFallbackFromCollapse();
             if (gpuReusedRound || gpuLiveCpuFallbackCount != 0) RebuildDrawCollapse(); // 재사용 라운드는 곡 중 상태가 달라졌을 수 있어 다시 계획한다
             {
+                ApplyBarrierClones();
                 ValidateDrawCollapse();
                 gpuCollapseOn = true;
                 foreach (var slice in gpuLiveSlices) slice.RefreshAlpha();

@@ -65,11 +65,14 @@ namespace StutterFix
 #endif
             gpuCollapseOn=false;gpuCollapsePendingFallback=null;
             foreach(var s in gpuCollapseSpans)if(s.Renderer)s.Renderer.enabled=false;
+            RestoreBarrierClones();
         }
         static void DisposeDrawCollapse()
         {
             InvalidateRecordedCollapse();
             HideDrawCollapse();
+            DestroyBarrierClones();
+            gpuSpanOfItem=null;gpuSpanVisible=null;gpuItemHiddenState=null;gpuSpanDirty.Clear();gpuSpanDirtyMark=null;
             foreach(var s in gpuCollapseSpans)s.Dispose();gpuCollapseSpans.Clear();
             foreach(var sm in gpuCollapseSharedMats.Values)if(sm)UnityEngine.Object.Destroy(sm);gpuCollapseSharedMats.Clear();
             gpuCollapseAllVerts?.Dispose();gpuCollapseAllVerts=null;gpuCollapseAllMap?.Dispose();gpuCollapseAllMap=null;gpuCollapseAllCount=0;
@@ -347,6 +350,150 @@ namespace StutterFix
 #if AUTOTEST
         static readonly Dictionary<string,int> diagExcludeKinds=new Dictionary<string,int>();
 #endif
+        // ---- 장벽 머티리얼 복제로 같은 묶음 안의 순서 재현 ----
+        struct BarrierClone { internal Renderer R; internal Material Orig, Clone; }
+        static readonly List<BarrierClone> gpuBarrierClones=new List<BarrierClone>();
+        static readonly Dictionary<int,Material> gpuBarrierCloneOrig=new Dictionary<int,Material>();
+        static bool gpuBarrierClonesApplied;
+        static int gpuBarrierCloneBuckets,gpuBarrierCloneRejected;
+        static bool CloneableBarrier(GpuLiveRow b)
+        {
+            var r=b.R;if(!r || !b.M)return false;
+            if(!(r is SpriteRenderer || r is MeshRenderer))return false;
+            return b.Key.Slot==0 && r.sharedMaterials.Length==1;
+        }
+        static void BuildBarrierOrderClones()
+        {
+            DestroyBarrierClones();
+            gpuBarrierCloneBuckets=gpuBarrierCloneRejected=0;
+            if(!GpuDecoPlayer.Product || !DrawCollapsePolicy.CloneBarrierMaterials)return;
+            var spanBuckets=new Dictionary<(int,int,int,float),List<int>>();
+            for(int k=0;k<gpuCollapseSpans.Count;k++)
+            {
+                var f=gpuCollapseSpans[k].First;var key=(f.Layer,f.Order,f.Queue,f.Distance);
+                if(!spanBuckets.TryGetValue(key,out var list)){list=new List<int>();spanBuckets[key]=list;}
+                list.Add(k);
+            }
+            var byBucket=new Dictionary<(int,int,int,float),List<GpuLiveRow>>();
+#if AUTOTEST
+            var diagWhy=new Dictionary<string,int>();int diagBuckets=0;
+#endif
+            foreach(var b in gpuCollapseBarriers)
+            {
+                if(!b.R || !b.M)continue;
+                var bk=b.Key;var key=(bk.Layer,bk.Order,bk.Queue,bk.Distance);
+#if AUTOTEST
+                if(spanBuckets.ContainsKey(key)){string why=b.R.GetType().Name+":"+b.R.name+" slot"+b.Key.Slot+" mats"+b.R.sharedMaterials.Length+(CloneableBarrier(b)?" 복제가능":" 복제불가");diagWhy.TryGetValue(why,out int dw);diagWhy[why]=dw+1;}
+#endif
+                if(!spanBuckets.ContainsKey(key) || !CloneableBarrier(b))continue;
+                if(!byBucket.TryGetValue(key,out var list)){list=new List<GpuLiveRow>();byBucket[key]=list;}
+                list.Add(b);
+            }
+            foreach(var pair in byBucket)
+            {
+                // 이 묶음의 구간과 장벽을 원래 ID 순서(작은 것이 먼저 그려짐)로 나열한다.
+                var seq=new List<(int id,int span,GpuLiveRow barrier)>();
+                foreach(int k in spanBuckets[pair.Key])seq.Add((gpuCollapseSpans[k].First.Material,k,null));
+                foreach(var b in pair.Value)seq.Add((b.Key.Material,-1,b));
+                seq.Sort((x,y)=>{int c=x.id.CompareTo(y.id);return c!=0?c:(x.span>=0?-1:1);});
+                // 그리는 순서의 거꾸로 만든다: 나중에 만든 머티리얼은 ID 가 더 작아(먼저 그려진다).
+                var newMats=new Material[seq.Count];
+                for(int n=seq.Count-1;n>=0;n--)
+                {
+                    var e=seq[n];
+                    var baseMat=e.span>=0?gpuCollapseSpans[e.span].Material:e.barrier.M;
+                    newMats[n]=new Material(baseMat){name=(e.span>=0?"GpuDeco collapse ordered":"GpuDeco barrier order")};
+                }
+                bool ascending=true;
+                for(int n=1;n<newMats.Length;n++)if(newMats[n-1].GetInstanceID()>=newMats[n].GetInstanceID()){ascending=false;break;}
+                if(!ascending)
+                {
+                    foreach(var m in newMats)if(m)UnityEngine.Object.Destroy(m);
+                    gpuBarrierCloneRejected++;
+                    continue;
+                }
+                for(int n=0;n<seq.Count;n++)
+                {
+                    var e=seq[n];
+                    if(e.span>=0)
+                    {
+                        var sp=gpuCollapseSpans[e.span];
+                        sp.Material=newMats[n];sp.SharedMat=false;if(sp.Renderer)sp.Renderer.sharedMaterial=newMats[n];
+                    }
+                    else
+                    {
+                        gpuBarrierClones.Add(new BarrierClone{R=e.barrier.R,Orig=e.barrier.R.sharedMaterial,Clone=newMats[n]});
+                        gpuBarrierCloneOrig[e.barrier.R.GetInstanceID()]=e.barrier.R.sharedMaterial;
+                    }
+                }
+                gpuBarrierCloneBuckets++;
+            }
+#if AUTOTEST
+            Main.Entry.Logger.Log("[GPU 장식] 구간이 있는 묶음의 장벽 분포: "+string.Join(" | ",diagWhy.OrderByDescending(x=>x.Value).Take(12).Select(x=>x.Key+"="+x.Value))+" | 구간 묶음 "+spanBuckets.Count);
+#endif
+            if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 순서 재현: 묶음 "+gpuBarrierCloneBuckets+"개, 장벽 복제 머티리얼 "+gpuBarrierClones.Count+"개"+(gpuBarrierCloneRejected>0?", ID 순서를 못 맞춘 묶음 "+gpuBarrierCloneRejected+"개":""));
+        }
+        static void ApplyBarrierClones()
+        {
+            if(gpuBarrierClonesApplied)return;
+            foreach(var c in gpuBarrierClones)if(c.R && c.Clone)c.R.sharedMaterial=c.Clone;
+            gpuBarrierClonesApplied=true;
+        }
+        static void RestoreBarrierClones()
+        {
+            if(!gpuBarrierClonesApplied)return;
+            foreach(var c in gpuBarrierClones)if(c.R && c.Orig && c.R.sharedMaterial==c.Clone)c.R.sharedMaterial=c.Orig;
+            gpuBarrierClonesApplied=false;
+        }
+        static void DestroyBarrierClones()
+        {
+            RestoreBarrierClones();
+            foreach(var c in gpuBarrierClones)if(c.Clone)UnityEngine.Object.Destroy(c.Clone);
+            gpuBarrierClones.Clear();gpuBarrierCloneOrig.Clear();
+        }
+        // ---- 놀고 있는 구간 끄기: 알파가 상수 0 인 항목만 든 구간은 대표 렌더러를 꺼 둔다 ----
+        static int[] gpuSpanOfItem;      // 슬라이스 항목 번호 -> 구간 번호(통합에 안 들어간 항목은 -1)
+        static int[] gpuSpanVisible;     // 구간마다 "보일 수 있는" 항목 수
+        static bool[] gpuItemHiddenState;
+        static readonly List<int> gpuSpanDirty=new List<int>();
+        static bool[] gpuSpanDirtyMark;
+        static int gpuSpanEnabledNow;
+        static void BuildSpanAlphaTracking()
+        {
+            gpuSpanOfItem=null;gpuSpanVisible=null;gpuItemHiddenState=null;gpuSpanDirty.Clear();gpuSpanDirtyMark=null;
+            if(!GpuDecoPlayer.Product || !DrawCollapsePolicy.CullIdleSpans || gpuLiveSlices.Count==0 || gpuCollapseSpans.Count==0)return;
+            int n=gpuLiveSlices[0].Data.Items.Length;
+            gpuSpanOfItem=new int[n];for(int i=0;i<n;i++)gpuSpanOfItem[i]=-1;
+            gpuSpanVisible=new int[gpuCollapseSpans.Count];gpuSpanDirtyMark=new bool[gpuCollapseSpans.Count];
+            for(int k=0;k<gpuCollapseSpans.Count;k++)
+            {
+                var items=gpuCollapseSpans[k].Items;gpuSpanVisible[k]=items.Length;
+                for(int j=0;j<items.Length;j++)gpuSpanOfItem[items[j]]=k;
+                MarkSpanDirty(k);
+            }
+            gpuItemHiddenState=new bool[n]; // 처음엔 모두 보일 수 있다고 두고, RefreshAlpha 가 실제 상태로 맞춘다
+        }
+        static void MarkSpanDirty(int k){if(!gpuSpanDirtyMark[k]){gpuSpanDirtyMark[k]=true;gpuSpanDirty.Add(k);}}
+        static void CollapseSpanAlpha(int item,bool hidden)
+        {
+            if(gpuSpanOfItem==null || (uint)item>=(uint)gpuSpanOfItem.Length)return;
+            int k=gpuSpanOfItem[item];if(k<0 || gpuItemHiddenState[item]==hidden)return;
+            gpuItemHiddenState[item]=hidden;
+            int before=gpuSpanVisible[k];gpuSpanVisible[k]+=hidden?-1:1;
+            if((before>0)!=(gpuSpanVisible[k]>0))MarkSpanDirty(k);
+        }
+        // 통합 디스패치 직전에 한 번: 바뀐 구간만 켜고 끈다.
+        static void ApplySpanCulling()
+        {
+            if(gpuSpanOfItem==null)return;
+            for(int n=0;n<gpuSpanDirty.Count;n++)
+            {
+                int k=gpuSpanDirty[n];gpuSpanDirtyMark[k]=false;
+                var r=gpuCollapseSpans[k].Renderer;bool want=gpuSpanVisible[k]>0 && !DrawCollapsePolicy.HideProxies;
+                if(r && r.enabled!=want)r.enabled=want;
+            }
+            gpuSpanDirty.Clear();
+        }
         static int gpuCollapsePlannedFallback;
         // 제품: 활성화 때 CPU 처리로 남은 장식(진행 중인 네이티브 트윈 등)은 통합에서 빼고 원본 렌더러를 정렬 장벽으로 둔다.
         // 곡 중에 더 늘어나면 가드(개수 불일치)가 걸려 원본으로 복귀한다.
@@ -431,7 +578,8 @@ namespace StutterFix
             foreach(var row in gpuCollapseBarriers)
             {
                 bool active=DrawCollapseBarrierActive(row);
-                bool tieBarrier=(active || GpuDecoPlayer.Product && DrawCollapsePolicy.TieAllBarriers) && !(row.R is SpriteMask); // 스프라이트 마스크는 색을 그리지 않는다(활성 마스크가 있으면 기능을 쓰지 않음)
+                bool cloneable=GpuDecoPlayer.Product && DrawCollapsePolicy.CloneBarrierMaterials && CloneableBarrier(row);
+                bool tieBarrier=(active || GpuDecoPlayer.Product && DrawCollapsePolicy.TieAllBarriers) && !(row.R is SpriteMask) && !cloneable; // 스프라이트 마스크는 색을 그리지 않는다(활성 마스크가 있으면 기능을 쓰지 않음)
                 bool refresh=!keysValid || active || gpuCollapseDirtyIds.Contains(row.R.GetInstanceID());
                 if(refresh)
                 {
@@ -622,6 +770,8 @@ namespace StutterFix
                 }
                 ri=rj;
             }
+            BuildBarrierOrderClones();
+            BuildSpanAlphaTracking();
             GpuLog("DRAWCOLLAPSE_SAME_BUCKET_SPANS spans_in_multi_runs="+multiSpans+" nudged_spans="+nudgedSpans);
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 구간 "+multiSpans+"개(재질 따로), 거리 보정 "+nudgedSpans+"개, 공유 재질 종류 "+gpuCollapseSharedMats.Count);
             GpuLog("DRAWCOLLAPSE_NODIRECT spans="+noDirectSpans+" of "+gpuCollapseSpans.Count);
@@ -771,11 +921,15 @@ namespace StutterFix
                         if(!first.R || !last.R)continue; // Already recorded by the owned checks.
                         var firstKey=GpuDecoScene.SortKey(first.R,first.M,gpuLiveCamera,first.Key.Slot);
                         var lastKey=GpuDecoScene.SortKey(last.R,last.M,gpuLiveCamera,last.Key.Slot);
-                        bool before=key.CompareTo(firstKey)<0,after=key.CompareTo(lastKey)>0;
+                        var judge=key;
+                        if(gpuBarrierCloneOrig.TryGetValue(r.GetInstanceID(),out var origMat) && origMat)judge=GpuDecoScene.SortKey(r,origMat,gpuLiveCamera,barrier.Key.Slot); // 복제 머티리얼이 씌워진 장벽의 앞/뒤는 원래 ID 로 판정
+                        bool before=judge.CompareTo(firstKey)<0,after=judge.CompareTo(lastKey)>0;
                         guard.Check((before && key.CompareTo(proxy)<0) || (after && key.CompareTo(proxy)>0),
                             "drawcollapse proxy/barrier order changed renderer="+r.GetInstanceID()
                             +" name="+r.name+" key="+DcKey(key)+" first="+DcKey(firstKey)+" last="+DcKey(lastKey)+" proxy="+DcKey(proxy)
-                            +" span_items="+span.Items.Length);
+                            +" span_items="+span.Items.Length
+                            +" plan_key="+DcKey(barrier.Key)+" judge="+DcKey(judge)+" order_now="+r.sortingOrder+" layer_now="+r.sortingLayerID+" mat_now="+(r.sharedMaterial?r.sharedMaterial.name:"null")+" mat_plan="+(barrier.M?barrier.M.name:"null")
+                            +" active="+DrawCollapseBarrierActive(barrier)+" cloned="+gpuBarrierCloneOrig.ContainsKey(r.GetInstanceID()));
                     }
                 }
             }
@@ -850,7 +1004,8 @@ namespace StutterFix
                 source.Gpu.DispatchCollapseMinimal(gpuCollapseTexture,gpuCollapseAllVerts,gpuCollapseAllMap,gpuCollapseAllCount,
                     new Vector4(ctm.position.x,ctm.position.y,ctm.eulerAngles.z,camScaleM),time,clipM);
                 long ex1=Stopwatch.GetTimestamp();
-                if((Time.frameCount&7)==0)
+                ApplySpanCulling();
+                if(gpuSpanOfItem==null && (Time.frameCount&7)==0)
                 foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
                 gpuCostExecTicks+=ex1-ex0;gpuCostProxyTicks+=Stopwatch.GetTimestamp()-ex1;
             }
@@ -877,7 +1032,8 @@ namespace StutterFix
                 long ex0=Stopwatch.GetTimestamp();
                 source.Gpu.ExecuteRecordedCollapse(new Vector4(ctf.position.x,ctf.position.y,ctf.eulerAngles.z,camScale),time,clip);
                 long ex1=Stopwatch.GetTimestamp();
-                if(!GpuDecoPlayer.Product || (Time.frameCount&7)==0)
+                ApplySpanCulling();
+                if(gpuSpanOfItem==null && (!GpuDecoPlayer.Product || (Time.frameCount&7)==0))
                 foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
                 gpuCostExecTicks+=ex1-ex0;gpuCostProxyTicks+=Stopwatch.GetTimestamp()-ex1;
             }

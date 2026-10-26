@@ -68,6 +68,7 @@ namespace StutterFix
             if(command=="drawcollapse on" || command=="drawcollapse ready")
             {
                 if(command=="drawcollapse ready")RebuildDrawCollapse();
+                ApplyBarrierClones();
                 ValidateDrawCollapse();
                 if(command.EndsWith(" on",StringComparison.Ordinal))
                 {

@@ -79,6 +79,11 @@ namespace StutterFix
         // 끈 상태의 한계: 숨겨져 있던 비소유 장식이 곡 중에 깨어나 같은 정렬 묶음(같은 z)에 있으면 그리는 순서가 달라질 수 있다
         // (Arche 180초: 옅은 띠 하나가 빠짐, 최대 17/255, 픽셀 9%). 정확히 막으려면 깨어나는 순간의 재계획(100ms+ 끊김)이나 동적 전환이 필요하다.
         internal static bool TieAllBarriers=false;
+        // 같은 정렬 묶음(층·순서·큐·거리) 안의 순서는 머티리얼 인스턴스 ID 로 갈린다. 구간이 있는 묶음의 장벽(스프라이트·메시 렌더러, 머티리얼 1개)에는
+        // 같은 속성의 복제 머티리얼을 켜 있는 동안만 씌우고, 구간·장벽의 머티리얼을 원래 ID 순서의 거꾸로 만들어 정확한 순서를 재현한다(런타임 비용 0).
+        internal static bool CloneBarrierMaterials=true;
+        // 알파가 상수 0 으로 고정된 항목만 든 구간은 대표 렌더러를 꺼서 그리기·컬링 비용을 없앤다(알파 0 은 어차피 안 그려지므로 화면 동일).
+        internal static bool CullIdleSpans=true;
         // 진단 전용: 대표 렌더러를 숨겨 그리기의 GPU 몫을 잰다(화면이 틀려진다).
         internal static bool HideProxies=false;
         // 화면 밖에 있는 쿼드는 컴퓨트에서 면적 0 으로 만든다(픽셀 변화 없음).

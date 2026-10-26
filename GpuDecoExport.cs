@@ -79,7 +79,7 @@ namespace StutterFix
             void ApplyAlpha(int item)
             {
                 var r=Renderers[item];if(!r)return;
-                if(active && gpuCollapseOn)ValidateDrawCollapseItem(item);
+                if(active && gpuCollapseOn){CollapseSpanAlpha(item,HiddenAlpha(item));ValidateDrawCollapseItem(item);}
                 bool wanted=active && !gpuRenderMergeOn && (!gpuCollapseOn || DrawCollapseTextureFallback(item)) && (!Independent || !GpuCpuFallback(MasterItems[item])) && (!gpuZeroAlpha || !Independent || !HiddenAlpha(item));
                 CopyMask?.Set(item,wanted);
                 if(r.enabled!=wanted){
