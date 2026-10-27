@@ -7,6 +7,7 @@
     <DefineConstants>$(DefineConstants);GPUDECO</DefineConstants>
     <LangVersion>latest</LangVersion>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefaultItemExcludes>$(DefaultItemExcludes);tools/optimization/HitMeterDirectCheck/**/bin/**;tools/optimization/HitMeterDirectCheck/**/obj/**</DefaultItemExcludes>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DebugType>none</DebugType>

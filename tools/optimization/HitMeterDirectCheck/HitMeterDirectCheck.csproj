@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GameManaged Condition="'$(GameManaged)' == ''">D:/SteamLibrary/steamapps/common/A Dance of Fire and Ice/A Dance of Fire and Ice_Data/Managed</GameManaged>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="Unity/Unity.csproj" />
+    <Reference Include="DOTween"><HintPath>$(GameManaged)/DOTween.dll</HintPath></Reference>
+    <Reference Include="0Harmony"><HintPath>$(GameManaged)/UnityModManager/0Harmony.dll</HintPath></Reference>
+    <Compile Include="../../../HitMeterFade.cs" Link="HitMeterFade.cs" />
+    <Compile Include="Adapters.cs" /><Compile Include="Program.cs" /><Compile Include="IlReader.cs" /><Compile Include="GameIlCheck.cs" />
+  </ItemGroup>
+</Project>
