@@ -75,7 +75,7 @@ namespace StutterFix
                 var add = AccessTools.Method(t, "AddHit");
                 if (add != null) h.Patch(add, transpiler: new HarmonyMethod(typeof(HitMeterFade), nameof(HandTranspiler)));
                 Main.Entry.Logger.Log("[오차 막대] 눈금 가볍게 사라지기 설치 (바꾼 곳 " + swapped + "개)");
-                Main.Entry.Logger.Log("[오차 막대 직접 종료] 눈금 Kill " + tickSwapped + "/2곳, 손 " + handSwapped + "/2곳 (기본 꺼짐)");
+                Main.Entry.Logger.Log("[오차 막대 직접 종료] 눈금 Kill " + tickSwapped + "/2곳, 손 " + handSwapped + "/2곳");
             }
             catch (Exception ex) { Main.Entry.Logger.Log("[오차 막대] 설치 실패: " + ex.Message); }
         }

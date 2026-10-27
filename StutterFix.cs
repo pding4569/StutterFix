@@ -1143,7 +1143,7 @@ BlendProbe.Tick();
         public int TweenerCapacity = 40000;
         public int SequenceCapacity = 25000;
         public bool SkipAssetUnload = true;
-        public bool BeatSkipNoChange = false; // dontChangeMySprite인 빛난 타일의 빈 OnBeat 호출 제외 (실험)
+        public bool BeatSkipNoChange = true;  // dontChangeMySprite인 빛난 타일의 빈 OnBeat 호출 제외 (결과 동일 검증됨; 고BPM 맵 +33~42%)
         public bool SkipIdleParticles = true;  // 파티클 장식이 매 프레임 같은 크기·속도를 다시 넣는 것 건너뛰기
         public bool LeakFix = true;            // 게임 메모리 누수 막기 (사용자 지정 FPS 화면 버퍼)
         public bool LoadCache = true;          // 맵 열기·재생 시작 때 이미지 파일 수정 시각을 한 프레임에 한 번만 읽기
@@ -1195,7 +1195,7 @@ BlendProbe.Tick();
         public bool FloorAnim = true;      // 길이 있는 타일 이동(MoveTrack)의 애니메이션을 DOTween 대신 모드가 돌림
         public bool HitTextFade = true;    // 판정 글자가 투명해질 때 메시 전체 대신 정점 색만 바꾸기
         public bool HitMeterFade = true;   // 판정 오차 막대 눈금이 사라질 때 그림을 다시 만들지 않고 렌더러 투명도만 바꾸기
-        public bool HitMeterDirectKill = false;   // 판정 오차 막대 눈금·손의 트윈을 문자열 검색 대신 핸들로 종료 (시험용)
+        public bool HitMeterDirectKill = true;   // 판정 오차 막대 눈금·손의 트윈을 문자열 검색 대신 핸들로 종료 (원래 DOTween 과 비트 차이 0; 고BPM 맵 +11~13%)
         // 연출 끄기 (기본 꺼짐: 켜면 화면이 달라진다)
         public string EffectsOff = "";     // 끌 효과 이벤트 이름들 (쉼표로)
         public bool GameScreenButton = true;   // 에디터 재생 단추 옆 "게임 화면으로 플레이" 단추
