@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
@@ -23,6 +23,7 @@ namespace StutterFix
     {
         internal static bool Enabled = true;
         internal static bool Verify;
+        internal static bool DiagSkipFloors;   // 진단: 빛난 타일 OnBeat 를 건너뛴다 (화면이 달라질 수 있음)
         internal static long Skipped, Called, Fast, Slow, Checks, Mismatch;
         private static readonly AccessTools.FieldRef<scrFloor, scrVfx> vfxRef = AccessTools.FieldRefAccess<scrFloor, scrVfx>("vfx");
         private static MethodBase onBeat, prop;
@@ -236,7 +237,7 @@ namespace StutterFix
         {
             if (!Enabled || Foreign()) { Slow++; return true; }
             Listeners(__instance.onBeats);
-            if (ADOBase.controller != null && ADOBase.controller.gameworld)
+            if (!DiagSkipFloors && ADOBase.controller != null && ADOBase.controller.gameworld)
             {
                 List<scrFloor> lf = ADOBase.lm.listFloors;
                 if (!FastFloors(lf))
