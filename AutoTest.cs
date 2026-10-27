@@ -901,6 +901,7 @@ namespace StutterFix
                 case "decosim": DecoSim.Command(arg); return true;
                 case "decobake": return DecoBake.Step(arg);
                 case "gpudeco": return DecoBake.GpuStep(arg);
+                case "beatprobe": Log("[beatprobe] " + BeatProbe.Run()); return true;
                 case "beatskip": BeatFix.DiagSkipFloors = arg == "on"; Log("[beatskip] " + BeatFix.DiagSkipFloors); return true;
                 case "tilesim": TileSim.Command(arg); return true;
                 case "tilecost": TileCost.Command(arg); return true;
