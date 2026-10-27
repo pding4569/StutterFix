@@ -666,6 +666,7 @@ namespace StutterFix
                         if (Hitch.TimeProbeOn) { TimeProbe.Force = false; TimeProbe.Report(); }
                         sb.Append("\n  함수별: ").Append(SlowScan.EndPan(pf));
                         sb.Append("\n  박자 알림: 건너뜀 ").Append(BeatFix.Skipped).Append(", 부름 ").Append(BeatFix.Called).Append(", 빠른 길 ").Append(BeatFix.Fast).Append(", 원래 반복 ").Append(BeatFix.Slow).Append(", 목록 틀림 ").Append(BeatFix.Mismatch).Append(", 다시 만들기 ").Append(BeatFix.Rebuilds).Append("번 ").Append(BeatFix.RebuildMs.ToString("F0")).Append("ms, 끝에 더하기 ").Append(BeatFix.Appends).Append("번");
+                        sb.Append("\n  beatsettled: ").Append(BeatFix.NoChangeStatus);
                         sb.Append("\n  이 모드 OnUpdate 프레임당 ").Append(((Main.UpdateTicks - panUpd0) * tms / pf).ToString("F2")).Append("ms:");
                         for (int k = 0; k < panTick0.Length; k++) { double v = (Main.TickCost[k] - panTick0[k]) * tms / pf; if (v >= 0.05) sb.Append(' ').Append(Main.TickName[k]).Append(' ').Append(v.ToString("F2")); }
                         foreach (var kv in panTimes) sb.Append(" | ").Append(kv.Key).Append(' ').Append((kv.Value * tms / pf).ToString("F2")).Append("ms/프레임");
@@ -903,6 +904,12 @@ namespace StutterFix
                 case "gpudeco": return DecoBake.GpuStep(arg);
                 case "beatprobe": Log("[beatprobe] " + BeatProbe.Run()); return true;
                 case "beatskip": BeatFix.DiagSkipFloors = arg == "on"; Log("[beatskip] " + BeatFix.DiagSkipFloors); return true;
+                case "beatsettled":
+                    if (arg != "on" && arg != "off") throw new Exception("beatsettled on|off");
+                    Main.Config.BeatSkipNoChange = arg == "on";
+                    BeatFix.SetSkipNoChange(Main.Config.BeatSkipNoChange);
+                    Main.Config.Save(Main.Entry);
+                    Log("[beatsettled] " + BeatFix.NoChangeStatus); return true;
                 case "tilesim": TileSim.Command(arg); return true;
                 case "tilecost": TileCost.Command(arg); return true;
                 case "fxslot": FxSlots.Command(arg); return true;

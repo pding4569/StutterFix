@@ -141,6 +141,7 @@
     <Compile Include="EditorPick.cs" />
     <Compile Include="TimeProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="BeatFix.cs" />
+    <Compile Include="BeatNoChangeSnapshot.cs" />
     <Compile Include="MatReuse.cs" />
     <Compile Include="FrameQueueDelayPolicy.cs" />
     <Compile Include="RawKeyboardClock.cs" />

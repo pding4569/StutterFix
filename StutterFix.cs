@@ -480,6 +480,7 @@ ParticleTextWatch.Install(harmony);
         {
             if (!installed) return;
             installed = false;
+            Try(BeatFix.Shutdown);
             EndDisplayTransition();
             Try(GpuDecoPlayer.Shutdown);
 #if AUTOTEST
@@ -947,6 +948,7 @@ BlendProbe.Tick();
             TexCompress.OwnOption = E("ImagePrefetch", Config.LowCompressImages) && !Resilience.SafeMode;   // 안전 모드: 미리 풀기는 줄이기에만 쓰고 저사양 압축은 끈다
             MoveApply.LogicSkip = Dormancy.Enabled = E("DormantSkip", Config.DormantSkip);
             BeatFix.Enabled = Dormancy.Enabled; EditorPick.Enabled = Dormancy.Enabled;
+            BeatFix.SetSkipNoChange(Config.BeatSkipNoChange);
             TextFix.SkipSameText = E("SkipSameText", Config.SkipSameText);
             TypeCache.Enabled = E("FilterTypeCache", Config.FilterTypeCache);
             FilterIdentity.Enabled = E("FilterIdentity", Config.FilterIdentity);
@@ -1139,6 +1141,7 @@ BlendProbe.Tick();
         public int TweenerCapacity = 40000;
         public int SequenceCapacity = 25000;
         public bool SkipAssetUnload = true;
+        public bool BeatSkipNoChange = false; // dontChangeMySprite인 빛난 타일의 빈 OnBeat 호출 제외 (실험)
         public bool SkipIdleParticles = true;  // 파티클 장식이 매 프레임 같은 크기·속도를 다시 넣는 것 건너뛰기
         public bool LeakFix = true;            // 게임 메모리 누수 막기 (사용자 지정 FPS 화면 버퍼)
         public bool LoadCache = true;          // 맵 열기·재생 시작 때 이미지 파일 수정 시각을 한 프레임에 한 번만 읽기

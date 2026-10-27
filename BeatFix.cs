@@ -19,11 +19,32 @@ namespace StutterFix
     // 원래 반복을 쓰는 경우: 타일 종류가 scrFloor 그 자체가 아닌 것이 있거나, 타일의 vfx 가 없거나 서로 다르거나, overrideTileSprites 가
     //   켜져 있거나, 다른 모드가 scrFloor.OnBeat 를 패치했거나 PropagateOnBeat 를 고쳐 쓰는(transpiler·다른 모드의 prefix) 경우.
     // 개발자용 검증(beat-verify): 박자 64번마다 타일 전부의 hasLit 와 목록을 비교한다.
+    // BeatSkipNoChange(기본 끔): hasLit && !dontChangeMySprite만 lit에 유지한다.
+    // TweenOpacity/StartEffect 뒤에도 갱신하며, 256박자마다 제외된 타일까지 관리 필드만 재검사한다.
     internal static class BeatFix
     {
         internal static bool Enabled = true;
         internal static bool Verify;
         internal static bool DiagSkipFloors;   // 진단: 빛난 타일 OnBeat 를 건너뛴다 (화면이 달라질 수 있음)
+        private static bool skipNoChange, noChangeHooks, verificationFailed;
+        internal static bool SkipNoChangeActive => skipNoChange && noChangeHooks && !verificationFailed;
+        internal static long NoChangeRechecks, NoChangeMismatch, NoChangeVerified, NoChangeVerifyMismatch;
+        private static long noChangeBeats;
+#if DEV || AUTOTEST
+        private static int verifyCursor;
+#endif
+        private static AccessTools.FieldRef<ffxLightBridge, List<scrFloor>> bridgeFloors;
+        internal static string NoChangeStatus => "요청=" + skipNoChange + ", 훅=" + noChangeHooks + ", 검증실패=" + verificationFailed + ", 적용=" + SkipNoChangeActive
+            + ", 재검사=" + NoChangeRechecks + ", 목록 불일치=" + NoChangeMismatch
+            + ", 상태 일치=" + NoChangeVerified + ", 상태 불일치=" + NoChangeVerifyMismatch;
+
+        internal static void SetSkipNoChange(bool value)
+        {
+            if (skipNoChange == value) return;
+            skipNoChange = value;
+            noChangeBeats = 0;
+            MarkDirty();
+        }
         internal static long Skipped, Called, Fast, Slow, Checks, Mismatch;
         private static readonly AccessTools.FieldRef<scrFloor, scrVfx> vfxRef = AccessTools.FieldRefAccess<scrFloor, scrVfx>("vfx");
         private static MethodBase onBeat, prop;
@@ -46,6 +67,22 @@ namespace StutterFix
             if (Edition.Dev) Main.Entry.Logger.Log("[박자 알림] 목록 바뀜 횟수 읽기: " + (verRef != null ? "됨" : "안 됨 (개수만 봄)"));
             h.Patch(light, postfix: new HarmonyMethod(typeof(BeatFix), nameof(LitChanged)));
             h.Patch(reset, postfix: new HarmonyMethod(typeof(BeatFix), nameof(LitChanged)));
+            // 알려진 게임 내 변경 경로를 모두 잡을 수 있을 때만 새 정책을 허용한다.
+            var tween = AccessTools.Method(typeof(scrFloor), "TweenOpacity");
+            var bridge = AccessTools.DeclaredMethod(typeof(ffxLightBridge), "StartEffect", new[] { typeof(scrPlanet) });   // 오버로드가 둘이라 이름만으로는 추상 메서드가 잡힌다
+            var floors = AccessTools.Field(typeof(ffxLightBridge), "brigeFloors");
+            if (tween != null && bridge != null && floors != null && floors.FieldType == typeof(List<scrFloor>))
+            {
+                bridgeFloors = AccessTools.FieldRefAccess<ffxLightBridge, List<scrFloor>>(floors);
+                try
+                {
+                    h.Patch(tween, postfix: new HarmonyMethod(typeof(BeatFix), nameof(OpacityChanged)));
+                    h.Patch(bridge, postfix: new HarmonyMethod(typeof(BeatFix), nameof(BridgeChanged)));
+                    noChangeHooks = true;
+                }
+                catch (Exception ex) { noChangeHooks = false; Main.Entry.Logger.Log("[박자 알림] beatsettled 훅 설치 실패: " + ex.Message); }
+            }
+            else Main.Entry.Logger.Log("[박자 알림] 플래그 변경 경로 확인 실패: beatsettled 사용 안 함");
             var mark = new HarmonyMethod(typeof(BeatFix), nameof(MarkDirty));
             h.Patch(make, prefix: mark, postfix: mark);
             foreach (var n in new[] { "InstantiateStringFloors", "InstantiateFloatFloors" }) { var m = AccessTools.Method(typeof(scrLevelMaker), n); if (m != null) h.Patch(m, postfix: mark); }
@@ -53,7 +90,21 @@ namespace StutterFix
 
         public static void MarkDirty() { dirty = true; lDirty = true; dirtyGen++; }
         // 새 맵 파일을 열 때: 지난 맵 타일 번호표를 놓는다 (다음 박자에 다시 만든다)
-        internal static void ForgetLevel() { MarkDirty(); arr = new scrFloor[0]; idx.Clear(); lit.Clear(); lActive.Clear(); lHead.Clear(); }
+        internal static void ForgetLevel()
+        {
+            MarkDirty(); arr = new scrFloor[0]; isLit = new bool[0]; idx.Clear(); lit.Clear();
+            lActive.Clear(); lHead.Clear(); lRef = null; vfx0 = null; noChangeBeats = 0;
+#if DEV || AUTOTEST
+            verifyCursor = 0;
+#endif
+        }
+        internal static void Shutdown()
+        {
+            SetSkipNoChange(false); ForgetLevel();
+            noChangeHooks = verificationFailed = Verify = DiagSkipFloors = false;
+            bridgeFloors = null; lNext = new int[0]; lBuf = new int[64]; litBuf = new int[64];
+            NoChangeRechecks = NoChangeMismatch = NoChangeVerified = NoChangeVerifyMismatch = 0;
+        }
         private static int dirtyGen, litGen;
 
         // 다른 모드가 고쳐 쓰는지: scrFloor.OnBeat 에 패치가 있거나, PropagateOnBeat 에 transpiler 나 이 모드 밖의 prefix 가 있으면
@@ -236,6 +287,12 @@ namespace StutterFix
         public static bool PropPrefix(scrConductor __instance)
         {
             if (!Enabled || Foreign()) { Slow++; return true; }
+            if (SkipNoChangeActive && !DiagSkipFloors && ADOBase.controller != null && ADOBase.controller.gameworld)
+            {
+                var floors = ADOBase.lm.listFloors;
+                PrepareFloors(floors);
+                if ((++noChangeBeats & 255) == 0) RecheckNoChange(floors);
+            }
             Listeners(__instance.onBeats);
             if (!DiagSkipFloors && ADOBase.controller != null && ADOBase.controller.gameworld)
             {
@@ -254,9 +311,12 @@ namespace StutterFix
         private static bool FastFloors(List<scrFloor> lf)
         {
             int n = lf.Count;
-            if (dirty || arr.Length != n || (n > 0 && (!ReferenceEquals(arr[0], lf[0]) || !ReferenceEquals(arr[n - 1], lf[n - 1])))) Rebuild(lf);
+            PrepareFloors(lf);
             if (!eligible || vfx0.overrideTileSprites) { Slow++; return false; }
             if (Verify && (++Checks & 63) == 0) Check(lf);
+#if DEV || AUTOTEST
+            if (Verify && SkipNoChangeActive && (noChangeBeats & 63) == 0) VerifyNoChange(lf);
+#endif
             // 부르는 동안 목록이 바뀌어도(OnBeat 안에서 LightUp 등) 원래처럼 이번 박자 시작 때의 순서대로 (원래 반복도 타일 목록을 앞에서부터 본다)
             int cnt = lit.Count;
             if (litBuf.Length < cnt) litBuf = new int[Math.Max(cnt, litBuf.Length * 2)];
@@ -266,6 +326,12 @@ namespace StutterFix
             return true;
         }
         private static int[] litBuf = new int[64];
+
+        private static void PrepareFloors(List<scrFloor> lf)
+        {
+            int n = lf.Count;
+            if (dirty || arr.Length != n || (n > 0 && (!ReferenceEquals(arr[0], lf[0]) || !ReferenceEquals(arr[n - 1], lf[n - 1])))) Rebuild(lf);
+        }
 
         private static void Rebuild(List<scrFloor> lf)
         {
@@ -283,19 +349,19 @@ namespace StutterFix
                 var v = vfxRef(f);
                 if (ReferenceEquals(v, null) || (!ReferenceEquals(vfx0, null) && !ReferenceEquals(v, vfx0))) eligible = false;
                 if (ReferenceEquals(vfx0, null)) vfx0 = v;
-                if (f.hasLit) { isLit[i] = true; lit.Add(i); }
+                if (ShouldCall(f)) { isLit[i] = true; lit.Add(i); }
             }
             if (ReferenceEquals(vfx0, null)) eligible = false;
         }
 
-        // LightUp / Reset 뒤: 그 타일의 hasLit 에 맞춰 목록을 고친다 (번호순 유지)
+        // LightUp / Reset / 플래그 변경 뒤: 실제 호출할 타일의 목록을 고친다 (번호순 유지)
         public static void LitChanged(scrFloor __instance)
         {
             litGen++;
             ListenersLitChanged(__instance);
             int i;
             if (dirty || !idx.TryGetValue(__instance, out i)) return;
-            bool now = __instance.hasLit;
+            bool now = ShouldCall(__instance);
             if (now == isLit[i]) return;
             isLit[i] = now;
             int at = lit.BinarySearch(i);
@@ -303,7 +369,69 @@ namespace StutterFix
             else if (at >= 0) lit.RemoveAt(at);
         }
 
-        // (개발자용) 타일 전부의 hasLit 와 목록 비교
+        private static bool ShouldCall(scrFloor f) => f.hasLit && (!SkipNoChangeActive || !f.dontChangeMySprite);
+
+        public static void OpacityChanged(scrFloor __instance)
+        {
+            if (SkipNoChangeActive) LitChanged(__instance);
+        }
+
+        public static void BridgeChanged(ffxLightBridge __instance)
+        {
+            if (!SkipNoChangeActive) return;
+            var floors = bridgeFloors(__instance);
+            if (floors == null) { MarkDirty(); return; }
+            foreach (var floor in floors) if (!ReferenceEquals(floor, null)) LitChanged(floor);
+        }
+
+        // 제외된 타일까지 전부 확인한다. 관리 필드만 읽고 Unity API는 호출하지 않는다.
+        private static void RecheckNoChange(List<scrFloor> lf)
+        {
+            NoChangeRechecks++;
+            long before = NoChangeMismatch;
+            for (int i = 0; i < lf.Count; i++)
+            {
+                var f = lf[i];
+                if (!ReferenceEquals(f, arr[i]))
+                {
+                    NoChangeMismatch++; lDirty = true; Rebuild(lf);
+                    Main.Entry.Logger.Log("[박자 알림] beatsettled 타일 교체 누락 발견: " + NoChangeStatus);
+                    return;
+                }
+                if (ReferenceEquals(f, null) || f.GetType() != typeof(scrFloor)) continue;
+                if (ShouldCall(f) == isLit[i]) continue;
+                NoChangeMismatch++;
+                LitChanged(f);
+            }
+            if (NoChangeMismatch != before) Main.Entry.Logger.Log("[박자 알림] beatsettled 목록 수리: " + NoChangeStatus);
+        }
+
+#if DEV || AUTOTEST
+        private static void VerifyNoChange(List<scrFloor> lf)
+        {
+            // 한 번에 한 타일만. 일반 Player에는 색/스프라이트의 네이티브 읽기를 넣지 않는다.
+            for (int j = 0; j < arr.Length; j++)
+            {
+                int i = verifyCursor++;
+                if (verifyCursor >= arr.Length) verifyCursor = 0;
+                var f = arr[i];
+                if (isLit[i] || ReferenceEquals(f, null) || f.GetType() != typeof(scrFloor) || !f.hasLit || !f.dontChangeMySprite) continue;
+                try
+                {
+                    var before = BeatNoChangeSnapshot.Read(f);
+                    f.OnBeat();
+                    if (before.Same(BeatNoChangeSnapshot.Read(f))) { NoChangeVerified++; return; }
+                }
+                catch (Exception ex) { Main.Entry.Logger.Log("[박자 알림 검증] " + ex.Message); }
+                NoChangeVerifyMismatch++;
+                verificationFailed = true; MarkDirty(); Rebuild(lf);
+                Main.Entry.Logger.Log("[박자 알림 검증] 제외 타일 상태 불일치: 이번 로드에서는 beatsettled 중단");
+                return;
+            }
+        }
+#endif
+
+        // (개발자용) 타일 전부의 호출 조건과 목록 비교
         private static void Check(List<scrFloor> lf)
         {
             int bad = 0;
@@ -311,7 +439,7 @@ namespace StutterFix
             {
                 var f = lf[i];
                 if (!ReferenceEquals(f, arr[i])) { bad++; continue; }
-                if (!ReferenceEquals(f, null) && f.hasLit != isLit[i]) bad++;
+                if (!ReferenceEquals(f, null) && ShouldCall(f) != isLit[i]) bad++;
             }
             int prev = -1;
             foreach (var i in lit) { if (i <= prev || !isLit[i]) bad++; prev = i; }
