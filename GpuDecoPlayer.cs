@@ -639,7 +639,10 @@ namespace StutterFix
             bool prebuilt = gpuPlanPreBuilt; gpuPlanPreBuilt = false;
             UndoCpuFallbackExclusion();ActMark("폴백해제");
             bool hadDynamic = gpuDynExcludedItems.Count > 0;
-            RestoreCollapseBaseState();
+            // 준비 때 미리 만든 계획(다시 하기 판은 기준 상태 복원 + 재계획으로 만든다)을 그대로 쓸 수 있으면 포함 배열을 기준으로 되돌리지 않는다:
+            // 그 계획이 동점으로 뺀 장식을 다시 넣으면 어느 구간에도 없고 독립 렌더러도 꺼진 채라 보이지 않는다.
+            if (prebuilt && !hadDynamic && gpuLiveCpuFallbackCount == 0) ClearCollapseDynamicState();
+            else RestoreCollapseBaseState();
             gpuCollapsePlannedFallback = 0;
             if (gpuLiveCpuFallbackCount != 0) ExcludeCpuFallbackFromCollapse();
             var songNow = scrConductor.instance;

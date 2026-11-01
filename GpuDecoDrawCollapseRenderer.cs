@@ -23,6 +23,8 @@ namespace StutterFix
         static readonly List<Texture2DArray> gpuCollapseArrays=new List<Texture2DArray>();
         static readonly List<Texture2D> gpuCollapseDirect=new List<Texture2D>(); // Borrowed, never destroyed.
         static readonly List<GpuLiveRow> gpuCollapseBarriers=new List<GpuLiveRow>();
+        // 동점 때문에 독립 렌더러로 뺀 장식의 장벽 줄 -> 그 장식 항목. 기준 상태 복원으로 장식이 다시 통합에 들어오면 그 줄을 지운다.
+        static readonly Dictionary<GpuLiveRow,int> gpuTieBarrierItem=new Dictionary<GpuLiveRow,int>();
         static readonly List<GpuLiveRow> gpuCollapseAuxiliaries=new List<GpuLiveRow>();
         static ComputeBuffer gpuCollapseTexture;
         static bool[] gpuCollapseIncluded;
@@ -81,7 +83,7 @@ namespace StutterFix
             gpuCollapseAllVerts?.Dispose();gpuCollapseAllVerts=null;gpuCollapseAllMap?.Dispose();gpuCollapseAllMap=null;gpuCollapseAllCount=0;
             gpuCollapseTexture?.Dispose();gpuCollapseTexture=null;gpuCollapseShader=null;gpuCollapseOwnedCursor=0;
             foreach(var a in gpuCollapseArrays)if(a)UnityEngine.Object.Destroy(a);
-            gpuCollapseArrays.Clear();gpuCollapseBarriers.Clear();gpuCollapseAuxiliaries.Clear();
+            gpuCollapseArrays.Clear();gpuCollapseBarriers.Clear();gpuTieBarrierItem.Clear();gpuCollapseAuxiliaries.Clear();
             gpuCollapseDirect.Clear();
             gpuCollapseArrayOnly=null;
             gpuCollapseIncluded=null;gpuCollapseSeen=null;gpuCollapseKeysValid=false;gpuCollapseScanned=false;gpuCollapseDirtyIds.Clear();gpuCollapseNewDecos.Clear();gpuCollapseOwnedRows=null;gpuCollapseTextureFallback=null;gpuCollapseTextureFallbackCount=0;
@@ -538,6 +540,11 @@ namespace StutterFix
             if(gpuCollapseIncludedSaved!=null && gpuCollapseIncluded!=null && gpuCollapseIncluded.Length==gpuCollapseIncludedSaved.Length)Array.Copy(gpuCollapseIncludedSaved,gpuCollapseIncluded,gpuCollapseIncluded.Length);
             if(gpuCollapseFallbackSaved!=null && gpuCollapseTextureFallback!=null && gpuCollapseTextureFallback.Length==gpuCollapseFallbackSaved.Length)
             {Array.Copy(gpuCollapseFallbackSaved,gpuCollapseTextureFallback,gpuCollapseTextureFallback.Length);gpuCollapseTextureFallbackCount=gpuCollapseFallbackCountSaved;}
+            ClearCollapseDynamicState();
+        }
+        // 미리 만든 계획을 그대로 쓸 때: 포함/폴백 배열은 그 계획과 짝이므로 두고, 지난 판의 동적 기록만 지운다.
+        static void ClearCollapseDynamicState()
+        {
             gpuDynExcludedItems.Clear();gpuDynZero=null;gpuBarrierWatch.Clear();gpuBarrierChecked.Clear();gpuDynExcludedSpans=0;gpuSpanCausers.Clear();gpuBarrierCauses.Clear();gpuBucketMembers.Clear();gpuBucketDirty.Clear();
         }
         static readonly List<GpuLiveRow> gpuWatchRows=new List<GpuLiveRow>();
@@ -768,6 +775,20 @@ namespace StutterFix
             float keyShift=keysValid?Vector3.Dot(camNow.position-gpuCollapseKeyCamPos,gpuCollapseKeyFwd):0f;
             // 곡 시작 뒤 파괴된 후보 장벽은 더 이상 그려지지 않으므로 뺀다.
             int lostBarriers=gpuCollapseBarriers.RemoveAll(b=>!b.R || !b.M);
+            // 지난 계획에서 동점으로 뺀 장식이 기준 상태 복원으로 다시 통합에 들어오면, 남은 장벽 줄(그 장식의 독립 렌더러)이
+            // 통합 항목 자신과 같은 재질로 동점이 되어 그 판 GPU 장식 전체가 꺼졌다(Arche 다시 하기 중간 시작). 줄을 지우고 아래에서 다시 판정한다.
+            int staleTie=0;
+            if(gpuTieBarrierItem.Count>0)
+            {
+                var stale=new List<GpuLiveRow>();
+                foreach(var p in gpuTieBarrierItem)if((uint)p.Value>=(uint)gpuCollapseIncluded.Length || gpuCollapseIncluded[p.Value])stale.Add(p.Key);
+                if(stale.Count>0)
+                {
+                    var staleSet=new HashSet<GpuLiveRow>(stale);
+                    staleTie=gpuCollapseBarriers.RemoveAll(b=>staleSet.Contains(b));
+                    foreach(var row in stale)gpuTieBarrierItem.Remove(row);
+                }
+            }
             int addedBarriers=0;
             if(gpuCollapseSeen!=null)
             {
@@ -881,7 +902,7 @@ namespace StutterFix
 #endif
                 if(!gpuCollapseTextureFallback[i]){gpuCollapseTextureFallback[i]=true;gpuCollapseTextureFallbackCount++;}
                 var ir=source.Renderers[i];
-                if(ir)newBarriers.Add(new GpuLiveRow{R=ir,M=ir.sharedMaterial,Item=-1,AuxiliaryOwner=-1,Key=GpuDecoScene.SortKey(ir,ir.sharedMaterial,gpuLiveCamera)});
+                if(ir){var tieRow=new GpuLiveRow{R=ir,M=ir.sharedMaterial,Item=-1,AuxiliaryOwner=-1,Key=GpuDecoScene.SortKey(ir,ir.sharedMaterial,gpuLiveCamera)};newBarriers.Add(tieRow);gpuTieBarrierItem[tieRow]=i;}
                 tieExcluded++;
             }
             var newBarrierSet=new HashSet<GpuLiveRow>(newBarriers);
@@ -893,7 +914,7 @@ namespace StutterFix
             diagExcludeKinds.Clear();
 #endif
             if(GpuDecoPlayer.Product)Main.Entry.Logger.Log("[GPU 장식] 동점 묶음 때문에 독립 렌더러로 남긴 장식 "+tieExcluded+"개 (동점 묶음 "+activeBucketMinMat.Count+"개)");
-            GpuLog("DRAWCOLLAPSE_REPLAN barriers_removed="+lostBarriers+" barriers_added="+addedBarriers+" barriers_now="+gpuCollapseBarriers.Count+" reread="+rereadBarriers+" keys_cached="+keysValid+" shift="+keyShift.ToString("R",Inv));
+            GpuLog("DRAWCOLLAPSE_REPLAN barriers_removed="+lostBarriers+" stale_tie_removed="+staleTie+" barriers_added="+addedBarriers+" barriers_now="+gpuCollapseBarriers.Count+" reread="+rereadBarriers+" keys_cached="+keysValid+" shift="+keyShift.ToString("R",Inv));
             foreach(var row in gpuCollapseBarriers)
                 rows.Add(new DrawCollapsePolicy.Row(row.Key,false,row.R.GetInstanceID()));
             for(int i=0;i<gpuCollapseOwnedRows.Length;i++)
