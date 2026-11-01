@@ -129,8 +129,7 @@ namespace StutterFix
             {
                 if(!nativeUpdateHooked)SetNativeAdoption(true);
                 if(nativeKillMethod==null)nativeKillMethod=AccessTools.Method(typeof(TweenExtensions),"Kill",new[]{typeof(Tween),typeof(bool)});
-                if(Compat.QuartzOptimizer)nativeGlobalReject=NativeReject.QuartzOptimizer;
-                else if(ForeignSetter())nativeGlobalReject=NativeReject.ForeignSetter;
+                if(ForeignSetter())nativeGlobalReject=NativeReject.ForeignSetter;
                 else if(DOTween.Version!="1.2.765")nativeGlobalReject=NativeReject.Version;
                 else if(NativePatched(nativeUpdateMethod,true))nativeGlobalReject=NativeReject.UpdatePatched;
                 nativeLinks=NativeRead<IDictionary>(null,"_TweenLinks",NativeManager);

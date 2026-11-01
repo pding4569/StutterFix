@@ -82,7 +82,8 @@ namespace StutterFix
             {
                 if (!FastMove.Installed || !FastMove.Enabled || !DecoAnim.Active || !ZeroTween.CanEase)
                     throw new InvalidOperationException("장식 이동 최적화가 꺼져 있음");
-                if (Compat.QuartzOptimizer || DecoBake.ForeignSetter()) throw new InvalidOperationException("다른 모드의 장식 처리와 겹침");
+                // Quartz 최적화 모듈은 파티클·히트음·텍스처·카메라만 고친다(장식 setter 0곳, 2026-11-01 Arche 로그). 실제 겹침은 setter 패치 검사로 본다.
+                if (DecoBake.ForeignSetter()) throw new InvalidOperationException("다른 모드의 장식 처리와 겹침");
                 if (Screen.width <= 0 || Screen.height <= 0) throw new InvalidOperationException("화면 크기를 확인할 수 없음");
                 var camera = GpuDecoScene.FindMain();
                 if (!camera.orthographic || camera.stereoEnabled || camera.rect != new Rect(0, 0, 1, 1))
