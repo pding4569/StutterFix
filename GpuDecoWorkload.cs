@@ -9,18 +9,17 @@ namespace StutterFix
     {
         // Preparation-only census. Midpoint quadrature is explicitly an estimate,
         // not a visibility proof or a frame-time predictor. No per-frame work.
-        static void LogGpuWorkload()
+        static void LogGpuWorkload(double end)
         {
             const int samples=128;
             if(table==null || table.InputEvents==null || gpuLiveOwnedIndices.Length==0)return;
-            double end=table.InputEvents.Select(e=>e.T0+e.Duration*table.Pitch/table.TweenScale).DefaultIfEmpty(0).Max();
             if(end<=0 || double.IsInfinity(end) || double.IsNaN(end))return;
             var owned=new bool[table.Decorations.Length];
             foreach(int d in gpuLiveOwnedIndices)owned[d]=true;
             long references=0,visibleReferences=0,visible=0,moving=0;
             foreach(var e in table.InputEvents)
             {
-                if(e.Targets==null || e.Reasons.Length!=0)continue;
+                if(e.T0<0 || e.T0>end || e.Targets==null || e.Reasons.Length!=0)continue;
                 foreach(int d in e.Targets)
                     if((uint)d<(uint)owned.Length && owned[d])
                     {
@@ -52,7 +51,7 @@ namespace StutterFix
                 +" horizon_s="+F(end)+" event_targets="+references+" visible_event_targets="+visibleReferences
                 +" visible_applications_per_s="+F(visibleReferences/end)
                 +" mean_visible_est="+F((double)visible/samples)+" mean_visible_moving_est="+F((double)moving/samples)
-                +" midpoint_samples="+samples+" performance_predictor=False");
+                +" midpoint_samples="+samples+" horizon=last_floor_entry performance_predictor=False");
         }
     }
 }

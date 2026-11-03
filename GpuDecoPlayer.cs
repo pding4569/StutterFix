@@ -83,7 +83,7 @@ namespace StutterFix
                     foreach(var method in AccessTools.GetDeclaredMethods(type))
                         if(!method.IsAbstract && (method.Name=="UpdatePosition" || method.Name=="SetSprite"
                             || method.Name=="ApplyColor" || method.Name=="SetVisible"
-                            || method.Name=="SetMaskingType" || method.Name=="EnableMeshRenderer"))
+                            || method.Name=="SetMaskingType" || method.Name=="EnableMeshRenderer" || method.Name=="UpdateShader"))
                             candidate.Patch(method,postfix:new HarmonyMethod(typeof(GpuDecoPlayer),nameof(BarrierChanged)));
                 barrierHooks=candidate;
             }
@@ -581,7 +581,7 @@ namespace StutterFix
             long p3 = Stopwatch.GetTimestamp();HpMark("이미지계획");
             PrepareGpuLive();HpMark("GPU준비");   // 재사용이면 준비 결과가 그대로라 바로 돌아온다
 #if AUTOTEST
-            LogGpuWorkload();
+            LogGpuWorkload(floors.Max(f=>f.entryTime));
 #endif
             if (!reuse)
             {

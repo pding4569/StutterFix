@@ -49,6 +49,12 @@ if mode=='windows':
     for i,gpu in enumerate((0,1,1,0)):
         run(f'cpu-flash-wf-{i}',[game('wf'),'press','waitsongpos 8 120','fpsmark start',
             'waitsongpos 22 90','fpsmark end flash-wf','gpudeco live state'],gpu)
+elif mode=='diagnose':
+    run('cpu-notify-exit-diagnose',['gpudeco drawcollapse notify check',game('exit'),'press',
+        'waitsongpos 115 240','gpudeco drawcollapse notify state'],1)
+elif mode=='profiles':
+    for k in ('ar','wf'):
+        run('cpu-profile-'+k,[game(k),'press','waitsongpos 20 120','gpudeco live state'],1)
 elif mode=='hold':
     for i,arg in enumerate(('check','off','on','on','off')):
         run(f'cpu-hold-exit-{i}',[game('exit').replace('game ','open ',1),'holdreads '+arg,'seek 90 8',

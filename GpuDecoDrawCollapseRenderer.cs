@@ -73,7 +73,7 @@ namespace StutterFix
         }
         static void DisposeDrawCollapse()
         {
-            gpuNotifyRow.Clear();gpuNotifyPending.Clear();gpuNotifyWork.Clear();gpuNotifyInitialized=false;
+            gpuNotifyRow.Clear();gpuNotifyPending.Clear();gpuNotifyWork.Clear();gpuNotifyPolled.Clear();gpuNotifyInitialized=false;
             InvalidateRecordedCollapse();
             HideDrawCollapse();
             DestroyBarrierClones();
@@ -558,6 +558,9 @@ namespace StutterFix
         static readonly Dictionary<int,int> gpuNotifyRow=new Dictionary<int,int>();
         static readonly HashSet<int> gpuNotifyPending=new HashSet<int>();
         static readonly List<int> gpuNotifyWork=new List<int>();
+        // Floors, lines and other non-decoration renderers have no decoration
+        // setter notification contract. Keep their original polling cadence.
+        static readonly List<int> gpuNotifyPolled=new List<int>();
         static int gpuNotifyAuditFrame;
         static bool gpuNotifyInitialized;
 #if AUTOTEST
@@ -611,8 +614,18 @@ namespace StutterFix
 #if AUTOTEST
             Main.Entry.Logger.Log("[GPU 장식] 감시 장벽 "+n+"개(비소유 장식 렌더러 + 구간 묶음의 장벽), 구간 묶음 "+gpuSpansByBucket.Count+"개");
 #endif
-            gpuNotifyRow.Clear();gpuNotifyPending.Clear();gpuNotifyInitialized=false;
-            for(int w=0;w<n;w++)if(gpuWatchRows[w].R)gpuNotifyRow[gpuWatchRows[w].R.GetInstanceID()]=w;
+            gpuNotifyRow.Clear();gpuNotifyPending.Clear();gpuNotifyPolled.Clear();gpuNotifyInitialized=false;
+            for(int w=0;w<n;w++)
+            {
+                var renderer=gpuWatchRows[w].R;if(!renderer)continue;
+                var owner=renderer.GetComponentInParent<scrVisualDecoration>();
+                if(owner && (ReferenceEquals(owner.spriteRenderer,renderer) || ReferenceEquals(owner.meshRenderer,renderer)))
+                    gpuNotifyRow[renderer.GetInstanceID()]=w;
+                else gpuNotifyPolled.Add(w);
+            }
+#if AUTOTEST
+            GpuLog("BARRIER_NOTIFY_CONTRACT notified="+gpuNotifyRow.Count+" legacy_polled="+gpuNotifyPolled.Count);
+#endif
         }
         // SetDepth 후크(제품에도 설치)에서 부른다: 깊이가 바뀐 장식이 장벽이면 감시 목록에 넣는다.
         internal static void GpuDepthChanged(scrVisualDecoration d)
@@ -649,6 +662,7 @@ namespace StutterFix
             float shift=Vector3.Dot(cam.transform.position-gpuCollapseCameraPosition,gpuCollapseCameraForward);
             gpuNotifyWork.Clear();
             if(notify && !audit)foreach(int w in gpuNotifyPending)gpuNotifyWork.Add(w);
+            if(notify && !audit && legacyDue)foreach(int w in gpuNotifyPolled)gpuNotifyWork.Add(w);
             // Consume before applying changes: any reentrant notification is
             // retained for the next dispatch rather than cleared afterwards.
             gpuNotifyPending.Clear();
@@ -660,7 +674,21 @@ namespace StutterFix
                     // Read the legacy signature in this exact dispatch, before
                     // touching caches/buckets. A miss stops this candidate.
                     gpuNotifyComparisons++;
-                    if(NotifyLegacyChanged(w))gpuNotifyMismatches++;
+                    if(NotifyLegacyChanged(w))
+                    {
+                        gpuNotifyMismatches++;
+                        if(gpuNotifyMismatches==1)
+                        {
+                            var missed=gpuWatchRows[w];var renderer=missed.R;
+                            GpuLog("BARRIER_NOTIFY_MISS row="+w+" name="+(renderer?renderer.name:"destroyed")
+                                +" type="+(renderer?renderer.GetType().Name:"destroyed")
+                                +" old_active="+gpuWatchActive[w]+" active="+DrawCollapseBarrierActive(missed)
+                                +" old_sig="+gpuWatchSig[w]+" z="+(renderer?renderer.transform.position.z:0)
+                                +" enabled="+(renderer && renderer.enabled)+" hierarchy="+(renderer && renderer.gameObject.activeInHierarchy)
+                                +" force_off="+(renderer && renderer.forceRenderingOff)
+                                +" song="+(scrConductor.instance?scrConductor.instance.songposition_minusi:double.NaN).ToString("F6",Inv));
+                        }
+                    }
                 }
             }
 #endif
