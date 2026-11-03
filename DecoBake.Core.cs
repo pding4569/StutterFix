@@ -365,8 +365,8 @@ namespace StutterFix
                         bool replacement = list.Count != 0 && list[list.Count - 1].Duration > 0
                             && (e.T0 - list[list.Count - 1].T0) / pitch * tweenScale < list[list.Count - 1].Duration;
                         float start = list.Count == 0 ? current : list[list.Count - 1].End;
-                        bool isScale = c == ScaleX || c == ScaleY;
-                        // No OnComplete setter for scale: retain plugin arithmetic even at the endpoint.
+                        bool isScale = c == ScaleX || c == ScaleY || c == 12 || c == 13;
+                        // Scale and parallax have no OnComplete setter: retain plugin arithmetic at the endpoint.
                         // ZeroTween's zero-duration proxy evaluates ease at time=duration=1.
                         float end = isScale ? start + (target - start) * ease(e.Ease,
                             e.Duration == 0 ? 1 : e.Duration, e.Duration == 0 ? 1 : e.Duration, e.Over, e.Period) : target;

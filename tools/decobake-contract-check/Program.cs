@@ -532,6 +532,12 @@ var parLiveEvent = Event(0,0,0,source:83); parLiveEvent.Values[0] = float.NaN; p
 var parLiveDeco = Decoration(); parLiveDeco.Initial[12] = 1e20f;
 var parLive = new BakeLive(Compile(parLiveDeco,new[] { parLiveEvent })); parLive.Resync(-1,LiveWrite); parLive.Start(83,0,LiveWrite);
 Require(parLive.Last[12] == 0,"live parallax multiplier zero endpoint uses plugin arithmetic");
+var parTable = Compile(parLiveDeco,new[] { parLiveEvent });
+Require(parTable.Eval(0,12,0) == 0,"compiled parallax zero endpoint matches live plugin cancellation arithmetic");
+var parDuration = Event(0,2,0,source:84); parDuration.Values[0] = float.NaN; parDuration.Values[13] = 1;
+var parDurationDeco = Decoration(); parDurationDeco.Initial[13] = 1e20f;
+Require(Compile(parDurationDeco,new[] { parDuration }).Eval(0,13,2) == 0,
+    "compiled parallax duration endpoint retains plugin cancellation instead of assigning target");
 Console.WriteLine("bake9 extra trigger/endpoint/nonfinite checks passed");
 var failedCommit = new BakeLive(twinTable); failedCommit.Resync(-1,LiveWrite); failedCommit.Start(44,0,LiveWrite);
 failedCommit.Step(2,false,LiveWrite,2,0); liveWrites[0] = -100;
