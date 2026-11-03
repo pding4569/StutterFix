@@ -191,7 +191,7 @@ namespace StutterFix
             gpuImageCandidate=false;gpuImageUploadFault=false;gpuImageMatrix=false;
 #endif
             gpuRenderMergePrepare=false;
-            enabled = false; CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
+            enabled = false; CancelBuild(); initial.Clear(); g1Initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
 #if DEV || AUTOTEST
             DecoSim.ForgetBake();
 #endif
@@ -210,7 +210,7 @@ namespace StutterFix
         {
             if (!enabled) return;
             DisposeGpuLive();
-            CancelBuild(); initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null; status = "새 맵 스냅샷 대기";
+            CancelBuild(); initial.Clear(); g1Initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null; status = "새 맵 스냅샷 대기";
             setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1;
         }
         private static void SetupPostfix(scrDecoration __instance)
@@ -221,7 +221,7 @@ namespace StutterFix
             {
                 if (ready || collector != null || job != null) CancelBuild(manager == __instance.manager);
                 var d = __instance;
-                if (manager != d.manager) { initial.Clear(); ClearBaseline(); manager = d.manager; setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1; }
+                if (manager != d.manager) { initial.Clear(); g1Initial.Clear(); ClearBaseline(); manager = d.manager; setupMs = setupFrameMs = setupFrameMaxMs = 0; setupFrame = -1; }
                 // Setup can run again during seek. Never replace pre-scrub values with animated values.
                 if (initial.ContainsKey(d)) return;
                 if (playerPrepKept) ClearPlayerPrepSnapshot(); // New objects must be captured normally before the next PreparePlayer.
@@ -257,6 +257,7 @@ namespace StutterFix
                 if (!DecoBakeCore.Finite(row.OriginalX) || !DecoBakeCore.Finite(row.OriginalY)
                     || !DecoBakeCore.Finite(row.GlobalX) || !DecoBakeCore.Finite(row.GlobalY)) row.Reasons.Add("초기값 비유한");
                 initial[d] = row;
+                CaptureG1Initial(d);
             }
             catch (Exception e) { Fail("초기값 수집 " + e.Message); }
             finally
@@ -320,13 +321,11 @@ namespace StutterFix
             var r = new List<string>();
             if (Conditional(f)) r.Add("조건/수동/타격");
             if (f.disableIfMinFx || f.disableIfMaxFx) r.Add("시각 효과 설정 조건");
-            if (f.imageFilenameUsed || f.originalSizeUsed || f.smoothingUsed || f.cropPivotOffsetUsed)
+            if (f.imageFilenameUsed)
 #if AUTOTEST || GPUDECO
-                if(!ImageOnlyEvent(f))
+                if(!gpuImageCandidate)
 #endif
-                r.Add("이미지/원래크기/크롭/wrap");
-            if (f.maskingTypeUsed || f.maskingTargetUsed || f.useMaskingDepthUsed || f.maskingFrontDepthUsed || f.maskingBackDepthUsed) r.Add("마스크 변경");
-            if (f.visibleUsed || f.depthUsed) r.Add("가시성/깊이 변경");
+                r.Add("이미지 변경");
             var movementReason = DecoBakeCore.MovementReason(f.movementType.ToString(), f.movementTypeUsed);
             if (movementReason != null) r.Add(movementReason);
             if (!Enum.IsDefined(typeof(Ease), f.ease) || f.ease == Ease.INTERNAL_Custom || f.ease == Ease.Unset) r.Add("미확인/사용자 이징");
@@ -382,6 +381,12 @@ namespace StutterFix
             var ids = new Dictionary<scrDecoration, int>();
             var ordered = new HashSet<ffxPlusBase>();
             var events = new List<DecoBakeCore.Event>();
+            var canHide = new HashSet<scrDecoration>();
+            var imageWrites = new HashSet<scrDecoration>();
+            foreach(var f in schedule.OfType<ffxMoveDecorationsPlus>())
+                if((f.visibleUsed && !f.visible) || f.imageFilenameUsed)
+                    foreach(var d in TimedTargets(f))
+                    {if(f.visibleUsed && !f.visible)canHide.Add(d);if(f.imageFilenameUsed)imageWrites.Add(d);}
 #if AUTOTEST || GPUDECO
             var visualFlags = new List<int>();
             var imageSelectors = new List<string>();
@@ -425,6 +430,7 @@ namespace StutterFix
                     {
                         if (!ids.TryGetValue(d, out int id)) throw new InvalidOperationException("대상/초기값 불일치");
                         targets.Add(id); if (++refs > MaxTargetRefs) throw new InvalidOperationException("대상 참조 상한");
+                        AddG1ValueReasons(f,d,decs[id],g1Initial.TryGetValue(d,out var g1) && g1.Visible && !canHide.Contains(d),imageWrites.Contains(d));
                         if (slice.Elapsed.TotalMilliseconds >= 4) { yield return null; slice.Restart(); }
                     }
                     e.Targets = targets.ToArray(); events.Add(e);

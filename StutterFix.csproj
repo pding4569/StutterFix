@@ -179,6 +179,7 @@
     <Compile Include="DecoBake.AdoptSig.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="DecoAnim.Bake.cs" />
     <Compile Include="DecoBake.cs" />
+    <Compile Include="DecoBake.G1.cs" />
     <Compile Include="FreeFpsProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="BigLevel.cs" />
     <Compile Include="PcTune.cs" />
