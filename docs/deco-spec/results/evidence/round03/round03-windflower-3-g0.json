@@ -1,0 +1,22 @@
+{
+  "steps": [
+    "timeout 600",
+    "wait 2",
+    "auto on",
+    "game D:/얼불춤 맵 파일/Windflower/Windflower.adofai",
+    "press",
+    "waitsongpos 12.0 400",
+    "fpsmark start",
+    "waitsongpos 22.0 60",
+    "fpsmark end round03-windflower-3-g0",
+    "quit"
+  ],
+  "settings": {
+    "GpuDeco": 0,
+    "GpuDecoImages": 1,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "timeout_min": 14,
+  "tag": "round03-windflower-3-g0"
+}

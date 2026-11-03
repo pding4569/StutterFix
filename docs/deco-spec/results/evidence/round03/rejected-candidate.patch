@@ -1,0 +1,75 @@
+diff --git a/GpuDecoPlayer.cs b/GpuDecoPlayer.cs
+index bb6fb3d..4efe3f0 100644
+--- a/GpuDecoPlayer.cs
++++ b/GpuDecoPlayer.cs
+@@ -498,6 +498,7 @@ namespace StutterFix
+             // 파괴된 장식(맵을 다시 불러온 경우) 항목은 정리한다. 살아 있는 것은 처음 Setup 기록을 그대로 쓴다.
+             int deadCount = 0;
+             if (initial.Count > 0) { var dead = initial.Keys.Where(k => !k).ToArray(); deadCount = dead.Length; foreach (var k in dead) initial.Remove(k); }
++            CheckGpuVisibleDensity(floors);
+             bool cacheCandidate = gpuLivePrepared && !gpuRecoveryBlocked && gpuLastRestoreComplete && gpuLiveSlices.Count > 0 && gpuScope != null && gpuScope.WholeSong
+                 && gpuPreparedHash != 0 && gpuLiveManager == manager && manager == scrDecorationManager.instance;
+             if (!cacheCandidate) { if (gpuLivePrepared || gpuLiveSlices.Count > 0) DisposeGpuLive(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
+diff --git a/GpuDecoPreparation.cs b/GpuDecoPreparation.cs
+index 8799b7a..4224883 100644
+--- a/GpuDecoPreparation.cs
++++ b/GpuDecoPreparation.cs
+@@ -3,6 +3,58 @@ namespace StutterFix
+ {
+     internal static partial class DecoBake
+     {
++        // Experimental pre-track proxy, not a calibrated CPU/GPU cost model.
++        // Initial visibility and initial-value deltas do not predict later visibility,
++        // interrupted tweens, camera culling, or the final ownership demotions.
++        static void CheckGpuVisibleDensity(System.Collections.Generic.List<scrFloor> floors)
++        {
++            var timer = System.Diagnostics.Stopwatch.StartNew();
++            double end = 0, visibleChannelSeconds = 0;
++            foreach (var floor in floors) end = System.Math.Max(end, floor.entryTime);
++            double pitch = scrConductor.instance.song.pitch, scale = DG.Tweening.DOTween.timeScale;
++            RequireLive(end > 0 && pitch > 0 && scale > 0, "invalid preflight clock");
++            int eligible = 0, activeFallback = 0, visible = 0, references = 0;
++            var visibleRows = new System.Collections.Generic.HashSet<scrDecoration>();
++            foreach (var pair in initial)
++            {
++                var d = pair.Key;
++                if (!d) continue;
++                bool active = d.gameObject.activeInHierarchy && g1RendererEnabled(d);
++                if (pair.Value.Reasons.Count != 0) { if (active) activeFallback++; continue; }
++                eligible++;
++                if (active && d is scrVisualDecoration v && v.spriteRenderer && v.spriteRenderer.enabled
++                    && pair.Value.Initial[10] > 0 && pair.Value.Initial[11] > 0)
++                { visibleRows.Add(d); visible++; }
++            }
++            var effects = scrVfxPlus.instance.effects;
++            RequireLive(effects.Count <= MaxEvents, "preflight effect limit");
++            foreach (var fx in effects)
++            {
++                if (!(fx is ffxMoveDecorationsPlus f) || f.duration <= 0) continue;
++                var e = CopyEvent(f);
++                if (e.Reasons.Length != 0) continue;
++                double duration = System.Math.Max(0, System.Math.Min(end, e.T0 + e.Duration * pitch / scale) - System.Math.Max(0, e.T0));
++                if (!(duration > 0) || double.IsInfinity(duration)) continue;
++                foreach (var d in f.decManager.GetTaggedDecorations((System.Collections.Generic.IEnumerable<string>)f.targetTags))
++                {
++                    RequireLive(++references <= MaxTargetRefs, "preflight target limit");
++                    if (!d || !visibleRows.Contains(d)) continue;
++                    var start = initial[d].Initial;
++                    for (int c = 0; c < e.Values.Length; c++)
++                        if (DecoBakeCore.Finite(e.Values[c]) && e.Values[c] != start[c])
++                            visibleChannelSeconds += duration;
++                }
++            }
++            double meanChannels = visibleChannelSeconds / end;
++            bool admit = eligible >= GpuDecoPlayerPolicy.MinimumOwned && meanChannels > eligible + activeFallback;
++            Main.Entry.Logger.Log("[GPU 장식] PREFLIGHT_DENSITY eligible_upper=" + eligible
++                + " initially_visible=" + visible + " active_fallback=" + activeFallback
++                + " horizon_s=" + N(end) + " mean_visible_channels=" + N(meanChannels)
++                + " target_refs=" + references + " census_ms=" + N(timer.Elapsed.TotalMilliseconds)
++                + " admit=" + admit + " visibility=INITIAL_ONLY cost_model=UNVERIFIED before_tracks_and_gpu=True");
++            RequireLive(admit, "initially visible channel density below slot and fallback proxy");
++        }
++
+         // Run after all row demotions, before allocating slices or consuming Data.
+         // An empty slice intentionally has no Data; it is not a preparation fault.
+         static bool AcceptGpuOwnedCount(int owned)

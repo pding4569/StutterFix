@@ -1,0 +1,18 @@
+{
+  "steps": [
+    "timeout 600",
+    "wait 2",
+    "auto on",
+    "game D:/얼불춤 맵 파일/Windflower/Windflower.adofai",
+    "wait 2",
+    "quit"
+  ],
+  "settings": {
+    "GpuDeco": 1,
+    "GpuDecoImages": 1,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "timeout_min": 14,
+  "tag": "round03-windflower-admission"
+}
