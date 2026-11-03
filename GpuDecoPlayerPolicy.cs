@@ -23,7 +23,7 @@ namespace StutterFix
     }
     internal static class GpuDecoPlayerPolicy
     {
-        internal const int MinimumOwned=10000; // 실측: 소유 124~2,999개 맵은 손해, 2만 8천 개는 큰 이득. 그 사이 맵은 표본 없음.
+        internal const int MinimumOwned=64;
         // Lower observed beneficial workload, rounded down at six decimals.
         // Calibration: cpu-profile-ar, cpu-profile-wf, cpu-notify-exit-diagnose.
         // Research gate remains off: these three workloads are not a general

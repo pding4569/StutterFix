@@ -546,7 +546,7 @@ namespace StutterFix
                     + string.Join(", ", total.OrderByDescending(kv => kv.Value).Select(kv => kv.Key + " " + kv.Value + "/단독 " + (only.TryGetValue(kv.Key, out int o) ? o : 0))));
             }
 #endif
-            RequireLive(table.Supported >= GpuDecoPlayerPolicy.MinimumOwned, "지원되는 장식이 적음");
+            RequireLive(table.Supported >= GpuDecoPlayerPolicy.MinimumOwned, "지원되는 장식이 적음 (64개 미만)");
             bool reuse = false;
             if (cacheCandidate)
             {
