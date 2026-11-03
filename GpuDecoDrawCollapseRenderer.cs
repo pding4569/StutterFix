@@ -1280,8 +1280,8 @@ namespace StutterFix
                 float dot=Vector3.Dot(gpuLiveCamera.transform.forward,gpuCollapseCameraForward);
                 var mode=gpuLiveCamera.transparencySortMode;
                 if(mode==TransparencySortMode.Default)mode=GraphicsSettings.transparencySortMode;
-                guard.Check(gpuLiveCamera.orthographic && (mode==TransparencySortMode.Default || mode==TransparencySortMode.Orthographic)
-                    && dot>=0.999999f,"drawcollapse camera sort axis/mode changed dot="+dot.ToString("R",Inv));
+                if(!(gpuLiveCamera.orthographic && (mode==TransparencySortMode.Default || mode==TransparencySortMode.Orthographic)
+                    && dot>=0.999999f))guard.Check(false,"drawcollapse camera sort axis/mode changed dot="+dot.ToString("R",Inv));
                 shift=Vector3.Dot(gpuLiveCamera.transform.position-gpuCollapseCameraPosition,gpuCollapseCameraForward);
             }
             if(prepared && gpuLiveSlices.Count==1 && full)
@@ -1323,7 +1323,7 @@ namespace StutterFix
                     for(int n=0;n<checks;n++)
                     {
                         int i=fullOwned?n:gpuCollapseOwnedCursor++%count;
-                        CheckDrawCollapseKey(gpuCollapseOwnedRows[i],shift,guard,"owned item="+i);
+                        CheckDrawCollapseKey(gpuCollapseOwnedRows[i],shift,guard,i);
                     }
                     if(!fullOwned && count>0)gpuCollapseOwnedCursor%=count;
                 }
@@ -1356,7 +1356,7 @@ namespace StutterFix
                         var judge=key;
                         if(gpuBarrierCloneOrig.TryGetValue(r.GetInstanceID(),out var origMat) && origMat)judge=GpuDecoScene.SortKey(r,origMat,gpuLiveCamera,barrier.Key.Slot); // 복제 머티리얼이 씌워진 장벽의 앞/뒤는 원래 ID 로 판정
                         bool before=judge.CompareTo(firstKey)<0,after=judge.CompareTo(lastKey)>0;
-                        guard.Check((before && key.CompareTo(proxy)<0) || (after && key.CompareTo(proxy)>0),
+                        if(!((before && key.CompareTo(proxy)<0) || (after && key.CompareTo(proxy)>0)))guard.Check(false,
                             "drawcollapse proxy/barrier order changed renderer="+r.GetInstanceID()
                             +" name="+r.name+" key="+DcKey(key)+" first="+DcKey(firstKey)+" last="+DcKey(lastKey)+" proxy="+DcKey(proxy)
                             +" span_items="+span.Items.Length
@@ -1370,14 +1370,14 @@ namespace StutterFix
 #endif
             guard.Finish(GpuLog);
         }
-        static void CheckDrawCollapseKey(GpuLiveRow row,float shift,DrawCollapseGuard guard,string label)
+        static void CheckDrawCollapseKey(GpuLiveRow row,float shift,DrawCollapseGuard guard,int item)
         {
-            if(row==null || !row.R || !row.M){guard.Check(false,"drawcollapse "+label+" lost");return;}
+            if(row==null || !row.R || !row.M){guard.Check(false,"drawcollapse owned item="+item+" lost");return;}
             var material=DrawCollapseMaterial(row);
             var now=GpuDecoScene.SortKey(row.R,material,gpuLiveCamera,row.Key.Slot);
             // Avoid formatting thousands of success-path diagnostics at entry.
             if(!DrawCollapsePolicy.SameSortKey(row.Key,now,shift))
-                guard.Check(false,"drawcollapse "+label+" sort key changed name="+row.R.name
+                guard.Check(false,"drawcollapse owned item="+item+" sort key changed name="+row.R.name
                     +" layer="+row.Key.Layer+"->"+now.Layer+" order="+row.Key.Order+"->"+now.Order
                     +" queue="+row.Key.Queue+"->"+now.Queue+" material="+row.Key.Material+"->"+now.Material
                     +" distance_delta="+(row.Key.Distance-now.Distance).ToString("R",Inv)+" camera_shift="+shift.ToString("R",Inv));
