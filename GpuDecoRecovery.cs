@@ -58,7 +58,7 @@ namespace StutterFix
             if(e.Reasons.Length!=0 || !GpuDecoGpu.Supported(e.Ease) || !DecoBakeCore.Finite(e.Over) || !DecoBakeCore.Finite(e.Period)
                 || fx.colorUsed && (float.IsNaN(e.Values[7]) || float.IsNaN(e.Values[8]) || float.IsNaN(e.Values[9]) || float.IsNaN(e.Values[10]))
                 || fx.parallaxUsed && (float.IsNaN(e.Values[12]) || float.IsNaN(e.Values[13])))
-                throw new NotSupportedException("GPU effect outside prepared contract");
+                throw new NotSupportedException("GPU effect outside prepared contract reasons="+string.Join(",",e.Reasons)+" ease="+e.Ease+" over="+e.Over+" period="+e.Period+" color="+fx.colorUsed+" parallax="+fx.parallaxUsed+" values="+e.Values[7]+","+e.Values[8]+","+e.Values[9]+","+e.Values[10]+","+e.Values[12]+","+e.Values[13]);
             var source=e.Duration>0f?AllocateGpuLiveSource(fx.GetInstanceID(),Time.frameCount,e.Duration,(Ease)e.Ease,e.Over,e.Period,0f):null;
             if(gpuEffectCache)CacheGpuEffect(e,e.Duration>0f&&source!=null);
             gpuCurrentFx=fx;gpuCurrentEvent=e;gpuCurrentAnimSource=source;gpuCurrentFxParsed=true;

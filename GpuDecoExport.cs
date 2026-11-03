@@ -358,6 +358,9 @@ namespace StutterFix
                         StopGpuLive("target_rollback_rejected",false);
                         gpuRecoveryBlocked=true;return false;
                     }
+#if AUTOTEST
+                Main.Entry.Logger.Log("[gpudeco] effect_exception "+ex.Message);
+#endif
                 RecoverGpuLive("effect:"+ex.GetType().Name,!(ex is NotSupportedException));
                 // The current/remaining targets go through normal FastMove once.
                 // Already committed earlier targets are restored as CPU records.
