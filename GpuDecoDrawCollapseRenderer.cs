@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || GPUDECO
+﻿#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -353,8 +353,6 @@ namespace StutterFix
         static double DcMs(long from)=>(Stopwatch.GetTimestamp()-from)*1000.0/Stopwatch.Frequency;
 #if AUTOTEST
         static readonly Dictionary<(int,int,int,float),HashSet<string>> diagBucketKinds=new Dictionary<(int,int,int,float),HashSet<string>>();
-#endif
-#if AUTOTEST
         static readonly Dictionary<string,int> diagExcludeKinds=new Dictionary<string,int>();
 #endif
         // ---- 장벽 머티리얼 복제로 같은 묶음 안의 순서 재현 ----
@@ -508,7 +506,9 @@ namespace StutterFix
             Main.Entry.Logger.Log("[gpudeco] 구간 머티리얼 공유 "+(on?"켬":"끔"));
         }
         internal static void MarkAllSpansDirty(){if(gpuSpanOfItem==null)return;for(int k=0;k<gpuCollapseSpans.Count;k++)MarkSpanDirty(k);}
+#if DEV || AUTOTEST
         internal static long gpuSpanToggles;
+#endif
         static void ApplySpanCulling()
         {
             if(gpuSpanOfItem==null)return;
@@ -516,7 +516,11 @@ namespace StutterFix
             {
                 int k=gpuSpanDirty[n];gpuSpanDirtyMark[k]=false;
                 var r=gpuCollapseSpans[k].Renderer;bool want=gpuSpanVisible[k]>0 && !DrawCollapsePolicy.HideProxies;
-                if(r && r.enabled!=want){r.enabled=want;gpuSpanToggles++;}
+                if(r && r.enabled!=want){r.enabled=want;
+#if AUTOTEST
+                    gpuSpanToggles++;
+#endif
+                }
             }
             gpuSpanDirty.Clear();
         }
@@ -954,8 +958,6 @@ namespace StutterFix
                 }
                 Main.Entry.Logger.Log("[GPU 장식] 장벽 종류: "+string.Join(" | ",kinds.OrderByDescending(x=>x.Value).Take(14).Select(x=>x.Key+"="+x.Value)));
             }
-#endif
-#if AUTOTEST
             if(GpuDecoPlayer.Product)
             {
                 var ob=new HashSet<(int,int,int,int)>();
@@ -1263,7 +1265,9 @@ namespace StutterFix
 #else
             var guard=new DrawCollapseGuard(false, GpuDecoPlayer.Product && !full ? GpuDecoPlayer.OrderViolation : (Action<string>)null);
 #endif
+#if AUTOTEST
             long dcV0=Stopwatch.GetTimestamp();
+#endif
             RequireDrawCollapse(guard);
             var sweep=CollapseBarriersToCheck(full); // 순환 커서는 프레임당 한 번만 전진
             bool prepared=gpuCollapseSpans.Count>0 && gpuCollapseTexture!=null && gpuCollapseIncluded!=null;
@@ -1361,7 +1365,9 @@ namespace StutterFix
                     }
                 }
             }
+#if AUTOTEST
             if(full)GpuLog("DRAWCOLLAPSE_VALIDATE_MS full="+DcMs(dcV0).ToString("F1",Inv)+" barriers="+gpuCollapseBarriers.Count+" auxiliaries="+gpuCollapseAuxiliaries.Count);
+#endif
             guard.Finish(GpuLog);
         }
         static void CheckDrawCollapseKey(GpuLiveRow row,float shift,DrawCollapseGuard guard,string label)
@@ -1429,14 +1435,20 @@ namespace StutterFix
                     var co=camm.camobj;float halfH=(co.orthographicSize*1.05f+.5f)*DrawCollapsePolicy.ClipScale,halfW=halfH*co.aspect;float rad=ctm.eulerAngles.z*Mathf.Deg2Rad;
                     clipM=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
                 }
+#if AUTOTEST
                 long ex0=Stopwatch.GetTimestamp();
+#endif
                 source.Gpu.DispatchCollapseMinimal(gpuCollapseTexture,gpuCollapseAllVerts,gpuCollapseAllMap,gpuCollapseAllCount,
                     new Vector4(ctm.position.x,ctm.position.y,ctm.eulerAngles.z,camScaleM),time,clipM);
+#if AUTOTEST
                 long ex1=Stopwatch.GetTimestamp();
+#endif
                 ApplySpanCulling();
                 if(gpuSpanOfItem==null && (Time.frameCount&7)==0)
                 foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
+#if AUTOTEST
                 gpuCostExecTicks+=ex1-ex0;gpuCostProxyTicks+=Stopwatch.GetTimestamp()-ex1;
+#endif
             }
             else if(DrawCollapsePolicy.RecordedDispatch)
             {
@@ -1458,13 +1470,19 @@ namespace StutterFix
                     var co=camy.camobj;float halfH=co.orthographicSize*1.05f+.5f,halfW=halfH*co.aspect;float rad=ctf.eulerAngles.z*Mathf.Deg2Rad;
                     clip=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
                 }
+#if AUTOTEST
                 long ex0=Stopwatch.GetTimestamp();
+#endif
                 source.Gpu.ExecuteRecordedCollapse(new Vector4(ctf.position.x,ctf.position.y,ctf.eulerAngles.z,camScale),time,clip);
+#if AUTOTEST
                 long ex1=Stopwatch.GetTimestamp();
+#endif
                 ApplySpanCulling();
                 if(gpuSpanOfItem==null && (!GpuDecoPlayer.Product || (Time.frameCount&7)==0))
                 foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
+#if AUTOTEST
                 gpuCostExecTicks+=ex1-ex0;gpuCostProxyTicks+=Stopwatch.GetTimestamp()-ex1;
+#endif
             }
             else
             {
@@ -1486,12 +1504,18 @@ namespace StutterFix
                 // CopyMask retains chunks containing visible fallback items;
                 // neighboring admitted buffers may be copied but stay hidden.
                 // Spans still evaluate directly into their representative VBs.
+#if AUTOTEST
                 long fe0=Stopwatch.GetTimestamp();
+#endif
                 source.Gpu.DispatchEvaluate();
+#if AUTOTEST
                 long fe1=Stopwatch.GetTimestamp();
+#endif
                 ulong low=source.CopyMask?.Low??ulong.MaxValue,high=source.CopyMask?.High??ulong.MaxValue;
                 if(source.NativeCopy==null || !source.NativeCopy.Execute(low,high))Graphics.ExecuteCommandBuffer(source.Commands);
+#if AUTOTEST
                 gpuCostFbEvalTicks+=fe1-fe0;gpuCostFbCopyTicks+=Stopwatch.GetTimestamp()-fe1;
+#endif
             }
         }
     }

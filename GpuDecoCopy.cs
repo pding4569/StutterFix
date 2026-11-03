@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || GPUDECO
+﻿#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -35,7 +35,9 @@ namespace StutterFix
         [DllImport("sfnative",CallingConvention=CallingConvention.Cdecl)] static extern uint sf_deco_copy_thread(int id);
         static readonly List<GpuDecoCopy> instances=new List<GpuDecoCopy>();
         static ulong managedFaults;
+#if DEV || AUTOTEST
         internal static long DbgSubmitTicks,DbgExecTicks;
+#endif
         internal static bool DirectSubmit=true;
         bool directBound;
         GraphicsBuffer normalized;
@@ -113,10 +115,12 @@ namespace StutterFix
                 // Consume the ordinary event/mask queue and retain normalization;
                 // an empty mask omits only destination-copy command chunks.
                 if(AblateDestinations) {if(!masked)throw new InvalidOperationException("unmasked copy ablation");low=high=0;}
-#endif
                 long sb0=System.Diagnostics.Stopwatch.GetTimestamp();
+#endif
                 if(token==0 || (masked?sf_deco_copy_submit_mask(token,low,high):sf_deco_copy_submit(token))==0){managedFaults++;failed=true;return false;}
+#if AUTOTEST
                 long sb1=System.Diagnostics.Stopwatch.GetTimestamp();
+#endif
                 if(evaluator==null && DirectSubmit)
                 {
                     // Graphics.ExecuteCommandBuffer 는 이 짧은 버퍼에도 프레임당 약 0.165ms 가 들었다(직접 Dispatch 는 약 0.005ms).
@@ -131,8 +135,10 @@ namespace StutterFix
                     GL.IssuePluginEvent(copyCallback,token);
                 }
                 else Graphics.ExecuteCommandBuffer(submitted);
+#if AUTOTEST
                 DbgSubmitTicks+=sb1-sb0;DbgExecTicks+=System.Diagnostics.Stopwatch.GetTimestamp()-sb1;
                 if(evaluator!=null)SingleExecutions++;
+#endif
                 return true;
             }
             catch(Exception e) {managedFaults++;failed=true;Status=e.GetType().Name+": "+e.Message;return false;}

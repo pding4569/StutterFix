@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || GPUDECO
+﻿#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -87,7 +87,11 @@ namespace StutterFix
 #if DEV || AUTOTEST
                     if(GpuDecoCostProbe.Enabled)GpuDecoCostProbe.AlphaToggle();
 #endif
-                    r.enabled=wanted;gpuAlphaToggles++;}
+                    r.enabled=wanted;
+#if AUTOTEST
+                    gpuAlphaToggles++;
+#endif
+                }
             }
             internal void RefreshItem(int item)=>ApplyAlpha(item);
             internal bool IsHiddenAlpha(int item)=>HiddenAlpha(item);
@@ -274,10 +278,12 @@ namespace StutterFix
         static double gpuLivePrepareMs, gpuLiveTransitionMs, gpuLiveTurnOnBakeTime;
         static float gpuLiveEnabledAt, gpuLiveZoomFactor = 1f;
         static long gpuLiveSkippedRecs;
+#if DEV || AUTOTEST
         static long gpuCostCheckTicks, gpuCostClockTicks, gpuCostWholeTicks, gpuCostValidateTicks, gpuCostExecTicks, gpuCostProxyTicks, gpuCostCamTicks, gpuCostDdTicks, gpuCostAfterTicks, gpuCostFbEvalTicks, gpuCostFbCopyTicks;
         internal static long gpuAlphaToggles;
         static long gpuCostFrames, gpuCostProgressTicks, gpuCostUniformTicks, gpuCostDispatchTicks, gpuCostMiscTicks;
         static double gpuCostMaxMs;
+#endif
         static readonly float[] gpuRestoreValues = new float[16];
 
         // G2 ABBA + stability gate state
@@ -325,7 +331,10 @@ namespace StutterFix
                 if(GpuRecoveryTesting){SaveGpuTarget(masterIdx,d);captured=true;}
                 ApplyGpuLiveEffectToTarget(fx, masterIdx, d);
                 ApplyG1Visible(fx,masterIdx,d);
-                gpuLiveSkippedRecs+=keys;return true;
+#if AUTOTEST
+                gpuLiveSkippedRecs+=keys;
+#endif
+                return true;
             }
             catch(Exception ex)
             {
@@ -1286,7 +1295,9 @@ namespace StutterFix
         static void DispatchGpuLiveSlice(double time)
         {
             GpuRecoveryFault("render_before");
+#if AUTOTEST
             long t0 = Stopwatch.GetTimestamp();
+#endif
             int s = FindGpuLiveSlice(time);
             if (s < 0) {StopGpuLive("outside_prepared_scope");return;}
             if (s != gpuLiveCurrentSlice)
@@ -1301,51 +1312,64 @@ namespace StutterFix
             }
             var active = gpuLiveSlices[gpuLiveCurrentSlice];
             if (active.Gpu == null) return;
+#if AUTOTEST
             long t1 = Stopwatch.GetTimestamp();
+#endif
             AdvanceGpuLiveSources();
 #if AUTOTEST || GPUDECO
             FlushGpuImagesBeforeVisible();
             if(!gpuLiveActive)return;
-#endif
-#if DEV || AUTOTEST
+#if AUTOTEST
             long probeAdvance=GpuDecoCostProbe.Enabled?Stopwatch.GetTimestamp():0;
 #endif
             active.FlushDirty();
-#if DEV || AUTOTEST
+#if AUTOTEST
             long probeDirty=GpuDecoCostProbe.Enabled?Stopwatch.GetTimestamp():0;
 #endif
             active.Gpu.UploadSourceE(gpuSourceE, gpuSourceProgress, gpuSourceHighWater);
+#if AUTOTEST
             long t2 = Stopwatch.GetTimestamp();
-#if DEV || AUTOTEST
             if(GpuDecoCostProbe.Enabled)GpuDecoCostProbe.Frame(probeAdvance-t1,probeDirty-probeAdvance,t2-probeDirty,
                 gpuSourceHighWater,active.CopyMask?.Low??0,active.CopyMask?.High??0);
-#endif
             long cm0=Stopwatch.GetTimestamp();
+#endif
             var camy = ADOBase.controller.camy;
             var ct = camy.transform;
             float camScale = camy.camobj.orthographicSize * .2f / gpuLiveZoomFactor;
             var camera=new Vector4(ct.position.x, ct.position.y, ct.eulerAngles.z, camScale);
+#if AUTOTEST
             long cm1=Stopwatch.GetTimestamp();
+#endif
             CheckDrawCollapseBeforeDispatch(time);
+#if AUTOTEST
             gpuCostCamTicks+=cm1-cm0;gpuCostValidateTicks+=Stopwatch.GetTimestamp()-cm1;
+#endif
             bool single=GpuDecoCopy.SingleSubmission && !gpuRenderMergeOn && !gpuCollapseOn && active.SharedBatch==null
                 && active.NativeCopy!=null && active.Gpu.UseLiveMode && active.Gpu.HasNativeLiveKernel;
             if(!single)active.Gpu.SetLiveUniforms(camera,time);
+#if AUTOTEST
             long t3 = Stopwatch.GetTimestamp();
+#endif
             ulong maskLow=gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.Low??ulong.MaxValue;
             ulong maskHigh=gpuCopyMaskBypass?ulong.MaxValue:active.CopyMask?.High??ulong.MaxValue;
             bool submitted=false;
             if(gpuCollapseOn)
             {
+#if AUTOTEST
                 long dd0=Stopwatch.GetTimestamp();
+#endif
                 DispatchDrawCollapse(time); // Direct representative VBs; independent copies only for texture overflow.
+#if AUTOTEST
                 gpuCostDdTicks+=Stopwatch.GetTimestamp()-dd0;
+#endif
                 submitted=true;
             }
             else
             {
                 submitted=single && active.NativeCopy.Execute(maskLow,maskHigh,active.Gpu,camera,time);
+#if AUTOTEST
                 if(GpuDecoCopy.SingleSubmission && !submitted)GpuDecoCopy.SingleFallbacks++;
+#endif
             }
             if(!submitted)
             {
@@ -1357,8 +1381,11 @@ namespace StutterFix
                 else if(active.SharedBatch!=null)active.SharedBatch.Dispatch();
                 else if(active.NativeCopy==null || !active.NativeCopy.Execute(maskLow,maskHigh))Graphics.ExecuteCommandBuffer(active.Commands);
             }
+#if AUTOTEST
             long af0=Stopwatch.GetTimestamp();
+#endif
             GpuRecoveryFault("render_after");
+#if AUTOTEST
             long t4 = Stopwatch.GetTimestamp();
             gpuCostAfterTicks+=t4-af0;
             gpuCostMiscTicks += t1 - t0;
@@ -1368,7 +1395,6 @@ namespace StutterFix
             gpuCostFrames++;
             double totalMs = (t4 - t0) * 1000.0 / Stopwatch.Frequency;
             if (totalMs > gpuCostMaxMs) gpuCostMaxMs = totalMs;
-#if AUTOTEST
             if (totalMs > 4.0 && GpuDecoPlayer.Product)
             {
                 double f = 1000.0 / Stopwatch.Frequency;
@@ -1386,13 +1412,21 @@ namespace StutterFix
             gpuLiveLastDispatchFrame = Time.frameCount;
             try
             {
+#if AUTOTEST
                 long pf0=Stopwatch.GetTimestamp();
+#endif
                 CheckPlayerFrame();
+#if AUTOTEST
                 long pf1=Stopwatch.GetTimestamp();
+#endif
                 AdvanceClock();
+#if AUTOTEST
                 long pf2=Stopwatch.GetTimestamp();
+#endif
                 DispatchGpuLiveSlice(BakeTime);
+#if AUTOTEST
                 gpuCostCheckTicks+=pf1-pf0;gpuCostClockTicks+=pf2-pf1;gpuCostWholeTicks+=Stopwatch.GetTimestamp()-pf0;
+#endif
             }
             catch (Exception e)
             {
@@ -1623,6 +1657,7 @@ namespace StutterFix
             finally {ClearGpuActivationUndo();LogNativeAdoptionTiming();}
         }
 
+#if DEV || AUTOTEST
         static void LogGpuLiveCost(string scope)
         {
             long f = Math.Max(1L, gpuCostFrames);
@@ -1650,6 +1685,7 @@ namespace StutterFix
                 + " dd_ms=" + (gpuCostDdTicks / tf / f).ToString("F6", Inv) + " after_ms=" + (gpuCostAfterTicks / tf / f).ToString("F6", Inv) + " fb_eval_ms=" + (gpuCostFbEvalTicks / tf / f).ToString("F6", Inv) + " fb_copy_ms=" + (gpuCostFbCopyTicks / tf / f).ToString("F6", Inv) + " fb_submit_ms=" + (GpuDecoCopy.DbgSubmitTicks / tf / f).ToString("F6", Inv) + " fb_exec_ms=" + (GpuDecoCopy.DbgExecTicks / tf / f).ToString("F6", Inv) + " span_tog=" + (gpuSpanToggles / (double)f).ToString("F2", Inv) + " alpha_tog=" + (gpuAlphaToggles / (double)f).ToString("F2", Inv) + " whole_frame_ms=" + (gpuCostWholeTicks / tf / f).ToString("F6", Inv));
         }
 
+#endif
         // Request B.3: Full restoration of owned decorations on off, song end, retry, restart, editor return, map reopen, and unload.
         internal static void StopGpuLive(string reason, bool syncState = true)
         {
@@ -1761,7 +1797,9 @@ namespace StutterFix
 #if AUTOTEST
             ObserveGpuMergeRestore(restored);
 #endif
+#if AUTOTEST
             LogGpuLiveCost(reason);
+#endif
             GpuLog("on=False owned=0 originals_restored=" + restored + " reason=" + reason
                 +" song="+time.ToString("F6",Inv)
                 +" resumed_recs="+resumed+" resume_expected="+(resume?.Count??0)+" unobserved_order="+unknownOrders
@@ -1784,8 +1822,6 @@ namespace StutterFix
             gpuTargetUndoDecoration=null;gpuTargetUndoCount=0;
 #if AUTOTEST
             gpuRecoveryFaultStage=null;
-#endif
-#if AUTOTEST
             DecoAnim.CancelGpuResumeAudit();
 #endif
 #if DEV || AUTOTEST
@@ -2537,8 +2573,6 @@ namespace StutterFix
             }
             throw new ArgumentException("gpudeco off|state|scheduled|ready|live prepare|live on|live off|live state|g2 ...|diag5|bisect|oracle|export <새 파일 경로>(AUTOTEST 전용)");
         }
-#endif
-#if AUTOTEST
         static void GpuLog(string s) { Main.Entry.Logger.Log("[gpudeco] " + s); }
 #else
         static void GpuLog(string s) { if (!GpuDecoPlayer.Product) Main.Entry.Logger.Log("[gpudeco] " + s); }
