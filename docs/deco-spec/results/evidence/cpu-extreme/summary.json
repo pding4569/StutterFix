@@ -1,0 +1,607 @@
+{
+  "groups": {
+    "idle": {
+      "runs": [
+        "cpu-idle-exit-0",
+        "cpu-idle-exit-1",
+        "cpu-idle-exit-2",
+        "cpu-idle-exit-3"
+      ],
+      "fps": [
+        310.0,
+        308.8,
+        307.2,
+        301.7
+      ],
+      "off_ms": 3.270178664984443,
+      "on_ms": 3.246775151122625,
+      "off_range_ms": 0.0887444267430797,
+      "on_range_ms": 0.016866364421416424,
+      "delta_ms": -0.02340351386181805
+    },
+    "hold": {
+      "runs": [
+        "cpu-hold-exit-1",
+        "cpu-hold-exit-2",
+        "cpu-hold-exit-3",
+        "cpu-hold-exit-4"
+      ],
+      "fps": [
+        308.0,
+        308.0,
+        309.4,
+        308.9
+      ],
+      "off_ms": 3.2420234346424053,
+      "on_ms": 3.239407651172357,
+      "off_range_ms": 0.009459624221682894,
+      "on_range_ms": 0.014691191161779305,
+      "delta_ms": -0.0026157834700484273
+    },
+    "flash": {
+      "runs": [
+        "cpu-flash-wf-0",
+        "cpu-flash-wf-1",
+        "cpu-flash-wf-2",
+        "cpu-flash-wf-3"
+      ],
+      "fps": [
+        351.8,
+        221.3,
+        211.4,
+        352.0
+      ],
+      "off_ms": 2.8417166261822313,
+      "on_ms": 4.624560896500039,
+      "off_range_ms": 0.0016150705462814052,
+      "on_range_ms": 0.21161614455904942,
+      "delta_ms": 1.782844270317808
+    },
+    "notify": {
+      "runs": [
+        "cpu-notify-cost-0",
+        "cpu-notify-cost-1",
+        "cpu-notify-cost-2",
+        "cpu-notify-cost-3"
+      ],
+      "fps": [
+        295.4,
+        283.2,
+        281.4,
+        286.4
+      ],
+      "off_ms": 3.4384302318984203,
+      "on_ms": 3.542366858202932,
+      "off_range_ms": 0.1063797596668472,
+      "on_range_ms": 0.022586823750497143,
+      "delta_ms": 0.10393662630451184,
+      "off_managed_elapsed_ms": 0.07781199999999999,
+      "on_managed_elapsed_ms": 0.139485
+    }
+  },
+  "runs": {
+    "cpu-flash-smoke": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-flash-smoke.log",
+      "raw_sha256": "fdd11eb7b1593e4b0099e6f84762b9b70450d2fb844d27150b663d5ffa0127b8",
+      "selected_log": "cpu-flash-smoke.txt"
+    },
+    "cpu-flash-smoke2": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-flash-smoke2.log",
+      "raw_sha256": "b5e2480bda01278499b2f62ab4a0b162efe1bd3f178308bb6bc6f50f3c400d1a",
+      "selected_log": "cpu-flash-smoke2.txt"
+    },
+    "cpu-idle-oracle": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-idle-oracle.log",
+      "raw_sha256": "dcd0d4073d65d1fc39d7c5f1b58780253f47f68d62914d44b85bd91312dd50a5",
+      "selected_log": "cpu-idle-oracle.txt",
+      "integrity": {
+        "dll_sha256": "94b5a2432f696d8b22d697a56d17b3ea50a90c0a49a7cca7b12aeefa9c64f3d6",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-idle-oracle.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-ar262-cand": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-ar262-cand.log",
+      "raw_sha256": "0768a5bdabe72f9e6a0c8a9adf2a12ea1ae228d5e547c7d9acbfb95a8968e249",
+      "selected_log": "cpu-ar262-cand.txt",
+      "integrity": {
+        "dll_sha256": "0de6306ff2b979f5d3c895a2f71a060aaabc32ca1eddf48d7453df775ba427af",
+        "worktree": "wt-cand",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-ar262-cand.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-idle-exit-0": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-idle-exit-0.log",
+      "raw_sha256": "d7005a71d274e9b2c8911d03a16a2745c4a020948d31c6d90c002418400c41eb",
+      "selected_log": "cpu-idle-exit-0.txt",
+      "integrity": {
+        "dll_sha256": "94b5a2432f696d8b22d697a56d17b3ea50a90c0a49a7cca7b12aeefa9c64f3d6",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-idle-exit-0.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 310.0,
+      "frame_ms": 3.225806451612903
+    },
+    "cpu-idle-exit-1": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-idle-exit-1.log",
+      "raw_sha256": "1db984b87bf1fe95d39d215cad7402189876f969142bb1718b4fcfd36c2c7231",
+      "selected_log": "cpu-idle-exit-1.txt",
+      "integrity": {
+        "dll_sha256": "94b5a2432f696d8b22d697a56d17b3ea50a90c0a49a7cca7b12aeefa9c64f3d6",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-idle-exit-1.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 308.8,
+      "frame_ms": 3.238341968911917
+    },
+    "cpu-idle-exit-2": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-idle-exit-2.log",
+      "raw_sha256": "17f4609560cd4ddcdb69cf01f704258c64048d964967010e1872bb57b5465ea0",
+      "selected_log": "cpu-idle-exit-2.txt",
+      "integrity": {
+        "dll_sha256": "94b5a2432f696d8b22d697a56d17b3ea50a90c0a49a7cca7b12aeefa9c64f3d6",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-idle-exit-2.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 307.2,
+      "frame_ms": 3.2552083333333335
+    },
+    "cpu-idle-exit-3": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-idle-exit-3.log",
+      "raw_sha256": "de7f0ea71d3ab0e2a44481137b6e13119b60828f991c60d865ab0590be0c5c13",
+      "selected_log": "cpu-idle-exit-3.txt",
+      "integrity": {
+        "dll_sha256": "94b5a2432f696d8b22d697a56d17b3ea50a90c0a49a7cca7b12aeefa9c64f3d6",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-idle-exit-3.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 301.7,
+      "frame_ms": 3.3145508783559827
+    },
+    "cpu-hold-exit-0": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-hold-exit-0.log",
+      "raw_sha256": "19c68eb5e50eab9f8cf39f2ec7bf5f0067a438b5bb69d01db2422e1c0c79d180",
+      "selected_log": "cpu-hold-exit-0.txt",
+      "integrity": {
+        "dll_sha256": "d531b272df59ddb10583dd5554c304135c820f93a971b01a140d68fe69ab4dde",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-hold-exit-0.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 306.8,
+      "frame_ms": 3.259452411994785
+    },
+    "cpu-hold-exit-1": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-hold-exit-1.log",
+      "raw_sha256": "c5bacf2d244c0af24f441065c54c88385e07c4d5ddf698497f9edcf6cb58901c",
+      "selected_log": "cpu-hold-exit-1.txt",
+      "integrity": {
+        "dll_sha256": "d531b272df59ddb10583dd5554c304135c820f93a971b01a140d68fe69ab4dde",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-hold-exit-1.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 308.0,
+      "frame_ms": 3.2467532467532467
+    },
+    "cpu-hold-exit-2": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-hold-exit-2.log",
+      "raw_sha256": "56fe3713ea43528ca0320e97f1321e32b033d6675769211944b30e98c2bed44d",
+      "selected_log": "cpu-hold-exit-2.txt",
+      "integrity": {
+        "dll_sha256": "d531b272df59ddb10583dd5554c304135c820f93a971b01a140d68fe69ab4dde",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-hold-exit-2.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 308.0,
+      "frame_ms": 3.2467532467532467
+    },
+    "cpu-hold-exit-3": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-hold-exit-3.log",
+      "raw_sha256": "ea65cc85ec94805b2838faf2823c8e2b9f62d9c5f24981a76a2ad6cafcbbb1d4",
+      "selected_log": "cpu-hold-exit-3.txt",
+      "integrity": {
+        "dll_sha256": "d531b272df59ddb10583dd5554c304135c820f93a971b01a140d68fe69ab4dde",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-hold-exit-3.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 309.4,
+      "frame_ms": 3.2320620555914674
+    },
+    "cpu-hold-exit-4": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-hold-exit-4.log",
+      "raw_sha256": "21b83bd7642a7e212c4c90c665d3b7119ea89ad2dd2c21effc5203faae104db4",
+      "selected_log": "cpu-hold-exit-4.txt",
+      "integrity": {
+        "dll_sha256": "d531b272df59ddb10583dd5554c304135c820f93a971b01a140d68fe69ab4dde",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-hold-exit-4.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 308.9,
+      "frame_ms": 3.237293622531564
+    },
+    "cpu-flash-wf-0": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-flash-wf-0.log",
+      "raw_sha256": "b3d37302cfb134610769b94467eed4bb04566fec0459252e4195d30c0c7f579e",
+      "selected_log": "cpu-flash-wf-0.txt",
+      "integrity": {
+        "dll_sha256": "94b5a2432f696d8b22d697a56d17b3ea50a90c0a49a7cca7b12aeefa9c64f3d6",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-flash-wf-0.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 351.8,
+      "frame_ms": 2.8425241614553722
+    },
+    "cpu-flash-wf-1": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-flash-wf-1.log",
+      "raw_sha256": "bfaa730b9e960500de8a1409e54078131af1eeb4f0bfcd3b644a7cfcfed999de",
+      "selected_log": "cpu-flash-wf-1.txt",
+      "integrity": {
+        "dll_sha256": "94b5a2432f696d8b22d697a56d17b3ea50a90c0a49a7cca7b12aeefa9c64f3d6",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-flash-wf-1.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 221.3,
+      "frame_ms": 4.518752824220515
+    },
+    "cpu-flash-wf-2": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-flash-wf-2.log",
+      "raw_sha256": "16784d96f09b5034f0377c6dfdc2e9a8969cef540d637edcc57e9aeb45394533",
+      "selected_log": "cpu-flash-wf-2.txt",
+      "integrity": {
+        "dll_sha256": "94b5a2432f696d8b22d697a56d17b3ea50a90c0a49a7cca7b12aeefa9c64f3d6",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-flash-wf-2.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 211.4,
+      "frame_ms": 4.7303689687795645
+    },
+    "cpu-flash-wf-3": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-flash-wf-3.log",
+      "raw_sha256": "c715a16e1767da2b865a6f55ae4b39ab77118684582d1687da74a249ec572e31",
+      "selected_log": "cpu-flash-wf-3.txt",
+      "integrity": {
+        "dll_sha256": "94b5a2432f696d8b22d697a56d17b3ea50a90c0a49a7cca7b12aeefa9c64f3d6",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-flash-wf-3.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 352.0,
+      "frame_ms": 2.840909090909091
+    },
+    "cpu-notify-cost-0": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-cost-0.log",
+      "raw_sha256": "9045a1095d277cdf3dd4a2f00845203a8b7c21b91cf0b035f8be153ba0266b25",
+      "selected_log": "cpu-notify-cost-0.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-cost-0.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 295.4,
+      "frame_ms": 3.3852403520649967,
+      "managed_elapsed_ms": 0.076847
+    },
+    "cpu-notify-cost-1": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-cost-1.log",
+      "raw_sha256": "ea9950e832fbf33d04becb205bd80364ff22b5de6ec4e4c53fa62423da8b3489",
+      "selected_log": "cpu-notify-cost-1.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-cost-1.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 283.2,
+      "frame_ms": 3.531073446327684,
+      "managed_elapsed_ms": 0.138426
+    },
+    "cpu-notify-cost-2": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-cost-2.log",
+      "raw_sha256": "51a73b546867ff9fc102010ab5a03b8bbb76de3909762036accc02b38dd8feae",
+      "selected_log": "cpu-notify-cost-2.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-cost-2.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 281.4,
+      "frame_ms": 3.553660270078181,
+      "managed_elapsed_ms": 0.140544
+    },
+    "cpu-notify-cost-3": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-cost-3.log",
+      "raw_sha256": "abe11b629c82c0ce2f85b17563d656a53bca00f934ca1e682ad5c1e0addb29c7",
+      "selected_log": "cpu-notify-cost-3.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-cost-3.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      },
+      "fps": 286.4,
+      "frame_ms": 3.491620111731844,
+      "managed_elapsed_ms": 0.078777
+    },
+    "cpu-notify-exit": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-exit.log",
+      "raw_sha256": "84dfb961481673e39b8c72f0b73f4424d8531250e33cbe10e48d715ce3d22b16",
+      "selected_log": "cpu-notify-exit.txt",
+      "integrity": {
+        "dll_sha256": "ea138bd3b9c09a545d354efc244d5ffae0f0ea8e3345e056f9548fc39640ca4b",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-exit.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": true
+      }
+    },
+    "cpu-notify-ar": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-ar.log",
+      "raw_sha256": "dcee3c4a7d0e6cb86e185abea3721d728a89129ecfff50fce73d2d9ed123c14f",
+      "selected_log": "cpu-notify-ar.txt",
+      "integrity": {
+        "dll_sha256": "ea138bd3b9c09a545d354efc244d5ffae0f0ea8e3345e056f9548fc39640ca4b",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-ar.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-notify-dd": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-dd.log",
+      "raw_sha256": "c6efbf12776ca925c4856775b639b05323a7ac588fc3114ad71a7566300d2352",
+      "selected_log": "cpu-notify-dd.txt",
+      "integrity": {
+        "dll_sha256": "ea138bd3b9c09a545d354efc244d5ffae0f0ea8e3345e056f9548fc39640ca4b",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-dd.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-notify-fixed-exit": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-fixed-exit.log",
+      "raw_sha256": "2f7e9c059c968c271ca6914566380629656c6e302d9bb0bd122a2f7cacfd3f61",
+      "selected_log": "cpu-notify-fixed-exit.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-fixed-exit.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-notify-fixed-ar": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-fixed-ar.log",
+      "raw_sha256": "676442a58f783145b3d290508a8d7ed3f2d5ffdfb7f9af341bc3dcdc720034b7",
+      "selected_log": "cpu-notify-fixed-ar.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-fixed-ar.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-notify-fixed-dd": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-fixed-dd.log",
+      "raw_sha256": "69cc2c8486e5458d66b9c6a51e4573296d37ede04c74239cb34169d91ca1946e",
+      "selected_log": "cpu-notify-fixed-dd.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-fixed-dd.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-admission-exit": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-admission-exit.log",
+      "raw_sha256": "d1a962054ebb31f77343528da98a6b062937be5a8d9b6a3b03171f92bede8535",
+      "selected_log": "cpu-admission-exit.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-admission-exit.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-admission-ar": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-admission-ar.log",
+      "raw_sha256": "b7555cb33c1170af2beaf44f359ea61170470b3d6f69b2fad1fa75665ed851eb",
+      "selected_log": "cpu-admission-ar.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-admission-ar.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-admission-wf": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-admission-wf.log",
+      "raw_sha256": "0cb17e12cabdf78b72e6d0f55d9a39135d7e4df2b4ddcf0ede64fe52eddd5af9",
+      "selected_log": "cpu-admission-wf.txt",
+      "integrity": {
+        "dll_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-admission-wf.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-profile-ar": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-profile-ar.log",
+      "raw_sha256": "a533a7042066ad13d3c1e382367b9b41de7e51455cab45ab84f41f5fa901d2f7",
+      "selected_log": "cpu-profile-ar.txt",
+      "integrity": {
+        "dll_sha256": "ff84c365be5ba2141577dbcc20e540b1ed255280a2e639eec152990b2e844e6e",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-profile-ar.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-profile-wf": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-profile-wf.log",
+      "raw_sha256": "1d00319490f1c8da3f79d0d23abc0c765e00ff73d8820aff45f3f2d9f196ca1e",
+      "selected_log": "cpu-profile-wf.txt",
+      "integrity": {
+        "dll_sha256": "ff84c365be5ba2141577dbcc20e540b1ed255280a2e639eec152990b2e844e6e",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-profile-wf.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    },
+    "cpu-notify-exit-diagnose": {
+      "raw_log": "E:\\StutterFixWork\\night-results\\cpu-notify-exit-diagnose.log",
+      "raw_sha256": "3bd34aaa62ff05640798ca62e4c424fd7bd57959870f3dc7193e1dd414f73f3f",
+      "selected_log": "cpu-notify-exit-diagnose.txt",
+      "integrity": {
+        "dll_sha256": "7893e5b882d0cd021c29e21bb1c86be513f7dd9aa4278b2e94a68978f172b3ee",
+        "worktree": "wt-partial",
+        "spec": "E:\\StutterFixWork\\wt-partial\\docs\\deco-spec\\results\\cpu-steps\\cpu-notify-exit-diagnose.json",
+        "returncode": 0,
+        "restored_dll": true,
+        "probe_absent": true,
+        "gpu_default_zero": true,
+        "step_failure": false
+      }
+    }
+  },
+  "preserved_integrity_records": 31,
+  "restoration_passed": 31,
+  "final_autotest_sha256": "495742335b8f57930933684ea5120d8d34693c466b4d77580104cbe4eb36da16",
+  "player_sha256": "559e8012ebd19ca2993aef74c369a66030613a10d2677403d22fbb718a4827c9",
+  "cand_pixel_artifacts": {
+    "E:\\StutterFixWork\\night-results\\cpu-ar262-cand-artifacts\\AR262_A.png": "7116a0949afa6bf30f80fae961c8dee758f31b295efaf15ab392cc3a2ca3229e",
+    "E:\\StutterFixWork\\night-results\\cpu-ar262-cand-artifacts\\AR262_A2.png": "7116a0949afa6bf30f80fae961c8dee758f31b295efaf15ab392cc3a2ca3229e",
+    "E:\\StutterFixWork\\night-results\\cpu-ar262-cand-artifacts\\AR262_C.png": "1364bb9ea5b5ecbd7ae9a3e76b8745f589e95f9a268d2b0cf1c56cad183bc671",
+    "E:\\StutterFixWork\\night-results\\cpu-ar262-cand-artifacts\\AR262_I.png": "41b689018472b81c3b92a6263b97b761471590ff9eb580d93943109ef7dd6c16"
+  }
+}

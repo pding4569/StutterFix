@@ -1,0 +1,4 @@
+[StutterFix] [gpudeco] effect_cache_fixture masks=65536 easing_cases=1332 mismatch=0 performance=False
+[StutterFix] [gpudeco] live_state active=True prepared=True owned=2816 active_sources=0 slice=0 skipped_recs=90 native_submitted=4884 native_executed=4884 native_errors=0 native_cpu_total_ms=102.449000 native_cpu_lifetime_max_ms=0.066500
+[StutterFix] [자동 시험] 단계 실패 'gpudeco live validate': gpudeco off|state|scheduled|ready|live prepare|live on|live off|live state|g2 ...|diag5|bisect|oracle|export <새 파일 경로>(AUTOTEST 전용)
+[StutterFix] [자동 시험] 단계 실패 'gpudeco live validate': gpudeco off|state|scheduled|ready|live prepare|live on|live off|live state|g2 ...|diag5|bisect|oracle|export <새 파일 경로>(AUTOTEST 전용) - 게임을 끕니다

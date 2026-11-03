@@ -1,0 +1,3 @@
+[StutterFix] [자동 시험] [idlefloor] enabled=False verify=False skipped=0 checked=0 mismatch=0
+[StutterFix] [자동 시험] [FPS 구간] idle-exit : 301.7 FPS (3016프레임 10.00초) | 표본 없음
+[StutterFix] [자동 시험] [idlefloor] enabled=False verify=False skipped=0 checked=0 mismatch=0

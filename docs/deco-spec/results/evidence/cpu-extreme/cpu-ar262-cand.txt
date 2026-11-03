@@ -1,0 +1,7 @@
+[StutterFix] [framecmp] diff N1 N2 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] diff AR262_C AR262_I threshold=3 maxRGBA=4,4,4,0 changed=8/3686400 ratio=2.1701388888888889E-06 PSNR=74.8671215898662 top32(bottom-left,x,y,w,h,L1)=(1216,544,32,32):1287;(1600,768,32,32):717;(1504,800,32,32):529;(1504,768,32,32):492;(1568,704,32,32):487
+[StutterFix] [framecmp] diff AR262_A AR262_A2 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] diff AR262_I AR262_A threshold=3 maxRGBA=1,1,1,0 changed=0/3686400 ratio=0 PSNR=89.4272548760556 top32(bottom-left,x,y,w,h,L1)=(928,736,32,32):18;(448,352,32,32):12;(992,544,32,32):12;(1184,832,32,32):12;(512,320,32,32):9
+[StutterFix] [framecmp] diff AR262_C AR262_A threshold=3 maxRGBA=4,4,4,0 changed=8/3686400 ratio=2.1701388888888889E-06 PSNR=74.722848950375734 top32(bottom-left,x,y,w,h,L1)=(1216,544,32,32):1287;(1600,768,32,32):717;(1504,800,32,32):531;(1504,768,32,32):492;(1568,704,32,32):487
+[StutterFix] [framecmp] framecmp RESULT noise_out=0 aa2_out=0 ab_out=8 ctl_order=NA ctl_hide=NA
+[StutterFix] [framecmp] framecmp VERDICT noise=PASS aa2=PASS order_ctl=FAIL hide_ctl=FAIL

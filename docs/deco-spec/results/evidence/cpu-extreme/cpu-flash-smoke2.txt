@@ -1,0 +1,2 @@
+[StutterFix] [gpudeco] flash_fixture cases=180 mismatch=0 reference=DOTween_Goto endpoints=position_callback_scale_plugin
+[StutterFix] [gpudeco] live_state active=True prepared=True owned=2820 active_sources=0 slice=0 skipped_recs=90 native_submitted=4854 native_executed=4854 native_errors=0 native_cpu_total_ms=99.695500 native_cpu_lifetime_max_ms=0.076200

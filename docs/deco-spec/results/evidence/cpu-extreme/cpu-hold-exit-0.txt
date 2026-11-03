@@ -1,0 +1,3 @@
+[StutterFix] [자동 시험] [holdreads] enabled=True oracle=True checks=0 mismatches=0
+[StutterFix] [자동 시험] [FPS 구간] hold-exit : 306.8 FPS (3070프레임 10.01초) | 표본 없음
+[StutterFix] [자동 시험] [holdreads] enabled=True oracle=True checks=796949 mismatches=0

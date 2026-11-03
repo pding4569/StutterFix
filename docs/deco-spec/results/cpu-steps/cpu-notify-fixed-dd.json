@@ -1,0 +1,22 @@
+{
+  "tag": "cpu-notify-fixed-dd",
+  "timeout_min": 25,
+  "settings": {
+    "GpuDeco": 1,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 1200",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "gpudeco drawcollapse notify check",
+    "game D:\\얼불춤 맵 파일\\DDONGSSADA3302 asansis remake\\level.adofai",
+    "press",
+    "waitend 1200",
+    "gpudeco drawcollapse notify state",
+    "gpudeco drawcollapse notify verify",
+    "quit"
+  ]
+}

@@ -1,0 +1,4 @@
+[StutterFix] [gpudeco] BARRIER_NOTIFY mode=check measured=False
+[StutterFix] [gpudeco] WORKLOAD owned=530 total=6314 ownership=0.083940 horizon_s=81898.448404 event_targets=8747 visible_event_targets=1790 visible_applications_per_s=0.021856 mean_visible_est=11.210938 mean_visible_moving_est=0.000000 midpoint_samples=128 performance_predictor=False
+[StutterFix] [gpudeco] BARRIER_NOTIFY enabled=True oracle=True checks=52774264 comparisons=155451722 mismatches=0
+[StutterFix] [gpudeco] BARRIER_NOTIFY enabled=True oracle=True checks=52774627 comparisons=155451722 mismatches=0

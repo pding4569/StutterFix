@@ -1,0 +1,3 @@
+[StutterFix] [자동 시험] [idlefloor] enabled=True verify=True skipped=0 checked=0 mismatch=0
+[StutterFix] [자동 시험] [idlefloor] enabled=True verify=True skipped=0 checked=357716 mismatch=0
+[StutterFix] [자동 시험] [idlefloor] enabled=True verify=True skipped=0 checked=357725 mismatch=0

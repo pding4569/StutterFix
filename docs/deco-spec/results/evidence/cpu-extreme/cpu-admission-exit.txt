@@ -1,0 +1,5 @@
+[StutterFix] [gpudeco] WORKLOAD_GATE enabled=True default=False
+[StutterFix] [gpudeco] BARRIER_NOTIFY_CONTRACT notified=895 legacy_polled=57
+[StutterFix] [gpudeco] WORKLOAD owned=2996 total=3524 ownership=0.850170 horizon_s=237.416151 event_targets=13448 visible_event_targets=7380 visible_applications_per_s=31.084659 mean_visible_est=168.320313 mean_visible_moving_est=13.015625 midpoint_samples=128 horizon=last_floor_entry performance_predictor=False
+[StutterFix] [gpudeco] WORKLOAD_GATE enabled=True candidate_admit=False calibration=observed_beneficial_lower_bound unseen_chart_performance=UNVERIFIED
+[StutterFix] [gpudeco] live_state active=False prepared=False owned=0 active_sources=0 slice=-1 skipped_recs=0 native_submitted=0 native_executed=0 native_errors=0 native_cpu_total_ms=0.000000 native_cpu_lifetime_max_ms=0.000000

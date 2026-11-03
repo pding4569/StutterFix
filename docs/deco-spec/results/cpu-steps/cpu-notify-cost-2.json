@@ -1,0 +1,26 @@
+{
+  "tag": "cpu-notify-cost-2",
+  "timeout_min": 25,
+  "settings": {
+    "GpuDeco": 1,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 1200",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "gpudeco drawcollapse notify on",
+    "open D:\\얼불춤 맵 파일\\Exit from ship\\Exit from SHiP_T2_.adofai",
+    "seek 90 8",
+    "waitsongpos 90 160",
+    "gpudeco cost reset",
+    "fpsmark start",
+    "waitsongpos 100 60",
+    "fpsmark end notify-cost",
+    "gpudeco cost",
+    "gpudeco live state",
+    "quit"
+  ]
+}

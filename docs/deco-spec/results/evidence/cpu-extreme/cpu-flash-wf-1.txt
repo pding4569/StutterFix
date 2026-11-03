@@ -1,0 +1,2 @@
+[StutterFix] [자동 시험] [FPS 구간] flash-wf : 221.3 FPS (3103프레임 14.02초) | 표본 없음
+[StutterFix] [gpudeco] live_state active=True prepared=True owned=2820 active_sources=2 slice=0 skipped_recs=92 native_submitted=5365 native_executed=5365 native_errors=0 native_cpu_total_ms=110.562400 native_cpu_lifetime_max_ms=0.054400
