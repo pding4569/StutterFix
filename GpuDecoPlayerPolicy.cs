@@ -24,6 +24,18 @@ namespace StutterFix
     internal static class GpuDecoPlayerPolicy
     {
         internal const int MinimumOwned=64;
+        // Lower observed beneficial workload, rounded down at six decimals.
+        // Calibration: cpu-profile-ar, cpu-profile-wf, cpu-notify-exit-diagnose.
+        // Research gate remains off: these three workloads are not a general
+        // predictor of performance on unseen charts.
+        internal const double MinimumOwnership=.989179;
+        internal const double MinimumVisibleApplications=250.8495;
+        internal const double MinimumVisibleMoving=173.265625;
+        internal static bool ProfitableWorkload(double ownership,double visibleApplications,double visibleMoving)
+            => !double.IsNaN(ownership) && !double.IsNaN(visibleApplications) && !double.IsNaN(visibleMoving)
+                && !double.IsInfinity(ownership) && !double.IsInfinity(visibleApplications) && !double.IsInfinity(visibleMoving)
+                && ownership>=MinimumOwnership && ownership<=1
+                && visibleApplications>=MinimumVisibleApplications && visibleMoving>=MinimumVisibleMoving;
         // Conservative whole-song mode (c). We deliberately do not promise that
         // every possible packing within 52 bindings will be attempted.
         internal static bool FitsTextures(int textures,int direct,int[] arrayGroups,int maxSlices)

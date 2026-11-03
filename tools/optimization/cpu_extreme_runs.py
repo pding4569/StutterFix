@@ -52,6 +52,14 @@ if mode=='windows':
 elif mode=='diagnose':
     run('cpu-notify-exit-diagnose',['gpudeco drawcollapse notify check',game('exit'),'press',
         'waitsongpos 115 240','gpudeco drawcollapse notify state'],1)
+elif mode=='admission':
+    for k in ('exit','ar','wf'):
+        run('cpu-admission-'+k,['gpudeco admission on',game(k),'press','waitsongpos 20 120','gpudeco live state'],1)
+elif mode=='notifycost':
+    for i,on in enumerate((False,True,True,False)):
+        run(f'cpu-notify-cost-{i}',['gpudeco drawcollapse notify '+('on' if on else 'off'),
+            game('exit').replace('game ','open ',1),'seek 90 8','waitsongpos 90 160','gpudeco cost reset',
+            'fpsmark start','waitsongpos 100 60','fpsmark end notify-cost','gpudeco cost','gpudeco live state'],1)
 elif mode=='profiles':
     for k in ('ar','wf'):
         run('cpu-profile-'+k,[game(k),'press','waitsongpos 20 120','gpudeco live state'],1)
@@ -67,6 +75,6 @@ elif mode=='pixel':
 elif mode=='notify':
     MAPS['dd']='DDONGSSADA3302 asansis remake/level.adofai'
     for k in ('exit','ar','dd'):
-        run('cpu-notify-'+k,['gpudeco drawcollapse notify check',game(k),'press','waitend 1200',
+        run('cpu-notify-fixed-'+k,['gpudeco drawcollapse notify check',game(k),'press','waitend 1200',
             'gpudeco drawcollapse notify state','gpudeco drawcollapse notify verify'],1,strict=False)
 else:raise SystemExit('windows|pixel|notify')

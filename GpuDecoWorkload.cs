@@ -1,4 +1,4 @@
-#if AUTOTEST
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Globalization;
 using System.Linq;
@@ -9,11 +9,12 @@ namespace StutterFix
     {
         // Preparation-only census. Midpoint quadrature is explicitly an estimate,
         // not a visibility proof or a frame-time predictor. No per-frame work.
-        static void LogGpuWorkload(double end)
+        static bool gpuWorkloadGate; // explicit research candidate, default off
+        static bool CheckGpuWorkload(double end)
         {
             const int samples=128;
-            if(table==null || table.InputEvents==null || gpuLiveOwnedIndices.Length==0)return;
-            if(end<=0 || double.IsInfinity(end) || double.IsNaN(end))return;
+            if(table==null || table.InputEvents==null || gpuLiveOwnedIndices.Length==0)return false;
+            if(end<=0 || double.IsInfinity(end) || double.IsNaN(end))return false;
             var owned=new bool[table.Decorations.Length];
             foreach(int d in gpuLiveOwnedIndices)owned[d]=true;
             long references=0,visibleReferences=0,visible=0,moving=0;
@@ -46,12 +47,17 @@ namespace StutterFix
                 }
             }
             string F(double x)=>x.ToString("F6",CultureInfo.InvariantCulture);
+            bool admit=GpuDecoPlayerPolicy.ProfitableWorkload((double)gpuLiveOwnedIndices.Length/owned.Length,
+                visibleReferences/end,(double)moving/samples);
             GpuLog("WORKLOAD owned="+gpuLiveOwnedIndices.Length+" total="+owned.Length
                 +" ownership="+F((double)gpuLiveOwnedIndices.Length/owned.Length)
                 +" horizon_s="+F(end)+" event_targets="+references+" visible_event_targets="+visibleReferences
                 +" visible_applications_per_s="+F(visibleReferences/end)
                 +" mean_visible_est="+F((double)visible/samples)+" mean_visible_moving_est="+F((double)moving/samples)
                 +" midpoint_samples="+samples+" horizon=last_floor_entry performance_predictor=False");
+            GpuLog("WORKLOAD_GATE enabled="+gpuWorkloadGate+" candidate_admit="+admit
+                +" calibration=observed_beneficial_lower_bound unseen_chart_performance=UNVERIFIED");
+            return admit;
         }
     }
 }

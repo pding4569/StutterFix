@@ -9,6 +9,18 @@ using StutterFix;
 
 int checks=0;
 void Check(bool value,string reason) { checks++; if(!value)throw new Exception(reason); }
+Check(GpuDecoPlayerPolicy.ProfitableWorkload(.989180,250.849544,173.265625),"measured beneficial calibration admitted");
+Check(!GpuDecoPlayerPolicy.ProfitableWorkload(.851022,31.109931,13.015625),"measured low-workload ownership rejected");
+Check(!GpuDecoPlayerPolicy.ProfitableWorkload(.447218,21.828945,18.195313),"measured mixed ownership rejected");
+Check(!GpuDecoPlayerPolicy.ProfitableWorkload(.98,300,200),"ownership independently required");
+Check(!GpuDecoPlayerPolicy.ProfitableWorkload(1,200,200),"application rate independently required");
+Check(!GpuDecoPlayerPolicy.ProfitableWorkload(1,300,100),"visible motion independently required");
+foreach(double invalid in new[]{double.NaN,double.PositiveInfinity,double.NegativeInfinity})
+{
+    Check(!GpuDecoPlayerPolicy.ProfitableWorkload(invalid,300,200),"finite ownership required");
+    Check(!GpuDecoPlayerPolicy.ProfitableWorkload(1,invalid,200),"finite application rate required");
+    Check(!GpuDecoPlayerPolicy.ProfitableWorkload(1,300,invalid),"finite visible motion required");
+}
 var life=new GpuDecoPlayerLifetime();
 Check(!life.TryPrepare() && !life.TryActivate(),"disabled lifetime cannot prepare or activate");
 for(int i=0;i<100;i++)
@@ -53,6 +65,7 @@ foreach(var item in new[]{(args[0],false),(args[1],true)})
         .Select(x=>(x.Handle,x.Def,Name:md.GetString(x.Def.Name))).ToArray();
     bool Has(string name)=>types.Any(t=>t.Name==name);
     Check(Has("GpuDecoPlayer") && Has("GpuDecoGpu") && Has("GpuDecoImageTimeline"),"runtime types included");
+    Check(Has("IdleFloorUpdate")==item.Item2 && Has("HoldMaterialReads")==item.Item2,"CPU research hooks excluded from Player");
     foreach(string diagnostic in new[]{"AutoTest","FrameCompare","GpuHide","GpuProbe","GpuCensus","GpuDecoCostProbe","GpuDecoSnapshot"})
         Check(Has(diagnostic)==item.Item2,"diagnostic boundary: "+diagnostic);
     if(!item.Item2)

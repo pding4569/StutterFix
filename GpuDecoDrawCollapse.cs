@@ -51,7 +51,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
         static bool GpuDrawCollapseCommand(string command)
         {
-#if AUTOTEST || GPUDECO
+#if AUTOTEST
             if(command.StartsWith("drawcollapse ",StringComparison.Ordinal) && DrawCollapseGateCommand(command.Substring(13)))return true;
 #endif
             if(command=="drawcollapse prepare")
@@ -76,7 +76,9 @@ namespace StutterFix
                     gpuCollapseOn=true;
                     try
                     {
+#if AUTOTEST
                         TileCompositeApply();
+#endif
                         foreach(var s in gpuLiveSlices)s.RefreshAlpha();
                         DispatchGpuLiveSlice(BakeTime);
                     }

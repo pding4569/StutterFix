@@ -2262,12 +2262,14 @@ namespace StutterFix
                     +" default=False channels=PositionX,PositionY,Rotation,ScaleX,ScaleY,Color atomic_decoration=True");return true;
             }
 #endif
+#if AUTOTEST
             if (command.StartsWith("light skip ",StringComparison.Ordinal))
             {
                 // 진단 전용: 메인 스레드 큰 단계를 통째로 건너뛰어 상한을 잰다. light skip <이름> on|off
                 var lp=command.Split(' ');LightProbe.Set(lp[2],lp.Length>3 && lp[3]=="on");
                 GpuLog("light skip "+lp[2]+" "+(lp.Length>3?lp[3]:"off"));return true;
             }
+#endif
             if (command == "latecache on" || command == "latecache off")
             {
                 RequireLive(!gpuLiveActive, "late cache toggle requires inactive GPU ownership");
@@ -2295,6 +2297,12 @@ namespace StutterFix
             if(command=="resources mark"){MarkGpuResources();return true;}
             if(command=="effectcache fixture"){TestGpuEffectCache();return true;}
             if(command=="flashfixture"){TestGpuFlash();return true;}
+            if(command=="admission on" || command=="admission off")
+            {
+                RequireLive(!gpuLiveActive && !gpuLivePrepared,"admission mode requires before preparation");
+                gpuWorkloadGate=command.EndsWith(" on",StringComparison.Ordinal);
+                GpuLog("WORKLOAD_GATE enabled="+gpuWorkloadGate+" default=False");return true;
+            }
             if(command=="packetfixture"){GpuLog(GpuDecoPacketFixture.Run());return true;}
             if(command=="packetguardfixture"){GpuLog(PacketGuardFixture());return true;}
             if(GpuPacketCommand(command))return true;

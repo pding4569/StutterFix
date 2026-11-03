@@ -1,0 +1,38 @@
+{
+  "tag": "cpu-ar262-cand",
+  "timeout_min": 25,
+  "settings": {
+    "GpuDeco": 1,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 1200",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "game D:/얼불춤 맵 파일/Arche/[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai",
+    "press",
+    "waitsongpos 262 420",
+    "pause",
+    "wait 0.2",
+    "framecmp filters on",
+    "framecmp ui exclude",
+    "framecmp mask none",
+    "framecmp noise N1 N2",
+    "framecmp grab AR262_C",
+    "gpudeco drawcollapse off",
+    "wait 0.2",
+    "framecmp grab AR262_I",
+    "framecmp diff AR262_C AR262_I 3 png",
+    "gpudeco live off",
+    "wait 0.2",
+    "framecmp grab AR262_A",
+    "framecmp grab AR262_A2",
+    "framecmp assertzero AR262_A AR262_A2 png",
+    "framecmp diff AR262_I AR262_A 3 png",
+    "framecmp diff AR262_C AR262_A 3 png",
+    "resume",
+    "quit"
+  ]
+}
