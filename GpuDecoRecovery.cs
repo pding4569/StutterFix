@@ -55,7 +55,7 @@ namespace StutterFix
             GpuRecoveryFault("preflight");
             ValidateG1EventGuard(fx);
             var e=CopyEvent(fx);
-            if(e.Reasons.Length!=0 || !GpuDecoGpu.Supported(e.Ease) || !DecoBakeCore.Finite(e.Over) || !DecoBakeCore.Finite(e.Period)
+            if(e.Reasons.Length!=0 || !GpuDecoGpu.LiveSupported(e.Ease) || !DecoBakeCore.Finite(e.Over) || !DecoBakeCore.Finite(e.Period)
                 || fx.colorUsed && (float.IsNaN(e.Values[7]) || float.IsNaN(e.Values[8]) || float.IsNaN(e.Values[9]) || float.IsNaN(e.Values[10]))
                 || fx.parallaxUsed && (float.IsNaN(e.Values[12]) || float.IsNaN(e.Values[13])))
                 throw new NotSupportedException("GPU effect outside prepared contract reasons="+string.Join(",",e.Reasons)+" ease="+e.Ease+" over="+e.Over+" period="+e.Period+" color="+fx.colorUsed+" parallax="+fx.parallaxUsed+" values="+e.Values[7]+","+e.Values[8]+","+e.Values[9]+","+e.Values[10]+","+e.Values[12]+","+e.Values[13]);
@@ -178,7 +178,7 @@ namespace StutterFix
                         RequireLive(at<gpuEffectChannelCount&&gpuEffectChannels[at++]==c,"cached effect channel order changed");
                     RequireLive(at==gpuEffectChannelCount,"cached effect channel count changed");masks++;
                 }
-                for(int id=0;id<=36;id++)if(GpuDecoGpu.Supported(id))
+                for(int id=0;id<=36;id++)if(GpuDecoGpu.LiveSupported(id))
                     foreach(float duration in new[]{0f,.01f,1f,2.25f})
                         foreach(float over in new[]{0f,1.70158f,4f})
                             foreach(float period in new[]{0f,.3f,.7f})
@@ -193,6 +193,36 @@ namespace StutterFix
                 GpuLog("effect_cache_fixture masks="+masks+" easing_cases="+eases+" mismatch=0 performance=False");
             }
             finally {gpuEffectChannelCount=0;gpuCurrentFxParsed=false;}
+        }
+        static void TestGpuFlash()
+        {
+            RequireLive(!gpuLiveActive,"Flash fixture requires inactive ownership");
+            int cases=0;
+            foreach(Ease ease in new[]{Ease.Flash,Ease.InFlash,Ease.OutFlash,Ease.InOutFlash})
+                foreach(float duration in new[]{.01f,1f,2.25f})
+                    foreach(float over in new[]{0f,1f,4f})
+                        foreach(float fraction in new[]{0f,.125f,.5f,.875f,1f})
+                        {
+                            float position=2.25f,scale=-.75f,target=4.5f;
+                            var p=DOTween.To(()=>position,v=>position=v,target,duration).SetEase(ease,over,0f)
+                                .OnComplete(()=>position=target).SetAutoKill(false).Pause();
+                            var s=DOTween.To(()=>scale,v=>scale=v,target,duration).SetEase(ease,over,0f)
+                                .SetAutoKill(false).Pause();
+                            try
+                            {
+                                float t=duration*fraction;
+                                p.Goto(t);s.Goto(t);
+                                float k=ZeroTween.Eval(ease,t,duration,over,0f);
+                                float expectedPosition=t>=duration?target:2.25f+(target-2.25f)*k;
+                                float expectedScale=-.75f+(target+.75f)*k;
+                                RequireLive(InstantMove.Bits(position)==InstantMove.Bits(expectedPosition)
+                                    && InstantMove.Bits(scale)==InstantMove.Bits(expectedScale),
+                                    "Flash DOTween mismatch ease="+ease+" fraction="+fraction+" over="+over);
+                                cases++;
+                            }
+                            finally {p.Kill();s.Kill();}
+                        }
+            GpuLog("flash_fixture cases="+cases+" mismatch=0 reference=DOTween_Goto endpoints=position_callback_scale_plugin");
         }
         static string gpuRecoveryFaultStage;
         static int gpuRecoveryTestDepth;

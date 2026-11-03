@@ -1543,7 +1543,7 @@ namespace StutterFix
                             }
                             continue;
                         }
-                        if (!r.Running || !ReferenceEquals(r.D, d) || r.Dur <= 0f || !GpuDecoGpu.Supported((int)r.E))
+                        if (!r.Running || !ReferenceEquals(r.D, d) || r.Dur <= 0f || !GpuDecoGpu.LiveSupported((int)r.E))
                             continue;
                         SaveGpuActivationRecord(r);
                         if (!r.Started && (r.Key == 7 || r.Key == 8))
@@ -2294,6 +2294,7 @@ namespace StutterFix
             if(GpuImagePlanCommand(command))return true;
             if(command=="resources mark"){MarkGpuResources();return true;}
             if(command=="effectcache fixture"){TestGpuEffectCache();return true;}
+            if(command=="flashfixture"){TestGpuFlash();return true;}
             if(command=="packetfixture"){GpuLog(GpuDecoPacketFixture.Run());return true;}
             if(command=="packetguardfixture"){GpuLog(PacketGuardFixture());return true;}
             if(GpuPacketCommand(command))return true;

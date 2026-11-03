@@ -23,6 +23,9 @@ namespace StutterFix
         internal struct Vertex { public Vector3 position; public Color color; public Vector2 uv; }
         static void Require(bool ok,string reason) { if(!ok) throw new InvalidOperationException(reason); }
         internal static bool Supported(int id) => id >= 0 && id <= 31 || id == 36;
+        // Live kernels consume CPU ZeroTween.Eval results, including Flash.
+        // Baked/anchor kernels still evaluate Ease in HLSL: keep Supported strict.
+        internal static bool LiveSupported(int id) => id >= 0 && id <= 36;
         // Native SpriteRenderer uses half-up UNorm8 conversion, unlike the
         // managed Color32 cast's ties-to-even. Only draw buffers use this rule.
         internal static Color DrawColor(Color logical)

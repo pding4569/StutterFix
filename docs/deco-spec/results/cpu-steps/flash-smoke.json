@@ -1,0 +1,22 @@
+{
+    "steps":  [
+                  "timeout 360",
+                  "wait 2",
+                  "auto on",
+                  "gpudeco flashfixture",
+                  "game D:/얼불춤 맵 파일/Windflower/Windflower.adofai",
+                  "press",
+                  "waitsongpos 20 120",
+                  "pause",
+                  "gpudeco live state",
+                  "resume",
+                  "quit"
+              ],
+    "timeout_min":  8,
+    "tag":  "cpu-flash-smoke",
+    "settings":  {
+                     "FrameGenRefresh":  false,
+                     "GpuDeco":  1,
+                     "FrameGenOutside":  0
+                 }
+}

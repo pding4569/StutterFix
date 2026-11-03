@@ -44,7 +44,7 @@ namespace StutterFix
                 {
                     var t=pair.Value;var r=t?.id as DecoAnim.Rec;
                     if(t!=null && t.active && (r==null || !r.Running)
-                        || r!=null && r.Running && (!ReferenceEquals(r.D,d) || r.Key!=(int)pair.Key || r.Dur<=0 || !GpuDecoGpu.Supported((int)r.E)))
+                        || r!=null && r.Running && (!ReferenceEquals(r.D,d) || r.Key!=(int)pair.Key || r.Dur<=0 || !GpuDecoGpu.LiveSupported((int)r.E)))
                     {
                         fallback=true;
 #if AUTOTEST

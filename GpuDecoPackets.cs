@@ -90,7 +90,7 @@ namespace StutterFix
                 if(fx is ffxMoveDecorationsPlus move)currentEffects[move.GetInstanceID()]=move;
             foreach(var e in table.InputEvents)
             {
-                if(e.Reasons.Length!=0 || e.Targets==null || !GpuDecoGpu.Supported(e.Ease))continue;
+                if(e.Reasons.Length!=0 || e.Targets==null || !GpuDecoGpu.LiveSupported(e.Ease))continue;
                 if(gpuPacketAmbiguous.Contains(e.Source))continue;
                 if(gpuPackets.ContainsKey(e.Source))
                 {gpuPackets.Remove(e.Source);gpuPacketAmbiguous.Add(e.Source);continue;}

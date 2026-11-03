@@ -29,7 +29,7 @@ namespace StutterFix
                     var clock=gpuSourcePool[source];
                     RequireLive(clock.Active && clock.Pos>=0f && clock.Pos<clock.Dur && DecoBakeCore.Finite(clock.Pos)
                         && DecoBakeCore.Finite(clock.Dur) && DecoBakeCore.Finite(clock.Over) && DecoBakeCore.Finite(clock.Period)
-                        && GpuDecoGpu.Supported((int)clock.Ease),"GPU resume source contract");
+                        && GpuDecoGpu.LiveSupported((int)clock.Ease),"GPU resume source contract");
                     int key=first<=4?first+1:first==5?7:first==6?8:first==7?9:first==11?10:first==12?11:first-2;
                     // A post-commit kill failure may leave an untouched original.
                     // Only killed natives become Recs; never start a duplicate CPU animation.
