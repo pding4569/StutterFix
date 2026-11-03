@@ -1,0 +1,27 @@
+{
+  "source_commit": "0a6067e",
+  "artifacts": [
+    {
+      "edition": "Player",
+      "path": "bin\\Player\\StutterFix.dll",
+      "sha256": "3ecae9fb0a13f0bb44ee2a559218e9f336d20e9889661d8b335e5edcba2424bf",
+      "bytes": 3380736,
+      "build_invocations": 1,
+      "errors": 0,
+      "warnings": 48
+    },
+    {
+      "edition": "PlayerAuto",
+      "path": "bin\\PlayerAuto\\StutterFix.dll",
+      "sha256": "13c76b1f08f0b848dd06f566e441a30a297db1347d741e7dfa0b7ab94cf8a9c0",
+      "bytes": 4436992,
+      "build_invocations": 1,
+      "errors": 0,
+      "warnings": 47
+    }
+  ],
+  "player_check_invocations": 1,
+  "player_check_checks": 438,
+  "player_check_errors": 0,
+  "game_executed": false
+}

@@ -1,0 +1,83 @@
+{
+  "scope": "bounded_preprocessor_check_not_compilation_or_runtime_test",
+  "checks": [
+    {
+      "edition": "Player",
+      "method": "DispatchGpuLiveSlice",
+      "timestamps": false
+    },
+    {
+      "edition": "Player",
+      "method": "GpuLiveFrame",
+      "timestamps": false
+    },
+    {
+      "edition": "Player",
+      "method": "ValidateDrawCollapse",
+      "timestamps": false
+    },
+    {
+      "edition": "Player",
+      "method": "DispatchDrawCollapse",
+      "timestamps": false
+    },
+    {
+      "edition": "Player",
+      "method": "Execute",
+      "timestamps": false
+    },
+    {
+      "edition": "PlayerAuto",
+      "method": "DispatchGpuLiveSlice",
+      "timestamps": true
+    },
+    {
+      "edition": "PlayerAuto",
+      "method": "GpuLiveFrame",
+      "timestamps": true
+    },
+    {
+      "edition": "PlayerAuto",
+      "method": "ValidateDrawCollapse",
+      "timestamps": true
+    },
+    {
+      "edition": "PlayerAuto",
+      "method": "DispatchDrawCollapse",
+      "timestamps": true
+    },
+    {
+      "edition": "PlayerAuto",
+      "method": "Execute",
+      "timestamps": true
+    },
+    {
+      "edition": "DEV",
+      "method": "DispatchGpuLiveSlice",
+      "timestamps": false
+    },
+    {
+      "edition": "DEV",
+      "method": "GpuLiveFrame",
+      "timestamps": false
+    },
+    {
+      "edition": "DEV",
+      "method": "ValidateDrawCollapse",
+      "timestamps": false
+    },
+    {
+      "edition": "DEV",
+      "method": "DispatchDrawCollapse",
+      "timestamps": false
+    },
+    {
+      "edition": "DEV",
+      "method": "Execute",
+      "timestamps": false
+    }
+  ],
+  "baseline_cost_lines": [
+    "[StutterFix] [gpudeco] cost scope=Application.quitting frames=89157 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.086435 progress_ms=0.008827 uniform_ms=0.062700 dispatch_ms=0.014010 misc_ms=0.000898 max_ms=8.377100 budget_le_0.5ms=True validate_ms=0.057507 cam_ms=0.000738 exec_ms=0.006304 proxy_ms=0.000234 check_ms=0.006495 clock_ms=0.000141 dd_ms=0.013617 after_ms=0.000105 fb_eval_ms=0.001633 fb_copy_ms=0.004137 fb_submit_ms=0.001690 fb_exec_ms=0.002222 span_tog=0.02 alpha_tog=0.10 whole_frame_ms=0.093487"
+  ]
+}
