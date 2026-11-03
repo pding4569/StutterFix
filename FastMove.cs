@@ -412,7 +412,7 @@ namespace StutterFix
             var tags = tagsRef(fx); var mgr = mgrRef(fx);
             if (tags == null || (object)mgr == null) return No(4);
             var dict = taggedRef(mgr);
-#if DEV || AUTOTEST || GPUDECO
+#if DEV || AUTOTEST
             if(GpuDecoPlayer.Available && DecoBake.TryPacketTargets(fx,dict,tags,out var packetTargets))
             {src=packetTargets;return ParallaxOk(fx)||No(0);}
 #endif
@@ -742,18 +742,20 @@ namespace StutterFix
 #if AUTOTEST
                 if(DecoBake.GpuImageShadowActive)DecoBake.ObserveGpuImagePlan(fx,targets);
 #endif
-#if DEV || AUTOTEST || GPUDECO
+#if DEV || AUTOTEST
                 bool packetMode=GpuDecoPlayer.Available && DecoBake.BeginGpuPacket(fx,targets);
 #endif
                 for (int i = 0; i < targets.Count; i++)
                 {
                     var dec = targets[i];
 #if DEV || AUTOTEST || GPUDECO
+#if DEV || AUTOTEST
                     if(packetMode)
                     {
                         int packetTaken=DecoBake.TryGpuPacketRun(fx,targets,i,anim?usedCount:0);
                         if(packetTaken>0){i+=packetTaken-1;continue;}
                     }
+#endif
                     if (GpuDecoPlayer.Available && DecoBake.SkipGpuOrAdopt(fx, dec, anim ? usedCount : 0))
                     {
                         // Placement has no tween; preserve this event's metadata side effect.

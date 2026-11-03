@@ -424,8 +424,10 @@ namespace StutterFix
         }
         internal static void EndGpuSource()
         {
+#if DEV || AUTOTEST
             gpuPacketCurrent=null;
             gpuPacketTargetExpected=null;
+#endif
             gpuSource = null;
             gpuCurrentFx = null;
             gpuCurrentFxParsed = false;
@@ -522,7 +524,9 @@ namespace StutterFix
             MarkGpuSourceDirty(slot);
             gpuActiveSourceSlots.Add(slot);
             gpuSourcePeakAllocated=Math.Max(gpuSourcePeakAllocated,gpuActiveSourceSlots.Count);
+#if DEV || AUTOTEST
             UpdatePacketClock(s);
+#endif
             return s;
         }
 
@@ -624,7 +628,9 @@ namespace StutterFix
             gpuSourceE[src.Slot] = 1f;
             gpuSourceProgress[src.Slot] = src.Dur;
             MarkGpuSourceDirty(src.Slot);
+#if DEV || AUTOTEST
             UpdatePacketClock(src);
+#endif
             for (int i = 0; i < src.MasterSlots.Count; i++)
             {
                 int masterSlot = src.MasterSlots[i];
@@ -1193,7 +1199,9 @@ namespace StutterFix
                 gpuLiveBaseline = baselineObjects;
                 gpuLiveBundleKey = gpuBundlePath;
                 gpuLivePrepared = true;
+#if DEV || AUTOTEST
                 if(gpuPacketMode!=0)CompileGpuPackets();
+#endif
                 gpuRecoveryBlocked=false;
                 gpuPreparedScope = gpuScope;
                 gpuLivePreparedNative=GpuDecoNativeBatch.Enabled;
@@ -1215,9 +1223,17 @@ namespace StutterFix
             }
         }
 
-        static int BuildLiveRun(GpuLiveSlice slice, List<GpuLiveRow> rows, int a, int b, int copyKernel, float z, MergeWindow merge=null)
+        static int BuildLiveRun(GpuLiveSlice slice, List<GpuLiveRow> rows, int a, int b, int copyKernel, float z
+#if DEV || AUTOTEST
+            , MergeWindow merge=null
+#endif
+            )
         {
+#if DEV || AUTOTEST
             bool mapped = merge != null;
+#else
+            const bool mapped = false;
+#endif
             var first = rows[a]; int count = b - a;
             var groups = new List<KeyValuePair<int, int>>();
             for (int n = 0; n < count;)
@@ -1285,6 +1301,7 @@ namespace StutterFix
                 props.SetVector("_Flip", Vector4.one);
                 renderer.SetPropertyBlock(props, g);
             }
+#if DEV || AUTOTEST
             if(mapped)
             {
                 var map=new uint[count*4];
@@ -1293,6 +1310,7 @@ namespace StutterFix
                 merge.Maps.Add(mesh, new MergeMap { Buffer=mapBuffer, Values=map, Renderer=renderer });
                 slice.Commands.SetComputeBufferParam(gpuLiveShader,copyKernel,"_CopyMap",mapBuffer);
             }
+#endif
             slice.Commands.SetComputeIntParam(gpuLiveShader, "_CopyFirstVertex", first.Item * 4);
             slice.Commands.SetComputeIntParam(gpuLiveShader, "_CopyVertexCount", count * 4);
             slice.Commands.SetComputeBufferParam(gpuLiveShader, copyKernel, "_Vertices", buffer);
@@ -1622,7 +1640,9 @@ namespace StutterFix
             {
             ClassifyGpuActivationOwnership();ActMark("소유분류");
             CaptureG1DrawState();
+#if DEV || AUTOTEST
             ClassifyPacketTargetGuards();ActMark("패킷분류");
+#endif
             for (int i = 0; i < gpuLiveOwnedRenderers.Length; i++)
             {
                 var r = gpuLiveOwnedRenderers[i];
@@ -1855,7 +1875,9 @@ namespace StutterFix
 #if AUTOTEST
             ResetGpuAblation();
 #endif
+#if DEV || AUTOTEST
             ClearGpuPackets();
+#endif
             ClearGpuActivationUndo();
             gpuTargetUndoDecoration=null;gpuTargetUndoCount=0;
 #if AUTOTEST
@@ -1883,8 +1905,10 @@ namespace StutterFix
             }
             DisposeGpuMerge();
             DisposeDrawCollapse();
+#if DEV || AUTOTEST
             gpuRenderMergeOn=false;
             gpuMergeRows=null;
+#endif
             for (int i = gpuLiveSlices.Count - 1; i >= 0; i--)
                 gpuLiveSlices[i].Dispose();
             gpuLiveSlices.Clear();

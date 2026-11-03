@@ -35,6 +35,7 @@
     <Compile Include="LightProbe.cs" />
     <Compile Include="BeatProbe.cs" />
     <Compile Include="GpuDecoPlayer.cs" />
+    <Compile Include="GpuDecoResearchDisabled.cs" />
     <Compile Include="GpuDecoPerItemPrepare.cs" />
     <Compile Include="GpuDecoDirectTexturePrepare.cs" />
     <Compile Include="GpuDecoPreparation.cs" />
@@ -106,8 +107,8 @@
     <Compile Include="GpuDecoResume.cs" />
     <Compile Include="GpuDecoRecovery.cs" />
     <Compile Include="GpuDecoPacketFixture.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
-    <Compile Include="GpuDecoPackets.cs" />
-    <Compile Include="GpuDecoPacketTargets.cs" />
+    <Compile Include="GpuDecoPackets.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
+    <Compile Include="GpuDecoPacketTargets.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoAblation.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoStorage.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoImageTimeline.cs" />
@@ -126,7 +127,7 @@
     <Compile Include="GpuDecoSnapshot.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoOrderProbe.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoExport.cs" />
-    <Compile Include="GpuDecoRenderMerge.cs" />
+    <Compile Include="GpuDecoRenderMerge.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoRenderMergeGate.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="RenderMergeGatePolicy.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="LiveDecoRenderer.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

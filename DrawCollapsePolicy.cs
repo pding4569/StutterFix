@@ -9,7 +9,7 @@ namespace StutterFix
     {
         internal static bool AdoptNativeTweens=true;
         // 마스크를 쓰는 장식만 원래대로 두고(구간을 끊는 장벽) 나머지를 맡는다. 스프라이트 마스크가 있다고 맵 전체를 거부하지 않는다.
-        internal static bool PartialMaskAdmit=true;
+        internal const bool PartialMaskAdmit=true;
         // Unity's loaded shader caps texture parameters at 64 on this D3D11
         // device, even though the native API accepts 128 SRVs.
         internal const int ArrayBindings=4;
@@ -72,9 +72,9 @@ namespace StutterFix
         }
         // Renderer stores the source item index for owned rows. Never regroup
         // A/B/A textures or move a quad across even a currently hidden barrier.
-        internal static bool SplitByOrder=true;
+        internal const bool SplitByOrder=true;
         // 구간 디스패치를 미리 기록한 명령 버퍼 한 번 실행으로 한다(끄면 구간마다 즉시 디스패치).
-        internal static bool RecordedDispatch=true;
+        internal const bool RecordedDispatch=true;
         // 제품 경로: 버퍼는 한 번만 묶고 프레임마다 값 몇 개+디스패치만(명령 버퍼 실행 대체). 끄면 기록된 명령 버퍼.
         internal static bool MinimalDispatch=true;
         // 알파가 상수 0 으로 고정된 항목만 든 구간은 대표 렌더러를 꺼서 그리기·컬링 비용을 없앤다(알파 0 은 어차피 안 그려지므로 화면 동일).
@@ -108,22 +108,23 @@ namespace StutterFix
         internal static bool MidReusePlan=true;
         // 큰 이미지 장식의 쿼드를 불투명한 부분에만 맞게 줄인다(투명 여백 래스터라이즈 제거). 텍스처 긴 변이 TightMinSide 이상일 때만.
         internal static bool TightLargeQuads=true;
-        internal static int TightMinSide=1025,TightMarginTexels=4;
-        internal static float TightMaxAreaRatio=.8f;
+        internal static int TightMinSide=1025;
+        internal const int TightMarginTexels=4;
+        internal const float TightMaxAreaRatio=.8f;
         // 2048 을 넘는 같은 크기 DXT5(4K 프레임 계열 등)를 정확한 크기의 배열 하나로 묶는다. 3개 미만이면 직접 슬롯을 쓴다.
-        internal static bool ExactBigArray=true;
+        internal const bool ExactBigArray=true;
         internal const int ExactBigMin=3;
         // 프로토타입: 정렬 키 캐시(카메라 이동분 일괄 보정)와 전수 스캔 생략. 끄면 이전 방식으로 전부 다시 읽는다.
-        internal static bool KeyCache=true;
-        internal static bool FullScanOnReplan=false;
+        internal const bool KeyCache=true;
+        internal const bool FullScanOnReplan=false;
         // 같은 정렬 묶음에서 장벽보다 앞에 그려지던 장식을 구간에 남기는 규칙. 켜면 260초 픽셀 42만 개가 달라져 기본 끔.
-        internal static bool KeepBeforeBarrier=true;
+        internal const bool KeepBeforeBarrier=true;
         // 장벽과 같은 정렬 묶음에서 시작하는 구간의 대표 렌더러 거리를 TieNudge 만큼 더 멀게 해 동점을 없앤다.
-        internal static bool NudgeTieSpans=true;
+        internal const bool NudgeTieSpans=true;
         // 같은 묶음에서 모든 활성 장벽보다 뒤에 그려지던 장식도 구간에 유지한다(대표 거리를 -미세 이동).
         internal static bool KeepAfterBarrier=true; // 262초 픽셀 최대 차이 4(0.4% 픽셀). GPU 병목에서는 폴백 14개의 전체 재평가를 없애 FPS +
         internal const float TieNudge=2e-4f;
-        internal static int MaxSpans=700;
+        internal const int MaxSpans=700;
         internal static List<int[]> Plan(List<Row> rows)
         {
             rows.Sort((a,b)=>a.Key.CompareTo(b.Key));

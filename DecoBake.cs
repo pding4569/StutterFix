@@ -183,14 +183,18 @@ namespace StutterFix
         }
         internal static void Shutdown()
         {
+#if DEV || AUTOTEST
             gpuPacketMode=0;
+#endif
             gpuPrepareWatch = null;
             DisposeGpuLive();
             if(nativeUpdateHooked)SetNativeAdoption(false);
 #if AUTOTEST || GPUDECO
             gpuImageCandidate=false;gpuImageUploadFault=false;gpuImageMatrix=false;
 #endif
+#if DEV || AUTOTEST
             gpuRenderMergePrepare=false;
+#endif
             enabled = false; CancelBuild(); initial.Clear(); g1Initial.Clear(); ClearBaseline(); manager = null; effectList = null; prepEffectSnapshot = null; prepFloors = null;
 #if DEV || AUTOTEST
             DecoSim.ForgetBake();

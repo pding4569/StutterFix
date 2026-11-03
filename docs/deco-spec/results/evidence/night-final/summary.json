@@ -1,0 +1,108 @@
+{
+  "verified_at": "2026-11-03T23:55:31.189942+09:00",
+  "base": "932545e",
+  "game_runs": 0,
+  "integrity": {
+    "installed_sha256": "b0efe68d6ccce3217310da0ad65cba4048c19d2d25f738c97f14d7822898c795",
+    "restore_sha256": "b0efe68d6ccce3217310da0ad65cba4048c19d2d25f738c97f14d7822898c795",
+    "restored_dll": true,
+    "probe_absent": true,
+    "gpu_default_zero": true
+  },
+  "player_sha256": "17c2885887de2cdb508c68186fffeff9ea3b38b95a8060a2989818d17160cd79",
+  "playerauto_sha256": "2a3b77ec8510e2eeea70886966e46abb4a69a66aee081fa819aaa2328f4c116f",
+  "checks": 492,
+  "player_errors": 0,
+  "player_warnings": 50,
+  "playerauto_errors": 0,
+  "playerauto_warnings": 46,
+  "source_added": 94,
+  "source_deleted": 827,
+  "source_files": [
+    {
+      "file": "AutoTest.cs",
+      "added": 0,
+      "deleted": 4
+    },
+    {
+      "file": "DecoBake.cs",
+      "added": 4,
+      "deleted": 0
+    },
+    {
+      "file": "DrawCollapsePolicy.cs",
+      "added": 12,
+      "deleted": 32
+    },
+    {
+      "file": "FastMove.cs",
+      "added": 4,
+      "deleted": 2
+    },
+    {
+      "file": "GpuDecoDrawCollapse.cs",
+      "added": 0,
+      "deleted": 4
+    },
+    {
+      "file": "GpuDecoDrawCollapseGate.cs",
+      "added": 2,
+      "deleted": 8
+    },
+    {
+      "file": "GpuDecoDrawCollapseRenderer.cs",
+      "added": 7,
+      "deleted": 236
+    },
+    {
+      "file": "GpuDecoExport.cs",
+      "added": 25,
+      "deleted": 2
+    },
+    {
+      "file": "GpuDecoPlayer.cs",
+      "added": 1,
+      "deleted": 27
+    },
+    {
+      "file": "GpuDecoResearchDisabled.cs",
+      "added": 20,
+      "deleted": 0
+    },
+    {
+      "file": "GpuDecoTrim.cs",
+      "added": 0,
+      "deleted": 22
+    },
+    {
+      "file": "GpuTileComposite.cs",
+      "added": 0,
+      "deleted": 352
+    },
+    {
+      "file": "HoldMaterialReads.cs",
+      "added": 0,
+      "deleted": 69
+    },
+    {
+      "file": "IdleFloorUpdate.cs",
+      "added": 0,
+      "deleted": 57
+    },
+    {
+      "file": "StutterFix.cs",
+      "added": 0,
+      "deleted": 3
+    },
+    {
+      "file": "StutterFix.csproj",
+      "added": 4,
+      "deleted": 6
+    },
+    {
+      "file": "tools/optimization/GpuDecoPlayerCheck/Program.cs",
+      "added": 15,
+      "deleted": 3
+    }
+  ]
+}

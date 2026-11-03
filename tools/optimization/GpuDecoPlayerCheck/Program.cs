@@ -66,6 +66,15 @@ foreach(var item in new[]{(args[0],false),(args[1],true)})
     bool Has(string name)=>types.Any(t=>t.Name==name);
     Check(Has("GpuDecoPlayer") && Has("GpuDecoGpu") && Has("GpuDecoImageTimeline"),"runtime types included");
     Check(!Has("IdleFloorUpdate") && !Has("HoldMaterialReads"),"failed CPU experiments removed");
+    Check(!Has("BarrierClone"),"rejected barrier cloning removed");
+    foreach(string research in new[]{"GpuEventPacket","PacketRun","PacketTargetGuard","MergeWindow","MergeGroup","MergeMap"})
+        Check(Has(research)==item.Item2,"research storage boundary: "+research);
+    var policy=types.Single(t=>t.Name=="DrawCollapsePolicy");
+    var policyFields=policy.Def.GetFields().Select(h=>md.GetFieldDefinition(h)).ToArray();
+    foreach(string fixedPolicy in new[]{"PartialMaskAdmit","SplitByOrder","RecordedDispatch","ExactBigArray","KeyCache",
+        "FullScanOnReplan","KeepBeforeBarrier","NudgeTieSpans","TightMarginTexels","TightMaxAreaRatio","MaxSpans"})
+        Check((policyFields.Single(f=>md.GetString(f.Name)==fixedPolicy).Attributes&FieldAttributes.Literal)!=0,
+            "policy has no runtime mutation: "+fixedPolicy);
     foreach(string diagnostic in new[]{"AutoTest","FrameCompare","GpuHide","GpuProbe","GpuCensus","GpuDecoCostProbe","GpuDecoSnapshot"})
         Check(Has(diagnostic)==item.Item2,"diagnostic boundary: "+diagnostic);
     if(!item.Item2)
@@ -75,6 +84,9 @@ foreach(var item in new[]{(args[0],false),(args[1],true)})
         Check((bake.Def.Attributes&TypeAttributes.BeforeFieldInit)==0,"runtime has an explicit lazy initializer");
         string[] methods=bake.Def.GetMethods().Select(h=>md.GetString(md.GetMethodDefinition(h).Name)).ToArray();
         Check(!methods.Contains("GpuStep") && !methods.Contains("GpuDrawCollapseCommand") && !methods.Contains("AdoptCommand"),"test command entry points excluded");
+        Check(!methods.Any(m=>new[]{"BeginGpuPacket","TryGpuPacketRun","TryPacketTargets","CompileGpuPackets",
+            "CollapseNotifyBarrier","NotifyBarrierCommand","BuildBarrierOrderClones","TrimStaticSprite"}.Contains(m)),
+            "inactive research and rejected experiment entry points excluded");
     }
     var resource=md.ManifestResources.Select(h=>md.GetManifestResource(h)).Single(r=>md.GetString(r.Name)=="StutterFix.gpudeco");
     Check(resource.Implementation.IsNil,"GPU bundle embedded, not linked");
