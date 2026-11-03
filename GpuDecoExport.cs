@@ -1364,7 +1364,12 @@ namespace StutterFix
 #endif
             bool single=GpuDecoCopy.SingleSubmission && !gpuRenderMergeOn && !gpuCollapseOn && active.SharedBatch==null
                 && active.NativeCopy!=null && active.Gpu.UseLiveMode && active.Gpu.HasNativeLiveKernel;
-            if(!single)active.Gpu.SetLiveUniforms(camera,time);
+            // These collapse branches write every uniform they consume in this dispatch.
+            // Do not cache shared ComputeShader state across slices or command-buffer execution.
+            bool collapseUniforms=gpuCollapseOn && (DrawCollapsePolicy.RecordedDispatch
+                || DrawCollapsePolicy.GlobalVerts && (DrawCollapsePolicy.DirectDispatch
+                    || GpuDecoPlayer.Product && DrawCollapsePolicy.MinimalDispatch));
+            if(!single && !collapseUniforms)active.Gpu.SetLiveUniforms(camera,time);
 #if AUTOTEST
             long t3 = Stopwatch.GetTimestamp();
 #endif

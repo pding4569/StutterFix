@@ -1501,6 +1501,8 @@ namespace StutterFix
 #if AUTOTEST
                 long fe0=Stopwatch.GetTimestamp();
 #endif
+                // Restore evaluator modes (including AlphaEarlyOut) after any collapse backend.
+                source.Gpu.SetLiveUniforms(camera,time);
                 source.Gpu.DispatchEvaluate();
 #if AUTOTEST
                 long fe1=Stopwatch.GetTimestamp();
