@@ -68,5 +68,6 @@ summary={'groups':groups,'runs':runs,'preserved_integrity_records':len(integrity
 for n in ('cpu-native-symbol.txt','cpu-player-check.txt','cpu-collapse-check.txt'):
     raw=(RAW/n).read_bytes()
     encoding='utf-16' if raw.startswith((b'\xff\xfe',b'\xfe\xff')) else 'utf-8-sig'
-    (OUT/n).write_text(raw.decode(encoding),encoding='utf-8')
+    (OUT/n).write_text('\n'.join(line.rstrip() for line in raw.decode(encoding).splitlines())+'\n',
+                       encoding='utf-8',newline='\n')
 print(json.dumps({'groups':groups,'integrity':len(integrity),'same_final_dll':True},indent=2))

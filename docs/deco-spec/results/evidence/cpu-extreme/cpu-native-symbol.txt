@@ -1,5 +1,5 @@
-== 리프 (표본 1)
-100.0%  [Unity] memcpy_repmovs
-== 스택 어디든(깊이 12 한계) (표본 1)
-100.0%  [Unity] memcpy_repmovs
-== 리프가 UnityPlayer 일 때 가장 가까운 관리 함수 (표본 1)
+== 리프 (표본 1)
+100.0%  [Unity] memcpy_repmovs
+== 스택 어디든(깊이 12 한계) (표본 1)
+100.0%  [Unity] memcpy_repmovs
+== 리프가 UnityPlayer 일 때 가장 가까운 관리 함수 (표본 1)

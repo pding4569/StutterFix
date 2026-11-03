@@ -1,1 +1,1 @@
-DrawCollapseCheck checks=52 errors=0 scope=offline_policy_only
+DrawCollapseCheck checks=52 errors=0 scope=offline_policy_only
