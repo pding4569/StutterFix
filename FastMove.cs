@@ -215,7 +215,7 @@ namespace StutterFix
 #if DEV || AUTOTEST
             if ((GpuDecoPlayer.Available && DecoBake.CpuAdopting)) DecoBake.StopAdopt("FastMove 원본 우회");
 #endif
-            if (GpuDecoPlayer.Active)
+            if (GpuDecoPlayer.Active && GpuOriginalTouchesOwned(fx))
             {
                 Main.Entry.Logger.Log("[gpudeco] original_guard bypass="+bypass+" running="+running+" enabled="+Enabled+" installed="+Installed
                     +" hitch_playing="+Hitch.Playing+" resume_continuity="+GpuPlaybackState.PlaybackContinuity
@@ -243,6 +243,26 @@ namespace StutterFix
             return true;
         }
 
+#if DEV || AUTOTEST || GPUDECO
+        private static bool GpuOriginalTouchesOwned(ffxMoveDecorationsPlus fx)
+        {
+            int targets=0,owned=0;
+            try
+            {
+                if(!fx || !fx.decManager || fx.targetTags==null)throw new InvalidOperationException("missing target manager/tags");
+                foreach(var d in fx.decManager.GetTaggedDecorations((IEnumerable<string>)fx.targetTags))
+                {targets++;if(DecoBake.SkipGpuLate(d))owned++;}
+                Main.Entry.Logger.Log("[gpudeco] original_targets source="+fx.GetInstanceID()+" targets="+targets+" owned="+owned
+                    +" image="+imgUsed(fx)+" selector="+tImg(fx)+" recovery="+(owned>0));
+                return owned>0;
+            }
+            catch(Exception ex)
+            {
+                Main.Entry.Logger.Log("[gpudeco] original_targets_unknown source="+(fx?fx.GetInstanceID():0)+" reason="+ex.GetType().Name+" recovery=True");
+                return true; // Unknown targets must never silently mutate owned state.
+            }
+        }
+#endif
         // ── 미리 확인이 쓰는 것 ──
         internal sealed class ShapeInfo { public List<scrDecoration> Targets; public readonly List<List<scrDecoration>> Sources = new List<List<scrDecoration>>(); public string Tag; public bool Pos, Px, Py, Col, Opa; public Vector2 Tp; public Color Tc; public float To; public int Keys; }
         private static readonly ShapeInfo shape = new ShapeInfo();
@@ -617,7 +637,14 @@ namespace StutterFix
             if ((object)holder == null) return false;
             var sprites = spritesRef(holder);
             if (sprites == null) return false;
-            if (imgUsed(fx)) { string fn = tImg(fx); if (!string.IsNullOrEmpty(fn) && !sprites.ContainsKey(fn)) return false; }
+            if (imgUsed(fx)) { string fn = tImg(fx); if (!string.IsNullOrEmpty(fn) && !sprites.ContainsKey(fn))
+                {
+                    // Visual decorations use GetValueOrDefault and clear the sprite.
+                    // Particle decorations use [] and must retain the original exception/order.
+                    foreach(var d in fx.decManager.GetTaggedDecorations((IEnumerable<string>)fx.targetTags))
+                        if(d is scrParticleDecoration)return false;
+                }
+            }
             return true;
         }
         private static bool AnyImg(ffxMoveDecorationsPlus fx)
