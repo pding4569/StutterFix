@@ -1,0 +1,149 @@
+{
+  "base_commit": "bd0645d",
+  "decision": "REJECTED: future-visibility density blocks known-beneficial Arche; source reverted",
+  "candidate": "128 midpoint forward-replay visible changing channels exceed eligible slots plus active fallback",
+  "admission_only_runs": 2,
+  "performance_runs": 4,
+  "window_song_s": [
+    12,
+    22
+  ],
+  "records": [
+    {
+      "tag": "round04-windflower-admission",
+      "raw_log": "E:\\StutterFixWork\\night-results\\round04-windflower-admission.log",
+      "raw_sha256": "0f1fd8597b19015625065cbb26fead79d48b4e5265d6d79bcfd84ff9268db689",
+      "gpu_activated": false,
+      "preflight": {
+        "eligible_upper": "4489",
+        "active_fallback": "1373",
+        "horizon_s": "361.58413",
+        "mean_visible": "96.03125",
+        "mean_moving": "28.40625",
+        "mean_channels": "94.328125",
+        "samples": "128",
+        "target_refs": "20050",
+        "census_ms": "46.719",
+        "admit": "False",
+        "cost_model": "UNVERIFIED",
+        "before_tracks_and_gpu": "True"
+      }
+    },
+    {
+      "tag": "round04-arche-admission",
+      "raw_log": "E:\\StutterFixWork\\night-results\\round04-arche-admission.log",
+      "raw_sha256": "f3e56ccaf5992799b904d267d839cfcc3f5da5b05aef7f7b711552e0e6514205",
+      "gpu_activated": false,
+      "preflight": {
+        "eligible_upper": "28714",
+        "active_fallback": "121",
+        "horizon_s": "308.400003",
+        "mean_visible": "205.890625",
+        "mean_moving": "184.59375",
+        "mean_channels": "945.679688",
+        "samples": "128",
+        "target_refs": "232018",
+        "census_ms": "880.4519",
+        "admit": "False",
+        "cost_model": "UNVERIFIED",
+        "before_tracks_and_gpu": "True"
+      }
+    },
+    {
+      "tag": "round04-windflower-0-g0",
+      "raw_log": "E:\\StutterFixWork\\night-results\\round04-windflower-0-g0.log",
+      "raw_sha256": "344f45d7cc4e2f2d8d0743bdb816eadcd7273ac155dde71f76d9f9bdbd441a46",
+      "gpu_activated": false,
+      "setting": 0,
+      "fps": 354.0,
+      "ms_from_rounded_fps": 2.824858757062147
+    },
+    {
+      "tag": "round04-windflower-1-g1",
+      "raw_log": "E:\\StutterFixWork\\night-results\\round04-windflower-1-g1.log",
+      "raw_sha256": "eaf2ed092c2bff99252c43b8903fdd875cb78d4ca6deb95a3c7111ecacd43d17",
+      "gpu_activated": false,
+      "preflight": {
+        "eligible_upper": "4489",
+        "active_fallback": "1373",
+        "horizon_s": "361.58413",
+        "mean_visible": "96.03125",
+        "mean_moving": "28.40625",
+        "mean_channels": "94.328125",
+        "samples": "128",
+        "target_refs": "20050",
+        "census_ms": "46.7912",
+        "admit": "False",
+        "cost_model": "UNVERIFIED",
+        "before_tracks_and_gpu": "True"
+      },
+      "setting": 1,
+      "fps": 350.7,
+      "ms_from_rounded_fps": 2.8514399771884804,
+      "pixel": {
+        "max_rgba": "0,0,0,0",
+        "over_3": 0,
+        "total": 3686400,
+        "scope": "CPU self comparison; no noise or positive controls"
+      }
+    },
+    {
+      "tag": "round04-windflower-2-g1",
+      "raw_log": "E:\\StutterFixWork\\night-results\\round04-windflower-2-g1.log",
+      "raw_sha256": "d67accb638509886ab7fe177b74a6b7dfd0f69ba56dd4fa854740dad795c756b",
+      "gpu_activated": false,
+      "preflight": {
+        "eligible_upper": "4489",
+        "active_fallback": "1373",
+        "horizon_s": "361.58413",
+        "mean_visible": "96.03125",
+        "mean_moving": "28.40625",
+        "mean_channels": "94.328125",
+        "samples": "128",
+        "target_refs": "20050",
+        "census_ms": "45.6316",
+        "admit": "False",
+        "cost_model": "UNVERIFIED",
+        "before_tracks_and_gpu": "True"
+      },
+      "setting": 1,
+      "fps": 351.4,
+      "ms_from_rounded_fps": 2.8457598178713717,
+      "pixel": {
+        "max_rgba": "0,0,0,0",
+        "over_3": 0,
+        "total": 3686400,
+        "scope": "CPU self comparison; no noise or positive controls"
+      }
+    },
+    {
+      "tag": "round04-windflower-3-g0",
+      "raw_log": "E:\\StutterFixWork\\night-results\\round04-windflower-3-g0.log",
+      "raw_sha256": "d9024496f07d5f1672cf4f64185bc8c0e32db94376fbc4934b143d8ee2330cb6",
+      "gpu_activated": false,
+      "setting": 0,
+      "fps": 355.3,
+      "ms_from_rounded_fps": 2.8145229383619474
+    }
+  ],
+  "off_mean_ms": 2.8196908477120473,
+  "candidate_mean_ms": 2.848599897529926,
+  "delta_ms": 0.028909049817878785,
+  "delta_ms_percent": 1.0252560078114925,
+  "off_pair_spread_ms": 0.010335818700199617,
+  "on_pair_spread_ms": 0.005680159317108746,
+  "metric_scope": "inverse rounded FPS; not CPU/GPU time or whole song",
+  "six_map_classifier_complete": false,
+  "default_GpuDeco": 0,
+  "integrity": {
+    "installed_sha256": "b0efe68d6ccce3217310da0ad65cba4048c19d2d25f738c97f14d7822898c795",
+    "restore_sha256": "b0efe68d6ccce3217310da0ad65cba4048c19d2d25f738c97f14d7822898c795",
+    "gpuprobe_present": false,
+    "game_process_present": false,
+    "GpuDeco": 0
+  },
+  "images": {
+    "windflower-b2-cpu-after.png": "372f7ef0bf066488cd6da2432a511d389c9b98d183a2c5414ca932f775e71e4a",
+    "windflower-b2-cpu-before.png": "372f7ef0bf066488cd6da2432a511d389c9b98d183a2c5414ca932f775e71e4a"
+  }
+}

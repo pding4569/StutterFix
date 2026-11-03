@@ -1,0 +1,7 @@
+[StutterFix] [GPU 장식] PREFLIGHT_FUTURE eligible_upper=4489 active_fallback=1373 horizon_s=361.58413 mean_visible=96.03125 mean_moving=28.40625 mean_channels=94.328125 samples=128 target_refs=20050 census_ms=46.7912 admit=False cost_model=UNVERIFIED before_tracks_and_gpu=True
+[StutterFix] [GPU 장식] 건너뜀: gpudeco G2: future visible channel density below slot and fallback proxy
+[StutterFix] [자동 시험] [FPS 구간] round04-windflower-1-g1 : 350.7 FPS (3505프레임 9.99초) | 표본 없음
+[StutterFix] [framecmp] diff GPU CPU threshold=3 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] framecmp RESULT noise_out=NA aa2_out=NA ab_out=0 ctl_order=NA ctl_hide=NA
+[StutterFix] [framecmp] framecmp VERDICT noise=FAIL aa2=FAIL order_ctl=FAIL hide_ctl=FAIL
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다

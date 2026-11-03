@@ -1,0 +1,2 @@
+[StutterFix] [자동 시험] [FPS 구간] round04-windflower-3-g0 : 355.3 FPS (3552프레임 10.00초) | 표본 없음
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다

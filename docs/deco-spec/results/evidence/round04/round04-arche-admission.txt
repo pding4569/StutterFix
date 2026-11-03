@@ -1,0 +1,3 @@
+[StutterFix] [GPU 장식] PREFLIGHT_FUTURE eligible_upper=28714 active_fallback=121 horizon_s=308.400003 mean_visible=205.890625 mean_moving=184.59375 mean_channels=945.679688 samples=128 target_refs=232018 census_ms=880.4519 admit=False cost_model=UNVERIFIED before_tracks_and_gpu=True
+[StutterFix] [GPU 장식] 건너뜀: gpudeco G2: future visible channel density below slot and fallback proxy
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다

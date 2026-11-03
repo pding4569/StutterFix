@@ -1,0 +1,121 @@
+diff --git a/GpuDecoPlayer.cs b/GpuDecoPlayer.cs
+index bb6fb3d..11601ed 100644
+--- a/GpuDecoPlayer.cs
++++ b/GpuDecoPlayer.cs
+@@ -498,6 +498,7 @@ namespace StutterFix
+             // 파괴된 장식(맵을 다시 불러온 경우) 항목은 정리한다. 살아 있는 것은 처음 Setup 기록을 그대로 쓴다.
+             int deadCount = 0;
+             if (initial.Count > 0) { var dead = initial.Keys.Where(k => !k).ToArray(); deadCount = dead.Length; foreach (var k in dead) initial.Remove(k); }
++            CheckGpuFutureDensity(floors);
+             bool cacheCandidate = gpuLivePrepared && !gpuRecoveryBlocked && gpuLastRestoreComplete && gpuLiveSlices.Count > 0 && gpuScope != null && gpuScope.WholeSong
+                 && gpuPreparedHash != 0 && gpuLiveManager == manager && manager == scrDecorationManager.instance;
+             if (!cacheCandidate) { if (gpuLivePrepared || gpuLiveSlices.Count > 0) DisposeGpuLive(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
+diff --git a/GpuDecoPreparation.cs b/GpuDecoPreparation.cs
+index 8799b7a..35c1d0b 100644
+--- a/GpuDecoPreparation.cs
++++ b/GpuDecoPreparation.cs
+@@ -3,6 +3,104 @@ namespace StutterFix
+ {
+     internal static partial class DecoBake
+     {
++        sealed class DensityRow
++        {
++            internal DecoBakeCore.Decoration Initial;
++            internal readonly DecoBakeCore.Segment[] Current = new DecoBakeCore.Segment[16];
++            internal readonly bool[] Written = new bool[16];
++            internal bool Visible, GlobalOrigin, Rejected;
++            internal float Value(int c, double t, float pitch, float scale)
++                => Written[c] ? DecoBakeCore.Value(Current[c], t, pitch, scale, EvaluateEase) : Initial.Initial[c];
++        }
++
++        // Bounded forward replay: retain only the current tween per channel, never
++        // construct immutable tracks or GPU resources. Quadrature is a cost proxy,
++        // not screen-space visibility or a calibrated CPU/GPU performance model.
++        static void CheckGpuFutureDensity(System.Collections.Generic.List<scrFloor> floors)
++        {
++            var timer = System.Diagnostics.Stopwatch.StartNew();
++            double horizon = 0;
++            foreach (var floor in floors) horizon = System.Math.Max(horizon, floor.entryTime);
++            float pitch = scrConductor.instance.song.pitch, scale = DG.Tweening.DOTween.timeScale;
++            RequireLive(DecoBakeCore.Finite(horizon) && horizon > 0 && pitch > 0 && scale > 0, "invalid preflight clock");
++            var rows = new System.Collections.Generic.Dictionary<scrDecoration, DensityRow>();
++            int fallback = 0;
++            foreach (var pair in initial)
++            {
++                var d = pair.Key;
++                if (!d) continue;
++                if (pair.Value.Reasons.Count != 0 || !g1Initial.TryGetValue(d, out var g1))
++                { if (d.gameObject.activeInHierarchy && g1RendererEnabled(d)) fallback++; continue; }
++                rows.Add(d, new DensityRow { Initial = pair.Value, Visible = g1.Visible });
++            }
++            var effects = scrVfxPlus.instance.effects;
++            RequireLive(effects.Count <= MaxEvents, "preflight effect limit");
++            const int samples = 128;
++            int cursor = 0, references = 0;
++            double channels = 0, moving = 0, visible = 0, previous = double.NegativeInfinity;
++            for (int sample = 0; sample < samples; sample++)
++            {
++                double t = horizon * (sample + .5) / samples;
++                while (cursor < effects.Count)
++                {
++                    var fx = effects[cursor];
++                    double at = DecoBakeCore.ScheduledTime(fx.startTime, fx.startEffectOffset);
++                    RequireLive(DecoBakeCore.Finite(at) && at >= previous, "unsorted preflight effects");
++                    if (at > t) break;
++                    previous = at; cursor++;
++                    if (!(fx is ffxMoveDecorationsPlus f)) continue;
++                    var e = CopyEvent(f);
++                    foreach (var d in f.decManager.GetTaggedDecorations((System.Collections.Generic.IEnumerable<string>)f.targetTags))
++                    {
++                        RequireLive(++references <= MaxTargetRefs, "preflight target limit");
++                        if (!d || !rows.TryGetValue(d, out var row)) continue;
++                        if (e.Reasons.Length != 0 || !DecoBakeCore.Finite(e.Duration) || e.Duration < 0) row.Rejected = true;
++                        if (row.Rejected) continue;
++                        if (f.visibleUsed) row.Visible = f.visible;
++                        if (e.ResetGlobalOrigin) row.GlobalOrigin = true;
++                        for (int c = 0; c < 16; c++)
++                        {
++                            float target = e.Values[c];
++                            if (!DecoBakeCore.Finite(target)) continue;
++                            float current = row.Value(c, at, pitch, scale);
++                            if (c < 2) target += e.RelativePosition ? current : row.GlobalOrigin
++                                ? (c == 0 ? row.Initial.GlobalX : row.Initial.GlobalY)
++                                : (c == 0 ? row.Initial.OriginalX : row.Initial.OriginalY);
++                            float start = row.Written[c] ? row.Current[c].End : current;
++                            bool isScale = c == 5 || c == 6 || c == 12 || c == 13;
++                            float end = isScale ? start + (target - start) * EvaluateEase(e.Ease,
++                                e.Duration == 0 ? 1 : e.Duration, e.Duration == 0 ? 1 : e.Duration, e.Over, e.Period) : target;
++                            if (!DecoBakeCore.Finite(end)) { row.Rejected = true; break; }
++                            row.Current[c] = new DecoBakeCore.Segment { T0 = at, Duration = e.Duration,
++                                Start = start, End = end, Target = target, IsScale = isScale,
++                                Ease = e.Ease, Over = e.Over, Period = e.Period };
++                            row.Written[c] = true;
++                        }
++                    }
++                }
++                foreach (var row in rows.Values)
++                {
++                    if (row.Rejected || !row.Visible || !(row.Value(10, t, pitch, scale) > 0 && row.Value(11, t, pitch, scale) > 0)) continue;
++                    visible++;
++                    int active = 0;
++                    for (int c = 0; c < 16; c++)
++                    {
++                        var s = row.Current[c];
++                        if (row.Written[c] && s.Duration > 0 && s.Start != s.Target && (t - s.T0) / pitch * scale < s.Duration) active++;
++                    }
++                    channels += active;
++                    if (active > 0) moving++;
++                }
++            }
++            double mean = channels / samples;
++            bool admit = rows.Count >= GpuDecoPlayerPolicy.MinimumOwned && mean > rows.Count + fallback;
++            Main.Entry.Logger.Log("[GPU 장식] PREFLIGHT_FUTURE eligible_upper=" + rows.Count + " active_fallback=" + fallback
++                + " horizon_s=" + N(horizon) + " mean_visible=" + N(visible / samples) + " mean_moving=" + N(moving / samples)
++                + " mean_channels=" + N(mean) + " samples=" + samples + " target_refs=" + references
++                + " census_ms=" + N(timer.Elapsed.TotalMilliseconds) + " admit=" + admit + " cost_model=UNVERIFIED before_tracks_and_gpu=True");
++            RequireLive(admit, "future visible channel density below slot and fallback proxy");
++        }
++
+         // Run after all row demotions, before allocating slices or consuming Data.
+         // An empty slice intentionally has no Data; it is not a preparation fault.
+         static bool AcceptGpuOwnedCount(int owned)
