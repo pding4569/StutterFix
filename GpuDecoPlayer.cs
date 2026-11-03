@@ -25,6 +25,7 @@ namespace StutterFix
         static GpuDecoPlayerLifetime lifetime;
         static bool reported, orderReported, cleanupPending;
         static Harmony hooks;
+        static Harmony barrierHooks;
         const string Owner = "StutterFix.GpuDeco.Player";
 
         internal static void Configure()
@@ -50,14 +51,7 @@ namespace StutterFix
                 hooks.Patch(update, prefix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(BeforeControllerUpdate)) { priority = Priority.First });
                 var depth = AccessTools.Method(typeof(scrVisualDecoration), "SetDepth");
                 if (depth != null) hooks.Patch(depth, postfix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(DepthChanged)));
-                // Independent of Dormancy's DEV-only notifications. Patch every
-                // overload; the product owner removes these on Shutdown.
-                foreach (var type in new[] { typeof(scrVisualDecoration), typeof(scrDecoration) })
-                    foreach (var method in AccessTools.GetDeclaredMethods(type))
-                        if (!method.IsAbstract && (method.Name == "UpdatePosition" || method.Name == "SetSprite"
-                            || method.Name == "ApplyColor" || method.Name == "SetVisible"
-                            || method.Name == "SetMaskingType" || method.Name == "EnableMeshRenderer"))
-                            hooks.Patch(method, postfix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(BarrierChanged)));
+                ConfigureBarrierNotifications(DrawCollapsePolicy.NotifyBarrierWatch);
                 // These hooks own the product lifetime independently of other modules.
                 foreach (var pair in new[] {
                     (typeof(scrController), "FailAction"), (typeof(scrController), "Fail2Action"),
@@ -77,6 +71,24 @@ namespace StutterFix
 
         static void BarrierChanged(scrDecoration __instance)
         { if (Product && DrawCollapsePolicy.NotifyBarrierWatch) DecoBake.CollapseNotifyBarrier(__instance); }
+        internal static void ConfigureBarrierNotifications(bool enable)
+        {
+            if(!enable){barrierHooks?.UnpatchAll(Owner+".BarrierWatch");barrierHooks=null;return;}
+            if(!Product || barrierHooks!=null)return;
+            var candidate=new Harmony(Owner+".BarrierWatch");
+            try
+            {
+                // Independent of Dormancy. No added Harmony postfixes when off.
+                foreach(var type in new[]{typeof(scrVisualDecoration),typeof(scrDecoration)})
+                    foreach(var method in AccessTools.GetDeclaredMethods(type))
+                        if(!method.IsAbstract && (method.Name=="UpdatePosition" || method.Name=="SetSprite"
+                            || method.Name=="ApplyColor" || method.Name=="SetVisible"
+                            || method.Name=="SetMaskingType" || method.Name=="EnableMeshRenderer"))
+                            candidate.Patch(method,postfix:new HarmonyMethod(typeof(GpuDecoPlayer),nameof(BarrierChanged)));
+                barrierHooks=candidate;
+            }
+            catch {candidate.UnpatchAll(Owner+".BarrierWatch");throw;}
+        }
         static void DepthChanged(scrVisualDecoration __instance)
         { if (Product) { DecoBake.GpuDepthChanged(__instance); BarrierChanged(__instance); } }
         static void SceneChanged(UnityEngine.SceneManagement.Scene oldScene, UnityEngine.SceneManagement.Scene newScene) => End("화면 전환");
@@ -221,6 +233,7 @@ namespace StutterFix
         {
             if (!Product) return;
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneChanged;
+            ConfigureBarrierNotifications(false);
             hooks?.UnpatchAll(Owner); hooks = null;
             try { if (RuntimeInitialized) { DecoBake.ReleasePlayerLevel(); DecoBake.Shutdown(); } }
             finally { Product = false; GpuDecoGpu.AlphaEarlyOut = 0; lifetime.Fail(); cleanupPending = false; }

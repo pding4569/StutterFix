@@ -1,0 +1,648 @@
+{
+  "scope": "Player without AUTOTEST; GPUDECO defined; source inventory, not compiler reachability proof",
+  "flags": [
+    {
+      "name": "AdoptNativeTweens",
+      "initial": "true",
+      "product_writers": [
+        "GpuDecoNativeAdopt.cs:196"
+      ],
+      "references": [
+        "GpuDecoPlayer.cs:170",
+        "DrawCollapsePolicy.cs:10",
+        "GpuDecoActivation.cs:41",
+        "GpuDecoActivation.cs:74",
+        "GpuDecoNativeAdopt.cs:126",
+        "GpuDecoNativeAdopt.cs:175",
+        "GpuDecoNativeAdopt.cs:196",
+        "FastMove.cs:666"
+      ]
+    },
+    {
+      "name": "PartialMaskAdmit",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "GpuDecoPlayer.cs:116",
+        "DrawCollapsePolicy.cs:12",
+        "GpuDecoDrawCollapseRenderer.cs:113",
+        "GpuDecoExport.cs:1006"
+      ]
+    },
+    {
+      "name": "SplitByOrder",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:75",
+        "DrawCollapsePolicy.cs:161"
+      ]
+    },
+    {
+      "name": "RecordedDispatch",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:77",
+        "GpuDecoDrawCollapseRenderer.cs:284",
+        "GpuDecoDrawCollapseRenderer.cs:1441"
+      ]
+    },
+    {
+      "name": "MinimalDispatch",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:79",
+        "GpuDecoDrawCollapseRenderer.cs:1422"
+      ]
+    },
+    {
+      "name": "TieAllBarriers",
+      "initial": "false",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:84",
+        "GpuDecoDrawCollapseRenderer.cs:926"
+      ]
+    },
+    {
+      "name": "CloneBarrierMaterials",
+      "initial": "false",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:89",
+        "GpuDecoDrawCollapseRenderer.cs:376",
+        "GpuDecoDrawCollapseRenderer.cs:925"
+      ]
+    },
+    {
+      "name": "CullIdleSpans",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:91",
+        "GpuDecoDrawCollapseRenderer.cs:471"
+      ]
+    },
+    {
+      "name": "HideProxies",
+      "initial": "false",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:93",
+        "GpuDecoDrawCollapseRenderer.cs:518",
+        "GpuDecoDrawCollapseRenderer.cs:1420",
+        "GpuDecoDrawCollapseRenderer.cs:1438",
+        "GpuDecoDrawCollapseRenderer.cs:1466",
+        "GpuDecoDrawCollapseRenderer.cs:1474",
+        "GpuDecoDrawCollapseRenderer.cs:1480"
+      ]
+    },
+    {
+      "name": "ClipScale",
+      "initial": "1f",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:95",
+        "GpuDecoDrawCollapseRenderer.cs:1429"
+      ]
+    },
+    {
+      "name": "GlobalVerts",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:98",
+        "GpuDecoDrawCollapseRenderer.cs:284",
+        "GpuDecoDrawCollapseRenderer.cs:1053",
+        "GpuDecoDrawCollapseRenderer.cs:1087",
+        "GpuDecoDrawCollapseRenderer.cs:1089",
+        "GpuDecoDrawCollapseRenderer.cs:1090",
+        "GpuDecoDrawCollapseRenderer.cs:1102",
+        "GpuDecoDrawCollapseRenderer.cs:1408",
+        "GpuDecoDrawCollapseRenderer.cs:1422",
+        "GpuDecoDrawCollapseRenderer.cs:1445",
+        "GpuDecoDrawCollapseRenderer.cs:1471",
+        "DecoBake.G1.cs:112"
+      ]
+    },
+    {
+      "name": "DirectDispatch",
+      "initial": "false",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:100",
+        "GpuDecoDrawCollapseRenderer.cs:1408"
+      ]
+    },
+    {
+      "name": "DisableOwnedRenderers",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "GpuDecoPlayer.cs:764",
+        "DrawCollapsePolicy.cs:105",
+        "GpuDecoExport.cs:1587",
+        "DecoBake.G1.cs:127"
+      ]
+    },
+    {
+      "name": "TileComposite",
+      "initial": "false",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:107"
+      ]
+    },
+    {
+      "name": "TileSingleMaxArea",
+      "initial": ".98f",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:109"
+      ]
+    },
+    {
+      "name": "TileMerge",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:111"
+      ]
+    },
+    {
+      "name": "ClipOffscreen",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:112",
+        "GpuDecoDrawCollapseRenderer.cs:1413",
+        "GpuDecoDrawCollapseRenderer.cs:1427",
+        "GpuDecoDrawCollapseRenderer.cs:1456"
+      ]
+    },
+    {
+      "name": "SkipOrderSweep",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:114",
+        "GpuDecoDrawCollapseRenderer.cs:1332"
+      ]
+    },
+    {
+      "name": "NotifyBarrierWatch",
+      "initial": "false",
+      "product_writers": [],
+      "references": [
+        "GpuDecoPlayer.cs:54",
+        "GpuDecoPlayer.cs:73",
+        "DrawCollapsePolicy.cs:117",
+        "GpuDecoDrawCollapseRenderer.cs:333",
+        "GpuDecoDrawCollapseRenderer.cs:631"
+      ]
+    },
+    {
+      "name": "SkipPausedCompute",
+      "initial": "false",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:119",
+        "GpuDecoDrawCollapseRenderer.cs:1406"
+      ]
+    },
+    {
+      "name": "PreStartActivate",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "GpuDecoPlayer.cs:161",
+        "DrawCollapsePolicy.cs:121"
+      ]
+    },
+    {
+      "name": "DeferEndOnResult",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "GpuDecoPlayer.cs:217",
+        "DrawCollapsePolicy.cs:123",
+        "GpuDecoExport.cs:389"
+      ]
+    },
+    {
+      "name": "ActivateInCatchUp",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "GpuDecoPlayer.cs:170",
+        "DrawCollapsePolicy.cs:125",
+        "FastMove.cs:666"
+      ]
+    },
+    {
+      "name": "MidReusePlan",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "GpuDecoPlayer.cs:690",
+        "DrawCollapsePolicy.cs:127"
+      ]
+    },
+    {
+      "name": "TightLargeQuads",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:129",
+        "GpuDecoTrim.cs:19",
+        "GpuDecoTrim.cs:78"
+      ]
+    },
+    {
+      "name": "TightAllOwned",
+      "initial": "false",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:131",
+        "GpuDecoTrim.cs:58"
+      ]
+    },
+    {
+      "name": "TightMinSide",
+      "initial": "1025",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:132",
+        "GpuDecoTrim.cs:33",
+        "GpuDecoTrim.cs:47",
+        "GpuDecoTrim.cs:61"
+      ]
+    },
+    {
+      "name": "TightMarginTexels",
+      "initial": "4",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:132",
+        "GpuDecoTrim.cs:40",
+        "GpuDecoTrim.cs:47"
+      ]
+    },
+    {
+      "name": "TightMaxAreaRatio",
+      "initial": ".8f",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:133",
+        "GpuDecoTrim.cs:96"
+      ]
+    },
+    {
+      "name": "ExactBigArray",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:135",
+        "GpuDecoDrawCollapseRenderer.cs:185"
+      ]
+    },
+    {
+      "name": "KeyCache",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:138",
+        "GpuDecoDrawCollapseRenderer.cs:859",
+        "GpuDecoDrawCollapseRenderer.cs:1010"
+      ]
+    },
+    {
+      "name": "FullScanOnReplan",
+      "initial": "false",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:139",
+        "GpuDecoDrawCollapseRenderer.cs:881"
+      ]
+    },
+    {
+      "name": "KeepBeforeBarrier",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:141",
+        "GpuDecoDrawCollapseRenderer.cs:980"
+      ]
+    },
+    {
+      "name": "NudgeTieSpans",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:143",
+        "GpuDecoDrawCollapseRenderer.cs:1080"
+      ]
+    },
+    {
+      "name": "KeepAfterBarrier",
+      "initial": "true",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:145",
+        "GpuDecoDrawCollapseRenderer.cs:983"
+      ]
+    },
+    {
+      "name": "MaxSpans",
+      "initial": "700",
+      "product_writers": [],
+      "references": [
+        "DrawCollapsePolicy.cs:147",
+        "GpuDecoDrawCollapseRenderer.cs:1015"
+      ]
+    }
+  ],
+  "excluded_files": [
+    "TimerResolutionInfo.cs",
+    "AllocProbe.cs",
+    "FrameScan.cs",
+    "DecoDiag.cs",
+    "TileSim.cs",
+    "TileCost.cs",
+    "ScriptProbe.cs",
+    "FloorProf.cs",
+    "FilterGpuProbe.cs",
+    "GpuProbe.cs",
+    "ArcheGpuResearch.cs",
+    "GpuHide.cs",
+    "GpuSplit.cs",
+    "GpuSplitPixelDiff.cs",
+    "FrameCompare.cs",
+    "FrameCompareMetrics.cs",
+    "FrameCompareState.cs",
+    "FrameCompareControlPolicy.cs",
+    "MatShare.cs",
+    "MatShareCompare.cs",
+    "MatSharePolicy.cs",
+    "GpuDecoDrawCollapseGate.cs",
+    "LiveDeco.cs",
+    "GpuDecoThreadCpu.cs",
+    "GpuDecoRenderMetrics.cs",
+    "GpuDecoCostProbe.cs",
+    "GpuDecoPacketFixture.cs",
+    "GpuDecoAblation.cs",
+    "GpuDecoStorage.cs",
+    "GpuTileComposite.cs",
+    "GpuDecoImageGeometryFixture.cs",
+    "GpuDecoImageTextureFixture.cs",
+    "HiddenDecoSynergy.cs",
+    "DecoAnim.Hidden.cs",
+    "GpuDecoSnapshot.cs",
+    "GpuDecoOrderProbe.cs",
+    "GpuDecoRenderMergeGate.cs",
+    "RenderMergeGatePolicy.cs",
+    "LiveDecoRenderer.cs",
+    "LiveDecoChanges.cs",
+    "LiveDecoGate2.cs",
+    "LiveDecoGate2Policy.cs",
+    "LiveDecoPolicy.cs",
+    "GpuSplitPolicy.cs",
+    "GpuCensus.cs",
+    "FilterHalfProbe.cs",
+    "FilterHalfPerf.cs",
+    "FilterIdentityProbe.cs",
+    "TimeProbe.cs",
+    "DecorationAudit.cs",
+    "AnimationAudit.cs",
+    "HeapPath.cs",
+    "AutoTest.cs",
+    "MicroBench.cs",
+    "InstBench.cs",
+    "MeshBench.cs",
+    "DecoRender.cs",
+    "SortProbe.cs",
+    "DecoSim.cs",
+    "DecoBake.Adopt.cs",
+    "DecoBake.Live.cs",
+    "DecoBake.AdoptSig.cs",
+    "FreeFpsProbe.cs",
+    "UiProf.cs",
+    "ParticleDump.cs",
+    "TileSig.cs",
+    "FuseProbe.cs",
+    "DecoGpu.cs",
+    "DecoBatchShadow.cs",
+    "DecoJobShadow.cs",
+    "DecoCensus.cs",
+    "OffscreenProbe.cs",
+    "CpuBreak.cs",
+    "MonoDump.cs",
+    "FloatSem.cs",
+    "ProfSamp.cs",
+    "RenderVerify.cs",
+    "SceneScan.cs",
+    "LoopProfiler.cs",
+    "PatchHot.cs",
+    "WasteProbe.cs",
+    "AllocScan.cs",
+    "PhaseWatch.cs",
+    "SlowScan.cs",
+    "StartProbe.cs",
+    "RenderWatch.cs",
+    "SamplerWatch.cs",
+    "RenderCallbackScan.cs",
+    "FrameRateScreenWatch.cs",
+    "ParticleTextWatch.cs",
+    "BlendProbe.cs",
+    "UpdateCostProbe.cs",
+    "FilterTrace.cs",
+    "MergeProbe.cs",
+    "UpdateFixture.cs"
+  ],
+  "methods": {
+    "GpuDecoDrawCollapseRenderer.cs:BuildBarrierOrderClones": {
+      "first": 372,
+      "last": 442,
+      "physical_lines": 71
+    },
+    "GpuDecoDrawCollapseRenderer.cs:DispatchDrawCollapse": {
+      "first": 1404,
+      "last": 1496,
+      "physical_lines": 93
+    },
+    "GpuDecoDrawCollapseRenderer.cs:ValidateDrawCollapse": {
+      "first": 1259,
+      "last": 1366,
+      "physical_lines": 108
+    },
+    "GpuDecoDrawCollapseRenderer.cs:DynamicOrderTick": {
+      "first": 628,
+      "last": 702,
+      "physical_lines": 75
+    },
+    "GpuDecoDrawCollapseRenderer.cs:ExcludedVisibilityTick": {
+      "first": 772,
+      "last": 781,
+      "physical_lines": 10
+    },
+    "GpuDecoDrawCollapseRenderer.cs:BuildDrawCollapseSpans": {
+      "first": 850,
+      "last": 1144,
+      "physical_lines": 295
+    },
+    "GpuDecoRenderMerge.cs:PrepareGpuMerge": {
+      "first": 70,
+      "last": 161,
+      "physical_lines": 92
+    },
+    "GpuDecoRenderMerge.cs:DispatchGpuMerge": {
+      "first": 237,
+      "last": 258,
+      "physical_lines": 22
+    },
+    "GpuDecoRenderMerge.cs:GpuRenderMergeCommand": {
+      "first": 269,
+      "last": 317,
+      "physical_lines": 49
+    },
+    "GpuDecoPackets.cs:CompileGpuPackets": {
+      "first": 83,
+      "last": 151,
+      "physical_lines": 69
+    },
+    "GpuDecoPackets.cs:GpuPacketCommand": {
+      "first": 384,
+      "last": 412,
+      "physical_lines": 29
+    },
+    "GpuDecoPackets.cs:TryGpuPacketRun": {
+      "first": 188,
+      "last": 248,
+      "physical_lines": 61
+    }
+  },
+  "files": {
+    "GpuDecoPlayer.cs": {
+      "physical_lines": 807,
+      "player_nonblank_lines": 656
+    },
+    "GpuDecoPerItemPrepare.cs": {
+      "physical_lines": 54,
+      "player_nonblank_lines": 51
+    },
+    "GpuDecoDirectTexturePrepare.cs": {
+      "physical_lines": 88,
+      "player_nonblank_lines": 85
+    },
+    "GpuDecoPreparation.cs": {
+      "physical_lines": 20,
+      "player_nonblank_lines": 18
+    },
+    "GpuDecoPlayerPolicy.cs": {
+      "physical_lines": 42,
+      "player_nonblank_lines": 41
+    },
+    "GpuDecoRecordStore.cs": {
+      "physical_lines": 28,
+      "player_nonblank_lines": 25
+    },
+    "GpuDecoScene.cs": {
+      "physical_lines": 248,
+      "player_nonblank_lines": 246
+    },
+    "DrawCollapsePolicy.cs": {
+      "physical_lines": 259,
+      "player_nonblank_lines": 229
+    },
+    "GpuDecoDrawCollapse.cs": {
+      "physical_lines": 215,
+      "player_nonblank_lines": 43
+    },
+    "GpuDecoDrawCollapseRenderer.cs": {
+      "physical_lines": 1499,
+      "player_nonblank_lines": 1276
+    },
+    "GpuDecoData.cs": {
+      "physical_lines": 216,
+      "player_nonblank_lines": 180
+    },
+    "GpuDecoGpu.cs": {
+      "physical_lines": 419,
+      "player_nonblank_lines": 411
+    },
+    "GpuDecoNativeBatch.cs": {
+      "physical_lines": 199,
+      "player_nonblank_lines": 193
+    },
+    "GpuDecoCopy.cs": {
+      "physical_lines": 203,
+      "player_nonblank_lines": 175
+    },
+    "GpuDecoAlphaPolicy.cs": {
+      "physical_lines": 13,
+      "player_nonblank_lines": 11
+    },
+    "GpuDecoScopePlan.cs": {
+      "physical_lines": 35,
+      "player_nonblank_lines": 32
+    },
+    "GpuDecoCopyMask.cs": {
+      "physical_lines": 42,
+      "player_nonblank_lines": 40
+    },
+    "GpuDecoResume.cs": {
+      "physical_lines": 67,
+      "player_nonblank_lines": 64
+    },
+    "GpuDecoRecovery.cs": {
+      "physical_lines": 249,
+      "player_nonblank_lines": 116
+    },
+    "GpuDecoPackets.cs": {
+      "physical_lines": 415,
+      "player_nonblank_lines": 410
+    },
+    "GpuDecoPacketTargets.cs": {
+      "physical_lines": 142,
+      "player_nonblank_lines": 139
+    },
+    "GpuDecoImageTimeline.cs": {
+      "physical_lines": 145,
+      "player_nonblank_lines": 142
+    },
+    "GpuDecoImagePlan.cs": {
+      "physical_lines": 158,
+      "player_nonblank_lines": 20
+    },
+    "GpuDecoImageVariants.cs": {
+      "physical_lines": 57,
+      "player_nonblank_lines": 54
+    },
+    "GpuDecoImagePlayback.cs": {
+      "physical_lines": 464,
+      "player_nonblank_lines": 348
+    },
+    "GpuDecoTrim.cs": {
+      "physical_lines": 124,
+      "player_nonblank_lines": 113
+    },
+    "GpuDecoActivation.cs": {
+      "physical_lines": 310,
+      "player_nonblank_lines": 108
+    },
+    "GpuDecoNativeAdopt.cs": {
+      "physical_lines": 651,
+      "player_nonblank_lines": 635
+    },
+    "GpuDecoExport.cs": {
+      "physical_lines": 2974,
+      "player_nonblank_lines": 1695
+    },
+    "GpuDecoRenderMerge.cs": {
+      "physical_lines": 320,
+      "player_nonblank_lines": 299
+    }
+  }
+}

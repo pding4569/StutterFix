@@ -724,6 +724,7 @@ namespace StutterFix
             }
             RequireLive(mode=="on" || mode=="off" || mode=="check","notify on|off|check|state|verify");
             RequireLive(!gpuLiveActive,"notify mode changes require inactive ownership");
+            GpuDecoPlayer.ConfigureBarrierNotifications(mode!="off");
             DrawCollapsePolicy.NotifyBarrierWatch=mode!="off";gpuNotifyOracle=mode=="check";
             gpuNotifyInitialized=false;gpuNotifyPending.Clear();
             gpuNotifyChecks=gpuNotifyComparisons=gpuNotifyMismatches=0;
