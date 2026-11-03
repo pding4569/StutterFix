@@ -39,6 +39,12 @@ def run(name,steps,gpu=0,wt='wt-partial',strict=True):
 
 def game(k):return 'game '+str(MAP/MAPS[k])
 
+def notify_cost():
+    for i,on in enumerate((False,True,True,False)):
+        run(f'cpu-notify-cost-{i}',['gpudeco drawcollapse notify '+('on' if on else 'off'),
+            game('exit').replace('game ','open ',1),'seek 90 8','waitsongpos 90 160','gpudeco cost reset',
+            'fpsmark start','waitsongpos 100 60','fpsmark end notify-cost','gpudeco cost','gpudeco live state'],1)
+
 mode=sys.argv[1]
 if mode=='windows':
     run('cpu-idle-oracle',[game('exit').replace('game ','open ',1),'idlefloor check','seek 90 8','waitsongpos 100 160',
@@ -56,10 +62,7 @@ elif mode=='admission':
     for k in ('exit','ar','wf'):
         run('cpu-admission-'+k,['gpudeco admission on',game(k),'press','waitsongpos 20 120','gpudeco live state'],1)
 elif mode=='notifycost':
-    for i,on in enumerate((False,True,True,False)):
-        run(f'cpu-notify-cost-{i}',['gpudeco drawcollapse notify '+('on' if on else 'off'),
-            game('exit').replace('game ','open ',1),'seek 90 8','waitsongpos 90 160','gpudeco cost reset',
-            'fpsmark start','waitsongpos 100 60','fpsmark end notify-cost','gpudeco cost','gpudeco live state'],1)
+    notify_cost()
 elif mode=='profiles':
     for k in ('ar','wf'):
         run('cpu-profile-'+k,[game(k),'press','waitsongpos 20 120','gpudeco live state'],1)
@@ -74,7 +77,10 @@ elif mode=='pixel':
     run('cpu-ar262-cand',steps,1,'wt-cand')
 elif mode=='notify':
     MAPS['dd']='DDONGSSADA3302 asansis remake/level.adofai'
+    passed=[]
     for k in ('exit','ar','dd'):
-        run('cpu-notify-fixed-'+k,['gpudeco drawcollapse notify check',game(k),'press','waitend 1200',
-            'gpudeco drawcollapse notify state','gpudeco drawcollapse notify verify'],1,strict=False)
+        passed.append(run('cpu-notify-fixed-'+k,['gpudeco drawcollapse notify check',game(k),'press','waitend 1200',
+            'gpudeco drawcollapse notify state','gpudeco drawcollapse notify verify'],1,strict=False))
+    if all(passed):notify_cost()
+    else:print('NOTIFY_COST_SKIPPED semantic gate failed',flush=True)
 else:raise SystemExit('windows|pixel|notify')

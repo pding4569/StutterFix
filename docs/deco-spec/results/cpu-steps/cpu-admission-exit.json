@@ -1,0 +1,21 @@
+{
+  "tag": "cpu-admission-exit",
+  "timeout_min": 25,
+  "settings": {
+    "GpuDeco": 1,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 1200",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "gpudeco admission on",
+    "game D:\\얼불춤 맵 파일\\Exit from ship\\Exit from SHiP_T2_.adofai",
+    "press",
+    "waitsongpos 20 120",
+    "gpudeco live state",
+    "quit"
+  ]
+}

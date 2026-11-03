@@ -1,0 +1,21 @@
+{
+  "tag": "cpu-admission-ar",
+  "timeout_min": 25,
+  "settings": {
+    "GpuDeco": 1,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 1200",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "gpudeco admission on",
+    "game D:\\얼불춤 맵 파일\\Arche\\[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai",
+    "press",
+    "waitsongpos 20 120",
+    "gpudeco live state",
+    "quit"
+  ]
+}
