@@ -1,0 +1,6 @@
+[StutterFix] [GPU 장식] PREFLIGHT candidate_upper=3378 remaining_renderers=6351 admit=False cost_model=UNVERIFIED before_collection=True
+[StutterFix] [GPU 장식] 건너뜀: gpudeco G2: 초기 지원 장식이 남는 렌더러보다 적음
+[StutterFix] [자동 시험] [FPS 구간] round01-exit-1-g1 : 305.9 FPS (3058프레임 10.00초) | 표본 없음
+[StutterFix] [framecmp] diff GPU CPU threshold=3 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] framecmp RESULT noise_out=NA aa2_out=NA ab_out=0 ctl_order=NA ctl_hide=NA
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다

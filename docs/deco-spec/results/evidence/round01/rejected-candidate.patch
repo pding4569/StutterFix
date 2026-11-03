@@ -1,0 +1,43 @@
+diff --git a/GpuDecoPlayer.cs b/GpuDecoPlayer.cs
+index bb6fb3d..7f84a95 100644
+--- a/GpuDecoPlayer.cs
++++ b/GpuDecoPlayer.cs
+@@ -498,6 +498,7 @@ namespace StutterFix
+             // 파괴된 장식(맵을 다시 불러온 경우) 항목은 정리한다. 살아 있는 것은 처음 Setup 기록을 그대로 쓴다.
+             int deadCount = 0;
+             if (initial.Count > 0) { var dead = initial.Keys.Where(k => !k).ToArray(); deadCount = dead.Length; foreach (var k in dead) initial.Remove(k); }
++            CheckGpuPreparationDominance();
+             bool cacheCandidate = gpuLivePrepared && !gpuRecoveryBlocked && gpuLastRestoreComplete && gpuLiveSlices.Count > 0 && gpuScope != null && gpuScope.WholeSong
+                 && gpuPreparedHash != 0 && gpuLiveManager == manager && manager == scrDecorationManager.instance;
+             if (!cacheCandidate) { if (gpuLivePrepared || gpuLiveSlices.Count > 0) DisposeGpuLive(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
+diff --git a/GpuDecoPreparation.cs b/GpuDecoPreparation.cs
+index 8799b7a..2b7222b 100644
+--- a/GpuDecoPreparation.cs
++++ b/GpuDecoPreparation.cs
+@@ -3,6 +3,26 @@ namespace StutterFix
+ {
+     internal static partial class DecoBake
+     {
++#if DEV || AUTOTEST || GPUDECO
++        // Experimental operation-count hypothesis, not a measured cost model.
++        // Initial eligibility is an upper bound: scheduled events can demote it.
++        // Reject before collecting events, building tracks or allocating GPU data.
++        static void CheckGpuPreparationDominance()
++        {
++            var candidates=new System.Collections.Generic.HashSet<UnityEngine.Renderer>();
++            foreach(var pair in initial)
++                if(pair.Key && pair.Value.Reasons.Count==0 && pair.Key is scrVisualDecoration d && d.spriteRenderer)
++                    candidates.Add(d.spriteRenderer);
++            int remaining=0;
++            foreach(var r in UnityEngine.Object.FindObjectsByType<UnityEngine.Renderer>(
++                UnityEngine.FindObjectsInactive.Exclude,UnityEngine.FindObjectsSortMode.None))
++                if(!candidates.Contains(r))remaining++;
++            bool admit=candidates.Count>=GpuDecoPlayerPolicy.MinimumOwned && candidates.Count>remaining;
++            Main.Entry.Logger.Log("[GPU 장식] PREFLIGHT candidate_upper="+candidates.Count
++                +" remaining_renderers="+remaining+" admit="+admit+" cost_model=UNVERIFIED before_collection=True");
++            RequireLive(admit,"초기 지원 장식이 남는 렌더러보다 적음");
++        }
++#endif
+         // Run after all row demotions, before allocating slices or consuming Data.
+         // An empty slice intentionally has no Data; it is not a preparation fault.
+         static bool AcceptGpuOwnedCount(int owned)

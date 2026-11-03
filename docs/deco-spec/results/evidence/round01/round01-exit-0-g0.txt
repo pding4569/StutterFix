@@ -1,0 +1,2 @@
+[StutterFix] [자동 시험] [FPS 구간] round01-exit-0-g0 : 304.0 FPS (3041프레임 10.00초) | 표본 없음
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다

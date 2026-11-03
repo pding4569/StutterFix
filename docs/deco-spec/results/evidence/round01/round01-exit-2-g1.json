@@ -1,0 +1,32 @@
+{
+  "steps": [
+    "timeout 400",
+    "wait 2",
+    "auto on",
+    "game D:/얼불춤 맵 파일/Exit from ship/Exit from SHiP_T2_.adofai",
+    "press",
+    "waitsongpos 90 240",
+    "fpsmark start",
+    "waitsongpos 100 60",
+    "fpsmark end round01-exit-2-g1",
+    "pause",
+    "wait 0.2",
+    "framecmp filters on",
+    "framecmp ui exclude",
+    "framecmp mask none",
+    "framecmp grab GPU",
+    "gpudeco live off",
+    "wait 0.2",
+    "framecmp grab CPU",
+    "framecmp diff GPU CPU 3 png",
+    "resume",
+    "quit"
+  ],
+  "settings": {
+    "GpuDeco": 1,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "timeout_min": 10,
+  "tag": "round01-exit-2-g1"
+}

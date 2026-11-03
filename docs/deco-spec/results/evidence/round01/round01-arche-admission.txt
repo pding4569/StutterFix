@@ -1,0 +1,2 @@
+[StutterFix] [GPU 장식] PREFLIGHT candidate_upper=28714 remaining_renderers=33134 admit=False cost_model=UNVERIFIED before_collection=True
+[StutterFix] [GPU 장식] 건너뜀: gpudeco G2: 초기 지원 장식이 남는 렌더러보다 적음

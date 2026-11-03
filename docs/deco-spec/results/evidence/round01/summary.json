@@ -1,0 +1,61 @@
+{
+  "base_commit": "df390b6",
+  "candidate": "initial image population dominates other scene renderers",
+  "decision": "REJECTED; beneficial workload also rejected; source reverted",
+  "window_song_s": [
+    90,
+    100
+  ],
+  "run_count": 4,
+  "admission_only_count": 1,
+  "runs": [
+    {
+      "tag": "round01-exit-0-g0",
+      "setting": 0,
+      "fps": 304.0,
+      "ms_from_rounded_fps": 3.289473684210526,
+      "raw_log": "E:\\StutterFixWork\\night-results\\round01-exit-0-g0.log",
+      "raw_sha256": "9188c4ed4c38020caf4307dca234dc357e768f2d6a4442be059d998b0c983a6b",
+      "gpu_active": false
+    },
+    {
+      "tag": "round01-exit-1-g1",
+      "setting": 1,
+      "fps": 305.9,
+      "ms_from_rounded_fps": 3.2690421706440014,
+      "raw_log": "E:\\StutterFixWork\\night-results\\round01-exit-1-g1.log",
+      "raw_sha256": "ce9811b9088f439e0e4eedb26f017b515b61bf75b5b05a243e8c25ca3f87c434",
+      "gpu_active": false
+    },
+    {
+      "tag": "round01-exit-2-g1",
+      "setting": 1,
+      "fps": 305.4,
+      "ms_from_rounded_fps": 3.274394237066143,
+      "raw_log": "E:\\StutterFixWork\\night-results\\round01-exit-2-g1.log",
+      "raw_sha256": "52e37f89a9498487cde68a0fc1bfb60dc707b86ffe91269d0ba8dee92a4acce5",
+      "gpu_active": false
+    },
+    {
+      "tag": "round01-exit-3-g0",
+      "setting": 0,
+      "fps": 307.8,
+      "ms_from_rounded_fps": 3.248862897985705,
+      "raw_log": "E:\\StutterFixWork\\night-results\\round01-exit-3-g0.log",
+      "raw_sha256": "6f1d29f72c7182e0c36b64cc7482abb1a9f4378ffbcb6887b61a18140c04ddaa",
+      "gpu_active": false
+    }
+  ],
+  "arche_log_sha256": "f4c4ced7f28620f95cac186d5405324845c2781e796e54159672ea4a02cfdd81",
+  "integrity": {
+    "installed_sha256": "b0efe68d6ccce3217310da0ad65cba4048c19d2d25f738c97f14d7822898c795",
+    "restore_sha256": "b0efe68d6ccce3217310da0ad65cba4048c19d2d25f738c97f14d7822898c795",
+    "gpuprobe_present": false,
+    "GpuDeco": 0
+  },
+  "off_mean_ms": 3.2691682910981155,
+  "candidate_mean_ms": 3.2717182038550723,
+  "pixel_scope": "two frozen CPU-path self comparisons after early rejection; not GPU parity proof",
+  "default_GpuDeco": 0,
+  "six_map_classifier_complete": false
+}
