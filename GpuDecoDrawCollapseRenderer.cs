@@ -73,6 +73,7 @@ namespace StutterFix
         }
         static void DisposeDrawCollapse()
         {
+            gpuNotifyRow.Clear();gpuNotifyPending.Clear();gpuNotifyWork.Clear();gpuNotifyInitialized=false;
             InvalidateRecordedCollapse();
             HideDrawCollapse();
             DestroyBarrierClones();
@@ -329,6 +330,7 @@ namespace StutterFix
         // Dormancy 가 이미 거는 장식 후크(ApplyColor/SetVisible/SetMaskingType/EnableMeshRenderer/Setup/Awake)와 SetDepth 후크에서 부른다.
         internal static void CollapseMarkDirty(scrDecoration d)
         {
+            if(DrawCollapsePolicy.NotifyBarrierWatch)CollapseNotifyBarrier(d);
             var vd=d as scrVisualDecoration;if(vd==null)return;
             if(vd.spriteRenderer)gpuCollapseDirtyIds.Add(vd.spriteRenderer.GetInstanceID());
             if(vd.meshRenderer)gpuCollapseDirtyIds.Add(vd.meshRenderer.GetInstanceID());
@@ -545,9 +547,25 @@ namespace StutterFix
         // 미리 만든 계획을 그대로 쓸 때: 포함/폴백 배열은 그 계획과 짝이므로 두고, 지난 판의 동적 기록만 지운다.
         static void ClearCollapseDynamicState()
         {
+            gpuNotifyInitialized=false;gpuNotifyPending.Clear();
             gpuDynExcludedItems.Clear();gpuDynZero=null;gpuBarrierWatch.Clear();gpuBarrierChecked.Clear();gpuDynExcludedSpans=0;gpuSpanCausers.Clear();gpuBarrierCauses.Clear();gpuBucketMembers.Clear();gpuBucketDirty.Clear();
         }
         static readonly List<GpuLiveRow> gpuWatchRows=new List<GpuLiveRow>();
+        static readonly Dictionary<int,int> gpuNotifyRow=new Dictionary<int,int>();
+        static readonly HashSet<int> gpuNotifyPending=new HashSet<int>();
+        static readonly List<int> gpuNotifyWork=new List<int>();
+        static int gpuNotifyAuditFrame;
+        static bool gpuNotifyInitialized;
+#if AUTOTEST
+        static bool gpuNotifyOracle;
+        static long gpuNotifyComparisons,gpuNotifyMismatches,gpuNotifyChecks;
+#endif
+        internal static void CollapseNotifyBarrier(scrDecoration d)
+        {
+            var vd=d as scrVisualDecoration;if(!vd)return;
+            if(vd.spriteRenderer && gpuNotifyRow.TryGetValue(vd.spriteRenderer.GetInstanceID(),out int a))gpuNotifyPending.Add(a);
+            if(vd.meshRenderer && gpuNotifyRow.TryGetValue(vd.meshRenderer.GetInstanceID(),out int b))gpuNotifyPending.Add(b);
+        }
         static (int,float,int,int)[] gpuWatchSig;
         static bool[] gpuWatchActive;
         static (int,int,int,int)[] gpuWatchBucket;
@@ -589,6 +607,8 @@ namespace StutterFix
 #if AUTOTEST
             Main.Entry.Logger.Log("[GPU 장식] 감시 장벽 "+n+"개(비소유 장식 렌더러 + 구간 묶음의 장벽), 구간 묶음 "+gpuSpansByBucket.Count+"개");
 #endif
+            gpuNotifyRow.Clear();gpuNotifyPending.Clear();gpuNotifyInitialized=false;
+            for(int w=0;w<n;w++)if(gpuWatchRows[w].R)gpuNotifyRow[gpuWatchRows[w].R.GetInstanceID()]=w;
         }
         // SetDepth 후크(제품에도 설치)에서 부른다: 깊이가 바뀐 장식이 장벽이면 감시 목록에 넣는다.
         internal static void GpuDepthChanged(scrVisualDecoration d)
@@ -608,15 +628,45 @@ namespace StutterFix
         static void DynamicOrderTick()
         {
             if(gpuWatchRows.Count==0 || !gpuCollapseOn)return;
-            if(Time.frameCount-gpuDynTickFrame<8)return;
+            bool notify=DrawCollapsePolicy.NotifyBarrierWatch;
+            bool legacyDue=Time.frameCount-gpuDynTickFrame>=8;
+            if(!notify && !legacyDue)return;
+            bool audit=!gpuNotifyInitialized || Time.frameCount-gpuNotifyAuditFrame>=64;
+#if AUTOTEST
+            bool oracle=notify && gpuNotifyOracle && legacyDue;
+#endif
+            if(legacyDue)
             gpuDynTickFrame=Time.frameCount;
 #if AUTOTEST
             gpuDynTickCount++;
 #endif
             var cam=gpuLiveCamera;if(!cam)return;
+            if(notify && audit){gpuNotifyAuditFrame=Time.frameCount;gpuNotifyInitialized=true;}
             float shift=Vector3.Dot(cam.transform.position-gpuCollapseCameraPosition,gpuCollapseCameraForward);
-            for(int w=0;w<gpuWatchRows.Count;w++)
+            gpuNotifyWork.Clear();
+            if(notify && !audit)foreach(int w in gpuNotifyPending)gpuNotifyWork.Add(w);
+            // Consume before applying changes: any reentrant notification is
+            // retained for the next dispatch rather than cleared afterwards.
+            gpuNotifyPending.Clear();
+#if AUTOTEST
+            if(oracle)for(int w=0;w<gpuWatchRows.Count;w++)
             {
+                if(!audit && !gpuNotifyWork.Contains(w))
+                {
+                    // Read the legacy signature in this exact dispatch, before
+                    // touching caches/buckets. A miss stops this candidate.
+                    gpuNotifyComparisons++;
+                    if(NotifyLegacyChanged(w))gpuNotifyMismatches++;
+                }
+            }
+#endif
+            int workCount=!notify || audit?gpuWatchRows.Count:gpuNotifyWork.Count;
+            for(int nw=0;nw<workCount;nw++)
+            {
+                int w=!notify || audit?nw:gpuNotifyWork[nw];
+#if AUTOTEST
+                if(notify)gpuNotifyChecks++;
+#endif
                 var row=gpuWatchRows[w];var r=row.R;if(!r)continue;
                 if(!DrawCollapseBarrierActive(row)){if(gpuWatchActive[w]){gpuWatchActive[w]=false;gpuWatchSig[w]=default;WatchRemove(w);}continue;}
                 int id=r.GetInstanceID();
@@ -642,10 +692,44 @@ namespace StutterFix
                 if(!gpuBucketMembers.TryGetValue(nb,out var members)){members=new HashSet<int>();gpuBucketMembers[nb]=members;}
                 members.Add(w);gpuBucketDirty.Add(nb);
             }
+#if AUTOTEST
+            if(notify && gpuNotifyOracle && gpuNotifyMismatches>0)
+                throw new InvalidOperationException("notify barrier oracle mismatch="+gpuNotifyMismatches);
+#endif
             if(gpuBucketDirty.Count==0)return;
             foreach(var key in gpuBucketDirty)ReclassifyBucket(key);
             gpuBucketDirty.Clear();
         }
+#if AUTOTEST
+        static bool NotifyLegacyChanged(int w)
+        {
+            var row=gpuWatchRows[w];var r=row.R;if(!r)return false; // legacy also skips destroyed rows
+            bool active=DrawCollapseBarrierActive(row);
+            if(!active)return gpuWatchActive[w];
+            Material mat;if(!gpuBarrierCloneOrig.TryGetValue(r.GetInstanceID(),out mat) || !mat)mat=DrawCollapseMaterial(row);
+            if(!mat)return false;
+            return !gpuWatchActive[w] || !gpuWatchSig[w].Equals((r.sortingOrder,r.transform.position.z,mat.GetInstanceID(),r.sortingLayerID));
+        }
+        static bool NotifyBarrierCommand(string sub)
+        {
+            if(!sub.StartsWith("notify ",StringComparison.Ordinal))return false;
+            string mode=sub.Substring(7);
+            if(mode=="state" || mode=="verify")
+            {
+                GpuLog("BARRIER_NOTIFY enabled="+DrawCollapsePolicy.NotifyBarrierWatch+" oracle="+gpuNotifyOracle
+                    +" checks="+gpuNotifyChecks+" comparisons="+gpuNotifyComparisons+" mismatches="+gpuNotifyMismatches);
+                if(mode=="verify")RequireLive(DrawCollapsePolicy.NotifyBarrierWatch && gpuNotifyOracle
+                    && gpuNotifyComparisons>0 && gpuNotifyMismatches==0,"notify oracle absent or mismatched");
+                return true;
+            }
+            RequireLive(mode=="on" || mode=="off" || mode=="check","notify on|off|check|state|verify");
+            RequireLive(!gpuLiveActive,"notify mode changes require inactive ownership");
+            DrawCollapsePolicy.NotifyBarrierWatch=mode!="off";gpuNotifyOracle=mode=="check";
+            gpuNotifyInitialized=false;gpuNotifyPending.Clear();
+            gpuNotifyChecks=gpuNotifyComparisons=gpuNotifyMismatches=0;
+            GpuLog("BARRIER_NOTIFY mode="+mode+" measured=False");return true;
+        }
+#endif
         // 묶음의 켜진 장벽 집합으로 구간마다 상태를 정한다: 가르거나 앞뒤 양쪽이면 독립 렌더러, 앞쪽에만 있으면 거리 보정, 아니면 그대로.
         static void ReclassifyBucket(in (int,int,int,int) key)
         {

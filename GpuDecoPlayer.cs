@@ -50,6 +50,14 @@ namespace StutterFix
                 hooks.Patch(update, prefix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(BeforeControllerUpdate)) { priority = Priority.First });
                 var depth = AccessTools.Method(typeof(scrVisualDecoration), "SetDepth");
                 if (depth != null) hooks.Patch(depth, postfix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(DepthChanged)));
+                // Independent of Dormancy's DEV-only notifications. Patch every
+                // overload; the product owner removes these on Shutdown.
+                foreach (var type in new[] { typeof(scrVisualDecoration), typeof(scrDecoration) })
+                    foreach (var method in AccessTools.GetDeclaredMethods(type))
+                        if (!method.IsAbstract && (method.Name == "UpdatePosition" || method.Name == "SetSprite"
+                            || method.Name == "ApplyColor" || method.Name == "SetVisible"
+                            || method.Name == "SetMaskingType" || method.Name == "EnableMeshRenderer"))
+                            hooks.Patch(method, postfix: new HarmonyMethod(typeof(GpuDecoPlayer), nameof(BarrierChanged)));
                 // These hooks own the product lifetime independently of other modules.
                 foreach (var pair in new[] {
                     (typeof(scrController), "FailAction"), (typeof(scrController), "Fail2Action"),
@@ -67,7 +75,10 @@ namespace StutterFix
             catch (Exception e) { Skip(e.Message); Shutdown(); }
         }
 
-        static void DepthChanged(scrVisualDecoration __instance) { if (Product) DecoBake.GpuDepthChanged(__instance); }
+        static void BarrierChanged(scrDecoration __instance)
+        { if (Product && DrawCollapsePolicy.NotifyBarrierWatch) DecoBake.CollapseNotifyBarrier(__instance); }
+        static void DepthChanged(scrVisualDecoration __instance)
+        { if (Product) { DecoBake.GpuDepthChanged(__instance); BarrierChanged(__instance); } }
         static void SceneChanged(UnityEngine.SceneManagement.Scene oldScene, UnityEngine.SceneManagement.Scene newScene) => End("화면 전환");
         static void Ending(MethodBase __originalMethod) => End(__originalMethod.Name);
 
