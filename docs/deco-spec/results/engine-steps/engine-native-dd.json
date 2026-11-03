@@ -1,0 +1,24 @@
+{
+  "tag": "engine-native-dd",
+  "timeout_min": 15,
+  "settings": {
+    "GpuDeco": 0,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 900",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "game D:/얼불춤 맵 파일/DDONGSSADA3302 asansis remake/level.adofai",
+    "press",
+    "waitsongpos 47 400",
+    "phasewindow on",
+    "profsamp begin 1000 native",
+    "wait 15",
+    "profsamp end frames",
+    "wait 1",
+    "quit"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "tag": "engine-phase-dd-deco-image",
+  "timeout_min": 15,
+  "settings": {
+    "GpuDeco": 0,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 900",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "game D:/얼불춤 맵 파일/DDONGSSADA3302 asansis remake/level.adofai",
+    "press",
+    "waitsongpos 47 400",
+    "phasewindow on",
+    "gpusplit hide deco-image",
+    "gpusplit state",
+    "gpuprobe on",
+    "waitsongpos 50 60",
+    "gpuprobe reset",
+    "phasewindow begin",
+    "fpsmark start",
+    "waitsongpos 65 60",
+    "fpsmark end engine",
+    "phasewindow end",
+    "gpuprobe state",
+    "gpuprobe off",
+    "phasewindow off",
+    "gpusplit off",
+    "quit"
+  ]
+}

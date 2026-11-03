@@ -8,14 +8,15 @@ using System.Threading;
 
 namespace StutterFix
 {
-    // (자동 시험 profsamp begin [hz] / end) 메인 스레드 표본 프로파일러. 함수에 계측을 넣지 않아 비용이 부풀지 않는다.
+    // (profsamp begin [hz] [native] / end) 명시적 진단 전용. 스레드 정지와
+    // 스택 풀기 비용이 있으므로 이 판의 FPS를 성능 비교에 사용하지 않는다.
     //   다른 스레드가 일정 간격으로 메인 스레드를 잠깐 멈추고(SuspendThread) 명령어 위치(RIP)와 프레임 포인터(RBP) 체인의 반환 주소를 미리 잡아 둔 배열에 저장한 뒤 바로 재개한다.
     //   (멈춘 동안에는 할당·잠금이 필요한 일을 하지 않는다: 메인 스레드가 힙/GC 잠금을 쥔 채 멈췄을 수 있다.)
     //   끝낸 뒤에 주소를 Mono JIT 정보(mono_jit_info_table_find)로 관리 함수 이름으로 풀고, 아니면 네이티브 모듈+RVA 로 묶어 상위를 보고한다.
     //   리프(바로 그 순간 실행 중인 함수)와 포함(스택에 한 번이라도 있는 함수) 두 가지.
     internal static class ProfSamp
     {
-        private const int MaxSamples = 40000, Depth = 12;
+        private const int MaxSamples = 40000, Depth = 32;
         private static ulong[] ips;       // MaxSamples * Depth, 0 이면 끝
         private static int count;
         private static volatile bool run;
@@ -23,6 +24,15 @@ namespace StutterFix
         private static IntPtr mainHandle;
         private static long t0, t1;
         private static int hzUsed;
+        private static bool nativeUnwind;
+        private struct ImageRange { internal ulong Start, End; }
+        private static ImageRange[] images;
+        private static long nativeFrames;
+        private static string failure;
+        [DllImport("kernel32.dll")] private static extern void RtlCaptureContext(IntPtr context);
+        [DllImport("kernel32.dll")] private static extern IntPtr RtlLookupFunctionEntry(ulong pc, out ulong imageBase, IntPtr history);
+        [DllImport("kernel32.dll")] private static extern IntPtr RtlVirtualUnwind(uint flags, ulong imageBase, ulong pc,
+            IntPtr entry, IntPtr context, out IntPtr handlerData, out ulong establisher, IntPtr contextPointers);
 
         [DllImport("kernel32.dll")] private static extern IntPtr OpenThread(uint access, bool inherit, uint id);
         [DllImport("kernel32.dll")] private static extern uint GetCurrentThreadId();
@@ -41,7 +51,21 @@ namespace StutterFix
         internal static string Begin(string arg)
         {
             if (run) return "이미 도는 중";
-            int hz = 1000; int.TryParse((arg ?? "").Trim(), out hz); if (hz < 50 || hz > 4000) hz = 1000; hzUsed = hz;
+            var args = (arg ?? "").Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+            if (args.Length > 2 || (args.Length == 2 && args[1] != "native"))
+                throw new ArgumentException("profsamp begin [hz] [native]");
+            int hz = 1000; if (args.Length > 0) int.TryParse(args[0], out hz); if (hz < 50 || hz > 4000) hz = 1000; hzUsed = hz;
+            nativeUnwind = args.Length == 2 && args[1] == "native";
+            nativeFrames = 0; failure = null;
+            // Resolve modules while the target is running. Never enter Mono/JIT
+            // function-table callbacks or enumerate modules with it suspended.
+            var ranges = new List<ImageRange>();
+            if (nativeUnwind)
+                using (var process = Process.GetCurrentProcess())
+                    foreach (ProcessModule module in process.Modules)
+                        ranges.Add(new ImageRange { Start = (ulong)module.BaseAddress.ToInt64(),
+                            End = (ulong)module.BaseAddress.ToInt64() + (ulong)module.ModuleMemorySize });
+            images = ranges.ToArray();
             ips = new ulong[MaxSamples * Depth]; count = 0;
             uint tid = GetCurrentThreadId();
             mainHandle = OpenThread(0x0002 | 0x0008 | 0x0040, false, tid);   // SUSPEND_RESUME | GET_CONTEXT | QUERY_INFORMATION
@@ -49,7 +73,48 @@ namespace StutterFix
             run = true; t0 = Stopwatch.GetTimestamp();
             thread = new Thread(Loop) { IsBackground = true, Priority = ThreadPriority.AboveNormal, Name = "StutterFix.ProfSamp" };
             thread.Start();
-            return "시작 (" + hz + "Hz, 메인 스레드 " + tid + ")";
+            return "시작 (" + hz + "Hz, 메인 스레드 " + tid + ", native_unwind=" + nativeUnwind + ")";
+        }
+
+        private static bool NativeImage(ulong pc)
+        {
+            for (int i = 0; i < images.Length; i++)
+                if (pc >= images[i].Start && pc < images[i].End) return true;
+            return false;
+        }
+
+        private static void CaptureNative(IntPtr ctx, int offset)
+        {
+            ulong firstSp = (ulong)Marshal.ReadInt64(ctx, 0x98);
+            for (int d = 0; d < Depth; d++)
+            {
+                ulong pc = (ulong)Marshal.ReadInt64(ctx, 0xF8), sp = (ulong)Marshal.ReadInt64(ctx, 0x98);
+                if (pc < 0x10000 || sp < firstSp || sp - firstSp >= (1UL << 20) || (sp & 7) != 0) break;
+                ips[offset + d] = pc;
+                if (NativeImage(pc))
+                {
+                    var entry = RtlLookupFunctionEntry(pc, out ulong imageBase, IntPtr.Zero);
+                    if (entry != IntPtr.Zero)
+                    {
+                        RtlVirtualUnwind(0, imageBase, pc, entry, ctx, out _, out _, IntPtr.Zero);
+                        nativeFrames++;
+                    }
+                    else // Native leaf: the return address is at RSP.
+                    {
+                        Marshal.WriteInt64(ctx, 0xF8, Marshal.ReadInt64((IntPtr)(long)sp));
+                        Marshal.WriteInt64(ctx, 0x98, (long)(sp + 8));
+                    }
+                }
+                else // Mono's existing frame-pointer convention; do not guess JIT unwind tables.
+                {
+                    ulong bp = (ulong)Marshal.ReadInt64(ctx, 0xA0);
+                    if (bp < sp || bp - firstSp >= (1UL << 20) - 16 || (bp & 7) != 0) break;
+                    Marshal.WriteInt64(ctx, 0xF8, Marshal.ReadInt64((IntPtr)(long)(bp + 8)));
+                    Marshal.WriteInt64(ctx, 0x98, (long)(bp + 16));
+                    Marshal.WriteInt64(ctx, 0xA0, Marshal.ReadInt64((IntPtr)(long)bp));
+                }
+                if ((ulong)Marshal.ReadInt64(ctx, 0x98) <= sp) break;
+            }
         }
 
         private static void Loop()
@@ -59,30 +124,40 @@ namespace StutterFix
             long period = Stopwatch.Frequency / hzUsed; long next = Stopwatch.GetTimestamp();
             try
             {
+                // Warm the JIT and P/Invoke wrappers on this worker's own stack
+                // before suspending the main thread. Discard this warmup sample.
+                if (nativeUnwind)
+                {
+                    RtlCaptureContext(ctx); CaptureNative(ctx, 0);
+                    Array.Clear(ips, 0, Depth); nativeFrames = 0;
+                }
                 while (run && count < MaxSamples)
                 {
                     next += period;
                     while (Stopwatch.GetTimestamp() < next) { Thread.SpinWait(50); if (!run) break; }
                     if (!run) break;
                     if (SuspendThread(mainHandle) == 0xFFFFFFFF) continue;
-                    // 멈춘 동안: 컨텍스트를 읽고 RBP 체인을 따라 반환 주소만 배열에 복사 (할당·잠금 금지)
-                    Marshal.WriteInt32(ctx, 0x30, 0x10003);   // CONTEXT_CONTROL | CONTEXT_INTEGER
-                    bool ok = GetThreadContext(mainHandle, ctx);
-                    if (ok)
+                    try
                     {
-                        int b = count * Depth; ulong rip = (ulong)Marshal.ReadInt64(ctx, 0xF8), rsp = (ulong)Marshal.ReadInt64(ctx, 0x98), rbp = (ulong)Marshal.ReadInt64(ctx, 0xA0);
-                        ips[b] = rip; int d = 1;
-                        while (d < Depth && rbp > rsp && rbp - rsp < (1UL << 20) && (rbp & 7) == 0)
+                        Marshal.WriteInt32(ctx, 0x30, 0x1000B);   // CONTEXT_FULL (x64)
+                        if (GetThreadContext(mainHandle, ctx))
                         {
-                            ulong ret = (ulong)Marshal.ReadInt64((IntPtr)(long)(rbp + 8)); ulong nbp = (ulong)Marshal.ReadInt64((IntPtr)(long)rbp);
-                            if (ret < 0x10000) break; ips[b + d++] = ret;
-                            if (nbp <= rbp) break; rbp = nbp;
+                            if (nativeUnwind) { CaptureNative(ctx, count * Depth); count++; continue; }
+                            int b = count * Depth; ulong rip = (ulong)Marshal.ReadInt64(ctx, 0xF8), rsp = (ulong)Marshal.ReadInt64(ctx, 0x98), rbp = (ulong)Marshal.ReadInt64(ctx, 0xA0);
+                            ips[b] = rip; int d = 1;
+                            while (d < Depth && rbp > rsp && rbp - rsp < (1UL << 20) && (rbp & 7) == 0)
+                            {
+                                ulong ret = (ulong)Marshal.ReadInt64((IntPtr)(long)(rbp + 8)); ulong nbp = (ulong)Marshal.ReadInt64((IntPtr)(long)rbp);
+                                if (ret < 0x10000) break; ips[b + d++] = ret;
+                                if (nbp <= rbp) break; rbp = nbp;
+                            }
+                            count++;
                         }
-                        count++;
                     }
-                    ResumeThread(mainHandle);
+                    finally { ResumeThread(mainHandle); }
                 }
             }
+            catch (Exception ex) { failure = ex.GetType().Name + ": " + ex.Message; run = false; }
             finally { Marshal.FreeHGlobal(raw); }
         }
 
@@ -177,6 +252,8 @@ namespace StutterFix
                 try { System.IO.File.WriteAllText(System.IO.Path.Combine(framesDir, "profsamp-frames.txt"), fb.ToString()); } catch { }
             }
             var sbo = new StringBuilder();
+            sbo.Append("native_unwind=").Append(nativeUnwind).Append(" native_frames=").Append(nativeFrames).Append(" max_depth=").Append(Depth).Append('\n');
+            if (failure != null) sbo.Append("sampling_error=").Append(failure).Append('\n');
             sbo.Append("표본 ").Append(count).Append("개 / ").Append(secs.ToString("F1")).Append("초 (").Append(hzUsed).Append("Hz 요청), 관리 코드 리프 ").Append((100.0 * managedLeaf / Math.Max(1, count)).ToString("F1")).Append("%\n");
             sbo.Append("[네이티브 모듈별 리프] ");
             foreach (var kv in Top(mod, 8)) sbo.Append(kv.Key).Append(' ').Append((100.0 * kv.Value / count).ToString("F1")).Append("%, ");
@@ -192,7 +269,7 @@ namespace StutterFix
                 foreach (var c in Top(callers[kv.Key], 3)) sbo.Append(c.Key).Append(' ').Append((100.0 * c.Value / count).ToString("F1")).Append("%; ");
                 sbo.Append("\n  ");
             }
-            ips = null; count = 0; cache.Clear();
+            ips = null; images = null; count = 0; cache.Clear();
             return sbo.ToString();
         }
         private static List<KeyValuePair<string, int>> Top(Dictionary<string, int> d, int n)
