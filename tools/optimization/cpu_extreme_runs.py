@@ -22,7 +22,7 @@ def run(name,steps,gpu=0,wt='wt-partial'):
     evidence={'dll_sha256':sha(artifact),'worktree':wt,'spec':str(f)}
     print('RUN',name,flush=True)
     result=subprocess.run([sys.executable,str(ROOT/'run_locked.py'),str(f),wt,name,'--keys',
-        'FPS 구간,fixture,단계 실패,BARRIER_NOTIFY,live_state,idlefloor,framecmp,diff,assertzero,effect_exception,원본 처리로 복귀',
+        'FPS 구간,fixture,단계 실패,BARRIER_NOTIFY,live_state,idlefloor,holdreads,framecmp,diff,assertzero,effect_exception,원본 처리로 복귀',
         '--tail','5'],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',errors='replace')
     print(result.stdout,flush=True)
     if result.stderr:print(result.stderr[-500:],flush=True)
@@ -34,27 +34,32 @@ def run(name,steps,gpu=0,wt='wt-partial'):
         step_failure=not log.exists() or '단계 실패' in log.read_text(encoding='utf-8',errors='replace'))
     (OUT/(name+'.integrity.json')).write_text(json.dumps(evidence,indent=2),encoding='utf-8')
     assert evidence['restored_dll'] and evidence['probe_absent'] and evidence['gpu_default_zero'],evidence
+    assert not evidence['step_failure'], 'step failure: '+name
     return not evidence['step_failure']
 
 def game(k):return 'game '+str(MAP/MAPS[k])
 
 mode=sys.argv[1]
 if mode=='windows':
-    run('cpu-idle-oracle',[game('exit'),'idlefloor check','seek 90 8','waitsongpos 100 160',
+    run('cpu-idle-oracle',[game('exit').replace('game ','open ',1),'idlefloor check','seek 90 8','waitsongpos 100 160',
         'idlefloor verify','idlefloor state'])
     for i,on in enumerate((False,True,True,False)):
-        run(f'cpu-idle-exit-{i}',[game('exit'),'idlefloor '+('on' if on else 'off'),'seek 90 8',
+        run(f'cpu-idle-exit-{i}',[game('exit').replace('game ','open ',1),'idlefloor '+('on' if on else 'off'),'seek 90 8',
             'waitsongpos 90 160','fpsmark start','waitsongpos 100 60','fpsmark end idle-exit','idlefloor state'])
     for i,gpu in enumerate((0,1,1,0)):
         run(f'cpu-flash-wf-{i}',[game('wf'),'press','waitsongpos 8 120','fpsmark start',
             'waitsongpos 22 90','fpsmark end flash-wf','gpudeco live state'],gpu)
+elif mode=='hold':
+    for i,arg in enumerate(('check','off','on','on','off')):
+        run(f'cpu-hold-exit-{i}',[game('exit').replace('game ','open ',1),'holdreads '+arg,'seek 90 8',
+            'waitsongpos 90 160','fpsmark start','waitsongpos 100 60','fpsmark end hold-exit',
+            'holdreads '+('verify' if arg=='check' else 'state')])
 elif mode=='pixel':
     original=json.loads((WT/'docs/deco-spec/results/evidence/g1/g1-ar-262-controls.steps.json').read_text(encoding='utf-8-sig'))
     steps=original['steps'][3:-1]
     run('cpu-ar262-cand',steps,1,'wt-cand')
 elif mode=='notify':
-    dd=next(MAP.rglob('*DDONGSSADA*.adofai'))
-    MAPS['dd']=str(dd.relative_to(MAP))
+    MAPS['dd']='DDONGSSADA3302 asansis remake/level.adofai'
     for k in ('exit','ar','dd'):
         run('cpu-notify-'+k,['gpudeco drawcollapse notify check',game(k),'press','waitend 1200',
             'gpudeco drawcollapse notify state','gpudeco drawcollapse notify verify'],1)

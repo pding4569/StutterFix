@@ -1,0 +1,24 @@
+{
+  "tag": "cpu-idle-exit-2",
+  "timeout_min": 25,
+  "settings": {
+    "GpuDeco": 0,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 1200",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "open D:\\얼불춤 맵 파일\\Exit from ship\\Exit from SHiP_T2_.adofai",
+    "idlefloor on",
+    "seek 90 8",
+    "waitsongpos 90 160",
+    "fpsmark start",
+    "waitsongpos 100 60",
+    "fpsmark end idle-exit",
+    "idlefloor state",
+    "quit"
+  ]
+}

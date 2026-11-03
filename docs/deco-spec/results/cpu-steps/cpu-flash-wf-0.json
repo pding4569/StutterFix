@@ -1,0 +1,23 @@
+{
+  "tag": "cpu-flash-wf-0",
+  "timeout_min": 25,
+  "settings": {
+    "GpuDeco": 0,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 1200",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "game D:\\얼불춤 맵 파일\\Windflower\\Windflower.adofai",
+    "press",
+    "waitsongpos 8 120",
+    "fpsmark start",
+    "waitsongpos 22 90",
+    "fpsmark end flash-wf",
+    "gpudeco live state",
+    "quit"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "tag": "cpu-idle-oracle",
+  "timeout_min": 25,
+  "settings": {
+    "GpuDeco": 0,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "steps": [
+    "timeout 1200",
+    "wait 2",
+    "auto on",
+    "fpscap 0",
+    "open D:\\얼불춤 맵 파일\\Exit from ship\\Exit from SHiP_T2_.adofai",
+    "idlefloor check",
+    "seek 90 8",
+    "waitsongpos 100 160",
+    "idlefloor verify",
+    "idlefloor state",
+    "quit"
+  ]
+}
