@@ -112,6 +112,7 @@ namespace StutterFix
             internal LiveChannel[] Channels = Array.Empty<LiveChannel>();
             internal Anchor[] FallbackAnchors = Array.Empty<Anchor>();
             internal bool[] DirtyBlocks = Array.Empty<bool>();
+            int[] dirtyFirst=Array.Empty<int>(),dirtyEnd=Array.Empty<int>();
             internal int DirtyBlockMin = int.MaxValue, DirtyBlockMax = -1;
             internal readonly List<Mesh> Meshes = new List<Mesh>();
             internal readonly List<GraphicsBuffer> Buffers = new List<GraphicsBuffer>();
@@ -124,6 +125,7 @@ namespace StutterFix
                 FallbackAnchors = new Anchor[channelCount];
                 int blocks = (channelCount + DirtyBlockSize - 1) / DirtyBlockSize;
                 DirtyBlocks = new bool[blocks];
+                dirtyFirst=new int[blocks];dirtyEnd=new int[blocks];
                 DirtyBlockMin = int.MaxValue;
                 DirtyBlockMax = -1;
             }
@@ -136,9 +138,17 @@ namespace StutterFix
                 }
                 int b = slot >> 8;
                 if ((uint)b >= (uint)DirtyBlocks.Length) return;
+                if(!DirtyBlocks[b]){dirtyFirst[b]=slot;dirtyEnd[b]=slot+1;}
+                else{dirtyFirst[b]=Math.Min(dirtyFirst[b],slot);dirtyEnd[b]=Math.Max(dirtyEnd[b],slot+1);}
                 DirtyBlocks[b] = true;
                 if (b < DirtyBlockMin) DirtyBlockMin = b;
                 if (b > DirtyBlockMax) DirtyBlockMax = b;
+            }
+            // Native packet writers expose dirty blocks rather than individual channels.
+            internal void MarkFullDirtyBlocks(int first,int last)
+            {
+                for(int b=first;b<=last;b++)if(DirtyBlocks[b])
+                {dirtyFirst[b]=b*DirtyBlockSize;dirtyEnd[b]=Math.Min(Channels.Length,(b+1)*DirtyBlockSize);}
             }
             internal void FlushDirty()
             {
@@ -151,17 +161,17 @@ namespace StutterFix
                     pendingAlpha.Clear();
                 }
                 if (Gpu == null || DirtyBlockMin > DirtyBlockMax) return;
-                int n = Channels.Length;
                 int b = DirtyBlockMin;
                 while (b <= DirtyBlockMax)
                 {
                     if (!DirtyBlocks[b]) { b++; continue; }
-                    int bStart = b;
+                    int slotStart=dirtyFirst[b],slotEnd=dirtyEnd[b]-1;
                     DirtyBlocks[b++] = false;
                     while (b <= DirtyBlockMax && DirtyBlocks[b])
+                    {
+                        slotEnd=dirtyEnd[b]-1;
                         DirtyBlocks[b++] = false;
-                    int slotStart = bStart * DirtyBlockSize;
-                    int slotEnd = Math.Min(n, b * DirtyBlockSize) - 1;
+                    }
                     if (slotStart <= slotEnd)
                     {
 #if DEV || AUTOTEST

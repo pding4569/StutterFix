@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || GPUDECO
+﻿#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -325,6 +325,7 @@ namespace StutterFix
                 committed=true;
                 if(anim)foreach(uint m in run.Masters)foreach(int c in gpuRecFirstChannels)
                     if((p.Mask&(1u<<c))!=0)StampGpuMasterRecOrder((int)m,c);
+                slice.MarkFullDirtyBlocks(run.MinBlock,run.MaxBlock);
                 slice.DirtyBlockMin=Math.Min(slice.DirtyBlockMin,run.MinBlock);slice.DirtyBlockMax=Math.Max(slice.DirtyBlockMax,run.MaxBlock);
                 if((gpuZeroAlpha || gpuRenderMergePrepared) && (p.Mask&0xC00u)!=0)
                     foreach(uint item in run.SliceItems)slice.MarkDirty((int)item*16+10);
