@@ -221,7 +221,7 @@ namespace StutterFix
             {
                 gpuLiveEnabledOff[i] = false;
                 var r = gpuLiveOwnedRenderers[i];
-                try { if (r) r.enabled = !G1DrawHidden(i); } catch { }
+                try { if (r) r.enabled = g1DrawVisible[i]; } catch { }
             }
         }
         static int[][] gpuLiveMasterToSliceItem = Array.Empty<int[]>();

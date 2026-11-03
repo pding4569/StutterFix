@@ -736,7 +736,7 @@ namespace StutterFix
                 if(GpuCpuFallback(master))continue;
                 var original=gpuLiveOwnedRenderers[master];
                 int item=gpuLiveMasterToSliceItem[master][0];
-                RequireLive(original && original.sprite && original.sprite.texture && item>=0 && slice.Renderers[item], "소유 장식 또는 GPU 렌더러 소실");
+                RequireLive(original && ((original.sprite && original.sprite.texture) || G1ExpectedEmpty(master)) && item>=0 && slice.Renderers[item], "소유 장식 또는 GPU 렌더러 소실");
                 RequireLive(original.enabled==(DrawCollapsePolicy.DisableOwnedRenderers?false:!G1DrawHidden(master))
                     && original.gameObject.activeInHierarchy && original.forceRenderingOff, "다른 처리에서 소유 렌더러 상태 변경");
                 RequireLive(original.maskInteraction==SpriteMaskInteraction.None && !original.GetComponentInParent<SortingGroup>(), "소유 장식 마스크 또는 정렬 그룹 변경");

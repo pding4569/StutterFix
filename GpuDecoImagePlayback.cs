@@ -153,8 +153,9 @@ namespace StutterFix
                 {
                     affected[index]=true;
                     var d=baselineObjects[index] as scrVisualDecoration;
-                    if(ev.VisualFlags!=1||v.Status!=GpuDecoImageVariant.Kind.ReadyQuad||!d||!d.spriteRenderer||!d.spriteRenderer.sprite
+                    if(ev.VisualFlags!=1||(v.Status!=GpuDecoImageVariant.Kind.ReadyQuad && v.Status!=GpuDecoImageVariant.Kind.Missing)||!d||!d.spriteRenderer||!d.spriteRenderer.sprite
                         ||gpuImageOriginalSize(d)==Vector2.zero||d.hitbox!=0||LazySprite.GpuPeekPending(d,out _)) {bad[index]=true;continue;}
+                    if(v.Status==GpuDecoImageVariant.Kind.Missing)continue;
                     var tri=d.spriteRenderer.sprite.triangles;
                     if(tri.Length!=v.Triangles.Length||!tri.SequenceEqual(v.Triangles))bad[index]=true;
                 }
@@ -174,6 +175,12 @@ namespace StutterFix
                 &&gpuImageTimeline.HeaderMatches(slot,FastMove.GpuImageSelector(fx),1)
                 &&gpuImagePlannedTargets[fx.GetInstanceID()].Contains(gpuLiveOwnedIndices[master]),"image event changed after preparation");
             var v=gpuImageVariants[gpuImageTimeline.Event(slot).Selector];
+            if(v.Status==GpuDecoImageVariant.Kind.Missing)
+            {
+                RequireLive(GpuDecoImageVariant.Capture(FastMove.GpuImageSelector(fx)).Status==GpuDecoImageVariant.Kind.Missing,
+                    "missing image became available after preparation");
+                return;
+            }
             RequireLive(FastMove.TryGpuImageSprite(FastMove.GpuImageSelector(fx),out var source)&&ReferenceEquals(source,v.Source)
                 &&source!=null&&source.sprite&&source.sprite.GetInstanceID()==v.SpriteId&&source.sprite.texture&&source.sprite.texture.GetInstanceID()==v.TextureId,
                 "image asset changed after preparation");
@@ -214,6 +221,11 @@ namespace StutterFix
         }
         static void RefreshGpuImageGeometry(int master,scrVisualDecoration d)
         {
+            if(!d.spriteRenderer.sprite)
+            {
+                RequireLive(g1ImageExpectedEmpty[master],"unexpected missing GPU image sprite");
+                g1ImageEmpty[master]=true;RefreshG1Draw(master);return;
+            }
             // Explicit diagnostic A only; no per-frame Transform writes.
             // The logical fields must already be current before this call.
             if(gpuImageRefreshPose){d.UpdatePosition();gpuImagePoseUpdates++;}
@@ -252,6 +264,7 @@ namespace StutterFix
                 renderer.SetPropertyBlock(gpuImageBlock,0);
                 gpuImageUploads++;
             }
+            g1ImageEmpty[master]=false;RefreshG1Draw(master);
         }
         static void CaptureGpuImageActivation()
         {
@@ -278,6 +291,7 @@ namespace StutterFix
             try
             {
                 SyncGpuImageFields(master,d);
+                g1ImageExpectedEmpty[master]=gpuImageVariants[gpuImageTimeline.Event(gpuImageSourceMap[fx.GetInstanceID()]).Selector].Status==GpuDecoImageVariant.Kind.Missing;
                 stage=1;FastMove.RunGpuImageBlock(fx,d);gpuImageSetters++;stage=2;
                 if(!gpuLiveActive)return;
                 if(LazySprite.GpuPeekPending(d,out _))gpuImageWake.Defer(master);

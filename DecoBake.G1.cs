@@ -60,13 +60,21 @@ namespace StutterFix
             }
         }
         static bool[] g1DrawVisible=Array.Empty<bool>();
+        static bool[] g1ImageEmpty=Array.Empty<bool>(),g1ImageExpectedEmpty=Array.Empty<bool>();
         static readonly AccessTools.FieldRef<scrDecoration,bool> g1ForceHide = AccessTools.FieldRefAccess<scrDecoration,bool>("forceHide");
         static void CaptureG1DrawState()
         {
             g1DrawVisible=new bool[gpuLiveOwnedIndices.Length];
+            g1ImageEmpty=new bool[g1DrawVisible.Length];g1ImageExpectedEmpty=new bool[g1DrawVisible.Length];
             for(int m=0;m<g1DrawVisible.Length;m++)g1DrawVisible[m]=gpuLiveOwnedRenderers[m].enabled;
         }
-        static bool G1DrawHidden(int master)=>(uint)master<(uint)g1DrawVisible.Length && !g1DrawVisible[master];
+        static bool G1DrawHidden(int master)=>(uint)master<(uint)g1DrawVisible.Length && (!g1DrawVisible[master] || g1ImageEmpty[master]);
+        static bool G1ExpectedEmpty(int master)=>(uint)master<(uint)g1ImageEmpty.Length && g1ImageEmpty[master] && g1ImageExpectedEmpty[master];
+        static void RefreshG1Draw(int master)
+        {
+            for(int s=0;s<gpuLiveSlices.Count;s++)
+            {int item=gpuLiveMasterToSliceItem[master][s];if(item>=0)gpuLiveSlices[s].RefreshItem(item);}
+        }
         internal static bool G1VisibilityConsistent(scrVisualDecoration d)=>d.spriteRenderer.enabled==g1RendererEnabled(d);
         static void SyncG1CollapseItem(int item)
         {
@@ -85,11 +93,7 @@ namespace StutterFix
             g1DrawVisible[master]=visible;
             var r=gpuLiveOwnedRenderers[master];r.forceRenderingOff=true;
             if(DrawCollapsePolicy.DisableOwnedRenderers){gpuLiveEnabledOff[master]=true;r.enabled=false;}
-            for(int s=0;s<gpuLiveSlices.Count;s++)
-            {
-                int item=gpuLiveMasterToSliceItem[master][s];
-                if(item>=0)gpuLiveSlices[s].RefreshItem(item);
-            }
+            RefreshG1Draw(master);
         }
     }
 }
