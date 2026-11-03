@@ -228,4 +228,11 @@ check의 전수 읽기/목록 검색 비용은 성능 시험에 포함하지 않
 - `git diff --check`: 통과. 죽은 제품 코드 삭제는 하지 않았다.
 - Player / PlayerAuto 최종 빌드 결과는 아래 기록한다. 게임 안 oracle·성능·픽셀은 미실행이다.
 
-<!-- BUILD_RESULTS -->
+| Build | Invocations | Errors | Warnings | DLL SHA-256 |
+|---|---|---|---|---|
+| Player Release | 1 | 0 | 46 | `f019f80665d59e3fb976d1df6f4948ecfa4ad771dd7632999260fd7f1b68855f` |
+| PlayerAuto Release | 1 | 0 | 47 | `956f7666bf66b0822fe38e827f31adbb60a7d307071d8041294cedc41a3c1b2f` |
+
+[Player log](evidence/simplify/build-player.log), [PlayerAuto log](evidence/simplify/build-playerauto.log).
+
+Build options: `-m:1 -p:BuildInParallel=false`; PlayerAuto additionally `-p:AutoTestBuild=1`.

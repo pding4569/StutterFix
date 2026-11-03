@@ -1,0 +1,16 @@
+{
+  "Player": {
+    "path": "bin\\Player\\StutterFix.dll",
+    "sha256": "f019f80665d59e3fb976d1df6f4948ecfa4ad771dd7632999260fd7f1b68855f",
+    "errors": 0,
+    "warnings": 46,
+    "invocations": 1
+  },
+  "PlayerAuto": {
+    "path": "bin\\PlayerAuto\\StutterFix.dll",
+    "sha256": "956f7666bf66b0822fe38e827f31adbb60a7d307071d8041294cedc41a3c1b2f",
+    "errors": 0,
+    "warnings": 47,
+    "invocations": 1
+  }
+}
