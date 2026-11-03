@@ -35,6 +35,9 @@
     <Compile Include="LightProbe.cs" />
     <Compile Include="BeatProbe.cs" />
     <Compile Include="GpuDecoPlayer.cs" />
+    <Compile Include="GpuDecoPerItemPrepare.cs" />
+    <Compile Include="GpuDecoDirectTexturePrepare.cs" />
+    <Compile Include="GpuDecoPreparation.cs" />
     <Compile Include="GpuDecoPlayerPolicy.cs" />
     <Compile Include="GpuDecoRecordStore.cs" />
     <EmbeddedResource Include="tools/gpudeco-lab/evidence/drawcollapse5/bundle/stutterfix_gpudeco" LogicalName="StutterFix.gpudeco" />

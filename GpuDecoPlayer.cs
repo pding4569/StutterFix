@@ -88,9 +88,10 @@ namespace StutterFix
                 var camera = GpuDecoScene.FindMain();
                 if (!camera.orthographic || camera.stereoEnabled || camera.rect != new Rect(0, 0, 1, 1))
                     throw new InvalidOperationException("지원하지 않는 카메라 설정 (직교 "+camera.orthographic+", 렌더 텍스처 "+(camera.targetTexture?camera.targetTexture.name:"없음")+", VR "+camera.stereoEnabled+", 영역 "+camera.rect+")");
-                if (UnityEngine.Object.FindObjectsByType<SortingGroup>(FindObjectsInactive.Include, FindObjectsSortMode.None).Any(g => g.isActiveAndEnabled)
-                    || UnityEngine.Object.FindObjectsByType<SpriteMask>(FindObjectsInactive.Include, FindObjectsSortMode.None).Any(m => m.enabled && m.gameObject.activeInHierarchy))
-                    throw new InvalidOperationException("정렬 그룹 또는 스프라이트 마스크 사용 중");
+                if (UnityEngine.Object.FindObjectsByType<SortingGroup>(FindObjectsInactive.Include, FindObjectsSortMode.None).Any(g => g.isActiveAndEnabled))
+                    throw new InvalidOperationException("정렬 그룹 사용 중");
+                if (!DrawCollapsePolicy.PartialMaskAdmit && UnityEngine.Object.FindObjectsByType<SpriteMask>(FindObjectsInactive.Include, FindObjectsSortMode.None).Any(m => m.enabled && m.gameObject.activeInHierarchy))
+                    throw new InvalidOperationException("스프라이트 마스크 사용 중");
 #if AUTOTEST
                 long heap0 = GC.GetTotalMemory(false) / 1048576;
 #endif
@@ -532,6 +533,18 @@ namespace StutterFix
             HpMark("표 만들기");
             long p2 = Stopwatch.GetTimestamp();
             RequireLive(ready && table != null, status);
+#if AUTOTEST
+            {
+                var total = new Dictionary<string, int>(); var only = new Dictionary<string, int>();
+                foreach (var row in table.Decorations)
+                {
+                    foreach (var why in row.Reasons) { total.TryGetValue(why, out int n); total[why] = n + 1; }
+                    if (row.Reasons.Count == 1) foreach (var why in row.Reasons) { only.TryGetValue(why, out int n); only[why] = n + 1; }
+                }
+                Main.Entry.Logger.Log("[GPU 장식] 표 거부 사유: 장식 " + table.Decorations.Length + "개, 지원 " + table.Supported + "개 | "
+                    + string.Join(", ", total.OrderByDescending(kv => kv.Value).Select(kv => kv.Key + " " + kv.Value + "/단독 " + (only.TryGetValue(kv.Key, out int o) ? o : 0))));
+            }
+#endif
             RequireLive(table.Supported >= GpuDecoPlayerPolicy.MinimumOwned, "지원되는 장식이 적음 (64개 미만)");
             bool reuse = false;
             if (cacheCandidate)

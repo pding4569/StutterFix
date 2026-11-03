@@ -1001,6 +1001,11 @@ namespace StutterFix
                 PrepMark("렌더러 훑기");
                 masterRows.Sort((a, b) => a.Key.CompareTo(b.Key));
                 PrepMark("정렬");
+                if(gpuCollapsePrepare && DrawCollapsePolicy.PartialMaskAdmit)
+                {
+                    DemotePerItemPrepareRows(masterRows,protoItems,null);
+                    DemoteDirectTextureOverflowRows(masterRows,null);
+                }
                 var collapseRows=gpuCollapsePrepare?new List<GpuLiveRow>(masterRows):null;
                 if(gpuRenderMergePrepare)for(int i=1;i<masterRows.Count;i++)
                     RequireLive(!masterRows[i-1].Key.SameMaterialTie(masterRows[i].Key)
@@ -1018,6 +1023,7 @@ namespace StutterFix
                 GpuLog("live_prepare_candidates window_visible=" + windowCandidates + " admitted=" + protoItems.Count
                     + " rejects=" + (rejectCounts.Count == 0 ? "none" : string.Join(",", rejectCounts.Select(kv => kv.Key + ":" + kv.Value))));
 
+                if(!AcceptGpuOwnedCount(masterRows.Count(r=>r.Item>=0)))return;
                 var ownedIndices = new List<int>();
                 var ownedRenderers = new List<SpriteRenderer>();
                 var baselineToMaster = new Dictionary<int, int>();

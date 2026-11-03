@@ -8,6 +8,8 @@ namespace StutterFix
     internal static class DrawCollapsePolicy
     {
         internal static bool AdoptNativeTweens=true;
+        // 마스크를 쓰는 장식만 원래대로 두고(구간을 끊는 장벽) 나머지를 맡는다. 스프라이트 마스크가 있다고 맵 전체를 거부하지 않는다.
+        internal static bool PartialMaskAdmit=true;
         // Unity's loaded shader caps texture parameters at 64 on this D3D11
         // device, even though the native API accepts 128 SRVs.
         internal const int ArrayBindings=4;

@@ -250,7 +250,9 @@ namespace StutterFix
                 if (d.parallax == null) row.Reasons.Add("시차 부품 없음");
                 var placementReason = DecoBakeCore.PlacementReason(d.placementType.ToString(), d.stickToFloor);
                 if (placementReason != null) row.Reasons.Add(placementReason);
-                if (d.lockRotation || d.lockScale || d.stickToFloor || d.followPlanet != null) row.Reasons.Add("추종/고정/바닥 배치");
+                if (d.lockRotation || d.lockScale) row.Reasons.Add("카메라 회전·크기 잠금");
+                if (d.stickToFloor) row.Reasons.Add("바닥 부착");
+                if (d.followPlanet != null) row.Reasons.Add("행성 추종");
                 if (row.Initial.Any(v => !DecoBakeCore.Finite(v))) row.Reasons.Add("초기값 비유한");
                 if (!DecoBakeCore.Finite(row.OriginalX) || !DecoBakeCore.Finite(row.OriginalY)
                     || !DecoBakeCore.Finite(row.GlobalX) || !DecoBakeCore.Finite(row.GlobalY)) row.Reasons.Add("초기값 비유한");
