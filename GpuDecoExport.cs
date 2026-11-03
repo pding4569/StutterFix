@@ -447,6 +447,13 @@ namespace StutterFix
         }
 
         // ── Request B.2: Source Pool & Incremental Channel Table Management ──
+        static int gpuSourceDirtyMin=int.MaxValue,gpuSourceDirtyMax=-1;
+        static void MarkGpuSourceDirty(int slot)
+        {
+            if(slot<gpuSourceDirtyMin)gpuSourceDirtyMin=slot;
+            if(slot>gpuSourceDirtyMax)gpuSourceDirtyMax=slot;
+        }
+
         static void ResetGpuLiveSourcePool()
         {
             gpuActiveSourceSlots.Clear();
@@ -460,6 +467,7 @@ namespace StutterFix
                 gpuSourceProgress[i] = 0f;
             }
             gpuSourceHighWater = 1;gpuSourcePeakAllocated=0;
+            gpuSourceDirtyMin=0;gpuSourceDirtyMax=MaxLiveSources-1;
         }
 
         static GpuLiveSource AllocateGpuLiveSource(int sourceId, int startFrame, float dur, Ease ease, float over, float period, float initialPos)
@@ -498,6 +506,7 @@ namespace StutterFix
             s.MasterSlots.Clear();
             gpuSourceE[slot] = s.CurrentE;
             gpuSourceProgress[slot] = initialPos;
+            MarkGpuSourceDirty(slot);
             gpuActiveSourceSlots.Add(slot);
             gpuSourcePeakAllocated=Math.Max(gpuSourcePeakAllocated,gpuActiveSourceSlots.Count);
             UpdatePacketClock(s);
@@ -601,6 +610,7 @@ namespace StutterFix
             src.CurrentE = 1f;
             gpuSourceE[src.Slot] = 1f;
             gpuSourceProgress[src.Slot] = src.Dur;
+            MarkGpuSourceDirty(src.Slot);
             UpdatePacketClock(src);
             for (int i = 0; i < src.MasterSlots.Count; i++)
             {
@@ -666,6 +676,7 @@ namespace StutterFix
                 src.CurrentE = e;
                 gpuSourceE[slot] = e;
                 gpuSourceProgress[slot] = nextPos;
+                MarkGpuSourceDirty(slot);
                 i++;
             }
         }
@@ -1300,7 +1311,8 @@ namespace StutterFix
 #endif
             int s = FindGpuLiveSlice(time);
             if (s < 0) {StopGpuLive("outside_prepared_scope");return;}
-            if (s != gpuLiveCurrentSlice)
+            bool sliceChanged=s!=gpuLiveCurrentSlice;
+            if (sliceChanged)
             {
                 if (gpuLiveCurrentSlice >= 0 && gpuLiveCurrentSlice < gpuLiveSlices.Count)
                     gpuLiveSlices[gpuLiveCurrentSlice].SetEnabled(false);
@@ -1326,7 +1338,11 @@ namespace StutterFix
 #if AUTOTEST
             long probeDirty=GpuDecoCostProbe.Enabled?Stopwatch.GetTimestamp():0;
 #endif
-            active.Gpu.UploadSourceE(gpuSourceE, gpuSourceProgress, gpuSourceHighWater);
+            // Inactive slices may have missed writes: switching always uploads the full used prefix.
+            int sourceFirst=sliceChanged?0:gpuSourceDirtyMin;
+            int sourceEnd=sliceChanged?gpuSourceHighWater:Math.Min(gpuSourceHighWater,gpuSourceDirtyMax+1);
+            if(sourceFirst<sourceEnd)active.Gpu.UploadSourceE(gpuSourceE,gpuSourceProgress,sourceEnd,sourceFirst);
+            gpuSourceDirtyMin=int.MaxValue;gpuSourceDirtyMax=-1;
 #if AUTOTEST
             long t2 = Stopwatch.GetTimestamp();
             if(GpuDecoCostProbe.Enabled)GpuDecoCostProbe.Frame(probeAdvance-t1,probeDirty-probeAdvance,t2-probeDirty,

@@ -1,4 +1,4 @@
-#if DEV || AUTOTEST || GPUDECO || UNITY_EDITOR
+﻿#if DEV || AUTOTEST || GPUDECO || UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -227,14 +227,14 @@ namespace StutterFix
             else if(fallbackAnchors != null)
                 anchorsBuffer.SetData(fallbackAnchors, dirtyMin, dirtyMin, count);
         }
-        // Uploads CPU-evaluated sourceE[] (and sourceProgress[] for fallback bundle) once per frame.
-        internal void UploadSourceE(float[] sourceE, float[] rawProgress, int count)
+        // Uploads the changed prefix subrange [first,count); count retains the original API end index.
+        internal void UploadSourceE(float[] sourceE, float[] rawProgress, int count,int first=0)
         {
-            if(count <= 0) return;
+            if(first >= count) return;
             if(hasLiveKernel)
-                sourceEBuffer.SetData(sourceE, 0, 0, count);
+                sourceEBuffer.SetData(sourceE, first, first, count-first);
             else
-                progress.SetData(rawProgress, 0, 0, count);
+                progress.SetData(rawProgress, first, first, count-first);
         }
         // 제품이 켜는 값: 독립 평가에서도 알파 0 항목을 건너뛴다(랩·시험 경로는 0 그대로).
         internal static int AlphaEarlyOut;
