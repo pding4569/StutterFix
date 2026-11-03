@@ -1,0 +1,216 @@
+{
+    "status":  "NOT_RUN",
+    "reason":  "User is playing another game; offline preparation only",
+    "source_branch":  "claude/gpudeco-partial",
+    "managed_build":  "Release Edition=Player AutoTestBuild=1",
+    "native_probe":  "gpuprobe.dll (tools/gpuprobe/build.ps1), measurement environment only",
+    "runs":  17,
+    "order":  [
+                  {
+                      "file":  "01-01-n.json",
+                      "stage":  "partition",
+                      "condition":  "N",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-02-k.json",
+                      "stage":  "partition",
+                      "condition":  "K",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-03-d.json",
+                      "stage":  "partition",
+                      "condition":  "D",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-04-dk.json",
+                      "stage":  "partition",
+                      "condition":  "DK",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-05-r.json",
+                      "stage":  "partition",
+                      "condition":  "R",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-06-rk.json",
+                      "stage":  "partition",
+                      "condition":  "RK",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-07-rk.json",
+                      "stage":  "partition",
+                      "condition":  "RK",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-08-r.json",
+                      "stage":  "partition",
+                      "condition":  "R",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-09-dk.json",
+                      "stage":  "partition",
+                      "condition":  "DK",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-10-d.json",
+                      "stage":  "partition",
+                      "condition":  "D",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-11-k.json",
+                      "stage":  "partition",
+                      "condition":  "K",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "01-12-n.json",
+                      "stage":  "partition",
+                      "condition":  "N",
+                      "gpu":  1,
+                      "window_song_seconds":  [
+                                                  90,
+                                                  100
+                                              ]
+                  },
+                  {
+                      "file":  "02-01-cpu.json",
+                      "stage":  "full_song_abba",
+                      "condition":  "cpu",
+                      "gpu":  0,
+                      "windows_song_seconds":  [
+                                                   [
+                                                       90,
+                                                       100
+                                                   ],
+                                                   [
+                                                       180,
+                                                       190
+                                                   ]
+                                               ]
+                  },
+                  {
+                      "file":  "02-02-gpu.json",
+                      "stage":  "full_song_abba",
+                      "condition":  "gpu",
+                      "gpu":  1,
+                      "windows_song_seconds":  [
+                                                   [
+                                                       90,
+                                                       100
+                                                   ],
+                                                   [
+                                                       180,
+                                                       190
+                                                   ]
+                                               ]
+                  },
+                  {
+                      "file":  "02-03-gpu.json",
+                      "stage":  "full_song_abba",
+                      "condition":  "gpu",
+                      "gpu":  1,
+                      "windows_song_seconds":  [
+                                                   [
+                                                       90,
+                                                       100
+                                                   ],
+                                                   [
+                                                       180,
+                                                       190
+                                                   ]
+                                               ]
+                  },
+                  {
+                      "file":  "02-04-cpu.json",
+                      "stage":  "full_song_abba",
+                      "condition":  "cpu",
+                      "gpu":  0,
+                      "windows_song_seconds":  [
+                                                   [
+                                                       90,
+                                                       100
+                                                   ],
+                                                   [
+                                                       180,
+                                                       190
+                                                   ]
+                                               ]
+                  },
+                  {
+                      "file":  "03-frozen-compute.json",
+                      "stage":  "paused_compute",
+                      "condition":  "N S S N N S S N",
+                      "gpu":  1,
+                      "pause_song_second":  92
+                  }
+              ],
+    "invalid_if":  [
+                       "GPU ownership lost or unexpectedly recovered",
+                       "ablation condition not applied",
+                       "GPU timestamp invalid or missing",
+                       "song window not reached",
+                       "restore_errors nonzero",
+                       "settings or display differ"
+                   ],
+    "notes":  [
+                  "Run each file in a fresh process, in order, only after user returns.",
+                  "Manifest is not an executable steps file.",
+                  "No game launch, build, Mods change, flag deletion, or push was performed.",
+                  "Initial 12 runs are attribution only; removed visuals are intentional.",
+                  "gpuprobe begins after map load and before press; phasewindow is used only while playing."
+              ]
+}
