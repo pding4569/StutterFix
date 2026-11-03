@@ -580,6 +580,9 @@ namespace StutterFix
             if (!reuse && gpuImageCandidate) CompilePlayerImages(); // 재사용이면 남겨 둔 이미지 계획(같은 내용)을 그대로 쓴다
             long p3 = Stopwatch.GetTimestamp();HpMark("이미지계획");
             PrepareGpuLive();HpMark("GPU준비");   // 재사용이면 준비 결과가 그대로라 바로 돌아온다
+#if AUTOTEST
+            LogGpuWorkload();
+#endif
             if (!reuse)
             {
                 gpuPreparedHash = PlayerSetupHash();
