@@ -1729,6 +1729,8 @@ namespace StutterFix
                     if (wasHidden != nowHidden)
                         mask |= (15 << 7) | (1 << 11);
                     if (mask != 0) DecoAnim.BakeWrite(d, gpuRestoreValues, 0, mask);
+                    // Camera inputs advance while GPU owns the pose, even if every logical value is constant.
+                    if(d.lockRotation || d.lockScale || d.parallax.dontAlterX || d.parallax.dontAlterY)d.UpdatePosition();
 #if AUTOTEST || GPUDECO
                     // Image setters read a managed mirror while the Transform
                     // remains GPU-owned. A same-value restore still needs pose.

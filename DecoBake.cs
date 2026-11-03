@@ -250,7 +250,6 @@ namespace StutterFix
                 if (d.parallax == null) row.Reasons.Add("시차 부품 없음");
                 var placementReason = DecoBakeCore.PlacementReason(d.placementType.ToString(), d.stickToFloor);
                 if (placementReason != null) row.Reasons.Add(placementReason);
-                if (d.lockRotation || d.lockScale) row.Reasons.Add("카메라 회전·크기 잠금");
                 if (d.stickToFloor) row.Reasons.Add("바닥 부착");
                 if (d.followPlanet != null) row.Reasons.Add("행성 추종");
                 if (row.Initial.Any(v => !DecoBakeCore.Finite(v))) row.Reasons.Add("초기값 비유한");
@@ -407,7 +406,7 @@ namespace StutterFix
                     ScaleUnitsX = source.ScaleUnitsX, ScaleUnitsY = source.ScaleUnitsY };
                 foreach (var reason in source.Reasons) row.Reasons.Add(reason);
                 if (foreignWriter) row.Reasons.Add("외부 모드 장식 setter 패치");
-                if (d.parallax != null && (d.parallax.dontAlterX || d.parallax.dontAlterY || d.parallax.clampToScreen)) row.Reasons.Add("시차 축 고정/화면 고정");
+                if (d.parallax != null && d.parallax.clampToScreen) row.Reasons.Add("시차 화면 고정");
                 if (d.hitboxEvents.Count != 0 || d.hasConditionalChange) row.Reasons.Add("히트박스/조건 연결");
                 if (d is scrVisualDecoration v && v.spriteRenderer != null && v.spriteRenderer.maskInteraction != SpriteMaskInteraction.None) row.Reasons.Add("마스크 대상");
                 decs[i] = row;
