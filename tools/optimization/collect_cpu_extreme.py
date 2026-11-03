@@ -66,5 +66,7 @@ summary={'groups':groups,'runs':runs,'preserved_integrity_records':len(integrity
     'player_sha256':sha(WT/'bin/Player/StutterFix.dll'),'cand_pixel_artifacts':artifacts}
 (OUT/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
 for n in ('cpu-native-symbol.txt','cpu-player-check.txt','cpu-collapse-check.txt'):
-    (OUT/n).write_bytes((RAW/n).read_bytes())
+    raw=(RAW/n).read_bytes()
+    encoding='utf-16' if raw.startswith((b'\xff\xfe',b'\xfe\xff')) else 'utf-8-sig'
+    (OUT/n).write_text(raw.decode(encoding),encoding='utf-8')
 print(json.dumps({'groups':groups,'integrity':len(integrity),'same_final_dll':True},indent=2))
