@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST || GPUDECO || UNITY_EDITOR
+#if DEV || AUTOTEST || GPUDECO || UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;

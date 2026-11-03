@@ -1,4 +1,4 @@
-﻿#if DEV || AUTOTEST || GPUDECO
+#if DEV || AUTOTEST || GPUDECO
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1341,6 +1341,7 @@ namespace StutterFix
 #if AUTOTEST || GPUDECO
             FlushGpuImagesBeforeVisible();
             if(!gpuLiveActive)return;
+#endif
 #if AUTOTEST
             long probeAdvance=GpuDecoCostProbe.Enabled?Stopwatch.GetTimestamp():0;
 #endif
@@ -2608,6 +2609,8 @@ namespace StutterFix
             }
             throw new ArgumentException("gpudeco off|state|scheduled|ready|live prepare|live on|live off|live state|g2 ...|diag5|bisect|oracle|export <새 파일 경로>(AUTOTEST 전용)");
         }
+#endif
+#if AUTOTEST
         static void GpuLog(string s) { Main.Entry.Logger.Log("[gpudeco] " + s); }
 #else
         static void GpuLog(string s) { if (!GpuDecoPlayer.Product) Main.Entry.Logger.Log("[gpudeco] " + s); }
