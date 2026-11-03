@@ -1,0 +1,27 @@
+{
+    "tag":  "g1-ar-restore-pixel262",
+    "timeout_min":  15,
+    "steps":  [
+                  "timeout 600",
+                  "wait 2",
+                  "auto on",
+                  "game D:/얼불춤 맵 파일/Arche/[𝐃𝐎 𝐍𝐎𝐓 𝐎𝐏𝐄𝐍 𝐓𝐇𝐈𝐒 𝐀𝐓 𝐇𝐎𝐌𝐄] FULL.adofai",
+                  "press",
+                  "waitsongpos 262 420",
+                  "pause",
+                  "wait 0.2",
+                  "framecmp filters on",
+                  "framecmp ui exclude",
+                  "framecmp mask none",
+                  "framecmp grab GPU",
+                  "gpudeco live off",
+                  "wait 0.2",
+                  "framecmp grab CPU",
+                  "framecmp diff GPU CPU 3 png",
+                  "resume",
+                  "quit"
+              ],
+    "settings":  {
+                     "GpuDeco":  1
+                 }
+}

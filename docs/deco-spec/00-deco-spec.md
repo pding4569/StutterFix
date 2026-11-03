@@ -54,7 +54,7 @@ P0 = pivotPosVec
 | color, opacity | 트윈 | 연속 | 표 (지원) |
 | parallax, parallaxOffset | 트윈 | 연속 | 표 (지원) |
 | decorationImage | 즉시 스프라이트 교체 | 계단 | 표 (이미지만일 때 지원) |
-| visible | `SetVisible` 즉시 | 계단(1비트) | **표로 가능, 지금은 거부** |
+| visible | `SetVisible` 즉시 | 계단(1비트) | G1 후보: 대상별 논리 visible/실제 그리기 분리, 합격 검증 미완료 |
 | depth | 정렬 층·순서 즉시 | 계단, 정렬 영향 | 표 + 구간 재배치, 어려움 |
 | relativeTo | `SetPlacementType` 즉시 | 계단 | Global·LastPosition 지원, 나머지 프레임 값 |
 | originalSize, cropPivotOffset | 즉시 | 계단 | 표로 가능, 지금은 거부 |
@@ -88,11 +88,15 @@ P0 = pivotPosVec
 | 스텐실 | 마스크 제공자·소비자 | 원래 방식 또는 직접 처리, 게임 검증 안 됨 |
 | 원래 방식 유지 | 글자, 오브젝트, 파티클, prefab, 사용자 컴포넌트, 히트박스, 혼합 모드, 조건 이벤트 | 지금과 같음, 구간을 끊는 장벽 |
 
-## 6. 현재 코드의 규칙과 어긋나는 점
+## 6. G1 후보 구현과 남은 차단
 
-- `DecoBake.Reasons`는 **필드를 쓰면** 거부한다. 값이 안 바뀌어도 대상 장식 전체가 빠진다.
-- `visibleUsed`와 `depthUsed`를 한 사유로 묶어, 1비트짜리 가시성까지 거부한다.
-- `FastMove.Orig`는 효과 하나라도 원래 경로로 가면 `RecoverGpuLive("FastMoveOriginal")`로 **맵 전체를** 되돌린다. Exit, DDONGSSADA가 곡 중에 이렇게 꺼졌다. 대상이 소유 장식인지 먼저 봐야 한다. 정확한 트리거는 아직 안 봤다.
+- 부가 필드의 무조건 거부를 Setup 스냅샷에 대한 대상별 실제 값 비교로 옮겼다. 마스크의 숨김 재활성화 예외는 유지한다.
+- 가시성은 논리 rendererEnabled, 원본 renderer 억제, GPU 그리기를 분리했다. 실제 깊이 변경은 계속 제외한다.
+- 잠금/시차 축 플래그는 기존 GPU 구현을 사용하고 CPU 복원 때 카메라 pose를 갱신한다. Camera·행성은 계속 범위 밖이다.
+- `FastMove.Orig`는 소유 대상이 없으면 전체 복귀를 생략하며, 대상 판정 실패/소유 대상이 있으면 안전하게 전체 복귀한다.
+  DD 추적에서 거부 번호 3 경로의 복귀를 관찰했으나 원본 추적의 특정 누락 파일 selector 연결은 미확정이다.
+- **G1은 합격하지 않았다.** Arche 262초 통합 그리기에 최대 차이 4가 남는다.
+  최신판 6맵 전체 검증, 새 활성화 임계값, ABBA 비교 등도 미완료다. 자세한 판정과 구현 한계는 [결과](results/g1.md), [구조](results/g1-code-structure.md)를 따른다.
 
 ## 7. 아직 안 읽은 것 (미확인)
 

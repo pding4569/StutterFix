@@ -1,0 +1,27 @@
+{
+    "tag":  "g1-wf-restore-pixel12",
+    "timeout_min":  15,
+    "steps":  [
+                  "timeout 600",
+                  "wait 2",
+                  "auto on",
+                  "game D:/얼불춤 맵 파일/Windflower/Windflower.adofai",
+                  "press",
+                  "waitsongpos 12 120",
+                  "pause",
+                  "wait 0.2",
+                  "framecmp filters on",
+                  "framecmp ui exclude",
+                  "framecmp mask none",
+                  "framecmp grab GPU",
+                  "gpudeco live off",
+                  "wait 0.2",
+                  "framecmp grab CPU",
+                  "framecmp diff GPU CPU 3 png",
+                  "resume",
+                  "quit"
+              ],
+    "settings":  {
+                     "GpuDeco":  1
+                 }
+}

@@ -1,0 +1,1 @@
+{"steps": ["timeout 1500", "wait 2", "auto on", "game D:/얼불춤 맵 파일/DDONGSSADA3302 asansis remake/level.adofai", "press", "waitend 1200", "wait 2", "quit"], "settings": {"GpuDeco": 1}, "timeout_min": 30, "tag": "partial2-dd"}

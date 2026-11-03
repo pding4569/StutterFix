@@ -1,0 +1,9 @@
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [GPU 장식] 표 거부 사유: 장식 6314개, 지원 1543개 | 가시성/깊이 변경 3483/단독 3382, 예약 목록 밖/조건/수동/타격 629/단독 575, 카메라 회전·크기 잠금 598/단독 551, 초기 마스크 128/단독 55, 마스크 대상 65/단독 0, 이미지 이외 장식 30/단독 25, Camera-동적 화면 투영 29/단독 0, 시차 축 고정/화면 고정 29/단독 0, Tile-동적 효과 시점 재배치 8/단독 8, 마스크 변경 5/단독 5, 초기 배치 미지원 2/단독 0, 행성 추종 2/단독 0
+[StutterFix] [gpudeco] image_admission affected=3990 eligible=3872 excluded=118 null_argument_policy=CPU
+[StutterFix] [GPU 장식] 준비 검사 장식 제외: 머티리얼/마스크 0 / 키워드 0 / 색조·불투명도 0 / 텍스처 밉맵 0 / 텍스처 랩 114 / 텍스처 바뀜 0
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=1487 admitted=615 rejects=blend:688,repeat-tile:162
+[StutterFix] [GPU 장식] 켜짐: 소유 501개, 그리기 통합 켬, 이미지 켬, CPU 처리 장식 0개 | 시작 26.4ms, 통합 켜기 11.1ms
+[StutterFix] [곡] 평균 293 FPS (3.4ms), 가장 긴 프레임 679ms, 곡 시작 연출 뒤 가장 긴 프레임 33ms, 끊김 0번, 프레임 128641개
+[StutterFix] [gpudeco] cost scope=Application.quitting frames=129824 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.427145 progress_ms=0.009413 uniform_ms=0.401663 dispatch_ms=0.014929 misc_ms=0.001140 max_ms=9.805300 budget_le_0.5ms=True validate_ms=0.396361 cam_ms=0.000780 exec_ms=0.006446 proxy_ms=0.000179 check_ms=0.006849 clock_ms=0.000182 dd_ms=0.014485 after_ms=0.000135 fb_eval_ms=0.001829 fb_copy_ms=0.004328 fb_submit_ms=0.001740 fb_exec_ms=0.002312 span_tog=0.00 alpha_tog=0.01 whole_frame_ms=0.434700
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=Application.quitting song=438.933672 resumed_recs=0 resume_expected=0 unobserved_order=0 restore_ms=1.627700

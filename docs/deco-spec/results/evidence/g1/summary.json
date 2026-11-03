@@ -1,0 +1,88 @@
+{
+  "acceptance": "BLOCKED_PIXEL",
+  "runs": {
+    "g1-original-dd": {
+      "source_commit": "f3bcc9f",
+      "full_song": false,
+      "raw": "E:\\StutterFixWork\\g1-artifacts\\logs\\g1-original-dd.log",
+      "raw_sha256": "527b13fb80a06518b0fbd2a99e2c60142c6734418fe764c2bf2fbd70008d7374",
+      "worst_logged_10s_fps": null,
+      "recovery_count": 1,
+      "step_failures": []
+    },
+    "g1-dd-missingfix": {
+      "source_commit": "8f85a66",
+      "full_song": true,
+      "raw": "E:\\StutterFixWork\\g1-artifacts\\logs\\g1-dd-missingfix.log",
+      "raw_sha256": "311d4f861cdf1f8100e5b7047a9ace05c5750e266b65bc2101ddb5ac089378cc",
+      "worst_logged_10s_fps": 186,
+      "recovery_count": 0,
+      "step_failures": []
+    },
+    "g1-exit-restore-pixel12": {
+      "source_commit": "3421147",
+      "full_song": false,
+      "raw": "E:\\StutterFixWork\\g1-artifacts\\logs\\g1-exit-restore-pixel12.log",
+      "raw_sha256": "803bfc175a86b93cd7ed34fede911ad743bc69ceec6124fa8e16955dc1b97b3c",
+      "worst_logged_10s_fps": 489,
+      "recovery_count": 0,
+      "step_failures": []
+    },
+    "g1-wf-restore-pixel12": {
+      "source_commit": "c550a52",
+      "full_song": false,
+      "raw": "E:\\StutterFixWork\\g1-artifacts\\logs\\g1-wf-restore-pixel12.log",
+      "raw_sha256": "a7ce113746aece9a85ce394479eaa9b79010e51e98caae985518af9afb6fc7c2",
+      "worst_logged_10s_fps": 196,
+      "recovery_count": 0,
+      "step_failures": []
+    },
+    "g1-ar-restore-pixel262": {
+      "source_commit": "8391551",
+      "full_song": false,
+      "raw": "E:\\StutterFixWork\\g1-artifacts\\logs\\g1-ar-restore-pixel262.log",
+      "raw_sha256": "20f8edb99dac68cbd74a37aa6ca1a0f9c1c96e440bf2cc1e6f6ff1c27cd3ebd5",
+      "worst_logged_10s_fps": 306,
+      "recovery_count": 0,
+      "step_failures": []
+    },
+    "g1-ar-262-controls": {
+      "source_commit": "8391551",
+      "full_song": false,
+      "raw": "E:\\StutterFixWork\\g1-artifacts\\logs\\g1-ar-262-controls.log",
+      "raw_sha256": "efcb187baefbf4414e8456914e527f96ece940a8d9d6125a1fee8cb9053d25d2",
+      "worst_logged_10s_fps": 306,
+      "recovery_count": 0,
+      "step_failures": []
+    }
+  },
+  "control_images": {
+    "AR262_C": {
+      "path": "E:\\StutterFixWork\\g1-artifacts\\pixels\\AR262_C.png",
+      "sha256": "18658b85eb265736b1fc666f9c197decd429c0b0bfcef82180e4ed303659e413"
+    },
+    "AR262_I": {
+      "path": "E:\\StutterFixWork\\g1-artifacts\\pixels\\AR262_I.png",
+      "sha256": "9e6b5b91cd750934c25202af9c5849e5360e099351361738c52dc888ea28e7fc"
+    },
+    "AR262_A": {
+      "path": "E:\\StutterFixWork\\g1-artifacts\\pixels\\AR262_A.png",
+      "sha256": "6225f76fd57e599b42575227f9fe66b802fbb332964ad4f1b2238e1cb14321c1"
+    },
+    "AR262_A2": {
+      "path": "E:\\StutterFixWork\\g1-artifacts\\pixels\\AR262_A2.png",
+      "sha256": "6225f76fd57e599b42575227f9fe66b802fbb332964ad4f1b2238e1cb14321c1"
+    }
+  },
+  "final_restoration": {
+    "installed_dll_sha256": "b0efe68d6ccce3217310da0ad65cba4048c19d2d25f738c97f14d7822898c795",
+    "restore_dll_sha256": "b0efe68d6ccce3217310da0ad65cba4048c19d2d25f738c97f14d7822898c795",
+    "dll_equal": true,
+    "gpuprobe_absent": true,
+    "gpu_deco_zero": true
+  },
+  "final_builds": {
+    "bin/Player/StutterFix.dll": "8ca658ea2a4925c8f2d5c897ef5b3650e9c74daee68ffaaa2ab02dcebfcdf7a0",
+    "bin/PlayerAuto/StutterFix.dll": "de4e54cae4a7eea135fd84f94c835525ac10b2474f835d1098187202bd0866c6"
+  }
+}

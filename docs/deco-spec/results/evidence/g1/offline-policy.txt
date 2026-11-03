@@ -1,0 +1,3 @@
+assembly=Player autotest=False types=518 embedded_bytes=90828 bundle_sha256=30E0945F4064D8CB00ACBDA19D6C3D840B05A7D0EA7F8ED419258C0DEFE74D07
+assembly=PlayerAuto autotest=True types=896 embedded_bytes=90828 bundle_sha256=30E0945F4064D8CB00ACBDA19D6C3D840B05A7D0EA7F8ED419258C0DEFE74D07
+GpuDecoPlayerCheck checks=438 errors=0 scope=offline_policy_and_PE_metadata_no_game_or_assembly_load

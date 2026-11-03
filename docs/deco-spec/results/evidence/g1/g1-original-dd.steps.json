@@ -1,0 +1,17 @@
+{
+    "steps":  [
+                  "timeout 300",
+                  "wait 2",
+                  "auto on",
+                  "gpudeco originaltrace on",
+                  "game D:/얼불춤 맵 파일/DDONGSSADA3302 asansis remake/level.adofai",
+                  "press",
+                  "wait 40",
+                  "quit"
+              ],
+    "settings":  {
+                     "GpuDeco":  1
+                 },
+    "timeout_min":  30,
+    "tag":  "g1-original-dd"
+}

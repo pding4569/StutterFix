@@ -1,0 +1,17 @@
+[StutterFix] [곡 시작] 화면: 수직동기 0, 목표 FPS 10000, FullScreenWindow, 2560x1440 120Hz, 창 2560x1440, 앞서 준비하는 프레임 2
+[StutterFix] [GPU 장식] 표 거부 사유: 장식 28835개, 지원 28692개 | Camera-동적 화면 투영 114/단독 0, 시차 화면 고정 114/단독 0, 깊이 변경 22/단독 22, 이미지 이외 장식 7/단독 7
+[StutterFix] [gpudeco] image_admission affected=5087 eligible=5028 excluded=59 null_argument_policy=CPU
+[StutterFix] [GPU 장식] 준비 검사 장식 제외: 머티리얼/마스크 0 / 키워드 0 / 색조·불투명도 0 / 텍스처 밉맵 0 / 텍스처 랩 0 / 텍스처 바뀜 0
+[StutterFix] [gpudeco] live_prepare_candidates window_visible=28633 admitted=28523 rejects=repeat-tile:110
+[StutterFix] [GPU 장식] 켜짐: 소유 28523개, 그리기 통합 켬, 이미지 켬, CPU 처리 장식 0개 | 시작 166.6ms, 통합 켜기 21.5ms
+[StutterFix] [곡] 평균 468 FPS (2.1ms), 가장 긴 프레임 743ms, 곡 시작 연출 뒤 가장 긴 프레임 105ms, 끊김 1번, 프레임 124835개
+[StutterFix] [framecmp] diff N1 N2 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] noise outside=0 inside=0 rendererStateEqual=True warning=False; noise floor advisory, continuing
+[StutterFix] [framecmp] diff AR262_C AR262_I threshold=3 maxRGBA=4,4,4,0 changed=2/3686400 ratio=5.4253472222222222E-07 PSNR=75.096595263796146 top32(bottom-left,x,y,w,h,L1)=(1216,544,32,32):753;(1536,704,32,32):601;(1088,928,32,32):452;(1472,800,32,32):446;(1440,896,32,32):411
+[StutterFix] [gpudeco] cost scope=live_off frames=124865 cpu_scope=managed_only native_copy_accounting=G2_window_stats total_ms=0.062740 progress_ms=0.015296 uniform_ms=0.037455 dispatch_ms=0.008922 misc_ms=0.001068 max_ms=14.269200 budget_le_0.5ms=True validate_ms=0.031915 cam_ms=0.001087 exec_ms=0.006319 proxy_ms=0.000252 check_ms=0.007142 clock_ms=0.000115 dd_ms=0.008593 after_ms=0.000097 fb_eval_ms=0.000294 fb_copy_ms=0.000623 fb_submit_ms=0.000221 fb_exec_ms=0.000369 span_tog=0.02 alpha_tog=0.92 whole_frame_ms=0.070417
+[StutterFix] [gpudeco] on=False owned=0 originals_restored=True reason=live_off song=262.008441 resumed_recs=11186 resume_expected=11186 unobserved_order=0 restore_ms=84.163600
+[StutterFix] [framecmp] diff AR262_A AR262_A2 threshold=0 maxRGBA=0,0,0,0 changed=0/3686400 ratio=0 PSNR=Infinity top32(bottom-left,x,y,w,h,L1)=
+[StutterFix] [framecmp] diff AR262_I AR262_A threshold=3 maxRGBA=1,1,1,0 changed=0/3686400 ratio=0 PSNR=93.679009877269038 top32(bottom-left,x,y,w,h,L1)=(1088,864,32,32):15;(992,544,32,32):12;(544,576,32,32):6;(960,576,32,32):6;(864,704,32,32):6
+[StutterFix] [framecmp] diff AR262_C AR262_A threshold=3 maxRGBA=4,4,4,0 changed=2/3686400 ratio=5.4253472222222222E-07 PSNR=75.044623427603838 top32(bottom-left,x,y,w,h,L1)=(1216,544,32,32):753;(1536,704,32,32):601;(1088,928,32,32):455;(1472,800,32,32):448;(1440,896,32,32):408
+[StutterFix] [framecmp] framecmp RESULT noise_out=0 aa2_out=0 ab_out=2 ctl_order=NA ctl_hide=NA
+[StutterFix] [framecmp] framecmp VERDICT noise=PASS aa2=PASS order_ctl=FAIL hide_ctl=FAIL
