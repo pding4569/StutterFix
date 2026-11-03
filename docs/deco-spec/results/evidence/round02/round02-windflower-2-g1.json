@@ -1,0 +1,33 @@
+{
+  "steps": [
+    "timeout 600",
+    "wait 2",
+    "auto on",
+    "game D:/얼불춤 맵 파일/Windflower/Windflower.adofai",
+    "press",
+    "waitsongpos 12.0 400",
+    "fpsmark start",
+    "waitsongpos 22.0 60",
+    "fpsmark end round02-windflower-2-g1",
+    "pause",
+    "wait 0.2",
+    "framecmp filters on",
+    "framecmp ui exclude",
+    "framecmp mask none",
+    "framecmp grab GPU",
+    "gpudeco live off",
+    "wait 0.2",
+    "framecmp grab CPU",
+    "framecmp diff GPU CPU 3 png",
+    "resume",
+    "quit"
+  ],
+  "settings": {
+    "GpuDeco": 1,
+    "GpuDecoImages": 1,
+    "FrameGenOutside": 0,
+    "FrameGenRefresh": false
+  },
+  "timeout_min": 14,
+  "tag": "round02-windflower-2-g1"
+}

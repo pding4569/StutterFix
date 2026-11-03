@@ -1,0 +1,2 @@
+[StutterFix] [자동 시험] [FPS 구간] round02-windflower-0-g0 : 355.5 FPS (3556프레임 10.00초) | 표본 없음
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다

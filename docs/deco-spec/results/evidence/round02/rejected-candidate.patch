@@ -1,0 +1,63 @@
+diff --git a/GpuDecoPlayer.cs b/GpuDecoPlayer.cs
+index bb6fb3d..f5639c1 100644
+--- a/GpuDecoPlayer.cs
++++ b/GpuDecoPlayer.cs
+@@ -498,6 +498,8 @@ namespace StutterFix
+             // 파괴된 장식(맵을 다시 불러온 경우) 항목은 정리한다. 살아 있는 것은 처음 Setup 기록을 그대로 쓴다.
+             int deadCount = 0;
+             if (initial.Count > 0) { var dead = initial.Keys.Where(k => !k).ToArray(); deadCount = dead.Length; foreach (var k in dead) initial.Remove(k); }
++            gpuImageCandidate = Main.Config.GpuDecoImages == 1;
++            CheckGpuScheduledWork(floors);
+             bool cacheCandidate = gpuLivePrepared && !gpuRecoveryBlocked && gpuLastRestoreComplete && gpuLiveSlices.Count > 0 && gpuScope != null && gpuScope.WholeSong
+                 && gpuPreparedHash != 0 && gpuLiveManager == manager && manager == scrDecorationManager.instance;
+             if (!cacheCandidate) { if (gpuLivePrepared || gpuLiveSlices.Count > 0) DisposeGpuLive(); gpuScope = GpuDecoScopePlan.Song(); gpuPreparedHash = 0; }
+diff --git a/GpuDecoPreparation.cs b/GpuDecoPreparation.cs
+index 8799b7a..9f6517d 100644
+--- a/GpuDecoPreparation.cs
++++ b/GpuDecoPreparation.cs
+@@ -3,6 +3,45 @@ namespace StutterFix
+ {
+     internal static partial class DecoBake
+     {
++#if DEV || AUTOTEST || GPUDECO
++        // Experimental scheduled-work dominance, before track/GPU preparation.
++        // This is potential work, not visible motion: interruptions and no-op
++        // targets can overcount it. Equal channel-seconds do not mean equal ms.
++        static void CheckGpuScheduledWork(System.Collections.Generic.List<scrFloor> floors)
++        {
++            var timer=System.Diagnostics.Stopwatch.StartNew();
++            double end=0, supported=0, fallback=0;
++            foreach(var floor in floors)end=System.Math.Max(end,floor.entryTime);
++            double pitch=scrConductor.instance.song.pitch, scale=DG.Tweening.DOTween.timeScale;
++            RequireLive(end>0 && pitch>0 && scale>0,"invalid preflight clock");
++            int references=0, eligible=0;
++            foreach(var pair in initial)if(pair.Key && pair.Value.Reasons.Count==0)eligible++;
++            var effects=scrVfxPlus.instance.effects;
++            RequireLive(effects.Count<=MaxEvents,"preflight effect limit");
++            foreach(var fx in effects)
++            {
++                if(!(fx is ffxMoveDecorationsPlus f) || f.duration<=0)continue;
++                var e=CopyEvent(f);
++                double duration=System.Math.Max(0,System.Math.Min(end,e.T0+e.Duration*pitch/scale)-System.Math.Max(0,e.T0));
++                int channels=0;
++                foreach(float value in e.Values)if(DecoBakeCore.Finite(value))channels++;
++                double work=duration*channels;
++                if(!(work>0) || double.IsInfinity(work))continue;
++                foreach(var d in f.decManager.GetTaggedDecorations((System.Collections.Generic.IEnumerable<string>)f.targetTags))
++                {
++                    RequireLive(++references<=MaxTargetRefs,"preflight target limit");
++                    if(d && initial.TryGetValue(d,out var row) && row.Reasons.Count==0 && e.Reasons.Length==0)supported+=work;
++                    else fallback+=work;
++                }
++            }
++            bool admit=eligible>=GpuDecoPlayerPolicy.MinimumOwned && supported>fallback;
++            Main.Entry.Logger.Log("[GPU 장식] PREFLIGHT_WORK eligible_upper="+eligible
++                +" supported_channel_s="+N(supported)+" fallback_channel_s="+N(fallback)
++                +" target_refs="+references+" census_ms="+N(timer.Elapsed.TotalMilliseconds)
++                +" admit="+admit+" visible_motion=False cost_model=UNVERIFIED before_tracks_and_gpu=True");
++            RequireLive(admit,"scheduled supported work does not dominate fallback");
++        }
++#endif
+         // Run after all row demotions, before allocating slices or consuming Data.
+         // An empty slice intentionally has no Data; it is not a preparation fault.
+         static bool AcceptGpuOwnedCount(int owned)

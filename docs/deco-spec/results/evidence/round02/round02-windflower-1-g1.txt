@@ -1,0 +1,8 @@
+[StutterFix] [GPU 장식] PREFLIGHT_WORK eligible_upper=4489 supported_channel_s=54411.5216 fallback_channel_s=3997.92364 target_refs=4690 census_ms=7.5657 admit=True visible_motion=False cost_model=UNVERIFIED before_tracks_and_gpu=True
+[StutterFix] [GPU 장식] 켜짐: 소유 2820개, 그리기 통합 켬, 이미지 켬, CPU 처리 장식 0개 | 시작 36.0ms, 통합 켜기 13.8ms
+[StutterFix] [자동 시험] [FPS 구간] round02-windflower-1-g1 : 224.4 FPS (2240프레임 9.98초) | 표본 없음
+[StutterFix] [GPU 장식] 건너뜀: 원본 장식 처리로 복귀함
+[StutterFix] [framecmp] diff GPU CPU threshold=3 maxRGBA=2,2,2,0 changed=0/3686400 ratio=0 PSNR=89.826122683156 top32(bottom-left,x,y,w,h,L1)=(512,704,32,32):13;(960,1408,32,32):13;(1568,1408,32,32):13;(768,1280,32,32):12;(608,320,32,32):11
+[StutterFix] [framecmp] framecmp RESULT noise_out=NA aa2_out=NA ab_out=0 ctl_order=NA ctl_hide=NA
+[StutterFix] [framecmp] framecmp VERDICT noise=FAIL aa2=FAIL order_ctl=FAIL hide_ctl=FAIL
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다

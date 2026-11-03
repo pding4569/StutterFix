@@ -1,0 +1,3 @@
+[StutterFix] [GPU 장식] PREFLIGHT_WORK eligible_upper=28714 supported_channel_s=449836.667 fallback_channel_s=351.500012 target_refs=134692 census_ms=328.5468 admit=True visible_motion=False cost_model=UNVERIFIED before_tracks_and_gpu=True
+[StutterFix] [GPU 장식] 켜짐: 소유 28523개, 그리기 통합 켬, 이미지 켬, CPU 처리 장식 0개 | 시작 174.0ms, 통합 켜기 20.6ms
+[StutterFix] [자동 시험] 끝 - 게임을 끕니다
