@@ -35,13 +35,13 @@ namespace StutterFix
             if(!g1Initial.TryGetValue(d,out var s)){row.Reasons.Add("초기 부가 상태 없음");return;}
             var v=(scrVisualDecoration)d;
             if(f.depthUsed && (d.syncFloorDepth || f.targetDepth!=s.Depth))row.Reasons.Add("깊이 변경");
-            if(f.cropPivotOffsetUsed && f.targetCropPivotOffset/100f!=s.Crop)row.Reasons.Add("크롭 변경");
+            if(f.cropPivotOffsetUsed && !(f.targetCropPivotOffset/100f).Equals(s.Crop))row.Reasons.Add("크롭 변경");
             if(f.smoothingUsed && f.targetSmoothing!=s.Smooth)row.Reasons.Add("부드럽게 변경");
             if(f.originalSizeUsed)
             {
                 // An image write can change dimensions before SetTextureScaleMultiplier.
                 if(f.targetOriginalSize.x!=0 && f.targetOriginalSize.y!=0 && (hasImageWrites || s.Width==0 || s.Height==0
-                    || new Vector2(f.targetOriginalSize.x/s.Width,f.targetOriginalSize.y/s.Height)!=s.TextureScale)
+                    || !new Vector2(f.targetOriginalSize.x/s.Width,f.targetOriginalSize.y/s.Height).Equals(s.TextureScale))
                     )
                     row.Reasons.Add("원래크기 변경/이미지 의존");
             }
@@ -69,7 +69,38 @@ namespace StutterFix
             for(int m=0;m<g1DrawVisible.Length;m++)g1DrawVisible[m]=gpuLiveOwnedRenderers[m].enabled;
         }
         static bool G1DrawHidden(int master)=>(uint)master<(uint)g1DrawVisible.Length && (!g1DrawVisible[master] || g1ImageEmpty[master]);
-        static bool G1ExpectedEmpty(int master)=>(uint)master<(uint)g1ImageEmpty.Length && g1ImageEmpty[master] && g1ImageExpectedEmpty[master];
+        static bool G1ExpectedEmpty(int master)=>(uint)master<(uint)g1ImageEmpty.Length && g1ImageEmpty[master];
+        readonly struct G1EventGuard : IEquatable<G1EventGuard>
+        {
+            readonly int flags,depth,front,back;
+            readonly Vector2 size,crop;
+            readonly bool smooth,customRange;
+            readonly MaskingType mask;
+            readonly string target;
+            internal G1EventGuard(ffxMoveDecorationsPlus f)
+            {
+                flags=(f.depthUsed?1:0)|(f.originalSizeUsed?2:0)|(f.cropPivotOffsetUsed?4:0)|(f.smoothingUsed?8:0)
+                    |(f.maskingTypeUsed?16:0)|(f.maskingTargetUsed?32:0)|(f.useMaskingDepthUsed?64:0)
+                    |(f.maskingFrontDepthUsed?128:0)|(f.maskingBackDepthUsed?256:0);
+                depth=f.targetDepth;front=f.targetMaskingFrontDepth;back=f.targetMaskingBackDepth;
+                size=f.targetOriginalSize;crop=f.targetCropPivotOffset;smooth=f.targetSmoothing;
+                customRange=f.targetUseMaskingDepth;mask=f.targetMaskingType;target=f.targetmaskingTarget;
+            }
+            public bool Equals(G1EventGuard b)=>flags==b.flags && depth==b.depth && front==b.front && back==b.back
+                && size.Equals(b.size) && crop.Equals(b.crop) && smooth==b.smooth && customRange==b.customRange && mask==b.mask && target==b.target;
+        }
+        static readonly Dictionary<int,G1EventGuard> g1EventGuards=new Dictionary<int,G1EventGuard>();
+        static void CaptureG1EventGuard(ffxMoveDecorationsPlus f)
+        {
+            var value=new G1EventGuard(f);int id=f.GetInstanceID();
+            if(g1EventGuards.TryGetValue(id,out var previous))RequireLive(previous.Equals(value),"ambiguous G1 no-op event source");
+            else g1EventGuards.Add(id,value);
+        }
+        static void ValidateG1EventGuard(ffxMoveDecorationsPlus f)
+        {
+            RequireLive(g1EventGuards.TryGetValue(f.GetInstanceID(),out var saved) && saved.Equals(new G1EventGuard(f)),
+                "G1 constant-field event changed after preparation");
+        }
         static void RefreshG1Draw(int master)
         {
             for(int s=0;s<gpuLiveSlices.Count;s++)

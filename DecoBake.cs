@@ -380,6 +380,7 @@ namespace StutterFix
             var ids = new Dictionary<scrDecoration, int>();
             var ordered = new HashSet<ffxPlusBase>();
             var events = new List<DecoBakeCore.Event>();
+            g1EventGuards.Clear();
             var canHide = new HashSet<scrDecoration>();
             var imageWrites = new HashSet<scrDecoration>();
             foreach(var f in schedule.OfType<ffxMoveDecorationsPlus>())
@@ -419,6 +420,7 @@ namespace StutterFix
                 var fx = DecoBakeCore.SnapshotItem(schedule, i, effects, epoch, generation); ordered.Add(fx);
                 if (fx is ffxMoveDecorationsPlus f)
                 {
+                    CaptureG1EventGuard(f);
                     var e = CopyEvent(f); var targets = new List<int>();
 #if AUTOTEST || GPUDECO
                     int visualSnapshot=(f.imageFilenameUsed?1:0)|(f.originalSizeUsed?2:0)|(f.smoothingUsed?4:0)|(f.cropPivotOffsetUsed?8:0);

@@ -53,6 +53,7 @@ namespace StutterFix
         {
             if(gpuCurrentFxParsed && ReferenceEquals(fx,gpuCurrentFx))return;
             GpuRecoveryFault("preflight");
+            ValidateG1EventGuard(fx);
             var e=CopyEvent(fx);
             if(e.Reasons.Length!=0 || !GpuDecoGpu.Supported(e.Ease) || !DecoBakeCore.Finite(e.Over) || !DecoBakeCore.Finite(e.Period)
                 || fx.colorUsed && (float.IsNaN(e.Values[7]) || float.IsNaN(e.Values[8]) || float.IsNaN(e.Values[9]) || float.IsNaN(e.Values[10]))

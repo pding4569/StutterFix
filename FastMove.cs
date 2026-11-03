@@ -405,7 +405,7 @@ namespace StutterFix
             {
                 // The fast loop has no crop writer. A proved no-op requires none.
                 foreach(var d in fx.decManager.GetTaggedDecorations((IEnumerable<string>)fx.targetTags))
-                    if(!(d is scrVisualDecoration) || d.croppedPivotOffset!=fx.targetCropPivotOffset/100f)return No(3);
+                    if(!(d is scrVisualDecoration) || !d.croppedPivotOffset.Equals(fx.targetCropPivotOffset/100f))return No(3);
             }
             if (AnyImg(fx) && !ImgSafe(fx)) return No(3);                                // 이미지·마스크: 준비 실패나 원래 코드가 예외를 낼 이름이면 원래대로
             var tags = tagsRef(fx); var mgr = mgrRef(fx);
