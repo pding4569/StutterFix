@@ -404,6 +404,7 @@ namespace StutterFix
             if (CropUsed(fx))
             {
                 // The fast loop has no crop writer. A proved no-op requires none.
+                if(!fx.decManager || fx.targetTags==null)return No(3);
                 foreach(var d in fx.decManager.GetTaggedDecorations((IEnumerable<string>)fx.targetTags))
                     if(!(d is scrVisualDecoration) || !d.croppedPivotOffset.Equals(fx.targetCropPivotOffset/100f))return No(3);
             }
@@ -646,6 +647,7 @@ namespace StutterFix
                 {
                     // Visual decorations use GetValueOrDefault and clear the sprite.
                     // Particle decorations use [] and must retain the original exception/order.
+                    if(!fx.decManager || fx.targetTags==null)return false;
                     foreach(var d in fx.decManager.GetTaggedDecorations((IEnumerable<string>)fx.targetTags))
                         if(d is scrParticleDecoration)return false;
                 }
