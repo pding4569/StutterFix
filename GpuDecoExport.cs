@@ -691,9 +691,9 @@ namespace StutterFix
             }
         }
 
+        // Sole caller GpuLiveSkip completes preflight/PrepareGpuEffect before target undo capture.
         static void ApplyGpuLiveEffectToTarget(ffxMoveDecorationsPlus fx, int masterIdx, scrDecoration d)
         {
-            PrepareGpuEffect(fx);
             var e = gpuCurrentEvent;
             int baseIdx = gpuLiveOwnedIndices[masterIdx];
             var decRow = table.Decorations[baseIdx];
@@ -717,7 +717,7 @@ namespace StutterFix
                 if (!gpuEffectCache&&float.IsNaN(rawTarget)) continue;
                 int masterSlot = masterIdx * 16 + c;
                 // In DOTween/FastMove: relative target is captured BEFORE Kill(true), and start is read AFTER Kill(true) completes the previous tween.
-                float currentBeforeKill = EvalMasterSlotCurrent(masterSlot);
+                float currentBeforeKill = c<2 && e.RelativePosition ? EvalMasterSlotCurrent(masterSlot) : 0f;
                 float afterKill = gpuMasterChannels[masterSlot].end;
                 float target = rawTarget;
                 if (c < 2)
