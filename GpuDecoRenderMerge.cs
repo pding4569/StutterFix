@@ -163,6 +163,7 @@ namespace StutterFix
         {
             var s=gpuLiveSlices[0];
             if(GpuCpuFallback(s.MasterItems[item]))return true;
+            if(G1DrawHidden(s.MasterItems[item]))return true;
             var a=s.Channels[item*16+10];var b=s.Channels[item*16+11];
             return GpuDecoAlphaPolicy.Hidden(a.end,a.sourceIndex,b.end,b.sourceIndex);
         }

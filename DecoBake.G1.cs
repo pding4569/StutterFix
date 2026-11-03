@@ -78,6 +78,7 @@ namespace StutterFix
         internal static bool G1VisibilityConsistent(scrVisualDecoration d)=>d.spriteRenderer.enabled==g1RendererEnabled(d);
         static void SyncG1CollapseItem(int item)
         {
+            RequireLive(!gpuCollapseOn || DrawCollapsePolicy.GlobalVerts,"G1 discrete visibility requires global collapse map");
             if(!gpuCollapseOn || gpuCollapseMapCpu==null || gpuCollapseSlotOfItem==null || !gpuCollapseIncluded[item])return;
             int slot=gpuCollapseSlotOfItem[item];if(slot<0)return;
             uint value=G1DrawHidden(gpuLiveSlices[0].MasterItems[item])?uint.MaxValue:(uint)item;
