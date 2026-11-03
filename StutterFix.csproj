@@ -207,6 +207,7 @@
     <Compile Include="RecolorDefer.cs" />
     <Compile Include="LazySprite.cs" />
     <Compile Include="FloorLateFix.cs" />
+    <Compile Include="IdleFloorUpdate.cs" />
     <Compile Include="ParticleDump.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="TileSig.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />
     <Compile Include="FuseProbe.cs" Condition="'$(Edition)' != 'Player' Or '$(AutoTestBuild)' == '1'" />

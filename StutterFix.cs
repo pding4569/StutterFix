@@ -264,6 +264,7 @@ UiProf.Install(harmony);
                 Try(() => ThumbCam.Install(harmony));   // 아무도 안 보는 썸네일 카메라 끄기 (ThumbCam.cs)
                 Try(() => TileCull.Install(harmony, Entry.Path));
                 Try(() => FloorLateFix.Install(harmony));   // 화면 밖 타일 끄기 (TileCull.cs)
+                Try(() => IdleFloorUpdate.Install(harmony));
                 Try(() => BeatFix.Install(harmony));   // 박자 알림에서 아무것도 안 하는 타일 건너뛰기 (BeatFix.cs)
                 Try(() => MatReuse.Install(harmony));   // 타일 머티리얼 누수 막기 (MatReuse.cs)
                 Try(() => EditorPick.Install(harmony));   // 큰 맵 편집 화면 클릭 끊김 (EditorPick.cs)
