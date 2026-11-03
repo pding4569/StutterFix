@@ -112,9 +112,6 @@ namespace StutterFix
         internal static bool ClipOffscreen=true;
         // 재생 중 프레임마다 하던 '장벽 ↔ 대표 렌더러' 순서 점검을 건너뛴다(진입 전수 점검은 유지, 안전장치는 로그 전용 방침).
         internal static bool SkipOrderSweep=true;
-        // Research only: notifications plus a 64-frame audit for unobservable
-        // engine/foreign writes. Keep production validation and alpha checks.
-        internal static bool NotifyBarrierWatch=false;
         // 진단 전용: 일시정지 프레임에서 컴퓨트 디스패치를 건너뛰어 컴퓨트의 GPU 몫을 잰다(첫 프레임 정점이 남아 화면은 같다).
         internal static bool SkipPausedCompute=false;
         // 곡 시작 키를 누르기 전(Start 상태, 정지된 화면)에 GPU 장식을 켠다: 켜는 약 150ms 가 카운트다운이 아니라 멈춰 있는 화면에서 일어난다.

@@ -65,7 +65,7 @@ foreach(var item in new[]{(args[0],false),(args[1],true)})
         .Select(x=>(x.Handle,x.Def,Name:md.GetString(x.Def.Name))).ToArray();
     bool Has(string name)=>types.Any(t=>t.Name==name);
     Check(Has("GpuDecoPlayer") && Has("GpuDecoGpu") && Has("GpuDecoImageTimeline"),"runtime types included");
-    Check(Has("IdleFloorUpdate")==item.Item2 && Has("HoldMaterialReads")==item.Item2,"CPU research hooks excluded from Player");
+    Check(!Has("IdleFloorUpdate") && !Has("HoldMaterialReads"),"failed CPU experiments removed");
     foreach(string diagnostic in new[]{"AutoTest","FrameCompare","GpuHide","GpuProbe","GpuCensus","GpuDecoCostProbe","GpuDecoSnapshot"})
         Check(Has(diagnostic)==item.Item2,"diagnostic boundary: "+diagnostic);
     if(!item.Item2)

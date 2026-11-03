@@ -34,7 +34,6 @@ namespace StutterFix
         }
         static bool DrawCollapseGateCommand(string sub)
         {
-            if(NotifyBarrierCommand(sub))return true;
             var args=sub.Split(' ');
             if(sub=="reset")
             {
