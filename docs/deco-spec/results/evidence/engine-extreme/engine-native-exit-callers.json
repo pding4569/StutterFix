@@ -1,0 +1,39 @@
+{
+  "samples": 14942,
+  "frames_sha256": "209254ebb551759b11ceb8a3678ec72168c96c75301170124febce26405c0e0c",
+  "resolved_sha256": "bc5c73fa4cd0b3bef04cef4ad395d159a76c3e191a6a72a413cfc62466e8c346",
+  "wait_leaf_samples": 10,
+  "wait_stacks": [
+    [
+      "[ntdll.dll+0x9E0F4];[KERNELBASE.dll+0x50D00];[Unity] GfxDeviceD3D11::WaitForLastPresentationAndGetTimestamp;[Unity] `InitPlayerLoopCallbacks'::`2'::TimeUpdateWaitForLastPresentationAndUpdateTimeRegistrator::Forward;[Unity] ExecutePlayerLoop;[Unity] ExecuteTimeUpdate;[Unity] PerformMainLoop;[Unity] MainMessageLoop;[Unity] UnityMainImpl;[Unity] UnityMain;[A Dance of Fire and Ice.exe+0x11F6];[KERNEL32.DLL+0x17374];[ntdll.dll+0x4CC91]",
+      10
+    ]
+  ],
+  "memcpy_repmovs_samples": 881,
+  "memcpy_callers": [
+    [
+      "[Unity] memcpy_repmovs;[Unity] ThreadsafeLinearAllocator<0>::Reallocate;[Unity] MemoryManager::Reallocate;[Unity] core::vector<RenderNode,core::allocator<RenderNode,0> >::resize_buffer_nocheck;[Unity] SpriteMaskJobs::SpriteMaskPrepareRendererNodes<0>;[Unity] QueuePrepareIntegrateMainThreadObjects;[Unity] ExtractSceneRenderNodeQueue;[Unity] CullResults::GetOrCreateSharedRendererScene",
+      869
+    ],
+    [
+      "[Unity] memcpy_repmovs;[Unity] ThreadsafeLinearAllocator<0>::Reallocate;[Unity] MemoryManager::Reallocate;[Unity] core::vector<ShaderLab::SerializedProgramParameters::BufferBinding,core::allocator<ShaderLab::SerializedProgramParameters::BufferBinding,0> >::reserve_impl;[Unity] BuildRenderObjectData;[Unity] DoRenderLoop;[Unity] Camera::CustomRender;[Unity] RenderManager::RenderOffscreenCameras",
+      5
+    ],
+    [
+      "[Unity] memcpy_repmovs;[Unity] DoForwardShaderRenderLoop;[Unity] DoRenderLoop;[Unity] Camera::CustomRender;[Unity] RenderManager::RenderOffscreenCameras;[Unity] PlayerRender;[Unity] ExecutePlayerLoop;[Unity] ExecutePlayerLoop",
+      4
+    ],
+    [
+      "[Unity] memcpy_repmovs;[Unity] ThreadsafeLinearAllocator<0>::Reallocate;[Unity] MemoryManager::Reallocate;[Unity] core::vector<ShaderLab::SerializedProgramParameters::BufferBinding,core::allocator<ShaderLab::SerializedProgramParameters::BufferBinding,0> >::reserve_impl;[Unity] BuildRenderObjectData;[Unity] DoRenderLoop;[Unity] Camera::CustomRender;[Unity] Camera::StandaloneCustomRender",
+      1
+    ],
+    [
+      "[Unity] memcpy_repmovs;[Unity] ArrayFromNormFloat;[Unity] SoundHandleAPI::SetData;[Unity] AudioClip_CUSTOM_SetData;(wrapper managed-to-native) UnityEngine.AudioClip:SetData_Injected;UnityEngine.AudioClip:SetData;UnityEngine.AudioClip:SetData;Quartz.Features.Optimizer.HitSoundRenderer:ScheduleSegment",
+      1
+    ],
+    [
+      "[Unity] memcpy_repmovs;[Unity] SharedMeshData::SharedMeshData;[Unity] Mesh::UnshareMeshData;[Unity] Mesh::SetVertices;[Unity] SetMeshComponentFromNativeArrayFromScript;(wrapper managed-to-native) UnityEngine.Mesh:SetArrayForChannelImpl_Injected;UnityEngine.Mesh:SetArrayForChannelImpl;UnityEngine.Mesh:SetSizedArrayForChannel",
+      1
+    ]
+  ]
+}

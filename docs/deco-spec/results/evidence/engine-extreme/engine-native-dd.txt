@@ -1,0 +1,3 @@
+[StutterFix] [자동 시험] phase_window ready markers=182 allocation_sampling=False diagnostic_only=True
+[StutterFix] [자동 시험] [profsamp] 시작 (1000Hz, 메인 스레드 21396, native_unwind=True)
+[StutterFix] [자동 시험] [profsamp] native_unwind=True native_frames=247132 max_depth=32

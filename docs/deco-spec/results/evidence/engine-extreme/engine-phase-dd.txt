@@ -1,0 +1,22 @@
+[StutterFix] [자동 시험] phase_window ready markers=182 allocation_sampling=False diagnostic_only=True
+[StutterFix] [gpuprobe] on sample=1/8 cameras=5 effects=65 install/warmup frames excluded; use on again after scene load
+[StutterFix] [gpuprobe] reset queued (existing hooks and queries retained)
+[StutterFix] [자동 시험] phase_window begin covered_playerloop_markers_only=True
+[StutterFix] [자동 시험] [FPS 구간] engine : 263.2 FPS (3942프레임 14.98초) | 표본 없음
+[StutterFix] [자동 시험] phase_window end frames=3944 CPU_time=False GPU_time=False includes_waits=True 합계 3.80ms | Update/ScriptRunBehaviourUpdate 0.95ms, TimeUpdate/WaitForLastPresentationAndUpdateTime 0.72ms, PreLateUpdate/ScriptRunBehaviourLateUpdate 0.66ms, PostLateUpdate/FinishFrameRendering 0.58ms, PostLateUpdate/PlayerUpdateCanvases 0.23ms, PostLateUpdate/UpdateAllRenderers 0.12ms, PostLateUpdate/UpdateAudio 0.10ms, PreUpdate/SendMouseEvents 0.10ms, PostLateUpdate/PlayerEmitCanvasGeometry 0.04ms, PostLateUpdate/UpdateRectTransform 0.03ms, PreLateUpdate/ParticleSystemBeginUpdateAll 0.02ms, EarlyUpdate/UpdateCanvasRectTransform 0.02ms, EarlyUpdate/UpdateInputManager 0.01ms, TimeUpdate/end 0.01ms, PostLateUpdate/PlayerSendFrameComplete 0.01ms
+[StutterFix] [gpuprobe] render_counter=Draw_Calls_Count scope=whole-frame valid=1 frames=3944 mean=374.673
+[StutterFix] [gpuprobe] render_counter=SetPass_Calls_Count scope=whole-frame valid=1 frames=3944 mean=315.402
+[StutterFix] [gpuprobe] render_counter=Batches_Count scope=whole-frame valid=1 frames=3944 mean=373.674
+[StutterFix] [gpuprobe] render_counter=Triangles_Count scope=whole-frame valid=1 frames=3944 mean=8082.589
+[StutterFix] [gpuprobe] render_counter=Vertices_Count scope=whole-frame valid=1 frames=3944 mean=11953.109
+[StutterFix] [gpuprobe] ready=1 completed=493 requested=494 invalid=0 ring_full=0 overflow=0 not_ready=0 errors=0 effect_outside_camera=0 unknown_camera=0 unknown_effect=0
+[StutterFix] [gpuprobe] frame:first-camera-preCull->end-of-frame active_frames=493 calls=493 mean_frame_ms=3.3190 mean_active_ms=3.3190 max_frame_ms=6.3672
+[StutterFix] [gpuprobe] camera-sum:inclusive active_frames=493 calls=1972 mean_frame_ms=3.3042 mean_active_ms=3.3042 max_frame_ms=6.3355
+[StutterFix] [gpuprobe] camera:BGMovingCam#94234 active_frames=493 calls=493 mean_frame_ms=0.0566 mean_active_ms=0.0566 max_frame_ms=0.2693
+[StutterFix] [gpuprobe] camera:Camera#94236 active_frames=493 calls=493 mean_frame_ms=3.2018 mean_active_ms=3.2018 max_frame_ms=6.2310
+[StutterFix] [gpuprobe] camera:BGStaticCam#94238 active_frames=493 calls=493 mean_frame_ms=0.0091 mean_active_ms=0.0091 max_frame_ms=0.2724
+[StutterFix] [gpuprobe] camera:OverlayCam#94240 active_frames=493 calls=493 mean_frame_ms=0.0366 mean_active_ms=0.0366 max_frame_ms=0.0645
+[StutterFix] [gpuprobe] effect:Camera/ScreenTile#96730 active_frames=23 calls=23 mean_frame_ms=0.0016 mean_active_ms=0.0335 max_frame_ms=0.0348
+[StutterFix] [gpuprobe] residual_frame_minus_cameras_ms=0.0148; effects nested inside camera: DO NOT ADD; nested Camera.Render can double-count cameras; interval is GPU elapsed, not GPU busy
+[StutterFix] [gpuprobe] off (hooks, camera buffers and query release queued)
+[StutterFix] [자동 시험] phase_window off owned_loop_removed=True

@@ -1,0 +1,208 @@
+{
+  "runs": {
+    "engine-native-dd": {
+      "dll_sha256": "814c542cd75689c1406438b48915493f3587fea4fa2568213b90af2c71669309",
+      "returncode": 0,
+      "restored_dll": true,
+      "probe_absent": true,
+      "gpu_default_zero": true,
+      "step_failure": false,
+      "completed": true,
+      "frames_sha256": "0f1c8799335edb1e52b39585f478fe3fc33e13f8966ae378f923d9dc191dc0af",
+      "spec_sha256": "c936311b8a9b9051c3f18034723e62d3b26d23a857b88a29bb0419ba70604410",
+      "raw_log": "E:\\StutterFixWork\\night-results\\engine-native-dd.log",
+      "raw_log_sha256": "86605574c8ef5e74b5c344f96f9d8bc35827f1b4bd55ead4e2b05da563c39698",
+      "valid_ablation": true,
+      "exclusion_reason": null
+    },
+    "engine-native-exit": {
+      "dll_sha256": "814c542cd75689c1406438b48915493f3587fea4fa2568213b90af2c71669309",
+      "returncode": 0,
+      "restored_dll": true,
+      "probe_absent": true,
+      "gpu_default_zero": true,
+      "step_failure": false,
+      "completed": true,
+      "frames_sha256": "209254ebb551759b11ceb8a3678ec72168c96c75301170124febce26405c0e0c",
+      "spec_sha256": "07652ec387cbd5782eda9ac14a23531c0553291ed0d94ffa79ecbd2d1651311f",
+      "raw_log": "E:\\StutterFixWork\\night-results\\engine-native-exit.log",
+      "raw_log_sha256": "87947d51d9f424d97f42ddda11f0ea4591ecd16dce84c9978fd1d84f1ea954f7",
+      "valid_ablation": true,
+      "exclusion_reason": null
+    },
+    "engine-phase-dd-all-v2": {
+      "dll_sha256": "814c542cd75689c1406438b48915493f3587fea4fa2568213b90af2c71669309",
+      "returncode": 0,
+      "restored_dll": true,
+      "probe_absent": true,
+      "gpu_default_zero": true,
+      "step_failure": false,
+      "completed": true,
+      "split_retained": true,
+      "spec_sha256": "c623a5df289c0e131a133e617a94880d4bef6d2a61ced86dc2af067ad01d1c9c",
+      "raw_log": "E:\\StutterFixWork\\night-results\\engine-phase-dd-all-v2.log",
+      "raw_log_sha256": "9a52139c6c8549334c709999dee3d6c1ba9ceae575edd1cbaf56d4b8a7a72526",
+      "valid_ablation": true,
+      "exclusion_reason": null,
+      "diagnostic_fps": 123.6,
+      "diagnostic_frame_ms_from_rounded_fps": 8.090614886731393
+    },
+    "engine-phase-dd-all": {
+      "dll_sha256": "659dac4eb9655492b9e3980e3bc4f2f8500dbe91f40b15743454881bd0dd3138",
+      "returncode": 0,
+      "restored_dll": true,
+      "probe_absent": true,
+      "gpu_default_zero": true,
+      "step_failure": false,
+      "completed": true,
+      "spec_sha256": "eb59d6e3901838cc1f4b03fc1b4432a6d36299b1862158dd44503f16b04b7c14",
+      "raw_log": "E:\\StutterFixWork\\night-results\\engine-phase-dd-all.log",
+      "raw_log_sha256": "16f6fa9aaf6382d4abdd233e8150b516a759b19f62ad35fb0b15e0d93ad6f35a",
+      "valid_ablation": false,
+      "exclusion_reason": "gpuprobe on cleared the earlier gpusplit hide",
+      "diagnostic_fps": 261.1,
+      "diagnostic_frame_ms_from_rounded_fps": 3.829950210647261
+    },
+    "engine-phase-dd-deco-image": {
+      "dll_sha256": "659dac4eb9655492b9e3980e3bc4f2f8500dbe91f40b15743454881bd0dd3138",
+      "returncode": 0,
+      "restored_dll": true,
+      "probe_absent": true,
+      "gpu_default_zero": true,
+      "step_failure": false,
+      "completed": true,
+      "spec_sha256": "b2bebeb5c58ed37ceec76a57b90eba435532e587dc372c0057be0589ea1e072d",
+      "raw_log": "E:\\StutterFixWork\\night-results\\engine-phase-dd-deco-image.log",
+      "raw_log_sha256": "4a7250e15b1926e4694227b77e20aecee8ee97d7b7376406fe41420f6c4e8072",
+      "valid_ablation": false,
+      "exclusion_reason": "gpuprobe on cleared the earlier gpusplit hide",
+      "diagnostic_fps": 261.6,
+      "diagnostic_frame_ms_from_rounded_fps": 3.82262996941896
+    },
+    "engine-phase-dd-deco-particle": {
+      "dll_sha256": "659dac4eb9655492b9e3980e3bc4f2f8500dbe91f40b15743454881bd0dd3138",
+      "returncode": 0,
+      "restored_dll": true,
+      "probe_absent": true,
+      "gpu_default_zero": true,
+      "step_failure": false,
+      "completed": true,
+      "spec_sha256": "9a09256cf81050b10719d8003a3155243fd8e910fb3a30f6db88237e99d35b4d",
+      "raw_log": "E:\\StutterFixWork\\night-results\\engine-phase-dd-deco-particle.log",
+      "raw_log_sha256": "25164d5181df119fdc284e78ae4fdab0aaf268511d0e025ce32d4f74b74f118e",
+      "valid_ablation": false,
+      "exclusion_reason": "gpuprobe on cleared the earlier gpusplit hide",
+      "diagnostic_fps": 262.8,
+      "diagnostic_frame_ms_from_rounded_fps": 3.8051750380517504
+    },
+    "engine-phase-dd": {
+      "dll_sha256": "659dac4eb9655492b9e3980e3bc4f2f8500dbe91f40b15743454881bd0dd3138",
+      "returncode": 0,
+      "restored_dll": true,
+      "probe_absent": true,
+      "gpu_default_zero": true,
+      "step_failure": false,
+      "completed": true,
+      "spec_sha256": "f72828cd7387f39a0195515b02b6d73ed4556bf60f05d7c61a39c4e122d19103",
+      "raw_log": "E:\\StutterFixWork\\night-results\\engine-phase-dd.log",
+      "raw_log_sha256": "15b9e4ab630b7b2b1dce02f26fb9ec851aebd9f91503f661e600d5ef689a451c",
+      "valid_ablation": true,
+      "exclusion_reason": null,
+      "diagnostic_fps": 263.2,
+      "diagnostic_frame_ms_from_rounded_fps": 3.799392097264438
+    }
+  },
+  "native": {
+    "dd": {
+      "samples": 14931,
+      "frames_sha256": "0f1c8799335edb1e52b39585f478fe3fc33e13f8966ae378f923d9dc191dc0af",
+      "resolved_sha256": "60a6d7ac6a6d16e7588a2af132a7b25e07d7881bfb8340352b9dbcb3a6503deb",
+      "wait_leaf_samples": 2337,
+      "wait_stacks": [
+        [
+          "[ntdll.dll+0x9E0F4];[KERNELBASE.dll+0x50D00];[Unity] GfxDeviceD3D11::WaitForLastPresentationAndGetTimestamp;[Unity] `InitPlayerLoopCallbacks'::`2'::TimeUpdateWaitForLastPresentationAndUpdateTimeRegistrator::Forward;[Unity] ExecutePlayerLoop;[Unity] ExecuteTimeUpdate;[Unity] PerformMainLoop;[Unity] MainMessageLoop;[Unity] UnityMainImpl;[Unity] UnityMain;[A Dance of Fire and Ice.exe+0x11F6];[KERNEL32.DLL+0x17374];[ntdll.dll+0x4CC91]",
+          2337
+        ]
+      ],
+      "memcpy_repmovs_samples": 144,
+      "memcpy_callers": [
+        [
+          "[Unity] memcpy_repmovs;[Unity] ThreadsafeLinearAllocator<0>::Reallocate;[Unity] MemoryManager::Reallocate;[Unity] core::vector<RenderNode,core::allocator<RenderNode,0> >::resize_buffer_nocheck;[Unity] SpriteMaskJobs::SpriteMaskPrepareRendererNodes<0>;[Unity] QueuePrepareIntegrateMainThreadObjects;[Unity] ExtractSceneRenderNodeQueue;[Unity] CullResults::GetOrCreateSharedRendererScene",
+          135
+        ],
+        [
+          "[Unity] memcpy_repmovs;[Unity] DoForwardShaderRenderLoop;[Unity] DoRenderLoop;[Unity] Camera::CustomRender;[Unity] RenderManager::RenderOffscreenCameras;[Unity] PlayerRender;[Unity] ExecutePlayerLoop;[Unity] ExecutePlayerLoop",
+          5
+        ],
+        [
+          "[Unity] memcpy_repmovs;[Unity] ArrayFromNormFloat;[Unity] SoundHandleAPI::SetData;[Unity] AudioClip_CUSTOM_SetData;(wrapper managed-to-native) UnityEngine.AudioClip:SetData_Injected;UnityEngine.AudioClip:SetData;UnityEngine.AudioClip:SetData;Quartz.Features.Optimizer.HitSoundRenderer:ScheduleSegment",
+          2
+        ],
+        [
+          "[Unity] memcpy_repmovs;[Unity] ThreadsafeLinearAllocator<0>::Reallocate;[Unity] MemoryManager::Reallocate;[Unity] core::vector<ShaderLab::SerializedProgramParameters::BufferBinding,core::allocator<ShaderLab::SerializedProgramParameters::BufferBinding,0> >::reserve_impl;[Unity] BuildRenderObjectData;[Unity] DoRenderLoop;[Unity] Camera::CustomRender;[Unity] RenderManager::RenderOffscreenCameras",
+          1
+        ],
+        [
+          "[Unity] memcpy_repmovs;[Unity] SharedMeshData::SharedMeshData;[Unity] Mesh::UnshareMeshData;[Unity] Mesh::SetVertices;[Unity] SetMeshComponentFromNativeArrayFromScript;(wrapper managed-to-native) UnityEngine.Mesh:SetArrayForChannelImpl_Injected;UnityEngine.Mesh:SetArrayForChannelImpl;UnityEngine.Mesh:SetSizedArrayForChannel",
+          1
+        ]
+      ]
+    },
+    "exit": {
+      "samples": 14942,
+      "frames_sha256": "209254ebb551759b11ceb8a3678ec72168c96c75301170124febce26405c0e0c",
+      "resolved_sha256": "bc5c73fa4cd0b3bef04cef4ad395d159a76c3e191a6a72a413cfc62466e8c346",
+      "wait_leaf_samples": 10,
+      "wait_stacks": [
+        [
+          "[ntdll.dll+0x9E0F4];[KERNELBASE.dll+0x50D00];[Unity] GfxDeviceD3D11::WaitForLastPresentationAndGetTimestamp;[Unity] `InitPlayerLoopCallbacks'::`2'::TimeUpdateWaitForLastPresentationAndUpdateTimeRegistrator::Forward;[Unity] ExecutePlayerLoop;[Unity] ExecuteTimeUpdate;[Unity] PerformMainLoop;[Unity] MainMessageLoop;[Unity] UnityMainImpl;[Unity] UnityMain;[A Dance of Fire and Ice.exe+0x11F6];[KERNEL32.DLL+0x17374];[ntdll.dll+0x4CC91]",
+          10
+        ]
+      ],
+      "memcpy_repmovs_samples": 881,
+      "memcpy_callers": [
+        [
+          "[Unity] memcpy_repmovs;[Unity] ThreadsafeLinearAllocator<0>::Reallocate;[Unity] MemoryManager::Reallocate;[Unity] core::vector<RenderNode,core::allocator<RenderNode,0> >::resize_buffer_nocheck;[Unity] SpriteMaskJobs::SpriteMaskPrepareRendererNodes<0>;[Unity] QueuePrepareIntegrateMainThreadObjects;[Unity] ExtractSceneRenderNodeQueue;[Unity] CullResults::GetOrCreateSharedRendererScene",
+          869
+        ],
+        [
+          "[Unity] memcpy_repmovs;[Unity] ThreadsafeLinearAllocator<0>::Reallocate;[Unity] MemoryManager::Reallocate;[Unity] core::vector<ShaderLab::SerializedProgramParameters::BufferBinding,core::allocator<ShaderLab::SerializedProgramParameters::BufferBinding,0> >::reserve_impl;[Unity] BuildRenderObjectData;[Unity] DoRenderLoop;[Unity] Camera::CustomRender;[Unity] RenderManager::RenderOffscreenCameras",
+          5
+        ],
+        [
+          "[Unity] memcpy_repmovs;[Unity] DoForwardShaderRenderLoop;[Unity] DoRenderLoop;[Unity] Camera::CustomRender;[Unity] RenderManager::RenderOffscreenCameras;[Unity] PlayerRender;[Unity] ExecutePlayerLoop;[Unity] ExecutePlayerLoop",
+          4
+        ],
+        [
+          "[Unity] memcpy_repmovs;[Unity] ThreadsafeLinearAllocator<0>::Reallocate;[Unity] MemoryManager::Reallocate;[Unity] core::vector<ShaderLab::SerializedProgramParameters::BufferBinding,core::allocator<ShaderLab::SerializedProgramParameters::BufferBinding,0> >::reserve_impl;[Unity] BuildRenderObjectData;[Unity] DoRenderLoop;[Unity] Camera::CustomRender;[Unity] Camera::StandaloneCustomRender",
+          1
+        ],
+        [
+          "[Unity] memcpy_repmovs;[Unity] ArrayFromNormFloat;[Unity] SoundHandleAPI::SetData;[Unity] AudioClip_CUSTOM_SetData;(wrapper managed-to-native) UnityEngine.AudioClip:SetData_Injected;UnityEngine.AudioClip:SetData;UnityEngine.AudioClip:SetData;Quartz.Features.Optimizer.HitSoundRenderer:ScheduleSegment",
+          1
+        ],
+        [
+          "[Unity] memcpy_repmovs;[Unity] SharedMeshData::SharedMeshData;[Unity] Mesh::UnshareMeshData;[Unity] Mesh::SetVertices;[Unity] SetMeshComponentFromNativeArrayFromScript;(wrapper managed-to-native) UnityEngine.Mesh:SetArrayForChannelImpl_Injected;UnityEngine.Mesh:SetArrayForChannelImpl;UnityEngine.Mesh:SetSizedArrayForChannel",
+          1
+        ]
+      ]
+    }
+  },
+  "symbols": {
+    "unity_sha256": "7e362b4c6ecee6fb493b1872cda5a5a0caf44f3b131b3c4bad132f0d1309f436",
+    "unity_rsds": [
+      {
+        "guid": "0bd60840-8142-4c16-9079-d97bfe021469",
+        "age": 1,
+        "pdb": "C:\\build\\output\\unity\\unity\\artifacts\\UnityPlayer\\Win_x64_VS2022_VB_MT_nondev_m_m\\UnityPlayer_Win64_player_mono_x64.pdb"
+      }
+    ],
+    "pdb": "E:\\StutterFixWork\\symbols\\UnityPlayer_Win64_player_mono_x64.pdb\\0BD6084081424C169079D97BFE0214691\\UnityPlayer_Win64_player_mono_x64.pdb",
+    "pdb_sha256": "0b5b8a58f3a1a3eb1922c855bc8fb6f4b5c0bf04bbef2c3e6937f3e6c0715ce0"
+  },
+  "final_integrity": {
+    "restored_dll": true,
+    "probe_absent": true,
+    "gpu_default_zero": true
+  }
+}

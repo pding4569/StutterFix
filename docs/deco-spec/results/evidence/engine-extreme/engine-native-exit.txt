@@ -1,0 +1,2 @@
+[StutterFix] [자동 시험] [profsamp] 시작 (1000Hz, 메인 스레드 19752, native_unwind=True)
+[StutterFix] [자동 시험] [profsamp] native_unwind=True native_frames=262281 max_depth=32
