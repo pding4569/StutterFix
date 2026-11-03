@@ -680,6 +680,7 @@ namespace StutterFix
         internal static bool DynExcludedZero(int item)=>gpuDynZero!=null && (uint)item<(uint)gpuDynZero.Length && gpuDynZero[item];
         static bool DynAlphaZero(int master)
         {
+            if(G1DrawHidden(master))return true;
             float a=EvalMasterSlotCurrent(master*16+10),b=EvalMasterSlotCurrent(master*16+11);
             return !(a>0f) || !(b>0f);
         }

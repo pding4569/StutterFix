@@ -35,7 +35,6 @@ namespace StutterFix
             if(!g1Initial.TryGetValue(d,out var s)){row.Reasons.Add("초기 부가 상태 없음");return;}
             var v=(scrVisualDecoration)d;
             if(f.depthUsed && (d.syncFloorDepth || f.targetDepth!=s.Depth))row.Reasons.Add("깊이 변경");
-            if(f.visibleUsed && f.visible!=s.Visible)row.Reasons.Add("가시성 변경");
             if(f.cropPivotOffsetUsed && f.targetCropPivotOffset/100f!=s.Crop)row.Reasons.Add("크롭 변경");
             if(f.smoothingUsed && f.targetSmoothing!=s.Smooth)row.Reasons.Add("부드럽게 변경");
             if(f.originalSizeUsed)
@@ -58,6 +57,38 @@ namespace StutterFix
                 if(s.FrontLayer!=SortingLayer.NameToID(front>=0?"Bg":"Default") || s.FrontOrder!=-front+1
                     || s.BackLayer!=SortingLayer.NameToID(back>=0?"Bg":"Default") || s.BackOrder!=-back)
                     row.Reasons.Add("마스크 깊이 변경");
+            }
+        }
+        static bool[] g1DrawVisible=Array.Empty<bool>();
+        static readonly AccessTools.FieldRef<scrDecoration,bool> g1ForceHide = AccessTools.FieldRefAccess<scrDecoration,bool>("forceHide");
+        static void CaptureG1DrawState()
+        {
+            g1DrawVisible=new bool[gpuLiveOwnedIndices.Length];
+            for(int m=0;m<g1DrawVisible.Length;m++)g1DrawVisible[m]=gpuLiveOwnedRenderers[m].enabled;
+        }
+        static bool G1DrawHidden(int master)=>(uint)master<(uint)g1DrawVisible.Length && !g1DrawVisible[master];
+        internal static bool G1VisibilityConsistent(scrVisualDecoration d)=>d.spriteRenderer.enabled==g1RendererEnabled(d);
+        static void SyncG1CollapseItem(int item)
+        {
+            if(!gpuCollapseOn || gpuCollapseMapCpu==null || gpuCollapseSlotOfItem==null || !gpuCollapseIncluded[item])return;
+            int slot=gpuCollapseSlotOfItem[item];if(slot<0)return;
+            uint value=G1DrawHidden(gpuLiveSlices[0].MasterItems[item])?uint.MaxValue:(uint)item;
+            if(gpuCollapseMapCpu[slot]==value)return;
+            gpuCollapseMapCpu[slot]=value;
+            gpuCollapseAllMap?.SetData(gpuCollapseMapCpu,slot,slot,1);
+        }
+        static void ApplyG1Visible(ffxMoveDecorationsPlus f,int master,scrDecoration d)
+        {
+            if(!f.visibleUsed)return;
+            bool visible=f.visible && !g1ForceHide(d);
+            d.SetVisible(visible); // Keep rendererEnabled separate from the physically suppressed CPU renderer.
+            g1DrawVisible[master]=visible;
+            var r=gpuLiveOwnedRenderers[master];r.forceRenderingOff=true;
+            if(DrawCollapsePolicy.DisableOwnedRenderers){gpuLiveEnabledOff[master]=true;r.enabled=false;}
+            for(int s=0;s<gpuLiveSlices.Count;s++)
+            {
+                int item=gpuLiveMasterToSliceItem[master][s];
+                if(item>=0)gpuLiveSlices[s].RefreshItem(item);
             }
         }
     }

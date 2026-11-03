@@ -160,7 +160,7 @@ namespace StutterFix
         internal static bool BeginGpuPacket(ffxMoveDecorationsPlus fx,List<scrDecoration> targets)
         {
             gpuPacketCurrent=null;
-            if(fx.imageFilenameUsed)return false; // Image side effects remain in target order.
+            if(fx.imageFilenameUsed || fx.visibleUsed)return false; // Discrete side effects remain in target order.
             if(gpuPacketMode==0 || !gpuLiveActive || gpuPacketGeneration!=generation)return false;
             if(!gpuPackets.TryGetValue(fx.GetInstanceID(),out var p)){gpuPacketUnplanned++;return false;}
             if(targets.Count!=p.Targets.Length)

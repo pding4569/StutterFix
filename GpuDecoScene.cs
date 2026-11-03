@@ -224,7 +224,7 @@ namespace StutterFix
             var r = d.spriteRenderer;
             // At t=0 (gpudeco live prepare), decorations that fade in during 258..276s have alpha==0 (d.GetVisible()==false).
             // Do not reject by current alpha here; VisibleInWindow already verified window visibility.
-            if (!r || !d.pivotTrans || !r.enabled || !r.gameObject.activeInHierarchy
+            if (!r || !d.pivotTrans || !DecoBake.G1VisibilityConsistent(d) || !r.gameObject.activeInHierarchy
                 || (r.forceRenderingOff && !InvisibleSkip.IsHidden(d))) return "inactive";
             var p = d.parallax;
             if (p && (!Inited(p) || p.cameraTransform == null))

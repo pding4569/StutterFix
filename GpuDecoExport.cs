@@ -73,14 +73,15 @@ namespace StutterFix
             internal bool Independent=>GpuDecoNativeBatch.Enabled && Renderers.Count==MasterItems.Length;
             bool HiddenAlpha(int item)
             {
+                if(G1DrawHidden(MasterItems[item]))return true;
                 var a=Channels[item*16+10];var b=Channels[item*16+11];
                 return GpuDecoAlphaPolicy.Hidden(a.end,a.sourceIndex,b.end,b.sourceIndex);
             }
             void ApplyAlpha(int item)
             {
                 var r=Renderers[item];if(!r)return;
-                if(active && gpuCollapseOn){CollapseSpanAlpha(item,HiddenAlpha(item));ValidateDrawCollapseItem(item);}
-                bool wanted=active && !gpuRenderMergeOn && (!gpuCollapseOn || DrawCollapseTextureFallback(item)) && (!Independent || !GpuCpuFallback(MasterItems[item])) && (!gpuZeroAlpha || !Independent || !HiddenAlpha(item)) && !DynExcludedZero(item);
+                if(active && gpuCollapseOn){SyncG1CollapseItem(item);CollapseSpanAlpha(item,HiddenAlpha(item));ValidateDrawCollapseItem(item);}
+                bool wanted=active && !G1DrawHidden(MasterItems[item]) && !gpuRenderMergeOn && (!gpuCollapseOn || DrawCollapseTextureFallback(item)) && (!Independent || !GpuCpuFallback(MasterItems[item])) && (!gpuZeroAlpha || !Independent || !HiddenAlpha(item)) && !DynExcludedZero(item);
                 CopyMask?.Set(item,wanted);
                 if(r.enabled!=wanted){
 #if DEV || AUTOTEST
@@ -220,7 +221,7 @@ namespace StutterFix
             {
                 gpuLiveEnabledOff[i] = false;
                 var r = gpuLiveOwnedRenderers[i];
-                try { if (r && !r.enabled) r.enabled = true; } catch { }
+                try { if (r) r.enabled = !G1DrawHidden(i); } catch { }
             }
         }
         static int[][] gpuLiveMasterToSliceItem = Array.Empty<int[]>();
@@ -323,6 +324,7 @@ namespace StutterFix
                 // 되돌리기용 장식별 16채널 복사는 오류 주입 시험일 때만 필요하다(사전 검증은 위에서 끝났고 Apply 는 배열 대입뿐).
                 if(GpuRecoveryTesting){SaveGpuTarget(masterIdx,d);captured=true;}
                 ApplyGpuLiveEffectToTarget(fx, masterIdx, d);
+                ApplyG1Visible(fx,masterIdx,d);
                 gpuLiveSkippedRecs+=keys;return true;
             }
             catch(Exception ex)
@@ -973,7 +975,7 @@ namespace StutterFix
                     if (!r || !r.gameObject.scene.IsValid() || (!(gpuRenderMergePrepare || gpuCollapsePrepare) && (!r.enabled || !r.gameObject.activeInHierarchy))
                         || (cam.cullingMask & (1 << r.gameObject.layer)) == 0) continue;
                     int candIdx;
-                    bool isOwned = candidateByRenderer.TryGetValue(r.GetInstanceID(), out candIdx) && r.enabled && r.gameObject.activeInHierarchy;
+                    bool isOwned = candidateByRenderer.TryGetValue(r.GetInstanceID(), out candIdx) && r.gameObject.activeInHierarchy;
                     if (!isOwned && r.forceRenderingOff && !(gpuRenderMergePrepare || gpuCollapsePrepare)) continue;
                     if (r.GetComponentInParent<SortingGroup>()) continue;
                     var materials = r.sharedMaterials;
@@ -1547,6 +1549,7 @@ namespace StutterFix
             try
             {
             ClassifyGpuActivationOwnership();ActMark("소유분류");
+            CaptureG1DrawState();
             ClassifyPacketTargetGuards();ActMark("패킷분류");
             for (int i = 0; i < gpuLiveOwnedRenderers.Length; i++)
             {
