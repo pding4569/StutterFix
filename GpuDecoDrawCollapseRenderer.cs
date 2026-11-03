@@ -1407,39 +1407,35 @@ namespace StutterFix
             GpuLog("DRAWCOLLAPSE_FALLBACK reason="+reason.Replace('\r',' ').Replace('\n',' ')
                 +" independent_restored=True");
         }
-        static void DispatchDrawCollapse(double time)
+        static void DispatchDrawCollapse(double time,Vector4 camera,float orthoSize)
         {
             if(DrawCollapsePolicy.SkipPausedCompute && GpuPlaybackState.Paused && gpuCollapseSpans.Count>0 && gpuCollapseSpans[0].Renderer.enabled)return;
             var source=gpuLiveSlices[0];
             if(DrawCollapsePolicy.GlobalVerts && DrawCollapsePolicy.DirectDispatch)
             {
-                var camd=ADOBase.controller.camy;var ctd=camd.transform;
-                float camScaleD=camd.camobj.orthographicSize*.2f/gpuLiveZoomFactor;
                 Vector4 clipD=Vector4.zero;
                 if(DrawCollapsePolicy.ClipOffscreen)
                 {
-                    var co=camd.camobj;float halfH=co.orthographicSize*1.05f+.5f,halfW=halfH*co.aspect;float rad=ctd.eulerAngles.z*Mathf.Deg2Rad;
+                    float halfH=orthoSize*1.05f+.5f,halfW=halfH*ADOBase.controller.camy.camobj.aspect;float rad=camera.z*Mathf.Deg2Rad;
                     clipD=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
                 }
                 source.Gpu.DispatchCollapseAllDirect(gpuCollapseTexture,gpuCollapseAllVerts,gpuCollapseAllMap,gpuCollapseAllCount,
-                    new Vector4(ctd.position.x,ctd.position.y,ctd.eulerAngles.z,camScaleD),time,clipD);
+                    camera,time,clipD);
                 foreach(var s in gpuCollapseSpans)if(s.Renderer.enabled==DrawCollapsePolicy.HideProxies)s.Renderer.enabled=!DrawCollapsePolicy.HideProxies;
             }
             else if(GpuDecoPlayer.Product && DrawCollapsePolicy.GlobalVerts && DrawCollapsePolicy.MinimalDispatch)
             {
-                var camm=ADOBase.controller.camy;var ctm=camm.transform;
-                float camScaleM=camm.camobj.orthographicSize*.2f/gpuLiveZoomFactor;
                 Vector4 clipM=Vector4.zero;
                 if(DrawCollapsePolicy.ClipOffscreen)
                 {
-                    var co=camm.camobj;float halfH=(co.orthographicSize*1.05f+.5f)*DrawCollapsePolicy.ClipScale,halfW=halfH*co.aspect;float rad=ctm.eulerAngles.z*Mathf.Deg2Rad;
+                    float halfH=(orthoSize*1.05f+.5f)*DrawCollapsePolicy.ClipScale,halfW=halfH*ADOBase.controller.camy.camobj.aspect;float rad=camera.z*Mathf.Deg2Rad;
                     clipM=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
                 }
 #if AUTOTEST
                 long ex0=Stopwatch.GetTimestamp();
 #endif
                 source.Gpu.DispatchCollapseMinimal(gpuCollapseTexture,gpuCollapseAllVerts,gpuCollapseAllMap,gpuCollapseAllCount,
-                    new Vector4(ctm.position.x,ctm.position.y,ctm.eulerAngles.z,camScaleM),time,clipM);
+                    camera,time,clipM);
 #if AUTOTEST
                 long ex1=Stopwatch.GetTimestamp();
 #endif
@@ -1462,18 +1458,16 @@ namespace StutterFix
                         source.Gpu.RecordCollapse(gpuCollapseTexture,tg,mp,ct);
                     }
                 }
-                var camy=ADOBase.controller.camy;var ctf=camy.transform;
-                float camScale=camy.camobj.orthographicSize*.2f/gpuLiveZoomFactor;
                 Vector4 clip=Vector4.zero;
                 if(DrawCollapsePolicy.ClipOffscreen)
                 {
-                    var co=camy.camobj;float halfH=co.orthographicSize*1.05f+.5f,halfW=halfH*co.aspect;float rad=ctf.eulerAngles.z*Mathf.Deg2Rad;
+                    float halfH=orthoSize*1.05f+.5f,halfW=halfH*ADOBase.controller.camy.camobj.aspect;float rad=camera.z*Mathf.Deg2Rad;
                     clip=new Vector4(Mathf.Cos(rad),Mathf.Sin(rad),halfW,halfH);
                 }
 #if AUTOTEST
                 long ex0=Stopwatch.GetTimestamp();
 #endif
-                source.Gpu.ExecuteRecordedCollapse(new Vector4(ctf.position.x,ctf.position.y,ctf.eulerAngles.z,camScale),time,clip);
+                source.Gpu.ExecuteRecordedCollapse(camera,time,clip);
 #if AUTOTEST
                 long ex1=Stopwatch.GetTimestamp();
 #endif

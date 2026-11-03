@@ -626,13 +626,13 @@ namespace StutterFix
         // Request B.1 & B.2: Advance all active sources once per frame by shared dt and evaluate double easing on CPU.
         static void AdvanceGpuLiveSources()
         {
-            if (gpuLiveLastSourceStepFrame == Time.frameCount) return;
-            gpuLiveLastSourceStepFrame = Time.frameCount;
+            int fc=Time.frameCount;
+            if (gpuLiveLastSourceStepFrame == fc) return;
+            gpuLiveLastSourceStepFrame = fc;
             if (!ADOBase.controller || ADOBase.controller.paused || Time.timeScale == 0) return;
             float dt = (DOTween.useSmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime) * DOTween.timeScale;
             if (dt < 1e-6f && dt > -1e-6f) return;
             if (!DecoBakeCore.Finite(dt) || dt <= 0f) return;
-            int fc = Time.frameCount;
             for (int i = 0; i < gpuActiveSourceSlots.Count;)
             {
                 int slot = gpuActiveSourceSlots[i];
@@ -1335,8 +1335,10 @@ namespace StutterFix
 #endif
             var camy = ADOBase.controller.camy;
             var ct = camy.transform;
-            float camScale = camy.camobj.orthographicSize * .2f / gpuLiveZoomFactor;
-            var camera=new Vector4(ct.position.x, ct.position.y, ct.eulerAngles.z, camScale);
+            float orthoSize=camy.camobj.orthographicSize;
+            float camScale = orthoSize * .2f / gpuLiveZoomFactor;
+            var position=ct.position;
+            var camera=new Vector4(position.x, position.y, ct.eulerAngles.z, camScale);
 #if AUTOTEST
             long cm1=Stopwatch.GetTimestamp();
 #endif
@@ -1358,7 +1360,7 @@ namespace StutterFix
 #if AUTOTEST
                 long dd0=Stopwatch.GetTimestamp();
 #endif
-                DispatchDrawCollapse(time); // Direct representative VBs; independent copies only for texture overflow.
+                DispatchDrawCollapse(time,camera,orthoSize); // Direct representative VBs; independent copies only for texture overflow.
 #if AUTOTEST
                 gpuCostDdTicks+=Stopwatch.GetTimestamp()-dd0;
 #endif
@@ -1408,8 +1410,10 @@ namespace StutterFix
         // after all Update/FastMove/DecoAnim and camera LateUpdate work, before any Camera renders.
         internal static void GpuLiveFrame()
         {
-            if (!gpuLiveActive || gpuLiveLastDispatchFrame == Time.frameCount) return;
-            gpuLiveLastDispatchFrame = Time.frameCount;
+            if (!gpuLiveActive) return;
+            int frame=Time.frameCount;
+            if (gpuLiveLastDispatchFrame == frame) return;
+            gpuLiveLastDispatchFrame = frame;
             try
             {
 #if AUTOTEST

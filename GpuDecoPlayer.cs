@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -760,15 +760,18 @@ namespace StutterFix
                 if(GpuCpuFallback(master))continue;
                 var original=gpuLiveOwnedRenderers[master];
                 int item=gpuLiveMasterToSliceItem[master][0];
-                RequireLive(original && ((original.sprite && original.sprite.texture) || G1ExpectedEmpty(master)) && item>=0 && slice.Renderers[item], "소유 장식 또는 GPU 렌더러 소실");
+                var sprite=original?original.sprite:null;
+                var texture=sprite?sprite.texture:null;
+                RequireLive(original && (texture || G1ExpectedEmpty(master)) && item>=0 && slice.Renderers[item], "소유 장식 또는 GPU 렌더러 소실");
                 RequireLive(original.enabled==(DrawCollapsePolicy.DisableOwnedRenderers?false:!G1DrawHidden(master))
                     && original.gameObject.activeInHierarchy && original.forceRenderingOff, "다른 처리에서 소유 렌더러 상태 변경");
                 RequireLive(original.maskInteraction==SpriteMaskInteraction.None && !original.GetComponentInParent<SortingGroup>(), "소유 장식 마스크 또는 정렬 그룹 변경");
                 var material=original.sharedMaterial;
-                RequireLive(material && material.shader && material.shader.name=="Sprites/Tile" && material.passCount==1
+                var shader=material?material.shader:null;
+                RequireLive(material && shader && shader.name=="Sprites/Tile" && material.passCount==1
                     && material.GetInstanceID()==slice.Data.Items[item].MaterialId, "소유 장식 재질 변경");
                 if(!GpuImageActor(gpuLiveOwnedIndices[master]))
-                    RequireLive(original.sprite.texture.GetInstanceID()==slice.Data.Items[item].TextureId, "준비하지 않은 텍스처 변경");
+                    RequireLive(texture.GetInstanceID()==slice.Data.Items[item].TextureId, "준비하지 않은 텍스처 변경");
             }
             if(gpuLiveOwnedIndices.Length>0)playerOwnedCursor%=gpuLiveOwnedIndices.Length;
         }
