@@ -50,28 +50,6 @@ namespace StutterFix
 
         internal static void TrimBoundsFor(Dictionary<int,Texture2D> textures){if(gpuLiveShader&&gpuLiveShader.HasKernel("AlphaBounds"))ComputeTrimBounds(gpuLiveShader,textures);}
         internal static bool TryGetTrimBounds(Texture2D t,out Vector4 b)=>gpuTrimBounds.TryGetValue(t.GetInstanceID(),out b);
-        // 라이브 내보내기 때 일반 소유 장식(스프라이트가 바뀌지 않는 것)의 정점·UV 를 미리 좁힌다. 텍스처 알파 범위는 필요할 때 한 번 구해 둔다.
-        static int gpuTrimStaticMips,gpuTrimStaticCalls,gpuTrimStaticSmall,gpuTrimStaticNoBounds,gpuTrimStaticNotQuad,gpuTrimStaticSame,gpuTrimStaticDone;
-        static bool TrimStaticSprite(Sprite sp,out Vector2[] vertices,out Vector2[] uvs)
-        {
-            vertices=sp?sp.vertices:null;uvs=sp?sp.uv:null;gpuTrimStaticCalls++;
-            if(!DrawCollapsePolicy.TightAllOwned||!sp||!sp.texture||gpuLiveShader==null||!gpuLiveShader.HasKernel("AlphaBounds"))return false;
-            var t=sp.texture;
-            if(t.mipmapCount!=1){gpuTrimStaticMips++;return false;}
-            if(Math.Max(t.width,t.height)<DrawCollapsePolicy.TightMinSide){gpuTrimStaticSmall++;return false;}
-            if(!gpuTrimBounds.ContainsKey(t.GetInstanceID()))
-            {
-                var one=new Dictionary<int,Texture2D>{{t.GetInstanceID(),t}};
-                ComputeTrimBounds(gpuLiveShader,one);
-            }
-            if(!gpuTrimBounds.ContainsKey(t.GetInstanceID())){gpuTrimStaticNoBounds++;return false;}
-            var v=GpuDecoImageVariant.CaptureSprite(sp);
-            if(v.Status!=GpuDecoImageVariant.Kind.ReadyQuad){gpuTrimStaticNotQuad++;return false;}
-            var tv=TightVariant(v,t);
-            if(ReferenceEquals(tv,v)){gpuTrimStaticSame++;return false;}
-            vertices=tv.Vertices;uvs=tv.UV;gpuTrimStaticDone++;return true;
-        }
-        internal static string TrimStaticStats()=>"static_calls="+gpuTrimStaticCalls+" small="+gpuTrimStaticSmall+" mips="+gpuTrimStaticMips+" no_bounds="+gpuTrimStaticNoBounds+" not_quad="+gpuTrimStaticNotQuad+" same="+gpuTrimStaticSame+" trimmed="+gpuTrimStaticDone;
         // 원본 변형의 정점·UV 를 불투명 범위로 좁힌 복사본을 돌려준다(줄일 수 없으면 원본 그대로).
         static GpuDecoImageVariant TightVariant(GpuDecoImageVariant v,Texture2D texture)
         {

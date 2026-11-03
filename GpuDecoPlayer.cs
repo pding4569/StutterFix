@@ -680,7 +680,6 @@ namespace StutterFix
             }
             ActMark("계획(재구성)");
             {
-                ApplyBarrierClones();ActMark("장벽복제");
                 if (reuseTry)
                 {
                     try { ValidateDrawCollapse(); ActMark("전수검증(계획 재사용)"); }
@@ -688,10 +687,8 @@ namespace StutterFix
                     {
                         // 중간 시작 상태가 준비 때 계획과 어긋남: 예전처럼 다시 계획한다.
                         Main.Entry.Logger.Log("[GPU 장식] 중간 시작: 준비 때 계획이 맞지 않아 다시 계획함 (" + e.GetType().Name + ")");
-                        RestoreBarrierClones();
                         foreach (var sl in gpuLiveSlices) foreach (var rr in sl.Renderers) if (rr && rr.enabled) rr.enabled = false;
                         RebuildDrawCollapse();ActMark("계획(재구성)");
-                        ApplyBarrierClones();
                         ValidateDrawCollapse();ActMark("전수검증");
                     }
                 }

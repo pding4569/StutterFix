@@ -952,7 +952,6 @@ namespace StutterFix
                     if (sp.vertices.Length != 4 || sp.uv.Length != 4 || sp.triangles.Length != 6) continue;
                     Vector2[] cornerSrc = sp.vertices, uvSrc = sp.uv;
 #if AUTOTEST || GPUDECO
-                    if (!GpuImageActor(index) && TrimStaticSprite(sp, out var trimV, out var trimUv)) { cornerSrc = trimV; uvSrc = trimUv; }
 #endif
                     PcAdd(ref gpuPcC,pcT);pcT=PcT();
                     var geometry = LiveDecoGeometry.Capture(d.pivotTrans, d.childTransform, r.transform, cornerSrc, r.flipX, r.flipY);

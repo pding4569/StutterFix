@@ -69,16 +69,12 @@ namespace StutterFix
             if(command=="drawcollapse on" || command=="drawcollapse ready")
             {
                 if(command=="drawcollapse ready")RebuildDrawCollapse();
-                ApplyBarrierClones();
                 ValidateDrawCollapse();
                 if(command.EndsWith(" on",StringComparison.Ordinal))
                 {
                     gpuCollapseOn=true;
                     try
                     {
-#if AUTOTEST
-                        TileCompositeApply();
-#endif
                         foreach(var s in gpuLiveSlices)s.RefreshAlpha();
                         DispatchGpuLiveSlice(BakeTime);
                     }

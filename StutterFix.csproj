@@ -115,7 +115,6 @@
     <Compile Include="GpuDecoImageVariants.cs" />
     <Compile Include="GpuDecoImagePlayback.cs" />
     <Compile Include="GpuDecoTrim.cs" />
-    <Compile Include="GpuTileComposite.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoImageGeometryFixture.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoImageTextureFixture.cs" Condition="'$(AutoTestBuild)' == '1'" />
     <Compile Include="GpuDecoActivation.cs" />

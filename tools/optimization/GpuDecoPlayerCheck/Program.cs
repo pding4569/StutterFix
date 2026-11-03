@@ -52,8 +52,8 @@ foreach(string reason in new[]{"drawcollapse representative lost","drawcollapse 
     Check(thrown,"serious failure must throw: "+reason);
 }
 Check(DrawCollapsePolicy.KeepAfterBarrier && DrawCollapsePolicy.SkipOrderSweep && DrawCollapsePolicy.GlobalVerts
-    && !DrawCollapsePolicy.TileComposite && DrawCollapsePolicy.DisableOwnedRenderers && !DrawCollapsePolicy.DirectDispatch
-    && !DrawCollapsePolicy.TightAllOwned && DrawCollapsePolicy.TightLargeQuads,"measured defaults unchanged");
+    && DrawCollapsePolicy.DisableOwnedRenderers && !DrawCollapsePolicy.DirectDispatch
+    && DrawCollapsePolicy.TightLargeQuads,"measured defaults unchanged");
 
 if(args.Length!=3)throw new ArgumentException("player.dll auto.dll bundle");
 byte[] bundleHash=SHA256.HashData(File.ReadAllBytes(args[2]));
