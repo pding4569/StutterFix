@@ -926,6 +926,7 @@ namespace StutterFix
                 case "gpuhide": GpuHide.Command(arg); return true;
                 case "hidegroup": { var q = arg.Split(' '); Log("[hidegroup] " + q[0] + " " + GpuHide.Toggle(q[0], q.Length > 1 && q[1] == "on")); return true; }
                 case "flatten": HierarchyFlat.Command(arg); return true;
+                case "camskip": HierarchyFlat.SkipCameras(arg); return true;
                 case "rtcensus": RuntimeCensus.Run(arg); return true;
                 case "rdcapture": RuntimeCensus.Capture(); return true;
                 case "dormfilter": Dormancy.FilterEveryFrame = arg == "every"; return true;

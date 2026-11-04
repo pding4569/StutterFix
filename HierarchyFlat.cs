@@ -19,6 +19,23 @@ namespace StutterFix
             }
         }
 
+        // 빈 배경 카메라를 끄면 카메라당 도는 화면 판정·정렬이 얼마나 주는지 잰다. 비용 비교용이라 그림 동일성은 보지 않는다.
+        internal static void SkipCameras(string arg)
+        {
+            var c = scrCamera.instance;
+            Color color = c.Bgcamstatic.backgroundColor;
+            c.Bgcamstatic.enabled = false;
+            c.BGcam.clearFlags = CameraClearFlags.SolidColor;
+            c.BGcam.backgroundColor = color;
+            if (arg.Contains("bg"))
+            {
+                c.BGcam.enabled = false;
+                c.camobj.clearFlags = CameraClearFlags.SolidColor;
+                c.camobj.backgroundColor = color;
+            }
+            Main.Entry.Logger.Log("[camskip] " + arg);
+        }
+
         private static void Flatten(string containerName)
         {
             var container = GameObject.Find(containerName);

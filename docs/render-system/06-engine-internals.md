@@ -37,6 +37,8 @@ Unity는 루트와 그 아래 전체를 계층 하나로 묶어 저장한다([hi
 - 타일 전부: `GetFloorContainer`의 `Floors` 아래.
 - 곡 중에는 거의 매 프레임 그 계층의 무언가가 움직인다.
 
+**이 엔진 버전의 코드(`TransformChangeDispatch::ScanAndHandleChangesJob`, 0x675a50):** 작업 단위는 (계층, 시작 번호)이고, 계층의 합친 변경 비트가 시스템 마스크와 겹치면 시작 번호부터 최대 0x2000개(8,192)의 변경 비트를 **하나씩 읽는다**. 전부 훑는다는 설명은 맞다. 다만 큰 계층도 8,192개씩 나눠 작업에 태우므로 "스레드 하나"라는 옛 설명은 이 버전에 맞지 않을 수 있다. 꺼진 Transform도 계층에 들어 있다면 Arche는 장식 9개 구조 × 2만 8천으로 약 26만 개까지 볼 수 있다(실제 수는 `rtcensus`로 확인).
+
 프로파일에서 `TransformChangeDispatch` 관련 메인 스레드 비율은 2~4%다. 작업 스레드 몫은 표본에 없다. 그릴 때 `CalculateGlobalPosition`·`SetGlobalT` 등도 관련될 수 있다.
 
 **시험:** 자동 시험 `flatten deco|floor`(`HierarchyFlat.cs`)가 곡 시작 전에 자식을 루트로 옮긴다. 비교 항목은 FPS, 메인 스레드 단계 비용, 끊김이다.
