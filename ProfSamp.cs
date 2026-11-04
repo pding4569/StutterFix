@@ -1,5 +1,6 @@
 #if DEV || AUTOTEST
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -48,14 +49,48 @@ namespace StutterFix
         [DllImport("mono-2.0-bdwgc", EntryPoint = "mono_method_full_name")] private static extern IntPtr mono_method_full_name(IntPtr method, bool signature);
         [DllImport("mono-2.0-bdwgc", EntryPoint = "mono_free")] private static extern void mono_free(IntPtr p);
 
+        [DllImport("kernel32.dll", SetLastError = true)] private static extern IntPtr CreateToolhelp32Snapshot(uint flags, uint pid);
+        [DllImport("kernel32.dll")] private static extern bool Thread32First(IntPtr snap, ref ThreadEntry e);
+        [DllImport("kernel32.dll")] private static extern bool Thread32Next(IntPtr snap, ref ThreadEntry e);
+        [DllImport("kernel32.dll")] private static extern int GetThreadDescription(IntPtr thread, out IntPtr text);
+        [DllImport("kernel32.dll")] private static extern IntPtr LocalFree(IntPtr mem);
+        [StructLayout(LayoutKind.Sequential)]
+        private struct ThreadEntry { internal uint Size, Usage, Id, Owner; internal int BasePri, DeltaPri; internal uint Flags; }
+
+        // 이름에 name 이 들어간 첫 스레드. 못 찾으면 있는 이름을 전부 보여 준다.
+        private static uint FindThread(string name)
+        {
+            uint pid = (uint)Process.GetCurrentProcess().Id;
+            IntPtr snap = CreateToolhelp32Snapshot(4, 0);
+            var names = new List<string>();
+            try
+            {
+                var e = new ThreadEntry { Size = (uint)Marshal.SizeOf(typeof(ThreadEntry)) };
+                for (bool ok = Thread32First(snap, ref e); ok; ok = Thread32Next(snap, ref e))
+                {
+                    if (e.Owner != pid) continue;
+                    IntPtr h = OpenThread(0x0800, false, e.Id);   // QUERY_LIMITED_INFORMATION
+                    if (h == IntPtr.Zero) continue;
+                    string text = "";
+                    if (GetThreadDescription(h, out IntPtr p) >= 0 && p != IntPtr.Zero) { text = Marshal.PtrToStringUni(p); LocalFree(p); }
+                    CloseHandle(h);
+                    if (text.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0) return e.Id;
+                    names.Add(text);
+                }
+            }
+            finally { CloseHandle(snap); }
+            throw new ArgumentException("스레드 없음: " + name + " / 있는 이름: " + string.Join(",", names.Distinct()));
+        }
+
         internal static string Begin(string arg)
         {
             if (run) return "이미 도는 중";
             var args = (arg ?? "").Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            if (args.Length > 2 || (args.Length == 2 && args[1] != "native"))
-                throw new ArgumentException("profsamp begin [hz] [native]");
+            if (args.Length > 3 || args.Skip(1).Any(a => a != "native" && !a.StartsWith("thread=")))
+                throw new ArgumentException("profsamp begin [hz] [native] [thread=이름 일부]");
             int hz = 1000; if (args.Length > 0) int.TryParse(args[0], out hz); if (hz < 50 || hz > 4000) hz = 1000; hzUsed = hz;
-            nativeUnwind = args.Length == 2 && args[1] == "native";
+            nativeUnwind = args.Contains("native");
+            string threadName = args.Where(a => a.StartsWith("thread=")).Select(a => a.Substring(7).Replace('_', ' ')).FirstOrDefault();
             nativeFrames = 0; failure = null;
             // Resolve modules while the target is running. Never enter Mono/JIT
             // function-table callbacks or enumerate modules with it suspended.
@@ -68,6 +103,7 @@ namespace StutterFix
             images = ranges.ToArray();
             ips = new ulong[MaxSamples * Depth]; count = 0;
             uint tid = GetCurrentThreadId();
+            if (threadName != null) tid = FindThread(threadName);
             mainHandle = OpenThread(0x0002 | 0x0008 | 0x0040, false, tid);   // SUSPEND_RESUME | GET_CONTEXT | QUERY_INFORMATION
             if (mainHandle == IntPtr.Zero) return "OpenThread 실패 " + Marshal.GetLastWin32Error();
             run = true; t0 = Stopwatch.GetTimestamp();
